@@ -229,7 +229,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                       {branch.address}
                     </p>
                   </div>
-                  <Badge variant={available ? "default" : "secondary"}>
+                  <Badge variant={available ? "outline" : "secondary"}>
                     {available ? `${quantity} במלאי` : "לא זמין"}
                   </Badge>
                 </div>

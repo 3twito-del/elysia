@@ -1,13 +1,5 @@
 import Link from "next/link";
-import {
-  Gem,
-  MapPin,
-  MessageCircle,
-  Phone,
-  Search,
-  ShieldCheck,
-  Sparkles,
-} from "lucide-react";
+import { Gem, MapPin, Search, ShieldCheck, Sparkles } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
@@ -24,10 +16,10 @@ const serviceLinks = [
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-black/10 bg-white/60 backdrop-blur-xl">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-14">
-        <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr_0.85fr_1.15fr]">
-          <section className="max-w-md">
+    <footer className="border-t border-black/10 bg-white/50 backdrop-blur-xl">
+      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:py-16">
+        <div className="grid gap-12 lg:grid-cols-[1.25fr_0.8fr_0.85fr_1fr]">
+          <section className="max-w-lg">
             <Link className="inline-flex items-center gap-2" href="/">
               <Gem className="text-foreground size-5" />
               <span className="text-2xl font-semibold tracking-normal">
@@ -38,8 +30,8 @@ export function SiteFooter() {
               רשת תכשיטי סטודיו ישראלית במיצוב יוקרה נגישה, עם קטלוג אונליין,
               זמינות לפי סניף וייעוץ אישי לבחירת תכשיט או מתנה.
             </p>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Button asChild>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <Button asChild variant="secondary">
                 <Link href="/stylist">
                   ייעוץ אישי
                   <Sparkles className="size-4" />
@@ -103,40 +95,31 @@ export function SiteFooter() {
             <h2 className="text-sm font-semibold" id="footer-branches">
               סניפים וקשר
             </h2>
-            <div className="mt-4 grid gap-5">
+            <p className="text-muted-foreground mt-4 text-sm leading-7">
+              בדיקת זמינות, מדידה ואיסוף מתבצעים בעמוד הסניפים כדי לשמור על מידע
+              מעודכן ולא לחזור על פרטים בכל תחתית עמוד.
+            </p>
+            <ul className="mt-5 grid gap-3 text-sm">
               {branches.map((branch) => (
-                <address
-                  className="text-muted-foreground not-italic"
+                <li
+                  className="flex items-center justify-between gap-3 border-b border-black/10 pb-3 last:border-b-0"
                   key={branch.slug}
                 >
-                  <p className="text-foreground text-sm font-medium">
-                    {branch.name}
-                  </p>
-                  <p className="mt-1 flex items-center gap-2 text-sm">
-                    <MapPin className="size-4" />
-                    {branch.address}, {branch.city}
-                  </p>
-                  <div className="mt-2 flex flex-wrap gap-3 text-sm">
-                    <a
-                      className="hover:text-foreground inline-flex items-center gap-1.5 transition"
-                      href={`tel:${branch.phone}`}
-                    >
-                      <Phone className="size-4" />
-                      {branch.phone}
-                    </a>
-                    <a
-                      className="hover:text-foreground inline-flex items-center gap-1.5 transition"
-                      href={`https://wa.me/${branch.whatsapp}`}
-                      rel="noreferrer"
-                      target="_blank"
-                    >
-                      <MessageCircle className="size-4" />
-                      WhatsApp
-                    </a>
-                  </div>
-                </address>
+                  <span className="font-medium">{branch.name}</span>
+                  <span className="text-muted-foreground">{branch.city}</span>
+                </li>
               ))}
-            </div>
+            </ul>
+            <Button
+              asChild
+              className="mt-6 w-full justify-between"
+              variant="outline"
+            >
+              <Link href="/branches">
+                לכל הסניפים
+                <MapPin className="size-4" />
+              </Link>
+            </Button>
           </section>
         </div>
 

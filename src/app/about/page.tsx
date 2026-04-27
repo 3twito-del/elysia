@@ -98,11 +98,11 @@ export default function AboutPage() {
             sizes="100vw"
             src={venusImage}
           />
-          <div className="absolute inset-0 bg-black/45" />
+          <div className="absolute inset-0 bg-black/[0.38]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(255,255,255,0.22),transparent_34%),linear-gradient(to_top,rgba(0,0,0,0.74),rgba(0,0,0,0.08)_58%,rgba(0,0,0,0.38))]" />
 
           <div className="relative mx-auto flex min-h-[86vh] max-w-7xl flex-col justify-end px-4 pt-24 pb-10 sm:px-6 lg:pb-14">
-            <div className="max-w-4xl rounded-md border border-white/20 bg-white/12 p-6 text-white shadow-2xl shadow-black/20 backdrop-blur-xl sm:p-8 lg:p-10">
+            <div className="max-w-4xl rounded-md border border-white/20 bg-white/12 p-6 text-white shadow-lg shadow-black/10 backdrop-blur-xl sm:p-8 lg:p-10">
               <Badge className="text-foreground mb-5 bg-white/80 shadow-none backdrop-blur">
                 אודות Aphrodite
               </Badge>

@@ -25,7 +25,7 @@ export default function GiftsPage() {
               בחירות קלות לקנייה עם אריזת מתנה, ברכה אישית והתאמה לפי תקציב.
             </p>
           </div>
-          <Button asChild>
+          <Button asChild variant="secondary">
             <Link href="/stylist">שאלון מתנה חכם</Link>
           </Button>
         </div>

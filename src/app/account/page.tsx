@@ -35,7 +35,7 @@ export default function AccountPage() {
                   placeholder="name@example.com או 050..."
                 />
               </div>
-              <Button className="w-full" disabled>
+              <Button className="w-full" disabled variant="secondary">
                 מנגנון OTP בהכנה
               </Button>
               <p className="text-muted-foreground text-xs leading-6">
@@ -49,24 +49,28 @@ export default function AccountPage() {
               detail="סטטוס, חשבוניות והחזרות"
               icon={PackageCheck}
               label="הזמנות"
+              variant="soft"
               value="0"
             />
             <MetricCard
               detail="מוצרים שמורים לקנייה"
               icon={Heart}
               label="Wishlist"
+              variant="soft"
               value="0"
             />
             <MetricCard
               detail="טבעות, שרשראות וצמידים"
               icon={Ruler}
               label="מידות"
+              variant="soft"
               value="פרופיל"
             />
             <MetricCard
               detail="מדידה וייעוץ בסניף"
               icon={CalendarCheck}
               label="תורים"
+              variant="soft"
               value="בתיאום"
             />
           </div>

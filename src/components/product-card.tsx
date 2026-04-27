@@ -13,7 +13,7 @@ export function ProductCard({ product }: { product: Product }) {
   ).length;
 
   return (
-    <Card className="h-full overflow-hidden rounded-md border-black/10 bg-white/65 py-0 shadow-none backdrop-blur transition duration-200 focus-within:border-black/30 hover:-translate-y-1 hover:border-black/25 hover:bg-white/80">
+    <Card className="h-full overflow-hidden rounded-md border-black/10 bg-white/55 py-0 shadow-none ring-1 ring-black/[0.02] backdrop-blur transition duration-200 focus-within:border-black/30 hover:-translate-y-0.5 hover:border-black/20 hover:bg-white/75">
       <Link
         aria-label={`צפייה במוצר ${product.name}`}
         className="block focus-visible:outline-none"
@@ -27,7 +27,7 @@ export function ProductCard({ product }: { product: Product }) {
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
             src={product.image}
           />
-          <Badge className="text-foreground absolute top-3 right-3 bg-white/75 shadow-none backdrop-blur">
+          <Badge className="text-foreground absolute top-3 right-3 bg-white/70 font-normal shadow-none backdrop-blur">
             {product.collection}
           </Badge>
         </div>
@@ -66,7 +66,7 @@ export function ProductCard({ product }: { product: Product }) {
               {availableBranches} סניפים
             </span>
           </div>
-          <Button asChild className="w-full gap-2">
+          <Button asChild className="w-full gap-2" variant="outline">
             <Link
               aria-label={`צפייה וקנייה: ${product.name}`}
               href={`/product/${product.slug}`}

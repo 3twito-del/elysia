@@ -144,7 +144,7 @@ export function ManualCheckoutForm({
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Button asChild>
+              <Button asChild variant="secondary">
                 <Link href="/admin">מעבר לאדמין</Link>
               </Button>
               <Button asChild variant="outline">
@@ -242,20 +242,24 @@ export function ManualCheckoutForm({
           <CardContent className="grid gap-4">
             <div className="grid gap-3 sm:grid-cols-2">
               <Button
+                aria-pressed={fulfillmentMethod === "DELIVERY"}
                 className="min-h-14 justify-start p-4"
                 onClick={() => setFulfillmentMethod("DELIVERY")}
                 type="button"
                 variant={
-                  fulfillmentMethod === "DELIVERY" ? "default" : "outline"
+                  fulfillmentMethod === "DELIVERY" ? "secondary" : "outline"
                 }
               >
                 משלוח עד הבית
               </Button>
               <Button
+                aria-pressed={fulfillmentMethod === "PICKUP"}
                 className="min-h-14 justify-start p-4"
                 onClick={() => setFulfillmentMethod("PICKUP")}
                 type="button"
-                variant={fulfillmentMethod === "PICKUP" ? "default" : "outline"}
+                variant={
+                  fulfillmentMethod === "PICKUP" ? "secondary" : "outline"
+                }
               >
                 איסוף מסניף
               </Button>

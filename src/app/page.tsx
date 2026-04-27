@@ -176,24 +176,28 @@ export default function Home() {
           detail="זמינות לפי סניף לפני הגעה"
           icon={MapPin}
           label="סניפים"
+          variant="soft"
           value="2"
         />
         <MetricCard
           detail="איסוף, משלוח או החזרה בסניף"
           icon={ShieldCheck}
           label="אומניצ׳אנל"
+          variant="soft"
           value="מלא"
         />
         <MetricCard
           detail="מתנות, אירועים ותקציב"
           icon={Sparkles}
           label="סטייליסט AI"
+          variant="soft"
           value="פעיל"
         />
         <MetricCard
           detail="מדידה וייעוץ אישי"
           icon={CalendarCheck}
           label="תורים"
+          variant="soft"
           value="בתיאום"
         />
       </section>
