@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { AphroditeIcon } from "~/components/icon";
+import { Heart, MapPin, ShoppingBag } from "lucide-react";
 
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -52,7 +52,7 @@ export function ProductCard({ product }: { product: Product }) {
             type="button"
             variant="ghost"
           >
-            <AphroditeIcon name="heart" className="size-5" />
+            <Heart className="size-4" />
           </Button>
         </div>
 
@@ -62,7 +62,7 @@ export function ProductCard({ product }: { product: Product }) {
               {formatPrice(product.price)}
             </span>
             <span className="text-muted-foreground flex items-center gap-1 text-xs">
-              <AphroditeIcon name="mapPin" className="size-4" />
+              <MapPin className="size-3.5" />
               {availableBranches} סניפים
             </span>
           </div>
@@ -71,7 +71,7 @@ export function ProductCard({ product }: { product: Product }) {
               aria-label={`צפייה וקנייה: ${product.name}`}
               href={`/product/${product.slug}`}
             >
-              <AphroditeIcon name="shoppingBag" className="size-5" />
+              <ShoppingBag className="size-4" />
               צפייה וקנייה
             </Link>
           </Button>

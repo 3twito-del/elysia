@@ -140,34 +140,6 @@
   html {
     @apply font-sans;
   }
-  .aphrodite-icon {
-    display: inline-flex;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-    color: currentColor;
-    line-height: 1;
-    vertical-align: middle;
-  }
-  .aphrodite-icon > iconify-icon {
-    display: block;
-    width: 100%;
-    height: 100%;
-    flex: none;
-    color: currentColor;
-    line-height: 1;
-    vertical-align: top;
-  }
-  iconify-icon {
-    color: currentColor;
-  }
-  [data-slot="button"] iconify-icon,
-  [data-slot="command-item"] iconify-icon,
-  [data-slot="dropdown-menu-item"] iconify-icon,
-  [data-slot="select-item"] iconify-icon,
-  [data-slot="select-trigger"] iconify-icon {
-    pointer-events: none;
-  }
 }
 
 .public-motion-shell {

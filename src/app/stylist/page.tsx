@@ -1,4 +1,4 @@
-import { AphroditeIcon } from "~/components/icon";
+import { Sparkles, WandSparkles } from "lucide-react";
 
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -36,7 +36,7 @@ export default function StylistPage() {
             <Card className="rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <AphroditeIcon name="sparkle" className="size-5" />
+                  <Sparkles className="size-5" />
                   מה ה-AI יודע לעשות
                 </CardTitle>
               </CardHeader>
@@ -49,7 +49,7 @@ export default function StylistPage() {
             <Card className="rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <AphroditeIcon name="magicWand" className="size-5" />
+                  <WandSparkles className="size-5" />
                   מדידה וירטואלית
                 </CardTitle>
               </CardHeader>

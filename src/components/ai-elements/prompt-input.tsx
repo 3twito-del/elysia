@@ -41,7 +41,14 @@ import {
 } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
 import type { ChatStatus, FileUIPart, SourceDocumentUIPart } from "ai";
-import { AphroditeIcon } from "~/components/icon";
+import {
+  CornerDownLeftIcon,
+  ImageIcon,
+  Monitor,
+  PlusIcon,
+  SquareIcon,
+  XIcon,
+} from "lucide-react";
 import { nanoid } from "nanoid";
 import type {
   ChangeEvent,
@@ -423,7 +430,7 @@ export const PromptInputActionAddAttachments = ({
 
   return (
     <DropdownMenuItem {...props} onSelect={handleSelect}>
-      <AphroditeIcon name="image" className="mr-2 size-4" /> {label}
+      <ImageIcon className="mr-2 size-4" /> {label}
     </DropdownMenuItem>
   );
 };
@@ -468,7 +475,7 @@ export const PromptInputActionAddScreenshot = ({
 
   return (
     <DropdownMenuItem {...props} onSelect={handleSelect}>
-      <AphroditeIcon name="monitor" className="mr-2 size-4" />
+      <Monitor className="mr-2 size-4" />
       {label}
     </DropdownMenuItem>
   );
@@ -1173,7 +1180,7 @@ export const PromptInputActionMenuTrigger = ({
 }: PromptInputActionMenuTriggerProps) => (
   <DropdownMenuTrigger asChild>
     <PromptInputButton className={className} {...props}>
-      {children ?? <AphroditeIcon name="plus" className="size-4" />}
+      {children ?? <PlusIcon className="size-4" />}
     </PromptInputButton>
   </DropdownMenuTrigger>
 );
@@ -1218,14 +1225,14 @@ export const PromptInputSubmit = ({
 }: PromptInputSubmitProps) => {
   const isGenerating = status === "submitted" || status === "streaming";
 
-  let Icon = <AphroditeIcon name="cornerDownLeft" className="size-4" />;
+  let Icon = <CornerDownLeftIcon className="size-4" />;
 
   if (status === "submitted") {
     Icon = <Spinner />;
   } else if (status === "streaming") {
-    Icon = <AphroditeIcon name="square" className="size-4" />;
+    Icon = <SquareIcon className="size-4" />;
   } else if (status === "error") {
-    Icon = <AphroditeIcon name="x" className="size-4" />;
+    Icon = <XIcon className="size-4" />;
   }
 
   const handleClick = useCallback(

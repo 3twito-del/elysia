@@ -2,7 +2,7 @@
 
 import { Fragment, useState } from "react";
 import { useChat } from "@ai-sdk/react";
-import { AphroditeIcon } from "~/components/icon";
+import { AlertCircle, MessageSquare, Sparkles } from "lucide-react";
 
 import {
   Conversation,
@@ -51,7 +51,7 @@ export function StylistChat() {
             </Badge>
             <h2 className="text-2xl font-semibold">סטייליסט תכשיטים אישי</h2>
           </div>
-          <AphroditeIcon name="sparkle" className="text-foreground size-6" />
+          <Sparkles className="text-foreground size-6" />
         </div>
       </div>
 
@@ -61,14 +61,11 @@ export function StylistChat() {
             {messages.length === 0 ? (
               <ConversationEmptyState
                 description="כתבי תקציב, אירוע, סגנון או מוצר שמעניין אותך."
-                icon={<AphroditeIcon name="chat" className="size-10" />}
+                icon={<MessageSquare className="size-10" />}
                 title="איך אפשר להתאים לך תכשיט?"
               >
                 <div className="grid gap-3 text-center">
-                  <AphroditeIcon
-                    name="chat"
-                    className="text-muted-foreground mx-auto size-10"
-                  />
+                  <MessageSquare className="text-muted-foreground mx-auto size-10" />
                   <div>
                     <h3 className="font-medium">איך אפשר להתאים לך תכשיט?</h3>
                     <p className="text-muted-foreground mt-1 text-sm">
@@ -118,10 +115,7 @@ export function StylistChat() {
           {error ? (
             <div className="mb-4 rounded-md border border-black/10 bg-black/[0.03] p-4 text-sm">
               <div className="flex items-start gap-3">
-                <AphroditeIcon
-                  name="alert"
-                  className="mt-0.5 size-5 shrink-0"
-                />
+                <AlertCircle className="mt-0.5 size-5 shrink-0" />
                 <div className="grid gap-2">
                   <p className="font-medium">הסטייליסט לא זמין כרגע.</p>
                   <p className="text-muted-foreground leading-6">

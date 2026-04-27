@@ -1,6 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
-import { AphroditeIcon } from "~/components/icon";
+import {
+  ArrowLeft,
+  CalendarCheck,
+  Gem,
+  MapPin,
+  Search,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 
 import { BranchCard } from "~/components/branch-card";
 import { MetricCard } from "~/components/metric-card";
@@ -46,7 +54,7 @@ export default function Home() {
               <Button asChild size="lg">
                 <Link href="/category/rings">
                   לקולקציה
-                  <AphroditeIcon name="arrowLeft" className="size-5" />
+                  <ArrowLeft className="size-4" />
                 </Link>
               </Button>
               <Button
@@ -57,15 +65,15 @@ export default function Home() {
               >
                 <Link href="/stylist">
                   ייעוץ סטייליסט AI
-                  <AphroditeIcon name="sparkle" className="size-5" />
+                  <Sparkles className="size-4" />
                 </Link>
               </Button>
             </div>
             <div className="mt-7 grid max-w-3xl gap-3 sm:grid-cols-3">
               {[
-                { icon: "mapPin", label: "זמינות לפי סניף" },
-                { icon: "sparkle", label: "ייעוץ אישי" },
-                { icon: "shieldCheck", label: "קופה מאובטחת" },
+                { icon: MapPin, label: "זמינות לפי סניף" },
+                { icon: Sparkles, label: "ייעוץ אישי" },
+                { icon: ShieldCheck, label: "קופה מאובטחת" },
               ].map((item) => {
                 const Icon = item.icon;
 
@@ -74,7 +82,7 @@ export default function Home() {
                     className="flex min-h-16 items-center gap-3 rounded-md border border-white/20 bg-white/15 px-4 py-3 text-sm font-medium text-white shadow-none backdrop-blur"
                     key={item.label}
                   >
-                    <AphroditeIcon className="size-6" name={Icon} />
+                    <Icon className="size-5" />
                     {item.label}
                   </div>
                 );
@@ -97,10 +105,7 @@ export default function Home() {
             role="search"
           >
             <div className="relative">
-              <AphroditeIcon
-                name="search"
-                className="text-muted-foreground absolute top-1/2 right-3 size-5 -translate-y-1/2"
-              />
+              <Search className="text-muted-foreground absolute top-1/2 right-3 size-4 -translate-y-1/2" />
               <Input
                 className="h-12 pr-10"
                 name="q"
@@ -109,7 +114,7 @@ export default function Home() {
             </div>
             <Button className="h-12 gap-2" type="submit">
               חיפוש
-              <AphroditeIcon name="search" className="size-5" />
+              <Search className="size-4" />
             </Button>
           </form>
         </div>
@@ -132,11 +137,8 @@ export default function Home() {
               href={`/category/${category.slug}`}
               key={category.slug}
             >
-              <div className="mb-5 flex size-12 items-center justify-center rounded-md border border-black/10 bg-black/[0.04]">
-                <AphroditeIcon
-                  name="diamond"
-                  className="text-foreground size-6"
-                />
+              <div className="mb-5 flex size-11 items-center justify-center rounded-md border border-black/10 bg-black/[0.04]">
+                <Gem className="text-foreground size-5" />
               </div>
               <h3 className="text-xl font-medium">{category.name}</h3>
               <p className="text-muted-foreground mt-2 min-h-12 text-sm leading-6">
@@ -144,7 +146,7 @@ export default function Home() {
               </p>
               <span className="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-medium group-hover:underline">
                 צפייה
-                <AphroditeIcon name="arrowLeft" className="size-5" />
+                <ArrowLeft className="size-4" />
               </span>
             </Link>
           ))}
@@ -174,28 +176,28 @@ export default function Home() {
         <RevealGrid className="grid gap-5 lg:grid-cols-4">
           <MetricCard
             detail="זמינות לפי סניף לפני הגעה"
-            icon="mapPin"
+            icon={MapPin}
             label="סניפים"
             variant="soft"
             value="2"
           />
           <MetricCard
             detail="איסוף, משלוח או החזרה בסניף"
-            icon="shieldCheck"
+            icon={ShieldCheck}
             label="אומניצ׳אנל"
             variant="soft"
             value="מלא"
           />
           <MetricCard
             detail="מתנות, אירועים ותקציב"
-            icon="sparkle"
+            icon={Sparkles}
             label="סטייליסט AI"
             variant="soft"
             value="פעיל"
           />
           <MetricCard
             detail="מדידה וייעוץ אישי"
-            icon="calendarCheck"
+            icon={CalendarCheck}
             label="תורים"
             variant="soft"
             value="בתיאום"

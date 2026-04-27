@@ -1,17 +1,17 @@
 import Link from "next/link";
-import { AphroditeIcon } from "~/components/icon";
+import { Gem, MapPin, Search, ShieldCheck, Sparkles } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import { branches, categories } from "~/lib/catalog";
 
 const serviceLinks = [
-  { href: "/about", label: "אודות Aphrodite", icon: "diamond" },
-  { href: "/search", label: "חיפוש בקטלוג", icon: "search" },
-  { href: "/checkout", label: "סל וקופה", icon: "shieldCheck" },
-  { href: "/account", label: "אזור לקוח", icon: "diamond" },
-  { href: "/branches", label: "סניפים ואיסוף", icon: "mapPin" },
-  { href: "/stylist", label: "סטייליסט AI", icon: "sparkle" },
+  { href: "/about", label: "אודות Aphrodite", icon: Gem },
+  { href: "/search", label: "חיפוש בקטלוג", icon: Search },
+  { href: "/checkout", label: "סל וקופה", icon: ShieldCheck },
+  { href: "/account", label: "אזור לקוח", icon: Gem },
+  { href: "/branches", label: "סניפים ואיסוף", icon: MapPin },
+  { href: "/stylist", label: "סטייליסט AI", icon: Sparkles },
 ];
 
 export function SiteFooter() {
@@ -21,10 +21,7 @@ export function SiteFooter() {
         <div className="grid gap-12 lg:grid-cols-[1.25fr_0.8fr_0.85fr_1fr]">
           <section className="max-w-lg">
             <Link className="inline-flex items-center gap-2" href="/">
-              <AphroditeIcon
-                name="diamond"
-                className="text-foreground size-6"
-              />
+              <Gem className="text-foreground size-5" />
               <span className="text-2xl font-semibold tracking-normal">
                 Aphrodite
               </span>
@@ -37,13 +34,13 @@ export function SiteFooter() {
               <Button asChild variant="secondary">
                 <Link href="/stylist">
                   ייעוץ אישי
-                  <AphroditeIcon name="sparkle" className="size-5" />
+                  <Sparkles className="size-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline">
                 <Link href="/branches">
                   מציאת סניף
-                  <AphroditeIcon name="mapPin" className="size-5" />
+                  <MapPin className="size-4" />
                 </Link>
               </Button>
             </div>
@@ -85,7 +82,7 @@ export function SiteFooter() {
                       className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 transition"
                       href={item.href}
                     >
-                      <AphroditeIcon className="size-[1.125rem]" name={Icon} />
+                      <Icon className="size-4" />
                       {item.label}
                     </Link>
                   </li>
@@ -120,7 +117,7 @@ export function SiteFooter() {
             >
               <Link href="/branches">
                 לכל הסניפים
-                <AphroditeIcon name="mapPin" className="size-5" />
+                <MapPin className="size-4" />
               </Link>
             </Button>
           </section>

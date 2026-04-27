@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AphroditeIcon } from "~/components/icon";
+import { SlidersHorizontal } from "lucide-react";
 
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
@@ -59,7 +59,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           <Card className="sticky top-24 rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
-                <AphroditeIcon name="sliders" className="size-5" />
+                <SlidersHorizontal className="size-4" />
                 פילטרים
               </CardTitle>
             </CardHeader>

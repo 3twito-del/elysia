@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { AphroditeIcon } from "~/components/icon";
+import { LockKeyhole } from "lucide-react";
 
 import { AdminLoginForm } from "./_components/admin-login-form";
 import { SiteHeader } from "~/components/site-header";
@@ -46,7 +46,7 @@ export default async function AdminLoginPage({
           <Card className="rounded-md border-black/10 bg-white/70 shadow-none backdrop-blur">
             <CardHeader className="border-b border-black/10 pb-4">
               <CardTitle className="flex items-center gap-2">
-                <AphroditeIcon name="lock" className="size-5" />
+                <LockKeyhole className="size-5" />
                 אימות פנימי
               </CardTitle>
             </CardHeader>

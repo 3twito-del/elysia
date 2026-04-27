@@ -3,7 +3,7 @@
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import type { UIMessage } from "ai";
-import { AphroditeIcon } from "~/components/icon";
+import { ArrowDownIcon, DownloadIcon } from "lucide-react";
 import type { ComponentProps } from "react";
 import { useCallback } from "react";
 import { StickToBottom, useStickToBottomContext } from "use-stick-to-bottom";
@@ -94,7 +94,7 @@ export const ConversationScrollButton = ({
         variant="outline"
         {...props}
       >
-        <AphroditeIcon name="arrowDown" className="size-4" />
+        <ArrowDownIcon className="size-4" />
       </Button>
     )
   );
@@ -162,7 +162,7 @@ export const ConversationDownload = ({
       variant="outline"
       {...props}
     >
-      {children ?? <AphroditeIcon name="download" className="size-4" />}
+      {children ?? <DownloadIcon className="size-4" />}
     </Button>
   );
 };

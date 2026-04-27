@@ -12,7 +12,7 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { InputGroup, InputGroupAddon } from "~/components/ui/input-group";
-import { AphroditeIcon } from "~/components/icon";
+import { SearchIcon, CheckIcon } from "lucide-react";
 
 function Command({
   className,
@@ -78,7 +78,7 @@ function CommandInput({
           {...props}
         />
         <InputGroupAddon>
-          <AphroditeIcon name="search" className="size-5 shrink-0 opacity-50" />
+          <SearchIcon className="size-4 shrink-0 opacity-50" />
         </InputGroupAddon>
       </InputGroup>
     </div>
@@ -152,16 +152,13 @@ function CommandItem({
     <CommandPrimitive.Item
       data-slot="command-item"
       className={cn(
-        "group/command-item data-selected:bg-muted data-selected:text-foreground data-selected:*:[.aphrodite-icon]:text-foreground data-selected:*:[svg]:text-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none in-data-[slot=dialog-content]:rounded-lg! data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_.aphrodite-icon]:pointer-events-none [&_.aphrodite-icon]:shrink-0 [&_.aphrodite-icon:not([class*='size-'])]:size-5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "group/command-item data-selected:bg-muted data-selected:text-foreground data-selected:*:[svg]:text-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none in-data-[slot=dialog-content]:rounded-lg! data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}
     >
       {children}
-      <AphroditeIcon
-        name="check"
-        className="ml-auto opacity-0 group-has-data-[slot=command-shortcut]/command-item:hidden group-data-[checked=true]/command-item:opacity-100"
-      />
+      <CheckIcon className="ml-auto opacity-0 group-has-data-[slot=command-shortcut]/command-item:hidden group-data-[checked=true]/command-item:opacity-100" />
     </CommandPrimitive.Item>
   );
 }
