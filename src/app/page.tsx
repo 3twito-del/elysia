@@ -133,7 +133,7 @@ export default function Home() {
         <RevealGrid className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {categories.map((category) => (
             <Link
-              className="group rounded-md border border-black/10 bg-white/65 p-5 backdrop-blur transition hover:border-black/30 hover:bg-white/85"
+              className="group flex min-h-[220px] w-full flex-col rounded-md border border-black/10 bg-white/65 p-5 backdrop-blur transition hover:-translate-y-0.5 hover:border-black/30 hover:bg-white/85 hover:shadow-lg hover:shadow-black/[0.04]"
               href={`/category/${category.slug}`}
               key={category.slug}
             >
@@ -144,7 +144,7 @@ export default function Home() {
               <p className="text-muted-foreground mt-2 min-h-12 text-sm leading-6">
                 {category.description}
               </p>
-              <span className="mt-5 inline-flex items-center gap-2 text-sm font-medium group-hover:underline">
+              <span className="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-medium group-hover:underline">
                 צפייה
                 <ArrowLeft className="size-4" />
               </span>
