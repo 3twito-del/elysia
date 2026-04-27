@@ -1,16 +1,15 @@
-import type { LucideIcon } from "lucide-react";
-
+import { AphroditeIcon, type IconName } from "~/components/icon";
 import { Card, CardContent } from "~/components/ui/card";
 import { cn } from "~/lib/utils";
 
 export function MetricCard({
-  icon: Icon,
+  icon,
   label,
   value,
   detail,
   variant = "default",
 }: {
-  icon: LucideIcon;
+  icon: IconName;
   label: string;
   value: string;
   detail: string;
@@ -32,7 +31,7 @@ export function MetricCard({
             isSoft ? "bg-white/60" : "bg-black/[0.04]",
           )}
         >
-          <Icon className="size-5" />
+          <AphroditeIcon className="size-5" name={icon} />
         </div>
         <div>
           <p className="text-muted-foreground text-sm">{label}</p>

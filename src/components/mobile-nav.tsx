@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSyncExternalStore } from "react";
-import { Gem, Menu } from "lucide-react";
+import { AphroditeIcon } from "~/components/icon";
 
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
@@ -39,7 +39,7 @@ export function MobileNav({ items }: { items: HeaderNavItem[] }) {
         type="button"
         variant="ghost"
       >
-        <Menu className="size-5" />
+        <AphroditeIcon name="menu" className="size-5" />
       </Button>
     );
   }
@@ -48,7 +48,7 @@ export function MobileNav({ items }: { items: HeaderNavItem[] }) {
     <Sheet>
       <SheetTrigger asChild>
         <Button className="lg:hidden" size="icon" type="button" variant="ghost">
-          <Menu className="size-5" />
+          <AphroditeIcon name="menu" className="size-5" />
           <span className="sr-only">פתח ניווט</span>
         </Button>
       </SheetTrigger>
@@ -61,7 +61,7 @@ export function MobileNav({ items }: { items: HeaderNavItem[] }) {
           className="flex items-center gap-2 text-lg font-semibold"
           href="/"
         >
-          <Gem className="text-foreground size-5" />
+          <AphroditeIcon name="diamond" className="text-foreground size-5" />
           Aphrodite
         </Link>
         <Separator className="my-5" />

@@ -2,14 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  CalendarCheck,
-  Heart,
-  PackageCheck,
-  RotateCcw,
-  ShieldCheck,
-  Sparkles,
-} from "lucide-react";
+import { AphroditeIcon } from "~/components/icon";
 
 import { SiteHeader } from "~/components/site-header";
 import { RevealGrid, RevealSection } from "~/components/reveal";
@@ -190,12 +183,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <Button asChild size="lg">
               <Link href={`/checkout?product=${product.slug}`}>
                 הוספה לסל
-                <PackageCheck className="size-4" />
+                <AphroditeIcon name="package" className="size-4" />
               </Link>
             </Button>
             <Button size="lg" variant="outline">
               שמירה
-              <Heart className="size-4" />
+              <AphroditeIcon name="heart" className="size-4" />
             </Button>
           </div>
 
@@ -203,13 +196,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <Button asChild variant="secondary">
               <Link href={`/stylist?product=${product.slug}`}>
                 מדידה/AI
-                <Sparkles className="size-4" />
+                <AphroditeIcon name="sparkle" className="size-4" />
               </Link>
             </Button>
             <Button asChild variant="secondary">
               <Link href="/branches">
                 תיאום בסניף
-                <CalendarCheck className="size-4" />
+                <AphroditeIcon name="calendarCheck" className="size-4" />
               </Link>
             </Button>
           </div>
@@ -245,7 +238,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <Card className="rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
-                <ShieldCheck className="size-5" />
+                <AphroditeIcon name="shieldCheck" className="size-5" />
                 אחריות
               </CardTitle>
             </CardHeader>
@@ -256,7 +249,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <Card className="rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
-                <RotateCcw className="size-5" />
+                <AphroditeIcon name="return" className="size-5" />
                 החזרות
               </CardTitle>
             </CardHeader>

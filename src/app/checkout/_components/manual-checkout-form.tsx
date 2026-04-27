@@ -2,13 +2,7 @@
 
 import { useMemo, useState, type FormEvent } from "react";
 import Link from "next/link";
-import {
-  CheckCircle2,
-  CreditCard,
-  Gift,
-  PackageCheck,
-  Truck,
-} from "lucide-react";
+import { AphroditeIcon } from "~/components/icon";
 
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -125,7 +119,7 @@ export function ManualCheckoutForm({
         <Card className="rounded-md border-black/10 bg-white/70 shadow-none backdrop-blur">
           <CardHeader>
             <div className="mb-4 grid size-12 place-items-center rounded-full border border-black/10 bg-black/[0.04]">
-              <CheckCircle2 className="size-6" />
+              <AphroditeIcon name="checkCircle" className="size-6" />
             </div>
             <CardTitle className="text-3xl">בקשת ההזמנה נקלטה</CardTitle>
           </CardHeader>
@@ -174,7 +168,7 @@ export function ManualCheckoutForm({
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <StepBadge value="1" />
-              <PackageCheck className="size-5" />
+              <AphroditeIcon name="package" className="size-5" />
               פרטי הזמנה
             </CardTitle>
           </CardHeader>
@@ -235,7 +229,7 @@ export function ManualCheckoutForm({
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <StepBadge value="2" />
-              <Truck className="size-5" />
+              <AphroditeIcon name="truck" className="size-5" />
               משלוח או איסוף
             </CardTitle>
           </CardHeader>
@@ -321,7 +315,7 @@ export function ManualCheckoutForm({
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <StepBadge value="3" />
-              <Gift className="size-5" />
+              <AphroditeIcon name="gift" className="size-5" />
               אריזת מתנה
             </CardTitle>
           </CardHeader>
@@ -389,7 +383,7 @@ export function ManualCheckoutForm({
               type="submit"
             >
               {createOrder.isPending ? "שומר הזמנה..." : "שליחת בקשת הזמנה"}
-              <CreditCard className="size-4" />
+              <AphroditeIcon name="creditCard" className="size-4" />
             </Button>
             <Button asChild variant="outline">
               <Link href={`/product/${product.slug}`}>חזרה למוצר</Link>

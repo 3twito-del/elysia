@@ -1,13 +1,4 @@
-import {
-  Boxes,
-  CalendarClock,
-  ClipboardList,
-  LogOut,
-  PackageCheck,
-  PlugZap,
-  ShieldAlert,
-  Store,
-} from "lucide-react";
+import { AphroditeIcon } from "~/components/icon";
 import { redirect } from "next/navigation";
 
 import { AdminOrderActions } from "./_components/admin-order-actions";
@@ -89,7 +80,7 @@ function AdminDatabaseFallback() {
         <Card className="rounded-md border-black/10 bg-white/70 shadow-none backdrop-blur">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <PlugZap className="size-5" />
+              <AphroditeIcon name="plug" className="size-5" />
               נדרש חיבור מסד נתונים תקין
             </CardTitle>
           </CardHeader>
@@ -112,7 +103,7 @@ function AdminForbidden({ title, detail }: { title: string; detail: string }) {
         <Card className="rounded-md border-black/10 bg-white/70 shadow-none backdrop-blur">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <ShieldAlert className="size-5" />
+              <AphroditeIcon name="shieldWarning" className="size-5" />
               {title}
             </CardTitle>
           </CardHeader>
@@ -200,7 +191,7 @@ export default async function AdminPage() {
               </div>
               <form action={adminLogoutAction}>
                 <Button className="gap-2" type="submit" variant="outline">
-                  <LogOut className="size-4" />
+                  <AphroditeIcon name="signOut" className="size-4" />
                   יציאה
                 </Button>
               </form>
@@ -211,25 +202,25 @@ export default async function AdminPage() {
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           <MetricCard
             detail="מוצרים פעילים בקטלוג"
-            icon={PackageCheck}
+            icon="package"
             label="מוצרים"
             value={String(overview.products)}
           />
           <MetricCard
             detail="יחידות מלאי רשומות בסניפים"
-            icon={Boxes}
+            icon="stack"
             label="מלאי"
             value={String(overview.inventoryUnits)}
           />
           <MetricCard
             detail="סניפים מחוברים לתפעול"
-            icon={Store}
+            icon="storefront"
             label="סניפים"
             value={String(overview.branches)}
           />
           <MetricCard
             detail="בקשות פתוחות"
-            icon={CalendarClock}
+            icon="calendarDots"
             label="הזמנות"
             value={String(overview.openOrders)}
           />
@@ -238,7 +229,7 @@ export default async function AdminPage() {
         <Card className="mt-8 rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <ClipboardList className="size-5" />
+              <AphroditeIcon name="clipboard" className="size-5" />
               הזמנות לטיפול
             </CardTitle>
           </CardHeader>
@@ -316,7 +307,7 @@ export default async function AdminPage() {
         <Card className="mt-8 rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <PlugZap className="size-5" />
+              <AphroditeIcon name="plug" className="size-5" />
               אינטגרציות
             </CardTitle>
           </CardHeader>

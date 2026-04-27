@@ -4,7 +4,7 @@ import * as React from "react";
 import { Select as SelectPrimitive } from "radix-ui";
 
 import { cn } from "~/lib/utils";
-import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from "lucide-react";
+import { AphroditeIcon } from "~/components/icon";
 
 function Select({
   ...props
@@ -51,7 +51,10 @@ function SelectTrigger({
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        <ChevronDownIcon className="text-muted-foreground pointer-events-none size-4" />
+        <AphroditeIcon
+          name="caretDown"
+          className="text-muted-foreground pointer-events-none size-4"
+        />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   );
@@ -124,7 +127,7 @@ function SelectItem({
     >
       <span className="pointer-events-none absolute right-2 flex size-4 items-center justify-center">
         <SelectPrimitive.ItemIndicator>
-          <CheckIcon className="pointer-events-none" />
+          <AphroditeIcon name="check" className="pointer-events-none" />
         </SelectPrimitive.ItemIndicator>
       </span>
       <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
@@ -158,7 +161,7 @@ function SelectScrollUpButton({
       )}
       {...props}
     >
-      <ChevronUpIcon />
+      <AphroditeIcon name="caretUp" />
     </SelectPrimitive.ScrollUpButton>
   );
 }
@@ -176,7 +179,7 @@ function SelectScrollDownButton({
       )}
       {...props}
     >
-      <ChevronDownIcon />
+      <AphroditeIcon name="caretDown" />
     </SelectPrimitive.ScrollDownButton>
   );
 }

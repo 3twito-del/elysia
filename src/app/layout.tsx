@@ -3,6 +3,7 @@ import "~/styles/globals.css";
 import { type Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
+import { IconPreloader } from "~/components/icon";
 import { PublicMotionProvider } from "~/components/public-motion-provider";
 import { SiteFooter } from "~/components/site-footer";
 import { TooltipProvider } from "~/components/ui/tooltip";
@@ -47,6 +48,7 @@ export default function RootLayout({
       <body>
         <TRPCReactProvider>
           <TooltipProvider>
+            <IconPreloader />
             <PublicMotionProvider>
               {children}
               <SiteFooter />

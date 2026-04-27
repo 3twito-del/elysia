@@ -1,5 +1,3 @@
-import { CalendarCheck, Heart, PackageCheck, Ruler } from "lucide-react";
-
 import { MetricCard } from "~/components/metric-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -48,28 +46,28 @@ export default function AccountPage() {
           <RevealGrid className="grid gap-5 sm:grid-cols-2">
             <MetricCard
               detail="סטטוס, חשבוניות והחזרות"
-              icon={PackageCheck}
+              icon="package"
               label="הזמנות"
               variant="soft"
               value="0"
             />
             <MetricCard
               detail="מוצרים שמורים לקנייה"
-              icon={Heart}
+              icon="heart"
               label="Wishlist"
               variant="soft"
               value="0"
             />
             <MetricCard
               detail="טבעות, שרשראות וצמידים"
-              icon={Ruler}
+              icon="ruler"
               label="מידות"
               variant="soft"
               value="פרופיל"
             />
             <MetricCard
               detail="מדידה וייעוץ בסניף"
-              icon={CalendarCheck}
+              icon="calendarCheck"
               label="תורים"
               variant="soft"
               value="בתיאום"

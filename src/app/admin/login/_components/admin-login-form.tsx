@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
-import { LockKeyhole } from "lucide-react";
+import { AphroditeIcon } from "~/components/icon";
 
 import { adminLoginAction, type AdminLoginState } from "../../actions";
 import { Button } from "~/components/ui/button";
@@ -60,7 +60,7 @@ function SubmitButton() {
 
   return (
     <Button className="w-full gap-2" disabled={pending} size="lg" type="submit">
-      <LockKeyhole className="size-4" />
+      <AphroditeIcon name="lock" className="size-4" />
       {pending ? "בודק הרשאה..." : "כניסה לאדמין"}
     </Button>
   );

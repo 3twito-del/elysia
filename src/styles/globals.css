@@ -140,6 +140,21 @@
   html {
     @apply font-sans;
   }
+  iconify-icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+    color: currentColor;
+    vertical-align: -0.125em;
+  }
+  [data-slot="button"] iconify-icon,
+  [data-slot="command-item"] iconify-icon,
+  [data-slot="dropdown-menu-item"] iconify-icon,
+  [data-slot="select-item"] iconify-icon,
+  [data-slot="select-trigger"] iconify-icon {
+    pointer-events: none;
+  }
 }
 
 .public-motion-shell {

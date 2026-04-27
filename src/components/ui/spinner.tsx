@@ -1,12 +1,16 @@
 import { cn } from "~/lib/utils";
-import { Loader2Icon } from "lucide-react";
+import { AphroditeIcon } from "~/components/icon";
 
-function Spinner({ className, ...props }: React.ComponentProps<"svg">) {
+function Spinner({
+  className,
+  ...props
+}: Omit<React.ComponentPropsWithoutRef<typeof AphroditeIcon>, "name">) {
   return (
-    <Loader2Icon
-      role="status"
-      aria-label="Loading"
+    <AphroditeIcon
       className={cn("size-4 animate-spin", className)}
+      label="Loading"
+      name="loader"
+      role="status"
       {...props}
     />
   );

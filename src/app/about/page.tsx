@@ -1,18 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowLeft,
-  Gem,
-  Gift,
-  Heart,
-  MapPin,
-  Ruler,
-  Search,
-  ShieldCheck,
-  Sparkles,
-  Store,
-} from "lucide-react";
+import { AphroditeIcon } from "~/components/icon";
 
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -30,22 +19,22 @@ const values = [
   {
     title: "שקיפות בבחירה",
     text: "כל תכשיט צריך להיות ברור לפני שהוא מרגש: חומר, מידה, מחיר, זמינות בסניף והדרך שבה הוא ירגיש כחלק מהחיים.",
-    icon: ShieldCheck,
+    icon: "shieldCheck",
   },
   {
     title: "יוקרה נגישה",
     text: "לא יוקרה שמרחיקה, אלא יוקרה שמסדרת את העולם סביבך: פחות רעש, יותר דיוק, שירות שמכבד את הזמן ואת ההחלטה.",
-    icon: Gem,
+    icon: "diamond",
   },
   {
     title: "ייעוץ ומדידה",
     text: "אנחנו מתייחסים למדידה ולייעוץ כאל חלק מהעיצוב עצמו. תכשיט יפה באמת הוא תכשיט שמונח נכון.",
-    icon: Ruler,
+    icon: "ruler",
   },
   {
     title: "זמינות קרובה",
     text: "הקטלוג הדיגיטלי והסניפים עובדים יחד כדי לקצר את המרחק בין השראה, בדיקה, רכישה וקבלת התכשיט.",
-    icon: MapPin,
+    icon: "mapPin",
   },
 ];
 
@@ -53,22 +42,22 @@ const journey = [
   {
     title: "חיפוש שמתחיל בשפה שלך",
     text: "לא כולם נכנסים לאתר עם שם דגם מדויק. לפעמים מתחילים בתקציב, באירוע, בצבע זהב, במידה, באדם שיקבל את המתנה או בתחושה שרוצים להשאיר. Aphrodite נבנית כך שהחיפוש יכבד גם את הדיוק וגם את האינטואיציה.",
-    icon: Search,
+    icon: "search",
   },
   {
     title: "בחירה שמחזיקה מידע",
     text: "עמוד מוצר טוב לא מסתפק בתמונה יפה. הוא צריך לספר מה החומר, מה האבן, איך בוחרים מידה, איפה המוצר זמין ומה אפשר לעשות אם רוצים למדוד, לאסוף, לשלוח או לשמור להמשך.",
-    icon: Sparkles,
+    icon: "sparkle",
   },
   {
     title: "סניף כהמשך של האתר",
     text: "הסניף אינו תיקון לחוויית האונליין, אלא המשך שלה. הוא המקום שבו אפשר לראות ברק, משקל, פרופורציה ומפגש בין תכשיט לעור, בלי להתחיל מחדש את תהליך הבחירה.",
-    icon: Store,
+    icon: "storefront",
   },
   {
     title: "רגע מסירה שנשאר נקי",
     text: "אריזה, ברכה, איסוף או משלוח הם חלק מהזיכרון. הם צריכים להיות מדויקים, לא צעקניים; חגיגיים, לא כבדים; מוכנים להינתן, אבל עדיין אישיים.",
-    icon: Gift,
+    icon: "gift",
   },
 ];
 
@@ -122,7 +111,7 @@ export default function AboutPage() {
                 <Button asChild size="lg">
                   <Link href="/search">
                     קטלוג שקט ומדויק
-                    <Search className="size-4" />
+                    <AphroditeIcon name="search" className="size-4" />
                   </Link>
                 </Button>
                 <Button
@@ -133,7 +122,7 @@ export default function AboutPage() {
                 >
                   <Link href="/branches">
                     מפגש בסניף
-                    <ArrowLeft className="size-4" />
+                    <AphroditeIcon name="arrowLeft" className="size-4" />
                   </Link>
                 </Button>
               </div>
@@ -244,7 +233,7 @@ export default function AboutPage() {
 
               <div className="grid gap-4">
                 <div className="rounded-md border border-black/10 bg-white/65 p-6 backdrop-blur">
-                  <Heart className="size-7" />
+                  <AphroditeIcon name="heart" className="size-7" />
                   <p className="mt-5 text-2xl font-semibold">
                     לא לבחור רק יפה. לבחור נכון.
                   </p>
@@ -254,7 +243,7 @@ export default function AboutPage() {
                   </p>
                 </div>
                 <div className="rounded-md border border-black/10 bg-white/65 p-6 backdrop-blur">
-                  <ShieldCheck className="size-7" />
+                  <AphroditeIcon name="shieldCheck" className="size-7" />
                   <p className="mt-5 text-2xl font-semibold">
                     אמון הוא חלק מהעיצוב.
                   </p>
@@ -286,7 +275,7 @@ export default function AboutPage() {
                   key={value.title}
                 >
                   <div className="flex size-11 items-center justify-center rounded-md border border-black/10 bg-black/[0.04]">
-                    <Icon className="size-5" />
+                    <AphroditeIcon className="size-5" name={Icon} />
                   </div>
                   <h3 className="mt-6 text-2xl font-semibold">{value.title}</h3>
                   <p className="text-muted-foreground mt-3 leading-7">
@@ -393,7 +382,7 @@ export default function AboutPage() {
                   >
                     <div className="flex gap-4">
                       <div className="flex size-10 shrink-0 items-center justify-center rounded-md border border-black/10 bg-black/[0.04]">
-                        <Icon className="size-5" />
+                        <AphroditeIcon className="size-5" name={Icon} />
                       </div>
                       <div>
                         <h3 className="text-xl font-semibold">{item.title}</h3>
@@ -412,7 +401,7 @@ export default function AboutPage() {
         <RevealSection className="bg-black/[0.03]">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
             <div className="mx-auto max-w-4xl rounded-md border border-black/10 bg-white/65 p-6 text-center backdrop-blur sm:p-8 lg:p-12">
-              <Sparkles className="mx-auto size-8" />
+              <AphroditeIcon name="sparkle" className="mx-auto size-8" />
               <h2 className="mt-6 text-4xl leading-tight font-semibold">
                 Aphrodite אינה מבקשת שתבחרו מהר. היא מבקשת שתבחרו בביטחון.
               </h2>

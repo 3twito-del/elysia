@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Gem, Search, ShoppingBag, UserRound } from "lucide-react";
+import { AphroditeIcon } from "~/components/icon";
 
 import { MobileNav, type HeaderNavItem } from "~/components/mobile-nav";
 import { Button } from "~/components/ui/button";
@@ -23,7 +23,7 @@ export function SiteHeader() {
         <div className="flex items-center gap-3">
           <MobileNav items={navItems} />
           <Link className="flex items-center gap-2" href="/">
-            <Gem className="text-foreground size-5" />
+            <AphroditeIcon name="diamond" className="text-foreground size-5" />
             <span className="text-xl font-semibold tracking-normal">
               Aphrodite
             </span>
@@ -41,19 +41,19 @@ export function SiteHeader() {
         <div className="flex items-center gap-1">
           <Button asChild size="icon" variant="ghost">
             <Link href="/search">
-              <Search className="size-5" />
+              <AphroditeIcon name="search" className="size-5" />
               <span className="sr-only">חיפוש</span>
             </Link>
           </Button>
           <Button asChild size="icon" variant="ghost">
             <Link href="/account">
-              <UserRound className="size-5" />
+              <AphroditeIcon name="user" className="size-5" />
               <span className="sr-only">אזור לקוח</span>
             </Link>
           </Button>
           <Button asChild size="icon" variant="ghost">
             <Link href="/checkout">
-              <ShoppingBag className="size-5" />
+              <AphroditeIcon name="shoppingBag" className="size-5" />
               <span className="sr-only">סל קניות</span>
             </Link>
           </Button>
