@@ -183,12 +183,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <Button asChild size="lg">
               <Link href={`/checkout?product=${product.slug}`}>
                 הוספה לסל
-                <AphroditeIcon name="package" className="size-4" />
+                <AphroditeIcon name="package" className="size-5" />
               </Link>
             </Button>
             <Button size="lg" variant="outline">
               שמירה
-              <AphroditeIcon name="heart" className="size-4" />
+              <AphroditeIcon name="heart" className="size-5" />
             </Button>
           </div>
 
@@ -196,13 +196,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <Button asChild variant="secondary">
               <Link href={`/stylist?product=${product.slug}`}>
                 מדידה/AI
-                <AphroditeIcon name="sparkle" className="size-4" />
+                <AphroditeIcon name="sparkle" className="size-5" />
               </Link>
             </Button>
             <Button asChild variant="secondary">
               <Link href="/branches">
                 תיאום בסניף
-                <AphroditeIcon name="calendarCheck" className="size-4" />
+                <AphroditeIcon name="calendarCheck" className="size-5" />
               </Link>
             </Button>
           </div>
@@ -238,7 +238,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <Card className="rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
-                <AphroditeIcon name="shieldCheck" className="size-5" />
+                <AphroditeIcon name="shieldCheck" className="size-6" />
                 אחריות
               </CardTitle>
             </CardHeader>
@@ -249,7 +249,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <Card className="rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
-                <AphroditeIcon name="return" className="size-5" />
+                <AphroditeIcon name="return" className="size-6" />
                 החזרות
               </CardTitle>
             </CardHeader>

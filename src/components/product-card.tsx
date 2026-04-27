@@ -52,7 +52,7 @@ export function ProductCard({ product }: { product: Product }) {
             type="button"
             variant="ghost"
           >
-            <AphroditeIcon name="heart" className="size-4" />
+            <AphroditeIcon name="heart" className="size-5" />
           </Button>
         </div>
 
@@ -62,7 +62,7 @@ export function ProductCard({ product }: { product: Product }) {
               {formatPrice(product.price)}
             </span>
             <span className="text-muted-foreground flex items-center gap-1 text-xs">
-              <AphroditeIcon name="mapPin" className="size-3.5" />
+              <AphroditeIcon name="mapPin" className="size-4" />
               {availableBranches} סניפים
             </span>
           </div>
@@ -71,7 +71,7 @@ export function ProductCard({ product }: { product: Product }) {
               aria-label={`צפייה וקנייה: ${product.name}`}
               href={`/product/${product.slug}`}
             >
-              <AphroditeIcon name="shoppingBag" className="size-4" />
+              <AphroditeIcon name="shoppingBag" className="size-5" />
               צפייה וקנייה
             </Link>
           </Button>

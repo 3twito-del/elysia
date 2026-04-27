@@ -60,7 +60,7 @@ function SubmitButton() {
 
   return (
     <Button className="w-full gap-2" disabled={pending} size="lg" type="submit">
-      <AphroditeIcon name="lock" className="size-4" />
+      <AphroditeIcon name="lock" className="size-5" />
       {pending ? "בודק הרשאה..." : "כניסה לאדמין"}
     </Button>
   );

@@ -191,7 +191,7 @@ export default async function AdminPage() {
               </div>
               <form action={adminLogoutAction}>
                 <Button className="gap-2" type="submit" variant="outline">
-                  <AphroditeIcon name="signOut" className="size-4" />
+                  <AphroditeIcon name="signOut" className="size-5" />
                   יציאה
                 </Button>
               </form>

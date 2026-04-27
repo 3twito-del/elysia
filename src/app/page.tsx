@@ -46,7 +46,7 @@ export default function Home() {
               <Button asChild size="lg">
                 <Link href="/category/rings">
                   לקולקציה
-                  <AphroditeIcon name="arrowLeft" className="size-4" />
+                  <AphroditeIcon name="arrowLeft" className="size-5" />
                 </Link>
               </Button>
               <Button
@@ -57,7 +57,7 @@ export default function Home() {
               >
                 <Link href="/stylist">
                   ייעוץ סטייליסט AI
-                  <AphroditeIcon name="sparkle" className="size-4" />
+                  <AphroditeIcon name="sparkle" className="size-5" />
                 </Link>
               </Button>
             </div>
@@ -74,7 +74,7 @@ export default function Home() {
                     className="flex min-h-16 items-center gap-3 rounded-md border border-white/20 bg-white/15 px-4 py-3 text-sm font-medium text-white shadow-none backdrop-blur"
                     key={item.label}
                   >
-                    <AphroditeIcon className="size-5" name={Icon} />
+                    <AphroditeIcon className="size-6" name={Icon} />
                     {item.label}
                   </div>
                 );
@@ -99,7 +99,7 @@ export default function Home() {
             <div className="relative">
               <AphroditeIcon
                 name="search"
-                className="text-muted-foreground absolute top-1/2 right-3 size-4 -translate-y-1/2"
+                className="text-muted-foreground absolute top-1/2 right-3 size-5 -translate-y-1/2"
               />
               <Input
                 className="h-12 pr-10"
@@ -109,7 +109,7 @@ export default function Home() {
             </div>
             <Button className="h-12 gap-2" type="submit">
               חיפוש
-              <AphroditeIcon name="search" className="size-4" />
+              <AphroditeIcon name="search" className="size-5" />
             </Button>
           </form>
         </div>
@@ -132,10 +132,10 @@ export default function Home() {
               href={`/category/${category.slug}`}
               key={category.slug}
             >
-              <div className="mb-5 flex size-11 items-center justify-center rounded-md border border-black/10 bg-black/[0.04]">
+              <div className="mb-5 flex size-12 items-center justify-center rounded-md border border-black/10 bg-black/[0.04]">
                 <AphroditeIcon
                   name="diamond"
-                  className="text-foreground size-5"
+                  className="text-foreground size-6"
                 />
               </div>
               <h3 className="text-xl font-medium">{category.name}</h3>
@@ -144,7 +144,7 @@ export default function Home() {
               </p>
               <span className="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-medium group-hover:underline">
                 צפייה
-                <AphroditeIcon name="arrowLeft" className="size-4" />
+                <AphroditeIcon name="arrowLeft" className="size-5" />
               </span>
             </Link>
           ))}

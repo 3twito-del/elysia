@@ -59,7 +59,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           <Card className="sticky top-24 rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
-                <AphroditeIcon name="sliders" className="size-4" />
+                <AphroditeIcon name="sliders" className="size-5" />
                 פילטרים
               </CardTitle>
             </CardHeader>

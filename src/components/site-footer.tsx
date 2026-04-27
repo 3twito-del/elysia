@@ -23,7 +23,7 @@ export function SiteFooter() {
             <Link className="inline-flex items-center gap-2" href="/">
               <AphroditeIcon
                 name="diamond"
-                className="text-foreground size-5"
+                className="text-foreground size-6"
               />
               <span className="text-2xl font-semibold tracking-normal">
                 Aphrodite
@@ -37,13 +37,13 @@ export function SiteFooter() {
               <Button asChild variant="secondary">
                 <Link href="/stylist">
                   ייעוץ אישי
-                  <AphroditeIcon name="sparkle" className="size-4" />
+                  <AphroditeIcon name="sparkle" className="size-5" />
                 </Link>
               </Button>
               <Button asChild variant="outline">
                 <Link href="/branches">
                   מציאת סניף
-                  <AphroditeIcon name="mapPin" className="size-4" />
+                  <AphroditeIcon name="mapPin" className="size-5" />
                 </Link>
               </Button>
             </div>
@@ -85,7 +85,7 @@ export function SiteFooter() {
                       className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 transition"
                       href={item.href}
                     >
-                      <AphroditeIcon className="size-4" name={Icon} />
+                      <AphroditeIcon className="size-[1.125rem]" name={Icon} />
                       {item.label}
                     </Link>
                   </li>
@@ -120,7 +120,7 @@ export function SiteFooter() {
             >
               <Link href="/branches">
                 לכל הסניפים
-                <AphroditeIcon name="mapPin" className="size-4" />
+                <AphroditeIcon name="mapPin" className="size-5" />
               </Link>
             </Button>
           </section>

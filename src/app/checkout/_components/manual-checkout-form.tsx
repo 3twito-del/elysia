@@ -383,7 +383,7 @@ export function ManualCheckoutForm({
               type="submit"
             >
               {createOrder.isPending ? "שומר הזמנה..." : "שליחת בקשת הזמנה"}
-              <AphroditeIcon name="creditCard" className="size-4" />
+              <AphroditeIcon name="creditCard" className="size-5" />
             </Button>
             <Button asChild variant="outline">
               <Link href={`/product/${product.slug}`}>חזרה למוצר</Link>

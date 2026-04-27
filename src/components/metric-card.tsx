@@ -27,11 +27,11 @@ export function MetricCard({
       <CardContent className="flex items-center gap-4 p-5">
         <div
           className={cn(
-            "text-foreground grid size-11 place-items-center rounded-md border border-black/10",
+            "text-foreground grid size-12 place-items-center rounded-md border border-black/10",
             isSoft ? "bg-white/60" : "bg-black/[0.04]",
           )}
         >
-          <AphroditeIcon className="size-5" name={icon} />
+          <AphroditeIcon className="size-6" name={icon} />
         </div>
         <div>
           <p className="text-muted-foreground text-sm">{label}</p>

@@ -39,7 +39,7 @@ export function MobileNav({ items }: { items: HeaderNavItem[] }) {
         type="button"
         variant="ghost"
       >
-        <AphroditeIcon name="menu" className="size-5" />
+        <AphroditeIcon name="menu" className="size-6" />
       </Button>
     );
   }
@@ -48,7 +48,7 @@ export function MobileNav({ items }: { items: HeaderNavItem[] }) {
     <Sheet>
       <SheetTrigger asChild>
         <Button className="lg:hidden" size="icon" type="button" variant="ghost">
-          <AphroditeIcon name="menu" className="size-5" />
+          <AphroditeIcon name="menu" className="size-6" />
           <span className="sr-only">פתח ניווט</span>
         </Button>
       </SheetTrigger>
@@ -61,7 +61,7 @@ export function MobileNav({ items }: { items: HeaderNavItem[] }) {
           className="flex items-center gap-2 text-lg font-semibold"
           href="/"
         >
-          <AphroditeIcon name="diamond" className="text-foreground size-5" />
+          <AphroditeIcon name="diamond" className="text-foreground size-6" />
           Aphrodite
         </Link>
         <Separator className="my-5" />

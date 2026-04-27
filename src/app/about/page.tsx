@@ -111,7 +111,7 @@ export default function AboutPage() {
                 <Button asChild size="lg">
                   <Link href="/search">
                     קטלוג שקט ומדויק
-                    <AphroditeIcon name="search" className="size-4" />
+                    <AphroditeIcon name="search" className="size-5" />
                   </Link>
                 </Button>
                 <Button
@@ -122,7 +122,7 @@ export default function AboutPage() {
                 >
                   <Link href="/branches">
                     מפגש בסניף
-                    <AphroditeIcon name="arrowLeft" className="size-4" />
+                    <AphroditeIcon name="arrowLeft" className="size-5" />
                   </Link>
                 </Button>
               </div>
@@ -275,7 +275,7 @@ export default function AboutPage() {
                   key={value.title}
                 >
                   <div className="flex size-11 items-center justify-center rounded-md border border-black/10 bg-black/[0.04]">
-                    <AphroditeIcon className="size-5" name={Icon} />
+                    <AphroditeIcon className="size-6" name={Icon} />
                   </div>
                   <h3 className="mt-6 text-2xl font-semibold">{value.title}</h3>
                   <p className="text-muted-foreground mt-3 leading-7">
@@ -382,7 +382,7 @@ export default function AboutPage() {
                   >
                     <div className="flex gap-4">
                       <div className="flex size-10 shrink-0 items-center justify-center rounded-md border border-black/10 bg-black/[0.04]">
-                        <AphroditeIcon className="size-5" name={Icon} />
+                        <AphroditeIcon className="size-6" name={Icon} />
                       </div>
                       <div>
                         <h3 className="text-xl font-semibold">{item.title}</h3>
