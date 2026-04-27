@@ -16,7 +16,7 @@ const serviceLinks = [
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-black/10 bg-white/50 backdrop-blur-xl">
+    <footer className="site-chrome border-t border-black/10 bg-white/50 backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:py-16">
         <div className="grid gap-12 lg:grid-cols-[1.25fr_0.8fr_0.85fr_1fr]">
           <section className="max-w-lg">

@@ -85,7 +85,7 @@ export function RevealGrid({
     >
       {items.map((child, index) => (
         <motion.div
-          className="motion-reveal-item h-full"
+          className="motion-reveal-item h-full [&>*]:h-full"
           key={isValidElement(child) && child.key != null ? child.key : index}
           transition={revealTransition}
           variants={getRevealVariants(shouldReduceMotion)}

@@ -78,7 +78,14 @@
   --aphrodite-gold: oklch(0.76 0.12 86);
   --aphrodite-rose: oklch(0.78 0.09 18);
   --aphrodite-pearl: oklch(0.97 0.02 96);
-  --aphrodite-sheen: oklch(1 0 0 / 58%);
+  --glass-tint: oklch(1 0 0 / 58%);
+  --glass-soft-tint: oklch(1 0 0 / 42%);
+  --glass-chrome-tint: oklch(1 0 0 / 68%);
+  --glass-border: oklch(0.68 0.012 86 / 16%);
+  --glass-border-strong: oklch(0.62 0.018 86 / 24%);
+  --glass-highlight: oklch(1 0 0 / 64%);
+  --glass-shadow: oklch(0.2 0 0 / 7%);
+  --glass-shadow-lift: oklch(0.2 0 0 / 10%);
   --sidebar: oklch(1 0 0 / 82%);
   --sidebar-foreground: oklch(0.13 0 0);
   --sidebar-primary: oklch(0.13 0 0);
@@ -142,10 +149,10 @@
   overflow-x: clip;
   background:
     linear-gradient(
-      126deg,
+      135deg,
       oklch(1 0 0 / 0) 0%,
-      oklch(0.98 0.018 88 / 0.32) 32%,
-      oklch(0.99 0.01 20 / 0.26) 57%,
+      oklch(0.98 0.014 90 / 0.22) 38%,
+      oklch(0.99 0.01 22 / 0.16) 68%,
       oklch(1 0 0 / 0) 100%
     ),
     var(--background);
@@ -162,7 +169,7 @@
   inset: 0;
   z-index: 0;
   overflow: hidden;
-  opacity: 0.78;
+  opacity: 0.48;
 }
 
 .public-motion-ambient::before,
@@ -173,57 +180,68 @@
 }
 
 .public-motion-ambient::before {
-  background:
-    linear-gradient(
-      115deg,
-      transparent 0%,
-      transparent 31%,
-      oklch(0.93 0.085 88 / 0.2) 32%,
-      transparent 34%,
-      transparent 57%,
-      oklch(0.94 0.065 18 / 0.16) 58%,
-      transparent 60%,
-      transparent 100%
-    ),
-    repeating-linear-gradient(
-      115deg,
-      transparent 0 56px,
-      oklch(1 0 0 / 0.16) 57px 58px,
-      transparent 59px 132px
-    );
-  mask-image: linear-gradient(
-    to bottom,
-    transparent,
-    black 16%,
-    black 82%,
-    transparent
+  background: radial-gradient(
+    circle at 68% 14%,
+    oklch(0.93 0.075 86 / 0.2),
+    transparent 34%
   );
-  animation: aphrodite-sheen 18s ease-in-out infinite;
+  animation: aphrodite-glass-drift 20s ease-in-out infinite;
 }
 
 .public-motion-ambient::after {
-  background:
-    linear-gradient(
-      180deg,
-      transparent 0%,
-      oklch(0.95 0.055 88 / 0.18) 48%,
-      transparent 86%
-    ),
-    linear-gradient(
-      82deg,
-      transparent 0%,
-      oklch(1 0 0 / 0.2) 42%,
-      transparent 43%,
-      transparent 100%
-    );
-  opacity: 0.48;
+  background: radial-gradient(
+    ellipse at 18% 72%,
+    oklch(0.95 0.045 18 / 0.16),
+    transparent 38%
+  );
+  opacity: 0.72;
 }
 
+.glass-surface,
 .public-motion-shell [data-slot="card"] {
   position: relative;
+  border-color: var(--glass-border);
+  background: linear-gradient(
+    145deg,
+    oklch(1 0 0 / 0.62),
+    oklch(1 0 0 / 0.42) 52%,
+    oklch(0.98 0.01 86 / 0.36)
+  );
   box-shadow:
-    0 22px 60px oklch(0.18 0 0 / 0.055),
-    inset 0 1px 0 var(--aphrodite-sheen);
+    0 16px 44px var(--glass-shadow),
+    inset 0 1px 0 var(--glass-highlight);
+  backdrop-filter: blur(14px) saturate(130%);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+}
+
+.glass-soft {
+  border-color: oklch(0.7 0.01 86 / 12%);
+  background: var(--glass-soft-tint);
+  box-shadow:
+    0 10px 30px oklch(0.2 0 0 / 4%),
+    inset 0 1px 0 oklch(1 0 0 / 46%);
+  backdrop-filter: blur(10px) saturate(118%);
+  -webkit-backdrop-filter: blur(10px) saturate(118%);
+}
+
+.glass-chrome,
+.public-motion-shell .site-chrome {
+  border-color: oklch(0.7 0.012 86 / 14%);
+  background: var(--glass-chrome-tint);
+  box-shadow:
+    0 8px 28px oklch(0.2 0 0 / 4%),
+    inset 0 1px 0 oklch(1 0 0 / 58%);
+  backdrop-filter: blur(12px) saturate(122%);
+  -webkit-backdrop-filter: blur(12px) saturate(122%);
+}
+
+.glass-lift,
+.public-motion-shell [data-slot="card"]:hover,
+.public-motion-shell [data-slot="card"]:focus-within {
+  border-color: var(--glass-border-strong);
+  box-shadow:
+    0 20px 54px var(--glass-shadow-lift),
+    inset 0 1px 0 oklch(1 0 0 / 72%);
 }
 
 .public-motion-shell [data-slot="card"]::before {
@@ -232,25 +250,21 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: linear-gradient(
-    115deg,
-    transparent 0%,
-    transparent 42%,
-    oklch(1 0 0 / 0.52) 49%,
-    transparent 56%,
-    transparent 100%
-  );
-  opacity: 0;
-  transform: translateX(18%);
-  transition:
-    opacity 360ms ease,
-    transform 720ms ease;
+  border-radius: inherit;
+  background:
+    linear-gradient(180deg, oklch(1 0 0 / 0.36), transparent 38%),
+    radial-gradient(
+      circle at 72% 0%,
+      oklch(0.95 0.055 86 / 0.16),
+      transparent 36%
+    );
+  opacity: 0.72;
+  transition: opacity 260ms ease;
 }
 
 .public-motion-shell [data-slot="card"]:hover::before,
 .public-motion-shell [data-slot="card"]:focus-within::before {
-  opacity: 0.55;
-  transform: translateX(-18%);
+  opacity: 0.9;
 }
 
 .public-motion-shell [data-slot="card"] > * {
@@ -258,34 +272,50 @@
   z-index: 1;
 }
 
-.public-motion-shell [data-slot="button"]:not(:disabled) {
+.public-motion-shell
+  [data-slot="button"][data-variant="outline"]:not(:disabled),
+.public-motion-shell
+  [data-slot="button"][data-variant="secondary"]:not(:disabled) {
+  border-color: var(--glass-border);
+  background: oklch(1 0 0 / 46%);
   box-shadow:
-    0 1px 0 oklch(1 0 0 / 0.45) inset,
-    0 12px 28px oklch(0.18 0 0 / 0.045);
+    0 8px 20px oklch(0.2 0 0 / 3.5%),
+    inset 0 1px 0 oklch(1 0 0 / 48%);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
 }
 
-.public-motion-shell [data-slot="button"]:not(:disabled):hover {
+.public-motion-shell
+  [data-slot="button"][data-variant="outline"]:not(:disabled):hover,
+.public-motion-shell
+  [data-slot="button"][data-variant="secondary"]:not(:disabled):hover {
+  border-color: var(--glass-border-strong);
+  background: oklch(1 0 0 / 58%);
   box-shadow:
-    0 1px 0 oklch(1 0 0 / 0.58) inset,
-    0 16px 36px oklch(0.18 0 0 / 0.07);
+    0 12px 28px oklch(0.2 0 0 / 5.5%),
+    inset 0 1px 0 oklch(1 0 0 / 62%);
 }
 
-@keyframes aphrodite-sheen {
+.public-motion-shell [data-slot="button"][data-variant="ghost"] {
+  box-shadow: none;
+}
+
+@keyframes aphrodite-glass-drift {
   0%,
   100% {
-    opacity: 0.22;
-    transform: translate3d(-2%, -1%, 0);
+    opacity: 0.55;
+    transform: translate3d(-1.5%, -0.5%, 0) scale(1);
   }
   50% {
-    opacity: 0.46;
-    transform: translate3d(2%, 1%, 0);
+    opacity: 0.82;
+    transform: translate3d(1.5%, 0.5%, 0) scale(1.02);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .public-motion-ambient::before {
     animation: none;
-    opacity: 0.18;
+    opacity: 0.38;
     transform: none;
   }
 
