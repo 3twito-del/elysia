@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import { SiteHeader } from "~/components/site-header";
+import { RevealGrid, RevealSection } from "~/components/reveal";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -84,7 +85,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         type="application/ld+json"
       />
-      <section className="mx-auto grid max-w-7xl gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[1.05fr_0.95fr]">
+      <RevealSection className="mx-auto grid max-w-7xl gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[1.05fr_0.95fr]">
         <div className="grid gap-4">
           <div className="relative aspect-square overflow-hidden rounded-md bg-black/[0.04]">
             <Image
@@ -237,40 +238,42 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </CardContent>
           </Card>
         </div>
-      </section>
+      </RevealSection>
 
-      <section className="mx-auto grid max-w-7xl gap-5 px-4 pb-14 sm:px-6 lg:grid-cols-3">
-        <Card className="rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <ShieldCheck className="size-5" />
-              אחריות
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-muted-foreground text-sm leading-7">
-            אחריות לשנה על פגמי ייצור ושירות ניקוי ראשוני ללא עלות.
-          </CardContent>
-        </Card>
-        <Card className="rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <RotateCcw className="size-5" />
-              החזרות
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-muted-foreground text-sm leading-7">
-            החזרה או החלפה לפי מדיניות החנות, בסניף או במשלוח מתואם.
-          </CardContent>
-        </Card>
-        <Card className="rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
-          <CardHeader>
-            <CardTitle className="text-lg">תיאור מלא</CardTitle>
-          </CardHeader>
-          <CardContent className="text-muted-foreground text-sm leading-7">
-            {product.description}
-          </CardContent>
-        </Card>
-      </section>
+      <RevealSection className="mx-auto max-w-7xl px-4 pb-14 sm:px-6">
+        <RevealGrid className="grid gap-5 lg:grid-cols-3">
+          <Card className="rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <ShieldCheck className="size-5" />
+                אחריות
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-muted-foreground text-sm leading-7">
+              אחריות לשנה על פגמי ייצור ושירות ניקוי ראשוני ללא עלות.
+            </CardContent>
+          </Card>
+          <Card className="rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <RotateCcw className="size-5" />
+                החזרות
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-muted-foreground text-sm leading-7">
+              החזרה או החלפה לפי מדיניות החנות, בסניף או במשלוח מתואם.
+            </CardContent>
+          </Card>
+          <Card className="rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
+            <CardHeader>
+              <CardTitle className="text-lg">תיאור מלא</CardTitle>
+            </CardHeader>
+            <CardContent className="text-muted-foreground text-sm leading-7">
+              {product.description}
+            </CardContent>
+          </Card>
+        </RevealGrid>
+      </RevealSection>
     </main>
   );
 }

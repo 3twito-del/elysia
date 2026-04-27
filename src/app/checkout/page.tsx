@@ -1,4 +1,5 @@
 import { ManualCheckoutForm } from "./_components/manual-checkout-form";
+import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { branches, getProductBySlug, products } from "~/lib/catalog";
 
@@ -19,19 +20,21 @@ export default async function CheckoutPage({
   return (
     <main>
       <SiteHeader />
-      <ManualCheckoutForm
-        branches={branches.map((branch) => ({
-          slug: branch.slug,
-          name: branch.name,
-          city: branch.city,
-        }))}
-        product={{
-          slug: product.slug,
-          name: product.name,
-          shortDescription: product.shortDescription,
-          price: product.price,
-        }}
-      />
+      <RevealSection>
+        <ManualCheckoutForm
+          branches={branches.map((branch) => ({
+            slug: branch.slug,
+            name: branch.name,
+            city: branch.city,
+          }))}
+          product={{
+            slug: product.slug,
+            name: product.name,
+            shortDescription: product.shortDescription,
+            price: product.price,
+          }}
+        />
+      </RevealSection>
     </main>
   );
 }

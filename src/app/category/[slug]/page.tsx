@@ -3,6 +3,7 @@ import Link from "next/link";
 import { SlidersHorizontal } from "lucide-react";
 
 import { ProductCard } from "~/components/product-card";
+import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -38,7 +39,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   return (
     <main>
       <SiteHeader />
-      <section className="border-b border-black/10 bg-black/[0.03] backdrop-blur">
+      <RevealSection className="border-b border-black/10 bg-black/[0.03] backdrop-blur">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
           <Badge className="mb-4 shadow-none" variant="secondary">
             קטלוג Aphrodite
@@ -51,9 +52,9 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
               "בחירה מסוננת מתוך קטלוג התכשיטים, עם זמינות סניפים ומחירים בשקלים."}
           </p>
         </div>
-      </section>
+      </RevealSection>
 
-      <section className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[280px_1fr]">
+      <RevealSection className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[280px_1fr]">
         <aside>
           <Card className="sticky top-24 rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
             <CardHeader>
@@ -109,13 +110,13 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
               <Link href="/stylist">התאמה אישית</Link>
             </Button>
           </div>
-          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          <RevealGrid className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {products.map((product) => (
               <ProductCard key={product.slug} product={product} />
             ))}
-          </div>
+          </RevealGrid>
         </div>
-      </section>
+      </RevealSection>
     </main>
   );
 }

@@ -1,6 +1,7 @@
 import { CalendarCheck, Heart, PackageCheck, Ruler } from "lucide-react";
 
 import { MetricCard } from "~/components/metric-card";
+import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -15,7 +16,7 @@ export default function AccountPage() {
   return (
     <main>
       <SiteHeader />
-      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+      <RevealSection className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
         <h1 className="text-4xl font-semibold">אזור לקוח</h1>
         <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
           צפייה בהזמנות, Wishlist, מידות, כתובות ותורים תיפתח לאחר חיבור מנגנון
@@ -44,7 +45,7 @@ export default function AccountPage() {
               </p>
             </CardContent>
           </Card>
-          <div className="grid gap-5 sm:grid-cols-2">
+          <RevealGrid className="grid gap-5 sm:grid-cols-2">
             <MetricCard
               detail="סטטוס, חשבוניות והחזרות"
               icon={PackageCheck}
@@ -73,9 +74,9 @@ export default function AccountPage() {
               variant="soft"
               value="בתיאום"
             />
-          </div>
+          </RevealGrid>
         </div>
-      </section>
+      </RevealSection>
     </main>
   );
 }

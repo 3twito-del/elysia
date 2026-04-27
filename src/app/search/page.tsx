@@ -1,4 +1,5 @@
 import { ProductCard } from "~/components/product-card";
+import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -22,7 +23,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   return (
     <main>
       <SiteHeader />
-      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+      <RevealSection className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
         <h1 className="text-4xl font-semibold">חיפוש בקטלוג</h1>
         <form
           aria-label="חיפוש בקטלוג"
@@ -40,12 +41,12 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             חיפוש
           </Button>
         </form>
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <RevealGrid className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {products.map((product) => (
             <ProductCard key={product.slug} product={product} />
           ))}
-        </div>
-      </section>
+        </RevealGrid>
+      </RevealSection>
     </main>
   );
 }

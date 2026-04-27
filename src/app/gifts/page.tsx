@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { ProductCard } from "~/components/product-card";
+import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { products } from "~/lib/catalog";
@@ -17,7 +18,7 @@ export default function GiftsPage() {
   return (
     <main>
       <SiteHeader />
-      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+      <RevealSection className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
             <h1 className="text-4xl font-semibold">מתנות תכשיטים</h1>
@@ -29,12 +30,12 @@ export default function GiftsPage() {
             <Link href="/stylist">שאלון מתנה חכם</Link>
           </Button>
         </div>
-        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <RevealGrid className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {giftProducts.map((product) => (
             <ProductCard key={product.slug} product={product} />
           ))}
-        </div>
-      </section>
+        </RevealGrid>
+      </RevealSection>
     </main>
   );
 }

@@ -13,6 +13,7 @@ import {
 import { BranchCard } from "~/components/branch-card";
 import { MetricCard } from "~/components/metric-card";
 import { ProductCard } from "~/components/product-card";
+import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -27,7 +28,7 @@ export default function Home() {
     <main>
       <SiteHeader />
 
-      <section className="relative min-h-[78vh] overflow-hidden">
+      <RevealSection className="relative min-h-[78vh] overflow-hidden">
         <Image
           alt="תכשיטי זהב ויהלומים על משטח סטודיו נקי"
           className="object-cover grayscale"
@@ -89,9 +90,9 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </RevealSection>
 
-      <section className="border-b border-black/10 bg-white/65 backdrop-blur">
+      <RevealSection className="border-b border-black/10 bg-white/65 backdrop-blur">
         <div className="mx-auto grid max-w-7xl gap-4 px-4 py-6 sm:px-6 lg:grid-cols-[1fr_2fr]">
           <div>
             <p className="text-muted-foreground text-sm">חיפוש מהיר</p>
@@ -117,9 +118,9 @@ export default function Home() {
             </Button>
           </form>
         </div>
-      </section>
+      </RevealSection>
 
-      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
+      <RevealSection className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
         <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
             <p className="text-muted-foreground text-sm">קטגוריות</p>
@@ -129,7 +130,7 @@ export default function Home() {
             <Link href="/search">כל הקטלוג</Link>
           </Button>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <RevealGrid className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {categories.map((category) => (
             <Link
               className="group rounded-md border border-black/10 bg-white/65 p-5 backdrop-blur transition hover:border-black/30 hover:bg-white/85"
@@ -149,10 +150,10 @@ export default function Home() {
               </span>
             </Link>
           ))}
-        </div>
-      </section>
+        </RevealGrid>
+      </RevealSection>
 
-      <section className="bg-black/[0.03]">
+      <RevealSection className="bg-black/[0.03]">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
           <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
@@ -163,58 +164,60 @@ export default function Home() {
               <Link href="/category/rings">טבעות מובילות</Link>
             </Button>
           </div>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <RevealGrid className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {featuredProducts.map((product) => (
               <ProductCard key={product.slug} product={product} />
             ))}
-          </div>
+          </RevealGrid>
         </div>
-      </section>
+      </RevealSection>
 
-      <section className="mx-auto grid max-w-7xl gap-5 px-4 py-14 sm:px-6 lg:grid-cols-4">
-        <MetricCard
-          detail="זמינות לפי סניף לפני הגעה"
-          icon={MapPin}
-          label="סניפים"
-          variant="soft"
-          value="2"
-        />
-        <MetricCard
-          detail="איסוף, משלוח או החזרה בסניף"
-          icon={ShieldCheck}
-          label="אומניצ׳אנל"
-          variant="soft"
-          value="מלא"
-        />
-        <MetricCard
-          detail="מתנות, אירועים ותקציב"
-          icon={Sparkles}
-          label="סטייליסט AI"
-          variant="soft"
-          value="פעיל"
-        />
-        <MetricCard
-          detail="מדידה וייעוץ אישי"
-          icon={CalendarCheck}
-          label="תורים"
-          variant="soft"
-          value="בתיאום"
-        />
-      </section>
+      <RevealSection className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
+        <RevealGrid className="grid gap-5 lg:grid-cols-4">
+          <MetricCard
+            detail="זמינות לפי סניף לפני הגעה"
+            icon={MapPin}
+            label="סניפים"
+            variant="soft"
+            value="2"
+          />
+          <MetricCard
+            detail="איסוף, משלוח או החזרה בסניף"
+            icon={ShieldCheck}
+            label="אומניצ׳אנל"
+            variant="soft"
+            value="מלא"
+          />
+          <MetricCard
+            detail="מתנות, אירועים ותקציב"
+            icon={Sparkles}
+            label="סטייליסט AI"
+            variant="soft"
+            value="פעיל"
+          />
+          <MetricCard
+            detail="מדידה וייעוץ אישי"
+            icon={CalendarCheck}
+            label="תורים"
+            variant="soft"
+            value="בתיאום"
+          />
+        </RevealGrid>
+      </RevealSection>
 
       <Separator />
 
-      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
+      <RevealSection className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
         <div className="mb-8">
           <p className="text-muted-foreground text-sm">סניפים</p>
           <h2 className="text-3xl font-semibold">איסוף, מדידה ושירות קרוב</h2>
         </div>
-        <div className="grid gap-5 lg:grid-cols-2">
+        <RevealGrid className="grid gap-5 lg:grid-cols-2">
           {branches.map((branch) => (
             <BranchCard branch={branch} key={branch.slug} />
           ))}
-        </div>
-      </section>
+        </RevealGrid>
+      </RevealSection>
     </main>
   );
 }

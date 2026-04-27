@@ -14,6 +14,7 @@ import {
   Store,
 } from "lucide-react";
 
+import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -89,7 +90,7 @@ export default function AboutPage() {
       <SiteHeader />
 
       <article>
-        <section className="relative min-h-[86vh] overflow-hidden">
+        <RevealSection className="relative min-h-[86vh] overflow-hidden">
           <Image
             alt="הולדת ונוס מאת סנדרו בוטיצ׳לי, יצירת רנסנס המשמשת השראה חזותית לעמוד אודות Aphrodite"
             className="object-cover grayscale"
@@ -146,9 +147,9 @@ export default function AboutPage() {
               מקור תמונה: Wikimedia Commons
             </a>
           </div>
-        </section>
+        </RevealSection>
 
-        <section className="border-b border-black/10 bg-white/65 backdrop-blur">
+        <RevealSection className="border-b border-black/10 bg-white/65 backdrop-blur">
           <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-3">
             <div className="rounded-md border border-black/10 bg-white/65 p-5 backdrop-blur">
               <p className="text-muted-foreground text-sm">שם</p>
@@ -165,9 +166,9 @@ export default function AboutPage() {
               </p>
             </div>
           </div>
-        </section>
+        </RevealSection>
 
-        <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
+        <RevealSection className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
           <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
             <div className="sticky top-24">
               <p className="text-muted-foreground text-sm">השם Aphrodite</p>
@@ -204,9 +205,9 @@ export default function AboutPage() {
               </p>
             </div>
           </div>
-        </section>
+        </RevealSection>
 
-        <section className="bg-black/[0.03]">
+        <RevealSection className="bg-black/[0.03]">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
             <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
               <div className="rounded-md border border-black/10 bg-white/65 p-6 backdrop-blur sm:p-8 lg:p-10">
@@ -265,9 +266,9 @@ export default function AboutPage() {
               </div>
             </div>
           </div>
-        </section>
+        </RevealSection>
 
-        <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
+        <RevealSection className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
           <div className="mb-9 max-w-3xl">
             <p className="text-muted-foreground text-sm">ערכים</p>
             <h2 className="mt-3 text-4xl leading-tight font-semibold">
@@ -275,7 +276,7 @@ export default function AboutPage() {
             </h2>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <RevealGrid className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {values.map((value) => {
               const Icon = value.icon;
 
@@ -294,10 +295,10 @@ export default function AboutPage() {
                 </section>
               );
             })}
-          </div>
-        </section>
+          </RevealGrid>
+        </RevealSection>
 
-        <section className="bg-black/[0.03]">
+        <RevealSection className="bg-black/[0.03]">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
             <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
               <div className="rounded-md border border-black/10 bg-white/65 p-6 backdrop-blur sm:p-8 lg:sticky lg:top-24 lg:p-10">
@@ -361,11 +362,11 @@ export default function AboutPage() {
               </div>
             </div>
           </div>
-        </section>
+        </RevealSection>
 
         <Separator />
 
-        <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
+        <RevealSection className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
           <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr]">
             <div>
               <p className="text-muted-foreground text-sm">חוויית הקנייה</p>
@@ -381,7 +382,7 @@ export default function AboutPage() {
               </p>
             </div>
 
-            <div className="grid gap-4">
+            <RevealGrid className="grid gap-4">
               {journey.map((item) => {
                 const Icon = item.icon;
 
@@ -404,11 +405,11 @@ export default function AboutPage() {
                   </section>
                 );
               })}
-            </div>
+            </RevealGrid>
           </div>
-        </section>
+        </RevealSection>
 
-        <section className="bg-black/[0.03]">
+        <RevealSection className="bg-black/[0.03]">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
             <div className="mx-auto max-w-4xl rounded-md border border-black/10 bg-white/65 p-6 text-center backdrop-blur sm:p-8 lg:p-12">
               <Sparkles className="mx-auto size-8" />
@@ -435,7 +436,7 @@ export default function AboutPage() {
               </div>
             </div>
           </div>
-        </section>
+        </RevealSection>
       </article>
     </main>
   );

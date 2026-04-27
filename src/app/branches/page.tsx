@@ -1,4 +1,5 @@
 import { BranchCard } from "~/components/branch-card";
+import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { branches } from "~/lib/catalog";
 
@@ -10,7 +11,7 @@ export default function BranchesPage() {
   return (
     <main>
       <SiteHeader />
-      <section className="border-b border-black/10 bg-black/[0.02]">
+      <RevealSection className="border-b border-black/10 bg-black/[0.02]">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
           <h1 className="text-4xl font-semibold">סניפי Aphrodite</h1>
           <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
@@ -18,15 +19,15 @@ export default function BranchesPage() {
             בסניפים.
           </p>
         </div>
-      </section>
+      </RevealSection>
 
-      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-14">
-        <div className="grid gap-5 lg:grid-cols-2">
+      <RevealSection className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-14">
+        <RevealGrid className="grid gap-5 lg:grid-cols-2">
           {branches.map((branch) => (
             <BranchCard branch={branch} key={branch.slug} />
           ))}
-        </div>
-      </section>
+        </RevealGrid>
+      </RevealSection>
     </main>
   );
 }
