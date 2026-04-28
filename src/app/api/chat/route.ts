@@ -9,7 +9,16 @@ import { google } from "@ai-sdk/google";
 import { z } from "zod";
 
 import { env } from "~/env";
-import { branches, formatPrice, searchProducts } from "~/lib/catalog";
+import {
+  formatPrice,
+  getCatalogBranches,
+  searchCatalogProducts,
+} from "~/server/services/catalog";
+import {
+  assertRateLimit,
+  getRequestIp,
+  RateLimitExceededError,
+} from "~/server/services/rate-limit";
 
 export const maxDuration = 30;
 
@@ -18,6 +27,26 @@ const chatRequestSchema = z.object({
 });
 
 export async function POST(req: Request) {
+  try {
+    assertRateLimit({
+      key: `chat:${getRequestIp(req)}`,
+      limit: 30,
+      windowMs: 60_000,
+    });
+  } catch (error) {
+    if (error instanceof RateLimitExceededError) {
+      return Response.json(
+        { error: "Too many chat requests." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(error.retryAfterSeconds) },
+        },
+      );
+    }
+
+    throw error;
+  }
+
   const { messages } = chatRequestSchema.parse(await req.json());
 
   if (!env.GOOGLE_GENERATIVE_AI_API_KEY) {
@@ -59,22 +88,27 @@ export async function POST(req: Request) {
           branch: z.string().optional(),
           maxPrice: z.number().optional(),
         }),
-        execute: (input) => {
+        execute: async (input) => {
           const resultSets = [
-            searchProducts(input),
-            input.query ? searchProducts({ ...input, query: undefined }) : [],
+            await searchCatalogProducts(input),
+            input.query
+              ? await searchCatalogProducts({ ...input, query: undefined })
+              : [],
             input.category
-              ? searchProducts({ ...input, category: undefined })
+              ? await searchCatalogProducts({ ...input, category: undefined })
               : [],
             input.query || input.category
-              ? searchProducts({
+              ? await searchCatalogProducts({
                   branch: input.branch,
                   maxPrice: input.maxPrice,
                 })
               : [],
-            input.maxPrice ? searchProducts({ maxPrice: input.maxPrice }) : [],
-            searchProducts({}),
+            input.maxPrice
+              ? await searchCatalogProducts({ maxPrice: input.maxPrice })
+              : [],
+            await searchCatalogProducts({}),
           ];
+          const branches = await getCatalogBranches();
           const results = Array.from(
             new Map(
               resultSets

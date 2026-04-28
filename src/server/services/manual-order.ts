@@ -7,6 +7,7 @@ import { env } from "~/env";
 import { notificationProvider } from "~/server/adapters/notifications";
 import { db } from "~/server/db";
 import { canReserveStock } from "./inventory";
+import { BUSINESS_EVENTS, createOutboxEvent } from "./outbox";
 import { calculateOrderTotal } from "./pricing";
 
 const MANUAL_ORDER_RESERVATION_HOURS = 24;
@@ -409,6 +410,62 @@ async function createManualOrderInTransaction(
     },
   });
 
+  await createOutboxEvent(tx, {
+    type: BUSINESS_EVENTS.orderCreated,
+    aggregateType: "Order",
+    aggregateId: order.id,
+    idempotencyKey: `${BUSINESS_EVENTS.orderCreated}:${order.id}`,
+    payload: {
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      customerId: customer.id,
+      total: totals.total,
+      fulfillmentMethod: input.fulfillmentMethod,
+    },
+  });
+
+  await createOutboxEvent(tx, {
+    type: BUSINESS_EVENTS.inventoryReserved,
+    aggregateType: "Order",
+    aggregateId: order.id,
+    idempotencyKey: `${BUSINESS_EVENTS.inventoryReserved}:${order.id}:${variant.id}:${branch.id}`,
+    payload: {
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      branchId: branch.id,
+      variantId: variant.id,
+      quantity: input.quantity,
+      reservationExpiresAt: reservationExpiresAt.toISOString(),
+    },
+  });
+
+  await createOutboxEvent(tx, {
+    type: BUSINESS_EVENTS.inventoryReservationExpired,
+    aggregateType: "Order",
+    aggregateId: order.id,
+    idempotencyKey: `${BUSINESS_EVENTS.inventoryReservationExpired}:${order.id}`,
+    availableAt: reservationExpiresAt,
+    payload: {
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      reservationExpiresAt: reservationExpiresAt.toISOString(),
+    },
+  });
+
+  await createOutboxEvent(tx, {
+    type: BUSINESS_EVENTS.emailRequested,
+    aggregateType: "Order",
+    aggregateId: order.id,
+    idempotencyKey: `${BUSINESS_EVENTS.emailRequested}:manual-order:${order.id}`,
+    payload: {
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      customerEmail: input.customer.email,
+      operationsEmail: env.OPERATIONS_EMAIL ?? null,
+      template: "manual_order_created",
+    },
+  });
+
   return {
     response: {
       orderId: order.id,
@@ -659,7 +716,15 @@ export async function getAdminOverview() {
         name: "Operations inbox",
         status: env.OPERATIONS_EMAIL ? "active" : "missing-email",
       },
-      { name: "Typesense", status: "local-fallback" },
+      {
+        name: "Typesense",
+        status:
+          env.TYPESENSE_HOST && env.TYPESENSE_API_KEY
+            ? "active"
+            : env.NODE_ENV === "production"
+              ? "missing-config"
+              : "local-dev-fallback",
+      },
     ],
   };
 }
@@ -718,13 +783,20 @@ export async function updateManualOrderStatus(input: {
     if (input.status === "PAID") {
       await tx.payment.updateMany({
         where: { orderId: order.id, provider: MANUAL_PAYMENT_PROVIDER },
-        data: { status: "CAPTURED" },
+        data: {
+          status: "CAPTURED",
+          providerStatus: "manual_confirmed",
+          capturedAt: new Date(),
+        },
       });
     }
 
     const updated = await tx.order.update({
       where: { id: order.id },
-      data: { status: input.status },
+      data: {
+        status: input.status,
+        ...getManualOrderStatusTimestampUpdate(input.status),
+      },
     });
 
     await tx.auditLog.create({
@@ -741,12 +813,49 @@ export async function updateManualOrderStatus(input: {
       },
     });
 
+    if (input.status === "PAID") {
+      await createOutboxEvent(tx, {
+        type: BUSINESS_EVENTS.paymentCaptured,
+        aggregateType: "Order",
+        aggregateId: order.id,
+        idempotencyKey: `${BUSINESS_EVENTS.paymentCaptured}:${order.id}`,
+        payload: {
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+          provider: MANUAL_PAYMENT_PROVIDER,
+        },
+      });
+    }
+
     return {
       orderId: updated.id,
       orderNumber: updated.orderNumber,
       status: updated.status,
     };
   });
+}
+
+function getManualOrderStatusTimestampUpdate(
+  status: AdminOrderStatusInput,
+): Prisma.OrderUpdateInput {
+  const now = new Date();
+
+  switch (status) {
+    case "PAID":
+      return { paidAt: now };
+    case "PREPARING":
+      return { preparingAt: now };
+    case "READY_FOR_PICKUP":
+      return { readyForPickupAt: now };
+    case "SHIPPED":
+      return { shippedAt: now };
+    case "COMPLETED":
+      return { completedAt: now };
+    case "CANCELLED":
+      return { cancelledAt: now };
+  }
+
+  return {};
 }
 
 async function releaseManualOrderReservations(

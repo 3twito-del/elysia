@@ -12,6 +12,14 @@ export type AuthorizedAdmin = {
   permissions: AdminPermission[];
 };
 
+const impliedPermissions: Partial<Record<AdminPermission, AdminPermission[]>> =
+  {
+    CATALOG: ["CATALOG_READ", "CATALOG_WRITE"],
+    INVENTORY: ["INVENTORY_READ", "INVENTORY_WRITE"],
+    ORDERS: ["ORDERS_READ", "ORDERS_WRITE", "ORDERS_REFUND"],
+    CUSTOMER_SERVICE: ["CUSTOMER_VIEW", "CUSTOMER_WRITE"],
+  };
+
 export async function getAdminFromSession(
   session: Session | null,
 ): Promise<AuthorizedAdmin | null> {
@@ -45,7 +53,10 @@ export function hasAdminPermission(
 ) {
   return (
     admin.permissions.includes("SYSTEM") ||
-    admin.permissions.includes(permission)
+    admin.permissions.includes(permission) ||
+    admin.permissions.some((adminPermission) =>
+      (impliedPermissions[adminPermission] ?? []).includes(permission),
+    )
   );
 }
 

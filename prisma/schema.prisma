@@ -64,15 +64,40 @@ enum OtpChannel {
 enum AdminPermission {
   SYSTEM
   CATALOG
+  CATALOG_READ
+  CATALOG_WRITE
   INVENTORY
+  INVENTORY_READ
+  INVENTORY_WRITE
   ORDERS
+  ORDERS_READ
+  ORDERS_WRITE
+  ORDERS_REFUND
   CUSTOMER_SERVICE
+  CUSTOMER_VIEW
+  CUSTOMER_WRITE
+  SYSTEM_CONFIG
 }
 
 enum WebhookStatus {
   RECEIVED
   PROCESSED
   FAILED
+}
+
+enum OutboxEventStatus {
+  PENDING
+  PUBLISHED
+  PROCESSING
+  PROCESSED
+  FAILED
+}
+
+enum JobRunStatus {
+  RUNNING
+  COMPLETED
+  FAILED
+  SKIPPED
 }
 
 model User {
@@ -182,6 +207,8 @@ model Product {
   variants        ProductVariant[]
   media           ProductMedia[]
   searchEvents    SearchEvent[]
+  viewEvents      ProductViewEvent[]
+  clickEvents     ProductClickEvent[]
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
 
@@ -234,6 +261,7 @@ model ProductMedia {
   cloudinaryId String?
   width        Int?
   height       Int?
+  isPrimary    Boolean   @default(false)
   sortOrder    Int       @default(0)
   product      Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -396,16 +424,22 @@ model WishlistItem {
 model Cart {
   id             String          @id @default(cuid())
   customerId      String?
+  sessionKey      String?
   status          CartStatus      @default(ACTIVE)
   currency        String          @default("ILS")
   couponCode      String?
   giftWrap        Boolean         @default(false)
   giftMessage     String?
+  expiresAt       DateTime?
+  mergeMetadata   Json?
   customer        Customer?       @relation(fields: [customerId], references: [id])
   items           CartItem[]
   orders          Order[]
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
+
+  @@index([sessionKey, status])
+  @@index([customerId, status])
 }
 
 model CartItem {
@@ -451,6 +485,13 @@ model Order {
   phone             String
   recipientName     String
   shippingAddress   Json?
+  paidAt            DateTime?
+  preparingAt       DateTime?
+  readyForPickupAt  DateTime?
+  shippedAt         DateTime?
+  completedAt       DateTime?
+  cancelledAt       DateTime?
+  refundedAt        DateTime?
   cart              Cart?             @relation(fields: [cartId], references: [id])
   customer          Customer?         @relation(fields: [customerId], references: [id])
   branch            Branch?           @relation(fields: [branchId], references: [id])
@@ -483,10 +524,14 @@ model Payment {
   provider         String
   providerPaymentId String?
   status           PaymentStatus @default(PENDING)
+  providerStatus   String?
+  failureCode      String?
   amount           Decimal       @db.Decimal(10, 2)
   currency         String        @default("ILS")
   idempotencyKey   String        @unique
   rawPayload       Json?
+  capturedAt       DateTime?
+  refundedAt       DateTime?
   order            Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
@@ -587,6 +632,34 @@ model SearchEvent {
   createdAt   DateTime @default(now())
 }
 
+model ProductViewEvent {
+  id         String   @id @default(cuid())
+  productId  String
+  sessionKey String?
+  customerId String?
+  path       String?
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@index([productId, createdAt])
+  @@index([sessionKey, createdAt])
+  @@index([customerId, createdAt])
+}
+
+model ProductClickEvent {
+  id         String   @id @default(cuid())
+  productId  String
+  query      String?
+  position   Int?
+  sessionKey String?
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@index([productId, createdAt])
+  @@index([query, createdAt])
+  @@index([sessionKey, createdAt])
+}
+
 model Role {
   id          String            @id @default(cuid())
   name        String            @unique
@@ -625,10 +698,50 @@ model WebhookEvent {
   externalId  String
   status      WebhookStatus @default(RECEIVED)
   payload     Json
+  rawBodyHash String?
   receivedAt  DateTime      @default(now())
   processedAt DateTime?
 
   @@unique([provider, externalId])
+  @@index([provider, rawBodyHash])
+}
+
+model OutboxEvent {
+  id             String            @id @default(cuid())
+  type           String
+  aggregateType  String?
+  aggregateId    String?
+  payload        Json
+  status         OutboxEventStatus @default(PENDING)
+  idempotencyKey String?           @unique
+  availableAt    DateTime          @default(now())
+  publishedAt    DateTime?
+  processedAt    DateTime?
+  attempts       Int               @default(0)
+  lastError      String?
+  jobRuns        JobRun[]
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@index([status, availableAt])
+  @@index([type])
+  @@index([aggregateType, aggregateId])
+}
+
+model JobRun {
+  id            String       @id @default(cuid())
+  name          String
+  status        JobRunStatus @default(RUNNING)
+  outboxEventId String?
+  attempts      Int          @default(0)
+  metadata      Json?
+  lastError     String?
+  startedAt     DateTime     @default(now())
+  finishedAt    DateTime?
+  outboxEvent   OutboxEvent? @relation(fields: [outboxEventId], references: [id], onDelete: SetNull)
+
+  @@index([name, status])
+  @@index([outboxEventId])
 }
 
 model IntegrationJob {

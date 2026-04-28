@@ -4,16 +4,21 @@ import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
-import { products } from "~/lib/catalog";
+import {
+  getFeaturedCatalogProducts,
+  searchCatalogProducts,
+} from "~/server/services/catalog";
 
 export const metadata = {
   title: "מתנות",
 };
 
-export default function GiftsPage() {
-  const giftProducts = products.filter((product) =>
-    product.tags.includes("מתנה"),
-  );
+export default async function GiftsPage() {
+  const giftProducts = await searchCatalogProducts({ query: "מתנה" });
+  const products =
+    giftProducts.length > 0
+      ? giftProducts
+      : await getFeaturedCatalogProducts(8);
 
   return (
     <main>
@@ -31,7 +36,7 @@ export default function GiftsPage() {
           </Button>
         </div>
         <RevealGrid className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {giftProducts.map((product) => (
+          {products.map((product) => (
             <ProductCard key={product.slug} product={product} />
           ))}
         </RevealGrid>

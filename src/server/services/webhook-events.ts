@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import type { Prisma, WebhookStatus } from "@prisma/client";
 
 import { db } from "~/server/db";
+import { BUSINESS_EVENTS, createOutboxEvent } from "~/server/services/outbox";
 
 export function parseWebhookJson(rawBody: string): unknown {
   if (!rawBody.trim()) return {};
@@ -59,28 +60,49 @@ export async function recordWebhookEvent(input: {
   );
   const eventType = getWebhookEventType(input.payload, input.fallbackEventType);
   const payload = toJson(input.payload);
+  const rawBodyHash = createHash("sha256").update(input.rawBody).digest("hex");
 
-  return db.webhookEvent.upsert({
-    where: {
-      provider_externalId: {
+  return db.$transaction(async (tx) => {
+    const event = await tx.webhookEvent.upsert({
+      where: {
+        provider_externalId: {
+          provider: input.provider,
+          externalId,
+        },
+      },
+      update: {
+        eventType,
+        status: input.status ?? "RECEIVED",
+        payload,
+        rawBodyHash,
+        processedAt: input.status === "PROCESSED" ? new Date() : undefined,
+      },
+      create: {
         provider: input.provider,
         externalId,
+        eventType,
+        status: input.status ?? "RECEIVED",
+        payload,
+        rawBodyHash,
+        processedAt: input.status === "PROCESSED" ? new Date() : undefined,
       },
-    },
-    update: {
-      eventType,
-      status: input.status ?? "RECEIVED",
-      payload,
-      processedAt: input.status === "PROCESSED" ? new Date() : undefined,
-    },
-    create: {
-      provider: input.provider,
-      externalId,
-      eventType,
-      status: input.status ?? "RECEIVED",
-      payload,
-      processedAt: input.status === "PROCESSED" ? new Date() : undefined,
-    },
+    });
+
+    await createOutboxEvent(tx, {
+      type: BUSINESS_EVENTS.webhookReceived,
+      aggregateType: "WebhookEvent",
+      aggregateId: event.id,
+      idempotencyKey: `${BUSINESS_EVENTS.webhookReceived}:${input.provider}:${externalId}`,
+      payload: {
+        provider: input.provider,
+        eventType,
+        externalId,
+        rawBodyHash,
+        status: input.status ?? "RECEIVED",
+      },
+    });
+
+    return event;
   });
 }
 

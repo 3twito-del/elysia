@@ -5,9 +5,9 @@ import { Heart, MapPin, ShoppingBag } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
-import { formatPrice, type Product } from "~/lib/catalog";
+import { formatPrice, type CatalogProduct } from "~/server/services/catalog";
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({ product }: { product: CatalogProduct }) {
   const availableBranches = Object.values(product.inventory).filter(
     Boolean,
   ).length;

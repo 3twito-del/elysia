@@ -1,13 +1,15 @@
 import { BranchCard } from "~/components/branch-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
-import { branches } from "~/lib/catalog";
+import { getCatalogBranches } from "~/server/services/catalog";
 
 export const metadata = {
   title: "סניפים",
 };
 
-export default function BranchesPage() {
+export default async function BranchesPage() {
+  const branches = await getCatalogBranches();
+
   return (
     <main>
       <SiteHeader />

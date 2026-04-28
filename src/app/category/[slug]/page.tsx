@@ -28,12 +28,15 @@ import {
   SheetTrigger,
 } from "~/components/ui/sheet";
 import {
-  branches,
-  categories,
   formatPrice,
-  products as catalogProducts,
-  searchProducts,
-} from "~/lib/catalog";
+  getCatalogBranches,
+  getCatalogCategories,
+  getCatalogCategoryBySlug,
+  getCatalogFacets,
+  searchCatalogProducts,
+  type CatalogBranch,
+  type CatalogCategory,
+} from "~/server/services/catalog";
 import { cn } from "~/lib/utils";
 
 type CategoryRouteProps = {
@@ -65,16 +68,10 @@ type ActiveFilter = {
 };
 
 const priceOptions = [750, 1000, 1500] as const;
-const materialOptions = getUniqueValues(
-  catalogProducts.map((product) => product.material),
-);
-const stoneOptions = getUniqueValues(
-  catalogProducts
-    .map((product) => product.stone)
-    .filter((value): value is string => Boolean(value)),
-);
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const categories = await getCatalogCategories();
+
   return categories.map((category) => ({ slug: category.slug }));
 }
 
@@ -82,7 +79,7 @@ export async function generateMetadata({
   params,
 }: CategoryRouteProps): Promise<Metadata> {
   const { slug } = await params;
-  const category = categories.find((item) => item.slug === slug);
+  const category = await getCatalogCategoryBySlug(slug);
 
   return {
     title: category?.name ?? "קטגוריה",
@@ -96,17 +93,29 @@ export default async function CategoryPage({
 }: CategoryPageProps) {
   const { slug } = await params;
   const query = await searchParams;
-  const category = categories.find((item) => item.slug === slug);
-  const filters = parseCategoryFilters(query);
-  const baseProducts = searchProducts({ category: slug });
-  const filteredProducts = searchProducts({
-    category: slug,
-    branch: filters.branch,
-    material: filters.material,
-    stone: filters.stone,
-    maxPrice: filters.maxPrice,
+  const [categories, branches, category, facets] = await Promise.all([
+    getCatalogCategories(),
+    getCatalogBranches(),
+    getCatalogCategoryBySlug(slug),
+    getCatalogFacets(),
+  ]);
+  const filters = parseCategoryFilters(query, {
+    branches,
+    materialOptions: facets.materials,
+    stoneOptions: facets.stones,
   });
-  const activeFilters = getActiveFilters(slug, filters);
+  const [baseProducts, filteredProducts, categoryCounts] = await Promise.all([
+    searchCatalogProducts({ category: slug }),
+    searchCatalogProducts({
+      category: slug,
+      branch: filters.branch,
+      material: filters.material,
+      stone: filters.stone,
+      maxPrice: filters.maxPrice,
+    }),
+    getCategoryCounts(categories),
+  ]);
+  const activeFilters = getActiveFilters(slug, filters, branches);
   const activeFilterCount = activeFilters.length;
   const resetHref = createCategoryHref(slug, {});
 
@@ -199,10 +208,15 @@ export default async function CategoryPage({
               <div className="p-4">
                 <FilterPanel
                   activeFilterCount={activeFilterCount}
+                  branches={branches}
+                  categories={categories}
+                  categoryCounts={categoryCounts}
                   closeOnSelect
                   filters={filters}
+                  materialOptions={facets.materials}
                   resetHref={resetHref}
                   slug={slug}
+                  stoneOptions={facets.stones}
                 />
               </div>
             </SheetContent>
@@ -222,9 +236,14 @@ export default async function CategoryPage({
             <CardContent>
               <FilterPanel
                 activeFilterCount={activeFilterCount}
+                branches={branches}
+                categories={categories}
+                categoryCounts={categoryCounts}
                 filters={filters}
+                materialOptions={facets.materials}
                 resetHref={resetHref}
                 slug={slug}
+                stoneOptions={facets.stones}
               />
             </CardContent>
           </Card>
@@ -301,12 +320,22 @@ export default async function CategoryPage({
 function FilterPanel({
   slug,
   filters,
+  categories,
+  branches,
+  materialOptions,
+  stoneOptions,
+  categoryCounts,
   activeFilterCount,
   resetHref,
   closeOnSelect = false,
 }: {
   slug: string;
   filters: CategoryFilters;
+  categories: CatalogCategory[];
+  branches: CatalogBranch[];
+  materialOptions: string[];
+  stoneOptions: string[];
+  categoryCounts: Map<string, number>;
   activeFilterCount: number;
   resetHref: string;
   closeOnSelect?: boolean;
@@ -338,7 +367,7 @@ function FilterPanel({
             href={createCategoryHref(item.slug, filters)}
             key={item.slug}
             label={item.name}
-            meta={`${searchProducts({ category: item.slug }).length} מוצרים`}
+            meta={`${categoryCounts.get(item.slug) ?? 0} מוצרים`}
           />
         ))}
       </FilterSection>
@@ -518,6 +547,11 @@ function FilterActionLink({
 
 function parseCategoryFilters(
   searchParams: CategorySearchParams,
+  options: {
+    branches: CatalogBranch[];
+    materialOptions: string[];
+    stoneOptions: string[];
+  },
 ): CategoryFilters {
   const branch = getFirstParam(searchParams.branch);
   const material = getFirstParam(searchParams.material);
@@ -525,15 +559,23 @@ function parseCategoryFilters(
   const maxPrice = getFirstParam(searchParams.maxPrice);
 
   return {
-    branch: branches.some((item) => item.slug === branch) ? branch : undefined,
+    branch: options.branches.some((item) => item.slug === branch)
+      ? branch
+      : undefined,
     material:
-      material && materialOptions.includes(material) ? material : undefined,
-    stone: stone && stoneOptions.includes(stone) ? stone : undefined,
+      material && options.materialOptions.includes(material)
+        ? material
+        : undefined,
+    stone: stone && options.stoneOptions.includes(stone) ? stone : undefined,
     maxPrice: getValidMaxPrice(maxPrice),
   };
 }
 
-function getActiveFilters(slug: string, filters: CategoryFilters) {
+function getActiveFilters(
+  slug: string,
+  filters: CategoryFilters,
+  branches: CatalogBranch[],
+) {
   const selectedBranch = branches.find(
     (branch) => branch.slug === filters.branch,
   );
@@ -599,6 +641,14 @@ function getValidMaxPrice(value?: string) {
   return priceOptions.find((price) => price === parsed);
 }
 
-function getUniqueValues(values: string[]) {
-  return Array.from(new Set(values));
+async function getCategoryCounts(categories: CatalogCategory[]) {
+  const entries = await Promise.all(
+    categories.map(async (category) => {
+      const products = await searchCatalogProducts({ category: category.slug });
+
+      return [category.slug, products.length] as const;
+    }),
+  );
+
+  return new Map(entries);
 }

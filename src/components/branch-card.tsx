@@ -3,9 +3,9 @@ import { CalendarCheck, MapPin, MessageCircle, Phone } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import type { Branch } from "~/lib/catalog";
+import type { CatalogBranch } from "~/server/services/catalog";
 
-export function BranchCard({ branch }: { branch: Branch }) {
+export function BranchCard({ branch }: { branch: CatalogBranch }) {
   const appointmentHref = `https://wa.me/${branch.whatsapp}?text=${encodeURIComponent(
     `שלום, אשמח לתאם פגישה בסניף ${branch.name}`,
   )}`;

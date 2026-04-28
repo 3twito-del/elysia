@@ -7,6 +7,10 @@ import {
   requestCustomerOtp,
   requestCustomerOtpInputSchema,
 } from "~/server/services/customer-otp";
+import {
+  assertRateLimit,
+  rateLimitMessage,
+} from "~/server/services/rate-limit";
 import { signIn, signOut } from "~/server/auth";
 
 export type CustomerOtpState = {
@@ -31,11 +35,18 @@ export async function requestCustomerOtpAction(
     return {
       ok: false,
       identifier,
-      message: parsed.error.issues[0]?.message ?? "יש להזין אימייל או טלפון.",
+      message:
+        parsed.error.issues[0]?.message ?? "יש להזין אימייל או טלפון תקינים.",
     };
   }
 
   try {
+    assertRateLimit({
+      key: `otp:request:${parsed.data.identifier}`,
+      limit: 3,
+      windowMs: 10 * 60_000,
+    });
+
     const result = await requestCustomerOtp(parsed.data);
 
     return {
@@ -48,13 +59,15 @@ export async function requestCustomerOtpAction(
           : "שלחנו קוד אימות ב-SMS.",
     };
   } catch (error) {
+    const fallbackMessage =
+      error instanceof Error
+        ? error.message
+        : "לא ניתן לשלוח קוד כרגע. נסו שוב.";
+
     return {
       ok: false,
       identifier,
-      message:
-        error instanceof Error
-          ? error.message
-          : "לא ניתן לשלוח קוד כרגע. נסו שוב.",
+      message: rateLimitMessage(error) ?? fallbackMessage,
     };
   }
 }
@@ -67,12 +80,28 @@ export async function verifyCustomerOtpAction(
   const code = getFormString(formData, "code");
 
   try {
+    assertRateLimit({
+      key: `otp:verify:${identifier}`,
+      limit: 6,
+      windowMs: 10 * 60_000,
+    });
+
     await signIn("otp", {
       identifier,
       code,
       redirectTo: "/account",
     });
   } catch (error) {
+    const message = rateLimitMessage(error);
+
+    if (message) {
+      return {
+        ok: false,
+        identifier,
+        message,
+      };
+    }
+
     if (error instanceof AuthError) {
       return {
         ok: false,

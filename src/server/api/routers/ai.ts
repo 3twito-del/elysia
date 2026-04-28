@@ -1,8 +1,9 @@
 import { z } from "zod";
 
-import { products } from "~/lib/catalog";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { tryOnProvider } from "~/server/adapters/try-on";
+import { db } from "~/server/db";
+import { searchCatalogProducts } from "~/server/services/catalog";
 
 export const aiRouter = createTRPCRouter({
   recommendGift: publicProcedure
@@ -14,15 +15,38 @@ export const aiRouter = createTRPCRouter({
         style: z.array(z.string()).default([]),
       }),
     )
-    .query(({ input }) => {
-      const hits = products
-        .filter((product) => product.price <= input.budget)
-        .slice(0, 3);
-
-      return {
+    .query(async ({ ctx, input }) => {
+      const hits = (
+        await searchCatalogProducts({
+          query: input.style.join(" "),
+          maxPrice: input.budget,
+          availableOnly: true,
+        })
+      ).slice(0, 3);
+      const response = {
         summary: `ל-${input.occasion} עבור ${input.relation}, הייתי מתחיל מתכשיטים נקיים עם שימוש יומיומי.`,
         products: hits,
       };
+      const customer = ctx.session?.user.id
+        ? await db.customer.findUnique({
+            where: { userId: ctx.session.user.id },
+            select: { id: true },
+          })
+        : null;
+
+      await db.recommendationSession.create({
+        data: {
+          customerId: customer?.id,
+          input,
+          output: {
+            summary: response.summary,
+            productSlugs: hits.map((product) => product.slug),
+          },
+          model: "catalog-rules-v1",
+        },
+      });
+
+      return response;
     }),
 
   createTryOnSession: publicProcedure

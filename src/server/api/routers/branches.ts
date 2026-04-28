@@ -1,6 +1,6 @@
-import { branches } from "~/lib/catalog";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { getCatalogBranches } from "~/server/services/catalog";
 
 export const branchesRouter = createTRPCRouter({
-  list: publicProcedure.query(() => branches),
+  list: publicProcedure.query(() => getCatalogBranches()),
 });

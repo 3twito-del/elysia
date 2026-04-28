@@ -7,11 +7,11 @@ import { Heart, PackageCheck, Sparkles } from "lucide-react";
 import { WishlistButton } from "./wishlist-button";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import type { ProductVariant } from "~/lib/catalog";
+import type { CatalogProductVariant } from "~/server/services/catalog";
 
 type ProductPurchasePanelProps = {
   productSlug: string;
-  variants: ProductVariant[];
+  variants: CatalogProductVariant[];
   metalColors: string[];
 };
 

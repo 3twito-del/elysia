@@ -17,6 +17,10 @@ describe("admin access", () => {
     expect(hasAdminPermission(ordersAdmin, "ORDERS")).toBe(true);
   });
 
+  it("allows broad permissions to satisfy granular checks", () => {
+    expect(hasAdminPermission(ordersAdmin, "ORDERS_REFUND")).toBe(true);
+  });
+
   it("allows SYSTEM to act as a super permission", () => {
     expect(
       hasAdminPermission(

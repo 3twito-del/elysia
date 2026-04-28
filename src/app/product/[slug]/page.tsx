@@ -12,17 +12,20 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
 import {
-  getAvailability,
-  getProductBySlug,
-  products,
   formatPrice,
-} from "~/lib/catalog";
+  getCatalogBranches,
+  getCatalogBranchAvailability,
+  getCatalogProductBySlug,
+  listCatalogProducts,
+} from "~/server/services/catalog";
 
 type ProductPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const products = await listCatalogProducts();
+
   return products.map((product) => ({ slug: product.slug }));
 }
 
@@ -30,7 +33,7 @@ export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getCatalogProductBySlug(slug);
 
   return {
     title: product?.name ?? "מוצר",
@@ -47,15 +50,18 @@ export async function generateMetadata({
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const [product, branches] = await Promise.all([
+    getCatalogProductBySlug(slug),
+    getCatalogBranches(),
+  ]);
 
   if (!product) notFound();
 
-  const availability = getAvailability(product);
+  const availability = getCatalogBranchAvailability({ product, branches });
   const availableBranchCount = availability.filter(
     ({ available }) => available,
   ).length;
-  const uniqueImages = Array.from(new Set([product.image]));
+  const uniqueImages = Array.from(new Set(product.images));
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Product",

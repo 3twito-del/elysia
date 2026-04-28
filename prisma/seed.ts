@@ -35,8 +35,12 @@ async function main() {
 
   await prisma.$transaction([
     prisma.auditLog.deleteMany(),
+    prisma.jobRun.deleteMany(),
+    prisma.outboxEvent.deleteMany(),
     prisma.integrationJob.deleteMany(),
     prisma.webhookEvent.deleteMany(),
+    prisma.productClickEvent.deleteMany(),
+    prisma.productViewEvent.deleteMany(),
     prisma.searchEvent.deleteMany(),
     prisma.tryOnSession.deleteMany(),
     prisma.recommendationSession.deleteMany(),
@@ -374,9 +378,19 @@ async function main() {
       permissions: [
         "SYSTEM",
         "CATALOG",
+        "CATALOG_READ",
+        "CATALOG_WRITE",
         "INVENTORY",
+        "INVENTORY_READ",
+        "INVENTORY_WRITE",
         "ORDERS",
+        "ORDERS_READ",
+        "ORDERS_WRITE",
+        "ORDERS_REFUND",
         "CUSTOMER_SERVICE",
+        "CUSTOMER_VIEW",
+        "CUSTOMER_WRITE",
+        "SYSTEM_CONFIG",
       ],
     },
   });

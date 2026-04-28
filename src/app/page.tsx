@@ -19,10 +19,18 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Separator } from "~/components/ui/separator";
-import { branches, categories, getFeaturedProducts } from "~/lib/catalog";
+import {
+  getCatalogBranches,
+  getCatalogCategories,
+  getFeaturedCatalogProducts,
+} from "~/server/services/catalog";
 
-export default function Home() {
-  const featuredProducts = getFeaturedProducts();
+export default async function Home() {
+  const [branches, categories, featuredProducts] = await Promise.all([
+    getCatalogBranches(),
+    getCatalogCategories(),
+    getFeaturedCatalogProducts(),
+  ]);
 
   return (
     <main>

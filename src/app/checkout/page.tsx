@@ -2,11 +2,11 @@ import { ManualCheckoutForm } from "./_components/manual-checkout-form";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import {
-  branches,
-  getProductBySlug,
-  getProductVariant,
-  products,
-} from "~/lib/catalog";
+  getCatalogBranches,
+  getCatalogProductBySlug,
+  getCatalogProductVariant,
+  getFeaturedCatalogProducts,
+} from "~/server/services/catalog";
 import { TRPCReactProvider } from "~/trpc/react";
 
 type CheckoutPageProps = {
@@ -21,8 +21,18 @@ export default async function CheckoutPage({
   searchParams,
 }: CheckoutPageProps) {
   const params = await searchParams;
-  const product = getProductBySlug(params.product ?? "") ?? products[0]!;
-  const variant = getProductVariant(product, params.variant);
+  const [branches, requestedProduct, fallbackProducts] = await Promise.all([
+    getCatalogBranches(),
+    params.product ? getCatalogProductBySlug(params.product) : null,
+    getFeaturedCatalogProducts(1),
+  ]);
+  const product = requestedProduct ?? fallbackProducts[0];
+
+  if (!product) {
+    throw new Error("No active products are available for checkout.");
+  }
+
+  const variant = getCatalogProductVariant(product, params.variant);
 
   return (
     <main>

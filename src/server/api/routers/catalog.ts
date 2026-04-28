@@ -1,46 +1,42 @@
 import { z } from "zod";
 
-import {
-  categories,
-  getAvailability,
-  getFeaturedProducts,
-  getProductBySlug,
-  getProductsByCategory,
-  products,
-} from "~/lib/catalog";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import {
+  getCatalogBranches,
+  getCatalogBranchAvailability,
+  getCatalogCategories,
+  getCatalogFacets,
+  getCatalogProductBySlug,
+  getFeaturedCatalogProducts,
+  listCatalogProducts,
+} from "~/server/services/catalog";
 
 export const catalogRouter = createTRPCRouter({
-  categories: publicProcedure.query(() => categories),
+  categories: publicProcedure.query(() => getCatalogCategories()),
 
-  featured: publicProcedure.query(() => getFeaturedProducts()),
+  branches: publicProcedure.query(() => getCatalogBranches()),
+
+  featured: publicProcedure.query(() => getFeaturedCatalogProducts()),
 
   list: publicProcedure
     .input(z.object({ category: z.string().optional() }).optional())
-    .query(({ input }) => getProductsByCategory(input?.category)),
+    .query(({ input }) => listCatalogProducts({ category: input?.category })),
 
   bySlug: publicProcedure
     .input(z.object({ slug: z.string() }))
-    .query(({ input }) => {
-      const product = getProductBySlug(input.slug);
+    .query(async ({ input }) => {
+      const [product, branches] = await Promise.all([
+        getCatalogProductBySlug(input.slug),
+        getCatalogBranches(),
+      ]);
 
       if (!product) return null;
 
       return {
         ...product,
-        availability: getAvailability(product),
+        availability: getCatalogBranchAvailability({ product, branches }),
       };
     }),
 
-  facets: publicProcedure.query(() => ({
-    materials: [...new Set(products.map((product) => product.material))],
-    stones: [
-      ...new Set(products.map((product) => product.stone).filter(Boolean)),
-    ],
-    collections: [...new Set(products.map((product) => product.collection))],
-    priceRange: {
-      min: Math.min(...products.map((product) => product.price)),
-      max: Math.max(...products.map((product) => product.price)),
-    },
-  })),
+  facets: publicProcedure.query(() => getCatalogFacets()),
 });

@@ -6,6 +6,10 @@ import { z } from "zod";
 
 import { signIn, signOut } from "~/server/auth";
 import { sanitizeAdminRedirect } from "~/server/auth/admin-redirect";
+import {
+  assertRateLimit,
+  rateLimitMessage,
+} from "~/server/services/rate-limit";
 
 const adminLoginSchema = z.object({
   email: z.string().email().toLowerCase(),
@@ -34,12 +38,24 @@ export async function adminLoginAction(
   const redirectTo = sanitizeAdminRedirect(parsed.data.next);
 
   try {
+    assertRateLimit({
+      key: `admin-login:${parsed.data.email}`,
+      limit: 5,
+      windowMs: 15 * 60_000,
+    });
+
     await signIn("admin", {
       email: parsed.data.email,
       password: parsed.data.password,
       redirectTo,
     });
   } catch (error) {
+    const message = rateLimitMessage(error);
+
+    if (message) {
+      return { message };
+    }
+
     if (error instanceof AuthError) {
       return { message: "פרטי ההתחברות אינם תואמים לאדמין פעיל." };
     }

@@ -8,13 +8,13 @@ import {
 import { z } from "zod";
 
 export const adminRouter = createTRPCRouter({
-  overview: adminProcedure("ORDERS").query(() => getAdminOverview()),
+  overview: adminProcedure("ORDERS_READ").query(() => getAdminOverview()),
 
-  orders: adminProcedure("ORDERS")
+  orders: adminProcedure("ORDERS_READ")
     .input(z.object({ limit: z.number().int().positive().max(50).default(20) }))
     .query(({ input }) => listAdminOrders(input)),
 
-  updateOrderStatus: adminProcedure("ORDERS")
+  updateOrderStatus: adminProcedure("ORDERS_WRITE")
     .input(
       z.object({
         orderId: z.string().min(1),

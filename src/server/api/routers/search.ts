@@ -14,12 +14,14 @@ export const searchRouter = createTRPCRouter({
         query: z.string().optional(),
         category: z.string().optional(),
         branch: z.string().optional(),
+        material: z.string().optional(),
+        stone: z.string().optional(),
         maxPrice: z.number().optional(),
       }),
     )
     .query(({ input }) => searchProvider.searchProducts(input)),
 
-  reindex: adminProcedure("CATALOG").mutation(() =>
+  reindex: adminProcedure("CATALOG_WRITE").mutation(() =>
     searchProvider.indexProducts(),
   ),
 });

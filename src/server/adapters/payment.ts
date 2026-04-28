@@ -30,9 +30,19 @@ class CardComPaymentProvider implements PaymentProvider {
   async createCheckout(input: CheckoutInput): Promise<CheckoutSession> {
     const parsed = checkoutInputSchema.parse(input);
     const terminal = env.CARD_COM_TERMINAL;
+    const hasCredentials =
+      Boolean(terminal) &&
+      Boolean(env.CARD_COM_API_NAME) &&
+      Boolean(env.CARD_COM_API_PASSWORD);
     const paymentId = `cardcom_${nanoid(12)}`;
 
-    if (!terminal) {
+    if (!hasCredentials) {
+      if (env.NODE_ENV === "production") {
+        throw new Error(
+          "CardCom production checkout requires CARD_COM_TERMINAL, CARD_COM_API_NAME, and CARD_COM_API_PASSWORD.",
+        );
+      }
+
       return {
         provider: "cardcom",
         providerPaymentId: paymentId,
@@ -51,6 +61,8 @@ class CardComPaymentProvider implements PaymentProvider {
 
   async verifyWebhook(payload: unknown, signature?: string) {
     if (!env.CARD_COM_API_PASSWORD) {
+      if (env.NODE_ENV === "production") return false;
+
       return z
         .object({ provider: z.literal("cardcom").optional() })
         .safeParse(payload).success;

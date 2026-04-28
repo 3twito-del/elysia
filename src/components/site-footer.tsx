@@ -4,7 +4,10 @@ import { Gem, MapPin, Search, ShieldCheck, Sparkles } from "lucide-react";
 import { NewsletterForm } from "~/components/newsletter-form";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-import { branches, categories } from "~/lib/catalog";
+import {
+  getCatalogBranches,
+  getCatalogCategories,
+} from "~/server/services/catalog";
 
 const serviceLinks = [
   { href: "/about", label: "אודות Aphrodite", icon: Gem },
@@ -15,7 +18,12 @@ const serviceLinks = [
   { href: "/stylist", label: "סטייליסט AI", icon: Sparkles },
 ];
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const [branches, categories] = await Promise.all([
+    getCatalogBranches(),
+    getCatalogCategories(),
+  ]);
+
   return (
     <footer className="glass-chrome site-chrome border-t">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:py-16">

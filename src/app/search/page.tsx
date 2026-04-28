@@ -3,7 +3,7 @@ import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { searchProducts } from "~/lib/catalog";
+import { searchCatalogProducts } from "~/server/services/catalog";
 
 type SearchPageProps = {
   searchParams: Promise<{ q?: string; category?: string }>;
@@ -15,7 +15,7 @@ export const metadata = {
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const params = await searchParams;
-  const products = searchProducts({
+  const products = await searchCatalogProducts({
     query: params.q,
     category: params.category,
   });

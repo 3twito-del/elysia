@@ -1,10 +1,44 @@
 import { z } from "zod";
 
-import { getProductBySlug, products } from "~/lib/catalog";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import {
+  addCartItem,
+  addCartItemInputSchema,
+  getCartBySession,
+  removeCartItem,
+  removeCartItemInputSchema,
+  updateCartItemInputSchema,
+  updateCartItemQuantity,
+  updateCartOptions,
+  updateCartOptionsInputSchema,
+} from "~/server/services/cart";
+import {
+  getCatalogProductBySlug,
+  getFeaturedCatalogProducts,
+} from "~/server/services/catalog";
 import { calculateOrderTotal } from "~/server/services/pricing";
 
 export const cartRouter = createTRPCRouter({
+  get: publicProcedure
+    .input(z.object({ sessionKey: z.string().min(16) }))
+    .query(({ input }) => getCartBySession(input.sessionKey)),
+
+  addItem: publicProcedure
+    .input(addCartItemInputSchema)
+    .mutation(({ input }) => addCartItem(input)),
+
+  updateItem: publicProcedure
+    .input(updateCartItemInputSchema)
+    .mutation(({ input }) => updateCartItemQuantity(input)),
+
+  removeItem: publicProcedure
+    .input(removeCartItemInputSchema)
+    .mutation(({ input }) => removeCartItem(input)),
+
+  updateOptions: publicProcedure
+    .input(updateCartOptionsInputSchema)
+    .mutation(({ input }) => updateCartOptions(input)),
+
   estimate: publicProcedure
     .input(
       z.object({
@@ -19,16 +53,27 @@ export const cartRouter = createTRPCRouter({
         fulfillmentMethod: z.enum(["DELIVERY", "PICKUP"]).default("DELIVERY"),
       }),
     )
-    .query(({ input }) => {
-      const items = input.items.map((item) => {
-        const product = getProductBySlug(item.productSlug) ?? products[0]!;
+    .query(async ({ input }) => {
+      const fallbackProducts = await getFeaturedCatalogProducts(1);
+      const items = await Promise.all(
+        input.items.map(async (item) => {
+          const product =
+            (await getCatalogProductBySlug(item.productSlug)) ??
+            fallbackProducts[0];
 
-        return {
-          name: product.name,
-          unitPrice: product.price,
-          quantity: item.quantity,
-        };
-      });
+          if (!product) {
+            throw new Error(
+              "No active product is available for cart estimate.",
+            );
+          }
+
+          return {
+            name: product.name,
+            unitPrice: product.price,
+            quantity: item.quantity,
+          };
+        }),
+      );
 
       return {
         items,

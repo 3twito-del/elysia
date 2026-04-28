@@ -1,12 +1,49 @@
+import { createHash, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 
+import { env } from "~/env";
 import {
   parseWebhookJson,
   recordWebhookEvent,
 } from "~/server/services/webhook-events";
+import {
+  assertRateLimit,
+  getRequestIp,
+  RateLimitExceededError,
+} from "~/server/services/rate-limit";
 
 export async function POST(req: Request) {
+  try {
+    assertRateLimit({
+      key: `webhook:cloudinary:${getRequestIp(req)}`,
+      limit: 120,
+      windowMs: 60_000,
+    });
+  } catch (error) {
+    if (error instanceof RateLimitExceededError) {
+      return NextResponse.json(
+        { ok: false, error: "Too many webhook requests." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(error.retryAfterSeconds) },
+        },
+      );
+    }
+
+    throw error;
+  }
+
   const rawBody = await req.text();
+  const signature = req.headers.get("x-cld-signature");
+  const timestamp = req.headers.get("x-cld-timestamp");
+
+  if (!verifyCloudinarySignature({ rawBody, signature, timestamp })) {
+    return NextResponse.json(
+      { ok: false, error: "Invalid Cloudinary signature." },
+      { status: 401 },
+    );
+  }
+
   const payload = parseWebhookJson(rawBody);
   const event = await recordWebhookEvent({
     provider: "cloudinary",
@@ -22,4 +59,43 @@ export async function POST(req: Request) {
     status: "RECEIVED",
     eventId: event.id,
   });
+}
+
+function verifyCloudinarySignature(input: {
+  rawBody: string;
+  signature: string | null;
+  timestamp: string | null;
+}) {
+  if (!env.CLOUDINARY_API_SECRET) {
+    return env.NODE_ENV !== "production";
+  }
+
+  if (!input.signature || !input.timestamp) return false;
+
+  const timestampMs = Number(input.timestamp) * 1000;
+
+  if (!Number.isFinite(timestampMs)) return false;
+
+  const twoHoursMs = 2 * 60 * 60_000;
+
+  if (Math.abs(Date.now() - timestampMs) > twoHoursMs) return false;
+
+  const signedPayload = `${input.rawBody}${input.timestamp}${env.CLOUDINARY_API_SECRET}`;
+
+  return ["sha1", "sha256"].some((algorithm) =>
+    safeEqualHex(
+      input.signature ?? "",
+      createHash(algorithm).update(signedPayload).digest("hex"),
+    ),
+  );
+}
+
+function safeEqualHex(actual: string, expected: string) {
+  const actualBuffer = Buffer.from(actual, "hex");
+  const expectedBuffer = Buffer.from(expected, "hex");
+
+  return (
+    actualBuffer.length === expectedBuffer.length &&
+    timingSafeEqual(actualBuffer, expectedBuffer)
+  );
 }
