@@ -1,19 +1,78 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import Link from "next/link";
-import { SlidersHorizontal } from "lucide-react";
+import {
+  Check,
+  Filter,
+  Gem,
+  MapPin,
+  SlidersHorizontal,
+  Sparkles,
+  X,
+} from "lucide-react";
 
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
-import { Button } from "~/components/ui/button";
+import { Button, buttonVariants } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
-import { categories, getProductsByCategory } from "~/lib/catalog";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "~/components/ui/sheet";
+import {
+  branches,
+  categories,
+  formatPrice,
+  products as catalogProducts,
+  searchProducts,
+} from "~/lib/catalog";
+import { cn } from "~/lib/utils";
 
-type CategoryPageProps = {
+type CategoryRouteProps = {
   params: Promise<{ slug: string }>;
 };
+
+type CategorySearchParams = {
+  branch?: string | string[];
+  material?: string | string[];
+  stone?: string | string[];
+  maxPrice?: string | string[];
+};
+
+type CategoryPageProps = CategoryRouteProps & {
+  searchParams: Promise<CategorySearchParams>;
+};
+
+type CategoryFilters = {
+  branch?: string;
+  material?: string;
+  stone?: string;
+  maxPrice?: number;
+};
+
+type ActiveFilter = {
+  key: keyof CategoryFilters;
+  label: string;
+  href: string;
+};
+
+const priceOptions = [750, 1000, 1500] as const;
+const materialOptions = getUniqueValues(
+  catalogProducts.map((product) => product.material),
+);
+const stoneOptions = getUniqueValues(
+  catalogProducts
+    .map((product) => product.stone)
+    .filter((value): value is string => Boolean(value)),
+);
 
 export function generateStaticParams() {
   return categories.map((category) => ({ slug: category.slug }));
@@ -21,7 +80,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-}: CategoryPageProps): Promise<Metadata> {
+}: CategoryRouteProps): Promise<Metadata> {
   const { slug } = await params;
   const category = categories.find((item) => item.slug === slug);
 
@@ -31,94 +90,515 @@ export async function generateMetadata({
   };
 }
 
-export default async function CategoryPage({ params }: CategoryPageProps) {
+export default async function CategoryPage({
+  params,
+  searchParams,
+}: CategoryPageProps) {
   const { slug } = await params;
+  const query = await searchParams;
   const category = categories.find((item) => item.slug === slug);
-  const products = getProductsByCategory(slug);
+  const filters = parseCategoryFilters(query);
+  const baseProducts = searchProducts({ category: slug });
+  const filteredProducts = searchProducts({
+    category: slug,
+    branch: filters.branch,
+    material: filters.material,
+    stone: filters.stone,
+    maxPrice: filters.maxPrice,
+  });
+  const activeFilters = getActiveFilters(slug, filters);
+  const activeFilterCount = activeFilters.length;
+  const resetHref = createCategoryHref(slug, {});
 
   return (
     <main>
       <SiteHeader />
+
       <RevealSection className="liquid-section border-b border-[var(--glass-border)]">
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
-          <Badge className="mb-4" variant="secondary">
-            קטלוג Aphrodite
-          </Badge>
-          <h1 className="text-4xl font-semibold">
-            {category?.name ?? "קטגוריה"}
-          </h1>
-          <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
-            {category?.description ??
-              "בחירה מסוננת מתוך קטלוג התכשיטים, עם זמינות סניפים ומחירים בשקלים."}
-          </p>
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:py-10">
+          <div className="glass-panel grid gap-6 rounded-md border p-5 sm:p-6 lg:grid-cols-[1fr_auto] lg:items-end">
+            <div>
+              <Badge className="mb-4" variant="secondary">
+                קטלוג Aphrodite
+              </Badge>
+              <div className="flex flex-wrap items-end gap-3">
+                <h1 className="text-3xl font-semibold sm:text-4xl">
+                  {category?.name ?? "קטגוריה"}
+                </h1>
+                <span className="text-muted-foreground pb-1 text-sm">
+                  {filteredProducts.length} מתוך {baseProducts.length} מוצרים
+                </span>
+              </div>
+              <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
+                {category?.description ??
+                  "בחירה מסוננת מתוך קטלוג התכשיטים, עם זמינות סניפים ומחירים בשקלים."}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-2 lg:max-w-md lg:justify-end">
+              {activeFilters.length > 0 ? (
+                activeFilters.map((filter) => (
+                  <Badge
+                    asChild
+                    className="h-7 gap-1 pr-2 pl-1"
+                    key={filter.key}
+                    variant="outline"
+                  >
+                    <Link href={filter.href} scroll={false}>
+                      <span>{filter.label}</span>
+                      <X className="size-3" />
+                      <span className="sr-only">הסרת פילטר</span>
+                    </Link>
+                  </Badge>
+                ))
+              ) : (
+                <Badge className="h-7" variant="outline">
+                  ללא פילטרים פעילים
+                </Badge>
+              )}
+            </div>
+          </div>
         </div>
       </RevealSection>
 
-      <RevealSection className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[280px_1fr]">
-        <aside>
-          <Card className="sticky top-24 rounded-md">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
+      <div className="glass-chrome sticky top-16 z-30 border-b lg:hidden">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+          <div className="text-sm">
+            <p className="font-medium">{filteredProducts.length} מוצרים</p>
+            <p className="text-muted-foreground text-xs">
+              {activeFilterCount > 0
+                ? `${activeFilterCount} פילטרים פעילים`
+                : "כל הפריטים בקטגוריה"}
+            </p>
+          </div>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button className="gap-2" type="button" variant="outline">
+                <Filter className="size-4" />
+                פילטרים
+                {activeFilterCount > 0 && (
+                  <Badge className="h-5 px-1.5" variant="secondary">
+                    {activeFilterCount}
+                  </Badge>
+                )}
+              </Button>
+            </SheetTrigger>
+            <SheetContent
+              className="w-[min(92vw,390px)] overflow-y-auto p-0"
+              side="right"
+            >
+              <SheetHeader className="border-b border-[var(--glass-border)] p-4">
+                <SheetTitle className="flex items-center gap-2">
+                  <SlidersHorizontal className="size-4" />
+                  פילטרים
+                </SheetTitle>
+                <SheetDescription>
+                  בחירה מהירה לפי זמינות, חומר, אבן ומחיר.
+                </SheetDescription>
+              </SheetHeader>
+              <div className="p-4">
+                <FilterPanel
+                  activeFilterCount={activeFilterCount}
+                  closeOnSelect
+                  filters={filters}
+                  resetHref={resetHref}
+                  slug={slug}
+                />
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </div>
+
+      <RevealSection className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[296px_1fr] lg:py-10">
+        <aside className="hidden lg:block">
+          <Card className="sticky top-24 rounded-md" size="sm">
+            <CardHeader className="border-b border-[var(--glass-border)] pb-4">
+              <CardTitle className="flex items-center gap-2">
                 <SlidersHorizontal className="size-4" />
                 פילטרים
               </CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-5 text-sm">
-              <div>
-                <p className="mb-2 font-medium">קטגוריה</p>
-                <div className="grid gap-1">
-                  {categories.map((item) => (
-                    <Button
-                      asChild
-                      className="justify-start"
-                      key={item.slug}
-                      variant={item.slug === slug ? "secondary" : "ghost"}
-                    >
-                      <Link href={`/category/${item.slug}`} scroll={false}>
-                        {item.name}
-                      </Link>
-                    </Button>
-                  ))}
-                </div>
-              </div>
-              <Separator />
-              <div>
-                <p className="mb-2 font-medium">זמינות</p>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline">תל אביב</Badge>
-                  <Badge variant="outline">ירושלים</Badge>
-                  <Badge variant="outline">איסוף היום</Badge>
-                </div>
-              </div>
-              <Separator />
-              <div>
-                <p className="mb-2 font-medium">חומר</p>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="secondary">זהב צהוב</Badge>
-                  <Badge variant="secondary">זהב לבן</Badge>
-                  <Badge variant="secondary">יהלום</Badge>
-                </div>
-              </div>
+            <CardContent>
+              <FilterPanel
+                activeFilterCount={activeFilterCount}
+                filters={filters}
+                resetHref={resetHref}
+                slug={slug}
+              />
             </CardContent>
           </Card>
         </aside>
 
-        <div>
-          <div className="mb-5 flex items-center justify-between">
-            <p className="text-muted-foreground text-sm">
-              {products.length} מוצרים
-            </p>
-            <Button asChild variant="outline">
-              <Link href="/stylist">התאמה אישית</Link>
-            </Button>
+        <section aria-labelledby="category-results" className="min-w-0">
+          <div className="glass-chrome sticky top-20 z-20 mb-5 rounded-md border p-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-base font-medium" id="category-results">
+                  {filteredProducts.length} מוצרים
+                </h2>
+                <p className="text-muted-foreground text-sm">
+                  {activeFilterCount > 0
+                    ? "התוצאות מסוננות לפי הבחירה שלך"
+                    : "כל הפריטים הזמינים בקטגוריה"}
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {activeFilterCount > 0 && (
+                  <Button asChild size="sm" variant="ghost">
+                    <Link href={resetHref} scroll={false}>
+                      איפוס
+                    </Link>
+                  </Button>
+                )}
+                <Button asChild size="sm" variant="outline">
+                  <Link href="/stylist">
+                    <Sparkles className="size-3.5" />
+                    התאמה אישית
+                  </Link>
+                </Button>
+              </div>
+            </div>
           </div>
-          <RevealGrid className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-            {products.map((product) => (
-              <ProductCard key={product.slug} product={product} />
-            ))}
-          </RevealGrid>
-        </div>
+
+          {filteredProducts.length > 0 ? (
+            <RevealGrid className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+              {filteredProducts.map((product) => (
+                <ProductCard key={product.slug} product={product} />
+              ))}
+            </RevealGrid>
+          ) : (
+            <div className="glass-panel grid min-h-80 place-items-center rounded-md border p-8 text-center">
+              <div className="max-w-md">
+                <div className="glass-inset mx-auto mb-4 flex size-12 items-center justify-center rounded-md border">
+                  <Gem className="size-5" />
+                </div>
+                <h3 className="text-xl font-semibold">
+                  לא נמצאו מוצרים בהתאמה הזו
+                </h3>
+                <p className="text-muted-foreground mt-2 leading-7">
+                  אפשר לרענן את הבחירה או לתת לסטייליסט למצוא עבורך שילוב מדויק.
+                </p>
+                <div className="mt-5 flex flex-wrap justify-center gap-2">
+                  <Button asChild variant="outline">
+                    <Link href={resetHref} scroll={false}>
+                      איפוס פילטרים
+                    </Link>
+                  </Button>
+                  <Button asChild>
+                    <Link href="/stylist">התאמה אישית</Link>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </section>
       </RevealSection>
     </main>
   );
+}
+
+function FilterPanel({
+  slug,
+  filters,
+  activeFilterCount,
+  resetHref,
+  closeOnSelect = false,
+}: {
+  slug: string;
+  filters: CategoryFilters;
+  activeFilterCount: number;
+  resetHref: string;
+  closeOnSelect?: boolean;
+}) {
+  return (
+    <div className="grid gap-5 text-sm">
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-muted-foreground text-xs">
+          {activeFilterCount > 0
+            ? `${activeFilterCount} בחירות פעילות`
+            : "בחירה נקייה"}
+        </p>
+        {activeFilterCount > 0 && (
+          <FilterActionLink
+            closeOnSelect={closeOnSelect}
+            href={resetHref}
+            variant="ghost"
+          >
+            איפוס
+          </FilterActionLink>
+        )}
+      </div>
+
+      <FilterSection title="קטגוריה">
+        {categories.map((item) => (
+          <FilterOptionLink
+            active={item.slug === slug}
+            closeOnSelect={closeOnSelect}
+            href={createCategoryHref(item.slug, filters)}
+            key={item.slug}
+            label={item.name}
+            meta={`${searchProducts({ category: item.slug }).length} מוצרים`}
+          />
+        ))}
+      </FilterSection>
+
+      <Separator />
+
+      <FilterSection title="זמינות">
+        {branches.map((branch) => {
+          const active = filters.branch === branch.slug;
+          return (
+            <FilterOptionLink
+              active={active}
+              closeOnSelect={closeOnSelect}
+              href={createCategoryHref(slug, {
+                ...filters,
+                branch: active ? undefined : branch.slug,
+              })}
+              icon={<MapPin className="size-3.5" />}
+              key={branch.slug}
+              label={branch.city}
+              meta="מלאי בסניף"
+            />
+          );
+        })}
+      </FilterSection>
+
+      <Separator />
+
+      <FilterSection title="חומר">
+        {materialOptions.map((material) => {
+          const active = filters.material === material;
+          return (
+            <FilterOptionLink
+              active={active}
+              closeOnSelect={closeOnSelect}
+              href={createCategoryHref(slug, {
+                ...filters,
+                material: active ? undefined : material,
+              })}
+              key={material}
+              label={material}
+            />
+          );
+        })}
+      </FilterSection>
+
+      <FilterSection title="אבן">
+        {stoneOptions.map((stone) => {
+          const active = filters.stone === stone;
+          return (
+            <FilterOptionLink
+              active={active}
+              closeOnSelect={closeOnSelect}
+              href={createCategoryHref(slug, {
+                ...filters,
+                stone: active ? undefined : stone,
+              })}
+              key={stone}
+              label={stone}
+            />
+          );
+        })}
+      </FilterSection>
+
+      <Separator />
+
+      <FilterSection title="מחיר">
+        {priceOptions.map((price) => {
+          const active = filters.maxPrice === price;
+          return (
+            <FilterOptionLink
+              active={active}
+              closeOnSelect={closeOnSelect}
+              href={createCategoryHref(slug, {
+                ...filters,
+                maxPrice: active ? undefined : price,
+              })}
+              key={price}
+              label={`עד ${formatPrice(price)}`}
+            />
+          );
+        })}
+      </FilterSection>
+    </div>
+  );
+}
+
+function FilterSection({
+  title,
+  children,
+}: {
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="grid gap-2" aria-label={title}>
+      <p className="font-medium">{title}</p>
+      <div className="grid gap-1">{children}</div>
+    </section>
+  );
+}
+
+function FilterOptionLink({
+  href,
+  label,
+  meta,
+  icon,
+  active,
+  closeOnSelect,
+}: {
+  href: string;
+  label: string;
+  meta?: string;
+  icon?: ReactNode;
+  active?: boolean;
+  closeOnSelect?: boolean;
+}) {
+  const link = (
+    <Link
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        buttonVariants({
+          size: "sm",
+          variant: active ? "secondary" : "ghost",
+        }),
+        "h-auto min-h-10 w-full justify-between px-3 py-2 text-right whitespace-normal",
+        active && "border-[var(--glass-border-strong)]",
+      )}
+      href={href}
+      scroll={false}
+    >
+      <span className="flex min-w-0 items-center gap-2">
+        {icon}
+        <span className="min-w-0 truncate">{label}</span>
+      </span>
+      <span className="flex shrink-0 items-center gap-2">
+        {meta && <span className="text-muted-foreground text-xs">{meta}</span>}
+        {active && <Check className="size-3.5" />}
+      </span>
+    </Link>
+  );
+
+  if (closeOnSelect) {
+    return <SheetClose asChild>{link}</SheetClose>;
+  }
+
+  return link;
+}
+
+function FilterActionLink({
+  href,
+  children,
+  closeOnSelect,
+  variant = "outline",
+}: {
+  href: string;
+  children: ReactNode;
+  closeOnSelect?: boolean;
+  variant?: "outline" | "ghost";
+}) {
+  const link = (
+    <Link
+      className={cn(buttonVariants({ size: "sm", variant }))}
+      href={href}
+      scroll={false}
+    >
+      {children}
+    </Link>
+  );
+
+  if (closeOnSelect) {
+    return <SheetClose asChild>{link}</SheetClose>;
+  }
+
+  return link;
+}
+
+function parseCategoryFilters(
+  searchParams: CategorySearchParams,
+): CategoryFilters {
+  const branch = getFirstParam(searchParams.branch);
+  const material = getFirstParam(searchParams.material);
+  const stone = getFirstParam(searchParams.stone);
+  const maxPrice = getFirstParam(searchParams.maxPrice);
+
+  return {
+    branch: branches.some((item) => item.slug === branch) ? branch : undefined,
+    material:
+      material && materialOptions.includes(material) ? material : undefined,
+    stone: stone && stoneOptions.includes(stone) ? stone : undefined,
+    maxPrice: getValidMaxPrice(maxPrice),
+  };
+}
+
+function getActiveFilters(slug: string, filters: CategoryFilters) {
+  const selectedBranch = branches.find(
+    (branch) => branch.slug === filters.branch,
+  );
+  const activeFilters: ActiveFilter[] = [];
+
+  if (selectedBranch) {
+    activeFilters.push({
+      key: "branch",
+      label: `זמינות: ${selectedBranch.city}`,
+      href: createCategoryHref(slug, { ...filters, branch: undefined }),
+    });
+  }
+
+  if (filters.material) {
+    activeFilters.push({
+      key: "material",
+      label: `חומר: ${filters.material}`,
+      href: createCategoryHref(slug, { ...filters, material: undefined }),
+    });
+  }
+
+  if (filters.stone) {
+    activeFilters.push({
+      key: "stone",
+      label: `אבן: ${filters.stone}`,
+      href: createCategoryHref(slug, { ...filters, stone: undefined }),
+    });
+  }
+
+  if (filters.maxPrice) {
+    activeFilters.push({
+      key: "maxPrice",
+      label: `עד ${formatPrice(filters.maxPrice)}`,
+      href: createCategoryHref(slug, { ...filters, maxPrice: undefined }),
+    });
+  }
+
+  return activeFilters;
+}
+
+function createCategoryHref(slug: string, filters: CategoryFilters) {
+  const params = new URLSearchParams();
+
+  if (filters.branch) params.set("branch", filters.branch);
+  if (filters.material) params.set("material", filters.material);
+  if (filters.stone) params.set("stone", filters.stone);
+  if (filters.maxPrice) params.set("maxPrice", String(filters.maxPrice));
+
+  const query = params.toString();
+
+  return query ? `/category/${slug}?${query}` : `/category/${slug}`;
+}
+
+function getFirstParam(value?: string | string[]) {
+  if (Array.isArray(value)) return value[0];
+
+  return value;
+}
+
+function getValidMaxPrice(value?: string) {
+  const parsed = Number(value);
+
+  return priceOptions.find((price) => price === parsed);
+}
+
+function getUniqueValues(values: string[]) {
+  return Array.from(new Set(values));
 }

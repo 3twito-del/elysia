@@ -198,14 +198,27 @@ export function searchProducts({
   query,
   category,
   branch,
+  material,
+  stone,
   maxPrice,
 }: {
   query?: string;
   category?: string;
   branch?: string;
+  material?: string;
+  stone?: string;
   maxPrice?: number;
 }) {
   const normalizedQuery = query?.trim().toLowerCase();
+  const knownMaterials = new Set(products.map((product) => product.material));
+  const knownStones = new Set(
+    products
+      .map((product) => product.stone)
+      .filter((value): value is string => Boolean(value)),
+  );
+  const normalizedMaterial =
+    material && knownMaterials.has(material) ? material : undefined;
+  const normalizedStone = stone && knownStones.has(stone) ? stone : undefined;
 
   return products.filter((product) => {
     const matchesQuery =
@@ -224,9 +237,19 @@ export function searchProducts({
         .includes(normalizedQuery);
     const matchesCategory = !category || product.categorySlug === category;
     const matchesBranch = !branch || (product.inventory[branch] ?? 0) > 0;
+    const matchesMaterial =
+      !normalizedMaterial || product.material === normalizedMaterial;
+    const matchesStone = !normalizedStone || product.stone === normalizedStone;
     const matchesPrice = !maxPrice || product.price <= maxPrice;
 
-    return matchesQuery && matchesCategory && matchesBranch && matchesPrice;
+    return (
+      matchesQuery &&
+      matchesCategory &&
+      matchesBranch &&
+      matchesMaterial &&
+      matchesStone &&
+      matchesPrice
+    );
   });
 }
 
