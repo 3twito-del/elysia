@@ -30,6 +30,7 @@ import {
   getAdminFromSession,
   hasAdminPermission,
 } from "~/server/auth/admin-access";
+import { TRPCReactProvider } from "~/trpc/react";
 import { api } from "~/trpc/server";
 
 export const metadata = {
@@ -86,7 +87,7 @@ function AdminDatabaseFallback() {
     <main>
       <SiteHeader />
       <section className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
-        <Card className="rounded-md border-black/10 bg-white/70 shadow-none backdrop-blur">
+        <Card className="rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <PlugZap className="size-5" />
@@ -109,7 +110,7 @@ function AdminForbidden({ title, detail }: { title: string; detail: string }) {
     <main>
       <SiteHeader />
       <section className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
-        <Card className="rounded-md border-black/10 bg-white/70 shadow-none backdrop-blur">
+        <Card className="rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ShieldAlert className="size-5" />
@@ -183,7 +184,7 @@ export default async function AdminPage() {
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
         <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <Badge className="mb-4 shadow-none" variant="secondary">
+            <Badge className="mb-4" variant="secondary">
               Back office
             </Badge>
             <h1 className="text-4xl font-semibold">ניהול Aphrodite</h1>
@@ -192,7 +193,7 @@ export default async function AdminPage() {
               הזה ההזמנות הן בקשות ידניות ללא ספק תשלום חיצוני.
             </p>
           </div>
-          <Card className="rounded-md border-black/10 bg-white/70 shadow-none backdrop-blur">
+          <Card className="rounded-md">
             <CardContent className="flex items-center gap-4 p-4">
               <div className="text-sm">
                 <p className="font-medium">{admin.name}</p>
@@ -235,7 +236,7 @@ export default async function AdminPage() {
           />
         </div>
 
-        <Card className="mt-8 rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
+        <Card className="mt-8 rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ClipboardList className="size-5" />
@@ -243,77 +244,79 @@ export default async function AdminPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="overflow-x-auto">
-            <Table className="min-w-[1080px]">
-              <TableHeader>
-                <TableRow>
-                  <TableHead>מספר</TableHead>
-                  <TableHead>לקוח</TableHead>
-                  <TableHead>סכום</TableHead>
-                  <TableHead>סטטוס</TableHead>
-                  <TableHead>סניף</TableHead>
-                  <TableHead>מסירה</TableHead>
-                  <TableHead>תאריך</TableHead>
-                  <TableHead>פעולות</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {orders.length === 0 ? (
+            <TRPCReactProvider>
+              <Table className="min-w-[1080px]">
+                <TableHeader>
                   <TableRow>
-                    <TableCell
-                      className="text-muted-foreground py-8 text-center"
-                      colSpan={8}
-                    >
-                      אין הזמנות עדיין.
-                    </TableCell>
+                    <TableHead>מספר</TableHead>
+                    <TableHead>לקוח</TableHead>
+                    <TableHead>סכום</TableHead>
+                    <TableHead>סטטוס</TableHead>
+                    <TableHead>סניף</TableHead>
+                    <TableHead>מסירה</TableHead>
+                    <TableHead>תאריך</TableHead>
+                    <TableHead>פעולות</TableHead>
                   </TableRow>
-                ) : (
-                  orders.map((order) => (
-                    <TableRow key={order.id}>
-                      <TableCell className="font-medium">
-                        {order.orderNumber}
-                      </TableCell>
-                      <TableCell>
-                        <div className="grid gap-1">
-                          <span>{order.recipientName}</span>
-                          <span className="text-muted-foreground text-xs">
-                            {order.email}
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell>{formatPrice(order.total)}</TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">
-                          {translateStatus(order.status)}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="grid gap-1">
-                          <span>{order.branchName}</span>
-                          <span className="text-muted-foreground text-xs">
-                            {order.branchCity}
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {translateFulfillment(order.fulfillmentMethod)}
-                      </TableCell>
-                      <TableCell>{formatDate(order.createdAt)}</TableCell>
-                      <TableCell>
-                        <AdminOrderActions
-                          fulfillmentMethod={order.fulfillmentMethod}
-                          orderId={order.id}
-                          status={order.status}
-                        />
+                </TableHeader>
+                <TableBody>
+                  {orders.length === 0 ? (
+                    <TableRow>
+                      <TableCell
+                        className="text-muted-foreground py-8 text-center"
+                        colSpan={8}
+                      >
+                        אין הזמנות עדיין.
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+                  ) : (
+                    orders.map((order) => (
+                      <TableRow key={order.id}>
+                        <TableCell className="font-medium">
+                          {order.orderNumber}
+                        </TableCell>
+                        <TableCell>
+                          <div className="grid gap-1">
+                            <span>{order.recipientName}</span>
+                            <span className="text-muted-foreground text-xs">
+                              {order.email}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell>{formatPrice(order.total)}</TableCell>
+                        <TableCell>
+                          <Badge variant="secondary">
+                            {translateStatus(order.status)}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="grid gap-1">
+                            <span>{order.branchName}</span>
+                            <span className="text-muted-foreground text-xs">
+                              {order.branchCity}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {translateFulfillment(order.fulfillmentMethod)}
+                        </TableCell>
+                        <TableCell>{formatDate(order.createdAt)}</TableCell>
+                        <TableCell>
+                          <AdminOrderActions
+                            fulfillmentMethod={order.fulfillmentMethod}
+                            orderId={order.id}
+                            status={order.status}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </TRPCReactProvider>
           </CardContent>
         </Card>
 
-        <Card className="mt-8 rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
+        <Card className="mt-8 rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <PlugZap className="size-5" />

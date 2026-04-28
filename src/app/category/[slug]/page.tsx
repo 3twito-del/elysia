@@ -39,9 +39,9 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   return (
     <main>
       <SiteHeader />
-      <RevealSection className="border-b border-black/10 bg-black/[0.03] backdrop-blur">
+      <RevealSection className="liquid-section border-b border-[var(--glass-border)]">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
-          <Badge className="mb-4 shadow-none" variant="secondary">
+          <Badge className="mb-4" variant="secondary">
             קטלוג Aphrodite
           </Badge>
           <h1 className="text-4xl font-semibold">
@@ -56,7 +56,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
       <RevealSection className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[280px_1fr]">
         <aside>
-          <Card className="sticky top-24 rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
+          <Card className="sticky top-24 rounded-md">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <SlidersHorizontal className="size-4" />

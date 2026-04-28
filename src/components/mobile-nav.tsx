@@ -52,10 +52,7 @@ export function MobileNav({ items }: { items: HeaderNavItem[] }) {
           <span className="sr-only">פתח ניווט</span>
         </Button>
       </SheetTrigger>
-      <SheetContent
-        className="w-80 border-black/10 bg-white/90 backdrop-blur-xl"
-        side="right"
-      >
+      <SheetContent className="w-80" side="right">
         <SheetTitle className="sr-only">ניווט ראשי</SheetTitle>
         <Link
           className="flex items-center gap-2 text-lg font-semibold"

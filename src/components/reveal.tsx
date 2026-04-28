@@ -1,12 +1,14 @@
 "use client";
 
-import { Children, isValidElement, type ReactNode } from "react";
 import {
-  motion,
-  useReducedMotion,
-  type Transition,
-  type Variants,
-} from "motion/react";
+  Children,
+  isValidElement,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 
 import { cn } from "~/lib/utils";
 
@@ -22,18 +24,37 @@ type RevealGridProps = {
   stagger?: number;
 };
 
-const revealTransition: Transition = {
-  duration: 0.62,
-  ease: [0.22, 1, 0.36, 1],
-};
+function useInViewOnce<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
+  const [isVisible, setIsVisible] = useState(false);
 
-function getRevealVariants(shouldReduceMotion: boolean): Variants {
-  return {
-    hidden: shouldReduceMotion
-      ? { opacity: 0 }
-      : { opacity: 0, y: 18, filter: "blur(8px)" },
-    visible: { opacity: 1, y: 0, filter: "blur(0px)" },
-  };
+  useEffect(() => {
+    const node = ref.current;
+
+    if (!node) return;
+
+    if (!("IntersectionObserver" in window)) {
+      const timeout = setTimeout(() => setIsVisible(true), 0);
+
+      return () => clearTimeout(timeout);
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+
+        setIsVisible(true);
+        observer.disconnect();
+      },
+      { rootMargin: "-80px", threshold: 0 },
+    );
+
+    observer.observe(node);
+
+    return () => observer.disconnect();
+  }, []);
+
+  return [ref, isVisible] as const;
 }
 
 export function RevealSection({
@@ -41,19 +62,18 @@ export function RevealSection({
   className,
   delay = 0,
 }: RevealSectionProps) {
-  const shouldReduceMotion = useReducedMotion() ?? false;
+  const [ref, isVisible] = useInViewOnce<HTMLElement>();
+  const style = { "--reveal-delay": `${delay}s` } as CSSProperties;
 
   return (
-    <motion.section
+    <section
       className={cn("motion-reveal", className)}
-      initial="hidden"
-      transition={{ ...revealTransition, delay }}
-      variants={getRevealVariants(shouldReduceMotion)}
-      viewport={{ once: true, margin: "-80px" }}
-      whileInView="visible"
+      data-reveal-visible={isVisible}
+      ref={ref}
+      style={style}
     >
       {children}
-    </motion.section>
+    </section>
   );
 }
 
@@ -62,37 +82,31 @@ export function RevealGrid({
   className,
   stagger = 0.07,
 }: RevealGridProps) {
-  const shouldReduceMotion = useReducedMotion() ?? false;
+  const [ref, isVisible] = useInViewOnce<HTMLDivElement>();
   const items = Children.toArray(children);
 
-  const containerVariants: Variants = {
-    hidden: {},
-    visible: {
-      transition: {
-        delayChildren: shouldReduceMotion ? 0 : 0.04,
-        staggerChildren: shouldReduceMotion ? 0 : stagger,
-      },
-    },
-  };
-
   return (
-    <motion.div
+    <div
       className={cn("motion-reveal-grid", className)}
-      initial="hidden"
-      variants={containerVariants}
-      viewport={{ once: true, margin: "-80px" }}
-      whileInView="visible"
+      data-reveal-visible={isVisible}
+      ref={ref}
     >
-      {items.map((child, index) => (
-        <motion.div
-          className="motion-reveal-item h-full [&>*]:h-full"
-          key={isValidElement(child) && child.key != null ? child.key : index}
-          transition={revealTransition}
-          variants={getRevealVariants(shouldReduceMotion)}
-        >
-          {child}
-        </motion.div>
-      ))}
-    </motion.div>
+      {items.map((child, index) => {
+        const style = {
+          "--reveal-delay": `${0.04 + index * stagger}s`,
+        } as CSSProperties;
+
+        return (
+          <div
+            className="motion-reveal-item h-full [&>*]:h-full"
+            data-reveal-visible={isVisible}
+            key={isValidElement(child) && child.key != null ? child.key : index}
+            style={style}
+          >
+            {child}
+          </div>
+        );
+      })}
+    </div>
   );
 }

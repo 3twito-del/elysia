@@ -35,7 +35,7 @@ export default async function AdminLoginPage({
       <section className="mx-auto grid min-h-[70vh] max-w-7xl items-center px-4 py-12 sm:px-6">
         <div className="mx-auto grid w-full max-w-md gap-6">
           <div>
-            <Badge className="mb-4 shadow-none" variant="secondary">
+            <Badge className="mb-4" variant="secondary">
               Back office
             </Badge>
             <h1 className="text-4xl font-semibold">כניסת אדמין</h1>
@@ -43,8 +43,8 @@ export default async function AdminLoginPage({
               גישה להזמנות, מלאי ופעולות תפעוליות שמורה למנהלים מורשים בלבד.
             </p>
           </div>
-          <Card className="rounded-md border-black/10 bg-white/70 shadow-none backdrop-blur">
-            <CardHeader className="border-b border-black/10 pb-4">
+          <Card className="rounded-md">
+            <CardHeader className="border-b border-[var(--glass-border)] pb-4">
               <CardTitle className="flex items-center gap-2">
                 <LockKeyhole className="size-5" />
                 אימות פנימי

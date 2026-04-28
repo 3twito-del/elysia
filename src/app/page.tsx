@@ -31,7 +31,7 @@ export default function Home() {
       <RevealSection className="relative min-h-[78vh] overflow-hidden">
         <Image
           alt="תכשיטי זהב ויהלומים על משטח סטודיו נקי"
-          className="object-cover grayscale"
+          className="media-mono object-cover"
           fill
           priority
           sizes="100vw"
@@ -40,7 +40,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-black/25" />
         <div className="relative mx-auto flex min-h-[78vh] max-w-7xl flex-col justify-end px-4 pt-24 pb-12 sm:px-6 lg:pb-16">
           <div className="max-w-2xl text-white">
-            <Badge className="text-foreground mb-5 bg-white/75 shadow-none backdrop-blur">
+            <Badge className="mb-5" variant="secondary">
               יוקרה נגישה | איסוף מסניף | מדידה בתיאום
             </Badge>
             <h1 className="text-5xl leading-[1.05] font-semibold tracking-normal sm:text-6xl lg:text-7xl">
@@ -59,7 +59,7 @@ export default function Home() {
               </Button>
               <Button
                 asChild
-                className="border-white/35 bg-white/15 text-white backdrop-blur hover:bg-white/25"
+                className="glass-hero text-white hover:bg-[oklch(1_0_0_/_18%)]"
                 size="lg"
                 variant="outline"
               >
@@ -79,7 +79,7 @@ export default function Home() {
 
                 return (
                   <div
-                    className="flex min-h-16 items-center gap-3 rounded-md border border-white/20 bg-white/15 px-4 py-3 text-sm font-medium text-white shadow-none backdrop-blur"
+                    className="glass-hero flex min-h-16 items-center gap-3 rounded-md border px-4 py-3 text-sm font-medium text-white"
                     key={item.label}
                   >
                     <Icon className="size-5" />
@@ -92,7 +92,7 @@ export default function Home() {
         </div>
       </RevealSection>
 
-      <RevealSection className="border-b border-black/10 bg-white/65 backdrop-blur">
+      <RevealSection className="glass-chrome border-b">
         <div className="mx-auto grid max-w-7xl gap-4 px-4 py-6 sm:px-6 lg:grid-cols-[1fr_2fr]">
           <div>
             <p className="text-muted-foreground text-sm">חיפוש מהיר</p>
@@ -133,11 +133,11 @@ export default function Home() {
         <RevealGrid className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {categories.map((category) => (
             <Link
-              className="group flex min-h-[220px] w-full flex-col rounded-md border border-black/10 bg-white/65 p-5 backdrop-blur transition hover:-translate-y-0.5 hover:border-black/30 hover:bg-white/85 hover:shadow-lg hover:shadow-black/[0.04]"
+              className="glass-card interactive-lift group flex min-h-[220px] w-full flex-col rounded-md border p-5"
               href={`/category/${category.slug}`}
               key={category.slug}
             >
-              <div className="mb-5 flex size-11 items-center justify-center rounded-md border border-black/10 bg-black/[0.04]">
+              <div className="glass-inset mb-5 flex size-11 items-center justify-center rounded-md border">
                 <Gem className="text-foreground size-5" />
               </div>
               <h3 className="text-xl font-medium">{category.name}</h3>
@@ -153,7 +153,7 @@ export default function Home() {
         </RevealGrid>
       </RevealSection>
 
-      <RevealSection className="bg-black/[0.03]">
+      <RevealSection className="liquid-section">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
           <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>

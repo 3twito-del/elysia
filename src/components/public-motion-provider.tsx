@@ -1,56 +1,95 @@
 "use client";
 
-import { type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import {
-  AnimatePresence,
-  MotionConfig,
-  motion,
-  useReducedMotion,
-  type Transition,
-} from "motion/react";
 
 type PublicMotionProviderProps = {
   children: ReactNode;
 };
 
-const pageTransition: Transition = {
-  duration: 0.44,
-  ease: [0.22, 1, 0.36, 1],
-};
+type MotionState = "visible" | "enter" | "exit";
+
+const pageTransitionMs = 440;
+
+function usePrefersReducedMotion() {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches);
+    const syncFrame = window.requestAnimationFrame(updatePreference);
+
+    mediaQuery.addEventListener("change", updatePreference);
+
+    return () => {
+      window.cancelAnimationFrame(syncFrame);
+      mediaQuery.removeEventListener("change", updatePreference);
+    };
+  }, []);
+
+  return prefersReducedMotion;
+}
 
 export function PublicMotionProvider({ children }: PublicMotionProviderProps) {
   const pathname = usePathname();
-  const shouldReduceMotion = useReducedMotion() ?? false;
+  const shouldReduceMotion = usePrefersReducedMotion();
   const isAdminRoute = pathname.startsWith("/admin");
+  const pendingChildren = useRef(children);
+  const [renderedPathname, setRenderedPathname] = useState(pathname);
+  const [renderedChildren, setRenderedChildren] = useState(children);
+  const [motionState, setMotionState] = useState<MotionState>("visible");
+
+  useEffect(() => {
+    pendingChildren.current = children;
+  }, [children]);
+
+  useEffect(() => {
+    if (pathname === renderedPathname) {
+      const updateFrame = window.requestAnimationFrame(() =>
+        setRenderedChildren(children),
+      );
+
+      return () => window.cancelAnimationFrame(updateFrame);
+    }
+
+    if (shouldReduceMotion) {
+      const updateFrame = window.requestAnimationFrame(() => {
+        setRenderedPathname(pathname);
+        setRenderedChildren(children);
+        setMotionState("visible");
+      });
+
+      return () => window.cancelAnimationFrame(updateFrame);
+    }
+
+    const exitFrame = window.requestAnimationFrame(() =>
+      setMotionState("exit"),
+    );
+
+    const swapTimer = window.setTimeout(() => {
+      setRenderedPathname(pathname);
+      setRenderedChildren(pendingChildren.current);
+      setMotionState("enter");
+
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => setMotionState("visible"));
+      });
+    }, pageTransitionMs);
+
+    return () => {
+      window.cancelAnimationFrame(exitFrame);
+      window.clearTimeout(swapTimer);
+    };
+  }, [children, pathname, renderedPathname, shouldReduceMotion]);
 
   if (isAdminRoute) {
     return <>{children}</>;
   }
 
-  const initial = shouldReduceMotion
-    ? { opacity: 0 }
-    : { opacity: 0, y: 10, filter: "blur(5px)" };
-  const animate = { opacity: 1, y: 0, filter: "blur(0px)" };
-  const exit = shouldReduceMotion
-    ? { opacity: 0 }
-    : { opacity: 0, y: -6, filter: "blur(4px)" };
-
   return (
-    <MotionConfig reducedMotion="user" transition={pageTransition}>
-      <AnimatePresence initial={false} mode="wait">
-        <motion.div
-          animate={animate}
-          className="public-motion-shell"
-          exit={exit}
-          initial={initial}
-          key={pathname}
-          transition={pageTransition}
-        >
-          <div aria-hidden="true" className="public-motion-ambient" />
-          <div className="public-motion-content">{children}</div>
-        </motion.div>
-      </AnimatePresence>
-    </MotionConfig>
+    <div className="public-motion-shell" data-motion-state={motionState}>
+      <div aria-hidden="true" className="public-motion-ambient" />
+      <div className="public-motion-content">{renderedChildren}</div>
+    </div>
   );
 }

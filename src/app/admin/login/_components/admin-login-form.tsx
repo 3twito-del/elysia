@@ -46,7 +46,7 @@ export function AdminLoginForm({ next }: AdminLoginFormProps) {
         />
       </div>
       {state.message ? (
-        <p className="rounded-md border border-black/10 bg-black/[0.03] p-3 text-sm text-red-700">
+        <p className="glass-inset rounded-md border p-3 text-sm text-red-700">
           {state.message}
         </p>
       ) : null}

@@ -16,7 +16,7 @@ export default function StylistPage() {
       <SiteHeader />
       <RevealSection className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_360px]">
         <div>
-          <Badge className="mb-4 shadow-none" variant="secondary">
+          <Badge className="mb-4" variant="secondary">
             התאמה חכמה
           </Badge>
           <h1 className="text-4xl font-semibold">
@@ -33,7 +33,7 @@ export default function StylistPage() {
 
         <aside className="grid content-start gap-5">
           <RevealGrid className="grid gap-5">
-            <Card className="rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
+            <Card className="rounded-md">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Sparkles className="size-5" />
@@ -46,7 +46,7 @@ export default function StylistPage() {
                 <p>הכנה למדידה וירטואלית דרך TryOnProvider פנימי.</p>
               </CardContent>
             </Card>
-            <Card className="rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
+            <Card className="rounded-md">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <WandSparkles className="size-5" />

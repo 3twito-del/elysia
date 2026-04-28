@@ -93,18 +93,18 @@ export default function AboutPage() {
         <RevealSection className="relative min-h-[86vh] overflow-hidden">
           <Image
             alt="הולדת ונוס מאת סנדרו בוטיצ׳לי, יצירת רנסנס המשמשת השראה חזותית לעמוד אודות Aphrodite"
-            className="object-cover grayscale"
+            className="media-mono object-cover"
             fill
             priority
             sizes="100vw"
             src={venusImage}
           />
           <div className="absolute inset-0 bg-black/[0.38]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(255,255,255,0.22),transparent_34%),linear-gradient(to_top,rgba(0,0,0,0.74),rgba(0,0,0,0.08)_58%,rgba(0,0,0,0.38))]" />
+          <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(255,255,255,0.2),transparent_38%),linear-gradient(to_top,rgba(0,0,0,0.74),rgba(0,0,0,0.08)_58%,rgba(0,0,0,0.38))]" />
 
           <div className="relative mx-auto flex min-h-[86vh] max-w-7xl flex-col justify-end px-4 pt-24 pb-10 sm:px-6 lg:pb-14">
-            <div className="max-w-4xl rounded-md border border-white/20 bg-white/12 p-6 text-white shadow-lg shadow-black/10 backdrop-blur-xl sm:p-8 lg:p-10">
-              <Badge className="text-foreground mb-5 bg-white/80 shadow-none backdrop-blur">
+            <div className="glass-hero max-w-4xl rounded-md border p-6 text-white sm:p-8 lg:p-10">
+              <Badge className="mb-5" variant="secondary">
                 אודות Aphrodite
               </Badge>
               <h1 className="max-w-3xl text-5xl leading-[1.04] font-semibold tracking-normal sm:text-6xl lg:text-7xl">
@@ -127,7 +127,7 @@ export default function AboutPage() {
                 </Button>
                 <Button
                   asChild
-                  className="border-white/35 bg-white/15 text-white backdrop-blur hover:bg-white/25"
+                  className="glass-hero text-white hover:bg-[oklch(1_0_0_/_18%)]"
                   size="lg"
                   variant="outline"
                 >
@@ -149,17 +149,17 @@ export default function AboutPage() {
           </div>
         </RevealSection>
 
-        <RevealSection className="border-b border-black/10 bg-white/65 backdrop-blur">
+        <RevealSection className="glass-chrome border-b">
           <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-3">
-            <div className="rounded-md border border-black/10 bg-white/65 p-5 backdrop-blur">
+            <div className="glass-card rounded-md border p-5">
               <p className="text-muted-foreground text-sm">שם</p>
               <p className="mt-2 text-3xl font-semibold">Aphrodite</p>
             </div>
-            <div className="rounded-md border border-black/10 bg-white/65 p-5 backdrop-blur">
+            <div className="glass-card rounded-md border p-5">
               <p className="text-muted-foreground text-sm">כוונה</p>
               <p className="mt-2 text-3xl font-semibold">יופי עם ביטחון</p>
             </div>
-            <div className="rounded-md border border-black/10 bg-white/65 p-5 backdrop-blur">
+            <div className="glass-card rounded-md border p-5">
               <p className="text-muted-foreground text-sm">אופי</p>
               <p className="mt-2 text-3xl font-semibold">
                 סטודיו ישראלי מודרני
@@ -207,10 +207,10 @@ export default function AboutPage() {
           </div>
         </RevealSection>
 
-        <RevealSection className="bg-black/[0.03]">
+        <RevealSection className="liquid-section">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
             <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-              <div className="rounded-md border border-black/10 bg-white/65 p-6 backdrop-blur sm:p-8 lg:p-10">
+              <div className="glass-panel rounded-md border p-6 sm:p-8 lg:p-10">
                 <p className="text-muted-foreground text-sm">הסיפור שלנו</p>
                 <h2 className="mt-3 text-4xl leading-tight font-semibold">
                   סטודיו ישראלי שמבקש להפוך יוקרה לדבר שאפשר להבין.
@@ -243,7 +243,7 @@ export default function AboutPage() {
               </div>
 
               <div className="grid gap-4">
-                <div className="rounded-md border border-black/10 bg-white/65 p-6 backdrop-blur">
+                <div className="glass-card rounded-md border p-6">
                   <Heart className="size-7" />
                   <p className="mt-5 text-2xl font-semibold">
                     לא לבחור רק יפה. לבחור נכון.
@@ -253,7 +253,7 @@ export default function AboutPage() {
                     בפרטים: פרופורציה, מידה, חומר, אירוע, אדם, הרגל וסגנון חיים.
                   </p>
                 </div>
-                <div className="rounded-md border border-black/10 bg-white/65 p-6 backdrop-blur">
+                <div className="glass-card rounded-md border p-6">
                   <ShieldCheck className="size-7" />
                   <p className="mt-5 text-2xl font-semibold">
                     אמון הוא חלק מהעיצוב.
@@ -282,10 +282,10 @@ export default function AboutPage() {
 
               return (
                 <section
-                  className="rounded-md border border-black/10 bg-white/65 p-6 backdrop-blur"
+                  className="glass-card rounded-md border p-6"
                   key={value.title}
                 >
-                  <div className="flex size-11 items-center justify-center rounded-md border border-black/10 bg-black/[0.04]">
+                  <div className="glass-inset flex size-11 items-center justify-center rounded-md border">
                     <Icon className="size-5" />
                   </div>
                   <h3 className="mt-6 text-2xl font-semibold">{value.title}</h3>
@@ -298,10 +298,10 @@ export default function AboutPage() {
           </RevealGrid>
         </RevealSection>
 
-        <RevealSection className="bg-black/[0.03]">
+        <RevealSection className="liquid-section">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
             <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
-              <div className="rounded-md border border-black/10 bg-white/65 p-6 backdrop-blur sm:p-8 lg:sticky lg:top-24 lg:p-10">
+              <div className="glass-panel rounded-md border p-6 sm:p-8 lg:sticky lg:top-24 lg:p-10">
                 <p className="text-muted-foreground text-sm">
                   איך אנחנו חושבים על תכשיט
                 </p>
@@ -353,7 +353,7 @@ export default function AboutPage() {
                   בלי לחשוב, ועל התחושה שתכשיט מסוים הפך להיות “שלי” לא בגלל
                   שהוא חדש, אלא בגלל שהוא נכון.
                 </p>
-                <div className="text-foreground rounded-md border border-black/10 bg-white/65 p-6 backdrop-blur">
+                <div className="glass-card text-foreground rounded-md border p-6">
                   <p className="text-2xl leading-9 font-semibold">
                     יופי טוב אינו ממהר. הוא נותן לעין להתקרב, ליד לבדוק, וללב
                     להבין שהבחירה שלו יכולה להיות שקטה.
@@ -388,11 +388,11 @@ export default function AboutPage() {
 
                 return (
                   <section
-                    className="rounded-md border border-black/10 bg-white/65 p-5 backdrop-blur"
+                    className="glass-card rounded-md border p-5"
                     key={item.title}
                   >
                     <div className="flex gap-4">
-                      <div className="flex size-10 shrink-0 items-center justify-center rounded-md border border-black/10 bg-black/[0.04]">
+                      <div className="glass-inset flex size-10 shrink-0 items-center justify-center rounded-md border">
                         <Icon className="size-5" />
                       </div>
                       <div>
@@ -409,9 +409,9 @@ export default function AboutPage() {
           </div>
         </RevealSection>
 
-        <RevealSection className="bg-black/[0.03]">
+        <RevealSection className="liquid-section">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
-            <div className="mx-auto max-w-4xl rounded-md border border-black/10 bg-white/65 p-6 text-center backdrop-blur sm:p-8 lg:p-12">
+            <div className="glass-panel mx-auto max-w-4xl rounded-md border p-6 text-center sm:p-8 lg:p-12">
               <Sparkles className="mx-auto size-8" />
               <h2 className="mt-6 text-4xl leading-tight font-semibold">
                 Aphrodite אינה מבקשת שתבחרו מהר. היא מבקשת שתבחרו בביטחון.

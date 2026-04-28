@@ -87,17 +87,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
       />
       <RevealSection className="mx-auto grid max-w-7xl gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[1.05fr_0.95fr]">
         <div className="grid gap-4">
-          <div className="relative aspect-square overflow-hidden rounded-md bg-black/[0.04]">
+          <div className="glass-inset relative aspect-square overflow-hidden rounded-md border">
             <Image
               alt={product.name}
-              className="object-cover"
+              className="media-mono object-cover"
               fill
               priority
               sizes="(min-width: 1024px) 50vw, 100vw"
               src={product.image}
             />
           </div>
-          <div className="grid gap-3 rounded-md border border-black/10 bg-white/65 p-3 shadow-none backdrop-blur sm:grid-cols-3">
+          <div className="glass-panel grid gap-3 rounded-md border p-3 sm:grid-cols-3">
             {[
               { label: "חומר", value: product.material },
               { label: "קולקציה", value: product.collection },
@@ -107,7 +107,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               },
             ].map((fact) => (
               <div
-                className="rounded-md border border-black/10 bg-white/55 p-3"
+                className="glass-inset rounded-md border p-3"
                 key={fact.label}
               >
                 <p className="text-muted-foreground text-xs">{fact.label}</p>
@@ -119,12 +119,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <div className="grid grid-cols-3 gap-3">
               {uniqueImages.map((image, index) => (
                 <div
-                  className="relative aspect-square overflow-hidden rounded-md bg-black/[0.04]"
+                  className="glass-inset relative aspect-square overflow-hidden rounded-md border"
                   key={image}
                 >
                   <Image
                     alt={`${product.name} ${index + 1}`}
-                    className="object-cover"
+                    className="media-mono object-cover"
                     fill
                     sizes="(min-width: 1024px) 16vw, 33vw"
                     src={image}
@@ -136,7 +136,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </div>
 
         <div className="lg:pt-4">
-          <Badge className="mb-4 shadow-none" variant="secondary">
+          <Badge className="mb-4" variant="secondary">
             {product.collection}
           </Badge>
           <h1 className="text-4xl font-semibold">{product.name}</h1>
@@ -152,7 +152,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 {formatPrice(product.compareAt)}
               </span>
             ) : null}
-            <Badge className="mb-1 shadow-none" variant="secondary">
+            <Badge className="mb-1" variant="secondary">
               {availableBranchCount} סניפים זמינים
             </Badge>
           </div>
@@ -214,14 +214,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </Button>
           </div>
 
-          <Card className="mt-8 rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
+          <Card className="mt-8 rounded-md">
             <CardHeader>
               <CardTitle className="text-lg">זמינות לפי סניף</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-3">
               {availability.map(({ branch, quantity, available }) => (
                 <div
-                  className="flex items-center justify-between rounded-md border border-black/10 bg-white/45 p-3 backdrop-blur"
+                  className="glass-inset flex items-center justify-between rounded-md border p-3"
                   key={branch.slug}
                 >
                   <div>
@@ -242,7 +242,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
       <RevealSection className="mx-auto max-w-7xl px-4 pb-14 sm:px-6">
         <RevealGrid className="grid gap-5 lg:grid-cols-3">
-          <Card className="rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
+          <Card className="rounded-md">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <ShieldCheck className="size-5" />
@@ -253,7 +253,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               אחריות לשנה על פגמי ייצור ושירות ניקוי ראשוני ללא עלות.
             </CardContent>
           </Card>
-          <Card className="rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
+          <Card className="rounded-md">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <RotateCcw className="size-5" />
@@ -264,7 +264,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               החזרה או החלפה לפי מדיניות החנות, בסניף או במשלוח מתואם.
             </CardContent>
           </Card>
-          <Card className="rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
+          <Card className="rounded-md">
             <CardHeader>
               <CardTitle className="text-lg">תיאור מלא</CardTitle>
             </CardHeader>

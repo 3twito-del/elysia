@@ -39,7 +39,7 @@ type ManualCheckoutFormProps = {
 
 function StepBadge({ value }: { value: string }) {
   return (
-    <span className="grid size-7 place-items-center rounded-full border border-black/10 bg-black/[0.04] text-xs font-semibold">
+    <span className="glass-inset grid size-7 place-items-center rounded-full border text-xs font-semibold">
       {value}
     </span>
   );
@@ -122,9 +122,9 @@ export function ManualCheckoutForm({
   if (createOrder.data) {
     return (
       <section className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
-        <Card className="rounded-md border-black/10 bg-white/70 shadow-none backdrop-blur">
+        <Card className="rounded-md">
           <CardHeader>
-            <div className="mb-4 grid size-12 place-items-center rounded-full border border-black/10 bg-black/[0.04]">
+            <div className="glass-inset mb-4 grid size-12 place-items-center rounded-full border">
               <CheckCircle2 className="size-6" />
             </div>
             <CardTitle className="text-3xl">בקשת ההזמנה נקלטה</CardTitle>
@@ -134,7 +134,7 @@ export function ManualCheckoutForm({
               ההזמנה נשמרה במערכת וממתינה לאישור נציג. אין חיוב אונליין בשלב
               הזה; צוות Aphrodite יטפל בהמשך התהליך מתוך מסך האדמין.
             </p>
-            <div className="rounded-md border border-black/10 bg-black/[0.03] p-5">
+            <div className="glass-inset rounded-md border p-5">
               <p className="text-muted-foreground text-sm">מספר הזמנה</p>
               <p className="mt-1 text-2xl font-semibold">
                 {createOrder.data.orderNumber}
@@ -170,7 +170,7 @@ export function ManualCheckoutForm({
           </p>
         </div>
 
-        <Card className="rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
+        <Card className="rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <StepBadge value="1" />
@@ -231,7 +231,7 @@ export function ManualCheckoutForm({
           </CardContent>
         </Card>
 
-        <Card className="rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
+        <Card className="rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <StepBadge value="2" />
@@ -268,7 +268,7 @@ export function ManualCheckoutForm({
             <div>
               <Label htmlFor="branch">סניף מטפל / מקור מלאי</Label>
               <select
-                className="border-input bg-background focus-visible:border-ring mt-2 h-11 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-3 focus-visible:ring-black/10"
+                className="glass-control mt-2 h-11 w-full rounded-md border px-3 text-sm outline-none focus-visible:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
                 id="branch"
                 onChange={(event) => setBranchSlug(event.currentTarget.value)}
                 required
@@ -317,7 +317,7 @@ export function ManualCheckoutForm({
           </CardContent>
         </Card>
 
-        <Card className="rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
+        <Card className="rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <StepBadge value="3" />
@@ -326,7 +326,7 @@ export function ManualCheckoutForm({
             </CardTitle>
           </CardHeader>
           <CardContent className="grid gap-3">
-            <label className="flex min-h-11 items-center gap-3 rounded-md border border-black/10 bg-black/[0.03] px-3 text-sm">
+            <label className="glass-inset flex min-h-11 items-center gap-3 rounded-md border px-3 text-sm">
               <input
                 checked={giftWrap}
                 onChange={(event) => setGiftWrap(event.currentTarget.checked)}
@@ -347,7 +347,7 @@ export function ManualCheckoutForm({
       </div>
 
       <aside>
-        <Card className="sticky top-24 rounded-md border-black/10 bg-white/65 shadow-none backdrop-blur">
+        <Card className="sticky top-24 rounded-md">
           <CardHeader>
             <StepBadge value="4" />
             <CardTitle>סיכום</CardTitle>
@@ -378,7 +378,7 @@ export function ManualCheckoutForm({
               </div>
             </div>
             {createOrder.error ? (
-              <p className="rounded-md border border-black/10 bg-black/[0.03] p-3 text-sm text-red-700">
+              <p className="glass-inset rounded-md border p-3 text-sm text-red-700">
                 {createOrder.error.message}
               </p>
             ) : null}

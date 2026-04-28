@@ -5,8 +5,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import { PublicMotionProvider } from "~/components/public-motion-provider";
 import { SiteFooter } from "~/components/site-footer";
-import { TooltipProvider } from "~/components/ui/tooltip";
-import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata: Metadata = {
   title: {
@@ -45,14 +43,10 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable}`}
     >
       <body>
-        <TRPCReactProvider>
-          <TooltipProvider>
-            <PublicMotionProvider>
-              {children}
-              <SiteFooter />
-            </PublicMotionProvider>
-          </TooltipProvider>
-        </TRPCReactProvider>
+        <PublicMotionProvider>
+          {children}
+          <SiteFooter />
+        </PublicMotionProvider>
       </body>
     </html>
   );

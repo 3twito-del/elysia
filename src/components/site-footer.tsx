@@ -16,7 +16,7 @@ const serviceLinks = [
 
 export function SiteFooter() {
   return (
-    <footer className="site-chrome border-t border-black/10 bg-white/50 backdrop-blur-md">
+    <footer className="glass-chrome site-chrome border-t">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:py-16">
         <div className="grid gap-12 lg:grid-cols-[1.25fr_0.8fr_0.85fr_1fr]">
           <section className="max-w-lg">
@@ -102,7 +102,7 @@ export function SiteFooter() {
             <ul className="mt-5 grid gap-3 text-sm">
               {branches.map((branch) => (
                 <li
-                  className="flex items-center justify-between gap-3 border-b border-black/10 pb-3 last:border-b-0"
+                  className="flex items-center justify-between gap-3 border-b border-[var(--glass-border)] pb-3 last:border-b-0"
                   key={branch.slug}
                 >
                   <span className="font-medium">{branch.name}</span>

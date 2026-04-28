@@ -5,18 +5,18 @@ import { Slot } from "radix-ui";
 import { cn } from "~/lib/utils";
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-md border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-black/10 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center rounded-md border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
         default:
-          "bg-foreground text-background hover:bg-foreground/85 [a]:hover:bg-foreground/85",
+          "bg-foreground text-background shadow-[0_14px_30px_oklch(0.15_0_0_/_16%)] hover:bg-foreground/85 hover:shadow-[0_18px_36px_oklch(0.15_0_0_/_18%)] [a]:hover:bg-foreground/85",
         outline:
-          "border-black/15 bg-white/50 backdrop-blur hover:border-black/25 hover:bg-black/[0.04] hover:text-foreground aria-expanded:bg-black/[0.04] aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
+          "glass-control text-foreground hover:border-[var(--glass-border-strong)] hover:bg-[oklch(1_0_0_/_58%)] hover:text-foreground aria-expanded:border-[var(--glass-border-strong)] aria-expanded:bg-[oklch(1_0_0_/_58%)] aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
         secondary:
-          "border-black/10 bg-black/[0.04] text-foreground backdrop-blur hover:bg-black/[0.07] aria-expanded:bg-black/[0.07] aria-expanded:text-foreground",
+          "glass-inset text-foreground hover:bg-[oklch(0.18_0_0_/_7%)] aria-expanded:bg-[oklch(0.18_0_0_/_7%)] aria-expanded:text-foreground",
         ghost:
-          "hover:bg-black/[0.04] hover:text-foreground aria-expanded:bg-black/[0.04] aria-expanded:text-foreground dark:hover:bg-muted/50",
+          "hover:bg-[oklch(0.18_0_0_/_4.5%)] hover:text-foreground aria-expanded:bg-[oklch(0.18_0_0_/_4.5%)] aria-expanded:text-foreground dark:hover:bg-muted/50",
         destructive:
           "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
         link: "text-foreground underline-offset-4 hover:underline",

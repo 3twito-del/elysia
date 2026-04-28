@@ -13,21 +13,24 @@ export function ProductCard({ product }: { product: Product }) {
   ).length;
 
   return (
-    <Card className="h-full overflow-hidden rounded-md border-black/10 bg-white/55 py-0 shadow-none ring-1 ring-black/[0.02] backdrop-blur transition duration-200 focus-within:border-black/30 hover:-translate-y-0.5 hover:border-black/20 hover:bg-white/75">
+    <Card className="interactive-lift h-full overflow-hidden rounded-md py-0">
       <Link
         aria-label={`צפייה במוצר ${product.name}`}
         className="block focus-visible:outline-none"
         href={`/product/${product.slug}`}
       >
-        <div className="relative aspect-square overflow-hidden bg-black/[0.04]">
+        <div className="glass-inset relative aspect-square overflow-hidden border-0">
           <Image
             alt={product.name}
-            className="object-cover transition duration-300 hover:scale-[1.03]"
+            className="media-mono object-cover transition duration-300 hover:scale-[1.03]"
             fill
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
             src={product.image}
           />
-          <Badge className="text-foreground absolute top-3 right-3 bg-white/70 font-normal shadow-none backdrop-blur">
+          <Badge
+            className="absolute top-3 right-3 font-normal"
+            variant="secondary"
+          >
             {product.collection}
           </Badge>
         </div>

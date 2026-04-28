@@ -21,15 +21,15 @@ export function MetricCard({
   return (
     <Card
       className={cn(
-        "rounded-md border-black/10 shadow-none backdrop-blur",
-        isSoft ? "bg-white/50 ring-1 ring-black/[0.02]" : "bg-white/65",
+        "interactive-lift rounded-md",
+        isSoft ? "glass-card" : "glass-panel",
       )}
     >
       <CardContent className="flex items-center gap-4 p-5">
         <div
           className={cn(
-            "text-foreground grid size-11 place-items-center rounded-md border border-black/10",
-            isSoft ? "bg-white/60" : "bg-black/[0.04]",
+            "glass-inset text-foreground grid size-11 place-items-center rounded-md border",
+            isSoft ? "opacity-90" : "opacity-100",
           )}
         >
           <Icon className="size-5" />

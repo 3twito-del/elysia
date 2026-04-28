@@ -23,8 +23,8 @@ export default function AccountPage() {
           OTP ללקוחות. כניסת אדמין מתבצעת במסלול נפרד ומוגן בסיסמה.
         </p>
         <div className="mt-8 grid gap-5 lg:grid-cols-[420px_1fr]">
-          <Card className="rounded-md border-black/10 bg-white/70 shadow-none backdrop-blur">
-            <CardHeader className="border-b border-black/10 pb-4">
+          <Card className="rounded-md">
+            <CardHeader className="border-b border-[var(--glass-border)] pb-4">
               <CardTitle>כניסת לקוח</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">

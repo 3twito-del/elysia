@@ -27,7 +27,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         <h1 className="text-4xl font-semibold">חיפוש בקטלוג</h1>
         <form
           aria-label="חיפוש בקטלוג"
-          className="mt-6 grid gap-3 rounded-md border border-black/10 bg-white/65 p-3 shadow-none backdrop-blur sm:grid-cols-[1fr_auto]"
+          className="glass-panel mt-6 grid gap-3 rounded-md border p-3 sm:grid-cols-[1fr_auto]"
           role="search"
         >
           <Input

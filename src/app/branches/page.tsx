@@ -11,7 +11,7 @@ export default function BranchesPage() {
   return (
     <main>
       <SiteHeader />
-      <RevealSection className="border-b border-black/10 bg-black/[0.02]">
+      <RevealSection className="liquid-section border-b border-[var(--glass-border)]">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
           <h1 className="text-4xl font-semibold">סניפי Aphrodite</h1>
           <p className="text-muted-foreground mt-3 max-w-2xl leading-7">

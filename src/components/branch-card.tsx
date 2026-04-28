@@ -11,7 +11,7 @@ export function BranchCard({ branch }: { branch: Branch }) {
   )}`;
 
   return (
-    <Card className="rounded-md border-black/10 bg-white/50 shadow-none ring-1 ring-black/[0.03] backdrop-blur transition-colors hover:bg-white/65">
+    <Card className="interactive-lift rounded-md">
       <CardHeader className="pb-3">
         <CardTitle className="text-2xl font-medium">{branch.name}</CardTitle>
       </CardHeader>
@@ -26,7 +26,7 @@ export function BranchCard({ branch }: { branch: Branch }) {
             {branch.phone}
           </span>
         </div>
-        <div className="grid gap-1.5 border-y border-black/10 py-4 text-sm leading-6">
+        <div className="grid gap-1.5 border-y border-[var(--glass-border)] py-4 text-sm leading-6">
           <span>א-ה: {branch.openingHours.sundayThursday}</span>
           <span>ו: {branch.openingHours.friday}</span>
           <span>ש: {branch.openingHours.saturday}</span>
@@ -34,7 +34,7 @@ export function BranchCard({ branch }: { branch: Branch }) {
         <div className="flex flex-wrap gap-2">
           {branch.services.map((service) => (
             <Badge
-              className="bg-white/55 px-3 py-1 text-xs font-normal"
+              className="px-3 py-1 text-xs font-normal"
               key={service}
               variant="outline"
             >
