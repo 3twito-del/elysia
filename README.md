@@ -9,7 +9,7 @@ Prisma/Postgres, אדמין פנימי, הזמנות ידניות, שמירת מ
 ```bash
 pnpm install
 cp .env.example .env
-pnpm db:push
+pnpm db:migrate:dev
 pnpm db:seed
 pnpm dev
 ```
@@ -50,7 +50,7 @@ GOOGLE_GENERATIVE_AI_API_KEY="AIza..."
 
 ```bash
 pnpm exec prisma generate
-pnpm db:push
+pnpm db:migrate:dev
 pnpm db:seed
 pnpm build
 ```

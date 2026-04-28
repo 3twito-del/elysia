@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Gem, MapPin, Search, ShieldCheck, Sparkles } from "lucide-react";
 
+import { NewsletterForm } from "~/components/newsletter-form";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import { branches, categories } from "~/lib/catalog";
@@ -30,6 +31,7 @@ export function SiteFooter() {
               רשת תכשיטי סטודיו ישראלית במיצוב יוקרה נגישה, עם קטלוג אונליין,
               זמינות לפי סניף וייעוץ אישי לבחירת תכשיט או מתנה.
             </p>
+            <NewsletterForm />
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <Button asChild variant="secondary">
                 <Link href="/stylist">

@@ -4,6 +4,7 @@ import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
 
 import { db } from "~/server/db";
+import { verifyCustomerOtp } from "~/server/services/customer-otp";
 import { verifyPassword } from "./password";
 
 declare module "next-auth" {
@@ -49,16 +50,26 @@ export const authConfig = {
         identifier: { label: "Email or phone", type: "text" },
         code: { label: "Code", type: "text" },
       },
-      authorize(credentials) {
+      async authorize(credentials) {
         const parsed = otpCredentialsSchema.safeParse(credentials);
 
         if (!parsed.success) {
           return null;
         }
 
-        // Customer OTP is not active yet. Reject the old fixed development
-        // code so it cannot create sessions in a production-like system.
-        return null;
+        try {
+          const customer = await verifyCustomerOtp(parsed.data);
+
+          return {
+            id: customer.userId,
+            email: customer.email,
+            name: customer.name,
+            adminUserId: null,
+            permissions: [],
+          };
+        } catch {
+          return null;
+        }
       },
     }),
     Credentials({

@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import {
+  adminProcedure,
+  createTRPCRouter,
+  publicProcedure,
+} from "~/server/api/trpc";
 import { searchProvider } from "~/server/adapters/search";
 
 export const searchRouter = createTRPCRouter({
@@ -15,5 +19,7 @@ export const searchRouter = createTRPCRouter({
     )
     .query(({ input }) => searchProvider.searchProducts(input)),
 
-  reindex: publicProcedure.mutation(() => searchProvider.indexProducts()),
+  reindex: adminProcedure("CATALOG").mutation(() =>
+    searchProvider.indexProducts(),
+  ),
 });

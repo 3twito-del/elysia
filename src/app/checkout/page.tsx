@@ -1,11 +1,16 @@
 import { ManualCheckoutForm } from "./_components/manual-checkout-form";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
-import { branches, getProductBySlug, products } from "~/lib/catalog";
+import {
+  branches,
+  getProductBySlug,
+  getProductVariant,
+  products,
+} from "~/lib/catalog";
 import { TRPCReactProvider } from "~/trpc/react";
 
 type CheckoutPageProps = {
-  searchParams: Promise<{ product?: string }>;
+  searchParams: Promise<{ product?: string; variant?: string }>;
 };
 
 export const metadata = {
@@ -17,6 +22,7 @@ export default async function CheckoutPage({
 }: CheckoutPageProps) {
   const params = await searchParams;
   const product = getProductBySlug(params.product ?? "") ?? products[0]!;
+  const variant = getProductVariant(product, params.variant);
 
   return (
     <main>
@@ -34,6 +40,8 @@ export default async function CheckoutPage({
               name: product.name,
               shortDescription: product.shortDescription,
               price: product.price,
+              variantName: variant?.name,
+              variantSku: variant?.sku,
             }}
           />
         </TRPCReactProvider>

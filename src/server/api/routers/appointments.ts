@@ -1,37 +1,76 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { branches } from "~/lib/catalog";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { notificationProvider } from "~/server/adapters/notifications";
+import { db } from "~/server/db";
+
+const createAppointmentInputSchema = z.object({
+  branchSlug: z.string().trim().min(1),
+  topic: z.string().trim().min(2),
+  name: z.string().trim().min(2),
+  email: z.string().trim().email().optional(),
+  phone: z.string().trim().min(7),
+  startsAt: z.string().datetime(),
+  notes: z.string().trim().max(500).optional(),
+});
 
 export const appointmentsRouter = createTRPCRouter({
   create: publicProcedure
-    .input(
-      z.object({
-        branchSlug: z.string(),
-        topic: z.string().min(2),
-        name: z.string().min(2),
-        email: z.string().email().optional(),
-        phone: z.string().min(7),
-        startsAt: z.string(),
-        notes: z.string().optional(),
-      }),
-    )
+    .input(createAppointmentInputSchema)
     .mutation(async ({ input }) => {
-      const branch =
-        branches.find((item) => item.slug === input.branchSlug) ?? branches[0]!;
+      const branch = await db.branch.findUnique({
+        where: { slug: input.branchSlug },
+      });
 
-      if (input.email) {
-        await notificationProvider.sendEmail({
-          to: input.email,
-          subject: "בקשת הפגישה שלך התקבלה",
-          body: `קיבלנו את בקשתך לפגישה בנושא ${input.topic} בסניף ${branch.name}. צוות Aphrodite יחזור אליך לאישור.`,
+      if (!branch) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "הסניף שנבחר לא נמצא.",
         });
       }
 
+      const appointment = await db.appointment.create({
+        data: {
+          branchId: branch.id,
+          topic: input.topic,
+          name: input.name,
+          email: input.email,
+          phone: input.phone,
+          startsAt: new Date(input.startsAt),
+          notes: input.notes,
+        },
+      });
+
+      if (input.email) {
+        await notificationProvider
+          .sendEmail({
+            to: input.email,
+            subject: "בקשת הפגישה שלך התקבלה",
+            body: `קיבלנו את בקשתך לפגישה בנושא ${input.topic} בסניף ${branch.name}. צוות Aphrodite יחזור אליך לאישור.`,
+          })
+          .catch(async (error: unknown) => {
+            await db.integrationJob.create({
+              data: {
+                provider: notificationProvider.providerName(),
+                jobType: "appointment_confirmation",
+                status: "FAILED",
+                attempts: 1,
+                lastError:
+                  error instanceof Error ? error.message : "Unknown error",
+                finishedAt: new Date(),
+                payload: {
+                  appointmentId: appointment.id,
+                  recipient: input.email,
+                },
+              },
+            });
+          });
+      }
+
       return {
-        id: `apt_${Date.now()}`,
-        status: "REQUESTED" as const,
+        id: appointment.id,
+        status: appointment.status,
         branch,
         ...input,
       };

@@ -1,12 +1,25 @@
 import { NextResponse } from "next/server";
 
+import {
+  parseWebhookJson,
+  recordWebhookEvent,
+} from "~/server/services/webhook-events";
+
 export async function POST(req: Request) {
-  const payload: unknown = await req.json().catch(() => ({}));
+  const rawBody = await req.text();
+  const payload = parseWebhookJson(rawBody);
+  const event = await recordWebhookEvent({
+    provider: "cloudinary",
+    rawBody,
+    payload,
+    status: "RECEIVED",
+    fallbackEventType: "cloudinary.webhook",
+  });
 
   return NextResponse.json({
     ok: true,
     provider: "cloudinary",
     status: "RECEIVED",
-    payload,
+    eventId: event.id,
   });
 }

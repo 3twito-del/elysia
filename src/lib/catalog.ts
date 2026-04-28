@@ -29,10 +29,18 @@ export type Product = {
   stone?: string;
   collection: string;
   image: string;
+  variants: ProductVariant[];
   metalColors: string[];
   sizes: string[];
   tags: string[];
   inventory: Record<string, number>;
+};
+
+export type ProductVariant = {
+  sku: string;
+  name: string;
+  size?: string;
+  metalColor?: string;
 };
 
 export const categories: Array<{
@@ -109,8 +117,12 @@ export const products: Product[] = [
     collection: "Studio Light",
     image:
       "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1400&q=80",
+    variants: [
+      { sku: "APH-RG-001-52", name: "מידה 52", size: "52" },
+      { sku: "APH-RG-001-54", name: "מידה 54", size: "54" },
+    ],
     metalColors: ["זהב צהוב"],
-    sizes: ["52", "54", "56"],
+    sizes: ["52", "54"],
     tags: ["אירוסין", "מתנה", "יוקרה נגישה"],
     inventory: { "tel-aviv": 6, jerusalem: 5 },
   },
@@ -129,6 +141,7 @@ export const products: Product[] = [
     collection: "Studio Light",
     image:
       "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1400&q=80",
+    variants: [{ sku: "APH-ER-018-STD", name: "זוג עגילים" }],
     metalColors: ["זהב צהוב"],
     sizes: ["זוג"],
     tags: ["פנינים", "יום יום", "מתנה"],
@@ -150,6 +163,10 @@ export const products: Product[] = [
     collection: "Studio Light",
     image:
       "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1400&q=80",
+    variants: [
+      { sku: "APH-NK-044-42", name: "42 ס״מ", size: "42 ס״מ" },
+      { sku: "APH-NK-044-45", name: "45 ס״מ", size: "45 ס״מ" },
+    ],
     metalColors: ["זהב לבן"],
     sizes: ["42 ס״מ", "45 ס״מ"],
     tags: ["שכבות", "יהלום", "מינימלי"],
@@ -169,6 +186,10 @@ export const products: Product[] = [
     collection: "Studio Light",
     image:
       "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=1400&q=80",
+    variants: [
+      { sku: "APH-BR-027-S", name: "S", size: "S" },
+      { sku: "APH-BR-027-M", name: "M", size: "M" },
+    ],
     metalColors: ["זהב צהוב"],
     sizes: ["S", "M"],
     tags: ["צמידים", "יום יום", "שכבות"],
@@ -186,6 +207,13 @@ export function formatPrice(amount: number) {
 
 export function getProductBySlug(slug: string) {
   return products.find((product) => product.slug === slug);
+}
+
+export function getProductVariant(product: Product, sku?: string) {
+  return (
+    product.variants.find((variant) => variant.sku === sku) ??
+    product.variants[0]
+  );
 }
 
 export function getProductsByCategory(slug?: string) {

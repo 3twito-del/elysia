@@ -342,6 +342,15 @@ model OtpChallenge {
   @@index([identifier, channel])
 }
 
+model NewsletterSubscription {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  status    String   @default("SUBSCRIBED")
+  source    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model CustomerAddress {
   id          String   @id @default(cuid())
   customerId  String

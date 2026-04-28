@@ -2,15 +2,9 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  CalendarCheck,
-  Heart,
-  PackageCheck,
-  RotateCcw,
-  ShieldCheck,
-  Sparkles,
-} from "lucide-react";
+import { CalendarCheck, RotateCcw, ShieldCheck } from "lucide-react";
 
+import { ProductPurchasePanel } from "./_components/product-purchase-panel";
 import { SiteHeader } from "~/components/site-header";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { Badge } from "~/components/ui/badge";
@@ -159,53 +153,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
           <Separator className="my-7" />
 
-          <div className="grid gap-5">
-            <div>
-              <p className="mb-2 text-sm font-medium">מידה</p>
-              <div className="flex flex-wrap gap-2">
-                {product.sizes.map((size) => (
-                  <Button
-                    className="min-h-11 min-w-11 px-4"
-                    key={size}
-                    variant="outline"
-                  >
-                    {size}
-                  </Button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <p className="mb-2 text-sm font-medium">צבע מתכת</p>
-              <div className="flex flex-wrap gap-2">
-                {product.metalColors.map((color) => (
-                  <Badge key={color} variant="secondary">
-                    {color}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-7 grid gap-3 sm:grid-cols-2">
-            <Button asChild size="lg">
-              <Link href={`/checkout?product=${product.slug}`}>
-                הוספה לסל
-                <PackageCheck className="size-4" />
-              </Link>
-            </Button>
-            <Button size="lg" variant="outline">
-              שמירה
-              <Heart className="size-4" />
-            </Button>
-          </div>
-
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <Button asChild variant="secondary">
-              <Link href={`/stylist?product=${product.slug}`}>
-                מדידה/AI
-                <Sparkles className="size-4" />
-              </Link>
-            </Button>
+          <div className="mt-7 grid gap-3">
+            <ProductPurchasePanel
+              metalColors={product.metalColors}
+              productSlug={product.slug}
+              variants={product.variants}
+            />
             <Button asChild variant="secondary">
               <Link href="/branches">
                 תיאום בסניף

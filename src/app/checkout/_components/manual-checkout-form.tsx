@@ -24,6 +24,8 @@ type CheckoutProduct = {
   name: string;
   shortDescription: string;
   price: number;
+  variantName?: string;
+  variantSku?: string;
 };
 
 type BranchOption = {
@@ -98,6 +100,7 @@ export function ManualCheckoutForm({
 
     createOrder.mutate({
       productSlug: product.slug,
+      variantSku: product.variantSku,
       quantity,
       fulfillmentMethod,
       branchSlug,
@@ -357,7 +360,9 @@ export function ManualCheckoutForm({
               <div>
                 <p className="font-medium">{product.name}</p>
                 <p className="text-muted-foreground text-sm">
-                  {product.shortDescription}
+                  {product.variantName
+                    ? `${product.variantName} · ${product.shortDescription}`
+                    : product.shortDescription}
                 </p>
               </div>
               <span>{formatPrice(product.price)}</span>

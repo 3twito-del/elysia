@@ -22,6 +22,7 @@ export const shippingAddressSchema = z.object({
 
 export const createManualOrderInputSchema = z.object({
   productSlug: z.string().trim().min(1),
+  variantSku: z.string().trim().min(1).optional(),
   quantity: z.number().int().positive().max(10).default(1),
   fulfillmentMethod: z.enum(["DELIVERY", "PICKUP"]),
   branchSlug: z.string().trim().min(1),
@@ -227,7 +228,9 @@ async function createManualOrderInTransaction(
     });
   }
 
-  const variant = product.variants[0];
+  const variant = input.variantSku
+    ? product.variants.find((item) => item.sku === input.variantSku)
+    : product.variants[0];
 
   if (!variant) {
     throw new TRPCError({
@@ -338,7 +341,10 @@ async function createManualOrderInTransaction(
       items: {
         create: {
           variantId: variant.id,
-          name: product.name,
+          name:
+            variant.name && variant.name !== product.name
+              ? `${product.name} - ${variant.name}`
+              : product.name,
           sku: variant.sku,
           quantity: input.quantity,
           unitPrice,

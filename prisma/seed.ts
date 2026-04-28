@@ -55,6 +55,7 @@ async function main() {
     prisma.savedSize.deleteMany(),
     prisma.customerAddress.deleteMany(),
     prisma.otpChallenge.deleteMany(),
+    prisma.newsletterSubscription.deleteMany(),
     prisma.customer.deleteMany(),
     prisma.inventoryReservation.deleteMany(),
     prisma.inventoryLedger.deleteMany(),
