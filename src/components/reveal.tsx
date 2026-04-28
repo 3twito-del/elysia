@@ -11,6 +11,7 @@ import {
 } from "react";
 
 import { cn } from "~/lib/utils";
+import { usePublicMotion } from "~/components/public-motion-provider";
 
 type RevealSectionProps = {
   children: ReactNode;
@@ -24,14 +25,25 @@ type RevealGridProps = {
   stagger?: number;
 };
 
-function useInViewOnce<T extends HTMLElement>() {
+function useInViewOnce<T extends HTMLElement>(initialVisible = false) {
   const ref = useRef<T>(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const [hasForcedVisible, setHasForcedVisible] = useState(initialVisible);
+  const [isVisible, setIsVisible] = useState(initialVisible);
+
+  useEffect(() => {
+    if (!initialVisible || hasForcedVisible) return;
+
+    const visibleFrame = window.requestAnimationFrame(() =>
+      setHasForcedVisible(true),
+    );
+
+    return () => window.cancelAnimationFrame(visibleFrame);
+  }, [hasForcedVisible, initialVisible]);
 
   useEffect(() => {
     const node = ref.current;
 
-    if (!node) return;
+    if (!node || hasForcedVisible) return;
 
     if (!("IntersectionObserver" in window)) {
       const timeout = setTimeout(() => setIsVisible(true), 0);
@@ -52,9 +64,9 @@ function useInViewOnce<T extends HTMLElement>() {
     observer.observe(node);
 
     return () => observer.disconnect();
-  }, []);
+  }, [hasForcedVisible]);
 
-  return [ref, isVisible] as const;
+  return [ref, hasForcedVisible || isVisible] as const;
 }
 
 export function RevealSection({
@@ -62,7 +74,8 @@ export function RevealSection({
   className,
   delay = 0,
 }: RevealSectionProps) {
-  const [ref, isVisible] = useInViewOnce<HTMLElement>();
+  const { suppressInitialReveal } = usePublicMotion();
+  const [ref, isVisible] = useInViewOnce<HTMLElement>(suppressInitialReveal);
   const style = { "--reveal-delay": `${delay}s` } as CSSProperties;
 
   return (
@@ -82,7 +95,8 @@ export function RevealGrid({
   className,
   stagger = 0.07,
 }: RevealGridProps) {
-  const [ref, isVisible] = useInViewOnce<HTMLDivElement>();
+  const { suppressInitialReveal } = usePublicMotion();
+  const [ref, isVisible] = useInViewOnce<HTMLDivElement>(suppressInitialReveal);
   const items = Children.toArray(children);
 
   return (

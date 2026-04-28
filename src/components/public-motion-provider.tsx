@@ -1,6 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { usePathname } from "next/navigation";
 
 type PublicMotionProviderProps = {
@@ -9,7 +17,27 @@ type PublicMotionProviderProps = {
 
 type MotionState = "visible" | "enter" | "exit";
 
+type PublicMotionContextValue = {
+  suppressInitialReveal: boolean;
+};
+
 const pageTransitionMs = 440;
+const PublicMotionContext = createContext<PublicMotionContextValue>({
+  suppressInitialReveal: false,
+});
+
+function getRouteMotionScope(pathname: string) {
+  if (pathname.startsWith("/category/")) return "/category";
+
+  return pathname;
+}
+
+function shouldPreserveRouteShell(fromPathname: string, toPathname: string) {
+  return (
+    fromPathname !== toPathname &&
+    getRouteMotionScope(fromPathname) === getRouteMotionScope(toPathname)
+  );
+}
 
 function usePrefersReducedMotion() {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
@@ -30,14 +58,24 @@ function usePrefersReducedMotion() {
   return prefersReducedMotion;
 }
 
+export function usePublicMotion() {
+  return useContext(PublicMotionContext);
+}
+
 export function PublicMotionProvider({ children }: PublicMotionProviderProps) {
   const pathname = usePathname();
   const shouldReduceMotion = usePrefersReducedMotion();
   const isAdminRoute = pathname.startsWith("/admin");
   const pendingChildren = useRef(children);
+  const hasSyncedInitialChildren = useRef(false);
   const [renderedPathname, setRenderedPathname] = useState(pathname);
   const [renderedChildren, setRenderedChildren] = useState(children);
   const [motionState, setMotionState] = useState<MotionState>("visible");
+  const [suppressInitialReveal, setSuppressInitialReveal] = useState(false);
+  const motionContextValue = useMemo(
+    () => ({ suppressInitialReveal }),
+    [suppressInitialReveal],
+  );
 
   useEffect(() => {
     pendingChildren.current = children;
@@ -45,21 +83,52 @@ export function PublicMotionProvider({ children }: PublicMotionProviderProps) {
 
   useEffect(() => {
     if (pathname === renderedPathname) {
-      const updateFrame = window.requestAnimationFrame(() =>
-        setRenderedChildren(children),
-      );
+      const shouldSuppressReveal = hasSyncedInitialChildren.current;
+      let revealResetFrame = 0;
+      const updateFrame = window.requestAnimationFrame(() => {
+        if (shouldSuppressReveal) {
+          setSuppressInitialReveal(true);
+        }
 
-      return () => window.cancelAnimationFrame(updateFrame);
+        setRenderedChildren(children);
+        hasSyncedInitialChildren.current = true;
+      });
+
+      if (shouldSuppressReveal) {
+        revealResetFrame = window.requestAnimationFrame(() => {
+          revealResetFrame = window.requestAnimationFrame(() =>
+            setSuppressInitialReveal(false),
+          );
+        });
+      }
+
+      return () => {
+        window.cancelAnimationFrame(updateFrame);
+        window.cancelAnimationFrame(revealResetFrame);
+      };
     }
 
-    if (shouldReduceMotion) {
+    if (
+      shouldReduceMotion ||
+      shouldPreserveRouteShell(renderedPathname, pathname)
+    ) {
+      let revealResetFrame = 0;
       const updateFrame = window.requestAnimationFrame(() => {
+        setSuppressInitialReveal(true);
         setRenderedPathname(pathname);
         setRenderedChildren(children);
         setMotionState("visible");
       });
+      revealResetFrame = window.requestAnimationFrame(() => {
+        revealResetFrame = window.requestAnimationFrame(() =>
+          setSuppressInitialReveal(false),
+        );
+      });
 
-      return () => window.cancelAnimationFrame(updateFrame);
+      return () => {
+        window.cancelAnimationFrame(updateFrame);
+        window.cancelAnimationFrame(revealResetFrame);
+      };
     }
 
     const exitFrame = window.requestAnimationFrame(() =>
@@ -87,9 +156,11 @@ export function PublicMotionProvider({ children }: PublicMotionProviderProps) {
   }
 
   return (
-    <div className="public-motion-shell" data-motion-state={motionState}>
-      <div aria-hidden="true" className="public-motion-ambient" />
-      <div className="public-motion-content">{renderedChildren}</div>
-    </div>
+    <PublicMotionContext.Provider value={motionContextValue}>
+      <div className="public-motion-shell" data-motion-state={motionState}>
+        <div aria-hidden="true" className="public-motion-ambient" />
+        <div className="public-motion-content">{renderedChildren}</div>
+      </div>
+    </PublicMotionContext.Provider>
   );
 }

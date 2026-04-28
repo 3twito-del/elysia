@@ -74,7 +74,9 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                       key={item.slug}
                       variant={item.slug === slug ? "secondary" : "ghost"}
                     >
-                      <Link href={`/category/${item.slug}`}>{item.name}</Link>
+                      <Link href={`/category/${item.slug}`} scroll={false}>
+                        {item.name}
+                      </Link>
                     </Button>
                   ))}
                 </div>
