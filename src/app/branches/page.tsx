@@ -1,7 +1,10 @@
 import { BranchCard } from "~/components/branch-card";
+import { AppointmentBookingForm } from "./_components/appointment-booking-form";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { getCatalogBranches } from "~/server/services/catalog";
+import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata = {
   title: "סניפים",
@@ -29,6 +32,17 @@ export default async function BranchesPage() {
             <BranchCard branch={branch} key={branch.slug} />
           ))}
         </RevealGrid>
+
+        <Card className="mt-8 rounded-md">
+          <CardHeader>
+            <CardTitle>תיאום פגישה בסניף</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <TRPCReactProvider>
+              <AppointmentBookingForm branches={branches} />
+            </TRPCReactProvider>
+          </CardContent>
+        </Card>
       </RevealSection>
     </main>
   );

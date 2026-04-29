@@ -5,10 +5,14 @@ import {
   LogOut,
   PackageCheck,
   Ruler,
+  ShieldCheck,
+  Trash2,
 } from "lucide-react";
 
 import { CustomerOtpForm } from "./_components/customer-otp-form";
-import { customerLogoutAction } from "./actions";
+import { CustomerAddressForm } from "./_components/customer-address-form";
+import { CustomerPrivacyActions } from "./_components/customer-privacy-actions";
+import { customerLogoutAction, removeWishlistItemAction } from "./actions";
 import { MetricCard } from "~/components/metric-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -44,6 +48,7 @@ async function loadCustomerAccount(userId: string) {
         orderBy: { createdAt: "desc" },
         take: 5,
       },
+      addresses: true,
       savedSizes: true,
       wishlist: {
         include: {
@@ -193,8 +198,9 @@ export default async function AccountPage() {
                 </p>
               ) : (
                 customer.orders.map((order) => (
-                  <div
+                  <Link
                     className="glass-inset flex items-center justify-between gap-4 rounded-md border p-3"
+                    href={`/account/orders/${order.id}`}
                     key={order.id}
                   >
                     <div>
@@ -204,7 +210,7 @@ export default async function AccountPage() {
                       </p>
                     </div>
                     <span>{formatPrice(Number(order.total))}</span>
-                  </div>
+                  </Link>
                 ))
               )}
             </CardContent>
@@ -221,21 +227,127 @@ export default async function AccountPage() {
                 </p>
               ) : (
                 wishlistItems.map((item) => (
-                  <Link
-                    className="glass-inset flex items-center justify-between gap-4 rounded-md border p-3 transition hover:border-[var(--glass-border-strong)]"
-                    href={`/product/${item.variant.product.slug}`}
+                  <div
+                    className="glass-inset flex items-center justify-between gap-4 rounded-md border p-3"
                     key={item.id}
                   >
-                    <div>
+                    <Link href={`/product/${item.variant.product.slug}`}>
                       <p className="font-medium">{item.variant.product.name}</p>
                       <p className="text-muted-foreground text-xs">
                         {item.variant.name}
                       </p>
-                    </div>
-                    <Heart className="size-4" />
-                  </Link>
+                    </Link>
+                    <form action={removeWishlistItemAction}>
+                      <input name="itemId" type="hidden" value={item.id} />
+                      <Button size="icon" type="submit" variant="ghost">
+                        <Trash2 className="size-4" />
+                        <span className="sr-only">הסרה</span>
+                      </Button>
+                    </form>
+                  </div>
                 ))
               )}
+            </CardContent>
+          </Card>
+
+          <Card className="rounded-md">
+            <CardHeader>
+              <CardTitle>כתובות שמורות</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              {customer.addresses.length === 0 ? (
+                <p className="text-muted-foreground text-sm">
+                  עדיין לא נשמרו כתובות.
+                </p>
+              ) : (
+                customer.addresses.map((address) => (
+                  <div
+                    className="glass-inset rounded-md border p-3"
+                    key={address.id}
+                  >
+                    <p className="font-medium">
+                      {address.label ?? address.recipient}
+                    </p>
+                    <p className="text-muted-foreground text-sm">
+                      {address.city}, {address.street}
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      {address.phone}
+                    </p>
+                  </div>
+                ))
+              )}
+              <CustomerAddressForm />
+            </CardContent>
+          </Card>
+
+          <Card className="rounded-md">
+            <CardHeader>
+              <CardTitle>מידות וסגנון</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-3">
+              {customer.savedSizes.length === 0 ? (
+                <p className="text-muted-foreground text-sm">
+                  עדיין לא נשמרו מידות.
+                </p>
+              ) : (
+                customer.savedSizes.map((size) => (
+                  <div
+                    className="glass-inset flex items-center justify-between rounded-md border p-3"
+                    key={size.id}
+                  >
+                    <span>{size.kind}</span>
+                    <span className="font-medium">{size.value}</span>
+                  </div>
+                ))
+              )}
+            </CardContent>
+          </Card>
+          <Card className="rounded-md">
+            <CardHeader>
+              <CardTitle>תורים</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-3">
+              {customer.appointments.length === 0 ? (
+                <p className="text-muted-foreground text-sm">
+                  עדיין לא נקבעו תורים.
+                </p>
+              ) : (
+                customer.appointments.map((appointment) => (
+                  <div
+                    className="glass-inset rounded-md border p-3"
+                    key={appointment.id}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="font-medium">{appointment.topic}</p>
+                        <p className="text-muted-foreground text-sm">
+                          {appointment.branch.name} ·{" "}
+                          {appointment.startsAt.toLocaleString("he-IL")}
+                        </p>
+                      </div>
+                      <span className="text-muted-foreground text-xs">
+                        {appointment.status}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              )}
+              <Button asChild className="w-fit" variant="outline">
+                <Link href="/branches">תיאום תור נוסף</Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="rounded-md">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <ShieldCheck className="size-5" />
+                פרטיות ונתונים
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CustomerPrivacyActions />
             </CardContent>
           </Card>
         </div>

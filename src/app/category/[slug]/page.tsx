@@ -271,7 +271,7 @@ export default async function CategoryPage({
                   </Button>
                 )}
                 <Button asChild size="sm" variant="outline">
-                  <Link href="/stylist">
+                  <Link href="/ai">
                     <Sparkles className="size-3.5" />
                     התאמה אישית
                   </Link>
@@ -305,7 +305,7 @@ export default async function CategoryPage({
                     </Link>
                   </Button>
                   <Button asChild>
-                    <Link href="/stylist">התאמה אישית</Link>
+                    <Link href="/ai">התאמה אישית</Link>
                   </Button>
                 </div>
               </div>

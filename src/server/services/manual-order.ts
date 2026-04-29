@@ -655,6 +655,14 @@ export async function listAdminOrders(input: { limit?: number } = {}) {
       customer: true,
       items: true,
       payments: true,
+      returns: {
+        orderBy: { createdAt: "desc" },
+        take: 3,
+      },
+      shipments: {
+        orderBy: { shippedAt: "desc" },
+        take: 1,
+      },
     },
   });
 
@@ -672,6 +680,23 @@ export async function listAdminOrders(input: { limit?: number } = {}) {
     createdAt: order.createdAt,
     itemCount: order.items.reduce((sum, item) => sum + item.quantity, 0),
     paymentStatus: order.payments[0]?.status ?? "PENDING",
+    returns: order.returns.map((request) => ({
+      id: request.id,
+      reason: request.reason,
+      status: request.status,
+      notes: request.notes,
+      createdAt: request.createdAt,
+    })),
+    shipment: order.shipments[0]
+      ? {
+          id: order.shipments[0].id,
+          provider: order.shipments[0].provider,
+          tracking: order.shipments[0].tracking,
+          status: order.shipments[0].status,
+          shippedAt: order.shipments[0].shippedAt,
+          deliveredAt: order.shipments[0].deliveredAt,
+        }
+      : null,
   }));
 }
 
@@ -826,6 +851,20 @@ export async function updateManualOrderStatus(input: {
         },
       });
     }
+
+    await createOutboxEvent(tx, {
+      type: BUSINESS_EVENTS.emailRequested,
+      aggregateType: "Order",
+      aggregateId: order.id,
+      idempotencyKey: `${BUSINESS_EVENTS.emailRequested}:order-status:${order.id}:${input.status}`,
+      payload: {
+        orderId: order.id,
+        orderNumber: order.orderNumber,
+        customerEmail: order.email,
+        template: "order_status_updated",
+        status: input.status,
+      },
+    });
 
     return {
       orderId: updated.id,

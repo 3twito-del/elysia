@@ -76,17 +76,20 @@ export async function markOutboxEventStatus(input: {
   status: OutboxEventStatus;
   lastError?: string;
 }) {
+  const retryAt =
+    input.status === "FAILED"
+      ? new Date(Date.now() + 2 ** 3 * 60_000)
+      : undefined;
+
   return db.outboxEvent.update({
     where: { id: input.id },
     data: {
       status: input.status,
       lastError: input.lastError,
-      attempts:
-        input.status === "FAILED" || input.status === "PROCESSING"
-          ? { increment: 1 }
-          : undefined,
+      attempts: input.status === "PROCESSING" ? { increment: 1 } : undefined,
       publishedAt: input.status === "PUBLISHED" ? new Date() : undefined,
       processedAt: input.status === "PROCESSED" ? new Date() : undefined,
+      availableAt: retryAt,
     },
   });
 }

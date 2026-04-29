@@ -1,10 +1,17 @@
 import type { Prisma } from "@prisma/client";
+import { unstable_cache } from "next/cache";
 
 import { db } from "~/server/db";
+import {
+  CATALOG_CACHE_TAGS,
+  categoryCacheTag,
+  productCacheTag,
+} from "~/server/services/catalog-cache";
 
 const ACTIVE_PRODUCT_WHERE = {
   status: "ACTIVE",
 } satisfies Prisma.ProductWhereInput;
+const CATALOG_REVALIDATE_SECONDS = 60 * 60;
 const DEFAULT_IMAGE =
   "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80";
 
@@ -93,69 +100,138 @@ export function formatPrice(amount: number) {
   }).format(amount);
 }
 
-export async function getCatalogCategories(): Promise<CatalogCategory[]> {
-  const categories = await db.category.findMany({
-    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
-  });
+const getCatalogCategoriesCached = unstable_cache(
+  async (): Promise<CatalogCategory[]> => {
+    const categories = await db.category.findMany({
+      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+    });
 
-  return categories.map((category) => ({
-    slug: category.slug,
-    name: category.name,
-    description: category.description ?? "",
-  }));
+    return categories.map((category) => ({
+      slug: category.slug,
+      name: category.name,
+      description: category.description ?? "",
+    }));
+  },
+  ["catalog:categories"],
+  {
+    revalidate: CATALOG_REVALIDATE_SECONDS,
+    tags: [CATALOG_CACHE_TAGS.categories],
+  },
+);
+
+export async function getCatalogCategories(): Promise<CatalogCategory[]> {
+  return getCatalogCategoriesCached();
 }
 
 export async function getCatalogCategoryBySlug(slug: string) {
-  const category = await db.category.findUnique({ where: { slug } });
+  const getCatalogCategoryBySlugCached = unstable_cache(
+    async () => {
+      const category = await db.category.findUnique({ where: { slug } });
 
-  if (!category) return null;
+      if (!category) return null;
 
-  return {
-    slug: category.slug,
-    name: category.name,
-    description: category.description ?? "",
-  } satisfies CatalogCategory;
+      return {
+        slug: category.slug,
+        name: category.name,
+        description: category.description ?? "",
+      } satisfies CatalogCategory;
+    },
+    [`catalog:category:${slug}`],
+    {
+      revalidate: CATALOG_REVALIDATE_SECONDS,
+      tags: [CATALOG_CACHE_TAGS.categories, categoryCacheTag(slug)],
+    },
+  );
+
+  return getCatalogCategoryBySlugCached();
 }
+
+const getCatalogBranchesCached = unstable_cache(
+  async (): Promise<CatalogBranch[]> => {
+    const branches = await db.branch.findMany({
+      orderBy: [{ city: "asc" }, { name: "asc" }],
+    });
+
+    return branches.map(mapCatalogBranch);
+  },
+  ["catalog:branches"],
+  {
+    revalidate: CATALOG_REVALIDATE_SECONDS,
+    tags: [CATALOG_CACHE_TAGS.branches],
+  },
+);
 
 export async function getCatalogBranches(): Promise<CatalogBranch[]> {
-  const branches = await db.branch.findMany({
-    orderBy: [{ city: "asc" }, { name: "asc" }],
-  });
-
-  return branches.map(mapCatalogBranch);
+  return getCatalogBranchesCached();
 }
 
-export async function getFeaturedCatalogProducts(take = 4) {
-  const records = await db.product.findMany({
-    where: ACTIVE_PRODUCT_WHERE,
-    include: createCatalogProductInclude(),
-    orderBy: [{ createdAt: "desc" }],
-    take,
-  });
+const getFeaturedCatalogProductsCached = unstable_cache(
+  async (take: number) => {
+    const records = await db.product.findMany({
+      where: ACTIVE_PRODUCT_WHERE,
+      include: createCatalogProductInclude(),
+      orderBy: [{ createdAt: "desc" }],
+      take,
+    });
 
-  return records.map(mapCatalogProduct);
+    return records.map(mapCatalogProduct);
+  },
+  ["catalog:featured-products"],
+  {
+    revalidate: CATALOG_REVALIDATE_SECONDS,
+    tags: [CATALOG_CACHE_TAGS.products],
+  },
+);
+
+export async function getFeaturedCatalogProducts(take = 4) {
+  return getFeaturedCatalogProductsCached(take);
 }
 
 export async function listCatalogProducts(input: { category?: string } = {}) {
-  const records = await db.product.findMany({
-    where: {
-      ...ACTIVE_PRODUCT_WHERE,
-      ...(input.category ? { category: { slug: input.category } } : {}),
-    },
-    include: createCatalogProductInclude(),
-    orderBy: [{ createdAt: "desc" }],
-  });
+  const getCatalogProductsCached = unstable_cache(
+    async () => {
+      const records = await db.product.findMany({
+        where: {
+          ...ACTIVE_PRODUCT_WHERE,
+          ...(input.category ? { category: { slug: input.category } } : {}),
+        },
+        include: createCatalogProductInclude(),
+        orderBy: [{ createdAt: "desc" }],
+      });
 
-  return records.map(mapCatalogProduct);
+      return records.map(mapCatalogProduct);
+    },
+    [`catalog:products:${input.category ?? "all"}`],
+    {
+      revalidate: CATALOG_REVALIDATE_SECONDS,
+      tags: [
+        CATALOG_CACHE_TAGS.products,
+        ...(input.category ? [categoryCacheTag(input.category)] : []),
+      ],
+    },
+  );
+
+  return getCatalogProductsCached();
 }
 
 export async function getCatalogProductBySlug(slug: string) {
-  const record = await db.product.findFirst({
-    where: { ...ACTIVE_PRODUCT_WHERE, slug },
-    include: createCatalogProductInclude(),
-  });
+  const getCatalogProductBySlugCached = unstable_cache(
+    async () => {
+      const record = await db.product.findFirst({
+        where: { ...ACTIVE_PRODUCT_WHERE, slug },
+        include: createCatalogProductInclude(),
+      });
 
-  return record ? mapCatalogProduct(record) : null;
+      return record ? mapCatalogProduct(record) : null;
+    },
+    [`catalog:product:${slug}`],
+    {
+      revalidate: CATALOG_REVALIDATE_SECONDS,
+      tags: [CATALOG_CACHE_TAGS.products, productCacheTag(slug)],
+    },
+  );
+
+  return getCatalogProductBySlugCached();
 }
 
 export function getCatalogProductVariant(
@@ -168,23 +244,36 @@ export function getCatalogProductVariant(
   );
 }
 
-export async function getCatalogFacets(): Promise<CatalogFacets> {
-  const products = await listCatalogProducts();
-  const prices = products.map((product) => product.price);
+const getCatalogFacetsCached = unstable_cache(
+  async (): Promise<CatalogFacets> => {
+    const products = await listCatalogProducts();
+    const prices = products.map((product) => product.price);
 
-  return {
-    materials: getUniqueValues(products.map((product) => product.material)),
-    stones: getUniqueValues(
-      products
-        .map((product) => product.stone)
-        .filter((value): value is string => Boolean(value)),
-    ),
-    collections: getUniqueValues(products.map((product) => product.collection)),
-    priceRange: {
-      min: prices.length > 0 ? Math.min(...prices) : 0,
-      max: prices.length > 0 ? Math.max(...prices) : 0,
-    },
-  };
+    return {
+      materials: getUniqueValues(products.map((product) => product.material)),
+      stones: getUniqueValues(
+        products
+          .map((product) => product.stone)
+          .filter((value): value is string => Boolean(value)),
+      ),
+      collections: getUniqueValues(
+        products.map((product) => product.collection),
+      ),
+      priceRange: {
+        min: prices.length > 0 ? Math.min(...prices) : 0,
+        max: prices.length > 0 ? Math.max(...prices) : 0,
+      },
+    };
+  },
+  ["catalog:facets"],
+  {
+    revalidate: CATALOG_REVALIDATE_SECONDS,
+    tags: [CATALOG_CACHE_TAGS.facets, CATALOG_CACHE_TAGS.products],
+  },
+);
+
+export async function getCatalogFacets(): Promise<CatalogFacets> {
+  return getCatalogFacetsCached();
 }
 
 export async function searchCatalogProducts(input: CatalogSearchInput = {}) {

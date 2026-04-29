@@ -431,7 +431,7 @@ export default function AboutPage() {
                   <Link href="/branches">סניפים ומדידה</Link>
                 </Button>
                 <Button asChild variant="outline">
-                  <Link href="/stylist">ייעוץ אישי</Link>
+                  <Link href="/ai">ייעוץ אישי</Link>
                 </Button>
               </div>
             </div>

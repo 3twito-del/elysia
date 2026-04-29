@@ -6,6 +6,28 @@ Goal: turn Aphrodite from a soft-launch commerce system into an enterprise-grade
 
 Default direction: keep Next.js/Vercel as the base, do not build a marketplace, and move through engineering-spec phases that keep the system stable at every step.
 
+## Current Status - 2026-04-29
+
+Local, unblocked implementation work is complete for this phase.
+
+Completed locally:
+
+- DB-first catalog reads, public catalog cache/revalidation tags, and removal of public static catalog dependency.
+- Guest/customer cart, OTP cart merge, coupon validation from DB, and cart checkout orchestration.
+- Outbox/job processing for email, search reindex, reservation expiry, retry state, payment reconciliation placeholder, and order-status notifications.
+- Search filters, facets, sort options, result analytics, click/view analytics, and production guard for Typesense config.
+- Admin catalog CRUD, inventory edits, coupon management, customer summary, order status actions, shipment tracking, appointment management, return/refund approval, audit logs, and customer export/delete privacy flows.
+- Customer account order detail, shipment/return visibility, return request form, saved addresses, wishlist management, appointments, and privacy export/delete controls.
+- Product recently viewed, similar products, real media gallery flow, variant selector, and branch availability.
+- AI gift recommendations with persisted recommendation sessions, style profile builder, order-support helper, and admin product-copy helper.
+- Automated local smoke script: `pnpm smoke`.
+
+Externally blocked or production-configuration work:
+
+- Real CardCom production checkout and full signed webhook validation require live CardCom credentials and provider contract details.
+- Vercel Queues, Firewall/WAF rules, Observability dashboards, and production alerting require the deployed Vercel project/environment.
+- Production email/SMS delivery depends on configured Resend/Brevo/SMS provider credentials.
+
 ## Key Architecture Changes
 
 ### 1. Single Source of Truth for Catalog and Inventory

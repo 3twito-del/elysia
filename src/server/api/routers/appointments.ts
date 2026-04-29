@@ -4,6 +4,7 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { notificationProvider } from "~/server/adapters/notifications";
 import { db } from "~/server/db";
+import { assertRateLimit } from "~/server/services/rate-limit";
 
 const createAppointmentInputSchema = z.object({
   branchSlug: z.string().trim().min(1),
@@ -18,7 +19,13 @@ const createAppointmentInputSchema = z.object({
 export const appointmentsRouter = createTRPCRouter({
   create: publicProcedure
     .input(createAppointmentInputSchema)
-    .mutation(async ({ input }) => {
+    .mutation(async ({ ctx, input }) => {
+      assertRateLimit({
+        key: `appointment:${input.phone}`,
+        limit: 4,
+        windowMs: 60 * 60_000,
+      });
+
       const branch = await db.branch.findUnique({
         where: { slug: input.branchSlug },
       });
@@ -30,9 +37,22 @@ export const appointmentsRouter = createTRPCRouter({
         });
       }
 
+      const customer = ctx.session?.user.id
+        ? await db.customer.findUnique({
+            where: { userId: ctx.session.user.id },
+            select: { id: true },
+          })
+        : input.email
+          ? await db.customer.findUnique({
+              where: { email: input.email },
+              select: { id: true },
+            })
+          : null;
+
       const appointment = await db.appointment.create({
         data: {
           branchId: branch.id,
+          customerId: customer?.id,
           topic: input.topic,
           name: input.name,
           email: input.email,

@@ -16,6 +16,7 @@ import {
   getCatalogProductBySlug,
   getFeaturedCatalogProducts,
 } from "~/server/services/catalog";
+import { getActiveCouponValue } from "~/server/services/coupons";
 import { calculateOrderTotal } from "~/server/services/pricing";
 
 export const cartRouter = createTRPCRouter({
@@ -55,34 +56,37 @@ export const cartRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       const fallbackProducts = await getFeaturedCatalogProducts(1);
-      const items = await Promise.all(
-        input.items.map(async (item) => {
-          const product =
-            (await getCatalogProductBySlug(item.productSlug)) ??
-            fallbackProducts[0];
+      const [items, coupon] = await Promise.all([
+        Promise.all(
+          input.items.map(async (item) => {
+            const product =
+              (await getCatalogProductBySlug(item.productSlug)) ??
+              fallbackProducts[0];
 
-          if (!product) {
-            throw new Error(
-              "No active product is available for cart estimate.",
-            );
-          }
+            if (!product) {
+              throw new Error(
+                "No active product is available for cart estimate.",
+              );
+            }
 
-          return {
-            name: product.name,
-            unitPrice: product.price,
-            quantity: item.quantity,
-          };
-        }),
-      );
+            return {
+              name: product.name,
+              unitPrice: product.price,
+              quantity: item.quantity,
+            };
+          }),
+        ),
+        getActiveCouponValue(input.couponCode),
+      ]);
 
       return {
         items,
         ...calculateOrderTotal({
           items,
           shipping: input.fulfillmentMethod === "DELIVERY" ? 29 : 0,
-          coupon:
-            input.couponCode === "APHRODITE10" ? { percentOff: 10 } : undefined,
+          coupon: coupon?.value,
         }),
+        couponValid: input.couponCode ? Boolean(coupon) : undefined,
       };
     }),
 });

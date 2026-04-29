@@ -4,6 +4,10 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { paymentProvider } from "~/server/adapters/payment";
 import { db } from "~/server/db";
+import {
+  cartCheckoutInputSchema,
+  createCartCheckoutOrder,
+} from "~/server/services/cart-checkout";
 import { BUSINESS_EVENTS, enqueueOutboxEvent } from "~/server/services/outbox";
 import { consumeRateLimit } from "~/server/services/rate-limit";
 import {
@@ -29,6 +33,25 @@ export const checkoutRouter = createTRPCRouter({
       }
 
       return createManualOrder(input);
+    }),
+
+  createCartOrder: publicProcedure
+    .input(cartCheckoutInputSchema)
+    .mutation(({ input }) => {
+      const rateLimit = consumeRateLimit({
+        key: `cart-checkout:${input.customer.email}`,
+        limit: 5,
+        windowMs: 15 * 60_000,
+      });
+
+      if (!rateLimit.allowed) {
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: "יותר מדי ניסיונות קופה. נסו שוב בעוד כמה דקות.",
+        });
+      }
+
+      return createCartCheckoutOrder(input);
     }),
 
   createPayment: publicProcedure

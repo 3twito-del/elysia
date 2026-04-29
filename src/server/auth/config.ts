@@ -30,6 +30,7 @@ type AdminTokenFields = {
 const otpCredentialsSchema = z.object({
   identifier: z.string().min(5),
   code: z.string().min(4).max(8),
+  sessionKey: z.string().min(16).max(128).optional(),
 });
 
 const adminCredentialsSchema = z.object({

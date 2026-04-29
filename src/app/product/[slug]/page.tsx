@@ -4,7 +4,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CalendarCheck, RotateCcw, ShieldCheck } from "lucide-react";
 
+import { ProductAnalytics } from "./_components/product-analytics";
 import { ProductPurchasePanel } from "./_components/product-purchase-panel";
+import { RecentlyViewedProducts } from "./_components/recently-viewed-products";
+import { ProductCard } from "~/components/product-card";
 import { SiteHeader } from "~/components/site-header";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { Badge } from "~/components/ui/badge";
@@ -18,9 +21,11 @@ import {
   getCatalogProductBySlug,
   listCatalogProducts,
 } from "~/server/services/catalog";
+import { TRPCReactProvider } from "~/trpc/react";
 
 type ProductPageProps = {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ q?: string; position?: string }>;
 };
 
 export async function generateStaticParams() {
@@ -48,8 +53,12 @@ export async function generateMetadata({
   };
 }
 
-export default async function ProductPage({ params }: ProductPageProps) {
+export default async function ProductPage({
+  params,
+  searchParams,
+}: ProductPageProps) {
   const { slug } = await params;
+  const search = searchParams ? await searchParams : {};
   const [product, branches] = await Promise.all([
     getCatalogProductBySlug(slug),
     getCatalogBranches(),
@@ -77,10 +86,26 @@ export default async function ProductPage({ params }: ProductPageProps) {
       availability: "https://schema.org/InStock",
     },
   };
+  const allProducts = await listCatalogProducts();
+  const similarProducts = allProducts
+    .filter(
+      (candidate) =>
+        candidate.slug !== product.slug &&
+        (candidate.categorySlug === product.categorySlug ||
+          candidate.material === product.material ||
+          candidate.collection === product.collection),
+    )
+    .slice(0, 4);
 
   return (
     <main>
       <SiteHeader />
+      <ProductAnalytics
+        path={`/product/${product.slug}`}
+        position={search.position ? Number(search.position) : undefined}
+        productSlug={product.slug}
+        query={search.q}
+      />
       <script
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         type="application/ld+json"
@@ -160,11 +185,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <Separator className="my-7" />
 
           <div className="mt-7 grid gap-3">
-            <ProductPurchasePanel
-              metalColors={product.metalColors}
-              productSlug={product.slug}
-              variants={product.variants}
-            />
+            <TRPCReactProvider>
+              <ProductPurchasePanel
+                metalColors={product.metalColors}
+                productSlug={product.slug}
+                variants={product.variants}
+              />
+            </TRPCReactProvider>
             <Button asChild variant="secondary">
               <Link href="/branches">
                 תיאום בסניף
@@ -232,6 +259,20 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </CardContent>
           </Card>
         </RevealGrid>
+        {similarProducts.length > 0 ? (
+          <div className="mt-12">
+            <h2 className="text-2xl font-semibold">מוצרים דומים</h2>
+            <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {similarProducts.map((similar) => (
+                <ProductCard key={similar.slug} product={similar} />
+              ))}
+            </div>
+          </div>
+        ) : null}
+        <RecentlyViewedProducts
+          currentSlug={product.slug}
+          products={allProducts}
+        />
       </RevealSection>
     </main>
   );

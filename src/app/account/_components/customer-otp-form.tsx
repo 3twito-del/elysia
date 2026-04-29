@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { LogIn, Send } from "lucide-react";
 
@@ -12,10 +12,14 @@ import {
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { getOrCreateCartSessionKey } from "~/lib/cart-session";
 
 const initialState: CustomerOtpState = {};
 
 export function CustomerOtpForm() {
+  const [sessionKey] = useState(() =>
+    typeof window === "undefined" ? "" : getOrCreateCartSessionKey(),
+  );
   const [requestState, requestAction] = useActionState(
     requestCustomerOtpAction,
     initialState,
@@ -51,6 +55,7 @@ export function CustomerOtpForm() {
       </form>
 
       <form action={verifyAction} className="grid gap-4">
+        <input name="sessionKey" type="hidden" value={sessionKey} />
         <div>
           <Label htmlFor="verify-identifier">אימייל או טלפון לאימות</Label>
           <Input

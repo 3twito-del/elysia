@@ -3,6 +3,7 @@ import type { Cart, CartItem, Prisma } from "@prisma/client";
 import { z } from "zod";
 
 import { db } from "~/server/db";
+import { getActiveCouponValue, normalizeCouponCode } from "./coupons";
 import { calculateOrderTotal } from "~/server/services/pricing";
 
 const CART_TTL_DAYS = 30;
@@ -50,7 +51,7 @@ type CartWithItems = Cart & {
   >;
 };
 
-export type CartSummary = ReturnType<typeof mapCartSummary>;
+export type CartSummary = Awaited<ReturnType<typeof mapCartSummary>>;
 
 export async function getCartBySession(sessionKey: string) {
   const parsed = cartSessionKeySchema.parse(sessionKey);
@@ -257,7 +258,7 @@ function getCartById(tx: Prisma.TransactionClient, id: string) {
   });
 }
 
-function mapCartSummary(cart: CartWithItems, fulfillmentMethod: string) {
+async function mapCartSummary(cart: CartWithItems, fulfillmentMethod: string) {
   const items = cart.items.map((item) => ({
     id: item.id,
     productSlug: item.variant.product.slug,
@@ -268,13 +269,11 @@ function mapCartSummary(cart: CartWithItems, fulfillmentMethod: string) {
     unitPrice: Number(item.unitPrice),
     lineTotal: Number(item.unitPrice) * item.quantity,
   }));
+  const coupon = await getActiveCouponValue(cart.couponCode);
   const totals = calculateOrderTotal({
     items,
     shipping: fulfillmentMethod === "DELIVERY" ? 29 : 0,
-    coupon:
-      cart.couponCode?.toUpperCase() === "APHRODITE10"
-        ? { percentOff: 10 }
-        : undefined,
+    coupon: coupon?.value,
   });
 
   return {
@@ -284,7 +283,8 @@ function mapCartSummary(cart: CartWithItems, fulfillmentMethod: string) {
     currency: cart.currency,
     giftWrap: cart.giftWrap,
     giftMessage: cart.giftMessage,
-    couponCode: cart.couponCode,
+    couponCode: normalizeCouponCode(cart.couponCode),
+    couponValid: cart.couponCode ? Boolean(coupon) : undefined,
     expiresAt: cart.expiresAt,
     items,
     itemCount: items.reduce((sum, item) => sum + item.quantity, 0),

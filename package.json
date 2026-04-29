@@ -19,6 +19,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "preview": "next build && next start",
+    "smoke": "node scripts/smoke.mjs",
     "start": "next start",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"

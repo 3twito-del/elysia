@@ -15,7 +15,7 @@ const serviceLinks = [
   { href: "/checkout", label: "סל וקופה", icon: ShieldCheck },
   { href: "/account", label: "אזור לקוח", icon: Gem },
   { href: "/branches", label: "סניפים ואיסוף", icon: MapPin },
-  { href: "/stylist", label: "סטייליסט AI", icon: Sparkles },
+  { href: "/ai", label: "סטייליסט AI", icon: Sparkles },
 ];
 
 export async function SiteFooter() {
@@ -42,7 +42,7 @@ export async function SiteFooter() {
             <NewsletterForm />
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <Button asChild variant="secondary">
-                <Link href="/stylist">
+                <Link href="/ai">
                   ייעוץ אישי
                   <Sparkles className="size-4" />
                 </Link>

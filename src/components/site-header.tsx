@@ -13,7 +13,7 @@ const navItems: HeaderNavItem[] = [
   { href: "/gifts", label: "מתנות" },
   { href: "/about", label: "אודות" },
   { href: "/branches", label: "סניפים" },
-  { href: "/stylist", label: "ייעוץ אישי" },
+  { href: "/ai", label: "ייעוץ אישי" },
 ];
 
 export function SiteHeader() {

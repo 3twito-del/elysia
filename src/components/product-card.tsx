@@ -5,19 +5,29 @@ import { Heart, MapPin, ShoppingBag } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
-import { formatPrice, type CatalogProduct } from "~/server/services/catalog";
+import { formatPrice } from "~/lib/format";
+import type { CatalogProduct } from "~/server/services/catalog";
 
-export function ProductCard({ product }: { product: CatalogProduct }) {
+type ProductCardProps = {
+  product: CatalogProduct;
+  searchContext?: {
+    query?: string;
+    position?: number;
+  };
+};
+
+export function ProductCard({ product, searchContext }: ProductCardProps) {
   const availableBranches = Object.values(product.inventory).filter(
     Boolean,
   ).length;
+  const href = createProductHref(product.slug, searchContext);
 
   return (
     <Card className="interactive-lift h-full overflow-hidden rounded-md py-0">
       <Link
         aria-label={`צפייה במוצר ${product.name}`}
         className="block focus-visible:outline-none"
-        href={`/product/${product.slug}`}
+        href={href}
       >
         <div className="glass-inset relative aspect-square overflow-hidden border-0">
           <Image
@@ -38,10 +48,7 @@ export function ProductCard({ product }: { product: CatalogProduct }) {
       <CardContent className="flex flex-1 flex-col gap-4 p-4">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <Link
-              className="font-medium hover:underline"
-              href={`/product/${product.slug}`}
-            >
+            <Link className="font-medium hover:underline" href={href}>
               {product.name}
             </Link>
             <p className="text-muted-foreground mt-1 line-clamp-2 text-sm">
@@ -70,10 +77,7 @@ export function ProductCard({ product }: { product: CatalogProduct }) {
             </span>
           </div>
           <Button asChild className="w-full gap-2" variant="outline">
-            <Link
-              aria-label={`צפייה וקנייה: ${product.name}`}
-              href={`/product/${product.slug}`}
-            >
+            <Link aria-label={`צפייה וקנייה: ${product.name}`} href={href}>
               <ShoppingBag className="size-4" />
               צפייה וקנייה
             </Link>
@@ -82,4 +86,19 @@ export function ProductCard({ product }: { product: CatalogProduct }) {
       </CardContent>
     </Card>
   );
+}
+
+function createProductHref(
+  slug: string,
+  searchContext?: ProductCardProps["searchContext"],
+) {
+  if (!searchContext?.query) return `/product/${slug}`;
+
+  const params = new URLSearchParams({ q: searchContext.query });
+
+  if (typeof searchContext.position === "number") {
+    params.set("position", String(searchContext.position));
+  }
+
+  return `/product/${slug}?${params.toString()}`;
 }

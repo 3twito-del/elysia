@@ -124,6 +124,7 @@ export async function POST(req: Request) {
             name: product.name,
             price: product.price,
             formattedPrice: formatPrice(product.price),
+            image: product.image,
             category: product.categoryName,
             material: product.material,
             stone: product.stone,

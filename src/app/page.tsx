@@ -71,7 +71,7 @@ export default async function Home() {
                 size="lg"
                 variant="outline"
               >
-                <Link href="/stylist">
+                <Link href="/ai">
                   ייעוץ סטייליסט AI
                   <Sparkles className="size-4" />
                 </Link>

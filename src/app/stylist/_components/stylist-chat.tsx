@@ -1,9 +1,10 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import { AlertCircle, MessageSquare, Sparkles } from "lucide-react";
 
+import { AiProductRecommendations } from "~/components/ai-product-recommendations";
 import {
   Conversation,
   ConversationContent,
@@ -23,7 +24,9 @@ import {
 } from "~/components/ai-elements/prompt-input";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
+import { Spinner } from "~/components/ui/spinner";
 import { TooltipProvider } from "~/components/ui/tooltip";
+import type { AiRecommendedProductInput } from "~/lib/ai-product-recommendations";
 
 const suggestions = [
   "מתנה לאמא עד 700 ש״ח בסגנון עדין",
@@ -95,15 +98,30 @@ export function StylistChat() {
               ) : (
                 messages.map((message) => (
                   <Message from={message.role} key={message.id}>
-                    <MessageContent>
+                    <MessageContent
+                      className={
+                        message.role === "assistant" ? "w-full" : undefined
+                      }
+                    >
                       {message.parts.map((part, index) => {
-                        if (part.type !== "text") return null;
+                        if (part.type === "text") {
+                          return (
+                            <MessageResponse key={`${message.id}-${index}`}>
+                              {part.text}
+                            </MessageResponse>
+                          );
+                        }
 
-                        return (
-                          <Fragment key={`${message.id}-${index}`}>
-                            <MessageResponse>{part.text}</MessageResponse>
-                          </Fragment>
-                        );
+                        if (isSearchCatalogToolPart(part)) {
+                          return (
+                            <SearchCatalogToolResult
+                              key={`${message.id}-${index}`}
+                              part={part}
+                            />
+                          );
+                        }
+
+                        return null;
                       })}
                     </MessageContent>
                   </Message>
@@ -159,5 +177,66 @@ export function StylistChat() {
         </div>
       </div>
     </TooltipProvider>
+  );
+}
+
+type SearchCatalogToolPart = {
+  type: "tool-searchCatalog";
+  state: string;
+  output?: unknown;
+  errorText?: string;
+};
+
+function SearchCatalogToolResult({ part }: { part: SearchCatalogToolPart }) {
+  if (part.state === "output-error") {
+    return (
+      <div className="glass-inset rounded-md border p-3 text-sm">
+        לא ניתן היה לטעון מוצרים מהקטלוג כרגע.
+      </div>
+    );
+  }
+
+  if (part.state !== "output-available") {
+    return (
+      <div className="glass-inset flex w-fit items-center gap-2 rounded-md border px-3 py-2 text-sm">
+        <Spinner />
+        מחפשת מוצרים בקטלוג
+      </div>
+    );
+  }
+
+  const products = Array.isArray(part.output)
+    ? part.output.filter(isAiRecommendedProductInput)
+    : [];
+
+  return (
+    <AiProductRecommendations
+      className="mt-1"
+      products={products}
+      source="stylist"
+      title="מוצרים מומלצים"
+    />
+  );
+}
+
+function isSearchCatalogToolPart(part: unknown): part is SearchCatalogToolPart {
+  return (
+    typeof part === "object" &&
+    part !== null &&
+    "type" in part &&
+    part.type === "tool-searchCatalog"
+  );
+}
+
+function isAiRecommendedProductInput(
+  value: unknown,
+): value is AiRecommendedProductInput {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "slug" in value &&
+    typeof value.slug === "string" &&
+    "name" in value &&
+    typeof value.name === "string"
   );
 }

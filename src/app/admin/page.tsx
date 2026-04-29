@@ -2,15 +2,25 @@ import {
   Boxes,
   CalendarClock,
   ClipboardList,
+  Percent,
   LogOut,
   PackageCheck,
   PlugZap,
   ShieldAlert,
   Store,
+  Users,
 } from "lucide-react";
 import { redirect } from "next/navigation";
 
 import { AdminOrderActions } from "./_components/admin-order-actions";
+import { AdminAppointmentActions } from "./_components/admin-appointment-actions";
+import {
+  AdminCouponCreateForm,
+  AdminCouponStatusAction,
+  AdminInventoryEditor,
+  AdminProductCreateForm,
+  AdminProductStatusAction,
+} from "./_components/admin-catalog-actions";
 import { adminLogoutAction } from "./actions";
 import { MetricCard } from "~/components/metric-card";
 import { SiteHeader } from "~/components/site-header";
@@ -74,12 +84,16 @@ function translateFulfillment(method: string) {
 }
 
 async function loadAdminData() {
-  const [overview, orders] = await Promise.all([
-    api.admin.overview(),
-    api.admin.orders({ limit: 10 }),
-  ]);
+  const [overview, orders, catalog, customers, appointments] =
+    await Promise.all([
+      api.admin.overview(),
+      api.admin.orders({ limit: 10 }),
+      api.admin.catalog(),
+      api.admin.customers({ limit: 10 }),
+      api.admin.appointments({ limit: 12 }),
+    ]);
 
-  return { orders, overview };
+  return { appointments, catalog, customers, orders, overview };
 }
 
 function AdminDatabaseFallback() {
@@ -176,7 +190,7 @@ export default async function AdminPage() {
     return <AdminDatabaseFallback />;
   }
 
-  const { orders, overview } = data;
+  const { appointments, catalog, customers, orders, overview } = data;
 
   return (
     <main>
@@ -304,6 +318,8 @@ export default async function AdminPage() {
                           <AdminOrderActions
                             fulfillmentMethod={order.fulfillmentMethod}
                             orderId={order.id}
+                            returns={order.returns}
+                            shipment={order.shipment}
                             status={order.status}
                           />
                         </TableCell>
@@ -315,6 +331,248 @@ export default async function AdminPage() {
             </TRPCReactProvider>
           </CardContent>
         </Card>
+
+        <Card className="mt-8 rounded-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CalendarClock className="size-5" />
+              תורים בסניפים
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="overflow-x-auto">
+            <TRPCReactProvider>
+              <Table className="min-w-[860px]">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>לקוח</TableHead>
+                    <TableHead>סניף</TableHead>
+                    <TableHead>נושא</TableHead>
+                    <TableHead>תאריך</TableHead>
+                    <TableHead>סטטוס</TableHead>
+                    <TableHead>פעולות</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {appointments.length === 0 ? (
+                    <TableRow>
+                      <TableCell
+                        className="text-muted-foreground py-8 text-center"
+                        colSpan={6}
+                      >
+                        אין תורים פתוחים.
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    appointments.map((appointment) => (
+                      <TableRow key={appointment.id}>
+                        <TableCell>
+                          <div className="grid gap-1">
+                            <span>{appointment.name}</span>
+                            <span className="text-muted-foreground text-xs">
+                              {appointment.phone}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {appointment.branchName}, {appointment.branchCity}
+                        </TableCell>
+                        <TableCell>{appointment.topic}</TableCell>
+                        <TableCell>
+                          {formatDate(appointment.startsAt)}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="secondary">
+                            {appointment.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <AdminAppointmentActions
+                            appointmentId={appointment.id}
+                            status={appointment.status}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </TRPCReactProvider>
+          </CardContent>
+        </Card>
+
+        <Card className="mt-8 rounded-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <PackageCheck className="size-5" />
+              קטלוג ומלאי
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-6 overflow-x-auto">
+            <TRPCReactProvider>
+              <AdminProductCreateForm catalog={catalog} />
+              <Table className="min-w-[1120px]">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>מוצר</TableHead>
+                    <TableHead>סטטוס</TableHead>
+                    <TableHead>קטגוריה</TableHead>
+                    <TableHead>מחיר</TableHead>
+                    <TableHead>מלאי</TableHead>
+                    <TableHead>פעולות</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {catalog.products.map((product) => (
+                    <TableRow key={product.id}>
+                      <TableCell>
+                        <div className="grid gap-1">
+                          <span className="font-medium">{product.name}</span>
+                          <span className="text-muted-foreground text-xs">
+                            {product.sku}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">{product.status}</Badge>
+                      </TableCell>
+                      <TableCell>{product.categoryName}</TableCell>
+                      <TableCell>{formatPrice(product.basePrice)}</TableCell>
+                      <TableCell>
+                        <div className="grid gap-2">
+                          {product.variants.flatMap((variant) =>
+                            variant.inventory.map((inventory) => (
+                              <div
+                                className="flex items-center justify-between gap-3"
+                                key={`${variant.id}:${inventory.branchId}`}
+                              >
+                                <span className="min-w-32 text-xs">
+                                  {variant.sku} · {inventory.branchName}
+                                </span>
+                                <AdminInventoryEditor
+                                  branchId={inventory.branchId}
+                                  quantity={inventory.quantity}
+                                  safetyStock={inventory.safetyStock}
+                                  variant={variant}
+                                />
+                              </div>
+                            )),
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <AdminProductStatusAction
+                          productId={product.id}
+                          status={product.status}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TRPCReactProvider>
+          </CardContent>
+        </Card>
+
+        <div className="mt-8 grid gap-6 xl:grid-cols-2">
+          <Card className="rounded-md">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Percent className="size-5" />
+                קופונים
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-5 overflow-x-auto">
+              <TRPCReactProvider>
+                <AdminCouponCreateForm />
+                <Table className="min-w-[620px]">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>קוד</TableHead>
+                      <TableHead>הטבה</TableHead>
+                      <TableHead>שימושים</TableHead>
+                      <TableHead>סטטוס</TableHead>
+                      <TableHead>פעולות</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {catalog.coupons.map((coupon) => (
+                      <TableRow key={coupon.id}>
+                        <TableCell className="font-medium">
+                          {coupon.code}
+                        </TableCell>
+                        <TableCell>
+                          {coupon.percentOff
+                            ? `${coupon.percentOff}%`
+                            : coupon.amountOff
+                              ? formatPrice(coupon.amountOff)
+                              : "-"}
+                        </TableCell>
+                        <TableCell>
+                          {coupon.usedCount}
+                          {coupon.maxUses ? ` / ${coupon.maxUses}` : ""}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="secondary">
+                            {coupon.isActive ? "פעיל" : "כבוי"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <AdminCouponStatusAction coupon={coupon} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TRPCReactProvider>
+            </CardContent>
+          </Card>
+
+          <Card className="rounded-md">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="size-5" />
+                לקוחות
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="overflow-x-auto">
+              <Table className="min-w-[620px]">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>לקוח</TableHead>
+                    <TableHead>הזמנות</TableHead>
+                    <TableHead>LTV</TableHead>
+                    <TableHead>Wishlist</TableHead>
+                    <TableHead>כתובות</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {customers.map((customer) => (
+                    <TableRow key={customer.id}>
+                      <TableCell>
+                        <div className="grid gap-1">
+                          <span>
+                            {customer.name
+                              ? customer.name
+                              : (customer.email ?? "-")}
+                          </span>
+                          <span className="text-muted-foreground text-xs">
+                            {customer.phone}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>{customer.orders}</TableCell>
+                      <TableCell>
+                        {formatPrice(customer.lifetimeValue)}
+                      </TableCell>
+                      <TableCell>{customer.wishlistItems}</TableCell>
+                      <TableCell>{customer.addresses}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </div>
 
         <Card className="mt-8 rounded-md">
           <CardHeader>

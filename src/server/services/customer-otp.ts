@@ -40,6 +40,7 @@ export const requestCustomerOtpInputSchema = z
 export const verifyCustomerOtpInputSchema = z.object({
   identifier: z.string().trim().min(5),
   code: z.string().trim().min(4).max(8),
+  sessionKey: z.string().trim().min(16).max(128).optional(),
 });
 
 export type RequestCustomerOtpInput = z.infer<
@@ -174,6 +175,23 @@ export async function verifyCustomerOtp(input: VerifyCustomerOtpInput) {
     }
 
     const customer = await upsertCustomerIdentity(tx, identifier);
+
+    if (parsed.sessionKey) {
+      await tx.cart.updateMany({
+        where: {
+          sessionKey: parsed.sessionKey,
+          status: "ACTIVE",
+        },
+        data: {
+          customerId: customer.customerId,
+          mergeMetadata: {
+            mergedFromSessionKey: parsed.sessionKey,
+            mergedAt: now.toISOString(),
+            source: "customer_otp",
+          },
+        },
+      });
+    }
 
     await tx.otpChallenge.update({
       where: { id: challenge.id },

@@ -32,7 +32,7 @@ export default async function GiftsPage() {
             </p>
           </div>
           <Button asChild variant="secondary">
-            <Link href="/stylist">שאלון מתנה חכם</Link>
+            <Link href="/ai?tool=gifts">שאלון מתנה חכם</Link>
           </Button>
         </div>
         <RevealGrid className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">

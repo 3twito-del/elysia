@@ -16,7 +16,12 @@ export const searchRouter = createTRPCRouter({
         branch: z.string().optional(),
         material: z.string().optional(),
         stone: z.string().optional(),
+        collection: z.string().optional(),
         maxPrice: z.number().optional(),
+        availableOnly: z.boolean().optional(),
+        sort: z
+          .enum(["relevance", "price-asc", "price-desc", "newest", "popular"])
+          .optional(),
       }),
     )
     .query(({ input }) => searchProvider.searchProducts(input)),

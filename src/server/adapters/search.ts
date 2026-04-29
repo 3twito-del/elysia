@@ -18,7 +18,10 @@ export type ProductSearchInput = {
   branch?: string;
   material?: string;
   stone?: string;
+  collection?: string;
   maxPrice?: number;
+  availableOnly?: boolean;
+  sort?: "relevance" | "price-asc" | "price-desc" | "newest" | "popular";
 };
 
 export type SearchFacet = {
@@ -75,11 +78,8 @@ class TypesenseSearchProvider implements SearchProvider {
         q: query,
         query_by: "name,shortDescription,category,material,stone,tags",
         filter_by: buildTypesenseFilter(input),
-        facet_by: "category,material,stone,availableBranches",
-        sort_by:
-          query !== "*"
-            ? "_text_match:desc,popularityScore:desc"
-            : "popularityScore:desc,createdAt:desc",
+        facet_by: "category,material,stone,collection,availableBranches",
+        sort_by: buildTypesenseSort(input, query),
         per_page: 24,
       });
     const slugs =
@@ -156,7 +156,7 @@ async function searchLocalProducts(input: ProductSearchInput) {
   ]);
 
   return {
-    hits,
+    hits: sortLocalHits(hits, input.sort),
     engine: "local" as const,
     facets,
   };
@@ -168,6 +168,26 @@ function assertLocalSearchAllowed() {
       "Typesense is required in production. Configure TYPESENSE_HOST and TYPESENSE_API_KEY.",
     );
   }
+}
+
+function sortLocalHits(
+  hits: CatalogProduct[],
+  sort: ProductSearchInput["sort"] = "relevance",
+) {
+  const sorted = [...hits];
+
+  if (sort === "price-asc") return sorted.sort((a, b) => a.price - b.price);
+  if (sort === "price-desc") return sorted.sort((a, b) => b.price - a.price);
+  if (sort === "newest") return sorted;
+  if (sort === "popular") {
+    return sorted.sort(
+      (a, b) =>
+        Object.values(b.inventory).reduce((sum, value) => sum + value, 0) -
+        Object.values(a.inventory).reduce((sum, value) => sum + value, 0),
+    );
+  }
+
+  return sorted;
 }
 
 async function ensureProductsCollection(client: Client) {
@@ -208,13 +228,28 @@ function buildTypesenseFilter(input: ProductSearchInput) {
       : null,
     input.material ? `material:=${escapeTypesenseValue(input.material)}` : null,
     input.stone ? `stone:=${escapeTypesenseValue(input.stone)}` : null,
+    input.collection
+      ? `collection:=${escapeTypesenseValue(input.collection)}`
+      : null,
     input.branch
       ? `availableBranches:=${escapeTypesenseValue(input.branch)}`
       : null,
+    input.availableOnly ? "availableBranches:!=[]" : null,
     input.maxPrice ? `price:<=${input.maxPrice}` : null,
   ].filter(Boolean);
 
   return filters.length > 0 ? filters.join(" && ") : undefined;
+}
+
+function buildTypesenseSort(input: ProductSearchInput, query: string) {
+  if (input.sort === "price-asc") return "price:asc";
+  if (input.sort === "price-desc") return "price:desc";
+  if (input.sort === "newest") return "createdAt:desc";
+  if (input.sort === "popular") return "popularityScore:desc";
+
+  return query !== "*"
+    ? "_text_match:desc,popularityScore:desc"
+    : "popularityScore:desc,createdAt:desc";
 }
 
 function escapeTypesenseValue(value: string) {
@@ -274,6 +309,14 @@ async function buildLocalFacets(input: ProductSearchInput) {
       values: facets.stones.map((stone) => ({
         value: stone,
         count: products.filter((product) => product.stone === stone).length,
+      })),
+    },
+    {
+      field: "collection",
+      values: facets.collections.map((collection) => ({
+        value: collection,
+        count: products.filter((product) => product.collection === collection)
+          .length,
       })),
     },
   ] satisfies SearchFacet[];
