@@ -37,6 +37,7 @@ export const env = createEnv({
     TYPESENSE_PORT: z.coerce.number().optional(),
     TYPESENSE_PROTOCOL: z.enum(["http", "https"]).optional(),
     GOOGLE_GENERATIVE_AI_API_KEY: z.string().optional(),
+    AI_CHAT_MODEL: z.string().optional(),
     VERCEL_OIDC_TOKEN: z.string().optional(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
@@ -81,6 +82,7 @@ export const env = createEnv({
     TYPESENSE_PORT: process.env.TYPESENSE_PORT,
     TYPESENSE_PROTOCOL: process.env.TYPESENSE_PROTOCOL,
     GOOGLE_GENERATIVE_AI_API_KEY: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+    AI_CHAT_MODEL: process.env.AI_CHAT_MODEL,
     VERCEL_OIDC_TOKEN: process.env.VERCEL_OIDC_TOKEN,
     NODE_ENV: process.env.NODE_ENV,
   },

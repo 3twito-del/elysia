@@ -5,7 +5,6 @@ import {
   tool,
   type UIMessage,
 } from "ai";
-import { google } from "@ai-sdk/google";
 import { z } from "zod";
 
 import { env } from "~/env";
@@ -21,6 +20,8 @@ import {
 } from "~/server/services/rate-limit";
 
 export const maxDuration = 30;
+
+const DEFAULT_CHAT_MODEL = "openai/gpt-5.4";
 
 const chatRequestSchema = z.object({
   messages: z.array(z.custom<UIMessage>()),
@@ -48,19 +49,11 @@ export async function POST(req: Request) {
   }
 
   const { messages } = chatRequestSchema.parse(await req.json());
-
-  if (!env.GOOGLE_GENERATIVE_AI_API_KEY) {
-    return Response.json(
-      {
-        error:
-          "Missing GOOGLE_GENERATIVE_AI_API_KEY. Create a Gemini API key in Google AI Studio and add it to your environment variables.",
-      },
-      { status: 503 },
-    );
-  }
+  const chatModel = env.AI_CHAT_MODEL ?? DEFAULT_CHAT_MODEL;
 
   const result = streamText({
-    model: google("gemini-2.5-flash"),
+    model: chatModel,
+    maxRetries: 1,
     system: [
       "את סטייליסטית התכשיטים של Aphrodite.",
       "עני בעברית בלבד, בטון יוקרתי, רגוע ותמציתי.",
