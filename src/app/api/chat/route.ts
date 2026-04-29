@@ -5,6 +5,7 @@ import {
   tool,
   type UIMessage,
 } from "ai";
+import { google } from "@ai-sdk/google";
 import { z } from "zod";
 
 import { env } from "~/env";
@@ -21,11 +22,49 @@ import {
 
 export const maxDuration = 30;
 
-const DEFAULT_CHAT_MODEL = "openai/gpt-5.4";
+const DEFAULT_GOOGLE_CHAT_MODEL = "gemini-2.0-flash";
+const DEFAULT_GATEWAY_CHAT_MODEL = "openai/gpt-5.4";
 
 const chatRequestSchema = z.object({
   messages: z.array(z.custom<UIMessage>()),
 });
+
+function resolveChatModel() {
+  const configuredModel = env.AI_CHAT_MODEL?.trim();
+
+  if (configuredModel?.startsWith("google:")) {
+    return {
+      model: google(configuredModel.slice("google:".length)),
+      requiresGoogleKey: true,
+    };
+  }
+
+  if (configuredModel && !configuredModel.includes("/")) {
+    return {
+      model: google(configuredModel),
+      requiresGoogleKey: true,
+    };
+  }
+
+  if (configuredModel) {
+    return {
+      model: configuredModel,
+      requiresGoogleKey: false,
+    };
+  }
+
+  if (env.GOOGLE_GENERATIVE_AI_API_KEY) {
+    return {
+      model: google(DEFAULT_GOOGLE_CHAT_MODEL),
+      requiresGoogleKey: true,
+    };
+  }
+
+  return {
+    model: DEFAULT_GATEWAY_CHAT_MODEL,
+    requiresGoogleKey: false,
+  };
+}
 
 export async function POST(req: Request) {
   try {
@@ -49,7 +88,17 @@ export async function POST(req: Request) {
   }
 
   const { messages } = chatRequestSchema.parse(await req.json());
-  const chatModel = env.AI_CHAT_MODEL ?? DEFAULT_CHAT_MODEL;
+  const { model: chatModel, requiresGoogleKey } = resolveChatModel();
+
+  if (requiresGoogleKey && !env.GOOGLE_GENERATIVE_AI_API_KEY) {
+    return Response.json(
+      {
+        error:
+          "Missing GOOGLE_GENERATIVE_AI_API_KEY for the configured Google chat model.",
+      },
+      { status: 503 },
+    );
+  }
 
   const result = streamText({
     model: chatModel,

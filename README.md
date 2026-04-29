@@ -43,7 +43,8 @@ BREVO_API_KEY="xkeysib-..."
 STORE_FROM_EMAIL="orders@example.com"
 STORE_FROM_NAME="Aphrodite"
 OPERATIONS_EMAIL="studio@example.com"
-AI_CHAT_MODEL="openai/gpt-5.4"
+GOOGLE_GENERATIVE_AI_API_KEY="AIza..."
+AI_CHAT_MODEL="google:gemini-2.0-flash"
 ```
 
 לאחר הגדרת env:
