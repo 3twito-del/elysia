@@ -1,5 +1,15 @@
 import Link from "next/link";
-import { Gem, MapPin, Search, ShieldCheck, Sparkles } from "lucide-react";
+import {
+  Accessibility,
+  CircleHelp,
+  FileText,
+  Gem,
+  LockKeyhole,
+  MapPin,
+  Search,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 
 import { NewsletterForm } from "~/components/newsletter-form";
 import { Button } from "~/components/ui/button";
@@ -16,6 +26,10 @@ const serviceLinks = [
   { href: "/account", label: "אזור לקוח", icon: Gem },
   { href: "/branches", label: "סניפים ואיסוף", icon: MapPin },
   { href: "/ai", label: "סטייליסט AI", icon: Sparkles },
+  { href: "/faq", label: "שאלות ותשובות", icon: CircleHelp },
+  { href: "/terms", label: "תקנון האתר", icon: FileText },
+  { href: "/privacy", label: "מדיניות פרטיות", icon: LockKeyhole },
+  { href: "/accessibility", label: "הצהרת נגישות", icon: Accessibility },
 ];
 
 export async function SiteFooter() {
@@ -135,9 +149,28 @@ export async function SiteFooter() {
 
         <Separator className="my-8" />
 
-        <div className="text-muted-foreground flex flex-col justify-between gap-3 text-sm sm:flex-row sm:items-center">
+        <div className="text-muted-foreground flex flex-col justify-between gap-4 text-sm lg:flex-row lg:items-center">
           <p>2026 Aphrodite. כל הזכויות שמורות.</p>
-          <p>תשלום מאובטח, איסוף מסניף, אחריות ושירות מדידה בתיאום.</p>
+          <nav
+            aria-label="קישורי מדיניות"
+            className="flex flex-wrap items-center gap-x-4 gap-y-2"
+          >
+            <Link className="hover:text-foreground transition" href="/terms">
+              תקנון האתר
+            </Link>
+            <Link className="hover:text-foreground transition" href="/privacy">
+              מדיניות פרטיות
+            </Link>
+            <Link className="hover:text-foreground transition" href="/faq">
+              שאלות ותשובות
+            </Link>
+            <Link
+              className="hover:text-foreground transition"
+              href="/accessibility"
+            >
+              הצהרת נגישות
+            </Link>
+          </nav>
         </div>
       </div>
     </footer>

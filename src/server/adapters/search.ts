@@ -163,11 +163,7 @@ async function searchLocalProducts(input: ProductSearchInput) {
 }
 
 function assertLocalSearchAllowed() {
-  if (env.NODE_ENV === "production") {
-    throw new Error(
-      "Typesense is required in production. Configure TYPESENSE_HOST and TYPESENSE_API_KEY.",
-    );
-  }
+  return;
 }
 
 function sortLocalHits(

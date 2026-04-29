@@ -1,6 +1,13 @@
 import { PrismaClient } from "@prisma/client";
 
 import { hashPassword } from "../src/server/auth/password";
+import {
+  getSeedProducts,
+  seedCategories,
+  seedCollections,
+  seedMaterials,
+  seedStones,
+} from "./seed-catalog";
 
 const prisma = new PrismaClient();
 
@@ -28,6 +35,29 @@ async function getBootstrapAdmin() {
     name,
     passwordHash: await hashPassword(password),
   };
+}
+
+type SlugRecord = {
+  id: string;
+  slug: string;
+};
+
+function createRecordMap<T extends SlugRecord>(records: readonly T[]) {
+  return new Map(records.map((record) => [record.slug, record] as const));
+}
+
+function getRequiredRecord<T extends SlugRecord>(
+  recordsBySlug: Map<string, T>,
+  slug: string,
+  modelName: string,
+) {
+  const record = recordsBySlug.get(slug);
+
+  if (!record) {
+    throw new Error(`Missing ${modelName} seed record for slug "${slug}".`);
+  }
+
+  return record;
 }
 
 async function main() {
@@ -77,74 +107,31 @@ async function main() {
     prisma.branch.deleteMany(),
   ]);
 
-  const [rings, necklaces, earrings, bracelets] = await Promise.all([
-    prisma.category.create({
-      data: {
-        slug: "rings",
-        name: "טבעות",
-        description: "טבעות זהב, יהלומים ואבני חן ליום יום ולאירועים.",
-        sortOrder: 1,
-      },
-    }),
-    prisma.category.create({
-      data: {
-        slug: "necklaces",
-        name: "שרשראות",
-        description: "שרשראות עדינות, תליונים וסטים משלימים.",
-        sortOrder: 2,
-      },
-    }),
-    prisma.category.create({
-      data: {
-        slug: "earrings",
-        name: "עגילים",
-        description: "עגילי סטודיו מודרניים בזהב, פנינים ויהלומים.",
-        sortOrder: 3,
-      },
-    }),
-    prisma.category.create({
-      data: {
-        slug: "bracelets",
-        name: "צמידים",
-        description: "צמידים נקיים עם נוכחות עדינה.",
-        sortOrder: 4,
-      },
-    }),
+  const [categories, materials, stones, collections] = await Promise.all([
+    Promise.all(
+      seedCategories.map((category) =>
+        prisma.category.create({ data: category }),
+      ),
+    ),
+    Promise.all(
+      seedMaterials.map((material) =>
+        prisma.material.create({ data: material }),
+      ),
+    ),
+    Promise.all(
+      seedStones.map((stone) => prisma.stone.create({ data: stone })),
+    ),
+    Promise.all(
+      seedCollections.map((collection) =>
+        prisma.collection.create({ data: collection }),
+      ),
+    ),
   ]);
 
-  const [gold, whiteGold, pearl, diamond] = await Promise.all([
-    prisma.material.create({
-      data: { slug: "yellow-gold", name: "זהב צהוב 14K" },
-    }),
-    prisma.material.create({
-      data: { slug: "white-gold", name: "זהב לבן 14K" },
-    }),
-    prisma.stone.create({ data: { slug: "pearl", name: "פנינה" } }),
-    prisma.stone.create({ data: { slug: "diamond", name: "יהלום" } }),
-  ]);
-
-  const [studio, bridal] = await Promise.all([
-    prisma.collection.create({
-      data: {
-        slug: "studio-light",
-        name: "Studio Light",
-        description: "קולקציית בסיס נקייה עם קווים דקים וזהב חם.",
-        heroImageUrl:
-          "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1600&q=80",
-        isFeatured: true,
-      },
-    }),
-    prisma.collection.create({
-      data: {
-        slug: "bridal-edit",
-        name: "Bridal Edit",
-        description: "בחירות מדויקות להצעות, חתונות וסטים חגיגיים.",
-        heroImageUrl:
-          "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1600&q=80",
-        isFeatured: true,
-      },
-    }),
-  ]);
+  const categoryBySlug = createRecordMap(categories);
+  const materialBySlug = createRecordMap(materials);
+  const stoneBySlug = createRecordMap(stones);
+  const collectionBySlug = createRecordMap(collections);
 
   const [tlv, jerusalem] = await Promise.all([
     prisma.branch.create({
@@ -185,128 +172,27 @@ async function main() {
     }),
   ]);
 
-  const products = [
-    {
-      slug: "venus-line-ring",
-      sku: "APH-RG-001",
-      name: "טבעת Venus Line",
-      shortDescription: "טבעת זהב דקה עם יהלום יחיד ונוכחות שקטה.",
-      description:
-        "טבעת יומיומית בעבודת סטודיו נקייה. מתאימה כמתנה, טבעת שכבות או טבעת הצעה עדינה.",
-      categoryId: rings.id,
-      materialId: gold.id,
-      stoneId: diamond.id,
-      basePrice: "1290",
-      collections: [studio.id, bridal.id],
-      image:
-        "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1400&q=80",
-      variants: [
-        {
-          sku: "APH-RG-001-52",
-          name: "מידה 52",
-          size: "52",
-          quantityTlv: 4,
-          quantityJerusalem: 2,
-        },
-        {
-          sku: "APH-RG-001-54",
-          name: "מידה 54",
-          size: "54",
-          quantityTlv: 2,
-          quantityJerusalem: 3,
-        },
-      ],
-    },
-    {
-      slug: "muse-pearl-earrings",
-      sku: "APH-ER-018",
-      name: "עגילי Muse Pearl",
-      shortDescription: "עגילי פנינה קטנים בזהב צהוב למראה נקי.",
-      description:
-        "עגילים קלאסיים במראה סטודיו מודרני, עם פנינה טבעית ונעילה נוחה לשימוש יומיומי.",
-      categoryId: earrings.id,
-      materialId: gold.id,
-      stoneId: pearl.id,
-      basePrice: "690",
-      collections: [studio.id],
-      image:
-        "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1400&q=80",
-      variants: [
-        {
-          sku: "APH-ER-018-STD",
-          name: "זוג עגילים",
-          size: null,
-          quantityTlv: 8,
-          quantityJerusalem: 5,
-        },
-      ],
-    },
-    {
-      slug: "selene-chain",
-      sku: "APH-NK-044",
-      name: "שרשרת Selene",
-      shortDescription: "שרשרת זהב לבן עם תליון אורכי דק.",
-      description:
-        "שרשרת מינימלית עם תליון אורכי, מתאימה ללבישה עצמאית או כחלק מסט שכבות.",
-      categoryId: necklaces.id,
-      materialId: whiteGold.id,
-      stoneId: diamond.id,
-      basePrice: "980",
-      collections: [studio.id],
-      image:
-        "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1400&q=80",
-      variants: [
-        {
-          sku: "APH-NK-044-42",
-          name: "42 ס״מ",
-          size: "42",
-          quantityTlv: 3,
-          quantityJerusalem: 1,
-        },
-        {
-          sku: "APH-NK-044-45",
-          name: "45 ס״מ",
-          size: "45",
-          quantityTlv: 1,
-          quantityJerusalem: 4,
-        },
-      ],
-    },
-    {
-      slug: "hera-bracelet",
-      sku: "APH-BR-027",
-      name: "צמיד Hera",
-      shortDescription: "צמיד חוליות דק בזהב צהוב עם סגירה שטוחה.",
-      description:
-        "צמיד זהב נוח וקל, בנוי לשילוב עם שעון או צמידים נוספים בלי להעמיס על היד.",
-      categoryId: bracelets.id,
-      materialId: gold.id,
-      stoneId: null,
-      basePrice: "840",
-      collections: [studio.id],
-      image:
-        "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=1400&q=80",
-      variants: [
-        {
-          sku: "APH-BR-027-S",
-          name: "S",
-          size: "S",
-          quantityTlv: 5,
-          quantityJerusalem: 3,
-        },
-        {
-          sku: "APH-BR-027-M",
-          name: "M",
-          size: "M",
-          quantityTlv: 2,
-          quantityJerusalem: 2,
-        },
-      ],
-    },
-  ];
+  const products = getSeedProducts();
 
   for (const productData of products) {
-    const product = await prisma.product.create({
+    const category = getRequiredRecord(
+      categoryBySlug,
+      productData.categorySlug,
+      "category",
+    );
+    const material = getRequiredRecord(
+      materialBySlug,
+      productData.materialSlug,
+      "material",
+    );
+    const stone = productData.stoneSlug
+      ? getRequiredRecord(stoneBySlug, productData.stoneSlug, "stone")
+      : null;
+    const productCollections = productData.collectionSlugs.map((slug) => ({
+      id: getRequiredRecord(collectionBySlug, slug, "collection").id,
+    }));
+
+    await prisma.product.create({
       data: {
         slug: productData.slug,
         sku: productData.sku,
@@ -314,14 +200,14 @@ async function main() {
         shortDescription: productData.shortDescription,
         description: productData.description,
         status: "ACTIVE",
-        categoryId: productData.categoryId,
-        materialId: productData.materialId,
-        stoneId: productData.stoneId,
+        categoryId: category.id,
+        materialId: material.id,
+        stoneId: stone?.id ?? null,
         basePrice: productData.basePrice,
         careInstructions: "מומלץ להימנע ממגע עם בושם, כלור וחומרי ניקוי.",
         warranty: "אחריות לשנה על פגמי ייצור ושירות ניקוי ראשוני ללא עלות.",
-        tags: ["יוקרה נגישה", "סטודיו מודרני"],
-        collections: { connect: productData.collections.map((id) => ({ id })) },
+        tags: productData.tags,
+        collections: { connect: productCollections },
         media: {
           create: {
             kind: "IMAGE",
@@ -329,47 +215,45 @@ async function main() {
             alt: productData.name,
             width: 1400,
             height: 1400,
+            isPrimary: true,
+            sortOrder: 0,
           },
+        },
+        variants: {
+          create: productData.variants.map((variantData, index) => ({
+            sku: variantData.sku,
+            name: variantData.name,
+            size: variantData.size,
+            metalColor: variantData.metalColor,
+            stoneColor: variantData.stoneColor,
+            priceDelta: variantData.priceDelta,
+            isDefault: index === 0,
+            prices: {
+              create: {
+                amount: productData.basePrice,
+                currency: "ILS",
+              },
+            },
+            inventoryItems: {
+              create: [
+                {
+                  branchId: tlv.id,
+                  quantity: variantData.quantityTlv,
+                  reserved: 0,
+                  safetyStock: variantData.safetyStock,
+                },
+                {
+                  branchId: jerusalem.id,
+                  quantity: variantData.quantityJerusalem,
+                  reserved: 0,
+                  safetyStock: variantData.safetyStock,
+                },
+              ],
+            },
+          })),
         },
       },
     });
-
-    for (const [index, variantData] of productData.variants.entries()) {
-      const variant = await prisma.productVariant.create({
-        data: {
-          productId: product.id,
-          sku: variantData.sku,
-          name: variantData.name,
-          size: variantData.size,
-          isDefault: index === 0,
-          prices: {
-            create: {
-              amount: productData.basePrice,
-              currency: "ILS",
-            },
-          },
-        },
-      });
-
-      await prisma.inventoryItem.createMany({
-        data: [
-          {
-            branchId: tlv.id,
-            variantId: variant.id,
-            quantity: variantData.quantityTlv,
-            reserved: 0,
-            safetyStock: 1,
-          },
-          {
-            branchId: jerusalem.id,
-            variantId: variant.id,
-            quantity: variantData.quantityJerusalem,
-            reserved: 0,
-            safetyStock: 1,
-          },
-        ],
-      });
-    }
   }
 
   const systemRole = await prisma.role.create({

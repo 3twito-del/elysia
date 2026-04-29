@@ -2,6 +2,7 @@ import type { OrderStatus, Prisma } from "@prisma/client";
 import { z } from "zod";
 
 import { db } from "~/server/db";
+import { DEFAULT_CATALOG_IMAGE } from "~/server/services/catalog";
 import { revalidateCatalogMutation } from "~/server/services/catalog-revalidation";
 import { normalizeCouponCode } from "~/server/services/coupons";
 import { BUSINESS_EVENTS, createOutboxEvent } from "~/server/services/outbox";
@@ -123,6 +124,12 @@ export async function listAdminCatalog() {
               },
             },
           },
+          media: {
+            where: { kind: "IMAGE" },
+            orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }],
+            select: { url: true },
+            take: 1,
+          },
         },
       }),
       db.category.findMany({
@@ -140,6 +147,7 @@ export async function listAdminCatalog() {
       slug: product.slug,
       sku: product.sku,
       name: product.name,
+      image: product.media[0]?.url ?? DEFAULT_CATALOG_IMAGE,
       status: product.status,
       categoryName: product.category.name,
       materialName: product.material.name,

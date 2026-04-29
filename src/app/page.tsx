@@ -45,13 +45,20 @@ export default async function Home() {
           sizes="100vw"
           src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=2200&q=85"
         />
-        <div className="absolute inset-0 bg-black/25" />
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.56),rgba(0,0,0,0.08)_54%,rgba(255,255,255,0.08))]" />
         <div className="relative mx-auto flex min-h-[78vh] max-w-7xl flex-col justify-end px-4 pt-24 pb-12 sm:px-6 lg:pb-16">
           <div className="max-w-2xl text-white">
-            <Badge className="mb-5" variant="secondary">
+            <Badge
+              className="mb-5 max-w-full text-right leading-6 whitespace-normal"
+              variant="secondary"
+            >
               יוקרה נגישה | איסוף מסניף | מדידה בתיאום
             </Badge>
-            <h1 className="text-5xl leading-[1.05] font-semibold tracking-normal sm:text-6xl lg:text-7xl">
+            <h1
+              className="text-left text-4xl leading-[1.05] font-semibold tracking-normal sm:text-6xl lg:text-7xl"
+              dir="ltr"
+            >
               Aphrodite
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-8 text-white/90">
@@ -141,21 +148,33 @@ export default async function Home() {
         <RevealGrid className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {categories.map((category) => (
             <Link
-              className="glass-card interactive-lift group flex min-h-[220px] w-full flex-col rounded-md border p-5"
+              className="glass-card interactive-lift group/card flex min-h-[260px] w-full flex-col overflow-hidden rounded-md border"
               href={`/category/${category.slug}`}
               key={category.slug}
             >
-              <div className="glass-inset mb-5 flex size-11 items-center justify-center rounded-md border">
-                <Gem className="text-foreground size-5" />
+              <div className="relative h-28 overflow-hidden border-b border-[var(--glass-border)] bg-white/35">
+                <Image
+                  alt=""
+                  className="media-mono object-cover transition duration-500 ease-[var(--ease-liquid)] group-hover/card:scale-[1.035]"
+                  fill
+                  sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                  src={category.image}
+                />
+                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(255,255,255,0.8),rgba(255,255,255,0.08))]" />
+                <div className="glass-inset absolute right-4 bottom-4 flex size-11 items-center justify-center rounded-md border">
+                  <Gem className="text-foreground size-5" />
+                </div>
               </div>
-              <h3 className="text-xl font-medium">{category.name}</h3>
-              <p className="text-muted-foreground mt-2 min-h-12 text-sm leading-6">
-                {category.description}
-              </p>
-              <span className="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-medium group-hover:underline">
-                צפייה
-                <ArrowLeft className="size-4" />
-              </span>
+              <div className="flex flex-1 flex-col p-5">
+                <h3 className="text-xl font-medium">{category.name}</h3>
+                <p className="text-muted-foreground mt-2 min-h-12 text-sm leading-6">
+                  {category.description}
+                </p>
+                <span className="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-medium group-hover/card:underline">
+                  צפייה
+                  <ArrowLeft className="size-4" />
+                </span>
+              </div>
             </Link>
           ))}
         </RevealGrid>

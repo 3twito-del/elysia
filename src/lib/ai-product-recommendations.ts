@@ -95,7 +95,9 @@ export function createAiProductHref(
   return `/product/${slug}?${params.toString()}`;
 }
 
-function getAvailableBranchCount(inventory?: Record<string, number | undefined>) {
+function getAvailableBranchCount(
+  inventory?: Record<string, number | undefined>,
+) {
   if (!inventory) return undefined;
 
   return Object.values(inventory).filter((quantity) => (quantity ?? 0) > 0)

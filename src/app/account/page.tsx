@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   CalendarCheck,
   Heart,
@@ -20,6 +21,7 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
+import { DEFAULT_CATALOG_IMAGE } from "~/server/services/catalog";
 
 export const metadata = {
   title: "אזור לקוח",
@@ -57,7 +59,15 @@ async function loadCustomerAccount(userId: string) {
             include: {
               variant: {
                 include: {
-                  product: true,
+                  product: {
+                    include: {
+                      media: {
+                        where: { kind: "IMAGE" },
+                        orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }],
+                        take: 1,
+                      },
+                    },
+                  },
                 },
               },
             },
@@ -231,11 +241,30 @@ export default async function AccountPage() {
                     className="glass-inset flex items-center justify-between gap-4 rounded-md border p-3"
                     key={item.id}
                   >
-                    <Link href={`/product/${item.variant.product.slug}`}>
-                      <p className="font-medium">{item.variant.product.name}</p>
-                      <p className="text-muted-foreground text-xs">
-                        {item.variant.name}
-                      </p>
+                    <Link
+                      className="flex min-w-0 items-center gap-3"
+                      href={`/product/${item.variant.product.slug}`}
+                    >
+                      <span className="relative size-14 shrink-0 overflow-hidden rounded-md border border-[var(--glass-border)] bg-white/35">
+                        <Image
+                          alt=""
+                          className="media-color object-cover"
+                          fill
+                          sizes="56px"
+                          src={
+                            item.variant.product.media[0]?.url ??
+                            DEFAULT_CATALOG_IMAGE
+                          }
+                        />
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block truncate font-medium">
+                          {item.variant.product.name}
+                        </span>
+                        <span className="text-muted-foreground block text-xs">
+                          {item.variant.name}
+                        </span>
+                      </span>
                     </Link>
                     <form action={removeWishlistItemAction}>
                       <input name="itemId" type="hidden" value={item.id} />

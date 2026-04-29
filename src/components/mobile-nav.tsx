@@ -9,6 +9,8 @@ import { Separator } from "~/components/ui/separator";
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
+  SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "~/components/ui/sheet";
@@ -47,26 +49,41 @@ export function MobileNav({ items }: { items: HeaderNavItem[] }) {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button className="lg:hidden" size="icon" type="button" variant="ghost">
+        <Button
+          aria-label="פתיחת ניווט"
+          className="lg:hidden"
+          size="icon"
+          type="button"
+          variant="ghost"
+        >
           <Menu className="size-5" />
           <span className="sr-only">פתח ניווט</span>
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-80" side="right">
-        <SheetTitle className="sr-only">ניווט ראשי</SheetTitle>
-        <Link
-          className="flex items-center gap-2 text-lg font-semibold"
-          href="/"
-        >
-          <Gem className="text-foreground size-5" />
-          Aphrodite
-        </Link>
-        <Separator className="my-5" />
-        <nav className="grid gap-2">
+      <SheetContent
+        className="w-[min(88vw,22rem)] overflow-y-auto p-0"
+        side="right"
+      >
+        <SheetHeader className="border-b border-[var(--glass-border)] p-4">
+          <Link
+            className="flex items-center gap-2 text-lg font-semibold"
+            dir="ltr"
+            href="/"
+          >
+            <Gem className="text-foreground size-5" />
+            Aphrodite
+          </Link>
+          <SheetTitle className="sr-only">ניווט ראשי</SheetTitle>
+          <SheetDescription className="sr-only">
+            Navigation links for the primary site sections.
+          </SheetDescription>
+        </SheetHeader>
+        <Separator />
+        <nav aria-label="ניווט מובייל" className="grid gap-1 p-3">
           {items.map((item) => (
             <Button
               asChild
-              className="justify-start"
+              className="h-11 justify-start px-3 text-base"
               key={item.href}
               variant="ghost"
             >

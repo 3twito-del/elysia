@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   CheckCircle2,
@@ -217,11 +218,29 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
             ) : cart?.items.length ? (
               cart.items.map((item) => (
                 <div
-                  className="glass-inset grid gap-3 rounded-md border p-3 sm:grid-cols-[1fr_auto]"
+                  className="glass-inset grid gap-3 rounded-md border p-3 sm:grid-cols-[72px_1fr_auto] sm:items-center"
                   key={item.id}
                 >
+                  <Link
+                    aria-label={`צפייה במוצר ${item.productName}`}
+                    className="relative size-[72px] overflow-hidden rounded-md border border-[var(--glass-border)] bg-white/35"
+                    href={`/product/${item.productSlug}`}
+                  >
+                    <Image
+                      alt=""
+                      className="media-color object-cover"
+                      fill
+                      sizes="72px"
+                      src={item.productImage}
+                    />
+                  </Link>
                   <div>
-                    <p className="font-medium">{item.productName}</p>
+                    <Link
+                      className="font-medium hover:underline"
+                      href={`/product/${item.productSlug}`}
+                    >
+                      {item.productName}
+                    </Link>
                     <p className="text-muted-foreground text-sm">
                       {item.variantName} · {formatPrice(item.unitPrice)}
                     </p>

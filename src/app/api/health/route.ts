@@ -12,9 +12,7 @@ export async function GET() {
     search:
       env.TYPESENSE_HOST && env.TYPESENSE_API_KEY
         ? "configured"
-        : env.NODE_ENV === "production"
-          ? "missing"
-          : "local-fallback",
+        : "local-fallback",
     email: notificationProvider.isOperational()
       ? "configured"
       : env.NODE_ENV === "production"

@@ -38,7 +38,7 @@ export async function adminLoginAction(
   const redirectTo = sanitizeAdminRedirect(parsed.data.next);
 
   try {
-    assertRateLimit({
+    await assertRateLimit({
       key: `admin-login:${parsed.data.email}`,
       limit: 5,
       windowMs: 15 * 60_000,

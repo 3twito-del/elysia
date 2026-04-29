@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { db } from "~/server/db";
+import { readSafeJson } from "~/server/http/safe-json";
 import {
   assertRateLimit,
   getRequestIp,
@@ -17,7 +18,7 @@ const productViewEventSchema = z.object({
 
 export async function POST(req: Request) {
   try {
-    assertRateLimit({
+    await assertRateLimit({
       key: `product-view:${getRequestIp(req)}`,
       limit: 120,
       windowMs: 60_000,
@@ -36,7 +37,13 @@ export async function POST(req: Request) {
     throw error;
   }
 
-  const parsed = productViewEventSchema.safeParse(await req.json());
+  const json = await readSafeJson(req);
+
+  if (!json.ok) {
+    return NextResponse.json({ ok: false }, { status: 400 });
+  }
+
+  const parsed = productViewEventSchema.safeParse(json.data);
 
   if (!parsed.success) {
     return NextResponse.json({ ok: false }, { status: 400 });

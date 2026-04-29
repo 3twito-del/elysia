@@ -96,10 +96,16 @@ export function resolveAiCatalogSearchIntent(
   input: AiCatalogToolInput,
 ): AiCatalogSearchIntent {
   const originalQuery = trimToUndefined(input.query);
-  const category = normalizeCategory(input.category) ?? detectCategory(originalQuery);
-  const material = normalizeMaterial(input.material) ?? detectMaterial(originalQuery);
+  const category =
+    normalizeCategory(input.category) ?? detectCategory(originalQuery);
+  const material =
+    normalizeMaterial(input.material) ?? detectMaterial(originalQuery);
   const maxPrice = input.maxPrice ?? detectMaxPrice(originalQuery);
-  const query = buildFocusedQuery(originalQuery, { category, material, maxPrice });
+  const query = buildFocusedQuery(originalQuery, {
+    category,
+    material,
+    maxPrice,
+  });
 
   return {
     originalQuery,
@@ -158,7 +164,8 @@ export function createAiMatchReason(
   intent: AiCatalogSearchIntent,
 ) {
   const reasons: string[] = [];
-  const productCategory = product.categorySlug ?? normalizeCategory(product.category);
+  const productCategory =
+    product.categorySlug ?? normalizeCategory(product.category);
 
   if (intent.category && productCategory === intent.category) {
     reasons.push("סוג הפריט תואם לבקשה");
@@ -176,7 +183,10 @@ export function createAiMatchReason(
     reasons.push(`נשאר בתקציב עד ${formatBudget(intent.maxPrice)}`);
   }
 
-  if (intent.category === "earrings" && mentionsSoftWeight(intent.originalQuery)) {
+  if (
+    intent.category === "earrings" &&
+    mentionsSoftWeight(intent.originalQuery)
+  ) {
     reasons.push("מראה עדין שלא מרגיש כבד");
   }
 
@@ -263,7 +273,9 @@ function buildFocusedQuery(
 
 function compactSearchInput(input: AiCatalogToolInput) {
   return Object.fromEntries(
-    Object.entries(input).filter(([, value]) => value !== undefined && value !== ""),
+    Object.entries(input).filter(
+      ([, value]) => value !== undefined && value !== "",
+    ),
   ) as AiCatalogToolInput;
 }
 

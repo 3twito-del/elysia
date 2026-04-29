@@ -20,7 +20,7 @@ export const appointmentsRouter = createTRPCRouter({
   create: publicProcedure
     .input(createAppointmentInputSchema)
     .mutation(async ({ ctx, input }) => {
-      assertRateLimit({
+      await assertRateLimit({
         key: `appointment:${input.phone}`,
         limit: 4,
         windowMs: 60 * 60_000,

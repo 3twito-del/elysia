@@ -3,6 +3,7 @@ import "~/styles/globals.css";
 import { type Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
+import { AccessibilityWidget } from "~/components/accessibility-widget";
 import { PublicMotionProvider } from "~/components/public-motion-provider";
 import { SiteFooter } from "~/components/site-footer";
 
@@ -47,6 +48,7 @@ export default function RootLayout({
           {children}
           <SiteFooter />
         </PublicMotionProvider>
+        <AccessibilityWidget />
       </body>
     </html>
   );

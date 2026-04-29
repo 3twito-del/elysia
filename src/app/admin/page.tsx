@@ -10,6 +10,7 @@ import {
   Store,
   Users,
 } from "lucide-react";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 
 import { AdminOrderActions } from "./_components/admin-order-actions";
@@ -425,11 +426,24 @@ export default async function AdminPage() {
                   {catalog.products.map((product) => (
                     <TableRow key={product.id}>
                       <TableCell>
-                        <div className="grid gap-1">
-                          <span className="font-medium">{product.name}</span>
-                          <span className="text-muted-foreground text-xs">
-                            {product.sku}
+                        <div className="flex min-w-64 items-center gap-3">
+                          <span className="relative size-12 shrink-0 overflow-hidden rounded-md border border-[var(--glass-border)] bg-white/35">
+                            <Image
+                              alt=""
+                              className="media-color object-cover"
+                              fill
+                              sizes="48px"
+                              src={product.image}
+                            />
                           </span>
+                          <div className="grid min-w-0 gap-1">
+                            <span className="truncate font-medium">
+                              {product.name}
+                            </span>
+                            <span className="text-muted-foreground text-xs">
+                              {product.sku}
+                            </span>
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell>

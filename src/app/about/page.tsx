@@ -99,8 +99,8 @@ export default function AboutPage() {
             sizes="100vw"
             src={venusImage}
           />
-          <div className="absolute inset-0 bg-black/[0.38]" />
-          <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(255,255,255,0.2),transparent_38%),linear-gradient(to_top,rgba(0,0,0,0.74),rgba(0,0,0,0.08)_58%,rgba(0,0,0,0.38))]" />
+          <div className="absolute inset-0 bg-black/[0.28]" />
+          <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(255,255,255,0.22),transparent_38%),linear-gradient(to_top,rgba(0,0,0,0.68),rgba(0,0,0,0.08)_58%,rgba(0,0,0,0.28))]" />
 
           <div className="relative mx-auto flex min-h-[86vh] max-w-7xl flex-col justify-end px-4 pt-24 pb-10 sm:px-6 lg:pb-14">
             <div className="glass-hero max-w-4xl rounded-md border p-6 text-white sm:p-8 lg:p-10">

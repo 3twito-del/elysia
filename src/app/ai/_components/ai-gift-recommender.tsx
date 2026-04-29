@@ -96,7 +96,11 @@ export function AiGiftRecommender() {
           disabled={recommendGift.isPending || Number(budget) <= 0}
           type="submit"
         >
-          {recommendGift.isPending ? <Spinner /> : <Sparkles className="size-4" />}
+          {recommendGift.isPending ? (
+            <Spinner />
+          ) : (
+            <Sparkles className="size-4" />
+          )}
           קבלת המלצות
         </Button>
       </form>

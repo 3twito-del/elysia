@@ -5,12 +5,7 @@ import { StylistChat } from "~/app/stylist/_components/stylist-chat";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "~/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata = {
@@ -33,37 +28,38 @@ export default async function AiPage({ searchParams }: AiPageProps) {
     <main className="min-h-screen">
       <SiteHeader />
       <RevealSection className="liquid-section border-b border-[var(--glass-border)]">
-        <div className="mx-auto grid max-w-7xl gap-7 px-4 py-8 sm:px-6 lg:py-10">
-          <Tabs className="gap-6" defaultValue={defaultTab}>
-            <div className="glass-panel grid gap-5 rounded-md border p-5 sm:p-6 lg:grid-cols-[1fr_auto] lg:items-end">
+        <div className="mx-auto grid max-w-6xl gap-5 px-4 py-6 sm:px-6 lg:py-8">
+          <Tabs className="gap-4" defaultValue={defaultTab} dir="rtl">
+            <div className="glass-panel grid gap-5 rounded-md border p-4 sm:p-5">
               <div className="grid gap-4">
                 <Badge className="w-fit" variant="secondary">
                   Aphrodite AI
                 </Badge>
                 <div className="grid gap-3">
-                  <h1 className="max-w-4xl text-3xl font-semibold tracking-normal sm:text-4xl">
+                  <h1 className="max-w-4xl text-2xl font-semibold tracking-normal sm:text-3xl">
                     התאמה חכמה לתכשיט, מתנה וסגנון
                   </h1>
                   <p className="text-muted-foreground max-w-3xl leading-7">
-                    כלי ה־AI מחוברים לקטלוג Aphrodite ומציגים פריטים זמינים
-                    מתוך המלאי, עם התאמה לפי כוונה, תקציב וסגנון.
+                    כלי ה־AI מחוברים לקטלוג Aphrodite ומציגים פריטים זמינים מתוך
+                    המלאי, עם התאמה לפי כוונה, תקציב וסגנון.
                   </p>
                 </div>
               </div>
 
               <TabsList
-                className="glass-control !grid h-auto w-full grid-cols-2 overflow-visible rounded-md p-1 sm:w-[360px]"
+                className="h-auto w-fit justify-start gap-1 rounded-none border-0 bg-transparent p-0"
                 dir="rtl"
+                variant="line"
               >
                 <TabsTrigger
-                  className="min-h-11 min-w-0 gap-2 px-3 data-active:bg-white/70"
+                  className="text-muted-foreground hover:text-foreground data-[state=active]:text-foreground min-h-10 min-w-0 cursor-pointer gap-2 rounded-none border-0 bg-transparent px-1.5 pt-1 pb-2 text-sm font-semibold shadow-none hover:bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none"
                   value="stylist"
                 >
                   <MessageSquare className="size-4" />
                   סטייליסט
                 </TabsTrigger>
                 <TabsTrigger
-                  className="min-h-11 min-w-0 gap-2 px-3 data-active:bg-white/70"
+                  className="text-muted-foreground hover:text-foreground data-[state=active]:text-foreground min-h-10 min-w-0 cursor-pointer gap-2 rounded-none border-0 bg-transparent px-1.5 pt-1 pb-2 text-sm font-semibold shadow-none hover:bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none"
                   value="gifts"
                 >
                   <Gift className="size-4" />
@@ -73,7 +69,7 @@ export default async function AiPage({ searchParams }: AiPageProps) {
             </div>
 
             <TabsContent className="mt-0" value="stylist">
-              <StylistChat />
+              <StylistChat compact />
             </TabsContent>
 
             <TabsContent className="mt-0" value="gifts">

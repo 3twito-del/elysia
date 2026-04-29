@@ -28,6 +28,7 @@ import { Button } from "~/components/ui/button";
 import { Spinner } from "~/components/ui/spinner";
 import { TooltipProvider } from "~/components/ui/tooltip";
 import type { AiRecommendedProductInput } from "~/lib/ai-product-recommendations";
+import { cn } from "~/lib/utils";
 
 const suggestions = [
   "מתנה לאמא עד 700 ש״ח בסגנון עדין",
@@ -35,7 +36,11 @@ const suggestions = [
   "עגילים עדינים לכלה, בלי תחושה כבדה",
 ];
 
-export function StylistChat() {
+type StylistChatProps = {
+  compact?: boolean;
+};
+
+export function StylistChat({ compact = false }: StylistChatProps) {
   const [input, setInput] = useState("");
   const { clearError, error, messages, sendMessage, status, stop } = useChat();
 
@@ -48,36 +53,68 @@ export function StylistChat() {
 
   return (
     <TooltipProvider>
-      <div className="glass-panel grid min-h-[640px] overflow-hidden rounded-md border">
-        <div className="border-b border-[var(--glass-border)] p-5 sm:p-6">
+      <div
+        className={cn(
+          "glass-panel grid overflow-hidden rounded-md border",
+          compact ? "min-h-[520px]" : "min-h-[640px]",
+        )}
+      >
+        <div
+          className={cn(
+            "border-b border-[var(--glass-border)]",
+            compact ? "p-4 sm:p-5" : "p-5 sm:p-6",
+          )}
+        >
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="grid gap-2">
               <Badge className="w-fit" variant="secondary">
                 Aphrodite AI
               </Badge>
               <div className="grid gap-1">
-                <h2 className="text-2xl font-semibold">
+                <h2
+                  className={cn(
+                    "font-semibold",
+                    compact ? "text-xl" : "text-2xl",
+                  )}
+                >
                   סטייליסט תכשיטים אישי
                 </h2>
                 <p className="text-muted-foreground max-w-2xl text-sm leading-6">
-                  מאתרים התאמות בקטלוג לפי תקציב, אירוע, חומר וסגנון, ומציגים
-                  את הפריטים עצמם אחרי ההמלצה.
+                  מאתרים התאמות בקטלוג לפי תקציב, אירוע, חומר וסגנון, ומציגים את
+                  הפריטים עצמם אחרי ההמלצה.
                 </p>
               </div>
             </div>
-            <div className="glass-inset flex size-12 items-center justify-center rounded-md border">
+            <div
+              className={cn(
+                "glass-inset flex items-center justify-center rounded-md border",
+                compact ? "size-10" : "size-12",
+              )}
+            >
               <Sparkles className="text-foreground size-5" />
             </div>
           </div>
         </div>
 
         <div className="flex min-h-0 flex-col">
-          <Conversation className="min-h-[440px]">
-            <ConversationContent className="gap-6 p-4 sm:p-6">
+          <Conversation className={compact ? "min-h-[280px]" : "min-h-[440px]"}>
+            <ConversationContent
+              className={cn("gap-6 p-4", compact ? "sm:p-5" : "sm:p-6")}
+            >
               {messages.length === 0 ? (
-                <ConversationEmptyState className="py-10">
-                  <div className="grid max-w-2xl gap-5 text-center">
-                    <div className="glass-inset mx-auto flex size-14 items-center justify-center rounded-md border">
+                <ConversationEmptyState className={compact ? "py-6" : "py-10"}>
+                  <div
+                    className={cn(
+                      "grid max-w-2xl text-center",
+                      compact ? "gap-4" : "gap-5",
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        "glass-inset mx-auto flex items-center justify-center rounded-md border",
+                        compact ? "size-12" : "size-14",
+                      )}
+                    >
                       <MessageSquare className="text-muted-foreground size-7" />
                     </div>
                     <div className="grid gap-2">
@@ -153,13 +190,9 @@ export function StylistChat() {
               </div>
             ) : null}
 
-            <PromptInput
-              className="relative"
-              dir="rtl"
-              onSubmit={handleSubmit}
-            >
+            <PromptInput className="relative" dir="rtl" onSubmit={handleSubmit}>
               <PromptInputTextarea
-                className="min-h-14 max-h-32 py-3 pr-4 pl-14 leading-6"
+                className="max-h-32 min-h-14 py-3 pr-4 pl-14 leading-6"
                 onChange={(event) => setInput(event.currentTarget.value)}
                 placeholder="לדוגמה: מתנה עד 900 ש״ח למישהי שאוהבת זהב לבן"
                 value={input}

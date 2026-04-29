@@ -12,7 +12,7 @@ export function getOrCreateCartSessionKey() {
 
   const sessionKey = createCartSessionKey();
 
-  window.localStorage.setItem(CART_SESSION_STORAGE_KEY, sessionKey);
+  writeStoredSessionKey(sessionKey);
   writeCartSessionCookie(sessionKey);
 
   return sessionKey;
@@ -29,6 +29,14 @@ function readStoredSessionKey() {
     return isValidSessionKey(stored) ? stored : null;
   } catch {
     return null;
+  }
+}
+
+function writeStoredSessionKey(sessionKey: string) {
+  try {
+    window.localStorage.setItem(CART_SESSION_STORAGE_KEY, sessionKey);
+  } catch {
+    // Some privacy modes block localStorage writes. The cookie is enough for continuity.
   }
 }
 

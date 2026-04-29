@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "prebuild": "node scripts/verify-production-env.mjs",
     "build": "next build",
     "check": "pnpm lint && pnpm typecheck && pnpm test",
     "db:generate": "prisma generate",
@@ -38,6 +39,8 @@
     "@trpc/client": "^11.0.0",
     "@trpc/react-query": "^11.0.0",
     "@trpc/server": "^11.0.0",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.37.0",
     "ai": "^6.0.168",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.10.0",

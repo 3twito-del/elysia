@@ -29,10 +29,10 @@ export function ProductCard({ product, searchContext }: ProductCardProps) {
         className="block focus-visible:outline-none"
         href={href}
       >
-        <div className="glass-inset relative aspect-square overflow-hidden border-0">
+        <div className="glass-inset relative aspect-square overflow-hidden border-0 bg-white/35">
           <Image
             alt={product.name}
-            className="media-mono object-cover transition duration-300 hover:scale-[1.03]"
+            className="media-color object-cover transition duration-500 ease-[var(--ease-liquid)] group-hover/card:scale-[1.035]"
             fill
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
             src={product.image}

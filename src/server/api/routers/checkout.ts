@@ -18,8 +18,8 @@ import {
 export const checkoutRouter = createTRPCRouter({
   createManualOrder: publicProcedure
     .input(createManualOrderInputSchema)
-    .mutation(({ input }) => {
-      const rateLimit = consumeRateLimit({
+    .mutation(async ({ input }) => {
+      const rateLimit = await consumeRateLimit({
         key: `checkout:${input.customer.email}`,
         limit: 5,
         windowMs: 15 * 60_000,
@@ -37,8 +37,8 @@ export const checkoutRouter = createTRPCRouter({
 
   createCartOrder: publicProcedure
     .input(cartCheckoutInputSchema)
-    .mutation(({ input }) => {
-      const rateLimit = consumeRateLimit({
+    .mutation(async ({ input }) => {
+      const rateLimit = await consumeRateLimit({
         key: `cart-checkout:${input.customer.email}`,
         limit: 5,
         windowMs: 15 * 60_000,
@@ -65,7 +65,7 @@ export const checkoutRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input }) => {
-      const rateLimit = consumeRateLimit({
+      const rateLimit = await consumeRateLimit({
         key: `payment:${input.customerEmail}`,
         limit: 8,
         windowMs: 15 * 60_000,

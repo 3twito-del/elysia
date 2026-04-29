@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
+  ChevronLeft,
+  ChevronRight,
   Check,
   Filter,
   Gem,
@@ -48,6 +51,7 @@ type CategorySearchParams = {
   material?: string | string[];
   stone?: string | string[];
   maxPrice?: string | string[];
+  page?: string | string[];
 };
 
 type CategoryPageProps = CategoryRouteProps & {
@@ -67,6 +71,7 @@ type ActiveFilter = {
   href: string;
 };
 
+const productsPerPage = 9;
 const priceOptions = [750, 1000, 1500] as const;
 
 export async function generateStaticParams() {
@@ -118,6 +123,26 @@ export default async function CategoryPage({
   const activeFilters = getActiveFilters(slug, filters, branches);
   const activeFilterCount = activeFilters.length;
   const resetHref = createCategoryHref(slug, {});
+  const requestedPage = getValidPage(getFirstParam(query.page));
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredProducts.length / productsPerPage),
+  );
+  const currentPage = Math.min(requestedPage, totalPages);
+  const pageStartIndex = (currentPage - 1) * productsPerPage;
+  const pageProducts = filteredProducts.slice(
+    pageStartIndex,
+    pageStartIndex + productsPerPage,
+  );
+  const visibleStart = filteredProducts.length > 0 ? pageStartIndex + 1 : 0;
+  const visibleEnd = Math.min(
+    pageStartIndex + pageProducts.length,
+    filteredProducts.length,
+  );
+  const pageRangeLabel =
+    filteredProducts.length > 0
+      ? `${visibleStart}-${visibleEnd} מתוך ${filteredProducts.length} מוצרים`
+      : "0 מוצרים";
 
   return (
     <main>
@@ -125,7 +150,7 @@ export default async function CategoryPage({
 
       <RevealSection className="liquid-section border-b border-[var(--glass-border)]">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:py-10">
-          <div className="glass-panel grid gap-6 rounded-md border p-5 sm:p-6 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div className="glass-panel grid gap-6 rounded-md border p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-stretch">
             <div>
               <Badge className="mb-4" variant="secondary">
                 קטלוג Aphrodite
@@ -144,27 +169,41 @@ export default async function CategoryPage({
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-2 lg:max-w-md lg:justify-end">
-              {activeFilters.length > 0 ? (
-                activeFilters.map((filter) => (
-                  <Badge
-                    asChild
-                    className="h-7 gap-1 pr-2 pl-1"
-                    key={filter.key}
-                    variant="outline"
-                  >
-                    <Link href={filter.href} scroll={false}>
-                      <span>{filter.label}</span>
-                      <X className="size-3" />
-                      <span className="sr-only">הסרת פילטר</span>
-                    </Link>
+            <div className="grid gap-4">
+              {category?.image ? (
+                <div className="relative h-36 overflow-hidden rounded-md border border-[var(--glass-border)] bg-white/35">
+                  <Image
+                    alt=""
+                    className="media-mono object-cover"
+                    fill
+                    sizes="280px"
+                    src={category.image}
+                  />
+                  <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(255,255,255,0.56),rgba(255,255,255,0.04))]" />
+                </div>
+              ) : null}
+              <div className="flex flex-wrap gap-2 lg:justify-end">
+                {activeFilters.length > 0 ? (
+                  activeFilters.map((filter) => (
+                    <Badge
+                      asChild
+                      className="h-7 gap-1 pr-2 pl-1"
+                      key={filter.key}
+                      variant="outline"
+                    >
+                      <Link href={filter.href} scroll={false}>
+                        <span>{filter.label}</span>
+                        <X className="size-3" />
+                        <span className="sr-only">הסרת פילטר</span>
+                      </Link>
+                    </Badge>
+                  ))
+                ) : (
+                  <Badge className="h-7" variant="outline">
+                    ללא פילטרים פעילים
                   </Badge>
-                ))
-              ) : (
-                <Badge className="h-7" variant="outline">
-                  ללא פילטרים פעילים
-                </Badge>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -173,7 +212,7 @@ export default async function CategoryPage({
       <div className="glass-chrome sticky top-16 z-30 border-b lg:hidden">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <div className="text-sm">
-            <p className="font-medium">{filteredProducts.length} מוצרים</p>
+            <p className="font-medium">{pageRangeLabel}</p>
             <p className="text-muted-foreground text-xs">
               {activeFilterCount > 0
                 ? `${activeFilterCount} פילטרים פעילים`
@@ -254,12 +293,14 @@ export default async function CategoryPage({
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="text-base font-medium" id="category-results">
-                  {filteredProducts.length} מוצרים
+                  {pageRangeLabel}
                 </h2>
                 <p className="text-muted-foreground text-sm">
-                  {activeFilterCount > 0
-                    ? "התוצאות מסוננות לפי הבחירה שלך"
-                    : "כל הפריטים הזמינים בקטגוריה"}
+                  {filteredProducts.length > productsPerPage
+                    ? `עמוד ${currentPage} מתוך ${totalPages}`
+                    : activeFilterCount > 0
+                      ? "התוצאות מסוננות לפי הבחירה שלך"
+                      : "כל הפריטים הזמינים בקטגוריה"}
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -281,11 +322,22 @@ export default async function CategoryPage({
           </div>
 
           {filteredProducts.length > 0 ? (
-            <RevealGrid className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-              {filteredProducts.map((product) => (
-                <ProductCard key={product.slug} product={product} />
-              ))}
-            </RevealGrid>
+            <>
+              <RevealGrid className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                {pageProducts.map((product) => (
+                  <ProductCard key={product.slug} product={product} />
+                ))}
+              </RevealGrid>
+
+              {totalPages > 1 && (
+                <CategoryPagination
+                  currentPage={currentPage}
+                  filters={filters}
+                  slug={slug}
+                  totalPages={totalPages}
+                />
+              )}
+            </>
           ) : (
             <div className="glass-panel grid min-h-80 place-items-center rounded-md border p-8 text-center">
               <div className="max-w-md">
@@ -629,6 +681,24 @@ function createCategoryHref(slug: string, filters: CategoryFilters) {
   return query ? `/category/${slug}?${query}` : `/category/${slug}`;
 }
 
+function createCategoryPageHref(
+  slug: string,
+  filters: CategoryFilters,
+  page: number,
+) {
+  const params = new URLSearchParams();
+
+  if (filters.branch) params.set("branch", filters.branch);
+  if (filters.material) params.set("material", filters.material);
+  if (filters.stone) params.set("stone", filters.stone);
+  if (filters.maxPrice) params.set("maxPrice", String(filters.maxPrice));
+  if (page > 1) params.set("page", String(page));
+
+  const query = params.toString();
+
+  return query ? `/category/${slug}?${query}` : `/category/${slug}`;
+}
+
 function getFirstParam(value?: string | string[]) {
   if (Array.isArray(value)) return value[0];
 
@@ -639,6 +709,132 @@ function getValidMaxPrice(value?: string) {
   const parsed = Number(value);
 
   return priceOptions.find((price) => price === parsed);
+}
+
+function getValidPage(value?: string) {
+  const parsed = Number(value);
+
+  if (!Number.isInteger(parsed) || parsed < 1) return 1;
+
+  return parsed;
+}
+
+function CategoryPagination({
+  slug,
+  filters,
+  currentPage,
+  totalPages,
+}: {
+  slug: string;
+  filters: CategoryFilters;
+  currentPage: number;
+  totalPages: number;
+}) {
+  const pages = getPaginationPages(currentPage, totalPages);
+  const previousPage = Math.max(1, currentPage - 1);
+  const nextPage = Math.min(totalPages, currentPage + 1);
+
+  return (
+    <nav
+      aria-label="עמודי מוצרים"
+      className="mt-8 flex flex-col items-center justify-between gap-3 sm:flex-row"
+    >
+      <p className="text-muted-foreground text-sm">
+        עמוד {currentPage} מתוך {totalPages}
+      </p>
+
+      <div className="flex flex-wrap items-center justify-center gap-2">
+        <Button
+          asChild={currentPage > 1}
+          disabled={currentPage <= 1}
+          size="sm"
+          variant="outline"
+        >
+          {currentPage > 1 ? (
+            <Link href={createCategoryPageHref(slug, filters, previousPage)}>
+              <ChevronRight className="size-4" />
+              הקודם
+            </Link>
+          ) : (
+            <span>
+              <ChevronRight className="size-4" />
+              הקודם
+            </span>
+          )}
+        </Button>
+
+        {pages.map((page, index) =>
+          page === "ellipsis" ? (
+            <span
+              aria-hidden="true"
+              className="text-muted-foreground px-2 text-sm"
+              key={`ellipsis-${index}`}
+            >
+              ...
+            </span>
+          ) : (
+            <Button
+              asChild
+              key={page}
+              size="sm"
+              variant={page === currentPage ? "secondary" : "outline"}
+            >
+              <Link
+                aria-current={page === currentPage ? "page" : undefined}
+                href={createCategoryPageHref(slug, filters, page)}
+              >
+                {page}
+              </Link>
+            </Button>
+          ),
+        )}
+
+        <Button
+          asChild={currentPage < totalPages}
+          disabled={currentPage >= totalPages}
+          size="sm"
+          variant="outline"
+        >
+          {currentPage < totalPages ? (
+            <Link href={createCategoryPageHref(slug, filters, nextPage)}>
+              הבא
+              <ChevronLeft className="size-4" />
+            </Link>
+          ) : (
+            <span>
+              הבא
+              <ChevronLeft className="size-4" />
+            </span>
+          )}
+        </Button>
+      </div>
+    </nav>
+  );
+}
+
+function getPaginationPages(currentPage: number, totalPages: number) {
+  const pages = new Set<number>([1, totalPages]);
+
+  for (let page = currentPage - 1; page <= currentPage + 1; page += 1) {
+    if (page > 1 && page < totalPages) {
+      pages.add(page);
+    }
+  }
+
+  const sortedPages = Array.from(pages).sort((first, second) => first - second);
+  const result: Array<number | "ellipsis"> = [];
+
+  for (const page of sortedPages) {
+    const previous = result[result.length - 1];
+
+    if (typeof previous === "number" && page - previous > 1) {
+      result.push("ellipsis");
+    }
+
+    result.push(page);
+  }
+
+  return result;
 }
 
 async function getCategoryCounts(categories: CatalogCategory[]) {

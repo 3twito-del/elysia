@@ -1,4 +1,15 @@
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+
 const buckets = new Map<string, { count: number; resetAt: number }>();
+const sharedLimiters = new Map<string, Ratelimit>();
+
+let sharedRedis: Redis | null = null;
+
+const SHARED_RATE_LIMIT_ENV = [
+  "UPSTASH_REDIS_REST_URL",
+  "UPSTASH_REDIS_REST_TOKEN",
+] as const;
 
 export type RateLimitInput = {
   key: string;
@@ -23,7 +34,75 @@ export class RateLimitExceededError extends Error {
   }
 }
 
-export function consumeRateLimit(input: RateLimitInput): RateLimitResult {
+export async function consumeRateLimit(
+  input: RateLimitInput,
+): Promise<RateLimitResult> {
+  const sharedLimiter = getSharedLimiter(input);
+
+  if (sharedLimiter) {
+    try {
+      const result = await sharedLimiter.limit(input.key);
+      const resetAt =
+        typeof result.reset === "number" ? result.reset : Date.now();
+
+      return {
+        allowed: result.success,
+        remaining: Math.max(result.remaining, 0),
+        retryAfterSeconds: Math.max(
+          1,
+          Math.ceil((resetAt - Date.now()) / 1000),
+        ),
+        resetAt: new Date(resetAt),
+      };
+    } catch (error) {
+      console.error("[rate-limit:shared-failed]", error);
+    }
+  }
+
+  return consumeMemoryRateLimit(input);
+}
+
+export async function assertRateLimit(input: RateLimitInput) {
+  const result = await consumeRateLimit(input);
+
+  if (!result.allowed) {
+    throw new RateLimitExceededError(result);
+  }
+
+  return result;
+}
+
+export function assertSharedRateLimitConfig(
+  env: Record<string, string | undefined> = process.env,
+) {
+  const missing = getMissingSharedRateLimitEnv(env);
+
+  if (isSharedRateLimitRequired(env) && missing.length > 0) {
+    throw new Error(
+      `Missing shared rate-limit environment variables: ${missing.join(", ")}`,
+    );
+  }
+}
+
+export function getMissingSharedRateLimitEnv(
+  env: Record<string, string | undefined> = process.env,
+) {
+  return SHARED_RATE_LIMIT_ENV.filter((name) => !env[name]?.trim());
+}
+
+export function isSharedRateLimitRequired(
+  env: Record<string, string | undefined> = process.env,
+) {
+  return env.VERCEL === "1" || env.VERCEL_ENV === "production";
+}
+
+export function resetRateLimitStateForTests() {
+  buckets.clear();
+  sharedLimiters.clear();
+  sharedRedis = null;
+}
+
+function consumeMemoryRateLimit(input: RateLimitInput): RateLimitResult {
   const now = Date.now();
   const bucket = buckets.get(input.key);
   const activeBucket =
@@ -48,16 +127,6 @@ export function consumeRateLimit(input: RateLimitInput): RateLimitResult {
   };
 }
 
-export function assertRateLimit(input: RateLimitInput) {
-  const result = consumeRateLimit(input);
-
-  if (!result.allowed) {
-    throw new RateLimitExceededError(result);
-  }
-
-  return result;
-}
-
 export function getRequestIp(req: Request) {
   return (
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
@@ -72,4 +141,31 @@ export function rateLimitMessage(error: unknown) {
   }
 
   return null;
+}
+
+function getSharedLimiter(input: RateLimitInput) {
+  assertSharedRateLimitConfig();
+
+  const url = process.env.UPSTASH_REDIS_REST_URL?.trim();
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN?.trim();
+
+  if (!url || !token) return null;
+
+  sharedRedis ??= new Redis({ url, token });
+
+  const windowSeconds = Math.max(1, Math.ceil(input.windowMs / 1000));
+  const limiterKey = `${input.limit}:${windowSeconds}`;
+  const existing = sharedLimiters.get(limiterKey);
+
+  if (existing) return existing;
+
+  const limiter = new Ratelimit({
+    redis: sharedRedis,
+    limiter: Ratelimit.slidingWindow(input.limit, `${windowSeconds} s`),
+    prefix: `aphrodite:rate-limit:${input.limit}:${windowSeconds}`,
+  });
+
+  sharedLimiters.set(limiterKey, limiter);
+
+  return limiter;
 }

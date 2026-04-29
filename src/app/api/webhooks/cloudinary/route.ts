@@ -14,7 +14,7 @@ import {
 
 export async function POST(req: Request) {
   try {
-    assertRateLimit({
+    await assertRateLimit({
       key: `webhook:cloudinary:${getRequestIp(req)}`,
       limit: 120,
       windowMs: 60_000,

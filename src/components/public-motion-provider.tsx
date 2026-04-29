@@ -44,14 +44,26 @@ function usePrefersReducedMotion() {
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches);
+    const updatePreference = () =>
+      setPrefersReducedMotion(
+        mediaQuery.matches ||
+          document.documentElement.dataset.accessibilityMotion === "reduce",
+      );
     const syncFrame = window.requestAnimationFrame(updatePreference);
 
     mediaQuery.addEventListener("change", updatePreference);
+    window.addEventListener(
+      "aphrodite:accessibility-settings",
+      updatePreference,
+    );
 
     return () => {
       window.cancelAnimationFrame(syncFrame);
       mediaQuery.removeEventListener("change", updatePreference);
+      window.removeEventListener(
+        "aphrodite:accessibility-settings",
+        updatePreference,
+      );
     };
   }, []);
 

@@ -19,6 +19,7 @@ import {
   getCatalogBranches,
   searchCatalogProducts,
 } from "~/server/services/catalog";
+import { readSafeJson } from "~/server/http/safe-json";
 import {
   assertRateLimit,
   getRequestIp,
@@ -73,7 +74,7 @@ function resolveChatModel() {
 
 export async function POST(req: Request) {
   try {
-    assertRateLimit({
+    await assertRateLimit({
       key: `chat:${getRequestIp(req)}`,
       limit: 30,
       windowMs: 60_000,
@@ -92,7 +93,19 @@ export async function POST(req: Request) {
     throw error;
   }
 
-  const { messages } = chatRequestSchema.parse(await req.json());
+  const json = await readSafeJson(req);
+
+  if (!json.ok) {
+    return Response.json({ error: "Invalid request body." }, { status: 400 });
+  }
+
+  const parsedRequest = chatRequestSchema.safeParse(json.data);
+
+  if (!parsedRequest.success) {
+    return Response.json({ error: "Invalid request body." }, { status: 400 });
+  }
+
+  const { messages } = parsedRequest.data;
   const { model: chatModel, requiresGoogleKey } = resolveChatModel();
 
   if (requiresGoogleKey && !env.GOOGLE_GENERATIVE_AI_API_KEY) {

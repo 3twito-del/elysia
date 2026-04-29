@@ -51,6 +51,12 @@ function useInViewOnce<T extends HTMLElement>(initialVisible = false) {
       return () => clearTimeout(timeout);
     }
 
+    const visibleFrame = window.requestAnimationFrame(() => {
+      if (isElementNearViewport(node)) {
+        setIsVisible(true);
+      }
+    });
+    const fallbackTimeout = window.setTimeout(() => setIsVisible(true), 1200);
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry?.isIntersecting) return;
@@ -63,10 +69,29 @@ function useInViewOnce<T extends HTMLElement>(initialVisible = false) {
 
     observer.observe(node);
 
-    return () => observer.disconnect();
+    return () => {
+      window.cancelAnimationFrame(visibleFrame);
+      window.clearTimeout(fallbackTimeout);
+      observer.disconnect();
+    };
   }, [hasForcedVisible]);
 
   return [ref, hasForcedVisible || isVisible] as const;
+}
+
+function isElementNearViewport(node: HTMLElement) {
+  const rect = node.getBoundingClientRect();
+  const viewportHeight =
+    window.innerHeight || document.documentElement.clientHeight;
+  const viewportWidth =
+    window.innerWidth || document.documentElement.clientWidth;
+
+  return (
+    rect.bottom >= -80 &&
+    rect.right >= -80 &&
+    rect.top <= viewportHeight + 80 &&
+    rect.left <= viewportWidth + 80
+  );
 }
 
 export function RevealSection({

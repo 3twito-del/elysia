@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -58,7 +60,26 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     <main>
       <SiteHeader />
       <RevealSection className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
-        <h1 className="text-4xl font-semibold">חיפוש בקטלוג</h1>
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-end">
+          <div>
+            <h1 className="text-4xl font-semibold">חיפוש בקטלוג</h1>
+            <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
+              תוצאות הקטלוג נשארות נקיות ומדויקות, עם צבע שמגיע מהפריטים עצמם.
+            </p>
+          </div>
+          {result.hits[0]?.image ? (
+            <div className="glass-inset relative hidden h-32 overflow-hidden rounded-md border bg-white/35 lg:block">
+              <Image
+                alt=""
+                className="media-mono object-cover"
+                fill
+                sizes="260px"
+                src={result.hits[0].image}
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(255,255,255,0.58),rgba(255,255,255,0.04))]" />
+            </div>
+          ) : null}
+        </div>
         <form
           aria-label="חיפוש בקטלוג"
           className="glass-panel mt-6 grid gap-3 rounded-md border p-3 lg:grid-cols-[1fr_repeat(4,160px)_120px]"

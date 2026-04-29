@@ -112,10 +112,10 @@ export default async function ProductPage({
       />
       <RevealSection className="mx-auto grid max-w-7xl gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[1.05fr_0.95fr]">
         <div className="grid gap-4">
-          <div className="glass-inset relative aspect-square overflow-hidden rounded-md border">
+          <div className="glass-inset relative aspect-square overflow-hidden rounded-md border bg-white/35">
             <Image
               alt={product.name}
-              className="media-mono object-cover"
+              className="media-color object-cover"
               fill
               priority
               sizes="(min-width: 1024px) 50vw, 100vw"
@@ -144,12 +144,12 @@ export default async function ProductPage({
             <div className="grid grid-cols-3 gap-3">
               {uniqueImages.map((image, index) => (
                 <div
-                  className="glass-inset relative aspect-square overflow-hidden rounded-md border"
+                  className="glass-inset relative aspect-square overflow-hidden rounded-md border bg-white/35"
                   key={image}
                 >
                   <Image
                     alt={`${product.name} ${index + 1}`}
-                    className="media-mono object-cover"
+                    className="media-color object-cover"
                     fill
                     sizes="(min-width: 1024px) 16vw, 33vw"
                     src={image}

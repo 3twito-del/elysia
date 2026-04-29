@@ -12,7 +12,7 @@ const ACTIVE_PRODUCT_WHERE = {
   status: "ACTIVE",
 } satisfies Prisma.ProductWhereInput;
 const CATALOG_REVALIDATE_SECONDS = 60 * 60;
-const DEFAULT_IMAGE =
+export const DEFAULT_CATALOG_IMAGE =
   "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80";
 
 type CatalogProductRecord = Prisma.ProductGetPayload<{
@@ -23,6 +23,8 @@ export type CatalogCategory = {
   slug: string;
   name: string;
   description: string;
+  image: string;
+  imageUrl: string;
 };
 
 export type CatalogBranch = {
@@ -104,13 +106,10 @@ const getCatalogCategoriesCached = unstable_cache(
   async (): Promise<CatalogCategory[]> => {
     const categories = await db.category.findMany({
       orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+      include: createCategoryImageInclude(),
     });
 
-    return categories.map((category) => ({
-      slug: category.slug,
-      name: category.name,
-      description: category.description ?? "",
-    }));
+    return categories.map(mapCatalogCategory);
   },
   ["catalog:categories"],
   {
@@ -126,15 +125,14 @@ export async function getCatalogCategories(): Promise<CatalogCategory[]> {
 export async function getCatalogCategoryBySlug(slug: string) {
   const getCatalogCategoryBySlugCached = unstable_cache(
     async () => {
-      const category = await db.category.findUnique({ where: { slug } });
+      const category = await db.category.findUnique({
+        where: { slug },
+        include: createCategoryImageInclude(),
+      });
 
       if (!category) return null;
 
-      return {
-        slug: category.slug,
-        name: category.name,
-        description: category.description ?? "",
-      } satisfies CatalogCategory;
+      return mapCatalogCategory(category);
     },
     [`catalog:category:${slug}`],
     {
@@ -397,8 +395,8 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
     material: record.material.name,
     stone: record.stone?.name,
     collection: record.collections[0]?.name ?? "Aphrodite",
-    image: images[0] ?? DEFAULT_IMAGE,
-    images: images.length > 0 ? images : [DEFAULT_IMAGE],
+    image: images[0] ?? DEFAULT_CATALOG_IMAGE,
+    images: images.length > 0 ? images : [DEFAULT_CATALOG_IMAGE],
     variants: record.variants.map((variant) => ({
       sku: variant.sku,
       name: variant.name,
@@ -443,6 +441,48 @@ function mapCatalogBranch(record: {
     whatsapp: record.whatsapp ?? "",
     services: record.services,
     openingHours,
+  };
+}
+
+function createCategoryImageInclude() {
+  return {
+    products: {
+      where: ACTIVE_PRODUCT_WHERE,
+      orderBy: { createdAt: "desc" },
+      take: 1,
+      include: {
+        media: {
+          where: { kind: "IMAGE" },
+          orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }],
+          take: 1,
+        },
+      },
+    },
+  } satisfies Prisma.CategoryInclude;
+}
+
+function mapCatalogCategory(category: {
+  slug: string;
+  name: string;
+  description: string | null;
+  imageUrl: string | null;
+  products: Array<{
+    media: Array<{
+      url: string;
+    }>;
+  }>;
+}): CatalogCategory {
+  const image =
+    category.imageUrl ??
+    category.products[0]?.media[0]?.url ??
+    DEFAULT_CATALOG_IMAGE;
+
+  return {
+    slug: category.slug,
+    name: category.name,
+    description: category.description ?? "",
+    image,
+    imageUrl: image,
   };
 }
 

@@ -71,7 +71,7 @@ export async function requestCustomerOtpAction(
   }
 
   try {
-    assertRateLimit({
+    await assertRateLimit({
       key: `otp:request:${parsed.data.identifier}`,
       limit: 3,
       windowMs: 10 * 60_000,
@@ -111,7 +111,7 @@ export async function verifyCustomerOtpAction(
   const sessionKey = getFormString(formData, "sessionKey");
 
   try {
-    assertRateLimit({
+    await assertRateLimit({
       key: `otp:verify:${identifier}`,
       limit: 6,
       windowMs: 10 * 60_000,

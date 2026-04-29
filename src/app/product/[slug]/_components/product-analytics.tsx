@@ -18,8 +18,39 @@ export function ProductAnalytics({
   query,
 }: ProductAnalyticsProps) {
   useEffect(() => {
-    const sessionKey = getOrCreateCartSessionKey();
+    const sessionKey = safeGetCartSessionKey();
 
+    writeRecentlyViewed(productSlug);
+
+    void sendAnalyticsEvent("/api/events/product-view", {
+      productSlug,
+      sessionKey,
+      path,
+    });
+
+    if (query) {
+      void sendAnalyticsEvent("/api/events/product-click", {
+        productSlug,
+        query,
+        position,
+        sessionKey,
+      });
+    }
+  }, [path, position, productSlug, query]);
+
+  return null;
+}
+
+function safeGetCartSessionKey() {
+  try {
+    return getOrCreateCartSessionKey();
+  } catch {
+    return undefined;
+  }
+}
+
+function writeRecentlyViewed(productSlug: string) {
+  try {
     window.localStorage.setItem(
       "aphrodite_recently_viewed",
       JSON.stringify(
@@ -29,23 +60,24 @@ export function ProductAnalytics({
         ].slice(0, 8),
       ),
     );
+  } catch {
+    // Analytics history is optional and should not block product pages.
+  }
+}
 
-    void fetch("/api/events/product-view", {
+async function sendAnalyticsEvent(
+  path: string,
+  body: Record<string, string | number | undefined>,
+) {
+  try {
+    await fetch(path, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ productSlug, sessionKey, path }),
+      body: JSON.stringify(body),
     });
-
-    if (query) {
-      void fetch("/api/events/product-click", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ productSlug, query, position, sessionKey }),
-      });
-    }
-  }, [path, position, productSlug, query]);
-
-  return null;
+  } catch {
+    // Fire-and-forget analytics must not surface network failures to users.
+  }
 }
 
 function readRecentlyViewed() {

@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { db } from "~/server/db";
 import { getActiveCouponValue, normalizeCouponCode } from "./coupons";
+import { DEFAULT_CATALOG_IMAGE } from "~/server/services/catalog";
 import { calculateOrderTotal } from "~/server/services/pricing";
 
 const CART_TTL_DAYS = 30;
@@ -45,6 +46,9 @@ type CartWithItems = Cart & {
         product: {
           slug: string;
           name: string;
+          media: Array<{
+            url: string;
+          }>;
         };
       };
     }
@@ -263,6 +267,7 @@ async function mapCartSummary(cart: CartWithItems, fulfillmentMethod: string) {
     id: item.id,
     productSlug: item.variant.product.slug,
     productName: item.variant.product.name,
+    productImage: item.variant.product.media[0]?.url ?? DEFAULT_CATALOG_IMAGE,
     variantSku: item.variant.sku,
     variantName: item.variant.name,
     quantity: item.quantity,
@@ -308,6 +313,12 @@ const cartInclude = {
             select: {
               slug: true,
               name: true,
+              media: {
+                where: { kind: "IMAGE" },
+                orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }],
+                select: { url: true },
+                take: 1,
+              },
             },
           },
         },

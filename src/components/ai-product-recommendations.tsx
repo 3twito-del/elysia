@@ -69,7 +69,7 @@ export function AiProductRecommendations({
               {product.image ? (
                 <Image
                   alt={product.name}
-                  className="object-cover transition-transform duration-500 ease-[var(--ease-liquid)] group-hover/card:scale-[1.035]"
+                  className="media-color object-cover transition-transform duration-500 ease-[var(--ease-liquid)] group-hover/card:scale-[1.035]"
                   fill
                   sizes={
                     resolvedLayout === "grid"
