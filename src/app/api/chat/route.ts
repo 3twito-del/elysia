@@ -10,6 +10,11 @@ import { z } from "zod";
 
 import { env } from "~/env";
 import {
+  createAiMatchReason,
+  createCatalogSearchPlan,
+  resolveAiCatalogSearchIntent,
+} from "~/lib/ai-catalog-intent";
+import {
   formatPrice,
   getCatalogBranches,
   searchCatalogProducts,
@@ -107,8 +112,9 @@ export async function POST(req: Request) {
       "את סטייליסטית התכשיטים של Aphrodite.",
       "עני בעברית בלבד, בטון יוקרתי, רגוע ותמציתי.",
       "בכל בקשה שכוללת המלצה, חיפוש, מתנה, תקציב, חומר, סגנון, קטגוריה או אירוע, חובה לקרוא קודם לכלי searchCatalog.",
-      "המליצי רק על מוצרים שהוחזרו מהכלי searchCatalog. אין להמציא מוצרים, מחירים, מלאי, סניפים או קישורים.",
-      "כאשר יש המלצות, הציגי 2-4 אפשרויות קצרות עם סיבת התאמה, מחיר, זמינות וקישור מוצר.",
+      "המליצי רק על מוצרים שהוחזרו מהכלי searchCatalog. אין להמציא מוצרים, מחירים, מלאי או סניפים.",
+      "אל תכתבי קישורי מוצר, URL או את הביטוי 'קישור למוצר' בתוך הטקסט. כרטיסי המוצר יוצגו אוטומטית אחרי התשובה.",
+      "כאשר יש המלצות, כתבי פסקה קצרה וטבעית שמסבירה את הכיוון, ואז רשימת שמות פריטים עם סיבת התאמה קצרה בלבד.",
       "אם הכלי מחזיר חלופות קרובות שאינן התאמה מושלמת, הציגי אותן כחלופות קרובות במקום לומר שלא נמצאו מוצרים.",
       "אל תשאלי שאלת הבהרה אם אפשר להריץ חיפוש רחב על בסיס הבקשה הקיימת.",
       "שאלי שאלת הבהרה אחת בלבד אם אין בבקשה שום רמז לסוג תכשיט, תקציב, אירוע, חומר או סגנון.",
@@ -116,7 +122,6 @@ export async function POST(req: Request) {
       "Do not add constraints that the user did not state. If the user did not specify category, material, stone, or metal color, do not narrow the answer to one.",
       "When searchCatalog returns two or more products, show at least two returned products unless the user explicitly asked for only one.",
       "Never say that no products were found if searchCatalog returned products. If the match is not exact, present them as close alternatives.",
-      "Copy product URLs exactly from the `url` field.",
     ].join("\n"),
     messages: await convertToModelMessages(messages),
     stopWhen: stepCountIs(4),
@@ -128,28 +133,24 @@ export async function POST(req: Request) {
           query: z.string().optional(),
           category: z.string().optional(),
           branch: z.string().optional(),
+          material: z.string().optional(),
+          stone: z.string().optional(),
           maxPrice: z.number().optional(),
         }),
         execute: async (input) => {
-          const resultSets = [
-            await searchCatalogProducts(input),
-            input.query
-              ? await searchCatalogProducts({ ...input, query: undefined })
-              : [],
-            input.category
-              ? await searchCatalogProducts({ ...input, category: undefined })
-              : [],
-            input.query || input.category
-              ? await searchCatalogProducts({
-                  branch: input.branch,
-                  maxPrice: input.maxPrice,
-                })
-              : [],
-            input.maxPrice
-              ? await searchCatalogProducts({ maxPrice: input.maxPrice })
-              : [],
-            await searchCatalogProducts({}),
-          ];
+          const intent = resolveAiCatalogSearchIntent(input);
+          const searchPlan = createCatalogSearchPlan(intent);
+          const resultSets = [];
+
+          for (const searchInput of searchPlan) {
+            resultSets.push(
+              await searchCatalogProducts({
+                ...searchInput,
+                availableOnly: true,
+              }),
+            );
+          }
+
           const branches = await getCatalogBranches();
           const results = Array.from(
             new Map(
@@ -162,11 +163,11 @@ export async function POST(req: Request) {
           return results.map((product) => ({
             slug: product.slug,
             url: `/product/${product.slug}`,
-            recommendationLine: `${product.name} - ${formatPrice(product.price)} - /product/${product.slug}`,
             name: product.name,
             price: product.price,
             formattedPrice: formatPrice(product.price),
             image: product.image,
+            matchReason: createAiMatchReason(product, intent),
             category: product.categoryName,
             material: product.material,
             stone: product.stone,

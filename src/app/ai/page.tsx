@@ -30,56 +30,70 @@ export default async function AiPage({ searchParams }: AiPageProps) {
     search.tab === "gifts" || search.tool === "gifts" ? "gifts" : "stylist";
 
   return (
-    <main>
+    <main className="min-h-screen">
       <SiteHeader />
-      <RevealSection className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6">
-        <div>
-          <Badge className="mb-4" variant="secondary">
-            Aphrodite AI
-          </Badge>
-          <h1 className="text-4xl font-semibold">
-            התאמה חכמה לתכשיט, מתנה וסגנון
-          </h1>
-          <p className="text-muted-foreground mt-3 max-w-3xl leading-7">
-            כלי ה-AI מחוברים לקטלוג Aphrodite ומציגים מוצרים קיימים כלחיצים,
-            עם מחיר וזמינות מתוך המלאי.
-          </p>
+      <RevealSection className="liquid-section border-b border-[var(--glass-border)]">
+        <div className="mx-auto grid max-w-7xl gap-7 px-4 py-8 sm:px-6 lg:py-10">
+          <Tabs className="gap-6" defaultValue={defaultTab}>
+            <div className="glass-panel grid gap-5 rounded-md border p-5 sm:p-6 lg:grid-cols-[1fr_auto] lg:items-end">
+              <div className="grid gap-4">
+                <Badge className="w-fit" variant="secondary">
+                  Aphrodite AI
+                </Badge>
+                <div className="grid gap-3">
+                  <h1 className="max-w-4xl text-3xl font-semibold tracking-normal sm:text-4xl">
+                    התאמה חכמה לתכשיט, מתנה וסגנון
+                  </h1>
+                  <p className="text-muted-foreground max-w-3xl leading-7">
+                    כלי ה־AI מחוברים לקטלוג Aphrodite ומציגים פריטים זמינים
+                    מתוך המלאי, עם התאמה לפי כוונה, תקציב וסגנון.
+                  </p>
+                </div>
+              </div>
+
+              <TabsList
+                className="glass-control !grid h-auto w-full grid-cols-2 overflow-visible rounded-md p-1 sm:w-[360px]"
+                dir="rtl"
+              >
+                <TabsTrigger
+                  className="min-h-11 min-w-0 gap-2 px-3 data-active:bg-white/70"
+                  value="stylist"
+                >
+                  <MessageSquare className="size-4" />
+                  סטייליסט
+                </TabsTrigger>
+                <TabsTrigger
+                  className="min-h-11 min-w-0 gap-2 px-3 data-active:bg-white/70"
+                  value="gifts"
+                >
+                  <Gift className="size-4" />
+                  מתנות
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            <TabsContent className="mt-0" value="stylist">
+              <StylistChat />
+            </TabsContent>
+
+            <TabsContent className="mt-0" value="gifts">
+              <TRPCReactProvider>
+                <AiGiftRecommender />
+              </TRPCReactProvider>
+            </TabsContent>
+          </Tabs>
+
+          <section className="grid gap-3 text-sm leading-6 sm:grid-cols-[auto_1fr] sm:items-start">
+            <div className="glass-inset flex size-10 items-center justify-center rounded-md border">
+              <Sparkles className="size-4" />
+            </div>
+            <p className="text-muted-foreground max-w-4xl">
+              תמיכה בהזמנה, שמירת פרופיל סגנון ומדידה וירטואלית נשארים זמינים
+              דרך אזור הלקוח ועמודי המוצר. ההמלצות כאן מתמקדות בפריטים שאפשר
+              לפתוח, לבדוק ולרכוש מתוך הקטלוג.
+            </p>
+          </section>
         </div>
-
-        <Tabs defaultValue={defaultTab}>
-          <TabsList className="w-full justify-start overflow-x-auto" dir="rtl">
-            <TabsTrigger className="min-w-36 gap-2" value="stylist">
-              <MessageSquare className="size-4" />
-              סטייליסט
-            </TabsTrigger>
-            <TabsTrigger className="min-w-36 gap-2" value="gifts">
-              <Gift className="size-4" />
-              מתנות
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent className="mt-6" value="stylist">
-            <StylistChat />
-          </TabsContent>
-
-          <TabsContent className="mt-6" value="gifts">
-            <TRPCReactProvider>
-              <AiGiftRecommender />
-            </TRPCReactProvider>
-          </TabsContent>
-        </Tabs>
-
-        <section className="glass-inset grid gap-3 rounded-md border p-4 text-sm leading-6">
-          <div className="flex items-center gap-2 font-medium">
-            <Sparkles className="size-4" />
-            כלים נוספים
-          </div>
-          <p className="text-muted-foreground">
-            תמיכה בהזמנה, שמירת פרופיל סגנון ומדידה וירטואלית נשארים זמינים דרך
-            אזור הלקוח ועמודי המוצר. כלים אלה אינם מחזירים רשימת מוצרים ולכן לא
-            מציגים כרטיסי המלצה.
-          </p>
-        </section>
       </RevealSection>
     </main>
   );

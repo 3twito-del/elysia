@@ -7,7 +7,12 @@ describe("AI product recommendations", () => {
     const products = normalizeAiRecommendedProducts(
       [
         { slug: "alpha", name: "Alpha", price: 100 },
-        { slug: "beta", name: "Beta", price: 200 },
+        {
+          slug: "beta",
+          name: "Beta",
+          matchReason: "Matches the brief",
+          price: 200,
+        },
         { slug: "alpha", name: "Duplicate Alpha", price: 300 },
         { slug: "gamma", name: "Gamma", price: 400 },
         { slug: "delta", name: "Delta", price: 500 },
@@ -25,5 +30,6 @@ describe("AI product recommendations", () => {
     ]);
     expect(products[0]?.href).toBe("/product/alpha?q=ai%3Agift&position=0");
     expect(products[3]?.href).toBe("/product/delta?q=ai%3Agift&position=3");
+    expect(products[1]?.matchReason).toBe("Matches the brief");
   });
 });

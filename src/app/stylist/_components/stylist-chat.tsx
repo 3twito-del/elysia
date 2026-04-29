@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useChat } from "@ai-sdk/react";
-import { AlertCircle, MessageSquare, Sparkles } from "lucide-react";
+import type { UIMessage } from "ai";
+import { AlertCircle, MessageSquare, Send, Sparkles } from "lucide-react";
 
 import { AiProductRecommendations } from "~/components/ai-product-recommendations";
 import {
@@ -30,8 +31,8 @@ import type { AiRecommendedProductInput } from "~/lib/ai-product-recommendations
 
 const suggestions = [
   "מתנה לאמא עד 700 ש״ח בסגנון עדין",
-  "טבעת זהב צהוב שאפשר לענוד כל יום",
-  "עגילים לכלה שלא נראים כבדים",
+  "טבעת זהב צהוב שמתאימה לענידה יומיומית",
+  "עגילים עדינים לכלה, בלי תחושה כבדה",
 ];
 
 export function StylistChat() {
@@ -47,45 +48,55 @@ export function StylistChat() {
 
   return (
     <TooltipProvider>
-      <div className="glass-panel grid min-h-[640px] rounded-md border">
-        <div className="border-b border-[var(--glass-border)] p-5">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <Badge className="mb-2" variant="secondary">
-                AI Stylist
+      <div className="glass-panel grid min-h-[640px] overflow-hidden rounded-md border">
+        <div className="border-b border-[var(--glass-border)] p-5 sm:p-6">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="grid gap-2">
+              <Badge className="w-fit" variant="secondary">
+                Aphrodite AI
               </Badge>
-              <h2 className="text-2xl font-semibold">סטייליסט תכשיטים אישי</h2>
+              <div className="grid gap-1">
+                <h2 className="text-2xl font-semibold">
+                  סטייליסט תכשיטים אישי
+                </h2>
+                <p className="text-muted-foreground max-w-2xl text-sm leading-6">
+                  מאתרים התאמות בקטלוג לפי תקציב, אירוע, חומר וסגנון, ומציגים
+                  את הפריטים עצמם אחרי ההמלצה.
+                </p>
+              </div>
             </div>
-            <Sparkles className="text-foreground size-6" />
+            <div className="glass-inset flex size-12 items-center justify-center rounded-md border">
+              <Sparkles className="text-foreground size-5" />
+            </div>
           </div>
         </div>
 
         <div className="flex min-h-0 flex-col">
           <Conversation className="min-h-[440px]">
-            <ConversationContent>
+            <ConversationContent className="gap-6 p-4 sm:p-6">
               {messages.length === 0 ? (
-                <ConversationEmptyState
-                  description="כתבי תקציב, אירוע, סגנון או מוצר שמעניין אותך."
-                  icon={<MessageSquare className="size-10" />}
-                  title="איך אפשר להתאים לך תכשיט?"
-                >
-                  <div className="grid gap-3 text-center">
-                    <MessageSquare className="text-muted-foreground mx-auto size-10" />
-                    <div>
-                      <h3 className="font-medium">איך אפשר להתאים לך תכשיט?</h3>
-                      <p className="text-muted-foreground mt-1 text-sm">
-                        כתבי תקציב, אירוע, סגנון או מוצר שמעניין אותך.
+                <ConversationEmptyState className="py-10">
+                  <div className="grid max-w-2xl gap-5 text-center">
+                    <div className="glass-inset mx-auto flex size-14 items-center justify-center rounded-md border">
+                      <MessageSquare className="text-muted-foreground size-7" />
+                    </div>
+                    <div className="grid gap-2">
+                      <h3 className="text-lg font-semibold">
+                        איך אפשר להתאים לך תכשיט?
+                      </h3>
+                      <p className="text-muted-foreground text-sm leading-6">
+                        כתבו תקציב, אירוע, סגנון או פריט שמעניין אתכם.
                       </p>
                     </div>
                     <div className="flex flex-wrap justify-center gap-2">
                       {suggestions.map((suggestion) => (
                         <Button
                           key={suggestion}
+                          className="glass-control interactive-lift min-h-11 max-w-full px-4 py-2 text-right leading-5 whitespace-normal"
                           onClick={() => {
                             setInput("");
                             void sendMessage({ text: suggestion });
                           }}
-                          className="min-h-11 px-4 py-2 text-right leading-5 whitespace-normal"
                           type="button"
                           variant="outline"
                         >
@@ -96,33 +107,19 @@ export function StylistChat() {
                   </div>
                 </ConversationEmptyState>
               ) : (
-                messages.map((message) => (
+                messages.map((message, messageIndex) => (
                   <Message from={message.role} key={message.id}>
                     <MessageContent
                       className={
-                        message.role === "assistant" ? "w-full" : undefined
+                        message.role === "assistant"
+                          ? "w-full gap-4 overflow-visible"
+                          : undefined
                       }
                     >
-                      {message.parts.map((part, index) => {
-                        if (part.type === "text") {
-                          return (
-                            <MessageResponse key={`${message.id}-${index}`}>
-                              {part.text}
-                            </MessageResponse>
-                          );
-                        }
-
-                        if (isSearchCatalogToolPart(part)) {
-                          return (
-                            <SearchCatalogToolResult
-                              key={`${message.id}-${index}`}
-                              part={part}
-                            />
-                          );
-                        }
-
-                        return null;
-                      })}
+                      {renderMessageParts(
+                        message,
+                        getNearestUserText(messages, messageIndex),
+                      )}
                     </MessageContent>
                   </Message>
                 ))
@@ -131,7 +128,7 @@ export function StylistChat() {
             <ConversationScrollButton />
           </Conversation>
 
-          <div className="border-t border-[var(--glass-border)] p-4">
+          <div className="border-t border-[var(--glass-border)] p-4 sm:p-5">
             {error ? (
               <div className="glass-inset mb-4 rounded-md border p-4 text-sm">
                 <div className="flex items-start gap-3">
@@ -139,7 +136,7 @@ export function StylistChat() {
                   <div className="grid gap-2">
                     <p className="font-medium">הסטייליסט לא זמין כרגע.</p>
                     <p className="text-muted-foreground leading-6">
-                      מכסת ה-AI הזמנית של הספק נוצלה או שהמפתח אינו פעיל. נסו
+                      מכסת ה־AI הזמנית של הספק נוצלה או שהמפתח אינו פעיל. נסו
                       שוב בעוד דקה.
                     </p>
                     <Button
@@ -155,21 +152,34 @@ export function StylistChat() {
                 </div>
               </div>
             ) : null}
-            <PromptInput onSubmit={handleSubmit}>
+
+            <PromptInput
+              className="relative"
+              dir="rtl"
+              onSubmit={handleSubmit}
+            >
               <PromptInputTextarea
-                className="min-h-24 pl-16"
+                className="min-h-14 max-h-32 py-3 pr-4 pl-14 leading-6"
                 onChange={(event) => setInput(event.currentTarget.value)}
-                placeholder="לדוגמה: מחפשת מתנה עד 900 ש״ח למישהי שאוהבת זהב לבן"
+                placeholder="לדוגמה: מתנה עד 900 ש״ח למישהי שאוהבת זהב לבן"
                 value={input}
               />
               <PromptInputSubmit
-                className="absolute bottom-2 left-2 size-11"
-                disabled={!input.trim() && status === "ready"}
+                className="absolute bottom-2 left-2 size-10 rounded-md"
+                disabled={
+                  !input.trim() &&
+                  status !== "submitted" &&
+                  status !== "streaming"
+                }
                 onStop={stop}
                 status={status}
-              />
+              >
+                {status === "ready" || status === "error" ? (
+                  <Send className="size-4" />
+                ) : undefined}
+              </PromptInputSubmit>
             </PromptInput>
-            <p className="text-muted-foreground mt-3 text-xs">
+            <p className="text-muted-foreground mt-3 text-xs leading-5">
               ההמלצות הן כלי עזר. זמינות, מידה והתאמה סופית יאושרו בקופה או
               בסניף.
             </p>
@@ -187,7 +197,43 @@ type SearchCatalogToolPart = {
   errorText?: string;
 };
 
-function SearchCatalogToolResult({ part }: { part: SearchCatalogToolPart }) {
+type TextPart = {
+  type: "text";
+  text: string;
+};
+
+function renderMessageParts(message: UIMessage, queryText?: string) {
+  const textParts = message.parts.filter(isTextPart);
+  const toolParts = (message.parts as unknown[]).filter(
+    isSearchCatalogToolPart,
+  );
+
+  return (
+    <>
+      {textParts.map((part, index) => (
+        <MessageResponse key={`${message.id}-text-${index}`}>
+          {part.text}
+        </MessageResponse>
+      ))}
+
+      {toolParts.map((part, index) => (
+        <SearchCatalogToolResult
+          key={`${message.id}-tool-${index}`}
+          part={part}
+          queryText={queryText}
+        />
+      ))}
+    </>
+  );
+}
+
+function SearchCatalogToolResult({
+  part,
+  queryText,
+}: {
+  part: SearchCatalogToolPart;
+  queryText?: string;
+}) {
   if (part.state === "output-error") {
     return (
       <div className="glass-inset rounded-md border p-3 text-sm">
@@ -200,7 +246,7 @@ function SearchCatalogToolResult({ part }: { part: SearchCatalogToolPart }) {
     return (
       <div className="glass-inset flex w-fit items-center gap-2 rounded-md border px-3 py-2 text-sm">
         <Spinner />
-        מחפשת מוצרים בקטלוג
+        מאתרים התאמות בקטלוג
       </div>
     );
   }
@@ -212,10 +258,43 @@ function SearchCatalogToolResult({ part }: { part: SearchCatalogToolPart }) {
   return (
     <AiProductRecommendations
       className="mt-1"
+      layout="inline"
       products={products}
+      queryText={queryText}
       source="stylist"
-      title="מוצרים מומלצים"
+      title="פריטים שמתאימים לבקשה"
     />
+  );
+}
+
+function getNearestUserText(messages: UIMessage[], messageIndex: number) {
+  for (let index = messageIndex - 1; index >= 0; index -= 1) {
+    const message = messages[index];
+    if (message?.role !== "user") continue;
+
+    const text = getMessageText(message);
+    if (text) return text;
+  }
+
+  return undefined;
+}
+
+function getMessageText(message: UIMessage) {
+  return message.parts
+    .filter(isTextPart)
+    .map((part) => part.text)
+    .join(" ")
+    .trim();
+}
+
+function isTextPart(part: unknown): part is TextPart {
+  return (
+    typeof part === "object" &&
+    part !== null &&
+    "type" in part &&
+    part.type === "text" &&
+    "text" in part &&
+    typeof part.text === "string"
   );
 }
 

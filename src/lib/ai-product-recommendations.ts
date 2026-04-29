@@ -9,6 +9,10 @@ export type AiRecommendedProductInput = {
   price?: number;
   formattedPrice?: string;
   image?: string;
+  category?: string;
+  material?: string;
+  stone?: string;
+  matchReason?: string;
   shortDescription?: string;
   description?: string;
   inventory?: Record<string, number | undefined>;
@@ -26,6 +30,10 @@ export type AiRecommendedProduct = {
   name: string;
   priceLabel?: string;
   image?: string;
+  category?: string;
+  material?: string;
+  stone?: string;
+  matchReason?: string;
   description: string;
   availableBranchCount?: number;
   availableBranches: readonly {
@@ -61,6 +69,10 @@ export function normalizeAiRecommendedProducts(
             ? formatPrice(product.price)
             : undefined),
         image: product.image,
+        category: product.category,
+        material: product.material,
+        stone: product.stone,
+        matchReason: product.matchReason,
         description: product.description ?? product.shortDescription ?? "",
         availableBranchCount:
           product.availableBranchCount ??
