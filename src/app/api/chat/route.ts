@@ -22,7 +22,7 @@ import {
 
 export const maxDuration = 30;
 
-const DEFAULT_GOOGLE_CHAT_MODEL = "gemini-2.0-flash";
+const DEFAULT_GOOGLE_CHAT_MODEL = "gemini-2.5-flash-lite";
 const DEFAULT_GATEWAY_CHAT_MODEL = "openai/gpt-5.4";
 
 const chatRequestSchema = z.object({

@@ -44,7 +44,7 @@ STORE_FROM_EMAIL="orders@example.com"
 STORE_FROM_NAME="Aphrodite"
 OPERATIONS_EMAIL="studio@example.com"
 GOOGLE_GENERATIVE_AI_API_KEY="AIza..."
-AI_CHAT_MODEL="google:gemini-2.0-flash"
+AI_CHAT_MODEL="google:gemini-2.5-flash-lite"
 ```
 
 לאחר הגדרת env:
