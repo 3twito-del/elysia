@@ -17,6 +17,7 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Separator } from "~/components/ui/separator";
 import { Textarea } from "~/components/ui/textarea";
+import { formatPrice } from "~/lib/format";
 import { api } from "~/trpc/react";
 
 type CheckoutProduct = {
@@ -45,14 +46,6 @@ function StepBadge({ value }: { value: string }) {
       {value}
     </span>
   );
-}
-
-function formatPrice(amount: number) {
-  return new Intl.NumberFormat("he-IL", {
-    style: "currency",
-    currency: "ILS",
-    maximumFractionDigits: 0,
-  }).format(amount);
 }
 
 export function ManualCheckoutForm({

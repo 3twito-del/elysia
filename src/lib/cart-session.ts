@@ -1,6 +1,7 @@
 const CART_SESSION_STORAGE_KEY = "aphrodite_cart_session";
 const CART_SESSION_COOKIE = "aphrodite_cart_session";
 const CART_SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
+export const CART_UPDATED_EVENT = "aphrodite:cart-updated";
 
 export function getOrCreateCartSessionKey() {
   const existing = readStoredSessionKey();
@@ -16,6 +17,14 @@ export function getOrCreateCartSessionKey() {
   writeCartSessionCookie(sessionKey);
 
   return sessionKey;
+}
+
+export function getStoredCartSessionKey() {
+  return readStoredSessionKey();
+}
+
+export function dispatchCartUpdated() {
+  window.dispatchEvent(new Event(CART_UPDATED_EVENT));
 }
 
 function readStoredSessionKey() {

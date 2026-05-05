@@ -127,7 +127,7 @@ export default function AboutPage() {
                 </Button>
                 <Button
                   asChild
-                  className="glass-hero text-white hover:bg-[oklch(1_0_0_/_18%)]"
+                  className="text-foreground hover:bg-muted hover:text-foreground border-white bg-white"
                   size="lg"
                   variant="outline"
                 >

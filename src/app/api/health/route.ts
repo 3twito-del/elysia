@@ -14,7 +14,7 @@ export async function GET() {
         ? "configured"
         : "local-fallback",
     email: notificationProvider.isOperational()
-      ? "configured"
+      ? notificationProvider.providerName()
       : env.NODE_ENV === "production"
         ? "missing"
         : "mock-fallback",

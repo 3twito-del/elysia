@@ -16,11 +16,16 @@ import {
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { EmptyState } from "~/components/ui/empty-state";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Separator } from "~/components/ui/separator";
 import { Textarea } from "~/components/ui/textarea";
-import { getOrCreateCartSessionKey } from "~/lib/cart-session";
+import {
+  dispatchCartUpdated,
+  getOrCreateCartSessionKey,
+} from "~/lib/cart-session";
+import { formatPrice } from "~/lib/format";
 import { api } from "~/trpc/react";
 
 type BranchOption = {
@@ -33,14 +38,6 @@ type CartCheckoutFormProps = {
   branches: BranchOption[];
 };
 
-function formatPrice(amount: number) {
-  return new Intl.NumberFormat("he-IL", {
-    style: "currency",
-    currency: "ILS",
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
-
 function StepBadge({ value }: { value: string }) {
   return (
     <span className="glass-inset grid size-7 place-items-center rounded-full border text-xs font-semibold">
@@ -51,9 +48,7 @@ function StepBadge({ value }: { value: string }) {
 
 export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
   const utils = api.useUtils();
-  const [sessionKey] = useState(() =>
-    typeof window === "undefined" ? null : getOrCreateCartSessionKey(),
-  );
+  const [sessionKey, setSessionKey] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -75,11 +70,13 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
   const updateItem = api.cart.updateItem.useMutation({
     onSuccess: async () => {
       if (sessionKey) await utils.cart.get.invalidate({ sessionKey });
+      dispatchCartUpdated();
     },
   });
   const removeItem = api.cart.removeItem.useMutation({
     onSuccess: async () => {
       if (sessionKey) await utils.cart.get.invalidate({ sessionKey });
+      dispatchCartUpdated();
     },
   });
   const updateOptions = api.cart.updateOptions.useMutation({
@@ -90,19 +87,39 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
   const createOrder = api.checkout.createCartOrder.useMutation({
     onSuccess: async () => {
       if (sessionKey) await utils.cart.get.invalidate({ sessionKey });
+      dispatchCartUpdated();
     },
   });
 
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() =>
+      setSessionKey(getOrCreateCartSessionKey()),
+    );
+
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
   const cart = cartQuery.data;
-  const canSubmit =
-    Boolean(sessionKey) &&
-    Boolean(cart?.items.length) &&
-    name.trim().length >= 2 &&
-    phone.trim().length >= 7 &&
-    email.trim().length > 0 &&
-    branchSlug.length > 0 &&
-    (fulfillmentMethod === "PICKUP" ||
-      (city.trim().length >= 2 && street.trim().length >= 2));
+  const cartItemCount = cart?.items.length ?? 0;
+  const subtotal = cart?.totals.subtotal ?? 0;
+  const discount = cart?.totals.discount ?? 0;
+  const shippingAmount =
+    cartItemCount > 0 && fulfillmentMethod === "DELIVERY" ? 29 : 0;
+  const orderTotal = Math.max(0, subtotal - discount + shippingAmount);
+  const checkoutIssues = getCheckoutIssues({
+    branchSlug,
+    cartItemCount,
+    city,
+    email,
+    fulfillmentMethod,
+    name,
+    phone,
+    sessionKey,
+    street,
+  });
+  const canSubmit = checkoutIssues.length === 0 && !createOrder.isPending;
+  const cartMutationError =
+    updateItem.error ?? removeItem.error ?? updateOptions.error;
   const optionMutationInput = useMemo(
     () =>
       sessionKey
@@ -125,7 +142,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!sessionKey || !canSubmit) return;
+    if (!sessionKey || !canSubmit || createOrder.isPending) return;
 
     createOrder.mutate({
       sessionKey,
@@ -194,6 +211,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
   return (
     <form
       className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_380px]"
+      data-testid="cart-checkout-form"
       onSubmit={handleSubmit}
     >
       <div className="grid gap-6">
@@ -215,6 +233,25 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
           <CardContent className="grid gap-3">
             {cartQuery.isLoading || !sessionKey ? (
               <p className="text-muted-foreground text-sm">טוען סל...</p>
+            ) : cartQuery.error ? (
+              <div className="glass-inset grid gap-3 rounded-md border p-4 text-sm">
+                <p className="font-medium">לא הצלחנו לטעון את הסל.</p>
+                <p className="text-muted-foreground">
+                  אפשר לנסות שוב או להמשיך לבחור פריטים מהקטלוג.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    onClick={() => void cartQuery.refetch()}
+                    type="button"
+                    variant="secondary"
+                  >
+                    טעינה מחדש
+                  </Button>
+                  <Button asChild variant="outline">
+                    <Link href="/category/rings">חזרה לקטלוג</Link>
+                  </Button>
+                </div>
+              </div>
             ) : cart?.items.length ? (
               cart.items.map((item) => (
                 <div
@@ -223,7 +260,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                 >
                   <Link
                     aria-label={`צפייה במוצר ${item.productName}`}
-                    className="relative size-[72px] overflow-hidden rounded-md border border-[var(--glass-border)] bg-white/35"
+                    className="bg-muted relative size-[72px] overflow-hidden rounded-md border border-[var(--glass-border)]"
                     href={`/product/${item.productSlug}`}
                   >
                     <Image
@@ -303,12 +340,19 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                 </div>
               ))
             ) : (
-              <div className="text-muted-foreground grid gap-3 text-sm">
-                <p>הסל ריק.</p>
-                <Button asChild className="w-fit" variant="secondary">
-                  <Link href="/category/rings">בחירת תכשיטים</Link>
-                </Button>
-              </div>
+              <EmptyState
+                className="min-h-52"
+                description="הסל ריק. אפשר לחזור לקטלוג ולבחור תכשיט לפני שמירת הזמנה."
+                icon={PackageCheck}
+                testId="checkout-empty-cart"
+                title="אין פריטים בסל"
+                variant="inset"
+                actions={
+                  <Button asChild variant="secondary">
+                    <Link href="/category/rings">בחירת תכשיטים</Link>
+                  </Button>
+                }
+              />
             )}
           </CardContent>
         </Card>
@@ -321,11 +365,17 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4">
+            <p className="text-muted-foreground text-sm">
+              הפרטים משמשים לאישור ההזמנה ולתיאום מסירה. נציג יאמת את הפרטים
+              לפני חיוב.
+            </p>
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <Label htmlFor="name">שם מלא</Label>
                 <Input
+                  aria-invalid={name.length > 0 && name.trim().length < 2}
                   id="name"
+                  minLength={2}
                   onChange={(event) => setName(event.currentTarget.value)}
                   required
                   value={name}
@@ -334,9 +384,13 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
               <div>
                 <Label htmlFor="phone">טלפון</Label>
                 <Input
+                  aria-invalid={phone.length > 0 && phone.trim().length < 7}
                   id="phone"
+                  minLength={7}
                   onChange={(event) => setPhone(event.currentTarget.value)}
+                  placeholder="05X-XXXXXXX"
                   required
+                  type="tel"
                   value={phone}
                 />
               </div>
@@ -346,6 +400,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
               <Input
                 id="email"
                 onChange={(event) => setEmail(event.currentTarget.value)}
+                placeholder="name@example.com"
                 required
                 type="email"
                 value={email}
@@ -408,7 +463,9 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                 <div>
                   <Label htmlFor="city">עיר</Label>
                   <Input
+                    aria-invalid={city.length > 0 && city.trim().length < 2}
                     id="city"
+                    minLength={2}
                     onChange={(event) => setCity(event.currentTarget.value)}
                     required
                     value={city}
@@ -417,7 +474,9 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                 <div>
                   <Label htmlFor="street">רחוב ומספר</Label>
                   <Input
+                    aria-invalid={street.length > 0 && street.trim().length < 2}
                     id="street"
+                    minLength={2}
                     onChange={(event) => setStreet(event.currentTarget.value)}
                     required
                     value={street}
@@ -493,37 +552,41 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
             <div className="grid gap-2 text-sm">
               <div className="flex justify-between">
                 <span>פריטים</span>
-                <span>{formatPrice(cart?.totals.subtotal ?? 0)}</span>
+                <span>{formatPrice(subtotal)}</span>
               </div>
               <div className="flex justify-between">
                 <span>הנחה</span>
-                <span>{formatPrice(cart?.totals.discount ?? 0)}</span>
+                <span>{formatPrice(discount)}</span>
               </div>
               <div className="flex justify-between">
                 <span>משלוח</span>
-                <span>
-                  {formatPrice(fulfillmentMethod === "DELIVERY" ? 29 : 0)}
-                </span>
+                <span>{formatPrice(shippingAmount)}</span>
               </div>
               <Separator />
               <div className="flex justify-between text-base font-semibold">
                 <span>סך הכל</span>
-                <span>
-                  {formatPrice(
-                    Math.max(
-                      0,
-                      (cart?.totals.subtotal ?? 0) -
-                        (cart?.totals.discount ?? 0) +
-                        (fulfillmentMethod === "DELIVERY" ? 29 : 0),
-                    ),
-                  )}
-                </span>
+                <span>{formatPrice(orderTotal)}</span>
               </div>
             </div>
             {cart?.couponCode ? (
               <Badge className="w-fit" variant="secondary">
                 {cart.couponCode}
               </Badge>
+            ) : null}
+            {checkoutIssues.length > 0 ? (
+              <div className="glass-inset rounded-md border p-3 text-sm">
+                <p className="font-medium">לפני שמירת ההזמנה</p>
+                <ul className="text-muted-foreground mt-2 grid list-inside list-disc gap-1">
+                  {checkoutIssues.map((issue) => (
+                    <li key={issue}>{issue}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+            {cartMutationError ? (
+              <p className="glass-inset rounded-md border p-3 text-sm text-red-700">
+                {cartMutationError.message}
+              </p>
             ) : null}
             {createOrder.error ? (
               <p className="glass-inset rounded-md border p-3 text-sm text-red-700">
@@ -535,7 +598,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
               size="lg"
               type="submit"
             >
-              {createOrder.isPending ? "שומר..." : "שמירת הזמנה"}
+              {createOrder.isPending ? "שומר הזמנה..." : "שמירת הזמנה"}
               <PackageCheck className="size-4" />
             </Button>
           </CardContent>
@@ -543,6 +606,44 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
       </aside>
     </form>
   );
+}
+
+function getCheckoutIssues({
+  branchSlug,
+  cartItemCount,
+  city,
+  email,
+  fulfillmentMethod,
+  name,
+  phone,
+  sessionKey,
+  street,
+}: {
+  branchSlug: string;
+  cartItemCount: number;
+  city: string;
+  email: string;
+  fulfillmentMethod: "DELIVERY" | "PICKUP";
+  name: string;
+  phone: string;
+  sessionKey: string | null;
+  street: string;
+}) {
+  const issues: string[] = [];
+
+  if (!sessionKey) issues.push("יצירת סל מקומי עדיין בטעינה.");
+  if (cartItemCount < 1) issues.push("הסל ריק.");
+  if (name.trim().length < 2) issues.push("יש להזין שם מלא.");
+  if (phone.trim().length < 7) issues.push("יש להזין טלפון תקין.");
+  if (!email.trim()) issues.push("יש להזין אימייל.");
+  if (!branchSlug) issues.push("יש לבחור סניף מלאי.");
+
+  if (fulfillmentMethod === "DELIVERY") {
+    if (city.trim().length < 2) issues.push("יש להזין עיר למשלוח.");
+    if (street.trim().length < 2) issues.push("יש להזין רחוב ומספר.");
+  }
+
+  return issues;
 }
 
 function ReservationCountdown({ expiresAt }: { expiresAt: Date }) {

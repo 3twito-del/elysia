@@ -5,10 +5,13 @@ import { Heart, MapPin, ShoppingBag } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
+import { getProductAvailabilityLabel } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
+import { cn } from "~/lib/utils";
 import type { CatalogProduct } from "~/server/services/catalog";
 
 type ProductCardProps = {
+  imagePriority?: boolean;
   product: CatalogProduct;
   searchContext?: {
     query?: string;
@@ -16,24 +19,41 @@ type ProductCardProps = {
   };
 };
 
-export function ProductCard({ product, searchContext }: ProductCardProps) {
+export function ProductCard({
+  imagePriority = false,
+  product,
+  searchContext,
+}: ProductCardProps) {
   const availableBranches = Object.values(product.inventory).filter(
-    Boolean,
+    (quantity) => quantity > 0,
   ).length;
+  const isAvailable = availableBranches > 0;
+  const compareAt =
+    typeof product.compareAt === "number" && product.compareAt > product.price
+      ? product.compareAt
+      : undefined;
   const href = createProductHref(product.slug, searchContext);
 
   return (
-    <Card className="interactive-lift h-full overflow-hidden rounded-md py-0">
+    <Card
+      aria-label={product.name}
+      className={cn(
+        "group/card interactive-lift h-full overflow-hidden rounded-md py-0",
+        !isAvailable && "bg-muted/30",
+      )}
+      data-testid="product-card"
+    >
       <Link
         aria-label={`צפייה במוצר ${product.name}`}
-        className="block focus-visible:outline-none"
+        className="block focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
         href={href}
       >
-        <div className="glass-inset relative aspect-square overflow-hidden border-0 bg-white/35">
+        <div className="glass-inset bg-muted relative aspect-[4/3] min-h-40 overflow-hidden border-0">
           <Image
             alt={product.name}
             className="media-color object-cover transition duration-500 ease-[var(--ease-liquid)] group-hover/card:scale-[1.035]"
             fill
+            loading={imagePriority ? "eager" : undefined}
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
             src={product.image}
           />
@@ -43,12 +63,21 @@ export function ProductCard({ product, searchContext }: ProductCardProps) {
           >
             {product.collection}
           </Badge>
+          <Badge
+            className="absolute top-3 left-3 font-normal"
+            variant={isAvailable ? "secondary" : "outline"}
+          >
+            {getProductAvailabilityLabel(availableBranches)}
+          </Badge>
         </div>
       </Link>
-      <CardContent className="flex flex-1 flex-col gap-4 p-4">
+      <CardContent className="flex min-h-64 flex-1 flex-col gap-4 p-4">
         <div className="flex items-start justify-between gap-3">
-          <div>
-            <Link className="font-medium hover:underline" href={href}>
+          <div className="min-w-0">
+            <Link
+              className="line-clamp-2 font-medium underline-offset-4 hover:underline focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
+              href={href}
+            >
               {product.name}
             </Link>
             <p className="text-muted-foreground mt-1 line-clamp-2 text-sm">
@@ -56,7 +85,7 @@ export function ProductCard({ product, searchContext }: ProductCardProps) {
             </p>
           </div>
           <Button
-            aria-label="שמירה ל-Wishlist"
+            aria-label={`שמירה ל-Wishlist: ${product.name}`}
             className="shrink-0"
             size="icon"
             type="button"
@@ -67,19 +96,31 @@ export function ProductCard({ product, searchContext }: ProductCardProps) {
         </div>
 
         <div className="mt-auto grid gap-4">
-          <div className="flex items-center justify-between">
-            <span className="text-lg font-semibold">
-              {formatPrice(product.price)}
-            </span>
-            <span className="text-muted-foreground flex items-center gap-1 text-xs">
+          <div className="flex items-end justify-between gap-3">
+            <div className="grid gap-0.5">
+              {compareAt ? (
+                <span className="text-muted-foreground text-xs line-through">
+                  {formatPrice(compareAt)}
+                </span>
+              ) : null}
+              <span className="text-lg font-semibold">
+                {formatPrice(product.price)}
+              </span>
+            </div>
+            <span
+              className={cn(
+                "flex shrink-0 items-center gap-1 text-xs",
+                isAvailable ? "text-muted-foreground" : "text-foreground",
+              )}
+            >
               <MapPin className="size-3.5" />
-              {availableBranches} סניפים
+              {getProductAvailabilityLabel(availableBranches)}
             </span>
           </div>
           <Button asChild className="w-full gap-2" variant="outline">
             <Link aria-label={`צפייה וקנייה: ${product.name}`} href={href}>
               <ShoppingBag className="size-4" />
-              צפייה וקנייה
+              {isAvailable ? "צפייה וקנייה" : "בדיקת זמינות"}
             </Link>
           </Button>
         </div>

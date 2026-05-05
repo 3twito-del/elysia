@@ -24,6 +24,11 @@ ADMIN_BOOTSTRAP_NAME="Aphrodite Admin"
 
 ## No-Card Soft Launch
 
+Transactional email can run on a no-card provider by setting either
+`RESEND_API_KEY` or `BREVO_API_KEY`, plus `STORE_FROM_EMAIL` and
+`OPERATIONS_EMAIL`. The sender domain still has to be verified with the
+provider.
+
 המינימום התפעולי להפעלה ללא עלות וללא כרטיס אשראי:
 
 - Neon Free כ־Postgres מנוהל.
@@ -39,7 +44,8 @@ AUTH_SECRET="generate-a-long-random-secret"
 ADMIN_BOOTSTRAP_EMAIL="admin@example.com"
 ADMIN_BOOTSTRAP_PASSWORD="strong-password-at-least-12"
 ADMIN_BOOTSTRAP_NAME="Aphrodite Admin"
-BREVO_API_KEY="xkeysib-..."
+RESEND_API_KEY="re_..."
+# or BREVO_API_KEY="xkeysib-..."
 STORE_FROM_EMAIL="orders@example.com"
 STORE_FROM_NAME="Aphrodite"
 OPERATIONS_EMAIL="studio@example.com"

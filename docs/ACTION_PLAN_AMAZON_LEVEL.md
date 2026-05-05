@@ -6,7 +6,74 @@ Goal: turn Aphrodite from a soft-launch commerce system into an enterprise-grade
 
 Default direction: keep Next.js/Vercel as the base, do not build a marketplace, and move through engineering-spec phases that keep the system stable at every step.
 
-## Current Status - 2026-04-29
+## No-Blocker Upgrade Roadmap
+
+This section is the immediate execution track. Every item here can be implemented from the repository alone without new credentials, external provider setup, Vercel production configuration, billing-plan changes, or business-contract decisions.
+
+Use this track for local product quality, UI polish, correctness, and implementation hardening. If an item requires CardCom production access, Vercel WAF/Queues/Observability setup, an SMS vendor, production email domains, or any provider secret that is not already available locally, it belongs in `Deferred / Blocked Work` instead.
+
+### UX and Responsive Polish
+
+- Lock the home hero layout to equal visual offsets on both sides and matching top/bottom spacing across desktop widths.
+- Keep mobile navigation sheets and all popup surfaces opaque, including Sheet, Dialog, AlertDialog, Dropdown, Popover, Select, Tooltip, Command, and HoverCard surfaces.
+- Close mobile-only sheets automatically when the viewport reaches the desktop breakpoint.
+- Add or extend visual QA screenshots for the home hero, mobile navigation, category sheets, filter panels, and key popups.
+- Review responsive layout at mobile, tablet, laptop, and wide desktop widths for text overflow, clipped controls, and inconsistent spacing.
+
+### Product Discovery
+
+- Improve category pages with clearer loading, empty, no-results, and error states.
+- Tighten filter UX: stable selected states, reset affordances, disabled states for unavailable filters, and mobile sheet behavior.
+- Improve search page ergonomics with better query persistence, no-results recovery, and clear result counts.
+- Refine product cards for consistent image ratios, badges, price/availability presentation, favorite controls, and keyboard focus.
+- Improve product pages with clearer media gallery states, variant/availability feedback, recently viewed, and non-AI catalog-based recommendation rails.
+
+### Checkout, Account, and Admin
+
+- Strengthen checkout form states: field-level validation, submission loading, recoverable errors, disabled duplicate submits, and clear pickup/shipping selection.
+- Improve cart and checkout empty states so users always have a clear next action.
+- Tighten account pages with loading, empty, forbidden, and error states for orders, addresses, wishlist, appointments, and privacy flows.
+- Improve admin tables with stable pagination, filters, empty states, mutation loading states, and server-confirmed success/error feedback.
+- Audit client/server validation boundaries for forms already present in the repo and align copy with the existing Hebrew RTL interface.
+
+### Reliability Local
+
+- Expand smoke coverage for public routes, category/product navigation, checkout entry, account entry, and admin entry using existing local adapters.
+- Add focused unit/integration tests for local catalog filtering, coupon validation, cart flow, form validation, and cache/revalidation helpers.
+- Keep `pnpm lint`, `pnpm typecheck`, and targeted tests passing after each implementation slice.
+- Add regression checks for hydration-sensitive components that render differently on mobile and desktop.
+- Verify development fallbacks fail clearly when production-only provider env vars are absent.
+
+### Accessibility and Performance
+
+- Review keyboard flow for header navigation, mobile sheets, filters, dialogs, product cards, checkout forms, and admin actions.
+- Fix contrast, visible focus, aria labels, heading order, and screen-reader labels where existing UI falls short.
+- Audit image priority, sizes, aspect ratios, and lazy-loading behavior for hero, product cards, galleries, and category media.
+- Prevent hydration mismatches by avoiding render-time randomness, date/locale drift, and server/client-only branching in hydrated trees.
+- Keep large interactive surfaces responsive without layout shift during hover, focus, loading, and data refresh states.
+
+### No-Blocker Validation Rules
+
+- The work must run locally with the current repository and local environment.
+- The work must not require new provider credentials, production webhooks, billing-plan changes, or manual platform configuration.
+- The work may use mocks, local adapters, existing DB seed data, and development fallbacks.
+- The work should improve code, UX, tests, documentation, or local verification without changing public API contracts unless a separate implementation plan explicitly approves it.
+
+## Deferred / Blocked Work
+
+These items are strategic, but they are not part of the no-blocker execution track because they require external access, provider credentials, production infrastructure, or business decisions.
+
+- Real CardCom production checkout, live payment capture, refund execution, and full signed webhook validation require live CardCom credentials and provider contract details.
+- Vercel Firewall/WAF rules, rate limiting at the platform edge, bot/challenge policies, and production security rollout require a deployed Vercel project and the correct Vercel plan/configuration.
+- Vercel Queues consumers for durable email delivery, reservation expiry, search reindexing, payment reconciliation, and order-status notifications require production Vercel Queues setup.
+- Vercel Observability dashboards, production traces, alerting, log drains, Speed Insights, and Web Analytics require production project access and observability configuration.
+- Production email delivery requires verified sender domains and configured provider credentials, such as Resend or Brevo.
+- SMS delivery requires a selected SMS vendor, sender setup, message templates, billing approval, and API credentials.
+- Any production webhook hardening, provider reconciliation, real customer notification delivery, or external integration health check stays blocked until the relevant provider is configured.
+
+The enterprise plan below remains the long-term strategic direction. Any item in it that depends on the blocked list above should be treated as deferred, not as no-blocker work.
+
+## Current Status - 2026-04-30
 
 Local, unblocked implementation work is complete for this phase.
 
@@ -21,12 +88,10 @@ Completed locally:
 - Product recently viewed, similar products, real media gallery flow, variant selector, and branch availability.
 - AI gift recommendations with persisted recommendation sessions, style profile builder, order-support helper, and admin product-copy helper.
 - Automated local smoke script: `pnpm smoke`.
+- Automated agent-browser visual QA script: `pnpm visual:qa`, including CDP repair fallback, annotated home screenshot, and content/error-overlay checks for home, search, no-results search, category, checkout, and product routes.
+- Transactional email adapter supports no-card providers via `RESEND_API_KEY` or `BREVO_API_KEY`, with production env validation and Resend idempotency for retry-safe outbox delivery.
 
-Externally blocked or production-configuration work:
-
-- Real CardCom production checkout and full signed webhook validation require live CardCom credentials and provider contract details.
-- Vercel Queues, Firewall/WAF rules, Observability dashboards, and production alerting require the deployed Vercel project/environment.
-- Production email/SMS delivery depends on configured Resend/Brevo/SMS provider credentials.
+Deferred external work is tracked in `Deferred / Blocked Work` so it stays separate from the immediate no-blocker roadmap.
 
 ## Key Architecture Changes
 
@@ -254,10 +319,10 @@ Externally blocked or production-configuration work:
    - Structured AI outputs.
    - Admin/customer AI tools.
 10. Production hardening:
-   - Vercel Firewall rules.
-   - Observability dashboards.
-   - smoke/e2e tests.
-   - rollout checklist.
+    - Vercel Firewall rules.
+    - Observability dashboards.
+    - smoke/e2e tests.
+    - rollout checklist.
 
 ## Test Plan
 

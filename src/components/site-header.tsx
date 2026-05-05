@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Gem, Search, ShoppingBag, UserRound } from "lucide-react";
+import { Gem, Search, UserRound } from "lucide-react";
 
+import { CartCountLink } from "~/components/cart-count-link";
 import { MobileNav, type HeaderNavItem } from "~/components/mobile-nav";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
@@ -13,7 +14,6 @@ const navItems: HeaderNavItem[] = [
   { href: "/category/necklaces", label: "שרשראות" },
   { href: "/category/earrings", label: "עגילים" },
   { href: "/category/bracelets", label: "צמידים" },
-  { href: "/category/rings?tag=bridal", label: "אירוסין" },
   { href: "/gifts", label: "מתנות" },
   { href: "/about", label: "אודות" },
   { href: "/branches", label: "סניפים" },
@@ -30,7 +30,7 @@ export function SiteHeader() {
     <header
       className={cn(
         "glass-chrome site-chrome sticky top-0 z-40 border-b transition-transform duration-300 ease-[var(--ease-liquid)] will-change-transform motion-reduce:translate-y-0 motion-reduce:transition-none",
-        scrollState === "hidden" && "-translate-y-[calc(100%-0.5rem)]",
+        scrollState === "hidden" && "-translate-y-full",
       )}
       data-scroll={scrollState}
       dir="rtl"
@@ -85,10 +85,7 @@ export function SiteHeader() {
             </Link>
           </Button>
           <Button asChild size="icon" variant="ghost">
-            <Link href="/checkout">
-              <ShoppingBag className="size-5" />
-              <span className="sr-only">סל קניות</span>
-            </Link>
+            <CartCountLink />
           </Button>
         </div>
       </div>

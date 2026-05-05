@@ -162,8 +162,21 @@ async function searchLocalProducts(input: ProductSearchInput) {
   };
 }
 
-function assertLocalSearchAllowed() {
-  return;
+type TypesenseSearchEnv = {
+  NODE_ENV: string;
+  TYPESENSE_API_KEY?: string;
+  TYPESENSE_HOST?: string;
+};
+
+export function assertLocalSearchAllowed(config: TypesenseSearchEnv = env) {
+  if (
+    config.NODE_ENV === "production" &&
+    (!config.TYPESENSE_HOST || !config.TYPESENSE_API_KEY)
+  ) {
+    throw new Error(
+      "Typesense production search requires TYPESENSE_HOST and TYPESENSE_API_KEY. Local catalog fallback is only available in development and test.",
+    );
+  }
 }
 
 function sortLocalHits(

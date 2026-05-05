@@ -21,7 +21,7 @@ type PublicMotionContextValue = {
   suppressInitialReveal: boolean;
 };
 
-const pageTransitionMs = 440;
+const pageTransitionMs = 120;
 const PublicMotionContext = createContext<PublicMotionContextValue>({
   suppressInitialReveal: false,
 });

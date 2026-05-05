@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo } from "react";
 
 import { ProductCard } from "~/components/product-card";
+import { RECENTLY_VIEWED_STORAGE_KEY } from "~/lib/cookie-consent";
+import { useCookieConsentValue } from "~/lib/use-cookie-consent";
 import type { CatalogProduct } from "~/server/services/catalog";
 
 export function RecentlyViewedProducts({
@@ -12,21 +14,11 @@ export function RecentlyViewedProducts({
   currentSlug: string;
   products: CatalogProduct[];
 }) {
-  const [slugs] = useState<string[]>(() => {
-    if (typeof window === "undefined") return [];
-
-    try {
-      const parsed: unknown = JSON.parse(
-        window.localStorage.getItem("aphrodite_recently_viewed") ?? "[]",
-      );
-
-      return Array.isArray(parsed)
-        ? parsed.filter((value): value is string => typeof value === "string")
-        : [];
-    } catch {
-      return [];
-    }
-  });
+  const consentValue = useCookieConsentValue();
+  const slugs = useMemo(
+    () => (consentValue === "all" ? readRecentlyViewedSlugs() : []),
+    [consentValue],
+  );
 
   const productsBySlug = new Map(
     products.map((product) => [product.slug, product]),
@@ -49,4 +41,18 @@ export function RecentlyViewedProducts({
       </div>
     </div>
   );
+}
+
+function readRecentlyViewedSlugs() {
+  try {
+    const parsed: unknown = JSON.parse(
+      window.localStorage.getItem(RECENTLY_VIEWED_STORAGE_KEY) ?? "[]",
+    );
+
+    return Array.isArray(parsed)
+      ? parsed.filter((value): value is string => typeof value === "string")
+      : [];
+  } catch {
+    return [];
+  }
 }

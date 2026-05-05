@@ -34,7 +34,7 @@ export default async function GiftsPage() {
           </div>
           <div className="grid gap-3">
             {products[0]?.image ? (
-              <div className="glass-inset relative hidden h-32 overflow-hidden rounded-md border bg-white/35 lg:block">
+              <div className="glass-inset bg-muted relative hidden h-32 overflow-hidden rounded-md border lg:block">
                 <Image
                   alt=""
                   className="media-mono object-cover"
@@ -51,8 +51,12 @@ export default async function GiftsPage() {
           </div>
         </div>
         <RevealGrid className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {products.map((product) => (
-            <ProductCard key={product.slug} product={product} />
+          {products.map((product, index) => (
+            <ProductCard
+              imagePriority={index === 0}
+              key={product.slug}
+              product={product}
+            />
           ))}
         </RevealGrid>
       </RevealSection>

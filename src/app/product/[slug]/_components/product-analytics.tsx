@@ -3,6 +3,8 @@
 import { useEffect } from "react";
 
 import { getOrCreateCartSessionKey } from "~/lib/cart-session";
+import { RECENTLY_VIEWED_STORAGE_KEY } from "~/lib/cookie-consent";
+import { useCookieConsentValue } from "~/lib/use-cookie-consent";
 
 type ProductAnalyticsProps = {
   productSlug: string;
@@ -17,7 +19,11 @@ export function ProductAnalytics({
   productSlug,
   query,
 }: ProductAnalyticsProps) {
+  const analyticsAllowed = useCookieConsentValue() === "all";
+
   useEffect(() => {
+    if (!analyticsAllowed) return;
+
     const sessionKey = safeGetCartSessionKey();
 
     writeRecentlyViewed(productSlug);
@@ -36,7 +42,7 @@ export function ProductAnalytics({
         sessionKey,
       });
     }
-  }, [path, position, productSlug, query]);
+  }, [analyticsAllowed, path, position, productSlug, query]);
 
   return null;
 }
@@ -52,7 +58,7 @@ function safeGetCartSessionKey() {
 function writeRecentlyViewed(productSlug: string) {
   try {
     window.localStorage.setItem(
-      "aphrodite_recently_viewed",
+      RECENTLY_VIEWED_STORAGE_KEY,
       JSON.stringify(
         [
           productSlug,
@@ -83,7 +89,7 @@ async function sendAnalyticsEvent(
 function readRecentlyViewed() {
   try {
     const parsed: unknown = JSON.parse(
-      window.localStorage.getItem("aphrodite_recently_viewed") ?? "[]",
+      window.localStorage.getItem(RECENTLY_VIEWED_STORAGE_KEY) ?? "[]",
     );
 
     return Array.isArray(parsed)

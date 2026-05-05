@@ -8,6 +8,7 @@ export type NotificationMessage = {
   subject: string;
   body: string;
   html?: string;
+  idempotencyKey?: string;
 };
 
 export type NotificationResult = {
@@ -24,6 +25,12 @@ export interface NotificationProvider {
 
 type BrevoSendEmailResponse = {
   messageId?: string;
+};
+
+type ResendSendError = {
+  message?: string;
+  name?: string;
+  statusCode?: number | null;
 };
 
 let resendClient: Resend | null = null;
@@ -62,6 +69,18 @@ async function readProviderError(response: Response) {
   } catch {
     return fallback;
   }
+}
+
+function formatResendError(error: ResendSendError) {
+  const details = [
+    error.name,
+    error.statusCode ? String(error.statusCode) : null,
+    error.message,
+  ]
+    .filter(Boolean)
+    .join(": ");
+
+  return details || "Resend email send failed.";
 }
 
 class BrevoNotificationProvider implements NotificationProvider {
@@ -142,13 +161,22 @@ class ResendNotificationProvider implements NotificationProvider {
     }
 
     const sender = getSender();
-    const result = await resend.emails.send({
-      from: `${sender.name} <${sender.email}>`,
-      to: message.to,
-      subject: message.subject,
-      text: message.body,
-      html: message.html,
-    });
+    const result = await resend.emails.send(
+      {
+        from: `${sender.name} <${sender.email}>`,
+        to: message.to,
+        subject: message.subject,
+        text: message.body,
+        html: message.html,
+      },
+      message.idempotencyKey
+        ? { idempotencyKey: message.idempotencyKey }
+        : undefined,
+    );
+
+    if (result.error) {
+      throw new Error(formatResendError(result.error));
+    }
 
     return {
       id: result.data?.id ?? `resend-${Date.now()}`,

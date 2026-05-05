@@ -63,7 +63,7 @@ export function AiProductRecommendations({
           >
             <Link
               aria-label={`צפייה בפריט ${product.name}`}
-              className="focus-visible:outline-ring relative aspect-square min-h-28 overflow-hidden rounded-md border border-[var(--glass-border)] bg-white/45 focus-visible:ring-2"
+              className="focus-visible:outline-ring bg-muted relative aspect-square min-h-28 overflow-hidden rounded-md border border-[var(--glass-border)] focus-visible:ring-2"
               href={product.href}
             >
               {product.image ? (
@@ -117,12 +117,12 @@ export function AiProductRecommendations({
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="text-muted-foreground flex min-w-0 flex-wrap items-center gap-2 text-xs">
                   {product.category ? (
-                    <span className="rounded-full border border-[var(--glass-border)] bg-white/30 px-2 py-1">
+                    <span className="bg-muted rounded-full border border-[var(--glass-border)] px-2 py-1">
                       {product.category}
                     </span>
                   ) : null}
                   {product.material ? (
-                    <span className="rounded-full border border-[var(--glass-border)] bg-white/30 px-2 py-1">
+                    <span className="bg-muted rounded-full border border-[var(--glass-border)] px-2 py-1">
                       {product.material.replace(" 14K", "")}
                     </span>
                   ) : null}

@@ -259,7 +259,10 @@ async function processEmailRequestedEvent(event: OutboxEvent) {
     );
   }
 
-  const result = await notificationProvider.sendEmail(message);
+  const result = await notificationProvider.sendEmail({
+    ...message,
+    idempotencyKey: event.idempotencyKey ?? event.id,
+  });
 
   await recordJobRun({
     name: event.type,

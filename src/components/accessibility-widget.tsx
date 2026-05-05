@@ -264,7 +264,7 @@ export function AccessibilityWidget() {
         <div className="fixed inset-0 z-[90]" dir="rtl">
           <button
             aria-label="סגירת תפריט נגישות"
-            className="fixed inset-0 cursor-default bg-[oklch(0.12_0_0_/_34%)] backdrop-blur-sm"
+            className="fixed inset-0 cursor-default bg-[oklch(0.12_0_0_/_34%)]"
             onClick={closeMenu}
             tabIndex={-1}
             type="button"
@@ -274,7 +274,7 @@ export function AccessibilityWidget() {
             aria-describedby={descriptionId}
             aria-labelledby={titleId}
             aria-modal="true"
-            className="glass-panel fixed top-1/2 left-1/2 z-[100] grid max-h-[calc(100vh-2rem)] w-[min(calc(100vw-2rem),30rem)] -translate-x-1/2 -translate-y-1/2 gap-4 overflow-y-auto rounded-lg border p-4 text-sm shadow-[0_24px_80px_oklch(0.1_0_0_/_24%)] outline-none"
+            className="popup-surface fixed top-1/2 left-1/2 z-[100] grid max-h-[calc(100vh-2rem)] w-[min(calc(100vw-2rem),30rem)] -translate-x-1/2 -translate-y-1/2 gap-4 overflow-y-auto rounded-lg border p-4 text-sm shadow-[0_24px_80px_oklch(0.1_0_0_/_24%)] outline-none"
             ref={dialogRef}
             role="dialog"
             tabIndex={-1}

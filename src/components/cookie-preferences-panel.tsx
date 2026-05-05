@@ -1,0 +1,69 @@
+"use client";
+
+import { BarChart3, CheckCircle2, ShieldCheck } from "lucide-react";
+
+import { Button } from "~/components/ui/button";
+import {
+  type CookieConsentValue,
+  writeCookieConsent,
+} from "~/lib/cookie-consent";
+import { useCookieConsentValue } from "~/lib/use-cookie-consent";
+
+export function CookiePreferencesPanel() {
+  const consentValue = useCookieConsentValue();
+  const statusText =
+    consentValue === "all"
+      ? "מאושרים קוקיז חיוניים וגם מדידה ושיפור חוויה."
+      : consentValue === "essential"
+        ? "מאושרים קוקיז חיוניים בלבד."
+        : "עדיין לא נשמרה בחירת קוקיז בדפדפן זה.";
+
+  const chooseConsent = (value: CookieConsentValue) => {
+    writeCookieConsent(value);
+  };
+
+  return (
+    <section aria-labelledby="cookie-preferences">
+      <div className="flex items-center gap-3">
+        <ShieldCheck className="size-5" aria-hidden="true" />
+        <h2 className="text-2xl font-semibold" id="cookie-preferences">
+          ניהול העדפות קוקיז
+        </h2>
+      </div>
+
+      <div className="glass-inset mt-4 rounded-md border p-5">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <p className="flex items-center gap-2 font-medium">
+              <CheckCircle2 className="size-5" aria-hidden="true" />
+              {statusText}
+            </p>
+            <p className="text-muted-foreground mt-2 leading-8">
+              ניתן לשנות את הבחירה בכל רגע. מעבר ל״הכרחי בלבד״ עוצר מדידה ומוחק
+              מהדפדפן את רשימת המוצרים שנצפו לאחרונה.
+            </p>
+          </div>
+
+          <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+            <Button
+              type="button"
+              variant={consentValue === "essential" ? "default" : "outline"}
+              onClick={() => chooseConsent("essential")}
+            >
+              <ShieldCheck className="size-4" />
+              הכרחי בלבד
+            </Button>
+            <Button
+              type="button"
+              variant={consentValue === "all" ? "default" : "outline"}
+              onClick={() => chooseConsent("all")}
+            >
+              <BarChart3 className="size-4" />
+              אישור מדידה
+            </Button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

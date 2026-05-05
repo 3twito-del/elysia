@@ -7,7 +7,10 @@ import { CheckCircle2, Heart, PackageCheck, Sparkles } from "lucide-react";
 import { WishlistButton } from "./wishlist-button";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import { getOrCreateCartSessionKey } from "~/lib/cart-session";
+import {
+  dispatchCartUpdated,
+  getOrCreateCartSessionKey,
+} from "~/lib/cart-session";
 import type { CatalogProductVariant } from "~/server/services/catalog";
 import { api } from "~/trpc/react";
 
@@ -29,6 +32,7 @@ export function ProductPurchasePanel({
   const addItem = api.cart.addItem.useMutation({
     onSuccess: () => {
       setCartMessage("הפריט נוסף לסל");
+      dispatchCartUpdated();
     },
     onError: (error) => {
       setCartMessage(error.message);

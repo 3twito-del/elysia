@@ -19,6 +19,8 @@ import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { EmptyState } from "~/components/ui/empty-state";
+import { formatPrice } from "~/lib/format";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 import { DEFAULT_CATALOG_IMAGE } from "~/server/services/catalog";
@@ -28,14 +30,6 @@ export const metadata = {
 };
 
 export const dynamic = "force-dynamic";
-
-function formatPrice(amount: number) {
-  return new Intl.NumberFormat("he-IL", {
-    style: "currency",
-    currency: "ILS",
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
 
 async function loadCustomerAccount(userId: string) {
   const customer = await db.customer.findUnique({
@@ -203,9 +197,17 @@ export default async function AccountPage() {
             </CardHeader>
             <CardContent className="grid gap-3">
               {customer.orders.length === 0 ? (
-                <p className="text-muted-foreground text-sm">
-                  אין הזמנות משויכות לחשבון הזה עדיין.
-                </p>
+                <EmptyState
+                  description="אין הזמנות משויכות לחשבון הזה עדיין."
+                  icon={PackageCheck}
+                  title="אין הזמנות"
+                  variant="inset"
+                  actions={
+                    <Button asChild variant="outline">
+                      <Link href="/category/rings">בחירת תכשיט ראשון</Link>
+                    </Button>
+                  }
+                />
               ) : (
                 customer.orders.map((order) => (
                   <Link
@@ -232,9 +234,17 @@ export default async function AccountPage() {
             </CardHeader>
             <CardContent className="grid gap-3">
               {wishlistItems.length === 0 ? (
-                <p className="text-muted-foreground text-sm">
-                  עדיין לא נשמרו מוצרים.
-                </p>
+                <EmptyState
+                  description="עדיין לא נשמרו מוצרים."
+                  icon={Heart}
+                  title="Wishlist ריק"
+                  variant="inset"
+                  actions={
+                    <Button asChild variant="outline">
+                      <Link href="/search">חיפוש בקטלוג</Link>
+                    </Button>
+                  }
+                />
               ) : (
                 wishlistItems.map((item) => (
                   <div
@@ -245,7 +255,7 @@ export default async function AccountPage() {
                       className="flex min-w-0 items-center gap-3"
                       href={`/product/${item.variant.product.slug}`}
                     >
-                      <span className="relative size-14 shrink-0 overflow-hidden rounded-md border border-[var(--glass-border)] bg-white/35">
+                      <span className="bg-muted relative size-14 shrink-0 overflow-hidden rounded-md border border-[var(--glass-border)]">
                         <Image
                           alt=""
                           className="media-color object-cover"
@@ -316,9 +326,17 @@ export default async function AccountPage() {
             </CardHeader>
             <CardContent className="grid gap-3">
               {customer.savedSizes.length === 0 ? (
-                <p className="text-muted-foreground text-sm">
-                  עדיין לא נשמרו מידות.
-                </p>
+                <EmptyState
+                  description="עדיין לא נשמרו מידות."
+                  icon={Ruler}
+                  title="אין מידות שמורות"
+                  variant="inset"
+                  actions={
+                    <Button asChild variant="outline">
+                      <Link href="/stylist">בניית פרופיל סגנון</Link>
+                    </Button>
+                  }
+                />
               ) : (
                 customer.savedSizes.map((size) => (
                   <div

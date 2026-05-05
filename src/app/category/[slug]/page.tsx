@@ -3,8 +3,6 @@ import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  ChevronLeft,
-  ChevronRight,
   Check,
   Filter,
   Gem,
@@ -20,6 +18,7 @@ import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button, buttonVariants } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { EmptyState } from "~/components/ui/empty-state";
 import { Separator } from "~/components/ui/separator";
 import {
   Sheet,
@@ -39,6 +38,7 @@ import {
   searchCatalogProducts,
   type CatalogBranch,
   type CatalogCategory,
+  type CatalogProduct,
 } from "~/server/services/catalog";
 import { cn } from "~/lib/utils";
 
@@ -51,6 +51,7 @@ type CategorySearchParams = {
   material?: string | string[];
   stone?: string | string[];
   maxPrice?: string | string[];
+  sort?: string | string[];
   page?: string | string[];
 };
 
@@ -58,11 +59,14 @@ type CategoryPageProps = CategoryRouteProps & {
   searchParams: Promise<CategorySearchParams>;
 };
 
+type CategorySort = "popular" | "price-asc" | "price-desc" | "newest";
+
 type CategoryFilters = {
   branch?: string;
   material?: string;
   stone?: string;
   maxPrice?: number;
+  sort: CategorySort;
 };
 
 type ActiveFilter = {
@@ -71,8 +75,22 @@ type ActiveFilter = {
   href: string;
 };
 
+type FilterCounts = {
+  branches: Map<string, number>;
+  materials: Map<string, number>;
+  maxPrices: Map<number, number>;
+  stones: Map<string, number>;
+};
+
 const productsPerPage = 9;
 const priceOptions = [750, 1000, 1500] as const;
+const defaultCategorySort = "popular" satisfies CategorySort;
+const sortOptions = [
+  { value: "popular", label: "פופולריות" },
+  { value: "price-asc", label: "מחיר: מנמוך לגבוה" },
+  { value: "price-desc", label: "מחיר: מגבוה לנמוך" },
+  { value: "newest", label: "מחדשים לישנים" },
+] as const satisfies ReadonlyArray<{ value: CategorySort; label: string }>;
 
 export async function generateStaticParams() {
   const categories = await getCatalogCategories();
@@ -122,26 +140,31 @@ export default async function CategoryPage({
   ]);
   const activeFilters = getActiveFilters(slug, filters, branches);
   const activeFilterCount = activeFilters.length;
+  const filterCounts = getFilterCounts(baseProducts);
   const resetHref = createCategoryHref(slug, {});
   const requestedPage = getValidPage(getFirstParam(query.page));
+  const sortedProducts = sortCategoryProducts(filteredProducts, filters.sort);
+  const currentSortLabel =
+    sortOptions.find((option) => option.value === filters.sort)?.label ??
+    sortOptions[0].label;
   const totalPages = Math.max(
     1,
-    Math.ceil(filteredProducts.length / productsPerPage),
+    Math.ceil(sortedProducts.length / productsPerPage),
   );
   const currentPage = Math.min(requestedPage, totalPages);
   const pageStartIndex = (currentPage - 1) * productsPerPage;
-  const pageProducts = filteredProducts.slice(
+  const pageProducts = sortedProducts.slice(
     pageStartIndex,
     pageStartIndex + productsPerPage,
   );
-  const visibleStart = filteredProducts.length > 0 ? pageStartIndex + 1 : 0;
+  const visibleStart = sortedProducts.length > 0 ? pageStartIndex + 1 : 0;
   const visibleEnd = Math.min(
     pageStartIndex + pageProducts.length,
-    filteredProducts.length,
+    sortedProducts.length,
   );
   const pageRangeLabel =
-    filteredProducts.length > 0
-      ? `${visibleStart}-${visibleEnd} מתוך ${filteredProducts.length} מוצרים`
+    sortedProducts.length > 0
+      ? `${visibleStart}-${visibleEnd} מתוך ${sortedProducts.length} מוצרים`
       : "0 מוצרים";
 
   return (
@@ -171,7 +194,7 @@ export default async function CategoryPage({
 
             <div className="grid gap-4">
               {category?.image ? (
-                <div className="relative h-36 overflow-hidden rounded-md border border-[var(--glass-border)] bg-white/35">
+                <div className="bg-muted relative h-36 overflow-hidden rounded-md border border-[var(--glass-border)]">
                   <Image
                     alt=""
                     className="media-mono object-cover"
@@ -219,9 +242,14 @@ export default async function CategoryPage({
                 : "כל הפריטים בקטגוריה"}
             </p>
           </div>
-          <Sheet>
+          <Sheet closeOnMediaQuery="(min-width: 1024px)">
             <SheetTrigger asChild>
-              <Button className="gap-2" type="button" variant="outline">
+              <Button
+                className="gap-2"
+                data-testid="category-filter-trigger"
+                type="button"
+                variant="outline"
+              >
                 <Filter className="size-4" />
                 פילטרים
                 {activeFilterCount > 0 && (
@@ -241,7 +269,7 @@ export default async function CategoryPage({
                   פילטרים
                 </SheetTitle>
                 <SheetDescription>
-                  בחירה מהירה לפי זמינות, חומר, אבן ומחיר.
+                  בחירה מהירה לפי מיון, זמינות, חומר, אבן ומחיר.
                 </SheetDescription>
               </SheetHeader>
               <div className="p-4">
@@ -251,9 +279,11 @@ export default async function CategoryPage({
                   categories={categories}
                   categoryCounts={categoryCounts}
                   closeOnSelect
+                  filterCounts={filterCounts}
                   filters={filters}
                   materialOptions={facets.materials}
                   resetHref={resetHref}
+                  sortOptions={sortOptions}
                   slug={slug}
                   stoneOptions={facets.stones}
                 />
@@ -278,9 +308,11 @@ export default async function CategoryPage({
                 branches={branches}
                 categories={categories}
                 categoryCounts={categoryCounts}
+                filterCounts={filterCounts}
                 filters={filters}
                 materialOptions={facets.materials}
                 resetHref={resetHref}
+                sortOptions={sortOptions}
                 slug={slug}
                 stoneOptions={facets.stones}
               />
@@ -289,7 +321,7 @@ export default async function CategoryPage({
         </aside>
 
         <section aria-labelledby="category-results" className="min-w-0">
-          <div className="glass-chrome sticky top-20 z-20 mb-5 rounded-md border p-3">
+          <div className="glass-chrome mb-7 rounded-md border p-3">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="text-base font-medium" id="category-results">
@@ -301,6 +333,8 @@ export default async function CategoryPage({
                     : activeFilterCount > 0
                       ? "התוצאות מסוננות לפי הבחירה שלך"
                       : "כל הפריטים הזמינים בקטגוריה"}
+                  <span className="mx-2">·</span>
+                  <span>מיון: {currentSortLabel}</span>
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -323,9 +357,16 @@ export default async function CategoryPage({
 
           {filteredProducts.length > 0 ? (
             <>
-              <RevealGrid className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                {pageProducts.map((product) => (
-                  <ProductCard key={product.slug} product={product} />
+              <RevealGrid
+                className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3"
+                data-testid="category-results-grid"
+              >
+                {pageProducts.map((product, index) => (
+                  <ProductCard
+                    imagePriority={index === 0}
+                    key={product.slug}
+                    product={product}
+                  />
                 ))}
               </RevealGrid>
 
@@ -339,18 +380,17 @@ export default async function CategoryPage({
               )}
             </>
           ) : (
-            <div className="glass-panel grid min-h-80 place-items-center rounded-md border p-8 text-center">
-              <div className="max-w-md">
-                <div className="glass-inset mx-auto mb-4 flex size-12 items-center justify-center rounded-md border">
-                  <Gem className="size-5" />
-                </div>
-                <h3 className="text-xl font-semibold">
-                  לא נמצאו מוצרים בהתאמה הזו
-                </h3>
-                <p className="text-muted-foreground mt-2 leading-7">
+            <EmptyState
+              description={
+                <>
                   אפשר לרענן את הבחירה או לתת לסטייליסט למצוא עבורך שילוב מדויק.
-                </p>
-                <div className="mt-5 flex flex-wrap justify-center gap-2">
+                </>
+              }
+              icon={Gem}
+              testId="category-empty-state"
+              title="לא נמצאו מוצרים בהתאמה הזו"
+              actions={
+                <>
                   <Button asChild variant="outline">
                     <Link href={resetHref} scroll={false}>
                       איפוס פילטרים
@@ -359,9 +399,9 @@ export default async function CategoryPage({
                   <Button asChild>
                     <Link href="/ai">התאמה אישית</Link>
                   </Button>
-                </div>
-              </div>
-            </div>
+                </>
+              }
+            />
           )}
         </section>
       </RevealSection>
@@ -377,8 +417,10 @@ function FilterPanel({
   materialOptions,
   stoneOptions,
   categoryCounts,
+  filterCounts,
   activeFilterCount,
   resetHref,
+  sortOptions,
   closeOnSelect = false,
 }: {
   slug: string;
@@ -388,8 +430,10 @@ function FilterPanel({
   materialOptions: string[];
   stoneOptions: string[];
   categoryCounts: Map<string, number>;
+  filterCounts: FilterCounts;
   activeFilterCount: number;
   resetHref: string;
+  sortOptions: ReadonlyArray<{ value: CategorySort; label: string }>;
   closeOnSelect?: boolean;
 }) {
   return (
@@ -411,6 +455,27 @@ function FilterPanel({
         )}
       </div>
 
+      <FilterSection title="מיון">
+        {sortOptions.map((option) => {
+          const active = filters.sort === option.value;
+
+          return (
+            <FilterOptionLink
+              active={active}
+              closeOnSelect={closeOnSelect}
+              href={createCategoryHref(slug, {
+                ...filters,
+                sort: active ? defaultCategorySort : option.value,
+              })}
+              key={option.value}
+              label={option.label}
+            />
+          );
+        })}
+      </FilterSection>
+
+      <Separator />
+
       <FilterSection title="קטגוריה">
         {categories.map((item) => (
           <FilterOptionLink
@@ -429,10 +494,13 @@ function FilterPanel({
       <FilterSection title="זמינות">
         {branches.map((branch) => {
           const active = filters.branch === branch.slug;
+          const count = filterCounts.branches.get(branch.slug) ?? 0;
+
           return (
             <FilterOptionLink
               active={active}
               closeOnSelect={closeOnSelect}
+              disabled={!active && count === 0}
               href={createCategoryHref(slug, {
                 ...filters,
                 branch: active ? undefined : branch.slug,
@@ -440,7 +508,7 @@ function FilterPanel({
               icon={<MapPin className="size-3.5" />}
               key={branch.slug}
               label={branch.city}
-              meta="מלאי בסניף"
+              meta={getFilterCountLabel(count)}
             />
           );
         })}
@@ -451,16 +519,20 @@ function FilterPanel({
       <FilterSection title="חומר">
         {materialOptions.map((material) => {
           const active = filters.material === material;
+          const count = filterCounts.materials.get(material) ?? 0;
+
           return (
             <FilterOptionLink
               active={active}
               closeOnSelect={closeOnSelect}
+              disabled={!active && count === 0}
               href={createCategoryHref(slug, {
                 ...filters,
                 material: active ? undefined : material,
               })}
               key={material}
               label={material}
+              meta={getFilterCountLabel(count)}
             />
           );
         })}
@@ -469,16 +541,20 @@ function FilterPanel({
       <FilterSection title="אבן">
         {stoneOptions.map((stone) => {
           const active = filters.stone === stone;
+          const count = filterCounts.stones.get(stone) ?? 0;
+
           return (
             <FilterOptionLink
               active={active}
               closeOnSelect={closeOnSelect}
+              disabled={!active && count === 0}
               href={createCategoryHref(slug, {
                 ...filters,
                 stone: active ? undefined : stone,
               })}
               key={stone}
               label={stone}
+              meta={getFilterCountLabel(count)}
             />
           );
         })}
@@ -489,16 +565,20 @@ function FilterPanel({
       <FilterSection title="מחיר">
         {priceOptions.map((price) => {
           const active = filters.maxPrice === price;
+          const count = filterCounts.maxPrices.get(price) ?? 0;
+
           return (
             <FilterOptionLink
               active={active}
               closeOnSelect={closeOnSelect}
+              disabled={!active && count === 0}
               href={createCategoryHref(slug, {
                 ...filters,
                 maxPrice: active ? undefined : price,
               })}
               key={price}
               label={`עד ${formatPrice(price)}`}
+              meta={getFilterCountLabel(count)}
             />
           );
         })}
@@ -529,6 +609,7 @@ function FilterOptionLink({
   icon,
   active,
   closeOnSelect,
+  disabled = false,
 }: {
   href: string;
   label: string;
@@ -536,21 +617,19 @@ function FilterOptionLink({
   icon?: ReactNode;
   active?: boolean;
   closeOnSelect?: boolean;
+  disabled?: boolean;
 }) {
-  const link = (
-    <Link
-      aria-current={active ? "page" : undefined}
-      className={cn(
-        buttonVariants({
-          size: "sm",
-          variant: active ? "secondary" : "ghost",
-        }),
-        "h-auto min-h-10 w-full justify-between px-3 py-2 text-right whitespace-normal",
-        active && "border-[var(--glass-border-strong)]",
-      )}
-      href={href}
-      scroll={false}
-    >
+  const className = cn(
+    buttonVariants({
+      size: "sm",
+      variant: active ? "secondary" : "ghost",
+    }),
+    "h-auto min-h-10 w-full justify-between px-3 py-2 text-right whitespace-normal",
+    active && "border-[var(--glass-border-strong)]",
+    disabled && "pointer-events-none opacity-45",
+  );
+  const content = (
+    <>
       <span className="flex min-w-0 items-center gap-2">
         {icon}
         <span className="min-w-0 truncate">{label}</span>
@@ -559,6 +638,32 @@ function FilterOptionLink({
         {meta && <span className="text-muted-foreground text-xs">{meta}</span>}
         {active && <Check className="size-3.5" />}
       </span>
+    </>
+  );
+
+  if (disabled) {
+    return (
+      <span
+        aria-disabled="true"
+        className={className}
+        title="אין תוצאות זמינות"
+      >
+        {content}
+      </span>
+    );
+  }
+
+  const link = (
+    <Link
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        className,
+        "focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none",
+      )}
+      href={href}
+      scroll={false}
+    >
+      {content}
     </Link>
   );
 
@@ -609,6 +714,7 @@ function parseCategoryFilters(
   const material = getFirstParam(searchParams.material);
   const stone = getFirstParam(searchParams.stone);
   const maxPrice = getFirstParam(searchParams.maxPrice);
+  const sort = getFirstParam(searchParams.sort);
 
   return {
     branch: options.branches.some((item) => item.slug === branch)
@@ -620,6 +726,7 @@ function parseCategoryFilters(
         : undefined,
     stone: stone && options.stoneOptions.includes(stone) ? stone : undefined,
     maxPrice: getValidMaxPrice(maxPrice),
+    sort: getValidCategorySort(sort),
   };
 }
 
@@ -668,13 +775,64 @@ function getActiveFilters(
   return activeFilters;
 }
 
-function createCategoryHref(slug: string, filters: CategoryFilters) {
+function getFilterCounts(products: CatalogProduct[]): FilterCounts {
+  const branches = new Map<string, number>();
+  const materials = new Map<string, number>();
+  const maxPrices = new Map<number, number>();
+  const stones = new Map<string, number>();
+
+  for (const price of priceOptions) {
+    maxPrices.set(price, 0);
+  }
+
+  for (const product of products) {
+    incrementCount(materials, product.material);
+
+    if (product.stone) {
+      incrementCount(stones, product.stone);
+    }
+
+    for (const [branchSlug, quantity] of Object.entries(product.inventory)) {
+      if (quantity > 0) {
+        incrementCount(branches, branchSlug);
+      }
+    }
+
+    for (const price of priceOptions) {
+      if (product.price <= price) {
+        incrementCount(maxPrices, price);
+      }
+    }
+  }
+
+  return {
+    branches,
+    materials,
+    maxPrices,
+    stones,
+  };
+}
+
+function incrementCount<Key>(counts: Map<Key, number>, key: Key) {
+  counts.set(key, (counts.get(key) ?? 0) + 1);
+}
+
+function getFilterCountLabel(count: number) {
+  if (count === 1) return "מוצר אחד";
+
+  return `${count} מוצרים`;
+}
+
+function createCategoryHref(slug: string, filters: Partial<CategoryFilters>) {
   const params = new URLSearchParams();
 
   if (filters.branch) params.set("branch", filters.branch);
   if (filters.material) params.set("material", filters.material);
   if (filters.stone) params.set("stone", filters.stone);
   if (filters.maxPrice) params.set("maxPrice", String(filters.maxPrice));
+  if (filters.sort && filters.sort !== defaultCategorySort) {
+    params.set("sort", filters.sort);
+  }
 
   const query = params.toString();
 
@@ -692,6 +850,7 @@ function createCategoryPageHref(
   if (filters.material) params.set("material", filters.material);
   if (filters.stone) params.set("stone", filters.stone);
   if (filters.maxPrice) params.set("maxPrice", String(filters.maxPrice));
+  if (filters.sort !== defaultCategorySort) params.set("sort", filters.sort);
   if (page > 1) params.set("page", String(page));
 
   const query = params.toString();
@@ -711,12 +870,62 @@ function getValidMaxPrice(value?: string) {
   return priceOptions.find((price) => price === parsed);
 }
 
+function getValidCategorySort(value?: string): CategorySort {
+  return sortOptions.some((option) => option.value === value)
+    ? (value as CategorySort)
+    : defaultCategorySort;
+}
+
 function getValidPage(value?: string) {
   const parsed = Number(value);
 
   if (!Number.isInteger(parsed) || parsed < 1) return 1;
 
   return parsed;
+}
+
+function sortCategoryProducts(products: CatalogProduct[], sort: CategorySort) {
+  const sorted = [...products];
+
+  if (sort === "price-asc") {
+    return sorted.sort(
+      (first, second) =>
+        first.price - second.price ||
+        getProductCreatedAtTime(second) - getProductCreatedAtTime(first),
+    );
+  }
+
+  if (sort === "price-desc") {
+    return sorted.sort(
+      (first, second) =>
+        second.price - first.price ||
+        getProductCreatedAtTime(second) - getProductCreatedAtTime(first),
+    );
+  }
+
+  if (sort === "newest") {
+    return sorted.sort(
+      (first, second) =>
+        getProductCreatedAtTime(second) - getProductCreatedAtTime(first),
+    );
+  }
+
+  return sorted.sort(
+    (first, second) =>
+      (second.popularityScore ?? 0) - (first.popularityScore ?? 0) ||
+      getProductCreatedAtTime(second) - getProductCreatedAtTime(first),
+  );
+}
+
+function getProductCreatedAtTime(product: CatalogProduct) {
+  if (product.createdAt instanceof Date) return product.createdAt.getTime();
+  if (typeof product.createdAt === "string") {
+    const parsed = Date.parse(product.createdAt);
+
+    return Number.isNaN(parsed) ? 0 : parsed;
+  }
+
+  return 0;
 }
 
 function CategoryPagination({
@@ -752,14 +961,10 @@ function CategoryPagination({
         >
           {currentPage > 1 ? (
             <Link href={createCategoryPageHref(slug, filters, previousPage)}>
-              <ChevronRight className="size-4" />
               הקודם
             </Link>
           ) : (
-            <span>
-              <ChevronRight className="size-4" />
-              הקודם
-            </span>
+            <span>הקודם</span>
           )}
         </Button>
 
@@ -798,13 +1003,9 @@ function CategoryPagination({
           {currentPage < totalPages ? (
             <Link href={createCategoryPageHref(slug, filters, nextPage)}>
               הבא
-              <ChevronLeft className="size-4" />
             </Link>
           ) : (
-            <span>
-              הבא
-              <ChevronLeft className="size-4" />
-            </span>
+            <span>הבא</span>
           )}
         </Button>
       </div>

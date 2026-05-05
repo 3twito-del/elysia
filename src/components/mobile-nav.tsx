@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useSyncExternalStore } from "react";
 import { Gem, Menu } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
@@ -20,38 +19,14 @@ export type HeaderNavItem = {
   label: string;
 };
 
-const subscribe = () => () => undefined;
-const getClientSnapshot = () => true;
-const getServerSnapshot = () => false;
-
 export function MobileNav({ items }: { items: HeaderNavItem[] }) {
-  const mounted = useSyncExternalStore(
-    subscribe,
-    getClientSnapshot,
-    getServerSnapshot,
-  );
-
-  if (!mounted) {
-    return (
-      <Button
-        aria-label="Open navigation"
-        className="lg:hidden"
-        disabled
-        size="icon"
-        type="button"
-        variant="ghost"
-      >
-        <Menu className="size-5" />
-      </Button>
-    );
-  }
-
   return (
-    <Sheet>
+    <Sheet closeOnMediaQuery="(min-width: 1024px)">
       <SheetTrigger asChild>
         <Button
           aria-label="פתיחת ניווט"
           className="lg:hidden"
+          data-testid="mobile-nav-trigger"
           size="icon"
           type="button"
           variant="ghost"
@@ -62,6 +37,7 @@ export function MobileNav({ items }: { items: HeaderNavItem[] }) {
       </SheetTrigger>
       <SheetContent
         className="w-[min(88vw,22rem)] overflow-y-auto p-0"
+        data-testid="mobile-nav-sheet"
         side="right"
       >
         <SheetHeader className="border-b border-[var(--glass-border)] p-4">
@@ -87,7 +63,9 @@ export function MobileNav({ items }: { items: HeaderNavItem[] }) {
               key={item.href}
               variant="ghost"
             >
-              <Link href={item.href}>{item.label}</Link>
+              <Link data-testid="mobile-nav-link" href={item.href}>
+                {item.label}
+              </Link>
             </Button>
           ))}
         </nav>

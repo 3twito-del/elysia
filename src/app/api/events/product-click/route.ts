@@ -1,7 +1,12 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { db } from "~/server/db";
+import {
+  badRequestJson,
+  notFoundJson,
+  okJson,
+  rateLimitedJson,
+} from "~/server/http/api-response";
 import { readSafeJson } from "~/server/http/safe-json";
 import {
   assertRateLimit,
@@ -25,13 +30,7 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     if (error instanceof RateLimitExceededError) {
-      return NextResponse.json(
-        { ok: false, error: "Too many analytics events." },
-        {
-          status: 429,
-          headers: { "Retry-After": String(error.retryAfterSeconds) },
-        },
-      );
+      return rateLimitedJson(error, "Too many analytics events.");
     }
 
     throw error;
@@ -40,13 +39,13 @@ export async function POST(req: Request) {
   const json = await readSafeJson(req);
 
   if (!json.ok) {
-    return NextResponse.json({ ok: false }, { status: 400 });
+    return badRequestJson();
   }
 
   const parsed = productClickEventSchema.safeParse(json.data);
 
   if (!parsed.success) {
-    return NextResponse.json({ ok: false }, { status: 400 });
+    return badRequestJson();
   }
 
   const product = await db.product.findUnique({
@@ -55,7 +54,7 @@ export async function POST(req: Request) {
   });
 
   if (!product) {
-    return NextResponse.json({ ok: false }, { status: 404 });
+    return notFoundJson();
   }
 
   await db.productClickEvent.create({
@@ -67,5 +66,5 @@ export async function POST(req: Request) {
     },
   });
 
-  return NextResponse.json({ ok: true });
+  return okJson({ ok: true });
 }

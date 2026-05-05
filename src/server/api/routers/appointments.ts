@@ -68,6 +68,7 @@ export const appointmentsRouter = createTRPCRouter({
             to: input.email,
             subject: "בקשת הפגישה שלך התקבלה",
             body: `קיבלנו את בקשתך לפגישה בנושא ${input.topic} בסניף ${branch.name}. צוות Aphrodite יחזור אליך לאישור.`,
+            idempotencyKey: `appointment_confirmation:${appointment.id}`,
           })
           .catch(async (error: unknown) => {
             await db.integrationJob.create({

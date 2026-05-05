@@ -8,6 +8,12 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
+import {
+  getFulfillmentMethodLabel,
+  getOrderStatusLabel,
+  getPaymentStatusLabel,
+} from "~/lib/commerce-labels";
+import { formatPrice } from "~/lib/format";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 
@@ -16,14 +22,6 @@ type OrderDetailPageProps = {
 };
 
 export const dynamic = "force-dynamic";
-
-function formatPrice(amount: number) {
-  return new Intl.NumberFormat("he-IL", {
-    style: "currency",
-    currency: "ILS",
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
 
 export default async function OrderDetailPage({
   params,
@@ -80,7 +78,7 @@ export default async function OrderDetailPage({
             </p>
           </div>
           <Badge className="w-fit" variant="secondary">
-            {order.status}
+            {getOrderStatusLabel(order.status)}
           </Badge>
         </div>
 
@@ -135,11 +133,13 @@ export default async function OrderDetailPage({
               <Separator />
               <p className="text-muted-foreground">
                 {order.fulfillmentMethod === "PICKUP"
-                  ? `איסוף: ${order.branch?.name ?? "סניף"}`
+                  ? `${getFulfillmentMethodLabel(order.fulfillmentMethod)}: ${
+                      order.branch?.name ?? "סניף"
+                    }`
                   : "משלוח לכתובת שנמסרה"}
               </p>
               <p className="text-muted-foreground">
-                תשלום: {order.payments[0]?.status ?? "PENDING"}
+                תשלום: {getPaymentStatusLabel(order.payments[0]?.status)}
               </p>
             </CardContent>
           </Card>

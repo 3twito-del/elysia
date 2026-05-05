@@ -1,0 +1,42 @@
+import { NextResponse } from "next/server";
+
+import type { RateLimitExceededError } from "~/server/services/rate-limit";
+
+export function okJson<T>(data: T, init?: ResponseInit) {
+  return NextResponse.json(data, init);
+}
+
+export function errorJson(
+  status: number,
+  error = "Request failed.",
+  init?: ResponseInit,
+) {
+  return NextResponse.json(
+    { ok: false, error },
+    {
+      ...init,
+      status,
+    },
+  );
+}
+
+export function badRequestJson(error = "Invalid request.") {
+  return errorJson(400, error);
+}
+
+export function notFoundJson(error = "Not found.") {
+  return errorJson(404, error);
+}
+
+export function unauthorizedJson(error = "Unauthorized.") {
+  return errorJson(401, error);
+}
+
+export function rateLimitedJson(
+  error: RateLimitExceededError,
+  message = "Too many requests.",
+) {
+  return errorJson(429, message, {
+    headers: { "Retry-After": String(error.retryAfterSeconds) },
+  });
+}

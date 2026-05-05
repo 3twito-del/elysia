@@ -36,6 +36,11 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
+import {
+  getFulfillmentMethodLabel,
+  getOrderStatusLabel,
+} from "~/lib/commerce-labels";
+import { formatPrice } from "~/lib/format";
 import { auth } from "~/server/auth";
 import {
   getAdminFromSession,
@@ -50,38 +55,11 @@ export const metadata = {
 
 export const dynamic = "force-dynamic";
 
-function formatPrice(amount: number) {
-  return new Intl.NumberFormat("he-IL", {
-    style: "currency",
-    currency: "ILS",
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
-
 function formatDate(date: Date) {
   return new Intl.DateTimeFormat("he-IL", {
     dateStyle: "short",
     timeStyle: "short",
   }).format(date);
-}
-
-function translateStatus(status: string) {
-  const statuses: Record<string, string> = {
-    PENDING_PAYMENT: "ממתין לתשלום",
-    PAID: "שולם ידנית",
-    PREPARING: "בהכנה",
-    READY_FOR_PICKUP: "מוכן לאיסוף",
-    SHIPPED: "נשלח",
-    COMPLETED: "הושלם",
-    CANCELLED: "בוטל",
-    REFUNDED: "זוכה",
-  };
-
-  return statuses[status] ?? status;
-}
-
-function translateFulfillment(method: string) {
-  return method === "PICKUP" ? "איסוף" : "משלוח";
 }
 
 async function loadAdminData() {
@@ -300,7 +278,7 @@ export default async function AdminPage() {
                         <TableCell>{formatPrice(order.total)}</TableCell>
                         <TableCell>
                           <Badge variant="secondary">
-                            {translateStatus(order.status)}
+                            {getOrderStatusLabel(order.status)}
                           </Badge>
                         </TableCell>
                         <TableCell>
@@ -312,7 +290,7 @@ export default async function AdminPage() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          {translateFulfillment(order.fulfillmentMethod)}
+                          {getFulfillmentMethodLabel(order.fulfillmentMethod)}
                         </TableCell>
                         <TableCell>{formatDate(order.createdAt)}</TableCell>
                         <TableCell>
@@ -427,7 +405,7 @@ export default async function AdminPage() {
                     <TableRow key={product.id}>
                       <TableCell>
                         <div className="flex min-w-64 items-center gap-3">
-                          <span className="relative size-12 shrink-0 overflow-hidden rounded-md border border-[var(--glass-border)] bg-white/35">
+                          <span className="bg-muted relative size-12 shrink-0 overflow-hidden rounded-md border border-[var(--glass-border)]">
                             <Image
                               alt=""
                               className="media-color object-cover"

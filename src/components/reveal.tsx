@@ -6,6 +6,7 @@ import {
   useEffect,
   useRef,
   useState,
+  type ComponentProps,
   type CSSProperties,
   type ReactNode,
 } from "react";
@@ -17,13 +18,13 @@ type RevealSectionProps = {
   children: ReactNode;
   className?: string;
   delay?: number;
-};
+} & Omit<ComponentProps<"section">, "children" | "className" | "ref" | "style">;
 
 type RevealGridProps = {
   children: ReactNode;
   className?: string;
   stagger?: number;
-};
+} & Omit<ComponentProps<"div">, "children" | "className" | "ref">;
 
 function useInViewOnce<T extends HTMLElement>(initialVisible = false) {
   const ref = useRef<T>(null);
@@ -56,7 +57,7 @@ function useInViewOnce<T extends HTMLElement>(initialVisible = false) {
         setIsVisible(true);
       }
     });
-    const fallbackTimeout = window.setTimeout(() => setIsVisible(true), 1200);
+    const fallbackTimeout = window.setTimeout(() => setIsVisible(true), 360);
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry?.isIntersecting) return;
@@ -98,6 +99,7 @@ export function RevealSection({
   children,
   className,
   delay = 0,
+  ...props
 }: RevealSectionProps) {
   const { suppressInitialReveal } = usePublicMotion();
   const [ref, isVisible] = useInViewOnce<HTMLElement>(suppressInitialReveal);
@@ -107,6 +109,7 @@ export function RevealSection({
     <section
       className={cn("motion-reveal", className)}
       data-reveal-visible={isVisible}
+      {...props}
       ref={ref}
       style={style}
     >
@@ -119,6 +122,7 @@ export function RevealGrid({
   children,
   className,
   stagger = 0.07,
+  ...props
 }: RevealGridProps) {
   const { suppressInitialReveal } = usePublicMotion();
   const [ref, isVisible] = useInViewOnce<HTMLDivElement>(suppressInitialReveal);
@@ -128,6 +132,7 @@ export function RevealGrid({
     <div
       className={cn("motion-reveal-grid", className)}
       data-reveal-visible={isVisible}
+      {...props}
       ref={ref}
     >
       {items.map((child, index) => {

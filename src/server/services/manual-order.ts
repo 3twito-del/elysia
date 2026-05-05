@@ -597,7 +597,10 @@ async function sendManualOrderNotificationMessage(input: {
   message: Parameters<typeof notificationProvider.sendEmail>[0];
 }) {
   try {
-    const result = await notificationProvider.sendEmail(input.message);
+    const result = await notificationProvider.sendEmail({
+      ...input.message,
+      idempotencyKey: `${input.jobType}:${input.input.orderId}`,
+    });
     await recordManualOrderNotificationJob({
       input: input.input,
       jobType: input.jobType,
@@ -734,7 +737,7 @@ export async function getAdminOverview() {
       { name: "Manual orders", status: "active" },
       { name: "CardCom", status: "disabled" },
       {
-        name: "Brevo transactional email",
+        name: `${notificationProvider.providerName()} transactional email`,
         status: notificationProvider.isOperational() ? "active" : "missing-key",
       },
       {

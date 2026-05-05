@@ -1,10 +1,7 @@
 import Link from "next/link";
 import {
-  Accessibility,
   CircleHelp,
-  FileText,
   Gem,
-  LockKeyhole,
   MapPin,
   Search,
   ShieldCheck,
@@ -27,9 +24,6 @@ const serviceLinks = [
   { href: "/branches", label: "סניפים ואיסוף", icon: MapPin },
   { href: "/ai", label: "סטייליסט AI", icon: Sparkles },
   { href: "/faq", label: "שאלות ותשובות", icon: CircleHelp },
-  { href: "/terms", label: "תקנון האתר", icon: FileText },
-  { href: "/privacy", label: "מדיניות פרטיות", icon: LockKeyhole },
-  { href: "/accessibility", label: "הצהרת נגישות", icon: Accessibility },
 ];
 
 export async function SiteFooter() {
@@ -160,9 +154,6 @@ export async function SiteFooter() {
             </Link>
             <Link className="hover:text-foreground transition" href="/privacy">
               מדיניות פרטיות
-            </Link>
-            <Link className="hover:text-foreground transition" href="/faq">
-              שאלות ותשובות
             </Link>
             <Link
               className="hover:text-foreground transition"

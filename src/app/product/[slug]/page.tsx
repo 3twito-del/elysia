@@ -15,7 +15,11 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
 import {
-  formatPrice,
+  getProductAvailabilityLabel,
+  getStockQuantityLabel,
+} from "~/lib/commerce-labels";
+import { formatPrice } from "~/lib/format";
+import {
   getCatalogBranches,
   getCatalogBranchAvailability,
   getCatalogProductBySlug,
@@ -112,7 +116,7 @@ export default async function ProductPage({
       />
       <RevealSection className="mx-auto grid max-w-7xl gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[1.05fr_0.95fr]">
         <div className="grid gap-4">
-          <div className="glass-inset relative aspect-square overflow-hidden rounded-md border bg-white/35">
+          <div className="glass-inset bg-muted relative aspect-square overflow-hidden rounded-md border">
             <Image
               alt={product.name}
               className="media-color object-cover"
@@ -128,7 +132,7 @@ export default async function ProductPage({
               { label: "קולקציה", value: product.collection },
               {
                 label: "זמינות",
-                value: `${availableBranchCount} סניפים`,
+                value: getProductAvailabilityLabel(availableBranchCount),
               },
             ].map((fact) => (
               <div
@@ -144,7 +148,7 @@ export default async function ProductPage({
             <div className="grid grid-cols-3 gap-3">
               {uniqueImages.map((image, index) => (
                 <div
-                  className="glass-inset relative aspect-square overflow-hidden rounded-md border bg-white/35"
+                  className="glass-inset bg-muted relative aspect-square overflow-hidden rounded-md border"
                   key={image}
                 >
                   <Image
@@ -178,7 +182,7 @@ export default async function ProductPage({
               </span>
             ) : null}
             <Badge className="mb-1" variant="secondary">
-              {availableBranchCount} סניפים זמינים
+              {getProductAvailabilityLabel(availableBranchCount)}
             </Badge>
           </div>
 
@@ -217,7 +221,7 @@ export default async function ProductPage({
                     </p>
                   </div>
                   <Badge variant={available ? "outline" : "secondary"}>
-                    {available ? `${quantity} במלאי` : "לא זמין"}
+                    {getStockQuantityLabel(quantity)}
                   </Badge>
                 </div>
               ))}

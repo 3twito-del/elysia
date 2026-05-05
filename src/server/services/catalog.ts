@@ -1,6 +1,8 @@
 import type { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
+import { cache } from "react";
 
+import { formatPrice } from "~/lib/format";
 import { db } from "~/server/db";
 import {
   CATALOG_CACHE_TAGS,
@@ -61,9 +63,12 @@ export type CatalogProduct = {
   description: string;
   price: number;
   compareAt?: number;
+  createdAt: Date | string;
+  popularityScore: number;
   material: string;
   stone?: string;
   collection: string;
+  collections: string[];
   image: string;
   images: string[];
   variants: CatalogProductVariant[];
@@ -94,13 +99,7 @@ export type CatalogFacets = {
   };
 };
 
-export function formatPrice(amount: number) {
-  return new Intl.NumberFormat("he-IL", {
-    style: "currency",
-    currency: "ILS",
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
+export { formatPrice };
 
 const getCatalogCategoriesCached = unstable_cache(
   async (): Promise<CatalogCategory[]> => {
@@ -118,9 +117,9 @@ const getCatalogCategoriesCached = unstable_cache(
   },
 );
 
-export async function getCatalogCategories(): Promise<CatalogCategory[]> {
-  return getCatalogCategoriesCached();
-}
+export const getCatalogCategories = cache(
+  async (): Promise<CatalogCategory[]> => getCatalogCategoriesCached(),
+);
 
 export async function getCatalogCategoryBySlug(slug: string) {
   const getCatalogCategoryBySlugCached = unstable_cache(
@@ -144,6 +143,10 @@ export async function getCatalogCategoryBySlug(slug: string) {
   return getCatalogCategoryBySlugCached();
 }
 
+export const getCatalogCategoryBySlugCachedRequest = cache(
+  getCatalogCategoryBySlug,
+);
+
 const getCatalogBranchesCached = unstable_cache(
   async (): Promise<CatalogBranch[]> => {
     const branches = await db.branch.findMany({
@@ -159,9 +162,9 @@ const getCatalogBranchesCached = unstable_cache(
   },
 );
 
-export async function getCatalogBranches(): Promise<CatalogBranch[]> {
-  return getCatalogBranchesCached();
-}
+export const getCatalogBranches = cache(
+  async (): Promise<CatalogBranch[]> => getCatalogBranchesCached(),
+);
 
 const getFeaturedCatalogProductsCached = unstable_cache(
   async (take: number) => {
@@ -181,9 +184,9 @@ const getFeaturedCatalogProductsCached = unstable_cache(
   },
 );
 
-export async function getFeaturedCatalogProducts(take = 4) {
-  return getFeaturedCatalogProductsCached(take);
-}
+export const getFeaturedCatalogProducts = cache(async (take = 4) =>
+  getFeaturedCatalogProductsCached(take),
+);
 
 export async function listCatalogProducts(input: { category?: string } = {}) {
   const getCatalogProductsCached = unstable_cache(
@@ -212,6 +215,8 @@ export async function listCatalogProducts(input: { category?: string } = {}) {
   return getCatalogProductsCached();
 }
 
+export const listCatalogProductsCachedRequest = cache(listCatalogProducts);
+
 export async function getCatalogProductBySlug(slug: string) {
   const getCatalogProductBySlugCached = unstable_cache(
     async () => {
@@ -231,6 +236,10 @@ export async function getCatalogProductBySlug(slug: string) {
 
   return getCatalogProductBySlugCached();
 }
+
+export const getCatalogProductBySlugCachedRequest = cache(
+  getCatalogProductBySlug,
+);
 
 export function getCatalogProductVariant(
   product: CatalogProduct,
@@ -270,29 +279,25 @@ const getCatalogFacetsCached = unstable_cache(
   },
 );
 
-export async function getCatalogFacets(): Promise<CatalogFacets> {
-  return getCatalogFacetsCached();
-}
+export const getCatalogFacets = cache(
+  async (): Promise<CatalogFacets> => getCatalogFacetsCached(),
+);
 
 export async function searchCatalogProducts(input: CatalogSearchInput = {}) {
-  const records = await db.product.findMany({
-    where: {
-      ...ACTIVE_PRODUCT_WHERE,
-      ...(input.category ? { category: { slug: input.category } } : {}),
-      ...(input.material ? { material: { name: input.material } } : {}),
-      ...(input.stone ? { stone: { name: input.stone } } : {}),
-      ...(input.collection
-        ? { collections: { some: { name: input.collection } } }
-        : {}),
-    },
-    include: createCatalogProductInclude(),
-    orderBy: [{ createdAt: "desc" }],
+  const products = await listCatalogProductsCachedRequest({
+    category: input.category,
   });
   const normalizedQuery = input.query?.trim().toLowerCase();
 
-  return records
-    .map(mapCatalogProduct)
+  return products
     .filter((product) => matchesCatalogSearch(product, normalizedQuery))
+    .filter((product) =>
+      input.material ? product.material === input.material : true,
+    )
+    .filter((product) => (input.stone ? product.stone === input.stone : true))
+    .filter((product) =>
+      input.collection ? product.collections.includes(input.collection) : true,
+    )
     .filter((product) =>
       input.branch ? (product.inventory[input.branch] ?? 0) > 0 : true,
     )
@@ -357,6 +362,12 @@ function createCatalogProductInclude() {
         },
       },
     },
+    _count: {
+      select: {
+        clickEvents: true,
+        viewEvents: true,
+      },
+    },
   } satisfies Prisma.ProductInclude;
 }
 
@@ -392,9 +403,12 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
     description: record.description,
     price: defaultPrice,
     compareAt: getCompareAt(defaultVariant),
+    createdAt: record.createdAt,
+    popularityScore: record._count.viewEvents + record._count.clickEvents * 2,
     material: record.material.name,
     stone: record.stone?.name,
     collection: record.collections[0]?.name ?? "Aphrodite",
+    collections: record.collections.map((collection) => collection.name),
     image: images[0] ?? DEFAULT_CATALOG_IMAGE,
     images: images.length > 0 ? images : [DEFAULT_CATALOG_IMAGE],
     variants: record.variants.map((variant) => ({

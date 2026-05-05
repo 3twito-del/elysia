@@ -7,8 +7,64 @@ import { cn } from "~/lib/utils";
 import { Button } from "~/components/ui/button";
 import { XIcon } from "lucide-react";
 
-function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
-  return <SheetPrimitive.Root data-slot="sheet" {...props} />;
+type SheetProps = Omit<
+  React.ComponentProps<typeof SheetPrimitive.Root>,
+  "defaultOpen" | "onOpenChange" | "open"
+> & {
+  closeOnMediaQuery?: string;
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  open?: boolean;
+};
+
+function Sheet({
+  closeOnMediaQuery,
+  defaultOpen,
+  onOpenChange,
+  open: controlledOpen,
+  ...props
+}: SheetProps) {
+  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(
+    defaultOpen ?? false,
+  );
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : uncontrolledOpen;
+
+  const handleOpenChange = React.useCallback(
+    (nextOpen: boolean) => {
+      if (!isControlled) {
+        setUncontrolledOpen(nextOpen);
+      }
+
+      onOpenChange?.(nextOpen);
+    },
+    [isControlled, onOpenChange],
+  );
+
+  React.useEffect(() => {
+    if (!closeOnMediaQuery || !open) return;
+
+    const mediaQuery = window.matchMedia(closeOnMediaQuery);
+    const closeIfMatched = () => {
+      if (mediaQuery.matches) {
+        handleOpenChange(false);
+      }
+    };
+
+    closeIfMatched();
+    mediaQuery.addEventListener("change", closeIfMatched);
+
+    return () => mediaQuery.removeEventListener("change", closeIfMatched);
+  }, [closeOnMediaQuery, handleOpenChange, open]);
+
+  return (
+    <SheetPrimitive.Root
+      data-slot="sheet"
+      onOpenChange={handleOpenChange}
+      open={open}
+      {...props}
+    />
+  );
 }
 
 function SheetTrigger({
@@ -37,7 +93,7 @@ function SheetOverlay({
     <SheetPrimitive.Overlay
       data-slot="sheet-overlay"
       className={cn(
-        "data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 fixed inset-0 z-[80] bg-[oklch(0.12_0_0_/_20%)] duration-100 supports-backdrop-filter:backdrop-blur-sm",
+        "data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 fixed inset-0 z-[80] bg-[oklch(0.12_0_0_/_20%)] duration-100",
         className,
       )}
       {...props}
@@ -62,7 +118,7 @@ function SheetContent({
         data-slot="sheet-content"
         data-side={side}
         className={cn(
-          "glass-panel text-popover-foreground data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 fixed z-[90] flex flex-col gap-4 bg-clip-padding text-sm transition duration-150 ease-in-out",
+          "popup-surface text-popover-foreground data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 fixed z-[90] flex flex-col gap-4 text-sm transition duration-150 ease-in-out",
           side === "bottom" && "inset-x-0 bottom-0 h-auto border-t",
           side === "left" &&
             "inset-y-0 left-0 h-full w-[min(88dvw,22rem)] border-r sm:max-w-sm",

@@ -15,7 +15,6 @@ import { MetricCard } from "~/components/metric-card";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
-import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Separator } from "~/components/ui/separator";
@@ -36,7 +35,7 @@ export default async function Home() {
     <main>
       <SiteHeader />
 
-      <RevealSection className="relative min-h-[78vh] overflow-hidden">
+      <RevealSection className="relative min-h-[78vh] overflow-hidden [--hero-edge:clamp(2rem,4vw,5rem)]">
         <Image
           alt="תכשיטי זהב ויהלומים על משטח סטודיו נקי"
           className="media-mono object-cover"
@@ -45,18 +44,15 @@ export default async function Home() {
           sizes="100vw"
           src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=2200&q=85"
         />
-        <div className="absolute inset-0 bg-black/20" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.56),rgba(0,0,0,0.08)_54%,rgba(255,255,255,0.08))]" />
-        <div className="relative mx-auto flex min-h-[78vh] max-w-7xl flex-col justify-end px-4 pt-24 pb-12 sm:px-6 lg:pb-16">
-          <div className="max-w-2xl text-white">
-            <Badge
-              className="mb-5 max-w-full text-right leading-6 whitespace-normal"
-              variant="secondary"
-            >
-              יוקרה נגישה | איסוף מסניף | מדידה בתיאום
-            </Badge>
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.05),rgba(0,0,0,0.36)_45%,rgba(0,0,0,0.7))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.62),rgba(0,0,0,0.08)_56%,rgba(0,0,0,0.12))]" />
+        <div className="relative min-h-[78vh]">
+          <div
+            className="absolute top-[var(--hero-edge)] right-[var(--hero-edge)] w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),48rem)] text-right text-white lg:w-[min(48rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
+            dir="rtl"
+          >
             <h1
-              className="text-left text-4xl leading-[1.05] font-semibold tracking-normal sm:text-6xl lg:text-7xl"
+              className="text-right text-4xl leading-[1.05] font-semibold tracking-normal sm:text-6xl lg:text-7xl"
               dir="ltr"
             >
               Aphrodite
@@ -65,44 +61,47 @@ export default async function Home() {
               רשת תכשיטים ישראלית עם קו סטודיו מודרני, קטלוג אונליין מלא, זמינות
               לפי סניף וייעוץ אישי לבחירת מתנה, טבעת או סט יומיומי.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button asChild size="lg">
-                <Link href="/category/rings">
-                  לקולקציה
-                  <ArrowLeft className="size-4" />
-                </Link>
-              </Button>
-              <Button
-                asChild
-                className="glass-hero text-white hover:bg-[oklch(1_0_0_/_18%)]"
-                size="lg"
-                variant="outline"
-              >
-                <Link href="/ai">
-                  ייעוץ סטייליסט AI
-                  <Sparkles className="size-4" />
-                </Link>
-              </Button>
-            </div>
-            <div className="mt-7 grid max-w-3xl gap-3 sm:grid-cols-3">
-              {[
-                { icon: MapPin, label: "זמינות לפי סניף" },
-                { icon: Sparkles, label: "ייעוץ אישי" },
-                { icon: ShieldCheck, label: "קופה מאובטחת" },
-              ].map((item) => {
-                const Icon = item.icon;
+          </div>
+        </div>
 
-                return (
-                  <div
-                    className="glass-hero flex min-h-16 items-center gap-3 rounded-md border px-4 py-3 text-sm font-medium text-white"
-                    key={item.label}
-                  >
-                    <Icon className="size-5" />
-                    {item.label}
-                  </div>
-                );
-              })}
-            </div>
+        <div
+          className="absolute bottom-[var(--hero-edge)] left-[var(--hero-edge)] w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),36rem)] text-white lg:w-[min(36rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
+          dir="rtl"
+        >
+          <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">
+            <Button asChild size="lg">
+              <Link href="/category/rings">
+                לקולקציה
+                <ArrowLeft className="size-4" />
+              </Link>
+            </Button>
+            <Button
+              asChild
+              className="text-foreground hover:bg-muted hover:text-foreground border-white bg-white"
+              size="lg"
+              variant="outline"
+            >
+              <Link href="/ai">
+                ייעוץ סטייליסט AI
+                <Sparkles className="size-4" />
+              </Link>
+            </Button>
+          </div>
+          <div className="mt-8 flex flex-wrap justify-start gap-x-6 gap-y-3 border-t border-white/25 pt-5 text-sm font-medium text-white/90 sm:justify-end">
+            {[
+              { icon: MapPin, label: "זמינות לפי סניף" },
+              { icon: Sparkles, label: "ייעוץ אישי" },
+              { icon: ShieldCheck, label: "קופה מאובטחת" },
+            ].map((item) => {
+              const Icon = item.icon;
+
+              return (
+                <div className="flex items-center gap-2" key={item.label}>
+                  <Icon className="size-4" />
+                  {item.label}
+                </div>
+              );
+            })}
           </div>
         </div>
       </RevealSection>
@@ -152,7 +151,7 @@ export default async function Home() {
               href={`/category/${category.slug}`}
               key={category.slug}
             >
-              <div className="relative h-28 overflow-hidden border-b border-[var(--glass-border)] bg-white/35">
+              <div className="bg-muted relative h-28 overflow-hidden border-b border-[var(--glass-border)]">
                 <Image
                   alt=""
                   className="media-mono object-cover transition duration-500 ease-[var(--ease-liquid)] group-hover/card:scale-[1.035]"
