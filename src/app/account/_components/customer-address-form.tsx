@@ -7,6 +7,7 @@ import { MapPin } from "lucide-react";
 import { addCustomerAddressAction, type AccountActionState } from "../actions";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import { StatusMessage } from "~/components/ui/status-message";
 
 const initialState: AccountActionState = {};
 
@@ -27,13 +28,9 @@ export function CustomerAddressForm() {
         <Input name="postalCode" placeholder="מיקוד" />
       </div>
       {state.message ? (
-        <p
-          className={
-            state.ok ? "text-sm text-emerald-700" : "text-sm text-red-700"
-          }
-        >
+        <StatusMessage tone={state.ok ? "success" : "error"} variant="plain">
           {state.message}
-        </p>
+        </StatusMessage>
       ) : null}
       <SubmitButton />
     </form>

@@ -5,6 +5,7 @@ import { useFormStatus } from "react-dom";
 
 import { saveWishlistItem, type PublicActionState } from "~/app/actions";
 import { Button } from "~/components/ui/button";
+import { StatusMessage } from "~/components/ui/status-message";
 
 const initialState: PublicActionState = {};
 
@@ -22,13 +23,13 @@ export function WishlistButton({
       <input name="productSlug" type="hidden" value={productSlug} />
       <SubmitButton>{children}</SubmitButton>
       {state.message ? (
-        <p
-          className={`text-xs leading-5 ${
-            state.ok ? "text-emerald-700" : "text-red-700"
-          }`}
+        <StatusMessage
+          size="xs"
+          tone={state.ok ? "success" : "error"}
+          variant="plain"
         >
           {state.message}
-        </p>
+        </StatusMessage>
       ) : null}
     </form>
   );

@@ -12,6 +12,7 @@ import {
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { StatusMessage } from "~/components/ui/status-message";
 import { getOrCreateCartSessionKey } from "~/lib/cart-session";
 
 const initialState: CustomerOtpState = {};
@@ -45,7 +46,9 @@ export function CustomerOtpForm() {
             type="text"
           />
         </div>
-        {requestState.message ? <StatusMessage state={requestState} /> : null}
+        {requestState.message ? (
+          <OtpStatusMessage state={requestState} />
+        ) : null}
         {requestState.developmentCode ? (
           <p className="glass-inset rounded-md border p-3 text-xs leading-6">
             קוד פיתוח: <span dir="ltr">{requestState.developmentCode}</span>
@@ -82,22 +85,18 @@ export function CustomerOtpForm() {
             required
           />
         </div>
-        {verifyState.message ? <StatusMessage state={verifyState} /> : null}
+        {verifyState.message ? <OtpStatusMessage state={verifyState} /> : null}
         <VerifyButton />
       </form>
     </div>
   );
 }
 
-function StatusMessage({ state }: { state: CustomerOtpState }) {
+function OtpStatusMessage({ state }: { state: CustomerOtpState }) {
   return (
-    <p
-      className={`glass-inset rounded-md border p-3 text-sm ${
-        state.ok ? "text-emerald-700" : "text-red-700"
-      }`}
-    >
+    <StatusMessage tone={state.ok ? "success" : "error"}>
       {state.message}
-    </p>
+    </StatusMessage>
   );
 }
 

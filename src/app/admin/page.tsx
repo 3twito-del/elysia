@@ -1,3 +1,4 @@
+import type { LucideIcon } from "lucide-react";
 import {
   Boxes,
   CalendarClock,
@@ -121,6 +122,34 @@ function AdminForbidden({ title, detail }: { title: string; detail: string }) {
         </Card>
       </section>
     </main>
+  );
+}
+
+function AdminTableEmptyRow({
+  colSpan,
+  description,
+  icon: Icon,
+  title,
+}: {
+  colSpan: number;
+  description: string;
+  icon: LucideIcon;
+  title: string;
+}) {
+  return (
+    <TableRow>
+      <TableCell className="py-10 text-center" colSpan={colSpan}>
+        <div className="mx-auto grid max-w-sm place-items-center gap-2">
+          <span className="glass-inset grid size-10 place-items-center rounded-md border">
+            <Icon className="size-4" aria-hidden="true" />
+          </span>
+          <p className="font-medium">{title}</p>
+          <p className="text-muted-foreground text-sm leading-6">
+            {description}
+          </p>
+        </div>
+      </TableCell>
+    </TableRow>
   );
 }
 
@@ -253,14 +282,12 @@ export default async function AdminPage() {
                 </TableHeader>
                 <TableBody>
                   {orders.length === 0 ? (
-                    <TableRow>
-                      <TableCell
-                        className="text-muted-foreground py-8 text-center"
-                        colSpan={8}
-                      >
-                        אין הזמנות עדיין.
-                      </TableCell>
-                    </TableRow>
+                    <AdminTableEmptyRow
+                      colSpan={8}
+                      description="בקשות חדשות יופיעו כאן לאחר שמירת הזמנה."
+                      icon={PackageCheck}
+                      title="אין הזמנות לטיפול"
+                    />
                   ) : (
                     orders.map((order) => (
                       <TableRow key={order.id}>
@@ -333,14 +360,12 @@ export default async function AdminPage() {
                 </TableHeader>
                 <TableBody>
                   {appointments.length === 0 ? (
-                    <TableRow>
-                      <TableCell
-                        className="text-muted-foreground py-8 text-center"
-                        colSpan={6}
-                      >
-                        אין תורים פתוחים.
-                      </TableCell>
-                    </TableRow>
+                    <AdminTableEmptyRow
+                      colSpan={6}
+                      description="תורים חדשים מהאתר יופיעו כאן לטיפול הסניפים."
+                      icon={CalendarClock}
+                      title="אין תורים פתוחים"
+                    />
                   ) : (
                     appointments.map((appointment) => (
                       <TableRow key={appointment.id}>
@@ -401,64 +426,73 @@ export default async function AdminPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {catalog.products.map((product) => (
-                    <TableRow key={product.id}>
-                      <TableCell>
-                        <div className="flex min-w-64 items-center gap-3">
-                          <span className="bg-muted relative size-12 shrink-0 overflow-hidden rounded-md border border-[var(--glass-border)]">
-                            <Image
-                              alt=""
-                              className="media-color object-cover"
-                              fill
-                              sizes="48px"
-                              src={product.image}
-                            />
-                          </span>
-                          <div className="grid min-w-0 gap-1">
-                            <span className="truncate font-medium">
-                              {product.name}
+                  {catalog.products.length === 0 ? (
+                    <AdminTableEmptyRow
+                      colSpan={6}
+                      description="לא נמצאו מוצרים לניהול. יצירת מוצר ראשון תפתח את אזור המלאי."
+                      icon={PackageCheck}
+                      title="אין מוצרים בקטלוג"
+                    />
+                  ) : (
+                    catalog.products.map((product) => (
+                      <TableRow key={product.id}>
+                        <TableCell>
+                          <div className="flex min-w-64 items-center gap-3">
+                            <span className="bg-muted relative size-12 shrink-0 overflow-hidden rounded-md border border-[var(--glass-border)]">
+                              <Image
+                                alt=""
+                                className="media-color object-cover"
+                                fill
+                                sizes="48px"
+                                src={product.image}
+                              />
                             </span>
-                            <span className="text-muted-foreground text-xs">
-                              {product.sku}
-                            </span>
+                            <div className="grid min-w-0 gap-1">
+                              <span className="truncate font-medium">
+                                {product.name}
+                              </span>
+                              <span className="text-muted-foreground text-xs">
+                                {product.sku}
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">{product.status}</Badge>
-                      </TableCell>
-                      <TableCell>{product.categoryName}</TableCell>
-                      <TableCell>{formatPrice(product.basePrice)}</TableCell>
-                      <TableCell>
-                        <div className="grid gap-2">
-                          {product.variants.flatMap((variant) =>
-                            variant.inventory.map((inventory) => (
-                              <div
-                                className="flex items-center justify-between gap-3"
-                                key={`${variant.id}:${inventory.branchId}`}
-                              >
-                                <span className="min-w-32 text-xs">
-                                  {variant.sku} · {inventory.branchName}
-                                </span>
-                                <AdminInventoryEditor
-                                  branchId={inventory.branchId}
-                                  quantity={inventory.quantity}
-                                  safetyStock={inventory.safetyStock}
-                                  variant={variant}
-                                />
-                              </div>
-                            )),
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <AdminProductStatusAction
-                          productId={product.id}
-                          status={product.status}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="secondary">{product.status}</Badge>
+                        </TableCell>
+                        <TableCell>{product.categoryName}</TableCell>
+                        <TableCell>{formatPrice(product.basePrice)}</TableCell>
+                        <TableCell>
+                          <div className="grid gap-2">
+                            {product.variants.flatMap((variant) =>
+                              variant.inventory.map((inventory) => (
+                                <div
+                                  className="flex items-center justify-between gap-3"
+                                  key={`${variant.id}:${inventory.branchId}`}
+                                >
+                                  <span className="min-w-32 text-xs">
+                                    {variant.sku} · {inventory.branchName}
+                                  </span>
+                                  <AdminInventoryEditor
+                                    branchId={inventory.branchId}
+                                    quantity={inventory.quantity}
+                                    safetyStock={inventory.safetyStock}
+                                    variant={variant}
+                                  />
+                                </div>
+                              )),
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <AdminProductStatusAction
+                            productId={product.id}
+                            status={product.status}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </TRPCReactProvider>
@@ -487,32 +521,41 @@ export default async function AdminPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {catalog.coupons.map((coupon) => (
-                      <TableRow key={coupon.id}>
-                        <TableCell className="font-medium">
-                          {coupon.code}
-                        </TableCell>
-                        <TableCell>
-                          {coupon.percentOff
-                            ? `${coupon.percentOff}%`
-                            : coupon.amountOff
-                              ? formatPrice(coupon.amountOff)
-                              : "-"}
-                        </TableCell>
-                        <TableCell>
-                          {coupon.usedCount}
-                          {coupon.maxUses ? ` / ${coupon.maxUses}` : ""}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="secondary">
-                            {coupon.isActive ? "פעיל" : "כבוי"}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <AdminCouponStatusAction coupon={coupon} />
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {catalog.coupons.length === 0 ? (
+                      <AdminTableEmptyRow
+                        colSpan={5}
+                        description="קופונים חדשים שתצרו יופיעו כאן עם סטטוס ושימושים."
+                        icon={Percent}
+                        title="אין קופונים"
+                      />
+                    ) : (
+                      catalog.coupons.map((coupon) => (
+                        <TableRow key={coupon.id}>
+                          <TableCell className="font-medium">
+                            {coupon.code}
+                          </TableCell>
+                          <TableCell>
+                            {coupon.percentOff
+                              ? `${coupon.percentOff}%`
+                              : coupon.amountOff
+                                ? formatPrice(coupon.amountOff)
+                                : "-"}
+                          </TableCell>
+                          <TableCell>
+                            {coupon.usedCount}
+                            {coupon.maxUses ? ` / ${coupon.maxUses}` : ""}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="secondary">
+                              {coupon.isActive ? "פעיל" : "כבוי"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <AdminCouponStatusAction coupon={coupon} />
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
                   </TableBody>
                 </Table>
               </TRPCReactProvider>
@@ -538,28 +581,37 @@ export default async function AdminPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {customers.map((customer) => (
-                    <TableRow key={customer.id}>
-                      <TableCell>
-                        <div className="grid gap-1">
-                          <span>
-                            {customer.name
-                              ? customer.name
-                              : (customer.email ?? "-")}
-                          </span>
-                          <span className="text-muted-foreground text-xs">
-                            {customer.phone}
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell>{customer.orders}</TableCell>
-                      <TableCell>
-                        {formatPrice(customer.lifetimeValue)}
-                      </TableCell>
-                      <TableCell>{customer.wishlistItems}</TableCell>
-                      <TableCell>{customer.addresses}</TableCell>
-                    </TableRow>
-                  ))}
+                  {customers.length === 0 ? (
+                    <AdminTableEmptyRow
+                      colSpan={5}
+                      description="חשבונות לקוח יופיעו כאן לאחר כניסה או הזמנה."
+                      icon={Users}
+                      title="אין לקוחות"
+                    />
+                  ) : (
+                    customers.map((customer) => (
+                      <TableRow key={customer.id}>
+                        <TableCell>
+                          <div className="grid gap-1">
+                            <span>
+                              {customer.name
+                                ? customer.name
+                                : (customer.email ?? "-")}
+                            </span>
+                            <span className="text-muted-foreground text-xs">
+                              {customer.phone}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell>{customer.orders}</TableCell>
+                        <TableCell>
+                          {formatPrice(customer.lifetimeValue)}
+                        </TableCell>
+                        <TableCell>{customer.wishlistItems}</TableCell>
+                        <TableCell>{customer.addresses}</TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
@@ -583,19 +635,28 @@ export default async function AdminPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {overview.integrations.map((integration) => (
-                  <TableRow key={integration.name}>
-                    <TableCell className="font-medium">
-                      {integration.name}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="secondary">{integration.status}</Badge>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      Adapter פנימי, מוכן להחלפה ללא שינוי במסכים.
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {overview.integrations.length === 0 ? (
+                  <AdminTableEmptyRow
+                    colSpan={3}
+                    description="סטטוס ספקים חיצוניים יוצג כאן לאחר הגדרת adapters."
+                    icon={PlugZap}
+                    title="אין אינטגרציות להצגה"
+                  />
+                ) : (
+                  overview.integrations.map((integration) => (
+                    <TableRow key={integration.name}>
+                      <TableCell className="font-medium">
+                        {integration.name}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">{integration.status}</Badge>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        Adapter פנימי, מוכן להחלפה ללא שינוי במסכים.
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </CardContent>

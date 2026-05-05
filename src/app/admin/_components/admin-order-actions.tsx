@@ -7,6 +7,7 @@ import { RotateCcw, Save, Truck } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { StatusMessage } from "~/components/ui/status-message";
 import { Textarea } from "~/components/ui/textarea";
 import { api } from "~/trpc/react";
 
@@ -212,7 +213,9 @@ function AdminRefundForm({
         ביצוע זיכוי
       </Button>
       {mutation.error ? (
-        <p className="text-xs text-red-700">{mutation.error.message}</p>
+        <StatusMessage size="xs" tone="error" variant="plain">
+          {mutation.error.message}
+        </StatusMessage>
       ) : null}
     </form>
   );

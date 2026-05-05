@@ -16,9 +16,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Separator } from "~/components/ui/separator";
+import { StatusMessage } from "~/components/ui/status-message";
 import { Textarea } from "~/components/ui/textarea";
 import { formatPrice } from "~/lib/format";
 import { api } from "~/trpc/react";
+import { CheckoutStepBadge } from "./checkout-step-badge";
 
 type CheckoutProduct = {
   slug: string;
@@ -39,14 +41,6 @@ type ManualCheckoutFormProps = {
   product: CheckoutProduct;
   branches: BranchOption[];
 };
-
-function StepBadge({ value }: { value: string }) {
-  return (
-    <span className="glass-inset grid size-7 place-items-center rounded-full border text-xs font-semibold">
-      {value}
-    </span>
-  );
-}
 
 export function ManualCheckoutForm({
   product,
@@ -169,7 +163,7 @@ export function ManualCheckoutForm({
         <Card className="rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <StepBadge value="1" />
+              <CheckoutStepBadge value="1" />
               <PackageCheck className="size-5" />
               פרטי הזמנה
             </CardTitle>
@@ -230,7 +224,7 @@ export function ManualCheckoutForm({
         <Card className="rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <StepBadge value="2" />
+              <CheckoutStepBadge value="2" />
               <Truck className="size-5" />
               משלוח או איסוף
             </CardTitle>
@@ -316,7 +310,7 @@ export function ManualCheckoutForm({
         <Card className="rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <StepBadge value="3" />
+              <CheckoutStepBadge value="3" />
               <Gift className="size-5" />
               אריזת מתנה
             </CardTitle>
@@ -345,7 +339,7 @@ export function ManualCheckoutForm({
       <aside>
         <Card className="sticky top-24 rounded-md">
           <CardHeader>
-            <StepBadge value="4" />
+            <CheckoutStepBadge value="4" />
             <CardTitle>סיכום</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4">
@@ -376,9 +370,9 @@ export function ManualCheckoutForm({
               </div>
             </div>
             {createOrder.error ? (
-              <p className="glass-inset rounded-md border p-3 text-sm text-red-700">
+              <StatusMessage tone="error">
                 {createOrder.error.message}
-              </p>
+              </StatusMessage>
             ) : null}
             <Button
               className="gap-2"

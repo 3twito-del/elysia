@@ -1,6 +1,9 @@
-import { NextResponse } from "next/server";
-
 import { paymentProvider } from "~/server/adapters/payment";
+import {
+  okJson,
+  rateLimitedJson,
+  unauthorizedJson,
+} from "~/server/http/api-response";
 import {
   parseWebhookJson,
   recordWebhookEvent,
@@ -21,13 +24,7 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     if (error instanceof RateLimitExceededError) {
-      return NextResponse.json(
-        { ok: false, error: "Too many webhook requests." },
-        {
-          status: 429,
-          headers: { "Retry-After": String(error.retryAfterSeconds) },
-        },
-      );
+      return rateLimitedJson(error, "Too many webhook requests.");
     }
 
     throw error;
@@ -49,10 +46,7 @@ export async function POST(req: Request) {
       console.error("[webhook:cardcom:record-failed]", error);
     });
 
-    return NextResponse.json(
-      { ok: false, error: "Invalid signature" },
-      { status: 401 },
-    );
+    return unauthorizedJson("Invalid signature");
   }
 
   const event = await recordWebhookEvent({
@@ -64,7 +58,7 @@ export async function POST(req: Request) {
   });
   const paymentResult = await applyCardComWebhook(payload);
 
-  return NextResponse.json({
+  return okJson({
     ok: true,
     provider: "cardcom",
     status: "RECEIVED",

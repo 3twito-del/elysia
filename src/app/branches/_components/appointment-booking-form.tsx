@@ -6,6 +6,7 @@ import { CalendarPlus } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { StatusMessage } from "~/components/ui/status-message";
 import { Textarea } from "~/components/ui/textarea";
 import type { CatalogBranch } from "~/server/services/catalog";
 import { api } from "~/trpc/react";
@@ -16,11 +17,16 @@ export function AppointmentBookingForm({
   branches: CatalogBranch[];
 }) {
   const [message, setMessage] = useState<string | null>(null);
+  const [messageTone, setMessageTone] = useState<"error" | "success">(
+    "success",
+  );
   const createAppointment = api.appointments.create.useMutation({
     onSuccess: (result) => {
+      setMessageTone("success");
       setMessage(`הבקשה נקלטה בסניף ${result.branch.name}.`);
     },
     onError: (error) => {
+      setMessageTone("error");
       setMessage(error.message);
     },
   });
@@ -77,7 +83,9 @@ export function AppointmentBookingForm({
       <Input name="startsAt" required type="datetime-local" />
       <Textarea name="notes" placeholder="הערות לצוות הסניף" />
       {message ? (
-        <p className="text-muted-foreground text-sm">{message}</p>
+        <StatusMessage tone={messageTone} variant="plain">
+          {message}
+        </StatusMessage>
       ) : null}
       <Button className="w-fit gap-2" disabled={createAppointment.isPending}>
         <CalendarPlus className="size-4" />

@@ -1,11 +1,14 @@
-import { NextResponse } from "next/server";
-
 import { auth } from "~/server/auth";
 import {
   getAdminFromSession,
   hasAdminPermission,
 } from "~/server/auth/admin-access";
 import { searchProvider } from "~/server/adapters/search";
+import {
+  forbiddenJson,
+  okJson,
+  unauthorizedJson,
+} from "~/server/http/api-response";
 import { BUSINESS_EVENTS, enqueueOutboxEvent } from "~/server/services/outbox";
 
 export const dynamic = "force-dynamic";
@@ -14,19 +17,13 @@ export async function POST() {
   const session = await auth();
 
   if (!session?.user) {
-    return NextResponse.json(
-      { ok: false, error: "Unauthorized" },
-      { status: 401 },
-    );
+    return unauthorizedJson("Unauthorized");
   }
 
   const admin = await getAdminFromSession(session);
 
   if (!admin || !hasAdminPermission(admin, "CATALOG_WRITE")) {
-    return NextResponse.json(
-      { ok: false, error: "Forbidden" },
-      { status: 403 },
-    );
+    return forbiddenJson("Forbidden");
   }
 
   const result = await searchProvider.indexProducts();
@@ -43,7 +40,7 @@ export async function POST() {
     },
   });
 
-  return NextResponse.json({
+  return okJson({
     ok: true,
     ...result,
   });

@@ -8,6 +8,7 @@ import { adminLoginAction, type AdminLoginState } from "../../actions";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { StatusMessage } from "~/components/ui/status-message";
 
 const initialState: AdminLoginState = {};
 
@@ -46,9 +47,7 @@ export function AdminLoginForm({ next }: AdminLoginFormProps) {
         />
       </div>
       {state.message ? (
-        <p className="glass-inset rounded-md border p-3 text-sm text-red-700">
-          {state.message}
-        </p>
+        <StatusMessage tone="error">{state.message}</StatusMessage>
       ) : null}
       <SubmitButton />
     </form>

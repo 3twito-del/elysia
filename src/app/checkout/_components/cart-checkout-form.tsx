@@ -20,6 +20,7 @@ import { EmptyState } from "~/components/ui/empty-state";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Separator } from "~/components/ui/separator";
+import { StatusMessage } from "~/components/ui/status-message";
 import { Textarea } from "~/components/ui/textarea";
 import {
   dispatchCartUpdated,
@@ -27,6 +28,7 @@ import {
 } from "~/lib/cart-session";
 import { formatPrice } from "~/lib/format";
 import { api } from "~/trpc/react";
+import { CheckoutStepBadge } from "./checkout-step-badge";
 
 type BranchOption = {
   slug: string;
@@ -37,14 +39,6 @@ type BranchOption = {
 type CartCheckoutFormProps = {
   branches: BranchOption[];
 };
-
-function StepBadge({ value }: { value: string }) {
-  return (
-    <span className="glass-inset grid size-7 place-items-center rounded-full border text-xs font-semibold">
-      {value}
-    </span>
-  );
-}
 
 export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
   const utils = api.useUtils();
@@ -225,7 +219,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
         <Card className="rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <StepBadge value="1" />
+              <CheckoutStepBadge value="1" />
               <PackageCheck className="size-5" />
               פריטים בסל
             </CardTitle>
@@ -360,7 +354,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
         <Card className="rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <StepBadge value="2" />
+              <CheckoutStepBadge value="2" />
               פרטי לקוח
             </CardTitle>
           </CardHeader>
@@ -412,7 +406,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
         <Card className="rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <StepBadge value="3" />
+              <CheckoutStepBadge value="3" />
               <Truck className="size-5" />
               מסירה
             </CardTitle>
@@ -500,7 +494,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
         <Card className="rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <StepBadge value="4" />
+              <CheckoutStepBadge value="4" />
               <Gift className="size-5" />
               הטבות ומתנה
             </CardTitle>
@@ -545,7 +539,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
       <aside>
         <Card className="sticky top-24 rounded-md">
           <CardHeader>
-            <StepBadge value="5" />
+            <CheckoutStepBadge value="5" />
             <CardTitle>סיכום</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4">
@@ -584,14 +578,14 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
               </div>
             ) : null}
             {cartMutationError ? (
-              <p className="glass-inset rounded-md border p-3 text-sm text-red-700">
+              <StatusMessage tone="error">
                 {cartMutationError.message}
-              </p>
+              </StatusMessage>
             ) : null}
             {createOrder.error ? (
-              <p className="glass-inset rounded-md border p-3 text-sm text-red-700">
+              <StatusMessage tone="error">
                 {createOrder.error.message}
-              </p>
+              </StatusMessage>
             ) : null}
             <Button
               disabled={!canSubmit || createOrder.isPending}

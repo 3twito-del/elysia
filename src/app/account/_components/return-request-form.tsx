@@ -9,6 +9,7 @@ import {
 } from "~/app/account/actions";
 import { Button } from "~/components/ui/button";
 import { Label } from "~/components/ui/label";
+import { StatusMessage } from "~/components/ui/status-message";
 import { Textarea } from "~/components/ui/textarea";
 
 const initialState: AccountActionState = {};
@@ -36,13 +37,9 @@ export function ReturnRequestForm({ orderId }: { orderId: string }) {
         <Textarea id="return-notes" name="notes" placeholder="פרטים נוספים" />
       </div>
       {state.message ? (
-        <p
-          className={
-            state.ok ? "text-sm text-emerald-700" : "text-sm text-red-700"
-          }
-        >
+        <StatusMessage tone={state.ok ? "success" : "error"} variant="plain">
           {state.message}
-        </p>
+        </StatusMessage>
       ) : null}
       <Button className="w-fit gap-2" disabled={pending} type="submit">
         <RotateCcw className="size-4" />

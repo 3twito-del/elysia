@@ -1,8 +1,7 @@
-import { NextResponse } from "next/server";
-
 import { env } from "~/env";
 import { notificationProvider } from "~/server/adapters/notifications";
 import { db } from "~/server/db";
+import { okJson } from "~/server/http/api-response";
 
 export const dynamic = "force-dynamic";
 
@@ -37,7 +36,7 @@ export async function GET() {
     (status) => !["down", "missing", "missing-secret"].includes(status),
   );
 
-  return NextResponse.json(
+  return okJson(
     {
       ok,
       checks,

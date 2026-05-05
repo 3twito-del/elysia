@@ -9,6 +9,7 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Spinner } from "~/components/ui/spinner";
+import { StatusMessage } from "~/components/ui/status-message";
 import { Textarea } from "~/components/ui/textarea";
 import { api } from "~/trpc/react";
 
@@ -88,7 +89,9 @@ export function AiGiftRecommender() {
         </Field>
 
         {recommendGift.error ? (
-          <p className="text-sm text-red-700">{recommendGift.error.message}</p>
+          <StatusMessage tone="error" variant="plain">
+            {recommendGift.error.message}
+          </StatusMessage>
         ) : null}
 
         <Button

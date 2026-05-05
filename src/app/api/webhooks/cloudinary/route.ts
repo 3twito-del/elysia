@@ -1,7 +1,11 @@
 import { createHash, timingSafeEqual } from "node:crypto";
-import { NextResponse } from "next/server";
 
 import { env } from "~/env";
+import {
+  okJson,
+  rateLimitedJson,
+  unauthorizedJson,
+} from "~/server/http/api-response";
 import {
   parseWebhookJson,
   recordWebhookEvent,
@@ -21,13 +25,7 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     if (error instanceof RateLimitExceededError) {
-      return NextResponse.json(
-        { ok: false, error: "Too many webhook requests." },
-        {
-          status: 429,
-          headers: { "Retry-After": String(error.retryAfterSeconds) },
-        },
-      );
+      return rateLimitedJson(error, "Too many webhook requests.");
     }
 
     throw error;
@@ -38,10 +36,7 @@ export async function POST(req: Request) {
   const timestamp = req.headers.get("x-cld-timestamp");
 
   if (!verifyCloudinarySignature({ rawBody, signature, timestamp })) {
-    return NextResponse.json(
-      { ok: false, error: "Invalid Cloudinary signature." },
-      { status: 401 },
-    );
+    return unauthorizedJson("Invalid Cloudinary signature.");
   }
 
   const payload = parseWebhookJson(rawBody);
@@ -53,7 +48,7 @@ export async function POST(req: Request) {
     fallbackEventType: "cloudinary.webhook",
   });
 
-  return NextResponse.json({
+  return okJson({
     ok: true,
     provider: "cloudinary",
     status: "RECEIVED",

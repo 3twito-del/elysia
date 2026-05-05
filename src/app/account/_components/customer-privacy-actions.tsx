@@ -10,6 +10,7 @@ import {
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { StatusMessage } from "~/components/ui/status-message";
 
 const initialState: AccountActionState = {};
 
@@ -40,13 +41,9 @@ export function CustomerPrivacyActions() {
           required
         />
         {state.message ? (
-          <p
-            className={
-              state.ok ? "text-sm text-emerald-700" : "text-sm text-red-700"
-            }
-          >
+          <StatusMessage tone={state.ok ? "success" : "error"} variant="plain">
             {state.message}
-          </p>
+          </StatusMessage>
         ) : null}
         <Button
           className="w-fit gap-2"

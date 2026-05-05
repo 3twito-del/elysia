@@ -8,6 +8,7 @@ import { Plus, Save } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { StatusMessage } from "~/components/ui/status-message";
 import { Textarea } from "~/components/ui/textarea";
 import { api, type RouterOutputs } from "~/trpc/react";
 
@@ -256,7 +257,9 @@ export function AdminProductCreateForm({ catalog }: { catalog: AdminCatalog }) {
         ))}
       </div>
       {mutation.error ? (
-        <p className="text-sm text-red-700">{mutation.error.message}</p>
+        <StatusMessage tone="error" variant="plain">
+          {mutation.error.message}
+        </StatusMessage>
       ) : null}
       <Button disabled={mutation.isPending} type="submit">
         <Plus className="size-4" />

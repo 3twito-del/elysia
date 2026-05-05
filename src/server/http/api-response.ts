@@ -32,6 +32,14 @@ export function unauthorizedJson(error = "Unauthorized.") {
   return errorJson(401, error);
 }
 
+export function forbiddenJson(error = "Forbidden.") {
+  return errorJson(403, error);
+}
+
+export function serviceUnavailableJson(error = "Service unavailable.") {
+  return errorJson(503, error);
+}
+
 export function rateLimitedJson(
   error: RateLimitExceededError,
   message = "Too many requests.",

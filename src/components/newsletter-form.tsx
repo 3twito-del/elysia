@@ -7,6 +7,7 @@ import { Mail } from "lucide-react";
 import { joinNewsletter, type PublicActionState } from "~/app/actions";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import { StatusMessage } from "~/components/ui/status-message";
 
 const initialState: PublicActionState = {};
 
@@ -27,11 +28,13 @@ export function NewsletterForm() {
         <SubmitButton />
       </div>
       {state.message ? (
-        <p
-          className={`text-xs ${state.ok ? "text-emerald-700" : "text-red-700"}`}
+        <StatusMessage
+          size="xs"
+          tone={state.ok ? "success" : "error"}
+          variant="plain"
         >
           {state.message}
-        </p>
+        </StatusMessage>
       ) : null}
     </form>
   );
