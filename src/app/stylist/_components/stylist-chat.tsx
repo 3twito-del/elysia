@@ -26,6 +26,7 @@ import {
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Spinner } from "~/components/ui/spinner";
+import { StatusMessage } from "~/components/ui/status-message";
 import { TooltipProvider } from "~/components/ui/tooltip";
 import type { AiRecommendedProductInput } from "~/lib/ai-product-recommendations";
 import { cn } from "~/lib/utils";
@@ -269,9 +270,9 @@ function SearchCatalogToolResult({
 }) {
   if (part.state === "output-error") {
     return (
-      <div className="glass-inset rounded-md border p-3 text-sm">
+      <StatusMessage tone="error">
         לא ניתן היה לטעון מוצרים מהקטלוג כרגע.
-      </div>
+      </StatusMessage>
     );
   }
 

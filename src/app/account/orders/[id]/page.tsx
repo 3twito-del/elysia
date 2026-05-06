@@ -8,6 +8,7 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
+import { StatusMessage } from "~/components/ui/status-message";
 import {
   getFulfillmentMethodLabel,
   getOrderStatusLabel,
@@ -91,20 +92,28 @@ export default async function OrderDetailPage({
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
-              {order.items.map((item) => (
-                <div
-                  className="glass-inset flex items-center justify-between rounded-md border p-3"
-                  key={item.id}
-                >
-                  <div>
-                    <p className="font-medium">{item.name}</p>
-                    <p className="text-muted-foreground text-xs">{item.sku}</p>
+              {order.items.length === 0 ? (
+                <StatusMessage tone="neutral">
+                  לא נמצאו פריטים שמורים להזמנה הזו.
+                </StatusMessage>
+              ) : (
+                order.items.map((item) => (
+                  <div
+                    className="glass-inset flex items-center justify-between rounded-md border p-3"
+                    key={item.id}
+                  >
+                    <div>
+                      <p className="font-medium">{item.name}</p>
+                      <p className="text-muted-foreground text-xs">
+                        {item.sku}
+                      </p>
+                    </div>
+                    <span>
+                      {item.quantity} × {formatPrice(Number(item.unitPrice))}
+                    </span>
                   </div>
-                  <span>
-                    {item.quantity} × {formatPrice(Number(item.unitPrice))}
-                  </span>
-                </div>
-              ))}
+                ))
+              )}
             </CardContent>
           </Card>
 
@@ -152,9 +161,9 @@ export default async function OrderDetailPage({
               <div className="grid gap-3">
                 <h2 className="font-medium">משלוח</h2>
                 {order.shipments.length === 0 ? (
-                  <p className="text-muted-foreground text-sm">
+                  <StatusMessage tone="neutral" variant="plain">
                     עדיין אין פרטי משלוח להזמנה.
-                  </p>
+                  </StatusMessage>
                 ) : (
                   order.shipments.map((shipment) => (
                     <div
@@ -173,9 +182,9 @@ export default async function OrderDetailPage({
               <div className="grid gap-3">
                 <h2 className="font-medium">החזרות</h2>
                 {order.returns.length === 0 ? (
-                  <p className="text-muted-foreground text-sm">
+                  <StatusMessage tone="neutral" variant="plain">
                     אין בקשות החזרה להזמנה.
-                  </p>
+                  </StatusMessage>
                 ) : (
                   order.returns.map((request) => (
                     <div

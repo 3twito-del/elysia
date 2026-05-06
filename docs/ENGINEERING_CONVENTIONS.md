@@ -16,6 +16,8 @@
 ## UI State
 
 - Use shared empty/error/loading state components before building ad-hoc panels.
+- Use `StatusMessage` for form, mutation, and tool-call feedback instead of
+  one-off red/green paragraphs.
 - Empty states must include one clear next action when a user can recover.
 - Product media should use stable aspect ratios and explicit `sizes`.
 - Popups, sheets, dialogs, menus, selects, tooltips, commands, and hover cards
@@ -44,6 +46,7 @@
 - `pnpm check`: lint, typecheck, and unit/integration tests.
 - `pnpm build`: production build and environment validation.
 - `pnpm smoke`: HTTP smoke check against `SMOKE_BASE_URL`.
-- `pnpm e2e`: Playwright desktop and mobile flows.
+- `pnpm e2e`: Playwright desktop and mobile flows. The local suite runs with a
+  single worker to avoid shared dev-server and browser-state flakiness.
 - `pnpm visual:qa`: agent-browser visual and overlay check for core routes.
 - `pnpm format:check`: formatting drift check.

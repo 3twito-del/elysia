@@ -2,11 +2,18 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { CheckCircle2, Heart, PackageCheck, Sparkles } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Heart,
+  PackageCheck,
+  Sparkles,
+} from "lucide-react";
 
 import { WishlistButton } from "./wishlist-button";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
+import { StatusMessage } from "~/components/ui/status-message";
 import {
   dispatchCartUpdated,
   getOrCreateCartSessionKey,
@@ -27,14 +34,19 @@ export function ProductPurchasePanel({
 }: ProductPurchasePanelProps) {
   const [selectedSku, setSelectedSku] = useState(variants[0]?.sku ?? "");
   const [cartMessage, setCartMessage] = useState<string | null>(null);
+  const [cartMessageTone, setCartMessageTone] = useState<"error" | "success">(
+    "success",
+  );
   const selectedVariant =
     variants.find((variant) => variant.sku === selectedSku) ?? variants[0];
   const addItem = api.cart.addItem.useMutation({
     onSuccess: () => {
+      setCartMessageTone("success");
       setCartMessage("הפריט נוסף לסל");
       dispatchCartUpdated();
     },
     onError: (error) => {
+      setCartMessageTone("error");
       setCartMessage(error.message);
     },
   });
@@ -99,13 +111,23 @@ export function ProductPurchasePanel({
 
       {cartMessage ? (
         <div className="glass-inset flex items-center justify-between gap-3 rounded-md border p-3 text-sm">
-          <span className="flex items-center gap-2">
-            <CheckCircle2 className="size-4" />
+          <StatusMessage
+            className="flex min-w-0 flex-1 items-center gap-2"
+            tone={cartMessageTone}
+            variant="plain"
+          >
+            {cartMessageTone === "success" ? (
+              <CheckCircle2 className="size-4 shrink-0" aria-hidden="true" />
+            ) : (
+              <AlertCircle className="size-4 shrink-0" aria-hidden="true" />
+            )}
             {cartMessage}
-          </span>
-          <Button asChild size="sm" variant="secondary">
-            <Link href="/checkout">מעבר לסל</Link>
-          </Button>
+          </StatusMessage>
+          {cartMessageTone === "success" ? (
+            <Button asChild size="sm" variant="secondary">
+              <Link href="/checkout">מעבר לסל</Link>
+            </Button>
+          ) : null}
         </div>
       ) : null}
 
