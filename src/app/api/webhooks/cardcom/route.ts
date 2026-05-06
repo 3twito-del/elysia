@@ -46,7 +46,7 @@ export async function POST(req: Request) {
       console.error("[webhook:cardcom:record-failed]", error);
     });
 
-    return unauthorizedJson("Invalid signature");
+    return unauthorizedJson("Invalid signature.");
   }
 
   const event = await recordWebhookEvent({

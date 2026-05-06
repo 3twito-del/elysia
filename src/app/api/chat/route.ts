@@ -19,6 +19,11 @@ import {
   getCatalogBranches,
   searchCatalogProducts,
 } from "~/server/services/catalog";
+import {
+  badRequestJson,
+  rateLimitedJson,
+  serviceUnavailableJson,
+} from "~/server/http/api-response";
 import { readSafeJson } from "~/server/http/safe-json";
 import {
   assertRateLimit,
@@ -81,13 +86,7 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     if (error instanceof RateLimitExceededError) {
-      return Response.json(
-        { error: "Too many chat requests." },
-        {
-          status: 429,
-          headers: { "Retry-After": String(error.retryAfterSeconds) },
-        },
-      );
+      return rateLimitedJson(error, "Too many chat requests.");
     }
 
     throw error;
@@ -96,25 +95,21 @@ export async function POST(req: Request) {
   const json = await readSafeJson(req);
 
   if (!json.ok) {
-    return Response.json({ error: "Invalid request body." }, { status: 400 });
+    return badRequestJson("Invalid request body.");
   }
 
   const parsedRequest = chatRequestSchema.safeParse(json.data);
 
   if (!parsedRequest.success) {
-    return Response.json({ error: "Invalid request body." }, { status: 400 });
+    return badRequestJson("Invalid request body.");
   }
 
   const { messages } = parsedRequest.data;
   const { model: chatModel, requiresGoogleKey } = resolveChatModel();
 
   if (requiresGoogleKey && !env.GOOGLE_GENERATIVE_AI_API_KEY) {
-    return Response.json(
-      {
-        error:
-          "Missing GOOGLE_GENERATIVE_AI_API_KEY for the configured Google chat model.",
-      },
-      { status: 503 },
+    return serviceUnavailableJson(
+      "Missing GOOGLE_GENERATIVE_AI_API_KEY for the configured Google chat model.",
     );
   }
 

@@ -33,6 +33,13 @@ const checks = [
     statuses: [401],
     includes: ['"ok":false', '"error":"Unauthorized."'],
   },
+  {
+    path: "/api/chat",
+    method: "POST",
+    body: "",
+    statuses: [400],
+    includes: ['"ok":false', '"error":"Invalid request body."'],
+  },
   { path: "/admin", statuses: [200, 302, 303, 307, 308] },
   {
     path: "/admin/login?next=https://evil.example/admin",
@@ -45,6 +52,8 @@ let failed = false;
 
 for (const check of checks) {
   const response = await fetch(`${baseUrl}${check.path}`, {
+    body: check.body,
+    method: check.method ?? "GET",
     redirect: "manual",
   });
   const statusOk = check.statuses.includes(response.status);

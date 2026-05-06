@@ -41,6 +41,8 @@
 
 - Preserve public response shapes, but use shared response helpers for status,
   errors, and rate limits.
+- Route handlers should not call `Response.json` or `NextResponse.json`
+  directly outside `src/server/http/api-response.ts`.
 - Rate-limited responses should include `Retry-After`.
 - Development fallbacks should fail clearly in production and remain documented
   in health checks.

@@ -17,13 +17,13 @@ export async function POST() {
   const session = await auth();
 
   if (!session?.user) {
-    return unauthorizedJson("Unauthorized");
+    return unauthorizedJson("Unauthorized.");
   }
 
   const admin = await getAdminFromSession(session);
 
   if (!admin || !hasAdminPermission(admin, "CATALOG_WRITE")) {
-    return forbiddenJson("Forbidden");
+    return forbiddenJson("Forbidden.");
   }
 
   const result = await searchProvider.indexProducts();

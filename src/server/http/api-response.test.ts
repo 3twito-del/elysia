@@ -45,4 +45,16 @@ describe("api response helpers", () => {
     expect(response.status).toBe(429);
     expect(response.headers.get("Retry-After")).toBe("12");
   });
+
+  it("standardizes rate-limit JSON payloads", async () => {
+    const response = rateLimitedJson(
+      { retryAfterSeconds: 12 } as Parameters<typeof rateLimitedJson>[0],
+      "Too many analytics events.",
+    );
+
+    await expect(response.json()).resolves.toEqual({
+      ok: false,
+      error: "Too many analytics events.",
+    });
+  });
 });
