@@ -4,6 +4,7 @@ import {
   CalendarCheck,
   Heart,
   LogOut,
+  MapPin,
   PackageCheck,
   Ruler,
   ShieldCheck,
@@ -17,9 +18,14 @@ import { customerLogoutAction, removeWishlistItemAction } from "./actions";
 import { MetricCard } from "~/components/metric-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
+import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { EmptyState } from "~/components/ui/empty-state";
+import {
+  getAppointmentStatusLabel,
+  getOrderStatusLabel,
+} from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
@@ -217,9 +223,9 @@ export default async function AccountPage() {
                   >
                     <div>
                       <p className="font-medium">{order.orderNumber}</p>
-                      <p className="text-muted-foreground text-xs">
-                        {order.status}
-                      </p>
+                      <Badge className="mt-1 w-fit" variant="secondary">
+                        {getOrderStatusLabel(order.status)}
+                      </Badge>
                     </div>
                     <span>{formatPrice(Number(order.total))}</span>
                   </Link>
@@ -295,9 +301,12 @@ export default async function AccountPage() {
             </CardHeader>
             <CardContent className="grid gap-4">
               {customer.addresses.length === 0 ? (
-                <p className="text-muted-foreground text-sm">
-                  עדיין לא נשמרו כתובות.
-                </p>
+                <EmptyState
+                  description="אפשר לשמור כתובת למסירה מהירה בהזמנה הבאה."
+                  icon={MapPin}
+                  title="אין כתובות שמורות"
+                  variant="inset"
+                />
               ) : (
                 customer.addresses.map((address) => (
                   <div
@@ -356,33 +365,43 @@ export default async function AccountPage() {
             </CardHeader>
             <CardContent className="grid gap-3">
               {customer.appointments.length === 0 ? (
-                <p className="text-muted-foreground text-sm">
-                  עדיין לא נקבעו תורים.
-                </p>
+                <EmptyState
+                  description="אפשר לתאם מדידה, איסוף או ייעוץ אישי באחד הסניפים."
+                  icon={CalendarCheck}
+                  title="אין תורים קרובים"
+                  variant="inset"
+                  actions={
+                    <Button asChild variant="outline">
+                      <Link href="/branches">תיאום תור</Link>
+                    </Button>
+                  }
+                />
               ) : (
-                customer.appointments.map((appointment) => (
-                  <div
-                    className="glass-inset rounded-md border p-3"
-                    key={appointment.id}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="font-medium">{appointment.topic}</p>
-                        <p className="text-muted-foreground text-sm">
-                          {appointment.branch.name} ·{" "}
-                          {appointment.startsAt.toLocaleString("he-IL")}
-                        </p>
+                <>
+                  {customer.appointments.map((appointment) => (
+                    <div
+                      className="glass-inset rounded-md border p-3"
+                      key={appointment.id}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="font-medium">{appointment.topic}</p>
+                          <p className="text-muted-foreground text-sm">
+                            {appointment.branch.name} ·{" "}
+                            {appointment.startsAt.toLocaleString("he-IL")}
+                          </p>
+                        </div>
+                        <Badge className="shrink-0" variant="secondary">
+                          {getAppointmentStatusLabel(appointment.status)}
+                        </Badge>
                       </div>
-                      <span className="text-muted-foreground text-xs">
-                        {appointment.status}
-                      </span>
                     </div>
-                  </div>
-                ))
+                  ))}
+                  <Button asChild className="w-fit" variant="outline">
+                    <Link href="/branches">תיאום תור נוסף</Link>
+                  </Button>
+                </>
               )}
-              <Button asChild className="w-fit" variant="outline">
-                <Link href="/branches">תיאום תור נוסף</Link>
-              </Button>
             </CardContent>
           </Card>
 

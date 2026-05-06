@@ -38,8 +38,12 @@ import {
 } from "~/components/ui/table";
 import { TableEmptyRow } from "~/components/ui/table-empty-row";
 import {
+  getAppointmentStatusLabel,
+  getCouponStatusLabel,
   getFulfillmentMethodLabel,
+  getIntegrationStatusLabel,
   getOrderStatusLabel,
+  getProductStatusLabel,
 } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
 import { auth } from "~/server/auth";
@@ -358,7 +362,7 @@ export default async function AdminPage() {
                         </TableCell>
                         <TableCell>
                           <Badge variant="secondary">
-                            {appointment.status}
+                            {getAppointmentStatusLabel(appointment.status)}
                           </Badge>
                         </TableCell>
                         <TableCell>
@@ -430,7 +434,9 @@ export default async function AdminPage() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="secondary">{product.status}</Badge>
+                          <Badge variant="secondary">
+                            {getProductStatusLabel(product.status)}
+                          </Badge>
                         </TableCell>
                         <TableCell>{product.categoryName}</TableCell>
                         <TableCell>{formatPrice(product.basePrice)}</TableCell>
@@ -519,7 +525,7 @@ export default async function AdminPage() {
                           </TableCell>
                           <TableCell>
                             <Badge variant="secondary">
-                              {coupon.isActive ? "פעיל" : "כבוי"}
+                              {getCouponStatusLabel(coupon.isActive)}
                             </Badge>
                           </TableCell>
                           <TableCell>
@@ -621,7 +627,9 @@ export default async function AdminPage() {
                         {integration.name}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="secondary">{integration.status}</Badge>
+                        <Badge variant="secondary">
+                          {getIntegrationStatusLabel(integration.status)}
+                        </Badge>
                       </TableCell>
                       <TableCell className="text-muted-foreground">
                         Adapter פנימי, מוכן להחלפה ללא שינוי במסכים.

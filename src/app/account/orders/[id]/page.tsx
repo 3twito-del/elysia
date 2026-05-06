@@ -13,6 +13,8 @@ import {
   getFulfillmentMethodLabel,
   getOrderStatusLabel,
   getPaymentStatusLabel,
+  getReturnStatusLabel,
+  getShipmentStatusLabel,
 } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
 import { auth } from "~/server/auth";
@@ -170,7 +172,9 @@ export default async function OrderDetailPage({
                       className="glass-inset rounded-md border p-3 text-sm"
                       key={shipment.id}
                     >
-                      <p className="font-medium">{shipment.status}</p>
+                      <Badge className="w-fit" variant="secondary">
+                        {getShipmentStatusLabel(shipment.status)}
+                      </Badge>
                       <p className="text-muted-foreground">
                         {shipment.provider ?? "משלוח"}{" "}
                         {shipment.tracking ? `· ${shipment.tracking}` : ""}
@@ -191,7 +195,9 @@ export default async function OrderDetailPage({
                       className="glass-inset rounded-md border p-3 text-sm"
                       key={request.id}
                     >
-                      <p className="font-medium">{request.status}</p>
+                      <Badge className="w-fit" variant="secondary">
+                        {getReturnStatusLabel(request.status)}
+                      </Badge>
                       <p className="text-muted-foreground">{request.reason}</p>
                     </div>
                   ))

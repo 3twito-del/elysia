@@ -9,6 +9,7 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { StatusMessage } from "~/components/ui/status-message";
 import { Textarea } from "~/components/ui/textarea";
+import { getReturnStatusLabel } from "~/lib/commerce-labels";
 import { api } from "~/trpc/react";
 
 type AdminOrderActionsProps = {
@@ -185,7 +186,8 @@ function AdminRefundForm({
       </Label>
       {activeReturn ? (
         <p className="text-muted-foreground text-xs">
-          בקשה פתוחה: {activeReturn.status} · {activeReturn.reason}
+          בקשה פתוחה: {getReturnStatusLabel(activeReturn.status)} ·{" "}
+          {activeReturn.reason}
         </p>
       ) : null}
       <Textarea

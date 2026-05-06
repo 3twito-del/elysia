@@ -1,11 +1,17 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  getAppointmentStatusLabel,
+  getCouponStatusLabel,
   getFulfillmentMethodLabel,
+  getIntegrationStatusLabel,
   getItemCountLabel,
   getOrderStatusLabel,
   getPaymentStatusLabel,
   getProductAvailabilityLabel,
+  getProductStatusLabel,
+  getReturnStatusLabel,
+  getShipmentStatusLabel,
   getStockQuantityLabel,
 } from "./commerce-labels";
 
@@ -15,6 +21,13 @@ describe("commerce labels", () => {
     expect(getOrderStatusLabel("CUSTOM_STATUS")).toBe("CUSTOM_STATUS");
     expect(getPaymentStatusLabel("CAPTURED")).toBe("שולם");
     expect(getPaymentStatusLabel(undefined)).toBe("ממתין");
+    expect(getProductStatusLabel("ACTIVE")).toBe("פעיל");
+    expect(getAppointmentStatusLabel("CONFIRMED")).toBe("מאושר");
+    expect(getShipmentStatusLabel("IN_TRANSIT")).toBe("בדרך");
+    expect(getReturnStatusLabel("REFUNDED")).toBe("זוכה");
+    expect(getCouponStatusLabel(false)).toBe("כבוי");
+    expect(getIntegrationStatusLabel("missing-config")).toBe("חסרה הגדרה");
+    expect(getProductStatusLabel("CUSTOM_STATUS")).toBe("CUSTOM_STATUS");
   });
 
   it("formats fulfillment, availability, stock, and count labels", () => {
