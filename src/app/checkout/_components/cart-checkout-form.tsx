@@ -19,6 +19,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { EmptyState } from "~/components/ui/empty-state";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { LoadingState } from "~/components/ui/loading-state";
 import { Separator } from "~/components/ui/separator";
 import { StatusMessage } from "~/components/ui/status-message";
 import { Textarea } from "~/components/ui/textarea";
@@ -226,7 +227,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
           </CardHeader>
           <CardContent className="grid gap-3">
             {cartQuery.isLoading || !sessionKey ? (
-              <p className="text-muted-foreground text-sm">טוען סל...</p>
+              <LoadingState label="טוען סל..." variant="plain" />
             ) : cartQuery.error ? (
               <div className="glass-inset grid gap-3 rounded-md border p-4 text-sm">
                 <p className="font-medium">לא הצלחנו לטעון את הסל.</p>

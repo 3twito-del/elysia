@@ -25,7 +25,7 @@ import {
 } from "~/components/ai-elements/prompt-input";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import { Spinner } from "~/components/ui/spinner";
+import { LoadingState } from "~/components/ui/loading-state";
 import { StatusMessage } from "~/components/ui/status-message";
 import { TooltipProvider } from "~/components/ui/tooltip";
 import type { AiRecommendedProductInput } from "~/lib/ai-product-recommendations";
@@ -277,12 +277,7 @@ function SearchCatalogToolResult({
   }
 
   if (part.state !== "output-available") {
-    return (
-      <div className="glass-inset flex w-fit items-center gap-2 rounded-md border px-3 py-2 text-sm">
-        <Spinner />
-        מאתרים התאמות בקטלוג
-      </div>
-    );
+    return <LoadingState label="מאתרים התאמות בקטלוג" variant="inline" />;
   }
 
   const products = Array.isArray(part.output)

@@ -1,4 +1,3 @@
-import type { LucideIcon } from "lucide-react";
 import {
   Boxes,
   CalendarClock,
@@ -37,6 +36,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
+import { TableEmptyRow } from "~/components/ui/table-empty-row";
 import {
   getFulfillmentMethodLabel,
   getOrderStatusLabel,
@@ -122,34 +122,6 @@ function AdminForbidden({ title, detail }: { title: string; detail: string }) {
         </Card>
       </section>
     </main>
-  );
-}
-
-function AdminTableEmptyRow({
-  colSpan,
-  description,
-  icon: Icon,
-  title,
-}: {
-  colSpan: number;
-  description: string;
-  icon: LucideIcon;
-  title: string;
-}) {
-  return (
-    <TableRow>
-      <TableCell className="py-10 text-center" colSpan={colSpan}>
-        <div className="mx-auto grid max-w-sm place-items-center gap-2">
-          <span className="glass-inset grid size-10 place-items-center rounded-md border">
-            <Icon className="size-4" aria-hidden="true" />
-          </span>
-          <p className="font-medium">{title}</p>
-          <p className="text-muted-foreground text-sm leading-6">
-            {description}
-          </p>
-        </div>
-      </TableCell>
-    </TableRow>
   );
 }
 
@@ -282,7 +254,7 @@ export default async function AdminPage() {
                 </TableHeader>
                 <TableBody>
                   {orders.length === 0 ? (
-                    <AdminTableEmptyRow
+                    <TableEmptyRow
                       colSpan={8}
                       description="בקשות חדשות יופיעו כאן לאחר שמירת הזמנה."
                       icon={PackageCheck}
@@ -360,7 +332,7 @@ export default async function AdminPage() {
                 </TableHeader>
                 <TableBody>
                   {appointments.length === 0 ? (
-                    <AdminTableEmptyRow
+                    <TableEmptyRow
                       colSpan={6}
                       description="תורים חדשים מהאתר יופיעו כאן לטיפול הסניפים."
                       icon={CalendarClock}
@@ -427,7 +399,7 @@ export default async function AdminPage() {
                 </TableHeader>
                 <TableBody>
                   {catalog.products.length === 0 ? (
-                    <AdminTableEmptyRow
+                    <TableEmptyRow
                       colSpan={6}
                       description="לא נמצאו מוצרים לניהול. יצירת מוצר ראשון תפתח את אזור המלאי."
                       icon={PackageCheck}
@@ -522,7 +494,7 @@ export default async function AdminPage() {
                   </TableHeader>
                   <TableBody>
                     {catalog.coupons.length === 0 ? (
-                      <AdminTableEmptyRow
+                      <TableEmptyRow
                         colSpan={5}
                         description="קופונים חדשים שתצרו יופיעו כאן עם סטטוס ושימושים."
                         icon={Percent}
@@ -582,7 +554,7 @@ export default async function AdminPage() {
                 </TableHeader>
                 <TableBody>
                   {customers.length === 0 ? (
-                    <AdminTableEmptyRow
+                    <TableEmptyRow
                       colSpan={5}
                       description="חשבונות לקוח יופיעו כאן לאחר כניסה או הזמנה."
                       icon={Users}
@@ -636,7 +608,7 @@ export default async function AdminPage() {
               </TableHeader>
               <TableBody>
                 {overview.integrations.length === 0 ? (
-                  <AdminTableEmptyRow
+                  <TableEmptyRow
                     colSpan={3}
                     description="סטטוס ספקים חיצוניים יוצג כאן לאחר הגדרת adapters."
                     icon={PlugZap}

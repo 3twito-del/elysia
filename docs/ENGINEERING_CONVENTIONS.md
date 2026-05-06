@@ -18,6 +18,10 @@
 - Use shared empty/error/loading state components before building ad-hoc panels.
 - Use `StatusMessage` for form, mutation, and tool-call feedback instead of
   one-off red/green paragraphs.
+- Use `LoadingState` for inline loading feedback instead of loose spinner/text
+  pairs.
+- Use `TableEmptyRow` for empty table bodies before creating route-local empty
+  rows.
 - Empty states must include one clear next action when a user can recover.
 - Product media should use stable aspect ratios and explicit `sizes`.
 - Popups, sheets, dialogs, menus, selects, tooltips, commands, and hover cards
