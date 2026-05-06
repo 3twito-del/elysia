@@ -2,12 +2,13 @@ import { NextResponse } from "next/server";
 
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
+import { notFoundJson, unauthorizedJson } from "~/server/http/api-response";
 
 export async function GET() {
   const session = await auth();
 
   if (!session?.user || session.user.adminUserId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return unauthorizedJson("Unauthorized.");
   }
 
   const customer = await db.customer.findUnique({
@@ -34,7 +35,7 @@ export async function GET() {
   });
 
   if (!customer) {
-    return NextResponse.json({ error: "Customer not found" }, { status: 404 });
+    return notFoundJson("Customer not found.");
   }
 
   await db.auditLog.create({

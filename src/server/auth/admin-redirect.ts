@@ -3,9 +3,13 @@ export function sanitizeAdminRedirect(value: unknown) {
     return "/admin";
   }
 
-  if (!value.startsWith("/admin") || value.startsWith("//")) {
-    return "/admin";
+  if (value === "/admin") {
+    return value;
   }
 
-  return value;
+  if (value.startsWith("/admin/") || value.startsWith("/admin?")) {
+    return value;
+  }
+
+  return "/admin";
 }

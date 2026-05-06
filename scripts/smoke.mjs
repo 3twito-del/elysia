@@ -28,7 +28,17 @@ const checks = [
     includes: ["venus-line-ring"],
   },
   { path: "/account", statuses: [200] },
+  {
+    path: "/account/privacy/export",
+    statuses: [401],
+    includes: ['"ok":false', '"error":"Unauthorized."'],
+  },
   { path: "/admin", statuses: [200, 302, 303, 307, 308] },
+  {
+    path: "/admin/login?next=https://evil.example/admin",
+    statuses: [200],
+    includes: ['name="next"', 'value="/admin"', "Back office"],
+  },
 ];
 
 let failed = false;

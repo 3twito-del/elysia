@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 
+import { MountedOnly } from "~/components/mounted-only";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -242,11 +243,11 @@ export default async function CategoryPage({
                 : "כל הפריטים בקטגוריה"}
             </p>
           </div>
-          <Sheet closeOnMediaQuery="(min-width: 1024px)">
-            <SheetTrigger asChild>
+          <MountedOnly
+            fallback={
               <Button
                 className="gap-2"
-                data-testid="category-filter-trigger"
+                disabled
                 type="button"
                 variant="outline"
               >
@@ -258,38 +259,57 @@ export default async function CategoryPage({
                   </Badge>
                 )}
               </Button>
-            </SheetTrigger>
-            <SheetContent
-              className="w-[min(92vw,390px)] overflow-y-auto p-0"
-              side="right"
-            >
-              <SheetHeader className="border-b border-[var(--glass-border)] p-4">
-                <SheetTitle className="flex items-center gap-2">
-                  <SlidersHorizontal className="size-4" />
+            }
+          >
+            <Sheet closeOnMediaQuery="(min-width: 1024px)">
+              <SheetTrigger asChild>
+                <Button
+                  className="gap-2"
+                  data-testid="category-filter-trigger"
+                  type="button"
+                  variant="outline"
+                >
+                  <Filter className="size-4" />
                   פילטרים
-                </SheetTitle>
-                <SheetDescription>
-                  בחירה מהירה לפי מיון, זמינות, חומר, אבן ומחיר.
-                </SheetDescription>
-              </SheetHeader>
-              <div className="p-4">
-                <FilterPanel
-                  activeFilterCount={activeFilterCount}
-                  branches={branches}
-                  categories={categories}
-                  categoryCounts={categoryCounts}
-                  closeOnSelect
-                  filterCounts={filterCounts}
-                  filters={filters}
-                  materialOptions={facets.materials}
-                  resetHref={resetHref}
-                  sortOptions={sortOptions}
-                  slug={slug}
-                  stoneOptions={facets.stones}
-                />
-              </div>
-            </SheetContent>
-          </Sheet>
+                  {activeFilterCount > 0 && (
+                    <Badge className="h-5 px-1.5" variant="secondary">
+                      {activeFilterCount}
+                    </Badge>
+                  )}
+                </Button>
+              </SheetTrigger>
+              <SheetContent
+                className="w-[min(92vw,390px)] overflow-y-auto p-0"
+                side="right"
+              >
+                <SheetHeader className="border-b border-[var(--glass-border)] p-4">
+                  <SheetTitle className="flex items-center gap-2">
+                    <SlidersHorizontal className="size-4" />
+                    פילטרים
+                  </SheetTitle>
+                  <SheetDescription>
+                    בחירה מהירה לפי מיון, זמינות, חומר, אבן ומחיר.
+                  </SheetDescription>
+                </SheetHeader>
+                <div className="p-4">
+                  <FilterPanel
+                    activeFilterCount={activeFilterCount}
+                    branches={branches}
+                    categories={categories}
+                    categoryCounts={categoryCounts}
+                    closeOnSelect
+                    filterCounts={filterCounts}
+                    filters={filters}
+                    materialOptions={facets.materials}
+                    resetHref={resetHref}
+                    sortOptions={sortOptions}
+                    slug={slug}
+                    stoneOptions={facets.stones}
+                  />
+                </div>
+              </SheetContent>
+            </Sheet>
+          </MountedOnly>
         </div>
       </div>
 

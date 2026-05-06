@@ -134,6 +134,45 @@ test.describe("cookie consent flow", () => {
   });
 });
 
+test.describe("access control surfaces", () => {
+  test.beforeEach(async ({ page }) => {
+    await clearBrowserState(page);
+    await setCookieConsent(page, "essential");
+  });
+
+  test("routes unauthenticated admin users to a sanitized login target", async ({
+    page,
+  }) => {
+    await page.goto("/admin");
+
+    await expect(page).toHaveURL(/\/admin\/login\?next=/);
+    await expect(page.locator('input[name="next"]')).toHaveValue("/admin");
+    await expect(page.locator("#email")).toBeVisible();
+
+    await page.goto("/admin/login?next=https://evil.example/admin");
+    await expect(page.locator('input[name="next"]')).toHaveValue("/admin");
+  });
+
+  test("shows customer login and rejects unauthenticated data export", async ({
+    page,
+  }) => {
+    await page.goto("/account");
+
+    await expect(page.locator("#identifier")).toBeVisible();
+    await expect(page.locator("#code")).toBeVisible();
+
+    const response = await page.request.get("/account/privacy/export");
+    const body: unknown = await response.json();
+
+    expect(response.status()).toBe(401);
+    expect(response.headers()["content-type"]).toContain("application/json");
+    expect(body).toEqual({
+      ok: false,
+      error: "Unauthorized.",
+    });
+  });
+});
+
 async function clearBrowserState(page: Page) {
   await page.goto("/");
   await page.evaluate(
