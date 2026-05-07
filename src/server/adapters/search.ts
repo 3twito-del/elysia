@@ -21,6 +21,8 @@ export type ProductSearchInput = {
   collection?: string;
   maxPrice?: number;
   availableOnly?: boolean;
+  page?: number;
+  perPage?: number;
   sort?: "relevance" | "price-asc" | "price-desc" | "newest" | "popular";
 };
 
@@ -33,6 +35,10 @@ export type ProductSearchResult = {
   hits: CatalogProduct[];
   facets: SearchFacet[];
   engine: "typesense" | "local";
+  page: number;
+  perPage: number;
+  total: number;
+  totalPages: number;
 };
 
 type ProductSearchDocument = {
@@ -52,6 +58,9 @@ type ProductSearchDocument = {
   createdAt: number;
 };
 
+export const DEFAULT_SEARCH_PER_PAGE = 24;
+const maxSearchPerPage = 48;
+
 export interface SearchProvider {
   searchProducts(input: ProductSearchInput): Promise<ProductSearchResult>;
   indexProducts(): Promise<{ indexed: number; engine: "typesense" | "local" }>;
@@ -70,6 +79,7 @@ class TypesenseSearchProvider implements SearchProvider {
 
     await ensureProductsCollection(client);
 
+    const pagination = normalizeSearchPagination(input);
     const query = normalizeTypesenseQuery(input.query);
     const response = await client
       .collections<ProductSearchDocument>(PRODUCTS_COLLECTION)
@@ -80,7 +90,8 @@ class TypesenseSearchProvider implements SearchProvider {
         filter_by: buildTypesenseFilter(input),
         facet_by: "category,material,stone,collection,availableBranches",
         sort_by: buildTypesenseSort(input, query),
-        per_page: 24,
+        page: pagination.page,
+        per_page: pagination.perPage,
       });
     const slugs =
       response.hits?.map((hit) => hit.document.slug).filter(Boolean) ?? [];
@@ -95,6 +106,10 @@ class TypesenseSearchProvider implements SearchProvider {
         .filter((product): product is CatalogProduct => Boolean(product)),
       engine: "typesense",
       facets: mapTypesenseFacets(response.facet_counts ?? []),
+      ...createSearchResultMeta(
+        typeof response.found === "number" ? response.found : slugs.length,
+        pagination,
+      ),
     };
   }
 
@@ -150,16 +165,65 @@ function getTypesenseClient() {
 }
 
 async function searchLocalProducts(input: ProductSearchInput) {
+  const pagination = normalizeSearchPagination(input);
   const [hits, facets] = await Promise.all([
     searchCatalogProducts(input),
     buildLocalFacets(input),
   ]);
+  const sortedHits = sortLocalHits(hits, input.sort);
+  const paginatedHits = paginateSearchHits(sortedHits, pagination);
 
   return {
-    hits: sortLocalHits(hits, input.sort),
+    hits: paginatedHits,
     engine: "local" as const,
     facets,
+    ...createSearchResultMeta(sortedHits.length, pagination),
   };
+}
+
+export function normalizeSearchPagination(input: {
+  page?: number;
+  perPage?: number;
+}) {
+  const page =
+    Number.isInteger(input.page) && Number(input.page) > 0
+      ? Number(input.page)
+      : 1;
+  const perPage =
+    Number.isInteger(input.perPage) && Number(input.perPage) > 0
+      ? Math.min(Number(input.perPage), maxSearchPerPage)
+      : DEFAULT_SEARCH_PER_PAGE;
+
+  return { page, perPage };
+}
+
+export function paginateSearchHits<T>(
+  hits: T[],
+  pagination: ReturnType<typeof normalizeSearchPagination>,
+) {
+  const totalPages = getSearchTotalPages(hits.length, pagination.perPage);
+  const page = Math.min(pagination.page, totalPages);
+  const start = (page - 1) * pagination.perPage;
+
+  return hits.slice(start, start + pagination.perPage);
+}
+
+function createSearchResultMeta(
+  total: number,
+  pagination: ReturnType<typeof normalizeSearchPagination>,
+) {
+  const totalPages = getSearchTotalPages(total, pagination.perPage);
+
+  return {
+    page: Math.min(pagination.page, totalPages),
+    perPage: pagination.perPage,
+    total,
+    totalPages,
+  };
+}
+
+function getSearchTotalPages(total: number, perPage: number) {
+  return Math.max(1, Math.ceil(total / perPage));
 }
 
 type TypesenseSearchEnv = {

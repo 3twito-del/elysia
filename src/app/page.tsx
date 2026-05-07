@@ -35,7 +35,7 @@ export default async function Home() {
     <main>
       <SiteHeader />
 
-      <RevealSection className="relative min-h-[78vh] overflow-hidden [--hero-edge:clamp(2rem,4vw,5rem)]">
+      <RevealSection className="relative min-h-[76svh] overflow-hidden [--hero-edge:clamp(1rem,4vw,5rem)] sm:min-h-[78vh]">
         <Image
           alt="תכשיטי זהב ויהלומים על משטח סטודיו נקי"
           className="media-mono object-cover"
@@ -46,7 +46,7 @@ export default async function Home() {
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.05),rgba(0,0,0,0.36)_45%,rgba(0,0,0,0.7))]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.62),rgba(0,0,0,0.08)_56%,rgba(0,0,0,0.12))]" />
-        <div className="relative min-h-[78vh]">
+        <div className="relative min-h-[76svh] sm:min-h-[78vh]">
           <div
             className="absolute top-[var(--hero-edge)] right-[var(--hero-edge)] w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),48rem)] text-right text-white lg:w-[min(48rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
             dir="rtl"
@@ -57,7 +57,7 @@ export default async function Home() {
             >
               Aphrodite
             </h1>
-            <p className="mt-5 max-w-xl text-lg leading-8 text-white/90">
+            <p className="mt-4 max-w-xl text-base leading-7 text-white/90 sm:mt-5 sm:text-lg sm:leading-8">
               רשת תכשיטים ישראלית עם קו סטודיו מודרני, קטלוג אונליין מלא, זמינות
               לפי סניף וייעוץ אישי לבחירת מתנה, טבעת או סט יומיומי.
             </p>
@@ -65,10 +65,10 @@ export default async function Home() {
         </div>
 
         <div
-          className="absolute bottom-[var(--hero-edge)] left-[var(--hero-edge)] w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),36rem)] text-white lg:w-[min(36rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
+          className="absolute inset-x-3 bottom-5 w-auto text-white sm:inset-x-auto sm:bottom-[var(--hero-edge)] sm:left-[var(--hero-edge)] sm:w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),36rem)] lg:w-[min(36rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
           dir="rtl"
         >
-          <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">
+          <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
             <Button asChild size="lg">
               <Link href="/category/rings">
                 לקולקציה
@@ -87,7 +87,7 @@ export default async function Home() {
               </Link>
             </Button>
           </div>
-          <div className="mt-8 flex flex-wrap justify-start gap-x-6 gap-y-3 border-t border-white/25 pt-5 text-sm font-medium text-white/90 sm:justify-end">
+          <div className="mt-4 flex flex-wrap justify-center gap-x-3 gap-y-2 border-t border-white/25 pt-3 pr-12 text-[0.7rem] font-medium text-white/90 sm:mt-8 sm:justify-end sm:gap-x-6 sm:gap-y-3 sm:pt-5 sm:pr-0 sm:text-sm">
             {[
               { icon: MapPin, label: "זמינות לפי סניף" },
               { icon: Sparkles, label: "ייעוץ אישי" },
@@ -191,8 +191,12 @@ export default async function Home() {
             </Button>
           </div>
           <RevealGrid className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.slug} product={product} />
+            {featuredProducts.map((product, index) => (
+              <ProductCard
+                imagePriority={index < 4}
+                key={product.slug}
+                product={product}
+              />
             ))}
           </RevealGrid>
         </div>

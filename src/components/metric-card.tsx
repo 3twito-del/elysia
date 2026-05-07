@@ -21,7 +21,7 @@ export function MetricCard({
   return (
     <Card
       className={cn(
-        "interactive-lift rounded-md",
+        "interactive-lift min-w-0 rounded-md",
         isSoft ? "glass-card" : "glass-panel",
       )}
     >
@@ -34,10 +34,10 @@ export function MetricCard({
         >
           <Icon className="size-5" />
         </div>
-        <div>
+        <div className="min-w-0">
           <p className="text-muted-foreground text-sm">{label}</p>
-          <p className="text-2xl font-semibold">{value}</p>
-          <p className="text-muted-foreground text-xs">{detail}</p>
+          <p className="text-2xl font-semibold break-words">{value}</p>
+          <p className="text-muted-foreground text-xs leading-5">{detail}</p>
         </div>
       </CardContent>
     </Card>

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CalendarCheck, RotateCcw, ShieldCheck } from "lucide-react";
 
 import { ProductAnalytics } from "./_components/product-analytics";
+import { ProductGallery } from "./_components/product-gallery";
 import { ProductPurchasePanel } from "./_components/product-purchase-panel";
 import { RecentlyViewedProducts } from "./_components/recently-viewed-products";
 import { ProductCard } from "~/components/product-card";
@@ -102,7 +102,7 @@ export default async function ProductPage({
     .slice(0, 4);
 
   return (
-    <main>
+    <main className="pb-24 md:pb-0">
       <SiteHeader />
       <ProductAnalytics
         path={`/product/${product.slug}`}
@@ -114,19 +114,14 @@ export default async function ProductPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         type="application/ld+json"
       />
-      <RevealSection className="mx-auto grid max-w-7xl gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[1.05fr_0.95fr]">
-        <div className="grid gap-4">
-          <div className="glass-inset bg-muted relative aspect-square overflow-hidden rounded-md border">
-            <Image
-              alt={product.name}
-              className="media-color object-cover"
-              fill
-              priority
-              sizes="(min-width: 1024px) 50vw, 100vw"
-              src={product.image}
-            />
-          </div>
-          <div className="glass-panel grid gap-3 rounded-md border p-3 sm:grid-cols-3">
+      <RevealSection className="mx-auto grid max-w-7xl gap-8 px-4 py-6 sm:px-6 sm:py-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10">
+        <div className="contents lg:grid lg:gap-4">
+          <ProductGallery
+            className="order-1 lg:order-none"
+            images={uniqueImages}
+            productName={product.name}
+          />
+          <div className="glass-panel order-3 grid gap-3 rounded-md border p-3 sm:grid-cols-3 lg:order-none">
             {[
               { label: "חומר", value: product.material },
               { label: "קולקציה", value: product.collection },
@@ -144,35 +139,22 @@ export default async function ProductPage({
               </div>
             ))}
           </div>
-          {uniqueImages.length > 1 ? (
-            <div className="grid grid-cols-3 gap-3">
-              {uniqueImages.map((image, index) => (
-                <div
-                  className="glass-inset bg-muted relative aspect-square overflow-hidden rounded-md border"
-                  key={image}
-                >
-                  <Image
-                    alt={`${product.name} ${index + 1}`}
-                    className="media-color object-cover"
-                    fill
-                    sizes="(min-width: 1024px) 16vw, 33vw"
-                    src={image}
-                  />
-                </div>
-              ))}
-            </div>
-          ) : null}
         </div>
 
-        <div className="lg:pt-4">
+        <div className="order-2 min-w-0 lg:order-none lg:pt-4">
           <Badge className="mb-4" variant="secondary">
             {product.collection}
           </Badge>
-          <h1 className="text-4xl font-semibold">{product.name}</h1>
+          <h1
+            className="text-3xl font-semibold break-words sm:text-4xl"
+            dir="auto"
+          >
+            {product.name}
+          </h1>
           <p className="text-muted-foreground mt-4 text-lg leading-8">
             {product.shortDescription}
           </p>
-          <div className="mt-6 flex items-end gap-3">
+          <div className="mt-6 flex flex-wrap items-end gap-3">
             <span className="text-3xl font-semibold">
               {formatPrice(product.price)}
             </span>
@@ -192,6 +174,8 @@ export default async function ProductPage({
             <TRPCReactProvider>
               <ProductPurchasePanel
                 metalColors={product.metalColors}
+                price={product.price}
+                productName={product.name}
                 productSlug={product.slug}
                 variants={product.variants}
               />

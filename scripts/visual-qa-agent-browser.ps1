@@ -8,7 +8,10 @@ param(
     "/search?q=zzzz-no-match&maxPrice=1",
     "/category/earrings",
     "/checkout",
-    "/product/venus-line-ring"
+    "/account",
+    "/product/venus-line-ring",
+    "/admin/login",
+    "/admin"
   ),
   [string]$ProfilePath = $(Join-Path $env:TEMP "agent-browser-cdp-aphrodite-$Port"),
   [switch]$NoScreenshot,
@@ -112,6 +115,11 @@ try {
       "document.querySelector('[data-nextjs-dialog], .vite-error-overlay, #webpack-dev-server-client-overlay') ? 'ERROR_OVERLAY' : 'OK'"
     ))
 
+    $overflow = Normalize-EvalResult (Invoke-AgentBrowser -CommandArgs @(
+      "eval",
+      "document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1 ? 'NO_X_OVERFLOW' : 'X_OVERFLOW'"
+    ))
+
     $title = Invoke-AgentBrowser -CommandArgs @("get", "title")
 
     if ($index -eq 0 -and -not $NoScreenshot) {
@@ -119,15 +127,16 @@ try {
       Write-Output $screenshotOutput
     }
 
-    $isPass = $content -eq "HAS_CONTENT" -and $overlay -eq "OK"
+    $isPass = $content -eq "HAS_CONTENT" -and $overlay -eq "OK" -and $overflow -eq "NO_X_OVERFLOW"
     if (-not $isPass) {
-      $failures.Add("$route content=$content overlay=$overlay") | Out-Null
+      $failures.Add("$route content=$content overlay=$overlay overflow=$overflow") | Out-Null
     }
 
     $results.Add([pscustomobject]@{
       Route = $route
       Content = $content
       Overlay = $overlay
+      Overflow = $overflow
       Title = $title
       Status = $(if ($isPass) { "PASS" } else { "FAIL" })
     }) | Out-Null

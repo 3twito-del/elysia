@@ -1,17 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
 import { after } from "next/server";
-import { Search, Sparkles, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, Sparkles, X } from "lucide-react";
 
+import { SearchControls } from "~/app/search/_components/search-controls";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { EmptyState } from "~/components/ui/empty-state";
-import { Input } from "~/components/ui/input";
 import { db } from "~/server/db";
 import {
+  DEFAULT_SEARCH_PER_PAGE,
   searchProvider,
   type ProductSearchInput,
 } from "~/server/adapters/search";
@@ -35,6 +36,7 @@ type SearchPageProps = {
     collection?: string;
     maxPrice?: string;
     availableOnly?: string;
+    page?: string;
     sort?: string;
   }>;
 };
@@ -63,30 +65,37 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const activeFilters = getActiveSearchFilters(input, categories, branches);
   const hasActiveFilters = activeFilters.length > 0;
   const firstCategory = categories[0];
-  const visibleFacets = result.facets.flatMap((facet) =>
-    facet.values
-      .filter((value) => value.count > 0)
-      .slice(0, 6)
-      .map((value) => ({
-        field: facet.field,
-        ...value,
-      })),
-  );
+  const visibleFacets = result.facets
+    .flatMap((facet) =>
+      facet.values
+        .filter((value) => value.count > 0)
+        .slice(0, 6)
+        .map((value) => ({
+          field: facet.field,
+          ...value,
+        })),
+    )
+    .slice(0, 10);
+  const visibleStart =
+    result.total > 0 ? (result.page - 1) * result.perPage + 1 : 0;
+  const visibleEnd = Math.min(result.page * result.perPage, result.total);
   const resultSummary =
-    result.hits.length === 1
+    result.total === 1
       ? "נמצאה תוצאה אחת"
-      : `נמצאו ${result.hits.length} תוצאות`;
+      : result.total > 0
+        ? `מציגים ${visibleStart}-${visibleEnd} מתוך ${result.total} תוצאות`
+        : "לא נמצאו תוצאות";
 
-  after(() => recordSearchEvent(input, result.hits.length));
+  after(() => recordSearchEvent(input, result.total));
 
   return (
     <main>
       <SiteHeader />
-      <RevealSection className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-end">
+      <RevealSection className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-end">
           <div>
-            <h1 className="text-4xl font-semibold">חיפוש בקטלוג</h1>
-            <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
+            <h1 className="text-3xl font-semibold sm:text-4xl">חיפוש בקטלוג</h1>
+            <p className="text-muted-foreground mt-2 max-w-2xl leading-7 sm:mt-3">
               תוצאות הקטלוג נשארות נקיות ומדויקות, עם צבע שמגיע מהפריטים עצמם.
             </p>
           </div>
@@ -103,71 +112,12 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             </div>
           ) : null}
         </div>
-        <form
-          aria-label="חיפוש בקטלוג"
-          className="glass-panel mt-6 grid gap-3 rounded-md border p-3 lg:grid-cols-[1fr_repeat(4,160px)_120px]"
-          data-testid="search-form"
-          role="search"
-        >
-          <Input
-            aria-label="חיפוש מוצר, חומר, אבן, אירוע או תקציב"
-            className="h-12"
-            defaultValue={input.query}
-            name="q"
-            placeholder="חיפוש מוצר, חומר, אבן, אירוע או תקציב"
-          />
-          <select
-            aria-label="סינון לפי קטגוריה"
-            className="glass-control h-12 rounded-md border px-3 text-sm"
-            defaultValue={input.category}
-            name="category"
-          >
-            <option value="">כל הקטגוריות</option>
-            {categories.map((category) => (
-              <option key={category.slug} value={category.slug}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-          <select
-            aria-label="סינון לפי סניף"
-            className="glass-control h-12 rounded-md border px-3 text-sm"
-            defaultValue={input.branch}
-            name="branch"
-          >
-            <option value="">כל הסניפים</option>
-            {branches.map((branch) => (
-              <option key={branch.slug} value={branch.slug}>
-                {branch.name}
-              </option>
-            ))}
-          </select>
-          <Input
-            aria-label="מחיר מקסימלי"
-            className="h-12"
-            defaultValue={input.maxPrice}
-            min={0}
-            name="maxPrice"
-            placeholder="מחיר עד"
-            type="number"
-          />
-          <select
-            aria-label="מיון תוצאות"
-            className="glass-control h-12 rounded-md border px-3 text-sm"
-            defaultValue={input.sort ?? "relevance"}
-            name="sort"
-          >
-            <option value="relevance">רלוונטיות</option>
-            <option value="price-asc">מחיר עולה</option>
-            <option value="price-desc">מחיר יורד</option>
-            <option value="newest">חדש</option>
-            <option value="popular">פופולרי</option>
-          </select>
-          <Button className="h-12 gap-2" type="submit">
-            <Search className="size-4" />
-            חיפוש
-          </Button>
-        </form>
+        <SearchControls
+          activeFilterCount={activeFilters.length}
+          branches={branches}
+          categories={categories}
+          input={input}
+        />
 
         {hasActiveFilters ? (
           <div
@@ -197,7 +147,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         ) : null}
 
         {visibleFacets.length > 0 ? (
-          <div className="mt-6 flex flex-wrap gap-2 text-sm">
+          <div className="mt-6 hidden flex-wrap gap-2 text-sm sm:flex">
             {visibleFacets.map((value) => (
               <span
                 className="glass-inset rounded-md border px-3 py-1"
@@ -283,19 +233,30 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             }
           />
         ) : (
-          <RevealGrid
-            className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
-            data-testid="search-results-grid"
-          >
-            {result.hits.map((product, index) => (
-              <ProductCard
-                imagePriority={index === 0}
-                key={product.slug}
-                product={product}
-                searchContext={{ position: index, query: input.query }}
-              />
-            ))}
-          </RevealGrid>
+          <>
+            <RevealGrid
+              className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+              data-testid="search-results-grid"
+            >
+              {result.hits.map((product, index) => (
+                <ProductCard
+                  imagePriority={index < 4}
+                  key={product.slug}
+                  product={product}
+                  searchContext={{
+                    position: (result.page - 1) * result.perPage + index,
+                    query: input.query,
+                  }}
+                />
+              ))}
+            </RevealGrid>
+
+            <SearchPagination
+              currentPage={result.page}
+              input={input}
+              totalPages={result.totalPages}
+            />
+          </>
         )}
       </RevealSection>
     </main>
@@ -339,6 +300,8 @@ function normalizeSearchInput(
     collection,
     maxPrice,
     availableOnly: params.availableOnly === "1",
+    page: normalizePage(params.page),
+    perPage: DEFAULT_SEARCH_PER_PAGE,
     sort: normalizeSort(params.sort),
   };
 }
@@ -360,7 +323,7 @@ function getActiveSearchFilters(
     filters.push({
       key: "query",
       label: `חיפוש: ${input.query}`,
-      href: createSearchHref({ ...input, query: undefined }),
+      href: createSearchHref({ ...input, page: undefined, query: undefined }),
     });
   }
 
@@ -368,7 +331,11 @@ function getActiveSearchFilters(
     filters.push({
       key: "category",
       label: `קטגוריה: ${selectedCategory.name}`,
-      href: createSearchHref({ ...input, category: undefined }),
+      href: createSearchHref({
+        ...input,
+        category: undefined,
+        page: undefined,
+      }),
     });
   }
 
@@ -376,7 +343,7 @@ function getActiveSearchFilters(
     filters.push({
       key: "branch",
       label: `סניף: ${selectedBranch.city}`,
-      href: createSearchHref({ ...input, branch: undefined }),
+      href: createSearchHref({ ...input, branch: undefined, page: undefined }),
     });
   }
 
@@ -384,7 +351,11 @@ function getActiveSearchFilters(
     filters.push({
       key: "material",
       label: `חומר: ${input.material}`,
-      href: createSearchHref({ ...input, material: undefined }),
+      href: createSearchHref({
+        ...input,
+        material: undefined,
+        page: undefined,
+      }),
     });
   }
 
@@ -392,7 +363,7 @@ function getActiveSearchFilters(
     filters.push({
       key: "stone",
       label: `אבן: ${input.stone}`,
-      href: createSearchHref({ ...input, stone: undefined }),
+      href: createSearchHref({ ...input, page: undefined, stone: undefined }),
     });
   }
 
@@ -400,7 +371,11 @@ function getActiveSearchFilters(
     filters.push({
       key: "collection",
       label: `קולקציה: ${input.collection}`,
-      href: createSearchHref({ ...input, collection: undefined }),
+      href: createSearchHref({
+        ...input,
+        collection: undefined,
+        page: undefined,
+      }),
     });
   }
 
@@ -408,7 +383,11 @@ function getActiveSearchFilters(
     filters.push({
       key: "maxPrice",
       label: `עד ${formatPrice(input.maxPrice)}`,
-      href: createSearchHref({ ...input, maxPrice: undefined }),
+      href: createSearchHref({
+        ...input,
+        maxPrice: undefined,
+        page: undefined,
+      }),
     });
   }
 
@@ -416,7 +395,11 @@ function getActiveSearchFilters(
     filters.push({
       key: "availableOnly",
       label: "זמין במלאי",
-      href: createSearchHref({ ...input, availableOnly: undefined }),
+      href: createSearchHref({
+        ...input,
+        availableOnly: undefined,
+        page: undefined,
+      }),
     });
   }
 
@@ -424,7 +407,7 @@ function getActiveSearchFilters(
     filters.push({
       key: "sort",
       label: getSortLabel(input.sort),
-      href: createSearchHref({ ...input, sort: undefined }),
+      href: createSearchHref({ ...input, page: undefined, sort: undefined }),
     });
   }
 
@@ -443,10 +426,122 @@ function createSearchHref(input: ProductSearchInput) {
   if (input.maxPrice) params.set("maxPrice", String(input.maxPrice));
   if (input.availableOnly) params.set("availableOnly", "1");
   if (input.sort && input.sort !== "relevance") params.set("sort", input.sort);
+  if (input.page && input.page > 1) params.set("page", String(input.page));
 
   const query = params.toString();
 
   return query ? `/search?${query}` : "/search";
+}
+
+function SearchPagination({
+  currentPage,
+  input,
+  totalPages,
+}: {
+  currentPage: number;
+  input: ProductSearchInput;
+  totalPages: number;
+}) {
+  if (totalPages <= 1) return null;
+
+  const previousPage = Math.max(1, currentPage - 1);
+  const nextPage = Math.min(totalPages, currentPage + 1);
+  const pages = getPaginationPages(currentPage, totalPages);
+
+  return (
+    <nav
+      aria-label="עמודי תוצאות חיפוש"
+      className="mt-8 flex flex-col items-center justify-between gap-3 sm:flex-row"
+    >
+      <p className="text-muted-foreground text-sm">
+        עמוד {currentPage} מתוך {totalPages}
+      </p>
+      <div className="flex flex-wrap items-center justify-center gap-2">
+        <Button
+          asChild={currentPage > 1}
+          disabled={currentPage <= 1}
+          size="sm"
+          variant="outline"
+        >
+          {currentPage > 1 ? (
+            <Link href={createSearchHref({ ...input, page: previousPage })}>
+              <ChevronRight className="size-3.5" />
+              הקודם
+            </Link>
+          ) : (
+            <span>הקודם</span>
+          )}
+        </Button>
+
+        {pages.map((page, index) =>
+          page === "ellipsis" ? (
+            <span
+              aria-hidden="true"
+              className="text-muted-foreground px-2 text-sm"
+              key={`ellipsis-${index}`}
+            >
+              ...
+            </span>
+          ) : (
+            <Button
+              asChild
+              key={page}
+              size="sm"
+              variant={page === currentPage ? "secondary" : "outline"}
+            >
+              <Link
+                aria-current={page === currentPage ? "page" : undefined}
+                href={createSearchHref({ ...input, page })}
+              >
+                {page}
+              </Link>
+            </Button>
+          ),
+        )}
+
+        <Button
+          asChild={currentPage < totalPages}
+          disabled={currentPage >= totalPages}
+          size="sm"
+          variant="outline"
+        >
+          {currentPage < totalPages ? (
+            <Link href={createSearchHref({ ...input, page: nextPage })}>
+              הבא
+              <ChevronLeft className="size-3.5" />
+            </Link>
+          ) : (
+            <span>הבא</span>
+          )}
+        </Button>
+      </div>
+    </nav>
+  );
+}
+
+function getPaginationPages(currentPage: number, totalPages: number) {
+  const pages = new Set<number>([1, totalPages]);
+
+  for (let page = currentPage - 1; page <= currentPage + 1; page += 1) {
+    if (page > 1 && page < totalPages) {
+      pages.add(page);
+    }
+  }
+
+  const sortedPages = Array.from(pages).sort((first, second) => first - second);
+  const result: Array<number | "ellipsis"> = [];
+
+  for (const page of sortedPages) {
+    const previous = result[result.length - 1];
+
+    if (typeof previous === "number" && page - previous > 1) {
+      result.push("ellipsis");
+    }
+
+    result.push(page);
+  }
+
+  return result;
 }
 
 function normalizeTextParam(value?: string) {
@@ -467,6 +562,12 @@ function normalizeMaxPrice(value?: string) {
   const parsed = Number(value);
 
   return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
+}
+
+function normalizePage(value?: string) {
+  const parsed = Number(value);
+
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined;
 }
 
 function normalizeSort(value?: string): ProductSearchInput["sort"] {

@@ -205,7 +205,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
 
   return (
     <form
-      className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_380px]"
+      className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 sm:py-10 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start"
       data-testid="cart-checkout-form"
       onSubmit={handleSubmit}
     >
@@ -250,7 +250,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
             ) : cart?.items.length ? (
               cart.items.map((item) => (
                 <div
-                  className="glass-inset grid gap-3 rounded-md border p-3 sm:grid-cols-[72px_1fr_auto] sm:items-center"
+                  className="glass-inset grid grid-cols-[72px_minmax(0,1fr)] gap-3 rounded-md border p-3 sm:grid-cols-[72px_minmax(0,1fr)_auto] sm:items-center"
                   key={item.id}
                 >
                   <Link
@@ -266,9 +266,10 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                       src={item.productImage}
                     />
                   </Link>
-                  <div>
+                  <div className="min-w-0">
                     <Link
-                      className="font-medium hover:underline"
+                      className="line-clamp-2 font-medium hover:underline"
+                      dir="auto"
                       href={`/product/${item.productSlug}`}
                     >
                       {item.productName}
@@ -277,7 +278,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                       {item.variantName} · {formatPrice(item.unitPrice)}
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="col-span-2 flex items-center justify-end gap-2 sm:col-span-1">
                     <Button
                       disabled={item.quantity <= 1 || updateItem.isPending}
                       onClick={() =>
@@ -538,7 +539,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
       </div>
 
       <aside>
-        <Card className="sticky top-24 rounded-md">
+        <Card className="rounded-md lg:sticky lg:top-24">
           <CardHeader>
             <CheckoutStepBadge value="5" />
             <CardTitle>סיכום</CardTitle>

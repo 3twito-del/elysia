@@ -103,6 +103,12 @@ function AdminDatabaseFallback() {
   );
 }
 
+function TableScrollHint({ children }: { children: string }) {
+  return (
+    <p className="text-muted-foreground mb-3 text-xs sm:hidden">{children}</p>
+  );
+}
+
 function AdminForbidden({ title, detail }: { title: string; detail: string }) {
   return (
     <main>
@@ -241,7 +247,10 @@ export default async function AdminPage() {
               הזמנות לטיפול
             </CardTitle>
           </CardHeader>
-          <CardContent className="overflow-x-auto">
+          <CardContent>
+            <TableScrollHint>
+              אפשר לגרור את הטבלה לצדדים במסכים צרים.
+            </TableScrollHint>
             <TRPCReactProvider>
               <Table className="min-w-[1080px]">
                 <TableHeader>
@@ -321,7 +330,10 @@ export default async function AdminPage() {
               תורים בסניפים
             </CardTitle>
           </CardHeader>
-          <CardContent className="overflow-x-auto">
+          <CardContent>
+            <TableScrollHint>
+              אפשר לגרור את הטבלה לצדדים במסכים צרים.
+            </TableScrollHint>
             <TRPCReactProvider>
               <Table className="min-w-[860px]">
                 <TableHeader>
@@ -387,7 +399,10 @@ export default async function AdminPage() {
               קטלוג ומלאי
             </CardTitle>
           </CardHeader>
-          <CardContent className="grid gap-6 overflow-x-auto">
+          <CardContent className="grid gap-6">
+            <TableScrollHint>
+              אפשר לגרור את הטבלה לצדדים במסכים צרים.
+            </TableScrollHint>
             <TRPCReactProvider>
               <AdminProductCreateForm catalog={catalog} />
               <Table className="min-w-[1120px]">
@@ -485,7 +500,10 @@ export default async function AdminPage() {
                 קופונים
               </CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-5 overflow-x-auto">
+            <CardContent className="grid gap-5">
+              <TableScrollHint>
+                אפשר לגרור את הטבלה לצדדים במסכים צרים.
+              </TableScrollHint>
               <TRPCReactProvider>
                 <AdminCouponCreateForm />
                 <Table className="min-w-[620px]">
@@ -547,7 +565,10 @@ export default async function AdminPage() {
                 לקוחות
               </CardTitle>
             </CardHeader>
-            <CardContent className="overflow-x-auto">
+            <CardContent>
+              <TableScrollHint>
+                אפשר לגרור את הטבלה לצדדים במסכים צרים.
+              </TableScrollHint>
               <Table className="min-w-[620px]">
                 <TableHeader>
                   <TableRow>
@@ -603,7 +624,10 @@ export default async function AdminPage() {
               אינטגרציות
             </CardTitle>
           </CardHeader>
-          <CardContent className="overflow-x-auto">
+          <CardContent>
+            <TableScrollHint>
+              אפשר לגרור את הטבלה לצדדים במסכים צרים.
+            </TableScrollHint>
             <Table className="min-w-[720px]">
               <TableHeader>
                 <TableRow>

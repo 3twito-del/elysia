@@ -2,8 +2,15 @@
 
 import { useState } from "react";
 import { useChat } from "@ai-sdk/react";
-import type { UIMessage } from "ai";
-import { AlertCircle, MessageSquare, Send, Sparkles } from "lucide-react";
+import type { ChatAddToolApproveResponseFunction, UIMessage } from "ai";
+import {
+  AlertCircle,
+  Check,
+  MessageSquare,
+  Send,
+  Sparkles,
+  X,
+} from "lucide-react";
 
 import { AiProductRecommendations } from "~/components/ai-product-recommendations";
 import {
@@ -43,7 +50,15 @@ type StylistChatProps = {
 
 export function StylistChat({ compact = false }: StylistChatProps) {
   const [input, setInput] = useState("");
-  const { clearError, error, messages, sendMessage, status, stop } = useChat();
+  const {
+    addToolApprovalResponse,
+    clearError,
+    error,
+    messages,
+    sendMessage,
+    status,
+    stop,
+  } = useChat();
 
   function handleSubmit(message: PromptInputMessage) {
     if (!message.text.trim()) return;
@@ -157,6 +172,7 @@ export function StylistChat({ compact = false }: StylistChatProps) {
                       {renderMessageParts(
                         message,
                         getNearestUserText(messages, messageIndex),
+                        addToolApprovalResponse,
                       )}
                     </MessageContent>
                   </Message>
@@ -227,8 +243,22 @@ export function StylistChat({ compact = false }: StylistChatProps) {
 type SearchCatalogToolPart = {
   type: "tool-searchCatalog";
   state: string;
+  input?: unknown;
   output?: unknown;
   errorText?: string;
+};
+
+type SafeActionToolPart = {
+  type: `tool-${string}`;
+  state: string;
+  input?: unknown;
+  output?: unknown;
+  errorText?: string;
+  approval?: {
+    id: string;
+    approved?: boolean;
+    reason?: string;
+  };
 };
 
 type TextPart = {
@@ -236,11 +266,13 @@ type TextPart = {
   text: string;
 };
 
-function renderMessageParts(message: UIMessage, queryText?: string) {
+function renderMessageParts(
+  message: UIMessage,
+  queryText: string | undefined,
+  addToolApprovalResponse: ChatAddToolApproveResponseFunction,
+) {
   const textParts = message.parts.filter(isTextPart);
-  const toolParts = (message.parts as unknown[]).filter(
-    isSearchCatalogToolPart,
-  );
+  const toolParts = (message.parts as unknown[]).filter(isSafeActionToolPart);
 
   return (
     <>
@@ -251,13 +283,35 @@ function renderMessageParts(message: UIMessage, queryText?: string) {
       ))}
 
       {toolParts.map((part, index) => (
-        <SearchCatalogToolResult
+        <ToolResult
+          addToolApprovalResponse={addToolApprovalResponse}
           key={`${message.id}-tool-${index}`}
           part={part}
           queryText={queryText}
         />
       ))}
     </>
+  );
+}
+
+function ToolResult({
+  addToolApprovalResponse,
+  part,
+  queryText,
+}: {
+  addToolApprovalResponse: ChatAddToolApproveResponseFunction;
+  part: SafeActionToolPart;
+  queryText?: string;
+}) {
+  if (isSearchCatalogToolPart(part)) {
+    return <SearchCatalogToolResult part={part} queryText={queryText} />;
+  }
+
+  return (
+    <SafeActionToolResult
+      addToolApprovalResponse={addToolApprovalResponse}
+      part={part}
+    />
   );
 }
 
@@ -294,6 +348,104 @@ function SearchCatalogToolResult({
       title="פריטים שמתאימים לבקשה"
     />
   );
+}
+
+function SafeActionToolResult({
+  addToolApprovalResponse,
+  part,
+}: {
+  addToolApprovalResponse: ChatAddToolApproveResponseFunction;
+  part: SafeActionToolPart;
+}) {
+  if (part.state === "approval-requested" && part.approval?.id) {
+    return (
+      <div className="glass-inset mt-1 grid gap-3 rounded-md border p-4 text-sm">
+        <div className="grid gap-1">
+          <p className="font-medium">{getToolLabel(part.type)}</p>
+          <p className="text-muted-foreground leading-6">
+            פעולה זו דורשת אישור לפני ביצוע.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            className="gap-2"
+            onClick={() => {
+              void addToolApprovalResponse({
+                id: part.approval?.id ?? "",
+                approved: true,
+              });
+            }}
+            size="sm"
+            type="button"
+          >
+            <Check className="size-4" />
+            אשר
+          </Button>
+          <Button
+            className="gap-2"
+            onClick={() => {
+              void addToolApprovalResponse({
+                id: part.approval?.id ?? "",
+                approved: false,
+                reason: "User denied the action.",
+              });
+            }}
+            size="sm"
+            type="button"
+            variant="outline"
+          >
+            <X className="size-4" />
+            בטל
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (part.state === "output-denied") {
+    return (
+      <StatusMessage tone="neutral">הפעולה לא בוצעה לאחר דחייה.</StatusMessage>
+    );
+  }
+
+  if (part.state === "output-error") {
+    return (
+      <StatusMessage tone="error">
+        לא ניתן היה להשלים את הפעולה כרגע.
+      </StatusMessage>
+    );
+  }
+
+  if (part.state !== "output-available") {
+    return <LoadingState label="מבצעים פעולה מאובטחת" variant="inline" />;
+  }
+
+  return (
+    <StatusMessage tone="success" variant="plain">
+      {getToolOutputText(part.output)}
+    </StatusMessage>
+  );
+}
+
+function getToolLabel(type: string) {
+  if (type === "tool-saveStyleProfile") return "שמירת פרופיל סגנון";
+  if (type === "tool-createTryOnSession") return "פתיחת מדידה וירטואלית";
+  if (type === "tool-orderSupport") return "בדיקת הזמנה";
+
+  return "פעולת AI";
+}
+
+function getToolOutputText(output: unknown) {
+  if (typeof output !== "object" || output === null) {
+    return "הפעולה הושלמה.";
+  }
+
+  const record = output as Record<string, unknown>;
+  const parts = [record.summary, record.nextStep, record.message].filter(
+    (value): value is string => typeof value === "string" && value.length > 0,
+  );
+
+  return parts.length > 0 ? parts.join(" ") : "הפעולה הושלמה.";
 }
 
 function getNearestUserText(messages: UIMessage[], messageIndex: number) {
@@ -333,6 +485,16 @@ function isSearchCatalogToolPart(part: unknown): part is SearchCatalogToolPart {
     part !== null &&
     "type" in part &&
     part.type === "tool-searchCatalog"
+  );
+}
+
+function isSafeActionToolPart(part: unknown): part is SafeActionToolPart {
+  return (
+    typeof part === "object" &&
+    part !== null &&
+    "type" in part &&
+    typeof part.type === "string" &&
+    part.type.startsWith("tool-")
   );
 }
 

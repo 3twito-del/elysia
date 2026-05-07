@@ -19,6 +19,8 @@ export const searchRouter = createTRPCRouter({
         collection: z.string().optional(),
         maxPrice: z.number().optional(),
         availableOnly: z.boolean().optional(),
+        page: z.number().int().positive().optional(),
+        perPage: z.number().int().positive().max(48).optional(),
         sort: z
           .enum(["relevance", "price-asc", "price-desc", "newest", "popular"])
           .optional(),

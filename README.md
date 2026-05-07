@@ -51,6 +51,8 @@ STORE_FROM_NAME="Aphrodite"
 OPERATIONS_EMAIL="studio@example.com"
 GOOGLE_GENERATIVE_AI_API_KEY="AIza..."
 AI_CHAT_MODEL="google:gemini-2.5-flash-lite"
+VERCEL_OIDC_TOKEN="..."
+# or AI_GATEWAY_API_KEY="..."
 ```
 
 לאחר הגדרת env:

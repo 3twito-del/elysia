@@ -350,6 +350,7 @@ model Customer {
   giftProfiles   GiftProfile[]
   styleProfile   StyleProfile?
   recommendationSessions RecommendationSession[]
+  aiRuns          AiRun[]
   tryOnSessions  TryOnSession[]
   createdAt      DateTime           @default(now())
   updatedAt      DateTime           @updatedAt
@@ -606,6 +607,46 @@ model RecommendationSession {
   model       String
   customer    Customer? @relation(fields: [customerId], references: [id])
   createdAt   DateTime  @default(now())
+}
+
+model AiRun {
+  id            String       @id @default(cuid())
+  customerId    String?
+  kind          String
+  status        String       @default("STARTED")
+  model         String
+  promptVersion String
+  input         Json
+  output        Json?
+  error         String?
+  metadata      Json?
+  startedAt     DateTime     @default(now())
+  completedAt   DateTime?
+  durationMs    Int?
+  customer      Customer?    @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  toolCalls     AiToolCall[]
+
+  @@index([customerId])
+  @@index([kind, startedAt])
+  @@index([status, startedAt])
+}
+
+model AiToolCall {
+  id          String   @id @default(cuid())
+  aiRunId     String
+  toolCallId  String?
+  name        String
+  status      String   @default("STARTED")
+  input       Json?
+  output      Json?
+  error       String?
+  startedAt   DateTime @default(now())
+  completedAt DateTime?
+  durationMs  Int?
+  aiRun       AiRun    @relation(fields: [aiRunId], references: [id], onDelete: Cascade)
+
+  @@index([aiRunId])
+  @@index([name, status])
 }
 
 model TryOnSession {

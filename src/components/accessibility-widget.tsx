@@ -251,7 +251,7 @@ export function AccessibilityWidget() {
         aria-expanded={isOpen}
         aria-haspopup="dialog"
         aria-label="פתיחת תפריט נגישות"
-        className="fixed right-4 bottom-4 z-50 size-12 rounded-full shadow-[0_16px_36px_oklch(0.12_0_0_/_20%)] sm:right-6 sm:bottom-6"
+        className="fixed top-1/2 left-0 z-50 size-11 -translate-y-1/2 rounded-l-none rounded-r-full shadow-[0_16px_36px_oklch(0.12_0_0_/_20%)] sm:top-auto sm:right-6 sm:bottom-[calc(var(--floating-stack-bottom,1rem)+env(safe-area-inset-bottom))] sm:left-auto sm:size-12 sm:translate-y-0 sm:rounded-full"
         onClick={() => setIsOpen(true)}
         ref={triggerButtonRef}
         size="icon-lg"

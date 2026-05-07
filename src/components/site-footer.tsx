@@ -1,5 +1,6 @@
 import Link from "next/link";
 import {
+  ChevronDown,
   CircleHelp,
   Gem,
   MapPin,
@@ -64,7 +65,96 @@ export async function SiteFooter() {
             </div>
           </section>
 
-          <nav aria-label="קטגוריות">
+          <div className="grid gap-3 lg:hidden">
+            <details className="group glass-inset rounded-md border">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4 text-sm font-semibold [&::-webkit-details-marker]:hidden">
+                קטגוריות
+                <ChevronDown className="size-4 transition group-open:rotate-180" />
+              </summary>
+              <ul className="text-muted-foreground grid gap-3 border-t border-[var(--glass-border)] p-4 text-sm">
+                {categories.map((category) => (
+                  <li key={category.slug}>
+                    <Link
+                      className="hover:text-foreground transition"
+                      href={`/category/${category.slug}`}
+                    >
+                      {category.name}
+                    </Link>
+                  </li>
+                ))}
+                <li>
+                  <Link
+                    className="hover:text-foreground transition"
+                    href="/gifts"
+                  >
+                    מתנות
+                  </Link>
+                </li>
+              </ul>
+            </details>
+
+            <details className="group glass-inset rounded-md border">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4 text-sm font-semibold [&::-webkit-details-marker]:hidden">
+                שירות וקנייה
+                <ChevronDown className="size-4 transition group-open:rotate-180" />
+              </summary>
+              <ul className="grid gap-3 border-t border-[var(--glass-border)] p-4 text-sm">
+                {serviceLinks.map((item) => {
+                  const Icon = item.icon;
+
+                  return (
+                    <li key={item.href}>
+                      <Link
+                        className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 transition"
+                        href={item.href}
+                      >
+                        <Icon className="size-4" />
+                        {item.label}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </details>
+
+            <details className="group glass-inset rounded-md border">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4 text-sm font-semibold [&::-webkit-details-marker]:hidden">
+                סניפים וקשר
+                <ChevronDown className="size-4 transition group-open:rotate-180" />
+              </summary>
+              <div className="grid gap-4 border-t border-[var(--glass-border)] p-4">
+                <p className="text-muted-foreground text-sm leading-7">
+                  בדיקת זמינות, מדידה ואיסוף מתבצעים בעמוד הסניפים כדי לשמור על
+                  מידע מעודכן.
+                </p>
+                <ul className="grid gap-3 text-sm">
+                  {branches.map((branch) => (
+                    <li
+                      className="flex items-center justify-between gap-3 border-b border-[var(--glass-border)] pb-3 last:border-b-0"
+                      key={branch.slug}
+                    >
+                      <span className="font-medium">{branch.name}</span>
+                      <span className="text-muted-foreground">
+                        {branch.city}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <Button
+                  asChild
+                  className="w-full justify-between"
+                  variant="outline"
+                >
+                  <Link href="/branches">
+                    לכל הסניפים
+                    <MapPin className="size-4" />
+                  </Link>
+                </Button>
+              </div>
+            </details>
+          </div>
+
+          <nav aria-label="קטגוריות" className="hidden lg:block">
             <h2 className="text-sm font-semibold">קטגוריות</h2>
             <ul className="text-muted-foreground mt-4 grid gap-3 text-sm">
               {categories.map((category) => (
@@ -88,7 +178,7 @@ export async function SiteFooter() {
             </ul>
           </nav>
 
-          <nav aria-label="שירות וקנייה">
+          <nav aria-label="שירות וקנייה" className="hidden lg:block">
             <h2 className="text-sm font-semibold">שירות וקנייה</h2>
             <ul className="mt-4 grid gap-3 text-sm">
               {serviceLinks.map((item) => {
@@ -109,7 +199,10 @@ export async function SiteFooter() {
             </ul>
           </nav>
 
-          <section aria-labelledby="footer-branches">
+          <section
+            aria-labelledby="footer-branches"
+            className="hidden lg:block"
+          >
             <h2 className="text-sm font-semibold" id="footer-branches">
               סניפים וקשר
             </h2>

@@ -42,7 +42,7 @@ export function EmptyState({
           {description}
         </div>
         {actions ? (
-          <div className="mt-5 flex flex-wrap justify-center gap-2">
+          <div className="mt-5 flex flex-col justify-center gap-2 sm:flex-row sm:flex-wrap">
             {actions}
           </div>
         ) : null}

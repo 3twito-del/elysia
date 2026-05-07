@@ -102,7 +102,7 @@ export default async function AccountPage() {
             כניסה מאובטחת באמצעות קוד חד-פעמי. לאחר הכניסה יוצגו הזמנות,
             Wishlist, מידות שמורות ותורים.
           </p>
-          <div className="mt-8 grid gap-5 lg:grid-cols-[420px_1fr]">
+          <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,420px)_1fr]">
             <Card className="rounded-md">
               <CardHeader className="border-b border-[var(--glass-border)] pb-4">
                 <CardTitle>כניסת לקוח</CardTitle>
@@ -154,7 +154,7 @@ export default async function AccountPage() {
       <SiteHeader />
       <RevealSection className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
+          <div className="min-w-0">
             <h1 className="text-4xl font-semibold">אזור לקוח</h1>
             <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
               {customer.firstName ?? session.user.name ?? "לקוח/ה"} מחובר/ת. כאן
@@ -217,17 +217,19 @@ export default async function AccountPage() {
               ) : (
                 customer.orders.map((order) => (
                   <Link
-                    className="glass-inset flex items-center justify-between gap-4 rounded-md border p-3"
+                    className="glass-inset flex min-w-0 items-center justify-between gap-4 rounded-md border p-3"
                     href={`/account/orders/${order.id}`}
                     key={order.id}
                   >
-                    <div>
+                    <div className="min-w-0">
                       <p className="font-medium">{order.orderNumber}</p>
                       <Badge className="mt-1 w-fit" variant="secondary">
                         {getOrderStatusLabel(order.status)}
                       </Badge>
                     </div>
-                    <span>{formatPrice(Number(order.total))}</span>
+                    <span className="shrink-0 font-medium">
+                      {formatPrice(Number(order.total))}
+                    </span>
                   </Link>
                 ))
               )}
@@ -258,7 +260,7 @@ export default async function AccountPage() {
                     key={item.id}
                   >
                     <Link
-                      className="flex min-w-0 items-center gap-3"
+                      className="flex min-w-0 flex-1 items-center gap-3"
                       href={`/product/${item.variant.product.slug}`}
                     >
                       <span className="bg-muted relative size-14 shrink-0 overflow-hidden rounded-md border border-[var(--glass-border)]">

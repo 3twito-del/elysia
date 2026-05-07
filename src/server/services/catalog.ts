@@ -16,6 +16,32 @@ const ACTIVE_PRODUCT_WHERE = {
 const CATALOG_REVALIDATE_SECONDS = 60 * 60;
 export const DEFAULT_CATALOG_IMAGE =
   "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80";
+const CATALOG_IMAGE_VARIANTS: Record<string, readonly string[]> = {
+  rings: [
+    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=1400&q=80",
+  ],
+  necklaces: [
+    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=1400&q=80",
+  ],
+  earrings: [
+    "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=1400&q=80",
+  ],
+  bracelets: [
+    "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1400&q=80",
+  ],
+};
 
 type CatalogProductRecord = Prisma.ProductGetPayload<{
   include: ReturnType<typeof createCatalogProductInclude>;
@@ -172,10 +198,9 @@ const getFeaturedCatalogProductsCached = unstable_cache(
       where: ACTIVE_PRODUCT_WHERE,
       include: createCatalogProductInclude(),
       orderBy: [{ createdAt: "desc" }],
-      take,
     });
 
-    return records.map(mapCatalogProduct);
+    return selectFeaturedCatalogProducts(records.map(mapCatalogProduct), take);
   },
   ["catalog:featured-products"],
   {
@@ -187,6 +212,35 @@ const getFeaturedCatalogProductsCached = unstable_cache(
 export const getFeaturedCatalogProducts = cache(async (take = 4) =>
   getFeaturedCatalogProductsCached(take),
 );
+
+function selectFeaturedCatalogProducts(
+  products: CatalogProduct[],
+  take: number,
+) {
+  const selected: CatalogProduct[] = [];
+  const selectedCategories = new Set<string>();
+
+  for (const product of products) {
+    if (selected.length >= take) break;
+    if (selectedCategories.has(product.categorySlug)) continue;
+
+    selected.push(product);
+    selectedCategories.add(product.categorySlug);
+  }
+
+  for (const product of products) {
+    if (selected.length >= take) break;
+    if (
+      selected.some((selectedProduct) => selectedProduct.slug === product.slug)
+    ) {
+      continue;
+    }
+
+    selected.push(product);
+  }
+
+  return selected;
+}
 
 export async function listCatalogProducts(input: { category?: string } = {}) {
   const getCatalogProductsCached = unstable_cache(
@@ -380,6 +434,11 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
   const images = record.media
     .filter((media) => media.kind === "IMAGE")
     .map((media) => media.url);
+  const displayImages = getDisplayImages({
+    categorySlug: record.category.slug,
+    images,
+    slug: record.slug,
+  });
   const inventory: Record<string, number> = {};
 
   for (const variant of record.variants) {
@@ -409,8 +468,8 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
     stone: record.stone?.name,
     collection: record.collections[0]?.name ?? "Aphrodite",
     collections: record.collections.map((collection) => collection.name),
-    image: images[0] ?? DEFAULT_CATALOG_IMAGE,
-    images: images.length > 0 ? images : [DEFAULT_CATALOG_IMAGE],
+    image: displayImages[0] ?? DEFAULT_CATALOG_IMAGE,
+    images: displayImages.length > 0 ? displayImages : [DEFAULT_CATALOG_IMAGE],
     variants: record.variants.map((variant) => ({
       sku: variant.sku,
       name: variant.name,
@@ -432,6 +491,36 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
     tags: record.tags,
     inventory,
   };
+}
+
+function getDisplayImages(input: {
+  categorySlug: string;
+  images: string[];
+  slug: string;
+}) {
+  if (!input.slug.startsWith("test-") || input.images.length !== 1) {
+    return input.images;
+  }
+
+  const variants = CATALOG_IMAGE_VARIANTS[input.categorySlug];
+
+  if (!variants || variants.length === 0) {
+    return input.images;
+  }
+
+  const variant = variants[getStableIndex(input.slug, variants.length)];
+
+  return variant ? [variant] : input.images;
+}
+
+function getStableIndex(value: string, length: number) {
+  let hash = 0;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
+  }
+
+  return hash % length;
 }
 
 function mapCatalogBranch(record: {

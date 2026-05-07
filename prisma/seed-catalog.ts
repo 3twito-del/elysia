@@ -364,6 +364,33 @@ const categoryBlueprints = {
   },
 } satisfies Record<SeedCategorySlug, CategoryBlueprint>;
 
+const categoryImageVariants = {
+  rings: [
+    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=1400&q=80",
+  ],
+  necklaces: [
+    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=1400&q=80",
+  ],
+  earrings: [
+    "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=1400&q=80",
+  ],
+  bracelets: [
+    "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1400&q=80",
+  ],
+} satisfies Record<SeedCategorySlug, readonly string[]>;
+
 const designFamilies = [
   { slug: "aura", name: "Aura", hebrew: "הילה", tags: ["עדין", "יום יום"] },
   { slug: "noya", name: "Noya", hebrew: "נויה", tags: ["נקי", "מתנה"] },
@@ -489,7 +516,7 @@ function createGeneratedProduct(
     stoneSlug: stone?.slug ?? null,
     basePrice: String(basePrice),
     collectionSlugs,
-    image: blueprint.image,
+    image: pick(categoryImageVariants[categorySlug], index + blueprint.offset),
     tags: createTags({
       blueprint,
       collectionSlugs,
