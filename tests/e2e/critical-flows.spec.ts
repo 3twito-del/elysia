@@ -95,6 +95,42 @@ test.describe("critical shopping flows", () => {
   });
 });
 
+test.describe("accessibility and responsive guardrails", () => {
+  test.beforeEach(async ({ page }) => {
+    await clearBrowserState(page);
+    await setCookieConsent(page, "essential");
+  });
+
+  test("exposes keyboard skip navigation", async ({ page }) => {
+    await page.goto("/");
+
+    await page.keyboard.press("Tab");
+
+    const skipLink = page.getByRole("link", { name: "דילוג לתוכן" });
+    await expect(skipLink).toBeFocused();
+    await expect(skipLink).toBeVisible();
+
+    await page.keyboard.press("Enter");
+    await expect(page).toHaveURL(/#main-content$/);
+  });
+
+  for (const route of [
+    "/",
+    "/search?q=venus",
+    `/product/${productSlug}`,
+    "/category/earrings",
+    "/checkout",
+    "/account",
+    "/admin/login",
+  ]) {
+    test(`keeps ${route} inside the viewport width`, async ({ page }) => {
+      await page.goto(route, { waitUntil: "networkidle" });
+
+      await expectNoHorizontalOverflow(page);
+    });
+  }
+});
+
 test.describe("cookie consent flow", () => {
   test.beforeEach(async ({ page }) => {
     await clearBrowserState(page);
@@ -236,4 +272,12 @@ async function expectRecentlyViewed(
       ),
     )
     .toBe(shouldInclude);
+}
+
+async function expectNoHorizontalOverflow(page: Page) {
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - window.innerWidth,
+  );
+
+  expect(overflow).toBeLessThanOrEqual(1);
 }

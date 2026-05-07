@@ -45,10 +45,15 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable}`}
     >
       <body>
-        <PublicMotionProvider>
-          {children}
-          <SiteFooter />
-        </PublicMotionProvider>
+        <a className="skip-link" href="#main-content">
+          דילוג לתוכן
+        </a>
+        <div id="main-content" tabIndex={-1}>
+          <PublicMotionProvider>
+            {children}
+            <SiteFooter />
+          </PublicMotionProvider>
+        </div>
         <CookieConsentBanner />
         <DeferredAccessibilityWidget />
       </body>

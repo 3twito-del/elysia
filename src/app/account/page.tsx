@@ -96,13 +96,13 @@ export default async function AccountPage() {
     return (
       <main>
         <SiteHeader />
-        <RevealSection className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
-          <h1 className="text-4xl font-semibold">אזור לקוח</h1>
+        <RevealSection className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+          <h1 className="text-3xl font-semibold sm:text-4xl">אזור לקוח</h1>
           <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
             כניסה מאובטחת באמצעות קוד חד-פעמי. לאחר הכניסה יוצגו הזמנות,
             Wishlist, מידות שמורות ותורים.
           </p>
-          <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,420px)_1fr]">
+          <div className="mt-6 grid gap-5 sm:mt-8 lg:grid-cols-[minmax(0,420px)_1fr]">
             <Card className="rounded-md">
               <CardHeader className="border-b border-[var(--glass-border)] pb-4">
                 <CardTitle>כניסת לקוח</CardTitle>
@@ -152,10 +152,10 @@ export default async function AccountPage() {
   return (
     <main>
       <SiteHeader />
-      <RevealSection className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+      <RevealSection className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
-            <h1 className="text-4xl font-semibold">אזור לקוח</h1>
+            <h1 className="text-3xl font-semibold sm:text-4xl">אזור לקוח</h1>
             <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
               {customer.firstName ?? session.user.name ?? "לקוח/ה"} מחובר/ת. כאן
               נשמרות הזמנות, פריטים מועדפים, מידות ותורים.

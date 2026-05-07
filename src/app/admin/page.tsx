@@ -185,13 +185,15 @@ export default async function AdminPage() {
   return (
     <main>
       <SiteHeader />
-      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+      <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
         <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-          <div>
+          <div className="min-w-0">
             <Badge className="mb-4" variant="secondary">
               Back office
             </Badge>
-            <h1 className="text-4xl font-semibold">ניהול Aphrodite</h1>
+            <h1 className="text-3xl font-semibold sm:text-4xl">
+              ניהול Aphrodite
+            </h1>
             <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
               מסך תפעולי לקטלוג, מלאי, סניפים, הזמנות, תורים ואינטגרציות. בשלב
               הזה ההזמנות הן בקשות ידניות ללא ספק תשלום חיצוני.

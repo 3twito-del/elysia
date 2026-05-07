@@ -6,6 +6,14 @@ export default defineConfig({
   testDir: "./tests/e2e",
   timeout: 30_000,
   workers: 1,
+  webServer: process.env.E2E_BASE_URL
+    ? undefined
+    : {
+        command: "pnpm dev",
+        reuseExistingServer: !process.env.CI,
+        timeout: 120_000,
+        url: baseURL,
+      },
   expect: {
     timeout: 10_000,
   },
