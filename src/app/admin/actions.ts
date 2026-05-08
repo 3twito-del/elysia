@@ -14,7 +14,7 @@ import {
 const adminLoginSchema = z.object({
   email: z.string().email().toLowerCase(),
   password: z.string().min(12),
-  next: z.string().optional(),
+  next: z.string().max(256).optional(),
 });
 
 export type AdminLoginState = {

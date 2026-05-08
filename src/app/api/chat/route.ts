@@ -17,6 +17,7 @@ import {
 import { auth } from "~/server/auth";
 import {
   badRequestJson,
+  payloadTooLargeJson,
   rateLimitedJson,
   serviceUnavailableJson,
 } from "~/server/http/api-response";
@@ -55,6 +56,10 @@ export async function POST(req: Request) {
   const json = await readSafeJson(req);
 
   if (!json.ok) {
+    if (json.error === "too-large") {
+      return payloadTooLargeJson("Chat request body is too large.");
+    }
+
     return badRequestJson("Invalid request body.");
   }
 

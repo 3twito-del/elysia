@@ -43,14 +43,16 @@ export const cartRouter = createTRPCRouter({
   estimate: publicProcedure
     .input(
       z.object({
-        items: z.array(
-          z.object({
-            productSlug: z.string(),
-            quantity: z.number().int().positive(),
-          }),
-        ),
+        items: z
+          .array(
+            z.object({
+              productSlug: z.string().trim().min(1).max(120),
+              quantity: z.number().int().positive(),
+            }),
+          )
+          .max(50),
         giftWrap: z.boolean().default(false),
-        couponCode: z.string().optional(),
+        couponCode: z.string().trim().max(64).optional(),
         fulfillmentMethod: z.enum(["DELIVERY", "PICKUP"]).default("DELIVERY"),
       }),
     )

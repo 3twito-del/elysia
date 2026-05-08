@@ -32,7 +32,7 @@ export default function StylistPage() {
         </div>
 
         <aside className="grid content-start gap-5">
-          <RevealGrid className="grid gap-5">
+          <RevealGrid className="grid gap-5" variant="compact">
             <Card className="rounded-md">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">

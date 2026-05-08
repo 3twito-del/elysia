@@ -24,6 +24,10 @@ export function badRequestJson(error = "Invalid request.") {
   return errorJson(400, error);
 }
 
+export function payloadTooLargeJson(error = "Request body is too large.") {
+  return errorJson(413, error);
+}
+
 export function notFoundJson(error = "Not found.") {
   return errorJson(404, error);
 }

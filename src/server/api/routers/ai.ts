@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { assertTRPCRateLimit, getTRPCRequestIp } from "~/server/api/rate-limit";
 import {
   adminProcedure,
   createTRPCRouter,
@@ -21,27 +22,47 @@ import {
 export const aiRouter = createTRPCRouter({
   recommendGift: publicProcedure
     .input(recommendGiftInputSchema)
-    .mutation(async ({ ctx, input }) =>
-      recommendGiftWithAiAudit(input, await createAiActionContext(ctx)),
-    ),
+    .mutation(async ({ ctx, input }) => {
+      await assertAiPublicRateLimit(ctx.headers, "gift");
+
+      return recommendGiftWithAiAudit(input, await createAiActionContext(ctx));
+    }),
 
   createTryOnSession: publicProcedure
     .input(createTryOnSessionInputSchema)
-    .mutation(async ({ ctx, input }) =>
-      createTryOnSessionWithAiAudit(input, await createAiActionContext(ctx)),
-    ),
+    .mutation(async ({ ctx, input }) => {
+      await assertAiPublicRateLimit(ctx.headers, "try-on");
+
+      return createTryOnSessionWithAiAudit(
+        input,
+        await createAiActionContext(ctx),
+      );
+    }),
 
   orderSupport: publicProcedure
     .input(orderSupportInputSchema)
-    .query(async ({ ctx, input }) =>
-      orderSupportWithAiAudit(input, await createAiActionContext(ctx)),
-    ),
+    .query(async ({ ctx, input }) => {
+      await assertAiPublicRateLimit(ctx.headers, "order-support");
+      await assertTRPCRateLimit({
+        key: `ai:order-support-email:${input.email}`,
+        limit: 10,
+        windowMs: 15 * 60_000,
+        message: "Too many order support lookups.",
+      });
+
+      return orderSupportWithAiAudit(input, await createAiActionContext(ctx));
+    }),
 
   buildStyleProfile: publicProcedure
     .input(saveStyleProfileInputSchema)
-    .mutation(async ({ ctx, input }) =>
-      saveStyleProfileWithAiAudit(input, await createAiActionContext(ctx)),
-    ),
+    .mutation(async ({ ctx, input }) => {
+      await assertAiPublicRateLimit(ctx.headers, "style-profile");
+
+      return saveStyleProfileWithAiAudit(
+        input,
+        await createAiActionContext(ctx),
+      );
+    }),
 
   adminProductCopy: adminProcedure("CATALOG_WRITE")
     .input(
@@ -61,6 +82,15 @@ export const aiRouter = createTRPCRouter({
       ].join("\n\n"),
     })),
 });
+
+async function assertAiPublicRateLimit(headers: Headers, action: string) {
+  await assertTRPCRateLimit({
+    key: `ai:${action}:${getTRPCRequestIp(headers)}`,
+    limit: 30,
+    windowMs: 15 * 60_000,
+    message: "Too many AI requests.",
+  });
+}
 
 async function createAiActionContext(ctx: {
   session: {

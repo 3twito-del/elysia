@@ -93,7 +93,10 @@ export function getMissingSharedRateLimitEnv(
 export function isSharedRateLimitRequired(
   env: Record<string, string | undefined> = process.env,
 ) {
-  return env.VERCEL === "1" || env.VERCEL_ENV === "production";
+  return (
+    env.NODE_ENV === "production" &&
+    (env.VERCEL === "1" || env.VERCEL_ENV === "production")
+  );
 }
 
 export function resetRateLimitStateForTests() {
@@ -128,10 +131,14 @@ function consumeMemoryRateLimit(input: RateLimitInput): RateLimitResult {
 }
 
 export function getRequestIp(req: Request) {
-  return (
-    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    req.headers.get("x-real-ip") ??
-    "unknown"
+  return getHeadersIp(req.headers);
+}
+
+export function getHeadersIp(headers: Headers) {
+  return normalizeRateLimitKeyPart(
+    headers.get("x-forwarded-for")?.split(",")[0] ??
+      headers.get("x-real-ip") ??
+      "unknown",
   );
 }
 
@@ -168,4 +175,10 @@ function getSharedLimiter(input: RateLimitInput) {
   sharedLimiters.set(limiterKey, limiter);
 
   return limiter;
+}
+
+function normalizeRateLimitKeyPart(value: string) {
+  const normalized = value.trim();
+
+  return normalized ? normalized.slice(0, 128) : "unknown";
 }

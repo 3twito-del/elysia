@@ -12,6 +12,7 @@ import {
 
 import { BranchCard } from "~/components/branch-card";
 import { MetricCard } from "~/components/metric-card";
+import { MotionMediaFrame } from "~/components/motion-media-frame";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -35,29 +36,40 @@ export default async function Home() {
     <main>
       <SiteHeader />
 
-      <RevealSection className="relative min-h-[76svh] overflow-hidden [--hero-edge:clamp(1rem,4vw,5rem)] sm:min-h-[78vh]">
-        <Image
-          alt="תכשיטי זהב ויהלומים על משטח סטודיו נקי"
-          className="media-mono object-cover"
-          fill
-          priority
-          sizes="100vw"
-          src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=2200&q=85"
-        />
+      <RevealSection
+        className="relative min-h-[76svh] overflow-hidden [--hero-edge:clamp(1rem,4vw,5rem)] sm:min-h-[78vh]"
+        initialVisible
+        variant="hero"
+      >
+        <MotionMediaFrame
+          className="absolute inset-0 min-h-[76svh] sm:min-h-[78vh]"
+          contentClassName="absolute inset-[-3%]"
+          intensity="hero"
+          parallax
+        >
+          <Image
+            alt="תכשיטי זהב ויהלומים על משטח סטודיו נקי"
+            className="media-mono object-cover"
+            fill
+            priority
+            sizes="100vw"
+            src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=2200&q=85"
+          />
+        </MotionMediaFrame>
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.05),rgba(0,0,0,0.36)_45%,rgba(0,0,0,0.7))]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.62),rgba(0,0,0,0.08)_56%,rgba(0,0,0,0.12))]" />
         <div className="relative min-h-[76svh] sm:min-h-[78vh]">
           <div
-            className="absolute top-[var(--hero-edge)] right-[var(--hero-edge)] w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),48rem)] text-right text-white lg:w-[min(48rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
+            className="motion-hero-copy absolute top-[var(--hero-edge)] right-[var(--hero-edge)] w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),48rem)] text-right text-white lg:w-[min(48rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
             dir="rtl"
           >
             <h1
-              className="text-right text-4xl leading-[1.05] font-semibold tracking-normal sm:text-6xl lg:text-7xl"
+              className="motion-copy-item text-right text-4xl leading-[1.05] font-semibold tracking-normal sm:text-6xl lg:text-7xl"
               dir="ltr"
             >
               Aphrodite
             </h1>
-            <p className="mt-4 max-w-xl text-base leading-7 text-white/90 sm:mt-5 sm:text-lg sm:leading-8">
+            <p className="motion-copy-item mt-4 max-w-xl text-base leading-7 text-white/90 [--motion-copy-delay:90ms] sm:mt-5 sm:text-lg sm:leading-8">
               רשת תכשיטים ישראלית עם קו סטודיו מודרני, קטלוג אונליין מלא, זמינות
               לפי סניף וייעוץ אישי לבחירת מתנה, טבעת או סט יומיומי.
             </p>
@@ -65,10 +77,10 @@ export default async function Home() {
         </div>
 
         <div
-          className="absolute inset-x-3 bottom-5 w-auto text-white sm:inset-x-auto sm:bottom-[var(--hero-edge)] sm:left-[var(--hero-edge)] sm:w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),36rem)] lg:w-[min(36rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
+          className="motion-hero-copy absolute inset-x-3 bottom-5 w-auto text-white sm:inset-x-auto sm:bottom-[var(--hero-edge)] sm:left-[var(--hero-edge)] sm:w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),36rem)] lg:w-[min(36rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
           dir="rtl"
         >
-          <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
+          <div className="motion-copy-item flex flex-col items-stretch gap-2 [--motion-copy-delay:170ms] sm:flex-row sm:items-center sm:justify-end sm:gap-3">
             <Button asChild size="lg">
               <Link href="/category/rings">
                 לקולקציה
@@ -87,7 +99,7 @@ export default async function Home() {
               </Link>
             </Button>
           </div>
-          <div className="mt-4 flex flex-wrap justify-center gap-x-3 gap-y-2 border-t border-white/25 pt-3 pr-12 text-[0.7rem] font-medium text-white/90 sm:mt-8 sm:justify-end sm:gap-x-6 sm:gap-y-3 sm:pt-5 sm:pr-0 sm:text-sm">
+          <div className="motion-copy-item mt-4 flex flex-wrap justify-center gap-x-3 gap-y-2 border-t border-white/25 pt-3 pr-12 text-[0.7rem] font-medium text-white/90 [--motion-copy-delay:240ms] sm:mt-8 sm:justify-end sm:gap-x-6 sm:gap-y-3 sm:pt-5 sm:pr-0 sm:text-sm">
             {[
               { icon: MapPin, label: "זמינות לפי סניף" },
               { icon: Sparkles, label: "ייעוץ אישי" },
@@ -144,7 +156,10 @@ export default async function Home() {
             <Link href="/search">כל הקטלוג</Link>
           </Button>
         </div>
-        <RevealGrid className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <RevealGrid
+          className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+          variant="media"
+        >
           {categories.map((category) => (
             <Link
               className="glass-card interactive-lift group/card flex min-h-[260px] w-full flex-col overflow-hidden rounded-md border"
@@ -190,7 +205,10 @@ export default async function Home() {
               <Link href="/category/rings">טבעות מובילות</Link>
             </Button>
           </div>
-          <RevealGrid className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <RevealGrid
+            className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+            variant="cards"
+          >
             {featuredProducts.map((product, index) => (
               <ProductCard
                 imagePriority={index < 4}
@@ -203,7 +221,7 @@ export default async function Home() {
       </RevealSection>
 
       <RevealSection className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
-        <RevealGrid className="grid gap-5 lg:grid-cols-4">
+        <RevealGrid className="grid gap-5 lg:grid-cols-4" variant="compact">
           <MetricCard
             detail="זמינות לפי סניף לפני הגעה"
             icon={MapPin}
@@ -242,7 +260,7 @@ export default async function Home() {
           <p className="text-muted-foreground text-sm">סניפים</p>
           <h2 className="text-3xl font-semibold">איסוף, מדידה ושירות קרוב</h2>
         </div>
-        <RevealGrid className="grid gap-5 lg:grid-cols-2">
+        <RevealGrid className="grid gap-5 lg:grid-cols-2" variant="cards">
           {branches.map((branch) => (
             <BranchCard branch={branch} key={branch.slug} />
           ))}

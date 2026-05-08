@@ -5,6 +5,7 @@ import {
   badRequestJson,
   notFoundJson,
   okJson,
+  payloadTooLargeJson,
   rateLimitedJson,
 } from "~/server/http/api-response";
 import { readSafeJson } from "~/server/http/safe-json";
@@ -39,6 +40,10 @@ export async function POST(req: Request) {
   const json = await readSafeJson(req);
 
   if (!json.ok) {
+    if (json.error === "too-large") {
+      return payloadTooLargeJson("Analytics event body is too large.");
+    }
+
     return badRequestJson();
   }
 

@@ -1,6 +1,8 @@
+import { createHmac } from "node:crypto";
+
 import { describe, expect, it } from "vitest";
 
-import { paymentProvider } from "./payment";
+import { paymentProvider, verifyCardComWebhookSignature } from "./payment";
 
 describe("payment adapter", () => {
   it("creates a mock CardCom checkout when credentials are absent", async () => {
@@ -16,5 +18,37 @@ describe("payment adapter", () => {
     expect(session.provider).toBe("cardcom");
     expect(session.redirectUrl).toContain("/checkout/mock-payment");
     expect(session.idempotencyKey).toContain("order_1");
+  });
+
+  it("verifies HMAC signed CardCom webhook bodies", () => {
+    const rawBody = JSON.stringify({ orderNumber: "APH-1001" });
+    const signature = createHmac("sha256", "webhook-secret")
+      .update(rawBody)
+      .digest("hex");
+
+    expect(
+      verifyCardComWebhookSignature({
+        rawBody,
+        secret: "webhook-secret",
+        signature,
+      }),
+    ).toBe(true);
+  });
+
+  it("rejects missing or mismatched CardCom webhook signatures", () => {
+    expect(
+      verifyCardComWebhookSignature({
+        rawBody: "{}",
+        secret: "webhook-secret",
+        signature: "invalid",
+      }),
+    ).toBe(false);
+    expect(
+      verifyCardComWebhookSignature({
+        rawBody: "{}",
+        secret: undefined,
+        signature: "invalid",
+      }),
+    ).toBe(false);
   });
 });

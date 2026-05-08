@@ -11,7 +11,11 @@ param(
     "/account",
     "/product/venus-line-ring",
     "/admin/login",
-    "/admin"
+    "/admin",
+    "/admin/orders",
+    "/admin/catalog",
+    "/admin/inventory",
+    "/admin/integrations"
   ),
   [string]$ProfilePath = $(Join-Path $env:TEMP "agent-browser-cdp-aphrodite-$Port"),
   [switch]$NoScreenshot,

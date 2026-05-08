@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -18,8 +20,17 @@ describe("customer OTP helpers", () => {
   it("matches OTP hashes without comparing raw codes", () => {
     const hash = hashOtp("dana@example.com", "123456");
 
+    expect(hash).toMatch(/^otp-hmac-sha256:/);
     expect(otpHashesMatch(hash, "Dana@Example.com", "123456")).toBe(true);
     expect(otpHashesMatch(hash, "Dana@Example.com", "654321")).toBe(false);
+  });
+
+  it("keeps pending legacy OTP hashes verifiable during rollout", () => {
+    const legacyHash = createHash("sha256")
+      .update("dana@example.com:123456")
+      .digest("hex");
+
+    expect(otpHashesMatch(legacyHash, "Dana@Example.com", "123456")).toBe(true);
   });
 
   it("expires OTP challenges after ten minutes", () => {

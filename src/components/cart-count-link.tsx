@@ -75,7 +75,7 @@ export function CartCountLink() {
     <Link className="relative" href="/checkout">
       <ShoppingBag className="size-5" />
       {itemCount > 0 ? (
-        <span className="bg-foreground text-background absolute -top-1.5 -right-1.5 grid h-5 min-w-5 place-items-center rounded-full px-1 text-[0.68rem] leading-none font-semibold">
+        <span className="cart-count-badge bg-foreground text-background absolute -top-1.5 -right-1.5 grid h-5 min-w-5 place-items-center rounded-full px-1 text-[0.68rem] leading-none font-semibold">
           {itemCount > 99 ? "99+" : itemCount}
         </span>
       ) : null}

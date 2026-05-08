@@ -1,0 +1,160 @@
+import type { LucideIcon } from "lucide-react";
+import {
+  Boxes,
+  CalendarClock,
+  ClipboardList,
+  Gauge,
+  History,
+  LogOut,
+  PackageCheck,
+  PlugZap,
+  Store,
+  Users,
+} from "lucide-react";
+import Link from "next/link";
+
+import { adminLogoutAction } from "~/app/admin/actions";
+import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
+import { Separator } from "~/components/ui/separator";
+import type { AuthorizedAdmin } from "~/server/auth/admin-access";
+import { cn } from "~/lib/utils";
+
+type AdminShellProps = {
+  active: AdminSection;
+  admin: AuthorizedAdmin;
+  children: React.ReactNode;
+  description: string;
+  eyebrow?: string;
+  title: string;
+};
+
+export type AdminSection =
+  | "appointments"
+  | "audit"
+  | "catalog"
+  | "customers"
+  | "integrations"
+  | "inventory"
+  | "orders"
+  | "overview";
+
+const navItems: Array<{
+  href: string;
+  icon: LucideIcon;
+  id: AdminSection;
+  label: string;
+}> = [
+  { href: "/admin", icon: Gauge, id: "overview", label: "סקירה" },
+  { href: "/admin/orders", icon: ClipboardList, id: "orders", label: "הזמנות" },
+  { href: "/admin/catalog", icon: PackageCheck, id: "catalog", label: "קטלוג" },
+  { href: "/admin/inventory", icon: Boxes, id: "inventory", label: "מלאי" },
+  { href: "/admin/customers", icon: Users, id: "customers", label: "לקוחות" },
+  {
+    href: "/admin/appointments",
+    icon: CalendarClock,
+    id: "appointments",
+    label: "תורים",
+  },
+  {
+    href: "/admin/integrations",
+    icon: PlugZap,
+    id: "integrations",
+    label: "אינטגרציות",
+  },
+  { href: "/admin/audit", icon: History, id: "audit", label: "Audit" },
+];
+
+export function AdminShell({
+  active,
+  admin,
+  children,
+  description,
+  eyebrow = "Back office",
+  title,
+}: AdminShellProps) {
+  return (
+    <main className="bg-background min-h-screen" dir="rtl">
+      <div className="mx-auto grid max-w-[1440px] gap-0 lg:grid-cols-[17rem_1fr]">
+        <aside className="border-border/70 bg-card/80 sticky top-0 z-30 border-b backdrop-blur lg:min-h-screen lg:border-e lg:border-b-0">
+          <div className="grid gap-4 p-4 lg:p-5">
+            <Link
+              className="flex items-center gap-2 text-lg font-semibold"
+              dir="ltr"
+              href="/admin"
+            >
+              <Store className="size-5" />
+              Aphrodite Ops
+            </Link>
+            <div className="flex gap-2 overflow-x-auto pb-1 lg:grid lg:overflow-visible lg:pb-0">
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = active === item.id;
+
+                return (
+                  <Button
+                    asChild
+                    className={cn(
+                      "h-10 justify-start gap-2 px-3 whitespace-nowrap",
+                      isActive && "border-[var(--glass-border-strong)]",
+                    )}
+                    key={item.href}
+                    variant={isActive ? "secondary" : "ghost"}
+                  >
+                    <Link
+                      aria-current={isActive ? "page" : undefined}
+                      href={item.href}
+                    >
+                      <Icon className="size-4" />
+                      {item.label}
+                    </Link>
+                  </Button>
+                );
+              })}
+            </div>
+            <Separator className="hidden lg:block" />
+            <div className="bg-background/70 hidden gap-3 rounded-md border p-3 text-sm lg:grid">
+              <div>
+                <p className="font-medium">{admin.name}</p>
+                <p className="text-muted-foreground">{admin.roleName}</p>
+              </div>
+              <form action={adminLogoutAction}>
+                <Button
+                  className="w-full gap-2"
+                  type="submit"
+                  variant="outline"
+                >
+                  <LogOut className="size-4" />
+                  יציאה
+                </Button>
+              </form>
+            </div>
+          </div>
+        </aside>
+
+        <section className="min-w-0 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+          <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+            <div className="min-w-0">
+              <Badge className="mb-3" variant="secondary">
+                {eyebrow}
+              </Badge>
+              <h1 className="text-3xl font-semibold tracking-normal sm:text-4xl">
+                {title}
+              </h1>
+              <p className="text-muted-foreground mt-3 max-w-3xl leading-7">
+                {description}
+              </p>
+            </div>
+            <form action={adminLogoutAction} className="lg:hidden">
+              <Button className="gap-2" type="submit" variant="outline">
+                <LogOut className="size-4" />
+                יציאה
+              </Button>
+            </form>
+          </div>
+          {children}
+        </section>
+      </div>
+    </main>
+  );
+}

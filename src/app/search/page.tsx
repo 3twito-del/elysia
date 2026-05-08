@@ -237,6 +237,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             <RevealGrid
               className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
               data-testid="search-results-grid"
+              variant="cards"
             >
               {result.hits.map((product, index) => (
                 <ProductCard

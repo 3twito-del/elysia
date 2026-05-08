@@ -5,6 +5,10 @@ import { z } from "zod";
 
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
+import {
+  assertRateLimit,
+  rateLimitMessage,
+} from "~/server/services/rate-limit";
 
 const newsletterSchema = z.object({
   email: z.string().trim().email().toLowerCase(),
@@ -29,6 +33,21 @@ export async function joinNewsletter(
 
   if (!parsed.success) {
     return { ok: false, message: "כתובת אימייל לא תקינה" };
+  }
+
+  try {
+    await assertRateLimit({
+      key: `newsletter:${parsed.data.email}`,
+      limit: 3,
+      windowMs: 10 * 60_000,
+    });
+  } catch (error) {
+    return {
+      ok: false,
+      message:
+        rateLimitMessage(error) ??
+        "׳׳ ׳ ׳™׳×׳ ׳׳”׳™׳¨׳©׳ ׳›׳¨׳’׳¢. ׳ ׳¡׳• ׳©׳•׳‘.",
+    };
   }
 
   await db.newsletterSubscription.upsert({

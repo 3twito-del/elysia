@@ -2,10 +2,13 @@ import { createHash, timingSafeEqual } from "node:crypto";
 
 import { env } from "~/env";
 import {
+  badRequestJson,
   okJson,
+  payloadTooLargeJson,
   rateLimitedJson,
   unauthorizedJson,
 } from "~/server/http/api-response";
+import { readSafeText } from "~/server/http/safe-json";
 import {
   parseWebhookJson,
   recordWebhookEvent,
@@ -15,6 +18,8 @@ import {
   getRequestIp,
   RateLimitExceededError,
 } from "~/server/services/rate-limit";
+
+const WEBHOOK_MAX_BYTES = 256 * 1024;
 
 export async function POST(req: Request) {
   try {
@@ -31,7 +36,15 @@ export async function POST(req: Request) {
     throw error;
   }
 
-  const rawBody = await req.text();
+  const body = await readSafeText(req, { maxBytes: WEBHOOK_MAX_BYTES });
+
+  if (!body.ok) {
+    return body.error === "too-large"
+      ? payloadTooLargeJson("Webhook body is too large.")
+      : badRequestJson("Webhook body is required.");
+  }
+
+  const rawBody = body.text;
   const signature = req.headers.get("x-cld-signature");
   const timestamp = req.headers.get("x-cld-timestamp");
 

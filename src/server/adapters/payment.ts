@@ -1,15 +1,17 @@
+import { createHmac, timingSafeEqual } from "node:crypto";
+
 import { nanoid } from "nanoid";
 import { z } from "zod";
 
 import { env } from "~/env";
 
 export const checkoutInputSchema = z.object({
-  orderId: z.string(),
-  orderNumber: z.string(),
+  orderId: z.string().trim().min(1).max(128),
+  orderNumber: z.string().trim().min(3).max(64),
   amount: z.number().positive(),
   currency: z.literal("ILS").default("ILS"),
   customerEmail: z.string().email(),
-  returnUrl: z.string().url(),
+  returnUrl: z.string().url().max(2_048),
 });
 
 export type CheckoutInput = z.infer<typeof checkoutInputSchema>;
@@ -21,9 +23,16 @@ export type CheckoutSession = {
   idempotencyKey: string;
 };
 
+export type WebhookVerificationInput = {
+  payload: unknown;
+  rawBody: string;
+  signature?: string;
+  timestamp?: string;
+};
+
 export interface PaymentProvider {
   createCheckout(input: CheckoutInput): Promise<CheckoutSession>;
-  verifyWebhook(payload: unknown, signature?: string): Promise<boolean>;
+  verifyWebhook(input: WebhookVerificationInput): Promise<boolean>;
 }
 
 class CardComPaymentProvider implements PaymentProvider {
@@ -59,17 +68,79 @@ class CardComPaymentProvider implements PaymentProvider {
     };
   }
 
-  async verifyWebhook(payload: unknown, signature?: string) {
+  async verifyWebhook(input: WebhookVerificationInput) {
     if (!env.CARD_COM_API_PASSWORD) {
       if (env.NODE_ENV === "production") return false;
 
       return z
         .object({ provider: z.literal("cardcom").optional() })
-        .safeParse(payload).success;
+        .safeParse(input.payload).success;
     }
 
-    return Boolean(signature);
+    return verifyCardComWebhookSignature({
+      rawBody: input.rawBody,
+      secret: env.CARD_COM_WEBHOOK_SECRET,
+      signature: input.signature,
+      timestamp: input.timestamp,
+    });
   }
 }
 
 export const paymentProvider: PaymentProvider = new CardComPaymentProvider();
+
+export function verifyCardComWebhookSignature(input: {
+  rawBody: string;
+  secret?: string;
+  signature?: string;
+  timestamp?: string;
+  nowMs?: number;
+}) {
+  const secret = input.secret?.trim();
+  const signature = normalizeWebhookSignature(input.signature);
+
+  if (!secret || !signature) return false;
+
+  if (input.timestamp) {
+    const timestampMs = Number(input.timestamp) * 1000;
+    const nowMs = input.nowMs ?? Date.now();
+    const fiveMinutesMs = 5 * 60_000;
+
+    if (!Number.isFinite(timestampMs)) return false;
+    if (Math.abs(nowMs - timestampMs) > fiveMinutesMs) return false;
+  }
+
+  return createCardComSignaturePayloads(input.rawBody, input.timestamp).some(
+    (payload) =>
+      safeEqualString(
+        signature,
+        createHmac("sha256", secret).update(payload).digest("hex"),
+      ) ||
+      safeEqualString(
+        signature,
+        createHmac("sha256", secret).update(payload).digest("base64"),
+      ),
+  );
+}
+
+function createCardComSignaturePayloads(
+  rawBody: string,
+  timestamp: string | undefined,
+) {
+  return timestamp ? [rawBody, `${timestamp}.${rawBody}`] : [rawBody];
+}
+
+function normalizeWebhookSignature(signature: string | undefined) {
+  if (!signature) return null;
+
+  return signature.trim().replace(/^sha256=/i, "");
+}
+
+function safeEqualString(actual: string, expected: string) {
+  const actualBuffer = Buffer.from(actual);
+  const expectedBuffer = Buffer.from(expected);
+
+  return (
+    actualBuffer.length === expectedBuffer.length &&
+    timingSafeEqual(actualBuffer, expectedBuffer)
+  );
+}

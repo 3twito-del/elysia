@@ -2,9 +2,9 @@ import { nanoid } from "nanoid";
 import { z } from "zod";
 
 export const tryOnInputSchema = z.object({
-  productSlug: z.string(),
-  variantId: z.string().optional(),
-  sourceImageUrl: z.string().url().optional(),
+  productSlug: z.string().trim().min(1).max(120),
+  variantId: z.string().trim().max(128).optional(),
+  sourceImageUrl: z.string().url().max(2_048).optional(),
 });
 
 export type TryOnInput = z.infer<typeof tryOnInputSchema>;

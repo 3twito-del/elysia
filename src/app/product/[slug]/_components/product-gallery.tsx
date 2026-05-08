@@ -1,8 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 
+import { useResolvedReducedMotion } from "~/components/motion-preference";
 import { Badge } from "~/components/ui/badge";
 import { cn } from "~/lib/utils";
 
@@ -19,21 +21,43 @@ export function ProductGallery({
 }: ProductGalleryProps) {
   const galleryImages = Array.from(new Set(images)).filter(Boolean);
   const [activeIndex, setActiveIndex] = useState(0);
+  const shouldReduceMotion = useResolvedReducedMotion();
   const activeImage = galleryImages[activeIndex] ?? galleryImages[0];
 
   if (!activeImage) return null;
 
   return (
     <div className={cn("grid gap-3", className)}>
-      <div className="glass-inset bg-muted relative aspect-square overflow-hidden rounded-md border">
-        <Image
-          alt={productName}
-          className="media-color object-cover"
-          fill
-          priority
-          sizes="(min-width: 1024px) 50vw, 100vw"
-          src={activeImage}
-        />
+      <div
+        className="glass-inset bg-muted relative aspect-square overflow-hidden rounded-md border"
+        data-motion-gallery="product"
+      >
+        <AnimatePresence initial={false} mode="popLayout">
+          <motion.div
+            animate={{ opacity: 1, scale: 1 }}
+            className="absolute inset-0"
+            exit={
+              shouldReduceMotion
+                ? { opacity: 1, scale: 1 }
+                : { opacity: 0, scale: 0.992 }
+            }
+            initial={shouldReduceMotion ? false : { opacity: 0, scale: 1.018 }}
+            key={activeImage}
+            transition={{
+              duration: shouldReduceMotion ? 0 : 0.28,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+          >
+            <Image
+              alt={productName}
+              className="media-color object-cover"
+              fill
+              priority
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              src={activeImage}
+            />
+          </motion.div>
+        </AnimatePresence>
         {galleryImages.length > 1 ? (
           <Badge className="absolute top-3 left-3" variant="secondary">
             {activeIndex + 1}/{galleryImages.length}
@@ -51,7 +75,7 @@ export function ProductGallery({
               aria-label={`הצגת תמונה ${index + 1} של ${productName}`}
               aria-pressed={activeIndex === index}
               className={cn(
-                "glass-inset bg-muted relative aspect-square overflow-hidden rounded-md border transition focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none",
+                "motion-thumbnail-button glass-inset bg-muted relative aspect-square overflow-hidden rounded-md border transition focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none",
                 activeIndex === index
                   ? "border-[var(--glass-border-strong)] ring-2 ring-[var(--glass-focus)]"
                   : "hover:border-[var(--glass-border-strong)]",

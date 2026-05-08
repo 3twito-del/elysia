@@ -15,8 +15,25 @@ const createContext = async (req: NextRequest) => {
   });
 };
 
-const handler = (req: NextRequest) =>
-  fetchRequestHandler({
+const MAX_TRPC_BODY_BYTES = 1024 * 1024;
+
+const handler = (req: NextRequest) => {
+  const contentLength = Number(req.headers.get("content-length"));
+
+  if (
+    Number.isSafeInteger(contentLength) &&
+    contentLength > MAX_TRPC_BODY_BYTES
+  ) {
+    return new Response(
+      JSON.stringify({ error: { message: "Request body is too large." } }),
+      {
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        status: 413,
+      },
+    );
+  }
+
+  return fetchRequestHandler({
     endpoint: "/api/trpc",
     req,
     router: appRouter,
@@ -30,5 +47,6 @@ const handler = (req: NextRequest) =>
           }
         : undefined,
   });
+};
 
 export { handler as GET, handler as POST };

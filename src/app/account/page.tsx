@@ -111,7 +111,7 @@ export default async function AccountPage() {
                 <CustomerOtpForm />
               </CardContent>
             </Card>
-            <RevealGrid className="grid gap-5 sm:grid-cols-2">
+            <RevealGrid className="grid gap-5 sm:grid-cols-2" variant="compact">
               <MetricCard
                 detail="סטטוס, חשבוניות והחזרות"
                 icon={PackageCheck}
@@ -169,7 +169,10 @@ export default async function AccountPage() {
           </form>
         </div>
 
-        <RevealGrid className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        <RevealGrid
+          className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4"
+          variant="cards"
+        >
           <MetricCard
             detail="הזמנות אחרונות"
             icon={PackageCheck}

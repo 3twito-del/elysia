@@ -27,7 +27,7 @@ export default async function BranchesPage() {
       </RevealSection>
 
       <RevealSection className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-14">
-        <RevealGrid className="grid gap-5 lg:grid-cols-2">
+        <RevealGrid className="grid gap-5 lg:grid-cols-2" variant="cards">
           {branches.map((branch) => (
             <BranchCard branch={branch} key={branch.slug} />
           ))}

@@ -14,6 +14,25 @@ export function parseWebhookJson(rawBody: string): unknown {
   }
 }
 
+export function redactWebhookPayload(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map((item) => redactWebhookPayload(item));
+  }
+
+  if (!value || typeof value !== "object") {
+    return value;
+  }
+
+  return Object.fromEntries(
+    Object.entries(value).map(([key, entryValue]) => [
+      key,
+      isSensitiveWebhookKey(key)
+        ? "[redacted]"
+        : redactWebhookPayload(entryValue),
+    ]),
+  );
+}
+
 export function createWebhookExternalId(
   provider: string,
   rawBody: string,
@@ -59,7 +78,7 @@ export async function recordWebhookEvent(input: {
     input.payload,
   );
   const eventType = getWebhookEventType(input.payload, input.fallbackEventType);
-  const payload = toJson(input.payload);
+  const payload = toJson(redactWebhookPayload(input.payload));
   const rawBodyHash = createHash("sha256").update(input.rawBody).digest("hex");
 
   return db.$transaction(async (tx) => {
@@ -125,4 +144,10 @@ function toJson(value: unknown): Prisma.InputJsonValue {
   if (value === undefined) return {};
 
   return value as Prisma.InputJsonValue;
+}
+
+function isSensitiveWebhookKey(key: string) {
+  return /authorization|api.?key|password|secret|signature|token|card|cvv|cvc|validity|owner|identity|phone|email/i.test(
+    key,
+  );
 }

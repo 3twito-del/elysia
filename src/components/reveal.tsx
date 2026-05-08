@@ -18,13 +18,22 @@ type RevealSectionProps = {
   children: ReactNode;
   className?: string;
   delay?: number;
-} & Omit<ComponentProps<"section">, "children" | "className" | "ref" | "style">;
+  initialVisible?: boolean;
+  variant?: "standard" | "hero" | "feature" | "subtle" | "none";
+} & Omit<ComponentProps<"section">, "children" | "className" | "ref">;
 
 type RevealGridProps = {
   children: ReactNode;
   className?: string;
   stagger?: number;
+  variant?: "cards" | "media" | "compact";
 } & Omit<ComponentProps<"div">, "children" | "className" | "ref">;
+
+const gridStaggerByVariant = {
+  cards: 0.07,
+  compact: 0.045,
+  media: 0.09,
+} satisfies Record<NonNullable<RevealGridProps["variant"]>, number>;
 
 function useInViewOnce<T extends HTMLElement>(initialVisible = false) {
   const ref = useRef<T>(null);
@@ -99,19 +108,28 @@ export function RevealSection({
   children,
   className,
   delay = 0,
+  initialVisible = false,
+  style,
+  variant = "standard",
   ...props
 }: RevealSectionProps) {
   const { suppressInitialReveal } = usePublicMotion();
-  const [ref, isVisible] = useInViewOnce<HTMLElement>(suppressInitialReveal);
-  const style = { "--reveal-delay": `${delay}s` } as CSSProperties;
+  const [ref, isVisible] = useInViewOnce<HTMLElement>(
+    initialVisible || suppressInitialReveal || variant === "none",
+  );
+  const revealStyle = {
+    ...style,
+    "--reveal-delay": `${delay}s`,
+  } as CSSProperties;
 
   return (
     <section
       className={cn("motion-reveal", className)}
+      data-reveal-variant={variant}
       data-reveal-visible={isVisible}
       {...props}
       ref={ref}
-      style={style}
+      style={revealStyle}
     >
       {children}
     </section>
@@ -121,28 +139,32 @@ export function RevealSection({
 export function RevealGrid({
   children,
   className,
-  stagger = 0.07,
+  stagger,
+  variant = "cards",
   ...props
 }: RevealGridProps) {
   const { suppressInitialReveal } = usePublicMotion();
   const [ref, isVisible] = useInViewOnce<HTMLDivElement>(suppressInitialReveal);
   const items = Children.toArray(children);
+  const resolvedStagger = stagger ?? gridStaggerByVariant[variant];
 
   return (
     <div
       className={cn("motion-reveal-grid", className)}
+      data-reveal-variant={variant}
       data-reveal-visible={isVisible}
       {...props}
       ref={ref}
     >
       {items.map((child, index) => {
         const style = {
-          "--reveal-delay": `${0.04 + index * stagger}s`,
+          "--reveal-delay": `${0.04 + index * resolvedStagger}s`,
         } as CSSProperties;
 
         return (
           <div
             className="motion-reveal-item h-full [&>*]:h-full"
+            data-reveal-variant={variant}
             data-reveal-visible={isVisible}
             key={isValidElement(child) && child.key != null ? child.key : index}
             style={style}

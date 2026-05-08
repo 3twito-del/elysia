@@ -50,7 +50,10 @@ export default async function GiftsPage() {
             </Button>
           </div>
         </div>
-        <RevealGrid className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <RevealGrid
+          className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+          variant="cards"
+        >
           {products.map((product, index) => (
             <ProductCard
               imagePriority={index === 0}

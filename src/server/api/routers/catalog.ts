@@ -19,7 +19,9 @@ export const catalogRouter = createTRPCRouter({
   featured: publicProcedure.query(() => getFeaturedCatalogProducts()),
 
   list: publicProcedure
-    .input(z.object({ category: z.string().optional() }).optional())
+    .input(
+      z.object({ category: z.string().trim().max(80).optional() }).optional(),
+    )
     .query(({ input }) => listCatalogProducts({ category: input?.category })),
 
   bySlug: publicProcedure

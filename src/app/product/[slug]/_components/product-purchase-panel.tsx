@@ -73,7 +73,7 @@ export function ProductPurchasePanel({
   }
 
   const stickyPurchaseBar = (
-    <div className="glass-chrome fixed inset-x-0 bottom-[calc(var(--floating-stack-bottom,0px)+env(safe-area-inset-bottom))] z-40 border-t p-3 shadow-[0_-18px_48px_oklch(0_0_0_/_14%)] md:hidden">
+    <div className="motion-sticky-purchase glass-chrome fixed inset-x-0 bottom-[calc(var(--floating-stack-bottom,0px)+env(safe-area-inset-bottom))] z-40 border-t p-3 shadow-[0_-18px_48px_oklch(0_0_0_/_14%)] md:hidden">
       <div className="mx-auto grid max-w-md grid-cols-[auto_minmax(0,1fr)] items-center gap-3 pl-14">
         <div className="order-2 min-w-0">
           <p className="text-muted-foreground truncate text-xs">
@@ -147,7 +147,7 @@ export function ProductPurchasePanel({
         </div>
 
         {cartMessage ? (
-          <div className="glass-inset flex items-center justify-between gap-3 rounded-md border p-3 text-sm">
+          <div className="motion-status-pop glass-inset flex items-center justify-between gap-3 rounded-md border p-3 text-sm">
             <StatusMessage
               className="flex min-w-0 flex-1 items-center gap-2"
               tone={cartMessageTone}

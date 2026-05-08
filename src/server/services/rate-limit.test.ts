@@ -28,9 +28,21 @@ describe("rate limit service", () => {
     });
   });
 
-  it("blocks Vercel builds when shared rate-limit env is missing", () => {
+  it("uses the local limiter for Vercel-like development envs", () => {
     expect(() =>
       assertSharedRateLimitConfig({
+        NODE_ENV: "development",
+        VERCEL: "1",
+        UPSTASH_REDIS_REST_URL: "",
+        UPSTASH_REDIS_REST_TOKEN: undefined,
+      }),
+    ).not.toThrow();
+  });
+
+  it("blocks production Vercel runtimes when shared rate-limit env is missing", () => {
+    expect(() =>
+      assertSharedRateLimitConfig({
+        NODE_ENV: "production",
         VERCEL: "1",
         UPSTASH_REDIS_REST_URL: "",
         UPSTASH_REDIS_REST_TOKEN: undefined,
@@ -38,9 +50,10 @@ describe("rate limit service", () => {
     ).toThrow(/UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN/);
   });
 
-  it("accepts Vercel builds when shared rate-limit env is configured", () => {
+  it("accepts production Vercel runtimes when shared rate-limit env is configured", () => {
     expect(() =>
       assertSharedRateLimitConfig({
+        NODE_ENV: "production",
         VERCEL: "1",
         UPSTASH_REDIS_REST_URL: "https://example.upstash.io",
         UPSTASH_REDIS_REST_TOKEN: "token",

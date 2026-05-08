@@ -2,6 +2,7 @@ import type { Prisma } from "@prisma/client";
 
 import { db } from "~/server/db";
 import { BUSINESS_EVENTS, enqueueOutboxEvent } from "~/server/services/outbox";
+import { redactWebhookPayload } from "~/server/services/webhook-events";
 
 export async function applyCardComWebhook(payload: unknown) {
   const providerPaymentId = getPayloadString(payload, [
@@ -59,7 +60,7 @@ export async function applyCardComWebhook(payload: unknown) {
         status: captured ? "CAPTURED" : failed ? "FAILED" : payment.status,
         capturedAt: captured ? new Date() : payment.capturedAt,
         failureCode: failed ? providerStatus : payment.failureCode,
-        rawPayload: payload as Prisma.InputJsonValue,
+        rawPayload: redactWebhookPayload(payload) as Prisma.InputJsonValue,
       },
     });
 

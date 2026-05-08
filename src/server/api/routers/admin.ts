@@ -6,10 +6,6 @@ import {
   createAdminProductInputSchema,
   refundAdminOrder,
   refundAdminOrderInputSchema,
-  getAdminOrderDetail,
-  listAdminAppointments,
-  listAdminCatalog,
-  listAdminCustomers,
   updateAdminAppointmentStatus,
   updateAdminAppointmentStatusInputSchema,
   updateAdminCouponStatus,
@@ -22,24 +18,44 @@ import {
   upsertAdminShipmentInputSchema,
 } from "~/server/services/admin-commerce";
 import {
-  adminOrderStatusSchema,
-  getAdminOverview,
+  adminAppointmentListInputSchema,
+  adminAuditListInputSchema,
+  adminCatalogListInputSchema,
+  adminCustomerListInputSchema,
+  adminInventoryListInputSchema,
+  adminJobRunListInputSchema,
+  adminOrderListInputSchema,
+  adminOutboxListInputSchema,
+  getAdminOperationsOverview,
+  getAdminOrderDetail,
+  listAdminAppointments,
+  listAdminAuditLogs,
+  listAdminCatalog,
+  listAdminCustomers,
+  listAdminInventory,
+  listAdminJobRuns,
   listAdminOrders,
+  listAdminOutboxEvents,
+} from "~/server/services/admin-operations";
+import {
+  adminOrderStatusSchema,
   updateManualOrderStatus,
 } from "~/server/services/manual-order";
 import { z } from "zod";
 
 export const adminRouter = createTRPCRouter({
-  overview: adminProcedure("ORDERS_READ").query(() => getAdminOverview()),
+  overview: adminProcedure("ORDERS_READ").query(() =>
+    getAdminOperationsOverview(),
+  ),
 
   orders: adminProcedure("ORDERS_READ")
-    .input(z.object({ limit: z.number().int().positive().max(50).default(20) }))
+    .input(adminOrderListInputSchema)
     .query(({ input }) => listAdminOrders(input)),
 
   updateOrderStatus: adminProcedure("ORDERS_WRITE")
     .input(
       z.object({
-        orderId: z.string().min(1),
+        orderId: z.string().trim().min(1).max(128),
         status: adminOrderStatusSchema,
       }),
     )
@@ -59,7 +75,9 @@ export const adminRouter = createTRPCRouter({
       refundAdminOrder({ data: input, adminUserId: ctx.admin.id }),
     ),
 
-  catalog: adminProcedure("CATALOG_READ").query(() => listAdminCatalog()),
+  catalog: adminProcedure("CATALOG_READ")
+    .input(adminCatalogListInputSchema)
+    .query(({ input }) => listAdminCatalog(input)),
 
   createProduct: adminProcedure("CATALOG_WRITE")
     .input(createAdminProductInputSchema)
@@ -92,16 +110,28 @@ export const adminRouter = createTRPCRouter({
     ),
 
   customers: adminProcedure("CUSTOMER_VIEW")
-    .input(
-      z.object({ limit: z.number().int().positive().max(100).default(50) }),
-    )
+    .input(adminCustomerListInputSchema)
     .query(({ input }) => listAdminCustomers(input)),
 
   appointments: adminProcedure("CUSTOMER_VIEW")
-    .input(
-      z.object({ limit: z.number().int().positive().max(100).default(25) }),
-    )
+    .input(adminAppointmentListInputSchema)
     .query(({ input }) => listAdminAppointments(input)),
+
+  inventory: adminProcedure("INVENTORY_READ")
+    .input(adminInventoryListInputSchema)
+    .query(({ input }) => listAdminInventory(input)),
+
+  audit: adminProcedure("SYSTEM_CONFIG")
+    .input(adminAuditListInputSchema)
+    .query(({ input }) => listAdminAuditLogs(input)),
+
+  outbox: adminProcedure("SYSTEM_CONFIG")
+    .input(adminOutboxListInputSchema)
+    .query(({ input }) => listAdminOutboxEvents(input)),
+
+  jobRuns: adminProcedure("SYSTEM_CONFIG")
+    .input(adminJobRunListInputSchema)
+    .query(({ input }) => listAdminJobRuns(input)),
 
   updateAppointmentStatus: adminProcedure("CUSTOMER_WRITE")
     .input(updateAdminAppointmentStatusInputSchema)
@@ -110,6 +140,6 @@ export const adminRouter = createTRPCRouter({
     ),
 
   orderDetail: adminProcedure("ORDERS_READ")
-    .input(z.object({ orderId: z.string().min(1) }))
+    .input(z.object({ orderId: z.string().trim().min(1).max(128) }))
     .query(({ input }) => getAdminOrderDetail(input.orderId)),
 });

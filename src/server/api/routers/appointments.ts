@@ -1,17 +1,17 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
+import { assertTRPCRateLimit, getTRPCRequestIp } from "~/server/api/rate-limit";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { notificationProvider } from "~/server/adapters/notifications";
 import { db } from "~/server/db";
-import { assertRateLimit } from "~/server/services/rate-limit";
 
 const createAppointmentInputSchema = z.object({
-  branchSlug: z.string().trim().min(1),
-  topic: z.string().trim().min(2),
-  name: z.string().trim().min(2),
+  branchSlug: z.string().trim().min(1).max(80),
+  topic: z.string().trim().min(2).max(120),
+  name: z.string().trim().min(2).max(120),
   email: z.string().trim().email().optional(),
-  phone: z.string().trim().min(7),
+  phone: z.string().trim().min(7).max(32),
   startsAt: z.string().datetime(),
   notes: z.string().trim().max(500).optional(),
 });
@@ -20,10 +20,17 @@ export const appointmentsRouter = createTRPCRouter({
   create: publicProcedure
     .input(createAppointmentInputSchema)
     .mutation(async ({ ctx, input }) => {
-      await assertRateLimit({
+      await assertTRPCRateLimit({
         key: `appointment:${input.phone}`,
         limit: 4,
         windowMs: 60 * 60_000,
+        message: "Too many appointment requests.",
+      });
+      await assertTRPCRateLimit({
+        key: `appointment-ip:${getTRPCRequestIp(ctx.headers)}`,
+        limit: 20,
+        windowMs: 60 * 60_000,
+        message: "Too many appointment requests.",
       });
 
       const branch = await db.branch.findUnique({

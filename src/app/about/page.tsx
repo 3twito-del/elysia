@@ -14,6 +14,7 @@ import {
   Store,
 } from "lucide-react";
 
+import { MotionMediaFrame } from "~/components/motion-media-frame";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
@@ -90,27 +91,38 @@ export default function AboutPage() {
       <SiteHeader />
 
       <article>
-        <RevealSection className="relative min-h-[86vh] overflow-hidden">
-          <Image
-            alt="הולדת ונוס מאת סנדרו בוטיצ׳לי, יצירת רנסנס המשמשת השראה חזותית לעמוד אודות Aphrodite"
-            className="media-mono object-cover"
-            fill
-            priority
-            sizes="100vw"
-            src={venusImage}
-          />
+        <RevealSection
+          className="relative min-h-[86vh] overflow-hidden"
+          initialVisible
+          variant="hero"
+        >
+          <MotionMediaFrame
+            className="absolute inset-0 min-h-[86vh]"
+            contentClassName="absolute inset-[-3%]"
+            intensity="hero"
+            parallax
+          >
+            <Image
+              alt="הולדת ונוס מאת סנדרו בוטיצ׳לי, יצירת רנסנס המשמשת השראה חזותית לעמוד אודות Aphrodite"
+              className="media-mono object-cover"
+              fill
+              priority
+              sizes="100vw"
+              src={venusImage}
+            />
+          </MotionMediaFrame>
           <div className="absolute inset-0 bg-black/[0.28]" />
           <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(255,255,255,0.22),transparent_38%),linear-gradient(to_top,rgba(0,0,0,0.68),rgba(0,0,0,0.08)_58%,rgba(0,0,0,0.28))]" />
 
           <div className="relative mx-auto flex min-h-[86vh] max-w-7xl flex-col justify-end px-4 pt-24 pb-10 sm:px-6 lg:pb-14">
-            <div className="glass-hero max-w-4xl rounded-md border p-6 text-white sm:p-8 lg:p-10">
+            <div className="motion-hero-copy glass-hero max-w-4xl rounded-md border p-6 text-white sm:p-8 lg:p-10">
               <Badge className="mb-5" variant="secondary">
                 אודות Aphrodite
               </Badge>
-              <h1 className="max-w-3xl text-5xl leading-[1.04] font-semibold tracking-normal sm:text-6xl lg:text-7xl">
+              <h1 className="motion-copy-item max-w-3xl text-5xl leading-[1.04] font-semibold tracking-normal sm:text-6xl lg:text-7xl">
                 יופי שנולד ברגע שבו בחירה הופכת לביטחון.
               </h1>
-              <p className="mt-6 max-w-3xl text-lg leading-8 text-white/88">
+              <p className="motion-copy-item mt-6 max-w-3xl text-lg leading-8 text-white/88 [--motion-copy-delay:90ms]">
                 Aphrodite היא סטודיו תכשיטים ישראלי מודרני שנבנה סביב רעיון פשוט
                 ומחייב: תכשיט אינו רק אובייקט יפה, אלא רגע שבו אדם מזהה את עצמו
                 מחדש. הוא יכול להיות מתנה, טבעת, שרשרת, זוג עגילים או צמיד
@@ -118,7 +130,7 @@ export default function AboutPage() {
                 נוכחות או להפוך יום רגיל למדויק יותר. לכן אנחנו מתייחסים ליופי
                 לא כאל קישוט, אלא כאל שפה של ביטחון.
               </p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <div className="motion-copy-item mt-8 flex flex-col gap-3 [--motion-copy-delay:170ms] sm:flex-row">
                 <Button asChild size="lg">
                   <Link href="/search">
                     קטלוג שקט ומדויק
@@ -276,7 +288,10 @@ export default function AboutPage() {
             </h2>
           </div>
 
-          <RevealGrid className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <RevealGrid
+            className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+            variant="cards"
+          >
             {values.map((value) => {
               const Icon = value.icon;
 
@@ -382,7 +397,7 @@ export default function AboutPage() {
               </p>
             </div>
 
-            <RevealGrid className="grid gap-4">
+            <RevealGrid className="grid gap-4" variant="compact">
               {journey.map((item) => {
                 const Icon = item.icon;
 

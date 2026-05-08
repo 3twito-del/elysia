@@ -1,10 +1,13 @@
 import { expect, test, type Page } from "@playwright/test";
 
 const consentStorageKey = "aphrodite_cookie_consent";
+const accessibilityStorageKey = "aphrodite.accessibility-settings";
 const recentlyViewedStorageKey = "aphrodite_recently_viewed";
 const cartStorageKey = "aphrodite_cart_session";
 const productSlug = "venus-line-ring";
 const productName = "טבעת Venus Line";
+const adminEmail = process.env.E2E_ADMIN_EMAIL;
+const adminPassword = process.env.E2E_ADMIN_PASSWORD;
 
 test.describe("critical shopping flows", () => {
   test.beforeEach(async ({ page }) => {
@@ -114,6 +117,59 @@ test.describe("accessibility and responsive guardrails", () => {
     await expect(page).toHaveURL(/#main-content$/);
   });
 
+  test("honors the site reduced-motion preference", async ({ page }) => {
+    await page.addInitScript((storageKey) => {
+      window.localStorage.setItem(
+        storageKey,
+        JSON.stringify({
+          highContrast: false,
+          reduceMotion: true,
+          textScale: "normal",
+          underlineLinks: false,
+        }),
+      );
+    }, accessibilityStorageKey);
+
+    await page.goto("/", { waitUntil: "networkidle" });
+
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () => document.documentElement.dataset.accessibilityMotion,
+        ),
+      )
+      .toBe("reduce");
+
+    const revealMotion = await page
+      .locator(".motion-reveal")
+      .first()
+      .evaluate((element) => {
+        const styles = window.getComputedStyle(element);
+
+        return {
+          transform: styles.transform,
+          transitionDurationsMs: styles.transitionDuration
+            .split(",")
+            .map((value) => value.trim())
+            .map((value) =>
+              value.endsWith("ms")
+                ? Number.parseFloat(value)
+                : Number.parseFloat(value) * 1000,
+            ),
+        };
+      });
+    const mediaTransform = await page
+      .locator("[data-motion-media='true'] .motion-media-content")
+      .first()
+      .evaluate((element) => window.getComputedStyle(element).transform);
+
+    expect(revealMotion.transform).toBe("none");
+    expect(
+      revealMotion.transitionDurationsMs.every((duration) => duration <= 0.01),
+    ).toBe(true);
+    expect(mediaTransform).toBe("none");
+  });
+
   for (const route of [
     "/",
     "/search?q=venus",
@@ -187,6 +243,40 @@ test.describe("access control surfaces", () => {
 
     await page.goto("/admin/login?next=https://evil.example/admin");
     await expect(page.locator('input[name="next"]')).toHaveValue("/admin");
+  });
+
+  test("protects routed admin operations pages", async ({ page }) => {
+    for (const route of [
+      "/admin/orders",
+      "/admin/catalog",
+      "/admin/inventory",
+      "/admin/customers",
+      "/admin/appointments",
+      "/admin/integrations",
+      "/admin/audit",
+    ]) {
+      await page.goto(route);
+      await expect(page).toHaveURL(/\/admin\/login\?next=/);
+    }
+  });
+
+  test("authenticated admins can open the operations shell", async ({
+    page,
+  }) => {
+    test.skip(
+      !adminEmail || !adminPassword,
+      "Set E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD to run authenticated admin e2e.",
+    );
+
+    await page.goto("/admin/login?next=/admin/orders");
+    await page.locator("#email").fill(adminEmail!);
+    await page.locator("#password").fill(adminPassword!);
+    await page.getByRole("button", { name: /אדמין|Admin/ }).click();
+
+    await expect(page).toHaveURL(/\/admin\/orders/);
+    await expect(page.getByRole("link", { name: /הזמנות/ })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "הזמנות" })).toBeVisible();
+    await expect(page.getByRole("link", { name: /אינטגרציות/ })).toBeVisible();
   });
 
   test("shows customer login and rejects unauthenticated data export", async ({

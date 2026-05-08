@@ -26,37 +26,37 @@ import {
 import { createStructuredRecommendationContract } from "~/server/ai/recommendation-contract";
 
 export const searchCatalogToolInputSchema = z.object({
-  query: z.string().optional(),
-  category: z.string().optional(),
-  branch: z.string().optional(),
-  material: z.string().optional(),
-  stone: z.string().optional(),
-  maxPrice: z.number().optional(),
+  query: z.string().trim().max(160).optional(),
+  category: z.string().trim().max(80).optional(),
+  branch: z.string().trim().max(80).optional(),
+  material: z.string().trim().max(80).optional(),
+  stone: z.string().trim().max(80).optional(),
+  maxPrice: z.number().positive().max(1_000_000).optional(),
 });
 
 export const saveStyleProfileInputSchema = z.object({
-  metalColors: z.array(z.string()).default([]),
-  styles: z.array(z.string()).default([]),
-  ringSize: z.string().optional(),
-  necklaceFit: z.string().optional(),
+  metalColors: z.array(z.string().trim().max(40)).max(12).default([]),
+  styles: z.array(z.string().trim().max(80)).max(12).default([]),
+  ringSize: z.string().trim().max(40).optional(),
+  necklaceFit: z.string().trim().max(80).optional(),
 });
 
 export const createTryOnSessionInputSchema = z.object({
-  productSlug: z.string(),
-  variantId: z.string().optional(),
-  sourceImageUrl: z.string().url().optional(),
+  productSlug: z.string().trim().min(1).max(120),
+  variantId: z.string().trim().max(128).optional(),
+  sourceImageUrl: z.string().url().max(2_048).optional(),
 });
 
 export const orderSupportInputSchema = z.object({
-  orderNumber: z.string().trim().min(3),
+  orderNumber: z.string().trim().min(3).max(64),
   email: z.string().trim().email().toLowerCase(),
 });
 
 export const recommendGiftInputSchema = z.object({
-  relation: z.string(),
-  occasion: z.string(),
-  budget: z.number().positive(),
-  style: z.array(z.string()).default([]),
+  relation: z.string().trim().min(1).max(80),
+  occasion: z.string().trim().min(1).max(80),
+  budget: z.number().positive().max(1_000_000),
+  style: z.array(z.string().trim().max(80)).max(12).default([]),
 });
 
 export const searchCatalogToolOutputSchema = z.array(

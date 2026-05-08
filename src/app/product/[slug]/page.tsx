@@ -19,6 +19,7 @@ import {
   getStockQuantityLabel,
 } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
+import { stringifyJsonLd } from "~/lib/json-ld";
 import {
   getCatalogBranches,
   getCatalogBranchAvailability,
@@ -111,7 +112,7 @@ export default async function ProductPage({
         query={search.q}
       />
       <script
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(structuredData) }}
         type="application/ld+json"
       />
       <RevealSection className="mx-auto grid max-w-7xl gap-8 px-4 py-6 sm:px-6 sm:py-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10">
@@ -215,7 +216,7 @@ export default async function ProductPage({
       </RevealSection>
 
       <RevealSection className="mx-auto max-w-7xl px-4 pb-14 sm:px-6">
-        <RevealGrid className="grid gap-5 lg:grid-cols-3">
+        <RevealGrid className="grid gap-5 lg:grid-cols-3" variant="compact">
           <Card className="rounded-md">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">

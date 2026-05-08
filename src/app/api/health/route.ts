@@ -1,4 +1,6 @@
 import { env } from "~/env";
+import { auth } from "~/server/auth";
+import { getAdminFromSession } from "~/server/auth/admin-access";
 import { notificationProvider } from "~/server/adapters/notifications";
 import { db } from "~/server/db";
 import { okJson } from "~/server/http/api-response";
@@ -6,6 +8,7 @@ import { okJson } from "~/server/http/api-response";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  const detailed = await canReadDetailedHealth();
   const checks = {
     database: await checkDatabase(),
     search:
@@ -20,7 +23,8 @@ export async function GET() {
     payment:
       env.CARD_COM_TERMINAL &&
       env.CARD_COM_API_NAME &&
-      env.CARD_COM_API_PASSWORD
+      env.CARD_COM_API_PASSWORD &&
+      env.CARD_COM_WEBHOOK_SECRET
         ? "configured"
         : env.NODE_ENV === "production"
           ? "missing"
@@ -37,11 +41,16 @@ export async function GET() {
   );
 
   return okJson(
-    {
-      ok,
-      checks,
-      timestamp: new Date().toISOString(),
-    },
+    detailed
+      ? {
+          ok,
+          checks,
+          timestamp: new Date().toISOString(),
+        }
+      : {
+          ok,
+          timestamp: new Date().toISOString(),
+        },
     { status: ok ? 200 : 503 },
   );
 }
@@ -53,4 +62,13 @@ async function checkDatabase() {
   } catch {
     return "down";
   }
+}
+
+async function canReadDetailedHealth() {
+  if (env.NODE_ENV !== "production") return true;
+
+  const session = await auth().catch(() => null);
+  const admin = await getAdminFromSession(session).catch(() => null);
+
+  return Boolean(admin?.permissions.includes("SYSTEM"));
 }

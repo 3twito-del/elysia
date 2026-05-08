@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { readSafeJson } from "./safe-json";
+import { readSafeJson, readSafeText } from "./safe-json";
 
 describe("readSafeJson", () => {
   it("rejects empty bodies without throwing", async () => {
@@ -37,6 +37,37 @@ describe("readSafeJson", () => {
     ).resolves.toEqual({
       ok: true,
       data: { value: 1 },
+    });
+  });
+
+  it("rejects bodies that exceed the configured byte limit", async () => {
+    await expect(
+      readSafeJson(
+        new Request("http://localhost", {
+          method: "POST",
+          body: JSON.stringify({ value: "too-large" }),
+        }),
+        { maxBytes: 8 },
+      ),
+    ).resolves.toEqual({
+      ok: false,
+      error: "too-large",
+    });
+  });
+});
+
+describe("readSafeText", () => {
+  it("returns raw text within the configured byte limit", async () => {
+    await expect(
+      readSafeText(
+        new Request("http://localhost", {
+          method: "POST",
+          body: "hello",
+        }),
+      ),
+    ).resolves.toEqual({
+      ok: true,
+      text: "hello",
     });
   });
 });

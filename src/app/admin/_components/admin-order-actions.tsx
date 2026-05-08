@@ -4,6 +4,17 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { RotateCcw, Save, Truck } from "lucide-react";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "~/components/ui/alert-dialog";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
@@ -50,18 +61,16 @@ export function AdminOrderActions({
       ) : null}
       <div className="flex flex-wrap gap-2">
         {actions.map((action) => (
-          <Button
+          <StatusActionButton
             disabled={updateStatus.isPending}
             key={action.status}
-            onClick={() =>
+            label={action.label}
+            onConfirm={() =>
               updateStatus.mutate({ orderId, status: action.status })
             }
-            size="sm"
-            type="button"
+            requiresConfirmation={action.status === "CANCELLED"}
             variant={action.status === "CANCELLED" ? "outline" : "secondary"}
-          >
-            {action.label}
-          </Button>
+          />
         ))}
       </div>
       {fulfillmentMethod === "DELIVERY" ? (
@@ -170,6 +179,9 @@ function AdminRefundForm({
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+  }
+
+  function submitRefund() {
     mutation.mutate({
       orderId,
       returnRequestId: activeReturn?.id,
@@ -204,22 +216,91 @@ function AdminRefundForm({
         />
         החזרת פריטים למלאי
       </label>
-      <Button
-        className="w-fit gap-2"
-        disabled={mutation.isPending}
-        size="sm"
-        type="submit"
-        variant="outline"
-      >
-        <RotateCcw className="size-3.5" />
-        ביצוע זיכוי
-      </Button>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button
+            className="w-fit gap-2"
+            disabled={mutation.isPending}
+            size="sm"
+            type="button"
+            variant="outline"
+          >
+            <RotateCcw className="size-3.5" />
+            ביצוע זיכוי
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent dir="rtl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>לאשר זיכוי להזמנה?</AlertDialogTitle>
+            <AlertDialogDescription>
+              הפעולה תעדכן את סטטוס ההזמנה והתשלומים לזיכוי, ותיצור אירוע הודעה
+              ללקוח. החזרת מלאי תתבצע רק אם האפשרות סומנה.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>ביטול</AlertDialogCancel>
+            <AlertDialogAction onClick={submitRefund}>
+              אישור זיכוי
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       {mutation.error ? (
         <StatusMessage size="xs" tone="error" variant="plain">
           {mutation.error.message}
         </StatusMessage>
       ) : null}
     </form>
+  );
+}
+
+function StatusActionButton({
+  disabled,
+  label,
+  onConfirm,
+  requiresConfirmation,
+  variant,
+}: {
+  disabled: boolean;
+  label: string;
+  onConfirm: () => void;
+  requiresConfirmation: boolean;
+  variant: "outline" | "secondary";
+}) {
+  if (!requiresConfirmation) {
+    return (
+      <Button
+        disabled={disabled}
+        onClick={onConfirm}
+        size="sm"
+        type="button"
+        variant={variant}
+      >
+        {label}
+      </Button>
+    );
+  }
+
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button disabled={disabled} size="sm" type="button" variant={variant}>
+          {label}
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent dir="rtl">
+        <AlertDialogHeader>
+          <AlertDialogTitle>לאשר ביטול הזמנה?</AlertDialogTitle>
+          <AlertDialogDescription>
+            ביטול ישחרר שמירות מלאי, יעדכן תשלום ידני לכשל ויירשם ב-audit.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>חזרה</AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm}>אישור ביטול</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
 

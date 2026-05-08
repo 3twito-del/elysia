@@ -14,7 +14,7 @@ import { api, type RouterOutputs } from "~/trpc/react";
 
 type AdminCatalog = RouterOutputs["admin"]["catalog"];
 type Product = AdminCatalog["products"][number];
-type Variant = Product["variants"][number];
+type Variant = Pick<Product["variants"][number], "id" | "name" | "sku">;
 type Coupon = AdminCatalog["coupons"][number];
 
 export function AdminProductStatusAction({

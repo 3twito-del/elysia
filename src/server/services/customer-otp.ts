@@ -1,4 +1,9 @@
-import { createHash, randomInt, timingSafeEqual } from "node:crypto";
+import {
+  createHash,
+  createHmac,
+  randomInt,
+  timingSafeEqual,
+} from "node:crypto";
 import { TRPCError } from "@trpc/server";
 import type { OtpChannel, Prisma } from "@prisma/client";
 import { z } from "zod";
@@ -9,6 +14,7 @@ import { db } from "~/server/db";
 
 const OTP_TTL_MINUTES = 10;
 const MAX_OTP_ATTEMPTS = 5;
+const OTP_HASH_SCHEME = "otp-hmac-sha256";
 
 type TransactionClient = Prisma.TransactionClient;
 
@@ -62,9 +68,13 @@ export function normalizeOtpIdentifier(identifier: string) {
 }
 
 export function hashOtp(identifier: string, code: string) {
-  return createHash("sha256")
+  const secret = getOtpHashSecret();
+
+  if (!secret) return hashLegacyOtp(identifier, code);
+
+  return `${OTP_HASH_SCHEME}:${createHmac("sha256", secret)
     .update(`${normalizeOtpIdentifier(identifier)}:${code.trim()}`)
-    .digest("hex");
+    .digest("hex")}`;
 }
 
 export function getOtpExpiresAt(now = new Date()) {
@@ -76,10 +86,31 @@ export function otpHashesMatch(
   identifier: string,
   code: string,
 ) {
+  if (expectedHash.startsWith(`${OTP_HASH_SCHEME}:`)) {
+    return safeEqualHex(
+      expectedHash.slice(`${OTP_HASH_SCHEME}:`.length),
+      hashOtp(identifier, code).slice(`${OTP_HASH_SCHEME}:`.length),
+    );
+  }
+
+  return safeEqualHex(expectedHash, hashLegacyOtp(identifier, code));
+}
+
+function hashLegacyOtp(identifier: string, code: string) {
+  return createHash("sha256")
+    .update(`${normalizeOtpIdentifier(identifier)}:${code.trim()}`)
+    .digest("hex");
+}
+
+function safeEqualHex(expectedHash: string, actualHash: string) {
   const expected = Buffer.from(expectedHash, "hex");
-  const actual = Buffer.from(hashOtp(identifier, code), "hex");
+  const actual = Buffer.from(actualHash, "hex");
 
   return expected.length === actual.length && timingSafeEqual(expected, actual);
+}
+
+function getOtpHashSecret() {
+  return env.AUTH_SECRET ?? (env.NODE_ENV === "production" ? undefined : "dev");
 }
 
 export async function requestCustomerOtp(input: RequestCustomerOtpInput) {
