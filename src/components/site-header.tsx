@@ -36,8 +36,8 @@ export function SiteHeader() {
             dir="ltr"
             href="/"
           >
-            <span className="maison-brand-mark grid size-8 place-items-center border border-[var(--luxury-accent-border)]">
-              <Gem className="size-4" />
+            <span className="grid size-8 place-items-center border border-[var(--luxury-accent-border)] bg-[var(--luxury-accent-soft)]">
+              <Gem className="size-4 text-[var(--foreground)]" />
             </span>
             <span className="min-w-0">
               <span className="block truncate text-lg leading-5 font-semibold tracking-normal sm:text-xl">

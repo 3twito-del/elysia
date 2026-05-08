@@ -26,4 +26,3 @@ Date: 2026-05-08
 - Visual complexity should come from layered editorial rhythm, persistent commerce controls, precise spacing, and service/status density rather than ornament.
 - Public pages should feel collectible and refined; admin remains an operational command surface with the same accent language but higher density and lower theatricality.
 - Keep the buy path explicit at every step: filters, availability, price, branch pickup, guest/manual checkout, and recovery states stay visible above decorative treatment.
-- Shared surfaces such as navigation, footer, metric cards, branch cards, and product galleries should carry the same ruled-frame language so the premium system is continuous, not isolated to hero areas.

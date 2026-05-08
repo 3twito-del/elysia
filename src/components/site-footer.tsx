@@ -48,11 +48,9 @@ export async function SiteFooter() {
           ))}
         </div>
         <div className="grid gap-12 lg:grid-cols-[1.25fr_0.8fr_0.85fr_1fr]">
-          <section className="maison-frame max-w-lg rounded-md p-5">
+          <section className="max-w-lg">
             <Link className="inline-flex items-center gap-2" href="/">
-              <span className="maison-brand-mark grid size-8 place-items-center border border-[var(--luxury-accent-border)]">
-                <Gem className="size-4" />
-              </span>
+              <Gem className="text-foreground size-5" />
               <span className="text-2xl font-semibold tracking-normal">
                 Aphrodite
               </span>
