@@ -21,7 +21,7 @@ export function MetricCard({
   return (
     <Card
       className={cn(
-        "interactive-lift min-w-0 rounded-md py-0 shadow-[0_14px_34px_var(--glass-shadow)]",
+        "maison-frame interactive-lift min-w-0 rounded-md py-0 shadow-[0_14px_34px_var(--glass-shadow)]",
         isSoft ? "glass-card" : "glass-panel",
       )}
     >

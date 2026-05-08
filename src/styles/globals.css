@@ -419,6 +419,33 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
     0 10px 30px var(--glass-shadow);
 }
 
+header.site-chrome {
+  isolation: isolate;
+}
+
+header.site-chrome::after {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: -1px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--luxury-accent-border),
+    transparent
+  );
+  content: "";
+  pointer-events: none;
+}
+
+.maison-brand-mark {
+  background:
+    linear-gradient(135deg, oklch(1 0 0 / 20%), transparent 46%),
+    var(--maison-red-ink);
+  color: var(--primary-foreground);
+  box-shadow: inset 0 0 0 1px oklch(1 0 0 / 14%);
+}
+
 .glass-control {
   border-color: var(--glass-border);
   background: var(--glass-control-bg);

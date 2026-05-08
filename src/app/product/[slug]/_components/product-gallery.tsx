@@ -25,7 +25,7 @@ export function ProductGallery({
 
   return (
     <div className={cn("group/gallery grid gap-3", className)}>
-      <div className="product-tile-image bg-secondary relative aspect-[4/5] overflow-hidden lg:aspect-[5/6]">
+      <div className="maison-frame product-tile-image bg-secondary relative aspect-[4/5] overflow-hidden lg:aspect-[5/6]">
         <Image
           alt={productName}
           className="media-color-rich object-cover"

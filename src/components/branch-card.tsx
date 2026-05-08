@@ -11,7 +11,7 @@ export function BranchCard({ branch }: { branch: CatalogBranch }) {
   )}`;
 
   return (
-    <Card className="commerce-command interactive-lift overflow-hidden rounded-md py-0">
+    <Card className="commerce-command maison-frame interactive-lift overflow-hidden rounded-md py-0">
       <CardHeader className="border-b border-[var(--glass-border)] bg-[linear-gradient(135deg,var(--luxury-accent-soft),transparent_56%)] p-5 pb-4">
         <CardTitle className="flex flex-wrap items-center justify-between gap-3 text-2xl font-medium">
           <span>{branch.name}</span>
