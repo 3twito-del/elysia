@@ -83,7 +83,7 @@ export default async function GiftsPage() {
           </div>
 
           {products[0]?.image ? (
-            <div className="product-tile-image overflow-hidden">
+            <div className="maison-frame product-tile-image overflow-hidden">
               <div className="bg-muted relative aspect-[4/3] min-h-64 overflow-hidden">
                 <Image
                   alt=""

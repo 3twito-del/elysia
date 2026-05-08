@@ -114,7 +114,7 @@ export default async function Home() {
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.04),rgba(0,0,0,0.18)_42%,rgba(0,0,0,0.7))]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.54),rgba(0,0,0,0.03)_58%,rgba(0,0,0,0.08))]" />
-        <div className="absolute inset-y-0 right-0 w-[min(56rem,72vw)] bg-[linear-gradient(90deg,rgba(0,0,0,0),rgba(32,40,62,0.18)_52%,rgba(255,255,255,0.06))]" />
+        <div className="absolute inset-y-0 right-0 w-[min(56rem,72vw)] bg-[linear-gradient(90deg,rgba(0,0,0,0),rgba(92,22,24,0.2)_52%,rgba(255,255,255,0.06))]" />
         <div className="relative min-h-[70svh] sm:min-h-[74vh] lg:min-h-[76vh]">
           <div
             className="absolute top-[var(--hero-edge)] right-[var(--hero-edge)] w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),48rem)] text-right text-white drop-shadow-[0_14px_34px_rgba(0,0,0,0.32)] lg:w-[min(48rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
@@ -374,7 +374,7 @@ export default async function Home() {
           {categories.map((category) => (
             <Link
               aria-label={`צפייה בקטגוריית ${category.name}`}
-              className="glass-card interactive-lift group/card flex min-h-[22rem] w-full flex-col overflow-hidden rounded-md border"
+              className="maison-frame glass-card interactive-lift group/card flex min-h-[22rem] w-full flex-col overflow-hidden rounded-md border"
               href={`/category/${category.slug}`}
               key={category.slug}
             >

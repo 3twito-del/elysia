@@ -130,7 +130,7 @@ export default async function ProductPage({
               images={uniqueImages}
               productName={productName}
             />
-            <div className="bg-background/55 order-3 grid gap-3 border-y border-[var(--glass-border)] py-4 sm:grid-cols-3 lg:order-none">
+            <div className="maison-frame bg-background/55 order-3 grid gap-3 rounded-md p-4 sm:grid-cols-3 lg:order-none">
               {[
                 { label: "חומר", value: productMaterial },
                 { label: "קולקציה", value: productCollection },
@@ -150,7 +150,7 @@ export default async function ProductPage({
             </div>
           </div>
 
-          <div className="checkout-ledger purchase-chamber order-2 min-w-0 rounded-md px-5 py-6 lg:sticky lg:top-24 lg:order-none lg:self-start lg:px-6">
+          <div className="checkout-ledger purchase-chamber maison-frame order-2 min-w-0 rounded-md px-5 py-6 lg:sticky lg:top-24 lg:order-none lg:self-start lg:px-6">
             <Badge
               className="bg-background/70 mb-4 rounded-none"
               variant="secondary"

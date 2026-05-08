@@ -177,7 +177,7 @@ export default async function CategoryPage({
 
       <RevealSection className="editorial-band signature-grid border-b border-[var(--glass-border)]">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:py-10">
-          <div className="grid gap-6 border-y border-[var(--glass-border)] py-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,440px)] lg:items-stretch">
+          <div className="maison-frame grid gap-6 rounded-md p-5 lg:grid-cols-[minmax(0,1fr)_minmax(320px,440px)] lg:items-stretch">
             <div className="lg:self-center">
               <Badge
                 className="bg-background/70 mb-4 rounded-none"
@@ -202,7 +202,7 @@ export default async function CategoryPage({
 
             <div className="grid gap-4">
               {category?.image ? (
-                <div className="bg-muted relative h-52 overflow-hidden border border-[var(--glass-border)] lg:h-full lg:min-h-52">
+                <div className="maison-frame bg-muted relative h-52 overflow-hidden lg:h-full lg:min-h-52">
                   <Image
                     alt=""
                     className="media-color-rich object-cover"

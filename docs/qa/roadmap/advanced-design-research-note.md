@@ -18,3 +18,11 @@ Date: 2026-05-08
 - Public commerce pages should feel premium and inspectable; admin pages should feel quiet, dense, and operational.
 - Avoid generic luxury tropes: heavy gold, dark-only palettes, oversized shadows, decorative blobs, and ungrounded competitor claims.
 - Keep every CTA, filter, input, sticky bar, and table usable in Hebrew RTL on mobile and desktop.
+
+## Maison Direction, Distinct From Cartier
+
+- Use fine-jewelry maison cues only as category language: lacquer-red restraint, ivory editorial fields, thin ruled frames, product-first imagery, and calm black typography.
+- Do not copy Cartier layout, brand marks, exact color usage, campaign composition, product presentation, or interaction patterns.
+- Visual complexity should come from layered editorial rhythm, persistent commerce controls, precise spacing, and service/status density rather than ornament.
+- Public pages should feel collectible and refined; admin remains an operational command surface with the same accent language but higher density and lower theatricality.
+- Keep the buy path explicit at every step: filters, availability, price, branch pickup, guest/manual checkout, and recovery states stay visible above decorative treatment.

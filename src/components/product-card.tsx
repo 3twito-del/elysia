@@ -74,7 +74,7 @@ export function ProductCard({
         </Link>
         <div className="pointer-events-none absolute inset-x-3 top-3 flex items-start justify-between gap-2">
           <Badge
-            className="product-tile-kicker max-w-[68%] rounded-none border-0 font-normal"
+            className="product-tile-kicker maison-cartouche max-w-[68%] rounded-none font-normal"
             variant="secondary"
           >
             <span className="truncate">{product.collection}</span>

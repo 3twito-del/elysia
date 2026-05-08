@@ -98,7 +98,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       <SiteHeader />
       <RevealSection className="editorial-band signature-grid border-b border-[var(--glass-border)]">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
-          <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(320px,440px)] lg:items-stretch">
+          <div className="maison-frame grid gap-5 rounded-md p-5 lg:grid-cols-[minmax(0,1fr)_minmax(320px,440px)] lg:items-stretch">
             <div className="lg:self-center">
               <p className="editorial-eyebrow mb-3">Catalog search</p>
               <h1 className="editorial-title text-4xl font-semibold sm:text-5xl">
@@ -109,7 +109,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               </p>
             </div>
             {result.hits[0]?.image ? (
-              <div className="bg-muted relative hidden h-44 overflow-hidden border border-[var(--glass-border)] lg:block">
+              <div className="maison-frame bg-muted relative hidden h-44 overflow-hidden lg:block">
                 <Image
                   alt=""
                   className="media-mono object-cover"

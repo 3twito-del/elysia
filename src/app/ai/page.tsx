@@ -132,7 +132,7 @@ export default async function AiPage({ searchParams }: AiPageProps) {
                 </div>
               </div>
 
-              <div className="product-tile-image media-color relative min-h-[260px] overflow-hidden rounded-md sm:min-h-[320px]">
+              <div className="maison-frame product-tile-image media-color relative min-h-[260px] overflow-hidden rounded-md sm:min-h-[320px]">
                 <Image
                   alt="תכשיט עדין על רקע סטודיו"
                   className="object-cover"

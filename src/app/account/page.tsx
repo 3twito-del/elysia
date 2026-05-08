@@ -168,7 +168,7 @@ export default async function AccountPage() {
               </div>
             </div>
 
-            <Card className="checkout-ledger purchase-chamber rounded-md">
+            <Card className="checkout-ledger purchase-chamber maison-frame rounded-md">
               <CardHeader className="border-b border-[var(--glass-border)] pb-4">
                 <CardTitle className="flex items-center gap-2">
                   <ShieldCheck className="size-5" />
