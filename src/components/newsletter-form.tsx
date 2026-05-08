@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { Mail } from "lucide-react";
@@ -27,6 +28,29 @@ export function NewsletterForm() {
         />
         <SubmitButton />
       </div>
+      <label className="text-muted-foreground flex items-start gap-2 text-xs leading-5">
+        <input
+          className="mt-1"
+          name="marketingConsent"
+          required
+          type="checkbox"
+          value="yes"
+        />
+        <span>
+          אני מסכימ/ה לקבל מ-Aphrodite עדכונים, הטבות ודברי פרסומת בדוא״ל. ניתן
+          להסיר בכל הודעה.
+        </span>
+      </label>
+      <p className="text-muted-foreground text-xs leading-5">
+        ניתן להסיר גם דרך{" "}
+        <Link
+          className="text-foreground underline underline-offset-4"
+          href="/newsletter/unsubscribe"
+        >
+          הסרה מדיוור
+        </Link>
+        .
+      </p>
       {state.message ? (
         <StatusMessage
           size="xs"

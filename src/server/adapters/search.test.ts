@@ -7,33 +7,17 @@ import {
 } from "./search";
 
 describe("search adapter config", () => {
-  it("allows the local catalog fallback outside production", () => {
-    expect(() =>
-      assertLocalSearchAllowed({
-        NODE_ENV: "development",
-        TYPESENSE_API_KEY: undefined,
-        TYPESENSE_HOST: undefined,
-      }),
-    ).not.toThrow();
-
-    expect(() =>
-      assertLocalSearchAllowed({
-        NODE_ENV: "test",
-        TYPESENSE_API_KEY: undefined,
-        TYPESENSE_HOST: undefined,
-      }),
-    ).not.toThrow();
-  });
-
-  it("blocks production search without Typesense credentials", () => {
+  it("allows the local catalog fallback when Typesense is not configured", () => {
     expect(() =>
       assertLocalSearchAllowed({
         NODE_ENV: "production",
         TYPESENSE_API_KEY: undefined,
         TYPESENSE_HOST: undefined,
       }),
-    ).toThrow(/Typesense production search requires/);
+    ).not.toThrow();
+  });
 
+  it("allows Typesense when both required credentials are configured", () => {
     expect(() =>
       assertLocalSearchAllowed({
         NODE_ENV: "production",
@@ -41,6 +25,24 @@ describe("search adapter config", () => {
         TYPESENSE_HOST: "search.example.com",
       }),
     ).not.toThrow();
+  });
+
+  it("blocks incomplete Typesense configuration", () => {
+    expect(() =>
+      assertLocalSearchAllowed({
+        NODE_ENV: "production",
+        TYPESENSE_API_KEY: undefined,
+        TYPESENSE_HOST: "search.example.com",
+      }),
+    ).toThrow(/Typesense search configuration is incomplete/);
+
+    expect(() =>
+      assertLocalSearchAllowed({
+        NODE_ENV: "development",
+        TYPESENSE_API_KEY: "typesense-key",
+        TYPESENSE_HOST: undefined,
+      }),
+    ).toThrow(/Typesense search configuration is incomplete/);
   });
 });
 

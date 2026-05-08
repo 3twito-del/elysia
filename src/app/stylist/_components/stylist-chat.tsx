@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { AiProductRecommendations } from "~/components/ai-product-recommendations";
+import { PrivacyCollectionNotice } from "~/components/privacy-collection-notice";
 import {
   Conversation,
   ConversationContent,
@@ -40,7 +41,7 @@ import { cn } from "~/lib/utils";
 
 const suggestions = [
   "מתנה לאמא עד 700 ש״ח בסגנון עדין",
-  "טבעת זהב צהוב שמתאימה לענידה יומיומית",
+  "טבעת דקה שמתאימה לענידה יומיומית",
   "עגילים עדינים לכלה, בלי תחושה כבדה",
 ];
 
@@ -72,7 +73,9 @@ export function StylistChat({ compact = false }: StylistChatProps) {
       <div
         className={cn(
           "glass-panel grid overflow-hidden rounded-md border",
-          compact ? "min-h-[520px]" : "min-h-[640px]",
+          compact
+            ? "min-h-[500px] sm:min-h-[520px]"
+            : "min-h-[560px] sm:min-h-[640px]",
         )}
       >
         <div
@@ -113,7 +116,13 @@ export function StylistChat({ compact = false }: StylistChatProps) {
         </div>
 
         <div className="flex min-h-0 flex-col">
-          <Conversation className={compact ? "min-h-[280px]" : "min-h-[440px]"}>
+          <Conversation
+            className={
+              compact
+                ? "min-h-[260px] sm:min-h-[280px]"
+                : "min-h-[320px] sm:min-h-[440px]"
+            }
+          >
             <ConversationContent
               className={cn("gap-6 p-4", compact ? "sm:p-5" : "sm:p-6")}
             >
@@ -145,7 +154,7 @@ export function StylistChat({ compact = false }: StylistChatProps) {
                       {suggestions.map((suggestion) => (
                         <Button
                           key={suggestion}
-                          className="glass-control interactive-lift min-h-11 max-w-full px-4 py-2 text-right leading-5 whitespace-normal"
+                          className="glass-control interactive-lift min-h-11 w-full max-w-full justify-center px-4 py-2 text-center leading-5 whitespace-normal sm:w-auto"
                           onClick={() => {
                             setInput("");
                             void sendMessage({ text: suggestion });
@@ -211,7 +220,7 @@ export function StylistChat({ compact = false }: StylistChatProps) {
               <PromptInputTextarea
                 className="max-h-32 min-h-14 py-3 pr-4 pl-14 leading-6"
                 onChange={(event) => setInput(event.currentTarget.value)}
-                placeholder="לדוגמה: מתנה עד 900 ש״ח למישהי שאוהבת זהב לבן"
+                placeholder="לדוגמה: מתנה עד 900 ש״ח למישהי שאוהבת קווים נקיים"
                 value={input}
               />
               <PromptInputSubmit
@@ -233,6 +242,7 @@ export function StylistChat({ compact = false }: StylistChatProps) {
               ההמלצות הן כלי עזר. זמינות, מידה והתאמה סופית יאושרו בקופה או
               בסניף.
             </p>
+            <PrivacyCollectionNotice className="mt-2" variant="ai" />
           </div>
         </div>
       </div>

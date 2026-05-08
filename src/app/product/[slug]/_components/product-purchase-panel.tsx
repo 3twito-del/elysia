@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import {
   AlertCircle,
@@ -20,6 +20,7 @@ import {
   getOrCreateCartSessionKey,
 } from "~/lib/cart-session";
 import { formatPrice } from "~/lib/format";
+import { removeGoldLanguage } from "~/lib/gold-free-copy";
 import type { CatalogProductVariant } from "~/server/services/catalog";
 import { api } from "~/trpc/react";
 
@@ -38,6 +39,7 @@ export function ProductPurchasePanel({
   variants,
   metalColors,
 }: ProductPurchasePanelProps) {
+  const stickyBarRef = useRef<HTMLDivElement>(null);
   const [selectedSku, setSelectedSku] = useState(variants[0]?.sku ?? "");
   const canRenderStickyBar = useSyncExternalStore(
     subscribeToNoopStore,
@@ -72,8 +74,48 @@ export function ProductPurchasePanel({
     });
   }
 
+  useEffect(() => {
+    if (!canRenderStickyBar) return;
+
+    const root = document.documentElement;
+    const syncOffset = () => {
+      const height = stickyBarRef.current?.getBoundingClientRect().height ?? 0;
+
+      if (height > 0) {
+        root.style.setProperty(
+          "--mobile-purchase-bar-height",
+          `${height + 12}px`,
+        );
+      }
+    };
+
+    syncOffset();
+
+    if (typeof ResizeObserver === "undefined" || !stickyBarRef.current) {
+      window.addEventListener("resize", syncOffset);
+
+      return () => {
+        window.removeEventListener("resize", syncOffset);
+        root.style.removeProperty("--mobile-purchase-bar-height");
+      };
+    }
+
+    const observer = new ResizeObserver(syncOffset);
+    observer.observe(stickyBarRef.current);
+    window.addEventListener("resize", syncOffset);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", syncOffset);
+      root.style.removeProperty("--mobile-purchase-bar-height");
+    };
+  }, [canRenderStickyBar]);
+
   const stickyPurchaseBar = (
-    <div className="glass-chrome fixed inset-x-0 bottom-[calc(var(--floating-stack-bottom,0px)+env(safe-area-inset-bottom))] z-40 border-t p-3 shadow-[0_-18px_48px_oklch(0_0_0_/_14%)] md:hidden">
+    <div
+      className="glass-chrome fixed inset-x-0 bottom-[calc(var(--floating-stack-bottom,0px)+env(safe-area-inset-bottom))] z-40 border-t p-3 md:hidden"
+      ref={stickyBarRef}
+    >
       <div className="mx-auto grid max-w-md grid-cols-[auto_minmax(0,1fr)] items-center gap-3 pl-14">
         <div className="order-2 min-w-0">
           <p className="text-muted-foreground truncate text-xs">
@@ -98,14 +140,14 @@ export function ProductPurchasePanel({
   return (
     <>
       <div className="grid gap-5">
-        <div className="grid gap-5">
+        <div className="grid gap-5 border-b border-[var(--glass-border)] pb-5">
           <div>
             <p className="mb-2 text-sm font-medium">מידה / וריאציה</p>
             <div className="flex flex-wrap gap-2">
               {variants.map((variant) => (
                 <Button
                   aria-pressed={selectedSku === variant.sku}
-                  className="min-h-11 min-w-11 px-4"
+                  className="min-h-11 min-w-11 rounded-none px-4"
                   key={variant.sku}
                   onClick={() => setSelectedSku(variant.sku)}
                   type="button"
@@ -113,7 +155,7 @@ export function ProductPurchasePanel({
                     selectedSku === variant.sku ? "secondary" : "outline"
                   }
                 >
-                  {variant.size ?? variant.name}
+                  {removeGoldLanguage(variant.size ?? variant.name)}
                 </Button>
               ))}
             </div>
@@ -123,14 +165,14 @@ export function ProductPurchasePanel({
             <div className="flex flex-wrap gap-2">
               {metalColors.map((color) => (
                 <Badge key={color} variant="secondary">
-                  {color}
+                  {removeGoldLanguage(color)}
                 </Badge>
               ))}
             </div>
           </div>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,0.8fr)]">
           <Button
             disabled={!selectedVariant || addItem.isPending}
             onClick={handleAddToCart}
@@ -147,7 +189,7 @@ export function ProductPurchasePanel({
         </div>
 
         {cartMessage ? (
-          <div className="glass-inset flex items-center justify-between gap-3 rounded-md border p-3 text-sm">
+          <div className="flex items-center justify-between gap-3 border border-[var(--glass-border)] p-3 text-sm">
             <StatusMessage
               className="flex min-w-0 flex-1 items-center gap-2"
               tone={cartMessageTone}
@@ -168,7 +210,7 @@ export function ProductPurchasePanel({
           </div>
         ) : null}
 
-        <Button asChild variant="secondary">
+        <Button asChild variant="outline">
           <Link href={`/ai?product=${productSlug}`}>
             מדידה/AI
             <Sparkles className="size-4" />

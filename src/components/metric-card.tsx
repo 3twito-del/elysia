@@ -21,23 +21,31 @@ export function MetricCard({
   return (
     <Card
       className={cn(
-        "interactive-lift min-w-0 rounded-md",
+        "interactive-lift min-w-0 rounded-md py-0 shadow-[0_14px_34px_var(--glass-shadow)]",
         isSoft ? "glass-card" : "glass-panel",
       )}
     >
-      <CardContent className="flex items-center gap-4 p-5">
-        <div
-          className={cn(
-            "glass-inset text-foreground grid size-11 place-items-center rounded-md border",
-            isSoft ? "opacity-90" : "opacity-100",
-          )}
-        >
-          <Icon className="size-5" />
+      <CardContent className="grid min-h-40 content-between gap-5 p-5">
+        <div className="flex items-start justify-between gap-4">
+          <p className="text-muted-foreground text-sm">{label}</p>
+          <div
+            className={cn(
+              "glass-inset text-foreground grid size-10 shrink-0 place-items-center rounded-md border",
+              isSoft
+                ? "[border-color:var(--luxury-accent-border)] opacity-90"
+                : "opacity-100",
+            )}
+          >
+            <Icon className="size-5" />
+          </div>
         </div>
         <div className="min-w-0">
-          <p className="text-muted-foreground text-sm">{label}</p>
-          <p className="text-2xl font-semibold break-words">{value}</p>
-          <p className="text-muted-foreground text-xs leading-5">{detail}</p>
+          <p className="text-3xl leading-none font-semibold break-words">
+            {value}
+          </p>
+          <p className="text-muted-foreground mt-3 text-xs leading-5">
+            {detail}
+          </p>
         </div>
       </CardContent>
     </Card>

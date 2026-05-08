@@ -35,7 +35,7 @@ export function SearchControls({
       <form
         action="/search"
         aria-label="חיפוש בקטלוג"
-        className="glass-panel mt-6 hidden gap-3 rounded-md border p-3 md:grid lg:grid-cols-[1fr_repeat(4,160px)_120px]"
+        className="mt-6 hidden gap-3 border-y border-[var(--glass-border)] py-4 md:grid lg:grid-cols-[1fr_repeat(4,160px)_120px]"
         role="search"
       >
         <SearchFields
@@ -50,7 +50,7 @@ export function SearchControls({
       </form>
 
       <div
-        className="glass-panel mt-4 grid grid-cols-[minmax(0,1fr)_2.75rem_2.75rem] gap-2 rounded-md border p-2 md:hidden"
+        className="mt-4 grid grid-cols-[minmax(0,1fr)_2.75rem_2.75rem] gap-2 border-y border-[var(--glass-border)] py-2 md:hidden"
         data-testid="mobile-search-controls"
       >
         <form
@@ -153,7 +153,7 @@ function SearchFields({
       />
       <select
         aria-label="סינון לפי קטגוריה"
-        className="glass-control h-12 rounded-md border px-3 text-sm"
+        className="bg-background h-12 rounded-none border border-[var(--glass-border)] px-3 text-sm"
         defaultValue={input.category}
         name="category"
       >
@@ -166,7 +166,7 @@ function SearchFields({
       </select>
       <select
         aria-label="סינון לפי סניף"
-        className="glass-control h-12 rounded-md border px-3 text-sm"
+        className="bg-background h-12 rounded-none border border-[var(--glass-border)] px-3 text-sm"
         defaultValue={input.branch}
         name="branch"
       >
@@ -188,7 +188,7 @@ function SearchFields({
       />
       <select
         aria-label="מיון תוצאות"
-        className="glass-control h-12 rounded-md border px-3 text-sm"
+        className="bg-background h-12 rounded-none border border-[var(--glass-border)] px-3 text-sm"
         defaultValue={input.sort ?? "relevance"}
         name="sort"
       >

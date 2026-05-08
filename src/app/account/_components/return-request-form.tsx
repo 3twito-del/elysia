@@ -7,6 +7,7 @@ import {
   requestReturnAction,
   type AccountActionState,
 } from "~/app/account/actions";
+import { PrivacyCollectionNotice } from "~/components/privacy-collection-notice";
 import { Button } from "~/components/ui/button";
 import { Label } from "~/components/ui/label";
 import { StatusMessage } from "~/components/ui/status-message";
@@ -36,6 +37,7 @@ export function ReturnRequestForm({ orderId }: { orderId: string }) {
         <Label htmlFor="return-notes">הערות</Label>
         <Textarea id="return-notes" name="notes" placeholder="פרטים נוספים" />
       </div>
+      <PrivacyCollectionNotice variant="account" />
       {state.message ? (
         <StatusMessage tone={state.ok ? "success" : "error"} variant="plain">
           {state.message}

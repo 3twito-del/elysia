@@ -1,26 +1,36 @@
+import {
+  brandMedia,
+  getBrandCategoryHero,
+  getSeedProductMediaUrls,
+} from "../src/lib/brand-media";
+
 export const PRODUCTS_PER_CATEGORY = 75;
 
 export const seedCategories = [
   {
     slug: "rings",
+    imageUrl: getBrandCategoryHero("rings").url,
     name: "טבעות",
     description: "טבעות זהב, יהלומים ואבני חן ליום יום ולאירועים.",
     sortOrder: 1,
   },
   {
     slug: "necklaces",
+    imageUrl: getBrandCategoryHero("necklaces").url,
     name: "שרשראות",
     description: "שרשראות עדינות, תליונים וסטים משלימים.",
     sortOrder: 2,
   },
   {
     slug: "earrings",
+    imageUrl: getBrandCategoryHero("earrings").url,
     name: "עגילים",
     description: "עגילי סטודיו מודרניים בזהב, פנינים ויהלומים.",
     sortOrder: 3,
   },
   {
     slug: "bracelets",
+    imageUrl: getBrandCategoryHero("bracelets").url,
     name: "צמידים",
     description: "צמידים נקיים עם נוכחות עדינה.",
     sortOrder: 4,
@@ -48,40 +58,35 @@ export const seedCollections = [
     slug: "studio-light",
     name: "Studio Light",
     description: "קולקציית בסיס נקייה עם קווים דקים וזהב חם.",
-    heroImageUrl:
-      "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1600&q=80",
+    heroImageUrl: brandMedia.collectionHeroes["studio-light"].url,
     isFeatured: true,
   },
   {
     slug: "bridal-edit",
     name: "Bridal Edit",
     description: "בחירות מדויקות להצעות, חתונות וסטים חגיגיים.",
-    heroImageUrl:
-      "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1600&q=80",
+    heroImageUrl: brandMedia.collectionHeroes["bridal-edit"].url,
     isFeatured: true,
   },
   {
     slug: "daily-icons",
     name: "Daily Icons",
     description: "תכשיטים קלים לשילוב יומיומי עם גימור נקי.",
-    heroImageUrl:
-      "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=1600&q=80",
+    heroImageUrl: brandMedia.collectionHeroes["daily-icons"].url,
     isFeatured: false,
   },
   {
     slug: "evening-glow",
     name: "Evening Glow",
     description: "פריטים מבריקים לערב, אירועים ומתנות עם נוכחות.",
-    heroImageUrl:
-      "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=1600&q=80",
+    heroImageUrl: brandMedia.collectionHeroes["evening-glow"].url,
     isFeatured: false,
   },
   {
     slug: "gift-studio",
     name: "Gift Studio",
     description: "בחירות מוכנות למתנות לפי תקציב, סגנון ואירוע.",
-    heroImageUrl:
-      "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=1600&q=80",
+    heroImageUrl: brandMedia.collectionHeroes["gift-studio"].url,
     isFeatured: false,
   },
 ] as const;
@@ -114,7 +119,7 @@ export type SeedProduct = {
   stoneSlug: SeedStoneSlug | null;
   basePrice: string;
   collectionSlugs: SeedCollectionSlug[];
-  image: string;
+  images: string[];
   tags: string[];
   variants: SeedProductVariant[];
 };
@@ -132,8 +137,7 @@ const manualProducts = [
     stoneSlug: "diamond",
     basePrice: "1290",
     collectionSlugs: ["studio-light", "bridal-edit"],
-    image:
-      "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1400&q=80",
+    images: getSeedProductMediaUrls("rings", "venus-line-ring"),
     tags: ["יוקרה נגישה", "סטודיו מודרני", "אירוסין", "מתנה"],
     variants: [
       {
@@ -172,8 +176,7 @@ const manualProducts = [
     stoneSlug: "pearl",
     basePrice: "690",
     collectionSlugs: ["studio-light"],
-    image:
-      "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1400&q=80",
+    images: getSeedProductMediaUrls("earrings", "muse-pearl-earrings"),
     tags: ["יוקרה נגישה", "סטודיו מודרני", "פנינה", "מתנה"],
     variants: [
       {
@@ -201,8 +204,7 @@ const manualProducts = [
     stoneSlug: "diamond",
     basePrice: "980",
     collectionSlugs: ["studio-light"],
-    image:
-      "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1400&q=80",
+    images: getSeedProductMediaUrls("necklaces", "selene-chain"),
     tags: ["יוקרה נגישה", "סטודיו מודרני", "שכבות", "מתנה"],
     variants: [
       {
@@ -241,8 +243,7 @@ const manualProducts = [
     stoneSlug: null,
     basePrice: "840",
     collectionSlugs: ["studio-light"],
-    image:
-      "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=1400&q=80",
+    images: getSeedProductMediaUrls("bracelets", "hera-bracelet"),
     tags: ["יוקרה נגישה", "סטודיו מודרני", "יום יום", "שכבות"],
     variants: [
       {
@@ -364,33 +365,6 @@ const categoryBlueprints = {
   },
 } satisfies Record<SeedCategorySlug, CategoryBlueprint>;
 
-const categoryImageVariants = {
-  rings: [
-    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=1400&q=80",
-  ],
-  necklaces: [
-    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=1400&q=80",
-  ],
-  earrings: [
-    "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=1400&q=80",
-  ],
-  bracelets: [
-    "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1400&q=80",
-  ],
-} satisfies Record<SeedCategorySlug, readonly string[]>;
-
 const designFamilies = [
   { slug: "aura", name: "Aura", hebrew: "הילה", tags: ["עדין", "יום יום"] },
   { slug: "noya", name: "Noya", hebrew: "נויה", tags: ["נקי", "מתנה"] },
@@ -504,9 +478,10 @@ function createGeneratedProduct(
   );
   const stoneText = stone ? `עם ${stone.name}` : "ללא אבן";
   const name = `${blueprint.productKind} ${family.name} ${detail.hebrew} ${serial}`;
+  const slug = `${blueprint.generatedSlugPrefix}-${family.slug}-${detail.slug}-${serial}`;
 
   return {
-    slug: `${blueprint.generatedSlugPrefix}-${family.slug}-${detail.slug}-${serial}`,
+    slug,
     sku,
     name,
     shortDescription: `${blueprint.productKind} ${material.name} ${stoneText} בגימור ${detail.hebrew}.`,
@@ -516,7 +491,7 @@ function createGeneratedProduct(
     stoneSlug: stone?.slug ?? null,
     basePrice: String(basePrice),
     collectionSlugs,
-    image: pick(categoryImageVariants[categorySlug], index + blueprint.offset),
+    images: getSeedProductMediaUrls(categorySlug, slug),
     tags: createTags({
       blueprint,
       collectionSlugs,

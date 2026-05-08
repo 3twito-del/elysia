@@ -52,7 +52,7 @@ const values = [
 const journey = [
   {
     title: "חיפוש שמתחיל בשפה שלך",
-    text: "לא כולם נכנסים לאתר עם שם דגם מדויק. לפעמים מתחילים בתקציב, באירוע, בצבע זהב, במידה, באדם שיקבל את המתנה או בתחושה שרוצים להשאיר. Aphrodite נבנית כך שהחיפוש יכבד גם את הדיוק וגם את האינטואיציה.",
+    text: "לא כולם נכנסים לאתר עם שם דגם מדויק. לפעמים מתחילים בתקציב, באירוע, בגוון מתכת, במידה, באדם שיקבל את המתנה או בתחושה שרוצים להשאיר. Aphrodite נבנית כך שהחיפוש יכבד גם את הדיוק וגם את האינטואיציה.",
     icon: Search,
   },
   {
@@ -99,15 +99,18 @@ export default function AboutPage() {
             sizes="100vw"
             src={venusImage}
           />
-          <div className="absolute inset-0 bg-black/[0.28]" />
-          <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(255,255,255,0.22),transparent_38%),linear-gradient(to_top,rgba(0,0,0,0.68),rgba(0,0,0,0.08)_58%,rgba(0,0,0,0.28))]" />
+          <div className="absolute inset-0 bg-black/[0.18]" />
+          <div className="absolute inset-0 bg-[linear-gradient(100deg,rgba(0,0,0,0.06),rgba(0,0,0,0.18)_36%,rgba(0,0,0,0.72)),linear-gradient(to_top,rgba(0,0,0,0.72),rgba(0,0,0,0.08)_56%,rgba(0,0,0,0.18))]" />
 
           <div className="relative mx-auto flex min-h-[86vh] max-w-7xl flex-col justify-end px-4 pt-24 pb-10 sm:px-6 lg:pb-14">
-            <div className="glass-hero max-w-4xl rounded-md border p-6 text-white sm:p-8 lg:p-10">
-              <Badge className="mb-5" variant="secondary">
+            <div className="max-w-4xl text-white drop-shadow-[0_16px_42px_rgba(0,0,0,0.34)]">
+              <Badge
+                className="mb-5 rounded-none border-white/24 bg-white/12 text-white hover:bg-white/18"
+                variant="outline"
+              >
                 אודות Aphrodite
               </Badge>
-              <h1 className="max-w-3xl text-5xl leading-[1.04] font-semibold tracking-normal sm:text-6xl lg:text-7xl">
+              <h1 className="editorial-title max-w-3xl text-5xl font-semibold tracking-normal sm:text-6xl lg:text-7xl">
                 יופי שנולד ברגע שבו בחירה הופכת לביטחון.
               </h1>
               <p className="mt-6 max-w-3xl text-lg leading-8 text-white/88">
@@ -149,17 +152,17 @@ export default function AboutPage() {
           </div>
         </RevealSection>
 
-        <RevealSection className="glass-chrome border-b">
-          <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-3">
-            <div className="glass-card rounded-md border p-5">
+        <RevealSection className="editorial-band signature-grid border-b border-[var(--glass-border)]">
+          <div className="mx-auto grid max-w-7xl gap-0 px-4 py-8 sm:px-6 lg:grid-cols-3">
+            <div className="border-b border-[var(--glass-border)] py-5 lg:border-e lg:border-b-0 lg:px-6">
               <p className="text-muted-foreground text-sm">שם</p>
               <p className="mt-2 text-3xl font-semibold">Aphrodite</p>
             </div>
-            <div className="glass-card rounded-md border p-5">
+            <div className="border-b border-[var(--glass-border)] py-5 lg:border-e lg:border-b-0 lg:px-6">
               <p className="text-muted-foreground text-sm">כוונה</p>
               <p className="mt-2 text-3xl font-semibold">יופי עם ביטחון</p>
             </div>
-            <div className="glass-card rounded-md border p-5">
+            <div className="py-5 lg:px-6">
               <p className="text-muted-foreground text-sm">אופי</p>
               <p className="mt-2 text-3xl font-semibold">
                 סטודיו ישראלי מודרני
@@ -207,10 +210,10 @@ export default function AboutPage() {
           </div>
         </RevealSection>
 
-        <RevealSection className="liquid-section">
+        <RevealSection className="editorial-band signature-grid border-y border-[var(--glass-border)]">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
             <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-              <div className="glass-panel rounded-md border p-6 sm:p-8 lg:p-10">
+              <div className="atelier-panel p-6 sm:p-8 lg:p-10">
                 <p className="text-muted-foreground text-sm">הסיפור שלנו</p>
                 <h2 className="mt-3 text-4xl leading-tight font-semibold">
                   סטודיו ישראלי שמבקש להפוך יוקרה לדבר שאפשר להבין.
@@ -243,7 +246,7 @@ export default function AboutPage() {
               </div>
 
               <div className="grid gap-4">
-                <div className="glass-card rounded-md border p-6">
+                <div className="atelier-panel p-6">
                   <Heart className="size-7" />
                   <p className="mt-5 text-2xl font-semibold">
                     לא לבחור רק יפה. לבחור נכון.
@@ -253,7 +256,7 @@ export default function AboutPage() {
                     בפרטים: פרופורציה, מידה, חומר, אירוע, אדם, הרגל וסגנון חיים.
                   </p>
                 </div>
-                <div className="glass-card rounded-md border p-6">
+                <div className="atelier-panel p-6">
                   <ShieldCheck className="size-7" />
                   <p className="mt-5 text-2xl font-semibold">
                     אמון הוא חלק מהעיצוב.
@@ -281,10 +284,7 @@ export default function AboutPage() {
               const Icon = value.icon;
 
               return (
-                <section
-                  className="glass-card rounded-md border p-6"
-                  key={value.title}
-                >
+                <section className="atelier-panel p-6" key={value.title}>
                   <div className="glass-inset flex size-11 items-center justify-center rounded-md border">
                     <Icon className="size-5" />
                   </div>
@@ -298,10 +298,10 @@ export default function AboutPage() {
           </RevealGrid>
         </RevealSection>
 
-        <RevealSection className="liquid-section">
+        <RevealSection className="editorial-band signature-grid border-y border-[var(--glass-border)]">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
             <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
-              <div className="glass-panel rounded-md border p-6 sm:p-8 lg:sticky lg:top-24 lg:p-10">
+              <div className="atelier-panel p-6 sm:p-8 lg:sticky lg:top-24 lg:p-10">
                 <p className="text-muted-foreground text-sm">
                   איך אנחנו חושבים על תכשיט
                 </p>
@@ -353,7 +353,7 @@ export default function AboutPage() {
                   בלי לחשוב, ועל התחושה שתכשיט מסוים הפך להיות “שלי” לא בגלל
                   שהוא חדש, אלא בגלל שהוא נכון.
                 </p>
-                <div className="glass-card text-foreground rounded-md border p-6">
+                <div className="atelier-panel text-foreground p-6">
                   <p className="text-2xl leading-9 font-semibold">
                     יופי טוב אינו ממהר. הוא נותן לעין להתקרב, ליד לבדוק, וללב
                     להבין שהבחירה שלו יכולה להיות שקטה.
@@ -387,10 +387,7 @@ export default function AboutPage() {
                 const Icon = item.icon;
 
                 return (
-                  <section
-                    className="glass-card rounded-md border p-5"
-                    key={item.title}
-                  >
+                  <section className="atelier-panel p-5" key={item.title}>
                     <div className="flex gap-4">
                       <div className="glass-inset flex size-10 shrink-0 items-center justify-center rounded-md border">
                         <Icon className="size-5" />
@@ -409,9 +406,9 @@ export default function AboutPage() {
           </div>
         </RevealSection>
 
-        <RevealSection className="liquid-section">
+        <RevealSection className="editorial-band signature-grid border-y border-[var(--glass-border)]">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
-            <div className="glass-panel mx-auto max-w-4xl rounded-md border p-6 text-center sm:p-8 lg:p-12">
+            <div className="purchase-chamber mx-auto max-w-4xl p-6 text-center sm:p-8 lg:p-12">
               <Sparkles className="mx-auto size-8" />
               <h2 className="mt-6 text-4xl leading-tight font-semibold">
                 Aphrodite אינה מבקשת שתבחרו מהר. היא מבקשת שתבחרו בביטחון.

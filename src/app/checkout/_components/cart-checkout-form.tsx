@@ -30,6 +30,7 @@ import { EmptyState } from "~/components/ui/empty-state";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { LoadingState } from "~/components/ui/loading-state";
+import { PrivacyCollectionNotice } from "~/components/privacy-collection-notice";
 import { Separator } from "~/components/ui/separator";
 import { StatusMessage } from "~/components/ui/status-message";
 import { Textarea } from "~/components/ui/textarea";
@@ -38,6 +39,8 @@ import {
   getOrCreateCartSessionKey,
 } from "~/lib/cart-session";
 import { formatPrice } from "~/lib/format";
+import { removeGoldLanguage } from "~/lib/gold-free-copy";
+import { createLegalAcceptanceRecord } from "~/lib/legal-acceptance";
 import { api } from "~/trpc/react";
 import { CheckoutStepBadge } from "./checkout-step-badge";
 
@@ -92,6 +95,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
   const [giftWrap, setGiftWrap] = useState(false);
   const [giftMessage, setGiftMessage] = useState("");
   const [couponCode, setCouponCode] = useState("");
+  const [acceptTerms, setAcceptTerms] = useState(false);
 
   const cartQuery = api.cart.get.useQuery(
     { sessionKey: sessionKey ?? "" },
@@ -137,6 +141,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
     cartItemCount > 0 && fulfillmentMethod === "DELIVERY" ? 29 : 0;
   const orderTotal = Math.max(0, subtotal - discount + shippingAmount);
   const checkoutIssues = getCheckoutIssues({
+    acceptTerms,
     branchSlug,
     cartItemCount,
     city,
@@ -165,7 +170,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
   );
 
   const mobileCheckoutBar = (
-    <div className="glass-chrome fixed inset-x-0 bottom-[calc(var(--floating-stack-bottom,0px)+env(safe-area-inset-bottom))] z-40 border-t p-3 shadow-[0_-18px_48px_oklch(0_0_0_/_14%)] md:hidden">
+    <div className="glass-chrome fixed inset-x-0 bottom-[calc(var(--floating-stack-bottom,0px)+env(safe-area-inset-bottom))] z-40 border-t p-3 md:hidden">
       <div className="mx-auto grid max-w-md grid-cols-[minmax(0,1fr)_auto] items-center gap-3 pl-14">
         <div className="min-w-0">
           <p className="text-muted-foreground truncate text-xs">
@@ -217,6 +222,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
       giftWrap,
       giftMessage: giftMessage || undefined,
       couponCode: couponCode || undefined,
+      legalAcceptance: createLegalAcceptanceRecord(),
     });
   }
 
@@ -264,20 +270,23 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
   return (
     <>
       <form
-        className="mx-auto grid max-w-7xl gap-8 px-4 pt-8 pb-28 sm:px-6 sm:pt-10 sm:pb-28 md:pb-10 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start"
+        className="focus-safe-stack mx-auto grid max-w-7xl gap-8 px-4 pt-8 pb-28 sm:px-6 sm:pt-10 sm:pb-28 md:pb-10 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start"
         data-testid="cart-checkout-form"
         id={checkoutFormId}
         onSubmit={handleSubmit}
       >
         <div className="grid gap-6">
           <div>
-            <h1 className="text-4xl font-semibold">סל וקופה</h1>
+            <p className="editorial-eyebrow mb-3">Checkout</p>
+            <h1 className="editorial-title text-4xl font-semibold sm:text-5xl">
+              סל וקופה
+            </h1>
             <p className="text-muted-foreground mt-2">
               סל רב-פריטים עם שמירת מלאי, פרטי מסירה וקופון.
             </p>
           </div>
 
-          <Card className="rounded-md">
+          <Card className="checkout-ledger rounded-md">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckoutStepBadge value="1" />
@@ -332,10 +341,11 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                         dir="auto"
                         href={`/product/${item.productSlug}`}
                       >
-                        {item.productName}
+                        {removeGoldLanguage(item.productName)}
                       </Link>
                       <p className="text-muted-foreground text-sm">
-                        {item.variantName} · {formatPrice(item.unitPrice)}
+                        {removeGoldLanguage(item.variantName)} ·{" "}
+                        {formatPrice(item.unitPrice)}
                       </p>
                     </div>
                     <div className="col-span-2 flex items-center justify-end gap-2 sm:col-span-1">
@@ -413,7 +423,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
             </CardContent>
           </Card>
 
-          <Card className="rounded-md">
+          <Card className="checkout-ledger rounded-md">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckoutStepBadge value="2" />
@@ -425,6 +435,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                 הפרטים משמשים לאישור ההזמנה ולתיאום מסירה. נציג יאמת את הפרטים
                 לפני חיוב.
               </p>
+              <PrivacyCollectionNotice variant="checkout" />
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="name">שם מלא</Label>
@@ -465,7 +476,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
             </CardContent>
           </Card>
 
-          <Card className="rounded-md">
+          <Card className="checkout-ledger rounded-md">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckoutStepBadge value="3" />
@@ -501,7 +512,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
               <div>
                 <Label htmlFor="branch">סניף מלאי</Label>
                 <select
-                  className="glass-control mt-2 h-11 w-full rounded-md border px-3 text-sm outline-none focus-visible:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
+                  className="bg-background mt-2 h-11 w-full rounded-none border border-[var(--glass-border)] px-3 text-sm outline-none focus-visible:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
                   id="branch"
                   onChange={(event) => setBranchSlug(event.currentTarget.value)}
                   required
@@ -555,7 +566,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
             </CardContent>
           </Card>
 
-          <Card className="rounded-md">
+          <Card className="checkout-ledger rounded-md">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckoutStepBadge value="4" />
@@ -603,7 +614,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
         </div>
 
         <aside>
-          <Card className="rounded-md lg:sticky lg:top-24">
+          <Card className="checkout-ledger rounded-md lg:sticky lg:top-24">
             <CardHeader>
               <CheckoutStepBadge value="5" />
               <CardTitle>סיכום</CardTitle>
@@ -652,6 +663,34 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                   </div>
                 ))}
               </div>
+              <label className="glass-inset flex min-h-11 items-start gap-3 rounded-md border p-3 text-xs leading-5">
+                <input
+                  checked={acceptTerms}
+                  className="mt-1"
+                  onChange={(event) =>
+                    setAcceptTerms(event.currentTarget.checked)
+                  }
+                  required
+                  type="checkbox"
+                />
+                <span>
+                  קראתי ואני מסכימ/ה ל
+                  <Link
+                    className="text-foreground underline underline-offset-4"
+                    href="/terms"
+                  >
+                    תקנון האתר
+                  </Link>{" "}
+                  ול
+                  <Link
+                    className="text-foreground underline underline-offset-4"
+                    href="/privacy"
+                  >
+                    מדיניות הפרטיות
+                  </Link>
+                  . ידוע לי שההזמנה נשמרת לטיפול נציג לפני חיוב.
+                </span>
+              </label>
               {checkoutIssues.length > 0 ? (
                 <div className="glass-inset rounded-md border p-3 text-sm">
                   <p className="font-medium">לפני שמירת ההזמנה</p>
@@ -692,6 +731,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
 }
 
 function getCheckoutIssues({
+  acceptTerms,
   branchSlug,
   cartItemCount,
   city,
@@ -702,6 +742,7 @@ function getCheckoutIssues({
   sessionKey,
   street,
 }: {
+  acceptTerms: boolean;
   branchSlug: string;
   cartItemCount: number;
   city: string;
@@ -720,6 +761,7 @@ function getCheckoutIssues({
   if (phone.trim().length < 7) issues.push("יש להזין טלפון תקין.");
   if (!email.trim()) issues.push("יש להזין אימייל.");
   if (!branchSlug) issues.push("יש לבחור סניף מלאי.");
+  if (!acceptTerms) issues.push("יש לאשר את התקנון ומדיניות הפרטיות.");
 
   if (fulfillmentMethod === "DELIVERY") {
     if (city.trim().length < 2) issues.push("יש להזין עיר למשלוח.");

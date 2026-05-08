@@ -64,7 +64,10 @@ describe("seed catalog generator", () => {
       expect(categorySlugs.has(product.categorySlug)).toBe(true);
       expect(materialSlugs.has(product.materialSlug)).toBe(true);
       expect(Number(product.basePrice)).toBeGreaterThan(0);
-      expect(product.image).toMatch(/^https:\/\//);
+      expect(product.images.length).toBeGreaterThanOrEqual(3);
+      expect(
+        product.images.every((image) => image.startsWith("https://")),
+      ).toBe(true);
       expect(product.tags.length).toBeGreaterThan(0);
       expect(product.variants.length).toBeGreaterThan(0);
 

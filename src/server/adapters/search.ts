@@ -233,12 +233,12 @@ type TypesenseSearchEnv = {
 };
 
 export function assertLocalSearchAllowed(config: TypesenseSearchEnv = env) {
-  if (
-    config.NODE_ENV === "production" &&
-    (!config.TYPESENSE_HOST || !config.TYPESENSE_API_KEY)
-  ) {
+  const hasTypesenseHost = Boolean(config.TYPESENSE_HOST);
+  const hasTypesenseApiKey = Boolean(config.TYPESENSE_API_KEY);
+
+  if (hasTypesenseHost !== hasTypesenseApiKey) {
     throw new Error(
-      "Typesense production search requires TYPESENSE_HOST and TYPESENSE_API_KEY. Local catalog fallback is only available in development and test.",
+      "Typesense search configuration is incomplete. Set both TYPESENSE_HOST and TYPESENSE_API_KEY, or leave both unset to use the local catalog fallback.",
     );
   }
 }

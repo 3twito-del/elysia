@@ -27,6 +27,7 @@ import {
   getOrderStatusLabel,
 } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
+import { removeGoldLanguage } from "~/lib/gold-free-copy";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 import { DEFAULT_CATALOG_IMAGE } from "~/server/services/catalog";
@@ -36,6 +37,33 @@ export const metadata = {
 };
 
 export const dynamic = "force-dynamic";
+
+const guestAccountHighlights = [
+  {
+    detail: "סטטוס, חשבוניות והחזרות",
+    icon: PackageCheck,
+    label: "הזמנות",
+    value: "מאובטח",
+  },
+  {
+    detail: "מוצרים שמורים לקנייה",
+    icon: Heart,
+    label: "Wishlist",
+    value: "פעיל",
+  },
+  {
+    detail: "טבעות, שרשראות וצמידים",
+    icon: Ruler,
+    label: "מידות",
+    value: "פרופיל",
+  },
+  {
+    detail: "מדידה וייעוץ בסניף",
+    icon: CalendarCheck,
+    label: "תורים",
+    value: "בתיאום",
+  },
+] as const;
 
 async function loadCustomerAccount(userId: string) {
   const customer = await db.customer.findUnique({
@@ -96,51 +124,61 @@ export default async function AccountPage() {
     return (
       <main>
         <SiteHeader />
-        <RevealSection className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
-          <h1 className="text-3xl font-semibold sm:text-4xl">אזור לקוח</h1>
-          <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
-            כניסה מאובטחת באמצעות קוד חד-פעמי. לאחר הכניסה יוצגו הזמנות,
-            Wishlist, מידות שמורות ותורים.
-          </p>
-          <div className="mt-6 grid gap-5 sm:mt-8 lg:grid-cols-[minmax(0,420px)_1fr]">
-            <Card className="rounded-md">
+        <RevealSection className="editorial-band signature-grid border-b border-[var(--glass-border)]">
+          <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-center lg:py-12">
+            <div className="grid gap-5">
+              <Badge className="w-fit gap-2" variant="secondary">
+                <ShieldCheck className="size-3.5" />
+                כניסה מאובטחת
+              </Badge>
+              <div className="grid gap-3">
+                <h1 className="editorial-title max-w-3xl text-3xl font-semibold tracking-normal text-balance sm:text-4xl lg:text-5xl">
+                  אזור לקוח לכל מה שנשמר אחרי הקנייה
+                </h1>
+                <p className="text-muted-foreground max-w-3xl leading-7">
+                  כניסה באמצעות קוד חד-פעמי פותחת הזמנות, Wishlist, מידות שמורות
+                  ותורים, בלי סיסמה קבועה ובלי חשבון מורכב.
+                </p>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                {guestAccountHighlights.map((item) => {
+                  const Icon = item.icon;
+
+                  return (
+                    <div
+                      className="commerce-command grid grid-cols-[auto_1fr] items-center gap-3 rounded-md p-4"
+                      key={item.label}
+                    >
+                      <div className="glass-card flex size-10 items-center justify-center rounded-md border">
+                        <Icon className="size-4" aria-hidden="true" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-muted-foreground text-xs">
+                          {item.label}
+                        </p>
+                        <p className="font-semibold">{item.value}</p>
+                        <p className="text-muted-foreground mt-1 text-xs leading-5">
+                          {item.detail}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <Card className="checkout-ledger purchase-chamber rounded-md">
               <CardHeader className="border-b border-[var(--glass-border)] pb-4">
-                <CardTitle>כניסת לקוח</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <ShieldCheck className="size-5" />
+                  כניסת לקוח
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <CustomerOtpForm />
               </CardContent>
             </Card>
-            <RevealGrid className="grid gap-5 sm:grid-cols-2">
-              <MetricCard
-                detail="סטטוס, חשבוניות והחזרות"
-                icon={PackageCheck}
-                label="הזמנות"
-                variant="soft"
-                value="מאובטח"
-              />
-              <MetricCard
-                detail="מוצרים שמורים לקנייה"
-                icon={Heart}
-                label="Wishlist"
-                variant="soft"
-                value="פעיל"
-              />
-              <MetricCard
-                detail="טבעות, שרשראות וצמידים"
-                icon={Ruler}
-                label="מידות"
-                variant="soft"
-                value="פרופיל"
-              />
-              <MetricCard
-                detail="מדידה וייעוץ בסניף"
-                icon={CalendarCheck}
-                label="תורים"
-                variant="soft"
-                value="בתיאום"
-              />
-            </RevealGrid>
           </div>
         </RevealSection>
       </main>
@@ -152,272 +190,274 @@ export default async function AccountPage() {
   return (
     <main>
       <SiteHeader />
-      <RevealSection className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0">
-            <h1 className="text-3xl font-semibold sm:text-4xl">אזור לקוח</h1>
-            <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
-              {customer.firstName ?? session.user.name ?? "לקוח/ה"} מחובר/ת. כאן
-              נשמרות הזמנות, פריטים מועדפים, מידות ותורים.
-            </p>
+      <RevealSection className="editorial-band signature-grid border-b border-[var(--glass-border)]">
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
+              <h1 className="text-3xl font-semibold sm:text-4xl">אזור לקוח</h1>
+              <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
+                {customer.firstName ?? session.user.name ?? "לקוח/ה"} מחובר/ת.
+                כאן נשמרות הזמנות, פריטים מועדפים, מידות ותורים.
+              </p>
+            </div>
+            <form action={customerLogoutAction}>
+              <Button className="gap-2" type="submit" variant="outline">
+                <LogOut className="size-4" />
+                יציאה
+              </Button>
+            </form>
           </div>
-          <form action={customerLogoutAction}>
-            <Button className="gap-2" type="submit" variant="outline">
-              <LogOut className="size-4" />
-              יציאה
-            </Button>
-          </form>
-        </div>
 
-        <RevealGrid className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-          <MetricCard
-            detail="הזמנות אחרונות"
-            icon={PackageCheck}
-            label="הזמנות"
-            value={String(customer.orders.length)}
-          />
-          <MetricCard
-            detail="פריטים שמורים"
-            icon={Heart}
-            label="Wishlist"
-            value={String(wishlistItems.length)}
-          />
-          <MetricCard
-            detail="מידות שמורות"
-            icon={Ruler}
-            label="מידות"
-            value={String(customer.savedSizes.length)}
-          />
-          <MetricCard
-            detail="תורים אחרונים"
-            icon={CalendarCheck}
-            label="תורים"
-            value={String(customer.appointments.length)}
-          />
-        </RevealGrid>
+          <RevealGrid className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+            <MetricCard
+              detail="הזמנות אחרונות"
+              icon={PackageCheck}
+              label="הזמנות"
+              value={String(customer.orders.length)}
+            />
+            <MetricCard
+              detail="פריטים שמורים"
+              icon={Heart}
+              label="Wishlist"
+              value={String(wishlistItems.length)}
+            />
+            <MetricCard
+              detail="מידות שמורות"
+              icon={Ruler}
+              label="מידות"
+              value={String(customer.savedSizes.length)}
+            />
+            <MetricCard
+              detail="תורים אחרונים"
+              icon={CalendarCheck}
+              label="תורים"
+              value={String(customer.appointments.length)}
+            />
+          </RevealGrid>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-2">
-          <Card className="rounded-md">
-            <CardHeader>
-              <CardTitle>הזמנות אחרונות</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-3">
-              {customer.orders.length === 0 ? (
-                <EmptyState
-                  description="אין הזמנות משויכות לחשבון הזה עדיין."
-                  icon={PackageCheck}
-                  title="אין הזמנות"
-                  variant="inset"
-                  actions={
-                    <Button asChild variant="outline">
-                      <Link href="/category/rings">בחירת תכשיט ראשון</Link>
-                    </Button>
-                  }
-                />
-              ) : (
-                customer.orders.map((order) => (
-                  <Link
-                    className="glass-inset flex min-w-0 items-center justify-between gap-4 rounded-md border p-3"
-                    href={`/account/orders/${order.id}`}
-                    key={order.id}
-                  >
-                    <div className="min-w-0">
-                      <p className="font-medium">{order.orderNumber}</p>
-                      <Badge className="mt-1 w-fit" variant="secondary">
-                        {getOrderStatusLabel(order.status)}
-                      </Badge>
-                    </div>
-                    <span className="shrink-0 font-medium">
-                      {formatPrice(Number(order.total))}
-                    </span>
-                  </Link>
-                ))
-              )}
-            </CardContent>
-          </Card>
-
-          <Card className="rounded-md">
-            <CardHeader>
-              <CardTitle>Wishlist</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-3">
-              {wishlistItems.length === 0 ? (
-                <EmptyState
-                  description="עדיין לא נשמרו מוצרים."
-                  icon={Heart}
-                  title="Wishlist ריק"
-                  variant="inset"
-                  actions={
-                    <Button asChild variant="outline">
-                      <Link href="/search">חיפוש בקטלוג</Link>
-                    </Button>
-                  }
-                />
-              ) : (
-                wishlistItems.map((item) => (
-                  <div
-                    className="glass-inset flex items-center justify-between gap-4 rounded-md border p-3"
-                    key={item.id}
-                  >
-                    <Link
-                      className="flex min-w-0 flex-1 items-center gap-3"
-                      href={`/product/${item.variant.product.slug}`}
-                    >
-                      <span className="bg-muted relative size-14 shrink-0 overflow-hidden rounded-md border border-[var(--glass-border)]">
-                        <Image
-                          alt=""
-                          className="media-color object-cover"
-                          fill
-                          sizes="56px"
-                          src={
-                            item.variant.product.media[0]?.url ??
-                            DEFAULT_CATALOG_IMAGE
-                          }
-                        />
-                      </span>
-                      <span className="min-w-0">
-                        <span className="block truncate font-medium">
-                          {item.variant.product.name}
-                        </span>
-                        <span className="text-muted-foreground block text-xs">
-                          {item.variant.name}
-                        </span>
-                      </span>
-                    </Link>
-                    <form action={removeWishlistItemAction}>
-                      <input name="itemId" type="hidden" value={item.id} />
-                      <Button size="icon" type="submit" variant="ghost">
-                        <Trash2 className="size-4" />
-                        <span className="sr-only">הסרה</span>
+          <div className="mt-8 grid gap-6 lg:grid-cols-2">
+            <Card className="checkout-ledger rounded-md">
+              <CardHeader>
+                <CardTitle>הזמנות אחרונות</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-3">
+                {customer.orders.length === 0 ? (
+                  <EmptyState
+                    description="אין הזמנות משויכות לחשבון הזה עדיין."
+                    icon={PackageCheck}
+                    title="אין הזמנות"
+                    variant="inset"
+                    actions={
+                      <Button asChild variant="outline">
+                        <Link href="/category/rings">בחירת תכשיט ראשון</Link>
                       </Button>
-                    </form>
-                  </div>
-                ))
-              )}
-            </CardContent>
-          </Card>
-
-          <Card className="rounded-md">
-            <CardHeader>
-              <CardTitle>כתובות שמורות</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-4">
-              {customer.addresses.length === 0 ? (
-                <EmptyState
-                  description="אפשר לשמור כתובת למסירה מהירה בהזמנה הבאה."
-                  icon={MapPin}
-                  title="אין כתובות שמורות"
-                  variant="inset"
-                />
-              ) : (
-                customer.addresses.map((address) => (
-                  <div
-                    className="glass-inset rounded-md border p-3"
-                    key={address.id}
-                  >
-                    <p className="font-medium">
-                      {address.label ?? address.recipient}
-                    </p>
-                    <p className="text-muted-foreground text-sm">
-                      {address.city}, {address.street}
-                    </p>
-                    <p className="text-muted-foreground text-xs">
-                      {address.phone}
-                    </p>
-                  </div>
-                ))
-              )}
-              <CustomerAddressForm />
-            </CardContent>
-          </Card>
-
-          <Card className="rounded-md">
-            <CardHeader>
-              <CardTitle>מידות וסגנון</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-3">
-              {customer.savedSizes.length === 0 ? (
-                <EmptyState
-                  description="עדיין לא נשמרו מידות."
-                  icon={Ruler}
-                  title="אין מידות שמורות"
-                  variant="inset"
-                  actions={
-                    <Button asChild variant="outline">
-                      <Link href="/stylist">בניית פרופיל סגנון</Link>
-                    </Button>
-                  }
-                />
-              ) : (
-                customer.savedSizes.map((size) => (
-                  <div
-                    className="glass-inset flex items-center justify-between rounded-md border p-3"
-                    key={size.id}
-                  >
-                    <span>{size.kind}</span>
-                    <span className="font-medium">{size.value}</span>
-                  </div>
-                ))
-              )}
-            </CardContent>
-          </Card>
-          <Card className="rounded-md">
-            <CardHeader>
-              <CardTitle>תורים</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-3">
-              {customer.appointments.length === 0 ? (
-                <EmptyState
-                  description="אפשר לתאם מדידה, איסוף או ייעוץ אישי באחד הסניפים."
-                  icon={CalendarCheck}
-                  title="אין תורים קרובים"
-                  variant="inset"
-                  actions={
-                    <Button asChild variant="outline">
-                      <Link href="/branches">תיאום תור</Link>
-                    </Button>
-                  }
-                />
-              ) : (
-                <>
-                  {customer.appointments.map((appointment) => (
-                    <div
-                      className="glass-inset rounded-md border p-3"
-                      key={appointment.id}
+                    }
+                  />
+                ) : (
+                  customer.orders.map((order) => (
+                    <Link
+                      className="glass-inset flex min-w-0 items-center justify-between gap-4 rounded-md border p-3"
+                      href={`/account/orders/${order.id}`}
+                      key={order.id}
                     >
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="font-medium">{appointment.topic}</p>
-                          <p className="text-muted-foreground text-sm">
-                            {appointment.branch.name} ·{" "}
-                            {appointment.startsAt.toLocaleString("he-IL")}
-                          </p>
-                        </div>
-                        <Badge className="shrink-0" variant="secondary">
-                          {getAppointmentStatusLabel(appointment.status)}
+                      <div className="min-w-0">
+                        <p className="font-medium">{order.orderNumber}</p>
+                        <Badge className="mt-1 w-fit" variant="secondary">
+                          {getOrderStatusLabel(order.status)}
                         </Badge>
                       </div>
-                    </div>
-                  ))}
-                  <Button asChild className="w-fit" variant="outline">
-                    <Link href="/branches">תיאום תור נוסף</Link>
-                  </Button>
-                </>
-              )}
-            </CardContent>
-          </Card>
+                      <span className="shrink-0 font-medium">
+                        {formatPrice(Number(order.total))}
+                      </span>
+                    </Link>
+                  ))
+                )}
+              </CardContent>
+            </Card>
 
-          <Card className="rounded-md">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <ShieldCheck className="size-5" />
-                פרטיות ונתונים
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CustomerPrivacyActions />
-            </CardContent>
-          </Card>
+            <Card className="checkout-ledger rounded-md">
+              <CardHeader>
+                <CardTitle>Wishlist</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-3">
+                {wishlistItems.length === 0 ? (
+                  <EmptyState
+                    description="עדיין לא נשמרו מוצרים."
+                    icon={Heart}
+                    title="Wishlist ריק"
+                    variant="inset"
+                    actions={
+                      <Button asChild variant="outline">
+                        <Link href="/search">חיפוש בקטלוג</Link>
+                      </Button>
+                    }
+                  />
+                ) : (
+                  wishlistItems.map((item) => (
+                    <div
+                      className="glass-inset flex items-center justify-between gap-4 rounded-md border p-3"
+                      key={item.id}
+                    >
+                      <Link
+                        className="flex min-w-0 flex-1 items-center gap-3"
+                        href={`/product/${item.variant.product.slug}`}
+                      >
+                        <span className="bg-muted relative size-14 shrink-0 overflow-hidden rounded-md border border-[var(--glass-border)]">
+                          <Image
+                            alt=""
+                            className="media-color object-cover"
+                            fill
+                            sizes="56px"
+                            src={
+                              item.variant.product.media[0]?.url ??
+                              DEFAULT_CATALOG_IMAGE
+                            }
+                          />
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block truncate font-medium">
+                            {removeGoldLanguage(item.variant.product.name)}
+                          </span>
+                          <span className="text-muted-foreground block text-xs">
+                            {removeGoldLanguage(item.variant.name)}
+                          </span>
+                        </span>
+                      </Link>
+                      <form action={removeWishlistItemAction}>
+                        <input name="itemId" type="hidden" value={item.id} />
+                        <Button size="icon" type="submit" variant="ghost">
+                          <Trash2 className="size-4" />
+                          <span className="sr-only">הסרה</span>
+                        </Button>
+                      </form>
+                    </div>
+                  ))
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="checkout-ledger rounded-md">
+              <CardHeader>
+                <CardTitle>כתובות שמורות</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-4">
+                {customer.addresses.length === 0 ? (
+                  <EmptyState
+                    description="אפשר לשמור כתובת למסירה מהירה בהזמנה הבאה."
+                    icon={MapPin}
+                    title="אין כתובות שמורות"
+                    variant="inset"
+                  />
+                ) : (
+                  customer.addresses.map((address) => (
+                    <div
+                      className="glass-inset rounded-md border p-3"
+                      key={address.id}
+                    >
+                      <p className="font-medium">
+                        {address.label ?? address.recipient}
+                      </p>
+                      <p className="text-muted-foreground text-sm">
+                        {address.city}, {address.street}
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        {address.phone}
+                      </p>
+                    </div>
+                  ))
+                )}
+                <CustomerAddressForm />
+              </CardContent>
+            </Card>
+
+            <Card className="checkout-ledger rounded-md">
+              <CardHeader>
+                <CardTitle>מידות וסגנון</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-3">
+                {customer.savedSizes.length === 0 ? (
+                  <EmptyState
+                    description="עדיין לא נשמרו מידות."
+                    icon={Ruler}
+                    title="אין מידות שמורות"
+                    variant="inset"
+                    actions={
+                      <Button asChild variant="outline">
+                        <Link href="/stylist">בניית פרופיל סגנון</Link>
+                      </Button>
+                    }
+                  />
+                ) : (
+                  customer.savedSizes.map((size) => (
+                    <div
+                      className="glass-inset flex items-center justify-between rounded-md border p-3"
+                      key={size.id}
+                    >
+                      <span>{size.kind}</span>
+                      <span className="font-medium">{size.value}</span>
+                    </div>
+                  ))
+                )}
+              </CardContent>
+            </Card>
+            <Card className="checkout-ledger rounded-md">
+              <CardHeader>
+                <CardTitle>תורים</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-3">
+                {customer.appointments.length === 0 ? (
+                  <EmptyState
+                    description="אפשר לתאם מדידה, איסוף או ייעוץ אישי באחד הסניפים."
+                    icon={CalendarCheck}
+                    title="אין תורים קרובים"
+                    variant="inset"
+                    actions={
+                      <Button asChild variant="outline">
+                        <Link href="/branches">תיאום תור</Link>
+                      </Button>
+                    }
+                  />
+                ) : (
+                  <>
+                    {customer.appointments.map((appointment) => (
+                      <div
+                        className="glass-inset rounded-md border p-3"
+                        key={appointment.id}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <p className="font-medium">{appointment.topic}</p>
+                            <p className="text-muted-foreground text-sm">
+                              {appointment.branch.name} ·{" "}
+                              {appointment.startsAt.toLocaleString("he-IL")}
+                            </p>
+                          </div>
+                          <Badge className="shrink-0" variant="secondary">
+                            {getAppointmentStatusLabel(appointment.status)}
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
+                    <Button asChild className="w-fit" variant="outline">
+                      <Link href="/branches">תיאום תור נוסף</Link>
+                    </Button>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="checkout-ledger rounded-md">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <ShieldCheck className="size-5" />
+                  פרטיות ונתונים
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CustomerPrivacyActions />
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </RevealSection>
     </main>

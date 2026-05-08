@@ -25,7 +25,7 @@ export function CookieConsentBanner() {
 
     const syncOffset = () => {
       const height = bannerRef.current?.getBoundingClientRect().height ?? 0;
-      root.style.setProperty("--floating-stack-bottom", `${height + 16}px`);
+      root.style.setProperty("--floating-stack-bottom", `${height + 24}px`);
     };
 
     syncOffset();
@@ -59,21 +59,23 @@ export function CookieConsentBanner() {
   return (
     <section
       aria-label="בחירת קוקיז"
-      className="bg-background/98 fixed inset-x-0 bottom-0 z-50 max-h-[28dvh] overflow-y-auto border-t border-[var(--glass-border)] px-3 py-2 shadow-[0_-10px_28px_oklch(0_0_0_/_9%)] backdrop-blur-xl sm:max-h-[44dvh] sm:px-6 sm:py-4"
+      className="popup-surface fixed inset-x-3 bottom-3 z-50 max-h-[min(54dvh,24rem)] overflow-y-auto rounded-md border px-4 py-3 backdrop-blur-xl sm:inset-x-auto sm:right-6 sm:bottom-6 sm:w-[min(35rem,calc(100vw-3rem))] sm:px-5 sm:py-4"
       ref={bannerRef}
     >
-      <div className="mx-auto grid max-w-7xl gap-2 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-        <div className="flex min-w-0 gap-2 sm:gap-3">
-          <div className="glass-inset mt-0.5 hidden size-10 shrink-0 items-center justify-center rounded-md border sm:flex">
+      <div className="grid gap-4">
+        <div className="flex min-w-0 gap-3">
+          <div className="glass-inset mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-md border">
             <Cookie className="size-5" aria-hidden="true" />
           </div>
           <div className="min-w-0">
-            <h2 className="text-xs font-semibold sm:text-base">
+            <h2 className="text-sm font-semibold sm:text-base">
               בחירת קוקיז באתר Aphrodite
             </h2>
-            <p className="text-muted-foreground mt-1 line-clamp-1 max-w-3xl text-[0.68rem] leading-5 sm:line-clamp-none sm:text-sm sm:leading-7">
+            <p className="text-muted-foreground mt-1 max-w-3xl text-xs leading-6 sm:text-sm sm:leading-7">
               אנו משתמשים בקוקיז חיוניים להפעלת האתר והסל. באישורכם נשתמש גם
-              במדידה ושיפור חוויית הקנייה, כולל מוצרים שנצפו לאחרונה.
+              במדידה ושיפור חוויית הקנייה, כולל מוצרים שנצפו לאחרונה. סירוב לא
+              יפגע בשירותים חיוניים, וניתן לשנות את הבחירה בכל עת דרך מדיניות
+              הפרטיות.
               <Link
                 className="text-foreground ms-1 underline underline-offset-4"
                 href="/privacy"
@@ -84,9 +86,9 @@ export function CookieConsentBanner() {
           </div>
         </div>
 
-        <div className="grid shrink-0 grid-cols-2 gap-2 sm:flex sm:flex-row">
+        <div className="grid shrink-0 grid-cols-2 gap-2">
           <Button
-            className="min-h-9 text-xs sm:min-h-11 sm:min-w-32 sm:text-sm"
+            className="min-h-10 text-xs sm:min-h-11 sm:text-sm"
             type="button"
             variant="outline"
             onClick={() => chooseConsent("essential")}
@@ -95,7 +97,7 @@ export function CookieConsentBanner() {
             הכרחי בלבד
           </Button>
           <Button
-            className="min-h-9 text-xs sm:min-h-11 sm:min-w-32 sm:text-sm"
+            className="min-h-10 text-xs sm:min-h-11 sm:text-sm"
             type="button"
             onClick={() => chooseConsent("all")}
           >

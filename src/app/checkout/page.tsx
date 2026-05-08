@@ -14,7 +14,7 @@ export default async function CheckoutPage() {
   return (
     <main>
       <SiteHeader />
-      <RevealSection>
+      <RevealSection className="editorial-band signature-grid border-b border-[var(--glass-border)]">
         <TRPCReactProvider>
           <CartCheckoutForm
             branches={branches.map((branch) => ({

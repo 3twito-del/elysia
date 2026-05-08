@@ -3,6 +3,10 @@ import type { FulfillmentMethod, Prisma } from "@prisma/client";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 
+import {
+  LEGAL_PRIVACY_VERSION,
+  LEGAL_TERMS_VERSION,
+} from "~/lib/legal-acceptance";
 import { db } from "~/server/db";
 import { cartSessionKeySchema } from "~/server/services/cart";
 import { revalidateCatalogMutation } from "~/server/services/catalog-revalidation";
@@ -20,6 +24,12 @@ const CART_CHECKOUT_PAYMENT_PROVIDER = "manual";
 type TransactionClient = Prisma.TransactionClient;
 
 export { isCouponUsable };
+
+const legalAcceptanceInputSchema = z.object({
+  acceptedAt: z.string().datetime(),
+  privacyVersion: z.literal(LEGAL_PRIVACY_VERSION),
+  termsVersion: z.literal(LEGAL_TERMS_VERSION),
+});
 
 export const cartCheckoutInputSchema = z.object({
   sessionKey: cartSessionKeySchema,
@@ -40,6 +50,7 @@ export const cartCheckoutInputSchema = z.object({
   giftWrap: z.boolean().default(false),
   giftMessage: z.string().trim().max(500).optional(),
   couponCode: z.string().trim().max(64).optional(),
+  legalAcceptance: legalAcceptanceInputSchema.optional(),
 });
 
 type CartCheckoutInput = z.infer<typeof cartCheckoutInputSchema>;
@@ -265,6 +276,7 @@ async function createCartCheckoutOrderInTransaction(
       currency: "ILS",
       idempotencyKey: `cart_checkout_${order.id}`,
       rawPayload: {
+        legalAcceptance: input.legalAcceptance ?? null,
         mode: "cart_checkout",
         reservationExpiresAt: reservationExpiresAt.toISOString(),
       },
@@ -281,6 +293,7 @@ async function createCartCheckoutOrderInTransaction(
       couponCode: coupon?.code,
       mergeMetadata: {
         checkedOutAt: new Date().toISOString(),
+        legalAcceptance: input.legalAcceptance ?? null,
         orderId: order.id,
       },
     },

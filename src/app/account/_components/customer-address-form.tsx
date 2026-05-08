@@ -5,6 +5,7 @@ import { useFormStatus } from "react-dom";
 import { MapPin } from "lucide-react";
 
 import { addCustomerAddressAction, type AccountActionState } from "../actions";
+import { PrivacyCollectionNotice } from "~/components/privacy-collection-notice";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { StatusMessage } from "~/components/ui/status-message";
@@ -27,6 +28,7 @@ export function CustomerAddressForm() {
         <Input name="street" placeholder="רחוב ומספר" required />
         <Input name="postalCode" placeholder="מיקוד" />
       </div>
+      <PrivacyCollectionNotice variant="account" />
       {state.message ? (
         <StatusMessage tone={state.ok ? "success" : "error"} variant="plain">
           {state.message}

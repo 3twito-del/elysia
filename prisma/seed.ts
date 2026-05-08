@@ -209,15 +209,15 @@ async function main() {
         tags: productData.tags,
         collections: { connect: productCollections },
         media: {
-          create: {
+          create: productData.images.map((url, index) => ({
             kind: "IMAGE",
-            url: productData.image,
+            url,
             alt: productData.name,
             width: 1400,
             height: 1400,
-            isPrimary: true,
-            sortOrder: 0,
-          },
+            isPrimary: index === 0,
+            sortOrder: index,
+          })),
         },
         variants: {
           create: productData.variants.map((variantData, index) => ({
