@@ -45,7 +45,7 @@ export default async function AdminLoginPage({
               גישה להזמנות, מלאי ופעולות תפעוליות שמורה למנהלים מורשים בלבד.
             </p>
           </div>
-          <Card className="checkout-ledger purchase-chamber maison-frame rounded-md">
+          <Card className="checkout-ledger purchase-chamber rounded-md">
             <CardHeader className="border-b border-[var(--glass-border)] pb-4">
               <CardTitle className="flex items-center gap-2">
                 <LockKeyhole className="size-5" />

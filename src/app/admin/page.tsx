@@ -187,7 +187,7 @@ export default async function AdminPage() {
       <SiteHeader />
       <section className="editorial-slab border-b border-[var(--glass-border)] px-4 py-8 sm:px-6 sm:py-10">
         <div className="mx-auto max-w-7xl">
-          <div className="admin-command-center maison-frame mb-8 flex flex-col gap-5 rounded-md border border-white/10 p-5 shadow-[0_18px_48px_var(--glass-shadow-deep)] lg:flex-row lg:items-start lg:justify-between">
+          <div className="admin-command-center mb-8 flex flex-col gap-5 rounded-md border border-white/10 p-5 shadow-[0_18px_48px_var(--glass-shadow-deep)] lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0">
               <Badge className="mb-4 rounded-none" variant="secondary">
                 Back office

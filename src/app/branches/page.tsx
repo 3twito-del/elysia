@@ -103,7 +103,7 @@ export default async function BranchesPage() {
             </div>
           </div>
 
-          <div className="maison-frame product-tile-image overflow-hidden">
+          <div className="product-tile-image overflow-hidden">
             <div className="bg-muted relative aspect-[4/3] min-h-64 overflow-hidden">
               <Image
                 alt=""
