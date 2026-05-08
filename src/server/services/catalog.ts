@@ -18,6 +18,7 @@ import {
 const ACTIVE_PRODUCT_WHERE = {
   status: "ACTIVE",
 } satisfies Prisma.ProductWhereInput;
+const CATALOG_PRESENTATION_CACHE_VERSION = "catalog:v3";
 const CATALOG_REVALIDATE_SECONDS = 60 * 60;
 export const DEFAULT_CATALOG_IMAGE = DEFAULT_BRAND_MEDIA;
 
@@ -114,7 +115,7 @@ const getCatalogCategoriesCached = unstable_cache(
 
     return categories.map(mapCatalogCategory);
   },
-  ["catalog:v2:categories"],
+  [`${CATALOG_PRESENTATION_CACHE_VERSION}:categories`],
   {
     revalidate: CATALOG_REVALIDATE_SECONDS,
     tags: [CATALOG_CACHE_TAGS.categories],
@@ -137,7 +138,7 @@ export async function getCatalogCategoryBySlug(slug: string) {
 
       return mapCatalogCategory(category);
     },
-    [`catalog:v2:category:${slug}`],
+    [`${CATALOG_PRESENTATION_CACHE_VERSION}:category:${slug}`],
     {
       revalidate: CATALOG_REVALIDATE_SECONDS,
       tags: [CATALOG_CACHE_TAGS.categories, categoryCacheTag(slug)],
@@ -159,7 +160,7 @@ const getCatalogBranchesCached = unstable_cache(
 
     return branches.map(mapCatalogBranch);
   },
-  ["catalog:v2:branches"],
+  [`${CATALOG_PRESENTATION_CACHE_VERSION}:branches`],
   {
     revalidate: CATALOG_REVALIDATE_SECONDS,
     tags: [CATALOG_CACHE_TAGS.branches],
@@ -180,7 +181,7 @@ const getFeaturedCatalogProductsCached = unstable_cache(
 
     return selectFeaturedCatalogProducts(records.map(mapCatalogProduct), take);
   },
-  ["catalog:v2:featured-products"],
+  [`${CATALOG_PRESENTATION_CACHE_VERSION}:featured-products`],
   {
     revalidate: CATALOG_REVALIDATE_SECONDS,
     tags: [CATALOG_CACHE_TAGS.products],
@@ -234,7 +235,9 @@ export async function listCatalogProducts(input: { category?: string } = {}) {
 
       return records.map(mapCatalogProduct);
     },
-    [`catalog:v2:products:${input.category ?? "all"}`],
+    [
+      `${CATALOG_PRESENTATION_CACHE_VERSION}:products:${input.category ?? "all"}`,
+    ],
     {
       revalidate: CATALOG_REVALIDATE_SECONDS,
       tags: [
@@ -259,7 +262,7 @@ export async function getCatalogProductBySlug(slug: string) {
 
       return record ? mapCatalogProduct(record) : null;
     },
-    [`catalog:v2:product:${slug}`],
+    [`${CATALOG_PRESENTATION_CACHE_VERSION}:product:${slug}`],
     {
       revalidate: CATALOG_REVALIDATE_SECONDS,
       tags: [CATALOG_CACHE_TAGS.products, productCacheTag(slug)],
@@ -304,7 +307,7 @@ const getCatalogFacetsCached = unstable_cache(
       },
     };
   },
-  ["catalog:v2:facets"],
+  [`${CATALOG_PRESENTATION_CACHE_VERSION}:facets`],
   {
     revalidate: CATALOG_REVALIDATE_SECONDS,
     tags: [CATALOG_CACHE_TAGS.facets, CATALOG_CACHE_TAGS.products],

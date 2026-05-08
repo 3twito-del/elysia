@@ -17,7 +17,6 @@ const ringCloseup = image("photo-1605100804763-247f67b3557e");
 const diamondEditorial = image("photo-1506630448388-4e683c67ddb0");
 const pearlJewelryTray = image("photo-1611652022419-a9419f74343d");
 const necklaceCloseup = image("photo-1599643478518-a784e5dc4c8f");
-const pearlStillLife = image("photo-1523293182086-7651a899d37f");
 const earringCloseup = image("photo-1535632066927-ab7c9ab60908");
 const braceletCloseup = image("photo-1611591437281-460bfbe1220a");
 
@@ -36,7 +35,7 @@ export const brandMedia = {
     "Layered jewelry on a neutral studio surface",
   ),
   aiHero: editorialAsset(
-    image("photo-1523293182086-7651a899d37f", 2000, 86),
+    image("photo-1611652022419-a9419f74343d", 2000, 86),
     "Curated jewelry gift selection",
   ),
   stylistHero: editorialAsset(
@@ -61,7 +60,7 @@ export const brandMedia = {
       "Everyday fine jewelry editorial detail",
     ),
     "evening-glow": editorialAsset(
-      pearlStillLife,
+      necklaceCloseup,
       "Evening jewelry still life with pearl tones",
     ),
     "gift-studio": editorialAsset(
@@ -97,7 +96,7 @@ export const brandMedia = {
         productStillLife,
         "Necklace still life on a light surface",
       ),
-      editorialAsset(pearlStillLife, "Necklace layered with pearl tones"),
+      editorialAsset(pearlJewelryTray, "Necklace layered with pearl tones"),
       editorialAsset(diamondEditorial, "Necklace editorial detail"),
     ],
     earrings: [
@@ -111,7 +110,7 @@ export const brandMedia = {
     ],
     bracelets: [
       editorialAsset(braceletCloseup, "Fine bracelet product close up"),
-      editorialAsset(pearlStillLife, "Bracelet layered still life"),
+      editorialAsset(pearlJewelryTray, "Bracelet layered still life"),
       editorialAsset(productStillLife, "Bracelet on a light studio surface"),
       editorialAsset(necklaceCloseup, "Bracelet editorial detail"),
     ],
@@ -129,12 +128,12 @@ export const brandMedia = {
     ],
     "selene-chain": [
       editorialAsset(necklaceCloseup, "Selene chain close up"),
-      editorialAsset(pearlStillLife, "Selene chain layered still life"),
+      editorialAsset(pearlJewelryTray, "Selene chain layered still life"),
       editorialAsset(diamondEditorial, "Selene chain editorial detail"),
     ],
     "hera-bracelet": [
       editorialAsset(braceletCloseup, "Hera bracelet close up"),
-      editorialAsset(pearlStillLife, "Hera bracelet layered still life"),
+      editorialAsset(pearlJewelryTray, "Hera bracelet layered still life"),
       editorialAsset(productStillLife, "Hera bracelet still life"),
     ],
   },
@@ -148,7 +147,6 @@ const seedImageIds = [
   "photo-1506630448388-4e683c67ddb0",
   "photo-1611652022419-a9419f74343d",
   "photo-1599643478518-a784e5dc4c8f",
-  "photo-1523293182086-7651a899d37f",
   "photo-1535632066927-ab7c9ab60908",
   "photo-1611591437281-460bfbe1220a",
 ] as const;
