@@ -8,11 +8,6 @@ import { db } from "~/server/db";
 
 const newsletterSchema = z.object({
   email: z.string().trim().email().toLowerCase(),
-  marketingConsent: z.literal("yes"),
-});
-
-const unsubscribeNewsletterSchema = z.object({
-  email: z.string().trim().email().toLowerCase(),
 });
 
 const wishlistSchema = z.object({
@@ -30,90 +25,26 @@ export async function joinNewsletter(
 ): Promise<PublicActionState> {
   const parsed = newsletterSchema.safeParse({
     email: formData.get("email"),
-    marketingConsent: formData.get("marketingConsent"),
-  });
-
-  if (!parsed.success) {
-    return {
-      ok: false,
-      message: "יש להזין אימייל תקין ולאשר קבלת דיוור",
-    };
-  }
-
-  const consentText =
-    "אני מסכימ/ה לקבל מ-Aphrodite עדכונים, הטבות ודברי פרסומת בדוא״ל, וידוע לי שאפשר להסיר בכל עת.";
-
-  try {
-    await db.newsletterSubscription.upsert({
-      where: { email: parsed.data.email },
-      update: {
-        consentText,
-        consentedAt: new Date(),
-        status: "SUBSCRIBED",
-        source: "site-footer-explicit-consent",
-      },
-      create: {
-        consentText,
-        consentedAt: new Date(),
-        email: parsed.data.email,
-        source: "site-footer-explicit-consent",
-      },
-    });
-  } catch (error) {
-    if (process.env.NODE_ENV === "development") {
-      console.error("[newsletter] failed to save subscription", error);
-    }
-
-    return {
-      ok: false,
-      message: "לא הצלחנו לשמור את ההרשמה כרגע. נסו שוב בעוד רגע.",
-    };
-  }
-
-  revalidatePath("/");
-  return { ok: true, message: "נרשמת לעדכוני Aphrodite" };
-}
-
-export async function unsubscribeNewsletter(
-  _state: PublicActionState,
-  formData: FormData,
-): Promise<PublicActionState> {
-  const parsed = unsubscribeNewsletterSchema.safeParse({
-    email: formData.get("email"),
   });
 
   if (!parsed.success) {
     return { ok: false, message: "כתובת אימייל לא תקינה" };
   }
 
-  try {
-    await db.newsletterSubscription.upsert({
-      where: { email: parsed.data.email },
-      update: {
-        status: "UNSUBSCRIBED",
-        source: "unsubscribe-form",
-      },
-      create: {
-        email: parsed.data.email,
-        source: "unsubscribe-form",
-        status: "UNSUBSCRIBED",
-      },
-    });
-  } catch (error) {
-    if (process.env.NODE_ENV === "development") {
-      console.error("[newsletter] failed to unsubscribe", error);
-    }
+  await db.newsletterSubscription.upsert({
+    where: { email: parsed.data.email },
+    update: {
+      status: "SUBSCRIBED",
+      source: "site-footer",
+    },
+    create: {
+      email: parsed.data.email,
+      source: "site-footer",
+    },
+  });
 
-    return {
-      ok: false,
-      message: "לא הצלחנו לעדכן את ההסרה כרגע. נסו שוב בעוד רגע.",
-    };
-  }
-
-  return {
-    ok: true,
-    message: "הכתובת הוסרה מדיוור שיווקי או סומנה כלא פעילה.",
-  };
+  revalidatePath("/");
+  return { ok: true, message: "נרשמת לעדכוני Aphrodite" };
 }
 
 export async function saveWishlistItem(

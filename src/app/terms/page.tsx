@@ -14,13 +14,7 @@ import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-import {
-  publicBusinessAddress,
-  publicBusinessId,
-  publicBusinessName,
-  publicContactEmail,
-  publicContactPhone,
-} from "~/lib/public-contact";
+import { publicContactEmail, publicContactPhone } from "~/lib/public-contact";
 
 export const metadata: Metadata = {
   title: "תקנון האתר",
@@ -29,10 +23,6 @@ export const metadata: Metadata = {
 };
 
 const termsSections = [
-  {
-    title: "פרטי העסק וגילוי לצרכן",
-    text: `${publicBusinessName} היא הגורם המפעיל את האתר. מספר עוסק/חברה: ${publicBusinessId}. כתובת למסירת הודעות: ${publicBusinessAddress}. פרטי קשר לבירורים, ביטולים ושירות לקוחות: ${publicContactEmail}, ${publicContactPhone}. לפני שליחת הזמנה יוצגו שם המוצר, מאפייניו העיקריים, מחירו בש״ח, דמי משלוח אם קיימים, סניף מלאי, אמצעי מסירה ופרטי הלקוח כפי שנמסרו.`,
-  },
   {
     title: "שימוש באתר",
     text: "השימוש באתר כפוף לתקנון זה, למדיניות הפרטיות ולכל דין. האתר מיועד להצגת קטלוג תכשיטים, בדיקת זמינות, קבלת ייעוץ, ביצוע הזמנה ותיאום שירות בסניפים.",
@@ -51,11 +41,7 @@ const termsSections = [
   },
   {
     title: "ביטול עסקה והחזרות",
-    text: "ביטול עסקה, החלפה או החזרה יתבצעו בהתאם לחוק הגנת הצרכן, תקנותיו ומדיניות החנות כפי שתימסר במועד הרכישה. בהזמנה באתר ניתן למסור הודעת ביטול בטלפון, בדוא״ל או בכל אמצעי מקוון שפורסם באתר. ככלל, בעסקת מכר מרחוק ניתן לבטל בתוך 14 ימים ממועד קבלת המוצר או מסמך הגילוי, לפי המאוחר, בכפוף לחריגים ולמועדים מיוחדים הקבועים בדין. בעת ביטול שאינו בשל פגם, אי התאמה או אי אספקה במועד, ייתכן חיוב בדמי ביטול בשיעור 5% ממחיר העסקה או 100 ש״ח, לפי הנמוך. מוצרים שיוצרו או הותאמו במיוחד, מוצרים שנעשה בהם שימוש או מוצרים שנפגמו עשויים להיות כפופים למגבלות החזרה לפי דין. ברכישה בסניף יחולו גם כללי ביטול עסקה פרונטלית, לרבות ההוראות הייחודיות לתכשיטים.",
-  },
-  {
-    title: "אישור תקנון ומדיניות פרטיות",
-    text: "שליחת בקשת הזמנה, תיאום פגישה או שימוש בכלי AI באתר מהווים אישור כי קראת את התקנון ואת מדיניות הפרטיות הרלוונטיים לאותה פעולה. אם אינך מסכים לתנאים, אין להשלים את הפעולה באתר ויש לפנות לשירות הלקוחות לקבלת חלופה.",
+    text: "ביטול עסקה, החלפה או החזרה יתבצעו בהתאם לחוק הגנת הצרכן, תקנותיו ומדיניות החנות כפי שתימסר במועד הרכישה. מוצרים שיוצרו או הותאמו במיוחד, מוצרים שנעשה בהם שימוש או מוצרים שנפגמו עשויים להיות כפופים למגבלות החזרה לפי דין.",
   },
   {
     title: "ייעוץ AI ותוכן באתר",
@@ -76,12 +62,12 @@ export default function TermsPage() {
     <main>
       <SiteHeader />
 
-      <RevealSection className="editorial-band signature-grid border-b border-[var(--glass-border)]">
+      <RevealSection className="liquid-section border-b border-[var(--glass-border)]">
         <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:py-16">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-muted-foreground text-sm">Aphrodite</p>
-              <h1 className="editorial-title mt-3 text-4xl font-semibold tracking-normal sm:text-5xl">
+              <h1 className="mt-3 text-4xl font-semibold tracking-normal sm:text-5xl">
                 תקנון האתר
               </h1>
               <p className="text-muted-foreground mt-4 max-w-3xl leading-8">
@@ -90,7 +76,7 @@ export default function TermsPage() {
                 דין.
               </p>
             </div>
-            <div className="atelier-panel w-fit p-4">
+            <div className="glass-card w-fit rounded-md border p-4">
               <FileText className="size-8" aria-hidden="true" />
             </div>
           </div>
@@ -98,17 +84,17 @@ export default function TermsPage() {
       </RevealSection>
 
       <RevealSection className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:py-14">
-        <div className="atelier-panel p-6 sm:p-8">
+        <div className="glass-panel rounded-md border p-6 sm:p-8">
           <div className="grid gap-6 sm:grid-cols-3">
-            <div className="border-y border-[var(--glass-border)] py-4">
+            <div className="glass-inset rounded-md border p-4">
               <ShieldCheck className="size-5" aria-hidden="true" />
               <p className="mt-3 font-medium">שימוש הוגן וברור</p>
             </div>
-            <div className="border-y border-[var(--glass-border)] py-4">
+            <div className="glass-inset rounded-md border p-4">
               <Truck className="size-5" aria-hidden="true" />
               <p className="mt-3 font-medium">משלוח ואיסוף מסניף</p>
             </div>
-            <div className="border-y border-[var(--glass-border)] py-4">
+            <div className="glass-inset rounded-md border p-4">
               <RotateCcw className="size-5" aria-hidden="true" />
               <p className="mt-3 font-medium">ביטולים לפי דין</p>
             </div>
@@ -148,14 +134,14 @@ export default function TermsPage() {
             </p>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               <a
-                className="atelier-panel hover:text-foreground flex items-center gap-3 p-4 transition"
+                className="glass-inset hover:text-foreground flex items-center gap-3 rounded-md border p-4 transition"
                 href={`mailto:${publicContactEmail}`}
               >
                 <Mail className="size-5" aria-hidden="true" />
                 <span>{publicContactEmail}</span>
               </a>
               <a
-                className="atelier-panel hover:text-foreground flex items-center gap-3 p-4 transition"
+                className="glass-inset hover:text-foreground flex items-center gap-3 rounded-md border p-4 transition"
                 href={`tel:${publicContactPhone}`}
               >
                 <Phone className="size-5" aria-hidden="true" />
@@ -168,7 +154,7 @@ export default function TermsPage() {
 
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
             <p className="text-muted-foreground text-sm">
-              עודכן לאחרונה: 7 במאי 2026.
+              עודכן לאחרונה: 29 באפריל 2026.
             </p>
             <Button asChild>
               <Link href="/privacy">למדיניות הפרטיות</Link>

@@ -2,11 +2,6 @@ import type { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
-import {
-  DEFAULT_BRAND_MEDIA,
-  getBrandCategoryHero,
-  getBrandProductMediaUrls,
-} from "~/lib/brand-media";
 import { formatPrice } from "~/lib/format";
 import { db } from "~/server/db";
 import {
@@ -19,7 +14,34 @@ const ACTIVE_PRODUCT_WHERE = {
   status: "ACTIVE",
 } satisfies Prisma.ProductWhereInput;
 const CATALOG_REVALIDATE_SECONDS = 60 * 60;
-export const DEFAULT_CATALOG_IMAGE = DEFAULT_BRAND_MEDIA;
+export const DEFAULT_CATALOG_IMAGE =
+  "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80";
+const CATALOG_IMAGE_VARIANTS: Record<string, readonly string[]> = {
+  rings: [
+    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=1400&q=80",
+  ],
+  necklaces: [
+    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=1400&q=80",
+  ],
+  earrings: [
+    "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=1400&q=80",
+  ],
+  bracelets: [
+    "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80",
+    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1400&q=80",
+  ],
+};
 
 type CatalogProductRecord = Prisma.ProductGetPayload<{
   include: ReturnType<typeof createCatalogProductInclude>;
@@ -114,7 +136,7 @@ const getCatalogCategoriesCached = unstable_cache(
 
     return categories.map(mapCatalogCategory);
   },
-  ["catalog:v2:categories"],
+  ["catalog:categories"],
   {
     revalidate: CATALOG_REVALIDATE_SECONDS,
     tags: [CATALOG_CACHE_TAGS.categories],
@@ -137,7 +159,7 @@ export async function getCatalogCategoryBySlug(slug: string) {
 
       return mapCatalogCategory(category);
     },
-    [`catalog:v2:category:${slug}`],
+    [`catalog:category:${slug}`],
     {
       revalidate: CATALOG_REVALIDATE_SECONDS,
       tags: [CATALOG_CACHE_TAGS.categories, categoryCacheTag(slug)],
@@ -159,7 +181,7 @@ const getCatalogBranchesCached = unstable_cache(
 
     return branches.map(mapCatalogBranch);
   },
-  ["catalog:v2:branches"],
+  ["catalog:branches"],
   {
     revalidate: CATALOG_REVALIDATE_SECONDS,
     tags: [CATALOG_CACHE_TAGS.branches],
@@ -180,7 +202,7 @@ const getFeaturedCatalogProductsCached = unstable_cache(
 
     return selectFeaturedCatalogProducts(records.map(mapCatalogProduct), take);
   },
-  ["catalog:v2:featured-products"],
+  ["catalog:featured-products"],
   {
     revalidate: CATALOG_REVALIDATE_SECONDS,
     tags: [CATALOG_CACHE_TAGS.products],
@@ -234,7 +256,7 @@ export async function listCatalogProducts(input: { category?: string } = {}) {
 
       return records.map(mapCatalogProduct);
     },
-    [`catalog:v2:products:${input.category ?? "all"}`],
+    [`catalog:products:${input.category ?? "all"}`],
     {
       revalidate: CATALOG_REVALIDATE_SECONDS,
       tags: [
@@ -259,7 +281,7 @@ export async function getCatalogProductBySlug(slug: string) {
 
       return record ? mapCatalogProduct(record) : null;
     },
-    [`catalog:v2:product:${slug}`],
+    [`catalog:product:${slug}`],
     {
       revalidate: CATALOG_REVALIDATE_SECONDS,
       tags: [CATALOG_CACHE_TAGS.products, productCacheTag(slug)],
@@ -304,7 +326,7 @@ const getCatalogFacetsCached = unstable_cache(
       },
     };
   },
-  ["catalog:v2:facets"],
+  ["catalog:facets"],
   {
     revalidate: CATALOG_REVALIDATE_SECONDS,
     tags: [CATALOG_CACHE_TAGS.facets, CATALOG_CACHE_TAGS.products],
@@ -476,11 +498,29 @@ function getDisplayImages(input: {
   images: string[];
   slug: string;
 }) {
-  return getBrandProductMediaUrls({
-    categorySlug: input.categorySlug,
-    currentImages: input.images,
-    slug: input.slug,
-  });
+  if (!input.slug.startsWith("test-") || input.images.length !== 1) {
+    return input.images;
+  }
+
+  const variants = CATALOG_IMAGE_VARIANTS[input.categorySlug];
+
+  if (!variants || variants.length === 0) {
+    return input.images;
+  }
+
+  const variant = variants[getStableIndex(input.slug, variants.length)];
+
+  return variant ? [variant] : input.images;
+}
+
+function getStableIndex(value: string, length: number) {
+  let hash = 0;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
+  }
+
+  return hash % length;
 }
 
 function mapCatalogBranch(record: {
@@ -535,10 +575,8 @@ function mapCatalogCategory(category: {
     }>;
   }>;
 }): CatalogCategory {
-  const brandHero = getBrandCategoryHero(category.slug);
   const image =
     category.imageUrl ??
-    brandHero.url ??
     category.products[0]?.media[0]?.url ??
     DEFAULT_CATALOG_IMAGE;
 

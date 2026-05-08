@@ -25,7 +25,6 @@ import {
   type CatalogCategory,
   type CatalogFacets,
 } from "~/server/services/catalog";
-import { removeGoldLanguage } from "~/lib/gold-free-copy";
 
 type SearchPageProps = {
   searchParams: Promise<{
@@ -62,10 +61,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     getCatalogFacets(),
   ]);
   const input = normalizeSearchInput(params, { branches, categories, facets });
-  const displayCategories = categories.map((category) => ({
-    ...category,
-    description: removeGoldLanguage(category.description),
-  }));
   const result = await searchProvider.searchProducts(input);
   const activeFilters = getActiveSearchFilters(input, categories, branches);
   const hasActiveFilters = activeFilters.length > 0;
@@ -96,182 +91,173 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   return (
     <main>
       <SiteHeader />
-      <RevealSection className="editorial-band signature-grid border-b border-[var(--glass-border)]">
-        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
-          <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(320px,440px)] lg:items-stretch">
-            <div className="lg:self-center">
-              <p className="editorial-eyebrow mb-3">Catalog search</p>
-              <h1 className="editorial-title text-4xl font-semibold sm:text-5xl">
-                חיפוש בקטלוג
-              </h1>
-              <p className="text-muted-foreground mt-2 max-w-2xl leading-7 sm:mt-3">
-                תוצאות הקטלוג נשארות נקיות ומדויקות, עם צבע שמגיע מהפריטים עצמם.
+      <RevealSection className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-end">
+          <div>
+            <h1 className="text-3xl font-semibold sm:text-4xl">חיפוש בקטלוג</h1>
+            <p className="text-muted-foreground mt-2 max-w-2xl leading-7 sm:mt-3">
+              תוצאות הקטלוג נשארות נקיות ומדויקות, עם צבע שמגיע מהפריטים עצמם.
+            </p>
+          </div>
+          {result.hits[0]?.image ? (
+            <div className="glass-inset bg-muted relative hidden h-32 overflow-hidden rounded-md border lg:block">
+              <Image
+                alt=""
+                className="media-mono object-cover"
+                fill
+                sizes="260px"
+                src={result.hits[0].image}
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(255,255,255,0.58),rgba(255,255,255,0.04))]" />
+            </div>
+          ) : null}
+        </div>
+        <SearchControls
+          activeFilterCount={activeFilters.length}
+          branches={branches}
+          categories={categories}
+          input={input}
+        />
+
+        {hasActiveFilters ? (
+          <div
+            aria-label="פילטרים פעילים"
+            className="mt-5 flex flex-wrap items-center gap-2 text-sm"
+          >
+            {activeFilters.map((filter) => (
+              <Badge
+                asChild
+                className="h-8 gap-1 pr-3 pl-2"
+                key={filter.key}
+                variant="outline"
+              >
+                <Link href={filter.href} scroll={false}>
+                  <span>{filter.label}</span>
+                  <X className="size-3" />
+                  <span className="sr-only">הסרת פילטר</span>
+                </Link>
+              </Badge>
+            ))}
+            <Button asChild size="sm" variant="ghost">
+              <Link href="/search" scroll={false}>
+                איפוס הכל
+              </Link>
+            </Button>
+          </div>
+        ) : null}
+
+        {visibleFacets.length > 0 ? (
+          <div className="mt-6 hidden flex-wrap gap-2 text-sm sm:flex">
+            {visibleFacets.map((value) => (
+              <span
+                className="glass-inset rounded-md border px-3 py-1"
+                key={`${value.field}:${value.value}`}
+              >
+                {value.value} · {value.count}
+              </span>
+            ))}
+          </div>
+        ) : null}
+
+        <section
+          aria-labelledby="search-results"
+          className="glass-chrome mt-8 rounded-md border p-3"
+          data-testid="search-results-summary"
+        >
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-base font-medium" id="search-results">
+                {resultSummary}
+              </h2>
+              <p className="text-muted-foreground text-sm">
+                {input.query
+                  ? `עבור "${input.query}"`
+                  : hasActiveFilters
+                    ? "לפי הבחירה הפעילה"
+                    : "כל התכשיטים שנמצאו בקטלוג"}
               </p>
             </div>
-            {result.hits[0]?.image ? (
-              <div className="bg-muted relative hidden h-44 overflow-hidden border border-[var(--glass-border)] lg:block">
-                <Image
-                  alt=""
-                  className="media-mono object-cover"
-                  fill
-                  sizes="(min-width: 1024px) 440px, 100vw"
-                  src={result.hits[0].image}
-                />
-                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(255,255,255,0.58),rgba(255,255,255,0.04))]" />
-              </div>
-            ) : null}
-          </div>
-          <SearchControls
-            activeFilterCount={activeFilters.length}
-            branches={branches}
-            categories={displayCategories}
-            input={input}
-          />
-
-          {hasActiveFilters ? (
-            <div
-              aria-label="פילטרים פעילים"
-              className="mt-5 flex flex-wrap items-center gap-2 text-sm"
-            >
-              {activeFilters.map((filter) => (
-                <Badge
-                  asChild
-                  className="h-8 gap-1 pr-3 pl-2"
-                  key={filter.key}
-                  variant="outline"
-                >
-                  <Link href={filter.href} scroll={false}>
-                    <span>{filter.label}</span>
-                    <X className="size-3" />
-                    <span className="sr-only">הסרת פילטר</span>
+            <div className="flex flex-wrap gap-2">
+              {hasActiveFilters ? (
+                <Button asChild size="sm" variant="ghost">
+                  <Link href="/search" scroll={false}>
+                    איפוס
                   </Link>
-                </Badge>
-              ))}
-              <Button asChild size="sm" variant="ghost">
-                <Link href="/search" scroll={false}>
-                  איפוס הכל
+                </Button>
+              ) : null}
+              <Button asChild size="sm" variant="outline">
+                <Link href="/ai">
+                  <Sparkles className="size-3.5" />
+                  התאמה אישית
                 </Link>
               </Button>
             </div>
-          ) : null}
+          </div>
+        </section>
 
-          {visibleFacets.length > 0 ? (
-            <div className="mt-6 hidden flex-wrap gap-2 text-sm sm:flex">
-              {visibleFacets.map((value, index) => {
-                const displayValue = removeGoldLanguage(value.value);
-
-                return (
-                  <span
-                    className="border border-[var(--glass-border)] px-3 py-1"
-                    key={`${value.field}:${displayValue}:${index}`}
-                  >
-                    {displayValue} · {value.count}
-                  </span>
-                );
-              })}
-            </div>
-          ) : null}
-
-          <section
-            aria-labelledby="search-results"
-            className="commerce-command mt-8 rounded-md p-4"
-            data-testid="search-results-summary"
-          >
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h2 className="text-base font-medium" id="search-results">
-                  {resultSummary}
-                </h2>
-                <p className="text-muted-foreground text-sm">
-                  {input.query
-                    ? `עבור "${removeGoldLanguage(input.query)}"`
-                    : hasActiveFilters
-                      ? "לפי הבחירה הפעילה"
-                      : "כל התכשיטים שנמצאו בקטלוג"}
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2">
+        {result.hits.length === 0 ? (
+          <EmptyState
+            className="mt-10"
+            description={
+              <>
+                אפשר לנקות את הבחירה, לעבור לקטגוריה פתוחה, או לתת לסטייליסט
+                למצוא חלופה קרובה מתוך הקטלוג.
+              </>
+            }
+            icon={Search}
+            testId="search-empty-state"
+            title="לא נמצאו תוצאות"
+            actions={
+              <>
                 {hasActiveFilters ? (
-                  <Button asChild size="sm" variant="ghost">
+                  <Button asChild variant="outline">
                     <Link href="/search" scroll={false}>
-                      איפוס
+                      איפוס חיפוש
                     </Link>
                   </Button>
                 ) : null}
-                <Button asChild size="sm" variant="outline">
-                  <Link href="/ai">
-                    <Sparkles className="size-3.5" />
-                    התאמה אישית
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          </section>
-
-          {result.hits.length === 0 ? (
-            <EmptyState
-              className="mt-10"
-              description={
-                <>
-                  אפשר לנקות את הבחירה, לעבור לקטגוריה פתוחה, או לתת לסטייליסט
-                  למצוא חלופה קרובה מתוך הקטלוג.
-                </>
-              }
-              icon={Search}
-              testId="search-empty-state"
-              title="לא נמצאו תוצאות"
-              actions={
-                <>
-                  {hasActiveFilters ? (
-                    <Button asChild variant="outline">
-                      <Link href="/search" scroll={false}>
-                        איפוס חיפוש
-                      </Link>
-                    </Button>
-                  ) : null}
-                  {firstCategory ? (
-                    <Button
-                      asChild
-                      variant={hasActiveFilters ? "outline" : "default"}
-                    >
-                      <Link href={`/category/${firstCategory.slug}`}>
-                        {firstCategory.name}
-                      </Link>
-                    </Button>
-                  ) : null}
-                  <Button asChild>
-                    <Link href="/ai">התאמה אישית</Link>
+                {firstCategory ? (
+                  <Button
+                    asChild
+                    variant={hasActiveFilters ? "outline" : "default"}
+                  >
+                    <Link href={`/category/${firstCategory.slug}`}>
+                      {firstCategory.name}
+                    </Link>
                   </Button>
-                </>
-              }
-            />
-          ) : (
-            <>
-              <RevealGrid
-                className="mt-10 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4"
-                data-testid="search-results-grid"
-              >
-                {result.hits.map((product, index) => (
-                  <ProductCard
-                    imagePriority={index < 4}
-                    key={product.slug}
-                    product={product}
-                    searchContext={{
-                      position: (result.page - 1) * result.perPage + index,
-                      query: input.query,
-                    }}
-                  />
-                ))}
-              </RevealGrid>
+                ) : null}
+                <Button asChild>
+                  <Link href="/ai">התאמה אישית</Link>
+                </Button>
+              </>
+            }
+          />
+        ) : (
+          <>
+            <RevealGrid
+              className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+              data-testid="search-results-grid"
+            >
+              {result.hits.map((product, index) => (
+                <ProductCard
+                  imagePriority={index < 4}
+                  key={product.slug}
+                  product={product}
+                  searchContext={{
+                    position: (result.page - 1) * result.perPage + index,
+                    query: input.query,
+                  }}
+                />
+              ))}
+            </RevealGrid>
 
-              <SearchPagination
-                currentPage={result.page}
-                input={input}
-                totalPages={result.totalPages}
-              />
-            </>
-          )}
-        </div>
+            <SearchPagination
+              currentPage={result.page}
+              input={input}
+              totalPages={result.totalPages}
+            />
+          </>
+        )}
       </RevealSection>
     </main>
   );
@@ -336,7 +322,7 @@ function getActiveSearchFilters(
   if (input.query) {
     filters.push({
       key: "query",
-      label: `חיפוש: ${removeGoldLanguage(input.query)}`,
+      label: `חיפוש: ${input.query}`,
       href: createSearchHref({ ...input, page: undefined, query: undefined }),
     });
   }
@@ -364,7 +350,7 @@ function getActiveSearchFilters(
   if (input.material) {
     filters.push({
       key: "material",
-      label: `חומר: ${removeGoldLanguage(input.material)}`,
+      label: `חומר: ${input.material}`,
       href: createSearchHref({
         ...input,
         material: undefined,
@@ -384,7 +370,7 @@ function getActiveSearchFilters(
   if (input.collection) {
     filters.push({
       key: "collection",
-      label: `קולקציה: ${removeGoldLanguage(input.collection)}`,
+      label: `קולקציה: ${input.collection}`,
       href: createSearchHref({
         ...input,
         collection: undefined,

@@ -34,19 +34,8 @@ export async function SiteFooter() {
   ]);
 
   return (
-    <footer className="site-chrome editorial-slab border-t">
+    <footer className="glass-chrome site-chrome border-t">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:py-16">
-        <div className="editorial-rule mb-10 grid gap-4 py-5 text-sm sm:grid-cols-3">
-          {[
-            "זמינות לפי סניף",
-            "ייעוץ אישי ומתנות",
-            "קופה, איסוף ושירות במקום אחד",
-          ].map((item) => (
-            <div className="atelier-line ps-4" key={item}>
-              {item}
-            </div>
-          ))}
-        </div>
         <div className="grid gap-12 lg:grid-cols-[1.25fr_0.8fr_0.85fr_1fr]">
           <section className="max-w-lg">
             <Link className="inline-flex items-center gap-2" href="/">
@@ -264,12 +253,6 @@ export async function SiteFooter() {
               href="/accessibility"
             >
               הצהרת נגישות
-            </Link>
-            <Link
-              className="hover:text-foreground transition"
-              href="/newsletter/unsubscribe"
-            >
-              הסרה מדיוור
             </Link>
           </nav>
         </div>

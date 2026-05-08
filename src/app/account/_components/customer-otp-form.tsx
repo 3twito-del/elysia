@@ -9,7 +9,6 @@ import {
   verifyCustomerOtpAction,
   type CustomerOtpState,
 } from "../actions";
-import { PrivacyCollectionNotice } from "~/components/privacy-collection-notice";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
@@ -35,19 +34,18 @@ export function CustomerOtpForm() {
   return (
     <div className="grid gap-6">
       <form action={requestAction} className="grid gap-4">
-        <div className="grid gap-2">
+        <div>
           <Label htmlFor="identifier">אימייל או טלפון</Label>
           <Input
             autoComplete="email tel"
             dir="ltr"
             id="identifier"
             name="identifier"
-            placeholder="name@example.com / 050..."
+            placeholder="name@example.com או 050..."
             required
             type="text"
           />
         </div>
-        <PrivacyCollectionNotice variant="login" />
         {requestState.message ? (
           <OtpStatusMessage state={requestState} />
         ) : null}
@@ -61,7 +59,7 @@ export function CustomerOtpForm() {
 
       <form action={verifyAction} className="grid gap-4">
         <input name="sessionKey" type="hidden" value={sessionKey} />
-        <div className="grid gap-2">
+        <div>
           <Label htmlFor="verify-identifier">אימייל או טלפון לאימות</Label>
           <Input
             defaultValue={identifier}
@@ -69,12 +67,12 @@ export function CustomerOtpForm() {
             id="verify-identifier"
             key={identifier}
             name="identifier"
-            placeholder="name@example.com / 050..."
+            placeholder="name@example.com או 050..."
             required
             type="text"
           />
         </div>
-        <div className="grid gap-2">
+        <div>
           <Label htmlFor="code">קוד אימות</Label>
           <Input
             autoComplete="one-time-code"

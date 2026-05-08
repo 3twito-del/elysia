@@ -41,7 +41,6 @@ import {
   type CatalogCategory,
   type CatalogProduct,
 } from "~/server/services/catalog";
-import { removeGoldLanguage } from "~/lib/gold-free-copy";
 import { cn } from "~/lib/utils";
 
 type CategoryRouteProps = {
@@ -108,9 +107,7 @@ export async function generateMetadata({
 
   return {
     title: category?.name ?? "קטגוריה",
-    description: category
-      ? removeGoldLanguage(category.description)
-      : undefined,
+    description: category?.description,
   };
 }
 
@@ -175,18 +172,15 @@ export default async function CategoryPage({
     <main>
       <SiteHeader />
 
-      <RevealSection className="editorial-band signature-grid border-b border-[var(--glass-border)]">
+      <RevealSection className="liquid-section border-b border-[var(--glass-border)]">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:py-10">
-          <div className="grid gap-6 border-y border-[var(--glass-border)] py-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,440px)] lg:items-stretch">
-            <div className="lg:self-center">
-              <Badge
-                className="bg-background/70 mb-4 rounded-none"
-                variant="secondary"
-              >
+          <div className="glass-panel grid gap-6 rounded-md border p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-stretch">
+            <div>
+              <Badge className="mb-4" variant="secondary">
                 קטלוג Aphrodite
               </Badge>
               <div className="flex flex-wrap items-end gap-3">
-                <h1 className="editorial-title text-4xl font-semibold sm:text-5xl">
+                <h1 className="text-3xl font-semibold sm:text-4xl">
                   {category?.name ?? "קטגוריה"}
                 </h1>
                 <span className="text-muted-foreground pb-1 text-sm">
@@ -194,20 +188,19 @@ export default async function CategoryPage({
                 </span>
               </div>
               <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
-                {category?.description
-                  ? removeGoldLanguage(category.description)
-                  : "בחירה מסוננת מתוך קטלוג התכשיטים, עם זמינות סניפים ומחירים בשקלים."}
+                {category?.description ??
+                  "בחירה מסוננת מתוך קטלוג התכשיטים, עם זמינות סניפים ומחירים בשקלים."}
               </p>
             </div>
 
             <div className="grid gap-4">
               {category?.image ? (
-                <div className="bg-muted relative h-52 overflow-hidden border border-[var(--glass-border)] lg:h-full lg:min-h-52">
+                <div className="bg-muted relative h-36 overflow-hidden rounded-md border border-[var(--glass-border)]">
                   <Image
                     alt=""
-                    className="media-color-rich object-cover"
+                    className="media-mono object-cover"
                     fill
-                    sizes="(min-width: 1024px) 440px, 100vw"
+                    sizes="280px"
                     src={category.image}
                   />
                   <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(255,255,255,0.56),rgba(255,255,255,0.04))]" />
@@ -237,28 +230,6 @@ export default async function CategoryPage({
               </div>
             </div>
           </div>
-          <nav
-            aria-label="קטגוריות נוספות"
-            className="mt-5 flex gap-2 overflow-x-auto pb-1"
-          >
-            {categories.map((item) => (
-              <Link
-                className={cn(
-                  "inline-flex h-9 shrink-0 items-center border px-3 text-sm transition-colors",
-                  item.slug === slug
-                    ? "border-foreground bg-foreground text-background"
-                    : "bg-background/72 border-[var(--glass-border)] hover:border-[var(--glass-border-strong)]",
-                )}
-                href={`/category/${item.slug}`}
-                key={item.slug}
-              >
-                {item.name}
-                <span className="ms-2 text-xs text-current/58">
-                  {categoryCounts.get(item.slug) ?? 0}
-                </span>
-              </Link>
-            ))}
-          </nav>
         </div>
       </RevealSection>
 
@@ -344,7 +315,7 @@ export default async function CategoryPage({
 
       <RevealSection className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[296px_1fr] lg:py-10">
         <aside className="hidden lg:block">
-          <Card className="filter-ledger sticky top-24 rounded-md" size="sm">
+          <Card className="sticky top-24 rounded-md" size="sm">
             <CardHeader className="border-b border-[var(--glass-border)] pb-4">
               <CardTitle className="flex items-center gap-2">
                 <SlidersHorizontal className="size-4" />
@@ -369,11 +340,8 @@ export default async function CategoryPage({
           </Card>
         </aside>
 
-        <section
-          aria-labelledby="category-results"
-          className="min-w-0 rounded-md"
-        >
-          <div className="commerce-command mb-8 hidden rounded-md p-4 lg:block">
+        <section aria-labelledby="category-results" className="min-w-0">
+          <div className="glass-chrome mb-7 rounded-md border p-3">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="text-base font-medium" id="category-results">
@@ -410,7 +378,7 @@ export default async function CategoryPage({
           {filteredProducts.length > 0 ? (
             <>
               <RevealGrid
-                className="grid gap-x-6 gap-y-10 sm:grid-cols-2 xl:grid-cols-3"
+                className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3"
                 data-testid="category-results-grid"
               >
                 {pageProducts.map((product, index) => (
@@ -583,7 +551,7 @@ function FilterPanel({
                 material: active ? undefined : material,
               })}
               key={material}
-              label={removeGoldLanguage(material)}
+              label={material}
               meta={getFilterCountLabel(count)}
             />
           );
@@ -803,7 +771,7 @@ function getActiveFilters(
   if (filters.material) {
     activeFilters.push({
       key: "material",
-      label: `חומר: ${removeGoldLanguage(filters.material)}`,
+      label: `חומר: ${filters.material}`,
       href: createCategoryHref(slug, { ...filters, material: undefined }),
     });
   }

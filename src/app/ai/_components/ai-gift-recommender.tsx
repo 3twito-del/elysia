@@ -8,7 +8,6 @@ import { MessageResponse } from "~/components/ai-elements/message";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { PrivacyCollectionNotice } from "~/components/privacy-collection-notice";
 import { Spinner } from "~/components/ui/spinner";
 import { StatusMessage } from "~/components/ui/status-message";
 import { Textarea } from "~/components/ui/textarea";
@@ -84,12 +83,10 @@ export function AiGiftRecommender() {
             className="min-h-24"
             id="ai-gift-style"
             onChange={(event) => setStyle(event.currentTarget.value)}
-            placeholder="לדוגמה: עדין, פנינים, שימוש יומיומי"
+            placeholder="לדוגמה: עדין, זהב לבן, שימוש יומיומי"
             value={style}
           />
         </Field>
-
-        <PrivacyCollectionNotice variant="ai" />
 
         {recommendGift.error ? (
           <StatusMessage tone="error" variant="plain">

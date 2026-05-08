@@ -41,10 +41,6 @@ const privacySections = [
     text: "המידע משמש להפעלת האתר, טיפול בהזמנות, אספקה ואיסוף, שירות לקוחות, ניהול חשבון, התאמת המלצות, שיפור חוויית משתמש, מניעת הונאות, אבטחת מידע, עמידה בחובות דין ושליחת עדכונים או דיוור כאשר הדבר מותר לפי דין.",
   },
   {
-    title: "יידוע בעת מילוי טפסים",
-    text: "בכל טופס שבו מתבקשים פרטים אישיים, מסירת הפרטים תלויה ברצונך ובהסכמתך, אלא אם צוין אחרת. אם לא יימסרו פרטי חובה כגון שם, טלפון, אימייל או כתובת משלוח לפי העניין, לא נוכל להשלים את השירות המבוקש, לשמור הזמנה, לתאם פגישה, להשיב לפנייה או להפעיל כלי AI לפי הבקשה. לצד כל טופס מרכזי באתר מוצגת הודעת יידוע קצרה על המטרה, תוצאת אי המסירה, גורמי מסירה וזכויות המשתמש.",
-  },
-  {
     title: "בעל שליטה במאגר ומחזיקים",
     text: "Aphrodite פועלת כבעלת השליטה במידע שנאסף במסגרת האתר, וספקי שירות חיצוניים עשויים לפעול כמחזיקים או מעבדים מטעמה לצורך מתן השירות. אנו משתדלים להגביל את הגישה למידע למורשים ולספקים הנדרשים לכך בלבד, בהתאם למטרות המפורטות במדיניות זו.",
   },
@@ -53,16 +49,8 @@ const privacySections = [
     text: "מידע עשוי להימסר לספקי תשתית, סליקה, משלוחים, דוא״ל, SMS, אחסון, חיפוש, אבטחה, אנליטיקה וספקי AI, ככל שהדבר נדרש להפעלת השירות. מידע עשוי להימסר גם אם קיימת חובה חוקית, צו שיפוטי, דרישת רשות מוסמכת או צורך להגן על זכויות Aphrodite והלקוחות.",
   },
   {
-    title: "העברת מידע מחוץ לישראל",
-    text: "חלק מספקי התשתית, הענן, הדוא״ל, האנליטיקה וה-AI עשויים לעבד או לאחסן מידע מחוץ לישראל. העברה כאמור תיעשה רק כאשר קיימת עילה מתאימה לפי הדין, לרבות מדינה בעלת רמת הגנה מתאימה, הסכמה, צורך במתן השירות או התחייבות חוזית של מקבל המידע לקיים תנאי הגנה ושימוש החלים על מאגר מידע בישראל.",
-  },
-  {
     title: "עוגיות ואחסון מקומי",
     text: "האתר משתמש בעוגיות, localStorage וטכנולוגיות דומות לצורך הפעלת שירותים חיוניים כגון סל קניות, התחברות, אבטחה והעדפות נגישות. שימוש במדידה, שיפור חוויית הקנייה ומוצרים שנצפו לאחרונה יתבצע רק לאחר בחירת המשתמש בבאנר הקוקיז. ניתן לנהל או למחוק עוגיות דרך הגדרות הדפדפן, אך חלק מהשירותים עשויים להיפגע.",
-  },
-  {
-    title: "דיוור ישיר והסרה",
-    text: "הרשמה לדיוור שיווקי מתבצעת רק לאחר פעולה מפורשת של המשתמש ואישור קבלת דברי פרסומת. ניתן להסיר את כתובת האימייל בכל הודעת דיוור, באמצעות דף ההסרה מדיוור באתר או בפנייה לשירות הלקוחות. הסרה מדיוור שיווקי אינה מונעת הודעות תפעוליות הנדרשות להזמנה, שירות, אבטחה או חובה לפי דין.",
   },
   {
     title: "אבטחת מידע ושמירה",
@@ -87,12 +75,12 @@ export default function PrivacyPage() {
     <main>
       <SiteHeader />
 
-      <RevealSection className="editorial-band signature-grid border-b border-[var(--glass-border)]">
+      <RevealSection className="liquid-section border-b border-[var(--glass-border)]">
         <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:py-16">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-muted-foreground text-sm">Aphrodite</p>
-              <h1 className="editorial-title mt-3 text-4xl font-semibold tracking-normal sm:text-5xl">
+              <h1 className="mt-3 text-4xl font-semibold tracking-normal sm:text-5xl">
                 מדיניות פרטיות
               </h1>
               <p className="text-muted-foreground mt-4 max-w-3xl leading-8">
@@ -100,7 +88,7 @@ export default function PrivacyPage() {
                 אישי במסגרת האתר והשירותים הדיגיטליים.
               </p>
             </div>
-            <div className="atelier-panel w-fit p-4">
+            <div className="glass-card w-fit rounded-md border p-4">
               <LockKeyhole className="size-8" aria-hidden="true" />
             </div>
           </div>
@@ -108,23 +96,23 @@ export default function PrivacyPage() {
       </RevealSection>
 
       <RevealSection className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:py-14">
-        <div className="atelier-panel p-6 sm:p-8">
+        <div className="glass-panel rounded-md border p-6 sm:p-8">
           <div className="grid gap-6 sm:grid-cols-3">
-            <div className="border-y border-[var(--glass-border)] py-4">
+            <div className="glass-inset rounded-md border p-4">
               <Database className="size-5" aria-hidden="true" />
               <p className="mt-3 font-medium">מידע שנמסר ונוצר באתר</p>
             </div>
-            <div className="border-y border-[var(--glass-border)] py-4">
+            <div className="glass-inset rounded-md border p-4">
               <ShieldCheck className="size-5" aria-hidden="true" />
               <p className="mt-3 font-medium">אבטחה ושימוש מוגבל</p>
             </div>
-            <div className="border-y border-[var(--glass-border)] py-4">
+            <div className="glass-inset rounded-md border p-4">
               <UserCheck className="size-5" aria-hidden="true" />
               <p className="mt-3 font-medium">זכויות עיון ותיקון</p>
             </div>
           </div>
 
-          <div className="mt-6 border-y border-[var(--glass-border)] py-5">
+          <div className="glass-inset mt-6 rounded-md border p-5">
             <div className="flex items-center gap-3">
               <ShieldCheck className="size-5" aria-hidden="true" />
               <h2 className="text-xl font-semibold">
@@ -177,14 +165,14 @@ export default function PrivacyPage() {
             </p>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               <a
-                className="atelier-panel hover:text-foreground flex items-center gap-3 p-4 transition"
+                className="glass-inset hover:text-foreground flex items-center gap-3 rounded-md border p-4 transition"
                 href={`mailto:${publicContactEmail}`}
               >
                 <Mail className="size-5" aria-hidden="true" />
                 <span>{publicContactEmail}</span>
               </a>
               <a
-                className="atelier-panel hover:text-foreground flex items-center gap-3 p-4 transition"
+                className="glass-inset hover:text-foreground flex items-center gap-3 rounded-md border p-4 transition"
                 href={`tel:${publicContactPhone}`}
               >
                 <Phone className="size-5" aria-hidden="true" />
@@ -197,7 +185,7 @@ export default function PrivacyPage() {
 
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
             <p className="text-muted-foreground text-sm">
-              עודכן לאחרונה: 7 במאי 2026.
+              עודכן לאחרונה: 1 במאי 2026.
             </p>
             <Button asChild>
               <Link href="/terms">לתקנון האתר</Link>

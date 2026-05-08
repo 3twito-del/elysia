@@ -6,7 +6,6 @@ import { CalendarPlus } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { PrivacyCollectionNotice } from "~/components/privacy-collection-notice";
 import { StatusMessage } from "~/components/ui/status-message";
 import { Textarea } from "~/components/ui/textarea";
 import type { CatalogBranch } from "~/server/services/catalog";
@@ -83,13 +82,6 @@ export function AppointmentBookingForm({
       </div>
       <Input name="startsAt" required type="datetime-local" />
       <Textarea name="notes" placeholder="הערות לצוות הסניף" />
-      <PrivacyCollectionNotice variant="appointment" />
-      <label className="text-muted-foreground flex items-start gap-2 text-xs leading-5">
-        <input className="mt-1" required type="checkbox" />
-        <span>
-          קראתי את מדיניות הפרטיות ואני מאשר/ת שימוש בפרטים לצורך תיאום הפגישה.
-        </span>
-      </label>
       {message ? (
         <StatusMessage tone={messageTone} variant="plain">
           {message}

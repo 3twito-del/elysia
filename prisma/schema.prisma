@@ -376,8 +376,6 @@ model NewsletterSubscription {
   email     String   @unique
   status    String   @default("SUBSCRIBED")
   source    String?
-  consentedAt DateTime?
-  consentText String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

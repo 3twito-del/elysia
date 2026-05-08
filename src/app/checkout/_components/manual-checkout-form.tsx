@@ -15,13 +15,10 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { PrivacyCollectionNotice } from "~/components/privacy-collection-notice";
 import { Separator } from "~/components/ui/separator";
 import { StatusMessage } from "~/components/ui/status-message";
 import { Textarea } from "~/components/ui/textarea";
 import { formatPrice } from "~/lib/format";
-import { removeGoldLanguage } from "~/lib/gold-free-copy";
-import { createLegalAcceptanceRecord } from "~/lib/legal-acceptance";
 import { api } from "~/trpc/react";
 import { CheckoutStepBadge } from "./checkout-step-badge";
 
@@ -62,7 +59,6 @@ export function ManualCheckoutForm({
   const [postalCode, setPostalCode] = useState("");
   const [giftWrap, setGiftWrap] = useState(true);
   const [giftMessage, setGiftMessage] = useState("");
-  const [acceptTerms, setAcceptTerms] = useState(false);
 
   const createOrder = api.checkout.createManualOrder.useMutation();
 
@@ -81,7 +77,6 @@ export function ManualCheckoutForm({
     phone.trim().length >= 7 &&
     email.trim().length > 0 &&
     branchSlug.length > 0 &&
-    acceptTerms &&
     (fulfillmentMethod === "PICKUP" ||
       (city.trim().length >= 2 && street.trim().length >= 2));
 
@@ -111,7 +106,6 @@ export function ManualCheckoutForm({
           : undefined,
       giftWrap,
       giftMessage: giftMessage || undefined,
-      legalAcceptance: createLegalAcceptanceRecord(),
     });
   }
 
@@ -224,7 +218,6 @@ export function ManualCheckoutForm({
                 />
               </div>
             </div>
-            <PrivacyCollectionNotice variant="checkout" />
           </CardContent>
         </Card>
 
@@ -352,13 +345,11 @@ export function ManualCheckoutForm({
           <CardContent className="grid gap-4">
             <div className="flex justify-between gap-4">
               <div>
-                <p className="font-medium">
-                  {removeGoldLanguage(product.name)}
-                </p>
+                <p className="font-medium">{product.name}</p>
                 <p className="text-muted-foreground text-sm">
                   {product.variantName
-                    ? `${removeGoldLanguage(product.variantName)} · ${removeGoldLanguage(product.shortDescription)}`
-                    : removeGoldLanguage(product.shortDescription)}
+                    ? `${product.variantName} · ${product.shortDescription}`
+                    : product.shortDescription}
                 </p>
               </div>
               <span>{formatPrice(product.price)}</span>
@@ -383,34 +374,6 @@ export function ManualCheckoutForm({
                 {createOrder.error.message}
               </StatusMessage>
             ) : null}
-            <label className="glass-inset flex min-h-11 items-start gap-3 rounded-md border p-3 text-xs leading-5">
-              <input
-                checked={acceptTerms}
-                className="mt-1"
-                onChange={(event) =>
-                  setAcceptTerms(event.currentTarget.checked)
-                }
-                required
-                type="checkbox"
-              />
-              <span>
-                קראתי ואני מסכימ/ה ל
-                <Link
-                  className="text-foreground underline underline-offset-4"
-                  href="/terms"
-                >
-                  תקנון האתר
-                </Link>{" "}
-                ול
-                <Link
-                  className="text-foreground underline underline-offset-4"
-                  href="/privacy"
-                >
-                  מדיניות הפרטיות
-                </Link>
-                . ידוע לי שההזמנה נשמרת לטיפול נציג לפני חיוב.
-              </span>
-            </label>
             <Button
               className="gap-2"
               disabled={!canSubmit || createOrder.isPending}

@@ -24,25 +24,21 @@ export function ProductGallery({
   if (!activeImage) return null;
 
   return (
-    <div className={cn("group/gallery grid gap-3", className)}>
-      <div className="product-tile-image bg-secondary relative aspect-[4/5] overflow-hidden lg:aspect-[5/6]">
+    <div className={cn("grid gap-3", className)}>
+      <div className="glass-inset bg-muted relative aspect-square overflow-hidden rounded-md border">
         <Image
           alt={productName}
-          className="media-color-rich object-cover"
+          className="media-color object-cover"
           fill
           priority
           sizes="(min-width: 1024px) 50vw, 100vw"
           src={activeImage}
         />
         {galleryImages.length > 1 ? (
-          <Badge
-            className="product-tile-kicker absolute top-3 left-3 rounded-none"
-            variant="secondary"
-          >
+          <Badge className="absolute top-3 left-3" variant="secondary">
             {activeIndex + 1}/{galleryImages.length}
           </Badge>
         ) : null}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/28 to-transparent p-5 text-white opacity-0 transition-opacity duration-300 group-hover/gallery:opacity-100" />
       </div>
 
       {galleryImages.length > 1 ? (
@@ -55,7 +51,7 @@ export function ProductGallery({
               aria-label={`הצגת תמונה ${index + 1} של ${productName}`}
               aria-pressed={activeIndex === index}
               className={cn(
-                "bg-secondary relative aspect-square overflow-hidden border transition focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none",
+                "glass-inset bg-muted relative aspect-square overflow-hidden rounded-md border transition focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none",
                 activeIndex === index
                   ? "border-[var(--glass-border-strong)] ring-2 ring-[var(--glass-focus)]"
                   : "hover:border-[var(--glass-border-strong)]",

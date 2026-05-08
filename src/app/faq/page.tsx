@@ -96,12 +96,12 @@ export default function FaqPage() {
     <main>
       <SiteHeader />
 
-      <RevealSection className="editorial-band signature-grid border-b border-[var(--glass-border)]">
-        <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:py-10">
-          <div className="grid gap-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+      <RevealSection className="liquid-section border-b border-[var(--glass-border)]">
+        <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:py-16">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-muted-foreground text-sm">Aphrodite</p>
-              <h1 className="editorial-title mt-3 text-4xl font-semibold tracking-normal sm:text-5xl">
+              <h1 className="mt-3 text-4xl font-semibold tracking-normal sm:text-5xl">
                 שאלות ותשובות
               </h1>
               <p className="text-muted-foreground mt-4 max-w-3xl leading-8">
@@ -109,45 +109,39 @@ export default function FaqPage() {
                 משלוחים, מתנות והמלצות AI.
               </p>
             </div>
-            <div className="atelier-panel grid w-full gap-3 p-4 sm:w-52">
+            <div className="glass-card w-fit rounded-md border p-4">
               <CircleHelp className="size-8" aria-hidden="true" />
-              <div>
-                <p className="text-2xl font-semibold">9</p>
-                <p className="text-muted-foreground text-sm">
-                  תשובות קצרות בשלושה נושאים
-                </p>
-              </div>
             </div>
           </div>
         </div>
       </RevealSection>
 
-      <RevealSection className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:py-10">
-        <div className="grid gap-3 sm:grid-cols-3">
+      <RevealSection className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:py-14">
+        <div className="grid gap-6 sm:grid-cols-3">
           <Link
-            className="atelier-panel interactive-lift grid grid-cols-[auto_1fr] items-center gap-3 p-4"
+            className="glass-card interactive-lift rounded-md border p-5"
             href="/search"
           >
             <Search className="size-5" aria-hidden="true" />
-            <p className="font-medium">חיפוש בקטלוג</p>
+            <p className="mt-3 font-medium">חיפוש בקטלוג</p>
           </Link>
           <Link
-            className="atelier-panel interactive-lift grid grid-cols-[auto_1fr] items-center gap-3 p-4"
+            className="glass-card interactive-lift rounded-md border p-5"
             href="/gifts"
           >
             <Gift className="size-5" aria-hidden="true" />
-            <p className="font-medium">מתנות לפי תקציב</p>
+            <p className="mt-3 font-medium">מתנות לפי תקציב</p>
           </Link>
           <Link
-            className="atelier-panel interactive-lift grid grid-cols-[auto_1fr] items-center gap-3 p-4"
+            className="glass-card interactive-lift rounded-md border p-5"
             href="/ai"
           >
             <Sparkles className="size-5" aria-hidden="true" />
-            <p className="font-medium">סטייליסט AI</p>
+            <p className="mt-3 font-medium">סטייליסט AI</p>
           </Link>
         </div>
 
-        <div className="atelier-panel mt-6 p-5 sm:p-8">
+        <div className="glass-panel mt-8 rounded-md border p-6 sm:p-8">
           <div className="grid gap-10">
             {faqGroups.map((group, index) => {
               const Icon = group.icon;
@@ -162,11 +156,10 @@ export default function FaqPage() {
                     </h2>
                   </div>
                   <div className="grid gap-3">
-                    {group.items.map((item, itemIndex) => (
+                    {group.items.map((item) => (
                       <details
-                        className="group border-b border-[var(--glass-border)] p-4 last:border-b-0"
+                        className="glass-inset group rounded-md border p-4"
                         key={item.question}
-                        open={index === 0 && itemIndex === 0}
                       >
                         <summary className="hover:text-foreground flex cursor-pointer list-none items-center justify-between gap-3 rounded-sm font-medium transition outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]">
                           <span>{item.question}</span>
@@ -198,14 +191,14 @@ export default function FaqPage() {
             </p>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               <a
-                className="atelier-panel hover:text-foreground flex items-center gap-3 p-4 transition"
+                className="glass-inset hover:text-foreground flex items-center gap-3 rounded-md border p-4 transition"
                 href={`mailto:${publicContactEmail}`}
               >
                 <Mail className="size-5" aria-hidden="true" />
                 <span>{publicContactEmail}</span>
               </a>
               <a
-                className="atelier-panel hover:text-foreground flex items-center gap-3 p-4 transition"
+                className="glass-inset hover:text-foreground flex items-center gap-3 rounded-md border p-4 transition"
                 href={`tel:${publicContactPhone}`}
               >
                 <Phone className="size-5" aria-hidden="true" />

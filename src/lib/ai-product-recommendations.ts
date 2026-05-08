@@ -1,5 +1,4 @@
 import { formatPrice } from "~/lib/format";
-import { removeGoldLanguage } from "~/lib/gold-free-copy";
 
 export const AI_RECOMMENDATION_LIMIT = 4;
 
@@ -63,20 +62,18 @@ export function normalizeAiRecommendedProducts(
       return {
         slug: product.slug,
         href: createAiProductHref(product.slug, source, index),
-        name: removeGoldLanguage(product.name),
+        name: product.name,
         priceLabel:
           product.formattedPrice ??
           (typeof product.price === "number"
             ? formatPrice(product.price)
             : undefined),
         image: product.image,
-        category: removeGoldLanguage(product.category),
-        material: removeGoldLanguage(product.material),
-        stone: removeGoldLanguage(product.stone),
-        matchReason: removeGoldLanguage(product.matchReason),
-        description: removeGoldLanguage(
-          product.description ?? product.shortDescription ?? "",
-        ),
+        category: product.category,
+        material: product.material,
+        stone: product.stone,
+        matchReason: product.matchReason,
+        description: product.description ?? product.shortDescription ?? "",
         availableBranchCount:
           product.availableBranchCount ??
           getAvailableBranchCount(product.inventory),

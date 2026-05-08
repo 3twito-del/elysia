@@ -4,10 +4,6 @@ import { nanoid } from "nanoid";
 import { z } from "zod";
 
 import { env } from "~/env";
-import {
-  LEGAL_PRIVACY_VERSION,
-  LEGAL_TERMS_VERSION,
-} from "~/lib/legal-acceptance";
 import { notificationProvider } from "~/server/adapters/notifications";
 import { db } from "~/server/db";
 import { canReserveStock } from "./inventory";
@@ -25,12 +21,6 @@ export const shippingAddressSchema = z.object({
   postalCode: z.string().trim().optional(),
 });
 
-export const legalAcceptanceInputSchema = z.object({
-  acceptedAt: z.string().datetime(),
-  privacyVersion: z.literal(LEGAL_PRIVACY_VERSION),
-  termsVersion: z.literal(LEGAL_TERMS_VERSION),
-});
-
 export const createManualOrderInputSchema = z.object({
   productSlug: z.string().trim().min(1),
   variantSku: z.string().trim().min(1).optional(),
@@ -45,7 +35,6 @@ export const createManualOrderInputSchema = z.object({
   shippingAddress: shippingAddressSchema.optional(),
   giftWrap: z.boolean().default(false),
   giftMessage: z.string().trim().max(500).optional(),
-  legalAcceptance: legalAcceptanceInputSchema.optional(),
 });
 
 export const adminOrderStatusSchema = z.enum([
@@ -310,9 +299,6 @@ async function createManualOrderInTransaction(
       currency: "ILS",
       giftWrap: input.giftWrap,
       giftMessage: input.giftMessage,
-      mergeMetadata: input.legalAcceptance
-        ? { legalAcceptance: input.legalAcceptance }
-        : undefined,
       items: {
         create: {
           variantId: variant.id,
@@ -418,7 +404,6 @@ async function createManualOrderInTransaction(
       currency: "ILS",
       idempotencyKey: `manual_${order.id}`,
       rawPayload: {
-        legalAcceptance: input.legalAcceptance ?? null,
         mode: "manual_order_request",
         reservationExpiresAt: reservationExpiresAt.toISOString(),
       },

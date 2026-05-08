@@ -11,19 +11,11 @@ export function BranchCard({ branch }: { branch: CatalogBranch }) {
   )}`;
 
   return (
-    <Card className="commerce-command interactive-lift overflow-hidden rounded-md py-0">
-      <CardHeader className="border-b border-[var(--glass-border)] bg-[linear-gradient(135deg,var(--luxury-accent-soft),transparent_56%)] p-5 pb-4">
-        <CardTitle className="flex flex-wrap items-center justify-between gap-3 text-2xl font-medium">
-          <span>{branch.name}</span>
-          <Badge
-            className="[border-color:var(--luxury-accent-border)] px-3 py-1 font-normal"
-            variant="outline"
-          >
-            {branch.city}
-          </Badge>
-        </CardTitle>
+    <Card className="interactive-lift rounded-md">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-2xl font-medium">{branch.name}</CardTitle>
       </CardHeader>
-      <CardContent className="grid gap-5 p-5">
+      <CardContent className="grid gap-5">
         <div className="text-muted-foreground grid gap-2.5 text-sm leading-6">
           <span className="flex items-center gap-2.5">
             <MapPin className="size-4 shrink-0" />
@@ -34,7 +26,7 @@ export function BranchCard({ branch }: { branch: CatalogBranch }) {
             {branch.phone}
           </span>
         </div>
-        <div className="glass-inset grid gap-1.5 rounded-md border px-4 py-3 text-sm leading-6">
+        <div className="grid gap-1.5 border-y border-[var(--glass-border)] py-4 text-sm leading-6">
           <span>א-ה: {branch.openingHours.sundayThursday}</span>
           <span>ו: {branch.openingHours.friday}</span>
           <span>ש: {branch.openingHours.saturday}</span>
@@ -68,7 +60,7 @@ export function BranchCard({ branch }: { branch: CatalogBranch }) {
             </a>
           </Button>
         </div>
-        <Button asChild className="gap-2">
+        <Button asChild className="gap-2" variant="outline">
           <a href={appointmentHref} rel="noreferrer" target="_blank">
             <CalendarCheck className="size-4" />
             תיאום פגישה
