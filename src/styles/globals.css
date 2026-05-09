@@ -88,24 +88,24 @@
   --glass-shadow-lift: oklch(0 0 0 / 5%);
   --glass-shadow-deep: oklch(0 0 0 / 8%);
   --glass-focus: oklch(0.1 0 0 / 14%);
-  --motion-fast: 120ms;
-  --motion-medium: 180ms;
-  --motion-slow: 320ms;
-  --motion-page: 140ms;
-  --motion-ui: 160ms;
-  --motion-reveal: 420ms;
-  --motion-reveal-subtle: 280ms;
-  --motion-feature: 560ms;
-  --motion-media: 720ms;
-  --motion-feedback: 260ms;
+  --motion-fast: 180ms;
+  --motion-medium: 260ms;
+  --motion-slow: 460ms;
+  --motion-page: 260ms;
+  --motion-ui: 260ms;
+  --motion-reveal: 640ms;
+  --motion-reveal-subtle: 440ms;
+  --motion-feature: 820ms;
+  --motion-media: 980ms;
+  --motion-feedback: 380ms;
   --ease-liquid: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-motion-standard: cubic-bezier(0.2, 0, 0, 1);
   --ease-motion-expressive: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-motion-feedback: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --motion-distance-subtle: 10px;
-  --motion-distance-standard: 18px;
-  --motion-distance-feature: 28px;
-  --hover-lift: -2px;
+  --ease-motion-feedback: cubic-bezier(0.2, 0, 0, 1);
+  --motion-distance-subtle: 5px;
+  --motion-distance-standard: 10px;
+  --motion-distance-feature: 14px;
+  --hover-lift: -1px;
   --sidebar: oklch(1 0 0);
   --sidebar-foreground: oklch(0.11 0 0);
   --sidebar-primary: oklch(0.11 0 0);
@@ -332,12 +332,12 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 
 .public-motion-shell[data-motion-state="enter"] {
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(6px);
 }
 
 .public-motion-shell[data-motion-state="exit"] {
   opacity: 0;
-  transform: translateY(-6px);
+  transform: translateY(-4px);
 }
 
 .public-motion-ambient {
@@ -406,7 +406,8 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 
 .glass-lift,
 .interactive-lift:hover,
-.interactive-lift:focus-within {
+.interactive-lift:focus-within,
+.interactive-lift:focus-visible {
   border-color: var(--glass-border-strong);
   transform: translateY(var(--hover-lift));
   box-shadow: 0 10px 24px var(--glass-shadow-lift);
@@ -443,9 +444,12 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 }
 
 .media-mono:hover,
+.media-mono:focus-visible,
 .group:hover .media-mono,
-.group\/card:hover .media-mono {
-  filter: saturate(1.16) contrast(1.04);
+.group:focus-within .media-mono,
+.group\/card:hover .media-mono,
+.group\/card:focus-within .media-mono {
+  filter: saturate(1.12) contrast(1.035);
 }
 
 .media-color {
@@ -464,11 +468,17 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 
 .media-color:hover,
 .media-color-rich:hover,
+.media-color:focus-visible,
+.media-color-rich:focus-visible,
 .group:hover .media-color,
 .group:hover .media-color-rich,
+.group:focus-within .media-color,
+.group:focus-within .media-color-rich,
 .group\/card:hover .media-color,
-.group\/card:hover .media-color-rich {
-  filter: saturate(1.22) contrast(1.05);
+.group\/card:hover .media-color-rich,
+.group\/card:focus-within .media-color,
+.group\/card:focus-within .media-color-rich {
+  filter: saturate(1.15) contrast(1.04);
 }
 
 .public-motion-shell
@@ -483,7 +493,11 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 .public-motion-shell
   [data-slot="button"][data-variant="outline"]:not(:disabled):hover,
 .public-motion-shell
-  [data-slot="button"][data-variant="secondary"]:not(:disabled):hover {
+  [data-slot="button"][data-variant="outline"]:not(:disabled):focus-visible,
+.public-motion-shell
+  [data-slot="button"][data-variant="secondary"]:not(:disabled):hover,
+.public-motion-shell
+  [data-slot="button"][data-variant="secondary"]:not(:disabled):focus-visible {
   border-color: var(--glass-border-strong);
   background: var(--muted);
   box-shadow: 0 4px 12px var(--glass-shadow-lift);
@@ -501,7 +515,6 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
     opacity var(--motion-reveal) var(--ease-motion-expressive),
     transform var(--motion-reveal) var(--ease-motion-expressive);
   transition-delay: var(--reveal-delay, 0s);
-  will-change: opacity, transform;
 }
 
 .motion-reveal[data-reveal-variant="hero"] {
@@ -534,6 +547,11 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
   will-change: auto;
 }
 
+.motion-reveal:not([data-reveal-visible="true"]),
+.motion-reveal-item:not([data-reveal-visible="true"]) {
+  will-change: opacity, transform;
+}
+
 :where(.motion-media-frame) {
   overflow: hidden;
   transform: translateZ(0);
@@ -543,6 +561,16 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
   width: 100%;
   height: 100%;
   transform-origin: center;
+  will-change: auto;
+}
+
+.motion-media-content.absolute {
+  width: auto;
+  height: auto;
+}
+
+.motion-media-frame[data-motion-parallax="true"][data-motion-reduced="false"]
+  .motion-media-content {
   will-change: transform;
 }
 
@@ -588,7 +616,7 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 @keyframes motion-copy-in {
   from {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -610,7 +638,7 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 @keyframes motion-status-pop {
   from {
     opacity: 0;
-    transform: translateY(8px) scale(0.98);
+    transform: translateY(6px) scale(0.99);
   }
   to {
     opacity: 1;
@@ -620,10 +648,10 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 
 @keyframes motion-badge-pop {
   0% {
-    transform: scale(0.72);
+    transform: scale(0.88);
   }
   70% {
-    transform: scale(1.12);
+    transform: scale(1.04);
   }
   100% {
     transform: scale(1);
@@ -646,17 +674,31 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
   .media-mono,
   .media-color,
   .media-color-rich {
-    opacity: 1;
-    transform: none;
-    filter: none;
-    transition: none;
-    animation: none;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+    animation: none !important;
   }
 
   .glass-panel::before,
   .glass-card::before,
   .glass-chrome::before,
   .public-motion-shell [data-slot="button"] {
+    transition: none !important;
+  }
+
+  .public-motion-shell[data-motion-state],
+  .motion-reveal[data-reveal-variant],
+  .motion-reveal-item[data-reveal-variant],
+  .motion-media-frame[data-motion-media],
+  .motion-media-frame[data-motion-media] .motion-media-content,
+  .motion-hero-copy .motion-copy-item,
+  .motion-thumbnail-button[aria-pressed="true"] {
+    opacity: 1;
+    transform: none;
+    filter: none;
     transition: none;
+    animation: none;
   }
 }

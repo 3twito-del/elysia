@@ -37,13 +37,14 @@ export default async function Home() {
       <SiteHeader />
 
       <RevealSection
-        className="relative min-h-[76svh] overflow-hidden [--hero-edge:clamp(1rem,4vw,5rem)] sm:min-h-[78vh]"
+        className="relative isolate min-h-[76svh] overflow-hidden bg-neutral-950 [--hero-edge:clamp(1rem,4vw,5rem)] sm:min-h-[78vh]"
         initialVisible
         variant="hero"
       >
         <MotionMediaFrame
-          className="absolute inset-0 min-h-[76svh] sm:min-h-[78vh]"
-          contentClassName="absolute inset-[-3%]"
+          className="absolute inset-0 h-full min-h-full w-full bg-neutral-950"
+          contentClassName="absolute inset-[-2.5%]"
+          hover
           intensity="hero"
           parallax
         >
@@ -56,8 +57,8 @@ export default async function Home() {
             src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=2200&q=85"
           />
         </MotionMediaFrame>
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.05),rgba(0,0,0,0.36)_45%,rgba(0,0,0,0.7))]" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.62),rgba(0,0,0,0.08)_56%,rgba(0,0,0,0.12))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.03),rgba(0,0,0,0.28)_45%,rgba(0,0,0,0.58))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.56),rgba(0,0,0,0.06)_58%,rgba(0,0,0,0.1))]" />
         <div className="relative min-h-[76svh] sm:min-h-[78vh]">
           <div
             className="motion-hero-copy absolute top-[var(--hero-edge)] right-[var(--hero-edge)] w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),48rem)] text-right text-white lg:w-[min(48rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
@@ -169,7 +170,7 @@ export default async function Home() {
               <div className="bg-muted relative h-28 overflow-hidden border-b border-[var(--glass-border)]">
                 <Image
                   alt=""
-                  className="media-mono object-cover transition duration-500 ease-[var(--ease-liquid)] group-hover/card:scale-[1.035]"
+                  className="media-mono object-cover transition duration-[700ms] ease-[var(--ease-motion-standard)] group-hover/card:scale-[1.015]"
                   fill
                   sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                   src={category.image}

@@ -39,13 +39,13 @@ export function ProductGallery({
             exit={
               shouldReduceMotion
                 ? { opacity: 1, scale: 1 }
-                : { opacity: 0, scale: 0.992 }
+                : { opacity: 0, scale: 0.996 }
             }
-            initial={shouldReduceMotion ? false : { opacity: 0, scale: 1.018 }}
+            initial={shouldReduceMotion ? false : { opacity: 0, scale: 1.006 }}
             key={activeImage}
             transition={{
-              duration: shouldReduceMotion ? 0 : 0.28,
-              ease: [0.16, 1, 0.3, 1],
+              duration: shouldReduceMotion ? 0 : 0.38,
+              ease: [0.2, 0, 0, 1],
             }}
           >
             <Image

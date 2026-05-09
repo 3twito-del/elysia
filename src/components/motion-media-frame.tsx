@@ -16,15 +16,15 @@ type MotionMediaFrameProps = {
 };
 
 const parallaxDistanceByIntensity = {
-  feature: 20,
-  hero: 36,
-  subtle: 10,
+  feature: 10,
+  hero: 16,
+  subtle: 5,
 } satisfies Record<NonNullable<MotionMediaFrameProps["intensity"]>, number>;
 
 const parallaxScaleByIntensity = {
-  feature: 1.025,
-  hero: 1.045,
-  subtle: 1.012,
+  feature: 1.012,
+  hero: 1.018,
+  subtle: 1.006,
 } satisfies Record<NonNullable<MotionMediaFrameProps["intensity"]>, number>;
 
 export function MotionMediaFrame({
@@ -51,6 +51,7 @@ export function MotionMediaFrame({
     if (!node) return;
 
     let frame = 0;
+    let isListening = false;
     const distance = parallaxDistanceByIntensity[intensity];
     const initialScale = parallaxScaleByIntensity[intensity];
 
@@ -75,14 +76,53 @@ export function MotionMediaFrame({
       frame = window.requestAnimationFrame(syncParallax);
     };
 
-    requestSync();
-    window.addEventListener("scroll", requestSync, { passive: true });
-    window.addEventListener("resize", requestSync);
+    const startTracking = () => {
+      if (isListening) return;
 
-    return () => {
+      isListening = true;
+      requestSync();
+      window.addEventListener("scroll", requestSync, { passive: true });
+      window.addEventListener("resize", requestSync);
+    };
+
+    const stopTracking = () => {
+      if (!isListening) return;
+
+      isListening = false;
       window.cancelAnimationFrame(frame);
+      frame = 0;
       window.removeEventListener("scroll", requestSync);
       window.removeEventListener("resize", requestSync);
+    };
+
+    if (!("IntersectionObserver" in window)) {
+      startTracking();
+
+      return stopTracking;
+    }
+
+    const initialFrame = window.requestAnimationFrame(() => {
+      if (isElementNearViewport(node, 320)) {
+        startTracking();
+      }
+    });
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          startTracking();
+        } else {
+          stopTracking();
+        }
+      },
+      { rootMargin: "320px 0px", threshold: 0 },
+    );
+
+    observer.observe(node);
+
+    return () => {
+      window.cancelAnimationFrame(initialFrame);
+      observer.disconnect();
+      stopTracking();
     };
   }, [intensity, parallax, scale, shouldReduceMotion, y]);
 
@@ -91,13 +131,15 @@ export function MotionMediaFrame({
       className={cn("motion-media-frame", className)}
       data-motion-intensity={intensity}
       data-motion-media="true"
+      data-motion-parallax={parallax}
       data-motion-reduced={shouldReduceMotion}
       ref={frameRef}
       whileHover={
         hover && !shouldReduceMotion
-          ? { scale: intensity === "subtle" ? 1.006 : 1.01 }
+          ? { scale: intensity === "subtle" ? 1.003 : 1.006 }
           : undefined
       }
+      transition={{ duration: 0.56, ease: [0.2, 0, 0, 1] }}
     >
       <motion.div
         className={cn("motion-media-content", contentClassName)}
@@ -118,4 +160,19 @@ export function MotionMediaFrame({
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
+}
+
+function isElementNearViewport(node: HTMLElement, margin: number) {
+  const rect = node.getBoundingClientRect();
+  const viewportHeight =
+    window.innerHeight || document.documentElement.clientHeight;
+  const viewportWidth =
+    window.innerWidth || document.documentElement.clientWidth;
+
+  return (
+    rect.bottom >= -margin &&
+    rect.right >= -margin &&
+    rect.top <= viewportHeight + margin &&
+    rect.left <= viewportWidth + margin
+  );
 }

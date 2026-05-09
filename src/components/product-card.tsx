@@ -55,7 +55,7 @@ export function ProductCard({
           <Image
             alt={product.name}
             blurDataURL={PRODUCT_IMAGE_BLUR_DATA_URL}
-            className="media-color object-cover transition duration-500 ease-[var(--ease-liquid)] group-hover/card:scale-[1.035]"
+            className="media-color object-cover transition duration-[700ms] ease-[var(--ease-motion-standard)] group-hover/card:scale-[1.015]"
             fill
             placeholder="blur"
             priority={imagePriority}

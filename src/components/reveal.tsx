@@ -12,6 +12,7 @@ import {
 } from "react";
 
 import { cn } from "~/lib/utils";
+import { useResolvedReducedMotion } from "~/components/motion-preference";
 import { usePublicMotion } from "~/components/public-motion-provider";
 
 type RevealSectionProps = {
@@ -30,30 +31,30 @@ type RevealGridProps = {
 } & Omit<ComponentProps<"div">, "children" | "className" | "ref">;
 
 const gridStaggerByVariant = {
-  cards: 0.07,
-  compact: 0.045,
-  media: 0.09,
+  cards: 0.045,
+  compact: 0.03,
+  media: 0.055,
 } satisfies Record<NonNullable<RevealGridProps["variant"]>, number>;
 
-function useInViewOnce<T extends HTMLElement>(initialVisible = false) {
+function useRevealInView<T extends HTMLElement>(initialVisible = false) {
   const ref = useRef<T>(null);
-  const [hasForcedVisible, setHasForcedVisible] = useState(initialVisible);
+  const shouldReduceMotion = useResolvedReducedMotion();
   const [isVisible, setIsVisible] = useState(initialVisible);
 
   useEffect(() => {
-    if (!initialVisible || hasForcedVisible) return;
+    if (!initialVisible && !shouldReduceMotion) return;
 
     const visibleFrame = window.requestAnimationFrame(() =>
-      setHasForcedVisible(true),
+      setIsVisible(true),
     );
 
     return () => window.cancelAnimationFrame(visibleFrame);
-  }, [hasForcedVisible, initialVisible]);
+  }, [initialVisible, shouldReduceMotion]);
 
   useEffect(() => {
     const node = ref.current;
 
-    if (!node || hasForcedVisible) return;
+    if (!node || isVisible || shouldReduceMotion) return;
 
     if (!("IntersectionObserver" in window)) {
       const timeout = setTimeout(() => setIsVisible(true), 0);
@@ -62,11 +63,10 @@ function useInViewOnce<T extends HTMLElement>(initialVisible = false) {
     }
 
     const visibleFrame = window.requestAnimationFrame(() => {
-      if (isElementNearViewport(node)) {
+      if (isElementNearViewport(node, 48)) {
         setIsVisible(true);
       }
     });
-    const fallbackTimeout = window.setTimeout(() => setIsVisible(true), 360);
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry?.isIntersecting) return;
@@ -74,22 +74,21 @@ function useInViewOnce<T extends HTMLElement>(initialVisible = false) {
         setIsVisible(true);
         observer.disconnect();
       },
-      { rootMargin: "-80px", threshold: 0 },
+      { rootMargin: "0px 0px -10% 0px", threshold: 0.01 },
     );
 
     observer.observe(node);
 
     return () => {
       window.cancelAnimationFrame(visibleFrame);
-      window.clearTimeout(fallbackTimeout);
       observer.disconnect();
     };
-  }, [hasForcedVisible]);
+  }, [isVisible, shouldReduceMotion]);
 
-  return [ref, hasForcedVisible || isVisible] as const;
+  return [ref, isVisible || shouldReduceMotion] as const;
 }
 
-function isElementNearViewport(node: HTMLElement) {
+function isElementNearViewport(node: HTMLElement, margin = 0) {
   const rect = node.getBoundingClientRect();
   const viewportHeight =
     window.innerHeight || document.documentElement.clientHeight;
@@ -97,10 +96,10 @@ function isElementNearViewport(node: HTMLElement) {
     window.innerWidth || document.documentElement.clientWidth;
 
   return (
-    rect.bottom >= -80 &&
-    rect.right >= -80 &&
-    rect.top <= viewportHeight + 80 &&
-    rect.left <= viewportWidth + 80
+    rect.bottom >= -margin &&
+    rect.right >= -margin &&
+    rect.top <= viewportHeight - margin &&
+    rect.left <= viewportWidth + margin
   );
 }
 
@@ -114,7 +113,7 @@ export function RevealSection({
   ...props
 }: RevealSectionProps) {
   const { suppressInitialReveal } = usePublicMotion();
-  const [ref, isVisible] = useInViewOnce<HTMLElement>(
+  const [ref, isVisible] = useRevealInView<HTMLElement>(
     initialVisible || suppressInitialReveal || variant === "none",
   );
   const revealStyle = {
@@ -144,7 +143,8 @@ export function RevealGrid({
   ...props
 }: RevealGridProps) {
   const { suppressInitialReveal } = usePublicMotion();
-  const [ref, isVisible] = useInViewOnce<HTMLDivElement>(suppressInitialReveal);
+  const [ref, isVisible] =
+    useRevealInView<HTMLDivElement>(suppressInitialReveal);
   const items = Children.toArray(children);
   const resolvedStagger = stagger ?? gridStaggerByVariant[variant];
 
@@ -158,7 +158,7 @@ export function RevealGrid({
     >
       {items.map((child, index) => {
         const style = {
-          "--reveal-delay": `${0.04 + index * resolvedStagger}s`,
+          "--reveal-delay": `${0.02 + index * resolvedStagger}s`,
         } as CSSProperties;
 
         return (

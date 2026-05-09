@@ -29,7 +29,7 @@ export function SiteHeader() {
   return (
     <header
       className={cn(
-        "glass-chrome site-chrome sticky top-0 z-40 border-b transition-transform duration-300 ease-[var(--ease-liquid)] will-change-transform motion-reduce:translate-y-0 motion-reduce:transition-none",
+        "glass-chrome site-chrome sticky top-0 z-40 border-b transition-transform duration-[420ms] ease-[var(--ease-motion-standard)] will-change-transform motion-reduce:translate-y-0 motion-reduce:transition-none",
         scrollState === "hidden" && "-translate-y-full",
       )}
       data-scroll={scrollState}
@@ -37,7 +37,7 @@ export function SiteHeader() {
     >
       <div
         className={cn(
-          "mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-3 px-4 transition-[height] duration-300 ease-[var(--ease-liquid)] motion-reduce:transition-none sm:px-6 lg:gap-6",
+          "mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-3 px-4 transition-[height] duration-[360ms] ease-[var(--ease-motion-standard)] motion-reduce:transition-none sm:px-6 lg:gap-6",
           isCompact ? "h-14" : "h-16",
         )}
       >
