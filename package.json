@@ -102,6 +102,7 @@
       "svix": "1.92.2"
     },
     "onlyBuiltDependencies": [
+      "agent-browser",
       "@prisma/client",
       "@prisma/engines",
       "esbuild",
