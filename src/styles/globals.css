@@ -353,16 +353,16 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 
 .public-motion-shell {
   opacity: 1;
-  transform: translateY(0);
-  transition: transform var(--motion-page) var(--ease-motion-standard);
+  transform: none;
+  transition: none;
 }
 
 .public-motion-shell[data-motion-state="enter"] {
-  transform: translateY(6px);
+  transform: none;
 }
 
 .public-motion-shell[data-motion-state="exit"] {
-  transform: translateY(-4px);
+  transform: none;
 }
 
 .public-motion-ambient {
@@ -683,12 +683,14 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 }
 
 :root .public-motion-shell {
-  transition: transform var(--motion-page) var(--ease-motion-standard);
+  transform: none !important;
+  transition: none !important;
 }
 
 :root .public-motion-shell[data-motion-state="enter"],
 :root .public-motion-shell[data-motion-state="exit"] {
   opacity: 1;
+  transform: none !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

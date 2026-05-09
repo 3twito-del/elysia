@@ -94,6 +94,23 @@ export function PublicMotionProvider({ children }: PublicMotionProviderProps) {
   }, [children]);
 
   useEffect(() => {
+    if (motionState !== "enter" || pathname !== renderedPathname) return;
+
+    let revealResetFrame = 0;
+    const visibleFrame = window.requestAnimationFrame(() => {
+      setMotionState("visible");
+      revealResetFrame = window.requestAnimationFrame(() =>
+        setSuppressInitialReveal(false),
+      );
+    });
+
+    return () => {
+      window.cancelAnimationFrame(visibleFrame);
+      window.cancelAnimationFrame(revealResetFrame);
+    };
+  }, [motionState, pathname, renderedPathname]);
+
+  useEffect(() => {
     if (pathname === renderedPathname) {
       const shouldSuppressReveal = hasSyncedInitialChildren.current;
       let revealResetFrame = 0;
@@ -143,9 +160,6 @@ export function PublicMotionProvider({ children }: PublicMotionProviderProps) {
       };
     }
 
-    let firstVisibleFrame = 0;
-    let secondVisibleFrame = 0;
-    let revealResetFrame = 0;
     const exitFrame = window.requestAnimationFrame(() =>
       setMotionState("exit"),
     );
@@ -155,22 +169,10 @@ export function PublicMotionProvider({ children }: PublicMotionProviderProps) {
       setRenderedPathname(pathname);
       setRenderedChildren(pendingChildren.current);
       setMotionState("enter");
-
-      firstVisibleFrame = window.requestAnimationFrame(() => {
-        secondVisibleFrame = window.requestAnimationFrame(() => {
-          setMotionState("visible");
-          revealResetFrame = window.requestAnimationFrame(() =>
-            setSuppressInitialReveal(false),
-          );
-        });
-      });
     }, pageTransitionMs);
 
     return () => {
       window.cancelAnimationFrame(exitFrame);
-      window.cancelAnimationFrame(firstVisibleFrame);
-      window.cancelAnimationFrame(secondVisibleFrame);
-      window.cancelAnimationFrame(revealResetFrame);
       window.clearTimeout(swapTimer);
     };
   }, [children, pathname, renderedPathname, shouldReduceMotion]);
