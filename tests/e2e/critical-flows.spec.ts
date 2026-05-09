@@ -22,7 +22,7 @@ test.describe("critical shopping flows", () => {
       page.getByRole("heading", { name: productName }),
     ).toBeVisible();
 
-    await page.getByRole("button", { name: /הוספה לסל/ }).click();
+    await page.getByRole("button", { exact: true, name: "הוספה לסל" }).click();
     await expect(page.getByText(/הפריט נוסף לסל/)).toBeVisible();
     await expect(
       page.getByRole("link", { name: /סל קניות, 1 פריטים/ }),
