@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -15,17 +14,13 @@ import {
 } from "lucide-react";
 
 import { MotionMediaFrame } from "~/components/motion-media-frame";
+import { CinematicHeroSequence } from "~/components/cinematic-hero-sequence";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-
-const venusImage =
-  "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project.jpg/1920px-Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project.jpg";
-
-const venusSource =
-  "https://commons.wikimedia.org/wiki/File:Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project.jpg";
+import { brandMedia } from "~/lib/brand-media";
 
 const values = [
   {
@@ -81,7 +76,7 @@ export const metadata: Metadata = {
     title: "אודות Aphrodite",
     description:
       "דף אודות מפואר בעברית על Aphrodite, השראת אפרודיטה והולדת ונוס, וחוויית תכשיטים שנבנית סביב יופי עם ביטחון.",
-    images: [{ url: venusImage }],
+    images: [{ url: "/brand/aphrodite-aqua-about.png" }],
   },
 };
 
@@ -102,14 +97,7 @@ export default function AboutPage() {
             intensity="hero"
             parallax
           >
-            <Image
-              alt="הולדת ונוס מאת סנדרו בוטיצ׳לי, יצירת רנסנס המשמשת השראה חזותית לעמוד אודות Aphrodite"
-              className="media-mono object-cover"
-              fill
-              priority
-              sizes="100vw"
-              src={venusImage}
-            />
+            <CinematicHeroSequence slides={brandMedia.about} />
           </MotionMediaFrame>
           <div className="absolute inset-0 bg-black/[0.28]" />
           <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(255,255,255,0.22),transparent_38%),linear-gradient(to_top,rgba(0,0,0,0.68),rgba(0,0,0,0.08)_58%,rgba(0,0,0,0.28))]" />
@@ -150,14 +138,6 @@ export default function AboutPage() {
                 </Button>
               </div>
             </div>
-            <a
-              className="mt-4 w-fit text-xs text-white/60 underline-offset-4 hover:text-white hover:underline"
-              href={venusSource}
-              rel="noreferrer"
-              target="_blank"
-            >
-              מקור תמונה: Wikimedia Commons
-            </a>
           </div>
         </RevealSection>
 

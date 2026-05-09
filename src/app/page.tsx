@@ -11,6 +11,10 @@ import {
 } from "lucide-react";
 
 import { BranchCard } from "~/components/branch-card";
+import {
+  CinematicHeroSequence,
+  type CinematicHeroSlide,
+} from "~/components/cinematic-hero-sequence";
 import { MetricCard } from "~/components/metric-card";
 import { MotionMediaFrame } from "~/components/motion-media-frame";
 import { ProductCard } from "~/components/product-card";
@@ -19,11 +23,27 @@ import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Separator } from "~/components/ui/separator";
+import { getCategoryBrandSlides } from "~/lib/brand-media";
 import {
   getCatalogBranches,
   getCatalogCategories,
   getFeaturedCatalogProducts,
 } from "~/server/services/catalog";
+
+const heroSlides = [
+  {
+    alt: "טבעות זהב ויהלומים על משטח סטודיו בגוון Aphrodite Aqua",
+    src: "/brand/aphrodite-aqua-hero-rings.png",
+  },
+  {
+    alt: "עגילי פנינה ושרשרת זהב על זכוכית בגוון טורקיז יוקרתי",
+    src: "/brand/aphrodite-aqua-hero-pearls.png",
+  },
+  {
+    alt: "צמידים ותליון יהלום בתאורת סטודיו טורקיז וזהב",
+    src: "/brand/aphrodite-aqua-hero-glass.png",
+  },
+] satisfies CinematicHeroSlide[];
 
 export default async function Home() {
   const [branches, categories, featuredProducts] = await Promise.all([
@@ -37,28 +57,22 @@ export default async function Home() {
       <SiteHeader />
 
       <RevealSection
-        className="relative isolate min-h-[76svh] overflow-hidden bg-neutral-950 [--hero-edge:clamp(1rem,4vw,5rem)] sm:min-h-[78vh]"
+        className="relative isolate min-h-[76svh] overflow-hidden bg-[var(--brand-aqua-deep)] [--hero-edge:clamp(1rem,4vw,5rem)] sm:min-h-[78vh]"
         initialVisible
         variant="hero"
       >
         <MotionMediaFrame
-          className="absolute inset-0 h-full min-h-full w-full bg-neutral-950"
-          contentClassName="absolute inset-[-2.5%]"
+          className="absolute inset-0 h-full min-h-full w-full bg-[var(--brand-aqua-deep)]"
+          contentClassName="absolute inset-[-3%]"
           hover
           intensity="hero"
           parallax
         >
-          <Image
-            alt="תכשיטי זהב ויהלומים על משטח סטודיו נקי"
-            className="media-mono object-cover"
-            fill
-            priority
-            sizes="100vw"
-            src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=2200&q=85"
-          />
+          <CinematicHeroSequence slides={heroSlides} />
         </MotionMediaFrame>
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.03),rgba(0,0,0,0.28)_45%,rgba(0,0,0,0.58))]" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.56),rgba(0,0,0,0.06)_58%,rgba(0,0,0,0.1))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,56,59,0.02),rgba(6,56,59,0.28)_42%,rgba(0,0,0,0.68))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.6),rgba(6,56,59,0.08)_58%,rgba(185,242,236,0.12))]" />
+        <div className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(244,213,138,0.7),transparent)]" />
         <div className="relative min-h-[76svh] sm:min-h-[78vh]">
           <div
             className="motion-hero-copy absolute top-[var(--hero-edge)] right-[var(--hero-edge)] w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),48rem)] text-right text-white lg:w-[min(48rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
@@ -82,7 +96,11 @@ export default async function Home() {
           dir="rtl"
         >
           <div className="motion-copy-item flex flex-col items-stretch gap-2 [--motion-copy-delay:170ms] sm:flex-row sm:items-center sm:justify-end sm:gap-3">
-            <Button asChild size="lg">
+            <Button
+              asChild
+              className="bg-[var(--brand-aqua)] text-[var(--brand-aqua-deep)] shadow-[0_16px_40px_rgba(66,201,190,0.2)] hover:bg-[var(--brand-aqua-soft)] hover:text-[var(--brand-aqua-deep)]"
+              size="lg"
+            >
               <Link href="/category/rings">
                 לקולקציה
                 <ArrowLeft className="size-4" />
@@ -90,7 +108,7 @@ export default async function Home() {
             </Button>
             <Button
               asChild
-              className="text-foreground hover:bg-muted hover:text-foreground border-white bg-white"
+              className="border-[rgb(244_213_138_/_0.72)] bg-[rgb(244_213_138_/_0.92)] text-neutral-950 hover:border-[var(--brand-champagne)] hover:bg-[var(--brand-champagne)] hover:text-neutral-950"
               size="lg"
               variant="outline"
             >
@@ -100,7 +118,7 @@ export default async function Home() {
               </Link>
             </Button>
           </div>
-          <div className="motion-copy-item mt-4 flex flex-wrap justify-center gap-x-3 gap-y-2 border-t border-white/25 pt-3 pr-12 text-[0.7rem] font-medium text-white/90 [--motion-copy-delay:240ms] sm:mt-8 sm:justify-end sm:gap-x-6 sm:gap-y-3 sm:pt-5 sm:pr-0 sm:text-sm">
+          <div className="motion-copy-item mt-4 flex flex-wrap justify-center gap-x-3 gap-y-2 border-t border-[rgb(185_242_236_/_0.36)] pt-3 pr-12 text-[0.7rem] font-medium text-white/90 [--motion-copy-delay:240ms] sm:mt-8 sm:justify-end sm:gap-x-6 sm:gap-y-3 sm:pt-5 sm:pr-0 sm:text-sm">
             {[
               { icon: MapPin, label: "זמינות לפי סניף" },
               { icon: Sparkles, label: "ייעוץ אישי" },
@@ -173,7 +191,10 @@ export default async function Home() {
                   className="media-mono object-cover transition duration-[700ms] ease-[var(--ease-motion-standard)] group-hover/card:scale-[1.015]"
                   fill
                   sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                  src={category.image}
+                  src={
+                    getCategoryBrandSlides(category.slug)[0]?.src ??
+                    category.image
+                  }
                 />
                 <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(255,255,255,0.8),rgba(255,255,255,0.08))]" />
                 <div className="glass-inset absolute right-4 bottom-4 flex size-11 items-center justify-center rounded-md border">

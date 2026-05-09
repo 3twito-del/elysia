@@ -38,8 +38,11 @@ export async function SiteFooter() {
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:py-16">
         <div className="grid gap-12 lg:grid-cols-[1.25fr_0.8fr_0.85fr_1fr]">
           <section className="max-w-lg">
-            <Link className="inline-flex items-center gap-2" href="/">
-              <Gem className="text-foreground size-5" />
+            <Link
+              className="brand-footer-mark inline-flex items-center gap-2"
+              href="/"
+            >
+              <Gem className="size-5" />
               <span className="text-2xl font-semibold tracking-normal">
                 Aphrodite
               </span>

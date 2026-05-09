@@ -10,11 +10,13 @@ import {
   UserCheck,
 } from "lucide-react";
 
+import { BrandMediaPanel } from "~/components/brand-media-panel";
 import { CookiePreferencesPanel } from "~/components/cookie-preferences-panel";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
+import { brandMedia } from "~/lib/brand-media";
 import { publicContactEmail, publicContactPhone } from "~/lib/public-contact";
 
 export const metadata: Metadata = {
@@ -92,6 +94,13 @@ export default function PrivacyPage() {
               <LockKeyhole className="size-8" aria-hidden="true" />
             </div>
           </div>
+          <BrandMediaPanel
+            alt="Subtle Aphrodite Aqua policy glass accent"
+            className="mt-7 h-28"
+            priority
+            slides={brandMedia.policy}
+            variant="content"
+          />
         </div>
       </RevealSection>
 

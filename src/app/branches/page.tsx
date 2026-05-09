@@ -1,8 +1,10 @@
+import { BrandMediaPanel } from "~/components/brand-media-panel";
 import { BranchCard } from "~/components/branch-card";
 import { AppointmentBookingForm } from "./_components/appointment-booking-form";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { brandMedia } from "~/lib/brand-media";
 import { getCatalogBranches } from "~/server/services/catalog";
 import { TRPCReactProvider } from "~/trpc/react";
 
@@ -23,6 +25,13 @@ export default async function BranchesPage() {
             זמינות מוצרים, איסוף מהחנות, שינוי מידה, ייעוץ מתנות ופגישות כלה
             בסניפים.
           </p>
+          <BrandMediaPanel
+            alt="Aqua jewelry boutique counter"
+            className="mt-6 h-52 lg:h-64"
+            priority
+            slides={brandMedia.branches}
+            variant="compact"
+          />
         </div>
       </RevealSection>
 

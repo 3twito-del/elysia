@@ -41,7 +41,7 @@ export function ProductCard({
     <Card
       aria-label={product.name}
       className={cn(
-        "group/card interactive-lift h-full min-w-0 overflow-hidden rounded-md py-0",
+        "brand-accent-card group/card interactive-lift h-full min-w-0 overflow-hidden rounded-md py-0",
         !isAvailable && "bg-muted/30",
       )}
       data-testid="product-card"
@@ -51,7 +51,7 @@ export function ProductCard({
         className="block focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
         href={href}
       >
-        <div className="glass-inset bg-muted relative aspect-[4/3] overflow-hidden border-0 sm:aspect-[5/4] sm:min-h-44">
+        <div className="brand-product-media glass-inset bg-muted relative aspect-[4/3] overflow-hidden border-0 sm:aspect-[5/4] sm:min-h-44">
           <Image
             alt={product.name}
             blurDataURL={PRODUCT_IMAGE_BLUR_DATA_URL}
@@ -116,7 +116,7 @@ export function ProductCard({
             </div>
             <span
               className={cn(
-                "glass-inset flex max-w-[48%] shrink-0 items-center gap-1 rounded-md border px-2 py-1 text-xs",
+                "brand-icon-well glass-inset flex max-w-[48%] shrink-0 items-center gap-1 rounded-md border px-2 py-1 text-xs",
                 isAvailable ? "text-muted-foreground" : "text-foreground",
               )}
             >

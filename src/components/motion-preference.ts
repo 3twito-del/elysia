@@ -14,16 +14,24 @@ export function useResolvedReducedMotion() {
       );
 
     updatePreference();
+    const observer = new MutationObserver(updatePreference);
+
+    observer.observe(document.documentElement, {
+      attributeFilter: ["data-accessibility-motion"],
+      attributes: true,
+    });
     window.addEventListener(
       "aphrodite:accessibility-settings",
       updatePreference,
     );
 
-    return () =>
+    return () => {
+      observer.disconnect();
       window.removeEventListener(
         "aphrodite:accessibility-settings",
         updatePreference,
       );
+    };
   }, []);
 
   return (prefersReducedMotion ?? false) || siteReducedMotion;

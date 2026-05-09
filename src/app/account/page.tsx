@@ -15,6 +15,7 @@ import { CustomerOtpForm } from "./_components/customer-otp-form";
 import { CustomerAddressForm } from "./_components/customer-address-form";
 import { CustomerPrivacyActions } from "./_components/customer-privacy-actions";
 import { customerLogoutAction, removeWishlistItemAction } from "./actions";
+import { BrandMediaPanel } from "~/components/brand-media-panel";
 import { MetricCard } from "~/components/metric-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -22,6 +23,7 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { EmptyState } from "~/components/ui/empty-state";
+import { brandMedia } from "~/lib/brand-media";
 import {
   getAppointmentStatusLabel,
   getOrderStatusLabel,
@@ -102,6 +104,13 @@ export default async function AccountPage() {
             כניסה מאובטחת באמצעות קוד חד-פעמי. לאחר הכניסה יוצגו הזמנות,
             Wishlist, מידות שמורות ותורים.
           </p>
+          <BrandMediaPanel
+            alt="Aqua account and service jewelry tray"
+            className="mt-6 h-44"
+            priority
+            slides={brandMedia.service}
+            variant="compact"
+          />
           <div className="mt-6 grid gap-5 sm:mt-8 lg:grid-cols-[minmax(0,420px)_1fr]">
             <Card className="rounded-md">
               <CardHeader className="border-b border-[var(--glass-border)] pb-4">
@@ -168,6 +177,13 @@ export default async function AccountPage() {
             </Button>
           </form>
         </div>
+        <BrandMediaPanel
+          alt="Aqua account and service jewelry tray"
+          className="mb-8 h-44"
+          priority
+          slides={brandMedia.service}
+          variant="compact"
+        />
 
         <RevealGrid
           className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4"

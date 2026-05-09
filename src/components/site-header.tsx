@@ -41,11 +41,11 @@ export function SiteHeader() {
         <div className="flex min-w-0 items-center gap-2 justify-self-start">
           <MobileNav items={navItems} />
           <Link
-            className="flex min-w-0 shrink-0 items-center gap-2"
+            className="brand-header-mark flex min-w-0 shrink-0 items-center gap-2"
             dir="ltr"
             href="/"
           >
-            <Gem className="text-foreground size-5" />
+            <Gem className="size-5" />
             <span className="truncate text-lg font-semibold tracking-normal sm:text-xl">
               Aphrodite
             </span>

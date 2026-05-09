@@ -2,10 +2,12 @@ import { Gift, MessageSquare, Sparkles } from "lucide-react";
 
 import { AiGiftRecommender } from "./_components/ai-gift-recommender";
 import { StylistChat } from "~/app/stylist/_components/stylist-chat";
+import { BrandMediaPanel } from "~/components/brand-media-panel";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { brandMedia } from "~/lib/brand-media";
 import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata = {
@@ -45,6 +47,14 @@ export default async function AiPage({ searchParams }: AiPageProps) {
                   </p>
                 </div>
               </div>
+
+              <BrandMediaPanel
+                alt="Aqua AI stylist jewelry scene"
+                className="h-44 sm:h-52"
+                priority
+                slides={brandMedia.ai}
+                variant="compact"
+              />
 
               <TabsList
                 className="h-auto w-fit justify-start gap-1 rounded-none border-0 bg-transparent p-0"

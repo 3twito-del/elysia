@@ -1,15 +1,16 @@
-import Image from "next/image";
 import Link from "next/link";
 import { after } from "next/server";
 import { ChevronLeft, ChevronRight, Search, Sparkles, X } from "lucide-react";
 
 import { SearchControls } from "~/app/search/_components/search-controls";
+import { BrandMediaPanel } from "~/components/brand-media-panel";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { EmptyState } from "~/components/ui/empty-state";
+import { brandMedia } from "~/lib/brand-media";
 import { db } from "~/server/db";
 import {
   DEFAULT_SEARCH_PER_PAGE,
@@ -99,18 +100,14 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               תוצאות הקטלוג נשארות נקיות ומדויקות, עם צבע שמגיע מהפריטים עצמם.
             </p>
           </div>
-          {result.hits[0]?.image ? (
-            <div className="glass-inset bg-muted relative hidden h-32 overflow-hidden rounded-md border lg:block">
-              <Image
-                alt=""
-                className="media-mono object-cover"
-                fill
-                sizes="260px"
-                src={result.hits[0].image}
-              />
-              <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(255,255,255,0.58),rgba(255,255,255,0.04))]" />
-            </div>
-          ) : null}
+          <BrandMediaPanel
+            alt="Aqua catalog search jewelry scene"
+            className="hidden h-32 lg:block"
+            priority
+            sizes="260px"
+            slides={brandMedia.search}
+            variant="compact"
+          />
         </div>
         <SearchControls
           activeFilterCount={activeFilters.length}

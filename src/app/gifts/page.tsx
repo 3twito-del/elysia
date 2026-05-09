@@ -1,10 +1,11 @@
 import Link from "next/link";
-import Image from "next/image";
 
+import { BrandMediaPanel } from "~/components/brand-media-panel";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
+import { brandMedia } from "~/lib/brand-media";
 import {
   getFeaturedCatalogProducts,
   searchCatalogProducts,
@@ -33,18 +34,14 @@ export default async function GiftsPage() {
             </p>
           </div>
           <div className="grid gap-3">
-            {products[0]?.image ? (
-              <div className="glass-inset bg-muted relative hidden h-32 overflow-hidden rounded-md border lg:block">
-                <Image
-                  alt=""
-                  className="media-mono object-cover"
-                  fill
-                  sizes="280px"
-                  src={products[0].image}
-                />
-                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(255,255,255,0.58),rgba(255,255,255,0.04))]" />
-              </div>
-            ) : null}
+            <BrandMediaPanel
+              alt="Aqua jewelry gift tray"
+              className="hidden h-32 lg:block"
+              priority
+              sizes="280px"
+              slides={brandMedia.gifts}
+              variant="compact"
+            />
             <Button asChild variant="secondary">
               <Link href="/ai?tool=gifts">שאלון מתנה חכם</Link>
             </Button>

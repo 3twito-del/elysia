@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Accessibility, Mail, Phone, ShieldCheck } from "lucide-react";
 
+import { BrandMediaPanel } from "~/components/brand-media-panel";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
+import { brandMedia } from "~/lib/brand-media";
 import { publicContactEmail, publicContactPhone } from "~/lib/public-contact";
 
 export const metadata: Metadata = {
@@ -36,6 +38,13 @@ export default function AccessibilityPage() {
               <Accessibility className="size-8" aria-hidden="true" />
             </div>
           </div>
+          <BrandMediaPanel
+            alt="Subtle Aphrodite Aqua policy glass accent"
+            className="mt-7 h-28"
+            priority
+            slides={brandMedia.policy}
+            variant="content"
+          />
         </div>
       </RevealSection>
 

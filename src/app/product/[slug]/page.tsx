@@ -117,12 +117,10 @@ export default async function ProductPage({
       />
       <RevealSection className="mx-auto grid max-w-7xl gap-8 px-4 py-6 sm:px-6 sm:py-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10">
         <div className="contents lg:grid lg:gap-4">
-          <ProductGallery
-            className="order-1 lg:order-none"
-            images={uniqueImages}
-            productName={product.name}
-          />
-          <div className="glass-panel order-3 grid gap-3 rounded-md border p-3 sm:grid-cols-3 lg:order-none">
+          <div className="brand-gallery-frame order-1 lg:order-none">
+            <ProductGallery images={uniqueImages} productName={product.name} />
+          </div>
+          <div className="brand-commerce-panel glass-panel order-3 grid gap-3 rounded-md border p-3 sm:grid-cols-3 lg:order-none">
             {[
               { label: "חומר", value: product.material },
               { label: "קולקציה", value: product.collection },
@@ -142,7 +140,7 @@ export default async function ProductPage({
           </div>
         </div>
 
-        <div className="order-2 min-w-0 lg:order-none lg:pt-4">
+        <div className="brand-commerce-panel order-2 min-w-0 rounded-md border border-[var(--glass-border)] p-4 lg:order-none lg:p-5 lg:pt-4">
           <Badge className="mb-4" variant="secondary">
             {product.collection}
           </Badge>
@@ -249,7 +247,7 @@ export default async function ProductPage({
           </Card>
         </RevealGrid>
         {similarProducts.length > 0 ? (
-          <div className="mt-12">
+          <div className="brand-similar-section mt-12 rounded-md border p-4 sm:p-5">
             <h2 className="text-2xl font-semibold">מוצרים דומים</h2>
             <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {similarProducts.map((similar) => (

@@ -20,6 +20,7 @@ import { Button, buttonVariants } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { EmptyState } from "~/components/ui/empty-state";
 import { Separator } from "~/components/ui/separator";
+import { getCategoryBrandSlides } from "~/lib/brand-media";
 import {
   Sheet,
   SheetClose,
@@ -193,19 +194,17 @@ export default async function CategoryPage({
             </div>
 
             <div className="grid gap-4">
-              {category?.image ? (
-                <div className="bg-muted relative h-36 overflow-hidden rounded-md border border-[var(--glass-border)]">
-                  <Image
-                    alt=""
-                    className="media-mono object-cover"
-                    fill
-                    priority
-                    sizes="280px"
-                    src={category.image}
-                  />
-                  <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(255,255,255,0.56),rgba(255,255,255,0.04))]" />
-                </div>
-              ) : null}
+              <div className="bg-muted relative h-36 overflow-hidden rounded-md border border-[var(--glass-border)]">
+                <Image
+                  alt=""
+                  className="media-color-rich object-cover"
+                  fill
+                  priority
+                  sizes="280px"
+                  src={getCategoryBrandSlides(slug)[0]!.src}
+                />
+                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(255,255,255,0.5),rgba(66,201,190,0.08))]" />
+              </div>
               <div className="flex flex-wrap gap-2 lg:justify-end">
                 {activeFilters.length > 0 ? (
                   activeFilters.map((filter) => (

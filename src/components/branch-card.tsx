@@ -11,7 +11,7 @@ export function BranchCard({ branch }: { branch: CatalogBranch }) {
   )}`;
 
   return (
-    <Card className="interactive-lift rounded-md">
+    <Card className="brand-branch-card brand-accent-card interactive-lift rounded-md">
       <CardHeader className="pb-3">
         <CardTitle className="text-2xl font-medium">{branch.name}</CardTitle>
       </CardHeader>
