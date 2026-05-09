@@ -21,7 +21,7 @@ type PublicMotionContextValue = {
   suppressInitialReveal: boolean;
 };
 
-const pageTransitionMs = 220;
+const pageTransitionMs = 120;
 const PublicMotionContext = createContext<PublicMotionContextValue>({
   suppressInitialReveal: false,
 });
@@ -143,22 +143,34 @@ export function PublicMotionProvider({ children }: PublicMotionProviderProps) {
       };
     }
 
+    let firstVisibleFrame = 0;
+    let secondVisibleFrame = 0;
+    let revealResetFrame = 0;
     const exitFrame = window.requestAnimationFrame(() =>
       setMotionState("exit"),
     );
 
     const swapTimer = window.setTimeout(() => {
+      setSuppressInitialReveal(true);
       setRenderedPathname(pathname);
       setRenderedChildren(pendingChildren.current);
       setMotionState("enter");
 
-      window.requestAnimationFrame(() => {
-        window.requestAnimationFrame(() => setMotionState("visible"));
+      firstVisibleFrame = window.requestAnimationFrame(() => {
+        secondVisibleFrame = window.requestAnimationFrame(() => {
+          setMotionState("visible");
+          revealResetFrame = window.requestAnimationFrame(() =>
+            setSuppressInitialReveal(false),
+          );
+        });
       });
     }, pageTransitionMs);
 
     return () => {
       window.cancelAnimationFrame(exitFrame);
+      window.cancelAnimationFrame(firstVisibleFrame);
+      window.cancelAnimationFrame(secondVisibleFrame);
+      window.cancelAnimationFrame(revealResetFrame);
       window.clearTimeout(swapTimer);
     };
   }, [children, pathname, renderedPathname, shouldReduceMotion]);

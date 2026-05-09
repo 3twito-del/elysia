@@ -91,12 +91,12 @@
   --motion-fast: 180ms;
   --motion-medium: 260ms;
   --motion-slow: 460ms;
-  --motion-page: 260ms;
-  --motion-ui: 260ms;
-  --motion-reveal: 640ms;
-  --motion-reveal-subtle: 440ms;
-  --motion-feature: 820ms;
-  --motion-media: 980ms;
+  --motion-page: 160ms;
+  --motion-ui: 220ms;
+  --motion-reveal: 360ms;
+  --motion-reveal-subtle: 280ms;
+  --motion-feature: 460ms;
+  --motion-media: 520ms;
   --motion-feedback: 380ms;
   --ease-liquid: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-motion-standard: cubic-bezier(0.2, 0, 0, 1);
@@ -354,18 +354,14 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 .public-motion-shell {
   opacity: 1;
   transform: translateY(0);
-  transition:
-    opacity var(--motion-page) var(--ease-motion-standard),
-    transform var(--motion-page) var(--ease-motion-standard);
+  transition: transform var(--motion-page) var(--ease-motion-standard);
 }
 
 .public-motion-shell[data-motion-state="enter"] {
-  opacity: 0;
   transform: translateY(6px);
 }
 
 .public-motion-shell[data-motion-state="exit"] {
-  opacity: 0;
   transform: translateY(-4px);
 }
 
@@ -466,10 +462,12 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 }
 
 .media-mono {
-  filter: saturate(1.06) contrast(1.03);
+  --media-filter: saturate(1.06) contrast(1.03);
+  filter: var(--media-filter);
   transition:
-    transform var(--motion-media) var(--ease-motion-expressive),
-    filter var(--motion-media) var(--ease-motion-expressive);
+    scale var(--motion-media) var(--ease-motion-expressive),
+    transform var(--motion-media) var(--ease-motion-expressive);
+  backface-visibility: hidden;
 }
 
 .media-mono:hover,
@@ -478,21 +476,25 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 .group:focus-within .media-mono,
 .group\/card:hover .media-mono,
 .group\/card:focus-within .media-mono {
-  filter: saturate(1.12) contrast(1.035);
+  filter: var(--media-filter);
 }
 
 .media-color {
-  filter: saturate(1.06) contrast(1.03);
+  --media-filter: saturate(1.06) contrast(1.03);
+  filter: var(--media-filter);
   transition:
-    transform var(--motion-media) var(--ease-motion-expressive),
-    filter var(--motion-media) var(--ease-motion-expressive);
+    scale var(--motion-media) var(--ease-motion-expressive),
+    transform var(--motion-media) var(--ease-motion-expressive);
+  backface-visibility: hidden;
 }
 
 .media-color-rich {
-  filter: saturate(1.12) contrast(1.04);
+  --media-filter: saturate(1.12) contrast(1.04);
+  filter: var(--media-filter);
   transition:
-    transform var(--motion-media) var(--ease-motion-expressive),
-    filter var(--motion-media) var(--ease-motion-expressive);
+    scale var(--motion-media) var(--ease-motion-expressive),
+    transform var(--motion-media) var(--ease-motion-expressive);
+  backface-visibility: hidden;
 }
 
 .media-color:hover,
@@ -507,7 +509,7 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 .group\/card:hover .media-color-rich,
 .group\/card:focus-within .media-color,
 .group\/card:focus-within .media-color-rich {
-  filter: saturate(1.15) contrast(1.04);
+  filter: var(--media-filter);
 }
 
 .public-motion-shell
@@ -538,11 +540,8 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 
 .motion-reveal,
 .motion-reveal-item {
-  opacity: 0;
   transform: translateY(var(--motion-distance-standard));
-  transition:
-    opacity var(--motion-reveal) var(--ease-motion-expressive),
-    transform var(--motion-reveal) var(--ease-motion-expressive);
+  transition: transform var(--motion-reveal) var(--ease-motion-expressive);
   transition-delay: var(--reveal-delay, 0s);
 }
 
@@ -564,21 +563,19 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 }
 
 .motion-reveal[data-reveal-variant="none"] {
-  opacity: 1;
   transform: none;
   transition: none;
 }
 
 .motion-reveal[data-reveal-visible="true"],
 .motion-reveal-item[data-reveal-visible="true"] {
-  opacity: 1;
   transform: translateY(0);
   will-change: auto;
 }
 
 .motion-reveal:not([data-reveal-visible="true"]),
 .motion-reveal-item:not([data-reveal-visible="true"]) {
-  will-change: opacity, transform;
+  will-change: transform;
 }
 
 :where(.motion-media-frame) {
@@ -644,11 +641,9 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 
 @keyframes motion-copy-in {
   from {
-    opacity: 0;
     transform: translateY(10px);
   }
   to {
-    opacity: 1;
     transform: translateY(0);
   }
 }
@@ -685,6 +680,15 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
   100% {
     transform: scale(1);
   }
+}
+
+:root .public-motion-shell {
+  transition: transform var(--motion-page) var(--ease-motion-standard);
+}
+
+:root .public-motion-shell[data-motion-state="enter"],
+:root .public-motion-shell[data-motion-state="exit"] {
+  opacity: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
