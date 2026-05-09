@@ -173,6 +173,35 @@
   html {
     @apply font-sans;
   }
+  :where(
+    a[href],
+    button,
+    input[type="button"],
+    input[type="reset"],
+    input[type="submit"],
+    input[type="checkbox"],
+    input[type="radio"],
+    label[for],
+    select,
+    summary,
+    [role="button"],
+    [data-slot="button"]
+  ):not(:disabled):not([aria-disabled="true"]):not([data-disabled]) {
+    cursor: pointer;
+  }
+  :where(
+    button,
+    input[type="button"],
+    input[type="reset"],
+    input[type="submit"],
+    input[type="checkbox"],
+    input[type="radio"],
+    select,
+    [role="button"],
+    [data-slot="button"]
+  ):is(:disabled, [aria-disabled="true"], [data-disabled]) {
+    cursor: not-allowed;
+  }
 }
 
 .skip-link {
