@@ -1,13 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { Gem, Search, UserRound } from "lucide-react";
 
 import { CartCountLink } from "~/components/cart-count-link";
 import { MobileNav, type HeaderNavItem } from "~/components/mobile-nav";
 import { Button } from "~/components/ui/button";
-import { cn } from "~/lib/utils";
 
 const navItems: HeaderNavItem[] = [
   { href: "/category/rings", label: "טבעות" },
@@ -20,27 +18,13 @@ const navItems: HeaderNavItem[] = [
   { href: "/ai", label: "ייעוץ אישי" },
 ];
 
-type HeaderScrollState = "top" | "shown" | "hidden";
-
 export function SiteHeader() {
-  const scrollState = useHeaderScrollState();
-  const isCompact = scrollState !== "top";
-
   return (
     <header
-      className={cn(
-        "glass-chrome site-chrome sticky top-0 z-40 border-b transition-transform duration-[420ms] ease-[var(--ease-motion-standard)] will-change-transform motion-reduce:translate-y-0 motion-reduce:transition-none",
-        scrollState === "hidden" && "-translate-y-full",
-      )}
-      data-scroll={scrollState}
+      className="glass-chrome site-chrome sticky top-0 z-50 border-b"
       dir="rtl"
     >
-      <div
-        className={cn(
-          "mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-3 px-4 transition-[height] duration-[360ms] ease-[var(--ease-motion-standard)] motion-reduce:transition-none sm:px-6 lg:gap-6",
-          isCompact ? "h-14" : "h-16",
-        )}
-      >
+      <div className="mx-auto grid h-16 max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-3 px-4 sm:px-6 lg:gap-6">
         <div className="flex min-w-0 items-center gap-2 justify-self-start">
           <MobileNav items={navItems} />
           <Link
@@ -91,74 +75,4 @@ export function SiteHeader() {
       </div>
     </header>
   );
-}
-
-function useHeaderScrollState() {
-  const [scrollState, setScrollState] = useState<HeaderScrollState>("top");
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let lastScrollY = Math.max(window.scrollY, 0);
-    let frame = 0;
-
-    const shouldReduceMotion = () =>
-      mediaQuery.matches ||
-      document.documentElement.dataset.accessibilityMotion === "reduce";
-
-    const syncScrollState = () => {
-      frame = 0;
-
-      if (shouldReduceMotion()) {
-        setScrollState(window.scrollY > 24 ? "shown" : "top");
-        lastScrollY = Math.max(window.scrollY, 0);
-        return;
-      }
-
-      const currentScrollY = Math.max(window.scrollY, 0);
-      const delta = currentScrollY - lastScrollY;
-
-      if (currentScrollY < 24) {
-        setScrollState("top");
-      } else if (delta > 8 && currentScrollY > 96) {
-        setScrollState("hidden");
-      } else if (delta < -6) {
-        setScrollState("shown");
-      }
-
-      lastScrollY = currentScrollY;
-    };
-
-    const requestSync = () => {
-      if (frame) return;
-      frame = window.requestAnimationFrame(syncScrollState);
-    };
-
-    const handleMotionPreference = () => {
-      if (shouldReduceMotion()) {
-        setScrollState(window.scrollY > 24 ? "shown" : "top");
-      } else {
-        requestSync();
-      }
-    };
-
-    requestSync();
-    window.addEventListener("scroll", requestSync, { passive: true });
-    window.addEventListener(
-      "aphrodite:accessibility-settings",
-      handleMotionPreference,
-    );
-    mediaQuery.addEventListener("change", handleMotionPreference);
-
-    return () => {
-      window.cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", requestSync);
-      window.removeEventListener(
-        "aphrodite:accessibility-settings",
-        handleMotionPreference,
-      );
-      mediaQuery.removeEventListener("change", handleMotionPreference);
-    };
-  }, []);
-
-  return scrollState;
 }
