@@ -11,17 +11,19 @@ type MotionMediaFrameProps = {
   className?: string;
   contentClassName?: string;
   hover?: boolean;
-  intensity?: "hero" | "feature" | "subtle";
+  intensity?: "cinematic" | "hero" | "feature" | "subtle";
   parallax?: boolean;
 };
 
 const parallaxDistanceByIntensity = {
+  cinematic: 38,
   feature: 10,
   hero: 16,
   subtle: 5,
 } satisfies Record<NonNullable<MotionMediaFrameProps["intensity"]>, number>;
 
 const parallaxScaleByIntensity = {
+  cinematic: 1.1,
   feature: 1.012,
   hero: 1.018,
   subtle: 1.006,
@@ -39,6 +41,9 @@ export function MotionMediaFrame({
   const shouldReduceMotion = useResolvedReducedMotion();
   const y = useMotionValue(0);
   const scale = useMotionValue(1);
+  const hasPositioningClass = /\b(?:absolute|fixed|relative|sticky)\b/.test(
+    className ?? "",
+  );
 
   useEffect(() => {
     if (!parallax || shouldReduceMotion) {
@@ -128,7 +133,11 @@ export function MotionMediaFrame({
 
   return (
     <motion.div
-      className={cn("motion-media-frame", className)}
+      className={cn(
+        "motion-media-frame",
+        !hasPositioningClass && "relative",
+        className,
+      )}
       data-motion-intensity={intensity}
       data-motion-media="true"
       data-motion-parallax={parallax}
@@ -136,7 +145,14 @@ export function MotionMediaFrame({
       ref={frameRef}
       whileHover={
         hover && !shouldReduceMotion
-          ? { scale: intensity === "subtle" ? 1.003 : 1.006 }
+          ? {
+              scale:
+                intensity === "cinematic"
+                  ? 1.01
+                  : intensity === "subtle"
+                    ? 1.003
+                    : 1.006,
+            }
           : undefined
       }
       transition={{ duration: 0.56, ease: [0.2, 0, 0, 1] }}

@@ -6,6 +6,23 @@ const recentlyViewedStorageKey = "aphrodite_recently_viewed";
 const cartStorageKey = "aphrodite_cart_session";
 const productSlug = "venus-line-ring";
 const productName = "טבעת Venus Line";
+const publicHeroRoutes = [
+  "/",
+  "/search?q=venus",
+  `/product/${productSlug}`,
+  "/category/earrings",
+  "/gifts",
+  "/branches",
+  "/checkout",
+  "/account",
+  "/ai",
+  "/stylist",
+  "/about",
+  "/faq",
+  "/privacy",
+  "/terms",
+  "/accessibility",
+];
 const adminEmail = process.env.E2E_ADMIN_EMAIL;
 const adminPassword = process.env.E2E_ADMIN_PASSWORD;
 
@@ -19,7 +36,9 @@ test.describe("critical shopping flows", () => {
     await page.goto(`/product/${productSlug}`);
 
     await expect(
-      page.getByRole("heading", { name: productName }),
+      page
+        .getByTestId("cinematic-page-hero")
+        .getByRole("heading", { name: productName }),
     ).toBeVisible();
 
     await page.getByRole("button", { exact: true, name: "הוספה לסל" }).click();
@@ -48,14 +67,21 @@ test.describe("critical shopping flows", () => {
     await expect(
       page.getByRole("heading", { name: /חיפוש בקטלוג/ }),
     ).toBeVisible();
-    await page
+    const productResultLink = page
+      .getByTestId("search-results-grid")
       .getByRole("link", { name: new RegExp(productName) })
-      .first()
-      .click();
+      .last();
+
+    const productHref = await productResultLink.getAttribute("href");
+
+    expect(productHref).toMatch(new RegExp(`/product/${productSlug}`));
+    await page.goto(productHref!);
 
     await expect(page).toHaveURL(new RegExp(`/product/${productSlug}`));
     await expect(
-      page.getByRole("heading", { name: productName }),
+      page
+        .getByTestId("cinematic-page-hero")
+        .getByRole("heading", { name: productName }),
     ).toBeVisible();
   });
 
@@ -162,23 +188,60 @@ test.describe("accessibility and responsive guardrails", () => {
       .locator("[data-motion-media='true'] .motion-media-content")
       .first()
       .evaluate((element) => window.getComputedStyle(element).transform);
+    const heroSequenceReduced = await page
+      .getByTestId("cinematic-page-hero-sequence")
+      .first()
+      .getAttribute("data-motion-reduced");
 
     expect(revealMotion.transform).toBe("none");
     expect(
       revealMotion.transitionDurationsMs.every((duration) => duration <= 0.01),
     ).toBe(true);
     expect(mediaTransform).toBe("none");
+    expect(heroSequenceReduced).toBe("true");
   });
 
-  for (const route of [
-    "/",
-    "/search?q=venus",
-    `/product/${productSlug}`,
-    "/category/earrings",
-    "/checkout",
-    "/account",
-    "/admin/login",
-  ]) {
+  test("shows cinematic heroes and page anchors on all public routes", async ({
+    page,
+  }) => {
+    test.setTimeout(90_000);
+
+    for (const route of publicHeroRoutes) {
+      await page.goto(route, { waitUntil: "domcontentloaded" });
+
+      const hero = page.getByTestId("cinematic-page-hero");
+      const heroHeading = hero.getByRole("heading").first();
+
+      await expect(hero).toBeVisible();
+      await expect(heroHeading).toBeVisible();
+      await expect(heroHeading).toBeInViewport({ ratio: 0.1 });
+      await expect(page.getByTestId("floating-anchor-nav")).toBeAttached();
+      await expectActiveAnchorSurface(page);
+    }
+  });
+
+  test("anchor clicks scroll to the section and update active state", async ({
+    page,
+  }) => {
+    await page.goto("/category/earrings", { waitUntil: "networkidle" });
+    await page.evaluate(() => window.scrollTo(0, 760));
+
+    const navScope =
+      (page.viewportSize()?.width ?? 0) < 768
+        ? ".floating-anchor-nav-mobile"
+        : ".floating-anchor-nav-rail";
+    const productsAnchor = page.locator(
+      `${navScope} a[href="#category-products"]`,
+    );
+
+    await expect(productsAnchor).toBeVisible();
+    await productsAnchor.click();
+    await expect(page).toHaveURL(/#category-products$/);
+    await expect(productsAnchor).toHaveAttribute("data-anchor-active", "true");
+    await expect(page.locator("#category-products")).toBeInViewport();
+  });
+
+  for (const route of [...publicHeroRoutes, "/admin/login"]) {
     test(`keeps ${route} inside the viewport width`, async ({ page }) => {
       await page.goto(route, { waitUntil: "networkidle" });
 
@@ -370,4 +433,18 @@ async function expectNoHorizontalOverflow(page: Page) {
   );
 
   expect(overflow).toBeLessThanOrEqual(1);
+}
+
+async function expectActiveAnchorSurface(page: Page) {
+  const isMobile = (page.viewportSize()?.width ?? 0) < 768;
+
+  if (!isMobile) {
+    await page.evaluate(() => window.scrollTo(0, 760));
+  }
+
+  const selector = isMobile
+    ? ".floating-anchor-nav-mobile a"
+    : ".floating-anchor-nav-rail a";
+
+  await expect(page.locator(selector).first()).toBeVisible();
 }

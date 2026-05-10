@@ -11,12 +11,13 @@ import {
 } from "lucide-react";
 
 import { BrandMediaPanel } from "~/components/brand-media-panel";
+import { CinematicPageHero } from "~/components/cinematic-page-hero";
 import { CookiePreferencesPanel } from "~/components/cookie-preferences-panel";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-import { brandMedia } from "~/lib/brand-media";
+import { brandMedia, cinematicRouteMedia } from "~/lib/brand-media";
 import { publicContactEmail, publicContactPhone } from "~/lib/public-contact";
 
 export const metadata: Metadata = {
@@ -72,12 +73,43 @@ const privacySections = [
   },
 ];
 
+const privacyAnchors = [
+  { id: "page-hero", label: "פתיחה" },
+  { id: "privacy-section-1", label: "תחולה" },
+  { id: "privacy-section-4", label: "שימוש" },
+  { id: "privacy-contact", label: "פנייה" },
+];
+
 export default function PrivacyPage() {
   return (
     <main>
       <SiteHeader />
 
-      <RevealSection className="liquid-section border-b border-[var(--glass-border)]">
+      <CinematicPageHero
+        actions={
+          <>
+            <Button asChild size="lg">
+              <Link href="#privacy-section-1">עיקרי המדיניות</Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link href="#privacy-contact">פנייה בנושא פרטיות</Link>
+            </Button>
+          </>
+        }
+        anchors={privacyAnchors}
+        description="כיצד אנחנו אוספים, משתמשים, שומרים ומגנים על מידע אישי במסגרת האתר והשירותים."
+        eyebrow="Aphrodite Policy"
+        slides={cinematicRouteMedia.legal}
+        stats={[
+          { label: "עדכון", value: "2026" },
+          { label: "זכויות", value: "עיון ותיקון" },
+          { label: "קוקיז", value: "בשליטה" },
+        ]}
+        title="מדיניות פרטיות"
+        variant="editorial"
+      />
+
+      <RevealSection aria-hidden="true" className="hidden" variant="none">
         <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:py-16">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>

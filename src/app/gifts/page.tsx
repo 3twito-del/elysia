@@ -1,11 +1,12 @@
 import Link from "next/link";
 
 import { BrandMediaPanel } from "~/components/brand-media-panel";
+import { CinematicPageHero } from "~/components/cinematic-page-hero";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
-import { brandMedia } from "~/lib/brand-media";
+import { brandMedia, cinematicRouteMedia } from "~/lib/brand-media";
 import {
   getFeaturedCatalogProducts,
   searchCatalogProducts,
@@ -21,12 +22,46 @@ export default async function GiftsPage() {
     giftProducts.length > 0
       ? giftProducts
       : await getFeaturedCatalogProducts(8);
+  const giftAnchors = [
+    { id: "page-hero", label: "פתיחה" },
+    { id: "gift-advisor", label: "ייעוץ" },
+    { id: "gift-products", label: "מתנות" },
+  ];
 
   return (
     <main>
       <SiteHeader />
-      <RevealSection className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-end">
+      <CinematicPageHero
+        actions={
+          <>
+            <Button asChild size="lg">
+              <Link href="#gift-products">למתנות</Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link href="/ai?tool=gifts">שאלון מתנה</Link>
+            </Button>
+          </>
+        }
+        anchors={giftAnchors}
+        description="בחירות קלות לקנייה עם אריזת מתנה, ברכה אישית והתאמה לפי תקציב."
+        eyebrow="Aphrodite Gifts"
+        slides={cinematicRouteMedia.gifts}
+        stats={[
+          { label: "בחירות", value: String(products.length) },
+          { label: "ייעוץ", value: "AI" },
+          { label: "אריזה", value: "מתנה" },
+        ]}
+        title="מתנות תכשיטים"
+        variant="commerce"
+      />
+      <RevealSection
+        className="mx-auto max-w-7xl px-4 py-12 sm:px-6"
+        id="gift-products"
+      >
+        <div
+          className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-end"
+          id="gift-advisor"
+        >
           <div>
             <h1 className="text-4xl font-semibold">מתנות תכשיטים</h1>
             <p className="text-muted-foreground mt-3 max-w-2xl leading-7">

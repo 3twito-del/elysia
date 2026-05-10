@@ -168,7 +168,7 @@ export function CinematicHeroSequence({
             "cinematic-hero-slide",
             index === 0 ? "opacity-100" : "opacity-0",
           )}
-          key={slide.src}
+          key={`${slide.src}-${index}`}
           ref={(node) => {
             slideRefs.current[index] = node;
           }}

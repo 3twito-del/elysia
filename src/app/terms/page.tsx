@@ -11,11 +11,12 @@ import {
 } from "lucide-react";
 
 import { BrandMediaPanel } from "~/components/brand-media-panel";
+import { CinematicPageHero } from "~/components/cinematic-page-hero";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-import { brandMedia } from "~/lib/brand-media";
+import { brandMedia, cinematicRouteMedia } from "~/lib/brand-media";
 import { publicContactEmail, publicContactPhone } from "~/lib/public-contact";
 
 export const metadata: Metadata = {
@@ -59,12 +60,43 @@ const termsSections = [
   },
 ];
 
+const termsAnchors = [
+  { id: "page-hero", label: "פתיחה" },
+  { id: "terms-section-1", label: "שימוש" },
+  { id: "terms-section-3", label: "הזמנות" },
+  { id: "terms-contact", label: "שירות" },
+];
+
 export default function TermsPage() {
   return (
     <main>
       <SiteHeader />
 
-      <RevealSection className="liquid-section border-b border-[var(--glass-border)]">
+      <CinematicPageHero
+        actions={
+          <>
+            <Button asChild size="lg">
+              <Link href="#terms-section-1">לתקנון</Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link href="#terms-contact">פנייה לשירות</Link>
+            </Button>
+          </>
+        }
+        anchors={termsAnchors}
+        description="תנאי השימוש באתר Aphrodite, כולל הזמנות, תשלום, משלוחים, ביטולים ושירות לקוחות."
+        eyebrow="Aphrodite Legal"
+        slides={cinematicRouteMedia.legal}
+        stats={[
+          { label: "שימוש", value: "ברור" },
+          { label: "תשלום", value: "מאובטח" },
+          { label: "שירות", value: "זמין" },
+        ]}
+        title="תקנון האתר"
+        variant="editorial"
+      />
+
+      <RevealSection aria-hidden="true" className="hidden" variant="none">
         <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:py-16">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>

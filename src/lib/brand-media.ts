@@ -15,90 +15,165 @@ export const brandHeroSlides = [
   },
 ] satisfies CinematicHeroSlide[];
 
-export const brandMedia = {
-  about: [
+export const cinematicRouteMedia = {
+  accessibility: [
     {
-      alt: "Aqua glass wave with gold jewelry and pearls",
-      src: "/brand/aphrodite-aqua-about.png",
+      alt: "Soft editorial aqua and champagne jewelry scene for accessibility information",
+      src: "/brand/cinematic/cinematic-editorial.png",
     },
-    brandHeroSlides[1]!,
-  ],
-  ai: [
     {
-      alt: "Aqua glass jewelry scene with champagne AI light paths",
-      src: "/brand/aphrodite-aqua-ai.png",
+      alt: "Subtle aqua glass and champagne jewelry scene",
+      src: "/brand/cinematic/cinematic-policy.png",
+    },
+  ],
+  account: [
+    {
+      alt: "Cinematic aqua and champagne service jewelry tray for customer account",
+      src: "/brand/cinematic/cinematic-service.png",
     },
     brandHeroSlides[2]!,
   ],
-  branches: [
+  ai: [
     {
-      alt: "Luxury jewelry boutique counter with aqua glass accents",
-      src: "/brand/aphrodite-aqua-branches.png",
+      alt: "Cinematic digital aqua and champagne jewelry scene for AI styling",
+      src: "/brand/cinematic/cinematic-ai.png",
     },
-    brandHeroSlides[0]!,
+    brandHeroSlides[2]!,
   ],
-  gifts: [
+  about: [
     {
-      alt: "Jewelry gift tray on an Aphrodite Aqua lacquer surface",
-      src: "/brand/aphrodite-aqua-gifts.png",
+      alt: "Cinematic Aphrodite Aqua editorial jewelry scene",
+      src: "/brand/cinematic/cinematic-editorial.png",
     },
     brandHeroSlides[1]!,
   ],
-  policy: [
+  branches: [
     {
-      alt: "Subtle aqua glass texture with champagne gold accents",
-      src: "/brand/aphrodite-aqua-policy.png",
+      alt: "Cinematic luxury jewelry boutique service scene",
+      src: "/brand/cinematic/cinematic-branches.png",
     },
+    brandHeroSlides[0]!,
+  ],
+  checkout: [
+    {
+      alt: "Cinematic jewelry service tray for checkout and delivery",
+      src: "/brand/cinematic/cinematic-service.png",
+    },
+    brandHeroSlides[2]!,
+  ],
+  faq: [
+    {
+      alt: "Soft cinematic aqua and champagne jewelry information scene",
+      src: "/brand/cinematic/cinematic-policy.png",
+    },
+    {
+      alt: "Editorial Aphrodite Aqua jewelry scene",
+      src: "/brand/cinematic/cinematic-editorial.png",
+    },
+  ],
+  gifts: [
+    {
+      alt: "Cinematic jewelry gift scene on aqua lacquer",
+      src: "/brand/cinematic/cinematic-gifts.png",
+    },
+    brandHeroSlides[1]!,
+  ],
+  home: [
+    {
+      alt: "Cinematic luxury jewelry scene in aqua and champagne light",
+      src: "/brand/cinematic/cinematic-home.png",
+    },
+    ...brandHeroSlides,
+  ],
+  legal: [
+    {
+      alt: "Cinematic policy and service jewelry scene in soft aqua light",
+      src: "/brand/cinematic/cinematic-policy.png",
+    },
+    {
+      alt: "Editorial Aphrodite Aqua jewelry scene",
+      src: "/brand/cinematic/cinematic-editorial.png",
+    },
+  ],
+  product: [
+    {
+      alt: "Cinematic product jewelry scene in aqua and champagne light",
+      src: "/brand/cinematic/cinematic-product.png",
+    },
+    brandHeroSlides[0]!,
   ],
   search: [
     {
-      alt: "Aphrodite Aqua rings and diamonds for catalog search",
-      src: "/brand/aphrodite-aqua-category-rings.png",
+      alt: "Cinematic jewelry catalog search scene",
+      src: "/brand/cinematic/cinematic-search.png",
     },
     {
-      alt: "Aphrodite Aqua necklaces and pearls for catalog search",
-      src: "/brand/aphrodite-aqua-category-necklaces.png",
+      alt: "Cinematic rings and diamonds category scene",
+      src: "/brand/cinematic/cinematic-category-rings.png",
     },
   ],
   service: [
     {
-      alt: "Organized luxury jewelry service tray on aqua lacquer",
-      src: "/brand/aphrodite-aqua-service.png",
+      alt: "Cinematic customer service jewelry tray",
+      src: "/brand/cinematic/cinematic-service.png",
+    },
+    brandHeroSlides[2]!,
+  ],
+  stylist: [
+    {
+      alt: "Cinematic digital-light jewelry scene for stylist chat",
+      src: "/brand/cinematic/cinematic-ai.png",
     },
     brandHeroSlides[2]!,
   ],
 } satisfies Record<string, CinematicHeroSlide[]>;
 
+export const brandMedia = {
+  about: cinematicRouteMedia.about,
+  ai: cinematicRouteMedia.ai,
+  branches: cinematicRouteMedia.branches,
+  gifts: cinematicRouteMedia.gifts,
+  policy: cinematicRouteMedia.legal,
+  search: cinematicRouteMedia.search,
+  service: cinematicRouteMedia.service,
+} satisfies Record<string, CinematicHeroSlide[]>;
+
 const categorySlides = {
   bracelets: [
     {
-      alt: "Gold bracelets and tennis bracelets on aqua glass",
-      src: "/brand/aphrodite-aqua-category-bracelets.png",
+      alt: "Cinematic gold bracelets and tennis bracelets on aqua glass",
+      src: "/brand/cinematic/cinematic-category-bracelets.png",
     },
     brandHeroSlides[2]!,
   ],
   earrings: [
     {
-      alt: "Gold earrings with pearls and diamonds on aqua glass",
-      src: "/brand/aphrodite-aqua-category-earrings.png",
+      alt: "Cinematic gold earrings with pearls and diamonds on aqua glass",
+      src: "/brand/cinematic/cinematic-category-earrings.png",
     },
     brandHeroSlides[1]!,
   ],
   necklaces: [
     {
-      alt: "Gold necklaces with pearl accents on aqua glass",
-      src: "/brand/aphrodite-aqua-category-necklaces.png",
+      alt: "Cinematic gold necklaces with pearl accents on aqua glass",
+      src: "/brand/cinematic/cinematic-category-necklaces.png",
     },
     brandHeroSlides[1]!,
   ],
   rings: [
     {
-      alt: "Gold and diamond rings on Aphrodite Aqua lacquer",
-      src: "/brand/aphrodite-aqua-category-rings.png",
+      alt: "Cinematic gold and diamond rings on Aphrodite Aqua lacquer",
+      src: "/brand/cinematic/cinematic-category-rings.png",
     },
     brandHeroSlides[0]!,
   ],
 } satisfies Record<string, CinematicHeroSlide[]>;
+
+export type CinematicRouteMediaKey = keyof typeof cinematicRouteMedia;
+
+export function getCinematicRouteSlides(key: CinematicRouteMediaKey) {
+  return cinematicRouteMedia[key] ?? cinematicRouteMedia.home;
+}
 
 export function getCategoryBrandSlides(slug: string) {
   return categorySlides[slug as keyof typeof categorySlides] ?? brandHeroSlides;

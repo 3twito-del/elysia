@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { ArrowRight, PackageCheck } from "lucide-react";
 
 import { ReturnRequestForm } from "../../_components/return-request-form";
+import { CinematicPageHero } from "~/components/cinematic-page-hero";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -16,6 +17,7 @@ import {
   getReturnStatusLabel,
   getShipmentStatusLabel,
 } from "~/lib/commerce-labels";
+import { cinematicRouteMedia } from "~/lib/brand-media";
 import { formatPrice } from "~/lib/format";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
@@ -62,10 +64,39 @@ export default async function OrderDetailPage({
   const canRequestReturn =
     !["PENDING_PAYMENT", "CANCELLED", "REFUNDED"].includes(order.status) &&
     order.returns.every((request) => request.status === "CANCELLED");
+  const orderAnchors = [
+    { id: "page-hero", label: "פתיחה" },
+    { id: "order-items", label: "פריטים" },
+    { id: "order-summary", label: "סיכום" },
+    { id: "order-support", label: "שירות" },
+  ];
 
   return (
     <main>
       <SiteHeader />
+      <CinematicPageHero
+        actions={
+          <>
+            <Button asChild size="lg">
+              <Link href="#order-items">פריטי ההזמנה</Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link href="#order-support">משלוח והחזרות</Link>
+            </Button>
+          </>
+        }
+        anchors={orderAnchors}
+        description={`${order.recipientName} · ${order.email}`}
+        eyebrow="Aphrodite Service"
+        slides={cinematicRouteMedia.service}
+        stats={[
+          { label: "סטטוס", value: getOrderStatusLabel(order.status) },
+          { label: "סכום", value: formatPrice(Number(order.total)) },
+          { label: "פריטים", value: String(order.items.length) },
+        ]}
+        title={order.orderNumber}
+        variant="service"
+      />
       <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
         <Button asChild className="mb-6 gap-2" variant="ghost">
           <Link href="/account">
@@ -86,7 +117,7 @@ export default async function OrderDetailPage({
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-          <Card className="rounded-md">
+          <Card className="rounded-md" id="order-items">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <PackageCheck className="size-5" />
@@ -119,7 +150,7 @@ export default async function OrderDetailPage({
             </CardContent>
           </Card>
 
-          <Card className="rounded-md">
+          <Card className="rounded-md" id="order-summary">
             <CardHeader>
               <CardTitle>סיכום</CardTitle>
             </CardHeader>
@@ -155,7 +186,7 @@ export default async function OrderDetailPage({
             </CardContent>
           </Card>
 
-          <Card className="rounded-md lg:col-span-2">
+          <Card className="rounded-md lg:col-span-2" id="order-support">
             <CardHeader>
               <CardTitle>משלוח והחזרות</CardTitle>
             </CardHeader>

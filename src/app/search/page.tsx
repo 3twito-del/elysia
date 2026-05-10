@@ -4,13 +4,14 @@ import { ChevronLeft, ChevronRight, Search, Sparkles, X } from "lucide-react";
 
 import { SearchControls } from "~/app/search/_components/search-controls";
 import { BrandMediaPanel } from "~/components/brand-media-panel";
+import { CinematicPageHero } from "~/components/cinematic-page-hero";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { EmptyState } from "~/components/ui/empty-state";
-import { brandMedia } from "~/lib/brand-media";
+import { brandMedia, cinematicRouteMedia } from "~/lib/brand-media";
 import { db } from "~/server/db";
 import {
   DEFAULT_SEARCH_PER_PAGE,
@@ -87,13 +88,45 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         ? `מציגים ${visibleStart}-${visibleEnd} מתוך ${result.total} תוצאות`
         : "לא נמצאו תוצאות";
 
+  const searchAnchors = [
+    { id: "page-hero", label: "פתיחה" },
+    { id: "search-controls", label: "חיפוש" },
+    { id: "search-results-section", label: "תוצאות" },
+  ];
+
   after(() => recordSearchEvent(input, result.total));
 
   return (
     <main>
       <SiteHeader />
-      <RevealSection className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-end">
+      <CinematicPageHero
+        actions={
+          <>
+            <Button asChild size="lg">
+              <Link href="#search-controls">חיפוש מדויק</Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link href="#search-results-section">לתוצאות</Link>
+            </Button>
+          </>
+        }
+        anchors={searchAnchors}
+        description="חיפוש קטלוג עם סינון לפי קטגוריה, סניף, חומר, אבן, תקציב וזמינות."
+        eyebrow="Aphrodite Catalog"
+        slides={cinematicRouteMedia.search}
+        stats={[
+          { label: "תוצאות", value: String(result.total) },
+          { label: "פילטרים", value: String(activeFilters.length) },
+          { label: "עמוד", value: String(result.page) },
+        ]}
+        title="חיפוש בקטלוג"
+        variant="commerce"
+      />
+      <RevealSection
+        className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12"
+        id="search-controls"
+      >
+        <div className="hidden gap-4 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-end">
           <div>
             <h1 className="text-3xl font-semibold sm:text-4xl">חיפוש בקטלוג</h1>
             <p className="text-muted-foreground mt-2 max-w-2xl leading-7 sm:mt-3">
@@ -160,6 +193,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           aria-labelledby="search-results"
           className="glass-chrome mt-8 rounded-md border p-3"
           data-testid="search-results-summary"
+          id="search-results-section"
         >
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>

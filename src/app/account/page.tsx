@@ -16,6 +16,7 @@ import { CustomerAddressForm } from "./_components/customer-address-form";
 import { CustomerPrivacyActions } from "./_components/customer-privacy-actions";
 import { customerLogoutAction, removeWishlistItemAction } from "./actions";
 import { BrandMediaPanel } from "~/components/brand-media-panel";
+import { CinematicPageHero } from "~/components/cinematic-page-hero";
 import { MetricCard } from "~/components/metric-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -23,7 +24,7 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { EmptyState } from "~/components/ui/empty-state";
-import { brandMedia } from "~/lib/brand-media";
+import { brandMedia, cinematicRouteMedia } from "~/lib/brand-media";
 import {
   getAppointmentStatusLabel,
   getOrderStatusLabel,
@@ -93,12 +94,51 @@ export default async function AccountPage() {
         return null;
       })
     : null;
+  const guestAccountAnchors = [
+    { id: "page-hero", label: "פתיחה" },
+    { id: "account-login", label: "כניסה" },
+    { id: "account-benefits", label: "שירותים" },
+  ];
+  const accountAnchors = [
+    { id: "page-hero", label: "פתיחה" },
+    { id: "account-overview", label: "סקירה" },
+    { id: "account-orders", label: "הזמנות" },
+    { id: "account-wishlist", label: "Wishlist" },
+    { id: "account-service", label: "תורים" },
+    { id: "account-privacy", label: "פרטיות" },
+  ];
 
   if (!session?.user || session.user.adminUserId || !customer) {
     return (
       <main>
         <SiteHeader />
-        <RevealSection className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+        <CinematicPageHero
+          actions={
+            <>
+              <Button asChild size="lg">
+                <Link href="#account-login">כניסה מאובטחת</Link>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <Link href="#account-benefits">מה נשמר כאן</Link>
+              </Button>
+            </>
+          }
+          anchors={guestAccountAnchors}
+          description="כניסה מאובטחת להזמנות, Wishlist, מידות שמורות, תורים ופרטיות."
+          eyebrow="Aphrodite Account"
+          slides={cinematicRouteMedia.account}
+          stats={[
+            { label: "כניסה", value: "OTP" },
+            { label: "Wishlist", value: "שמור" },
+            { label: "פרטיות", value: "בשליטה" },
+          ]}
+          title="אזור לקוח"
+          variant="service"
+        />
+        <RevealSection
+          className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12"
+          id="account-login"
+        >
           <h1 className="text-3xl font-semibold sm:text-4xl">אזור לקוח</h1>
           <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
             כניסה מאובטחת באמצעות קוד חד-פעמי. לאחר הכניסה יוצגו הזמנות,
@@ -106,7 +146,7 @@ export default async function AccountPage() {
           </p>
           <BrandMediaPanel
             alt="Aqua account and service jewelry tray"
-            className="mt-6 h-44"
+            className="hidden"
             priority
             slides={brandMedia.service}
             variant="compact"
@@ -120,7 +160,11 @@ export default async function AccountPage() {
                 <CustomerOtpForm />
               </CardContent>
             </Card>
-            <RevealGrid className="grid gap-5 sm:grid-cols-2" variant="compact">
+            <RevealGrid
+              className="grid gap-5 sm:grid-cols-2"
+              id="account-benefits"
+              variant="compact"
+            >
               <MetricCard
                 detail="סטטוס, חשבוניות והחזרות"
                 icon={PackageCheck}
@@ -161,7 +205,33 @@ export default async function AccountPage() {
   return (
     <main>
       <SiteHeader />
-      <RevealSection className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+      <CinematicPageHero
+        actions={
+          <>
+            <Button asChild size="lg">
+              <Link href="#account-orders">הזמנות אחרונות</Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link href="#account-service">תורים ושירות</Link>
+            </Button>
+          </>
+        }
+        anchors={accountAnchors}
+        description="כל ההזמנות, המועדפים, המידות, הכתובות והפרטיות שלך במקום אחד."
+        eyebrow="Aphrodite Account"
+        slides={cinematicRouteMedia.account}
+        stats={[
+          { label: "הזמנות", value: String(customer.orders.length) },
+          { label: "Wishlist", value: String(wishlistItems.length) },
+          { label: "תורים", value: String(customer.appointments.length) },
+        ]}
+        title="אזור לקוח"
+        variant="service"
+      />
+      <RevealSection
+        className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12"
+        id="account-overview"
+      >
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <h1 className="text-3xl font-semibold sm:text-4xl">אזור לקוח</h1>
@@ -179,7 +249,7 @@ export default async function AccountPage() {
         </div>
         <BrandMediaPanel
           alt="Aqua account and service jewelry tray"
-          className="mb-8 h-44"
+          className="hidden"
           priority
           slides={brandMedia.service}
           variant="compact"
@@ -216,7 +286,7 @@ export default async function AccountPage() {
         </RevealGrid>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
-          <Card className="rounded-md">
+          <Card className="rounded-md" id="account-orders">
             <CardHeader>
               <CardTitle>הזמנות אחרונות</CardTitle>
             </CardHeader>
@@ -255,7 +325,7 @@ export default async function AccountPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-md">
+          <Card className="rounded-md" id="account-wishlist">
             <CardHeader>
               <CardTitle>Wishlist</CardTitle>
             </CardHeader>
@@ -316,7 +386,7 @@ export default async function AccountPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-md">
+          <Card className="rounded-md" id="account-addresses">
             <CardHeader>
               <CardTitle>כתובות שמורות</CardTitle>
             </CardHeader>
@@ -350,7 +420,7 @@ export default async function AccountPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-md">
+          <Card className="rounded-md" id="account-sizes">
             <CardHeader>
               <CardTitle>מידות וסגנון</CardTitle>
             </CardHeader>
@@ -380,7 +450,7 @@ export default async function AccountPage() {
               )}
             </CardContent>
           </Card>
-          <Card className="rounded-md">
+          <Card className="rounded-md" id="account-service">
             <CardHeader>
               <CardTitle>תורים</CardTitle>
             </CardHeader>
@@ -426,7 +496,7 @@ export default async function AccountPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-md">
+          <Card className="rounded-md" id="account-privacy">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <ShieldCheck className="size-5" />

@@ -14,11 +14,12 @@ import {
 } from "lucide-react";
 
 import { BrandMediaPanel } from "~/components/brand-media-panel";
+import { CinematicPageHero } from "~/components/cinematic-page-hero";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-import { brandMedia } from "~/lib/brand-media";
+import { brandMedia, cinematicRouteMedia } from "~/lib/brand-media";
 import { publicContactEmail, publicContactPhone } from "~/lib/public-contact";
 
 export const metadata: Metadata = {
@@ -93,12 +94,43 @@ const faqGroups = [
   },
 ];
 
+const faqAnchors = [
+  { id: "page-hero", label: "פתיחה" },
+  { id: "faq-shortcuts", label: "קיצורים" },
+  { id: "faq-groups", label: "שאלות" },
+  { id: "faq-contact", label: "שירות" },
+];
+
 export default function FaqPage() {
   return (
     <main>
       <SiteHeader />
 
-      <RevealSection className="liquid-section border-b border-[var(--glass-border)]">
+      <CinematicPageHero
+        actions={
+          <>
+            <Button asChild size="lg">
+              <Link href="#faq-groups">לשאלות</Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link href="#faq-contact">יצירת קשר</Link>
+            </Button>
+          </>
+        }
+        anchors={faqAnchors}
+        description="תשובות קצרות על קנייה באתר, זמינות בסניפים, מידות, משלוחים, מתנות והמלצות AI."
+        eyebrow="Aphrodite Help"
+        slides={cinematicRouteMedia.faq}
+        stats={[
+          { label: "נושאים", value: String(faqGroups.length) },
+          { label: "שירות", value: "זמין" },
+          { label: "AI", value: "פעיל" },
+        ]}
+        title="שאלות ותשובות"
+        variant="editorial"
+      />
+
+      <RevealSection aria-hidden="true" className="hidden" variant="none">
         <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:py-16">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -125,7 +157,10 @@ export default function FaqPage() {
         </div>
       </RevealSection>
 
-      <RevealSection className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:py-14">
+      <RevealSection
+        className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:py-14"
+        id="faq-shortcuts"
+      >
         <div className="grid gap-6 sm:grid-cols-3">
           <Link
             className="glass-card interactive-lift rounded-md border p-5"
@@ -150,7 +185,10 @@ export default function FaqPage() {
           </Link>
         </div>
 
-        <div className="glass-panel mt-8 rounded-md border p-6 sm:p-8">
+        <div
+          className="glass-panel mt-8 rounded-md border p-6 sm:p-8"
+          id="faq-groups"
+        >
           <div className="grid gap-10">
             {faqGroups.map((group, index) => {
               const Icon = group.icon;

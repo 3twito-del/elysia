@@ -15,6 +15,7 @@ import {
   CinematicHeroSequence,
   type CinematicHeroSlide,
 } from "~/components/cinematic-hero-sequence";
+import { FloatingAnchorNav } from "~/components/floating-anchor-nav";
 import { MetricCard } from "~/components/metric-card";
 import { MotionMediaFrame } from "~/components/motion-media-frame";
 import { ProductCard } from "~/components/product-card";
@@ -23,7 +24,7 @@ import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Separator } from "~/components/ui/separator";
-import { getCategoryBrandSlides } from "~/lib/brand-media";
+import { cinematicRouteMedia, getCategoryBrandSlides } from "~/lib/brand-media";
 import {
   getCatalogBranches,
   getCatalogCategories,
@@ -45,6 +46,17 @@ const heroSlides = [
   },
 ] satisfies CinematicHeroSlide[];
 
+const homeSlides = [...cinematicRouteMedia.home, ...heroSlides];
+
+const homeAnchors = [
+  { id: "page-hero", label: "פתיחה" },
+  { id: "quick-search", label: "חיפוש" },
+  { id: "categories", label: "קטגוריות" },
+  { id: "featured", label: "נבחרים" },
+  { id: "service-metrics", label: "שירות" },
+  { id: "branches", label: "סניפים" },
+];
+
 export default async function Home() {
   const [branches, categories, featuredProducts] = await Promise.all([
     getCatalogBranches(),
@@ -58,17 +70,22 @@ export default async function Home() {
 
       <RevealSection
         className="relative isolate min-h-[76svh] overflow-hidden bg-[var(--brand-aqua-deep)] [--hero-edge:clamp(1rem,4vw,5rem)] sm:min-h-[78vh]"
+        data-testid="cinematic-page-hero"
+        id="page-hero"
         initialVisible
         variant="hero"
       >
         <MotionMediaFrame
-          className="absolute inset-0 h-full min-h-full w-full bg-[var(--brand-aqua-deep)]"
-          contentClassName="absolute inset-[-3%]"
+          className="absolute inset-0 h-full min-h-[76svh] w-full bg-[var(--brand-aqua-deep)] sm:min-h-[78vh]"
+          contentClassName="absolute inset-0 min-h-[76svh] sm:min-h-[78vh]"
           hover
-          intensity="hero"
+          intensity="cinematic"
           parallax
         >
-          <CinematicHeroSequence slides={heroSlides} />
+          <CinematicHeroSequence
+            slides={homeSlides}
+            testId="cinematic-page-hero-sequence"
+          />
         </MotionMediaFrame>
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,56,59,0.02),rgba(6,56,59,0.28)_42%,rgba(0,0,0,0.68))]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.6),rgba(6,56,59,0.08)_58%,rgba(185,242,236,0.12))]" />
@@ -137,7 +154,9 @@ export default async function Home() {
         </div>
       </RevealSection>
 
-      <RevealSection className="glass-chrome border-b">
+      <FloatingAnchorNav items={homeAnchors} />
+
+      <RevealSection className="glass-chrome border-b" id="quick-search">
         <div className="mx-auto grid max-w-7xl gap-4 px-4 py-6 sm:px-6 lg:grid-cols-[1fr_2fr]">
           <div>
             <p className="text-muted-foreground text-sm">חיפוש מהיר</p>
@@ -165,7 +184,10 @@ export default async function Home() {
         </div>
       </RevealSection>
 
-      <RevealSection className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
+      <RevealSection
+        className="mx-auto max-w-7xl px-4 py-14 sm:px-6"
+        id="categories"
+      >
         <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
             <p className="text-muted-foreground text-sm">קטגוריות</p>
@@ -216,7 +238,7 @@ export default async function Home() {
         </RevealGrid>
       </RevealSection>
 
-      <RevealSection className="liquid-section">
+      <RevealSection className="liquid-section" id="featured">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
           <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
@@ -242,7 +264,10 @@ export default async function Home() {
         </div>
       </RevealSection>
 
-      <RevealSection className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
+      <RevealSection
+        className="mx-auto max-w-7xl px-4 py-14 sm:px-6"
+        id="service-metrics"
+      >
         <RevealGrid className="grid gap-5 lg:grid-cols-4" variant="compact">
           <MetricCard
             detail="זמינות לפי סניף לפני הגעה"
@@ -277,7 +302,10 @@ export default async function Home() {
 
       <Separator />
 
-      <RevealSection className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
+      <RevealSection
+        className="mx-auto max-w-7xl px-4 py-14 sm:px-6"
+        id="branches"
+      >
         <div className="mb-8">
           <p className="text-muted-foreground text-sm">סניפים</p>
           <h2 className="text-3xl font-semibold">איסוף, מדידה ושירות קרוב</h2>

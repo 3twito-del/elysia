@@ -7,6 +7,7 @@ import { ProductAnalytics } from "./_components/product-analytics";
 import { ProductGallery } from "./_components/product-gallery";
 import { ProductPurchasePanel } from "./_components/product-purchase-panel";
 import { RecentlyViewedProducts } from "./_components/recently-viewed-products";
+import { CinematicPageHero } from "~/components/cinematic-page-hero";
 import { ProductCard } from "~/components/product-card";
 import { SiteHeader } from "~/components/site-header";
 import { RevealGrid, RevealSection } from "~/components/reveal";
@@ -18,6 +19,7 @@ import {
   getProductAvailabilityLabel,
   getStockQuantityLabel,
 } from "~/lib/commerce-labels";
+import { cinematicRouteMedia } from "~/lib/brand-media";
 import { formatPrice } from "~/lib/format";
 import { stringifyJsonLd } from "~/lib/json-ld";
 import {
@@ -101,6 +103,20 @@ export default async function ProductPage({
           candidate.collection === product.collection),
     )
     .slice(0, 4);
+  const productHeroSlides =
+    uniqueImages.length > 0
+      ? uniqueImages.map((src) => ({
+          alt: product.name,
+          src,
+        }))
+      : cinematicRouteMedia.product;
+  const productAnchors = [
+    { id: "page-hero", label: "פתיחה" },
+    { id: "product-buy", label: "רכישה" },
+    { id: "product-details", label: "פרטים" },
+    { id: "product-availability", label: "זמינות" },
+    { id: "similar-products", label: "דומים" },
+  ];
 
   return (
     <main className="pb-24 md:pb-0">
@@ -115,7 +131,37 @@ export default async function ProductPage({
         dangerouslySetInnerHTML={{ __html: stringifyJsonLd(structuredData) }}
         type="application/ld+json"
       />
-      <RevealSection className="mx-auto grid max-w-7xl gap-8 px-4 py-6 sm:px-6 sm:py-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10">
+      <CinematicPageHero
+        actions={
+          <>
+            <Button asChild size="lg">
+              <Link href="#product-buy">בחירת מידה ורכישה</Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link href="#product-availability">זמינות בסניפים</Link>
+            </Button>
+          </>
+        }
+        anchors={productAnchors}
+        description={product.shortDescription}
+        eyebrow={product.collection}
+        slides={productHeroSlides}
+        stats={[
+          { label: "מחיר", value: formatPrice(product.price) },
+          { label: "חומר", value: product.material },
+          {
+            label: "זמינות",
+            value: getProductAvailabilityLabel(availableBranchCount),
+          },
+        ]}
+        title={product.name}
+        variant="product"
+      />
+
+      <RevealSection
+        className="mx-auto grid max-w-7xl gap-8 px-4 py-6 sm:px-6 sm:py-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10"
+        id="product-buy"
+      >
         <div className="contents lg:grid lg:gap-4">
           <div className="brand-gallery-frame order-1 lg:order-none">
             <ProductGallery images={uniqueImages} productName={product.name} />
@@ -187,7 +233,7 @@ export default async function ProductPage({
             </Button>
           </div>
 
-          <Card className="mt-8 rounded-md">
+          <Card className="mt-8 rounded-md" id="product-availability">
             <CardHeader>
               <CardTitle className="text-lg">זמינות לפי סניף</CardTitle>
             </CardHeader>
@@ -213,7 +259,10 @@ export default async function ProductPage({
         </div>
       </RevealSection>
 
-      <RevealSection className="mx-auto max-w-7xl px-4 pb-14 sm:px-6">
+      <RevealSection
+        className="mx-auto max-w-7xl px-4 pb-14 sm:px-6"
+        id="product-details"
+      >
         <RevealGrid className="grid gap-5 lg:grid-cols-3" variant="compact">
           <Card className="rounded-md">
             <CardHeader>
@@ -247,7 +296,10 @@ export default async function ProductPage({
           </Card>
         </RevealGrid>
         {similarProducts.length > 0 ? (
-          <div className="brand-similar-section mt-12 rounded-md border p-4 sm:p-5">
+          <div
+            className="brand-similar-section mt-12 rounded-md border p-4 sm:p-5"
+            id="similar-products"
+          >
             <h2 className="text-2xl font-semibold">מוצרים דומים</h2>
             <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {similarProducts.map((similar) => (

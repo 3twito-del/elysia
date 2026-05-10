@@ -1,13 +1,16 @@
+import Link from "next/link";
 import { Gift, MessageSquare, Sparkles } from "lucide-react";
 
 import { AiGiftRecommender } from "./_components/ai-gift-recommender";
 import { StylistChat } from "~/app/stylist/_components/stylist-chat";
 import { BrandMediaPanel } from "~/components/brand-media-panel";
+import { CinematicPageHero } from "~/components/cinematic-page-hero";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { brandMedia } from "~/lib/brand-media";
+import { brandMedia, cinematicRouteMedia } from "~/lib/brand-media";
 import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata = {
@@ -25,11 +28,43 @@ export default async function AiPage({ searchParams }: AiPageProps) {
   const search = searchParams ? await searchParams : {};
   const defaultTab =
     search.tab === "gifts" || search.tool === "gifts" ? "gifts" : "stylist";
+  const aiAnchors = [
+    { id: "page-hero", label: "פתיחה" },
+    { id: "ai-tools", label: "כלים" },
+    { id: "ai-stylist", label: "סטייליסט" },
+    { id: "ai-gifts", label: "מתנות" },
+  ];
 
   return (
     <main className="min-h-screen">
       <SiteHeader />
-      <RevealSection className="liquid-section border-b border-[var(--glass-border)]">
+      <CinematicPageHero
+        actions={
+          <>
+            <Button asChild size="lg">
+              <Link href="#ai-stylist">סטייליסט AI</Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link href="#ai-gifts">שאלון מתנה</Link>
+            </Button>
+          </>
+        }
+        anchors={aiAnchors}
+        description="כלי AI מחוברים לקטלוג Aphrodite ומציגים פריטים זמינים לפי כוונה, תקציב וסגנון."
+        eyebrow="Aphrodite AI"
+        slides={cinematicRouteMedia.ai}
+        stats={[
+          { label: "כלים", value: "2" },
+          { label: "קטלוג", value: "חי" },
+          { label: "התאמה", value: "אישית" },
+        ]}
+        title="התאמה חכמה לתכשיט"
+        variant="commerce"
+      />
+      <RevealSection
+        className="liquid-section border-b border-[var(--glass-border)]"
+        id="ai-tools"
+      >
         <div className="mx-auto grid max-w-6xl gap-5 px-4 py-6 sm:px-6 lg:py-8">
           <Tabs className="gap-4" defaultValue={defaultTab} dir="rtl">
             <div className="glass-panel grid gap-5 rounded-md border p-4 sm:p-5">
@@ -78,11 +113,11 @@ export default async function AiPage({ searchParams }: AiPageProps) {
               </TabsList>
             </div>
 
-            <TabsContent className="mt-0" value="stylist">
+            <TabsContent className="mt-0" id="ai-stylist" value="stylist">
               <StylistChat compact />
             </TabsContent>
 
-            <TabsContent className="mt-0" value="gifts">
+            <TabsContent className="mt-0" id="ai-gifts" value="gifts">
               <TRPCReactProvider>
                 <AiGiftRecommender />
               </TRPCReactProvider>

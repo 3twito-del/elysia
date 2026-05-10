@@ -15,12 +15,13 @@ import {
 
 import { MotionMediaFrame } from "~/components/motion-media-frame";
 import { CinematicHeroSequence } from "~/components/cinematic-hero-sequence";
+import { FloatingAnchorNav } from "~/components/floating-anchor-nav";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-import { brandMedia } from "~/lib/brand-media";
+import { cinematicRouteMedia } from "~/lib/brand-media";
 
 const values = [
   {
@@ -68,6 +69,15 @@ const journey = [
   },
 ];
 
+const aboutAnchors = [
+  { id: "page-hero", label: "פתיחה" },
+  { id: "about-snapshot", label: "תמצית" },
+  { id: "about-name", label: "השם" },
+  { id: "about-story", label: "סיפור" },
+  { id: "about-values", label: "ערכים" },
+  { id: "about-experience", label: "חוויה" },
+];
+
 export const metadata: Metadata = {
   title: "אודות",
   description:
@@ -88,22 +98,24 @@ export default function AboutPage() {
       <article>
         <RevealSection
           className="relative min-h-[86vh] overflow-hidden"
+          data-testid="cinematic-page-hero"
+          id="page-hero"
           initialVisible
           variant="hero"
         >
           <MotionMediaFrame
             className="absolute inset-0 min-h-[86vh]"
-            contentClassName="absolute inset-[-3%]"
-            intensity="hero"
+            contentClassName="absolute inset-0"
+            intensity="cinematic"
             parallax
           >
-            <CinematicHeroSequence slides={brandMedia.about} />
+            <CinematicHeroSequence slides={cinematicRouteMedia.about} />
           </MotionMediaFrame>
           <div className="absolute inset-0 bg-black/[0.28]" />
           <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(255,255,255,0.22),transparent_38%),linear-gradient(to_top,rgba(0,0,0,0.68),rgba(0,0,0,0.08)_58%,rgba(0,0,0,0.28))]" />
 
           <div className="relative mx-auto flex min-h-[86vh] max-w-7xl flex-col justify-end px-4 pt-24 pb-10 sm:px-6 lg:pb-14">
-            <div className="motion-hero-copy glass-hero max-w-4xl rounded-md border p-6 text-white sm:p-8 lg:p-10">
+            <div className="motion-hero-copy max-w-4xl text-white">
               <Badge className="mb-5" variant="secondary">
                 אודות Aphrodite
               </Badge>
@@ -140,8 +152,9 @@ export default function AboutPage() {
             </div>
           </div>
         </RevealSection>
+        <FloatingAnchorNav items={aboutAnchors} />
 
-        <RevealSection className="glass-chrome border-b">
+        <RevealSection className="glass-chrome border-b" id="about-snapshot">
           <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-3">
             <div className="glass-card rounded-md border p-5">
               <p className="text-muted-foreground text-sm">שם</p>
@@ -160,7 +173,10 @@ export default function AboutPage() {
           </div>
         </RevealSection>
 
-        <RevealSection className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
+        <RevealSection
+          className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20"
+          id="about-name"
+        >
           <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
             <div className="sticky top-24">
               <p className="text-muted-foreground text-sm">השם Aphrodite</p>
@@ -199,7 +215,7 @@ export default function AboutPage() {
           </div>
         </RevealSection>
 
-        <RevealSection className="liquid-section">
+        <RevealSection className="liquid-section" id="about-story">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
             <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
               <div className="glass-panel rounded-md border p-6 sm:p-8 lg:p-10">
@@ -260,7 +276,10 @@ export default function AboutPage() {
           </div>
         </RevealSection>
 
-        <RevealSection className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
+        <RevealSection
+          className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20"
+          id="about-values"
+        >
           <div className="mb-9 max-w-3xl">
             <p className="text-muted-foreground text-sm">ערכים</p>
             <h2 className="mt-3 text-4xl leading-tight font-semibold">
@@ -361,7 +380,10 @@ export default function AboutPage() {
 
         <Separator />
 
-        <RevealSection className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
+        <RevealSection
+          className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20"
+          id="about-experience"
+        >
           <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr]">
             <div>
               <p className="text-muted-foreground text-sm">חוויית הקנייה</p>

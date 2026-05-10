@@ -3,11 +3,12 @@ import Link from "next/link";
 import { Accessibility, Mail, Phone, ShieldCheck } from "lucide-react";
 
 import { BrandMediaPanel } from "~/components/brand-media-panel";
+import { CinematicPageHero } from "~/components/cinematic-page-hero";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-import { brandMedia } from "~/lib/brand-media";
+import { brandMedia, cinematicRouteMedia } from "~/lib/brand-media";
 import { publicContactEmail, publicContactPhone } from "~/lib/public-contact";
 
 export const metadata: Metadata = {
@@ -16,12 +17,43 @@ export const metadata: Metadata = {
     "הצהרת הנגישות של Aphrodite, פירוט התאמות באתר ופרטי פנייה בנושא נגישות.",
 };
 
+const accessibilityAnchors = [
+  { id: "page-hero", label: "פתיחה" },
+  { id: "accessibility-standard", label: "תקן" },
+  { id: "accessibility-tools", label: "כלים" },
+  { id: "accessibility-contact", label: "פנייה" },
+];
+
 export default function AccessibilityPage() {
   return (
     <main>
       <SiteHeader />
 
-      <RevealSection className="liquid-section border-b border-[var(--glass-border)]">
+      <CinematicPageHero
+        actions={
+          <>
+            <Button asChild size="lg">
+              <Link href="#accessibility-standard">רמת נגישות</Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link href="#accessibility-contact">פנייה בנושא נגישות</Link>
+            </Button>
+          </>
+        }
+        anchors={accessibilityAnchors}
+        description="אנחנו פועלים להנגיש את האתר והשירותים הדיגיטליים כך שיהיו זמינים, ברורים ונוחים לשימוש."
+        eyebrow="Aphrodite Accessibility"
+        slides={cinematicRouteMedia.accessibility}
+        stats={[
+          { label: "תנועה", value: "ניתנת להפחתה" },
+          { label: "טקסט", value: "ניתן להגדלה" },
+          { label: "ניגודיות", value: "זמינה" },
+        ]}
+        title="הצהרת נגישות"
+        variant="editorial"
+      />
+
+      <RevealSection aria-hidden="true" className="hidden" variant="none">
         <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:py-16">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>

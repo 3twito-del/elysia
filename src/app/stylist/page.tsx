@@ -1,9 +1,13 @@
+import Link from "next/link";
 import { Sparkles, WandSparkles } from "lucide-react";
 
+import { CinematicPageHero } from "~/components/cinematic-page-hero";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { cinematicRouteMedia } from "~/lib/brand-media";
 import { StylistChat } from "./_components/stylist-chat";
 
 export const metadata = {
@@ -11,10 +15,42 @@ export const metadata = {
 };
 
 export default function StylistPage() {
+  const stylistAnchors = [
+    { id: "page-hero", label: "פתיחה" },
+    { id: "stylist-chat", label: "שיחה" },
+    { id: "stylist-capabilities", label: "יכולות" },
+  ];
+
   return (
     <main>
       <SiteHeader />
-      <RevealSection className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_360px]">
+      <CinematicPageHero
+        actions={
+          <>
+            <Button asChild size="lg">
+              <Link href="#stylist-chat">להתחלת שיחה</Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link href="/search">חיפוש קטלוג</Link>
+            </Button>
+          </>
+        }
+        anchors={stylistAnchors}
+        description="ייעוץ תכשיטים לפי סגנון, תקציב ואירוע, עם המלצות שנשארות בתוך קטלוג פעיל."
+        eyebrow="Aphrodite Stylist"
+        slides={cinematicRouteMedia.stylist}
+        stats={[
+          { label: "התאמה", value: "AI" },
+          { label: "קטלוג", value: "זמין" },
+          { label: "סגנון", value: "אישי" },
+        ]}
+        title="סטייליסט תכשיטים"
+        variant="commerce"
+      />
+      <RevealSection
+        className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_360px]"
+        id="stylist-chat"
+      >
         <div>
           <Badge className="mb-4" variant="secondary">
             התאמה חכמה
@@ -31,7 +67,7 @@ export default function StylistPage() {
           </div>
         </div>
 
-        <aside className="grid content-start gap-5">
+        <aside className="grid content-start gap-5" id="stylist-capabilities">
           <RevealGrid className="grid gap-5" variant="compact">
             <Card className="rounded-md">
               <CardHeader>

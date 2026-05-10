@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { CategoryFilterSheet } from "./_components/category-filter-sheet";
+import { CinematicPageHero } from "~/components/cinematic-page-hero";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -167,11 +168,47 @@ export default async function CategoryPage({
       ? `${visibleStart}-${visibleEnd} מתוך ${sortedProducts.length} מוצרים`
       : "0 מוצרים";
 
+  const categoryAnchors = [
+    { id: "page-hero", label: "פתיחה" },
+    { id: "category-filters", label: "פילטרים" },
+    { id: "category-products", label: "מוצרים" },
+  ];
+
   return (
     <main>
       <SiteHeader />
 
-      <RevealSection className="liquid-section border-b border-[var(--glass-border)]">
+      <CinematicPageHero
+        actions={
+          <>
+            <Button asChild size="lg">
+              <Link href="#category-products">לצפייה במוצרים</Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link href="#category-filters">סינון מדויק</Link>
+            </Button>
+          </>
+        }
+        anchors={categoryAnchors}
+        description={
+          category?.description ??
+          "בחירה מסוננת מתוך קטלוג התכשיטים, עם זמינות סניפים ומחירים בשקלים."
+        }
+        eyebrow="קטלוג Aphrodite"
+        slides={getCategoryBrandSlides(slug)}
+        stats={[
+          {
+            label: "מוצרים מוצגים",
+            value: `${filteredProducts.length}/${baseProducts.length}`,
+          },
+          { label: "סניפים", value: String(branches.length) },
+          { label: "מיון", value: currentSortLabel },
+        ]}
+        title={category?.name ?? "קטגוריה"}
+        variant="commerce"
+      />
+
+      <RevealSection aria-hidden="true" className="hidden" variant="none">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:py-10">
           <div className="glass-panel grid gap-6 rounded-md border p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-stretch">
             <div>
@@ -290,6 +327,8 @@ export default async function CategoryPage({
         </div>
       </div>
 
+      <div className="h-px" id="category-filters" />
+
       <RevealSection className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[296px_1fr] lg:py-10">
         <aside className="hidden lg:block">
           <Card className="sticky top-24 rounded-md" size="sm">
@@ -317,7 +356,11 @@ export default async function CategoryPage({
           </Card>
         </aside>
 
-        <section aria-labelledby="category-results" className="min-w-0">
+        <section
+          aria-labelledby="category-results"
+          className="min-w-0"
+          id="category-products"
+        >
           <div className="glass-chrome mb-7 rounded-md border p-3">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
