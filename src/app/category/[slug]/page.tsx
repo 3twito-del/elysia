@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 
+import { CategoryFilterSheet } from "./_components/category-filter-sheet";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -22,13 +23,11 @@ import { EmptyState } from "~/components/ui/empty-state";
 import { Separator } from "~/components/ui/separator";
 import { getCategoryBrandSlides } from "~/lib/brand-media";
 import {
-  Sheet,
   SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "~/components/ui/sheet";
 import {
   formatPrice,
@@ -242,23 +241,21 @@ export default async function CategoryPage({
                 : "כל הפריטים בקטגוריה"}
             </p>
           </div>
-          <Sheet closeOnMediaQuery="(min-width: 1024px)">
-            <SheetTrigger asChild>
-              <Button
-                className="gap-2"
-                data-testid="category-filter-trigger"
-                type="button"
-                variant="outline"
-              >
-                <Filter className="size-4" />
-                פילטרים
-                {activeFilterCount > 0 && (
-                  <Badge className="h-5 px-1.5" variant="secondary">
-                    {activeFilterCount}
-                  </Badge>
-                )}
-              </Button>
-            </SheetTrigger>
+          <CategoryFilterSheet activeFilterCount={activeFilterCount}>
+            <Button
+              className="gap-2"
+              data-testid="category-filter-trigger"
+              type="button"
+              variant="outline"
+            >
+              <Filter className="size-4" />
+              פילטרים
+              {activeFilterCount > 0 && (
+                <Badge className="h-5 px-1.5" variant="secondary">
+                  {activeFilterCount}
+                </Badge>
+              )}
+            </Button>
             <SheetContent
               className="w-[min(92vw,390px)] overflow-y-auto p-0"
               side="right"
@@ -289,7 +286,7 @@ export default async function CategoryPage({
                 />
               </div>
             </SheetContent>
-          </Sheet>
+          </CategoryFilterSheet>
         </div>
       </div>
 
