@@ -295,7 +295,14 @@ test.describe("cookie consent flow", () => {
     ).toBeVisible();
     await expectRecentlyViewed(page, productSlug, false);
 
-    await page.getByRole("button", { name: "אישור הכל" }).click();
+    const acceptCookiesButton = page.getByRole("button", {
+      name: "אישור הכל",
+    });
+    await expect(acceptCookiesButton).toHaveCSS(
+      "background-color",
+      "rgb(66, 201, 190)",
+    );
+    await acceptCookiesButton.click();
 
     await expect(
       page.getByRole("region", { name: "בחירת קוקיז" }),

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Cookie, Settings } from "lucide-react";
+import { CheckCircle2, Cookie, Settings } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 import { Button } from "~/components/ui/button";
@@ -59,7 +59,7 @@ export function CookieConsentBanner() {
   return (
     <section
       aria-label="בחירת קוקיז"
-      className="bg-background/98 fixed inset-x-0 bottom-0 z-50 max-h-[28dvh] overflow-y-auto border-t border-[var(--glass-border)] px-3 py-2 shadow-[0_-10px_28px_oklch(0_0_0_/_9%)] backdrop-blur-xl sm:max-h-[44dvh] sm:px-6 sm:py-4"
+      className="bg-background fixed inset-x-0 bottom-0 z-50 max-h-[28dvh] overflow-y-auto border-t border-[var(--glass-border)] px-3 py-2 shadow-[0_-10px_28px_oklch(0_0_0_/_9%)] sm:max-h-[44dvh] sm:px-6 sm:py-4"
       ref={bannerRef}
     >
       <div className="mx-auto grid max-w-7xl gap-2 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
@@ -86,7 +86,7 @@ export function CookieConsentBanner() {
 
         <div className="grid shrink-0 grid-cols-2 gap-2 sm:flex sm:flex-row">
           <Button
-            className="min-h-9 text-xs sm:min-h-11 sm:min-w-32 sm:text-sm"
+            className="cookie-button-secondary min-h-9 text-xs sm:min-h-11 sm:min-w-32 sm:text-sm"
             type="button"
             variant="outline"
             onClick={() => chooseConsent("essential")}
@@ -95,10 +95,11 @@ export function CookieConsentBanner() {
             הכרחי בלבד
           </Button>
           <Button
-            className="min-h-9 text-xs sm:min-h-11 sm:min-w-32 sm:text-sm"
+            className="cookie-button-primary min-h-9 text-xs sm:min-h-11 sm:min-w-32 sm:text-sm"
             type="button"
             onClick={() => chooseConsent("all")}
           >
+            <CheckCircle2 className="size-4" />
             אישור הכל
           </Button>
         </div>

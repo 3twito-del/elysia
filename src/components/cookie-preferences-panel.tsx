@@ -46,16 +46,18 @@ export function CookiePreferencesPanel() {
 
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
             <Button
+              className="cookie-button-secondary"
               type="button"
-              variant={consentValue === "essential" ? "default" : "outline"}
+              variant="outline"
               onClick={() => chooseConsent("essential")}
             >
               <ShieldCheck className="size-4" />
               הכרחי בלבד
             </Button>
             <Button
+              className="cookie-button-primary"
               type="button"
-              variant={consentValue === "all" ? "default" : "outline"}
+              variant="default"
               onClick={() => chooseConsent("all")}
             >
               <BarChart3 className="size-4" />

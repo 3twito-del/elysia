@@ -1104,6 +1104,88 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
   color: var(--brand-aqua-deep);
 }
 
+.cookie-button-primary,
+.cookie-button-secondary {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    transform var(--motion-ui) var(--ease-motion-standard),
+    border-color var(--motion-ui) var(--ease-motion-standard),
+    background-color var(--motion-ui) var(--ease-motion-standard),
+    box-shadow var(--motion-ui) var(--ease-motion-standard);
+}
+
+.cookie-button-primary::after,
+.cookie-button-secondary::after {
+  pointer-events: none;
+  position: absolute;
+  inset: -45% auto -45% -36%;
+  width: 34%;
+  content: "";
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(255 255 255 / 42%),
+    rgb(185 242 236 / 24%),
+    transparent
+  );
+  opacity: 0;
+}
+
+.cookie-button-primary:not(:disabled) {
+  border-color: var(--brand-aqua) !important;
+  background: var(--brand-aqua) !important;
+  color: var(--brand-aqua-deep) !important;
+  box-shadow: 0 12px 28px rgb(66 201 190 / 18%);
+}
+
+.cookie-button-secondary:not(:disabled) {
+  border-color: var(--border) !important;
+  background: var(--background) !important;
+  color: var(--foreground) !important;
+  box-shadow: 0 2px 8px var(--glass-shadow);
+}
+
+.cookie-button-primary:not(:disabled):hover,
+.cookie-button-primary:not(:disabled):focus-visible,
+.cookie-button-secondary:not(:disabled):hover,
+.cookie-button-secondary:not(:disabled):focus-visible {
+  border-color: var(--brand-aqua) !important;
+  background: var(--brand-aqua) !important;
+  color: var(--brand-aqua-deep) !important;
+  box-shadow: 0 16px 34px rgb(66 201 190 / 22%);
+  transform: translateY(-1px);
+}
+
+.cookie-button-primary:not(:disabled):hover::after,
+.cookie-button-primary:not(:disabled):focus-visible::after,
+.cookie-button-secondary:not(:disabled):hover::after,
+.cookie-button-secondary:not(:disabled):focus-visible::after {
+  animation: aqua-button-shine 1.22s var(--ease-motion-standard);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cookie-button-primary,
+  .cookie-button-secondary {
+    transition: none;
+  }
+
+  .cookie-button-primary:not(:disabled):hover,
+  .cookie-button-primary:not(:disabled):focus-visible,
+  .cookie-button-secondary:not(:disabled):hover,
+  .cookie-button-secondary:not(:disabled):focus-visible {
+    transform: none;
+  }
+
+  .cookie-button-primary:not(:disabled):hover::after,
+  .cookie-button-primary:not(:disabled):focus-visible::after,
+  .cookie-button-secondary:not(:disabled):hover::after,
+  .cookie-button-secondary:not(:disabled):focus-visible::after {
+    animation: none;
+  }
+}
+
 .public-motion-shell [data-slot="badge"][data-variant="secondary"],
 .public-motion-shell [data-slot="badge"][data-variant="outline"] {
   border-color: rgb(66 201 190 / 24%);
