@@ -495,10 +495,6 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
   animation: none !important;
 }
 
-.public-motion-content :where(section[id], div[id], article[id]) {
-  scroll-margin-top: 6.25rem;
-}
-
 .cinematic-page-hero {
   position: relative;
   isolation: isolate;

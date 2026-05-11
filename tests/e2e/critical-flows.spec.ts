@@ -256,6 +256,7 @@ test.describe("accessibility and responsive guardrails", () => {
     await expect(page).toHaveURL(/#category-products$/);
     expect(page.url()).not.toMatch(/#.*#/);
     await expect(page.locator("#category-products")).toBeInViewport();
+    await expectElementAtViewportTop(page, "#category-products");
   });
 
   test("home scroll cue normalizes an existing hash instead of duplicating it", async ({
@@ -269,6 +270,7 @@ test.describe("accessibility and responsive guardrails", () => {
 
     await expect(page).toHaveURL(/\/#quick-search$/);
     expect(page.url()).not.toContain("#quick-search#quick-search");
+    await expectElementAtViewportTop(page, "#quick-search");
   });
 
   for (const route of [...publicHeroRoutes, "/admin/login"]) {
@@ -470,4 +472,18 @@ async function expectNoHorizontalOverflow(page: Page) {
   );
 
   expect(overflow).toBeLessThanOrEqual(1);
+}
+
+async function expectElementAtViewportTop(page: Page, selector: string) {
+  await expect
+    .poll(
+      () =>
+        page
+          .locator(selector)
+          .evaluate((element) =>
+            Math.round(Math.abs(element.getBoundingClientRect().top)),
+          ),
+      { timeout: 10_000 },
+    )
+    .toBeLessThanOrEqual(2);
 }

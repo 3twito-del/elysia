@@ -210,9 +210,8 @@ export function PublicMotionProvider({ children }: PublicMotionProviderProps) {
         target.dataset.anchorTargetActive = "true";
       }
 
-      target.scrollIntoView({
+      scrollTargetToViewportTop(target, {
         behavior: shouldReduceMotion ? "auto" : "smooth",
-        block: "start",
       });
 
       const nextUrl = new URL(window.location.href);
@@ -270,4 +269,35 @@ function getElementByHash(hash: string) {
   } catch {
     return document.getElementById(hash.slice(1));
   }
+}
+
+function scrollTargetToViewportTop(
+  target: HTMLElement,
+  options: Pick<ScrollToOptions, "behavior">,
+) {
+  window.scrollTo({
+    top: getTargetDocumentTop(target),
+    behavior: options.behavior,
+  });
+
+  if (options.behavior !== "smooth") return;
+
+  const snapToExactTop = () => {
+    if (!target.isConnected) return;
+
+    const offset = target.getBoundingClientRect().top;
+    if (Math.abs(offset) <= 1) return;
+
+    window.scrollTo({
+      top: Math.max(0, window.scrollY + offset),
+      behavior: "auto",
+    });
+  };
+
+  window.setTimeout(snapToExactTop, 720);
+  window.setTimeout(snapToExactTop, 1040);
+}
+
+function getTargetDocumentTop(target: HTMLElement) {
+  return Math.max(0, target.getBoundingClientRect().top + window.scrollY);
 }
