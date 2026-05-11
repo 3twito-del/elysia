@@ -63,6 +63,23 @@ describe("AI catalog intent", () => {
     ).toContain("סוג הפריט תואם לבקשה");
   });
 
+  it("includes a formatted budget in match reasons", () => {
+    const intent = resolveAiCatalogSearchIntent({
+      query: "rings under 900",
+    });
+
+    const reason = createAiMatchReason(
+      {
+        categorySlug: "rings",
+        price: 690,
+      },
+      intent,
+    );
+
+    expect(reason).toContain("900");
+    expect(reason).toContain("\u20aa");
+  });
+
   it("keeps category-locked searches locked even with prompt injection text", () => {
     const intent = resolveAiCatalogSearchIntent({
       query:

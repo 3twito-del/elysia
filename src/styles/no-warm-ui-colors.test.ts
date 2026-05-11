@@ -20,7 +20,9 @@ describe("public UI color guard", () => {
       ...walk(path.join(root, "src/app")).filter(
         (file) =>
           isUiFile(file) &&
-          !file.includes(`${path.sep}src${path.sep}app${path.sep}admin${path.sep}`),
+          !file.includes(
+            `${path.sep}src${path.sep}app${path.sep}admin${path.sep}`,
+          ),
       ),
       path.join(root, "src/lib/brand-media.ts"),
     ].filter((file) => !file.includes(".test."));

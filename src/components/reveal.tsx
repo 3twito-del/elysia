@@ -44,9 +44,7 @@ function useRevealInView<T extends HTMLElement>(initialVisible = false) {
   useEffect(() => {
     if (!initialVisible && !shouldReduceMotion) return;
 
-    const visibleFrame = window.requestAnimationFrame(() =>
-      setIsVisible(true),
-    );
+    const visibleFrame = window.requestAnimationFrame(() => setIsVisible(true));
 
     return () => window.cancelAnimationFrame(visibleFrame);
   }, [initialVisible, shouldReduceMotion]);
@@ -143,8 +141,9 @@ export function RevealGrid({
   ...props
 }: RevealGridProps) {
   const { suppressInitialReveal } = usePublicMotion();
-  const [ref, isVisible] =
-    useRevealInView<HTMLDivElement>(suppressInitialReveal);
+  const [ref, isVisible] = useRevealInView<HTMLDivElement>(
+    suppressInitialReveal,
+  );
   const items = Children.toArray(children);
   const resolvedStagger = stagger ?? gridStaggerByVariant[variant];
 

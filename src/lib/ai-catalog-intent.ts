@@ -1,3 +1,5 @@
+import { formatPrice } from "./format";
+
 export type AiCatalogToolInput = {
   query?: string;
   category?: string;
@@ -324,9 +326,5 @@ function normalizeText(value?: string) {
 }
 
 function formatBudget(amount: number) {
-  return new Intl.NumberFormat("he-IL", {
-    style: "currency",
-    currency: "ILS",
-    maximumFractionDigits: 0,
-  }).format(amount);
+  return formatPrice(amount);
 }

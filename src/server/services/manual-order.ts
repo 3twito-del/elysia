@@ -4,6 +4,7 @@ import { nanoid } from "nanoid";
 import { z } from "zod";
 
 import { env } from "~/env";
+import { formatPrice } from "~/lib/format";
 import { notificationProvider } from "~/server/adapters/notifications";
 import { db } from "~/server/db";
 import { canReserveStock } from "./inventory";
@@ -493,11 +494,7 @@ async function createManualOrderInTransaction(
 }
 
 export function formatManualOrderAmount(amount: number) {
-  return new Intl.NumberFormat("he-IL", {
-    style: "currency",
-    currency: "ILS",
-    maximumFractionDigits: 0,
-  }).format(amount);
+  return formatPrice(amount);
 }
 
 export function createManualOrderCustomerMessage(

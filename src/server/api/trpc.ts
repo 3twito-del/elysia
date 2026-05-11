@@ -60,6 +60,9 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
   },
 });
 
+const enableDevTimingLogs = process.env.TRPC_DEBUG === "1";
+const enableDevLatency = process.env.TRPC_DEV_LATENCY === "1";
+
 /**
  * Create a server-side caller.
  *
@@ -82,23 +85,22 @@ export const createCallerFactory = t.createCallerFactory;
 export const createTRPCRouter = t.router;
 
 /**
- * Middleware for timing procedure execution and adding an artificial delay in development.
+ * Middleware for optional procedure timing and artificial latency in development.
  *
- * You can remove this if you don't like it, but it can help catch unwanted waterfalls by simulating
- * network latency that would occur in production but not in local development.
+ * Set TRPC_DEBUG=1 for timing logs, or TRPC_DEV_LATENCY=1 when deliberately
+ * testing loading states and unwanted waterfalls.
  */
 const timingMiddleware = t.middleware(async ({ next, path }) => {
   const start = Date.now();
 
-  if (t._config.isDev) {
-    // artificial delay in dev
+  if (t._config.isDev && enableDevLatency) {
     const waitMs = Math.floor(Math.random() * 400) + 100;
     await new Promise((resolve) => setTimeout(resolve, waitMs));
   }
 
   const result = await next();
 
-  if (t._config.isDev) {
+  if (t._config.isDev && enableDevTimingLogs) {
     const end = Date.now();
     console.debug(`[TRPC] ${path} took ${end - start}ms to execute`);
   }
