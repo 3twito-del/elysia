@@ -22,11 +22,6 @@ export default async function GiftsPage() {
     giftProducts.length > 0
       ? giftProducts
       : await getFeaturedCatalogProducts(8);
-  const giftAnchors = [
-    { id: "page-hero", label: "פתיחה" },
-    { id: "gift-advisor", label: "ייעוץ" },
-    { id: "gift-products", label: "מתנות" },
-  ];
 
   return (
     <main>
@@ -42,9 +37,9 @@ export default async function GiftsPage() {
             </Button>
           </>
         }
-        anchors={giftAnchors}
         description="בחירות קלות לקנייה עם אריזת מתנה, ברכה אישית והתאמה לפי תקציב."
         eyebrow="Aphrodite Gifts"
+        scrollCue={{ href: "#gift-products", label: "למתנות" }}
         slides={cinematicRouteMedia.gifts}
         stats={[
           { label: "בחירות", value: String(products.length) },

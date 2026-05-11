@@ -18,11 +18,6 @@ export const metadata = {
 
 export default async function BranchesPage() {
   const branches = await getCatalogBranches();
-  const branchAnchors = [
-    { id: "page-hero", label: "פתיחה" },
-    { id: "branches-list", label: "סניפים" },
-    { id: "appointment", label: "פגישה" },
-  ];
 
   return (
     <main>
@@ -38,9 +33,9 @@ export default async function BranchesPage() {
             </Button>
           </>
         }
-        anchors={branchAnchors}
         description="זמינות מוצרים, איסוף מהחנות, שינוי מידה, ייעוץ מתנות ופגישות כלה בסניפים."
         eyebrow="Aphrodite Service"
+        scrollCue={{ href: "#branches-list", label: "לסניפים" }}
         slides={cinematicRouteMedia.branches}
         stats={[
           { label: "סניפים", value: String(branches.length) },

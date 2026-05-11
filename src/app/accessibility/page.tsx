@@ -17,13 +17,6 @@ export const metadata: Metadata = {
     "הצהרת הנגישות של Aphrodite, פירוט התאמות באתר ופרטי פנייה בנושא נגישות.",
 };
 
-const accessibilityAnchors = [
-  { id: "page-hero", label: "פתיחה" },
-  { id: "accessibility-standard", label: "תקן" },
-  { id: "accessibility-tools", label: "כלים" },
-  { id: "accessibility-contact", label: "פנייה" },
-];
-
 export default function AccessibilityPage() {
   return (
     <main>
@@ -40,9 +33,9 @@ export default function AccessibilityPage() {
             </Button>
           </>
         }
-        anchors={accessibilityAnchors}
         description="אנחנו פועלים להנגיש את האתר והשירותים הדיגיטליים כך שיהיו זמינים, ברורים ונוחים לשימוש."
         eyebrow="Aphrodite Accessibility"
+        scrollCue={{ href: "#accessibility-standard", label: "לתקן הנגישות" }}
         slides={cinematicRouteMedia.accessibility}
         stats={[
           { label: "תנועה", value: "ניתנת להפחתה" },

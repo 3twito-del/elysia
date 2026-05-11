@@ -16,11 +16,6 @@ export const metadata = {
 
 export default async function CheckoutPage() {
   const branches = await getCatalogBranches();
-  const checkoutAnchors = [
-    { id: "page-hero", label: "פתיחה" },
-    { id: "checkout-form", label: "קופה" },
-    { id: "checkout-service", label: "שירות" },
-  ];
 
   return (
     <main>
@@ -36,9 +31,9 @@ export default async function CheckoutPage() {
             </Button>
           </>
         }
-        anchors={checkoutAnchors}
         description="סל, משלוח ואיסוף מסניף בממשק נקי, עם שירות שמדגיש את רגע הרכישה."
         eyebrow="Aphrodite Service"
+        scrollCue={{ href: "#checkout-form", label: "לקופה" }}
         slides={cinematicRouteMedia.checkout}
         stats={[
           { label: "סניפים", value: String(branches.length) },
@@ -51,7 +46,7 @@ export default async function CheckoutPage() {
       <RevealSection id="checkout-form">
         <div className="hidden">
           <BrandPageIntro
-            description="סל, משלוח ואיסוף מסניף בממשק נקי, עם מסגרת Aqua/Champagne שמדגישה את רגע השירות ולא משנה את לוגיקת ההזמנה."
+            description="סל, משלוח ואיסוף מסניף בממשק נקי, עם מסגרת Aqua נקייה שמדגישה את רגע השירות ולא משנה את לוגיקת ההזמנה."
             eyebrow="Aphrodite Service"
             mediaAlt="Aqua jewelry checkout service tray"
             mediaPriority

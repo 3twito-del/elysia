@@ -15,12 +15,6 @@ export const metadata = {
 };
 
 export default function StylistPage() {
-  const stylistAnchors = [
-    { id: "page-hero", label: "פתיחה" },
-    { id: "stylist-chat", label: "שיחה" },
-    { id: "stylist-capabilities", label: "יכולות" },
-  ];
-
   return (
     <main>
       <SiteHeader />
@@ -35,9 +29,9 @@ export default function StylistPage() {
             </Button>
           </>
         }
-        anchors={stylistAnchors}
         description="ייעוץ תכשיטים לפי סגנון, תקציב ואירוע, עם המלצות שנשארות בתוך קטלוג פעיל."
         eyebrow="Aphrodite Stylist"
+        scrollCue={{ href: "#stylist-chat", label: "לשיחה" }}
         slides={cinematicRouteMedia.stylist}
         stats={[
           { label: "התאמה", value: "AI" },

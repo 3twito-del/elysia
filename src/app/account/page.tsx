@@ -94,20 +94,6 @@ export default async function AccountPage() {
         return null;
       })
     : null;
-  const guestAccountAnchors = [
-    { id: "page-hero", label: "פתיחה" },
-    { id: "account-login", label: "כניסה" },
-    { id: "account-benefits", label: "שירותים" },
-  ];
-  const accountAnchors = [
-    { id: "page-hero", label: "פתיחה" },
-    { id: "account-overview", label: "סקירה" },
-    { id: "account-orders", label: "הזמנות" },
-    { id: "account-wishlist", label: "Wishlist" },
-    { id: "account-service", label: "תורים" },
-    { id: "account-privacy", label: "פרטיות" },
-  ];
-
   if (!session?.user || session.user.adminUserId || !customer) {
     return (
       <main>
@@ -123,9 +109,9 @@ export default async function AccountPage() {
               </Button>
             </>
           }
-          anchors={guestAccountAnchors}
           description="כניסה מאובטחת להזמנות, Wishlist, מידות שמורות, תורים ופרטיות."
           eyebrow="Aphrodite Account"
+          scrollCue={{ href: "#account-login", label: "לכניסה" }}
           slides={cinematicRouteMedia.account}
           stats={[
             { label: "כניסה", value: "OTP" },
@@ -216,9 +202,9 @@ export default async function AccountPage() {
             </Button>
           </>
         }
-        anchors={accountAnchors}
         description="כל ההזמנות, המועדפים, המידות, הכתובות והפרטיות שלך במקום אחד."
         eyebrow="Aphrodite Account"
+        scrollCue={{ href: "#account-overview", label: "לסקירה" }}
         slides={cinematicRouteMedia.account}
         stats={[
           { label: "הזמנות", value: String(customer.orders.length) },

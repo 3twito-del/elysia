@@ -94,13 +94,6 @@ const faqGroups = [
   },
 ];
 
-const faqAnchors = [
-  { id: "page-hero", label: "פתיחה" },
-  { id: "faq-shortcuts", label: "קיצורים" },
-  { id: "faq-groups", label: "שאלות" },
-  { id: "faq-contact", label: "שירות" },
-];
-
 export default function FaqPage() {
   return (
     <main>
@@ -117,9 +110,9 @@ export default function FaqPage() {
             </Button>
           </>
         }
-        anchors={faqAnchors}
         description="תשובות קצרות על קנייה באתר, זמינות בסניפים, מידות, משלוחים, מתנות והמלצות AI."
         eyebrow="Aphrodite Help"
+        scrollCue={{ href: "#faq-shortcuts", label: "לקיצורים" }}
         slides={cinematicRouteMedia.faq}
         stats={[
           { label: "נושאים", value: String(faqGroups.length) },

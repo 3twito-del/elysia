@@ -21,7 +21,7 @@ type PublicMotionContextValue = {
   suppressInitialReveal: boolean;
 };
 
-const pageTransitionMs = 120;
+const pageTransitionMs = 180;
 const PublicMotionContext = createContext<PublicMotionContextValue>({
   suppressInitialReveal: false,
 });
@@ -177,6 +177,60 @@ export function PublicMotionProvider({ children }: PublicMotionProviderProps) {
     };
   }, [children, pathname, renderedPathname, shouldReduceMotion]);
 
+  useEffect(() => {
+    if (isAdminRoute) return;
+
+    const onAnchorClick = (event: MouseEvent) => {
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.shiftKey
+      ) {
+        return;
+      }
+
+      const eventTarget = event.target;
+      if (!(eventTarget instanceof Element)) return;
+
+      const anchor = eventTarget.closest<HTMLAnchorElement>('a[href^="#"]');
+      if (!anchor || anchor.target || anchor.hasAttribute("download")) return;
+
+      const hash = anchor.hash;
+      const target = getElementByHash(hash);
+      if (!target) return;
+
+      if (shouldReduceMotion) return;
+
+      event.preventDefault();
+
+      anchor.dataset.anchorActivating = "true";
+      target.dataset.anchorTargetActive = "true";
+
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      window.history.pushState(
+        null,
+        "",
+        `${window.location.pathname}${window.location.search}${hash}`,
+      );
+
+      window.setTimeout(() => {
+        delete anchor.dataset.anchorActivating;
+      }, 720);
+      window.setTimeout(() => {
+        delete target.dataset.anchorTargetActive;
+      }, 1180);
+    };
+
+    document.addEventListener("click", onAnchorClick);
+
+    return () => {
+      document.removeEventListener("click", onAnchorClick);
+    };
+  }, [isAdminRoute, shouldReduceMotion]);
+
   if (isAdminRoute) {
     return <>{children}</>;
   }
@@ -189,4 +243,14 @@ export function PublicMotionProvider({ children }: PublicMotionProviderProps) {
       </div>
     </PublicMotionContext.Provider>
   );
+}
+
+function getElementByHash(hash: string) {
+  if (!hash || hash === "#") return null;
+
+  try {
+    return document.getElementById(decodeURIComponent(hash.slice(1)));
+  } catch {
+    return document.getElementById(hash.slice(1));
+  }
 }

@@ -168,12 +168,6 @@ export default async function CategoryPage({
       ? `${visibleStart}-${visibleEnd} מתוך ${sortedProducts.length} מוצרים`
       : "0 מוצרים";
 
-  const categoryAnchors = [
-    { id: "page-hero", label: "פתיחה" },
-    { id: "category-filters", label: "פילטרים" },
-    { id: "category-products", label: "מוצרים" },
-  ];
-
   return (
     <main>
       <SiteHeader />
@@ -189,12 +183,12 @@ export default async function CategoryPage({
             </Button>
           </>
         }
-        anchors={categoryAnchors}
         description={
           category?.description ??
           "בחירה מסוננת מתוך קטלוג התכשיטים, עם זמינות סניפים ומחירים בשקלים."
         }
         eyebrow="קטלוג Aphrodite"
+        scrollCue={{ href: "#category-products", label: "למוצרים" }}
         slides={getCategoryBrandSlides(slug)}
         stats={[
           {

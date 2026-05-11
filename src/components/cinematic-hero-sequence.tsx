@@ -67,8 +67,8 @@ export function CinematicHeroSequence({
       gsap.set(bandNodes, { opacity: 0.26, xPercent: 0 });
 
       const timeline = gsap.timeline({ repeat: -1 });
-      const holdDuration = 5.4;
-      const fadeDuration = 1.35;
+      const holdDuration = 6.1;
+      const fadeDuration = 1.55;
 
       slideNodes.forEach((slide, index) => {
         const nextSlide = slideNodes[(index + 1) % slideNodes.length];
@@ -134,7 +134,7 @@ export function CinematicHeroSequence({
       gsap
         .timeline({ repeat: -1, yoyo: true })
         .to(bandNodes, {
-          duration: 7.2,
+          duration: 8.4,
           ease: "sine.inOut",
           opacity: 0.5,
           stagger: 0.9,
@@ -142,7 +142,7 @@ export function CinematicHeroSequence({
           yPercent: -4,
         })
         .to(bandNodes, {
-          duration: 6.8,
+          duration: 8,
           ease: "sine.inOut",
           opacity: 0.22,
           stagger: 0.7,

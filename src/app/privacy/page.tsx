@@ -73,13 +73,6 @@ const privacySections = [
   },
 ];
 
-const privacyAnchors = [
-  { id: "page-hero", label: "פתיחה" },
-  { id: "privacy-section-1", label: "תחולה" },
-  { id: "privacy-section-4", label: "שימוש" },
-  { id: "privacy-contact", label: "פנייה" },
-];
-
 export default function PrivacyPage() {
   return (
     <main>
@@ -96,9 +89,9 @@ export default function PrivacyPage() {
             </Button>
           </>
         }
-        anchors={privacyAnchors}
         description="כיצד אנחנו אוספים, משתמשים, שומרים ומגנים על מידע אישי במסגרת האתר והשירותים."
         eyebrow="Aphrodite Policy"
+        scrollCue={{ href: "#privacy-section-1", label: "לעיקרי המדיניות" }}
         slides={cinematicRouteMedia.legal}
         stats={[
           { label: "עדכון", value: "2026" },

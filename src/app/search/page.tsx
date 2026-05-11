@@ -88,12 +88,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         ? `מציגים ${visibleStart}-${visibleEnd} מתוך ${result.total} תוצאות`
         : "לא נמצאו תוצאות";
 
-  const searchAnchors = [
-    { id: "page-hero", label: "פתיחה" },
-    { id: "search-controls", label: "חיפוש" },
-    { id: "search-results-section", label: "תוצאות" },
-  ];
-
   after(() => recordSearchEvent(input, result.total));
 
   return (
@@ -110,9 +104,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             </Button>
           </>
         }
-        anchors={searchAnchors}
         description="חיפוש קטלוג עם סינון לפי קטגוריה, סניף, חומר, אבן, תקציב וזמינות."
         eyebrow="Aphrodite Catalog"
+        scrollCue={{ href: "#search-controls", label: "לחיפוש" }}
         slides={cinematicRouteMedia.search}
         stats={[
           { label: "תוצאות", value: String(result.total) },

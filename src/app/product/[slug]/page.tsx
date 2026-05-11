@@ -110,14 +110,6 @@ export default async function ProductPage({
           src,
         }))
       : cinematicRouteMedia.product;
-  const productAnchors = [
-    { id: "page-hero", label: "פתיחה" },
-    { id: "product-buy", label: "רכישה" },
-    { id: "product-details", label: "פרטים" },
-    { id: "product-availability", label: "זמינות" },
-    { id: "similar-products", label: "דומים" },
-  ];
-
   return (
     <main className="pb-24 md:pb-0">
       <SiteHeader />
@@ -142,9 +134,9 @@ export default async function ProductPage({
             </Button>
           </>
         }
-        anchors={productAnchors}
         description={product.shortDescription}
         eyebrow={product.collection}
+        scrollCue={{ href: "#product-buy", label: "לרכישה" }}
         slides={productHeroSlides}
         stats={[
           { label: "מחיר", value: formatPrice(product.price) },

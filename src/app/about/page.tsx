@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
+  ArrowDown,
   ArrowLeft,
   Gem,
   Gift,
@@ -15,7 +16,7 @@ import {
 
 import { MotionMediaFrame } from "~/components/motion-media-frame";
 import { CinematicHeroSequence } from "~/components/cinematic-hero-sequence";
-import { FloatingAnchorNav } from "~/components/floating-anchor-nav";
+import { KineticImageMotion } from "~/components/kinetic-image-motion";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
@@ -69,15 +70,6 @@ const journey = [
   },
 ];
 
-const aboutAnchors = [
-  { id: "page-hero", label: "פתיחה" },
-  { id: "about-snapshot", label: "תמצית" },
-  { id: "about-name", label: "השם" },
-  { id: "about-story", label: "סיפור" },
-  { id: "about-values", label: "ערכים" },
-  { id: "about-experience", label: "חוויה" },
-];
-
 export const metadata: Metadata = {
   title: "אודות",
   description:
@@ -109,7 +101,9 @@ export default function AboutPage() {
             intensity="cinematic"
             parallax
           >
-            <CinematicHeroSequence slides={cinematicRouteMedia.about} />
+            <KineticImageMotion intensity="hero">
+              <CinematicHeroSequence slides={cinematicRouteMedia.about} />
+            </KineticImageMotion>
           </MotionMediaFrame>
           <div className="absolute inset-0 bg-black/[0.28]" />
           <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(255,255,255,0.22),transparent_38%),linear-gradient(to_top,rgba(0,0,0,0.68),rgba(0,0,0,0.08)_58%,rgba(0,0,0,0.28))]" />
@@ -149,10 +143,17 @@ export default function AboutPage() {
                   </Link>
                 </Button>
               </div>
+              <Link
+                className="cinematic-page-hero-scroll-cue motion-copy-item [--motion-copy-delay:230ms]"
+                data-testid="hero-scroll-cue"
+                href="#about-snapshot"
+              >
+                <span>לתמצית</span>
+                <ArrowDown className="size-4" />
+              </Link>
             </div>
           </div>
         </RevealSection>
-        <FloatingAnchorNav items={aboutAnchors} />
 
         <RevealSection className="glass-chrome border-b" id="about-snapshot">
           <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-3">

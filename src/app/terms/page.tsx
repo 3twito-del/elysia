@@ -60,13 +60,6 @@ const termsSections = [
   },
 ];
 
-const termsAnchors = [
-  { id: "page-hero", label: "פתיחה" },
-  { id: "terms-section-1", label: "שימוש" },
-  { id: "terms-section-3", label: "הזמנות" },
-  { id: "terms-contact", label: "שירות" },
-];
-
 export default function TermsPage() {
   return (
     <main>
@@ -83,9 +76,9 @@ export default function TermsPage() {
             </Button>
           </>
         }
-        anchors={termsAnchors}
         description="תנאי השימוש באתר Aphrodite, כולל הזמנות, תשלום, משלוחים, ביטולים ושירות לקוחות."
         eyebrow="Aphrodite Legal"
+        scrollCue={{ href: "#terms-section-1", label: "לתקנון" }}
         slides={cinematicRouteMedia.legal}
         stats={[
           { label: "שימוש", value: "ברור" },

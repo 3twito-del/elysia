@@ -2,15 +2,15 @@ import type { CinematicHeroSlide } from "~/components/cinematic-hero-sequence";
 
 export const brandHeroSlides = [
   {
-    alt: "Gold and diamond rings on an Aphrodite Aqua studio surface",
+    alt: "Diamond rings on an Aphrodite Aqua studio surface",
     src: "/brand/aphrodite-aqua-hero-rings.png",
   },
   {
-    alt: "Pearls and gold jewelry on turquoise glass",
+    alt: "Pearl jewelry on turquoise glass",
     src: "/brand/aphrodite-aqua-hero-pearls.png",
   },
   {
-    alt: "Diamond jewelry and glass in aqua and champagne studio light",
+    alt: "Diamond jewelry and glass in aqua studio light",
     src: "/brand/aphrodite-aqua-hero-glass.png",
   },
 ] satisfies CinematicHeroSlide[];
@@ -18,24 +18,24 @@ export const brandHeroSlides = [
 export const cinematicRouteMedia = {
   accessibility: [
     {
-      alt: "Soft editorial aqua and champagne jewelry scene for accessibility information",
+      alt: "Soft editorial aqua and pearl jewelry scene for accessibility information",
       src: "/brand/cinematic/cinematic-editorial.png",
     },
     {
-      alt: "Subtle aqua glass and champagne jewelry scene",
+      alt: "Subtle aqua glass and pearl jewelry scene",
       src: "/brand/cinematic/cinematic-policy.png",
     },
   ],
   account: [
     {
-      alt: "Cinematic aqua and champagne service jewelry tray for customer account",
+      alt: "Cinematic aqua and pearl service jewelry tray for customer account",
       src: "/brand/cinematic/cinematic-service.png",
     },
     brandHeroSlides[2]!,
   ],
   ai: [
     {
-      alt: "Cinematic digital aqua and champagne jewelry scene for AI styling",
+      alt: "Cinematic digital aqua and pearl jewelry scene for AI styling",
       src: "/brand/cinematic/cinematic-ai.png",
     },
     brandHeroSlides[2]!,
@@ -63,7 +63,7 @@ export const cinematicRouteMedia = {
   ],
   faq: [
     {
-      alt: "Soft cinematic aqua and champagne jewelry information scene",
+      alt: "Soft cinematic aqua and pearl jewelry information scene",
       src: "/brand/cinematic/cinematic-policy.png",
     },
     {
@@ -80,7 +80,7 @@ export const cinematicRouteMedia = {
   ],
   home: [
     {
-      alt: "Cinematic luxury jewelry scene in aqua and champagne light",
+      alt: "Cinematic luxury jewelry scene in aqua and studio light",
       src: "/brand/cinematic/cinematic-home.png",
     },
     ...brandHeroSlides,
@@ -97,7 +97,7 @@ export const cinematicRouteMedia = {
   ],
   product: [
     {
-      alt: "Cinematic product jewelry scene in aqua and champagne light",
+      alt: "Cinematic product jewelry scene in aqua and studio light",
       src: "/brand/cinematic/cinematic-product.png",
     },
     brandHeroSlides[0]!,
@@ -141,28 +141,28 @@ export const brandMedia = {
 const categorySlides = {
   bracelets: [
     {
-      alt: "Cinematic gold bracelets and tennis bracelets on aqua glass",
+      alt: "Cinematic bracelets and tennis bracelets on aqua glass",
       src: "/brand/cinematic/cinematic-category-bracelets.png",
     },
     brandHeroSlides[2]!,
   ],
   earrings: [
     {
-      alt: "Cinematic gold earrings with pearls and diamonds on aqua glass",
+      alt: "Cinematic earrings with pearls and diamonds on aqua glass",
       src: "/brand/cinematic/cinematic-category-earrings.png",
     },
     brandHeroSlides[1]!,
   ],
   necklaces: [
     {
-      alt: "Cinematic gold necklaces with pearl accents on aqua glass",
+      alt: "Cinematic necklaces with pearl accents on aqua glass",
       src: "/brand/cinematic/cinematic-category-necklaces.png",
     },
     brandHeroSlides[1]!,
   ],
   rings: [
     {
-      alt: "Cinematic gold and diamond rings on Aphrodite Aqua lacquer",
+      alt: "Cinematic diamond rings on Aphrodite Aqua lacquer",
       src: "/brand/cinematic/cinematic-category-rings.png",
     },
     brandHeroSlides[0]!,

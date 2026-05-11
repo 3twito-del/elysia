@@ -192,6 +192,14 @@ test.describe("accessibility and responsive guardrails", () => {
       .getByTestId("cinematic-page-hero-sequence")
       .first()
       .getAttribute("data-motion-reduced");
+    const kineticImageReduced = await page
+      .locator("[data-kinetic-image]")
+      .first()
+      .getAttribute("data-motion-reduced");
+    const kineticImageTransform = await page
+      .locator("[data-kinetic-image] .kinetic-image-layer")
+      .first()
+      .evaluate((element) => window.getComputedStyle(element).transform);
 
     expect(revealMotion.transform).toBe("none");
     expect(
@@ -199,9 +207,11 @@ test.describe("accessibility and responsive guardrails", () => {
     ).toBe(true);
     expect(mediaTransform).toBe("none");
     expect(heroSequenceReduced).toBe("true");
+    expect(kineticImageReduced).toBe("true");
+    expect(kineticImageTransform).toBe("none");
   });
 
-  test("shows cinematic heroes and page anchors on all public routes", async ({
+  test("shows cinematic heroes and static scroll cues on all public routes", async ({
     page,
   }) => {
     test.setTimeout(90_000);
@@ -215,29 +225,27 @@ test.describe("accessibility and responsive guardrails", () => {
       await expect(hero).toBeVisible();
       await expect(heroHeading).toBeVisible();
       await expect(heroHeading).toBeInViewport({ ratio: 0.1 });
-      await expect(page.getByTestId("floating-anchor-nav")).toBeAttached();
-      await expectActiveAnchorSurface(page);
+      await expect(hero.getByTestId("hero-scroll-cue")).toBeVisible();
+      await expect(
+        page.locator(
+          ".floating-anchor-nav, .floating-anchor-nav-mobile, .floating-anchor-nav-rail",
+        ),
+      ).toHaveCount(0);
     }
   });
 
-  test("anchor clicks scroll to the section and update active state", async ({
+  test("hero scroll cue clicks scroll to the section and update the hash", async ({
     page,
   }) => {
     await page.goto("/category/earrings", { waitUntil: "networkidle" });
-    await page.evaluate(() => window.scrollTo(0, 760));
 
-    const navScope =
-      (page.viewportSize()?.width ?? 0) < 768
-        ? ".floating-anchor-nav-mobile"
-        : ".floating-anchor-nav-rail";
-    const productsAnchor = page.locator(
-      `${navScope} a[href="#category-products"]`,
-    );
+    const scrollCue = page.getByTestId("hero-scroll-cue");
 
-    await expect(productsAnchor).toBeVisible();
-    await productsAnchor.click();
+    await expect(scrollCue).toBeVisible();
+    await expect(scrollCue).toHaveAttribute("href", "#category-products");
+    await scrollCue.click();
+    await expect(scrollCue).toHaveAttribute("data-anchor-activating", "true");
     await expect(page).toHaveURL(/#category-products$/);
-    await expect(productsAnchor).toHaveAttribute("data-anchor-active", "true");
     await expect(page.locator("#category-products")).toBeInViewport();
   });
 
@@ -433,18 +441,4 @@ async function expectNoHorizontalOverflow(page: Page) {
   );
 
   expect(overflow).toBeLessThanOrEqual(1);
-}
-
-async function expectActiveAnchorSurface(page: Page) {
-  const isMobile = (page.viewportSize()?.width ?? 0) < 768;
-
-  if (!isMobile) {
-    await page.evaluate(() => window.scrollTo(0, 760));
-  }
-
-  const selector = isMobile
-    ? ".floating-anchor-nav-mobile a"
-    : ".floating-anchor-nav-rail a";
-
-  await expect(page.locator(selector).first()).toBeVisible();
 }

@@ -4,6 +4,7 @@ import {
   CinematicHeroSequence,
   type CinematicHeroSlide,
 } from "~/components/cinematic-hero-sequence";
+import { KineticImageMotion } from "~/components/kinetic-image-motion";
 import { cn } from "~/lib/utils";
 
 export type BrandMediaPanelVariant =
@@ -37,12 +38,14 @@ export function BrandMediaPanel({
       data-brand-variant={variant}
     >
       {alt ? <span className="sr-only">{alt}</span> : null}
-      <CinematicHeroSequence
-        priority={priority}
-        sizes={sizes}
-        slides={slides}
-        testId="brand-media-sequence"
-      />
+      <KineticImageMotion intensity="panel">
+        <CinematicHeroSequence
+          priority={priority}
+          sizes={sizes}
+          slides={slides}
+          testId="brand-media-sequence"
+        />
+      </KineticImageMotion>
       <span className="brand-media-panel-shine" aria-hidden="true" />
     </div>
   );

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
+  ArrowDown,
   ArrowLeft,
   CalendarCheck,
   Gem,
@@ -15,7 +16,7 @@ import {
   CinematicHeroSequence,
   type CinematicHeroSlide,
 } from "~/components/cinematic-hero-sequence";
-import { FloatingAnchorNav } from "~/components/floating-anchor-nav";
+import { KineticImageMotion } from "~/components/kinetic-image-motion";
 import { MetricCard } from "~/components/metric-card";
 import { MotionMediaFrame } from "~/components/motion-media-frame";
 import { ProductCard } from "~/components/product-card";
@@ -33,29 +34,20 @@ import {
 
 const heroSlides = [
   {
-    alt: "טבעות זהב ויהלומים על משטח סטודיו בגוון Aphrodite Aqua",
+    alt: "טבעות יהלומים על משטח סטודיו בגוון Aphrodite Aqua",
     src: "/brand/aphrodite-aqua-hero-rings.png",
   },
   {
-    alt: "עגילי פנינה ושרשרת זהב על זכוכית בגוון טורקיז יוקרתי",
+    alt: "עגילי פנינה ושרשרת על זכוכית בגוון טורקיז יוקרתי",
     src: "/brand/aphrodite-aqua-hero-pearls.png",
   },
   {
-    alt: "צמידים ותליון יהלום בתאורת סטודיו טורקיז וזהב",
+    alt: "צמידים ותליון יהלום בתאורת סטודיו טורקיז ופנינה",
     src: "/brand/aphrodite-aqua-hero-glass.png",
   },
 ] satisfies CinematicHeroSlide[];
 
 const homeSlides = [...cinematicRouteMedia.home, ...heroSlides];
-
-const homeAnchors = [
-  { id: "page-hero", label: "פתיחה" },
-  { id: "quick-search", label: "חיפוש" },
-  { id: "categories", label: "קטגוריות" },
-  { id: "featured", label: "נבחרים" },
-  { id: "service-metrics", label: "שירות" },
-  { id: "branches", label: "סניפים" },
-];
 
 export default async function Home() {
   const [branches, categories, featuredProducts] = await Promise.all([
@@ -82,14 +74,16 @@ export default async function Home() {
           intensity="cinematic"
           parallax
         >
-          <CinematicHeroSequence
-            slides={homeSlides}
-            testId="cinematic-page-hero-sequence"
-          />
+          <KineticImageMotion intensity="hero">
+            <CinematicHeroSequence
+              slides={homeSlides}
+              testId="cinematic-page-hero-sequence"
+            />
+          </KineticImageMotion>
         </MotionMediaFrame>
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,56,59,0.02),rgba(6,56,59,0.28)_42%,rgba(0,0,0,0.68))]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.6),rgba(6,56,59,0.08)_58%,rgba(185,242,236,0.12))]" />
-        <div className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(244,213,138,0.7),transparent)]" />
+        <div className="absolute inset-x-0 top-0 h-px bg-[rgba(185,242,236,0.42)]" />
         <div className="relative min-h-[76svh] sm:min-h-[78vh]">
           <div
             className="motion-hero-copy absolute top-[var(--hero-edge)] right-[var(--hero-edge)] w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),48rem)] text-right text-white lg:w-[min(48rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
@@ -125,7 +119,7 @@ export default async function Home() {
             </Button>
             <Button
               asChild
-              className="border-[rgb(244_213_138_/_0.72)] bg-[rgb(244_213_138_/_0.92)] text-neutral-950 hover:border-[var(--brand-champagne)] hover:bg-[var(--brand-champagne)] hover:text-neutral-950"
+              className="border-white/70 bg-white text-[var(--brand-aqua-deep)] hover:border-[var(--brand-aqua-soft)] hover:bg-[var(--brand-aqua-soft)] hover:text-[var(--brand-aqua-deep)]"
               size="lg"
               variant="outline"
             >
@@ -151,10 +145,16 @@ export default async function Home() {
               );
             })}
           </div>
+          <Link
+            className="cinematic-page-hero-scroll-cue motion-copy-item [--motion-copy-delay:310ms]"
+            data-testid="hero-scroll-cue"
+            href="#quick-search"
+          >
+            <span>חיפוש מהיר</span>
+            <ArrowDown className="size-4" />
+          </Link>
         </div>
       </RevealSection>
-
-      <FloatingAnchorNav items={homeAnchors} />
 
       <RevealSection className="glass-chrome border-b" id="quick-search">
         <div className="mx-auto grid max-w-7xl gap-4 px-4 py-6 sm:px-6 lg:grid-cols-[1fr_2fr]">

@@ -28,12 +28,6 @@ export default async function AiPage({ searchParams }: AiPageProps) {
   const search = searchParams ? await searchParams : {};
   const defaultTab =
     search.tab === "gifts" || search.tool === "gifts" ? "gifts" : "stylist";
-  const aiAnchors = [
-    { id: "page-hero", label: "פתיחה" },
-    { id: "ai-tools", label: "כלים" },
-    { id: "ai-stylist", label: "סטייליסט" },
-    { id: "ai-gifts", label: "מתנות" },
-  ];
 
   return (
     <main className="min-h-screen">
@@ -49,9 +43,9 @@ export default async function AiPage({ searchParams }: AiPageProps) {
             </Button>
           </>
         }
-        anchors={aiAnchors}
         description="כלי AI מחוברים לקטלוג Aphrodite ומציגים פריטים זמינים לפי כוונה, תקציב וסגנון."
         eyebrow="Aphrodite AI"
+        scrollCue={{ href: "#ai-tools", label: "לכלי AI" }}
         slides={cinematicRouteMedia.ai}
         stats={[
           { label: "כלים", value: "2" },

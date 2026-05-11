@@ -155,7 +155,7 @@ export function MotionMediaFrame({
             }
           : undefined
       }
-      transition={{ duration: 0.56, ease: [0.2, 0, 0, 1] }}
+      transition={{ duration: 0.72, ease: [0.2, 0, 0, 1] }}
     >
       <motion.div
         className={cn("motion-media-content", contentClassName)}

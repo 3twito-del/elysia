@@ -64,12 +64,6 @@ export default async function OrderDetailPage({
   const canRequestReturn =
     !["PENDING_PAYMENT", "CANCELLED", "REFUNDED"].includes(order.status) &&
     order.returns.every((request) => request.status === "CANCELLED");
-  const orderAnchors = [
-    { id: "page-hero", label: "פתיחה" },
-    { id: "order-items", label: "פריטים" },
-    { id: "order-summary", label: "סיכום" },
-    { id: "order-support", label: "שירות" },
-  ];
 
   return (
     <main>
@@ -85,9 +79,9 @@ export default async function OrderDetailPage({
             </Button>
           </>
         }
-        anchors={orderAnchors}
         description={`${order.recipientName} · ${order.email}`}
         eyebrow="Aphrodite Service"
+        scrollCue={{ href: "#order-summary", label: "לסיכום" }}
         slides={cinematicRouteMedia.service}
         stats={[
           { label: "סטטוס", value: getOrderStatusLabel(order.status) },

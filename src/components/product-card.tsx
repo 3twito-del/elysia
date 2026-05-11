@@ -5,6 +5,7 @@ import { Heart, MapPin, ShoppingBag } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
+import { KineticImageMotion } from "~/components/kinetic-image-motion";
 import { getProductAvailabilityLabel } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
 import { cn } from "~/lib/utils";
@@ -52,16 +53,18 @@ export function ProductCard({
         href={href}
       >
         <div className="brand-product-media glass-inset bg-muted relative aspect-[4/3] overflow-hidden border-0 sm:aspect-[5/4] sm:min-h-44">
-          <Image
-            alt={product.name}
-            blurDataURL={PRODUCT_IMAGE_BLUR_DATA_URL}
-            className="media-color object-cover transition duration-[700ms] ease-[var(--ease-motion-standard)] group-hover/card:scale-[1.015]"
-            fill
-            placeholder="blur"
-            priority={imagePriority}
-            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-            src={product.image}
-          />
+          <KineticImageMotion intensity="card">
+            <Image
+              alt={product.name}
+              blurDataURL={PRODUCT_IMAGE_BLUR_DATA_URL}
+              className="media-color object-cover"
+              fill
+              placeholder="blur"
+              priority={imagePriority}
+              sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+              src={product.image}
+            />
+          </KineticImageMotion>
           <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
             <Badge className="max-w-[62%] font-normal" variant="secondary">
               <span className="truncate">{product.collection}</span>
