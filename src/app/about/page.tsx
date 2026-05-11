@@ -133,7 +133,7 @@ export default function AboutPage() {
                 </Button>
                 <Button
                   asChild
-                  className="border-[var(--brand-aqua)] bg-[var(--brand-aqua)] text-[var(--brand-aqua-deep)] hover:bg-[var(--brand-aqua)] hover:text-[var(--brand-aqua-deep)]"
+                  className="border-white bg-white text-[var(--brand-aqua-deep)] hover:border-[var(--brand-aqua)] hover:bg-white hover:text-[var(--brand-aqua-deep)]"
                   size="lg"
                 >
                   <Link href="/branches">

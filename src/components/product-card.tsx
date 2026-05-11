@@ -131,8 +131,8 @@ export function ProductCard({
           </div>
           <Button
             asChild
-            className="min-h-11 w-full gap-2"
-            variant={isAvailable ? "default" : "outline"}
+            className="product-card-cta min-h-11 w-full gap-2"
+            variant="outline"
           >
             <Link aria-label={`צפייה וקנייה: ${product.name}`} href={href}>
               <ShoppingBag className="size-4" />
