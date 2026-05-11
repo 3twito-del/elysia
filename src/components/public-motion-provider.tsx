@@ -22,6 +22,7 @@ type PublicMotionContextValue = {
 };
 
 const pageTransitionMs = 180;
+const anchorScrollEventName = "aphrodite:anchor-scroll";
 const PublicMotionContext = createContext<PublicMotionContextValue>({
   suppressInitialReveal: false,
 });
@@ -180,6 +181,29 @@ export function PublicMotionProvider({ children }: PublicMotionProviderProps) {
   useEffect(() => {
     if (isAdminRoute) return;
 
+    const root = document.documentElement;
+    const anchorScrollTimers = new Set<number>();
+
+    const queueAnchorTimer = (callback: () => void, delay: number) => {
+      const timer = window.setTimeout(() => {
+        anchorScrollTimers.delete(timer);
+        callback();
+      }, delay);
+
+      anchorScrollTimers.add(timer);
+    };
+
+    const beginAnchorScrollSession = (target: HTMLElement) => {
+      root.dataset.anchorScrollActive = "true";
+      dispatchAnchorScrollEvent("start", target);
+
+      queueAnchorTimer(() => dispatchAnchorScrollEvent("settle", target), 1080);
+      queueAnchorTimer(() => {
+        delete root.dataset.anchorScrollActive;
+        dispatchAnchorScrollEvent("end", target);
+      }, 1380);
+    };
+
     const onAnchorClick = (event: MouseEvent) => {
       if (
         event.defaultPrevented ||
@@ -204,6 +228,7 @@ export function PublicMotionProvider({ children }: PublicMotionProviderProps) {
 
       event.preventDefault();
       event.stopPropagation();
+      beginAnchorScrollSession(target);
 
       if (!shouldReduceMotion) {
         anchor.dataset.anchorActivating = "true";
@@ -238,8 +263,86 @@ export function PublicMotionProvider({ children }: PublicMotionProviderProps) {
 
     return () => {
       document.removeEventListener("click", onAnchorClick, true);
+      anchorScrollTimers.forEach((timer) => window.clearTimeout(timer));
+      delete root.dataset.anchorScrollActive;
     };
   }, [isAdminRoute, shouldReduceMotion]);
+
+  useEffect(() => {
+    if (isAdminRoute) return;
+
+    const previousScrollRestoration = window.history.scrollRestoration;
+    window.history.scrollRestoration = "manual";
+
+    if (window.location.hash) {
+      return () => {
+        window.history.scrollRestoration = previousScrollRestoration;
+      };
+    }
+
+    const scrollToTop = () => {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    };
+
+    const frame = window.requestAnimationFrame(scrollToTop);
+    const timer = window.setTimeout(scrollToTop, 120);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(timer);
+      window.history.scrollRestoration = previousScrollRestoration;
+    };
+  }, [isAdminRoute]);
+
+  useEffect(() => {
+    if (isAdminRoute) return;
+
+    let canClearHashAtTop = false;
+    let frame = 0;
+
+    const clearHashWhenBackAtTop = () => {
+      frame = 0;
+
+      if (
+        !canClearHashAtTop ||
+        !window.location.hash ||
+        window.scrollY > 24 ||
+        document.documentElement.dataset.anchorScrollActive === "true"
+      ) {
+        return;
+      }
+
+      window.history.replaceState(
+        null,
+        "",
+        `${window.location.pathname}${window.location.search}`,
+      );
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    };
+
+    const requestHashCleanup = () => {
+      if (frame) return;
+
+      frame = window.requestAnimationFrame(clearHashWhenBackAtTop);
+    };
+
+    const allowHashCleanupTimer = window.setTimeout(() => {
+      canClearHashAtTop = true;
+      requestHashCleanup();
+    }, 1200);
+
+    window.addEventListener("scroll", requestHashCleanup, { passive: true });
+    window.addEventListener("hashchange", requestHashCleanup);
+    window.addEventListener(anchorScrollEventName, requestHashCleanup);
+
+    return () => {
+      window.clearTimeout(allowHashCleanupTimer);
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", requestHashCleanup);
+      window.removeEventListener("hashchange", requestHashCleanup);
+      window.removeEventListener(anchorScrollEventName, requestHashCleanup);
+    };
+  }, [isAdminRoute, pathname]);
 
   if (isAdminRoute) {
     return <>{children}</>;
@@ -271,6 +374,21 @@ function getElementByHash(hash: string) {
   }
 }
 
+function dispatchAnchorScrollEvent(
+  phase: "start" | "settle" | "end",
+  target: HTMLElement,
+) {
+  window.dispatchEvent(
+    new CustomEvent(anchorScrollEventName, {
+      detail: {
+        phase,
+        targetId: target.id,
+        targetTop: getTargetDocumentTop(target),
+      },
+    }),
+  );
+}
+
 function scrollTargetToViewportTop(
   target: HTMLElement,
   options: Pick<ScrollToOptions, "behavior">,
@@ -286,6 +404,7 @@ function scrollTargetToViewportTop(
     if (!target.isConnected) return;
 
     const offset = target.getBoundingClientRect().top;
+    if (Math.abs(offset) > 96) return;
     if (Math.abs(offset) <= 1) return;
 
     window.scrollTo({

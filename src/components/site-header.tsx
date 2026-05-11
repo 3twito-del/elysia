@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Gem, Search, UserRound } from "lucide-react";
 
@@ -22,6 +22,10 @@ const navItems: HeaderNavItem[] = [
 ];
 
 type HeaderScrollState = "top" | "shown" | "hidden";
+type AnchorScrollEventDetail = {
+  phase?: "start" | "settle" | "end";
+  targetTop?: number;
+};
 
 export function SiteHeader() {
   const scrollState = useHeaderScrollState();
@@ -93,6 +97,8 @@ export function SiteHeader() {
 function useHeaderScrollState() {
   const pathname = usePathname();
   const [scrollState, setScrollState] = useState<HeaderScrollState>("top");
+  const anchorScrollLockUntil = useRef(0);
+  const shouldHideDuringAnchorScroll = useRef(false);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -113,6 +119,19 @@ function useHeaderScrollState() {
       const currentScrollY = Math.max(window.scrollY, 0);
       const delta = currentScrollY - lastScrollY;
 
+      if (performance.now() < anchorScrollLockUntil.current) {
+        if (currentScrollY < 24) {
+          setScrollState("top");
+        } else if (shouldReduceMotion()) {
+          setScrollState("shown");
+        } else if (shouldHideDuringAnchorScroll.current) {
+          setScrollState("hidden");
+        }
+
+        lastScrollY = currentScrollY;
+        return;
+      }
+
       if (currentScrollY < 24) {
         setScrollState("top");
       } else if (shouldReduceMotion()) {
@@ -132,9 +151,30 @@ function useHeaderScrollState() {
       frame = window.requestAnimationFrame(syncScrollState);
     };
 
+    const handleAnchorScroll = (event: Event) => {
+      const detail = (event as CustomEvent<AnchorScrollEventDetail>).detail;
+      const currentScrollY = Math.max(window.scrollY, 0);
+
+      shouldHideDuringAnchorScroll.current =
+        (detail?.targetTop ?? currentScrollY) > 160;
+      anchorScrollLockUntil.current =
+        performance.now() + (detail?.phase === "end" ? 260 : 1500);
+
+      if (
+        currentScrollY >= 24 &&
+        shouldHideDuringAnchorScroll.current &&
+        !shouldReduceMotion()
+      ) {
+        setScrollState("hidden");
+      }
+
+      lastScrollY = currentScrollY;
+    };
+
     requestSync();
     window.addEventListener("scroll", requestSync, { passive: true });
     window.addEventListener("aphrodite:accessibility-settings", requestSync);
+    window.addEventListener("aphrodite:anchor-scroll", handleAnchorScroll);
     mediaQuery.addEventListener("change", requestSync);
 
     return () => {
@@ -145,6 +185,7 @@ function useHeaderScrollState() {
         "aphrodite:accessibility-settings",
         requestSync,
       );
+      window.removeEventListener("aphrodite:anchor-scroll", handleAnchorScroll);
       mediaQuery.removeEventListener("change", requestSync);
     };
   }, [pathname]);

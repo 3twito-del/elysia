@@ -248,6 +248,7 @@ test.describe("accessibility and responsive guardrails", () => {
     await page.goto("/category/earrings", { waitUntil: "networkidle" });
 
     const scrollCue = page.getByTestId("hero-scroll-cue");
+    const header = page.locator("header.site-chrome");
 
     await expect(scrollCue).toBeVisible();
     await expect(scrollCue).toHaveAttribute("href", "#category-products");
@@ -257,6 +258,7 @@ test.describe("accessibility and responsive guardrails", () => {
     expect(page.url()).not.toMatch(/#.*#/);
     await expect(page.locator("#category-products")).toBeInViewport();
     await expectElementAtViewportTop(page, "#category-products");
+    await expect(header).toHaveAttribute("data-scroll", "hidden");
   });
 
   test("home scroll cue normalizes an existing hash instead of duplicating it", async ({
@@ -271,6 +273,24 @@ test.describe("accessibility and responsive guardrails", () => {
     await expect(page).toHaveURL(/\/#quick-search$/);
     expect(page.url()).not.toContain("#quick-search#quick-search");
     await expectElementAtViewportTop(page, "#quick-search");
+  });
+
+  test("clears stale anchor hashes at the page top before reload", async ({
+    page,
+  }) => {
+    await page.goto("/", { waitUntil: "networkidle" });
+
+    await page.getByTestId("hero-scroll-cue").click();
+    await expectElementAtViewportTop(page, "#quick-search");
+
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "auto" }));
+    await expect.poll(() => page.evaluate(() => window.location.hash)).toBe("");
+    await expectPageAtViewportTop(page);
+
+    await page.reload({ waitUntil: "networkidle" });
+
+    await expectPageAtViewportTop(page);
+    expect(page.url()).not.toContain("#");
   });
 
   for (const route of [...publicHeroRoutes, "/admin/login"]) {
@@ -485,5 +505,11 @@ async function expectElementAtViewportTop(page: Page, selector: string) {
           ),
       { timeout: 10_000 },
     )
+    .toBeLessThanOrEqual(2);
+}
+
+async function expectPageAtViewportTop(page: Page) {
+  await expect
+    .poll(() => page.evaluate(() => Math.round(Math.abs(window.scrollY))))
     .toBeLessThanOrEqual(2);
 }
