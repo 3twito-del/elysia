@@ -198,23 +198,34 @@ export function PublicMotionProvider({ children }: PublicMotionProviderProps) {
       const anchor = eventTarget.closest<HTMLAnchorElement>('a[href^="#"]');
       if (!anchor || anchor.target || anchor.hasAttribute("download")) return;
 
-      const hash = anchor.hash;
+      const hash = normalizeHash(anchor.getAttribute("href"));
       const target = getElementByHash(hash);
       if (!target) return;
 
-      if (shouldReduceMotion) return;
-
       event.preventDefault();
+      event.stopPropagation();
 
-      anchor.dataset.anchorActivating = "true";
-      target.dataset.anchorTargetActive = "true";
+      if (!shouldReduceMotion) {
+        anchor.dataset.anchorActivating = "true";
+        target.dataset.anchorTargetActive = "true";
+      }
 
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
-      window.history.pushState(
-        null,
-        "",
-        `${window.location.pathname}${window.location.search}${hash}`,
-      );
+      target.scrollIntoView({
+        behavior: shouldReduceMotion ? "auto" : "smooth",
+        block: "start",
+      });
+
+      const nextUrl = new URL(window.location.href);
+      nextUrl.hash = hash;
+      const nextPath = `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`;
+
+      if (window.location.hash === hash) {
+        window.history.replaceState(null, "", nextPath);
+      } else {
+        window.history.pushState(null, "", nextPath);
+      }
+
+      if (shouldReduceMotion) return;
 
       window.setTimeout(() => {
         delete anchor.dataset.anchorActivating;
@@ -224,10 +235,10 @@ export function PublicMotionProvider({ children }: PublicMotionProviderProps) {
       }, 1180);
     };
 
-    document.addEventListener("click", onAnchorClick);
+    document.addEventListener("click", onAnchorClick, true);
 
     return () => {
-      document.removeEventListener("click", onAnchorClick);
+      document.removeEventListener("click", onAnchorClick, true);
     };
   }, [isAdminRoute, shouldReduceMotion]);
 
@@ -243,6 +254,12 @@ export function PublicMotionProvider({ children }: PublicMotionProviderProps) {
       </div>
     </PublicMotionContext.Provider>
   );
+}
+
+function normalizeHash(href: string | null) {
+  if (!href || href === "#") return "";
+
+  return href.startsWith("#") ? href : "";
 }
 
 function getElementByHash(hash: string) {

@@ -61,15 +61,15 @@ export default async function Home() {
       <SiteHeader />
 
       <RevealSection
-        className="relative isolate min-h-[76svh] overflow-hidden bg-[var(--brand-aqua-deep)] [--hero-edge:clamp(1rem,4vw,5rem)] sm:min-h-[78vh]"
+        className="relative isolate min-h-[max(38rem,calc(100svh-4rem))] w-screen max-w-none overflow-hidden bg-[var(--brand-aqua-deep)] [--hero-edge:clamp(1rem,4vw,5rem)]"
         data-testid="cinematic-page-hero"
         id="page-hero"
         initialVisible
         variant="hero"
       >
         <MotionMediaFrame
-          className="absolute inset-0 h-full min-h-[76svh] w-full bg-[var(--brand-aqua-deep)] sm:min-h-[78vh]"
-          contentClassName="absolute inset-0 min-h-[76svh] sm:min-h-[78vh]"
+          className="absolute inset-0 h-full min-h-[max(38rem,calc(100svh-4rem))] w-full bg-[var(--brand-aqua-deep)]"
+          contentClassName="absolute inset-0 min-h-[max(38rem,calc(100svh-4rem))]"
           hover
           intensity="cinematic"
           parallax
@@ -84,7 +84,7 @@ export default async function Home() {
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,56,59,0.02),rgba(6,56,59,0.28)_42%,rgba(0,0,0,0.68))]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.6),rgba(6,56,59,0.08)_58%,rgba(185,242,236,0.12))]" />
         <div className="absolute inset-x-0 top-0 h-px bg-[rgba(185,242,236,0.42)]" />
-        <div className="relative min-h-[76svh] sm:min-h-[78vh]">
+        <div className="relative min-h-[max(38rem,calc(100svh-4rem))]">
           <div
             className="motion-hero-copy absolute top-[var(--hero-edge)] right-[var(--hero-edge)] w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),48rem)] text-right text-white lg:w-[min(48rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
             dir="rtl"
@@ -109,7 +109,7 @@ export default async function Home() {
           <div className="motion-copy-item flex flex-col items-stretch gap-2 [--motion-copy-delay:170ms] sm:flex-row sm:items-center sm:justify-end sm:gap-3">
             <Button
               asChild
-              className="bg-[var(--brand-aqua)] text-[var(--brand-aqua-deep)] shadow-[0_16px_40px_rgba(66,201,190,0.2)] hover:bg-[var(--brand-aqua-soft)] hover:text-[var(--brand-aqua-deep)]"
+              className="border-[var(--brand-aqua)] bg-[var(--brand-aqua)] text-[var(--brand-aqua-deep)] shadow-[0_16px_40px_rgba(66,201,190,0.2)] hover:bg-[var(--brand-aqua)] hover:text-[var(--brand-aqua-deep)]"
               size="lg"
             >
               <Link href="/category/rings">
@@ -119,9 +119,8 @@ export default async function Home() {
             </Button>
             <Button
               asChild
-              className="border-white/70 bg-white text-[var(--brand-aqua-deep)] hover:border-[var(--brand-aqua-soft)] hover:bg-[var(--brand-aqua-soft)] hover:text-[var(--brand-aqua-deep)]"
+              className="border-[var(--brand-aqua)] bg-[var(--brand-aqua)] text-[var(--brand-aqua-deep)] shadow-[0_16px_40px_rgba(66,201,190,0.2)] hover:bg-[var(--brand-aqua)] hover:text-[var(--brand-aqua-deep)]"
               size="lg"
-              variant="outline"
             >
               <Link href="/ai">
                 ייעוץ סטייליסט AI
@@ -145,14 +144,14 @@ export default async function Home() {
               );
             })}
           </div>
-          <Link
+          <a
             className="cinematic-page-hero-scroll-cue motion-copy-item [--motion-copy-delay:310ms]"
             data-testid="hero-scroll-cue"
             href="#quick-search"
           >
             <span>חיפוש מהיר</span>
             <ArrowDown className="size-4" />
-          </Link>
+          </a>
         </div>
       </RevealSection>
 

@@ -89,14 +89,14 @@ export default function AboutPage() {
 
       <article>
         <RevealSection
-          className="relative min-h-[86vh] overflow-hidden"
+          className="relative min-h-[max(38rem,calc(100svh-4rem))] w-screen max-w-none overflow-hidden"
           data-testid="cinematic-page-hero"
           id="page-hero"
           initialVisible
           variant="hero"
         >
           <MotionMediaFrame
-            className="absolute inset-0 min-h-[86vh]"
+            className="absolute inset-0 min-h-[max(38rem,calc(100svh-4rem))]"
             contentClassName="absolute inset-0"
             intensity="cinematic"
             parallax
@@ -108,7 +108,7 @@ export default function AboutPage() {
           <div className="absolute inset-0 bg-black/[0.28]" />
           <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(255,255,255,0.22),transparent_38%),linear-gradient(to_top,rgba(0,0,0,0.68),rgba(0,0,0,0.08)_58%,rgba(0,0,0,0.28))]" />
 
-          <div className="relative mx-auto flex min-h-[86vh] max-w-7xl flex-col justify-end px-4 pt-24 pb-10 sm:px-6 lg:pb-14">
+          <div className="relative mx-auto flex min-h-[max(38rem,calc(100svh-4rem))] max-w-7xl flex-col justify-end px-4 pt-24 pb-10 sm:px-6 lg:pb-14">
             <div className="motion-hero-copy max-w-4xl text-white">
               <Badge className="mb-5" variant="secondary">
                 אודות Aphrodite
@@ -133,9 +133,8 @@ export default function AboutPage() {
                 </Button>
                 <Button
                   asChild
-                  className="text-foreground hover:bg-muted hover:text-foreground border-white bg-white"
+                  className="border-[var(--brand-aqua)] bg-[var(--brand-aqua)] text-[var(--brand-aqua-deep)] hover:bg-[var(--brand-aqua)] hover:text-[var(--brand-aqua-deep)]"
                   size="lg"
-                  variant="outline"
                 >
                   <Link href="/branches">
                     מפגש בסניף
@@ -143,14 +142,14 @@ export default function AboutPage() {
                   </Link>
                 </Button>
               </div>
-              <Link
+              <a
                 className="cinematic-page-hero-scroll-cue motion-copy-item [--motion-copy-delay:230ms]"
                 data-testid="hero-scroll-cue"
                 href="#about-snapshot"
               >
                 <span>לתמצית</span>
                 <ArrowDown className="size-4" />
-              </Link>
+              </a>
             </div>
           </div>
         </RevealSection>

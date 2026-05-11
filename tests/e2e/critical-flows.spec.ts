@@ -226,6 +226,14 @@ test.describe("accessibility and responsive guardrails", () => {
       await expect(heroHeading).toBeVisible();
       await expect(heroHeading).toBeInViewport({ ratio: 0.1 });
       await expect(hero.getByTestId("hero-scroll-cue")).toBeVisible();
+      const heroBox = await hero.boundingBox();
+      const viewport = page.viewportSize();
+      expect(heroBox?.width ?? 0).toBeGreaterThanOrEqual(
+        (viewport?.width ?? 0) - 2,
+      );
+      expect(heroBox?.height ?? 0).toBeGreaterThanOrEqual(
+        (viewport?.height ?? 0) - 80,
+      );
       await expect(
         page.locator(
           ".floating-anchor-nav, .floating-anchor-nav-mobile, .floating-anchor-nav-rail",
@@ -246,7 +254,21 @@ test.describe("accessibility and responsive guardrails", () => {
     await scrollCue.click();
     await expect(scrollCue).toHaveAttribute("data-anchor-activating", "true");
     await expect(page).toHaveURL(/#category-products$/);
+    expect(page.url()).not.toMatch(/#.*#/);
     await expect(page.locator("#category-products")).toBeInViewport();
+  });
+
+  test("home scroll cue normalizes an existing hash instead of duplicating it", async ({
+    page,
+  }) => {
+    await page.goto("/#quick-search", { waitUntil: "networkidle" });
+
+    await page
+      .getByTestId("hero-scroll-cue")
+      .evaluate((element: HTMLElement) => element.click());
+
+    await expect(page).toHaveURL(/\/#quick-search$/);
+    expect(page.url()).not.toContain("#quick-search#quick-search");
   });
 
   for (const route of [...publicHeroRoutes, "/admin/login"]) {

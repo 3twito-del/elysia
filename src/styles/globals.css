@@ -53,21 +53,21 @@
 :root {
   --background: oklch(0.995 0 0);
   --foreground: oklch(0.11 0 0);
-  --card: oklch(1 0 0 / 88%);
+  --card: oklch(1 0 0);
   --card-foreground: oklch(0.11 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.11 0 0);
   --primary: oklch(0.11 0 0);
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.96 0 0 / 86%);
+  --secondary: oklch(0.96 0 0);
   --secondary-foreground: oklch(0.14 0 0);
-  --muted: oklch(0.96 0 0 / 86%);
+  --muted: oklch(0.96 0 0);
   --muted-foreground: oklch(0.42 0 0);
-  --accent: oklch(0.94 0 0 / 78%);
+  --accent: oklch(0.94 0 0);
   --accent-foreground: oklch(0.11 0 0);
   --destructive: oklch(0.47 0.15 27);
-  --border: oklch(0.82 0 0 / 56%);
-  --input: oklch(0.82 0 0 / 56%);
+  --border: oklch(0.84 0 0);
+  --input: oklch(0.84 0 0);
   --ring: oklch(0.14 0 0);
   --chart-1: oklch(0.18 0 0);
   --chart-2: oklch(0.36 0 0);
@@ -85,7 +85,7 @@
   --glass-inset-bg: var(--muted);
   --glass-chrome-bg: var(--background);
   --glass-border: var(--border);
-  --glass-border-strong: oklch(0.62 0 0 / 72%);
+  --glass-border-strong: oklch(0.62 0 0);
   --glass-edge: transparent;
   --glass-specular: transparent;
   --glass-shadow: oklch(0 0 0 / 3%);
@@ -503,7 +503,10 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
   position: relative;
   isolation: isolate;
   display: grid;
-  min-height: clamp(38rem, 88svh, 58rem);
+  width: 100vw;
+  max-width: 100vw;
+  min-height: max(38rem, calc(100svh - 4rem));
+  margin-inline: calc(50% - 50vw);
   overflow: hidden;
   background: var(--brand-aqua-deep);
   color: white;
@@ -511,11 +514,11 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 
 .cinematic-page-hero[data-hero-variant="editorial"],
 .cinematic-page-hero[data-hero-variant="service"] {
-  min-height: clamp(34rem, 76svh, 52rem);
+  min-height: max(34rem, calc(100svh - 4rem));
 }
 
 .cinematic-page-hero[data-hero-variant="product"] {
-  min-height: clamp(40rem, 92svh, 60rem);
+  min-height: max(40rem, calc(100svh - 4rem));
 }
 
 .cinematic-page-hero-media,
@@ -664,10 +667,11 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
   margin-top: 1.2rem;
   overflow: hidden;
   border: 1px solid rgb(66 201 190 / 68%);
-  border-radius: 999px;
+  border-radius: var(--radius-md);
   background: var(--brand-aqua);
   color: var(--brand-aqua-deep);
-  padding: 0.72rem 1rem;
+  min-height: 3rem;
+  padding: 0.72rem 1.15rem;
   font-size: 0.9rem;
   font-weight: 720;
   text-decoration: none;
@@ -696,7 +700,8 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 
 .cinematic-page-hero-scroll-cue:hover,
 .cinematic-page-hero-scroll-cue:focus-visible {
-  border-color: rgb(255 255 255 / 72%);
+  border-color: var(--brand-aqua);
+  color: var(--brand-aqua-deep);
   transform: translateY(-1px);
 }
 
@@ -854,7 +859,7 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
 .public-motion-shell .brand-icon-well,
 .public-motion-shell .glass-inset:has(> svg:only-child) {
   border-color: rgb(66 201 190 / 24%);
-  background: rgb(66 201 190 / 10%);
+  background: var(--brand-aqua-soft);
   color: var(--brand-aqua-deep);
 }
 
@@ -1052,10 +1057,10 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
   [data-slot="button"][data-variant="outline"]:not(:disabled),
 .public-motion-shell
   [data-slot="button"][data-variant="secondary"]:not(:disabled) {
-  border-color: rgb(66 201 190 / 34%);
-  background: rgb(66 201 190 / 10%);
+  border-color: var(--brand-aqua);
+  background: var(--brand-aqua);
   color: var(--brand-aqua-deep);
-  box-shadow: 0 2px 8px var(--glass-shadow);
+  box-shadow: 0 12px 28px rgb(66 201 190 / 18%);
 }
 
 .public-motion-shell
@@ -1066,10 +1071,10 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
   [data-slot="button"][data-variant="secondary"]:not(:disabled):hover,
 .public-motion-shell
   [data-slot="button"][data-variant="secondary"]:not(:disabled):focus-visible {
-  border-color: rgb(66 201 190 / 68%);
+  border-color: var(--brand-aqua);
   background: var(--brand-aqua);
   color: var(--brand-aqua-deep);
-  box-shadow: 0 4px 12px var(--glass-shadow-lift);
+  box-shadow: 0 16px 34px rgb(66 201 190 / 22%);
 }
 
 .public-motion-shell
@@ -1095,14 +1100,14 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
 .public-motion-shell [data-slot="button"][data-variant="ghost"]:not(:disabled):hover,
 .public-motion-shell
   [data-slot="button"][data-variant="ghost"]:not(:disabled):focus-visible {
-  background: rgb(66 201 190 / 10%);
+  background: var(--brand-aqua);
   color: var(--brand-aqua-deep);
 }
 
 .public-motion-shell [data-slot="badge"][data-variant="secondary"],
 .public-motion-shell [data-slot="badge"][data-variant="outline"] {
   border-color: rgb(66 201 190 / 24%);
-  background: rgb(66 201 190 / 10%);
+  background: var(--brand-aqua-soft);
 }
 
 .motion-reveal,
