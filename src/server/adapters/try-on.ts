@@ -29,7 +29,7 @@ class InternalTryOnProvider implements TryOnProvider {
       status: "queued",
       provider: "internal-webar",
       message:
-        "תשתית המדידה נשמרה. מנוע WebAR/Computer Vision עצמאי יחובר דרך אותו interface בגרסה מתקדמת.",
+        "תשתית המדידה נשמרה. מנוע ראייה ממוחשבת עצמאי יחובר דרך אותו חוזה בגרסה מתקדמת.",
     };
   }
 }

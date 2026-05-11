@@ -165,8 +165,8 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
   );
 
   const mobileCheckoutBar = (
-    <div className="glass-chrome fixed inset-x-0 bottom-[calc(var(--floating-stack-bottom,0px)+env(safe-area-inset-bottom))] z-40 border-t p-3 shadow-[0_-18px_48px_oklch(0_0_0_/_14%)] md:hidden">
-      <div className="mx-auto grid max-w-md grid-cols-[minmax(0,1fr)_auto] items-center gap-3 pl-14">
+    <div className="glass-chrome fixed inset-x-3 bottom-[calc(var(--floating-stack-bottom,0px)+0.75rem+env(safe-area-inset-bottom))] z-40 rounded-md border p-2.5 shadow-[0_18px_48px_oklch(0_0_0_/_16%)] md:hidden">
+      <div className="mx-auto grid max-w-md grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
         <div className="min-w-0">
           <p className="text-muted-foreground truncate text-xs">
             {checkoutIssues.length > 0
@@ -271,7 +271,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
       >
         <div className="grid gap-6">
           <div>
-            <h1 className="text-4xl font-semibold">סל וקופה</h1>
+            <h2 className="text-4xl font-semibold">סל וקופה</h2>
             <p className="text-muted-foreground mt-2">
               סל רב-פריטים עם שמירת מלאי, פרטי מסירה וקופון.
             </p>
@@ -684,7 +684,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
           </Card>
         </aside>
       </form>
-      {canRenderStickyBar
+      {canRenderStickyBar && cartItemCount > 0
         ? createPortal(mobileCheckoutBar, document.body)
         : null}
     </>

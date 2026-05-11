@@ -29,7 +29,7 @@ import { cinematicRouteMedia, getCategoryBrandSlides } from "~/lib/brand-media";
 import {
   getCatalogBranches,
   getCatalogCategories,
-  getFeaturedCatalogProducts,
+  searchCatalogProducts,
 } from "~/server/services/catalog";
 
 const heroSlides = [
@@ -50,11 +50,12 @@ const heroSlides = [
 const homeSlides = [...cinematicRouteMedia.home, ...heroSlides];
 
 export default async function Home() {
-  const [branches, categories, featuredProducts] = await Promise.all([
+  const [branches, categories, ringProducts] = await Promise.all([
     getCatalogBranches(),
     getCatalogCategories(),
-    getFeaturedCatalogProducts(),
+    searchCatalogProducts({ category: "rings" }),
   ]);
+  const featuredProducts = ringProducts.slice(0, 4);
 
   return (
     <main>

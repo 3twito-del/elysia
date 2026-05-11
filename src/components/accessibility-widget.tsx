@@ -251,7 +251,7 @@ export function AccessibilityWidget() {
         aria-expanded={isOpen}
         aria-haspopup="dialog"
         aria-label="פתיחת תפריט נגישות"
-        className="fixed top-1/2 left-0 z-50 size-11 -translate-y-1/2 rounded-l-none rounded-r-full shadow-[0_16px_36px_oklch(0.12_0_0_/_20%)] sm:top-auto sm:right-6 sm:bottom-[calc(var(--floating-stack-bottom,1rem)+env(safe-area-inset-bottom))] sm:left-auto sm:size-12 sm:translate-y-0 sm:rounded-full"
+        className="fixed bottom-[calc(var(--floating-stack-bottom,1rem)+5rem+env(safe-area-inset-bottom))] left-4 z-50 size-11 rounded-full shadow-[0_16px_36px_oklch(0.12_0_0_/_20%)] sm:bottom-[calc(var(--floating-stack-bottom,1rem)+env(safe-area-inset-bottom))] sm:left-6 sm:size-12"
         onClick={() => setIsOpen(true)}
         ref={triggerButtonRef}
         size="icon-lg"
@@ -274,7 +274,7 @@ export function AccessibilityWidget() {
             aria-describedby={descriptionId}
             aria-labelledby={titleId}
             aria-modal="true"
-            className="popup-surface fixed top-1/2 left-1/2 z-[100] grid max-h-[calc(100vh-2rem)] w-[min(calc(100vw-2rem),30rem)] -translate-x-1/2 -translate-y-1/2 gap-4 overflow-y-auto rounded-lg border p-4 text-sm shadow-[0_24px_80px_oklch(0.1_0_0_/_24%)] outline-none"
+            className="popup-surface fixed top-1/2 left-1/2 z-[100] grid max-h-[min(42rem,calc(100vh-2rem))] w-[min(calc(100vw-2rem),27rem)] -translate-x-1/2 -translate-y-1/2 gap-4 overflow-y-auto rounded-lg border p-4 text-sm shadow-[0_24px_80px_oklch(0.1_0_0_/_24%)] outline-none"
             ref={dialogRef}
             role="dialog"
             tabIndex={-1}

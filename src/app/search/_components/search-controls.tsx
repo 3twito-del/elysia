@@ -50,13 +50,13 @@ export function SearchControls({
       </form>
 
       <div
-        className="glass-panel mt-4 grid grid-cols-[minmax(0,1fr)_2.75rem_2.75rem] gap-2 rounded-md border p-2 md:hidden"
+        className="glass-panel mt-4 grid gap-2 rounded-md border p-2 md:hidden"
         data-testid="mobile-search-controls"
       >
         <form
           action="/search"
           aria-label="חיפוש מהיר בקטלוג"
-          className="contents"
+          className="grid grid-cols-[minmax(0,1fr)_auto] gap-2"
           role="search"
         >
           <Input
@@ -69,7 +69,7 @@ export function SearchControls({
           <PreservedSearchInputs input={input} />
           <Button
             aria-label="חיפוש"
-            className="h-11 overflow-hidden px-0 text-[0px]"
+            className="h-11 gap-2 px-4 text-sm"
             type="submit"
           >
             <Search className="text-background size-4" />
@@ -80,7 +80,7 @@ export function SearchControls({
         <Sheet closeOnMediaQuery="(min-width: 768px)">
           <SheetTrigger asChild>
             <Button
-              className="relative h-11 overflow-hidden px-0 [&>span:first-child]:text-[0px]"
+              className="relative h-11 w-full justify-center gap-2"
               aria-label="סינון ומיון"
               type="button"
               variant="outline"

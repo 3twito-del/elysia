@@ -52,7 +52,7 @@ export function ProductCard({
         className="block focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
         href={href}
       >
-        <div className="brand-product-media glass-inset bg-muted relative aspect-[4/3] overflow-hidden border-0 sm:aspect-[5/4] sm:min-h-44">
+        <div className="brand-product-media glass-inset bg-muted relative aspect-[5/4] overflow-hidden border-0 sm:min-h-40">
           <KineticImageMotion intensity="card">
             <Image
               alt={product.name}
@@ -65,22 +65,14 @@ export function ProductCard({
               src={product.image}
             />
           </KineticImageMotion>
-          <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
-            <Badge className="max-w-[62%] font-normal" variant="secondary">
+          <div className="absolute inset-x-3 top-3 flex items-start justify-start">
+            <Badge className="max-w-[74%] font-normal" variant="secondary">
               <span className="truncate">{product.collection}</span>
-            </Badge>
-            <Badge
-              className="max-w-[42%] font-normal"
-              variant={isAvailable ? "secondary" : "outline"}
-            >
-              <span className="truncate">
-                {getProductAvailabilityLabel(availableBranches)}
-              </span>
             </Badge>
           </div>
         </div>
       </Link>
-      <CardContent className="flex min-h-52 flex-1 flex-col gap-4 p-4 sm:min-h-64">
+      <CardContent className="flex min-h-44 flex-1 flex-col gap-3 p-4 sm:min-h-52">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <Link
@@ -95,17 +87,17 @@ export function ProductCard({
             </p>
           </div>
           <Button
-            aria-label={`שמירה ל-Wishlist: ${product.name}`}
-            className="shrink-0"
+            aria-label={`שמירה למועדפים: ${product.name}`}
+            className="bg-background/78 h-10 w-10 shrink-0 rounded-full border border-[var(--glass-border)]"
             size="icon"
             type="button"
-            variant="ghost"
+            variant="outline"
           >
             <Heart className="size-4" />
           </Button>
         </div>
 
-        <div className="mt-auto grid gap-4">
+        <div className="mt-auto grid gap-3">
           <div className="flex min-h-12 items-end justify-between gap-3">
             <div className="grid gap-0.5">
               {compareAt ? (

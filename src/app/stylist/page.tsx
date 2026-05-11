@@ -49,11 +49,11 @@ export default function StylistPage() {
           <Badge className="mb-4" variant="secondary">
             התאמה חכמה
           </Badge>
-          <h1 className="text-4xl font-semibold">
+          <h2 className="text-4xl font-semibold">
             ייעוץ תכשיטים לפי סגנון, תקציב ואירוע
-          </h1>
+          </h2>
           <p className="text-muted-foreground mt-3 max-w-3xl leading-7">
-            שכבת ה-AI מחוברת לקטלוג Aphrodite דרך tool פנימי, כך שההמלצות נשארות
+            שכבת ה-AI מחוברת לקטלוג Aphrodite דרך כלי פנימי, כך שההמלצות נשארות
             בתוך מוצרים קיימים ומוכנים להמשך עם חיפוש סמנטי ומדידה וירטואלית.
           </p>
           <div className="mt-8">
@@ -73,7 +73,7 @@ export default function StylistPage() {
               <CardContent className="text-muted-foreground grid gap-3 text-sm leading-7">
                 <p>התאמת מתנה לפי קשר, אירוע, תקציב וסגנון.</p>
                 <p>סינון לפי מוצרים זמינים וחומרים מתוך הקטלוג.</p>
-                <p>הכנה למדידה וירטואלית דרך TryOnProvider פנימי.</p>
+                <p>הכנה למדידה וירטואלית דרך ספק מדידה פנימי.</p>
               </CardContent>
             </Card>
             <Card className="rounded-md">
@@ -84,7 +84,7 @@ export default function StylistPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-muted-foreground text-sm leading-7">
-                ב-v1 נשמר interface למדידה. WebAR/Computer Vision עצמאי ייכנס
+                בגרסה הראשונה נשמר חוזה למדידה. מנוע ראייה ממוחשבת עצמאי ייכנס
                 דרך אותו חוזה בלי לשנות את מסכי המוצר או הלקוח.
               </CardContent>
             </Card>

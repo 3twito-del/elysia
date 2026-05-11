@@ -105,10 +105,13 @@ export default async function ProductPage({
     .slice(0, 4);
   const productHeroSlides =
     uniqueImages.length > 0
-      ? uniqueImages.map((src) => ({
-          alt: product.name,
-          src,
-        }))
+      ? [
+          ...uniqueImages.map((src) => ({
+            alt: product.name,
+            src,
+          })),
+          ...cinematicRouteMedia.product,
+        ]
       : cinematicRouteMedia.product;
   return (
     <main className="pb-24 md:pb-0">
@@ -182,12 +185,12 @@ export default async function ProductPage({
           <Badge className="mb-4" variant="secondary">
             {product.collection}
           </Badge>
-          <h1
+          <h2
             className="text-3xl font-semibold break-words sm:text-4xl"
             dir="auto"
           >
             {product.name}
-          </h1>
+          </h2>
           <p className="text-muted-foreground mt-4 text-lg leading-8">
             {product.shortDescription}
           </p>

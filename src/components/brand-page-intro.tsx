@@ -38,7 +38,7 @@ export function BrandPageIntro({
     >
       <div className="brand-page-intro-copy">
         {eyebrow ? <p className="brand-page-intro-eyebrow">{eyebrow}</p> : null}
-        <h1 className="brand-page-intro-title">{title}</h1>
+        <h2 className="brand-page-intro-title">{title}</h2>
         {description ? (
           <p className="brand-page-intro-description">{description}</p>
         ) : null}

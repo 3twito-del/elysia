@@ -35,8 +35,8 @@ export async function SiteFooter() {
 
   return (
     <footer className="glass-chrome site-chrome border-t">
-      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:py-16">
-        <div className="grid gap-12 lg:grid-cols-[1.25fr_0.8fr_0.85fr_1fr]">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-12">
+        <div className="grid gap-8 lg:grid-cols-[1.15fr_0.8fr_0.85fr_1fr]">
           <section className="max-w-lg">
             <Link
               className="brand-footer-mark inline-flex items-center gap-2"
@@ -47,12 +47,12 @@ export async function SiteFooter() {
                 Aphrodite
               </span>
             </Link>
-            <p className="text-muted-foreground mt-4 text-sm leading-7">
+            <p className="text-muted-foreground mt-3 text-sm leading-7">
               רשת תכשיטי סטודיו ישראלית במיצוב יוקרה נגישה, עם קטלוג אונליין,
               זמינות לפי סניף וייעוץ אישי לבחירת תכשיט או מתנה.
             </p>
             <NewsletterForm />
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-5 flex flex-col gap-3 sm:flex-row">
               <Button asChild variant="secondary">
                 <Link href="/ai">
                   ייעוץ אישי
@@ -78,7 +78,7 @@ export async function SiteFooter() {
                 {categories.map((category) => (
                   <li key={category.slug}>
                     <Link
-                      className="hover:text-foreground transition"
+                      className="hover:text-foreground inline-flex min-h-9 items-center transition"
                       href={`/category/${category.slug}`}
                     >
                       {category.name}
@@ -87,7 +87,7 @@ export async function SiteFooter() {
                 ))}
                 <li>
                   <Link
-                    className="hover:text-foreground transition"
+                    className="hover:text-foreground inline-flex min-h-9 items-center transition"
                     href="/gifts"
                   >
                     מתנות
@@ -108,7 +108,7 @@ export async function SiteFooter() {
                   return (
                     <li key={item.href}>
                       <Link
-                        className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 transition"
+                        className="text-muted-foreground hover:text-foreground inline-flex min-h-9 items-center gap-2 transition"
                         href={item.href}
                       >
                         <Icon className="size-4" />
@@ -159,11 +159,11 @@ export async function SiteFooter() {
 
           <nav aria-label="קטגוריות" className="hidden lg:block">
             <h2 className="text-sm font-semibold">קטגוריות</h2>
-            <ul className="text-muted-foreground mt-4 grid gap-3 text-sm">
+            <ul className="text-muted-foreground mt-3 grid gap-1.5 text-sm">
               {categories.map((category) => (
                 <li key={category.slug}>
                   <Link
-                    className="hover:text-foreground transition"
+                    className="hover:text-foreground inline-flex min-h-8 items-center transition"
                     href={`/category/${category.slug}`}
                   >
                     {category.name}
@@ -172,7 +172,7 @@ export async function SiteFooter() {
               ))}
               <li>
                 <Link
-                  className="hover:text-foreground transition"
+                  className="hover:text-foreground inline-flex min-h-8 items-center transition"
                   href="/gifts"
                 >
                   מתנות
@@ -183,14 +183,14 @@ export async function SiteFooter() {
 
           <nav aria-label="שירות וקנייה" className="hidden lg:block">
             <h2 className="text-sm font-semibold">שירות וקנייה</h2>
-            <ul className="mt-4 grid gap-3 text-sm">
+            <ul className="mt-3 grid gap-1.5 text-sm">
               {serviceLinks.map((item) => {
                 const Icon = item.icon;
 
                 return (
                   <li key={item.href}>
                     <Link
-                      className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 transition"
+                      className="text-muted-foreground hover:text-foreground inline-flex min-h-8 items-center gap-2 transition"
                       href={item.href}
                     >
                       <Icon className="size-4" />
@@ -213,7 +213,7 @@ export async function SiteFooter() {
               בדיקת זמינות, מדידה ואיסוף מתבצעים בעמוד הסניפים כדי לשמור על מידע
               מעודכן ולא לחזור על פרטים בכל תחתית עמוד.
             </p>
-            <ul className="mt-5 grid gap-3 text-sm">
+            <ul className="mt-4 grid gap-2 text-sm">
               {branches.map((branch) => (
                 <li
                   className="flex items-center justify-between gap-3 border-b border-[var(--glass-border)] pb-3 last:border-b-0"
@@ -226,7 +226,7 @@ export async function SiteFooter() {
             </ul>
             <Button
               asChild
-              className="mt-6 w-full justify-between"
+              className="mt-4 w-full justify-between"
               variant="outline"
             >
               <Link href="/branches">
@@ -237,7 +237,7 @@ export async function SiteFooter() {
           </section>
         </div>
 
-        <Separator className="my-8" />
+        <Separator className="my-6" />
 
         <div className="text-muted-foreground flex flex-col justify-between gap-4 text-sm lg:flex-row lg:items-center">
           <p>2026 Aphrodite. כל הזכויות שמורות.</p>
@@ -245,14 +245,20 @@ export async function SiteFooter() {
             aria-label="קישורי מדיניות"
             className="flex flex-wrap items-center gap-x-4 gap-y-2"
           >
-            <Link className="hover:text-foreground transition" href="/terms">
+            <Link
+              className="hover:text-foreground inline-flex min-h-8 items-center transition"
+              href="/terms"
+            >
               תקנון האתר
             </Link>
-            <Link className="hover:text-foreground transition" href="/privacy">
+            <Link
+              className="hover:text-foreground inline-flex min-h-8 items-center transition"
+              href="/privacy"
+            >
               מדיניות פרטיות
             </Link>
             <Link
-              className="hover:text-foreground transition"
+              className="hover:text-foreground inline-flex min-h-8 items-center transition"
               href="/accessibility"
             >
               הצהרת נגישות

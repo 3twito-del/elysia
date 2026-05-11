@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { CheckCircle2, Cookie, Settings } from "lucide-react";
 import { useEffect, useRef } from "react";
 
@@ -12,13 +13,15 @@ import {
 import { useCookieConsentValue } from "~/lib/use-cookie-consent";
 
 export function CookieConsentBanner() {
+  const pathname = usePathname();
   const consentValue = useCookieConsentValue();
   const bannerRef = useRef<HTMLElement>(null);
+  const isAdminRoute = pathname.startsWith("/admin");
 
   useEffect(() => {
     const root = document.documentElement;
 
-    if (consentValue !== null) {
+    if (isAdminRoute || consentValue !== null) {
       root.style.removeProperty("--floating-stack-bottom");
       return;
     }
@@ -48,9 +51,9 @@ export function CookieConsentBanner() {
       window.removeEventListener("resize", syncOffset);
       root.style.removeProperty("--floating-stack-bottom");
     };
-  }, [consentValue]);
+  }, [consentValue, isAdminRoute]);
 
-  if (consentValue !== null) return null;
+  if (isAdminRoute || consentValue !== null) return null;
 
   const chooseConsent = (value: CookieConsentValue) => {
     writeCookieConsent(value);

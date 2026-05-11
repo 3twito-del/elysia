@@ -67,9 +67,9 @@ export default async function AiPage({ searchParams }: AiPageProps) {
                   Aphrodite AI
                 </Badge>
                 <div className="grid gap-3">
-                  <h1 className="max-w-4xl text-2xl font-semibold tracking-normal sm:text-3xl">
+                  <h2 className="max-w-4xl text-2xl font-semibold tracking-normal sm:text-3xl">
                     התאמה חכמה לתכשיט, מתנה וסגנון
-                  </h1>
+                  </h2>
                   <p className="text-muted-foreground max-w-3xl leading-7">
                     כלי ה־AI מחוברים לקטלוג Aphrodite ומציגים פריטים זמינים מתוך
                     המלאי, עם התאמה לפי כוונה, תקציב וסגנון.
@@ -78,7 +78,7 @@ export default async function AiPage({ searchParams }: AiPageProps) {
               </div>
 
               <BrandMediaPanel
-                alt="Aqua AI stylist jewelry scene"
+                alt="סצנת תכשיטים להתאמה אישית חכמה"
                 className="h-44 sm:h-52"
                 priority
                 slides={brandMedia.ai}

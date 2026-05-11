@@ -122,7 +122,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       >
         <div className="hidden gap-4 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-end">
           <div>
-            <h1 className="text-3xl font-semibold sm:text-4xl">חיפוש בקטלוג</h1>
+            <h2 className="text-3xl font-semibold sm:text-4xl">חיפוש בקטלוג</h2>
             <p className="text-muted-foreground mt-2 max-w-2xl leading-7 sm:mt-3">
               תוצאות הקטלוג נשארות נקיות ומדויקות, עם צבע שמגיע מהפריטים עצמם.
             </p>
@@ -185,7 +185,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
         <section
           aria-labelledby="search-results"
-          className="glass-chrome mt-8 rounded-md border p-3"
+          className="mt-8 border-y border-[var(--glass-border)] py-4"
           data-testid="search-results-summary"
           id="search-results-section"
         >
@@ -502,11 +502,11 @@ function SearchPagination({
         {pages.map((page, index) =>
           page === "ellipsis" ? (
             <span
-              aria-hidden="true"
-              className="text-muted-foreground px-2 text-sm"
+              aria-label="עמודים נוספים"
+              className="text-muted-foreground grid h-8 min-w-8 place-items-center rounded-md border border-transparent px-2 text-sm"
               key={`ellipsis-${index}`}
             >
-              ...
+              …
             </span>
           ) : (
             <Button

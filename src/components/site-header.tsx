@@ -41,29 +41,30 @@ export function SiteHeader() {
       data-scroll={scrollState}
       dir="rtl"
     >
-      <div className="mx-auto grid h-16 max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-3 px-4 sm:px-6 lg:gap-6">
-        <div className="flex min-w-0 items-center gap-2 justify-self-start">
+      <div className="mx-auto grid h-16 max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-6 lg:grid-cols-[auto_1fr_auto] lg:gap-6">
+        <div className="flex items-center justify-self-start lg:hidden">
           <MobileNav items={navItems} />
-          <Link
-            className="brand-header-mark flex min-w-0 shrink-0 items-center gap-2"
-            dir="ltr"
-            href="/"
-          >
-            <Gem className="size-5" />
-            <span className="truncate text-lg font-semibold tracking-normal sm:text-xl">
-              Aphrodite
-            </span>
-          </Link>
         </div>
+
+        <Link
+          className="brand-header-mark flex min-w-0 shrink-0 items-center gap-2 justify-self-center lg:justify-self-start"
+          dir="ltr"
+          href="/"
+        >
+          <Gem className="size-5" />
+          <span className="truncate text-lg font-semibold tracking-normal sm:text-xl">
+            Aphrodite
+          </span>
+        </Link>
 
         <nav
           aria-label="ניווט ראשי"
-          className="hidden min-w-0 items-center justify-center gap-0.5 lg:flex"
+          className="hidden min-w-0 items-center justify-center gap-1 lg:flex"
         >
           {navItems.map((item) => (
             <Button
               asChild
-              className="px-2 text-sm xl:px-3"
+              className="h-10 px-3 text-[0.94rem] font-medium xl:px-4"
               key={item.href}
               variant="ghost"
             >

@@ -58,14 +58,14 @@ export default async function GiftsPage() {
           id="gift-advisor"
         >
           <div>
-            <h1 className="text-4xl font-semibold">מתנות תכשיטים</h1>
+            <h2 className="text-4xl font-semibold">מתנות תכשיטים</h2>
             <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
               בחירות קלות לקנייה עם אריזת מתנה, ברכה אישית והתאמה לפי תקציב.
             </p>
           </div>
           <div className="grid gap-3">
             <BrandMediaPanel
-              alt="Aqua jewelry gift tray"
+              alt="מגש תכשיטים למתנה בגוון אקווה"
               className="hidden h-32 lg:block"
               priority
               sizes="280px"

@@ -2,15 +2,15 @@ import type { CinematicHeroSlide } from "~/components/cinematic-hero-sequence";
 
 export const brandHeroSlides = [
   {
-    alt: "Diamond rings on an Aphrodite Aqua studio surface",
+    alt: "טבעות יהלום על משטח סטודיו בגוון אקווה",
     src: "/brand/aphrodite-aqua-hero-rings.png",
   },
   {
-    alt: "Pearl jewelry on turquoise glass",
+    alt: "תכשיטי פנינה על זכוכית טורקיז",
     src: "/brand/aphrodite-aqua-hero-pearls.png",
   },
   {
-    alt: "Diamond jewelry and glass in aqua studio light",
+    alt: "תכשיטי יהלום וזכוכית בתאורת סטודיו אקווה",
     src: "/brand/aphrodite-aqua-hero-glass.png",
   },
 ] satisfies CinematicHeroSlide[];
@@ -18,111 +18,111 @@ export const brandHeroSlides = [
 export const cinematicRouteMedia = {
   accessibility: [
     {
-      alt: "Soft editorial aqua and pearl jewelry scene for accessibility information",
+      alt: "סצנת תכשיטי פנינה רכה למידע נגישות",
       src: "/brand/cinematic/cinematic-editorial.png",
     },
     {
-      alt: "Subtle aqua glass and pearl jewelry scene",
+      alt: "זכוכית אקווה ותכשיטי פנינה בעיצוב שקט",
       src: "/brand/cinematic/cinematic-policy.png",
     },
   ],
   account: [
     {
-      alt: "Cinematic aqua and pearl service jewelry tray for customer account",
-      src: "/brand/cinematic/cinematic-service.png",
+      alt: "מגש שירות תכשיטים עם פנינים וזכוכית אקווה לאזור לקוח",
+      src: "/brand/cinematic/cinematic-service-v2.png",
     },
     brandHeroSlides[2]!,
   ],
   ai: [
     {
-      alt: "Cinematic digital aqua and pearl jewelry scene for AI styling",
-      src: "/brand/cinematic/cinematic-ai.png",
+      alt: "תכשיטים על מגש זכוכית אקווה להתאמה אישית",
+      src: "/brand/cinematic/cinematic-catalog-v2.png",
     },
     brandHeroSlides[2]!,
   ],
   about: [
     {
-      alt: "Cinematic Aphrodite Aqua editorial jewelry scene",
+      alt: "סצנת תכשיטים עריכתית בגוון Aphrodite Aqua",
       src: "/brand/cinematic/cinematic-editorial.png",
     },
     brandHeroSlides[1]!,
   ],
   branches: [
     {
-      alt: "Cinematic luxury jewelry boutique service scene",
-      src: "/brand/cinematic/cinematic-branches.png",
+      alt: "מגש שירות בוטיק עם תכשיטי פנינה וזכוכית אקווה",
+      src: "/brand/cinematic/cinematic-service-v2.png",
     },
     brandHeroSlides[0]!,
   ],
   checkout: [
     {
-      alt: "Cinematic jewelry service tray for checkout and delivery",
-      src: "/brand/cinematic/cinematic-service.png",
+      alt: "מגש אריזה ושירות לקופה ומשלוח תכשיטים",
+      src: "/brand/cinematic/cinematic-service-v2.png",
     },
     brandHeroSlides[2]!,
   ],
   faq: [
     {
-      alt: "Soft cinematic aqua and pearl jewelry information scene",
+      alt: "סצנת מידע רכה עם זכוכית אקווה ופנינים",
       src: "/brand/cinematic/cinematic-policy.png",
     },
     {
-      alt: "Editorial Aphrodite Aqua jewelry scene",
+      alt: "סצנת תכשיטים עריכתית בגוון Aphrodite Aqua",
       src: "/brand/cinematic/cinematic-editorial.png",
     },
   ],
   gifts: [
     {
-      alt: "Cinematic jewelry gift scene on aqua lacquer",
-      src: "/brand/cinematic/cinematic-gifts.png",
+      alt: "תכשיטי מתנה על מגש זכוכית אקווה ומשטח אבן כהה",
+      src: "/brand/cinematic/cinematic-catalog-v2.png",
     },
     brandHeroSlides[1]!,
   ],
   home: [
     {
-      alt: "Cinematic luxury jewelry scene in aqua and studio light",
+      alt: "סצנת תכשיטי יוקרה בתאורת סטודיו אקווה",
       src: "/brand/cinematic/cinematic-home.png",
     },
     ...brandHeroSlides,
   ],
   legal: [
     {
-      alt: "Cinematic policy and service jewelry scene in soft aqua light",
+      alt: "סצנת שירות ומדיניות בתאורת אקווה רכה",
       src: "/brand/cinematic/cinematic-policy.png",
     },
     {
-      alt: "Editorial Aphrodite Aqua jewelry scene",
+      alt: "סצנת תכשיטים עריכתית בגוון Aphrodite Aqua",
       src: "/brand/cinematic/cinematic-editorial.png",
     },
   ],
   product: [
     {
-      alt: "Cinematic product jewelry scene in aqua and studio light",
-      src: "/brand/cinematic/cinematic-product.png",
+      alt: "טבעת זהב ויהלומים על קטיפה כהה עם קצה זכוכית אקווה",
+      src: "/brand/cinematic/cinematic-product-v2.png",
     },
     brandHeroSlides[0]!,
   ],
   search: [
     {
-      alt: "Cinematic jewelry catalog search scene",
-      src: "/brand/cinematic/cinematic-search.png",
+      alt: "קטלוג תכשיטים על אבן שחורה וזכוכית אקווה",
+      src: "/brand/cinematic/cinematic-catalog-v2.png",
     },
     {
-      alt: "Cinematic rings and diamonds category scene",
+      alt: "טבעות ויהלומים בסצנת קטגוריה קולנועית",
       src: "/brand/cinematic/cinematic-category-rings.png",
     },
   ],
   service: [
     {
-      alt: "Cinematic customer service jewelry tray",
-      src: "/brand/cinematic/cinematic-service.png",
+      alt: "מגש שירות לקוחות עם אריזת תכשיטים ופנינים",
+      src: "/brand/cinematic/cinematic-service-v2.png",
     },
     brandHeroSlides[2]!,
   ],
   stylist: [
     {
-      alt: "Cinematic digital-light jewelry scene for stylist chat",
-      src: "/brand/cinematic/cinematic-ai.png",
+      alt: "קטלוג תכשיטים כהה להתאמת סטייליסט אישית",
+      src: "/brand/cinematic/cinematic-catalog-v2.png",
     },
     brandHeroSlides[2]!,
   ],
@@ -141,29 +141,29 @@ export const brandMedia = {
 const categorySlides = {
   bracelets: [
     {
-      alt: "Cinematic bracelets and tennis bracelets on aqua glass",
-      src: "/brand/cinematic/cinematic-category-bracelets.png",
+      alt: "צמידים וצמידי טניס על זכוכית אקווה",
+      src: "/brand/cinematic/cinematic-catalog-v2.png",
     },
     brandHeroSlides[2]!,
   ],
   earrings: [
     {
-      alt: "Cinematic earrings with pearls and diamonds on aqua glass",
-      src: "/brand/cinematic/cinematic-category-earrings.png",
+      alt: "עגילי פנינה ויהלום על מגש זכוכית אקווה",
+      src: "/brand/cinematic/cinematic-service-v2.png",
     },
     brandHeroSlides[1]!,
   ],
   necklaces: [
     {
-      alt: "Cinematic necklaces with pearl accents on aqua glass",
-      src: "/brand/cinematic/cinematic-category-necklaces.png",
+      alt: "שרשראות ופנינים על אבן כהה וזכוכית אקווה",
+      src: "/brand/cinematic/cinematic-catalog-v2.png",
     },
     brandHeroSlides[1]!,
   ],
   rings: [
     {
-      alt: "Cinematic diamond rings on Aphrodite Aqua lacquer",
-      src: "/brand/cinematic/cinematic-category-rings.png",
+      alt: "טבעת זהב ויהלומים בתאורת אקווה כהה",
+      src: "/brand/cinematic/cinematic-product-v2.png",
     },
     brandHeroSlides[0]!,
   ],

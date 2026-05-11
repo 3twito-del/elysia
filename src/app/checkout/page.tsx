@@ -48,7 +48,7 @@ export default async function CheckoutPage() {
           <BrandPageIntro
             description="סל, משלוח ואיסוף מסניף בממשק נקי, עם מסגרת Aqua נקייה שמדגישה את רגע השירות ולא משנה את לוגיקת ההזמנה."
             eyebrow="Aphrodite Service"
-            mediaAlt="Aqua jewelry checkout service tray"
+            mediaAlt="מגש שירות לקופה עם אריזת תכשיטים"
             mediaPriority
             slides={brandMedia.service}
             title="קופה מאובטחת"

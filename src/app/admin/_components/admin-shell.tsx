@@ -70,7 +70,7 @@ export function AdminShell({
   admin,
   children,
   description,
-  eyebrow = "Back office",
+  eyebrow = "ניהול פנימי",
   title,
 }: AdminShellProps) {
   return (

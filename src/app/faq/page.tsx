@@ -128,9 +128,9 @@ export default function FaqPage() {
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-muted-foreground text-sm">Aphrodite</p>
-              <h1 className="mt-3 text-4xl font-semibold tracking-normal sm:text-5xl">
+              <h2 className="mt-3 text-4xl font-semibold tracking-normal sm:text-5xl">
                 שאלות ותשובות
-              </h1>
+              </h2>
               <p className="text-muted-foreground mt-4 max-w-3xl leading-8">
                 תשובות קצרות לשאלות נפוצות על קנייה באתר, זמינות בסניפים, מידות,
                 משלוחים, מתנות והמלצות AI.

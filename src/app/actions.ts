@@ -135,5 +135,5 @@ export async function saveWishlistItem(
 
   revalidatePath(`/product/${parsed.data.productSlug}`);
   revalidatePath("/account");
-  return { ok: true, message: "המוצר נשמר ל-Wishlist" };
+  return { ok: true, message: "המוצר נשמר למועדפים" };
 }

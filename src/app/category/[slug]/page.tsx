@@ -210,9 +210,9 @@ export default async function CategoryPage({
                 קטלוג Aphrodite
               </Badge>
               <div className="flex flex-wrap items-end gap-3">
-                <h1 className="text-3xl font-semibold sm:text-4xl">
+                <h2 className="text-3xl font-semibold sm:text-4xl">
                   {category?.name ?? "קטגוריה"}
-                </h1>
+                </h2>
                 <span className="text-muted-foreground pb-1 text-sm">
                   {filteredProducts.length} מתוך {baseProducts.length} מוצרים
                 </span>
@@ -355,7 +355,7 @@ export default async function CategoryPage({
           className="min-w-0"
           id="category-products"
         >
-          <div className="glass-chrome mb-7 rounded-md border p-3">
+          <div className="mb-7 border-y border-[var(--glass-border)] py-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="text-base font-medium" id="category-results">
@@ -1006,11 +1006,11 @@ function CategoryPagination({
         {pages.map((page, index) =>
           page === "ellipsis" ? (
             <span
-              aria-hidden="true"
-              className="text-muted-foreground px-2 text-sm"
+              aria-label="עמודים נוספים"
+              className="text-muted-foreground grid h-8 min-w-8 place-items-center rounded-md border border-transparent px-2 text-sm"
               key={`ellipsis-${index}`}
             >
-              ...
+              …
             </span>
           ) : (
             <Button

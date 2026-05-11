@@ -100,7 +100,7 @@ export default async function OrderDetailPage({
         </Button>
         <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 className="text-4xl font-semibold">{order.orderNumber}</h1>
+            <h2 className="text-4xl font-semibold">{order.orderNumber}</h2>
             <p className="text-muted-foreground mt-2">
               {order.recipientName} · {order.email}
             </p>

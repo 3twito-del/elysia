@@ -13,6 +13,7 @@ import { usePathname } from "next/navigation";
 
 type PublicMotionProviderProps = {
   children: ReactNode;
+  footer?: ReactNode;
 };
 
 type MotionState = "visible" | "enter" | "exit";
@@ -75,7 +76,10 @@ export function usePublicMotion() {
   return useContext(PublicMotionContext);
 }
 
-export function PublicMotionProvider({ children }: PublicMotionProviderProps) {
+export function PublicMotionProvider({
+  children,
+  footer,
+}: PublicMotionProviderProps) {
   const pathname = usePathname();
   const shouldReduceMotion = usePrefersReducedMotion();
   const isAdminRoute = pathname.startsWith("/admin");
@@ -352,7 +356,10 @@ export function PublicMotionProvider({ children }: PublicMotionProviderProps) {
     <PublicMotionContext.Provider value={motionContextValue}>
       <div className="public-motion-shell" data-motion-state={motionState}>
         <div aria-hidden="true" className="public-motion-ambient" />
-        <div className="public-motion-content">{renderedChildren}</div>
+        <div className="public-motion-content">
+          {renderedChildren}
+          {footer}
+        </div>
       </div>
     </PublicMotionContext.Provider>
   );

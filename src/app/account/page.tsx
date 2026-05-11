@@ -109,13 +109,13 @@ export default async function AccountPage() {
               </Button>
             </>
           }
-          description="כניסה מאובטחת להזמנות, Wishlist, מידות שמורות, תורים ופרטיות."
+          description="כניסה מאובטחת להזמנות, מועדפים, מידות שמורות, תורים ופרטיות."
           eyebrow="Aphrodite Account"
           scrollCue={{ href: "#account-login", label: "לכניסה" }}
           slides={cinematicRouteMedia.account}
           stats={[
             { label: "כניסה", value: "OTP" },
-            { label: "Wishlist", value: "שמור" },
+            { label: "מועדפים", value: "שמור" },
             { label: "פרטיות", value: "בשליטה" },
           ]}
           title="אזור לקוח"
@@ -125,10 +125,10 @@ export default async function AccountPage() {
           className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12"
           id="account-login"
         >
-          <h1 className="text-3xl font-semibold sm:text-4xl">אזור לקוח</h1>
+          <h2 className="text-3xl font-semibold sm:text-4xl">אזור לקוח</h2>
           <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
             כניסה מאובטחת באמצעות קוד חד-פעמי. לאחר הכניסה יוצגו הזמנות,
-            Wishlist, מידות שמורות ותורים.
+            מועדפים, מידות שמורות ותורים.
           </p>
           <BrandMediaPanel
             alt="Aqua account and service jewelry tray"
@@ -161,7 +161,7 @@ export default async function AccountPage() {
               <MetricCard
                 detail="מוצרים שמורים לקנייה"
                 icon={Heart}
-                label="Wishlist"
+                label="מועדפים"
                 variant="soft"
                 value="פעיל"
               />
@@ -208,7 +208,7 @@ export default async function AccountPage() {
         slides={cinematicRouteMedia.account}
         stats={[
           { label: "הזמנות", value: String(customer.orders.length) },
-          { label: "Wishlist", value: String(wishlistItems.length) },
+          { label: "מועדפים", value: String(wishlistItems.length) },
           { label: "תורים", value: String(customer.appointments.length) },
         ]}
         title="אזור לקוח"
@@ -220,7 +220,7 @@ export default async function AccountPage() {
       >
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
-            <h1 className="text-3xl font-semibold sm:text-4xl">אזור לקוח</h1>
+            <h2 className="text-3xl font-semibold sm:text-4xl">אזור לקוח</h2>
             <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
               {customer.firstName ?? session.user.name ?? "לקוח/ה"} מחובר/ת. כאן
               נשמרות הזמנות, פריטים מועדפים, מידות ותורים.
@@ -254,7 +254,7 @@ export default async function AccountPage() {
           <MetricCard
             detail="פריטים שמורים"
             icon={Heart}
-            label="Wishlist"
+            label="מועדפים"
             value={String(wishlistItems.length)}
           />
           <MetricCard
@@ -313,14 +313,14 @@ export default async function AccountPage() {
 
           <Card className="rounded-md" id="account-wishlist">
             <CardHeader>
-              <CardTitle>Wishlist</CardTitle>
+              <CardTitle>מועדפים</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-3">
               {wishlistItems.length === 0 ? (
                 <EmptyState
                   description="עדיין לא נשמרו מוצרים."
                   icon={Heart}
-                  title="Wishlist ריק"
+                  title="אין פריטים מועדפים"
                   variant="inset"
                   actions={
                     <Button asChild variant="outline">

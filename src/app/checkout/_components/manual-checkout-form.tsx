@@ -154,7 +154,7 @@ export function ManualCheckoutForm({
     >
       <div className="grid gap-6">
         <div>
-          <h1 className="text-4xl font-semibold">סל וקופה</h1>
+          <h2 className="text-4xl font-semibold">סל וקופה</h2>
           <p className="text-muted-foreground mt-2">
             בקשת הזמנה פנימית: שמירת מלאי, פתיחת הזמנה, וטיפול ידני של נציג.
           </p>

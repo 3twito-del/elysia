@@ -73,8 +73,8 @@ export function ProductPurchasePanel({
   }
 
   const stickyPurchaseBar = (
-    <div className="motion-sticky-purchase glass-chrome fixed inset-x-0 bottom-[calc(var(--floating-stack-bottom,0px)+env(safe-area-inset-bottom))] z-40 border-t p-3 shadow-[0_-18px_48px_oklch(0_0_0_/_14%)] md:hidden">
-      <div className="mx-auto grid max-w-md grid-cols-[auto_minmax(0,1fr)] items-center gap-3 pl-14">
+    <div className="motion-sticky-purchase glass-chrome fixed inset-x-3 bottom-[calc(var(--floating-stack-bottom,0px)+0.75rem+env(safe-area-inset-bottom))] z-40 rounded-md border p-2.5 shadow-[0_18px_48px_oklch(0_0_0_/_16%)] md:hidden">
+      <div className="mx-auto grid max-w-md grid-cols-[auto_minmax(0,1fr)] items-center gap-3">
         <div className="order-2 min-w-0">
           <p className="text-muted-foreground truncate text-xs">
             {productName}
@@ -170,7 +170,7 @@ export function ProductPurchasePanel({
 
         <Button asChild variant="secondary">
           <Link href={`/ai?product=${productSlug}`}>
-            מדידה/AI
+            מדידה חכמה
             <Sparkles className="size-4" />
           </Link>
         </Button>

@@ -94,9 +94,9 @@ export default function TermsPage() {
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-muted-foreground text-sm">Aphrodite</p>
-              <h1 className="mt-3 text-4xl font-semibold tracking-normal sm:text-5xl">
+              <h2 className="mt-3 text-4xl font-semibold tracking-normal sm:text-5xl">
                 תקנון האתר
-              </h1>
+              </h2>
               <p className="text-muted-foreground mt-4 max-w-3xl leading-8">
                 התקנון מסדיר את השימוש באתר, בקטלוג, בהזמנות ובשירותים
                 הדיגיטליים של Aphrodite. הוא אינו גורע מזכויות המוקנות לכם לפי

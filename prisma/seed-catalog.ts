@@ -46,7 +46,7 @@ export const seedStones = [
 export const seedCollections = [
   {
     slug: "studio-light",
-    name: "Studio Light",
+    name: "אור סטודיו",
     description: "קולקציית בסיס נקייה עם קווים דקים וזהב חם.",
     heroImageUrl:
       "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1600&q=80",
@@ -54,7 +54,7 @@ export const seedCollections = [
   },
   {
     slug: "bridal-edit",
-    name: "Bridal Edit",
+    name: "בחירת כלה",
     description: "בחירות מדויקות להצעות, חתונות וסטים חגיגיים.",
     heroImageUrl:
       "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1600&q=80",
@@ -62,7 +62,7 @@ export const seedCollections = [
   },
   {
     slug: "daily-icons",
-    name: "Daily Icons",
+    name: "אייקונים יומיים",
     description: "תכשיטים קלים לשילוב יומיומי עם גימור נקי.",
     heroImageUrl:
       "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=1600&q=80",
@@ -70,7 +70,7 @@ export const seedCollections = [
   },
   {
     slug: "evening-glow",
-    name: "Evening Glow",
+    name: "זוהר ערב",
     description: "פריטים מבריקים לערב, אירועים ומתנות עם נוכחות.",
     heroImageUrl:
       "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=1600&q=80",
@@ -78,7 +78,7 @@ export const seedCollections = [
   },
   {
     slug: "gift-studio",
-    name: "Gift Studio",
+    name: "סטודיו מתנות",
     description: "בחירות מוכנות למתנות לפי תקציב, סגנון ואירוע.",
     heroImageUrl:
       "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=1600&q=80",
@@ -289,7 +289,7 @@ const categoryBlueprints = {
   rings: {
     productKind: "טבעת",
     skuPrefix: "RG",
-    generatedSlugPrefix: "test-ring",
+    generatedSlugPrefix: "ring",
     image:
       "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1400&q=80",
     priceBase: 690,
@@ -308,7 +308,7 @@ const categoryBlueprints = {
   necklaces: {
     productKind: "שרשרת",
     skuPrefix: "NK",
-    generatedSlugPrefix: "test-necklace",
+    generatedSlugPrefix: "necklace",
     image:
       "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1400&q=80",
     priceBase: 620,
@@ -327,7 +327,7 @@ const categoryBlueprints = {
   earrings: {
     productKind: "עגילי",
     skuPrefix: "ER",
-    generatedSlugPrefix: "test-earrings",
+    generatedSlugPrefix: "earrings",
     image:
       "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1400&q=80",
     priceBase: 360,
@@ -346,7 +346,7 @@ const categoryBlueprints = {
   bracelets: {
     productKind: "צמיד",
     skuPrefix: "BR",
-    generatedSlugPrefix: "test-bracelet",
+    generatedSlugPrefix: "bracelet",
     image:
       "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=1400&q=80",
     priceBase: 520,
@@ -503,7 +503,7 @@ function createGeneratedProduct(
     index,
   );
   const stoneText = stone ? `עם ${stone.name}` : "ללא אבן";
-  const name = `${blueprint.productKind} ${family.name} ${detail.hebrew} ${serial}`;
+  const name = `${blueprint.productKind} ${family.hebrew} ${detail.hebrew}`;
 
   return {
     slug: `${blueprint.generatedSlugPrefix}-${family.slug}-${detail.slug}-${serial}`,

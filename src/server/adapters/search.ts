@@ -169,7 +169,7 @@ async function searchLocalProducts(input: ProductSearchInput) {
     searchCatalogProducts(input),
     buildLocalFacets(input),
   ]);
-  const sortedHits = sortLocalHits(hits, input.sort);
+  const sortedHits = sortLocalHits(hits, input);
   const paginatedHits = paginateSearchHits(sortedHits, pagination);
 
   return {
@@ -242,24 +242,85 @@ export function assertLocalSearchAllowed(config: TypesenseSearchEnv = env) {
   }
 }
 
-function sortLocalHits(
-  hits: CatalogProduct[],
-  sort: ProductSearchInput["sort"] = "relevance",
-) {
+function sortLocalHits(hits: CatalogProduct[], input: ProductSearchInput) {
+  const sort = input.sort ?? "relevance";
   const sorted = [...hits];
 
   if (sort === "price-asc") return sorted.sort((a, b) => a.price - b.price);
   if (sort === "price-desc") return sorted.sort((a, b) => b.price - a.price);
-  if (sort === "newest") return sorted;
+  if (sort === "newest") {
+    return sorted.sort(
+      (a, b) => getProductCreatedAtTime(b) - getProductCreatedAtTime(a),
+    );
+  }
   if (sort === "popular") {
     return sorted.sort(
       (a, b) =>
-        Object.values(b.inventory).reduce((sum, value) => sum + value, 0) -
-        Object.values(a.inventory).reduce((sum, value) => sum + value, 0),
+        (b.popularityScore ?? 0) - (a.popularityScore ?? 0) ||
+        getProductCreatedAtTime(b) - getProductCreatedAtTime(a),
     );
   }
 
+  if (isDefaultCatalogBrowse(input)) {
+    return interleaveProductsByCategory(sorted);
+  }
+
   return sorted;
+}
+
+function isDefaultCatalogBrowse(input: ProductSearchInput) {
+  return (
+    !input.query &&
+    !input.category &&
+    !input.branch &&
+    !input.material &&
+    !input.stone &&
+    !input.collection &&
+    !input.maxPrice &&
+    !input.availableOnly
+  );
+}
+
+function interleaveProductsByCategory(products: CatalogProduct[]) {
+  const buckets = new Map<string, CatalogProduct[]>();
+
+  for (const product of products) {
+    const bucket = buckets.get(product.categorySlug) ?? [];
+    bucket.push(product);
+    buckets.set(product.categorySlug, bucket);
+  }
+
+  const orderedBuckets = Array.from(buckets.values()).map((bucket) =>
+    bucket.sort(
+      (a, b) =>
+        (b.popularityScore ?? 0) - (a.popularityScore ?? 0) ||
+        getProductCreatedAtTime(b) - getProductCreatedAtTime(a),
+    ),
+  );
+  const interleaved: CatalogProduct[] = [];
+  let index = 0;
+
+  while (interleaved.length < products.length) {
+    for (const bucket of orderedBuckets) {
+      const product = bucket[index];
+      if (product) interleaved.push(product);
+    }
+
+    index += 1;
+  }
+
+  return interleaved;
+}
+
+function getProductCreatedAtTime(product: CatalogProduct) {
+  if (product.createdAt instanceof Date) return product.createdAt.getTime();
+  if (typeof product.createdAt === "string") {
+    const parsed = Date.parse(product.createdAt);
+
+    return Number.isNaN(parsed) ? 0 : parsed;
+  }
+
+  return 0;
 }
 
 async function ensureProductsCollection(client: Client) {
@@ -288,8 +349,8 @@ function toTypesenseDocument(product: CatalogProduct): ProductSearchDocument {
     availableBranches: Object.entries(product.inventory)
       .filter(([, quantity]) => quantity > 0)
       .map(([branch]) => branch),
-    popularityScore: 0,
-    createdAt: Math.floor(Date.now() / 1000),
+    popularityScore: product.popularityScore ?? 0,
+    createdAt: Math.floor(getProductCreatedAtTime(product) / 1000),
   };
 }
 

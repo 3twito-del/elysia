@@ -202,7 +202,7 @@ const getFeaturedCatalogProductsCached = unstable_cache(
 
     return selectFeaturedCatalogProducts(records.map(mapCatalogProduct), take);
   },
-  ["catalog:featured-products"],
+  ["catalog:featured-products:v2"],
   {
     revalidate: CATALOG_REVALIDATE_SECONDS,
     tags: [CATALOG_CACHE_TAGS.products],
@@ -256,7 +256,7 @@ export async function listCatalogProducts(input: { category?: string } = {}) {
 
       return records.map(mapCatalogProduct);
     },
-    [`catalog:products:${input.category ?? "all"}`],
+    [`catalog:products:v2:${input.category ?? "all"}`],
     {
       revalidate: CATALOG_REVALIDATE_SECONDS,
       tags: [
@@ -281,7 +281,7 @@ export async function getCatalogProductBySlug(slug: string) {
 
       return record ? mapCatalogProduct(record) : null;
     },
-    [`catalog:product:${slug}`],
+    [`catalog:product:v2:${slug}`],
     {
       revalidate: CATALOG_REVALIDATE_SECONDS,
       tags: [CATALOG_CACHE_TAGS.products, productCacheTag(slug)],
@@ -326,7 +326,7 @@ const getCatalogFacetsCached = unstable_cache(
       },
     };
   },
-  ["catalog:facets"],
+  ["catalog:facets:v2"],
   {
     revalidate: CATALOG_REVALIDATE_SECONDS,
     tags: [CATALOG_CACHE_TAGS.facets, CATALOG_CACHE_TAGS.products],
@@ -455,7 +455,7 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
   return {
     slug: record.slug,
     sku: record.sku,
-    name: record.name,
+    name: getDisplayProductName(record.name),
     categorySlug: record.category.slug,
     categoryName: record.category.name,
     shortDescription: record.shortDescription,
@@ -491,6 +491,10 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
     tags: record.tags,
     inventory,
   };
+}
+
+function getDisplayProductName(name: string) {
+  return name.replace(/\s+\d{3}$/u, "");
 }
 
 function getDisplayImages(input: {

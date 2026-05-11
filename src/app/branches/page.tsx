@@ -48,13 +48,13 @@ export default async function BranchesPage() {
 
       <RevealSection aria-hidden="true" className="hidden" variant="none">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
-          <h1 className="text-4xl font-semibold">סניפי Aphrodite</h1>
+          <h2 className="text-4xl font-semibold">סניפי Aphrodite</h2>
           <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
             זמינות מוצרים, איסוף מהחנות, שינוי מידה, ייעוץ מתנות ופגישות כלה
             בסניפים.
           </p>
           <BrandMediaPanel
-            alt="Aqua jewelry boutique counter"
+            alt="דלפק בוטיק תכשיטים בגוון אקווה"
             className="mt-6 h-52 lg:h-64"
             priority
             slides={brandMedia.branches}
