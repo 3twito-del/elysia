@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation";
 import { RotateCcw, Save, Truck } from "lucide-react";
 
 import {
+  AdminMutationStatus,
+  type AdminMutationFeedback,
+} from "./admin-mutation-status";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -18,39 +22,45 @@ import {
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { StatusMessage } from "~/components/ui/status-message";
 import { Textarea } from "~/components/ui/textarea";
 import { getReturnStatusLabel } from "~/lib/commerce-labels";
 import { api } from "~/trpc/react";
 
 type AdminOrderActionsProps = {
-  orderId: string;
-  status: string;
   fulfillmentMethod: string;
-  shipment?: {
-    provider: string | null;
-    tracking: string | null;
-    status: string;
-  } | null;
+  orderId: string;
   returns: Array<{
     id: string;
     reason: string;
     status: string;
   }>;
+  shipment?: {
+    provider: string | null;
+    status: string;
+    tracking: string | null;
+  } | null;
+  status: string;
 };
 
 const terminalStatuses = new Set(["COMPLETED", "CANCELLED", "REFUNDED"]);
 
 export function AdminOrderActions({
-  orderId,
-  status,
   fulfillmentMethod,
-  shipment,
+  orderId,
   returns,
+  shipment,
+  status,
 }: AdminOrderActionsProps) {
   const router = useRouter();
+  const [feedback, setFeedback] = useState<AdminMutationFeedback>();
   const updateStatus = api.admin.updateOrderStatus.useMutation({
-    onSuccess: () => router.refresh(),
+    onError: (error) => setFeedback({ message: error.message, tone: "error" }),
+    onMutate: () =>
+      setFeedback({ message: "מעדכן סטטוס הזמנה...", tone: "neutral" }),
+    onSuccess: () => {
+      router.refresh();
+      setFeedback({ message: "סטטוס ההזמנה עודכן.", tone: "success" });
+    },
   });
   const actions = getAvailableActions(status, fulfillmentMethod);
 
@@ -68,11 +78,13 @@ export function AdminOrderActions({
             onConfirm={() =>
               updateStatus.mutate({ orderId, status: action.status })
             }
+            pending={updateStatus.isPending}
             requiresConfirmation={action.status === "CANCELLED"}
             variant={action.status === "CANCELLED" ? "outline" : "secondary"}
           />
         ))}
       </div>
+      <AdminMutationStatus feedback={feedback} />
       {fulfillmentMethod === "DELIVERY" ? (
         <AdminShipmentForm orderId={orderId} shipment={shipment} />
       ) : null}
@@ -92,17 +104,27 @@ function AdminShipmentForm({
   const [provider, setProvider] = useState(shipment?.provider ?? "");
   const [tracking, setTracking] = useState(shipment?.tracking ?? "");
   const [status, setStatus] = useState(shipment?.status ?? "SHIPPED");
+  const [feedback, setFeedback] = useState<AdminMutationFeedback>();
   const mutation = api.admin.upsertShipment.useMutation({
-    onSuccess: () => router.refresh(),
+    onError: (error) => setFeedback({ message: error.message, tone: "error" }),
+    onMutate: () =>
+      setFeedback({ message: "שומר פרטי משלוח...", tone: "neutral" }),
+    onSuccess: () => {
+      router.refresh();
+      setFeedback({ message: "פרטי המשלוח נשמרו.", tone: "success" });
+    },
   });
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const nextProvider = provider.trim();
+    const nextTracking = tracking.trim();
+
     mutation.mutate({
       orderId,
-      provider: provider || undefined,
-      tracking: tracking || undefined,
+      provider: nextProvider.length > 0 ? nextProvider : undefined,
       status,
+      tracking: nextTracking.length > 0 ? nextTracking : undefined,
     });
   }
 
@@ -115,18 +137,21 @@ function AdminShipmentForm({
       <div className="grid gap-2 sm:grid-cols-3">
         <Input
           className="h-9"
+          disabled={mutation.isPending}
           onChange={(event) => setProvider(event.currentTarget.value)}
           placeholder="ספק"
           value={provider}
         />
         <Input
           className="h-9"
+          disabled={mutation.isPending}
           onChange={(event) => setTracking(event.currentTarget.value)}
           placeholder="Tracking"
           value={tracking}
         />
         <select
           className="glass-control h-9 rounded-md border px-2 text-xs"
+          disabled={mutation.isPending}
           onChange={(event) => setStatus(event.currentTarget.value)}
           value={status}
         >
@@ -143,8 +168,9 @@ function AdminShipmentForm({
         variant="outline"
       >
         <Save className="size-3.5" />
-        שמירת משלוח
+        {mutation.isPending ? "שומר..." : "שמירת משלוח"}
       </Button>
+      <AdminMutationStatus feedback={feedback} />
     </form>
   );
 }
@@ -161,8 +187,14 @@ function AdminRefundForm({
   const router = useRouter();
   const [reason, setReason] = useState(returns[0]?.reason ?? "");
   const [restockItems, setRestockItems] = useState(false);
+  const [feedback, setFeedback] = useState<AdminMutationFeedback>();
   const mutation = api.admin.refundOrder.useMutation({
-    onSuccess: () => router.refresh(),
+    onError: (error) => setFeedback({ message: error.message, tone: "error" }),
+    onMutate: () => setFeedback({ message: "מבצע זיכוי...", tone: "neutral" }),
+    onSuccess: () => {
+      router.refresh();
+      setFeedback({ message: "הזיכוי נשמר וההזמנה עודכנה.", tone: "success" });
+    },
   });
   const activeReturn = returns.find(
     (request) => request.status !== "CANCELLED",
@@ -182,11 +214,16 @@ function AdminRefundForm({
   }
 
   function submitRefund() {
+    const trimmedReason = reason.trim();
+
     mutation.mutate({
       orderId,
-      returnRequestId: activeReturn?.id,
-      reason: reason.trim() ? reason : (activeReturn?.reason ?? "Admin refund"),
+      reason:
+        trimmedReason.length > 0
+          ? trimmedReason
+          : (activeReturn?.reason ?? "Admin refund"),
       restockItems,
+      returnRequestId: activeReturn?.id,
     });
   }
 
@@ -204,6 +241,7 @@ function AdminRefundForm({
       ) : null}
       <Textarea
         className="min-h-16"
+        disabled={mutation.isPending}
         onChange={(event) => setReason(event.currentTarget.value)}
         placeholder="סיבת זיכוי"
         value={reason}
@@ -211,6 +249,7 @@ function AdminRefundForm({
       <label className="text-muted-foreground flex items-center gap-2 text-xs">
         <input
           checked={restockItems}
+          disabled={mutation.isPending}
           onChange={(event) => setRestockItems(event.currentTarget.checked)}
           type="checkbox"
         />
@@ -226,7 +265,7 @@ function AdminRefundForm({
             variant="outline"
           >
             <RotateCcw className="size-3.5" />
-            ביצוע זיכוי
+            {mutation.isPending ? "מבצע..." : "ביצוע זיכוי"}
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent dir="rtl">
@@ -239,17 +278,16 @@ function AdminRefundForm({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>ביטול</AlertDialogCancel>
-            <AlertDialogAction onClick={submitRefund}>
+            <AlertDialogAction
+              disabled={mutation.isPending}
+              onClick={submitRefund}
+            >
               אישור זיכוי
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      {mutation.error ? (
-        <StatusMessage size="xs" tone="error" variant="plain">
-          {mutation.error.message}
-        </StatusMessage>
-      ) : null}
+      <AdminMutationStatus feedback={feedback} />
     </form>
   );
 }
@@ -258,15 +296,19 @@ function StatusActionButton({
   disabled,
   label,
   onConfirm,
+  pending,
   requiresConfirmation,
   variant,
 }: {
   disabled: boolean;
   label: string;
   onConfirm: () => void;
+  pending: boolean;
   requiresConfirmation: boolean;
   variant: "outline" | "secondary";
 }) {
+  const buttonLabel = pending ? "מעדכן..." : label;
+
   if (!requiresConfirmation) {
     return (
       <Button
@@ -276,7 +318,7 @@ function StatusActionButton({
         type="button"
         variant={variant}
       >
-        {label}
+        {buttonLabel}
       </Button>
     );
   }
@@ -285,7 +327,7 @@ function StatusActionButton({
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button disabled={disabled} size="sm" type="button" variant={variant}>
-          {label}
+          {buttonLabel}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent dir="rtl">
@@ -309,30 +351,30 @@ function getAvailableActions(status: string, fulfillmentMethod: string) {
 
   if (status === "PENDING_PAYMENT") {
     return [
-      { status: "PAID" as const, label: "אישור תשלום ידני" },
-      { status: "CANCELLED" as const, label: "ביטול" },
+      { label: "אישור תשלום ידני", status: "PAID" as const },
+      { label: "ביטול", status: "CANCELLED" as const },
     ];
   }
 
   if (status === "PAID") {
     return [
-      { status: "PREPARING" as const, label: "העברה להכנה" },
-      { status: "CANCELLED" as const, label: "ביטול" },
+      { label: "העברה להכנה", status: "PREPARING" as const },
+      { label: "ביטול", status: "CANCELLED" as const },
     ];
   }
 
   if (status === "PREPARING") {
     return [
       {
+        label: fulfillmentMethod === "PICKUP" ? "מוכן לאיסוף" : "נשלח",
         status:
           fulfillmentMethod === "PICKUP"
             ? ("READY_FOR_PICKUP" as const)
             : ("SHIPPED" as const),
-        label: fulfillmentMethod === "PICKUP" ? "מוכן לאיסוף" : "נשלח",
       },
-      { status: "CANCELLED" as const, label: "ביטול" },
+      { label: "ביטול", status: "CANCELLED" as const },
     ];
   }
 
-  return [{ status: "COMPLETED" as const, label: "השלמה" }];
+  return [{ label: "השלמה", status: "COMPLETED" as const }];
 }

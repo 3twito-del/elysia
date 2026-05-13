@@ -32,9 +32,9 @@ Use this track for local product quality, UI polish, correctness, and implementa
 
 - Completed 2026-05-14: Strengthen checkout form states with field-level validation, submission loading, recoverable errors, disabled duplicate submits, and clear pickup/shipping selection.
 - Completed 2026-05-14: Improve cart and checkout empty states so users always have a clear next action.
-- In progress 2026-05-14: Tighten account pages with loading, empty, forbidden, and error states for orders, addresses, wishlist, appointments, and privacy flows. Added explicit customer-account load error, missing profile, and admin-session forbidden states on the account overview.
-- In progress 2026-05-14: Improve admin tables with stable pagination, filters, empty states, mutation loading states, and server-confirmed success/error feedback. Added consistent filter reset actions across order, catalog, customer, appointment, inventory, and audit tables, plus Outbox search/reset in integrations.
-- Audit client/server validation boundaries for forms already present in the repo and align copy with the existing Hebrew RTL interface.
+- Completed 2026-05-14: Tighten account pages with loading, empty, forbidden, and error states for orders, addresses, wishlist, appointments, and privacy flows. Added explicit customer-account load error, missing profile, admin-session forbidden state, account loading/error route fallbacks, and field-level validation for address, return, and privacy forms.
+- Completed 2026-05-14: Improve admin tables with stable pagination, filters, empty states, mutation loading states, and server-confirmed success/error feedback. Added consistent filter reset actions across order, catalog, customer, appointment, inventory, and audit tables, Outbox search/reset in integrations, admin loading/error route fallbacks, and pending/success/error feedback for catalog, inventory, coupon, order, shipment, refund, and appointment actions.
+- In progress 2026-05-14: Audit client/server validation boundaries for forms already present in the repo and align copy with the existing Hebrew RTL interface. Completed checkout/manual order and account address/return/privacy validation helpers with focused unit coverage.
 
 ### Reliability Local
 

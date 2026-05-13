@@ -19,6 +19,7 @@ export function ReturnRequestForm({ orderId }: { orderId: string }) {
     requestReturnAction,
     initialState,
   );
+  const fieldErrors = state.fieldErrors ?? {};
 
   return (
     <form action={action} className="grid gap-3">
@@ -26,15 +27,30 @@ export function ReturnRequestForm({ orderId }: { orderId: string }) {
       <div className="grid gap-2">
         <Label htmlFor="return-reason">סיבת החזרה</Label>
         <Textarea
+          aria-describedby="return-reason-error"
+          aria-invalid={Boolean(fieldErrors.reason)}
+          disabled={pending}
           id="return-reason"
+          maxLength={500}
+          minLength={3}
           name="reason"
           placeholder="מידה, סגנון, פגם, או כל סיבה אחרת"
           required
         />
+        <FieldError id="return-reason-error" message={fieldErrors.reason} />
       </div>
       <div className="grid gap-2">
         <Label htmlFor="return-notes">הערות</Label>
-        <Textarea id="return-notes" name="notes" placeholder="פרטים נוספים" />
+        <Textarea
+          aria-describedby="return-notes-error"
+          aria-invalid={Boolean(fieldErrors.notes)}
+          disabled={pending}
+          id="return-notes"
+          maxLength={1000}
+          name="notes"
+          placeholder="פרטים נוספים"
+        />
+        <FieldError id="return-notes-error" message={fieldErrors.notes} />
       </div>
       {state.message ? (
         <StatusMessage tone={state.ok ? "success" : "error"} variant="plain">
@@ -43,8 +59,16 @@ export function ReturnRequestForm({ orderId }: { orderId: string }) {
       ) : null}
       <Button className="w-fit gap-2" disabled={pending} type="submit">
         <RotateCcw className="size-4" />
-        פתיחת בקשת החזרה
+        {pending ? "פותח בקשה..." : "פתיחת בקשת החזרה"}
       </Button>
     </form>
+  );
+}
+
+function FieldError({ id, message }: { id: string; message?: string }) {
+  return (
+    <p className="text-destructive min-h-5 text-xs leading-5" id={id}>
+      {message ?? ""}
+    </p>
   );
 }

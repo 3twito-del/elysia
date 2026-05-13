@@ -11,6 +11,7 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { StatusMessage } from "~/components/ui/status-message";
+import { DELETE_CONFIRMATION_VALUE } from "~/lib/account-validation-constants";
 
 const initialState: AccountActionState = {};
 
@@ -19,6 +20,7 @@ export function CustomerPrivacyActions() {
     deleteCustomerDataAction,
     initialState,
   );
+  const confirmationError = state.fieldErrors?.confirmation;
 
   return (
     <div className="grid gap-4">
@@ -35,10 +37,22 @@ export function CustomerPrivacyActions() {
       >
         <Label htmlFor="delete-confirmation">מחיקת נתונים</Label>
         <Input
+          aria-describedby="delete-confirmation-error"
+          aria-invalid={Boolean(confirmationError)}
+          autoComplete="off"
+          disabled={pending}
           id="delete-confirmation"
           name="confirmation"
-          placeholder="DELETE"
+          pattern={DELETE_CONFIRMATION_VALUE}
+          placeholder={DELETE_CONFIRMATION_VALUE}
           required
+        />
+        <p className="text-muted-foreground text-xs leading-5">
+          יש להקליד DELETE בדיוק כדי לאשר מחיקה קבועה של נתוני הלקוח.
+        </p>
+        <FieldError
+          id="delete-confirmation-error"
+          message={confirmationError}
         />
         {state.message ? (
           <StatusMessage tone={state.ok ? "success" : "error"} variant="plain">
@@ -52,9 +66,17 @@ export function CustomerPrivacyActions() {
           variant="outline"
         >
           <Trash2 className="size-4" />
-          מחיקת נתונים
+          {pending ? "מוחק נתונים..." : "מחיקת נתונים"}
         </Button>
       </form>
     </div>
+  );
+}
+
+function FieldError({ id, message }: { id: string; message?: string }) {
+  return (
+    <p className="text-destructive min-h-5 text-xs leading-5" id={id}>
+      {message ?? ""}
+    </p>
   );
 }

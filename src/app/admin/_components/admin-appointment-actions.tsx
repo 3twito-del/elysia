@@ -1,27 +1,31 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import {
+  AdminMutationStatus,
+  type AdminMutationFeedback,
+} from "./admin-mutation-status";
 import { Button } from "~/components/ui/button";
-import { StatusMessage } from "~/components/ui/status-message";
 import { api } from "~/trpc/react";
 
 type AppointmentStatus = "REQUESTED" | "CONFIRMED" | "COMPLETED" | "CANCELLED";
 
 const actionsByStatus: Record<
   AppointmentStatus,
-  Array<{ status: AppointmentStatus; label: string }>
+  Array<{ label: string; status: AppointmentStatus }>
 > = {
-  REQUESTED: [
-    { status: "CONFIRMED", label: "אישור" },
-    { status: "CANCELLED", label: "ביטול" },
-  ],
-  CONFIRMED: [
-    { status: "COMPLETED", label: "הושלם" },
-    { status: "CANCELLED", label: "ביטול" },
-  ],
-  COMPLETED: [],
   CANCELLED: [],
+  COMPLETED: [],
+  CONFIRMED: [
+    { label: "הושלם", status: "COMPLETED" },
+    { label: "ביטול", status: "CANCELLED" },
+  ],
+  REQUESTED: [
+    { label: "אישור", status: "CONFIRMED" },
+    { label: "ביטול", status: "CANCELLED" },
+  ],
 };
 
 export function AdminAppointmentActions({
@@ -32,8 +36,14 @@ export function AdminAppointmentActions({
   status: AppointmentStatus;
 }) {
   const router = useRouter();
+  const [feedback, setFeedback] = useState<AdminMutationFeedback>();
   const mutation = api.admin.updateAppointmentStatus.useMutation({
-    onSuccess: () => router.refresh(),
+    onError: (error) => setFeedback({ message: error.message, tone: "error" }),
+    onMutate: () => setFeedback({ message: "מעדכן תור...", tone: "neutral" }),
+    onSuccess: () => {
+      router.refresh();
+      setFeedback({ message: "התור עודכן.", tone: "success" });
+    },
   });
   const actions = actionsByStatus[status];
 
@@ -58,15 +68,11 @@ export function AdminAppointmentActions({
             type="button"
             variant={action.status === "CANCELLED" ? "outline" : "secondary"}
           >
-            {action.label}
+            {mutation.isPending ? "מעדכן..." : action.label}
           </Button>
         ))}
       </div>
-      {mutation.error ? (
-        <StatusMessage size="xs" tone="error" variant="plain">
-          {mutation.error.message}
-        </StatusMessage>
-      ) : null}
+      <AdminMutationStatus feedback={feedback} />
     </div>
   );
 }

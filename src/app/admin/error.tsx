@@ -1,0 +1,39 @@
+"use client";
+
+import { AlertTriangle, RefreshCw } from "lucide-react";
+
+import { Button } from "~/components/ui/button";
+import { Card, CardContent } from "~/components/ui/card";
+import { EmptyState } from "~/components/ui/empty-state";
+
+export default function AdminError({
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  return (
+    <main
+      className="mx-auto flex min-h-[70vh] max-w-3xl items-center px-4 py-16 sm:px-6"
+      dir="rtl"
+    >
+      <Card className="w-full rounded-md">
+        <CardContent className="p-4 sm:p-6">
+          <EmptyState
+            actions={
+              <Button className="gap-2" onClick={reset} type="button">
+                <RefreshCw className="size-4" />
+                ניסיון חוזר
+              </Button>
+            }
+            description="לא הצלחנו לטעון את מסך הניהול. הפעולה לא בוצעה, ואפשר לרענן את הנתונים."
+            icon={AlertTriangle}
+            testId="admin-error-boundary"
+            title="שגיאה בטעינת הניהול"
+            variant="inset"
+          />
+        </CardContent>
+      </Card>
+    </main>
+  );
+}

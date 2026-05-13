@@ -4,7 +4,6 @@ import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
-import { z } from "zod";
 
 import {
   requestCustomerOtp,
@@ -18,6 +17,13 @@ import { signIn, signOut } from "~/server/auth";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 import { BUSINESS_EVENTS, createOutboxEvent } from "~/server/services/outbox";
+import {
+  customerAddressInputSchema,
+  deleteCustomerDataInputSchema,
+  getFirstZodIssueMessage,
+  getZodFieldErrors,
+  returnRequestInputSchema,
+} from "~/lib/account-validation";
 
 export type CustomerOtpState = {
   ok?: boolean;
@@ -27,28 +33,10 @@ export type CustomerOtpState = {
 };
 
 export type AccountActionState = {
+  fieldErrors?: Record<string, string | undefined>;
   ok?: boolean;
   message?: string;
 };
-
-const addressSchema = z.object({
-  label: z.string().trim().max(80).optional(),
-  recipient: z.string().trim().min(2),
-  phone: z.string().trim().min(7),
-  city: z.string().trim().min(2),
-  street: z.string().trim().min(2),
-  postalCode: z.string().trim().max(20).optional(),
-});
-
-const returnRequestSchema = z.object({
-  orderId: z.string().trim().min(1),
-  reason: z.string().trim().min(3).max(500),
-  notes: z.string().trim().max(1000).optional(),
-});
-
-const deleteCustomerDataSchema = z.object({
-  confirmation: z.literal("DELETE"),
-});
 
 export async function requestCustomerOtpAction(
   _state: CustomerOtpState,
@@ -165,7 +153,7 @@ export async function addCustomerAddressAction(
     return { ok: false, message: "יש להתחבר לאזור הלקוח." };
   }
 
-  const parsed = addressSchema.safeParse({
+  const parsed = customerAddressInputSchema.safeParse({
     label: getFormString(formData, "label"),
     recipient: getFormString(formData, "recipient"),
     phone: getFormString(formData, "phone"),
@@ -175,7 +163,14 @@ export async function addCustomerAddressAction(
   });
 
   if (!parsed.success) {
-    return { ok: false, message: "פרטי הכתובת אינם תקינים." };
+    return {
+      fieldErrors: getZodFieldErrors(parsed.error),
+      ok: false,
+      message: getFirstZodIssueMessage(
+        parsed.error,
+        "פרטי הכתובת אינם תקינים.",
+      ),
+    };
   }
 
   await db.customerAddress.create({
@@ -229,14 +224,21 @@ export async function requestReturnAction(
     return { ok: false, message: "יש להתחבר לאזור הלקוח." };
   }
 
-  const parsed = returnRequestSchema.safeParse({
+  const parsed = returnRequestInputSchema.safeParse({
     orderId: getFormString(formData, "orderId"),
     reason: getFormString(formData, "reason"),
-    notes: getFormString(formData, "notes") || undefined,
+    notes: getFormString(formData, "notes"),
   });
 
   if (!parsed.success) {
-    return { ok: false, message: "פרטי בקשת ההחזרה אינם תקינים." };
+    return {
+      fieldErrors: getZodFieldErrors(parsed.error),
+      ok: false,
+      message: getFirstZodIssueMessage(
+        parsed.error,
+        "פרטי בקשת ההחזרה אינם תקינים.",
+      ),
+    };
   }
 
   const order = await db.order.findFirst({
@@ -307,12 +309,16 @@ export async function deleteCustomerDataAction(
   formData: FormData,
 ): Promise<AccountActionState> {
   const session = await auth();
-  const parsed = deleteCustomerDataSchema.safeParse({
+  const parsed = deleteCustomerDataInputSchema.safeParse({
     confirmation: getFormString(formData, "confirmation"),
   });
 
   if (!parsed.success) {
-    return { ok: false, message: "יש להקליד DELETE כדי לאשר מחיקת נתונים." };
+    return {
+      fieldErrors: getZodFieldErrors(parsed.error),
+      ok: false,
+      message: getFirstZodIssueMessage(parsed.error),
+    };
   }
 
   const customer = session?.user?.id

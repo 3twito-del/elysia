@@ -1,31 +1,125 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import { MapPin } from "lucide-react";
 
 import { addCustomerAddressAction, type AccountActionState } from "../actions";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
 import { StatusMessage } from "~/components/ui/status-message";
 
 const initialState: AccountActionState = {};
 
 export function CustomerAddressForm() {
-  const [state, action] = useActionState(
+  const [state, action, pending] = useActionState(
     addCustomerAddressAction,
     initialState,
   );
+  const fieldErrors = state.fieldErrors ?? {};
 
   return (
     <form action={action} className="grid gap-3">
       <div className="grid gap-3 sm:grid-cols-2">
-        <Input name="label" placeholder="שם כתובת" />
-        <Input name="recipient" placeholder="שם מקבל" required />
-        <Input name="phone" placeholder="טלפון" required />
-        <Input name="city" placeholder="עיר" required />
-        <Input name="street" placeholder="רחוב ומספר" required />
-        <Input name="postalCode" placeholder="מיקוד" />
+        <AddressField
+          error={fieldErrors.label}
+          id="address-label"
+          label="שם כתובת"
+        >
+          <Input
+            autoComplete="address-line3"
+            disabled={pending}
+            id="address-label"
+            maxLength={80}
+            name="label"
+            placeholder="בית, עבודה או אחר"
+          />
+        </AddressField>
+        <AddressField
+          error={fieldErrors.recipient}
+          id="address-recipient"
+          label="שם מקבל"
+        >
+          <Input
+            aria-describedby="address-recipient-error"
+            aria-invalid={Boolean(fieldErrors.recipient)}
+            autoComplete="name"
+            disabled={pending}
+            id="address-recipient"
+            maxLength={80}
+            minLength={2}
+            name="recipient"
+            required
+          />
+        </AddressField>
+        <AddressField
+          error={fieldErrors.phone}
+          id="address-phone"
+          label="טלפון"
+        >
+          <Input
+            aria-describedby="address-phone-error"
+            aria-invalid={Boolean(fieldErrors.phone)}
+            autoComplete="tel"
+            dir="ltr"
+            disabled={pending}
+            id="address-phone"
+            inputMode="tel"
+            maxLength={20}
+            minLength={7}
+            name="phone"
+            placeholder="050-1234567"
+            required
+          />
+        </AddressField>
+        <AddressField error={fieldErrors.city} id="address-city" label="עיר">
+          <Input
+            aria-describedby="address-city-error"
+            aria-invalid={Boolean(fieldErrors.city)}
+            autoComplete="address-level2"
+            disabled={pending}
+            id="address-city"
+            maxLength={80}
+            minLength={2}
+            name="city"
+            required
+          />
+        </AddressField>
+        <AddressField
+          error={fieldErrors.street}
+          id="address-street"
+          label="רחוב ומספר"
+        >
+          <Input
+            aria-describedby="address-street-error"
+            aria-invalid={Boolean(fieldErrors.street)}
+            autoComplete="street-address"
+            disabled={pending}
+            id="address-street"
+            maxLength={120}
+            minLength={2}
+            name="street"
+            required
+          />
+        </AddressField>
+        <AddressField
+          error={fieldErrors.postalCode}
+          id="address-postal-code"
+          label="מיקוד"
+        >
+          <Input
+            aria-describedby="address-postal-code-error"
+            aria-invalid={Boolean(fieldErrors.postalCode)}
+            autoComplete="postal-code"
+            dir="ltr"
+            disabled={pending}
+            id="address-postal-code"
+            inputMode="numeric"
+            maxLength={20}
+            name="postalCode"
+          />
+        </AddressField>
       </div>
       {state.message ? (
         <StatusMessage tone={state.ok ? "success" : "error"} variant="plain">
@@ -37,13 +131,41 @@ export function CustomerAddressForm() {
   );
 }
 
+function AddressField({
+  children,
+  error,
+  id,
+  label,
+}: {
+  children: ReactNode;
+  error?: string;
+  id: string;
+  label: string;
+}) {
+  return (
+    <div className="grid gap-1.5">
+      <Label htmlFor={id}>{label}</Label>
+      {children}
+      <FieldError id={`${id}-error`} message={error} />
+    </div>
+  );
+}
+
+function FieldError({ id, message }: { id: string; message?: string }) {
+  return (
+    <p className="text-destructive min-h-5 text-xs leading-5" id={id}>
+      {message ?? ""}
+    </p>
+  );
+}
+
 function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
     <Button className="w-fit gap-2" disabled={pending} type="submit">
       <MapPin className="size-4" />
-      שמירת כתובת
+      {pending ? "שומר כתובת..." : "שמירת כתובת"}
     </Button>
   );
 }
