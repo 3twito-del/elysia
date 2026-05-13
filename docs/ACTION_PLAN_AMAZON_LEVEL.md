@@ -30,10 +30,10 @@ Use this track for local product quality, UI polish, correctness, and implementa
 
 ### Checkout, Account, and Admin
 
-- Strengthen checkout form states: field-level validation, submission loading, recoverable errors, disabled duplicate submits, and clear pickup/shipping selection.
-- Improve cart and checkout empty states so users always have a clear next action.
-- Tighten account pages with loading, empty, forbidden, and error states for orders, addresses, wishlist, appointments, and privacy flows.
-- Improve admin tables with stable pagination, filters, empty states, mutation loading states, and server-confirmed success/error feedback.
+- Completed 2026-05-14: Strengthen checkout form states with field-level validation, submission loading, recoverable errors, disabled duplicate submits, and clear pickup/shipping selection.
+- Completed 2026-05-14: Improve cart and checkout empty states so users always have a clear next action.
+- In progress 2026-05-14: Tighten account pages with loading, empty, forbidden, and error states for orders, addresses, wishlist, appointments, and privacy flows. Added explicit customer-account load error, missing profile, and admin-session forbidden states on the account overview.
+- In progress 2026-05-14: Improve admin tables with stable pagination, filters, empty states, mutation loading states, and server-confirmed success/error feedback. Added consistent filter reset actions across order, catalog, customer, appointment, inventory, and audit tables, plus Outbox search/reset in integrations.
 - Audit client/server validation boundaries for forms already present in the repo and align copy with the existing Hebrew RTL interface.
 
 ### Reliability Local

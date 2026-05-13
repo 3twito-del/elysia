@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { CalendarClock, Search } from "lucide-react";
 
 import { AdminAppointmentActions } from "../_components/admin-appointment-actions";
@@ -92,6 +93,14 @@ export default async function AdminAppointmentsPage({
 
   if (!data) return <AdminDatabaseFallback />;
 
+  const hasActiveFilters = [
+    Boolean(params.branchId),
+    Boolean(params.query),
+    params.sort !== "starts-asc",
+    Boolean(params.status),
+    params.page > 1,
+  ].some(Boolean);
+
   return (
     <AdminShell
       active="appointments"
@@ -110,7 +119,7 @@ export default async function AdminAppointmentsPage({
           <CardContent>
             <form
               action="/admin/appointments"
-              className="grid gap-3 md:grid-cols-[1fr_repeat(4,160px)_auto]"
+              className="grid gap-3 md:grid-cols-[1fr_repeat(3,160px)_auto_auto]"
             >
               <Input
                 defaultValue={params.query}
@@ -150,6 +159,11 @@ export default async function AdminAppointmentsPage({
                 <option value="starts-desc">רחוקים תחילה</option>
               </select>
               <Button type="submit">סינון</Button>
+              {hasActiveFilters ? (
+                <Button asChild variant="outline">
+                  <Link href="/admin/appointments">ניקוי</Link>
+                </Button>
+              ) : null}
             </form>
           </CardContent>
         </Card>

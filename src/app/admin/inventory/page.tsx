@@ -87,6 +87,13 @@ export default async function AdminInventoryPage({
 
   if (!data) return <AdminDatabaseFallback />;
 
+  const hasActiveFilters = [
+    Boolean(params.branchId),
+    Boolean(params.query),
+    params.sort !== "updated-desc",
+    params.page > 1,
+  ].some(Boolean);
+
   return (
     <AdminShell
       active="inventory"
@@ -105,7 +112,7 @@ export default async function AdminInventoryPage({
           <CardContent>
             <form
               action="/admin/inventory"
-              className="grid gap-3 md:grid-cols-[1fr_180px_180px_auto]"
+              className="grid gap-3 md:grid-cols-[1fr_180px_180px_auto_auto]"
             >
               <Input
                 defaultValue={params.query}
@@ -134,6 +141,11 @@ export default async function AdminInventoryPage({
                 <option value="available-desc">זמין גבוה</option>
               </select>
               <Button type="submit">סינון</Button>
+              {hasActiveFilters ? (
+                <Button asChild variant="outline">
+                  <Link href="/admin/inventory">ניקוי</Link>
+                </Button>
+              ) : null}
             </form>
           </CardContent>
         </Card>

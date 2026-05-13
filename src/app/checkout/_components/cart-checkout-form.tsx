@@ -3,6 +3,7 @@
 import {
   useEffect,
   useMemo,
+  useRef,
   useState,
   useSyncExternalStore,
   type FormEvent,
@@ -37,6 +38,12 @@ import {
   dispatchCartUpdated,
   getOrCreateCartSessionKey,
 } from "~/lib/cart-session";
+import {
+  getCheckoutIssueList,
+  hasCheckoutErrors,
+  validateCheckoutFields,
+  type CheckoutField,
+} from "~/lib/checkout-validation";
 import { formatPrice } from "~/lib/format";
 import { api } from "~/trpc/react";
 import { CheckoutStepBadge } from "./checkout-step-badge";
@@ -92,6 +99,12 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
   const [giftWrap, setGiftWrap] = useState(false);
   const [giftMessage, setGiftMessage] = useState("");
   const [couponCode, setCouponCode] = useState("");
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [submitLocked, setSubmitLocked] = useState(false);
+  const [touchedFields, setTouchedFields] = useState<Set<CheckoutField>>(
+    () => new Set(),
+  );
+  const submitLockedRef = useRef(false);
 
   const cartQuery = api.cart.get.useQuery(
     { sessionKey: sessionKey ?? "" },
@@ -119,6 +132,10 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
       if (sessionKey) await utils.cart.get.invalidate({ sessionKey });
       dispatchCartUpdated();
     },
+    onError: () => {
+      submitLockedRef.current = false;
+      setSubmitLocked(false);
+    },
   });
 
   useEffect(() => {
@@ -136,7 +153,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
   const shippingAmount =
     cartItemCount > 0 && fulfillmentMethod === "DELIVERY" ? 29 : 0;
   const orderTotal = Math.max(0, subtotal - discount + shippingAmount);
-  const checkoutIssues = getCheckoutIssues({
+  const checkoutErrors = validateCheckoutFields({
     branchSlug,
     cartItemCount,
     city,
@@ -144,10 +161,13 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
     fulfillmentMethod,
     name,
     phone,
-    sessionKey,
+    requireCart: true,
+    sessionReady: Boolean(sessionKey),
     street,
   });
-  const canSubmit = checkoutIssues.length === 0 && !createOrder.isPending;
+  const checkoutIssues = getCheckoutIssueList(checkoutErrors);
+  const checkoutLocked = createOrder.isPending || submitLocked;
+  const canSubmit = !hasCheckoutErrors(checkoutErrors) && !checkoutLocked;
   const cartMutationError =
     updateItem.error ?? removeItem.error ?? updateOptions.error;
   const optionMutationInput = useMemo(
@@ -178,12 +198,8 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
           </p>
           <p className="text-lg font-semibold">{formatPrice(orderTotal)}</p>
         </div>
-        <Button
-          disabled={!canSubmit || createOrder.isPending}
-          form={checkoutFormId}
-          type="submit"
-        >
-          {createOrder.isPending ? "שומר..." : "שמירה"}
+        <Button disabled={!canSubmit} form={checkoutFormId} type="submit">
+          {checkoutLocked ? "שומר..." : "שמירה"}
           <PackageCheck className="size-4" />
         </Button>
       </div>
@@ -195,11 +211,31 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
     updateOptions.mutate(optionMutationInput);
   }
 
+  function markFieldTouched(field: CheckoutField) {
+    setTouchedFields((current) => {
+      if (current.has(field)) return current;
+
+      const next = new Set(current);
+      next.add(field);
+
+      return next;
+    });
+  }
+
+  function getVisibleFieldError(field: CheckoutField) {
+    if (!submitAttempted && !touchedFields.has(field)) return undefined;
+
+    return checkoutErrors[field];
+  }
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setSubmitAttempted(true);
 
-    if (!sessionKey || !canSubmit || createOrder.isPending) return;
+    if (!sessionKey || !canSubmit || submitLockedRef.current) return;
 
+    submitLockedRef.current = true;
+    setSubmitLocked(true);
     createOrder.mutate({
       sessionKey,
       fulfillmentMethod,
@@ -267,6 +303,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
   return (
     <>
       <form
+        aria-busy={checkoutLocked}
         className="mx-auto grid max-w-7xl gap-8 px-4 pt-8 pb-28 sm:px-6 sm:pt-10 sm:pb-28 md:pb-10 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start"
         data-testid="cart-checkout-form"
         id={checkoutFormId}
@@ -343,7 +380,6 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                     </div>
                     <div className="col-span-2 flex items-center justify-end gap-2 sm:col-span-1">
                       <Button
-                        disabled={item.quantity <= 1 || updateItem.isPending}
                         onClick={() =>
                           sessionKey &&
                           updateItem.mutate({
@@ -355,6 +391,11 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                         size="icon"
                         type="button"
                         variant="outline"
+                        disabled={
+                          item.quantity <= 1 ||
+                          updateItem.isPending ||
+                          checkoutLocked
+                        }
                       >
                         <Minus className="size-4" />
                         <span className="sr-only">הפחתה</span>
@@ -363,7 +404,6 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                         {item.quantity}
                       </span>
                       <Button
-                        disabled={item.quantity >= 10 || updateItem.isPending}
                         onClick={() =>
                           sessionKey &&
                           updateItem.mutate({
@@ -375,12 +415,16 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                         size="icon"
                         type="button"
                         variant="outline"
+                        disabled={
+                          item.quantity >= 10 ||
+                          updateItem.isPending ||
+                          checkoutLocked
+                        }
                       >
                         <Plus className="size-4" />
                         <span className="sr-only">הוספה</span>
                       </Button>
                       <Button
-                        disabled={removeItem.isPending}
                         onClick={() =>
                           sessionKey &&
                           removeItem.mutate({
@@ -391,6 +435,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                         size="icon"
                         type="button"
                         variant="ghost"
+                        disabled={removeItem.isPending || checkoutLocked}
                       >
                         <Trash2 className="size-4" />
                         <span className="sr-only">הסרה</span>
@@ -407,9 +452,14 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                   title="אין פריטים בסל"
                   variant="inset"
                   actions={
-                    <Button asChild variant="secondary">
-                      <Link href="/category/rings">בחירת תכשיטים</Link>
-                    </Button>
+                    <>
+                      <Button asChild variant="secondary">
+                        <Link href="/category/rings">בחירת תכשיטים</Link>
+                      </Button>
+                      <Button asChild variant="outline">
+                        <Link href="/search">חיפוש בקטלוג</Link>
+                      </Button>
+                    </>
                   }
                 />
               )}
@@ -431,10 +481,17 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="name">שם מלא</Label>
+                  <FieldError
+                    id="name-error"
+                    message={getVisibleFieldError("name")}
+                  />
                   <Input
-                    aria-invalid={name.length > 0 && name.trim().length < 2}
+                    aria-describedby="name-error"
+                    aria-invalid={Boolean(getVisibleFieldError("name"))}
+                    disabled={checkoutLocked}
                     id="name"
                     minLength={2}
+                    onBlur={() => markFieldTouched("name")}
                     onChange={(event) => setName(event.currentTarget.value)}
                     required
                     value={name}
@@ -442,10 +499,17 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                 </div>
                 <div>
                   <Label htmlFor="phone">טלפון</Label>
+                  <FieldError
+                    id="phone-error"
+                    message={getVisibleFieldError("phone")}
+                  />
                   <Input
-                    aria-invalid={phone.length > 0 && phone.trim().length < 7}
+                    aria-describedby="phone-error"
+                    aria-invalid={Boolean(getVisibleFieldError("phone"))}
+                    disabled={checkoutLocked}
                     id="phone"
                     minLength={7}
+                    onBlur={() => markFieldTouched("phone")}
                     onChange={(event) => setPhone(event.currentTarget.value)}
                     placeholder="05X-XXXXXXX"
                     required
@@ -456,8 +520,16 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
               </div>
               <div>
                 <Label htmlFor="email">אימייל</Label>
+                <FieldError
+                  id="email-error"
+                  message={getVisibleFieldError("email")}
+                />
                 <Input
+                  aria-describedby="email-error"
+                  aria-invalid={Boolean(getVisibleFieldError("email"))}
+                  disabled={checkoutLocked}
                   id="email"
+                  onBlur={() => markFieldTouched("email")}
                   onChange={(event) => setEmail(event.currentTarget.value)}
                   placeholder="name@example.com"
                   required
@@ -480,32 +552,54 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
               <div className="grid gap-3 sm:grid-cols-2">
                 <Button
                   aria-pressed={fulfillmentMethod === "DELIVERY"}
-                  className="min-h-14 justify-start p-4"
+                  className="h-auto min-h-16 justify-start p-4 text-right whitespace-normal"
+                  disabled={checkoutLocked}
                   onClick={() => setFulfillmentMethod("DELIVERY")}
                   type="button"
                   variant={
                     fulfillmentMethod === "DELIVERY" ? "secondary" : "outline"
                   }
                 >
-                  משלוח
+                  <Truck className="size-4" aria-hidden="true" />
+                  <span className="grid gap-0.5">
+                    <span>משלוח עד הבית</span>
+                    <span className="text-muted-foreground text-xs font-normal">
+                      כולל עיר, רחוב ודמי משלוח
+                    </span>
+                  </span>
                 </Button>
                 <Button
                   aria-pressed={fulfillmentMethod === "PICKUP"}
-                  className="min-h-14 justify-start p-4"
+                  className="h-auto min-h-16 justify-start p-4 text-right whitespace-normal"
+                  disabled={checkoutLocked}
                   onClick={() => setFulfillmentMethod("PICKUP")}
                   type="button"
                   variant={
                     fulfillmentMethod === "PICKUP" ? "secondary" : "outline"
                   }
                 >
-                  איסוף
+                  <Store className="size-4" aria-hidden="true" />
+                  <span className="grid gap-0.5">
+                    <span>איסוף מסניף</span>
+                    <span className="text-muted-foreground text-xs font-normal">
+                      ללא כתובת משלוח וללא דמי משלוח
+                    </span>
+                  </span>
                 </Button>
               </div>
               <div>
                 <Label htmlFor="branch">סניף מלאי</Label>
+                <FieldError
+                  id="branch-error"
+                  message={getVisibleFieldError("branchSlug")}
+                />
                 <select
+                  aria-describedby="branch-error"
+                  aria-invalid={Boolean(getVisibleFieldError("branchSlug"))}
                   className="glass-control mt-2 h-11 w-full rounded-md border px-3 text-sm outline-none focus-visible:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
+                  disabled={checkoutLocked}
                   id="branch"
+                  onBlur={() => markFieldTouched("branchSlug")}
                   onChange={(event) => setBranchSlug(event.currentTarget.value)}
                   required
                   value={branchSlug}
@@ -521,10 +615,17 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div>
                     <Label htmlFor="city">עיר</Label>
+                    <FieldError
+                      id="city-error"
+                      message={getVisibleFieldError("city")}
+                    />
                     <Input
-                      aria-invalid={city.length > 0 && city.trim().length < 2}
+                      aria-describedby="city-error"
+                      aria-invalid={Boolean(getVisibleFieldError("city"))}
+                      disabled={checkoutLocked}
                       id="city"
                       minLength={2}
+                      onBlur={() => markFieldTouched("city")}
                       onChange={(event) => setCity(event.currentTarget.value)}
                       required
                       value={city}
@@ -532,12 +633,17 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                   </div>
                   <div>
                     <Label htmlFor="street">רחוב ומספר</Label>
+                    <FieldError
+                      id="street-error"
+                      message={getVisibleFieldError("street")}
+                    />
                     <Input
-                      aria-invalid={
-                        street.length > 0 && street.trim().length < 2
-                      }
+                      aria-describedby="street-error"
+                      aria-invalid={Boolean(getVisibleFieldError("street"))}
+                      disabled={checkoutLocked}
                       id="street"
                       minLength={2}
+                      onBlur={() => markFieldTouched("street")}
                       onChange={(event) => setStreet(event.currentTarget.value)}
                       required
                       value={street}
@@ -546,6 +652,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                   <div>
                     <Label htmlFor="postalCode">מיקוד</Label>
                     <Input
+                      disabled={checkoutLocked}
                       id="postalCode"
                       onChange={(event) =>
                         setPostalCode(event.currentTarget.value)
@@ -571,6 +678,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                 <div>
                   <Label htmlFor="coupon">קופון</Label>
                   <Input
+                    disabled={checkoutLocked}
                     id="coupon"
                     onChange={(event) =>
                       setCouponCode(event.currentTarget.value)
@@ -580,7 +688,11 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                 </div>
                 <Button
                   className="self-end"
-                  disabled={!optionMutationInput || updateOptions.isPending}
+                  disabled={
+                    !optionMutationInput ||
+                    updateOptions.isPending ||
+                    checkoutLocked
+                  }
                   onClick={applyOptions}
                   type="button"
                   variant="secondary"
@@ -591,12 +703,14 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
               <label className="glass-inset flex min-h-11 items-center gap-3 rounded-md border px-3 text-sm">
                 <input
                   checked={giftWrap}
+                  disabled={checkoutLocked}
                   onChange={(event) => setGiftWrap(event.currentTarget.checked)}
                   type="checkbox"
                 />
                 אריזת מתנה
               </label>
               <Textarea
+                disabled={checkoutLocked}
                 onChange={(event) => setGiftMessage(event.currentTarget.value)}
                 placeholder="ברכה אישית"
                 value={giftMessage}
@@ -675,12 +789,8 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                   {createOrder.error.message}
                 </StatusMessage>
               ) : null}
-              <Button
-                disabled={!canSubmit || createOrder.isPending}
-                size="lg"
-                type="submit"
-              >
-                {createOrder.isPending ? "שומר הזמנה..." : "שמירת הזמנה"}
+              <Button disabled={!canSubmit} size="lg" type="submit">
+                {checkoutLocked ? "שומר הזמנה..." : "שמירת הזמנה"}
                 <PackageCheck className="size-4" />
               </Button>
             </CardContent>
@@ -694,42 +804,17 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
   );
 }
 
-function getCheckoutIssues({
-  branchSlug,
-  cartItemCount,
-  city,
-  email,
-  fulfillmentMethod,
-  name,
-  phone,
-  sessionKey,
-  street,
-}: {
-  branchSlug: string;
-  cartItemCount: number;
-  city: string;
-  email: string;
-  fulfillmentMethod: "DELIVERY" | "PICKUP";
-  name: string;
-  phone: string;
-  sessionKey: string | null;
-  street: string;
-}) {
-  const issues: string[] = [];
-
-  if (!sessionKey) issues.push("יצירת סל מקומי עדיין בטעינה.");
-  if (cartItemCount < 1) issues.push("הסל ריק.");
-  if (name.trim().length < 2) issues.push("יש להזין שם מלא.");
-  if (phone.trim().length < 7) issues.push("יש להזין טלפון תקין.");
-  if (!email.trim()) issues.push("יש להזין אימייל.");
-  if (!branchSlug) issues.push("יש לבחור סניף מלאי.");
-
-  if (fulfillmentMethod === "DELIVERY") {
-    if (city.trim().length < 2) issues.push("יש להזין עיר למשלוח.");
-    if (street.trim().length < 2) issues.push("יש להזין רחוב ומספר.");
-  }
-
-  return issues;
+function FieldError({ id, message }: { id: string; message?: string }) {
+  return (
+    <p
+      className="min-h-5 text-xs leading-5 text-red-700"
+      data-testid={message ? `${id}-visible` : undefined}
+      id={id}
+      role={message ? "alert" : undefined}
+    >
+      {message}
+    </p>
+  );
 }
 
 function ReservationCountdown({ expiresAt }: { expiresAt: Date }) {

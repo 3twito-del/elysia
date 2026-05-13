@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   assertCartReservationAvailable,
+  cartCheckoutInputSchema,
   createCartCheckoutOrderNumber,
   getCartCheckoutReservationExpiresAt,
   getCartCheckoutShippingTotal,
@@ -96,5 +97,35 @@ describe("cart checkout service", () => {
         requested: 2,
       }),
     ).toThrow(TRPCError);
+  });
+
+  it("requires shipping address for delivery checkout", () => {
+    const result = cartCheckoutInputSchema.safeParse({
+      sessionKey: "cart-session-key-123456",
+      fulfillmentMethod: "DELIVERY",
+      branchSlug: "tel-aviv",
+      customer: {
+        name: "Dana Levi",
+        email: "dana@example.com",
+        phone: "0501234567",
+      },
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it("allows pickup checkout without shipping address", () => {
+    const result = cartCheckoutInputSchema.safeParse({
+      sessionKey: "cart-session-key-123456",
+      fulfillmentMethod: "PICKUP",
+      branchSlug: "tel-aviv",
+      customer: {
+        name: "Dana Levi",
+        email: "dana@example.com",
+        phone: "0501234567",
+      },
+    });
+
+    expect(result.success).toBe(true);
   });
 });

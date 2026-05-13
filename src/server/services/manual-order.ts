@@ -22,21 +22,39 @@ export const shippingAddressSchema = z.object({
   postalCode: z.string().trim().optional(),
 });
 
-export const createManualOrderInputSchema = z.object({
-  productSlug: z.string().trim().min(1),
-  variantSku: z.string().trim().min(1).optional(),
-  quantity: z.number().int().positive().max(10).default(1),
-  fulfillmentMethod: z.enum(["DELIVERY", "PICKUP"]),
-  branchSlug: z.string().trim().min(1),
-  customer: z.object({
-    name: z.string().trim().min(2),
-    email: z.string().trim().email().toLowerCase(),
-    phone: z.string().trim().min(7),
-  }),
-  shippingAddress: shippingAddressSchema.optional(),
-  giftWrap: z.boolean().default(false),
-  giftMessage: z.string().trim().max(500).optional(),
-});
+export const createManualOrderInputSchema = z
+  .object({
+    productSlug: z.string().trim().min(1),
+    variantSku: z.string().trim().min(1).optional(),
+    quantity: z.number().int().positive().max(10).default(1),
+    fulfillmentMethod: z.enum(["DELIVERY", "PICKUP"]),
+    branchSlug: z.string().trim().min(1),
+    customer: z.object({
+      name: z.string().trim().min(2),
+      email: z.string().trim().email().toLowerCase(),
+      phone: z.string().trim().min(7),
+    }),
+    shippingAddress: shippingAddressSchema.optional(),
+    giftWrap: z.boolean().default(false),
+    giftMessage: z.string().trim().max(500).optional(),
+  })
+  .superRefine(validateDeliveryAddressForSchema);
+
+function validateDeliveryAddressForSchema(
+  input: {
+    fulfillmentMethod: "DELIVERY" | "PICKUP";
+    shippingAddress?: z.infer<typeof shippingAddressSchema>;
+  },
+  context: z.RefinementCtx,
+) {
+  if (input.fulfillmentMethod !== "DELIVERY" || input.shippingAddress) return;
+
+  context.addIssue({
+    code: z.ZodIssueCode.custom,
+    message: "כתובת משלוח נדרשת להזמנת משלוח.",
+    path: ["shippingAddress"],
+  });
+}
 
 export const adminOrderStatusSchema = z.enum([
   "PAID",

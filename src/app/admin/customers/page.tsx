@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Search, Users } from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
@@ -79,6 +80,12 @@ export default async function AdminCustomersPage({
 
   if (!data) return <AdminDatabaseFallback />;
 
+  const hasActiveFilters = [
+    Boolean(params.query),
+    params.sort !== "updated-desc",
+    params.page > 1,
+  ].some(Boolean);
+
   return (
     <AdminShell
       active="customers"
@@ -96,7 +103,7 @@ export default async function AdminCustomersPage({
         <CardContent>
           <form
             action="/admin/customers"
-            className="grid gap-3 md:grid-cols-[1fr_180px_auto]"
+            className="grid gap-3 md:grid-cols-[1fr_180px_auto_auto]"
           >
             <Input
               defaultValue={params.query}
@@ -113,6 +120,11 @@ export default async function AdminCustomersPage({
               <option value="ltv-desc">LTV גבוה</option>
             </select>
             <Button type="submit">סינון</Button>
+            {hasActiveFilters ? (
+              <Button asChild variant="outline">
+                <Link href="/admin/customers">ניקוי</Link>
+              </Button>
+            ) : null}
           </form>
         </CardContent>
       </Card>

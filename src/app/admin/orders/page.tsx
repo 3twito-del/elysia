@@ -108,6 +108,15 @@ export default async function AdminOrdersPage({
 
   if (!data) return <AdminDatabaseFallback />;
 
+  const hasActiveFilters = [
+    Boolean(params.branchId),
+    Boolean(params.fulfillmentMethod),
+    Boolean(params.query),
+    params.sort !== "created-desc",
+    Boolean(params.status),
+    params.page > 1,
+  ].some(Boolean);
+
   return (
     <AdminShell
       active="orders"
@@ -125,7 +134,7 @@ export default async function AdminOrdersPage({
         <CardContent>
           <form
             action="/admin/orders"
-            className="grid gap-3 md:grid-cols-[1fr_repeat(4,160px)_auto]"
+            className="grid gap-3 md:grid-cols-[1fr_repeat(4,160px)_auto_auto]"
           >
             <Input
               defaultValue={params.query}
@@ -176,6 +185,11 @@ export default async function AdminOrdersPage({
               <option value="total-asc">סכום נמוך</option>
             </select>
             <Button type="submit">סינון</Button>
+            {hasActiveFilters ? (
+              <Button asChild variant="outline">
+                <Link href="/admin/orders">ניקוי</Link>
+              </Button>
+            ) : null}
           </form>
         </CardContent>
       </Card>

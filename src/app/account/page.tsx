@@ -1,15 +1,19 @@
 import Link from "next/link";
 import Image from "next/image";
 import {
+  AlertTriangle,
   CalendarCheck,
   Heart,
+  LayoutDashboard,
   LogOut,
   MapPin,
   PackageCheck,
   Ruler,
   ShieldCheck,
   Trash2,
+  type LucideIcon,
 } from "lucide-react";
+import type { ReactNode } from "react";
 
 import { CustomerOtpForm } from "./_components/customer-otp-form";
 import { CustomerAddressForm } from "./_components/customer-address-form";
@@ -83,18 +87,134 @@ async function loadCustomerAccount(userId: string) {
   return customer;
 }
 
+function AccountStatePage({
+  actions,
+  description,
+  icon,
+  testId,
+  title,
+}: {
+  actions?: ReactNode;
+  description: ReactNode;
+  icon: LucideIcon;
+  testId: string;
+  title: ReactNode;
+}) {
+  return (
+    <main>
+      <SiteHeader />
+      <section className="mx-auto flex min-h-[60vh] max-w-3xl items-center px-4 py-16 sm:px-6">
+        <Card className="w-full rounded-md">
+          <CardContent className="p-4 sm:p-6">
+            <EmptyState
+              actions={actions}
+              description={description}
+              icon={icon}
+              testId={testId}
+              title={title}
+              variant="inset"
+            />
+          </CardContent>
+        </Card>
+      </section>
+    </main>
+  );
+}
+
 export default async function AccountPage() {
   const session = await auth();
-  const customer = session?.user?.id
-    ? await loadCustomerAccount(session.user.id).catch((error: unknown) => {
-        if (process.env.NODE_ENV === "development") {
-          console.error("[account] failed to load customer account", error);
-        }
+  const isCustomerSession = Boolean(
+    session?.user?.id && !session.user.adminUserId,
+  );
+  let accountLoadFailed = false;
+  const customer =
+    session?.user?.id && !session.user.adminUserId
+      ? await loadCustomerAccount(session.user.id).catch((error: unknown) => {
+          if (process.env.NODE_ENV === "development") {
+            console.error("[account] failed to load customer account", error);
+          }
 
-        return null;
-      })
-    : null;
-  if (!session?.user || session.user.adminUserId || !customer) {
+          accountLoadFailed = true;
+          return null;
+        })
+      : null;
+
+  if (session?.user?.adminUserId) {
+    return (
+      <AccountStatePage
+        actions={
+          <>
+            <Button asChild>
+              <Link href="/admin">
+                <LayoutDashboard className="size-4" />
+                מעבר לניהול
+              </Link>
+            </Button>
+            <form action={customerLogoutAction}>
+              <Button className="gap-2" type="submit" variant="outline">
+                <LogOut className="size-4" />
+                יציאה
+              </Button>
+            </form>
+          </>
+        }
+        description="הסשן הנוכחי שייך למשתמש ניהול. אזור לקוחות מציג נתוני לקוח בלבד, כדי לא לערבב בין תפעול לבין פרטים אישיים."
+        icon={ShieldCheck}
+        testId="account-admin-forbidden"
+        title="אזור לקוחות זמין ללקוחות בלבד"
+      />
+    );
+  }
+
+  if (isCustomerSession && accountLoadFailed) {
+    return (
+      <AccountStatePage
+        actions={
+          <>
+            <Button asChild>
+              <Link href="/account">ניסיון חוזר</Link>
+            </Button>
+            <form action={customerLogoutAction}>
+              <Button className="gap-2" type="submit" variant="outline">
+                <LogOut className="size-4" />
+                יציאה
+              </Button>
+            </form>
+          </>
+        }
+        description="לא הצלחנו לטעון את ההזמנות, הכתובות והמועדפים כרגע. הנתונים לא נמחקו, ואפשר לנסות שוב בעוד רגע."
+        icon={AlertTriangle}
+        testId="account-load-error"
+        title="לא ניתן לטעון את אזור הלקוח"
+      />
+    );
+  }
+
+  if (isCustomerSession && !customer) {
+    return (
+      <AccountStatePage
+        actions={
+          <>
+            <Button asChild>
+              <Link href="/account#account-login">כניסה מחדש</Link>
+            </Button>
+            <form action={customerLogoutAction}>
+              <Button className="gap-2" type="submit" variant="outline">
+                <LogOut className="size-4" />
+                יציאה
+              </Button>
+            </form>
+          </>
+        }
+        description="הסשן פעיל, אבל לא נמצא פרופיל לקוח תואם. כניסה מחדש תיצור חיבור נקי לחשבון הלקוח."
+        icon={AlertTriangle}
+        testId="account-missing-customer"
+        title="פרופיל הלקוח לא נמצא"
+      />
+    );
+  }
+
+  if (!session?.user || !customer) {
     return (
       <main>
         <SiteHeader />

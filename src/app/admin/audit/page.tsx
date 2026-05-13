@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { History, Search } from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
@@ -79,6 +80,13 @@ export default async function AdminAuditPage({
 
   if (!data) return <AdminDatabaseFallback />;
 
+  const hasActiveFilters = [
+    Boolean(params.entity),
+    Boolean(params.query),
+    params.sort !== "created-desc",
+    params.page > 1,
+  ].some(Boolean);
+
   return (
     <AdminShell
       active="audit"
@@ -96,7 +104,7 @@ export default async function AdminAuditPage({
         <CardContent>
           <form
             action="/admin/audit"
-            className="grid gap-3 md:grid-cols-[1fr_160px_160px_auto]"
+            className="grid gap-3 md:grid-cols-[1fr_160px_160px_auto_auto]"
           >
             <Input
               defaultValue={params.query}
@@ -117,6 +125,11 @@ export default async function AdminAuditPage({
               <option value="created-asc">ישנות תחילה</option>
             </select>
             <Button type="submit">סינון</Button>
+            {hasActiveFilters ? (
+              <Button asChild variant="outline">
+                <Link href="/admin/audit">ניקוי</Link>
+              </Button>
+            ) : null}
           </form>
         </CardContent>
       </Card>

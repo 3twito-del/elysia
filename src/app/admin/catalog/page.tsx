@@ -90,6 +90,14 @@ export default async function AdminCatalogPage({
 
   if (!catalog) return <AdminDatabaseFallback />;
 
+  const hasActiveFilters = [
+    Boolean(params.categoryId),
+    Boolean(params.query),
+    params.sort !== "updated-desc",
+    Boolean(params.status),
+    params.page > 1,
+  ].some(Boolean);
+
   return (
     <AdminShell
       active="catalog"
@@ -108,7 +116,7 @@ export default async function AdminCatalogPage({
           <CardContent>
             <form
               action="/admin/catalog"
-              className="grid gap-3 md:grid-cols-[1fr_repeat(3,160px)_auto]"
+              className="grid gap-3 md:grid-cols-[1fr_repeat(3,160px)_auto_auto]"
             >
               <Input
                 defaultValue={params.query}
@@ -150,6 +158,11 @@ export default async function AdminCatalogPage({
                 <option value="price-asc">מחיר נמוך</option>
               </select>
               <Button type="submit">סינון</Button>
+              {hasActiveFilters ? (
+                <Button asChild variant="outline">
+                  <Link href="/admin/catalog">ניקוי</Link>
+                </Button>
+              ) : null}
             </form>
           </CardContent>
         </Card>

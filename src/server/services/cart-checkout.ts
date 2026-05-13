@@ -21,26 +21,48 @@ type TransactionClient = Prisma.TransactionClient;
 
 export { isCouponUsable };
 
-export const cartCheckoutInputSchema = z.object({
-  sessionKey: cartSessionKeySchema,
-  fulfillmentMethod: z.enum(["DELIVERY", "PICKUP"]),
-  branchSlug: z.string().trim().min(1),
-  customer: z.object({
-    name: z.string().trim().min(2),
-    email: z.string().trim().email().toLowerCase(),
-    phone: z.string().trim().min(7),
-  }),
-  shippingAddress: z
-    .object({
-      city: z.string().trim().min(2),
-      street: z.string().trim().min(2),
-      postalCode: z.string().trim().optional(),
-    })
-    .optional(),
-  giftWrap: z.boolean().default(false),
-  giftMessage: z.string().trim().max(500).optional(),
-  couponCode: z.string().trim().max(64).optional(),
-});
+export const cartCheckoutInputSchema = z
+  .object({
+    sessionKey: cartSessionKeySchema,
+    fulfillmentMethod: z.enum(["DELIVERY", "PICKUP"]),
+    branchSlug: z.string().trim().min(1),
+    customer: z.object({
+      name: z.string().trim().min(2),
+      email: z.string().trim().email().toLowerCase(),
+      phone: z.string().trim().min(7),
+    }),
+    shippingAddress: z
+      .object({
+        city: z.string().trim().min(2),
+        street: z.string().trim().min(2),
+        postalCode: z.string().trim().optional(),
+      })
+      .optional(),
+    giftWrap: z.boolean().default(false),
+    giftMessage: z.string().trim().max(500).optional(),
+    couponCode: z.string().trim().max(64).optional(),
+  })
+  .superRefine(validateDeliveryAddressForSchema);
+
+function validateDeliveryAddressForSchema(
+  input: {
+    fulfillmentMethod: "DELIVERY" | "PICKUP";
+    shippingAddress?: {
+      city: string;
+      postalCode?: string;
+      street: string;
+    };
+  },
+  context: z.RefinementCtx,
+) {
+  if (input.fulfillmentMethod !== "DELIVERY" || input.shippingAddress) return;
+
+  context.addIssue({
+    code: z.ZodIssueCode.custom,
+    message: "כתובת משלוח נדרשת להזמנת משלוח.",
+    path: ["shippingAddress"],
+  });
+}
 
 type CartCheckoutInput = z.infer<typeof cartCheckoutInputSchema>;
 

@@ -9,6 +9,7 @@ import {
   createManualOrderOperationsMessage,
   createManualOrderStatusAuditMetadata,
   createManualOrderNumber,
+  createManualOrderInputSchema,
   formatManualOrderAmount,
   getManualOrderReservationExpiresAt,
 } from "./manual-order";
@@ -62,6 +63,38 @@ describe("manual order service", () => {
         requested: 2,
       }),
     ).toThrow(TRPCError);
+  });
+
+  it("requires shipping address for delivery manual orders", () => {
+    const result = createManualOrderInputSchema.safeParse({
+      productSlug: "venus-line-ring",
+      quantity: 1,
+      fulfillmentMethod: "DELIVERY",
+      branchSlug: "tel-aviv",
+      customer: {
+        name: "Dana Levi",
+        email: "dana@example.com",
+        phone: "0501234567",
+      },
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it("allows pickup manual orders without shipping address", () => {
+    const result = createManualOrderInputSchema.safeParse({
+      productSlug: "venus-line-ring",
+      quantity: 1,
+      fulfillmentMethod: "PICKUP",
+      branchSlug: "tel-aviv",
+      customer: {
+        name: "Dana Levi",
+        email: "dana@example.com",
+        phone: "0501234567",
+      },
+    });
+
+    expect(result.success).toBe(true);
   });
 
   it("allows only the next operational status for manual orders", () => {

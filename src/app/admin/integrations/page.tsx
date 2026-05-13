@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Activity, PlugZap } from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
@@ -11,7 +12,9 @@ import {
 } from "../_components/admin-table-tools";
 import { getAdminPageAccess } from "../_lib/access";
 import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
 import {
   Table,
   TableBody,
@@ -83,6 +86,10 @@ export default async function AdminIntegrationsPage({
   if (!outbox || !jobs) return <AdminDatabaseFallback />;
 
   const integrations = getAdminIntegrationStatuses();
+  const hasActiveOutboxFilters = [
+    Boolean(outboxParams.query),
+    outboxParams.page > 1,
+  ].some(Boolean);
 
   return (
     <AdminShell
@@ -136,6 +143,22 @@ export default async function AdminIntegrationsPage({
             </CardTitle>
           </CardHeader>
           <CardContent>
+            <form
+              action="/admin/integrations"
+              className="mb-4 grid gap-2 sm:grid-cols-[1fr_auto_auto]"
+            >
+              <Input
+                defaultValue={outboxParams.query}
+                name="query"
+                placeholder="חיפוש לפי סוג, סטטוס או מזהה"
+              />
+              <Button type="submit">סינון</Button>
+              {hasActiveOutboxFilters ? (
+                <Button asChild variant="outline">
+                  <Link href="/admin/integrations">ניקוי</Link>
+                </Button>
+              ) : null}
+            </form>
             <AdminTableScrollHint />
             <Table className="min-w-[760px]">
               <TableHeader>
