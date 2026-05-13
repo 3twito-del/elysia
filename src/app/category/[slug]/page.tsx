@@ -14,6 +14,10 @@ import {
 } from "lucide-react";
 
 import { CategoryFilterSheet } from "./_components/category-filter-sheet";
+import {
+  getCategoryFilterCounts,
+  type CategoryFilterCounts,
+} from "./_lib/category-filter-utils";
 import { CinematicPageHero } from "~/components/cinematic-page-hero";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
@@ -77,13 +81,6 @@ type ActiveFilter = {
   href: string;
 };
 
-type FilterCounts = {
-  branches: Map<string, number>;
-  materials: Map<string, number>;
-  maxPrices: Map<number, number>;
-  stones: Map<string, number>;
-};
-
 const productsPerPage = 9;
 const priceOptions = [750, 1000, 1500] as const;
 const defaultCategorySort = "popular" satisfies CategorySort;
@@ -143,17 +140,19 @@ export default async function CategoryPage({
       stone: filters.stone,
       maxPrice: filters.maxPrice,
     }),
-    getCategoryCounts(categories),
+    getCategoryCounts(categories, filters),
   ]);
   const activeFilters = getActiveFilters(slug, filters, branches);
   const activeFilterCount = activeFilters.length;
-  const filterCounts = getFilterCounts(baseProducts);
+  const filterCounts = getCategoryFilterCounts(
+    baseProducts,
+    filters,
+    priceOptions,
+  );
   const resetHref = createCategoryHref(slug, {});
   const requestedPage = getValidPage(getFirstParam(query.page));
   const sortedProducts = sortCategoryProducts(filteredProducts, filters.sort);
-  const currentSortLabel =
-    sortOptions.find((option) => option.value === filters.sort)?.label ??
-    sortOptions[0].label;
+  const currentSortLabel = getCategorySortLabel(filters.sort);
   const totalPages = Math.max(
     1,
     Math.ceil(sortedProducts.length / productsPerPage),
@@ -314,10 +313,10 @@ export default async function CategoryPage({
               <div className="p-4">
                 <FilterPanel
                   activeFilterCount={activeFilterCount}
+                  activeFilters={activeFilters}
                   branches={branches}
                   categories={categories}
                   categoryCounts={categoryCounts}
-                  closeOnSelect
                   filterCounts={filterCounts}
                   filters={filters}
                   materialOptions={facets.materials}
@@ -326,6 +325,22 @@ export default async function CategoryPage({
                   slug={slug}
                   stoneOptions={facets.stones}
                 />
+              </div>
+              <div className="bg-popover sticky bottom-0 grid grid-cols-2 gap-2 border-t border-[var(--glass-border)] p-4">
+                {hasActiveFilters ? (
+                  <Button asChild variant="outline">
+                    <Link href={resetHref} scroll={false}>
+                      איפוס
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button disabled type="button" variant="outline">
+                    איפוס
+                  </Button>
+                )}
+                <SheetClose asChild>
+                  <Button type="button">סגירה</Button>
+                </SheetClose>
               </div>
             </SheetContent>
           </CategoryFilterSheet>
@@ -346,6 +361,7 @@ export default async function CategoryPage({
             <CardContent>
               <FilterPanel
                 activeFilterCount={activeFilterCount}
+                activeFilters={activeFilters}
                 branches={branches}
                 categories={categories}
                 categoryCounts={categoryCounts}
@@ -400,6 +416,27 @@ export default async function CategoryPage({
                 </Button>
               </div>
             </div>
+            {activeFilters.length > 0 && (
+              <div
+                aria-label="בחירות פעילות"
+                className="mt-4 flex flex-wrap gap-2"
+              >
+                {activeFilters.map((filter) => (
+                  <Badge
+                    asChild
+                    className="h-7 max-w-full gap-1 pr-2 pl-1"
+                    key={filter.key}
+                    variant="outline"
+                  >
+                    <Link href={filter.href} scroll={false}>
+                      <span className="min-w-0 truncate">{filter.label}</span>
+                      <X className="size-3" />
+                      <span className="sr-only">הסרת בחירה</span>
+                    </Link>
+                  </Badge>
+                ))}
+              </div>
+            )}
           </div>
 
           {filteredProducts.length > 0 ? (
@@ -500,6 +537,7 @@ function CategoryEmptyState({
 function FilterPanel({
   slug,
   filters,
+  activeFilters,
   categories,
   branches,
   materialOptions,
@@ -513,12 +551,13 @@ function FilterPanel({
 }: {
   slug: string;
   filters: CategoryFilters;
+  activeFilters: ActiveFilter[];
   categories: CatalogCategory[];
   branches: CatalogBranch[];
   materialOptions: string[];
   stoneOptions: string[];
   categoryCounts: Map<string, number>;
-  filterCounts: FilterCounts;
+  filterCounts: CategoryFilterCounts;
   activeFilterCount: number;
   resetHref: string;
   sortOptions: ReadonlyArray<{ value: CategorySort; label: string }>;
@@ -543,6 +582,22 @@ function FilterPanel({
         )}
       </div>
 
+      {activeFilters.length > 0 && (
+        <div aria-label="בחירות פעילות" className="flex flex-wrap gap-2">
+          {activeFilters.map((filter) => (
+            <FilterActionLink
+              className="h-auto max-w-full gap-1 px-2 py-1 text-xs whitespace-normal"
+              closeOnSelect={closeOnSelect}
+              href={filter.href}
+              key={filter.key}
+            >
+              <span className="min-w-0 truncate">{filter.label}</span>
+              <X className="size-3" />
+            </FilterActionLink>
+          ))}
+        </div>
+      )}
+
       <FilterSection title="מיון">
         {sortOptions.map((option) => {
           const active = filters.sort === option.value;
@@ -565,16 +620,22 @@ function FilterPanel({
       <Separator />
 
       <FilterSection title="קטגוריה">
-        {categories.map((item) => (
-          <FilterOptionLink
-            active={item.slug === slug}
-            closeOnSelect={closeOnSelect}
-            href={createCategoryHref(item.slug, filters)}
-            key={item.slug}
-            label={item.name}
-            meta={`${categoryCounts.get(item.slug) ?? 0} מוצרים`}
-          />
-        ))}
+        {categories.map((item) => {
+          const active = item.slug === slug;
+          const count = categoryCounts.get(item.slug) ?? 0;
+
+          return (
+            <FilterOptionLink
+              active={active}
+              closeOnSelect={closeOnSelect}
+              disabled={!active && count === 0}
+              href={createCategoryHref(item.slug, filters)}
+              key={item.slug}
+              label={item.name}
+              meta={getFilterCountLabel(count)}
+            />
+          );
+        })}
       </FilterSection>
 
       <Separator />
@@ -712,9 +773,10 @@ function FilterOptionLink({
       size: "sm",
       variant: active ? "secondary" : "ghost",
     }),
-    "h-auto min-h-10 w-full justify-between px-3 py-2 text-right whitespace-normal",
-    active && "border-[var(--glass-border-strong)]",
-    disabled && "pointer-events-none opacity-45",
+    "h-auto min-h-10 w-full justify-between border px-3 py-2 text-right whitespace-normal",
+    active &&
+      "border-[var(--glass-border-strong)] bg-[var(--glass-inset-bg)] shadow-[inset_0_0_0_1px_var(--glass-border-strong)]",
+    disabled && "cursor-not-allowed opacity-45",
   );
   const content = (
     <>
@@ -734,6 +796,7 @@ function FilterOptionLink({
       <span
         aria-disabled="true"
         className={className}
+        data-disabled="true"
         title="אין תוצאות זמינות"
       >
         {content}
@@ -748,6 +811,7 @@ function FilterOptionLink({
         className,
         "focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none",
       )}
+      data-state={active ? "checked" : "unchecked"}
       href={href}
       scroll={false}
     >
@@ -765,17 +829,19 @@ function FilterOptionLink({
 function FilterActionLink({
   href,
   children,
+  className,
   closeOnSelect,
   variant = "outline",
 }: {
   href: string;
   children: ReactNode;
+  className?: string;
   closeOnSelect?: boolean;
   variant?: "outline" | "ghost";
 }) {
   const link = (
     <Link
-      className={cn(buttonVariants({ size: "sm", variant }))}
+      className={cn(buttonVariants({ size: "sm", variant }), className)}
       href={href}
       scroll={false}
     >
@@ -860,49 +926,18 @@ function getActiveFilters(
     });
   }
 
+  if (filters.sort !== defaultCategorySort) {
+    activeFilters.push({
+      key: "sort",
+      label: `מיון: ${getCategorySortLabel(filters.sort)}`,
+      href: createCategoryHref(slug, {
+        ...filters,
+        sort: defaultCategorySort,
+      }),
+    });
+  }
+
   return activeFilters;
-}
-
-function getFilterCounts(products: CatalogProduct[]): FilterCounts {
-  const branches = new Map<string, number>();
-  const materials = new Map<string, number>();
-  const maxPrices = new Map<number, number>();
-  const stones = new Map<string, number>();
-
-  for (const price of priceOptions) {
-    maxPrices.set(price, 0);
-  }
-
-  for (const product of products) {
-    incrementCount(materials, product.material);
-
-    if (product.stone) {
-      incrementCount(stones, product.stone);
-    }
-
-    for (const [branchSlug, quantity] of Object.entries(product.inventory)) {
-      if (quantity > 0) {
-        incrementCount(branches, branchSlug);
-      }
-    }
-
-    for (const price of priceOptions) {
-      if (product.price <= price) {
-        incrementCount(maxPrices, price);
-      }
-    }
-  }
-
-  return {
-    branches,
-    materials,
-    maxPrices,
-    stones,
-  };
-}
-
-function incrementCount<Key>(counts: Map<Key, number>, key: Key) {
-  counts.set(key, (counts.get(key) ?? 0) + 1);
 }
 
 function getFilterCountLabel(count: number) {
@@ -962,6 +997,13 @@ function getValidCategorySort(value?: string): CategorySort {
   return sortOptions.some((option) => option.value === value)
     ? (value as CategorySort)
     : defaultCategorySort;
+}
+
+function getCategorySortLabel(sort: CategorySort) {
+  return (
+    sortOptions.find((option) => option.value === sort)?.label ??
+    sortOptions[0].label
+  );
 }
 
 function getValidPage(value?: string) {
@@ -1126,10 +1168,19 @@ function getPaginationPages(currentPage: number, totalPages: number) {
   return result;
 }
 
-async function getCategoryCounts(categories: CatalogCategory[]) {
+async function getCategoryCounts(
+  categories: CatalogCategory[],
+  filters: CategoryFilters,
+) {
   const entries = await Promise.all(
     categories.map(async (category) => {
-      const products = await searchCatalogProducts({ category: category.slug });
+      const products = await searchCatalogProducts({
+        category: category.slug,
+        branch: filters.branch,
+        material: filters.material,
+        maxPrice: filters.maxPrice,
+        stone: filters.stone,
+      });
 
       return [category.slug, products.length] as const;
     }),

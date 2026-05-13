@@ -49,6 +49,13 @@ type ActiveSearchFilter = {
   href: string;
 };
 
+type SearchRecoveryAction = {
+  description: string;
+  href: string;
+  label: string;
+  total: number;
+};
+
 export const metadata = {
   title: "חיפוש",
 };
@@ -66,6 +73,15 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const result = await searchProvider.searchProducts(input);
   const activeFilters = getActiveSearchFilters(input, categories, branches);
   const hasActiveFilters = activeFilters.length > 0;
+  const activeRefinementCount = getActiveSearchRefinementCount(input);
+  const hasActiveRefinements = activeRefinementCount > 0;
+  const clearFiltersHref = createSearchHref({
+    query: input.query,
+    page: undefined,
+  });
+  const resetAllHref = "/search";
+  const recoveryActions =
+    result.total === 0 ? await getSearchRecoveryActions(input) : [];
   const firstCategory = categories[0];
   const visibleFacets = result.facets
     .flatMap((facet) =>
@@ -88,6 +104,12 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         ? `מציגים ${visibleStart}-${visibleEnd} מתוך ${result.total} תוצאות`
         : "לא נמצאו תוצאות";
 
+  const resultDetail =
+    result.total > 0
+      ? `עמוד ${result.page} מתוך ${result.totalPages} · ${result.perPage} תוצאות בעמוד`
+      : recoveryActions.length > 0
+        ? "נמצאו דרכי הרחבה עם תוצאות זמינות"
+        : "אפשר לנקות בחירות או לעבור לקטלוג המלא";
   after(() => recordSearchEvent(input, result.total));
 
   return (
@@ -137,9 +159,10 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           />
         </div>
         <SearchControls
-          activeFilterCount={activeFilters.length}
+          activeFilterCount={activeRefinementCount}
           branches={branches}
           categories={categories}
+          clearFiltersHref={clearFiltersHref}
           input={input}
         />
 
@@ -163,7 +186,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               </Badge>
             ))}
             <Button asChild size="sm" variant="ghost">
-              <Link href="/search" scroll={false}>
+              <Link href={resetAllHref} scroll={false}>
                 איפוס הכל
               </Link>
             </Button>
@@ -201,11 +224,22 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                     ? "לפי הבחירה הפעילה"
                     : "כל התכשיטים שנמצאו בקטלוג"}
               </p>
+              <p
+                className="text-muted-foreground mt-1 text-xs"
+                data-testid="search-result-count"
+              >
+                {resultDetail}
+              </p>
             </div>
             <div className="flex flex-wrap gap-2">
               {hasActiveFilters ? (
                 <Button asChild size="sm" variant="ghost">
-                  <Link href="/search" scroll={false}>
+                  <Link
+                    href={
+                      hasActiveRefinements ? clearFiltersHref : resetAllHref
+                    }
+                    scroll={false}
+                  >
                     איפוס
                   </Link>
                 </Button>
@@ -234,9 +268,30 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             title="לא נמצאו תוצאות"
             actions={
               <>
+                {recoveryActions.length > 0 ? (
+                  <span
+                    className="contents"
+                    data-testid="search-recovery-actions"
+                  >
+                    {recoveryActions.map((action) => (
+                      <Button asChild key={action.href} variant="outline">
+                        <Link
+                          href={action.href}
+                          scroll={false}
+                          title={action.description}
+                        >
+                          <span>{action.label}</span>
+                          <span className="text-xs opacity-75">
+                            {formatSearchResultCount(action.total)}
+                          </span>
+                        </Link>
+                      </Button>
+                    ))}
+                  </span>
+                ) : null}
                 {hasActiveFilters ? (
                   <Button asChild variant="outline">
-                    <Link href="/search" scroll={false}>
+                    <Link href={resetAllHref} scroll={false}>
                       איפוס חיפוש
                     </Link>
                   </Button>
@@ -440,6 +495,121 @@ function getActiveSearchFilters(
   return filters;
 }
 
+function getActiveSearchRefinementCount(input: ProductSearchInput) {
+  return [
+    input.category,
+    input.branch,
+    input.material,
+    input.stone,
+    input.collection,
+    input.maxPrice,
+    input.availableOnly,
+    input.sort && input.sort !== "relevance" ? input.sort : undefined,
+  ].filter(Boolean).length;
+}
+
+async function getSearchRecoveryActions(input: ProductSearchInput) {
+  const candidates: Array<{
+    description: string;
+    href: string;
+    input: ProductSearchInput;
+    label: string;
+  }> = [];
+  const hasRefinements = getActiveSearchRefinementCount(input) > 0;
+
+  if (input.query && hasRefinements) {
+    const queryOnlyInput: ProductSearchInput = {
+      query: input.query,
+      page: undefined,
+      perPage: DEFAULT_SEARCH_PER_PAGE,
+    };
+
+    candidates.push({
+      description:
+        "שומר את מילת החיפוש ומסיר קטגוריה, סניף, חומר, אבן, תקציב ומיון.",
+      href: createSearchHref(queryOnlyInput),
+      input: queryOnlyInput,
+      label: "ניקוי פילטרים",
+    });
+  }
+
+  if (input.query) {
+    const withoutQueryInput: ProductSearchInput = {
+      ...input,
+      query: undefined,
+      page: undefined,
+      perPage: DEFAULT_SEARCH_PER_PAGE,
+    };
+
+    candidates.push({
+      description: "שומר את הבחירות הפעילות ומסיר רק את מילת החיפוש.",
+      href: createSearchHref(withoutQueryInput),
+      input: withoutQueryInput,
+      label: "בלי מילת החיפוש",
+    });
+  }
+
+  if (input.query || hasRefinements) {
+    const allCatalogInput: ProductSearchInput = {
+      page: undefined,
+      perPage: DEFAULT_SEARCH_PER_PAGE,
+    };
+
+    candidates.push({
+      description: "פותח את כל מוצרי הקטלוג ללא חיפוש ופילטרים.",
+      href: createSearchHref(allCatalogInput),
+      input: allCatalogInput,
+      label: "כל הקטלוג",
+    });
+  }
+
+  const uniqueCandidates = dedupeRecoveryCandidates(candidates);
+  const totals = await Promise.all(
+    uniqueCandidates.map((candidate) =>
+      countSearchResults({
+        ...candidate.input,
+        page: 1,
+        perPage: 1,
+      }),
+    ),
+  );
+
+  return uniqueCandidates
+    .map((candidate, index): SearchRecoveryAction => {
+      const total = totals[index] ?? 0;
+
+      return {
+        description: candidate.description,
+        href: candidate.href,
+        label: candidate.label,
+        total,
+      };
+    })
+    .filter((action) => action.total > 0);
+}
+
+function dedupeRecoveryCandidates<Candidate extends { href: string }>(
+  candidates: Candidate[],
+) {
+  const seen = new Set<string>();
+  const unique: Candidate[] = [];
+
+  for (const candidate of candidates) {
+    if (seen.has(candidate.href)) continue;
+
+    seen.add(candidate.href);
+    unique.push(candidate);
+  }
+
+  return unique;
+}
+
+async function countSearchResults(input: ProductSearchInput) {
+  const result = await searchProvider.searchProducts(input);
+
+  return result.total;
+}
+
 function createSearchHref(input: ProductSearchInput) {
   const params = new URLSearchParams();
 
@@ -617,6 +787,12 @@ function getSortLabel(sort: NonNullable<ProductSearchInput["sort"]>) {
   if (sort === "popular") return "פופולרי";
 
   return "רלוונטיות";
+}
+
+function formatSearchResultCount(count: number) {
+  if (count === 1) return "תוצאה אחת";
+
+  return `${count} תוצאות`;
 }
 
 async function recordSearchEvent(

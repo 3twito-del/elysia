@@ -21,6 +21,7 @@ type SearchControlsProps = {
   activeFilterCount: number;
   branches: CatalogBranch[];
   categories: CatalogCategory[];
+  clearFiltersHref: string;
   input: ProductSearchInput;
 };
 
@@ -28,6 +29,7 @@ export function SearchControls({
   activeFilterCount,
   branches,
   categories,
+  clearFiltersHref,
   input,
 }: SearchControlsProps) {
   return (
@@ -43,6 +45,7 @@ export function SearchControls({
           categories={categories}
           input={input}
         />
+        <PreservedFacetInputs input={input} />
         <Button className="h-12 gap-2" type="submit">
           <Search className="size-4" />
           חיפוש
@@ -124,7 +127,7 @@ export function SearchControls({
               <div className="grid grid-cols-2 gap-2 pt-1">
                 <Button type="submit">הצגת תוצאות</Button>
                 <Button asChild variant="outline">
-                  <Link href="/search">איפוס</Link>
+                  <Link href={clearFiltersHref}>איפוס</Link>
                 </Button>
               </div>
             </form>

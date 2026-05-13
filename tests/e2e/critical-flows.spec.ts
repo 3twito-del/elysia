@@ -4,12 +4,14 @@ const consentStorageKey = "aphrodite_cookie_consent";
 const accessibilityStorageKey = "aphrodite.accessibility-settings";
 const recentlyViewedStorageKey = "aphrodite_recently_viewed";
 const cartStorageKey = "aphrodite_cart_session";
-const productSlug = "venus-line-ring";
-const productName = "טבעת Venus Line";
+const cartProductSlug = "test-bracelet-sivan-halo-174";
+const cartProductName = "צמיד Sivan הילה פתוחה";
+const searchProductSlug = "venus-line-ring";
+const searchProductName = "טבעת Venus Line";
 const publicHeroRoutes = [
   "/",
   "/search?q=venus",
-  `/product/${productSlug}`,
+  `/product/${cartProductSlug}`,
   "/category/earrings",
   "/gifts",
   "/branches",
@@ -33,16 +35,21 @@ test.describe("critical shopping flows", () => {
 
   test("adds a product to cart and shows it in checkout", async ({ page }) => {
     await setCookieConsent(page, "essential");
-    await page.goto(`/product/${productSlug}`);
+    await page.goto(`/product/${cartProductSlug}`);
 
     await expect(
       page
         .getByTestId("cinematic-page-hero")
-        .getByRole("heading", { name: productName }),
+        .getByRole("heading", { name: cartProductName }),
+    ).toBeVisible();
+    await expect(page.getByTestId("product-gallery")).toBeVisible();
+    await expect(page.getByTestId("product-variant-feedback")).toBeVisible();
+    await expect(
+      page.getByTestId("product-recommendation-rails"),
     ).toBeVisible();
 
     await page.getByRole("button", { exact: true, name: "הוספה לסל" }).click();
-    await expect(page.getByText(/הפריט נוסף לסל/)).toBeVisible();
+    await expect(page.getByText(/נוספה לסל|הפריט נוסף לסל/)).toBeVisible();
     await expect(
       page.getByRole("link", { name: /סל קניות, 1 פריטים/ }),
     ).toBeVisible();
@@ -51,7 +58,7 @@ test.describe("critical shopping flows", () => {
 
     await expect(page.getByRole("heading", { name: /סל וקופה/ })).toBeVisible();
     await expect(
-      page.getByRole("link", { exact: true, name: productName }),
+      page.getByRole("link", { name: new RegExp(cartProductName) }).first(),
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: /שמירת הזמנה/ }),
@@ -69,19 +76,19 @@ test.describe("critical shopping flows", () => {
     ).toBeVisible();
     const productResultLink = page
       .getByTestId("search-results-grid")
-      .getByRole("link", { name: new RegExp(productName) })
+      .getByRole("link", { name: new RegExp(searchProductName) })
       .last();
 
     const productHref = await productResultLink.getAttribute("href");
 
-    expect(productHref).toMatch(new RegExp(`/product/${productSlug}`));
+    expect(productHref).toMatch(new RegExp(`/product/${searchProductSlug}`));
     await page.goto(productHref!);
 
-    await expect(page).toHaveURL(new RegExp(`/product/${productSlug}`));
+    await expect(page).toHaveURL(new RegExp(`/product/${searchProductSlug}`));
     await expect(
       page
         .getByTestId("cinematic-page-hero")
-        .getByRole("heading", { name: productName }),
+        .getByRole("heading", { name: searchProductName }),
     ).toBeVisible();
   });
 
@@ -93,6 +100,10 @@ test.describe("critical shopping flows", () => {
     await page.goto("/search?q=zzzz-no-match&maxPrice=1");
     await expect(page.getByTestId("search-empty-state")).toBeVisible();
     await expect(page.getByTestId("search-form")).toBeVisible();
+    await expect(page.getByTestId("search-result-count")).toBeVisible();
+    await expect(
+      page.getByTestId("search-recovery-actions").getByRole("link").first(),
+    ).toBeVisible();
 
     const categoryNoResultsParams = new URLSearchParams({
       material: "זהב לבן 14K",
@@ -396,12 +407,12 @@ test.describe("cookie consent flow", () => {
   test("blocks analytics until approval and clears it when switching to essential", async ({
     page,
   }) => {
-    await page.goto(`/product/${productSlug}`);
+    await page.goto(`/product/${searchProductSlug}`);
 
     await expect(
       page.getByRole("region", { name: "בחירת קוקיז" }),
     ).toBeVisible();
-    await expectRecentlyViewed(page, productSlug, false);
+    await expectRecentlyViewed(page, searchProductSlug, false);
 
     const acceptCookiesButton = page.getByRole("button", {
       name: "אישור הכל",
@@ -416,7 +427,7 @@ test.describe("cookie consent flow", () => {
       page.getByRole("region", { name: "בחירת קוקיז" }),
     ).toBeHidden();
     await expectCookieConsent(page, "all");
-    await expectRecentlyViewed(page, productSlug, true);
+    await expectRecentlyViewed(page, searchProductSlug, true);
 
     await page.goto("/privacy");
     await page
@@ -425,7 +436,7 @@ test.describe("cookie consent flow", () => {
       .click();
 
     await expectCookieConsent(page, "essential");
-    await expectRecentlyViewed(page, productSlug, false);
+    await expectRecentlyViewed(page, searchProductSlug, false);
 
     await page.reload();
     await expect(page.getByRole("region", { name: "בחירת קוקיז" })).toHaveCount(

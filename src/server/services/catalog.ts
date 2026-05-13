@@ -77,6 +77,9 @@ export type CatalogProductVariant = {
   metalColor?: string;
   stoneColor?: string;
   price: number;
+  inventory: Record<string, number>;
+  availableQuantity: number;
+  availableBranchCount: number;
 };
 
 export type CatalogProduct = {
@@ -441,14 +444,24 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
   });
   const inventory: Record<string, number> = {};
 
+  const variantInventories = new Map<
+    string,
+    {
+      availableBranchCount: number;
+      availableQuantity: number;
+      inventory: Record<string, number>;
+    }
+  >();
+
   for (const variant of record.variants) {
-    for (const item of variant.inventoryItems) {
-      const available = Math.max(
-        item.quantity - item.reserved - item.safetyStock,
-        0,
-      );
-      inventory[item.branch.slug] =
-        (inventory[item.branch.slug] ?? 0) + available;
+    const variantInventory = getVariantInventory(variant);
+
+    variantInventories.set(variant.sku, variantInventory);
+
+    for (const [branchSlug, quantity] of Object.entries(
+      variantInventory.inventory,
+    )) {
+      inventory[branchSlug] = (inventory[branchSlug] ?? 0) + quantity;
     }
   }
 
@@ -477,6 +490,11 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
       metalColor: variant.metalColor ?? undefined,
       stoneColor: variant.stoneColor ?? undefined,
       price: getVariantPrice(variant, Number(record.basePrice)),
+      inventory: variantInventories.get(variant.sku)?.inventory ?? {},
+      availableQuantity:
+        variantInventories.get(variant.sku)?.availableQuantity ?? 0,
+      availableBranchCount:
+        variantInventories.get(variant.sku)?.availableBranchCount ?? 0,
     })),
     metalColors: getUniqueValues(
       record.variants
@@ -489,6 +507,33 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
         .filter((value): value is string => Boolean(value)),
     ),
     tags: record.tags,
+    inventory,
+  };
+}
+
+function getVariantInventory(
+  variant: CatalogProductRecord["variants"][number],
+) {
+  const inventory: Record<string, number> = {};
+
+  for (const item of variant.inventoryItems) {
+    const available = Math.max(
+      item.quantity - item.reserved - item.safetyStock,
+      0,
+    );
+
+    inventory[item.branch.slug] =
+      (inventory[item.branch.slug] ?? 0) + available;
+  }
+
+  return {
+    availableBranchCount: Object.values(inventory).filter(
+      (quantity) => quantity > 0,
+    ).length,
+    availableQuantity: Object.values(inventory).reduce(
+      (sum, quantity) => sum + quantity,
+      0,
+    ),
     inventory,
   };
 }

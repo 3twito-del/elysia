@@ -7,6 +7,10 @@ import { ProductAnalytics } from "./_components/product-analytics";
 import { ProductGallery } from "./_components/product-gallery";
 import { ProductPurchasePanel } from "./_components/product-purchase-panel";
 import { RecentlyViewedProducts } from "./_components/recently-viewed-products";
+import {
+  getProductRecommendationRails,
+  type ProductRecommendationRail,
+} from "./_lib/product-recommendation-rails";
 import { CinematicPageHero } from "~/components/cinematic-page-hero";
 import { ProductCard } from "~/components/product-card";
 import { SiteHeader } from "~/components/site-header";
@@ -66,9 +70,10 @@ export default async function ProductPage({
 }: ProductPageProps) {
   const { slug } = await params;
   const search = searchParams ? await searchParams : {};
-  const [product, branches] = await Promise.all([
+  const [product, branches, allProducts] = await Promise.all([
     getCatalogProductBySlug(slug),
     getCatalogBranches(),
+    listCatalogProducts(),
   ]);
 
   if (!product) notFound();
@@ -93,16 +98,10 @@ export default async function ProductPage({
       availability: "https://schema.org/InStock",
     },
   };
-  const allProducts = await listCatalogProducts();
-  const similarProducts = allProducts
-    .filter(
-      (candidate) =>
-        candidate.slug !== product.slug &&
-        (candidate.categorySlug === product.categorySlug ||
-          candidate.material === product.material ||
-          candidate.collection === product.collection),
-    )
-    .slice(0, 4);
+  const recommendationRails = getProductRecommendationRails({
+    product,
+    products: allProducts,
+  });
   const productHeroSlides =
     uniqueImages.length > 0
       ? [
@@ -290,24 +289,53 @@ export default async function ProductPage({
             </CardContent>
           </Card>
         </RevealGrid>
-        {similarProducts.length > 0 ? (
-          <div
-            className="brand-similar-section mt-12 rounded-md border p-4 sm:p-5"
-            id="similar-products"
-          >
-            <h2 className="text-2xl font-semibold">מוצרים דומים</h2>
-            <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {similarProducts.map((similar) => (
-                <ProductCard key={similar.slug} product={similar} />
-              ))}
-            </div>
-          </div>
-        ) : null}
+        <ProductRecommendationRails rails={recommendationRails} />
         <RecentlyViewedProducts
           currentSlug={product.slug}
           products={allProducts}
         />
       </RevealSection>
     </main>
+  );
+}
+
+function ProductRecommendationRails({
+  rails,
+}: {
+  rails: ProductRecommendationRail[];
+}) {
+  if (rails.length === 0) return null;
+
+  return (
+    <div
+      className="mt-12 grid gap-8"
+      data-testid="product-recommendation-rails"
+      id="similar-products"
+    >
+      {rails.map((rail) => {
+        const headingId = `product-recommendation-${rail.id}`;
+
+        return (
+          <section
+            aria-labelledby={headingId}
+            className="brand-similar-section rounded-md border p-4 sm:p-5"
+            data-testid={`product-recommendation-rail-${rail.id}`}
+            key={rail.id}
+          >
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-2xl font-semibold" id={headingId}>
+                {rail.title}
+              </h2>
+              <Badge variant="outline">מתוך הקטלוג</Badge>
+            </div>
+            <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {rail.products.map((recommended) => (
+                <ProductCard key={recommended.slug} product={recommended} />
+              ))}
+            </div>
+          </section>
+        );
+      })}
+    </div>
   );
 }

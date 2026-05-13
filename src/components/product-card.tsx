@@ -1,11 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, MapPin, ShoppingBag } from "lucide-react";
+import { MapPin, ShoppingBag } from "lucide-react";
 
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { KineticImageMotion } from "~/components/kinetic-image-motion";
+import { ProductCardFavoriteButton } from "~/components/product-card-favorite-button";
 import { getProductAvailabilityLabel } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
 import { cn } from "~/lib/utils";
@@ -36,13 +37,16 @@ export function ProductCard({
     typeof product.compareAt === "number" && product.compareAt > product.price
       ? product.compareAt
       : undefined;
+  const discountPercent = compareAt
+    ? Math.round(((compareAt - product.price) / compareAt) * 100)
+    : undefined;
   const href = createProductHref(product.slug, searchContext);
 
   return (
     <Card
       aria-label={product.name}
       className={cn(
-        "brand-accent-card group/card interactive-lift h-full min-w-0 overflow-hidden rounded-md py-0",
+        "brand-accent-card interactive-lift h-full min-w-0 overflow-hidden rounded-md py-0 transition focus-within:ring-3 focus-within:ring-[var(--glass-focus)]",
         !isAvailable && "bg-muted/30",
       )}
       data-public-floating-avoid="true"
@@ -53,7 +57,7 @@ export function ProductCard({
         className="block focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
         href={href}
       >
-        <div className="brand-product-media glass-inset bg-muted relative aspect-[5/4] overflow-hidden border-0 sm:min-h-40">
+        <div className="brand-product-media glass-inset bg-muted relative aspect-[4/5] overflow-hidden border-0">
           <KineticImageMotion intensity="card">
             <Image
               alt={product.name}
@@ -66,57 +70,77 @@ export function ProductCard({
               src={product.image}
             />
           </KineticImageMotion>
-          <div className="absolute inset-x-3 top-3 flex items-start justify-start">
-            <Badge className="max-w-[74%] font-normal" variant="secondary">
+          <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
+            <Badge className="max-w-[68%] font-normal" variant="secondary">
               <span className="truncate">{product.collection}</span>
             </Badge>
+            {discountPercent ? (
+              <Badge className="font-semibold" dir="ltr" variant="default">
+                -{discountPercent}%
+              </Badge>
+            ) : !isAvailable ? (
+              <Badge variant="destructive">לא זמין</Badge>
+            ) : null}
+          </div>
+          <div className="absolute inset-x-3 bottom-3 flex min-w-0 flex-wrap gap-2">
+            <Badge className="max-w-full font-normal" variant="outline">
+              <span className="truncate">{product.material}</span>
+            </Badge>
+            {product.stone ? (
+              <Badge className="max-w-full font-normal" variant="outline">
+                <span className="truncate">{product.stone}</span>
+              </Badge>
+            ) : null}
           </div>
         </div>
       </Link>
-      <CardContent className="flex min-h-44 flex-1 flex-col gap-3 p-4 sm:min-h-52">
+      <CardContent className="flex min-h-52 flex-1 flex-col gap-4 p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <Link
-              className="line-clamp-2 text-base font-medium underline-offset-4 hover:underline focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
+              className="line-clamp-2 min-h-12 text-base leading-6 font-medium underline-offset-4 hover:underline focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
               dir="auto"
               href={href}
             >
               {product.name}
             </Link>
-            <p className="text-muted-foreground mt-1 line-clamp-2 text-sm">
+            <p className="text-muted-foreground mt-1 line-clamp-2 min-h-10 text-sm leading-5">
               {product.shortDescription}
             </p>
           </div>
-          <Button
-            aria-label={`שמירה למועדפים: ${product.name}`}
-            className="bg-background/78 h-10 w-10 shrink-0 rounded-full border border-[var(--glass-border)]"
-            size="icon"
-            type="button"
-            variant="outline"
-          >
-            <Heart className="size-4" />
-          </Button>
+          <ProductCardFavoriteButton
+            productName={product.name}
+            productSlug={product.slug}
+          />
         </div>
 
         <div className="mt-auto grid gap-3">
-          <div className="flex min-h-12 items-end justify-between gap-3">
-            <div className="grid gap-0.5">
+          <div className="grid min-h-16 grid-cols-[minmax(0,1fr)_auto] items-end gap-3">
+            <div className="min-w-0">
+              <p className="text-muted-foreground text-xs">מחיר</p>
               {compareAt ? (
-                <span className="text-muted-foreground text-xs line-through">
+                <span className="text-muted-foreground mt-1 block text-xs line-through">
                   {formatPrice(compareAt)}
                 </span>
               ) : null}
-              <span className="text-xl font-semibold">
+              <span className="block text-xl leading-7 font-semibold">
                 {formatPrice(product.price)}
               </span>
             </div>
             <span
               className={cn(
-                "brand-icon-well glass-inset flex max-w-[48%] shrink-0 items-center gap-1 rounded-md border px-2 py-1 text-xs",
+                "brand-icon-well glass-inset flex max-w-36 shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-2 text-xs",
                 isAvailable ? "text-muted-foreground" : "text-foreground",
               )}
             >
-              <MapPin className="size-3.5" />
+              <span
+                className={cn(
+                  "size-2 shrink-0 rounded-full",
+                  isAvailable ? "bg-emerald-500" : "bg-muted-foreground",
+                )}
+                aria-hidden="true"
+              />
+              <MapPin className="size-3.5 shrink-0" aria-hidden="true" />
               <span className="truncate">
                 {getProductAvailabilityLabel(availableBranches)}
               </span>
@@ -128,7 +152,7 @@ export function ProductCard({
             variant="outline"
           >
             <Link aria-label={`צפייה וקנייה: ${product.name}`} href={href}>
-              <ShoppingBag className="size-4" />
+              <ShoppingBag className="size-4" aria-hidden="true" />
               {isAvailable ? "צפייה וקנייה" : "בדיקת זמינות"}
             </Link>
           </Button>

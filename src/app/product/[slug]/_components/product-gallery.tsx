@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
+import { ImageOff } from "lucide-react";
 
 import { useResolvedReducedMotion } from "~/components/motion-preference";
 import { Badge } from "~/components/ui/badge";
@@ -22,15 +23,46 @@ export function ProductGallery({
   const galleryImages = Array.from(new Set(images)).filter(Boolean);
   const [activeIndex, setActiveIndex] = useState(0);
   const shouldReduceMotion = useResolvedReducedMotion();
-  const activeImage = galleryImages[activeIndex] ?? galleryImages[0];
+  const activeImageIndex = Math.min(activeIndex, galleryImages.length - 1);
+  const activeImage = galleryImages[activeImageIndex];
 
-  if (!activeImage) return null;
+  if (!activeImage) {
+    return (
+      <div className={cn("grid gap-3", className)}>
+        <div
+          className="glass-inset bg-muted flex aspect-square items-center justify-center rounded-md border p-6 text-center"
+          data-testid="product-gallery-empty"
+        >
+          <div className="grid justify-items-center gap-3">
+            <span className="brand-icon-well glass-inset flex size-12 items-center justify-center rounded-md border">
+              <ImageOff className="size-5" aria-hidden="true" />
+            </span>
+            <div>
+              <p className="font-medium">תמונת מוצר תעלה בקרוב</p>
+              <p className="text-muted-foreground mt-1 text-sm">
+                פרטי המוצר והזמינות עדיין מוצגים בעמוד.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={cn("grid gap-3", className)}>
+      <div className="flex items-center justify-between gap-3 text-sm">
+        <p className="font-medium">גלריית מוצר</p>
+        <p className="text-muted-foreground">
+          {galleryImages.length > 1
+            ? `תמונה ${activeImageIndex + 1} מתוך ${galleryImages.length}`
+            : "תמונה יחידה"}
+        </p>
+      </div>
       <div
         className="glass-inset bg-muted relative aspect-square overflow-hidden rounded-md border"
         data-motion-gallery="product"
+        data-testid="product-gallery"
       >
         <AnimatePresence initial={false} mode="popLayout">
           <motion.div
@@ -60,7 +92,7 @@ export function ProductGallery({
         </AnimatePresence>
         {galleryImages.length > 1 ? (
           <Badge className="absolute top-3 left-3" variant="secondary">
-            {activeIndex + 1}/{galleryImages.length}
+            {activeImageIndex + 1}/{galleryImages.length}
           </Badge>
         ) : null}
       </div>
@@ -73,10 +105,11 @@ export function ProductGallery({
           {galleryImages.map((image, index) => (
             <button
               aria-label={`הצגת תמונה ${index + 1} של ${productName}`}
-              aria-pressed={activeIndex === index}
+              aria-current={activeImageIndex === index}
+              aria-pressed={activeImageIndex === index}
               className={cn(
                 "motion-thumbnail-button glass-inset bg-muted relative aspect-square overflow-hidden rounded-md border transition focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none",
-                activeIndex === index
+                activeImageIndex === index
                   ? "border-[var(--glass-border-strong)] ring-2 ring-[var(--glass-focus)]"
                   : "hover:border-[var(--glass-border-strong)]",
               )}

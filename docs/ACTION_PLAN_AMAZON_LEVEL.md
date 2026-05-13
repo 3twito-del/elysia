@@ -23,10 +23,10 @@ Use this track for local product quality, UI polish, correctness, and implementa
 ### Product Discovery
 
 - Completed 2026-05-13: Improve category pages with clearer loading, empty, no-results, and error states.
-- Tighten filter UX: stable selected states, reset affordances, disabled states for unavailable filters, and mobile sheet behavior.
-- Improve search page ergonomics with better query persistence, no-results recovery, and clear result counts.
-- Refine product cards for consistent image ratios, badges, price/availability presentation, favorite controls, and keyboard focus.
-- Improve product pages with clearer media gallery states, variant/availability feedback, recently viewed, and non-AI catalog-based recommendation rails.
+- Completed 2026-05-13: Tighten filter UX with stable selected states, reset affordances, disabled states for unavailable filters, and improved mobile sheet behavior.
+- Completed 2026-05-13: Improve search page ergonomics with better query persistence, no-results recovery, and clear result counts.
+- Completed 2026-05-13: Refine product cards for consistent image ratios, badges, price/availability presentation, favorite controls, and keyboard focus.
+- Completed 2026-05-13: Improve product pages with clearer media gallery states, variant/availability feedback, recently viewed, and non-AI catalog-based recommendation rails.
 
 ### Checkout, Account, and Admin
 

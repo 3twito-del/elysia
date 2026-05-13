@@ -7,6 +7,7 @@ import {
   AlertCircle,
   CheckCircle2,
   Heart,
+  MapPin,
   PackageCheck,
   Sparkles,
 } from "lucide-react";
@@ -19,6 +20,10 @@ import {
   dispatchCartUpdated,
   getOrCreateCartSessionKey,
 } from "~/lib/cart-session";
+import {
+  getProductAvailabilityLabel,
+  getStockQuantityLabel,
+} from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
 import type { CatalogProductVariant } from "~/server/services/catalog";
 import { api } from "~/trpc/react";
@@ -38,7 +43,9 @@ export function ProductPurchasePanel({
   variants,
   metalColors,
 }: ProductPurchasePanelProps) {
-  const [selectedSku, setSelectedSku] = useState(variants[0]?.sku ?? "");
+  const [selectedSku, setSelectedSku] = useState(
+    getInitialVariantSku(variants),
+  );
   const canRenderStickyBar = useSyncExternalStore(
     subscribeToNoopStore,
     getClientSnapshot,
@@ -50,10 +57,22 @@ export function ProductPurchasePanel({
   );
   const selectedVariant =
     variants.find((variant) => variant.sku === selectedSku) ?? variants[0];
+  const selectedVariantAvailable =
+    (selectedVariant?.availableQuantity ?? 0) > 0;
+  const selectedVariantPrice = selectedVariant?.price ?? price;
+  const selectedVariantBranchCount = selectedVariant?.availableBranchCount ?? 0;
   const addItem = api.cart.addItem.useMutation({
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
+      const addedVariant = variants.find(
+        (variant) => variant.sku === variables.variantSku,
+      );
+
       setCartMessageTone("success");
-      setCartMessage("הפריט נוסף לסל");
+      setCartMessage(
+        addedVariant?.size
+          ? `${addedVariant.size} נוספה לסל`
+          : "הפריט נוסף לסל",
+      );
       dispatchCartUpdated();
     },
     onError: (error) => {
@@ -61,9 +80,15 @@ export function ProductPurchasePanel({
       setCartMessage(error.message);
     },
   });
+  const addToCartDisabled =
+    !selectedVariant || !selectedVariantAvailable || addItem.isPending;
 
   function handleAddToCart() {
-    if (!selectedVariant) return;
+    if (!selectedVariant || !selectedVariantAvailable) {
+      setCartMessageTone("error");
+      setCartMessage("הווריאציה שנבחרה אינה זמינה כרגע.");
+      return;
+    }
 
     addItem.mutate({
       sessionKey: getOrCreateCartSessionKey(),
@@ -82,16 +107,23 @@ export function ProductPurchasePanel({
           <p className="text-muted-foreground truncate text-xs">
             {productName}
           </p>
-          <p className="text-lg font-semibold">{formatPrice(price)}</p>
+          <p className="text-lg font-semibold">
+            {formatPrice(selectedVariantPrice)}
+          </p>
         </div>
         <Button
           aria-label={`הוספה לסל: ${productName}`}
           className="order-1"
-          disabled={!selectedVariant || addItem.isPending}
+          aria-describedby="product-variant-feedback"
+          disabled={addToCartDisabled}
           onClick={handleAddToCart}
           type="button"
         >
-          {addItem.isPending ? "מוסיף..." : "הוספה לסל"}
+          {addItem.isPending
+            ? "מוסיף..."
+            : selectedVariantAvailable
+              ? "הוספה לסל"
+              : "לא זמינה"}
           <PackageCheck className="size-4" />
         </Button>
       </div>
@@ -107,8 +139,10 @@ export function ProductPurchasePanel({
             <div className="flex flex-wrap gap-2">
               {variants.map((variant) => (
                 <Button
+                  aria-label={getVariantButtonLabel(variant)}
                   aria-pressed={selectedSku === variant.sku}
                   className="min-h-11 min-w-11 px-4"
+                  disabled={variant.availableQuantity <= 0}
                   key={variant.sku}
                   onClick={() => setSelectedSku(variant.sku)}
                   type="button"
@@ -121,26 +155,83 @@ export function ProductPurchasePanel({
               ))}
             </div>
           </div>
+          <div
+            className="glass-inset grid gap-3 rounded-md border p-3"
+            id="product-variant-feedback"
+            data-testid="product-variant-feedback"
+          >
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-muted-foreground text-xs">בחירה פעילה</p>
+                <p className="mt-1 font-medium">
+                  {selectedVariant
+                    ? getVariantDisplayName(selectedVariant)
+                    : "אין וריאציה זמינה"}
+                </p>
+              </div>
+              <Badge
+                variant={selectedVariantAvailable ? "outline" : "destructive"}
+              >
+                {selectedVariantAvailable
+                  ? getProductAvailabilityLabel(selectedVariantBranchCount)
+                  : "לא זמינה"}
+              </Badge>
+            </div>
+            <div className="grid gap-2 text-sm sm:grid-cols-2">
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <PackageCheck className="size-4" aria-hidden="true" />
+                {selectedVariant
+                  ? getStockQuantityLabel(selectedVariant.availableQuantity)
+                  : "אין מלאי"}
+              </span>
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <MapPin className="size-4" aria-hidden="true" />
+                {selectedVariantAvailable
+                  ? getProductAvailabilityLabel(selectedVariantBranchCount)
+                  : "מומלץ לתאם בסניף"}
+              </span>
+            </div>
+            <StatusMessage
+              size="xs"
+              tone={selectedVariantAvailable ? "success" : "error"}
+              variant="plain"
+            >
+              {selectedVariantAvailable
+                ? "אפשר להוסיף את הבחירה הזו לסל ולהמשיך לקופה."
+                : "בחרו מידה אחרת או תאמו בדיקת זמינות מול הסניף."}
+            </StatusMessage>
+          </div>
           <div>
             <p className="mb-2 text-sm font-medium">צבע מתכת</p>
             <div className="flex flex-wrap gap-2">
-              {metalColors.map((color) => (
-                <Badge key={color} variant="secondary">
-                  {color}
-                </Badge>
-              ))}
+              {metalColors.length > 0 ? (
+                metalColors.map((color) => (
+                  <Badge key={color} variant="secondary">
+                    {color}
+                  </Badge>
+                ))
+              ) : (
+                <span className="text-muted-foreground text-sm">
+                  לפי הווריאציה הזמינה
+                </span>
+              )}
             </div>
           </div>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
           <Button
-            disabled={!selectedVariant || addItem.isPending}
+            aria-describedby="product-variant-feedback"
+            disabled={addToCartDisabled}
             onClick={handleAddToCart}
             size="lg"
             type="button"
           >
-            {addItem.isPending ? "מוסיף..." : "הוספה לסל"}
+            {addItem.isPending
+              ? "מוסיף..."
+              : selectedVariantAvailable
+                ? "הוספה לסל"
+                : "לא זמינה"}
             <PackageCheck className="size-4" />
           </Button>
           <WishlistButton productSlug={productSlug}>
@@ -183,15 +274,22 @@ export function ProductPurchasePanel({
               <p className="text-muted-foreground truncate text-xs">
                 {productName}
               </p>
-              <p className="text-lg font-semibold">{formatPrice(price)}</p>
+              <p className="text-lg font-semibold">
+                {formatPrice(selectedVariantPrice)}
+              </p>
             </div>
             <Button
               aria-label={`הוספה לסל: ${productName}`}
-              disabled={!selectedVariant || addItem.isPending}
+              aria-describedby="product-variant-feedback"
+              disabled={addToCartDisabled}
               onClick={handleAddToCart}
               type="button"
             >
-              {addItem.isPending ? "מוסיף..." : "הוספה לסל"}
+              {addItem.isPending
+                ? "מוסיף..."
+                : selectedVariantAvailable
+                  ? "הוספה לסל"
+                  : "לא זמינה"}
               <PackageCheck className="size-4" />
             </Button>
           </div>
@@ -214,4 +312,25 @@ function getClientSnapshot() {
 
 function getServerSnapshot() {
   return false;
+}
+
+function getInitialVariantSku(variants: CatalogProductVariant[]) {
+  return (
+    variants.find((variant) => variant.availableQuantity > 0)?.sku ??
+    variants[0]?.sku ??
+    ""
+  );
+}
+
+function getVariantDisplayName(variant: CatalogProductVariant) {
+  return variant.size ?? variant.name;
+}
+
+function getVariantButtonLabel(variant: CatalogProductVariant) {
+  const availability =
+    variant.availableQuantity > 0
+      ? getStockQuantityLabel(variant.availableQuantity)
+      : "לא זמין";
+
+  return `${getVariantDisplayName(variant)}, ${formatPrice(variant.price)}, ${availability}`;
 }

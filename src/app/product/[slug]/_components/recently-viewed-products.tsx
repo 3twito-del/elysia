@@ -32,14 +32,23 @@ export function RecentlyViewedProducts({
   if (viewed.length === 0) return null;
 
   return (
-    <div className="mt-10">
-      <h2 className="text-2xl font-semibold">נצפו לאחרונה</h2>
+    <section
+      aria-labelledby="recently-viewed-products-heading"
+      className="brand-similar-section mt-8 rounded-md border p-4 sm:p-5"
+      data-testid="recently-viewed-products"
+    >
+      <h2
+        className="text-2xl font-semibold"
+        id="recently-viewed-products-heading"
+      >
+        נצפו לאחרונה
+      </h2>
       <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {viewed.map((product) => (
           <ProductCard key={product.slug} product={product} />
         ))}
       </div>
-    </div>
+    </section>
   );
 }
 
