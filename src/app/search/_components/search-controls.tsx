@@ -82,6 +82,7 @@ export function SearchControls({
             <Button
               className="relative h-11 w-full justify-center gap-2"
               aria-label="סינון ומיון"
+              data-testid="mobile-search-filter-trigger"
               type="button"
               variant="outline"
             >
@@ -98,6 +99,7 @@ export function SearchControls({
           </SheetTrigger>
           <SheetContent
             className="max-h-[85dvh] overflow-y-auto rounded-t-lg p-0"
+            data-testid="mobile-search-filter-sheet"
             dir="rtl"
             side="bottom"
           >

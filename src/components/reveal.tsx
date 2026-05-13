@@ -19,6 +19,7 @@ type RevealSectionProps = {
   children: ReactNode;
   className?: string;
   delay?: number;
+  floatingAvoid?: boolean;
   initialVisible?: boolean;
   variant?: "standard" | "hero" | "feature" | "subtle" | "none";
 } & Omit<ComponentProps<"section">, "children" | "className" | "ref">;
@@ -105,6 +106,7 @@ export function RevealSection({
   children,
   className,
   delay = 0,
+  floatingAvoid = true,
   initialVisible = false,
   style,
   variant = "standard",
@@ -122,6 +124,7 @@ export function RevealSection({
   return (
     <section
       className={cn("motion-reveal", className)}
+      data-public-floating-avoid={floatingAvoid ? "true" : undefined}
       data-reveal-variant={variant}
       data-reveal-visible={isVisible}
       {...props}

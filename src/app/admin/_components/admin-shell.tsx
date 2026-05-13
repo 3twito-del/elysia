@@ -76,7 +76,7 @@ export function AdminShell({
   return (
     <main className="bg-background min-h-screen" dir="rtl">
       <div className="mx-auto grid max-w-[1440px] gap-0 lg:grid-cols-[17rem_1fr]">
-        <aside className="border-border/70 bg-card/80 sticky top-0 z-30 border-b backdrop-blur lg:min-h-screen lg:border-e lg:border-b-0">
+        <aside className="border-border/70 bg-card/95 border-b backdrop-blur lg:sticky lg:top-0 lg:z-30 lg:min-h-screen lg:border-e lg:border-b-0">
           <div className="grid gap-4 p-4 lg:p-5">
             <Link
               className="flex items-center gap-2 text-lg font-semibold"
@@ -86,7 +86,10 @@ export function AdminShell({
               <Store className="size-5" />
               Aphrodite Ops
             </Link>
-            <div className="flex gap-2 overflow-x-auto pb-1 lg:grid lg:overflow-visible lg:pb-0">
+            <nav
+              aria-label="Admin sections"
+              className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-1"
+            >
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = active === item.id;
@@ -95,7 +98,7 @@ export function AdminShell({
                   <Button
                     asChild
                     className={cn(
-                      "h-10 justify-start gap-2 px-3 whitespace-nowrap",
+                      "h-11 w-full min-w-0 justify-start gap-2 px-3 text-start whitespace-normal lg:h-10",
                       isActive && "border-[var(--glass-border-strong)]",
                     )}
                     key={item.href}
@@ -106,12 +109,12 @@ export function AdminShell({
                       href={item.href}
                     >
                       <Icon className="size-4" />
-                      {item.label}
+                      <span className="min-w-0 truncate">{item.label}</span>
                     </Link>
                   </Button>
                 );
               })}
-            </div>
+            </nav>
             <Separator className="hidden lg:block" />
             <div className="bg-background/70 hidden gap-3 rounded-md border p-3 text-sm lg:grid">
               <div>

@@ -14,15 +14,15 @@ Use this track for local product quality, UI polish, correctness, and implementa
 
 ### UX and Responsive Polish
 
-- Lock the home hero layout to equal visual offsets on both sides and matching top/bottom spacing across desktop widths.
-- Keep mobile navigation sheets and all popup surfaces opaque, including Sheet, Dialog, AlertDialog, Dropdown, Popover, Select, Tooltip, Command, and HoverCard surfaces.
-- Close mobile-only sheets automatically when the viewport reaches the desktop breakpoint.
-- Add or extend visual QA screenshots for the home hero, mobile navigation, category sheets, filter panels, and key popups.
-- Review responsive layout at mobile, tablet, laptop, and wide desktop widths for text overflow, clipped controls, and inconsistent spacing.
+- Completed 2026-05-13: Lock the home hero layout to equal visual offsets on both sides and matching top/bottom spacing across desktop widths.
+- Completed 2026-05-13: Keep mobile navigation sheets and all popup surfaces opaque, including Sheet, Dialog, AlertDialog, Dropdown, Popover, Select, Tooltip, Command, and HoverCard surfaces.
+- Completed 2026-05-13: Close mobile-only sheets automatically when the viewport reaches the desktop breakpoint.
+- Completed 2026-05-13: Add or extend visual QA screenshots for the home hero, mobile navigation, category sheets, filter panels, and key popups.
+- Completed 2026-05-13: Review responsive layout at mobile, tablet, laptop, and wide desktop widths for text overflow, clipped controls, and inconsistent spacing.
 
 ### Product Discovery
 
-- Improve category pages with clearer loading, empty, no-results, and error states.
+- Completed 2026-05-13: Improve category pages with clearer loading, empty, no-results, and error states.
 - Tighten filter UX: stable selected states, reset affordances, disabled states for unavailable filters, and mobile sheet behavior.
 - Improve search page ergonomics with better query persistence, no-results recovery, and clear result counts.
 - Refine product cards for consistent image ratios, badges, price/availability presentation, favorite controls, and keyboard focus.

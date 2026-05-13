@@ -22,9 +22,12 @@ export function CookieConsentBanner() {
     const root = document.documentElement;
 
     if (isAdminRoute || consentValue !== null) {
+      delete root.dataset.cookieBannerOpen;
       root.style.removeProperty("--floating-stack-bottom");
       return;
     }
+
+    root.dataset.cookieBannerOpen = "true";
 
     const syncOffset = () => {
       const height = bannerRef.current?.getBoundingClientRect().height ?? 0;
@@ -38,6 +41,7 @@ export function CookieConsentBanner() {
 
       return () => {
         window.removeEventListener("resize", syncOffset);
+        delete root.dataset.cookieBannerOpen;
         root.style.removeProperty("--floating-stack-bottom");
       };
     }
@@ -49,6 +53,7 @@ export function CookieConsentBanner() {
     return () => {
       observer.disconnect();
       window.removeEventListener("resize", syncOffset);
+      delete root.dataset.cookieBannerOpen;
       root.style.removeProperty("--floating-stack-bottom");
     };
   }, [consentValue, isAdminRoute]);

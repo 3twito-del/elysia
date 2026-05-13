@@ -94,9 +94,33 @@ test.describe("critical shopping flows", () => {
     await expect(page.getByTestId("search-empty-state")).toBeVisible();
     await expect(page.getByTestId("search-form")).toBeVisible();
 
+    const categoryNoResultsParams = new URLSearchParams({
+      material: "זהב לבן 14K",
+      stone: "יהלום",
+    });
+
+    await page.goto(`/category/earrings?${categoryNoResultsParams}`);
+    await expect(page.getByTestId("category-empty-state")).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "איפוס פילטרים" }),
+    ).toBeVisible();
+
     await page.goto("/checkout");
     await expect(page.getByTestId("cart-checkout-form")).toBeVisible();
     await expect(page.getByTestId("checkout-empty-cart")).toBeVisible();
+  });
+
+  test("shows category not-found recovery", async ({ page }) => {
+    await setCookieConsent(page, "essential");
+
+    await page.goto("/category/not-a-real-category");
+
+    const notFoundState = page.getByTestId("category-not-found-state");
+
+    await expect(notFoundState).toBeVisible();
+    await expect(
+      notFoundState.getByRole("link", { name: "חיפוש בקטלוג" }),
+    ).toBeVisible();
   });
 
   test("opens mobile navigation", async ({ page }) => {
@@ -107,6 +131,9 @@ test.describe("critical shopping flows", () => {
     await page.getByTestId("mobile-nav-trigger").click();
     await expect(page.getByTestId("mobile-nav-sheet")).toBeVisible();
     await expect(page.getByTestId("mobile-nav-link").first()).toBeVisible();
+
+    await page.setViewportSize({ width: 1024, height: 900 });
+    await expect(page.getByTestId("mobile-nav-sheet")).toBeHidden();
   });
 
   test("opens mobile category filter sheet", async ({ page }) => {
@@ -121,6 +148,26 @@ test.describe("critical shopping flows", () => {
     await expect(filterTrigger).toBeVisible();
     await filterTrigger.click();
     await expect(page.getByRole("dialog")).toBeVisible();
+
+    await page.setViewportSize({ width: 1024, height: 900 });
+    await expect(page.getByRole("dialog")).toBeHidden();
+  });
+
+  test("closes mobile search filter sheet at the tablet breakpoint", async ({
+    page,
+  }) => {
+    test.skip((page.viewportSize()?.width ?? 0) >= 768, "mobile-only flow");
+    await setCookieConsent(page, "essential");
+
+    await page.goto("/search?q=venus", { waitUntil: "networkidle" });
+    const mobileControls = page.getByTestId("mobile-search-controls");
+
+    await expect(mobileControls).toBeVisible();
+    await mobileControls.getByTestId("mobile-search-filter-trigger").click();
+    await expect(page.getByTestId("mobile-search-filter-sheet")).toBeVisible();
+
+    await page.setViewportSize({ width: 768, height: 900 });
+    await expect(page.getByTestId("mobile-search-filter-sheet")).toBeHidden();
   });
 });
 
@@ -300,6 +347,45 @@ test.describe("accessibility and responsive guardrails", () => {
       await expectNoHorizontalOverflow(page);
     });
   }
+
+  test("keeps the home hero offsets balanced on desktop", async ({ page }) => {
+    test.skip((page.viewportSize()?.width ?? 0) < 1024, "desktop-only check");
+
+    await page.goto("/", { waitUntil: "networkidle" });
+
+    const offsets = await page.evaluate(() => {
+      const hero = document.querySelector(
+        '[data-testid="cinematic-page-hero"]',
+      );
+      const copy = document.querySelector('[data-testid="home-hero-copy"]');
+      const actions = document.querySelector(
+        '[data-testid="home-hero-actions"]',
+      );
+
+      if (!hero || !copy || !actions) {
+        throw new Error("Missing home hero alignment targets.");
+      }
+
+      const heroRect = hero.getBoundingClientRect();
+      const copyRect = copy.getBoundingClientRect();
+      const actionsRect = actions.getBoundingClientRect();
+
+      return {
+        actionsBottom: Math.round(heroRect.bottom - actionsRect.bottom),
+        actionsLeft: Math.round(actionsRect.left - heroRect.left),
+        copyRight: Math.round(heroRect.right - copyRect.right),
+        copyTop: Math.round(copyRect.top - heroRect.top),
+      };
+    });
+
+    expect(
+      Math.abs(offsets.copyRight - offsets.actionsLeft),
+    ).toBeLessThanOrEqual(1);
+    expect(
+      Math.abs(offsets.copyTop - offsets.actionsBottom),
+    ).toBeLessThanOrEqual(1);
+    expect(offsets.copyRight).toBeGreaterThanOrEqual(48);
+  });
 });
 
 test.describe("cookie consent flow", () => {

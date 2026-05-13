@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import {
   Check,
   Filter,
@@ -123,6 +124,11 @@ export default async function CategoryPage({
     getCatalogCategoryBySlug(slug),
     getCatalogFacets(),
   ]);
+
+  if (!category) {
+    notFound();
+  }
+
   const filters = parseCategoryFilters(query, {
     branches,
     materialOptions: facets.materials,
@@ -163,6 +169,8 @@ export default async function CategoryPage({
     pageStartIndex + pageProducts.length,
     sortedProducts.length,
   );
+  const hasCategoryProducts = baseProducts.length > 0;
+  const hasActiveFilters = activeFilterCount > 0;
   const pageRangeLabel =
     sortedProducts.length > 0
       ? `${visibleStart}-${visibleEnd} מתוך ${sortedProducts.length} מוצרים`
@@ -184,7 +192,7 @@ export default async function CategoryPage({
           </>
         }
         description={
-          category?.description ??
+          category.description ??
           "בחירה מסוננת מתוך קטלוג התכשיטים, עם זמינות סניפים ומחירים בשקלים."
         }
         eyebrow="קטלוג Aphrodite"
@@ -198,7 +206,7 @@ export default async function CategoryPage({
           { label: "סניפים", value: String(branches.length) },
           { label: "מיון", value: currentSortLabel },
         ]}
-        title={category?.name ?? "קטגוריה"}
+        title={category.name}
         variant="commerce"
       />
 
@@ -211,14 +219,14 @@ export default async function CategoryPage({
               </Badge>
               <div className="flex flex-wrap items-end gap-3">
                 <h2 className="text-3xl font-semibold sm:text-4xl">
-                  {category?.name ?? "קטגוריה"}
+                  {category.name}
                 </h2>
                 <span className="text-muted-foreground pb-1 text-sm">
                   {filteredProducts.length} מתוך {baseProducts.length} מוצרים
                 </span>
               </div>
               <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
-                {category?.description ??
+                {category.description ??
                   "בחירה מסוננת מתוך קטלוג התכשיטים, עם זמינות סניפים ומחירים בשקלים."}
               </p>
             </div>
@@ -267,9 +275,11 @@ export default async function CategoryPage({
           <div className="text-sm">
             <p className="font-medium">{pageRangeLabel}</p>
             <p className="text-muted-foreground text-xs">
-              {activeFilterCount > 0
+              {hasActiveFilters
                 ? `${activeFilterCount} פילטרים פעילים`
-                : "כל הפריטים בקטגוריה"}
+                : hasCategoryProducts
+                  ? "כל הפריטים בקטגוריה"
+                  : "הקטגוריה בעדכון"}
             </p>
           </div>
           <CategoryFilterSheet activeFilterCount={activeFilterCount}>
@@ -289,6 +299,7 @@ export default async function CategoryPage({
             </Button>
             <SheetContent
               className="w-[min(92vw,390px)] overflow-y-auto p-0"
+              data-testid="category-filter-sheet"
               side="right"
             >
               <SheetHeader className="border-b border-[var(--glass-border)] p-4">
@@ -324,7 +335,7 @@ export default async function CategoryPage({
       <div className="h-px" id="category-filters" />
 
       <RevealSection className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[296px_1fr] lg:py-10">
-        <aside className="hidden lg:block">
+        <aside className="hidden lg:block" data-testid="category-filter-panel">
           <Card className="sticky top-24 rounded-md" size="sm">
             <CardHeader className="border-b border-[var(--glass-border)] pb-4">
               <CardTitle className="flex items-center gap-2">
@@ -362,17 +373,19 @@ export default async function CategoryPage({
                   {pageRangeLabel}
                 </h2>
                 <p className="text-muted-foreground text-sm">
-                  {filteredProducts.length > productsPerPage
-                    ? `עמוד ${currentPage} מתוך ${totalPages}`
-                    : activeFilterCount > 0
-                      ? "התוצאות מסוננות לפי הבחירה שלך"
-                      : "כל הפריטים הזמינים בקטגוריה"}
+                  {!hasCategoryProducts
+                    ? "נעדכן את הבחירה בקרוב"
+                    : filteredProducts.length > productsPerPage
+                      ? `עמוד ${currentPage} מתוך ${totalPages}`
+                      : hasActiveFilters
+                        ? "התוצאות מסוננות לפי הבחירה שלך"
+                        : "כל הפריטים הזמינים בקטגוריה"}
                   <span className="mx-2">·</span>
                   <span>מיון: {currentSortLabel}</span>
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
-                {activeFilterCount > 0 && (
+                {hasActiveFilters && (
                   <Button asChild size="sm" variant="ghost">
                     <Link href={resetHref} scroll={false}>
                       איפוס
@@ -415,32 +428,72 @@ export default async function CategoryPage({
               )}
             </>
           ) : (
-            <EmptyState
-              description={
-                <>
-                  אפשר לרענן את הבחירה או לתת לסטייליסט למצוא עבורך שילוב מדויק.
-                </>
-              }
-              icon={Gem}
-              testId="category-empty-state"
-              title="לא נמצאו מוצרים בהתאמה הזו"
-              actions={
-                <>
-                  <Button asChild variant="outline">
-                    <Link href={resetHref} scroll={false}>
-                      איפוס פילטרים
-                    </Link>
-                  </Button>
-                  <Button asChild>
-                    <Link href="/ai">התאמה אישית</Link>
-                  </Button>
-                </>
-              }
+            <CategoryEmptyState
+              hasActiveFilters={hasActiveFilters}
+              hasCategoryProducts={hasCategoryProducts}
+              resetHref={resetHref}
             />
           )}
         </section>
       </RevealSection>
     </main>
+  );
+}
+
+function CategoryEmptyState({
+  hasActiveFilters,
+  hasCategoryProducts,
+  resetHref,
+}: {
+  hasActiveFilters: boolean;
+  hasCategoryProducts: boolean;
+  resetHref: string;
+}) {
+  if (!hasCategoryProducts) {
+    return (
+      <EmptyState
+        actions={
+          <>
+            <Button asChild variant="outline">
+              <Link href="/search">חיפוש בכל הקטלוג</Link>
+            </Button>
+            <Button asChild>
+              <Link href="/ai">התאמה אישית</Link>
+            </Button>
+          </>
+        }
+        description="הקטגוריה קיימת, אבל אין בה כרגע פריטים פעילים. אפשר לעבור לחיפוש הרחב או לקבל המלצה מתוך קטגוריות זמינות."
+        icon={Gem}
+        testId="category-empty-state"
+        title="הקטגוריה מתעדכנת"
+      />
+    );
+  }
+
+  return (
+    <EmptyState
+      actions={
+        <>
+          {hasActiveFilters ? (
+            <Button asChild variant="outline">
+              <Link href={resetHref} scroll={false}>
+                איפוס פילטרים
+              </Link>
+            </Button>
+          ) : null}
+          <Button asChild variant={hasActiveFilters ? "default" : "outline"}>
+            <Link href="/search">חיפוש בכל הקטלוג</Link>
+          </Button>
+          <Button asChild>
+            <Link href="/ai">התאמה אישית</Link>
+          </Button>
+        </>
+      }
+      description="אפשר לנקות את הבחירה, להרחיב את החיפוש, או לתת לסטייליסט למצוא עבורך שילוב קרוב מתוך הקטלוג."
+      icon={Gem}
+      testId="category-empty-state"
+      title="לא נמצאו מוצרים בהתאמה הזו"
+    />
   );
 }
 

@@ -1,0 +1,30 @@
+{
+  "active": false,
+  "baselineCommit": "8cbd142",
+  "statusFile": "docs/qa/design-failures.md",
+  "reason": "Temporary design-remediation gate. Non-design changes are blocked until every recorded design finding is verified or rejected.",
+  "allowedPathGlobs": [
+    "docs/qa/**",
+    "scripts/design-*.mjs",
+    "scripts/visual-qa-agent-browser.ps1",
+    "package.json",
+    "src/app/**",
+    "src/components/**",
+    "src/styles/**",
+    "src/lib/brand-media.ts",
+    "public/brand/**",
+    "tests/e2e/**"
+  ],
+  "blockedPathGlobs": [
+    ".env",
+    ".env.*",
+    "prisma/**",
+    "src/app/api/**",
+    "src/server/**",
+    "src/env.js",
+    "next.config.js",
+    "playwright.config.ts",
+    "tsconfig.json",
+    "pnpm-lock.yaml"
+  ]
+}

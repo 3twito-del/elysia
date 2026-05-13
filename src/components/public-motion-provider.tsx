@@ -24,6 +24,18 @@ type PublicMotionContextValue = {
 
 const pageTransitionMs = 180;
 const anchorScrollEventName = "aphrodite:anchor-scroll";
+const floatingAvoidSelector = [
+  '[data-public-floating-avoid="true"]',
+  '[data-slot="card"]',
+  ".glass-card",
+  ".glass-panel",
+].join(",");
+const floatingBarSelector = '[data-public-floating-bar="true"]';
+const modalSurfaceSelector = [
+  '[data-slot="sheet-content"][data-state="open"]',
+  '[data-slot="dialog-content"][data-state="open"]',
+  '[role="dialog"][aria-modal="true"]',
+].join(",");
 const PublicMotionContext = createContext<PublicMotionContextValue>({
   suppressInitialReveal: false,
 });
@@ -181,6 +193,143 @@ export function PublicMotionProvider({
       window.clearTimeout(swapTimer);
     };
   }, [children, pathname, renderedPathname, shouldReduceMotion]);
+
+  useEffect(() => {
+    if (isAdminRoute) return;
+
+    const root = document.documentElement;
+    let syncFrame = 0;
+
+    const isVisibleElement = (element: HTMLElement) => {
+      const styles = window.getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+
+      return (
+        styles.display !== "none" &&
+        styles.visibility !== "hidden" &&
+        rect.width > 0 &&
+        rect.height > 0 &&
+        rect.bottom > 0 &&
+        rect.top < window.innerHeight
+      );
+    };
+
+    const syncFloatingChrome = () => {
+      syncFrame = 0;
+
+      const floatingBars =
+        document.querySelectorAll<HTMLElement>(floatingBarSelector);
+      let nextFloatingBarOffset = 0;
+
+      floatingBars.forEach((bar) => {
+        if (!isVisibleElement(bar)) return;
+
+        const rect = bar.getBoundingClientRect();
+        nextFloatingBarOffset = Math.max(
+          nextFloatingBarOffset,
+          window.innerHeight - rect.top + 8,
+        );
+      });
+
+      if (nextFloatingBarOffset > 0) {
+        root.style.setProperty(
+          "--public-floating-bar-offset",
+          `${Math.ceil(nextFloatingBarOffset)}px`,
+        );
+        root.dataset.publicFloatingBarVisible = "true";
+      } else {
+        root.style.removeProperty("--public-floating-bar-offset");
+        delete root.dataset.publicFloatingBarVisible;
+      }
+
+      const guardSize = window.innerWidth < 640 ? 88 : 104;
+      const floatingGuardArea = {
+        bottom: window.innerHeight,
+        left: window.innerWidth - guardSize,
+        right: window.innerWidth,
+        top: window.innerHeight - guardSize,
+      };
+      const hasFloatingCollision = Array.from(
+        document.querySelectorAll<HTMLElement>(floatingAvoidSelector),
+      ).some((element) => {
+        if (!isVisibleElement(element)) return false;
+
+        const rect = element.getBoundingClientRect();
+
+        return (
+          rect.left < floatingGuardArea.right &&
+          rect.right > floatingGuardArea.left &&
+          rect.top < floatingGuardArea.bottom &&
+          rect.bottom > floatingGuardArea.top
+        );
+      });
+
+      if (hasFloatingCollision) {
+        root.dataset.publicFloatingCollision = "true";
+      } else {
+        delete root.dataset.publicFloatingCollision;
+      }
+
+      const hasOpenModalSurface = Array.from(
+        document.querySelectorAll<HTMLElement>(modalSurfaceSelector),
+      ).some(isVisibleElement);
+
+      if (hasOpenModalSurface) {
+        root.dataset.publicOverlayOpen = "true";
+      } else {
+        delete root.dataset.publicOverlayOpen;
+      }
+    };
+
+    const requestFloatingChromeSync = () => {
+      if (syncFrame) return;
+
+      syncFrame = window.requestAnimationFrame(syncFloatingChrome);
+    };
+
+    const mutationObserver = new MutationObserver(requestFloatingChromeSync);
+    const resizeObserver =
+      "ResizeObserver" in window
+        ? new ResizeObserver(requestFloatingChromeSync)
+        : null;
+
+    mutationObserver.observe(document.body, {
+      attributeFilter: [
+        "aria-hidden",
+        "aria-modal",
+        "class",
+        "data-state",
+        "hidden",
+        "style",
+      ],
+      attributes: true,
+      childList: true,
+      subtree: true,
+    });
+    resizeObserver?.observe(document.body);
+    window.addEventListener("scroll", requestFloatingChromeSync, {
+      passive: true,
+    });
+    window.addEventListener("resize", requestFloatingChromeSync);
+    window.addEventListener("orientationchange", requestFloatingChromeSync);
+    requestFloatingChromeSync();
+
+    return () => {
+      mutationObserver.disconnect();
+      resizeObserver?.disconnect();
+      window.removeEventListener("scroll", requestFloatingChromeSync);
+      window.removeEventListener("resize", requestFloatingChromeSync);
+      window.removeEventListener(
+        "orientationchange",
+        requestFloatingChromeSync,
+      );
+      window.cancelAnimationFrame(syncFrame);
+      root.style.removeProperty("--public-floating-bar-offset");
+      delete root.dataset.publicFloatingCollision;
+      delete root.dataset.publicFloatingBarVisible;
+      delete root.dataset.publicOverlayOpen;
+    };
+  }, [isAdminRoute, pathname]);
 
   useEffect(() => {
     if (isAdminRoute) return;

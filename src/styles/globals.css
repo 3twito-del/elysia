@@ -945,9 +945,15 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
 
 .popup-surface {
   border-color: var(--glass-border);
-  background: var(--popover);
+  background: var(--popover) !important;
   background-clip: padding-box;
   box-shadow: 0 18px 48px var(--glass-shadow-deep);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.popup-overlay {
+  background: oklch(0.12 0 0 / 58%);
 }
 
 .liquid-section {
@@ -1320,6 +1326,24 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
 .motion-sticky-purchase {
   animation: motion-sticky-in var(--motion-feedback) var(--ease-motion-standard)
     both;
+}
+
+.public-floating-control {
+  transition:
+    opacity var(--motion-ui) var(--ease-motion-standard),
+    transform var(--motion-ui) var(--ease-motion-standard),
+    visibility var(--motion-ui) var(--ease-motion-standard);
+}
+
+html[data-public-overlay-open="true"] .public-floating-control,
+html[data-anchor-scroll-active="true"] .public-floating-control,
+html[data-public-floating-collision="true"] .public-floating-trigger,
+html[data-public-floating-bar-visible="true"] .public-floating-trigger,
+html[data-cookie-banner-open="true"] .public-floating-trigger {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(0.5rem) scale(0.96);
+  visibility: hidden;
 }
 
 .cart-count-badge {

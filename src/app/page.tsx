@@ -62,7 +62,7 @@ export default async function Home() {
       <SiteHeader />
 
       <RevealSection
-        className="relative isolate min-h-[max(38rem,calc(100svh-4rem))] w-screen max-w-none overflow-hidden bg-[var(--brand-aqua-deep)] [--hero-edge:clamp(1rem,4vw,5rem)]"
+        className="relative isolate min-h-[max(38rem,calc(100svh-4rem))] w-screen max-w-none overflow-hidden bg-[var(--brand-aqua-deep)] [--hero-edge:clamp(1rem,4vw,5rem)] lg:[--hero-edge:clamp(3rem,4vw,5rem)]"
         data-testid="cinematic-page-hero"
         id="page-hero"
         initialVisible
@@ -88,6 +88,7 @@ export default async function Home() {
         <div className="relative min-h-[max(38rem,calc(100svh-4rem))]">
           <div
             className="motion-hero-copy absolute top-[var(--hero-edge)] right-[var(--hero-edge)] w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),48rem)] text-right text-white lg:w-[min(48rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
+            data-testid="home-hero-copy"
             dir="rtl"
           >
             <h1
@@ -105,6 +106,7 @@ export default async function Home() {
 
         <div
           className="motion-hero-copy absolute inset-x-3 bottom-5 w-auto text-white sm:inset-x-auto sm:bottom-[var(--hero-edge)] sm:left-[var(--hero-edge)] sm:w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),36rem)] lg:w-[min(36rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
+          data-testid="home-hero-actions"
           dir="rtl"
         >
           <div className="motion-copy-item flex flex-col items-stretch gap-2 [--motion-copy-delay:170ms] sm:flex-row sm:items-center sm:justify-end sm:gap-3">

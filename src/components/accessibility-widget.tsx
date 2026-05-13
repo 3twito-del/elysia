@@ -251,7 +251,7 @@ export function AccessibilityWidget() {
         aria-expanded={isOpen}
         aria-haspopup="dialog"
         aria-label="פתיחת תפריט נגישות"
-        className="fixed bottom-[calc(var(--floating-stack-bottom,1rem)+5rem+env(safe-area-inset-bottom))] left-4 z-50 size-11 rounded-full shadow-[0_16px_36px_oklch(0.12_0_0_/_20%)] sm:bottom-[calc(var(--floating-stack-bottom,1rem)+env(safe-area-inset-bottom))] sm:left-6 sm:size-12"
+        className="public-floating-control public-floating-trigger fixed right-4 bottom-[calc(max(var(--floating-stack-bottom,1rem),var(--public-floating-bar-offset,1rem))+env(safe-area-inset-bottom))] z-50 size-11 rounded-full shadow-[0_16px_36px_oklch(0.12_0_0_/_20%)] sm:right-6 sm:size-12"
         onClick={() => setIsOpen(true)}
         ref={triggerButtonRef}
         size="icon-lg"
@@ -264,7 +264,7 @@ export function AccessibilityWidget() {
         <div className="fixed inset-0 z-[90]" dir="rtl">
           <button
             aria-label="סגירת תפריט נגישות"
-            className="fixed inset-0 cursor-default bg-[oklch(0.12_0_0_/_34%)]"
+            className="popup-overlay fixed inset-0 cursor-default"
             onClick={closeMenu}
             tabIndex={-1}
             type="button"

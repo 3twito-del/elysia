@@ -45,6 +45,7 @@ export function ProductCard({
         "brand-accent-card group/card interactive-lift h-full min-w-0 overflow-hidden rounded-md py-0",
         !isAvailable && "bg-muted/30",
       )}
+      data-public-floating-avoid="true"
       data-testid="product-card"
     >
       <Link
