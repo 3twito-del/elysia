@@ -11,7 +11,6 @@ import {
   getProductRecommendationRails,
   type ProductRecommendationRail,
 } from "./_lib/product-recommendation-rails";
-import { CinematicPageHero } from "~/components/cinematic-page-hero";
 import { ProductCard } from "~/components/product-card";
 import { SiteHeader } from "~/components/site-header";
 import { RevealGrid, RevealSection } from "~/components/reveal";
@@ -23,7 +22,6 @@ import {
   getProductAvailabilityLabel,
   getStockQuantityLabel,
 } from "~/lib/commerce-labels";
-import { cinematicRouteMedia } from "~/lib/brand-media";
 import { formatPrice } from "~/lib/format";
 import { stringifyJsonLd } from "~/lib/json-ld";
 import {
@@ -102,16 +100,7 @@ export default async function ProductPage({
     product,
     products: allProducts,
   });
-  const productHeroSlides =
-    uniqueImages.length > 0
-      ? [
-          ...uniqueImages.map((src) => ({
-            alt: product.name,
-            src,
-          })),
-          ...cinematicRouteMedia.product,
-        ]
-      : cinematicRouteMedia.product;
+
   return (
     <main className="pb-24 md:pb-0">
       <SiteHeader />
@@ -125,35 +114,9 @@ export default async function ProductPage({
         dangerouslySetInnerHTML={{ __html: stringifyJsonLd(structuredData) }}
         type="application/ld+json"
       />
-      <CinematicPageHero
-        actions={
-          <>
-            <Button asChild size="lg">
-              <Link href="#product-buy">בחירת מידה ורכישה</Link>
-            </Button>
-            <Button asChild size="lg" variant="outline">
-              <Link href="#product-availability">זמינות בסניפים</Link>
-            </Button>
-          </>
-        }
-        description={product.shortDescription}
-        eyebrow={product.collection}
-        scrollCue={{ href: "#product-buy", label: "לרכישה" }}
-        slides={productHeroSlides}
-        stats={[
-          { label: "מחיר", value: formatPrice(product.price) },
-          { label: "חומר", value: product.material },
-          {
-            label: "זמינות",
-            value: getProductAvailabilityLabel(availableBranchCount),
-          },
-        ]}
-        title={product.name}
-        variant="product"
-      />
 
       <RevealSection
-        className="mx-auto grid max-w-7xl gap-8 px-4 py-6 sm:px-6 sm:py-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10"
+        className="mx-auto grid max-w-7xl gap-8 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10"
         id="product-buy"
       >
         <div className="contents lg:grid lg:gap-4">
@@ -184,12 +147,12 @@ export default async function ProductPage({
           <Badge className="mb-4" variant="secondary">
             {product.collection}
           </Badge>
-          <h2
+          <h1
             className="text-3xl font-semibold break-words sm:text-4xl"
             dir="auto"
           >
             {product.name}
-          </h2>
+          </h1>
           <p className="text-muted-foreground mt-4 text-lg leading-8">
             {product.shortDescription}
           </p>

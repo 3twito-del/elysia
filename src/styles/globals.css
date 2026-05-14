@@ -775,6 +775,85 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
   animation: none !important;
 }
 
+.compact-page-intro {
+  display: grid;
+  gap: clamp(1.25rem, 3vw, 2rem);
+  align-items: end;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding: clamp(2rem, 5vw, 4rem) 1rem clamp(1.5rem, 3.6vw, 2.75rem);
+}
+
+.compact-page-intro[data-has-aside="true"] {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.compact-page-intro-copy {
+  min-width: 0;
+}
+
+.compact-page-intro-eyebrow {
+  width: fit-content;
+  border: 1px solid rgb(66 201 190 / 18%);
+  border-radius: 999px;
+  background: rgb(66 201 190 / 8%);
+  color: var(--brand-aqua-deep);
+  padding: 0.25rem 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+
+.compact-page-intro-title {
+  margin-top: 0.85rem;
+  max-width: 54rem;
+  font-size: clamp(2rem, 4.5vw, 3.75rem);
+  font-weight: 650;
+  line-height: 1.05;
+  letter-spacing: 0;
+}
+
+.compact-page-intro-description {
+  color: var(--muted-foreground);
+  margin-top: 1rem;
+  max-width: 48rem;
+  font-size: clamp(1rem, 1.5vw, 1.08rem);
+  line-height: 1.85;
+}
+
+.compact-page-intro-aside {
+  display: grid;
+  gap: 1rem;
+}
+
+.compact-page-intro-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+  gap: 0.75rem;
+}
+
+.compact-page-intro-metric {
+  border-block-start: 1px solid var(--glass-border);
+  padding-block-start: 0.75rem;
+}
+
+.compact-page-intro-metric dt {
+  color: var(--muted-foreground);
+  font-size: 0.78rem;
+}
+
+.compact-page-intro-metric dd {
+  margin-top: 0.2rem;
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.compact-page-intro-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
 .brand-page-intro {
   display: grid;
   gap: clamp(1rem, 2.6vw, 2rem);
@@ -1571,6 +1650,14 @@ html[data-cookie-banner-open="true"]
 @media (min-width: 768px) {
   .cinematic-page-hero-inner {
     padding-inline: 1.5rem;
+  }
+
+  .compact-page-intro {
+    padding-inline: 1.5rem;
+  }
+
+  .compact-page-intro[data-has-aside="true"] {
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 34%);
   }
 
   .brand-page-intro {

@@ -19,8 +19,7 @@ import { CustomerOtpForm } from "./_components/customer-otp-form";
 import { CustomerAddressForm } from "./_components/customer-address-form";
 import { CustomerPrivacyActions } from "./_components/customer-privacy-actions";
 import { customerLogoutAction, removeWishlistItemAction } from "./actions";
-import { BrandMediaPanel } from "~/components/brand-media-panel";
-import { CinematicPageHero } from "~/components/cinematic-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { MetricCard } from "~/components/metric-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -28,7 +27,6 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { EmptyState } from "~/components/ui/empty-state";
-import { brandMedia, cinematicRouteMedia } from "~/lib/brand-media";
 import {
   getAppointmentStatusLabel,
   getOrderStatusLabel,
@@ -218,28 +216,25 @@ export default async function AccountPage() {
     return (
       <main>
         <SiteHeader />
-        <CinematicPageHero
+        <CompactPageIntro
           actions={
             <>
-              <Button asChild size="lg">
+              <Button asChild>
                 <Link href="#account-login">כניסה מאובטחת</Link>
               </Button>
-              <Button asChild size="lg" variant="outline">
+              <Button asChild variant="outline">
                 <Link href="#account-benefits">מה נשמר כאן</Link>
               </Button>
             </>
           }
           description="כניסה מאובטחת להזמנות, מועדפים, מידות שמורות, תורים ופרטיות."
           eyebrow="Aphrodite Account"
-          scrollCue={{ href: "#account-login", label: "לכניסה" }}
-          slides={cinematicRouteMedia.account}
-          stats={[
+          metrics={[
             { label: "כניסה", value: "OTP" },
             { label: "מועדפים", value: "שמור" },
             { label: "פרטיות", value: "בשליטה" },
           ]}
           title="אזור לקוח"
-          variant="service"
         />
         <RevealSection
           className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12"
@@ -250,12 +245,6 @@ export default async function AccountPage() {
             כניסה מאובטחת באמצעות קוד חד-פעמי. לאחר הכניסה יוצגו הזמנות,
             מועדפים, מידות שמורות ותורים.
           </p>
-          <BrandMediaPanel
-            alt="Aqua account and service jewelry tray"
-            className="hidden"
-            slides={brandMedia.service}
-            variant="compact"
-          />
           <div className="mt-6 grid gap-5 sm:mt-8 lg:grid-cols-[minmax(0,420px)_1fr]">
             <Card className="rounded-md">
               <CardHeader className="border-b border-[var(--glass-border)] pb-4">
@@ -310,28 +299,25 @@ export default async function AccountPage() {
   return (
     <main>
       <SiteHeader />
-      <CinematicPageHero
+      <CompactPageIntro
         actions={
           <>
-            <Button asChild size="lg">
+            <Button asChild>
               <Link href="#account-orders">הזמנות אחרונות</Link>
             </Button>
-            <Button asChild size="lg" variant="outline">
+            <Button asChild variant="outline">
               <Link href="#account-service">תורים ושירות</Link>
             </Button>
           </>
         }
         description="כל ההזמנות, המועדפים, המידות, הכתובות והפרטיות שלך במקום אחד."
         eyebrow="Aphrodite Account"
-        scrollCue={{ href: "#account-overview", label: "לסקירה" }}
-        slides={cinematicRouteMedia.account}
-        stats={[
+        metrics={[
           { label: "הזמנות", value: String(customer.orders.length) },
           { label: "מועדפים", value: String(wishlistItems.length) },
           { label: "תורים", value: String(customer.appointments.length) },
         ]}
         title="אזור לקוח"
-        variant="service"
       />
       <RevealSection
         className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12"
@@ -352,13 +338,6 @@ export default async function AccountPage() {
             </Button>
           </form>
         </div>
-        <BrandMediaPanel
-          alt="Aqua account and service jewelry tray"
-          className="hidden"
-          slides={brandMedia.service}
-          variant="compact"
-        />
-
         <RevealGrid
           className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4"
           variant="cards"

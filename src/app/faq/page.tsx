@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ChevronDown,
-  CircleHelp,
   Gift,
   Mail,
   PackageCheck,
@@ -13,13 +12,11 @@ import {
   Truck,
 } from "lucide-react";
 
-import { BrandMediaPanel } from "~/components/brand-media-panel";
-import { CinematicPageHero } from "~/components/cinematic-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-import { brandMedia, cinematicRouteMedia } from "~/lib/brand-media";
 import { publicContactEmail, publicContactPhone } from "~/lib/public-contact";
 
 export const metadata: Metadata = {
@@ -99,55 +96,26 @@ export default function FaqPage() {
     <main>
       <SiteHeader />
 
-      <CinematicPageHero
+      <CompactPageIntro
         actions={
           <>
-            <Button asChild size="lg">
+            <Button asChild>
               <Link href="#faq-groups">לשאלות</Link>
             </Button>
-            <Button asChild size="lg" variant="outline">
+            <Button asChild variant="outline">
               <Link href="#faq-contact">יצירת קשר</Link>
             </Button>
           </>
         }
         description="תשובות קצרות על קנייה באתר, זמינות בסניפים, מידות, משלוחים, מתנות והמלצות AI."
         eyebrow="Aphrodite Help"
-        scrollCue={{ href: "#faq-shortcuts", label: "לקיצורים" }}
-        slides={cinematicRouteMedia.faq}
-        stats={[
+        metrics={[
           { label: "נושאים", value: String(faqGroups.length) },
           { label: "שירות", value: "זמין" },
           { label: "AI", value: "פעיל" },
         ]}
         title="שאלות ותשובות"
-        variant="editorial"
       />
-
-      <RevealSection aria-hidden="true" className="hidden" variant="none">
-        <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:py-16">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-muted-foreground text-sm">Aphrodite</p>
-              <h2 className="mt-3 text-4xl font-semibold tracking-normal sm:text-5xl">
-                שאלות ותשובות
-              </h2>
-              <p className="text-muted-foreground mt-4 max-w-3xl leading-8">
-                תשובות קצרות לשאלות נפוצות על קנייה באתר, זמינות בסניפים, מידות,
-                משלוחים, מתנות והמלצות AI.
-              </p>
-            </div>
-            <div className="glass-card w-fit rounded-md border p-4">
-              <CircleHelp className="size-8" aria-hidden="true" />
-            </div>
-          </div>
-          <BrandMediaPanel
-            alt="Subtle Aphrodite Aqua policy glass accent"
-            className="mt-7 h-28"
-            slides={brandMedia.policy}
-            variant="content"
-          />
-        </div>
-      </RevealSection>
 
       <RevealSection
         className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:py-14"

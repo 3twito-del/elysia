@@ -49,10 +49,9 @@ describe("image performance guardrails", () => {
     );
   });
 
-  it("keeps category and search support media on explicit fixed desktop sizes", () => {
+  it("keeps category and discovery support media on explicit fixed desktop sizes", () => {
     const files = [
       "src/app/category/[slug]/page.tsx",
-      "src/app/search/page.tsx",
       "src/app/gifts/page.tsx",
     ];
     const offenders = files.filter((file) => {

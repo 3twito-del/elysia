@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
-  FileText,
   Mail,
   PackageCheck,
   Phone,
@@ -10,13 +9,11 @@ import {
   Truck,
 } from "lucide-react";
 
-import { BrandMediaPanel } from "~/components/brand-media-panel";
-import { CinematicPageHero } from "~/components/cinematic-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-import { brandMedia, cinematicRouteMedia } from "~/lib/brand-media";
 import { publicContactEmail, publicContactPhone } from "~/lib/public-contact";
 
 export const metadata: Metadata = {
@@ -65,56 +62,26 @@ export default function TermsPage() {
     <main>
       <SiteHeader />
 
-      <CinematicPageHero
+      <CompactPageIntro
         actions={
           <>
-            <Button asChild size="lg">
+            <Button asChild>
               <Link href="#terms-section-1">לתקנון</Link>
             </Button>
-            <Button asChild size="lg" variant="outline">
+            <Button asChild variant="outline">
               <Link href="#terms-contact">פנייה לשירות</Link>
             </Button>
           </>
         }
         description="תנאי השימוש באתר Aphrodite, כולל הזמנות, תשלום, משלוחים, ביטולים ושירות לקוחות."
         eyebrow="Aphrodite Legal"
-        scrollCue={{ href: "#terms-section-1", label: "לתקנון" }}
-        slides={cinematicRouteMedia.legal}
-        stats={[
+        metrics={[
           { label: "שימוש", value: "ברור" },
           { label: "תשלום", value: "מאובטח" },
           { label: "שירות", value: "זמין" },
         ]}
         title="תקנון האתר"
-        variant="editorial"
       />
-
-      <RevealSection aria-hidden="true" className="hidden" variant="none">
-        <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:py-16">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-muted-foreground text-sm">Aphrodite</p>
-              <h2 className="mt-3 text-4xl font-semibold tracking-normal sm:text-5xl">
-                תקנון האתר
-              </h2>
-              <p className="text-muted-foreground mt-4 max-w-3xl leading-8">
-                התקנון מסדיר את השימוש באתר, בקטלוג, בהזמנות ובשירותים
-                הדיגיטליים של Aphrodite. הוא אינו גורע מזכויות המוקנות לכם לפי
-                דין.
-              </p>
-            </div>
-            <div className="glass-card w-fit rounded-md border p-4">
-              <FileText className="size-8" aria-hidden="true" />
-            </div>
-          </div>
-          <BrandMediaPanel
-            alt="Subtle Aphrodite Aqua policy glass accent"
-            className="mt-7 h-28"
-            slides={brandMedia.policy}
-            variant="content"
-          />
-        </div>
-      </RevealSection>
 
       <RevealSection className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:py-14">
         <div className="glass-panel rounded-md border p-6 sm:p-8">

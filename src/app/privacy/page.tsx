@@ -3,21 +3,18 @@ import Link from "next/link";
 import {
   Cookie,
   Database,
-  LockKeyhole,
   Mail,
   Phone,
   ShieldCheck,
   UserCheck,
 } from "lucide-react";
 
-import { BrandMediaPanel } from "~/components/brand-media-panel";
-import { CinematicPageHero } from "~/components/cinematic-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { CookiePreferencesPanel } from "~/components/cookie-preferences-panel";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-import { brandMedia, cinematicRouteMedia } from "~/lib/brand-media";
 import { publicContactEmail, publicContactPhone } from "~/lib/public-contact";
 
 export const metadata: Metadata = {
@@ -78,55 +75,26 @@ export default function PrivacyPage() {
     <main>
       <SiteHeader />
 
-      <CinematicPageHero
+      <CompactPageIntro
         actions={
           <>
-            <Button asChild size="lg">
+            <Button asChild>
               <Link href="#privacy-section-1">עיקרי המדיניות</Link>
             </Button>
-            <Button asChild size="lg" variant="outline">
+            <Button asChild variant="outline">
               <Link href="#privacy-contact">פנייה בנושא פרטיות</Link>
             </Button>
           </>
         }
         description="כיצד אנחנו אוספים, משתמשים, שומרים ומגנים על מידע אישי במסגרת האתר והשירותים."
         eyebrow="Aphrodite Policy"
-        scrollCue={{ href: "#privacy-section-1", label: "לעיקרי המדיניות" }}
-        slides={cinematicRouteMedia.legal}
-        stats={[
+        metrics={[
           { label: "עדכון", value: "2026" },
           { label: "זכויות", value: "עיון ותיקון" },
           { label: "קוקיז", value: "בשליטה" },
         ]}
         title="מדיניות פרטיות"
-        variant="editorial"
       />
-
-      <RevealSection aria-hidden="true" className="hidden" variant="none">
-        <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:py-16">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-muted-foreground text-sm">Aphrodite</p>
-              <h2 className="mt-3 text-4xl font-semibold tracking-normal sm:text-5xl">
-                מדיניות פרטיות
-              </h2>
-              <p className="text-muted-foreground mt-4 max-w-3xl leading-8">
-                המדיניות מפרטת כיצד אנו אוספים, משתמשים, שומרים ומגנים על מידע
-                אישי במסגרת האתר והשירותים הדיגיטליים.
-              </p>
-            </div>
-            <div className="glass-card w-fit rounded-md border p-4">
-              <LockKeyhole className="size-8" aria-hidden="true" />
-            </div>
-          </div>
-          <BrandMediaPanel
-            alt="Subtle Aphrodite Aqua policy glass accent"
-            className="mt-7 h-28"
-            slides={brandMedia.policy}
-            variant="content"
-          />
-        </div>
-      </RevealSection>
 
       <RevealSection className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:py-14">
         <div className="glass-panel rounded-md border p-6 sm:p-8">

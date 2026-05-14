@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { ArrowRight, PackageCheck } from "lucide-react";
 
 import { ReturnRequestForm } from "../../_components/return-request-form";
-import { CinematicPageHero } from "~/components/cinematic-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -17,7 +17,6 @@ import {
   getReturnStatusLabel,
   getShipmentStatusLabel,
 } from "~/lib/commerce-labels";
-import { cinematicRouteMedia } from "~/lib/brand-media";
 import { formatPrice } from "~/lib/format";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
@@ -68,28 +67,25 @@ export default async function OrderDetailPage({
   return (
     <main>
       <SiteHeader />
-      <CinematicPageHero
+      <CompactPageIntro
         actions={
           <>
-            <Button asChild size="lg">
+            <Button asChild>
               <Link href="#order-items">פריטי ההזמנה</Link>
             </Button>
-            <Button asChild size="lg" variant="outline">
+            <Button asChild variant="outline">
               <Link href="#order-support">משלוח והחזרות</Link>
             </Button>
           </>
         }
         description={`${order.recipientName} · ${order.email}`}
         eyebrow="Aphrodite Service"
-        scrollCue={{ href: "#order-summary", label: "לסיכום" }}
-        slides={cinematicRouteMedia.service}
-        stats={[
+        metrics={[
           { label: "סטטוס", value: getOrderStatusLabel(order.status) },
           { label: "סכום", value: formatPrice(Number(order.total)) },
           { label: "פריטים", value: String(order.items.length) },
         ]}
         title={order.orderNumber}
-        variant="service"
       />
       <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
         <Button asChild className="mb-6 gap-2" variant="ghost">

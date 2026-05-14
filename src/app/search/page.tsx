@@ -3,15 +3,13 @@ import { after } from "next/server";
 import { ChevronLeft, ChevronRight, Search, Sparkles, X } from "lucide-react";
 
 import { SearchControls } from "~/app/search/_components/search-controls";
-import { BrandMediaPanel } from "~/components/brand-media-panel";
-import { CinematicPageHero } from "~/components/cinematic-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { EmptyState } from "~/components/ui/empty-state";
-import { brandMedia, cinematicRouteMedia } from "~/lib/brand-media";
 import { db } from "~/server/db";
 import {
   DEFAULT_SEARCH_PER_PAGE,
@@ -115,48 +113,30 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   return (
     <main>
       <SiteHeader />
-      <CinematicPageHero
+      <CompactPageIntro
         actions={
           <>
-            <Button asChild size="lg">
+            <Button asChild>
               <Link href="#search-controls">חיפוש מדויק</Link>
             </Button>
-            <Button asChild size="lg" variant="outline">
+            <Button asChild variant="outline">
               <Link href="#search-results-section">לתוצאות</Link>
             </Button>
           </>
         }
         description="חיפוש קטלוג עם סינון לפי קטגוריה, סניף, חומר, אבן, תקציב וזמינות."
         eyebrow="Aphrodite Catalog"
-        scrollCue={{ href: "#search-controls", label: "לחיפוש" }}
-        slides={cinematicRouteMedia.search}
-        stats={[
+        metrics={[
           { label: "תוצאות", value: String(result.total) },
           { label: "פילטרים", value: String(activeFilters.length) },
           { label: "עמוד", value: String(result.page) },
         ]}
         title="חיפוש בקטלוג"
-        variant="commerce"
       />
       <RevealSection
         className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12"
         id="search-controls"
       >
-        <div className="hidden gap-4 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-end">
-          <div>
-            <h2 className="text-3xl font-semibold sm:text-4xl">חיפוש בקטלוג</h2>
-            <p className="text-muted-foreground mt-2 max-w-2xl leading-7 sm:mt-3">
-              תוצאות הקטלוג נשארות נקיות ומדויקות, עם צבע שמגיע מהפריטים עצמם.
-            </p>
-          </div>
-          <BrandMediaPanel
-            alt="Aqua catalog search jewelry scene"
-            className="hidden h-32 lg:block"
-            sizes="260px"
-            slides={brandMedia.search}
-            variant="compact"
-          />
-        </div>
         <SearchControls
           activeFilterCount={activeRefinementCount}
           branches={branches}
