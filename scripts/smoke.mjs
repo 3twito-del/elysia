@@ -127,6 +127,13 @@ export const smokeChecks = [
     includes: ['"ok":false', '"error":"Invalid request body."'],
   },
   {
+    path: "/api/webhooks/cardcom",
+    method: "POST",
+    body: "{}",
+    statuses: [401],
+    includes: ['"ok":false', '"error":"Invalid signature."'],
+  },
+  {
     path: "/admin/login?next=https://evil.example/admin",
     statuses: [200],
     includes: ['name="next"', 'value="/admin"', 'id="email"'],

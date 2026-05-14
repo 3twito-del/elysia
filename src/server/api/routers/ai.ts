@@ -6,6 +6,7 @@ import {
   createTRPCRouter,
   publicProcedure,
 } from "~/server/api/trpc";
+import { createRateLimitKey } from "~/server/services/rate-limit";
 import {
   createTryOnSessionInputSchema,
   createTryOnSessionWithAiAudit,
@@ -44,7 +45,7 @@ export const aiRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       await assertAiPublicRateLimit(ctx.headers, "order-support");
       await assertTRPCRateLimit({
-        key: `ai:order-support-email:${input.email}`,
+        key: createRateLimitKey("ai:order-support-email", input.email),
         limit: 10,
         windowMs: 15 * 60_000,
         message: "יותר מדי בדיקות הזמנה. נסו שוב מאוחר יותר.",

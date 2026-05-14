@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import { useRef, useState, type KeyboardEvent } from "react";
 import { ImageOff } from "lucide-react";
 
 import { useResolvedReducedMotion } from "~/components/motion-preference";
@@ -22,9 +22,45 @@ export function ProductGallery({
 }: ProductGalleryProps) {
   const galleryImages = Array.from(new Set(images)).filter(Boolean);
   const [activeIndex, setActiveIndex] = useState(0);
+  const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const shouldReduceMotion = useResolvedReducedMotion();
   const activeImageIndex = Math.min(activeIndex, galleryImages.length - 1);
   const activeImage = galleryImages[activeImageIndex];
+
+  function activateThumbnail(nextIndex: number, shouldFocus = false) {
+    if (galleryImages.length === 0) return;
+
+    const boundedIndex =
+      (nextIndex + galleryImages.length) % galleryImages.length;
+
+    setActiveIndex(boundedIndex);
+
+    if (shouldFocus) {
+      window.requestAnimationFrame(() => {
+        thumbnailRefs.current[boundedIndex]?.focus();
+      });
+    }
+  }
+
+  function handleThumbnailKeyDown(
+    event: KeyboardEvent<HTMLButtonElement>,
+    index: number,
+  ) {
+    const nextKeyMap: Partial<Record<string, number>> = {
+      ArrowDown: index + 1,
+      ArrowRight: index + 1,
+      ArrowLeft: index - 1,
+      ArrowUp: index - 1,
+      End: galleryImages.length - 1,
+      Home: 0,
+    };
+    const nextIndex = nextKeyMap[event.key];
+
+    if (nextIndex === undefined) return;
+
+    event.preventDefault();
+    activateThumbnail(nextIndex, true);
+  }
 
   if (!activeImage) {
     return (
@@ -119,7 +155,11 @@ export function ProductGallery({
               )}
               data-testid="product-gallery-thumbnail"
               key={image}
-              onClick={() => setActiveIndex(index)}
+              onClick={() => activateThumbnail(index)}
+              onKeyDown={(event) => handleThumbnailKeyDown(event, index)}
+              ref={(node) => {
+                thumbnailRefs.current[index] = node;
+              }}
               type="button"
             >
               <Image

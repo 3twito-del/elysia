@@ -28,6 +28,7 @@ describe("smoke checks", () => {
         "/product/venus-line-ring",
         "/checkout",
         "/account",
+        "/api/webhooks/cardcom",
         "/admin/login?next=https://evil.example/admin",
       ]),
     );

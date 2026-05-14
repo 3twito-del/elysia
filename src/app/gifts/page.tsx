@@ -67,7 +67,6 @@ export default async function GiftsPage() {
             <BrandMediaPanel
               alt="מגש תכשיטים למתנה בגוון אקווה"
               className="hidden h-32 lg:block"
-              priority
               sizes="280px"
               slides={brandMedia.gifts}
               variant="compact"

@@ -99,7 +99,7 @@ export function CookieConsentBanner() {
             variant="outline"
             onClick={() => chooseConsent("essential")}
           >
-            <Settings className="size-4" />
+            <Settings aria-hidden="true" className="size-4" />
             הכרחי בלבד
           </Button>
           <Button
@@ -107,7 +107,7 @@ export function CookieConsentBanner() {
             type="button"
             onClick={() => chooseConsent("all")}
           >
-            <CheckCircle2 className="size-4" />
+            <CheckCircle2 aria-hidden="true" className="size-4" />
             אישור הכל
           </Button>
         </div>

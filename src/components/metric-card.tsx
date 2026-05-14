@@ -32,7 +32,7 @@ export function MetricCard({
             isSoft ? "opacity-90" : "opacity-100",
           )}
         >
-          <Icon className="size-5" />
+          <Icon aria-hidden="true" className="size-5" />
         </div>
         <div className="min-w-0">
           <p className="text-muted-foreground text-sm">{label}</p>

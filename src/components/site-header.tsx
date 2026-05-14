@@ -51,7 +51,7 @@ export function SiteHeader() {
           dir="ltr"
           href="/"
         >
-          <Gem className="size-5" />
+          <Gem aria-hidden="true" className="size-5" />
           <span className="truncate text-lg font-semibold tracking-normal sm:text-xl">
             Aphrodite
           </span>
@@ -76,13 +76,13 @@ export function SiteHeader() {
         <div className="flex items-center gap-1 justify-self-end" dir="ltr">
           <Button asChild size="icon" variant="ghost">
             <Link href="/search">
-              <Search className="size-5" />
+              <Search aria-hidden="true" className="size-5" />
               <span className="sr-only">חיפוש</span>
             </Link>
           </Button>
           <Button asChild size="icon" variant="ghost">
             <Link href="/account">
-              <UserRound className="size-5" />
+              <UserRound aria-hidden="true" className="size-5" />
               <span className="sr-only">אזור לקוח</span>
             </Link>
           </Button>

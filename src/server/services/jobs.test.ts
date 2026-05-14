@@ -4,6 +4,7 @@ import {
   canExpireReservationForOrderStatus,
   createOutboxEmailMessage,
   getOutboxPayloadString,
+  redactJobRecipient,
 } from "./jobs";
 
 describe("outbox job helpers", () => {
@@ -39,5 +40,11 @@ describe("outbox job helpers", () => {
         orderNumber: "APH-20260428-AB12CD",
       }),
     ).toBeNull();
+  });
+
+  it("redacts recipients before job metadata persistence", () => {
+    expect(redactJobRecipient("dana@example.com")).toBe("d***@example.com");
+    expect(redactJobRecipient("+972-50-123-4567")).toBe("***4567");
+    expect(redactJobRecipient("")).toBe("[redacted]");
   });
 });

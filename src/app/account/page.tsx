@@ -146,13 +146,13 @@ export default async function AccountPage() {
           <>
             <Button asChild>
               <Link href="/admin">
-                <LayoutDashboard className="size-4" />
+                <LayoutDashboard aria-hidden="true" className="size-4" />
                 מעבר לניהול
               </Link>
             </Button>
             <form action={customerLogoutAction}>
               <Button className="gap-2" type="submit" variant="outline">
-                <LogOut className="size-4" />
+                <LogOut aria-hidden="true" className="size-4" />
                 יציאה
               </Button>
             </form>
@@ -176,7 +176,7 @@ export default async function AccountPage() {
             </Button>
             <form action={customerLogoutAction}>
               <Button className="gap-2" type="submit" variant="outline">
-                <LogOut className="size-4" />
+                <LogOut aria-hidden="true" className="size-4" />
                 יציאה
               </Button>
             </form>
@@ -200,7 +200,7 @@ export default async function AccountPage() {
             </Button>
             <form action={customerLogoutAction}>
               <Button className="gap-2" type="submit" variant="outline">
-                <LogOut className="size-4" />
+                <LogOut aria-hidden="true" className="size-4" />
                 יציאה
               </Button>
             </form>
@@ -253,7 +253,6 @@ export default async function AccountPage() {
           <BrandMediaPanel
             alt="Aqua account and service jewelry tray"
             className="hidden"
-            priority
             slides={brandMedia.service}
             variant="compact"
           />
@@ -348,7 +347,7 @@ export default async function AccountPage() {
           </div>
           <form action={customerLogoutAction}>
             <Button className="gap-2" type="submit" variant="outline">
-              <LogOut className="size-4" />
+              <LogOut aria-hidden="true" className="size-4" />
               יציאה
             </Button>
           </form>
@@ -356,7 +355,6 @@ export default async function AccountPage() {
         <BrandMediaPanel
           alt="Aqua account and service jewelry tray"
           className="hidden"
-          priority
           slides={brandMedia.service}
           variant="compact"
         />
@@ -481,8 +479,13 @@ export default async function AccountPage() {
                     </Link>
                     <form action={removeWishlistItemAction}>
                       <input name="itemId" type="hidden" value={item.id} />
-                      <Button size="icon" type="submit" variant="ghost">
-                        <Trash2 className="size-4" />
+                      <Button
+                        aria-label={`הסרת ${item.variant.product.name} מהמועדפים`}
+                        size="icon"
+                        type="submit"
+                        variant="ghost"
+                      >
+                        <Trash2 aria-hidden="true" className="size-4" />
                         <span className="sr-only">הסרה</span>
                       </Button>
                     </form>
@@ -605,7 +608,7 @@ export default async function AccountPage() {
           <Card className="rounded-md" id="account-privacy">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <ShieldCheck className="size-5" />
+                <ShieldCheck aria-hidden="true" className="size-5" />
                 פרטיות ונתונים
               </CardTitle>
             </CardHeader>

@@ -30,6 +30,12 @@ export type WebhookVerificationInput = {
   timestamp?: string;
 };
 
+const cardComDevelopmentWebhookPayloadSchema = z
+  .object({
+    provider: z.literal("cardcom"),
+  })
+  .passthrough();
+
 export interface PaymentProvider {
   createCheckout(input: CheckoutInput): Promise<CheckoutSession>;
   verifyWebhook(input: WebhookVerificationInput): Promise<boolean>;
@@ -93,9 +99,7 @@ class CardComPaymentProvider implements PaymentProvider {
     if (!env.CARD_COM_API_PASSWORD) {
       if (env.NODE_ENV === "production") return false;
 
-      return z
-        .object({ provider: z.literal("cardcom").optional() })
-        .safeParse(input.payload).success;
+      return isCardComDevelopmentWebhookPayload(input.payload);
     }
 
     return verifyCardComWebhookSignature({
@@ -141,6 +145,10 @@ export function verifyCardComWebhookSignature(input: {
         createHmac("sha256", secret).update(payload).digest("base64"),
       ),
   );
+}
+
+export function isCardComDevelopmentWebhookPayload(payload: unknown) {
+  return cardComDevelopmentWebhookPayloadSchema.safeParse(payload).success;
 }
 
 function createCardComSignaturePayloads(

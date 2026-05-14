@@ -56,6 +56,11 @@ export function AdminAppointmentActions({
       <div className="flex flex-wrap gap-2">
         {actions.map((action) => (
           <Button
+            aria-label={
+              mutation.isPending
+                ? `מעדכן תור: ${action.label}`
+                : `עדכון תור: ${action.label}`
+            }
             disabled={mutation.isPending}
             key={action.status}
             onClick={() =>

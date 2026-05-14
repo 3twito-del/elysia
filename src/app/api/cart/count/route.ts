@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { okJson } from "~/server/http/api-response";
+import { okJson, rateLimitedJson } from "~/server/http/api-response";
 import {
   assertRateLimit,
   getRequestIp,
@@ -34,7 +34,7 @@ export async function GET(req: Request) {
     return okJson({ itemCount: cart?.itemCount ?? 0 });
   } catch (error) {
     if (error instanceof RateLimitExceededError) {
-      return okJson({ itemCount: 0 }, { status: 429 });
+      return rateLimitedJson(error, "Too many cart count requests.");
     }
 
     return okJson({ itemCount: 0 }, { status: 400 });

@@ -56,7 +56,7 @@ export function AiGiftRecommender() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="mb-2 inline-flex items-center gap-2 text-sm font-medium">
-            <Gift className="size-4" />
+            <Gift aria-hidden="true" className="size-4" />
             התאמת מתנה
           </div>
           <h2 className="text-2xl font-semibold">שאלון מתנה חכם</h2>
@@ -65,7 +65,7 @@ export function AiGiftRecommender() {
             בקטלוג.
           </p>
         </div>
-        <Sparkles className="text-foreground size-6" />
+        <Sparkles aria-hidden="true" className="text-foreground size-6" />
       </div>
 
       <form className="grid gap-4" onSubmit={handleSubmit}>
@@ -140,9 +140,9 @@ export function AiGiftRecommender() {
           type="submit"
         >
           {recommendGift.isPending ? (
-            <Spinner />
+            <Spinner aria-hidden="true" role="presentation" />
           ) : (
-            <Sparkles className="size-4" />
+            <Sparkles aria-hidden="true" className="size-4" />
           )}
           קבלת המלצות
         </Button>

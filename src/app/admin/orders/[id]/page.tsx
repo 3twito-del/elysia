@@ -79,7 +79,7 @@ export default async function AdminOrderDetailPage({
           <Card className="rounded-md">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <ClipboardList className="size-5" />
+                <ClipboardList aria-hidden="true" className="size-5" />
                 מצב הזמנה
               </CardTitle>
             </CardHeader>
@@ -123,7 +123,7 @@ export default async function AdminOrderDetailPage({
           <Card className="rounded-md">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <PackageCheck className="size-5" />
+                <PackageCheck aria-hidden="true" className="size-5" />
                 פריטים ותשלום
               </CardTitle>
             </CardHeader>
@@ -183,7 +183,7 @@ export default async function AdminOrderDetailPage({
           <Card className="rounded-md">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Boxes className="size-5" />
+                <Boxes aria-hidden="true" className="size-5" />
                 מלאי, outbox ו-audit
               </CardTitle>
             </CardHeader>
@@ -251,7 +251,7 @@ export default async function AdminOrderDetailPage({
           <Card className="rounded-md">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <UserRound className="size-5" />
+                <UserRound aria-hidden="true" className="size-5" />
                 לקוח
               </CardTitle>
             </CardHeader>
@@ -270,7 +270,7 @@ export default async function AdminOrderDetailPage({
           <Card className="rounded-md">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Truck className="size-5" />
+                <Truck aria-hidden="true" className="size-5" />
                 פעולות תפעול
               </CardTitle>
             </CardHeader>
@@ -290,7 +290,7 @@ export default async function AdminOrderDetailPage({
           <Card className="rounded-md">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <RotateCcw className="size-5" />
+                <RotateCcw aria-hidden="true" className="size-5" />
                 החזרות
               </CardTitle>
             </CardHeader>
@@ -364,7 +364,7 @@ function OperationalList({
   return (
     <section>
       <h3 className="mb-3 flex items-center gap-2 font-medium">
-        <Icon className="size-4" />
+        <Icon aria-hidden="true" className="size-4" />
         {title}
       </h3>
       {children.length > 0 ? (

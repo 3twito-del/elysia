@@ -18,11 +18,11 @@ export function BranchCard({ branch }: { branch: CatalogBranch }) {
       <CardContent className="grid gap-5">
         <div className="text-muted-foreground grid gap-2.5 text-sm leading-6">
           <span className="flex items-center gap-2.5">
-            <MapPin className="size-4 shrink-0" />
+            <MapPin aria-hidden="true" className="size-4 shrink-0" />
             {branch.address}, {branch.city}
           </span>
           <span className="flex items-center gap-2.5">
-            <Phone className="size-4 shrink-0" />
+            <Phone aria-hidden="true" className="size-4 shrink-0" />
             {branch.phone}
           </span>
         </div>
@@ -45,7 +45,7 @@ export function BranchCard({ branch }: { branch: CatalogBranch }) {
         <div className="grid gap-2.5 sm:grid-cols-2">
           <Button asChild className="gap-2" variant="outline">
             <a href={`tel:${branch.phone}`}>
-              <Phone className="size-4" />
+              <Phone aria-hidden="true" className="size-4" />
               חיוג
             </a>
           </Button>
@@ -55,14 +55,14 @@ export function BranchCard({ branch }: { branch: CatalogBranch }) {
               rel="noreferrer"
               target="_blank"
             >
-              <MessageCircle className="size-4" />
+              <MessageCircle aria-hidden="true" className="size-4" />
               WhatsApp
             </a>
           </Button>
         </div>
         <Button asChild className="gap-2" variant="outline">
           <a href={appointmentHref} rel="noreferrer" target="_blank">
-            <CalendarCheck className="size-4" />
+            <CalendarCheck aria-hidden="true" className="size-4" />
             תיאום פגישה
           </a>
         </Button>

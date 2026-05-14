@@ -150,7 +150,7 @@ export function AdminInventoryEditor({
           type="button"
           variant="outline"
         >
-          <Save className="size-4" />
+          <Save aria-hidden="true" className="size-4" />
           <span className="sr-only">
             {mutation.isPending ? "שומר מלאי" : "שמירת מלאי"}
           </span>
@@ -243,6 +243,7 @@ export function AdminCouponCreateForm() {
   return (
     <form className="grid gap-3 md:grid-cols-5" onSubmit={handleSubmit}>
       <Input
+        aria-label="קוד קופון"
         aria-invalid={Boolean(fieldErrors.code)}
         disabled={mutation.isPending}
         name="code"
@@ -250,12 +251,14 @@ export function AdminCouponCreateForm() {
         required
       />
       <Input
+        aria-label="תיאור קופון"
         aria-invalid={Boolean(fieldErrors.description)}
         disabled={mutation.isPending}
         name="description"
         placeholder="תיאור"
       />
       <Input
+        aria-label="אחוז הנחה"
         aria-invalid={Boolean(fieldErrors.percentOff)}
         disabled={mutation.isPending}
         max={100}
@@ -265,6 +268,7 @@ export function AdminCouponCreateForm() {
         type="number"
       />
       <Input
+        aria-label="סכום הנחה"
         aria-invalid={Boolean(fieldErrors.amountOff)}
         disabled={mutation.isPending}
         min={1}
@@ -273,7 +277,7 @@ export function AdminCouponCreateForm() {
         type="number"
       />
       <Button disabled={mutation.isPending} type="submit">
-        <Plus className="size-4" />
+        <Plus aria-hidden="true" className="size-4" />
         {mutation.isPending ? "יוצר..." : "קופון"}
       </Button>
       <div className="md:col-span-5">
@@ -366,12 +370,14 @@ export function AdminProductCreateForm({ catalog }: { catalog: AdminCatalog }) {
               <Label>{branch.name}</Label>
               <div className="mt-2 grid grid-cols-2 gap-2">
                 <Input
+                  aria-label={`מלאי התחלתי עבור ${branch.name}`}
                   min={0}
                   name={`quantity_${branch.id}`}
                   placeholder="מלאי"
                   type="number"
                 />
                 <Input
+                  aria-label={`מלאי ביטחון עבור ${branch.name}`}
                   min={0}
                   name={`safety_${branch.id}`}
                   placeholder="מלאי ביטחון"
@@ -394,7 +400,7 @@ export function AdminProductCreateForm({ catalog }: { catalog: AdminCatalog }) {
       ) : null}
       <AdminMutationStatus feedback={feedback} />
       <Button disabled={mutation.isPending} type="submit">
-        <Plus className="size-4" />
+        <Plus aria-hidden="true" className="size-4" />
         {mutation.isPending ? "יוצר מוצר..." : "יצירת מוצר"}
       </Button>
     </form>
@@ -439,6 +445,7 @@ function Field({
 }) {
   return (
     <Input
+      aria-label={placeholder}
       min={type === "number" ? 0 : undefined}
       name={name}
       placeholder={placeholder}
@@ -459,6 +466,7 @@ function Select({
 }) {
   return (
     <select
+      aria-label={getSelectAriaLabel(name)}
       className="glass-control h-10 rounded-md border px-3 text-sm"
       name={name}
       required={!optional}
@@ -471,4 +479,12 @@ function Select({
       ))}
     </select>
   );
+}
+
+function getSelectAriaLabel(name: string) {
+  if (name === "categoryId") return "קטגוריית מוצר";
+  if (name === "materialId") return "חומר מוצר";
+  if (name === "stoneId") return "אבן מוצר";
+
+  return name;
 }

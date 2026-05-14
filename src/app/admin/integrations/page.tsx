@@ -96,7 +96,7 @@ export default async function AdminIntegrationsPage({
             <CardHeader>
               <CardTitle className="flex items-center justify-between gap-3 text-base">
                 <span className="flex items-center gap-2">
-                  <PlugZap className="size-4" />
+                  <PlugZap aria-hidden="true" className="size-4" />
                   {integration.name}
                 </span>
                 <Badge
@@ -130,7 +130,7 @@ export default async function AdminIntegrationsPage({
         <Card className="rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Activity className="size-5" />
+              <Activity aria-hidden="true" className="size-5" />
               Outbox
             </CardTitle>
           </CardHeader>
@@ -140,6 +140,7 @@ export default async function AdminIntegrationsPage({
               className="mb-4 grid gap-2 sm:grid-cols-[1fr_auto_auto]"
             >
               <Input
+                aria-label="חיפוש Outbox"
                 defaultValue={outboxParams.query}
                 name="query"
                 placeholder="חיפוש לפי סוג, סטטוס או מזהה"
@@ -203,7 +204,7 @@ export default async function AdminIntegrationsPage({
         <Card className="rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Activity className="size-5" />
+              <Activity aria-hidden="true" className="size-5" />
               Job runs
             </CardTitle>
           </CardHeader>

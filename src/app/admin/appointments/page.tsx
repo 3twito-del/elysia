@@ -106,7 +106,7 @@ export default async function AdminAppointmentsPage({
         <Card className="rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Search className="size-5" />
+              <Search aria-hidden="true" className="size-5" />
               סינון תורים
             </CardTitle>
           </CardHeader>
@@ -116,11 +116,13 @@ export default async function AdminAppointmentsPage({
               className="grid gap-3 md:grid-cols-[1fr_repeat(3,160px)_auto_auto]"
             >
               <Input
+                aria-label="חיפוש תורים"
                 defaultValue={params.query}
                 name="query"
                 placeholder="שם, טלפון, אימייל או נושא"
               />
               <select
+                aria-label="סינון לפי סטטוס תור"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
                 defaultValue={params.status ?? ""}
                 name="status"
@@ -133,6 +135,7 @@ export default async function AdminAppointmentsPage({
                 ))}
               </select>
               <select
+                aria-label="סינון תורים לפי סניף"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
                 defaultValue={params.branchId ?? ""}
                 name="branchId"
@@ -145,6 +148,7 @@ export default async function AdminAppointmentsPage({
                 ))}
               </select>
               <select
+                aria-label="מיון תורים"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
                 defaultValue={params.sort}
                 name="sort"
@@ -165,7 +169,7 @@ export default async function AdminAppointmentsPage({
         <Card className="mt-6 rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <CalendarClock className="size-5" />
+              <CalendarClock aria-hidden="true" className="size-5" />
               תורי סניף
             </CardTitle>
           </CardHeader>

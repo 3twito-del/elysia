@@ -6,11 +6,10 @@ import {
   cloneElement,
   isValidElement,
   useState,
-  type MouseEventHandler,
   type ReactElement,
 } from "react";
 
-import { Sheet } from "~/components/ui/sheet";
+import { Sheet, SheetTrigger } from "~/components/ui/sheet";
 
 type CategoryFilterSheetProps = {
   activeFilterCount: number;
@@ -21,7 +20,6 @@ type FilterTriggerProps = {
   "aria-expanded"?: boolean;
   "aria-haspopup"?: "dialog";
   "data-active-filter-count"?: number;
-  onClick?: MouseEventHandler<HTMLElement>;
 };
 
 export function CategoryFilterSheet({
@@ -44,29 +42,21 @@ export function CategoryFilterSheet({
   }
 
   const triggerElement = trigger as ReactElement<FilterTriggerProps>;
-  const handleTriggerClick: MouseEventHandler<HTMLElement> = (event) => {
-    triggerElement.props.onClick?.(event);
-
-    if (!event.defaultPrevented) {
-      setOpen(true);
-    }
-  };
 
   return (
-    <>
-      {cloneElement(triggerElement, {
-        "aria-expanded": open,
-        "aria-haspopup": "dialog",
-        "data-active-filter-count": activeFilterCount,
-        onClick: handleTriggerClick,
-      })}
-      <Sheet
-        closeOnMediaQuery="(min-width: 1024px)"
-        onOpenChange={setOpen}
-        open={open}
-      >
-        {content}
-      </Sheet>
-    </>
+    <Sheet
+      closeOnMediaQuery="(min-width: 1024px)"
+      onOpenChange={setOpen}
+      open={open}
+    >
+      <SheetTrigger asChild>
+        {cloneElement(triggerElement, {
+          "aria-expanded": open,
+          "aria-haspopup": "dialog",
+          "data-active-filter-count": activeFilterCount,
+        })}
+      </SheetTrigger>
+      {content}
+    </Sheet>
   );
 }

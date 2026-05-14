@@ -607,6 +607,31 @@ export async function listAdminCustomers(
   };
 }
 
+export async function recordAdminCustomerDataAccess(input: {
+  adminUserId: string;
+  page: number;
+  pageSize: number;
+  query?: string;
+  resultCount: number;
+  totalItems: number;
+}) {
+  return db.auditLog.create({
+    data: {
+      adminUserId: input.adminUserId,
+      action: "admin_customer_data_viewed",
+      entity: "Customer",
+      metadata: {
+        page: input.page,
+        pageSize: input.pageSize,
+        queryLength: input.query?.length ?? 0,
+        queryPresent: Boolean(input.query),
+        resultCount: input.resultCount,
+        totalItems: input.totalItems,
+      },
+    },
+  });
+}
+
 export async function listAdminAppointments(
   input: z.infer<typeof adminAppointmentListInputSchema>,
 ) {

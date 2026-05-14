@@ -110,7 +110,6 @@ export default function TermsPage() {
           <BrandMediaPanel
             alt="Subtle Aphrodite Aqua policy glass accent"
             className="mt-7 h-28"
-            priority
             slides={brandMedia.policy}
             variant="content"
           />

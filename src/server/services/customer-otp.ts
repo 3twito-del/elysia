@@ -67,6 +67,23 @@ export function normalizeOtpIdentifier(identifier: string) {
   return trimmed.replace(/[^\d+]/g, "");
 }
 
+export function redactOtpIdentifierForMetadata(identifier: string) {
+  const normalized = normalizeOtpIdentifier(identifier);
+
+  if (!normalized) return "[redacted]";
+
+  if (normalized.includes("@")) {
+    const [localPart, domain] = normalized.split("@");
+    const safeLocal = localPart ? `${localPart.slice(0, 1)}***` : "[redacted]";
+
+    return domain ? `${safeLocal}@${domain}` : safeLocal;
+  }
+
+  const digits = normalized.replace(/\D/g, "");
+
+  return digits.length >= 4 ? `***${digits.slice(-4)}` : "[redacted]";
+}
+
 export function hashOtp(identifier: string, code: string) {
   const secret = getOtpHashSecret();
 
@@ -140,7 +157,7 @@ export async function requestCustomerOtp(input: RequestCustomerOtpInput) {
         lastError: error instanceof Error ? error.message : "Unknown error",
         finishedAt: new Date(),
         payload: {
-          identifier,
+          identifier: redactOtpIdentifierForMetadata(identifier),
           channel: parsed.channel,
         },
       },

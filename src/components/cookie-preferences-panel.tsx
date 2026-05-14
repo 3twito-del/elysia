@@ -51,7 +51,7 @@ export function CookiePreferencesPanel() {
               variant="outline"
               onClick={() => chooseConsent("essential")}
             >
-              <ShieldCheck className="size-4" />
+              <ShieldCheck aria-hidden="true" className="size-4" />
               הכרחי בלבד
             </Button>
             <Button

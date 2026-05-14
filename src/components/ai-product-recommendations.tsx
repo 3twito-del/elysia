@@ -80,7 +80,10 @@ export function AiProductRecommendations({
                 />
               ) : (
                 <span className="bg-muted flex size-full items-center justify-center">
-                  <Sparkles className="text-muted-foreground size-5" />
+                  <Sparkles
+                    aria-hidden="true"
+                    className="text-muted-foreground size-5"
+                  />
                 </span>
               )}
             </Link>
@@ -128,7 +131,7 @@ export function AiProductRecommendations({
                   ) : null}
                   {typeof product.availableBranchCount === "number" ? (
                     <span className="inline-flex items-center gap-1">
-                      <MapPin className="size-3.5" />
+                      <MapPin aria-hidden="true" className="size-3.5" />
                       {product.availableBranchCount} סניפים
                     </span>
                   ) : null}
@@ -143,9 +146,9 @@ export function AiProductRecommendations({
                   <Link href={product.href}>
                     צפייה בפריט
                     {resolvedLayout === "grid" ? (
-                      <ExternalLink className="size-3.5" />
+                      <ExternalLink aria-hidden="true" className="size-3.5" />
                     ) : (
-                      <ArrowLeft className="size-3.5" />
+                      <ArrowLeft aria-hidden="true" className="size-3.5" />
                     )}
                   </Link>
                 </Button>

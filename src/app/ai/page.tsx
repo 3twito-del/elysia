@@ -94,14 +94,14 @@ export default async function AiPage({ searchParams }: AiPageProps) {
                   className="text-muted-foreground hover:text-foreground data-[state=active]:text-foreground min-h-10 min-w-0 cursor-pointer gap-2 rounded-none border-0 bg-transparent px-1.5 pt-1 pb-2 text-sm font-semibold shadow-none hover:bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none"
                   value="stylist"
                 >
-                  <MessageSquare className="size-4" />
+                  <MessageSquare aria-hidden="true" className="size-4" />
                   סטייליסט
                 </TabsTrigger>
                 <TabsTrigger
                   className="text-muted-foreground hover:text-foreground data-[state=active]:text-foreground min-h-10 min-w-0 cursor-pointer gap-2 rounded-none border-0 bg-transparent px-1.5 pt-1 pb-2 text-sm font-semibold shadow-none hover:bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none"
                   value="gifts"
                 >
-                  <Gift className="size-4" />
+                  <Gift aria-hidden="true" className="size-4" />
                   מתנות
                 </TabsTrigger>
               </TabsList>
@@ -120,7 +120,7 @@ export default async function AiPage({ searchParams }: AiPageProps) {
 
           <section className="grid gap-3 text-sm leading-6 sm:grid-cols-[auto_1fr] sm:items-start">
             <div className="glass-inset flex size-10 items-center justify-center rounded-md border">
-              <Sparkles className="size-4" />
+              <Sparkles aria-hidden="true" className="size-4" />
             </div>
             <p className="text-muted-foreground max-w-4xl">
               תמיכה בהזמנה, שמירת פרופיל סגנון ומדידה וירטואלית נשארים זמינים

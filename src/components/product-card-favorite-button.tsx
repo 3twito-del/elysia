@@ -65,7 +65,7 @@ function FavoriteSubmitButton({
       className={cn(
         "bg-background/82 h-10 w-10 shrink-0 rounded-full border border-[var(--glass-border)] shadow-[0_8px_18px_oklch(0_0_0_/_8%)] backdrop-blur",
         "hover:bg-background hover:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
-        isSaved && "text-red-700",
+        isSaved && "text-red-700 dark:text-red-300",
       )}
       disabled={pending}
       size="icon"

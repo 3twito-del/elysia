@@ -236,7 +236,6 @@ export default async function CategoryPage({
                   alt=""
                   className="media-color-rich object-cover"
                   fill
-                  priority
                   sizes="280px"
                   src={getCategoryBrandSlides(slug)[0]!.src}
                 />
@@ -253,7 +252,7 @@ export default async function CategoryPage({
                     >
                       <Link href={filter.href} scroll={false}>
                         <span>{filter.label}</span>
-                        <X className="size-3" />
+                        <X aria-hidden="true" className="size-3" />
                         <span className="sr-only">הסרת פילטר</span>
                       </Link>
                     </Badge>
@@ -288,7 +287,7 @@ export default async function CategoryPage({
               type="button"
               variant="outline"
             >
-              <Filter className="size-4" />
+              <Filter aria-hidden="true" className="size-4" />
               פילטרים
               {activeFilterCount > 0 && (
                 <Badge className="h-5 px-1.5" variant="secondary">
@@ -303,7 +302,7 @@ export default async function CategoryPage({
             >
               <SheetHeader className="border-b border-[var(--glass-border)] p-4">
                 <SheetTitle className="flex items-center gap-2">
-                  <SlidersHorizontal className="size-4" />
+                  <SlidersHorizontal aria-hidden="true" className="size-4" />
                   פילטרים
                 </SheetTitle>
                 <SheetDescription>
@@ -355,7 +354,7 @@ export default async function CategoryPage({
           <Card className="sticky top-24 rounded-md" size="sm">
             <CardHeader className="border-b border-[var(--glass-border)] pb-4">
               <CardTitle className="flex items-center gap-2">
-                <SlidersHorizontal className="size-4" />
+                <SlidersHorizontal aria-hidden="true" className="size-4" />
                 פילטרים
               </CardTitle>
             </CardHeader>
@@ -411,7 +410,7 @@ export default async function CategoryPage({
                 )}
                 <Button asChild size="sm" variant="outline">
                   <Link href="/ai">
-                    <Sparkles className="size-3.5" />
+                    <Sparkles aria-hidden="true" className="size-3.5" />
                     התאמה אישית
                   </Link>
                 </Button>
@@ -431,7 +430,7 @@ export default async function CategoryPage({
                   >
                     <Link href={filter.href} scroll={false}>
                       <span className="min-w-0 truncate">{filter.label}</span>
-                      <X className="size-3" />
+                      <X aria-hidden="true" className="size-3" />
                       <span className="sr-only">הסרת בחירה</span>
                     </Link>
                   </Badge>
@@ -594,7 +593,7 @@ function FilterPanel({
               key={filter.key}
             >
               <span className="min-w-0 truncate">{filter.label}</span>
-              <X className="size-3" />
+              <X aria-hidden="true" className="size-3" />
             </FilterActionLink>
           ))}
         </div>
@@ -656,7 +655,7 @@ function FilterPanel({
                 ...filters,
                 branch: active ? undefined : branch.slug,
               })}
-              icon={<MapPin className="size-3.5" />}
+              icon={<MapPin aria-hidden="true" className="size-3.5" />}
               key={branch.slug}
               label={branch.city}
               meta={getFilterCountLabel(count)}
@@ -788,7 +787,7 @@ function FilterOptionLink({
       </span>
       <span className="flex shrink-0 items-center gap-2">
         {meta && <span className="text-muted-foreground text-xs">{meta}</span>}
-        {active && <Check className="size-3.5" />}
+        {active && <Check aria-hidden="true" className="size-3.5" />}
       </span>
     </>
   );

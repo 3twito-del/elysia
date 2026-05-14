@@ -152,7 +152,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           <BrandMediaPanel
             alt="Aqua catalog search jewelry scene"
             className="hidden h-32 lg:block"
-            priority
             sizes="260px"
             slides={brandMedia.search}
             variant="compact"
@@ -180,7 +179,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               >
                 <Link href={filter.href} scroll={false}>
                   <span>{filter.label}</span>
-                  <X className="size-3" />
+                  <X aria-hidden="true" className="size-3" />
                   <span className="sr-only">הסרת פילטר</span>
                 </Link>
               </Badge>
@@ -246,7 +245,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               ) : null}
               <Button asChild size="sm" variant="outline">
                 <Link href="/ai">
-                  <Sparkles className="size-3.5" />
+                  <Sparkles aria-hidden="true" className="size-3.5" />
                   התאמה אישית
                 </Link>
               </Button>
@@ -662,7 +661,7 @@ function SearchPagination({
         >
           {currentPage > 1 ? (
             <Link href={createSearchHref({ ...input, page: previousPage })}>
-              <ChevronRight className="size-3.5" />
+              <ChevronRight aria-hidden="true" className="size-3.5" />
               הקודם
             </Link>
           ) : (
@@ -705,7 +704,7 @@ function SearchPagination({
           {currentPage < totalPages ? (
             <Link href={createSearchHref({ ...input, page: nextPage })}>
               הבא
-              <ChevronLeft className="size-3.5" />
+              <ChevronLeft aria-hidden="true" className="size-3.5" />
             </Link>
           ) : (
             <span>הבא</span>

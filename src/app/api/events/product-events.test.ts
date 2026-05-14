@@ -54,4 +54,31 @@ describe("product analytics routes", () => {
     expect(response.status).toBe(400);
     expect(dbMocks.productFindUnique).not.toHaveBeenCalled();
   });
+
+  it("standardizes product analytics rate-limit responses", async () => {
+    let response = await postProductView(createProductViewRequest());
+
+    for (let attempt = 0; attempt < 120; attempt += 1) {
+      response = await postProductView(createProductViewRequest());
+    }
+
+    expect(response.status).toBe(429);
+    expect(response.headers.get("Retry-After")).toBeTruthy();
+    await expect(response.json()).resolves.toEqual({
+      ok: false,
+      error: "Too many analytics events.",
+    });
+    expect(dbMocks.productFindUnique).not.toHaveBeenCalled();
+  });
 });
+
+function createProductViewRequest() {
+  return new Request("http://localhost/api/events/product-view", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-forwarded-for": "203.0.113.20",
+    },
+    body: "{}",
+  });
+}

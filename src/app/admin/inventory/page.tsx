@@ -99,7 +99,7 @@ export default async function AdminInventoryPage({
         <Card className="rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Search className="size-5" />
+              <Search aria-hidden="true" className="size-5" />
               סינון מלאי
             </CardTitle>
           </CardHeader>
@@ -109,11 +109,13 @@ export default async function AdminInventoryPage({
               className="grid gap-3 md:grid-cols-[1fr_180px_180px_auto_auto]"
             >
               <Input
+                aria-label="חיפוש מלאי"
                 defaultValue={params.query}
                 name="query"
                 placeholder="מוצר, SKU או סניף"
               />
               <select
+                aria-label="סינון לפי סניף"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
                 defaultValue={params.branchId ?? ""}
                 name="branchId"
@@ -126,6 +128,7 @@ export default async function AdminInventoryPage({
                 ))}
               </select>
               <select
+                aria-label="מיון מלאי"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
                 defaultValue={params.sort}
                 name="sort"
@@ -147,7 +150,7 @@ export default async function AdminInventoryPage({
         <Card className="mt-6 rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Boxes className="size-5" />
+              <Boxes aria-hidden="true" className="size-5" />
               מלאי
             </CardTitle>
           </CardHeader>

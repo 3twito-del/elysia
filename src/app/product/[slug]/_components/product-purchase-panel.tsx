@@ -124,7 +124,7 @@ export function ProductPurchasePanel({
             : selectedVariantAvailable
               ? "הוספה לסל"
               : "לא זמינה"}
-          <PackageCheck className="size-4" />
+          <PackageCheck aria-hidden="true" className="size-4" />
         </Button>
       </div>
     </div>
@@ -232,11 +232,11 @@ export function ProductPurchasePanel({
               : selectedVariantAvailable
                 ? "הוספה לסל"
                 : "לא זמינה"}
-            <PackageCheck className="size-4" />
+            <PackageCheck aria-hidden="true" className="size-4" />
           </Button>
           <WishlistButton productSlug={productSlug}>
             שמירה
-            <Heart className="size-4" />
+            <Heart aria-hidden="true" className="size-4" />
           </WishlistButton>
         </div>
 
@@ -265,7 +265,7 @@ export function ProductPurchasePanel({
         <Button asChild variant="secondary">
           <Link href={`/ai?product=${productSlug}`}>
             מדידה חכמה
-            <Sparkles className="size-4" />
+            <Sparkles aria-hidden="true" className="size-4" />
           </Link>
         </Button>
         <div className="hidden">
@@ -290,7 +290,7 @@ export function ProductPurchasePanel({
                 : selectedVariantAvailable
                   ? "הוספה לסל"
                   : "לא זמינה"}
-              <PackageCheck className="size-4" />
+              <PackageCheck aria-hidden="true" className="size-4" />
             </Button>
           </div>
         </div>

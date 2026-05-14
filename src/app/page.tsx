@@ -117,7 +117,7 @@ export default async function Home() {
             >
               <Link href="/category/rings">
                 לקולקציה
-                <ArrowLeft className="size-4" />
+                <ArrowLeft aria-hidden="true" className="size-4" />
               </Link>
             </Button>
             <Button
@@ -127,7 +127,7 @@ export default async function Home() {
             >
               <Link href="/ai">
                 ייעוץ סטייליסט AI
-                <Sparkles className="size-4" />
+                <Sparkles aria-hidden="true" className="size-4" />
               </Link>
             </Button>
           </div>
@@ -141,7 +141,7 @@ export default async function Home() {
 
               return (
                 <div className="flex items-center gap-2" key={item.label}>
-                  <Icon className="size-4" />
+                  <Icon aria-hidden="true" className="size-4" />
                   {item.label}
                 </div>
               );
@@ -153,7 +153,7 @@ export default async function Home() {
             href="#quick-search"
           >
             <span>חיפוש מהיר</span>
-            <ArrowDown className="size-4" />
+            <ArrowDown aria-hidden="true" className="size-4" />
           </a>
         </div>
       </RevealSection>
@@ -171,8 +171,12 @@ export default async function Home() {
             role="search"
           >
             <div className="relative">
-              <Search className="text-muted-foreground absolute top-1/2 right-3 size-4 -translate-y-1/2" />
+              <Search
+                aria-hidden="true"
+                className="text-muted-foreground absolute top-1/2 right-3 size-4 -translate-y-1/2"
+              />
               <Input
+                aria-label="חיפוש מוצר בקטלוג"
                 className="h-12 pr-10"
                 name="q"
                 placeholder="טבעת זהב, עגילי פנינה, מתנה עד 700..."
@@ -180,7 +184,7 @@ export default async function Home() {
             </div>
             <Button className="h-12 gap-2" type="submit">
               חיפוש
-              <Search className="size-4" />
+              <Search aria-hidden="true" className="size-4" />
             </Button>
           </form>
         </div>
@@ -222,7 +226,7 @@ export default async function Home() {
                 />
                 <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(255,255,255,0.8),rgba(255,255,255,0.08))]" />
                 <div className="glass-inset absolute right-4 bottom-4 flex size-11 items-center justify-center rounded-md border">
-                  <Gem className="text-foreground size-5" />
+                  <Gem aria-hidden="true" className="text-foreground size-5" />
                 </div>
               </div>
               <div className="flex flex-1 flex-col p-5">
@@ -232,7 +236,7 @@ export default async function Home() {
                 </p>
                 <span className="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-medium group-hover/card:underline">
                   צפייה
-                  <ArrowLeft className="size-4" />
+                  <ArrowLeft aria-hidden="true" className="size-4" />
                 </span>
               </div>
             </Link>

@@ -78,7 +78,7 @@
   --brand-aqua: #42c9be;
   --brand-aqua-soft: #effcfb;
   --brand-aqua-deep: #06383b;
-  --brand-aqua-ring: rgb(66 201 190 / 18%);
+  --brand-aqua-ring: rgb(66 201 190 / 34%);
   --glass-panel-bg: var(--card);
   --glass-card-bg: var(--card);
   --glass-control-bg: var(--background);
@@ -164,7 +164,7 @@
   --glass-shadow: oklch(0 0 0 / 16%);
   --glass-shadow-lift: oklch(0 0 0 / 20%);
   --glass-shadow-deep: oklch(0 0 0 / 26%);
-  --glass-focus: rgb(185 242 236 / 22%);
+  --glass-focus: rgb(185 242 236 / 44%);
 }
 
 @layer base {
@@ -280,7 +280,7 @@ html[data-accessibility-contrast="true"] {
   --glass-shadow: oklch(0 0 0 / 8%);
   --glass-shadow-lift: oklch(0 0 0 / 10%);
   --glass-shadow-deep: oklch(0 0 0 / 12%);
-  --glass-focus: oklch(0 0 0 / 24%);
+  --glass-focus: oklch(0 0 0 / 52%);
   --hover-lift: 0px;
 }
 
@@ -501,7 +501,7 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
   display: grid;
   width: 100vw;
   max-width: 100vw;
-  min-height: clamp(28rem, 68svh, 40rem);
+  min-height: max(36rem, calc(100svh - 4rem));
   margin-inline: calc(50% - 50vw);
   overflow: hidden;
   background: var(--brand-aqua-deep);
@@ -510,11 +510,11 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 
 .cinematic-page-hero[data-hero-variant="editorial"],
 .cinematic-page-hero[data-hero-variant="service"] {
-  min-height: clamp(27rem, 62svh, 36rem);
+  min-height: max(34rem, calc(100svh - 4rem));
 }
 
 .cinematic-page-hero[data-hero-variant="product"] {
-  min-height: clamp(29rem, 70svh, 40rem);
+  min-height: max(36rem, calc(100svh - 4rem));
 }
 
 .cinematic-page-hero-media,
@@ -1337,9 +1337,12 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
 
 html[data-public-overlay-open="true"] .public-floating-control,
 html[data-anchor-scroll-active="true"] .public-floating-control,
-html[data-public-floating-collision="true"] .public-floating-trigger,
-html[data-public-floating-bar-visible="true"] .public-floating-trigger,
-html[data-cookie-banner-open="true"] .public-floating-trigger {
+html[data-public-floating-collision="true"]
+  .public-floating-trigger:not([data-accessibility-widget-trigger="true"]),
+html[data-public-floating-bar-visible="true"]
+  .public-floating-trigger:not([data-accessibility-widget-trigger="true"]),
+html[data-cookie-banner-open="true"]
+  .public-floating-trigger:not([data-accessibility-widget-trigger="true"]) {
   opacity: 0;
   pointer-events: none;
   transform: translateY(0.5rem) scale(0.96);

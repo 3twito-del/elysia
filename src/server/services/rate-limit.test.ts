@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import {
   assertSharedRateLimitConfig,
   consumeRateLimit,
+  createRateLimitKey,
   resetRateLimitStateForTests,
 } from "./rate-limit";
 
@@ -59,5 +60,13 @@ describe("rate limit service", () => {
         UPSTASH_REDIS_REST_TOKEN: "token",
       }),
     ).not.toThrow();
+  });
+
+  it("creates stable non-PII keys for identifier-scoped limits", () => {
+    const key = createRateLimitKey("otp:request", " Dana@Example.com ");
+
+    expect(key).toBe(createRateLimitKey("otp:request", "dana@example.com"));
+    expect(key).toMatch(/^otp:request:[a-f0-9]{32}$/);
+    expect(key).not.toContain("dana@example.com");
   });
 });

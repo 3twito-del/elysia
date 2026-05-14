@@ -91,7 +91,7 @@ export default async function AdminAuditPage({
       <Card className="rounded-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Search className="size-5" />
+            <Search aria-hidden="true" className="size-5" />
             סינון Audit
           </CardTitle>
         </CardHeader>
@@ -101,16 +101,19 @@ export default async function AdminAuditPage({
             className="grid gap-3 md:grid-cols-[1fr_160px_160px_auto_auto]"
           >
             <Input
+              aria-label="חיפוש Audit"
               defaultValue={params.query}
               name="query"
               placeholder="פעולה, entity, מזהה או אדמין"
             />
             <Input
+              aria-label="סינון לפי Entity"
               defaultValue={params.entity}
               name="entity"
               placeholder="Entity"
             />
             <select
+              aria-label="מיון אירועי Audit"
               className="glass-control h-11 rounded-md border px-3 text-sm"
               defaultValue={params.sort}
               name="sort"
@@ -131,7 +134,7 @@ export default async function AdminAuditPage({
       <Card className="mt-6 rounded-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <History className="size-5" />
+            <History aria-hidden="true" className="size-5" />
             אירועים
           </CardTitle>
         </CardHeader>

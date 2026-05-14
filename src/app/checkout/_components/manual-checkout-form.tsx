@@ -159,7 +159,7 @@ export function ManualCheckoutForm({
         <Card className="rounded-md">
           <CardHeader>
             <div className="glass-inset mb-4 grid size-12 place-items-center rounded-full border">
-              <CheckCircle2 className="size-6" />
+              <CheckCircle2 aria-hidden="true" className="size-6" />
             </div>
             <CardTitle className="text-3xl">בקשת ההזמנה נקלטה</CardTitle>
           </CardHeader>
@@ -209,7 +209,7 @@ export function ManualCheckoutForm({
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CheckoutStepBadge value="1" />
-              <PackageCheck className="size-5" />
+              <PackageCheck aria-hidden="true" className="size-5" />
               פרטי הזמנה
             </CardTitle>
           </CardHeader>
@@ -304,7 +304,7 @@ export function ManualCheckoutForm({
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CheckoutStepBadge value="2" />
-              <Truck className="size-5" />
+              <Truck aria-hidden="true" className="size-5" />
               משלוח או איסוף
             </CardTitle>
           </CardHeader>
@@ -431,7 +431,7 @@ export function ManualCheckoutForm({
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CheckoutStepBadge value="3" />
-              <Gift className="size-5" />
+              <Gift aria-hidden="true" className="size-5" />
               אריזת מתנה
             </CardTitle>
           </CardHeader>
@@ -513,7 +513,7 @@ export function ManualCheckoutForm({
               type="submit"
             >
               {checkoutLocked ? "שומר הזמנה..." : "שליחת בקשת הזמנה"}
-              <CreditCard className="size-4" />
+              <CreditCard aria-hidden="true" className="size-4" />
             </Button>
             <Button asChild variant="outline">
               <Link href={`/product/${product.slug}`}>חזרה למוצר</Link>
@@ -528,7 +528,7 @@ export function ManualCheckoutForm({
 function FieldError({ id, message }: { id: string; message?: string }) {
   return (
     <p
-      className="min-h-5 text-xs leading-5 text-red-700"
+      className="text-destructive min-h-5 text-xs leading-5"
       data-testid={message ? `${id}-visible` : undefined}
       id={id}
       role={message ? "alert" : undefined}

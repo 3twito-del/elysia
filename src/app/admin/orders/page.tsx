@@ -120,7 +120,7 @@ export default async function AdminOrdersPage({
       <Card className="rounded-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Search className="size-5" />
+            <Search aria-hidden="true" className="size-5" />
             סינון הזמנות
           </CardTitle>
         </CardHeader>
@@ -130,11 +130,13 @@ export default async function AdminOrdersPage({
             className="grid gap-3 md:grid-cols-[1fr_repeat(4,160px)_auto_auto]"
           >
             <Input
+              aria-label="חיפוש הזמנות"
               defaultValue={params.query}
               name="query"
               placeholder="מספר הזמנה, לקוח, אימייל או טלפון"
             />
             <select
+              aria-label="סינון לפי סטטוס הזמנה"
               className="glass-control h-11 rounded-md border px-3 text-sm"
               defaultValue={params.status ?? ""}
               name="status"
@@ -147,6 +149,7 @@ export default async function AdminOrdersPage({
               ))}
             </select>
             <select
+              aria-label="סינון לפי סניף"
               className="glass-control h-11 rounded-md border px-3 text-sm"
               defaultValue={params.branchId ?? ""}
               name="branchId"
@@ -159,6 +162,7 @@ export default async function AdminOrdersPage({
               ))}
             </select>
             <select
+              aria-label="סינון לפי אופן מסירה"
               className="glass-control h-11 rounded-md border px-3 text-sm"
               defaultValue={params.fulfillmentMethod ?? ""}
               name="fulfillmentMethod"
@@ -168,6 +172,7 @@ export default async function AdminOrdersPage({
               <option value="PICKUP">איסוף</option>
             </select>
             <select
+              aria-label="מיון הזמנות"
               className="glass-control h-11 rounded-md border px-3 text-sm"
               defaultValue={params.sort}
               name="sort"
@@ -190,7 +195,7 @@ export default async function AdminOrdersPage({
       <Card className="mt-6 rounded-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <ClipboardList className="size-5" />
+            <ClipboardList aria-hidden="true" className="size-5" />
             תור עבודה
           </CardTitle>
         </CardHeader>

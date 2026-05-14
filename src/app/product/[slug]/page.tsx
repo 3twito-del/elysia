@@ -222,7 +222,7 @@ export default async function ProductPage({
             <Button asChild variant="secondary">
               <Link href="/branches">
                 תיאום בסניף
-                <CalendarCheck className="size-4" />
+                <CalendarCheck aria-hidden="true" className="size-4" />
               </Link>
             </Button>
           </div>
@@ -261,7 +261,7 @@ export default async function ProductPage({
           <Card className="rounded-md">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
-                <ShieldCheck className="size-5" />
+                <ShieldCheck aria-hidden="true" className="size-5" />
                 אחריות
               </CardTitle>
             </CardHeader>
@@ -272,7 +272,7 @@ export default async function ProductPage({
           <Card className="rounded-md">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
-                <RotateCcw className="size-5" />
+                <RotateCcw aria-hidden="true" className="size-5" />
                 החזרות
               </CardTitle>
             </CardHeader>

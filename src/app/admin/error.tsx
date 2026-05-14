@@ -22,7 +22,7 @@ export default function AdminError({
           <EmptyState
             actions={
               <Button className="gap-2" onClick={reset} type="button">
-                <RefreshCw className="size-4" />
+                <RefreshCw aria-hidden="true" className="size-4" />
                 ניסיון חוזר
               </Button>
             }

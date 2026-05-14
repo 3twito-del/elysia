@@ -94,7 +94,7 @@ export default async function OrderDetailPage({
       <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
         <Button asChild className="mb-6 gap-2" variant="ghost">
           <Link href="/account">
-            <ArrowRight className="size-4" />
+            <ArrowRight aria-hidden="true" className="size-4" />
             אזור לקוח
           </Link>
         </Button>
@@ -114,7 +114,7 @@ export default async function OrderDetailPage({
           <Card className="rounded-md" id="order-items">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <PackageCheck className="size-5" />
+                <PackageCheck aria-hidden="true" className="size-5" />
                 פריטים
               </CardTitle>
             </CardHeader>

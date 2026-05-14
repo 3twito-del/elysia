@@ -8,6 +8,7 @@ import { signIn, signOut } from "~/server/auth";
 import { sanitizeAdminRedirect } from "~/server/auth/admin-redirect";
 import {
   assertRateLimit,
+  createRateLimitKey,
   rateLimitMessage,
 } from "~/server/services/rate-limit";
 
@@ -36,7 +37,7 @@ export async function adminLoginAction(
 
   try {
     await assertRateLimit({
-      key: `admin-login:${parsed.data.email}`,
+      key: createRateLimitKey("admin-login", parsed.data.email),
       limit: 5,
       windowMs: 15 * 60_000,
     });

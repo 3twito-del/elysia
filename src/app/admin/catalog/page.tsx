@@ -109,7 +109,7 @@ export default async function AdminCatalogPage({
         <Card className="rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Search className="size-5" />
+              <Search aria-hidden="true" className="size-5" />
               חיפוש וסינון
             </CardTitle>
           </CardHeader>
@@ -119,11 +119,13 @@ export default async function AdminCatalogPage({
               className="grid gap-3 md:grid-cols-[1fr_repeat(3,160px)_auto_auto]"
             >
               <Input
+                aria-label="חיפוש מוצרים"
                 defaultValue={params.query}
                 name="query"
                 placeholder="שם מוצר, SKU או slug"
               />
               <select
+                aria-label="סינון לפי סטטוס מוצר"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
                 defaultValue={params.status ?? ""}
                 name="status"
@@ -136,6 +138,7 @@ export default async function AdminCatalogPage({
                 ))}
               </select>
               <select
+                aria-label="סינון לפי קטגוריה"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
                 defaultValue={params.categoryId ?? ""}
                 name="categoryId"
@@ -148,6 +151,7 @@ export default async function AdminCatalogPage({
                 ))}
               </select>
               <select
+                aria-label="מיון מוצרים"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
                 defaultValue={params.sort}
                 name="sort"
@@ -170,7 +174,7 @@ export default async function AdminCatalogPage({
         <Card className="mt-6 rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <PackageCheck className="size-5" />
+              <PackageCheck aria-hidden="true" className="size-5" />
               יצירת מוצר
             </CardTitle>
           </CardHeader>

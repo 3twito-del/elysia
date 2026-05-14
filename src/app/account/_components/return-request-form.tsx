@@ -58,7 +58,7 @@ export function ReturnRequestForm({ orderId }: { orderId: string }) {
         </StatusMessage>
       ) : null}
       <Button className="w-fit gap-2" disabled={pending} type="submit">
-        <RotateCcw className="size-4" />
+        <RotateCcw aria-hidden="true" className="size-4" />
         {pending ? "פותח בקשה..." : "פתיחת בקשת החזרה"}
       </Button>
     </form>

@@ -104,6 +104,23 @@ export function createOutboxEmailMessage(payload: Prisma.JsonValue) {
   };
 }
 
+export function redactJobRecipient(value: string) {
+  const normalized = value.trim();
+
+  if (!normalized) return "[redacted]";
+
+  if (normalized.includes("@")) {
+    const [localPart, domain] = normalized.split("@");
+    const safeLocal = localPart ? `${localPart.slice(0, 1)}***` : "[redacted]";
+
+    return domain ? `${safeLocal}@${domain}` : safeLocal;
+  }
+
+  const digits = normalized.replace(/\D/g, "");
+
+  return digits.length >= 4 ? `***${digits.slice(-4)}` : "[redacted]";
+}
+
 async function processOutboxEvent(event: OutboxEvent) {
   if (event.type === BUSINESS_EVENTS.searchReindexRequested) {
     const indexed = await searchProvider.indexProducts();
@@ -272,7 +289,7 @@ async function processEmailRequestedEvent(event: OutboxEvent) {
     metadata: {
       provider: result.provider,
       providerMessageId: result.id,
-      recipient: message.to,
+      recipient: redactJobRecipient(message.to),
     },
   });
 

@@ -6,6 +6,7 @@ import {
   assertCardComCheckoutConfigured,
   CARD_COM_PRODUCTION_CHECKOUT_ERROR,
   paymentProvider,
+  isCardComDevelopmentWebhookPayload,
   verifyCardComWebhookSignature,
 } from "./payment";
 
@@ -69,6 +70,34 @@ describe("payment adapter", () => {
     ).toBe(true);
   });
 
+  it("rejects stale timestamped CardCom webhook signatures", () => {
+    const rawBody = JSON.stringify({ orderNumber: "APH-1001" });
+    const timestamp = "1760000000";
+    const signature = createHmac("sha256", "webhook-secret")
+      .update(`${timestamp}.${rawBody}`)
+      .digest("base64");
+    const signedAtMs = Number(timestamp) * 1000;
+
+    expect(
+      verifyCardComWebhookSignature({
+        rawBody,
+        secret: "webhook-secret",
+        signature: `sha256=${signature}`,
+        timestamp,
+        nowMs: signedAtMs + 30_000,
+      }),
+    ).toBe(true);
+    expect(
+      verifyCardComWebhookSignature({
+        rawBody,
+        secret: "webhook-secret",
+        signature: `sha256=${signature}`,
+        timestamp,
+        nowMs: signedAtMs + 6 * 60_000,
+      }),
+    ).toBe(false);
+  });
+
   it("rejects missing or mismatched CardCom webhook signatures", () => {
     expect(
       verifyCardComWebhookSignature({
@@ -82,6 +111,22 @@ describe("payment adapter", () => {
         rawBody: "{}",
         secret: undefined,
         signature: "invalid",
+      }),
+    ).toBe(false);
+  });
+
+  it("keeps the development CardCom webhook fallback provider-scoped", () => {
+    expect(
+      isCardComDevelopmentWebhookPayload({
+        provider: "cardcom",
+        orderNumber: "APH-1001",
+      }),
+    ).toBe(true);
+    expect(isCardComDevelopmentWebhookPayload({})).toBe(false);
+    expect(
+      isCardComDevelopmentWebhookPayload({
+        provider: "other",
+        orderNumber: "APH-1001",
       }),
     ).toBe(false);
   });

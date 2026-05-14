@@ -5,13 +5,14 @@ import { assertTRPCRateLimit, getTRPCRequestIp } from "~/server/api/rate-limit";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { notificationProvider } from "~/server/adapters/notifications";
 import { db } from "~/server/db";
+import { createRateLimitKey } from "~/server/services/rate-limit";
 
 export const appointmentsRouter = createTRPCRouter({
   create: publicProcedure
     .input(createAppointmentInputSchema)
     .mutation(async ({ ctx, input }) => {
       await assertTRPCRateLimit({
-        key: `appointment:${input.phone}`,
+        key: createRateLimitKey("appointment", input.phone),
         limit: 4,
         windowMs: 60 * 60_000,
         message: "יותר מדי בקשות לפגישה. נסו שוב מאוחר יותר.",

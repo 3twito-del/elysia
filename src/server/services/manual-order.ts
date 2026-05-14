@@ -565,6 +565,25 @@ export function createManualOrderOperationsMessage(
   };
 }
 
+export function redactManualOrderNotificationRecipient(
+  recipient: string | null,
+) {
+  const normalized = recipient?.trim();
+
+  if (!normalized) return null;
+
+  if (normalized.includes("@")) {
+    const [localPart, domain] = normalized.split("@");
+    const safeLocal = localPart ? `${localPart.slice(0, 1)}***` : "[redacted]";
+
+    return domain ? `${safeLocal}@${domain}` : safeLocal;
+  }
+
+  const digits = normalized.replace(/\D/g, "");
+
+  return digits.length >= 4 ? `***${digits.slice(-4)}` : "[redacted]";
+}
+
 async function sendManualOrderNotifications(
   input: ManualOrderNotificationContext,
 ) {
@@ -654,7 +673,7 @@ async function recordManualOrderNotificationJob(input: {
         payload: {
           orderId: input.input.orderId,
           orderNumber: input.input.orderNumber,
-          recipient: input.recipient,
+          recipient: redactManualOrderNotificationRecipient(input.recipient),
           providerMessageId: input.providerMessageId,
         },
       },

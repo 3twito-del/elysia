@@ -56,7 +56,6 @@ export default async function BranchesPage() {
           <BrandMediaPanel
             alt="דלפק בוטיק תכשיטים בגוון אקווה"
             className="mt-6 h-52 lg:h-64"
-            priority
             slides={brandMedia.branches}
             variant="compact"
           />

@@ -12,6 +12,7 @@ import {
   createManualOrderInputSchema,
   formatManualOrderAmount,
   getManualOrderReservationExpiresAt,
+  redactManualOrderNotificationRecipient,
 } from "./manual-order";
 
 describe("manual order service", () => {
@@ -190,5 +191,15 @@ describe("manual order service", () => {
     expect(message.subject).toContain("APH-20260427-AB12CD");
     expect(message.body).toContain("dana@example.com");
     expect(message.body).toContain("RING-VENUS");
+  });
+
+  it("redacts manual-order notification recipients for job metadata", () => {
+    expect(redactManualOrderNotificationRecipient("dana@example.com")).toBe(
+      "d***@example.com",
+    );
+    expect(redactManualOrderNotificationRecipient("050-123-4567")).toBe(
+      "***4567",
+    );
+    expect(redactManualOrderNotificationRecipient(null)).toBeNull();
   });
 });

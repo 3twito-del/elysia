@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
@@ -103,6 +105,13 @@ export function resetRateLimitStateForTests() {
   buckets.clear();
   sharedLimiters.clear();
   sharedRedis = null;
+}
+
+export function createRateLimitKey(scope: string, identifier: string) {
+  const normalized = identifier.trim().toLowerCase() || "unknown";
+  const digest = createHash("sha256").update(normalized).digest("hex");
+
+  return `${scope}:${digest.slice(0, 32)}`;
 }
 
 function consumeMemoryRateLimit(input: RateLimitInput): RateLimitResult {

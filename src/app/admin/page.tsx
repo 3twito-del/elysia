@@ -100,7 +100,7 @@ export default async function AdminOverviewPage() {
         <Card className="rounded-md">
           <CardHeader className="flex flex-row items-center justify-between gap-3">
             <CardTitle className="flex items-center gap-2">
-              <ClipboardList className="size-5" />
+              <ClipboardList aria-hidden="true" className="size-5" />
               הזמנות אחרונות
             </CardTitle>
             <Button asChild size="sm" variant="outline">
@@ -164,7 +164,7 @@ export default async function AdminOverviewPage() {
         <Card className="rounded-md">
           <CardHeader className="flex flex-row items-center justify-between gap-3">
             <CardTitle className="flex items-center gap-2">
-              <PlugZap className="size-5" />
+              <PlugZap aria-hidden="true" className="size-5" />
               אינטגרציות
             </CardTitle>
             <Button asChild size="sm" variant="outline">

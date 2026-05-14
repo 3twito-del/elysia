@@ -1,5 +1,6 @@
 import { assertTRPCRateLimit, getTRPCRequestIp } from "~/server/api/rate-limit";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { createRateLimitKey } from "~/server/services/rate-limit";
 import {
   normalizeOtpIdentifier,
   requestCustomerOtp,
@@ -15,7 +16,7 @@ export const customersRouter = createTRPCRouter({
       const identifier = normalizeOtpIdentifier(input.identifier);
 
       await assertTRPCRateLimit({
-        key: `otp:request:${identifier}`,
+        key: createRateLimitKey("otp:request", identifier),
         limit: 3,
         windowMs: 10 * 60_000,
         message: "Too many OTP requests.",
@@ -36,7 +37,7 @@ export const customersRouter = createTRPCRouter({
       const identifier = normalizeOtpIdentifier(input.identifier);
 
       await assertTRPCRateLimit({
-        key: `otp:verify:${identifier}`,
+        key: createRateLimitKey("otp:verify", identifier),
         limit: 6,
         windowMs: 10 * 60_000,
         message: "Too many OTP verification attempts.",

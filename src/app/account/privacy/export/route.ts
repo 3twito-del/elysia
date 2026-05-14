@@ -2,13 +2,35 @@ import { NextResponse } from "next/server";
 
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
-import { notFoundJson, unauthorizedJson } from "~/server/http/api-response";
+import {
+  notFoundJson,
+  rateLimitedJson,
+  unauthorizedJson,
+} from "~/server/http/api-response";
+import {
+  assertRateLimit,
+  RateLimitExceededError,
+} from "~/server/services/rate-limit";
 
 export async function GET() {
   const session = await auth();
 
   if (!session?.user || session.user.adminUserId) {
     return unauthorizedJson("Unauthorized.");
+  }
+
+  try {
+    await assertRateLimit({
+      key: `privacy-export:${session.user.id}`,
+      limit: 5,
+      windowMs: 15 * 60_000,
+    });
+  } catch (error) {
+    if (error instanceof RateLimitExceededError) {
+      return rateLimitedJson(error, "Too many privacy export requests.");
+    }
+
+    throw error;
   }
 
   const customer = await db.customer.findUnique({
@@ -61,8 +83,10 @@ export async function GET() {
     ),
     {
       headers: {
+        "Cache-Control": "no-store",
         "Content-Disposition": `attachment; filename="aphrodite-customer-${customer.id}.json"`,
         "Content-Type": "application/json; charset=utf-8",
+        "X-Content-Type-Options": "nosniff",
       },
     },
   );

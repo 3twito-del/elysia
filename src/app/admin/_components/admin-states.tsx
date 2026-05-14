@@ -16,7 +16,7 @@ export function AdminForbidden({
       <Card className="rounded-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <ShieldAlert className="size-5" />
+            <ShieldAlert aria-hidden="true" className="size-5" />
             {title}
           </CardTitle>
         </CardHeader>
@@ -39,7 +39,7 @@ export function AdminDatabaseFallback() {
       <Card className="rounded-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <PlugZap className="size-5" />
+            <PlugZap aria-hidden="true" className="size-5" />
             נדרש חיבור מסד נתונים תקין
           </CardTitle>
         </CardHeader>

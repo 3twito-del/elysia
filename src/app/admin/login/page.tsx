@@ -38,7 +38,7 @@ export default async function AdminLoginPage({
             dir="ltr"
             href="/"
           >
-            <Gem className="size-5" />
+            <Gem aria-hidden="true" className="size-5" />
             <span className="text-xl font-semibold tracking-normal">
               Aphrodite
             </span>
@@ -55,7 +55,7 @@ export default async function AdminLoginPage({
           <Card className="rounded-md">
             <CardHeader className="border-b border-[var(--glass-border)] pb-4">
               <CardTitle className="flex items-center gap-2">
-                <LockKeyhole className="size-5" />
+                <LockKeyhole aria-hidden="true" className="size-5" />
                 אימות פנימי
               </CardTitle>
             </CardHeader>

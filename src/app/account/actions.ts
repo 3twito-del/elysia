@@ -11,6 +11,7 @@ import {
 } from "~/server/services/customer-otp";
 import {
   assertRateLimit,
+  createRateLimitKey,
   rateLimitMessage,
 } from "~/server/services/rate-limit";
 import { signIn, signOut } from "~/server/auth";
@@ -60,7 +61,7 @@ export async function requestCustomerOtpAction(
 
   try {
     await assertRateLimit({
-      key: `otp:request:${parsed.data.identifier}`,
+      key: createRateLimitKey("otp:request", parsed.data.identifier),
       limit: 3,
       windowMs: 10 * 60_000,
     });
@@ -100,7 +101,7 @@ export async function verifyCustomerOtpAction(
 
   try {
     await assertRateLimit({
-      key: `otp:verify:${identifier}`,
+      key: createRateLimitKey("otp:verify", identifier),
       limit: 6,
       windowMs: 10 * 60_000,
     });
@@ -319,6 +320,22 @@ export async function deleteCustomerDataAction(
       ok: false,
       message: getFirstZodIssueMessage(parsed.error),
     };
+  }
+
+  try {
+    await assertRateLimit({
+      key: `customer-data-delete:${session?.user?.id ?? "anonymous"}`,
+      limit: 3,
+      windowMs: 60 * 60_000,
+    });
+  } catch (error) {
+    const message = rateLimitMessage(error);
+
+    if (message) {
+      return { ok: false, message };
+    }
+
+    throw error;
   }
 
   const customer = session?.user?.id

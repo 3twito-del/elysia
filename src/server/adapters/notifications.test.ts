@@ -97,6 +97,35 @@ describe("notification adapter", () => {
     ).resolves.toMatchObject({ provider: "mock" });
     expect(provider.isOperational()).toBe(false);
     expect(provider.providerName()).toBe("mock");
+    expect(infoSpy).toHaveBeenCalledWith("[notifications:mock]", {
+      to: "d***@example.com",
+      toName: undefined,
+      subject: "Order update",
+      hasBody: true,
+      hasHtml: false,
+      idempotencyKey: undefined,
+    });
+
+    infoSpy.mockRestore();
+  });
+
+  it("redacts mock OTP delivery logs", async () => {
+    const infoSpy = vi.spyOn(console, "info").mockImplementation(() => {
+      return undefined;
+    });
+    const provider = createNotificationProvider({
+      NODE_ENV: "development",
+      BREVO_API_KEY: undefined,
+      RESEND_API_KEY: undefined,
+    });
+
+    await expect(
+      provider.sendOtp("dana@example.com", "123456"),
+    ).resolves.toMatchObject({ provider: "mock" });
+    expect(infoSpy).toHaveBeenCalledWith("[notifications:otp-mock]", {
+      identifier: "d***@example.com",
+      code: "[redacted]",
+    });
 
     infoSpy.mockRestore();
   });

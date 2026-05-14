@@ -21,19 +21,23 @@ export function StatusMessage({
   tone = "neutral",
   variant = "inset",
 }: StatusMessageProps) {
+  const messageRole = role ?? (tone === "error" ? "alert" : "status");
+
   return (
     <p
+      aria-atomic="true"
+      aria-live={messageRole === "alert" ? "assertive" : "polite"}
       className={cn(
         "leading-6",
         size === "xs" ? "text-xs" : "text-sm",
         variant === "inset" && "glass-inset rounded-md border p-3",
-        tone === "success" && "text-emerald-700",
-        tone === "error" && "text-red-700",
+        tone === "success" && "text-emerald-700 dark:text-emerald-300",
+        tone === "error" && "text-red-700 dark:text-red-300",
         tone === "neutral" && "text-muted-foreground",
         className,
       )}
       data-testid={testId}
-      role={role ?? (tone === "error" ? "alert" : "status")}
+      role={messageRole}
     >
       {children}
     </p>

@@ -42,7 +42,7 @@ export async function SiteFooter() {
               className="brand-footer-mark inline-flex items-center gap-2"
               href="/"
             >
-              <Gem className="size-5" />
+              <Gem aria-hidden="true" className="size-5" />
               <span className="text-2xl font-semibold tracking-normal">
                 Aphrodite
               </span>
@@ -56,13 +56,13 @@ export async function SiteFooter() {
               <Button asChild variant="secondary">
                 <Link href="/ai">
                   ייעוץ אישי
-                  <Sparkles className="size-4" />
+                  <Sparkles aria-hidden="true" className="size-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline">
                 <Link href="/branches">
                   מציאת סניף
-                  <MapPin className="size-4" />
+                  <MapPin aria-hidden="true" className="size-4" />
                 </Link>
               </Button>
             </div>
@@ -72,7 +72,10 @@ export async function SiteFooter() {
             <details className="group glass-inset rounded-md border">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4 text-sm font-semibold [&::-webkit-details-marker]:hidden">
                 קטגוריות
-                <ChevronDown className="size-4 transition group-open:rotate-180" />
+                <ChevronDown
+                  aria-hidden="true"
+                  className="size-4 transition group-open:rotate-180"
+                />
               </summary>
               <ul className="text-muted-foreground grid gap-3 border-t border-[var(--glass-border)] p-4 text-sm">
                 {categories.map((category) => (
@@ -99,7 +102,10 @@ export async function SiteFooter() {
             <details className="group glass-inset rounded-md border">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4 text-sm font-semibold [&::-webkit-details-marker]:hidden">
                 שירות וקנייה
-                <ChevronDown className="size-4 transition group-open:rotate-180" />
+                <ChevronDown
+                  aria-hidden="true"
+                  className="size-4 transition group-open:rotate-180"
+                />
               </summary>
               <ul className="grid gap-3 border-t border-[var(--glass-border)] p-4 text-sm">
                 {serviceLinks.map((item) => {
@@ -111,7 +117,7 @@ export async function SiteFooter() {
                         className="text-muted-foreground hover:text-foreground inline-flex min-h-9 items-center gap-2 transition"
                         href={item.href}
                       >
-                        <Icon className="size-4" />
+                        <Icon aria-hidden="true" className="size-4" />
                         {item.label}
                       </Link>
                     </li>
@@ -123,7 +129,10 @@ export async function SiteFooter() {
             <details className="group glass-inset rounded-md border">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4 text-sm font-semibold [&::-webkit-details-marker]:hidden">
                 סניפים וקשר
-                <ChevronDown className="size-4 transition group-open:rotate-180" />
+                <ChevronDown
+                  aria-hidden="true"
+                  className="size-4 transition group-open:rotate-180"
+                />
               </summary>
               <div className="grid gap-4 border-t border-[var(--glass-border)] p-4">
                 <p className="text-muted-foreground text-sm leading-7">
@@ -150,7 +159,7 @@ export async function SiteFooter() {
                 >
                   <Link href="/branches">
                     לכל הסניפים
-                    <MapPin className="size-4" />
+                    <MapPin aria-hidden="true" className="size-4" />
                   </Link>
                 </Button>
               </div>
@@ -193,7 +202,7 @@ export async function SiteFooter() {
                       className="text-muted-foreground hover:text-foreground inline-flex min-h-8 items-center gap-2 transition"
                       href={item.href}
                     >
-                      <Icon className="size-4" />
+                      <Icon aria-hidden="true" className="size-4" />
                       {item.label}
                     </Link>
                   </li>
@@ -231,7 +240,7 @@ export async function SiteFooter() {
             >
               <Link href="/branches">
                 לכל הסניפים
-                <MapPin className="size-4" />
+                <MapPin aria-hidden="true" className="size-4" />
               </Link>
             </Button>
           </section>

@@ -10,6 +10,7 @@ import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 import {
   assertRateLimit,
+  createRateLimitKey,
   rateLimitMessage,
 } from "~/server/services/rate-limit";
 
@@ -35,7 +36,7 @@ export async function joinNewsletter(
 
   try {
     await assertRateLimit({
-      key: `newsletter:${parsed.data.email}`,
+      key: createRateLimitKey("newsletter", parsed.data.email),
       limit: 3,
       windowMs: 10 * 60_000,
     });

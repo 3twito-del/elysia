@@ -200,7 +200,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
         </div>
         <Button disabled={!canSubmit} form={checkoutFormId} type="submit">
           {checkoutLocked ? "שומר..." : "שמירה"}
-          <PackageCheck className="size-4" />
+          <PackageCheck aria-hidden="true" className="size-4" />
         </Button>
       </div>
     </div>
@@ -265,7 +265,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
         <Card className="rounded-md">
           <CardHeader>
             <div className="glass-inset mb-4 grid size-12 place-items-center rounded-full border">
-              <CheckCircle2 className="size-6" />
+              <CheckCircle2 aria-hidden="true" className="size-6" />
             </div>
             <CardTitle className="text-3xl">ההזמנה נשמרה</CardTitle>
           </CardHeader>
@@ -321,7 +321,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckoutStepBadge value="1" />
-                <PackageCheck className="size-5" />
+                <PackageCheck aria-hidden="true" className="size-5" />
                 פריטים בסל
               </CardTitle>
             </CardHeader>
@@ -380,6 +380,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                     </div>
                     <div className="col-span-2 flex items-center justify-end gap-2 sm:col-span-1">
                       <Button
+                        aria-label={`הפחתת כמות עבור ${item.productName}`}
                         onClick={() =>
                           sessionKey &&
                           updateItem.mutate({
@@ -397,13 +398,19 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                           checkoutLocked
                         }
                       >
-                        <Minus className="size-4" />
+                        <Minus aria-hidden="true" className="size-4" />
                         <span className="sr-only">הפחתה</span>
                       </Button>
-                      <span className="grid h-10 w-10 place-items-center text-sm font-medium">
+                      <span
+                        aria-atomic="true"
+                        aria-label={`כמות ${item.productName}: ${item.quantity}`}
+                        aria-live="polite"
+                        className="grid h-10 w-10 place-items-center text-sm font-medium"
+                      >
                         {item.quantity}
                       </span>
                       <Button
+                        aria-label={`הוספת כמות עבור ${item.productName}`}
                         onClick={() =>
                           sessionKey &&
                           updateItem.mutate({
@@ -421,10 +428,11 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                           checkoutLocked
                         }
                       >
-                        <Plus className="size-4" />
+                        <Plus aria-hidden="true" className="size-4" />
                         <span className="sr-only">הוספה</span>
                       </Button>
                       <Button
+                        aria-label={`הסרת ${item.productName} מהסל`}
                         onClick={() =>
                           sessionKey &&
                           removeItem.mutate({
@@ -437,7 +445,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
                         variant="ghost"
                         disabled={removeItem.isPending || checkoutLocked}
                       >
-                        <Trash2 className="size-4" />
+                        <Trash2 aria-hidden="true" className="size-4" />
                         <span className="sr-only">הסרה</span>
                       </Button>
                     </div>
@@ -544,7 +552,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckoutStepBadge value="3" />
-                <Truck className="size-5" />
+                <Truck aria-hidden="true" className="size-5" />
                 מסירה
               </CardTitle>
             </CardHeader>
@@ -669,7 +677,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckoutStepBadge value="4" />
-                <Gift className="size-5" />
+                <Gift aria-hidden="true" className="size-5" />
                 הטבות ומתנה
               </CardTitle>
             </CardHeader>
@@ -791,7 +799,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
               ) : null}
               <Button disabled={!canSubmit} size="lg" type="submit">
                 {checkoutLocked ? "שומר הזמנה..." : "שמירת הזמנה"}
-                <PackageCheck className="size-4" />
+                <PackageCheck aria-hidden="true" className="size-4" />
               </Button>
             </CardContent>
           </Card>
@@ -807,7 +815,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
 function FieldError({ id, message }: { id: string; message?: string }) {
   return (
     <p
-      className="min-h-5 text-xs leading-5 text-red-700"
+      className="text-destructive min-h-5 text-xs leading-5"
       data-testid={message ? `${id}-visible` : undefined}
       id={id}
       role={message ? "alert" : undefined}
@@ -818,13 +826,27 @@ function FieldError({ id, message }: { id: string; message?: string }) {
 }
 
 function ReservationCountdown({ expiresAt }: { expiresAt: Date }) {
-  const [now, setNow] = useState(() => Date.now());
-  const remainingMs = Math.max(0, expiresAt.getTime() - now);
-  const remainingMinutes = Math.floor(remainingMs / 60_000);
-  const remainingSeconds = Math.floor((remainingMs % 60_000) / 1000);
+  const [now, setNow] = useState<number | null>(null);
+  const remainingMs =
+    now === null ? null : Math.max(0, expiresAt.getTime() - now);
+  const remainingMinutes =
+    remainingMs === null ? null : Math.floor(remainingMs / 60_000);
+  const remainingSeconds =
+    remainingMs === null ? null : Math.floor((remainingMs % 60_000) / 1000);
+  const countdownText =
+    remainingMs === null
+      ? "--:--"
+      : `${String(remainingMinutes).padStart(2, "0")}:${String(
+          remainingSeconds,
+        ).padStart(2, "0")}`;
 
   useEffect(() => {
-    const interval = window.setInterval(() => setNow(Date.now()), 1000);
+    function updateNow() {
+      setNow(Date.now());
+    }
+
+    updateNow();
+    const interval = window.setInterval(updateNow, 1000);
 
     return () => window.clearInterval(interval);
   }, []);
@@ -832,9 +854,8 @@ function ReservationCountdown({ expiresAt }: { expiresAt: Date }) {
   return (
     <div className="glass-inset rounded-md border p-4">
       <p className="text-muted-foreground text-sm">שמירת מלאי</p>
-      <p className="mt-1 text-2xl font-semibold">
-        {String(remainingMinutes).padStart(2, "0")}:
-        {String(remainingSeconds).padStart(2, "0")}
+      <p aria-live="polite" className="mt-1 text-2xl font-semibold">
+        {countdownText}
       </p>
     </div>
   );

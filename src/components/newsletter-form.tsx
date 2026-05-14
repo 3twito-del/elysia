@@ -45,7 +45,7 @@ function SubmitButton() {
 
   return (
     <Button className="gap-2" disabled={pending} type="submit">
-      <Mail className="size-4" />
+      <Mail aria-hidden="true" className="size-4" />
       {pending ? "שומר..." : "הרשמה"}
     </Button>
   );

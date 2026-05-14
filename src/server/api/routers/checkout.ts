@@ -9,7 +9,10 @@ import {
   createCartCheckoutOrder,
 } from "~/server/services/cart-checkout";
 import { BUSINESS_EVENTS, enqueueOutboxEvent } from "~/server/services/outbox";
-import { consumeRateLimit } from "~/server/services/rate-limit";
+import {
+  consumeRateLimit,
+  createRateLimitKey,
+} from "~/server/services/rate-limit";
 import {
   createManualOrder,
   createManualOrderInputSchema,
@@ -28,7 +31,7 @@ export const checkoutRouter = createTRPCRouter({
     .input(createManualOrderInputSchema)
     .mutation(async ({ input }) => {
       const rateLimit = await consumeRateLimit({
-        key: `checkout:${input.customer.email}`,
+        key: createRateLimitKey("checkout", input.customer.email),
         limit: 5,
         windowMs: 15 * 60_000,
       });
@@ -47,7 +50,7 @@ export const checkoutRouter = createTRPCRouter({
     .input(cartCheckoutInputSchema)
     .mutation(async ({ input }) => {
       const rateLimit = await consumeRateLimit({
-        key: `cart-checkout:${input.customer.email}`,
+        key: createRateLimitKey("cart-checkout", input.customer.email),
         limit: 5,
         windowMs: 15 * 60_000,
       });
@@ -66,7 +69,7 @@ export const checkoutRouter = createTRPCRouter({
     .input(createPaymentInputSchema)
     .mutation(async ({ ctx, input }) => {
       const rateLimit = await consumeRateLimit({
-        key: `payment:${input.customerEmail}`,
+        key: createRateLimitKey("payment", input.customerEmail),
         limit: 8,
         windowMs: 15 * 60_000,
       });

@@ -66,7 +66,7 @@ export default function StylistPage() {
             <Card className="rounded-md">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Sparkles className="size-5" />
+                  <Sparkles aria-hidden="true" className="size-5" />
                   מה ה-AI יודע לעשות
                 </CardTitle>
               </CardHeader>

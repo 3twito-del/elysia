@@ -69,26 +69,32 @@ export async function POST(req: Request) {
   });
 }
 
-function verifyCloudinarySignature(input: {
+export function verifyCloudinarySignature(input: {
   rawBody: string;
   signature: string | null;
+  secret?: string;
+  nodeEnv?: string;
+  nowMs?: number;
   timestamp: string | null;
 }) {
-  if (!env.CLOUDINARY_API_SECRET) {
-    return env.NODE_ENV !== "production";
+  const secret = input.secret ?? env.CLOUDINARY_API_SECRET;
+
+  if (!secret) {
+    return (input.nodeEnv ?? env.NODE_ENV) !== "production";
   }
 
   if (!input.signature || !input.timestamp) return false;
 
   const timestampMs = Number(input.timestamp) * 1000;
+  const nowMs = input.nowMs ?? Date.now();
 
   if (!Number.isFinite(timestampMs)) return false;
 
   const twoHoursMs = 2 * 60 * 60_000;
 
-  if (Math.abs(Date.now() - timestampMs) > twoHoursMs) return false;
+  if (Math.abs(nowMs - timestampMs) > twoHoursMs) return false;
 
-  const signedPayload = `${input.rawBody}${input.timestamp}${env.CLOUDINARY_API_SECRET}`;
+  const signedPayload = `${input.rawBody}${input.timestamp}${secret}`;
 
   return ["sha1", "sha256"].some((algorithm) =>
     safeEqualHex(

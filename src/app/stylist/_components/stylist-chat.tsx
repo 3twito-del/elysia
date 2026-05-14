@@ -107,7 +107,7 @@ export function StylistChat({ compact = false }: StylistChatProps) {
                 compact ? "size-10" : "size-12",
               )}
             >
-              <Sparkles className="text-foreground size-5" />
+              <Sparkles aria-hidden="true" className="text-foreground size-5" />
             </div>
           </div>
         </div>
@@ -131,7 +131,10 @@ export function StylistChat({ compact = false }: StylistChatProps) {
                         compact ? "size-12" : "size-14",
                       )}
                     >
-                      <MessageSquare className="text-muted-foreground size-7" />
+                      <MessageSquare
+                        aria-hidden="true"
+                        className="text-muted-foreground size-7"
+                      />
                     </div>
                     <div className="grid gap-2">
                       <h3 className="text-lg font-semibold">
@@ -186,7 +189,10 @@ export function StylistChat({ compact = false }: StylistChatProps) {
             {error ? (
               <div className="glass-inset mb-4 rounded-md border p-4 text-sm">
                 <div className="flex items-start gap-3">
-                  <AlertCircle className="mt-0.5 size-5 shrink-0" />
+                  <AlertCircle
+                    aria-hidden="true"
+                    className="mt-0.5 size-5 shrink-0"
+                  />
                   <div className="grid gap-2">
                     <p className="font-medium">הסטייליסט לא זמין כרגע.</p>
                     <p className="text-muted-foreground leading-6">
@@ -225,7 +231,7 @@ export function StylistChat({ compact = false }: StylistChatProps) {
                 status={status}
               >
                 {status === "ready" || status === "error" ? (
-                  <Send className="size-4" />
+                  <Send aria-hidden="true" className="size-4" />
                 ) : undefined}
               </PromptInputSubmit>
             </PromptInput>
@@ -378,7 +384,7 @@ function SafeActionToolResult({
             size="sm"
             type="button"
           >
-            <Check className="size-4" />
+            <Check aria-hidden="true" className="size-4" />
             אשר
           </Button>
           <Button
@@ -394,7 +400,7 @@ function SafeActionToolResult({
             type="button"
             variant="outline"
           >
-            <X className="size-4" />
+            <X aria-hidden="true" className="size-4" />
             בטל
           </Button>
         </div>

@@ -7,13 +7,33 @@ import { searchProvider } from "~/server/adapters/search";
 import {
   forbiddenJson,
   okJson,
+  rateLimitedJson,
   unauthorizedJson,
 } from "~/server/http/api-response";
 import { BUSINESS_EVENTS, enqueueOutboxEvent } from "~/server/services/outbox";
+import {
+  assertRateLimit,
+  getRequestIp,
+  RateLimitExceededError,
+} from "~/server/services/rate-limit";
 
 export const dynamic = "force-dynamic";
 
-export async function POST() {
+export async function POST(req: Request) {
+  try {
+    await assertRateLimit({
+      key: `search-reindex:${getRequestIp(req)}`,
+      limit: 10,
+      windowMs: 60_000,
+    });
+  } catch (error) {
+    if (error instanceof RateLimitExceededError) {
+      return rateLimitedJson(error, "Too many search reindex requests.");
+    }
+
+    throw error;
+  }
+
   const session = await auth();
 
   if (!session?.user) {

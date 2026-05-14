@@ -59,7 +59,7 @@ function SubmitButton() {
 
   return (
     <Button className="w-full gap-2" disabled={pending} size="lg" type="submit">
-      <LockKeyhole className="size-4" />
+      <LockKeyhole aria-hidden="true" className="size-4" />
       {pending ? "בודק הרשאה..." : "כניסה לאדמין"}
     </Button>
   );

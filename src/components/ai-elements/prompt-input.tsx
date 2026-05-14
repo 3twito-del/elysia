@@ -1129,13 +1129,19 @@ export const PromptInputButton = ({
   className,
   size,
   tooltip,
+  "aria-label": ariaLabel,
   ...props
 }: PromptInputButtonProps) => {
   const newSize =
     size ?? (Children.count(props.children) > 1 ? "sm" : "icon-sm");
+  const tooltipLabel = typeof tooltip === "string" ? tooltip : undefined;
+  const inferredAriaLabel = String(newSize).startsWith("icon")
+    ? tooltipLabel
+    : undefined;
 
   const button = (
     <InputGroupButton
+      aria-label={ariaLabel ?? inferredAriaLabel}
       className={cn(className)}
       size={newSize}
       type="button"
@@ -1176,10 +1182,11 @@ export type PromptInputActionMenuTriggerProps = PromptInputButtonProps;
 export const PromptInputActionMenuTrigger = ({
   className,
   children,
+  "aria-label": ariaLabel = "פתיחת פעולות קלט",
   ...props
 }: PromptInputActionMenuTriggerProps) => (
   <DropdownMenuTrigger asChild>
-    <PromptInputButton className={className} {...props}>
+    <PromptInputButton aria-label={ariaLabel} className={className} {...props}>
       {children ?? <PlusIcon aria-hidden="true" className="size-4" />}
     </PromptInputButton>
   </DropdownMenuTrigger>
@@ -1228,7 +1235,7 @@ export const PromptInputSubmit = ({
   let Icon = <CornerDownLeftIcon aria-hidden="true" className="size-4" />;
 
   if (status === "submitted") {
-    Icon = <Spinner />;
+    Icon = <Spinner aria-hidden="true" role="presentation" />;
   } else if (status === "streaming") {
     Icon = <SquareIcon aria-hidden="true" className="size-4" />;
   } else if (status === "error") {

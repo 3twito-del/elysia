@@ -10,8 +10,15 @@ import { StickToBottom, useStickToBottomContext } from "use-stick-to-bottom";
 
 export type ConversationProps = ComponentProps<typeof StickToBottom>;
 
-export const Conversation = ({ className, ...props }: ConversationProps) => (
+export const Conversation = ({
+  className,
+  "aria-label": ariaLabel = "שיחת AI",
+  ...props
+}: ConversationProps) => (
   <StickToBottom
+    aria-label={ariaLabel}
+    aria-live="polite"
+    aria-relevant="additions text"
     className={cn("relative flex-1 overflow-y-hidden", className)}
     initial="smooth"
     resize="smooth"
@@ -42,8 +49,8 @@ export type ConversationEmptyStateProps = ComponentProps<"div"> & {
 
 export const ConversationEmptyState = ({
   className,
-  title = "No messages yet",
-  description = "Start a conversation to see messages here",
+  title = "אין הודעות עדיין",
+  description = "התחילו שיחה כדי לראות כאן הודעות",
   icon,
   children,
   ...props
@@ -84,6 +91,7 @@ export const ConversationScrollButton = ({
   return (
     !isAtBottom && (
       <Button
+        aria-label="גלילה לתחתית השיחה"
         className={cn(
           "dark:bg-background dark:hover:bg-muted absolute bottom-4 left-[50%] translate-x-[-50%] rounded-full",
           className,
@@ -94,7 +102,7 @@ export const ConversationScrollButton = ({
         variant="outline"
         {...props}
       >
-        <ArrowDownIcon className="size-4" />
+        <ArrowDownIcon aria-hidden="true" className="size-4" />
       </Button>
     )
   );
@@ -117,7 +125,11 @@ export type ConversationDownloadProps = Omit<
 
 const defaultFormatMessage = (message: UIMessage): string => {
   const roleLabel =
-    message.role.charAt(0).toUpperCase() + message.role.slice(1);
+    message.role === "user"
+      ? "משתמש"
+      : message.role === "assistant"
+        ? "עוזר"
+        : "מערכת";
   return `**${roleLabel}:** ${getMessageText(message)}`;
 };
 
@@ -131,7 +143,7 @@ export const messagesToMarkdown = (
 
 export const ConversationDownload = ({
   messages,
-  filename = "conversation.md",
+  filename = "aphrodite-ai-chat.md",
   formatMessage = defaultFormatMessage,
   className,
   children,
@@ -152,6 +164,7 @@ export const ConversationDownload = ({
 
   return (
     <Button
+      aria-label="הורדת השיחה"
       className={cn(
         "dark:bg-background dark:hover:bg-muted absolute top-4 right-4 rounded-full",
         className,
@@ -162,7 +175,7 @@ export const ConversationDownload = ({
       variant="outline"
       {...props}
     >
-      {children ?? <DownloadIcon className="size-4" />}
+      {children ?? <DownloadIcon aria-hidden="true" className="size-4" />}
     </Button>
   );
 };

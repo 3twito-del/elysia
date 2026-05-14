@@ -26,7 +26,7 @@ export function CustomerPrivacyActions() {
     <div className="grid gap-4">
       <Button asChild className="w-fit gap-2" variant="outline">
         <a href="/account/privacy/export">
-          <Download className="size-4" />
+          <Download aria-hidden="true" className="size-4" />
           ייצוא נתונים
         </a>
       </Button>
@@ -65,7 +65,7 @@ export function CustomerPrivacyActions() {
           type="submit"
           variant="outline"
         >
-          <Trash2 className="size-4" />
+          <Trash2 aria-hidden="true" className="size-4" />
           {pending ? "מוחק נתונים..." : "מחיקת נתונים"}
         </Button>
       </form>

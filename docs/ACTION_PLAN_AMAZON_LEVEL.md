@@ -19,6 +19,7 @@ Use this track for local product quality, UI polish, correctness, and implementa
 - Completed 2026-05-13: Close mobile-only sheets automatically when the viewport reaches the desktop breakpoint.
 - Completed 2026-05-13: Add or extend visual QA screenshots for the home hero, mobile navigation, category sheets, filter panels, and key popups.
 - Completed 2026-05-13: Review responsive layout at mobile, tablet, laptop, and wide desktop widths for text overflow, clipped controls, and inconsistent spacing.
+- Completed 2026-05-14: Fixed shared cinematic page-hero viewport height so public route heroes keep their first-viewport presence across desktop and mobile, and revalidated the Playwright hero guard.
 
 ### Product Discovery
 
@@ -43,6 +44,18 @@ Use this track for local product quality, UI polish, correctness, and implementa
 - Keep `pnpm lint`, `pnpm typecheck`, and targeted tests passing after each implementation slice.
 - Completed 2026-05-14: Add regression checks for hydration-sensitive components that render differently on mobile and desktop. Added Playwright hydration/error-overlay guards for header mobile navigation, search/category filter sheets, and cart-count client hydration across mobile and desktop viewport changes.
 - Completed 2026-05-14: Verify development fallbacks fail clearly when production-only provider env vars are absent. Added testable production env validation, documented Vercel runtime guard env in `.env.example`, blocked Typesense local search fallback on production search paths, and made missing production transactional email providers fail with an explicit provider error instead of mock delivery.
+- Completed 2026-05-14: Standardized cart-count and analytics rate-limit regression coverage, tightened the local CardCom webhook fallback to provider-scoped payloads, and extended smoke coverage for invalid CardCom webhook signatures.
+- Completed 2026-05-14: Added IP-scoped rate limiting to the admin search reindex route before authentication and covered both the authorized reindex path and standardized 429 response with route tests.
+- Completed 2026-05-14: Minimized PII in local notification mock logs by redacting email/phone identifiers, suppressing OTP codes and message bodies, and adding adapter regression coverage.
+- Completed 2026-05-14: Added CardCom webhook replay-protection regression coverage for timestamped HMAC signatures so stale signed callbacks are rejected.
+- Completed 2026-05-14: Hardened customer privacy export/delete flows with per-user rate limits, no-store export download headers, audit-preserving export coverage, and Cloudinary webhook replay/signature regression tests.
+- Completed 2026-05-14: Added a static security guardrail that scans source and scripts for common production secret/token patterns before they can land in code.
+- Completed 2026-05-14: Added non-PII audit logging for admin customer-list access so customer-data browsing records admin, pagination, result counts, and query presence without storing raw search text.
+- Completed 2026-05-14: Added IP-scoped rate limiting and route tests for the outbox job endpoint so repeated job triggers are throttled before processor work.
+- Completed 2026-05-14: Minimized PII in outbox email job metadata by redacting email/phone recipients before `JobRun` persistence, with helper coverage.
+- Completed 2026-05-14: Minimized PII in manual-order notification `IntegrationJob` payloads by redacting stored recipients while preserving actual delivery messages.
+- Completed 2026-05-14: Replaced identifier-scoped rate-limit keys for newsletter, OTP, admin login, appointments, AI order support, checkout, cart checkout, and payment with stable SHA-256 scoped keys so Redis/shared limiter keys do not expose raw email or phone values.
+- Completed 2026-05-14: Minimized PII in OTP delivery failure metadata by redacting persisted email/phone identifiers while preserving channel and helper coverage.
 
 ### Accessibility and Performance
 
@@ -50,8 +63,19 @@ Use this track for local product quality, UI polish, correctness, and implementa
 - Completed 2026-05-14: Tuned product-card and product-gallery image `sizes`/lazy-loading behavior so search/category cards and gallery thumbnails request more appropriate responsive image candidates without layout changes.
 - Completed 2026-05-14: Centralized Hebrew date and date-time rendering on an explicit `Asia/Jerusalem` timezone across account, admin, and manual-order notification surfaces to avoid date/locale drift.
 - Completed 2026-05-14: Localized AI prompt/message and admin navigation accessibility labels, and marked decorative control icons as hidden from assistive technology.
-- Review keyboard flow for header navigation, mobile sheets, filters, dialogs, product cards, checkout forms, and admin actions.
-- Fix contrast, visible focus, aria labels, heading order, and screen-reader labels where existing UI falls short.
+- Completed 2026-05-14: Extended product-gallery keyboard flow with arrow/Home/End thumbnail activation, added explicit checkout quantity/remove labels and live quantity text, hid additional decorative category/header/AI icons from assistive technology, and covered the gallery/checkout labels in E2E regression checks.
+- Completed 2026-05-14: Hardened admin filter/create/action controls with explicit accessible names, hid additional decorative admin/cookie icons, moved customer OTP cart-session hydration to a hydration-safe client snapshot, and added an account hydration regression check.
+- Completed 2026-05-14: Closed another accessibility/hydration slice by hiding remaining decorative home/account/admin icons, adding explicit labels for home quick search and admin filters in customers, appointments, integrations, and audit, naming wishlist removal by product, keeping the accessibility widget trigger reachable when floating collision guards are active, moving accessibility preferences to a hydration-safe external-store snapshot, and adding Playwright regression checks for quick-search labels, stored accessibility settings, and widget keyboard operation.
+- Completed 2026-05-14: Added a static Next Image `fill`/`sizes` regression guard and hid additional decorative branch, account, footer, search, AI, product, checkout, and loading icons from assistive technology.
+- Completed 2026-05-14: Hardened shared AI chat elements with a named polite conversation log, accessible icon-only scroll/download/prompt controls, localized shared defaults, decorative action icons, and static regression coverage for those guardrails.
+- Completed 2026-05-14: Removed eager priority loading from hidden account/search/gift/policy/branch/category media panels, hid remaining decorative search/account/cookie/admin/product/checkout/order-detail/about icons from assistive technology, and added static guards that prevent hidden image/media surfaces or hidden aria sections from being marked `priority`.
+- Completed 2026-05-14: Made the cart checkout reservation countdown hydration-safe by rendering a stable initial placeholder before the client clock starts, and added a static guard against wall-clock state initializers in client-rendered app/component surfaces.
+- Completed 2026-05-14: Hardened shared button behavior by defaulting native buttons to `type="button"`, preserving explicit submit/asChild behavior, and adding a static guard that keeps icon-sized buttons accessible by name.
+- Completed 2026-05-14: Hardened shared spinner semantics so standalone loading indicators keep a status label while decorative spinners inside named buttons/loading regions stay hidden from assistive technology, with regression coverage.
+- Completed 2026-05-14: Made shared status messages explicitly live and atomic so form errors announce assertively while neutral/success feedback announces politely, with regression coverage.
+- Completed 2026-05-14: Tightened dark-mode contrast for shared status messages, checkout field errors, and saved-product affordances by using theme-aware destructive/success text classes.
+- Completed 2026-05-14: Reviewed the mobile keyboard flow for header navigation and responsive filter sheets, wired the category filter sheet through the real Radix `SheetTrigger` so Escape/close restores focus to the trigger, and added Playwright coverage for keyboard opening/closing of mobile nav, search filters, and category filters.
+- Completed 2026-05-14: Strengthened shared visible-focus contrast tokens across default, dark, and high-contrast modes; made Select and Dropdown highlighted states use full accent contrast instead of low-alpha focus fills; named Select scroll buttons and hid their chevron icons from assistive technology; and added static accessibility guardrails for these primitives.
 - Audit image priority, sizes, aspect ratios, and lazy-loading behavior for hero, product cards, galleries, and category media.
 - Prevent hydration mismatches by avoiding render-time randomness, date/locale drift, and server/client-only branching in hydrated trees.
 - Keep large interactive surfaces responsive without layout shift during hover, focus, loading, and data refresh states.

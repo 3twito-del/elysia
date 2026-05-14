@@ -128,7 +128,7 @@ export default function AboutPage() {
                 <Button asChild size="lg">
                   <Link href="/search">
                     קטלוג שקט ומדויק
-                    <Search className="size-4" />
+                    <Search aria-hidden="true" className="size-4" />
                   </Link>
                 </Button>
                 <Button
@@ -252,7 +252,7 @@ export default function AboutPage() {
 
               <div className="grid gap-4">
                 <div className="glass-card rounded-md border p-6">
-                  <Heart className="size-7" />
+                  <Heart aria-hidden="true" className="size-7" />
                   <p className="mt-5 text-2xl font-semibold">
                     לא לבחור רק יפה. לבחור נכון.
                   </p>
@@ -262,7 +262,7 @@ export default function AboutPage() {
                   </p>
                 </div>
                 <div className="glass-card rounded-md border p-6">
-                  <ShieldCheck className="size-7" />
+                  <ShieldCheck aria-hidden="true" className="size-7" />
                   <p className="mt-5 text-2xl font-semibold">
                     אמון הוא חלק מהעיצוב.
                   </p>
@@ -300,7 +300,7 @@ export default function AboutPage() {
                   key={value.title}
                 >
                   <div className="glass-inset flex size-11 items-center justify-center rounded-md border">
-                    <Icon className="size-5" />
+                    <Icon aria-hidden="true" className="size-5" />
                   </div>
                   <h3 className="mt-6 text-2xl font-semibold">{value.title}</h3>
                   <p className="text-muted-foreground mt-3 leading-7">
@@ -410,7 +410,7 @@ export default function AboutPage() {
                   >
                     <div className="flex gap-4">
                       <div className="glass-inset flex size-10 shrink-0 items-center justify-center rounded-md border">
-                        <Icon className="size-5" />
+                        <Icon aria-hidden="true" className="size-5" />
                       </div>
                       <div>
                         <h3 className="text-xl font-semibold">{item.title}</h3>
@@ -429,7 +429,7 @@ export default function AboutPage() {
         <RevealSection className="liquid-section">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
             <div className="glass-panel mx-auto max-w-4xl rounded-md border p-6 text-center sm:p-8 lg:p-12">
-              <Sparkles className="mx-auto size-8" />
+              <Sparkles aria-hidden="true" className="mx-auto size-8" />
               <h2 className="mt-6 text-4xl leading-tight font-semibold">
                 Aphrodite אינה מבקשת שתבחרו מהר. היא מבקשת שתבחרו בביטחון.
               </h2>

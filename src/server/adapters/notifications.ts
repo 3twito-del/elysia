@@ -92,6 +92,41 @@ function formatResendError(error: ResendSendError) {
   return details || "Resend email send failed.";
 }
 
+function redactNotificationIdentifier(identifier: string) {
+  const normalized = identifier.trim();
+
+  if (!normalized) return "[redacted]";
+
+  if (normalized.includes("@")) {
+    const [localPart, domain] = normalized.split("@");
+    const safeLocal = localPart ? `${localPart.slice(0, 1)}***` : "[redacted]";
+
+    return domain ? `${safeLocal}@${domain}` : safeLocal;
+  }
+
+  const digits = normalized.replace(/\D/g, "");
+
+  return digits.length >= 4 ? `***${digits.slice(-4)}` : "[redacted]";
+}
+
+function redactNotificationMessage(message: NotificationMessage) {
+  return {
+    to: redactNotificationIdentifier(message.to),
+    toName: message.toName ? "[redacted]" : undefined,
+    subject: message.subject,
+    hasBody: Boolean(message.body),
+    hasHtml: Boolean(message.html),
+    idempotencyKey: message.idempotencyKey,
+  };
+}
+
+function logMockOtp(tag: string, identifier: string) {
+  console.info(tag, {
+    identifier: redactNotificationIdentifier(identifier),
+    code: "[redacted]",
+  });
+}
+
 class BrevoNotificationProvider implements NotificationProvider {
   isOperational() {
     return Boolean(env.BREVO_API_KEY);
@@ -141,7 +176,7 @@ class BrevoNotificationProvider implements NotificationProvider {
 
   async sendOtp(identifier: string, code: string) {
     if (!identifier.includes("@")) {
-      console.info("[notifications:sms-mock]", { identifier, code });
+      logMockOtp("[notifications:sms-mock]", identifier);
       return { id: `mock-sms-${Date.now()}`, provider: "sms-mock" };
     }
 
@@ -195,7 +230,7 @@ class ResendNotificationProvider implements NotificationProvider {
 
   async sendOtp(identifier: string, code: string) {
     if (!identifier.includes("@")) {
-      console.info("[notifications:sms-mock]", { identifier, code });
+      logMockOtp("[notifications:sms-mock]", identifier);
       return { id: `mock-sms-${Date.now()}`, provider: "sms-mock" };
     }
 
@@ -217,12 +252,12 @@ class MockNotificationProvider implements NotificationProvider {
   }
 
   async sendEmail(message: NotificationMessage) {
-    console.info("[notifications:mock]", message);
+    console.info("[notifications:mock]", redactNotificationMessage(message));
     return { id: `mock-email-${Date.now()}`, provider: this.providerName() };
   }
 
-  async sendOtp(identifier: string, code: string) {
-    console.info("[notifications:otp-mock]", { identifier, code });
+  async sendOtp(identifier: string, _code: string) {
+    logMockOtp("[notifications:otp-mock]", identifier);
     return { id: `mock-otp-${Date.now()}`, provider: this.providerName() };
   }
 }

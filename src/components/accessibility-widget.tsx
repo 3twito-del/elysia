@@ -12,7 +12,15 @@ import {
   Underline,
   X,
 } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 
 import { cn } from "~/lib/utils";
 import { Button } from "~/components/ui/button";
@@ -28,6 +36,7 @@ type AccessibilitySettings = {
 };
 
 const storageKey = "aphrodite.accessibility-settings";
+const settingsChangeEvent = "aphrodite:accessibility-settings";
 
 const defaultSettings: AccessibilitySettings = {
   textScale: "normal",
@@ -46,15 +55,7 @@ function isTextScale(value: unknown): value is TextScale {
   return value === "normal" || value === "large" || value === "xlarge";
 }
 
-function readStoredSettings() {
-  let stored: string | null = null;
-
-  try {
-    stored = window.localStorage.getItem(storageKey);
-  } catch {
-    return defaultSettings;
-  }
-
+function parseStoredSettings(stored: string | null) {
   if (!stored) return defaultSettings;
 
   try {
@@ -80,6 +81,42 @@ function readStoredSettings() {
   } catch {
     return defaultSettings;
   }
+}
+
+function subscribeToAccessibilitySettings(onStoreChange: () => void) {
+  const handleStorage = (event: StorageEvent) => {
+    if (event.key === storageKey) onStoreChange();
+  };
+
+  window.addEventListener("storage", handleStorage);
+  window.addEventListener(settingsChangeEvent, onStoreChange);
+
+  return () => {
+    window.removeEventListener("storage", handleStorage);
+    window.removeEventListener(settingsChangeEvent, onStoreChange);
+  };
+}
+
+function getClientSettingsSnapshot() {
+  try {
+    return window.localStorage.getItem(storageKey) ?? "";
+  } catch {
+    return "";
+  }
+}
+
+function getServerSettingsSnapshot() {
+  return "";
+}
+
+function writeStoredSettings(settings: AccessibilitySettings) {
+  try {
+    window.localStorage.setItem(storageKey, JSON.stringify(settings));
+  } catch {
+    // Browsers can block storage in strict privacy modes; the live setting still applies.
+  }
+
+  applyAccessibilitySettings(settings);
 }
 
 function applyAccessibilitySettings(settings: AccessibilitySettings) {
@@ -109,7 +146,7 @@ function applyAccessibilitySettings(settings: AccessibilitySettings) {
     delete root.dataset.accessibilityMotion;
   }
 
-  window.dispatchEvent(new CustomEvent("aphrodite:accessibility-settings"));
+  window.dispatchEvent(new CustomEvent(settingsChangeEvent));
 }
 
 function getScaleIndex(value: TextScale) {
@@ -172,20 +209,31 @@ export function AccessibilityWidget() {
   const dialogRef = useRef<HTMLElement>(null);
   const triggerButtonRef = useRef<HTMLButtonElement>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [settings, setSettings] = useState<AccessibilitySettings>(() => {
-    if (typeof window === "undefined") return defaultSettings;
+  const settingsSnapshot = useSyncExternalStore(
+    subscribeToAccessibilitySettings,
+    getClientSettingsSnapshot,
+    getServerSettingsSnapshot,
+  );
+  const settings = useMemo(
+    () => parseStoredSettings(settingsSnapshot),
+    [settingsSnapshot],
+  );
+  const updateSettings = useCallback(
+    (
+      updater:
+        | AccessibilitySettings
+        | ((current: AccessibilitySettings) => AccessibilitySettings),
+    ) => {
+      const current = parseStoredSettings(getClientSettingsSnapshot());
+      const next = typeof updater === "function" ? updater(current) : updater;
 
-    return readStoredSettings();
-  });
+      writeStoredSettings(next);
+    },
+    [],
+  );
 
   useEffect(() => {
     applyAccessibilitySettings(settings);
-
-    try {
-      window.localStorage.setItem(storageKey, JSON.stringify(settings));
-    } catch {
-      // Browsers can block storage in strict privacy modes; the live setting still applies.
-    }
   }, [settings]);
 
   useEffect(() => {
@@ -252,6 +300,7 @@ export function AccessibilityWidget() {
         aria-haspopup="dialog"
         aria-label="פתיחת תפריט נגישות"
         className="public-floating-control public-floating-trigger fixed right-4 bottom-[calc(max(var(--floating-stack-bottom,1rem),var(--public-floating-bar-offset,1rem))+env(safe-area-inset-bottom))] z-50 size-11 rounded-full shadow-[0_16px_36px_oklch(0.12_0_0_/_20%)] sm:right-6 sm:size-12"
+        data-accessibility-widget-trigger="true"
         onClick={() => setIsOpen(true)}
         ref={triggerButtonRef}
         size="icon-lg"
@@ -319,7 +368,7 @@ export function AccessibilityWidget() {
                   aria-label="הקטנת טקסט"
                   disabled={currentScaleIndex <= 0}
                   onClick={() =>
-                    setSettings((current) => ({
+                    updateSettings((current) => ({
                       ...current,
                       textScale:
                         textScaleOptions[
@@ -350,7 +399,7 @@ export function AccessibilityWidget() {
                       )}
                       key={option.value}
                       onClick={() =>
-                        setSettings((current) => ({
+                        updateSettings((current) => ({
                           ...current,
                           textScale: option.value,
                         }))
@@ -366,7 +415,7 @@ export function AccessibilityWidget() {
                   aria-label="הגדלת טקסט"
                   disabled={currentScaleIndex >= textScaleOptions.length - 1}
                   onClick={() =>
-                    setSettings((current) => ({
+                    updateSettings((current) => ({
                       ...current,
                       textScale:
                         textScaleOptions[
@@ -395,7 +444,7 @@ export function AccessibilityWidget() {
                 icon={Contrast}
                 label="ניגודיות גבוהה"
                 onChange={(checked) =>
-                  setSettings((current) => ({
+                  updateSettings((current) => ({
                     ...current,
                     highContrast: checked,
                   }))
@@ -407,7 +456,7 @@ export function AccessibilityWidget() {
                 icon={Underline}
                 label="הדגשת קישורים"
                 onChange={(checked) =>
-                  setSettings((current) => ({
+                  updateSettings((current) => ({
                     ...current,
                     underlineLinks: checked,
                   }))
@@ -419,7 +468,7 @@ export function AccessibilityWidget() {
                 icon={Accessibility}
                 label="הפחתת תנועה"
                 onChange={(checked) =>
-                  setSettings((current) => ({
+                  updateSettings((current) => ({
                     ...current,
                     reduceMotion: checked,
                   }))
@@ -430,7 +479,7 @@ export function AccessibilityWidget() {
             <div className="glass-inset -mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-lg border-t p-4 sm:flex-row sm:justify-end">
               <Button
                 className="justify-between"
-                onClick={() => setSettings(defaultSettings)}
+                onClick={() => updateSettings(defaultSettings)}
                 type="button"
                 variant="outline"
               >

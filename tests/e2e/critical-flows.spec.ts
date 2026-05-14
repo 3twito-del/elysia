@@ -55,6 +55,19 @@ test.describe("critical shopping flows", () => {
         "aria-pressed",
         "true",
       );
+      await galleryThumbnails.first().focus();
+      await page.keyboard.press("ArrowRight");
+      await expect(galleryThumbnails.nth(1)).toBeFocused();
+      await expect(galleryThumbnails.nth(1)).toHaveAttribute(
+        "aria-pressed",
+        "true",
+      );
+      await page.keyboard.press("Home");
+      await expect(galleryThumbnails.first()).toBeFocused();
+      await expect(galleryThumbnails.first()).toHaveAttribute(
+        "aria-pressed",
+        "true",
+      );
       await galleryThumbnails.nth(1).click();
       await expect(galleryThumbnails.nth(1)).toHaveAttribute(
         "aria-pressed",
@@ -77,6 +90,10 @@ test.describe("critical shopping flows", () => {
     await expect(
       page.getByRole("button", { name: /שמירת הזמנה/ }),
     ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /הוספת כמות עבור/ }),
+    ).toBeVisible();
+    await expect(page.locator('[aria-label^="כמות "]')).toContainText("1");
   });
 
   test("finds a product from search and opens its product page", async ({
@@ -209,6 +226,47 @@ test.describe("critical shopping flows", () => {
     await page.setViewportSize({ width: 768, height: 900 });
     await expect(page.getByTestId("mobile-search-filter-sheet")).toBeHidden();
   });
+
+  test("restores focus after keyboard-closing mobile sheets", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 900 });
+    await setCookieConsent(page, "essential");
+
+    await page.goto("/");
+    const mobileNavTrigger = page.getByTestId("mobile-nav-trigger");
+
+    await mobileNavTrigger.focus();
+    await page.keyboard.press("Enter");
+    await expect(page.getByTestId("mobile-nav-sheet")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByTestId("mobile-nav-sheet")).toBeHidden();
+    await expect(mobileNavTrigger).toBeFocused();
+
+    await page.goto("/search?q=venus", { waitUntil: "domcontentloaded" });
+    const searchFilterTrigger = page.getByTestId(
+      "mobile-search-filter-trigger",
+    );
+
+    await expect(searchFilterTrigger).toBeVisible();
+    await searchFilterTrigger.focus();
+    await page.keyboard.press("Enter");
+    await expect(page.getByTestId("mobile-search-filter-sheet")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByTestId("mobile-search-filter-sheet")).toBeHidden();
+    await expect(searchFilterTrigger).toBeFocused();
+
+    await page.goto("/category/earrings", { waitUntil: "domcontentloaded" });
+    const categoryFilterTrigger = page.getByTestId("category-filter-trigger");
+
+    await expect(categoryFilterTrigger).toBeVisible();
+    await categoryFilterTrigger.focus();
+    await page.keyboard.press("Enter");
+    await expect(page.getByTestId("category-filter-sheet")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByTestId("category-filter-sheet")).toBeHidden();
+    await expect(categoryFilterTrigger).toBeFocused();
+  });
 });
 
 test.describe("hydration-sensitive responsive surfaces", () => {
@@ -324,6 +382,70 @@ test.describe("hydration-sensitive responsive surfaces", () => {
 
     await expectNoHydrationRegressions(page, hydrationIssues);
   });
+
+  test("hydrates account OTP cart session without server/client mismatch", async ({
+    page,
+  }) => {
+    const sessionKey = "account_hydration_regression_123456789";
+    const hydrationIssues = trackHydrationIssues(page);
+
+    await page.addInitScript(
+      ({ cartStorageKey, sessionKey }) => {
+        window.localStorage.setItem(cartStorageKey, sessionKey);
+        document.cookie = [
+          `aphrodite_cart_session=${encodeURIComponent(sessionKey)}`,
+          "Path=/",
+          "SameSite=Lax",
+        ].join("; ");
+      },
+      { cartStorageKey, sessionKey },
+    );
+
+    await page.goto("/account", { waitUntil: "domcontentloaded" });
+
+    await expect(page.locator("#identifier")).toBeVisible();
+    await expect(page.locator('input[name="sessionKey"]')).toHaveValue(
+      sessionKey,
+    );
+    await expectNoHydrationRegressions(page, hydrationIssues);
+  });
+
+  test("hydrates stored accessibility preferences without server/client mismatch", async ({
+    page,
+  }) => {
+    const hydrationIssues = trackHydrationIssues(page);
+
+    await page.addInitScript((storageKey) => {
+      window.localStorage.setItem(
+        storageKey,
+        JSON.stringify({
+          highContrast: true,
+          reduceMotion: true,
+          textScale: "large",
+          underlineLinks: true,
+        }),
+      );
+    }, accessibilityStorageKey);
+
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+
+    await expect
+      .poll(() =>
+        page.evaluate(() => ({
+          contrast: document.documentElement.dataset.accessibilityContrast,
+          links: document.documentElement.dataset.accessibilityLinks,
+          motion: document.documentElement.dataset.accessibilityMotion,
+          text: document.documentElement.dataset.accessibilityText,
+        })),
+      )
+      .toEqual({
+        contrast: "true",
+        links: "true",
+        motion: "reduce",
+        text: "large",
+      });
+    await expectNoHydrationRegressions(page, hydrationIssues);
+  });
 });
 
 test.describe("accessibility and responsive guardrails", () => {
@@ -343,6 +465,54 @@ test.describe("accessibility and responsive guardrails", () => {
 
     await page.keyboard.press("Enter");
     await expect(page).toHaveURL(/#main-content$/);
+  });
+
+  test("exposes accessible names for the home quick search", async ({
+    page,
+  }) => {
+    await page.goto("/");
+
+    await expect(
+      page.getByRole("search", { name: "חיפוש בקטלוג" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("textbox", { name: "חיפוש מוצר בקטלוג" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { exact: true, name: "חיפוש" }),
+    ).toBeVisible();
+  });
+
+  test("keeps the accessibility widget keyboard-operable", async ({ page }) => {
+    await page.goto("/");
+
+    const trigger = page.locator(".public-floating-trigger");
+    await expect(trigger).toBeVisible();
+    await expect(trigger).toHaveAttribute(
+      "aria-label",
+      new RegExp("\\u05e0\\u05d2\\u05d9\\u05e9\\u05d5\\u05ea"),
+    );
+    await trigger.click();
+
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole("button").first()).toBeFocused();
+
+    const reduceMotionToggle = dialog.locator('input[type="checkbox"]').nth(2);
+    await reduceMotionToggle.focus();
+    await expect(reduceMotionToggle).toBeFocused();
+    await page.keyboard.press("Space");
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () => document.documentElement.dataset.accessibilityMotion,
+        ),
+      )
+      .toBe("reduce");
+
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+    await expect(trigger).toBeFocused();
   });
 
   test("honors the site reduced-motion preference", async ({ page }) => {

@@ -26,7 +26,10 @@ export default function AccountLoading() {
             <Card className="rounded-md" key={label}>
               <CardHeader className="flex flex-row items-center justify-between gap-3">
                 <CardTitle className="text-base">{label}</CardTitle>
-                <Icon className="text-muted-foreground size-5" />
+                <Icon
+                  aria-hidden="true"
+                  className="text-muted-foreground size-5"
+                />
               </CardHeader>
               <CardContent className="grid gap-3">
                 <Skeleton className="h-8 w-20" />

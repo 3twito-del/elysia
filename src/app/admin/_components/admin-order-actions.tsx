@@ -153,7 +153,7 @@ function AdminShipmentForm({
   return (
     <form className="grid gap-2 rounded-md border p-2" onSubmit={handleSubmit}>
       <Label className="flex items-center gap-2 text-xs">
-        <Truck className="size-3.5" />
+        <Truck aria-hidden="true" className="size-3.5" />
         משלוח
       </Label>
       <div className="grid gap-2 sm:grid-cols-3">
@@ -192,7 +192,7 @@ function AdminShipmentForm({
         type="submit"
         variant="outline"
       >
-        <Save className="size-3.5" />
+        <Save aria-hidden="true" className="size-3.5" />
         {mutation.isPending ? "שומר..." : "שמירת משלוח"}
       </Button>
       <AdminMutationStatus feedback={feedback} />
@@ -268,7 +268,7 @@ function AdminRefundForm({
   return (
     <form className="grid gap-2 rounded-md border p-2" onSubmit={handleSubmit}>
       <Label className="flex items-center gap-2 text-xs">
-        <RotateCcw className="size-3.5" />
+        <RotateCcw aria-hidden="true" className="size-3.5" />
         זיכוי / החזרה
       </Label>
       {activeReturn ? (
@@ -303,7 +303,7 @@ function AdminRefundForm({
             type="button"
             variant="outline"
           >
-            <RotateCcw className="size-3.5" />
+            <RotateCcw aria-hidden="true" className="size-3.5" />
             {mutation.isPending ? "מבצע..." : "ביצוע זיכוי"}
           </Button>
         </AlertDialogTrigger>
@@ -351,6 +351,7 @@ function StatusActionButton({
   if (!requiresConfirmation) {
     return (
       <Button
+        aria-label={pending ? `מעדכן הזמנה: ${label}` : label}
         disabled={disabled}
         onClick={onConfirm}
         size="sm"
@@ -365,7 +366,13 @@ function StatusActionButton({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button disabled={disabled} size="sm" type="button" variant={variant}>
+        <Button
+          aria-label={pending ? `מעדכן הזמנה: ${label}` : label}
+          disabled={disabled}
+          size="sm"
+          type="button"
+          variant={variant}
+        >
           {buttonLabel}
         </Button>
       </AlertDialogTrigger>

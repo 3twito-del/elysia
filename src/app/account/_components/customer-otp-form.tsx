@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useSyncExternalStore } from "react";
 import { useFormStatus } from "react-dom";
 import { LogIn, Send } from "lucide-react";
 
@@ -18,8 +18,10 @@ import { getOrCreateCartSessionKey } from "~/lib/cart-session";
 const initialState: CustomerOtpState = {};
 
 export function CustomerOtpForm() {
-  const [sessionKey] = useState(() =>
-    typeof window === "undefined" ? "" : getOrCreateCartSessionKey(),
+  const sessionKey = useSyncExternalStore(
+    subscribeToNoopStore,
+    getClientCartSessionSnapshot,
+    getServerCartSessionSnapshot,
   );
   const [requestState, requestAction] = useActionState(
     requestCustomerOtpAction,
@@ -92,6 +94,18 @@ export function CustomerOtpForm() {
   );
 }
 
+function subscribeToNoopStore() {
+  return () => undefined;
+}
+
+function getClientCartSessionSnapshot() {
+  return getOrCreateCartSessionKey();
+}
+
+function getServerCartSessionSnapshot() {
+  return "";
+}
+
 function OtpStatusMessage({ state }: { state: CustomerOtpState }) {
   return (
     <StatusMessage tone={state.ok ? "success" : "error"}>
@@ -105,7 +119,7 @@ function RequestButton() {
 
   return (
     <Button className="w-full gap-2" disabled={pending} type="submit">
-      <Send className="size-4" />
+      <Send aria-hidden="true" className="size-4" />
       {pending ? "שולח קוד..." : "שליחת קוד"}
     </Button>
   );
@@ -121,7 +135,7 @@ function VerifyButton() {
       type="submit"
       variant="secondary"
     >
-      <LogIn className="size-4" />
+      <LogIn aria-hidden="true" className="size-4" />
       {pending ? "בודק קוד..." : "כניסה לאזור לקוח"}
     </Button>
   );

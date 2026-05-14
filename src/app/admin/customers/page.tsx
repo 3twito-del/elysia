@@ -25,7 +25,10 @@ import {
 } from "~/components/ui/table";
 import { TableEmptyRow } from "~/components/ui/table-empty-row";
 import { formatHebrewDate, formatPrice } from "~/lib/format";
-import { listAdminCustomers } from "~/server/services/admin-operations";
+import {
+  listAdminCustomers,
+  recordAdminCustomerDataAccess,
+} from "~/server/services/admin-operations";
 
 export const metadata = {
   title: "Customers | Admin",
@@ -76,6 +79,19 @@ export default async function AdminCustomersPage({
 
   if (!data) return <AdminDatabaseFallback />;
 
+  await recordAdminCustomerDataAccess({
+    adminUserId: access.admin.id,
+    page: data.pageInfo.page,
+    pageSize: data.pageInfo.pageSize,
+    query: params.query,
+    resultCount: data.items.length,
+    totalItems: data.pageInfo.totalItems,
+  }).catch((error: unknown) => {
+    if (process.env.NODE_ENV === "development") {
+      console.error("[admin] failed to audit customer access", error);
+    }
+  });
+
   const hasActiveFilters = [
     Boolean(params.query),
     params.sort !== "updated-desc",
@@ -92,7 +108,7 @@ export default async function AdminCustomersPage({
       <Card className="rounded-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Search className="size-5" />
+            <Search aria-hidden="true" className="size-5" />
             סינון לקוחות
           </CardTitle>
         </CardHeader>
@@ -102,11 +118,13 @@ export default async function AdminCustomersPage({
             className="grid gap-3 md:grid-cols-[1fr_180px_auto_auto]"
           >
             <Input
+              aria-label="חיפוש לקוחות"
               defaultValue={params.query}
               name="query"
               placeholder="שם, אימייל או טלפון"
             />
             <select
+              aria-label="מיון לקוחות"
               className="glass-control h-11 rounded-md border px-3 text-sm"
               defaultValue={params.sort}
               name="sort"
@@ -128,7 +146,7 @@ export default async function AdminCustomersPage({
       <Card className="mt-6 rounded-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Users className="size-5" />
+            <Users aria-hidden="true" className="size-5" />
             לקוחות
           </CardTitle>
         </CardHeader>

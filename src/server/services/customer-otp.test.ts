@@ -7,6 +7,7 @@ import {
   hashOtp,
   normalizeOtpIdentifier,
   otpHashesMatch,
+  redactOtpIdentifierForMetadata,
 } from "./customer-otp";
 
 describe("customer OTP helpers", () => {
@@ -15,6 +16,14 @@ describe("customer OTP helpers", () => {
       "dana@example.com",
     );
     expect(normalizeOtpIdentifier("050-123 4567")).toBe("0501234567");
+  });
+
+  it("redacts OTP identifiers before operational metadata persistence", () => {
+    expect(redactOtpIdentifierForMetadata(" Dana@Example.COM ")).toBe(
+      "d***@example.com",
+    );
+    expect(redactOtpIdentifierForMetadata("050-123 4567")).toBe("***4567");
+    expect(redactOtpIdentifierForMetadata("")).toBe("[redacted]");
   });
 
   it("matches OTP hashes without comparing raw codes", () => {
