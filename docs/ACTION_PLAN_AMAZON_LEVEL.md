@@ -40,7 +40,9 @@ The production standard is:
 The repository is ready for local development and verification. It already has
 DB-first catalog reads, cart and checkout orchestration, local outbox/job flows,
 admin/account/product/search/AI flows, local development fallbacks, and
-smoke/visual QA commands that run without production provider access.
+smoke/visual QA commands that run without production provider access. Production
+provider readiness is checked separately from the build so strategic blockers do
+not prevent preview or deployment builds.
 
 The remaining roadmap is production rollout work. It depends on external
 providers, credentials, Vercel project configuration, operational ownership, and

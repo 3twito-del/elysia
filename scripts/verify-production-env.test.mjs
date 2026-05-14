@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   getProductionEnvValidationError,
   verifyProductionEnv,
+  verifyProductionReadiness,
 } from "./verify-production-env.mjs";
 
 describe("production environment validation", () => {
@@ -31,9 +32,20 @@ describe("production environment validation", () => {
     });
   });
 
-  it("fails production builds clearly when Amazon-level provider env is absent", () => {
+  it("allows production builds when Vercel runtime env is configured even if rollout providers are absent", () => {
     expect(
       verifyProductionEnv({
+        VERCEL: "1",
+        VERCEL_ENV: "production",
+        UPSTASH_REDIS_REST_URL: "https://example.upstash.io",
+        UPSTASH_REDIS_REST_TOKEN: "token",
+      }),
+    ).toEqual({ ok: true });
+  });
+
+  it("fails production readiness clearly when Amazon-level provider env is absent", () => {
+    expect(
+      verifyProductionReadiness({
         VERCEL: "1",
         VERCEL_ENV: "production",
         UPSTASH_REDIS_REST_URL: "https://example.upstash.io",
@@ -48,9 +60,9 @@ describe("production environment validation", () => {
     });
   });
 
-  it("fails production builds clearly when production payment env is partial", () => {
+  it("fails production readiness clearly when production payment env is partial", () => {
     expect(
-      verifyProductionEnv({
+      verifyProductionReadiness({
         VERCEL: "1",
         VERCEL_ENV: "production",
         UPSTASH_REDIS_REST_URL: "https://example.upstash.io",
@@ -72,9 +84,9 @@ describe("production environment validation", () => {
     });
   });
 
-  it("accepts production builds when Amazon-level readiness env is configured", () => {
+  it("accepts production readiness when Amazon-level readiness env is configured", () => {
     expect(
-      verifyProductionEnv({
+      verifyProductionReadiness({
         VERCEL: "1",
         VERCEL_ENV: "production",
         UPSTASH_REDIS_REST_URL: "https://example.upstash.io",

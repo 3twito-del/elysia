@@ -7,8 +7,6 @@ const requiredVercelEnv = [
 
 export function getProductionEnvValidationError(env = process.env) {
   const isVercelBuild = env.VERCEL === "1";
-  const isVercelProductionBuild =
-    env.VERCEL === "1" && env.VERCEL_ENV === "production";
 
   if (isVercelBuild) {
     const missing = getMissingEnv(requiredVercelEnv, env);
@@ -18,9 +16,14 @@ export function getProductionEnvValidationError(env = process.env) {
     }
   }
 
-  if (!isVercelProductionBuild) {
-    return null;
-  }
+  return null;
+}
+
+export function getProductionReadinessValidationError(env = process.env) {
+  const isVercelProductionBuild =
+    env.VERCEL === "1" && env.VERCEL_ENV === "production";
+
+  if (!isVercelProductionBuild) return null;
 
   const missing = [
     ...requiredVercelEnv.filter((name) => !env[name]?.trim()),
@@ -66,8 +69,21 @@ export function verifyProductionEnv(env = process.env) {
   };
 }
 
-export function main(env = process.env) {
-  const result = verifyProductionEnv(env);
+export function verifyProductionReadiness(env = process.env) {
+  const error = getProductionReadinessValidationError(env);
+
+  if (!error) return { ok: true };
+
+  return {
+    ok: false,
+    error,
+  };
+}
+
+export function main(env = process.env, argv = process.argv.slice(2)) {
+  const result = argv.includes("--readiness")
+    ? verifyProductionReadiness(env)
+    : verifyProductionEnv(env);
 
   if (!result.ok) {
     console.error(result.error);

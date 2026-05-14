@@ -21,6 +21,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "preview": "next build && next start",
+    "production:readiness": "node scripts/verify-production-env.mjs --readiness",
     "smoke": "node scripts/smoke.mjs",
     "visual:qa": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/visual-qa-agent-browser.ps1",
     "start": "next start",
