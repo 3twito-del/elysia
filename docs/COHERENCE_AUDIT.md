@@ -12,9 +12,9 @@
 
 ## Findings
 
-- **Artifacts**: roadmap screenshots were stored at the repository root; they now
-  belong under `docs/qa/roadmap/`. `test-results/` is runtime output and should
-  not be committed.
+- **Artifacts**: historical roadmap/design QA screenshots and temporary gate
+  files have been removed from the repository. `test-results/` is runtime output
+  and should not be committed.
 - **Formatting duplication**: currency formatting existed in account, admin,
   checkout, manual checkout, order detail, product, catalog, and AI code. The
   source of truth should be `src/lib/format.ts`.
