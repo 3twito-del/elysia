@@ -22,7 +22,11 @@ vi.mock("~/env", () => ({
   },
 }));
 
-import { notificationProvider } from "./notifications";
+import {
+  createNotificationProvider,
+  notificationProvider,
+  PRODUCTION_EMAIL_PROVIDER_ERROR,
+} from "./notifications";
 
 describe("notification adapter", () => {
   beforeEach(() => {
@@ -72,5 +76,49 @@ describe("notification adapter", () => {
         body: "Your order was updated.",
       }),
     ).rejects.toThrow("daily_quota_exceeded: 429: Daily email quota exceeded.");
+  });
+
+  it("uses the mock provider only outside production when email keys are absent", async () => {
+    const infoSpy = vi.spyOn(console, "info").mockImplementation(() => {
+      return undefined;
+    });
+    const provider = createNotificationProvider({
+      NODE_ENV: "development",
+      BREVO_API_KEY: undefined,
+      RESEND_API_KEY: undefined,
+    });
+
+    await expect(
+      provider.sendEmail({
+        to: "dana@example.com",
+        subject: "Order update",
+        body: "Your order was updated.",
+      }),
+    ).resolves.toMatchObject({ provider: "mock" });
+    expect(provider.isOperational()).toBe(false);
+    expect(provider.providerName()).toBe("mock");
+
+    infoSpy.mockRestore();
+  });
+
+  it("fails clearly in production when transactional email keys are absent", async () => {
+    const provider = createNotificationProvider({
+      NODE_ENV: "production",
+      BREVO_API_KEY: undefined,
+      RESEND_API_KEY: undefined,
+    });
+
+    expect(provider.isOperational()).toBe(false);
+    expect(provider.providerName()).toBe("missing");
+    await expect(
+      provider.sendEmail({
+        to: "dana@example.com",
+        subject: "Order update",
+        body: "Your order was updated.",
+      }),
+    ).rejects.toThrow(PRODUCTION_EMAIL_PROVIDER_ERROR);
+    await expect(
+      provider.sendOtp("dana@example.com", "123456"),
+    ).rejects.toThrow(PRODUCTION_EMAIL_PROVIDER_ERROR);
   });
 });

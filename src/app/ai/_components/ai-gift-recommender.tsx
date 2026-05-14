@@ -11,6 +11,12 @@ import { Label } from "~/components/ui/label";
 import { Spinner } from "~/components/ui/spinner";
 import { StatusMessage } from "~/components/ui/status-message";
 import { Textarea } from "~/components/ui/textarea";
+import { recommendGiftInputSchema } from "~/lib/ai-commerce-validation";
+import {
+  getFirstZodIssueMessage,
+  getZodFieldErrors,
+  type FormFieldErrors,
+} from "~/lib/form-validation";
 import { api } from "~/trpc/react";
 
 export function AiGiftRecommender() {
@@ -18,17 +24,31 @@ export function AiGiftRecommender() {
   const [occasion, setOccasion] = useState("יום הולדת");
   const [budget, setBudget] = useState("700");
   const [style, setStyle] = useState("עדין, יומיומי");
+  const [fieldErrors, setFieldErrors] = useState<FormFieldErrors>({});
+  const [validationMessage, setValidationMessage] = useState<string | null>(
+    null,
+  );
   const recommendGift = api.ai.recommendGift.useMutation();
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    recommendGift.mutate({
+    const parsed = recommendGiftInputSchema.safeParse({
       relation,
       occasion,
       budget: Number(budget),
       style: splitStyleInput(style),
     });
+
+    if (!parsed.success) {
+      setFieldErrors(getZodFieldErrors(parsed.error));
+      setValidationMessage(getFirstZodIssueMessage(parsed.error));
+      return;
+    }
+
+    setFieldErrors({});
+    setValidationMessage(null);
+    recommendGift.mutate(parsed.data);
   }
 
   return (
@@ -50,24 +70,42 @@ export function AiGiftRecommender() {
 
       <form className="grid gap-4" onSubmit={handleSubmit}>
         <div className="grid gap-4 md:grid-cols-3">
-          <Field htmlFor="ai-gift-relation" label="למי המתנה">
+          <Field
+            error={fieldErrors.relation}
+            htmlFor="ai-gift-relation"
+            label="למי המתנה"
+          >
             <Input
+              aria-invalid={Boolean(fieldErrors.relation)}
+              disabled={recommendGift.isPending}
               id="ai-gift-relation"
               onChange={(event) => setRelation(event.currentTarget.value)}
               required
               value={relation}
             />
           </Field>
-          <Field htmlFor="ai-gift-occasion" label="אירוע">
+          <Field
+            error={fieldErrors.occasion}
+            htmlFor="ai-gift-occasion"
+            label="אירוע"
+          >
             <Input
+              aria-invalid={Boolean(fieldErrors.occasion)}
+              disabled={recommendGift.isPending}
               id="ai-gift-occasion"
               onChange={(event) => setOccasion(event.currentTarget.value)}
               required
               value={occasion}
             />
           </Field>
-          <Field htmlFor="ai-gift-budget" label="תקציב">
+          <Field
+            error={fieldErrors.budget}
+            htmlFor="ai-gift-budget"
+            label="תקציב"
+          >
             <Input
+              aria-invalid={Boolean(fieldErrors.budget)}
+              disabled={recommendGift.isPending}
               id="ai-gift-budget"
               min={1}
               onChange={(event) => setBudget(event.currentTarget.value)}
@@ -78,9 +116,11 @@ export function AiGiftRecommender() {
           </Field>
         </div>
 
-        <Field htmlFor="ai-gift-style" label="סגנון">
+        <Field error={fieldErrors.style} htmlFor="ai-gift-style" label="סגנון">
           <Textarea
+            aria-invalid={Boolean(fieldErrors.style)}
             className="min-h-24"
+            disabled={recommendGift.isPending}
             id="ai-gift-style"
             onChange={(event) => setStyle(event.currentTarget.value)}
             placeholder="לדוגמה: עדין, זהב לבן, שימוש יומיומי"
@@ -88,9 +128,9 @@ export function AiGiftRecommender() {
           />
         </Field>
 
-        {recommendGift.error ? (
+        {(validationMessage ?? recommendGift.error) ? (
           <StatusMessage tone="error" variant="plain">
-            {recommendGift.error.message}
+            {validationMessage ?? recommendGift.error?.message}
           </StatusMessage>
         ) : null}
 
@@ -129,10 +169,12 @@ export function AiGiftRecommender() {
 
 function Field({
   children,
+  error,
   htmlFor,
   label,
 }: {
   children: ReactNode;
+  error?: string;
   htmlFor: string;
   label: string;
 }) {
@@ -140,6 +182,7 @@ function Field({
     <div className="grid gap-2">
       <Label htmlFor={htmlFor}>{label}</Label>
       {children}
+      {error ? <p className="text-destructive text-xs">{error}</p> : null}
     </div>
   );
 }

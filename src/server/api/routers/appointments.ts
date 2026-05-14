@@ -1,20 +1,10 @@
 import { TRPCError } from "@trpc/server";
-import { z } from "zod";
 
+import { createAppointmentInputSchema } from "~/lib/appointment-validation";
 import { assertTRPCRateLimit, getTRPCRequestIp } from "~/server/api/rate-limit";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { notificationProvider } from "~/server/adapters/notifications";
 import { db } from "~/server/db";
-
-const createAppointmentInputSchema = z.object({
-  branchSlug: z.string().trim().min(1).max(80),
-  topic: z.string().trim().min(2).max(120),
-  name: z.string().trim().min(2).max(120),
-  email: z.string().trim().email().optional(),
-  phone: z.string().trim().min(7).max(32),
-  startsAt: z.string().datetime(),
-  notes: z.string().trim().max(500).optional(),
-});
 
 export const appointmentsRouter = createTRPCRouter({
   create: publicProcedure
@@ -24,13 +14,13 @@ export const appointmentsRouter = createTRPCRouter({
         key: `appointment:${input.phone}`,
         limit: 4,
         windowMs: 60 * 60_000,
-        message: "Too many appointment requests.",
+        message: "יותר מדי בקשות לפגישה. נסו שוב מאוחר יותר.",
       });
       await assertTRPCRateLimit({
         key: `appointment-ip:${getTRPCRequestIp(ctx.headers)}`,
         limit: 20,
         windowMs: 60 * 60_000,
-        message: "Too many appointment requests.",
+        message: "יותר מדי בקשות לפגישה. נסו שוב מאוחר יותר.",
       });
 
       const branch = await db.branch.findUnique({

@@ -8,6 +8,7 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -24,6 +25,9 @@ type SearchControlsProps = {
   clearFiltersHref: string;
   input: ProductSearchInput;
 };
+
+const searchSelectClassName =
+  "glass-control h-12 min-w-0 rounded-md border px-3 text-sm outline-none focus-visible:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]";
 
 export function SearchControls({
   activeFilterCount,
@@ -47,7 +51,7 @@ export function SearchControls({
         />
         <PreservedFacetInputs input={input} />
         <Button className="h-12 gap-2" type="submit">
-          <Search className="size-4" />
+          <Search aria-hidden="true" className="size-4" />
           חיפוש
         </Button>
       </form>
@@ -75,7 +79,7 @@ export function SearchControls({
             className="h-11 gap-2 px-4 text-sm"
             type="submit"
           >
-            <Search className="text-background size-4" />
+            <Search aria-hidden="true" className="text-background size-4" />
             חיפוש
           </Button>
         </form>
@@ -90,7 +94,10 @@ export function SearchControls({
               variant="outline"
             >
               <span className="inline-flex items-center gap-2">
-                <SlidersHorizontal className="text-foreground size-4" />
+                <SlidersHorizontal
+                  aria-hidden="true"
+                  className="text-foreground size-4"
+                />
                 סינון ומיון
               </span>
               {activeFilterCount > 0 ? (
@@ -127,7 +134,9 @@ export function SearchControls({
               <div className="grid grid-cols-2 gap-2 pt-1">
                 <Button type="submit">הצגת תוצאות</Button>
                 <Button asChild variant="outline">
-                  <Link href={clearFiltersHref}>איפוס</Link>
+                  <SheetClose asChild>
+                    <Link href={clearFiltersHref}>איפוס</Link>
+                  </SheetClose>
                 </Button>
               </div>
             </form>
@@ -158,7 +167,7 @@ function SearchFields({
       />
       <select
         aria-label="סינון לפי קטגוריה"
-        className="glass-control h-12 rounded-md border px-3 text-sm"
+        className={searchSelectClassName}
         defaultValue={input.category}
         name="category"
       >
@@ -171,7 +180,7 @@ function SearchFields({
       </select>
       <select
         aria-label="סינון לפי סניף"
-        className="glass-control h-12 rounded-md border px-3 text-sm"
+        className={searchSelectClassName}
         defaultValue={input.branch}
         name="branch"
       >
@@ -193,7 +202,7 @@ function SearchFields({
       />
       <select
         aria-label="מיון תוצאות"
-        className="glass-control h-12 rounded-md border px-3 text-sm"
+        className={searchSelectClassName}
         defaultValue={input.sort ?? "relevance"}
         name="sort"
       >

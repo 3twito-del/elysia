@@ -322,6 +322,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               {result.hits.map((product, index) => (
                 <ProductCard
                   imagePriority={index < 4}
+                  imageSizes="(min-width: 1280px) 18rem, (min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                   key={product.slug}
                   product={product}
                   searchContext={{

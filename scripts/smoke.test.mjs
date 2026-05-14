@@ -1,0 +1,90 @@
+import { describe, expect, it } from "vitest";
+
+import {
+  createSmokeCheckUrl,
+  evaluateSmokeCheck,
+  protectedAdminPaths,
+  smokeChecks,
+} from "./smoke.mjs";
+
+describe("smoke checks", () => {
+  it("covers roadmap reliability entry points", () => {
+    const paths = smokeChecks.map((check) => check.path);
+
+    expect(paths).toEqual(
+      expect.arrayContaining([
+        "/",
+        "/branches",
+        "/gifts",
+        "/ai",
+        "/ai?tab=gifts",
+        "/stylist",
+        "/search",
+        "/search?q=venus",
+        "/category/rings",
+        "/category/necklaces",
+        "/category/earrings",
+        "/category/bracelets",
+        "/product/venus-line-ring",
+        "/checkout",
+        "/account",
+        "/admin/login?next=https://evil.example/admin",
+      ]),
+    );
+
+    for (const path of protectedAdminPaths) {
+      expect(paths).toContain(path);
+    }
+  });
+
+  it("accepts protected admin redirects from either location or body", () => {
+    const check = smokeChecks.find((item) => item.path === "/admin/orders");
+
+    expect(check).toBeDefined();
+    expect(
+      evaluateSmokeCheck(check, {
+        body: "",
+        headers: { location: "/admin/login?next=%2Fadmin" },
+        status: 307,
+      }).ok,
+    ).toBe(true);
+    expect(
+      evaluateSmokeCheck(check, {
+        body: '<script>location.replace("/admin/login?next=/admin")</script>',
+        headers: {},
+        status: 200,
+      }).ok,
+    ).toBe(true);
+  });
+
+  it("reports missing body and pattern expectations", () => {
+    const result = evaluateSmokeCheck(
+      {
+        path: "/category/earrings",
+        statuses: [200],
+        includes: ['data-testid="category-results-grid"'],
+        matches: [/href="\/product\//],
+      },
+      {
+        body: "<main>No products</main>",
+        headers: {},
+        status: 200,
+      },
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.missing).toEqual([
+      'body:"data-testid=\\"category-results-grid\\""',
+      'body:/href="\\/product\\//',
+    ]);
+  });
+
+  it("joins base URLs and paths without duplicate slashes", () => {
+    expect(createSmokeCheckUrl("http://localhost:3002/", "/checkout")).toBe(
+      "http://localhost:3002/checkout",
+    );
+    expect(createSmokeCheckUrl("http://localhost:3002", "account")).toBe(
+      "http://localhost:3002/account",
+    );
+  });
+});

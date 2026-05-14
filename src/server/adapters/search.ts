@@ -73,6 +73,8 @@ class TypesenseSearchProvider implements SearchProvider {
     const client = getTypesenseClient();
 
     if (!client) {
+      assertLocalSearchAllowed();
+
       return searchLocalProducts(input);
     }
 

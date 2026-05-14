@@ -344,6 +344,14 @@ export async function searchCatalogProducts(input: CatalogSearchInput = {}) {
   const products = await listCatalogProductsCachedRequest({
     category: input.category,
   });
+
+  return filterCatalogProducts(products, input);
+}
+
+export function filterCatalogProducts(
+  products: CatalogProduct[],
+  input: CatalogSearchInput = {},
+) {
   const normalizedQuery = input.query?.trim().toLowerCase();
 
   return products

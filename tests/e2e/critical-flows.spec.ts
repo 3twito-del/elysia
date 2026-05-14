@@ -47,6 +47,20 @@ test.describe("critical shopping flows", () => {
     await expect(
       page.getByTestId("product-recommendation-rails"),
     ).toBeVisible();
+    const galleryThumbnails = page.getByTestId("product-gallery-thumbnail");
+    const galleryThumbnailCount = await galleryThumbnails.count();
+
+    if (galleryThumbnailCount > 1) {
+      await expect(galleryThumbnails.first()).toHaveAttribute(
+        "aria-pressed",
+        "true",
+      );
+      await galleryThumbnails.nth(1).click();
+      await expect(galleryThumbnails.nth(1)).toHaveAttribute(
+        "aria-pressed",
+        "true",
+      );
+    }
 
     await page.getByRole("button", { exact: true, name: "הוספה לסל" }).click();
     await expect(page.getByText(/נוספה לסל|הפריט נוסף לסל/)).toBeVisible();
@@ -142,7 +156,12 @@ test.describe("critical shopping flows", () => {
     await page.getByTestId("mobile-nav-trigger").click();
     await expect(page.getByTestId("mobile-nav-sheet")).toBeVisible();
     await expect(page.getByTestId("mobile-nav-link").first()).toBeVisible();
+    await page.getByTestId("mobile-nav-link").first().click();
+    await expect(page.getByTestId("mobile-nav-sheet")).toBeHidden();
+    await expect(page).toHaveURL(/\/category\/rings/);
 
+    await page.getByTestId("mobile-nav-trigger").click();
+    await expect(page.getByTestId("mobile-nav-sheet")).toBeVisible();
     await page.setViewportSize({ width: 1024, height: 900 });
     await expect(page.getByTestId("mobile-nav-sheet")).toBeHidden();
   });
@@ -159,9 +178,19 @@ test.describe("critical shopping flows", () => {
     await expect(filterTrigger).toBeVisible();
     await filterTrigger.click();
     await expect(page.getByRole("dialog")).toBeVisible();
+    await page
+      .getByTestId("category-filter-sheet")
+      .locator("a[href*='sort=price-asc']")
+      .first()
+      .click();
+    await expect(page.getByTestId("category-filter-sheet")).toBeHidden();
+    await expect(page).toHaveURL(/sort=price-asc/);
 
+    await page.goto("/category/earrings", { waitUntil: "networkidle" });
+    await page.getByTestId("category-filter-trigger").click();
+    await expect(page.getByTestId("category-filter-sheet")).toBeVisible();
     await page.setViewportSize({ width: 1024, height: 900 });
-    await expect(page.getByRole("dialog")).toBeHidden();
+    await expect(page.getByTestId("category-filter-sheet")).toBeHidden();
   });
 
   test("closes mobile search filter sheet at the tablet breakpoint", async ({
@@ -179,6 +208,121 @@ test.describe("critical shopping flows", () => {
 
     await page.setViewportSize({ width: 768, height: 900 });
     await expect(page.getByTestId("mobile-search-filter-sheet")).toBeHidden();
+  });
+});
+
+test.describe("hydration-sensitive responsive surfaces", () => {
+  test.beforeEach(async ({ page }) => {
+    await clearBrowserState(page);
+    await setCookieConsent(page, "essential");
+  });
+
+  test("keeps header navigation hydration-clean across mobile and desktop reloads", async ({
+    page,
+  }) => {
+    const hydrationIssues = trackHydrationIssues(page);
+
+    await page.setViewportSize({ width: 390, height: 900 });
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+
+    const mobileNavTrigger = page.getByTestId("mobile-nav-trigger");
+
+    await expect(mobileNavTrigger).toBeVisible();
+    await mobileNavTrigger.click();
+    await expect(page.getByTestId("mobile-nav-sheet")).toBeVisible();
+
+    await page.setViewportSize({ width: 1024, height: 900 });
+    await expect(page.getByTestId("mobile-nav-sheet")).toBeHidden();
+    await expect(mobileNavTrigger).toBeHidden();
+
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await expect(page.getByTestId("mobile-nav-trigger")).toBeHidden();
+
+    await page.setViewportSize({ width: 390, height: 900 });
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await expect(page.getByTestId("mobile-nav-trigger")).toBeVisible();
+
+    await expectNoHydrationRegressions(page, hydrationIssues);
+  });
+
+  test("keeps responsive filter sheets hydration-clean across breakpoints", async ({
+    page,
+  }) => {
+    const hydrationIssues = trackHydrationIssues(page);
+
+    await page.setViewportSize({ width: 390, height: 900 });
+    await page.goto("/search?q=venus", { waitUntil: "domcontentloaded" });
+
+    const mobileSearchControls = page.getByTestId("mobile-search-controls");
+
+    await expect(mobileSearchControls).toBeVisible();
+    await mobileSearchControls
+      .getByTestId("mobile-search-filter-trigger")
+      .click();
+    await expect(page.getByTestId("mobile-search-filter-sheet")).toBeVisible();
+
+    await page.setViewportSize({ width: 768, height: 900 });
+    await expect(page.getByTestId("mobile-search-filter-sheet")).toBeHidden();
+
+    await page.setViewportSize({ width: 390, height: 900 });
+    await page.goto("/category/earrings", { waitUntil: "domcontentloaded" });
+
+    const categoryFilterTrigger = page.getByTestId("category-filter-trigger");
+
+    await expect(categoryFilterTrigger).toBeVisible();
+    await categoryFilterTrigger.click();
+    await expect(page.getByTestId("category-filter-sheet")).toBeVisible();
+
+    await page.setViewportSize({ width: 1024, height: 900 });
+    await expect(page.getByTestId("category-filter-sheet")).toBeHidden();
+    await expect(page.getByTestId("category-filter-panel")).toBeVisible();
+
+    await expectNoHydrationRegressions(page, hydrationIssues);
+  });
+
+  test("hydrates cart count from stored client session without mismatch", async ({
+    page,
+  }) => {
+    const sessionKey = "cart_hydration_regression_123456789";
+    const seenSessionKeys: string[] = [];
+    const hydrationIssues = trackHydrationIssues(page);
+
+    await page.route("**/api/cart/count**", async (route) => {
+      const requestUrl = new URL(route.request().url());
+
+      seenSessionKeys.push(requestUrl.searchParams.get("sessionKey") ?? "");
+      await route.fulfill({
+        body: JSON.stringify({ itemCount: 3 }),
+        contentType: "application/json",
+        status: 200,
+      });
+    });
+    await page.addInitScript(
+      ({ cartStorageKey, sessionKey }) => {
+        window.localStorage.setItem(cartStorageKey, sessionKey);
+        document.cookie = [
+          `aphrodite_cart_session=${encodeURIComponent(sessionKey)}`,
+          "Path=/",
+          "SameSite=Lax",
+        ].join("; ");
+      },
+      { cartStorageKey, sessionKey },
+    );
+
+    await page.setViewportSize({ width: 390, height: 900 });
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+
+    await expect(
+      page.locator("a[href='/checkout'] .cart-count-badge"),
+    ).toHaveText("3");
+    expect(seenSessionKeys).toContain(sessionKey);
+
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await expect(
+      page.locator("a[href='/checkout'] .cart-count-badge"),
+    ).toHaveText("3");
+
+    await expectNoHydrationRegressions(page, hydrationIssues);
   });
 });
 
@@ -589,6 +733,40 @@ async function expectNoHorizontalOverflow(page: Page) {
   );
 
   expect(overflow).toBeLessThanOrEqual(1);
+}
+
+function trackHydrationIssues(page: Page) {
+  const hydrationIssuePattern =
+    /hydration|hydrate|server rendered|server-rendered|text content does not match|did not match/i;
+  const hydrationIssues: string[] = [];
+
+  page.on("console", (message) => {
+    if (
+      (message.type() === "error" || message.type() === "warning") &&
+      hydrationIssuePattern.test(message.text())
+    ) {
+      hydrationIssues.push(message.text());
+    }
+  });
+  page.on("pageerror", (error) => {
+    if (hydrationIssuePattern.test(error.message)) {
+      hydrationIssues.push(error.message);
+    }
+  });
+
+  return hydrationIssues;
+}
+
+async function expectNoHydrationRegressions(
+  page: Page,
+  hydrationIssues: string[],
+) {
+  await expect(
+    page.locator(
+      "[data-nextjs-dialog], [data-nextjs-dialog-overlay], [data-nextjs-error-overlay]",
+    ),
+  ).toHaveCount(0);
+  expect(hydrationIssues).toEqual([]);
 }
 
 async function expectElementAtViewportTop(page: Page, selector: string) {

@@ -2,20 +2,14 @@
 
 import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
-import { z } from "zod";
 
+import { adminLoginInputSchema } from "~/lib/public-action-validation";
 import { signIn, signOut } from "~/server/auth";
 import { sanitizeAdminRedirect } from "~/server/auth/admin-redirect";
 import {
   assertRateLimit,
   rateLimitMessage,
 } from "~/server/services/rate-limit";
-
-const adminLoginSchema = z.object({
-  email: z.string().email().toLowerCase(),
-  password: z.string().min(12),
-  next: z.string().max(256).optional(),
-});
 
 export type AdminLoginState = {
   message?: string;
@@ -25,14 +19,17 @@ export async function adminLoginAction(
   _state: AdminLoginState,
   formData: FormData,
 ): Promise<AdminLoginState> {
-  const parsed = adminLoginSchema.safeParse({
+  const parsed = adminLoginInputSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
     next: formData.get("next"),
   });
 
   if (!parsed.success) {
-    return { message: "יש להזין אימייל וסיסמה תקינים." };
+    return {
+      message:
+        parsed.error.issues[0]?.message ?? "יש להזין אימייל וסיסמה תקינים.",
+    };
   }
 
   const redirectTo = sanitizeAdminRedirect(parsed.data.next);

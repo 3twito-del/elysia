@@ -34,18 +34,20 @@ Use this track for local product quality, UI polish, correctness, and implementa
 - Completed 2026-05-14: Improve cart and checkout empty states so users always have a clear next action.
 - Completed 2026-05-14: Tighten account pages with loading, empty, forbidden, and error states for orders, addresses, wishlist, appointments, and privacy flows. Added explicit customer-account load error, missing profile, admin-session forbidden state, account loading/error route fallbacks, and field-level validation for address, return, and privacy forms.
 - Completed 2026-05-14: Improve admin tables with stable pagination, filters, empty states, mutation loading states, and server-confirmed success/error feedback. Added consistent filter reset actions across order, catalog, customer, appointment, inventory, and audit tables, Outbox search/reset in integrations, admin loading/error route fallbacks, and pending/success/error feedback for catalog, inventory, coupon, order, shipment, refund, and appointment actions.
-- In progress 2026-05-14: Audit client/server validation boundaries for forms already present in the repo and align copy with the existing Hebrew RTL interface. Completed checkout/manual order and account address/return/privacy validation helpers with focused unit coverage.
+- Completed 2026-05-14: Audit client/server validation boundaries for forms already present in the repo and align copy with the existing Hebrew RTL interface. Completed checkout/manual order, account address/return/privacy, newsletter/wishlist/admin login, appointment booking, AI gift recommendations, and admin catalog/inventory/order validation helpers with focused unit coverage.
 
 ### Reliability Local
 
-- Expand smoke coverage for public routes, category/product navigation, checkout entry, account entry, and admin entry using existing local adapters.
-- Add focused unit/integration tests for local catalog filtering, coupon validation, cart flow, form validation, and cache/revalidation helpers.
+- Completed 2026-05-14: Expand smoke coverage for public routes, category/product navigation, checkout entry, account entry, and admin entry using existing local adapters. `pnpm smoke` now covers public informational routes, AI/gift tools, search results/no-results, all primary category pages, product-to-category links, checkout/account entry forms, unauthorized account export, chat bad-request handling, sanitized admin login, and protected admin route entry.
+- Completed 2026-05-14: Add focused unit/integration tests for local catalog filtering, coupon validation, cart flow, form validation, and cache/revalidation helpers. Added pure catalog filter/availability coverage, active coupon lookup coverage, cart summary/options/quantity coverage with local DB mocks, stable cache tag tests, catalog revalidation tag dedupe tests, and retained the shared form validation test suite.
 - Keep `pnpm lint`, `pnpm typecheck`, and targeted tests passing after each implementation slice.
-- Add regression checks for hydration-sensitive components that render differently on mobile and desktop.
-- Verify development fallbacks fail clearly when production-only provider env vars are absent.
+- Completed 2026-05-14: Add regression checks for hydration-sensitive components that render differently on mobile and desktop. Added Playwright hydration/error-overlay guards for header mobile navigation, search/category filter sheets, and cart-count client hydration across mobile and desktop viewport changes.
+- Completed 2026-05-14: Verify development fallbacks fail clearly when production-only provider env vars are absent. Added testable production env validation, documented Vercel runtime guard env in `.env.example`, blocked Typesense local search fallback on production search paths, and made missing production transactional email providers fail with an explicit provider error instead of mock delivery.
 
 ### Accessibility and Performance
 
+- Completed 2026-05-14: Improved mobile keyboard/screen-reader flow for header navigation and filter sheets by closing sheets on selection, tightening sheet/dialog close labels, adding explicit cart and gallery live labels, and extending E2E coverage for those interactions.
+- Completed 2026-05-14: Tuned product-card and product-gallery image `sizes`/lazy-loading behavior so search/category cards and gallery thumbnails request more appropriate responsive image candidates without layout changes.
 - Review keyboard flow for header navigation, mobile sheets, filters, dialogs, product cards, checkout forms, and admin actions.
 - Fix contrast, visible focus, aria labels, heading order, and screen-reader labels where existing UI falls short.
 - Audit image priority, sizes, aspect ratios, and lazy-loading behavior for hero, product cards, galleries, and category media.

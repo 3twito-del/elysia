@@ -166,7 +166,7 @@ export default async function AdminInventoryPage({
                   <TableHead>סניף</TableHead>
                   <TableHead>כמות</TableHead>
                   <TableHead>שמורות</TableHead>
-                  <TableHead>Safety</TableHead>
+                  <TableHead>מלאי ביטחון</TableHead>
                   <TableHead>זמין</TableHead>
                   <TableHead>עודכן</TableHead>
                   <TableHead>עריכה</TableHead>

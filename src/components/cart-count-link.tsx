@@ -15,6 +15,8 @@ type CartCountResponse = {
 
 export function CartCountLink() {
   const [itemCount, setItemCount] = useState(0);
+  const cartLabel =
+    itemCount > 0 ? `סל קניות, ${itemCount} פריטים` : "סל קניות";
 
   useEffect(() => {
     let cancelled = false;
@@ -72,15 +74,18 @@ export function CartCountLink() {
   }, []);
 
   return (
-    <Link className="relative" href="/checkout">
-      <ShoppingBag className="size-5" />
+    <Link aria-label={cartLabel} className="relative" href="/checkout">
+      <ShoppingBag aria-hidden="true" className="size-5" />
       {itemCount > 0 ? (
-        <span className="cart-count-badge bg-foreground text-background absolute -top-1.5 -right-1.5 grid h-5 min-w-5 place-items-center rounded-full px-1 text-[0.68rem] leading-none font-semibold">
+        <span
+          aria-hidden="true"
+          className="cart-count-badge bg-foreground text-background absolute -top-1.5 -right-1.5 grid h-5 min-w-5 place-items-center rounded-full px-1 text-[0.68rem] leading-none font-semibold"
+        >
           {itemCount > 99 ? "99+" : itemCount}
         </span>
       ) : null}
-      <span className="sr-only">
-        {itemCount > 0 ? `סל קניות, ${itemCount} פריטים` : "סל קניות"}
+      <span aria-atomic="true" aria-live="polite" className="sr-only">
+        {cartLabel}
       </span>
     </Link>
   );

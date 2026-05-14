@@ -2,9 +2,43 @@ import { createHmac } from "node:crypto";
 
 import { describe, expect, it } from "vitest";
 
-import { paymentProvider, verifyCardComWebhookSignature } from "./payment";
+import {
+  assertCardComCheckoutConfigured,
+  CARD_COM_PRODUCTION_CHECKOUT_ERROR,
+  paymentProvider,
+  verifyCardComWebhookSignature,
+} from "./payment";
 
 describe("payment adapter", () => {
+  it("keeps CardCom mock checkout available outside production only", () => {
+    expect(
+      assertCardComCheckoutConfigured({
+        NODE_ENV: "development",
+        CARD_COM_API_NAME: undefined,
+        CARD_COM_API_PASSWORD: undefined,
+        CARD_COM_TERMINAL: undefined,
+      }),
+    ).toBe(false);
+
+    expect(() =>
+      assertCardComCheckoutConfigured({
+        NODE_ENV: "production",
+        CARD_COM_API_NAME: undefined,
+        CARD_COM_API_PASSWORD: undefined,
+        CARD_COM_TERMINAL: undefined,
+      }),
+    ).toThrow(CARD_COM_PRODUCTION_CHECKOUT_ERROR);
+
+    expect(
+      assertCardComCheckoutConfigured({
+        NODE_ENV: "production",
+        CARD_COM_API_NAME: "api-name",
+        CARD_COM_API_PASSWORD: "api-password",
+        CARD_COM_TERMINAL: "12345",
+      }),
+    ).toBe(true);
+  });
+
   it("creates a mock CardCom checkout when credentials are absent", async () => {
     const session = await paymentProvider.createCheckout({
       orderId: "order_1",

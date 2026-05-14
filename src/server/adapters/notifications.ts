@@ -23,6 +23,15 @@ export interface NotificationProvider {
   sendOtp(identifier: string, code: string): Promise<NotificationResult>;
 }
 
+export type NotificationEnv = {
+  BREVO_API_KEY?: string;
+  NODE_ENV: string;
+  RESEND_API_KEY?: string;
+};
+
+export const PRODUCTION_EMAIL_PROVIDER_ERROR =
+  "Production transactional email requires BREVO_API_KEY or RESEND_API_KEY.";
+
 type BrevoSendEmailResponse = {
   messageId?: string;
 };
@@ -218,9 +227,33 @@ class MockNotificationProvider implements NotificationProvider {
   }
 }
 
-function createNotificationProvider(): NotificationProvider {
-  if (env.BREVO_API_KEY) return new BrevoNotificationProvider();
-  if (env.RESEND_API_KEY) return new ResendNotificationProvider();
+class MissingProductionNotificationProvider implements NotificationProvider {
+  isOperational() {
+    return false;
+  }
+
+  providerName() {
+    return "missing";
+  }
+
+  async sendEmail(): Promise<NotificationResult> {
+    throw new Error(PRODUCTION_EMAIL_PROVIDER_ERROR);
+  }
+
+  async sendOtp(): Promise<NotificationResult> {
+    throw new Error(PRODUCTION_EMAIL_PROVIDER_ERROR);
+  }
+}
+
+export function createNotificationProvider(
+  config: NotificationEnv = env,
+): NotificationProvider {
+  if (config.BREVO_API_KEY) return new BrevoNotificationProvider();
+  if (config.RESEND_API_KEY) return new ResendNotificationProvider();
+  if (config.NODE_ENV === "production") {
+    return new MissingProductionNotificationProvider();
+  }
+
   return new MockNotificationProvider();
 }
 

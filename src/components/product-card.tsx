@@ -14,6 +14,7 @@ import type { CatalogProduct } from "~/server/services/catalog";
 
 type ProductCardProps = {
   imagePriority?: boolean;
+  imageSizes?: string;
   product: CatalogProduct;
   searchContext?: {
     query?: string;
@@ -23,9 +24,12 @@ type ProductCardProps = {
 
 const PRODUCT_IMAGE_BLUR_DATA_URL =
   "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMCIgaGVpZ2h0PSI4Ij48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB4Mj0iMSIgeTE9IjAiIHkyPSIxIj48c3RvcCBzdG9wLWNvbG9yPSIjZjRmMGVhIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZGRkNmNjIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3QgZmlsbD0idXJsKCNnKSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjgiLz48L3N2Zz4=";
+const DEFAULT_PRODUCT_CARD_IMAGE_SIZES =
+  "(min-width: 1280px) 18rem, (min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw";
 
 export function ProductCard({
   imagePriority = false,
+  imageSizes = DEFAULT_PRODUCT_CARD_IMAGE_SIZES,
   product,
   searchContext,
 }: ProductCardProps) {
@@ -66,7 +70,7 @@ export function ProductCard({
               fill
               placeholder="blur"
               priority={imagePriority}
-              sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+              sizes={imageSizes}
               src={product.image}
             />
           </KineticImageMotion>

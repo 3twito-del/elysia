@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import {
   CircleHelp,
   Gem,
@@ -41,6 +42,8 @@ const serviceActions = [
 ] as const;
 
 export function MobileNav({ items }: { items: HeaderNavItem[] }) {
+  const [open, setOpen] = useState(false);
+  const closeNav = () => setOpen(false);
   const catalogItems = items.slice(0, 5);
   const editorialItems = items
     .slice(5)
@@ -49,7 +52,11 @@ export function MobileNav({ items }: { items: HeaderNavItem[] }) {
     );
 
   return (
-    <Sheet closeOnMediaQuery="(min-width: 1024px)">
+    <Sheet
+      closeOnMediaQuery="(min-width: 1024px)"
+      onOpenChange={setOpen}
+      open={open}
+    >
       <SheetTrigger asChild>
         <Button
           aria-label="פתיחת ניווט"
@@ -59,7 +66,7 @@ export function MobileNav({ items }: { items: HeaderNavItem[] }) {
           type="button"
           variant="ghost"
         >
-          <Menu className="size-5" />
+          <Menu aria-hidden="true" className="size-5" />
           <span className="sr-only">פתח ניווט</span>
         </Button>
       </SheetTrigger>
@@ -73,8 +80,9 @@ export function MobileNav({ items }: { items: HeaderNavItem[] }) {
             className="flex items-center gap-2 text-lg font-semibold"
             dir="ltr"
             href="/"
+            onClick={closeNav}
           >
-            <Gem className="text-foreground size-5" />
+            <Gem aria-hidden="true" className="text-foreground size-5" />
             Aphrodite
           </Link>
           <SheetTitle className="sr-only">ניווט ראשי</SheetTitle>
@@ -95,8 +103,8 @@ export function MobileNav({ items }: { items: HeaderNavItem[] }) {
                   key={item.href}
                   variant="outline"
                 >
-                  <Link href={item.href}>
-                    <Icon className="size-4" />
+                  <Link href={item.href} onClick={closeNav}>
+                    <Icon aria-hidden="true" className="size-4" />
                     {item.label}
                   </Link>
                 </Button>
@@ -117,7 +125,11 @@ export function MobileNav({ items }: { items: HeaderNavItem[] }) {
                 key={item.href}
                 variant="ghost"
               >
-                <Link data-testid="mobile-nav-link" href={item.href}>
+                <Link
+                  data-testid="mobile-nav-link"
+                  href={item.href}
+                  onClick={closeNav}
+                >
                   {item.label}
                 </Link>
               </Button>
@@ -138,8 +150,12 @@ export function MobileNav({ items }: { items: HeaderNavItem[] }) {
                   key={item.href}
                   variant="ghost"
                 >
-                  <Link data-testid="mobile-nav-link" href={item.href}>
-                    <Icon className="size-4" />
+                  <Link
+                    data-testid="mobile-nav-link"
+                    href={item.href}
+                    onClick={closeNav}
+                  >
+                    <Icon aria-hidden="true" className="size-4" />
                     {item.label}
                   </Link>
                 </Button>
@@ -152,7 +168,11 @@ export function MobileNav({ items }: { items: HeaderNavItem[] }) {
                 key={item.href}
                 variant="ghost"
               >
-                <Link data-testid="mobile-nav-link" href={item.href}>
+                <Link
+                  data-testid="mobile-nav-link"
+                  href={item.href}
+                  onClick={closeNav}
+                >
                   {item.label}
                 </Link>
               </Button>

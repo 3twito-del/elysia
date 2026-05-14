@@ -1,33 +1,119 @@
-const baseUrl = process.env.SMOKE_BASE_URL ?? "http://localhost:3002";
+import { pathToFileURL } from "node:url";
 
-const checks = [
-  { path: "/", statuses: [200], includes: ["Aphrodite"] },
-  { path: "/branches", statuses: [200], includes: ["Aphrodite"] },
-  { path: "/search", statuses: [200], includes: ['data-testid="search-form"'] },
+export const protectedAdminPaths = [
+  "/admin",
+  "/admin/orders",
+  "/admin/catalog",
+  "/admin/inventory",
+  "/admin/customers",
+  "/admin/appointments",
+  "/admin/integrations",
+  "/admin/audit",
+];
+
+const categoryPaths = [
+  "/category/rings",
+  "/category/necklaces",
+  "/category/earrings",
+  "/category/bracelets",
+];
+
+const publicRouteChecks = [
+  {
+    path: "/",
+    statuses: [200],
+    includes: ["Aphrodite"],
+    matches: [
+      /href="\/category\/rings"/,
+      /href="\/checkout"/,
+      /href="\/account"/,
+    ],
+  },
+  {
+    path: "/branches",
+    statuses: [200],
+    includes: [
+      "Aphrodite",
+      'name="branchSlug"',
+      'name="topic"',
+      'name="startsAt"',
+    ],
+  },
+  {
+    path: "/gifts",
+    statuses: [200],
+    includes: ["Aphrodite"],
+    matches: [/href="\/product\//],
+  },
+  { path: "/ai", statuses: [200], includes: ["Aphrodite"] },
+  {
+    path: "/ai?tab=gifts",
+    statuses: [200],
+    includes: ["Aphrodite", 'id="ai-gift-budget"'],
+  },
+  { path: "/stylist", statuses: [200], includes: ["Aphrodite"] },
+  { path: "/about", statuses: [200], includes: ["Aphrodite"] },
+  { path: "/faq", statuses: [200], includes: ["Aphrodite"] },
+  { path: "/privacy", statuses: [200], includes: ["Aphrodite"] },
+  { path: "/terms", statuses: [200], includes: ["Aphrodite"] },
+  { path: "/accessibility", statuses: [200], includes: ["Aphrodite"] },
+];
+
+const categoryNavigationChecks = categoryPaths.map((path) => ({
+  path,
+  statuses: [200],
+  includes: [
+    'data-testid="category-results-grid"',
+    'data-testid="product-card"',
+  ],
+  matches: [/href="\/product\//],
+}));
+
+export const smokeChecks = [
+  ...publicRouteChecks,
+  {
+    path: "/search",
+    statuses: [200],
+    includes: ['data-testid="search-form"'],
+  },
+  {
+    path: "/search?q=venus",
+    statuses: [200],
+    includes: [
+      'data-testid="search-form"',
+      'data-testid="search-results-grid"',
+      "/product/venus-line-ring",
+    ],
+    matches: [/href="\/product\//],
+  },
   {
     path: "/search?q=zzzz-no-match&maxPrice=1",
     statuses: [200],
     includes: ['data-testid="search-empty-state"', 'data-testid="search-form"'],
   },
+  ...categoryNavigationChecks,
   {
-    path: "/category/earrings",
+    path: "/product/venus-line-ring",
     statuses: [200],
     includes: [
-      'data-testid="category-results-grid"',
-      'data-testid="product-card"',
+      "venus-line-ring",
+      'data-testid="product-gallery"',
+      'data-testid="product-variant-feedback"',
+      'data-testid="product-recommendation-rails"',
     ],
+    matches: [/href="\/category\//],
   },
   {
     path: "/checkout",
     statuses: [200],
     includes: ['data-testid="cart-checkout-form"'],
+    matches: [/href="\/category\//],
   },
   {
-    path: "/product/venus-line-ring",
+    path: "/account",
     statuses: [200],
-    includes: ["venus-line-ring"],
+    includes: ['id="identifier"', 'id="code"', 'name="sessionKey"'],
   },
-  { path: "/account", statuses: [200] },
   {
     path: "/account/privacy/export",
     statuses: [401],
@@ -40,41 +126,121 @@ const checks = [
     statuses: [400],
     includes: ['"ok":false', '"error":"Invalid request body."'],
   },
-  { path: "/admin", statuses: [200, 302, 303, 307, 308] },
   {
     path: "/admin/login?next=https://evil.example/admin",
     statuses: [200],
-    includes: ['name="next"', 'value="/admin"', "Back office"],
+    includes: ['name="next"', 'value="/admin"', 'id="email"'],
   },
+  ...protectedAdminPaths.map((path) => ({
+    path,
+    statuses: [200, 302, 303, 307, 308],
+    includesAnywhere: ["/admin/login"],
+    matchesAnywhere: [/next=(?:\/admin|%2Fadmin)/],
+  })),
 ];
 
-let failed = false;
+export function createSmokeCheckUrl(baseUrl, path) {
+  const root = baseUrl.replace(/\/+$/u, "");
+  const suffix = path.startsWith("/") ? path : `/${path}`;
 
-for (const check of checks) {
-  const response = await fetch(`${baseUrl}${check.path}`, {
-    body: check.body,
-    method: check.method ?? "GET",
-    redirect: "manual",
-  });
-  const statusOk = check.statuses.includes(response.status);
-  const body = statusOk && check.includes?.length ? await response.text() : "";
-  const contentOk =
-    check.includes?.every((expected) => body.includes(expected)) ?? true;
-  const ok = statusOk && contentOk;
-  const contentSuffix = contentOk
-    ? ""
-    : ` missing ${check.includes
-        .filter((expected) => !body.includes(expected))
-        .map((expected) => JSON.stringify(expected))
-        .join(", ")}`;
-
-  console.log(
-    `${ok ? "PASS" : "FAIL"} ${check.path} -> ${response.status}${contentSuffix}`,
-  );
-
-  if (!ok) failed = true;
+  return `${root}${suffix}`;
 }
 
-if (failed) {
-  process.exitCode = 1;
+export async function runSmokeChecks({
+  baseUrl = process.env.SMOKE_BASE_URL ?? "http://localhost:3002",
+  checks = smokeChecks,
+  fetchImpl = fetch,
+  logger = console.log,
+} = {}) {
+  let failed = false;
+  const results = [];
+
+  for (const check of checks) {
+    const response = await fetchImpl(createSmokeCheckUrl(baseUrl, check.path), {
+      body: check.body,
+      method: check.method ?? "GET",
+      redirect: "manual",
+    });
+    const body = await response.text();
+    const result = evaluateSmokeCheck(check, {
+      body,
+      headers: response.headers,
+      status: response.status,
+    });
+
+    results.push(result);
+    logger(formatSmokeResult(result));
+
+    if (!result.ok) failed = true;
+  }
+
+  return { failed, results };
+}
+
+export function evaluateSmokeCheck(check, response) {
+  const statusOk = check.statuses.includes(response.status);
+  const body = response.body ?? "";
+  const location = getHeader(response.headers, "location");
+  const anywhere = `${location}\n${body}`;
+  const missingBodyIncludes = (check.includes ?? []).filter(
+    (expected) => !body.includes(expected),
+  );
+  const missingBodyMatches = (check.matches ?? []).filter(
+    (expected) => !expected.test(body),
+  );
+  const missingAnywhereIncludes = (check.includesAnywhere ?? []).filter(
+    (expected) => !anywhere.includes(expected),
+  );
+  const missingAnywhereMatches = (check.matchesAnywhere ?? []).filter(
+    (expected) => !expected.test(anywhere),
+  );
+  const missing = [
+    ...missingBodyIncludes.map((value) => `body:${JSON.stringify(value)}`),
+    ...missingBodyMatches.map((value) => `body:${value}`),
+    ...missingAnywhereIncludes.map(
+      (value) => `body-or-location:${JSON.stringify(value)}`,
+    ),
+    ...missingAnywhereMatches.map((value) => `body-or-location:${value}`),
+  ];
+
+  if (!statusOk) {
+    missing.unshift(`status:${response.status}`);
+  }
+
+  return {
+    location,
+    missing,
+    ok: statusOk && missing.length === 0,
+    path: check.path,
+    status: response.status,
+  };
+}
+
+export function formatSmokeResult(result) {
+  const locationSuffix = result.location ? ` location=${result.location}` : "";
+  const missingSuffix =
+    result.missing.length > 0 ? ` missing ${result.missing.join(", ")}` : "";
+
+  return `${result.ok ? "PASS" : "FAIL"} ${result.path} -> ${result.status}${locationSuffix}${missingSuffix}`;
+}
+
+function getHeader(headers, name) {
+  if (!headers) return "";
+
+  if (typeof headers.get === "function") {
+    return headers.get(name) ?? "";
+  }
+
+  return headers[name] ?? headers[name.toLowerCase()] ?? "";
+}
+
+const isMain =
+  process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+
+if (isMain) {
+  const { failed } = await runSmokeChecks();
+
+  if (failed) {
+    process.exitCode = 1;
+  }
 }

@@ -35,23 +35,44 @@ export interface PaymentProvider {
   verifyWebhook(input: WebhookVerificationInput): Promise<boolean>;
 }
 
+export type CardComPaymentEnv = {
+  CARD_COM_API_NAME?: string;
+  CARD_COM_API_PASSWORD?: string;
+  CARD_COM_TERMINAL?: string;
+  NODE_ENV: string;
+};
+
+export const CARD_COM_PRODUCTION_CHECKOUT_ERROR =
+  "CardCom production checkout requires CARD_COM_TERMINAL, CARD_COM_API_NAME, and CARD_COM_API_PASSWORD.";
+
+export function hasCardComCheckoutCredentials(config: CardComPaymentEnv = env) {
+  return Boolean(
+    config.CARD_COM_TERMINAL?.trim() &&
+    config.CARD_COM_API_NAME?.trim() &&
+    config.CARD_COM_API_PASSWORD?.trim(),
+  );
+}
+
+export function assertCardComCheckoutConfigured(
+  config: CardComPaymentEnv = env,
+) {
+  const hasCredentials = hasCardComCheckoutCredentials(config);
+
+  if (!hasCredentials && config.NODE_ENV === "production") {
+    throw new Error(CARD_COM_PRODUCTION_CHECKOUT_ERROR);
+  }
+
+  return hasCredentials;
+}
+
 class CardComPaymentProvider implements PaymentProvider {
   async createCheckout(input: CheckoutInput): Promise<CheckoutSession> {
     const parsed = checkoutInputSchema.parse(input);
     const terminal = env.CARD_COM_TERMINAL;
-    const hasCredentials =
-      Boolean(terminal) &&
-      Boolean(env.CARD_COM_API_NAME) &&
-      Boolean(env.CARD_COM_API_PASSWORD);
+    const hasCredentials = assertCardComCheckoutConfigured();
     const paymentId = `cardcom_${nanoid(12)}`;
 
     if (!hasCredentials) {
-      if (env.NODE_ENV === "production") {
-        throw new Error(
-          "CardCom production checkout requires CARD_COM_TERMINAL, CARD_COM_API_NAME, and CARD_COM_API_PASSWORD.",
-        );
-      }
-
       return {
         provider: "cardcom",
         providerPaymentId: paymentId,

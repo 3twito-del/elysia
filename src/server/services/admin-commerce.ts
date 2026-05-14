@@ -1,6 +1,16 @@
 import type { OrderStatus, Prisma } from "@prisma/client";
-import { z } from "zod";
+import type { z } from "zod";
 
+import {
+  createAdminCouponInputSchema,
+  createAdminProductInputSchema,
+  refundAdminOrderInputSchema,
+  updateAdminAppointmentStatusInputSchema,
+  updateAdminCouponStatusInputSchema,
+  updateAdminInventoryInputSchema,
+  updateAdminProductStatusInputSchema,
+  upsertAdminShipmentInputSchema,
+} from "~/lib/admin-validation";
 import { db } from "~/server/db";
 import { DEFAULT_CATALOG_IMAGE } from "~/server/services/catalog";
 import { revalidateCatalogMutation } from "~/server/services/catalog-revalidation";
@@ -9,84 +19,16 @@ import { BUSINESS_EVENTS, createOutboxEvent } from "~/server/services/outbox";
 
 type TransactionClient = Prisma.TransactionClient;
 
-export const createAdminProductInputSchema = z.object({
-  slug: z.string().trim().min(3).max(120),
-  sku: z.string().trim().min(3).max(80),
-  name: z.string().trim().min(2).max(160),
-  shortDescription: z.string().trim().min(5).max(240),
-  description: z.string().trim().min(5).max(1500),
-  categoryId: z.string().trim().min(1),
-  materialId: z.string().trim().min(1),
-  stoneId: z.string().trim().min(1).optional(),
-  basePrice: z.number().positive(),
-  imageUrl: z.string().url().optional(),
-  variantSku: z.string().trim().min(3).max(100),
-  variantName: z.string().trim().min(1).max(120),
-  branchInventory: z
-    .array(
-      z.object({
-        branchId: z.string().trim().min(1),
-        quantity: z.number().int().nonnegative(),
-        safetyStock: z.number().int().nonnegative().default(0),
-      }),
-    )
-    .default([]),
-});
-
-export const updateAdminProductStatusInputSchema = z.object({
-  productId: z.string().trim().min(1),
-  status: z.enum(["DRAFT", "ACTIVE", "ARCHIVED"]),
-});
-
-export const updateAdminInventoryInputSchema = z.object({
-  variantId: z.string().trim().min(1),
-  branchId: z.string().trim().min(1),
-  quantity: z.number().int().nonnegative(),
-  safetyStock: z.number().int().nonnegative().default(0),
-});
-
-export const createAdminCouponInputSchema = z
-  .object({
-    code: z.string().trim().min(3).max(64),
-    description: z.string().trim().max(240).optional(),
-    percentOff: z.number().int().min(1).max(100).optional(),
-    amountOff: z.number().positive().optional(),
-    startsAt: z.coerce.date().default(() => new Date()),
-    endsAt: z.coerce.date().optional(),
-    maxUses: z.number().int().positive().optional(),
-  })
-  .refine(
-    (input) => input.percentOff !== undefined || input.amountOff !== undefined,
-    {
-      message: "Coupon must include percentOff or amountOff.",
-    },
-  );
-
-export const updateAdminCouponStatusInputSchema = z.object({
-  couponId: z.string().trim().min(1),
-  isActive: z.boolean(),
-});
-
-export const upsertAdminShipmentInputSchema = z.object({
-  orderId: z.string().trim().min(1),
-  provider: z.string().trim().max(80).optional(),
-  tracking: z.string().trim().max(120).optional(),
-  status: z.string().trim().min(2).max(80).default("SHIPPED"),
-});
-
-export const refundAdminOrderInputSchema = z.object({
-  orderId: z.string().trim().min(1),
-  returnRequestId: z.string().trim().min(1).optional(),
-  reason: z.string().trim().min(3).max(500),
-  notes: z.string().trim().max(1000).optional(),
-  restockItems: z.boolean().default(false),
-});
-
-export const updateAdminAppointmentStatusInputSchema = z.object({
-  appointmentId: z.string().trim().min(1),
-  status: z.enum(["REQUESTED", "CONFIRMED", "COMPLETED", "CANCELLED"]),
-  notes: z.string().trim().max(500).optional(),
-});
+export {
+  createAdminCouponInputSchema,
+  createAdminProductInputSchema,
+  refundAdminOrderInputSchema,
+  updateAdminAppointmentStatusInputSchema,
+  updateAdminCouponStatusInputSchema,
+  updateAdminInventoryInputSchema,
+  updateAdminProductStatusInputSchema,
+  upsertAdminShipmentInputSchema,
+} from "~/lib/admin-validation";
 
 export function canRefundOrderStatus(status: OrderStatus) {
   return [

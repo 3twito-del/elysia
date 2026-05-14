@@ -1,0 +1,155 @@
+import { describe, expect, it } from "vitest";
+
+import {
+  filterCatalogProducts,
+  getCatalogAvailability,
+  getCatalogBranchAvailability,
+  type CatalogBranch,
+  type CatalogProduct,
+} from "./catalog";
+
+describe("catalog filtering", () => {
+  it("filters by query, facets, branch availability, max price, and stock", () => {
+    const products = [
+      makeProduct({
+        collections: ["bridal"],
+        description: "Diamond ring for a refined gift",
+        inventory: { "tel-aviv": 2, jerusalem: 0 },
+        material: "זהב לבן 14K",
+        name: "Venus Line Ring",
+        price: 1290,
+        slug: "venus-line-ring",
+        stone: "יהלום",
+        tags: ["gift"],
+      }),
+      makeProduct({
+        collections: ["classic"],
+        description: "Everyday pearl earrings",
+        inventory: { "tel-aviv": 0, jerusalem: 4 },
+        material: "כסף",
+        name: "Noor Pearl Earrings",
+        price: 690,
+        slug: "noor-pearl-earrings",
+        stone: "פנינה",
+        tags: ["daily"],
+      }),
+      makeProduct({
+        collections: ["bridal"],
+        description: "Out of stock diamond bracelet",
+        inventory: { "tel-aviv": 0, jerusalem: 0 },
+        material: "זהב לבן 14K",
+        name: "Mika Bracelet",
+        price: 850,
+        slug: "mika-bracelet",
+        stone: "יהלום",
+        tags: ["gift"],
+      }),
+    ];
+
+    expect(
+      filterCatalogProducts(products, {
+        availableOnly: true,
+        branch: "tel-aviv",
+        collection: "bridal",
+        material: "זהב לבן 14K",
+        maxPrice: 1500,
+        query: "gift",
+        stone: "יהלום",
+      }).map((product) => product.slug),
+    ).toEqual(["venus-line-ring"]);
+  });
+
+  it("keeps empty searches broad and excludes unavailable products only when requested", () => {
+    const products = [
+      makeProduct({
+        inventory: { "tel-aviv": 0 },
+        name: "Unavailable",
+        slug: "unavailable",
+      }),
+      makeProduct({
+        inventory: { "tel-aviv": 1 },
+        name: "Available",
+        slug: "available",
+      }),
+    ];
+
+    expect(
+      filterCatalogProducts(products).map((product) => product.slug),
+    ).toEqual(["unavailable", "available"]);
+    expect(
+      filterCatalogProducts(products, { availableOnly: true }).map(
+        (product) => product.slug,
+      ),
+    ).toEqual(["available"]);
+  });
+});
+
+describe("catalog availability helpers", () => {
+  it("maps product and branch availability from inventory quantities", () => {
+    const product = makeProduct({
+      inventory: { "tel-aviv": 2, jerusalem: 0 },
+      slug: "venus-line-ring",
+    });
+    const branches: CatalogBranch[] = [
+      makeBranch("tel-aviv"),
+      makeBranch("jerusalem"),
+      makeBranch("haifa"),
+    ];
+
+    expect(getCatalogAvailability(product)).toEqual([
+      { available: true, branchSlug: "tel-aviv", quantity: 2 },
+      { available: false, branchSlug: "jerusalem", quantity: 0 },
+    ]);
+    expect(getCatalogBranchAvailability({ branches, product })).toEqual([
+      { available: true, branch: branches[0], quantity: 2 },
+      { available: false, branch: branches[1], quantity: 0 },
+      { available: false, branch: branches[2], quantity: 0 },
+    ]);
+  });
+});
+
+function makeProduct(
+  overrides: Partial<CatalogProduct> &
+    Pick<CatalogProduct, "inventory" | "slug">,
+): CatalogProduct {
+  return {
+    categoryName: "טבעות",
+    categorySlug: "rings",
+    collection: overrides.collections?.[0] ?? "classic",
+    collections: overrides.collections ?? ["classic"],
+    createdAt: new Date("2026-01-01T00:00:00.000Z"),
+    description: overrides.description ?? "Description",
+    image: "/product.png",
+    images: ["/product.png"],
+    inventory: overrides.inventory,
+    material: overrides.material ?? "זהב",
+    metalColors: [],
+    name: overrides.name ?? "Product",
+    popularityScore: 0,
+    price: overrides.price ?? 1000,
+    shortDescription: overrides.shortDescription ?? "Short description",
+    sizes: [],
+    sku: overrides.sku ?? "SKU",
+    slug: overrides.slug,
+    stone: overrides.stone,
+    tags: overrides.tags ?? [],
+    variants: [],
+  };
+}
+
+function makeBranch(slug: string): CatalogBranch {
+  return {
+    address: `${slug} address`,
+    city: slug,
+    name: slug,
+    openingHours: {
+      friday: "",
+      saturday: "",
+      sundayThursday: "",
+    },
+    phone: "",
+    services: [],
+    slug,
+    whatsapp: "",
+  };
+}

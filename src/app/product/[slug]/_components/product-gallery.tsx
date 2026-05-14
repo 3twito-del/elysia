@@ -50,10 +50,14 @@ export function ProductGallery({
   }
 
   return (
-    <div className={cn("grid gap-3", className)}>
+    <div
+      aria-label={`גלריית מוצר עבור ${productName}`}
+      className={cn("grid gap-3", className)}
+      role="group"
+    >
       <div className="flex items-center justify-between gap-3 text-sm">
         <p className="font-medium">גלריית מוצר</p>
-        <p className="text-muted-foreground">
+        <p aria-live="polite" className="text-muted-foreground">
           {galleryImages.length > 1
             ? `תמונה ${activeImageIndex + 1} מתוך ${galleryImages.length}`
             : "תמונה יחידה"}
@@ -113,6 +117,7 @@ export function ProductGallery({
                   ? "border-[var(--glass-border-strong)] ring-2 ring-[var(--glass-focus)]"
                   : "hover:border-[var(--glass-border-strong)]",
               )}
+              data-testid="product-gallery-thumbnail"
               key={image}
               onClick={() => setActiveIndex(index)}
               type="button"
@@ -121,7 +126,8 @@ export function ProductGallery({
                 alt=""
                 className="media-color object-cover"
                 fill
-                sizes="(min-width: 1024px) 16vw, 25vw"
+                loading="lazy"
+                sizes="(min-width: 1024px) 96px, (min-width: 640px) 20vw, 25vw"
                 src={image}
               />
             </button>

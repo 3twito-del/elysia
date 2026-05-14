@@ -23,7 +23,16 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Textarea } from "~/components/ui/textarea";
+import {
+  refundAdminOrderInputSchema,
+  upsertAdminShipmentInputSchema,
+} from "~/lib/admin-validation";
 import { getReturnStatusLabel } from "~/lib/commerce-labels";
+import {
+  getFirstZodIssueMessage,
+  getZodFieldErrors,
+  type FormFieldErrors,
+} from "~/lib/form-validation";
 import { api } from "~/trpc/react";
 
 type AdminOrderActionsProps = {
@@ -105,6 +114,7 @@ function AdminShipmentForm({
   const [tracking, setTracking] = useState(shipment?.tracking ?? "");
   const [status, setStatus] = useState(shipment?.status ?? "SHIPPED");
   const [feedback, setFeedback] = useState<AdminMutationFeedback>();
+  const [fieldErrors, setFieldErrors] = useState<FormFieldErrors>({});
   const mutation = api.admin.upsertShipment.useMutation({
     onError: (error) => setFeedback({ message: error.message, tone: "error" }),
     onMutate: () =>
@@ -120,12 +130,24 @@ function AdminShipmentForm({
     const nextProvider = provider.trim();
     const nextTracking = tracking.trim();
 
-    mutation.mutate({
+    const parsed = upsertAdminShipmentInputSchema.safeParse({
       orderId,
       provider: nextProvider.length > 0 ? nextProvider : undefined,
       status,
       tracking: nextTracking.length > 0 ? nextTracking : undefined,
     });
+
+    if (!parsed.success) {
+      setFieldErrors(getZodFieldErrors(parsed.error));
+      setFeedback({
+        message: getFirstZodIssueMessage(parsed.error),
+        tone: "error",
+      });
+      return;
+    }
+
+    setFieldErrors({});
+    mutation.mutate(parsed.data);
   }
 
   return (
@@ -137,6 +159,7 @@ function AdminShipmentForm({
       <div className="grid gap-2 sm:grid-cols-3">
         <Input
           className="h-9"
+          aria-invalid={Boolean(fieldErrors.provider)}
           disabled={mutation.isPending}
           onChange={(event) => setProvider(event.currentTarget.value)}
           placeholder="ספק"
@@ -144,13 +167,15 @@ function AdminShipmentForm({
         />
         <Input
           className="h-9"
+          aria-invalid={Boolean(fieldErrors.tracking)}
           disabled={mutation.isPending}
           onChange={(event) => setTracking(event.currentTarget.value)}
-          placeholder="Tracking"
+          placeholder="מספר מעקב"
           value={tracking}
         />
         <select
           className="glass-control h-9 rounded-md border px-2 text-xs"
+          aria-invalid={Boolean(fieldErrors.status)}
           disabled={mutation.isPending}
           onChange={(event) => setStatus(event.currentTarget.value)}
           value={status}
@@ -188,6 +213,7 @@ function AdminRefundForm({
   const [reason, setReason] = useState(returns[0]?.reason ?? "");
   const [restockItems, setRestockItems] = useState(false);
   const [feedback, setFeedback] = useState<AdminMutationFeedback>();
+  const [fieldErrors, setFieldErrors] = useState<FormFieldErrors>({});
   const mutation = api.admin.refundOrder.useMutation({
     onError: (error) => setFeedback({ message: error.message, tone: "error" }),
     onMutate: () => setFeedback({ message: "מבצע זיכוי...", tone: "neutral" }),
@@ -216,15 +242,27 @@ function AdminRefundForm({
   function submitRefund() {
     const trimmedReason = reason.trim();
 
-    mutation.mutate({
+    const parsed = refundAdminOrderInputSchema.safeParse({
       orderId,
       reason:
         trimmedReason.length > 0
           ? trimmedReason
-          : (activeReturn?.reason ?? "Admin refund"),
+          : (activeReturn?.reason ?? "זיכוי אדמין"),
       restockItems,
       returnRequestId: activeReturn?.id,
     });
+
+    if (!parsed.success) {
+      setFieldErrors(getZodFieldErrors(parsed.error));
+      setFeedback({
+        message: getFirstZodIssueMessage(parsed.error),
+        tone: "error",
+      });
+      return;
+    }
+
+    setFieldErrors({});
+    mutation.mutate(parsed.data);
   }
 
   return (
@@ -240,6 +278,7 @@ function AdminRefundForm({
         </p>
       ) : null}
       <Textarea
+        aria-invalid={Boolean(fieldErrors.reason)}
         className="min-h-16"
         disabled={mutation.isPending}
         onChange={(event) => setReason(event.currentTarget.value)}

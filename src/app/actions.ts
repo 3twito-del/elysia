@@ -1,22 +1,17 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
 
+import {
+  newsletterInputSchema,
+  wishlistInputSchema,
+} from "~/lib/public-action-validation";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 import {
   assertRateLimit,
   rateLimitMessage,
 } from "~/server/services/rate-limit";
-
-const newsletterSchema = z.object({
-  email: z.string().trim().email().toLowerCase(),
-});
-
-const wishlistSchema = z.object({
-  productSlug: z.string().trim().min(1),
-});
 
 export type PublicActionState = {
   ok?: boolean;
@@ -27,12 +22,15 @@ export async function joinNewsletter(
   _state: PublicActionState,
   formData: FormData,
 ): Promise<PublicActionState> {
-  const parsed = newsletterSchema.safeParse({
+  const parsed = newsletterInputSchema.safeParse({
     email: formData.get("email"),
   });
 
   if (!parsed.success) {
-    return { ok: false, message: "כתובת אימייל לא תקינה" };
+    return {
+      ok: false,
+      message: parsed.error.issues[0]?.message ?? "כתובת אימייל לא תקינה.",
+    };
   }
 
   try {
@@ -44,9 +42,7 @@ export async function joinNewsletter(
   } catch (error) {
     return {
       ok: false,
-      message:
-        rateLimitMessage(error) ??
-        "׳׳ ׳ ׳™׳×׳ ׳׳”׳™׳¨׳©׳ ׳›׳¨׳’׳¢. ׳ ׳¡׳• ׳©׳•׳‘.",
+      message: rateLimitMessage(error) ?? "לא ניתן להירשם כרגע. נסו שוב.",
     };
   }
 
@@ -70,12 +66,15 @@ export async function saveWishlistItem(
   _state: PublicActionState,
   formData: FormData,
 ): Promise<PublicActionState> {
-  const parsed = wishlistSchema.safeParse({
+  const parsed = wishlistInputSchema.safeParse({
     productSlug: formData.get("productSlug"),
   });
 
   if (!parsed.success) {
-    return { ok: false, message: "לא נמצא מוצר לשמירה" };
+    return {
+      ok: false,
+      message: parsed.error.issues[0]?.message ?? "לא נמצא מוצר לשמירה.",
+    };
   }
 
   const session = await auth();
@@ -110,7 +109,10 @@ export async function saveWishlistItem(
   const variant = product?.variants[0];
 
   if (!variant) {
-    return { ok: false, message: "לא נמצאה וריאציה זמינה לשמירה." };
+    return {
+      ok: false,
+      message: "לא נמצאה וריאציה זמינה לשמירה.",
+    };
   }
 
   const wishlist = await db.wishlist.upsert({

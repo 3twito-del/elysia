@@ -128,7 +128,7 @@ export function CinematicPageHero({
               style={{ "--motion-copy-delay": "330ms" } as CSSProperties}
             >
               <span>{scrollCue.label}</span>
-              <ArrowDown className="size-4" />
+              <ArrowDown aria-hidden="true" className="size-4" />
             </a>
           ) : null}
           {children}

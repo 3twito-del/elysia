@@ -14,6 +14,16 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { StatusMessage } from "~/components/ui/status-message";
 import { Textarea } from "~/components/ui/textarea";
+import {
+  createAdminCouponInputSchema,
+  createAdminProductInputSchema,
+  updateAdminInventoryInputSchema,
+} from "~/lib/admin-validation";
+import {
+  getFirstZodIssueMessage,
+  getZodFieldErrors,
+  type FormFieldErrors,
+} from "~/lib/form-validation";
 import { api, type RouterOutputs } from "~/trpc/react";
 
 type AdminCatalog = RouterOutputs["admin"]["catalog"];
@@ -79,6 +89,7 @@ export function AdminInventoryEditor({
   const [value, setValue] = useState(quantity);
   const [safety, setSafety] = useState(safetyStock);
   const [feedback, setFeedback] = useState<AdminMutationFeedback>();
+  const [fieldErrors, setFieldErrors] = useState<FormFieldErrors>({});
   const mutation = api.admin.updateInventory.useMutation({
     onError: (error) => setFeedback({ message: error.message, tone: "error" }),
     onMutate: () => setFeedback({ message: "שומר מלאי...", tone: "neutral" }),
@@ -94,6 +105,7 @@ export function AdminInventoryEditor({
       <div className="flex items-center gap-2">
         <Input
           aria-label={`כמות מלאי עבור ${variant.name}`}
+          aria-invalid={Boolean(fieldErrors.quantity)}
           className="h-9 w-20"
           disabled={mutation.isPending}
           min={0}
@@ -102,25 +114,38 @@ export function AdminInventoryEditor({
           value={value}
         />
         <Input
-          aria-label={`Safety stock עבור ${variant.name}`}
+          aria-label={`מלאי ביטחון עבור ${variant.name}`}
+          aria-invalid={Boolean(fieldErrors.safetyStock)}
           className="h-9 w-16"
           disabled={mutation.isPending}
           min={0}
           onChange={(event) => setSafety(Number(event.currentTarget.value))}
-          title="Safety stock"
+          title="מלאי ביטחון"
           type="number"
           value={safety}
         />
         <Button
           disabled={mutation.isPending}
-          onClick={() =>
-            mutation.mutate({
+          onClick={() => {
+            const parsed = updateAdminInventoryInputSchema.safeParse({
               branchId,
               quantity: value,
               safetyStock: safety,
               variantId: variant.id,
-            })
-          }
+            });
+
+            if (!parsed.success) {
+              setFieldErrors(getZodFieldErrors(parsed.error));
+              setFeedback({
+                message: getFirstZodIssueMessage(parsed.error),
+                tone: "error",
+              });
+              return;
+            }
+
+            setFieldErrors({});
+            mutation.mutate(parsed.data);
+          }}
           size="icon"
           type="button"
           variant="outline"
@@ -172,6 +197,7 @@ export function AdminCouponCreateForm() {
   const utils = api.useUtils();
   const router = useRouter();
   const [feedback, setFeedback] = useState<AdminMutationFeedback>();
+  const [fieldErrors, setFieldErrors] = useState<FormFieldErrors>({});
   const mutation = api.admin.createCoupon.useMutation({
     onError: (error) => setFeedback({ message: error.message, tone: "error" }),
     onMutate: () => setFeedback({ message: "יוצר קופון...", tone: "neutral" }),
@@ -190,35 +216,47 @@ export function AdminCouponCreateForm() {
     const amountOff = getFormNumber(form, "amountOff");
     const maxUses = getFormNumber(form, "maxUses");
 
-    mutation.mutate(
-      {
-        amountOff: amountOff > 0 ? amountOff : undefined,
-        code: getFormString(form, "code"),
-        description: getOptionalFormString(form, "description"),
-        maxUses: maxUses > 0 ? maxUses : undefined,
-        percentOff: percentOff > 0 ? percentOff : undefined,
-        startsAt: new Date(),
-      },
-      {
-        onSuccess: () => formElement.reset(),
-      },
-    );
+    const parsed = createAdminCouponInputSchema.safeParse({
+      amountOff: amountOff > 0 ? amountOff : undefined,
+      code: getFormString(form, "code"),
+      description: getOptionalFormString(form, "description"),
+      maxUses: maxUses > 0 ? maxUses : undefined,
+      percentOff: percentOff > 0 ? percentOff : undefined,
+      startsAt: new Date(),
+    });
+
+    if (!parsed.success) {
+      setFieldErrors(getZodFieldErrors(parsed.error));
+      setFeedback({
+        message: getFirstZodIssueMessage(parsed.error),
+        tone: "error",
+      });
+      return;
+    }
+
+    setFieldErrors({});
+    mutation.mutate(parsed.data, {
+      onSuccess: () => formElement.reset(),
+    });
   }
 
   return (
     <form className="grid gap-3 md:grid-cols-5" onSubmit={handleSubmit}>
       <Input
+        aria-invalid={Boolean(fieldErrors.code)}
         disabled={mutation.isPending}
         name="code"
         placeholder="קוד"
         required
       />
       <Input
+        aria-invalid={Boolean(fieldErrors.description)}
         disabled={mutation.isPending}
         name="description"
         placeholder="תיאור"
       />
       <Input
+        aria-invalid={Boolean(fieldErrors.percentOff)}
         disabled={mutation.isPending}
         max={100}
         min={1}
@@ -227,6 +265,7 @@ export function AdminCouponCreateForm() {
         type="number"
       />
       <Input
+        aria-invalid={Boolean(fieldErrors.amountOff)}
         disabled={mutation.isPending}
         min={1}
         name="amountOff"
@@ -248,6 +287,7 @@ export function AdminProductCreateForm({ catalog }: { catalog: AdminCatalog }) {
   const utils = api.useUtils();
   const router = useRouter();
   const [feedback, setFeedback] = useState<AdminMutationFeedback>();
+  const [fieldErrors, setFieldErrors] = useState<FormFieldErrors>({});
   const mutation = api.admin.createProduct.useMutation({
     onError: (error) => setFeedback({ message: error.message, tone: "error" }),
     onMutate: () => setFeedback({ message: "יוצר מוצר...", tone: "neutral" }),
@@ -268,26 +308,35 @@ export function AdminProductCreateForm({ catalog }: { catalog: AdminCatalog }) {
       safetyStock: getFormNumber(form, `safety_${branch.id}`),
     }));
 
-    mutation.mutate(
-      {
-        basePrice: getFormNumber(form, "basePrice"),
-        branchInventory,
-        categoryId: getFormString(form, "categoryId"),
-        description: getFormString(form, "description"),
-        imageUrl: getOptionalFormString(form, "imageUrl"),
-        materialId: getFormString(form, "materialId"),
-        name: getFormString(form, "name"),
-        shortDescription: getFormString(form, "shortDescription"),
-        sku: getFormString(form, "sku"),
-        slug: getFormString(form, "slug"),
-        stoneId: getOptionalFormString(form, "stoneId"),
-        variantName: getOptionalFormString(form, "variantName") ?? "Default",
-        variantSku: getFormString(form, "variantSku"),
-      },
-      {
-        onSuccess: () => formElement.reset(),
-      },
-    );
+    const parsed = createAdminProductInputSchema.safeParse({
+      basePrice: getFormNumber(form, "basePrice"),
+      branchInventory,
+      categoryId: getFormString(form, "categoryId"),
+      description: getFormString(form, "description"),
+      imageUrl: getOptionalFormString(form, "imageUrl"),
+      materialId: getFormString(form, "materialId"),
+      name: getFormString(form, "name"),
+      shortDescription: getFormString(form, "shortDescription"),
+      sku: getFormString(form, "sku"),
+      slug: getFormString(form, "slug"),
+      stoneId: getOptionalFormString(form, "stoneId"),
+      variantName: getOptionalFormString(form, "variantName") ?? "ברירת מחדל",
+      variantSku: getFormString(form, "variantSku"),
+    });
+
+    if (!parsed.success) {
+      setFieldErrors(getZodFieldErrors(parsed.error));
+      setFeedback({
+        message: getFirstZodIssueMessage(parsed.error),
+        tone: "error",
+      });
+      return;
+    }
+
+    setFieldErrors({});
+    mutation.mutate(parsed.data, {
+      onSuccess: () => formElement.reset(),
+    });
   }
 
   return (
@@ -305,10 +354,10 @@ export function AdminProductCreateForm({ catalog }: { catalog: AdminCatalog }) {
         </div>
         <div className="grid gap-3 md:grid-cols-3">
           <Field name="basePrice" placeholder="מחיר" type="number" />
-          <Field name="variantSku" placeholder="Variant SKU" />
+          <Field name="variantSku" placeholder="מק״ט וריאציה" />
           <Field name="variantName" placeholder="שם וריאציה" />
         </div>
-        <Field name="imageUrl" optional placeholder="Image URL" />
+        <Field name="imageUrl" optional placeholder="כתובת תמונה" />
         <Textarea name="shortDescription" placeholder="תיאור קצר" required />
         <Textarea name="description" placeholder="תיאור מלא" required />
         <div className="grid gap-3 md:grid-cols-2">
@@ -325,7 +374,7 @@ export function AdminProductCreateForm({ catalog }: { catalog: AdminCatalog }) {
                 <Input
                   min={0}
                   name={`safety_${branch.id}`}
-                  placeholder="Safety"
+                  placeholder="מלאי ביטחון"
                   type="number"
                 />
               </div>
@@ -333,6 +382,11 @@ export function AdminProductCreateForm({ catalog }: { catalog: AdminCatalog }) {
           ))}
         </div>
       </fieldset>
+      {getFieldErrorList(fieldErrors).length > 0 ? (
+        <StatusMessage tone="error" variant="plain">
+          {getFieldErrorList(fieldErrors).join(" ")}
+        </StatusMessage>
+      ) : null}
       {mutation.error ? (
         <StatusMessage tone="error" variant="plain">
           {mutation.error.message}
@@ -364,6 +418,12 @@ function getFormNumber(form: FormData, key: string) {
   const number = Number(value);
 
   return Number.isFinite(number) ? number : 0;
+}
+
+function getFieldErrorList(errors: FormFieldErrors) {
+  return Object.values(errors).filter((error): error is string =>
+    Boolean(error),
+  );
 }
 
 function Field({

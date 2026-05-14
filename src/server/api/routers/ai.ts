@@ -47,7 +47,7 @@ export const aiRouter = createTRPCRouter({
         key: `ai:order-support-email:${input.email}`,
         limit: 10,
         windowMs: 15 * 60_000,
-        message: "Too many order support lookups.",
+        message: "יותר מדי בדיקות הזמנה. נסו שוב מאוחר יותר.",
       });
 
       return orderSupportWithAiAudit(input, await createAiActionContext(ctx));
@@ -88,7 +88,7 @@ async function assertAiPublicRateLimit(headers: Headers, action: string) {
     key: `ai:${action}:${getTRPCRequestIp(headers)}`,
     limit: 30,
     windowMs: 15 * 60_000,
-    message: "Too many AI requests.",
+    message: "יותר מדי בקשות AI. נסו שוב מאוחר יותר.",
   });
 }
 

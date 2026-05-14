@@ -137,8 +137,8 @@ function SheetContent({
               className="absolute end-3 top-3"
               size="icon-sm"
             >
-              <XIcon />
-              <span className="sr-only">Close</span>
+              <XIcon aria-hidden="true" />
+              <span className="sr-only">סגירה</span>
             </Button>
           </SheetPrimitive.Close>
         )}

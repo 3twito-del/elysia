@@ -5,6 +5,13 @@ import {
   createCatalogSearchPlan,
   resolveAiCatalogSearchIntent,
 } from "~/lib/ai-catalog-intent";
+import type {
+  createTryOnSessionInputSchema,
+  orderSupportInputSchema,
+  recommendGiftInputSchema,
+  saveStyleProfileInputSchema,
+  searchCatalogToolInputSchema,
+} from "~/lib/ai-commerce-validation";
 import { tryOnProvider } from "~/server/adapters/try-on";
 import { db } from "~/server/db";
 import {
@@ -25,39 +32,13 @@ import {
 } from "~/server/ai/constants";
 import { createStructuredRecommendationContract } from "~/server/ai/recommendation-contract";
 
-export const searchCatalogToolInputSchema = z.object({
-  query: z.string().trim().max(160).optional(),
-  category: z.string().trim().max(80).optional(),
-  branch: z.string().trim().max(80).optional(),
-  material: z.string().trim().max(80).optional(),
-  stone: z.string().trim().max(80).optional(),
-  maxPrice: z.number().positive().max(1_000_000).optional(),
-});
-
-export const saveStyleProfileInputSchema = z.object({
-  metalColors: z.array(z.string().trim().max(40)).max(12).default([]),
-  styles: z.array(z.string().trim().max(80)).max(12).default([]),
-  ringSize: z.string().trim().max(40).optional(),
-  necklaceFit: z.string().trim().max(80).optional(),
-});
-
-export const createTryOnSessionInputSchema = z.object({
-  productSlug: z.string().trim().min(1).max(120),
-  variantId: z.string().trim().max(128).optional(),
-  sourceImageUrl: z.string().url().max(2_048).optional(),
-});
-
-export const orderSupportInputSchema = z.object({
-  orderNumber: z.string().trim().min(3).max(64),
-  email: z.string().trim().email().toLowerCase(),
-});
-
-export const recommendGiftInputSchema = z.object({
-  relation: z.string().trim().min(1).max(80),
-  occasion: z.string().trim().min(1).max(80),
-  budget: z.number().positive().max(1_000_000),
-  style: z.array(z.string().trim().max(80)).max(12).default([]),
-});
+export {
+  createTryOnSessionInputSchema,
+  orderSupportInputSchema,
+  recommendGiftInputSchema,
+  saveStyleProfileInputSchema,
+  searchCatalogToolInputSchema,
+} from "~/lib/ai-commerce-validation";
 
 export const searchCatalogToolOutputSchema = z.array(
   z.object({
