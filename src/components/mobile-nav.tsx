@@ -77,13 +77,13 @@ export function MobileNav({ items }: { items: HeaderNavItem[] }) {
       >
         <SheetHeader className="border-b border-[var(--glass-border)] p-4">
           <Link
-            className="flex items-center gap-2 text-lg font-semibold"
+            className="brand-header-mark inline-flex min-w-0 items-center gap-2 text-lg font-semibold"
             dir="ltr"
             href="/"
             onClick={closeNav}
           >
             <Gem aria-hidden="true" className="text-foreground size-5" />
-            Aphrodite
+            <span>Aphrodite</span>
           </Link>
           <SheetTitle className="sr-only">ניווט ראשי</SheetTitle>
           <SheetDescription className="sr-only">

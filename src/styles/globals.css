@@ -715,6 +715,18 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
   );
 }
 
+.cinematic-page-hero-scroll-cue:dir(rtl)::after {
+  inset: -40% -35% -40% auto;
+  transform: translateX(130%) skewX(14deg);
+  background: linear-gradient(
+    270deg,
+    transparent,
+    rgb(255 255 255 / 32%),
+    rgb(185 242 236 / 22%),
+    transparent
+  );
+}
+
 .cinematic-page-hero-scroll-cue:hover,
 .cinematic-page-hero-scroll-cue:focus-visible {
   border-color: var(--brand-aqua);
@@ -727,6 +739,12 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 .cinematic-page-hero-scroll-cue:focus-visible::after,
 .cinematic-page-hero-scroll-cue[data-anchor-activating="true"]::after {
   animation: aqua-button-shine 1.22s var(--ease-motion-standard);
+}
+
+.cinematic-page-hero-scroll-cue:dir(rtl):hover::after,
+.cinematic-page-hero-scroll-cue:dir(rtl):focus-visible::after,
+.cinematic-page-hero-scroll-cue:dir(rtl)[data-anchor-activating="true"]::after {
+  animation-name: aqua-button-shine-rtl;
 }
 
 .cinematic-page-hero-scroll-cue:focus-visible {
@@ -880,6 +898,28 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
   border-color: rgb(66 201 190 / 16%);
   background: rgb(66 201 190 / 7%);
   color: var(--brand-aqua-deep);
+}
+
+.brand-header-mark {
+  align-items: center;
+  color: var(--foreground);
+  line-height: 1;
+  text-decoration: none;
+}
+
+.brand-header-mark span {
+  display: inline-block;
+  min-width: 0;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.brand-header-mark svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: none;
+  overflow: visible;
+  stroke-width: 2.15;
 }
 
 .brand-header-mark svg,
@@ -1067,6 +1107,18 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
   opacity: 0;
 }
 
+.public-motion-shell [data-slot="button"]:dir(rtl):not(:disabled)::after {
+  inset: -45% -36% -45% auto;
+  transform: translateX(135%) skewX(14deg);
+  background: linear-gradient(
+    270deg,
+    transparent,
+    rgb(255 255 255 / 34%),
+    rgb(185 242 236 / 24%),
+    transparent
+  );
+}
+
 .public-motion-shell [data-slot="button"]:not(:disabled):hover,
 .public-motion-shell [data-slot="button"]:not(:disabled):focus-visible {
   transform: translateY(-1px);
@@ -1077,6 +1129,14 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
 .public-motion-shell
   [data-slot="button"][data-anchor-activating="true"]::after {
   animation: aqua-button-shine 1.22s var(--ease-motion-standard);
+}
+
+.public-motion-shell [data-slot="button"]:dir(rtl):not(:disabled):hover::after,
+.public-motion-shell
+  [data-slot="button"]:dir(rtl):not(:disabled):focus-visible::after,
+.public-motion-shell
+  [data-slot="button"]:dir(rtl)[data-anchor-activating="true"]::after {
+  animation-name: aqua-button-shine-rtl;
 }
 
 .public-motion-shell
@@ -1175,6 +1235,19 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
   opacity: 0;
 }
 
+.cookie-button-primary:dir(rtl)::after,
+.cookie-button-secondary:dir(rtl)::after {
+  inset: -45% -36% -45% auto;
+  transform: translateX(135%) skewX(14deg);
+  background: linear-gradient(
+    270deg,
+    transparent,
+    rgb(255 255 255 / 42%),
+    rgb(185 242 236 / 24%),
+    transparent
+  );
+}
+
 .cookie-button-primary:not(:disabled) {
   border-color: var(--brand-aqua) !important;
   background: var(--brand-aqua) !important;
@@ -1212,6 +1285,13 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
 .cookie-button-secondary:not(:disabled):hover::after,
 .cookie-button-secondary:not(:disabled):focus-visible::after {
   animation: aqua-button-shine 1.22s var(--ease-motion-standard);
+}
+
+.cookie-button-primary:dir(rtl):not(:disabled):hover::after,
+.cookie-button-primary:dir(rtl):not(:disabled):focus-visible::after,
+.cookie-button-secondary:dir(rtl):not(:disabled):hover::after,
+.cookie-button-secondary:dir(rtl):not(:disabled):focus-visible::after {
+  animation-name: aqua-button-shine-rtl;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1420,6 +1500,20 @@ html[data-cookie-banner-open="true"]
   100% {
     opacity: 0;
     transform: translateX(355%) skewX(-14deg);
+  }
+}
+
+@keyframes aqua-button-shine-rtl {
+  0% {
+    opacity: 0;
+    transform: translateX(135%) skewX(14deg);
+  }
+  28% {
+    opacity: 0.72;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-355%) skewX(14deg);
   }
 }
 

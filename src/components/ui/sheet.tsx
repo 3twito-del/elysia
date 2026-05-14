@@ -93,7 +93,7 @@ function SheetOverlay({
     <SheetPrimitive.Overlay
       data-slot="sheet-overlay"
       className={cn(
-        "popup-overlay data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 fixed inset-0 z-[80] duration-100",
+        "popup-overlay data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 fixed inset-0 z-[80] data-closed:duration-150 data-open:duration-200 motion-reduce:animate-none",
         className,
       )}
       {...props}
@@ -118,13 +118,15 @@ function SheetContent({
         data-slot="sheet-content"
         data-side={side}
         className={cn(
-          "popup-surface text-popover-foreground data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 fixed z-[90] flex flex-col gap-4 text-sm transition duration-150 ease-in-out",
-          side === "bottom" && "inset-x-0 bottom-0 h-auto border-t",
+          "popup-surface text-popover-foreground data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 fixed z-[90] flex flex-col gap-4 text-sm ease-[var(--ease-motion-standard)] data-closed:duration-150 data-open:duration-200 motion-reduce:animate-none motion-reduce:transition-none",
+          side === "bottom" &&
+            "data-open:slide-in-from-bottom data-closed:slide-out-to-bottom inset-x-0 bottom-0 h-auto border-t",
           side === "left" &&
-            "inset-y-0 left-0 h-full w-[min(88dvw,22rem)] border-r sm:max-w-sm",
+            "data-open:slide-in-from-left data-closed:slide-out-to-left inset-y-0 left-0 h-full w-[min(88dvw,22rem)] border-r sm:max-w-sm",
           side === "right" &&
-            "inset-y-0 right-[calc(100vw-100dvw)] h-full w-[min(88dvw,22rem)] border-l sm:max-w-sm",
-          side === "top" && "inset-x-0 top-0 h-auto border-b",
+            "data-open:slide-in-from-right data-closed:slide-out-to-right inset-y-0 right-[calc(100vw-100dvw)] h-full w-[min(88dvw,22rem)] border-l sm:max-w-sm",
+          side === "top" &&
+            "data-open:slide-in-from-top data-closed:slide-out-to-top inset-x-0 top-0 h-auto border-b",
           className,
         )}
         {...props}

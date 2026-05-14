@@ -122,7 +122,7 @@ export default async function Home() {
             </Button>
             <Button
               asChild
-              className="border-white bg-white text-[var(--brand-aqua-deep)] shadow-[0_12px_30px_rgba(0,0,0,0.12)] hover:border-[var(--brand-aqua)] hover:bg-white hover:text-[var(--brand-aqua-deep)]"
+              className="border-transparent bg-[var(--brand-aqua)] text-[var(--brand-aqua-deep)] shadow-[0_12px_30px_rgba(66,201,190,0.14)] hover:border-transparent hover:bg-[var(--brand-aqua)] hover:text-[var(--brand-aqua-deep)] focus-visible:border-[var(--brand-aqua)]"
               size="lg"
             >
               <Link href="/ai">
@@ -209,14 +209,14 @@ export default async function Home() {
         >
           {categories.map((category) => (
             <Link
-              className="glass-card interactive-lift group/card flex min-h-[260px] w-full flex-col overflow-hidden rounded-md border"
+              className="glass-card interactive-lift group/card flex min-h-[320px] w-full flex-col overflow-hidden rounded-md border"
               href={`/category/${category.slug}`}
               key={category.slug}
             >
-              <div className="bg-muted relative h-28 overflow-hidden border-b border-[var(--glass-border)]">
+              <div className="bg-muted relative aspect-[3/2] overflow-hidden border-b border-[var(--glass-border)]">
                 <Image
                   alt=""
-                  className="media-mono object-cover transition duration-[700ms] ease-[var(--ease-motion-standard)] group-hover/card:scale-[1.015]"
+                  className="media-mono object-cover object-center transition duration-[700ms] ease-[var(--ease-motion-standard)] group-hover/card:scale-[1.015]"
                   fill
                   sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                   src={
