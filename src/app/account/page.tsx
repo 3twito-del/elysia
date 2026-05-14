@@ -33,7 +33,7 @@ import {
   getAppointmentStatusLabel,
   getOrderStatusLabel,
 } from "~/lib/commerce-labels";
-import { formatPrice } from "~/lib/format";
+import { formatHebrewDateTime, formatPrice } from "~/lib/format";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 import { DEFAULT_CATALOG_IMAGE } from "~/server/services/catalog";
@@ -585,7 +585,7 @@ export default async function AccountPage() {
                           <p className="font-medium">{appointment.topic}</p>
                           <p className="text-muted-foreground text-sm">
                             {appointment.branch.name} ·{" "}
-                            {appointment.startsAt.toLocaleString("he-IL")}
+                            {formatHebrewDateTime(appointment.startsAt)}
                           </p>
                         </div>
                         <Badge className="shrink-0" variant="secondary">

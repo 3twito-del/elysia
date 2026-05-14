@@ -259,7 +259,7 @@ export const MessageBranchPrevious = ({
 
   return (
     <Button
-      aria-label="Previous branch"
+      aria-label="הצגת תשובה קודמת"
       disabled={totalBranches <= 1}
       onClick={goToPrevious}
       size="icon-sm"
@@ -267,7 +267,7 @@ export const MessageBranchPrevious = ({
       variant="ghost"
       {...props}
     >
-      {children ?? <ChevronLeftIcon size={14} />}
+      {children ?? <ChevronLeftIcon aria-hidden="true" size={14} />}
     </Button>
   );
 };
@@ -282,7 +282,7 @@ export const MessageBranchNext = ({
 
   return (
     <Button
-      aria-label="Next branch"
+      aria-label="הצגת תשובה הבאה"
       disabled={totalBranches <= 1}
       onClick={goToNext}
       size="icon-sm"
@@ -290,7 +290,7 @@ export const MessageBranchNext = ({
       variant="ghost"
       {...props}
     >
-      {children ?? <ChevronRightIcon size={14} />}
+      {children ?? <ChevronRightIcon aria-hidden="true" size={14} />}
     </Button>
   );
 };
@@ -311,7 +311,7 @@ export const MessageBranchPage = ({
       )}
       {...props}
     >
-      {currentBranch + 1} of {totalBranches}
+      {currentBranch + 1} מתוך {totalBranches}
     </ButtonGroupText>
   );
 };

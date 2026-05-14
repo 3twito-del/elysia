@@ -26,6 +26,7 @@ import {
 } from "~/components/ui/table";
 import { TableEmptyRow } from "~/components/ui/table-empty-row";
 import { getAppointmentStatusLabel } from "~/lib/commerce-labels";
+import { formatHebrewDateTime } from "~/lib/format";
 import { listAdminAppointments } from "~/server/services/admin-operations";
 import { TRPCReactProvider } from "~/trpc/react";
 
@@ -54,13 +55,6 @@ function optionalParam(value: string | string[] | undefined) {
   const param = firstParam(value);
 
   return param && param.length > 0 ? param : undefined;
-}
-
-function formatDate(date: Date) {
-  return new Intl.DateTimeFormat("he-IL", {
-    dateStyle: "short",
-    timeStyle: "short",
-  }).format(date);
 }
 
 export default async function AdminAppointmentsPage({
@@ -211,7 +205,9 @@ export default async function AdminAppointmentsPage({
                         {appointment.branchName}, {appointment.branchCity}
                       </TableCell>
                       <TableCell>{appointment.topic}</TableCell>
-                      <TableCell>{formatDate(appointment.startsAt)}</TableCell>
+                      <TableCell>
+                        {formatHebrewDateTime(appointment.startsAt)}
+                      </TableCell>
                       <TableCell>
                         <Badge variant="secondary">
                           {getAppointmentStatusLabel(appointment.status)}

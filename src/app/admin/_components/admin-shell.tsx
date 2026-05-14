@@ -62,7 +62,7 @@ const navItems: Array<{
     id: "integrations",
     label: "אינטגרציות",
   },
-  { href: "/admin/audit", icon: History, id: "audit", label: "Audit" },
+  { href: "/admin/audit", icon: History, id: "audit", label: "יומן ביקורת" },
 ];
 
 export function AdminShell({
@@ -83,11 +83,11 @@ export function AdminShell({
               dir="ltr"
               href="/admin"
             >
-              <Store className="size-5" />
+              <Store aria-hidden="true" className="size-5" />
               Aphrodite Ops
             </Link>
             <nav
-              aria-label="Admin sections"
+              aria-label="אזורי ניהול"
               className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-1"
             >
               {navItems.map((item) => {
@@ -108,7 +108,7 @@ export function AdminShell({
                       aria-current={isActive ? "page" : undefined}
                       href={item.href}
                     >
-                      <Icon className="size-4" />
+                      <Icon aria-hidden="true" className="size-4" />
                       <span className="min-w-0 truncate">{item.label}</span>
                     </Link>
                   </Button>
@@ -127,7 +127,7 @@ export function AdminShell({
                   type="submit"
                   variant="outline"
                 >
-                  <LogOut className="size-4" />
+                  <LogOut aria-hidden="true" className="size-4" />
                   יציאה
                 </Button>
               </form>
@@ -150,7 +150,7 @@ export function AdminShell({
             </div>
             <form action={adminLogoutAction} className="lg:hidden">
               <Button className="gap-2" type="submit" variant="outline">
-                <LogOut className="size-4" />
+                <LogOut aria-hidden="true" className="size-4" />
                 יציאה
               </Button>
             </form>

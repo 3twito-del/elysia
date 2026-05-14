@@ -24,6 +24,7 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { TableEmptyRow } from "~/components/ui/table-empty-row";
+import { formatOptionalHebrewDateTime } from "~/lib/format";
 import {
   getAdminIntegrationStatuses,
   listAdminJobRuns,
@@ -48,15 +49,6 @@ function optionalParam(value: string | string[] | undefined) {
   const param = firstParam(value);
 
   return param && param.length > 0 ? param : undefined;
-}
-
-function formatDate(date: Date | null | undefined) {
-  if (!date) return "-";
-
-  return new Intl.DateTimeFormat("he-IL", {
-    dateStyle: "short",
-    timeStyle: "short",
-  }).format(date);
 }
 
 export default async function AdminIntegrationsPage({
@@ -192,7 +184,9 @@ export default async function AdminIntegrationsPage({
                         <Badge variant="secondary">{event.status}</Badge>
                       </TableCell>
                       <TableCell>{event.attempts}</TableCell>
-                      <TableCell>{formatDate(event.availableAt)}</TableCell>
+                      <TableCell>
+                        {formatOptionalHebrewDateTime(event.availableAt)}
+                      </TableCell>
                     </TableRow>
                   ))
                 )}
@@ -241,8 +235,12 @@ export default async function AdminIntegrationsPage({
                         <Badge variant="secondary">{job.status}</Badge>
                       </TableCell>
                       <TableCell>{job.attempts}</TableCell>
-                      <TableCell>{formatDate(job.startedAt)}</TableCell>
-                      <TableCell>{formatDate(job.finishedAt)}</TableCell>
+                      <TableCell>
+                        {formatOptionalHebrewDateTime(job.startedAt)}
+                      </TableCell>
+                      <TableCell>
+                        {formatOptionalHebrewDateTime(job.finishedAt)}
+                      </TableCell>
                     </TableRow>
                   ))
                 )}

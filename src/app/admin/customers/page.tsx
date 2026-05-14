@@ -24,7 +24,7 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { TableEmptyRow } from "~/components/ui/table-empty-row";
-import { formatPrice } from "~/lib/format";
+import { formatHebrewDate, formatPrice } from "~/lib/format";
 import { listAdminCustomers } from "~/server/services/admin-operations";
 
 export const metadata = {
@@ -45,10 +45,6 @@ function optionalParam(value: string | string[] | undefined) {
   const param = firstParam(value);
 
   return param && param.length > 0 ? param : undefined;
-}
-
-function formatDate(date: Date) {
-  return new Intl.DateTimeFormat("he-IL", { dateStyle: "short" }).format(date);
 }
 
 export default async function AdminCustomersPage({
@@ -182,7 +178,9 @@ export default async function AdminCustomersPage({
                     <TableCell>{customer.wishlistItems}</TableCell>
                     <TableCell>{customer.addresses}</TableCell>
                     <TableCell>{customer.appointments}</TableCell>
-                    <TableCell>{formatDate(customer.updatedAt)}</TableCell>
+                    <TableCell>
+                      {formatHebrewDate(customer.updatedAt)}
+                    </TableCell>
                   </TableRow>
                 ))
               )}

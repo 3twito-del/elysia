@@ -27,6 +27,7 @@ import {
 } from "~/components/ui/table";
 import { TableEmptyRow } from "~/components/ui/table-empty-row";
 import { getStockQuantityLabel } from "~/lib/commerce-labels";
+import { formatHebrewDateTime } from "~/lib/format";
 import { listAdminInventory } from "~/server/services/admin-operations";
 import { TRPCReactProvider } from "~/trpc/react";
 
@@ -48,13 +49,6 @@ function optionalParam(value: string | string[] | undefined) {
   const param = firstParam(value);
 
   return param && param.length > 0 ? param : undefined;
-}
-
-function formatDate(date: Date) {
-  return new Intl.DateTimeFormat("he-IL", {
-    dateStyle: "short",
-    timeStyle: "short",
-  }).format(date);
 }
 
 export default async function AdminInventoryPage({
@@ -223,7 +217,9 @@ export default async function AdminInventoryPage({
                           {getStockQuantityLabel(item.sellable)}
                         </Badge>
                       </TableCell>
-                      <TableCell>{formatDate(item.updatedAt)}</TableCell>
+                      <TableCell>
+                        {formatHebrewDateTime(item.updatedAt)}
+                      </TableCell>
                       <TableCell>
                         <AdminInventoryEditor
                           branchId={item.branchId}

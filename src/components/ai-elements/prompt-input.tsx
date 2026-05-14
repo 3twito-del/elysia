@@ -415,7 +415,7 @@ export type PromptInputActionAddAttachmentsProps = ComponentProps<
 };
 
 export const PromptInputActionAddAttachments = ({
-  label = "Add photos or files",
+  label = "הוספת תמונות או קבצים",
   ...props
 }: PromptInputActionAddAttachmentsProps) => {
   const attachments = usePromptInputAttachments();
@@ -430,7 +430,7 @@ export const PromptInputActionAddAttachments = ({
 
   return (
     <DropdownMenuItem {...props} onSelect={handleSelect}>
-      <ImageIcon className="mr-2 size-4" /> {label}
+      <ImageIcon aria-hidden="true" className="mr-2 size-4" /> {label}
     </DropdownMenuItem>
   );
 };
@@ -442,7 +442,7 @@ export type PromptInputActionAddScreenshotProps = ComponentProps<
 };
 
 export const PromptInputActionAddScreenshot = ({
-  label = "Take screenshot",
+  label = "צילום מסך",
   onSelect,
   ...props
 }: PromptInputActionAddScreenshotProps) => {
@@ -475,7 +475,7 @@ export const PromptInputActionAddScreenshot = ({
 
   return (
     <DropdownMenuItem {...props} onSelect={handleSelect}>
-      <Monitor className="mr-2 size-4" />
+      <Monitor aria-hidden="true" className="mr-2 size-4" />
       {label}
     </DropdownMenuItem>
   );
@@ -907,12 +907,12 @@ export const PromptInput = ({
     <>
       <input
         accept={accept}
-        aria-label="Upload files"
+        aria-label="העלאת קבצים"
         className="hidden"
         multiple={multiple}
         onChange={handleChange}
         ref={inputRef}
-        title="Upload files"
+        title="העלאת קבצים"
         type="file"
       />
       <form
@@ -957,7 +957,7 @@ export const PromptInputTextarea = ({
   onChange,
   onKeyDown,
   className,
-  placeholder = "What would you like to know?",
+  placeholder = "מה תרצי לשאול?",
   ...props
 }: PromptInputTextareaProps) => {
   const controller = useOptionalPromptInputController();
@@ -1180,7 +1180,7 @@ export const PromptInputActionMenuTrigger = ({
 }: PromptInputActionMenuTriggerProps) => (
   <DropdownMenuTrigger asChild>
     <PromptInputButton className={className} {...props}>
-      {children ?? <PlusIcon className="size-4" />}
+      {children ?? <PlusIcon aria-hidden="true" className="size-4" />}
     </PromptInputButton>
   </DropdownMenuTrigger>
 );
@@ -1225,14 +1225,14 @@ export const PromptInputSubmit = ({
 }: PromptInputSubmitProps) => {
   const isGenerating = status === "submitted" || status === "streaming";
 
-  let Icon = <CornerDownLeftIcon className="size-4" />;
+  let Icon = <CornerDownLeftIcon aria-hidden="true" className="size-4" />;
 
   if (status === "submitted") {
     Icon = <Spinner />;
   } else if (status === "streaming") {
-    Icon = <SquareIcon className="size-4" />;
+    Icon = <SquareIcon aria-hidden="true" className="size-4" />;
   } else if (status === "error") {
-    Icon = <XIcon className="size-4" />;
+    Icon = <XIcon aria-hidden="true" className="size-4" />;
   }
 
   const handleClick = useCallback(
@@ -1249,7 +1249,7 @@ export const PromptInputSubmit = ({
 
   return (
     <InputGroupButton
-      aria-label={isGenerating ? "Stop" : "Submit"}
+      aria-label={isGenerating ? "עצירת יצירה" : "שליחה"}
       className={cn(className)}
       onClick={handleClick}
       size={size}

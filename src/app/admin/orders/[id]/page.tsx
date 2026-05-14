@@ -33,7 +33,7 @@ import {
   getPaymentStatusLabel,
   getReturnStatusLabel,
 } from "~/lib/commerce-labels";
-import { formatPrice } from "~/lib/format";
+import { formatOptionalHebrewDateTime, formatPrice } from "~/lib/format";
 import { getAdminOrderDetail } from "~/server/services/admin-operations";
 import { TRPCReactProvider } from "~/trpc/react";
 
@@ -46,15 +46,6 @@ export const dynamic = "force-dynamic";
 type AdminOrderDetailPageProps = {
   params: Promise<{ id: string }>;
 };
-
-function formatDate(date: Date | null | undefined) {
-  if (!date) return "-";
-
-  return new Intl.DateTimeFormat("he-IL", {
-    dateStyle: "short",
-    timeStyle: "short",
-  }).format(date);
-}
 
 export default async function AdminOrderDetailPage({
   params,
@@ -106,7 +97,10 @@ export default async function AdminOrderDetailPage({
                   label="סכום"
                   value={formatPrice(order.totals.total)}
                 />
-                <StatusFact label="נוצרה" value={formatDate(order.createdAt)} />
+                <StatusFact
+                  label="נוצרה"
+                  value={formatOptionalHebrewDateTime(order.createdAt)}
+                />
               </div>
               <div className="grid gap-3 md:grid-cols-4">
                 {order.timeline.map((event) => (
@@ -118,7 +112,7 @@ export default async function AdminOrderDetailPage({
                       {event.label}
                     </p>
                     <p className="mt-1 text-sm font-medium">
-                      {formatDate(event.at)}
+                      {formatOptionalHebrewDateTime(event.at)}
                     </p>
                   </div>
                 ))}
@@ -207,8 +201,9 @@ export default async function AdminOrderDetailPage({
                     <span className="font-medium">
                       {reservation.quantity} יח׳
                     </span>{" "}
-                    · פג תוקף {formatDate(reservation.expiresAt)} · שוחרר{" "}
-                    {formatDate(reservation.releasedAt)}
+                    · פג תוקף{" "}
+                    {formatOptionalHebrewDateTime(reservation.expiresAt)} ·{" "}
+                    שוחרר {formatOptionalHebrewDateTime(reservation.releasedAt)}
                   </li>
                 ))}
               </OperationalList>
@@ -243,7 +238,8 @@ export default async function AdminOrderDetailPage({
                     key={log.id}
                   >
                     <span className="font-medium">{log.action}</span> ·{" "}
-                    {log.adminName} · {formatDate(log.createdAt)}
+                    {log.adminName} ·{" "}
+                    {formatOptionalHebrewDateTime(log.createdAt)}
                   </li>
                 ))}
               </OperationalList>

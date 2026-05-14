@@ -48,6 +48,8 @@ Use this track for local product quality, UI polish, correctness, and implementa
 
 - Completed 2026-05-14: Improved mobile keyboard/screen-reader flow for header navigation and filter sheets by closing sheets on selection, tightening sheet/dialog close labels, adding explicit cart and gallery live labels, and extending E2E coverage for those interactions.
 - Completed 2026-05-14: Tuned product-card and product-gallery image `sizes`/lazy-loading behavior so search/category cards and gallery thumbnails request more appropriate responsive image candidates without layout changes.
+- Completed 2026-05-14: Centralized Hebrew date and date-time rendering on an explicit `Asia/Jerusalem` timezone across account, admin, and manual-order notification surfaces to avoid date/locale drift.
+- Completed 2026-05-14: Localized AI prompt/message and admin navigation accessibility labels, and marked decorative control icons as hidden from assistive technology.
 - Review keyboard flow for header navigation, mobile sheets, filters, dialogs, product cards, checkout forms, and admin actions.
 - Fix contrast, visible focus, aria labels, heading order, and screen-reader labels where existing UI falls short.
 - Audit image priority, sizes, aspect ratios, and lazy-loading behavior for hero, product cards, galleries, and category media.

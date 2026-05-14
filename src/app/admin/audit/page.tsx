@@ -24,6 +24,7 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { TableEmptyRow } from "~/components/ui/table-empty-row";
+import { formatHebrewDateTime } from "~/lib/format";
 import { listAdminAuditLogs } from "~/server/services/admin-operations";
 
 export const metadata = {
@@ -44,13 +45,6 @@ function optionalParam(value: string | string[] | undefined) {
   const param = firstParam(value);
 
   return param && param.length > 0 ? param : undefined;
-}
-
-function formatDate(date: Date) {
-  return new Intl.DateTimeFormat("he-IL", {
-    dateStyle: "short",
-    timeStyle: "short",
-  }).format(date);
 }
 
 export default async function AdminAuditPage({
@@ -179,7 +173,7 @@ export default async function AdminAuditPage({
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell>{formatDate(log.createdAt)}</TableCell>
+                    <TableCell>{formatHebrewDateTime(log.createdAt)}</TableCell>
                     <TableCell className="max-w-sm">
                       <code className="text-muted-foreground line-clamp-2 text-xs break-all">
                         {JSON.stringify(log.metadata ?? {})}

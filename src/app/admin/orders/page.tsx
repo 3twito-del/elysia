@@ -29,7 +29,7 @@ import {
   getOrderStatusLabel,
   getPaymentStatusLabel,
 } from "~/lib/commerce-labels";
-import { formatPrice } from "~/lib/format";
+import { formatHebrewDateTime, formatPrice } from "~/lib/format";
 import { listAdminOrders } from "~/server/services/admin-operations";
 
 export const metadata = {
@@ -61,13 +61,6 @@ function optionalParam(value: string | string[] | undefined) {
   const param = firstParam(value);
 
   return param && param.length > 0 ? param : undefined;
-}
-
-function formatDate(date: Date) {
-  return new Intl.DateTimeFormat("he-IL", {
-    dateStyle: "short",
-    timeStyle: "short",
-  }).format(date);
 }
 
 export default async function AdminOrdersPage({
@@ -261,7 +254,9 @@ export default async function AdminOrdersPage({
                     <TableCell>
                       {getFulfillmentMethodLabel(order.fulfillmentMethod)}
                     </TableCell>
-                    <TableCell>{formatDate(order.createdAt)}</TableCell>
+                    <TableCell>
+                      {formatHebrewDateTime(order.createdAt)}
+                    </TableCell>
                     <TableCell>
                       <Button asChild size="sm" variant="outline">
                         <Link href={`/admin/orders/${order.id}`}>טיפול</Link>

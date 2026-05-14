@@ -4,6 +4,34 @@ const shekelPriceFormatter = new Intl.NumberFormat("he-IL", {
   maximumFractionDigits: 0,
 });
 
+export const HEBREW_COMMERCE_TIME_ZONE = "Asia/Jerusalem";
+
+const hebrewDateFormatter = new Intl.DateTimeFormat("he-IL", {
+  dateStyle: "short",
+  timeZone: HEBREW_COMMERCE_TIME_ZONE,
+});
+
+const hebrewDateTimeFormatter = new Intl.DateTimeFormat("he-IL", {
+  dateStyle: "short",
+  timeStyle: "short",
+  timeZone: HEBREW_COMMERCE_TIME_ZONE,
+});
+
 export function formatPrice(amount: number) {
   return shekelPriceFormatter.format(amount);
+}
+
+export function formatHebrewDate(date: Date | string | number) {
+  return hebrewDateFormatter.format(new Date(date));
+}
+
+export function formatHebrewDateTime(date: Date | string | number) {
+  return hebrewDateTimeFormatter.format(new Date(date));
+}
+
+export function formatOptionalHebrewDateTime(
+  date: Date | string | number | null | undefined,
+  fallback = "-",
+) {
+  return date == null ? fallback : formatHebrewDateTime(date);
 }

@@ -4,7 +4,7 @@ import { nanoid } from "nanoid";
 import { z } from "zod";
 
 import { env } from "~/env";
-import { formatPrice } from "~/lib/format";
+import { formatHebrewDateTime, formatPrice } from "~/lib/format";
 import { notificationProvider } from "~/server/adapters/notifications";
 import { db } from "~/server/db";
 import { canReserveStock } from "./inventory";
@@ -535,7 +535,7 @@ export function createManualOrderCustomerMessage(
       `כמות: ${input.quantity}`,
       `סכום לתשלום באישור ידני: ${formatManualOrderAmount(input.total)}`,
       `אופן קבלה: ${fulfillmentText}`,
-      `המלאי נשמר עד ${input.reservationExpiresAt.toLocaleString("he-IL")}.`,
+      `המלאי נשמר עד ${formatHebrewDateTime(input.reservationExpiresAt)}.`,
       `צוות Aphrodite יחזור אליך לאישור סופי והמשך טיפול.`,
     ].join("\n\n"),
   };

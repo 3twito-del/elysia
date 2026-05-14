@@ -29,7 +29,7 @@ import {
   getOrderStatusLabel,
   getPaymentStatusLabel,
 } from "~/lib/commerce-labels";
-import { formatPrice } from "~/lib/format";
+import { formatHebrewDateTime, formatPrice } from "~/lib/format";
 import { getAdminPageAccess } from "~/app/admin/_lib/access";
 import { getAdminOperationsOverview } from "~/server/services/admin-operations";
 
@@ -38,13 +38,6 @@ export const metadata = {
 };
 
 export const dynamic = "force-dynamic";
-
-function formatDate(date: Date) {
-  return new Intl.DateTimeFormat("he-IL", {
-    dateStyle: "short",
-    timeStyle: "short",
-  }).format(date);
-}
 
 export default async function AdminOverviewPage() {
   const access = await getAdminPageAccess("ORDERS_READ");
@@ -157,7 +150,9 @@ export default async function AdminOverviewPage() {
                         </Badge>
                       </TableCell>
                       <TableCell>{formatPrice(order.total)}</TableCell>
-                      <TableCell>{formatDate(order.createdAt)}</TableCell>
+                      <TableCell>
+                        {formatHebrewDateTime(order.createdAt)}
+                      </TableCell>
                     </TableRow>
                   ))
                 )}
