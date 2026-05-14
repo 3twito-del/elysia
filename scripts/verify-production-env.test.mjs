@@ -31,7 +31,7 @@ describe("production environment validation", () => {
     });
   });
 
-  it("fails production builds clearly when email provider env is absent", () => {
+  it("fails production builds clearly when Amazon-level provider env is absent", () => {
     expect(
       verifyProductionEnv({
         VERCEL: "1",
@@ -44,11 +44,11 @@ describe("production environment validation", () => {
     ).toEqual({
       ok: false,
       error:
-        "Missing production provider environment variables: BREVO_API_KEY or RESEND_API_KEY",
+        "Missing production provider environment variables: CARD_COM_TERMINAL, CARD_COM_API_NAME, CARD_COM_API_PASSWORD, CARD_COM_WEBHOOK_SECRET, SMS_PROVIDER_API_KEY, TYPESENSE_HOST, TYPESENSE_API_KEY, BREVO_API_KEY or RESEND_API_KEY, JOB_RUNNER_SECRET or CRON_SECRET, AI_GATEWAY_API_KEY or VERCEL_OIDC_TOKEN or GOOGLE_GENERATIVE_AI_API_KEY",
     });
   });
 
-  it("fails production builds clearly when partial CardCom env is present", () => {
+  it("fails production builds clearly when production payment env is partial", () => {
     expect(
       verifyProductionEnv({
         VERCEL: "1",
@@ -59,6 +59,11 @@ describe("production environment validation", () => {
         OPERATIONS_EMAIL: "ops@example.com",
         RESEND_API_KEY: "re_live",
         CARD_COM_TERMINAL: "12345",
+        SMS_PROVIDER_API_KEY: "sms-key",
+        TYPESENSE_HOST: "search.example.com",
+        TYPESENSE_API_KEY: "typesense-key",
+        JOB_RUNNER_SECRET: "job-secret",
+        AI_GATEWAY_API_KEY: "ai-key",
       }),
     ).toEqual({
       ok: false,
@@ -67,7 +72,7 @@ describe("production environment validation", () => {
     });
   });
 
-  it("accepts production builds when required provider env is configured", () => {
+  it("accepts production builds when Amazon-level readiness env is configured", () => {
     expect(
       verifyProductionEnv({
         VERCEL: "1",
@@ -77,6 +82,15 @@ describe("production environment validation", () => {
         STORE_FROM_EMAIL: "orders@example.com",
         OPERATIONS_EMAIL: "ops@example.com",
         BREVO_API_KEY: "brevo-key",
+        CARD_COM_TERMINAL: "12345",
+        CARD_COM_API_NAME: "api-name",
+        CARD_COM_API_PASSWORD: "api-password",
+        CARD_COM_WEBHOOK_SECRET: "webhook-secret",
+        SMS_PROVIDER_API_KEY: "sms-key",
+        TYPESENSE_HOST: "search.example.com",
+        TYPESENSE_API_KEY: "typesense-key",
+        JOB_RUNNER_SECRET: "job-secret",
+        AI_GATEWAY_API_KEY: "ai-key",
       }),
     ).toEqual({ ok: true });
   });

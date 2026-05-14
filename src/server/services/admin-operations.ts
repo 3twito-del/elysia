@@ -64,6 +64,27 @@ export type AdminIntegrationSummary = {
   status: AdminIntegrationStatus;
 };
 
+export type ProductionIntegrationConfig = {
+  aiGatewayApiKey?: string;
+  cardComApiName?: string;
+  cardComApiPassword?: string;
+  cardComTerminal?: string;
+  cardComWebhookSecret?: string;
+  cronSecret?: string;
+  googleGenerativeAiApiKey?: string;
+  jobRunnerSecret?: string;
+  nodeEnv: string;
+  notificationOperational: boolean;
+  notificationProviderName: string;
+  operationsEmail?: string;
+  resendApiKey?: string;
+  smsProviderApiKey?: string;
+  storeFromEmail?: string;
+  typesenseApiKey?: string;
+  typesenseHost?: string;
+  vercelOidcToken?: string;
+};
+
 const pageQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   pageSize: z.coerce.number().int().min(1).max(100).default(20),
@@ -964,33 +985,91 @@ export async function listAdminJobRuns(
 }
 
 export function getAdminIntegrationStatuses(): AdminIntegrationSummary[] {
+  return createProductionIntegrationSummaries({
+    aiGatewayApiKey: env.AI_GATEWAY_API_KEY,
+    cardComApiName: env.CARD_COM_API_NAME,
+    cardComApiPassword: env.CARD_COM_API_PASSWORD,
+    cardComTerminal: env.CARD_COM_TERMINAL,
+    cardComWebhookSecret: env.CARD_COM_WEBHOOK_SECRET,
+    cronSecret: env.CRON_SECRET,
+    googleGenerativeAiApiKey: env.GOOGLE_GENERATIVE_AI_API_KEY,
+    jobRunnerSecret: env.JOB_RUNNER_SECRET,
+    nodeEnv: env.NODE_ENV,
+    notificationOperational: notificationProvider.isOperational(),
+    notificationProviderName: notificationProvider.providerName(),
+    operationsEmail: env.OPERATIONS_EMAIL,
+    resendApiKey: env.RESEND_API_KEY,
+    smsProviderApiKey: env.SMS_PROVIDER_API_KEY,
+    storeFromEmail: env.STORE_FROM_EMAIL,
+    typesenseApiKey: env.TYPESENSE_API_KEY,
+    typesenseHost: env.TYPESENSE_HOST,
+    vercelOidcToken: env.VERCEL_OIDC_TOKEN,
+  });
+}
+
+export function createProductionIntegrationSummaries(
+  config: ProductionIntegrationConfig,
+): AdminIntegrationSummary[] {
+  const localFallback = config.nodeEnv !== "production";
+
   return [
     createIntegrationSummary({
       configured: Boolean(
-        env.CARD_COM_TERMINAL &&
-        env.CARD_COM_API_NAME &&
-        env.CARD_COM_API_PASSWORD,
+        hasConfigValue(config.cardComTerminal) &&
+          hasConfigValue(config.cardComApiName) &&
+          hasConfigValue(config.cardComApiPassword) &&
+          hasConfigValue(config.cardComWebhookSecret),
       ),
-      fallback: env.NODE_ENV !== "production",
-      capabilities: ["checkout", "capture", "webhook"],
-      configuredDetail: "CardCom credentials are present.",
+      fallback: localFallback,
+      capabilities: [
+        "checkout",
+        "capture",
+        "refund",
+        "signed-webhook",
+        "reconciliation",
+      ],
+      configuredDetail:
+        "CardCom live checkout credentials and webhook signing secret are present.",
       fallbackDetail: "Manual payment workflow is active for local operations.",
       missingDetail:
-        "CardCom terminal, API name, and API password are missing.",
+        "CardCom terminal, API name, API password, and webhook secret are required for production payment readiness.",
       name: "CardCom payments",
     }),
     createIntegrationSummary({
-      configured: notificationProvider.isOperational(),
-      fallback: env.NODE_ENV !== "production",
-      capabilities: ["transactional-email", "retry-safe-outbox"],
-      configuredDetail: `${notificationProvider.providerName()} email is configured.`,
+      configured: Boolean(
+        config.notificationOperational &&
+          hasConfigValue(config.storeFromEmail) &&
+          hasConfigValue(config.operationsEmail),
+      ),
+      fallback: localFallback,
+      capabilities: [
+        "transactional-email",
+        "sender-domain",
+        "operations-alerts",
+        "retry-safe-outbox",
+      ],
+      configuredDetail: `${config.notificationProviderName} email is configured with sender and operations recipients.`,
       fallbackDetail: "Email delivery is using local/mock fallback behavior.",
-      missingDetail: "Configure Resend or Brevo plus sender/operations emails.",
+      missingDetail:
+        "Configure Resend or Brevo plus STORE_FROM_EMAIL and OPERATIONS_EMAIL.",
       name: "Transactional email",
     }),
     createIntegrationSummary({
-      configured: Boolean(env.TYPESENSE_HOST && env.TYPESENSE_API_KEY),
-      fallback: env.NODE_ENV !== "production",
+      configured: hasConfigValue(config.smsProviderApiKey),
+      fallback: localFallback,
+      capabilities: ["otp-sms", "order-status-sms", "delivery-alerts"],
+      configuredDetail: "SMS provider credentials are present.",
+      fallbackDetail: "SMS sends use local/mock behavior outside production.",
+      missingDetail:
+        "SMS_PROVIDER_API_KEY is required for production customer notification readiness.",
+      name: "SMS notifications",
+    }),
+    createIntegrationSummary({
+      configured: Boolean(
+        hasConfigValue(config.typesenseHost) &&
+          hasConfigValue(config.typesenseApiKey),
+      ),
+      fallback: localFallback,
       capabilities: ["search", "facets", "reindex"],
       configuredDetail: "Typesense host and API key are configured.",
       fallbackDetail: "Local catalog search fallback is active.",
@@ -998,27 +1077,62 @@ export function getAdminIntegrationStatuses(): AdminIntegrationSummary[] {
       name: "Typesense search",
     }),
     createIntegrationSummary({
-      configured: Boolean(env.JOB_RUNNER_SECRET ?? env.CRON_SECRET),
-      fallback: env.NODE_ENV !== "production",
-      capabilities: ["outbox", "reservation-expiry", "retry"],
+      configured: Boolean(
+        hasConfigValue(config.jobRunnerSecret) || hasConfigValue(config.cronSecret),
+      ),
+      fallback: localFallback,
+      capabilities: [
+        "outbox",
+        "reservation-expiry",
+        "search-reindex",
+        "payment-reconciliation",
+        "retry",
+      ],
       configuredDetail: "Job runner endpoint is protected by a bearer secret.",
       fallbackDetail: "Local job runner is open for development.",
       missingDetail: "JOB_RUNNER_SECRET or CRON_SECRET is required.",
       name: "Outbox jobs",
     }),
+    createIntegrationSummary({
+      configured: Boolean(
+        hasConfigValue(config.aiGatewayApiKey) ||
+          hasConfigValue(config.vercelOidcToken) ||
+          hasConfigValue(config.googleGenerativeAiApiKey),
+      ),
+      fallback: localFallback,
+      capabilities: ["catalog-grounding", "tool-calls", "audit", "rate-limits"],
+      configuredDetail: "AI model credentials are present for commerce flows.",
+      fallbackDetail:
+        "AI commerce can be tested locally when a model credential is supplied.",
+      missingDetail:
+        "Configure AI_GATEWAY_API_KEY, VERCEL_OIDC_TOKEN, or GOOGLE_GENERATIVE_AI_API_KEY for production AI readiness.",
+      name: "AI commerce",
+    }),
     {
-      capabilities: ["waf", "rate-limits", "observability"],
-      detail: hasVercelCredentials()
+      capabilities: [
+        "waf",
+        "edge-rate-limits",
+        "observability",
+        "alerts",
+        "runbooks",
+      ],
+      detail: hasVercelPlatformAccess(config)
         ? "Vercel-linked credentials are present; production policies still require rollout."
         : "Code is ready for platform policy rollout when Vercel access is available.",
       name: "Vercel platform controls",
-      status: hasVercelCredentials() ? "degraded" : "rollout-required",
+      status: hasVercelPlatformAccess(config) ? "degraded" : "rollout-required",
     },
   ];
 }
 
-function hasVercelCredentials() {
-  return Boolean(env.VERCEL_OIDC_TOKEN ?? env.AI_GATEWAY_API_KEY);
+function hasVercelPlatformAccess(config: ProductionIntegrationConfig) {
+  return Boolean(
+    hasConfigValue(config.vercelOidcToken) || hasConfigValue(config.aiGatewayApiKey),
+  );
+}
+
+function hasConfigValue(value: string | undefined) {
+  return Boolean(value?.trim());
 }
 
 export function createIntegrationSummary(input: {

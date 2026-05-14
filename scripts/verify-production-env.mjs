@@ -22,29 +22,31 @@ export function getProductionEnvValidationError(env = process.env) {
     return null;
   }
 
-  const missing = requiredVercelEnv.filter((name) => !env[name]?.trim());
-
-  missing.push(...getMissingEnv(["STORE_FROM_EMAIL", "OPERATIONS_EMAIL"], env));
-
+  const missing = [
+    ...requiredVercelEnv.filter((name) => !env[name]?.trim()),
+    ...getMissingEnv(["STORE_FROM_EMAIL", "OPERATIONS_EMAIL"], env),
+  ];
   const cardComEnv = [
     "CARD_COM_TERMINAL",
     "CARD_COM_API_NAME",
     "CARD_COM_API_PASSWORD",
+    "CARD_COM_WEBHOOK_SECRET",
   ];
-  const hasAnyCardComEnv = cardComEnv.some((name) => env[name]?.trim());
-  const missingCardComEnv = getMissingEnv(cardComEnv, env);
 
-  if (!env.BREVO_API_KEY?.trim() && !env.RESEND_API_KEY?.trim()) {
-    missing.push("BREVO_API_KEY or RESEND_API_KEY");
-  }
-
-  if (hasAnyCardComEnv) {
-    missing.push(...missingCardComEnv);
-
-    if (!env.CARD_COM_WEBHOOK_SECRET?.trim()) {
-      missing.push("CARD_COM_WEBHOOK_SECRET");
-    }
-  }
+  missing.push(...getMissingEnv(cardComEnv, env));
+  missing.push(...getMissingEnv(["SMS_PROVIDER_API_KEY"], env));
+  missing.push(...getMissingEnv(["TYPESENSE_HOST", "TYPESENSE_API_KEY"], env));
+  pushMissingAny(missing, ["BREVO_API_KEY", "RESEND_API_KEY"], env);
+  pushMissingAny(missing, ["JOB_RUNNER_SECRET", "CRON_SECRET"], env);
+  pushMissingAny(
+    missing,
+    [
+      "AI_GATEWAY_API_KEY",
+      "VERCEL_OIDC_TOKEN",
+      "GOOGLE_GENERATIVE_AI_API_KEY",
+    ],
+    env,
+  );
 
   if (missing.length > 0) {
     return `Missing production provider environment variables: ${missing.join(", ")}`;
@@ -77,6 +79,12 @@ export function main(env = process.env) {
 
 function getMissingEnv(names, env) {
   return names.filter((name) => !env[name]?.trim());
+}
+
+function pushMissingAny(missing, names, env) {
+  if (names.some((name) => env[name]?.trim())) return;
+
+  missing.push(names.join(" or "));
 }
 
 if (isDirectExecution()) {
