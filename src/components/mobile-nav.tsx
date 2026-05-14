@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useState } from "react";
 import {
   CircleHelp,
-  Gem,
   MapPin,
   Menu,
   Search,
@@ -19,7 +18,6 @@ import {
   Sheet,
   SheetContent,
   SheetDescription,
-  SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "~/components/ui/sheet";
@@ -73,23 +71,13 @@ export function MobileNav({ items }: { items: HeaderNavItem[] }) {
       <SheetContent
         className="w-[min(88vw,22rem)] overflow-y-auto p-0"
         data-testid="mobile-nav-sheet"
+        showCloseButton={false}
         side="right"
       >
-        <SheetHeader className="border-b border-[var(--glass-border)] p-4">
-          <Link
-            className="brand-header-mark inline-flex min-w-0 items-center gap-2 text-lg font-semibold"
-            dir="ltr"
-            href="/"
-            onClick={closeNav}
-          >
-            <Gem aria-hidden="true" className="text-foreground size-5" />
-            <span>Aphrodite</span>
-          </Link>
-          <SheetTitle className="sr-only">ניווט ראשי</SheetTitle>
-          <SheetDescription className="sr-only">
-            קישורי ניווט ראשיים לאתר Aphrodite.
-          </SheetDescription>
-        </SheetHeader>
+        <SheetTitle className="sr-only">ניווט ראשי</SheetTitle>
+        <SheetDescription className="sr-only">
+          קישורי ניווט ראשיים לאתר Aphrodite.
+        </SheetDescription>
 
         <div className="grid gap-4 p-4">
           <div className="grid grid-cols-3 gap-2">
