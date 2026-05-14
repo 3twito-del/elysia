@@ -71,6 +71,23 @@ export const updateAdminInventoryInputSchema = z.object({
   safetyStock: nonnegativeInteger("יש להזין מלאי ביטחון תקין.").default(0),
 });
 
+export const createAdminCouponClientInputSchema = z
+  .object({
+    code: z.string().trim().min(3, "׳™׳© ׳׳”׳–׳™׳ ׳§׳•׳“ ׳§׳•׳₪׳•׳.").max(64),
+    description: optionalTrimmedString(240, "׳×׳™׳׳•׳¨ ׳”׳§׳•׳₪׳•׳ ׳׳¨׳•׳ ׳׳“׳™."),
+    percentOff: z.number().int().min(1).max(100).optional(),
+    amountOff: z.number().positive().optional(),
+    endsAt: z.coerce.date().optional(),
+    maxUses: z.number().int().positive().optional(),
+  })
+  .refine(
+    (input) => input.percentOff !== undefined || input.amountOff !== undefined,
+    {
+      message: "׳™׳© ׳׳”׳–׳™׳ ׳׳—׳•׳– ׳”׳ ׳—׳” ׳׳• ׳¡׳›׳•׳ ׳”׳ ׳—׳”.",
+      path: ["percentOff"],
+    },
+  );
+
 export const createAdminCouponInputSchema = z
   .object({
     code: z.string().trim().min(3, "יש להזין קוד קופון.").max(64),

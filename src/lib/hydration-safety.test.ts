@@ -32,4 +32,44 @@ describe("hydration safety", () => {
       [],
     );
   });
+
+  it("does not branch client-rendered output on browser-only globals", () => {
+    const offenders = CLIENT_SURFACE_ROOTS.flatMap((root) =>
+      listSourceFiles(path.join(process.cwd(), root)),
+    ).filter((file) => {
+      const source = readFileSync(file, "utf8");
+
+      return source.includes('"use client"') && /typeof\s+window/.test(source);
+    });
+
+    expect(offenders.map((file) => path.relative(process.cwd(), file))).toEqual(
+      [],
+    );
+  });
+
+  it("keeps Hebrew date formatting pinned to the commerce timezone", () => {
+    const source = readFileSync(
+      path.join(process.cwd(), "src/lib/format.ts"),
+      "utf8",
+    );
+
+    expect(source).toContain('HEBREW_COMMERCE_TIME_ZONE = "Asia/Jerusalem"');
+    expect(source.match(/new Intl\.DateTimeFormat\("he-IL"/g)).toHaveLength(2);
+    expect(source.match(/timeZone: HEBREW_COMMERCE_TIME_ZONE/g)).toHaveLength(
+      2,
+    );
+  });
+
+  it("keeps coupon creation forms free of client clock defaults", () => {
+    const source = readFileSync(
+      path.join(
+        process.cwd(),
+        "src/app/admin/_components/admin-catalog-actions.tsx",
+      ),
+      "utf8",
+    );
+
+    expect(source).toContain("createAdminCouponClientInputSchema.safeParse");
+    expect(source).not.toContain("startsAt: new Date()");
+  });
 });

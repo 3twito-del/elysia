@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  createAdminCouponClientInputSchema,
   createAdminCouponInputSchema,
   createAdminProductInputSchema,
   refundAdminOrderInputSchema,
@@ -10,6 +11,20 @@ import {
 import { getZodFieldErrors } from "./form-validation";
 
 describe("admin validation", () => {
+  it("keeps coupon form validation free of client clock defaults", () => {
+    const clientParsed = createAdminCouponClientInputSchema.parse({
+      code: "WELCOME",
+      percentOff: 10,
+    });
+    const serverParsed = createAdminCouponInputSchema.parse({
+      code: "WELCOME",
+      percentOff: 10,
+    });
+
+    expect(clientParsed).not.toHaveProperty("startsAt");
+    expect(serverParsed.startsAt).toBeInstanceOf(Date);
+  });
+
   it("requires either a percent or amount discount for coupons", () => {
     const parsed = createAdminCouponInputSchema.safeParse({
       code: "WELCOME",

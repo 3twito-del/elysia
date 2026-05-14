@@ -124,7 +124,8 @@ export function ProductGallery({
               alt={productName}
               className="media-color object-cover"
               fill
-              priority
+              loading={activeImageIndex === 0 ? undefined : "lazy"}
+              priority={activeImageIndex === 0}
               sizes="(min-width: 1024px) 50vw, 100vw"
               src={activeImage}
             />

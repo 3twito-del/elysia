@@ -7,6 +7,63 @@ const sourceRoots = ["src/app", "src/components"];
 const sourceExtensions = new Set([".tsx", ".ts"]);
 
 describe("image performance guardrails", () => {
+  it("keeps hero media full-viewport sized and only prioritizes the first slide", () => {
+    const source = readFileSync(
+      path.join(process.cwd(), "src/components/cinematic-hero-sequence.tsx"),
+      "utf8",
+    );
+
+    expect(source).toContain('sizes = "100vw"');
+    expect(source).toContain("priority={priority && index === 0}");
+  });
+
+  it("keeps product cards on a stable commerce aspect ratio with responsive image sizes", () => {
+    const source = readFileSync(
+      path.join(process.cwd(), "src/components/product-card.tsx"),
+      "utf8",
+    );
+
+    expect(source).toContain("relative aspect-[4/5] overflow-hidden");
+    expect(source).toContain("DEFAULT_PRODUCT_CARD_IMAGE_SIZES");
+    expect(source).toContain("(min-width: 1280px) 18rem");
+    expect(source).toContain("(min-width: 640px) 50vw");
+  });
+
+  it("prioritizes only the initial product gallery image and lazy-loads later active images", () => {
+    const source = readFileSync(
+      path.join(
+        process.cwd(),
+        "src/app/product/[slug]/_components/product-gallery.tsx",
+      ),
+      "utf8",
+    );
+
+    expect(source).toContain("priority={activeImageIndex === 0}");
+    expect(source).toContain(
+      'loading={activeImageIndex === 0 ? undefined : "lazy"}',
+    );
+    expect(source).toContain('sizes="(min-width: 1024px) 50vw, 100vw"');
+    expect(source).toContain('loading="lazy"');
+    expect(source).toContain(
+      'sizes="(min-width: 1024px) 96px, (min-width: 640px) 20vw, 25vw"',
+    );
+  });
+
+  it("keeps category and search support media on explicit fixed desktop sizes", () => {
+    const files = [
+      "src/app/category/[slug]/page.tsx",
+      "src/app/search/page.tsx",
+      "src/app/gifts/page.tsx",
+    ];
+    const offenders = files.filter((file) => {
+      const source = readFileSync(path.join(process.cwd(), file), "utf8");
+
+      return !/\bsizes="(?:260|280)px"/.test(source);
+    });
+
+    expect(offenders).toEqual([]);
+  });
+
   it("keeps fill-based next/image usage paired with explicit sizes", () => {
     const offenders = listSourceFiles(sourceRoots).flatMap((filePath) => {
       const source = readFileSync(filePath, "utf8");

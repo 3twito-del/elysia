@@ -15,7 +15,7 @@ import { Label } from "~/components/ui/label";
 import { StatusMessage } from "~/components/ui/status-message";
 import { Textarea } from "~/components/ui/textarea";
 import {
-  createAdminCouponInputSchema,
+  createAdminCouponClientInputSchema,
   createAdminProductInputSchema,
   updateAdminInventoryInputSchema,
 } from "~/lib/admin-validation";
@@ -216,13 +216,12 @@ export function AdminCouponCreateForm() {
     const amountOff = getFormNumber(form, "amountOff");
     const maxUses = getFormNumber(form, "maxUses");
 
-    const parsed = createAdminCouponInputSchema.safeParse({
+    const parsed = createAdminCouponClientInputSchema.safeParse({
       amountOff: amountOff > 0 ? amountOff : undefined,
       code: getFormString(form, "code"),
       description: getOptionalFormString(form, "description"),
       maxUses: maxUses > 0 ? maxUses : undefined,
       percentOff: percentOff > 0 ? percentOff : undefined,
-      startsAt: new Date(),
     });
 
     if (!parsed.success) {

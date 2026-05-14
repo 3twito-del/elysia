@@ -59,13 +59,27 @@ export default function CategoryLoading() {
           </div>
           <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {Array.from({ length: 6 }, (_, index) => (
-              <Card className="overflow-hidden rounded-md py-0" key={index}>
-                <Skeleton className="aspect-[5/4] w-full rounded-none" />
-                <CardContent className="grid gap-3 p-4">
-                  <Skeleton className="h-5 w-3/4" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-2/3" />
-                  <Skeleton className="h-11 w-full" />
+              <Card
+                className="h-full min-w-0 overflow-hidden rounded-md py-0"
+                key={index}
+              >
+                <Skeleton className="aspect-[4/5] w-full rounded-none" />
+                <CardContent className="flex min-h-52 flex-col gap-4 p-4">
+                  <div className="grid min-h-[6.5rem] gap-2">
+                    <Skeleton className="h-6 w-3/4" />
+                    <Skeleton className="h-5 w-full" />
+                    <Skeleton className="h-5 w-2/3" />
+                  </div>
+                  <div className="mt-auto grid gap-3">
+                    <div className="grid min-h-16 grid-cols-[minmax(0,1fr)_5.5rem] items-end gap-3">
+                      <div className="grid gap-2">
+                        <Skeleton className="h-3 w-12" />
+                        <Skeleton className="h-7 w-24" />
+                      </div>
+                      <Skeleton className="h-9 w-full" />
+                    </div>
+                    <Skeleton className="h-11 w-full" />
+                  </div>
                 </CardContent>
               </Card>
             ))}
