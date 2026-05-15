@@ -34,7 +34,7 @@ export function RecentlyViewedProducts({
   return (
     <section
       aria-labelledby="recently-viewed-products-heading"
-      className="brand-similar-section mt-8 rounded-md border p-4 sm:p-5"
+      className="mt-8 border-t border-[var(--glass-border)] pt-8"
       data-testid="recently-viewed-products"
     >
       <h2

@@ -151,7 +151,10 @@ function AdminShipmentForm({
   }
 
   return (
-    <form className="grid gap-2 rounded-md border p-2" onSubmit={handleSubmit}>
+    <form
+      className="grid gap-2 border-t border-[var(--glass-border)] pt-3"
+      onSubmit={handleSubmit}
+    >
       <Label className="flex items-center gap-2 text-xs">
         <Truck aria-hidden="true" className="size-3.5" />
         משלוח
@@ -266,7 +269,10 @@ function AdminRefundForm({
   }
 
   return (
-    <form className="grid gap-2 rounded-md border p-2" onSubmit={handleSubmit}>
+    <form
+      className="grid gap-2 border-t border-[var(--glass-border)] pt-3"
+      onSubmit={handleSubmit}
+    >
       <Label className="flex items-center gap-2 text-xs">
         <RotateCcw aria-hidden="true" className="size-3.5" />
         זיכוי / החזרה

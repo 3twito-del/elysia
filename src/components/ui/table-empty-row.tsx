@@ -19,7 +19,7 @@ export function TableEmptyRow({
     <TableRow>
       <TableCell className="py-10 text-center" colSpan={colSpan}>
         <div className="mx-auto grid max-w-sm place-items-center gap-2">
-          <span className="glass-inset grid size-10 place-items-center rounded-md border">
+          <span className="grid size-10 place-items-center border-b border-[var(--brand-aqua)]">
             <Icon aria-hidden="true" className="size-4" />
           </span>
           <p className="font-medium">{title}</p>

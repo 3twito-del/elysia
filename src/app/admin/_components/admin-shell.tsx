@@ -116,7 +116,7 @@ export function AdminShell({
               })}
             </nav>
             <Separator className="hidden lg:block" />
-            <div className="bg-background/70 hidden gap-3 rounded-md border p-3 text-sm lg:grid">
+            <div className="hidden gap-3 border-t border-[var(--glass-border)] pt-4 text-sm lg:grid">
               <div>
                 <p className="font-medium">{admin.name}</p>
                 <p className="text-muted-foreground">{admin.roleName}</p>

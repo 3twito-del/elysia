@@ -775,8 +775,7 @@ function FilterOptionLink({
       variant: active ? "secondary" : "ghost",
     }),
     "h-auto min-h-10 w-full justify-between border px-3 py-2 text-right whitespace-normal",
-    active &&
-      "border-[var(--glass-border-strong)] bg-[var(--glass-inset-bg)] shadow-[inset_0_0_0_1px_var(--glass-border-strong)]",
+    active && "border-[var(--glass-border-strong)] bg-transparent",
     disabled && "cursor-not-allowed opacity-45",
   );
   const content = (

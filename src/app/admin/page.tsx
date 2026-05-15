@@ -174,7 +174,7 @@ export default async function AdminOverviewPage() {
           <CardContent className="grid gap-3">
             {overview.integrations.map((integration) => (
               <div
-                className="bg-background/70 rounded-md border p-3"
+                className="border-t border-[var(--glass-border)] pt-3"
                 key={integration.name}
               >
                 <div className="flex items-center justify-between gap-3">

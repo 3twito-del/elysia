@@ -20,6 +20,3 @@ Rejected or undecided ideas are intentionally not recorded in this file.
 ## Approval Log
 
 No approved design changes pending implementation.
-
-| ID  | Date | Area | Approved change | Rationale | Implementation status |
-| --- | ---- | ---- | --------------- | --------- | --------------------- |

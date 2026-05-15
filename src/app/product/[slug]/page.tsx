@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CalendarCheck, RotateCcw, ShieldCheck } from "lucide-react";
+import { CalendarCheck } from "lucide-react";
 
 import { ProductAnalytics } from "./_components/product-analytics";
 import { ProductGallery } from "./_components/product-gallery";
@@ -16,7 +16,6 @@ import { SiteHeader } from "~/components/site-header";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
 import {
   getProductAvailabilityLabel,
@@ -116,14 +115,14 @@ export default async function ProductPage({
       />
 
       <RevealSection
-        className="mx-auto grid max-w-7xl gap-8 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10"
+        className="mx-auto grid max-w-7xl gap-8 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12"
         id="product-buy"
       >
-        <div className="contents lg:grid lg:gap-4">
+        <div className="contents lg:grid lg:content-start lg:gap-4">
           <div className="brand-gallery-frame order-1 lg:order-none">
             <ProductGallery images={uniqueImages} productName={product.name} />
           </div>
-          <div className="brand-commerce-panel glass-panel order-3 grid gap-3 rounded-md border p-3 sm:grid-cols-3 lg:order-none">
+          <dl className="order-3 grid border-y border-[var(--glass-border)] text-sm sm:grid-cols-3 lg:order-none">
             {[
               { label: "חומר", value: product.material },
               { label: "קולקציה", value: product.collection },
@@ -133,17 +132,17 @@ export default async function ProductPage({
               },
             ].map((fact) => (
               <div
-                className="glass-inset rounded-md border p-3"
+                className="flex items-baseline justify-between gap-4 border-b border-[var(--glass-border)] py-3 last:border-b-0 sm:block sm:border-e sm:border-b-0 sm:px-4 sm:first:pe-0 sm:last:border-e-0 sm:last:ps-0"
                 key={fact.label}
               >
-                <p className="text-muted-foreground text-xs">{fact.label}</p>
-                <p className="mt-1 text-sm font-medium">{fact.value}</p>
+                <dt className="text-muted-foreground text-xs">{fact.label}</dt>
+                <dd className="mt-1 text-sm font-medium">{fact.value}</dd>
               </div>
             ))}
-          </div>
+          </dl>
         </div>
 
-        <div className="brand-commerce-panel order-2 min-w-0 rounded-md border border-[var(--glass-border)] p-4 lg:order-none lg:p-5 lg:pt-4">
+        <div className="order-2 min-w-0 border-y border-[var(--glass-border)] py-5 lg:order-none lg:border-y-0 lg:border-s lg:py-0 lg:ps-8">
           <Badge className="mb-4" variant="secondary">
             {product.collection}
           </Badge>
@@ -190,14 +189,15 @@ export default async function ProductPage({
             </Button>
           </div>
 
-          <Card className="mt-8 rounded-md" id="product-availability">
-            <CardHeader>
-              <CardTitle className="text-lg">זמינות לפי סניף</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-3">
+          <section
+            className="mt-8 border-t border-[var(--glass-border)] pt-5"
+            id="product-availability"
+          >
+            <h2 className="text-lg font-medium">זמינות לפי סניף</h2>
+            <div className="mt-4 divide-y divide-[var(--glass-border)]">
               {availability.map(({ branch, quantity, available }) => (
                 <div
-                  className="glass-inset flex items-center justify-between rounded-md border p-3"
+                  className="flex items-center justify-between gap-4 py-4"
                   key={branch.slug}
                 >
                   <div>
@@ -211,8 +211,8 @@ export default async function ProductPage({
                   </Badge>
                 </div>
               ))}
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         </div>
       </RevealSection>
 
@@ -220,37 +220,28 @@ export default async function ProductPage({
         className="mx-auto max-w-7xl px-4 pb-14 sm:px-6"
         id="product-details"
       >
-        <RevealGrid className="grid gap-5 lg:grid-cols-3" variant="compact">
-          <Card className="rounded-md">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <ShieldCheck aria-hidden="true" className="size-5" />
-                אחריות
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-muted-foreground text-sm leading-7">
+        <RevealGrid
+          className="grid border-y border-[var(--glass-border)] lg:grid-cols-3"
+          variant="compact"
+        >
+          <section className="border-b border-[var(--glass-border)] py-6 lg:border-e lg:border-b-0 lg:px-6 lg:first:pe-0">
+            <h2 className="text-lg font-medium">אחריות</h2>
+            <p className="text-muted-foreground mt-4 text-sm leading-7">
               אחריות לשנה על פגמי ייצור ושירות ניקוי ראשוני ללא עלות.
-            </CardContent>
-          </Card>
-          <Card className="rounded-md">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <RotateCcw aria-hidden="true" className="size-5" />
-                החזרות
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-muted-foreground text-sm leading-7">
+            </p>
+          </section>
+          <section className="border-b border-[var(--glass-border)] py-6 lg:border-e lg:border-b-0 lg:px-6">
+            <h2 className="text-lg font-medium">החזרות</h2>
+            <p className="text-muted-foreground mt-4 text-sm leading-7">
               החזרה או החלפה לפי מדיניות החנות, בסניף או במשלוח מתואם.
-            </CardContent>
-          </Card>
-          <Card className="rounded-md">
-            <CardHeader>
-              <CardTitle className="text-lg">תיאור מלא</CardTitle>
-            </CardHeader>
-            <CardContent className="text-muted-foreground text-sm leading-7">
+            </p>
+          </section>
+          <section className="py-6 lg:px-6 lg:last:ps-0">
+            <h2 className="text-lg font-medium">תיאור מלא</h2>
+            <p className="text-muted-foreground mt-4 text-sm leading-7">
               {product.description}
-            </CardContent>
-          </Card>
+            </p>
+          </section>
         </RevealGrid>
         <ProductRecommendationRails rails={recommendationRails} />
         <RecentlyViewedProducts
@@ -281,7 +272,7 @@ function ProductRecommendationRails({
         return (
           <section
             aria-labelledby={headingId}
-            className="brand-similar-section rounded-md border p-4 sm:p-5"
+            className="border-t border-[var(--glass-border)] pt-8"
             data-testid={`product-recommendation-rail-${rail.id}`}
             key={rail.id}
           >

@@ -51,7 +51,7 @@ export function ProductCard({
       aria-label={product.name}
       className={cn(
         "brand-accent-card interactive-lift h-full min-w-0 overflow-hidden rounded-md py-0 transition focus-within:ring-3 focus-within:ring-[var(--glass-focus)]",
-        !isAvailable && "bg-muted/30",
+        !isAvailable && "opacity-80",
       )}
       data-public-floating-avoid="true"
       data-testid="product-card"
@@ -61,7 +61,7 @@ export function ProductCard({
         className="block focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
         href={href}
       >
-        <div className="brand-product-media glass-inset bg-muted relative aspect-[4/5] overflow-hidden border-0">
+        <div className="brand-product-media bg-background relative aspect-[4/5] overflow-hidden border-b border-[var(--glass-border)]">
           <KineticImageMotion intensity="card">
             <Image
               alt={product.name}
@@ -133,7 +133,7 @@ export function ProductCard({
             </div>
             <span
               className={cn(
-                "brand-icon-well glass-inset flex max-w-36 shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-2 text-xs",
+                "brand-icon-well flex max-w-36 shrink-0 items-center gap-1.5 border-b border-[var(--brand-aqua)] px-0 py-1.5 text-xs",
                 isAvailable ? "text-muted-foreground" : "text-foreground",
               )}
             >

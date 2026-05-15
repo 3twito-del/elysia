@@ -111,7 +111,7 @@ export function AiProductRecommendations({
                 ) : null}
 
                 {product.matchReason ? (
-                  <p className="glass-inset rounded-md border px-3 py-2 text-xs leading-5">
+                  <p className="border-y border-[var(--glass-border)] py-2 text-xs leading-5">
                     {product.matchReason}
                   </p>
                 ) : null}
@@ -120,12 +120,12 @@ export function AiProductRecommendations({
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="text-muted-foreground flex min-w-0 flex-wrap items-center gap-2 text-xs">
                   {product.category ? (
-                    <span className="bg-muted rounded-full border border-[var(--glass-border)] px-2 py-1">
+                    <span className="border-b border-[var(--brand-aqua)] px-1 py-0.5">
                       {product.category}
                     </span>
                   ) : null}
                   {product.material ? (
-                    <span className="bg-muted rounded-full border border-[var(--glass-border)] px-2 py-1">
+                    <span className="border-b border-[var(--brand-aqua)] px-1 py-0.5">
                       {product.material.replace(" 14K", "")}
                     </span>
                   ) : null}
