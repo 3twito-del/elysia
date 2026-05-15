@@ -21,14 +21,14 @@ export function MetricCard({
   return (
     <Card
       className={cn(
-        "brand-accent-card interactive-lift min-w-0 rounded-md border-t-2 border-t-[var(--brand-aqua)]",
+        "brand-accent-card interactive-lift min-w-0 rounded-md",
         isSoft ? "glass-card" : "glass-panel",
       )}
     >
       <CardContent className="flex items-center gap-4 p-5">
         <div
           className={cn(
-            "brand-icon-well text-foreground grid size-10 place-items-center",
+            "brand-icon-well glass-inset text-foreground grid size-11 place-items-center rounded-md border",
             isSoft ? "opacity-90" : "opacity-100",
           )}
         >

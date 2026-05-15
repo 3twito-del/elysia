@@ -365,10 +365,7 @@ export function AdminProductCreateForm({ catalog }: { catalog: AdminCatalog }) {
         <Textarea name="description" placeholder="תיאור מלא" required />
         <div className="grid gap-3 md:grid-cols-2">
           {catalog.branches.map((branch) => (
-            <div
-              className="border-t border-[var(--glass-border)] pt-3"
-              key={branch.id}
-            >
+            <div className="glass-inset rounded-md border p-3" key={branch.id}>
               <Label>{branch.name}</Label>
               <div className="mt-2 grid grid-cols-2 gap-2">
                 <Input

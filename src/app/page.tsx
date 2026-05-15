@@ -112,7 +112,7 @@ export default async function Home() {
           <div className="motion-copy-item flex flex-col items-stretch gap-2 [--motion-copy-delay:170ms] sm:flex-row sm:items-center sm:justify-end sm:gap-3">
             <Button
               asChild
-              className="border-[var(--brand-aqua)] bg-[var(--brand-aqua)] text-[var(--brand-aqua-deep)] hover:bg-[var(--brand-aqua)] hover:text-[var(--brand-aqua-deep)]"
+              className="border-[var(--brand-aqua)] bg-[var(--brand-aqua)] text-[var(--brand-aqua-deep)] shadow-[0_12px_30px_rgba(66,201,190,0.14)] hover:bg-[var(--brand-aqua)] hover:text-[var(--brand-aqua-deep)]"
               size="lg"
             >
               <Link href="/category/rings">
@@ -122,7 +122,7 @@ export default async function Home() {
             </Button>
             <Button
               asChild
-              className="border-transparent bg-[var(--brand-aqua)] text-[var(--brand-aqua-deep)] hover:border-transparent hover:bg-[var(--brand-aqua)] hover:text-[var(--brand-aqua-deep)] focus-visible:border-[var(--brand-aqua)]"
+              className="border-transparent bg-[var(--brand-aqua)] text-[var(--brand-aqua-deep)] shadow-[0_12px_30px_rgba(66,201,190,0.14)] hover:border-transparent hover:bg-[var(--brand-aqua)] hover:text-[var(--brand-aqua-deep)] focus-visible:border-[var(--brand-aqua)]"
               size="lg"
             >
               <Link href="/ai">

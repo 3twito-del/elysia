@@ -66,11 +66,11 @@ export function ProductGallery({
     return (
       <div className={cn("grid gap-3", className)}>
         <div
-          className="bg-background flex aspect-square items-center justify-center border border-[var(--glass-border)] p-6 text-center"
+          className="glass-inset bg-muted flex aspect-square items-center justify-center rounded-md border p-6 text-center"
           data-testid="product-gallery-empty"
         >
           <div className="grid justify-items-center gap-3">
-            <span className="brand-icon-well flex size-12 items-center justify-center border-b border-[var(--brand-aqua)]">
+            <span className="brand-icon-well glass-inset flex size-12 items-center justify-center rounded-md border">
               <ImageOff className="size-5" aria-hidden="true" />
             </span>
             <div>
@@ -100,7 +100,7 @@ export function ProductGallery({
         </p>
       </div>
       <div
-        className="bg-background relative aspect-square overflow-hidden border border-[var(--glass-border)]"
+        className="glass-inset bg-muted relative aspect-square overflow-hidden rounded-md border"
         data-motion-gallery="product"
         data-testid="product-gallery"
       >
@@ -149,7 +149,7 @@ export function ProductGallery({
               aria-current={activeImageIndex === index}
               aria-pressed={activeImageIndex === index}
               className={cn(
-                "motion-thumbnail-button bg-background relative aspect-square overflow-hidden border border-[var(--glass-border)] transition focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none",
+                "motion-thumbnail-button glass-inset bg-muted relative aspect-square overflow-hidden rounded-md border transition focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none",
                 activeImageIndex === index
                   ? "border-[var(--glass-border-strong)] ring-2 ring-[var(--glass-focus)]"
                   : "hover:border-[var(--glass-border-strong)]",

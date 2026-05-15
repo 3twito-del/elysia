@@ -25,16 +25,16 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "grid place-items-center p-8 text-center",
-        variant === "panel" && "min-h-80 border-y border-[var(--glass-border)]",
-        variant === "inset" && "border-y border-[var(--glass-border)]",
+        "grid place-items-center rounded-md p-8 text-center",
+        variant === "panel" && "glass-panel min-h-80 border",
+        variant === "inset" && "glass-inset border",
         variant === "plain" && "min-h-40",
         className,
       )}
       data-testid={testId}
     >
       <div className="max-w-lg">
-        <div className="mx-auto mb-4 flex size-12 items-center justify-center border-b border-[var(--brand-aqua)]">
+        <div className="glass-inset mx-auto mb-4 flex size-12 items-center justify-center rounded-md border">
           <Icon className="size-5" aria-hidden="true" />
         </div>
         <p className="text-xl font-semibold">{title}</p>

@@ -69,7 +69,7 @@ export async function SiteFooter() {
           </section>
 
           <div className="grid gap-3 lg:hidden">
-            <details className="group border-t border-[var(--glass-border)]">
+            <details className="group glass-inset rounded-md border">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4 text-sm font-semibold [&::-webkit-details-marker]:hidden">
                 קטגוריות
                 <ChevronDown
@@ -99,7 +99,7 @@ export async function SiteFooter() {
               </ul>
             </details>
 
-            <details className="group border-t border-[var(--glass-border)]">
+            <details className="group glass-inset rounded-md border">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4 text-sm font-semibold [&::-webkit-details-marker]:hidden">
                 שירות וקנייה
                 <ChevronDown
@@ -126,7 +126,7 @@ export async function SiteFooter() {
               </ul>
             </details>
 
-            <details className="group border-t border-[var(--glass-border)]">
+            <details className="group glass-inset rounded-md border">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4 text-sm font-semibold [&::-webkit-details-marker]:hidden">
                 סניפים וקשר
                 <ChevronDown

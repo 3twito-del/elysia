@@ -105,7 +105,7 @@ export default async function AdminOrderDetailPage({
               <div className="grid gap-3 md:grid-cols-4">
                 {order.timeline.map((event) => (
                   <div
-                    className="border-t border-[var(--glass-border)] pt-3"
+                    className="bg-background/70 rounded-md border p-3"
                     key={event.label}
                   >
                     <p className="text-muted-foreground text-xs">
@@ -152,7 +152,7 @@ export default async function AdminOrderDetailPage({
                   ))}
                 </TableBody>
               </Table>
-              <div className="grid gap-2 border-y border-[var(--glass-border)] py-4 text-sm sm:max-w-sm">
+              <div className="bg-background/70 grid gap-2 rounded-md border p-4 text-sm sm:max-w-sm">
                 <TotalRow label="ביניים" value={order.totals.subtotal} />
                 <TotalRow label="הנחה" value={order.totals.discount} />
                 <TotalRow label="משלוח" value={order.totals.shipping} />
@@ -161,7 +161,7 @@ export default async function AdminOrderDetailPage({
               <div className="grid gap-3 md:grid-cols-2">
                 {order.payments.map((payment) => (
                   <div
-                    className="border-t border-[var(--glass-border)] pt-3"
+                    className="bg-background/70 rounded-md border p-3"
                     key={payment.id}
                   >
                     <div className="flex items-center justify-between gap-3">
@@ -195,7 +195,7 @@ export default async function AdminOrderDetailPage({
               >
                 {order.reservations.map((reservation) => (
                   <li
-                    className="border-t border-[var(--glass-border)] pt-3"
+                    className="bg-background/70 rounded-md border p-3"
                     key={reservation.id}
                   >
                     <span className="font-medium">
@@ -214,7 +214,7 @@ export default async function AdminOrderDetailPage({
               >
                 {order.outboxEvents.map((event) => (
                   <li
-                    className="border-t border-[var(--glass-border)] pt-3"
+                    className="bg-background/70 rounded-md border p-3"
                     key={event.id}
                   >
                     <span className="font-medium">{event.type}</span> ·{" "}
@@ -234,7 +234,7 @@ export default async function AdminOrderDetailPage({
               >
                 {order.auditLogs.map((log) => (
                   <li
-                    className="border-t border-[var(--glass-border)] pt-3"
+                    className="bg-background/70 rounded-md border p-3"
                     key={log.id}
                   >
                     <span className="font-medium">{log.action}</span> ·{" "}
@@ -302,7 +302,7 @@ export default async function AdminOrderDetailPage({
               ) : (
                 order.returns.map((request) => (
                   <div
-                    className="border-t border-[var(--glass-border)] pt-3"
+                    className="bg-background/70 rounded-md border p-3"
                     key={request.id}
                   >
                     <Badge variant="secondary">
@@ -322,7 +322,7 @@ export default async function AdminOrderDetailPage({
 
 function StatusFact({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border-t border-[var(--glass-border)] pt-3">
+    <div className="bg-background/70 rounded-md border p-3">
       <p className="text-muted-foreground text-xs">{label}</p>
       <p className="mt-1 font-medium">{value}</p>
     </div>

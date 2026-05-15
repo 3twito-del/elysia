@@ -186,7 +186,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
 
   const mobileCheckoutBar = (
     <div
-      className="public-floating-control glass-chrome fixed inset-x-3 bottom-[calc(var(--floating-stack-bottom,0px)+0.75rem+env(safe-area-inset-bottom))] z-40 rounded-md border p-2.5 md:hidden"
+      className="public-floating-control glass-chrome fixed inset-x-3 bottom-[calc(var(--floating-stack-bottom,0px)+0.75rem+env(safe-area-inset-bottom))] z-40 rounded-md border p-2.5 shadow-[0_18px_48px_oklch(0_0_0_/_16%)] md:hidden"
       data-public-floating-bar="true"
     >
       <div className="mx-auto grid max-w-md grid-cols-[minmax(0,1fr)_auto] items-center gap-3">

@@ -99,7 +99,7 @@ export function ProductPurchasePanel({
 
   const stickyPurchaseBar = (
     <div
-      className="public-floating-control motion-sticky-purchase glass-chrome fixed inset-x-3 bottom-[calc(var(--floating-stack-bottom,0px)+0.75rem+env(safe-area-inset-bottom))] z-40 rounded-md border p-2.5 md:hidden"
+      className="public-floating-control motion-sticky-purchase glass-chrome fixed inset-x-3 bottom-[calc(var(--floating-stack-bottom,0px)+0.75rem+env(safe-area-inset-bottom))] z-40 rounded-md border p-2.5 shadow-[0_18px_48px_oklch(0_0_0_/_16%)] md:hidden"
       data-public-floating-bar="true"
     >
       <div className="mx-auto grid max-w-md grid-cols-[auto_minmax(0,1fr)] items-center gap-3">
@@ -156,7 +156,7 @@ export function ProductPurchasePanel({
             </div>
           </div>
           <div
-            className="grid gap-3 border-y border-[var(--glass-border)] py-4"
+            className="glass-inset grid gap-3 rounded-md border p-3"
             id="product-variant-feedback"
             data-testid="product-variant-feedback"
           >
@@ -241,7 +241,7 @@ export function ProductPurchasePanel({
         </div>
 
         {cartMessage ? (
-          <div className="motion-status-pop flex items-center justify-between gap-3 border-y border-[var(--glass-border)] py-3 text-sm">
+          <div className="motion-status-pop glass-inset flex items-center justify-between gap-3 rounded-md border p-3 text-sm">
             <StatusMessage
               className="flex min-w-0 flex-1 items-center gap-2"
               tone={cartMessageTone}
