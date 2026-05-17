@@ -774,17 +774,13 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 }
 
 .home-quick-search-cue {
-  position: absolute;
-  right: auto;
-  bottom: calc(12rem + env(safe-area-inset-bottom));
-  left: 50%;
+  position: relative;
   z-index: 4;
   display: grid;
-  width: 4.75rem;
-  height: 4.75rem;
+  width: 3.75rem;
+  height: 3.75rem;
   min-height: 0;
-  translate: -50% 0;
-  margin-top: 0;
+  margin: 0.75rem auto 0;
   place-items: center;
   overflow: visible;
   border-color: transparent;
@@ -813,8 +809,8 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 
 .home-quick-search-lottie {
   display: block;
-  width: 4.15rem;
-  height: 4.15rem;
+  width: 3.35rem;
+  height: 3.35rem;
   pointer-events: none;
   filter: brightness(0) invert(1) drop-shadow(0 10px 24px rgb(0 0 0 / 26%));
 }
@@ -827,7 +823,7 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 
 @media (min-width: 640px) {
   .home-quick-search-cue {
-    bottom: var(--hero-edge);
+    margin-top: 1rem;
   }
 }
 

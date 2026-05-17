@@ -6,3 +6,7 @@ node_modules
 *.log
 *.tsbuildinfo
 generated
+
+# Source brand PNGs are converted to AVIF and are not referenced at runtime.
+public/brand/*.png
+public/brand/**/*.png

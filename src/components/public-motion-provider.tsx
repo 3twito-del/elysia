@@ -36,6 +36,12 @@ const modalSurfaceSelector = [
   '[data-slot="dialog-content"][data-state="open"]',
   '[role="dialog"][aria-modal="true"]',
 ].join(",");
+const floatingChromeWatchSelector = [
+  floatingAvoidSelector,
+  floatingBarSelector,
+  modalSurfaceSelector,
+  ".public-floating-control",
+].join(",");
 const PublicMotionContext = createContext<PublicMotionContextValue>({
   suppressInitialReveal: false,
 });
@@ -198,6 +204,8 @@ export function PublicMotionProvider({
     if (isAdminRoute) return;
 
     const root = document.documentElement;
+    let disposeFloatingChromeWatchers: (() => void) | null = null;
+    let hasDisposed = false;
     let syncFrame = 0;
 
     const isVisibleElement = (element: HTMLElement) => {
@@ -287,42 +295,57 @@ export function PublicMotionProvider({
       syncFrame = window.requestAnimationFrame(syncFloatingChrome);
     };
 
-    const mutationObserver = new MutationObserver(requestFloatingChromeSync);
-    const resizeObserver =
-      "ResizeObserver" in window
-        ? new ResizeObserver(requestFloatingChromeSync)
-        : null;
-
-    mutationObserver.observe(document.body, {
-      attributeFilter: [
-        "aria-hidden",
-        "aria-modal",
-        "class",
-        "data-state",
-        "hidden",
-        "style",
-      ],
-      attributes: true,
-      childList: true,
-      subtree: true,
-    });
-    resizeObserver?.observe(document.body);
-    window.addEventListener("scroll", requestFloatingChromeSync, {
-      passive: true,
-    });
-    window.addEventListener("resize", requestFloatingChromeSync);
-    window.addEventListener("orientationchange", requestFloatingChromeSync);
     requestFloatingChromeSync();
+    const cancelDeferredWatcherSetup = scheduleIdleTask(() => {
+      if (hasDisposed) return;
+
+      const mutationObserver = new MutationObserver((mutations) => {
+        if (mutations.some(shouldSyncFloatingChromeMutation)) {
+          requestFloatingChromeSync();
+        }
+      });
+      const resizeObserver =
+        "ResizeObserver" in window
+          ? new ResizeObserver(requestFloatingChromeSync)
+          : null;
+
+      mutationObserver.observe(document.body, {
+        attributeFilter: [
+          "aria-hidden",
+          "aria-modal",
+          "class",
+          "data-state",
+          "hidden",
+          "style",
+        ],
+        attributes: true,
+        childList: true,
+        subtree: true,
+      });
+      resizeObserver?.observe(document.body);
+      window.addEventListener("scroll", requestFloatingChromeSync, {
+        passive: true,
+      });
+      window.addEventListener("resize", requestFloatingChromeSync);
+      window.addEventListener("orientationchange", requestFloatingChromeSync);
+      requestFloatingChromeSync();
+
+      disposeFloatingChromeWatchers = () => {
+        mutationObserver.disconnect();
+        resizeObserver?.disconnect();
+        window.removeEventListener("scroll", requestFloatingChromeSync);
+        window.removeEventListener("resize", requestFloatingChromeSync);
+        window.removeEventListener(
+          "orientationchange",
+          requestFloatingChromeSync,
+        );
+      };
+    }, 900);
 
     return () => {
-      mutationObserver.disconnect();
-      resizeObserver?.disconnect();
-      window.removeEventListener("scroll", requestFloatingChromeSync);
-      window.removeEventListener("resize", requestFloatingChromeSync);
-      window.removeEventListener(
-        "orientationchange",
-        requestFloatingChromeSync,
-      );
+      hasDisposed = true;
+      cancelDeferredWatcherSetup();
+      disposeFloatingChromeWatchers?.();
       window.cancelAnimationFrame(syncFrame);
       root.style.removeProperty("--public-floating-bar-offset");
       delete root.dataset.publicFloatingCollision;
@@ -575,4 +598,45 @@ function scrollTargetToViewportTop(
 
 function getTargetDocumentTop(target: HTMLElement) {
   return Math.max(0, target.getBoundingClientRect().top + window.scrollY);
+}
+
+function scheduleIdleTask(callback: () => void, timeout: number) {
+  const idleWindow = window as Window & {
+    cancelIdleCallback?: (handle: number) => void;
+    requestIdleCallback?: (
+      callback: IdleRequestCallback,
+      options?: IdleRequestOptions,
+    ) => number;
+  };
+
+  if (idleWindow.requestIdleCallback && idleWindow.cancelIdleCallback) {
+    const idleId = idleWindow.requestIdleCallback(callback, { timeout });
+
+    return () => idleWindow.cancelIdleCallback?.(idleId);
+  }
+
+  const timer = window.setTimeout(callback, Math.min(timeout, 500));
+
+  return () => window.clearTimeout(timer);
+}
+
+function shouldSyncFloatingChromeMutation(mutation: MutationRecord) {
+  if (mutation.type === "attributes") {
+    return elementTouchesFloatingChrome(mutation.target);
+  }
+
+  return (
+    Array.from(mutation.addedNodes).some(elementTouchesFloatingChrome) ||
+    Array.from(mutation.removedNodes).some(elementTouchesFloatingChrome)
+  );
+}
+
+function elementTouchesFloatingChrome(node: Node) {
+  if (!(node instanceof Element)) return false;
+
+  return (
+    node.matches(floatingChromeWatchSelector) ||
+    Boolean(node.closest(floatingChromeWatchSelector)) ||
+    Boolean(node.querySelector(floatingChromeWatchSelector))
+  );
 }

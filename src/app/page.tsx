@@ -43,7 +43,14 @@ const heroSlides = [
   },
 ] satisfies CinematicHeroSlide[];
 
-const homeSlides = [...cinematicRouteMedia.home, ...heroSlides];
+const homeSlides = Array.from(
+  new Map(
+    [...cinematicRouteMedia.home, ...heroSlides].map((slide) => [
+      slide.src,
+      slide,
+    ]),
+  ).values(),
+);
 
 export default async function Home() {
   const [categories, ringProducts] = await Promise.all([
@@ -99,11 +106,11 @@ export default async function Home() {
         </div>
 
         <div
-          className="motion-hero-copy absolute inset-x-3 bottom-5 w-auto text-white sm:inset-x-auto sm:bottom-[var(--hero-edge)] sm:left-[var(--hero-edge)] sm:w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),36rem)] lg:w-[min(36rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
+          className="home-hero-actions motion-hero-copy absolute inset-x-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] w-auto text-white sm:inset-x-auto sm:bottom-[var(--hero-edge)] sm:left-[var(--hero-edge)] sm:w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),36rem)] lg:w-[min(36rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
           data-testid="home-hero-actions"
           dir="rtl"
         >
-          <div className="motion-copy-item flex flex-col items-stretch gap-2 [--motion-copy-delay:170ms] sm:flex-row sm:items-center sm:justify-end sm:gap-3">
+          <div className="motion-copy-item flex flex-col items-stretch gap-2 px-3 [--motion-copy-delay:170ms] sm:flex-row sm:items-center sm:justify-end sm:gap-3 sm:px-0">
             <Button
               asChild
               className="border-[var(--brand-aqua)] bg-[var(--brand-aqua)] text-[var(--brand-aqua-deep)] shadow-[0_12px_30px_rgba(66,201,190,0.14)] hover:bg-[var(--brand-aqua)] hover:text-[var(--brand-aqua-deep)]"
@@ -141,15 +148,15 @@ export default async function Home() {
               );
             })}
           </div>
+          <a
+            aria-label="חיפוש מהיר"
+            className="cinematic-page-hero-scroll-cue home-quick-search-cue motion-copy-item [--motion-copy-delay:310ms]"
+            data-testid="hero-scroll-cue"
+            href="#quick-search"
+          >
+            <ScrollDownLottie />
+          </a>
         </div>
-        <a
-          aria-label="חיפוש מהיר"
-          className="cinematic-page-hero-scroll-cue home-quick-search-cue motion-copy-item [--motion-copy-delay:310ms]"
-          data-testid="hero-scroll-cue"
-          href="#quick-search"
-        >
-          <ScrollDownLottie />
-        </a>
       </RevealSection>
 
       <RevealSection className="glass-chrome border-b" id="quick-search">
