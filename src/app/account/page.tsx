@@ -228,7 +228,7 @@ export default async function AccountPage() {
           title="אזור לקוח"
         />
         <RevealSection
-          className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12"
+          className="mx-auto max-w-7xl scroll-mt-24 px-4 py-8 sm:scroll-mt-28 sm:px-6 sm:py-12"
           id="account-login"
         >
           <h2 className="text-3xl font-semibold sm:text-4xl">אזור לקוח</h2>
@@ -246,7 +246,7 @@ export default async function AccountPage() {
               </CardContent>
             </Card>
             <RevealGrid
-              className="grid gap-5 sm:grid-cols-2"
+              className="grid scroll-mt-24 gap-5 sm:scroll-mt-28 sm:grid-cols-2"
               id="account-benefits"
               variant="compact"
             >
@@ -311,7 +311,7 @@ export default async function AccountPage() {
         title="אזור לקוח"
       />
       <RevealSection
-        className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12"
+        className="mx-auto max-w-7xl scroll-mt-24 px-4 py-8 sm:scroll-mt-28 sm:px-6 sm:py-12"
         id="account-overview"
       >
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -360,7 +360,10 @@ export default async function AccountPage() {
         </RevealGrid>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
-          <Card className="rounded-md" id="account-orders">
+          <Card
+            className="scroll-mt-24 rounded-md sm:scroll-mt-28"
+            id="account-orders"
+          >
             <CardHeader>
               <CardTitle>הזמנות אחרונות</CardTitle>
             </CardHeader>
@@ -399,7 +402,10 @@ export default async function AccountPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-md" id="account-wishlist">
+          <Card
+            className="scroll-mt-24 rounded-md sm:scroll-mt-28"
+            id="account-wishlist"
+          >
             <CardHeader>
               <CardTitle>מועדפים</CardTitle>
             </CardHeader>
@@ -465,7 +471,10 @@ export default async function AccountPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-md" id="account-addresses">
+          <Card
+            className="scroll-mt-24 rounded-md sm:scroll-mt-28"
+            id="account-addresses"
+          >
             <CardHeader>
               <CardTitle>כתובות שמורות</CardTitle>
             </CardHeader>
@@ -499,7 +508,10 @@ export default async function AccountPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-md" id="account-sizes">
+          <Card
+            className="scroll-mt-24 rounded-md sm:scroll-mt-28"
+            id="account-sizes"
+          >
             <CardHeader>
               <CardTitle>מידות וסגנון</CardTitle>
             </CardHeader>
@@ -529,7 +541,10 @@ export default async function AccountPage() {
               )}
             </CardContent>
           </Card>
-          <Card className="rounded-md" id="account-service">
+          <Card
+            className="scroll-mt-24 rounded-md sm:scroll-mt-28"
+            id="account-service"
+          >
             <CardHeader>
               <CardTitle>שירות</CardTitle>
             </CardHeader>
@@ -553,7 +568,10 @@ export default async function AccountPage() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-md" id="account-privacy">
+          <Card
+            className="scroll-mt-24 rounded-md sm:scroll-mt-28"
+            id="account-privacy"
+          >
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <ShieldCheck aria-hidden="true" className="size-5" />

@@ -582,7 +582,9 @@ function scrollTargetToViewportTop(
   const snapToExactTop = () => {
     if (!target.isConnected) return;
 
-    const offset = target.getBoundingClientRect().top;
+    const scrollMarginTop = getTargetScrollMarginTop(target);
+    const offset = target.getBoundingClientRect().top - scrollMarginTop;
+
     if (Math.abs(offset) > 96) return;
     if (Math.abs(offset) <= 1) return;
 
@@ -597,7 +599,20 @@ function scrollTargetToViewportTop(
 }
 
 function getTargetDocumentTop(target: HTMLElement) {
-  return Math.max(0, target.getBoundingClientRect().top + window.scrollY);
+  return Math.max(
+    0,
+    target.getBoundingClientRect().top +
+      window.scrollY -
+      getTargetScrollMarginTop(target),
+  );
+}
+
+function getTargetScrollMarginTop(target: HTMLElement) {
+  const scrollMarginTop = Number.parseFloat(
+    window.getComputedStyle(target).scrollMarginTop,
+  );
+
+  return Number.isFinite(scrollMarginTop) ? scrollMarginTop : 0;
 }
 
 function scheduleIdleTask(callback: () => void, timeout: number) {
