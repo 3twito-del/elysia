@@ -31,15 +31,20 @@ export function CustomerOtpForm() {
     verifyCustomerOtpAction,
     initialState,
   );
-  const identifier = verifyState.identifier ?? requestState.identifier ?? "";
+  const requestedIdentifier = requestState.ok
+    ? (requestState.identifier ?? "")
+    : "";
+  const verificationIdentifier = verifyState.identifier ?? requestedIdentifier;
+  const canVerify = Boolean(requestState.ok && verificationIdentifier);
 
   return (
-    <div className="grid gap-6">
+    <div className="grid gap-5">
       <form action={requestAction} className="grid gap-4">
         <div>
           <Label htmlFor="identifier">אימייל או טלפון</Label>
           <Input
             autoComplete="email tel"
+            defaultValue={verificationIdentifier}
             dir="ltr"
             id="identifier"
             name="identifier"
@@ -56,40 +61,43 @@ export function CustomerOtpForm() {
             קוד פיתוח: <span dir="ltr">{requestState.developmentCode}</span>
           </p>
         ) : null}
-        <RequestButton />
+        <RequestButton hasVerificationTarget={canVerify} />
       </form>
 
-      <form action={verifyAction} className="grid gap-4">
-        <input name="sessionKey" type="hidden" value={sessionKey} />
-        <div>
-          <Label htmlFor="verify-identifier">אימייל או טלפון לאימות</Label>
-          <Input
-            defaultValue={identifier}
-            dir="ltr"
-            id="verify-identifier"
-            key={identifier}
+      {canVerify ? (
+        <form action={verifyAction} className="grid gap-4">
+          <input
             name="identifier"
-            placeholder="name@example.com או 050..."
-            required
-            type="text"
+            type="hidden"
+            value={verificationIdentifier}
           />
-        </div>
-        <div>
-          <Label htmlFor="code">קוד אימות</Label>
-          <Input
-            autoComplete="one-time-code"
-            dir="ltr"
-            id="code"
-            inputMode="numeric"
-            maxLength={8}
-            minLength={4}
-            name="code"
-            required
-          />
-        </div>
-        {verifyState.message ? <OtpStatusMessage state={verifyState} /> : null}
-        <VerifyButton />
-      </form>
+          <input name="sessionKey" type="hidden" value={sessionKey} />
+          <p className="text-muted-foreground text-sm leading-6">
+            קוד האימות נשלח אל{" "}
+            <span className="text-foreground font-medium" dir="ltr">
+              {verificationIdentifier}
+            </span>
+            .
+          </p>
+          <div>
+            <Label htmlFor="code">קוד אימות</Label>
+            <Input
+              autoComplete="one-time-code"
+              dir="ltr"
+              id="code"
+              inputMode="numeric"
+              maxLength={8}
+              minLength={4}
+              name="code"
+              required
+            />
+          </div>
+          {verifyState.message ? (
+            <OtpStatusMessage state={verifyState} />
+          ) : null}
+          <VerifyButton />
+        </form>
+      ) : null}
     </div>
   );
 }
@@ -114,13 +122,21 @@ function OtpStatusMessage({ state }: { state: CustomerOtpState }) {
   );
 }
 
-function RequestButton() {
+function RequestButton({
+  hasVerificationTarget,
+}: {
+  hasVerificationTarget: boolean;
+}) {
   const { pending } = useFormStatus();
 
   return (
     <Button className="w-full gap-2" disabled={pending} type="submit">
       <Send aria-hidden="true" className="size-4" />
-      {pending ? "שולח קוד..." : "שליחת קוד"}
+      {pending
+        ? "שולח קוד..."
+        : hasVerificationTarget
+          ? "שליחת קוד נוסף"
+          : "שליחת קוד"}
     </Button>
   );
 }

@@ -208,6 +208,7 @@ export default async function AccountPage() {
       <main>
         <SiteHeader />
         <CompactPageIntro
+          className="account-entry-intro"
           actions={
             <>
               <Button asChild>
@@ -220,23 +221,14 @@ export default async function AccountPage() {
           }
           description="כניסה מאובטחת להזמנות, מועדפים, מידות שמורות, שירות ופרטיות."
           eyebrow="Aphrodite Account"
-          metrics={[
-            { label: "כניסה", value: "OTP" },
-            { label: "מועדפים", value: "שמור" },
-            { label: "פרטיות", value: "בשליטה" },
-          ]}
           title="אזור לקוח"
         />
         <RevealSection
-          className="mx-auto max-w-7xl scroll-mt-24 px-4 py-8 sm:scroll-mt-28 sm:px-6 sm:py-12"
+          aria-label="כניסה לאזור לקוח"
+          className="mx-auto max-w-7xl scroll-mt-24 px-4 pt-2 pb-8 sm:scroll-mt-28 sm:px-6 sm:pt-4 sm:pb-12"
           id="account-login"
         >
-          <h2 className="text-3xl font-semibold sm:text-4xl">אזור לקוח</h2>
-          <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
-            כניסה מאובטחת באמצעות קוד חד-פעמי. לאחר הכניסה יוצגו הזמנות,
-            מועדפים, מידות שמורות ושירות.
-          </p>
-          <div className="mt-6 grid gap-5 sm:mt-8 lg:grid-cols-[minmax(0,420px)_1fr]">
+          <div className="grid gap-5 lg:grid-cols-[minmax(0,420px)_1fr]">
             <Card className="rounded-md">
               <CardHeader className="border-b border-[var(--glass-border)] pb-4">
                 <CardTitle>כניסת לקוח</CardTitle>
@@ -291,6 +283,7 @@ export default async function AccountPage() {
     <main>
       <SiteHeader />
       <CompactPageIntro
+        className="account-entry-intro"
         actions={
           <>
             <Button asChild>
@@ -314,14 +307,7 @@ export default async function AccountPage() {
         className="mx-auto max-w-7xl scroll-mt-24 px-4 py-8 sm:scroll-mt-28 sm:px-6 sm:py-12"
         id="account-overview"
       >
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0">
-            <h2 className="text-3xl font-semibold sm:text-4xl">אזור לקוח</h2>
-            <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
-              {customer.firstName ?? session.user.name ?? "לקוח/ה"} מחובר/ת. כאן
-              נשמרות הזמנות, פריטים מועדפים, מידות ופרטי שירות.
-            </p>
-          </div>
+        <div className="mb-6 flex justify-end">
           <form action={customerLogoutAction}>
             <Button className="gap-2" type="submit" variant="outline">
               <LogOut aria-hidden="true" className="size-4" />
