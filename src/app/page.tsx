@@ -18,7 +18,6 @@ import { MetricCard } from "~/components/metric-card";
 import { MotionMediaFrame } from "~/components/motion-media-frame";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
-import { ScrollDownLottie } from "~/components/scroll-down-lottie";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -132,14 +131,6 @@ export default async function Home() {
               </Link>
             </Button>
           </div>
-          <a
-            aria-label="חיפוש מהיר"
-            className="cinematic-page-hero-scroll-cue home-quick-search-cue motion-copy-item [--motion-copy-delay:310ms]"
-            data-testid="hero-scroll-cue"
-            href="#quick-search"
-          >
-            <ScrollDownLottie />
-          </a>
         </div>
       </RevealSection>
 

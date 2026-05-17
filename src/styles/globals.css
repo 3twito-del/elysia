@@ -503,137 +503,6 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
   animation: none !important;
 }
 
-.cinematic-page-hero-scroll-cue {
-  position: relative;
-  display: inline-flex;
-  width: fit-content;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 1.2rem;
-  overflow: hidden;
-  border: 1px solid rgb(66 201 190 / 36%);
-  border-radius: var(--radius-md);
-  background: white;
-  color: var(--brand-aqua-deep);
-  min-height: 3rem;
-  padding: 0.72rem 1.15rem;
-  font-size: 0.9rem;
-  font-weight: 720;
-  text-decoration: none;
-  box-shadow: 0 12px 30px rgb(0 0 0 / 12%);
-  transition:
-    border-color var(--motion-ui) var(--ease-motion-standard),
-    color var(--motion-ui) var(--ease-motion-standard),
-    transform var(--motion-ui) var(--ease-motion-standard);
-}
-
-.cinematic-page-hero-scroll-cue::after {
-  content: "";
-  pointer-events: none;
-  position: absolute;
-  inset: -40% auto -40% -35%;
-  width: 38%;
-  transform: translateX(-130%) skewX(-14deg);
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgb(255 255 255 / 42%),
-    rgb(255 255 255 / 18%),
-    transparent
-  );
-}
-
-.cinematic-page-hero-scroll-cue:dir(rtl)::after {
-  inset: -40% -35% -40% auto;
-  transform: translateX(130%) skewX(14deg);
-  background: linear-gradient(
-    270deg,
-    transparent,
-    rgb(255 255 255 / 42%),
-    rgb(255 255 255 / 18%),
-    transparent
-  );
-}
-
-.cinematic-page-hero-scroll-cue:hover,
-.cinematic-page-hero-scroll-cue:focus-visible {
-  border-color: var(--brand-aqua);
-  background: var(--brand-aqua);
-  color: var(--brand-aqua-deep);
-  transform: translateY(-1px);
-}
-
-.cinematic-page-hero-scroll-cue:hover::after,
-.cinematic-page-hero-scroll-cue:focus-visible::after,
-.cinematic-page-hero-scroll-cue[data-anchor-activating="true"]::after {
-  animation: aqua-button-shine 1.22s var(--ease-motion-standard);
-}
-
-.cinematic-page-hero-scroll-cue:dir(rtl):hover::after,
-.cinematic-page-hero-scroll-cue:dir(rtl):focus-visible::after,
-.cinematic-page-hero-scroll-cue:dir(rtl)[data-anchor-activating="true"]::after {
-  animation-name: aqua-button-shine-rtl;
-}
-
-.cinematic-page-hero-scroll-cue:focus-visible {
-  outline: 3px solid rgb(185 242 236 / 52%);
-  outline-offset: 3px;
-}
-
-.home-quick-search-cue {
-  position: relative;
-  z-index: 4;
-  display: grid;
-  width: 3.75rem;
-  height: 3.75rem;
-  min-height: 0;
-  margin: 0.75rem auto 0;
-  place-items: center;
-  overflow: visible;
-  border-color: transparent;
-  border-radius: 999px;
-  background: transparent;
-  color: white;
-  padding: 0;
-  box-shadow: none;
-  backdrop-filter: none;
-}
-
-.home-quick-search-cue::after {
-  display: none;
-}
-
-.home-quick-search-cue:hover,
-.home-quick-search-cue:focus-visible {
-  border-color: transparent;
-  background: transparent;
-  color: white;
-  box-shadow: none;
-  outline: none;
-  outline-offset: 0;
-  transform: translateY(-1px);
-}
-
-.home-quick-search-lottie {
-  display: block;
-  width: 3.35rem;
-  height: 3.35rem;
-  pointer-events: none;
-  filter: brightness(0) invert(1) drop-shadow(0 10px 24px rgb(0 0 0 / 26%));
-}
-
-.home-quick-search-lottie svg {
-  display: block;
-  width: 100% !important;
-  height: 100% !important;
-}
-
-@media (min-width: 640px) {
-  .home-quick-search-cue {
-    margin-top: 1rem;
-  }
-}
-
 .public-motion-shell
   :where(a, button, [data-slot="button"])[data-anchor-activating="true"] {
   animation: anchor-press 640ms var(--ease-motion-feedback) both;
@@ -1595,7 +1464,6 @@ html[data-cookie-banner-open="true"]
   .motion-thumbnail-button,
   .kinetic-image-layer,
   .kinetic-image-shine,
-  .cinematic-page-hero-scroll-cue,
   .category-loading-progress,
   .cart-count-badge,
   .interactive-lift,
@@ -1614,7 +1482,6 @@ html[data-cookie-banner-open="true"]
   .glass-panel::before,
   .glass-card::before,
   .glass-chrome::before,
-  .cinematic-page-hero-scroll-cue::after,
   .public-motion-shell [data-slot="button"] {
     transition: none !important;
   }
