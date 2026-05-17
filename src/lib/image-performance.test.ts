@@ -52,20 +52,15 @@ describe("image performance guardrails", () => {
     );
   });
 
-  it("keeps category and discovery support media on explicit fixed desktop sizes", () => {
+  it("keeps category result media on explicit fixed desktop sizes", () => {
     const categorySource = readFileSync(
       path.join(process.cwd(), "src/app/category/[slug]/page.tsx"),
-      "utf8",
-    );
-    const giftsSource = readFileSync(
-      path.join(process.cwd(), "src/app/gifts/page.tsx"),
       "utf8",
     );
 
     expect(categorySource).toContain(
       'imageSizes="(min-width: 1280px) 18rem, (min-width: 1024px) calc((100vw - 24rem) / 2), (min-width: 640px) 50vw, 100vw"',
     );
-    expect(giftsSource).toContain('sizes="280px"');
   });
 
   it("keeps fill-based next/image usage paired with explicit sizes", () => {

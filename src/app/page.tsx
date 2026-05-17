@@ -64,15 +64,15 @@ export default async function Home() {
       <SiteHeader />
 
       <RevealSection
-        className="relative isolate min-h-[max(38rem,calc(100svh-4rem))] w-screen max-w-none overflow-hidden bg-[var(--brand-aqua-deep)] [--hero-edge:clamp(1rem,4vw,5rem)] lg:[--hero-edge:clamp(3rem,4vw,5rem)]"
+        className="relative isolate min-h-[clamp(30rem,calc(82svh-4rem),40rem)] w-screen max-w-none overflow-hidden bg-[var(--brand-aqua-deep)] [--hero-edge:clamp(1rem,4vw,5rem)] lg:[--hero-edge:clamp(3rem,4vw,5rem)]"
         data-testid="cinematic-page-hero"
         id="page-hero"
         initialVisible
         variant="hero"
       >
         <MotionMediaFrame
-          className="absolute inset-0 h-full min-h-[max(38rem,calc(100svh-4rem))] w-full bg-[var(--brand-aqua-deep)]"
-          contentClassName="absolute inset-0 min-h-[max(38rem,calc(100svh-4rem))]"
+          className="absolute inset-0 h-full min-h-[clamp(30rem,calc(82svh-4rem),40rem)] w-full bg-[var(--brand-aqua-deep)]"
+          contentClassName="absolute inset-0 min-h-[clamp(30rem,calc(82svh-4rem),40rem)]"
           intensity="cinematic"
           parallax
         >
@@ -86,7 +86,7 @@ export default async function Home() {
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,56,59,0.02),rgba(6,56,59,0.28)_42%,rgba(0,0,0,0.68))]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.6),rgba(6,56,59,0.08)_58%,rgba(185,242,236,0.12))]" />
         <div className="absolute inset-x-0 top-0 h-px bg-[rgba(185,242,236,0.42)]" />
-        <div className="relative min-h-[max(38rem,calc(100svh-4rem))]">
+        <div className="relative min-h-[clamp(30rem,calc(82svh-4rem),40rem)]">
           <div
             className="motion-hero-copy absolute top-[var(--hero-edge)] right-[var(--hero-edge)] w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),48rem)] text-right text-white lg:w-[min(48rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
             data-testid="home-hero-copy"
@@ -99,8 +99,8 @@ export default async function Home() {
               Aphrodite
             </h1>
             <p className="motion-copy-item mt-4 max-w-xl text-base leading-7 text-white/90 [--motion-copy-delay:90ms] sm:mt-5 sm:text-lg sm:leading-8">
-              רשת תכשיטים ישראלית עם קו סטודיו מודרני, קטלוג אונליין מלא, זמינות
-              לרכישה אונליין וייעוץ אישי לבחירת מתנה, טבעת או סט יומיומי.
+              תכשיטים ישראליים בקו סטודיו מודרני, עם קטלוג אונליין וייעוץ אישי
+              לבחירה מדויקת.
             </p>
           </div>
         </div>
@@ -123,30 +123,14 @@ export default async function Home() {
             </Button>
             <Button
               asChild
-              className="border-transparent bg-[var(--brand-aqua)] text-[var(--brand-aqua-deep)] shadow-[0_12px_30px_rgba(66,201,190,0.14)] hover:border-transparent hover:bg-[var(--brand-aqua)] hover:text-[var(--brand-aqua-deep)] focus-visible:border-[var(--brand-aqua)]"
+              className="border-white/70 bg-white/10 text-white shadow-none hover:border-white hover:bg-white hover:text-[var(--brand-aqua-deep)] focus-visible:border-white"
               size="lg"
+              variant="outline"
             >
               <Link href="/ai">
-                ייעוץ סטייליסט AI
-                <Sparkles aria-hidden="true" className="size-4" />
+                ייעוץ אישי
               </Link>
             </Button>
-          </div>
-          <div className="motion-copy-item mt-4 flex flex-wrap justify-center gap-x-3 gap-y-2 border-t border-[rgb(185_242_236_/_0.36)] pt-3 pr-12 text-[0.7rem] font-medium text-white/90 [--motion-copy-delay:240ms] sm:mt-8 sm:justify-end sm:gap-x-6 sm:gap-y-3 sm:pt-5 sm:pr-0 sm:text-sm">
-            {[
-              { icon: Gem, label: "רכישה אונליין" },
-              { icon: Sparkles, label: "ייעוץ אישי" },
-              { icon: ShieldCheck, label: "קופה מאובטחת" },
-            ].map((item) => {
-              const Icon = item.icon;
-
-              return (
-                <div className="flex items-center gap-2" key={item.label}>
-                  <Icon aria-hidden="true" className="size-4" />
-                  {item.label}
-                </div>
-              );
-            })}
           </div>
           <a
             aria-label="חיפוש מהיר"

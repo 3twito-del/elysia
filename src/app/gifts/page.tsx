@@ -1,12 +1,10 @@
 import Link from "next/link";
 
-import { BrandMediaPanel } from "~/components/brand-media-panel";
-import { CinematicPageHero } from "~/components/cinematic-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
-import { brandMedia, cinematicRouteMedia } from "~/lib/brand-media";
 import {
   getFeaturedCatalogProducts,
   searchCatalogProducts,
@@ -26,28 +24,26 @@ export default async function GiftsPage() {
   return (
     <main>
       <SiteHeader />
-      <CinematicPageHero
+      <CompactPageIntro
         actions={
           <>
-            <Button asChild size="lg">
+            <Button asChild>
               <Link href="#gift-products">למתנות</Link>
             </Button>
-            <Button asChild size="lg" variant="outline">
+            <Button asChild variant="outline">
               <Link href="/ai?tool=gifts">שאלון מתנה</Link>
             </Button>
           </>
         }
         description="בחירות קלות לקנייה עם אריזת מתנה, ברכה אישית והתאמה לפי תקציב."
         eyebrow="Aphrodite Gifts"
-        scrollCue={{ href: "#gift-products", label: "למתנות" }}
-        slides={cinematicRouteMedia.gifts}
-        stats={[
+        id="page-hero"
+        metrics={[
           { label: "בחירות", value: String(products.length) },
           { label: "ייעוץ", value: "AI" },
           { label: "אריזה", value: "מתנה" },
         ]}
         title="מתנות תכשיטים"
-        variant="commerce"
       />
       <RevealSection
         className="mx-auto max-w-7xl px-4 py-12 sm:px-6"
@@ -58,19 +54,12 @@ export default async function GiftsPage() {
           id="gift-advisor"
         >
           <div>
-            <h2 className="text-4xl font-semibold">מתנות תכשיטים</h2>
+            <h2 className="text-3xl font-semibold">בחירות זמינות עכשיו</h2>
             <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
-              בחירות קלות לקנייה עם אריזת מתנה, ברכה אישית והתאמה לפי תקציב.
+              פריטים שמתאימים למתנה, עם מסלול קצר לשאלון AI כשצריך דיוק נוסף.
             </p>
           </div>
           <div className="grid gap-3">
-            <BrandMediaPanel
-              alt="מגש תכשיטים למתנה בגוון אקווה"
-              className="hidden h-32 lg:block"
-              sizes="280px"
-              slides={brandMedia.gifts}
-              variant="compact"
-            />
             <Button asChild variant="secondary">
               <Link href="/ai?tool=gifts">שאלון מתנה חכם</Link>
             </Button>

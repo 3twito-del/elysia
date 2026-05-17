@@ -35,6 +35,27 @@ describe("layout stability guardrails", () => {
       extractCssBlock(cssSource, ".motion-thumbnail-button:hover"),
     ).not.toMatch(/\b(?:margin|top|bottom|left|right|width|height)\s*:/);
   });
+
+  it("keeps the full cinematic hero reserved for the home route", () => {
+    const homeSource = readSource("src/app/page.tsx");
+    const compactRouteSources = [
+      "src/app/about/page.tsx",
+      "src/app/ai/page.tsx",
+      "src/app/category/[slug]/page.tsx",
+      "src/app/gifts/page.tsx",
+      "src/app/stylist/page.tsx",
+    ].map((sourcePath) => [sourcePath, readSource(sourcePath)] as const);
+
+    expect(homeSource).toContain('data-testid="cinematic-page-hero"');
+
+    for (const [sourcePath, source] of compactRouteSources) {
+      expect(source, sourcePath).toContain("CompactPageIntro");
+      expect(source, sourcePath).not.toContain("CinematicPageHero");
+      expect(source, sourcePath).not.toContain(
+        'data-testid="cinematic-page-hero"',
+      );
+    }
+  });
 });
 
 function readSource(relativePath: string) {

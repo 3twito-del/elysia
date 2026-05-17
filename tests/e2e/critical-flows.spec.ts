@@ -8,7 +8,7 @@ const cartProductSlug = "test-bracelet-sivan-halo-174";
 const cartProductName = "צמיד Sivan הילה פתוחה";
 const searchProductSlug = "venus-line-ring";
 const searchProductName = "טבעת Venus Line";
-const publicHeroRoutes = [
+const publicRoutes = [
   "/",
   "/search?q=venus",
   `/product/${cartProductSlug}`,
@@ -38,9 +38,7 @@ test.describe("critical shopping flows", () => {
     await page.goto(`/product/${cartProductSlug}`);
 
     await expect(
-      page
-        .getByTestId("cinematic-page-hero")
-        .getByRole("heading", { name: cartProductName }),
+      page.getByRole("heading", { name: cartProductName }).first(),
     ).toBeVisible();
     await expect(page.getByTestId("product-gallery")).toBeVisible();
     await expect(page.getByTestId("product-variant-feedback")).toBeVisible();
@@ -117,9 +115,7 @@ test.describe("critical shopping flows", () => {
 
     await expect(page).toHaveURL(new RegExp(`/product/${searchProductSlug}`));
     await expect(
-      page
-        .getByTestId("cinematic-page-hero")
-        .getByRole("heading", { name: searchProductName }),
+      page.getByRole("heading", { name: searchProductName }).first(),
     ).toBeVisible();
   });
 
@@ -583,29 +579,30 @@ test.describe("accessibility and responsive guardrails", () => {
     expect(kineticImageTransform).toBe("none");
   });
 
-  test("shows cinematic heroes and static scroll cues on all public routes", async ({
+  test("keeps the cinematic hero reserved for the home route", async ({
     page,
   }) => {
     test.setTimeout(90_000);
 
-    for (const route of publicHeroRoutes) {
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+
+    const homeHero = page.getByTestId("cinematic-page-hero");
+    const homeHeroBox = await homeHero.boundingBox();
+    const viewport = page.viewportSize();
+
+    await expect(homeHero).toBeVisible();
+    await expect(homeHero.getByRole("heading").first()).toBeVisible();
+    await expect(homeHero.getByTestId("hero-scroll-cue")).toBeVisible();
+    expect(homeHeroBox?.width ?? 0).toBeGreaterThanOrEqual(
+      (viewport?.width ?? 0) - 2,
+    );
+    expect(homeHeroBox?.height ?? 0).toBeGreaterThanOrEqual(480);
+
+    for (const route of publicRoutes.filter((route) => route !== "/")) {
       await page.goto(route, { waitUntil: "domcontentloaded" });
 
-      const hero = page.getByTestId("cinematic-page-hero");
-      const heroHeading = hero.getByRole("heading").first();
-
-      await expect(hero).toBeVisible();
-      await expect(heroHeading).toBeVisible();
-      await expect(heroHeading).toBeInViewport({ ratio: 0.1 });
-      await expect(hero.getByTestId("hero-scroll-cue")).toBeVisible();
-      const heroBox = await hero.boundingBox();
-      const viewport = page.viewportSize();
-      expect(heroBox?.width ?? 0).toBeGreaterThanOrEqual(
-        (viewport?.width ?? 0) - 2,
-      );
-      expect(heroBox?.height ?? 0).toBeGreaterThanOrEqual(
-        (viewport?.height ?? 0) - 80,
-      );
+      await expect(page.getByTestId("cinematic-page-hero")).toHaveCount(0);
+      await expect(page.getByRole("heading").first()).toBeVisible();
       await expect(
         page.locator(
           ".floating-anchor-nav, .floating-anchor-nav-mobile, .floating-anchor-nav-rail",
@@ -614,18 +611,20 @@ test.describe("accessibility and responsive guardrails", () => {
     }
   });
 
-  test("hero scroll cue clicks scroll to the section and update the hash", async ({
+  test("category intro action scrolls to the products and updates the hash", async ({
     page,
   }) => {
     await page.goto("/category/earrings", { waitUntil: "networkidle" });
 
-    const scrollCue = page.getByTestId("hero-scroll-cue");
+    const productsLink = page.locator('a[href="#category-products"]').first();
     const header = page.locator("header.site-chrome");
 
-    await expect(scrollCue).toBeVisible();
-    await expect(scrollCue).toHaveAttribute("href", "#category-products");
-    await scrollCue.click();
-    await expect(scrollCue).toHaveAttribute("data-anchor-activating", "true");
+    await expect(productsLink).toBeVisible();
+    await productsLink.click();
+    await expect(productsLink).toHaveAttribute(
+      "data-anchor-activating",
+      "true",
+    );
     await expect(page).toHaveURL(/#category-products$/);
     expect(page.url()).not.toMatch(/#.*#/);
     await expect(page.locator("#category-products")).toBeInViewport();
@@ -665,7 +664,7 @@ test.describe("accessibility and responsive guardrails", () => {
     expect(page.url()).not.toContain("#");
   });
 
-  for (const route of [...publicHeroRoutes, "/admin/login"]) {
+  for (const route of [...publicRoutes, "/admin/login"]) {
     test(`keeps ${route} inside the viewport width`, async ({ page }) => {
       await page.goto(route, { waitUntil: "networkidle" });
 

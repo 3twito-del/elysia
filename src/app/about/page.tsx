@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
-  ArrowDown,
-  ArrowLeft,
   Gem,
   Gift,
   Heart,
@@ -12,15 +10,11 @@ import {
   Sparkles,
 } from "lucide-react";
 
-import { MotionMediaFrame } from "~/components/motion-media-frame";
-import { CinematicHeroSequence } from "~/components/cinematic-hero-sequence";
-import { KineticImageMotion } from "~/components/kinetic-image-motion";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
-import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-import { cinematicRouteMedia } from "~/lib/brand-media";
 
 const values = [
   {
@@ -86,90 +80,33 @@ export default function AboutPage() {
       <SiteHeader />
 
       <article>
-        <RevealSection
-          className="relative min-h-[max(38rem,calc(100svh-4rem))] w-screen max-w-none overflow-hidden"
-          data-testid="cinematic-page-hero"
+        <CompactPageIntro
+          actions={
+            <>
+              <Button asChild>
+                <Link href="/search">
+                  קטלוג שקט ומדויק
+                  <Search aria-hidden="true" className="size-4" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/ai">
+                  ייעוץ אישי
+                  <Sparkles aria-hidden="true" className="size-4" />
+                </Link>
+              </Button>
+            </>
+          }
+          description="Aphrodite היא סטודיו תכשיטים ישראלי מודרני שנבנה סביב רעיון פשוט: תכשיט יפה באמת הוא בחירה שמעניקה ביטחון, לא עוד רעש."
+          eyebrow="אודות Aphrodite"
           id="page-hero"
-          initialVisible
-          variant="hero"
-        >
-          <MotionMediaFrame
-            className="absolute inset-0 min-h-[max(38rem,calc(100svh-4rem))]"
-            contentClassName="absolute inset-0"
-            intensity="cinematic"
-            parallax
-          >
-            <KineticImageMotion intensity="hero">
-              <CinematicHeroSequence slides={cinematicRouteMedia.about} />
-            </KineticImageMotion>
-          </MotionMediaFrame>
-          <div className="absolute inset-0 bg-black/[0.28]" />
-          <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(255,255,255,0.22),transparent_38%),linear-gradient(to_top,rgba(0,0,0,0.68),rgba(0,0,0,0.08)_58%,rgba(0,0,0,0.28))]" />
-
-          <div className="relative mx-auto flex min-h-[max(38rem,calc(100svh-4rem))] max-w-7xl flex-col justify-end px-4 pt-24 pb-10 sm:px-6 lg:pb-14">
-            <div className="motion-hero-copy max-w-4xl text-white">
-              <Badge className="mb-5" variant="secondary">
-                אודות Aphrodite
-              </Badge>
-              <h1 className="motion-copy-item max-w-3xl text-5xl leading-[1.04] font-semibold tracking-normal sm:text-6xl lg:text-7xl">
-                יופי שנולד ברגע שבו בחירה הופכת לביטחון.
-              </h1>
-              <p className="motion-copy-item mt-6 max-w-3xl text-lg leading-8 text-white/88 [--motion-copy-delay:90ms]">
-                Aphrodite היא סטודיו תכשיטים ישראלי מודרני שנבנה סביב רעיון פשוט
-                ומחייב: תכשיט אינו רק אובייקט יפה, אלא רגע שבו אדם מזהה את עצמו
-                מחדש. הוא יכול להיות מתנה, טבעת, שרשרת, זוג עגילים או צמיד
-                שנבחרו בשקט. הוא יכול לסמן התחלה, לשמור זיכרון, להעניק תחושת
-                נוכחות או להפוך יום רגיל למדויק יותר. לכן אנחנו מתייחסים ליופי
-                לא כאל קישוט, אלא כאל שפה של ביטחון.
-              </p>
-              <div className="motion-copy-item mt-8 flex flex-col gap-3 [--motion-copy-delay:170ms] sm:flex-row">
-                <Button asChild size="lg">
-                  <Link href="/search">
-                    קטלוג שקט ומדויק
-                    <Search aria-hidden="true" className="size-4" />
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  className="border-white bg-white text-[var(--brand-aqua-deep)] hover:border-[var(--brand-aqua)] hover:bg-white hover:text-[var(--brand-aqua-deep)]"
-                  size="lg"
-                >
-                  <Link href="/ai">
-                    ייעוץ אישי
-                    <ArrowLeft className="size-4" />
-                  </Link>
-                </Button>
-              </div>
-              <a
-                className="cinematic-page-hero-scroll-cue motion-copy-item [--motion-copy-delay:230ms]"
-                data-testid="hero-scroll-cue"
-                href="#about-snapshot"
-              >
-                <span>לתמצית</span>
-                <ArrowDown className="size-4" />
-              </a>
-            </div>
-          </div>
-        </RevealSection>
-
-        <RevealSection className="glass-chrome border-b" id="about-snapshot">
-          <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-3">
-            <div className="glass-card rounded-md border p-5">
-              <p className="text-muted-foreground text-sm">שם</p>
-              <p className="mt-2 text-3xl font-semibold">Aphrodite</p>
-            </div>
-            <div className="glass-card rounded-md border p-5">
-              <p className="text-muted-foreground text-sm">כוונה</p>
-              <p className="mt-2 text-3xl font-semibold">יופי עם ביטחון</p>
-            </div>
-            <div className="glass-card rounded-md border p-5">
-              <p className="text-muted-foreground text-sm">אופי</p>
-              <p className="mt-2 text-3xl font-semibold">
-                סטודיו ישראלי מודרני
-              </p>
-            </div>
-          </div>
-        </RevealSection>
+          metrics={[
+            { label: "שם", value: "Aphrodite" },
+            { label: "כוונה", value: "יופי עם ביטחון" },
+            { label: "אופי", value: "סטודיו ישראלי מודרני" },
+          ]}
+          title="יופי שנולד ברגע שבו בחירה הופכת לביטחון."
+        />
 
         <RevealSection
           className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20"

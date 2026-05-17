@@ -1,13 +1,11 @@
 import Link from "next/link";
 import { Sparkles, WandSparkles } from "lucide-react";
 
-import { CinematicPageHero } from "~/components/cinematic-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
-import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { cinematicRouteMedia } from "~/lib/brand-media";
 import { DeferredStylistChat } from "./_components/deferred-stylist-chat";
 
 export const metadata = {
@@ -18,47 +16,33 @@ export default function StylistPage() {
   return (
     <main>
       <SiteHeader />
-      <CinematicPageHero
+      <CompactPageIntro
         actions={
           <>
-            <Button asChild size="lg">
+            <Button asChild>
               <Link href="#stylist-chat">להתחלת שיחה</Link>
             </Button>
-            <Button asChild size="lg" variant="outline">
+            <Button asChild variant="outline">
               <Link href="/search">חיפוש קטלוג</Link>
             </Button>
           </>
         }
         description="ייעוץ תכשיטים לפי סגנון, תקציב ואירוע, עם המלצות שנשארות בתוך קטלוג פעיל."
         eyebrow="Aphrodite Stylist"
-        scrollCue={{ href: "#stylist-chat", label: "לשיחה" }}
-        slides={cinematicRouteMedia.stylist}
-        stats={[
+        id="page-hero"
+        metrics={[
           { label: "התאמה", value: "AI" },
           { label: "קטלוג", value: "זמין" },
           { label: "סגנון", value: "אישי" },
         ]}
         title="סטייליסט תכשיטים"
-        variant="commerce"
       />
       <RevealSection
-        className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_360px]"
+        className="mx-auto grid max-w-7xl gap-8 px-4 py-6 sm:px-6 lg:grid-cols-[1fr_360px] lg:py-8"
         id="stylist-chat"
       >
-        <div>
-          <Badge className="mb-4" variant="secondary">
-            התאמה חכמה
-          </Badge>
-          <h2 className="text-4xl font-semibold">
-            ייעוץ תכשיטים לפי סגנון, תקציב ואירוע
-          </h2>
-          <p className="text-muted-foreground mt-3 max-w-3xl leading-7">
-            שכבת ה-AI מחוברת לקטלוג Aphrodite דרך כלי פנימי, כך שההמלצות נשארות
-            בתוך מוצרים קיימים ומוכנים להמשך עם חיפוש סמנטי ומדידה וירטואלית.
-          </p>
-          <div className="mt-8">
-            <DeferredStylistChat />
-          </div>
+        <div className="min-w-0">
+          <DeferredStylistChat />
         </div>
 
         <aside className="grid content-start gap-5" id="stylist-capabilities">

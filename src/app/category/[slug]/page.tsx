@@ -16,7 +16,7 @@ import {
   type CategoryFilters,
   type CategorySearchParams,
 } from "./_lib/category-filter-state";
-import { CinematicPageHero } from "~/components/cinematic-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -24,7 +24,6 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { EmptyState } from "~/components/ui/empty-state";
-import { getCategoryBrandSlides } from "~/lib/brand-media";
 import {
   SheetClose,
   SheetContent,
@@ -151,14 +150,13 @@ export default async function CategoryPage({
     <main>
       <SiteHeader />
 
-      <CinematicPageHero
-        className="category-page-hero"
+      <CompactPageIntro
         actions={
           <>
-            <Button asChild size="lg">
+            <Button asChild>
               <Link href="#category-products">לצפייה במוצרים</Link>
             </Button>
-            <Button asChild size="lg" variant="outline">
+            <Button asChild variant="outline">
               <Link href="#category-filters">סינון מדויק</Link>
             </Button>
           </>
@@ -168,11 +166,8 @@ export default async function CategoryPage({
           "בחירה מסוננת מתוך קטלוג התכשיטים, עם רכישה אונליין ומחירים בשקלים."
         }
         eyebrow="קטלוג Aphrodite"
-        mediaParallax={false}
-        mediaScrollMotion={false}
-        scrollCue={{ href: "#category-products", label: "למוצרים" }}
-        slides={getCategoryBrandSlides(slug)}
-        stats={[
+        id="page-hero"
+        metrics={[
           {
             label: "מוצרים מוצגים",
             value: `${filteredProducts.length}/${baseProducts.length}`,
@@ -181,7 +176,6 @@ export default async function CategoryPage({
           { label: "מיון", value: currentSortLabel },
         ]}
         title={category.name}
-        variant="commerce"
       />
 
       <div className="glass-chrome sticky top-16 z-30 border-b lg:hidden">

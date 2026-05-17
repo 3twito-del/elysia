@@ -3,14 +3,12 @@ import { Gift, MessageSquare, Sparkles } from "lucide-react";
 
 import { DeferredAiGiftPanel } from "./_components/deferred-ai-gift-panel";
 import { DeferredStylistChat } from "~/app/stylist/_components/deferred-stylist-chat";
-import { BrandMediaPanel } from "~/components/brand-media-panel";
-import { CinematicPageHero } from "~/components/cinematic-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { brandMedia, cinematicRouteMedia } from "~/lib/brand-media";
 
 export const metadata = {
   title: "כלי AI",
@@ -31,28 +29,26 @@ export default async function AiPage({ searchParams }: AiPageProps) {
   return (
     <main className="min-h-screen">
       <SiteHeader />
-      <CinematicPageHero
+      <CompactPageIntro
         actions={
           <>
-            <Button asChild size="lg">
+            <Button asChild>
               <Link href="#ai-stylist">סטייליסט AI</Link>
             </Button>
-            <Button asChild size="lg" variant="outline">
+            <Button asChild variant="outline">
               <Link href="#ai-gifts">שאלון מתנה</Link>
             </Button>
           </>
         }
         description="כלי AI מחוברים לקטלוג Aphrodite ומציגים פריטים זמינים לפי כוונה, תקציב וסגנון."
         eyebrow="Aphrodite AI"
-        scrollCue={{ href: "#ai-tools", label: "לכלי AI" }}
-        slides={cinematicRouteMedia.ai}
-        stats={[
+        id="page-hero"
+        metrics={[
           { label: "כלים", value: "2" },
           { label: "קטלוג", value: "חי" },
           { label: "התאמה", value: "אישית" },
         ]}
         title="התאמה חכמה לתכשיט"
-        variant="commerce"
       />
       <RevealSection
         className="liquid-section border-b border-[var(--glass-border)]"
@@ -66,23 +62,11 @@ export default async function AiPage({ searchParams }: AiPageProps) {
                   Aphrodite AI
                 </Badge>
                 <div className="grid gap-3">
-                  <h2 className="max-w-4xl text-2xl font-semibold tracking-normal sm:text-3xl">
-                    התאמה חכמה לתכשיט, מתנה וסגנון
+                  <h2 className="max-w-4xl text-xl font-semibold tracking-normal sm:text-2xl">
+                    בחרו כלי
                   </h2>
-                  <p className="text-muted-foreground max-w-3xl leading-7">
-                    כלי ה־AI מחוברים לקטלוג Aphrodite ומציגים פריטים זמינים מתוך
-                    המלאי, עם התאמה לפי כוונה, תקציב וסגנון.
-                  </p>
                 </div>
               </div>
-
-              <BrandMediaPanel
-                alt="סצנת תכשיטים להתאמה אישית חכמה"
-                className="h-44 sm:h-52"
-                priority
-                slides={brandMedia.ai}
-                variant="compact"
-              />
 
               <TabsList
                 className="h-auto w-fit justify-start gap-1 rounded-none border-0 bg-transparent p-0"
