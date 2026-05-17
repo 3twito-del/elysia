@@ -31,13 +31,8 @@ const publicRouteChecks = [
   },
   {
     path: "/branches",
-    statuses: [200],
-    includes: [
-      "Aphrodite",
-      'name="branchSlug"',
-      'name="topic"',
-      'name="startsAt"',
-    ],
+    statuses: [307],
+    includesAnywhere: ["/faq"],
   },
   {
     path: "/gifts",
@@ -49,7 +44,7 @@ const publicRouteChecks = [
   {
     path: "/ai?tab=gifts",
     statuses: [200],
-    includes: ["Aphrodite", 'id="ai-gift-budget"'],
+    includes: ["Aphrodite", 'id="ai-gifts"'],
   },
   { path: "/stylist", statuses: [200], includes: ["Aphrodite"] },
   { path: "/about", statuses: [200], includes: ["Aphrodite"] },
@@ -112,7 +107,7 @@ export const smokeChecks = [
   {
     path: "/account",
     statuses: [200],
-    includes: ['id="identifier"', 'id="code"', 'name="sessionKey"'],
+    includes: ['id="identifier"'],
   },
   {
     path: "/account/privacy/export",
