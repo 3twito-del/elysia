@@ -26,6 +26,17 @@ const PRODUCT_IMAGE_BLUR_DATA_URL =
   "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMCIgaGVpZ2h0PSI4Ij48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB4Mj0iMSIgeTE9IjAiIHkyPSIxIj48c3RvcCBzdG9wLWNvbG9yPSIjZjRmMGVhIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZGRkNmNjIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3QgZmlsbD0idXJsKCNnKSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjgiLz48L3N2Zz4=";
 const DEFAULT_PRODUCT_CARD_IMAGE_SIZES =
   "(min-width: 1280px) 18rem, (min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw";
+const DEFAULT_PRODUCT_CARD_IMAGE_POSITION = "50% 50%";
+const PRODUCT_CARD_IMAGE_POSITION_BY_SOURCE = [
+  {
+    source: "photo-1611652022419-a9419f74343d",
+    position: "50% 42%",
+  },
+  {
+    source: "photo-1535632066927-ab7c9ab60908",
+    position: "50% 56%",
+  },
+] as const;
 
 export function ProductCard({
   imagePriority = false,
@@ -46,6 +57,7 @@ export function ProductCard({
     ? Math.round(((compareAt - product.price) / compareAt) * 100)
     : undefined;
   const href = createProductHref(product.slug, searchContext);
+  const imageObjectPosition = getProductCardImageObjectPosition(product);
 
   return (
     <Card
@@ -73,6 +85,7 @@ export function ProductCard({
               priority={imagePriority}
               sizes={imageSizes}
               src={product.image}
+              style={{ objectPosition: imageObjectPosition }}
             />
           </KineticImageMotion>
           <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
@@ -164,6 +177,14 @@ export function ProductCard({
       </CardContent>
     </Card>
   );
+}
+
+function getProductCardImageObjectPosition(product: CatalogProduct) {
+  const focusRule = PRODUCT_CARD_IMAGE_POSITION_BY_SOURCE.find((rule) =>
+    product.image.includes(rule.source),
+  );
+
+  return focusRule?.position ?? DEFAULT_PRODUCT_CARD_IMAGE_POSITION;
 }
 
 function createProductHref(

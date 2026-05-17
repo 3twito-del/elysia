@@ -73,8 +73,6 @@ class TypesenseSearchProvider implements SearchProvider {
     const client = getTypesenseClient();
 
     if (!client) {
-      assertLocalSearchAllowed();
-
       return searchLocalProducts(input);
     }
 
@@ -119,8 +117,6 @@ class TypesenseSearchProvider implements SearchProvider {
     const products = await listCatalogProducts();
 
     if (!client) {
-      assertLocalSearchAllowed();
-
       return {
         indexed: products.length,
         engine: "local" as const,
@@ -148,7 +144,7 @@ export const searchProvider: SearchProvider = new TypesenseSearchProvider();
 let typesenseClient: Client | null = null;
 
 function getTypesenseClient() {
-  if (!env.TYPESENSE_HOST || !env.TYPESENSE_API_KEY) return null;
+  if (!hasTypesenseConfig(env)) return null;
 
   typesenseClient ??= new Client({
     nodes: [
@@ -233,15 +229,19 @@ type TypesenseSearchEnv = {
   TYPESENSE_HOST?: string;
 };
 
-export function assertLocalSearchAllowed(config: TypesenseSearchEnv = env) {
-  if (
-    config.NODE_ENV === "production" &&
-    (!config.TYPESENSE_HOST || !config.TYPESENSE_API_KEY)
-  ) {
-    throw new Error(
-      "Typesense production search requires TYPESENSE_HOST and TYPESENSE_API_KEY. Local catalog fallback is only available in development and test.",
-    );
-  }
+type ConfiguredTypesenseSearchEnv = TypesenseSearchEnv & {
+  TYPESENSE_API_KEY: string;
+  TYPESENSE_HOST: string;
+};
+
+export function shouldUseLocalSearchFallback(config: TypesenseSearchEnv = env) {
+  return !hasTypesenseConfig(config);
+}
+
+function hasTypesenseConfig(
+  config: TypesenseSearchEnv,
+): config is ConfiguredTypesenseSearchEnv {
+  return Boolean(config.TYPESENSE_HOST && config.TYPESENSE_API_KEY);
 }
 
 function sortLocalHits(hits: CatalogProduct[], input: ProductSearchInput) {

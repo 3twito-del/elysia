@@ -1,46 +1,54 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  assertLocalSearchAllowed,
+  shouldUseLocalSearchFallback,
   paginateSearchHits,
   normalizeSearchPagination,
 } from "./search";
 
 describe("search adapter config", () => {
-  it("allows the local catalog fallback outside production", () => {
-    expect(() =>
-      assertLocalSearchAllowed({
+  it("uses the local catalog fallback when Typesense credentials are absent", () => {
+    expect(
+      shouldUseLocalSearchFallback({
         NODE_ENV: "development",
         TYPESENSE_API_KEY: undefined,
         TYPESENSE_HOST: undefined,
       }),
-    ).not.toThrow();
+    ).toBe(true);
 
-    expect(() =>
-      assertLocalSearchAllowed({
+    expect(
+      shouldUseLocalSearchFallback({
         NODE_ENV: "test",
         TYPESENSE_API_KEY: undefined,
         TYPESENSE_HOST: undefined,
       }),
-    ).not.toThrow();
-  });
+    ).toBe(true);
 
-  it("blocks production search without Typesense credentials", () => {
-    expect(() =>
-      assertLocalSearchAllowed({
+    expect(
+      shouldUseLocalSearchFallback({
         NODE_ENV: "production",
         TYPESENSE_API_KEY: undefined,
         TYPESENSE_HOST: undefined,
       }),
-    ).toThrow(/Typesense production search requires/);
+    ).toBe(true);
+  });
 
-    expect(() =>
-      assertLocalSearchAllowed({
+  it("uses Typesense when production credentials are configured", () => {
+    expect(
+      shouldUseLocalSearchFallback({
         NODE_ENV: "production",
         TYPESENSE_API_KEY: "typesense-key",
         TYPESENSE_HOST: "search.example.com",
       }),
-    ).not.toThrow();
+    ).toBe(false);
+
+    expect(
+      shouldUseLocalSearchFallback({
+        NODE_ENV: "production",
+        TYPESENSE_API_KEY: "typesense-key",
+        TYPESENSE_HOST: undefined,
+      }),
+    ).toBe(true);
   });
 });
 
