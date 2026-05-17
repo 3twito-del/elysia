@@ -66,7 +66,6 @@ export default async function Home() {
         <MotionMediaFrame
           className="absolute inset-0 h-full min-h-[max(38rem,calc(100svh-4rem))] w-full bg-[var(--brand-aqua-deep)]"
           contentClassName="absolute inset-0 min-h-[max(38rem,calc(100svh-4rem))]"
-          hover
           intensity="cinematic"
           parallax
         >

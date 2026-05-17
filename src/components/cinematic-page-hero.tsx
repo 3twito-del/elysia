@@ -66,7 +66,6 @@ export function CinematicPageHero({
       <MotionMediaFrame
         className="cinematic-page-hero-media"
         contentClassName="cinematic-page-hero-media-content"
-        hover
         intensity="cinematic"
         parallax={mediaParallax}
       >

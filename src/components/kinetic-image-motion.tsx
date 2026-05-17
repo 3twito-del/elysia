@@ -10,6 +10,7 @@ type KineticImageMotionProps = {
   children: ReactNode;
   className?: string;
   intensity?: "card" | "hero" | "panel";
+  pointerMotion?: boolean;
   scrollMotion?: boolean;
 };
 
@@ -46,6 +47,7 @@ export function KineticImageMotion({
   children,
   className,
   intensity = "panel",
+  pointerMotion,
   scrollMotion = true,
 }: KineticImageMotionProps) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -59,6 +61,7 @@ export function KineticImageMotion({
     if (!root || !layer || shouldReduceMotion) return;
 
     const config = motionConfig[intensity];
+    const shouldUsePointerMotion = pointerMotion ?? intensity !== "hero";
     const scrollDepth = scrollMotion ? config.scrollDepth : 0;
     let pointerInside = false;
     let scrollFrame = 0;
@@ -128,7 +131,7 @@ export function KineticImageMotion({
     const syncScroll = () => {
       scrollFrame = 0;
 
-      if (pointerInside || !scrollDepth) return;
+      if ((shouldUsePointerMotion && pointerInside) || !scrollDepth) return;
 
       const rect = root.getBoundingClientRect();
       const viewportHeight =
@@ -147,9 +150,11 @@ export function KineticImageMotion({
       scrollFrame = window.requestAnimationFrame(syncScroll);
     };
 
-    root.addEventListener("pointerenter", onPointerEnter);
-    root.addEventListener("pointermove", onPointerMove);
-    root.addEventListener("pointerleave", onPointerLeave);
+    if (shouldUsePointerMotion) {
+      root.addEventListener("pointerenter", onPointerEnter);
+      root.addEventListener("pointermove", onPointerMove);
+      root.addEventListener("pointerleave", onPointerLeave);
+    }
 
     if (scrollDepth) {
       requestScrollSync();
@@ -158,16 +163,18 @@ export function KineticImageMotion({
     }
 
     return () => {
-      root.removeEventListener("pointerenter", onPointerEnter);
-      root.removeEventListener("pointermove", onPointerMove);
-      root.removeEventListener("pointerleave", onPointerLeave);
+      if (shouldUsePointerMotion) {
+        root.removeEventListener("pointerenter", onPointerEnter);
+        root.removeEventListener("pointermove", onPointerMove);
+        root.removeEventListener("pointerleave", onPointerLeave);
+      }
       window.removeEventListener("scroll", requestScrollSync);
       window.removeEventListener("resize", requestScrollSync);
       if (scrollFrame) window.cancelAnimationFrame(scrollFrame);
       layerAnimation?.revert();
       shineAnimation?.revert();
     };
-  }, [intensity, scrollMotion, shouldReduceMotion]);
+  }, [intensity, pointerMotion, scrollMotion, shouldReduceMotion]);
 
   return (
     <div
