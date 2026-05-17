@@ -62,7 +62,7 @@ export function ProductCard({
         className="block focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
         href={href}
       >
-        <div className="brand-product-media glass-inset bg-muted relative aspect-[4/5] overflow-hidden border-0">
+        <div className="brand-product-media glass-inset bg-muted relative aspect-[10/11] overflow-hidden border-0 sm:aspect-[4/5]">
           <KineticImageMotion intensity="card">
             <Image
               alt={product.name}
