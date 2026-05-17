@@ -8,7 +8,7 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { cinematicRouteMedia } from "~/lib/brand-media";
-import { StylistChat } from "./_components/stylist-chat";
+import { DeferredStylistChat } from "./_components/deferred-stylist-chat";
 
 export const metadata = {
   title: "סטייליסט AI",
@@ -57,7 +57,7 @@ export default function StylistPage() {
             בתוך מוצרים קיימים ומוכנים להמשך עם חיפוש סמנטי ומדידה וירטואלית.
           </p>
           <div className="mt-8">
-            <StylistChat />
+            <DeferredStylistChat />
           </div>
         </div>
 

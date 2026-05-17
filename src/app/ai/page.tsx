@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { Gift, MessageSquare, Sparkles } from "lucide-react";
 
-import { AiGiftRecommender } from "./_components/ai-gift-recommender";
-import { StylistChat } from "~/app/stylist/_components/stylist-chat";
+import { DeferredAiGiftPanel } from "./_components/deferred-ai-gift-panel";
+import { DeferredStylistChat } from "~/app/stylist/_components/deferred-stylist-chat";
 import { BrandMediaPanel } from "~/components/brand-media-panel";
 import { CinematicPageHero } from "~/components/cinematic-page-hero";
 import { RevealSection } from "~/components/reveal";
@@ -11,7 +11,6 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { brandMedia, cinematicRouteMedia } from "~/lib/brand-media";
-import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata = {
   title: "כלי AI",
@@ -108,13 +107,11 @@ export default async function AiPage({ searchParams }: AiPageProps) {
             </div>
 
             <TabsContent className="mt-0" id="ai-stylist" value="stylist">
-              <StylistChat compact />
+              <DeferredStylistChat compact />
             </TabsContent>
 
             <TabsContent className="mt-0" id="ai-gifts" value="gifts">
-              <TRPCReactProvider>
-                <AiGiftRecommender />
-              </TRPCReactProvider>
+              <DeferredAiGiftPanel />
             </TabsContent>
           </Tabs>
 
