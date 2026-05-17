@@ -11,6 +11,8 @@ import { Label } from "~/components/ui/label";
 import { StatusMessage } from "~/components/ui/status-message";
 
 const initialState: AccountActionState = {};
+const accountInputClassName = "h-12 px-4 text-base md:text-sm";
+const accountLabelClassName = "mb-2 justify-start leading-5";
 
 export function CustomerAddressForm() {
   const [state, action, pending] = useActionState(
@@ -29,11 +31,12 @@ export function CustomerAddressForm() {
         >
           <Input
             autoComplete="address-line3"
+            className={accountInputClassName}
             disabled={pending}
             id="address-label"
             maxLength={80}
             name="label"
-            placeholder="בית, עבודה או אחר"
+            placeholder="בית / עבודה"
           />
         </AddressField>
         <AddressField
@@ -45,6 +48,7 @@ export function CustomerAddressForm() {
             aria-describedby="address-recipient-error"
             aria-invalid={Boolean(fieldErrors.recipient)}
             autoComplete="name"
+            className={accountInputClassName}
             disabled={pending}
             id="address-recipient"
             maxLength={80}
@@ -62,6 +66,7 @@ export function CustomerAddressForm() {
             aria-describedby="address-phone-error"
             aria-invalid={Boolean(fieldErrors.phone)}
             autoComplete="tel"
+            className={accountInputClassName}
             dir="ltr"
             disabled={pending}
             id="address-phone"
@@ -69,7 +74,7 @@ export function CustomerAddressForm() {
             maxLength={20}
             minLength={7}
             name="phone"
-            placeholder="050-1234567"
+            placeholder="050..."
             required
           />
         </AddressField>
@@ -78,6 +83,7 @@ export function CustomerAddressForm() {
             aria-describedby="address-city-error"
             aria-invalid={Boolean(fieldErrors.city)}
             autoComplete="address-level2"
+            className={accountInputClassName}
             disabled={pending}
             id="address-city"
             maxLength={80}
@@ -95,6 +101,7 @@ export function CustomerAddressForm() {
             aria-describedby="address-street-error"
             aria-invalid={Boolean(fieldErrors.street)}
             autoComplete="street-address"
+            className={accountInputClassName}
             disabled={pending}
             id="address-street"
             maxLength={120}
@@ -112,6 +119,7 @@ export function CustomerAddressForm() {
             aria-describedby="address-postal-code-error"
             aria-invalid={Boolean(fieldErrors.postalCode)}
             autoComplete="postal-code"
+            className={accountInputClassName}
             dir="ltr"
             disabled={pending}
             id="address-postal-code"
@@ -143,8 +151,10 @@ function AddressField({
   label: string;
 }) {
   return (
-    <div className="grid gap-1.5">
-      <Label htmlFor={id}>{label}</Label>
+    <div className="grid gap-2">
+      <Label className={accountLabelClassName} htmlFor={id}>
+        {label}
+      </Label>
       {children}
       <FieldError id={`${id}-error`} message={error} />
     </div>

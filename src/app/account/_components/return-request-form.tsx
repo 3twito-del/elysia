@@ -13,6 +13,7 @@ import { StatusMessage } from "~/components/ui/status-message";
 import { Textarea } from "~/components/ui/textarea";
 
 const initialState: AccountActionState = {};
+const accountLabelClassName = "mb-2 justify-start leading-5";
 
 export function ReturnRequestForm({ orderId }: { orderId: string }) {
   const [state, action, pending] = useActionState(
@@ -25,7 +26,9 @@ export function ReturnRequestForm({ orderId }: { orderId: string }) {
     <form action={action} className="grid gap-3">
       <input name="orderId" type="hidden" value={orderId} />
       <div className="grid gap-2">
-        <Label htmlFor="return-reason">סיבת החזרה</Label>
+        <Label className={accountLabelClassName} htmlFor="return-reason">
+          סיבת החזרה
+        </Label>
         <Textarea
           aria-describedby="return-reason-error"
           aria-invalid={Boolean(fieldErrors.reason)}
@@ -34,13 +37,15 @@ export function ReturnRequestForm({ orderId }: { orderId: string }) {
           maxLength={500}
           minLength={3}
           name="reason"
-          placeholder="מידה, סגנון, פגם, או כל סיבה אחרת"
+          placeholder="מידה, סגנון או פגם"
           required
         />
         <FieldError id="return-reason-error" message={fieldErrors.reason} />
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="return-notes">הערות</Label>
+        <Label className={accountLabelClassName} htmlFor="return-notes">
+          הערות
+        </Label>
         <Textarea
           aria-describedby="return-notes-error"
           aria-invalid={Boolean(fieldErrors.notes)}

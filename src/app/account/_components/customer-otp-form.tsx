@@ -16,6 +16,8 @@ import { StatusMessage } from "~/components/ui/status-message";
 import { getOrCreateCartSessionKey } from "~/lib/cart-session";
 
 const initialState: CustomerOtpState = {};
+const accountInputClassName = "h-12 px-4 text-base md:text-sm";
+const accountLabelClassName = "mb-2 justify-start leading-5";
 
 export function CustomerOtpForm() {
   const sessionKey = useSyncExternalStore(
@@ -41,14 +43,17 @@ export function CustomerOtpForm() {
     <div className="grid gap-5">
       <form action={requestAction} className="grid gap-4">
         <div>
-          <Label htmlFor="identifier">אימייל או טלפון</Label>
+          <Label className={accountLabelClassName} htmlFor="identifier">
+            אימייל או טלפון
+          </Label>
           <Input
             autoComplete="email tel"
+            className={accountInputClassName}
             defaultValue={verificationIdentifier}
-            dir="ltr"
+            dir="auto"
             id="identifier"
             name="identifier"
-            placeholder="name@example.com או 050..."
+            placeholder="אימייל או נייד"
             required
             type="text"
           />
@@ -80,9 +85,12 @@ export function CustomerOtpForm() {
             .
           </p>
           <div>
-            <Label htmlFor="code">קוד אימות</Label>
+            <Label className={accountLabelClassName} htmlFor="code">
+              קוד אימות
+            </Label>
             <Input
               autoComplete="one-time-code"
+              className={accountInputClassName}
               dir="ltr"
               id="code"
               inputMode="numeric"

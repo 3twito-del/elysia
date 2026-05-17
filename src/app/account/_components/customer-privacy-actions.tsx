@@ -14,6 +14,8 @@ import { StatusMessage } from "~/components/ui/status-message";
 import { DELETE_CONFIRMATION_VALUE } from "~/lib/account-validation-constants";
 
 const initialState: AccountActionState = {};
+const accountInputClassName = "h-12 px-4 text-base md:text-sm";
+const accountLabelClassName = "mb-2 justify-start leading-5";
 
 export function CustomerPrivacyActions() {
   const [state, action, pending] = useActionState(
@@ -35,11 +37,14 @@ export function CustomerPrivacyActions() {
         action={action}
         className="glass-inset grid gap-3 rounded-md border p-3"
       >
-        <Label htmlFor="delete-confirmation">מחיקת נתונים</Label>
+        <Label className={accountLabelClassName} htmlFor="delete-confirmation">
+          מחיקת נתונים
+        </Label>
         <Input
           aria-describedby="delete-confirmation-error"
           aria-invalid={Boolean(confirmationError)}
           autoComplete="off"
+          className={accountInputClassName}
           disabled={pending}
           id="delete-confirmation"
           name="confirmation"
