@@ -592,6 +592,22 @@ test.describe("accessibility and responsive guardrails", () => {
 
     await expect(homeHero).toBeVisible();
     await expect(homeHero.getByRole("heading").first()).toBeVisible();
+    await expect(homeHero.locator('a[href="/ai"][data-variant="outline"]')).toBeVisible();
+    const heroOutlineButtonStyles = await homeHero
+      .locator('a[href="/ai"][data-variant="outline"]')
+      .evaluate((element) => {
+        const styles = window.getComputedStyle(element);
+
+        return {
+          backgroundColor: styles.backgroundColor,
+          color: styles.color,
+        };
+      });
+
+    expect(heroOutlineButtonStyles.color).toBe("rgb(255, 255, 255)");
+    expect(heroOutlineButtonStyles.backgroundColor).not.toBe(
+      "rgb(255, 255, 255)",
+    );
     expect(homeHeroBox?.width ?? 0).toBeGreaterThanOrEqual(
       (viewport?.width ?? 0) - 2,
     );

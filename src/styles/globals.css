@@ -811,7 +811,7 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
   box-shadow: 0 4px 14px var(--glass-shadow);
 }
 
-.glass-control {
+:where(.glass-control) {
   border-color: var(--glass-border);
   background: var(--glass-control-bg);
   box-shadow: 0 2px 8px var(--glass-shadow);
@@ -983,58 +983,6 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
 .public-motion-shell
   [data-slot="button"]:dir(rtl)[data-anchor-activating="true"]::after {
   animation-name: aqua-button-shine-rtl;
-}
-
-.public-motion-shell
-  [data-slot="button"][data-variant="outline"]:not(:disabled),
-.public-motion-shell
-  [data-slot="button"][data-variant="secondary"]:not(:disabled) {
-  border-color: rgb(66 201 190 / 22%);
-  background: var(--background);
-  color: var(--foreground);
-  box-shadow: 0 6px 16px rgb(6 56 59 / 5%);
-}
-
-.public-motion-shell
-  [data-slot="button"][data-variant="outline"]:not(:disabled):hover,
-.public-motion-shell
-  [data-slot="button"][data-variant="outline"]:not(:disabled):focus-visible,
-.public-motion-shell
-  [data-slot="button"][data-variant="secondary"]:not(:disabled):hover,
-.public-motion-shell
-  [data-slot="button"][data-variant="secondary"]:not(:disabled):focus-visible {
-  border-color: rgb(66 201 190 / 42%);
-  background: rgb(66 201 190 / 10%);
-  color: var(--brand-aqua-deep);
-  box-shadow: 0 10px 24px rgb(66 201 190 / 10%);
-}
-
-.public-motion-shell
-  [data-slot="button"][data-variant="default"]:not(:disabled) {
-  background: var(--brand-aqua);
-  color: var(--brand-aqua-deep);
-  box-shadow: 0 10px 24px rgb(66 201 190 / 12%);
-}
-
-.public-motion-shell
-  [data-slot="button"][data-variant="default"]:not(:disabled):hover,
-.public-motion-shell
-  [data-slot="button"][data-variant="default"]:not(:disabled):focus-visible {
-  background: var(--brand-aqua);
-  color: var(--brand-aqua-deep);
-  box-shadow: 0 14px 28px rgb(66 201 190 / 16%);
-}
-
-.public-motion-shell [data-slot="button"][data-variant="ghost"] {
-  box-shadow: none;
-}
-
-.public-motion-shell
-  [data-slot="button"][data-variant="ghost"]:not(:disabled):hover,
-.public-motion-shell
-  [data-slot="button"][data-variant="ghost"]:not(:disabled):focus-visible {
-  background: rgb(66 201 190 / 8%);
-  color: var(--brand-aqua-deep);
 }
 
 .public-motion-shell [data-slot="button"].product-primary-cta:not(:disabled),

@@ -26,4 +26,17 @@ describe("Button", () => {
     expect(markup).toContain("<a ");
     expect(markup).not.toContain("type=");
   });
+
+  it("lets custom outline button colors override the base variant", () => {
+    const markup = renderToStaticMarkup(
+      <Button className="bg-white/10 text-white" variant="outline">
+        Action
+      </Button>,
+    );
+
+    expect(markup).toContain("bg-white/10");
+    expect(markup).toContain("text-white");
+    expect(markup).not.toContain("bg-background");
+    expect(markup).not.toContain("text-foreground");
+  });
 });
