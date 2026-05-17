@@ -110,6 +110,10 @@
   --motion-distance-standard: 10px;
   --motion-distance-feature: 14px;
   --hover-lift: -1px;
+  --site-header-height: 4rem;
+  --anchor-scroll-offset: calc(
+    var(--site-header-height) + 1rem + env(safe-area-inset-top)
+  );
   --sidebar: oklch(1 0 0);
   --sidebar-foreground: oklch(0.11 0 0);
   --sidebar-primary: oklch(0.11 0 0);
@@ -176,6 +180,10 @@
   }
   html {
     @apply font-sans;
+    scroll-padding-top: var(--anchor-scroll-offset);
+  }
+  :where([id]) {
+    scroll-margin-top: var(--anchor-scroll-offset);
   }
   :where(
       a[href],

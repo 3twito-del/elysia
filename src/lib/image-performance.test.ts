@@ -23,7 +23,8 @@ describe("image performance guardrails", () => {
       "utf8",
     );
 
-    expect(source).toContain("relative aspect-[4/5] overflow-hidden");
+    expect(source).toContain("relative aspect-[10/11] overflow-hidden");
+    expect(source).toContain("sm:aspect-[4/5]");
     expect(source).toContain("DEFAULT_PRODUCT_CARD_IMAGE_SIZES");
     expect(source).toContain("(min-width: 1280px) 18rem");
     expect(source).toContain("(min-width: 640px) 50vw");
@@ -42,25 +43,29 @@ describe("image performance guardrails", () => {
     expect(source).toContain(
       'loading={activeImageIndex === 0 ? undefined : "lazy"}',
     );
-    expect(source).toContain('sizes="(min-width: 1024px) 50vw, 100vw"');
+    expect(source).toContain(
+      'sizes="(min-width: 1280px) 58vw, (min-width: 1024px) 54vw, 100vw"',
+    );
     expect(source).toContain('loading="lazy"');
     expect(source).toContain(
-      'sizes="(min-width: 1024px) 96px, (min-width: 640px) 20vw, 25vw"',
+      'sizes="(min-width: 1024px) 12vw, (min-width: 640px) 18vw, 24vw"',
     );
   });
 
   it("keeps category and discovery support media on explicit fixed desktop sizes", () => {
-    const files = [
-      "src/app/category/[slug]/page.tsx",
-      "src/app/gifts/page.tsx",
-    ];
-    const offenders = files.filter((file) => {
-      const source = readFileSync(path.join(process.cwd(), file), "utf8");
+    const categorySource = readFileSync(
+      path.join(process.cwd(), "src/app/category/[slug]/page.tsx"),
+      "utf8",
+    );
+    const giftsSource = readFileSync(
+      path.join(process.cwd(), "src/app/gifts/page.tsx"),
+      "utf8",
+    );
 
-      return !/\bsizes="(?:260|280)px"/.test(source);
-    });
-
-    expect(offenders).toEqual([]);
+    expect(categorySource).toContain(
+      'imageSizes="(min-width: 1280px) 18rem, (min-width: 1024px) calc((100vw - 24rem) / 2), (min-width: 640px) 50vw, 100vw"',
+    );
+    expect(giftsSource).toContain('sizes="280px"');
   });
 
   it("keeps fill-based next/image usage paired with explicit sizes", () => {

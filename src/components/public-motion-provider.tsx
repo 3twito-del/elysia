@@ -395,10 +395,10 @@ export function PublicMotionProvider({
       const eventTarget = event.target;
       if (!(eventTarget instanceof Element)) return;
 
-      const anchor = eventTarget.closest<HTMLAnchorElement>('a[href^="#"]');
+      const anchor = eventTarget.closest<HTMLAnchorElement>('a[href*="#"]');
       if (!anchor || anchor.target || anchor.hasAttribute("download")) return;
 
-      const hash = normalizeHash(anchor.getAttribute("href"));
+      const hash = normalizeSamePageHash(anchor.getAttribute("href"));
       const target = getElementByHash(hash);
       if (!target) return;
 
@@ -537,10 +537,26 @@ export function PublicMotionProvider({
   );
 }
 
-function normalizeHash(href: string | null) {
+function normalizeSamePageHash(href: string | null) {
   if (!href || href === "#") return "";
 
-  return href.startsWith("#") ? href : "";
+  if (href.startsWith("#")) return href;
+
+  try {
+    const url = new URL(href, window.location.href);
+
+    if (
+      url.origin !== window.location.origin ||
+      url.pathname !== window.location.pathname ||
+      url.search !== window.location.search
+    ) {
+      return "";
+    }
+
+    return url.hash && url.hash !== "#" ? url.hash : "";
+  } catch {
+    return "";
+  }
 }
 
 function getElementByHash(hash: string) {
