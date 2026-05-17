@@ -1,17 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-  ArrowDown,
   ArrowLeft,
   CalendarCheck,
   Gem,
-  MapPin,
   Search,
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
 
-import { BranchCard } from "~/components/branch-card";
 import {
   CinematicHeroSequence,
   type CinematicHeroSlide,
@@ -21,13 +18,12 @@ import { MetricCard } from "~/components/metric-card";
 import { MotionMediaFrame } from "~/components/motion-media-frame";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
+import { ScrollDownLottie } from "~/components/scroll-down-lottie";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { Separator } from "~/components/ui/separator";
 import { cinematicRouteMedia, getCategoryBrandSlides } from "~/lib/brand-media";
 import {
-  getCatalogBranches,
   getCatalogCategories,
   searchCatalogProducts,
 } from "~/server/services/catalog";
@@ -35,23 +31,22 @@ import {
 const heroSlides = [
   {
     alt: "טבעות יהלומים על משטח סטודיו בגוון Aphrodite Aqua",
-    src: "/brand/aphrodite-aqua-hero-rings.png",
+    src: "/brand/aphrodite-aqua-hero-rings.avif",
   },
   {
     alt: "עגילי פנינה ושרשרת על זכוכית בגוון טורקיז יוקרתי",
-    src: "/brand/aphrodite-aqua-hero-pearls.png",
+    src: "/brand/aphrodite-aqua-hero-pearls.avif",
   },
   {
     alt: "צמידים ותליון יהלום בתאורת סטודיו טורקיז ופנינה",
-    src: "/brand/aphrodite-aqua-hero-glass.png",
+    src: "/brand/aphrodite-aqua-hero-glass.avif",
   },
 ] satisfies CinematicHeroSlide[];
 
 const homeSlides = [...cinematicRouteMedia.home, ...heroSlides];
 
 export default async function Home() {
-  const [branches, categories, ringProducts] = await Promise.all([
-    getCatalogBranches(),
+  const [categories, ringProducts] = await Promise.all([
     getCatalogCategories(),
     searchCatalogProducts({ category: "rings" }),
   ]);
@@ -99,7 +94,7 @@ export default async function Home() {
             </h1>
             <p className="motion-copy-item mt-4 max-w-xl text-base leading-7 text-white/90 [--motion-copy-delay:90ms] sm:mt-5 sm:text-lg sm:leading-8">
               רשת תכשיטים ישראלית עם קו סטודיו מודרני, קטלוג אונליין מלא, זמינות
-              לפי סניף וייעוץ אישי לבחירת מתנה, טבעת או סט יומיומי.
+              לרכישה אונליין וייעוץ אישי לבחירת מתנה, טבעת או סט יומיומי.
             </p>
           </div>
         </div>
@@ -133,7 +128,7 @@ export default async function Home() {
           </div>
           <div className="motion-copy-item mt-4 flex flex-wrap justify-center gap-x-3 gap-y-2 border-t border-[rgb(185_242_236_/_0.36)] pt-3 pr-12 text-[0.7rem] font-medium text-white/90 [--motion-copy-delay:240ms] sm:mt-8 sm:justify-end sm:gap-x-6 sm:gap-y-3 sm:pt-5 sm:pr-0 sm:text-sm">
             {[
-              { icon: MapPin, label: "זמינות לפי סניף" },
+              { icon: Gem, label: "רכישה אונליין" },
               { icon: Sparkles, label: "ייעוץ אישי" },
               { icon: ShieldCheck, label: "קופה מאובטחת" },
             ].map((item) => {
@@ -147,15 +142,15 @@ export default async function Home() {
               );
             })}
           </div>
-          <a
-            className="cinematic-page-hero-scroll-cue motion-copy-item [--motion-copy-delay:310ms]"
-            data-testid="hero-scroll-cue"
-            href="#quick-search"
-          >
-            <span>חיפוש מהיר</span>
-            <ArrowDown aria-hidden="true" className="size-4" />
-          </a>
         </div>
+        <a
+          aria-label="חיפוש מהיר"
+          className="cinematic-page-hero-scroll-cue home-quick-search-cue motion-copy-item [--motion-copy-delay:310ms]"
+          data-testid="hero-scroll-cue"
+          href="#quick-search"
+        >
+          <ScrollDownLottie />
+        </a>
       </RevealSection>
 
       <RevealSection className="glass-chrome border-b" id="quick-search">
@@ -276,16 +271,16 @@ export default async function Home() {
       >
         <RevealGrid className="grid gap-5 lg:grid-cols-4" variant="compact">
           <MetricCard
-            detail="זמינות לפי סניף לפני הגעה"
-            icon={MapPin}
-            label="סניפים"
+            detail="קטלוג מלא וזמין לרכישה מהבית"
+            icon={Gem}
+            label="אונליין"
             variant="soft"
-            value="2"
+            value="100%"
           />
           <MetricCard
-            detail="איסוף, משלוח או החזרה בסניף"
+            detail="משלוח עד הבית והחזרות בתיאום"
             icon={ShieldCheck}
-            label="אומניצ׳אנל"
+            label="שירות"
             variant="soft"
             value="מלא"
           />
@@ -297,29 +292,12 @@ export default async function Home() {
             value="פעיל"
           />
           <MetricCard
-            detail="מדידה וייעוץ אישי"
+            detail="התאמה, מידה וייעוץ אישי"
             icon={CalendarCheck}
-            label="תורים"
+            label="התאמה"
             variant="soft"
             value="בתיאום"
           />
-        </RevealGrid>
-      </RevealSection>
-
-      <Separator />
-
-      <RevealSection
-        className="mx-auto max-w-7xl px-4 py-14 sm:px-6"
-        id="branches"
-      >
-        <div className="mb-8">
-          <p className="text-muted-foreground text-sm">סניפים</p>
-          <h2 className="text-3xl font-semibold">איסוף, מדידה ושירות קרוב</h2>
-        </div>
-        <RevealGrid className="grid gap-5 lg:grid-cols-2" variant="cards">
-          {branches.map((branch) => (
-            <BranchCard branch={branch} key={branch.slug} />
-          ))}
         </RevealGrid>
       </RevealSection>
     </main>

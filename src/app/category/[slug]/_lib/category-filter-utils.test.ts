@@ -26,14 +26,12 @@ describe("getCategoryFilterCounts", () => {
           stone: "pearl",
         }),
       ],
-      { branch: "tel-aviv", material: "gold" },
+      { material: "gold" },
       [750, 1500, 2000],
     );
 
-    expect(counts.branches.get("tel-aviv")).toBe(2);
-    expect(counts.branches.get("jerusalem")).toBe(1);
     expect(counts.materials.get("gold")).toBe(2);
-    expect(counts.materials.get("silver")).toBeUndefined();
+    expect(counts.materials.get("silver")).toBe(1);
     expect(counts.stones.get("diamond")).toBe(1);
     expect(counts.stones.get("pearl")).toBe(1);
     expect(counts.maxPrices.get(750)).toBe(1);
@@ -57,14 +55,14 @@ describe("getCategoryFilterCounts", () => {
           stone: "pearl",
         }),
       ],
-      { branch: "tel-aviv", material: "silver" },
+      { material: "silver", stone: "diamond" },
       [1500],
     );
 
-    expect(counts.branches.get("tel-aviv")).toBeUndefined();
-    expect(counts.branches.get("jerusalem")).toBe(1);
     expect(counts.materials.get("gold")).toBe(1);
     expect(counts.materials.get("silver")).toBeUndefined();
+    expect(counts.stones.get("diamond")).toBeUndefined();
+    expect(counts.stones.get("pearl")).toBe(1);
   });
 });
 

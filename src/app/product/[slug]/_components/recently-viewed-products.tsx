@@ -34,11 +34,11 @@ export function RecentlyViewedProducts({
   return (
     <section
       aria-labelledby="recently-viewed-products-heading"
-      className="brand-similar-section mt-8 rounded-md border p-4 sm:p-5"
+      className="border-border mx-auto mt-12 max-w-7xl border-t pt-10"
       data-testid="recently-viewed-products"
     >
       <h2
-        className="text-2xl font-semibold"
+        className="text-3xl font-semibold"
         id="recently-viewed-products-heading"
       >
         נצפו לאחרונה

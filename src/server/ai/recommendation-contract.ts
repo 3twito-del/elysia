@@ -35,7 +35,7 @@ export type AiRecommendationMissingInfo =
 export type AiStructuredRecommendationProduct = {
   slug: string;
   matchReason?: string;
-  availableBranchCount?: number;
+  availableOnline?: boolean;
   price?: number;
 };
 

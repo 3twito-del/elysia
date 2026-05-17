@@ -3,7 +3,7 @@ import { z } from "zod";
 const phonePattern = /^[\d+\-()\s]{7,20}$/u;
 
 export const createAppointmentInputSchema = z.object({
-  branchSlug: z.string().trim().min(1, "יש לבחור סניף.").max(80),
+  branchSlug: z.string().trim().min(1, "יש לבחור אפשרות שירות.").max(80),
   topic: z.string().trim().min(2, "יש להזין נושא לפגישה.").max(120),
   name: z.string().trim().min(2, "יש להזין שם מלא.").max(120),
   email: z.string().trim().email("יש להזין כתובת אימייל תקינה.").optional(),

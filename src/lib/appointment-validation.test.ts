@@ -35,7 +35,7 @@ describe("appointment validation", () => {
     expect(parsed.success).toBe(false);
     if (!parsed.success) {
       expect(getZodFieldErrors(parsed.error)).toMatchObject({
-        branchSlug: "יש לבחור סניף.",
+        branchSlug: "יש לבחור אפשרות שירות.",
         email: "יש להזין כתובת אימייל תקינה.",
         name: "יש להזין שם מלא.",
         phone: "יש להזין טלפון תקין.",

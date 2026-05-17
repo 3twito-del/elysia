@@ -311,23 +311,8 @@ export function getCatalogProductVariant(
 const getCatalogFacetsCached = unstable_cache(
   async (): Promise<CatalogFacets> => {
     const products = await listCatalogProducts();
-    const prices = products.map((product) => product.price);
 
-    return {
-      materials: getUniqueValues(products.map((product) => product.material)),
-      stones: getUniqueValues(
-        products
-          .map((product) => product.stone)
-          .filter((value): value is string => Boolean(value)),
-      ),
-      collections: getUniqueValues(
-        products.map((product) => product.collection),
-      ),
-      priceRange: {
-        min: prices.length > 0 ? Math.min(...prices) : 0,
-        max: prices.length > 0 ? Math.max(...prices) : 0,
-      },
-    };
+    return getCatalogFacetsFromProducts(products);
   },
   ["catalog:facets:v2"],
   {
@@ -339,6 +324,26 @@ const getCatalogFacetsCached = unstable_cache(
 export const getCatalogFacets = cache(
   async (): Promise<CatalogFacets> => getCatalogFacetsCached(),
 );
+
+export function getCatalogFacetsFromProducts(
+  products: CatalogProduct[],
+): CatalogFacets {
+  const prices = products.map((product) => product.price);
+
+  return {
+    materials: getUniqueValues(products.map((product) => product.material)),
+    stones: getUniqueValues(
+      products
+        .map((product) => product.stone)
+        .filter((value): value is string => Boolean(value)),
+    ),
+    collections: getUniqueValues(products.map((product) => product.collection)),
+    priceRange: {
+      min: prices.length > 0 ? Math.min(...prices) : 0,
+      max: prices.length > 0 ? Math.max(...prices) : 0,
+    },
+  };
+}
 
 export async function searchCatalogProducts(input: CatalogSearchInput = {}) {
   const products = await listCatalogProductsCachedRequest({
@@ -355,6 +360,9 @@ export function filterCatalogProducts(
   const normalizedQuery = input.query?.trim().toLowerCase();
 
   return products
+    .filter((product) =>
+      input.category ? product.categorySlug === input.category : true,
+    )
     .filter((product) => matchesCatalogSearch(product, normalizedQuery))
     .filter((product) =>
       input.material ? product.material === input.material : true,

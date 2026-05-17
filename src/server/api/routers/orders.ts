@@ -10,7 +10,7 @@ export const ordersRouter = createTRPCRouter({
     },
     {
       status: "READY_FOR_PICKUP",
-      label: "עדכון איסוף/משלוח נשלח ללקוח",
+      label: "עדכון משלוח נשלח ללקוח",
       at: "לאחר הכנה",
     },
   ]),

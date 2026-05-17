@@ -16,11 +16,10 @@ import {
   SheetTrigger,
 } from "~/components/ui/sheet";
 import type { ProductSearchInput } from "~/server/adapters/search";
-import type { CatalogBranch, CatalogCategory } from "~/server/services/catalog";
+import type { CatalogCategory } from "~/server/services/catalog";
 
 type SearchControlsProps = {
   activeFilterCount: number;
-  branches: CatalogBranch[];
   categories: CatalogCategory[];
   clearFiltersHref: string;
   input: ProductSearchInput;
@@ -31,7 +30,6 @@ const searchSelectClassName =
 
 export function SearchControls({
   activeFilterCount,
-  branches,
   categories,
   clearFiltersHref,
   input,
@@ -41,14 +39,10 @@ export function SearchControls({
       <form
         action="/search"
         aria-label="חיפוש בקטלוג"
-        className="glass-panel mt-6 hidden gap-3 rounded-md border p-3 md:grid lg:grid-cols-[1fr_repeat(4,160px)_120px]"
+        className="glass-panel mt-6 hidden gap-3 rounded-md border p-3 md:grid lg:grid-cols-[1fr_repeat(3,160px)_120px]"
         role="search"
       >
-        <SearchFields
-          branches={branches}
-          categories={categories}
-          input={input}
-        />
+        <SearchFields categories={categories} input={input} />
         <PreservedFacetInputs input={input} />
         <Button className="h-12 gap-2" type="submit">
           <Search aria-hidden="true" className="size-4" />
@@ -116,7 +110,7 @@ export function SearchControls({
             <SheetHeader className="border-b border-[var(--glass-border)] pe-12 text-right">
               <SheetTitle>סינון תוצאות</SheetTitle>
               <SheetDescription>
-                עדכני קטגוריה, סניף, תקציב ומיון בלי להעמיס על המסך.
+                עדכני קטגוריה, תקציב ומיון בלי להעמיס על המסך.
               </SheetDescription>
             </SheetHeader>
             <form
@@ -125,11 +119,7 @@ export function SearchControls({
               className="grid gap-3 p-4"
               role="search"
             >
-              <SearchFields
-                branches={branches}
-                categories={categories}
-                input={input}
-              />
+              <SearchFields categories={categories} input={input} />
               <PreservedFacetInputs input={input} />
               <div className="grid grid-cols-2 gap-2 pt-1">
                 <Button type="submit">הצגת תוצאות</Button>
@@ -148,11 +138,9 @@ export function SearchControls({
 }
 
 function SearchFields({
-  branches,
   categories,
   input,
 }: {
-  branches: CatalogBranch[];
   categories: CatalogCategory[];
   input: ProductSearchInput;
 }) {
@@ -175,19 +163,6 @@ function SearchFields({
         {categories.map((category) => (
           <option key={category.slug} value={category.slug}>
             {category.name}
-          </option>
-        ))}
-      </select>
-      <select
-        aria-label="סינון לפי סניף"
-        className={searchSelectClassName}
-        defaultValue={input.branch}
-        name="branch"
-      >
-        <option value="">כל הסניפים</option>
-        {branches.map((branch) => (
-          <option key={branch.slug} value={branch.slug}>
-            {branch.name}
           </option>
         ))}
       </select>
@@ -220,7 +195,6 @@ function PreservedSearchInputs({ input }: { input: ProductSearchInput }) {
   return (
     <>
       <PreservedInput name="category" value={input.category} />
-      <PreservedInput name="branch" value={input.branch} />
       <PreservedInput name="material" value={input.material} />
       <PreservedInput name="stone" value={input.stone} />
       <PreservedInput name="collection" value={input.collection} />

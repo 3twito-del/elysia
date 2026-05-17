@@ -16,12 +16,7 @@ export type AiRecommendedProductInput = {
   shortDescription?: string;
   description?: string;
   inventory?: Record<string, number | undefined>;
-  availableBranchCount?: number;
-  availableBranches?: readonly {
-    name: string;
-    city?: string;
-    quantity?: number;
-  }[];
+  availableOnline?: boolean;
 };
 
 export type AiRecommendedProduct = {
@@ -35,12 +30,7 @@ export type AiRecommendedProduct = {
   stone?: string;
   matchReason?: string;
   description: string;
-  availableBranchCount?: number;
-  availableBranches: readonly {
-    name: string;
-    city?: string;
-    quantity?: number;
-  }[];
+  availableOnline?: boolean;
 };
 
 export function normalizeAiRecommendedProducts(
@@ -57,8 +47,6 @@ export function normalizeAiRecommendedProducts(
   return Array.from(uniqueProducts.values())
     .slice(0, AI_RECOMMENDATION_LIMIT)
     .map((product, index): AiRecommendedProduct => {
-      const availableBranches = product.availableBranches ?? [];
-
       return {
         slug: product.slug,
         href: createAiProductHref(product.slug, source, index),
@@ -74,10 +62,8 @@ export function normalizeAiRecommendedProducts(
         stone: product.stone,
         matchReason: product.matchReason,
         description: product.description ?? product.shortDescription ?? "",
-        availableBranchCount:
-          product.availableBranchCount ??
-          getAvailableBranchCount(product.inventory),
-        availableBranches,
+        availableOnline:
+          product.availableOnline ?? getInventoryAvailability(product.inventory),
       };
     });
 }
@@ -95,11 +81,10 @@ export function createAiProductHref(
   return `/product/${slug}?${params.toString()}`;
 }
 
-function getAvailableBranchCount(
+function getInventoryAvailability(
   inventory?: Record<string, number | undefined>,
 ) {
   if (!inventory) return undefined;
 
-  return Object.values(inventory).filter((quantity) => (quantity ?? 0) > 0)
-    .length;
+  return Object.values(inventory).some((quantity) => (quantity ?? 0) > 0);
 }

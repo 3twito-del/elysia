@@ -1,32 +1,29 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  Check,
-  Filter,
-  Gem,
-  MapPin,
-  SlidersHorizontal,
-  Sparkles,
-  X,
-} from "lucide-react";
+import { Filter, Gem, SlidersHorizontal, Sparkles, X } from "lucide-react";
 
 import { CategoryFilterSheet } from "./_components/category-filter-sheet";
+import { DeferredCategoryFilterPanel } from "./_components/deferred-category-filter-panel";
 import {
-  getCategoryFilterCounts,
-  type CategoryFilterCounts,
-} from "./_lib/category-filter-utils";
+  createCategoryFilterQueryString,
+  createCategoryPageHref,
+  getCategoryRouteState,
+  getFirstParam as getCategoryFirstParam,
+  getValidPage as getValidCategoryPage,
+  productsPerPage,
+  sortCategoryProducts as sortCategoryRouteProducts,
+  type CategoryFilters,
+  type CategorySearchParams,
+} from "./_lib/category-filter-state";
 import { CinematicPageHero } from "~/components/cinematic-page-hero";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
-import { Button, buttonVariants } from "~/components/ui/button";
+import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { EmptyState } from "~/components/ui/empty-state";
-import { Separator } from "~/components/ui/separator";
 import { getCategoryBrandSlides } from "~/lib/brand-media";
 import {
   SheetClose,
@@ -36,61 +33,41 @@ import {
   SheetTitle,
 } from "~/components/ui/sheet";
 import {
-  formatPrice,
-  getCatalogBranches,
   getCatalogCategories,
-  getCatalogCategoryBySlug,
-  getCatalogFacets,
-  searchCatalogProducts,
-  type CatalogBranch,
-  type CatalogCategory,
-  type CatalogProduct,
+  getCatalogFacetsFromProducts,
+  listCatalogProductsCachedRequest,
 } from "~/server/services/catalog";
-import { cn } from "~/lib/utils";
 
 type CategoryRouteProps = {
   params: Promise<{ slug: string }>;
-};
-
-type CategorySearchParams = {
-  branch?: string | string[];
-  material?: string | string[];
-  stone?: string | string[];
-  maxPrice?: string | string[];
-  sort?: string | string[];
-  page?: string | string[];
 };
 
 type CategoryPageProps = CategoryRouteProps & {
   searchParams: Promise<CategorySearchParams>;
 };
 
-type CategorySort = "popular" | "price-asc" | "price-desc" | "newest";
-
-type CategoryFilters = {
-  branch?: string;
-  material?: string;
-  stone?: string;
-  maxPrice?: number;
-  sort: CategorySort;
+export const revalidate = 3600;
+const categoryMetadataBySlug: Record<
+  string,
+  { description: string; title: string }
+> = {
+  bracelets: {
+    description: "צמידים וצמידי טניס מודרניים, בזהב, כסף ופנינים.",
+    title: "צמידים",
+  },
+  earrings: {
+    description: "עגילים עדינים, תלויים וסטים משלימים לכל יום ולאירועים.",
+    title: "עגילים",
+  },
+  necklaces: {
+    description: "שרשראות עדינות, תליונים וסטים משלימים.",
+    title: "שרשראות",
+  },
+  rings: {
+    description: "טבעות זהב, יהלומים ואבני חן ליום יום ולאירועים.",
+    title: "טבעות",
+  },
 };
-
-type ActiveFilter = {
-  key: keyof CategoryFilters;
-  label: string;
-  href: string;
-};
-
-const productsPerPage = 9;
-const priceOptions = [750, 1000, 1500] as const;
-const defaultCategorySort = "popular" satisfies CategorySort;
-const sortOptions = [
-  { value: "popular", label: "פופולריות" },
-  { value: "price-asc", label: "מחיר: מנמוך לגבוה" },
-  { value: "price-desc", label: "מחיר: מגבוה לנמוך" },
-  { value: "newest", label: "מחדשים לישנים" },
-] as const satisfies ReadonlyArray<{ value: CategorySort; label: string }>;
-
 export async function generateStaticParams() {
   const categories = await getCatalogCategories();
 
@@ -101,10 +78,10 @@ export async function generateMetadata({
   params,
 }: CategoryRouteProps): Promise<Metadata> {
   const { slug } = await params;
-  const category = await getCatalogCategoryBySlug(slug);
+  const category = categoryMetadataBySlug[slug];
 
   return {
-    title: category?.name ?? "קטגוריה",
+    title: category?.title ?? "קטגוריה",
     description: category?.description,
   };
 }
@@ -115,44 +92,39 @@ export default async function CategoryPage({
 }: CategoryPageProps) {
   const { slug } = await params;
   const query = await searchParams;
-  const [categories, branches, category, facets] = await Promise.all([
+  const [categories, catalogProducts] = await Promise.all([
     getCatalogCategories(),
-    getCatalogBranches(),
-    getCatalogCategoryBySlug(slug),
-    getCatalogFacets(),
+    listCatalogProductsCachedRequest(),
   ]);
+  const category = categories.find((item) => item.slug === slug);
 
   if (!category) {
     notFound();
   }
 
-  const filters = parseCategoryFilters(query, {
-    branches,
-    materialOptions: facets.materials,
-    stoneOptions: facets.stones,
+  const facets = getCatalogFacetsFromProducts(catalogProducts);
+  const categoryState = getCategoryRouteState({
+    catalogProducts,
+    categories,
+    facets,
+    query,
+    slug,
   });
-  const [baseProducts, filteredProducts, categoryCounts] = await Promise.all([
-    searchCatalogProducts({ category: slug }),
-    searchCatalogProducts({
-      category: slug,
-      branch: filters.branch,
-      material: filters.material,
-      stone: filters.stone,
-      maxPrice: filters.maxPrice,
-    }),
-    getCategoryCounts(categories, filters),
-  ]);
-  const activeFilters = getActiveFilters(slug, filters, branches);
-  const activeFilterCount = activeFilters.length;
-  const filterCounts = getCategoryFilterCounts(
+  const {
+    activeFilterCount,
+    activeFilters,
     baseProducts,
+    currentSortLabel,
+    filteredProducts,
     filters,
-    priceOptions,
+    resetHref,
+  } = categoryState;
+  const filterQueryString = createCategoryFilterQueryString(query);
+  const requestedPage = getValidCategoryPage(getCategoryFirstParam(query.page));
+  const sortedProducts = sortCategoryRouteProducts(
+    filteredProducts,
+    filters.sort,
   );
-  const resetHref = createCategoryHref(slug, {});
-  const requestedPage = getValidPage(getFirstParam(query.page));
-  const sortedProducts = sortCategoryProducts(filteredProducts, filters.sort);
-  const currentSortLabel = getCategorySortLabel(filters.sort);
   const totalPages = Math.max(
     1,
     Math.ceil(sortedProducts.length / productsPerPage),
@@ -180,6 +152,7 @@ export default async function CategoryPage({
       <SiteHeader />
 
       <CinematicPageHero
+        className="category-page-hero"
         actions={
           <>
             <Button asChild size="lg">
@@ -192,9 +165,11 @@ export default async function CategoryPage({
         }
         description={
           category.description ??
-          "בחירה מסוננת מתוך קטלוג התכשיטים, עם זמינות סניפים ומחירים בשקלים."
+          "בחירה מסוננת מתוך קטלוג התכשיטים, עם רכישה אונליין ומחירים בשקלים."
         }
         eyebrow="קטלוג Aphrodite"
+        mediaParallax={false}
+        mediaScrollMotion={false}
         scrollCue={{ href: "#category-products", label: "למוצרים" }}
         slides={getCategoryBrandSlides(slug)}
         stats={[
@@ -202,71 +177,12 @@ export default async function CategoryPage({
             label: "מוצרים מוצגים",
             value: `${filteredProducts.length}/${baseProducts.length}`,
           },
-          { label: "סניפים", value: String(branches.length) },
+          { label: "אונליין", value: "זמין" },
           { label: "מיון", value: currentSortLabel },
         ]}
         title={category.name}
         variant="commerce"
       />
-
-      <RevealSection aria-hidden="true" className="hidden" variant="none">
-        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:py-10">
-          <div className="glass-panel grid gap-6 rounded-md border p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-stretch">
-            <div>
-              <Badge className="mb-4" variant="secondary">
-                קטלוג Aphrodite
-              </Badge>
-              <div className="flex flex-wrap items-end gap-3">
-                <h2 className="text-3xl font-semibold sm:text-4xl">
-                  {category.name}
-                </h2>
-                <span className="text-muted-foreground pb-1 text-sm">
-                  {filteredProducts.length} מתוך {baseProducts.length} מוצרים
-                </span>
-              </div>
-              <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
-                {category.description ??
-                  "בחירה מסוננת מתוך קטלוג התכשיטים, עם זמינות סניפים ומחירים בשקלים."}
-              </p>
-            </div>
-
-            <div className="grid gap-4">
-              <div className="bg-muted relative h-36 overflow-hidden rounded-md border border-[var(--glass-border)]">
-                <Image
-                  alt=""
-                  className="media-color-rich object-cover"
-                  fill
-                  sizes="280px"
-                  src={getCategoryBrandSlides(slug)[0]!.src}
-                />
-                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(255,255,255,0.5),rgba(66,201,190,0.08))]" />
-              </div>
-              <div className="flex flex-wrap gap-2 lg:justify-end">
-                {activeFilters.length > 0 ? (
-                  activeFilters.map((filter) => (
-                    <Badge
-                      asChild
-                      className="h-7 gap-1 pr-2 pl-1"
-                      key={filter.key}
-                      variant="outline"
-                    >
-                      <Link href={filter.href} scroll={false}>
-                        <span>{filter.label}</span>
-                        <X aria-hidden="true" className="size-3" />
-                        <span className="sr-only">הסרת פילטר</span>
-                      </Link>
-                    </Badge>
-                  ))
-                ) : (
-                  <Badge className="h-7" variant="outline">
-                    ללא פילטרים פעילים
-                  </Badge>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </RevealSection>
 
       <div className="glass-chrome sticky top-16 z-30 border-b lg:hidden">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
@@ -310,20 +226,12 @@ export default async function CategoryPage({
                 </SheetDescription>
               </SheetHeader>
               <div className="p-4">
-                <FilterPanel
+                <DeferredCategoryFilterPanel
                   activeFilterCount={activeFilterCount}
-                  activeFilters={activeFilters}
-                  branches={branches}
-                  categories={categories}
-                  categoryCounts={categoryCounts}
                   closeOnSelect
-                  filterCounts={filterCounts}
-                  filters={filters}
-                  materialOptions={facets.materials}
+                  queryString={filterQueryString}
                   resetHref={resetHref}
-                  sortOptions={sortOptions}
                   slug={slug}
-                  stoneOptions={facets.stones}
                 />
               </div>
               <div className="bg-popover sticky bottom-0 grid grid-cols-2 gap-2 border-t border-[var(--glass-border)] p-4">
@@ -359,19 +267,11 @@ export default async function CategoryPage({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <FilterPanel
+              <DeferredCategoryFilterPanel
                 activeFilterCount={activeFilterCount}
-                activeFilters={activeFilters}
-                branches={branches}
-                categories={categories}
-                categoryCounts={categoryCounts}
-                filterCounts={filterCounts}
-                filters={filters}
-                materialOptions={facets.materials}
+                queryString={filterQueryString}
                 resetHref={resetHref}
-                sortOptions={sortOptions}
                 slug={slug}
-                stoneOptions={facets.stones}
               />
             </CardContent>
           </Card>
@@ -535,530 +435,6 @@ function CategoryEmptyState({
   );
 }
 
-function FilterPanel({
-  slug,
-  filters,
-  activeFilters,
-  categories,
-  branches,
-  materialOptions,
-  stoneOptions,
-  categoryCounts,
-  filterCounts,
-  activeFilterCount,
-  resetHref,
-  sortOptions,
-  closeOnSelect = false,
-}: {
-  slug: string;
-  filters: CategoryFilters;
-  activeFilters: ActiveFilter[];
-  categories: CatalogCategory[];
-  branches: CatalogBranch[];
-  materialOptions: string[];
-  stoneOptions: string[];
-  categoryCounts: Map<string, number>;
-  filterCounts: CategoryFilterCounts;
-  activeFilterCount: number;
-  resetHref: string;
-  sortOptions: ReadonlyArray<{ value: CategorySort; label: string }>;
-  closeOnSelect?: boolean;
-}) {
-  return (
-    <div className="grid gap-5 text-sm">
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-muted-foreground text-xs">
-          {activeFilterCount > 0
-            ? `${activeFilterCount} בחירות פעילות`
-            : "בחירה נקייה"}
-        </p>
-        {activeFilterCount > 0 && (
-          <FilterActionLink
-            closeOnSelect={closeOnSelect}
-            href={resetHref}
-            variant="ghost"
-          >
-            איפוס
-          </FilterActionLink>
-        )}
-      </div>
-
-      {activeFilters.length > 0 && (
-        <div aria-label="בחירות פעילות" className="flex flex-wrap gap-2">
-          {activeFilters.map((filter) => (
-            <FilterActionLink
-              className="h-auto max-w-full gap-1 px-2 py-1 text-xs whitespace-normal"
-              closeOnSelect={closeOnSelect}
-              href={filter.href}
-              key={filter.key}
-            >
-              <span className="min-w-0 truncate">{filter.label}</span>
-              <X aria-hidden="true" className="size-3" />
-            </FilterActionLink>
-          ))}
-        </div>
-      )}
-
-      <FilterSection title="מיון">
-        {sortOptions.map((option) => {
-          const active = filters.sort === option.value;
-
-          return (
-            <FilterOptionLink
-              active={active}
-              closeOnSelect={closeOnSelect}
-              href={createCategoryHref(slug, {
-                ...filters,
-                sort: active ? defaultCategorySort : option.value,
-              })}
-              key={option.value}
-              label={option.label}
-            />
-          );
-        })}
-      </FilterSection>
-
-      <Separator />
-
-      <FilterSection title="קטגוריה">
-        {categories.map((item) => {
-          const active = item.slug === slug;
-          const count = categoryCounts.get(item.slug) ?? 0;
-
-          return (
-            <FilterOptionLink
-              active={active}
-              closeOnSelect={closeOnSelect}
-              disabled={!active && count === 0}
-              href={createCategoryHref(item.slug, filters)}
-              key={item.slug}
-              label={item.name}
-              meta={getFilterCountLabel(count)}
-            />
-          );
-        })}
-      </FilterSection>
-
-      <Separator />
-
-      <FilterSection title="זמינות">
-        {branches.map((branch) => {
-          const active = filters.branch === branch.slug;
-          const count = filterCounts.branches.get(branch.slug) ?? 0;
-
-          return (
-            <FilterOptionLink
-              active={active}
-              closeOnSelect={closeOnSelect}
-              disabled={!active && count === 0}
-              href={createCategoryHref(slug, {
-                ...filters,
-                branch: active ? undefined : branch.slug,
-              })}
-              icon={<MapPin aria-hidden="true" className="size-3.5" />}
-              key={branch.slug}
-              label={branch.city}
-              meta={getFilterCountLabel(count)}
-            />
-          );
-        })}
-      </FilterSection>
-
-      <Separator />
-
-      <FilterSection title="חומר">
-        {materialOptions.map((material) => {
-          const active = filters.material === material;
-          const count = filterCounts.materials.get(material) ?? 0;
-
-          return (
-            <FilterOptionLink
-              active={active}
-              closeOnSelect={closeOnSelect}
-              disabled={!active && count === 0}
-              href={createCategoryHref(slug, {
-                ...filters,
-                material: active ? undefined : material,
-              })}
-              key={material}
-              label={material}
-              meta={getFilterCountLabel(count)}
-            />
-          );
-        })}
-      </FilterSection>
-
-      <FilterSection title="אבן">
-        {stoneOptions.map((stone) => {
-          const active = filters.stone === stone;
-          const count = filterCounts.stones.get(stone) ?? 0;
-
-          return (
-            <FilterOptionLink
-              active={active}
-              closeOnSelect={closeOnSelect}
-              disabled={!active && count === 0}
-              href={createCategoryHref(slug, {
-                ...filters,
-                stone: active ? undefined : stone,
-              })}
-              key={stone}
-              label={stone}
-              meta={getFilterCountLabel(count)}
-            />
-          );
-        })}
-      </FilterSection>
-
-      <Separator />
-
-      <FilterSection title="מחיר">
-        {priceOptions.map((price) => {
-          const active = filters.maxPrice === price;
-          const count = filterCounts.maxPrices.get(price) ?? 0;
-
-          return (
-            <FilterOptionLink
-              active={active}
-              closeOnSelect={closeOnSelect}
-              disabled={!active && count === 0}
-              href={createCategoryHref(slug, {
-                ...filters,
-                maxPrice: active ? undefined : price,
-              })}
-              key={price}
-              label={`עד ${formatPrice(price)}`}
-              meta={getFilterCountLabel(count)}
-            />
-          );
-        })}
-      </FilterSection>
-    </div>
-  );
-}
-
-function FilterSection({
-  title,
-  children,
-}: {
-  title: string;
-  children: ReactNode;
-}) {
-  return (
-    <section className="grid gap-2" aria-label={title}>
-      <p className="font-medium">{title}</p>
-      <div className="grid gap-1">{children}</div>
-    </section>
-  );
-}
-
-function FilterOptionLink({
-  href,
-  label,
-  meta,
-  icon,
-  active,
-  closeOnSelect,
-  disabled = false,
-}: {
-  href: string;
-  label: string;
-  meta?: string;
-  icon?: ReactNode;
-  active?: boolean;
-  closeOnSelect?: boolean;
-  disabled?: boolean;
-}) {
-  const className = cn(
-    buttonVariants({
-      size: "sm",
-      variant: active ? "secondary" : "ghost",
-    }),
-    "h-auto min-h-10 w-full justify-between border px-3 py-2 text-right whitespace-normal",
-    active &&
-      "border-[var(--glass-border-strong)] bg-[var(--glass-inset-bg)] shadow-[inset_0_0_0_1px_var(--glass-border-strong)]",
-    disabled && "cursor-not-allowed opacity-45",
-  );
-  const content = (
-    <>
-      <span className="flex min-w-0 items-center gap-2">
-        {icon}
-        <span className="min-w-0 truncate">{label}</span>
-      </span>
-      <span className="flex shrink-0 items-center gap-2">
-        {meta && <span className="text-muted-foreground text-xs">{meta}</span>}
-        {active && <Check aria-hidden="true" className="size-3.5" />}
-      </span>
-    </>
-  );
-
-  if (disabled) {
-    return (
-      <span
-        aria-disabled="true"
-        className={className}
-        data-disabled="true"
-        title="אין תוצאות זמינות"
-      >
-        {content}
-      </span>
-    );
-  }
-
-  const link = (
-    <Link
-      aria-current={active ? "page" : undefined}
-      className={cn(
-        className,
-        "focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none",
-      )}
-      data-state={active ? "checked" : "unchecked"}
-      href={href}
-      scroll={false}
-    >
-      {content}
-    </Link>
-  );
-
-  if (closeOnSelect) {
-    return <SheetClose asChild>{link}</SheetClose>;
-  }
-
-  return link;
-}
-
-function FilterActionLink({
-  href,
-  children,
-  className,
-  closeOnSelect,
-  variant = "outline",
-}: {
-  href: string;
-  children: ReactNode;
-  className?: string;
-  closeOnSelect?: boolean;
-  variant?: "outline" | "ghost";
-}) {
-  const link = (
-    <Link
-      className={cn(buttonVariants({ size: "sm", variant }), className)}
-      href={href}
-      scroll={false}
-    >
-      {children}
-    </Link>
-  );
-
-  if (closeOnSelect) {
-    return <SheetClose asChild>{link}</SheetClose>;
-  }
-
-  return link;
-}
-
-function parseCategoryFilters(
-  searchParams: CategorySearchParams,
-  options: {
-    branches: CatalogBranch[];
-    materialOptions: string[];
-    stoneOptions: string[];
-  },
-): CategoryFilters {
-  const branch = getFirstParam(searchParams.branch);
-  const material = getFirstParam(searchParams.material);
-  const stone = getFirstParam(searchParams.stone);
-  const maxPrice = getFirstParam(searchParams.maxPrice);
-  const sort = getFirstParam(searchParams.sort);
-
-  return {
-    branch: options.branches.some((item) => item.slug === branch)
-      ? branch
-      : undefined,
-    material:
-      material && options.materialOptions.includes(material)
-        ? material
-        : undefined,
-    stone: stone && options.stoneOptions.includes(stone) ? stone : undefined,
-    maxPrice: getValidMaxPrice(maxPrice),
-    sort: getValidCategorySort(sort),
-  };
-}
-
-function getActiveFilters(
-  slug: string,
-  filters: CategoryFilters,
-  branches: CatalogBranch[],
-) {
-  const selectedBranch = branches.find(
-    (branch) => branch.slug === filters.branch,
-  );
-  const activeFilters: ActiveFilter[] = [];
-
-  if (selectedBranch) {
-    activeFilters.push({
-      key: "branch",
-      label: `זמינות: ${selectedBranch.city}`,
-      href: createCategoryHref(slug, { ...filters, branch: undefined }),
-    });
-  }
-
-  if (filters.material) {
-    activeFilters.push({
-      key: "material",
-      label: `חומר: ${filters.material}`,
-      href: createCategoryHref(slug, { ...filters, material: undefined }),
-    });
-  }
-
-  if (filters.stone) {
-    activeFilters.push({
-      key: "stone",
-      label: `אבן: ${filters.stone}`,
-      href: createCategoryHref(slug, { ...filters, stone: undefined }),
-    });
-  }
-
-  if (filters.maxPrice) {
-    activeFilters.push({
-      key: "maxPrice",
-      label: `עד ${formatPrice(filters.maxPrice)}`,
-      href: createCategoryHref(slug, { ...filters, maxPrice: undefined }),
-    });
-  }
-
-  if (filters.sort !== defaultCategorySort) {
-    activeFilters.push({
-      key: "sort",
-      label: `מיון: ${getCategorySortLabel(filters.sort)}`,
-      href: createCategoryHref(slug, {
-        ...filters,
-        sort: defaultCategorySort,
-      }),
-    });
-  }
-
-  return activeFilters;
-}
-
-function getFilterCountLabel(count: number) {
-  if (count === 1) return "מוצר אחד";
-
-  return `${count} מוצרים`;
-}
-
-function createCategoryHref(slug: string, filters: Partial<CategoryFilters>) {
-  const params = new URLSearchParams();
-
-  if (filters.branch) params.set("branch", filters.branch);
-  if (filters.material) params.set("material", filters.material);
-  if (filters.stone) params.set("stone", filters.stone);
-  if (filters.maxPrice) params.set("maxPrice", String(filters.maxPrice));
-  if (filters.sort && filters.sort !== defaultCategorySort) {
-    params.set("sort", filters.sort);
-  }
-
-  const query = params.toString();
-
-  return query ? `/category/${slug}?${query}` : `/category/${slug}`;
-}
-
-function createCategoryPageHref(
-  slug: string,
-  filters: CategoryFilters,
-  page: number,
-) {
-  const params = new URLSearchParams();
-
-  if (filters.branch) params.set("branch", filters.branch);
-  if (filters.material) params.set("material", filters.material);
-  if (filters.stone) params.set("stone", filters.stone);
-  if (filters.maxPrice) params.set("maxPrice", String(filters.maxPrice));
-  if (filters.sort !== defaultCategorySort) params.set("sort", filters.sort);
-  if (page > 1) params.set("page", String(page));
-
-  const query = params.toString();
-
-  return query ? `/category/${slug}?${query}` : `/category/${slug}`;
-}
-
-function getFirstParam(value?: string | string[]) {
-  if (Array.isArray(value)) return value[0];
-
-  return value;
-}
-
-function getValidMaxPrice(value?: string) {
-  const parsed = Number(value);
-
-  return priceOptions.find((price) => price === parsed);
-}
-
-function getValidCategorySort(value?: string): CategorySort {
-  return sortOptions.some((option) => option.value === value)
-    ? (value as CategorySort)
-    : defaultCategorySort;
-}
-
-function getCategorySortLabel(sort: CategorySort) {
-  return (
-    sortOptions.find((option) => option.value === sort)?.label ??
-    sortOptions[0].label
-  );
-}
-
-function getValidPage(value?: string) {
-  const parsed = Number(value);
-
-  if (!Number.isInteger(parsed) || parsed < 1) return 1;
-
-  return parsed;
-}
-
-function sortCategoryProducts(products: CatalogProduct[], sort: CategorySort) {
-  const sorted = [...products];
-
-  if (sort === "price-asc") {
-    return sorted.sort(
-      (first, second) =>
-        first.price - second.price ||
-        getProductCreatedAtTime(second) - getProductCreatedAtTime(first),
-    );
-  }
-
-  if (sort === "price-desc") {
-    return sorted.sort(
-      (first, second) =>
-        second.price - first.price ||
-        getProductCreatedAtTime(second) - getProductCreatedAtTime(first),
-    );
-  }
-
-  if (sort === "newest") {
-    return sorted.sort(
-      (first, second) =>
-        getProductCreatedAtTime(second) - getProductCreatedAtTime(first),
-    );
-  }
-
-  return sorted.sort(
-    (first, second) =>
-      (second.popularityScore ?? 0) - (first.popularityScore ?? 0) ||
-      getProductCreatedAtTime(second) - getProductCreatedAtTime(first),
-  );
-}
-
-function getProductCreatedAtTime(product: CatalogProduct) {
-  if (product.createdAt instanceof Date) return product.createdAt.getTime();
-  if (typeof product.createdAt === "string") {
-    const parsed = Date.parse(product.createdAt);
-
-    return Number.isNaN(parsed) ? 0 : parsed;
-  }
-
-  return 0;
-}
-
 function CategoryPagination({
   slug,
   filters,
@@ -1167,25 +543,4 @@ function getPaginationPages(currentPage: number, totalPages: number) {
   }
 
   return result;
-}
-
-async function getCategoryCounts(
-  categories: CatalogCategory[],
-  filters: CategoryFilters,
-) {
-  const entries = await Promise.all(
-    categories.map(async (category) => {
-      const products = await searchCatalogProducts({
-        category: category.slug,
-        branch: filters.branch,
-        material: filters.material,
-        maxPrice: filters.maxPrice,
-        stone: filters.stone,
-      });
-
-      return [category.slug, products.length] as const;
-    }),
-  );
-
-  return new Map(entries);
 }

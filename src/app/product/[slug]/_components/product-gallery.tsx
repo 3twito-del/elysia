@@ -64,19 +64,19 @@ export function ProductGallery({
 
   if (!activeImage) {
     return (
-      <div className={cn("grid gap-3", className)}>
+      <div className={cn("grid gap-4", className)}>
         <div
-          className="glass-inset bg-muted flex aspect-square items-center justify-center rounded-md border p-6 text-center"
+          className="border-border bg-card flex aspect-[4/5] items-center justify-center rounded-md border p-8 text-center sm:aspect-[5/4] lg:aspect-[4/3]"
           data-testid="product-gallery-empty"
         >
-          <div className="grid justify-items-center gap-3">
-            <span className="brand-icon-well glass-inset flex size-12 items-center justify-center rounded-md border">
+          <div className="grid justify-items-center gap-4">
+            <span className="border-border flex size-12 items-center justify-center rounded-full border">
               <ImageOff className="size-5" aria-hidden="true" />
             </span>
             <div>
               <p className="font-medium">תמונת מוצר תעלה בקרוב</p>
-              <p className="text-muted-foreground mt-1 text-sm">
-                פרטי המוצר והזמינות עדיין מוצגים בעמוד.
+              <p className="text-muted-foreground mt-2 text-sm">
+                פרטי המוצר, המחיר והזמינות עדיין מוצגים בעמוד.
               </p>
             </div>
           </div>
@@ -88,19 +88,11 @@ export function ProductGallery({
   return (
     <div
       aria-label={`גלריית מוצר עבור ${productName}`}
-      className={cn("grid gap-3", className)}
+      className={cn("grid gap-4", className)}
       role="group"
     >
-      <div className="flex items-center justify-between gap-3 text-sm">
-        <p className="font-medium">גלריית מוצר</p>
-        <p aria-live="polite" className="text-muted-foreground">
-          {galleryImages.length > 1
-            ? `תמונה ${activeImageIndex + 1} מתוך ${galleryImages.length}`
-            : "תמונה יחידה"}
-        </p>
-      </div>
       <div
-        className="glass-inset bg-muted relative aspect-square overflow-hidden rounded-md border"
+        className="border-border bg-card relative aspect-[4/5] overflow-hidden rounded-md border sm:aspect-[5/4] lg:aspect-[4/3]"
         data-motion-gallery="product"
         data-testid="product-gallery"
       >
@@ -126,13 +118,16 @@ export function ProductGallery({
               fill
               loading={activeImageIndex === 0 ? undefined : "lazy"}
               priority={activeImageIndex === 0}
-              sizes="(min-width: 1024px) 50vw, 100vw"
+              sizes="(min-width: 1280px) 58vw, (min-width: 1024px) 54vw, 100vw"
               src={activeImage}
             />
           </motion.div>
         </AnimatePresence>
         {galleryImages.length > 1 ? (
-          <Badge className="absolute top-3 left-3" variant="secondary">
+          <Badge
+            className="bg-background/90 text-foreground absolute bottom-4 left-4 rounded-full px-3 backdrop-blur"
+            variant="secondary"
+          >
             {activeImageIndex + 1}/{galleryImages.length}
           </Badge>
         ) : null}
@@ -141,7 +136,7 @@ export function ProductGallery({
       {galleryImages.length > 1 ? (
         <div
           aria-label="תמונות מוצר"
-          className="grid grid-cols-4 gap-2 sm:grid-cols-5 lg:grid-cols-3"
+          className="grid grid-cols-4 gap-3 sm:grid-cols-5 lg:grid-cols-4"
         >
           {galleryImages.map((image, index) => (
             <button
@@ -149,10 +144,10 @@ export function ProductGallery({
               aria-current={activeImageIndex === index}
               aria-pressed={activeImageIndex === index}
               className={cn(
-                "motion-thumbnail-button glass-inset bg-muted relative aspect-square overflow-hidden rounded-md border transition focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none",
+                "motion-thumbnail-button border-border bg-card relative aspect-[4/5] overflow-hidden rounded-md border transition focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none",
                 activeImageIndex === index
-                  ? "border-[var(--glass-border-strong)] ring-2 ring-[var(--glass-focus)]"
-                  : "hover:border-[var(--glass-border-strong)]",
+                  ? "border-foreground ring-foreground ring-1"
+                  : "hover:border-foreground/60",
               )}
               data-testid="product-gallery-thumbnail"
               key={image}
@@ -168,7 +163,7 @@ export function ProductGallery({
                 className="media-color object-cover"
                 fill
                 loading="lazy"
-                sizes="(min-width: 1024px) 96px, (min-width: 640px) 20vw, 25vw"
+                sizes="(min-width: 1024px) 12vw, (min-width: 640px) 18vw, 24vw"
                 src={image}
               />
             </button>

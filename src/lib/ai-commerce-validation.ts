@@ -3,7 +3,6 @@ import { z } from "zod";
 export const searchCatalogToolInputSchema = z.object({
   query: z.string().trim().max(160).optional(),
   category: z.string().trim().max(80).optional(),
-  branch: z.string().trim().max(80).optional(),
   material: z.string().trim().max(80).optional(),
   stone: z.string().trim().max(80).optional(),
   maxPrice: z.number().positive().max(1_000_000).optional(),

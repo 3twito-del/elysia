@@ -10,6 +10,7 @@ type KineticImageMotionProps = {
   children: ReactNode;
   className?: string;
   intensity?: "card" | "hero" | "panel";
+  scrollMotion?: boolean;
 };
 
 const motionConfig = {
@@ -45,6 +46,7 @@ export function KineticImageMotion({
   children,
   className,
   intensity = "panel",
+  scrollMotion = true,
 }: KineticImageMotionProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useResolvedReducedMotion();
@@ -57,6 +59,7 @@ export function KineticImageMotion({
     if (!root || !layer || shouldReduceMotion) return;
 
     const config = motionConfig[intensity];
+    const scrollDepth = scrollMotion ? config.scrollDepth : 0;
     let pointerInside = false;
     let scrollFrame = 0;
     let layerAnimation: ReturnType<typeof animate> | null = null;
@@ -125,7 +128,7 @@ export function KineticImageMotion({
     const syncScroll = () => {
       scrollFrame = 0;
 
-      if (pointerInside || !config.scrollDepth) return;
+      if (pointerInside || !scrollDepth) return;
 
       const rect = root.getBoundingClientRect();
       const viewportHeight =
@@ -136,11 +139,11 @@ export function KineticImageMotion({
         1,
       );
 
-      animateLayer(0, (progress - 0.5) * config.scrollDepth, 1.01, 0, 920);
+      animateLayer(0, (progress - 0.5) * scrollDepth, 1.01, 0, 920);
     };
 
     const requestScrollSync = () => {
-      if (!config.scrollDepth || scrollFrame) return;
+      if (!scrollDepth || scrollFrame) return;
       scrollFrame = window.requestAnimationFrame(syncScroll);
     };
 
@@ -148,7 +151,7 @@ export function KineticImageMotion({
     root.addEventListener("pointermove", onPointerMove);
     root.addEventListener("pointerleave", onPointerLeave);
 
-    if (config.scrollDepth) {
+    if (scrollDepth) {
       requestScrollSync();
       window.addEventListener("scroll", requestScrollSync, { passive: true });
       window.addEventListener("resize", requestScrollSync);
@@ -164,7 +167,7 @@ export function KineticImageMotion({
       layerAnimation?.revert();
       shineAnimation?.revert();
     };
-  }, [intensity, shouldReduceMotion]);
+  }, [intensity, scrollMotion, shouldReduceMotion]);
 
   return (
     <div

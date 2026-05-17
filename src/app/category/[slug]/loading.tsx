@@ -1,8 +1,6 @@
-import { SlidersHorizontal } from "lucide-react";
-
 import { SiteHeader } from "~/components/site-header";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { Skeleton } from "~/components/ui/skeleton";
+
+const previewRows = 3;
 
 export default function CategoryLoading() {
   return (
@@ -12,78 +10,58 @@ export default function CategoryLoading() {
       <section
         aria-busy="true"
         aria-label="טוען קטגוריה"
-        className="relative isolate min-h-[max(34rem,calc(100svh-4rem))] overflow-hidden bg-[var(--brand-aqua-deep)] px-4 py-24 text-white sm:px-6 lg:px-20"
+        className="bg-background relative overflow-hidden border-b border-[var(--glass-border)]"
       >
-        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-end">
-          <div className="max-w-2xl space-y-5">
-            <Skeleton className="h-6 w-36 bg-white/15" />
-            <Skeleton className="h-16 w-full max-w-xl bg-white/15" />
-            <Skeleton className="h-6 w-4/5 bg-white/15" />
-            <div className="flex flex-col gap-3 pt-6 sm:flex-row">
-              <Skeleton className="h-12 w-full bg-white/15 sm:w-36" />
-              <Skeleton className="h-12 w-full bg-white/15 sm:w-40" />
+        <span className="sr-only">טוען קטגוריה</span>
+        <div
+          aria-hidden="true"
+          className="absolute inset-x-0 top-0 h-px overflow-hidden bg-[var(--glass-border)]"
+        >
+          <div className="category-loading-progress h-full w-1/3 bg-[var(--brand-aqua)]" />
+        </div>
+
+        <div className="mx-auto grid max-w-7xl gap-5 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-end lg:py-10">
+          <div className="max-w-2xl">
+            <div className="bg-foreground/10 h-3 w-28 rounded-full" />
+            <div className="bg-foreground/[0.08] mt-5 h-10 w-[min(100%,28rem)] rounded-md" />
+            <div className="bg-foreground/[0.07] mt-3 h-4 w-[min(80%,34rem)] rounded-full" />
+            <div className="mt-7 flex gap-2">
+              <div className="h-9 w-28 rounded-md bg-[var(--brand-aqua)]/35" />
+              <div className="bg-background/60 h-9 w-24 rounded-md border border-[var(--glass-border)]" />
             </div>
           </div>
-          <div className="hidden gap-3 lg:grid">
-            <Skeleton className="h-24 w-full bg-white/10" />
-            <Skeleton className="h-24 w-full bg-white/10" />
+
+          <div className="hidden gap-2 lg:grid">
+            <div className="bg-foreground/[0.04] h-8 rounded-md border border-[var(--glass-border)]" />
+            <div className="bg-foreground/[0.04] h-8 rounded-md border border-[var(--glass-border)]" />
+            <div className="bg-foreground/[0.04] h-8 rounded-md border border-[var(--glass-border)]" />
           </div>
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[296px_1fr] lg:py-10">
-        <aside className="hidden lg:block">
-          <Card className="sticky top-24 rounded-md" size="sm">
-            <CardHeader className="border-b border-[var(--glass-border)] pb-4">
-              <CardTitle className="flex items-center gap-2">
-                <SlidersHorizontal className="size-4" />
-                פילטרים
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-4">
-              {Array.from({ length: 5 }, (_, index) => (
-                <div className="grid gap-2" key={index}>
-                  <Skeleton className="h-4 w-20" />
-                  <Skeleton className="h-10 w-full" />
-                  <Skeleton className="h-10 w-full" />
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </aside>
+      <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+        <div className="border-y border-[var(--glass-border)] py-4">
+          <div className="bg-foreground/[0.08] h-4 w-40 rounded-full" />
+          <div className="bg-foreground/[0.06] mt-2 h-3 w-56 max-w-full rounded-full" />
+        </div>
 
-        <div className="min-w-0">
-          <div className="mb-7 border-y border-[var(--glass-border)] py-4">
-            <Skeleton className="h-5 w-48" />
-            <Skeleton className="mt-2 h-4 w-72 max-w-full" />
-          </div>
-          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-            {Array.from({ length: 6 }, (_, index) => (
-              <Card
-                className="h-full min-w-0 overflow-hidden rounded-md py-0"
-                key={index}
-              >
-                <Skeleton className="aspect-[4/5] w-full rounded-none" />
-                <CardContent className="flex min-h-52 flex-col gap-4 p-4">
-                  <div className="grid min-h-[6.5rem] gap-2">
-                    <Skeleton className="h-6 w-3/4" />
-                    <Skeleton className="h-5 w-full" />
-                    <Skeleton className="h-5 w-2/3" />
-                  </div>
-                  <div className="mt-auto grid gap-3">
-                    <div className="grid min-h-16 grid-cols-[minmax(0,1fr)_5.5rem] items-end gap-3">
-                      <div className="grid gap-2">
-                        <Skeleton className="h-3 w-12" />
-                        <Skeleton className="h-7 w-24" />
-                      </div>
-                      <Skeleton className="h-9 w-full" />
-                    </div>
-                    <Skeleton className="h-11 w-full" />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: previewRows }, (_, index) => (
+            <div
+              aria-hidden="true"
+              className="bg-background rounded-md border border-[var(--glass-border)] p-4"
+              key={index}
+            >
+              <div className="bg-foreground/[0.07] h-3 w-24 rounded-full" />
+              <div className="bg-foreground/[0.08] mt-4 h-4 w-3/4 rounded-full" />
+              <div className="bg-foreground/[0.05] mt-2 h-3 w-full rounded-full" />
+              <div className="mt-5 h-px bg-[var(--glass-border)]" />
+              <div className="mt-4 flex items-center justify-between gap-3">
+                <div className="bg-foreground/[0.08] h-4 w-20 rounded-full" />
+                <div className="bg-foreground/[0.06] h-7 w-20 rounded-md" />
+              </div>
+            </div>
+          ))}
         </div>
       </section>
     </main>

@@ -2,7 +2,7 @@ const orderStatusLabels: Readonly<Record<string, string>> = {
   PENDING_PAYMENT: "ממתין לתשלום",
   PAID: "שולם ידנית",
   PREPARING: "בהכנה",
-  READY_FOR_PICKUP: "מוכן לאיסוף",
+  READY_FOR_PICKUP: "מוכן למשלוח",
   SHIPPED: "נשלח",
   COMPLETED: "הושלם",
   CANCELLED: "בוטל",
@@ -86,14 +86,13 @@ export function getIntegrationStatusLabel(status: string) {
 }
 
 export function getFulfillmentMethodLabel(method: string) {
-  return method === "PICKUP" ? "איסוף" : "משלוח";
+  return method === "PICKUP" ? "אונליין" : "משלוח";
 }
 
-export function getProductAvailabilityLabel(availableBranches: number) {
-  if (availableBranches === 0) return "בדיקת זמינות";
-  if (availableBranches === 1) return "זמין בסניף אחד";
+export function getProductAvailabilityLabel(availableQuantity: number) {
+  if (availableQuantity === 0) return "בדיקת זמינות";
 
-  return `זמין ב-${availableBranches} סניפים`;
+  return "זמין אונליין";
 }
 
 export function getStockQuantityLabel(quantity: number) {

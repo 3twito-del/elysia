@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, ShoppingBag } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -33,10 +33,11 @@ export function ProductCard({
   product,
   searchContext,
 }: ProductCardProps) {
-  const availableBranches = Object.values(product.inventory).filter(
-    (quantity) => quantity > 0,
-  ).length;
-  const isAvailable = availableBranches > 0;
+  const onlineStockQuantity = Object.values(product.inventory).reduce(
+    (total, quantity) => total + quantity,
+    0,
+  );
+  const isAvailable = onlineStockQuantity > 0;
   const compareAt =
     typeof product.compareAt === "number" && product.compareAt > product.price
       ? product.compareAt
@@ -144,9 +145,8 @@ export function ProductCard({
                 )}
                 aria-hidden="true"
               />
-              <MapPin className="size-3.5 shrink-0" aria-hidden="true" />
               <span className="truncate">
-                {getProductAvailabilityLabel(availableBranches)}
+                {getProductAvailabilityLabel(onlineStockQuantity)}
               </span>
             </span>
           </div>

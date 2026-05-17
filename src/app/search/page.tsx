@@ -17,11 +17,9 @@ import {
   type ProductSearchInput,
 } from "~/server/adapters/search";
 import {
-  getCatalogBranches,
   getCatalogCategories,
   getCatalogFacets,
   formatPrice,
-  type CatalogBranch,
   type CatalogCategory,
   type CatalogFacets,
 } from "~/server/services/catalog";
@@ -30,7 +28,6 @@ type SearchPageProps = {
   searchParams: Promise<{
     q?: string;
     category?: string;
-    branch?: string;
     material?: string;
     stone?: string;
     collection?: string;
@@ -62,14 +59,13 @@ export const dynamic = "force-dynamic";
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const params = await searchParams;
-  const [categories, branches, facets] = await Promise.all([
+  const [categories, facets] = await Promise.all([
     getCatalogCategories(),
-    getCatalogBranches(),
     getCatalogFacets(),
   ]);
-  const input = normalizeSearchInput(params, { branches, categories, facets });
+  const input = normalizeSearchInput(params, { categories, facets });
   const result = await searchProvider.searchProducts(input);
-  const activeFilters = getActiveSearchFilters(input, categories, branches);
+  const activeFilters = getActiveSearchFilters(input, categories);
   const hasActiveFilters = activeFilters.length > 0;
   const activeRefinementCount = getActiveSearchRefinementCount(input);
   const hasActiveRefinements = activeRefinementCount > 0;
@@ -124,7 +120,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             </Button>
           </>
         }
-        description="חיפוש קטלוג עם סינון לפי קטגוריה, סניף, חומר, אבן, תקציב וזמינות."
+        description="חיפוש קטלוג עם סינון לפי קטגוריה, חומר, אבן, תקציב וזמינות."
         eyebrow="Aphrodite Catalog"
         metrics={[
           { label: "תוצאות", value: String(result.total) },
@@ -139,7 +135,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       >
         <SearchControls
           activeFilterCount={activeRefinementCount}
-          branches={branches}
           categories={categories}
           clearFiltersHref={clearFiltersHref}
           input={input}
@@ -327,7 +322,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 function normalizeSearchInput(
   params: Awaited<SearchPageProps["searchParams"]>,
   options: {
-    branches: CatalogBranch[];
     categories: CatalogCategory[];
     facets: CatalogFacets;
   },
@@ -336,10 +330,6 @@ function normalizeSearchInput(
   const category = normalizeCatalogValue(
     params.category,
     options.categories.map((item) => item.slug),
-  );
-  const branch = normalizeCatalogValue(
-    params.branch,
-    options.branches.map((item) => item.slug),
   );
   const material = normalizeCatalogValue(
     params.material,
@@ -355,7 +345,6 @@ function normalizeSearchInput(
   return {
     query,
     category,
-    branch,
     material,
     stone,
     collection,
@@ -370,13 +359,9 @@ function normalizeSearchInput(
 function getActiveSearchFilters(
   input: ProductSearchInput,
   categories: CatalogCategory[],
-  branches: CatalogBranch[],
 ) {
   const selectedCategory = categories.find(
     (category) => category.slug === input.category,
-  );
-  const selectedBranch = branches.find(
-    (branch) => branch.slug === input.branch,
   );
   const filters: ActiveSearchFilter[] = [];
 
@@ -397,14 +382,6 @@ function getActiveSearchFilters(
         category: undefined,
         page: undefined,
       }),
-    });
-  }
-
-  if (selectedBranch) {
-    filters.push({
-      key: "branch",
-      label: `סניף: ${selectedBranch.city}`,
-      href: createSearchHref({ ...input, branch: undefined, page: undefined }),
     });
   }
 
@@ -478,7 +455,6 @@ function getActiveSearchFilters(
 function getActiveSearchRefinementCount(input: ProductSearchInput) {
   return [
     input.category,
-    input.branch,
     input.material,
     input.stone,
     input.collection,
@@ -506,7 +482,7 @@ async function getSearchRecoveryActions(input: ProductSearchInput) {
 
     candidates.push({
       description:
-        "שומר את מילת החיפוש ומסיר קטגוריה, סניף, חומר, אבן, תקציב ומיון.",
+        "שומר את מילת החיפוש ומסיר קטגוריה, חומר, אבן, תקציב ומיון.",
       href: createSearchHref(queryOnlyInput),
       input: queryOnlyInput,
       label: "ניקוי פילטרים",
@@ -595,7 +571,6 @@ function createSearchHref(input: ProductSearchInput) {
 
   if (input.query) params.set("q", input.query);
   if (input.category) params.set("category", input.category);
-  if (input.branch) params.set("branch", input.branch);
   if (input.material) params.set("material", input.material);
   if (input.stone) params.set("stone", input.stone);
   if (input.collection) params.set("collection", input.collection);
@@ -779,7 +754,7 @@ async function recordSearchEvent(
   input: ProductSearchInput,
   resultCount: number,
 ) {
-  if (!input.query && !input.category && !input.branch) return;
+  if (!input.query && !input.category) return;
 
   await db.searchEvent
     .create({
@@ -787,7 +762,6 @@ async function recordSearchEvent(
         query: input.query ?? "",
         filters: {
           category: input.category ?? null,
-          branch: input.branch ?? null,
           material: input.material ?? null,
           stone: input.stone ?? null,
           collection: input.collection ?? null,

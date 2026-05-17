@@ -31,7 +31,6 @@ const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
 const phonePattern = /^[\d+\-()\s]{7,20}$/u;
 
 export function validateCheckoutFields({
-  branchSlug,
   cartItemCount = 1,
   city = "",
   email = "",
@@ -68,10 +67,6 @@ export function validateCheckoutFields({
 
   if (!emailPattern.test(email.trim())) {
     errors.email = "יש להזין אימייל תקין.";
-  }
-
-  if (!branchSlug) {
-    errors.branchSlug = "יש לבחור סניף מלאי.";
   }
 
   if (fulfillmentMethod === "DELIVERY") {

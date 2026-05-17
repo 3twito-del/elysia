@@ -24,8 +24,8 @@ export { isCouponUsable };
 export const cartCheckoutInputSchema = z
   .object({
     sessionKey: cartSessionKeySchema,
-    fulfillmentMethod: z.enum(["DELIVERY", "PICKUP"]),
-    branchSlug: z.string().trim().min(1),
+    fulfillmentMethod: z.literal("DELIVERY").default("DELIVERY"),
+    branchSlug: z.string().trim().min(1).optional(),
     customer: z.object({
       name: z.string().trim().min(2),
       email: z.string().trim().email().toLowerCase(),
@@ -46,7 +46,7 @@ export const cartCheckoutInputSchema = z
 
 function validateDeliveryAddressForSchema(
   input: {
-    fulfillmentMethod: "DELIVERY" | "PICKUP";
+    fulfillmentMethod: "DELIVERY";
     shippingAddress?: {
       city: string;
       postalCode?: string;
@@ -92,7 +92,7 @@ export function assertCartReservationAvailable(input: {
   if (!canReserveStock(input)) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "אין מספיק מלאי זמין לשמירת כל הפריטים בסניף שנבחר.",
+      message: "אין מספיק מלאי זמין לשמירת כל הפריטים.",
     });
   }
 }
@@ -102,10 +102,11 @@ export async function createCartCheckoutOrder(input: CartCheckoutInput) {
   const result = await db.$transaction((tx) =>
     createCartCheckoutOrderInTransaction(tx, parsed),
   );
+  const { inventoryBranchSlug, ...orderResult } = result;
 
-  revalidateCatalogMutation({ branchSlugs: [parsed.branchSlug] });
+  revalidateCatalogMutation({ branchSlugs: [inventoryBranchSlug] });
 
-  return result;
+  return orderResult;
 }
 
 async function createCartCheckoutOrderInTransaction(
@@ -121,16 +122,7 @@ async function createCartCheckoutOrderInTransaction(
     });
   }
 
-  const branch = await tx.branch.findUnique({
-    where: { slug: input.branchSlug },
-  });
-
-  if (!branch) {
-    throw new TRPCError({
-      code: "BAD_REQUEST",
-      message: "הסניף שנבחר לא נמצא.",
-    });
-  }
+  const branch = await resolveOnlineFulfillmentBranch(tx, input, cart);
 
   const coupon = await resolveCoupon(tx, input.couponCode ?? cart.couponCode);
   const items = cart.items.map((item) => ({
@@ -186,7 +178,7 @@ async function createCartCheckoutOrderInTransaction(
     if (!inventoryItem) {
       throw new TRPCError({
         code: "BAD_REQUEST",
-        message: `אין מלאי מוגדר עבור ${item.variant.product.name} בסניף שנבחר.`,
+        message: `המלאי עבור ${item.variant.product.name} אינו זמין כרגע.`,
       });
     }
 
@@ -374,10 +366,66 @@ async function createCartCheckoutOrderInTransaction(
     orderId: order.id,
     orderNumber: order.orderNumber,
     status: order.status,
+    inventoryBranchSlug: branch.slug,
     reservationExpiresAt,
     totals,
     itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
   };
+}
+
+async function resolveOnlineFulfillmentBranch(
+  tx: TransactionClient,
+  input: Pick<CartCheckoutInput, "branchSlug">,
+  cart: { items: Array<{ quantity: number; variantId: string }> },
+) {
+  if (input.branchSlug) {
+    const selectedBranch = await tx.branch.findUnique({
+      where: { slug: input.branchSlug },
+    });
+
+    if (selectedBranch) return selectedBranch;
+
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "מקור המלאי שנבחר לא נמצא.",
+    });
+  }
+
+  const branches = await tx.branch.findMany({
+    orderBy: [{ name: "asc" }],
+  });
+  const variantIds = cart.items.map((item) => item.variantId);
+
+  for (const branch of branches) {
+    const inventoryItems = await tx.inventoryItem.findMany({
+      where: {
+        branchId: branch.id,
+        variantId: { in: variantIds },
+      },
+    });
+    const inventoryByVariant = new Map(
+      inventoryItems.map((item) => [item.variantId, item]),
+    );
+    const canFulfillCart = cart.items.every((item) => {
+      const inventoryItem = inventoryByVariant.get(item.variantId);
+
+      return inventoryItem
+        ? canReserveStock({
+            quantity: inventoryItem.quantity,
+            reserved: inventoryItem.reserved,
+            safetyStock: inventoryItem.safetyStock,
+            requested: item.quantity,
+          })
+        : false;
+    });
+
+    if (canFulfillCart) return branch;
+  }
+
+  throw new TRPCError({
+    code: "BAD_REQUEST",
+    message: "אין מספיק מלאי זמין לשמירת ההזמנה.",
+  });
 }
 
 async function getActiveCheckoutCart(

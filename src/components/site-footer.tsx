@@ -3,8 +3,8 @@ import {
   ChevronDown,
   CircleHelp,
   Gem,
-  MapPin,
   Search,
+  Share2,
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
@@ -12,26 +12,24 @@ import {
 import { NewsletterForm } from "~/components/newsletter-form";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-import {
-  getCatalogBranches,
-  getCatalogCategories,
-} from "~/server/services/catalog";
+import { getCatalogCategories } from "~/server/services/catalog";
 
 const serviceLinks = [
   { href: "/about", label: "אודות Aphrodite", icon: Gem },
   { href: "/search", label: "חיפוש בקטלוג", icon: Search },
   { href: "/checkout", label: "סל וקופה", icon: ShieldCheck },
   { href: "/account", label: "אזור לקוח", icon: Gem },
-  { href: "/branches", label: "סניפים ואיסוף", icon: MapPin },
   { href: "/ai", label: "סטייליסט AI", icon: Sparkles },
   { href: "/faq", label: "שאלות ותשובות", icon: CircleHelp },
 ];
 
+const socialLink = {
+  href: "https://www.instagram.com/aphrodite.one/",
+  label: "רשתות חברתיות",
+};
+
 export async function SiteFooter() {
-  const [branches, categories] = await Promise.all([
-    getCatalogBranches(),
-    getCatalogCategories(),
-  ]);
+  const categories = await getCatalogCategories();
 
   return (
     <footer className="glass-chrome site-chrome border-t">
@@ -49,7 +47,7 @@ export async function SiteFooter() {
             </Link>
             <p className="text-muted-foreground mt-3 text-sm leading-7">
               רשת תכשיטי סטודיו ישראלית במיצוב יוקרה נגישה, עם קטלוג אונליין,
-              זמינות לפי סניף וייעוץ אישי לבחירת תכשיט או מתנה.
+              רכישה מאובטחת וייעוץ אישי לבחירת תכשיט או מתנה.
             </p>
             <NewsletterForm />
             <div className="mt-5 flex flex-col gap-3 sm:flex-row">
@@ -60,9 +58,9 @@ export async function SiteFooter() {
                 </Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href="/branches">
-                  מציאת סניף
-                  <MapPin aria-hidden="true" className="size-4" />
+                <Link href="/search">
+                  חיפוש בקטלוג
+                  <Search aria-hidden="true" className="size-4" />
                 </Link>
               </Button>
             </div>
@@ -128,7 +126,7 @@ export async function SiteFooter() {
 
             <details className="group glass-inset rounded-md border">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4 text-sm font-semibold [&::-webkit-details-marker]:hidden">
-                סניפים וקשר
+                שירות אונליין
                 <ChevronDown
                   aria-hidden="true"
                   className="size-4 transition group-open:rotate-180"
@@ -136,30 +134,17 @@ export async function SiteFooter() {
               </summary>
               <div className="grid gap-4 border-t border-[var(--glass-border)] p-4">
                 <p className="text-muted-foreground text-sm leading-7">
-                  בדיקת זמינות, מדידה ואיסוף מתבצעים בעמוד הסניפים כדי לשמור על
-                  מידע מעודכן.
+                  כל המכירות מתקיימות אונליין בשלב זה, עם משלוח עד הבית ושירות
+                  לקוחות שמלווה את ההזמנה.
                 </p>
-                <ul className="grid gap-3 text-sm">
-                  {branches.map((branch) => (
-                    <li
-                      className="flex items-center justify-between gap-3 border-b border-[var(--glass-border)] pb-3 last:border-b-0"
-                      key={branch.slug}
-                    >
-                      <span className="font-medium">{branch.name}</span>
-                      <span className="text-muted-foreground">
-                        {branch.city}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
                 <Button
                   asChild
                   className="w-full justify-between"
                   variant="outline"
                 >
-                  <Link href="/branches">
-                    לכל הסניפים
-                    <MapPin aria-hidden="true" className="size-4" />
+                  <Link href="/faq">
+                    שאלות נפוצות
+                    <CircleHelp aria-hidden="true" className="size-4" />
                   </Link>
                 </Button>
               </div>
@@ -212,35 +197,24 @@ export async function SiteFooter() {
           </nav>
 
           <section
-            aria-labelledby="footer-branches"
+            aria-labelledby="footer-online-service"
             className="hidden lg:block"
           >
-            <h2 className="text-sm font-semibold" id="footer-branches">
-              סניפים וקשר
+            <h2 className="text-sm font-semibold" id="footer-online-service">
+              שירות אונליין
             </h2>
             <p className="text-muted-foreground mt-4 text-sm leading-7">
-              בדיקת זמינות, מדידה ואיסוף מתבצעים בעמוד הסניפים כדי לשמור על מידע
-              מעודכן ולא לחזור על פרטים בכל תחתית עמוד.
+              כל המכירות מתקיימות אונליין בשלב זה. ההזמנות נשלחות לכתובת
+              הלקוח, וצוות השירות זמין לייעוץ, התאמה ומעקב אחרי ההזמנה.
             </p>
-            <ul className="mt-4 grid gap-2 text-sm">
-              {branches.map((branch) => (
-                <li
-                  className="flex items-center justify-between gap-3 border-b border-[var(--glass-border)] pb-3 last:border-b-0"
-                  key={branch.slug}
-                >
-                  <span className="font-medium">{branch.name}</span>
-                  <span className="text-muted-foreground">{branch.city}</span>
-                </li>
-              ))}
-            </ul>
             <Button
               asChild
               className="mt-4 w-full justify-between"
               variant="outline"
             >
-              <Link href="/branches">
-                לכל הסניפים
-                <MapPin aria-hidden="true" className="size-4" />
+              <Link href="/faq">
+                שאלות נפוצות
+                <CircleHelp aria-hidden="true" className="size-4" />
               </Link>
             </Button>
           </section>
@@ -272,6 +246,16 @@ export async function SiteFooter() {
             >
               הצהרת נגישות
             </Link>
+            <a
+              aria-label="רשתות חברתיות של Aphrodite"
+              className="hover:text-foreground inline-flex min-h-8 items-center gap-1.5 transition"
+              href={socialLink.href}
+              rel="noreferrer"
+              target="_blank"
+            >
+              <Share2 aria-hidden="true" className="size-4" />
+              {socialLink.label}
+            </a>
           </nav>
         </div>
       </div>

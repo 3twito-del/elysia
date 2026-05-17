@@ -9,7 +9,6 @@ import {
 describe("checkout validation", () => {
   it("requires delivery address fields for delivery", () => {
     const errors = validateCheckoutFields({
-      branchSlug: "tel-aviv",
       email: "dana@example.com",
       fulfillmentMethod: "DELIVERY",
       name: "Dana Levi",
@@ -21,13 +20,14 @@ describe("checkout validation", () => {
     expect(hasCheckoutErrors(errors)).toBe(true);
   });
 
-  it("does not require delivery address fields for pickup", () => {
+  it("does not require an inventory source for online delivery", () => {
     const errors = validateCheckoutFields({
-      branchSlug: "tel-aviv",
+      city: "Tel Aviv",
       email: "dana@example.com",
-      fulfillmentMethod: "PICKUP",
+      fulfillmentMethod: "DELIVERY",
       name: "Dana Levi",
       phone: "0501234567",
+      street: "Herzl 1",
     });
 
     expect(errors.city).toBeUndefined();
@@ -37,14 +37,15 @@ describe("checkout validation", () => {
 
   it("reports cart and session blockers as issue list items", () => {
     const errors = validateCheckoutFields({
-      branchSlug: "",
       cartItemCount: 0,
+      city: "Tel Aviv",
       email: "invalid",
-      fulfillmentMethod: "PICKUP",
+      fulfillmentMethod: "DELIVERY",
       name: "",
       phone: "",
       requireCart: true,
       sessionReady: false,
+      street: "Herzl 1",
     });
 
     expect(getCheckoutIssueList(errors)).toEqual([
@@ -53,7 +54,6 @@ describe("checkout validation", () => {
       "יש להזין שם מלא.",
       "יש להזין טלפון תקין.",
       "יש להזין אימייל תקין.",
-      "יש לבחור סניף מלאי.",
     ]);
   });
 });

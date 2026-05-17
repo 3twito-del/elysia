@@ -19,7 +19,6 @@ import {
   PackageCheck,
   Plus,
   ShieldCheck,
-  Store,
   Trash2,
   Truck,
 } from "lucide-react";
@@ -48,16 +47,6 @@ import { formatPrice } from "~/lib/format";
 import { api } from "~/trpc/react";
 import { CheckoutStepBadge } from "./checkout-step-badge";
 
-type BranchOption = {
-  slug: string;
-  name: string;
-  city: string;
-};
-
-type CartCheckoutFormProps = {
-  branches: BranchOption[];
-};
-
 const checkoutFormId = "cart-checkout-form";
 
 const checkoutTrustItems = [
@@ -72,13 +61,13 @@ const checkoutTrustItems = [
     label: "בדיקה לפני חיוב",
   },
   {
-    detail: "אפשר לבחור משלוח או איסוף מסניף",
-    icon: Store,
-    label: "מסירה גמישה",
+    detail: "ההזמנות נשלחות לכתובת שתבחרו",
+    icon: Truck,
+    label: "משלוח עד הבית",
   },
 ] as const;
 
-export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
+export function CartCheckoutForm() {
   const utils = api.useUtils();
   const canRenderStickyBar = useSyncExternalStore(
     subscribeToNoopStore,
@@ -89,10 +78,7 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [fulfillmentMethod, setFulfillmentMethod] = useState<
-    "DELIVERY" | "PICKUP"
-  >("DELIVERY");
-  const [branchSlug, setBranchSlug] = useState(branches[0]?.slug ?? "");
+  const fulfillmentMethod = "DELIVERY" as const;
   const [city, setCity] = useState("");
   const [street, setStreet] = useState("");
   const [postalCode, setPostalCode] = useState("");
@@ -150,11 +136,9 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
   const cartItemCount = cart?.items.length ?? 0;
   const subtotal = cart?.totals.subtotal ?? 0;
   const discount = cart?.totals.discount ?? 0;
-  const shippingAmount =
-    cartItemCount > 0 && fulfillmentMethod === "DELIVERY" ? 29 : 0;
+  const shippingAmount = cartItemCount > 0 ? 29 : 0;
   const orderTotal = Math.max(0, subtotal - discount + shippingAmount);
   const checkoutErrors = validateCheckoutFields({
-    branchSlug,
     cartItemCount,
     city,
     email,
@@ -178,10 +162,10 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
             giftWrap,
             giftMessage: giftMessage || undefined,
             couponCode: couponCode || undefined,
-            fulfillmentMethod,
+            fulfillmentMethod: "DELIVERY" as const,
           }
         : null,
-    [couponCode, fulfillmentMethod, giftMessage, giftWrap, sessionKey],
+    [couponCode, giftMessage, giftWrap, sessionKey],
   );
 
   const mobileCheckoutBar = (
@@ -238,21 +222,17 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
     setSubmitLocked(true);
     createOrder.mutate({
       sessionKey,
-      fulfillmentMethod,
-      branchSlug,
+      fulfillmentMethod: "DELIVERY",
       customer: {
         name,
         phone,
         email,
       },
-      shippingAddress:
-        fulfillmentMethod === "DELIVERY"
-          ? {
-              city,
-              street,
-              postalCode: postalCode || undefined,
-            }
-          : undefined,
+      shippingAddress: {
+        city,
+        street,
+        postalCode: postalCode || undefined,
+      },
       giftWrap,
       giftMessage: giftMessage || undefined,
       couponCode: couponCode || undefined,
@@ -557,119 +537,64 @@ export function CartCheckoutForm({ branches }: CartCheckoutFormProps) {
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
-              <div className="grid gap-3 sm:grid-cols-2">
-                <Button
-                  aria-pressed={fulfillmentMethod === "DELIVERY"}
-                  className="h-auto min-h-16 justify-start p-4 text-right whitespace-normal"
-                  disabled={checkoutLocked}
-                  onClick={() => setFulfillmentMethod("DELIVERY")}
-                  type="button"
-                  variant={
-                    fulfillmentMethod === "DELIVERY" ? "secondary" : "outline"
-                  }
-                >
-                  <Truck className="size-4" aria-hidden="true" />
-                  <span className="grid gap-0.5">
-                    <span>משלוח עד הבית</span>
-                    <span className="text-muted-foreground text-xs font-normal">
-                      כולל עיר, רחוב ודמי משלוח
-                    </span>
-                  </span>
-                </Button>
-                <Button
-                  aria-pressed={fulfillmentMethod === "PICKUP"}
-                  className="h-auto min-h-16 justify-start p-4 text-right whitespace-normal"
-                  disabled={checkoutLocked}
-                  onClick={() => setFulfillmentMethod("PICKUP")}
-                  type="button"
-                  variant={
-                    fulfillmentMethod === "PICKUP" ? "secondary" : "outline"
-                  }
-                >
-                  <Store className="size-4" aria-hidden="true" />
-                  <span className="grid gap-0.5">
-                    <span>איסוף מסניף</span>
-                    <span className="text-muted-foreground text-xs font-normal">
-                      ללא כתובת משלוח וללא דמי משלוח
-                    </span>
-                  </span>
-                </Button>
-              </div>
-              <div>
-                <Label htmlFor="branch">סניף מלאי</Label>
-                <FieldError
-                  id="branch-error"
-                  message={getVisibleFieldError("branchSlug")}
-                />
-                <select
-                  aria-describedby="branch-error"
-                  aria-invalid={Boolean(getVisibleFieldError("branchSlug"))}
-                  className="glass-control mt-2 h-11 w-full rounded-md border px-3 text-sm outline-none focus-visible:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
-                  disabled={checkoutLocked}
-                  id="branch"
-                  onBlur={() => markFieldTouched("branchSlug")}
-                  onChange={(event) => setBranchSlug(event.currentTarget.value)}
-                  required
-                  value={branchSlug}
-                >
-                  {branches.map((branch) => (
-                    <option key={branch.slug} value={branch.slug}>
-                      {branch.name} - {branch.city}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              {fulfillmentMethod === "DELIVERY" ? (
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div>
-                    <Label htmlFor="city">עיר</Label>
-                    <FieldError
-                      id="city-error"
-                      message={getVisibleFieldError("city")}
-                    />
-                    <Input
-                      aria-describedby="city-error"
-                      aria-invalid={Boolean(getVisibleFieldError("city"))}
-                      disabled={checkoutLocked}
-                      id="city"
-                      minLength={2}
-                      onBlur={() => markFieldTouched("city")}
-                      onChange={(event) => setCity(event.currentTarget.value)}
-                      required
-                      value={city}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="street">רחוב ומספר</Label>
-                    <FieldError
-                      id="street-error"
-                      message={getVisibleFieldError("street")}
-                    />
-                    <Input
-                      aria-describedby="street-error"
-                      aria-invalid={Boolean(getVisibleFieldError("street"))}
-                      disabled={checkoutLocked}
-                      id="street"
-                      minLength={2}
-                      onBlur={() => markFieldTouched("street")}
-                      onChange={(event) => setStreet(event.currentTarget.value)}
-                      required
-                      value={street}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="postalCode">מיקוד</Label>
-                    <Input
-                      disabled={checkoutLocked}
-                      id="postalCode"
-                      onChange={(event) =>
-                        setPostalCode(event.currentTarget.value)
-                      }
-                      value={postalCode}
-                    />
-                  </div>
+              <div className="glass-inset flex items-start gap-3 rounded-md border p-4 text-sm">
+                <Truck className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+                <div>
+                  <p className="font-medium">משלוח עד הבית</p>
+                  <p className="text-muted-foreground mt-1">
+                    בשלב זה המכירות באתר מתקיימות אונליין בלבד.
+                  </p>
                 </div>
-              ) : null}
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <Label htmlFor="city">עיר</Label>
+                  <FieldError
+                    id="city-error"
+                    message={getVisibleFieldError("city")}
+                  />
+                  <Input
+                    aria-describedby="city-error"
+                    aria-invalid={Boolean(getVisibleFieldError("city"))}
+                    disabled={checkoutLocked}
+                    id="city"
+                    minLength={2}
+                    onBlur={() => markFieldTouched("city")}
+                    onChange={(event) => setCity(event.currentTarget.value)}
+                    required
+                    value={city}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="street">רחוב ומספר</Label>
+                  <FieldError
+                    id="street-error"
+                    message={getVisibleFieldError("street")}
+                  />
+                  <Input
+                    aria-describedby="street-error"
+                    aria-invalid={Boolean(getVisibleFieldError("street"))}
+                    disabled={checkoutLocked}
+                    id="street"
+                    minLength={2}
+                    onBlur={() => markFieldTouched("street")}
+                    onChange={(event) => setStreet(event.currentTarget.value)}
+                    required
+                    value={street}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="postalCode">מיקוד</Label>
+                  <Input
+                    disabled={checkoutLocked}
+                    id="postalCode"
+                    onChange={(event) =>
+                      setPostalCode(event.currentTarget.value)
+                    }
+                    value={postalCode}
+                  />
+                </div>
+              </div>
             </CardContent>
           </Card>
 

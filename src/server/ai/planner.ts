@@ -704,7 +704,6 @@ const orderIdentityTerms = [
   "הזמנתי",
   "משלוח",
   "המשלוח",
-  "איסוף",
 ] as const;
 
 const orderReferenceTerms = [

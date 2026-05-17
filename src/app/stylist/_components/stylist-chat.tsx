@@ -236,8 +236,7 @@ export function StylistChat({ compact = false }: StylistChatProps) {
               </PromptInputSubmit>
             </PromptInput>
             <p className="text-muted-foreground mt-3 text-xs leading-5">
-              ההמלצות הן כלי עזר. זמינות, מידה והתאמה סופית יאושרו בקופה או
-              בסניף.
+              ההמלצות הן כלי עזר. זמינות, מידה והתאמה סופית יאושרו בקופה.
             </p>
           </div>
         </div>

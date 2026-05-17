@@ -14,11 +14,7 @@ import type {
 } from "~/lib/ai-commerce-validation";
 import { tryOnProvider } from "~/server/adapters/try-on";
 import { db } from "~/server/db";
-import {
-  formatPrice,
-  getCatalogBranches,
-  searchCatalogProducts,
-} from "~/server/services/catalog";
+import { formatPrice, searchCatalogProducts } from "~/server/services/catalog";
 import {
   failAiRun,
   finishAiRun,
@@ -53,14 +49,7 @@ export const searchCatalogToolOutputSchema = z.array(
     material: z.string(),
     stone: z.string().optional(),
     description: z.string(),
-    availableBranchCount: z.number(),
-    availableBranches: z.array(
-      z.object({
-        name: z.string(),
-        city: z.string(),
-        quantity: z.number(),
-      }),
-    ),
+    availableOnline: z.boolean(),
   }),
 );
 
@@ -127,7 +116,6 @@ export async function executeSearchCatalog(input: SearchCatalogToolInput) {
     );
   }
 
-  const branches = await getCatalogBranches();
   const results = Array.from(
     new Map(
       resultSets.flat().map((product) => [product.slug, product] as const),
@@ -146,16 +134,9 @@ export async function executeSearchCatalog(input: SearchCatalogToolInput) {
     material: product.material,
     stone: product.stone,
     description: product.shortDescription,
-    availableBranchCount: Object.values(product.inventory).filter(
+    availableOnline: Object.values(product.inventory).some(
       (quantity) => quantity > 0,
-    ).length,
-    availableBranches: branches
-      .map((branch) => ({
-        name: branch.name,
-        city: branch.city,
-        quantity: product.inventory[branch.slug] ?? 0,
-      }))
-      .filter((branch) => branch.quantity > 0),
+    ),
   }));
 }
 
@@ -194,7 +175,7 @@ export async function executeOrderSupport(input: OrderSupportInput) {
       orderNumber: input.orderNumber,
       email: input.email,
     },
-    include: { branch: true, payments: true },
+    include: { payments: true },
   });
 
   if (!order) {
@@ -211,9 +192,7 @@ export async function executeOrderSupport(input: OrderSupportInput) {
     nextStep:
       order.status === "PENDING_PAYMENT"
         ? "ההזמנה ממתינה לתשלום או אישור נציג."
-        : order.status === "READY_FOR_PICKUP"
-          ? `ניתן לאסוף מהסניף ${order.branch?.name ?? ""}.`
-          : "נעדכן בכל שינוי סטטוס.",
+        : "נעדכן בכל שינוי סטטוס.",
     paymentStatus: order.payments[0]?.status ?? "PENDING",
   };
 }

@@ -3,7 +3,6 @@ import { formatPrice } from "./format";
 export type AiCatalogToolInput = {
   query?: string;
   category?: string;
-  branch?: string;
   material?: string;
   stone?: string;
   maxPrice?: number;
@@ -15,7 +14,6 @@ export type AiCatalogSearchIntent = {
   category?: string;
   material?: string;
   stone?: string;
-  branch?: string;
   maxPrice?: number;
   categoryLocked: boolean;
   fallbackAllowed: boolean;
@@ -115,7 +113,6 @@ export function resolveAiCatalogSearchIntent(
     category,
     material,
     stone: trimToUndefined(input.stone),
-    branch: trimToUndefined(input.branch),
     maxPrice,
     categoryLocked: Boolean(category),
     fallbackAllowed: !category,
@@ -124,7 +121,6 @@ export function resolveAiCatalogSearchIntent(
 
 export function createCatalogSearchPlan(intent: AiCatalogSearchIntent) {
   const base = {
-    branch: intent.branch,
     category: intent.category,
     material: intent.material,
     maxPrice: intent.maxPrice,
@@ -135,7 +131,6 @@ export function createCatalogSearchPlan(intent: AiCatalogSearchIntent) {
   const exact = compactSearchInput({ ...base, query: intent.query });
   const original = compactSearchInput({ ...base, query: intent.originalQuery });
   const budgetOnly = compactSearchInput({
-    branch: intent.branch,
     category: intent.category,
     maxPrice: intent.maxPrice,
   });
@@ -145,13 +140,11 @@ export function createCatalogSearchPlan(intent: AiCatalogSearchIntent) {
   if (intent.fallbackAllowed) {
     plan.push(
       compactSearchInput({
-        branch: intent.branch,
         material: intent.material,
         maxPrice: intent.maxPrice,
         stone: intent.stone,
       }),
       compactSearchInput({
-        branch: intent.branch,
         maxPrice: intent.maxPrice,
       }),
       {},

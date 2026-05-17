@@ -31,11 +31,11 @@ describe("commerce labels", () => {
   });
 
   it("formats fulfillment, availability, stock, and count labels", () => {
-    expect(getFulfillmentMethodLabel("PICKUP")).toBe("איסוף");
+    expect(getFulfillmentMethodLabel("PICKUP")).toBe("אונליין");
     expect(getFulfillmentMethodLabel("DELIVERY")).toBe("משלוח");
     expect(getProductAvailabilityLabel(0)).toBe("בדיקת זמינות");
-    expect(getProductAvailabilityLabel(1)).toBe("זמין בסניף אחד");
-    expect(getProductAvailabilityLabel(3)).toBe("זמין ב-3 סניפים");
+    expect(getProductAvailabilityLabel(1)).toBe("זמין אונליין");
+    expect(getProductAvailabilityLabel(3)).toBe("זמין אונליין");
     expect(getStockQuantityLabel(0)).toBe("לא זמין");
     expect(getStockQuantityLabel(4)).toBe("4 במלאי");
     expect(getItemCountLabel(1)).toBe("מוצר אחד");

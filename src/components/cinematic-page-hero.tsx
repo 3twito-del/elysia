@@ -23,7 +23,9 @@ type CinematicPageHeroProps = {
   description?: ReactNode;
   eyebrow?: ReactNode;
   id?: string;
+  mediaParallax?: boolean;
   mediaPriority?: boolean;
+  mediaScrollMotion?: boolean;
   scrollCue?: {
     href: string;
     label: string;
@@ -42,7 +44,9 @@ export function CinematicPageHero({
   description,
   eyebrow,
   id = "page-hero",
+  mediaParallax = true,
   mediaPriority = true,
+  mediaScrollMotion = true,
   scrollCue,
   slides,
   stats,
@@ -64,9 +68,9 @@ export function CinematicPageHero({
         contentClassName="cinematic-page-hero-media-content"
         hover
         intensity="cinematic"
-        parallax
+        parallax={mediaParallax}
       >
-        <KineticImageMotion intensity="hero">
+        <KineticImageMotion intensity="hero" scrollMotion={mediaScrollMotion}>
           <CinematicHeroSequence
             priority={mediaPriority}
             slides={slides}

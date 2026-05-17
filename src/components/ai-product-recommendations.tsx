@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ExternalLink, MapPin, Sparkles } from "lucide-react";
+import { ArrowLeft, ExternalLink, Sparkles } from "lucide-react";
 
 import {
   normalizeAiRecommendedProducts,
@@ -129,10 +129,9 @@ export function AiProductRecommendations({
                       {product.material.replace(" 14K", "")}
                     </span>
                   ) : null}
-                  {typeof product.availableBranchCount === "number" ? (
+                  {product.availableOnline ? (
                     <span className="inline-flex items-center gap-1">
-                      <MapPin aria-hidden="true" className="size-3.5" />
-                      {product.availableBranchCount} סניפים
+                      זמין אונליין
                     </span>
                   ) : null}
                 </div>

@@ -5,6 +5,10 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Gem, Search, UserRound } from "lucide-react";
 
+import {
+  isCategoryHref,
+  useCategoryRoutePrefetch,
+} from "~/components/category-route-prefetch";
 import { CartCountLink } from "~/components/cart-count-link";
 import { MobileNav, type HeaderNavItem } from "~/components/mobile-nav";
 import { Button } from "~/components/ui/button";
@@ -17,9 +21,11 @@ const navItems: HeaderNavItem[] = [
   { href: "/category/bracelets", label: "צמידים" },
   { href: "/gifts", label: "מתנות" },
   { href: "/about", label: "אודות" },
-  { href: "/branches", label: "סניפים" },
   { href: "/ai", label: "ייעוץ אישי" },
 ];
+const categoryNavHrefs = navItems
+  .map((item) => item.href)
+  .filter(isCategoryHref);
 
 type HeaderScrollState = "top" | "shown" | "hidden";
 type AnchorScrollEventDetail = {
@@ -29,6 +35,9 @@ type AnchorScrollEventDetail = {
 
 export function SiteHeader() {
   const scrollState = useHeaderScrollState();
+  const categoryPrefetch = useCategoryRoutePrefetch(categoryNavHrefs, {
+    prefetchOnHomeIdle: true,
+  });
 
   return (
     <header
@@ -43,7 +52,11 @@ export function SiteHeader() {
     >
       <div className="mx-auto grid h-16 max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-6 lg:grid-cols-[auto_1fr_auto] lg:gap-6">
         <div className="flex items-center justify-self-start lg:hidden">
-          <MobileNav items={navItems} />
+          <MobileNav
+            items={navItems}
+            onCategoryIntent={categoryPrefetch.prefetch}
+            onOpenCategoryPrefetch={categoryPrefetch.prefetchAll}
+          />
         </div>
 
         <Link
@@ -61,16 +74,35 @@ export function SiteHeader() {
           aria-label="ניווט ראשי"
           className="hidden min-w-0 items-center justify-center gap-1 lg:flex"
         >
-          {navItems.map((item) => (
-            <Button
-              asChild
-              className="h-10 px-3 text-[0.94rem] font-medium xl:px-4"
-              key={item.href}
-              variant="ghost"
-            >
-              <Link href={item.href}>{item.label}</Link>
-            </Button>
-          ))}
+          {navItems.map((item) => {
+            const categoryHref = isCategoryHref(item.href);
+
+            return (
+              <Button
+                asChild
+                className="h-10 px-3 text-[0.94rem] font-medium xl:px-4"
+                key={item.href}
+                variant="ghost"
+              >
+                <Link
+                  href={item.href}
+                  onFocus={
+                    categoryHref
+                      ? () => categoryPrefetch.prefetch(item.href)
+                      : undefined
+                  }
+                  onPointerEnter={
+                    categoryHref
+                      ? () => categoryPrefetch.prefetch(item.href)
+                      : undefined
+                  }
+                  prefetch={categoryHref ? true : undefined}
+                >
+                  {item.label}
+                </Link>
+              </Button>
+            );
+          })}
         </nav>
 
         <div className="flex items-center gap-1 justify-self-end" dir="ltr">

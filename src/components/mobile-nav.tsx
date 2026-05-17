@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   CircleHelp,
-  MapPin,
   Menu,
   Search,
   ShoppingBag,
@@ -27,6 +26,12 @@ export type HeaderNavItem = {
   label: string;
 };
 
+type MobileNavProps = {
+  items: HeaderNavItem[];
+  onCategoryIntent?: (href: string) => void;
+  onOpenCategoryPrefetch?: () => void;
+};
+
 const quickActions = [
   { href: "/search", label: "חיפוש", icon: Search },
   { href: "/checkout", label: "סל", icon: ShoppingBag },
@@ -35,11 +40,14 @@ const quickActions = [
 
 const serviceActions = [
   { href: "/ai", label: "ייעוץ אישי", icon: Sparkles },
-  { href: "/branches", label: "סניפים", icon: MapPin },
   { href: "/faq", label: "שאלות", icon: CircleHelp },
 ] as const;
 
-export function MobileNav({ items }: { items: HeaderNavItem[] }) {
+export function MobileNav({
+  items,
+  onCategoryIntent,
+  onOpenCategoryPrefetch,
+}: MobileNavProps) {
   const [open, setOpen] = useState(false);
   const closeNav = () => setOpen(false);
   const catalogItems = items.slice(0, 5);
@@ -48,6 +56,12 @@ export function MobileNav({ items }: { items: HeaderNavItem[] }) {
     .filter(
       (item) => !serviceActions.some((action) => action.href === item.href),
     );
+
+  useEffect(() => {
+    if (open) {
+      onOpenCategoryPrefetch?.();
+    }
+  }, [onOpenCategoryPrefetch, open]);
 
   return (
     <Sheet
@@ -116,7 +130,20 @@ export function MobileNav({ items }: { items: HeaderNavItem[] }) {
                 <Link
                   data-testid="mobile-nav-link"
                   href={item.href}
+                  onFocus={
+                    item.href.startsWith("/category/")
+                      ? () => onCategoryIntent?.(item.href)
+                      : undefined
+                  }
                   onClick={closeNav}
+                  onPointerEnter={
+                    item.href.startsWith("/category/")
+                      ? () => onCategoryIntent?.(item.href)
+                      : undefined
+                  }
+                  prefetch={
+                    item.href.startsWith("/category/") ? true : undefined
+                  }
                 >
                   {item.label}
                 </Link>

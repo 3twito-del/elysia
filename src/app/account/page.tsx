@@ -2,7 +2,6 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   AlertTriangle,
-  CalendarCheck,
   Heart,
   LayoutDashboard,
   LogOut,
@@ -27,11 +26,8 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { EmptyState } from "~/components/ui/empty-state";
-import {
-  getAppointmentStatusLabel,
-  getOrderStatusLabel,
-} from "~/lib/commerce-labels";
-import { formatHebrewDateTime, formatPrice } from "~/lib/format";
+import { getOrderStatusLabel } from "~/lib/commerce-labels";
+import { formatPrice } from "~/lib/format";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 import { DEFAULT_CATALOG_IMAGE } from "~/server/services/catalog";
@@ -46,11 +42,6 @@ async function loadCustomerAccount(userId: string) {
   const customer = await db.customer.findUnique({
     where: { userId },
     include: {
-      appointments: {
-        orderBy: { startsAt: "desc" },
-        take: 3,
-        include: { branch: true },
-      },
       orders: {
         orderBy: { createdAt: "desc" },
         take: 5,
@@ -227,7 +218,7 @@ export default async function AccountPage() {
               </Button>
             </>
           }
-          description="כניסה מאובטחת להזמנות, מועדפים, מידות שמורות, תורים ופרטיות."
+          description="כניסה מאובטחת להזמנות, מועדפים, מידות שמורות, שירות ופרטיות."
           eyebrow="Aphrodite Account"
           metrics={[
             { label: "כניסה", value: "OTP" },
@@ -243,7 +234,7 @@ export default async function AccountPage() {
           <h2 className="text-3xl font-semibold sm:text-4xl">אזור לקוח</h2>
           <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
             כניסה מאובטחת באמצעות קוד חד-פעמי. לאחר הכניסה יוצגו הזמנות,
-            מועדפים, מידות שמורות ותורים.
+            מועדפים, מידות שמורות ושירות.
           </p>
           <div className="mt-6 grid gap-5 sm:mt-8 lg:grid-cols-[minmax(0,420px)_1fr]">
             <Card className="rounded-md">
@@ -281,11 +272,11 @@ export default async function AccountPage() {
                 value="פרופיל"
               />
               <MetricCard
-                detail="מדידה וייעוץ בסניף"
-                icon={CalendarCheck}
-                label="תורים"
+                detail="ייעוץ אונליין ושירות אישי"
+                icon={ShieldCheck}
+                label="שירות"
                 variant="soft"
-                value="בתיאום"
+                value="זמין"
               />
             </RevealGrid>
           </div>
@@ -306,7 +297,7 @@ export default async function AccountPage() {
               <Link href="#account-orders">הזמנות אחרונות</Link>
             </Button>
             <Button asChild variant="outline">
-              <Link href="#account-service">תורים ושירות</Link>
+              <Link href="#account-service">שירות</Link>
             </Button>
           </>
         }
@@ -315,7 +306,7 @@ export default async function AccountPage() {
         metrics={[
           { label: "הזמנות", value: String(customer.orders.length) },
           { label: "מועדפים", value: String(wishlistItems.length) },
-          { label: "תורים", value: String(customer.appointments.length) },
+          { label: "שירות", value: "אונליין" },
         ]}
         title="אזור לקוח"
       />
@@ -328,7 +319,7 @@ export default async function AccountPage() {
             <h2 className="text-3xl font-semibold sm:text-4xl">אזור לקוח</h2>
             <p className="text-muted-foreground mt-3 max-w-2xl leading-7">
               {customer.firstName ?? session.user.name ?? "לקוח/ה"} מחובר/ת. כאן
-              נשמרות הזמנות, פריטים מועדפים, מידות ותורים.
+              נשמרות הזמנות, פריטים מועדפים, מידות ופרטי שירות.
             </p>
           </div>
           <form action={customerLogoutAction}>
@@ -361,10 +352,10 @@ export default async function AccountPage() {
             value={String(customer.savedSizes.length)}
           />
           <MetricCard
-            detail="תורים אחרונים"
-            icon={CalendarCheck}
-            label="תורים"
-            value={String(customer.appointments.length)}
+            detail="ייעוץ ומעקב אחרי הזמנות"
+            icon={ShieldCheck}
+            label="שירות"
+            value="אונליין"
           />
         </RevealGrid>
 
@@ -540,47 +531,25 @@ export default async function AccountPage() {
           </Card>
           <Card className="rounded-md" id="account-service">
             <CardHeader>
-              <CardTitle>תורים</CardTitle>
+              <CardTitle>שירות</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-3">
-              {customer.appointments.length === 0 ? (
-                <EmptyState
-                  description="אפשר לתאם מדידה, איסוף או ייעוץ אישי באחד הסניפים."
-                  icon={CalendarCheck}
-                  title="אין תורים קרובים"
-                  variant="inset"
-                  actions={
+              <EmptyState
+                description="אפשר לקבל ייעוץ אישי, עזרה בבחירת מידה ומעקב אחרי הזמנות דרך שירות הלקוחות."
+                icon={ShieldCheck}
+                title="שירות אונליין"
+                variant="inset"
+                actions={
+                  <>
                     <Button asChild variant="outline">
-                      <Link href="/branches">תיאום תור</Link>
+                      <Link href="/faq">שאלות נפוצות</Link>
                     </Button>
-                  }
-                />
-              ) : (
-                <>
-                  {customer.appointments.map((appointment) => (
-                    <div
-                      className="glass-inset rounded-md border p-3"
-                      key={appointment.id}
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="font-medium">{appointment.topic}</p>
-                          <p className="text-muted-foreground text-sm">
-                            {appointment.branch.name} ·{" "}
-                            {formatHebrewDateTime(appointment.startsAt)}
-                          </p>
-                        </div>
-                        <Badge className="shrink-0" variant="secondary">
-                          {getAppointmentStatusLabel(appointment.status)}
-                        </Badge>
-                      </div>
-                    </div>
-                  ))}
-                  <Button asChild className="w-fit" variant="outline">
-                    <Link href="/branches">תיאום תור נוסף</Link>
-                  </Button>
-                </>
-              )}
+                    <Button asChild>
+                      <Link href="/ai">ייעוץ אישי</Link>
+                    </Button>
+                  </>
+                }
+              />
             </CardContent>
           </Card>
 

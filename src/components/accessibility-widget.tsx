@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   Accessibility,
   CaseSensitive,
+  CirclePause,
   Contrast,
   Minus,
   Plus,
@@ -465,7 +466,7 @@ export function AccessibilityWidget() {
               <ToggleRow
                 checked={settings.reduceMotion}
                 description="מבטל אנימציות ומעברים שאינם חיוניים."
-                icon={Accessibility}
+                icon={CirclePause}
                 label="הפחתת תנועה"
                 onChange={(checked) =>
                   updateSettings((current) => ({

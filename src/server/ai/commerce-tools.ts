@@ -31,7 +31,7 @@ export function createAiCommerceTools(context: AiCommerceToolContext) {
   return {
     searchCatalog: tool({
       description:
-        "Search the real Aphrodite jewelry catalog by need, style, category, branch, material, stone, or budget. Use before every product recommendation.",
+        "Search the real Aphrodite jewelry catalog by need, style, category, material, stone, or budget. Use before every product recommendation.",
       inputSchema: searchCatalogToolInputSchema,
       outputSchema: searchCatalogToolOutputSchema,
       strict: true,
@@ -153,7 +153,6 @@ export function applyCatalogPlanningHints(
     ...input,
     query: mergeSearchQueries(hints.query, input.query),
     category: hints.category ?? input.category,
-    branch: hints.branch ?? input.branch,
     material: hints.material ?? input.material,
     stone: hints.stone ?? input.stone,
     maxPrice: hints.maxPrice ?? input.maxPrice,

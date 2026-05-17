@@ -31,12 +31,11 @@ describe("AI commerce tools", () => {
   it("keeps explicit model fields when no deterministic hint exists", () => {
     expect(
       applyCatalogPlanningHints(
-        { branch: "tel-aviv", stone: "יהלום" },
+        { stone: "יהלום" },
         { query: "טבעת אירוסין" },
       ),
     ).toEqual({
       query: "טבעת אירוסין",
-      branch: "tel-aviv",
       stone: "יהלום",
     });
   });
@@ -55,14 +54,7 @@ describe("AI commerce tools", () => {
           category: "טבעות",
           material: "זהב צהוב 14K",
           description: "טבעת עדינה",
-          availableBranchCount: 1,
-          availableBranches: [
-            {
-              name: "Aphrodite תל אביב",
-              city: "תל אביב",
-              quantity: 2,
-            },
-          ],
+          availableOnline: true,
         },
       ]),
     ).not.toThrow();

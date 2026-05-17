@@ -11,7 +11,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
 import { StatusMessage } from "~/components/ui/status-message";
 import {
-  getFulfillmentMethodLabel,
   getOrderStatusLabel,
   getPaymentStatusLabel,
   getReturnStatusLabel,
@@ -48,7 +47,6 @@ export default async function OrderDetailPage({
       customerId: customer.id,
     },
     include: {
-      branch: true,
       items: true,
       payments: true,
       returns: {
@@ -164,11 +162,7 @@ export default async function OrderDetailPage({
               </div>
               <Separator />
               <p className="text-muted-foreground">
-                {order.fulfillmentMethod === "PICKUP"
-                  ? `${getFulfillmentMethodLabel(order.fulfillmentMethod)}: ${
-                      order.branch?.name ?? "סניף"
-                    }`
-                  : "משלוח לכתובת שנמסרה"}
+                משלוח לכתובת שנמסרה
               </p>
               <p className="text-muted-foreground">
                 תשלום: {getPaymentStatusLabel(order.payments[0]?.status)}

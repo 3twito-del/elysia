@@ -103,7 +103,6 @@ describe("cart checkout service", () => {
     const result = cartCheckoutInputSchema.safeParse({
       sessionKey: "cart-session-key-123456",
       fulfillmentMethod: "DELIVERY",
-      branchSlug: "tel-aviv",
       customer: {
         name: "Dana Levi",
         email: "dana@example.com",
@@ -114,15 +113,18 @@ describe("cart checkout service", () => {
     expect(result.success).toBe(false);
   });
 
-  it("allows pickup checkout without shipping address", () => {
+  it("allows online delivery checkout without a public inventory source", () => {
     const result = cartCheckoutInputSchema.safeParse({
       sessionKey: "cart-session-key-123456",
-      fulfillmentMethod: "PICKUP",
-      branchSlug: "tel-aviv",
+      fulfillmentMethod: "DELIVERY",
       customer: {
         name: "Dana Levi",
         email: "dana@example.com",
         phone: "0501234567",
+      },
+      shippingAddress: {
+        city: "Tel Aviv",
+        street: "Herzl 1",
       },
     });
 

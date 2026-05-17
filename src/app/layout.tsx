@@ -14,12 +14,12 @@ export const metadata: Metadata = {
     template: "%s | Aphrodite",
   },
   description:
-    "רשת תכשיטים ישראלית במיצוב יוקרה נגישה: טבעות, שרשראות, עגילים, צמידים, מתנות ותיאום מדידה בסניפים.",
+    "רשת תכשיטים ישראלית במיצוב יוקרה נגישה: טבעות, שרשראות, עגילים, צמידים, מתנות ורכישה אונליין.",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
   metadataBase: new URL("https://aphrodite.local"),
   openGraph: {
     title: "Aphrodite",
-    description: "תכשיטי סטודיו מודרניים בעברית, עם מסחר מלא וחיבור לסניפים.",
+    description: "תכשיטי סטודיו מודרניים בעברית, עם מסחר אונליין מלא ושירות אישי.",
     locale: "he_IL",
     type: "website",
   },
