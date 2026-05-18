@@ -52,7 +52,7 @@ export function AiGiftRecommender() {
   }
 
   return (
-    <div className="brand-surface grid gap-6 p-5">
+    <div className="brand-surface grid gap-5 p-4 sm:p-5">
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="mb-2 inline-flex items-center gap-2 text-sm font-medium">
@@ -68,7 +68,7 @@ export function AiGiftRecommender() {
         <Sparkles aria-hidden="true" className="text-foreground size-6" />
       </div>
 
-      <form className="grid gap-4" onSubmit={handleSubmit}>
+      <form className="grid gap-3.5" onSubmit={handleSubmit}>
         <div className="grid gap-4 md:grid-cols-3">
           <Field
             error={fieldErrors.relation}

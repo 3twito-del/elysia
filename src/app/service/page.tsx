@@ -88,8 +88,8 @@ export default async function ServicePage() {
         variant="content"
       />
 
-      <RevealSection className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-14">
-        <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+      <RevealSection className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:py-12">
+        <div className="grid gap-7 lg:grid-cols-[0.86fr_1.14fr] lg:items-start">
           <section className="grid gap-5" aria-labelledby="service-contact">
             <div>
               <Badge variant="secondary">Online first</Badge>
@@ -104,7 +104,7 @@ export default async function ServicePage() {
 
             <div className="grid gap-3 sm:grid-cols-2">
               <a
-                className="brand-surface interactive-lift flex min-h-24 items-center gap-4 rounded-md p-4"
+                className="brand-surface interactive-lift flex min-h-20 items-center gap-3 rounded-md p-4"
                 href={phoneHref}
               >
                 <span className="glass-inset grid size-11 place-items-center rounded-full border">
@@ -118,7 +118,7 @@ export default async function ServicePage() {
                 </span>
               </a>
               <a
-                className="brand-surface interactive-lift flex min-h-24 items-center gap-4 rounded-md p-4"
+                className="brand-surface interactive-lift flex min-h-20 items-center gap-3 rounded-md p-4"
                 href={`mailto:${profile.settings.serviceEmail}`}
               >
                 <span className="glass-inset grid size-11 place-items-center rounded-full border">
@@ -133,14 +133,14 @@ export default async function ServicePage() {
               </a>
             </div>
 
-            <div className="brand-surface rounded-md p-5">
-              <div className="grid gap-5">
+            <div className="brand-surface rounded-md p-4 sm:p-5">
+              <div className="grid gap-4">
                 {serviceTracks.map((track) => {
                   const Icon = track.icon;
 
                   return (
                     <div
-                      className="grid gap-3 sm:grid-cols-[auto_minmax(0,1fr)]"
+                      className="grid gap-3 border-b border-[var(--glass-border)] pb-4 last:border-b-0 last:pb-0 sm:grid-cols-[auto_minmax(0,1fr)]"
                       key={track.title}
                     >
                       <span className="glass-inset grid size-10 place-items-center rounded-full border">

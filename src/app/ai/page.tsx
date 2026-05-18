@@ -58,13 +58,13 @@ export default async function AiPage({ searchParams }: AiPageProps) {
         variant="content"
       />
       <RevealSection
-        className="brand-page-band border-b border-[var(--glass-border)]"
+        className="border-b border-[var(--glass-border)]"
         id="ai-tools"
       >
-        <div className="mx-auto grid max-w-6xl gap-5 px-4 py-6 sm:px-6 lg:py-8">
+        <div className="mx-auto grid max-w-5xl gap-5 px-4 py-6 sm:px-6 lg:py-8">
           <Tabs className="gap-4" defaultValue={defaultTab} dir="rtl">
-            <div className="brand-control-panel grid gap-5 p-4 sm:p-5">
-              <div className="grid gap-4">
+            <div className="brand-control-panel grid gap-4 p-3 sm:grid-cols-[1fr_auto] sm:items-end sm:p-4">
+              <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
                 <Badge className="w-fit" variant="secondary">
                   Aphrodite AI
                 </Badge>

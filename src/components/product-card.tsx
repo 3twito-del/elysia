@@ -63,7 +63,7 @@ export function ProductCard({
     <Card
       aria-label={product.name}
       className={cn(
-        "brand-accent-card interactive-lift h-full min-w-0 overflow-hidden rounded-md py-0 transition focus-within:ring-3 focus-within:ring-[var(--glass-focus)]",
+        "brand-accent-card interactive-lift group/card h-full min-w-0 overflow-hidden rounded-md py-0 transition focus-within:ring-3 focus-within:ring-[var(--glass-focus)]",
         !isAvailable && "bg-muted/30",
       )}
       data-public-floating-avoid="true"
@@ -79,7 +79,7 @@ export function ProductCard({
             <Image
               alt={product.name}
               blurDataURL={PRODUCT_IMAGE_BLUR_DATA_URL}
-              className="media-color object-cover"
+              className="media-color object-cover transition duration-[700ms] ease-[var(--ease-motion-standard)] group-hover/card:scale-[1.015]"
               fill
               placeholder="blur"
               priority={imagePriority}
@@ -112,17 +112,17 @@ export function ProductCard({
           </div>
         </div>
       </Link>
-      <CardContent className="flex min-h-52 flex-1 flex-col gap-4 p-4">
+      <CardContent className="flex min-h-52 flex-1 flex-col gap-3.5 p-3.5 sm:p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <Link
-              className="line-clamp-2 min-h-12 text-base leading-6 font-medium underline-offset-4 hover:underline focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
+              className="line-clamp-2 min-h-11 text-base leading-[1.45] font-medium underline-offset-4 hover:underline focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
               dir="auto"
               href={href}
             >
               {product.name}
             </Link>
-            <p className="text-muted-foreground mt-1 line-clamp-2 min-h-10 text-sm leading-5">
+            <p className="text-muted-foreground mt-1 line-clamp-2 min-h-9 text-sm leading-5">
               {product.shortDescription}
             </p>
           </div>
@@ -141,13 +141,13 @@ export function ProductCard({
                   {formatPrice(compareAt)}
                 </span>
               ) : null}
-              <span className="block text-xl leading-7 font-semibold">
+              <span className="block text-lg leading-6 font-semibold sm:text-xl sm:leading-7">
                 {formatPrice(product.price)}
               </span>
             </div>
             <span
               className={cn(
-                "brand-icon-well glass-inset flex max-w-36 shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-2 text-xs",
+                "brand-icon-well glass-inset flex max-w-32 shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs",
                 isAvailable ? "text-muted-foreground" : "text-foreground",
               )}
             >

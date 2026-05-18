@@ -1,7 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useSyncExternalStore, type CSSProperties } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type CSSProperties,
+} from "react";
 import { createPortal } from "react-dom";
 import { AlertCircle, CheckCircle2, Heart, PackageCheck } from "lucide-react";
 
@@ -45,6 +51,8 @@ export function ProductPurchasePanel({
     getClientSnapshot,
     getServerSnapshot,
   );
+  const primaryCtaRef = useRef<HTMLButtonElement | null>(null);
+  const [showStickyBar, setShowStickyBar] = useState(false);
   const [cartMessage, setCartMessage] = useState<string | null>(null);
   const [cartMessageTone, setCartMessageTone] = useState<"error" | "success">(
     "success",
@@ -76,6 +84,45 @@ export function ProductPurchasePanel({
   });
   const addToCartDisabled =
     !selectedVariant || !selectedVariantAvailable || addItem.isPending;
+
+  useEffect(() => {
+    if (!canRenderStickyBar) return;
+
+    const primaryCta = primaryCtaRef.current;
+    if (!primaryCta) return;
+
+    const syncStickyBar = () => {
+      const rect = primaryCta.getBoundingClientRect();
+      const isPrimaryCtaVisible =
+        rect.bottom > 0 && rect.top < window.innerHeight - 96;
+
+      setShowStickyBar(!isPrimaryCtaVisible);
+    };
+
+    syncStickyBar();
+
+    if (typeof IntersectionObserver !== "undefined") {
+      const observer = new IntersectionObserver(
+        ([entry]) => setShowStickyBar(!entry?.isIntersecting),
+        {
+          rootMargin: "0px 0px -96px 0px",
+          threshold: 0.1,
+        },
+      );
+
+      observer.observe(primaryCta);
+
+      return () => observer.disconnect();
+    }
+
+    window.addEventListener("resize", syncStickyBar);
+    window.addEventListener("scroll", syncStickyBar, { passive: true });
+
+    return () => {
+      window.removeEventListener("resize", syncStickyBar);
+      window.removeEventListener("scroll", syncStickyBar);
+    };
+  }, [canRenderStickyBar]);
 
   function handleAddToCart() {
     if (!selectedVariant || !selectedVariantAvailable) {
@@ -194,6 +241,7 @@ export function ProductPurchasePanel({
             className="product-primary-cta h-12 w-full"
             disabled={addToCartDisabled}
             onClick={handleAddToCart}
+            ref={primaryCtaRef}
             size="lg"
             type="button"
           >
@@ -257,7 +305,7 @@ export function ProductPurchasePanel({
           </div>
         </div>
       </div>
-      {canRenderStickyBar
+      {canRenderStickyBar && showStickyBar
         ? createPortal(stickyPurchaseBar, document.body)
         : null}
     </>

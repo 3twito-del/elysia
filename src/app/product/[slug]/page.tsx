@@ -124,7 +124,7 @@ export default async function ProductPage({
       />
 
       <RevealSection
-        className="mx-auto grid max-w-[92rem] gap-10 px-4 py-6 sm:px-6 sm:py-10 lg:grid-cols-[minmax(0,1.18fr)_minmax(22rem,0.82fr)] lg:gap-14"
+        className="mx-auto grid max-w-[88rem] gap-8 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-[minmax(0,1.12fr)_minmax(22rem,0.78fr)] lg:gap-12"
         dir="ltr"
         id="product-buy"
         initialVisible
@@ -145,7 +145,7 @@ export default async function ProductPage({
             </div>
 
             <h1
-              className="mt-6 max-w-[14ch] text-4xl leading-[1.08] font-semibold break-words sm:text-5xl"
+              className="mt-5 max-w-[16ch] text-3xl leading-[1.08] font-semibold break-words sm:text-5xl"
               dir="auto"
             >
               {product.name}
@@ -209,7 +209,7 @@ export default async function ProductPage({
       </RevealSection>
 
       <RevealSection
-        className="brand-page-band border-y px-4 py-14 sm:px-6 lg:py-20"
+        className="brand-page-band border-y px-4 py-12 sm:px-6 lg:py-16"
         id="product-details"
       >
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
@@ -277,7 +277,7 @@ function ProductRecommendationRails({
 
   return (
     <div
-      className="mx-auto mt-14 grid max-w-7xl gap-12"
+      className="mx-auto mt-12 grid max-w-7xl gap-10"
       data-testid="product-recommendation-rails"
       id="similar-products"
     >
@@ -287,7 +287,7 @@ function ProductRecommendationRails({
         return (
           <section
             aria-labelledby={headingId}
-            className="border-border border-t pt-10"
+            className="border-border border-t pt-8"
             data-testid={`product-recommendation-rail-${rail.id}`}
             key={rail.id}
           >

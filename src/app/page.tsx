@@ -134,7 +134,7 @@ export default async function Home() {
       </RevealSection>
 
       <RevealSection className="brand-page-band border-b" id="quick-search">
-        <div className="mx-auto grid max-w-7xl gap-4 px-4 py-6 sm:px-6 lg:grid-cols-[1fr_2fr]">
+        <div className="mx-auto grid max-w-7xl gap-4 px-4 py-5 sm:px-6 lg:grid-cols-[1fr_2fr]">
           <div>
             <p className="text-muted-foreground text-sm">חיפוש מהיר</p>
             <h2 className="text-2xl font-semibold">מה תרצי למצוא היום?</h2>
@@ -166,7 +166,7 @@ export default async function Home() {
       </RevealSection>
 
       <RevealSection
-        className="mx-auto max-w-7xl px-4 py-14 sm:px-6"
+        className="mx-auto max-w-7xl px-4 py-12 sm:px-6"
         id="categories"
       >
         <CommerceSectionHeader
@@ -184,7 +184,7 @@ export default async function Home() {
         >
           {categories.map((category) => (
             <Link
-              className="brand-surface interactive-lift group/card flex min-h-[320px] w-full flex-col overflow-hidden rounded-md"
+              className="brand-surface interactive-lift group/card flex min-h-[290px] w-full flex-col overflow-hidden rounded-md"
               href={`/category/${category.slug}`}
               key={category.slug}
             >
@@ -220,7 +220,7 @@ export default async function Home() {
       </RevealSection>
 
       <RevealSection className="brand-page-band" id="featured">
-        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
           <CommerceSectionHeader
             action={
               <Button asChild variant="outline">
@@ -246,7 +246,7 @@ export default async function Home() {
       </RevealSection>
 
       <RevealSection
-        className="mx-auto max-w-7xl px-4 py-14 sm:px-6"
+        className="mx-auto max-w-7xl px-4 py-12 sm:px-6"
         id="service-metrics"
       >
         <RevealGrid className="grid gap-5 lg:grid-cols-4" variant="compact">

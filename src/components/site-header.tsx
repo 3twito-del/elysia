@@ -35,6 +35,7 @@ type AnchorScrollEventDetail = {
 };
 
 export function SiteHeader() {
+  const pathname = usePathname();
   const scrollState = useHeaderScrollState();
   const categoryPrefetch = useCategoryRoutePrefetch(categoryNavHrefs, {
     prefetchOnHomeIdle: true,
@@ -77,15 +78,23 @@ export function SiteHeader() {
         >
           {navItems.map((item) => {
             const categoryHref = isCategoryHref(item.href);
+            const isActive =
+              pathname === item.href ||
+              (categoryHref && pathname.startsWith(`${item.href}/`));
 
             return (
               <Button
                 asChild
-                className="h-10 px-3 text-[0.94rem] font-medium xl:px-4"
+                className={cn(
+                  "h-10 px-3 text-[0.94rem] font-medium xl:px-4",
+                  isActive &&
+                    "bg-secondary text-foreground hover:bg-secondary shadow-none",
+                )}
                 key={item.href}
                 variant="ghost"
               >
                 <Link
+                  aria-current={isActive ? "page" : undefined}
                   href={item.href}
                   onFocus={
                     categoryHref

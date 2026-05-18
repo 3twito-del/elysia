@@ -47,7 +47,7 @@ export function ServiceRequestForm({ topics }: ServiceRequestFormProps) {
   return (
     <form
       action={formAction}
-      className="brand-surface grid gap-5 rounded-md p-5 sm:p-6"
+      className="brand-surface grid gap-4 rounded-md p-4 sm:p-5"
       ref={formRef}
     >
       <div className="grid gap-2">
@@ -157,7 +157,7 @@ export function ServiceRequestForm({ topics }: ServiceRequestFormProps) {
         />
       </div>
 
-      <div className="glass-inset grid gap-3 rounded-md border p-4">
+      <div className="glass-inset grid gap-3 rounded-md border p-3.5">
         <Label className="flex items-center gap-2" htmlFor="attachments">
           <Paperclip aria-hidden="true" className="size-4" />
           תמונות או PDF
@@ -183,7 +183,7 @@ export function ServiceRequestForm({ topics }: ServiceRequestFormProps) {
       ) : null}
 
       <Button
-        className="min-h-11 w-full gap-2 sm:w-fit"
+        className="min-h-11 w-full gap-2 sm:w-fit sm:min-w-40"
         disabled={pending}
         type="submit"
       >

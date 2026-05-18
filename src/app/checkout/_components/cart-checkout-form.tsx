@@ -284,20 +284,20 @@ export function CartCheckoutForm() {
     <>
       <form
         aria-busy={checkoutLocked}
-        className="mx-auto grid max-w-7xl gap-8 px-4 pt-8 pb-28 sm:px-6 sm:pt-10 sm:pb-28 md:pb-10 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start"
+        className="mx-auto grid max-w-7xl gap-6 px-4 pt-6 pb-28 sm:px-6 sm:pt-8 sm:pb-28 md:pb-10 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start"
         data-testid="cart-checkout-form"
         id={checkoutFormId}
         onSubmit={handleSubmit}
       >
-        <div className="grid gap-6">
+        <div className="grid gap-5">
           <div>
-            <h2 className="text-4xl font-semibold">סל וקופה</h2>
-            <p className="text-muted-foreground mt-2">
+            <h2 className="text-2xl font-semibold sm:text-3xl">סל וקופה</h2>
+            <p className="text-muted-foreground mt-2 max-w-3xl text-sm leading-7 sm:text-base">
               סל רב-פריטים עם שמירת מלאי, פרטי מסירה וקופון.
             </p>
           </div>
 
-          <Card className="rounded-md">
+          <Card className="rounded-md" size="sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckoutStepBadge value="1" />
@@ -454,7 +454,7 @@ export function CartCheckoutForm() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-md">
+          <Card className="rounded-md" size="sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckoutStepBadge value="2" />
@@ -528,7 +528,7 @@ export function CartCheckoutForm() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-md">
+          <Card className="rounded-md" size="sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckoutStepBadge value="3" />
@@ -598,7 +598,7 @@ export function CartCheckoutForm() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-md">
+          <Card className="rounded-md" size="sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckoutStepBadge value="4" />
@@ -653,7 +653,7 @@ export function CartCheckoutForm() {
         </div>
 
         <aside>
-          <Card className="rounded-md lg:sticky lg:top-24">
+          <Card className="rounded-md lg:sticky lg:top-24" size="sm">
             <CardHeader>
               <CheckoutStepBadge value="5" />
               <CardTitle>סיכום</CardTitle>
