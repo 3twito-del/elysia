@@ -88,8 +88,11 @@ export function ProductCard({
               style={{ objectPosition: imageObjectPosition }}
             />
           </KineticImageMotion>
-          <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
-            <Badge className="max-w-[68%] font-normal" variant="secondary">
+          <div className="absolute inset-x-2.5 top-2.5 flex items-start justify-between gap-2">
+            <Badge
+              className="max-w-[68%] font-normal shadow-sm"
+              variant="secondary"
+            >
               <span className="truncate">{product.collection}</span>
             </Badge>
             {discountPercent ? (
@@ -100,7 +103,7 @@ export function ProductCard({
               <Badge variant="destructive">לא זמין</Badge>
             ) : null}
           </div>
-          <div className="absolute inset-x-3 bottom-3 flex min-w-0 flex-wrap gap-2">
+          <div className="absolute inset-x-2.5 bottom-2.5 flex min-w-0 flex-wrap gap-1.5">
             <Badge className="max-w-full font-normal" variant="outline">
               <span className="truncate">{product.material}</span>
             </Badge>
@@ -112,7 +115,7 @@ export function ProductCard({
           </div>
         </div>
       </Link>
-      <CardContent className="flex min-h-52 flex-1 flex-col gap-3.5 p-3.5 sm:p-4">
+      <CardContent className="flex min-h-52 flex-1 flex-col gap-3 p-3.5 sm:p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <Link
@@ -132,7 +135,7 @@ export function ProductCard({
           />
         </div>
 
-        <div className="mt-auto grid gap-3">
+        <div className="mt-auto grid gap-2.5">
           <div className="grid min-h-16 grid-cols-[minmax(0,1fr)_auto] items-end gap-3">
             <div className="min-w-0">
               <p className="text-muted-foreground text-xs">מחיר</p>

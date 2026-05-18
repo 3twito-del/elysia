@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   CircleHelp,
+  Gem,
   Menu,
   Search,
   ShoppingBag,
@@ -94,6 +95,20 @@ export function MobileNav({
           קישורי ניווט ראשיים לאתר Aphrodite.
         </SheetDescription>
 
+        <div className="border-b border-[var(--glass-border)] px-4 py-4">
+          <Link
+            className="brand-header-mark inline-flex items-center gap-2"
+            href="/"
+            onClick={closeNav}
+          >
+            <Gem aria-hidden="true" className="size-5" />
+            <span className="text-lg font-semibold">Aphrodite</span>
+          </Link>
+          <p className="text-muted-foreground mt-2 text-sm leading-6">
+            ׳§׳˜׳׳•׳’ ׳׳•׳ ׳׳™׳™׳, ׳™׳™׳¢׳•׳¥ ׳׳™׳©׳™ ׳•׳©׳™׳¨׳•׳× ׳˜׳׳₪׳•׳ ׳™.
+          </p>
+        </div>
+
         <div className="grid gap-4 p-4">
           <div className="grid grid-cols-3 gap-2">
             {quickActions.map((item) => {
@@ -102,7 +117,7 @@ export function MobileNav({
               return (
                 <Button
                   asChild
-                  className="h-auto min-h-16 flex-col gap-2 px-2 text-xs"
+                  className="h-auto min-h-14 flex-col gap-1.5 px-2 text-xs"
                   key={item.href}
                   variant="outline"
                 >
@@ -124,7 +139,7 @@ export function MobileNav({
             {catalogItems.map((item) => (
               <Button
                 asChild
-                className="h-11 justify-start px-3 text-base"
+                className="h-10 justify-start px-3 text-[0.96rem]"
                 key={item.href}
                 variant="ghost"
               >
@@ -162,7 +177,7 @@ export function MobileNav({
               return (
                 <Button
                   asChild
-                  className="h-11 justify-start gap-2 px-3 text-base"
+                  className="h-10 justify-start gap-2 px-3 text-[0.96rem]"
                   key={item.href}
                   variant="ghost"
                 >
@@ -180,7 +195,7 @@ export function MobileNav({
             {editorialItems.map((item) => (
               <Button
                 asChild
-                className="h-11 justify-start px-3 text-base"
+                className="h-10 justify-start px-3 text-[0.96rem]"
                 key={item.href}
                 variant="ghost"
               >

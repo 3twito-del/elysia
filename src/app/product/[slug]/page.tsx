@@ -124,7 +124,7 @@ export default async function ProductPage({
       />
 
       <RevealSection
-        className="mx-auto grid max-w-[88rem] gap-8 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-[minmax(0,1.12fr)_minmax(22rem,0.78fr)] lg:gap-12"
+        className="mx-auto grid max-w-[86rem] gap-7 px-4 py-5 sm:px-6 sm:py-7 lg:grid-cols-[minmax(0,1.08fr)_minmax(21rem,0.72fr)] lg:gap-10"
         dir="ltr"
         id="product-buy"
         initialVisible
@@ -145,17 +145,17 @@ export default async function ProductPage({
             </div>
 
             <h1
-              className="mt-5 max-w-[16ch] text-3xl leading-[1.08] font-semibold break-words sm:text-5xl"
+              className="mt-4 max-w-[17ch] text-3xl leading-[1.08] font-semibold break-words sm:text-4xl"
               dir="auto"
             >
               {product.name}
             </h1>
-            <p className="text-muted-foreground mt-5 max-w-prose text-lg leading-8">
+            <p className="text-muted-foreground mt-4 max-w-prose text-base leading-7">
               {product.shortDescription}
             </p>
 
-            <div className="mt-7 flex flex-wrap items-end gap-3">
-              <span className="text-3xl font-semibold tracking-normal">
+            <div className="mt-6 flex flex-wrap items-end gap-3">
+              <span className="text-2xl font-semibold tracking-normal sm:text-3xl">
                 {formatPrice(product.price)}
               </span>
               {product.compareAt ? (
@@ -168,7 +168,7 @@ export default async function ProductPage({
               </span>
             </div>
 
-            <div className="mt-8">
+            <div className="mt-7">
               <TRPCReactProvider>
                 <ProductPurchasePanel
                   metalColors={product.metalColors}
@@ -193,7 +193,7 @@ export default async function ProductPage({
               </Button>
             </div>
 
-            <dl className="border-border mt-8 grid divide-y border-y">
+            <dl className="border-border mt-7 grid divide-y border-y">
               {productFacts.map((fact) => (
                 <div
                   className="grid grid-cols-[7rem_minmax(0,1fr)] gap-4 py-3 text-sm"
@@ -209,10 +209,10 @@ export default async function ProductPage({
       </RevealSection>
 
       <RevealSection
-        className="brand-page-band border-y px-4 py-12 sm:px-6 lg:py-16"
+        className="brand-page-band border-y px-4 py-10 sm:px-6 lg:py-14"
         id="product-details"
       >
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
+        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.88fr_1.12fr] lg:gap-12">
           <CommerceSectionHeader
             className="mb-0"
             eyebrow="Aphrodite Atelier"
@@ -220,7 +220,7 @@ export default async function ProductPage({
           />
 
           <div className="grid gap-8">
-            <p className="text-muted-foreground text-lg leading-9">
+            <p className="text-muted-foreground text-base leading-8">
               {product.description}
             </p>
 
@@ -277,7 +277,7 @@ function ProductRecommendationRails({
 
   return (
     <div
-      className="mx-auto mt-12 grid max-w-7xl gap-10"
+      className="mx-auto mt-10 grid max-w-7xl gap-9"
       data-testid="product-recommendation-rails"
       id="similar-products"
     >
@@ -287,7 +287,7 @@ function ProductRecommendationRails({
         return (
           <section
             aria-labelledby={headingId}
-            className="border-border border-t pt-8"
+            className="border-border border-t pt-7"
             data-testid={`product-recommendation-rail-${rail.id}`}
             key={rail.id}
           >
@@ -301,7 +301,7 @@ function ProductRecommendationRails({
               id={headingId}
               title={rail.title}
             />
-            <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {rail.products.map((recommended) => (
                 <ProductCard key={recommended.slug} product={recommended} />
               ))}

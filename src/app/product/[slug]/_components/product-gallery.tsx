@@ -66,7 +66,7 @@ export function ProductGallery({
     return (
       <div className={cn("grid gap-4", className)}>
         <div
-          className="border-border bg-card flex aspect-[4/5] items-center justify-center rounded-md border p-8 text-center sm:aspect-[5/4] lg:aspect-[4/3]"
+          className="brand-surface flex aspect-[4/5] items-center justify-center rounded-md p-8 text-center sm:aspect-[5/4] lg:aspect-[4/3]"
           data-testid="product-gallery-empty"
         >
           <div className="grid justify-items-center gap-4">
@@ -92,7 +92,7 @@ export function ProductGallery({
       role="group"
     >
       <div
-        className="border-border bg-card relative aspect-[4/5] overflow-hidden rounded-md border sm:aspect-[5/4] lg:aspect-[4/3]"
+        className="brand-gallery-frame relative aspect-[4/5] overflow-hidden rounded-md sm:aspect-[5/4] lg:aspect-[4/3]"
         data-motion-gallery="product"
         data-testid="product-gallery"
       >

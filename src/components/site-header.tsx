@@ -52,7 +52,7 @@ export function SiteHeader() {
       data-scroll={scrollState}
       dir="rtl"
     >
-      <div className="mx-auto grid h-16 max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-6 lg:grid-cols-[auto_1fr_auto] lg:gap-6">
+      <div className="mx-auto grid h-16 max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 sm:px-6 lg:grid-cols-[auto_1fr_auto] lg:gap-5">
         <div className="flex items-center justify-self-start lg:hidden">
           <MobileNav
             items={navItems}
@@ -86,9 +86,9 @@ export function SiteHeader() {
               <Button
                 asChild
                 className={cn(
-                  "h-10 px-3 text-[0.94rem] font-medium xl:px-4",
+                  "h-9 px-3 text-[0.9rem] font-medium xl:px-3.5",
                   isActive &&
-                    "bg-secondary text-foreground hover:bg-secondary shadow-none",
+                    "bg-secondary/80 text-foreground hover:bg-secondary shadow-none ring-1 ring-[var(--glass-border)]",
                 )}
                 key={item.href}
                 variant="ghost"

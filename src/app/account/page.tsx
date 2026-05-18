@@ -232,11 +232,11 @@ export default async function AccountPage() {
         />
         <RevealSection
           aria-label="כניסה לאזור לקוח"
-          className="mx-auto max-w-7xl scroll-mt-24 px-4 pt-2 pb-8 sm:scroll-mt-28 sm:px-6 sm:pt-4 sm:pb-12"
+          className="mx-auto max-w-7xl scroll-mt-24 px-4 pt-1 pb-8 sm:scroll-mt-28 sm:px-6 sm:pt-3 sm:pb-10"
           id="account-login"
         >
-          <div className="grid gap-5 lg:grid-cols-[minmax(0,420px)_1fr]">
-            <Card className="rounded-md">
+          <div className="grid gap-5 lg:grid-cols-[minmax(0,400px)_1fr]">
+            <Card className="rounded-md" size="sm">
               <CardHeader className="border-b border-[var(--glass-border)] pb-4">
                 <CardTitle>כניסת לקוח</CardTitle>
               </CardHeader>
@@ -317,7 +317,7 @@ export default async function AccountPage() {
         variant="checkout"
       />
       <RevealSection
-        className="mx-auto max-w-7xl scroll-mt-24 px-4 py-8 sm:scroll-mt-28 sm:px-6 sm:py-12"
+        className="mx-auto max-w-7xl scroll-mt-24 px-4 py-7 sm:scroll-mt-28 sm:px-6 sm:py-10"
         id="account-overview"
       >
         <div className="mb-6 flex justify-end">
@@ -358,10 +358,11 @@ export default async function AccountPage() {
           />
         </RevealGrid>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-2">
+        <div className="mt-7 grid gap-5 lg:grid-cols-2">
           <Card
             className="scroll-mt-24 rounded-md sm:scroll-mt-28"
             id="account-orders"
+            size="sm"
           >
             <CardHeader>
               <CardTitle>הזמנות אחרונות</CardTitle>
@@ -404,6 +405,7 @@ export default async function AccountPage() {
           <Card
             className="scroll-mt-24 rounded-md sm:scroll-mt-28"
             id="account-wishlist"
+            size="sm"
           >
             <CardHeader>
               <CardTitle>מועדפים</CardTitle>
@@ -473,6 +475,7 @@ export default async function AccountPage() {
           <Card
             className="scroll-mt-24 rounded-md sm:scroll-mt-28"
             id="account-addresses"
+            size="sm"
           >
             <CardHeader>
               <CardTitle>כתובות שמורות</CardTitle>
@@ -510,6 +513,7 @@ export default async function AccountPage() {
           <Card
             className="scroll-mt-24 rounded-md sm:scroll-mt-28"
             id="account-sizes"
+            size="sm"
           >
             <CardHeader>
               <CardTitle>מידות וסגנון</CardTitle>
@@ -543,6 +547,7 @@ export default async function AccountPage() {
           <Card
             className="scroll-mt-24 rounded-md sm:scroll-mt-28"
             id="account-service"
+            size="sm"
           >
             <CardHeader>
               <CardTitle>שירות</CardTitle>
@@ -570,6 +575,7 @@ export default async function AccountPage() {
           <Card
             className="scroll-mt-24 rounded-md sm:scroll-mt-28"
             id="account-privacy"
+            size="sm"
           >
             <CardHeader>
               <CardTitle className="flex items-center gap-2">

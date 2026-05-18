@@ -258,7 +258,7 @@ export default async function CategoryPage({
 
       <div className="h-px" id="category-filters" />
 
-      <RevealSection className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[296px_1fr] lg:py-10">
+      <RevealSection className="mx-auto grid max-w-7xl gap-6 px-4 py-7 sm:px-6 lg:grid-cols-[280px_1fr] lg:py-9">
         <aside className="hidden lg:block" data-testid="category-filter-panel">
           <Card
             className="brand-control-panel sticky top-24 rounded-md"
@@ -286,7 +286,7 @@ export default async function CategoryPage({
           className="min-w-0"
           id="category-products"
         >
-          <div className="brand-control-panel mb-7 rounded-md p-4">
+          <div className="brand-control-panel mb-5 rounded-md p-3.5 sm:p-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="text-base font-medium" id="category-results">
@@ -346,7 +346,7 @@ export default async function CategoryPage({
           {filteredProducts.length > 0 ? (
             <>
               <RevealGrid
-                className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3"
+                className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
                 data-testid="category-results-grid"
                 variant="cards"
               >

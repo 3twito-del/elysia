@@ -34,8 +34,8 @@ export async function SiteFooter() {
 
   return (
     <footer className="glass-chrome site-chrome border-t">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:py-10">
-        <div className="grid gap-7 lg:grid-cols-[1.05fr_0.75fr_0.85fr_0.95fr]">
+      <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:py-9">
+        <div className="grid gap-6 lg:grid-cols-[1.08fr_0.72fr_0.82fr_0.9fr]">
           <section className="max-w-lg">
             <Link
               className="brand-footer-mark inline-flex items-center gap-2"
@@ -46,7 +46,7 @@ export async function SiteFooter() {
                 Aphrodite
               </span>
             </Link>
-            <p className="text-muted-foreground mt-3 max-w-md text-sm leading-7">
+            <p className="text-muted-foreground mt-3 max-w-md text-sm leading-6">
               רשת תכשיטי סטודיו ישראלית במיצוב יוקרה נגישה, עם קטלוג אונליין,
               רכישה מאובטחת וייעוץ אישי לבחירת תכשיט או מתנה.
             </p>
@@ -68,7 +68,7 @@ export async function SiteFooter() {
           </section>
 
           <div className="grid gap-2 lg:hidden">
-            <details className="group glass-inset rounded-md border">
+            <details className="group bg-background/70 rounded-md border">
               <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold [&::-webkit-details-marker]:hidden">
                 קטגוריות
                 <ChevronDown
@@ -98,7 +98,7 @@ export async function SiteFooter() {
               </ul>
             </details>
 
-            <details className="group glass-inset rounded-md border">
+            <details className="group bg-background/70 rounded-md border">
               <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold [&::-webkit-details-marker]:hidden">
                 שירות וקנייה
                 <ChevronDown
@@ -125,7 +125,7 @@ export async function SiteFooter() {
               </ul>
             </details>
 
-            <details className="group glass-inset rounded-md border">
+            <details className="group bg-background/70 rounded-md border">
               <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold [&::-webkit-details-marker]:hidden">
                 שירות אונליין
                 <ChevronDown
@@ -134,7 +134,7 @@ export async function SiteFooter() {
                 />
               </summary>
               <div className="grid gap-4 border-t border-[var(--glass-border)] p-4">
-                <p className="text-muted-foreground text-sm leading-7">
+                <p className="text-muted-foreground text-sm leading-6">
                   כל המכירות מתקיימות אונליין בשלב זה, עם משלוח עד הבית ושירות
                   לקוחות שמלווה את ההזמנה.
                 </p>
@@ -204,7 +204,7 @@ export async function SiteFooter() {
             <h2 className="text-sm font-semibold" id="footer-online-service">
               שירות אונליין
             </h2>
-            <p className="text-muted-foreground mt-4 text-sm leading-7">
+            <p className="text-muted-foreground mt-4 text-sm leading-6">
               כל המכירות מתקיימות אונליין בשלב זה. ההזמנות נשלחות לכתובת הלקוח,
               וצוות השירות זמין לייעוץ, התאמה ומעקב אחרי ההזמנה.
             </p>
@@ -221,7 +221,7 @@ export async function SiteFooter() {
           </section>
         </div>
 
-        <Separator className="my-5" />
+        <Separator className="my-4" />
 
         <div className="text-muted-foreground flex flex-col justify-between gap-4 text-sm lg:flex-row lg:items-center">
           <p>2026 Aphrodite. כל הזכויות שמורות.</p>

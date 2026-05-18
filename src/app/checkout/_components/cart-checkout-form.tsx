@@ -284,15 +284,15 @@ export function CartCheckoutForm() {
     <>
       <form
         aria-busy={checkoutLocked}
-        className="mx-auto grid max-w-7xl gap-6 px-4 pt-6 pb-28 sm:px-6 sm:pt-8 sm:pb-28 md:pb-10 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start"
+        className="mx-auto grid max-w-7xl gap-5 px-4 pt-5 pb-28 sm:px-6 sm:pt-7 sm:pb-28 md:pb-10 lg:grid-cols-[minmax(0,1fr)_352px] lg:items-start"
         data-testid="cart-checkout-form"
         id={checkoutFormId}
         onSubmit={handleSubmit}
       >
-        <div className="grid gap-5">
+        <div className="grid gap-4">
           <div>
-            <h2 className="text-2xl font-semibold sm:text-3xl">סל וקופה</h2>
-            <p className="text-muted-foreground mt-2 max-w-3xl text-sm leading-7 sm:text-base">
+            <h2 className="text-xl font-semibold sm:text-2xl">סל וקופה</h2>
+            <p className="text-muted-foreground mt-1.5 max-w-3xl text-sm leading-6 sm:text-base">
               סל רב-פריטים עם שמירת מלאי, פרטי מסירה וקופון.
             </p>
           </div>
@@ -330,12 +330,12 @@ export function CartCheckoutForm() {
               ) : cart?.items.length ? (
                 cart.items.map((item) => (
                   <div
-                    className="glass-inset grid grid-cols-[72px_minmax(0,1fr)] gap-3 rounded-md border p-3 sm:grid-cols-[72px_minmax(0,1fr)_auto] sm:items-center"
+                    className="bg-background/72 grid grid-cols-[68px_minmax(0,1fr)] gap-3 rounded-md border p-3 sm:grid-cols-[68px_minmax(0,1fr)_auto] sm:items-center"
                     key={item.id}
                   >
                     <Link
                       aria-label={`צפייה במוצר ${item.productName}`}
-                      className="bg-muted relative size-[72px] overflow-hidden rounded-md border border-[var(--glass-border)]"
+                      className="bg-muted relative size-[68px] overflow-hidden rounded-md border border-[var(--glass-border)]"
                       href={`/product/${item.productSlug}`}
                     >
                       <Image
@@ -433,7 +433,7 @@ export function CartCheckoutForm() {
                 ))
               ) : (
                 <EmptyState
-                  className="min-h-52"
+                  className="min-h-44"
                   description="הסל ריק. אפשר לחזור לקטלוג ולבחור תכשיט לפני שמירת הזמנה."
                   icon={PackageCheck}
                   testId="checkout-empty-cart"
@@ -537,7 +537,7 @@ export function CartCheckoutForm() {
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
-              <div className="glass-inset flex items-start gap-3 rounded-md border p-4 text-sm">
+              <div className="bg-background/72 flex items-start gap-3 rounded-md border p-3.5 text-sm">
                 <Truck className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
                 <div>
                   <p className="font-medium">משלוח עד הבית</p>

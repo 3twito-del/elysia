@@ -47,7 +47,7 @@ export function ServiceRequestForm({ topics }: ServiceRequestFormProps) {
   return (
     <form
       action={formAction}
-      className="brand-surface grid gap-4 rounded-md p-4 sm:p-5"
+      className="brand-surface grid gap-3.5 rounded-md p-4"
       ref={formRef}
     >
       <div className="grid gap-2">
@@ -69,7 +69,7 @@ export function ServiceRequestForm({ topics }: ServiceRequestFormProps) {
         </select>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2">
         <Field
           autoComplete="name"
           error={state.fieldErrors?.name}
@@ -101,7 +101,7 @@ export function ServiceRequestForm({ topics }: ServiceRequestFormProps) {
         type="email"
       />
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2">
         <Field
           error={state.fieldErrors?.orderNumber}
           label="מספר הזמנה"
@@ -118,7 +118,7 @@ export function ServiceRequestForm({ topics }: ServiceRequestFormProps) {
         />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2">
         <div className="grid gap-2">
           <Label htmlFor="preferredContact">דרך חזרה מועדפת</Label>
           <select
@@ -148,7 +148,7 @@ export function ServiceRequestForm({ topics }: ServiceRequestFormProps) {
         <Label htmlFor="message">מה נוכל לבדוק?</Label>
         <FieldError message={state.fieldErrors?.message} />
         <Textarea
-          className="min-h-36"
+          className="min-h-32"
           disabled={pending}
           id="message"
           name="message"
@@ -157,7 +157,7 @@ export function ServiceRequestForm({ topics }: ServiceRequestFormProps) {
         />
       </div>
 
-      <div className="glass-inset grid gap-3 rounded-md border p-3.5">
+      <div className="bg-background/72 grid gap-3 rounded-md border p-3">
         <Label className="flex items-center gap-2" htmlFor="attachments">
           <Paperclip aria-hidden="true" className="size-4" />
           תמונות או PDF

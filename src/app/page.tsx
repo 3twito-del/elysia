@@ -64,15 +64,15 @@ export default async function Home() {
       <SiteHeader />
 
       <RevealSection
-        className="relative isolate min-h-[clamp(30rem,calc(82svh-4rem),40rem)] w-screen max-w-none overflow-hidden bg-[var(--brand-aqua-deep)] [--hero-edge:clamp(1rem,4vw,5rem)] lg:[--hero-edge:clamp(3rem,4vw,5rem)]"
+        className="relative isolate min-h-[clamp(29rem,calc(76svh-4rem),38rem)] w-screen max-w-none overflow-hidden bg-[var(--brand-aqua-deep)] [--hero-edge:clamp(1rem,4vw,5rem)] lg:[--hero-edge:clamp(3rem,4vw,5rem)]"
         data-testid="cinematic-page-hero"
         id="page-hero"
         initialVisible
         variant="hero"
       >
         <MotionMediaFrame
-          className="absolute inset-0 h-full min-h-[clamp(30rem,calc(82svh-4rem),40rem)] w-full bg-[var(--brand-aqua-deep)]"
-          contentClassName="absolute inset-0 min-h-[clamp(30rem,calc(82svh-4rem),40rem)]"
+          className="absolute inset-0 h-full min-h-[clamp(29rem,calc(76svh-4rem),38rem)] w-full bg-[var(--brand-aqua-deep)]"
+          contentClassName="absolute inset-0 min-h-[clamp(29rem,calc(76svh-4rem),38rem)]"
           intensity="cinematic"
           parallax
         >
@@ -83,22 +83,22 @@ export default async function Home() {
             />
           </KineticImageMotion>
         </MotionMediaFrame>
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,56,59,0.02),rgba(6,56,59,0.28)_42%,rgba(0,0,0,0.68))]" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.6),rgba(6,56,59,0.08)_58%,rgba(185,242,236,0.12))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,56,59,0.02),rgba(6,56,59,0.24)_42%,rgba(0,0,0,0.64))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.56),rgba(6,56,59,0.06)_58%,rgba(185,242,236,0.09))]" />
         <div className="absolute inset-x-0 top-0 h-px bg-[rgba(185,242,236,0.42)]" />
-        <div className="relative min-h-[clamp(30rem,calc(82svh-4rem),40rem)]">
+        <div className="relative min-h-[clamp(29rem,calc(76svh-4rem),38rem)]">
           <div
             className="motion-hero-copy absolute top-[var(--hero-edge)] right-[var(--hero-edge)] w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),48rem)] text-right text-white lg:w-[min(48rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
             data-testid="home-hero-copy"
             dir="rtl"
           >
             <h1
-              className="motion-copy-item text-right text-4xl leading-[1.05] font-semibold tracking-normal sm:text-6xl lg:text-7xl"
+              className="motion-copy-item text-right text-4xl leading-[1.05] font-semibold tracking-normal sm:text-6xl lg:text-[4.75rem]"
               dir="ltr"
             >
               Aphrodite
             </h1>
-            <p className="motion-copy-item mt-4 max-w-xl text-base leading-7 text-white/90 [--motion-copy-delay:90ms] sm:mt-5 sm:text-lg sm:leading-8">
+            <p className="motion-copy-item mt-4 max-w-xl text-base leading-7 text-white/90 [--motion-copy-delay:90ms] sm:mt-5 sm:text-[1.05rem] sm:leading-8">
               תכשיטים ישראליים בקו סטודיו מודרני, עם קטלוג אונליין וייעוץ אישי
               לבחירה מדויקת.
             </p>
@@ -134,7 +134,7 @@ export default async function Home() {
       </RevealSection>
 
       <RevealSection className="brand-page-band border-b" id="quick-search">
-        <div className="mx-auto grid max-w-7xl gap-4 px-4 py-5 sm:px-6 lg:grid-cols-[1fr_2fr]">
+        <div className="mx-auto grid max-w-7xl gap-4 px-4 py-4 sm:px-6 lg:grid-cols-[0.85fr_2fr] lg:items-center">
           <div>
             <p className="text-muted-foreground text-sm">חיפוש מהיר</p>
             <h2 className="text-2xl font-semibold">מה תרצי למצוא היום?</h2>
@@ -142,7 +142,7 @@ export default async function Home() {
           <form
             action="/search"
             aria-label="חיפוש בקטלוג"
-            className="grid gap-3 sm:grid-cols-[1fr_auto]"
+            className="brand-control-panel grid gap-2 p-2 sm:grid-cols-[1fr_auto]"
             role="search"
           >
             <div className="relative">
@@ -166,7 +166,7 @@ export default async function Home() {
       </RevealSection>
 
       <RevealSection
-        className="mx-auto max-w-7xl px-4 py-12 sm:px-6"
+        className="mx-auto max-w-7xl px-4 py-10 sm:px-6"
         id="categories"
       >
         <CommerceSectionHeader
@@ -184,7 +184,7 @@ export default async function Home() {
         >
           {categories.map((category) => (
             <Link
-              className="brand-surface interactive-lift group/card flex min-h-[290px] w-full flex-col overflow-hidden rounded-md"
+              className="brand-surface interactive-lift group/card flex min-h-[270px] w-full flex-col overflow-hidden rounded-md"
               href={`/category/${category.slug}`}
               key={category.slug}
             >
@@ -204,8 +204,8 @@ export default async function Home() {
                   <Gem aria-hidden="true" className="text-foreground size-5" />
                 </div>
               </div>
-              <div className="flex flex-1 flex-col p-5">
-                <h3 className="text-xl font-medium">{category.name}</h3>
+              <div className="flex flex-1 flex-col p-4">
+                <h3 className="text-lg font-medium">{category.name}</h3>
                 <p className="text-muted-foreground mt-2 min-h-12 text-sm leading-6">
                   {category.description}
                 </p>
@@ -220,7 +220,7 @@ export default async function Home() {
       </RevealSection>
 
       <RevealSection className="brand-page-band" id="featured">
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
           <CommerceSectionHeader
             action={
               <Button asChild variant="outline">
@@ -246,7 +246,7 @@ export default async function Home() {
       </RevealSection>
 
       <RevealSection
-        className="mx-auto max-w-7xl px-4 py-12 sm:px-6"
+        className="mx-auto max-w-7xl px-4 py-10 sm:px-6"
         id="service-metrics"
       >
         <RevealGrid className="grid gap-5 lg:grid-cols-4" variant="compact">

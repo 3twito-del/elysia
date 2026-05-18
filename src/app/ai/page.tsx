@@ -61,14 +61,14 @@ export default async function AiPage({ searchParams }: AiPageProps) {
         className="border-b border-[var(--glass-border)]"
         id="ai-tools"
       >
-        <div className="mx-auto grid max-w-5xl gap-5 px-4 py-6 sm:px-6 lg:py-8">
+        <div className="mx-auto grid max-w-5xl gap-4 px-4 py-5 sm:px-6 lg:py-7">
           <Tabs className="gap-4" defaultValue={defaultTab} dir="rtl">
-            <div className="brand-control-panel grid gap-4 p-3 sm:grid-cols-[1fr_auto] sm:items-end sm:p-4">
-              <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
+            <div className="brand-control-panel grid gap-3 p-3 sm:grid-cols-[1fr_auto] sm:items-end">
+              <div className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end">
                 <Badge className="w-fit" variant="secondary">
                   Aphrodite AI
                 </Badge>
-                <div className="grid gap-3">
+                <div className="grid gap-2">
                   <h2 className="max-w-4xl text-xl font-semibold tracking-normal sm:text-2xl">
                     בחרו כלי
                   </h2>
@@ -107,7 +107,7 @@ export default async function AiPage({ searchParams }: AiPageProps) {
           </Tabs>
 
           <section className="grid gap-3 text-sm leading-6 sm:grid-cols-[auto_1fr] sm:items-start">
-            <div className="glass-inset flex size-10 items-center justify-center rounded-md border">
+            <div className="brand-icon-well flex size-10 items-center justify-center rounded-md border">
               <Sparkles aria-hidden="true" className="size-4" />
             </div>
             <p className="text-muted-foreground max-w-4xl">

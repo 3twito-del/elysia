@@ -52,14 +52,14 @@ export function AiGiftRecommender() {
   }
 
   return (
-    <div className="brand-surface grid gap-5 p-4 sm:p-5">
+    <div className="brand-surface grid gap-4 p-4">
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="mb-2 inline-flex items-center gap-2 text-sm font-medium">
             <Gift aria-hidden="true" className="size-4" />
             התאמת מתנה
           </div>
-          <h2 className="text-2xl font-semibold">שאלון מתנה חכם</h2>
+          <h2 className="text-xl font-semibold">שאלון מתנה חכם</h2>
           <p className="text-muted-foreground mt-2 max-w-2xl text-sm leading-6">
             הזינו קשר, אירוע, תקציב וסגנון. ההמלצות יישארו בתוך מוצרים קיימים
             בקטלוג.
@@ -68,8 +68,8 @@ export function AiGiftRecommender() {
         <Sparkles aria-hidden="true" className="text-foreground size-6" />
       </div>
 
-      <form className="grid gap-3.5" onSubmit={handleSubmit}>
-        <div className="grid gap-4 md:grid-cols-3">
+      <form className="grid gap-3" onSubmit={handleSubmit}>
+        <div className="grid gap-3 md:grid-cols-3">
           <Field
             error={fieldErrors.relation}
             htmlFor="ai-gift-relation"

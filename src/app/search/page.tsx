@@ -137,7 +137,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         variant="catalog"
       />
       <RevealSection
-        className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12"
+        className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-10"
         id="search-controls"
       >
         <SearchControls
@@ -150,7 +150,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         {hasActiveFilters ? (
           <div
             aria-label="פילטרים פעילים"
-            className="mt-5 flex flex-wrap items-center gap-2 text-sm"
+            className="mt-4 flex flex-wrap items-center gap-2 text-sm"
           >
             {activeFilters.map((filter) => (
               <Badge
@@ -175,7 +175,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         ) : null}
 
         {visibleFacets.length > 0 ? (
-          <div className="mt-6 hidden flex-wrap gap-2 text-sm sm:flex">
+          <div className="mt-5 hidden flex-wrap gap-2 text-sm sm:flex">
             {visibleFacets.map((value) => (
               <span
                 className="glass-inset rounded-md border px-3 py-1"
@@ -189,7 +189,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
         <section
           aria-labelledby="search-results"
-          className="brand-control-panel mt-8 rounded-md p-4"
+          className="brand-control-panel mt-6 rounded-md p-3.5 sm:p-4"
           data-testid="search-results-summary"
           id="search-results-section"
         >
@@ -296,7 +296,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         ) : (
           <>
             <RevealGrid
-              className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+              className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
               data-testid="search-results-grid"
               variant="cards"
             >
