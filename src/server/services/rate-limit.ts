@@ -95,10 +95,7 @@ export function getMissingSharedRateLimitEnv(
 export function isSharedRateLimitRequired(
   env: Record<string, string | undefined> = process.env,
 ) {
-  return (
-    env.NODE_ENV === "production" &&
-    (env.VERCEL === "1" || env.VERCEL_ENV === "production")
-  );
+  return env.NODE_ENV === "production" && env.VERCEL_ENV === "production";
 }
 
 export function resetRateLimitStateForTests() {

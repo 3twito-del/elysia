@@ -71,7 +71,7 @@ export function StylistChat({ compact = false }: StylistChatProps) {
     <TooltipProvider>
       <div
         className={cn(
-          "glass-panel grid overflow-hidden rounded-md border",
+          "brand-surface grid overflow-hidden",
           compact ? "min-h-[520px]" : "min-h-[640px]",
         )}
       >

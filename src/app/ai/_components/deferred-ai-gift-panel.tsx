@@ -8,7 +8,7 @@ const LazyAiGiftPanel = dynamic(
   () => import("./ai-gift-panel").then((mod) => mod.AiGiftPanel),
   {
     loading: () => (
-      <div className="glass-panel grid min-h-[420px] place-items-center rounded-md border p-5">
+      <div className="brand-surface grid min-h-[420px] place-items-center p-5">
         <LoadingState label="טוענים את שאלון המתנה" />
       </div>
     ),

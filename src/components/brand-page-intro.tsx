@@ -1,11 +1,13 @@
 import type { ReactNode } from "react";
 
 import {
-  BrandMediaPanel,
-  type BrandMediaPanelVariant,
-  type BrandMediaSlide,
+  CommercePageHero,
+  type CommercePageHeroVariant,
+} from "~/components/commerce-page-hero";
+import type {
+  BrandMediaPanelVariant,
+  BrandMediaSlide,
 } from "~/components/brand-media-panel";
-import { cn } from "~/lib/utils";
 
 type BrandPageIntroProps = {
   actions?: ReactNode;
@@ -30,29 +32,28 @@ export function BrandPageIntro({
   title,
   variant = "compact",
 }: BrandPageIntroProps) {
+  const heroVariant: CommercePageHeroVariant =
+    variant === "commerce"
+      ? "checkout"
+      : variant === "category"
+        ? "catalog"
+        : variant === "hero"
+          ? "home"
+          : "content";
+
   return (
-    <div
-      className={cn("brand-page-intro", className)}
-      data-brand-variant={variant}
-      dir="rtl"
-    >
-      <div className="brand-page-intro-copy">
-        {eyebrow ? <p className="brand-page-intro-eyebrow">{eyebrow}</p> : null}
-        <h2 className="brand-page-intro-title">{title}</h2>
-        {description ? (
-          <p className="brand-page-intro-description">{description}</p>
-        ) : null}
-        {actions ? (
-          <div className="brand-page-intro-actions">{actions}</div>
-        ) : null}
-      </div>
-      <BrandMediaPanel
-        alt={mediaAlt}
-        className="brand-page-intro-media"
-        priority={mediaPriority}
-        slides={slides}
-        variant={variant}
-      />
-    </div>
+    <CommercePageHero
+      actions={actions}
+      className={className}
+      description={description}
+      eyebrow={eyebrow}
+      media={{
+        alt: mediaAlt,
+        priority: mediaPriority,
+        slides,
+      }}
+      title={title}
+      variant={heroVariant}
+    />
   );
 }

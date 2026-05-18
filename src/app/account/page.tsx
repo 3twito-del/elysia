@@ -18,7 +18,7 @@ import { CustomerOtpForm } from "./_components/customer-otp-form";
 import { CustomerAddressForm } from "./_components/customer-address-form";
 import { CustomerPrivacyActions } from "./_components/customer-privacy-actions";
 import { customerLogoutAction, removeWishlistItemAction } from "./actions";
-import { CompactPageIntro } from "~/components/compact-page-intro";
+import { CommercePageHero } from "~/components/commerce-page-hero";
 import { MetricCard } from "~/components/metric-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -26,6 +26,7 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { EmptyState } from "~/components/ui/empty-state";
+import { cinematicRouteMedia } from "~/lib/brand-media";
 import { getOrderStatusLabel } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
 import { auth } from "~/server/auth";
@@ -207,7 +208,7 @@ export default async function AccountPage() {
     return (
       <main>
         <SiteHeader />
-        <CompactPageIntro
+        <CommercePageHero
           className="account-entry-intro"
           actions={
             <>
@@ -221,7 +222,13 @@ export default async function AccountPage() {
           }
           description="כניסה מאובטחת להזמנות, מועדפים, מידות שמורות, שירות ופרטיות."
           eyebrow="Aphrodite Account"
+          media={{
+            alt: "Aphrodite account",
+            priority: true,
+            slides: cinematicRouteMedia.account,
+          }}
           title="אזור לקוח"
+          variant="checkout"
         />
         <RevealSection
           aria-label="כניסה לאזור לקוח"
@@ -282,7 +289,7 @@ export default async function AccountPage() {
   return (
     <main>
       <SiteHeader />
-      <CompactPageIntro
+      <CommercePageHero
         className="account-entry-intro"
         actions={
           <>
@@ -296,12 +303,18 @@ export default async function AccountPage() {
         }
         description="כל ההזמנות, המועדפים, המידות, הכתובות והפרטיות שלך במקום אחד."
         eyebrow="Aphrodite Account"
+        media={{
+          alt: "Aphrodite account",
+          priority: true,
+          slides: cinematicRouteMedia.account,
+        }}
         metrics={[
           { label: "הזמנות", value: String(customer.orders.length) },
           { label: "מועדפים", value: String(wishlistItems.length) },
           { label: "שירות", value: "אונליין" },
         ]}
         title="אזור לקוח"
+        variant="checkout"
       />
       <RevealSection
         className="mx-auto max-w-7xl scroll-mt-24 px-4 py-8 sm:scroll-mt-28 sm:px-6 sm:py-12"

@@ -39,7 +39,7 @@ export function SearchControls({
       <form
         action="/search"
         aria-label="חיפוש בקטלוג"
-        className="glass-panel mt-6 hidden gap-3 rounded-md border p-3 md:grid lg:grid-cols-[1fr_repeat(3,160px)_120px]"
+        className="brand-control-panel mt-6 hidden gap-3 p-3 md:grid lg:grid-cols-[1fr_repeat(3,160px)_120px]"
         role="search"
       >
         <SearchFields categories={categories} input={input} />
@@ -51,7 +51,7 @@ export function SearchControls({
       </form>
 
       <div
-        className="glass-panel mt-4 grid gap-2 rounded-md border p-2 md:hidden"
+        className="brand-control-panel mt-4 grid gap-2 p-2 md:hidden"
         data-testid="mobile-search-controls"
       >
         <form

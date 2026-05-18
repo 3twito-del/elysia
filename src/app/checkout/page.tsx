@@ -1,10 +1,11 @@
 import Link from "next/link";
 
 import { CartCheckoutForm } from "./_components/cart-checkout-form";
-import { CompactPageIntro } from "~/components/compact-page-intro";
+import { CommercePageHero } from "~/components/commerce-page-hero";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
+import { cinematicRouteMedia } from "~/lib/brand-media";
 import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata = {
@@ -15,7 +16,7 @@ export default async function CheckoutPage() {
   return (
     <main>
       <SiteHeader />
-      <CompactPageIntro
+      <CommercePageHero
         actions={
           <>
             <Button asChild>
@@ -28,12 +29,18 @@ export default async function CheckoutPage() {
         }
         description="סל, משלוח עד הבית וקופה מאובטחת בממשק נקי, עם שירות שמדגיש את רגע הרכישה."
         eyebrow="Aphrodite Service"
+        media={{
+          alt: "Aphrodite checkout",
+          priority: true,
+          slides: cinematicRouteMedia.checkout,
+        }}
         metrics={[
           { label: "אונליין", value: "בלבד" },
           { label: "קופה", value: "מאובטחת" },
           { label: "משלוח", value: "עד הבית" },
         ]}
         title="קופה מאובטחת"
+        variant="checkout"
       />
       <RevealSection id="checkout-form">
         <div id="checkout-service" />

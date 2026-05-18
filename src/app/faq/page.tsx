@@ -12,11 +12,12 @@ import {
   Truck,
 } from "lucide-react";
 
-import { CompactPageIntro } from "~/components/compact-page-intro";
+import { CommercePageHero } from "~/components/commerce-page-hero";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
+import { cinematicRouteMedia } from "~/lib/brand-media";
 import { publicContactEmail, publicContactPhone } from "~/lib/public-contact";
 
 export const metadata: Metadata = {
@@ -96,7 +97,7 @@ export default function FaqPage() {
     <main>
       <SiteHeader />
 
-      <CompactPageIntro
+      <CommercePageHero
         actions={
           <>
             <Button asChild>
@@ -109,12 +110,18 @@ export default function FaqPage() {
         }
         description="תשובות קצרות על קנייה באתר, זמינות אונליין, מידות, משלוחים, מתנות והמלצות AI."
         eyebrow="Aphrodite Help"
+        media={{
+          alt: "Aphrodite help",
+          priority: true,
+          slides: cinematicRouteMedia.faq,
+        }}
         metrics={[
           { label: "נושאים", value: String(faqGroups.length) },
           { label: "שירות", value: "זמין" },
           { label: "AI", value: "פעיל" },
         ]}
         title="שאלות ותשובות"
+        variant="content"
       />
 
       <RevealSection
@@ -122,33 +129,21 @@ export default function FaqPage() {
         id="faq-shortcuts"
       >
         <div className="grid gap-6 sm:grid-cols-3">
-          <Link
-            className="glass-card interactive-lift rounded-md border p-5"
-            href="/search"
-          >
+          <Link className="brand-surface interactive-lift p-5" href="/search">
             <Search className="size-5" aria-hidden="true" />
             <p className="mt-3 font-medium">חיפוש בקטלוג</p>
           </Link>
-          <Link
-            className="glass-card interactive-lift rounded-md border p-5"
-            href="/gifts"
-          >
+          <Link className="brand-surface interactive-lift p-5" href="/gifts">
             <Gift className="size-5" aria-hidden="true" />
             <p className="mt-3 font-medium">מתנות לפי תקציב</p>
           </Link>
-          <Link
-            className="glass-card interactive-lift rounded-md border p-5"
-            href="/ai"
-          >
+          <Link className="brand-surface interactive-lift p-5" href="/ai">
             <Sparkles className="size-5" aria-hidden="true" />
             <p className="mt-3 font-medium">סטייליסט AI</p>
           </Link>
         </div>
 
-        <div
-          className="glass-panel mt-8 rounded-md border p-6 sm:p-8"
-          id="faq-groups"
-        >
+        <div className="brand-surface mt-8 p-6 sm:p-8" id="faq-groups">
           <div className="grid gap-10">
             {faqGroups.map((group, index) => {
               const Icon = group.icon;

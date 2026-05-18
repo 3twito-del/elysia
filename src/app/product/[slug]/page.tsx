@@ -1,12 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  Gem,
-  RotateCcw,
-  ShieldCheck,
-  Sparkles,
-} from "lucide-react";
+import { Gem, RotateCcw, ShieldCheck, Sparkles } from "lucide-react";
 
 import { ProductAnalytics } from "./_components/product-analytics";
 import { ProductGallery } from "./_components/product-gallery";
@@ -16,14 +11,13 @@ import {
   getProductRecommendationRails,
   type ProductRecommendationRail,
 } from "./_lib/product-recommendation-rails";
+import { CommerceSectionHeader } from "~/components/commerce-section-header";
 import { ProductCard } from "~/components/product-card";
 import { SiteHeader } from "~/components/site-header";
 import { RevealSection } from "~/components/reveal";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import {
-  getProductAvailabilityLabel,
-} from "~/lib/commerce-labels";
+import { getProductAvailabilityLabel } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
 import { stringifyJsonLd } from "~/lib/json-ld";
 import {
@@ -210,31 +204,27 @@ export default async function ProductPage({
                 </div>
               ))}
             </dl>
-
           </div>
         </aside>
       </RevealSection>
 
       <RevealSection
-        className="border-border bg-card border-y px-4 py-14 sm:px-6 lg:py-20"
+        className="brand-page-band border-y px-4 py-14 sm:px-6 lg:py-20"
         id="product-details"
       >
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
-          <div>
-            <p className="text-muted-foreground text-xs font-medium tracking-[0.18em] uppercase">
-              Aphrodite Atelier
-            </p>
-            <h2 className="mt-4 text-3xl leading-tight font-semibold sm:text-4xl">
-              תכשיט שנבחר כמו פריט אייקוני, לא כמו עוד מוצר בקטלוג.
-            </h2>
-          </div>
+          <CommerceSectionHeader
+            className="mb-0"
+            eyebrow="Aphrodite Atelier"
+            title="תכשיט שנבחר כמו פריט אייקוני, לא כמו עוד מוצר בקטלוג."
+          />
 
           <div className="grid gap-8">
             <p className="text-muted-foreground text-lg leading-9">
               {product.description}
             </p>
 
-            <div className="border-border divide-border divide-y border-y">
+            <div className="brand-surface divide-border divide-y overflow-hidden rounded-md">
               <ServiceRow
                 description="אחריות לשנה על פגמי ייצור ושירות ניקוי ראשוני ללא עלות."
                 icon={ShieldCheck}
@@ -301,19 +291,16 @@ function ProductRecommendationRails({
             data-testid={`product-recommendation-rail-${rail.id}`}
             key={rail.id}
           >
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <p className="text-muted-foreground text-xs font-medium tracking-[0.18em] uppercase">
-                  Curated Selection
-                </p>
-                <h2 className="mt-3 text-3xl font-semibold" id={headingId}>
-                  {rail.title}
-                </h2>
-              </div>
-              <Badge className="rounded-full" variant="outline">
-                מתוך הקטלוג
-              </Badge>
-            </div>
+            <CommerceSectionHeader
+              action={
+                <Badge className="rounded-full" variant="outline">
+                  מתוך הקטלוג
+                </Badge>
+              }
+              eyebrow="Curated Selection"
+              id={headingId}
+              title={rail.title}
+            />
             <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {rail.products.map((recommended) => (
                 <ProductCard key={recommended.slug} product={recommended} />

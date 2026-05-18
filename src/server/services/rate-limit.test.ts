@@ -45,10 +45,23 @@ describe("rate limit service", () => {
       assertSharedRateLimitConfig({
         NODE_ENV: "production",
         VERCEL: "1",
+        VERCEL_ENV: "production",
         UPSTASH_REDIS_REST_URL: "",
         UPSTASH_REDIS_REST_TOKEN: undefined,
       }),
     ).toThrow(/UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN/);
+  });
+
+  it("uses the local limiter for preview Vercel runtimes without shared env", () => {
+    expect(() =>
+      assertSharedRateLimitConfig({
+        NODE_ENV: "production",
+        VERCEL: "1",
+        VERCEL_ENV: "preview",
+        UPSTASH_REDIS_REST_URL: "",
+        UPSTASH_REDIS_REST_TOKEN: undefined,
+      }),
+    ).not.toThrow();
   });
 
   it("accepts production Vercel runtimes when shared rate-limit env is configured", () => {
@@ -56,6 +69,7 @@ describe("rate limit service", () => {
       assertSharedRateLimitConfig({
         NODE_ENV: "production",
         VERCEL: "1",
+        VERCEL_ENV: "production",
         UPSTASH_REDIS_REST_URL: "https://example.upstash.io",
         UPSTASH_REDIS_REST_TOKEN: "token",
       }),

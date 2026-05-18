@@ -10,11 +10,12 @@ import {
   Sparkles,
 } from "lucide-react";
 
-import { CompactPageIntro } from "~/components/compact-page-intro";
+import { CommercePageHero } from "~/components/commerce-page-hero";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
+import { cinematicRouteMedia } from "~/lib/brand-media";
 
 const values = [
   {
@@ -80,7 +81,7 @@ export default function AboutPage() {
       <SiteHeader />
 
       <article>
-        <CompactPageIntro
+        <CommercePageHero
           actions={
             <>
               <Button asChild>
@@ -100,12 +101,18 @@ export default function AboutPage() {
           description="Aphrodite היא סטודיו תכשיטים ישראלי מודרני שנבנה סביב רעיון פשוט: תכשיט יפה באמת הוא בחירה שמעניקה ביטחון, לא עוד רעש."
           eyebrow="אודות Aphrodite"
           id="page-hero"
+          media={{
+            alt: "Aphrodite",
+            priority: true,
+            slides: cinematicRouteMedia.about,
+          }}
           metrics={[
             { label: "שם", value: "Aphrodite" },
             { label: "כוונה", value: "יופי עם ביטחון" },
             { label: "אופי", value: "סטודיו ישראלי מודרני" },
           ]}
           title="יופי שנולד ברגע שבו בחירה הופכת לביטחון."
+          variant="content"
         />
 
         <RevealSection
@@ -140,20 +147,19 @@ export default function AboutPage() {
               </p>
               <p>
                 לכן דף האודות הזה אינו מספר על מיתוס רחוק בלבד. הוא מספר על הדרך
-                שבה מיתוס יכול להפוך לשירות, לעיצוב, למידה, לקטלוג,
-                לקופסה קטנה שמוגשת בזמן הנכון. Aphrodite נולדה מתוך הרצון לחבר
-                בין שפה גבוהה של יופי לבין חוויית קנייה ברורה, שקופה ונגישה. זו
-                אינה סתירה. להפך: ככל שהרגע רגשי יותר, כך הוא צריך מערכת שמעניקה
-                ביטחון.
+                שבה מיתוס יכול להפוך לשירות, לעיצוב, למידה, לקטלוג, לקופסה קטנה
+                שמוגשת בזמן הנכון. Aphrodite נולדה מתוך הרצון לחבר בין שפה גבוהה
+                של יופי לבין חוויית קנייה ברורה, שקופה ונגישה. זו אינה סתירה.
+                להפך: ככל שהרגע רגשי יותר, כך הוא צריך מערכת שמעניקה ביטחון.
               </p>
             </div>
           </div>
         </RevealSection>
 
-        <RevealSection className="liquid-section" id="about-story">
+        <RevealSection className="brand-page-band" id="about-story">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
             <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-              <div className="glass-panel rounded-md border p-6 sm:p-8 lg:p-10">
+              <div className="brand-surface p-6 sm:p-8 lg:p-10">
                 <p className="text-muted-foreground text-sm">הסיפור שלנו</p>
                 <h2 className="mt-3 text-4xl leading-tight font-semibold">
                   סטודיו ישראלי שמבקש להפוך יוקרה לדבר שאפשר להבין.
@@ -176,17 +182,16 @@ export default function AboutPage() {
                   </p>
                   <p>
                     מתוך המקום הזה נבנתה Aphrodite כמותג שמחבר קטלוג, ייעוץ,
-                    מידה, שירות ומתנה אחת שלמה. האונליין אינו רק חלון ראווה.
-                    הוא כלי בחירה. שירות הלקוחות הוא המקום לשיחה, התאמה ואישור.
-                    ה־AI Stylist אינו תחליף לטעם
-                    אישי או למומחיות אנושית. הוא דרך נוספת להתחיל שיחה כשלא
-                    יודעים עדיין איך לנסח את הרצון.
+                    מידה, שירות ומתנה אחת שלמה. האונליין אינו רק חלון ראווה. הוא
+                    כלי בחירה. שירות הלקוחות הוא המקום לשיחה, התאמה ואישור. ה־AI
+                    Stylist אינו תחליף לטעם אישי או למומחיות אנושית. הוא דרך
+                    נוספת להתחיל שיחה כשלא יודעים עדיין איך לנסח את הרצון.
                   </p>
                 </div>
               </div>
 
               <div className="grid gap-4">
-                <div className="glass-card rounded-md border p-6">
+                <div className="brand-surface p-6">
                   <Heart aria-hidden="true" className="size-7" />
                   <p className="mt-5 text-2xl font-semibold">
                     לא לבחור רק יפה. לבחור נכון.
@@ -196,7 +201,7 @@ export default function AboutPage() {
                     בפרטים: פרופורציה, מידה, חומר, אירוע, אדם, הרגל וסגנון חיים.
                   </p>
                 </div>
-                <div className="glass-card rounded-md border p-6">
+                <div className="brand-surface p-6">
                   <ShieldCheck aria-hidden="true" className="size-7" />
                   <p className="mt-5 text-2xl font-semibold">
                     אמון הוא חלק מהעיצוב.
@@ -230,10 +235,7 @@ export default function AboutPage() {
               const Icon = value.icon;
 
               return (
-                <section
-                  className="glass-card rounded-md border p-6"
-                  key={value.title}
-                >
+                <section className="brand-surface p-6" key={value.title}>
                   <div className="glass-inset flex size-11 items-center justify-center rounded-md border">
                     <Icon aria-hidden="true" className="size-5" />
                   </div>
@@ -247,10 +249,10 @@ export default function AboutPage() {
           </RevealGrid>
         </RevealSection>
 
-        <RevealSection className="liquid-section">
+        <RevealSection className="brand-page-band">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
             <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
-              <div className="glass-panel rounded-md border p-6 sm:p-8 lg:sticky lg:top-24 lg:p-10">
+              <div className="brand-surface p-6 sm:p-8 lg:sticky lg:top-24 lg:p-10">
                 <p className="text-muted-foreground text-sm">
                   איך אנחנו חושבים על תכשיט
                 </p>
@@ -281,17 +283,17 @@ export default function AboutPage() {
                   מתוך תפיסה זו, חוויית הקנייה אינה נספח. היא חלק מהתכשיט. כאשר
                   אדם רוכש מתנה, טבעת אירוסין, זוג עגילים או שרשרת לעצמו, הוא
                   מבקש יותר ממוצר. הוא מבקש ודאות. הוא רוצה לדעת שהמחיר ברור,
-                  שהמידה ניתנת לבדיקה, ששירות הלקוחות יכול לעזור, שהאריזה מכבדת את
-                  הרגע, שהשירות לא ייעלם אחרי התשלום. כל פרט כזה מקטין את המרחק
-                  בין התלהבות לבין החלטה, ומאפשר ליופי להישאר חופשי מחרדה.
+                  שהמידה ניתנת לבדיקה, ששירות הלקוחות יכול לעזור, שהאריזה מכבדת
+                  את הרגע, שהשירות לא ייעלם אחרי התשלום. כל פרט כזה מקטין את
+                  המרחק בין התלהבות לבין החלטה, ומאפשר ליופי להישאר חופשי מחרדה.
                 </p>
                 <p>
                   לכן אנחנו מתכננים את Aphrodite כשפה אחת: קטלוג שמציג מידע בלי
                   להציף, כרטיס מוצר שמכבד את התמונה אבל לא מסתיר את הפרטים,
-                  שירות אונליין שמחזיק את החוויה בידיים, וייעוץ אישי שמתחיל בשאלה ולא
-                  בתשובה מוכנה. מבחינתנו, שירות טוב אינו אומר לומר לכולם מה
-                  מתאים להם. שירות טוב הוא לבנות מספיק בהירות כדי שכל אדם יוכל
-                  לזהות מה מתאים לו.
+                  שירות אונליין שמחזיק את החוויה בידיים, וייעוץ אישי שמתחיל
+                  בשאלה ולא בתשובה מוכנה. מבחינתנו, שירות טוב אינו אומר לומר
+                  לכולם מה מתאים להם. שירות טוב הוא לבנות מספיק בהירות כדי שכל
+                  אדם יוכל לזהות מה מתאים לו.
                 </p>
                 <p>
                   יש תכשיטים שנבחרים כי הם מתאימים לאירוע מסוים, ויש כאלה
@@ -302,7 +304,7 @@ export default function AboutPage() {
                   בלי לחשוב, ועל התחושה שתכשיט מסוים הפך להיות “שלי” לא בגלל
                   שהוא חדש, אלא בגלל שהוא נכון.
                 </p>
-                <div className="glass-card text-foreground rounded-md border p-6">
+                <div className="brand-surface text-foreground p-6">
                   <p className="text-2xl leading-9 font-semibold">
                     יופי טוב אינו ממהר. הוא נותן לעין להתקרב, ליד לבדוק, וללב
                     להבין שהבחירה שלו יכולה להיות שקטה.
@@ -339,10 +341,7 @@ export default function AboutPage() {
                 const Icon = item.icon;
 
                 return (
-                  <section
-                    className="glass-card rounded-md border p-5"
-                    key={item.title}
-                  >
+                  <section className="brand-surface p-5" key={item.title}>
                     <div className="flex gap-4">
                       <div className="glass-inset flex size-10 shrink-0 items-center justify-center rounded-md border">
                         <Icon aria-hidden="true" className="size-5" />
@@ -361,9 +360,9 @@ export default function AboutPage() {
           </div>
         </RevealSection>
 
-        <RevealSection className="liquid-section">
+        <RevealSection className="brand-page-band">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
-            <div className="glass-panel mx-auto max-w-4xl rounded-md border p-6 text-center sm:p-8 lg:p-12">
+            <div className="brand-surface mx-auto max-w-4xl p-6 text-center sm:p-8 lg:p-12">
               <Sparkles aria-hidden="true" className="mx-auto size-8" />
               <h2 className="mt-6 text-4xl leading-tight font-semibold">
                 Aphrodite אינה מבקשת שתבחרו מהר. היא מבקשת שתבחרו בביטחון.

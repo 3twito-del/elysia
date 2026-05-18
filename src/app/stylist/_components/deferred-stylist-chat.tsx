@@ -45,8 +45,8 @@ function StylistChatLoading({ compact = false }: DeferredStylistChatProps) {
     <div
       className={
         compact
-          ? "glass-panel grid min-h-[520px] place-items-center rounded-md border p-5"
-          : "glass-panel grid min-h-[640px] place-items-center rounded-md border p-5"
+          ? "brand-surface grid min-h-[520px] place-items-center p-5"
+          : "brand-surface grid min-h-[640px] place-items-center p-5"
       }
     >
       <LoadingState label="טוענים את הסטייליסט" />

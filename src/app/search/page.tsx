@@ -3,13 +3,14 @@ import { after } from "next/server";
 import { ChevronLeft, ChevronRight, Search, Sparkles, X } from "lucide-react";
 
 import { SearchControls } from "~/app/search/_components/search-controls";
-import { CompactPageIntro } from "~/components/compact-page-intro";
+import { CommercePageHero } from "~/components/commerce-page-hero";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { EmptyState } from "~/components/ui/empty-state";
+import { cinematicRouteMedia } from "~/lib/brand-media";
 import { db } from "~/server/db";
 import {
   DEFAULT_SEARCH_PER_PAGE,
@@ -109,7 +110,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   return (
     <main>
       <SiteHeader />
-      <CompactPageIntro
+      <CommercePageHero
         actions={
           <>
             <Button asChild>
@@ -122,12 +123,18 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         }
         description="חיפוש קטלוג עם סינון לפי קטגוריה, חומר, אבן, תקציב וזמינות."
         eyebrow="Aphrodite Catalog"
+        media={{
+          alt: "קטלוג Aphrodite",
+          priority: true,
+          slides: cinematicRouteMedia.search,
+        }}
         metrics={[
           { label: "תוצאות", value: String(result.total) },
           { label: "פילטרים", value: String(activeFilters.length) },
           { label: "עמוד", value: String(result.page) },
         ]}
         title="חיפוש בקטלוג"
+        variant="catalog"
       />
       <RevealSection
         className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12"
@@ -182,7 +189,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
         <section
           aria-labelledby="search-results"
-          className="mt-8 border-y border-[var(--glass-border)] py-4"
+          className="brand-control-panel mt-8 rounded-md p-4"
           data-testid="search-results-summary"
           id="search-results-section"
         >
@@ -481,8 +488,7 @@ async function getSearchRecoveryActions(input: ProductSearchInput) {
     };
 
     candidates.push({
-      description:
-        "שומר את מילת החיפוש ומסיר קטגוריה, חומר, אבן, תקציב ומיון.",
+      description: "שומר את מילת החיפוש ומסיר קטגוריה, חומר, אבן, תקציב ומיון.",
       href: createSearchHref(queryOnlyInput),
       input: queryOnlyInput,
       label: "ניקוי פילטרים",

@@ -1016,9 +1016,9 @@ export function createProductionIntegrationSummaries(
     createIntegrationSummary({
       configured: Boolean(
         hasConfigValue(config.cardComTerminal) &&
-          hasConfigValue(config.cardComApiName) &&
-          hasConfigValue(config.cardComApiPassword) &&
-          hasConfigValue(config.cardComWebhookSecret),
+        hasConfigValue(config.cardComApiName) &&
+        hasConfigValue(config.cardComApiPassword) &&
+        hasConfigValue(config.cardComWebhookSecret),
       ),
       fallback: localFallback,
       capabilities: [
@@ -1038,8 +1038,8 @@ export function createProductionIntegrationSummaries(
     createIntegrationSummary({
       configured: Boolean(
         config.notificationOperational &&
-          hasConfigValue(config.storeFromEmail) &&
-          hasConfigValue(config.operationsEmail),
+        hasConfigValue(config.storeFromEmail) &&
+        hasConfigValue(config.operationsEmail),
       ),
       fallback: localFallback,
       capabilities: [
@@ -1067,7 +1067,7 @@ export function createProductionIntegrationSummaries(
     createIntegrationSummary({
       configured: Boolean(
         hasConfigValue(config.typesenseHost) &&
-          hasConfigValue(config.typesenseApiKey),
+        hasConfigValue(config.typesenseApiKey),
       ),
       fallback: localFallback,
       capabilities: ["search", "facets", "reindex"],
@@ -1078,7 +1078,8 @@ export function createProductionIntegrationSummaries(
     }),
     createIntegrationSummary({
       configured: Boolean(
-        hasConfigValue(config.jobRunnerSecret) || hasConfigValue(config.cronSecret),
+        hasConfigValue(config.jobRunnerSecret) ||
+        hasConfigValue(config.cronSecret),
       ),
       fallback: localFallback,
       capabilities: [
@@ -1096,8 +1097,8 @@ export function createProductionIntegrationSummaries(
     createIntegrationSummary({
       configured: Boolean(
         hasConfigValue(config.aiGatewayApiKey) ||
-          hasConfigValue(config.vercelOidcToken) ||
-          hasConfigValue(config.googleGenerativeAiApiKey),
+        hasConfigValue(config.vercelOidcToken) ||
+        hasConfigValue(config.googleGenerativeAiApiKey),
       ),
       fallback: localFallback,
       capabilities: ["catalog-grounding", "tool-calls", "audit", "rate-limits"],
@@ -1127,7 +1128,8 @@ export function createProductionIntegrationSummaries(
 
 function hasVercelPlatformAccess(config: ProductionIntegrationConfig) {
   return Boolean(
-    hasConfigValue(config.vercelOidcToken) || hasConfigValue(config.aiGatewayApiKey),
+    hasConfigValue(config.vercelOidcToken) ||
+    hasConfigValue(config.aiGatewayApiKey),
   );
 }
 

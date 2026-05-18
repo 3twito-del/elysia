@@ -19,7 +19,8 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://aphrodite.local"),
   openGraph: {
     title: "Aphrodite",
-    description: "תכשיטי סטודיו מודרניים בעברית, עם מסחר אונליין מלא ושירות אישי.",
+    description:
+      "תכשיטי סטודיו מודרניים בעברית, עם מסחר אונליין מלא ושירות אישי.",
     locale: "he_IL",
     type: "website",
   },

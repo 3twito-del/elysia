@@ -74,7 +74,10 @@ export const updateAdminInventoryInputSchema = z.object({
 export const createAdminCouponClientInputSchema = z
   .object({
     code: z.string().trim().min(3, "׳™׳© ׳׳”׳–׳™׳ ׳§׳•׳“ ׳§׳•׳₪׳•׳.").max(64),
-    description: optionalTrimmedString(240, "׳×׳™׳׳•׳¨ ׳”׳§׳•׳₪׳•׳ ׳׳¨׳•׳ ׳׳“׳™."),
+    description: optionalTrimmedString(
+      240,
+      "׳×׳™׳׳•׳¨ ׳”׳§׳•׳₪׳•׳ ׳׳¨׳•׳ ׳׳“׳™.",
+    ),
     percentOff: z.number().int().min(1).max(100).optional(),
     amountOff: z.number().positive().optional(),
     endsAt: z.coerce.date().optional(),

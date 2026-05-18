@@ -16,7 +16,7 @@ import {
   type CategoryFilters,
   type CategorySearchParams,
 } from "./_lib/category-filter-state";
-import { CompactPageIntro } from "~/components/compact-page-intro";
+import { CommercePageHero } from "~/components/commerce-page-hero";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -36,6 +36,7 @@ import {
   getCatalogFacetsFromProducts,
   listCatalogProductsCachedRequest,
 } from "~/server/services/catalog";
+import { getCategoryBrandSlides } from "~/lib/brand-media";
 
 type CategoryRouteProps = {
   params: Promise<{ slug: string }>;
@@ -150,7 +151,7 @@ export default async function CategoryPage({
     <main>
       <SiteHeader />
 
-      <CompactPageIntro
+      <CommercePageHero
         actions={
           <>
             <Button asChild>
@@ -167,6 +168,11 @@ export default async function CategoryPage({
         }
         eyebrow="קטלוג Aphrodite"
         id="page-hero"
+        media={{
+          alt: category.name,
+          priority: true,
+          slides: getCategoryBrandSlides(slug),
+        }}
         metrics={[
           {
             label: "מוצרים מוצגים",
@@ -176,9 +182,10 @@ export default async function CategoryPage({
           { label: "מיון", value: currentSortLabel },
         ]}
         title={category.name}
+        variant="catalog"
       />
 
-      <div className="glass-chrome sticky top-16 z-30 border-b lg:hidden">
+      <div className="brand-control-panel sticky top-16 z-30 rounded-none border-x-0 border-t-0 lg:hidden">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <div className="text-sm">
             <p className="font-medium">{pageRangeLabel}</p>
@@ -253,7 +260,10 @@ export default async function CategoryPage({
 
       <RevealSection className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[296px_1fr] lg:py-10">
         <aside className="hidden lg:block" data-testid="category-filter-panel">
-          <Card className="sticky top-24 rounded-md" size="sm">
+          <Card
+            className="brand-control-panel sticky top-24 rounded-md"
+            size="sm"
+          >
             <CardHeader className="border-b border-[var(--glass-border)] pb-4">
               <CardTitle className="flex items-center gap-2">
                 <SlidersHorizontal aria-hidden="true" className="size-4" />
@@ -276,7 +286,7 @@ export default async function CategoryPage({
           className="min-w-0"
           id="category-products"
         >
-          <div className="mb-7 border-y border-[var(--glass-border)] py-4">
+          <div className="brand-control-panel mb-7 rounded-md p-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="text-base font-medium" id="category-results">

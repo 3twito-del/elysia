@@ -221,12 +221,7 @@ export function createCategoryPageHref(
 export function createCategoryFilterQueryString(query: CategorySearchParams) {
   const params = new URLSearchParams();
 
-  for (const key of [
-    "material",
-    "stone",
-    "maxPrice",
-    "sort",
-  ] as const) {
+  for (const key of ["material", "stone", "maxPrice", "sort"] as const) {
     const value = getFirstParam(query[key]);
     if (value) params.set(key, value);
   }
@@ -362,10 +357,7 @@ function parseCategoryFilters(
   };
 }
 
-function getActiveFilters(
-  slug: string,
-  filters: CategoryFilters,
-) {
+function getActiveFilters(slug: string, filters: CategoryFilters) {
   const activeFilters: ActiveFilter[] = [];
 
   if (filters.material) {

@@ -6,9 +6,10 @@ const requiredVercelEnv = [
 ];
 
 export function getProductionEnvValidationError(env = process.env) {
-  const isVercelBuild = env.VERCEL === "1";
+  const isVercelProductionBuild =
+    env.VERCEL === "1" && env.VERCEL_ENV === "production";
 
-  if (isVercelBuild) {
+  if (isVercelProductionBuild) {
     const missing = getMissingEnv(requiredVercelEnv, env);
 
     if (missing.length > 0) {

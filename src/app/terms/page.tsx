@@ -9,10 +9,11 @@ import {
   Truck,
 } from "lucide-react";
 
-import { CompactPageIntro } from "~/components/compact-page-intro";
+import { CommercePageHero } from "~/components/commerce-page-hero";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
+import { cinematicRouteMedia } from "~/lib/brand-media";
 import { Separator } from "~/components/ui/separator";
 import { publicContactEmail, publicContactPhone } from "~/lib/public-contact";
 
@@ -62,7 +63,7 @@ export default function TermsPage() {
     <main>
       <SiteHeader />
 
-      <CompactPageIntro
+      <CommercePageHero
         actions={
           <>
             <Button asChild>
@@ -75,16 +76,22 @@ export default function TermsPage() {
         }
         description="תנאי השימוש באתר Aphrodite, כולל הזמנות, תשלום, משלוחים, ביטולים ושירות לקוחות."
         eyebrow="Aphrodite Legal"
+        media={{
+          alt: "Aphrodite legal",
+          priority: true,
+          slides: cinematicRouteMedia.legal,
+        }}
         metrics={[
           { label: "שימוש", value: "ברור" },
           { label: "תשלום", value: "מאובטח" },
           { label: "שירות", value: "זמין" },
         ]}
         title="תקנון האתר"
+        variant="content"
       />
 
       <RevealSection className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:py-14">
-        <div className="glass-panel rounded-md border p-6 sm:p-8">
+        <div className="brand-surface p-6 sm:p-8">
           <div className="grid gap-6 sm:grid-cols-3">
             <div className="glass-inset rounded-md border p-4">
               <ShieldCheck className="size-5" aria-hidden="true" />

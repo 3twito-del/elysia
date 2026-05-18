@@ -38,18 +38,19 @@ describe("layout stability guardrails", () => {
 
   it("keeps the full cinematic hero reserved for the home route", () => {
     const homeSource = readSource("src/app/page.tsx");
-    const compactRouteSources = [
+    const commerceRouteSources = [
       "src/app/about/page.tsx",
       "src/app/ai/page.tsx",
       "src/app/category/[slug]/page.tsx",
       "src/app/gifts/page.tsx",
+      "src/app/search/page.tsx",
       "src/app/stylist/page.tsx",
     ].map((sourcePath) => [sourcePath, readSource(sourcePath)] as const);
 
     expect(homeSource).toContain('data-testid="cinematic-page-hero"');
 
-    for (const [sourcePath, source] of compactRouteSources) {
-      expect(source, sourcePath).toContain("CompactPageIntro");
+    for (const [sourcePath, source] of commerceRouteSources) {
+      expect(source, sourcePath).toContain("CommercePageHero");
       expect(source, sourcePath).not.toContain("CinematicPageHero");
       expect(source, sourcePath).not.toContain(
         'data-testid="cinematic-page-hero"',

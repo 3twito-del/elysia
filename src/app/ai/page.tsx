@@ -3,12 +3,13 @@ import { Gift, MessageSquare, Sparkles } from "lucide-react";
 
 import { DeferredAiGiftPanel } from "./_components/deferred-ai-gift-panel";
 import { DeferredStylistChat } from "~/app/stylist/_components/deferred-stylist-chat";
-import { CompactPageIntro } from "~/components/compact-page-intro";
+import { CommercePageHero } from "~/components/commerce-page-hero";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { cinematicRouteMedia } from "~/lib/brand-media";
 
 export const metadata = {
   title: "כלי AI",
@@ -29,7 +30,7 @@ export default async function AiPage({ searchParams }: AiPageProps) {
   return (
     <main className="min-h-screen">
       <SiteHeader />
-      <CompactPageIntro
+      <CommercePageHero
         actions={
           <>
             <Button asChild>
@@ -43,20 +44,26 @@ export default async function AiPage({ searchParams }: AiPageProps) {
         description="כלי AI מחוברים לקטלוג Aphrodite ומציגים פריטים זמינים לפי כוונה, תקציב וסגנון."
         eyebrow="Aphrodite AI"
         id="page-hero"
+        media={{
+          alt: "Aphrodite AI",
+          priority: true,
+          slides: cinematicRouteMedia.ai,
+        }}
         metrics={[
           { label: "כלים", value: "2" },
           { label: "קטלוג", value: "חי" },
           { label: "התאמה", value: "אישית" },
         ]}
         title="התאמה חכמה לתכשיט"
+        variant="content"
       />
       <RevealSection
-        className="liquid-section border-b border-[var(--glass-border)]"
+        className="brand-page-band border-b border-[var(--glass-border)]"
         id="ai-tools"
       >
         <div className="mx-auto grid max-w-6xl gap-5 px-4 py-6 sm:px-6 lg:py-8">
           <Tabs className="gap-4" defaultValue={defaultTab} dir="rtl">
-            <div className="glass-panel grid gap-5 rounded-md border p-4 sm:p-5">
+            <div className="brand-control-panel grid gap-5 p-4 sm:p-5">
               <div className="grid gap-4">
                 <Badge className="w-fit" variant="secondary">
                   Aphrodite AI

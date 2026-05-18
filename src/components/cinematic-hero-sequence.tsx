@@ -183,6 +183,7 @@ export function CinematicHeroSequence({
             alt={slide.alt}
             className="cinematic-hero-image media-color-rich object-cover"
             fill
+            loading={priority && index === 1 ? "eager" : undefined}
             priority={priority && index === 0}
             sizes={sizes}
             src={slide.src}

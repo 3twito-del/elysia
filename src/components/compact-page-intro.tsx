@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
 
-import { cn } from "~/lib/utils";
+import {
+  CommercePageHero,
+  type CommercePageHeroMetric,
+} from "~/components/commerce-page-hero";
 
-type CompactPageIntroMetric = {
-  label: ReactNode;
-  value: ReactNode;
-};
+type CompactPageIntroMetric = CommercePageHeroMetric;
 
 type CompactPageIntroProps = {
   actions?: ReactNode;
@@ -26,44 +26,16 @@ export function CompactPageIntro({
   metrics,
   title,
 }: CompactPageIntroProps) {
-  const hasActions = actions !== undefined && actions !== null;
-  const hasMetrics = (metrics?.length ?? 0) > 0;
-  const hasAside = hasActions || hasMetrics;
-
   return (
-    <section
-      className={cn("compact-page-intro", className)}
-      data-has-aside={hasAside ? "true" : "false"}
-      dir="rtl"
+    <CommercePageHero
+      actions={actions}
+      className={className}
+      description={description}
+      eyebrow={eyebrow}
       id={id}
-    >
-      <div className="compact-page-intro-copy">
-        {eyebrow ? (
-          <p className="compact-page-intro-eyebrow">{eyebrow}</p>
-        ) : null}
-        <h1 className="compact-page-intro-title">{title}</h1>
-        {description ? (
-          <p className="compact-page-intro-description">{description}</p>
-        ) : null}
-      </div>
-
-      {hasAside ? (
-        <div className="compact-page-intro-aside">
-          {hasMetrics ? (
-            <dl className="compact-page-intro-metrics">
-              {metrics?.map((metric, index) => (
-                <div className="compact-page-intro-metric" key={index}>
-                  <dt>{metric.label}</dt>
-                  <dd>{metric.value}</dd>
-                </div>
-              ))}
-            </dl>
-          ) : null}
-          {hasActions ? (
-            <div className="compact-page-intro-actions">{actions}</div>
-          ) : null}
-        </div>
-      ) : null}
-    </section>
+      metrics={metrics}
+      title={title}
+      variant="content"
+    />
   );
 }

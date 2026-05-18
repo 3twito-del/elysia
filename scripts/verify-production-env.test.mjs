@@ -17,11 +17,22 @@ describe("production environment validation", () => {
     ).toBeNull();
   });
 
-  it("requires shared Vercel runtime env on any Vercel build", () => {
+  it("allows preview Vercel builds without production-only shared runtime env", () => {
     expect(
       verifyProductionEnv({
         VERCEL: "1",
         VERCEL_ENV: "preview",
+        UPSTASH_REDIS_REST_URL: "",
+        UPSTASH_REDIS_REST_TOKEN: undefined,
+      }),
+    ).toEqual({ ok: true });
+  });
+
+  it("requires shared Vercel runtime env on production Vercel builds", () => {
+    expect(
+      verifyProductionEnv({
+        VERCEL: "1",
+        VERCEL_ENV: "production",
         UPSTASH_REDIS_REST_URL: "",
         UPSTASH_REDIS_REST_TOKEN: undefined,
       }),

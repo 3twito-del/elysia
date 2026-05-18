@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Mail, Phone, ShieldCheck } from "lucide-react";
 
-import { CompactPageIntro } from "~/components/compact-page-intro";
+import { CommercePageHero } from "~/components/commerce-page-hero";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
+import { cinematicRouteMedia } from "~/lib/brand-media";
 import { Separator } from "~/components/ui/separator";
 import { publicContactEmail, publicContactPhone } from "~/lib/public-contact";
 
@@ -20,7 +21,7 @@ export default function AccessibilityPage() {
     <main>
       <SiteHeader />
 
-      <CompactPageIntro
+      <CommercePageHero
         actions={
           <>
             <Button asChild>
@@ -33,16 +34,22 @@ export default function AccessibilityPage() {
         }
         description="אנחנו פועלים להנגיש את האתר והשירותים הדיגיטליים כך שיהיו זמינים, ברורים ונוחים לשימוש."
         eyebrow="Aphrodite Accessibility"
+        media={{
+          alt: "Aphrodite accessibility",
+          priority: true,
+          slides: cinematicRouteMedia.accessibility,
+        }}
         metrics={[
           { label: "תנועה", value: "ניתנת להפחתה" },
           { label: "טקסט", value: "ניתן להגדלה" },
           { label: "ניגודיות", value: "זמינה" },
         ]}
         title="הצהרת נגישות"
+        variant="content"
       />
 
       <RevealSection className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:py-14">
-        <div className="glass-panel rounded-md border p-6 sm:p-8">
+        <div className="brand-surface p-6 sm:p-8">
           <section aria-labelledby="accessibility-standard">
             <div className="flex items-center gap-3">
               <ShieldCheck className="size-5" aria-hidden="true" />

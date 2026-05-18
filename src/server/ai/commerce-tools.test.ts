@@ -30,10 +30,7 @@ describe("AI commerce tools", () => {
 
   it("keeps explicit model fields when no deterministic hint exists", () => {
     expect(
-      applyCatalogPlanningHints(
-        { stone: "יהלום" },
-        { query: "טבעת אירוסין" },
-      ),
+      applyCatalogPlanningHints({ stone: "יהלום" }, { query: "טבעת אירוסין" }),
     ).toEqual({
       query: "טבעת אירוסין",
       stone: "יהלום",

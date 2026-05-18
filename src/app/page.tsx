@@ -13,6 +13,7 @@ import {
   CinematicHeroSequence,
   type CinematicHeroSlide,
 } from "~/components/cinematic-hero-sequence";
+import { CommerceSectionHeader } from "~/components/commerce-section-header";
 import { KineticImageMotion } from "~/components/kinetic-image-motion";
 import { MetricCard } from "~/components/metric-card";
 import { MotionMediaFrame } from "~/components/motion-media-frame";
@@ -126,15 +127,13 @@ export default async function Home() {
               size="lg"
               variant="outline"
             >
-              <Link href="/ai">
-                ייעוץ אישי
-              </Link>
+              <Link href="/ai">ייעוץ אישי</Link>
             </Button>
           </div>
         </div>
       </RevealSection>
 
-      <RevealSection className="glass-chrome border-b" id="quick-search">
+      <RevealSection className="brand-page-band border-b" id="quick-search">
         <div className="mx-auto grid max-w-7xl gap-4 px-4 py-6 sm:px-6 lg:grid-cols-[1fr_2fr]">
           <div>
             <p className="text-muted-foreground text-sm">חיפוש מהיר</p>
@@ -170,22 +169,22 @@ export default async function Home() {
         className="mx-auto max-w-7xl px-4 py-14 sm:px-6"
         id="categories"
       >
-        <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-          <div>
-            <p className="text-muted-foreground text-sm">קטגוריות</p>
-            <h2 className="text-3xl font-semibold">מסלול קצר למוצר הנכון</h2>
-          </div>
-          <Button asChild variant="outline">
-            <Link href="/search">כל הקטלוג</Link>
-          </Button>
-        </div>
+        <CommerceSectionHeader
+          action={
+            <Button asChild variant="outline">
+              <Link href="/search">כל הקטלוג</Link>
+            </Button>
+          }
+          eyebrow="קטגוריות"
+          title="מסלול קצר למוצר הנכון"
+        />
         <RevealGrid
           className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
           variant="media"
         >
           {categories.map((category) => (
             <Link
-              className="glass-card interactive-lift group/card flex min-h-[320px] w-full flex-col overflow-hidden rounded-md border"
+              className="brand-surface interactive-lift group/card flex min-h-[320px] w-full flex-col overflow-hidden rounded-md"
               href={`/category/${category.slug}`}
               key={category.slug}
             >
@@ -220,17 +219,17 @@ export default async function Home() {
         </RevealGrid>
       </RevealSection>
 
-      <RevealSection className="liquid-section" id="featured">
+      <RevealSection className="brand-page-band" id="featured">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
-          <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-            <div>
-              <p className="text-muted-foreground text-sm">נבחרים</p>
-              <h2 className="text-3xl font-semibold">תכשיטים זמינים לקנייה</h2>
-            </div>
-            <Button asChild variant="outline">
-              <Link href="/category/rings">טבעות מובילות</Link>
-            </Button>
-          </div>
+          <CommerceSectionHeader
+            action={
+              <Button asChild variant="outline">
+                <Link href="/category/rings">טבעות מובילות</Link>
+              </Button>
+            }
+            eyebrow="נבחרים"
+            title="תכשיטים זמינים לקנייה"
+          />
           <RevealGrid
             className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
             variant="cards"

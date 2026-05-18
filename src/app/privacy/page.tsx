@@ -9,11 +9,12 @@ import {
   UserCheck,
 } from "lucide-react";
 
-import { CompactPageIntro } from "~/components/compact-page-intro";
+import { CommercePageHero } from "~/components/commerce-page-hero";
 import { CookiePreferencesPanel } from "~/components/cookie-preferences-panel";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
+import { cinematicRouteMedia } from "~/lib/brand-media";
 import { Separator } from "~/components/ui/separator";
 import { publicContactEmail, publicContactPhone } from "~/lib/public-contact";
 
@@ -75,7 +76,7 @@ export default function PrivacyPage() {
     <main>
       <SiteHeader />
 
-      <CompactPageIntro
+      <CommercePageHero
         actions={
           <>
             <Button asChild>
@@ -88,16 +89,22 @@ export default function PrivacyPage() {
         }
         description="כיצד אנחנו אוספים, משתמשים, שומרים ומגנים על מידע אישי במסגרת האתר והשירותים."
         eyebrow="Aphrodite Policy"
+        media={{
+          alt: "Aphrodite privacy",
+          priority: true,
+          slides: cinematicRouteMedia.legal,
+        }}
         metrics={[
           { label: "עדכון", value: "2026" },
           { label: "זכויות", value: "עיון ותיקון" },
           { label: "קוקיז", value: "בשליטה" },
         ]}
         title="מדיניות פרטיות"
+        variant="content"
       />
 
       <RevealSection className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:py-14">
-        <div className="glass-panel rounded-md border p-6 sm:p-8">
+        <div className="brand-surface p-6 sm:p-8">
           <div className="grid gap-6 sm:grid-cols-3">
             <div className="glass-inset rounded-md border p-4">
               <Database className="size-5" aria-hidden="true" />

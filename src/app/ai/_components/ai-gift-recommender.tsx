@@ -52,7 +52,7 @@ export function AiGiftRecommender() {
   }
 
   return (
-    <div className="glass-panel grid gap-6 rounded-md border p-5">
+    <div className="brand-surface grid gap-6 p-5">
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="mb-2 inline-flex items-center gap-2 text-sm font-medium">

@@ -3,13 +3,14 @@ import { notFound, redirect } from "next/navigation";
 import { ArrowRight, PackageCheck } from "lucide-react";
 
 import { ReturnRequestForm } from "../../_components/return-request-form";
-import { CompactPageIntro } from "~/components/compact-page-intro";
+import { CommercePageHero } from "~/components/commerce-page-hero";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
 import { StatusMessage } from "~/components/ui/status-message";
+import { cinematicRouteMedia } from "~/lib/brand-media";
 import {
   getOrderStatusLabel,
   getPaymentStatusLabel,
@@ -65,7 +66,7 @@ export default async function OrderDetailPage({
   return (
     <main>
       <SiteHeader />
-      <CompactPageIntro
+      <CommercePageHero
         actions={
           <>
             <Button asChild>
@@ -78,12 +79,18 @@ export default async function OrderDetailPage({
         }
         description={`${order.recipientName} · ${order.email}`}
         eyebrow="Aphrodite Service"
+        media={{
+          alt: "Aphrodite order service",
+          priority: true,
+          slides: cinematicRouteMedia.service,
+        }}
         metrics={[
           { label: "סטטוס", value: getOrderStatusLabel(order.status) },
           { label: "סכום", value: formatPrice(Number(order.total)) },
           { label: "פריטים", value: String(order.items.length) },
         ]}
         title={order.orderNumber}
+        variant="checkout"
       />
       <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
         <Button asChild className="mb-6 gap-2" variant="ghost">
@@ -161,9 +168,7 @@ export default async function OrderDetailPage({
                 <span>{formatPrice(Number(order.total))}</span>
               </div>
               <Separator />
-              <p className="text-muted-foreground">
-                משלוח לכתובת שנמסרה
-              </p>
+              <p className="text-muted-foreground">משלוח לכתובת שנמסרה</p>
               <p className="text-muted-foreground">
                 תשלום: {getPaymentStatusLabel(order.payments[0]?.status)}
               </p>

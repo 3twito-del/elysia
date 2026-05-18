@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { Sparkles, WandSparkles } from "lucide-react";
 
-import { CompactPageIntro } from "~/components/compact-page-intro";
+import { CommercePageHero } from "~/components/commerce-page-hero";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { cinematicRouteMedia } from "~/lib/brand-media";
 import { DeferredStylistChat } from "./_components/deferred-stylist-chat";
 
 export const metadata = {
@@ -16,7 +17,7 @@ export default function StylistPage() {
   return (
     <main>
       <SiteHeader />
-      <CompactPageIntro
+      <CommercePageHero
         actions={
           <>
             <Button asChild>
@@ -30,12 +31,18 @@ export default function StylistPage() {
         description="ייעוץ תכשיטים לפי סגנון, תקציב ואירוע, עם המלצות שנשארות בתוך קטלוג פעיל."
         eyebrow="Aphrodite Stylist"
         id="page-hero"
+        media={{
+          alt: "Aphrodite stylist",
+          priority: true,
+          slides: cinematicRouteMedia.stylist,
+        }}
         metrics={[
           { label: "התאמה", value: "AI" },
           { label: "קטלוג", value: "זמין" },
           { label: "סגנון", value: "אישי" },
         ]}
         title="סטייליסט תכשיטים"
+        variant="content"
       />
       <RevealSection
         className="mx-auto grid max-w-7xl gap-8 px-4 py-6 sm:px-6 lg:grid-cols-[1fr_360px] lg:py-8"

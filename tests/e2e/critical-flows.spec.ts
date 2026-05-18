@@ -592,7 +592,9 @@ test.describe("accessibility and responsive guardrails", () => {
 
     await expect(homeHero).toBeVisible();
     await expect(homeHero.getByRole("heading").first()).toBeVisible();
-    await expect(homeHero.locator('a[href="/ai"][data-variant="outline"]')).toBeVisible();
+    await expect(
+      homeHero.locator('a[href="/ai"][data-variant="outline"]'),
+    ).toBeVisible();
     const heroOutlineButtonStyles = await homeHero
       .locator('a[href="/ai"][data-variant="outline"]')
       .evaluate((element) => {

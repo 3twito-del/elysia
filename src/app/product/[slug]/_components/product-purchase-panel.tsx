@@ -3,12 +3,7 @@
 import Link from "next/link";
 import { useState, useSyncExternalStore, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
-import {
-  AlertCircle,
-  CheckCircle2,
-  Heart,
-  PackageCheck,
-} from "lucide-react";
+import { AlertCircle, CheckCircle2, Heart, PackageCheck } from "lucide-react";
 
 import { WishlistButton } from "./wishlist-button";
 import { Badge } from "~/components/ui/badge";

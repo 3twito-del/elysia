@@ -63,7 +63,8 @@ export function normalizeAiRecommendedProducts(
         matchReason: product.matchReason,
         description: product.description ?? product.shortDescription ?? "",
         availableOnline:
-          product.availableOnline ?? getInventoryAvailability(product.inventory),
+          product.availableOnline ??
+          getInventoryAvailability(product.inventory),
       };
     });
 }

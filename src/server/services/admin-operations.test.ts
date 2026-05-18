@@ -140,12 +140,8 @@ describe("admin operations helpers", () => {
     expect(getStatusByName(integrations, "Typesense search")).toBe(
       "missing-secret",
     );
-    expect(getStatusByName(integrations, "Outbox jobs")).toBe(
-      "missing-secret",
-    );
-    expect(getStatusByName(integrations, "AI commerce")).toBe(
-      "missing-secret",
-    );
+    expect(getStatusByName(integrations, "Outbox jobs")).toBe("missing-secret");
+    expect(getStatusByName(integrations, "AI commerce")).toBe("missing-secret");
     expect(getStatusByName(integrations, "Vercel platform controls")).toBe(
       "rollout-required",
     );
