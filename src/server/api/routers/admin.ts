@@ -38,6 +38,21 @@ import {
   listAdminOutboxEvents,
 } from "~/server/services/admin-operations";
 import {
+  getAdminServiceConfiguration,
+  listAdminServiceRequests,
+  serviceRequestListInputSchema,
+  updateAdminServiceRequest,
+  updateAdminServiceSettings,
+  upsertAdminContactTopic,
+  upsertAdminServiceBranch,
+} from "~/server/services/service";
+import {
+  updateServiceRequestInputSchema,
+  updateServiceSettingsInputSchema,
+  upsertContactTopicInputSchema,
+  upsertServiceBranchInputSchema,
+} from "~/lib/service-validation";
+import {
   adminOrderStatusSchema,
   updateManualOrderStatus,
 } from "~/server/services/manual-order";
@@ -132,6 +147,38 @@ export const adminRouter = createTRPCRouter({
   jobRuns: adminProcedure("SYSTEM_CONFIG")
     .input(adminJobRunListInputSchema)
     .query(({ input }) => listAdminJobRuns(input)),
+
+  serviceConfiguration: adminProcedure("CUSTOMER_VIEW").query(() =>
+    getAdminServiceConfiguration(),
+  ),
+
+  serviceRequests: adminProcedure("CUSTOMER_VIEW")
+    .input(serviceRequestListInputSchema)
+    .query(({ input }) => listAdminServiceRequests(input)),
+
+  updateServiceRequest: adminProcedure("CUSTOMER_WRITE")
+    .input(updateServiceRequestInputSchema)
+    .mutation(({ ctx, input }) =>
+      updateAdminServiceRequest({ data: input, adminUserId: ctx.admin.id }),
+    ),
+
+  updateServiceSettings: adminProcedure("SYSTEM_CONFIG")
+    .input(updateServiceSettingsInputSchema)
+    .mutation(({ ctx, input }) =>
+      updateAdminServiceSettings({ data: input, adminUserId: ctx.admin.id }),
+    ),
+
+  upsertContactTopic: adminProcedure("SYSTEM_CONFIG")
+    .input(upsertContactTopicInputSchema)
+    .mutation(({ ctx, input }) =>
+      upsertAdminContactTopic({ data: input, adminUserId: ctx.admin.id }),
+    ),
+
+  upsertServiceBranch: adminProcedure("SYSTEM_CONFIG")
+    .input(upsertServiceBranchInputSchema)
+    .mutation(({ ctx, input }) =>
+      upsertAdminServiceBranch({ data: input, adminUserId: ctx.admin.id }),
+    ),
 
   updateAppointmentStatus: adminProcedure("CUSTOMER_WRITE")
     .input(updateAdminAppointmentStatusInputSchema)

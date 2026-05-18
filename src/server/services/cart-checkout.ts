@@ -392,7 +392,8 @@ async function resolveOnlineFulfillmentBranch(
   }
 
   const branches = await tx.branch.findMany({
-    orderBy: [{ name: "asc" }],
+    where: { isActive: true },
+    orderBy: [{ kind: "asc" }, { sortOrder: "asc" }, { name: "asc" }],
   });
   const variantIds = cart.items.map((item) => item.variantId);
 

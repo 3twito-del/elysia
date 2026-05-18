@@ -4,6 +4,7 @@ import {
   CalendarClock,
   ClipboardList,
   Gauge,
+  Headset,
   History,
   LogOut,
   PackageCheck,
@@ -37,7 +38,8 @@ export type AdminSection =
   | "integrations"
   | "inventory"
   | "orders"
-  | "overview";
+  | "overview"
+  | "service";
 
 const navItems: Array<{
   href: string;
@@ -50,6 +52,7 @@ const navItems: Array<{
   { href: "/admin/catalog", icon: PackageCheck, id: "catalog", label: "קטלוג" },
   { href: "/admin/inventory", icon: Boxes, id: "inventory", label: "מלאי" },
   { href: "/admin/customers", icon: Users, id: "customers", label: "לקוחות" },
+  { href: "/admin/service", icon: Headset, id: "service", label: "שירות" },
   {
     href: "/admin/appointments",
     icon: CalendarClock,

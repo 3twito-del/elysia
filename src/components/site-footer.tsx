@@ -21,6 +21,7 @@ const serviceLinks = [
   { href: "/account", label: "אזור לקוח", icon: Gem },
   { href: "/ai", label: "סטייליסט AI", icon: Sparkles },
   { href: "/faq", label: "שאלות ותשובות", icon: CircleHelp },
+  { href: "/service", label: "שירות לקוחות", icon: CircleHelp },
 ];
 
 const socialLink = {

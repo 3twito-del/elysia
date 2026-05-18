@@ -167,6 +167,18 @@ export function getAdminSkip(input: { page: number; pageSize: number }) {
   return (input.page - 1) * input.pageSize;
 }
 
+async function getAdminServiceSettings() {
+  return db.serviceSettings.findUnique({ where: { id: "default" } });
+}
+
+function getAdminBranchWhere(
+  physicalBranchesEnabled: boolean,
+): Prisma.BranchWhereInput {
+  return physicalBranchesEnabled
+    ? { isActive: true }
+    : { kind: "ONLINE" as const, isActive: true };
+}
+
 export async function getAdminOperationsOverview() {
   const [
     products,
@@ -179,10 +191,11 @@ export async function getAdminOperationsOverview() {
     failedOutbox,
     dueOutbox,
     latestOrders,
+    serviceSettings,
   ] = await Promise.all([
     db.product.count(),
     db.product.count({ where: { status: "ACTIVE" } }),
-    db.branch.count(),
+    db.branch.count({ where: { kind: "PHYSICAL" } }),
     db.inventoryItem.aggregate({ _sum: { quantity: true } }),
     db.inventoryItem.aggregate({ _sum: { reserved: true } }),
     db.appointment.count({ where: { status: "REQUESTED" } }),
@@ -205,11 +218,14 @@ export async function getAdminOperationsOverview() {
       take: 5,
       include: { branch: true, payments: { take: 1 } },
     }),
+    getAdminServiceSettings(),
   ]);
+  const physicalBranchesEnabled =
+    serviceSettings?.physicalBranchesEnabled ?? false;
 
   return {
     activeProducts,
-    branches,
+    branches: physicalBranchesEnabled ? branches : 0,
     dueOutbox,
     failedOutbox,
     integrations: getAdminIntegrationStatuses(),
@@ -222,7 +238,9 @@ export async function getAdminOperationsOverview() {
       recipientName: order.recipientName,
       status: order.status,
       total: Number(order.total),
-      branchName: order.branch?.name ?? null,
+      branchName: physicalBranchesEnabled
+        ? (order.branch?.name ?? null)
+        : "שירות אונליין",
       createdAt: order.createdAt,
     })),
     openOrders,
@@ -235,9 +253,14 @@ export async function listAdminOrders(
   input: z.infer<typeof adminOrderListInputSchema>,
 ) {
   const parsed = adminOrderListInputSchema.parse(input);
+  const serviceSettings = await getAdminServiceSettings();
+  const physicalBranchesEnabled =
+    serviceSettings?.physicalBranchesEnabled ?? false;
   const where: Prisma.OrderWhereInput = {
     ...(parsed.status ? { status: parsed.status } : {}),
-    ...(parsed.branchId ? { branchId: parsed.branchId } : {}),
+    ...(physicalBranchesEnabled && parsed.branchId
+      ? { branchId: parsed.branchId }
+      : {}),
     ...(parsed.fulfillmentMethod
       ? { fulfillmentMethod: parsed.fulfillmentMethod }
       : {}),
@@ -283,14 +306,23 @@ export async function listAdminOrders(
         },
       },
     }),
-    db.branch.findMany({ orderBy: [{ city: "asc" }, { name: "asc" }] }),
+    db.branch.findMany({
+      where: getAdminBranchWhere(physicalBranchesEnabled),
+      orderBy: [
+        { kind: "asc" },
+        { sortOrder: "asc" },
+        { city: "asc" },
+        { name: "asc" },
+      ],
+    }),
   ]);
 
   return {
+    physicalBranchesEnabled,
     branches: branches.map((branch) => ({
       id: branch.id,
-      city: branch.city,
-      name: branch.name,
+      city: physicalBranchesEnabled ? branch.city : "",
+      name: physicalBranchesEnabled ? branch.name : "שירות אונליין",
       slug: branch.slug,
     })),
     items: orders.map((order) => ({
@@ -302,8 +334,10 @@ export async function listAdminOrders(
       email: order.email,
       phone: order.phone,
       recipientName: order.recipientName,
-      branchName: order.branch?.name ?? "ללא סניף",
-      branchCity: order.branch?.city ?? "",
+      branchName: physicalBranchesEnabled
+        ? (order.branch?.name ?? "שירות אונליין")
+        : "שירות אונליין",
+      branchCity: physicalBranchesEnabled ? (order.branch?.city ?? "") : "",
       createdAt: order.createdAt,
       itemCount: order.items.reduce((sum, item) => sum + item.quantity, 0),
       paymentStatus: order.payments[0]?.status ?? "PENDING",
@@ -338,6 +372,10 @@ export async function listAdminCatalog(
   input: z.infer<typeof adminCatalogListInputSchema>,
 ) {
   const parsed = adminCatalogListInputSchema.parse(input);
+  const serviceSettings = await getAdminServiceSettings();
+  const physicalBranchesEnabled =
+    serviceSettings?.physicalBranchesEnabled ?? false;
+  const branchWhere = getAdminBranchWhere(physicalBranchesEnabled);
   const where: Prisma.ProductWhereInput = {
     ...(parsed.status ? { status: parsed.status } : {}),
     ...(parsed.categoryId ? { categoryId: parsed.categoryId } : {}),
@@ -371,7 +409,10 @@ export async function listAdminCatalog(
         stone: true,
         variants: {
           include: {
-            inventoryItems: { include: { branch: true } },
+            inventoryItems: {
+              where: { branch: branchWhere },
+              include: { branch: true },
+            },
             prices: {
               orderBy: { validFrom: "desc" },
               take: 1,
@@ -392,16 +433,25 @@ export async function listAdminCatalog(
     }),
     db.material.findMany({ orderBy: { name: "asc" } }),
     db.stone.findMany({ orderBy: { name: "asc" } }),
-    db.branch.findMany({ orderBy: [{ city: "asc" }, { name: "asc" }] }),
+    db.branch.findMany({
+      where: branchWhere,
+      orderBy: [
+        { kind: "asc" },
+        { sortOrder: "asc" },
+        { city: "asc" },
+        { name: "asc" },
+      ],
+    }),
     db.coupon.findMany({ orderBy: { startsAt: "desc" }, take: 20 }),
   ]);
 
   return {
+    physicalBranchesEnabled,
     branches: branches.map((branch) => ({
       id: branch.id,
       slug: branch.slug,
-      name: branch.name,
-      city: branch.city,
+      name: physicalBranchesEnabled ? branch.name : "שירות אונליין",
+      city: physicalBranchesEnabled ? branch.city : "",
     })),
     categories: categories.map((category) => ({
       id: category.id,
@@ -448,7 +498,9 @@ export async function listAdminCatalog(
         price: Number(variant.prices[0]?.amount ?? product.basePrice),
         inventory: variant.inventoryItems.map((item) => ({
           branchId: item.branchId,
-          branchName: item.branch.name,
+          branchName: physicalBranchesEnabled
+            ? item.branch.name
+            : "שירות אונליין",
           quantity: item.quantity,
           reserved: item.reserved,
           safetyStock: item.safetyStock,
@@ -467,8 +519,15 @@ export async function listAdminInventory(
   input: z.infer<typeof adminInventoryListInputSchema>,
 ) {
   const parsed = adminInventoryListInputSchema.parse(input);
+  const serviceSettings = await getAdminServiceSettings();
+  const physicalBranchesEnabled =
+    serviceSettings?.physicalBranchesEnabled ?? false;
+  const branchWhere = getAdminBranchWhere(physicalBranchesEnabled);
   const where: Prisma.InventoryItemWhereInput = {
-    ...(parsed.branchId ? { branchId: parsed.branchId } : {}),
+    branch: branchWhere,
+    ...(physicalBranchesEnabled && parsed.branchId
+      ? { branchId: parsed.branchId }
+      : {}),
     ...(parsed.query
       ? {
           OR: [
@@ -521,21 +580,30 @@ export async function listAdminInventory(
       },
     }),
     db.inventoryItem.count({ where }),
-    db.branch.findMany({ orderBy: [{ city: "asc" }, { name: "asc" }] }),
+    db.branch.findMany({
+      where: branchWhere,
+      orderBy: [
+        { kind: "asc" },
+        { sortOrder: "asc" },
+        { city: "asc" },
+        { name: "asc" },
+      ],
+    }),
   ]);
 
   return {
+    physicalBranchesEnabled,
     branches: branches.map((branch) => ({
       id: branch.id,
-      city: branch.city,
-      name: branch.name,
+      city: physicalBranchesEnabled ? branch.city : "",
+      name: physicalBranchesEnabled ? branch.name : "שירות אונליין",
       slug: branch.slug,
     })),
     items: items.map((item) => ({
       id: item.id,
       branchId: item.branchId,
-      branchName: item.branch.name,
-      branchCity: item.branch.city,
+      branchName: physicalBranchesEnabled ? item.branch.name : "שירות אונליין",
+      branchCity: physicalBranchesEnabled ? item.branch.city : "",
       categoryName: item.variant.product.category.name,
       productName: item.variant.product.name,
       productSlug: item.variant.product.slug,
@@ -657,9 +725,16 @@ export async function listAdminAppointments(
   input: z.infer<typeof adminAppointmentListInputSchema>,
 ) {
   const parsed = adminAppointmentListInputSchema.parse(input);
+  const serviceSettings = await getAdminServiceSettings();
+  const physicalBranchesEnabled =
+    serviceSettings?.physicalBranchesEnabled ?? false;
+  const branchWhere = getAdminBranchWhere(physicalBranchesEnabled);
   const where: Prisma.AppointmentWhereInput = {
     ...(parsed.status ? { status: parsed.status } : {}),
-    ...(parsed.branchId ? { branchId: parsed.branchId } : {}),
+    branch: branchWhere,
+    ...(physicalBranchesEnabled && parsed.branchId
+      ? { branchId: parsed.branchId }
+      : {}),
     ...(parsed.query
       ? {
           OR: [
@@ -683,14 +758,23 @@ export async function listAdminAppointments(
       },
     }),
     db.appointment.count({ where }),
-    db.branch.findMany({ orderBy: [{ city: "asc" }, { name: "asc" }] }),
+    db.branch.findMany({
+      where: branchWhere,
+      orderBy: [
+        { kind: "asc" },
+        { sortOrder: "asc" },
+        { city: "asc" },
+        { name: "asc" },
+      ],
+    }),
   ]);
 
   return {
+    physicalBranchesEnabled,
     branches: branches.map((branch) => ({
       id: branch.id,
-      city: branch.city,
-      name: branch.name,
+      city: physicalBranchesEnabled ? branch.city : "",
+      name: physicalBranchesEnabled ? branch.name : "שירות אונליין",
       slug: branch.slug,
     })),
     items: appointments.map((appointment) => ({
@@ -702,8 +786,10 @@ export async function listAdminAppointments(
       startsAt: appointment.startsAt,
       status: appointment.status,
       notes: appointment.notes,
-      branchName: appointment.branch.name,
-      branchCity: appointment.branch.city,
+      branchName: physicalBranchesEnabled
+        ? appointment.branch.name
+        : "שירות אונליין",
+      branchCity: physicalBranchesEnabled ? appointment.branch.city : "",
       customerId: appointment.customerId,
     })),
     pageInfo: createAdminPageInfo({
@@ -732,6 +818,10 @@ export async function getAdminOrderDetail(orderId: string) {
   });
 
   if (!order) return null;
+
+  const serviceSettings = await getAdminServiceSettings();
+  const physicalBranchesEnabled =
+    serviceSettings?.physicalBranchesEnabled ?? false;
 
   const [reservations, auditLogs, outboxEvents, inventoryLedgers] =
     await Promise.all([
@@ -781,9 +871,11 @@ export async function getAdminOrderDetail(orderId: string) {
     branch: order.branch
       ? {
           id: order.branch.id,
-          name: order.branch.name,
-          city: order.branch.city,
-          phone: order.branch.phone,
+          name: physicalBranchesEnabled ? order.branch.name : "שירות אונליין",
+          city: physicalBranchesEnabled ? order.branch.city : "",
+          phone: physicalBranchesEnabled
+            ? order.branch.phone
+            : (serviceSettings?.displayPhone ?? order.branch.phone),
         }
       : null,
     items: order.items.map((item) => ({
@@ -835,7 +927,7 @@ export async function getAdminOrderDetail(orderId: string) {
     })),
     inventoryLedgers: inventoryLedgers.map((entry) => ({
       id: entry.id,
-      branchName: entry.branch.name,
+      branchName: physicalBranchesEnabled ? entry.branch.name : "שירות אונליין",
       variantSku: entry.variant.sku,
       delta: entry.delta,
       reason: entry.reason,
@@ -1217,7 +1309,7 @@ function createOrderTimeline(order: {
     { label: "נוצרה", at: order.createdAt },
     { label: "שולמה", at: order.paidAt },
     { label: "בהכנה", at: order.preparingAt },
-    { label: "מוכן לאיסוף", at: order.readyForPickupAt },
+    { label: "מוכן למשלוח", at: order.readyForPickupAt },
     { label: "נשלחה", at: order.shippedAt },
     { label: "הושלמה", at: order.completedAt },
     { label: "בוטלה", at: order.cancelledAt },

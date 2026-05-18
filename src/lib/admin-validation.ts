@@ -49,7 +49,7 @@ export const createAdminProductInputSchema = z.object({
   branchInventory: z
     .array(
       z.object({
-        branchId: requiredId("חסר סניף מלאי."),
+        branchId: requiredId("חסר ערוץ מלאי."),
         quantity: nonnegativeInteger("יש להזין מלאי תקין."),
         safetyStock: nonnegativeInteger("יש להזין מלאי ביטחון תקין.").default(
           0,
@@ -66,7 +66,7 @@ export const updateAdminProductStatusInputSchema = z.object({
 
 export const updateAdminInventoryInputSchema = z.object({
   variantId: requiredId("חסרה וריאציה לעדכון מלאי."),
-  branchId: requiredId("חסר סניף לעדכון מלאי."),
+  branchId: requiredId("חסר ערוץ לעדכון מלאי."),
   quantity: nonnegativeInteger("יש להזין מלאי תקין."),
   safetyStock: nonnegativeInteger("יש להזין מלאי ביטחון תקין.").default(0),
 });

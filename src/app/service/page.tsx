@@ -1,0 +1,203 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import {
+  Clock3,
+  Mail,
+  MessageSquareText,
+  Phone,
+  RotateCcw,
+  Ruler,
+  ShieldCheck,
+  Sparkles,
+  Wrench,
+} from "lucide-react";
+
+import { ServiceRequestForm } from "./_components/service-request-form";
+import { CommercePageHero } from "~/components/commerce-page-hero";
+import { RevealSection } from "~/components/reveal";
+import { SiteHeader } from "~/components/site-header";
+import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
+import { Separator } from "~/components/ui/separator";
+import { cinematicRouteMedia } from "~/lib/brand-media";
+import { getPublicServiceProfile } from "~/server/services/service";
+
+export const metadata: Metadata = {
+  title: "שירות לקוחות",
+  description:
+    "שירות אונליין וטלפוני של Aphrodite להזמנות, תיקונים, החזרות, מידות, פרטיות ונגישות.",
+};
+
+export const dynamic = "force-dynamic";
+
+const serviceTracks = [
+  {
+    icon: MessageSquareText,
+    title: "פנייה כללית",
+    text: "שאלה על מוצר, מתנה, זמינות, משלוח או התאמה לפני הזמנה.",
+  },
+  {
+    icon: Wrench,
+    title: "תיקונים ואחריות",
+    text: "בדיקת מקרה, צירוף תמונות, תיעוד מצב התכשיט ותיאום טיפול המשך.",
+  },
+  {
+    icon: RotateCcw,
+    title: "החלפות והחזרות",
+    text: "בקשות החלפה, החזרה או בירור אחרי רכישה בהתאם למדיניות האתר.",
+  },
+  {
+    icon: Ruler,
+    title: "מידה והתאמה",
+    text: "התייעצות לפני בחירת מידה, פרופורציה, מתנה או התאמה אישית.",
+  },
+] as const;
+
+export default async function ServicePage() {
+  const profile = await getPublicServiceProfile();
+  const phoneHref = `tel:${profile.settings.phoneE164}`;
+
+  return (
+    <main>
+      <SiteHeader />
+
+      <CommercePageHero
+        actions={
+          <>
+            <Button asChild>
+              <Link href="#service-form">פתיחת פנייה</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <a href={phoneHref}>{profile.settings.displayPhone}</a>
+            </Button>
+          </>
+        }
+        description="שירות Aphrodite פועל אונליין ובטלפון בלבד: הזמנות, תיקונים, התאמת מידה, החזרות, נגישות ופרטיות מטופלים במקום אחד."
+        eyebrow="Aphrodite Service"
+        media={{
+          alt: "Aphrodite service",
+          priority: true,
+          slides: cinematicRouteMedia.service,
+        }}
+        metrics={[
+          { label: "שירות", value: "אונליין" },
+          { label: "טלפון", value: profile.settings.displayPhone },
+          { label: "פניות", value: "24/7" },
+        ]}
+        title="שירות לקוחות"
+        variant="content"
+      />
+
+      <RevealSection className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-14">
+        <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+          <section className="grid gap-5" aria-labelledby="service-contact">
+            <div>
+              <Badge variant="secondary">Online first</Badge>
+              <h2 className="mt-4 text-3xl font-semibold" id="service-contact">
+                כל ערוצי השירות במקום אחד
+              </h2>
+              <p className="text-muted-foreground mt-3 max-w-prose leading-8">
+                הפעילות מתבצעת אונליין או בטלפון, עם תיעוד מסודר לכל פנייה והמשך
+                טיפול לפי הנושא.
+              </p>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <a
+                className="brand-surface interactive-lift flex min-h-24 items-center gap-4 rounded-md p-4"
+                href={phoneHref}
+              >
+                <span className="glass-inset grid size-11 place-items-center rounded-full border">
+                  <Phone aria-hidden="true" className="size-5" />
+                </span>
+                <span>
+                  <span className="block font-semibold">טלפון</span>
+                  <span className="text-muted-foreground block text-sm">
+                    {profile.settings.displayPhone}
+                  </span>
+                </span>
+              </a>
+              <a
+                className="brand-surface interactive-lift flex min-h-24 items-center gap-4 rounded-md p-4"
+                href={`mailto:${profile.settings.serviceEmail}`}
+              >
+                <span className="glass-inset grid size-11 place-items-center rounded-full border">
+                  <Mail aria-hidden="true" className="size-5" />
+                </span>
+                <span>
+                  <span className="block font-semibold">אימייל</span>
+                  <span className="text-muted-foreground block text-sm">
+                    {profile.settings.serviceEmail}
+                  </span>
+                </span>
+              </a>
+            </div>
+
+            <div className="brand-surface rounded-md p-5">
+              <div className="grid gap-5">
+                {serviceTracks.map((track) => {
+                  const Icon = track.icon;
+
+                  return (
+                    <div
+                      className="grid gap-3 sm:grid-cols-[auto_minmax(0,1fr)]"
+                      key={track.title}
+                    >
+                      <span className="glass-inset grid size-10 place-items-center rounded-full border">
+                        <Icon aria-hidden="true" className="size-4" />
+                      </span>
+                      <div>
+                        <h3 className="font-semibold">{track.title}</h3>
+                        <p className="text-muted-foreground mt-1 leading-7">
+                          {track.text}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <Separator className="my-5" />
+              <div className="grid gap-3 sm:grid-cols-3">
+                <TrustItem icon={Clock3} label="חזרה מסודרת" />
+                <TrustItem icon={ShieldCheck} label="תיעוד מאובטח" />
+                <TrustItem icon={Sparkles} label="שירות מותאם" />
+              </div>
+            </div>
+          </section>
+
+          <section aria-labelledby="service-form" id="service-form">
+            <div className="mb-4">
+              <Badge variant="outline">Service form</Badge>
+              <h2 className="mt-3 text-3xl font-semibold">פתיחת פנייה</h2>
+              <p className="text-muted-foreground mt-2 leading-7">
+                בחרו נושא, הוסיפו פרטים וקבצים אם צריך, והפנייה תיכנס לטיפול.
+              </p>
+            </div>
+            <ServiceRequestForm
+              topics={profile.topics.map((topic) => ({
+                description: topic.description,
+                label: topic.label,
+                slug: topic.slug,
+              }))}
+            />
+          </section>
+        </div>
+      </RevealSection>
+    </main>
+  );
+}
+
+function TrustItem({
+  icon: Icon,
+  label,
+}: {
+  icon: typeof Clock3;
+  label: string;
+}) {
+  return (
+    <div className="glass-inset flex min-h-14 items-center gap-2 rounded-md border px-3 text-sm">
+      <Icon aria-hidden="true" className="size-4 shrink-0" />
+      <span>{label}</span>
+    </div>
+  );
+}

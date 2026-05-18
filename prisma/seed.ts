@@ -74,6 +74,8 @@ async function main() {
     prisma.searchEvent.deleteMany(),
     prisma.tryOnSession.deleteMany(),
     prisma.recommendationSession.deleteMany(),
+    prisma.serviceRequestAttachment.deleteMany(),
+    prisma.serviceRequest.deleteMany(),
     prisma.giftProfile.deleteMany(),
     prisma.styleProfile.deleteMany(),
     prisma.appointment.deleteMany(),
@@ -104,6 +106,8 @@ async function main() {
     prisma.stone.deleteMany(),
     prisma.adminUser.deleteMany(),
     prisma.role.deleteMany(),
+    prisma.contactTopic.deleteMany(),
+    prisma.serviceSettings.deleteMany(),
     prisma.branch.deleteMany(),
   ]);
 
@@ -133,7 +137,92 @@ async function main() {
   const stoneBySlug = createRecordMap(stones);
   const collectionBySlug = createRecordMap(collections);
 
-  const [tlv, jerusalem] = await Promise.all([
+  await prisma.serviceSettings.create({
+    data: {
+      id: "default",
+      phoneE164: "+972547277455",
+      displayPhone: "054-727-7455",
+      serviceEmail: "3twito@gmail.com",
+      physicalBranchesEnabled: false,
+    },
+  });
+
+  await prisma.contactTopic.createMany({
+    data: [
+      {
+        id: "topic_general",
+        slug: "general",
+        label: "פנייה כללית",
+        description: "שאלה או בקשה שאינה משויכת לנושא אחר.",
+        sortOrder: 10,
+      },
+      {
+        id: "topic_order",
+        slug: "order",
+        label: "הזמנה קיימת",
+        description: "בירור, עדכון או שאלה לגבי הזמנה.",
+        sortOrder: 20,
+      },
+      {
+        id: "topic_repair",
+        slug: "repair",
+        label: "תיקון",
+        description: "בקשה לבדיקת תיקון, אחריות או טיפול בתכשיט.",
+        sortOrder: 30,
+      },
+      {
+        id: "topic_returns",
+        slug: "returns",
+        label: "החלפה או החזרה",
+        description: "בקשה להחלפה, החזרה או זיכוי.",
+        sortOrder: 40,
+      },
+      {
+        id: "topic_sizing",
+        slug: "sizing",
+        label: "מידה והתאמה",
+        description: "ייעוץ מידה, התאמה או בחירת מתנה.",
+        sortOrder: 50,
+      },
+      {
+        id: "topic_accessibility_privacy",
+        slug: "accessibility-privacy",
+        label: "נגישות ופרטיות",
+        description: "פנייה בנושא נגישות, פרטיות או מידע אישי.",
+        sortOrder: 60,
+      },
+      {
+        id: "topic_partnership",
+        slug: "partnership",
+        label: "שיתוף פעולה",
+        description: "פנייה עסקית, תוכן או שיתוף פעולה.",
+        sortOrder: 70,
+      },
+    ],
+  });
+
+  const [onlineService] = await Promise.all([
+    prisma.branch.create({
+      data: {
+        slug: "online-service",
+        name: "שירות אונליין",
+        address: "Online",
+        city: "Online",
+        phone: "054-727-7455",
+        whatsapp: "972547277455",
+        openingHours: {
+          sundayThursday: "10:00-18:00",
+          friday: "09:30-13:00",
+          saturday: "Closed",
+        },
+        services: ["Online service", "Phone support", "Repairs coordination"],
+        kind: "ONLINE",
+        isApproved: true,
+        isPublic: false,
+        isActive: true,
+        sortOrder: 0,
+      },
+    }),
     prisma.branch.create({
       data: {
         slug: "tel-aviv",
@@ -144,6 +233,11 @@ async function main() {
         whatsapp: "97235550101",
         latitude: 32.0809,
         longitude: 34.7806,
+        kind: "PHYSICAL",
+        isApproved: false,
+        isPublic: false,
+        isActive: true,
+        sortOrder: 10,
         openingHours: {
           sundayThursday: "10:00-20:00",
           friday: "09:30-14:00",
@@ -162,6 +256,11 @@ async function main() {
         whatsapp: "97225550101",
         latitude: 31.7767,
         longitude: 35.2248,
+        kind: "PHYSICAL",
+        isApproved: false,
+        isPublic: false,
+        isActive: true,
+        sortOrder: 20,
         openingHours: {
           sundayThursday: "10:00-19:00",
           friday: "09:30-13:30",
@@ -237,14 +336,9 @@ async function main() {
             inventoryItems: {
               create: [
                 {
-                  branchId: tlv.id,
-                  quantity: variantData.quantityTlv,
-                  reserved: 0,
-                  safetyStock: variantData.safetyStock,
-                },
-                {
-                  branchId: jerusalem.id,
-                  quantity: variantData.quantityJerusalem,
+                  branchId: onlineService.id,
+                  quantity:
+                    variantData.quantityTlv + variantData.quantityJerusalem,
                   reserved: 0,
                   safetyStock: variantData.safetyStock,
                 },

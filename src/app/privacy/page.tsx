@@ -16,13 +16,15 @@ import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { cinematicRouteMedia } from "~/lib/brand-media";
 import { Separator } from "~/components/ui/separator";
-import { publicContactEmail, publicContactPhone } from "~/lib/public-contact";
+import { getPublicContactSettings } from "~/server/services/service";
 
 export const metadata: Metadata = {
   title: "מדיניות פרטיות",
   description:
     "מדיניות הפרטיות של Aphrodite בהתאם לחוק הגנת הפרטיות, לרבות תיקון 13: מידע שנאסף, מטרות שימוש, העברת מידע, אבטחה וזכויות משתמשים.",
 };
+
+export const dynamic = "force-dynamic";
 
 const privacySections = [
   {
@@ -71,7 +73,9 @@ const privacySections = [
   },
 ];
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const contact = await getPublicContactSettings();
+
   return (
     <main>
       <SiteHeader />
@@ -174,17 +178,17 @@ export default function PrivacyPage() {
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               <a
                 className="glass-inset hover:text-foreground flex items-center gap-3 rounded-md border p-4 transition"
-                href={`mailto:${publicContactEmail}`}
+                href={`mailto:${contact.email}`}
               >
                 <Mail className="size-5" aria-hidden="true" />
-                <span>{publicContactEmail}</span>
+                <span>{contact.email}</span>
               </a>
               <a
                 className="glass-inset hover:text-foreground flex items-center gap-3 rounded-md border p-4 transition"
-                href={`tel:${publicContactPhone}`}
+                href={contact.phoneHref}
               >
                 <Phone className="size-5" aria-hidden="true" />
-                <span>{publicContactPhone}</span>
+                <span>{contact.phoneDisplay}</span>
               </a>
             </div>
           </section>

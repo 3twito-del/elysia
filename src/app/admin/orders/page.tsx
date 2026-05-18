@@ -101,8 +101,9 @@ export default async function AdminOrdersPage({
 
   if (!data) return <AdminDatabaseFallback />;
 
+  const showPhysicalBranches = data.physicalBranchesEnabled;
   const hasActiveFilters = [
-    Boolean(params.branchId),
+    showPhysicalBranches && Boolean(params.branchId),
     Boolean(params.fulfillmentMethod),
     Boolean(params.query),
     params.sort !== "created-desc",
@@ -114,7 +115,11 @@ export default async function AdminOrdersPage({
     <AdminShell
       active="orders"
       admin={access.admin}
-      description="ניהול הזמנות לפי סטטוס, סניף, אופן מסירה ותאריך. כל טיפול עמוק מתבצע ממסך פרטי ההזמנה כדי לשמור על audit ותמונה תפעולית מלאה."
+      description={
+        showPhysicalBranches
+          ? "ניהול הזמנות לפי סטטוס, מיקום פיזי, אופן מסירה ותאריך. כל טיפול עמוק מתבצע ממסך פרטי ההזמנה כדי לשמור על audit ותמונה תפעולית מלאה."
+          : "ניהול הזמנות לפי סטטוס, משלוח ותאריך. כל טיפול עמוק מתבצע ממסך פרטי ההזמנה כדי לשמור על audit ותמונה תפעולית מלאה."
+      }
       title="הזמנות"
     >
       <Card className="rounded-md">
@@ -127,7 +132,11 @@ export default async function AdminOrdersPage({
         <CardContent>
           <form
             action="/admin/orders"
-            className="grid gap-3 md:grid-cols-[1fr_repeat(4,160px)_auto_auto]"
+            className={
+              showPhysicalBranches
+                ? "grid gap-3 md:grid-cols-[1fr_repeat(4,160px)_auto_auto]"
+                : "grid gap-3 md:grid-cols-[1fr_repeat(3,160px)_auto_auto]"
+            }
           >
             <Input
               aria-label="חיפוש הזמנות"
@@ -148,19 +157,21 @@ export default async function AdminOrdersPage({
                 </option>
               ))}
             </select>
-            <select
-              aria-label="סינון לפי סניף"
-              className="glass-control h-11 rounded-md border px-3 text-sm"
-              defaultValue={params.branchId ?? ""}
-              name="branchId"
-            >
-              <option value="">כל הסניפים</option>
-              {data.branches.map((branch) => (
-                <option key={branch.id} value={branch.id}>
-                  {branch.name}
-                </option>
-              ))}
-            </select>
+            {showPhysicalBranches ? (
+              <select
+                aria-label="סינון לפי מיקום פיזי"
+                className="glass-control h-11 rounded-md border px-3 text-sm"
+                defaultValue={params.branchId ?? ""}
+                name="branchId"
+              >
+                <option value="">כל המיקומים</option>
+                {data.branches.map((branch) => (
+                  <option key={branch.id} value={branch.id}>
+                    {branch.name}
+                  </option>
+                ))}
+              </select>
+            ) : null}
             <select
               aria-label="סינון לפי אופן מסירה"
               className="glass-control h-11 rounded-md border px-3 text-sm"
@@ -169,7 +180,9 @@ export default async function AdminOrdersPage({
             >
               <option value="">כל המסירות</option>
               <option value="DELIVERY">משלוח</option>
-              <option value="PICKUP">איסוף</option>
+              {showPhysicalBranches ? (
+                <option value="PICKUP">תיאום הגעה</option>
+              ) : null}
             </select>
             <select
               aria-label="מיון הזמנות"
@@ -209,7 +222,9 @@ export default async function AdminOrdersPage({
                 <TableHead>סכום</TableHead>
                 <TableHead>סטטוס</TableHead>
                 <TableHead>תשלום</TableHead>
-                <TableHead>סניף</TableHead>
+                <TableHead>
+                  {showPhysicalBranches ? "מיקום פיזי" : "שירות"}
+                </TableHead>
                 <TableHead>מסירה</TableHead>
                 <TableHead>תאריך</TableHead>
                 <TableHead>פעולה</TableHead>
@@ -251,9 +266,11 @@ export default async function AdminOrdersPage({
                     <TableCell>
                       <div className="grid gap-1">
                         <span>{order.branchName}</span>
-                        <span className="text-muted-foreground text-xs">
-                          {order.branchCity}
-                        </span>
+                        {showPhysicalBranches && order.branchCity ? (
+                          <span className="text-muted-foreground text-xs">
+                            {order.branchCity}
+                          </span>
+                        ) : null}
                       </div>
                     </TableCell>
                     <TableCell>
@@ -276,7 +293,7 @@ export default async function AdminOrdersPage({
             basePath="/admin/orders"
             pageInfo={data.pageInfo}
             searchParams={{
-              branchId: params.branchId,
+              branchId: showPhysicalBranches ? params.branchId : undefined,
               fulfillmentMethod: params.fulfillmentMethod,
               query: params.query,
               sort: params.sort,

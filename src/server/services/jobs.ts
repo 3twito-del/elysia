@@ -83,24 +83,30 @@ export function getOutboxPayloadString(payload: Prisma.JsonValue, key: string) {
 }
 
 export function createOutboxEmailMessage(payload: Prisma.JsonValue) {
-  const customerEmail = getOutboxPayloadString(payload, "customerEmail");
+  const customerEmail =
+    getOutboxPayloadString(payload, "recipientEmail") ??
+    getOutboxPayloadString(payload, "customerEmail");
   const orderNumber = getOutboxPayloadString(payload, "orderNumber");
   const template = getOutboxPayloadString(payload, "template") ?? "generic";
+  const subject = getOutboxPayloadString(payload, "subject");
+  const body = getOutboxPayloadString(payload, "body");
 
   if (!customerEmail) return null;
 
   return {
     to: customerEmail,
-    subject: orderNumber
-      ? `Aphrodite ${orderNumber}`
-      : "Aphrodite order update",
-    body: [
-      "Aphrodite",
-      orderNumber ? `Order: ${orderNumber}` : null,
-      `Event: ${template}`,
-    ]
-      .filter(Boolean)
-      .join("\n"),
+    subject:
+      subject ??
+      (orderNumber ? `Aphrodite ${orderNumber}` : "Aphrodite order update"),
+    body:
+      body ??
+      [
+        "Aphrodite",
+        orderNumber ? `Order: ${orderNumber}` : null,
+        `Event: ${template}`,
+      ]
+        .filter(Boolean)
+        .join("\n"),
   };
 }
 

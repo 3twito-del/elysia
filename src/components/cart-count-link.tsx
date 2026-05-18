@@ -2,91 +2,115 @@
 
 import Link from "next/link";
 import { ShoppingBag } from "lucide-react";
-import { useEffect, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useState,
+  type ComponentPropsWithoutRef,
+} from "react";
 
 import {
   CART_UPDATED_EVENT,
   getStoredCartSessionKey,
 } from "~/lib/cart-session";
+import { cn } from "~/lib/utils";
 
 type CartCountResponse = {
   itemCount: number;
 };
 
-export function CartCountLink() {
-  const [itemCount, setItemCount] = useState(0);
-  const cartLabel =
-    itemCount > 0 ? `סל קניות, ${itemCount} פריטים` : "סל קניות";
+type CartCountLinkProps = Omit<
+  ComponentPropsWithoutRef<typeof Link>,
+  "aria-label" | "children" | "href"
+>;
 
-  useEffect(() => {
-    let cancelled = false;
+export const CartCountLink = forwardRef<HTMLAnchorElement, CartCountLinkProps>(
+  ({ className, ...props }, ref) => {
+    const [itemCount, setItemCount] = useState(0);
+    const cartLabel =
+      itemCount > 0 ? `סל קניות, ${itemCount} פריטים` : "סל קניות";
 
-    async function refreshCartCount() {
-      const sessionKey = getStoredCartSessionKey();
+    useEffect(() => {
+      let cancelled = false;
 
-      if (!sessionKey) {
-        setItemCount(0);
-        return;
-      }
+      async function refreshCartCount() {
+        const sessionKey = getStoredCartSessionKey();
 
-      try {
-        const response = await fetch(
-          `/api/cart/count?sessionKey=${encodeURIComponent(sessionKey)}`,
-          { cache: "no-store" },
-        );
-
-        if (!response.ok) {
+        if (!sessionKey) {
           setItemCount(0);
           return;
         }
 
-        const data = (await response.json()) as CartCountResponse;
+        try {
+          const response = await fetch(
+            `/api/cart/count?sessionKey=${encodeURIComponent(sessionKey)}`,
+            { cache: "no-store" },
+          );
 
-        if (!cancelled) {
-          setItemCount(Number.isFinite(data.itemCount) ? data.itemCount : 0);
-        }
-      } catch {
-        if (!cancelled) {
-          setItemCount(0);
+          if (!response.ok) {
+            setItemCount(0);
+            return;
+          }
+
+          const data = (await response.json()) as CartCountResponse;
+
+          if (!cancelled) {
+            setItemCount(Number.isFinite(data.itemCount) ? data.itemCount : 0);
+          }
+        } catch {
+          if (!cancelled) {
+            setItemCount(0);
+          }
         }
       }
-    }
 
-    void refreshCartCount();
+      void refreshCartCount();
 
-    const handleCartUpdated = () => void refreshCartCount();
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
-        void refreshCartCount();
-      }
-    };
+      const handleCartUpdated = () => void refreshCartCount();
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === "visible") {
+          void refreshCartCount();
+        }
+      };
 
-    window.addEventListener(CART_UPDATED_EVENT, handleCartUpdated);
-    window.addEventListener("focus", handleCartUpdated);
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+      window.addEventListener(CART_UPDATED_EVENT, handleCartUpdated);
+      window.addEventListener("focus", handleCartUpdated);
+      document.addEventListener("visibilitychange", handleVisibilityChange);
 
-    return () => {
-      cancelled = true;
-      window.removeEventListener(CART_UPDATED_EVENT, handleCartUpdated);
-      window.removeEventListener("focus", handleCartUpdated);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, []);
+      return () => {
+        cancelled = true;
+        window.removeEventListener(CART_UPDATED_EVENT, handleCartUpdated);
+        window.removeEventListener("focus", handleCartUpdated);
+        document.removeEventListener(
+          "visibilitychange",
+          handleVisibilityChange,
+        );
+      };
+    }, []);
 
-  return (
-    <Link aria-label={cartLabel} className="relative" href="/checkout">
-      <ShoppingBag aria-hidden="true" className="size-5" />
-      {itemCount > 0 ? (
-        <span
-          aria-hidden="true"
-          className="cart-count-badge bg-foreground text-background absolute -top-1.5 -right-1.5 grid h-5 min-w-5 place-items-center rounded-full px-1 text-[0.68rem] leading-none font-semibold"
-        >
-          {itemCount > 99 ? "99+" : itemCount}
+    return (
+      <Link
+        {...props}
+        ref={ref}
+        aria-label={cartLabel}
+        className={cn("relative", className)}
+        href="/checkout"
+      >
+        <ShoppingBag aria-hidden="true" className="size-5" />
+        {itemCount > 0 ? (
+          <span
+            aria-hidden="true"
+            className="cart-count-badge bg-foreground text-background absolute -top-1.5 -right-1.5 grid h-5 min-w-5 place-items-center rounded-full px-1 text-[0.68rem] leading-none font-semibold"
+          >
+            {itemCount > 99 ? "99+" : itemCount}
+          </span>
+        ) : null}
+        <span aria-atomic="true" aria-live="polite" className="sr-only">
+          {cartLabel}
         </span>
-      ) : null}
-      <span aria-atomic="true" aria-live="polite" className="sr-only">
-        {cartLabel}
-      </span>
-    </Link>
-  );
-}
+      </Link>
+    );
+  },
+);
+
+CartCountLink.displayName = "CartCountLink";

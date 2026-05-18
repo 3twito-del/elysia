@@ -81,8 +81,9 @@ export default async function AdminInventoryPage({
 
   if (!data) return <AdminDatabaseFallback />;
 
+  const showPhysicalBranches = data.physicalBranchesEnabled;
   const hasActiveFilters = [
-    Boolean(params.branchId),
+    showPhysicalBranches && Boolean(params.branchId),
     Boolean(params.query),
     params.sort !== "updated-desc",
     params.page > 1,
@@ -92,8 +93,12 @@ export default async function AdminInventoryPage({
     <AdminShell
       active="inventory"
       admin={access.admin}
-      description="ניהול מלאי לפי סניף ווריאציה, כולל שמורות, safety stock ומלאי זמין למכירה."
-      title="מלאי סניפים"
+      description={
+        showPhysicalBranches
+          ? "ניהול מלאי לפי מיקום פיזי ווריאציה, כולל שמורות, safety stock ומלאי זמין למכירה."
+          : "ניהול מלאי שירות אונליין לפי וריאציה, כולל שמורות, safety stock ומלאי זמין למכירה."
+      }
+      title={showPhysicalBranches ? "מלאי מיקומים" : "מלאי שירות"}
     >
       <TRPCReactProvider>
         <Card className="rounded-md">
@@ -106,27 +111,35 @@ export default async function AdminInventoryPage({
           <CardContent>
             <form
               action="/admin/inventory"
-              className="grid gap-3 md:grid-cols-[1fr_180px_180px_auto_auto]"
+              className={
+                showPhysicalBranches
+                  ? "grid gap-3 md:grid-cols-[1fr_180px_180px_auto_auto]"
+                  : "grid gap-3 md:grid-cols-[1fr_180px_auto_auto]"
+              }
             >
               <Input
                 aria-label="חיפוש מלאי"
                 defaultValue={params.query}
                 name="query"
-                placeholder="מוצר, SKU או סניף"
+                placeholder={
+                  showPhysicalBranches ? "מוצר, SKU או מיקום" : "מוצר או SKU"
+                }
               />
-              <select
-                aria-label="סינון לפי סניף"
-                className="glass-control h-11 rounded-md border px-3 text-sm"
-                defaultValue={params.branchId ?? ""}
-                name="branchId"
-              >
-                <option value="">כל הסניפים</option>
-                {data.branches.map((branch) => (
-                  <option key={branch.id} value={branch.id}>
-                    {branch.name}
-                  </option>
-                ))}
-              </select>
+              {showPhysicalBranches ? (
+                <select
+                  aria-label="סינון לפי מיקום פיזי"
+                  className="glass-control h-11 rounded-md border px-3 text-sm"
+                  defaultValue={params.branchId ?? ""}
+                  name="branchId"
+                >
+                  <option value="">כל המיקומים</option>
+                  {data.branches.map((branch) => (
+                    <option key={branch.id} value={branch.id}>
+                      {branch.name}
+                    </option>
+                  ))}
+                </select>
+              ) : null}
               <select
                 aria-label="מיון מלאי"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
@@ -160,7 +173,9 @@ export default async function AdminInventoryPage({
               <TableHeader>
                 <TableRow>
                   <TableHead>מוצר</TableHead>
-                  <TableHead>סניף</TableHead>
+                  <TableHead>
+                    {showPhysicalBranches ? "מיקום פיזי" : "שירות"}
+                  </TableHead>
                   <TableHead>כמות</TableHead>
                   <TableHead>שמורות</TableHead>
                   <TableHead>מלאי ביטחון</TableHead>
@@ -206,9 +221,11 @@ export default async function AdminInventoryPage({
                       </TableCell>
                       <TableCell>
                         {item.branchName}
-                        <span className="text-muted-foreground block text-xs">
-                          {item.branchCity}
-                        </span>
+                        {showPhysicalBranches && item.branchCity ? (
+                          <span className="text-muted-foreground block text-xs">
+                            {item.branchCity}
+                          </span>
+                        ) : null}
                       </TableCell>
                       <TableCell>{item.quantity}</TableCell>
                       <TableCell>{item.reserved}</TableCell>
@@ -240,7 +257,7 @@ export default async function AdminInventoryPage({
               basePath="/admin/inventory"
               pageInfo={data.pageInfo}
               searchParams={{
-                branchId: params.branchId,
+                branchId: showPhysicalBranches ? params.branchId : undefined,
                 query: params.query,
                 sort: params.sort,
               }}

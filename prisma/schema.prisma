@@ -61,6 +61,26 @@ enum OtpChannel {
   SMS
 }
 
+enum BranchKind {
+  ONLINE
+  PHYSICAL
+}
+
+enum ServiceRequestStatus {
+  NEW
+  IN_REVIEW
+  WAITING_FOR_CUSTOMER
+  RESOLVED
+  CLOSED
+}
+
+enum ServiceContactPreference {
+  EMAIL
+  PHONE
+  WHATSAPP
+  ANY
+}
+
 enum AdminPermission {
   SYSTEM
   CATALOG
@@ -280,10 +300,83 @@ model Branch {
   longitude     Float?
   openingHours  Json
   services      String[]
+  kind          BranchKind      @default(PHYSICAL)
+  isApproved    Boolean         @default(false)
+  isPublic      Boolean         @default(false)
+  isActive      Boolean         @default(true)
+  sortOrder     Int             @default(0)
   inventoryItems InventoryItem[]
   inventoryLedgers InventoryLedger[]
   appointments  Appointment[]
   orders        Order[]
+
+  @@index([kind, isApproved, isPublic, isActive, sortOrder])
+}
+
+model ServiceSettings {
+  id                      String   @id @default("default")
+  phoneE164                String   @default("+972547277455")
+  displayPhone             String   @default("054-727-7455")
+  serviceEmail             String   @default("3twito@gmail.com")
+  physicalBranchesEnabled  Boolean  @default(false)
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+}
+
+model ContactTopic {
+  id             String           @id @default(cuid())
+  slug           String           @unique
+  label          String
+  description    String?
+  recipientEmail String?
+  isActive       Boolean          @default(true)
+  sortOrder      Int              @default(0)
+  requests       ServiceRequest[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@index([isActive, sortOrder])
+}
+
+model ServiceRequest {
+  id                   String                    @id @default(cuid())
+  topicId              String?
+  topic                ContactTopic?             @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  status               ServiceRequestStatus      @default(NEW)
+  name                 String
+  phone                String
+  email                String
+  orderNumber          String?
+  productReference     String?
+  preferredContact     ServiceContactPreference  @default(ANY)
+  preferredContactTime String?
+  message              String
+  adminNotes           String?
+  attachments          ServiceRequestAttachment[]
+  createdAt            DateTime                  @default(now())
+  updatedAt            DateTime                  @updatedAt
+
+  @@index([status, createdAt])
+  @@index([topicId])
+  @@index([email])
+  @@index([phone])
+}
+
+model ServiceRequestAttachment {
+  id               String         @id @default(cuid())
+  serviceRequestId String
+  provider         String
+  publicId         String
+  secureUrl        String
+  originalFilename String
+  contentType      String
+  bytes            Int
+  width            Int?
+  height           Int?
+  request          ServiceRequest @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
+  createdAt        DateTime       @default(now())
+
+  @@index([serviceRequestId])
 }
 
 model InventoryItem {

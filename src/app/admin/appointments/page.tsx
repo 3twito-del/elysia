@@ -87,8 +87,9 @@ export default async function AdminAppointmentsPage({
 
   if (!data) return <AdminDatabaseFallback />;
 
+  const showPhysicalBranches = data.physicalBranchesEnabled;
   const hasActiveFilters = [
-    Boolean(params.branchId),
+    showPhysicalBranches && Boolean(params.branchId),
     Boolean(params.query),
     params.sort !== "starts-asc",
     Boolean(params.status),
@@ -99,8 +100,12 @@ export default async function AdminAppointmentsPage({
     <AdminShell
       active="appointments"
       admin={access.admin}
-      description="תיאום, אישור וסגירת תורים בסניפים עם חיפוש לפי לקוח, טלפון, נושא וסניף."
-      title="תורים"
+      description={
+        showPhysicalBranches
+          ? "תיאום, אישור וסגירת תורים במיקומים פיזיים עם חיפוש לפי לקוח, טלפון, נושא ומיקום."
+          : "תיאום, אישור וסגירת פניות שירות טלפוניות או מקוונות עם חיפוש לפי לקוח, טלפון ונושא."
+      }
+      title={showPhysicalBranches ? "תורים" : "תיאומי שירות"}
     >
       <TRPCReactProvider>
         <Card className="rounded-md">
@@ -113,7 +118,11 @@ export default async function AdminAppointmentsPage({
           <CardContent>
             <form
               action="/admin/appointments"
-              className="grid gap-3 md:grid-cols-[1fr_repeat(3,160px)_auto_auto]"
+              className={
+                showPhysicalBranches
+                  ? "grid gap-3 md:grid-cols-[1fr_repeat(3,160px)_auto_auto]"
+                  : "grid gap-3 md:grid-cols-[1fr_repeat(2,160px)_auto_auto]"
+              }
             >
               <Input
                 aria-label="חיפוש תורים"
@@ -134,19 +143,21 @@ export default async function AdminAppointmentsPage({
                   </option>
                 ))}
               </select>
-              <select
-                aria-label="סינון תורים לפי סניף"
-                className="glass-control h-11 rounded-md border px-3 text-sm"
-                defaultValue={params.branchId ?? ""}
-                name="branchId"
-              >
-                <option value="">כל הסניפים</option>
-                {data.branches.map((branch) => (
-                  <option key={branch.id} value={branch.id}>
-                    {branch.name}
-                  </option>
-                ))}
-              </select>
+              {showPhysicalBranches ? (
+                <select
+                  aria-label="סינון תורים לפי מיקום פיזי"
+                  className="glass-control h-11 rounded-md border px-3 text-sm"
+                  defaultValue={params.branchId ?? ""}
+                  name="branchId"
+                >
+                  <option value="">כל המיקומים</option>
+                  {data.branches.map((branch) => (
+                    <option key={branch.id} value={branch.id}>
+                      {branch.name}
+                    </option>
+                  ))}
+                </select>
+              ) : null}
               <select
                 aria-label="מיון תורים"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
@@ -170,7 +181,7 @@ export default async function AdminAppointmentsPage({
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CalendarClock aria-hidden="true" className="size-5" />
-              תורי סניף
+              {showPhysicalBranches ? "תורי מיקום" : "תיאומי שירות"}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -179,7 +190,9 @@ export default async function AdminAppointmentsPage({
               <TableHeader>
                 <TableRow>
                   <TableHead>לקוח</TableHead>
-                  <TableHead>סניף</TableHead>
+                  <TableHead>
+                    {showPhysicalBranches ? "מיקום פיזי" : "שירות"}
+                  </TableHead>
                   <TableHead>נושא</TableHead>
                   <TableHead>תאריך</TableHead>
                   <TableHead>סטטוס</TableHead>
@@ -206,7 +219,10 @@ export default async function AdminAppointmentsPage({
                         </div>
                       </TableCell>
                       <TableCell>
-                        {appointment.branchName}, {appointment.branchCity}
+                        {appointment.branchName}
+                        {showPhysicalBranches && appointment.branchCity
+                          ? `, ${appointment.branchCity}`
+                          : ""}
                       </TableCell>
                       <TableCell>{appointment.topic}</TableCell>
                       <TableCell>
@@ -232,7 +248,7 @@ export default async function AdminAppointmentsPage({
               basePath="/admin/appointments"
               pageInfo={data.pageInfo}
               searchParams={{
-                branchId: params.branchId,
+                branchId: showPhysicalBranches ? params.branchId : undefined,
                 query: params.query,
                 sort: params.sort,
                 status: params.status,

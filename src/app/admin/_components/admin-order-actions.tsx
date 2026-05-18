@@ -412,7 +412,7 @@ function getAvailableActions(status: string, fulfillmentMethod: string) {
   if (status === "PREPARING") {
     return [
       {
-        label: fulfillmentMethod === "PICKUP" ? "מוכן לאיסוף" : "נשלח",
+        label: fulfillmentMethod === "PICKUP" ? "מוכן לתיאום" : "נשלח",
         status:
           fulfillmentMethod === "PICKUP"
             ? ("READY_FOR_PICKUP" as const)

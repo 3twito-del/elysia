@@ -18,13 +18,15 @@ import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import { cinematicRouteMedia } from "~/lib/brand-media";
-import { publicContactEmail, publicContactPhone } from "~/lib/public-contact";
+import { getPublicContactSettings } from "~/server/services/service";
 
 export const metadata: Metadata = {
   title: "שאלות ותשובות",
   description:
     "שאלות ותשובות על קנייה ב-Aphrodite, זמינות מוצרים, מידות, משלוחים, החזרות, מתנות וסטייליסט AI.",
 };
+
+export const dynamic = "force-dynamic";
 
 const faqGroups = [
   {
@@ -92,7 +94,9 @@ const faqGroups = [
   },
 ];
 
-export default function FaqPage() {
+export default async function FaqPage() {
+  const contact = await getPublicContactSettings();
+
   return (
     <main>
       <SiteHeader />
@@ -194,17 +198,17 @@ export default function FaqPage() {
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               <a
                 className="glass-inset hover:text-foreground flex items-center gap-3 rounded-md border p-4 transition"
-                href={`mailto:${publicContactEmail}`}
+                href={`mailto:${contact.email}`}
               >
                 <Mail className="size-5" aria-hidden="true" />
-                <span>{publicContactEmail}</span>
+                <span>{contact.email}</span>
               </a>
               <a
                 className="glass-inset hover:text-foreground flex items-center gap-3 rounded-md border p-4 transition"
-                href={`tel:${publicContactPhone}`}
+                href={contact.phoneHref}
               >
                 <Phone className="size-5" aria-hidden="true" />
-                <span>{publicContactPhone}</span>
+                <span>{contact.phoneDisplay}</span>
               </a>
             </div>
           </section>

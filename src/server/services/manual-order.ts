@@ -142,7 +142,7 @@ export function assertManualReservationAvailable(input: {
   if (!canReserveStock(input)) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "אין מספיק מלאי זמין לשמירת ההזמנה בסניף שנבחר.",
+      message: "אין מספיק מלאי זמין לשמירת ההזמנה בערוץ שנבחר.",
     });
   }
 }
@@ -170,7 +170,7 @@ export function assertManualOrderTransitionAllowed(input: {
   ) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "הזמנת משלוח לא יכולה לעבור לסטטוס מוכן לאיסוף.",
+      message: "הזמנת משלוח לא יכולה לעבור לסטטוס מוכן לתיאום.",
     });
   }
 
@@ -180,7 +180,7 @@ export function assertManualOrderTransitionAllowed(input: {
   ) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "הזמנת איסוף לא יכולה לעבור לסטטוס נשלחה.",
+      message: "הזמנת תיאום אינה יכולה לעבור לסטטוס נשלחה.",
     });
   }
 }
@@ -218,7 +218,7 @@ async function createManualOrderInTransaction(
   if (!branch) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "הסניף שנבחר לא נמצא.",
+      message: "ערוץ השירות שנבחר לא נמצא.",
     });
   }
 
@@ -280,7 +280,7 @@ async function createManualOrderInTransaction(
   if (!inventoryItem) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "אין מלאי מוגדר למוצר בסניף שנבחר.",
+      message: "אין מלאי מוגדר למוצר בערוץ שנבחר.",
     });
   }
 
@@ -520,7 +520,7 @@ export function createManualOrderCustomerMessage(
 ) {
   const fulfillmentText =
     input.fulfillmentMethod === "PICKUP"
-      ? `איסוף מסניף ${input.branchName}`
+      ? `תיאום שירות דרך ${input.branchName}`
       : "משלוח לכתובת שנמסרה";
 
   return {
@@ -557,8 +557,8 @@ export function createManualOrderOperationsMessage(
       `SKU: ${input.sku}`,
       `כמות: ${input.quantity}`,
       `סכום: ${formatManualOrderAmount(input.total)}`,
-      `סניף: ${input.branchName}`,
-      `טלפון סניף: ${input.branchPhone}`,
+      `ערוץ שירות: ${input.branchName}`,
+      `טלפון שירות: ${input.branchPhone}`,
       `Fulfillment: ${input.fulfillmentMethod}`,
       `שמירת מלאי עד: ${input.reservationExpiresAt.toISOString()}`,
     ].join("\n"),
@@ -712,7 +712,7 @@ export async function listAdminOrders(input: { limit?: number } = {}) {
     email: order.email,
     phone: order.phone,
     recipientName: order.recipientName,
-    branchName: order.branch?.name ?? "ללא סניף",
+    branchName: order.branch?.name ?? "שירות אונליין",
     branchCity: order.branch?.city ?? "",
     createdAt: order.createdAt,
     itemCount: order.items.reduce((sum, item) => sum + item.quantity, 0),

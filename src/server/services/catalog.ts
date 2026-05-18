@@ -178,8 +178,20 @@ export const getCatalogCategoryBySlugCachedRequest = cache(
 
 const getCatalogBranchesCached = unstable_cache(
   async (): Promise<CatalogBranch[]> => {
+    const settings = await db.serviceSettings.findUnique({
+      where: { id: "default" },
+    });
+
+    if (!settings?.physicalBranchesEnabled) return [];
+
     const branches = await db.branch.findMany({
-      orderBy: [{ city: "asc" }, { name: "asc" }],
+      where: {
+        kind: "PHYSICAL",
+        isActive: true,
+        isApproved: true,
+        isPublic: true,
+      },
+      orderBy: [{ sortOrder: "asc" }, { city: "asc" }, { name: "asc" }],
     });
 
     return branches.map(mapCatalogBranch);
