@@ -1,0 +1,501 @@
+# מסמך קו עיצובי לאפרודיטה
+
+תאריך גישה למחקר: 18 במאי 2026
+סטטוס: מסמך תכנון ושער החלטות בלבד
+תחולה: אתר המסחר הציבורי של Aphrodite, עם התייחסות לאזורי admin רק כאשר הם משפיעים על שפת המערכת
+כלל ביצוע: אין שינוי עיצובי מאושר במסמך זה. כל שינוי חייב אישור מפורש לפי מזהה `DCH-###`.
+
+## אפיון הקו העיצובי לנוכח הדוגמאות
+
+### מסקנת כיוון
+
+הקו העיצובי המומלץ לאפרודיטה הוא `quiet luxury commerce`: אתר מסחר תכשיטים נקי, קריא, מבוסס מוצר ושירות, עם שכבת מותג עדינה ולא תיאטרלית. השפה צריכה להישען על אמון, דיוק, צילום תכשיט ברור, היררכיית קנייה נוקשה וממשק שמאפשר חיפוש, סינון, בחירה וקופה בלי הפרעות.
+
+הקו הנוכחי באתר כבר תואם חלק גדול מהכיוון הזה:
+
+- צבעוניות קרירה ומצומצמת: מונוכרום, לבן, שחור, אפור ואקווה כצבע פעולה יחיד.
+- קומפוננטות shadcn/Tailwind עם רדיוס קטן, גבולות דקים ופופאפים אטומים.
+- דף הבית משתמש בהירו קולנועי מלא, בעוד שדפי מסחר אחרים משתמשים ב־`CommercePageHero`.
+- כרטיסי מוצר יציבים עם יחס תמונה מוגדר, מחירים, זמינות ו־CTA ברור.
+- קיימים גייטים נגד צבעים חמים ציבוריים, פופאפים שקופים, חוסר נגישות בכפתורי אייקון, overflow ורגרסיות reduced motion.
+
+מול אתרי יוקרה ותכשיטים מובילים, ההחלטה העיצובית צריכה להיות שמרנית: לשמור על מעט צבע, מעט אפקטים, הרבה מרווח מבוקר, צילום מוצר איכותי, טיפוגרפיה רגועה, ומיקרו־אינטראקציות קצרות שאינן מושכות תשומת לב מהקנייה. מול אתרי איקומרס מובילים, יש להעדיף יעילות מסחרית על אפקטים: חיפוש נגיש, סינון ברור, מיון, כרטיס מוצר יציב, זמינות, שירות, החזרות וקופה בלי עומס חזותי.
+
+### עקרונות קו מחייבים
+
+1. **המותג הוא המוצר, לא האפקט**
+   צילום התכשיט, שם המוצר, מחיר, זמינות ושירות הם מוקד המסך. גרדיאנט, ברק, glass או תנועה רשאים להופיע רק אם הם משפרים הבנה או עומק מותגי מדיד.
+
+2. **אקוּוה הוא צבע פעולה, לא רקע דקורטיבי**
+   `--brand-aqua` צריך להישאר צבע CTA, פוקוס, הדגשה נקודתית ואייקונים. אין להרחיב אותו למשטחי רקע רחבים, אורבים, כתמי צבע או UI חד־גוני.
+
+3. **חומריות תכשיטית מוגבלת לתוכן מוצר**
+   זהב, רוז־גולד, כסף ואבנים צריכים להופיע כמידע מוצר או סווץ׳ חומר בלבד. הם לא צריכים להפוך לשפת UI, רקעים, גרדיאנטים שיווקיים או צבעי מצב כלליים.
+
+4. **הירו קולנועי רק בבית**
+   דף הבית רשאי להיות חווייתי ולספר את המותג. קטגוריה, חיפוש, מוצר, קופה, חשבון, שירות ותוכן צריכים להיות מסחריים יותר: כותרת ברורה, פעולה, מדיה תומכת, ללא פרומו שמדחה את המשימה.
+
+5. **תנועה היא משוב, לא בידור**
+   reveal, hover, parallax ו־shine צריכים להיות קצרים, עדינים וניתנים לכיבוי מלא. כל תנועה רציפה מחוץ להירו הבית נחשבת חשודה עד אישור.
+
+6. **משטחים אטומים לפני glass**
+   האתר כבר מחזיק כלל נכון: popup, sheet, dialog, menu, select, tooltip ו־command צריכים להיות אטומים. glass יכול להישאר שם מחלקה היסטורי, אך לא להתנהג כטשטוש שקוף.
+
+7. **רדיוס קטן ושפה חדה**
+   הרדיוס הקיים, סביב `--radius: 0.375rem`, מתאים למסחר יוקרתי מודרני. אין להוסיף cards מעוגלים מאוד, pill cards או קופסאות דקורטיביות גדולות.
+
+8. **היררכיית CTA אחת לכל אזור**
+   בכל אזור מסך יש פעולה ראשית אחת בלבד באקווה. פעולות משניות צריכות להיות outline/ghost ניטרליות. ברק על CTA אינו חלק מהשפה אלא מועמד להסרה.
+
+9. **מובייל קודם במשימות מסחריות**
+   במובייל יש להעדיף חיפוש, סינון, מחיר, זמינות ו־CTA על פני מדיה דקורטיבית, מטריקות, אנימציות וצפיפות טקסט.
+
+10. **נגישות ויציבות הן חלק מהאסתטיקה**
+    פוקוס גלוי, שמות נגישים לאייקונים, reduced motion, אין horizontal overflow, יחס תמונה יציב ו־Core Web Vitals טובים הם חלק מהקו העיצובי, לא שכבת QA נפרדת.
+
+### אתרי benchmark מנותחים
+
+הטבלה הבאה מסכמת את 48 אתרי הייחוס המרכזיים מתוך הקורפוס הרחב. הניתוח נועד לכוון החלטות, לא להעתיק סגנון.
+
+| אתר                       | תחום                     | דפוס רלוונטי                                          | השלכה לאפרודיטה                                     |
+| ------------------------- | ------------------------ | ----------------------------------------------------- | --------------------------------------------------- |
+| Baymard                   | מחקר UX איקומרס          | החלטות חיפוש, PLP, PDP, checkout ומובייל מבוססות מחקר | כל שינוי מסחרי חייב להימדד מול שימושיות, לא רק מראה |
+| Cartier                   | תכשיטים יוקרתיים         | מותג חזק, שירותים, מתנות, ניווט מלא אך רגוע           | לשמור על מותג ברור בלי להכביד על קנייה              |
+| Tiffany                   | תכשיטים יוקרתיים         | Gift/service/appointment כחלק מהמסחר                  | להבליט שירות והחזרות באזורים מסחריים                |
+| Bulgari                   | תכשיטים ויוקרה           | שירותים, appointment, store locator, gift flows       | לחזק שירות לצד קטגוריות                             |
+| Van Cleef & Arpels        | תכשיטים יוקרתיים         | בוטיקים, appointment, heritage                        | לשמור על תחושת בית־מותג בלי להפוך כל עמוד להירו     |
+| Graff                     | high jewelry             | צילום, קולקציות, boutique, appointment                | להשתמש במדיה יוקרתית אך לא להסתיר CTA               |
+| Harry Winston             | high jewelry             | מסרים קצרים, appointment ושירות                       | דפי תוכן צריכים להיות נקיים וקצרים                  |
+| David Yurman              | jewelry commerce         | עזרה, chat, email, appointment                        | שירות אישי צריך להיות נגיש, לא רק footer            |
+| Mejuri                    | תכשיטים מודרניים         | מסחר ישיר, מובייל צפוף אך ברור                        | לשמור על צפיפות מסחרית בלי אסתטיקה דקורטיבית        |
+| Pandora                   | תכשיטים mass-premium     | PLP ברור, badges, מתנות                               | להשתמש בקטגוריות ומתנות, לא בעומס badge             |
+| Blue Nile                 | יהלומים                  | סינון, השוואה, confidence content                     | מוצרים יקרים צריכים מידע החלטה ברור                 |
+| Brilliant Earth           | יהלומים/אירוסין          | התאמה, מסננים, education                              | להוסיף החלטה הדרגתית רק אם יש ערך מסחרי             |
+| James Allen               | יהלומים                  | product detail ו־visual proof                         | מדיה צריכה להוכיח מוצר, לא רק אווירה                |
+| Louis Vuitton             | luxury commerce          | מדיה גדולה, ניווט איטי ומותג חזק                      | השראה למותג, לא לדפוסי checkout                     |
+| Gucci                     | luxury fashion           | צבע ומותג אקספרסיבי                                   | לא לאמץ צבעוניות אם היא שוברת את הקו הקריר          |
+| Hermès                    | quiet luxury             | מרווח, טיפוגרפיה, restraint                           | חיזוק לריסון צבע ותנועה                             |
+| Dior                      | luxury fashion           | editorial commerce                                    | לשמור editorial רק באזורים סיפוריים                 |
+| Chanel                    | luxury fashion           | בלעדיות ו־boutique                                    | רלוונטי לשירות, פחות לאיקומרס מלא                   |
+| Farfetch                  | luxury marketplace       | PLP, פילטרים, כמות מוצרים                             | benchmark טוב לסינון וחיפוש                         |
+| Net-a-Porter              | luxury marketplace       | editorial + commerce                                  | הפרדה בין השראה לבין task flow                      |
+| Nordstrom                 | department commerce      | מידע שירות, delivery/returns                          | אמון מסחרי צריך להיות קרוב לפעולות                  |
+| Sephora                   | beauty commerce          | חיפוש, המלצות, reviews, quick actions                 | benchmark לפונקציונליות, לא לפלטת צבע               |
+| Apple Store               | product commerce         | מינימליזם, hierarchy, CTAs                            | פחות אפקטים, יותר החלטה ברורה                       |
+| Nike                      | apparel commerce         | מדיה חזקה, PLP יציב                                   | שימוש במותג בלי לשבור קצב מסחרי                     |
+| Amazon                    | mass commerce            | יעילות, מידע, conversion                              | לא לאמץ צפיפות, כן לאמץ בהירות פעולה                |
+| Target                    | mass commerce            | cart, pickup, availability                            | זמינות ושירות צריכים להיות גלויים                   |
+| Walmart                   | mass commerce            | חיפוש/מחיר/משלוח                                      | checkout צריך להיות פרגמטי                          |
+| Wayfair                   | catalog commerce         | סינון והשוואה                                         | PLP צריך לאפשר צמצום מהיר                           |
+| Etsy                      | marketplace              | מלאי, personalization, trust                          | useful for handcrafted/story signals                |
+| 1stDibs                   | luxury marketplace       | vintage/luxury discovery                              | benchmark לאוצרות, לא לאפקטים                       |
+| Beladora                  | vintage designer jewelry | designer/category paths                               | רלוונטי לניווט לפי מעצב/חומר                        |
+| Harrods                   | luxury department        | שירות ומותג                                           | luxury service content                              |
+| Selfridges                | luxury department        | editorial commerce                                    | לא להציף מסכים מסחריים בתוכן                        |
+| Mytheresa                 | luxury fashion           | PLP נקי ומסחרי                                        | רלוונטי לצפיפות מוצר                                |
+| SSENSE                    | fashion commerce         | minimal, grid-led                                     | חיזוק למונוכרום וגריד                               |
+| IKEA                      | product/category utility | ניווט ומשימות                                         | מודל לשימושיות, לא לאסתטיקה                         |
+| Home Depot                | utility commerce         | filters, availability, pickup                         | טוב למדידת בהירות מסחרית                            |
+| REI                       | specialty commerce       | content + product confidence                          | מידע מסייע ליד מוצר                                 |
+| Warby Parker              | eyewear                  | guided choice and try-on                              | השראה לייעוץ אישי מבוקר                             |
+| Ray-Ban                   | eyewear                  | product configurator                                  | רק אם יש בחירת וריאנטים אמיתית                      |
+| Grainger                  | B2B commerce             | חיפוש מדויק, זמינות                                   | רלוונטי ל־admin/operational clarity                 |
+| Booking                   | marketplace flow         | תאריכים, מלאי, trust                                  | benchmark לשלביות והפחתת חרדה                       |
+| Uber Eats                 | mobile commerce          | sticky cart/action                                    | benchmark לפעולת מובייל מיידית                      |
+| Starbucks                 | mobile ordering          | repeat action, clear state                            | state feedback מהיר                                 |
+| LEGO                      | catalog + storytelling   | קטגוריות, גיל, collection                             | השראה לניווט קטגוריאלי ברור                         |
+| Awwwards luxury ecommerce | השראה חזותית             | אפקטים, טיפוגרפיה, motion                             | מקור השראה בלבד; לא מקור לשימושיות checkout         |
+| WCAG 2.2                  | תקן נגישות               | focus, target size, text alternatives                 | תנאי קבלה לכל שינוי                                 |
+| Core Web Vitals           | ביצועים                  | LCP, INP, CLS                                         | אפקטים חזותיים חייבים להצדיק עלות                   |
+
+## פערים יישומיים
+
+סנכרון יישום אחרון: 18 במאי 2026. הטבלה משקפת את מצב הקוד הנוכחי, לא רק את מצב ההחלטות המקורי. סעיפים שמסומנים `Implemented` כבר יושמו או מקובעים בגייטים קיימים. סעיפים שמסומנים `Partial` קיימים בקוד באופן חלקי או התנהגותי, אך עדיין דורשים audit, gate מפורש או החלטת חריגים לפני שממשיכים הלאה. סעיפים שמסומנים `Open` הם הפערים הבאים לביצוע.
+
+| ID      | שינוי מוצע                                                   | ראיות benchmark                                                                                                | מיקום קיים                                                                                                  | סיכון                                 | חלופה                                          | המלצה                                 | סטטוס                 |
+| ------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------- | ---------------------------------------------- | ------------------------------------- | --------------------- |
+| DCH-001 | להסיר או לצמצם shine/ברק מכפתורי CTA ומדיה                   | אתרי יוקרה מובילים נשענים יותר על צילום, טיפוגרפיה ושירות; Baymard/Web Vitals מציבים שימושיות ותגובה לפני אפקט | `src/styles/globals.css`, `src/components/kinetic-image-motion.tsx`, `src/components/brand-media-panel.tsx` | ברק נתפס כקוסמטי ועלול להעמיס תנועה   | להשאיר shine רק בהירו הבית או לבטל לגמרי       | לשמר את gate ולבדוק חזותית לפני שינוי | Implemented: `src/styles/no-shine-effects.test.ts` |
+| DCH-002 | להגביל גרדיאנטים דקורטיביים מחוץ להירו הבית                  | קו quiet luxury דורש משטחי תוכן רגועים; גרדיאנטים רבים מקשים על אחידות                                         | `brand-page-band`, `commerce-page-hero`, overlays בדף הבית                                                  | הסרה חדה מדי עלולה לשטח את המותג      | להשאיר vignette פונקציונלי על תמונות בלבד      | לשמר משטחי תוכן סולידיים              | Implemented: `src/styles/no-decorative-page-gradients.test.ts` |
+| DCH-003 | להקשיח איסור צבעים חמים ב־UI ציבורי, עם חריג לחומר מוצר בלבד | הקוד כבר אוסר champagne/yellow/amber; תכשיטים רשאים להציג חומר אך UI לא                                        | `src/styles/no-warm-ui-colors.test.ts`, `product-purchase-panel.tsx`, blur placeholder בכרטיס מוצר          | חסימת סווצ׳ חומר תפגע באינפורמציה     | להפריד `material-swatch` כחריג מתועד           | לשמר חריג חומר מוצר מתועד             | Implemented: `src/styles/no-warm-ui-colors.test.ts` |
+| DCH-004 | לקבע שהירו קולנועי מלא נשאר רק בדף הבית                      | בדיקות e2e כבר מצפות לכך; UX מסחרי דורש כניסה מהירה לקטגוריה/מוצר                                              | `src/lib/layout-stability.test.ts`, `tests/e2e/critical-flows.spec.ts`, `src/app/page.tsx`                  | הרחבת ההירו תדחה משימות מסחריות       | מדיה קטנה ב־CommercePageHero                   | לשמר כקו מחייב                         | Implemented: `src/lib/layout-stability.test.ts`, e2e |
+| DCH-005 | להגדיר motion budget ציבורי: ללא תנועה רציפה מחוץ להירו הבית | WCAG/reduced motion וה־e2e הקיים תומכים בכיבוי מלא; mobile UX מתגמל פשטות                                      | `motion-media-frame.tsx`, `reveal.tsx`, `public-motion-provider.tsx`                                        | אפקטים רבים פוגעים ב־INP/תחושת יציבות | reveal קצר בלבד, hover transform בלבד          | לשמר תקציב תנועה קשיח                 | Implemented: `src/lib/public-motion-budget.test.ts` |
+| DCH-006 | להפוך glass לשפה אטומה ושקטה, לא טשטוש                       | קיימים גייטים לפופאפים אטומים; luxury commerce נפגע משקיפות שמפחיתה קריאות                                     | `popup-surfaces.test.ts`, `globals.css`, UI primitives                                                      | חזרה ל־blur תפגע בקריאות ונגישות      | לשמור שם מחלקה אך התנהגות אטומה                | לשמר איסור blur במשטחי פעולה          | Implemented: `src/styles/opaque-glass-surfaces.test.ts` |
+| DCH-007 | CTA ראשי יחיד באקווה בכל אזור פעולה                          | אתרי מסחר מובילים שומרים היררכיית פעולה ברורה; ריבוי CTA צבעוניים מחליש החלטה                                  | `button.tsx`, `product-card.tsx`, `checkout`, `product-purchase-panel`                                      | יותר מדי אקווה יוצר רעש חזותי         | primary aqua, secondary neutral/outline        | לשמר כ־design gate                    | Implemented: `src/styles/cta-hierarchy.test.ts` |
+| DCH-008 | לצמצם badges/overlays בכרטיס מוצר כאשר אין ערך החלטה         | PLP טוב צריך לאפשר סריקה, מחיר, זמינות וחומר בלי עומס                                                          | `src/components/product-card.tsx`                                                                           | עומס badge מסתיר מוצר ומקשה על מובייל | להשאיר collection + availability/discount בלבד | לשמר budget ל־overlay                  | Implemented: `src/styles/product-card-overlays.test.ts` |
+| DCH-009 | להקשיח צפיפות מובייל: פעולה וחיפוש לפני תוכן דקורטיבי        | Baymard mobile מדגיש navigation/search/filter/list item clarity                                                | `src/app/page.tsx`, `category/[slug]/page.tsx`, `search-controls.tsx`                                       | מדיה גדולה מדי דוחה מוצרים            | mobile-first spacing audit                     | לשמר audit מובייל לפני שינוי           | Implemented: `src/styles/mobile-commerce-density.test.ts` |
+| DCH-010 | להפוך תוכן שירות לאמון מסחרי קרוב לפעולות                    | Tiffany/Bulgari/Graff/David Yurman מציגים appointment, service, returns, contact                               | product, checkout, service, footer                                                                          | שירות רחוק מדי מפחית ביטחון           | trust strip ליד PDP/checkout בלבד              | לשמר audit קבלה ל־PDP/checkout/service | Implemented: `src/styles/service-trust-placement.test.ts` |
+| DCH-011 | להגדיר איסור cards בתוך cards ועומס section cards            | קו שקט דורש bands/sections, לא nesting חזותי                                                                   | public pages using `brand-surface` and `glass-inset`                                                        | nesting יוצר UI כבד ולא יוקרתי        | משטח אחד, אינסטים רק לטפסים/מצבים              | לשמר gate עיצובי                      | Implemented: `src/styles/no-nested-card-surfaces.test.ts` |
+| DCH-012 | לשמור letter-spacing אפס וטיפוגרפיה חסכונית                  | הקוד כבר בכיוון; עברית ו־RTL נפגעים ממרווח אותיות                                                              | `globals.css`, headers, brand mark                                                                          | אותיות צפופות/מרווחות פוגעות קריאות   | font-weight והיררכיה במקום tracking            | לשמר gate עם חריגי shortcut מתועדים   | Implemented: `src/styles/typography-spacing.test.ts` |
+| DCH-013 | להקשיח נגישות כקריטריון עיצוב: focus, target, names          | WCAG 2.2 כולל focus/target/text alternatives; tests כבר בודקים חלק                                             | `accessibility-guardrails.test.ts`, e2e accessibility                                                       | שינוי חזותי עלול לשבור שימושיות       | כל שינוי עובר e2e + keyboard pass              | לשמר כתנאי קבלה                       | Implemented: `src/lib/accessibility-guardrails.test.ts`, e2e |
+| DCH-014 | להימנע מהרחבת palette מעבר לאקווה/נייטרלים                   | הקו הנוכחי והגייטים שומרים זהות קרירה; luxury quiet דורש restraint                                             | `globals.css`, `no-warm-ui-colors.test.ts`                                                                  | palette רחב יקשה על אחידות            | צבעי חומר רק בתוכן מוצר                        | לשמר gate לשינוי palette חדש          | Implemented: `src/styles/public-palette.test.ts` |
+| DCH-015 | לשמור על מדיה מוצרית אמיתית ולא איורי SVG/רקעים מופשטים      | אתרי תכשיטים מובילים נשענים על צילום מוצר/מודל/בוטיק                                                           | `public/brand`, `brand-media.ts`, product gallery                                                           | מדיה אווירתית מדי לא מוכרת מוצר       | צילום מוצר או סטודיו בלבד                      | לשמר gate למדיה ציבורית               | Implemented: `src/styles/product-led-media.test.ts` |
+
+נכון לסנכרון זה, אין סעיף `DCH` פתוח ליישום. השלב הבא הוא verification מלא והכנסת קבצי ה־gate החדשים ל־git יחד עם שינויי ה־UI והתיעוד.
+
+### סטטוס אימות יישום
+
+סנכרון יישום: 19 במאי 2026. כל סעיפי `DCH-001` עד `DCH-015` מקובעים בקוד או בגייטים סטטיים.
+
+- `pnpm check` עבר: lint, typecheck ו־Vitest עם 80 קבצי בדיקה ו־302 בדיקות.
+- e2e ממוקד עבר מול `http://localhost:3001`: הוספה לסל, עדכון מונה סל, no-results recoverable, sheets במובייל, consent, נגישות ו־focus restoration, ו־OTP/session hydration.
+- `pnpm exec playwright test` מלא עבר מול שרת הפיתוח: 76 בדיקות עברו ו־6 דולגו לפי תנאי הסביבה.
+- יציבות DB בהרצת e2e חוזקה ב־`src/server/db.ts` באמצעות retry לשגיאות Prisma חולפות ו־Postgres fail-fast defaults בסביבות לא־production: `connect_timeout`, `pool_timeout`, `socket_timeout` ו־`connection_limit`.
+- שרת הפיתוח ששימש לאימות: `pnpm exec next dev --turbopack -p 3001`.
+
+### תנאי אישור לכל שינוי עתידי
+
+כל שינוי עיצובי עתידי חייב לעבור את השער הבא:
+
+| שדה         | חובה                                                                       |
+| ----------- | -------------------------------------------------------------------------- |
+| מזהה        | `DCH-###`                                                                  |
+| החלטת משתמש | `Approve DCH-###`, `Reject DCH-###` או `Defer DCH-###`                     |
+| ראיות       | לפחות מקור benchmark אחד ומיקום קוד אחד                                    |
+| השפעה       | מה משתנה למשתמש ומה לא משתנה                                               |
+| סיכון       | נגישות, מובייל, ביצועים, מסחר, מותג                                        |
+| בדיקות      | מינימום `pnpm check`; לשינויי UI ציבוריים גם `pnpm e2e` ו־`pnpm visual:qa` |
+| תיעוד       | אם אושר שינוי חדש, להעביר ל־`docs/DESIGN_CHANGE_DECISIONS.md` לפני יישום; אחרי יישום להסיר מיומן ההחלטות ולעדכן סטטוס בטבלה זו |
+
+### בדיקות קבלה למסמך
+
+- המסמך מכיל 300+ URL ייחודיים בנספח המחקר.
+- המסמך מכיל 40+ אתרי benchmark מנותחים.
+- כל פער יישומי כולל מזהה, ראיות, מיקום, סיכון, חלופה, המלצה וסטטוס.
+- סטטוסי היישום בטבלת `DCH` תואמים לגייטים ולקוד בפועל.
+- `docs/DESIGN_CHANGE_DECISIONS.md` נשאר יומן לשינויים מאושרים שעדיין ממתינים ליישום, לא היסטוריית ביצוע.
+
+## נספח מחקר: קורפוס 300+ מקורות
+
+מבנה כל שורה: `ID | URL | סוג מקור | תאריך גישה | תחום | מסכים שנבדקו | תובנה קצרה`.
+שורות מחקר ותקנים שימשו כעוגן החלטה. שורות אתרי benchmark שימשו למיפוי דפוסי בית, ניווט, קטגוריה, מוצר, חיפוש, שירות, קופה ומובייל.
+
+| ID   | URL                                                                     | סוג מקור       | תאריך      | תחום                  | מסכים                            | תובנה                                                 |
+| ---- | ----------------------------------------------------------------------- | -------------- | ---------- | --------------------- | -------------------------------- | ----------------------------------------------------- |
+| S001 | https://baymard.com/                                                    | מחקר UX        | 2026-05-18 | איקומרס               | מחקר, search, checkout, mobile   | החלטות UX צריכות להישען על ראיות ולא על העדפה חזותית. |
+| S002 | https://baymard.com/ux-benchmark                                        | Benchmark      | 2026-05-18 | איקומרס               | 326 אתרים, desktop/mobile/app    | בסיס להשוואת אתרי מסחר מובילים.                       |
+| S003 | https://baymard.com/ecommerce-design-examples                           | ספריית דוגמאות | 2026-05-18 | איקומרס               | cart, checkout, account, returns | מקור לדפוסי מסך ולא לאסתטיקה בלבד.                    |
+| S004 | https://baymard.com/research/mcommerce-usability                        | מחקר UX        | 2026-05-18 | מובייל מסחרי          | mobile nav, PLP, search, PDP     | מובייל דורש חיפוש, פילטרים וכרטיסי מוצר ברורים.       |
+| S005 | https://baymard.com/blog/mobile-app-ux-trends                           | מאמר מחקר      | 2026-05-18 | מובייל                | app commerce                     | אפליקציות מסחר נמדדות לפי task success.               |
+| S006 | https://www.w3.org/TR/wcag/                                             | תקן            | 2026-05-18 | נגישות                | focus, target, text alternatives | נגישות היא דרישת עיצוב מחייבת.                        |
+| S007 | https://www.w3.org/WAI/standards-guidelines/wcag/                       | תקן            | 2026-05-18 | נגישות                | overview, policy                 | WCAG 2.2 הוא יעד תכנון עדכני.                         |
+| S008 | https://web.dev/articles/defining-core-web-vitals-thresholds            | תקן ביצועים    | 2026-05-18 | ביצועים               | LCP, INP, CLS                    | תנועה ומדיה חייבים להצדיק עלות ביצועית.               |
+| S009 | https://www.nngroup.com/videos/mobile-images/                           | מחקר UX        | 2026-05-18 | מובייל                | imagery, performance             | תמונות במובייל צריכות ערך אינפורמטיבי.                |
+| S010 | https://www.awwwards.com/websites/luxury-ecommerce/                     | השראה חזותית   | 2026-05-18 | luxury ecommerce      | visual, motion, typography       | מקור השראה בלבד, לא מקור checkout.                    |
+| S011 | https://www.cartier.com/en-us/home                                      | אתר מותג       | 2026-05-18 | תכשיטים               | home, category, service          | מותג חזק עם ניווט ושירות ברורים.                      |
+| S012 | https://www.tiffany.com/                                                | אתר מותג       | 2026-05-18 | תכשיטים               | home, gifts, service             | מתנות ושירות הם חלק מהמסחר.                           |
+| S013 | https://www.tiffany.com/tiffany-gifts.html                              | אתר מותג       | 2026-05-18 | תכשיטים               | gifts, service                   | gift flow צריך להיות מובחן ונקי.                      |
+| S014 | https://www.tiffany.com/stores/                                         | אתר מותג       | 2026-05-18 | תכשיטים               | store locator, service           | חיבור אונליין־חנות מחזק אמון.                         |
+| S015 | https://www.bulgari.com/                                                | אתר מותג       | 2026-05-18 | תכשיטים               | home, gifts, appointment         | שירות ו־appointment נוכחים לצד קטלוג.                 |
+| S016 | https://www.vancleefarpels.com/                                         | אתר מותג       | 2026-05-18 | תכשיטים               | home, boutique, appointment      | יוקרה שקטה נשענת על heritage ושירות.                  |
+| S017 | https://www.vancleefarpels.com/en/store-locator-search.html             | אתר מותג       | 2026-05-18 | תכשיטים               | store locator                    | בוטיקים הם trust signal.                              |
+| S018 | https://www.graff.com/us-en/home/                                       | אתר מותג       | 2026-05-18 | high jewelry          | home, collection, boutique       | צילום ו־boutique חזקים יותר מאפקטים.                  |
+| S019 | https://www.harrywinston.com/                                           | אתר מותג       | 2026-05-18 | high jewelry          | home, appointment, catalog       | מסרים קצרים ושירות בולטים.                            |
+| S020 | https://www.davidyurman.com/                                            | אתר מותג       | 2026-05-18 | תכשיטים               | home, help, appointment          | עזרה אישית קרובה למסחר.                               |
+| S021 | https://www.beladora.com/                                               | אתר מסחר       | 2026-05-18 | vintage jewelry       | home, designer paths             | ניווט לפי מעצב/אוצרות תומך discovery.                 |
+| S022 | https://www.chopard.com/                                                | אתר מותג       | 2026-05-18 | תכשיטים               | home, jewelry, watches           | luxury restraint with product-led paths.              |
+| S023 | https://www.boucheron.com/                                              | אתר מותג       | 2026-05-18 | תכשיטים               | home, collections                | heritage and collection storytelling.                 |
+| S024 | https://www.chaumet.com/                                                | אתר מותג       | 2026-05-18 | תכשיטים               | home, collections                | editorial tone should stay controlled.                |
+| S025 | https://www.piaget.com/                                                 | אתר מותג       | 2026-05-18 | תכשיטים               | home, jewelry, watches           | luxury media must not hide commerce.                  |
+| S026 | https://www.mikimotoamerica.com/                                        | אתר מסחר       | 2026-05-18 | תכשיטים               | pearls, PLP, PDP                 | product material clarity matters.                     |
+| S027 | https://mejuri.com/                                                     | אתר מסחר       | 2026-05-18 | תכשיטים               | home, PLP, PDP                   | modern jewelry commerce favors clean grids.           |
+| S028 | https://www.pandora.net/                                                | אתר מסחר       | 2026-05-18 | תכשיטים               | home, PLP, gifts                 | mass-premium needs badge discipline.                  |
+| S029 | https://www.swarovski.com/                                              | אתר מסחר       | 2026-05-18 | jewelry/crystal       | home, category, gifts            | strong product imagery over UI effects.               |
+| S030 | https://www.bluenile.com/                                               | אתר מסחר       | 2026-05-18 | diamonds              | search, filters, PDP             | decision support is key for expensive items.          |
+| S031 | https://www.brilliantearth.com/                                         | אתר מסחר       | 2026-05-18 | diamonds              | filters, education, PDP          | guided choice can support conversion.                 |
+| S032 | https://www.jamesallen.com/                                             | אתר מסחר       | 2026-05-18 | diamonds              | configurator, PDP                | visual proof should be functional.                    |
+| S033 | https://www.debeers.com/                                                | אתר מותג       | 2026-05-18 | diamonds              | home, high jewelry               | luxury copy should be concise.                        |
+| S034 | https://www.vrai.com/                                                   | אתר מסחר       | 2026-05-18 | diamonds              | PLP, PDP, education              | clean ecommerce with material confidence.             |
+| S035 | https://www.catbirdnyc.com/                                             | אתר מסחר       | 2026-05-18 | jewelry               | home, PLP                        | warm brand tone must not override UI clarity.         |
+| S036 | https://www.kendrascott.com/                                            | אתר מסחר       | 2026-05-18 | jewelry               | PLP, gifts                       | gift/category paths need fast scanning.               |
+| S037 | https://www.monicavinader.com/                                          | אתר מסחר       | 2026-05-18 | jewelry               | home, category                   | restraint and product grid balance.                   |
+| S038 | https://www.missoma.com/                                                | אתר מסחר       | 2026-05-18 | jewelry               | home, PLP                        | editorial commerce should remain shoppable.           |
+| S039 | https://www.gorjana.com/                                                | אתר מסחר       | 2026-05-18 | jewelry               | PLP, PDP                         | minimal card systems fit Aphrodite.                   |
+| S040 | https://www.astridandmiyu.com/                                          | אתר מסחר       | 2026-05-18 | jewelry               | home, category                   | strong nav and service tone.                          |
+| S041 | https://auratenewyork.com/                                              | אתר מסחר       | 2026-05-18 | jewelry               | home, PLP                        | modern premium with restrained UI.                    |
+| S042 | https://www.stoneandstrand.com/                                         | אתר מסחר       | 2026-05-18 | jewelry               | home, PLP                        | product-first imagery.                                |
+| S043 | https://www.buccellati.com/                                             | אתר מותג       | 2026-05-18 | high jewelry          | home, collections                | craft story supports premium value.                   |
+| S044 | https://www.pomellato.com/                                              | אתר מותג       | 2026-05-18 | jewelry               | home, collections                | color can be product-led, not UI-led.                 |
+| S045 | https://www.messika.com/                                                | אתר מותג       | 2026-05-18 | jewelry               | home, jewelry                    | bold media requires clean controls.                   |
+| S046 | https://www.fred.com/                                                   | אתר מותג       | 2026-05-18 | jewelry               | home, collections                | luxury playfulness should be bounded.                 |
+| S047 | https://www.qeelin.com/                                                 | אתר מותג       | 2026-05-18 | jewelry               | home, collections                | iconography can be branded but sparse.                |
+| S048 | https://www.damiani.com/                                                | אתר מותג       | 2026-05-18 | jewelry               | home, category                   | heritage with controlled commerce.                    |
+| S049 | https://www.robertocoin.com/                                            | אתר מותג       | 2026-05-18 | jewelry               | collections, PDP                 | product material clarity.                             |
+| S050 | https://johnhardy.com/                                                  | אתר מסחר       | 2026-05-18 | jewelry               | PLP, PDP                         | craft story should not bury CTA.                      |
+| S051 | https://www.lagos.com/                                                  | אתר מסחר       | 2026-05-18 | jewelry               | home, category                   | premium grid discipline.                              |
+| S052 | https://www.monicarichkosann.com/                                       | אתר מסחר       | 2026-05-18 | jewelry               | PLP, gifting                     | emotional copy near product.                          |
+| S053 | https://spinellikilcollin.com/                                          | אתר מותג       | 2026-05-18 | jewelry               | home, PLP                        | minimal interface with strong product.                |
+| S054 | https://www.anitako.com/                                                | אתר מסחר       | 2026-05-18 | jewelry               | home, PLP                        | luxury grid with few distractions.                    |
+| S055 | https://foundrae.com/                                                   | אתר מסחר       | 2026-05-18 | jewelry               | home, story, PLP                 | storytelling must be separated from flow.             |
+| S056 | https://jacquieaiche.com/                                               | אתר מסחר       | 2026-05-18 | jewelry               | home, PLP                        | mood-heavy design needs commerce guardrails.          |
+| S057 | https://sophiebillebrahe.com/                                           | אתר מותג       | 2026-05-18 | jewelry               | home, collection                 | whitespace and restraint.                             |
+| S058 | https://shaunleane.com/                                                 | אתר מסחר       | 2026-05-18 | jewelry               | home, PLP                        | dark luxury can hurt clarity if overused.             |
+| S059 | https://www.stephenwebster.com/                                         | אתר מותג       | 2026-05-18 | jewelry               | collections                      | high-contrast product storytelling.                   |
+| S060 | https://www.mariatash.com/                                              | אתר מסחר       | 2026-05-18 | jewelry               | category, PDP                    | variant and service clarity.                          |
+| S061 | https://wwake.com/                                                      | אתר מסחר       | 2026-05-18 | jewelry               | PLP, PDP                         | understated product-led commerce.                     |
+| S062 | https://jenniferfisherjewelry.com/                                      | אתר מסחר       | 2026-05-18 | jewelry               | PLP, gifts                       | direct commerce clarity.                              |
+| S063 | https://www.jhannahjewelry.com/                                         | אתר מסחר       | 2026-05-18 | jewelry               | home, PLP                        | minimal jewelry language.                             |
+| S064 | https://completedworks.com/                                             | אתר מסחר       | 2026-05-18 | jewelry               | editorial, PLP                   | editorial needs bounded placement.                    |
+| S065 | https://www.mateonewyork.com/                                           | אתר מסחר       | 2026-05-18 | jewelry               | home, PLP                        | clean premium product cards.                          |
+| S066 | https://agmesnyc.com/                                                   | אתר מסחר       | 2026-05-18 | jewelry               | home, PLP                        | gallery restraint.                                    |
+| S067 | https://jenny-bird.com/                                                 | אתר מסחר       | 2026-05-18 | jewelry               | PLP, gifts                       | category clarity.                                     |
+| S068 | https://auvere.com/                                                     | אתר מסחר       | 2026-05-18 | jewelry               | PLP, PDP                         | material confidence.                                  |
+| S069 | https://www.tacori.com/                                                 | אתר מסחר       | 2026-05-18 | jewelry               | engagement, PDP                  | education and configurators.                          |
+| S070 | https://www.kay.com/                                                    | אתר מסחר       | 2026-05-18 | jewelry               | PLP, PDP, checkout               | retail jewelry conversion patterns.                   |
+| S071 | https://www.zales.com/                                                  | אתר מסחר       | 2026-05-18 | jewelry               | PLP, deals                       | promotions must not dominate luxury UI.               |
+| S072 | https://www.jared.com/                                                  | אתר מסחר       | 2026-05-18 | jewelry               | PLP, PDP                         | service and financing signals.                        |
+| S073 | https://www.helzberg.com/                                               | אתר מסחר       | 2026-05-18 | jewelry               | PLP, gifts                       | mainstream jewelry flow.                              |
+| S074 | https://www.benbridge.com/                                              | אתר מסחר       | 2026-05-18 | jewelry               | PLP, store                       | store trust and product grids.                        |
+| S075 | https://www.reeds.com/                                                  | אתר מסחר       | 2026-05-18 | jewelry               | PLP, PDP                         | product listing utility.                              |
+| S076 | https://www.angara.com/                                                 | אתר מסחר       | 2026-05-18 | jewelry               | configurator, PDP                | customization must be understandable.                 |
+| S077 | https://www.ross-simons.com/                                            | אתר מסחר       | 2026-05-18 | jewelry               | PLP, sale                        | sale language should be restrained.                   |
+| S078 | https://www.1stdibs.com/                                                | marketplace    | 2026-05-18 | luxury/vintage        | search, PLP, product             | curated discovery and trust.                          |
+| S079 | https://www.hodinkee.com/                                               | media/commerce | 2026-05-18 | watches               | editorial, shop                  | separate editorial from buying path.                  |
+| S080 | https://www.bucherer.com/                                               | אתר מסחר       | 2026-05-18 | watches/jewelry       | home, PLP                        | luxury watch/jewelry service model.                   |
+| S081 | https://www.tagheuer.com/                                               | אתר מותג       | 2026-05-18 | watches/jewelry       | home, category                   | brand motion should be measured.                      |
+| S082 | https://www.tissotwatches.com/                                          | אתר מסחר       | 2026-05-18 | watches               | PLP, PDP                         | specification clarity.                                |
+| S083 | https://www.rolex.com/                                                  | אתר מותג       | 2026-05-18 | watches               | home, retailer locator           | scarcity and appointment models.                      |
+| S084 | https://www.omegawatches.com/                                           | אתר מותג       | 2026-05-18 | watches               | collections, stores              | technical/product confidence.                         |
+| S085 | https://www.louisvuitton.com/                                           | אתר מותג       | 2026-05-18 | luxury                | home, PLP, PDP                   | brand media must stay shoppable.                      |
+| S086 | https://www.dior.com/                                                   | אתר מותג       | 2026-05-18 | luxury                | home, category                   | editorial should not replace task flow.               |
+| S087 | https://www.chanel.com/                                                 | אתר מותג       | 2026-05-18 | luxury                | home, category                   | restrained luxury and boutique logic.                 |
+| S088 | https://www.gucci.com/                                                  | אתר מסחר       | 2026-05-18 | luxury                | home, PLP                        | expressive brand needs clear controls.                |
+| S089 | https://www.prada.com/                                                  | אתר מסחר       | 2026-05-18 | luxury                | PLP, PDP                         | minimal interfaces can support premium.               |
+| S090 | https://www.hermes.com/                                                 | אתר מותג       | 2026-05-18 | luxury                | home, product                    | quiet luxury restraint.                               |
+| S091 | https://www.loewe.com/                                                  | אתר מסחר       | 2026-05-18 | luxury                | PLP, PDP                         | product-led gallery.                                  |
+| S092 | https://www.ysl.com/                                                    | אתר מסחר       | 2026-05-18 | luxury                | home, category                   | dark/monochrome discipline.                           |
+| S093 | https://www.burberry.com/                                               | אתר מסחר       | 2026-05-18 | luxury                | PLP, PDP                         | brand + commerce balance.                             |
+| S094 | https://www.versace.com/                                                | אתר מסחר       | 2026-05-18 | luxury                | home, PLP                        | bold decorative identity needs limits.                |
+| S095 | https://www.valentino.com/                                              | אתר מסחר       | 2026-05-18 | luxury                | PLP, PDP                         | high fashion grid restraint.                          |
+| S096 | https://www.fendi.com/                                                  | אתר מסחר       | 2026-05-18 | luxury                | category, PDP                    | media hierarchy.                                      |
+| S097 | https://www.celine.com/                                                 | אתר מסחר       | 2026-05-18 | luxury                | PLP, PDP                         | typographic restraint.                                |
+| S098 | https://www.bottegaveneta.com/                                          | אתר מסחר       | 2026-05-18 | luxury                | PLP, PDP                         | product craft imagery.                                |
+| S099 | https://www.balenciaga.com/                                             | אתר מסחר       | 2026-05-18 | luxury                | PLP, PDP                         | minimal UI with strong product.                       |
+| S100 | https://www.miumiu.com/                                                 | אתר מסחר       | 2026-05-18 | luxury                | home, PLP                        | branded editorial control.                            |
+| S101 | https://www.armani.com/                                                 | אתר מסחר       | 2026-05-18 | luxury                | category, PDP                    | monochrome premium language.                          |
+| S102 | https://www.moncler.com/                                                | אתר מסחר       | 2026-05-18 | luxury                | PLP, product                     | product card consistency.                             |
+| S103 | https://www.canadagoose.com/                                            | אתר מסחר       | 2026-05-18 | luxury apparel        | PDP, service                     | technical confidence near purchase.                   |
+| S104 | https://www.ralphlauren.com/                                            | אתר מסחר       | 2026-05-18 | premium apparel       | home, category                   | lifestyle should not bury catalog.                    |
+| S105 | https://www.toryburch.com/                                              | אתר מסחר       | 2026-05-18 | premium apparel       | PLP, PDP                         | restrained commerce patterns.                         |
+| S106 | https://www.coach.com/                                                  | אתר מסחר       | 2026-05-18 | premium accessories   | PLP, gifts                       | promotion balance.                                    |
+| S107 | https://www.katespade.com/                                              | אתר מסחר       | 2026-05-18 | accessories           | home, gifts                      | color should be brand-specific, not generic.          |
+| S108 | https://www.michaelkors.com/                                            | אתר מסחר       | 2026-05-18 | accessories           | PLP, sale                        | sale emphasis risk.                                   |
+| S109 | https://www.longchamp.com/                                              | אתר מסחר       | 2026-05-18 | accessories           | category, PDP                    | simple product flows.                                 |
+| S110 | https://www.mulberry.com/                                               | אתר מסחר       | 2026-05-18 | luxury accessories    | PLP, PDP                         | craft and product photography.                        |
+| S111 | https://www.rimowa.com/                                                 | אתר מסחר       | 2026-05-18 | luxury travel goods   | PDP, service                     | product detail clarity.                               |
+| S112 | https://www.tumi.com/                                                   | אתר מסחר       | 2026-05-18 | travel goods          | PLP, PDP                         | functional premium commerce.                          |
+| S113 | https://www.farfetch.com/                                               | marketplace    | 2026-05-18 | luxury fashion        | search, PLP, filter              | advanced filtering for large catalog.                 |
+| S114 | https://www.net-a-porter.com/                                           | marketplace    | 2026-05-18 | luxury fashion        | editorial, PLP                   | editorial and commerce separation.                    |
+| S115 | https://www.mytheresa.com/                                              | marketplace    | 2026-05-18 | luxury fashion        | PLP, PDP                         | clean grid and premium tone.                          |
+| S116 | https://www.ssense.com/                                                 | marketplace    | 2026-05-18 | fashion               | PLP, search                      | monochrome commerce discipline.                       |
+| S117 | https://www.saksfifthavenue.com/                                        | department     | 2026-05-18 | luxury retail         | search, PLP, checkout            | service and promotion balance.                        |
+| S118 | https://www.nordstrom.com/                                              | department     | 2026-05-18 | retail                | PLP, PDP, service                | clear returns and delivery trust.                     |
+| S119 | https://www.neimanmarcus.com/                                           | department     | 2026-05-18 | luxury retail         | PLP, PDP                         | luxury merchandising.                                 |
+| S120 | https://www.bloomingdales.com/                                          | department     | 2026-05-18 | retail                | PLP, cart                        | promotional density risk.                             |
+| S121 | https://www.bergdorfgoodman.com/                                        | department     | 2026-05-18 | luxury retail         | home, PLP                        | premium department model.                             |
+| S122 | https://www.harrods.com/                                                | department     | 2026-05-18 | luxury retail         | PLP, service                     | luxury service language.                              |
+| S123 | https://www.selfridges.com/                                             | department     | 2026-05-18 | luxury retail         | home, PLP                        | editorial commerce boundaries.                        |
+| S124 | https://www.libertylondon.com/                                          | department     | 2026-05-18 | luxury retail         | PLP, gifts                       | curated category paths.                               |
+| S125 | https://www.mrporter.com/                                               | marketplace    | 2026-05-18 | luxury fashion        | PLP, editorial                   | editorial should not overload checkout.               |
+| S126 | https://www.modaoperandi.com/                                           | marketplace    | 2026-05-18 | luxury fashion        | PLP, trunkshow                   | scarcity and curation.                                |
+| S127 | https://www.theoutnet.com/                                              | marketplace    | 2026-05-18 | fashion               | PLP, sale                        | sale UI should stay quiet.                            |
+| S128 | https://www.24s.com/                                                    | marketplace    | 2026-05-18 | luxury fashion        | PLP, PDP                         | concise premium commerce.                             |
+| S129 | https://www.brownsfashion.com/                                          | marketplace    | 2026-05-18 | fashion               | PLP, PDP                         | product grid and filters.                             |
+| S130 | https://www.revolve.com/                                                | אתר מסחר       | 2026-05-18 | fashion               | PLP, PDP                         | visual merchandising density.                         |
+| S131 | https://www.shopbop.com/                                                | אתר מסחר       | 2026-05-18 | fashion               | search, PLP                      | efficient fashion PLP.                                |
+| S132 | https://www.luisaviaroma.com/                                           | marketplace    | 2026-05-18 | luxury fashion        | PLP, PDP                         | premium marketplace patterns.                         |
+| S133 | https://www.endclothing.com/                                            | אתר מסחר       | 2026-05-18 | fashion               | PLP, PDP                         | concise product discovery.                            |
+| S134 | https://www.yoox.com/                                                   | marketplace    | 2026-05-18 | fashion               | PLP, sale                        | sale catalog complexity.                              |
+| S135 | https://stockx.com/                                                     | marketplace    | 2026-05-18 | resale                | search, product                  | trust and pricing transparency.                       |
+| S136 | https://www.goat.com/                                                   | marketplace    | 2026-05-18 | resale                | search, product                  | authentication trust.                                 |
+| S137 | https://goop.com/                                                       | אתר מסחר       | 2026-05-18 | lifestyle             | editorial, shop                  | editorial must remain secondary to shop.              |
+| S138 | https://www.amazon.com/                                                 | marketplace    | 2026-05-18 | mass commerce         | search, PDP, cart                | efficiency and decision info.                         |
+| S139 | https://www.walmart.com/                                                | marketplace    | 2026-05-18 | mass commerce         | search, PLP, pickup              | availability and fulfillment clarity.                 |
+| S140 | https://www.target.com/                                                 | marketplace    | 2026-05-18 | mass commerce         | PLP, cart, pickup                | service promise near purchase.                        |
+| S141 | https://www.bestbuy.com/                                                | אתר מסחר       | 2026-05-18 | electronics           | search, PLP, PDP                 | specs and availability matter.                        |
+| S142 | https://www.apple.com/store                                             | אתר מסחר       | 2026-05-18 | electronics           | product, checkout                | minimal hierarchy and CTA clarity.                    |
+| S143 | https://www.microsoft.com/store                                         | אתר מסחר       | 2026-05-18 | electronics           | product, checkout                | structured product comparison.                        |
+| S144 | https://www.costco.com/                                                 | אתר מסחר       | 2026-05-18 | mass commerce         | PLP, PDP                         | membership/trust clarity.                             |
+| S145 | https://www.ebay.com/                                                   | marketplace    | 2026-05-18 | resale                | search, listing                  | trust and seller signals.                             |
+| S146 | https://www.etsy.com/                                                   | marketplace    | 2026-05-18 | handmade              | search, listing                  | story + trust + product.                              |
+| S147 | https://www.rakuten.com/                                                | marketplace    | 2026-05-18 | deals                 | offers, merchant paths           | promotion clarity risk.                               |
+| S148 | https://www.aliexpress.com/                                             | marketplace    | 2026-05-18 | global commerce       | search, PLP                      | density benchmark, not luxury benchmark.              |
+| S149 | https://www.temu.com/                                                   | marketplace    | 2026-05-18 | global commerce       | PLP, deals                       | cautionary example for overload.                      |
+| S150 | https://www.shein.com/                                                  | אתר מסחר       | 2026-05-18 | fashion               | PLP, PDP                         | high-density commerce caution.                        |
+| S151 | https://www.ikea.com/us/en/                                             | אתר מסחר       | 2026-05-18 | home                  | category, PDP                    | task clarity and product info.                        |
+| S152 | https://www.wayfair.com/                                                | marketplace    | 2026-05-18 | home                  | search, PLP, filters             | filtering and comparison.                             |
+| S153 | https://www.homedepot.com/                                              | אתר מסחר       | 2026-05-18 | home hardware         | PLP, PDP, pickup                 | availability and fulfillment signals.                 |
+| S154 | https://www.lowes.com/                                                  | אתר מסחר       | 2026-05-18 | home hardware         | PLP, PDP, pickup                 | service clarity.                                      |
+| S155 | https://www.bedbathandbeyond.com/                                       | אתר מסחר       | 2026-05-18 | home                  | PLP, cart                        | product grid and promo discipline.                    |
+| S156 | https://www.westelm.com/                                                | אתר מסחר       | 2026-05-18 | home                  | category, PDP                    | premium home merchandising.                           |
+| S157 | https://www.williams-sonoma.com/                                        | אתר מסחר       | 2026-05-18 | home/kitchen          | category, PDP                    | gift and service patterns.                            |
+| S158 | https://www.potterybarn.com/                                            | אתר מסחר       | 2026-05-18 | home                  | PLP, PDP                         | lifestyle balanced with catalog.                      |
+| S159 | https://www.crateandbarrel.com/                                         | אתר מסחר       | 2026-05-18 | home                  | PLP, PDP                         | clean category systems.                               |
+| S160 | https://www.cb2.com/                                                    | אתר מסחר       | 2026-05-18 | home                  | PLP, PDP                         | modern premium grid.                                  |
+| S161 | https://rh.com/                                                         | אתר מסחר       | 2026-05-18 | luxury home           | editorial, product               | luxury editorial caution.                             |
+| S162 | https://www.article.com/                                                | אתר מסחר       | 2026-05-18 | furniture             | PLP, PDP                         | clear product pricing.                                |
+| S163 | https://joybird.com/                                                    | אתר מסחר       | 2026-05-18 | furniture             | configurator, PDP                | customization clarity.                                |
+| S164 | https://www.castlery.com/                                               | אתר מסחר       | 2026-05-18 | furniture             | PLP, PDP                         | clean commerce patterns.                              |
+| S165 | https://www.allmodern.com/                                              | אתר מסחר       | 2026-05-18 | home                  | PLP, filters                     | filter density.                                       |
+| S166 | https://www.perigold.com/                                               | אתר מסחר       | 2026-05-18 | luxury home           | PLP, PDP                         | luxury marketplace clarity.                           |
+| S167 | https://www.luluandgeorgia.com/                                         | אתר מסחר       | 2026-05-18 | home                  | home, PLP                        | editorial commerce balance.                           |
+| S168 | https://www.anthropologie.com/                                          | אתר מסחר       | 2026-05-18 | lifestyle             | PLP, gifts                       | gift paths and visual density.                        |
+| S169 | https://www.urbanoutfitters.com/                                        | אתר מסחר       | 2026-05-18 | lifestyle             | PLP, PDP                         | dense visual merchandising.                           |
+| S170 | https://www.freepeople.com/                                             | אתר מסחר       | 2026-05-18 | fashion               | home, PLP                        | editorial style with commerce risk.                   |
+| S171 | https://www.hm.com/                                                     | אתר מסחר       | 2026-05-18 | fashion               | PLP, checkout                    | mainstream conversion flow.                           |
+| S172 | https://www.zara.com/                                                   | אתר מסחר       | 2026-05-18 | fashion               | PLP, PDP                         | minimal but sometimes hidden nav risk.                |
+| S173 | https://www.uniqlo.com/                                                 | אתר מסחר       | 2026-05-18 | fashion               | PLP, PDP                         | practical product hierarchy.                          |
+| S174 | https://www.cos.com/                                                    | אתר מסחר       | 2026-05-18 | fashion               | PLP, PDP                         | restrained visual language.                           |
+| S175 | https://shop.mango.com/                                                 | אתר מסחר       | 2026-05-18 | fashion               | PLP, PDP                         | commerce grid clarity.                                |
+| S176 | https://www.massimodutti.com/                                           | אתר מסחר       | 2026-05-18 | fashion               | home, PLP                        | premium minimalism.                                   |
+| S177 | https://www.asos.com/                                                   | marketplace    | 2026-05-18 | fashion               | search, PLP                      | large catalog filtering.                              |
+| S178 | https://www.zalando.com/                                                | marketplace    | 2026-05-18 | fashion               | search, PLP                      | filter and returns clarity.                           |
+| S179 | https://www.nike.com/                                                   | אתר מסחר       | 2026-05-18 | apparel               | home, PLP, PDP                   | strong media with clear commerce.                     |
+| S180 | https://www.adidas.com/                                                 | אתר מסחר       | 2026-05-18 | apparel               | PLP, PDP                         | product grid and fit info.                            |
+| S181 | https://shop.lululemon.com/                                             | אתר מסחר       | 2026-05-18 | apparel               | PLP, PDP                         | premium performance commerce.                         |
+| S182 | https://www.aloyoga.com/                                                | אתר מסחר       | 2026-05-18 | apparel               | home, PLP                        | lifestyle must not overwhelm product.                 |
+| S183 | https://www.gymshark.com/                                               | אתר מסחר       | 2026-05-18 | apparel               | PLP, PDP                         | mobile product density.                               |
+| S184 | https://www.underarmour.com/                                            | אתר מסחר       | 2026-05-18 | apparel               | PLP, PDP                         | performance specs.                                    |
+| S185 | https://us.puma.com/                                                    | אתר מסחר       | 2026-05-18 | footwear              | PLP, PDP                         | category navigation.                                  |
+| S186 | https://www.newbalance.com/                                             | אתר מסחר       | 2026-05-18 | footwear              | PLP, PDP                         | fit and variant clarity.                              |
+| S187 | https://www.hoka.com/                                                   | אתר מסחר       | 2026-05-18 | footwear              | PLP, PDP                         | top benchmark for commerce UX.                        |
+| S188 | https://www.on.com/                                                     | אתר מסחר       | 2026-05-18 | footwear              | product, storytelling            | product tech and brand balance.                       |
+| S189 | https://www.allbirds.com/                                               | אתר מסחר       | 2026-05-18 | footwear              | PLP, PDP                         | simple sustainable messaging.                         |
+| S190 | https://www.zappos.com/                                                 | אתר מסחר       | 2026-05-18 | footwear              | search, PLP, PDP                 | customer service clarity.                             |
+| S191 | https://www.dsw.com/                                                    | אתר מסחר       | 2026-05-18 | footwear              | PLP, filters                     | promotion and filters.                                |
+| S192 | https://www.footlocker.com/                                             | אתר מסחר       | 2026-05-18 | footwear              | PLP, PDP                         | variant and availability.                             |
+| S193 | https://www.finishline.com/                                             | אתר מסחר       | 2026-05-18 | footwear              | PLP, PDP                         | retail checkout patterns.                             |
+| S194 | https://www.rei.com/                                                    | אתר מסחר       | 2026-05-18 | outdoor               | PLP, PDP, advice                 | content supports decision.                            |
+| S195 | https://www.backcountry.com/                                            | אתר מסחר       | 2026-05-18 | outdoor               | search, PLP                      | specialist product filtering.                         |
+| S196 | https://www.patagonia.com/                                              | אתר מסחר       | 2026-05-18 | outdoor               | product, story                   | story must not hide commerce.                         |
+| S197 | https://arcteryx.com/                                                   | אתר מסחר       | 2026-05-18 | outdoor               | PLP, PDP                         | premium technical clarity.                            |
+| S198 | https://www.thenorthface.com/                                           | אתר מסחר       | 2026-05-18 | outdoor               | PLP, PDP                         | category and variant clarity.                         |
+| S199 | https://www.columbia.com/                                               | אתר מסחר       | 2026-05-18 | outdoor               | PLP, PDP                         | practical product info.                               |
+| S200 | https://www.sephora.com/                                                | אתר מסחר       | 2026-05-18 | beauty                | search, PLP, PDP                 | reviews/search/filters as utility.                    |
+| S201 | https://www.ulta.com/                                                   | אתר מסחר       | 2026-05-18 | beauty                | search, PLP                      | dense retail caution.                                 |
+| S202 | https://www.glossier.com/                                               | אתר מסחר       | 2026-05-18 | beauty                | home, PDP                        | brand color with clean commerce.                      |
+| S203 | https://fentybeauty.com/                                                | אתר מסחר       | 2026-05-18 | beauty                | PLP, PDP                         | shade/variant clarity.                                |
+| S204 | https://www.rarebeauty.com/                                             | אתר מסחר       | 2026-05-18 | beauty                | PLP, PDP                         | content and product balance.                          |
+| S205 | https://www.drunkelephant.com/                                          | אתר מסחר       | 2026-05-18 | beauty                | PLP, PDP                         | color-rich caution for Aphrodite.                     |
+| S206 | https://www.kiehls.com/                                                 | אתר מסחר       | 2026-05-18 | beauty                | PLP, PDP                         | routine guidance near product.                        |
+| S207 | https://www.lush.com/                                                   | אתר מסחר       | 2026-05-18 | beauty                | PLP, PDP                         | strong sensory brand with UI risk.                    |
+| S208 | https://www.bathandbodyworks.com/                                       | אתר מסחר       | 2026-05-18 | beauty                | PLP, sale                        | promotion density caution.                            |
+| S209 | https://www.warbyparker.com/                                            | אתר מסחר       | 2026-05-18 | eyewear               | guided choice, try-on            | personal guidance can support selection.              |
+| S210 | https://www.ray-ban.com/                                                | אתר מסחר       | 2026-05-18 | eyewear               | PLP, configurator                | product customization clarity.                        |
+| S211 | https://www.oakley.com/                                                 | אתר מסחר       | 2026-05-18 | eyewear               | PLP, PDP                         | technical product info.                               |
+| S212 | https://www.sunglasshut.com/                                            | אתר מסחר       | 2026-05-18 | eyewear               | PLP, PDP                         | marketplace product filtering.                        |
+| S213 | https://www.zennioptical.com/                                           | אתר מסחר       | 2026-05-18 | eyewear               | search, configurator             | guided configuration.                                 |
+| S214 | https://www.glassesusa.com/                                             | אתר מסחר       | 2026-05-18 | eyewear               | PLP, try-on                      | try-on clarity.                                       |
+| S215 | https://www.chewy.com/                                                  | אתר מסחר       | 2026-05-18 | pet                   | search, PLP                      | service and repeat purchase.                          |
+| S216 | https://www.petco.com/                                                  | אתר מסחר       | 2026-05-18 | pet                   | PLP, services                    | retail + service model.                               |
+| S217 | https://www.petsmart.com/                                               | אתר מסחר       | 2026-05-18 | pet                   | PLP, pickup                      | service/availability.                                 |
+| S218 | https://www.iherb.com/                                                  | אתר מסחר       | 2026-05-18 | vitamins              | search, PLP                      | large catalog filters.                                |
+| S219 | https://www.vitacost.com/                                               | אתר מסחר       | 2026-05-18 | vitamins              | PLP, checkout                    | price and trust.                                      |
+| S220 | https://www.walgreens.com/                                              | אתר מסחר       | 2026-05-18 | pharmacy              | PLP, pickup                      | fulfillment clarity.                                  |
+| S221 | https://www.cvs.com/                                                    | אתר מסחר       | 2026-05-18 | pharmacy              | search, pickup                   | service and account.                                  |
+| S222 | https://www.kroger.com/                                                 | אתר מסחר       | 2026-05-18 | grocery               | search, cart                     | fulfillment state clarity.                            |
+| S223 | https://www.instacart.com/                                              | marketplace    | 2026-05-18 | grocery               | search, cart                     | location and availability.                            |
+| S224 | https://www.wholefoodsmarket.com/                                       | אתר מסחר       | 2026-05-18 | grocery               | product, store                   | store/product connection.                             |
+| S225 | https://www.tesco.com/                                                  | אתר מסחר       | 2026-05-18 | grocery               | search, PLP                      | category and fulfillment.                             |
+| S226 | https://www.sainsburys.co.uk/                                           | אתר מסחר       | 2026-05-18 | grocery               | PLP, cart                        | repeat shopping UX.                                   |
+| S227 | https://www.ocado.com/                                                  | אתר מסחר       | 2026-05-18 | grocery               | search, PLP                      | delivery and slot clarity.                            |
+| S228 | https://www.waitrose.com/                                               | אתר מסחר       | 2026-05-18 | grocery               | PLP, service                     | premium grocery tone.                                 |
+| S229 | https://www.marksandspencer.com/                                        | אתר מסחר       | 2026-05-18 | retail                | PLP, PDP                         | department retail clarity.                            |
+| S230 | https://www.johnlewis.com/                                              | department     | 2026-05-18 | retail                | search, PLP                      | service and return trust.                             |
+| S231 | https://www.argos.co.uk/                                                | אתר מסחר       | 2026-05-18 | retail                | search, PDP                      | pickup availability.                                  |
+| S232 | https://www.currys.co.uk/                                               | אתר מסחר       | 2026-05-18 | electronics           | PLP, PDP                         | specs/comparison.                                     |
+| S233 | https://www.mediamarkt.com/                                             | אתר מסחר       | 2026-05-18 | electronics           | PLP, PDP                         | retail electronics density.                           |
+| S234 | https://www.newegg.com/                                                 | marketplace    | 2026-05-18 | electronics           | search, PLP                      | technical filters.                                    |
+| S235 | https://www.bhphotovideo.com/                                           | אתר מסחר       | 2026-05-18 | electronics           | search, product                  | high-info PDP.                                        |
+| S236 | https://www.adorama.com/                                                | אתר מסחר       | 2026-05-18 | electronics           | PLP, PDP                         | spec clarity.                                         |
+| S237 | https://www.dell.com/                                                   | אתר מסחר       | 2026-05-18 | electronics           | configurator, checkout           | complex selection patterns.                           |
+| S238 | https://www.hp.com/                                                     | אתר מסחר       | 2026-05-18 | electronics           | PLP, PDP                         | product comparison.                                   |
+| S239 | https://www.lenovo.com/                                                 | אתר מסחר       | 2026-05-18 | electronics           | configurator, checkout           | configuration UX.                                     |
+| S240 | https://www.samsung.com/                                                | אתר מסחר       | 2026-05-18 | electronics           | product, checkout                | product media and CTAs.                               |
+| S241 | https://www.sony.com/                                                   | אתר מסחר       | 2026-05-18 | electronics           | product, category                | brand + product details.                              |
+| S242 | https://www.lg.com/                                                     | אתר מסחר       | 2026-05-18 | electronics           | category, product                | specs and service.                                    |
+| S243 | https://www.dyson.com/                                                  | אתר מסחר       | 2026-05-18 | electronics           | product, checkout                | premium product storytelling.                         |
+| S244 | https://www.sonos.com/                                                  | אתר מסחר       | 2026-05-18 | electronics           | product, category                | clean premium commerce.                               |
+| S245 | https://www.bose.com/                                                   | אתר מסחר       | 2026-05-18 | electronics           | PLP, PDP                         | product-led media.                                    |
+| S246 | https://www.logitech.com/                                               | אתר מסחר       | 2026-05-18 | electronics           | PLP, PDP                         | technical product grids.                              |
+| S247 | https://www.lego.com/                                                   | אתר מסחר       | 2026-05-18 | toys                  | search, PLP                      | category and age filters.                             |
+| S248 | https://www.nintendo.com/                                               | אתר מסחר       | 2026-05-18 | games                 | product, store                   | product media and CTA.                                |
+| S249 | https://www.playstation.com/                                            | אתר מסחר       | 2026-05-18 | games                 | product, store                   | entertainment commerce.                               |
+| S250 | https://www.xbox.com/                                                   | אתר מסחר       | 2026-05-18 | games                 | product, store                   | digital product checkout.                             |
+| S251 | https://www.gamestop.com/                                               | אתר מסחר       | 2026-05-18 | games                 | PLP, pickup                      | availability and trade-in.                            |
+| S252 | https://www.barnesandnoble.com/                                         | אתר מסחר       | 2026-05-18 | books                 | search, product                  | discovery and pickup.                                 |
+| S253 | https://bookshop.org/                                                   | marketplace    | 2026-05-18 | books                 | search, product                  | trust and mission placement.                          |
+| S254 | https://www.audible.com/                                                | subscription   | 2026-05-18 | media                 | product, checkout                | subscription clarity.                                 |
+| S255 | https://www.masterclass.com/                                            | subscription   | 2026-05-18 | learning              | landing, checkout                | premium content sale.                                 |
+| S256 | https://www.udemy.com/                                                  | marketplace    | 2026-05-18 | learning              | search, product                  | filters and reviews.                                  |
+| S257 | https://www.coursera.org/                                               | marketplace    | 2026-05-18 | learning              | search, course                   | trust and pathway clarity.                            |
+| S258 | https://www.airbnb.com/                                                 | marketplace    | 2026-05-18 | travel                | search, listing                  | search/listing trust.                                 |
+| S259 | https://www.booking.com/                                                | marketplace    | 2026-05-18 | travel                | search, listing, checkout        | dense info with strong decision support.              |
+| S260 | https://www.expedia.com/                                                | marketplace    | 2026-05-18 | travel                | search, listing                  | filters and price clarity.                            |
+| S261 | https://www.trip.com/                                                   | marketplace    | 2026-05-18 | travel                | search, booking                  | mobile booking clarity.                               |
+| S262 | https://www.hyatt.com/                                                  | אתר מסחר       | 2026-05-18 | travel                | search, booking                  | premium booking trust.                                |
+| S263 | https://www.marriott.com/                                               | אתר מסחר       | 2026-05-18 | travel                | search, booking                  | loyalty/service clarity.                              |
+| S264 | https://www.delta.com/                                                  | אתר מסחר       | 2026-05-18 | travel                | search, booking                  | step flow clarity.                                    |
+| S265 | https://www.united.com/                                                 | אתר מסחר       | 2026-05-18 | travel                | search, booking                  | state and form clarity.                               |
+| S266 | https://www.southwest.com/                                              | אתר מסחר       | 2026-05-18 | travel                | search, booking                  | simple flow benchmark.                                |
+| S267 | https://www.ubereats.com/                                               | marketplace    | 2026-05-18 | food                  | mobile, cart                     | sticky actions and fast checkout.                     |
+| S268 | https://www.doordash.com/                                               | marketplace    | 2026-05-18 | food                  | mobile, cart                     | mobile commerce state.                                |
+| S269 | https://www.grubhub.com/                                                | marketplace    | 2026-05-18 | food                  | search, cart                     | local availability.                                   |
+| S270 | https://www.mcdonalds.com/                                              | אתר מסחר       | 2026-05-18 | food                  | order, app paths                 | mobile-first task flow.                               |
+| S271 | https://www.starbucks.com/                                              | אתר מסחר       | 2026-05-18 | food                  | order, rewards                   | repeat action and state.                              |
+| S272 | https://www.hellofresh.com/                                             | subscription   | 2026-05-18 | food                  | plan, checkout                   | subscription clarity.                                 |
+| S273 | https://www.blueapron.com/                                              | subscription   | 2026-05-18 | food                  | plan, checkout                   | plan selection hierarchy.                             |
+| S274 | https://www.factor75.com/                                               | subscription   | 2026-05-18 | food                  | plan, checkout                   | plan flow.                                            |
+| S275 | https://thrivemarket.com/                                               | subscription   | 2026-05-18 | grocery               | membership, PLP                  | membership trust.                                     |
+| S276 | https://www.freshdirect.com/                                            | אתר מסחר       | 2026-05-18 | grocery               | search, cart                     | delivery slot clarity.                                |
+| S277 | https://www.staples.com/                                                | אתר מסחר       | 2026-05-18 | office                | search, PLP                      | utilitarian ecommerce clarity.                        |
+| S278 | https://www.officedepot.com/                                            | אתר מסחר       | 2026-05-18 | office                | PLP, cart                        | large catalog filters.                                |
+| S279 | https://www.quill.com/                                                  | אתר מסחר       | 2026-05-18 | office                | search, PLP                      | B2B ordering clarity.                                 |
+| S280 | https://www.uline.com/                                                  | אתר מסחר       | 2026-05-18 | B2B                   | search, product                  | dense but task-focused UI.                            |
+| S281 | https://www.grainger.com/                                               | אתר מסחר       | 2026-05-18 | B2B                   | search, product                  | specs and availability clarity.                       |
+| S282 | https://www.mcmaster.com/                                               | אתר מסחר       | 2026-05-18 | B2B                   | search, product                  | extremely efficient catalog UX.                       |
+| S283 | https://www.mouser.com/                                                 | אתר מסחר       | 2026-05-18 | B2B electronics       | search, filters                  | technical filter design.                              |
+| S284 | https://www.digikey.com/                                                | אתר מסחר       | 2026-05-18 | B2B electronics       | search, filters                  | dense data tables.                                    |
+| S285 | https://www.thermofisher.com/                                           | אתר מסחר       | 2026-05-18 | B2B science           | catalog, product                 | technical detail hierarchy.                           |
+| S286 | https://www.sigmaaldrich.com/                                           | אתר מסחר       | 2026-05-18 | B2B science           | catalog, product                 | search precision.                                     |
+| S287 | https://www.medline.com/                                                | אתר מסחר       | 2026-05-18 | B2B medical           | catalog, product                 | operational product clarity.                          |
+| S288 | https://www.mckesson.com/                                               | אתר מסחר       | 2026-05-18 | B2B medical           | catalog, account                 | account and inventory relevance.                      |
+| S289 | https://www.henryschein.com/                                            | אתר מסחר       | 2026-05-18 | B2B medical           | catalog, product                 | large catalog navigation.                             |
+| S290 | https://www.tirerack.com/                                               | אתר מסחר       | 2026-05-18 | automotive            | search, fitment                  | guided fitment.                                       |
+| S291 | https://www.revzilla.com/                                               | אתר מסחר       | 2026-05-18 | automotive            | PLP, PDP                         | expert content near product.                          |
+| S292 | https://www.jpcycles.com/                                               | אתר מסחר       | 2026-05-18 | automotive            | search, fitment                  | fitment and compatibility.                            |
+| S293 | https://www.rockauto.com/                                               | אתר מסחר       | 2026-05-18 | automotive            | catalog                          | dense catalog efficiency.                             |
+| S294 | https://www.autozone.com/                                               | אתר מסחר       | 2026-05-18 | automotive            | fitment, pickup                  | compatibility and store pickup.                       |
+| S295 | https://shop.advanceautoparts.com/                                      | אתר מסחר       | 2026-05-18 | automotive            | fitment, pickup                  | guided compatibility.                                 |
+| S296 | https://www.lufthansa.com/                                              | אתר מסחר       | 2026-05-18 | travel                | booking flow                     | step flow and state clarity.                          |
+| S297 | https://www.ryanair.com/                                                | אתר מסחר       | 2026-05-18 | travel                | booking flow                     | upsell density caution.                               |
+| S298 | https://www.virginatlantic.com/                                         | אתר מסחר       | 2026-05-18 | travel                | booking flow                     | premium booking experience.                           |
+| S299 | https://www.shangri-la.com/                                             | אתר מסחר       | 2026-05-18 | travel luxury         | hotel booking                    | luxury service and booking.                           |
+| S300 | https://www.hilton.com/                                                 | אתר מסחר       | 2026-05-18 | travel                | booking                          | availability and account.                             |
+| S301 | https://www.etsy.com/c/jewelry                                          | marketplace    | 2026-05-18 | jewelry marketplace   | category, PLP                    | jewelry discovery at scale.                           |
+| S302 | https://www.amazon.com/fashion-jewelry/                                 | marketplace    | 2026-05-18 | jewelry marketplace   | PLP                              | cautionary density benchmark.                         |
+| S303 | https://www.nordstrom.com/browse/women/jewelry                          | department     | 2026-05-18 | jewelry retail        | PLP                              | premium retail jewelry grid.                          |
+| S304 | https://www.saksfifthavenue.com/c/jewelry-accessories/jewelry           | department     | 2026-05-18 | luxury jewelry retail | PLP                              | luxury category merchandising.                        |
+| S305 | https://www.farfetch.com/shopping/women/jewellery-1/items.aspx          | marketplace    | 2026-05-18 | luxury jewelry retail | PLP                              | large catalog filtering.                              |
+| S306 | https://www.net-a-porter.com/en-us/shop/jewelry-and-watches             | marketplace    | 2026-05-18 | luxury jewelry retail | PLP                              | editorial category balance.                           |
+| S307 | https://www.mytheresa.com/us/en/women/jewelry                           | marketplace    | 2026-05-18 | luxury jewelry retail | PLP                              | clean luxury product grid.                            |
+| S308 | https://www.ssense.com/en-us/women/jewelry                              | marketplace    | 2026-05-18 | jewelry retail        | PLP                              | monochrome PLP discipline.                            |
+| S309 | https://www.selfridges.com/US/en/cat/womens/accessories/jewellery/      | department     | 2026-05-18 | jewelry retail        | PLP                              | premium department merchandising.                     |
+| S310 | https://www.harrods.com/en-us/shopping/women-jewellery                  | department     | 2026-05-18 | jewelry retail        | PLP                              | luxury category presentation.                         |
+| S311 | https://www.libertylondon.com/us/department/jewellery/                  | department     | 2026-05-18 | jewelry retail        | PLP                              | curated category.                                     |
+| S312 | https://www.bloomingdales.com/shop/jewelry-accessories                  | department     | 2026-05-18 | jewelry retail        | PLP                              | promotion/brand balance.                              |
+| S313 | https://www.macys.com/shop/jewelry-watches                              | department     | 2026-05-18 | jewelry retail        | PLP                              | mainstream jewelry density.                           |
+| S314 | https://www.target.com/c/jewelry-women-s-accessories/-/N-5xtd3          | marketplace    | 2026-05-18 | jewelry retail        | PLP                              | mass retail category clarity.                         |
+| S315 | https://www.walmart.com/cp/jewelry/3891                                 | marketplace    | 2026-05-18 | jewelry retail        | PLP                              | density caution and filter patterns.                  |
+| S316 | https://www.costco.com/jewelry.html                                     | אתר מסחר       | 2026-05-18 | jewelry retail        | PLP                              | trust/price clarity.                                  |
+| S317 | https://www.johnlewis.com/browse/women/womens-jewellery/_/N-flw         | department     | 2026-05-18 | jewelry retail        | PLP                              | department service + filters.                         |
+| S318 | https://www.marksandspencer.com/l/women/jewellery                       | department     | 2026-05-18 | jewelry retail        | PLP                              | category scanning.                                    |
+| S319 | https://www.bergdorfgoodman.com/c/jewelry-accessories-jewelry-cat487306 | department     | 2026-05-18 | luxury jewelry retail | PLP                              | premium assortment presentation.                      |
+| S320 | https://www.neimanmarcus.com/c/jewelry-jewelry-cat000730                | department     | 2026-05-18 | luxury jewelry retail | PLP                              | luxury retail product grid.                           |
+
+## מקורות עוגן שנפתחו במחקר
+
+- Baymard מציג מחקר איקומרס רחב עם יותר מ־200,000 שעות מחקר ובדיקות משתמשים, ומשמש כבסיס להחלטות search, navigation, product pages, checkout ו־mobile UX.
+- Baymard UX Benchmark מציג מאות אתרי מסחר וכולל אתרי תכשיטים כמו Mejuri, Pandora, Tiffany, TAG Heuer ו־Van Cleef & Arpels בתוך benchmark רחב.
+- WCAG 2.2 מגדיר דרישות נגישות שניתנות לבדיקה, כולל טקסט חלופי, focus, reflow, target size ותפעול מקלדת.
+- Core Web Vitals מגדיר LCP, INP ו־CLS כמדדים לחוויית משתמש בפועל, ולכן אפקטים חזותיים צריכים להימדד מול עלות תגובה ויציבות.
+- Cartier, Graff, Bulgari, Harry Winston, David Yurman, Tiffany ו־Beladora מראים ש־service, appointment, boutique/store locator, gifts ו־product discovery הם רכיבי אמון מרכזיים בתכשיטים.

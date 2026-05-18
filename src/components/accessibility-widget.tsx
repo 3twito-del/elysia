@@ -209,6 +209,7 @@ export function AccessibilityWidget() {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLElement>(null);
   const triggerButtonRef = useRef<HTMLButtonElement>(null);
+  const shouldRestoreTriggerFocusRef = useRef(false);
   const [isOpen, setIsOpen] = useState(false);
   const settingsSnapshot = useSyncExternalStore(
     subscribeToAccessibilitySettings,
@@ -247,8 +248,10 @@ export function AccessibilityWidget() {
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        shouldRestoreTriggerFocusRef.current = true;
         setIsOpen(false);
-        window.requestAnimationFrame(() => triggerButtonRef.current?.focus());
         return;
       }
 
@@ -284,14 +287,43 @@ export function AccessibilityWidget() {
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    if (isOpen) {
+      shouldRestoreTriggerFocusRef.current = true;
+      return;
+    }
+
+    if (!shouldRestoreTriggerFocusRef.current) return;
+
+    const restoreTriggerFocus = () => {
+      const trigger =
+        triggerButtonRef.current ??
+        document.querySelector<HTMLButtonElement>(
+          '[data-accessibility-widget-trigger="true"]',
+        );
+
+      trigger?.focus({ preventScroll: true });
+      shouldRestoreTriggerFocusRef.current = false;
+    };
+    const restoreFrame = window.requestAnimationFrame(restoreTriggerFocus);
+    const restoreTimeout = window.setTimeout(restoreTriggerFocus, 0);
+    const restoreSettledTimeout = window.setTimeout(restoreTriggerFocus, 50);
+
+    return () => {
+      window.cancelAnimationFrame(restoreFrame);
+      window.clearTimeout(restoreTimeout);
+      window.clearTimeout(restoreSettledTimeout);
+    };
+  }, [isOpen]);
+
   if (pathname.startsWith("/admin")) {
     return null;
   }
 
   const currentScaleIndex = getScaleIndex(settings.textScale);
   const closeMenu = () => {
+    shouldRestoreTriggerFocusRef.current = true;
     setIsOpen(false);
-    window.requestAnimationFrame(() => triggerButtonRef.current?.focus());
   };
 
   return (

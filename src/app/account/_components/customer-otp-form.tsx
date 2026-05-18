@@ -42,6 +42,7 @@ export function CustomerOtpForm() {
   return (
     <div className="grid gap-5">
       <form action={requestAction} className="grid gap-4">
+        <input name="sessionKey" type="hidden" value={sessionKey} />
         <div>
           <Label className={accountLabelClassName} htmlFor="identifier">
             אימייל או טלפון

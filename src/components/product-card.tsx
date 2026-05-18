@@ -23,7 +23,7 @@ type ProductCardProps = {
 };
 
 const PRODUCT_IMAGE_BLUR_DATA_URL =
-  "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMCIgaGVpZ2h0PSI4Ij48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB4Mj0iMSIgeTE9IjAiIHkyPSIxIj48c3RvcCBzdG9wLWNvbG9yPSIjZjRmMGVhIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZGRkNmNjIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3QgZmlsbD0idXJsKCNnKSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjgiLz48L3N2Zz4=";
+  "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='10'%20height='8'%20viewBox='0%200%2010%208'%3E%3Crect%20width='10'%20height='8'%20fill='%23eef6f7'/%3E%3C/svg%3E";
 const DEFAULT_PRODUCT_CARD_IMAGE_SIZES =
   "(min-width: 1280px) 18rem, (min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw";
 const DEFAULT_PRODUCT_CARD_IMAGE_POSITION = "50% 50%";
@@ -58,6 +58,9 @@ export function ProductCard({
     : undefined;
   const href = createProductHref(product.slug, searchContext);
   const imageObjectPosition = getProductCardImageObjectPosition(product);
+  const productDetails = [product.material, product.stone].filter(
+    (detail): detail is string => Boolean(detail),
+  );
 
   return (
     <Card
@@ -103,16 +106,6 @@ export function ProductCard({
               <Badge variant="destructive">לא זמין</Badge>
             ) : null}
           </div>
-          <div className="absolute inset-x-2.5 bottom-2.5 flex min-w-0 flex-wrap gap-1.5">
-            <Badge className="max-w-full font-normal" variant="outline">
-              <span className="truncate">{product.material}</span>
-            </Badge>
-            {product.stone ? (
-              <Badge className="max-w-full font-normal" variant="outline">
-                <span className="truncate">{product.stone}</span>
-              </Badge>
-            ) : null}
-          </div>
         </div>
       </Link>
       <CardContent className="flex min-h-52 flex-1 flex-col gap-3 p-3.5 sm:p-4">
@@ -128,6 +121,19 @@ export function ProductCard({
             <p className="text-muted-foreground mt-1 line-clamp-2 min-h-9 text-sm leading-5">
               {product.shortDescription}
             </p>
+            <div
+              className="text-muted-foreground mt-2 flex min-h-5 flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-5"
+              data-testid="product-card-attributes"
+            >
+              {productDetails.map((detail, index) => (
+                <span
+                  className="max-w-full min-w-0 truncate"
+                  key={`${detail}-${index}`}
+                >
+                  {detail}
+                </span>
+              ))}
+            </div>
           </div>
           <ProductCardFavoriteButton
             productName={product.name}

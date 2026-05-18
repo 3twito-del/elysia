@@ -157,7 +157,7 @@ export function ServiceRequestForm({ topics }: ServiceRequestFormProps) {
         />
       </div>
 
-      <div className="bg-background/72 grid gap-3 rounded-md border p-3">
+      <div className="bg-background grid gap-3 rounded-md border p-3">
         <Label className="flex items-center gap-2" htmlFor="attachments">
           <Paperclip aria-hidden="true" className="size-4" />
           תמונות או PDF

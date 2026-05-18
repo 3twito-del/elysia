@@ -136,7 +136,7 @@ export default async function ProductPage({
         <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start" dir="rtl">
           <div className="mx-auto max-w-xl lg:mx-0">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="text-muted-foreground text-xs font-medium tracking-[0.18em] uppercase">
+              <p className="text-muted-foreground text-xs font-medium tracking-normal uppercase">
                 Aphrodite Fine Jewelry
               </p>
               <Badge className="rounded-full px-3" variant="secondary">

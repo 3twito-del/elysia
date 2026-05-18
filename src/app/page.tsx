@@ -64,20 +64,22 @@ export default async function Home() {
       <SiteHeader />
 
       <RevealSection
-        className="relative isolate min-h-[clamp(29rem,calc(76svh-4rem),38rem)] w-screen max-w-none overflow-hidden bg-[var(--brand-aqua-deep)] [--hero-edge:clamp(1rem,4vw,5rem)] lg:[--hero-edge:clamp(3rem,4vw,5rem)]"
+        className="relative isolate min-h-[var(--home-hero-height)] w-screen max-w-none overflow-hidden bg-[var(--brand-aqua-deep)] [--hero-edge:clamp(1rem,4vw,5rem)] [--home-hero-height:clamp(22rem,58svh,29rem)] sm:[--home-hero-height:clamp(29rem,calc(76svh-4rem),38rem)] lg:[--hero-edge:clamp(3rem,4vw,5rem)]"
         data-testid="cinematic-page-hero"
         id="page-hero"
         initialVisible
         variant="hero"
       >
         <MotionMediaFrame
-          className="absolute inset-0 h-full min-h-[clamp(29rem,calc(76svh-4rem),38rem)] w-full bg-[var(--brand-aqua-deep)]"
-          contentClassName="absolute inset-0 min-h-[clamp(29rem,calc(76svh-4rem),38rem)]"
+          className="absolute inset-0 h-full min-h-[var(--home-hero-height)] w-full bg-[var(--brand-aqua-deep)]"
+          contentClassName="absolute inset-0 min-h-[var(--home-hero-height)]"
           intensity="cinematic"
+          motionScope="home-hero"
           parallax
         >
-          <KineticImageMotion intensity="hero">
+          <KineticImageMotion intensity="hero" motionScope="home-hero">
             <CinematicHeroSequence
+              motionScope="home-hero"
               slides={homeSlides}
               testId="cinematic-page-hero-sequence"
             />
@@ -86,7 +88,7 @@ export default async function Home() {
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,56,59,0.02),rgba(6,56,59,0.24)_42%,rgba(0,0,0,0.64))]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.56),rgba(6,56,59,0.06)_58%,rgba(185,242,236,0.09))]" />
         <div className="absolute inset-x-0 top-0 h-px bg-[rgba(185,242,236,0.42)]" />
-        <div className="relative min-h-[clamp(29rem,calc(76svh-4rem),38rem)]">
+        <div className="relative min-h-[var(--home-hero-height)]">
           <div
             className="motion-hero-copy absolute top-[var(--hero-edge)] right-[var(--hero-edge)] w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),48rem)] text-right text-white lg:w-[min(48rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
             data-testid="home-hero-copy"
@@ -123,7 +125,7 @@ export default async function Home() {
             </Button>
             <Button
               asChild
-              className="border-white/70 bg-white/10 text-white shadow-none hover:border-white hover:bg-white hover:text-[var(--brand-aqua-deep)] focus-visible:border-white"
+              className="border-white bg-[var(--brand-aqua-deep)] text-white shadow-none hover:border-white hover:bg-white hover:text-[var(--brand-aqua-deep)] focus-visible:border-white"
               size="lg"
               variant="outline"
             >
@@ -166,7 +168,7 @@ export default async function Home() {
       </RevealSection>
 
       <RevealSection
-        className="mx-auto max-w-7xl px-4 py-10 sm:px-6"
+        className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-10"
         id="categories"
       >
         <CommerceSectionHeader
@@ -184,7 +186,7 @@ export default async function Home() {
         >
           {categories.map((category) => (
             <Link
-              className="brand-surface interactive-lift group/card flex min-h-[270px] w-full flex-col overflow-hidden rounded-md"
+              className="brand-surface interactive-lift group/card flex min-h-[220px] w-full flex-col overflow-hidden rounded-md sm:min-h-[270px]"
               href={`/category/${category.slug}`}
               key={category.slug}
             >
@@ -220,7 +222,7 @@ export default async function Home() {
       </RevealSection>
 
       <RevealSection className="brand-page-band" id="featured">
-        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+        <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-10">
           <CommerceSectionHeader
             action={
               <Button asChild variant="outline">
@@ -246,7 +248,7 @@ export default async function Home() {
       </RevealSection>
 
       <RevealSection
-        className="mx-auto max-w-7xl px-4 py-10 sm:px-6"
+        className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-10"
         id="service-metrics"
       >
         <RevealGrid className="grid gap-5 lg:grid-cols-4" variant="compact">

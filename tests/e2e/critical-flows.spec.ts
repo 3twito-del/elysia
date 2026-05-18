@@ -76,8 +76,8 @@ test.describe("critical shopping flows", () => {
     await page.getByRole("button", { exact: true, name: "הוספה לסל" }).click();
     await expect(page.getByText(/נוספה לסל|הפריט נוסף לסל/)).toBeVisible();
     await expect(
-      page.getByRole("link", { name: /סל קניות, 1 פריטים/ }),
-    ).toBeVisible();
+      page.locator("a[href='/checkout'] .cart-count-badge"),
+    ).toHaveText("1");
 
     await page.goto("/checkout");
 
@@ -183,7 +183,7 @@ test.describe("critical shopping flows", () => {
     test.skip((page.viewportSize()?.width ?? 0) >= 1024, "mobile-only flow");
     await setCookieConsent(page, "essential");
 
-    await page.goto("/category/earrings", { waitUntil: "networkidle" });
+    await page.goto("/category/earrings", { waitUntil: "domcontentloaded" });
     const filterTrigger = page.getByTestId("category-filter-trigger");
 
     await expect(page.getByTestId("category-results-grid")).toBeVisible();
@@ -199,7 +199,7 @@ test.describe("critical shopping flows", () => {
     await expect(page.getByTestId("category-filter-sheet")).toBeHidden();
     await expect(page).toHaveURL(/sort=price-asc/);
 
-    await page.goto("/category/earrings", { waitUntil: "networkidle" });
+    await page.goto("/category/earrings", { waitUntil: "domcontentloaded" });
     await page.getByTestId("category-filter-trigger").click();
     await expect(page.getByTestId("category-filter-sheet")).toBeVisible();
     await page.setViewportSize({ width: 1024, height: 900 });
@@ -488,7 +488,8 @@ test.describe("accessibility and responsive guardrails", () => {
       "aria-label",
       new RegExp("\\u05e0\\u05d2\\u05d9\\u05e9\\u05d5\\u05ea"),
     );
-    await trigger.click();
+    await trigger.focus();
+    await page.keyboard.press("Enter");
 
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
@@ -508,7 +509,15 @@ test.describe("accessibility and responsive guardrails", () => {
 
     await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden();
-    await expect(trigger).toBeFocused();
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () =>
+            document.activeElement ===
+            document.querySelector("[data-accessibility-widget-trigger='true']"),
+        ),
+      )
+      .toBe(true);
   });
 
   test("honors the site reduced-motion preference", async ({ page }) => {
@@ -626,7 +635,9 @@ test.describe("accessibility and responsive guardrails", () => {
     expect(homeHeroBox?.width ?? 0).toBeGreaterThanOrEqual(
       (viewport?.width ?? 0) - 2,
     );
-    expect(homeHeroBox?.height ?? 0).toBeGreaterThanOrEqual(480);
+    expect(homeHeroBox?.height ?? 0).toBeGreaterThanOrEqual(
+      (viewport?.width ?? 0) < 1024 ? 440 : 480,
+    );
 
     for (const route of publicRoutes.filter((route) => route !== "/")) {
       await page.goto(route, { waitUntil: "domcontentloaded" });
@@ -644,7 +655,7 @@ test.describe("accessibility and responsive guardrails", () => {
   test("category intro action scrolls to the products and updates the hash", async ({
     page,
   }) => {
-    await page.goto("/category/earrings", { waitUntil: "networkidle" });
+    await page.goto("/category/earrings", { waitUntil: "domcontentloaded" });
 
     const productsLink = page.locator('a[href="#category-products"]').first();
     const header = page.locator("header.site-chrome");
@@ -814,7 +825,7 @@ test.describe("access control surfaces", () => {
     await page.goto("/account");
 
     await expect(page.locator("#identifier")).toBeVisible();
-    await expect(page.locator("#code")).toBeVisible();
+    await expect(page.locator("#code")).toHaveCount(0);
 
     const response = await page.request.get("/account/privacy/export");
     const body: unknown = await response.json();

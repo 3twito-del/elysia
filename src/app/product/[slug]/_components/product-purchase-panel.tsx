@@ -9,7 +9,14 @@ import {
   type CSSProperties,
 } from "react";
 import { createPortal } from "react-dom";
-import { AlertCircle, CheckCircle2, Heart, PackageCheck } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Heart,
+  PackageCheck,
+  RotateCcw,
+  ShieldCheck,
+} from "lucide-react";
 
 import { WishlistButton } from "./wishlist-button";
 import { Badge } from "~/components/ui/badge";
@@ -258,6 +265,37 @@ export function ProductPurchasePanel({
           </WishlistButton>
         </div>
 
+        <div
+          aria-label="אמון ושירות בקנייה"
+          className="grid gap-2"
+          data-testid="product-commerce-trust"
+        >
+          <div className="glass-inset flex items-start gap-2 rounded-md border p-3 text-sm">
+            <ShieldCheck
+              aria-hidden="true"
+              className="mt-0.5 size-4 shrink-0"
+            />
+            <div className="min-w-0">
+              <p className="font-medium">אימות לפני חיוב</p>
+              <p className="text-muted-foreground mt-0.5 leading-5">
+                נציג יאשר פרטי מידה, מלאי ומסירה לפני השלמת התהליך.
+              </p>
+            </div>
+          </div>
+          <div className="glass-inset flex items-start gap-2 rounded-md border p-3 text-sm">
+            <RotateCcw
+              aria-hidden="true"
+              className="mt-0.5 size-4 shrink-0"
+            />
+            <div className="min-w-0">
+              <p className="font-medium">החלפות והחזרות</p>
+              <p className="text-muted-foreground mt-0.5 leading-5">
+                החזרה או החלפה מתואמת עם שירות הלקוחות לפי מדיניות האתר.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {cartMessage ? (
           <div className="motion-status-pop border-border flex items-center justify-between gap-3 rounded-md border p-3 text-sm">
             <StatusMessage
@@ -292,6 +330,7 @@ export function ProductPurchasePanel({
                   <span
                     aria-hidden="true"
                     className="size-3 rounded-full border border-black/10"
+                    data-material-swatch="true"
                     style={getMetalSwatchStyle(color)}
                   />
                   {color}

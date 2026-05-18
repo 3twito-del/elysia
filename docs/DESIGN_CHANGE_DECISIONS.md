@@ -21,5 +21,8 @@ Rejected or undecided ideas are intentionally not recorded in this file.
 
 No approved design changes pending implementation.
 
+Implemented design changes are intentionally not retained in this log. Current
+implementation status is tracked in `docs/DESIGN_DIRECTION_BENCHMARK_GATE.md`.
+
 | ID  | Date | Area | Approved change | Rationale | Implementation status |
 | --- | ---- | ---- | --------------- | --------- | --------------------- |

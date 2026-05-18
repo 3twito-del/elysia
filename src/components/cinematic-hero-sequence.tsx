@@ -13,6 +13,7 @@ export type CinematicHeroSlide = {
 
 type CinematicHeroSequenceProps = {
   className?: string;
+  motionScope?: "home-hero" | "static";
   priority?: boolean;
   sizes?: string;
   slides: CinematicHeroSlide[];
@@ -21,12 +22,14 @@ type CinematicHeroSequenceProps = {
 
 export function CinematicHeroSequence({
   className,
+  motionScope = "static",
   priority = true,
   sizes = "100vw",
   slides,
   testId = "cinematic-hero-sequence",
 }: CinematicHeroSequenceProps) {
   const shouldReduceMotion = useResolvedReducedMotion();
+  const allowsContinuousMotion = motionScope === "home-hero";
   const rootRef = useRef<HTMLDivElement>(null);
   const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
   const bandRefs = useRef<(HTMLSpanElement | null)[]>([]);
@@ -41,7 +44,11 @@ export function CinematicHeroSequence({
 
     if (!root || !firstSlide) return;
 
-    if (shouldReduceMotion || slideNodes.length === 1) {
+    if (
+      !allowsContinuousMotion ||
+      shouldReduceMotion ||
+      slideNodes.length === 1
+    ) {
       slideNodes.forEach((slide, index) => {
         slide.style.removeProperty("transform");
         slide.style.opacity = index === 0 ? "1" : "0";
@@ -158,13 +165,15 @@ export function CinematicHeroSequence({
       isCancelled = true;
       context?.revert();
     };
-  }, [shouldReduceMotion, slides.length]);
+  }, [allowsContinuousMotion, shouldReduceMotion, slides.length]);
 
   return (
     <div
       aria-hidden="true"
       className={cn("cinematic-hero-sequence", className)}
+      data-motion-continuous={allowsContinuousMotion && !shouldReduceMotion}
       data-motion-reduced={shouldReduceMotion}
+      data-motion-scope={motionScope}
       data-testid={testId}
       ref={rootRef}
     >

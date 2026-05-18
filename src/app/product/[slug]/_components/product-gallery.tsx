@@ -125,7 +125,7 @@ export function ProductGallery({
         </AnimatePresence>
         {galleryImages.length > 1 ? (
           <Badge
-            className="bg-background/90 text-foreground absolute bottom-4 left-4 rounded-full px-3 backdrop-blur"
+            className="bg-background text-foreground absolute bottom-4 left-4 rounded-full px-3"
             variant="secondary"
           >
             {activeImageIndex + 1}/{galleryImages.length}

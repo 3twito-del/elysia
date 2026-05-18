@@ -9,6 +9,7 @@ type KineticImageMotionProps = {
   children: ReactNode;
   className?: string;
   intensity?: "card" | "hero" | "panel";
+  motionScope?: "home-hero" | "static";
   pointerMotion?: boolean;
   scrollMotion?: boolean;
 };
@@ -18,19 +19,16 @@ const motionConfig = {
     depth: 8,
     scale: 1.018,
     scrollDepth: 0,
-    shineDuration: 1280,
   },
   hero: {
     depth: 18,
     scale: 1.026,
     scrollDepth: 18,
-    shineDuration: 1640,
   },
   panel: {
     depth: 12,
     scale: 1.02,
     scrollDepth: 0,
-    shineDuration: 1460,
   },
 } satisfies Record<
   NonNullable<KineticImageMotionProps["intensity"]>,
@@ -38,7 +36,6 @@ const motionConfig = {
     depth: number;
     scale: number;
     scrollDepth: number;
-    shineDuration: number;
   }
 >;
 
@@ -46,20 +43,21 @@ export function KineticImageMotion({
   children,
   className,
   intensity = "panel",
+  motionScope = "static",
   pointerMotion,
   scrollMotion = true,
 }: KineticImageMotionProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useResolvedReducedMotion();
+  const allowsEnhancedMotion = motionScope === "home-hero";
 
   useEffect(() => {
     let disposeAnimation: (() => void) | null = null;
     let isCancelled = false;
     const root = rootRef.current;
     const layer = root?.querySelector<HTMLElement>(".kinetic-image-layer");
-    const shine = root?.querySelector<HTMLElement>(".kinetic-image-shine");
 
-    if (!root || !layer || shouldReduceMotion) return;
+    if (!root || !layer || !allowsEnhancedMotion || shouldReduceMotion) return;
 
     void import("animejs").then(({ animate }) => {
       if (isCancelled || !root.isConnected) return;
@@ -70,24 +68,6 @@ export function KineticImageMotion({
       let pointerInside = false;
       let scrollFrame = 0;
       let layerAnimation: AnimationHandle | null = null;
-      let shineAnimation: AnimationHandle | null = null;
-      let lastShineAt = 0;
-
-      const playShine = (force = false) => {
-        if (!shine) return;
-
-        const now = window.performance.now();
-        if (!force && now - lastShineAt < 1050) return;
-
-        lastShineAt = now;
-        shineAnimation?.revert();
-        shineAnimation = animate(shine, {
-          opacity: [0, 0.18, 0],
-          translateX: ["-140%", "235%"],
-          duration: config.shineDuration,
-          ease: "inOutSine",
-        });
-      };
 
       const animateLayer = (
         x: number,
@@ -119,12 +99,10 @@ export function KineticImageMotion({
           config.scale,
           xProgress * 0.42,
         );
-        playShine();
       };
 
       const onPointerEnter = () => {
         pointerInside = true;
-        playShine(true);
       };
 
       const onPointerLeave = () => {
@@ -178,7 +156,6 @@ export function KineticImageMotion({
         window.removeEventListener("resize", requestScrollSync);
         if (scrollFrame) window.cancelAnimationFrame(scrollFrame);
         layerAnimation?.revert();
-        shineAnimation?.revert();
       };
     });
 
@@ -186,18 +163,25 @@ export function KineticImageMotion({
       isCancelled = true;
       disposeAnimation?.();
     };
-  }, [intensity, pointerMotion, scrollMotion, shouldReduceMotion]);
+  }, [
+    allowsEnhancedMotion,
+    intensity,
+    pointerMotion,
+    scrollMotion,
+    shouldReduceMotion,
+  ]);
 
   return (
     <div
       className={cn("kinetic-image-motion", className)}
       data-kinetic-image
+      data-motion-enabled={allowsEnhancedMotion && !shouldReduceMotion}
       data-motion-reduced={shouldReduceMotion}
-      data-motion-source="animejs"
+      data-motion-scope={motionScope}
+      data-motion-source={allowsEnhancedMotion ? "animejs" : undefined}
       ref={rootRef}
     >
       <div className="kinetic-image-layer">{children}</div>
-      <span aria-hidden="true" className="kinetic-image-shine" />
     </div>
   );
 }

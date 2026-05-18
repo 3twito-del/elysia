@@ -330,7 +330,7 @@ export function CartCheckoutForm() {
               ) : cart?.items.length ? (
                 cart.items.map((item) => (
                   <div
-                    className="bg-background/72 grid grid-cols-[68px_minmax(0,1fr)] gap-3 rounded-md border p-3 sm:grid-cols-[68px_minmax(0,1fr)_auto] sm:items-center"
+                    className="bg-background grid grid-cols-[68px_minmax(0,1fr)] gap-3 rounded-md border p-3 sm:grid-cols-[68px_minmax(0,1fr)_auto] sm:items-center"
                     key={item.id}
                   >
                     <Link
@@ -537,7 +537,7 @@ export function CartCheckoutForm() {
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
-              <div className="bg-background/72 flex items-start gap-3 rounded-md border p-3.5 text-sm">
+              <div className="bg-background flex items-start gap-3 rounded-md border p-3.5 text-sm">
                 <Truck className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
                 <div>
                   <p className="font-medium">משלוח עד הבית</p>

@@ -46,7 +46,6 @@ export function BrandMediaPanel({
           testId="brand-media-sequence"
         />
       </KineticImageMotion>
-      <span className="brand-media-panel-shine" aria-hidden="true" />
     </div>
   );
 }

@@ -7,10 +7,25 @@ const forbiddenUiPatterns = [
   /brand-champagne/i,
   /244\s+213\s+138/i,
   /#f4d58a/i,
+  /#f4f0ea/i,
+  /#ddd6cc/i,
+  /#f7d7c7/i,
+  /#c98e79/i,
+  /#fff2eb/i,
+  /#fff0b8/i,
+  /#d4a63d/i,
+  /#fff7d9/i,
   /\byellow\b/i,
   /\bamber\b/i,
   /\bchampagne\b/i,
+  /\brose\b/i,
+  /\bgold\b/i,
 ];
+
+const productPurchasePanelPath = path.join(
+  root,
+  "src/app/product/[slug]/_components/product-purchase-panel.tsx",
+);
 
 describe("public UI color guard", () => {
   it("keeps warm color names and tokens out of public UI and hero files", () => {
@@ -28,7 +43,10 @@ describe("public UI color guard", () => {
     ].filter((file) => !file.includes(".test."));
 
     const violations = files.flatMap((file) => {
-      const content = readFileSync(file, "utf8");
+      const content = removeApprovedWarmColorExceptions(
+        file,
+        readFileSync(file, "utf8"),
+      );
 
       return forbiddenUiPatterns
         .filter((pattern) => pattern.test(content))
@@ -46,7 +64,99 @@ describe("public UI color guard", () => {
 
     expect(brandMedia).not.toMatch(/\bgold\b/i);
   });
+
+  it("keeps product blur placeholders cool-neutral", () => {
+    const productCardSource = readFileSync(
+      path.join(root, "src/components/product-card.tsx"),
+      "utf8",
+    );
+    const decodedBlurData = decodeDataUrl(
+      extractProductImageBlurDataUrl(productCardSource),
+    );
+
+    const violations = forbiddenUiPatterns
+      .filter((pattern) => pattern.test(decodedBlurData))
+      .map((pattern) => `PRODUCT_IMAGE_BLUR_DATA_URL matched ${pattern}`);
+
+    expect(decodedBlurData).toContain("#eef6f7");
+    expect(violations).toEqual([]);
+  });
+
+  it("documents product material swatches as the only public warm-color exception", () => {
+    const productPurchasePanel = readFileSync(productPurchasePanelPath, "utf8");
+    const swatchBlock = extractFunctionBlock(
+      productPurchasePanel,
+      "function getMetalSwatchStyle",
+    );
+
+    expect(productPurchasePanel).toContain('data-material-swatch="true"');
+    expect(swatchBlock).toMatch(/linear-gradient/);
+    expect(swatchBlock).toMatch(/#fff0b8|#d4a63d|#f7d7c7|#c98e79/);
+  });
 });
+
+function removeApprovedWarmColorExceptions(file: string, content: string) {
+  if (file !== productPurchasePanelPath) return content;
+
+  return content.replace(
+    extractFunctionBlock(content, "function getMetalSwatchStyle"),
+    "",
+  );
+}
+
+function extractProductImageBlurDataUrl(source: string) {
+  const match = /const PRODUCT_IMAGE_BLUR_DATA_URL\s*=\s*"([^"]+)";/.exec(
+    source,
+  );
+
+  if (!match?.[1]) {
+    throw new Error("Could not find PRODUCT_IMAGE_BLUR_DATA_URL");
+  }
+
+  return match[1];
+}
+
+function decodeDataUrl(dataUrl: string) {
+  const [, metadata, data] = /^data:([^,]+),(.*)$/.exec(dataUrl) ?? [];
+
+  if (!metadata || !data) {
+    throw new Error("Invalid product image blur data URL");
+  }
+
+  if (metadata.includes(";base64")) {
+    return Buffer.from(data, "base64").toString("utf8");
+  }
+
+  return decodeURIComponent(data);
+}
+
+function extractFunctionBlock(source: string, signature: string) {
+  const functionIndex = source.indexOf(signature);
+  expect(functionIndex).toBeGreaterThanOrEqual(0);
+
+  const blockStart = source.indexOf("{", functionIndex);
+  expect(blockStart).toBeGreaterThanOrEqual(0);
+
+  let depth = 0;
+
+  for (let index = blockStart; index < source.length; index += 1) {
+    const char = source[index];
+
+    if (char === "{") {
+      depth += 1;
+    }
+
+    if (char === "}") {
+      depth -= 1;
+
+      if (depth === 0) {
+        return source.slice(functionIndex, index + 1);
+      }
+    }
+  }
+
+  throw new Error(`Could not extract function block for ${signature}`);
+}
 
 function walk(dir: string): string[] {
   if (!statSync(dir, { throwIfNoEntry: false })?.isDirectory()) return [];

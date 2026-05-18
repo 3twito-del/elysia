@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -38,22 +38,31 @@ describe("layout stability guardrails", () => {
 
   it("keeps the full cinematic hero reserved for the home route", () => {
     const homeSource = readSource("src/app/page.tsx");
-    const commerceRouteSources = [
-      "src/app/about/page.tsx",
-      "src/app/ai/page.tsx",
-      "src/app/category/[slug]/page.tsx",
-      "src/app/gifts/page.tsx",
-      "src/app/search/page.tsx",
-      "src/app/stylist/page.tsx",
-    ].map((sourcePath) => [sourcePath, readSource(sourcePath)] as const);
+    const publicPageSources = walk(path.join(process.cwd(), "src/app"))
+      .filter(
+        (file) =>
+          file.endsWith("page.tsx") &&
+          !file.includes(`${path.sep}src${path.sep}app${path.sep}admin`),
+      )
+      .map((file) => toPosixPath(path.relative(process.cwd(), file)))
+      .filter((sourcePath) => sourcePath !== "src/app/page.tsx")
+      .map((sourcePath) => [sourcePath, readSource(sourcePath)] as const);
 
     expect(homeSource).toContain('data-testid="cinematic-page-hero"');
+    expect(readSource("src/components/commerce-page-hero.tsx")).not.toContain(
+      '| "home"',
+    );
 
-    for (const [sourcePath, source] of commerceRouteSources) {
-      expect(source, sourcePath).toContain("CommercePageHero");
+    for (const [sourcePath, source] of publicPageSources) {
       expect(source, sourcePath).not.toContain("CinematicPageHero");
       expect(source, sourcePath).not.toContain(
         'data-testid="cinematic-page-hero"',
+      );
+      expect(source, sourcePath).not.toMatch(
+        /\bvariant\s*=\s*(?:\{["']home["']\}|["']home["'])/,
+      );
+      expect(source, sourcePath).not.toMatch(
+        /\bvariant\s*=\s*(?:\{["']hero["']\}|["']hero["'])/,
       );
     }
   });
@@ -61,6 +70,10 @@ describe("layout stability guardrails", () => {
 
 function readSource(relativePath: string) {
   return readFileSync(path.join(process.cwd(), relativePath), "utf8");
+}
+
+function toPosixPath(filePath: string) {
+  return filePath.split(path.sep).join("/");
 }
 
 function extractCssBlock(source: string, selector: string) {
@@ -71,4 +84,17 @@ function extractCssBlock(source: string, selector: string) {
   const blockEnd = source.indexOf("}", blockStart);
 
   return source.slice(blockStart, blockEnd + 1);
+}
+
+function walk(dir: string): string[] {
+  if (!statSync(dir, { throwIfNoEntry: false })?.isDirectory()) return [];
+
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const entryPath = path.join(dir, entry.name);
+
+    if (entry.isDirectory()) return walk(entryPath);
+    if (entry.isFile()) return [entryPath];
+
+    return [];
+  });
 }

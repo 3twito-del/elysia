@@ -37,9 +37,7 @@ export function BrandPageIntro({
       ? "checkout"
       : variant === "category"
         ? "catalog"
-        : variant === "hero"
-          ? "home"
-          : "content";
+        : "content";
 
   return (
     <CommercePageHero

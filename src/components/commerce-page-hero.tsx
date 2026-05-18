@@ -7,11 +7,7 @@ import {
 } from "~/components/brand-media-panel";
 import { cn } from "~/lib/utils";
 
-export type CommercePageHeroVariant =
-  | "catalog"
-  | "checkout"
-  | "content"
-  | "home";
+export type CommercePageHeroVariant = "catalog" | "checkout" | "content";
 
 export type CommercePageHeroMetric = {
   label: ReactNode;
@@ -44,7 +40,6 @@ const mediaVariantByHeroVariant: Record<
   catalog: "category",
   checkout: "commerce",
   content: "content",
-  home: "hero",
 };
 
 export function CommercePageHero({

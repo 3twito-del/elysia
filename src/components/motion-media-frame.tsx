@@ -12,6 +12,7 @@ type MotionMediaFrameProps = {
   contentClassName?: string;
   hover?: boolean;
   intensity?: "cinematic" | "hero" | "feature" | "subtle";
+  motionScope?: "home-hero" | "public";
   parallax?: boolean;
 };
 
@@ -35,10 +36,13 @@ export function MotionMediaFrame({
   contentClassName,
   hover = false,
   intensity = "feature",
+  motionScope = "public",
   parallax = false,
 }: MotionMediaFrameProps) {
   const frameRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useResolvedReducedMotion();
+  const allowsEnhancedMotion = motionScope === "home-hero";
+  const effectiveParallax = parallax && allowsEnhancedMotion;
   const y = useMotionValue(0);
   const scale = useMotionValue(1);
   const hasPositioningClass = /\b(?:absolute|fixed|relative|sticky)\b/.test(
@@ -46,7 +50,7 @@ export function MotionMediaFrame({
   );
 
   useEffect(() => {
-    if (!parallax || shouldReduceMotion) {
+    if (!effectiveParallax || shouldReduceMotion) {
       y.set(0);
       scale.set(1);
       return;
@@ -129,7 +133,7 @@ export function MotionMediaFrame({
       observer.disconnect();
       stopTracking();
     };
-  }, [intensity, parallax, scale, shouldReduceMotion, y]);
+  }, [effectiveParallax, intensity, scale, shouldReduceMotion, y]);
 
   return (
     <motion.div
@@ -140,11 +144,12 @@ export function MotionMediaFrame({
       )}
       data-motion-intensity={intensity}
       data-motion-media="true"
-      data-motion-parallax={parallax}
+      data-motion-parallax={effectiveParallax}
       data-motion-reduced={shouldReduceMotion}
+      data-motion-scope={motionScope}
       ref={frameRef}
       whileHover={
-        hover && !shouldReduceMotion
+        hover && allowsEnhancedMotion && !shouldReduceMotion
           ? {
               scale:
                 intensity === "cinematic"
@@ -160,7 +165,7 @@ export function MotionMediaFrame({
       <motion.div
         className={cn("motion-media-content", contentClassName)}
         style={
-          parallax && !shouldReduceMotion
+          effectiveParallax && !shouldReduceMotion
             ? {
                 scale,
                 y,

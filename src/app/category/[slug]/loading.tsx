@@ -27,7 +27,7 @@ export default function CategoryLoading() {
             <div className="bg-foreground/[0.07] mt-3 h-4 w-[min(80%,34rem)] rounded-full" />
             <div className="mt-7 flex gap-2">
               <div className="h-9 w-28 rounded-md bg-[var(--brand-aqua)]/35" />
-              <div className="bg-background/60 h-9 w-24 rounded-md border border-[var(--glass-border)]" />
+              <div className="bg-background h-9 w-24 rounded-md border border-[var(--glass-border)]" />
             </div>
           </div>
 
