@@ -608,6 +608,19 @@ test.describe("accessibility and responsive guardrails", () => {
     expect(heroOutlineButtonStyles.backgroundColor).not.toBe(
       "rgb(255, 255, 255)",
     );
+    const heroOutlineButtonShine = await homeHero
+      .locator('a[href="/ai"][data-variant="outline"]')
+      .evaluate((element) => {
+        const styles = window.getComputedStyle(element, "::after");
+
+        return {
+          animationName: styles.animationName,
+          content: styles.content,
+        };
+      });
+
+    expect(heroOutlineButtonShine.content).toBe("none");
+    expect(heroOutlineButtonShine.animationName).toBe("none");
     expect(homeHeroBox?.width ?? 0).toBeGreaterThanOrEqual(
       (viewport?.width ?? 0) - 2,
     );

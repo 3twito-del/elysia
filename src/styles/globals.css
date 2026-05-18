@@ -936,7 +936,11 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
   transition-duration: var(--motion-ui);
 }
 
-.public-motion-shell [data-slot="button"]:not(:disabled)::after {
+.public-motion-shell
+  [data-slot="button"][data-variant="default"]:not(:disabled)::after,
+.public-motion-shell
+  [data-slot="button"].product-primary-cta:not(:disabled)::after,
+[data-slot="button"].product-primary-cta:not(:disabled)::after {
   content: "";
   pointer-events: none;
   position: absolute;
@@ -953,7 +957,11 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
   opacity: 0;
 }
 
-.public-motion-shell [data-slot="button"]:dir(rtl):not(:disabled)::after {
+.public-motion-shell
+  [data-slot="button"][data-variant="default"]:dir(rtl):not(:disabled)::after,
+.public-motion-shell
+  [data-slot="button"].product-primary-cta:dir(rtl):not(:disabled)::after,
+[data-slot="button"].product-primary-cta:dir(rtl):not(:disabled)::after {
   inset: -45% -36% -45% auto;
   transform: translateX(135%) skewX(14deg);
   background: linear-gradient(
@@ -970,18 +978,39 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
   transform: translateY(-1px);
 }
 
-.public-motion-shell [data-slot="button"]:not(:disabled):hover::after,
-.public-motion-shell [data-slot="button"]:not(:disabled):focus-visible::after,
 .public-motion-shell
-  [data-slot="button"][data-anchor-activating="true"]::after {
+  [data-slot="button"][data-variant="default"]:not(:disabled):hover::after,
+.public-motion-shell
+  [data-slot="button"][data-variant="default"]:not(:disabled):focus-visible::after,
+.public-motion-shell
+  [data-slot="button"][data-variant="default"][data-anchor-activating="true"]::after,
+.public-motion-shell
+  [data-slot="button"].product-primary-cta:not(:disabled):hover::after,
+.public-motion-shell
+  [data-slot="button"].product-primary-cta:not(:disabled):focus-visible::after,
+.public-motion-shell
+  [data-slot="button"].product-primary-cta[data-anchor-activating="true"]::after,
+[data-slot="button"].product-primary-cta:not(:disabled):hover::after,
+[data-slot="button"].product-primary-cta:not(:disabled):focus-visible::after,
+[data-slot="button"].product-primary-cta[data-anchor-activating="true"]::after {
   animation: aqua-button-shine 1.22s var(--ease-motion-standard);
 }
 
-.public-motion-shell [data-slot="button"]:dir(rtl):not(:disabled):hover::after,
 .public-motion-shell
-  [data-slot="button"]:dir(rtl):not(:disabled):focus-visible::after,
+  [data-slot="button"][data-variant="default"]:dir(rtl):not(:disabled):hover::after,
 .public-motion-shell
-  [data-slot="button"]:dir(rtl)[data-anchor-activating="true"]::after {
+  [data-slot="button"][data-variant="default"]:dir(rtl):not(:disabled):focus-visible::after,
+.public-motion-shell
+  [data-slot="button"][data-variant="default"]:dir(rtl)[data-anchor-activating="true"]::after,
+.public-motion-shell
+  [data-slot="button"].product-primary-cta:dir(rtl):not(:disabled):hover::after,
+.public-motion-shell
+  [data-slot="button"].product-primary-cta:dir(rtl):not(:disabled):focus-visible::after,
+.public-motion-shell
+  [data-slot="button"].product-primary-cta:dir(rtl)[data-anchor-activating="true"]::after,
+[data-slot="button"].product-primary-cta:dir(rtl):not(:disabled):hover::after,
+[data-slot="button"].product-primary-cta:dir(rtl):not(:disabled):focus-visible::after,
+[data-slot="button"].product-primary-cta:dir(rtl)[data-anchor-activating="true"]::after {
   animation-name: aqua-button-shine-rtl;
 }
 
@@ -1032,8 +1061,7 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
     box-shadow var(--motion-ui) var(--ease-motion-standard);
 }
 
-.cookie-button-primary::after,
-.cookie-button-secondary::after {
+.cookie-button-primary::after {
   pointer-events: none;
   position: absolute;
   inset: -45% auto -45% -36%;
@@ -1049,8 +1077,7 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
   opacity: 0;
 }
 
-.cookie-button-primary:dir(rtl)::after,
-.cookie-button-secondary:dir(rtl)::after {
+.cookie-button-primary:dir(rtl)::after {
   inset: -45% -36% -45% auto;
   transform: translateX(135%) skewX(14deg);
   background: linear-gradient(
@@ -1095,16 +1122,12 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
 }
 
 .cookie-button-primary:not(:disabled):hover::after,
-.cookie-button-primary:not(:disabled):focus-visible::after,
-.cookie-button-secondary:not(:disabled):hover::after,
-.cookie-button-secondary:not(:disabled):focus-visible::after {
+.cookie-button-primary:not(:disabled):focus-visible::after {
   animation: aqua-button-shine 1.22s var(--ease-motion-standard);
 }
 
 .cookie-button-primary:dir(rtl):not(:disabled):hover::after,
-.cookie-button-primary:dir(rtl):not(:disabled):focus-visible::after,
-.cookie-button-secondary:dir(rtl):not(:disabled):hover::after,
-.cookie-button-secondary:dir(rtl):not(:disabled):focus-visible::after {
+.cookie-button-primary:dir(rtl):not(:disabled):focus-visible::after {
   animation-name: aqua-button-shine-rtl;
 }
 
@@ -1122,9 +1145,7 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
   }
 
   .cookie-button-primary:not(:disabled):hover::after,
-  .cookie-button-primary:not(:disabled):focus-visible::after,
-  .cookie-button-secondary:not(:disabled):hover::after,
-  .cookie-button-secondary:not(:disabled):focus-visible::after {
+  .cookie-button-primary:not(:disabled):focus-visible::after {
     animation: none;
   }
 }
