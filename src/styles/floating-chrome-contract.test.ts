@@ -46,6 +46,9 @@ describe("public floating chrome contract", () => {
     expect(countOccurrences(banner, "--public-bottom-safe-offset")).toBe(4);
     expect(banner).toContain("sm:w-[min(calc(100vw-2rem),22rem)]");
     expect(banner).toContain(
+      "bottom-[calc(0.75rem+env(safe-area-inset-bottom))]",
+    );
+    expect(banner).not.toContain(
       "top-[calc(var(--site-header-height)+0.5rem+env(safe-area-inset-top))]",
     );
     expect(banner).not.toContain("fixed inset-x-0 bottom-0");

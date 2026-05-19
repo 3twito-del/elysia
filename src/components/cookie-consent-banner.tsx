@@ -75,7 +75,7 @@ export function CookieConsentBanner() {
   return (
     <section
       aria-label="בחירת קוקיז"
-      className="bg-background fixed inset-x-3 top-[calc(var(--site-header-height)+0.5rem+env(safe-area-inset-top))] bottom-auto z-50 max-h-[28dvh] overflow-y-auto rounded-md border border-[var(--glass-border)] px-3 py-2 shadow-[0_-10px_28px_oklch(0_0_0_/_9%)] sm:inset-x-auto sm:top-auto sm:right-4 sm:bottom-4 sm:max-h-[32dvh] sm:w-[min(calc(100vw-2rem),22rem)] sm:px-4 sm:py-3"
+      className="bg-background fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-50 max-h-[32dvh] overflow-y-auto rounded-md border border-[var(--glass-border)] px-3 py-2 shadow-[0_12px_30px_oklch(0_0_0_/_7%)] sm:inset-x-auto sm:right-4 sm:bottom-4 sm:w-[min(calc(100vw-2rem),22rem)] sm:px-4 sm:py-3"
       ref={bannerRef}
     >
       <div className="grid gap-2">

@@ -63,14 +63,14 @@ function FavoriteSubmitButton({
       aria-describedby={statusId}
       aria-label={label}
       className={cn(
-        "bg-background h-10 w-10 shrink-0 rounded-full border border-[var(--glass-border)] shadow-[0_8px_18px_oklch(0_0_0_/_8%)]",
-        "hover:bg-background hover:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+        "h-10 w-10 shrink-0 rounded-md border border-transparent bg-transparent shadow-none",
+        "hover:bg-muted/35 hover:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
         isSaved && "text-red-700 dark:text-red-300",
       )}
       disabled={pending}
       size="icon"
       type="submit"
-      variant="outline"
+      variant="ghost"
     >
       <Heart
         aria-hidden="true"

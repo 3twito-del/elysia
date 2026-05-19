@@ -33,7 +33,7 @@ export default async function GiftsPage() {
       <RevealSection className="mx-auto max-w-7xl px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y)]">
         <section
           aria-labelledby="gift-results"
-          className="brand-control-panel rounded-md p-[var(--ui-panel-padding)]"
+          className="border-b border-[var(--glass-border)] pb-4"
           data-testid="gift-results-summary"
         >
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

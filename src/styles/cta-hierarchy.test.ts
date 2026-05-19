@@ -14,6 +14,12 @@ describe("public CTA hierarchy", () => {
     );
     expect(buttonSource).toMatch(/outline:\s*"[^"]*bg-background/);
     expect(buttonSource).toMatch(/secondary:\s*"[^"]*bg-background/);
+    expect(buttonSource).not.toMatch(
+      /(outline|secondary):\s*"[^"]*shadow-\[0_6px/,
+    );
+    expect(buttonSource).not.toMatch(
+      /(outline|secondary|ghost):\s*"[^"]*hover:bg-\[rgb\(66_201_190/,
+    );
   });
 
   it("keeps product purchase actions to one aqua primary and one neutral secondary action", () => {

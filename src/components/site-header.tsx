@@ -54,6 +54,7 @@ export function SiteHeader() {
       <div className="mx-auto grid h-16 max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 sm:px-6 lg:grid-cols-[auto_1fr_auto] lg:gap-5">
         <div className="flex items-center justify-self-start lg:hidden">
           <MobileNav
+            currentPathname={pathname}
             items={navItems}
             onCategoryIntent={categoryPrefetch.prefetch}
             onOpenCategoryPrefetch={categoryPrefetch.prefetchAll}
@@ -82,34 +83,29 @@ export function SiteHeader() {
               (categoryHref && pathname.startsWith(`${item.href}/`));
 
             return (
-              <Button
-                asChild
+              <Link
+                aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "h-9 px-3 text-[0.9rem] font-medium xl:px-3.5",
+                  "text-muted-foreground hover:text-foreground focus-visible:text-foreground relative inline-flex h-9 items-center px-3 text-[0.9rem] font-medium transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] xl:px-3.5",
                   isActive &&
-                    "bg-secondary/80 text-foreground hover:bg-secondary shadow-none ring-1 ring-[var(--glass-border)]",
+                    "text-foreground after:bg-foreground font-semibold after:absolute after:inset-x-3 after:bottom-1 after:h-px after:content-['']",
                 )}
+                href={item.href}
                 key={item.href}
-                variant="ghost"
+                onFocus={
+                  categoryHref
+                    ? () => categoryPrefetch.prefetch(item.href)
+                    : undefined
+                }
+                onPointerEnter={
+                  categoryHref
+                    ? () => categoryPrefetch.prefetch(item.href)
+                    : undefined
+                }
+                prefetch={categoryHref ? true : undefined}
               >
-                <Link
-                  aria-current={isActive ? "page" : undefined}
-                  href={item.href}
-                  onFocus={
-                    categoryHref
-                      ? () => categoryPrefetch.prefetch(item.href)
-                      : undefined
-                  }
-                  onPointerEnter={
-                    categoryHref
-                      ? () => categoryPrefetch.prefetch(item.href)
-                      : undefined
-                  }
-                  prefetch={categoryHref ? true : undefined}
-                >
-                  {item.label}
-                </Link>
-              </Button>
+                {item.label}
+              </Link>
             );
           })}
         </nav>

@@ -20,6 +20,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "~/components/ui/sheet";
+import { cn } from "~/lib/utils";
 
 export type HeaderNavItem = {
   href: string;
@@ -27,6 +28,7 @@ export type HeaderNavItem = {
 };
 
 type MobileNavProps = {
+  currentPathname: string;
   items: HeaderNavItem[];
   onCategoryIntent?: (href: string) => void;
   onOpenCategoryPrefetch?: () => void;
@@ -44,6 +46,7 @@ const serviceActions = [
 ] as const;
 
 export function MobileNav({
+  currentPathname,
   items,
   onCategoryIntent,
   onOpenCategoryPrefetch,
@@ -103,7 +106,7 @@ export function MobileNav({
             <span className="text-lg font-semibold">Aphrodite</span>
           </Link>
           <p className="text-muted-foreground mt-2 text-sm leading-6">
-            ׳§׳˜׳׳•׳’ ׳׳•׳ ׳׳™׳™׳, ׳™׳™׳¢׳•׳¥ ׳׳™׳©׳™ ׳•׳©׳™׳¨׳•׳× ׳˜׳׳₪׳•׳ ׳™.
+            תכשיטים אונליין, ייעוץ אישי ושירות לקוחות נגיש.
           </p>
         </div>
 
@@ -111,19 +114,22 @@ export function MobileNav({
           <div className="grid grid-cols-3 gap-2">
             {quickActions.map((item) => {
               const Icon = item.icon;
+              const isActive = currentPathname === item.href;
 
               return (
-                <Button
-                  asChild
-                  className="h-auto min-h-14 flex-col gap-1.5 px-2 text-xs"
+                <Link
+                  aria-current={isActive ? "page" : undefined}
+                  className={cn(
+                    "text-muted-foreground hover:text-foreground grid min-h-14 place-items-center gap-1.5 px-2 text-center text-xs transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+                    isActive && "text-foreground font-semibold",
+                  )}
+                  href={item.href}
                   key={item.href}
-                  variant="outline"
+                  onClick={closeNav}
                 >
-                  <Link href={item.href} onClick={closeNav}>
-                    <Icon aria-hidden="true" className="size-4" />
-                    {item.label}
-                  </Link>
-                </Button>
+                  <Icon aria-hidden="true" className="size-4" />
+                  {item.label}
+                </Link>
               );
             })}
           </div>
@@ -134,16 +140,22 @@ export function MobileNav({
             <p className="text-muted-foreground px-1 text-xs font-medium">
               קטלוג
             </p>
-            {catalogItems.map((item) => (
-              <Button
-                asChild
-                className="h-10 justify-start px-3 text-[0.96rem]"
-                key={item.href}
-                variant="ghost"
-              >
+            {catalogItems.map((item) => {
+              const isActive =
+                currentPathname === item.href ||
+                currentPathname.startsWith(`${item.href}/`);
+
+              return (
                 <Link
+                  aria-current={isActive ? "page" : undefined}
+                  className={cn(
+                    "text-muted-foreground hover:text-foreground relative inline-flex min-h-10 items-center px-1 text-[0.96rem] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+                    isActive &&
+                      "text-foreground after:bg-foreground font-semibold after:absolute after:inset-x-1 after:bottom-1 after:h-px after:content-['']",
+                  )}
                   data-testid="mobile-nav-link"
                   href={item.href}
+                  key={item.href}
                   onFocus={
                     item.href.startsWith("/category/")
                       ? () => onCategoryIntent?.(item.href)
@@ -161,8 +173,8 @@ export function MobileNav({
                 >
                   {item.label}
                 </Link>
-              </Button>
-            ))}
+              );
+            })}
           </nav>
 
           <nav aria-label="ניווט שירות" className="grid gap-1">
@@ -171,41 +183,46 @@ export function MobileNav({
             </p>
             {serviceActions.map((item) => {
               const Icon = item.icon;
+              const isActive = currentPathname === item.href;
 
               return (
-                <Button
-                  asChild
-                  className="h-10 justify-start gap-2 px-3 text-[0.96rem]"
-                  key={item.href}
-                  variant="ghost"
-                >
-                  <Link
-                    data-testid="mobile-nav-link"
-                    href={item.href}
-                    onClick={closeNav}
-                  >
-                    <Icon aria-hidden="true" className="size-4" />
-                    {item.label}
-                  </Link>
-                </Button>
-              );
-            })}
-            {editorialItems.map((item) => (
-              <Button
-                asChild
-                className="h-10 justify-start px-3 text-[0.96rem]"
-                key={item.href}
-                variant="ghost"
-              >
                 <Link
+                  aria-current={isActive ? "page" : undefined}
+                  className={cn(
+                    "text-muted-foreground hover:text-foreground relative inline-flex min-h-10 items-center gap-2 px-1 text-[0.96rem] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+                    isActive &&
+                      "text-foreground after:bg-foreground font-semibold after:absolute after:inset-x-1 after:bottom-1 after:h-px after:content-['']",
+                  )}
                   data-testid="mobile-nav-link"
                   href={item.href}
+                  key={item.href}
+                  onClick={closeNav}
+                >
+                  <Icon aria-hidden="true" className="size-4" />
+                  {item.label}
+                </Link>
+              );
+            })}
+            {editorialItems.map((item) => {
+              const isActive = currentPathname === item.href;
+
+              return (
+                <Link
+                  aria-current={isActive ? "page" : undefined}
+                  className={cn(
+                    "text-muted-foreground hover:text-foreground relative inline-flex min-h-10 items-center px-1 text-[0.96rem] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+                    isActive &&
+                      "text-foreground after:bg-foreground font-semibold after:absolute after:inset-x-1 after:bottom-1 after:h-px after:content-['']",
+                  )}
+                  data-testid="mobile-nav-link"
+                  href={item.href}
+                  key={item.href}
                   onClick={closeNav}
                 >
                   {item.label}
                 </Link>
-              </Button>
-            ))}
+              );
+            })}
           </nav>
         </div>
       </SheetContent>

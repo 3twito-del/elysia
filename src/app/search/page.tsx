@@ -144,7 +144,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
         <section
           aria-labelledby="search-results"
-          className="brand-control-panel mt-4 rounded-md p-[var(--ui-panel-padding)] sm:mt-6"
+          className="mt-4 border-b border-[var(--glass-border)] pb-4 sm:mt-6"
           data-testid="search-results-summary"
           id="search-results-section"
         >

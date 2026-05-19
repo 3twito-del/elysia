@@ -60,7 +60,7 @@ export async function SiteFooter() {
           </section>
 
           <div className="grid gap-2 lg:hidden">
-            <details className="group bg-background rounded-md border">
+            <details className="group border-b border-[var(--glass-border)]">
               <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold [&::-webkit-details-marker]:hidden">
                 קטגוריות
                 <ChevronDown
@@ -90,7 +90,7 @@ export async function SiteFooter() {
               </ul>
             </details>
 
-            <details className="group bg-background rounded-md border">
+            <details className="group border-b border-[var(--glass-border)]">
               <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold [&::-webkit-details-marker]:hidden">
                 שירות וקנייה
                 <ChevronDown
@@ -117,7 +117,7 @@ export async function SiteFooter() {
               </ul>
             </details>
 
-            <details className="group bg-background rounded-md border">
+            <details className="group border-b border-[var(--glass-border)]">
               <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold [&::-webkit-details-marker]:hidden">
                 שירות אונליין
                 <ChevronDown

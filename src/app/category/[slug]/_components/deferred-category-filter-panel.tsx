@@ -5,7 +5,6 @@ import { Check, MapPin, RotateCw, X } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import type { CategoryFilterPayload } from "../_lib/category-filter-state";
-import { buttonVariants } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import { SheetClose } from "~/components/ui/sheet";
 import { cn } from "~/lib/utils";
@@ -194,13 +193,11 @@ function FilterOptionLink({
   option: CategoryFilterPayload["sections"][number]["options"][number];
 }) {
   const className = cn(
-    buttonVariants({
-      size: "sm",
-      variant: option.active ? "secondary" : "ghost",
-    }),
-    "h-auto min-h-10 w-full justify-between border px-3 py-2 text-right whitespace-normal",
+    "grid min-h-10 w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-[var(--glass-border)] px-1 py-2 text-right text-sm whitespace-normal transition-colors outline-none",
+    "hover:text-foreground focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+    option.active ? "text-foreground font-semibold" : "text-muted-foreground",
     option.active &&
-      "border-[var(--glass-border-strong)] bg-[var(--glass-inset-bg)] shadow-[inset_0_0_0_1px_var(--glass-border-strong)]",
+      "border-[var(--glass-border-strong)] bg-transparent shadow-none",
     option.disabled && "cursor-not-allowed opacity-45",
   );
   const content = (
@@ -270,7 +267,12 @@ function FilterActionLink({
 }) {
   const link = (
     <Link
-      className={cn(buttonVariants({ size: "sm", variant }), className)}
+      className={cn(
+        "text-muted-foreground hover:text-foreground inline-flex min-h-8 items-center justify-center gap-1.5 px-1 text-sm font-medium transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+        variant === "outline" &&
+          "text-foreground hover:border-foreground border-b border-[var(--glass-border)]",
+        className,
+      )}
       href={href}
       scroll={false}
     >
@@ -318,7 +320,7 @@ function FilterPanelFallback({ resetHref }: { resetHref: string }) {
         <span>לא ניתן לטעון פילטרים כרגע.</span>
       </div>
       <Link
-        className={buttonVariants({ size: "sm", variant: "outline" })}
+        className="hover:border-foreground inline-flex min-h-8 w-fit items-center border-b border-[var(--glass-border)] px-1 text-sm font-medium transition-colors focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
         href={resetHref}
         scroll={false}
       >

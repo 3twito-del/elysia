@@ -62,7 +62,7 @@ describe("mobile commerce density", () => {
       "px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)]",
     );
     expect(category).toContain(
-      "brand-control-panel mb-5 hidden rounded-md p-[var(--ui-panel-padding)] lg:block",
+      "mb-5 hidden border-b border-[var(--glass-border)] pb-4 lg:block",
     );
     expect(category).toContain("grid gap-3 sm:grid-cols-2 sm:gap-4");
     expect(search).toContain(

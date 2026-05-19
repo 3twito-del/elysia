@@ -1,0 +1,162 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
+import { describe, expect, it } from "vitest";
+
+const root = process.cwd();
+
+describe("luxury commerce UI hardening", () => {
+  it("keeps public header navigation typographic instead of button-framed", () => {
+    const source = read("src/components/site-header.tsx");
+    const navBlock = extractBetween(
+      source,
+      "<nav\n          aria-label=",
+      "</nav>",
+    );
+
+    expect(navBlock).not.toContain("<Button");
+    expect(navBlock).not.toContain("bg-secondary");
+    expect(navBlock).not.toContain("ring-1");
+    expect(navBlock).not.toContain("shadow-");
+    expect(navBlock).toContain("after:h-px");
+    expect(navBlock).toContain('aria-current={isActive ? "page" : undefined}');
+  });
+
+  it("keeps mobile navigation and footer disclosures unboxed", () => {
+    const mobileNav = read("src/components/mobile-nav.tsx");
+    const footer = read("src/components/site-footer.tsx");
+
+    expect(mobileNav).not.toContain("h-auto min-h-14 flex-col");
+    expect(mobileNav).not.toContain('variant="outline"');
+    expect(mobileNav).toContain(
+      "תכשיטים אונליין, ייעוץ אישי ושירות לקוחות נגיש.",
+    );
+    expect(mobileNav).not.toContain("׳³");
+    expect(mobileNav).toContain("after:h-px");
+    expect(footer).not.toContain("bg-background rounded-md border");
+    expect(footer).toContain(
+      'className="group border-b border-[var(--glass-border)]"',
+    );
+  });
+
+  it("keeps category filter choices as list rows instead of boxed buttons", () => {
+    const source = read(
+      "src/app/category/[slug]/_components/deferred-category-filter-panel.tsx",
+    );
+
+    expect(source).not.toContain("buttonVariants");
+    expect(source).not.toContain("variant: option.active");
+    expect(source).not.toContain("shadow-[inset_0_0_0_1px");
+    expect(source).toContain("grid min-h-10 w-full");
+    expect(source).toContain("border-b border-[var(--glass-border)]");
+  });
+
+  it("keeps commerce result summaries as rows instead of empty panels", () => {
+    const category = read("src/app/category/[slug]/page.tsx");
+    const search = read("src/app/search/page.tsx");
+    const gifts = read("src/app/gifts/page.tsx");
+    const searchControls = read(
+      "src/app/search/_components/search-controls.tsx",
+    );
+
+    expect(category).not.toContain(
+      "brand-control-panel mb-5 hidden rounded-md",
+    );
+    expect(search).not.toContain(
+      "brand-control-panel mt-4 rounded-md p-[var(--ui-panel-padding)]",
+    );
+    expect(gifts).not.toContain(
+      "brand-control-panel rounded-md p-[var(--ui-panel-padding)]",
+    );
+    expect(searchControls).not.toContain(
+      "brand-control-panel mt-4 hidden gap-2.5",
+    );
+    expect(category).toContain(
+      "mb-5 hidden border-b border-[var(--glass-border)] pb-4 lg:block",
+    );
+    expect(search).toContain(
+      "mt-4 border-b border-[var(--glass-border)] pb-4 sm:mt-6",
+    );
+    expect(gifts).toContain("border-b border-[var(--glass-border)] pb-4");
+  });
+
+  it("keeps non-action labels and cookie consent from returning to aqua pills or top overlays", () => {
+    const css = read("src/styles/globals.css");
+    const heroEyebrowBlock = extractCssBlock(
+      css,
+      ".commerce-page-hero-eyebrow,\n.commerce-section-header-eyebrow",
+    );
+    const catalogEyebrowBlock = extractCssBlock(
+      css,
+      '.commerce-page-hero[data-commerce-hero="catalog"] .commerce-page-hero-eyebrow',
+    );
+    const cookieBanner = read("src/components/cookie-consent-banner.tsx");
+
+    expect(heroEyebrowBlock).not.toContain("border:");
+    expect(heroEyebrowBlock).not.toContain("border-radius");
+    expect(heroEyebrowBlock).not.toContain("background:");
+    expect(heroEyebrowBlock).not.toContain("brand-aqua-deep");
+    expect(catalogEyebrowBlock).not.toContain("background:");
+    expect(cookieBanner).toContain(
+      "bottom-[calc(0.75rem+env(safe-area-inset-bottom))]",
+    );
+    expect(cookieBanner).not.toContain("bottom-auto");
+    expect(cookieBanner).not.toContain(
+      "top-[calc(var(--site-header-height)+0.5rem+env(safe-area-inset-top))]",
+    );
+  });
+
+  it("keeps public secondary controls low-shadow and neutral", () => {
+    const button = read("src/components/ui/button.tsx");
+    const favorite = read("src/components/product-card-favorite-button.tsx");
+    const card = read("src/components/ui/card.tsx");
+
+    expect(button).not.toMatch(/(outline|secondary):\s*"[^"]*shadow-\[0_6px/);
+    expect(button).not.toMatch(
+      /(outline|secondary|ghost):\s*"[^"]*hover:bg-\[rgb\(66_201_190/,
+    );
+    expect(favorite).not.toContain("shadow-[0_8px");
+    expect(favorite).toContain('variant="ghost"');
+    expect(card).toContain("shadow-none");
+  });
+});
+
+function read(relativePath: string) {
+  return readFileSync(path.join(root, relativePath), "utf8");
+}
+
+function extractBetween(source: string, start: string, end: string) {
+  const startIndex = source.indexOf(start);
+  expect(startIndex).toBeGreaterThanOrEqual(0);
+
+  const endIndex = source.indexOf(end, startIndex);
+  expect(endIndex).toBeGreaterThan(startIndex);
+
+  return source.slice(startIndex, endIndex + end.length);
+}
+
+function extractCssBlock(source: string, selector: string) {
+  const selectorIndex = source.indexOf(selector);
+  expect(selectorIndex).toBeGreaterThanOrEqual(0);
+
+  const blockStart = source.indexOf("{", selectorIndex);
+  expect(blockStart).toBeGreaterThanOrEqual(0);
+
+  let depth = 0;
+
+  for (let index = blockStart; index < source.length; index += 1) {
+    const char = source[index];
+
+    if (char === "{") depth += 1;
+
+    if (char === "}") {
+      depth -= 1;
+
+      if (depth === 0) {
+        return source.slice(blockStart, index + 1);
+      }
+    }
+  }
+
+  throw new Error(`Could not extract CSS block for ${selector}`);
+}
