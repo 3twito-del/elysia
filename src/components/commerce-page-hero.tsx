@@ -5,9 +5,14 @@ import {
   type BrandMediaPanelVariant,
   type BrandMediaSlide,
 } from "~/components/brand-media-panel";
+import { shouldRenderPublicElement } from "~/lib/public-design-policy";
+import type { PublicRouteArchetype } from "~/lib/public-structure-policy";
 import { cn } from "~/lib/utils";
 
 export type CommercePageHeroVariant = "catalog" | "checkout" | "content";
+export type CommercePageHeroDensity = "editorial" | "commerce" | "service";
+export type CommercePageHeroIntent = "commerce" | "service" | "content";
+export type CommercePageHeroMetricsMode = "tiles" | "inline";
 
 export type CommercePageHeroMetric = {
   label: ReactNode;
@@ -23,12 +28,17 @@ export type CommercePageHeroMedia = {
 
 type CommercePageHeroProps = {
   actions?: ReactNode;
+  archetype?: PublicRouteArchetype;
   className?: string;
   description?: ReactNode;
+  density?: CommercePageHeroDensity;
   eyebrow?: ReactNode;
   id?: string;
+  intent?: CommercePageHeroIntent;
   media?: CommercePageHeroMedia;
+  metricsMode?: CommercePageHeroMetricsMode;
   metrics?: CommercePageHeroMetric[];
+  showMediaOnMobile?: boolean;
   title: ReactNode;
   variant?: CommercePageHeroVariant;
 };
@@ -42,27 +52,56 @@ const mediaVariantByHeroVariant: Record<
   content: "content",
 };
 
+const densityByHeroVariant: Record<
+  CommercePageHeroVariant,
+  CommercePageHeroDensity
+> = {
+  catalog: "commerce",
+  checkout: "service",
+  content: "service",
+};
+
+const intentByHeroVariant: Record<
+  CommercePageHeroVariant,
+  CommercePageHeroIntent
+> = {
+  catalog: "commerce",
+  checkout: "service",
+  content: "content",
+};
+
 export function CommercePageHero({
   actions,
+  archetype,
   className,
   description,
+  density,
   eyebrow,
   id,
+  intent,
   media,
+  metricsMode = "tiles",
   metrics,
+  showMediaOnMobile = false,
   title,
   variant = "content",
 }: CommercePageHeroProps) {
   const hasActions = actions !== undefined && actions !== null;
-  const hasMedia = Boolean(media);
-  const hasMetrics = (metrics?.length ?? 0) > 0;
+  const hasMedia = Boolean(media) && shouldRenderPublicElement("routeHeroMedia");
+  const hasMetrics =
+    (metrics?.length ?? 0) > 0 && shouldRenderPublicElement("heroMetrics");
   const hasAside = hasMedia || hasMetrics;
 
   return (
     <section
       className={cn("commerce-page-hero brand-page-band", className)}
+      data-commerce-density={density ?? densityByHeroVariant[variant]}
       data-commerce-hero={variant}
       data-has-aside={hasAside ? "true" : "false"}
+      data-media-mobile={showMediaOnMobile ? "true" : "false"}
+      data-metrics-mode={metricsMode}
+      data-route-archetype={archetype ?? getDefaultArchetype(variant)}
+      data-route-intent={intent ?? intentByHeroVariant[variant]}
       dir="rtl"
       id={id}
     >
@@ -107,4 +146,13 @@ export function CommercePageHero({
       </div>
     </section>
   );
+}
+
+function getDefaultArchetype(
+  variant: CommercePageHeroVariant,
+): PublicRouteArchetype {
+  if (variant === "catalog") return "plp";
+  if (variant === "checkout") return "checkout";
+
+  return "content";
 }

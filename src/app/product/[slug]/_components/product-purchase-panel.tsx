@@ -28,7 +28,7 @@ import {
 } from "~/lib/cart-session";
 import {
   getProductAvailabilityLabel,
-  getStockQuantityLabel,
+  getPublicStockStatusLabel,
 } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
 import { cn } from "~/lib/utils";
@@ -100,26 +100,27 @@ export function ProductPurchasePanel({
 
     const syncStickyBar = () => {
       const rect = primaryCta.getBoundingClientRect();
-      const isPrimaryCtaVisible =
-        rect.bottom > 0 && rect.top < window.innerHeight - 96;
 
-      setShowStickyBar(!isPrimaryCtaVisible);
+      setShowStickyBar(rect.bottom <= 0);
     };
 
     syncStickyBar();
 
     if (typeof IntersectionObserver !== "undefined") {
-      const observer = new IntersectionObserver(
-        ([entry]) => setShowStickyBar(!entry?.isIntersecting),
-        {
-          rootMargin: "0px 0px -96px 0px",
-          threshold: 0.1,
-        },
-      );
+      const observer = new IntersectionObserver(() => syncStickyBar(), {
+        rootMargin: "0px",
+        threshold: [0, 1],
+      });
 
       observer.observe(primaryCta);
+      window.addEventListener("resize", syncStickyBar);
+      window.addEventListener("scroll", syncStickyBar, { passive: true });
 
-      return () => observer.disconnect();
+      return () => {
+        observer.disconnect();
+        window.removeEventListener("resize", syncStickyBar);
+        window.removeEventListener("scroll", syncStickyBar);
+      };
     }
 
     window.addEventListener("resize", syncStickyBar);
@@ -149,6 +150,7 @@ export function ProductPurchasePanel({
     <div
       className="public-floating-control motion-sticky-purchase glass-chrome fixed inset-x-3 bottom-[calc(var(--floating-stack-bottom,0px)+0.75rem+env(safe-area-inset-bottom))] z-40 rounded-md border p-2.5 shadow-[0_18px_48px_oklch(0_0_0_/_16%)] md:hidden"
       data-public-floating-bar="true"
+      data-public-floating-avoid="true"
     >
       <div className="mx-auto grid max-w-md grid-cols-[auto_minmax(0,1fr)] items-center gap-3">
         <div className="order-2 min-w-0">
@@ -180,7 +182,7 @@ export function ProductPurchasePanel({
 
   return (
     <>
-      <div className="grid gap-6">
+      <div className="grid gap-6" data-public-floating-avoid="true">
         <div className="grid gap-3">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
@@ -230,8 +232,8 @@ export function ProductPurchasePanel({
             <span className="flex items-center gap-1.5">
               <PackageCheck className="size-4" aria-hidden="true" />
               {selectedVariant
-                ? getStockQuantityLabel(selectedVariant.availableQuantity)
-                : "אין מלאי"}
+                ? getPublicStockStatusLabel(selectedVariant.availableQuantity)
+                : "בדיקת זמינות"}
             </span>
             <span className="flex items-center gap-1.5">
               <CheckCircle2 className="size-4" aria-hidden="true" />
@@ -283,10 +285,7 @@ export function ProductPurchasePanel({
             </div>
           </div>
           <div className="glass-inset flex items-start gap-2 rounded-md border p-3 text-sm">
-            <RotateCcw
-              aria-hidden="true"
-              className="mt-0.5 size-4 shrink-0"
-            />
+            <RotateCcw aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
             <div className="min-w-0">
               <p className="font-medium">החלפות והחזרות</p>
               <p className="text-muted-foreground mt-0.5 leading-5">
@@ -378,7 +377,7 @@ function getVariantDisplayName(variant: CatalogProductVariant) {
 function getVariantButtonLabel(variant: CatalogProductVariant) {
   const availability =
     variant.availableQuantity > 0
-      ? getStockQuantityLabel(variant.availableQuantity)
+      ? getPublicStockStatusLabel(variant.availableQuantity)
       : "לא זמין";
 
   return `${getVariantDisplayName(variant)}, ${formatPrice(variant.price)}, ${availability}`;

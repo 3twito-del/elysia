@@ -8,6 +8,9 @@ const publicSourceRoots = ["src/app", "src/components", "src/styles"].map(
   (dir) => path.join(root, dir),
 );
 const approvedBrandTokens = new Set([
+  "--brand-porcelain",
+  "--brand-ink",
+  "--brand-platinum",
   "--brand-aqua",
   "--brand-aqua-soft",
   "--brand-aqua-deep",
@@ -36,14 +39,12 @@ describe("public palette guardrails", () => {
         const source = readFileSync(file, "utf8");
 
         if (relativePath === approvedWarmMaterialPath) {
-          return source.includes('data-material-swatch="true"') ? [] : [
-            `${relativePath} is missing documented material swatches`,
-          ];
+          return source.includes('data-material-swatch="true"')
+            ? []
+            : [`${relativePath} is missing documented material swatches`];
         }
 
-        return /#(?:fff0b8|d4a63d|fff7d9|f7d7c7|c98e79|fff2eb)\b/i.test(
-          source,
-        )
+        return /#(?:fff0b8|d4a63d|fff7d9|f7d7c7|c98e79|fff2eb)\b/i.test(source)
           ? [`${relativePath} contains warm material colors outside swatches`]
           : [];
       });

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { after } from "next/server";
-import { ChevronLeft, ChevronRight, Search, Sparkles, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 
 import { SearchControls } from "~/app/search/_components/search-controls";
 import { CommercePageHero } from "~/components/commerce-page-hero";
@@ -10,7 +10,6 @@ import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { EmptyState } from "~/components/ui/empty-state";
-import { cinematicRouteMedia } from "~/lib/brand-media";
 import { db } from "~/server/db";
 import {
   DEFAULT_SEARCH_PER_PAGE,
@@ -78,17 +77,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const recoveryActions =
     result.total === 0 ? await getSearchRecoveryActions(input) : [];
   const firstCategory = categories[0];
-  const visibleFacets = result.facets
-    .flatMap((facet) =>
-      facet.values
-        .filter((value) => value.count > 0)
-        .slice(0, 6)
-        .map((value) => ({
-          field: facet.field,
-          ...value,
-        })),
-    )
-    .slice(0, 10);
   const visibleStart =
     result.total > 0 ? (result.page - 1) * result.perPage + 1 : 0;
   const visibleEnd = Math.min(result.page * result.perPage, result.total);
@@ -111,28 +99,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     <main>
       <SiteHeader />
       <CommercePageHero
-        actions={
-          <>
-            <Button asChild>
-              <Link href="#search-controls">חיפוש מדויק</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="#search-results-section">לתוצאות</Link>
-            </Button>
-          </>
-        }
         description="חיפוש קטלוג עם סינון לפי קטגוריה, חומר, אבן, תקציב וזמינות."
         eyebrow="Aphrodite Catalog"
-        media={{
-          alt: "קטלוג Aphrodite",
-          priority: true,
-          slides: cinematicRouteMedia.search,
-        }}
-        metrics={[
-          { label: "תוצאות", value: String(result.total) },
-          { label: "פילטרים", value: String(activeFilters.length) },
-          { label: "עמוד", value: String(result.page) },
-        ]}
         title="חיפוש בקטלוג"
         variant="catalog"
       />
@@ -174,19 +142,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           </div>
         ) : null}
 
-        {visibleFacets.length > 0 ? (
-          <div className="mt-5 hidden flex-wrap gap-2 text-sm sm:flex">
-            {visibleFacets.map((value) => (
-              <span
-                className="glass-inset rounded-md border px-3 py-1"
-                key={`${value.field}:${value.value}`}
-              >
-                {value.value} · {value.count}
-              </span>
-            ))}
-          </div>
-        ) : null}
-
         <section
           aria-labelledby="search-results"
           className="brand-control-panel mt-4 rounded-md p-3.5 sm:mt-6 sm:p-4"
@@ -225,12 +180,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                   </Link>
                 </Button>
               ) : null}
-              <Button asChild size="sm" variant="outline">
-                <Link href="/ai">
-                  <Sparkles aria-hidden="true" className="size-3.5" />
-                  התאמה אישית
-                </Link>
-              </Button>
             </div>
           </div>
         </section>
@@ -240,8 +189,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             className="mt-6 sm:mt-10"
             description={
               <>
-                אפשר לנקות את הבחירה, לעבור לקטגוריה פתוחה, או לתת לסטייליסט
-                למצוא חלופה קרובה מתוך הקטלוג.
+                אפשר לנקות את הבחירה, לעבור לקטגוריה פתוחה, או להרחיב את
+                החיפוש בכל הקטלוג.
               </>
             }
             icon={Search}
@@ -284,9 +233,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                     </Link>
                   </Button>
                 ) : null}
-                <Button asChild>
-                  <Link href="/ai">התאמה אישית</Link>
-                </Button>
               </>
             }
           />
@@ -436,7 +382,7 @@ function getActiveSearchFilters(
   if (input.availableOnly) {
     filters.push({
       key: "availableOnly",
-      label: "זמין במלאי",
+      label: "זמין להזמנה",
       href: createSearchHref({
         ...input,
         availableOnly: undefined,

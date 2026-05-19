@@ -273,7 +273,6 @@ function getCategoryFilterSections({
           disabled: !active && count === 0,
           href: createCategoryHref(item.slug, filters),
           label: item.name,
-          meta: getFilterCountLabel(count),
         };
       }),
     },
@@ -291,7 +290,6 @@ function getCategoryFilterSections({
             material: active ? undefined : material,
           }),
           label: material,
-          meta: getFilterCountLabel(count),
         };
       }),
     },
@@ -309,7 +307,6 @@ function getCategoryFilterSections({
             stone: active ? undefined : stone,
           }),
           label: stone,
-          meta: getFilterCountLabel(count),
         };
       }),
     },
@@ -327,7 +324,6 @@ function getCategoryFilterSections({
             maxPrice: active ? undefined : price,
           }),
           label: `עד ${formatPrice(price)}`,
-          meta: getFilterCountLabel(count),
         };
       }),
     },
@@ -396,12 +392,6 @@ function getActiveFilters(slug: string, filters: CategoryFilters) {
   }
 
   return activeFilters;
-}
-
-function getFilterCountLabel(count: number) {
-  if (count === 1) return "מוצר אחד";
-
-  return `${count} מוצרים`;
 }
 
 function createCategoryHref(slug: string, filters: Partial<CategoryFilters>) {

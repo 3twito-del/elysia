@@ -91,21 +91,17 @@ export function ProductCard({
               style={{ objectPosition: imageObjectPosition }}
             />
           </KineticImageMotion>
-          <div className="absolute inset-x-2.5 top-2.5 flex items-start justify-between gap-2">
-            <Badge
-              className="max-w-[68%] font-normal shadow-sm"
-              variant="secondary"
-            >
-              <span className="truncate">{product.collection}</span>
-            </Badge>
-            {discountPercent ? (
-              <Badge className="font-semibold" dir="ltr" variant="default">
-                -{discountPercent}%
-              </Badge>
-            ) : !isAvailable ? (
-              <Badge variant="destructive">לא זמין</Badge>
-            ) : null}
-          </div>
+          {discountPercent || !isAvailable ? (
+            <div className="absolute top-2.5 left-2.5 flex items-start gap-2">
+              {discountPercent ? (
+                <Badge className="font-semibold" dir="ltr" variant="default">
+                  -{discountPercent}%
+                </Badge>
+              ) : !isAvailable ? (
+                <Badge variant="destructive">לא זמין</Badge>
+              ) : null}
+            </div>
+          ) : null}
         </div>
       </Link>
       <CardContent className="flex min-h-52 flex-1 flex-col gap-3 p-3.5 sm:p-4">

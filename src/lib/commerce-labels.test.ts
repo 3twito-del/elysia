@@ -9,6 +9,7 @@ import {
   getOrderStatusLabel,
   getPaymentStatusLabel,
   getProductAvailabilityLabel,
+  getPublicStockStatusLabel,
   getProductStatusLabel,
   getReturnStatusLabel,
   getShipmentStatusLabel,
@@ -34,8 +35,10 @@ describe("commerce labels", () => {
     expect(getFulfillmentMethodLabel("PICKUP")).toBe("אונליין");
     expect(getFulfillmentMethodLabel("DELIVERY")).toBe("משלוח");
     expect(getProductAvailabilityLabel(0)).toBe("בדיקת זמינות");
-    expect(getProductAvailabilityLabel(1)).toBe("זמין אונליין");
-    expect(getProductAvailabilityLabel(3)).toBe("זמין אונליין");
+    expect(getProductAvailabilityLabel(1)).toBe("זמין להזמנה");
+    expect(getProductAvailabilityLabel(3)).toBe("זמין להזמנה");
+    expect(getPublicStockStatusLabel(0)).toBe("אזל זמנית");
+    expect(getPublicStockStatusLabel(4)).toBe("זמין להזמנה");
     expect(getStockQuantityLabel(0)).toBe("לא זמין");
     expect(getStockQuantityLabel(4)).toBe("4 במלאי");
     expect(getItemCountLabel(1)).toBe("מוצר אחד");

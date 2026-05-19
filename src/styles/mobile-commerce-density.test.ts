@@ -7,9 +7,9 @@ describe("mobile commerce density", () => {
   it("keeps the home mobile hero shorter so quick search is visible sooner", () => {
     const source = read("src/app/page.tsx");
 
-    expect(source).toContain("[--home-hero-height:clamp(22rem,58svh,29rem)]");
+    expect(source).toContain("[--home-hero-height:clamp(20rem,54svh,28rem)]");
     expect(source).toContain(
-      "sm:[--home-hero-height:clamp(29rem,calc(76svh-4rem),38rem)]",
+      "sm:[--home-hero-height:clamp(30rem,calc(66svh-4rem),34rem)]",
     );
     expect(countOccurrences(source, "min-h-[var(--home-hero-height)]")).toBe(4);
     expect(indexOf(source, 'id="quick-search"')).toBeLessThan(
@@ -22,6 +22,7 @@ describe("mobile commerce density", () => {
 
   it("hides catalog hero media and metrics on mobile before filters or search controls", () => {
     const css = read("src/styles/globals.css");
+    const hero = read("src/components/commerce-page-hero.tsx");
 
     expect(css).toMatch(
       /@media \(max-width: 767px\)[\s\S]*commerce-page-hero\[data-commerce-hero="catalog"\] \.commerce-page-hero-inner[\s\S]*min-height: auto;/,
@@ -29,6 +30,24 @@ describe("mobile commerce density", () => {
     expect(css).toMatch(
       /commerce-page-hero\[data-commerce-hero="catalog"\] \.commerce-page-hero-aside,[\s\S]*commerce-page-hero\[data-commerce-hero="catalog"\] \.commerce-page-hero-media,[\s\S]*commerce-page-hero\[data-commerce-hero="catalog"\]\s+\.commerce-page-hero-metrics \{[\s\S]*display: none;/,
     );
+    expect(hero).toContain(
+      "data-commerce-density={density ?? densityByHeroVariant[variant]}",
+    );
+    expect(hero).toContain(
+      "data-route-intent={intent ?? intentByHeroVariant[variant]}",
+    );
+  });
+
+  it("keeps non-home commerce heroes compact on desktop", () => {
+    const css = read("src/styles/globals.css");
+
+    expect(css).toMatch(
+      /commerce-page-hero\[data-commerce-hero="catalog"\] \.commerce-page-hero-inner \{[\s\S]*min-height: auto;/,
+    );
+    expect(css).toContain(
+      'commerce-page-hero[data-commerce-hero="catalog"][data-has-aside="true"]',
+    );
+    expect(css).toContain("minmax(16rem, 28%)");
   });
 
   it("keeps product and result sections tighter on mobile", () => {

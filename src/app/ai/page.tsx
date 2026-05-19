@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Gift, MessageSquare, Sparkles } from "lucide-react";
 
 import { DeferredAiGiftPanel } from "./_components/deferred-ai-gift-panel";
@@ -7,9 +6,7 @@ import { CommercePageHero } from "~/components/commerce-page-hero";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
-import { Button } from "~/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { cinematicRouteMedia } from "~/lib/brand-media";
 
 export const metadata = {
   title: "כלי AI",
@@ -31,29 +28,9 @@ export default async function AiPage({ searchParams }: AiPageProps) {
     <main className="min-h-screen">
       <SiteHeader />
       <CommercePageHero
-        actions={
-          <>
-            <Button asChild>
-              <Link href="#ai-stylist">סטייליסט AI</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="#ai-gifts">שאלון מתנה</Link>
-            </Button>
-          </>
-        }
         description="כלי AI מחוברים לקטלוג Aphrodite ומציגים פריטים זמינים לפי כוונה, תקציב וסגנון."
         eyebrow="Aphrodite AI"
         id="page-hero"
-        media={{
-          alt: "Aphrodite AI",
-          priority: true,
-          slides: cinematicRouteMedia.ai,
-        }}
-        metrics={[
-          { label: "כלים", value: "2" },
-          { label: "קטלוג", value: "חי" },
-          { label: "התאמה", value: "אישית" },
-        ]}
         title="התאמה חכמה לתכשיט"
         variant="content"
       />

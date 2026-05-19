@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import {
   Clock3,
   Mail,
@@ -17,9 +16,7 @@ import { CommercePageHero } from "~/components/commerce-page-hero";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
-import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-import { cinematicRouteMedia } from "~/lib/brand-media";
 import { getPublicServiceProfile } from "~/server/services/service";
 
 export const metadata: Metadata = {
@@ -62,28 +59,8 @@ export default async function ServicePage() {
       <SiteHeader />
 
       <CommercePageHero
-        actions={
-          <>
-            <Button asChild>
-              <Link href="#service-form">פתיחת פנייה</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <a href={phoneHref}>{profile.settings.displayPhone}</a>
-            </Button>
-          </>
-        }
         description="שירות Aphrodite פועל אונליין ובטלפון בלבד: הזמנות, תיקונים, התאמת מידה, החזרות, נגישות ופרטיות מטופלים במקום אחד."
         eyebrow="Aphrodite Service"
-        media={{
-          alt: "Aphrodite service",
-          priority: true,
-          slides: cinematicRouteMedia.service,
-        }}
-        metrics={[
-          { label: "שירות", value: "אונליין" },
-          { label: "טלפון", value: profile.settings.displayPhone },
-          { label: "פניות", value: "24/7" },
-        ]}
         title="שירות לקוחות"
         variant="content"
       />

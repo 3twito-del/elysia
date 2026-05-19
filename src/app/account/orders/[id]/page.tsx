@@ -10,7 +10,6 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
 import { StatusMessage } from "~/components/ui/status-message";
-import { cinematicRouteMedia } from "~/lib/brand-media";
 import {
   getOrderStatusLabel,
   getPaymentStatusLabel,
@@ -67,28 +66,8 @@ export default async function OrderDetailPage({
     <main>
       <SiteHeader />
       <CommercePageHero
-        actions={
-          <>
-            <Button asChild>
-              <Link href="#order-items">פריטי ההזמנה</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="#order-support">משלוח והחזרות</Link>
-            </Button>
-          </>
-        }
         description={`${order.recipientName} · ${order.email}`}
         eyebrow="Aphrodite Service"
-        media={{
-          alt: "Aphrodite order service",
-          priority: true,
-          slides: cinematicRouteMedia.service,
-        }}
-        metrics={[
-          { label: "סטטוס", value: getOrderStatusLabel(order.status) },
-          { label: "סכום", value: formatPrice(Number(order.total)) },
-          { label: "פריטים", value: String(order.items.length) },
-        ]}
         title={order.orderNumber}
         variant="checkout"
       />

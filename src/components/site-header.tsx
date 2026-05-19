@@ -21,7 +21,6 @@ const navItems: HeaderNavItem[] = [
   { href: "/category/bracelets", label: "צמידים" },
   { href: "/gifts", label: "מתנות" },
   { href: "/about", label: "אודות" },
-  { href: "/ai", label: "ייעוץ אישי" },
   { href: "/service", label: "שירות" },
 ];
 const categoryNavHrefs = navItems

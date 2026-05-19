@@ -28,6 +28,20 @@ describe("product-led media guardrails", () => {
 
     expect(brandAssetViolations).toEqual([]);
   });
+
+  it("keeps catalog and seed image pools local and category-specific", () => {
+    const catalog = read("src/server/services/catalog.ts");
+    const seed = read("prisma/seed-catalog.ts");
+
+    expect(catalog).toContain(
+      'export const DEFAULT_CATALOG_IMAGE = "/brand/v2/commerce-catalog.avif";',
+    );
+    expect(seed).not.toContain("images.unsplash.com");
+    for (const category of ["rings", "earrings", "necklaces", "bracelets"]) {
+      expect(catalog).toContain(`/brand/v2/category-${category}.avif`);
+      expect(seed).toContain(`/brand/v2/category-${category}.avif`);
+    }
+  });
 });
 
 function read(relativePath: string) {

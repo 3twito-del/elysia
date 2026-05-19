@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Filter, Gem, SlidersHorizontal, Sparkles, X } from "lucide-react";
+import { Filter, Gem, SlidersHorizontal, X } from "lucide-react";
 
 import { CategoryFilterSheet } from "./_components/category-filter-sheet";
 import { DeferredCategoryFilterPanel } from "./_components/deferred-category-filter-panel";
@@ -36,7 +36,6 @@ import {
   getCatalogFacetsFromProducts,
   listCatalogProductsCachedRequest,
 } from "~/server/services/catalog";
-import { getCategoryBrandSlides } from "~/lib/brand-media";
 
 type CategoryRouteProps = {
   params: Promise<{ slug: string }>;
@@ -152,35 +151,12 @@ export default async function CategoryPage({
       <SiteHeader />
 
       <CommercePageHero
-        actions={
-          <>
-            <Button asChild>
-              <Link href="#category-products">לצפייה במוצרים</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="#category-filters">סינון מדויק</Link>
-            </Button>
-          </>
-        }
         description={
           category.description ??
           "בחירה מסוננת מתוך קטלוג התכשיטים, עם רכישה אונליין ומחירים בשקלים."
         }
         eyebrow="קטלוג Aphrodite"
         id="page-hero"
-        media={{
-          alt: category.name,
-          priority: true,
-          slides: getCategoryBrandSlides(slug),
-        }}
-        metrics={[
-          {
-            label: "מוצרים מוצגים",
-            value: `${filteredProducts.length}/${baseProducts.length}`,
-          },
-          { label: "אונליין", value: "זמין" },
-          { label: "מיון", value: currentSortLabel },
-        ]}
         title={category.name}
         variant="catalog"
       />
@@ -314,12 +290,6 @@ export default async function CategoryPage({
                     </Link>
                   </Button>
                 )}
-                <Button asChild size="sm" variant="outline">
-                  <Link href="/ai">
-                    <Sparkles aria-hidden="true" className="size-3.5" />
-                    התאמה אישית
-                  </Link>
-                </Button>
               </div>
             </div>
             {activeFilters.length > 0 && (
@@ -401,12 +371,9 @@ function CategoryEmptyState({
             <Button asChild variant="outline">
               <Link href="/search">חיפוש בכל הקטלוג</Link>
             </Button>
-            <Button asChild>
-              <Link href="/ai">התאמה אישית</Link>
-            </Button>
           </>
         }
-        description="הקטגוריה קיימת, אבל אין בה כרגע פריטים פעילים. אפשר לעבור לחיפוש הרחב או לקבל המלצה מתוך קטגוריות זמינות."
+        description="הקטגוריה קיימת, אבל אין בה כרגע פריטים פעילים. אפשר לעבור לחיפוש הרחב או לפתוח קטגוריה זמינה אחרת."
         icon={Gem}
         testId="category-empty-state"
         title="הקטגוריה מתעדכנת"
@@ -428,12 +395,9 @@ function CategoryEmptyState({
           <Button asChild variant="outline">
             <Link href="/search">חיפוש בכל הקטלוג</Link>
           </Button>
-          <Button asChild>
-            <Link href="/ai">התאמה אישית</Link>
-          </Button>
         </>
       }
-      description="אפשר לנקות את הבחירה, להרחיב את החיפוש, או לתת לסטייליסט למצוא עבורך שילוב קרוב מתוך הקטלוג."
+      description="אפשר לנקות את הבחירה או להרחיב את החיפוש בכל הקטלוג."
       icon={Gem}
       testId="category-empty-state"
       title="לא נמצאו מוצרים בהתאמה הזו"

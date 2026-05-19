@@ -6,7 +6,6 @@ import {
   Search,
   Share2,
   ShieldCheck,
-  Sparkles,
 } from "lucide-react";
 
 import { NewsletterForm } from "~/components/newsletter-form";
@@ -19,7 +18,6 @@ const serviceLinks = [
   { href: "/search", label: "חיפוש בקטלוג", icon: Search },
   { href: "/checkout", label: "סל וקופה", icon: ShieldCheck },
   { href: "/account", label: "אזור לקוח", icon: Gem },
-  { href: "/ai", label: "סטייליסט AI", icon: Sparkles },
   { href: "/faq", label: "שאלות ותשובות", icon: CircleHelp },
   { href: "/service", label: "שירות לקוחות", icon: CircleHelp },
 ];
@@ -48,16 +46,10 @@ export async function SiteFooter() {
             </Link>
             <p className="text-muted-foreground mt-3 max-w-md text-sm leading-6">
               רשת תכשיטי סטודיו ישראלית במיצוב יוקרה נגישה, עם קטלוג אונליין,
-              רכישה מאובטחת וייעוץ אישי לבחירת תכשיט או מתנה.
+              רכישה מאובטחת ושירות אישי לבחירת תכשיט או מתנה.
             </p>
             <NewsletterForm />
             <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-              <Button asChild variant="secondary">
-                <Link href="/ai">
-                  ייעוץ אישי
-                  <Sparkles aria-hidden="true" className="size-4" />
-                </Link>
-              </Button>
               <Button asChild variant="outline">
                 <Link href="/search">
                   חיפוש בקטלוג

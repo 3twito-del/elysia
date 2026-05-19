@@ -1,12 +1,9 @@
 import Link from "next/link";
 
 import { CommercePageHero } from "~/components/commerce-page-hero";
-import { CommerceSectionHeader } from "~/components/commerce-section-header";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
-import { Button } from "~/components/ui/button";
-import { cinematicRouteMedia } from "~/lib/brand-media";
 import {
   getFeaturedCatalogProducts,
   searchCatalogProducts,
@@ -27,48 +24,38 @@ export default async function GiftsPage() {
     <main>
       <SiteHeader />
       <CommercePageHero
-        actions={
-          <>
-            <Button asChild>
-              <Link href="#gift-products">למתנות</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="/ai?tool=gifts">שאלון מתנה</Link>
-            </Button>
-          </>
-        }
         description="בחירות קלות לקנייה עם אריזת מתנה, ברכה אישית והתאמה לפי תקציב."
         eyebrow="Aphrodite Gifts"
         id="page-hero"
-        media={{
-          alt: "Aphrodite gifts",
-          priority: true,
-          slides: cinematicRouteMedia.gifts,
-        }}
-        metrics={[
-          { label: "בחירות", value: String(products.length) },
-          { label: "ייעוץ", value: "AI" },
-          { label: "אריזה", value: "מתנה" },
-        ]}
         title="מתנות תכשיטים"
-        variant="content"
+        variant="catalog"
       />
-      <RevealSection
-        className="mx-auto max-w-7xl px-4 py-12 sm:px-6"
-        id="gift-products"
-      >
-        <CommerceSectionHeader
-          action={
-            <Button asChild variant="secondary">
-              <Link href="/ai?tool=gifts">שאלון מתנה חכם</Link>
-            </Button>
-          }
-          description="פריטים שמתאימים למתנה, עם מסלול קצר לשאלון AI כשצריך דיוק נוסף."
-          id="gift-advisor"
-          title="בחירות זמינות עכשיו"
-        />
+      <RevealSection className="mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-6">
+        <section
+          aria-labelledby="gift-results"
+          className="brand-control-panel rounded-md p-3.5 sm:p-4"
+          data-testid="gift-results-summary"
+        >
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-base font-medium" id="gift-results">
+                בחירות זמינות עכשיו
+              </h2>
+              <p className="text-muted-foreground text-sm">
+                {products.length} פריטים שמתאימים למתנה
+              </p>
+            </div>
+            <Link
+              className="text-muted-foreground hover:text-foreground text-sm font-medium underline-offset-4 hover:underline"
+              href="/search?q=%D7%9E%D7%AA%D7%A0%D7%94"
+            >
+              חיפוש מתנה מדויק
+            </Link>
+          </div>
+        </section>
         <RevealGrid
-          className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+          className="mt-5 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4"
+          data-testid="gift-results-grid"
           variant="cards"
         >
           {products.map((product, index) => (

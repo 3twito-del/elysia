@@ -14,7 +14,6 @@ import { CookiePreferencesPanel } from "~/components/cookie-preferences-panel";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
-import { cinematicRouteMedia } from "~/lib/brand-media";
 import { Separator } from "~/components/ui/separator";
 import { getPublicContactSettings } from "~/server/services/service";
 
@@ -81,28 +80,8 @@ export default async function PrivacyPage() {
       <SiteHeader />
 
       <CommercePageHero
-        actions={
-          <>
-            <Button asChild>
-              <Link href="#privacy-section-1">עיקרי המדיניות</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="#privacy-contact">פנייה בנושא פרטיות</Link>
-            </Button>
-          </>
-        }
         description="כיצד אנחנו אוספים, משתמשים, שומרים ומגנים על מידע אישי במסגרת האתר והשירותים."
         eyebrow="Aphrodite Policy"
-        media={{
-          alt: "Aphrodite privacy",
-          priority: true,
-          slides: cinematicRouteMedia.legal,
-        }}
-        metrics={[
-          { label: "עדכון", value: "2026" },
-          { label: "זכויות", value: "עיון ותיקון" },
-          { label: "קוקיז", value: "בשליטה" },
-        ]}
         title="מדיניות פרטיות"
         variant="content"
       />

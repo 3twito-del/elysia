@@ -3,15 +3,15 @@ import type { CinematicHeroSlide } from "~/components/cinematic-hero-sequence";
 export const brandHeroSlides = [
   {
     alt: "טבעות יהלום על משטח סטודיו בגוון אקווה",
-    src: "/brand/aphrodite-aqua-hero-rings.avif",
+    src: "/brand/v2/hero-rings.avif",
   },
   {
     alt: "תכשיטי פנינה על זכוכית טורקיז",
-    src: "/brand/aphrodite-aqua-hero-pearls.avif",
+    src: "/brand/v2/hero-pearls.avif",
   },
   {
     alt: "תכשיטי יהלום וזכוכית בתאורת סטודיו אקווה",
-    src: "/brand/aphrodite-aqua-hero-glass.avif",
+    src: "/brand/v2/hero-glass.avif",
   },
 ] satisfies CinematicHeroSlide[];
 
@@ -19,103 +19,103 @@ export const cinematicRouteMedia = {
   accessibility: [
     {
       alt: "סצנת תכשיטי פנינה רכה למידע נגישות",
-      src: "/brand/cinematic/cinematic-editorial.avif",
+      src: "/brand/v2/content-editorial.avif",
     },
     {
       alt: "זכוכית אקווה ותכשיטי פנינה בעיצוב שקט",
-      src: "/brand/cinematic/cinematic-policy.avif",
+      src: "/brand/v2/content-policy.avif",
     },
   ],
   account: [
     {
       alt: "מגש שירות תכשיטים עם פנינים וזכוכית אקווה לאזור לקוח",
-      src: "/brand/cinematic/cinematic-service-v2.avif",
+      src: "/brand/v2/service-task.avif",
     },
     brandHeroSlides[2]!,
   ],
   ai: [
     {
       alt: "תכשיטים על מגש זכוכית אקווה להתאמה אישית",
-      src: "/brand/cinematic/cinematic-catalog-v2.avif",
+      src: "/brand/v2/commerce-catalog.avif",
     },
     brandHeroSlides[2]!,
   ],
   about: [
     {
       alt: "סצנת תכשיטים עריכתית בגוון Aphrodite Aqua",
-      src: "/brand/cinematic/cinematic-editorial.avif",
+      src: "/brand/v2/content-editorial.avif",
     },
     brandHeroSlides[1]!,
   ],
   checkout: [
     {
       alt: "מגש אריזה ושירות לקופה ומשלוח תכשיטים",
-      src: "/brand/cinematic/cinematic-service-v2.avif",
+      src: "/brand/v2/service-task.avif",
     },
     brandHeroSlides[2]!,
   ],
   faq: [
     {
       alt: "סצנת מידע רכה עם זכוכית אקווה ופנינים",
-      src: "/brand/cinematic/cinematic-policy.avif",
+      src: "/brand/v2/content-policy.avif",
     },
     {
       alt: "סצנת תכשיטים עריכתית בגוון Aphrodite Aqua",
-      src: "/brand/cinematic/cinematic-editorial.avif",
+      src: "/brand/v2/content-editorial.avif",
     },
   ],
   gifts: [
     {
       alt: "תכשיטי מתנה על מגש זכוכית אקווה ומשטח אבן כהה",
-      src: "/brand/cinematic/cinematic-catalog-v2.avif",
+      src: "/brand/v2/commerce-gifts.avif",
     },
     brandHeroSlides[1]!,
   ],
   home: [
     {
       alt: "סצנת תכשיטי יוקרה בתאורת סטודיו אקווה",
-      src: "/brand/cinematic/cinematic-home.avif",
+      src: "/brand/v2/editorial-home.avif",
     },
     ...brandHeroSlides,
   ],
   legal: [
     {
       alt: "סצנת שירות ומדיניות בתאורת אקווה רכה",
-      src: "/brand/cinematic/cinematic-policy.avif",
+      src: "/brand/v2/content-policy.avif",
     },
     {
       alt: "סצנת תכשיטים עריכתית בגוון Aphrodite Aqua",
-      src: "/brand/cinematic/cinematic-editorial.avif",
+      src: "/brand/v2/content-editorial.avif",
     },
   ],
   product: [
     {
       alt: "טבעת זהב ויהלומים על קטיפה כהה עם קצה זכוכית אקווה",
-      src: "/brand/cinematic/cinematic-product-v2.avif",
+      src: "/brand/v2/product-focus.avif",
     },
     brandHeroSlides[0]!,
   ],
   search: [
     {
       alt: "קטלוג תכשיטים על אבן שחורה וזכוכית אקווה",
-      src: "/brand/cinematic/cinematic-catalog-v2.avif",
+      src: "/brand/v2/commerce-search.avif",
     },
     {
       alt: "טבעות ויהלומים בסצנת קטגוריה קולנועית",
-      src: "/brand/cinematic/cinematic-category-rings.avif",
+      src: "/brand/v2/category-rings.avif",
     },
   ],
   service: [
     {
       alt: "מגש שירות לקוחות עם אריזת תכשיטים ופנינים",
-      src: "/brand/cinematic/cinematic-service-v2.avif",
+      src: "/brand/v2/service-task.avif",
     },
     brandHeroSlides[2]!,
   ],
   stylist: [
     {
       alt: "קטלוג תכשיטים כהה להתאמת סטייליסט אישית",
-      src: "/brand/cinematic/cinematic-catalog-v2.avif",
+      src: "/brand/v2/commerce-catalog.avif",
     },
     brandHeroSlides[2]!,
   ],
@@ -134,28 +134,28 @@ const categorySlides = {
   bracelets: [
     {
       alt: "צמידים וצמידי טניס על זכוכית אקווה",
-      src: "/brand/cinematic/cinematic-catalog-v2.avif",
+      src: "/brand/v2/category-bracelets.avif",
     },
     brandHeroSlides[2]!,
   ],
   earrings: [
     {
       alt: "עגילי פנינה ויהלום על מגש זכוכית אקווה",
-      src: "/brand/cinematic/cinematic-service-v2.avif",
+      src: "/brand/v2/category-earrings.avif",
     },
     brandHeroSlides[1]!,
   ],
   necklaces: [
     {
       alt: "שרשראות ופנינים על אבן כהה וזכוכית אקווה",
-      src: "/brand/cinematic/cinematic-catalog-v2.avif",
+      src: "/brand/v2/category-necklaces.avif",
     },
     brandHeroSlides[1]!,
   ],
   rings: [
     {
       alt: "טבעת זהב ויהלומים בתאורת אקווה כהה",
-      src: "/brand/cinematic/cinematic-product-v2.avif",
+      src: "/brand/v2/category-rings.avif",
     },
     brandHeroSlides[0]!,
   ],

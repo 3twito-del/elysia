@@ -8,7 +8,6 @@ import {
   Menu,
   Search,
   ShoppingBag,
-  Sparkles,
   UserRound,
 } from "lucide-react";
 
@@ -41,7 +40,6 @@ const quickActions = [
 
 const serviceActions = [
   { href: "/service", label: "שירות", icon: CircleHelp },
-  { href: "/ai", label: "ייעוץ אישי", icon: Sparkles },
   { href: "/faq", label: "שאלות", icon: CircleHelp },
 ] as const;
 

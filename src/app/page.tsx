@@ -2,11 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowLeft,
-  CalendarCheck,
   Gem,
   Search,
-  ShieldCheck,
-  Sparkles,
 } from "lucide-react";
 
 import {
@@ -15,7 +12,6 @@ import {
 } from "~/components/cinematic-hero-sequence";
 import { CommerceSectionHeader } from "~/components/commerce-section-header";
 import { KineticImageMotion } from "~/components/kinetic-image-motion";
-import { MetricCard } from "~/components/metric-card";
 import { MotionMediaFrame } from "~/components/motion-media-frame";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
@@ -31,15 +27,15 @@ import {
 const heroSlides = [
   {
     alt: "טבעות יהלומים על משטח סטודיו בגוון Aphrodite Aqua",
-    src: "/brand/aphrodite-aqua-hero-rings.avif",
+    src: "/brand/v2/hero-rings.avif",
   },
   {
     alt: "עגילי פנינה ושרשרת על זכוכית בגוון טורקיז יוקרתי",
-    src: "/brand/aphrodite-aqua-hero-pearls.avif",
+    src: "/brand/v2/hero-pearls.avif",
   },
   {
     alt: "צמידים ותליון יהלום בתאורת סטודיו טורקיז ופנינה",
-    src: "/brand/aphrodite-aqua-hero-glass.avif",
+    src: "/brand/v2/hero-glass.avif",
   },
 ] satisfies CinematicHeroSlide[];
 
@@ -64,7 +60,7 @@ export default async function Home() {
       <SiteHeader />
 
       <RevealSection
-        className="relative isolate min-h-[var(--home-hero-height)] w-screen max-w-none overflow-hidden bg-[var(--brand-aqua-deep)] [--hero-edge:clamp(1rem,4vw,5rem)] [--home-hero-height:clamp(22rem,58svh,29rem)] sm:[--home-hero-height:clamp(29rem,calc(76svh-4rem),38rem)] lg:[--hero-edge:clamp(3rem,4vw,5rem)]"
+        className="relative isolate min-h-[var(--home-hero-height)] w-screen max-w-none overflow-hidden bg-[var(--brand-aqua-deep)] [--hero-edge:clamp(1rem,4vw,5rem)] [--home-hero-height:clamp(20rem,54svh,28rem)] sm:[--home-hero-height:clamp(30rem,calc(66svh-4rem),34rem)] lg:[--hero-edge:clamp(3rem,4vw,5rem)]"
         data-testid="cinematic-page-hero"
         id="page-hero"
         initialVisible
@@ -101,7 +97,7 @@ export default async function Home() {
               Aphrodite
             </h1>
             <p className="motion-copy-item mt-4 max-w-xl text-base leading-7 text-white/90 [--motion-copy-delay:90ms] sm:mt-5 sm:text-[1.05rem] sm:leading-8">
-              תכשיטים ישראליים בקו סטודיו מודרני, עם קטלוג אונליין וייעוץ אישי
+              תכשיטים ישראליים בקו סטודיו מודרני, עם קטלוג אונליין ושירות אישי
               לבחירה מדויקת.
             </p>
           </div>
@@ -129,7 +125,7 @@ export default async function Home() {
               size="lg"
               variant="outline"
             >
-              <Link href="/ai">ייעוץ אישי</Link>
+              <Link href="/service">שירות לקוחות</Link>
             </Button>
           </div>
         </div>
@@ -144,7 +140,7 @@ export default async function Home() {
           <form
             action="/search"
             aria-label="חיפוש בקטלוג"
-            className="brand-control-panel grid gap-2 p-2 sm:grid-cols-[1fr_auto]"
+            className="brand-control-panel grid gap-2 p-1.5 sm:grid-cols-[1fr_auto]"
             role="search"
           >
             <div className="relative">
@@ -247,41 +243,6 @@ export default async function Home() {
         </div>
       </RevealSection>
 
-      <RevealSection
-        className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-10"
-        id="service-metrics"
-      >
-        <RevealGrid className="grid gap-5 lg:grid-cols-4" variant="compact">
-          <MetricCard
-            detail="קטלוג מלא וזמין לרכישה מהבית"
-            icon={Gem}
-            label="אונליין"
-            variant="soft"
-            value="100%"
-          />
-          <MetricCard
-            detail="משלוח עד הבית והחזרות בתיאום"
-            icon={ShieldCheck}
-            label="שירות"
-            variant="soft"
-            value="מלא"
-          />
-          <MetricCard
-            detail="מתנות, אירועים ותקציב"
-            icon={Sparkles}
-            label="סטייליסט AI"
-            variant="soft"
-            value="פעיל"
-          />
-          <MetricCard
-            detail="התאמה, מידה וייעוץ אישי"
-            icon={CalendarCheck}
-            label="התאמה"
-            variant="soft"
-            value="בתיאום"
-          />
-        </RevealGrid>
-      </RevealSection>
     </main>
   );
 }

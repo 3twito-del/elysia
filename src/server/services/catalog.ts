@@ -14,33 +14,34 @@ const ACTIVE_PRODUCT_WHERE = {
   status: "ACTIVE",
 } satisfies Prisma.ProductWhereInput;
 const CATALOG_REVALIDATE_SECONDS = 60 * 60;
-export const DEFAULT_CATALOG_IMAGE =
-  "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80";
+export const DEFAULT_CATALOG_IMAGE = "/brand/v2/commerce-catalog.avif";
 const CATALOG_IMAGE_VARIANTS: Record<string, readonly string[]> = {
   rings: [
-    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=1400&q=80",
+    "/brand/v2/category-rings.avif",
+    "/brand/v2/product-focus.avif",
+    "/brand/v2/hero-rings.avif",
   ],
   necklaces: [
-    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=1400&q=80",
+    "/brand/v2/category-necklaces.avif",
+    "/brand/v2/hero-pearls.avif",
+    "/brand/v2/commerce-catalog.avif",
   ],
   earrings: [
-    "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=1400&q=80",
+    "/brand/v2/category-earrings.avif",
+    "/brand/v2/hero-pearls.avif",
+    "/brand/v2/service-task.avif",
   ],
   bracelets: [
-    "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1400&q=80",
+    "/brand/v2/category-bracelets.avif",
+    "/brand/v2/hero-glass.avif",
+    "/brand/v2/commerce-gifts.avif",
   ],
+};
+const CATEGORY_CATALOG_IMAGES: Record<string, string> = {
+  bracelets: "/brand/v2/category-bracelets.avif",
+  earrings: "/brand/v2/category-earrings.avif",
+  necklaces: "/brand/v2/category-necklaces.avif",
+  rings: "/brand/v2/category-rings.avif",
 };
 
 type CatalogProductRecord = Prisma.ProductGetPayload<{
@@ -575,19 +576,26 @@ function getDisplayImages(input: {
   images: string[];
   slug: string;
 }) {
-  if (!input.slug.startsWith("test-") || input.images.length !== 1) {
+  const usesLegacyCatalogMedia =
+    input.images.length === 0 || input.images.every(isLegacyCatalogImage);
+
+  if (!input.slug.startsWith("test-") && !usesLegacyCatalogMedia) {
     return input.images;
   }
 
   const variants = CATALOG_IMAGE_VARIANTS[input.categorySlug];
 
   if (!variants || variants.length === 0) {
-    return input.images;
+    return input.images.length > 0 ? input.images : [DEFAULT_CATALOG_IMAGE];
   }
 
   const variant = variants[getStableIndex(input.slug, variants.length)];
 
   return variant ? [variant] : input.images;
+}
+
+function isLegacyCatalogImage(image: string) {
+  return image.startsWith("https://images.unsplash.com/");
 }
 
 function getStableIndex(value: string, length: number) {
@@ -653,6 +661,7 @@ function mapCatalogCategory(category: {
   }>;
 }): CatalogCategory {
   const image =
+    CATEGORY_CATALOG_IMAGES[category.slug] ??
     category.imageUrl ??
     category.products[0]?.media[0]?.url ??
     DEFAULT_CATALOG_IMAGE;

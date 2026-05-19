@@ -92,7 +92,11 @@ export function getFulfillmentMethodLabel(method: string) {
 export function getProductAvailabilityLabel(availableQuantity: number) {
   if (availableQuantity === 0) return "בדיקת זמינות";
 
-  return "זמין אונליין";
+  return "זמין להזמנה";
+}
+
+export function getPublicStockStatusLabel(quantity: number) {
+  return quantity > 0 ? "זמין להזמנה" : "אזל זמנית";
 }
 
 export function getStockQuantityLabel(quantity: number) {

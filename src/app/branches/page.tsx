@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { MapPin, Phone, ShieldCheck } from "lucide-react";
 import { redirect } from "next/navigation";
 
@@ -7,8 +6,6 @@ import { CommercePageHero } from "~/components/commerce-page-hero";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
-import { Button } from "~/components/ui/button";
-import { cinematicRouteMedia } from "~/lib/brand-media";
 import { getPublicServiceProfile } from "~/server/services/service";
 
 export const metadata: Metadata = {
@@ -33,28 +30,8 @@ export default async function BranchesPage() {
     <main>
       <SiteHeader />
       <CommercePageHero
-        actions={
-          <>
-            <Button asChild>
-              <Link href="#branches-list">צפייה בסניפים</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="/service">שירות לקוחות</Link>
-            </Button>
-          </>
-        }
         description="מיקומי שירות מאושרים של Aphrodite, כולל פרטי קשר, שעות ותיאום לפני הגעה."
         eyebrow="Aphrodite Locations"
-        media={{
-          alt: "Aphrodite service locations",
-          priority: true,
-          slides: cinematicRouteMedia.service,
-        }}
-        metrics={[
-          { label: "מיקומים", value: String(profile.branches.length) },
-          { label: "שירות", value: "בתיאום" },
-          { label: "טלפון", value: profile.settings.displayPhone },
-        ]}
         title="סניפים ושירות"
         variant="content"
       />

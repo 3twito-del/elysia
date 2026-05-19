@@ -39,14 +39,15 @@ describe("commerce service trust placement", () => {
     );
   });
 
-  it("keeps checkout trust details in the summary before the save action", () => {
+  it("keeps checkout task content first and trust details before the save action", () => {
     const checkoutPage = read("src/app/checkout/page.tsx");
     const checkoutForm = read(
       "src/app/checkout/_components/cart-checkout-form.tsx",
     );
 
-    expect(checkoutPage).toContain('href="#checkout-service"');
+    expect(checkoutPage).not.toContain('href="#checkout-service"');
     expect(checkoutPage).toContain('<div id="checkout-service" />');
+    expect(checkoutPage).toContain("<CartCheckoutForm />");
     expect(checkoutForm).toContain("const checkoutTrustItems");
     expect(checkoutForm).toContain("checkoutTrustItems.map");
     expect(indexOf(checkoutForm, "checkoutTrustItems.map")).toBeLessThan(
@@ -57,7 +58,7 @@ describe("commerce service trust placement", () => {
   it("keeps the service route action-led and connected to customer support", () => {
     const servicePage = read("src/app/service/page.tsx");
 
-    expect(servicePage).toContain('href="#service-form"');
+    expect(servicePage).not.toContain('href="#service-form"');
     expect(servicePage).toContain("href={phoneHref}");
     expect(servicePage).toContain("const serviceTracks");
     expect(servicePage).toContain(

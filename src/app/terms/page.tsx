@@ -13,7 +13,6 @@ import { CommercePageHero } from "~/components/commerce-page-hero";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
-import { cinematicRouteMedia } from "~/lib/brand-media";
 import { Separator } from "~/components/ui/separator";
 import { getPublicContactSettings } from "~/server/services/service";
 
@@ -68,28 +67,8 @@ export default async function TermsPage() {
       <SiteHeader />
 
       <CommercePageHero
-        actions={
-          <>
-            <Button asChild>
-              <Link href="#terms-section-1">לתקנון</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="#terms-contact">פנייה לשירות</Link>
-            </Button>
-          </>
-        }
         description="תנאי השימוש באתר Aphrodite, כולל הזמנות, תשלום, משלוחים, ביטולים ושירות לקוחות."
         eyebrow="Aphrodite Legal"
-        media={{
-          alt: "Aphrodite legal",
-          priority: true,
-          slides: cinematicRouteMedia.legal,
-        }}
-        metrics={[
-          { label: "שימוש", value: "ברור" },
-          { label: "תשלום", value: "מאובטח" },
-          { label: "שירות", value: "זמין" },
-        ]}
         title="תקנון האתר"
         variant="content"
       />

@@ -8,7 +8,6 @@ import {
   Phone,
   Ruler,
   Search,
-  Sparkles,
   Truck,
 } from "lucide-react";
 
@@ -17,13 +16,12 @@ import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-import { cinematicRouteMedia } from "~/lib/brand-media";
 import { getPublicContactSettings } from "~/server/services/service";
 
 export const metadata: Metadata = {
   title: "שאלות ותשובות",
   description:
-    "שאלות ותשובות על קנייה ב-Aphrodite, זמינות מוצרים, מידות, משלוחים, החזרות, מתנות וסטייליסט AI.",
+    "שאלות ותשובות על קנייה ב-Aphrodite, זמינות מוצרים, מידות, משלוחים, החזרות ומתנות.",
 };
 
 export const dynamic = "force-dynamic";
@@ -51,7 +49,7 @@ const faqGroups = [
     ],
   },
   {
-    title: "מידות, מתנות וייעוץ",
+    title: "מידות ומתנות",
     icon: Ruler,
     items: [
       {
@@ -62,7 +60,7 @@ const faqGroups = [
       {
         question: "האם אפשר לקבל המלצה למתנה?",
         answer:
-          "כן. אזור המתנות והסטייליסט AI מאפשרים לבחור לפי תקציב, אירוע, סגנון והעדפות. ההמלצות הן כלי עזר ואפשר לאמת אותן מול נציג לפני רכישה.",
+          "כן. אזור המתנות מאפשר לבחור לפי תקציב, אירוע, חומר וסגנון. אפשר לפנות לשירות הלקוחות כדי לאמת התאמה לפני רכישה.",
       },
       {
         question: "האם ניתן לצרף ברכה או אריזת מתנה?",
@@ -102,28 +100,8 @@ export default async function FaqPage() {
       <SiteHeader />
 
       <CommercePageHero
-        actions={
-          <>
-            <Button asChild>
-              <Link href="#faq-groups">לשאלות</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="#faq-contact">יצירת קשר</Link>
-            </Button>
-          </>
-        }
-        description="תשובות קצרות על קנייה באתר, זמינות אונליין, מידות, משלוחים, מתנות והמלצות AI."
+        description="תשובות קצרות על קנייה באתר, זמינות אונליין, מידות, משלוחים ומתנות."
         eyebrow="Aphrodite Help"
-        media={{
-          alt: "Aphrodite help",
-          priority: true,
-          slides: cinematicRouteMedia.faq,
-        }}
-        metrics={[
-          { label: "נושאים", value: String(faqGroups.length) },
-          { label: "שירות", value: "זמין" },
-          { label: "AI", value: "פעיל" },
-        ]}
         title="שאלות ותשובות"
         variant="content"
       />
@@ -132,7 +110,7 @@ export default async function FaqPage() {
         className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:py-14"
         id="faq-shortcuts"
       >
-        <div className="grid gap-6 sm:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2">
           <Link className="brand-surface interactive-lift p-5" href="/search">
             <Search className="size-5" aria-hidden="true" />
             <p className="mt-3 font-medium">חיפוש בקטלוג</p>
@@ -140,10 +118,6 @@ export default async function FaqPage() {
           <Link className="brand-surface interactive-lift p-5" href="/gifts">
             <Gift className="size-5" aria-hidden="true" />
             <p className="mt-3 font-medium">מתנות לפי תקציב</p>
-          </Link>
-          <Link className="brand-surface interactive-lift p-5" href="/ai">
-            <Sparkles className="size-5" aria-hidden="true" />
-            <p className="mt-3 font-medium">סטייליסט AI</p>
           </Link>
         </div>
 

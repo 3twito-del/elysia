@@ -251,12 +251,20 @@ export function PublicMotionProvider({
       }
 
       const guardSize = window.innerWidth < 640 ? 88 : 104;
-      const floatingGuardArea = {
-        bottom: window.innerHeight,
-        left: window.innerWidth - guardSize,
-        right: window.innerWidth,
-        top: window.innerHeight - guardSize,
-      };
+      const floatingGuardAreas = [
+        {
+          bottom: window.innerHeight,
+          left: 0,
+          right: guardSize,
+          top: window.innerHeight - guardSize,
+        },
+        {
+          bottom: window.innerHeight,
+          left: window.innerWidth - guardSize,
+          right: window.innerWidth,
+          top: window.innerHeight - guardSize,
+        },
+      ];
       const hasFloatingCollision = Array.from(
         document.querySelectorAll<HTMLElement>(floatingAvoidSelector),
       ).some((element) => {
@@ -264,11 +272,12 @@ export function PublicMotionProvider({
 
         const rect = element.getBoundingClientRect();
 
-        return (
-          rect.left < floatingGuardArea.right &&
-          rect.right > floatingGuardArea.left &&
-          rect.top < floatingGuardArea.bottom &&
-          rect.bottom > floatingGuardArea.top
+        return floatingGuardAreas.some(
+          (area) =>
+            rect.left < area.right &&
+            rect.right > area.left &&
+            rect.top < area.bottom &&
+            rect.bottom > area.top,
         );
       });
 

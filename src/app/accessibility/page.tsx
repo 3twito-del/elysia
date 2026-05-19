@@ -6,7 +6,6 @@ import { CommercePageHero } from "~/components/commerce-page-hero";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
-import { cinematicRouteMedia } from "~/lib/brand-media";
 import { Separator } from "~/components/ui/separator";
 import { getPublicContactSettings } from "~/server/services/service";
 
@@ -26,28 +25,8 @@ export default async function AccessibilityPage() {
       <SiteHeader />
 
       <CommercePageHero
-        actions={
-          <>
-            <Button asChild>
-              <Link href="#accessibility-standard">רמת נגישות</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="#accessibility-contact">פנייה בנושא נגישות</Link>
-            </Button>
-          </>
-        }
         description="אנחנו פועלים להנגיש את האתר והשירותים הדיגיטליים כך שיהיו זמינים, ברורים ונוחים לשימוש."
         eyebrow="Aphrodite Accessibility"
-        media={{
-          alt: "Aphrodite accessibility",
-          priority: true,
-          slides: cinematicRouteMedia.accessibility,
-        }}
-        metrics={[
-          { label: "תנועה", value: "ניתנת להפחתה" },
-          { label: "טקסט", value: "ניתן להגדלה" },
-          { label: "ניגודיות", value: "זמינה" },
-        ]}
         title="הצהרת נגישות"
         variant="content"
       />

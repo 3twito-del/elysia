@@ -1,12 +1,9 @@
-import Link from "next/link";
 import { Sparkles, WandSparkles } from "lucide-react";
 
 import { CommercePageHero } from "~/components/commerce-page-hero";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
-import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { cinematicRouteMedia } from "~/lib/brand-media";
 import { DeferredStylistChat } from "./_components/deferred-stylist-chat";
 
 export const metadata = {
@@ -18,29 +15,9 @@ export default function StylistPage() {
     <main>
       <SiteHeader />
       <CommercePageHero
-        actions={
-          <>
-            <Button asChild>
-              <Link href="#stylist-chat">להתחלת שיחה</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="/search">חיפוש קטלוג</Link>
-            </Button>
-          </>
-        }
         description="ייעוץ תכשיטים לפי סגנון, תקציב ואירוע, עם המלצות שנשארות בתוך קטלוג פעיל."
         eyebrow="Aphrodite Stylist"
         id="page-hero"
-        media={{
-          alt: "Aphrodite stylist",
-          priority: true,
-          slides: cinematicRouteMedia.stylist,
-        }}
-        metrics={[
-          { label: "התאמה", value: "AI" },
-          { label: "קטלוג", value: "זמין" },
-          { label: "סגנון", value: "אישי" },
-        ]}
         title="סטייליסט תכשיטים"
         variant="content"
       />

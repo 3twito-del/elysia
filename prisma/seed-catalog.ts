@@ -48,40 +48,35 @@ export const seedCollections = [
     slug: "studio-light",
     name: "אור סטודיו",
     description: "קולקציית בסיס נקייה עם קווים דקים וזהב חם.",
-    heroImageUrl:
-      "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1600&q=80",
+    heroImageUrl: "/brand/v2/commerce-catalog.avif",
     isFeatured: true,
   },
   {
     slug: "bridal-edit",
     name: "בחירת כלה",
     description: "בחירות מדויקות להצעות, חתונות וסטים חגיגיים.",
-    heroImageUrl:
-      "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1600&q=80",
+    heroImageUrl: "/brand/v2/category-rings.avif",
     isFeatured: true,
   },
   {
     slug: "daily-icons",
     name: "אייקונים יומיים",
     description: "תכשיטים קלים לשילוב יומיומי עם גימור נקי.",
-    heroImageUrl:
-      "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=1600&q=80",
+    heroImageUrl: "/brand/v2/hero-glass.avif",
     isFeatured: false,
   },
   {
     slug: "evening-glow",
     name: "זוהר ערב",
     description: "פריטים מבריקים לערב, אירועים ומתנות עם נוכחות.",
-    heroImageUrl:
-      "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=1600&q=80",
+    heroImageUrl: "/brand/v2/service-task.avif",
     isFeatured: false,
   },
   {
     slug: "gift-studio",
     name: "סטודיו מתנות",
     description: "בחירות מוכנות למתנות לפי תקציב, סגנון ואירוע.",
-    heroImageUrl:
-      "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=1600&q=80",
+    heroImageUrl: "/brand/v2/commerce-gifts.avif",
     isFeatured: false,
   },
 ] as const;
@@ -132,8 +127,7 @@ const manualProducts = [
     stoneSlug: "diamond",
     basePrice: "1290",
     collectionSlugs: ["studio-light", "bridal-edit"],
-    image:
-      "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1400&q=80",
+    image: "/brand/v2/category-rings.avif",
     tags: ["יוקרה נגישה", "סטודיו מודרני", "אירוסין", "מתנה"],
     variants: [
       {
@@ -172,8 +166,7 @@ const manualProducts = [
     stoneSlug: "pearl",
     basePrice: "690",
     collectionSlugs: ["studio-light"],
-    image:
-      "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1400&q=80",
+    image: "/brand/v2/category-earrings.avif",
     tags: ["יוקרה נגישה", "סטודיו מודרני", "פנינה", "מתנה"],
     variants: [
       {
@@ -201,8 +194,7 @@ const manualProducts = [
     stoneSlug: "diamond",
     basePrice: "980",
     collectionSlugs: ["studio-light"],
-    image:
-      "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1400&q=80",
+    image: "/brand/v2/category-necklaces.avif",
     tags: ["יוקרה נגישה", "סטודיו מודרני", "שכבות", "מתנה"],
     variants: [
       {
@@ -241,8 +233,7 @@ const manualProducts = [
     stoneSlug: null,
     basePrice: "840",
     collectionSlugs: ["studio-light"],
-    image:
-      "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=1400&q=80",
+    image: "/brand/v2/category-bracelets.avif",
     tags: ["יוקרה נגישה", "סטודיו מודרני", "יום יום", "שכבות"],
     variants: [
       {
@@ -290,8 +281,7 @@ const categoryBlueprints = {
     productKind: "טבעת",
     skuPrefix: "RG",
     generatedSlugPrefix: "ring",
-    image:
-      "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1400&q=80",
+    image: "/brand/v2/category-rings.avif",
     priceBase: 690,
     priceStep: 65,
     variantPriceStep: 45,
@@ -309,8 +299,7 @@ const categoryBlueprints = {
     productKind: "שרשרת",
     skuPrefix: "NK",
     generatedSlugPrefix: "necklace",
-    image:
-      "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1400&q=80",
+    image: "/brand/v2/category-necklaces.avif",
     priceBase: 620,
     priceStep: 55,
     variantPriceStep: 35,
@@ -328,8 +317,7 @@ const categoryBlueprints = {
     productKind: "עגילי",
     skuPrefix: "ER",
     generatedSlugPrefix: "earrings",
-    image:
-      "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1400&q=80",
+    image: "/brand/v2/category-earrings.avif",
     priceBase: 360,
     priceStep: 48,
     variantPriceStep: 30,
@@ -347,8 +335,7 @@ const categoryBlueprints = {
     productKind: "צמיד",
     skuPrefix: "BR",
     generatedSlugPrefix: "bracelet",
-    image:
-      "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=1400&q=80",
+    image: "/brand/v2/category-bracelets.avif",
     priceBase: 520,
     priceStep: 52,
     variantPriceStep: 40,
@@ -366,28 +353,24 @@ const categoryBlueprints = {
 
 const categoryImageVariants = {
   rings: [
-    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=1400&q=80",
+    "/brand/v2/category-rings.avif",
+    "/brand/v2/product-focus.avif",
+    "/brand/v2/hero-rings.avif",
   ],
   necklaces: [
-    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=1400&q=80",
+    "/brand/v2/category-necklaces.avif",
+    "/brand/v2/hero-pearls.avif",
+    "/brand/v2/commerce-catalog.avif",
   ],
   earrings: [
-    "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=1400&q=80",
+    "/brand/v2/category-earrings.avif",
+    "/brand/v2/hero-pearls.avif",
+    "/brand/v2/service-task.avif",
   ],
   bracelets: [
-    "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=80",
-    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1400&q=80",
+    "/brand/v2/category-bracelets.avif",
+    "/brand/v2/hero-glass.avif",
+    "/brand/v2/commerce-gifts.avif",
   ],
 } satisfies Record<SeedCategorySlug, readonly string[]>;
 

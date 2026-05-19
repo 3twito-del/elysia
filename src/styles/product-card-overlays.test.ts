@@ -7,8 +7,8 @@ describe("product card overlay budget", () => {
   it("keeps product image overlays limited to decision-critical badges", () => {
     const source = read("src/components/product-card.tsx");
 
-    expect(countOccurrences(source, "<Badge")).toBe(3);
-    expect(source).toContain("product.collection");
+    expect(countOccurrences(source, "<Badge")).toBe(2);
+    expect(source).not.toContain("product.collection");
     expect(source).toContain("discountPercent");
     expect(source).toContain("לא זמין");
     expect(source).not.toContain("absolute inset-x-2.5 bottom-2.5");

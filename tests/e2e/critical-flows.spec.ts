@@ -602,10 +602,10 @@ test.describe("accessibility and responsive guardrails", () => {
     await expect(homeHero).toBeVisible();
     await expect(homeHero.getByRole("heading").first()).toBeVisible();
     await expect(
-      homeHero.locator('a[href="/ai"][data-variant="outline"]'),
+      homeHero.locator('a[href="/service"][data-variant="outline"]'),
     ).toBeVisible();
     const heroOutlineButtonStyles = await homeHero
-      .locator('a[href="/ai"][data-variant="outline"]')
+      .locator('a[href="/service"][data-variant="outline"]')
       .evaluate((element) => {
         const styles = window.getComputedStyle(element);
 
@@ -620,7 +620,7 @@ test.describe("accessibility and responsive guardrails", () => {
       "rgb(255, 255, 255)",
     );
     const heroOutlineButtonShine = await homeHero
-      .locator('a[href="/ai"][data-variant="outline"]')
+      .locator('a[href="/service"][data-variant="outline"]')
       .evaluate((element) => {
         const styles = window.getComputedStyle(element, "::after");
 
@@ -652,24 +652,34 @@ test.describe("accessibility and responsive guardrails", () => {
     }
   });
 
-  test("category intro action scrolls to the products and updates the hash", async ({
+  test("removes adjacent same-page hero CTAs from public task routes", async ({
     page,
   }) => {
-    await page.goto("/category/earrings", { waitUntil: "domcontentloaded" });
+    for (const route of [
+      "/gifts",
+      "/category/earrings",
+      "/search?q=venus",
+      "/checkout",
+      "/service",
+      "/account",
+      "/ai",
+      "/stylist",
+      "/faq",
+      "/privacy",
+      "/terms",
+      "/accessibility",
+    ]) {
+      await page.goto(route, { waitUntil: "domcontentloaded" });
 
-    const productsLink = page.locator('a[href="#category-products"]').first();
-    const header = page.locator("header.site-chrome");
+      await expect(
+        page.locator('.commerce-page-hero-actions a[href^="#"]'),
+      ).toHaveCount(0);
+      await expect(page.getByRole("heading").first()).toBeVisible();
+    }
 
-    await expect(productsLink).toBeVisible();
-    await productsLink.click();
-    await expect(productsLink).toHaveAttribute(
-      "data-anchor-activating",
-      "true",
-    );
-    await expect(page).toHaveURL(/#category-products$/);
-    expect(page.url()).not.toMatch(/#.*#/);
-    await expect(page.locator("#category-products")).toBeInViewport();
-    await expect(header).toHaveAttribute("data-scroll", "hidden");
+    await page.goto("/gifts", { waitUntil: "domcontentloaded" });
+    await expect(page.getByTestId("gift-results-summary")).toBeVisible();
+    await expect(page.getByTestId("gift-results-grid")).toBeVisible();
   });
 
   for (const route of [...publicRoutes, "/admin/login"]) {

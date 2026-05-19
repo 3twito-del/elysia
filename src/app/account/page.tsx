@@ -26,7 +26,6 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { EmptyState } from "~/components/ui/empty-state";
-import { cinematicRouteMedia } from "~/lib/brand-media";
 import { getOrderStatusLabel } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
 import { auth } from "~/server/auth";
@@ -186,7 +185,7 @@ export default async function AccountPage() {
         actions={
           <>
             <Button asChild>
-              <Link href="/account#account-login">כניסה מחדש</Link>
+              <Link href="/account">כניסה מחדש</Link>
             </Button>
             <form action={customerLogoutAction}>
               <Button className="gap-2" type="submit" variant="outline">
@@ -210,23 +209,8 @@ export default async function AccountPage() {
         <SiteHeader />
         <CommercePageHero
           className="account-entry-intro"
-          actions={
-            <>
-              <Button asChild>
-                <Link href="#account-login">כניסה מאובטחת</Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link href="#account-benefits">מה נשמר כאן</Link>
-              </Button>
-            </>
-          }
           description="כניסה מאובטחת להזמנות, מועדפים, מידות שמורות, שירות ופרטיות."
           eyebrow="Aphrodite Account"
-          media={{
-            alt: "Aphrodite account",
-            priority: true,
-            slides: cinematicRouteMedia.account,
-          }}
           title="אזור לקוח"
           variant="checkout"
         />
@@ -291,28 +275,8 @@ export default async function AccountPage() {
       <SiteHeader />
       <CommercePageHero
         className="account-entry-intro"
-        actions={
-          <>
-            <Button asChild>
-              <Link href="#account-orders">הזמנות אחרונות</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="#account-service">שירות</Link>
-            </Button>
-          </>
-        }
         description="כל ההזמנות, המועדפים, המידות, הכתובות והפרטיות שלך במקום אחד."
         eyebrow="Aphrodite Account"
-        media={{
-          alt: "Aphrodite account",
-          priority: true,
-          slides: cinematicRouteMedia.account,
-        }}
-        metrics={[
-          { label: "הזמנות", value: String(customer.orders.length) },
-          { label: "מועדפים", value: String(wishlistItems.length) },
-          { label: "שירות", value: "אונליין" },
-        ]}
         title="אזור לקוח"
         variant="checkout"
       />
@@ -564,7 +528,7 @@ export default async function AccountPage() {
                       <Link href="/faq">שאלות נפוצות</Link>
                     </Button>
                     <Button asChild>
-                      <Link href="/ai">ייעוץ אישי</Link>
+                      <Link href="/service">שירות לקוחות</Link>
                     </Button>
                   </>
                 }

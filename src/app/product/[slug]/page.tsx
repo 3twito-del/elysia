@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Gem, RotateCcw, ShieldCheck, Sparkles } from "lucide-react";
+import { Gem, RotateCcw, ShieldCheck } from "lucide-react";
 
 import { ProductAnalytics } from "./_components/product-analytics";
 import { ProductGallery } from "./_components/product-gallery";
@@ -16,7 +15,6 @@ import { ProductCard } from "~/components/product-card";
 import { SiteHeader } from "~/components/site-header";
 import { RevealSection } from "~/components/reveal";
 import { Badge } from "~/components/ui/badge";
-import { Button } from "~/components/ui/button";
 import { getProductAvailabilityLabel } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
 import { stringifyJsonLd } from "~/lib/json-ld";
@@ -129,19 +127,19 @@ export default async function ProductPage({
         id="product-buy"
         initialVisible
       >
-        <div className="min-w-0">
+        <div className="order-2 min-w-0 lg:order-none">
           <ProductGallery images={uniqueImages} productName={product.name} />
         </div>
 
-        <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start" dir="rtl">
+        <aside
+          className="order-1 min-w-0 lg:sticky lg:top-24 lg:order-none lg:self-start"
+          dir="rtl"
+        >
           <div className="mx-auto max-w-xl lg:mx-0">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-muted-foreground text-xs font-medium tracking-normal uppercase">
                 Aphrodite Fine Jewelry
               </p>
-              <Badge className="rounded-full px-3" variant="secondary">
-                {product.collection}
-              </Badge>
             </div>
 
             <h1
@@ -180,20 +178,10 @@ export default async function ProductPage({
               </TRPCReactProvider>
             </div>
 
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <Button
-                asChild
-                className="h-12 justify-between"
-                variant="secondary"
-              >
-                <Link href={`/ai?product=${product.slug}`}>
-                  מדידה חכמה
-                  <Sparkles aria-hidden="true" className="size-4" />
-                </Link>
-              </Button>
-            </div>
-
-            <dl className="border-border mt-7 grid divide-y border-y">
+            <dl
+              className="border-border mt-7 grid divide-y border-y"
+              data-public-floating-avoid="true"
+            >
               {productFacts.map((fact) => (
                 <div
                   className="grid grid-cols-[7rem_minmax(0,1fr)] gap-4 py-3 text-sm"
