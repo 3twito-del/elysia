@@ -13,9 +13,7 @@ import {
 
 describe("public structure benchmark v4 policy", () => {
   it("locks the benchmark artifact, corpus, and threshold", () => {
-    expect(PUBLIC_STRUCTURE_BENCHMARK_V4).toBe(
-      "PUBLIC_STRUCTURE_BENCHMARK_V4",
-    );
+    expect(PUBLIC_STRUCTURE_BENCHMARK_V4).toBe("PUBLIC_STRUCTURE_BENCHMARK_V4");
     expect(publicStructureBenchmarkCorpus).toHaveLength(30);
     expect(
       publicStructureBenchmarkCorpus.reduce(
@@ -27,9 +25,7 @@ describe("public structure benchmark v4 policy", () => {
   });
 
   it("removes adjacent same-page hero anchor CTAs", () => {
-    expect(publicStructurePolicy.adjacentSamePageHeroCta.status).toBe(
-      "remove",
-    );
+    expect(publicStructurePolicy.adjacentSamePageHeroCta.status).toBe("remove");
     expect(anchorCtaPolicy.samePageHeroAnchor.status).toBe("remove");
     expect(anchorCtaPolicy.adjacentSectionJump.status).toBe("remove");
     expect(shouldRenderStructuralElement("adjacentSamePageHeroCta")).toBe(

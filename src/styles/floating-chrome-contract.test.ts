@@ -24,6 +24,43 @@ describe("public floating chrome contract", () => {
     expect(css).toContain(
       "top: calc(var(--site-header-height) + 1rem + env(safe-area-inset-top))",
     );
+    expect(css).toContain(
+      'html[data-cookie-banner-open="true"] .public-motion-content',
+    );
+    expect(css).toContain(
+      'html[data-public-floating-bar-visible="true"] .public-motion-content',
+    );
+    expect(css).toContain("var(--public-bottom-safe-offset, 0px)");
+  });
+
+  it("syncs cookie banner height into the shared bottom content offset", () => {
+    const banner = read("src/components/cookie-consent-banner.tsx");
+
+    expect(banner).toContain("--public-bottom-safe-offset");
+    expect(banner).toContain(
+      'root.style.setProperty("--public-bottom-safe-offset", `${height}px`)',
+    );
+    expect(banner).toContain(
+      'root.style.setProperty("--public-cookie-top-offset", `${height + 8}px`)',
+    );
+    expect(countOccurrences(banner, "--public-bottom-safe-offset")).toBe(4);
+    expect(banner).toContain("sm:w-[min(calc(100vw-2rem),22rem)]");
+    expect(banner).toContain(
+      "top-[calc(var(--site-header-height)+0.5rem+env(safe-area-inset-top))]",
+    );
+    expect(banner).not.toContain("fixed inset-x-0 bottom-0");
+  });
+
+  it("does not reserve mobile purchase or checkout space before sticky bars exist", () => {
+    const productPage = read("src/app/product/[slug]/page.tsx");
+    const checkoutForm = read(
+      "src/app/checkout/_components/cart-checkout-form.tsx",
+    );
+
+    expect(productPage).not.toContain("pb-24");
+    expect(productPage).not.toContain("md:pb-0");
+    expect(checkoutForm).not.toContain("pb-28");
+    expect(checkoutForm).toContain('data-public-floating-bar="true"');
   });
 
   it("observes both mobile and desktop floating corners for collisions", () => {
@@ -47,4 +84,8 @@ describe("public floating chrome contract", () => {
 
 function read(relativePath: string) {
   return readFileSync(path.join(root, relativePath), "utf8");
+}
+
+function countOccurrences(source: string, pattern: string) {
+  return source.split(pattern).length - 1;
 }

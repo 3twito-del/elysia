@@ -77,7 +77,7 @@ export function ProductCard({
         className="block focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
         href={href}
       >
-        <div className="brand-product-media glass-inset bg-muted relative aspect-[10/11] overflow-hidden border-0 sm:aspect-[4/5]">
+        <div className="brand-product-media glass-inset bg-muted relative aspect-[5/4] overflow-hidden border-0 sm:aspect-[4/5]">
           <KineticImageMotion intensity="card">
             <Image
               alt={product.name}
@@ -104,21 +104,21 @@ export function ProductCard({
           ) : null}
         </div>
       </Link>
-      <CardContent className="flex min-h-52 flex-1 flex-col gap-3 p-3.5 sm:p-4">
-        <div className="flex items-start justify-between gap-3">
+      <CardContent className="flex min-h-40 flex-1 flex-col gap-2.5 p-[var(--ui-card-padding)] sm:min-h-52 sm:gap-3">
+        <div className="flex items-start justify-between gap-2.5 sm:gap-3">
           <div className="min-w-0">
             <Link
-              className="line-clamp-2 min-h-11 text-base leading-[1.45] font-medium underline-offset-4 hover:underline focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
+              className="line-clamp-2 min-h-10 text-base leading-[1.4] font-medium underline-offset-4 hover:underline focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none sm:min-h-11 sm:leading-[1.45]"
               dir="auto"
               href={href}
             >
               {product.name}
             </Link>
-            <p className="text-muted-foreground mt-1 line-clamp-2 min-h-9 text-sm leading-5">
+            <p className="text-muted-foreground mt-1 line-clamp-1 min-h-5 text-sm leading-5 sm:line-clamp-2 sm:min-h-9">
               {product.shortDescription}
             </p>
             <div
-              className="text-muted-foreground mt-2 flex min-h-5 flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-5"
+              className="text-muted-foreground mt-1.5 flex min-h-5 flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-5 sm:mt-2"
               data-testid="product-card-attributes"
             >
               {productDetails.map((detail, index) => (
@@ -138,7 +138,7 @@ export function ProductCard({
         </div>
 
         <div className="mt-auto grid gap-2.5">
-          <div className="grid min-h-16 grid-cols-[minmax(0,1fr)_auto] items-end gap-3">
+          <div className="grid min-h-12 grid-cols-[minmax(0,1fr)_auto] items-end gap-2.5 sm:min-h-16 sm:gap-3">
             <div className="min-w-0">
               <p className="text-muted-foreground text-xs">מחיר</p>
               {compareAt ? (
@@ -170,7 +170,7 @@ export function ProductCard({
           </div>
           <Button
             asChild
-            className="product-card-cta min-h-11 w-full gap-2"
+            className="product-card-cta min-h-10 w-full gap-2 sm:min-h-11"
             variant="outline"
           >
             <Link aria-label={`צפייה וקנייה: ${product.name}`} href={href}>

@@ -30,10 +30,10 @@ export default async function GiftsPage() {
         title="מתנות תכשיטים"
         variant="catalog"
       />
-      <RevealSection className="mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-6">
+      <RevealSection className="mx-auto max-w-7xl px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y)]">
         <section
           aria-labelledby="gift-results"
-          className="brand-control-panel rounded-md p-3.5 sm:p-4"
+          className="brand-control-panel rounded-md p-[var(--ui-panel-padding)]"
           data-testid="gift-results-summary"
         >
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

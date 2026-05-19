@@ -514,7 +514,9 @@ test.describe("accessibility and responsive guardrails", () => {
         page.evaluate(
           () =>
             document.activeElement ===
-            document.querySelector("[data-accessibility-widget-trigger='true']"),
+            document.querySelector(
+              "[data-accessibility-widget-trigger='true']",
+            ),
         ),
       )
       .toBe(true);

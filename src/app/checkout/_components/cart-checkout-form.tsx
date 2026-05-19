@@ -285,7 +285,7 @@ export function CartCheckoutForm() {
     <>
       <form
         aria-busy={checkoutLocked}
-        className="mx-auto grid max-w-7xl gap-5 px-4 pt-5 pb-28 sm:px-6 sm:pt-7 sm:pb-28 md:pb-10 lg:grid-cols-[minmax(0,1fr)_352px] lg:items-start"
+        className="mx-auto grid max-w-7xl gap-5 px-[var(--ui-page-x)] pt-[var(--ui-section-y-tight)] pb-[var(--ui-section-y)] lg:grid-cols-[minmax(0,1fr)_352px] lg:items-start lg:px-[var(--ui-page-x-wide)]"
         data-testid="cart-checkout-form"
         id={checkoutFormId}
         onSubmit={handleSubmit}

@@ -162,7 +162,7 @@ export default async function CategoryPage({
       />
 
       <div className="brand-control-panel sticky top-16 z-30 rounded-none border-x-0 border-t-0 lg:hidden">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-[var(--ui-page-x)] py-3 sm:px-[var(--ui-page-x-wide)]">
           <div className="text-sm">
             <p className="font-medium">{pageRangeLabel}</p>
             <p className="text-muted-foreground text-xs">
@@ -193,7 +193,7 @@ export default async function CategoryPage({
               data-testid="category-filter-sheet"
               side="right"
             >
-              <SheetHeader className="border-b border-[var(--glass-border)] p-4">
+              <SheetHeader className="border-b border-[var(--glass-border)] p-[var(--ui-panel-padding)]">
                 <SheetTitle className="flex items-center gap-2">
                   <SlidersHorizontal aria-hidden="true" className="size-4" />
                   פילטרים
@@ -202,7 +202,7 @@ export default async function CategoryPage({
                   בחירה מהירה לפי מיון, זמינות, חומר, אבן ומחיר.
                 </SheetDescription>
               </SheetHeader>
-              <div className="p-4">
+              <div className="p-[var(--ui-panel-padding)]">
                 <DeferredCategoryFilterPanel
                   activeFilterCount={activeFilterCount}
                   closeOnSelect
@@ -211,7 +211,7 @@ export default async function CategoryPage({
                   slug={slug}
                 />
               </div>
-              <div className="bg-popover sticky bottom-0 grid grid-cols-2 gap-2 border-t border-[var(--glass-border)] p-4">
+              <div className="bg-popover sticky bottom-0 grid grid-cols-2 gap-2 border-t border-[var(--glass-border)] p-[var(--ui-panel-padding)]">
                 {hasActiveFilters ? (
                   <Button asChild variant="outline">
                     <Link href={resetHref} scroll={false}>
@@ -236,7 +236,7 @@ export default async function CategoryPage({
 
       <div className="h-px" id="category-filters" />
 
-      <RevealSection className="mx-auto grid max-w-7xl gap-6 px-4 py-4 sm:px-6 sm:py-6 lg:grid-cols-[280px_1fr] lg:py-9">
+      <RevealSection className="mx-auto grid max-w-7xl gap-6 px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:grid-cols-[280px_1fr] lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y)]">
         <aside className="hidden lg:block" data-testid="category-filter-panel">
           <Card
             className="brand-control-panel sticky top-24 rounded-md"
@@ -264,7 +264,7 @@ export default async function CategoryPage({
           className="min-w-0"
           id="category-products"
         >
-          <div className="brand-control-panel mb-4 rounded-md p-3.5 sm:mb-5 sm:p-4">
+          <div className="brand-control-panel mb-5 hidden rounded-md p-[var(--ui-panel-padding)] lg:block">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="text-base font-medium" id="category-results">

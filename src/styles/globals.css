@@ -7,8 +7,11 @@
 
 @theme inline {
   --font-heading:
-    "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
+    "Noto Sans Hebrew", "Noto Sans Hebrew Fallback", ui-sans-serif,
+    system-ui, sans-serif;
+  --font-sans:
+    "Noto Sans Hebrew", "Noto Sans Hebrew Fallback", ui-sans-serif,
+    system-ui, sans-serif;
   --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -95,6 +98,21 @@
   --glass-shadow-lift: oklch(0 0 0 / 5%);
   --glass-shadow-deep: oklch(0 0 0 / 8%);
   --glass-focus: var(--brand-aqua-ring);
+  --font-hebrew-sans:
+    var(--font-noto-hebrew), "Noto Sans Hebrew",
+    "Noto Sans Hebrew Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-latin-brand:
+    var(--font-geist-sans), "Geist", "Geist Fallback", ui-sans-serif,
+    system-ui, sans-serif;
+  --ui-page-x: clamp(1rem, 2.4vw, 1.5rem);
+  --ui-page-x-wide: clamp(1.5rem, 3vw, 2rem);
+  --ui-section-y: clamp(1.75rem, 3.4vw, 2.75rem);
+  --ui-section-y-tight: clamp(1.1rem, 2.2vw, 1.65rem);
+  --ui-section-y-wide: clamp(2.25rem, 4vw, 3.5rem);
+  --ui-panel-padding: clamp(0.875rem, 1.8vw, 1rem);
+  --ui-card-padding: clamp(0.875rem, 1.7vw, 1rem);
+  --ui-card-padding-tight: clamp(0.75rem, 1.5vw, 0.875rem);
+  --ui-form-gap: clamp(0.75rem, 1.8vw, 1rem);
   --motion-fast: 220ms;
   --motion-medium: 340ms;
   --motion-slow: 560ms;
@@ -180,10 +198,25 @@
   }
   body {
     @apply bg-background text-foreground overflow-x-clip antialiased;
+    font-family: var(--font-hebrew-sans);
+    font-feature-settings: "kern" 1;
+    text-rendering: optimizeLegibility;
   }
   html {
     @apply font-sans;
     scroll-padding-top: var(--anchor-scroll-offset);
+  }
+  :where(
+    button,
+    input,
+    textarea,
+    select,
+    summary,
+    [data-slot="button"],
+    [data-slot="card"],
+    [role="dialog"]
+  ) {
+    font-family: var(--font-hebrew-sans);
   }
   :where([id]) {
     scroll-margin-top: var(--anchor-scroll-offset);
@@ -365,6 +398,11 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 .public-motion-content {
   position: relative;
   z-index: 1;
+  padding-top: var(--public-top-safe-offset, 0px);
+  padding-bottom: 0;
+  transition:
+    padding-top var(--motion-ui) var(--ease-motion-standard),
+    padding-bottom var(--motion-ui) var(--ease-motion-standard);
 }
 
 .public-motion-shell {
@@ -749,17 +787,18 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
   align-items: center;
   max-width: 78rem;
   margin-inline: auto;
-  padding: clamp(1.7rem, 4vw, 3.6rem) 1rem clamp(1.5rem, 3.4vw, 3rem);
+  padding: var(--ui-section-y-wide) var(--ui-page-x)
+    var(--ui-section-y);
 }
 
 .commerce-page-hero[data-commerce-hero="catalog"] .commerce-page-hero-inner {
   max-width: 78rem;
   min-height: auto;
-  padding-block: clamp(1.35rem, 3vw, 2.5rem);
+  padding-block: var(--ui-section-y-tight);
 }
 
 .commerce-page-hero[data-commerce-hero="checkout"] .commerce-page-hero-inner {
-  padding-block: clamp(1.75rem, 4vw, 3.5rem) clamp(1.5rem, 3vw, 2.75rem);
+  padding-block: var(--ui-section-y-wide) var(--ui-section-y);
 }
 
 .commerce-page-hero.account-entry-intro .commerce-page-hero-inner {
@@ -865,7 +904,7 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
   background: rgb(255 255 255 / 82%);
-  padding: 0.72rem;
+  padding: var(--ui-card-padding-tight);
   box-shadow: 0 6px 14px rgb(6 56 59 / 3%);
 }
 
@@ -1000,6 +1039,7 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
 .brand-header-mark {
   align-items: center;
   color: var(--foreground);
+  font-family: var(--font-latin-brand);
   line-height: 1;
   text-decoration: none;
 }
@@ -1009,6 +1049,12 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
   min-width: 0;
   line-height: 1;
   letter-spacing: 0;
+}
+
+.brand-footer-mark,
+.home-hero-wordmark,
+.admin-brand-mark {
+  font-family: var(--font-latin-brand);
 }
 
 .brand-header-mark svg {
@@ -1398,6 +1444,36 @@ html[data-public-floating-collision="true"]
   transform: none;
 }
 
+html[data-public-floating-bar-visible="true"] .public-motion-content {
+  padding-bottom: calc(
+    var(--public-floating-bar-offset, 0px) + env(safe-area-inset-bottom)
+  );
+}
+
+@media (max-width: 639px) {
+  html[data-cookie-banner-open="true"] .public-motion-content {
+    padding-top: var(--public-cookie-top-offset, 0px);
+  }
+}
+
+@media (min-width: 640px) {
+  html[data-cookie-banner-open="true"] .public-motion-content {
+    padding-bottom: calc(
+      var(--public-bottom-safe-offset, 0px) + env(safe-area-inset-bottom)
+    );
+  }
+
+  html[data-cookie-banner-open="true"][data-public-floating-bar-visible="true"]
+    .public-motion-content {
+    padding-bottom: calc(
+      max(
+          var(--public-bottom-safe-offset, 0px),
+          var(--public-floating-bar-offset, 0px)
+        ) + env(safe-area-inset-bottom)
+    );
+  }
+}
+
 .cart-count-badge {
   animation: motion-badge-pop var(--motion-feedback) var(--ease-motion-feedback)
     both;
@@ -1555,6 +1631,10 @@ html[data-public-floating-collision="true"]
 
   .commerce-page-hero-metric {
     padding: 0.7rem;
+  }
+
+  .public-motion-content {
+    transition-duration: var(--motion-fast);
   }
 }
 

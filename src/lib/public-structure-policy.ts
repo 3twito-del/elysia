@@ -8,8 +8,7 @@ import {
 export const PUBLIC_STRUCTURE_BENCHMARK_V4 = "PUBLIC_STRUCTURE_BENCHMARK_V4";
 export const PUBLIC_STRUCTURE_BENCHMARK_TOTAL_WEIGHT =
   PUBLIC_BENCHMARK_TOTAL_WEIGHT;
-export const PUBLIC_STRUCTURE_KEEP_THRESHOLD =
-  PUBLIC_BENCHMARK_KEEP_THRESHOLD;
+export const PUBLIC_STRUCTURE_KEEP_THRESHOLD = PUBLIC_BENCHMARK_KEEP_THRESHOLD;
 
 export type PublicRouteArchetype =
   | "home"
@@ -43,8 +42,7 @@ export type PublicAnchorCtaKey = keyof typeof anchorCtaPolicy;
 export type PublicRouteStructureKey = keyof typeof routeStructurePolicy;
 
 const evidence = {
-  baymardJewelry:
-    "https://baymard.com/blog/jewelry-and-watches-2025-benchmark",
+  baymardJewelry: "https://baymard.com/blog/jewelry-and-watches-2025-benchmark",
   bulgariGifts: "https://www.bulgari.com/en-us/gifts",
   chopardRings: "https://www.chopard.com/en-us/jewellery-rings",
   tiffanyRings: "https://www.tiffany.com/jewelry/rings/",
@@ -61,11 +59,7 @@ export const publicStructureBenchmarkCorpus = publicBenchmarkCorpus;
 export const publicStructurePolicy = {
   homeBrandHeroThenCommerceEntry: allow(
     25,
-    [
-      evidence.baymardJewelry,
-      evidence.tiffanyRings,
-      evidence.vanCleefRings,
-    ],
+    [evidence.baymardJewelry, evidence.tiffanyRings, evidence.vanCleefRings],
     "Home may open with one brand-led hero only when category, search, or product entry follows immediately.",
   ),
   plpTitleControlsGridFirst: allow(

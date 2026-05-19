@@ -108,7 +108,7 @@ export default async function ProductPage({
   ];
 
   return (
-    <main className="bg-background pb-24 md:pb-0">
+    <main className="bg-background">
       <SiteHeader />
       <ProductAnalytics
         path={`/product/${product.slug}`}
@@ -122,7 +122,7 @@ export default async function ProductPage({
       />
 
       <RevealSection
-        className="mx-auto grid max-w-[86rem] gap-7 px-4 py-5 sm:px-6 sm:py-7 lg:grid-cols-[minmax(0,1.08fr)_minmax(21rem,0.72fr)] lg:gap-10"
+        className="mx-auto grid max-w-[86rem] gap-7 px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:grid-cols-[minmax(0,1.08fr)_minmax(21rem,0.72fr)] lg:gap-10 lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y)]"
         dir="ltr"
         id="product-buy"
         initialVisible
@@ -197,7 +197,7 @@ export default async function ProductPage({
       </RevealSection>
 
       <RevealSection
-        className="brand-page-band border-y px-4 py-10 sm:px-6 lg:py-14"
+        className="brand-page-band border-y px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]"
         id="product-details"
       >
         <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.88fr_1.12fr] lg:gap-12">

@@ -87,7 +87,8 @@ export function CommercePageHero({
   variant = "content",
 }: CommercePageHeroProps) {
   const hasActions = actions !== undefined && actions !== null;
-  const hasMedia = Boolean(media) && shouldRenderPublicElement("routeHeroMedia");
+  const hasMedia =
+    Boolean(media) && shouldRenderPublicElement("routeHeroMedia");
   const hasMetrics =
     (metrics?.length ?? 0) > 0 && shouldRenderPublicElement("heroMetrics");
   const hasAside = hasMedia || hasMetrics;

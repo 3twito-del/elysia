@@ -54,13 +54,24 @@ describe("mobile commerce density", () => {
     const home = read("src/app/page.tsx");
     const category = read("src/app/category/[slug]/page.tsx");
     const search = read("src/app/search/page.tsx");
+    const productCard = read("src/components/product-card.tsx");
 
     expect(home).toContain("py-7 sm:px-6 sm:py-10");
     expect(home).toContain("min-h-[220px] w-full");
-    expect(category).toContain("py-4 sm:px-6 sm:py-6");
+    expect(category).toContain(
+      "px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)]",
+    );
+    expect(category).toContain(
+      "brand-control-panel mb-5 hidden rounded-md p-[var(--ui-panel-padding)] lg:block",
+    );
     expect(category).toContain("grid gap-3 sm:grid-cols-2 sm:gap-4");
-    expect(search).toContain("px-4 py-4 sm:px-6 sm:py-10");
+    expect(search).toContain(
+      "px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)]",
+    );
     expect(search).toContain("mt-5 grid gap-3 sm:mt-8");
+    expect(productCard).toContain("relative aspect-[5/4] overflow-hidden");
+    expect(productCard).toContain("flex min-h-40 flex-1 flex-col");
+    expect(productCard).toContain("line-clamp-1 min-h-5");
   });
 });
 

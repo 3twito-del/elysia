@@ -24,6 +24,8 @@ export function CookieConsentBanner() {
     if (isAdminRoute || consentValue !== null) {
       delete root.dataset.cookieBannerOpen;
       root.style.removeProperty("--floating-stack-bottom");
+      root.style.removeProperty("--public-bottom-safe-offset");
+      root.style.removeProperty("--public-cookie-top-offset");
       return;
     }
 
@@ -32,6 +34,8 @@ export function CookieConsentBanner() {
     const syncOffset = () => {
       const height = bannerRef.current?.getBoundingClientRect().height ?? 0;
       root.style.setProperty("--floating-stack-bottom", `${height + 16}px`);
+      root.style.setProperty("--public-bottom-safe-offset", `${height}px`);
+      root.style.setProperty("--public-cookie-top-offset", `${height + 8}px`);
     };
 
     syncOffset();
@@ -43,6 +47,8 @@ export function CookieConsentBanner() {
         window.removeEventListener("resize", syncOffset);
         delete root.dataset.cookieBannerOpen;
         root.style.removeProperty("--floating-stack-bottom");
+        root.style.removeProperty("--public-bottom-safe-offset");
+        root.style.removeProperty("--public-cookie-top-offset");
       };
     }
 
@@ -55,6 +61,8 @@ export function CookieConsentBanner() {
       window.removeEventListener("resize", syncOffset);
       delete root.dataset.cookieBannerOpen;
       root.style.removeProperty("--floating-stack-bottom");
+      root.style.removeProperty("--public-bottom-safe-offset");
+      root.style.removeProperty("--public-cookie-top-offset");
     };
   }, [consentValue, isAdminRoute]);
 
@@ -67,10 +75,10 @@ export function CookieConsentBanner() {
   return (
     <section
       aria-label="בחירת קוקיז"
-      className="bg-background fixed inset-x-0 bottom-0 z-50 max-h-[28dvh] overflow-y-auto border-t border-[var(--glass-border)] px-3 py-2 shadow-[0_-10px_28px_oklch(0_0_0_/_9%)] sm:max-h-[44dvh] sm:px-6 sm:py-4"
+      className="bg-background fixed inset-x-3 top-[calc(var(--site-header-height)+0.5rem+env(safe-area-inset-top))] bottom-auto z-50 max-h-[28dvh] overflow-y-auto rounded-md border border-[var(--glass-border)] px-3 py-2 shadow-[0_-10px_28px_oklch(0_0_0_/_9%)] sm:inset-x-auto sm:top-auto sm:right-4 sm:bottom-4 sm:max-h-[32dvh] sm:w-[min(calc(100vw-2rem),22rem)] sm:px-4 sm:py-3"
       ref={bannerRef}
     >
-      <div className="mx-auto grid max-w-7xl gap-2 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+      <div className="grid gap-2">
         <div className="flex min-w-0 gap-2 sm:gap-3">
           <div className="glass-inset mt-0.5 hidden size-10 shrink-0 items-center justify-center rounded-md border sm:flex">
             <Cookie className="size-5" aria-hidden="true" />
@@ -79,7 +87,7 @@ export function CookieConsentBanner() {
             <h2 className="text-xs font-semibold sm:text-base">
               בחירת קוקיז באתר Aphrodite
             </h2>
-            <p className="text-muted-foreground mt-1 line-clamp-1 max-w-3xl text-[0.68rem] leading-5 sm:line-clamp-none sm:text-sm sm:leading-7">
+            <p className="text-muted-foreground mt-1 line-clamp-1 max-w-3xl text-[0.68rem] leading-5 sm:text-sm sm:leading-6">
               אנו משתמשים בקוקיז חיוניים להפעלת האתר והסל. באישורכם נשתמש גם
               במדידה ושיפור חוויית הקנייה, כולל מוצרים שנצפו לאחרונה.
               <Link
@@ -92,9 +100,9 @@ export function CookieConsentBanner() {
           </div>
         </div>
 
-        <div className="grid shrink-0 grid-cols-2 gap-2 sm:flex sm:flex-row">
+        <div className="grid shrink-0 grid-cols-2 gap-2">
           <Button
-            className="cookie-button-secondary min-h-9 text-xs sm:min-h-11 sm:min-w-32 sm:text-sm"
+            className="cookie-button-secondary min-h-9 text-xs sm:min-h-10 sm:min-w-32 sm:text-sm"
             type="button"
             variant="outline"
             onClick={() => chooseConsent("essential")}
@@ -103,7 +111,7 @@ export function CookieConsentBanner() {
             הכרחי בלבד
           </Button>
           <Button
-            className="cookie-button-primary min-h-9 text-xs sm:min-h-11 sm:min-w-32 sm:text-sm"
+            className="cookie-button-primary min-h-9 text-xs sm:min-h-10 sm:min-w-32 sm:text-sm"
             type="button"
             onClick={() => chooseConsent("all")}
           >

@@ -46,7 +46,9 @@ describe("benchmark policy enforcement", () => {
     expect(productPanel).not.toContain(" במלאי");
     expect(categoryFilters).not.toContain("meta: getFilterCountLabel");
     expect(search).not.toContain("visibleFacets");
-    expect(category).not.toContain("${filteredProducts.length}/${baseProducts.length}");
+    expect(category).not.toContain(
+      "${filteredProducts.length}/${baseProducts.length}",
+    );
   });
 
   it("removes repeated collection badges from product cards", () => {

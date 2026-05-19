@@ -82,7 +82,7 @@ export function AdminShell({
         <aside className="border-border/70 bg-card/95 border-b backdrop-blur lg:sticky lg:top-0 lg:z-30 lg:min-h-screen lg:border-e lg:border-b-0">
           <div className="grid gap-4 p-4 lg:p-5">
             <Link
-              className="flex items-center gap-2 text-lg font-semibold"
+              className="admin-brand-mark flex items-center gap-2 text-lg font-semibold"
               dir="ltr"
               href="/admin"
             >
@@ -138,7 +138,7 @@ export function AdminShell({
           </div>
         </aside>
 
-        <section className="min-w-0 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+        <section className="min-w-0 px-[var(--ui-page-x)] py-[var(--ui-section-y)] lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y-wide)]">
           <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
             <div className="min-w-0">
               <Badge className="mb-3" variant="secondary">

@@ -1,10 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowLeft,
-  Gem,
-  Search,
-} from "lucide-react";
+import { ArrowLeft, Gem, Search } from "lucide-react";
 
 import {
   CinematicHeroSequence,
@@ -91,7 +87,7 @@ export default async function Home() {
             dir="rtl"
           >
             <h1
-              className="motion-copy-item text-right text-4xl leading-[1.05] font-semibold tracking-normal sm:text-6xl lg:text-[4.75rem]"
+              className="home-hero-wordmark motion-copy-item text-right text-4xl leading-[1.05] font-semibold tracking-normal sm:text-6xl lg:text-[4.75rem]"
               dir="ltr"
             >
               Aphrodite
@@ -242,7 +238,6 @@ export default async function Home() {
           </RevealGrid>
         </div>
       </RevealSection>
-
     </main>
   );
 }

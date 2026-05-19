@@ -15,12 +15,12 @@ describe("public benchmark design policy", () => {
       publicBenchmarkCorpus.reduce((total, site) => total + site.weight, 0),
     ).toBe(PUBLIC_BENCHMARK_TOTAL_WEIGHT);
     expect(PUBLIC_BENCHMARK_KEEP_THRESHOLD).toBe(18.75);
-    expect(publicBenchmarkCorpus.slice(0, 15).every((site) => site.weight === 1.5)).toBe(
-      true,
-    );
-    expect(publicBenchmarkCorpus.slice(15).every((site) => site.weight === 1)).toBe(
-      true,
-    );
+    expect(
+      publicBenchmarkCorpus.slice(0, 15).every((site) => site.weight === 1.5),
+    ).toBe(true);
+    expect(
+      publicBenchmarkCorpus.slice(15).every((site) => site.weight === 1),
+    ).toBe(true);
   });
 
   it("removes benchmark-failing public commerce elements", () => {

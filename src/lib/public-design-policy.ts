@@ -91,12 +91,18 @@ export const publicBenchmarkCorpus: PublicBenchmarkSite[] = [
 ];
 
 export const publicElementPolicy = {
-  homeEditorialHero: allow(24.5, "Home may keep one product-led editorial hero."),
+  homeEditorialHero: allow(
+    24.5,
+    "Home may keep one product-led editorial hero.",
+  ),
   routeHeroMedia: remove(
     17.5,
     "Non-home route heroes are text/task first; route media is hidden.",
   ),
-  heroMetrics: remove(6.5, "Hero metric tiles and product-ratio blocks are removed."),
+  heroMetrics: remove(
+    6.5,
+    "Hero metric tiles and product-ratio blocks are removed.",
+  ),
   categoryProductCount: allow(
     29,
     "PLP/search may show result range/count near the grid.",
@@ -109,10 +115,7 @@ export const publicElementPolicy = {
     31,
     "Use generic availability language for purchase confidence.",
   ),
-  filterOptionCounts: remove(
-    12,
-    "Facet options do not expose result counts.",
-  ),
+  filterOptionCounts: remove(12, "Facet options do not expose result counts."),
   activeFilterChips: allow(22, "Active refinements may be removable chips."),
   sortControl: allow(28, "Sort remains near result controls."),
   collectionBadgePill: remove(
@@ -143,7 +146,10 @@ export const publicElementPolicy = {
     10,
     "Motion outside the home hero is minimal and never continuous.",
   ),
-  relatedProducts: allow(24, "Related product rails may remain after PDP purchase."),
+  relatedProducts: allow(
+    24,
+    "Related product rails may remain after PDP purchase.",
+  ),
   checkoutReassurance: allow(
     26,
     "Checkout reassurance is allowed near submit/payment context.",

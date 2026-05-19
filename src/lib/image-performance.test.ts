@@ -23,7 +23,7 @@ describe("image performance guardrails", () => {
       "utf8",
     );
 
-    expect(source).toContain("relative aspect-[10/11] overflow-hidden");
+    expect(source).toContain("relative aspect-[5/4] overflow-hidden");
     expect(source).toContain("sm:aspect-[4/5]");
     expect(source).toContain("DEFAULT_PRODUCT_CARD_IMAGE_SIZES");
     expect(source).toContain("(min-width: 1280px) 18rem");

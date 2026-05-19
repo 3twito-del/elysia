@@ -1,7 +1,7 @@
 import "~/styles/globals.css";
 
 import { type Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Noto_Sans_Hebrew } from "next/font/google";
 
 import { CookieConsentBanner } from "~/components/cookie-consent-banner";
 import { DeferredAccessibilityWidget } from "~/components/deferred-accessibility-widget";
@@ -36,15 +36,23 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
 });
 
+const notoSansHebrew = Noto_Sans_Hebrew({
+  subsets: ["hebrew"],
+  variable: "--font-noto-hebrew",
+  weight: "variable",
+});
+
+const fontClassName = [
+  notoSansHebrew.variable,
+  geistSans.variable,
+  geistMono.variable,
+].join(" ");
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="he"
-      dir="rtl"
-      className={`${geistSans.variable} ${geistMono.variable}`}
-    >
+    <html lang="he" dir="rtl" className={fontClassName}>
       <body>
         <a className="skip-link" href="#main-content">
           דילוג לתוכן

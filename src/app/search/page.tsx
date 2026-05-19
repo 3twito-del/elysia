@@ -105,7 +105,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         variant="catalog"
       />
       <RevealSection
-        className="mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-10"
+        className="mx-auto max-w-7xl px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y-wide)]"
         id="search-controls"
       >
         <SearchControls
@@ -144,7 +144,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
         <section
           aria-labelledby="search-results"
-          className="brand-control-panel mt-4 rounded-md p-3.5 sm:mt-6 sm:p-4"
+          className="brand-control-panel mt-4 rounded-md p-[var(--ui-panel-padding)] sm:mt-6"
           data-testid="search-results-summary"
           id="search-results-section"
         >
@@ -189,8 +189,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             className="mt-6 sm:mt-10"
             description={
               <>
-                אפשר לנקות את הבחירה, לעבור לקטגוריה פתוחה, או להרחיב את
-                החיפוש בכל הקטלוג.
+                אפשר לנקות את הבחירה, לעבור לקטגוריה פתוחה, או להרחיב את החיפוש
+                בכל הקטלוג.
               </>
             }
             icon={Search}

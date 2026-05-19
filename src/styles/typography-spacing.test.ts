@@ -8,17 +8,52 @@ const sourceRoots = ["src/app", "src/components", "src/styles"].map((dir) =>
   path.join(root, dir),
 );
 const allowedTrackingUtilities = new Map([
-  [
-    "src/components/ui/command.tsx",
-    ["tracking-widest"],
-  ],
-  [
-    "src/components/ui/dropdown-menu.tsx",
-    ["tracking-widest"],
-  ],
+  ["src/components/ui/command.tsx", ["tracking-widest"]],
+  ["src/components/ui/dropdown-menu.tsx", ["tracking-widest"]],
 ]);
 
 describe("public typography spacing guardrails", () => {
+  it("uses a dedicated Hebrew UI font while keeping Geist scoped to brand marks", () => {
+    const layout = read("src/app/layout.tsx");
+    const css = read("src/styles/globals.css");
+    const home = read("src/app/page.tsx");
+    const adminShell = read("src/app/admin/_components/admin-shell.tsx");
+
+    expect(layout).toContain("Noto_Sans_Hebrew");
+    expect(layout).toContain('variable: "--font-noto-hebrew"');
+    expect(layout).toContain("notoSansHebrew.variable");
+    expect(css).toContain("--font-hebrew-sans");
+    expect(css).toContain("--font-latin-brand");
+    expect(css).toContain('--font-sans:\n    "Noto Sans Hebrew"');
+    expect(css).toContain("font-family: var(--font-hebrew-sans);");
+    expect(css).toContain(".home-hero-wordmark");
+    expect(home).toContain("home-hero-wordmark");
+    expect(adminShell).toContain("admin-brand-mark");
+  });
+
+  it("defines shared spacing tokens for page, section, panel, card, and form surfaces", () => {
+    const css = read("src/styles/globals.css");
+    const card = read("src/components/ui/card.tsx");
+    const adminShell = read("src/app/admin/_components/admin-shell.tsx");
+
+    [
+      "--ui-page-x",
+      "--ui-page-x-wide",
+      "--ui-section-y",
+      "--ui-section-y-tight",
+      "--ui-section-y-wide",
+      "--ui-panel-padding",
+      "--ui-card-padding",
+      "--ui-card-padding-tight",
+      "--ui-form-gap",
+    ].forEach((token) => expect(css).toContain(token));
+
+    expect(card).toContain("py-[var(--ui-card-padding)]");
+    expect(card).toContain("p-[var(--ui-card-padding)]");
+    expect(adminShell).toContain("px-[var(--ui-page-x)]");
+    expect(adminShell).toContain("py-[var(--ui-section-y)]");
+  });
+
   it("keeps public text letter spacing normal except documented shortcut labels", () => {
     const violations = sourceRoots
       .flatMap(walk)
@@ -41,6 +76,10 @@ describe("public typography spacing guardrails", () => {
     expect(violations).toEqual([]);
   });
 });
+
+function read(relativePath: string) {
+  return readFileSync(path.join(root, relativePath), "utf8");
+}
 
 function findTrackingUtilityViolations(source: string, allowed: string[]) {
   return Array.from(

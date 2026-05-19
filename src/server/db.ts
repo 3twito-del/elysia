@@ -92,7 +92,11 @@ function createRetryProxy<T extends object>(target: T): T {
 async function retryTransientPrismaError<T>(
   operation: () => T,
 ): Promise<Awaited<T>> {
-  for (let attempt = 0; attempt <= transientPrismaRetryDelaysMs.length; attempt += 1) {
+  for (
+    let attempt = 0;
+    attempt <= transientPrismaRetryDelaysMs.length;
+    attempt += 1
+  ) {
     try {
       return await operation();
     } catch (error) {
