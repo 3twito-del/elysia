@@ -508,6 +508,29 @@
 | S319 | https://www.bergdorfgoodman.com/c/jewelry-accessories-jewelry-cat487306 | department     | 2026-05-18 | luxury jewelry retail | PLP                              | premium assortment presentation.                      |
 | S320 | https://www.neimanmarcus.com/c/jewelry-jewelry-cat000730                | department     | 2026-05-18 | luxury jewelry retail | PLP                              | luxury retail product grid.                           |
 
+## High Jewelry Reference Gate
+
+Implementation marker: `HIGH_JEWELRY_REFERENCE_GATE`.
+
+Future public UI, UX, content, structure, and commerce-control changes must
+first pass the Tier A-only high jewelry gate before implementation. The broad
+30-site corpus remains the secondary commerce-usability corpus, but luxury,
+content, and design-tone decisions use the 15-site high jewelry gate as the
+primary standard.
+
+The gate uses the 15 existing Tier A luxury houses, each at weight `1.5`, for a
+total weight of `22.5`. A change is supported only at score `11.25` or higher,
+which means support from at least 8 of 15 reference sites.
+
+Unsupported means no implementation until explicit exception. If a requested
+public change is below threshold, Codex must state that it is unsupported by the
+High Jewelry Reference Gate, cite the score and reason, and stop before editing
+files. Legal, accessibility, payment, SEO, cookie, and backend-correctness work
+may pass only as explicit mandatory exceptions.
+
+Source of truth: `docs/HIGH_JEWELRY_REFERENCE_GATE.md` and
+`src/lib/high-jewelry-reference-gate.ts`.
+
 ## מקורות עוגן שנפתחו במחקר
 
 - Baymard מציג מחקר איקומרס רחב עם יותר מ־200,000 שעות מחקר ובדיקות משתמשים, ומשמש כבסיס להחלטות search, navigation, product pages, checkout ו־mobile UX.
