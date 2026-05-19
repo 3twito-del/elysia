@@ -7,9 +7,7 @@ const root = process.cwd();
 
 describe("high jewelry reference gate documentation", () => {
   it("documents the gate, source list, threshold, and blocking protocol", () => {
-    const doc = read("docs/HIGH_JEWELRY_REFERENCE_GATE.md");
-    const direction = read("docs/DESIGN_DIRECTION_BENCHMARK_GATE.md");
-    const dch = read("docs/DESIGN_CHANGE_DECISIONS.md");
+    const doc = read("docs/PUBLIC_CHANGE_GATE.md");
 
     expect(doc).toContain("HIGH_JEWELRY_REFERENCE_GATE");
     expect(doc).toContain("15 Tier A high jewelry sites");
@@ -18,10 +16,9 @@ describe("high jewelry reference gate documentation", () => {
     expect(doc).toContain("unsupported means no implementation");
     expect(doc).toContain("explicit exception");
     expect(doc).toContain("About copy reduction");
-    expect(direction).toContain("HIGH_JEWELRY_REFERENCE_GATE");
-    expect(direction).toContain("Tier A-only high jewelry gate");
-    expect(dch).toContain("DCH-041");
-    expect(dch).toContain("High jewelry reference gate");
+    expect(doc).toContain("Tier A-only high jewelry gate");
+    expect(doc).toContain("DCH-041");
+    expect(doc).toContain("High jewelry reference gate");
   });
 });
 

@@ -76,8 +76,7 @@ describe("public structure enforcement", () => {
 
   it("documents the v4 structure policy in code and docs", () => {
     const policy = read("src/lib/public-structure-policy.ts");
-    const artifact = read("docs/PUBLIC_STRUCTURE_BENCHMARK_V4.md");
-    const dch = read("docs/DESIGN_CHANGE_DECISIONS.md");
+    const artifact = read("docs/PUBLIC_CHANGE_GATE.md");
 
     expect(policy).toContain("PublicRouteArchetype");
     expect(policy).toContain("PublicStructureDecision");
@@ -87,7 +86,7 @@ describe("public structure enforcement", () => {
     expect(policy).toContain("benchmarkEvidenceUrl");
     expect(policy).toContain("mandatoryExceptionReason");
     expect(artifact).toContain("PUBLIC_STRUCTURE_BENCHMARK_V4");
-    expect(dch).toContain("DCH-032");
+    expect(artifact).toContain("DCH-032");
   });
 });
 
