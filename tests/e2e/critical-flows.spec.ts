@@ -233,28 +233,26 @@ test.describe("critical shopping flows", () => {
     const mobileNavTrigger = page.getByTestId("mobile-nav-trigger");
 
     await expect(mobileNavTrigger).toHaveAttribute("aria-expanded", "false");
-    await mobileNavTrigger.focus();
-    await page.keyboard.press("Enter");
+    await mobileNavTrigger.press("Enter");
     await expect(page.getByTestId("mobile-nav-sheet")).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(page.getByTestId("mobile-nav-sheet")).toBeHidden();
     await expect(mobileNavTrigger).toBeFocused();
 
-    await page.goto("/search?q=venus", { waitUntil: "domcontentloaded" });
+    await page.goto("/search?q=venus", { waitUntil: "networkidle" });
     const searchFilterTrigger = page.getByTestId(
       "mobile-search-filter-trigger",
     );
 
     await expect(searchFilterTrigger).toBeVisible();
     await expect(searchFilterTrigger).toHaveAttribute("aria-expanded", "false");
-    await searchFilterTrigger.focus();
-    await page.keyboard.press("Enter");
+    await searchFilterTrigger.press("Enter");
     await expect(page.getByTestId("mobile-search-filter-sheet")).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(page.getByTestId("mobile-search-filter-sheet")).toBeHidden();
     await expect(searchFilterTrigger).toBeFocused();
 
-    await page.goto("/category/earrings", { waitUntil: "domcontentloaded" });
+    await page.goto("/category/earrings", { waitUntil: "networkidle" });
     const categoryFilterTrigger = page.getByTestId("category-filter-trigger");
 
     await expect(categoryFilterTrigger).toBeVisible();
@@ -262,8 +260,7 @@ test.describe("critical shopping flows", () => {
       "aria-expanded",
       "false",
     );
-    await categoryFilterTrigger.focus();
-    await page.keyboard.press("Enter");
+    await categoryFilterTrigger.press("Enter");
     await expect(page.getByTestId("category-filter-sheet")).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(page.getByTestId("category-filter-sheet")).toBeHidden();
