@@ -4,8 +4,8 @@ const consentStorageKey = "aphrodite_cookie_consent";
 const accessibilityStorageKey = "aphrodite.accessibility-settings";
 const recentlyViewedStorageKey = "aphrodite_recently_viewed";
 const cartStorageKey = "aphrodite_cart_session";
-const cartProductSlug = "test-bracelet-sivan-halo-174";
-const cartProductName = "צמיד Sivan הילה פתוחה";
+const cartProductSlug = "hera-bracelet";
+const cartProductName = "צמיד Hera";
 const searchProductSlug = "venus-line-ring";
 const searchProductName = "טבעת Venus Line";
 const publicRoutes = [
@@ -232,6 +232,7 @@ test.describe("critical shopping flows", () => {
     await page.goto("/");
     const mobileNavTrigger = page.getByTestId("mobile-nav-trigger");
 
+    await expect(mobileNavTrigger).toHaveAttribute("aria-expanded", "false");
     await mobileNavTrigger.focus();
     await page.keyboard.press("Enter");
     await expect(page.getByTestId("mobile-nav-sheet")).toBeVisible();
@@ -245,6 +246,7 @@ test.describe("critical shopping flows", () => {
     );
 
     await expect(searchFilterTrigger).toBeVisible();
+    await expect(searchFilterTrigger).toHaveAttribute("aria-expanded", "false");
     await searchFilterTrigger.focus();
     await page.keyboard.press("Enter");
     await expect(page.getByTestId("mobile-search-filter-sheet")).toBeVisible();
@@ -256,6 +258,10 @@ test.describe("critical shopping flows", () => {
     const categoryFilterTrigger = page.getByTestId("category-filter-trigger");
 
     await expect(categoryFilterTrigger).toBeVisible();
+    await expect(categoryFilterTrigger).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
     await categoryFilterTrigger.focus();
     await page.keyboard.press("Enter");
     await expect(page.getByTestId("category-filter-sheet")).toBeVisible();
