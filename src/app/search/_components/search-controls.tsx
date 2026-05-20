@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Check, Search, SlidersHorizontal } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { Badge } from "~/components/ui/badge";
@@ -16,43 +16,58 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "~/components/ui/sheet";
+import { cn } from "~/lib/utils";
 import type { ProductSearchInput } from "~/server/adapters/search";
-import type { CatalogCategory } from "~/server/services/catalog";
+import type { CatalogCategory, CatalogFacets } from "~/server/services/catalog";
 
 type SearchControlsProps = {
   activeFilterCount: number;
   categories: CatalogCategory[];
   clearFiltersHref: string;
+  facets: CatalogFacets;
   input: ProductSearchInput;
+  viewMode: "grid" | "list";
 };
 
 const searchSelectClassName =
-  "glass-control h-11 min-w-0 rounded-md border px-3 text-sm outline-none focus-visible:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]";
+  "glass-control h-11 w-full min-w-0 rounded-md border px-3 text-sm outline-none transition-colors focus-visible:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]";
 
 export function SearchControls({
   activeFilterCount,
   categories,
   clearFiltersHref,
+  facets,
   input,
+  viewMode,
 }: SearchControlsProps) {
   return (
-    <div data-testid="search-form">
+    <div
+      className="brand-control-panel rounded-md p-[var(--ui-panel-padding)]"
+      data-testid="search-form"
+    >
       <form
         action="/search"
         aria-label="חיפוש בקטלוג"
-        className="mt-4 hidden items-end gap-2.5 border-b border-[var(--glass-border)] pb-4 lg:grid lg:grid-cols-[1fr_repeat(3,152px)_116px]"
+        className="hidden gap-3 lg:grid"
         role="search"
       >
-        <SearchFields categories={categories} input={input} />
-        <PreservedFacetInputs input={input} />
-        <Button className="h-11 gap-2" type="submit">
-          <Search aria-hidden="true" className="size-4" />
-          חיפוש
-        </Button>
+        <div className="grid items-end gap-3 lg:grid-cols-[minmax(18rem,1.45fr)_repeat(3,minmax(9rem,1fr))_auto]">
+          <PrimarySearchFields categories={categories} input={input} />
+          <Button className="h-11 gap-2" type="submit">
+            <Search aria-hidden="true" className="size-4" />
+            חיפוש
+          </Button>
+        </div>
+        <div className="grid items-end gap-3 border-t border-[var(--glass-border)] pt-3 lg:grid-cols-[repeat(3,minmax(9rem,1fr))_minmax(8rem,0.8fr)_minmax(9rem,0.9fr)]">
+          <FacetSearchFields facets={facets} input={input} />
+          <AvailabilityField input={input} />
+          <PreservedModeInput input={input} />
+          <PreservedViewInput viewMode={viewMode} />
+        </div>
       </form>
 
       <div
-        className="mt-3 grid gap-2 border-b border-[var(--glass-border)] pb-3 lg:hidden"
+        className="grid gap-3 lg:hidden"
         data-testid="mobile-search-controls"
       >
         <form
@@ -61,14 +76,20 @@ export function SearchControls({
           className="grid grid-cols-[minmax(0,1fr)_auto] gap-2"
           role="search"
         >
-          <Input
-            aria-label="חיפוש מוצר, חומר, אבן, אירוע או תקציב"
-            className="h-11"
-            defaultValue={input.query}
-            name="q"
-            placeholder="טבעת, עגילים, מתנה..."
-          />
-          <PreservedSearchInputs input={input} />
+          <div className="relative min-w-0">
+            <Search
+              aria-hidden="true"
+              className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2"
+            />
+            <Input
+              aria-label="חיפוש מוצר, חומר, אבן, אירוע או תקציב"
+              className="h-11 ps-10 pe-3"
+              defaultValue={input.query}
+              name="q"
+              placeholder="טבעת, עגילים, מתנה..."
+            />
+          </div>
+          <PreservedSearchInputs input={input} viewMode={viewMode} />
           <Button
             aria-label="חיפוש"
             className="h-11 gap-2 px-4 text-sm"
@@ -79,11 +100,11 @@ export function SearchControls({
           </Button>
         </form>
 
-        <Sheet closeOnMediaQuery="(min-width: 768px)">
+        <Sheet closeOnMediaQuery="(min-width: 1024px)">
           <SheetTrigger asChild>
             <Button
-              className="relative h-11 w-full justify-center gap-2"
               aria-label="סינון ומיון"
+              className="relative h-11 w-full justify-center gap-2"
               data-testid="mobile-search-filter-trigger"
               type="button"
               variant="outline"
@@ -103,15 +124,18 @@ export function SearchControls({
             </Button>
           </SheetTrigger>
           <SheetContent
-            className="max-h-[85dvh] overflow-y-auto rounded-t-md p-0"
+            className="max-h-[88dvh] overflow-y-auto rounded-t-md p-0"
             data-testid="mobile-search-filter-sheet"
             dir="rtl"
             side="bottom"
           >
             <SheetHeader className="border-b border-[var(--glass-border)] pe-12 text-right">
-              <SheetTitle>סינון מדויק</SheetTitle>
+              <SheetTitle className="flex items-center gap-2">
+                <SlidersHorizontal aria-hidden="true" className="size-4" />
+                סינון מדויק
+              </SheetTitle>
               <SheetDescription>
-                בחרו סוג תכשיט, תקציב וסדר הצגה.
+                בחרו סוג תכשיט, חומר, אבן, קולקציה, תקציב וסדר הצגה.
               </SheetDescription>
             </SheetHeader>
             <form
@@ -120,8 +144,11 @@ export function SearchControls({
               className="grid gap-4 p-4"
               role="search"
             >
-              <SearchFields categories={categories} input={input} />
-              <PreservedFacetInputs input={input} />
+              <PrimarySearchFields categories={categories} input={input} />
+              <FacetSearchFields facets={facets} input={input} />
+              <AvailabilityField input={input} />
+              <PreservedModeInput input={input} />
+              <PreservedViewInput viewMode={viewMode} />
               <div className="grid grid-cols-2 gap-2 pt-1">
                 <Button type="submit">הצגת תוצאות</Button>
                 <Button asChild variant="outline">
@@ -138,7 +165,7 @@ export function SearchControls({
   );
 }
 
-function SearchFields({
+function PrimarySearchFields({
   categories,
   input,
 }: {
@@ -148,29 +175,30 @@ function SearchFields({
   return (
     <>
       <SearchControlField label="חיפוש">
-        <Input
-          aria-label="חיפוש מוצר, חומר, אבן, אירוע או תקציב"
-          className="h-11"
-          defaultValue={input.query}
-          name="q"
-          placeholder="טבעת, עגילים, מתנה..."
-        />
+        <div className="relative min-w-0">
+          <Search
+            aria-hidden="true"
+            className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2"
+          />
+          <Input
+            aria-label="חיפוש מוצר, חומר, אבן, אירוע או תקציב"
+            className="h-11 ps-10 pe-3"
+            defaultValue={input.query}
+            name="q"
+            placeholder="טבעת, עגילים, מתנה..."
+          />
+        </div>
       </SearchControlField>
-      <SearchControlField label="סוג תכשיט">
-        <select
-          aria-label="סינון לפי קטגוריה"
-          className={searchSelectClassName}
-          defaultValue={input.category}
-          name="category"
-        >
-          <option value="">כל הסוגים</option>
-          {categories.map((category) => (
-            <option key={category.slug} value={category.slug}>
-              {category.name}
-            </option>
-          ))}
-        </select>
-      </SearchControlField>
+      <SearchSelectField
+        label="סוג תכשיט"
+        name="category"
+        options={categories.map((category) => ({
+          label: category.name,
+          value: category.slug,
+        }))}
+        placeholder="כל הסוגים"
+        value={input.category}
+      />
       <SearchControlField label="תקציב">
         <Input
           aria-label="מחיר מקסימלי"
@@ -182,21 +210,120 @@ function SearchFields({
           type="number"
         />
       </SearchControlField>
-      <SearchControlField label="סדר הצגה">
-        <select
-          aria-label="מיון תוצאות"
-          className={searchSelectClassName}
-          defaultValue={input.sort ?? "relevance"}
-          name="sort"
-        >
-          <option value="relevance">התאמה</option>
-          <option value="price-asc">מחיר עולה</option>
-          <option value="price-desc">מחיר יורד</option>
-          <option value="newest">החדשים תחילה</option>
-          <option value="popular">המומלצים תחילה</option>
-        </select>
-      </SearchControlField>
+      <SearchSelectField
+        label="סדר הצגה"
+        name="sort"
+        options={[
+          { label: "התאמה", value: "relevance" },
+          { label: "מחיר עולה", value: "price-asc" },
+          { label: "מחיר יורד", value: "price-desc" },
+          { label: "החדשים תחילה", value: "newest" },
+          { label: "המומלצים תחילה", value: "popular" },
+        ]}
+        placeholder="התאמה"
+        value={input.sort ?? "relevance"}
+      />
     </>
+  );
+}
+
+function FacetSearchFields({
+  facets,
+  input,
+}: {
+  facets: CatalogFacets;
+  input: ProductSearchInput;
+}) {
+  return (
+    <>
+      <SearchSelectField
+        label="חומר"
+        name="material"
+        options={facets.materials.map((material) => ({
+          label: material,
+          value: material,
+        }))}
+        placeholder="כל החומרים"
+        value={input.material}
+      />
+      <SearchSelectField
+        label="אבן"
+        name="stone"
+        options={facets.stones.map((stone) => ({
+          label: stone,
+          value: stone,
+        }))}
+        placeholder="כל האבנים"
+        value={input.stone}
+      />
+      <SearchSelectField
+        label="קולקציה"
+        name="collection"
+        options={facets.collections.map((collection) => ({
+          label: collection,
+          value: collection,
+        }))}
+        placeholder="כל הקולקציות"
+        value={input.collection}
+      />
+    </>
+  );
+}
+
+function SearchSelectField({
+  label,
+  name,
+  options,
+  placeholder,
+  value,
+}: {
+  label: string;
+  name: keyof ProductSearchInput;
+  options: Array<{ label: string; value: string }>;
+  placeholder: string;
+  value?: string;
+}) {
+  return (
+    <SearchControlField label={label}>
+      <select
+        aria-label={label}
+        className={searchSelectClassName}
+        defaultValue={value ?? ""}
+        name={name}
+      >
+        <option value="">{placeholder}</option>
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </SearchControlField>
+  );
+}
+
+function AvailabilityField({ input }: { input: ProductSearchInput }) {
+  return (
+    <SearchControlField label="זמינות">
+      <label
+        className={cn(
+          "glass-control flex h-11 min-w-0 items-center gap-2 rounded-md border px-3 text-sm transition-colors focus-within:border-[var(--glass-border-strong)] focus-within:ring-3 focus-within:ring-[var(--glass-focus)]",
+          input.availableOnly && "border-[var(--glass-border-strong)]",
+        )}
+      >
+        <input
+          className="size-4 shrink-0 accent-[var(--brand-aqua)]"
+          defaultChecked={input.availableOnly}
+          name="availableOnly"
+          type="checkbox"
+          value="1"
+        />
+        <span className="min-w-0 truncate">זמין להזמנה</span>
+        {input.availableOnly ? (
+          <Check aria-hidden="true" className="ms-auto size-3.5 shrink-0" />
+        ) : null}
+      </label>
+    </SearchControlField>
   );
 }
 
@@ -208,14 +335,20 @@ function SearchControlField({
   label: string;
 }) {
   return (
-    <label className="grid gap-1.5 text-sm">
+    <label className="grid min-w-0 gap-1.5 text-sm">
       <span className="text-muted-foreground text-xs">{label}</span>
       {children}
     </label>
   );
 }
 
-function PreservedSearchInputs({ input }: { input: ProductSearchInput }) {
+function PreservedSearchInputs({
+  input,
+  viewMode,
+}: {
+  input: ProductSearchInput;
+  viewMode: "grid" | "list";
+}) {
   return (
     <>
       <PreservedInput name="category" value={input.category} />
@@ -233,21 +366,27 @@ function PreservedSearchInputs({ input }: { input: ProductSearchInput }) {
           input.sort && input.sort !== "relevance" ? input.sort : undefined
         }
       />
+      <PreservedModeInput input={input} />
+      <PreservedViewInput viewMode={viewMode} />
     </>
   );
 }
 
-function PreservedFacetInputs({ input }: { input: ProductSearchInput }) {
+function PreservedModeInput({ input }: { input: ProductSearchInput }) {
   return (
-    <>
-      <PreservedInput name="material" value={input.material} />
-      <PreservedInput name="stone" value={input.stone} />
-      <PreservedInput name="collection" value={input.collection} />
-      <PreservedInput
-        name="availableOnly"
-        value={input.availableOnly ? "1" : undefined}
-      />
-    </>
+    <PreservedInput
+      name="mode"
+      value={input.mode === "classic" ? "classic" : undefined}
+    />
+  );
+}
+
+function PreservedViewInput({ viewMode }: { viewMode: "grid" | "list" }) {
+  return (
+    <PreservedInput
+      name="view"
+      value={viewMode === "list" ? "list" : undefined}
+    />
   );
 }
 

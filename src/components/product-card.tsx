@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ShoppingBag } from "lucide-react";
+import { ShoppingBag, Sparkles } from "lucide-react";
 
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -15,6 +15,7 @@ import type { CatalogProduct } from "~/server/services/catalog";
 type ProductCardProps = {
   imagePriority?: boolean;
   imageSizes?: string;
+  matchReason?: string;
   product: CatalogProduct;
   searchContext?: {
     query?: string;
@@ -41,6 +42,7 @@ const PRODUCT_CARD_IMAGE_POSITION_BY_SOURCE = [
 export function ProductCard({
   imagePriority = false,
   imageSizes = DEFAULT_PRODUCT_CARD_IMAGE_SIZES,
+  matchReason,
   product,
   searchContext,
 }: ProductCardProps) {
@@ -130,6 +132,15 @@ export function ProductCard({
                 </span>
               ))}
             </div>
+            {matchReason ? (
+              <p
+                className="text-muted-foreground mt-2 inline-flex max-w-full items-center gap-1.5 rounded-md border border-[var(--glass-border)] bg-[var(--glass-inset-bg)] px-2 py-1 text-xs"
+                data-testid="product-card-match-reason"
+              >
+                <Sparkles aria-hidden="true" className="size-3.5 shrink-0" />
+                <span className="truncate">{matchReason}</span>
+              </p>
+            ) : null}
           </div>
           <ProductCardFavoriteButton
             productName={product.name}

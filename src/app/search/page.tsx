@@ -1,6 +1,16 @@
+import Image from "next/image";
 import Link from "next/link";
 import { after } from "next/server";
-import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Grid2X2,
+  List,
+  Search,
+  ShoppingBag,
+  Sparkles,
+  X,
+} from "lucide-react";
 
 import { SearchControls } from "~/app/search/_components/search-controls";
 import { CommercePageHero } from "~/components/commerce-page-hero";
@@ -10,6 +20,9 @@ import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { EmptyState } from "~/components/ui/empty-state";
+import { resolveAiCatalogSearchIntent } from "~/lib/ai-catalog-intent";
+import { getProductAvailabilityLabel } from "~/lib/commerce-labels";
+import { cn } from "~/lib/utils";
 import { db } from "~/server/db";
 import {
   DEFAULT_SEARCH_PER_PAGE,
@@ -22,6 +35,7 @@ import {
   formatPrice,
   type CatalogCategory,
   type CatalogFacets,
+  type CatalogProduct,
 } from "~/server/services/catalog";
 
 type SearchPageProps = {
@@ -33,8 +47,10 @@ type SearchPageProps = {
     collection?: string;
     maxPrice?: string;
     availableOnly?: string;
+    mode?: string;
     page?: string;
     sort?: string;
+    view?: string;
   }>;
 };
 
@@ -51,6 +67,14 @@ type SearchRecoveryAction = {
   total: number;
 };
 
+type SearchViewMode = "grid" | "list";
+type SearchHrefInput = ProductSearchInput & {
+  view?: SearchViewMode;
+};
+
+const SEARCH_RESULT_IMAGE_BLUR_DATA_URL =
+  "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='10'%20height='8'%20viewBox='0%200%2010%208'%3E%3Crect%20width='10'%20height='8'%20fill='%23eef6f7'/%3E%3C/svg%3E";
+
 export const metadata = {
   title: "חיפוש",
 };
@@ -64,18 +88,21 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     getCatalogFacets(),
   ]);
   const input = normalizeSearchInput(params, { categories, facets });
+  const viewMode = normalizeSearchView(params.view);
   const result = await searchProvider.searchProducts(input);
-  const activeFilters = getActiveSearchFilters(input, categories);
+  const activeFilters = getActiveSearchFilters(input, categories, viewMode);
   const hasActiveFilters = activeFilters.length > 0;
   const activeRefinementCount = getActiveSearchRefinementCount(input);
   const hasActiveRefinements = activeRefinementCount > 0;
   const clearFiltersHref = createSearchHref({
     query: input.query,
+    mode: input.mode,
     page: undefined,
+    view: viewMode,
   });
-  const resetAllHref = "/search";
+  const resetAllHref = createSearchHref({ mode: input.mode, view: viewMode });
   const recoveryActions =
-    result.total === 0 ? await getSearchRecoveryActions(input) : [];
+    result.total === 0 ? await getSearchRecoveryActions(input, viewMode) : [];
   const firstCategory = categories[0];
   const visibleStart =
     result.total > 0 ? (result.page - 1) * result.perPage + 1 : 0;
@@ -112,7 +139,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           activeFilterCount={activeRefinementCount}
           categories={categories}
           clearFiltersHref={clearFiltersHref}
+          facets={facets}
           input={input}
+          viewMode={viewMode}
         />
 
         {hasActiveFilters ? (
@@ -166,8 +195,31 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               >
                 {resultDetail}
               </p>
+              <p className="text-muted-foreground mt-1 text-xs">
+                מיון: {getSortLabel(input.sort ?? "relevance")} · תצוגה:{" "}
+                {getSearchViewLabel(viewMode)} ·{" "}
+                {result.mode === "semantic"
+                  ? "\u05d7\u05d9\u05e4\u05d5\u05e9 \u05d7\u05db\u05dd"
+                  : "\u05d7\u05d9\u05e4\u05d5\u05e9 \u05e7\u05dc\u05d0\u05e1\u05d9"}
+              </p>
+              {result.activeSemanticSignals.length > 0 ? (
+                <div
+                  aria-label="\u05e4\u05d9\u05e8\u05d5\u05e9 \u05d7\u05d9\u05e4\u05d5\u05e9 \u05d7\u05db\u05dd"
+                  className="mt-3 flex flex-wrap gap-2"
+                  data-testid="semantic-search-signals"
+                >
+                  {result.activeSemanticSignals.slice(0, 6).map((signal) => (
+                    <Badge className="gap-1" key={signal} variant="secondary">
+                      <Sparkles aria-hidden="true" className="size-3" />
+                      <span>{signal}</span>
+                    </Badge>
+                  ))}
+                </div>
+              ) : null}
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <SearchModeToggle input={input} viewMode={viewMode} />
+              <SearchViewToggle input={input} viewMode={viewMode} />
               {hasActiveFilters ? (
                 <Button asChild size="sm" variant="ghost">
                   <Link
@@ -236,18 +288,18 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               </>
             }
           />
-        ) : (
+        ) : viewMode === "list" ? (
           <>
             <RevealGrid
-              className="mt-5 grid gap-3 sm:mt-8 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4"
-              data-testid="search-results-grid"
-              variant="cards"
+              className="mt-5 grid gap-3 sm:mt-8"
+              data-testid="search-results-list"
+              variant="compact"
             >
               {result.hits.map((product, index) => (
-                <ProductCard
-                  imagePriority={index < 4}
-                  imageSizes="(min-width: 1280px) 18rem, (min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                <SearchResultListItem
+                  imagePriority={index < 2}
                   key={product.slug}
+                  matchReason={result.hitMetaBySlug[product.slug]?.matchReason}
                   product={product}
                   searchContext={{
                     position: (result.page - 1) * result.perPage + index,
@@ -261,11 +313,300 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               currentPage={result.page}
               input={input}
               totalPages={result.totalPages}
+              viewMode={viewMode}
+            />
+          </>
+        ) : (
+          <>
+            <RevealGrid
+              className="mt-5 grid gap-3 sm:mt-8 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4"
+              data-testid="search-results-grid"
+              variant="cards"
+            >
+              {result.hits.map((product, index) => (
+                <ProductCard
+                  imagePriority={index < 4}
+                  imageSizes="(min-width: 1280px) 18rem, (min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                  key={product.slug}
+                  matchReason={result.hitMetaBySlug[product.slug]?.matchReason}
+                  product={product}
+                  searchContext={{
+                    position: (result.page - 1) * result.perPage + index,
+                    query: input.query,
+                  }}
+                />
+              ))}
+            </RevealGrid>
+
+            <SearchPagination
+              currentPage={result.page}
+              input={input}
+              totalPages={result.totalPages}
+              viewMode={viewMode}
             />
           </>
         )}
       </RevealSection>
     </main>
+  );
+}
+
+function SearchModeToggle({
+  input,
+  viewMode,
+}: {
+  input: ProductSearchInput;
+  viewMode: SearchViewMode;
+}) {
+  const isClassic = input.mode === "classic";
+  const nextMode = isClassic ? "semantic" : "classic";
+  const href = createSearchHref({
+    ...input,
+    mode: nextMode === "classic" ? "classic" : undefined,
+    page: undefined,
+    view: viewMode,
+  });
+
+  return (
+    <Button asChild size="sm" variant={isClassic ? "outline" : "secondary"}>
+      <Link
+        aria-label={
+          isClassic
+            ? "\u05de\u05e2\u05d1\u05e8 \u05dc\u05d7\u05d9\u05e4\u05d5\u05e9 \u05d7\u05db\u05dd"
+            : "\u05de\u05e2\u05d1\u05e8 \u05dc\u05d7\u05d9\u05e4\u05d5\u05e9 \u05e7\u05dc\u05d0\u05e1\u05d9"
+        }
+        className="gap-1.5"
+        href={href}
+        scroll={false}
+      >
+        <Sparkles aria-hidden="true" className="size-3.5" />
+        <span>
+          {isClassic
+            ? "\u05d7\u05d9\u05e4\u05d5\u05e9 \u05e7\u05dc\u05d0\u05e1\u05d9"
+            : "\u05d7\u05d9\u05e4\u05d5\u05e9 \u05d7\u05db\u05dd"}
+        </span>
+      </Link>
+    </Button>
+  );
+}
+
+function SearchViewToggle({
+  input,
+  viewMode,
+}: {
+  input: ProductSearchInput;
+  viewMode: SearchViewMode;
+}) {
+  const views = [
+    {
+      href: createSearchHref({ ...input, page: undefined, view: "grid" }),
+      icon: Grid2X2,
+      label: "גריד",
+      value: "grid" as const,
+    },
+    {
+      href: createSearchHref({ ...input, page: undefined, view: "list" }),
+      icon: List,
+      label: "רשימה",
+      value: "list" as const,
+    },
+  ];
+
+  return (
+    <div
+      aria-label="מצב תצוגה"
+      className="glass-control flex h-8 items-center gap-1 rounded-md border p-1"
+      role="group"
+    >
+      {views.map((view) => {
+        const Icon = view.icon;
+        const active = viewMode === view.value;
+
+        return (
+          <Button
+            asChild
+            className="h-6 gap-1 px-2"
+            key={view.value}
+            size="sm"
+            variant={active ? "secondary" : "ghost"}
+          >
+            <Link
+              aria-current={active ? "page" : undefined}
+              aria-label={`תצוגת ${view.label}`}
+              aria-pressed={active}
+              href={view.href}
+              scroll={false}
+            >
+              <Icon aria-hidden="true" className="size-3.5" />
+              <span className="hidden sm:inline">{view.label}</span>
+            </Link>
+          </Button>
+        );
+      })}
+    </div>
+  );
+}
+
+function SearchResultListItem({
+  imagePriority,
+  matchReason,
+  product,
+  searchContext,
+}: {
+  imagePriority?: boolean;
+  matchReason?: string;
+  product: CatalogProduct;
+  searchContext?: {
+    query?: string;
+    position?: number;
+  };
+}) {
+  const onlineStockQuantity = Object.values(product.inventory).reduce(
+    (total, quantity) => total + quantity,
+    0,
+  );
+  const isAvailable = onlineStockQuantity > 0;
+  const compareAt =
+    typeof product.compareAt === "number" && product.compareAt > product.price
+      ? product.compareAt
+      : undefined;
+  const discountPercent = compareAt
+    ? Math.round(((compareAt - product.price) / compareAt) * 100)
+    : undefined;
+  const href = createProductSearchHref(product.slug, searchContext);
+  const productDetails = [
+    product.categoryName,
+    product.material,
+    product.stone,
+    product.collection,
+  ].filter((detail): detail is string => Boolean(detail));
+
+  return (
+    <article
+      aria-label={product.name}
+      className={cn(
+        "product-card-shell group/list grid min-h-full overflow-hidden rounded-md border border-[var(--glass-border)] bg-[var(--glass-panel-bg)] shadow-none transition focus-within:ring-3 focus-within:ring-[var(--glass-focus)] md:grid-cols-[minmax(10rem,14rem)_1fr]",
+        !isAvailable && "bg-muted/30",
+      )}
+      data-testid="search-result-list-item"
+    >
+      <Link
+        aria-label={`צפייה במוצר ${product.name}`}
+        className="brand-product-media glass-inset relative block aspect-[5/4] overflow-hidden focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none md:aspect-square"
+        href={href}
+      >
+        <Image
+          alt={product.name}
+          blurDataURL={SEARCH_RESULT_IMAGE_BLUR_DATA_URL}
+          className="media-color object-cover transition duration-[700ms] ease-[var(--ease-motion-standard)] group-hover/list:scale-[1.015]"
+          fill
+          placeholder="blur"
+          priority={imagePriority}
+          sizes="(min-width: 1024px) 14rem, (min-width: 768px) 28vw, 100vw"
+          src={product.image}
+        />
+        {discountPercent || !isAvailable ? (
+          <div className="absolute top-2.5 left-2.5 flex items-start gap-2">
+            {discountPercent ? (
+              <Badge className="font-semibold" dir="ltr" variant="default">
+                -{discountPercent}%
+              </Badge>
+            ) : !isAvailable ? (
+              <Badge variant="destructive">לא זמין</Badge>
+            ) : null}
+          </div>
+        ) : null}
+      </Link>
+
+      <div className="grid min-w-0 gap-4 p-[var(--ui-card-padding)] md:grid-cols-[minmax(0,1fr)_minmax(11rem,auto)]">
+        <div className="min-w-0">
+          <div className="mb-2 flex flex-wrap gap-2">
+            <Badge variant="outline">{product.categoryName}</Badge>
+            {product.material ? (
+              <Badge variant="secondary">{product.material}</Badge>
+            ) : null}
+          </div>
+          <Link
+            className="line-clamp-2 text-lg leading-7 font-medium underline-offset-4 hover:underline focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
+            dir="auto"
+            href={href}
+          >
+            {product.name}
+          </Link>
+          <p className="text-muted-foreground mt-2 line-clamp-2 text-sm leading-6">
+            {product.shortDescription}
+          </p>
+          {matchReason ? (
+            <p
+              className="text-muted-foreground mt-2 inline-flex max-w-full items-center gap-1.5 rounded-md border border-[var(--glass-border)] bg-[var(--glass-inset-bg)] px-2.5 py-1.5 text-xs"
+              data-testid="search-result-match-reason"
+            >
+              <Sparkles aria-hidden="true" className="size-3.5 shrink-0" />
+              <span className="truncate">{matchReason}</span>
+            </p>
+          ) : null}
+          <div
+            className="text-muted-foreground mt-3 flex min-h-5 flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-5"
+            data-testid="search-result-list-attributes"
+          >
+            {productDetails.map((detail, index) => (
+              <span
+                className="max-w-full min-w-0 truncate"
+                key={`${detail}-${index}`}
+              >
+                {detail}
+                {index < productDetails.length - 1 ? (
+                  <span className="mx-2 text-[var(--glass-border-strong)]">
+                    ·
+                  </span>
+                ) : null}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid content-between gap-3 md:min-w-44 md:text-end">
+          <div>
+            <p className="text-muted-foreground text-xs">מחיר</p>
+            {compareAt ? (
+              <span className="text-muted-foreground mt-1 block text-xs line-through">
+                {formatPrice(compareAt)}
+              </span>
+            ) : null}
+            <span className="block text-xl leading-7 font-semibold">
+              {formatPrice(product.price)}
+            </span>
+            <span
+              className={cn(
+                "mt-2 inline-flex max-w-full items-center gap-1.5 rounded-md border border-[var(--glass-border)] px-2.5 py-1.5 text-xs",
+                isAvailable ? "text-muted-foreground" : "text-foreground",
+              )}
+            >
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "size-2 shrink-0 rounded-full",
+                  isAvailable ? "bg-emerald-500" : "bg-muted-foreground",
+                )}
+              />
+              <span className="truncate">
+                {getProductAvailabilityLabel(onlineStockQuantity)}
+              </span>
+            </span>
+          </div>
+          <Button
+            asChild
+            className="product-card-cta min-h-10 w-full gap-2"
+            variant="outline"
+          >
+            <Link aria-label={`צפייה וקנייה: ${product.name}`} href={href}>
+              <ShoppingBag aria-hidden="true" className="size-4" />
+              {isAvailable ? "צפייה וקנייה" : "בדיקת זמינות"}
+            </Link>
+          </Button>
+        </div>
+      </div>
+    </article>
   );
 }
 
@@ -276,7 +617,13 @@ function normalizeSearchInput(
     facets: CatalogFacets;
   },
 ): ProductSearchInput {
-  const query = normalizeTextParam(params.q);
+  const rawQuery = normalizeTextParam(params.q);
+  const intent = rawQuery
+    ? resolveAiCatalogSearchIntent({ query: rawQuery })
+    : undefined;
+  const explicitMaxPrice = normalizeMaxPrice(params.maxPrice);
+  const maxPrice = explicitMaxPrice ?? intent?.maxPrice;
+  const query = normalizeBudgetAwareQuery(rawQuery, maxPrice);
   const category = normalizeCatalogValue(
     params.category,
     options.categories.map((item) => item.slug),
@@ -290,7 +637,6 @@ function normalizeSearchInput(
     params.collection,
     options.facets.collections,
   );
-  const maxPrice = normalizeMaxPrice(params.maxPrice);
 
   return {
     query,
@@ -300,16 +646,43 @@ function normalizeSearchInput(
     collection,
     maxPrice,
     availableOnly: params.availableOnly === "1",
+    mode: normalizeSearchMode(params.mode),
     page: normalizePage(params.page),
     perPage: DEFAULT_SEARCH_PER_PAGE,
     sort: normalizeSort(params.sort),
   };
 }
 
+function normalizeBudgetAwareQuery(query?: string, maxPrice?: number) {
+  if (!query) return undefined;
+  if (!maxPrice) return query;
+
+  const withoutBudget = query
+    .replace(
+      /(?:\u05e2\u05d3|\u05ea\u05e7\u05e6\u05d9\u05d1|\u05de\u05e7\u05e1\u05d9\u05de\u05d5\u05dd|max|under|below)\s*\d{2,5}/gi,
+      " ",
+    )
+    .replace(/\d{2,5}\s*(?:\u05e9["'\u05f3\u05f4]?\u05d7|\u20aa|ils)/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (isGenericGiftSearch(withoutBudget)) return undefined;
+
+  return withoutBudget || undefined;
+}
+
+function isGenericGiftSearch(query: string) {
+  return /^(?:\u05de\u05ea\u05e0\u05d4|\u05dc\u05de\u05ea\u05e0\u05d4|gift|present)$/i.test(
+    query,
+  );
+}
+
 function getActiveSearchFilters(
   input: ProductSearchInput,
   categories: CatalogCategory[],
+  viewMode: SearchViewMode,
 ) {
+  const hrefInput: SearchHrefInput = { ...input, view: viewMode };
   const selectedCategory = categories.find(
     (category) => category.slug === input.category,
   );
@@ -319,7 +692,11 @@ function getActiveSearchFilters(
     filters.push({
       key: "query",
       label: `חיפוש: ${input.query}`,
-      href: createSearchHref({ ...input, page: undefined, query: undefined }),
+      href: createSearchHref({
+        ...hrefInput,
+        page: undefined,
+        query: undefined,
+      }),
     });
   }
 
@@ -328,7 +705,7 @@ function getActiveSearchFilters(
       key: "category",
       label: `קטגוריה: ${selectedCategory.name}`,
       href: createSearchHref({
-        ...input,
+        ...hrefInput,
         category: undefined,
         page: undefined,
       }),
@@ -340,7 +717,7 @@ function getActiveSearchFilters(
       key: "material",
       label: `חומר: ${input.material}`,
       href: createSearchHref({
-        ...input,
+        ...hrefInput,
         material: undefined,
         page: undefined,
       }),
@@ -351,7 +728,11 @@ function getActiveSearchFilters(
     filters.push({
       key: "stone",
       label: `אבן: ${input.stone}`,
-      href: createSearchHref({ ...input, page: undefined, stone: undefined }),
+      href: createSearchHref({
+        ...hrefInput,
+        page: undefined,
+        stone: undefined,
+      }),
     });
   }
 
@@ -360,7 +741,7 @@ function getActiveSearchFilters(
       key: "collection",
       label: `קולקציה: ${input.collection}`,
       href: createSearchHref({
-        ...input,
+        ...hrefInput,
         collection: undefined,
         page: undefined,
       }),
@@ -372,7 +753,7 @@ function getActiveSearchFilters(
       key: "maxPrice",
       label: `עד ${formatPrice(input.maxPrice)}`,
       href: createSearchHref({
-        ...input,
+        ...hrefInput,
         maxPrice: undefined,
         page: undefined,
       }),
@@ -384,7 +765,7 @@ function getActiveSearchFilters(
       key: "availableOnly",
       label: "זמין להזמנה",
       href: createSearchHref({
-        ...input,
+        ...hrefInput,
         availableOnly: undefined,
         page: undefined,
       }),
@@ -395,7 +776,23 @@ function getActiveSearchFilters(
     filters.push({
       key: "sort",
       label: getSortLabel(input.sort),
-      href: createSearchHref({ ...input, page: undefined, sort: undefined }),
+      href: createSearchHref({
+        ...hrefInput,
+        page: undefined,
+        sort: undefined,
+      }),
+    });
+  }
+
+  if (input.mode === "classic") {
+    filters.push({
+      key: "mode",
+      label: "\u05d7\u05d9\u05e4\u05d5\u05e9 \u05e7\u05dc\u05d0\u05e1\u05d9",
+      href: createSearchHref({
+        ...hrefInput,
+        mode: undefined,
+        page: undefined,
+      }),
     });
   }
 
@@ -411,10 +808,14 @@ function getActiveSearchRefinementCount(input: ProductSearchInput) {
     input.maxPrice,
     input.availableOnly,
     input.sort && input.sort !== "relevance" ? input.sort : undefined,
+    input.mode === "classic" ? input.mode : undefined,
   ].filter(Boolean).length;
 }
 
-async function getSearchRecoveryActions(input: ProductSearchInput) {
+async function getSearchRecoveryActions(
+  input: ProductSearchInput,
+  viewMode: SearchViewMode,
+) {
   const candidates: Array<{
     description: string;
     href: string;
@@ -432,7 +833,7 @@ async function getSearchRecoveryActions(input: ProductSearchInput) {
 
     candidates.push({
       description: "שומר את מילת החיפוש ומסיר קטגוריה, חומר, אבן, תקציב ומיון.",
-      href: createSearchHref(queryOnlyInput),
+      href: createSearchHref({ ...queryOnlyInput, view: viewMode }),
       input: queryOnlyInput,
       label: "ניקוי פילטרים",
     });
@@ -448,7 +849,7 @@ async function getSearchRecoveryActions(input: ProductSearchInput) {
 
     candidates.push({
       description: "שומר את הבחירות הפעילות ומסיר רק את מילת החיפוש.",
-      href: createSearchHref(withoutQueryInput),
+      href: createSearchHref({ ...withoutQueryInput, view: viewMode }),
       input: withoutQueryInput,
       label: "בלי מילת החיפוש",
     });
@@ -462,7 +863,7 @@ async function getSearchRecoveryActions(input: ProductSearchInput) {
 
     candidates.push({
       description: "פותח את כל מוצרי הקטלוג ללא חיפוש ופילטרים.",
-      href: createSearchHref(allCatalogInput),
+      href: createSearchHref({ ...allCatalogInput, view: viewMode }),
       input: allCatalogInput,
       label: "כל הקטלוג",
     });
@@ -515,7 +916,7 @@ async function countSearchResults(input: ProductSearchInput) {
   return result.total;
 }
 
-function createSearchHref(input: ProductSearchInput) {
+function createSearchHref(input: SearchHrefInput) {
   const params = new URLSearchParams();
 
   if (input.query) params.set("q", input.query);
@@ -526,6 +927,8 @@ function createSearchHref(input: ProductSearchInput) {
   if (input.maxPrice) params.set("maxPrice", String(input.maxPrice));
   if (input.availableOnly) params.set("availableOnly", "1");
   if (input.sort && input.sort !== "relevance") params.set("sort", input.sort);
+  if (input.mode === "classic") params.set("mode", input.mode);
+  if (input.view === "list") params.set("view", input.view);
   if (input.page && input.page > 1) params.set("page", String(input.page));
 
   const query = params.toString();
@@ -533,20 +936,41 @@ function createSearchHref(input: ProductSearchInput) {
   return query ? `/search?${query}` : "/search";
 }
 
+function createProductSearchHref(
+  slug: string,
+  searchContext?: {
+    query?: string;
+    position?: number;
+  },
+) {
+  if (!searchContext?.query) return `/product/${slug}`;
+
+  const params = new URLSearchParams({ q: searchContext.query });
+
+  if (typeof searchContext.position === "number") {
+    params.set("position", String(searchContext.position));
+  }
+
+  return `/product/${slug}?${params.toString()}`;
+}
+
 function SearchPagination({
   currentPage,
   input,
   totalPages,
+  viewMode,
 }: {
   currentPage: number;
   input: ProductSearchInput;
   totalPages: number;
+  viewMode: SearchViewMode;
 }) {
   if (totalPages <= 1) return null;
 
   const previousPage = Math.max(1, currentPage - 1);
   const nextPage = Math.min(totalPages, currentPage + 1);
   const pages = getPaginationPages(currentPage, totalPages);
+  const hrefInput: SearchHrefInput = { ...input, view: viewMode };
 
   return (
     <nav
@@ -564,7 +988,7 @@ function SearchPagination({
           variant="outline"
         >
           {currentPage > 1 ? (
-            <Link href={createSearchHref({ ...input, page: previousPage })}>
+            <Link href={createSearchHref({ ...hrefInput, page: previousPage })}>
               <ChevronRight aria-hidden="true" className="size-3.5" />
               הקודם
             </Link>
@@ -591,7 +1015,7 @@ function SearchPagination({
             >
               <Link
                 aria-current={page === currentPage ? "page" : undefined}
-                href={createSearchHref({ ...input, page })}
+                href={createSearchHref({ ...hrefInput, page })}
               >
                 {page}
               </Link>
@@ -606,7 +1030,7 @@ function SearchPagination({
           variant="outline"
         >
           {currentPage < totalPages ? (
-            <Link href={createSearchHref({ ...input, page: nextPage })}>
+            <Link href={createSearchHref({ ...hrefInput, page: nextPage })}>
               הבא
               <ChevronLeft aria-hidden="true" className="size-3.5" />
             </Link>
@@ -684,6 +1108,14 @@ function normalizeSort(value?: string): ProductSearchInput["sort"] {
   return undefined;
 }
 
+function normalizeSearchView(value?: string): SearchViewMode {
+  return value === "list" ? "list" : "grid";
+}
+
+function normalizeSearchMode(value?: string): ProductSearchInput["mode"] {
+  return value === "classic" ? "classic" : "semantic";
+}
+
 function getSortLabel(sort: NonNullable<ProductSearchInput["sort"]>) {
   if (sort === "price-asc") return "מחיר עולה";
   if (sort === "price-desc") return "מחיר יורד";
@@ -691,6 +1123,10 @@ function getSortLabel(sort: NonNullable<ProductSearchInput["sort"]>) {
   if (sort === "popular") return "פופולרי";
 
   return "רלוונטיות";
+}
+
+function getSearchViewLabel(viewMode: SearchViewMode) {
+  return viewMode === "list" ? "רשימה" : "גריד";
 }
 
 function formatSearchResultCount(count: number) {
@@ -716,6 +1152,7 @@ async function recordSearchEvent(
           collection: input.collection ?? null,
           maxPrice: input.maxPrice ?? null,
           availableOnly: input.availableOnly ?? false,
+          mode: input.mode ?? "semantic",
           sort: input.sort ?? "relevance",
         },
         resultCount,

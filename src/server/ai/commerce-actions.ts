@@ -2,7 +2,6 @@ import { z } from "zod";
 
 import {
   createAiMatchReason,
-  createCatalogSearchPlan,
   resolveAiCatalogSearchIntent,
 } from "~/lib/ai-catalog-intent";
 import type {
@@ -13,8 +12,9 @@ import type {
   searchCatalogToolInputSchema,
 } from "~/lib/ai-commerce-validation";
 import { tryOnProvider } from "~/server/adapters/try-on";
+import { searchProvider } from "~/server/adapters/search";
 import { db } from "~/server/db";
-import { formatPrice, searchCatalogProducts } from "~/server/services/catalog";
+import { formatPrice } from "~/server/services/catalog";
 import {
   failAiRun,
   finishAiRun,
@@ -104,23 +104,17 @@ export async function getCustomerIdForAiSession(input: {
 
 export async function executeSearchCatalog(input: SearchCatalogToolInput) {
   const intent = resolveAiCatalogSearchIntent(input);
-  const searchPlan = createCatalogSearchPlan(intent);
-  const resultSets = [];
-
-  for (const searchInput of searchPlan) {
-    resultSets.push(
-      await searchCatalogProducts({
-        ...searchInput,
-        availableOnly: true,
-      }),
-    );
-  }
-
-  const results = Array.from(
-    new Map(
-      resultSets.flat().map((product) => [product.slug, product] as const),
-    ).values(),
-  ).slice(0, 4);
+  const searchResult = await searchProvider.searchProducts({
+    availableOnly: true,
+    category: intent.category ?? input.category,
+    material: intent.material ?? input.material,
+    maxPrice: intent.maxPrice ?? input.maxPrice,
+    mode: "semantic",
+    perPage: 8,
+    query: intent.originalQuery ?? intent.query ?? input.query,
+    stone: intent.stone ?? input.stone,
+  });
+  const results = searchResult.hits.slice(0, 4);
 
   return results.map((product) => ({
     slug: product.slug,
@@ -129,7 +123,9 @@ export async function executeSearchCatalog(input: SearchCatalogToolInput) {
     price: product.price,
     formattedPrice: formatPrice(product.price),
     image: product.image,
-    matchReason: createAiMatchReason(product, intent),
+    matchReason:
+      searchResult.hitMetaBySlug[product.slug]?.matchReason ??
+      createAiMatchReason(product, intent),
     category: product.categoryName,
     material: product.material,
     stone: product.stone,

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  getProductsCollectionName,
   shouldUseLocalSearchFallback,
   paginateSearchHits,
   normalizeSearchPagination,
@@ -49,6 +50,12 @@ describe("search adapter config", () => {
         TYPESENSE_HOST: undefined,
       }),
     ).toBe(true);
+  });
+
+  it("names semantic Typesense collections by embedding model and dimension", () => {
+    expect(getProductsCollectionName("cloudflare:@cf/baai/bge-m3", 1024)).toBe(
+      "products_semantic_cf_baai_bge_m3_1024_v1",
+    );
   });
 });
 

@@ -55,8 +55,12 @@ export async function POST(req: Request) {
     idempotencyKey: `${BUSINESS_EVENTS.searchReindexRequested}:products:${Date.now()}`,
     payload: {
       requestedBy: admin.id,
+      embedded: result.embedded ?? 0,
+      embeddingDimension: result.embeddingDimension ?? null,
+      embeddingModel: result.embeddingModel ?? null,
       indexed: result.indexed,
       engine: result.engine,
+      semantic: result.semantic ?? false,
     },
   });
 

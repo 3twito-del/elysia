@@ -41,12 +41,50 @@ describe("AI model resolver", () => {
     ).toBe(true);
   });
 
-  it("falls back to the gateway model when no direct Google key exists", () => {
+  it("uses the free-tier router when no manual model override exists", () => {
     const resolved = resolveAiChatModel({});
 
-    expect(resolved.modelId).toBe("openai/gpt-5.4");
-    expect(resolved.provider).toBe("gateway");
+    expect(resolved.modelId).toBe("free-tier-router");
+    expect(resolved.provider).toBe("router");
     expect(isResolvedAiModelReady(resolved, {})).toBe(false);
+  });
+
+  it("prefers configured free providers in order", () => {
+    const resolved = resolveAiChatModel({
+      CEREBRAS_API_KEY: "cerebras-key",
+      GROQ_API_KEY: "groq-key",
+      FREE_AI_PROVIDER_ORDER: "groq,cerebras,google",
+    });
+
+    expect(resolved.provider).toBe("router");
+    expect(resolved.modelId).toBe("groq:llama-3.1-8b-instant");
+    expect(resolved.candidates.filter((candidate) => candidate.ready)).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          provider: "groq",
+          modelId: "llama-3.1-8b-instant",
+        }),
+        expect.objectContaining({
+          provider: "cerebras",
+          modelId: "qwen-3-235b-a22b-instruct-2507",
+        }),
+      ]),
+    );
+  });
+
+  it("can resolve a single Cerebras override", () => {
+    const resolved = resolveAiChatModel({
+      AI_CHAT_MODEL: "cerebras:qwen-3-235b-a22b-instruct-2507",
+    });
+
+    expect(resolved.provider).toBe("cerebras");
+    expect(resolved.modelId).toBe("cerebras:qwen-3-235b-a22b-instruct-2507");
+    expect(isResolvedAiModelReady(resolved, {})).toBe(false);
+    expect(
+      isResolvedAiModelReady(resolved, {
+        CEREBRAS_API_KEY: "key",
+      }),
+    ).toBe(true);
   });
 
   it("reports actionable readiness errors for missing model credentials", () => {

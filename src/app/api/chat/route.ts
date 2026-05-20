@@ -7,6 +7,7 @@ import { getCustomerIdForAiSession } from "~/server/ai/commerce-actions";
 import { AI_PROMPT_VERSION } from "~/server/ai/constants";
 import {
   getResolvedAiModelReadinessError,
+  recordAiProviderUsage,
   resolveAiChatModel,
 } from "~/server/ai/model";
 import {
@@ -112,12 +113,19 @@ export async function POST(req: Request) {
     metadata: {
       ip: getRequestIp(req),
       provider: resolvedModel.provider,
+      providerCandidates: resolvedModel.candidates.map((candidate) => ({
+        provider: candidate.provider,
+        modelId: candidate.modelId,
+        ready: candidate.ready,
+        quotaBlockedUntil: candidate.quotaBlockedUntil,
+      })),
     },
   });
 
   try {
     const agent = createAiCommerceAgent({
       model: resolvedModel.model,
+      resolvedModel,
       aiRunId: run.id,
       customerId,
       sessionUserId: session?.user.id,
@@ -132,6 +140,15 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     await failAiRun(run.id, error);
+    await recordAiProviderUsage({
+      provider: resolvedModel.provider,
+      model: resolvedModel.modelId,
+      purpose: "chat",
+      status: "failed",
+      metadata: {
+        error: error instanceof Error ? error.message : String(error),
+      },
+    });
     throw error;
   }
 }

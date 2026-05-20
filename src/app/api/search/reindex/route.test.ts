@@ -58,8 +58,12 @@ describe("search reindex route", () => {
     });
     adminAccessMocks.hasAdminPermission.mockReturnValue(true);
     searchMocks.indexProducts.mockResolvedValue({
+      embedded: 12,
+      embeddingDimension: 768,
+      embeddingModel: "google/gemini-embedding-001",
       indexed: 42,
       engine: "local",
+      semantic: true,
     });
     outboxMocks.enqueueOutboxEvent.mockResolvedValue({ id: "outbox_1" });
   });
@@ -70,8 +74,12 @@ describe("search reindex route", () => {
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
       ok: true,
+      embedded: 12,
+      embeddingDimension: 768,
+      embeddingModel: "google/gemini-embedding-001",
       indexed: 42,
       engine: "local",
+      semantic: true,
     });
     expect(searchMocks.indexProducts).toHaveBeenCalledTimes(1);
     expect(outboxMocks.enqueueOutboxEvent).toHaveBeenCalledWith(
@@ -81,8 +89,12 @@ describe("search reindex route", () => {
         aggregateId: "products",
         payload: {
           requestedBy: "admin_1",
+          embedded: 12,
+          embeddingDimension: 768,
+          embeddingModel: "google/gemini-embedding-001",
           indexed: 42,
           engine: "local",
+          semantic: true,
         },
       }),
     );

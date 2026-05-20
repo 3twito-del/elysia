@@ -9,12 +9,18 @@ import { finishAiRun } from "~/server/ai/audit";
 import { createAiCommerceTools } from "~/server/ai/commerce-tools";
 import type { AiCommerceToolContext } from "~/server/ai/commerce-tools";
 import { AI_RUN_KIND } from "~/server/ai/constants";
+import {
+  getAiMaxOutputTokens,
+  recordAiProviderUsage,
+  type ResolvedAiChatModel,
+} from "~/server/ai/model";
 import type { AiPlanningContext } from "~/server/ai/planner";
 
 type AiCommerceTools = ReturnType<typeof createAiCommerceTools>;
 
 type CreateAiCommerceAgentInput = AiCommerceToolContext & {
   model: LanguageModel;
+  resolvedModel: Pick<ResolvedAiChatModel, "modelId" | "provider">;
 };
 
 export function createAiCommerceAgent(input: CreateAiCommerceAgentInput) {
@@ -26,7 +32,8 @@ export function createAiCommerceAgent(input: CreateAiCommerceAgentInput) {
     instructions: createAiCommerceAgentInstructions(input.planning),
     tools,
     activeTools: getActiveToolsForPlanning(input.planning),
-    stopWhen: stepCountIs(6),
+    stopWhen: stepCountIs(3),
+    maxOutputTokens: getAiMaxOutputTokens(),
     experimental_context: {
       aiRunId: input.aiRunId,
       customerId: input.customerId,
@@ -37,6 +44,17 @@ export function createAiCommerceAgent(input: CreateAiCommerceAgentInput) {
     onFinish: async (event) => {
       try {
         await finishAiRun(input.aiRunId, summarizeAgentFinish(event));
+        await recordAiProviderUsage({
+          provider: input.resolvedModel.provider,
+          model: input.resolvedModel.modelId,
+          purpose: "chat",
+          status: "succeeded",
+          usage: event.totalUsage,
+          metadata: {
+            finishReason: event.finishReason,
+            steps: event.steps.length,
+          },
+        });
       } catch (error) {
         console.error("[ai-agent:audit-finish-failed]", error);
       }

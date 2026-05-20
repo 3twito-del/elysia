@@ -44,6 +44,13 @@ const homeSlides = Array.from(
   ).values(),
 );
 
+const quickSearchSuggestions = [
+  { href: "/search?q=טבעת%20זהב", label: "טבעת זהב" },
+  { href: "/search?q=עגילי%20פנינה", label: "עגילי פנינה" },
+  { href: "/search?maxPrice=700", label: "מתנה עד 700" },
+  { href: "/search?category=rings", label: "טבעות" },
+] as const;
+
 export default async function Home() {
   const [categories, ringProducts] = await Promise.all([
     getCatalogCategories(),
@@ -131,34 +138,55 @@ export default async function Home() {
       </RevealSection>
 
       <RevealSection className="brand-page-band border-b" id="quick-search">
-        <div className="mx-auto grid max-w-7xl gap-4 px-4 py-4 sm:px-6 lg:grid-cols-[0.85fr_2fr] lg:items-center">
-          <div>
+        <div className="mx-auto grid max-w-7xl gap-3 px-[var(--ui-page-x)] py-4 sm:px-[var(--ui-page-x-wide)] sm:py-5 lg:grid-cols-[minmax(15rem,0.7fr)_minmax(0,1.9fr)] lg:items-center">
+          <div className="min-w-0">
             <p className="text-muted-foreground text-sm">חיפוש מהיר</p>
             <h2 className="text-2xl font-semibold">מה תרצי למצוא היום?</h2>
           </div>
-          <form
-            action="/search"
-            aria-label="חיפוש בקטלוג"
-            className="brand-control-panel grid gap-2 p-1.5 sm:grid-cols-[1fr_auto]"
-            role="search"
-          >
-            <div className="relative">
-              <Search
-                aria-hidden="true"
-                className="text-muted-foreground absolute top-1/2 right-3 size-4 -translate-y-1/2"
-              />
-              <Input
-                aria-label="חיפוש מוצר בקטלוג"
-                className="h-12 pr-10"
-                name="q"
-                placeholder="טבעת זהב, עגילי פנינה, מתנה עד 700..."
-              />
+          <div className="grid min-w-0 gap-2">
+            <form
+              action="/search"
+              aria-label="חיפוש בקטלוג"
+              className="brand-control-panel grid gap-2 p-1.5 sm:grid-cols-[minmax(0,1fr)_auto]"
+              data-testid="home-quick-search-form"
+              role="search"
+            >
+              <div className="relative">
+                <Search
+                  aria-hidden="true"
+                  className="text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2"
+                />
+                <Input
+                  aria-label="חיפוש מוצר בקטלוג"
+                  className="bg-background h-[3.25rem] rounded-md border-[var(--glass-border)] pr-11 pl-3 text-sm focus-visible:border-[var(--glass-border-strong)]"
+                  name="q"
+                  placeholder="טבעת זהב, עגילי פנינה, מתנה עד 700..."
+                />
+              </div>
+              <Button
+                className="h-[3.25rem] gap-2 px-5 active:translate-y-px"
+                type="submit"
+              >
+                חיפוש
+                <Search aria-hidden="true" className="size-4" />
+              </Button>
+            </form>
+            <div
+              aria-label="חיפושים מהירים"
+              className="flex flex-wrap items-center gap-2"
+              data-testid="home-quick-search-suggestions"
+            >
+              {quickSearchSuggestions.map((suggestion) => (
+                <Link
+                  className="glass-control hover:bg-muted/35 inline-flex min-h-8 items-center rounded-md border px-3 text-xs font-medium transition-all outline-none hover:border-[var(--glass-border-strong)] focus-visible:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] active:translate-y-px"
+                  href={suggestion.href}
+                  key={suggestion.href}
+                >
+                  {suggestion.label}
+                </Link>
+              ))}
             </div>
-            <Button className="h-12 gap-2" type="submit">
-              חיפוש
-              <Search aria-hidden="true" className="size-4" />
-            </Button>
-          </form>
+          </div>
         </div>
       </RevealSection>
 

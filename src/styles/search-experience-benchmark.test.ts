@@ -1,0 +1,89 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
+import { describe, expect, it } from "vitest";
+
+describe("search experience benchmark contract", () => {
+  it("documents at least one hundred measurable search-control benchmark parameters", () => {
+    const benchmark = read("docs/qa/search-control-benchmark/benchmark.md");
+    const parameterCount = benchmark.match(/^\d+\./gm)?.length ?? 0;
+
+    expect(parameterCount).toBeGreaterThanOrEqual(100);
+    expect(benchmark).toContain("Control height");
+    expect(benchmark).toContain("Button press animation");
+    expect(benchmark).toContain("Official sites opened");
+  });
+
+  it("keeps the home quick search compact, measured, and directly actionable", () => {
+    const home = read("src/app/page.tsx");
+
+    expect(home).toContain("quickSearchSuggestions");
+    expect(home).toContain('data-testid="home-quick-search-form"');
+    expect(home).toContain('data-testid="home-quick-search-suggestions"');
+    expect(home).toContain("/search?maxPrice=700");
+    expect(home).toContain("h-[3.25rem]");
+    expect(home).toContain("pointer-events-none");
+    expect(home).toContain("active:translate-y-px");
+    expect(indexOf(home, 'id="quick-search"')).toBeLessThan(
+      indexOf(home, 'id="categories"'),
+    );
+  });
+
+  it("keeps search controls complete across query, facets, availability, sort, and view state", () => {
+    const controls = read("src/app/search/_components/search-controls.tsx");
+
+    expect(controls).toContain("FacetSearchFields");
+    expect(controls).toContain("AvailabilityField");
+    expect(controls).toContain('name="material"');
+    expect(controls).toContain('name="stone"');
+    expect(controls).toContain('name="collection"');
+    expect(controls).toContain('name="availableOnly"');
+    expect(controls).toContain('name="mode"');
+    expect(controls).toContain('name="view"');
+    expect(controls).toContain('data-testid="mobile-search-filter-sheet"');
+  });
+
+  it("keeps grid and list result presentations addressable by URL", () => {
+    const page = read("src/app/search/page.tsx");
+
+    expect(page).toContain('type SearchViewMode = "grid" | "list"');
+    expect(page).toContain("SearchViewToggle");
+    expect(page).toContain("SearchModeToggle");
+    expect(page).toContain('data-testid="search-results-grid"');
+    expect(page).toContain('data-testid="search-results-list"');
+    expect(page).toContain('data-testid="search-result-list-item"');
+    expect(page).toContain('data-testid="semantic-search-signals"');
+    expect(page).toContain('params.set("view", input.view)');
+    expect(page).toContain('params.set("mode", input.mode)');
+    expect(page).toContain('value === "list" ? "list" : "grid"');
+  });
+
+  it("treats natural-language budget searches as measured filter state", () => {
+    const page = read("src/app/search/page.tsx");
+
+    expect(page).toContain("resolveAiCatalogSearchIntent");
+    expect(page).toContain("normalizeBudgetAwareQuery");
+    expect(page).toContain("intent?.maxPrice");
+    expect(page).toContain("isGenericGiftSearch");
+  });
+
+  it("keeps search result cards benchmark-safe for public commerce", () => {
+    const page = read("src/app/search/page.tsx");
+
+    expect(page).toContain("getProductAvailabilityLabel");
+    expect(page).toContain("product.categoryName");
+    expect(page).toContain("product.material");
+    expect(page).not.toContain("availableQuantity");
+    expect(page).not.toContain("visibleFacets");
+  });
+});
+
+function read(relativePath: string) {
+  return readFileSync(path.join(process.cwd(), relativePath), "utf8");
+}
+
+function indexOf(source: string, pattern: string) {
+  const index = source.indexOf(pattern);
+  expect(index, pattern).toBeGreaterThanOrEqual(0);
+  return index;
+}
