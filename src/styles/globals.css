@@ -1340,16 +1340,24 @@ main
 }
 
 .home-hero-actions [data-slot="button"] {
+  position: relative;
+  overflow: hidden;
   box-shadow: none !important;
   transition-property:
-    background-color, border-color, color, outline-color;
+    background-color, border-color, color, opacity, outline-color, transform;
+  transition-duration: 260ms;
+  transition-timing-function: var(--ease-motion-standard);
 }
 
 .home-hero-actions [data-slot="button"]:not(:disabled):hover,
-.home-hero-actions [data-slot="button"]:not(:disabled):focus-visible,
-.home-hero-actions [data-slot="button"]:not(:disabled):active {
+.home-hero-actions [data-slot="button"]:not(:disabled):focus-visible {
   box-shadow: none !important;
   transform: none !important;
+}
+
+.home-hero-actions [data-slot="button"]:not(:disabled):active {
+  box-shadow: none !important;
+  transform: translateY(1px) scale(0.99) !important;
 }
 
 .home-hero-actions [data-slot="button"]:focus-visible {
@@ -1357,6 +1365,38 @@ main
   outline-offset: 3px;
   --tw-ring-shadow: 0 0 #0000 !important;
   --tw-ring-color: transparent !important;
+}
+
+.home-hero-actions .home-hero-cta-primary:not(:disabled) {
+  border-color: rgb(255 255 255 / 96%) !important;
+  background: rgb(255 255 255 / 96%) !important;
+  color: var(--foreground) !important;
+}
+
+.home-hero-actions .home-hero-cta-primary:not(:disabled):hover,
+.home-hero-actions .home-hero-cta-primary:not(:disabled):focus-visible {
+  border-color: rgb(255 255 255 / 82%) !important;
+  background: rgb(255 255 255 / 12%) !important;
+  color: white !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.home-hero-actions .home-hero-cta-secondary:not(:disabled):hover,
+.home-hero-actions .home-hero-cta-secondary:not(:disabled):focus-visible {
+  border-color: rgb(255 255 255 / 96%) !important;
+  background: rgb(255 255 255 / 96%) !important;
+  color: var(--foreground) !important;
+}
+
+.home-hero-actions .home-hero-cta-icon {
+  transition: transform 260ms var(--ease-motion-standard);
+}
+
+.home-hero-actions
+  .home-hero-cta-primary:not(:disabled):is(:hover, :focus-visible)
+  .home-hero-cta-icon {
+  transform: translateX(-0.25rem);
 }
 
 .public-motion-shell [data-slot="button"].product-primary-cta:not(:disabled),

@@ -117,17 +117,20 @@ export default async function Home() {
           <div className="motion-copy-item flex flex-col items-stretch gap-2 px-3 [--motion-copy-delay:170ms] sm:flex-row sm:items-center sm:justify-end sm:gap-3 sm:px-0">
             <Button
               asChild
-              className="text-foreground hover:text-foreground border-white bg-white shadow-none hover:border-white hover:bg-white"
+              className="home-hero-cta-primary text-foreground hover:text-foreground border-white bg-white shadow-none hover:border-white hover:bg-white"
               size="lg"
             >
               <Link href="/category/rings">
                 לקולקציה
-                <ArrowLeft aria-hidden="true" className="size-4" />
+                <ArrowLeft
+                  aria-hidden="true"
+                  className="home-hero-cta-icon size-4"
+                />
               </Link>
             </Button>
             <Button
               asChild
-              className="hover:text-foreground border-white bg-transparent text-white shadow-none hover:border-white hover:bg-white focus-visible:border-white"
+              className="home-hero-cta-secondary hover:text-foreground border-white bg-transparent text-white shadow-none hover:border-white hover:bg-white focus-visible:border-white"
               size="lg"
               variant="outline"
             >
