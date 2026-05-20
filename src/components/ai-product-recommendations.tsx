@@ -58,7 +58,7 @@ export function AiProductRecommendations({
       >
         {normalizedProducts.map((product) => (
           <article
-            className="glass-card interactive-lift group/card grid gap-4 rounded-md border p-3.5 sm:grid-cols-[112px_1fr] sm:p-4"
+            className="ai-recommendation-card glass-card group/card grid gap-4 rounded-md border p-3.5 sm:grid-cols-[112px_1fr] sm:p-4"
             key={product.slug}
           >
             <Link

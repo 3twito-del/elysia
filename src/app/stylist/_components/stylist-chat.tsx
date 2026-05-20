@@ -148,7 +148,7 @@ export function StylistChat({ compact = false }: StylistChatProps) {
                       {suggestions.map((suggestion) => (
                         <Button
                           key={suggestion}
-                          className="glass-control interactive-lift min-h-11 max-w-full px-4 py-2 text-right leading-5 whitespace-normal"
+                          className="glass-control min-h-11 max-w-full px-4 py-2 text-right leading-5 whitespace-normal"
                           onClick={() => {
                             setInput("");
                             void sendMessage({ text: suggestion });
