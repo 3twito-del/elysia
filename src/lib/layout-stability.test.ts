@@ -25,11 +25,11 @@ describe("layout stability guardrails", () => {
     expect(loadingSource).toContain("h-7 w-20");
   });
 
-  it("keeps shared lift interactions transform-only so hover and focus do not reflow layout", () => {
+  it("keeps shared hover interactions from reflowing layout", () => {
     const cssSource = readSource("src/styles/globals.css");
 
     expect(cssSource).toContain("transform: translateY(var(--hover-lift));");
-    expect(cssSource).toContain("transform: translateY(-1px);");
+    expect(cssSource).toContain("transform: none;");
 
     expect(extractCssBlock(cssSource, ".interactive-lift:hover")).not.toMatch(
       /\b(?:margin|top|bottom|left|right|width|height)\s*:/,
@@ -37,6 +37,9 @@ describe("layout stability guardrails", () => {
     expect(
       extractCssBlock(cssSource, ".motion-thumbnail-button:hover"),
     ).not.toMatch(/\b(?:margin|top|bottom|left|right|width|height)\s*:/);
+    expect(
+      extractCssBlock(cssSource, ".motion-thumbnail-button:hover"),
+    ).toContain("transform: none;");
   });
 
   it("keeps the full cinematic hero reserved for the home route", () => {

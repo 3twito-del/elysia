@@ -1330,13 +1330,43 @@ main
   filter: var(--media-filter);
 }
 
-.public-motion-shell [data-slot="button"]:not(:disabled) {
-  transition-duration: var(--motion-ui);
+.public-motion-shell
+  :where(button, [role="button"], [data-slot="button"]):not(
+    .popup-overlay
+  ):not(:disabled):not([aria-disabled="true"]):not([data-disabled]) {
+  transition-property: background-color, border-color, color, outline-color,
+    opacity, box-shadow, transform;
+  transition-duration: var(--motion-fast);
+  transition-timing-function: var(--ease-motion-standard);
 }
 
-.public-motion-shell [data-slot="button"]:not(:disabled):hover,
-.public-motion-shell [data-slot="button"]:not(:disabled):focus-visible {
-  transform: translateY(-1px);
+.public-motion-shell
+  :where(button, [role="button"], [data-slot="button"]):not(
+    .popup-overlay
+  ):not(:disabled):not([aria-disabled="true"]):not([data-disabled]):is(
+    :hover,
+    :focus-visible
+  ) {
+  transform: none;
+}
+
+.public-motion-shell
+  :where([data-slot="button"][data-variant="default"], .product-primary-cta):not(
+    :disabled
+  ):not([aria-disabled="true"]):not([data-disabled]):active {
+  transform: translateY(1px);
+}
+
+.public-motion-shell
+  :where(
+    [data-slot="button"][data-size="icon"],
+    [data-slot="button"][data-size="icon-xs"],
+    [data-slot="button"][data-size="icon-sm"],
+    [data-slot="button"][data-size="icon-lg"],
+    button[aria-pressed],
+    .motion-thumbnail-button
+  ):active {
+  transform: none !important;
 }
 
 .home-hero-actions [data-slot="button"] {
@@ -1344,7 +1374,7 @@ main
   overflow: hidden;
   box-shadow: none !important;
   transition-property:
-    background-color, border-color, color, opacity, outline-color, transform;
+    background-color, border-color, color, outline-color, opacity, transform;
   transition-duration: 260ms;
   transition-timing-function: var(--ease-motion-standard);
 }
@@ -1437,7 +1467,7 @@ main
 .cookie-button-primary,
 .cookie-button-secondary {
   transition:
-    transform var(--motion-ui) var(--ease-motion-standard),
+    transform var(--motion-fast) var(--ease-motion-standard),
     border-color var(--motion-ui) var(--ease-motion-standard),
     background-color var(--motion-ui) var(--ease-motion-standard),
     box-shadow var(--motion-ui) var(--ease-motion-standard);
@@ -1463,7 +1493,6 @@ main
   background: var(--brand-aqua) !important;
   color: var(--brand-aqua-deep) !important;
   box-shadow: 0 14px 28px rgb(66 201 190 / 16%);
-  transform: translateY(-1px);
 }
 
 .cookie-button-secondary:not(:disabled):hover,
@@ -1472,7 +1501,11 @@ main
   background: rgb(66 201 190 / 10%) !important;
   color: var(--brand-aqua-deep) !important;
   box-shadow: 0 10px 24px rgb(66 201 190 / 10%);
-  transform: translateY(-1px);
+}
+
+.cookie-button-primary:not(:disabled):active,
+.cookie-button-secondary:not(:disabled):active {
+  transform: translateY(1px);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1649,14 +1682,13 @@ html[data-public-floating-bar-visible="true"] .public-motion-content {
 
 .motion-thumbnail-button {
   transition:
-    transform var(--motion-ui) var(--ease-motion-standard),
     border-color var(--motion-ui) var(--ease-motion-standard),
     box-shadow var(--motion-ui) var(--ease-motion-standard);
 }
 
 .motion-thumbnail-button:hover,
 .motion-thumbnail-button[aria-pressed="true"] {
-  transform: translateY(-1px);
+  transform: none;
 }
 
 @keyframes motion-copy-in {

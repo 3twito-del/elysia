@@ -23,7 +23,10 @@ describe("search experience benchmark contract", () => {
     expect(home).toContain("/search?maxPrice=700");
     expect(home).toContain("h-[3.25rem]");
     expect(home).toContain("pointer-events-none");
-    expect(home).toContain("active:translate-y-px");
+    expect(home).toContain(
+      "transition-[background-color,border-color,color,outline-color,opacity]",
+    );
+    expect(home).not.toContain("active:translate-y-px");
     expect(indexOf(home, 'id="quick-search"')).toBeLessThan(
       indexOf(home, 'id="categories"'),
     );

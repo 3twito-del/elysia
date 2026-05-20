@@ -167,7 +167,7 @@ export default async function Home() {
                 />
               </div>
               <Button
-                className="h-[3.25rem] gap-2 px-5 active:translate-y-px"
+                className="h-[3.25rem] gap-2 px-5"
                 type="submit"
               >
                 חיפוש
@@ -181,7 +181,7 @@ export default async function Home() {
             >
               {quickSearchSuggestions.map((suggestion) => (
                 <Link
-                  className="glass-control hover:bg-muted/35 inline-flex min-h-8 items-center rounded-md border px-3 text-xs font-medium transition-all outline-none hover:border-[var(--glass-border-strong)] focus-visible:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] active:translate-y-px"
+                  className="glass-control hover:bg-muted/35 inline-flex min-h-8 items-center rounded-md border px-3 text-xs font-medium transition-[background-color,border-color,color,outline-color,opacity] duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)] outline-none hover:border-[var(--glass-border-strong)] focus-visible:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
                   href={suggestion.href}
                   key={suggestion.href}
                 >
