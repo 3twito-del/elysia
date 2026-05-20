@@ -25,7 +25,6 @@ import {
 } from "~/server/services/search-embeddings";
 
 const TEXT_QUERY_FIELDS = "name,shortDescription,category,material,stone,tags";
-const HYBRID_QUERY_FIELDS = `${TEXT_QUERY_FIELDS},embedding`;
 const SEMANTIC_VECTOR_K = 200;
 
 export type ProductSearchInput = {
@@ -357,7 +356,7 @@ async function searchTypesenseSemanticProducts(
         {
           collection: collectionName,
           q: query,
-          query_by: HYBRID_QUERY_FIELDS,
+          query_by: TEXT_QUERY_FIELDS,
           ...(vectorQuery ? { vector_query: vectorQuery } : {}),
           exclude_fields: "embedding",
           drop_tokens_threshold: 0,
@@ -370,6 +369,10 @@ async function searchTypesenseSemanticProducts(
       ],
     })
     .then((result) => result.results[0]);
+  if (response?.error) {
+    throw new Error(`Typesense semantic search failed: ${response.error}`);
+  }
+
   const products = await listCatalogProducts();
   const productsBySlug = new Map(
     products.map((product) => [product.slug, product] as const),
