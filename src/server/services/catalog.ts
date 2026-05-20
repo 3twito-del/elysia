@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+﻿import type { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
@@ -508,7 +508,7 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
     popularityScore: record._count.viewEvents + record._count.clickEvents * 2,
     material: record.material.name,
     stone: record.stone?.name,
-    collection: record.collections[0]?.name ?? "Aphrodite",
+    collection: record.collections[0]?.name ?? "Elysia",
     collections: record.collections.map((collection) => collection.name),
     image: displayImages[0] ?? DEFAULT_CATALOG_IMAGE,
     images: displayImages.length > 0 ? displayImages : [DEFAULT_CATALOG_IMAGE],

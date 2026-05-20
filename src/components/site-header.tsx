@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Gem, Search, UserRound } from "lucide-react";
+import { useEffect, useState } from "react";
+import { MapPin, Search, UserRound } from "lucide-react";
 
 import {
   isCategoryHref,
@@ -26,161 +26,23 @@ const navItems: HeaderNavItem[] = [
 const categoryNavHrefs = navItems
   .map((item) => item.href)
   .filter(isCategoryHref);
-
-type HeaderScrollState = "top" | "shown" | "hidden";
-type AnchorScrollEventDetail = {
-  phase?: "start" | "settle" | "end";
-  targetTop?: number;
-};
+const desktopNavItems = navItems.slice(0, 4);
 
 export function SiteHeader() {
   const pathname = usePathname();
-  const scrollState = useHeaderScrollState();
+  const [hasScrolled, setHasScrolled] = useState(false);
   const categoryPrefetch = useCategoryRoutePrefetch(categoryNavHrefs, {
     prefetchOnHomeIdle: true,
   });
-
-  return (
-    <header
-      className={cn(
-        "glass-chrome site-chrome sticky top-0 z-50 h-16 border-b transition-transform duration-[220ms] ease-[var(--ease-motion-standard)] motion-reduce:translate-y-0 motion-reduce:transition-none",
-        scrollState === "hidden"
-          ? "-translate-y-[calc(100%+1px)]"
-          : "translate-y-0",
-      )}
-      data-scroll={scrollState}
-      dir="rtl"
-    >
-      <div className="mx-auto grid h-16 max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 sm:px-6 lg:grid-cols-[auto_1fr_auto] lg:gap-5">
-        <div className="flex items-center justify-self-start lg:hidden">
-          <MobileNav
-            currentPathname={pathname}
-            items={navItems}
-            onCategoryIntent={categoryPrefetch.prefetch}
-            onOpenCategoryPrefetch={categoryPrefetch.prefetchAll}
-          />
-        </div>
-
-        <Link
-          className="brand-header-mark flex min-w-0 shrink-0 items-center gap-2 justify-self-center lg:justify-self-start"
-          dir="ltr"
-          href="/"
-        >
-          <Gem aria-hidden="true" className="size-5" />
-          <span className="truncate text-lg font-semibold tracking-normal sm:text-xl">
-            Aphrodite
-          </span>
-        </Link>
-
-        <nav
-          aria-label="ניווט ראשי"
-          className="hidden min-w-0 items-center justify-center gap-1 lg:flex"
-        >
-          {navItems.map((item) => {
-            const categoryHref = isCategoryHref(item.href);
-            const isActive =
-              pathname === item.href ||
-              (categoryHref && pathname.startsWith(`${item.href}/`));
-
-            return (
-              <Link
-                aria-current={isActive ? "page" : undefined}
-                className={cn(
-                  "text-muted-foreground hover:text-foreground focus-visible:text-foreground relative inline-flex h-9 items-center px-3 text-[0.9rem] font-medium transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] xl:px-3.5",
-                  isActive &&
-                    "text-foreground after:bg-foreground font-semibold after:absolute after:inset-x-3 after:bottom-1 after:h-px after:content-['']",
-                )}
-                href={item.href}
-                key={item.href}
-                onFocus={
-                  categoryHref
-                    ? () => categoryPrefetch.prefetch(item.href)
-                    : undefined
-                }
-                onPointerEnter={
-                  categoryHref
-                    ? () => categoryPrefetch.prefetch(item.href)
-                    : undefined
-                }
-                prefetch={categoryHref ? true : undefined}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="flex items-center gap-1 justify-self-end" dir="ltr">
-          <Button asChild size="icon" variant="ghost">
-            <Link href="/search">
-              <Search aria-hidden="true" className="size-5" />
-              <span className="sr-only">חיפוש</span>
-            </Link>
-          </Button>
-          <Button asChild size="icon" variant="ghost">
-            <Link href="/account">
-              <UserRound aria-hidden="true" className="size-5" />
-              <span className="sr-only">אזור לקוח</span>
-            </Link>
-          </Button>
-          <Button asChild size="icon" variant="ghost">
-            <CartCountLink />
-          </Button>
-        </div>
-      </div>
-    </header>
-  );
-}
-
-function useHeaderScrollState() {
-  const pathname = usePathname();
-  const [scrollState, setScrollState] = useState<HeaderScrollState>("top");
-  const anchorScrollLockUntil = useRef(0);
-  const shouldHideDuringAnchorScroll = useRef(false);
+  const isOverHomeHero = pathname === "/" && !hasScrolled;
+  const headerState = isOverHomeHero ? "transparent" : "solid";
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let lastScrollY = Math.max(window.scrollY, 0);
     let frame = 0;
-    const routeFrame = window.requestAnimationFrame(() => {
-      lastScrollY = Math.max(window.scrollY, 0);
-      setScrollState(lastScrollY > 24 ? "shown" : "top");
-    });
-
-    const shouldReduceMotion = () =>
-      mediaQuery.matches ||
-      document.documentElement.dataset.accessibilityMotion === "reduce";
 
     const syncScrollState = () => {
       frame = 0;
-
-      const currentScrollY = Math.max(window.scrollY, 0);
-      const delta = currentScrollY - lastScrollY;
-
-      if (performance.now() < anchorScrollLockUntil.current) {
-        if (currentScrollY < 24) {
-          setScrollState("top");
-        } else if (shouldReduceMotion()) {
-          setScrollState("shown");
-        } else if (shouldHideDuringAnchorScroll.current) {
-          setScrollState("hidden");
-        }
-
-        lastScrollY = currentScrollY;
-        return;
-      }
-
-      if (currentScrollY < 24) {
-        setScrollState("top");
-      } else if (shouldReduceMotion()) {
-        setScrollState("shown");
-      } else if (delta > 10 && currentScrollY > 160) {
-        setScrollState("hidden");
-      } else if (delta < -8) {
-        setScrollState("shown");
-      }
-
-      lastScrollY = currentScrollY;
+      setHasScrolled(window.scrollY > 8);
     };
 
     const requestSync = () => {
@@ -189,44 +51,137 @@ function useHeaderScrollState() {
       frame = window.requestAnimationFrame(syncScrollState);
     };
 
-    const handleAnchorScroll = (event: Event) => {
-      const detail = (event as CustomEvent<AnchorScrollEventDetail>).detail;
-      const currentScrollY = Math.max(window.scrollY, 0);
-
-      shouldHideDuringAnchorScroll.current =
-        (detail?.targetTop ?? currentScrollY) > 160;
-      anchorScrollLockUntil.current =
-        performance.now() + (detail?.phase === "end" ? 260 : 1500);
-
-      if (
-        currentScrollY >= 24 &&
-        shouldHideDuringAnchorScroll.current &&
-        !shouldReduceMotion()
-      ) {
-        setScrollState("hidden");
-      }
-
-      lastScrollY = currentScrollY;
-    };
-
     requestSync();
     window.addEventListener("scroll", requestSync, { passive: true });
-    window.addEventListener("aphrodite:accessibility-settings", requestSync);
-    window.addEventListener("aphrodite:anchor-scroll", handleAnchorScroll);
-    mediaQuery.addEventListener("change", requestSync);
+    window.addEventListener("resize", requestSync);
 
     return () => {
-      window.cancelAnimationFrame(routeFrame);
       window.cancelAnimationFrame(frame);
       window.removeEventListener("scroll", requestSync);
-      window.removeEventListener(
-        "aphrodite:accessibility-settings",
-        requestSync,
-      );
-      window.removeEventListener("aphrodite:anchor-scroll", handleAnchorScroll);
-      mediaQuery.removeEventListener("change", requestSync);
+      window.removeEventListener("resize", requestSync);
     };
   }, [pathname]);
 
-  return scrollState;
+  return (
+    <>
+      <header
+        className="site-header fixed inset-x-0 top-0 z-50 h-16 md:h-[4.25rem] lg:h-[6.125rem]"
+        data-header-state={headerState}
+        data-over-media={isOverHomeHero ? "true" : undefined}
+        dir="rtl"
+      >
+        <p className="sr-only">
+          Elysia online jewelry studio with catalog navigation, product search,
+          boutique locations, account access, cart recovery, and direct routes
+          for rings, necklaces, earrings, and bracelets.
+        </p>
+        <div className="mx-auto grid h-16 max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 sm:px-6 md:h-[4.25rem] md:grid-cols-[auto_1fr_auto] md:gap-3 lg:h-[6.125rem] lg:gap-5">
+          <div className="flex items-center justify-self-start md:hidden">
+            <MobileNav
+              currentPathname={pathname}
+              items={navItems}
+              onCategoryIntent={categoryPrefetch.prefetch}
+              onOpenCategoryPrefetch={categoryPrefetch.prefetchAll}
+            />
+          </div>
+
+          <Link
+            className="brand-header-mark site-header-link flex min-w-0 shrink-0 items-center justify-self-center md:justify-self-start"
+            dir="ltr"
+            href="/"
+          >
+            <span className="truncate text-lg font-semibold tracking-normal sm:text-xl">
+              Elysia
+            </span>
+          </Link>
+
+          <nav
+            aria-label="ניווט ראשי"
+            className="hidden min-w-0 items-center justify-center gap-1 md:flex"
+          >
+            {desktopNavItems.map((item) => {
+              const categoryHref = isCategoryHref(item.href);
+              const isActive =
+                pathname === item.href ||
+                (categoryHref && pathname.startsWith(`${item.href}/`));
+
+              return (
+                <Link
+                  aria-current={isActive ? "page" : undefined}
+                  className={cn(
+                    "site-header-link relative inline-flex h-9 items-center px-2 text-[0.86rem] font-medium transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] xl:px-3",
+                    isActive &&
+                      "text-foreground after:bg-foreground font-semibold after:absolute after:inset-x-2 after:bottom-1 after:h-px after:content-[''] xl:after:inset-x-3",
+                  )}
+                  href={item.href}
+                  key={item.href}
+                  onFocus={
+                    categoryHref
+                      ? () => categoryPrefetch.prefetch(item.href)
+                      : undefined
+                  }
+                  onPointerEnter={
+                    categoryHref
+                      ? () => categoryPrefetch.prefetch(item.href)
+                      : undefined
+                  }
+                  prefetch={categoryHref ? true : undefined}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+
+          <div
+            className="flex items-center gap-0 justify-self-end sm:gap-1"
+            dir="ltr"
+          >
+            <Button
+              asChild
+              className="site-header-action"
+              size="icon"
+              variant="ghost"
+            >
+              <Link href="/search">
+                <Search aria-hidden="true" className="size-5" />
+                <span className="sr-only">חיפוש</span>
+              </Link>
+            </Button>
+            <Button
+              asChild
+              className="site-header-action hidden md:inline-flex"
+              size="icon"
+              variant="ghost"
+            >
+              <Link href="/branches">
+                <MapPin aria-hidden="true" className="size-5" />
+                <span className="sr-only">סניפים ושירות</span>
+              </Link>
+            </Button>
+            <Button
+              asChild
+              className="site-header-action hidden md:inline-flex"
+              size="icon"
+              variant="ghost"
+            >
+              <Link href="/account">
+                <UserRound aria-hidden="true" className="size-5" />
+                <span className="sr-only">אזור לקוח</span>
+              </Link>
+            </Button>
+            <Button
+              asChild
+              className="site-header-action"
+              size="icon"
+              variant="ghost"
+            >
+              <CartCountLink />
+            </Button>
+          </div>
+        </div>
+      </header>
+      <div aria-hidden="true" className="h-16 md:h-[4.25rem] lg:h-[6.125rem]" />
+    </>
+  );
 }

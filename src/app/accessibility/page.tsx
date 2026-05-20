@@ -12,7 +12,7 @@ import { getPublicContactSettings } from "~/server/services/service";
 export const metadata: Metadata = {
   title: "הצהרת נגישות",
   description:
-    "הצהרת הנגישות של Aphrodite, פירוט התאמות באתר ופרטי פנייה בנושא נגישות.",
+    "הצהרת הנגישות של Elysia, פירוט התאמות באתר ופרטי פנייה בנושא נגישות.",
 };
 
 export const dynamic = "force-dynamic";
@@ -26,7 +26,7 @@ export default async function AccessibilityPage() {
 
       <CommercePageHero
         description="אנחנו פועלים להנגיש את האתר והשירותים הדיגיטליים כך שיהיו זמינים, ברורים ונוחים לשימוש."
-        eyebrow="Aphrodite Accessibility"
+        eyebrow="Elysia Accessibility"
         title="הצהרת נגישות"
         variant="content"
       />

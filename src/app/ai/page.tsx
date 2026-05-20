@@ -28,8 +28,8 @@ export default async function AiPage({ searchParams }: AiPageProps) {
     <main className="min-h-screen">
       <SiteHeader />
       <CommercePageHero
-        description="כלי AI מחוברים לקטלוג Aphrodite ומציגים פריטים זמינים לפי כוונה, תקציב וסגנון."
-        eyebrow="Aphrodite AI"
+        description="כלי AI מחוברים לקטלוג Elysia ומציגים פריטים זמינים לפי כוונה, תקציב וסגנון."
+        eyebrow="Elysia AI"
         id="page-hero"
         title="התאמה חכמה לתכשיט"
         variant="content"
@@ -43,7 +43,7 @@ export default async function AiPage({ searchParams }: AiPageProps) {
             <div className="brand-control-panel grid gap-3 p-3 sm:grid-cols-[1fr_auto] sm:items-end">
               <div className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end">
                 <Badge className="w-fit" variant="secondary">
-                  Aphrodite AI
+                  Elysia AI
                 </Badge>
                 <div className="grid gap-2">
                   <h2 className="max-w-4xl text-xl font-semibold tracking-normal sm:text-2xl">

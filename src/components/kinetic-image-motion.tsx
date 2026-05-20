@@ -23,7 +23,7 @@ const motionConfig = {
   hero: {
     depth: 18,
     scale: 1.026,
-    scrollDepth: 18,
+    scrollDepth: 0,
   },
   panel: {
     depth: 12,
@@ -68,6 +68,8 @@ export function KineticImageMotion({
       let pointerInside = false;
       let scrollFrame = 0;
       let layerAnimation: AnimationHandle | null = null;
+
+      if (!shouldUsePointerMotion && !scrollDepth) return;
 
       const animateLayer = (
         x: number,

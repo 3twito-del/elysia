@@ -1,4 +1,4 @@
-import { TRPCError } from "@trpc/server";
+﻿import { TRPCError } from "@trpc/server";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -155,7 +155,7 @@ describe("manual order service", () => {
       customerName: "Dana",
       customerEmail: "dana@example.com",
       customerPhone: "0501234567",
-      branchName: "Aphrodite Tel Aviv",
+      branchName: "Elysia Tel Aviv",
       branchPhone: "03-1234567",
       productName: "Venus Line Ring",
       sku: "RING-VENUS",
@@ -178,7 +178,7 @@ describe("manual order service", () => {
       customerName: "Dana",
       customerEmail: "dana@example.com",
       customerPhone: "0501234567",
-      branchName: "Aphrodite Tel Aviv",
+      branchName: "Elysia Tel Aviv",
       branchPhone: "03-1234567",
       productName: "Venus Line Ring",
       sku: "RING-VENUS",

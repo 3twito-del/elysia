@@ -10,8 +10,13 @@ describe("luxury commerce UI hardening", () => {
     const source = read("src/components/site-header.tsx");
     const navBlock = extractBetween(
       source,
-      "<nav\n          aria-label=",
+      "<nav\n            aria-label=",
       "</nav>",
+    );
+    const brandBlock = extractBetween(
+      source,
+      '<Link\n            className="brand-header-mark',
+      "</Link>",
     );
 
     expect(navBlock).not.toContain("<Button");
@@ -20,6 +25,9 @@ describe("luxury commerce UI hardening", () => {
     expect(navBlock).not.toContain("shadow-");
     expect(navBlock).toContain("after:h-px");
     expect(navBlock).toContain('aria-current={isActive ? "page" : undefined}');
+    expect(brandBlock).toContain("Elysia");
+    expect(brandBlock).not.toContain("<Gem");
+    expect(source).toContain('href="/branches"');
   });
 
   it("keeps mobile navigation and footer disclosures unboxed", () => {
@@ -33,6 +41,9 @@ describe("luxury commerce UI hardening", () => {
     );
     expect(mobileNav).not.toContain("׳³");
     expect(mobileNav).toContain("after:h-px");
+    expect(mobileNav).toContain('href: "/branches"');
+    expect(mobileNav).toContain("grid-cols-4");
+    expect(mobileNav).not.toContain("<Gem");
     expect(footer).not.toContain("bg-background rounded-md border");
     expect(footer).toContain(
       'className="group border-b border-[var(--glass-border)]"',
@@ -82,6 +93,12 @@ describe("luxury commerce UI hardening", () => {
 
   it("keeps non-action labels and cookie consent from returning to aqua pills or top overlays", () => {
     const css = read("src/styles/globals.css");
+    const home = read("src/app/page.tsx");
+    const commerceHeroBlock = extractCssBlock(css, ".commerce-page-hero");
+    const catalogHeroBlock = extractCssBlock(
+      css,
+      '.commerce-page-hero[data-commerce-hero="catalog"]',
+    );
     const heroEyebrowBlock = extractCssBlock(
       css,
       ".commerce-page-hero-eyebrow,\n.commerce-section-header-eyebrow",
@@ -97,6 +114,17 @@ describe("luxury commerce UI hardening", () => {
     expect(heroEyebrowBlock).not.toContain("background:");
     expect(heroEyebrowBlock).not.toContain("brand-aqua-deep");
     expect(catalogEyebrowBlock).not.toContain("background:");
+    expect(commerceHeroBlock).toContain("border-bottom: 0;");
+    expect(commerceHeroBlock).toContain("background: transparent;");
+    expect(catalogHeroBlock).toContain("background: transparent;");
+    expect(css).toContain(
+      'main > header + [aria-hidden="true"] + [data-testid="cinematic-page-hero"]',
+    );
+    expect(css).toContain("margin-top: calc(-1 * var(--site-header-height));");
+    expect(css).toContain("padding-top: var(--site-header-height);");
+    expect(home).not.toContain("bg-[var(--brand-aqua-deep)]");
+    expect(home).not.toContain("bg-[var(--brand-aqua)]");
+    expect(home).not.toContain("rgba(66,201,190");
     expect(cookieBanner).toContain(
       "bottom-[calc(0.75rem+env(safe-area-inset-bottom))]",
     );
@@ -109,6 +137,7 @@ describe("luxury commerce UI hardening", () => {
   it("keeps public secondary controls low-shadow and neutral", () => {
     const button = read("src/components/ui/button.tsx");
     const favorite = read("src/components/product-card-favorite-button.tsx");
+    const productCard = read("src/components/product-card.tsx");
     const card = read("src/components/ui/card.tsx");
 
     expect(button).not.toMatch(/(outline|secondary):\s*"[^"]*shadow-\[0_6px/);
@@ -117,6 +146,9 @@ describe("luxury commerce UI hardening", () => {
     );
     expect(favorite).not.toContain("shadow-[0_8px");
     expect(favorite).toContain('variant="ghost"');
+    expect(productCard).toContain("product-card-shell");
+    expect(productCard).toContain("border-0");
+    expect(productCard).toContain("shadow-none");
     expect(card).toContain("shadow-none");
   });
 });

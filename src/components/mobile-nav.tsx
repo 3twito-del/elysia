@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   CircleHelp,
-  Gem,
+  MapPin,
   Menu,
   Search,
   ShoppingBag,
@@ -36,6 +36,7 @@ type MobileNavProps = {
 
 const quickActions = [
   { href: "/search", label: "חיפוש", icon: Search },
+  { href: "/branches", label: "סניפים", icon: MapPin },
   { href: "/checkout", label: "סל", icon: ShoppingBag },
   { href: "/account", label: "אזור לקוח", icon: UserRound },
 ] as const;
@@ -68,14 +69,14 @@ export function MobileNav({
 
   return (
     <Sheet
-      closeOnMediaQuery="(min-width: 1024px)"
+      closeOnMediaQuery="(min-width: 768px)"
       onOpenChange={setOpen}
       open={open}
     >
       <SheetTrigger asChild>
         <Button
           aria-label="פתיחת ניווט"
-          className="lg:hidden"
+          className="site-header-action md:hidden"
           data-testid="mobile-nav-trigger"
           size="icon"
           type="button"
@@ -93,17 +94,16 @@ export function MobileNav({
       >
         <SheetTitle className="sr-only">ניווט ראשי</SheetTitle>
         <SheetDescription className="sr-only">
-          קישורי ניווט ראשיים לאתר Aphrodite.
+          קישורי ניווט ראשיים לאתר Elysia.
         </SheetDescription>
 
         <div className="border-b border-[var(--glass-border)] px-4 py-4">
           <Link
-            className="brand-header-mark inline-flex items-center gap-2"
+            className="brand-header-mark site-header-link inline-flex items-center"
             href="/"
             onClick={closeNav}
           >
-            <Gem aria-hidden="true" className="size-5" />
-            <span className="text-lg font-semibold">Aphrodite</span>
+            <span className="text-lg font-semibold">Elysia</span>
           </Link>
           <p className="text-muted-foreground mt-2 text-sm leading-6">
             תכשיטים אונליין, ייעוץ אישי ושירות לקוחות נגיש.
@@ -111,7 +111,7 @@ export function MobileNav({
         </div>
 
         <div className="grid gap-4 p-4">
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-4 gap-2">
             {quickActions.map((item) => {
               const Icon = item.icon;
               const isActive = currentPathname === item.href;

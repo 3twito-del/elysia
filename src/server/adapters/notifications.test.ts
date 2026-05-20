@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+﻿import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const resendSendMock = vi.hoisted(() => vi.fn());
 
@@ -17,7 +17,7 @@ vi.mock("~/env", () => ({
     BREVO_API_KEY: undefined,
     RESEND_API_KEY: "re_test",
     STORE_FROM_EMAIL: "orders@example.com",
-    STORE_FROM_NAME: "Aphrodite",
+    STORE_FROM_NAME: "Elysia",
     NODE_ENV: "test",
   },
 }));
@@ -49,7 +49,7 @@ describe("notification adapter", () => {
     expect(result).toEqual({ id: "email_123", provider: "resend" });
     expect(resendSendMock).toHaveBeenCalledWith(
       {
-        from: "Aphrodite <orders@example.com>",
+        from: "Elysia <orders@example.com>",
         to: "dana@example.com",
         subject: "Order update",
         text: "Your order was updated.",

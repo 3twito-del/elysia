@@ -66,7 +66,7 @@ export function ProductCard({
     <Card
       aria-label={product.name}
       className={cn(
-        "brand-accent-card interactive-lift group/card h-full min-w-0 overflow-hidden rounded-md py-0 transition focus-within:ring-3 focus-within:ring-[var(--glass-focus)]",
+        "product-card-shell group/card h-full min-w-0 overflow-hidden rounded-md border-0 py-0 shadow-none transition focus-within:ring-3 focus-within:ring-[var(--glass-focus)]",
         !isAvailable && "bg-muted/30",
       )}
       data-public-floating-avoid="true"

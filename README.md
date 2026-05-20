@@ -1,4 +1,4 @@
-# Aphrodite
+# Elysia
 
 אתר איקומרס בעברית לרשת תכשיטים, מבוסס Next.js App Router, tRPC,
 Prisma/Postgres, אדמין פנימי, הזמנות ידניות, שמירת מלאי זמנית ואינטגרציות
@@ -19,7 +19,7 @@ pnpm dev
 ```env
 ADMIN_BOOTSTRAP_EMAIL="admin@example.com"
 ADMIN_BOOTSTRAP_PASSWORD="strong-password-at-least-12"
-ADMIN_BOOTSTRAP_NAME="Aphrodite Admin"
+ADMIN_BOOTSTRAP_NAME="Elysia Admin"
 ```
 
 ## No-Card Soft Launch
@@ -43,11 +43,11 @@ DATABASE_URL="postgresql://..."
 AUTH_SECRET="generate-a-long-random-secret"
 ADMIN_BOOTSTRAP_EMAIL="admin@example.com"
 ADMIN_BOOTSTRAP_PASSWORD="strong-password-at-least-12"
-ADMIN_BOOTSTRAP_NAME="Aphrodite Admin"
+ADMIN_BOOTSTRAP_NAME="Elysia Admin"
 RESEND_API_KEY="re_..."
 # or BREVO_API_KEY="xkeysib-..."
 STORE_FROM_EMAIL="orders@example.com"
-STORE_FROM_NAME="Aphrodite"
+STORE_FROM_NAME="Elysia"
 OPERATIONS_EMAIL="studio@example.com"
 GOOGLE_GENERATIVE_AI_API_KEY="AIza..."
 AI_CHAT_MODEL="google:gemini-2.5-flash-lite"

@@ -84,7 +84,7 @@ export function StylistChat({ compact = false }: StylistChatProps) {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="grid gap-2">
               <Badge className="w-fit" variant="secondary">
-                Aphrodite AI
+                Elysia AI
               </Badge>
               <div className="grid gap-1">
                 <h2

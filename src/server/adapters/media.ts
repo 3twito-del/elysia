@@ -1,4 +1,4 @@
-import { v2 as cloudinary } from "cloudinary";
+﻿import { v2 as cloudinary } from "cloudinary";
 
 import { env } from "~/env";
 
@@ -81,7 +81,7 @@ class CloudinaryMediaProvider implements MediaProvider {
 
     const buffer = Buffer.from(await upload.file.arrayBuffer());
     const result = await uploadBuffer(buffer, {
-      folder: "aphrodite/service-requests",
+      folder: "elysia/service-requests",
       resource_type: "auto",
       use_filename: true,
       unique_filename: true,

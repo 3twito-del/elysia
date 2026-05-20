@@ -1,4 +1,4 @@
-import { pathToFileURL } from "node:url";
+﻿import { pathToFileURL } from "node:url";
 
 export const protectedAdminPaths = [
   "/admin",
@@ -22,7 +22,7 @@ const publicRouteChecks = [
   {
     path: "/",
     statuses: [200],
-    includes: ["Aphrodite"],
+    includes: ["Elysia"],
     matches: [
       /href="\/category\/rings"/,
       /href="\/checkout"/,
@@ -37,21 +37,21 @@ const publicRouteChecks = [
   {
     path: "/gifts",
     statuses: [200],
-    includes: ["Aphrodite"],
+    includes: ["Elysia"],
     matches: [/href="\/product\//],
   },
-  { path: "/ai", statuses: [200], includes: ["Aphrodite"] },
+  { path: "/ai", statuses: [200], includes: ["Elysia"] },
   {
     path: "/ai?tab=gifts",
     statuses: [200],
-    includes: ["Aphrodite", 'id="ai-gifts"'],
+    includes: ["Elysia", 'id="ai-gifts"'],
   },
-  { path: "/stylist", statuses: [200], includes: ["Aphrodite"] },
-  { path: "/about", statuses: [200], includes: ["Aphrodite"] },
-  { path: "/faq", statuses: [200], includes: ["Aphrodite"] },
-  { path: "/privacy", statuses: [200], includes: ["Aphrodite"] },
-  { path: "/terms", statuses: [200], includes: ["Aphrodite"] },
-  { path: "/accessibility", statuses: [200], includes: ["Aphrodite"] },
+  { path: "/stylist", statuses: [200], includes: ["Elysia"] },
+  { path: "/about", statuses: [200], includes: ["Elysia"] },
+  { path: "/faq", statuses: [200], includes: ["Elysia"] },
+  { path: "/privacy", statuses: [200], includes: ["Elysia"] },
+  { path: "/terms", statuses: [200], includes: ["Elysia"] },
+  { path: "/accessibility", statuses: [200], includes: ["Elysia"] },
 ];
 
 const categoryNavigationChecks = categoryPaths.map((path) => ({

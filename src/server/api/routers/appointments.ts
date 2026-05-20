@@ -65,7 +65,7 @@ export const appointmentsRouter = createTRPCRouter({
           .sendEmail({
             to: input.email,
             subject: "בקשת הפגישה שלך התקבלה",
-            body: `קיבלנו את בקשתך לפגישה בנושא ${input.topic}. צוות Aphrodite יחזור אליך לאישור.`,
+            body: `קיבלנו את בקשתך לפגישה בנושא ${input.topic}. צוות Elysia יחזור אליך לאישור.`,
             idempotencyKey: `appointment_confirmation:${appointment.id}`,
           })
           .catch(async (error: unknown) => {

@@ -36,8 +36,8 @@ type AccessibilitySettings = {
   reduceMotion: boolean;
 };
 
-const storageKey = "aphrodite.accessibility-settings";
-const settingsChangeEvent = "aphrodite:accessibility-settings";
+const storageKey = "elysia.accessibility-settings";
+const settingsChangeEvent = "elysia:accessibility-settings";
 
 const defaultSettings: AccessibilitySettings = {
   textScale: "normal",
@@ -332,12 +332,13 @@ export function AccessibilityWidget() {
         aria-expanded={isOpen}
         aria-haspopup="dialog"
         aria-label="פתיחת תפריט נגישות"
-        className="public-floating-control public-floating-trigger fixed bottom-[calc(max(var(--floating-stack-bottom,1rem),var(--public-floating-bar-offset,1rem))+env(safe-area-inset-bottom))] left-4 z-50 size-11 rounded-full shadow-[0_16px_36px_oklch(0.12_0_0_/_20%)] sm:right-6 sm:left-auto sm:size-12"
+        className="public-floating-control public-floating-trigger bg-background text-foreground focus-visible:outline-foreground/50 fixed right-4 bottom-[calc(max(var(--floating-stack-bottom,1rem),var(--public-floating-bar-offset,1rem))+env(safe-area-inset-bottom))] left-auto z-50 size-11 rounded-full shadow-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid sm:right-6 sm:size-12"
         data-accessibility-widget-trigger="true"
         onClick={() => setIsOpen(true)}
         ref={triggerButtonRef}
         size="icon-lg"
         type="button"
+        variant="outline"
       >
         <Accessibility className="size-6" aria-hidden="true" />
       </Button>

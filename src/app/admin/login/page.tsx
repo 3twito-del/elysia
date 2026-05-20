@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Gem, LockKeyhole } from "lucide-react";
+import { LockKeyhole } from "lucide-react";
 
 import { AdminLoginForm } from "./_components/admin-login-form";
 import { Badge } from "~/components/ui/badge";
@@ -34,13 +34,12 @@ export default async function AdminLoginPage({
       <section className="mx-auto grid min-h-screen max-w-7xl items-center px-[var(--ui-page-x)] py-[var(--ui-section-y)] lg:px-[var(--ui-page-x-wide)]">
         <div className="mx-auto grid w-full max-w-md gap-6">
           <Link
-            className="brand-header-mark mx-auto inline-flex items-center gap-2"
+            className="brand-header-mark mx-auto inline-flex items-center"
             dir="ltr"
             href="/"
           >
-            <Gem aria-hidden="true" className="size-5" />
             <span className="text-xl font-semibold tracking-normal">
-              Aphrodite
+              Elysia
             </span>
           </Link>
           <div>

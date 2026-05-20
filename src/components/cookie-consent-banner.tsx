@@ -21,11 +21,10 @@ export function CookieConsentBanner() {
   useEffect(() => {
     const root = document.documentElement;
 
-    if (isAdminRoute || consentValue !== null) {
+    if (isAdminRoute || consentValue === undefined || consentValue !== null) {
       delete root.dataset.cookieBannerOpen;
       root.style.removeProperty("--floating-stack-bottom");
       root.style.removeProperty("--public-bottom-safe-offset");
-      root.style.removeProperty("--public-cookie-top-offset");
       return;
     }
 
@@ -35,7 +34,6 @@ export function CookieConsentBanner() {
       const height = bannerRef.current?.getBoundingClientRect().height ?? 0;
       root.style.setProperty("--floating-stack-bottom", `${height + 16}px`);
       root.style.setProperty("--public-bottom-safe-offset", `${height}px`);
-      root.style.setProperty("--public-cookie-top-offset", `${height + 8}px`);
     };
 
     syncOffset();
@@ -48,7 +46,6 @@ export function CookieConsentBanner() {
         delete root.dataset.cookieBannerOpen;
         root.style.removeProperty("--floating-stack-bottom");
         root.style.removeProperty("--public-bottom-safe-offset");
-        root.style.removeProperty("--public-cookie-top-offset");
       };
     }
 
@@ -62,11 +59,12 @@ export function CookieConsentBanner() {
       delete root.dataset.cookieBannerOpen;
       root.style.removeProperty("--floating-stack-bottom");
       root.style.removeProperty("--public-bottom-safe-offset");
-      root.style.removeProperty("--public-cookie-top-offset");
     };
   }, [consentValue, isAdminRoute]);
 
-  if (isAdminRoute || consentValue !== null) return null;
+  if (isAdminRoute || consentValue === undefined || consentValue !== null) {
+    return null;
+  }
 
   const chooseConsent = (value: CookieConsentValue) => {
     writeCookieConsent(value);
@@ -76,6 +74,7 @@ export function CookieConsentBanner() {
     <section
       aria-label="בחירת קוקיז"
       className="bg-background fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-50 max-h-[32dvh] overflow-y-auto rounded-md border border-[var(--glass-border)] px-3 py-2 shadow-[0_12px_30px_oklch(0_0_0_/_7%)] sm:inset-x-auto sm:right-4 sm:bottom-4 sm:w-[min(calc(100vw-2rem),22rem)] sm:px-4 sm:py-3"
+      data-cookie-consent-banner="true"
       ref={bannerRef}
     >
       <div className="grid gap-2">
@@ -85,7 +84,7 @@ export function CookieConsentBanner() {
           </div>
           <div className="min-w-0">
             <h2 className="text-xs font-semibold sm:text-base">
-              בחירת קוקיז באתר Aphrodite
+              בחירת קוקיז באתר Elysia
             </h2>
             <p className="text-muted-foreground mt-1 line-clamp-1 max-w-3xl text-[0.68rem] leading-5 sm:text-sm sm:leading-6">
               אנו משתמשים בקוקיז חיוניים להפעלת האתר והסל. באישורכם נשתמש גם

@@ -44,11 +44,7 @@ export function getProductionReadinessValidationError(env = process.env) {
   pushMissingAny(missing, ["JOB_RUNNER_SECRET", "CRON_SECRET"], env);
   pushMissingAny(
     missing,
-    [
-      "AI_GATEWAY_API_KEY",
-      "VERCEL_OIDC_TOKEN",
-      "GOOGLE_GENERATIVE_AI_API_KEY",
-    ],
+    ["AI_GATEWAY_API_KEY", "VERCEL_OIDC_TOKEN", "GOOGLE_GENERATIVE_AI_API_KEY"],
     env,
   );
 

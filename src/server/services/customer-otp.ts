@@ -282,7 +282,7 @@ async function upsertCustomerIdentity(
       userId: user.id,
       customerId: customer.id,
       email: user.email,
-      name: customer.firstName ?? user.name ?? "לקוח/ה Aphrodite",
+      name: customer.firstName ?? user.name ?? "לקוח/ה Elysia",
     };
   }
 
@@ -300,7 +300,7 @@ async function upsertCustomerIdentity(
       userId: existingCustomer.userId,
       customerId: existingCustomer.id,
       email: user?.email ?? null,
-      name: existingCustomer.firstName ?? user?.name ?? "לקוח/ה Aphrodite",
+      name: existingCustomer.firstName ?? user?.name ?? "לקוח/ה Elysia",
     };
   }
 
@@ -326,7 +326,7 @@ async function upsertCustomerIdentity(
     userId: user.id,
     customerId: customer.id,
     email: user.email,
-    name: customer.firstName ?? user.name ?? "לקוח/ה Aphrodite",
+    name: customer.firstName ?? user.name ?? "לקוח/ה Elysia",
   };
 }
 

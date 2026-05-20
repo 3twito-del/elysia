@@ -29,7 +29,7 @@ export function AdminLoginForm({ next }: AdminLoginFormProps) {
           dir="ltr"
           id="email"
           name="email"
-          placeholder="admin@aphrodite.local"
+          placeholder="admin@elysia.local"
           required
           type="email"
         />

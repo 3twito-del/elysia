@@ -9,7 +9,6 @@ import {
   LogOut,
   PackageCheck,
   PlugZap,
-  Store,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -82,12 +81,11 @@ export function AdminShell({
         <aside className="border-border/70 bg-card/95 border-b backdrop-blur lg:sticky lg:top-0 lg:z-30 lg:min-h-screen lg:border-e lg:border-b-0">
           <div className="grid gap-4 p-4 lg:p-5">
             <Link
-              className="admin-brand-mark flex items-center gap-2 text-lg font-semibold"
+              className="admin-brand-mark flex items-center text-lg font-semibold"
               dir="ltr"
               href="/admin"
             >
-              <Store aria-hidden="true" className="size-5" />
-              Aphrodite Ops
+              Elysia
             </Link>
             <nav
               aria-label="אזורי ניהול"

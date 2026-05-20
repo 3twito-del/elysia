@@ -1,6 +1,6 @@
-export const COOKIE_CONSENT_STORAGE_KEY = "aphrodite_cookie_consent";
-export const COOKIE_CONSENT_EVENT = "aphrodite:cookie-consent";
-export const RECENTLY_VIEWED_STORAGE_KEY = "aphrodite_recently_viewed";
+export const COOKIE_CONSENT_STORAGE_KEY = "elysia_cookie_consent";
+export const COOKIE_CONSENT_EVENT = "elysia:cookie-consent";
+export const RECENTLY_VIEWED_STORAGE_KEY = "elysia_recently_viewed";
 
 export type CookieConsentValue = "essential" | "all";
 

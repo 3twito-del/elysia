@@ -18,7 +18,7 @@ async function getBootstrapAdmin() {
   const name =
     configuredName && configuredName.length > 0
       ? configuredName
-      : "Aphrodite Admin";
+      : "Elysia Admin";
 
   if (!email || !password) {
     throw new Error(
@@ -226,7 +226,7 @@ async function main() {
     prisma.branch.create({
       data: {
         slug: "tel-aviv",
-        name: "Aphrodite תל אביב",
+        name: "Elysia תל אביב",
         address: "דיזנגוף 148",
         city: "תל אביב",
         phone: "03-5550101",
@@ -249,7 +249,7 @@ async function main() {
     prisma.branch.create({
       data: {
         slug: "jerusalem",
-        name: "Aphrodite ירושלים",
+        name: "Elysia ירושלים",
         address: "ממילא 12",
         city: "ירושלים",
         phone: "02-5550101",

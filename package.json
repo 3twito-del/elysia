@@ -1,11 +1,15 @@
 {
-  "name": "aphrodite",
+  "name": "elysia",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
     "prebuild": "node scripts/verify-production-env.mjs && node scripts/convert-public-images-to-avif.mjs",
     "build": "next build",
+    "benchmark:header": "tsx scripts/header-benchmark.ts",
+    "benchmark:header:local": "tsx scripts/header-benchmark.ts --skip-external",
+    "benchmark:site": "tsx scripts/benchmarks/site-benchmark.ts --replace-blocked",
+    "benchmark:site:local": "tsx scripts/benchmarks/site-benchmark.ts --skip-external",
     "check": "pnpm lint && pnpm typecheck && pnpm test",
     "db:generate": "prisma generate",
     "db:migrate:dev": "prisma migrate dev",

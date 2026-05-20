@@ -93,7 +93,7 @@ function Wait-CdpReady {
 $chrome = Get-AgentBrowserChromePath -RequestedPath $ChromePath
 
 if (-not $ProfilePath) {
-  $ProfilePath = Join-Path $env:TEMP "agent-browser-cdp-aphrodite-$Port"
+  $ProfilePath = Join-Path $env:TEMP "agent-browser-cdp-elysia-$Port"
 }
 
 Stop-AgentBrowserOwnedProcesses -ProfilePrefix $ProfilePath

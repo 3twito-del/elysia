@@ -175,7 +175,7 @@ function getSharedLimiter(input: RateLimitInput) {
   const limiter = new Ratelimit({
     redis: sharedRedis,
     limiter: Ratelimit.slidingWindow(input.limit, `${windowSeconds} s`),
-    prefix: `aphrodite:rate-limit:${input.limit}:${windowSeconds}`,
+    prefix: `elysia:rate-limit:${input.limit}:${windowSeconds}`,
   });
 
   sharedLimiters.set(limiterKey, limiter);

@@ -79,7 +79,7 @@ export async function createServiceRequestAction(
 
   return {
     ok: true,
-    message: "הפנייה התקבלה. צוות Aphrodite יחזור אליכם בהקדם.",
+    message: "הפנייה התקבלה. צוות Elysia יחזור אליכם בהקדם.",
   };
 }
 

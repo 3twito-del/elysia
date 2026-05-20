@@ -11,7 +11,7 @@ import { getPublicServiceProfile } from "~/server/services/service";
 export const metadata: Metadata = {
   title: "שירות",
   description:
-    "שירות Aphrodite אונליין ובטלפון, עם תצוגת מיקומים פיזיים רק לאחר אישור הפעלה.",
+    "שירות Elysia אונליין ובטלפון, עם תצוגת מיקומים פיזיים רק לאחר אישור הפעלה.",
 };
 
 export const dynamic = "force-dynamic";
@@ -30,8 +30,8 @@ export default async function BranchesPage() {
     <main>
       <SiteHeader />
       <CommercePageHero
-        description="מיקומי שירות מאושרים של Aphrodite, כולל פרטי קשר, שעות ותיאום לפני הגעה."
-        eyebrow="Aphrodite Locations"
+        description="מיקומי שירות מאושרים של Elysia, כולל פרטי קשר, שעות ותיאום לפני הגעה."
+        eyebrow="Elysia Locations"
         title="סניפים ושירות"
         variant="content"
       />

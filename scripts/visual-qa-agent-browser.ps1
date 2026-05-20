@@ -17,7 +17,7 @@ param(
     "/admin/inventory",
     "/admin/integrations"
   ),
-  [string]$ProfilePath = $(Join-Path $env:TEMP "agent-browser-cdp-aphrodite-$Port"),
+  [string]$ProfilePath = $(Join-Path $env:TEMP "agent-browser-cdp-elysia-$Port"),
   [switch]$NoScreenshot,
   [switch]$KeepOpen
 )

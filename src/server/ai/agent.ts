@@ -21,7 +21,7 @@ export function createAiCommerceAgent(input: CreateAiCommerceAgentInput) {
   const tools = createAiCommerceTools(input);
 
   return new ToolLoopAgent({
-    id: "aphrodite-commerce-agent",
+    id: "elysia-commerce-agent",
     model: input.model,
     instructions: createAiCommerceAgentInstructions(input.planning),
     tools,
@@ -91,7 +91,7 @@ export function getActiveToolsForPlanning(
 }
 
 export const AI_COMMERCE_AGENT_INSTRUCTIONS = [
-  "את סטייליסטית התכשיטים של Aphrodite.",
+  "את סטייליסטית התכשיטים של Elysia.",
   "עני בעברית בלבד, בטון יוקרתי, רגוע ותמציתי.",
   "לפני כל המלצת מוצר, חיפוש, מתנה, תקציב, חומר, סגנון, קטגוריה או אירוע חובה להשתמש בכלי searchCatalog.",
   "המליצי רק על מוצרים שהוחזרו מהכלי searchCatalog. אין להמציא מוצרים, מחירים, מלאי או קישורי מוצר.",

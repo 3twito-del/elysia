@@ -143,7 +143,7 @@ export const messagesToMarkdown = (
 
 export const ConversationDownload = ({
   messages,
-  filename = "aphrodite-ai-chat.md",
+  filename = "elysia-ai-chat.md",
   formatMessage = defaultFormatMessage,
   className,
   children,

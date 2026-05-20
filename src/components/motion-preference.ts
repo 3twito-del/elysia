@@ -20,15 +20,12 @@ export function useResolvedReducedMotion() {
       attributeFilter: ["data-accessibility-motion"],
       attributes: true,
     });
-    window.addEventListener(
-      "aphrodite:accessibility-settings",
-      updatePreference,
-    );
+    window.addEventListener("elysia:accessibility-settings", updatePreference);
 
     return () => {
       observer.disconnect();
       window.removeEventListener(
-        "aphrodite:accessibility-settings",
+        "elysia:accessibility-settings",
         updatePreference,
       );
     };

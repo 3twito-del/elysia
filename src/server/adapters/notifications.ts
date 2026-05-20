@@ -52,8 +52,8 @@ function getResend() {
 
 function getSender() {
   return {
-    email: env.STORE_FROM_EMAIL ?? "orders@aphrodite.local",
-    name: env.STORE_FROM_NAME ?? "Aphrodite",
+    email: env.STORE_FROM_EMAIL ?? "orders@elysia.local",
+    name: env.STORE_FROM_NAME ?? "Elysia",
   };
 }
 
@@ -182,7 +182,7 @@ class BrevoNotificationProvider implements NotificationProvider {
 
     return this.sendEmail({
       to: identifier,
-      subject: "קוד הכניסה שלך ל-Aphrodite",
+      subject: "קוד הכניסה שלך ל-Elysia",
       body: `קוד הכניסה שלך הוא ${code}. הקוד תקף ל-10 דקות.`,
     });
   }
@@ -236,7 +236,7 @@ class ResendNotificationProvider implements NotificationProvider {
 
     return this.sendEmail({
       to: identifier,
-      subject: "קוד הכניסה שלך ל-Aphrodite",
+      subject: "קוד הכניסה שלך ל-Elysia",
       body: `קוד הכניסה שלך הוא ${code}. הקוד תקף ל-10 דקות.`,
     });
   }

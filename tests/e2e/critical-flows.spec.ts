@@ -1,9 +1,9 @@
 import { expect, test, type Page } from "@playwright/test";
 
-const consentStorageKey = "aphrodite_cookie_consent";
-const accessibilityStorageKey = "aphrodite.accessibility-settings";
-const recentlyViewedStorageKey = "aphrodite_recently_viewed";
-const cartStorageKey = "aphrodite_cart_session";
+const consentStorageKey = "elysia_cookie_consent";
+const accessibilityStorageKey = "elysia.accessibility-settings";
+const recentlyViewedStorageKey = "elysia_recently_viewed";
+const cartStorageKey = "elysia_cart_session";
 const cartProductSlug = "hera-bracelet";
 const cartProductName = "צמיד Hera";
 const searchProductSlug = "venus-line-ring";
@@ -358,7 +358,7 @@ test.describe("hydration-sensitive responsive surfaces", () => {
       ({ cartStorageKey, sessionKey }) => {
         window.localStorage.setItem(cartStorageKey, sessionKey);
         document.cookie = [
-          `aphrodite_cart_session=${encodeURIComponent(sessionKey)}`,
+          `elysia_cart_session=${encodeURIComponent(sessionKey)}`,
           "Path=/",
           "SameSite=Lax",
         ].join("; ");
@@ -392,7 +392,7 @@ test.describe("hydration-sensitive responsive surfaces", () => {
       ({ cartStorageKey, sessionKey }) => {
         window.localStorage.setItem(cartStorageKey, sessionKey);
         document.cookie = [
-          `aphrodite_cart_session=${encodeURIComponent(sessionKey)}`,
+          `elysia_cart_session=${encodeURIComponent(sessionKey)}`,
           "Path=/",
           "SameSite=Lax",
         ].join("; ");
@@ -485,12 +485,34 @@ test.describe("accessibility and responsive guardrails", () => {
   test("keeps the accessibility widget keyboard-operable", async ({ page }) => {
     await page.goto("/");
 
-    const trigger = page.locator(".public-floating-trigger");
+    const trigger = page.locator("[data-accessibility-widget-trigger='true']");
     await expect(trigger).toBeVisible();
     await expect(trigger).toHaveAttribute(
       "aria-label",
       new RegExp("\\u05e0\\u05d2\\u05d9\\u05e9\\u05d5\\u05ea"),
     );
+    const triggerChrome = await trigger.evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      const styles = window.getComputedStyle(element);
+
+      return {
+        backgroundColor: styles.backgroundColor,
+        bottom: window.innerHeight - rect.bottom,
+        boxShadow: styles.boxShadow,
+        left: rect.left,
+        opacity: styles.opacity,
+        right: window.innerWidth - rect.right,
+        visibility: styles.visibility,
+      };
+    });
+
+    expect(triggerChrome.right).toBeLessThan(triggerChrome.left);
+    expect(triggerChrome.bottom).toBeGreaterThanOrEqual(0);
+    expect(triggerChrome.backgroundColor).not.toBe("rgb(66, 201, 190)");
+    expect(triggerChrome.boxShadow).not.toContain("16px 36px");
+    expect(triggerChrome.visibility).toBe("visible");
+    expect(Number(triggerChrome.opacity)).toBe(1);
+
     await trigger.focus();
     await page.keyboard.press("Enter");
 
@@ -695,12 +717,15 @@ test.describe("accessibility and responsive guardrails", () => {
     });
   }
 
-  test("keeps the home hero offsets balanced on desktop", async ({ page }) => {
+  test("keeps the top-anchored home hero clear of the desktop header", async ({
+    page,
+  }) => {
     test.skip((page.viewportSize()?.width ?? 0) < 1024, "desktop-only check");
 
     await page.goto("/", { waitUntil: "networkidle" });
 
     const offsets = await page.evaluate(() => {
+      const header = document.querySelector("header");
       const hero = document.querySelector(
         '[data-testid="cinematic-page-hero"]',
       );
@@ -709,10 +734,11 @@ test.describe("accessibility and responsive guardrails", () => {
         '[data-testid="home-hero-actions"]',
       );
 
-      if (!hero || !copy || !actions) {
+      if (!header || !hero || !copy || !actions) {
         throw new Error("Missing home hero alignment targets.");
       }
 
+      const headerRect = header.getBoundingClientRect();
       const heroRect = hero.getBoundingClientRect();
       const copyRect = copy.getBoundingClientRect();
       const actionsRect = actions.getBoundingClientRect();
@@ -720,24 +746,84 @@ test.describe("accessibility and responsive guardrails", () => {
       return {
         actionsBottom: Math.round(heroRect.bottom - actionsRect.bottom),
         actionsLeft: Math.round(actionsRect.left - heroRect.left),
+        headerHeight: Math.round(headerRect.height),
+        heroTop: Math.round(heroRect.top),
         copyRight: Math.round(heroRect.right - copyRect.right),
         copyTop: Math.round(copyRect.top - heroRect.top),
       };
     });
 
+    expect(offsets.heroTop).toBe(0);
     expect(
       Math.abs(offsets.copyRight - offsets.actionsLeft),
     ).toBeLessThanOrEqual(1);
     expect(
-      Math.abs(offsets.copyTop - offsets.actionsBottom),
+      Math.abs(offsets.copyTop - offsets.actionsBottom - offsets.headerHeight),
     ).toBeLessThanOrEqual(1);
     expect(offsets.copyRight).toBeGreaterThanOrEqual(48);
+    expect(offsets.copyTop).toBeGreaterThanOrEqual(offsets.headerHeight + 32);
   });
 });
 
 test.describe("cookie consent flow", () => {
   test.beforeEach(async ({ page }) => {
     await clearBrowserState(page);
+  });
+
+  test("does not flash the cookie banner after consent is already stored", async ({
+    page,
+  }) => {
+    await setCookieConsent(page, "all");
+    await page.addInitScript(() => {
+      const win = window as Window & { __cookieBannerSeen?: boolean };
+      const markBannerIfPresent = () => {
+        if (document.querySelector('[data-cookie-consent-banner="true"]')) {
+          win.__cookieBannerSeen = true;
+        }
+      };
+
+      win.__cookieBannerSeen = false;
+      document.addEventListener("DOMContentLoaded", markBannerIfPresent);
+      new MutationObserver(markBannerIfPresent).observe(
+        document.documentElement,
+        {
+          childList: true,
+          subtree: true,
+        },
+      );
+    });
+
+    await page.goto("/", { waitUntil: "networkidle" });
+    await page.waitForTimeout(100);
+
+    await expect(
+      page.locator('[data-cookie-consent-banner="true"]'),
+    ).toHaveCount(0);
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () =>
+            (window as Window & { __cookieBannerSeen?: boolean })
+              .__cookieBannerSeen,
+        ),
+      )
+      .toBe(false);
+
+    await page.reload({ waitUntil: "networkidle" });
+    await page.waitForTimeout(100);
+
+    await expect(
+      page.locator('[data-cookie-consent-banner="true"]'),
+    ).toHaveCount(0);
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () =>
+            (window as Window & { __cookieBannerSeen?: boolean })
+              .__cookieBannerSeen,
+        ),
+      )
+      .toBe(false);
   });
 
   test("blocks analytics until approval and clears it when switching to essential", async ({
@@ -861,7 +947,7 @@ async function clearBrowserState(page: Page) {
       window.localStorage.removeItem(consentStorageKey);
       window.localStorage.removeItem(recentlyViewedStorageKey);
       window.localStorage.removeItem(cartStorageKey);
-      document.cookie = "aphrodite_cart_session=; Path=/; Max-Age=0";
+      document.cookie = "elysia_cart_session=; Path=/; Max-Age=0";
     },
     { cartStorageKey, consentStorageKey, recentlyViewedStorageKey },
   );

@@ -8,7 +8,9 @@ import {
   readCookieConsent,
 } from "~/lib/cookie-consent";
 
-export function useCookieConsentValue() {
+export type CookieConsentSnapshot = CookieConsentValue | null | undefined;
+
+export function useCookieConsentValue(): CookieConsentSnapshot {
   return useSyncExternalStore(
     subscribeCookieConsent,
     getCookieConsentSnapshot,
@@ -22,10 +24,10 @@ function subscribeCookieConsent(onStoreChange: () => void) {
   return () => window.removeEventListener(COOKIE_CONSENT_EVENT, onStoreChange);
 }
 
-function getCookieConsentSnapshot(): CookieConsentValue | null {
+function getCookieConsentSnapshot(): CookieConsentSnapshot {
   return readCookieConsent()?.value ?? null;
 }
 
-function getServerCookieConsentSnapshot(): CookieConsentValue | null {
-  return null;
+function getServerCookieConsentSnapshot(): CookieConsentSnapshot {
+  return undefined;
 }

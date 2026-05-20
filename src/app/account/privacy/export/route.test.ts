@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+﻿import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { resetRateLimitStateForTests } from "~/server/services/rate-limit";
 
@@ -71,7 +71,7 @@ describe("customer privacy export route", () => {
     expect(response.headers.get("Cache-Control")).toBe("no-store");
     expect(response.headers.get("X-Content-Type-Options")).toBe("nosniff");
     expect(response.headers.get("Content-Disposition")).toContain(
-      'filename="aphrodite-customer-customer_1.json"',
+      'filename="elysia-customer-customer_1.json"',
     );
     await expect(response.json()).resolves.toMatchObject({
       customer: {

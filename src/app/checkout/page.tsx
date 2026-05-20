@@ -14,7 +14,7 @@ export default async function CheckoutPage() {
       <SiteHeader />
       <CommercePageHero
         description="סל, משלוח עד הבית וקופה מאובטחת בממשק נקי, עם שירות שמדגיש את רגע הרכישה."
-        eyebrow="Aphrodite Service"
+        eyebrow="Elysia Service"
         title="קופה מאובטחת"
         variant="checkout"
       />

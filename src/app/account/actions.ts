@@ -366,7 +366,7 @@ export async function deleteCustomerDataAction(
       where: { customerId: customer.id },
       data: {
         customerId: null,
-        email: "deleted-customer@aphrodite.local",
+        email: "deleted-customer@elysia.local",
         phone: "deleted",
         recipientName: "Deleted customer",
         shippingAddress: Prisma.JsonNull,
@@ -412,7 +412,7 @@ export async function deleteCustomerDataAction(
         where: { id: session.user.id },
         data: {
           name: "Deleted customer",
-          email: `deleted-${session.user.id}@aphrodite.local`,
+          email: `deleted-${session.user.id}@elysia.local`,
           image: null,
         },
       });

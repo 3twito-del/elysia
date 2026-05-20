@@ -10,15 +10,15 @@ import { SiteFooter } from "~/components/site-footer";
 
 export const metadata: Metadata = {
   title: {
-    default: "Aphrodite | תכשיטי סטודיו מודרניים",
-    template: "%s | Aphrodite",
+    default: "Elysia | תכשיטי סטודיו מודרניים",
+    template: "%s | Elysia",
   },
   description:
     "רשת תכשיטים ישראלית במיצוב יוקרה נגישה: טבעות, שרשראות, עגילים, צמידים, מתנות ורכישה אונליין.",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
-  metadataBase: new URL("https://aphrodite.local"),
+  metadataBase: new URL("https://elysia.local"),
   openGraph: {
-    title: "Aphrodite",
+    title: "Elysia",
     description:
       "תכשיטי סטודיו מודרניים בעברית, עם מסחר אונליין מלא ושירות אישי.",
     locale: "he_IL",

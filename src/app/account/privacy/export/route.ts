@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
@@ -84,7 +84,7 @@ export async function GET() {
     {
       headers: {
         "Cache-Control": "no-store",
-        "Content-Disposition": `attachment; filename="aphrodite-customer-${customer.id}.json"`,
+        "Content-Disposition": `attachment; filename="elysia-customer-${customer.id}.json"`,
         "Content-Type": "application/json; charset=utf-8",
         "X-Content-Type-Options": "nosniff",
       },

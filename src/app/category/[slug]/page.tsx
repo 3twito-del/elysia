@@ -155,7 +155,7 @@ export default async function CategoryPage({
           category.description ??
           "בחירה מסוננת מתוך קטלוג התכשיטים, עם רכישה אונליין ומחירים בשקלים."
         }
-        eyebrow="קטלוג Aphrodite"
+        eyebrow="קטלוג Elysia"
         id="page-hero"
         title={category.name}
         variant="catalog"

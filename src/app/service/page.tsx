@@ -22,7 +22,7 @@ import { getPublicServiceProfile } from "~/server/services/service";
 export const metadata: Metadata = {
   title: "שירות לקוחות",
   description:
-    "שירות אונליין וטלפוני של Aphrodite להזמנות, תיקונים, החזרות, מידות, פרטיות ונגישות.",
+    "שירות אונליין וטלפוני של Elysia להזמנות, תיקונים, החזרות, מידות, פרטיות ונגישות.",
 };
 
 export const dynamic = "force-dynamic";
@@ -59,8 +59,8 @@ export default async function ServicePage() {
       <SiteHeader />
 
       <CommercePageHero
-        description="שירות Aphrodite פועל אונליין ובטלפון בלבד: הזמנות, תיקונים, התאמת מידה, החזרות, נגישות ופרטיות מטופלים במקום אחד."
-        eyebrow="Aphrodite Service"
+        description="שירות Elysia פועל אונליין ובטלפון בלבד: הזמנות, תיקונים, התאמת מידה, החזרות, נגישות ופרטיות מטופלים במקום אחד."
+        eyebrow="Elysia Service"
         title="שירות לקוחות"
         variant="content"
       />

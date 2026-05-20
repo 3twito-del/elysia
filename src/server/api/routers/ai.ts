@@ -79,7 +79,7 @@ export const aiRouter = createTRPCRouter({
       description: [
         `${input.name} נבנה כפריט ${input.category} מודרני עם נוכחות עדינה.`,
         `החומר המרכזי הוא ${input.material}${input.stone ? ` בשילוב ${input.stone}` : ""}.`,
-        "הטון מתאים לקטלוג Aphrodite: פרקטי, יוקרתי ונגיש, בלי להמציא מלאי או מחיר.",
+        "הטון מתאים לקטלוג Elysia: פרקטי, יוקרתי ונגיש, בלי להמציא מלאי או מחיר.",
       ].join("\n\n"),
     })),
 });

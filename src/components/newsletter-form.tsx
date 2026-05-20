@@ -44,7 +44,12 @@ function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <Button className="gap-2" disabled={pending} type="submit">
+    <Button
+      className="gap-2"
+      disabled={pending}
+      type="submit"
+      variant="outline"
+    >
       <Mail aria-hidden="true" className="size-4" />
       {pending ? "שומר..." : "הרשמה"}
     </Button>

@@ -1,4 +1,4 @@
-import { tool } from "ai";
+﻿import { tool } from "ai";
 
 import {
   createTryOnSessionInputSchema,
@@ -31,7 +31,7 @@ export function createAiCommerceTools(context: AiCommerceToolContext) {
   return {
     searchCatalog: tool({
       description:
-        "Search the real Aphrodite jewelry catalog by need, style, category, material, stone, or budget. Use before every product recommendation.",
+        "Search the real Elysia jewelry catalog by need, style, category, material, stone, or budget. Use before every product recommendation.",
       inputSchema: searchCatalogToolInputSchema,
       outputSchema: searchCatalogToolOutputSchema,
       strict: true,

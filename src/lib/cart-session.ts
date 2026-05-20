@@ -1,7 +1,7 @@
-const CART_SESSION_STORAGE_KEY = "aphrodite_cart_session";
-const CART_SESSION_COOKIE = "aphrodite_cart_session";
+const CART_SESSION_STORAGE_KEY = "elysia_cart_session";
+const CART_SESSION_COOKIE = "elysia_cart_session";
 const CART_SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
-export const CART_UPDATED_EVENT = "aphrodite:cart-updated";
+export const CART_UPDATED_EVENT = "elysia:cart-updated";
 
 export function getOrCreateCartSessionKey() {
   const existing = readStoredSessionKey();

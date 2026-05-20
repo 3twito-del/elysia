@@ -7,11 +7,11 @@
 
 @theme inline {
   --font-heading:
-    "Noto Sans Hebrew", "Noto Sans Hebrew Fallback", ui-sans-serif,
-    system-ui, sans-serif;
+    "Noto Sans Hebrew", "Noto Sans Hebrew Fallback", ui-sans-serif, system-ui,
+    sans-serif;
   --font-sans:
-    "Noto Sans Hebrew", "Noto Sans Hebrew Fallback", ui-sans-serif,
-    system-ui, sans-serif;
+    "Noto Sans Hebrew", "Noto Sans Hebrew Fallback", ui-sans-serif, system-ui,
+    sans-serif;
   --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -99,11 +99,11 @@
   --glass-shadow-deep: oklch(0 0 0 / 8%);
   --glass-focus: var(--brand-aqua-ring);
   --font-hebrew-sans:
-    var(--font-noto-hebrew), "Noto Sans Hebrew",
-    "Noto Sans Hebrew Fallback", ui-sans-serif, system-ui, sans-serif;
+    var(--font-noto-hebrew), "Noto Sans Hebrew", "Noto Sans Hebrew Fallback",
+    ui-sans-serif, system-ui, sans-serif;
   --font-latin-brand:
-    var(--font-geist-sans), "Geist", "Geist Fallback", ui-sans-serif,
-    system-ui, sans-serif;
+    var(--font-geist-sans), "Geist", "Geist Fallback", ui-sans-serif, system-ui,
+    sans-serif;
   --ui-page-x: clamp(1rem, 2.4vw, 1.5rem);
   --ui-page-x-wide: clamp(1.5rem, 3vw, 2rem);
   --ui-section-y: clamp(1.75rem, 3.4vw, 2.75rem);
@@ -143,6 +143,18 @@
   --sidebar-accent-foreground: oklch(0.16 0 0);
   --sidebar-border: oklch(0.86 0 0 / 70%);
   --sidebar-ring: oklch(0.18 0 0);
+}
+
+@media (min-width: 768px) {
+  :root {
+    --site-header-height: 4.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --site-header-height: 6.125rem;
+  }
 }
 
 .dark {
@@ -759,20 +771,45 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
 .commerce-page-hero {
   --commerce-hero-copy-max: 42rem;
   --commerce-hero-media-min: clamp(9rem, 18vw, 14rem);
-  border-bottom: 1px solid var(--glass-border);
+  border-bottom: 0;
   color: var(--brand-ink);
-  background: var(--brand-porcelain);
+  background: transparent;
 }
 
 .commerce-page-hero[data-commerce-hero="catalog"] {
   --commerce-hero-copy-max: 44rem;
   --commerce-hero-media-min: clamp(9rem, 18vw, 14rem);
   color: var(--foreground);
-  background: var(--brand-porcelain);
+  background: transparent;
 }
 
 .commerce-page-hero[data-commerce-density="service"] {
-  background: var(--background);
+  background: transparent;
+}
+
+main > header + [aria-hidden="true"] + [data-testid="cinematic-page-hero"],
+main > header + [aria-hidden="true"] + .commerce-page-hero {
+  margin-top: calc(-1 * var(--site-header-height));
+}
+
+main > header + [aria-hidden="true"] + [data-testid="cinematic-page-hero"] {
+  padding-top: var(--site-header-height);
+}
+
+main
+  > header
+  + [aria-hidden="true"]
+  + .commerce-page-hero
+  .commerce-page-hero-inner {
+  padding-top: calc(var(--site-header-height) + var(--ui-section-y-wide));
+}
+
+main
+  > header
+  + [aria-hidden="true"]
+  + .commerce-page-hero[data-commerce-hero="catalog"]
+  .commerce-page-hero-inner {
+  padding-top: calc(var(--site-header-height) + var(--ui-section-y-tight));
 }
 
 .commerce-page-hero-inner {
@@ -783,8 +820,7 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
   align-items: center;
   max-width: 78rem;
   margin-inline: auto;
-  padding: var(--ui-section-y-wide) var(--ui-page-x)
-    var(--ui-section-y);
+  padding: var(--ui-section-y-wide) var(--ui-page-x) var(--ui-section-y);
 }
 
 .commerce-page-hero[data-commerce-hero="catalog"] .commerce-page-hero-inner {
@@ -1001,6 +1037,80 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
 
 .brand-aqua-section {
   background: var(--background);
+}
+
+.site-header {
+  --site-header-link-color: var(--muted-foreground);
+  --site-header-link-hover: var(--foreground);
+  border-bottom: 1px solid transparent;
+  background: transparent;
+  color: var(--foreground);
+  box-shadow: none;
+  transition:
+    background-color var(--motion-ui) var(--ease-motion-standard),
+    border-color var(--motion-ui) var(--ease-motion-standard),
+    box-shadow var(--motion-ui) var(--ease-motion-standard),
+    color var(--motion-ui) var(--ease-motion-standard);
+}
+
+.site-header[data-header-state="solid"] {
+  border-bottom-color: var(--glass-border);
+  background: var(--background);
+  box-shadow: 0 1px 0 oklch(0 0 0 / 2%);
+}
+
+.site-header[data-over-media="true"][data-header-state="transparent"] {
+  --site-header-link-color: rgb(255 255 255 / 78%);
+  --site-header-link-hover: white;
+  color: white;
+}
+
+.site-header[data-over-media="true"][data-header-state="transparent"]
+  .text-muted-foreground {
+  color: rgb(255 255 255 / 82%);
+}
+
+.site-header .site-header-link {
+  background: transparent;
+  color: var(--site-header-link-color);
+  text-decoration: none;
+  transition: color var(--motion-fast) var(--ease-motion-standard);
+}
+
+.site-header .brand-header-mark.site-header-link {
+  color: var(--site-header-link-color);
+}
+
+.site-header .site-header-link:hover,
+.site-header .site-header-link:focus-visible,
+.site-header .site-header-link[aria-current="page"] {
+  background: transparent;
+  color: var(--site-header-link-hover);
+}
+
+.site-header .site-header-action {
+  border-color: transparent !important;
+  background: transparent !important;
+  color: var(--site-header-link-color) !important;
+  box-shadow: none !important;
+  transition:
+    color var(--motion-fast) var(--ease-motion-standard),
+    outline-color var(--motion-fast) var(--ease-motion-standard) !important;
+}
+
+.site-header .site-header-action:hover,
+.site-header .site-header-action:focus-visible,
+.site-header .site-header-action[aria-expanded="true"] {
+  border-color: transparent !important;
+  background: transparent !important;
+  color: var(--site-header-link-hover) !important;
+  box-shadow: none !important;
+  outline: none !important;
+  transform: none !important;
+}
+
+.site-header .site-header-action:focus-visible {
+  outline: none !important;
 }
 
 .brand-accent-card,
@@ -1419,19 +1529,14 @@ html[data-public-overlay-open="true"] .public-floating-control,
 html[data-anchor-scroll-active="true"] .public-floating-control,
 html[data-public-floating-collision="true"]
   .public-floating-trigger:not([data-accessibility-widget-trigger="true"]),
-html[data-public-floating-bar-visible="true"] .public-floating-trigger,
-html[data-cookie-banner-open="true"] .public-floating-trigger {
+html[data-public-floating-bar-visible="true"]
+  .public-floating-trigger:not([data-accessibility-widget-trigger="true"]),
+html[data-cookie-banner-open="true"]
+  .public-floating-trigger:not([data-accessibility-widget-trigger="true"]) {
   opacity: 0;
   pointer-events: none;
   transform: translateY(0.5rem) scale(0.96);
   visibility: hidden;
-}
-
-html[data-public-floating-collision="true"]
-  .public-floating-trigger[data-accessibility-widget-trigger="true"] {
-  top: calc(var(--site-header-height) + 1rem + env(safe-area-inset-top));
-  bottom: auto;
-  transform: none;
 }
 
 html[data-public-floating-bar-visible="true"] .public-motion-content {
@@ -1442,7 +1547,9 @@ html[data-public-floating-bar-visible="true"] .public-motion-content {
 
 @media (max-width: 639px) {
   html[data-cookie-banner-open="true"] .public-motion-content {
-    padding-top: var(--public-cookie-top-offset, 0px);
+    padding-bottom: calc(
+      var(--public-bottom-safe-offset, 0px) + env(safe-area-inset-bottom)
+    );
   }
 }
 
@@ -1459,7 +1566,8 @@ html[data-public-floating-bar-visible="true"] .public-motion-content {
       max(
           var(--public-bottom-safe-offset, 0px),
           var(--public-floating-bar-offset, 0px)
-        ) + env(safe-area-inset-bottom)
+        ) +
+        env(safe-area-inset-bottom)
     );
   }
 }
@@ -1568,6 +1676,22 @@ html[data-public-floating-bar-visible="true"] .public-motion-content {
   .commerce-page-hero[data-commerce-hero="catalog"] .commerce-page-hero-inner {
     min-height: auto;
     padding-block: 1.05rem 1rem;
+  }
+
+  main
+    > header
+    + [aria-hidden="true"]
+    + .commerce-page-hero
+    .commerce-page-hero-inner {
+    padding-top: calc(var(--site-header-height) + 1.45rem);
+  }
+
+  main
+    > header
+    + [aria-hidden="true"]
+    + .commerce-page-hero[data-commerce-hero="catalog"]
+    .commerce-page-hero-inner {
+    padding-top: calc(var(--site-header-height) + 1.05rem);
   }
 
   .commerce-page-hero-title {

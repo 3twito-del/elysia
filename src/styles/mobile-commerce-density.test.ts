@@ -20,6 +20,18 @@ describe("mobile commerce density", () => {
     );
   });
 
+  it("keeps home hero imagery independent from page scroll", () => {
+    const home = read("src/app/page.tsx");
+    const kineticImageMotion = read("src/components/kinetic-image-motion.tsx");
+
+    expect(home).not.toContain("\n          parallax");
+    expect(home).toContain("scrollMotion={false}");
+    expect(kineticImageMotion).toContain("scrollDepth: 0");
+    expect(kineticImageMotion).toContain(
+      "if (!shouldUsePointerMotion && !scrollDepth) return;",
+    );
+  });
+
   it("hides catalog hero media and metrics on mobile before filters or search controls", () => {
     const css = read("src/styles/globals.css");
     const hero = read("src/components/commerce-page-hero.tsx");

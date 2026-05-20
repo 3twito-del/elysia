@@ -529,14 +529,14 @@ export function createManualOrderCustomerMessage(
     subject: `בקשת ההזמנה ${input.orderNumber} התקבלה`,
     body: [
       `${input.customerName} שלום,`,
-      `בקשת ההזמנה שלך ב-Aphrodite התקבלה ונשמרה לטיפול נציג.`,
+      `בקשת ההזמנה שלך ב-Elysia התקבלה ונשמרה לטיפול נציג.`,
       `מספר הזמנה: ${input.orderNumber}`,
       `פריט: ${input.productName}`,
       `כמות: ${input.quantity}`,
       `סכום לתשלום באישור ידני: ${formatManualOrderAmount(input.total)}`,
       `אופן קבלה: ${fulfillmentText}`,
       `המלאי נשמר עד ${formatHebrewDateTime(input.reservationExpiresAt)}.`,
-      `צוות Aphrodite יחזור אליך לאישור סופי והמשך טיפול.`,
+      `צוות Elysia יחזור אליך לאישור סופי והמשך טיפול.`,
     ].join("\n\n"),
   };
 }

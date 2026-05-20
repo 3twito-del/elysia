@@ -3,9 +3,12 @@ import {
   ChevronDown,
   CircleHelp,
   Gem,
+  MapPin,
   Search,
   Share2,
   ShieldCheck,
+  ShoppingBag,
+  Sparkles,
 } from "lucide-react";
 
 import { NewsletterForm } from "~/components/newsletter-form";
@@ -14,16 +17,24 @@ import { Separator } from "~/components/ui/separator";
 import { getCatalogCategories } from "~/server/services/catalog";
 
 const serviceLinks = [
-  { href: "/about", label: "אודות Aphrodite", icon: Gem },
+  { href: "/about", label: "אודות Elysia", icon: Gem },
   { href: "/search", label: "חיפוש בקטלוג", icon: Search },
-  { href: "/checkout", label: "סל וקופה", icon: ShieldCheck },
+  { href: "/branches", label: "סניפים ושירות", icon: MapPin },
   { href: "/account", label: "אזור לקוח", icon: Gem },
+  { href: "/checkout", label: "קופה ותשלום", icon: ShoppingBag },
   { href: "/faq", label: "שאלות ותשובות", icon: CircleHelp },
   { href: "/service", label: "שירות לקוחות", icon: CircleHelp },
+  { href: "/gifts", label: "מתנות", icon: Sparkles },
+  { href: "/ai", label: "סטייליסט AI", icon: Sparkles },
+  { href: "/stylist", label: "ייעוץ אישי", icon: Sparkles },
+  { href: "/terms", label: "תקנון האתר", icon: ShieldCheck },
+  { href: "/privacy", label: "מדיניות פרטיות", icon: ShieldCheck },
+  { href: "/accessibility", label: "הצהרת נגישות", icon: ShieldCheck },
+  { href: "/category/rings", label: "טבעות מובילות", icon: Gem },
 ];
 
 const socialLink = {
-  href: "https://www.instagram.com/aphrodite.one/",
+  href: "https://www.instagram.com/elysia.one/",
   label: "רשתות חברתיות",
 };
 
@@ -31,25 +42,24 @@ export async function SiteFooter() {
   const categories = await getCatalogCategories();
 
   return (
-    <footer className="glass-chrome site-chrome border-t">
-      <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:py-9">
-        <div className="grid gap-6 lg:grid-cols-[1.08fr_0.72fr_0.82fr_0.9fr]">
+    <footer className="bg-transparent">
+      <div className="mx-auto min-h-[63rem] max-w-7xl px-4 py-14 sm:px-6 md:min-h-[55rem] lg:min-h-[32rem] lg:py-20">
+        <div className="grid gap-8 md:grid-cols-2 md:items-start lg:grid-cols-[1.08fr_0.72fr_1fr_0.9fr]">
           <section className="max-w-lg">
             <Link
-              className="brand-footer-mark inline-flex items-center gap-2"
+              className="brand-footer-mark inline-flex items-center"
               href="/"
             >
-              <Gem aria-hidden="true" className="size-5" />
               <span className="text-2xl font-semibold tracking-normal">
-                Aphrodite
+                Elysia
               </span>
             </Link>
-            <p className="text-muted-foreground mt-3 max-w-md text-sm leading-6">
+            <p className="text-muted-foreground mt-5 max-w-md text-sm leading-7">
               רשת תכשיטי סטודיו ישראלית במיצוב יוקרה נגישה, עם קטלוג אונליין,
               רכישה מאובטחת ושירות אישי לבחירת תכשיט או מתנה.
             </p>
             <NewsletterForm />
-            <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+            <div className="mt-6 flex flex-col gap-2 sm:flex-row">
               <Button asChild variant="outline">
                 <Link href="/search">
                   חיפוש בקטלוג
@@ -59,9 +69,12 @@ export async function SiteFooter() {
             </div>
           </section>
 
-          <div className="grid gap-2 lg:hidden">
+          <div className="grid gap-3 md:hidden">
             <details className="group border-b border-[var(--glass-border)]">
-              <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold [&::-webkit-details-marker]:hidden">
+              <summary
+                aria-expanded="true"
+                className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold [&::-webkit-details-marker]:hidden"
+              >
                 קטגוריות
                 <ChevronDown
                   aria-hidden="true"
@@ -91,7 +104,10 @@ export async function SiteFooter() {
             </details>
 
             <details className="group border-b border-[var(--glass-border)]">
-              <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold [&::-webkit-details-marker]:hidden">
+              <summary
+                aria-expanded="true"
+                className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold [&::-webkit-details-marker]:hidden"
+              >
                 שירות וקנייה
                 <ChevronDown
                   aria-hidden="true"
@@ -118,7 +134,10 @@ export async function SiteFooter() {
             </details>
 
             <details className="group border-b border-[var(--glass-border)]">
-              <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold [&::-webkit-details-marker]:hidden">
+              <summary
+                aria-expanded="true"
+                className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold [&::-webkit-details-marker]:hidden"
+              >
                 שירות אונליין
                 <ChevronDown
                   aria-hidden="true"
@@ -144,9 +163,9 @@ export async function SiteFooter() {
             </details>
           </div>
 
-          <nav aria-label="קטגוריות" className="hidden lg:block">
+          <nav aria-label="קטגוריות" className="hidden md:block">
             <h2 className="text-sm font-semibold">קטגוריות</h2>
-            <ul className="text-muted-foreground mt-3 grid gap-1.5 text-sm">
+            <ul className="text-muted-foreground mt-5 grid gap-2 text-sm">
               {categories.map((category) => (
                 <li key={category.slug}>
                   <Link
@@ -168,9 +187,9 @@ export async function SiteFooter() {
             </ul>
           </nav>
 
-          <nav aria-label="שירות וקנייה" className="hidden lg:block">
+          <nav aria-label="שירות וקנייה" className="hidden md:block">
             <h2 className="text-sm font-semibold">שירות וקנייה</h2>
-            <ul className="mt-3 grid gap-1.5 text-sm">
+            <ul className="mt-5 grid gap-2 text-sm">
               {serviceLinks.map((item) => {
                 const Icon = item.icon;
 
@@ -191,18 +210,18 @@ export async function SiteFooter() {
 
           <section
             aria-labelledby="footer-online-service"
-            className="hidden lg:block"
+            className="hidden md:block"
           >
             <h2 className="text-sm font-semibold" id="footer-online-service">
               שירות אונליין
             </h2>
-            <p className="text-muted-foreground mt-4 text-sm leading-6">
+            <p className="text-muted-foreground mt-5 text-sm leading-7">
               כל המכירות מתקיימות אונליין בשלב זה. ההזמנות נשלחות לכתובת הלקוח,
               וצוות השירות זמין לייעוץ, התאמה ומעקב אחרי ההזמנה.
             </p>
             <Button
               asChild
-              className="mt-4 w-full justify-between"
+              className="mt-6 w-full justify-between"
               variant="outline"
             >
               <Link href="/faq">
@@ -213,10 +232,10 @@ export async function SiteFooter() {
           </section>
         </div>
 
-        <Separator className="my-4" />
+        <Separator className="my-8" />
 
         <div className="text-muted-foreground flex flex-col justify-between gap-4 text-sm lg:flex-row lg:items-center">
-          <p>2026 Aphrodite. כל הזכויות שמורות.</p>
+          <span>2026 Elysia. כל הזכויות שמורות.</span>
           <nav
             aria-label="קישורי מדיניות"
             className="flex flex-wrap items-center gap-x-4 gap-y-2"
@@ -240,7 +259,7 @@ export async function SiteFooter() {
               הצהרת נגישות
             </Link>
             <a
-              aria-label="רשתות חברתיות של Aphrodite"
+              aria-label="רשתות חברתיות של Elysia"
               className="hover:text-foreground inline-flex min-h-8 items-center gap-1.5 transition"
               href={socialLink.href}
               rel="noreferrer"

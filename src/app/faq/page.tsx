@@ -21,7 +21,7 @@ import { getPublicContactSettings } from "~/server/services/service";
 export const metadata: Metadata = {
   title: "שאלות ותשובות",
   description:
-    "שאלות ותשובות על קנייה ב-Aphrodite, זמינות מוצרים, מידות, משלוחים, החזרות ומתנות.",
+    "שאלות ותשובות על קנייה ב-Elysia, זמינות מוצרים, מידות, משלוחים, החזרות ומתנות.",
 };
 
 export const dynamic = "force-dynamic";
@@ -101,7 +101,7 @@ export default async function FaqPage() {
 
       <CommercePageHero
         description="תשובות קצרות על קנייה באתר, זמינות אונליין, מידות, משלוחים ומתנות."
-        eyebrow="Aphrodite Help"
+        eyebrow="Elysia Help"
         title="שאלות ותשובות"
         variant="content"
       />

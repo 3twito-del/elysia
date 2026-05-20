@@ -1,4 +1,4 @@
-import { TRPCError } from "@trpc/server";
+﻿import { TRPCError } from "@trpc/server";
 import { describe, expect, it } from "vitest";
 
 import { assertAdminAccess, hasAdminPermission } from "./admin-access";
@@ -6,7 +6,7 @@ import type { AuthorizedAdmin } from "./admin-access";
 
 const ordersAdmin: AuthorizedAdmin = {
   id: "admin_1",
-  email: "admin@aphrodite.local",
+  email: "admin@elysia.local",
   name: "Admin",
   roleName: "Orders",
   permissions: ["ORDERS"],

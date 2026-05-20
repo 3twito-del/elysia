@@ -1,4 +1,4 @@
-import { createHmac } from "node:crypto";
+﻿import { createHmac } from "node:crypto";
 
 import { describe, expect, it } from "vitest";
 
@@ -47,7 +47,7 @@ describe("payment adapter", () => {
       amount: 1290,
       currency: "ILS",
       customerEmail: "customer@example.com",
-      returnUrl: "https://aphrodite.local/checkout/return",
+      returnUrl: "https://elysia.local/checkout/return",
     });
 
     expect(session.provider).toBe("cardcom");

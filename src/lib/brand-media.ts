@@ -42,7 +42,7 @@ export const cinematicRouteMedia = {
   ],
   about: [
     {
-      alt: "סצנת תכשיטים עריכתית בגוון Aphrodite Aqua",
+      alt: "סצנת תכשיטים עריכתית בגוון Elysia Aqua",
       src: "/brand/v2/content-editorial.avif",
     },
     brandHeroSlides[1]!,
@@ -60,7 +60,7 @@ export const cinematicRouteMedia = {
       src: "/brand/v2/content-policy.avif",
     },
     {
-      alt: "סצנת תכשיטים עריכתית בגוון Aphrodite Aqua",
+      alt: "סצנת תכשיטים עריכתית בגוון Elysia Aqua",
       src: "/brand/v2/content-editorial.avif",
     },
   ],
@@ -84,7 +84,7 @@ export const cinematicRouteMedia = {
       src: "/brand/v2/content-policy.avif",
     },
     {
-      alt: "סצנת תכשיטים עריכתית בגוון Aphrodite Aqua",
+      alt: "סצנת תכשיטים עריכתית בגוון Elysia Aqua",
       src: "/brand/v2/content-editorial.avif",
     },
   ],

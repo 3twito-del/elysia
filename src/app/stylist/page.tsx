@@ -16,7 +16,7 @@ export default function StylistPage() {
       <SiteHeader />
       <CommercePageHero
         description="ייעוץ תכשיטים לפי סגנון, תקציב ואירוע, עם המלצות שנשארות בתוך קטלוג פעיל."
-        eyebrow="Aphrodite Stylist"
+        eyebrow="Elysia Stylist"
         id="page-hero"
         title="סטייליסט תכשיטים"
         variant="content"

@@ -1,6 +1,6 @@
 # Public Change Gate
 
-Status: single source of truth for future public Aphrodite design, UX,
+Status: single source of truth for future public Elysia design, UX,
 content, structure, and commerce-control changes.
 
 Implementation markers retained in code:
@@ -27,23 +27,23 @@ The Tier A-only high jewelry gate uses 15 Tier A high jewelry sites. Each site
 has weight `1.5`, for a total weight of `22.5`. The pass threshold is `11.25`,
 which requires support from at least 8 of 15 sites.
 
-| Site | Source URL | Weight |
-| --- | --- | --- |
-| Cartier | https://www.cartier.com/en-us/jewelry/ | 1.5 |
-| Tiffany & Co. | https://www.tiffany.com/ | 1.5 |
-| Van Cleef & Arpels | https://www.vancleefarpels.com/us/en/collections/jewelry/couture.html | 1.5 |
-| Bulgari | https://www.bulgari.com/en-us/ | 1.5 |
-| Harry Winston | https://www.harrywinston.com/ | 1.5 |
-| Graff | https://www.graff.com/us-en/home/ | 1.5 |
-| Chopard | https://www.chopard.com/en-us | 1.5 |
-| Boucheron | https://www.boucheron.com/us/ | 1.5 |
-| Chaumet | https://www.chaumet.com/us_en/ | 1.5 |
-| Piaget | https://www.piaget.com/us-en | 1.5 |
-| Mikimoto | https://www.mikimoto.com/en/index.html | 1.5 |
-| Messika | https://www.messika.com/us_en/ | 1.5 |
-| Buccellati | https://www.buccellati.com/en_us/home | 1.5 |
-| De Beers | https://www.debeers.com/en-us/home | 1.5 |
-| Pomellato | https://www.pomellato.com/ | 1.5 |
+| Site               | Source URL                                                            | Weight |
+| ------------------ | --------------------------------------------------------------------- | ------ |
+| Cartier            | https://www.cartier.com/en-us/jewelry/                                | 1.5    |
+| Tiffany & Co.      | https://www.tiffany.com/                                              | 1.5    |
+| Van Cleef & Arpels | https://www.vancleefarpels.com/us/en/collections/jewelry/couture.html | 1.5    |
+| Bulgari            | https://www.bulgari.com/en-us/                                        | 1.5    |
+| Harry Winston      | https://www.harrywinston.com/                                         | 1.5    |
+| Graff              | https://www.graff.com/us-en/home/                                     | 1.5    |
+| Chopard            | https://www.chopard.com/en-us                                         | 1.5    |
+| Boucheron          | https://www.boucheron.com/us/                                         | 1.5    |
+| Chaumet            | https://www.chaumet.com/us_en/                                        | 1.5    |
+| Piaget             | https://www.piaget.com/us-en                                          | 1.5    |
+| Mikimoto           | https://www.mikimoto.com/en/index.html                                | 1.5    |
+| Messika            | https://www.messika.com/us_en/                                        | 1.5    |
+| Buccellati         | https://www.buccellati.com/en_us/home                                 | 1.5    |
+| De Beers           | https://www.debeers.com/en-us/home                                    | 1.5    |
+| Pomellato          | https://www.pomellato.com/                                            | 1.5    |
 
 ## Required Workflow
 
@@ -65,7 +65,7 @@ which requires support from at least 8 of 15 sites.
    changes may pass as mandatory exceptions, but the exception must still be
    explicit.
 
-Example: for an About copy reduction, compare Aphrodite against Maison, About,
+Example: for an About copy reduction, compare Elysia against Maison, About,
 heritage, and story pages in the 15-site corpus. If at least 8 sites support
 shorter, more restrained content density, the change can proceed. If not,
 Codex must state that the About copy reduction is unsupported by the gate and
@@ -92,6 +92,43 @@ Required structural decisions:
   section.
 - Floating chrome, cookie controls, accessibility controls, and sticky commerce
   controls must not cover focusable or purchasing controls.
+
+## Header Configuration Policy
+
+Any public header change must first be classified by these aspects:
+
+- Chrome anatomy: promo/location strip, primary row, secondary row, drawer,
+  sheet, or utility rail.
+- Brand mark: wordmark, monogram, house symbol, sizing, position, and whether
+  decorative marks are used.
+- Navigation taxonomy: high jewelry, jewelry, category, collection, bridal,
+  gifts, maison/about, service, watches, and editorial paths.
+- Utility access: search, store/location, contact/service, account, wishlist,
+  cart, language, country, currency, and appointment paths.
+- Commerce state: cart count, saved-item state, availability/service entry
+  points, and whether a utility is backed by a real route.
+- Interaction model: static, sticky, hide-on-scroll, dropdown, mega menu,
+  drawer, sheet, active state, hover, keyboard, and focus restoration.
+- Responsive model: desktop row density, tablet breakpoint, mobile menu
+  trigger, tap targets, safe-area behavior, and text fit.
+- Visual tone: typographic links, neutral chrome, restrained borders,
+  low-shadow surfaces, no boxed public navigation, and no decorative pills.
+- Accessibility: skip links, landmarks, `aria-current`, `aria-expanded`,
+  accessible names, reduced motion, Escape close, and focus return.
+- Localization and compliance: country/language selectors only when backed by
+  real service, legal/accessibility links, and cookie-control collision rules.
+
+Canonical decision from the 15-site high-jewelry gate:
+
+- The header stays compact, sticky, typographic, and utility-led.
+- The public header and mobile navigation use a clean Elysia wordmark only;
+  generic gem icons are not used inside the header brand mark.
+- Primary navigation remains category/task oriented and unboxed.
+- Utilities must expose search, location/service, account, and cart when those
+  routes exist; unavailable physical locations may resolve to the service route.
+- Mobile navigation mirrors the desktop taxonomy through a sheet/drawer with
+  compact quick actions and separate catalog/service groups.
+- AI/stylist remains out of primary header navigation.
 
 ## Historical Decisions
 

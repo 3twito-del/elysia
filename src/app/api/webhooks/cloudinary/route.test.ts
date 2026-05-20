@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+﻿import { createHash } from "node:crypto";
 
 import { describe, expect, it } from "vitest";
 
@@ -6,7 +6,7 @@ import { verifyCloudinarySignature } from "./route";
 
 describe("Cloudinary webhook verification", () => {
   it("verifies signed webhook bodies within the timestamp window", () => {
-    const rawBody = JSON.stringify({ public_id: "products/aphrodite-ring" });
+    const rawBody = JSON.stringify({ public_id: "products/elysia-ring" });
     const timestamp = "1760000000";
     const secret = "cloudinary-secret";
     const signature = createHash("sha256")
@@ -26,7 +26,7 @@ describe("Cloudinary webhook verification", () => {
   });
 
   it("rejects stale signed callbacks and production fallback verification", () => {
-    const rawBody = JSON.stringify({ public_id: "products/aphrodite-ring" });
+    const rawBody = JSON.stringify({ public_id: "products/elysia-ring" });
     const timestamp = "1760000000";
     const secret = "cloudinary-secret";
     const signature = createHash("sha256")

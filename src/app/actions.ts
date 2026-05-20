@@ -60,7 +60,7 @@ export async function joinNewsletter(
   });
 
   revalidatePath("/");
-  return { ok: true, message: "נרשמת לעדכוני Aphrodite" };
+  return { ok: true, message: "נרשמת לעדכוני Elysia" };
 }
 
 export async function saveWishlistItem(

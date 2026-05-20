@@ -6,22 +6,22 @@ import { describe, expect, it } from "vitest";
 const root = process.cwd();
 
 describe("public floating chrome contract", () => {
-  it("hides accessibility triggers while sticky commerce bars are visible", () => {
+  it("keeps the accessibility trigger available while sticky commerce bars are visible", () => {
     const css = read("src/styles/globals.css");
 
     expect(css).toContain(
-      'html[data-public-floating-bar-visible="true"] .public-floating-trigger',
+      'html[data-public-floating-bar-visible="true"]\n  .public-floating-trigger:not([data-accessibility-widget-trigger="true"])',
     );
     expect(css).toContain(
-      'html[data-cookie-banner-open="true"] .public-floating-trigger',
+      'html[data-cookie-banner-open="true"]\n  .public-floating-trigger:not([data-accessibility-widget-trigger="true"])',
     );
     expect(css).toContain(
       'html[data-public-floating-collision="true"]\n  .public-floating-trigger:not([data-accessibility-widget-trigger="true"])',
     );
-    expect(css).toContain(
-      'html[data-public-floating-collision="true"]\n  .public-floating-trigger[data-accessibility-widget-trigger="true"]',
+    expect(css).not.toContain(
+      '.public-floating-trigger[data-accessibility-widget-trigger="true"]',
     );
-    expect(css).toContain(
+    expect(css).not.toContain(
       "top: calc(var(--site-header-height) + 1rem + env(safe-area-inset-top))",
     );
     expect(css).toContain(
@@ -33,6 +33,35 @@ describe("public floating chrome contract", () => {
     expect(css).toContain("var(--public-bottom-safe-offset, 0px)");
   });
 
+  it("renders the accessibility trigger as a neutral RTL bottom action", () => {
+    const widget = read("src/components/accessibility-widget.tsx");
+
+    expect(widget).toContain('data-accessibility-widget-trigger="true"');
+    expect(widget).toContain("fixed right-4");
+    expect(widget).toContain("left-auto");
+    expect(widget).toContain('variant="outline"');
+    expect(widget).toContain("bg-background");
+    expect(widget).toContain("text-foreground");
+    expect(widget).toContain("shadow-none");
+    expect(widget).toContain("focus-visible:ring-0");
+    expect(widget).toContain("focus-visible:ring-transparent");
+    expect(widget).toContain("focus-visible:outline-foreground/50");
+    expect(widget).toContain("focus-visible:outline-solid");
+    expect(widget).not.toContain("fixed bottom");
+    expect(widget).not.toContain("left-4");
+    expect(widget).not.toContain('variant="default"');
+  });
+
+  it("does not server-render the cookie banner before consent storage is known", () => {
+    const hook = read("src/lib/use-cookie-consent.ts");
+    const banner = read("src/components/cookie-consent-banner.tsx");
+
+    expect(hook).toContain("export type CookieConsentSnapshot");
+    expect(hook).toContain("return undefined;");
+    expect(banner).toContain("consentValue === undefined");
+    expect(banner).toContain('data-cookie-consent-banner="true"');
+  });
+
   it("syncs cookie banner height into the shared bottom content offset", () => {
     const banner = read("src/components/cookie-consent-banner.tsx");
 
@@ -40,9 +69,7 @@ describe("public floating chrome contract", () => {
     expect(banner).toContain(
       'root.style.setProperty("--public-bottom-safe-offset", `${height}px`)',
     );
-    expect(banner).toContain(
-      'root.style.setProperty("--public-cookie-top-offset", `${height + 8}px`)',
-    );
+    expect(banner).not.toContain("--public-cookie-top-offset");
     expect(countOccurrences(banner, "--public-bottom-safe-offset")).toBe(4);
     expect(banner).toContain("sm:w-[min(calc(100vw-2rem),22rem)]");
     expect(banner).toContain(

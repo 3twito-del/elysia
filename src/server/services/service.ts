@@ -217,7 +217,7 @@ export async function createPublicServiceRequest(input: {
       idempotencyKey: `${BUSINESS_EVENTS.emailRequested}:service-request:${created.id}`,
       payload: {
         recipientEmail: topic?.recipientEmail ?? settings.serviceEmail,
-        subject: `Aphrodite service request: ${topic?.label ?? parsed.topicSlug}`,
+        subject: `Elysia service request: ${topic?.label ?? parsed.topicSlug}`,
         body: createServiceRequestEmailBody({
           attachmentCount: uploads.length,
           email: parsed.email,
@@ -522,7 +522,7 @@ function createServiceRequestEmailBody(input: {
   topicLabel: string;
 }) {
   return [
-    "Aphrodite service request",
+    "Elysia service request",
     `Request ID: ${input.requestId}`,
     `Topic: ${input.topicLabel}`,
     `Name: ${input.name}`,

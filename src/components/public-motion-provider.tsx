@@ -23,7 +23,7 @@ type PublicMotionContextValue = {
 };
 
 const pageTransitionMs = 180;
-const anchorScrollEventName = "aphrodite:anchor-scroll";
+const anchorScrollEventName = "elysia:anchor-scroll";
 const floatingAvoidSelector = [
   '[data-public-floating-avoid="true"]',
   '[data-slot="card"]',
@@ -72,16 +72,13 @@ function usePrefersReducedMotion() {
     const syncFrame = window.requestAnimationFrame(updatePreference);
 
     mediaQuery.addEventListener("change", updatePreference);
-    window.addEventListener(
-      "aphrodite:accessibility-settings",
-      updatePreference,
-    );
+    window.addEventListener("elysia:accessibility-settings", updatePreference);
 
     return () => {
       window.cancelAnimationFrame(syncFrame);
       mediaQuery.removeEventListener("change", updatePreference);
       window.removeEventListener(
-        "aphrodite:accessibility-settings",
+        "elysia:accessibility-settings",
         updatePreference,
       );
     };

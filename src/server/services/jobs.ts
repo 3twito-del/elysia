@@ -1,4 +1,4 @@
-import type { OrderStatus, OutboxEvent, Prisma } from "@prisma/client";
+﻿import type { OrderStatus, OutboxEvent, Prisma } from "@prisma/client";
 
 import { notificationProvider } from "~/server/adapters/notifications";
 import { searchProvider } from "~/server/adapters/search";
@@ -97,11 +97,11 @@ export function createOutboxEmailMessage(payload: Prisma.JsonValue) {
     to: customerEmail,
     subject:
       subject ??
-      (orderNumber ? `Aphrodite ${orderNumber}` : "Aphrodite order update"),
+      (orderNumber ? `Elysia ${orderNumber}` : "Elysia order update"),
     body:
       body ??
       [
-        "Aphrodite",
+        "Elysia",
         orderNumber ? `Order: ${orderNumber}` : null,
         `Event: ${template}`,
       ]

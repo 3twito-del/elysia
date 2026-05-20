@@ -85,7 +85,7 @@ export default async function ProductPage({
     sku: product.sku,
     image: product.image,
     description: product.shortDescription,
-    brand: { "@type": "Brand", name: "Aphrodite" },
+    brand: { "@type": "Brand", name: "Elysia" },
     offers: {
       "@type": "Offer",
       priceCurrency: "ILS",
@@ -138,7 +138,7 @@ export default async function ProductPage({
           <div className="mx-auto max-w-xl lg:mx-0">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-muted-foreground text-xs font-medium tracking-normal uppercase">
-                Aphrodite Fine Jewelry
+                Elysia Fine Jewelry
               </p>
             </div>
 
@@ -203,7 +203,7 @@ export default async function ProductPage({
         <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.88fr_1.12fr] lg:gap-12">
           <CommerceSectionHeader
             className="mb-0"
-            eyebrow="Aphrodite Atelier"
+            eyebrow="Elysia Atelier"
             title="תכשיט שנבחר כמו פריט אייקוני, לא כמו עוד מוצר בקטלוג."
           />
 
