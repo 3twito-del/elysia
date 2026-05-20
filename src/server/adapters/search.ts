@@ -223,7 +223,15 @@ async function searchSemanticProducts(
   const context = await createSemanticSearchContext(input);
 
   if (client && context.queryVector) {
-    return searchTypesenseSemanticProducts(client, context);
+    try {
+      return await searchTypesenseSemanticProducts(client, context);
+    } catch (error) {
+      if (process.env.NODE_ENV === "development") {
+        console.error("[search:typesense-semantic]", error);
+      }
+
+      return searchLocalSemanticProducts(context);
+    }
   }
 
   return searchLocalSemanticProducts(context);
@@ -340,23 +348,28 @@ async function searchTypesenseSemanticProducts(
   const query = normalizeTypesenseQuery(
     intent.lexicalQuery ?? effectiveInput.query ?? intent.semanticQuery,
   );
-  const response = await client
-    .collections<ProductSearchDocument>(collectionName)
-    .documents()
-    .search({
-      q: query,
-      query_by: HYBRID_QUERY_FIELDS,
-      vector_query: queryVector
-        ? `embedding:([${queryVector.join(",")}], k:${SEMANTIC_VECTOR_K}, alpha:0.65)`
-        : undefined,
-      exclude_fields: "embedding",
-      drop_tokens_threshold: 0,
-      filter_by: buildTypesenseFilter(effectiveInput, intent),
-      facet_by: "category,material,stone,collection,availableBranches",
-      sort_by: buildTypesenseSort(effectiveInput, query),
-      page: pagination.page,
-      per_page: pagination.perPage,
-    });
+  const vectorQuery = queryVector
+    ? `embedding:([${queryVector.join(",")}], k:${SEMANTIC_VECTOR_K}, alpha:0.65)`
+    : undefined;
+  const response = await client.multiSearch
+    .perform<[ProductSearchDocument]>({
+      searches: [
+        {
+          collection: collectionName,
+          q: query,
+          query_by: HYBRID_QUERY_FIELDS,
+          ...(vectorQuery ? { vector_query: vectorQuery } : {}),
+          exclude_fields: "embedding",
+          drop_tokens_threshold: 0,
+          filter_by: buildTypesenseFilter(effectiveInput, intent),
+          facet_by: "category,material,stone,collection,availableBranches",
+          sort_by: buildTypesenseSort(effectiveInput, query),
+          page: pagination.page,
+          per_page: pagination.perPage,
+        },
+      ],
+    })
+    .then((result) => result.results[0]);
   const products = await listCatalogProducts();
   const productsBySlug = new Map(
     products.map((product) => [product.slug, product] as const),
