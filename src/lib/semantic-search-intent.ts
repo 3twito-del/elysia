@@ -148,6 +148,7 @@ export function resolveDeterministicSemanticSearchIntent(
     query: originalQuery,
     stone: input.stone,
   });
+  const excludedTerms = detectExcludedTerms(originalQuery, options);
   const hardFilters = {
     category:
       input.category ??
@@ -155,12 +156,16 @@ export function resolveDeterministicSemanticSearchIntent(
       detectCategory(originalQuery, options.categories),
     material:
       input.material ??
-      detectAllowedValue(originalQuery, options.facets?.materials),
+      detectAllowedValue(
+        originalQuery,
+        options.facets?.materials,
+        excludedTerms,
+      ),
     stone:
-      input.stone ?? detectAllowedValue(originalQuery, options.facets?.stones),
+      input.stone ??
+      detectAllowedValue(originalQuery, options.facets?.stones, excludedTerms),
     maxPrice: input.maxPrice ?? aiIntent.maxPrice,
   };
-  const excludedTerms = detectExcludedTerms(originalQuery, options);
   const softSignals = detectSoftSignals(originalQuery);
   const semanticQuery = buildSemanticQuery(originalQuery, {
     excludedTerms,
@@ -311,13 +316,23 @@ function detectCategory(
   )?.slug;
 }
 
-function detectAllowedValue(query?: string, allowedValues: string[] = []) {
+function detectAllowedValue(
+  query?: string,
+  allowedValues: string[] = [],
+  excludedValues: string[] = [],
+) {
   const normalized = normalizeText(query);
   if (!normalized) return undefined;
+  const normalizedExcludedValues = new Set(excludedValues.map(normalizeText));
 
-  return allowedValues.find((value) =>
-    normalized.includes(normalizeText(value)),
-  );
+  return allowedValues.find((value) => {
+    const normalizedValue = normalizeText(value);
+
+    return (
+      !normalizedExcludedValues.has(normalizedValue) &&
+      normalized.includes(normalizedValue)
+    );
+  });
 }
 
 function detectExcludedTerms(

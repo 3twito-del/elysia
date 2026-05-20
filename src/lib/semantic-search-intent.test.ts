@@ -45,6 +45,7 @@ describe("semantic search intent", () => {
 
     expect(intent.hardFilters.category).toBe("rings");
     expect(intent.hardFilters.material).toBeUndefined();
+    expect(intent.hardFilters.stone).toBeUndefined();
     expect(intent.excludedTerms).toContain("פנינה");
     expect(
       productMatchesSemanticExclusions(
