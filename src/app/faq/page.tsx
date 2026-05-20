@@ -101,7 +101,7 @@ export default async function FaqPage() {
 
       <CommercePageHero
         description="תשובות קצרות על קנייה באתר, זמינות אונליין, מידות, משלוחים ומתנות."
-        eyebrow="Elysia Help"
+        eyebrow="עזרה ושירות"
         title="שאלות ותשובות"
         variant="content"
       />

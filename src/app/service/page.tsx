@@ -60,7 +60,7 @@ export default async function ServicePage() {
 
       <CommercePageHero
         description="שירות Elysia פועל אונליין ובטלפון בלבד: הזמנות, תיקונים, התאמת מידה, החזרות, נגישות ופרטיות מטופלים במקום אחד."
-        eyebrow="Elysia Service"
+        eyebrow="שירות Elysia"
         title="שירות לקוחות"
         variant="content"
       />
@@ -69,7 +69,7 @@ export default async function ServicePage() {
         <div className="grid gap-6 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
           <section className="grid gap-5" aria-labelledby="service-contact">
             <div>
-              <Badge variant="secondary">Online first</Badge>
+              <Badge variant="secondary">שירות אונליין</Badge>
               <h2 className="mt-3 text-2xl font-semibold" id="service-contact">
                 כל ערוצי השירות במקום אחד
               </h2>
@@ -144,7 +144,7 @@ export default async function ServicePage() {
 
           <section aria-labelledby="service-form" id="service-form">
             <div className="mb-4">
-              <Badge variant="outline">Service form</Badge>
+              <Badge variant="outline">פתיחת פנייה</Badge>
               <h2 className="mt-3 text-2xl font-semibold">פתיחת פנייה</h2>
               <p className="text-muted-foreground mt-2 text-sm leading-6">
                 בחרו נושא, הוסיפו פרטים וקבצים אם צריך, והפנייה תיכנס לטיפול.

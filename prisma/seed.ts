@@ -213,9 +213,9 @@ async function main() {
         openingHours: {
           sundayThursday: "10:00-18:00",
           friday: "09:30-13:00",
-          saturday: "Closed",
+          saturday: "סגור",
         },
-        services: ["Online service", "Phone support", "Repairs coordination"],
+        services: ["שירות אונליין", "מענה טלפוני", "תיאום תיקונים"],
         kind: "ONLINE",
         isApproved: true,
         isPublic: false,

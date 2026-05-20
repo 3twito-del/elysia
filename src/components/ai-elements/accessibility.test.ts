@@ -7,7 +7,7 @@ describe("AI elements accessibility guardrails", () => {
   it("keeps the conversation log named and announced politely", () => {
     const source = readSource("src/components/ai-elements/conversation.tsx");
 
-    expect(source).toContain('"aria-label": ariaLabel = "שיחת AI"');
+    expect(source).toContain('"aria-label": ariaLabel = "שיחת סטייליסט"');
     expect(source).toContain("aria-label={ariaLabel}");
     expect(source).toContain('aria-live="polite"');
     expect(source).toContain('aria-relevant="additions text"');

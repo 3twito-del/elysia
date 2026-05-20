@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { DeferredStylistChat } from "./_components/deferred-stylist-chat";
 
 export const metadata = {
-  title: "סטייליסט AI",
+  title: "סטייליסט תכשיטים",
 };
 
 export default function StylistPage() {
@@ -16,7 +16,7 @@ export default function StylistPage() {
       <SiteHeader />
       <CommercePageHero
         description="ייעוץ תכשיטים לפי סגנון, תקציב ואירוע, עם המלצות שנשארות בתוך קטלוג פעיל."
-        eyebrow="Elysia Stylist"
+        eyebrow="ייעוץ אישי"
         id="page-hero"
         title="סטייליסט תכשיטים"
         variant="content"
@@ -35,7 +35,7 @@ export default function StylistPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Sparkles aria-hidden="true" className="size-5" />
-                  מה ה-AI יודע לעשות
+                  מה הסטייליסט יודע לעשות
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-muted-foreground grid gap-3 text-sm leading-7">
@@ -52,8 +52,8 @@ export default function StylistPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-muted-foreground text-sm leading-7">
-                בגרסה הראשונה נשמר חוזה למדידה. מנוע ראייה ממוחשבת עצמאי ייכנס
-                דרך אותו חוזה בלי לשנות את מסכי המוצר או הלקוח.
+                אפשר לפתוח בקשת מדידה מתמונת מוצר או מפרטי מידה, ולקבל הכוונה
+                לפני שמירת ההזמנה.
               </CardContent>
             </Card>
           </RevealGrid>

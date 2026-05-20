@@ -77,9 +77,9 @@ export const aiRouter = createTRPCRouter({
     .query(({ input }) => ({
       shortDescription: `${input.name} ב${input.material}${input.stone ? ` עם ${input.stone}` : ""}, בעיצוב נקי לשימוש יומיומי ומתנה מדויקת.`,
       description: [
-        `${input.name} נבנה כפריט ${input.category} מודרני עם נוכחות עדינה.`,
+        `${input.name} הוא פריט ${input.category} מודרני עם נוכחות עדינה.`,
         `החומר המרכזי הוא ${input.material}${input.stone ? ` בשילוב ${input.stone}` : ""}.`,
-        "הטון מתאים לקטלוג Elysia: פרקטי, יוקרתי ונגיש, בלי להמציא מלאי או מחיר.",
+        "הפרטים, הזמינות והמחיר מוצגים לפני רכישה כדי לאפשר בחירה ברורה ושקטה.",
       ].join("\n\n"),
     })),
 });
@@ -89,7 +89,7 @@ async function assertAiPublicRateLimit(headers: Headers, action: string) {
     key: `ai:${action}:${getTRPCRequestIp(headers)}`,
     limit: 30,
     windowMs: 15 * 60_000,
-    message: "יותר מדי בקשות AI. נסו שוב מאוחר יותר.",
+    message: "יותר מדי בקשות התאמה. נסו שוב מאוחר יותר.",
   });
 }
 

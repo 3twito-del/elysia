@@ -103,7 +103,7 @@ export function PublicMotionProvider({
   const [renderedPathname, setRenderedPathname] = useState(pathname);
   const [renderedChildren, setRenderedChildren] = useState(children);
   const [motionState, setMotionState] = useState<MotionState>("visible");
-  const [suppressInitialReveal, setSuppressInitialReveal] = useState(false);
+  const [suppressInitialReveal, setSuppressInitialReveal] = useState(true);
   const motionContextValue = useMemo(
     () => ({ suppressInitialReveal }),
     [suppressInitialReveal],
@@ -141,15 +141,12 @@ export function PublicMotionProvider({
 
         setRenderedChildren(children);
         hasSyncedInitialChildren.current = true;
-      });
-
-      if (shouldSuppressReveal) {
         revealResetFrame = window.requestAnimationFrame(() => {
           revealResetFrame = window.requestAnimationFrame(() =>
             setSuppressInitialReveal(false),
           );
         });
-      }
+      });
 
       return () => {
         window.cancelAnimationFrame(updateFrame);

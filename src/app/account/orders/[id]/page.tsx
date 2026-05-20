@@ -67,7 +67,7 @@ export default async function OrderDetailPage({
       <SiteHeader />
       <CommercePageHero
         description={`${order.recipientName} · ${order.email}`}
-        eyebrow="Elysia Service"
+        eyebrow="פרטי הזמנה"
         title={order.orderNumber}
         variant="checkout"
       />

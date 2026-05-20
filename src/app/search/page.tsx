@@ -100,7 +100,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       <SiteHeader />
       <CommercePageHero
         description="חיפוש קטלוג עם סינון לפי קטגוריה, חומר, אבן, תקציב וזמינות."
-        eyebrow="Elysia Catalog"
+        eyebrow="קטלוג Elysia"
         title="חיפוש בקטלוג"
         variant="catalog"
       />

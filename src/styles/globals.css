@@ -417,6 +417,10 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
     padding-bottom var(--motion-ui) var(--ease-motion-standard);
 }
 
+.public-motion-content > main {
+  min-height: calc(100svh + var(--site-header-height));
+}
+
 .public-motion-shell {
   opacity: 1;
   transform: none;
@@ -1335,6 +1339,26 @@ main
   transform: translateY(-1px);
 }
 
+.home-hero-actions [data-slot="button"] {
+  box-shadow: none !important;
+  transition-property:
+    background-color, border-color, color, outline-color;
+}
+
+.home-hero-actions [data-slot="button"]:not(:disabled):hover,
+.home-hero-actions [data-slot="button"]:not(:disabled):focus-visible,
+.home-hero-actions [data-slot="button"]:not(:disabled):active {
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.home-hero-actions [data-slot="button"]:focus-visible {
+  outline: 2px solid currentColor !important;
+  outline-offset: 3px;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  --tw-ring-color: transparent !important;
+}
+
 .public-motion-shell [data-slot="button"].product-primary-cta:not(:disabled),
 [data-slot="button"].product-primary-cta:not(:disabled) {
   border-color: var(--brand-aqua) !important;
@@ -1502,6 +1526,12 @@ main
 }
 
 .motion-hero-copy .motion-copy-item {
+  animation: none;
+}
+
+.public-motion-shell[data-motion-state="enter"]
+  .motion-hero-copy
+  .motion-copy-item {
   animation: motion-copy-in var(--motion-feature) var(--ease-motion-expressive)
     both;
   animation-delay: var(--motion-copy-delay, 0ms);

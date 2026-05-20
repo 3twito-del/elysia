@@ -43,6 +43,7 @@ export type CategoryFilterOption = {
 };
 
 export type CategoryFilterSection = {
+  description: string;
   options: CategoryFilterOption[];
   title: string;
 };
@@ -70,10 +71,10 @@ export const productsPerPage = 6;
 export const priceOptions = [750, 1000, 1500] as const;
 export const defaultCategorySort = "popular" satisfies CategorySort;
 export const sortOptions = [
-  { value: "popular", label: "פופולריות" },
-  { value: "price-asc", label: "מחיר: מנמוך לגבוה" },
-  { value: "price-desc", label: "מחיר: מגבוה לנמוך" },
-  { value: "newest", label: "מחדשים לישנים" },
+  { value: "popular", label: "המומלצים תחילה" },
+  { value: "price-asc", label: "מחיר עולה" },
+  { value: "price-desc", label: "מחיר יורד" },
+  { value: "newest", label: "החדשים תחילה" },
 ] as const satisfies ReadonlyArray<{ value: CategorySort; label: string }>;
 
 export function getCategoryRouteState({
@@ -246,9 +247,10 @@ function getCategoryFilterSections({
   slug: string;
   stoneOptions: string[];
 }): CategoryFilterSection[] {
-  return [
+  const sections = [
     {
-      title: "מיון",
+      description: "סדר הצגה לפי התאמה, מחיר או פריטים חדשים.",
+      title: "סדר הצגה",
       options: sortOptions.map((option) => {
         const active = filters.sort === option.value;
 
@@ -263,7 +265,8 @@ function getCategoryFilterSections({
       }),
     },
     {
-      title: "קטגוריה",
+      description: "מעבר נקי בין סוגי תכשיטים בלי לאבד את הבחירה.",
+      title: "סוג תכשיט",
       options: categories.map((item) => {
         const active = item.slug === slug;
         const count = categoryCounts.get(item.slug) ?? 0;
@@ -277,6 +280,7 @@ function getCategoryFilterSections({
       }),
     },
     {
+      description: "מתכת וגוון שמשנים את האופי של כל פריט.",
       title: "חומר",
       options: materialOptions.map((material) => {
         const active = filters.material === material;
@@ -294,6 +298,7 @@ function getCategoryFilterSections({
       }),
     },
     {
+      description: "מרכז חזותי: יהלום, פנינה או אבן צבע.",
       title: "אבן",
       options: stoneOptions.map((stone) => {
         const active = filters.stone === stone;
@@ -311,7 +316,8 @@ function getCategoryFilterSections({
       }),
     },
     {
-      title: "מחיר",
+      description: "תקרת מחיר שמתאימה לרכישה הנוכחית.",
+      title: "תקציב",
       options: priceOptions.map((price) => {
         const active = filters.maxPrice === price;
         const count = filterCounts.maxPrices.get(price) ?? 0;
@@ -327,7 +333,20 @@ function getCategoryFilterSections({
         };
       }),
     },
-  ];
+  ] satisfies CategoryFilterSection[];
+
+  return sections
+    .map((section) => ({
+      ...section,
+      options: section.options.filter(isVisibleFilterOption),
+    }))
+    .filter((section) => section.options.length > 0);
+}
+
+function isVisibleFilterOption(option: CategoryFilterOption) {
+  if (option.active) return true;
+
+  return option.disabled !== true;
 }
 
 function parseCategoryFilters(

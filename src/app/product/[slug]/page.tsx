@@ -138,7 +138,7 @@ export default async function ProductPage({
           <div className="mx-auto max-w-xl lg:mx-0">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-muted-foreground text-xs font-medium tracking-normal uppercase">
-                Elysia Fine Jewelry
+                תכשיטי Elysia
               </p>
             </div>
 
@@ -203,7 +203,7 @@ export default async function ProductPage({
         <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.88fr_1.12fr] lg:gap-12">
           <CommerceSectionHeader
             className="mb-0"
-            eyebrow="Elysia Atelier"
+            eyebrow="הסטודיו של Elysia"
             title="תכשיט שנבחר כמו פריט אייקוני, לא כמו עוד מוצר בקטלוג."
           />
 
@@ -285,7 +285,7 @@ function ProductRecommendationRails({
                   מתוך הקטלוג
                 </Badge>
               }
-              eyebrow="Curated Selection"
+              eyebrow="בחירה משלימה"
               id={headingId}
               title={rail.title}
             />

@@ -487,13 +487,18 @@ function createGeneratedProduct(
   );
   const stoneText = stone ? `עם ${stone.name}` : "ללא אבן";
   const name = `${blueprint.productKind} ${family.hebrew} ${detail.hebrew}`;
+  const description = createGeneratedProductDescription({
+    materialName: material.name,
+    name,
+    stoneName: stone?.name,
+  });
 
   return {
     slug: `${blueprint.generatedSlugPrefix}-${family.slug}-${detail.slug}-${serial}`,
     sku,
     name,
     shortDescription: `${blueprint.productKind} ${material.name} ${stoneText} בגימור ${detail.hebrew}.`,
-    description: `${name} נבנה כפריט בדיקות קטלוג פעיל עם ${material.name}, ${stoneText}, וריאציות מלאי ומחיר תקף. מתאים לסינון, חיפוש, מתנות ותצוגת עמוד מוצר.`,
+    description,
     categorySlug,
     materialSlug: material.slug,
     stoneSlug: stone?.slug ?? null,
@@ -553,7 +558,6 @@ function createTags(input: {
       ...input.familyTags,
       input.materialName,
       input.stoneName ?? "ללא אבן",
-      "בדיקות קטלוג",
       "יוקרה נגישה",
       ...(input.collectionSlugs.includes("gift-studio") || input.index % 4 === 0
         ? ["מתנה"]
@@ -561,6 +565,16 @@ function createTags(input: {
       ...(input.collectionSlugs.includes("bridal-edit") ? ["אירוסין"] : []),
     ]),
   );
+}
+
+function createGeneratedProductDescription(input: {
+  materialName: string;
+  name: string;
+  stoneName?: string;
+}) {
+  const stoneText = input.stoneName ? ` עם ${input.stoneName}` : "";
+
+  return `${input.name} משלב ${input.materialName}${stoneText} בקו נקי ונוח לענידה. מתאים לשילוב יומיומי, מתנה או אירוע, עם פירוט מלא של מידה, חומר וזמינות לפני רכישה.`;
 }
 
 function createVariants(input: {

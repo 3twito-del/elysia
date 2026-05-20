@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 
 import { useResolvedReducedMotion } from "~/components/motion-preference";
 import { cn } from "~/lib/utils";
@@ -187,6 +187,11 @@ export function CinematicHeroSequence({
           ref={(node) => {
             slideRefs.current[index] = node;
           }}
+          style={getInitialSlideStyle(
+            index,
+            allowsContinuousMotion,
+            shouldReduceMotion,
+          )}
         >
           <Image
             alt={slide.alt}
@@ -214,6 +219,21 @@ export function CinematicHeroSequence({
       <span className="cinematic-hero-vignette" />
     </div>
   );
+}
+
+function getInitialSlideStyle(
+  index: number,
+  allowsContinuousMotion: boolean,
+  shouldReduceMotion: boolean,
+): CSSProperties | undefined {
+  if (!allowsContinuousMotion || shouldReduceMotion) return undefined;
+
+  return {
+    opacity: index === 0 ? 1 : 0,
+    transform: `scale(${index === 0 ? 1.018 : 1.045})`,
+    transformOrigin: "center center",
+    zIndex: index === 0 ? 2 : 1,
+  };
 }
 
 function isDefined<T>(value: T | null | undefined): value is T {

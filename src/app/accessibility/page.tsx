@@ -26,7 +26,7 @@ export default async function AccessibilityPage() {
 
       <CommercePageHero
         description="אנחנו פועלים להנגיש את האתר והשירותים הדיגיטליים כך שיהיו זמינים, ברורים ונוחים לשימוש."
-        eyebrow="Elysia Accessibility"
+        eyebrow="נגישות"
         title="הצהרת נגישות"
         variant="content"
       />

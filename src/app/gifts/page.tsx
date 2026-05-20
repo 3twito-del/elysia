@@ -25,7 +25,7 @@ export default async function GiftsPage() {
       <SiteHeader />
       <CommercePageHero
         description="בחירות קלות לקנייה עם אריזת מתנה, ברכה אישית והתאמה לפי תקציב."
-        eyebrow="Elysia Gifts"
+        eyebrow="מתנות Elysia"
         id="page-hero"
         title="מתנות תכשיטים"
         variant="catalog"

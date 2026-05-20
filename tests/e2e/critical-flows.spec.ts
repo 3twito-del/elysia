@@ -184,9 +184,9 @@ test.describe("critical shopping flows", () => {
     await setCookieConsent(page, "essential");
 
     await page.goto("/category/earrings", { waitUntil: "domcontentloaded" });
-    const filterTrigger = page.getByTestId("category-filter-trigger");
+    const filterTrigger = visibleByTestId(page, "category-filter-trigger");
 
-    await expect(page.getByTestId("category-results-grid")).toBeVisible();
+    await expect(visibleByTestId(page, "category-results-grid")).toBeVisible();
     await expect(filterTrigger).toHaveCount(1);
     await expect(filterTrigger).toBeVisible();
     await filterTrigger.click();
@@ -200,7 +200,7 @@ test.describe("critical shopping flows", () => {
     await expect(page).toHaveURL(/sort=price-asc/);
 
     await page.goto("/category/earrings", { waitUntil: "domcontentloaded" });
-    await page.getByTestId("category-filter-trigger").click();
+    await visibleByTestId(page, "category-filter-trigger").click();
     await expect(page.getByTestId("category-filter-sheet")).toBeVisible();
     await page.setViewportSize({ width: 1024, height: 900 });
     await expect(page.getByTestId("category-filter-sheet")).toBeHidden();
@@ -253,7 +253,10 @@ test.describe("critical shopping flows", () => {
     await expect(searchFilterTrigger).toBeFocused();
 
     await page.goto("/category/earrings", { waitUntil: "networkidle" });
-    const categoryFilterTrigger = page.getByTestId("category-filter-trigger");
+    const categoryFilterTrigger = visibleByTestId(
+      page,
+      "category-filter-trigger",
+    );
 
     await expect(categoryFilterTrigger).toBeVisible();
     await expect(categoryFilterTrigger).toHaveAttribute(
@@ -324,7 +327,10 @@ test.describe("hydration-sensitive responsive surfaces", () => {
     await page.setViewportSize({ width: 390, height: 900 });
     await page.goto("/category/earrings", { waitUntil: "domcontentloaded" });
 
-    const categoryFilterTrigger = page.getByTestId("category-filter-trigger");
+    const categoryFilterTrigger = visibleByTestId(
+      page,
+      "category-filter-trigger",
+    );
 
     await expect(categoryFilterTrigger).toBeVisible();
     await categoryFilterTrigger.click();
@@ -332,7 +338,7 @@ test.describe("hydration-sensitive responsive surfaces", () => {
 
     await page.setViewportSize({ width: 1024, height: 900 });
     await expect(page.getByTestId("category-filter-sheet")).toBeHidden();
-    await expect(page.getByTestId("category-filter-panel")).toBeVisible();
+    await expect(visibleByTestId(page, "category-filter-panel")).toBeVisible();
 
     await expectNoHydrationRegressions(page, hydrationIssues);
   });
@@ -613,6 +619,23 @@ test.describe("accessibility and responsive guardrails", () => {
     expect(heroSequenceReduced).toBe("true");
     expect(kineticImageReduced).toBe("true");
     expect(kineticImageTransform).toBe("none");
+  });
+
+  test("does not replay entrance motion during public reloads", async ({
+    page,
+  }) => {
+    test.setTimeout(60_000);
+    await installReloadMotionMonitor(page);
+
+    for (const route of ["/", "/category/earrings", "/about"]) {
+      await page.goto(route, { waitUntil: "domcontentloaded" });
+      await page.waitForTimeout(1200);
+      await expectReloadMotionStable(page, route);
+
+      await page.reload({ waitUntil: "domcontentloaded" });
+      await page.waitForTimeout(1200);
+      await expectReloadMotionStable(page, `${route} reload`);
+    }
   });
 
   test("keeps the cinematic hero reserved for the home route", async ({
@@ -1011,6 +1034,121 @@ async function expectNoHorizontalOverflow(page: Page) {
   );
 
   expect(overflow).toBeLessThanOrEqual(1);
+}
+
+async function installReloadMotionMonitor(page: Page) {
+  await page.addInitScript(() => {
+    const win = window as Window & {
+      __reloadMotionMetrics?: {
+        layoutShift: number;
+        maxMovingElements: number;
+        movingSamples: string[];
+      };
+    };
+    const metrics = {
+      layoutShift: 0,
+      maxMovingElements: 0,
+      movingSamples: [] as string[],
+    };
+    const trackedSelector = [
+      ".motion-reveal",
+      ".motion-reveal-item",
+      ".motion-hero-copy .motion-copy-item",
+    ].join(",");
+    const describeElement = (element: Element) =>
+      [
+        element.getAttribute("data-testid"),
+        element.id ? `#${element.id}` : "",
+        element.className.toString().split(/\s+/).slice(0, 2).join("."),
+      ]
+        .filter(Boolean)
+        .join(" ");
+    const isIdentityTransform = (value: string) =>
+      value === "none" ||
+      value === "matrix(1, 0, 0, 1, 0, 0)" ||
+      value === "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)";
+
+    win.__reloadMotionMetrics = metrics;
+
+    if (
+      "PerformanceObserver" in window &&
+      PerformanceObserver.supportedEntryTypes.includes("layout-shift")
+    ) {
+      try {
+        const observer = new PerformanceObserver((list) => {
+          list.getEntries().forEach((entry) => {
+            const layoutShift = entry as PerformanceEntry & {
+              hadRecentInput?: boolean;
+              value?: number;
+            };
+
+            if (!layoutShift.hadRecentInput) {
+              metrics.layoutShift += layoutShift.value ?? 0;
+            }
+          });
+        });
+
+        observer.observe({ buffered: true, type: "layout-shift" });
+      } catch {
+        // Older browser builds may expose the type without accepting observe options.
+      }
+    }
+
+    const startedAt = performance.now();
+    const sample = () => {
+      const movingElements = Array.from(
+        document.querySelectorAll<HTMLElement>(trackedSelector),
+      ).filter((element) => {
+        const styles = window.getComputedStyle(element);
+
+        return (
+          !isIdentityTransform(styles.transform) ||
+          styles.animationName !== "none"
+        );
+      });
+
+      if (movingElements.length > 0) {
+        metrics.maxMovingElements = Math.max(
+          metrics.maxMovingElements,
+          movingElements.length,
+        );
+        if (metrics.movingSamples.length < 8) {
+          metrics.movingSamples.push(
+            movingElements.map(describeElement).join(", "),
+          );
+        }
+      }
+
+      if (performance.now() - startedAt < 900) {
+        window.requestAnimationFrame(sample);
+      }
+    };
+
+    window.requestAnimationFrame(sample);
+  });
+}
+
+async function expectReloadMotionStable(page: Page, label: string) {
+  const metrics = await page.evaluate(() => {
+    const win = window as Window & {
+      __reloadMotionMetrics?: {
+        layoutShift: number;
+        maxMovingElements: number;
+        movingSamples: string[];
+      };
+    };
+
+    return win.__reloadMotionMetrics ?? null;
+  });
+
+  expect(metrics, label).not.toBeNull();
+  expect(metrics?.layoutShift ?? 0, label).toBeLessThanOrEqual(0.03);
+  expect(metrics?.maxMovingElements ?? 0, label).toBe(0);
+  expect(metrics?.movingSamples ?? [], label).toEqual([]);
+}
+
+function visibleByTestId(page: Page, testId: string) {
+  return page.getByTestId(testId).filter({ visible: true });
 }
 
 function trackHydrationIssues(page: Page) {

@@ -37,7 +37,7 @@ const gridStaggerByVariant = {
   media: 0.055,
 } satisfies Record<NonNullable<RevealGridProps["variant"]>, number>;
 
-function useRevealInView<T extends HTMLElement>(initialVisible = false) {
+function useRevealInView<T extends HTMLElement>(initialVisible = true) {
   const ref = useRef<T>(null);
   const shouldReduceMotion = useResolvedReducedMotion();
   const [isVisible, setIsVisible] = useState(initialVisible);
@@ -107,7 +107,7 @@ export function RevealSection({
   className,
   delay = 0,
   floatingAvoid = true,
-  initialVisible = false,
+  initialVisible = true,
   style,
   variant = "standard",
   ...props
@@ -143,10 +143,7 @@ export function RevealGrid({
   variant = "cards",
   ...props
 }: RevealGridProps) {
-  const { suppressInitialReveal } = usePublicMotion();
-  const [ref, isVisible] = useRevealInView<HTMLDivElement>(
-    suppressInitialReveal,
-  );
+  const [ref, isVisible] = useRevealInView<HTMLDivElement>(true);
   const items = Children.toArray(children);
   const resolvedStagger = stagger ?? gridStaggerByVariant[variant];
 

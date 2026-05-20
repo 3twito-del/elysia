@@ -12,7 +12,7 @@ export type ConversationProps = ComponentProps<typeof StickToBottom>;
 
 export const Conversation = ({
   className,
-  "aria-label": ariaLabel = "שיחת AI",
+  "aria-label": ariaLabel = "שיחת סטייליסט",
   ...props
 }: ConversationProps) => (
   <StickToBottom
@@ -143,7 +143,7 @@ export const messagesToMarkdown = (
 
 export const ConversationDownload = ({
   messages,
-  filename = "elysia-ai-chat.md",
+  filename = "elysia-stylist-chat.md",
   formatMessage = defaultFormatMessage,
   className,
   children,

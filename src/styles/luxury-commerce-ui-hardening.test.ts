@@ -48,6 +48,16 @@ describe("luxury commerce UI hardening", () => {
     expect(footer).toContain(
       'className="group border-b border-[var(--glass-border)]"',
     );
+    expect(footer).toContain(
+      "lg:grid-cols-[1.3fr_0.55fr_0.64fr_0.64fr_1fr]",
+    );
+    expect(footer).toContain(
+      "const primaryServiceLinks = serviceLinks.slice(0, 7)",
+    );
+    expect(footer).toContain(
+      "const secondaryServiceLinks = serviceLinks.slice(7)",
+    );
+    expect(footer).not.toContain("lg:grid-cols-2 lg:gap-x-5");
   });
 
   it("keeps category filter choices as list rows instead of boxed buttons", () => {

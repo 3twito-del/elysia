@@ -218,7 +218,7 @@ const getFeaturedCatalogProductsCached = unstable_cache(
 
     return selectFeaturedCatalogProducts(records.map(mapCatalogProduct), take);
   },
-  ["catalog:featured-products:v2"],
+  ["catalog:featured-products:v3"],
   {
     revalidate: CATALOG_REVALIDATE_SECONDS,
     tags: [CATALOG_CACHE_TAGS.products],
@@ -272,7 +272,7 @@ export async function listCatalogProducts(input: { category?: string } = {}) {
 
       return records.map(mapCatalogProduct);
     },
-    [`catalog:products:v2:${input.category ?? "all"}`],
+    [`catalog:products:v3:${input.category ?? "all"}`],
     {
       revalidate: CATALOG_REVALIDATE_SECONDS,
       tags: [
@@ -297,7 +297,7 @@ export async function getCatalogProductBySlug(slug: string) {
 
       return record ? mapCatalogProduct(record) : null;
     },
-    [`catalog:product:v2:${slug}`],
+    [`catalog:product:v3:${slug}`],
     {
       revalidate: CATALOG_REVALIDATE_SECONDS,
       tags: [CATALOG_CACHE_TAGS.products, productCacheTag(slug)],
@@ -327,7 +327,7 @@ const getCatalogFacetsCached = unstable_cache(
 
     return getCatalogFacetsFromProducts(products);
   },
-  ["catalog:facets:v2"],
+  ["catalog:facets:v3"],
   {
     revalidate: CATALOG_REVALIDATE_SECONDS,
     tags: [CATALOG_CACHE_TAGS.facets, CATALOG_CACHE_TAGS.products],
@@ -494,14 +494,23 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
     }
   }
 
+  const displayName = getDisplayProductName(record.name);
+  const displayDescription = getDisplayProductDescription({
+    description: record.description,
+    material: record.material.name,
+    name: displayName,
+    stone: record.stone?.name,
+  });
+  const displayTags = getDisplayProductTags(record.tags);
+
   return {
     slug: record.slug,
     sku: record.sku,
-    name: getDisplayProductName(record.name),
+    name: displayName,
     categorySlug: record.category.slug,
     categoryName: record.category.name,
     shortDescription: record.shortDescription,
-    description: record.description,
+    description: displayDescription,
     price: defaultPrice,
     compareAt: getCompareAt(defaultVariant),
     createdAt: record.createdAt,
@@ -535,7 +544,7 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
         .map((variant) => variant.size)
         .filter((value): value is string => Boolean(value)),
     ),
-    tags: record.tags,
+    tags: displayTags,
     inventory,
   };
 }
@@ -569,6 +578,32 @@ function getVariantInventory(
 
 function getDisplayProductName(name: string) {
   return name.replace(/\s+\d{3}$/u, "");
+}
+
+function getDisplayProductDescription(input: {
+  description: string;
+  material: string;
+  name: string;
+  stone?: string;
+}) {
+  if (!isGeneratedCatalogDescription(input.description)) {
+    return input.description;
+  }
+
+  const stoneText = input.stone ? ` עם ${input.stone}` : "";
+
+  return `${input.name} משלב ${input.material}${stoneText} בקו נקי ונוח לענידה. מתאים לשילוב יומיומי, מתנה או אירוע, עם פירוט מלא של מידה, חומר וזמינות לפני רכישה.`;
+}
+
+function isGeneratedCatalogDescription(description: string) {
+  return (
+    description.includes("בדיקות קטלוג") ||
+    description.includes("תצוגת עמוד מוצר")
+  );
+}
+
+function getDisplayProductTags(tags: string[]) {
+  return tags.filter((tag) => tag !== "בדיקות קטלוג");
 }
 
 function getDisplayImages(input: {

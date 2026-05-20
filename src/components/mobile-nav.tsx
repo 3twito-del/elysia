@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   CircleHelp,
+  Headphones,
   MapPin,
   Menu,
   Search,
@@ -42,7 +43,7 @@ const quickActions = [
 ] as const;
 
 const serviceActions = [
-  { href: "/service", label: "שירות", icon: CircleHelp },
+  { href: "/service", label: "שירות", icon: Headphones },
   { href: "/faq", label: "שאלות", icon: CircleHelp },
 ] as const;
 

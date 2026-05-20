@@ -22,6 +22,30 @@ describe("public CTA hierarchy", () => {
     );
   });
 
+  it("keeps floating home hero CTA buttons visually static on hover", () => {
+    const css = read("src/styles/globals.css");
+    const home = read("src/app/page.tsx");
+
+    expect(home).toContain("home-hero-actions");
+    expect(css).toContain(".home-hero-actions [data-slot=\"button\"]");
+    expect(css).toContain(
+      ".home-hero-actions [data-slot=\"button\"]:not(:disabled):hover",
+    );
+    expect(css).toContain(
+      ".home-hero-actions [data-slot=\"button\"]:not(:disabled):active",
+    );
+    expect(css).toContain("box-shadow: none !important;");
+    expect(css).toContain("transform: none !important;");
+    expect(css).toContain(
+      "background-color, border-color, color, outline-color",
+    );
+    expect(css).toContain(
+      ".home-hero-actions [data-slot=\"button\"]:focus-visible",
+    );
+    expect(css).toContain("outline: 2px solid currentColor !important;");
+    expect(css).toContain("--tw-ring-color: transparent !important;");
+  });
+
   it("keeps product purchase actions to one aqua primary and one neutral secondary action", () => {
     const source = read(
       "src/app/product/[slug]/_components/product-purchase-panel.tsx",

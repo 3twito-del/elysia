@@ -29,7 +29,7 @@ class InternalTryOnProvider implements TryOnProvider {
       status: "queued",
       provider: "internal-webar",
       message:
-        "תשתית המדידה נשמרה. מנוע ראייה ממוחשבת עצמאי יחובר דרך אותו חוזה בגרסה מתקדמת.",
+        "בקשת המדידה נשמרה. נציג יחזור עם הכוונה למידה, התאמה והמשך טיפול.",
     };
   }
 }

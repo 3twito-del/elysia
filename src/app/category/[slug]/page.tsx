@@ -181,7 +181,7 @@ export default async function CategoryPage({
               variant="outline"
             >
               <Filter aria-hidden="true" className="size-4" />
-              פילטרים
+              סינון
               {activeFilterCount > 0 && (
                 <Badge className="h-5 px-1.5" variant="secondary">
                   {activeFilterCount}
@@ -196,10 +196,10 @@ export default async function CategoryPage({
               <SheetHeader className="border-b border-[var(--glass-border)] p-[var(--ui-panel-padding)]">
                 <SheetTitle className="flex items-center gap-2">
                   <SlidersHorizontal aria-hidden="true" className="size-4" />
-                  פילטרים
+                  סינון מדויק
                 </SheetTitle>
                 <SheetDescription>
-                  בחירה מהירה לפי מיון, זמינות, חומר, אבן ומחיר.
+                  בחרו סדר הצגה, סוג תכשיט, חומר, אבן ותקציב.
                 </SheetDescription>
               </SheetHeader>
               <div className="p-[var(--ui-panel-padding)]">
@@ -245,7 +245,7 @@ export default async function CategoryPage({
             <CardHeader className="border-b border-[var(--glass-border)] pb-4">
               <CardTitle className="flex items-center gap-2">
                 <SlidersHorizontal aria-hidden="true" className="size-4" />
-                פילטרים
+                סינון מדויק
               </CardTitle>
             </CardHeader>
             <CardContent>

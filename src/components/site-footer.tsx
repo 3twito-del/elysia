@@ -1,14 +1,21 @@
 import Link from "next/link";
 import {
+  Accessibility,
+  Bot,
   ChevronDown,
   CircleHelp,
+  FileText,
   Gem,
+  Gift,
+  Headphones,
+  Info,
+  LockKeyhole,
   MapPin,
   Search,
   Share2,
-  ShieldCheck,
   ShoppingBag,
-  Sparkles,
+  UserRound,
+  WandSparkles,
 } from "lucide-react";
 
 import { NewsletterForm } from "~/components/newsletter-form";
@@ -17,21 +24,24 @@ import { Separator } from "~/components/ui/separator";
 import { getCatalogCategories } from "~/server/services/catalog";
 
 const serviceLinks = [
-  { href: "/about", label: "אודות Elysia", icon: Gem },
+  { href: "/about", label: "אודות Elysia", icon: Info },
   { href: "/search", label: "חיפוש בקטלוג", icon: Search },
   { href: "/branches", label: "סניפים ושירות", icon: MapPin },
-  { href: "/account", label: "אזור לקוח", icon: Gem },
+  { href: "/account", label: "אזור לקוח", icon: UserRound },
   { href: "/checkout", label: "קופה ותשלום", icon: ShoppingBag },
   { href: "/faq", label: "שאלות ותשובות", icon: CircleHelp },
-  { href: "/service", label: "שירות לקוחות", icon: CircleHelp },
-  { href: "/gifts", label: "מתנות", icon: Sparkles },
-  { href: "/ai", label: "סטייליסט AI", icon: Sparkles },
-  { href: "/stylist", label: "ייעוץ אישי", icon: Sparkles },
-  { href: "/terms", label: "תקנון האתר", icon: ShieldCheck },
-  { href: "/privacy", label: "מדיניות פרטיות", icon: ShieldCheck },
-  { href: "/accessibility", label: "הצהרת נגישות", icon: ShieldCheck },
+  { href: "/service", label: "שירות לקוחות", icon: Headphones },
+  { href: "/gifts", label: "מתנות", icon: Gift },
+  { href: "/ai", label: "התאמה חכמה", icon: Bot },
+  { href: "/stylist", label: "ייעוץ אישי", icon: WandSparkles },
+  { href: "/terms", label: "תקנון האתר", icon: FileText },
+  { href: "/privacy", label: "מדיניות פרטיות", icon: LockKeyhole },
+  { href: "/accessibility", label: "הצהרת נגישות", icon: Accessibility },
   { href: "/category/rings", label: "טבעות מובילות", icon: Gem },
 ];
+
+const primaryServiceLinks = serviceLinks.slice(0, 7);
+const secondaryServiceLinks = serviceLinks.slice(7);
 
 const socialLink = {
   href: "https://www.instagram.com/elysia.one/",
@@ -44,7 +54,7 @@ export async function SiteFooter() {
   return (
     <footer className="bg-transparent">
       <div className="mx-auto min-h-[63rem] max-w-7xl px-4 py-14 sm:px-6 md:min-h-[55rem] lg:min-h-[32rem] lg:py-20">
-        <div className="grid gap-8 md:grid-cols-2 md:items-start lg:grid-cols-[1.08fr_0.72fr_1fr_0.9fr]">
+        <div className="grid gap-8 md:grid-cols-2 md:items-start lg:grid-cols-[1.3fr_0.55fr_0.64fr_0.64fr_1fr]">
           <section className="max-w-lg">
             <Link
               className="brand-footer-mark inline-flex items-center"
@@ -190,7 +200,30 @@ export async function SiteFooter() {
           <nav aria-label="שירות וקנייה" className="hidden md:block">
             <h2 className="text-sm font-semibold">שירות וקנייה</h2>
             <ul className="mt-5 grid gap-2 text-sm">
-              {serviceLinks.map((item) => {
+              {primaryServiceLinks.map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <li key={item.href}>
+                    <Link
+                      className="text-muted-foreground hover:text-foreground inline-flex min-h-8 items-center gap-2 transition"
+                      href={item.href}
+                    >
+                      <Icon aria-hidden="true" className="size-4" />
+                      {item.label}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+
+          <nav aria-label="שירות וקנייה - המשך" className="hidden md:block">
+            <h2 aria-hidden="true" className="invisible text-sm font-semibold">
+              שירות וקנייה
+            </h2>
+            <ul className="mt-5 grid gap-2 text-sm">
+              {secondaryServiceLinks.map((item) => {
                 const Icon = item.icon;
 
                 return (

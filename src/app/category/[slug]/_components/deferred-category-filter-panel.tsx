@@ -111,29 +111,37 @@ function FilterPanelContent({
   data: CategoryFilterPayload;
 }) {
   return (
-    <div className="grid gap-5 text-sm">
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-muted-foreground text-xs">
-          {data.activeFilterCount > 0
-            ? `${data.activeFilterCount} בחירות פעילות`
-            : "בחירה נקייה"}
-        </p>
-        {data.activeFilterCount > 0 && (
-          <FilterActionLink
-            closeOnSelect={closeOnSelect}
-            href={data.resetHref}
-            variant="ghost"
-          >
-            איפוס
-          </FilterActionLink>
-        )}
+    <div className="grid gap-5 text-sm" data-filter-style="segmented">
+      <div className="grid gap-4 border-b border-[var(--glass-border)] pb-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="grid gap-1">
+            <p className="text-foreground text-sm font-medium">סינון מדויק</p>
+            <p className="text-muted-foreground text-xs leading-5">
+              בחירה לפי סוג, חומר, אבן ותקציב.
+            </p>
+          </div>
+          {data.activeFilterCount > 0 && (
+            <FilterActionLink
+              closeOnSelect={closeOnSelect}
+              href={data.resetHref}
+              variant="ghost"
+            >
+              איפוס
+            </FilterActionLink>
+          )}
+        </div>
+
+        <FilterSelectionSummary sections={data.sections} />
       </div>
 
       {data.activeFilters.length > 0 && (
-        <div aria-label="בחירות פעילות" className="flex flex-wrap gap-2">
+        <div
+          aria-label="בחירות פעילות"
+          className="flex flex-wrap gap-x-3 gap-y-2"
+        >
           {data.activeFilters.map((filter) => (
             <FilterActionLink
-              className="h-auto max-w-full gap-1 px-2 py-1 text-xs whitespace-normal"
+              className="h-auto max-w-full gap-1 border-b border-[var(--glass-border)] px-0 py-1 text-xs whitespace-normal"
               closeOnSelect={closeOnSelect}
               href={filter.href}
               key={filter.key}
@@ -145,15 +153,40 @@ function FilterPanelContent({
         </div>
       )}
 
-      {data.sections.map((section, index) => (
-        <FilterSection
-          closeOnSelect={closeOnSelect}
-          key={section.title}
-          section={section}
-          withSeparator={index > 0}
-        />
-      ))}
+      <div className="grid gap-5">
+        {data.sections.map((section, index) => (
+          <FilterSection
+            closeOnSelect={closeOnSelect}
+            key={section.title}
+            section={section}
+            withSeparator={index > 0}
+          />
+        ))}
+      </div>
     </div>
+  );
+}
+
+function FilterSelectionSummary({
+  sections,
+}: {
+  sections: CategoryFilterPayload["sections"];
+}) {
+  return (
+    <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-xs">
+      {sections.map((section) => {
+        const activeOption = section.options.find((option) => option.active);
+
+        return (
+          <div className="min-w-0" key={section.title}>
+            <dt className="text-muted-foreground">{section.title}</dt>
+            <dd className="text-foreground truncate font-medium">
+              {activeOption?.label ?? "כל האפשרויות"}
+            </dd>
+          </div>
+        );
+      })}
+    </dl>
   );
 }
 
@@ -169,17 +202,22 @@ function FilterSection({
   return (
     <>
       {withSeparator && <Separator />}
-      <section aria-label={section.title} className="grid gap-2">
-        <p className="font-medium">{section.title}</p>
+      <section aria-label={section.title} className="grid gap-3">
         <div className="grid gap-1">
-          {section.options.map((option) => (
-            <FilterOptionLink
-              closeOnSelect={closeOnSelect}
-              key={`${section.title}-${option.href}-${option.label}`}
-              option={option}
-            />
-          ))}
+          <h3 className="text-foreground text-sm font-medium">
+            {section.title}
+          </h3>
+          <p className="text-muted-foreground text-xs leading-5">
+            {section.description}
+          </p>
         </div>
+        <ul className="grid gap-0.5">
+          {section.options.map((option) => (
+            <li key={`${section.title}-${option.href}-${option.label}`}>
+              <FilterOptionLink closeOnSelect={closeOnSelect} option={option} />
+            </li>
+          ))}
+        </ul>
       </section>
     </>
   );
@@ -193,7 +231,7 @@ function FilterOptionLink({
   option: CategoryFilterPayload["sections"][number]["options"][number];
 }) {
   const className = cn(
-    "grid min-h-10 w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-[var(--glass-border)] px-1 py-2 text-right text-sm whitespace-normal transition-colors outline-none",
+    "grid min-h-10 w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-[var(--glass-border)] px-0 py-2.5 text-right text-sm whitespace-normal transition-colors outline-none",
     "hover:text-foreground focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
     option.active ? "text-foreground font-semibold" : "text-muted-foreground",
     option.active &&
@@ -202,6 +240,13 @@ function FilterOptionLink({
   );
   const content = (
     <>
+      <span
+        aria-hidden="true"
+        className={cn(
+          "size-1.5 rounded-full border border-[var(--glass-border-strong)]",
+          option.active && "bg-foreground",
+        )}
+      />
       <span className="flex min-w-0 items-center gap-2">
         {option.icon === "pin" && (
           <MapPin aria-hidden="true" className="size-3.5" />

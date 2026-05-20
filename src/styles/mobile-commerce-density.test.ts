@@ -22,13 +22,43 @@ describe("mobile commerce density", () => {
 
   it("keeps home hero imagery independent from page scroll", () => {
     const home = read("src/app/page.tsx");
+    const css = read("src/styles/globals.css");
+    const cinematicHeroSequence = read(
+      "src/components/cinematic-hero-sequence.tsx",
+    );
     const kineticImageMotion = read("src/components/kinetic-image-motion.tsx");
+    const publicMotionProvider = read(
+      "src/components/public-motion-provider.tsx",
+    );
+    const reveal = read("src/components/reveal.tsx");
 
     expect(home).not.toContain("\n          parallax");
     expect(home).toContain("scrollMotion={false}");
     expect(kineticImageMotion).toContain("scrollDepth: 0");
     expect(kineticImageMotion).toContain(
       "if (!shouldUsePointerMotion && !scrollDepth) return;",
+    );
+    expect(publicMotionProvider).toContain(
+      "const [suppressInitialReveal, setSuppressInitialReveal] = useState(true)",
+    );
+    expect(reveal).toContain(
+      "function useRevealInView<T extends HTMLElement>(initialVisible = true)",
+    );
+    expect(reveal).toContain("initialVisible = true");
+    expect(reveal).toContain(
+      "const [ref, isVisible] = useRevealInView<HTMLDivElement>(true)",
+    );
+    expect(cinematicHeroSequence).toContain("function getInitialSlideStyle");
+    expect(cinematicHeroSequence).toContain(
+      "transform: `scale(${index === 0 ? 1.018 : 1.045})`",
+    );
+    expect(css).toContain(".motion-hero-copy .motion-copy-item {\n  animation: none;");
+    expect(css).toContain(
+      '.public-motion-shell[data-motion-state="enter"]\n  .motion-hero-copy\n  .motion-copy-item',
+    );
+    expect(css).toContain(".public-motion-content > main");
+    expect(css).toContain(
+      "min-height: calc(100svh + var(--site-header-height));",
     );
   });
 

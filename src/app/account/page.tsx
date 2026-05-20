@@ -210,7 +210,7 @@ export default async function AccountPage() {
         <CommercePageHero
           className="account-entry-intro"
           description="כניסה מאובטחת להזמנות, מועדפים, מידות שמורות, שירות ופרטיות."
-          eyebrow="Elysia Account"
+          eyebrow="אזור לקוח"
           title="אזור לקוח"
           variant="checkout"
         />
@@ -276,7 +276,7 @@ export default async function AccountPage() {
       <CommercePageHero
         className="account-entry-intro"
         description="כל ההזמנות, המועדפים, המידות, הכתובות והפרטיות שלך במקום אחד."
-        eyebrow="Elysia Account"
+        eyebrow="אזור לקוח"
         title="אזור לקוח"
         variant="checkout"
       />

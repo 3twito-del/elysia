@@ -84,7 +84,7 @@ export function StylistChat({ compact = false }: StylistChatProps) {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="grid gap-2">
               <Badge className="w-fit" variant="secondary">
-                Elysia AI
+                סטייליסט Elysia
               </Badge>
               <div className="grid gap-1">
                 <h2
@@ -196,8 +196,7 @@ export function StylistChat({ compact = false }: StylistChatProps) {
                   <div className="grid gap-2">
                     <p className="font-medium">הסטייליסט לא זמין כרגע.</p>
                     <p className="text-muted-foreground leading-6">
-                      מכסת ה־AI הזמנית של הספק נוצלה או שהמפתח אינו פעיל. נסו
-                      שוב בעוד דקה.
+                      שירות ההתאמה אינו זמין כרגע. נסו שוב בעוד דקה.
                     </p>
                     <Button
                       className="w-fit"
@@ -437,7 +436,7 @@ function getToolLabel(type: string) {
   if (type === "tool-createTryOnSession") return "פתיחת מדידה וירטואלית";
   if (type === "tool-orderSupport") return "בדיקת הזמנה";
 
-  return "פעולת AI";
+  return "פעולת התאמה";
 }
 
 function getToolOutputText(output: unknown) {

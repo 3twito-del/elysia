@@ -1,64 +1,159 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { Gem, Heart, Ruler, Search, ShieldCheck, Sparkles } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import {
+  BadgeCheck,
+  Camera,
+  Gem,
+  Handshake,
+  Headphones,
+  PackageCheck,
+  PenLine,
+  Ruler,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  Store,
+  Truck,
+} from "lucide-react";
 
 import { CommercePageHero } from "~/components/commerce-page-hero";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
-import { Separator } from "~/components/ui/separator";
 import { cinematicRouteMedia } from "~/lib/brand-media";
+
+type IconItem = {
+  icon: LucideIcon;
+  text: string;
+  title: string;
+};
+
+type ImageTile = {
+  alt: string;
+  className: string;
+  loading?: "eager" | "lazy";
+  sizes: string;
+  src: string;
+};
+
+const editorialImages = [
+  {
+    alt: "טבעות כסף ויהלומים על משטח סטודיו בגוון אקווה",
+    className:
+      "col-span-2 aspect-[16/10] sm:col-span-1 sm:row-span-2 sm:aspect-[4/5]",
+    loading: "eager",
+    sizes: "(min-width: 1024px) 28vw, (min-width: 640px) 46vw, 100vw",
+    src: "/brand/v2/content-editorial.avif",
+  },
+  {
+    alt: "טבעת זהב ויהלומים בצילום מוצר נקי",
+    className: "aspect-[5/4]",
+    sizes: "(min-width: 1024px) 22vw, (min-width: 640px) 46vw, 100vw",
+    src: "/brand/v2/product-focus.avif",
+  },
+  {
+    alt: "תכשיטי פנינה וזכוכית בסטודיו אקווה",
+    className: "aspect-[5/4]",
+    sizes: "(min-width: 1024px) 22vw, (min-width: 640px) 46vw, 100vw",
+    src: "/brand/v2/hero-pearls.avif",
+  },
+] satisfies ImageTile[];
+
+const storyImages = [
+  {
+    alt: "קומפוזיציית תכשיטים עריכתית עם טבעות וזכוכית אקווה",
+    className: "aspect-[16/10]",
+    sizes: "(min-width: 1024px) 54vw, 100vw",
+    src: "/brand/aphrodite-aqua-about.avif",
+  },
+  {
+    alt: "מגש שירות עם אריזה ותכשיטי פנינה",
+    className: "aspect-[4/3]",
+    sizes: "(min-width: 1024px) 24vw, 100vw",
+    src: "/brand/v2/service-task.avif",
+  },
+] satisfies ImageTile[];
 
 const values = [
   {
-    title: "שקיפות בבחירה",
-    text: "חומר, מידה, מחיר, זמינות ושירות צריכים להיות ברורים לפני שהרכישה הופכת לרגשית.",
+    title: "שקיפות לפני רגש",
+    text: "חומר, מידה, מחיר וזמינות מוצגים לפני שהלקוחה צריכה לנחש. היוקרה נשארת ברורה.",
     icon: ShieldCheck,
   },
   {
-    title: "יוקרה נגישה",
-    text: "קו נקי, מידע מדויק ושירות שמכבד את הזמן. פחות רעש סביב הבחירה, יותר ביטחון בתוצאה.",
+    title: "חומר במרכז",
+    text: "התמונה, הפרופורציה והפירוט הטכני מקבלים קדימות על פני מסרים רועשים או קישוטים עודפים.",
     icon: Gem,
   },
   {
-    title: "מידה ופרופורציה",
-    text: "תכשיט יפה באמת הוא תכשיט שמונח נכון: על היד, על הצוואר, על האוזן ובחיי היום יום.",
+    title: "התאמה שימושית",
+    text: "אנחנו בודקים איך התכשיט יישב ביום יום: על היד, על הצוואר, באירוע ובשגרה.",
     icon: Ruler,
   },
   {
-    title: "שירות שממשיך את האתר",
-    text: "הקטלוג, הייעוץ והטיפול אחרי ההזמנה בנויים כשפה אחת, לא כתחנות נפרדות.",
-    icon: Heart,
+    title: "שירות שממשיך",
+    text: "ייעוץ, הזמנה, משלוח, החלפה ושאלות אחרי קנייה נבנים כחוויה אחת ולא כתחנות נפרדות.",
+    icon: Handshake,
   },
-];
+] satisfies IconItem[];
 
-const journey = [
+const standards = [
   {
-    title: "מתחילים בשפה של הלקוחה",
-    text: "אפשר להגיע עם שם דגם, תקציב, אירוע, חומר, אבן או תחושה. החיפוש נועד לכבד גם דיוק וגם אינטואיציה.",
+    title: "צילום שמראה פרטים",
+    text: "צפיפות התמונות מכוונת להחלטה: מבט אווירה, תקריב חומר ותמונה שמסבירה שימוש.",
+    icon: Camera,
+  },
+  {
+    title: "חיפוש בלי רעש",
+    text: "הקטלוג מוביל לפי צורך, תקציב, חומר וקטגוריה בלי להכריח מסלול רכישה אחד.",
     icon: Search,
   },
   {
-    title: "מצמצמים רעש",
-    text: "עמוד מוצר טוב אינו מסתיר מידע מאחורי תמונה יפה. הוא מציג פרטים בקצב שמאפשר החלטה רגועה.",
-    icon: Sparkles,
+    title: "אישור לפני פעולה",
+    text: "הלקוחה מקבלת סימני אמון ברורים לפני הזמנה, לא רק אחרי שהמוצר בעגלה.",
+    icon: BadgeCheck,
   },
   {
-    title: "משאירים מקום לשירות",
-    text: "כאשר צריך מידה, התאמה, החלפה או שאלה לפני רכישה, השירות ממשיך את אותה חוויה נקייה.",
-    icon: ShieldCheck,
+    title: "אריזה ומסירה",
+    text: "החוויה לא מסתיימת בכפתור התשלום. גם פתיחת האריזה צריכה להרגיש מדויקת.",
+    icon: PackageCheck,
   },
-];
+  {
+    title: "מענה אנושי",
+    text: "במקומות שבהם בחירה דיגיטלית לא מספיקה, השירות נכנס בעדינות ולא משתלט.",
+    icon: Headphones,
+  },
+] satisfies IconItem[];
+
+const workflow = [
+  {
+    title: "עורכים את הקולקציה",
+    text: "כל פריט נכנס לקטלוג עם תפקיד ברור: מתנה, יום יום, אירוע, או בחירה אישית מאוד.",
+    icon: PenLine,
+  },
+  {
+    title: "בודקים שימוש אמיתי",
+    text: "אנחנו מסתכלים על משקל, סגירה, אורך, שכבות ונוחות לפני שממליצים על פריט לרגע מסוים.",
+    icon: Store,
+  },
+  {
+    title: "מלווים אחרי ההזמנה",
+    text: "משלוח, שאלה, התאמה או החלפה נשארים חלק מהמותג ולא נספח תפעולי.",
+    icon: Truck,
+  },
+] satisfies IconItem[];
 
 export const metadata: Metadata = {
   title: "אודות",
   description:
-    "הסיפור של Elysia: סטודיו תכשיטים ישראלי מודרני שמחבר יופי, שקיפות, שירות ובחירה שקטה.",
+    "Elysia היא סטודיו תכשיטים ישראלי מודרני עם קטלוג אונליין, פרטי מוצר ברורים ושירות אישי לפני ואחרי הזמנה.",
   openGraph: {
     title: "אודות Elysia",
     description:
-      "דף אודות בעברית על Elysia, סטודיו תכשיטים מודרני שנבנה סביב יופי מדויק ובחירה בטוחה.",
-    images: [{ url: "/brand/cinematic/cinematic-editorial.avif" }],
+      "סטודיו תכשיטים ישראלי שמחבר יופי נקי, חומר גלוי, בחירה מדויקת ושירות אישי.",
+    images: [{ url: "/brand/v2/content-editorial.avif" }],
   },
 };
 
@@ -73,218 +168,269 @@ export default function AboutPage() {
             <>
               <Button asChild>
                 <Link href="/search">
-                  קטלוג שקט ומדויק
+                  לקטלוג
                   <Search aria-hidden="true" className="size-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline">
                 <Link href="/service">
                   שירות לקוחות
-                  <Sparkles aria-hidden="true" className="size-4" />
+                  <Headphones aria-hidden="true" className="size-4" />
                 </Link>
               </Button>
             </>
           }
-          description="Elysia היא סטודיו תכשיטים ישראלי מודרני שנבנה סביב רעיון פשוט: תכשיט יפה באמת הוא בחירה שמעניקה ביטחון, לא עוד רעש."
+          className="[&_.commerce-page-hero-inner]:pb-6 lg:[&_.commerce-page-hero-inner]:pb-8"
+          description="Elysia היא סטודיו תכשיטים ישראלי שמבקש להפוך רכישת תכשיט אונליין לדבר ברור, יפה ואנושי. פחות רעש מסביב לבחירה, יותר חומר, אור, פרופורציה ושירות."
           eyebrow="אודות Elysia"
           id="page-hero"
           media={{
             alt: "תכשיטי Elysia על משטח סטודיו בגוון אקווה",
             priority: true,
+            sizes: "(min-width: 1024px) 34vw, 100vw",
             slides: cinematicRouteMedia.about,
           }}
           metrics={[
-            { label: "שם", value: "Elysia" },
-            { label: "כוונה", value: "יופי עם ביטחון" },
-            { label: "אופי", value: "סטודיו ישראלי מודרני" },
+            { label: "מיקוד", value: "תכשיטים אונליין" },
+            { label: "גישה", value: "יוקרה נגישה" },
+            { label: "שירות", value: "אישי ומדוד" },
           ]}
-          title="יופי שנבחר בשקט ונשאר נכון."
+          metricsMode="inline"
+          title="סטודיו תכשיטים שמעדיף דיוק על רעש."
           variant="content"
         />
 
         <RevealSection
-          className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20"
-          id="about-name"
+          className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:py-12"
+          id="about-editorial"
+          variant="none"
         >
-          <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
-            <div className="sticky top-24">
-              <p className="text-muted-foreground text-sm">השם Elysia</p>
-              <h2 className="mt-3 text-4xl leading-tight font-semibold sm:text-5xl">
-                שם קצר, נקי וזכיר, בלי סמל שמסביר אותו יתר על המידה.
+          <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
+            <div>
+              <p className="text-muted-foreground text-sm">הגישה שלנו</p>
+              <h2 className="mt-3 max-w-2xl text-3xl leading-tight font-semibold sm:text-4xl">
+                לא מספרים על יוקרה מרחוק. מראים אותה קרוב, בקצב שאפשר לבחור בו.
               </h2>
+              <div className="text-muted-foreground mt-5 grid max-w-2xl gap-4 text-base leading-8">
+                <p>
+                  תכשיט טוב מתחיל בפרופורציה, בחומר ובשקט. אנחנו מציגים כל פריט
+                  כך שאפשר לראות את הקו, להבין את המידה, לבדוק את המחיר ולהרגיש
+                  בטוחים לפני ההזמנה.
+                </p>
+                <p>
+                  לצד הקטלוג יש שירות אישי שמכיר את הרגע: מתנה, מידה, אירוע או
+                  בחירה יומיומית. המטרה אינה למהר את ההחלטה, אלא להפוך אותה
+                  לברורה יותר.
+                </p>
+              </div>
+              <dl className="mt-7 grid gap-3 sm:grid-cols-3">
+                <div className="border-t border-[var(--glass-border)] pt-3">
+                  <dt className="text-muted-foreground text-xs">חומר</dt>
+                  <dd className="mt-1 text-xl font-semibold">
+                    זהב, כסף ופנינים
+                  </dd>
+                </div>
+                <div className="border-t border-[var(--glass-border)] pt-3">
+                  <dt className="text-muted-foreground text-xs">מסירה</dt>
+                  <dd className="mt-1 text-xl font-semibold">
+                    אונליין עד הבית
+                  </dd>
+                </div>
+                <div className="border-t border-[var(--glass-border)] pt-3">
+                  <dt className="text-muted-foreground text-xs">שירות</dt>
+                  <dd className="mt-1 text-xl font-semibold">
+                    לפני ואחרי הזמנה
+                  </dd>
+                </div>
+              </dl>
             </div>
 
-            <div className="text-muted-foreground grid gap-6 text-lg leading-9">
-              <p>
-                Elysia נבחר כשם שיכול לעמוד לבדו. הוא רך מספיק לתכשיט עדין,
-                מדויק מספיק לקטלוג מסחרי, וזכיר מספיק כדי לא להזדקק לסימן נוסף.
-                לכן הלוגו של המותג הוא השם בלבד: טיפוגרפיה נקייה, קצב שקט,
-                ונוכחות שמאפשרת לתכשיטים לשאת את החומר, האור והפרטים.
-              </p>
-              <p>
-                הבחירה בשם כזה מכתיבה גם את חוויית הקנייה. אנחנו לא מבקשים
-                להעמיס על הלקוחה הבטחות גדולות או שפה רועשת. אנחנו מבקשים לבנות
-                מרחב שבו אפשר לראות, להשוות, לשאול, למדוד ולהחליט מתוך ביטחון.
-                היוקרה נמצאת באיפוק, לא בעוד שכבה של קישוט.
-              </p>
-              <p>
-                מתוך המקום הזה נבנתה Elysia כשפה אחת: קטלוג שמציג מידע בלי
-                להציף, כרטיס מוצר שמכבד את התמונה אבל לא מסתיר את הפרטים, שירות
-                אונליין שמחזיק את החוויה בידיים, ואריזה שמרגישה חגיגית בלי להפוך
-                לכבדה.
-              </p>
+            <div className="grid grid-cols-2 gap-3">
+              {editorialImages.map((image) => (
+                <EditorialImage image={image} key={image.src} />
+              ))}
             </div>
           </div>
         </RevealSection>
 
-        <RevealSection className="brand-page-band" id="about-story">
-          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
-            <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-              <div className="brand-surface p-6 sm:p-8 lg:p-10">
+        <RevealSection className="brand-page-band border-y" id="about-story">
+          <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-14">
+            <div className="grid gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-start">
+              <div>
                 <p className="text-muted-foreground text-sm">הסיפור שלנו</p>
-                <h2 className="mt-3 text-4xl leading-tight font-semibold">
-                  סטודיו ישראלי שמבקש להפוך יוקרה לדבר שאפשר להבין.
+                <h2 className="mt-3 max-w-3xl text-3xl leading-tight font-semibold sm:text-4xl">
+                  Elysia נבנתה כדי שהבחירה בתכשיט תרגיש מדויקת לפני שהיא מרגישה
+                  חגיגית.
                 </h2>
-                <div className="text-muted-foreground mt-6 grid gap-5 leading-8">
+                <div className="text-muted-foreground mt-5 grid max-w-3xl gap-4 leading-8">
                   <p>
-                    מאחורי Elysia עומד צוות שמעדיף שהעבודה, השירות והדיוק ידברו
-                    לפני שמות האנשים. אנחנו חושבים כמו סטודיו, פועלים כמו מערכת
-                    מסחר מודרנית, ומתייחסים לכל תכשיט כמפגש בין אסתטיקה, מידע
-                    ואמון.
+                    מאחורי המותג עומדת תפיסה פשוטה: תכשיט יפה באמת לא צריך
+                    להסתמך על מסתורין. הוא צריך תמונה טובה, פרטים ברורים,
+                    פרופורציה נכונה ושירות שמכבד את הזמן של הלקוחה.
                   </p>
                   <p>
-                    תכשיטים אינם צריכים להרגיש מרוחקים. הם יכולים להיות יוקרתיים
-                    ועדיין ברורים; חגיגיים ועדיין שימושיים; רגשיים ועדיין קלים
-                    לרכישה. תפקידנו להסיר ערפל, לא להוסיף מסתורין מיותר.
+                    לכן אנחנו בוחרים פריטים שנראים טוב מקרוב ונשארים נוחים
+                    בשימוש: טבעת שאפשר לענוד כל יום, שרשרת שמחזיקה שכבות, עגילים
+                    שלא מכבידים ומתנה שמגיעה ארוזה נכון.
                   </p>
                 </div>
               </div>
 
-              <div className="grid gap-4">
-                <div className="brand-surface p-6">
-                  <Heart aria-hidden="true" className="size-7" />
-                  <p className="mt-5 text-2xl font-semibold">
-                    לא לבחור רק יפה. לבחור נכון.
-                  </p>
-                  <p className="text-muted-foreground mt-3 leading-7">
-                    ההבדל בין תכשיט שמרשים לרגע לבין תכשיט שנענד שוב ושוב נמצא
-                    בפרטים: פרופורציה, מידה, חומר, אירוע והרגלים.
-                  </p>
-                </div>
-                <div className="brand-surface p-6">
-                  <ShieldCheck aria-hidden="true" className="size-7" />
-                  <p className="mt-5 text-2xl font-semibold">
-                    אמון הוא חלק מהעיצוב.
-                  </p>
-                  <p className="text-muted-foreground mt-3 leading-7">
-                    כאשר כל פרט מוצג בשקט ובבהירות, היופי יכול לעשות את שלו
-                    וההחלטה נשארת רגועה גם אחרי שהמסך נסגר.
-                  </p>
-                </div>
-              </div>
+              <RevealGrid className="grid gap-3" variant="compact">
+                {workflow.map((item) => (
+                  <IconRow item={item} key={item.title} />
+                ))}
+              </RevealGrid>
+            </div>
+
+            <div className="mt-8 grid gap-3 lg:grid-cols-[1.38fr_0.62fr]">
+              {storyImages.map((image) => (
+                <EditorialImage image={image} key={image.src} />
+              ))}
             </div>
           </div>
         </RevealSection>
 
         <RevealSection
-          className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20"
+          className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-14"
           id="about-values"
         >
-          <div className="mb-9 max-w-3xl">
-            <p className="text-muted-foreground text-sm">ערכים</p>
-            <h2 className="mt-3 text-4xl leading-tight font-semibold">
-              שקיפות, איפוק ושירות שמאפשרים ליופי להישאר נקי.
+          <div className="mb-7 max-w-3xl">
+            <p className="text-muted-foreground text-sm">עקרונות</p>
+            <h2 className="mt-3 text-3xl leading-tight font-semibold sm:text-4xl">
+              ארבע הבטחות שמחזיקות את הקטלוג, את ההזמנה ואת השירות.
             </h2>
           </div>
 
           <RevealGrid
-            className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+            className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
             variant="cards"
           >
-            {values.map((value) => {
-              const Icon = value.icon;
-
-              return (
-                <section className="brand-surface p-6" key={value.title}>
-                  <div className="glass-inset flex size-11 items-center justify-center rounded-md border">
-                    <Icon aria-hidden="true" className="size-5" />
-                  </div>
-                  <h3 className="mt-6 text-2xl font-semibold">{value.title}</h3>
-                  <p className="text-muted-foreground mt-3 leading-7">
-                    {value.text}
-                  </p>
-                </section>
-              );
-            })}
+            {values.map((value) => (
+              <IconCard item={value} key={value.title} />
+            ))}
           </RevealGrid>
         </RevealSection>
 
-        <RevealSection className="brand-page-band" id="about-experience">
-          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
-            <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr]">
-              <div>
-                <p className="text-muted-foreground text-sm">חוויית הקנייה</p>
-                <h2 className="mt-3 text-4xl leading-tight font-semibold">
-                  הדרך אל התכשיט חשובה כמעט כמו התכשיט עצמו.
-                </h2>
-                <p className="text-muted-foreground mt-5 text-lg leading-8">
-                  בחירה בתכשיט היא פעולה רגשית, אבל היא לא צריכה להיות מעורפלת.
-                  כל שלב באתר נועד להחזיר את תשומת הלב לדבר החשוב: איך התכשיט
-                  ירגיש כשהוא יהפוך לחלק מהחיים.
-                </p>
+        <RevealSection
+          className="brand-page-band border-y"
+          id="about-standards"
+        >
+          <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[0.84fr_1.16fr] lg:py-14">
+            <div>
+              <p className="text-muted-foreground text-sm">סטנדרט שירות</p>
+              <h2 className="mt-3 text-3xl leading-tight font-semibold sm:text-4xl">
+                לפני רכישה צריכה להיות תשובה: חומר, מידה, זמינות ומסירה.
+              </h2>
+              <p className="text-muted-foreground mt-5 leading-8">
+                בכל פריט אנחנו מעדיפים מידע שאפשר לפעול לפיו: תקריב שמראה גימור,
+                תיאור קצר שמסביר שימוש, מחיר ברור ושירות שמאפשר לוודא התאמה לפני
+                שמירת ההזמנה.
+              </p>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <Button asChild variant="outline">
+                  <Link href="/category/rings">טבעות</Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link href="/category/earrings">עגילים</Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link href="/gifts">מתנות</Link>
+                </Button>
               </div>
-
-              <RevealGrid className="grid gap-4" variant="compact">
-                {journey.map((item) => {
-                  const Icon = item.icon;
-
-                  return (
-                    <section className="brand-surface p-5" key={item.title}>
-                      <div className="flex gap-4">
-                        <div className="glass-inset flex size-10 shrink-0 items-center justify-center rounded-md border">
-                          <Icon aria-hidden="true" className="size-5" />
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-semibold">
-                            {item.title}
-                          </h3>
-                          <p className="text-muted-foreground mt-2 leading-7">
-                            {item.text}
-                          </p>
-                        </div>
-                      </div>
-                    </section>
-                  );
-                })}
-              </RevealGrid>
             </div>
+
+            <RevealGrid className="grid gap-3 sm:grid-cols-2" variant="compact">
+              {standards.map((standard) => (
+                <IconRow item={standard} key={standard.title} />
+              ))}
+            </RevealGrid>
           </div>
         </RevealSection>
 
-        <Separator />
-
-        <RevealSection className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
-          <div className="brand-surface mx-auto max-w-4xl p-6 text-center sm:p-8 lg:p-12">
-            <Sparkles aria-hidden="true" className="mx-auto size-8" />
-            <h2 className="mt-6 text-4xl leading-tight font-semibold">
-              Elysia אינה מבקשת שתבחרו מהר. היא מבקשת שתבחרו בביטחון.
-            </h2>
-            <p className="text-muted-foreground mx-auto mt-5 max-w-3xl text-lg leading-8">
-              יש תכשיטים שמתחילים בתמונה ויש תכשיטים שמתחילים באדם. אנחנו
-              מעדיפים להתחיל באדם: בסגנון שלו, ברגע שלו, בשאלה מה הוא רוצה לזכור
-              ומה הוא רוצה להרגיש.
-            </p>
-            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-              <Button asChild variant="outline">
-                <Link href="/search">חיפוש בקטלוג</Link>
+        <RevealSection
+          className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-14"
+          id="about-close"
+          variant="none"
+        >
+          <div className="grid gap-6 border-t border-[var(--glass-border)] pt-8 lg:grid-cols-[1fr_auto] lg:items-end">
+            <div>
+              <Sparkles aria-hidden="true" className="size-7" />
+              <h2 className="mt-4 max-w-3xl text-3xl leading-tight font-semibold sm:text-4xl">
+                Elysia לא מבקשת שתבחרו מהר. היא מבקשת שתבחרו נכון.
+              </h2>
+              <p className="text-muted-foreground mt-4 max-w-3xl leading-8">
+                יש תכשיטים שמתחילים בתמונה ויש תכשיטים שמתחילים באדם. אנחנו
+                מעדיפים להתחיל באדם: בסגנון שלו, ברגע שלו, ובשאלה מה הוא רוצה
+                לזכור.
+              </p>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
+              <Button asChild>
+                <Link href="/search">
+                  חיפוש בקטלוג
+                  <Search aria-hidden="true" className="size-4" />
+                </Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href="/service">שירות לקוחות</Link>
+                <Link href="/service">
+                  ייעוץ ושירות
+                  <Headphones aria-hidden="true" className="size-4" />
+                </Link>
               </Button>
             </div>
           </div>
         </RevealSection>
       </article>
     </main>
+  );
+}
+
+function EditorialImage({ image }: { image: ImageTile }) {
+  return (
+    <figure
+      className={`bg-muted relative overflow-hidden rounded-md border border-[var(--glass-border)] ${image.className}`}
+    >
+      <Image
+        alt={image.alt}
+        className="media-mono object-cover object-center"
+        fill
+        loading={image.loading ?? "lazy"}
+        sizes={image.sizes}
+        src={image.src}
+      />
+    </figure>
+  );
+}
+
+function IconCard({ item }: { item: IconItem }) {
+  const Icon = item.icon;
+
+  return (
+    <section className="brand-surface p-5">
+      <div className="glass-inset flex size-10 items-center justify-center rounded-md border">
+        <Icon aria-hidden="true" className="size-5" />
+      </div>
+      <h3 className="mt-5 text-xl font-semibold">{item.title}</h3>
+      <p className="text-muted-foreground mt-3 leading-7">{item.text}</p>
+    </section>
+  );
+}
+
+function IconRow({ item }: { item: IconItem }) {
+  const Icon = item.icon;
+
+  return (
+    <section className="border-b border-[var(--glass-border)] pb-4 last:border-b-0">
+      <div className="flex gap-4">
+        <div className="glass-inset flex size-10 shrink-0 items-center justify-center rounded-md border">
+          <Icon aria-hidden="true" className="size-5" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold">{item.title}</h3>
+          <p className="text-muted-foreground mt-1.5 leading-7">{item.text}</p>
+        </div>
+      </div>
+    </section>
   );
 }

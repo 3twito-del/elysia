@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Search, SlidersHorizontal } from "lucide-react";
+import type { ReactNode } from "react";
 
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -26,7 +27,7 @@ type SearchControlsProps = {
 };
 
 const searchSelectClassName =
-  "glass-control h-12 min-w-0 rounded-md border px-3 text-sm outline-none focus-visible:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]";
+  "glass-control h-11 min-w-0 rounded-md border px-3 text-sm outline-none focus-visible:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]";
 
 export function SearchControls({
   activeFilterCount,
@@ -39,12 +40,12 @@ export function SearchControls({
       <form
         action="/search"
         aria-label="חיפוש בקטלוג"
-        className="mt-4 hidden gap-2.5 border-b border-[var(--glass-border)] pb-4 lg:grid lg:grid-cols-[1fr_repeat(3,152px)_116px]"
+        className="mt-4 hidden items-end gap-2.5 border-b border-[var(--glass-border)] pb-4 lg:grid lg:grid-cols-[1fr_repeat(3,152px)_116px]"
         role="search"
       >
         <SearchFields categories={categories} input={input} />
         <PreservedFacetInputs input={input} />
-        <Button className="h-12 gap-2" type="submit">
+        <Button className="h-11 gap-2" type="submit">
           <Search aria-hidden="true" className="size-4" />
           חיפוש
         </Button>
@@ -92,7 +93,7 @@ export function SearchControls({
                   aria-hidden="true"
                   className="text-foreground size-4"
                 />
-                סינון ומיון
+                סינון מדויק
               </span>
               {activeFilterCount > 0 ? (
                 <Badge className="absolute -top-2 -left-2" variant="secondary">
@@ -108,15 +109,15 @@ export function SearchControls({
             side="bottom"
           >
             <SheetHeader className="border-b border-[var(--glass-border)] pe-12 text-right">
-              <SheetTitle>סינון תוצאות</SheetTitle>
+              <SheetTitle>סינון מדויק</SheetTitle>
               <SheetDescription>
-                עדכני קטגוריה, תקציב ומיון בלי להעמיס על המסך.
+                בחרו סוג תכשיט, תקציב וסדר הצגה.
               </SheetDescription>
             </SheetHeader>
             <form
               action="/search"
               aria-label="סינון תוצאות חיפוש"
-              className="grid gap-3 p-4"
+              className="grid gap-4 p-4"
               role="search"
             >
               <SearchFields categories={categories} input={input} />
@@ -146,48 +147,71 @@ function SearchFields({
 }) {
   return (
     <>
-      <Input
-        aria-label="חיפוש מוצר, חומר, אבן, אירוע או תקציב"
-        className="h-12"
-        defaultValue={input.query}
-        name="q"
-        placeholder="חיפוש מוצר, חומר, אבן, אירוע או תקציב"
-      />
-      <select
-        aria-label="סינון לפי קטגוריה"
-        className={searchSelectClassName}
-        defaultValue={input.category}
-        name="category"
-      >
-        <option value="">כל הקטגוריות</option>
-        {categories.map((category) => (
-          <option key={category.slug} value={category.slug}>
-            {category.name}
-          </option>
-        ))}
-      </select>
-      <Input
-        aria-label="מחיר מקסימלי"
-        className="h-12"
-        defaultValue={input.maxPrice}
-        min={0}
-        name="maxPrice"
-        placeholder="מחיר עד"
-        type="number"
-      />
-      <select
-        aria-label="מיון תוצאות"
-        className={searchSelectClassName}
-        defaultValue={input.sort ?? "relevance"}
-        name="sort"
-      >
-        <option value="relevance">רלוונטיות</option>
-        <option value="price-asc">מחיר עולה</option>
-        <option value="price-desc">מחיר יורד</option>
-        <option value="newest">חדש</option>
-        <option value="popular">פופולרי</option>
-      </select>
+      <SearchControlField label="חיפוש">
+        <Input
+          aria-label="חיפוש מוצר, חומר, אבן, אירוע או תקציב"
+          className="h-11"
+          defaultValue={input.query}
+          name="q"
+          placeholder="טבעת, עגילים, מתנה..."
+        />
+      </SearchControlField>
+      <SearchControlField label="סוג תכשיט">
+        <select
+          aria-label="סינון לפי קטגוריה"
+          className={searchSelectClassName}
+          defaultValue={input.category}
+          name="category"
+        >
+          <option value="">כל הסוגים</option>
+          {categories.map((category) => (
+            <option key={category.slug} value={category.slug}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+      </SearchControlField>
+      <SearchControlField label="תקציב">
+        <Input
+          aria-label="מחיר מקסימלי"
+          className="h-11"
+          defaultValue={input.maxPrice}
+          min={0}
+          name="maxPrice"
+          placeholder="מחיר עד"
+          type="number"
+        />
+      </SearchControlField>
+      <SearchControlField label="סדר הצגה">
+        <select
+          aria-label="מיון תוצאות"
+          className={searchSelectClassName}
+          defaultValue={input.sort ?? "relevance"}
+          name="sort"
+        >
+          <option value="relevance">התאמה</option>
+          <option value="price-asc">מחיר עולה</option>
+          <option value="price-desc">מחיר יורד</option>
+          <option value="newest">החדשים תחילה</option>
+          <option value="popular">המומלצים תחילה</option>
+        </select>
+      </SearchControlField>
     </>
+  );
+}
+
+function SearchControlField({
+  children,
+  label,
+}: {
+  children: ReactNode;
+  label: string;
+}) {
+  return (
+    <label className="grid gap-1.5 text-sm">
+      <span className="text-muted-foreground text-xs">{label}</span>
+      {children}
+    </label>
   );
 }
 
