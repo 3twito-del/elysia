@@ -52,6 +52,37 @@ describe("public motion budget", () => {
       extractCssBlock(loadingCss, ".category-loading-progress"),
     ).not.toMatch(/\banimation\s*:/);
   });
+
+  it("keeps passive catalog media out of client-side motion libraries", () => {
+    const brandMediaPanelSource = read("src/components/brand-media-panel.tsx");
+    const filterPanelSource = read(
+      "src/app/category/[slug]/_components/deferred-category-filter-panel.tsx",
+    );
+    const preferenceSource = read("src/components/motion-preference.ts");
+    const productCardSource = read("src/components/product-card.tsx");
+
+    expect(brandMediaPanelSource).not.toContain('"use client"');
+    expect(brandMediaPanelSource).not.toContain(
+      'from "~/components/kinetic-image-motion"',
+    );
+    expect(brandMediaPanelSource).toContain("function StaticKineticImageFrame");
+    expect(brandMediaPanelSource).toContain(
+      "function StaticCinematicHeroSequence",
+    );
+    expect(filterPanelSource).not.toContain('"use client"');
+    expect(filterPanelSource).not.toContain("fetch(");
+    expect(filterPanelSource).not.toContain("IntersectionObserver");
+    expect(preferenceSource).not.toContain('from "motion/react"');
+    expect(preferenceSource).toContain(
+      'const reducedMotionQuery = "(prefers-reduced-motion: reduce)";',
+    );
+    expect(preferenceSource).toContain("window.matchMedia(reducedMotionQuery)");
+    expect(productCardSource).not.toContain(
+      'from "~/components/kinetic-image-motion"',
+    );
+    expect(productCardSource).toContain("function StaticKineticImageFrame");
+    expect(productCardSource).toContain('data-motion-scope="static"');
+  });
 });
 
 function read(relativePath: string) {

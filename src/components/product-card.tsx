@@ -1,11 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { ShoppingBag, Sparkles } from "lucide-react";
 
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
-import { KineticImageMotion } from "~/components/kinetic-image-motion";
 import { ProductCardFavoriteButton } from "~/components/product-card-favorite-button";
 import { getProductAvailabilityLabel } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
@@ -80,7 +80,7 @@ export function ProductCard({
         href={href}
       >
         <div className="brand-product-media glass-inset bg-muted relative aspect-[5/4] overflow-hidden border-0 sm:aspect-[4/5]">
-          <KineticImageMotion intensity="card">
+          <StaticKineticImageFrame>
             <Image
               alt={product.name}
               blurDataURL={PRODUCT_IMAGE_BLUR_DATA_URL}
@@ -92,7 +92,7 @@ export function ProductCard({
               src={product.image}
               style={{ objectPosition: imageObjectPosition }}
             />
-          </KineticImageMotion>
+          </StaticKineticImageFrame>
           {discountPercent || !isAvailable ? (
             <div className="absolute top-2.5 left-2.5 flex items-start gap-2">
               {discountPercent ? (
@@ -192,6 +192,20 @@ export function ProductCard({
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+function StaticKineticImageFrame({ children }: { children: ReactNode }) {
+  return (
+    <div
+      className="kinetic-image-motion"
+      data-kinetic-image
+      data-motion-enabled="false"
+      data-motion-reduced="false"
+      data-motion-scope="static"
+    >
+      <div className="kinetic-image-layer">{children}</div>
+    </div>
   );
 }
 

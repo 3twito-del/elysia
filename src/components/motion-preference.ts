@@ -1,11 +1,24 @@
 "use client";
 
-import { useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 
+const reducedMotionQuery = "(prefers-reduced-motion: reduce)";
+
 export function useResolvedReducedMotion() {
-  const prefersReducedMotion = useReducedMotion();
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [siteReducedMotion, setSiteReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(reducedMotionQuery);
+    const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches);
+
+    updatePreference();
+    mediaQuery.addEventListener("change", updatePreference);
+
+    return () => {
+      mediaQuery.removeEventListener("change", updatePreference);
+    };
+  }, []);
 
   useEffect(() => {
     const updatePreference = () =>
@@ -31,5 +44,5 @@ export function useResolvedReducedMotion() {
     };
   }, []);
 
-  return (prefersReducedMotion ?? false) || siteReducedMotion;
+  return prefersReducedMotion || siteReducedMotion;
 }

@@ -1,105 +1,23 @@
-"use client";
-
 import Link from "next/link";
 import { Check, MapPin, RotateCw, X } from "lucide-react";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import type { CategoryFilterPayload } from "../_lib/category-filter-state";
 import { SheetClose } from "~/components/ui/sheet";
 import { cn } from "~/lib/utils";
 
 type DeferredCategoryFilterPanelProps = {
-  activeFilterCount: number;
   closeOnSelect?: boolean;
-  queryString: string;
-  resetHref: string;
-  slug: string;
+  data: CategoryFilterPayload;
 };
 
-type LoadState =
-  | { status: "idle" }
-  | { data: CategoryFilterPayload; key: string; status: "ready" }
-  | { key: string; status: "error" };
-
 export function DeferredCategoryFilterPanel({
-  activeFilterCount,
   closeOnSelect = false,
-  queryString,
-  resetHref,
-  slug,
+  data,
 }: DeferredCategoryFilterPanelProps) {
-  const rootRef = useRef<HTMLDivElement>(null);
-  const [shouldLoad, setShouldLoad] = useState(closeOnSelect);
-  const [loadState, setLoadState] = useState<LoadState>({ status: "idle" });
-  const requestKey = `${slug}?${queryString}`;
-
-  useEffect(() => {
-    if (shouldLoad) return;
-
-    const node = rootRef.current;
-    if (!node) return;
-
-    if (!("IntersectionObserver" in window)) {
-      const fallbackTimer = setTimeout(() => setShouldLoad(true), 0);
-
-      return () => clearTimeout(fallbackTimer);
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) {
-          setShouldLoad(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: "480px 0px" },
-    );
-
-    observer.observe(node);
-
-    return () => observer.disconnect();
-  }, [shouldLoad]);
-
-  useEffect(() => {
-    if (!shouldLoad) return;
-    if (loadState.status !== "idle" && loadState.key === requestKey) return;
-
-    const controller = new AbortController();
-    const params = queryString ? `?${queryString}` : "";
-
-    fetch(`/category/${slug}/filters${params}`, {
-      headers: { Accept: "application/json" },
-      signal: controller.signal,
-    })
-      .then((response) => {
-        if (!response.ok) throw new Error("Filter payload failed");
-
-        return response.json() as Promise<CategoryFilterPayload>;
-      })
-      .then((data) => setLoadState({ data, key: requestKey, status: "ready" }))
-      .catch((error: unknown) => {
-        if (error instanceof DOMException && error.name === "AbortError") {
-          return;
-        }
-
-        setLoadState({ key: requestKey, status: "error" });
-      });
-
-    return () => controller.abort();
-  }, [loadState, queryString, requestKey, shouldLoad, slug]);
-
   return (
-    <div className="min-h-40" ref={rootRef}>
-      {loadState.status === "ready" && loadState.key === requestKey ? (
-        <FilterPanelContent
-          closeOnSelect={closeOnSelect}
-          data={loadState.data}
-        />
-      ) : loadState.status === "error" && loadState.key === requestKey ? (
-        <FilterPanelFallback resetHref={resetHref} />
-      ) : (
-        <FilterPanelSkeleton activeFilterCount={activeFilterCount} />
-      )}
+    <div className="min-h-40">
+      <FilterPanelContent closeOnSelect={closeOnSelect} data={data} />
     </div>
   );
 }
@@ -328,31 +246,7 @@ function FilterActionLink({
   return link;
 }
 
-function FilterPanelSkeleton({
-  activeFilterCount,
-}: {
-  activeFilterCount: number;
-}) {
-  return (
-    <div aria-busy="true" className="grid gap-4 text-sm">
-      <div className="flex items-center justify-between gap-3">
-        <span className="bg-muted h-3 w-28 rounded-md" />
-        {activeFilterCount > 0 && (
-          <span className="bg-muted h-7 w-16 rounded-md" />
-        )}
-      </div>
-      {Array.from({ length: 4 }, (_, index) => (
-        <div className="grid gap-2" key={index}>
-          <span className="bg-muted h-4 w-20 rounded-md" />
-          <span className="bg-muted h-9 w-full rounded-md" />
-          <span className="bg-muted h-9 w-full rounded-md" />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function FilterPanelFallback({ resetHref }: { resetHref: string }) {
+export function FilterPanelFallback({ resetHref }: { resetHref: string }) {
   return (
     <div className="grid gap-3 text-sm">
       <div className="text-muted-foreground flex items-center gap-2">

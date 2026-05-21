@@ -6,13 +6,13 @@ import { Filter, Gem, SlidersHorizontal, X } from "lucide-react";
 import { CategoryFilterSheet } from "./_components/category-filter-sheet";
 import { DeferredCategoryFilterPanel } from "./_components/deferred-category-filter-panel";
 import {
-  createCategoryFilterQueryString,
   createCategoryPageHref,
   getCategoryRouteState,
   getFirstParam as getCategoryFirstParam,
   getValidPage as getValidCategoryPage,
   productsPerPage,
   sortCategoryProducts as sortCategoryRouteProducts,
+  toCategoryFilterPayload,
   type CategoryFilters,
   type CategorySearchParams,
 } from "./_lib/category-filter-state";
@@ -118,7 +118,7 @@ export default async function CategoryPage({
     filters,
     resetHref,
   } = categoryState;
-  const filterQueryString = createCategoryFilterQueryString(query);
+  const filterPayload = toCategoryFilterPayload(categoryState);
   const requestedPage = getValidCategoryPage(getCategoryFirstParam(query.page));
   const sortedProducts = sortCategoryRouteProducts(
     filteredProducts,
@@ -204,11 +204,8 @@ export default async function CategoryPage({
               </SheetHeader>
               <div className="p-[var(--ui-panel-padding)]">
                 <DeferredCategoryFilterPanel
-                  activeFilterCount={activeFilterCount}
                   closeOnSelect
-                  queryString={filterQueryString}
-                  resetHref={resetHref}
-                  slug={slug}
+                  data={filterPayload}
                 />
               </div>
               <div className="bg-popover sticky bottom-0 grid grid-cols-2 gap-2 border-t border-[var(--glass-border)] p-[var(--ui-panel-padding)]">
@@ -249,12 +246,7 @@ export default async function CategoryPage({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <DeferredCategoryFilterPanel
-                activeFilterCount={activeFilterCount}
-                queryString={filterQueryString}
-                resetHref={resetHref}
-                slug={slug}
-              />
+              <DeferredCategoryFilterPanel data={filterPayload} />
             </CardContent>
           </Card>
         </aside>

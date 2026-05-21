@@ -1,10 +1,6 @@
-"use client";
+import Image from "next/image";
+import type { ReactNode } from "react";
 
-import {
-  CinematicHeroSequence,
-  type CinematicHeroSlide,
-} from "~/components/cinematic-hero-sequence";
-import { KineticImageMotion } from "~/components/kinetic-image-motion";
 import { cn } from "~/lib/utils";
 
 export type BrandMediaPanelVariant =
@@ -14,12 +10,17 @@ export type BrandMediaPanelVariant =
   | "content"
   | "hero";
 
+export type BrandMediaSlide = {
+  alt: string;
+  src: string;
+};
+
 type BrandMediaPanelProps = {
   alt?: string;
   className?: string;
   priority?: boolean;
   sizes?: string;
-  slides: CinematicHeroSlide[];
+  slides: BrandMediaSlide[];
   variant?: BrandMediaPanelVariant;
 };
 
@@ -38,16 +39,74 @@ export function BrandMediaPanel({
       data-brand-variant={variant}
     >
       {alt ? <span className="sr-only">{alt}</span> : null}
-      <KineticImageMotion intensity="panel">
-        <CinematicHeroSequence
+      <StaticKineticImageFrame>
+        <StaticCinematicHeroSequence
           priority={priority}
           sizes={sizes}
           slides={slides}
           testId="brand-media-sequence"
         />
-      </KineticImageMotion>
+      </StaticKineticImageFrame>
     </div>
   );
 }
 
-export type { CinematicHeroSlide as BrandMediaSlide };
+function StaticKineticImageFrame({ children }: { children: ReactNode }) {
+  return (
+    <div
+      className="kinetic-image-motion"
+      data-kinetic-image
+      data-motion-enabled="false"
+      data-motion-reduced="false"
+      data-motion-scope="static"
+    >
+      <div className="kinetic-image-layer">{children}</div>
+    </div>
+  );
+}
+
+function StaticCinematicHeroSequence({
+  priority = true,
+  sizes = "100vw",
+  slides,
+  testId = "cinematic-hero-sequence",
+}: {
+  priority?: boolean;
+  sizes?: string;
+  slides: BrandMediaSlide[];
+  testId?: string;
+}) {
+  return (
+    <div
+      aria-hidden="true"
+      className={cn("cinematic-hero-sequence")}
+      data-motion-continuous="false"
+      data-motion-reduced="false"
+      data-motion-scope="static"
+      data-testid={testId}
+    >
+      {slides.map((slide, index) => (
+        <div
+          className={cn(
+            "cinematic-hero-slide",
+            index === 0 ? "opacity-100" : "opacity-0",
+          )}
+          key={`${slide.src}-${index}`}
+        >
+          <Image
+            alt={slide.alt}
+            className="cinematic-hero-image media-color-rich object-cover"
+            fill
+            loading={priority && index === 1 ? "eager" : undefined}
+            priority={priority && index === 0}
+            sizes={sizes}
+            src={slide.src}
+          />
+        </div>
+      ))}
+      <span className="cinematic-hero-band cinematic-hero-band-a" />
+      <span className="cinematic-hero-band cinematic-hero-band-b" />
+      <span className="cinematic-hero-vignette" />
+    </div>
+  );
+}
