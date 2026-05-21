@@ -7,7 +7,7 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { ProductCardFavoriteButton } from "~/components/product-card-favorite-button";
-import { getProductAvailabilityLabel } from "~/lib/commerce-labels";
+import { getPublicProductCommerceStatus } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
 import { cn } from "~/lib/utils";
 import type { CatalogProduct } from "~/server/services/catalog";
@@ -50,7 +50,13 @@ export function ProductCard({
     (total, quantity) => total + quantity,
     0,
   );
-  const isAvailable = onlineStockQuantity > 0;
+  const commerceStatus = getPublicProductCommerceStatus({
+    availableQuantity: onlineStockQuantity,
+    availabilityMode: product.availabilityMode,
+  });
+  const isAvailable = commerceStatus.canAddToCart;
+  const isUnavailable =
+    product.availabilityMode === "READY_TO_ORDER" && onlineStockQuantity <= 0;
   const compareAt =
     typeof product.compareAt === "number" && product.compareAt > product.price
       ? product.compareAt
@@ -59,6 +65,10 @@ export function ProductCard({
     ? Math.round(((compareAt - product.price) / compareAt) * 100)
     : undefined;
   const href = createProductHref(product.slug, searchContext);
+  const actionHref = commerceStatus.canAddToCart
+    ? href
+    : createProductServiceHref(product, commerceStatus.serviceReason);
+  const commerceHighlights = product.commerceHighlights ?? [];
   const imageObjectPosition = getProductCardImageObjectPosition(product);
   const productDetails = [product.material, product.stone].filter(
     (detail): detail is string => Boolean(detail),
@@ -69,7 +79,7 @@ export function ProductCard({
       aria-label={product.name}
       className={cn(
         "product-card-shell group/card h-full min-w-0 overflow-hidden rounded-md border-0 py-0 shadow-none transition focus-within:ring-3 focus-within:ring-[var(--glass-focus)]",
-        !isAvailable && "bg-muted/30",
+        isUnavailable && "bg-muted/30",
       )}
       data-public-floating-avoid="true"
       data-testid="product-card"
@@ -93,13 +103,13 @@ export function ProductCard({
               style={{ objectPosition: imageObjectPosition }}
             />
           </StaticKineticImageFrame>
-          {discountPercent || !isAvailable ? (
+          {discountPercent || isUnavailable ? (
             <div className="absolute top-2.5 left-2.5 flex items-start gap-2">
               {discountPercent ? (
                 <Badge className="font-semibold" dir="ltr" variant="default">
                   -{discountPercent}%
                 </Badge>
-              ) : !isAvailable ? (
+              ) : isUnavailable ? (
                 <Badge variant="destructive">לא זמין</Badge>
               ) : null}
             </div>
@@ -141,6 +151,18 @@ export function ProductCard({
                 <span className="truncate">{matchReason}</span>
               </p>
             ) : null}
+            {commerceHighlights.length > 0 ? (
+              <div
+                className="text-muted-foreground mt-2 grid gap-1 text-xs leading-5"
+                data-testid="product-card-highlights"
+              >
+                {commerceHighlights.slice(0, 2).map((highlight) => (
+                  <span className="line-clamp-1" key={highlight}>
+                    {highlight}
+                  </span>
+                ))}
+              </div>
+            ) : null}
           </div>
           <ProductCardFavoriteButton
             productName={product.name}
@@ -174,9 +196,7 @@ export function ProductCard({
                 )}
                 aria-hidden="true"
               />
-              <span className="truncate">
-                {getProductAvailabilityLabel(onlineStockQuantity)}
-              </span>
+              <span className="truncate">{commerceStatus.label}</span>
             </span>
           </div>
           <Button
@@ -184,9 +204,12 @@ export function ProductCard({
             className="product-card-cta min-h-10 w-full gap-2 sm:min-h-11"
             variant="outline"
           >
-            <Link aria-label={`צפייה וקנייה: ${product.name}`} href={href}>
+            <Link
+              aria-label={`${commerceStatus.cardCtaLabel}: ${product.name}`}
+              href={actionHref}
+            >
               <ShoppingBag className="size-4" aria-hidden="true" />
-              {isAvailable ? "צפייה וקנייה" : "בדיקת זמינות"}
+              {commerceStatus.cardCtaLabel}
             </Link>
           </Button>
         </div>
@@ -215,6 +238,15 @@ function getProductCardImageObjectPosition(product: CatalogProduct) {
   );
 
   return focusRule?.position ?? DEFAULT_PRODUCT_CARD_IMAGE_POSITION;
+}
+
+function createProductServiceHref(product: CatalogProduct, reason: string) {
+  const params = new URLSearchParams({
+    productReference: `${product.name} (${product.sku})`,
+    reason,
+  });
+
+  return `/service?${params.toString()}`;
 }
 
 function createProductHref(

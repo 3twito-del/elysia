@@ -60,6 +60,27 @@ function getRequiredRecord<T extends SlugRecord>(
   return record;
 }
 
+type SeedAvailabilityMode = "READY_TO_ORDER" | "MADE_TO_ORDER" | "CONSULTATION";
+
+function getSeedAvailabilityMode(slug: string): SeedAvailabilityMode {
+  if (slug === "muse-pearl-earrings") return "MADE_TO_ORDER";
+  if (slug === "venus-line-ring") return "CONSULTATION";
+
+  return "READY_TO_ORDER";
+}
+
+function getSeedCommerceHighlights(slug: string) {
+  if (slug === "muse-pearl-earrings") {
+    return ["מחיר גלוי לפני התאמה", "ייצור לפי מידה וגוון"];
+  }
+
+  if (slug === "venus-line-ring") {
+    return ["ייעוץ התאמה לפני שמירה", "בחירת אבן מאומתת"];
+  }
+
+  return ["מחיר גלוי לפני שמירה", "בדיקת איכות לפני מסירה"];
+}
+
 async function main() {
   const bootstrapAdmin = await getBootstrapAdmin();
 
@@ -303,6 +324,10 @@ async function main() {
         materialId: material.id,
         stoneId: stone?.id ?? null,
         basePrice: productData.basePrice,
+        availabilityMode: getSeedAvailabilityMode(productData.slug),
+        commerceHighlights: getSeedCommerceHighlights(productData.slug),
+        deliveryPromise: "משלוח עד הבית לאחר אימות פרטי ההזמנה.",
+        returnPolicy: "החלפה או החזרה מתואמת לפי מדיניות האתר.",
         careInstructions: "מומלץ להימנע ממגע עם בושם, כלור וחומרי ניקוי.",
         warranty: "אחריות לשנה על פגמי ייצור ושירות ניקוי ראשוני ללא עלות.",
         tags: productData.tags,

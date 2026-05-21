@@ -21,6 +21,7 @@ import {
 } from "~/lib/service-validation";
 
 type ServiceRequestFormProps = {
+  defaultProductReference?: string;
   topics: Array<{
     description?: string | null;
     label: string;
@@ -31,7 +32,10 @@ type ServiceRequestFormProps = {
 const initialState: ServiceRequestActionState = {};
 const maxFileSizeMb = Math.round(maxServiceRequestFileBytes / 1024 / 1024);
 
-export function ServiceRequestForm({ topics }: ServiceRequestFormProps) {
+export function ServiceRequestForm({
+  defaultProductReference,
+  topics,
+}: ServiceRequestFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const [state, formAction, pending] = useActionState(
     createServiceRequestAction,
@@ -110,6 +114,7 @@ export function ServiceRequestForm({ topics }: ServiceRequestFormProps) {
           placeholder="אופציונלי"
         />
         <Field
+          defaultValue={defaultProductReference}
           error={state.fieldErrors?.productReference}
           label="מוצר או קישור"
           name="productReference"

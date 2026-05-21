@@ -53,7 +53,7 @@ export async function SiteFooter() {
 
   return (
     <footer className="bg-transparent">
-      <div className="mx-auto min-h-[63rem] max-w-7xl px-4 py-14 sm:px-6 md:min-h-[55rem] lg:min-h-[32rem] lg:py-20">
+      <div className="mx-auto max-w-7xl px-4 pt-12 pb-8 sm:px-6 sm:pt-14 sm:pb-10 md:min-h-[55rem] md:py-14 lg:min-h-[32rem] lg:py-20">
         <div className="grid gap-8 md:grid-cols-2 md:items-start lg:grid-cols-[1.3fr_0.55fr_0.64fr_0.64fr_1fr]">
           <section className="max-w-lg">
             <Link

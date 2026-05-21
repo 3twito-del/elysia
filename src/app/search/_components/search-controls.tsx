@@ -100,7 +100,7 @@ export function SearchControls({
           </Button>
         </form>
 
-        <Sheet closeOnMediaQuery="(min-width: 1024px)">
+        <Sheet closeOnMediaQuery="(min-width: 768px)">
           <SheetTrigger asChild>
             <Button
               aria-label="סינון ומיון"

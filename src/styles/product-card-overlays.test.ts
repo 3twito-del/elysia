@@ -24,6 +24,8 @@ describe("product card overlay budget", () => {
       "const productDetails = [product.material, product.stone]",
     );
     expect(source).toContain('data-testid="product-card-attributes"');
+    expect(source).toContain('data-testid="product-card-highlights"');
+    expect(source).toContain("commerceHighlights.slice(0, 2)");
     expect(source).toMatch(/productDetails\.map\(\(detail, index\) =>/);
   });
 });

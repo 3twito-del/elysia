@@ -50,9 +50,19 @@ const serviceTracks = [
   },
 ] as const;
 
-export default async function ServicePage() {
+type ServicePageProps = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
+function firstParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+export default async function ServicePage({ searchParams }: ServicePageProps) {
+  const query = searchParams ? await searchParams : {};
   const profile = await getPublicServiceProfile();
   const phoneHref = `tel:${profile.settings.phoneE164}`;
+  const defaultProductReference = firstParam(query.productReference);
 
   return (
     <main>
@@ -151,6 +161,7 @@ export default async function ServicePage() {
               </p>
             </div>
             <ServiceRequestForm
+              defaultProductReference={defaultProductReference}
               topics={profile.topics.map((topic) => ({
                 description: topic.description,
                 label: topic.label,

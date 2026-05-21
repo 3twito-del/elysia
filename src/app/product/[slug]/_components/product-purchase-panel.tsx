@@ -27,8 +27,9 @@ import {
   getOrCreateCartSessionKey,
 } from "~/lib/cart-session";
 import {
-  getProductAvailabilityLabel,
+  getPublicProductCommerceStatus,
   getPublicStockStatusLabel,
+  type PublicProductAvailabilityMode,
 } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
 import { cn } from "~/lib/utils";
@@ -38,6 +39,8 @@ import { api } from "~/trpc/react";
 type ProductPurchasePanelProps = {
   productSlug: string;
   productName: string;
+  productReference: string;
+  availabilityMode: PublicProductAvailabilityMode;
   price: number;
   variants: CatalogProductVariant[];
   metalColors: string[];
@@ -46,6 +49,8 @@ type ProductPurchasePanelProps = {
 export function ProductPurchasePanel({
   productSlug,
   productName,
+  productReference,
+  availabilityMode,
   price,
   variants,
   metalColors,
@@ -58,7 +63,7 @@ export function ProductPurchasePanel({
     getClientSnapshot,
     getServerSnapshot,
   );
-  const primaryCtaRef = useRef<HTMLButtonElement | null>(null);
+  const primaryCtaRef = useRef<HTMLDivElement | null>(null);
   const [showStickyBar, setShowStickyBar] = useState(false);
   const [cartMessage, setCartMessage] = useState<string | null>(null);
   const [cartMessageTone, setCartMessageTone] = useState<"error" | "success">(
@@ -66,10 +71,17 @@ export function ProductPurchasePanel({
   );
   const selectedVariant =
     variants.find((variant) => variant.sku === selectedSku) ?? variants[0];
-  const selectedVariantAvailable =
-    (selectedVariant?.availableQuantity ?? 0) > 0;
   const selectedVariantPrice = selectedVariant?.price ?? price;
   const selectedVariantQuantity = selectedVariant?.availableQuantity ?? 0;
+  const commerceStatus = getPublicProductCommerceStatus({
+    availableQuantity: selectedVariantQuantity,
+    availabilityMode,
+  });
+  const selectedVariantAvailable = commerceStatus.canAddToCart;
+  const serviceHref = createProductServiceHref({
+    productReference,
+    reason: commerceStatus.serviceReason,
+  });
   const addItem = api.cart.addItem.useMutation({
     onSuccess: (_data, variables) => {
       const addedVariant = variants.find(
@@ -135,7 +147,7 @@ export function ProductPurchasePanel({
   function handleAddToCart() {
     if (!selectedVariant || !selectedVariantAvailable) {
       setCartMessageTone("error");
-      setCartMessage("הווריאציה שנבחרה אינה זמינה כרגע.");
+      setCartMessage("הפריט זמין דרך שירות הלקוחות לפני הזמנה.");
       return;
     }
 
@@ -161,21 +173,30 @@ export function ProductPurchasePanel({
             {formatPrice(selectedVariantPrice)}
           </p>
         </div>
-        <Button
-          aria-describedby="product-variant-feedback"
-          aria-label={`הוספה לסל: ${productName}`}
-          className="product-primary-cta order-1"
-          disabled={addToCartDisabled}
-          onClick={handleAddToCart}
-          type="button"
-        >
-          {addItem.isPending
-            ? "מוסיף..."
-            : selectedVariantAvailable
-              ? "הוספה לסל"
-              : "לא זמין"}
-          <PackageCheck aria-hidden="true" className="size-4" />
-        </Button>
+        {selectedVariantAvailable ? (
+          <Button
+            aria-describedby="product-variant-feedback"
+            aria-label={`הוספה לסל: ${productName}`}
+            className="product-primary-cta order-1"
+            disabled={addToCartDisabled}
+            onClick={handleAddToCart}
+            type="button"
+          >
+            {addItem.isPending
+              ? "מוסיף..."
+              : selectedVariantAvailable
+                ? "הוספה לסל"
+                : "לא זמין"}
+            <PackageCheck aria-hidden="true" className="size-4" />
+          </Button>
+        ) : (
+          <Button asChild className="product-primary-cta order-1">
+            <Link href={serviceHref}>
+              {commerceStatus.ctaLabel}
+              <PackageCheck aria-hidden="true" className="size-4" />
+            </Link>
+          </Button>
+        )}
       </div>
     </div>
   );
@@ -195,25 +216,31 @@ export function ProductPurchasePanel({
             </div>
             <Badge
               className="rounded-full"
-              variant={selectedVariantAvailable ? "outline" : "destructive"}
+              variant={
+                selectedVariantAvailable ||
+                availabilityMode !== "READY_TO_ORDER"
+                  ? "outline"
+                  : "destructive"
+              }
             >
-              {selectedVariantAvailable
-                ? getProductAvailabilityLabel(selectedVariantQuantity)
-                : "לא זמין"}
+              {commerceStatus.label}
             </Badge>
           </div>
 
           <div className="flex flex-wrap gap-2">
             {variants.map((variant) => (
               <Button
-                aria-label={getVariantButtonLabel(variant)}
+                aria-label={getVariantButtonLabel(variant, availabilityMode)}
                 aria-pressed={selectedSku === variant.sku}
                 className={cn(
                   "min-h-11 min-w-12 rounded-full px-4",
                   selectedSku === variant.sku &&
                     "bg-foreground text-background hover:bg-foreground/90 hover:text-background",
                 )}
-                disabled={variant.availableQuantity <= 0}
+                disabled={
+                  availabilityMode === "READY_TO_ORDER" &&
+                  variant.availableQuantity <= 0
+                }
                 key={variant.sku}
                 onClick={() => setSelectedSku(variant.sku)}
                 type="button"
@@ -231,36 +258,46 @@ export function ProductPurchasePanel({
           >
             <span className="flex items-center gap-1.5">
               <PackageCheck className="size-4" aria-hidden="true" />
-              {selectedVariant
-                ? getPublicStockStatusLabel(selectedVariant.availableQuantity)
-                : "בדיקת זמינות"}
+              {selectedVariant ? commerceStatus.label : "בדיקת זמינות"}
             </span>
             <span className="flex items-center gap-1.5">
               <CheckCircle2 className="size-4" aria-hidden="true" />
               {selectedVariantAvailable
-                ? getProductAvailabilityLabel(selectedVariantQuantity)
+                ? commerceStatus.label
                 : "מומלץ לבדוק מול שירות הלקוחות"}
             </span>
           </div>
         </div>
 
-        <div className="grid gap-3">
-          <Button
-            aria-describedby="product-variant-feedback"
-            className="product-primary-cta h-12 w-full"
-            disabled={addToCartDisabled}
-            onClick={handleAddToCart}
-            ref={primaryCtaRef}
-            size="lg"
-            type="button"
-          >
-            {addItem.isPending
-              ? "מוסיף..."
-              : selectedVariantAvailable
-                ? "הוספה לסל"
-                : "לא זמין"}
-            <PackageCheck aria-hidden="true" className="size-4" />
-          </Button>
+        <div className="grid gap-3" ref={primaryCtaRef}>
+          {selectedVariantAvailable ? (
+            <Button
+              aria-describedby="product-variant-feedback"
+              className="product-primary-cta h-12 w-full"
+              disabled={addToCartDisabled}
+              onClick={handleAddToCart}
+              size="lg"
+              type="button"
+            >
+              {addItem.isPending
+                ? "מוסיף..."
+                : selectedVariantAvailable
+                  ? "הוספה לסל"
+                  : "לא זמין"}
+              <PackageCheck aria-hidden="true" className="size-4" />
+            </Button>
+          ) : (
+            <Button
+              asChild
+              className="product-primary-cta h-12 w-full"
+              size="lg"
+            >
+              <Link href={serviceHref}>
+                {commerceStatus.ctaLabel}
+                <PackageCheck aria-hidden="true" className="size-4" />
+              </Link>
+            </Button>
+          )}
           <WishlistButton productSlug={productSlug}>
             שמירה למועדפים
             <Heart aria-hidden="true" className="size-4" />
@@ -354,6 +391,18 @@ function subscribeToNoopStore() {
   return () => undefined;
 }
 
+function createProductServiceHref(input: {
+  productReference: string;
+  reason: string;
+}) {
+  const params = new URLSearchParams({
+    productReference: input.productReference,
+    reason: input.reason,
+  });
+
+  return `/service?${params.toString()}`;
+}
+
 function getClientSnapshot() {
   return true;
 }
@@ -374,11 +423,18 @@ function getVariantDisplayName(variant: CatalogProductVariant) {
   return variant.size ?? variant.name;
 }
 
-function getVariantButtonLabel(variant: CatalogProductVariant) {
+function getVariantButtonLabel(
+  variant: CatalogProductVariant,
+  availabilityMode: PublicProductAvailabilityMode,
+) {
+  const commerceStatus = getPublicProductCommerceStatus({
+    availabilityMode,
+    availableQuantity: variant.availableQuantity,
+  });
   const availability =
-    variant.availableQuantity > 0
+    availabilityMode === "READY_TO_ORDER"
       ? getPublicStockStatusLabel(variant.availableQuantity)
-      : "לא זמין";
+      : commerceStatus.label;
 
   return `${getVariantDisplayName(variant)}, ${formatPrice(variant.price)}, ${availability}`;
 }

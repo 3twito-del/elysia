@@ -18,6 +18,7 @@ import {
   createAdminCouponClientInputSchema,
   createAdminProductInputSchema,
   updateAdminInventoryInputSchema,
+  updateAdminProductCommerceInputSchema,
 } from "~/lib/admin-validation";
 import {
   getFirstZodIssueMessage,
@@ -70,6 +71,139 @@ export function AdminProductStatusAction({
       </Button>
       <AdminMutationStatus feedback={feedback} />
     </div>
+  );
+}
+
+export function AdminProductCommerceForm({ product }: { product: Product }) {
+  const utils = api.useUtils();
+  const router = useRouter();
+  const variant = product.variants[0];
+  const [feedback, setFeedback] = useState<AdminMutationFeedback>();
+  const [fieldErrors, setFieldErrors] = useState<FormFieldErrors>({});
+  const mutation = api.admin.updateProductCommerce.useMutation({
+    onError: (error) => setFeedback({ message: error.message, tone: "error" }),
+    onMutate: () =>
+      setFeedback({ message: "שומר שכבת מסחר...", tone: "neutral" }),
+    onSuccess: async () => {
+      await utils.admin.catalog.invalidate();
+      router.refresh();
+      setFeedback({ message: "שכבת המסחר נשמרה.", tone: "success" });
+    },
+  });
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const compareAt = getFormNumber(form, "compareAt");
+    const parsed = updateAdminProductCommerceInputSchema.safeParse({
+      availabilityMode: getFormString(form, "availabilityMode"),
+      careInstructions: getOptionalFormString(form, "careInstructions"),
+      commerceHighlights: getFormLines(form, "commerceHighlights"),
+      compareAt: compareAt > 0 ? compareAt : undefined,
+      deliveryPromise: getOptionalFormString(form, "deliveryPromise"),
+      productId: product.id,
+      returnPolicy: getOptionalFormString(form, "returnPolicy"),
+      variantId: variant?.id,
+      variantMetalColor: getOptionalFormString(form, "variantMetalColor"),
+      variantSize: getOptionalFormString(form, "variantSize"),
+      variantStoneColor: getOptionalFormString(form, "variantStoneColor"),
+      warranty: getOptionalFormString(form, "warranty"),
+    });
+
+    if (!parsed.success) {
+      setFieldErrors(getZodFieldErrors(parsed.error));
+      setFeedback({
+        message: getFirstZodIssueMessage(parsed.error),
+        tone: "error",
+      });
+      return;
+    }
+
+    setFieldErrors({});
+    mutation.mutate(parsed.data);
+  }
+
+  return (
+    <details className="mt-2 text-sm">
+      <summary className="text-muted-foreground cursor-pointer underline-offset-4 hover:underline">
+        מסחר
+      </summary>
+      <form className="mt-3 grid min-w-72 gap-3" onSubmit={handleSubmit}>
+        <fieldset className="grid gap-3" disabled={mutation.isPending}>
+          <AvailabilitySelect defaultValue={product.availabilityMode} />
+          <Textarea
+            aria-label="הבטחות מסחר"
+            defaultValue={product.commerceHighlights.join("\n")}
+            name="commerceHighlights"
+            placeholder="משלוח מתואם עד הבית"
+          />
+          <Input
+            aria-label="הבטחת משלוח"
+            defaultValue={product.deliveryPromise ?? ""}
+            name="deliveryPromise"
+            placeholder="הבטחת משלוח"
+          />
+          <Input
+            aria-label="מדיניות החזרה"
+            defaultValue={product.returnPolicy ?? ""}
+            name="returnPolicy"
+            placeholder="מדיניות החזרה"
+          />
+          <Textarea
+            aria-label="אחריות"
+            defaultValue={product.warranty ?? ""}
+            name="warranty"
+            placeholder="אחריות"
+          />
+          <Textarea
+            aria-label="הנחיות טיפול"
+            defaultValue={product.careInstructions ?? ""}
+            name="careInstructions"
+            placeholder="הנחיות טיפול"
+          />
+          {variant ? (
+            <div className="grid gap-2">
+              <Input
+                aria-label="מחיר לפני הנחה"
+                defaultValue={variant.compareAt ?? ""}
+                min={0}
+                name="compareAt"
+                placeholder="מחיר לפני הנחה"
+                type="number"
+              />
+              <Input
+                aria-label="מידת וריאציה"
+                defaultValue={variant.size ?? ""}
+                name="variantSize"
+                placeholder="מידה"
+              />
+              <Input
+                aria-label="גוון מתכת"
+                defaultValue={variant.metalColor ?? ""}
+                name="variantMetalColor"
+                placeholder="גוון מתכת"
+              />
+              <Input
+                aria-label="גוון אבן"
+                defaultValue={variant.stoneColor ?? ""}
+                name="variantStoneColor"
+                placeholder="גוון אבן"
+              />
+            </div>
+          ) : null}
+        </fieldset>
+        {getFieldErrorList(fieldErrors).length > 0 ? (
+          <StatusMessage tone="error" variant="plain">
+            {getFieldErrorList(fieldErrors).join(" ")}
+          </StatusMessage>
+        ) : null}
+        <AdminMutationStatus feedback={feedback} />
+        <Button disabled={mutation.isPending} size="sm" type="submit">
+          <Save aria-hidden="true" className="size-4" />
+          {mutation.isPending ? "שומר..." : "שמירת מסחר"}
+        </Button>
+      </form>
+    </details>
   );
 }
 
@@ -310,21 +444,32 @@ export function AdminProductCreateForm({ catalog }: { catalog: AdminCatalog }) {
       quantity: getFormNumber(form, `quantity_${branch.id}`),
       safetyStock: getFormNumber(form, `safety_${branch.id}`),
     }));
+    const compareAt = getFormNumber(form, "compareAt");
 
     const parsed = createAdminProductInputSchema.safeParse({
+      availabilityMode: getFormString(form, "availabilityMode"),
       basePrice: getFormNumber(form, "basePrice"),
       branchInventory,
       categoryId: getFormString(form, "categoryId"),
+      careInstructions: getOptionalFormString(form, "careInstructions"),
+      commerceHighlights: getFormLines(form, "commerceHighlights"),
+      compareAt: compareAt > 0 ? compareAt : undefined,
       description: getFormString(form, "description"),
+      deliveryPromise: getOptionalFormString(form, "deliveryPromise"),
       imageUrl: getOptionalFormString(form, "imageUrl"),
       materialId: getFormString(form, "materialId"),
       name: getFormString(form, "name"),
+      returnPolicy: getOptionalFormString(form, "returnPolicy"),
       shortDescription: getFormString(form, "shortDescription"),
       sku: getFormString(form, "sku"),
       slug: getFormString(form, "slug"),
       stoneId: getOptionalFormString(form, "stoneId"),
+      variantMetalColor: getOptionalFormString(form, "variantMetalColor"),
       variantName: getOptionalFormString(form, "variantName") ?? "ברירת מחדל",
+      variantSize: getOptionalFormString(form, "variantSize"),
       variantSku: getFormString(form, "variantSku"),
+      variantStoneColor: getOptionalFormString(form, "variantStoneColor"),
+      warranty: getOptionalFormString(form, "warranty"),
     });
 
     if (!parsed.success) {
@@ -345,6 +490,28 @@ export function AdminProductCreateForm({ catalog }: { catalog: AdminCatalog }) {
   return (
     <form className="grid gap-4" onSubmit={handleSubmit}>
       <fieldset className="grid gap-4" disabled={mutation.isPending}>
+        <div className="grid gap-3 md:grid-cols-4">
+          <AvailabilitySelect defaultValue="READY_TO_ORDER" />
+          <Field
+            name="compareAt"
+            optional
+            placeholder="מחיר לפני הנחה"
+            type="number"
+          />
+          <Field name="variantSize" optional placeholder="מידה" />
+          <Field name="variantMetalColor" optional placeholder="גוון מתכת" />
+          <Field name="variantStoneColor" optional placeholder="גוון אבן" />
+        </div>
+        <Textarea
+          name="commerceHighlights"
+          placeholder="הבטחות מסחר, שורה לכל הבטחה"
+        />
+        <div className="grid gap-3 md:grid-cols-2">
+          <Field name="deliveryPromise" optional placeholder="הבטחת משלוח" />
+          <Field name="returnPolicy" optional placeholder="מדיניות החזרה" />
+        </div>
+        <Textarea name="warranty" placeholder="אחריות" />
+        <Textarea name="careInstructions" placeholder="הנחיות טיפול" />
         <div className="grid gap-3 md:grid-cols-3">
           <Field name="name" placeholder="שם מוצר" />
           <Field name="slug" placeholder="slug" />
@@ -418,6 +585,13 @@ function getOptionalFormString(form: FormData, key: string) {
   return value.length > 0 ? value : undefined;
 }
 
+function getFormLines(form: FormData, key: string) {
+  return getFormString(form, key)
+    .split(/\r?\n/u)
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
 function getFormNumber(form: FormData, key: string) {
   const value = getFormString(form, key);
   const number = Number(value);
@@ -451,6 +625,22 @@ function Field({
       required={!optional}
       type={type}
     />
+  );
+}
+
+function AvailabilitySelect({ defaultValue }: { defaultValue: string }) {
+  return (
+    <select
+      aria-label="מצב זמינות מסחרי"
+      className="glass-control h-10 rounded-md border px-3 text-sm"
+      defaultValue={defaultValue}
+      name="availabilityMode"
+      required
+    >
+      <option value="READY_TO_ORDER">זמין להזמנה</option>
+      <option value="MADE_TO_ORDER">בהזמנה אישית</option>
+      <option value="CONSULTATION">לתיאום ייעוץ</option>
+    </select>
   );
 }
 

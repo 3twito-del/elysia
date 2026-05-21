@@ -5,6 +5,7 @@ import {
   createAdminCouponInputSchema,
   createAdminProductInputSchema,
   refundAdminOrderInputSchema,
+  updateAdminProductCommerceInputSchema,
   updateAdminInventoryInputSchema,
   upsertAdminShipmentInputSchema,
 } from "./admin-validation";
@@ -106,6 +107,46 @@ describe("admin validation", () => {
         materialId: "יש לבחור חומר.",
         name: "יש להזין שם מוצר.",
       });
+    }
+  });
+
+  it("requires compare-at prices to be above the sale price on product creation", () => {
+    const parsed = createAdminProductInputSchema.safeParse({
+      basePrice: 100,
+      branchInventory: [],
+      categoryId: "category_1",
+      compareAt: 90,
+      description: "Full product description",
+      materialId: "material_1",
+      name: "Product",
+      shortDescription: "Short product copy",
+      sku: "SKU-1",
+      slug: "product",
+      variantName: "Default",
+      variantSku: "SKU-1-DEFAULT",
+    });
+
+    expect(parsed.success).toBe(false);
+    if (!parsed.success) {
+      expect(getZodFieldErrors(parsed.error).compareAt).toBe(
+        "מחיר לפני הנחה חייב להיות גבוה ממחיר המכירה.",
+      );
+    }
+  });
+
+  it("validates commerce updates and requires a variant for compare-at updates", () => {
+    const parsed = updateAdminProductCommerceInputSchema.safeParse({
+      availabilityMode: "READY_TO_ORDER",
+      compareAt: 1200,
+      commerceHighlights: [],
+      productId: "product_1",
+    });
+
+    expect(parsed.success).toBe(false);
+    if (!parsed.success) {
+      expect(getZodFieldErrors(parsed.error).compareAt).toBe(
+        "יש לבחור וריאציה לעדכון מחיר לפני הנחה.",
+      );
     }
   });
 });

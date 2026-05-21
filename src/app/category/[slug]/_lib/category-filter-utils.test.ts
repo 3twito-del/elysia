@@ -71,10 +71,12 @@ function makeProduct(
     Partial<Pick<CatalogProduct, "stone">>,
 ): CatalogProduct {
   return {
+    availabilityMode: "READY_TO_ORDER",
     categoryName: "Category",
     categorySlug: "category",
     collection: "classic",
     collections: ["classic"],
+    commerceHighlights: [],
     createdAt: new Date("2026-01-01T00:00:00Z"),
     description: "Description",
     image: "/product.png",

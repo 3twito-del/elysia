@@ -8,6 +8,7 @@ import {
   updateAdminAppointmentStatusInputSchema,
   updateAdminCouponStatusInputSchema,
   updateAdminInventoryInputSchema,
+  updateAdminProductCommerceInputSchema,
   updateAdminProductStatusInputSchema,
   upsertAdminShipmentInputSchema,
 } from "~/lib/admin-validation";
@@ -26,6 +27,7 @@ export {
   updateAdminAppointmentStatusInputSchema,
   updateAdminCouponStatusInputSchema,
   updateAdminInventoryInputSchema,
+  updateAdminProductCommerceInputSchema,
   updateAdminProductStatusInputSchema,
   upsertAdminShipmentInputSchema,
 } from "~/lib/admin-validation";
@@ -556,6 +558,12 @@ export async function createAdminProduct(input: {
         materialId: parsed.materialId,
         stoneId: parsed.stoneId,
         basePrice: parsed.basePrice,
+        availabilityMode: parsed.availabilityMode,
+        commerceHighlights: parsed.commerceHighlights,
+        deliveryPromise: parsed.deliveryPromise,
+        returnPolicy: parsed.returnPolicy,
+        careInstructions: parsed.careInstructions,
+        warranty: parsed.warranty,
         tags: [],
         media: parsed.imageUrl
           ? {
@@ -574,10 +582,14 @@ export async function createAdminProduct(input: {
         productId: created.id,
         sku: parsed.variantSku,
         name: parsed.variantName,
+        size: parsed.variantSize,
+        metalColor: parsed.variantMetalColor,
+        stoneColor: parsed.variantStoneColor,
         isDefault: true,
         prices: {
           create: {
             amount: parsed.basePrice,
+            compareAt: parsed.compareAt,
             currency: "ILS",
           },
         },
@@ -609,6 +621,94 @@ export async function createAdminProduct(input: {
     });
 
     return created;
+  });
+
+  revalidateCatalogMutation({
+    productSlugs: [product.slug],
+    categorySlugs: [product.category.slug],
+  });
+
+  return { id: product.id, slug: product.slug };
+}
+
+export async function updateAdminProductCommerce(input: {
+  data: z.infer<typeof updateAdminProductCommerceInputSchema>;
+  adminUserId: string;
+}) {
+  const parsed = updateAdminProductCommerceInputSchema.parse(input.data);
+  const product = await db.$transaction(async (tx) => {
+    const updated = await tx.product.update({
+      where: { id: parsed.productId },
+      data: {
+        availabilityMode: parsed.availabilityMode,
+        commerceHighlights: parsed.commerceHighlights,
+        deliveryPromise: parsed.deliveryPromise ?? null,
+        returnPolicy: parsed.returnPolicy ?? null,
+        careInstructions: parsed.careInstructions ?? null,
+        warranty: parsed.warranty ?? null,
+      },
+      include: { category: true },
+    });
+
+    if (parsed.variantId) {
+      const variant = await tx.productVariant.findUniqueOrThrow({
+        where: { id: parsed.variantId },
+        include: {
+          prices: {
+            orderBy: { validFrom: "desc" },
+            take: 1,
+          },
+          product: true,
+        },
+      });
+
+      await tx.productVariant.update({
+        where: { id: parsed.variantId },
+        data: {
+          size: parsed.variantSize ?? null,
+          metalColor: parsed.variantMetalColor ?? null,
+          stoneColor: parsed.variantStoneColor ?? null,
+        },
+      });
+
+      const latestPrice = variant.prices[0];
+
+      if (latestPrice) {
+        await tx.price.update({
+          where: { id: latestPrice.id },
+          data: { compareAt: parsed.compareAt ?? null },
+        });
+      } else if (parsed.compareAt) {
+        await tx.price.create({
+          data: {
+            variantId: variant.id,
+            amount:
+              Number(variant.product.basePrice) + Number(variant.priceDelta),
+            compareAt: parsed.compareAt,
+            currency: "ILS",
+          },
+        });
+      }
+    }
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "product_commerce_updated",
+      entity: "Product",
+      entityId: updated.id,
+      metadata: {
+        availabilityMode: parsed.availabilityMode,
+        commerceHighlightCount: parsed.commerceHighlights.length,
+        variantId: parsed.variantId,
+      },
+    });
+
+    await createSearchReindexEvent(tx, {
+      aggregateId: updated.id,
+      reason: "product_commerce_updated",
+    });
+
+    return updated;
   });
 
   revalidateCatalogMutation({

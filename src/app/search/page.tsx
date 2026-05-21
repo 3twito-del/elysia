@@ -21,7 +21,7 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { EmptyState } from "~/components/ui/empty-state";
 import { resolveAiCatalogSearchIntent } from "~/lib/ai-catalog-intent";
-import { getProductAvailabilityLabel } from "~/lib/commerce-labels";
+import { getPublicProductCommerceStatus } from "~/lib/commerce-labels";
 import { cn } from "~/lib/utils";
 import { db } from "~/server/db";
 import {
@@ -465,7 +465,13 @@ function SearchResultListItem({
     (total, quantity) => total + quantity,
     0,
   );
-  const isAvailable = onlineStockQuantity > 0;
+  const commerceStatus = getPublicProductCommerceStatus({
+    availabilityMode: product.availabilityMode,
+    availableQuantity: onlineStockQuantity,
+  });
+  const isAvailable = commerceStatus.canAddToCart;
+  const isUnavailable =
+    product.availabilityMode === "READY_TO_ORDER" && !isAvailable;
   const compareAt =
     typeof product.compareAt === "number" && product.compareAt > product.price
       ? product.compareAt
@@ -474,6 +480,10 @@ function SearchResultListItem({
     ? Math.round(((compareAt - product.price) / compareAt) * 100)
     : undefined;
   const href = createProductSearchHref(product.slug, searchContext);
+  const actionHref = commerceStatus.canAddToCart
+    ? href
+    : createProductServiceHref(product, commerceStatus.serviceReason);
+  const commerceHighlights = (product.commerceHighlights ?? []).slice(0, 2);
   const productDetails = [
     product.categoryName,
     product.material,
@@ -486,7 +496,7 @@ function SearchResultListItem({
       aria-label={product.name}
       className={cn(
         "product-card-shell group/list grid min-h-full overflow-hidden rounded-md border border-[var(--glass-border)] bg-[var(--glass-panel-bg)] shadow-none transition focus-within:ring-3 focus-within:ring-[var(--glass-focus)] md:grid-cols-[minmax(10rem,14rem)_1fr]",
-        !isAvailable && "bg-muted/30",
+        isUnavailable && "bg-muted/30",
       )}
       data-testid="search-result-list-item"
     >
@@ -505,13 +515,13 @@ function SearchResultListItem({
           sizes="(min-width: 1024px) 14rem, (min-width: 768px) 28vw, 100vw"
           src={product.image}
         />
-        {discountPercent || !isAvailable ? (
+        {discountPercent || isUnavailable ? (
           <div className="absolute top-2.5 left-2.5 flex items-start gap-2">
             {discountPercent ? (
               <Badge className="font-semibold" dir="ltr" variant="default">
                 -{discountPercent}%
               </Badge>
-            ) : !isAvailable ? (
+            ) : isUnavailable ? (
               <Badge variant="destructive">לא זמין</Badge>
             ) : null}
           </div>
@@ -563,6 +573,18 @@ function SearchResultListItem({
               </span>
             ))}
           </div>
+          {commerceHighlights.length > 0 ? (
+            <ul className="text-muted-foreground mt-3 flex flex-wrap gap-2 text-xs">
+              {commerceHighlights.map((highlight) => (
+                <li
+                  className="rounded-md border border-[var(--glass-border)] bg-[var(--glass-inset-bg)] px-2.5 py-1"
+                  key={highlight}
+                >
+                  {highlight}
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </div>
 
         <div className="grid content-between gap-3 md:min-w-44 md:text-end">
@@ -589,9 +611,7 @@ function SearchResultListItem({
                   isAvailable ? "bg-emerald-500" : "bg-muted-foreground",
                 )}
               />
-              <span className="truncate">
-                {getProductAvailabilityLabel(onlineStockQuantity)}
-              </span>
+              <span className="truncate">{commerceStatus.label}</span>
             </span>
           </div>
           <Button
@@ -599,15 +619,27 @@ function SearchResultListItem({
             className="product-card-cta min-h-10 w-full gap-2"
             variant="outline"
           >
-            <Link aria-label={`צפייה וקנייה: ${product.name}`} href={href}>
+            <Link
+              aria-label={`${commerceStatus.cardCtaLabel}: ${product.name}`}
+              href={actionHref}
+            >
               <ShoppingBag aria-hidden="true" className="size-4" />
-              {isAvailable ? "צפייה וקנייה" : "בדיקת זמינות"}
+              {commerceStatus.cardCtaLabel}
             </Link>
           </Button>
         </div>
       </div>
     </article>
   );
+}
+
+function createProductServiceHref(
+  product: Pick<CatalogProduct, "name" | "sku">,
+  reason: string,
+) {
+  const productReference = `${product.name} (${product.sku})`;
+
+  return `/service?productReference=${encodeURIComponent(productReference)}&reason=${encodeURIComponent(reason)}`;
 }
 
 function normalizeSearchInput(

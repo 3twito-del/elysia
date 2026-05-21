@@ -3,7 +3,7 @@ import { z } from "zod";
 import { optionalTrimmedString } from "./form-validation";
 
 const requiredId = (message = "חסר מזהה לביצוע הפעולה.") =>
-  z.string().trim().min(1, message);
+  z.string().trim().min(1, message).max(128, "המזהה ארוך מדי.");
 
 const requiredText = (message: string, maxLength: number) =>
   z.string().trim().min(1, message).max(maxLength, "הטקסט ארוך מדי.");
@@ -13,6 +13,17 @@ const positiveNumber = (message: string) =>
 
 const nonnegativeInteger = (message: string) =>
   z.number({ invalid_type_error: message }).int(message).nonnegative(message);
+
+const productAvailabilityModes = [
+  "READY_TO_ORDER",
+  "MADE_TO_ORDER",
+  "CONSULTATION",
+] as const;
+
+const commerceHighlights = z
+  .array(z.string().trim().min(1).max(80, "שורת הבטחת מסחר ארוכה מדי."))
+  .max(4, "ניתן להציג עד ארבע הבטחות מסחר.")
+  .default([]);
 
 const optionalUrl = z.preprocess(
   (value) =>
@@ -25,44 +36,88 @@ const optionalUrl = z.preprocess(
     .optional(),
 );
 
-export const createAdminProductInputSchema = z.object({
-  slug: z.string().trim().min(3, "יש להזין slug תקין.").max(120),
-  sku: z.string().trim().min(3, "יש להזין מק״ט מוצר.").max(80),
-  name: z.string().trim().min(2, "יש להזין שם מוצר.").max(160),
-  shortDescription: z
-    .string()
-    .trim()
-    .min(5, "יש להזין תיאור קצר.")
-    .max(240, "התיאור הקצר ארוך מדי."),
-  description: z
-    .string()
-    .trim()
-    .min(5, "יש להזין תיאור מלא.")
-    .max(1500, "התיאור המלא ארוך מדי."),
-  categoryId: requiredId("יש לבחור קטגוריה."),
-  materialId: requiredId("יש לבחור חומר."),
-  stoneId: requiredId().optional(),
-  basePrice: positiveNumber("יש להזין מחיר גדול מאפס."),
-  imageUrl: optionalUrl,
-  variantSku: z.string().trim().min(3, "יש להזין מק״ט וריאציה.").max(100),
-  variantName: z.string().trim().min(1, "יש להזין שם וריאציה.").max(120),
-  branchInventory: z
-    .array(
-      z.object({
-        branchId: requiredId("חסר ערוץ מלאי."),
-        quantity: nonnegativeInteger("יש להזין מלאי תקין."),
-        safetyStock: nonnegativeInteger("יש להזין מלאי ביטחון תקין.").default(
-          0,
-        ),
-      }),
-    )
-    .default([]),
-});
+export const createAdminProductInputSchema = z
+  .object({
+    slug: z.string().trim().min(3, "יש להזין slug תקין.").max(120),
+    sku: z.string().trim().min(3, "יש להזין מק״ט מוצר.").max(80),
+    name: z.string().trim().min(2, "יש להזין שם מוצר.").max(160),
+    shortDescription: z
+      .string()
+      .trim()
+      .min(5, "יש להזין תיאור קצר.")
+      .max(240, "התיאור הקצר ארוך מדי."),
+    description: z
+      .string()
+      .trim()
+      .min(5, "יש להזין תיאור מלא.")
+      .max(1500, "התיאור המלא ארוך מדי."),
+    categoryId: requiredId("יש לבחור קטגוריה."),
+    materialId: requiredId("יש לבחור חומר."),
+    stoneId: requiredId().optional(),
+    basePrice: positiveNumber("יש להזין מחיר גדול מאפס."),
+    compareAt: z.number().positive("יש להזין מחיר לפני הנחה תקין.").optional(),
+    availabilityMode: z
+      .enum(productAvailabilityModes)
+      .default("READY_TO_ORDER"),
+    commerceHighlights,
+    deliveryPromise: optionalTrimmedString(160, "הבטחת המשלוח ארוכה מדי."),
+    returnPolicy: optionalTrimmedString(220, "מדיניות ההחזרה ארוכה מדי."),
+    careInstructions: optionalTrimmedString(500, "הנחיות הטיפול ארוכות מדי."),
+    warranty: optionalTrimmedString(300, "טקסט האחריות ארוך מדי."),
+    imageUrl: optionalUrl,
+    variantSku: z.string().trim().min(3, "יש להזין מק״ט וריאציה.").max(100),
+    variantName: z.string().trim().min(1, "יש להזין שם וריאציה.").max(120),
+    variantSize: optionalTrimmedString(80, "מידת הווריאציה ארוכה מדי."),
+    variantMetalColor: optionalTrimmedString(80, "גוון המתכת ארוך מדי."),
+    variantStoneColor: optionalTrimmedString(80, "גוון האבן ארוך מדי."),
+    branchInventory: z
+      .array(
+        z.object({
+          branchId: requiredId("חסר ערוץ מלאי."),
+          quantity: nonnegativeInteger("יש להזין מלאי תקין."),
+          safetyStock: nonnegativeInteger("יש להזין מלאי ביטחון תקין.").default(
+            0,
+          ),
+        }),
+      )
+      .default([]),
+  })
+  .refine(
+    (input) =>
+      input.compareAt === undefined || input.compareAt > input.basePrice,
+    {
+      message: "מחיר לפני הנחה חייב להיות גבוה ממחיר המכירה.",
+      path: ["compareAt"],
+    },
+  );
 
 export const updateAdminProductStatusInputSchema = z.object({
   productId: requiredId("חסר מוצר לעדכון."),
   status: z.enum(["DRAFT", "ACTIVE", "ARCHIVED"]),
 });
+
+export const updateAdminProductCommerceInputSchema = z
+  .object({
+    productId: requiredId("חסר מוצר לעדכון."),
+    variantId: requiredId("חסרה וריאציה לעדכון.").optional(),
+    availabilityMode: z.enum(productAvailabilityModes),
+    commerceHighlights,
+    deliveryPromise: optionalTrimmedString(160, "הבטחת המשלוח ארוכה מדי."),
+    returnPolicy: optionalTrimmedString(220, "מדיניות ההחזרה ארוכה מדי."),
+    careInstructions: optionalTrimmedString(500, "הנחיות הטיפול ארוכות מדי."),
+    warranty: optionalTrimmedString(300, "טקסט האחריות ארוך מדי."),
+    compareAt: z.number().positive("יש להזין מחיר לפני הנחה תקין.").optional(),
+    variantSize: optionalTrimmedString(80, "מידת הווריאציה ארוכה מדי."),
+    variantMetalColor: optionalTrimmedString(80, "גוון המתכת ארוך מדי."),
+    variantStoneColor: optionalTrimmedString(80, "גוון האבן ארוך מדי."),
+  })
+  .refine(
+    (input) => input.compareAt === undefined || Boolean(input.variantId),
+    {
+      message: "יש לבחור וריאציה לעדכון מחיר לפני הנחה.",
+      path: ["compareAt"],
+    },
+  );
 
 export const updateAdminInventoryInputSchema = z.object({
   variantId: requiredId("חסרה וריאציה לעדכון מלאי."),
@@ -73,11 +128,8 @@ export const updateAdminInventoryInputSchema = z.object({
 
 export const createAdminCouponClientInputSchema = z
   .object({
-    code: z.string().trim().min(3, "׳™׳© ׳׳”׳–׳™׳ ׳§׳•׳“ ׳§׳•׳₪׳•׳.").max(64),
-    description: optionalTrimmedString(
-      240,
-      "׳×׳™׳׳•׳¨ ׳”׳§׳•׳₪׳•׳ ׳׳¨׳•׳ ׳׳“׳™.",
-    ),
+    code: z.string().trim().min(3, "יש להזין קוד קופון.").max(64),
+    description: optionalTrimmedString(240, "תיאור הקופון ארוך מדי."),
     percentOff: z.number().int().min(1).max(100).optional(),
     amountOff: z.number().positive().optional(),
     endsAt: z.coerce.date().optional(),
@@ -86,7 +138,7 @@ export const createAdminCouponClientInputSchema = z
   .refine(
     (input) => input.percentOff !== undefined || input.amountOff !== undefined,
     {
-      message: "׳™׳© ׳׳”׳–׳™׳ ׳׳—׳•׳– ׳”׳ ׳—׳” ׳׳• ׳¡׳›׳•׳ ׳”׳ ׳—׳”.",
+      message: "יש להזין אחוז הנחה או סכום הנחה.",
       path: ["percentOff"],
     },
   );

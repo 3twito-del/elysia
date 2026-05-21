@@ -3,6 +3,7 @@ import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
 import { formatPrice } from "~/lib/format";
+import type { PublicProductAvailabilityMode } from "~/lib/commerce-labels";
 import { db } from "~/server/db";
 import {
   CATALOG_CACHE_TAGS,
@@ -91,6 +92,12 @@ export type CatalogProduct = {
   categoryName: string;
   shortDescription: string;
   description: string;
+  availabilityMode: PublicProductAvailabilityMode;
+  commerceHighlights: string[];
+  deliveryPromise?: string;
+  returnPolicy?: string;
+  careInstructions?: string;
+  warranty?: string;
   price: number;
   compareAt?: number;
   createdAt: Date | string;
@@ -218,7 +225,7 @@ const getFeaturedCatalogProductsCached = unstable_cache(
 
     return selectFeaturedCatalogProducts(records.map(mapCatalogProduct), take);
   },
-  ["catalog:featured-products:v3"],
+  ["catalog:featured-products:v5"],
   {
     revalidate: CATALOG_REVALIDATE_SECONDS,
     tags: [CATALOG_CACHE_TAGS.products],
@@ -272,7 +279,7 @@ export async function listCatalogProducts(input: { category?: string } = {}) {
 
       return records.map(mapCatalogProduct);
     },
-    [`catalog:products:v3:${input.category ?? "all"}`],
+    [`catalog:products:v5:${input.category ?? "all"}`],
     {
       revalidate: CATALOG_REVALIDATE_SECONDS,
       tags: [
@@ -297,7 +304,7 @@ export async function getCatalogProductBySlug(slug: string) {
 
       return record ? mapCatalogProduct(record) : null;
     },
-    [`catalog:product:v3:${slug}`],
+    [`catalog:product:v5:${slug}`],
     {
       revalidate: CATALOG_REVALIDATE_SECONDS,
       tags: [CATALOG_CACHE_TAGS.products, productCacheTag(slug)],
@@ -327,7 +334,7 @@ const getCatalogFacetsCached = unstable_cache(
 
     return getCatalogFacetsFromProducts(products);
   },
-  ["catalog:facets:v3"],
+  ["catalog:facets:v5"],
   {
     revalidate: CATALOG_REVALIDATE_SECONDS,
     tags: [CATALOG_CACHE_TAGS.facets, CATALOG_CACHE_TAGS.products],
@@ -511,6 +518,14 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
     categoryName: record.category.name,
     shortDescription: record.shortDescription,
     description: displayDescription,
+    availabilityMode: record.availabilityMode,
+    commerceHighlights: getDisplayCommerceHighlights(record),
+    deliveryPromise:
+      record.deliveryPromise ?? "משלוח עד הבית לאחר אימות פרטי ההזמנה.",
+    returnPolicy:
+      record.returnPolicy ?? "החלפה או החזרה מתואמת לפי מדיניות האתר.",
+    careInstructions: record.careInstructions ?? undefined,
+    warranty: record.warranty ?? undefined,
     price: defaultPrice,
     compareAt: getCompareAt(defaultVariant),
     createdAt: record.createdAt,
@@ -593,6 +608,18 @@ function getDisplayProductDescription(input: {
   const stoneText = input.stone ? ` עם ${input.stone}` : "";
 
   return `${input.name} משלב ${input.material}${stoneText} בקו נקי ונוח לענידה. מתאים לשילוב יומיומי, מתנה או אירוע, עם פירוט מלא של מידה, חומר וזמינות לפני רכישה.`;
+}
+
+function getDisplayCommerceHighlights(record: CatalogProductRecord) {
+  if (record.commerceHighlights.length > 0) {
+    return record.commerceHighlights;
+  }
+
+  return [
+    record.warranty ?? "אחריות ושירות לאחר רכישה",
+    record.deliveryPromise ?? "משלוח מתואם עד הבית",
+    record.careInstructions ?? "הנחיות טיפול מצורפות לכל פריט",
+  ];
 }
 
 function isGeneratedCatalogDescription(description: string) {

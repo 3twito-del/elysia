@@ -4,6 +4,7 @@ import { PackageCheck, Search } from "lucide-react";
 
 import {
   AdminProductCreateForm,
+  AdminProductCommerceForm,
   AdminProductStatusAction,
 } from "../_components/admin-catalog-actions";
 import { AdminShell } from "../_components/admin-shell";
@@ -250,6 +251,7 @@ export default async function AdminCatalogPage({
                           productId={product.id}
                           status={product.status}
                         />
+                        <AdminProductCommerceForm product={product} />
                       </TableCell>
                     </TableRow>
                   ))

@@ -66,10 +66,12 @@ describe("search embeddings", () => {
 
 function makeProduct(overrides: Partial<CatalogProduct> = {}): CatalogProduct {
   return {
+    availabilityMode: "READY_TO_ORDER",
     categoryName: "עגילים",
     categorySlug: "earrings",
     collection: "Gift Studio",
     collections: ["Gift Studio"],
+    commerceHighlights: [],
     createdAt: new Date("2026-01-01T00:00:00.000Z"),
     description: "עגילים עדינים למתנה או ליום יום.",
     image: "/product.png",

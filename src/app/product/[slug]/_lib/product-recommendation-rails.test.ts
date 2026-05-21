@@ -88,10 +88,12 @@ function createProduct(overrides: Partial<CatalogProduct> & { slug: string }) {
   const { slug, ...rest } = overrides;
 
   return {
+    availabilityMode: "READY_TO_ORDER",
     categoryName: "Category",
     categorySlug: "category",
     collection: "Collection",
     collections: ["Collection"],
+    commerceHighlights: [],
     compareAt: undefined,
     createdAt: "2026-01-01T00:00:00.000Z",
     description: "Description",

@@ -53,6 +53,16 @@ const integrationStatusLabels: Readonly<Record<string, string>> = {
   "local-dev-fallback": "Fallback מקומי",
 };
 
+export type PublicProductAvailabilityMode =
+  | "READY_TO_ORDER"
+  | "MADE_TO_ORDER"
+  | "CONSULTATION";
+
+type PublicProductCommerceStatusInput = {
+  availabilityMode?: PublicProductAvailabilityMode;
+  availableQuantity: number;
+};
+
 export function getOrderStatusLabel(status: string) {
   return getMappedLabel(orderStatusLabels, status);
 }
@@ -90,13 +100,57 @@ export function getFulfillmentMethodLabel(method: string) {
 }
 
 export function getProductAvailabilityLabel(availableQuantity: number) {
-  if (availableQuantity === 0) return "בדיקת זמינות";
-
-  return "זמין להזמנה";
+  return getPublicProductCommerceStatus({
+    availableQuantity,
+    availabilityMode: "READY_TO_ORDER",
+  }).label;
 }
 
 export function getPublicStockStatusLabel(quantity: number) {
   return quantity > 0 ? "זמין להזמנה" : "אזל זמנית";
+}
+
+export function getPublicProductCommerceStatus({
+  availabilityMode = "READY_TO_ORDER",
+  availableQuantity,
+}: PublicProductCommerceStatusInput) {
+  if (availabilityMode === "MADE_TO_ORDER") {
+    return {
+      canAddToCart: false,
+      cardCtaLabel: "הזמנה אישית",
+      ctaLabel: "פתיחת בקשת התאמה",
+      label: "בהזמנה אישית",
+      serviceReason: "made-to-order",
+    } as const;
+  }
+
+  if (availabilityMode === "CONSULTATION") {
+    return {
+      canAddToCart: false,
+      cardCtaLabel: "תיאום ייעוץ",
+      ctaLabel: "תיאום ייעוץ",
+      label: "לתיאום ייעוץ",
+      serviceReason: "consultation",
+    } as const;
+  }
+
+  if (availableQuantity <= 0) {
+    return {
+      canAddToCart: false,
+      cardCtaLabel: "בדיקת זמינות",
+      ctaLabel: "בדיקת זמינות",
+      label: "בדיקת זמינות",
+      serviceReason: "availability",
+    } as const;
+  }
+
+  return {
+    canAddToCart: true,
+    cardCtaLabel: "צפייה וקנייה",
+    ctaLabel: "הוספה לסל",
+    label: "זמין להזמנה",
+    serviceReason: "ready",
+  } as const;
 }
 
 export function getStockQuantityLabel(quantity: number) {

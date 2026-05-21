@@ -6,6 +6,8 @@ const recentlyViewedStorageKey = "elysia_recently_viewed";
 const cartStorageKey = "elysia_cart_session";
 const cartProductSlug = "hera-bracelet";
 const cartProductName = "צמיד Hera";
+const madeToOrderProductSlug = "muse-pearl-earrings";
+const madeToOrderProductName = "עגילי Muse Pearl";
 const searchProductSlug = "venus-line-ring";
 const searchProductName = "טבעת Venus Line";
 const publicRoutes = [
@@ -91,7 +93,31 @@ test.describe("critical shopping flows", () => {
     await expect(
       page.getByRole("button", { name: /הוספת כמות עבור/ }),
     ).toBeVisible();
+    await expect(page.getByTestId("checkout-line-total").first()).toContainText(
+      "סכום שורה",
+    );
     await expect(page.locator('[aria-label^="כמות "]')).toContainText("1");
+  });
+
+  test("routes made-to-order products to service with product reference", async ({
+    page,
+  }) => {
+    await setCookieConsent(page, "essential");
+    await page.goto(`/product/${madeToOrderProductSlug}`);
+
+    await expect(
+      page.getByRole("heading", { name: madeToOrderProductName }).first(),
+    ).toBeVisible();
+    const serviceCta = page
+      .getByRole("link", { name: /פתיחת בקשת התאמה/ })
+      .first();
+
+    await expect(serviceCta).toHaveAttribute("href", /\/service\?/);
+    await serviceCta.click();
+    await expect(page).toHaveURL(/\/service\?/);
+    await expect(page.locator('input[name="productReference"]')).toHaveValue(
+      new RegExp(madeToOrderProductName),
+    );
   });
 
   test("finds a product from search and opens its product page", async ({
@@ -105,8 +131,8 @@ test.describe("critical shopping flows", () => {
     ).toBeVisible();
     const productResultLink = page
       .getByTestId("search-results-grid")
-      .getByRole("link", { name: new RegExp(searchProductName) })
-      .last();
+      .getByRole("link", { exact: true, name: searchProductName })
+      .first();
 
     const productHref = await productResultLink.getAttribute("href");
 
@@ -138,9 +164,11 @@ test.describe("critical shopping flows", () => {
     });
 
     await page.goto(`/category/earrings?${categoryNoResultsParams}`);
-    await expect(page.getByTestId("category-empty-state")).toBeVisible();
+    const categoryEmptyState = visibleByTestId(page, "category-empty-state");
+
+    await expect(categoryEmptyState).toBeVisible();
     await expect(
-      page.getByRole("link", { name: "איפוס פילטרים" }),
+      categoryEmptyState.getByRole("link", { name: "איפוס פילטרים" }),
     ).toBeVisible();
 
     await page.goto("/checkout");
@@ -408,10 +436,15 @@ test.describe("hydration-sensitive responsive surfaces", () => {
 
     await page.goto("/account", { waitUntil: "domcontentloaded" });
 
-    await expect(page.locator("#identifier")).toBeVisible();
-    await expect(page.locator('input[name="sessionKey"]')).toHaveValue(
-      sessionKey,
-    );
+    const accountLoginForm = visibleByTestId(page, "account-otp-request-form");
+
+    await expect(accountLoginForm).toBeVisible();
+    await expect(
+      accountLoginForm.getByTestId("account-identifier-input"),
+    ).toBeVisible();
+    await expect(
+      accountLoginForm.locator('input[name="sessionKey"]'),
+    ).toHaveValue(sessionKey);
     await expectNoHydrationRegressions(page, hydrationIssues);
   });
 
@@ -651,37 +684,35 @@ test.describe("accessibility and responsive guardrails", () => {
 
     await expect(homeHero).toBeVisible();
     await expect(homeHero.getByRole("heading").first()).toBeVisible();
-    await expect(
-      homeHero.locator('a[href="/service"][data-variant="outline"]'),
-    ).toBeVisible();
-    const heroOutlineButtonStyles = await homeHero
-      .locator('a[href="/service"][data-variant="outline"]')
-      .evaluate((element) => {
-        const styles = window.getComputedStyle(element);
+    const heroServiceLink = homeHero.locator(
+      'a.home-hero-service-link[href="/service"]',
+    );
 
-        return {
-          backgroundColor: styles.backgroundColor,
-          color: styles.color,
-        };
-      });
+    await expect(heroServiceLink).toBeVisible();
+    const heroServiceLinkStyles = await heroServiceLink.evaluate((element) => {
+      const styles = window.getComputedStyle(element);
 
-    expect(heroOutlineButtonStyles.color).toBe("rgb(255, 255, 255)");
-    expect(heroOutlineButtonStyles.backgroundColor).not.toBe(
+      return {
+        backgroundColor: styles.backgroundColor,
+        color: styles.color,
+      };
+    });
+
+    expect(heroServiceLinkStyles.color).toBe("rgb(255, 255, 255)");
+    expect(heroServiceLinkStyles.backgroundColor).not.toBe(
       "rgb(255, 255, 255)",
     );
-    const heroOutlineButtonShine = await homeHero
-      .locator('a[href="/service"][data-variant="outline"]')
-      .evaluate((element) => {
-        const styles = window.getComputedStyle(element, "::after");
+    const heroServiceLinkShine = await heroServiceLink.evaluate((element) => {
+      const styles = window.getComputedStyle(element, "::after");
 
-        return {
-          animationName: styles.animationName,
-          content: styles.content,
-        };
-      });
+      return {
+        animationName: styles.animationName,
+        content: styles.content,
+      };
+    });
 
-    expect(heroOutlineButtonShine.content).toBe("none");
-    expect(heroOutlineButtonShine.animationName).toBe("none");
+    expect(heroServiceLinkShine.content).toBe("none");
+    expect(heroServiceLinkShine.animationName).toBe("none");
     expect(homeHeroBox?.width ?? 0).toBeGreaterThanOrEqual(
       (viewport?.width ?? 0) - 2,
     );
@@ -864,7 +895,7 @@ test.describe("cookie consent flow", () => {
     });
     await expect(acceptCookiesButton).toHaveCSS(
       "background-color",
-      "rgb(66, 201, 190)",
+      "rgb(16, 19, 20)",
     );
     await acceptCookiesButton.click();
 
@@ -948,8 +979,15 @@ test.describe("access control surfaces", () => {
   }) => {
     await page.goto("/account");
 
-    await expect(page.locator("#identifier")).toBeVisible();
-    await expect(page.locator("#code")).toHaveCount(0);
+    const accountLoginForm = visibleByTestId(page, "account-otp-request-form");
+
+    await expect(accountLoginForm).toBeVisible();
+    await expect(
+      accountLoginForm.getByTestId("account-identifier-input"),
+    ).toBeVisible();
+    await expect(
+      page.getByTestId("account-code-input").filter({ visible: true }),
+    ).toHaveCount(0);
 
     const response = await page.request.get("/account/privacy/export");
     const body: unknown = await response.json();

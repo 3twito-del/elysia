@@ -487,6 +487,12 @@ export async function listAdminCatalog(
       name: product.name,
       image: product.media[0]?.url ?? DEFAULT_CATALOG_IMAGE,
       status: product.status,
+      availabilityMode: product.availabilityMode,
+      commerceHighlights: product.commerceHighlights,
+      deliveryPromise: product.deliveryPromise,
+      returnPolicy: product.returnPolicy,
+      careInstructions: product.careInstructions,
+      warranty: product.warranty,
       categoryName: product.category.name,
       materialName: product.material.name,
       stoneName: product.stone?.name ?? null,
@@ -495,7 +501,13 @@ export async function listAdminCatalog(
         id: variant.id,
         sku: variant.sku,
         name: variant.name,
+        size: variant.size,
+        metalColor: variant.metalColor,
+        stoneColor: variant.stoneColor,
         price: Number(variant.prices[0]?.amount ?? product.basePrice),
+        compareAt: variant.prices[0]?.compareAt
+          ? Number(variant.prices[0].compareAt)
+          : null,
         inventory: variant.inventoryItems.map((item) => ({
           branchId: item.branchId,
           branchName: physicalBranchesEnabled

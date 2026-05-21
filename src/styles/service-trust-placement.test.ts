@@ -31,6 +31,7 @@ describe("commerce service trust placement", () => {
     const productPage = read("src/app/product/[slug]/page.tsx");
 
     expect(productPage).toContain("<ProductPurchasePanel");
+    expect(productPage).toContain('data-testid="product-commerce-details"');
     expect(productPage).toContain("<ServiceRow");
     expect(productPage).toContain("ShieldCheck");
     expect(productPage).toContain("RotateCcw");
@@ -49,6 +50,7 @@ describe("commerce service trust placement", () => {
     expect(checkoutPage).toContain('<div id="checkout-service" />');
     expect(checkoutPage).toContain("<CartCheckoutForm />");
     expect(checkoutForm).toContain("const checkoutTrustItems");
+    expect(checkoutForm).toContain('data-testid="checkout-line-total"');
     expect(checkoutForm).toContain("checkoutTrustItems.map");
     expect(indexOf(checkoutForm, "checkoutTrustItems.map")).toBeLessThan(
       indexOf(checkoutForm, '<Button disabled={!canSubmit} size="lg"'),

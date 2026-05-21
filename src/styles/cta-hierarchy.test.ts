@@ -79,9 +79,11 @@ describe("public CTA hierarchy", () => {
       "src/app/product/[slug]/_components/wishlist-button.tsx",
     );
 
-    expect(countOccurrences(source, "product-primary-cta")).toBe(2);
+    expect(countOccurrences(source, "product-primary-cta")).toBe(4);
     expect(source).toContain('className="product-primary-cta h-12 w-full"');
     expect(source).toContain('className="product-primary-cta order-1"');
+    expect(source).toContain("commerceStatus.ctaLabel");
+    expect(source).toContain("serviceHref");
     expect(read("src/styles/globals.css")).toContain(
       "background: var(--brand-accent) !important;",
     );

@@ -41,7 +41,11 @@ export function CustomerOtpForm() {
 
   return (
     <div className="grid gap-5">
-      <form action={requestAction} className="grid gap-4">
+      <form
+        action={requestAction}
+        className="grid gap-4"
+        data-testid="account-otp-request-form"
+      >
         <input name="sessionKey" type="hidden" value={sessionKey} />
         <div>
           <Label className={accountLabelClassName} htmlFor="identifier">
@@ -50,6 +54,7 @@ export function CustomerOtpForm() {
           <Input
             autoComplete="email tel"
             className={accountInputClassName}
+            data-testid="account-identifier-input"
             defaultValue={verificationIdentifier}
             dir="auto"
             id="identifier"
@@ -92,6 +97,7 @@ export function CustomerOtpForm() {
             <Input
               autoComplete="one-time-code"
               className={accountInputClassName}
+              data-testid="account-code-input"
               dir="ltr"
               id="code"
               inputMode="numeric"

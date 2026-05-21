@@ -358,6 +358,12 @@ export function CartCheckoutForm() {
                       <p className="text-muted-foreground text-sm">
                         {item.variantName} · {formatPrice(item.unitPrice)}
                       </p>
+                      <p
+                        className="text-foreground mt-1 text-sm font-semibold"
+                        data-testid="checkout-line-total"
+                      >
+                        סכום שורה: {formatPrice(item.lineTotal)}
+                      </p>
                     </div>
                     <div className="col-span-2 flex items-center justify-end gap-2 sm:col-span-1">
                       <Button

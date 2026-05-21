@@ -56,10 +56,12 @@ function makeProduct(
   overrides: Pick<CatalogProduct, "categorySlug" | "price" | "slug">,
 ): CatalogProduct {
   return {
+    availabilityMode: "READY_TO_ORDER",
     categoryName: overrides.categorySlug,
     categorySlug: overrides.categorySlug,
     collection: "classic",
     collections: ["classic"],
+    commerceHighlights: [],
     createdAt: new Date("2026-01-01T00:00:00Z"),
     description: "Description",
     image: "/product.png",

@@ -113,11 +113,14 @@ function makeProduct(
     Pick<CatalogProduct, "inventory" | "slug">,
 ): CatalogProduct {
   return {
+    availabilityMode: overrides.availabilityMode ?? "READY_TO_ORDER",
     categoryName: "טבעות",
     categorySlug: "rings",
     collection: overrides.collections?.[0] ?? "classic",
     collections: overrides.collections ?? ["classic"],
+    commerceHighlights: overrides.commerceHighlights ?? [],
     createdAt: new Date("2026-01-01T00:00:00.000Z"),
+    deliveryPromise: overrides.deliveryPromise,
     description: overrides.description ?? "Description",
     image: "/product.png",
     images: ["/product.png"],
@@ -127,6 +130,7 @@ function makeProduct(
     name: overrides.name ?? "Product",
     popularityScore: 0,
     price: overrides.price ?? 1000,
+    returnPolicy: overrides.returnPolicy,
     shortDescription: overrides.shortDescription ?? "Short description",
     sizes: [],
     sku: overrides.sku ?? "SKU",

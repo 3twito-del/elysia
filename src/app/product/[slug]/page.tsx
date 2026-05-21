@@ -15,7 +15,7 @@ import { ProductCard } from "~/components/product-card";
 import { SiteHeader } from "~/components/site-header";
 import { RevealSection } from "~/components/reveal";
 import { Badge } from "~/components/ui/badge";
-import { getProductAvailabilityLabel } from "~/lib/commerce-labels";
+import { getPublicProductCommerceStatus } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
 import { stringifyJsonLd } from "~/lib/json-ld";
 import {
@@ -77,6 +77,10 @@ export default async function ProductPage({
     (total, quantity) => total + quantity,
     0,
   );
+  const commerceStatus = getPublicProductCommerceStatus({
+    availableQuantity: onlineStockQuantity,
+    availabilityMode: product.availabilityMode,
+  });
   const uniqueImages = Array.from(new Set(product.images));
   const structuredData = {
     "@context": "https://schema.org",
@@ -90,7 +94,9 @@ export default async function ProductPage({
       "@type": "Offer",
       priceCurrency: "ILS",
       price: product.price,
-      availability: "https://schema.org/InStock",
+      availability: commerceStatus.canAddToCart
+        ? "https://schema.org/InStock"
+        : "https://schema.org/PreOrder",
     },
   };
   const recommendationRails = getProductRecommendationRails({
@@ -102,10 +108,20 @@ export default async function ProductPage({
     { label: "קולקציה", value: product.collection },
     {
       label: "זמינות",
-      value: getProductAvailabilityLabel(onlineStockQuantity),
+      value: commerceStatus.label,
     },
     { label: "מק״ט", value: product.sku },
   ];
+  const productCommerceDetails = [
+    { label: "משלוח", value: product.deliveryPromise },
+    { label: "החזרה", value: product.returnPolicy },
+    { label: "אחריות", value: product.warranty },
+    { label: "טיפול", value: product.careInstructions },
+  ].filter(
+    (detail): detail is { label: string; value: string } =>
+      typeof detail.value === "string" && detail.value.length > 0,
+  );
+  const commerceHighlights = product.commerceHighlights ?? [];
 
   return (
     <main className="bg-background">
@@ -162,16 +178,32 @@ export default async function ProductPage({
                 </span>
               ) : null}
               <span className="border-border text-muted-foreground mb-1 rounded-full border px-3 py-1 text-xs">
-                {getProductAvailabilityLabel(onlineStockQuantity)}
+                {commerceStatus.label}
               </span>
             </div>
+
+            {commerceHighlights.length > 0 ? (
+              <ul
+                className="text-muted-foreground mt-5 grid gap-2 text-sm leading-6"
+                data-testid="product-commerce-highlights"
+              >
+                {commerceHighlights.slice(0, 4).map((highlight) => (
+                  <li className="flex gap-2" key={highlight}>
+                    <span aria-hidden="true">-</span>
+                    <span>{highlight}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
 
             <div className="mt-7">
               <TRPCReactProvider>
                 <ProductPurchasePanel
+                  availabilityMode={product.availabilityMode}
                   metalColors={product.metalColors}
                   price={product.price}
                   productName={product.name}
+                  productReference={`${product.name} (${product.sku})`}
                   productSlug={product.slug}
                   variants={product.variants}
                 />
@@ -192,6 +224,25 @@ export default async function ProductPage({
                 </div>
               ))}
             </dl>
+
+            {productCommerceDetails.length > 0 ? (
+              <dl
+                className="mt-5 grid gap-3"
+                data-testid="product-commerce-details"
+              >
+                {productCommerceDetails.map((detail) => (
+                  <div
+                    className="glass-inset rounded-md border p-3"
+                    key={detail.label}
+                  >
+                    <dt className="text-muted-foreground text-xs">
+                      {detail.label}
+                    </dt>
+                    <dd className="mt-1 text-sm leading-6">{detail.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            ) : null}
           </div>
         </aside>
       </RevealSection>

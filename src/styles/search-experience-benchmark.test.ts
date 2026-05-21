@@ -74,10 +74,12 @@ describe("search experience benchmark contract", () => {
   it("keeps search result cards benchmark-safe for public commerce", () => {
     const page = read("src/app/search/page.tsx");
 
-    expect(page).toContain("getProductAvailabilityLabel");
+    expect(page).toContain("getPublicProductCommerceStatus");
+    expect(page).toContain("product.availabilityMode");
+    expect(page).toContain("(product.commerceHighlights ?? []).slice(0, 2)");
     expect(page).toContain("product.categoryName");
     expect(page).toContain("product.material");
-    expect(page).not.toContain("availableQuantity");
+    expect(page).not.toContain("getProductAvailabilityLabel");
     expect(page).not.toContain("visibleFacets");
   });
 });

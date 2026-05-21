@@ -12,6 +12,8 @@ import {
   updateAdminCouponStatusInputSchema,
   updateAdminInventory,
   updateAdminInventoryInputSchema,
+  updateAdminProductCommerce,
+  updateAdminProductCommerceInputSchema,
   updateAdminProductStatus,
   updateAdminProductStatusInputSchema,
   upsertAdminShipment,
@@ -104,6 +106,12 @@ export const adminRouter = createTRPCRouter({
     .input(updateAdminProductStatusInputSchema)
     .mutation(({ ctx, input }) =>
       updateAdminProductStatus({ data: input, adminUserId: ctx.admin.id }),
+    ),
+
+  updateProductCommerce: adminProcedure("CATALOG_WRITE")
+    .input(updateAdminProductCommerceInputSchema)
+    .mutation(({ ctx, input }) =>
+      updateAdminProductCommerce({ data: input, adminUserId: ctx.admin.id }),
     ),
 
   updateInventory: adminProcedure("INVENTORY_WRITE")

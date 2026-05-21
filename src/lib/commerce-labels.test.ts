@@ -9,6 +9,7 @@ import {
   getOrderStatusLabel,
   getPaymentStatusLabel,
   getProductAvailabilityLabel,
+  getPublicProductCommerceStatus,
   getPublicStockStatusLabel,
   getProductStatusLabel,
   getReturnStatusLabel,
@@ -43,5 +44,41 @@ describe("commerce labels", () => {
     expect(getStockQuantityLabel(4)).toBe("4 במלאי");
     expect(getItemCountLabel(1)).toBe("מוצר אחד");
     expect(getItemCountLabel(3)).toBe("3 מוצרים");
+  });
+
+  it("maps public commerce status from availability mode and quantity", () => {
+    expect(
+      getPublicProductCommerceStatus({
+        availabilityMode: "READY_TO_ORDER",
+        availableQuantity: 2,
+      }),
+    ).toMatchObject({
+      canAddToCart: true,
+      cardCtaLabel: "צפייה וקנייה",
+      ctaLabel: "הוספה לסל",
+      label: "זמין להזמנה",
+    });
+    expect(
+      getPublicProductCommerceStatus({
+        availabilityMode: "MADE_TO_ORDER",
+        availableQuantity: 0,
+      }),
+    ).toMatchObject({
+      canAddToCart: false,
+      ctaLabel: "פתיחת בקשת התאמה",
+      label: "בהזמנה אישית",
+      serviceReason: "made-to-order",
+    });
+    expect(
+      getPublicProductCommerceStatus({
+        availabilityMode: "CONSULTATION",
+        availableQuantity: 8,
+      }),
+    ).toMatchObject({
+      canAddToCart: false,
+      ctaLabel: "תיאום ייעוץ",
+      label: "לתיאום ייעוץ",
+      serviceReason: "consultation",
+    });
   });
 });

@@ -13,6 +13,12 @@ enum ProductStatus {
   ARCHIVED
 }
 
+enum ProductAvailabilityMode {
+  READY_TO_ORDER
+  MADE_TO_ORDER
+  CONSULTATION
+}
+
 enum MediaKind {
   IMAGE
   VIDEO
@@ -206,32 +212,36 @@ model Stone {
 }
 
 model Product {
-  id               String                   @id @default(cuid())
-  slug             String                   @unique
-  sku              String                   @unique
-  name             String
-  shortDescription String
-  description      String
-  status           ProductStatus            @default(DRAFT)
-  categoryId       String
-  materialId       String
-  stoneId          String?
-  basePrice        Decimal                  @db.Decimal(10, 2)
-  careInstructions String?
-  warranty         String?
-  tags             String[]
-  category         Category                 @relation(fields: [categoryId], references: [id])
-  material         Material                 @relation(fields: [materialId], references: [id])
-  stone            Stone?                   @relation(fields: [stoneId], references: [id])
-  collections      Collection[]
-  variants         ProductVariant[]
-  media            ProductMedia[]
-  searchEmbeddings ProductSearchEmbedding[]
-  searchEvents     SearchEvent[]
-  viewEvents       ProductViewEvent[]
-  clickEvents      ProductClickEvent[]
-  createdAt        DateTime                 @default(now())
-  updatedAt        DateTime                 @updatedAt
+  id                 String                   @id @default(cuid())
+  slug               String                   @unique
+  sku                String                   @unique
+  name               String
+  shortDescription   String
+  description        String
+  status             ProductStatus            @default(DRAFT)
+  categoryId         String
+  materialId         String
+  stoneId            String?
+  basePrice          Decimal                  @db.Decimal(10, 2)
+  availabilityMode   ProductAvailabilityMode  @default(READY_TO_ORDER)
+  commerceHighlights String[]                 @default([])
+  deliveryPromise    String?
+  returnPolicy       String?
+  careInstructions   String?
+  warranty           String?
+  tags               String[]
+  category           Category                 @relation(fields: [categoryId], references: [id])
+  material           Material                 @relation(fields: [materialId], references: [id])
+  stone              Stone?                   @relation(fields: [stoneId], references: [id])
+  collections        Collection[]
+  variants           ProductVariant[]
+  media              ProductMedia[]
+  searchEmbeddings   ProductSearchEmbedding[]
+  searchEvents       SearchEvent[]
+  viewEvents         ProductViewEvent[]
+  clickEvents        ProductClickEvent[]
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
 
   @@index([status])
   @@index([categoryId])
