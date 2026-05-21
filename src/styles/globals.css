@@ -387,6 +387,9 @@ html[data-accessibility-motion="reduce"] .motion-copy-item,
 html[data-accessibility-motion="reduce"] .motion-status-pop,
 html[data-accessibility-motion="reduce"] .motion-sticky-purchase,
 html[data-accessibility-motion="reduce"] .motion-thumbnail-button,
+html[data-accessibility-motion="reduce"] .mobile-nav-panel,
+html[data-accessibility-motion="reduce"] .mobile-nav-animated-item,
+html[data-accessibility-motion="reduce"] .mobile-nav-close svg,
 html[data-accessibility-motion="reduce"] .kinetic-image-layer,
 html[data-accessibility-motion="reduce"] .cart-count-badge,
 html[data-accessibility-motion="reduce"] .interactive-lift,
@@ -1117,6 +1120,88 @@ main
   outline: none !important;
 }
 
+.mobile-nav-panel {
+  --mobile-nav-item-step: 34ms;
+  gap: 0;
+  overflow-x: hidden;
+  border-left-color: var(--glass-border) !important;
+}
+
+.mobile-nav-panel[data-state="open"] {
+  animation:
+    mobile-nav-panel-in 420ms var(--ease-motion-expressive) both !important;
+}
+
+.mobile-nav-panel[data-state="closed"] {
+  animation: mobile-nav-panel-out 180ms var(--ease-motion-standard) both !important;
+}
+
+.mobile-nav-header {
+  background: var(--background);
+}
+
+.mobile-nav-close {
+  border-color: transparent !important;
+  background: transparent !important;
+  color: var(--foreground) !important;
+  box-shadow: none !important;
+}
+
+.mobile-nav-panel[data-state="open"] .mobile-nav-close svg {
+  animation: mobile-nav-cross-in 520ms var(--ease-motion-expressive) both;
+}
+
+.mobile-nav-animated-item {
+  transform: none;
+}
+
+.mobile-nav-panel[data-state="open"] .mobile-nav-animated-item {
+  animation: mobile-nav-item-in 520ms var(--ease-motion-expressive) both;
+  animation-delay: calc(
+    45ms + var(--mobile-nav-index, 0) * var(--mobile-nav-item-step)
+  );
+}
+
+.mobile-nav-quick-action,
+.mobile-nav-link,
+.mobile-nav-feature-link,
+.mobile-nav-feature-icon,
+.mobile-nav-feature-arrow {
+  transition:
+    background-color var(--motion-fast) var(--ease-motion-standard),
+    border-color var(--motion-fast) var(--ease-motion-standard),
+    color var(--motion-fast) var(--ease-motion-standard),
+    transform var(--motion-fast) var(--ease-motion-standard);
+}
+
+.mobile-nav-quick-action:hover,
+.mobile-nav-quick-action:focus-visible,
+.mobile-nav-link:hover,
+.mobile-nav-link:focus-visible {
+  background: rgb(66 201 190 / 5%);
+}
+
+.mobile-nav-feature-link {
+  color: var(--foreground);
+}
+
+.mobile-nav-feature-link:hover,
+.mobile-nav-feature-link:focus-visible {
+  border-color: rgb(66 201 190 / 24%);
+  background: rgb(66 201 190 / 5%);
+}
+
+.mobile-nav-feature-link:hover .mobile-nav-feature-icon,
+.mobile-nav-feature-link:focus-visible .mobile-nav-feature-icon {
+  border-color: rgb(66 201 190 / 28%);
+  background: rgb(66 201 190 / 7%);
+}
+
+.mobile-nav-feature-link:hover .mobile-nav-feature-arrow,
+.mobile-nav-feature-link:focus-visible .mobile-nav-feature-arrow {
+  transform: translateX(-0.18rem);
+}
+
 .brand-accent-card,
 .brand-commerce-panel,
 .brand-gallery-frame,
@@ -1749,6 +1834,50 @@ html[data-public-floating-bar-visible="true"] .public-motion-content {
   }
 }
 
+@keyframes mobile-nav-panel-in {
+  from {
+    opacity: 0.96;
+    transform: translateX(1.15rem) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes mobile-nav-panel-out {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0.96;
+    transform: translateX(0.75rem) scale(0.99);
+  }
+}
+
+@keyframes mobile-nav-item-in {
+  from {
+    opacity: 0;
+    transform: translateX(0.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes mobile-nav-cross-in {
+  from {
+    opacity: 0;
+    transform: rotate(-72deg) scale(0.86);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+}
+
 @keyframes anchor-press {
   0% {
     transform: translateY(0) scale(1);
@@ -1941,6 +2070,9 @@ html[data-public-floating-bar-visible="true"] .public-motion-content {
   .motion-status-pop,
   .motion-sticky-purchase,
   .motion-thumbnail-button,
+  .mobile-nav-panel,
+  .mobile-nav-animated-item,
+  .mobile-nav-close svg,
   .kinetic-image-layer,
   .category-loading-progress,
   .cart-count-badge,
