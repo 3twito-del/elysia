@@ -27,12 +27,12 @@ describe("public CTA hierarchy", () => {
     const home = read("src/app/page.tsx");
 
     expect(home).toContain("home-hero-actions");
-    expect(css).toContain(".home-hero-actions [data-slot=\"button\"]");
+    expect(css).toContain('.home-hero-actions [data-slot="button"]');
     expect(css).toContain(
-      ".home-hero-actions [data-slot=\"button\"]:not(:disabled):hover",
+      '.home-hero-actions [data-slot="button"]:not(:disabled):hover',
     );
     expect(css).toContain(
-      ".home-hero-actions [data-slot=\"button\"]:not(:disabled):active",
+      '.home-hero-actions [data-slot="button"]:not(:disabled):active',
     );
     expect(css).toContain("box-shadow: none !important;");
     expect(css).toContain("transform: none !important;");
@@ -40,7 +40,7 @@ describe("public CTA hierarchy", () => {
       "background-color, border-color, color, outline-color",
     );
     expect(css).toContain(
-      ".home-hero-actions [data-slot=\"button\"]:focus-visible",
+      '.home-hero-actions [data-slot="button"]:focus-visible',
     );
     expect(css).toContain("outline: 2px solid currentColor !important;");
     expect(css).toContain("--tw-ring-color: transparent !important;");
@@ -58,6 +58,20 @@ describe("public CTA hierarchy", () => {
     expect(source).toContain('className="product-primary-cta h-12 w-full"');
     expect(source).toContain('className="product-primary-cta order-1"');
     expect(wishlistSource).toContain('variant="outline"');
+  });
+
+  it("keeps product card CTAs as neutral outline links on hover", () => {
+    const css = read("src/styles/globals.css");
+    const hoverBlock = extractCssBlock(
+      css,
+      ".product-card-cta:not(:disabled):hover",
+    );
+
+    expect(hoverBlock).toContain("border-color: var(--glass-border-strong)");
+    expect(hoverBlock).toContain("background: var(--muted)");
+    expect(hoverBlock).toContain("color: var(--foreground)");
+    expect(hoverBlock).not.toContain("var(--brand-aqua");
+    expect(hoverBlock).not.toContain("66 201 190");
   });
 
   it("keeps recovery and filter action groups from presenting two default CTAs", () => {
@@ -82,4 +96,15 @@ function read(relativePath: string) {
 
 function countOccurrences(source: string, pattern: string) {
   return source.split(pattern).length - 1;
+}
+
+function extractCssBlock(source: string, selector: string) {
+  const start = source.indexOf(selector);
+
+  if (start === -1) return "";
+
+  const openBrace = source.indexOf("{", start);
+  const closeBrace = source.indexOf("}", openBrace);
+
+  return source.slice(start, closeBrace + 1);
 }

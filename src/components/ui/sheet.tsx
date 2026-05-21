@@ -118,7 +118,7 @@ function SheetContent({
         data-slot="sheet-content"
         data-side={side}
         className={cn(
-          "popup-surface text-popover-foreground data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 fixed z-[90] flex flex-col gap-4 text-sm ease-[var(--ease-motion-standard)] data-closed:duration-150 data-open:duration-200 motion-reduce:animate-none motion-reduce:transition-none",
+          "popup-surface minimal-scroll text-popover-foreground data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 fixed z-[90] flex flex-col gap-4 text-sm ease-[var(--ease-motion-standard)] data-closed:duration-150 data-open:duration-200 motion-reduce:animate-none motion-reduce:transition-none",
           side === "bottom" &&
             "data-open:slide-in-from-bottom data-closed:slide-out-to-bottom inset-x-0 bottom-0 h-auto border-t",
           side === "left" &&
