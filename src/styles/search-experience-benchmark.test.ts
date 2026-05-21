@@ -14,7 +14,7 @@ describe("search experience benchmark contract", () => {
     expect(benchmark).toContain("Official sites opened");
   });
 
-  it("keeps the home quick search compact, measured, and directly actionable", () => {
+  it("keeps the home quick search compact without appearing before editorial content", () => {
     const home = read("src/app/page.tsx");
 
     expect(home).toContain("quickSearchSuggestions");
@@ -26,9 +26,10 @@ describe("search experience benchmark contract", () => {
     expect(home).toContain(
       "transition-[background-color,border-color,color,outline-color,opacity]",
     );
+    expect(home).not.toContain("brand-control-panel grid gap-2 p-1.5");
     expect(home).not.toContain("active:translate-y-px");
-    expect(indexOf(home, 'id="quick-search"')).toBeLessThan(
-      indexOf(home, 'id="categories"'),
+    expect(indexOf(home, 'id="categories"')).toBeLessThan(
+      indexOf(home, 'id="quick-search"'),
     );
   });
 

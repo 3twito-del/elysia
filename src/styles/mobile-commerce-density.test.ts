@@ -4,20 +4,21 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 describe("mobile commerce density", () => {
-  it("keeps the home mobile hero shorter so quick search is visible sooner", () => {
+  it("keeps the home mobile first viewport editorial before quick search", () => {
     const source = read("src/app/page.tsx");
 
-    expect(source).toContain("[--home-hero-height:clamp(20rem,54svh,28rem)]");
+    expect(source).toContain("[--home-hero-height:clamp(35rem,86svh,44rem)]");
     expect(source).toContain(
-      "sm:[--home-hero-height:clamp(30rem,calc(66svh-4rem),34rem)]",
+      "sm:[--home-hero-height:clamp(40rem,78svh,52rem)]",
     );
     expect(countOccurrences(source, "min-h-[var(--home-hero-height)]")).toBe(4);
-    expect(indexOf(source, 'id="quick-search"')).toBeLessThan(
-      indexOf(source, 'id="categories"'),
-    );
     expect(indexOf(source, 'id="categories"')).toBeLessThan(
+      indexOf(source, 'id="quick-search"'),
+    );
+    expect(indexOf(source, 'id="quick-search"')).toBeLessThan(
       indexOf(source, 'id="featured"'),
     );
+    expect(source).not.toContain("brand-control-panel grid gap-2 p-1.5");
   });
 
   it("keeps home hero imagery independent from page scroll", () => {
@@ -52,7 +53,9 @@ describe("mobile commerce density", () => {
     expect(cinematicHeroSequence).toContain(
       "transform: `scale(${index === 0 ? 1.018 : 1.045})`",
     );
-    expect(css).toContain(".motion-hero-copy .motion-copy-item {\n  animation: none;");
+    expect(css).toContain(
+      ".motion-hero-copy .motion-copy-item {\n  animation: none;",
+    );
     expect(css).toContain(
       '.public-motion-shell[data-motion-state="enter"]\n  .motion-hero-copy\n  .motion-copy-item',
     );

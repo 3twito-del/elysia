@@ -6,14 +6,20 @@ import { describe, expect, it } from "vitest";
 const root = process.cwd();
 
 describe("public CTA hierarchy", () => {
-  it("keeps the default button variant as the single aqua primary treatment", () => {
+  it("keeps the default button variant neutral and reserves aqua for explicit accent use", () => {
     const buttonSource = read("src/components/ui/button.tsx");
 
     expect(buttonSource).toMatch(
-      /default:\s*"[^"]*bg-\[var\(--brand-aqua\)\][^"]*text-\[var\(--brand-aqua-deep\)\]/,
+      /default:\s*"[^"]*bg-\[var\(--action-primary\)\][^"]*text-\[var\(--action-primary-foreground\)\]/,
+    );
+    expect(buttonSource).toMatch(
+      /brandAccent:\s*"[^"]*bg-\[var\(--brand-aqua\)\][^"]*text-\[var\(--brand-aqua-deep\)\]/,
     );
     expect(buttonSource).toMatch(/outline:\s*"[^"]*bg-background/);
     expect(buttonSource).toMatch(/secondary:\s*"[^"]*bg-background/);
+    expect(buttonSource).not.toMatch(
+      /default:\s*"[^"]*bg-\[var\(--brand-aqua\)\]/,
+    );
     expect(buttonSource).not.toMatch(
       /(outline|secondary):\s*"[^"]*shadow-\[0_6px/,
     );
@@ -30,6 +36,7 @@ describe("public CTA hierarchy", () => {
     expect(css).toContain("--accent: #f4f7f8;");
     expect(css).toContain("--glass-border: #e2e8ec;");
     expect(css).toContain("--glass-border-strong: #b8c5cc;");
+    expect(css).toContain("--action-primary: var(--brand-ink);");
     expect(css).toContain(".glass-control:not(:disabled)");
     expect(css).toContain('[data-slot="button"][data-variant="secondary"]');
     expect(css).not.toContain("--secondary: var(--brand-aqua-soft);");
@@ -43,6 +50,8 @@ describe("public CTA hierarchy", () => {
     const home = read("src/app/page.tsx");
 
     expect(home).toContain("home-hero-actions");
+    expect(home).toContain("home-hero-service-link");
+    expect(home).not.toContain("home-hero-cta-secondary");
     expect(css).toContain('.home-hero-actions [data-slot="button"]');
     expect(css).toContain(
       '.home-hero-actions [data-slot="button"]:not(:disabled):hover',
@@ -62,7 +71,7 @@ describe("public CTA hierarchy", () => {
     expect(css).toContain("--tw-ring-color: transparent !important;");
   });
 
-  it("keeps product purchase actions to one aqua primary and one neutral secondary action", () => {
+  it("keeps product purchase actions to one explicit accent primary and one neutral secondary action", () => {
     const source = read(
       "src/app/product/[slug]/_components/product-purchase-panel.tsx",
     );
@@ -73,6 +82,9 @@ describe("public CTA hierarchy", () => {
     expect(countOccurrences(source, "product-primary-cta")).toBe(2);
     expect(source).toContain('className="product-primary-cta h-12 w-full"');
     expect(source).toContain('className="product-primary-cta order-1"');
+    expect(read("src/styles/globals.css")).toContain(
+      "background: var(--brand-accent) !important;",
+    );
     expect(wishlistSource).toContain('variant="outline"');
   });
 

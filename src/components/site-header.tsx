@@ -89,7 +89,7 @@ export function SiteHeader() {
             dir="ltr"
             href="/"
           >
-            <span className="truncate text-lg font-semibold tracking-normal sm:text-xl">
+            <span className="truncate text-[1.65rem] font-medium tracking-normal sm:text-3xl lg:text-[2.35rem]">
               Elysia
             </span>
           </Link>

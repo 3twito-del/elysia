@@ -25,6 +25,9 @@ describe("public benchmark design policy", () => {
 
   it("removes benchmark-failing public commerce elements", () => {
     expect(publicElementPolicy.heroMetrics.status).toBe("remove");
+    expect(publicElementPolicy.homeFirstViewportSearch.status).toBe("remove");
+    expect(publicElementPolicy.defaultAquaCta.status).toBe("remove");
+    expect(publicElementPolicy.editorialFirstViewport.status).toBe("allow");
     expect(publicElementPolicy.routeHeroMedia.status).toBe("remove");
     expect(publicElementPolicy.exactInventoryQuantity.status).toBe("remove");
     expect(publicElementPolicy.filterOptionCounts.status).toBe("remove");
@@ -32,6 +35,8 @@ describe("public benchmark design policy", () => {
     expect(publicElementPolicy.aiStylistPrimary.status).toBe("remove");
 
     expect(shouldRenderPublicElement("heroMetrics")).toBe(false);
+    expect(shouldRenderPublicElement("homeFirstViewportSearch")).toBe(false);
+    expect(shouldRenderPublicElement("defaultAquaCta")).toBe(false);
     expect(shouldRenderPublicElement("routeHeroMedia")).toBe(false);
     expect(shouldRenderPublicElement("exactInventoryQuantity")).toBe(false);
   });

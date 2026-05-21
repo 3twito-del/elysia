@@ -95,6 +95,18 @@ export const publicElementPolicy = {
     24.5,
     "Home may keep one product-led editorial hero.",
   ),
+  editorialFirstViewport: allow(
+    27,
+    "The home first viewport is campaign-led with one hero story and minimal actions.",
+  ),
+  homeFirstViewportSearch: remove(
+    9,
+    "Search forms are moved below the first editorial viewport on mobile.",
+  ),
+  defaultAquaCta: remove(
+    8,
+    "Aqua is not the default public CTA treatment; it is explicit accent-only.",
+  ),
   routeHeroMedia: remove(
     17.5,
     "Non-home route heroes are text/task first; route media is hidden.",

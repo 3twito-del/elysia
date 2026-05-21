@@ -68,16 +68,15 @@ describe("luxury commerce UI hardening", () => {
     expect(source).not.toContain("shadow-[inset_0_0_0_1px");
     expect(source).toContain('data-filter-style="fluent-list"');
     expect(source).toContain("grid min-h-10 w-full");
-    expect(source).toContain("rounded-md px-2 py-2.5");
+    expect(source).toContain("rounded-md px-2.5 py-2.5");
     expect(source).toContain(
-      'option.active && "bg-[var(--muted)] shadow-none"',
+      'option.active && "bg-[var(--secondary)] shadow-none"',
     );
+    expect(source).toContain('option.active && "text-foreground"');
     expect(source).not.toContain(
       "border-[var(--glass-border-strong)] bg-transparent shadow-none",
     );
-    expect(source).not.toContain(
-      "border-b border-[var(--glass-border)] px-0 py-2.5",
-    );
+    expect(source).not.toContain("border-[var(--brand-aqua)]");
   });
 
   it("keeps commerce result summaries as rows instead of empty panels", () => {
@@ -144,7 +143,7 @@ describe("luxury commerce UI hardening", () => {
     expect(home).not.toContain("bg-[var(--brand-aqua)]");
     expect(home).not.toContain("rgba(66,201,190");
     expect(css).toContain("--glass-border: #e2e8ec;");
-    expect(css).toContain("--scrollbar-thumb: rgb(16 24 28 / 18%);");
+    expect(css).toContain("--scrollbar-thumb: rgb(91 101 106 / 24%);");
     expect(css).not.toContain("--glass-border: #bfe9e5;");
     expect(css).not.toContain("--scrollbar-thumb: rgb(66 201 190 / 30%);");
     expect(cookieBanner).toContain(

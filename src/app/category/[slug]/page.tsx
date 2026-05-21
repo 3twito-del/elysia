@@ -22,7 +22,6 @@ import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { EmptyState } from "~/components/ui/empty-state";
 import {
   SheetClose,
@@ -161,7 +160,7 @@ export default async function CategoryPage({
         variant="catalog"
       />
 
-      <div className="brand-control-panel sticky top-16 z-30 rounded-none border-x-0 border-t-0 lg:hidden">
+      <div className="bg-background sticky top-16 z-30 border-b border-[var(--glass-border)] lg:hidden">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-[var(--ui-page-x)] py-3 sm:px-[var(--ui-page-x-wide)]">
           <div className="text-sm">
             <p className="font-medium">{pageRangeLabel}</p>
@@ -235,20 +234,17 @@ export default async function CategoryPage({
 
       <RevealSection className="mx-auto grid max-w-7xl gap-6 px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:grid-cols-[280px_1fr] lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y)]">
         <aside className="hidden lg:block" data-testid="category-filter-panel">
-          <Card
-            className="brand-control-panel sticky top-24 rounded-md"
-            size="sm"
-          >
-            <CardHeader className="border-b border-[var(--glass-border)] pb-4">
-              <CardTitle className="flex items-center gap-2">
+          <div className="sticky top-24 border-y border-[var(--glass-border)] py-4">
+            <div className="pb-4">
+              <h2 className="flex items-center gap-2 text-base font-medium">
                 <SlidersHorizontal aria-hidden="true" className="size-4" />
                 סינון מדויק
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </h2>
+            </div>
+            <div>
               <DeferredCategoryFilterPanel data={filterPayload} />
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </aside>
 
         <section

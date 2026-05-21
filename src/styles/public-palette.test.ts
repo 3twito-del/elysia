@@ -15,6 +15,7 @@ const approvedBrandTokens = new Set([
   "--brand-aqua-soft",
   "--brand-aqua-deep",
   "--brand-aqua-ring",
+  "--brand-accent",
 ]);
 const approvedWarmMaterialPath =
   "src/app/product/[slug]/_components/product-purchase-panel.tsx";

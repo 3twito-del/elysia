@@ -55,19 +55,19 @@
 
 :root {
   --background: #fcfdfe;
-  --foreground: var(--brand-aqua-deep);
+  --foreground: var(--brand-ink);
   --card: oklch(1 0 0);
-  --card-foreground: var(--brand-aqua-deep);
+  --card-foreground: var(--brand-ink);
   --popover: oklch(1 0 0);
-  --popover-foreground: var(--brand-aqua-deep);
-  --primary: var(--brand-aqua-deep);
+  --popover-foreground: var(--brand-ink);
+  --primary: var(--brand-ink);
   --primary-foreground: oklch(1 0 0);
   --secondary: #f6f8f9;
-  --secondary-foreground: var(--brand-aqua-deep);
+  --secondary-foreground: var(--brand-ink);
   --muted: #f6f8f9;
   --muted-foreground: #5c6a6f;
   --accent: #f4f7f8;
-  --accent-foreground: var(--brand-aqua-deep);
+  --accent-foreground: var(--brand-ink);
   --destructive: oklch(0.47 0.15 27);
   --border: #e2e8ec;
   --input: #d8e1e6;
@@ -85,6 +85,10 @@
   --brand-aqua-soft: #effcfb;
   --brand-aqua-deep: #071516;
   --brand-aqua-ring: rgb(66 201 190 / 34%);
+  --brand-accent: var(--brand-aqua);
+  --action-primary: var(--brand-ink);
+  --action-primary-foreground: #ffffff;
+  --action-primary-hover: #252b2d;
   --glass-panel-bg: var(--card);
   --glass-card-bg: var(--card);
   --glass-control-bg: #ffffff;
@@ -99,15 +103,15 @@
   --glass-shadow-deep: oklch(0 0 0 / 8%);
   --glass-focus: rgb(16 24 28 / 16%);
   --scrollbar-size: 0.375rem;
-  --scrollbar-thumb: rgb(16 24 28 / 18%);
-  --scrollbar-thumb-hover: rgb(16 24 28 / 30%);
+  --scrollbar-thumb: rgb(91 101 106 / 24%);
+  --scrollbar-thumb-hover: rgb(91 101 106 / 38%);
   --scrollbar-track: transparent;
   --font-hebrew-sans:
     var(--font-noto-hebrew), "Noto Sans Hebrew", "Noto Sans Hebrew Fallback",
     ui-sans-serif, system-ui, sans-serif;
   --font-latin-brand:
-    var(--font-geist-sans), "Geist", "Geist Fallback", ui-sans-serif, system-ui,
-    sans-serif;
+    var(--font-cormorant-garamond), "Cormorant Garamond", Georgia,
+    "Times New Roman", serif;
   --ui-page-x: clamp(1rem, 2.4vw, 1.5rem);
   --ui-page-x-wide: clamp(1.5rem, 3vw, 2rem);
   --ui-section-y: clamp(1.75rem, 3.4vw, 2.75rem);
@@ -144,7 +148,7 @@
   --sidebar-primary: oklch(0.11 0 0);
   --sidebar-primary-foreground: oklch(1 0 0);
   --sidebar-accent: #f6f8f9;
-  --sidebar-accent-foreground: var(--brand-aqua-deep);
+  --sidebar-accent-foreground: var(--brand-ink);
   --sidebar-border: #e2e8ec;
   --sidebar-ring: #7f919a;
 }
@@ -185,6 +189,9 @@
   --chart-3: #42c9be;
   --chart-4: #1d6f68;
   --chart-5: #0f3f3b;
+  --action-primary: oklch(0.94 0 0);
+  --action-primary-foreground: var(--brand-aqua-deep);
+  --action-primary-hover: oklch(1 0 0);
   --sidebar: oklch(0.2 0.026 195);
   --sidebar-foreground: oklch(0.97 0.018 185);
   --sidebar-primary: var(--brand-aqua);
@@ -602,8 +609,8 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
   min-height: 100%;
   overflow: hidden;
   background:
-    linear-gradient(115deg, var(--brand-aqua-deep), transparent 62%),
-    linear-gradient(180deg, oklch(0.08 0.03 205), oklch(0.12 0.05 195));
+    linear-gradient(115deg, var(--brand-ink), transparent 62%),
+    linear-gradient(180deg, #0e1112, #1b2022);
 }
 
 .cinematic-hero-slide {
@@ -909,22 +916,18 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
   background: var(--glass-panel-bg);
-  box-shadow: 0 1px 0 oklch(0 0 0 / 1.5%);
+  box-shadow: none;
 }
 
 .brand-control-panel {
   border-color: var(--glass-border);
-  background: color-mix(
-    in oklch,
-    var(--glass-panel-bg) 96%,
-    var(--brand-porcelain)
-  );
-  box-shadow: 0 1px 0 oklch(0 0 0 / 1.5%);
+  background: var(--glass-panel-bg);
+  box-shadow: none;
 }
 
 .brand-media-frame {
-  border: 1px solid rgb(185 242 236 / 14%);
-  box-shadow: 0 14px 34px rgb(6 56 59 / 11%);
+  border: 1px solid rgb(16 24 28 / 10%);
+  box-shadow: none;
 }
 
 .commerce-page-hero {
@@ -1701,13 +1704,6 @@ footer nav a:focus-visible {
   -webkit-backdrop-filter: blur(8px);
 }
 
-.home-hero-actions .home-hero-cta-secondary:not(:disabled):hover,
-.home-hero-actions .home-hero-cta-secondary:not(:disabled):focus-visible {
-  border-color: rgb(255 255 255 / 96%) !important;
-  background: rgb(255 255 255 / 96%) !important;
-  color: var(--foreground) !important;
-}
-
 .home-hero-actions .home-hero-cta-icon {
   transition: transform 260ms var(--ease-motion-standard);
 }
@@ -1720,10 +1716,10 @@ footer nav a:focus-visible {
 
 .public-motion-shell [data-slot="button"].product-primary-cta:not(:disabled),
 [data-slot="button"].product-primary-cta:not(:disabled) {
-  border-color: var(--brand-aqua) !important;
-  background: var(--brand-aqua) !important;
+  border-color: var(--brand-accent) !important;
+  background: var(--brand-accent) !important;
   color: var(--brand-aqua-deep) !important;
-  box-shadow: 0 14px 30px rgb(66 201 190 / 18%) !important;
+  box-shadow: none !important;
 }
 
 .public-motion-shell
@@ -1732,10 +1728,10 @@ footer nav a:focus-visible {
   [data-slot="button"].product-primary-cta:not(:disabled):focus-visible,
 [data-slot="button"].product-primary-cta:not(:disabled):hover,
 [data-slot="button"].product-primary-cta:not(:disabled):focus-visible {
-  border-color: var(--brand-aqua) !important;
-  background: var(--brand-aqua) !important;
+  border-color: var(--brand-accent) !important;
+  background: var(--brand-accent) !important;
   color: var(--brand-aqua-deep) !important;
-  box-shadow: 0 18px 36px rgb(66 201 190 / 24%) !important;
+  box-shadow: none !important;
 }
 
 .product-card-cta:not(:disabled) {
@@ -1779,10 +1775,10 @@ footer nav a:focus-visible {
 }
 
 .cookie-button-primary:not(:disabled) {
-  border-color: var(--brand-aqua) !important;
-  background: var(--brand-aqua) !important;
-  color: var(--brand-aqua-deep) !important;
-  box-shadow: 0 10px 24px rgb(66 201 190 / 12%);
+  border-color: var(--action-primary) !important;
+  background: var(--action-primary) !important;
+  color: var(--action-primary-foreground) !important;
+  box-shadow: none;
 }
 
 .cookie-button-secondary:not(:disabled) {
@@ -1794,10 +1790,10 @@ footer nav a:focus-visible {
 
 .cookie-button-primary:not(:disabled):hover,
 .cookie-button-primary:not(:disabled):focus-visible {
-  border-color: var(--brand-aqua) !important;
-  background: var(--brand-aqua) !important;
-  color: var(--brand-aqua-deep) !important;
-  box-shadow: 0 14px 28px rgb(66 201 190 / 16%);
+  border-color: var(--action-primary-hover) !important;
+  background: var(--action-primary-hover) !important;
+  color: var(--action-primary-foreground) !important;
+  box-shadow: none;
 }
 
 .cookie-button-secondary:not(:disabled):hover,

@@ -1,7 +1,12 @@
 import "~/styles/globals.css";
 
 import { type Metadata } from "next";
-import { Geist, Geist_Mono, Noto_Sans_Hebrew } from "next/font/google";
+import {
+  Cormorant_Garamond,
+  Geist,
+  Geist_Mono,
+  Noto_Sans_Hebrew,
+} from "next/font/google";
 
 import { CookieConsentBanner } from "~/components/cookie-consent-banner";
 import { DeferredAccessibilityWidget } from "~/components/deferred-accessibility-widget";
@@ -36,6 +41,12 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
 });
 
+const cormorantGaramond = Cormorant_Garamond({
+  subsets: ["latin"],
+  variable: "--font-cormorant-garamond",
+  weight: ["400", "500", "600"],
+});
+
 const notoSansHebrew = Noto_Sans_Hebrew({
   subsets: ["hebrew"],
   variable: "--font-noto-hebrew",
@@ -44,6 +55,7 @@ const notoSansHebrew = Noto_Sans_Hebrew({
 
 const fontClassName = [
   notoSansHebrew.variable,
+  cormorantGaramond.variable,
   geistSans.variable,
   geistMono.variable,
 ].join(" ");

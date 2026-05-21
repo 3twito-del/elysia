@@ -30,7 +30,7 @@ function FilterPanelContent({
   data: CategoryFilterPayload;
 }) {
   return (
-    <div className="grid gap-5 text-sm" data-filter-style="fluent-list">
+    <div className="grid gap-6 text-sm" data-filter-style="fluent-list">
       <div className="grid gap-4 pb-1">
         <div className="flex items-start justify-between gap-3">
           <div className="grid gap-1">
@@ -118,7 +118,10 @@ function FilterSection({
   return (
     <section
       aria-label={section.title}
-      className={cn("grid gap-3", withOffset && "pt-1")}
+      className={cn(
+        "grid gap-3",
+        withOffset && "border-t border-[var(--glass-border)] pt-5",
+      )}
     >
       <div className="grid gap-1">
         <h3 className="text-foreground text-sm font-medium">{section.title}</h3>
@@ -145,10 +148,10 @@ function FilterOptionLink({
   option: CategoryFilterPayload["sections"][number]["options"][number];
 }) {
   const className = cn(
-    "grid min-h-10 w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-md px-2 py-2.5 text-right text-sm whitespace-normal transition-colors outline-none",
+    "grid min-h-10 w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-md px-2.5 py-2.5 text-right text-sm whitespace-normal transition-colors outline-none",
     "hover:bg-[var(--muted)] hover:text-foreground focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
     option.active ? "text-foreground font-semibold" : "text-muted-foreground",
-    option.active && "bg-[var(--muted)] shadow-none",
+    option.active && "bg-[var(--secondary)] shadow-none",
     option.disabled && "cursor-not-allowed opacity-45",
   );
   const content = (
@@ -156,8 +159,8 @@ function FilterOptionLink({
       <span
         aria-hidden="true"
         className={cn(
-          "grid size-4 place-items-center rounded-[3px] border border-transparent",
-          option.active && "bg-background border-[var(--glass-border-strong)]",
+          "grid size-4 place-items-center rounded-full text-transparent",
+          option.active && "text-foreground",
         )}
       >
         {option.active && <Check aria-hidden="true" className="size-3" />}
