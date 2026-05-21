@@ -12,11 +12,11 @@ const buttonVariants = cva(
         default:
           "border-[var(--brand-aqua)] bg-[var(--brand-aqua)] text-[var(--brand-aqua-deep)] shadow-[0_10px_24px_rgb(66_201_190_/_12%)] hover:bg-[var(--brand-aqua)] hover:text-[var(--brand-aqua-deep)] hover:shadow-[0_14px_28px_rgb(66_201_190_/_16%)]",
         outline:
-          "border-border bg-background text-foreground shadow-none hover:border-[var(--glass-border-strong)] hover:bg-muted/35 aria-expanded:border-[var(--glass-border-strong)] aria-expanded:bg-muted/35 dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
+          "border-[var(--glass-border)] bg-background text-foreground shadow-none hover:border-[var(--brand-aqua)] hover:bg-[var(--brand-aqua-soft)] hover:text-[var(--brand-aqua-deep)] aria-expanded:border-[var(--brand-aqua)] aria-expanded:bg-[var(--brand-aqua-soft)] aria-expanded:text-[var(--brand-aqua-deep)] dark:border-input dark:bg-input/30 dark:hover:border-[var(--glass-border-strong)] dark:hover:bg-accent",
         secondary:
-          "border-border bg-background text-foreground shadow-none hover:border-[var(--glass-border-strong)] hover:bg-muted/35 aria-expanded:border-[var(--glass-border-strong)] aria-expanded:bg-muted/35",
+          "border-[var(--glass-border)] bg-background text-foreground shadow-none hover:border-[var(--brand-aqua)] hover:bg-[var(--brand-aqua-soft)] hover:text-[var(--brand-aqua-deep)] aria-expanded:border-[var(--brand-aqua)] aria-expanded:bg-[var(--brand-aqua-soft)] aria-expanded:text-[var(--brand-aqua-deep)] dark:hover:border-[var(--glass-border-strong)] dark:hover:bg-accent",
         ghost:
-          "shadow-none hover:bg-muted/35 aria-expanded:bg-muted/35 dark:hover:bg-muted/50",
+          "shadow-none hover:bg-[var(--brand-aqua-soft)] hover:text-[var(--brand-aqua-deep)] aria-expanded:bg-[var(--brand-aqua-soft)] aria-expanded:text-[var(--brand-aqua-deep)] dark:hover:bg-accent dark:hover:text-accent-foreground",
         destructive:
           "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
         link: "text-foreground underline-offset-4 hover:underline",

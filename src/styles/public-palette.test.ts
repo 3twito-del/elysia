@@ -20,7 +20,7 @@ const approvedWarmMaterialPath =
   "src/app/product/[slug]/_components/product-purchase-panel.tsx";
 
 describe("public palette guardrails", () => {
-  it("keeps the public brand palette limited to aqua and neutral tokens", () => {
+  it("keeps the public brand palette limited to cool commerce tokens", () => {
     const css = read("src/styles/globals.css");
     const brandTokens = Array.from(
       css.matchAll(/(--brand-[\w-]+)\s*:/g),

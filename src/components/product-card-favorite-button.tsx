@@ -64,7 +64,7 @@ function FavoriteSubmitButton({
       aria-label={label}
       className={cn(
         "h-10 w-10 shrink-0 rounded-md border border-transparent bg-transparent shadow-none",
-        "hover:bg-muted/35 hover:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+        "hover:border-[var(--brand-aqua)] hover:bg-[var(--brand-aqua-soft)] hover:text-[var(--brand-aqua-deep)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
         isSaved && "text-red-700 dark:text-red-300",
       )}
       disabled={pending}

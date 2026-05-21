@@ -48,9 +48,7 @@ describe("luxury commerce UI hardening", () => {
     expect(footer).toContain(
       'className="group border-b border-[var(--glass-border)]"',
     );
-    expect(footer).toContain(
-      "lg:grid-cols-[1.3fr_0.55fr_0.64fr_0.64fr_1fr]",
-    );
+    expect(footer).toContain("lg:grid-cols-[1.3fr_0.55fr_0.64fr_0.64fr_1fr]");
     expect(footer).toContain(
       "const primaryServiceLinks = serviceLinks.slice(0, 7)",
     );
@@ -144,7 +142,7 @@ describe("luxury commerce UI hardening", () => {
     );
   });
 
-  it("keeps public secondary controls low-shadow and neutral", () => {
+  it("keeps public secondary controls low-shadow and lightly branded", () => {
     const button = read("src/components/ui/button.tsx");
     const favorite = read("src/components/product-card-favorite-button.tsx");
     const productCard = read("src/components/product-card.tsx");

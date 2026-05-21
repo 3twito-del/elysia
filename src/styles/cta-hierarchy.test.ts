@@ -22,6 +22,19 @@ describe("public CTA hierarchy", () => {
     );
   });
 
+  it("uses aqua-tinted surface tokens instead of achromatic gray UI states", () => {
+    const css = read("src/styles/globals.css");
+
+    expect(css).toContain("--secondary: var(--brand-aqua-soft);");
+    expect(css).toContain("--muted: var(--brand-aqua-soft);");
+    expect(css).toContain("--accent: #ddf8f5;");
+    expect(css).toContain("--glass-border-strong: var(--brand-aqua);");
+    expect(css).toContain(".glass-control:not(:disabled)");
+    expect(css).toContain('[data-slot="button"][data-variant="secondary"]');
+    expect(css).not.toContain("--muted: oklch(0.96 0 0);");
+    expect(css).not.toContain("--accent: oklch(0.94 0 0);");
+  });
+
   it("keeps floating home hero CTA buttons visually static on hover", () => {
     const css = read("src/styles/globals.css");
     const home = read("src/app/page.tsx");
@@ -60,18 +73,17 @@ describe("public CTA hierarchy", () => {
     expect(wishlistSource).toContain('variant="outline"');
   });
 
-  it("keeps product card CTAs as neutral outline links on hover", () => {
+  it("keeps product card CTA hover states in a light commerce wash", () => {
     const css = read("src/styles/globals.css");
     const hoverBlock = extractCssBlock(
       css,
       ".product-card-cta:not(:disabled):hover",
     );
 
-    expect(hoverBlock).toContain("border-color: var(--glass-border-strong)");
-    expect(hoverBlock).toContain("background: var(--muted)");
-    expect(hoverBlock).toContain("color: var(--foreground)");
-    expect(hoverBlock).not.toContain("var(--brand-aqua");
-    expect(hoverBlock).not.toContain("66 201 190");
+    expect(hoverBlock).toContain("border-color: var(--brand-aqua)");
+    expect(hoverBlock).toContain("background: var(--brand-aqua-soft)");
+    expect(hoverBlock).toContain("color: var(--brand-aqua-deep)");
+    expect(hoverBlock).toContain("rgb(66 201 190 / 10%)");
   });
 
   it("keeps recovery and filter action groups from presenting two default CTAs", () => {
