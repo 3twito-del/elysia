@@ -1739,18 +1739,19 @@ footer nav a:focus-visible {
 }
 
 .product-card-cta:not(:disabled) {
-  border-color: var(--glass-border) !important;
-  background: var(--background) !important;
+  border-color: rgb(7 21 22 / 18%) !important;
+  background: #ffffff !important;
   color: var(--foreground) !important;
   box-shadow: none !important;
 }
 
 .product-card-cta:not(:disabled):hover,
 .product-card-cta:not(:disabled):focus-visible {
-  border-color: var(--brand-aqua) !important;
-  background: var(--brand-aqua-soft) !important;
-  color: var(--brand-aqua-deep) !important;
-  box-shadow: 0 8px 18px rgb(66 201 190 / 10%) !important;
+  --tw-ring-color: rgb(7 21 22 / 18%) !important;
+  border-color: rgb(7 21 22 / 64%) !important;
+  background: #ffffff !important;
+  color: var(--foreground) !important;
+  box-shadow: 0 10px 22px rgb(7 21 22 / 8%) !important;
 }
 
 .ai-recommendation-card {

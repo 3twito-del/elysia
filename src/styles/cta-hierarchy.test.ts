@@ -73,17 +73,23 @@ describe("public CTA hierarchy", () => {
     expect(wishlistSource).toContain('variant="outline"');
   });
 
-  it("keeps product card CTA hover states in a light commerce wash", () => {
+  it("keeps listing card CTA states white and out of aqua or warm treatments", () => {
     const css = read("src/styles/globals.css");
+    const baseBlock = extractCssBlock(css, ".product-card-cta:not(:disabled)");
     const hoverBlock = extractCssBlock(
       css,
       ".product-card-cta:not(:disabled):hover",
     );
 
-    expect(hoverBlock).toContain("border-color: var(--brand-aqua)");
-    expect(hoverBlock).toContain("background: var(--brand-aqua-soft)");
-    expect(hoverBlock).toContain("color: var(--brand-aqua-deep)");
-    expect(hoverBlock).toContain("rgb(66 201 190 / 10%)");
+    expect(baseBlock).toContain("border-color: rgb(7 21 22 / 18%)");
+    expect(baseBlock).toContain("background: #ffffff");
+    expect(hoverBlock).toContain("--tw-ring-color: rgb(7 21 22 / 18%)");
+    expect(hoverBlock).toContain("border-color: rgb(7 21 22 / 64%)");
+    expect(hoverBlock).toContain("background: #ffffff");
+    expect(hoverBlock).toContain("rgb(7 21 22 / 8%)");
+    expect(`${baseBlock}\n${hoverBlock}`).not.toMatch(
+      /brand-aqua|66 201 190|#42c9be|125 87 70|#fffaf7|#fff3ec/i,
+    );
   });
 
   it("keeps recovery and filter action groups from presenting two default CTAs", () => {
