@@ -17,7 +17,7 @@ export default function CategoryLoading() {
           aria-hidden="true"
           className="absolute inset-x-0 top-0 h-px overflow-hidden bg-[var(--glass-border)]"
         >
-          <div className="category-loading-progress h-full w-1/3 bg-[var(--brand-aqua)]" />
+          <div className="category-loading-progress bg-foreground/20 h-full w-1/3" />
         </div>
 
         <div className="mx-auto grid max-w-7xl gap-5 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-end lg:py-10">
@@ -26,7 +26,7 @@ export default function CategoryLoading() {
             <div className="bg-foreground/[0.08] mt-5 h-10 w-[min(100%,28rem)] rounded-md" />
             <div className="bg-foreground/[0.07] mt-3 h-4 w-[min(80%,34rem)] rounded-full" />
             <div className="mt-7 flex gap-2">
-              <div className="h-9 w-28 rounded-md bg-[var(--brand-aqua)]/35" />
+              <div className="bg-foreground/10 h-9 w-28 rounded-md" />
               <div className="bg-background h-9 w-24 rounded-md border border-[var(--glass-border)]" />
             </div>
           </div>

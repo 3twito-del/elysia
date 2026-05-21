@@ -256,10 +256,12 @@ function getCategoryFilterSections({
 
         return {
           active,
-          href: createCategoryHref(slug, {
-            ...filters,
-            sort: active ? defaultCategorySort : option.value,
-          }),
+          href: active
+            ? createCategoryHref(slug, filters)
+            : createCategoryHref(slug, {
+                ...filters,
+                sort: option.value,
+              }),
           label: option.label,
         };
       }),

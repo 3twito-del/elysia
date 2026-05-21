@@ -312,7 +312,7 @@ function AvailabilityField({ input }: { input: ProductSearchInput }) {
         )}
       >
         <input
-          className="size-4 shrink-0 accent-[var(--brand-aqua)]"
+          className="size-4 shrink-0 accent-[var(--foreground)]"
           defaultChecked={input.availableOnly}
           name="availableOnly"
           type="checkbox"

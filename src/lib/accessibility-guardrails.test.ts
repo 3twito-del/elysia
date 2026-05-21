@@ -28,7 +28,8 @@ describe("accessibility guardrails", () => {
     );
 
     expect(css).toContain("--brand-aqua-ring: rgb(66 201 190 / 34%);");
-    expect(css).toContain("--glass-focus: rgb(185 242 236 / 44%);");
+    expect(css).toContain("--glass-focus: rgb(16 24 28 / 16%);");
+    expect(css).toContain("--glass-focus: rgb(226 232 236 / 42%);");
     expect(css).toContain("--glass-focus: oklch(0 0 0 / 52%);");
   });
 

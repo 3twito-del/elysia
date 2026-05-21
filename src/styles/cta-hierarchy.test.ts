@@ -22,15 +22,18 @@ describe("public CTA hierarchy", () => {
     );
   });
 
-  it("uses aqua-tinted surface tokens instead of achromatic gray UI states", () => {
+  it("keeps public surface tokens light, neutral, and separate from aqua CTAs", () => {
     const css = read("src/styles/globals.css");
 
-    expect(css).toContain("--secondary: var(--brand-aqua-soft);");
-    expect(css).toContain("--muted: var(--brand-aqua-soft);");
-    expect(css).toContain("--accent: #ddf8f5;");
-    expect(css).toContain("--glass-border-strong: var(--brand-aqua);");
+    expect(css).toContain("--secondary: #f6f8f9;");
+    expect(css).toContain("--muted: #f6f8f9;");
+    expect(css).toContain("--accent: #f4f7f8;");
+    expect(css).toContain("--glass-border: #e2e8ec;");
+    expect(css).toContain("--glass-border-strong: #b8c5cc;");
     expect(css).toContain(".glass-control:not(:disabled)");
     expect(css).toContain('[data-slot="button"][data-variant="secondary"]');
+    expect(css).not.toContain("--secondary: var(--brand-aqua-soft);");
+    expect(css).not.toContain("--glass-border-strong: var(--brand-aqua);");
     expect(css).not.toContain("--muted: oklch(0.96 0 0);");
     expect(css).not.toContain("--accent: oklch(0.94 0 0);");
   });
@@ -81,12 +84,12 @@ describe("public CTA hierarchy", () => {
       ".product-card-cta:not(:disabled):hover",
     );
 
-    expect(baseBlock).toContain("border-color: rgb(7 21 22 / 18%)");
+    expect(baseBlock).toContain("border-color: rgb(16 24 28 / 12%)");
     expect(baseBlock).toContain("background: #ffffff");
-    expect(hoverBlock).toContain("--tw-ring-color: rgb(7 21 22 / 18%)");
-    expect(hoverBlock).toContain("border-color: rgb(7 21 22 / 64%)");
+    expect(hoverBlock).toContain("--tw-ring-color: rgb(16 24 28 / 14%)");
+    expect(hoverBlock).toContain("border-color: rgb(16 24 28 / 24%)");
     expect(hoverBlock).toContain("background: #ffffff");
-    expect(hoverBlock).toContain("rgb(7 21 22 / 8%)");
+    expect(hoverBlock).toContain("rgb(16 24 28 / 4%)");
     expect(`${baseBlock}\n${hoverBlock}`).not.toMatch(
       /brand-aqua|66 201 190|#42c9be|125 87 70|#fffaf7|#fff3ec/i,
     );

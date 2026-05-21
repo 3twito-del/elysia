@@ -5,7 +5,6 @@ import { Check, MapPin, RotateCw, X } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import type { CategoryFilterPayload } from "../_lib/category-filter-state";
-import { Separator } from "~/components/ui/separator";
 import { SheetClose } from "~/components/ui/sheet";
 import { cn } from "~/lib/utils";
 
@@ -19,8 +18,8 @@ type DeferredCategoryFilterPanelProps = {
 
 type LoadState =
   | { status: "idle" }
-  | { data: CategoryFilterPayload; status: "ready" }
-  | { status: "error" };
+  | { data: CategoryFilterPayload; key: string; status: "ready" }
+  | { key: string; status: "error" };
 
 export function DeferredCategoryFilterPanel({
   activeFilterCount,
@@ -32,6 +31,7 @@ export function DeferredCategoryFilterPanel({
   const rootRef = useRef<HTMLDivElement>(null);
   const [shouldLoad, setShouldLoad] = useState(closeOnSelect);
   const [loadState, setLoadState] = useState<LoadState>({ status: "idle" });
+  const requestKey = `${slug}?${queryString}`;
 
   useEffect(() => {
     if (shouldLoad) return;
@@ -61,7 +61,8 @@ export function DeferredCategoryFilterPanel({
   }, [shouldLoad]);
 
   useEffect(() => {
-    if (!shouldLoad || loadState.status !== "idle") return;
+    if (!shouldLoad) return;
+    if (loadState.status !== "idle" && loadState.key === requestKey) return;
 
     const controller = new AbortController();
     const params = queryString ? `?${queryString}` : "";
@@ -75,26 +76,26 @@ export function DeferredCategoryFilterPanel({
 
         return response.json() as Promise<CategoryFilterPayload>;
       })
-      .then((data) => setLoadState({ data, status: "ready" }))
+      .then((data) => setLoadState({ data, key: requestKey, status: "ready" }))
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === "AbortError") {
           return;
         }
 
-        setLoadState({ status: "error" });
+        setLoadState({ key: requestKey, status: "error" });
       });
 
     return () => controller.abort();
-  }, [loadState.status, queryString, shouldLoad, slug]);
+  }, [loadState, queryString, requestKey, shouldLoad, slug]);
 
   return (
     <div className="min-h-40" ref={rootRef}>
-      {loadState.status === "ready" ? (
+      {loadState.status === "ready" && loadState.key === requestKey ? (
         <FilterPanelContent
           closeOnSelect={closeOnSelect}
           data={loadState.data}
         />
-      ) : loadState.status === "error" ? (
+      ) : loadState.status === "error" && loadState.key === requestKey ? (
         <FilterPanelFallback resetHref={resetHref} />
       ) : (
         <FilterPanelSkeleton activeFilterCount={activeFilterCount} />
@@ -111,8 +112,8 @@ function FilterPanelContent({
   data: CategoryFilterPayload;
 }) {
   return (
-    <div className="grid gap-5 text-sm" data-filter-style="segmented">
-      <div className="grid gap-4 border-b border-[var(--glass-border)] pb-4">
+    <div className="grid gap-5 text-sm" data-filter-style="fluent-list">
+      <div className="grid gap-4 pb-1">
         <div className="flex items-start justify-between gap-3">
           <div className="grid gap-1">
             <p className="text-foreground text-sm font-medium">סינון מדויק</p>
@@ -135,13 +136,10 @@ function FilterPanelContent({
       </div>
 
       {data.activeFilters.length > 0 && (
-        <div
-          aria-label="בחירות פעילות"
-          className="flex flex-wrap gap-x-3 gap-y-2"
-        >
+        <div aria-label="בחירות פעילות" className="flex flex-wrap gap-2">
           {data.activeFilters.map((filter) => (
             <FilterActionLink
-              className="h-auto max-w-full gap-1 border-b border-[var(--glass-border)] px-0 py-1 text-xs whitespace-normal"
+              className="text-foreground h-auto max-w-full gap-1 rounded-full bg-[var(--muted)] px-2.5 py-1 text-xs whitespace-normal"
               closeOnSelect={closeOnSelect}
               href={filter.href}
               key={filter.key}
@@ -159,7 +157,7 @@ function FilterPanelContent({
             closeOnSelect={closeOnSelect}
             key={section.title}
             section={section}
-            withSeparator={index > 0}
+            withOffset={index > 0}
           />
         ))}
       </div>
@@ -193,33 +191,31 @@ function FilterSelectionSummary({
 function FilterSection({
   closeOnSelect,
   section,
-  withSeparator,
+  withOffset,
 }: {
   closeOnSelect: boolean;
   section: CategoryFilterPayload["sections"][number];
-  withSeparator: boolean;
+  withOffset: boolean;
 }) {
   return (
-    <>
-      {withSeparator && <Separator />}
-      <section aria-label={section.title} className="grid gap-3">
-        <div className="grid gap-1">
-          <h3 className="text-foreground text-sm font-medium">
-            {section.title}
-          </h3>
-          <p className="text-muted-foreground text-xs leading-5">
-            {section.description}
-          </p>
-        </div>
-        <ul className="grid gap-0.5">
-          {section.options.map((option) => (
-            <li key={`${section.title}-${option.href}-${option.label}`}>
-              <FilterOptionLink closeOnSelect={closeOnSelect} option={option} />
-            </li>
-          ))}
-        </ul>
-      </section>
-    </>
+    <section
+      aria-label={section.title}
+      className={cn("grid gap-3", withOffset && "pt-1")}
+    >
+      <div className="grid gap-1">
+        <h3 className="text-foreground text-sm font-medium">{section.title}</h3>
+        <p className="text-muted-foreground text-xs leading-5">
+          {section.description}
+        </p>
+      </div>
+      <ul className="grid gap-1">
+        {section.options.map((option) => (
+          <li key={`${section.title}-${option.href}-${option.label}`}>
+            <FilterOptionLink closeOnSelect={closeOnSelect} option={option} />
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
@@ -231,11 +227,10 @@ function FilterOptionLink({
   option: CategoryFilterPayload["sections"][number]["options"][number];
 }) {
   const className = cn(
-    "grid min-h-10 w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-[var(--glass-border)] px-0 py-2.5 text-right text-sm whitespace-normal transition-colors outline-none",
-    "hover:text-foreground focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+    "grid min-h-10 w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-md px-2 py-2.5 text-right text-sm whitespace-normal transition-colors outline-none",
+    "hover:bg-[var(--muted)] hover:text-foreground focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
     option.active ? "text-foreground font-semibold" : "text-muted-foreground",
-    option.active &&
-      "border-[var(--glass-border-strong)] bg-transparent shadow-none",
+    option.active && "bg-[var(--muted)] shadow-none",
     option.disabled && "cursor-not-allowed opacity-45",
   );
   const content = (
@@ -243,10 +238,12 @@ function FilterOptionLink({
       <span
         aria-hidden="true"
         className={cn(
-          "size-1.5 rounded-full border border-[var(--glass-border-strong)]",
-          option.active && "bg-foreground",
+          "grid size-4 place-items-center rounded-[3px] border border-transparent",
+          option.active && "bg-background border-[var(--glass-border-strong)]",
         )}
-      />
+      >
+        {option.active && <Check aria-hidden="true" className="size-3" />}
+      </span>
       <span className="flex min-w-0 items-center gap-2">
         {option.icon === "pin" && (
           <MapPin aria-hidden="true" className="size-3.5" />
@@ -257,7 +254,6 @@ function FilterOptionLink({
         {option.meta && (
           <span className="text-muted-foreground text-xs">{option.meta}</span>
         )}
-        {option.active && <Check aria-hidden="true" className="size-3.5" />}
       </span>
     </>
   );
@@ -347,7 +343,6 @@ function FilterPanelSkeleton({
       </div>
       {Array.from({ length: 4 }, (_, index) => (
         <div className="grid gap-2" key={index}>
-          {index > 0 && <Separator />}
           <span className="bg-muted h-4 w-20 rounded-md" />
           <span className="bg-muted h-9 w-full rounded-md" />
           <span className="bg-muted h-9 w-full rounded-md" />

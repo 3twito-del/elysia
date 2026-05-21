@@ -66,8 +66,18 @@ describe("luxury commerce UI hardening", () => {
     expect(source).not.toContain("buttonVariants");
     expect(source).not.toContain("variant: option.active");
     expect(source).not.toContain("shadow-[inset_0_0_0_1px");
+    expect(source).toContain('data-filter-style="fluent-list"');
     expect(source).toContain("grid min-h-10 w-full");
-    expect(source).toContain("border-b border-[var(--glass-border)]");
+    expect(source).toContain("rounded-md px-2 py-2.5");
+    expect(source).toContain(
+      'option.active && "bg-[var(--muted)] shadow-none"',
+    );
+    expect(source).not.toContain(
+      "border-[var(--glass-border-strong)] bg-transparent shadow-none",
+    );
+    expect(source).not.toContain(
+      "border-b border-[var(--glass-border)] px-0 py-2.5",
+    );
   });
 
   it("keeps commerce result summaries as rows instead of empty panels", () => {
@@ -133,6 +143,10 @@ describe("luxury commerce UI hardening", () => {
     expect(home).not.toContain("bg-[var(--brand-aqua-deep)]");
     expect(home).not.toContain("bg-[var(--brand-aqua)]");
     expect(home).not.toContain("rgba(66,201,190");
+    expect(css).toContain("--glass-border: #e2e8ec;");
+    expect(css).toContain("--scrollbar-thumb: rgb(16 24 28 / 18%);");
+    expect(css).not.toContain("--glass-border: #bfe9e5;");
+    expect(css).not.toContain("--scrollbar-thumb: rgb(66 201 190 / 30%);");
     expect(cookieBanner).toContain(
       "bottom-[calc(0.75rem+env(safe-area-inset-bottom))]",
     );
@@ -152,7 +166,11 @@ describe("luxury commerce UI hardening", () => {
     expect(button).not.toMatch(
       /(outline|secondary|ghost):\s*"[^"]*hover:bg-\[rgb\(66_201_190/,
     );
+    expect(button).not.toMatch(
+      /(outline|secondary|ghost):\s*"[^"]*brand-aqua-soft/,
+    );
     expect(favorite).not.toContain("shadow-[0_8px");
+    expect(favorite).not.toContain("brand-aqua-soft");
     expect(favorite).toContain('variant="ghost"');
     expect(productCard).toContain("product-card-shell");
     expect(productCard).toContain("border-0");
