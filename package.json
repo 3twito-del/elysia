@@ -123,6 +123,7 @@
       "agent-browser",
       "@prisma/client",
       "@prisma/engines",
+      "@swc/core",
       "esbuild",
       "msw",
       "prisma",
