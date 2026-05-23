@@ -30,35 +30,55 @@ const desktopNavItems = navItems.slice(0, 4);
 
 export function SiteHeader() {
   const pathname = usePathname();
-  const [hasScrolled, setHasScrolled] = useState(false);
+  const [isHomeHeroVisible, setIsHomeHeroVisible] = useState(true);
   const categoryPrefetch = useCategoryRoutePrefetch(categoryNavHrefs, {
     prefetchOnHomeIdle: true,
   });
-  const isOverHomeHero = pathname === "/" && !hasScrolled;
+  const isOverHomeHero = pathname === "/" && isHomeHeroVisible;
   const headerState = isOverHomeHero ? "transparent" : "solid";
 
   useEffect(() => {
+    if (pathname !== "/") return;
+
     let frame = 0;
 
-    const syncScrollState = () => {
+    const syncHeaderState = () => {
       frame = 0;
-      setHasScrolled(window.scrollY > 8);
+      const hero = document.querySelector<HTMLElement>(
+        '[data-testid="cinematic-page-hero"]',
+      );
+
+      if (!hero) {
+        setIsHomeHeroVisible(true);
+        return;
+      }
+
+      const headerHeight =
+        document.querySelector<HTMLElement>(".site-header")?.offsetHeight ??
+        64;
+      const heroRect = hero.getBoundingClientRect();
+
+      setIsHomeHeroVisible(
+        heroRect.top <= headerHeight && heroRect.bottom > headerHeight + 8,
+      );
     };
 
     const requestSync = () => {
       if (frame) return;
 
-      frame = window.requestAnimationFrame(syncScrollState);
+      frame = window.requestAnimationFrame(syncHeaderState);
     };
 
     requestSync();
     window.addEventListener("scroll", requestSync, { passive: true });
     window.addEventListener("resize", requestSync);
+    window.addEventListener("pageshow", requestSync);
 
     return () => {
       window.cancelAnimationFrame(frame);
       window.removeEventListener("scroll", requestSync);
       window.removeEventListener("resize", requestSync);
+      window.removeEventListener("pageshow", requestSync);
     };
   }, [pathname]);
 
