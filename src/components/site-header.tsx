@@ -27,58 +27,57 @@ const categoryNavHrefs = navItems
   .map((item) => item.href)
   .filter(isCategoryHref);
 const desktopNavItems = navItems.slice(0, 4);
+const HOME_HEADER_SOLID_SCROLL_Y = 8;
 
 export function SiteHeader() {
   const pathname = usePathname();
-  const [isHomeHeroVisible, setIsHomeHeroVisible] = useState(true);
+  const [hasScrolled, setHasScrolled] = useState(false);
   const categoryPrefetch = useCategoryRoutePrefetch(categoryNavHrefs, {
     prefetchOnHomeIdle: true,
   });
-  const isOverHomeHero = pathname === "/" && isHomeHeroVisible;
+  const isOverHomeHero = pathname === "/" && !hasScrolled;
   const headerState = isOverHomeHero ? "transparent" : "solid";
 
   useEffect(() => {
     if (pathname !== "/") return;
 
     let frame = 0;
+    let restoreTimer = 0;
 
-    const syncHeaderState = () => {
+    const syncScrollState = () => {
       frame = 0;
-      const hero = document.querySelector<HTMLElement>(
-        '[data-testid="cinematic-page-hero"]',
-      );
+      const scrollY =
+        window.scrollY ||
+        document.documentElement.scrollTop ||
+        document.body.scrollTop ||
+        0;
 
-      if (!hero) {
-        setIsHomeHeroVisible(true);
-        return;
-      }
-
-      const headerHeight =
-        document.querySelector<HTMLElement>(".site-header")?.offsetHeight ??
-        64;
-      const heroRect = hero.getBoundingClientRect();
-
-      setIsHomeHeroVisible(
-        heroRect.top <= headerHeight && heroRect.bottom > headerHeight + 8,
-      );
+      setHasScrolled(scrollY > HOME_HEADER_SOLID_SCROLL_Y);
     };
 
     const requestSync = () => {
       if (frame) return;
 
-      frame = window.requestAnimationFrame(syncHeaderState);
+      frame = window.requestAnimationFrame(syncScrollState);
     };
 
-    requestSync();
+    const requestRestoredSync = () => {
+      requestSync();
+      window.clearTimeout(restoreTimer);
+      restoreTimer = window.setTimeout(requestSync, 120);
+    };
+
+    requestRestoredSync();
     window.addEventListener("scroll", requestSync, { passive: true });
     window.addEventListener("resize", requestSync);
-    window.addEventListener("pageshow", requestSync);
+    window.addEventListener("pageshow", requestRestoredSync);
 
     return () => {
       window.cancelAnimationFrame(frame);
+      window.clearTimeout(restoreTimer);
       window.removeEventListener("scroll", requestSync);
       window.removeEventListener("resize", requestSync);
-      window.removeEventListener("pageshow", requestSync);
+      window.removeEventListener("pageshow", requestRestoredSync);
     };
   }, [pathname]);
 
