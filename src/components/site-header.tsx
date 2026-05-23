@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { MapPin, Search, UserRound } from "lucide-react";
+import { Headset, Search, UserRound } from "lucide-react";
 
 import {
   isCategoryHref,
@@ -161,7 +161,7 @@ export function SiteHeader() {
               size="icon"
               variant="ghost"
             >
-              <Link href="/search">
+              <Link data-header-tooltip="חיפוש" href="/search">
                 <Search aria-hidden="true" className="size-5" />
                 <span className="sr-only">חיפוש</span>
               </Link>
@@ -172,8 +172,8 @@ export function SiteHeader() {
               size="icon"
               variant="ghost"
             >
-              <Link href="/branches">
-                <MapPin aria-hidden="true" className="size-5" />
+              <Link data-header-tooltip="סניפים ושירות" href="/branches">
+                <Headset aria-hidden="true" className="size-5" />
                 <span className="sr-only">סניפים ושירות</span>
               </Link>
             </Button>
@@ -183,7 +183,7 @@ export function SiteHeader() {
               size="icon"
               variant="ghost"
             >
-              <Link href="/account">
+              <Link data-header-tooltip="אזור לקוח" href="/account">
                 <UserRound aria-hidden="true" className="size-5" />
                 <span className="sr-only">אזור לקוח</span>
               </Link>
@@ -194,7 +194,7 @@ export function SiteHeader() {
               size="icon"
               variant="ghost"
             >
-              <CartCountLink />
+              <CartCountLink data-header-tooltip="סל קניות" />
             </Button>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Gem, Search } from "lucide-react";
+import { ArrowLeft, Search } from "lucide-react";
 
 import { CinematicHeroSequence } from "~/components/cinematic-hero-sequence";
 import { CommerceSectionHeader } from "~/components/commerce-section-header";
@@ -129,40 +129,33 @@ export default async function Home() {
           title="מסלול קצר למוצר הנכון"
         />
         <RevealGrid
-          className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+          className="grid grid-cols-2 gap-x-3 gap-y-5 sm:gap-x-4 sm:gap-y-6 lg:grid-cols-4"
           variant="media"
         >
           {categories.map((category) => (
             <Link
-              className="brand-surface interactive-lift group/card flex min-h-[220px] w-full flex-col overflow-hidden rounded-md sm:min-h-[270px]"
+              className="group/card block w-full min-w-0 outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
+              data-testid="home-category-tile"
               href={`/category/${category.slug}`}
               key={category.slug}
             >
-              <div className="bg-muted relative aspect-[3/2] overflow-hidden border-b border-[var(--glass-border)]">
+              <div className="bg-muted relative aspect-[4/5] min-h-[220px] overflow-hidden rounded-md">
                 <Image
                   alt=""
-                  className="media-mono object-cover object-center transition duration-[700ms] ease-[var(--ease-motion-standard)] group-hover/card:scale-[1.015]"
+                  className="media-color object-cover object-center transition duration-[700ms] ease-[var(--ease-motion-standard)] group-hover/card:scale-[1.015]"
                   fill
-                  sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                  sizes="(min-width: 1280px) 18rem, (min-width: 1024px) 25vw, 50vw"
                   src={
                     getCategoryBrandSlides(category.slug)[0]?.src ??
                     category.image
                   }
                 />
-                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(255,255,255,0.8),rgba(255,255,255,0.08))]" />
-                <div className="glass-inset absolute right-4 bottom-4 flex size-11 items-center justify-center rounded-md border">
-                  <Gem aria-hidden="true" className="text-foreground size-5" />
-                </div>
+                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(16,19,20,0.18),rgba(16,19,20,0.02)_42%,rgba(255,255,255,0.04))]" />
               </div>
-              <div className="flex flex-1 flex-col p-4">
-                <h3 className="text-lg font-medium">{category.name}</h3>
-                <p className="text-muted-foreground mt-2 min-h-12 text-sm leading-6">
-                  {category.description}
-                </p>
-                <span className="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-medium group-hover/card:underline">
-                  צפייה
-                  <ArrowLeft aria-hidden="true" className="size-4" />
-                </span>
+              <div className="mt-3 border-b border-[var(--glass-border)] pb-3 text-center">
+                <h3 className="group-hover/card:text-muted-foreground group-focus-visible/card:text-muted-foreground min-w-0 text-base leading-6 font-medium transition-colors duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)] sm:text-lg">
+                  {category.name}
+                </h3>
               </div>
             </Link>
           ))}

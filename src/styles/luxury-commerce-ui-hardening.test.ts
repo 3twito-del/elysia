@@ -28,6 +28,15 @@ describe("luxury commerce UI hardening", () => {
     expect(brandBlock).toContain("Elysia");
     expect(brandBlock).not.toContain("<Gem");
     expect(source).toContain('href="/branches"');
+    expect(source).toContain("Headset");
+    expect(source).not.toContain("MapPin");
+    expect(source).toContain('data-header-tooltip="חיפוש"');
+    expect(source).toContain('data-header-tooltip="סניפים ושירות"');
+    expect(source).toContain('data-header-tooltip="אזור לקוח"');
+    expect(source).toContain('data-header-tooltip="סל קניות"');
+    expect(read("src/styles/globals.css")).toContain(
+      ".site-header .site-header-action[data-header-tooltip]::after",
+    );
   });
 
   it("keeps mobile navigation and footer disclosures unboxed", () => {
