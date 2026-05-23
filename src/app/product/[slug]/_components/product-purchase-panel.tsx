@@ -15,6 +15,7 @@ import {
   Heart,
   PackageCheck,
   RotateCcw,
+  Ruler,
   ShieldCheck,
 } from "lucide-react";
 
@@ -34,6 +35,17 @@ import {
 } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
 import { queueOfflineJsonAction } from "~/lib/pwa-offline";
+import {
+  findBestVariantForSavedSize,
+  formatSavedSize,
+  getSizeGuideHref,
+  getSizeKindForCategory,
+  type SizeFitMatch,
+} from "~/lib/size-fit";
+import {
+  getSavedSize,
+  subscribeToSavedSizeUpdates,
+} from "~/lib/size-fit-storage";
 import { cn } from "~/lib/utils";
 import type { CatalogProductVariant } from "~/server/services/catalog";
 import { api } from "~/trpc/react";
@@ -42,6 +54,7 @@ type ProductPurchasePanelProps = {
   productSlug: string;
   productName: string;
   productReference: string;
+  categorySlug: string;
   availabilityMode: PublicProductAvailabilityMode;
   price: number;
   variants: CatalogProductVariant[];
@@ -52,6 +65,7 @@ export function ProductPurchasePanel({
   productSlug,
   productName,
   productReference,
+  categorySlug,
   availabilityMode,
   price,
   variants,
@@ -71,6 +85,9 @@ export function ProductPurchasePanel({
   const [cartMessageTone, setCartMessageTone] = useState<"error" | "success">(
     "success",
   );
+  const [savedSizeMatch, setSavedSizeMatch] =
+    useState<SizeFitMatch<CatalogProductVariant> | null>(null);
+  const sizeKind = getSizeKindForCategory(categorySlug);
   const selectedVariant =
     variants.find((variant) => variant.sku === selectedSku) ?? variants[0];
   const selectedVariantPrice = selectedVariant?.price ?? price;
@@ -110,6 +127,24 @@ export function ProductPurchasePanel({
   });
   const addToCartDisabled =
     !selectedVariant || !selectedVariantAvailable || addItem.isPending;
+
+  useEffect(() => {
+    if (!sizeKind) return;
+
+    const syncSavedSize = () => {
+      const savedSize = getSavedSize(sizeKind);
+      const match = findBestVariantForSavedSize(variants, sizeKind, savedSize);
+
+      setSavedSizeMatch(match);
+
+      if (match) {
+        setSelectedSku(match.variant.sku);
+      }
+    };
+
+    syncSavedSize();
+    return subscribeToSavedSizeUpdates(syncSavedSize);
+  }, [sizeKind, variants]);
 
   useEffect(() => {
     if (!canRenderStickyBar) return;
@@ -259,7 +294,18 @@ export function ProductPurchasePanel({
         <div className="grid gap-3">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold">בחירת מידה</p>
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="text-sm font-semibold">בחירת מידה</p>
+                {sizeKind ? (
+                  <Link
+                    className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-xs font-medium underline-offset-4 hover:underline"
+                    href={getSizeGuideHref(sizeKind)}
+                  >
+                    <Ruler aria-hidden="true" className="size-3.5" />
+                    מדריך מידות
+                  </Link>
+                ) : null}
+              </div>
               <p className="text-muted-foreground mt-1 text-sm">
                 {selectedVariant
                   ? getVariantDisplayName(selectedVariant)
@@ -319,6 +365,34 @@ export function ProductPurchasePanel({
                 : "מומלץ לבדוק מול שירות הלקוחות"}
             </span>
           </div>
+          {savedSizeMatch ? (
+            <div
+              className={cn(
+                "rounded-md border p-3 text-sm leading-6",
+                savedSizeMatch.available
+                  ? "glass-inset"
+                  : "border-destructive/30 bg-destructive/5 text-foreground",
+              )}
+              data-testid="product-saved-size-match"
+            >
+              <p className="font-medium">
+                המידה השמורה שלך:{" "}
+                {formatSavedSize(
+                  savedSizeMatch.kind,
+                  savedSizeMatch.normalizedValue,
+                )}
+              </p>
+              <p className="text-muted-foreground mt-1">
+                {savedSizeMatch.exact
+                  ? savedSizeMatch.available
+                    ? "בחרנו עבורך את הווריאנט המתאים."
+                    : "הווריאנט במידה הזו אינו זמין כרגע."
+                  : savedSizeMatch.available
+                    ? "בחרנו עבורך את הווריאנט הקרוב ביותר שזמין עכשיו."
+                    : "המידה הקרובה ביותר אינה זמינה כרגע."}
+              </p>
+            </div>
+          ) : null}
         </div>
 
         <div className="grid gap-3" ref={primaryCtaRef}>

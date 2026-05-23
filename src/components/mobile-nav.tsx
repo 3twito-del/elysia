@@ -9,6 +9,7 @@ import {
   Headphones,
   MapPin,
   Menu,
+  Ruler,
   Search,
   ShoppingBag,
   Sparkles,
@@ -64,6 +65,12 @@ const spotlightActions = [
     label: "מתנות",
     description: "בחירה מהירה לפי אירוע",
     icon: Gift,
+  },
+  {
+    href: "/size-guide",
+    label: "מדריך מידות",
+    description: "טבעות, צמידים, שרשראות ועגילים",
+    icon: Ruler,
   },
   {
     href: "/search",
@@ -232,7 +239,7 @@ export function MobileNav({
 
           <Separator
             className="mobile-nav-animated-item"
-            style={getMobileNavStaggerStyle(10)}
+            style={getMobileNavStaggerStyle(11)}
           />
 
           <nav
@@ -241,7 +248,7 @@ export function MobileNav({
           >
             <p
               className="text-muted-foreground mobile-nav-animated-item px-1 text-xs font-medium"
-              style={getMobileNavStaggerStyle(11)}
+              style={getMobileNavStaggerStyle(12)}
             >
               קטלוג
             </p>
@@ -275,7 +282,7 @@ export function MobileNav({
                   prefetch={
                     item.href.startsWith("/category/") ? true : undefined
                   }
-                  style={getMobileNavStaggerStyle(12 + index)}
+                  style={getMobileNavStaggerStyle(13 + index)}
                 >
                   {item.label}
                 </Link>
@@ -289,7 +296,7 @@ export function MobileNav({
           >
             <p
               className="text-muted-foreground mobile-nav-animated-item px-1 text-xs font-medium"
-              style={getMobileNavStaggerStyle(18)}
+              style={getMobileNavStaggerStyle(19)}
             >
               שירות
             </p>
@@ -309,7 +316,7 @@ export function MobileNav({
                   href={item.href}
                   key={item.href}
                   onClick={closeNav}
-                  style={getMobileNavStaggerStyle(19 + index)}
+                  style={getMobileNavStaggerStyle(20 + index)}
                 >
                   <Icon aria-hidden="true" className="size-4" />
                   {item.label}
@@ -331,7 +338,7 @@ export function MobileNav({
                   href={item.href}
                   key={item.href}
                   onClick={closeNav}
-                  style={getMobileNavStaggerStyle(21 + index)}
+                  style={getMobileNavStaggerStyle(22 + index)}
                 >
                   {item.label}
                 </Link>

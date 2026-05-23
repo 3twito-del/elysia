@@ -101,6 +101,19 @@ export default function manifest(): ExtendedManifest {
           },
         ],
       },
+      {
+        name: "מדריך מידות",
+        short_name: "מידות",
+        description: "שמירת מידה מקומית להתאמה מהירה",
+        url: "/size-guide?source=pwa-shortcut",
+        icons: [
+          {
+            src: "/pwa/icons/icon-192.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+        ],
+      },
     ],
   };
 }

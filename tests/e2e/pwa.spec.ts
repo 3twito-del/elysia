@@ -3,6 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 const cartProductSlug = "hera-bracelet";
 const notificationPromptMarker = "__elysiaNotificationPromptRequested";
 const pwaE2eOptInStorageKey = "elysia:pwa-e2e";
+const savedSizeStorageKey = "elysia_saved_sizes_v1";
 
 test.use({ serviceWorkers: "allow" });
 
@@ -38,7 +39,14 @@ test.describe("PWA runtime", () => {
     expect(manifest.lang).toBe("he");
     expect(manifest.dir).toBe("rtl");
     expect(manifest.start_url).toContain("source=pwa");
-    expect(manifest.shortcuts).toHaveLength(3);
+    expect(manifest.shortcuts).toHaveLength(4);
+    expect(manifest.shortcuts).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          url: "/size-guide?source=pwa-shortcut",
+        }),
+      ]),
+    );
 
     await waitForPwaRegistration(page);
     await expectNotificationPromptRequested(page);
@@ -60,6 +68,46 @@ test.describe("PWA runtime", () => {
 
       await expect(page.getByTestId("product-gallery")).toBeVisible();
       await expect(page).toHaveURL(new RegExp(`/product/${cartProductSlug}`));
+    } finally {
+      await context.setOffline(false);
+    }
+  });
+
+  test("keeps local size saving available offline", async ({
+    context,
+    page,
+  }) => {
+    await prepareControlledPwaPage(page, "/size-guide?kind=ring");
+    await expect(page.getByTestId("size-guide-tool")).toBeVisible();
+
+    await context.setOffline(true);
+
+    try {
+      await expect
+        .poll(() => page.evaluate(() => navigator.onLine))
+        .toBe(false);
+
+      await page.locator("#size-guide-ring").fill("54");
+      await page
+        .getByTestId("size-guide-tool")
+        .getByRole("button", { name: "שמירת מידה" })
+        .click();
+
+      await expect
+        .poll(() =>
+          page.evaluate((storageKey) => {
+            const stored = window.localStorage.getItem(storageKey);
+
+            if (!stored) return null;
+
+            try {
+              return (JSON.parse(stored) as { ring?: string }).ring ?? null;
+            } catch {
+              return null;
+            }
+          }, savedSizeStorageKey),
+        )
+        .toBe("54");
     } finally {
       await context.setOffline(false);
     }

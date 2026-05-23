@@ -17,6 +17,7 @@ import type { ReactNode } from "react";
 import { CustomerOtpForm } from "./_components/customer-otp-form";
 import { CustomerAddressForm } from "./_components/customer-address-form";
 import { CustomerPrivacyActions } from "./_components/customer-privacy-actions";
+import { CustomerSavedSizesForm } from "./_components/customer-saved-sizes-form";
 import { customerLogoutAction, removeWishlistItemAction } from "./actions";
 import { CommercePageHero } from "~/components/commerce-page-hero";
 import { MetricCard } from "~/components/metric-card";
@@ -28,6 +29,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { EmptyState } from "~/components/ui/empty-state";
 import { getOrderStatusLabel } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
+import {
+  formatSavedSize,
+  getSizeKindLabel,
+  sizeFitKinds,
+  type SizeFitKind,
+} from "~/lib/size-fit";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 import { DEFAULT_CATALOG_IMAGE } from "~/server/services/catalog";
@@ -491,21 +498,26 @@ export default async function AccountPage() {
                   variant="inset"
                   actions={
                     <Button asChild variant="outline">
-                      <Link href="/stylist">בניית פרופיל סגנון</Link>
+                      <Link href="/size-guide">פתיחת מדריך מידות</Link>
                     </Button>
                   }
                 />
               ) : (
-                customer.savedSizes.map((size) => (
-                  <div
-                    className="glass-inset flex items-center justify-between rounded-md border p-3"
-                    key={size.id}
-                  >
-                    <span>{size.kind}</span>
-                    <span className="font-medium">{size.value}</span>
-                  </div>
-                ))
+                <div className="grid gap-2 text-sm">
+                  {customer.savedSizes.map((size) => (
+                    <div
+                      className="glass-inset flex items-center justify-between rounded-md border p-3"
+                      key={size.id}
+                    >
+                      <span>{getSavedSizeLabel(size.kind)}</span>
+                      <span className="font-medium">
+                        {getSavedSizeValue(size.kind, size.value)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               )}
+              <CustomerSavedSizesForm savedSizes={customer.savedSizes} />
             </CardContent>
           </Card>
           <Card
@@ -555,4 +567,16 @@ export default async function AccountPage() {
       </RevealSection>
     </main>
   );
+}
+
+function getSavedSizeLabel(kind: string) {
+  return isSizeFitKind(kind) ? getSizeKindLabel(kind) : kind;
+}
+
+function getSavedSizeValue(kind: string, value: string) {
+  return isSizeFitKind(kind) ? formatSavedSize(kind, value) : value;
+}
+
+function isSizeFitKind(value: string): value is SizeFitKind {
+  return (sizeFitKinds as readonly string[]).includes(value);
 }

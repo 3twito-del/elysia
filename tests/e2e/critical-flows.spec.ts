@@ -21,6 +21,7 @@ const publicRoutes = [
   "/account",
   "/ai",
   "/stylist",
+  "/size-guide",
   "/about",
   "/faq",
   "/privacy",
@@ -97,6 +98,30 @@ test.describe("critical shopping flows", () => {
       "סכום שורה",
     );
     await expect(page.locator('[aria-label^="כמות "]')).toContainText("1");
+  });
+
+  test("saves a ring size locally and applies it on product pages", async ({
+    page,
+  }) => {
+    await setCookieConsent(page, "essential");
+    await page.goto("/size-guide?kind=ring");
+
+    await expect(page.getByTestId("size-guide-tool")).toBeVisible();
+    await page.locator("#size-guide-ring").fill("54");
+    await page
+      .getByTestId("size-guide-tool")
+      .getByRole("button", { name: "שמירת מידה" })
+      .click();
+    await expect(page.getByText(/נשמר/).first()).toBeVisible();
+
+    await page.goto("/product/venus-line-ring");
+
+    await expect(page.getByTestId("product-saved-size-match")).toContainText(
+      "54",
+    );
+    await expect(
+      page.locator("button[aria-pressed='true']").first(),
+    ).toContainText("54");
   });
 
   test("routes made-to-order products to service with product reference", async ({
@@ -745,6 +770,7 @@ test.describe("accessibility and responsive guardrails", () => {
       "/account",
       "/ai",
       "/stylist",
+      "/size-guide",
       "/faq",
       "/privacy",
       "/terms",

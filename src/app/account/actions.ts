@@ -25,6 +25,11 @@ import {
   getZodFieldErrors,
   returnRequestInputSchema,
 } from "~/lib/account-validation";
+import {
+  savedSizeInputSchema,
+  sizeFitKinds,
+  type SavedSize,
+} from "~/lib/size-fit";
 
 export type CustomerOtpState = {
   ok?: boolean;
@@ -188,6 +193,184 @@ export async function addCustomerAddressAction(
   revalidatePath("/account");
 
   return { ok: true, message: "הכתובת נשמרה." };
+}
+
+export async function saveCustomerSizeAction(
+  _state: AccountActionState,
+  formData: FormData,
+): Promise<AccountActionState> {
+  const parsed = savedSizeInputSchema.safeParse({
+    kind: getFormString(formData, "kind"),
+    value: getFormString(formData, "value"),
+  });
+
+  if (!parsed.success) {
+    return {
+      fieldErrors: getZodFieldErrors(parsed.error),
+      ok: false,
+      message: getFirstZodIssueMessage(
+        parsed.error,
+        "המידה שנבחרה אינה תקינה.",
+      ),
+    };
+  }
+
+  const session = await auth();
+
+  if (session?.user?.adminUserId) {
+    return {
+      ok: false,
+      message: "אזור מידות לקוח זמין ללקוחות בלבד.",
+    };
+  }
+
+  if (!session?.user?.id) {
+    return {
+      ok: true,
+      message: "המידה נשמרה במכשיר. התחברות תסנכרן אותה לחשבון.",
+    };
+  }
+
+  try {
+    await assertRateLimit({
+      key: createRateLimitKey("saved-size", session.user.id),
+      limit: 20,
+      windowMs: 10 * 60_000,
+    });
+  } catch (error) {
+    return {
+      ok: false,
+      message: rateLimitMessage(error) ?? "לא ניתן לשמור מידה כרגע.",
+    };
+  }
+
+  const customer = await db.customer.findUnique({
+    where: { userId: session.user.id },
+  });
+
+  if (!customer) {
+    return { ok: false, message: "לא נמצא פרופיל לקוח פעיל." };
+  }
+
+  await db.savedSize.upsert({
+    where: {
+      customerId_kind: {
+        customerId: customer.id,
+        kind: parsed.data.kind,
+      },
+    },
+    update: { value: parsed.data.value },
+    create: {
+      customerId: customer.id,
+      kind: parsed.data.kind,
+      value: parsed.data.value,
+    },
+  });
+
+  revalidatePath("/account");
+
+  return { ok: true, message: "המידה נשמרה." };
+}
+
+export async function syncCustomerSavedSizesAction(
+  sizes: SavedSize[],
+): Promise<AccountActionState> {
+  const parsed = savedSizeInputSchema
+    .array()
+    .max(sizeFitKinds.length)
+    .safeParse(sizes);
+
+  if (!parsed.success) {
+    return {
+      fieldErrors: getZodFieldErrors(parsed.error),
+      ok: false,
+      message: getFirstZodIssueMessage(
+        parsed.error,
+        "לא ניתן לסנכרן את המידות המקומיות.",
+      ),
+    };
+  }
+
+  const session = await auth();
+
+  if (session?.user?.adminUserId) {
+    return {
+      ok: false,
+      message: "אזור מידות לקוח זמין ללקוחות בלבד.",
+    };
+  }
+
+  if (!session?.user?.id) {
+    return {
+      ok: true,
+      message: "המידות נשמרו במכשיר.",
+    };
+  }
+
+  const uniqueSizes = Array.from(
+    new Map(parsed.data.map((size) => [size.kind, size])).values(),
+  );
+
+  if (uniqueSizes.length === 0) {
+    return { ok: true };
+  }
+
+  try {
+    await assertRateLimit({
+      key: createRateLimitKey("saved-size-sync", session.user.id),
+      limit: 10,
+      windowMs: 10 * 60_000,
+    });
+  } catch (error) {
+    return {
+      ok: false,
+      message: rateLimitMessage(error) ?? "לא ניתן לסנכרן מידות מקומיות כרגע.",
+    };
+  }
+
+  const customer = await db.customer.findUnique({
+    where: { userId: session.user.id },
+    include: { savedSizes: true },
+  });
+
+  if (!customer) {
+    return { ok: false, message: "לא נמצא פרופיל לקוח פעיל." };
+  }
+
+  const existingKinds = new Set(customer.savedSizes.map((size) => size.kind));
+  const missingSizes = uniqueSizes.filter(
+    (size) => !existingKinds.has(size.kind),
+  );
+
+  if (missingSizes.length === 0) {
+    return { ok: true };
+  }
+
+  await db.$transaction(
+    missingSizes.map((size) =>
+      db.savedSize.upsert({
+        where: {
+          customerId_kind: {
+            customerId: customer.id,
+            kind: size.kind,
+          },
+        },
+        update: { value: size.value },
+        create: {
+          customerId: customer.id,
+          kind: size.kind,
+          value: size.value,
+        },
+      }),
+    ),
+  );
+
+  revalidatePath("/account");
+
+  return {
+    ok: true,
+    message: "מידות שנשמרו במכשיר סונכרנו לחשבון.",
+  };
 }
 
 export async function removeWishlistItemAction(formData: FormData) {

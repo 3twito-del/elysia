@@ -200,6 +200,7 @@ export default async function ProductPage({
               <TRPCReactProvider>
                 <ProductPurchasePanel
                   availabilityMode={product.availabilityMode}
+                  categorySlug={product.categorySlug}
                   metalColors={product.metalColors}
                   price={product.price}
                   productName={product.name}
