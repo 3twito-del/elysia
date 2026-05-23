@@ -237,6 +237,7 @@ model Product {
   variants           ProductVariant[]
   media              ProductMedia[]
   searchEmbeddings   ProductSearchEmbedding[]
+  pushInterests      ProductPushInterest[]
   searchEvents       SearchEvent[]
   viewEvents         ProductViewEvent[]
   clickEvents        ProductClickEvent[]
@@ -471,6 +472,7 @@ model Customer {
   styleProfile           StyleProfile?
   recommendationSessions RecommendationSession[]
   aiRuns                 AiRun[]
+  pushSubscriptions      PushSubscription[]
   tryOnSessions          TryOnSession[]
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @updatedAt
@@ -500,6 +502,100 @@ model NewsletterSubscription {
   consentText String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+}
+
+model OfflineActionReceipt {
+  id          String    @id @default(cuid())
+  deviceId    String
+  actionId    String
+  kind        String
+  status      String    @default("PROCESSING")
+  result      Json?
+  lastError   String?
+  processedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([deviceId, actionId])
+  @@index([kind, status])
+  @@index([createdAt])
+}
+
+model PushSubscription {
+  id                 String                @id @default(cuid())
+  endpoint           String                @unique
+  deviceId           String?
+  customerId         String?
+  sessionKey         String?
+  p256dh             String
+  auth               String
+  userAgent          String?
+  status             String                @default("ACTIVE")
+  marketingOptIn     Boolean               @default(false)
+  transactionalOptIn Boolean               @default(true)
+  lastSeenAt         DateTime              @default(now())
+  revokedAt          DateTime?
+  customer           Customer?             @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  deliveries         PushDelivery[]
+  interests          ProductPushInterest[]
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+
+  @@index([deviceId])
+  @@index([customerId])
+  @@index([sessionKey])
+  @@index([status, marketingOptIn])
+}
+
+model PushCampaign {
+  id          String         @id @default(cuid())
+  title       String
+  body        String
+  targetUrl   String
+  segment     String         @default("MARKETING_OPT_IN")
+  status      String         @default("DRAFT")
+  scheduledAt DateTime?
+  sentAt      DateTime?
+  lastError   String?
+  deliveries  PushDelivery[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([status, scheduledAt])
+}
+
+model PushDelivery {
+  id             String            @id @default(cuid())
+  campaignId     String?
+  subscriptionId String
+  endpoint       String
+  status         String            @default("PENDING")
+  error          String?
+  deliveredAt    DateTime?
+  campaign       PushCampaign?     @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  subscription   PushSubscription  @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@index([campaignId])
+  @@index([subscriptionId, status])
+  @@index([status, createdAt])
+}
+
+model ProductPushInterest {
+  id             String           @id @default(cuid())
+  productId      String
+  subscriptionId String
+  kind           String           @default("BACK_IN_STOCK")
+  status         String           @default("ACTIVE")
+  notifiedAt     DateTime?
+  product        Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
+  subscription   PushSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@unique([productId, subscriptionId, kind])
+  @@index([status, kind])
 }
 
 model CustomerAddress {

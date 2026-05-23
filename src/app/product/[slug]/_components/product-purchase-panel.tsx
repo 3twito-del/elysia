@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 
 import { WishlistButton } from "./wishlist-button";
+import { PushOptInButton } from "~/components/push-opt-in-button";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { StatusMessage } from "~/components/ui/status-message";
@@ -32,6 +33,7 @@ import {
   type PublicProductAvailabilityMode,
 } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
+import { queueOfflineJsonAction } from "~/lib/pwa-offline";
 import { cn } from "~/lib/utils";
 import type { CatalogProductVariant } from "~/server/services/catalog";
 import { api } from "~/trpc/react";
@@ -96,7 +98,12 @@ export function ProductPurchasePanel({
       );
       dispatchCartUpdated();
     },
-    onError: (error) => {
+    onError: (error, variables) => {
+      if (isRecoverableOfflineCartError(error)) {
+        void queueAddToCartForSync(variables);
+        return;
+      }
+
       setCartMessageTone("error");
       setCartMessage(error.message);
     },
@@ -144,10 +151,55 @@ export function ProductPurchasePanel({
     };
   }, [canRenderStickyBar]);
 
+  function queueAddToCartForSync(input: {
+    quantity?: number;
+    sessionKey: string;
+    variantSku: string;
+  }) {
+    return queueOfflineJsonAction("cart.addItem", {
+      quantity: input.quantity ?? 1,
+      sessionKey: input.sessionKey,
+      variantSku: input.variantSku,
+    })
+      .then(() => {
+        setCartMessageTone("success");
+        setCartMessage(
+          "׳”׳₪׳¨׳™׳˜ ׳ ׳©׳׳¨ ׳׳¡׳ ׳›׳¨׳•׳ ׳•׳™׳×׳•׳•׳¡׳£ ׳׳¡׳ ׳›׳©׳”׳—׳™׳‘׳•׳¨ ׳™׳×׳—׳“׳©.",
+        );
+        dispatchCartUpdated();
+      })
+      .catch(() => {
+        setCartMessageTone("error");
+        setCartMessage(
+          "׳׳ ׳”׳¦׳׳—׳ ׳• ׳׳©׳׳•׳¨ ׳׳× ׳”׳₪׳¢׳•׳׳” ׳‘׳׳¦׳‘ ׳׳ ׳׳§׳•׳•׳.",
+        );
+      });
+  }
+
   function handleAddToCart() {
     if (!selectedVariant || !selectedVariantAvailable) {
       setCartMessageTone("error");
       setCartMessage("הפריט זמין דרך שירות הלקוחות לפני הזמנה.");
+      return;
+    }
+
+    if (!navigator.onLine) {
+      const sessionKey = getOrCreateCartSessionKey();
+
+      void queueOfflineJsonAction("cart.addItem", {
+        quantity: 1,
+        sessionKey,
+        variantSku: selectedVariant.sku,
+      })
+        .then(() => {
+          setCartMessageTone("success");
+          setCartMessage("הפריט נשמר לסנכרון ויתווסף לסל כשהחיבור יתחדש.");
+          dispatchCartUpdated();
+        })
+        .catch(() => {
+          setCartMessageTone("error");
+          setCartMessage("לא הצלחנו לשמור את הפעולה במצב לא מקוון.");
+        });
       return;
     }
 
@@ -302,6 +354,13 @@ export function ProductPurchasePanel({
             שמירה למועדפים
             <Heart aria-hidden="true" className="size-4" />
           </WishlistButton>
+          {!selectedVariantAvailable ? (
+            <PushOptInButton
+              label="עדכנו אותי כשחוזר למלאי"
+              marketing
+              productSlug={productSlug}
+            />
+          ) : null}
         </div>
 
         <div
@@ -437,6 +496,19 @@ function getVariantButtonLabel(
       : commerceStatus.label;
 
   return `${getVariantDisplayName(variant)}, ${formatPrice(variant.price)}, ${availability}`;
+}
+
+function isRecoverableOfflineCartError(error: { message: string }) {
+  if (typeof navigator !== "undefined" && !navigator.onLine) return true;
+
+  const message = error.message.toLowerCase();
+
+  return (
+    message.includes("failed to fetch") ||
+    message.includes("fetch failed") ||
+    message.includes("load failed") ||
+    message.includes("network")
+  );
 }
 
 function getMetalSwatchStyle(color: string): CSSProperties {

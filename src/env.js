@@ -53,15 +53,15 @@ export const env = createEnv({
     AI_EMBEDDING_DIMENSIONS: z.coerce.number().int().positive().optional(),
     AI_SEMANTIC_SEARCH_ENABLED: z.enum(["0", "1", "false", "true"]).optional(),
     AI_MAX_OUTPUT_TOKENS: z.coerce.number().int().positive().optional(),
-    AI_INTENT_MAX_OUTPUT_TOKENS: z.coerce
-      .number()
-      .int()
-      .positive()
-      .optional(),
+    AI_INTENT_MAX_OUTPUT_TOKENS: z.coerce.number().int().positive().optional(),
     AI_DAILY_HARD_STOP: z.enum(["0", "1", "false", "true"]).optional(),
     UPSTASH_REDIS_REST_URL: z.string().url().optional(),
     UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
     VERCEL_OIDC_TOKEN: z.string().optional(),
+    SITE_URL: z.string().url().optional(),
+    VAPID_PUBLIC_KEY: z.string().optional(),
+    VAPID_PRIVATE_KEY: z.string().optional(),
+    VAPID_SUBJECT: z.string().optional(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -73,7 +73,7 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
-    // NEXT_PUBLIC_CLIENTVAR: z.string(),
+    NEXT_PUBLIC_VAPID_PUBLIC_KEY: z.string().optional(),
   },
 
   /**
@@ -126,6 +126,11 @@ export const env = createEnv({
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
     VERCEL_OIDC_TOKEN: process.env.VERCEL_OIDC_TOKEN,
+    SITE_URL: process.env.SITE_URL,
+    VAPID_PUBLIC_KEY: process.env.VAPID_PUBLIC_KEY,
+    VAPID_PRIVATE_KEY: process.env.VAPID_PRIVATE_KEY,
+    VAPID_SUBJECT: process.env.VAPID_SUBJECT,
+    NEXT_PUBLIC_VAPID_PUBLIC_KEY: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
     NODE_ENV: process.env.NODE_ENV,
   },
   /**

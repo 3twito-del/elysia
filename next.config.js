@@ -3,6 +3,7 @@
  * for Docker builds.
  */
 import "./src/env.js";
+import { withSerwist } from "@serwist/turbopack";
 
 const securityHeaders = [
   {
@@ -65,4 +66,4 @@ const config = {
   },
 };
 
-export default config;
+export default withSerwist(config);

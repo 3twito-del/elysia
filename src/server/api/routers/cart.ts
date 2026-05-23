@@ -18,6 +18,7 @@ import {
 } from "~/server/services/catalog";
 import { getActiveCouponValue } from "~/server/services/coupons";
 import { calculateOrderTotal } from "~/server/services/pricing";
+import { scheduleCartReminder } from "~/server/services/push";
 
 export const cartRouter = createTRPCRouter({
   get: publicProcedure
@@ -26,7 +27,15 @@ export const cartRouter = createTRPCRouter({
 
   addItem: publicProcedure
     .input(addCartItemInputSchema)
-    .mutation(({ input }) => addCartItem(input)),
+    .mutation(async ({ input }) => {
+      const cart = await addCartItem(input);
+
+      await scheduleCartReminder({ sessionKey: input.sessionKey }).catch(
+        () => undefined,
+      );
+
+      return cart;
+    }),
 
   updateItem: publicProcedure
     .input(updateCartItemInputSchema)

@@ -9,6 +9,11 @@ import {
   markOutboxEventStatus,
   recordJobRun,
 } from "~/server/services/outbox";
+import {
+  processBackInStockInterests,
+  sendCartReminder,
+  sendPushCampaign,
+} from "~/server/services/push";
 
 export type ProcessOutboxResult = {
   scanned: number;
@@ -20,12 +25,19 @@ export type ProcessOutboxResult = {
 type JobStatus = "COMPLETED" | "FAILED" | "SKIPPED";
 
 export async function processDueOutboxEvents(input: { limit?: number } = {}) {
+  const pushAutomation = await processBackInStockInterests().catch(
+    (error: unknown) => ({
+      error: error instanceof Error ? error.message : "Push automation failed.",
+      sent: 0,
+      skipped: 0,
+    }),
+  );
   const events = await listDueOutboxEvents({ limit: input.limit });
   const result: ProcessOutboxResult = {
     scanned: events.length,
-    processed: 0,
+    processed: pushAutomation.sent > 0 ? 1 : 0,
     failed: 0,
-    skipped: 0,
+    skipped: pushAutomation.skipped,
   };
 
   for (const event of events) {
@@ -150,6 +162,14 @@ async function processOutboxEvent(event: OutboxEvent) {
     return processEmailRequestedEvent(event);
   }
 
+  if (event.type === BUSINESS_EVENTS.pushCampaignRequested) {
+    return processPushCampaignEvent(event);
+  }
+
+  if (event.type === BUSINESS_EVENTS.pushCartReminderDue) {
+    return processCartReminderEvent(event);
+  }
+
   await recordJobRun({
     name: event.type,
     outboxEventId: event.id,
@@ -159,6 +179,46 @@ async function processOutboxEvent(event: OutboxEvent) {
   });
 
   return { status: "COMPLETED" as const };
+}
+
+async function processPushCampaignEvent(event: OutboxEvent) {
+  const campaignId = getOutboxPayloadString(event.payload, "campaignId");
+
+  if (!campaignId) {
+    return recordSkippedJob(event, "Missing campaignId in push payload.");
+  }
+
+  const result = await sendPushCampaign(campaignId);
+
+  await recordJobRun({
+    name: event.type,
+    outboxEventId: event.id,
+    status: "COMPLETED",
+    attempts: event.attempts + 1,
+    metadata: result,
+  });
+
+  return { status: "COMPLETED" as const };
+}
+
+async function processCartReminderEvent(event: OutboxEvent) {
+  const sessionKey = getOutboxPayloadString(event.payload, "sessionKey");
+
+  if (!sessionKey) {
+    return recordSkippedJob(event, "Missing sessionKey in cart reminder.");
+  }
+
+  const result = await sendCartReminder(sessionKey);
+
+  await recordJobRun({
+    name: event.type,
+    outboxEventId: event.id,
+    status: result.sent > 0 ? "COMPLETED" : "SKIPPED",
+    attempts: event.attempts + 1,
+    metadata: result,
+  });
+
+  return { status: result.sent > 0 ? "COMPLETED" : "SKIPPED" };
 }
 
 async function processReservationExpiryEvent(event: OutboxEvent) {

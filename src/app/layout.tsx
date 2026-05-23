@@ -1,6 +1,6 @@
 import "~/styles/globals.css";
 
-import { type Metadata } from "next";
+import { type Metadata, type Viewport } from "next";
 import {
   Cormorant_Garamond,
   Geist,
@@ -10,25 +10,54 @@ import {
 
 import { CookieConsentBanner } from "~/components/cookie-consent-banner";
 import { DeferredAccessibilityWidget } from "~/components/deferred-accessibility-widget";
+import { PwaProvider } from "~/components/pwa-provider";
 import { PublicMotionProvider } from "~/components/public-motion-provider";
 import { SiteFooter } from "~/components/site-footer";
+import { env } from "~/env";
+
+const appName = "Elysia";
+const appDescription =
+  "רשת תכשיטים ישראלית בעיצוב יוקרה נגישה: טבעות, שרשראות, עגילים, צמידים, מתנות ורכישה אונליין.";
 
 export const metadata: Metadata = {
+  applicationName: appName,
   title: {
     default: "Elysia | תכשיטי סטודיו מודרניים",
     template: "%s | Elysia",
   },
   description:
     "רשת תכשיטים ישראלית במיצוב יוקרה נגישה: טבעות, שרשראות, עגילים, צמידים, מתנות ורכישה אונליין.",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
-  metadataBase: new URL("https://elysia.local"),
+  manifest: "/manifest.webmanifest",
+  icons: [
+    { rel: "icon", url: "/favicon.ico" },
+    { rel: "apple-touch-icon", url: "/apple-touch-icon.png" },
+  ],
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: appName,
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  metadataBase: new URL(env.SITE_URL ?? "https://elysia.co.il"),
   openGraph: {
     title: "Elysia",
     description:
       "תכשיטי סטודיו מודרניים בעברית, עם מסחר אונליין מלא ושירות אישי.",
     locale: "he_IL",
+    siteName: appName,
     type: "website",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: appName,
+    description: appDescription,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#101314",
 };
 
 const geistSans = Geist({
@@ -66,16 +95,18 @@ export default function RootLayout({
   return (
     <html lang="he" dir="rtl" className={fontClassName}>
       <body>
-        <a className="skip-link" href="#main-content">
-          דילוג לתוכן
-        </a>
-        <div id="main-content" tabIndex={-1}>
-          <PublicMotionProvider footer={<SiteFooter />}>
-            {children}
-          </PublicMotionProvider>
-        </div>
-        <CookieConsentBanner />
-        <DeferredAccessibilityWidget />
+        <PwaProvider>
+          <a className="skip-link" href="#main-content">
+            דילוג לתוכן
+          </a>
+          <div id="main-content" tabIndex={-1}>
+            <PublicMotionProvider footer={<SiteFooter />}>
+              {children}
+            </PublicMotionProvider>
+          </div>
+          <CookieConsentBanner />
+          <DeferredAccessibilityWidget />
+        </PwaProvider>
       </body>
     </html>
   );

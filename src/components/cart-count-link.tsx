@@ -13,6 +13,7 @@ import {
   CART_UPDATED_EVENT,
   getStoredCartSessionKey,
 } from "~/lib/cart-session";
+import { getOfflineCartDelta } from "~/lib/pwa-offline";
 import { cn } from "~/lib/utils";
 
 type CartCountResponse = {
@@ -42,24 +43,40 @@ export const CartCountLink = forwardRef<HTMLAnchorElement, CartCountLinkProps>(
         }
 
         try {
+          const offlineDelta = await getOfflineCartDelta(sessionKey).catch(
+            () => 0,
+          );
+
+          if (!navigator.onLine) {
+            setItemCount(offlineDelta);
+            return;
+          }
+
           const response = await fetch(
             `/api/cart/count?sessionKey=${encodeURIComponent(sessionKey)}`,
             { cache: "no-store" },
           );
 
           if (!response.ok) {
-            setItemCount(0);
+            setItemCount(offlineDelta);
             return;
           }
 
           const data = (await response.json()) as CartCountResponse;
 
           if (!cancelled) {
-            setItemCount(Number.isFinite(data.itemCount) ? data.itemCount : 0);
+            setItemCount(
+              (Number.isFinite(data.itemCount) ? data.itemCount : 0) +
+                offlineDelta,
+            );
           }
         } catch {
           if (!cancelled) {
-            setItemCount(0);
+            const offlineDelta = await getOfflineCartDelta(sessionKey).catch(
+              () => 0,
+            );
+
+            setItemCount(offlineDelta);
           }
         }
       }

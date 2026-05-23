@@ -1,6 +1,13 @@
 "use client";
 
-import { useActionState, useEffect, useRef, type ComponentProps } from "react";
+import {
+  useActionState,
+  useEffect,
+  useRef,
+  useState,
+  type ComponentProps,
+  type FormEvent,
+} from "react";
 import { Paperclip, Send } from "lucide-react";
 
 import {
@@ -12,6 +19,7 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { StatusMessage } from "~/components/ui/status-message";
 import { Textarea } from "~/components/ui/textarea";
+import { queueOfflineServiceRequest } from "~/lib/pwa-offline";
 import {
   maxServiceRequestFileBytes,
   maxServiceRequestFiles,
@@ -41,6 +49,9 @@ export function ServiceRequestForm({
     createServiceRequestAction,
     initialState,
   );
+  const [offlineState, setOfflineState] = useState<ServiceRequestActionState>(
+    {},
+  );
 
   useEffect(() => {
     if (state.ok) {
@@ -48,10 +59,35 @@ export function ServiceRequestForm({
     }
   }, [state.ok]);
 
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    if (navigator.onLine) return;
+
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    void queueOfflineServiceRequest(formData)
+      .then(() => {
+        setOfflineState({
+          ok: true,
+          message: "הפנייה נשמרה ותישלח אוטומטית כשהחיבור יחזור.",
+        });
+        form.reset();
+      })
+      .catch(() =>
+        setOfflineState({
+          ok: false,
+          message:
+            "לא הצלחנו לשמור את הפנייה במצב לא מקוון. השאירו את הקבצים זמינים ונסו שוב כשיש חיבור.",
+        }),
+      );
+  }
+
   return (
     <form
       action={formAction}
       className="brand-surface grid gap-3.5 rounded-md p-4"
+      onSubmit={handleSubmit}
       ref={formRef}
     >
       <div className="grid gap-2">
@@ -184,6 +220,11 @@ export function ServiceRequestForm({
       {state.message ? (
         <StatusMessage tone={state.ok ? "success" : "error"}>
           {state.message}
+        </StatusMessage>
+      ) : null}
+      {offlineState.message ? (
+        <StatusMessage tone={offlineState.ok ? "success" : "error"}>
+          {offlineState.message}
         </StatusMessage>
       ) : null}
 

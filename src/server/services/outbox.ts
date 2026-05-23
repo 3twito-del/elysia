@@ -10,6 +10,8 @@ export const BUSINESS_EVENTS = {
   inventoryReserved: "inventory.reserved",
   inventoryReservationExpired: "inventory.reservation_expired",
   emailRequested: "email.requested",
+  pushCampaignRequested: "push.campaign_requested",
+  pushCartReminderDue: "push.cart_reminder_due",
   searchReindexRequested: "search.reindex_requested",
   webhookReceived: "webhook.received",
 } as const;

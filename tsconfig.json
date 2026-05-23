@@ -17,7 +17,8 @@
     "lib": [
       "dom",
       "dom.iterable",
-      "ES2022"
+      "ES2022",
+      "webworker"
     ],
     "noEmit": true,
     "module": "ESNext",

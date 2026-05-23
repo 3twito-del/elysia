@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import {
+  Bell,
   Boxes,
   CalendarClock,
   ClipboardList,
@@ -36,6 +37,7 @@ export type AdminSection =
   | "customers"
   | "integrations"
   | "inventory"
+  | "notifications"
   | "orders"
   | "overview"
   | "service";
@@ -52,6 +54,12 @@ const navItems: Array<{
   { href: "/admin/inventory", icon: Boxes, id: "inventory", label: "מלאי" },
   { href: "/admin/customers", icon: Users, id: "customers", label: "לקוחות" },
   { href: "/admin/service", icon: Headset, id: "service", label: "שירות" },
+  {
+    href: "/admin/notifications",
+    icon: Bell,
+    id: "notifications",
+    label: "Push",
+  },
   {
     href: "/admin/appointments",
     icon: CalendarClock,

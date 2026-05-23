@@ -173,6 +173,8 @@ async function updateSourceReferences(avifBySourceUrl, summary) {
     const nextSource = source.replace(
       /(["'`])(?<url>\/[^"'`\s)]+?\.(?:jpeg|jpg|png|webp))\1/g,
       (match, quote, url) => {
+        if (shouldKeepSourceReference(url)) return match;
+
         const avifUrl = avifBySourceUrl.get(url);
 
         if (!avifUrl) return match;
@@ -188,6 +190,14 @@ async function updateSourceReferences(avifBySourceUrl, summary) {
     summary.referenceFilesUpdated += 1;
     summary.referencesUpdated += updatedReferencesInFile;
   }
+}
+
+function shouldKeepSourceReference(url) {
+  return (
+    url === "/apple-touch-icon.png" ||
+    url.startsWith("/pwa/icons/") ||
+    url.startsWith("/pwa/screenshots/")
+  );
 }
 
 async function findReferenceFiles(root) {

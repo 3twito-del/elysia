@@ -44,6 +44,10 @@ import {
   type CheckoutField,
 } from "~/lib/checkout-validation";
 import { formatPrice } from "~/lib/format";
+import {
+  queueOfflineJsonAction,
+  rememberOfflineCartSnapshot,
+} from "~/lib/pwa-offline";
 import { api } from "~/trpc/react";
 import { CheckoutStepBadge } from "./checkout-step-badge";
 
@@ -75,6 +79,7 @@ export function CartCheckoutForm() {
     getServerSnapshot,
   );
   const [sessionKey, setSessionKey] = useState<string | null>(null);
+  const [isOffline, setIsOffline] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -132,6 +137,29 @@ export function CartCheckoutForm() {
     return () => window.cancelAnimationFrame(frame);
   }, []);
 
+  useEffect(() => {
+    const syncOnlineState = () => setIsOffline(!navigator.onLine);
+
+    syncOnlineState();
+    window.addEventListener("online", syncOnlineState);
+    window.addEventListener("offline", syncOnlineState);
+
+    return () => {
+      window.removeEventListener("online", syncOnlineState);
+      window.removeEventListener("offline", syncOnlineState);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!sessionKey || !cartQuery.data) return;
+
+    void rememberOfflineCartSnapshot({
+      itemCount: cartQuery.data.itemCount,
+      sessionKey,
+      updatedAt: new Date().toISOString(),
+    }).catch(() => undefined);
+  }, [cartQuery.data, sessionKey]);
+
   const cart = cartQuery.data;
   const cartItemCount = cart?.items.length ?? 0;
   const subtotal = cart?.totals.subtotal ?? 0;
@@ -150,7 +178,8 @@ export function CartCheckoutForm() {
     street,
   });
   const checkoutIssues = getCheckoutIssueList(checkoutErrors);
-  const checkoutLocked = createOrder.isPending || submitLocked;
+  const checkoutSubmissionLocked = createOrder.isPending || submitLocked;
+  const checkoutLocked = checkoutSubmissionLocked || isOffline;
   const canSubmit = !hasCheckoutErrors(checkoutErrors) && !checkoutLocked;
   const cartMutationError =
     updateItem.error ?? removeItem.error ?? updateOptions.error;
@@ -193,6 +222,12 @@ export function CartCheckoutForm() {
 
   function applyOptions() {
     if (!optionMutationInput) return;
+
+    if (isOffline) {
+      void queueOfflineJsonAction("cart.updateOptions", optionMutationInput);
+      return;
+    }
+
     updateOptions.mutate(optionMutationInput);
   }
 
@@ -217,7 +252,9 @@ export function CartCheckoutForm() {
     event.preventDefault();
     setSubmitAttempted(true);
 
-    if (!sessionKey || !canSubmit || submitLockedRef.current) return;
+    if (isOffline || !sessionKey || !canSubmit || submitLockedRef.current) {
+      return;
+    }
 
     submitLockedRef.current = true;
     setSubmitLocked(true);
@@ -238,6 +275,18 @@ export function CartCheckoutForm() {
       giftMessage: giftMessage || undefined,
       couponCode: couponCode || undefined,
     });
+  }
+
+  function queueOfflineCartMutation(
+    kind: "cart.removeItem" | "cart.updateItem",
+    payload: Record<string, unknown>,
+  ) {
+    if (!sessionKey) return;
+
+    void queueOfflineJsonAction(kind, {
+      sessionKey,
+      ...payload,
+    }).then(dispatchCartUpdated);
   }
 
   if (createOrder.data) {
@@ -368,21 +417,30 @@ export function CartCheckoutForm() {
                     <div className="col-span-2 flex items-center justify-end gap-2 sm:col-span-1">
                       <Button
                         aria-label={`הפחתת כמות עבור ${item.productName}`}
-                        onClick={() =>
-                          sessionKey &&
-                          updateItem.mutate({
-                            sessionKey,
+                        onClick={() => {
+                          if (!sessionKey) return;
+                          const payload = {
                             itemId: item.id,
                             quantity: item.quantity - 1,
-                          })
-                        }
+                          };
+
+                          if (isOffline) {
+                            queueOfflineCartMutation(
+                              "cart.updateItem",
+                              payload,
+                            );
+                            return;
+                          }
+
+                          updateItem.mutate({ sessionKey, ...payload });
+                        }}
                         size="icon"
                         type="button"
                         variant="outline"
                         disabled={
                           item.quantity <= 1 ||
                           updateItem.isPending ||
-                          checkoutLocked
+                          checkoutSubmissionLocked
                         }
                       >
                         <Minus aria-hidden="true" className="size-4" />
@@ -398,21 +456,30 @@ export function CartCheckoutForm() {
                       </span>
                       <Button
                         aria-label={`הוספת כמות עבור ${item.productName}`}
-                        onClick={() =>
-                          sessionKey &&
-                          updateItem.mutate({
-                            sessionKey,
+                        onClick={() => {
+                          if (!sessionKey) return;
+                          const payload = {
                             itemId: item.id,
                             quantity: item.quantity + 1,
-                          })
-                        }
+                          };
+
+                          if (isOffline) {
+                            queueOfflineCartMutation(
+                              "cart.updateItem",
+                              payload,
+                            );
+                            return;
+                          }
+
+                          updateItem.mutate({ sessionKey, ...payload });
+                        }}
                         size="icon"
                         type="button"
                         variant="outline"
                         disabled={
                           item.quantity >= 10 ||
                           updateItem.isPending ||
-                          checkoutLocked
+                          checkoutSubmissionLocked
                         }
                       >
                         <Plus aria-hidden="true" className="size-4" />
@@ -420,17 +487,26 @@ export function CartCheckoutForm() {
                       </Button>
                       <Button
                         aria-label={`הסרת ${item.productName} מהסל`}
-                        onClick={() =>
-                          sessionKey &&
-                          removeItem.mutate({
-                            sessionKey,
-                            itemId: item.id,
-                          })
-                        }
+                        onClick={() => {
+                          if (!sessionKey) return;
+                          const payload = { itemId: item.id };
+
+                          if (isOffline) {
+                            queueOfflineCartMutation(
+                              "cart.removeItem",
+                              payload,
+                            );
+                            return;
+                          }
+
+                          removeItem.mutate({ sessionKey, ...payload });
+                        }}
                         size="icon"
                         type="button"
                         variant="ghost"
-                        disabled={removeItem.isPending || checkoutLocked}
+                        disabled={
+                          removeItem.isPending || checkoutSubmissionLocked
+                        }
                       >
                         <Trash2 aria-hidden="true" className="size-4" />
                         <span className="sr-only">הסרה</span>
@@ -631,7 +707,7 @@ export function CartCheckoutForm() {
                   disabled={
                     !optionMutationInput ||
                     updateOptions.isPending ||
-                    checkoutLocked
+                    checkoutSubmissionLocked
                   }
                   onClick={applyOptions}
                   type="button"
@@ -722,6 +798,12 @@ export function CartCheckoutForm() {
               {cartMutationError ? (
                 <StatusMessage tone="error">
                   {cartMutationError.message}
+                </StatusMessage>
+              ) : null}
+              {isOffline ? (
+                <StatusMessage tone="error">
+                  הקופה דורשת חיבור פעיל. פעולות סל נתמכות יישמרו ויסתנכרנו
+                  כשהחיבור יחזור.
                 </StatusMessage>
               ) : null}
               {createOrder.error ? (
