@@ -2,10 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Search } from "lucide-react";
 
-import { CinematicHeroSequence } from "~/components/cinematic-hero-sequence";
+import {
+  StaticCinematicHeroSequence,
+  StaticKineticImageFrame,
+} from "~/components/brand-media-panel";
 import { CommerceSectionHeader } from "~/components/commerce-section-header";
-import { KineticImageMotion } from "~/components/kinetic-image-motion";
-import { MotionMediaFrame } from "~/components/motion-media-frame";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -44,24 +45,25 @@ export default async function Home() {
         initialVisible
         variant="hero"
       >
-        <MotionMediaFrame
-          className="absolute inset-0 h-full min-h-[var(--home-hero-height)] w-full"
-          contentClassName="absolute inset-0 min-h-[var(--home-hero-height)]"
-          intensity="cinematic"
-          motionScope="home-hero"
+        <div
+          className="motion-media-frame absolute inset-0 h-full min-h-[var(--home-hero-height)] w-full"
+          data-motion-intensity="cinematic"
+          data-motion-media="true"
+          data-motion-parallax="false"
+          data-motion-reduced="false"
+          data-motion-scope="home-hero"
         >
-          <KineticImageMotion
-            intensity="hero"
-            motionScope="home-hero"
-            scrollMotion={false}
-          >
-            <CinematicHeroSequence
-              motionScope="home-hero"
-              slides={homeSlides}
-              testId="cinematic-page-hero-sequence"
-            />
-          </KineticImageMotion>
-        </MotionMediaFrame>
+          <div className="motion-media-content absolute inset-0 min-h-[var(--home-hero-height)]">
+            <StaticKineticImageFrame>
+              <StaticCinematicHeroSequence
+                priority
+                motionScope="home-hero"
+                slides={homeSlides}
+                testId="cinematic-page-hero-sequence"
+              />
+            </StaticKineticImageFrame>
+          </div>
+        </div>
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.02),rgba(0,0,0,0.16)_44%,rgba(0,0,0,0.58))]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.68),rgba(0,0,0,0.12)_58%,rgba(0,0,0,0.22))]" />
         <div className="absolute inset-x-0 top-0 h-px bg-white opacity-30" />

@@ -88,6 +88,7 @@ export function ProductCard({
         aria-label={`צפייה במוצר ${product.name}`}
         className="block focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
         href={href}
+        prefetch={false}
       >
         <div className="brand-product-media glass-inset bg-muted relative aspect-[5/4] overflow-hidden border-0 sm:aspect-[4/5]">
           <StaticKineticImageFrame>
@@ -123,6 +124,7 @@ export function ProductCard({
               className="line-clamp-2 min-h-10 text-base leading-[1.4] font-medium underline-offset-4 hover:underline focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none sm:min-h-11 sm:leading-[1.45]"
               dir="auto"
               href={href}
+              prefetch={false}
             >
               {product.name}
             </Link>
@@ -207,6 +209,7 @@ export function ProductCard({
             <Link
               aria-label={`${commerceStatus.cardCtaLabel}: ${product.name}`}
               href={actionHref}
+              prefetch={false}
             >
               <ShoppingBag className="size-4" aria-hidden="true" />
               {commerceStatus.cardCtaLabel}

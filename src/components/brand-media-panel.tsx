@@ -51,7 +51,7 @@ export function BrandMediaPanel({
   );
 }
 
-function StaticKineticImageFrame({ children }: { children: ReactNode }) {
+export function StaticKineticImageFrame({ children }: { children: ReactNode }) {
   return (
     <div
       className="kinetic-image-motion"
@@ -65,12 +65,14 @@ function StaticKineticImageFrame({ children }: { children: ReactNode }) {
   );
 }
 
-function StaticCinematicHeroSequence({
+export function StaticCinematicHeroSequence({
+  motionScope = "static",
   priority = true,
   sizes = "100vw",
   slides,
   testId = "cinematic-hero-sequence",
 }: {
+  motionScope?: "home-hero" | "static";
   priority?: boolean;
   sizes?: string;
   slides: BrandMediaSlide[];
@@ -82,7 +84,7 @@ function StaticCinematicHeroSequence({
       className={cn("cinematic-hero-sequence")}
       data-motion-continuous="false"
       data-motion-reduced="false"
-      data-motion-scope="static"
+      data-motion-scope={motionScope}
       data-testid={testId}
     >
       {slides.map((slide, index) => (

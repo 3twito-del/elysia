@@ -22,6 +22,15 @@ describe("PwaProvider", () => {
     expect(source).toContain("elysia:pwa-e2e");
     expect(source).toContain("runtime.localStorage?.getItem");
   });
+
+  it("keeps Serwist out of the initial provider bundle", () => {
+    const providerSource = read("src/components/pwa-provider.tsx");
+    const runtimeSource = read("src/components/pwa-runtime.tsx");
+
+    expect(providerSource).not.toContain("@serwist/turbopack/react");
+    expect(providerSource).toContain("dynamic(");
+    expect(runtimeSource).toContain("@serwist/turbopack/react");
+  });
 });
 
 function read(relativePath: string) {

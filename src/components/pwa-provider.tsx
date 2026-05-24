@@ -1,9 +1,7 @@
 "use client";
 
-import { SerwistProvider } from "@serwist/turbopack/react";
+import dynamic from "next/dynamic";
 import { useEffect, useSyncExternalStore, type ReactNode } from "react";
-
-import { PwaLifecycle } from "~/components/pwa-lifecycle";
 
 const pwaCachePrefix = "elysia-";
 const pwaDevCleanupStorageKey = "elysia:pwa-dev-cleanup";
@@ -20,6 +18,11 @@ type BrowserRuntime = typeof globalThis & {
 type PwaProviderProps = {
   children: ReactNode;
 };
+
+const PwaRuntime = dynamic(
+  () => import("~/components/pwa-runtime").then((mod) => mod.PwaRuntime),
+  { ssr: false },
+);
 
 export function PwaProvider({ children }: PwaProviderProps) {
   const enabled = useSyncExternalStore(
@@ -40,19 +43,7 @@ export function PwaProvider({ children }: PwaProviderProps) {
     void registerServiceWorker();
   }, [enabled]);
 
-  return (
-    <SerwistProvider
-      cacheOnNavigation
-      disable={!enabled}
-      options={{ scope: "/" }}
-      register={enabled}
-      reloadOnOnline={false}
-      swUrl="/serwist/sw.js"
-    >
-      {children}
-      {enabled ? <PwaLifecycle /> : null}
-    </SerwistProvider>
-  );
+  return enabled ? <PwaRuntime>{children}</PwaRuntime> : children;
 }
 
 function getBrowserRuntime() {
