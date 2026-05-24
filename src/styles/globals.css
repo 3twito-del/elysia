@@ -131,10 +131,18 @@
   --motion-feature: 620ms;
   --motion-media: 680ms;
   --motion-feedback: 480ms;
+  --motion-overlay-enter: 240ms;
+  --motion-overlay-exit: 220ms;
+  --motion-sheet-enter: 520ms;
+  --motion-sheet-exit: 420ms;
+  --motion-sheet-axis-distance: 102%;
+  --motion-sheet-axis-distance-negative: -102%;
   --ease-liquid: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-motion-standard: cubic-bezier(0.2, 0, 0, 1);
   --ease-motion-expressive: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-motion-feedback: cubic-bezier(0.2, 0, 0, 1);
+  --ease-motion-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-motion-exit: cubic-bezier(0.32, 0, 0.2, 1);
   --motion-distance-subtle: 5px;
   --motion-distance-standard: 10px;
   --motion-distance-feature: 14px;
@@ -546,6 +554,8 @@ html[data-accessibility-motion="reduce"] .motion-copy-item,
 html[data-accessibility-motion="reduce"] .motion-status-pop,
 html[data-accessibility-motion="reduce"] .motion-sticky-purchase,
 html[data-accessibility-motion="reduce"] .motion-thumbnail-button,
+html[data-accessibility-motion="reduce"] .sheet-content,
+html[data-accessibility-motion="reduce"] .sheet-overlay,
 html[data-accessibility-motion="reduce"] .mobile-nav-panel,
 html[data-accessibility-motion="reduce"] .mobile-nav-animated-item,
 html[data-accessibility-motion="reduce"] .mobile-nav-close svg,
@@ -1275,7 +1285,7 @@ main
   outline: none !important;
 }
 
-[data-icon-tooltip] {
+[data-icon-tooltip]:not(.fixed):not(.absolute):not(.sticky) {
   position: relative;
 }
 
@@ -1334,18 +1344,25 @@ main
 }
 
 .mobile-nav-panel {
-  --mobile-nav-item-step: 34ms;
+  --mobile-nav-item-step: 30ms;
   gap: 0;
   overflow-x: hidden;
   border-left-color: var(--glass-border) !important;
+  transform: translate3d(0, 0, 0);
+  transform-origin: right center;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
 }
 
 .mobile-nav-panel[data-state="open"] {
-  animation: mobile-nav-panel-in 420ms var(--ease-motion-expressive) both !important;
+  animation: mobile-nav-panel-in var(--motion-sheet-enter)
+    var(--ease-motion-enter) both !important;
 }
 
 .mobile-nav-panel[data-state="closed"] {
-  animation: mobile-nav-panel-out 180ms var(--ease-motion-standard) both !important;
+  animation: mobile-nav-panel-out var(--motion-sheet-exit)
+    var(--ease-motion-exit) both !important;
+  pointer-events: none;
 }
 
 .mobile-nav-header {
@@ -1364,14 +1381,19 @@ main
 }
 
 .mobile-nav-animated-item {
-  transform: none;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
 }
 
 .mobile-nav-panel[data-state="open"] .mobile-nav-animated-item {
-  animation: mobile-nav-item-in 520ms var(--ease-motion-expressive) both;
+  animation: mobile-nav-item-in 520ms var(--ease-motion-enter) both;
   animation-delay: calc(
     45ms + var(--mobile-nav-index, 0) * var(--mobile-nav-item-step)
   );
+}
+
+.mobile-nav-panel[data-state="closed"] .mobile-nav-animated-item {
+  animation: mobile-nav-item-out 160ms var(--ease-motion-standard) both;
 }
 
 .mobile-nav-quick-action,
@@ -1596,6 +1618,91 @@ footer nav a:focus-visible {
 
 .popup-overlay {
   background: oklch(0.12 0 0 / 58%);
+}
+
+.sheet-overlay {
+  animation-fill-mode: both;
+  will-change: opacity;
+}
+
+.sheet-overlay[data-state="open"] {
+  animation: sheet-overlay-in var(--motion-overlay-enter)
+    var(--ease-motion-standard) both;
+}
+
+.sheet-overlay[data-state="closed"] {
+  animation: sheet-overlay-out var(--motion-overlay-exit)
+    var(--ease-motion-standard) both;
+}
+
+.sheet-content {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+}
+
+.sheet-content[data-state="closed"] {
+  pointer-events: none;
+}
+
+.sheet-content[data-side="right"] {
+  transform-origin: right center;
+}
+
+.sheet-content[data-side="left"] {
+  transform-origin: left center;
+}
+
+.sheet-content[data-side="top"] {
+  transform-origin: center top;
+}
+
+.sheet-content[data-side="bottom"] {
+  transform-origin: center bottom;
+}
+
+.sheet-content[data-state="open"] {
+  animation-duration: var(--motion-sheet-enter);
+  animation-fill-mode: both;
+  animation-timing-function: var(--ease-motion-enter);
+}
+
+.sheet-content[data-state="closed"] {
+  animation-duration: var(--motion-sheet-exit);
+  animation-fill-mode: both;
+  animation-timing-function: var(--ease-motion-exit);
+}
+
+.sheet-content[data-side="right"][data-state="open"] {
+  animation-name: sheet-in-from-right;
+}
+
+.sheet-content[data-side="right"][data-state="closed"] {
+  animation-name: sheet-out-to-right;
+}
+
+.sheet-content[data-side="left"][data-state="open"] {
+  animation-name: sheet-in-from-left;
+}
+
+.sheet-content[data-side="left"][data-state="closed"] {
+  animation-name: sheet-out-to-left;
+}
+
+.sheet-content[data-side="top"][data-state="open"] {
+  animation-name: sheet-in-from-top;
+}
+
+.sheet-content[data-side="top"][data-state="closed"] {
+  animation-name: sheet-out-to-top;
+}
+
+.sheet-content[data-side="bottom"][data-state="open"] {
+  animation-name: sheet-in-from-bottom;
+}
+
+.sheet-content[data-side="bottom"][data-state="closed"] {
+  animation-name: sheet-out-to-bottom;
 }
 
 .liquid-section {
@@ -2100,36 +2207,161 @@ html[data-public-floating-bar-visible="true"] .public-motion-content {
   }
 }
 
-@keyframes mobile-nav-panel-in {
+@keyframes sheet-overlay-in {
   from {
-    opacity: 0.96;
-    transform: translateX(1.15rem) scale(0.985);
+    opacity: 0;
   }
   to {
     opacity: 1;
-    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes sheet-overlay-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes sheet-in-from-right {
+  from {
+    opacity: 0.98;
+    transform: translate3d(var(--motion-sheet-axis-distance), 0, 0)
+      scaleX(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleX(1);
+  }
+}
+
+@keyframes sheet-out-to-right {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleX(1);
+  }
+  to {
+    opacity: 0.98;
+    transform: translate3d(var(--motion-sheet-axis-distance), 0, 0)
+      scaleX(0.985);
+  }
+}
+
+@keyframes sheet-in-from-left {
+  from {
+    opacity: 0.98;
+    transform: translate3d(var(--motion-sheet-axis-distance-negative), 0, 0)
+      scaleX(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleX(1);
+  }
+}
+
+@keyframes sheet-out-to-left {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleX(1);
+  }
+  to {
+    opacity: 0.98;
+    transform: translate3d(var(--motion-sheet-axis-distance-negative), 0, 0)
+      scaleX(0.985);
+  }
+}
+
+@keyframes sheet-in-from-top {
+  from {
+    opacity: 0.98;
+    transform: translate3d(0, var(--motion-sheet-axis-distance-negative), 0)
+      scaleY(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleY(1);
+  }
+}
+
+@keyframes sheet-out-to-top {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleY(1);
+  }
+  to {
+    opacity: 0.98;
+    transform: translate3d(0, var(--motion-sheet-axis-distance-negative), 0)
+      scaleY(0.985);
+  }
+}
+
+@keyframes sheet-in-from-bottom {
+  from {
+    opacity: 0.98;
+    transform: translate3d(0, var(--motion-sheet-axis-distance), 0)
+      scaleY(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleY(1);
+  }
+}
+
+@keyframes sheet-out-to-bottom {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleY(1);
+  }
+  to {
+    opacity: 0.98;
+    transform: translate3d(0, var(--motion-sheet-axis-distance), 0)
+      scaleY(0.985);
+  }
+}
+
+@keyframes mobile-nav-panel-in {
+  from {
+    opacity: 0.98;
+    transform: translate3d(104%, 0, 0) scaleX(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleX(1);
   }
 }
 
 @keyframes mobile-nav-panel-out {
   from {
     opacity: 1;
-    transform: translateX(0) scale(1);
+    transform: translate3d(0, 0, 0) scaleX(1);
   }
   to {
-    opacity: 0.96;
-    transform: translateX(0.75rem) scale(0.99);
+    opacity: 0.98;
+    transform: translate3d(104%, 0, 0) scaleX(0.985);
   }
 }
 
 @keyframes mobile-nav-item-in {
   from {
     opacity: 0;
-    transform: translateX(0.75rem);
+    transform: translate3d(0.75rem, 0, 0);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes mobile-nav-item-out {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    opacity: 0.72;
+    transform: translate3d(0.35rem, 0, 0);
   }
 }
 
@@ -2336,6 +2568,8 @@ html[data-public-floating-bar-visible="true"] .public-motion-content {
   .motion-status-pop,
   .motion-sticky-purchase,
   .motion-thumbnail-button,
+  .sheet-content,
+  .sheet-overlay,
   .mobile-nav-panel,
   .mobile-nav-animated-item,
   .mobile-nav-close svg,

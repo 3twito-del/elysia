@@ -39,6 +39,19 @@ type AccessibilitySettings = {
 
 const storageKey = "elysia.accessibility-settings";
 const settingsChangeEvent = "elysia:accessibility-settings";
+const focusableDialogSelector = [
+  "a[href]",
+  "button:not([disabled])",
+  "input:not([disabled])",
+  "select:not([disabled])",
+  "textarea:not([disabled])",
+  '[tabindex]:not([tabindex="-1"])',
+].join(",");
+const inertOutsideDialogSelector = [
+  "#main-content",
+  ".skip-link",
+  '[data-cookie-consent-banner="true"]',
+].join(",");
 
 const defaultSettings: AccessibilitySettings = {
   textScale: "normal",
@@ -155,6 +168,41 @@ function getScaleIndex(value: TextScale) {
   return textScaleOptions.findIndex((option) => option.value === value);
 }
 
+function areSettingsEqual(
+  first: AccessibilitySettings,
+  second: AccessibilitySettings,
+) {
+  return (
+    first.textScale === second.textScale &&
+    first.highContrast === second.highContrast &&
+    first.underlineLinks === second.underlineLinks &&
+    first.reduceMotion === second.reduceMotion
+  );
+}
+
+function getElementInert(element: HTMLElement) {
+  return element.inert;
+}
+
+function setElementInert(element: HTMLElement, inert: boolean) {
+  element.inert = inert;
+}
+
+function getFocusableDialogElements(dialog: HTMLElement | null) {
+  if (!dialog) return [];
+
+  return Array.from(
+    dialog.querySelectorAll<HTMLElement>(focusableDialogSelector),
+  ).filter((element) => {
+    if (element.hasAttribute("disabled")) return false;
+    if (element.getAttribute("aria-hidden") === "true") return false;
+
+    const styles = window.getComputedStyle(element);
+
+    return styles.display !== "none" && styles.visibility !== "hidden";
+  });
+}
+
 function ToggleRow({
   checked,
   description,
@@ -205,16 +253,20 @@ function ToggleRow({
 
 export function AccessibilityWidget() {
   const pathname = usePathname();
+  const dialogId = useId();
   const titleId = useId();
   const descriptionId = useId();
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLElement>(null);
+  const initialFocusRef = useRef<HTMLHeadingElement>(null);
   const triggerButtonRef = useRef<HTMLButtonElement>(null);
   const shouldRestoreTriggerFocusRef = useRef(false);
+  const statusFrameRef = useRef<number | null>(null);
+  const statusTimeoutRef = useRef<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [hiddenTriggerPathname, setHiddenTriggerPathname] = useState<
     string | null
   >(null);
+  const [statusMessage, setStatusMessage] = useState("");
   const settingsSnapshot = useSyncExternalStore(
     subscribeToAccessibilitySettings,
     getClientSettingsSnapshot,
@@ -224,18 +276,41 @@ export function AccessibilityWidget() {
     () => parseStoredSettings(settingsSnapshot),
     [settingsSnapshot],
   );
+  const announceSettingsChange = useCallback((message: string) => {
+    if (statusFrameRef.current !== null) {
+      window.cancelAnimationFrame(statusFrameRef.current);
+    }
+
+    if (statusTimeoutRef.current !== null) {
+      window.clearTimeout(statusTimeoutRef.current);
+    }
+
+    setStatusMessage("");
+
+    statusFrameRef.current = window.requestAnimationFrame(() => {
+      setStatusMessage(message);
+      statusTimeoutRef.current = window.setTimeout(
+        () => setStatusMessage(""),
+        2400,
+      );
+    });
+  }, []);
   const updateSettings = useCallback(
     (
       updater:
         | AccessibilitySettings
         | ((current: AccessibilitySettings) => AccessibilitySettings),
+      announcement = "העדפות הנגישות עודכנו",
     ) => {
       const current = parseStoredSettings(getClientSettingsSnapshot());
       const next = typeof updater === "function" ? updater(current) : updater;
 
+      if (areSettingsEqual(current, next)) return;
+
       writeStoredSettings(next);
+      announceSettingsChange(announcement);
     },
-    [],
+    [announceSettingsChange],
   );
 
   useEffect(() => {
@@ -243,12 +318,37 @@ export function AccessibilityWidget() {
   }, [settings]);
 
   useEffect(() => {
+    return () => {
+      if (statusFrameRef.current !== null) {
+        window.cancelAnimationFrame(statusFrameRef.current);
+      }
+
+      if (statusTimeoutRef.current !== null) {
+        window.clearTimeout(statusTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    shouldRestoreTriggerFocusRef.current = false;
+    setIsOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
     if (!isOpen) return;
 
     const previousOverflow = document.body.style.overflow;
-    const focusFrame = window.requestAnimationFrame(() =>
-      closeButtonRef.current?.focus(),
-    );
+    const inertTargets = Array.from(
+      document.querySelectorAll<HTMLElement>(inertOutsideDialogSelector),
+    ).filter((element) => !dialogRef.current?.contains(element));
+    const previousInertStates = inertTargets.map((element) => ({
+      ariaHidden: element.getAttribute("aria-hidden"),
+      element,
+      inert: getElementInert(element),
+    }));
+    const focusFrame = window.requestAnimationFrame(() => {
+      initialFocusRef.current?.focus({ preventScroll: true });
+    });
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -260,34 +360,50 @@ export function AccessibilityWidget() {
       }
 
       if (event.key === "Tab") {
-        const focusableElements = Array.from(
-          dialogRef.current?.querySelectorAll<HTMLElement>(
-            'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
-          ) ?? [],
-        ).filter((element) => !element.hasAttribute("disabled"));
-
+        const focusableElements = getFocusableDialogElements(dialogRef.current);
         const firstElement = focusableElements[0];
         const lastElement = focusableElements[focusableElements.length - 1];
 
         if (!firstElement || !lastElement) return;
 
-        if (event.shiftKey && document.activeElement === firstElement) {
+        const activeElement = document.activeElement;
+        const isDialogFocusable = focusableElements.some(
+          (element) => element === activeElement,
+        );
+
+        if (!isDialogFocusable) {
+          event.preventDefault();
+          (event.shiftKey ? lastElement : firstElement).focus();
+        } else if (event.shiftKey && activeElement === firstElement) {
           event.preventDefault();
           lastElement.focus();
-        } else if (!event.shiftKey && document.activeElement === lastElement) {
+        } else if (!event.shiftKey && activeElement === lastElement) {
           event.preventDefault();
           firstElement.focus();
         }
       }
     };
 
+    inertTargets.forEach((element) => {
+      setElementInert(element, true);
+      element.setAttribute("aria-hidden", "true");
+    });
     document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown, true);
 
     return () => {
+      previousInertStates.forEach(({ ariaHidden, element, inert }) => {
+        setElementInert(element, inert);
+
+        if (ariaHidden === null) {
+          element.removeAttribute("aria-hidden");
+        } else {
+          element.setAttribute("aria-hidden", ariaHidden);
+        }
+      });
       document.body.style.overflow = previousOverflow;
       window.cancelAnimationFrame(focusFrame);
-      window.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keydown", handleKeyDown, true);
     };
   }, [isOpen]);
 
@@ -340,6 +456,7 @@ export function AccessibilityWidget() {
     <>
       {!isTriggerHidden && (
         <Button
+          aria-controls={dialogId}
           aria-expanded={isOpen}
           aria-haspopup="dialog"
           aria-label="פתיחת תפריט נגישות"
@@ -350,6 +467,7 @@ export function AccessibilityWidget() {
           onClick={() => setIsOpen(true)}
           ref={triggerButtonRef}
           size="icon-lg"
+          tabIndex={isOpen ? -1 : undefined}
           type="button"
           variant="outline"
         >
@@ -372,13 +490,19 @@ export function AccessibilityWidget() {
             aria-labelledby={titleId}
             aria-modal="true"
             className="popup-surface minimal-scroll fixed top-1/2 left-1/2 z-[100] grid max-h-[min(42rem,calc(100vh-2rem))] w-[min(calc(100vw-2rem),27rem)] -translate-x-1/2 -translate-y-1/2 gap-4 overflow-y-auto rounded-lg border p-4 text-sm shadow-[0_24px_80px_oklch(0.1_0_0_/_24%)] outline-none"
+            id={dialogId}
             ref={dialogRef}
             role="dialog"
             tabIndex={-1}
           >
             <div className="flex items-start justify-between gap-4 pe-1">
               <div>
-                <h2 className="text-xl font-medium" id={titleId}>
+                <h2
+                  className="rounded-sm text-xl font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
+                  id={titleId}
+                  ref={initialFocusRef}
+                  tabIndex={-1}
+                >
                   תפריט נגישות
                 </h2>
                 <p
@@ -393,7 +517,6 @@ export function AccessibilityWidget() {
                 data-icon-tooltip="סגירה"
                 data-icon-tooltip-placement="top"
                 onClick={closeMenu}
-                ref={closeButtonRef}
                 size="icon-sm"
                 type="button"
                 variant="ghost"
@@ -542,7 +665,9 @@ export function AccessibilityWidget() {
               </Button>
               <Button
                 className="justify-between"
-                onClick={() => updateSettings(defaultSettings)}
+                onClick={() =>
+                  updateSettings(defaultSettings, "התאמות הנגישות אופסו")
+                }
                 type="button"
                 variant="outline"
               >
@@ -554,6 +679,15 @@ export function AccessibilityWidget() {
                   הצהרת נגישות
                 </Link>
               </Button>
+            </div>
+
+            <div
+              aria-atomic="true"
+              aria-live="polite"
+              className="sr-only"
+              role="status"
+            >
+              {statusMessage}
             </div>
           </section>
         </div>

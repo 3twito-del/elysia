@@ -110,12 +110,12 @@ export default async function Home() {
       </RevealSection>
 
       <RevealSection
-        className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-10"
+        className="mx-auto max-w-7xl px-[var(--ui-page-x)] py-5 sm:px-6 sm:py-10"
         id="categories"
       >
         <CommerceSectionHeader
           action={
-            <Button asChild variant="outline">
+            <Button asChild size="sm" variant="outline">
               <Link href="/search">כל הקטלוג</Link>
             </Button>
           }
@@ -123,7 +123,7 @@ export default async function Home() {
           title="מסלול קצר למוצר הנכון"
         />
         <RevealGrid
-          className="grid grid-cols-2 gap-x-3 gap-y-5 sm:gap-x-4 sm:gap-y-6 lg:grid-cols-4"
+          className="grid grid-cols-2 gap-2.5 sm:gap-x-4 sm:gap-y-6 lg:grid-cols-4"
           variant="media"
         >
           {categories.map((category) => (
@@ -133,7 +133,7 @@ export default async function Home() {
               href={`/category/${category.slug}`}
               key={category.slug}
             >
-              <div className="bg-muted relative aspect-[4/5] min-h-[220px] overflow-hidden rounded-md">
+              <div className="bg-muted relative aspect-[4/3] overflow-hidden rounded-md sm:aspect-[4/5] sm:min-h-[220px]">
                 <Image
                   alt=""
                   className="media-color object-cover object-center transition duration-[700ms] ease-[var(--ease-motion-standard)] group-hover/card:scale-[1.015]"
@@ -144,9 +144,15 @@ export default async function Home() {
                     category.image
                   }
                 />
-                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(16,19,20,0.18),rgba(16,19,20,0.02)_42%,rgba(255,255,255,0.04))]" />
+                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(16,19,20,0.48),rgba(16,19,20,0.08)_58%,rgba(255,255,255,0.04))] sm:bg-[linear-gradient(to_top,rgba(16,19,20,0.18),rgba(16,19,20,0.02)_42%,rgba(255,255,255,0.04))]" />
+                <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-3 text-white sm:hidden">
+                  <h3 className="min-w-0 text-base leading-5 font-medium">
+                    {category.name}
+                  </h3>
+                  <ArrowLeft aria-hidden="true" className="size-4 shrink-0" />
+                </div>
               </div>
-              <div className="mt-3 border-b border-[var(--glass-border)] pb-3 text-center">
+              <div className="mt-3 hidden border-b border-[var(--glass-border)] pb-3 text-center sm:block">
                 <h3 className="group-hover/card:text-muted-foreground group-focus-visible/card:text-muted-foreground min-w-0 text-base leading-6 font-medium transition-colors duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)] sm:text-lg">
                   {category.name}
                 </h3>

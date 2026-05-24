@@ -33,6 +33,31 @@ describe("public motion budget", () => {
     expect(violations).toEqual([]);
   });
 
+  it("keeps sheet and mobile navigation exits compositor-only and fully off canvas", () => {
+    const css = read("src/styles/globals.css");
+    const sheetSource = read("src/components/ui/sheet.tsx");
+
+    expect(sheetSource).toContain('"sheet-content popup-surface');
+    expect(sheetSource).toContain('"sheet-overlay popup-overlay');
+    expect(sheetSource).not.toContain("data-closed:slide-out-to-right");
+    expect(css).toContain("--motion-sheet-exit: 420ms;");
+    expect(css).toContain("--motion-sheet-axis-distance: 102%;");
+    expect(css).toContain(
+      '.sheet-content[data-side="right"][data-state="closed"]',
+    );
+    expect(css).toContain("animation-name: sheet-out-to-right;");
+    expect(css).toContain("@keyframes sheet-out-to-right");
+    expect(css).toContain(
+      "translate3d(var(--motion-sheet-axis-distance), 0, 0)",
+    );
+    expect(css).toContain("@keyframes mobile-nav-panel-out");
+    expect(css).toContain("transform: translate3d(104%, 0, 0) scaleX(0.985);");
+    expect(
+      extractCssBlock(css, '.mobile-nav-panel[data-state="closed"]'),
+    ).toContain("var(--motion-sheet-exit)");
+    expect(css).not.toContain("transform: translateX(0.75rem)");
+  });
+
   it("requires explicit home-hero scope before GSAP repeat timelines can run", () => {
     const sequenceSource = read("src/components/cinematic-hero-sequence.tsx");
     const homeSource = read("src/app/page.tsx");

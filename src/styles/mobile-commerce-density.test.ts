@@ -101,11 +101,15 @@ describe("mobile commerce density", () => {
     const search = read("src/app/search/page.tsx");
     const productCard = read("src/components/product-card.tsx");
 
-    expect(home).toContain("py-7 sm:px-6 sm:py-10");
-    expect(home).toContain("grid grid-cols-2 gap-x-3 gap-y-5");
+    expect(home).toContain("px-[var(--ui-page-x)] py-5 sm:px-6 sm:py-10");
+    expect(home).toContain("grid grid-cols-2 gap-2.5");
     expect(home).toContain('data-testid="home-category-tile"');
-    expect(home).toContain("relative aspect-[4/5] min-h-[220px]");
-    expect(home).toContain("group-hover/card:text-muted-foreground");
+    expect(home).toContain(
+      "relative aspect-[4/3] overflow-hidden rounded-md sm:aspect-[4/5] sm:min-h-[220px]",
+    );
+    expect(home).toContain("absolute inset-x-0 bottom-0");
+    expect(home).toContain("sm:hidden");
+    expect(home).toContain("hidden border-b border-[var(--glass-border)]");
     expect(home).not.toContain("brand-surface interactive-lift group/card");
     expect(home).not.toContain("group-hover/card:underline");
     expect(category).toContain(

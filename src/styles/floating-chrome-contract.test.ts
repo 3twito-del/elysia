@@ -31,6 +31,10 @@ describe("public floating chrome contract", () => {
       'html[data-public-floating-bar-visible="true"] .public-motion-content',
     );
     expect(css).toContain("var(--public-bottom-safe-offset, 0px)");
+    expect(css).toContain(
+      "[data-icon-tooltip]:not(.fixed):not(.absolute):not(.sticky)",
+    );
+    expect(css).not.toContain("[data-icon-tooltip] {\n  position: relative;");
   });
 
   it("renders the accessibility trigger as a neutral RTL bottom action", () => {

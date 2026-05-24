@@ -555,6 +555,10 @@ test.describe("accessibility and responsive guardrails", () => {
       "aria-label",
       new RegExp("\\u05e0\\u05d2\\u05d9\\u05e9\\u05d5\\u05ea"),
     );
+    await expect(trigger).toHaveAttribute("aria-expanded", "false");
+    const controlledDialogId = await trigger.getAttribute("aria-controls");
+    expect(controlledDialogId).toBeTruthy();
+
     const triggerChrome = await trigger.evaluate((element) => {
       const rect = element.getBoundingClientRect();
       const styles = window.getComputedStyle(element);
@@ -582,6 +586,27 @@ test.describe("accessibility and responsive guardrails", () => {
 
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
+    await expect(dialog).toHaveAttribute("id", controlledDialogId!);
+    await expect(trigger).toHaveAttribute("aria-expanded", "true");
+    await expect(page.locator("#main-content")).toHaveAttribute("inert", "");
+    await expect(page.locator("#main-content")).toHaveAttribute(
+      "aria-hidden",
+      "true",
+    );
+
+    const dialogTitle = dialog.getByRole("heading", {
+      name: new RegExp("\\u05e0\\u05d2\\u05d9\\u05e9\\u05d5\\u05ea"),
+    });
+    await expect(dialogTitle).toBeFocused();
+
+    await page.keyboard.press("Shift+Tab");
+    await expect(
+      dialog.getByRole("link", {
+        name: new RegExp("\\u05d4\\u05e6\\u05d4\\u05e8\\u05ea"),
+      }),
+    ).toBeFocused();
+
+    await page.keyboard.press("Tab");
     await expect(dialog.getByRole("button").first()).toBeFocused();
 
     const reduceMotionToggle = dialog.locator('input[type="checkbox"]').nth(2);
@@ -595,9 +620,20 @@ test.describe("accessibility and responsive guardrails", () => {
         ),
       )
       .toBe("reduce");
+    await expect(dialog.getByRole("status")).toContainText(
+      new RegExp("\\u05e0\\u05d2\\u05d9\\u05e9\\u05d5\\u05ea"),
+    );
 
     await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden();
+    await expect(page.locator("#main-content")).not.toHaveAttribute(
+      "inert",
+      "",
+    );
+    await expect(page.locator("#main-content")).not.toHaveAttribute(
+      "aria-hidden",
+      "true",
+    );
     await expect
       .poll(() =>
         page.evaluate(
