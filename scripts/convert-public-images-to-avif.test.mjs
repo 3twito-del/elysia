@@ -70,7 +70,7 @@ describe("public image AVIF conversion", () => {
 });
 
 async function createImageFixture() {
-  const cwd = await mkdtemp(path.join(os.tmpdir(), "aphrodite-avif-"));
+  const cwd = await mkdtemp(path.join(os.tmpdir(), "elysia-avif-"));
 
   tempRoots.push(cwd);
   await mkdir(path.join(cwd, "public"), { recursive: true });

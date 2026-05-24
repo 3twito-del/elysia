@@ -14,19 +14,19 @@ jobs:
       ADMIN_BOOTSTRAP_NAME: CI Admin
       ADMIN_BOOTSTRAP_PASSWORD: ci-admin-password-12345
       AUTH_SECRET: ci-auth-secret-for-quality-workflow
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/aphrodite?schema=public
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/elysia?schema=public
 
     services:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_DB: aphrodite
+          POSTGRES_DB: elysia
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U postgres -d aphrodite"
+          --health-cmd "pg_isready -U postgres -d elysia"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5

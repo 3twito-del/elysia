@@ -66,7 +66,7 @@ const storyImages = [
     alt: "קומפוזיציית תכשיטים עריכתית עם טבעות וזכוכית אקווה",
     className: "aspect-[16/10]",
     sizes: "(min-width: 1024px) 54vw, 100vw",
-    src: "/brand/aphrodite-aqua-about.avif",
+    src: "/brand/elysia-aqua-about.avif",
   },
   {
     alt: "מגש שירות עם אריזה ותכשיטי פנינה",
