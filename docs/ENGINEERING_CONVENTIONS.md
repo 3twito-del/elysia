@@ -49,6 +49,33 @@
 - Development fallbacks should fail clearly in production and remain documented
   in health checks.
 
+## Coherence Contract
+
+`pnpm gate:coherence` enforces the repository's short architectural contract
+without running long live benchmarks.
+
+- Services must remain domain/server code. They may use persistence, cache, and
+  provider-facing service dependencies, but must not import route UI,
+  `_components`, public component primitives, icon packages, or animation UI.
+- Adapters wrap external providers and SDK clients. They must not open Prisma
+  transactions or import `~/server/db`; business transactions belong in
+  services.
+- API route handlers and tRPC routers validate I/O, rate-limit, call services,
+  and return the existing public response shape. They must not import
+  `~/server/db`, `@prisma/client`, or open transactions directly.
+- Source files over 700 lines fail unless they are listed in
+  `scripts/coherence-contract.mjs` with a reason. The current allowed
+  orchestration exceptions are:
+  `src/server/services/admin-operations.ts`,
+  `src/server/adapters/search.ts`, `src/app/search/page.tsx`,
+  `src/app/checkout/_components/cart-checkout-form.tsx`, and
+  `scripts/benchmarks/core.ts`.
+- New or moved code must not introduce unapproved `TODO`, `FIXME`, `HACK`, or
+  `@ts-ignore` markers.
+- Stable public import paths may remain as facades, but the implementation
+  weight should move into sibling `*-inputs`, `*-contract`, `*-assets`,
+  `*-types`, `_lib`, or leaf `_components` modules.
+
 ## QA Commands
 
 - `pnpm check`: lint, typecheck, and unit/integration tests.
@@ -79,6 +106,9 @@ chooses the matching depth.
   runtime check.
 - `pnpm gate:runtime`: runs `gate:fix`, builds once, starts preview, then runs
   smoke, Playwright, and agent-browser visual QA.
+- `pnpm gate:coherence`: runs the coherence contract, lint, typecheck, and
+  focused static/Vitest coverage for the gate catalog, AI element accessibility,
+  admin commerce, AI model/planner, search, and search state.
 - `pnpm gate:public:local`: runs all public benchmark parts with
   `--skip-external`.
 - `pnpm gate:public:live`: runs all public benchmark parts against live
@@ -88,6 +118,9 @@ chooses the matching depth.
 - `pnpm gate:prod`: forces production-readiness env validation locally.
 - `pnpm gate:full`: runs fix once, then quick, test, db, build/runtime,
   security, and live public benchmarks.
+- `pnpm gate:ship`: runs the deploy gate for routine production releases:
+  coherence, quick, test, DB, build, runtime, and security. It intentionally
+  excludes `gate:public:live`.
 - `pnpm gate:release`: runs `gate:full` plus `gate:prod`.
 
 Prerequisites: DB gates need a reachable `DATABASE_URL`; runtime gates need a
@@ -95,3 +128,19 @@ successful production build and available preview port; e2e needs Playwright
 browsers; visual QA needs `agent-browser` and PowerShell; live benchmarks and
 security audit need network access; production readiness needs real provider
 secrets in the environment.
+
+## Production Deploy
+
+Use `gate:ship` as the standing pre-deploy gate. Use `gate:full` only before a
+manual high-risk release where live public benchmark duration is acceptable.
+
+1. Run `pnpm gate:coherence`.
+2. Run `pnpm gate:ship`.
+3. Run `git diff --check` and inspect `git status --short`.
+4. If generated QA markdown has trailing blank lines, clean only
+   `docs/qa/*.md`.
+5. Deploy the linked Vercel project with:
+   `vercel pull --yes --environment=production`,
+   `vercel build --prod`, and
+   `vercel deploy --prebuilt --prod`.
+6. Smoke the production URL with the same route coverage as `scripts/smoke.mjs`.

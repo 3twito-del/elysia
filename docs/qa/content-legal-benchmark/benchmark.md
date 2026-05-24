@@ -1,13 +1,13 @@
 # Content Legal Benchmark
 
-Generated: 2026-05-24T15:23:49.078Z
+Generated: 2026-05-24T18:11:04.807Z
 
 ## Summary
 
 - Status: pass
 - Active corpus: 15/15 sites produced enough data
 - Alignment: 88%
-- Metrics: 544 match, 71 mismatch, 0 not comparable
+- Metrics: 541 match, 74 mismatch, 0 not comparable
 - Active weight: 19.5; threshold weight: 9.75
 
 This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site substitutions affect QA reports only and do not change the High Jewelry Reference Gate.
@@ -39,13 +39,12 @@ This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site 
 - about / desktop / interaction / buttonCount: Elysia=18; baseline=median 6; IQR 0-12; weight=19.5
 - about / desktop / content / headingCount: Elysia=36; baseline=median 9; IQR 3-32; weight=19.5
 - about / desktop / content / paragraphCount: Elysia=49; baseline=median 5; IQR 2-27; weight=19.5
-- about / tablet / chrome / heightPx: Elysia=4868; baseline=median 3473; IQR 825-4225; weight=19.5
-- about / tablet / chrome / areaRatio: Elysia=5.3388; baseline=median 3.86; IQR 0.92-4.69; weight=19.5
 - about / tablet / chrome / fullBleed: Elysia=false; baseline=true (16.5/19.5)
-- about / tablet / interaction / buttonCount: Elysia=18; baseline=median 8; IQR 0-15; weight=19.5
-- about / tablet / content / headingCount: Elysia=36; baseline=median 8; IQR 3-25; weight=19.5
+- about / tablet / interaction / buttonCount: Elysia=18; baseline=median 10; IQR 0-15; weight=19.5
+- about / tablet / content / headingCount: Elysia=36; baseline=median 9; IQR 4-29; weight=19.5
 - about / tablet / content / paragraphCount: Elysia=49; baseline=median 5; IQR 2-39; weight=19.5
-- about / tablet / commerce / priceTextPresent: Elysia=false; baseline=true (11/19.5)
+- about / tablet / media / imageCount: Elysia=10; baseline=median 22; IQR 12-102; weight=19.5
+- about / tablet / commerce / priceTextPresent: Elysia=false; baseline=true (12.5/19.5)
 - about / mobile / chrome / heightPx: Elysia=5834; baseline=median 4275; IQR 844-5743; weight=19.5
 - about / mobile / chrome / fullBleed: Elysia=false; baseline=true (16.5/19.5)
 - about / mobile / accessibility / hasAriaExpanded: Elysia=true; baseline=false (15/19.5)
@@ -57,8 +56,9 @@ This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site 
 - faq / desktop / chrome / fullBleed: Elysia=false; baseline=true (16.5/19.5)
 - faq / desktop / media / imageCount: Elysia=0; baseline=median 12; IQR 1-56; weight=19.5
 - faq / tablet / chrome / fullBleed: Elysia=false; baseline=true (16.5/19.5)
-- faq / tablet / media / imageCount: Elysia=0; baseline=median 18; IQR 8-64; weight=19.5
-- faq / tablet / commerce / priceTextPresent: Elysia=false; baseline=true (11/19.5)
+- faq / tablet / interaction / linkCount: Elysia=14; baseline=median 23; IQR 16-35; weight=19.5
+- faq / tablet / media / imageCount: Elysia=0; baseline=median 22; IQR 12-102; weight=19.5
+- faq / tablet / commerce / priceTextPresent: Elysia=false; baseline=true (12.5/19.5)
 
 ## Lessons
 

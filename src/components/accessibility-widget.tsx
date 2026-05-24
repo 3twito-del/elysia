@@ -25,40 +25,26 @@ import {
 } from "react";
 
 import { cn } from "~/lib/utils";
+import {
+  getElementInert,
+  getFocusableDialogElements,
+  inertOutsideDialogSelector,
+  setElementInert,
+} from "~/components/accessibility-dialog";
+import {
+  applyAccessibilitySettings,
+  areSettingsEqual,
+  defaultAccessibilitySettings,
+  getClientSettingsSnapshot,
+  getServerSettingsSnapshot,
+  parseStoredSettings,
+  subscribeToAccessibilitySettings,
+  type AccessibilitySettings,
+  type TextScale,
+  writeStoredSettings,
+} from "~/components/accessibility-settings";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-
-type TextScale = "normal" | "large" | "xlarge";
-
-type AccessibilitySettings = {
-  textScale: TextScale;
-  highContrast: boolean;
-  underlineLinks: boolean;
-  reduceMotion: boolean;
-};
-
-const storageKey = "elysia.accessibility-settings";
-const settingsChangeEvent = "elysia:accessibility-settings";
-const focusableDialogSelector = [
-  "a[href]",
-  "button:not([disabled])",
-  "input:not([disabled])",
-  "select:not([disabled])",
-  "textarea:not([disabled])",
-  '[tabindex]:not([tabindex="-1"])',
-].join(",");
-const inertOutsideDialogSelector = [
-  "#main-content",
-  ".skip-link",
-  '[data-cookie-consent-banner="true"]',
-].join(",");
-
-const defaultSettings: AccessibilitySettings = {
-  textScale: "normal",
-  highContrast: false,
-  underlineLinks: false,
-  reduceMotion: false,
-};
 
 const textScaleOptions: Array<{ value: TextScale; label: string }> = [
   { value: "normal", label: "רגיל" },
@@ -66,141 +52,8 @@ const textScaleOptions: Array<{ value: TextScale; label: string }> = [
   { value: "xlarge", label: "גדול מאוד" },
 ];
 
-function isTextScale(value: unknown): value is TextScale {
-  return value === "normal" || value === "large" || value === "xlarge";
-}
-
-function parseStoredSettings(stored: string | null) {
-  if (!stored) return defaultSettings;
-
-  try {
-    const parsed = JSON.parse(stored) as Partial<AccessibilitySettings>;
-
-    return {
-      textScale: isTextScale(parsed.textScale)
-        ? parsed.textScale
-        : defaultSettings.textScale,
-      highContrast:
-        typeof parsed.highContrast === "boolean"
-          ? parsed.highContrast
-          : defaultSettings.highContrast,
-      underlineLinks:
-        typeof parsed.underlineLinks === "boolean"
-          ? parsed.underlineLinks
-          : defaultSettings.underlineLinks,
-      reduceMotion:
-        typeof parsed.reduceMotion === "boolean"
-          ? parsed.reduceMotion
-          : defaultSettings.reduceMotion,
-    };
-  } catch {
-    return defaultSettings;
-  }
-}
-
-function subscribeToAccessibilitySettings(onStoreChange: () => void) {
-  const handleStorage = (event: StorageEvent) => {
-    if (event.key === storageKey) onStoreChange();
-  };
-
-  window.addEventListener("storage", handleStorage);
-  window.addEventListener(settingsChangeEvent, onStoreChange);
-
-  return () => {
-    window.removeEventListener("storage", handleStorage);
-    window.removeEventListener(settingsChangeEvent, onStoreChange);
-  };
-}
-
-function getClientSettingsSnapshot() {
-  try {
-    return window.localStorage.getItem(storageKey) ?? "";
-  } catch {
-    return "";
-  }
-}
-
-function getServerSettingsSnapshot() {
-  return "";
-}
-
-function writeStoredSettings(settings: AccessibilitySettings) {
-  try {
-    window.localStorage.setItem(storageKey, JSON.stringify(settings));
-  } catch {
-    // Browsers can block storage in strict privacy modes; the live setting still applies.
-  }
-
-  applyAccessibilitySettings(settings);
-}
-
-function applyAccessibilitySettings(settings: AccessibilitySettings) {
-  const root = document.documentElement;
-
-  if (settings.textScale === "normal") {
-    delete root.dataset.accessibilityText;
-  } else {
-    root.dataset.accessibilityText = settings.textScale;
-  }
-
-  if (settings.highContrast) {
-    root.dataset.accessibilityContrast = "true";
-  } else {
-    delete root.dataset.accessibilityContrast;
-  }
-
-  if (settings.underlineLinks) {
-    root.dataset.accessibilityLinks = "true";
-  } else {
-    delete root.dataset.accessibilityLinks;
-  }
-
-  if (settings.reduceMotion) {
-    root.dataset.accessibilityMotion = "reduce";
-  } else {
-    delete root.dataset.accessibilityMotion;
-  }
-
-  window.dispatchEvent(new CustomEvent(settingsChangeEvent));
-}
-
 function getScaleIndex(value: TextScale) {
   return textScaleOptions.findIndex((option) => option.value === value);
-}
-
-function areSettingsEqual(
-  first: AccessibilitySettings,
-  second: AccessibilitySettings,
-) {
-  return (
-    first.textScale === second.textScale &&
-    first.highContrast === second.highContrast &&
-    first.underlineLinks === second.underlineLinks &&
-    first.reduceMotion === second.reduceMotion
-  );
-}
-
-function getElementInert(element: HTMLElement) {
-  return element.inert;
-}
-
-function setElementInert(element: HTMLElement, inert: boolean) {
-  element.inert = inert;
-}
-
-function getFocusableDialogElements(dialog: HTMLElement | null) {
-  if (!dialog) return [];
-
-  return Array.from(
-    dialog.querySelectorAll<HTMLElement>(focusableDialogSelector),
-  ).filter((element) => {
-    if (element.hasAttribute("disabled")) return false;
-    if (element.getAttribute("aria-hidden") === "true") return false;
-
-    const styles = window.getComputedStyle(element);
-
-    return styles.display !== "none" && styles.visibility !== "hidden";
-  });
 }
 
 function ToggleRow({
@@ -672,7 +525,10 @@ export function AccessibilityWidget() {
               <Button
                 className="justify-between"
                 onClick={() =>
-                  updateSettings(defaultSettings, "התאמות הנגישות אופסו")
+                  updateSettings(
+                    defaultAccessibilitySettings,
+                    "התאמות הנגישות אופסו",
+                  )
                 }
                 type="button"
                 variant="outline"

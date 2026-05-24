@@ -1,6 +1,6 @@
 # Public Benchmark Index
 
-Generated: 2026-05-24T15:35:03.328Z
+Generated: 2026-05-24T18:21:16.958Z
 
 ## Latest Results
 
@@ -9,14 +9,14 @@ Generated: 2026-05-24T15:35:03.328Z
 | Header | pass | 85% | 12/12 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Aurate; Harry Winston -> Kendra Scott | [report](./header-benchmark/benchmark.md) |
 | Footer | pass | 85% | 15/15 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Brilliant Earth; Harry Winston -> Blue Nile; Chaumet -> VRAI; Mikimoto -> Aurate | [report](./footer-benchmark/benchmark.md) |
 | Floating Chrome | warn | 68% | 15/15 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Brilliant Earth; Harry Winston -> Blue Nile; Chaumet -> VRAI; Mikimoto -> Aurate | [report](./floating-chrome-benchmark/benchmark.md) |
-| Route Hero | warn | 63% | 14/14 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Brilliant Earth; Harry Winston -> Blue Nile; Chaumet -> Kendra Scott | [report](./route-hero-benchmark/benchmark.md) |
+| Route Hero | warn | 62% | 14/14 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Brilliant Earth; Harry Winston -> Blue Nile; Chaumet -> Kendra Scott | [report](./route-hero-benchmark/benchmark.md) |
 | PLP Search Gifts | warn | 70% | 15/15 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Brilliant Earth; Harry Winston -> Blue Nile; Chaumet -> VRAI; Mikimoto -> Aurate | [report](./plp-benchmark/benchmark.md) |
-| Product Card | warn | 64% | 15/15 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Brilliant Earth; Harry Winston -> Blue Nile; Chaumet -> VRAI; Mikimoto -> Aurate | [report](./product-card-benchmark/benchmark.md) |
-| PDP | warn | 80% | 15/15 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Brilliant Earth; Harry Winston -> Blue Nile; Chaumet -> VRAI; Mikimoto -> Aurate | [report](./pdp-benchmark/benchmark.md) |
-| Checkout | pass | 85% | 15/15 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Brilliant Earth; Harry Winston -> Blue Nile; Chaumet -> VRAI; Mikimoto -> Aurate | [report](./checkout-benchmark/benchmark.md) |
+| Product Card | warn | 65% | 15/15 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Brilliant Earth; Harry Winston -> Blue Nile; Chaumet -> VRAI; Mikimoto -> Aurate | [report](./product-card-benchmark/benchmark.md) |
+| PDP | warn | 79% | 15/15 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Brilliant Earth; Harry Winston -> Blue Nile; Chaumet -> VRAI; Mikimoto -> Aurate | [report](./pdp-benchmark/benchmark.md) |
+| Checkout | pass | 84% | 15/15 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Brilliant Earth; Harry Winston -> Blue Nile; Chaumet -> VRAI; Mikimoto -> Aurate | [report](./checkout-benchmark/benchmark.md) |
 | Service Account | pass | 87% | 15/15 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Brilliant Earth; Harry Winston -> Blue Nile; Chaumet -> VRAI; Mikimoto -> Aurate | [report](./service-account-benchmark/benchmark.md) |
 | Content Legal | pass | 88% | 15/15 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Brilliant Earth; Harry Winston -> Blue Nile; Chaumet -> VRAI; Mikimoto -> Aurate | [report](./content-legal-benchmark/benchmark.md) |
-| AI Stylist | pass | 85% | 15/15 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Brilliant Earth; Harry Winston -> Blue Nile; Chaumet -> VRAI; Mikimoto -> Aurate | [report](./ai-stylist-benchmark/benchmark.md) |
+| AI Stylist | pass | 83% | 15/15 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Brilliant Earth; Harry Winston -> Blue Nile; Chaumet -> VRAI; Mikimoto -> Aurate | [report](./ai-stylist-benchmark/benchmark.md) |
 
 ## Cross-Surface Lessons
 

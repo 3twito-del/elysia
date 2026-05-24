@@ -35,13 +35,16 @@ describe("benchmark policy enforcement", () => {
     const productPanel = read(
       "src/app/product/[slug]/_components/product-purchase-panel.tsx",
     );
+    const productPurchaseUtils = read(
+      "src/app/product/[slug]/_components/product-purchase-utils.ts",
+    );
     const categoryFilters = read(
       "src/app/category/[slug]/_lib/category-filter-state.ts",
     );
     const search = read("src/app/search/page.tsx");
     const category = read("src/app/category/[slug]/page.tsx");
 
-    expect(productPanel).toContain("getPublicStockStatusLabel");
+    expect(productPurchaseUtils).toContain("getPublicStockStatusLabel");
     expect(productPanel).not.toContain("getStockQuantityLabel");
     expect(productPanel).not.toContain(" במלאי");
     expect(categoryFilters).not.toContain("meta: getFilterCountLabel");

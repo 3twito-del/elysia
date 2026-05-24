@@ -23,6 +23,21 @@ import {
   getSearchEmbeddingConfig,
   loadStoredProductSearchEmbeddings,
 } from "~/server/services/search-embeddings";
+import {
+  createSearchResultMeta,
+  getProductsCollectionName,
+  hasTypesenseConfig,
+  normalizeSearchPagination,
+  paginateSearchHits,
+} from "./search-utils";
+
+export {
+  DEFAULT_SEARCH_PER_PAGE,
+  getProductsCollectionName,
+  normalizeSearchPagination,
+  paginateSearchHits,
+  shouldUseLocalSearchFallback,
+} from "./search-utils";
 
 const TEXT_QUERY_FIELDS = "name,shortDescription,category,material,stone,tags";
 const SEMANTIC_VECTOR_K = 200;
@@ -109,9 +124,6 @@ type ScoredSemanticHit = {
   semanticScore: number;
   totalScore: number;
 };
-
-export const DEFAULT_SEARCH_PER_PAGE = 24;
-const maxSearchPerPage = 48;
 
 export interface SearchProvider {
   searchProducts(input: ProductSearchInput): Promise<ProductSearchResult>;
@@ -522,72 +534,6 @@ async function searchLocalSemanticProducts(
   };
 }
 
-export function normalizeSearchPagination(input: {
-  page?: number;
-  perPage?: number;
-}) {
-  const page =
-    Number.isInteger(input.page) && Number(input.page) > 0
-      ? Number(input.page)
-      : 1;
-  const perPage =
-    Number.isInteger(input.perPage) && Number(input.perPage) > 0
-      ? Math.min(Number(input.perPage), maxSearchPerPage)
-      : DEFAULT_SEARCH_PER_PAGE;
-
-  return { page, perPage };
-}
-
-export function paginateSearchHits<T>(
-  hits: T[],
-  pagination: ReturnType<typeof normalizeSearchPagination>,
-) {
-  const totalPages = getSearchTotalPages(hits.length, pagination.perPage);
-  const page = Math.min(pagination.page, totalPages);
-  const start = (page - 1) * pagination.perPage;
-
-  return hits.slice(start, start + pagination.perPage);
-}
-
-function createSearchResultMeta(
-  total: number,
-  pagination: ReturnType<typeof normalizeSearchPagination>,
-) {
-  const totalPages = getSearchTotalPages(total, pagination.perPage);
-
-  return {
-    page: Math.min(pagination.page, totalPages),
-    perPage: pagination.perPage,
-    total,
-    totalPages,
-  };
-}
-
-function getSearchTotalPages(total: number, perPage: number) {
-  return Math.max(1, Math.ceil(total / perPage));
-}
-
-type TypesenseSearchEnv = {
-  NODE_ENV: string;
-  TYPESENSE_API_KEY?: string;
-  TYPESENSE_HOST?: string;
-};
-
-type ConfiguredTypesenseSearchEnv = TypesenseSearchEnv & {
-  TYPESENSE_API_KEY: string;
-  TYPESENSE_HOST: string;
-};
-
-export function shouldUseLocalSearchFallback(config: TypesenseSearchEnv = env) {
-  return !hasTypesenseConfig(config);
-}
-
-function hasTypesenseConfig(
-  config: TypesenseSearchEnv,
-): config is ConfiguredTypesenseSearchEnv {
-  return Boolean(config.TYPESENSE_HOST && config.TYPESENSE_API_KEY);
-}
-
 function sortLocalHits(hits: CatalogProduct[], input: ProductSearchInput) {
   const sort = input.sort ?? "relevance";
   const sorted = [...hits];
@@ -700,19 +646,6 @@ function getProductCreatedAtTime(product: CatalogProduct) {
   }
 
   return 0;
-}
-
-export function getProductsCollectionName(model: string, dimension: number) {
-  const modelSlug =
-    model
-      .toLowerCase()
-      .replace(/^cloudflare:@cf\//u, "cf/")
-      .replace(/^cloudflare:/u, "cf:")
-      .replace(/[^a-z0-9]+/g, "_")
-      .replace(/^_+|_+$/g, "")
-      .slice(0, 36) || "lexical";
-
-  return `products_semantic_${modelSlug}_${dimension}_v1`;
 }
 
 async function ensureProductsCollection(

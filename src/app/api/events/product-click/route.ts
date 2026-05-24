@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-import { db } from "~/server/db";
 import {
   badRequestJson,
   notFoundJson,
@@ -14,6 +13,7 @@ import {
   getRequestIp,
   RateLimitExceededError,
 } from "~/server/services/rate-limit";
+import { recordProductClickEvent } from "~/server/services/product-events";
 
 const productClickEventSchema = z.object({
   productSlug: z.string().trim().min(1),
@@ -53,23 +53,9 @@ export async function POST(req: Request) {
     return badRequestJson();
   }
 
-  const product = await db.product.findUnique({
-    where: { slug: parsed.data.productSlug },
-    select: { id: true },
-  });
+  const recorded = await recordProductClickEvent(parsed.data);
 
-  if (!product) {
-    return notFoundJson();
-  }
-
-  await db.productClickEvent.create({
-    data: {
-      productId: product.id,
-      query: parsed.data.query,
-      position: parsed.data.position,
-      sessionKey: parsed.data.sessionKey,
-    },
-  });
+  if (!recorded) return notFoundJson();
 
   return okJson({ ok: true });
 }

@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 import { auth } from "~/server/auth";
-import { db } from "~/server/db";
 import {
   badRequestJson,
   okJson,
@@ -9,6 +8,7 @@ import {
 } from "~/server/http/api-response";
 import {
   getVapidPublicKey,
+  getPushCustomerIdForUser,
   isPushConfigured,
   upsertPushSubscription,
 } from "~/server/services/push";
@@ -50,16 +50,13 @@ export async function POST(req: Request) {
   }
 
   const session = await auth();
-  const customer =
+  const customerId =
     session?.user?.id && !session.user.adminUserId
-      ? await db.customer.findUnique({
-          where: { userId: session.user.id },
-          select: { id: true },
-        })
-      : null;
+      ? await getPushCustomerIdForUser(session.user.id)
+      : undefined;
   const subscription = await upsertPushSubscription({
     auth: parsed.data.subscription.keys.auth,
-    customerId: customer?.id,
+    customerId,
     deviceId: parsed.data.deviceId,
     endpoint: parsed.data.subscription.endpoint,
     marketingOptIn: parsed.data.marketingOptIn,

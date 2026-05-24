@@ -49,26 +49,27 @@ describe("search experience benchmark contract", () => {
 
   it("keeps grid and list result presentations addressable by URL", () => {
     const page = read("src/app/search/page.tsx");
+    const state = read("src/app/search/_lib/search-state.ts");
 
-    expect(page).toContain('type SearchViewMode = "grid" | "list"');
+    expect(state).toContain('type SearchViewMode = "grid" | "list"');
     expect(page).toContain("SearchViewToggle");
     expect(page).toContain("SearchModeToggle");
     expect(page).toContain('data-testid="search-results-grid"');
     expect(page).toContain('data-testid="search-results-list"');
     expect(page).toContain('data-testid="search-result-list-item"');
     expect(page).toContain('data-testid="semantic-search-signals"');
-    expect(page).toContain('params.set("view", input.view)');
-    expect(page).toContain('params.set("mode", input.mode)');
-    expect(page).toContain('value === "list" ? "list" : "grid"');
+    expect(state).toContain('params.set("view", input.view)');
+    expect(state).toContain('params.set("mode", input.mode)');
+    expect(state).toContain('value === "list" ? "list" : "grid"');
   });
 
   it("treats natural-language budget searches as measured filter state", () => {
-    const page = read("src/app/search/page.tsx");
+    const state = read("src/app/search/_lib/search-state.ts");
 
-    expect(page).toContain("resolveAiCatalogSearchIntent");
-    expect(page).toContain("normalizeBudgetAwareQuery");
-    expect(page).toContain("intent?.maxPrice");
-    expect(page).toContain("isGenericGiftSearch");
+    expect(state).toContain("resolveAiCatalogSearchIntent");
+    expect(state).toContain("normalizeBudgetAwareQuery");
+    expect(state).toContain("intent?.maxPrice");
+    expect(state).toContain("isGenericGiftSearch");
   });
 
   it("keeps search result cards benchmark-safe for public commerce", () => {

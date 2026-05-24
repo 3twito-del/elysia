@@ -886,7 +886,7 @@
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 0.018,
+        "min": 0.023,
         "q1": 0.427,
         "q3": 1,
         "sampleWeight": 18,
@@ -905,7 +905,7 @@
       "corpusBaseline": {
         "max": 6.7921,
         "median": 0.9278,
-        "min": 0.0004,
+        "min": 0.0005,
         "q1": 0.0606,
         "q3": 4.5629,
         "sampleWeight": 18,
@@ -1222,7 +1222,7 @@
       "elysiaValue": 4,
       "corpusBaseline": {
         "max": 142,
-        "median": 3,
+        "median": 2,
         "min": 0,
         "q1": 0,
         "q3": 48,
@@ -1241,7 +1241,7 @@
       "elysiaValue": 0.543,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.966,
+        "median": 0.952,
         "min": 0.5,
         "q1": 0.889,
         "q3": 1,
@@ -1295,7 +1295,7 @@
         "median": 687,
         "min": 18,
         "q1": 145,
-        "q3": 11304,
+        "q3": 11024,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -1580,7 +1580,7 @@
         "median": 21,
         "min": -4941,
         "q1": 0,
-        "q3": 169,
+        "q3": 85,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -1595,11 +1595,11 @@
     {
       "elysiaValue": 2047,
       "corpusBaseline": {
-        "max": 7003,
-        "median": 824,
+        "max": 7482,
+        "median": 825,
         "min": 21,
         "q1": 169,
-        "q3": 3815,
+        "q3": 3830,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -1616,7 +1616,7 @@
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 0.034,
+        "min": 0.044,
         "q1": 0.958,
         "q3": 1,
         "sampleWeight": 19.5,
@@ -1633,11 +1633,11 @@
     {
       "elysiaValue": 2.2447,
       "corpusBaseline": {
-        "max": 7.7807,
-        "median": 0.9151,
-        "min": 0.0008,
+        "max": 8.3133,
+        "median": 0.9167,
+        "min": 0.001,
         "q1": 0.1798,
-        "q3": 4.239,
+        "q3": 4.2553,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -1764,11 +1764,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 7,
+        "max": 16,
         "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 1,
+        "q3": 2,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -1783,11 +1783,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 2,
+        "max": 16,
         "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 1,
+        "q3": 2,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -1806,7 +1806,7 @@
         "median": 0.333,
         "min": 0,
         "q1": 0.033,
-        "q3": 0.7,
+        "q3": 0.56,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -1857,10 +1857,10 @@
       "elysiaValue": 11,
       "corpusBaseline": {
         "max": 42,
-        "median": 6,
+        "median": 16,
         "min": 0,
         "q1": 0,
-        "q3": 23,
+        "q3": 24,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -1895,10 +1895,10 @@
       "elysiaValue": 35,
       "corpusBaseline": {
         "max": 112,
-        "median": 10,
+        "median": 18,
         "min": 0,
         "q1": 2,
-        "q3": 30,
+        "q3": 34,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -1935,7 +1935,7 @@
         "max": 1,
         "median": 0.5,
         "min": 0,
-        "q1": 0.333,
+        "q1": 0.194,
         "q3": 0.967,
         "sampleWeight": 19.5,
         "type": "number"
@@ -1952,10 +1952,10 @@
       "elysiaValue": 4,
       "corpusBaseline": {
         "max": 142,
-        "median": 2,
+        "median": 6,
         "min": 0,
         "q1": 0,
-        "q3": 41,
+        "q3": 44,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -1971,7 +1971,7 @@
       "elysiaValue": 0.543,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.92,
+        "median": 0.967,
         "min": 0,
         "q1": 0.667,
         "q3": 0.991,
@@ -1991,11 +1991,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 14,
+        "supportWeight": 15.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 14,
+      "evidenceWeight": 15.5,
       "group": "accessibility",
       "key": "hasAriaCurrent",
       "matchStatus": "match",
@@ -2022,10 +2022,10 @@
       "elysiaValue": 1440,
       "corpusBaseline": {
         "max": 34266,
-        "median": 687,
+        "median": 1151,
         "min": 6,
         "q1": 123,
-        "q3": 11304,
+        "q3": 11024,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2041,10 +2041,10 @@
       "elysiaValue": 7,
       "corpusBaseline": {
         "max": 97,
-        "median": 2,
+        "median": 3,
         "min": 0,
         "q1": 0,
-        "q3": 10,
+        "q3": 25,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2098,7 +2098,7 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 178,
-        "median": 1,
+        "median": 12,
         "min": 0,
         "q1": 0,
         "q3": 56,
@@ -2116,7 +2116,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 2,
+        "max": 4,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -2156,11 +2156,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 13,
+        "supportWeight": 11.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 13,
+      "evidenceWeight": 11.5,
       "group": "commerce",
       "key": "priceTextPresent",
       "matchStatus": "match",
@@ -2203,10 +2203,10 @@
       "elysiaValue": 5.374,
       "corpusBaseline": {
         "max": 1285.714,
-        "median": 4.961,
+        "median": 4.812,
         "min": 0,
         "q1": 0,
-        "q3": 6.029,
+        "q3": 5.998,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2222,7 +2222,7 @@
       "elysiaValue": 17.099,
       "corpusBaseline": {
         "max": 1428.571,
-        "median": 12.142,
+        "median": 7.625,
         "min": 0,
         "q1": 5.696,
         "q3": 29.357,
@@ -3084,7 +3084,7 @@
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 0.018,
+        "min": 0.023,
         "q1": 0.427,
         "q3": 1,
         "sampleWeight": 18,
@@ -3103,7 +3103,7 @@
       "corpusBaseline": {
         "max": 6.7921,
         "median": 0.9278,
-        "min": 0.0004,
+        "min": 0.0005,
         "q1": 0.0606,
         "q3": 4.5629,
         "sampleWeight": 18,
@@ -3420,7 +3420,7 @@
       "elysiaValue": 5,
       "corpusBaseline": {
         "max": 142,
-        "median": 3,
+        "median": 2,
         "min": 0,
         "q1": 0,
         "q3": 48,
@@ -3439,7 +3439,7 @@
       "elysiaValue": 0.867,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.966,
+        "median": 0.952,
         "min": 0.5,
         "q1": 0.889,
         "q3": 1,
@@ -3493,7 +3493,7 @@
         "median": 687,
         "min": 18,
         "q1": 145,
-        "q3": 11304,
+        "q3": 11024,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -3778,7 +3778,7 @@
         "median": 21,
         "min": -4941,
         "q1": 0,
-        "q3": 169,
+        "q3": 85,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -3793,11 +3793,11 @@
     {
       "elysiaValue": 968,
       "corpusBaseline": {
-        "max": 7003,
-        "median": 824,
+        "max": 7482,
+        "median": 825,
         "min": 21,
         "q1": 169,
-        "q3": 3815,
+        "q3": 3830,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -3814,7 +3814,7 @@
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 0.034,
+        "min": 0.044,
         "q1": 0.958,
         "q3": 1,
         "sampleWeight": 19.5,
@@ -3831,11 +3831,11 @@
     {
       "elysiaValue": 1.0616,
       "corpusBaseline": {
-        "max": 7.7807,
-        "median": 0.9151,
-        "min": 0.0008,
+        "max": 8.3133,
+        "median": 0.9167,
+        "min": 0.001,
         "q1": 0.1798,
-        "q3": 4.239,
+        "q3": 4.2553,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -3962,11 +3962,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 7,
+        "max": 16,
         "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 1,
+        "q3": 2,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -3981,11 +3981,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 2,
+        "max": 16,
         "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 1,
+        "q3": 2,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4004,7 +4004,7 @@
         "median": 0.333,
         "min": 0,
         "q1": 0.033,
-        "q3": 0.7,
+        "q3": 0.56,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4055,10 +4055,10 @@
       "elysiaValue": 9,
       "corpusBaseline": {
         "max": 42,
-        "median": 6,
+        "median": 16,
         "min": 0,
         "q1": 0,
-        "q3": 23,
+        "q3": 24,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4093,10 +4093,10 @@
       "elysiaValue": 15,
       "corpusBaseline": {
         "max": 112,
-        "median": 10,
+        "median": 18,
         "min": 0,
         "q1": 2,
-        "q3": 30,
+        "q3": 34,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4133,7 +4133,7 @@
         "max": 1,
         "median": 0.5,
         "min": 0,
-        "q1": 0.333,
+        "q1": 0.194,
         "q3": 0.967,
         "sampleWeight": 19.5,
         "type": "number"
@@ -4150,10 +4150,10 @@
       "elysiaValue": 5,
       "corpusBaseline": {
         "max": 142,
-        "median": 2,
+        "median": 6,
         "min": 0,
         "q1": 0,
-        "q3": 41,
+        "q3": 44,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4169,7 +4169,7 @@
       "elysiaValue": 0.867,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.92,
+        "median": 0.967,
         "min": 0,
         "q1": 0.667,
         "q3": 0.991,
@@ -4189,11 +4189,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 14,
+        "supportWeight": 15.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 14,
+      "evidenceWeight": 15.5,
       "group": "accessibility",
       "key": "hasAriaCurrent",
       "matchStatus": "match",
@@ -4220,10 +4220,10 @@
       "elysiaValue": 490,
       "corpusBaseline": {
         "max": 34266,
-        "median": 687,
+        "median": 1151,
         "min": 6,
         "q1": 123,
-        "q3": 11304,
+        "q3": 11024,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4239,10 +4239,10 @@
       "elysiaValue": 1,
       "corpusBaseline": {
         "max": 97,
-        "median": 2,
+        "median": 3,
         "min": 0,
         "q1": 0,
-        "q3": 10,
+        "q3": 25,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4296,7 +4296,7 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 178,
-        "median": 1,
+        "median": 12,
         "min": 0,
         "q1": 0,
         "q3": 56,
@@ -4314,7 +4314,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 2,
+        "max": 4,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -4354,11 +4354,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 13,
+        "supportWeight": 11.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 13,
+      "evidenceWeight": 11.5,
       "group": "commerce",
       "key": "priceTextPresent",
       "matchStatus": "match",
@@ -4401,10 +4401,10 @@
       "elysiaValue": 9.298,
       "corpusBaseline": {
         "max": 1285.714,
-        "median": 4.961,
+        "median": 4.812,
         "min": 0,
         "q1": 0,
-        "q3": 6.029,
+        "q3": 5.998,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4420,7 +4420,7 @@
       "elysiaValue": 15.496,
       "corpusBaseline": {
         "max": 1428.571,
-        "median": 12.142,
+        "median": 7.625,
         "min": 0,
         "q1": 5.696,
         "q3": 29.357,
@@ -5282,7 +5282,7 @@
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 0.018,
+        "min": 0.023,
         "q1": 0.427,
         "q3": 1,
         "sampleWeight": 18,
@@ -5301,7 +5301,7 @@
       "corpusBaseline": {
         "max": 6.7921,
         "median": 0.9278,
-        "min": 0.0004,
+        "min": 0.0005,
         "q1": 0.0606,
         "q3": 4.5629,
         "sampleWeight": 18,
@@ -5618,7 +5618,7 @@
       "elysiaValue": 4,
       "corpusBaseline": {
         "max": 142,
-        "median": 3,
+        "median": 2,
         "min": 0,
         "q1": 0,
         "q3": 48,
@@ -5637,7 +5637,7 @@
       "elysiaValue": 0.543,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.966,
+        "median": 0.952,
         "min": 0.5,
         "q1": 0.889,
         "q3": 1,
@@ -5691,7 +5691,7 @@
         "median": 687,
         "min": 18,
         "q1": 145,
-        "q3": 11304,
+        "q3": 11024,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -5976,7 +5976,7 @@
         "median": 21,
         "min": -4941,
         "q1": 0,
-        "q3": 169,
+        "q3": 85,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -5991,11 +5991,11 @@
     {
       "elysiaValue": 2047,
       "corpusBaseline": {
-        "max": 7003,
-        "median": 824,
+        "max": 7482,
+        "median": 825,
         "min": 21,
         "q1": 169,
-        "q3": 3815,
+        "q3": 3830,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6012,7 +6012,7 @@
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 0.034,
+        "min": 0.044,
         "q1": 0.958,
         "q3": 1,
         "sampleWeight": 19.5,
@@ -6029,11 +6029,11 @@
     {
       "elysiaValue": 2.2447,
       "corpusBaseline": {
-        "max": 7.7807,
-        "median": 0.9151,
-        "min": 0.0008,
+        "max": 8.3133,
+        "median": 0.9167,
+        "min": 0.001,
         "q1": 0.1798,
-        "q3": 4.239,
+        "q3": 4.2553,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6160,11 +6160,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 7,
+        "max": 16,
         "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 1,
+        "q3": 2,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6179,11 +6179,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 2,
+        "max": 16,
         "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 1,
+        "q3": 2,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6202,7 +6202,7 @@
         "median": 0.333,
         "min": 0,
         "q1": 0.033,
-        "q3": 0.7,
+        "q3": 0.56,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6253,10 +6253,10 @@
       "elysiaValue": 11,
       "corpusBaseline": {
         "max": 42,
-        "median": 6,
+        "median": 16,
         "min": 0,
         "q1": 0,
-        "q3": 23,
+        "q3": 24,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6291,10 +6291,10 @@
       "elysiaValue": 35,
       "corpusBaseline": {
         "max": 112,
-        "median": 10,
+        "median": 18,
         "min": 0,
         "q1": 2,
-        "q3": 30,
+        "q3": 34,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6331,7 +6331,7 @@
         "max": 1,
         "median": 0.5,
         "min": 0,
-        "q1": 0.333,
+        "q1": 0.194,
         "q3": 0.967,
         "sampleWeight": 19.5,
         "type": "number"
@@ -6348,10 +6348,10 @@
       "elysiaValue": 4,
       "corpusBaseline": {
         "max": 142,
-        "median": 2,
+        "median": 6,
         "min": 0,
         "q1": 0,
-        "q3": 41,
+        "q3": 44,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6367,7 +6367,7 @@
       "elysiaValue": 0.543,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.92,
+        "median": 0.967,
         "min": 0,
         "q1": 0.667,
         "q3": 0.991,
@@ -6387,11 +6387,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 14,
+        "supportWeight": 15.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 14,
+      "evidenceWeight": 15.5,
       "group": "accessibility",
       "key": "hasAriaCurrent",
       "matchStatus": "match",
@@ -6418,10 +6418,10 @@
       "elysiaValue": 1440,
       "corpusBaseline": {
         "max": 34266,
-        "median": 687,
+        "median": 1151,
         "min": 6,
         "q1": 123,
-        "q3": 11304,
+        "q3": 11024,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6437,10 +6437,10 @@
       "elysiaValue": 7,
       "corpusBaseline": {
         "max": 97,
-        "median": 2,
+        "median": 3,
         "min": 0,
         "q1": 0,
-        "q3": 10,
+        "q3": 25,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6494,7 +6494,7 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 178,
-        "median": 1,
+        "median": 12,
         "min": 0,
         "q1": 0,
         "q3": 56,
@@ -6512,7 +6512,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 2,
+        "max": 4,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -6552,11 +6552,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 13,
+        "supportWeight": 11.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 13,
+      "evidenceWeight": 11.5,
       "group": "commerce",
       "key": "priceTextPresent",
       "matchStatus": "match",
@@ -6599,10 +6599,10 @@
       "elysiaValue": 5.374,
       "corpusBaseline": {
         "max": 1285.714,
-        "median": 4.961,
+        "median": 4.812,
         "min": 0,
         "q1": 0,
-        "q3": 6.029,
+        "q3": 5.998,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6618,7 +6618,7 @@
       "elysiaValue": 17.099,
       "corpusBaseline": {
         "max": 1428.571,
-        "median": 12.142,
+        "median": 7.625,
         "min": 0,
         "q1": 5.696,
         "q3": 29.357,
@@ -7372,7 +7372,7 @@
     "id": "service-account",
     "title": "Service Account"
   },
-  "runAt": "2026-05-24T15:23:49.078Z",
+  "runAt": "2026-05-24T18:11:04.807Z",
   "sites": [
     {
       "enoughViewportCount": 0,
@@ -8562,7 +8562,7 @@
             "elementCount": 7,
             "visibleElementCount": 2,
             "semanticTag": "main",
-            "topPx": -4873,
+            "topPx": -4674,
             "heightPx": 3815,
             "widthRatio": 1,
             "areaRatio": 4.239,
@@ -9080,8 +9080,8 @@
             "focusableCount": 10,
             "minTapTargetPx": 19.19,
             "tapTargetPassRatio": 0.8,
-            "ariaLabelCount": 3,
-            "namedControlRatio": 1,
+            "ariaLabelCount": 1,
+            "namedControlRatio": 0.9,
             "hasAriaCurrent": true,
             "hasAriaExpanded": true,
             "textLength": 682,
@@ -9114,13 +9114,13 @@
           "enoughData": true,
           "metrics": {
             "elementFound": true,
-            "elementCount": 8,
+            "elementCount": 6,
             "visibleElementCount": 2,
             "semanticTag": "main",
-            "topPx": 169,
-            "heightPx": 824,
+            "topPx": 85,
+            "heightPx": 7482,
             "widthRatio": 1,
-            "areaRatio": 0.9151,
+            "areaRatio": 8.3133,
             "fullBleed": true,
             "hasBorder": false,
             "hasShadow": false,
@@ -9128,32 +9128,32 @@
             "isStickyOrFixed": false,
             "neutralBackground": true,
             "transparentBackground": true,
-            "roundedControlCount": 1,
-            "pillLikeControlCount": 1,
-            "boxedControlRatio": 0.7,
+            "roundedControlCount": 16,
+            "pillLikeControlCount": 16,
+            "boxedControlRatio": 0.423,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 6,
-            "buttonCount": 3,
-            "focusableCount": 10,
+            "linkCount": 36,
+            "buttonCount": 15,
+            "focusableCount": 52,
             "minTapTargetPx": 14.39,
-            "tapTargetPassRatio": 0.7,
-            "ariaLabelCount": 1,
-            "namedControlRatio": 0.9,
-            "hasAriaCurrent": true,
+            "tapTargetPassRatio": 0.135,
+            "ariaLabelCount": 44,
+            "namedControlRatio": 0.981,
+            "hasAriaCurrent": false,
             "hasAriaExpanded": true,
-            "textLength": 682,
-            "headingCount": 2,
+            "textLength": 5525,
+            "headingCount": 32,
             "paragraphCount": 5,
             "formControlCount": 1,
-            "imageCount": 1,
-            "videoCount": 0,
+            "imageCount": 56,
+            "videoCount": 4,
             "productLinkCount": 0,
-            "priceTextPresent": false,
+            "priceTextPresent": true,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
-            "linksPer1000Px": 7.285,
-            "controlsPer1000Px": 12.142
+            "linksPer1000Px": 4.812,
+            "controlsPer1000Px": 6.95
           },
           "loadStatus": "ok",
           "siteName": "Piaget",
@@ -9196,7 +9196,7 @@
             "focusableCount": 49,
             "minTapTargetPx": 14.39,
             "tapTargetPassRatio": 0.143,
-            "ariaLabelCount": 48,
+            "ariaLabelCount": 37,
             "namedControlRatio": 0.98,
             "hasAriaCurrent": false,
             "hasAriaExpanded": true,
@@ -9639,7 +9639,7 @@
             "namedControlRatio": 1,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 121,
+            "textLength": 123,
             "headingCount": 2,
             "paragraphCount": 3,
             "formControlCount": 0,
@@ -9697,7 +9697,7 @@
             "namedControlRatio": 1,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 122,
+            "textLength": 123,
             "headingCount": 2,
             "paragraphCount": 3,
             "formControlCount": 0,
@@ -9914,7 +9914,7 @@
             "elementCount": 4,
             "visibleElementCount": 1,
             "semanticTag": "main",
-            "topPx": -4207,
+            "topPx": -3392,
             "heightPx": 4767,
             "widthRatio": 1,
             "areaRatio": 5.6481,
@@ -10040,7 +10040,7 @@
             "elementCount": 1,
             "visibleElementCount": 1,
             "semanticTag": "form",
-            "topPx": 3865,
+            "topPx": 3889,
             "heightPx": 170,
             "widthRatio": 0.974,
             "areaRatio": 0.184,
@@ -10224,7 +10224,7 @@
             "elementCount": 4,
             "visibleElementCount": 1,
             "semanticTag": "form",
-            "topPx": 5134,
+            "topPx": 5136,
             "heightPx": 169,
             "widthRatio": 0.958,
             "areaRatio": 0.1798,
@@ -10282,7 +10282,7 @@
             "elementCount": 4,
             "visibleElementCount": 1,
             "semanticTag": "form",
-            "topPx": 4191,
+            "topPx": 4190,
             "heightPx": 164,
             "widthRatio": 0.918,
             "areaRatio": 0.1784,
@@ -10375,7 +10375,7 @@
             "namedControlRatio": 0.991,
             "hasAriaCurrent": true,
             "hasAriaExpanded": true,
-            "textLength": 3453,
+            "textLength": 3432,
             "headingCount": 7,
             "paragraphCount": 52,
             "formControlCount": 0,
@@ -10433,7 +10433,7 @@
             "namedControlRatio": 0.972,
             "hasAriaCurrent": true,
             "hasAriaExpanded": true,
-            "textLength": 3458,
+            "textLength": 3437,
             "headingCount": 7,
             "paragraphCount": 51,
             "formControlCount": 0,
@@ -10491,7 +10491,7 @@
             "namedControlRatio": 0.973,
             "hasAriaCurrent": true,
             "hasAriaExpanded": true,
-            "textLength": 3468,
+            "textLength": 3447,
             "headingCount": 7,
             "paragraphCount": 51,
             "formControlCount": 0,
@@ -11088,8 +11088,8 @@
             "semanticTag": "form",
             "topPx": 57,
             "heightPx": 21,
-            "widthRatio": 0.018,
-            "areaRatio": 0.0004,
+            "widthRatio": 0.023,
+            "areaRatio": 0.0005,
             "fullBleed": false,
             "hasBorder": false,
             "hasShadow": false,
@@ -11111,7 +11111,7 @@
             "namedControlRatio": 0.967,
             "hasAriaCurrent": false,
             "hasAriaExpanded": true,
-            "textLength": 11304,
+            "textLength": 11024,
             "headingCount": 97,
             "paragraphCount": 87,
             "formControlCount": 1,
@@ -11146,8 +11146,8 @@
             "semanticTag": "form",
             "topPx": 57,
             "heightPx": 21,
-            "widthRatio": 0.034,
-            "areaRatio": 0.0008,
+            "widthRatio": 0.044,
+            "areaRatio": 0.001,
             "fullBleed": false,
             "hasBorder": false,
             "hasShadow": false,
@@ -11169,7 +11169,7 @@
             "namedControlRatio": 0.967,
             "hasAriaCurrent": false,
             "hasAriaExpanded": true,
-            "textLength": 11304,
+            "textLength": 11024,
             "headingCount": 97,
             "paragraphCount": 87,
             "formControlCount": 1,

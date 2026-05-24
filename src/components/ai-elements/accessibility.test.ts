@@ -40,7 +40,9 @@ describe("AI elements accessibility guardrails", () => {
   });
 
   it("keeps prompt icon buttons accessible when only a tooltip is provided", () => {
-    const source = readSource("src/components/ai-elements/prompt-input.tsx");
+    const source = readSource(
+      "src/components/ai-elements/prompt-input-controls.tsx",
+    );
 
     expect(source).toContain("const inferredAriaLabel =");
     expect(source).toContain("aria-label={ariaLabel ?? inferredAriaLabel}");

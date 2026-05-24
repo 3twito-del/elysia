@@ -1,13 +1,13 @@
 # PLP Search Gifts Benchmark
 
-Generated: 2026-05-24T15:23:49.078Z
+Generated: 2026-05-24T18:11:04.807Z
 
 ## Summary
 
 - Status: warn
 - Active corpus: 15/15 sites produced enough data
 - Alignment: 70%
-- Metrics: 260 match, 109 mismatch, 0 not comparable
+- Metrics: 259 match, 110 mismatch, 0 not comparable
 - Active weight: 19.5; threshold weight: 9.75
 
 This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site substitutions affect QA reports only and do not change the High Jewelry Reference Gate.
@@ -44,21 +44,21 @@ This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site 
 - category / desktop / density / linksPer1000Px: Elysia=35.044; baseline=median 8.26; IQR 3.51-18.57; weight=19.5
 - category / desktop / density / controlsPer1000Px: Elysia=41.552; baseline=median 11.01; IQR 3.05-28.25; weight=19.5
 - category / tablet / chrome / fullBleed: Elysia=false; baseline=true (18/19.5)
-- category / tablet / interaction / linkCount: Elysia=49; baseline=median 23; IQR 16-35; weight=19.5
-- category / tablet / interaction / buttonCount: Elysia=34; baseline=median 10; IQR 0-18; weight=19.5
-- category / tablet / accessibility / hasAriaCurrent: Elysia=true; baseline=false (14/19.5)
+- category / tablet / interaction / linkCount: Elysia=49; baseline=median 24; IQR 16-36; weight=19.5
+- category / tablet / interaction / buttonCount: Elysia=34; baseline=median 13; IQR 0-18; weight=19.5
+- category / tablet / accessibility / hasAriaCurrent: Elysia=true; baseline=false (15.5/19.5)
 - category / tablet / accessibility / hasAriaExpanded: Elysia=true; baseline=false (13.5/19.5)
+- category / tablet / media / imageCount: Elysia=12; baseline=median 56; IQR 18-95; weight=19.5
 - category / tablet / commerce / productLinkCount: Elysia=36; baseline=median 0; IQR 0-1; weight=19.5
-- category / tablet / density / linksPer1000Px: Elysia=17.785; baseline=median 6.03; IQR 4.21-10.89; weight=19.5
-- category / tablet / density / controlsPer1000Px: Elysia=22.866; baseline=median 9.71; IQR 4.61-15.78; weight=19.5
+- category / tablet / density / linksPer1000Px: Elysia=17.785; baseline=median 4.96; IQR 4.21-10.89; weight=19.5
+- category / tablet / density / controlsPer1000Px: Elysia=22.866; baseline=median 6.68; IQR 4.61-15.78; weight=19.5
 - category / mobile / chrome / fullBleed: Elysia=false; baseline=true (18/19.5)
 - category / mobile / interaction / buttonCount: Elysia=33; baseline=median 15; IQR 8-31; weight=19.5
-- category / mobile / accessibility / ariaLabelCount: Elysia=58; baseline=median 38; IQR 12-57; weight=19.5
+- category / mobile / accessibility / ariaLabelCount: Elysia=58; baseline=median 37; IQR 12-57; weight=19.5
 - category / mobile / accessibility / hasAriaCurrent: Elysia=true; baseline=false (14.5/19.5)
 - category / mobile / accessibility / hasAriaExpanded: Elysia=true; baseline=false (13.5/19.5)
-- category / mobile / content / textLength: Elysia=2783; baseline=median 15905; IQR 3468-29569; weight=19.5
+- category / mobile / content / textLength: Elysia=2783; baseline=median 15905; IQR 3447-29569; weight=19.5
 - category / mobile / media / imageCount: Elysia=12; baseline=median 56; IQR 18-95; weight=19.5
-- category / mobile / commerce / productLinkCount: Elysia=36; baseline=median 0; IQR 0-0; weight=19.5
 
 ## Lessons
 

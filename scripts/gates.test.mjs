@@ -30,11 +30,13 @@ const expectedGateNames = [
   "gate:e2e",
   "gate:visual",
   "gate:runtime",
+  "gate:coherence",
   "gate:public:local",
   "gate:public:live",
   "gate:security",
   "gate:prod",
   "gate:full",
+  "gate:ship",
   "gate:release",
 ];
 
@@ -53,6 +55,15 @@ describe("manual quality gates", () => {
     expect(getGateDefinition("gate:full")?.includes).toContain(
       "gate:public:live",
     );
+  });
+
+  it("keeps the ship gate strict without live public benchmarks", () => {
+    const shipIncludes = getGateDefinition("gate:ship")?.includes ?? [];
+
+    expect(shipIncludes).toContain("gate:coherence");
+    expect(shipIncludes).toContain("gate:runtime");
+    expect(shipIncludes).toContain("gate:security");
+    expect(shipIncludes).not.toContain("gate:public:live");
   });
 
   it("does not register watch-mode gate commands", () => {

@@ -30,15 +30,15 @@ describe("product-led media guardrails", () => {
   });
 
   it("keeps catalog and seed image pools local and category-specific", () => {
-    const catalog = read("src/server/services/catalog.ts");
+    const catalogAssets = read("src/server/services/catalog-assets.ts");
     const seed = read("prisma/seed-catalog.ts");
 
-    expect(catalog).toContain(
+    expect(catalogAssets).toContain(
       'export const DEFAULT_CATALOG_IMAGE = "/brand/v2/commerce-catalog.avif";',
     );
     expect(seed).not.toContain("images.unsplash.com");
     for (const category of ["rings", "earrings", "necklaces", "bracelets"]) {
-      expect(catalog).toContain(`/brand/v2/category-${category}.avif`);
+      expect(catalogAssets).toContain(`/brand/v2/category-${category}.avif`);
       expect(seed).toContain(`/brand/v2/category-${category}.avif`);
     }
   });

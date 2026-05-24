@@ -1,6 +1,5 @@
 import { TRPCError } from "@trpc/server";
 import type { FulfillmentMethod, Prisma } from "@prisma/client";
-import { nanoid } from "nanoid";
 import { z } from "zod";
 
 import { db } from "~/server/db";
@@ -10,12 +9,22 @@ import {
   getActiveCouponValue,
   isCouponUsable,
 } from "~/server/services/coupons";
+import {
+  createCommerceOrderNumber,
+  createOrderItemName,
+  createOrderShippingAddress,
+  getDeliveryShippingTotal,
+  getReservationExpiresAt,
+  hasReservableStock,
+  shippingAddressSchema,
+} from "~/server/services/order-workflow";
 import { canReserveStock } from "~/server/services/inventory";
 import { BUSINESS_EVENTS, createOutboxEvent } from "~/server/services/outbox";
 import { calculateOrderTotal } from "~/server/services/pricing";
 
 const CART_CHECKOUT_RESERVATION_MINUTES = 30;
 const CART_CHECKOUT_PAYMENT_PROVIDER = "manual";
+const CART_CHECKOUT_RESERVATION_MS = CART_CHECKOUT_RESERVATION_MINUTES * 60_000;
 
 type TransactionClient = Prisma.TransactionClient;
 
@@ -31,13 +40,7 @@ export const cartCheckoutInputSchema = z
       email: z.string().trim().email().toLowerCase(),
       phone: z.string().trim().min(7),
     }),
-    shippingAddress: z
-      .object({
-        city: z.string().trim().min(2),
-        street: z.string().trim().min(2),
-        postalCode: z.string().trim().optional(),
-      })
-      .optional(),
+    shippingAddress: shippingAddressSchema.optional(),
     giftWrap: z.boolean().default(false),
     giftMessage: z.string().trim().max(500).optional(),
     couponCode: z.string().trim().max(64).optional(),
@@ -68,19 +71,20 @@ type CartCheckoutInput = z.infer<typeof cartCheckoutInputSchema>;
 
 export function createCartCheckoutOrderNumber(
   now = new Date(),
-  suffix = nanoid(6),
+  suffix?: string,
 ) {
-  const datePart = now.toISOString().slice(0, 10).replaceAll("-", "");
-
-  return `APH-${datePart}-${suffix.toUpperCase()}`;
+  return createCommerceOrderNumber(now, suffix);
 }
 
 export function getCartCheckoutReservationExpiresAt(now = new Date()) {
-  return new Date(now.getTime() + CART_CHECKOUT_RESERVATION_MINUTES * 60_000);
+  return getReservationExpiresAt({
+    now,
+    durationMs: CART_CHECKOUT_RESERVATION_MS,
+  });
 }
 
 export function getCartCheckoutShippingTotal(method: FulfillmentMethod) {
-  return method === "DELIVERY" ? 29 : 0;
+  return getDeliveryShippingTotal(method);
 }
 
 export function assertCartReservationAvailable(input: {
@@ -128,10 +132,10 @@ async function createCartCheckoutOrderInTransaction(
   const items = cart.items.map((item) => ({
     cartItemId: item.id,
     variantId: item.variantId,
-    name:
-      item.variant.name && item.variant.name !== item.variant.product.name
-        ? `${item.variant.product.name} - ${item.variant.name}`
-        : item.variant.product.name,
+    name: createOrderItemName({
+      productName: item.variant.product.name,
+      variantName: item.variant.name,
+    }),
     sku: item.variant.sku,
     quantity: item.quantity,
     unitPrice: Number(item.unitPrice),
@@ -155,15 +159,11 @@ async function createCartCheckoutOrderInTransaction(
   });
   const orderNumber = createCartCheckoutOrderNumber();
   const reservationExpiresAt = getCartCheckoutReservationExpiresAt();
-  const shippingAddress = input.shippingAddress
-    ? ({
-        recipient: input.customer.name,
-        phone: input.customer.phone,
-        city: input.shippingAddress.city,
-        street: input.shippingAddress.street,
-        postalCode: input.shippingAddress.postalCode ?? null,
-      } satisfies Prisma.InputJsonObject)
-    : undefined;
+  const shippingAddress = createOrderShippingAddress({
+    customerName: input.customer.name,
+    customerPhone: input.customer.phone,
+    shippingAddress: input.shippingAddress,
+  });
 
   for (const item of cart.items) {
     const inventoryItem = await tx.inventoryItem.findUnique({
@@ -411,7 +411,7 @@ async function resolveOnlineFulfillmentBranch(
       const inventoryItem = inventoryByVariant.get(item.variantId);
 
       return inventoryItem
-        ? canReserveStock({
+        ? hasReservableStock({
             quantity: inventoryItem.quantity,
             reserved: inventoryItem.reserved,
             safetyStock: inventoryItem.safetyStock,

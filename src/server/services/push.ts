@@ -94,6 +94,15 @@ export async function upsertPushSubscription(
   return subscription;
 }
 
+export async function getPushCustomerIdForUser(userId: string) {
+  const customer = await db.customer.findUnique({
+    where: { userId },
+    select: { id: true },
+  });
+
+  return customer?.id;
+}
+
 export async function updatePushPreferencesFromOffline(payload: unknown) {
   const parsed = pushPreferencesInputSchema.parse(payload);
 

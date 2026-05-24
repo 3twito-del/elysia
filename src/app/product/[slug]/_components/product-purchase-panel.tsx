@@ -20,6 +20,13 @@ import {
 } from "lucide-react";
 
 import { WishlistButton } from "./wishlist-button";
+import {
+  createProductServiceHref,
+  getInitialVariantSku,
+  getVariantButtonLabel,
+  getVariantDisplayName,
+  isRecoverableOfflineCartError,
+} from "./product-purchase-utils";
 import { PushOptInButton } from "~/components/push-opt-in-button";
 import { Button } from "~/components/ui/button";
 import { StatusMessage } from "~/components/ui/status-message";
@@ -28,8 +35,12 @@ import {
   getOrCreateCartSessionKey,
 } from "~/lib/cart-session";
 import {
+  getClientSnapshot,
+  getServerSnapshot,
+  subscribeToNoopStore,
+} from "~/lib/client-render-snapshot";
+import {
   getPublicProductCommerceStatus,
-  getPublicStockStatusLabel,
   type PublicProductAvailabilityMode,
 } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
@@ -499,71 +510,6 @@ export function ProductPurchasePanel({
         ? createPortal(stickyPurchaseBar, document.body)
         : null}
     </>
-  );
-}
-
-function subscribeToNoopStore() {
-  return () => undefined;
-}
-
-function createProductServiceHref(input: {
-  productReference: string;
-  reason: string;
-}) {
-  const params = new URLSearchParams({
-    productReference: input.productReference,
-    reason: input.reason,
-  });
-
-  return `/service?${params.toString()}`;
-}
-
-function getClientSnapshot() {
-  return true;
-}
-
-function getServerSnapshot() {
-  return false;
-}
-
-function getInitialVariantSku(variants: CatalogProductVariant[]) {
-  return (
-    variants.find((variant) => variant.availableQuantity > 0)?.sku ??
-    variants[0]?.sku ??
-    ""
-  );
-}
-
-function getVariantDisplayName(variant: CatalogProductVariant) {
-  return variant.size ?? variant.name;
-}
-
-function getVariantButtonLabel(
-  variant: CatalogProductVariant,
-  availabilityMode: PublicProductAvailabilityMode,
-) {
-  const commerceStatus = getPublicProductCommerceStatus({
-    availabilityMode,
-    availableQuantity: variant.availableQuantity,
-  });
-  const availability =
-    availabilityMode === "READY_TO_ORDER"
-      ? getPublicStockStatusLabel(variant.availableQuantity)
-      : commerceStatus.label;
-
-  return `${getVariantDisplayName(variant)}, ${formatPrice(variant.price)}, ${availability}`;
-}
-
-function isRecoverableOfflineCartError(error: { message: string }) {
-  if (typeof navigator !== "undefined" && !navigator.onLine) return true;
-
-  const message = error.message.toLowerCase();
-
-  return (
-    message.includes("failed to fetch") ||
-    message.includes("fetch failed") ||
-    message.includes("load failed") ||
-    message.includes("network")
   );
 }
 

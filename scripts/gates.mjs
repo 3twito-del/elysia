@@ -147,6 +147,31 @@ export const gateDefinitions = [
     ],
   },
   {
+    name: "gate:coherence",
+    description:
+      "Run fast architectural coherence checks, lint, typecheck, and focused static Vitest coverage.",
+    steps: [
+      step("Check coherence contract", "node", [
+        "scripts/coherence-contract.mjs",
+      ]),
+      step("Lint", "pnpm", ["lint"]),
+      step("Typecheck", "pnpm", ["typecheck"]),
+      step("Run focused coherence tests", "pnpm", [
+        "exec",
+        "vitest",
+        "run",
+        "scripts/gates.test.mjs",
+        "src/styles/benchmark-policy-enforcement.test.ts",
+        "src/components/ai-elements/accessibility.test.ts",
+        "src/server/services/admin-commerce.test.ts",
+        "src/server/ai/model.test.ts",
+        "src/server/ai/planner.test.ts",
+        "src/server/adapters/search.test.ts",
+        "src/app/search/_lib/search-state.test.ts",
+      ]),
+    ],
+  },
+  {
     name: "gate:public:local",
     description:
       "Auto-fix, then benchmark all public parts locally without external crawling.",
@@ -211,6 +236,21 @@ export const gateDefinitions = [
       "gate:runtime",
       "gate:security",
       "gate:public:live",
+    ],
+  },
+  {
+    name: "gate:ship",
+    description:
+      "Run the release gate minus live public benchmarks for routine production deploys.",
+    needsFix: true,
+    includes: [
+      "gate:coherence",
+      "gate:quick",
+      "gate:test",
+      "gate:db",
+      "gate:build",
+      "gate:runtime",
+      "gate:security",
     ],
   },
   {

@@ -2,107 +2,52 @@ import { randomUUID } from "node:crypto";
 
 import { google } from "@ai-sdk/google";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
-import type { LanguageModel } from "ai";
 
-import { env } from "~/env";
 import {
-  DEFAULT_AI_INTENT_MAX_OUTPUT_TOKENS,
-  DEFAULT_AI_MAX_OUTPUT_TOKENS,
   DEFAULT_CEREBRAS_CHAT_MODEL,
   DEFAULT_CLOUDFLARE_CHAT_MODEL,
-  DEFAULT_FREE_AI_PROVIDER_ORDER,
   DEFAULT_GATEWAY_CHAT_MODEL,
   DEFAULT_GOOGLE_CHAT_MODEL,
   DEFAULT_GROQ_CHAT_MODEL,
   FALLBACK_CEREBRAS_CHAT_MODEL,
 } from "~/server/ai/constants";
 import { getErrorMessage, toPrismaJson } from "~/server/ai/audit";
+import type {
+  AiModelCandidate,
+  AiModelEnv,
+  AiProviderUsageInput,
+  AiPurpose,
+  LanguageModelGenerateOptions,
+  LanguageModelGenerateResult,
+  LanguageModelStreamOptions,
+  LanguageModelStreamResult,
+  LanguageModelV3Like,
+  ResolvedAiChatModel,
+} from "~/server/ai/quota-router-types";
+import {
+  extractTokenUsage,
+  getAiIntentMaxOutputTokenLimit,
+  getAiMaxOutputTokenLimit,
+  getDefaultAiModelEnv,
+  getErrorHeaders,
+  getErrorStatusCode,
+  getHeaderNumber,
+  getResetAtFromHeaders,
+  isMissingProviderUsageTableError,
+  parseProviderOrder,
+  stripProviderPrefix,
+  toError,
+  trimToUndefined,
+} from "~/server/ai/quota-router-utils";
 import { db } from "~/server/db";
 
-export type AiProviderId =
-  | "cerebras"
-  | "groq"
-  | "cloudflare"
-  | "google"
-  | "gateway"
-  | "router";
-
-export type AiPurpose =
-  | "chat"
-  | "semantic_intent"
-  | "embedding"
-  | "catalog"
-  | "gift"
-  | "test";
-
-type ConcreteLanguageModel = Exclude<LanguageModel, string>;
-type LanguageModelV3Like = Extract<
-  ConcreteLanguageModel,
-  { specificationVersion: "v3" }
->;
-type LanguageModelGenerateOptions = Parameters<
-  LanguageModelV3Like["doGenerate"]
->[0];
-type LanguageModelGenerateResult = Awaited<
-  ReturnType<LanguageModelV3Like["doGenerate"]>
->;
-type LanguageModelStreamOptions = Parameters<
-  LanguageModelV3Like["doStream"]
->[0];
-type LanguageModelStreamResult = Awaited<
-  ReturnType<LanguageModelV3Like["doStream"]>
->;
-
-export type AiModelEnv = {
-  AI_CHAT_MODEL?: string;
-  AI_GATEWAY_API_KEY?: string;
-  AI_DAILY_HARD_STOP?: string;
-  AI_INTENT_MAX_OUTPUT_TOKENS?: number;
-  AI_MAX_OUTPUT_TOKENS?: number;
-  CEREBRAS_API_KEY?: string;
-  CEREBRAS_CHAT_MODEL?: string;
-  CLOUDFLARE_ACCOUNT_ID?: string;
-  CLOUDFLARE_AI_API_TOKEN?: string;
-  CLOUDFLARE_CHAT_MODEL?: string;
-  FREE_AI_PROVIDER_ORDER?: string;
-  GOOGLE_GENERATIVE_AI_API_KEY?: string;
-  GROQ_API_KEY?: string;
-  GROQ_CHAT_MODEL?: string;
-  VERCEL_OIDC_TOKEN?: string;
-};
-
-export type AiModelCandidate = {
-  provider: Exclude<AiProviderId, "router">;
-  modelId: string;
-  displayModelId: string;
-  model?: LanguageModelV3Like;
-  ready: boolean;
-  credentialEnv?: string;
-  readinessError?: string;
-  quotaBlockedUntil?: Date;
-};
-
-export type ResolvedAiChatModel = {
-  model: LanguageModel;
-  modelId: string;
-  provider: AiProviderId;
-  requiresGoogleKey: boolean;
-  requiresGatewayAuth: boolean;
-  candidates: AiModelCandidate[];
-  readinessError?: string;
-};
-
-type AiProviderUsageInput = {
-  provider: string;
-  model: string;
-  purpose: AiPurpose;
-  status: "succeeded" | "failed" | "quota_exhausted";
-  usage?: unknown;
-  metadata?: unknown;
-  remainingRequests?: number;
-  remainingTokens?: number;
-  resetAt?: Date;
-};
+export type {
+  AiModelCandidate,
+  AiModelEnv,
+  AiProviderId,
+  AiPurpose,
+  ResolvedAiChatModel,
+} from "~/server/ai/quota-router-types";
 
 const quotaBlocks = new Map<string, number>();
 
@@ -214,19 +159,13 @@ export function getResolvedAiModelReadinessError(
 export function getAiMaxOutputTokens(
   config: AiModelEnv = getDefaultAiModelEnv(),
 ) {
-  return boundTokenLimit(
-    config.AI_MAX_OUTPUT_TOKENS,
-    DEFAULT_AI_MAX_OUTPUT_TOKENS,
-  );
+  return getAiMaxOutputTokenLimit(config);
 }
 
 export function getAiIntentMaxOutputTokens(
   config: AiModelEnv = getDefaultAiModelEnv(),
 ) {
-  return boundTokenLimit(
-    config.AI_INTENT_MAX_OUTPUT_TOKENS,
-    DEFAULT_AI_INTENT_MAX_OUTPUT_TOKENS,
-  );
+  return getAiIntentMaxOutputTokenLimit(config);
 }
 
 export async function recordAiProviderUsage(input: AiProviderUsageInput) {
@@ -699,192 +638,5 @@ function getQuotaBlockKey(
 function isDailyHardStopEnabled(config: AiModelEnv = getDefaultAiModelEnv()) {
   return (
     config.AI_DAILY_HARD_STOP !== "0" && config.AI_DAILY_HARD_STOP !== "false"
-  );
-}
-
-function parseProviderOrder(value: string | undefined) {
-  const providers = (
-    value?.trim() ? value.split(",") : [...DEFAULT_FREE_AI_PROVIDER_ORDER]
-  )
-    .map((provider) => provider.trim().toLowerCase())
-    .filter(
-      (provider): provider is Exclude<AiProviderId, "router"> =>
-        provider === "cerebras" ||
-        provider === "groq" ||
-        provider === "cloudflare" ||
-        provider === "google" ||
-        provider === "gateway",
-    );
-
-  return providers.length > 0 ? providers : [...DEFAULT_FREE_AI_PROVIDER_ORDER];
-}
-
-function stripProviderPrefix(modelId: string, provider: string) {
-  const prefix = `${provider}:`;
-  return modelId.startsWith(prefix) ? modelId.slice(prefix.length) : modelId;
-}
-
-function trimToUndefined(value?: string) {
-  const trimmed = value?.trim();
-  if (!trimmed) return undefined;
-
-  return trimmed;
-}
-
-function boundTokenLimit(value: number | undefined, fallback: number) {
-  const limit = value ?? fallback;
-  return Math.min(Math.max(limit, 1), 2_000);
-}
-
-function getDefaultAiModelEnv(): AiModelEnv {
-  return {
-    AI_CHAT_MODEL: env.AI_CHAT_MODEL,
-    AI_DAILY_HARD_STOP: env.AI_DAILY_HARD_STOP,
-    AI_GATEWAY_API_KEY: env.AI_GATEWAY_API_KEY,
-    AI_INTENT_MAX_OUTPUT_TOKENS: env.AI_INTENT_MAX_OUTPUT_TOKENS,
-    AI_MAX_OUTPUT_TOKENS: env.AI_MAX_OUTPUT_TOKENS,
-    CEREBRAS_API_KEY: env.CEREBRAS_API_KEY,
-    CEREBRAS_CHAT_MODEL: env.CEREBRAS_CHAT_MODEL,
-    CLOUDFLARE_ACCOUNT_ID: env.CLOUDFLARE_ACCOUNT_ID,
-    CLOUDFLARE_AI_API_TOKEN: env.CLOUDFLARE_AI_API_TOKEN,
-    CLOUDFLARE_CHAT_MODEL: env.CLOUDFLARE_CHAT_MODEL,
-    FREE_AI_PROVIDER_ORDER: env.FREE_AI_PROVIDER_ORDER,
-    GOOGLE_GENERATIVE_AI_API_KEY: env.GOOGLE_GENERATIVE_AI_API_KEY,
-    GROQ_API_KEY: env.GROQ_API_KEY,
-    GROQ_CHAT_MODEL: env.GROQ_CHAT_MODEL,
-    VERCEL_OIDC_TOKEN: env.VERCEL_OIDC_TOKEN,
-  };
-}
-
-function extractTokenUsage(usage: unknown) {
-  if (!usage || typeof usage !== "object") {
-    return {
-      promptTokens: null,
-      completionTokens: null,
-      totalTokens: null,
-    };
-  }
-
-  const record = usage as Record<string, unknown>;
-  const promptTokens =
-    getNumber(record.inputTokens) ??
-    getNumber(record.promptTokens) ??
-    getNestedTokenTotal(record.inputTokens);
-  const completionTokens =
-    getNumber(record.outputTokens) ??
-    getNumber(record.completionTokens) ??
-    getNestedTokenTotal(record.outputTokens);
-  const totalTokens =
-    getNumber(record.totalTokens) ??
-    (promptTokens !== null || completionTokens !== null
-      ? (promptTokens ?? 0) + (completionTokens ?? 0)
-      : null);
-
-  return {
-    promptTokens,
-    completionTokens,
-    totalTokens,
-  };
-}
-
-function getNestedTokenTotal(value: unknown) {
-  if (!value || typeof value !== "object") return null;
-
-  return getNumber((value as Record<string, unknown>).total);
-}
-
-function getNumber(value: unknown) {
-  return typeof value === "number" && Number.isFinite(value) ? value : null;
-}
-
-function getErrorStatusCode(error: unknown) {
-  if (!error || typeof error !== "object") return undefined;
-
-  const record = error as Record<string, unknown>;
-  const statusCode = getNumber(record.statusCode) ?? getNumber(record.status);
-
-  return statusCode ?? undefined;
-}
-
-function getErrorHeaders(error: unknown) {
-  if (!error || typeof error !== "object") return {};
-
-  const record = error as Record<string, unknown>;
-  const headers = record.responseHeaders ?? record.headers;
-
-  if (headers instanceof Headers) {
-    return Object.fromEntries(
-      [...headers.entries()].map(([key, value]) => [key.toLowerCase(), value]),
-    );
-  }
-
-  if (!headers || typeof headers !== "object") return {};
-
-  return Object.fromEntries(
-    Object.entries(headers as Record<string, unknown>).map(([key, value]) => [
-      key.toLowerCase(),
-      String(value),
-    ]),
-  );
-}
-
-function getHeaderNumber(headers: Record<string, string>, keys: string[]) {
-  for (const key of keys) {
-    const value = headers[key.toLowerCase()];
-    if (!value) continue;
-
-    const parsed = Number(value);
-    if (Number.isFinite(parsed)) return parsed;
-  }
-
-  return undefined;
-}
-
-function getResetAtFromHeaders(headers: Record<string, string>) {
-  const retryAfter = headers["retry-after"];
-  if (retryAfter) {
-    const seconds = Number(retryAfter);
-    if (Number.isFinite(seconds)) {
-      return new Date(Date.now() + seconds * 1000);
-    }
-
-    const timestamp = Date.parse(retryAfter);
-    if (!Number.isNaN(timestamp)) return new Date(timestamp);
-  }
-
-  const reset = headers["x-ratelimit-reset"] ?? headers["ratelimit-reset"];
-  if (!reset) return undefined;
-
-  const seconds = Number(reset);
-  if (Number.isFinite(seconds)) {
-    if (seconds > 1_000_000_000) return new Date(seconds * 1000);
-
-    return new Date(Date.now() + seconds * 1000);
-  }
-
-  const timestamp = Date.parse(reset);
-  return Number.isNaN(timestamp) ? undefined : new Date(timestamp);
-}
-
-function toError(error: unknown, fallbackMessage: string) {
-  if (error instanceof Error) return error;
-  if (typeof error === "string") return new Error(error);
-
-  return new Error(fallbackMessage);
-}
-
-function isMissingProviderUsageTableError(error: unknown) {
-  if (!error || typeof error !== "object") return false;
-
-  const record = error as { code?: unknown; message?: unknown };
-  const code = typeof record.code === "string" ? record.code : "";
-  const message = typeof record.message === "string" ? record.message : "";
-
-  return (
-    code === "P2021" ||
-    code === "P2022" ||
-    message.includes('relation "AiProviderUsage" does not exist') ||
-    message.includes("The table `AiProviderUsage` does not exist") ||
-    message.includes("42P01")
   );
 }

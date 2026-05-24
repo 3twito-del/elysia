@@ -3,140 +3,45 @@ import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
 import { formatPrice } from "~/lib/format";
-import type { PublicProductAvailabilityMode } from "~/lib/commerce-labels";
 import { db } from "~/server/db";
 import {
   CATALOG_CACHE_TAGS,
   categoryCacheTag,
   productCacheTag,
 } from "~/server/services/catalog-cache";
+import {
+  DEFAULT_CATALOG_IMAGE,
+  getCatalogCategoryImage,
+  getDisplayCatalogImages,
+} from "~/server/services/catalog-assets";
+import type {
+  CatalogBranch,
+  CatalogCategory,
+  CatalogFacets,
+  CatalogProduct,
+  CatalogProductVariant,
+  CatalogSearchInput,
+} from "~/server/services/catalog-types";
 
 const ACTIVE_PRODUCT_WHERE = {
   status: "ACTIVE",
 } satisfies Prisma.ProductWhereInput;
 const CATALOG_REVALIDATE_SECONDS = 60 * 60;
-export const DEFAULT_CATALOG_IMAGE = "/brand/v2/commerce-catalog.avif";
-const CATALOG_IMAGE_VARIANTS: Record<string, readonly string[]> = {
-  rings: [
-    "/brand/v2/category-rings.avif",
-    "/brand/v2/product-focus.avif",
-    "/brand/v2/hero-rings.avif",
-  ],
-  necklaces: [
-    "/brand/v2/category-necklaces.avif",
-    "/brand/v2/hero-pearls.avif",
-    "/brand/v2/commerce-catalog.avif",
-  ],
-  earrings: [
-    "/brand/v2/category-earrings.avif",
-    "/brand/v2/hero-pearls.avif",
-    "/brand/v2/service-task.avif",
-  ],
-  bracelets: [
-    "/brand/v2/category-bracelets.avif",
-    "/brand/v2/hero-glass.avif",
-    "/brand/v2/commerce-gifts.avif",
-  ],
-};
-const CATEGORY_CATALOG_IMAGES: Record<string, string> = {
-  bracelets: "/brand/v2/category-bracelets.avif",
-  earrings: "/brand/v2/category-earrings.avif",
-  necklaces: "/brand/v2/category-necklaces.avif",
-  rings: "/brand/v2/category-rings.avif",
+export { DEFAULT_CATALOG_IMAGE };
+
+export { formatPrice };
+export type {
+  CatalogBranch,
+  CatalogCategory,
+  CatalogFacets,
+  CatalogProduct,
+  CatalogProductVariant,
+  CatalogSearchInput,
 };
 
 type CatalogProductRecord = Prisma.ProductGetPayload<{
   include: ReturnType<typeof createCatalogProductInclude>;
 }>;
-
-export type CatalogCategory = {
-  slug: string;
-  name: string;
-  description: string;
-  image: string;
-  imageUrl: string;
-};
-
-export type CatalogBranch = {
-  slug: string;
-  name: string;
-  city: string;
-  address: string;
-  phone: string;
-  whatsapp: string;
-  services: string[];
-  openingHours: {
-    sundayThursday: string;
-    friday: string;
-    saturday: string;
-  };
-};
-
-export type CatalogProductVariant = {
-  sku: string;
-  name: string;
-  size?: string;
-  metalColor?: string;
-  stoneColor?: string;
-  price: number;
-  inventory: Record<string, number>;
-  availableQuantity: number;
-  availableBranchCount: number;
-};
-
-export type CatalogProduct = {
-  slug: string;
-  sku: string;
-  name: string;
-  categorySlug: string;
-  categoryName: string;
-  shortDescription: string;
-  description: string;
-  availabilityMode: PublicProductAvailabilityMode;
-  commerceHighlights: string[];
-  deliveryPromise?: string;
-  returnPolicy?: string;
-  careInstructions?: string;
-  warranty?: string;
-  price: number;
-  compareAt?: number;
-  createdAt: Date | string;
-  popularityScore: number;
-  material: string;
-  stone?: string;
-  collection: string;
-  collections: string[];
-  image: string;
-  images: string[];
-  variants: CatalogProductVariant[];
-  metalColors: string[];
-  sizes: string[];
-  tags: string[];
-  inventory: Record<string, number>;
-};
-
-export type CatalogSearchInput = {
-  query?: string;
-  category?: string;
-  branch?: string;
-  material?: string;
-  stone?: string;
-  maxPrice?: number;
-  collection?: string;
-  availableOnly?: boolean;
-};
-
-export type CatalogFacets = {
-  materials: string[];
-  stones: string[];
-  collections: string[];
-  priceRange: {
-    min: number;
-    max: number;
-  };
-};
-
-export { formatPrice };
 
 const getCatalogCategoriesCached = unstable_cache(
   async (): Promise<CatalogCategory[]> => {
@@ -473,7 +378,7 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
   const images = record.media
     .filter((media) => media.kind === "IMAGE")
     .map((media) => media.url);
-  const displayImages = getDisplayImages({
+  const displayImages = getDisplayCatalogImages({
     categorySlug: record.category.slug,
     images,
     slug: record.slug,
@@ -633,43 +538,6 @@ function getDisplayProductTags(tags: string[]) {
   return tags.filter((tag) => tag !== "בדיקות קטלוג");
 }
 
-function getDisplayImages(input: {
-  categorySlug: string;
-  images: string[];
-  slug: string;
-}) {
-  const usesLegacyCatalogMedia =
-    input.images.length === 0 || input.images.every(isLegacyCatalogImage);
-
-  if (!input.slug.startsWith("test-") && !usesLegacyCatalogMedia) {
-    return input.images;
-  }
-
-  const variants = CATALOG_IMAGE_VARIANTS[input.categorySlug];
-
-  if (!variants || variants.length === 0) {
-    return input.images.length > 0 ? input.images : [DEFAULT_CATALOG_IMAGE];
-  }
-
-  const variant = variants[getStableIndex(input.slug, variants.length)];
-
-  return variant ? [variant] : input.images;
-}
-
-function isLegacyCatalogImage(image: string) {
-  return image.startsWith("https://images.unsplash.com/");
-}
-
-function getStableIndex(value: string, length: number) {
-  let hash = 0;
-
-  for (let index = 0; index < value.length; index += 1) {
-    hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
-  }
-
-  return hash % length;
-}
-
 function mapCatalogBranch(record: {
   slug: string;
   name: string;
@@ -722,11 +590,11 @@ function mapCatalogCategory(category: {
     }>;
   }>;
 }): CatalogCategory {
-  const image =
-    CATEGORY_CATALOG_IMAGES[category.slug] ??
-    category.imageUrl ??
-    category.products[0]?.media[0]?.url ??
-    DEFAULT_CATALOG_IMAGE;
+  const image = getCatalogCategoryImage({
+    categorySlug: category.slug,
+    imageUrl: category.imageUrl,
+    productImage: category.products[0]?.media[0]?.url,
+  });
 
   return {
     slug: category.slug,

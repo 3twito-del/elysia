@@ -1,6 +1,6 @@
 # Service Account Benchmark
 
-Generated: 2026-05-24T15:23:49.078Z
+Generated: 2026-05-24T18:11:04.807Z
 
 ## Summary
 
@@ -40,7 +40,7 @@ This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site 
 - service / desktop / content / paragraphCount: Elysia=27; baseline=median 3; IQR 2-18; weight=18
 - service / desktop / content / formControlCount: Elysia=21; baseline=median 1; IQR 1-1; weight=18
 - service / tablet / chrome / fullBleed: Elysia=false; baseline=true (11/19.5)
-- service / tablet / interaction / focusableCount: Elysia=35; baseline=median 10; IQR 2-30; weight=19.5
+- service / tablet / interaction / focusableCount: Elysia=35; baseline=median 18; IQR 2-34; weight=19.5
 - service / tablet / content / paragraphCount: Elysia=27; baseline=median 3; IQR 0-13; weight=19.5
 - service / tablet / content / formControlCount: Elysia=21; baseline=median 1; IQR 1-1; weight=19.5
 - service / tablet / commerce / addToCartTextPresent: Elysia=true; baseline=false (10.5/19.5)
@@ -58,7 +58,7 @@ This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site 
 - account / tablet / content / formControlCount: Elysia=3; baseline=median 1; IQR 1-1; weight=19.5
 - account / tablet / commerce / addToCartTextPresent: Elysia=true; baseline=false (10.5/19.5)
 - account / tablet / commerce / checkoutTextPresent: Elysia=true; baseline=false (10.5/19.5)
-- account / tablet / density / linksPer1000Px: Elysia=9.298; baseline=median 4.96; IQR 0-6.03; weight=19.5
+- account / tablet / density / linksPer1000Px: Elysia=9.298; baseline=median 4.81; IQR 0-6; weight=19.5
 
 ## Lessons
 

@@ -1,13 +1,13 @@
 # Footer Benchmark
 
-Generated: 2026-05-24T15:23:49.078Z
+Generated: 2026-05-24T18:11:04.807Z
 
 ## Summary
 
 - Status: pass
 - Active corpus: 15/15 sites produced enough data
 - Alignment: 85%
-- Metrics: 104 match, 19 mismatch, 0 not comparable
+- Metrics: 105 match, 18 mismatch, 0 not comparable
 - Active weight: 19.5; threshold weight: 9.75
 
 This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site substitutions affect QA reports only and do not change the High Jewelry Reference Gate.
@@ -41,7 +41,6 @@ This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site 
 - home / desktop / interaction / focusableCount: Elysia=21; baseline=median 28; IQR 24-33; weight=19.5
 - home / desktop / commerce / addToCartTextPresent: Elysia=true; baseline=false (15.5/19.5)
 - home / desktop / commerce / checkoutTextPresent: Elysia=true; baseline=false (15.5/19.5)
-- home / tablet / chrome / topPx: Elysia=3849; baseline=median 1028; IQR 27-3803; weight=19.5
 - home / tablet / chrome / fullBleed: Elysia=false; baseline=true (17/19.5)
 - home / tablet / visual-tone / roundedControlCount: Elysia=2; baseline=median 0; IQR 0-0; weight=19.5
 - home / tablet / visual-tone / pillLikeControlCount: Elysia=2; baseline=median 0; IQR 0-0; weight=19.5

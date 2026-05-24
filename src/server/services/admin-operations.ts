@@ -1,171 +1,59 @@
-import type {
-  AppointmentStatus,
-  FulfillmentMethod,
-  OrderStatus,
-  Prisma,
-  ProductStatus,
-} from "@prisma/client";
-import { z } from "zod";
+import type { OrderStatus, Prisma } from "@prisma/client";
 
 import { env } from "~/env";
 import { notificationProvider } from "~/server/adapters/notifications";
 import { db } from "~/server/db";
 import { DEFAULT_CATALOG_IMAGE } from "~/server/services/catalog";
+import {
+  createProductionIntegrationSummaries,
+  type AdminIntegrationSummary,
+} from "~/server/services/admin-integrations";
+import {
+  adminAppointmentListInputSchema,
+  adminAuditListInputSchema,
+  adminCatalogListInputSchema,
+  adminCustomerListInputSchema,
+  adminInventoryListInputSchema,
+  adminJobRunListInputSchema,
+  adminOrderListInputSchema,
+  adminOutboxListInputSchema,
+  createAdminPageInfo,
+  getAdminCatalogSort,
+  getAdminOrderSort,
+  getAdminSkip,
+  type AdminAppointmentListInput,
+  type AdminAuditListInput,
+  type AdminCatalogListInput,
+  type AdminCustomerListInput,
+  type AdminInventoryListInput,
+  type AdminJobRunListInput,
+  type AdminOrderListInput,
+  type AdminOutboxListInput,
+  type AdminPageInfo,
+} from "~/server/services/admin-operations-inputs";
 
-const orderStatuses = [
-  "PENDING_PAYMENT",
-  "PAID",
-  "PREPARING",
-  "READY_FOR_PICKUP",
-  "SHIPPED",
-  "COMPLETED",
-  "CANCELLED",
-  "REFUNDED",
-] as const satisfies readonly OrderStatus[];
-
-const productStatuses = [
-  "DRAFT",
-  "ACTIVE",
-  "ARCHIVED",
-] as const satisfies readonly ProductStatus[];
-
-const appointmentStatuses = [
-  "REQUESTED",
-  "CONFIRMED",
-  "COMPLETED",
-  "CANCELLED",
-] as const satisfies readonly AppointmentStatus[];
-
-const fulfillmentMethods = [
-  "DELIVERY",
-  "PICKUP",
-] as const satisfies readonly FulfillmentMethod[];
-
-export type AdminPageInfo = {
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
-  page: number;
-  pageSize: number;
-  totalItems: number;
-  totalPages: number;
+export {
+  createIntegrationSummary,
+  createProductionIntegrationSummaries,
+} from "~/server/services/admin-integrations";
+export type {
+  AdminIntegrationStatus,
+  AdminIntegrationSummary,
+  ProductionIntegrationConfig,
+} from "~/server/services/admin-integrations";
+export {
+  adminAppointmentListInputSchema,
+  adminAuditListInputSchema,
+  adminCatalogListInputSchema,
+  adminCustomerListInputSchema,
+  adminInventoryListInputSchema,
+  adminJobRunListInputSchema,
+  adminOrderListInputSchema,
+  adminOutboxListInputSchema,
+  createAdminPageInfo,
+  getAdminSkip,
 };
-
-export type AdminIntegrationStatus =
-  | "configured"
-  | "degraded"
-  | "local-fallback"
-  | "missing-secret"
-  | "rollout-required";
-
-export type AdminIntegrationSummary = {
-  capabilities: string[];
-  detail: string;
-  name: string;
-  status: AdminIntegrationStatus;
-};
-
-export type ProductionIntegrationConfig = {
-  aiGatewayApiKey?: string;
-  cardComApiName?: string;
-  cardComApiPassword?: string;
-  cardComTerminal?: string;
-  cardComWebhookSecret?: string;
-  cronSecret?: string;
-  googleGenerativeAiApiKey?: string;
-  jobRunnerSecret?: string;
-  nodeEnv: string;
-  notificationOperational: boolean;
-  notificationProviderName: string;
-  operationsEmail?: string;
-  resendApiKey?: string;
-  smsProviderApiKey?: string;
-  storeFromEmail?: string;
-  typesenseApiKey?: string;
-  typesenseHost?: string;
-  vercelOidcToken?: string;
-};
-
-const pageQuerySchema = z.object({
-  page: z.coerce.number().int().min(1).default(1),
-  pageSize: z.coerce.number().int().min(1).max(100).default(20),
-  query: z.string().trim().max(160).optional(),
-});
-
-export const adminOrderListInputSchema = pageQuerySchema.extend({
-  branchId: z.string().trim().min(1).optional(),
-  dateFrom: z.coerce.date().optional(),
-  dateTo: z.coerce.date().optional(),
-  fulfillmentMethod: z.enum(fulfillmentMethods).optional(),
-  sort: z
-    .enum(["created-desc", "created-asc", "total-desc", "total-asc"])
-    .default("created-desc"),
-  status: z.enum(orderStatuses).optional(),
-});
-
-export const adminCatalogListInputSchema = pageQuerySchema.extend({
-  categoryId: z.string().trim().min(1).optional(),
-  sort: z
-    .enum(["updated-desc", "name-asc", "price-desc", "price-asc"])
-    .default("updated-desc"),
-  status: z.enum(productStatuses).optional(),
-});
-
-export const adminInventoryListInputSchema = pageQuerySchema.extend({
-  branchId: z.string().trim().min(1).optional(),
-  sort: z
-    .enum(["updated-desc", "available-asc", "available-desc"])
-    .default("updated-desc"),
-});
-
-export const adminCustomerListInputSchema = pageQuerySchema.extend({
-  sort: z
-    .enum(["updated-desc", "orders-desc", "ltv-desc"])
-    .default("updated-desc"),
-});
-
-export const adminAppointmentListInputSchema = pageQuerySchema.extend({
-  branchId: z.string().trim().min(1).optional(),
-  sort: z.enum(["starts-asc", "starts-desc"]).default("starts-asc"),
-  status: z.enum(appointmentStatuses).optional(),
-});
-
-export const adminAuditListInputSchema = pageQuerySchema.extend({
-  entity: z.string().trim().max(80).optional(),
-  sort: z.enum(["created-desc", "created-asc"]).default("created-desc"),
-});
-
-export const adminOutboxListInputSchema = pageQuerySchema.extend({
-  status: z
-    .enum(["PENDING", "PUBLISHED", "PROCESSING", "PROCESSED", "FAILED"])
-    .optional(),
-  type: z.string().trim().max(120).optional(),
-});
-
-export const adminJobRunListInputSchema = pageQuerySchema.extend({
-  status: z.enum(["RUNNING", "COMPLETED", "FAILED", "SKIPPED"]).optional(),
-});
-
-export function createAdminPageInfo(input: {
-  page: number;
-  pageSize: number;
-  totalItems: number;
-}): AdminPageInfo {
-  const totalPages = Math.max(1, Math.ceil(input.totalItems / input.pageSize));
-  const page = Math.min(input.page, totalPages);
-
-  return {
-    hasNextPage: page < totalPages,
-    hasPreviousPage: page > 1,
-    page,
-    pageSize: input.pageSize,
-    totalItems: input.totalItems,
-    totalPages,
-  };
-}
-
-export function getAdminSkip(input: { page: number; pageSize: number }) {
-  return (input.page - 1) * input.pageSize;
-}
+export type { AdminPageInfo };
 
 async function getAdminServiceSettings() {
   return db.serviceSettings.findUnique({ where: { id: "default" } });
@@ -249,9 +137,7 @@ export async function getAdminOperationsOverview() {
   };
 }
 
-export async function listAdminOrders(
-  input: z.infer<typeof adminOrderListInputSchema>,
-) {
+export async function listAdminOrders(input: AdminOrderListInput) {
   const parsed = adminOrderListInputSchema.parse(input);
   const serviceSettings = await getAdminServiceSettings();
   const physicalBranchesEnabled =
@@ -283,7 +169,7 @@ export async function listAdminOrders(
         }
       : {}),
   };
-  const orderBy = getOrderSort(parsed.sort);
+  const orderBy = getAdminOrderSort(parsed.sort);
   const [totalItems, orders, branches] = await Promise.all([
     db.order.count({ where }),
     db.order.findMany({
@@ -368,9 +254,7 @@ export async function listAdminOrders(
   };
 }
 
-export async function listAdminCatalog(
-  input: z.infer<typeof adminCatalogListInputSchema>,
-) {
+export async function listAdminCatalog(input: AdminCatalogListInput) {
   const parsed = adminCatalogListInputSchema.parse(input);
   const serviceSettings = await getAdminServiceSettings();
   const physicalBranchesEnabled =
@@ -400,7 +284,7 @@ export async function listAdminCatalog(
   ] = await Promise.all([
     db.product.findMany({
       where,
-      orderBy: getCatalogSort(parsed.sort),
+      orderBy: getAdminCatalogSort(parsed.sort),
       skip: getAdminSkip(parsed),
       take: parsed.pageSize,
       include: {
@@ -527,9 +411,7 @@ export async function listAdminCatalog(
   };
 }
 
-export async function listAdminInventory(
-  input: z.infer<typeof adminInventoryListInputSchema>,
-) {
+export async function listAdminInventory(input: AdminInventoryListInput) {
   const parsed = adminInventoryListInputSchema.parse(input);
   const serviceSettings = await getAdminServiceSettings();
   const physicalBranchesEnabled =
@@ -639,9 +521,7 @@ export async function listAdminInventory(
   };
 }
 
-export async function listAdminCustomers(
-  input: z.infer<typeof adminCustomerListInputSchema>,
-) {
+export async function listAdminCustomers(input: AdminCustomerListInput) {
   const parsed = adminCustomerListInputSchema.parse(input);
   const where: Prisma.CustomerWhereInput = parsed.query
     ? {
@@ -733,9 +613,7 @@ export async function recordAdminCustomerDataAccess(input: {
   });
 }
 
-export async function listAdminAppointments(
-  input: z.infer<typeof adminAppointmentListInputSchema>,
-) {
+export async function listAdminAppointments(input: AdminAppointmentListInput) {
   const parsed = adminAppointmentListInputSchema.parse(input);
   const serviceSettings = await getAdminServiceSettings();
   const physicalBranchesEnabled =
@@ -950,9 +828,7 @@ export async function getAdminOrderDetail(orderId: string) {
   };
 }
 
-export async function listAdminAuditLogs(
-  input: z.infer<typeof adminAuditListInputSchema>,
-) {
+export async function listAdminAuditLogs(input: AdminAuditListInput) {
   const parsed = adminAuditListInputSchema.parse(input);
   const where: Prisma.AuditLogWhereInput = {
     ...(parsed.entity ? { entity: parsed.entity } : {}),
@@ -1001,9 +877,7 @@ export async function listAdminAuditLogs(
   };
 }
 
-export async function listAdminOutboxEvents(
-  input: z.infer<typeof adminOutboxListInputSchema>,
-) {
+export async function listAdminOutboxEvents(input: AdminOutboxListInput) {
   const parsed = adminOutboxListInputSchema.parse(input);
   const where: Prisma.OutboxEventWhereInput = {
     ...(parsed.status ? { status: parsed.status } : {}),
@@ -1049,9 +923,7 @@ export async function listAdminOutboxEvents(
   };
 }
 
-export async function listAdminJobRuns(
-  input: z.infer<typeof adminJobRunListInputSchema>,
-) {
+export async function listAdminJobRuns(input: AdminJobRunListInput) {
   const parsed = adminJobRunListInputSchema.parse(input);
   const where: Prisma.JobRunWhereInput = {
     ...(parsed.status ? { status: parsed.status } : {}),
@@ -1109,191 +981,6 @@ export function getAdminIntegrationStatuses(): AdminIntegrationSummary[] {
     typesenseHost: env.TYPESENSE_HOST,
     vercelOidcToken: env.VERCEL_OIDC_TOKEN,
   });
-}
-
-export function createProductionIntegrationSummaries(
-  config: ProductionIntegrationConfig,
-): AdminIntegrationSummary[] {
-  const localFallback = config.nodeEnv !== "production";
-
-  return [
-    createIntegrationSummary({
-      configured: Boolean(
-        hasConfigValue(config.cardComTerminal) &&
-        hasConfigValue(config.cardComApiName) &&
-        hasConfigValue(config.cardComApiPassword) &&
-        hasConfigValue(config.cardComWebhookSecret),
-      ),
-      fallback: localFallback,
-      capabilities: [
-        "checkout",
-        "capture",
-        "refund",
-        "signed-webhook",
-        "reconciliation",
-      ],
-      configuredDetail:
-        "CardCom live checkout credentials and webhook signing secret are present.",
-      fallbackDetail: "Manual payment workflow is active for local operations.",
-      missingDetail:
-        "CardCom terminal, API name, API password, and webhook secret are required for production payment readiness.",
-      name: "CardCom payments",
-    }),
-    createIntegrationSummary({
-      configured: Boolean(
-        config.notificationOperational &&
-        hasConfigValue(config.storeFromEmail) &&
-        hasConfigValue(config.operationsEmail),
-      ),
-      fallback: localFallback,
-      capabilities: [
-        "transactional-email",
-        "sender-domain",
-        "operations-alerts",
-        "retry-safe-outbox",
-      ],
-      configuredDetail: `${config.notificationProviderName} email is configured with sender and operations recipients.`,
-      fallbackDetail: "Email delivery is using local/mock fallback behavior.",
-      missingDetail:
-        "Configure Resend or Brevo plus STORE_FROM_EMAIL and OPERATIONS_EMAIL.",
-      name: "Transactional email",
-    }),
-    createIntegrationSummary({
-      configured: hasConfigValue(config.smsProviderApiKey),
-      fallback: localFallback,
-      capabilities: ["otp-sms", "order-status-sms", "delivery-alerts"],
-      configuredDetail: "SMS provider credentials are present.",
-      fallbackDetail: "SMS sends use local/mock behavior outside production.",
-      missingDetail:
-        "SMS_PROVIDER_API_KEY is required for production customer notification readiness.",
-      name: "SMS notifications",
-    }),
-    createIntegrationSummary({
-      configured: Boolean(
-        hasConfigValue(config.typesenseHost) &&
-        hasConfigValue(config.typesenseApiKey),
-      ),
-      fallback: localFallback,
-      capabilities: ["search", "facets", "reindex"],
-      configuredDetail: "Typesense host and API key are configured.",
-      fallbackDetail: "Local catalog search fallback is active.",
-      missingDetail: "Typesense host and API key are required in production.",
-      name: "Typesense search",
-    }),
-    createIntegrationSummary({
-      configured: Boolean(
-        hasConfigValue(config.jobRunnerSecret) ||
-        hasConfigValue(config.cronSecret),
-      ),
-      fallback: localFallback,
-      capabilities: [
-        "outbox",
-        "reservation-expiry",
-        "search-reindex",
-        "payment-reconciliation",
-        "retry",
-      ],
-      configuredDetail: "Job runner endpoint is protected by a bearer secret.",
-      fallbackDetail: "Local job runner is open for development.",
-      missingDetail: "JOB_RUNNER_SECRET or CRON_SECRET is required.",
-      name: "Outbox jobs",
-    }),
-    createIntegrationSummary({
-      configured: Boolean(
-        hasConfigValue(config.aiGatewayApiKey) ||
-        hasConfigValue(config.vercelOidcToken) ||
-        hasConfigValue(config.googleGenerativeAiApiKey),
-      ),
-      fallback: localFallback,
-      capabilities: ["catalog-grounding", "tool-calls", "audit", "rate-limits"],
-      configuredDetail: "AI model credentials are present for commerce flows.",
-      fallbackDetail:
-        "AI commerce can be tested locally when a model credential is supplied.",
-      missingDetail:
-        "Configure AI_GATEWAY_API_KEY, VERCEL_OIDC_TOKEN, or GOOGLE_GENERATIVE_AI_API_KEY for production AI readiness.",
-      name: "AI commerce",
-    }),
-    {
-      capabilities: [
-        "waf",
-        "edge-rate-limits",
-        "observability",
-        "alerts",
-        "runbooks",
-      ],
-      detail: hasVercelPlatformAccess(config)
-        ? "Vercel-linked credentials are present; production policies still require rollout."
-        : "Code is ready for platform policy rollout when Vercel access is available.",
-      name: "Vercel platform controls",
-      status: hasVercelPlatformAccess(config) ? "degraded" : "rollout-required",
-    },
-  ];
-}
-
-function hasVercelPlatformAccess(config: ProductionIntegrationConfig) {
-  return Boolean(
-    hasConfigValue(config.vercelOidcToken) ||
-    hasConfigValue(config.aiGatewayApiKey),
-  );
-}
-
-function hasConfigValue(value: string | undefined) {
-  return Boolean(value?.trim());
-}
-
-export function createIntegrationSummary(input: {
-  capabilities: string[];
-  configured: boolean;
-  configuredDetail: string;
-  fallback: boolean;
-  fallbackDetail: string;
-  missingDetail: string;
-  name: string;
-}): AdminIntegrationSummary {
-  if (input.configured) {
-    return {
-      capabilities: input.capabilities,
-      detail: input.configuredDetail,
-      name: input.name,
-      status: "configured",
-    };
-  }
-
-  if (input.fallback) {
-    return {
-      capabilities: input.capabilities,
-      detail: input.fallbackDetail,
-      name: input.name,
-      status: "local-fallback",
-    };
-  }
-
-  return {
-    capabilities: input.capabilities,
-    detail: input.missingDetail,
-    name: input.name,
-    status: "missing-secret",
-  };
-}
-
-function getOrderSort(
-  sort: z.infer<typeof adminOrderListInputSchema>["sort"],
-): Prisma.OrderOrderByWithRelationInput {
-  if (sort === "created-asc") return { createdAt: "asc" };
-  if (sort === "total-desc") return { total: "desc" };
-  if (sort === "total-asc") return { total: "asc" };
-
-  return { createdAt: "desc" };
-}
-
-function getCatalogSort(
-  sort: z.infer<typeof adminCatalogListInputSchema>["sort"],
-): Prisma.ProductOrderByWithRelationInput {
-  if (sort === "name-asc") return { name: "asc" };
-  if (sort === "price-desc") return { basePrice: "desc" };
-  if (sort === "price-asc") return { basePrice: "asc" };
-
-  return { updatedAt: "desc" };
 }
 
 async function getOrderTotals() {

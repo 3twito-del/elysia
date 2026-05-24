@@ -1,91 +1,55 @@
 import { TRPCError } from "@trpc/server";
-import type { FulfillmentMethod, OrderStatus, Prisma } from "@prisma/client";
-import { nanoid } from "nanoid";
-import { z } from "zod";
+import type { OrderStatus, Prisma } from "@prisma/client";
 
 import { env } from "~/env";
-import { formatHebrewDateTime, formatPrice } from "~/lib/format";
 import { notificationProvider } from "~/server/adapters/notifications";
 import { db } from "~/server/db";
-import { canReserveStock } from "./inventory";
+import {
+  createOrderItemName,
+  createOrderShippingAddress,
+} from "./order-workflow";
+import {
+  assertManualOrderTransitionAllowed,
+  assertManualReservationAvailable,
+  calculateManualOrderTotals,
+  createManualOrderNumber,
+  createManualOrderStatusAuditMetadata,
+  getManualOrderReservationExpiresAt,
+  MANUAL_PAYMENT_PROVIDER,
+  type AdminOrderStatusInput,
+  type CreateManualOrderInput,
+} from "./manual-order-contract";
+import {
+  sendManualOrderNotifications,
+  type ManualOrderNotificationContext,
+} from "./manual-order-notifications";
 import { BUSINESS_EVENTS, createOutboxEvent } from "./outbox";
-import { calculateOrderTotal } from "./pricing";
 
-const MANUAL_ORDER_RESERVATION_HOURS = 24;
-const MANUAL_PAYMENT_PROVIDER = "manual";
+export {
+  adminOrderStatusSchema,
+  assertManualOrderTransitionAllowed,
+  assertManualReservationAvailable,
+  calculateManualOrderTotals,
+  createManualOrderInputSchema,
+  createManualOrderNumber,
+  createManualOrderStatusAuditMetadata,
+  getManualOrderReservationExpiresAt,
+  getManualOrderShippingTotal,
+  shippingAddressSchema,
+} from "./manual-order-contract";
+export {
+  createManualOrderCustomerMessage,
+  createManualOrderOperationsMessage,
+  formatManualOrderAmount,
+  redactManualOrderNotificationRecipient,
+} from "./manual-order-notifications";
+export type {
+  AdminOrderStatusInput,
+  CreateManualOrderInput,
+} from "./manual-order-contract";
+export type { ManualOrderNotificationContext } from "./manual-order-notifications";
 
 type TransactionClient = Prisma.TransactionClient;
-
-export const shippingAddressSchema = z.object({
-  city: z.string().trim().min(2),
-  street: z.string().trim().min(2),
-  postalCode: z.string().trim().optional(),
-});
-
-export const createManualOrderInputSchema = z
-  .object({
-    productSlug: z.string().trim().min(1),
-    variantSku: z.string().trim().min(1).optional(),
-    quantity: z.number().int().positive().max(10).default(1),
-    fulfillmentMethod: z.enum(["DELIVERY", "PICKUP"]),
-    branchSlug: z.string().trim().min(1),
-    customer: z.object({
-      name: z.string().trim().min(2),
-      email: z.string().trim().email().toLowerCase(),
-      phone: z.string().trim().min(7),
-    }),
-    shippingAddress: shippingAddressSchema.optional(),
-    giftWrap: z.boolean().default(false),
-    giftMessage: z.string().trim().max(500).optional(),
-  })
-  .superRefine(validateDeliveryAddressForSchema);
-
-function validateDeliveryAddressForSchema(
-  input: {
-    fulfillmentMethod: "DELIVERY" | "PICKUP";
-    shippingAddress?: z.infer<typeof shippingAddressSchema>;
-  },
-  context: z.RefinementCtx,
-) {
-  if (input.fulfillmentMethod !== "DELIVERY" || input.shippingAddress) return;
-
-  context.addIssue({
-    code: z.ZodIssueCode.custom,
-    message: "כתובת משלוח נדרשת להזמנת משלוח.",
-    path: ["shippingAddress"],
-  });
-}
-
-export const adminOrderStatusSchema = z.enum([
-  "PAID",
-  "PREPARING",
-  "READY_FOR_PICKUP",
-  "SHIPPED",
-  "COMPLETED",
-  "CANCELLED",
-]);
-
-export type CreateManualOrderInput = z.infer<
-  typeof createManualOrderInputSchema
->;
-
-export type AdminOrderStatusInput = z.infer<typeof adminOrderStatusSchema>;
-
-type ManualOrderNotificationContext = {
-  orderId: string;
-  orderNumber: string;
-  customerName: string;
-  customerEmail: string;
-  customerPhone: string;
-  branchName: string;
-  branchPhone: string;
-  productName: string;
-  sku: string;
-  quantity: number;
-  total: number;
-  fulfillmentMethod: FulfillmentMethod;
-  reservationExpiresAt: Date;
-};
 
 type ManualOrderTransactionResult = {
   response: {
@@ -97,105 +61,6 @@ type ManualOrderTransactionResult = {
   };
   notification: ManualOrderNotificationContext;
 };
-
-const manualOrderTransitions: Record<OrderStatus, OrderStatus[]> = {
-  PENDING_PAYMENT: ["PAID", "CANCELLED"],
-  PAID: ["PREPARING", "CANCELLED"],
-  PREPARING: ["READY_FOR_PICKUP", "SHIPPED", "CANCELLED"],
-  READY_FOR_PICKUP: ["COMPLETED", "CANCELLED"],
-  SHIPPED: ["COMPLETED"],
-  COMPLETED: [],
-  CANCELLED: [],
-  REFUNDED: [],
-};
-
-export function getManualOrderShippingTotal(fulfillmentMethod: string) {
-  return fulfillmentMethod === "DELIVERY" ? 29 : 0;
-}
-
-export function getManualOrderReservationExpiresAt(now = new Date()) {
-  return new Date(now.getTime() + MANUAL_ORDER_RESERVATION_HOURS * 60 * 60_000);
-}
-
-export function createManualOrderNumber(now = new Date(), suffix = nanoid(6)) {
-  const datePart = now.toISOString().slice(0, 10).replaceAll("-", "");
-  return `APH-${datePart}-${suffix.toUpperCase()}`;
-}
-
-export function calculateManualOrderTotals(input: {
-  unitPrice: number;
-  quantity: number;
-  fulfillmentMethod: string;
-}) {
-  return calculateOrderTotal({
-    items: [{ unitPrice: input.unitPrice, quantity: input.quantity }],
-    shipping: getManualOrderShippingTotal(input.fulfillmentMethod),
-  });
-}
-
-export function assertManualReservationAvailable(input: {
-  quantity: number;
-  reserved: number;
-  safetyStock: number;
-  requested: number;
-}) {
-  if (!canReserveStock(input)) {
-    throw new TRPCError({
-      code: "BAD_REQUEST",
-      message: "אין מספיק מלאי זמין לשמירת ההזמנה בערוץ שנבחר.",
-    });
-  }
-}
-
-export function assertManualOrderTransitionAllowed(input: {
-  currentStatus: OrderStatus;
-  nextStatus: AdminOrderStatusInput;
-  fulfillmentMethod: FulfillmentMethod;
-}) {
-  if (input.currentStatus === input.nextStatus) return;
-
-  const allowedStatuses = manualOrderTransitions[input.currentStatus];
-  const nextStatus = input.nextStatus as OrderStatus;
-
-  if (!allowedStatuses.includes(nextStatus)) {
-    throw new TRPCError({
-      code: "BAD_REQUEST",
-      message: "לא ניתן לבצע מעבר סטטוס זה להזמנה ידנית.",
-    });
-  }
-
-  if (
-    input.nextStatus === "READY_FOR_PICKUP" &&
-    input.fulfillmentMethod !== "PICKUP"
-  ) {
-    throw new TRPCError({
-      code: "BAD_REQUEST",
-      message: "הזמנת משלוח לא יכולה לעבור לסטטוס מוכן לתיאום.",
-    });
-  }
-
-  if (
-    input.nextStatus === "SHIPPED" &&
-    input.fulfillmentMethod !== "DELIVERY"
-  ) {
-    throw new TRPCError({
-      code: "BAD_REQUEST",
-      message: "הזמנת תיאום אינה יכולה לעבור לסטטוס נשלחה.",
-    });
-  }
-}
-
-export function createManualOrderStatusAuditMetadata(input: {
-  orderNumber: string;
-  oldStatus: OrderStatus;
-  newStatus: AdminOrderStatusInput;
-}) {
-  return {
-    orderNumber: input.orderNumber,
-    oldStatus: input.oldStatus,
-    newStatus: input.newStatus,
-  } satisfies Prisma.InputJsonObject;
-}
 
 export async function createManualOrder(input: CreateManualOrderInput) {
   const result = await db.$transaction((tx) =>
@@ -331,15 +196,11 @@ async function createManualOrderInTransaction(
 
   const orderNumber = createManualOrderNumber();
   const reservationExpiresAt = getManualOrderReservationExpiresAt();
-  const shippingAddress = input.shippingAddress
-    ? ({
-        recipient: input.customer.name,
-        phone: input.customer.phone,
-        city: input.shippingAddress.city,
-        street: input.shippingAddress.street,
-        postalCode: input.shippingAddress.postalCode ?? null,
-      } satisfies Prisma.InputJsonObject)
-    : undefined;
+  const shippingAddress = createOrderShippingAddress({
+    customerName: input.customer.name,
+    customerPhone: input.customer.phone,
+    shippingAddress: input.shippingAddress,
+  });
 
   const order = await tx.order.create({
     data: {
@@ -361,10 +222,10 @@ async function createManualOrderInTransaction(
       items: {
         create: {
           variantId: variant.id,
-          name:
-            variant.name && variant.name !== product.name
-              ? `${product.name} - ${variant.name}`
-              : product.name,
+          name: createOrderItemName({
+            productName: product.name,
+            variantName: variant.name,
+          }),
           sku: variant.sku,
           quantity: input.quantity,
           unitPrice,
@@ -509,178 +370,6 @@ async function createManualOrderInTransaction(
       reservationExpiresAt,
     },
   };
-}
-
-export function formatManualOrderAmount(amount: number) {
-  return formatPrice(amount);
-}
-
-export function createManualOrderCustomerMessage(
-  input: ManualOrderNotificationContext,
-) {
-  const fulfillmentText =
-    input.fulfillmentMethod === "PICKUP"
-      ? `תיאום שירות דרך ${input.branchName}`
-      : "משלוח לכתובת שנמסרה";
-
-  return {
-    to: input.customerEmail,
-    toName: input.customerName,
-    subject: `בקשת ההזמנה ${input.orderNumber} התקבלה`,
-    body: [
-      `${input.customerName} שלום,`,
-      `בקשת ההזמנה שלך ב-Elysia התקבלה ונשמרה לטיפול נציג.`,
-      `מספר הזמנה: ${input.orderNumber}`,
-      `פריט: ${input.productName}`,
-      `כמות: ${input.quantity}`,
-      `סכום לתשלום באישור ידני: ${formatManualOrderAmount(input.total)}`,
-      `אופן קבלה: ${fulfillmentText}`,
-      `המלאי נשמר עד ${formatHebrewDateTime(input.reservationExpiresAt)}.`,
-      `צוות Elysia יחזור אליך לאישור סופי והמשך טיפול.`,
-    ].join("\n\n"),
-  };
-}
-
-export function createManualOrderOperationsMessage(
-  input: ManualOrderNotificationContext,
-) {
-  return {
-    to: env.OPERATIONS_EMAIL ?? "",
-    subject: `בקשת הזמנה חדשה ${input.orderNumber}`,
-    body: [
-      `נוצרה בקשת הזמנה חדשה לטיפול ידני.`,
-      `מספר הזמנה: ${input.orderNumber}`,
-      `לקוח: ${input.customerName}`,
-      `אימייל: ${input.customerEmail}`,
-      `טלפון: ${input.customerPhone}`,
-      `פריט: ${input.productName}`,
-      `SKU: ${input.sku}`,
-      `כמות: ${input.quantity}`,
-      `סכום: ${formatManualOrderAmount(input.total)}`,
-      `ערוץ שירות: ${input.branchName}`,
-      `טלפון שירות: ${input.branchPhone}`,
-      `Fulfillment: ${input.fulfillmentMethod}`,
-      `שמירת מלאי עד: ${input.reservationExpiresAt.toISOString()}`,
-    ].join("\n"),
-  };
-}
-
-export function redactManualOrderNotificationRecipient(
-  recipient: string | null,
-) {
-  const normalized = recipient?.trim();
-
-  if (!normalized) return null;
-
-  if (normalized.includes("@")) {
-    const [localPart, domain] = normalized.split("@");
-    const safeLocal = localPart ? `${localPart.slice(0, 1)}***` : "[redacted]";
-
-    return domain ? `${safeLocal}@${domain}` : safeLocal;
-  }
-
-  const digits = normalized.replace(/\D/g, "");
-
-  return digits.length >= 4 ? `***${digits.slice(-4)}` : "[redacted]";
-}
-
-async function sendManualOrderNotifications(
-  input: ManualOrderNotificationContext,
-) {
-  if (!notificationProvider.isOperational()) {
-    await recordManualOrderNotificationJob({
-      input,
-      jobType: "manual_order_notification",
-      recipient: input.customerEmail,
-      status: "FAILED",
-      lastError: "No transactional email provider is configured.",
-    });
-    return;
-  }
-
-  await sendManualOrderNotificationMessage({
-    input,
-    jobType: "manual_order_customer_confirmation",
-    recipient: input.customerEmail,
-    message: createManualOrderCustomerMessage(input),
-  });
-
-  if (!env.OPERATIONS_EMAIL) {
-    await recordManualOrderNotificationJob({
-      input,
-      jobType: "manual_order_operations_notification",
-      recipient: null,
-      status: "FAILED",
-      lastError: "OPERATIONS_EMAIL is not configured.",
-    });
-    return;
-  }
-
-  await sendManualOrderNotificationMessage({
-    input,
-    jobType: "manual_order_operations_notification",
-    recipient: env.OPERATIONS_EMAIL,
-    message: createManualOrderOperationsMessage(input),
-  });
-}
-
-async function sendManualOrderNotificationMessage(input: {
-  input: ManualOrderNotificationContext;
-  jobType: string;
-  recipient: string;
-  message: Parameters<typeof notificationProvider.sendEmail>[0];
-}) {
-  try {
-    const result = await notificationProvider.sendEmail({
-      ...input.message,
-      idempotencyKey: `${input.jobType}:${input.input.orderId}`,
-    });
-    await recordManualOrderNotificationJob({
-      input: input.input,
-      jobType: input.jobType,
-      recipient: input.recipient,
-      status: "COMPLETED",
-      providerMessageId: result.id,
-    });
-  } catch (error) {
-    await recordManualOrderNotificationJob({
-      input: input.input,
-      jobType: input.jobType,
-      recipient: input.recipient,
-      status: "FAILED",
-      lastError: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-}
-
-async function recordManualOrderNotificationJob(input: {
-  input: ManualOrderNotificationContext;
-  jobType: string;
-  recipient: string | null;
-  status: "COMPLETED" | "FAILED";
-  providerMessageId?: string;
-  lastError?: string;
-}) {
-  try {
-    await db.integrationJob.create({
-      data: {
-        provider: notificationProvider.providerName(),
-        jobType: input.jobType,
-        status: input.status,
-        attempts: input.status === "COMPLETED" ? 1 : 0,
-        lastError: input.lastError,
-        finishedAt: new Date(),
-        payload: {
-          orderId: input.input.orderId,
-          orderNumber: input.input.orderNumber,
-          recipient: redactManualOrderNotificationRecipient(input.recipient),
-          providerMessageId: input.providerMessageId,
-        },
-      },
-    });
-  } catch (error) {
-    console.error("[manual-order:notification-job]", error);
-  }
 }
 
 export async function listAdminOrders(input: { limit?: number } = {}) {
