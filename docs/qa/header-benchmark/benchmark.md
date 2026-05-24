@@ -1,51 +1,66 @@
 # Header Benchmark: High-Jewelry Alignment
 
-Generated: 2026-05-21T16:03:24.698Z
+Generated: 2026-05-24T15:23:49.078Z
 
 ## Summary
 
-- Status: local-only
-- Active corpus: 0/0 sites produced enough data
-- Alignment: 64%
-- Metrics: 54 match, 30 mismatch, 87 not comparable
-- Active weight: 0; threshold weight: 0
+- Status: pass
+- Active corpus: 12/12 sites produced enough data
+- Alignment: 85%
+- Metrics: 146 match, 25 mismatch, 0 not comparable
+- Active weight: 16; threshold weight: 8
 
 This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site substitutions affect QA reports only and do not change the High Jewelry Reference Gate.
 
 ## Corpus Substitutions
 
-- None.
+- Cartier replaced by David Yurman.
+- Tiffany & Co. replaced by Mejuri.
+- Bulgari replaced by Aurate.
+- Harry Winston replaced by Kendra Scott.
 
 ## Blocked Sites
 
-- None.
+- Cartier (canonical; weight 1.5).
+- Tiffany & Co. (canonical; weight 1.5).
+- Bulgari (canonical; weight 1.5).
+- Harry Winston (canonical; weight 1.5).
+- Chaumet (canonical; weight 1.5).
+- Mikimoto (canonical; weight 1.5).
+- Messika (canonical; weight 1.5).
+- Swarovski (reserve; weight 1).
+- Brilliant Earth (reserve; weight 1).
+- Blue Nile (reserve; weight 1).
+- VRAI (reserve; weight 1).
+- Monica Vinader (reserve; weight 1).
+- Pandora US (reserve; weight 1).
 
 ## Top Mismatches
 
-- home / desktop / chrome / heightPx: Elysia=98; baseline=median 0; IQR 0-0; weight=0
-- home / desktop / interaction / linkCount: Elysia=9; baseline=median 0; IQR 0-0; weight=0
-- home / desktop / interaction / buttonCount: Elysia=4; baseline=median 0; IQR 0-0; weight=0
-- home / desktop / interaction / focusableCount: Elysia=9; baseline=median 0; IQR 0-0; weight=0
-- home / desktop / accessibility / ariaLabelCount: Elysia=3; baseline=median 0; IQR 0-0; weight=0
-- home / desktop / content / textLength: Elysia=214; baseline=median 0; IQR 0-0; weight=0
-- home / desktop / density / linksPer1000Px: Elysia=91.837; baseline=median 0; IQR 0-0; weight=0
-- home / desktop / density / controlsPer1000Px: Elysia=91.837; baseline=median 0; IQR 0-0; weight=0
-- home / desktop / chrome / headerHeightPx: Elysia=98; baseline=median 0; IQR 0-0; weight=0
-- home / desktop / navigation / navVisibleLinkCount: Elysia=9; baseline=median 0; IQR 0-0; weight=0
-- home / tablet / chrome / heightPx: Elysia=68; baseline=median 0; IQR 0-0; weight=0
-- home / tablet / interaction / linkCount: Elysia=9; baseline=median 0; IQR 0-0; weight=0
-- home / tablet / interaction / buttonCount: Elysia=4; baseline=median 0; IQR 0-0; weight=0
-- home / tablet / interaction / focusableCount: Elysia=9; baseline=median 0; IQR 0-0; weight=0
-- home / tablet / accessibility / ariaLabelCount: Elysia=3; baseline=median 0; IQR 0-0; weight=0
-- home / tablet / content / textLength: Elysia=214; baseline=median 0; IQR 0-0; weight=0
-- home / tablet / density / linksPer1000Px: Elysia=132.353; baseline=median 0; IQR 0-0; weight=0
-- home / tablet / density / controlsPer1000Px: Elysia=132.353; baseline=median 0; IQR 0-0; weight=0
-- home / tablet / chrome / headerHeightPx: Elysia=68; baseline=median 0; IQR 0-0; weight=0
-- home / tablet / navigation / navVisibleLinkCount: Elysia=9; baseline=median 0; IQR 0-0; weight=0
-- home / mobile / chrome / heightPx: Elysia=64; baseline=median 0; IQR 0-0; weight=0
-- home / mobile / interaction / linkCount: Elysia=3; baseline=median 0; IQR 0-0; weight=0
-- home / mobile / interaction / buttonCount: Elysia=3; baseline=median 0; IQR 0-0; weight=0
-- home / mobile / interaction / focusableCount: Elysia=4; baseline=median 0; IQR 0-0; weight=0
+- home / desktop / chrome / fullBleed: Elysia=false; baseline=true (14.5/16)
+- home / desktop / chrome / hasBorder: Elysia=true; baseline=false (14.5/16)
+- home / desktop / visual-tone / transparentBackground: Elysia=true; baseline=false (8.5/16)
+- home / desktop / interaction / linkCount: Elysia=9; baseline=median 4; IQR 1-8; weight=16
+- home / desktop / accessibility / hasAriaExpanded: Elysia=false; baseline=true (9/16)
+- home / desktop / media / imageCount: Elysia=0; baseline=median 63; IQR 1-104; weight=16
+- home / desktop / chrome / headerAtViewportTop: Elysia=true; baseline=false (9.5/16)
+- home / desktop / brand / brandWordmarkOnly: Elysia=true; baseline=false (13/16)
+- home / desktop / navigation / desktopNavVisible: Elysia=true; baseline=false (8.5/16)
+- home / desktop / navigation / navVisibleLinkCount: Elysia=9; baseline=median 4; IQR 1-8; weight=16
+- home / tablet / chrome / fullBleed: Elysia=false; baseline=true (13.5/16)
+- home / tablet / chrome / hasBorder: Elysia=true; baseline=false (14.5/16)
+- home / tablet / interaction / linkCount: Elysia=9; baseline=median 2; IQR 1-7; weight=16
+- home / tablet / accessibility / hasAriaExpanded: Elysia=false; baseline=true (9/16)
+- home / tablet / media / imageCount: Elysia=0; baseline=median 63; IQR 1-104; weight=16
+- home / tablet / density / linksPer1000Px: Elysia=132.353; baseline=median 42.55; IQR 11.91-90.91; weight=16
+- home / tablet / chrome / headerAtViewportTop: Elysia=true; baseline=false (9.5/16)
+- home / tablet / brand / brandWordmarkOnly: Elysia=true; baseline=false (13/16)
+- home / tablet / navigation / desktopNavVisible: Elysia=true; baseline=false (9.5/16)
+- home / tablet / navigation / navVisibleLinkCount: Elysia=9; baseline=median 2; IQR 1-7; weight=16
+- home / tablet / interaction / mobileNavTriggerVisible: Elysia=false; baseline=true (10.5/16)
+- home / mobile / chrome / fullBleed: Elysia=false; baseline=true (13.5/15)
+- home / mobile / chrome / hasBorder: Elysia=true; baseline=false (13.5/15)
+- home / mobile / media / imageCount: Elysia=0; baseline=median 44; IQR 1-104; weight=15
 
 ## Lessons
 

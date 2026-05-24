@@ -58,3 +58,40 @@
   single worker to avoid shared dev-server and browser-state flakiness.
 - `pnpm visual:qa`: agent-browser visual and overlay check for core routes.
 - `pnpm format:check`: formatting drift check.
+
+## Manual Quality Gates
+
+Quality gates are manual `pnpm gate:*` commands. They do not run in watch mode,
+do not install pre-commit hooks, and should be invoked only when the operator
+chooses the matching depth.
+
+- `pnpm gate:list`: prints the gate catalog.
+- `pnpm gate:fix`: applies deterministic repairs: Prisma format/generate,
+  public AVIF conversion/reference updates, ESLint fixes, and Prettier writes.
+- `pnpm gate:quick`: runs `gate:fix`, then format check, lint, typecheck,
+  Prisma validate, and AVIF check mode.
+- `pnpm gate:test`: runs `gate:fix`, then Vitest.
+- `pnpm gate:db`: runs `gate:fix`, then Prisma validate/generate, migration
+  deploy, seed, and migration status.
+- `pnpm gate:build`: runs `gate:fix`, then `next build`.
+- `pnpm gate:smoke`, `pnpm gate:e2e`, and `pnpm gate:visual`: run `gate:fix`,
+  build once, start a managed `next start` preview server, then run the named
+  runtime check.
+- `pnpm gate:runtime`: runs `gate:fix`, builds once, starts preview, then runs
+  smoke, Playwright, and agent-browser visual QA.
+- `pnpm gate:public:local`: runs all public benchmark parts with
+  `--skip-external`.
+- `pnpm gate:public:live`: runs all public benchmark parts against live
+  reference sites with blocked-site replacement enabled.
+- `pnpm gate:security`: checks frozen lockfile install integrity and
+  `pnpm audit --prod`.
+- `pnpm gate:prod`: forces production-readiness env validation locally.
+- `pnpm gate:full`: runs fix once, then quick, test, db, build/runtime,
+  security, and live public benchmarks.
+- `pnpm gate:release`: runs `gate:full` plus `gate:prod`.
+
+Prerequisites: DB gates need a reachable `DATABASE_URL`; runtime gates need a
+successful production build and available preview port; e2e needs Playwright
+browsers; visual QA needs `agent-browser` and PowerShell; live benchmarks and
+security audit need network access; production readiness needs real provider
+secrets in the environment.

@@ -39,7 +39,7 @@ export class RateLimitExceededError extends Error {
 export async function consumeRateLimit(
   input: RateLimitInput,
 ): Promise<RateLimitResult> {
-  const sharedLimiter = getSharedLimiter(input);
+  const sharedLimiter = getSharedLimiterOrNull(input);
 
   if (sharedLimiter) {
     try {
@@ -181,6 +181,16 @@ function getSharedLimiter(input: RateLimitInput) {
   sharedLimiters.set(limiterKey, limiter);
 
   return limiter;
+}
+
+function getSharedLimiterOrNull(input: RateLimitInput) {
+  try {
+    return getSharedLimiter(input);
+  } catch (error) {
+    console.error("[rate-limit:shared-config-failed]", error);
+
+    return null;
+  }
 }
 
 function normalizeRateLimitKeyPart(value: string) {

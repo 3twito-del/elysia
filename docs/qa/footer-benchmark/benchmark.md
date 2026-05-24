@@ -1,14 +1,14 @@
 # Footer Benchmark
 
-Generated: 2026-05-19T21:12:44.943Z
+Generated: 2026-05-24T15:23:49.078Z
 
 ## Summary
 
 - Status: pass
-- Active corpus: 14/14 sites produced enough data
-- Alignment: 100%
-- Metrics: 123 match, 0 mismatch, 0 not comparable
-- Active weight: 18.5; threshold weight: 9.25
+- Active corpus: 15/15 sites produced enough data
+- Alignment: 85%
+- Metrics: 104 match, 19 mismatch, 0 not comparable
+- Active weight: 19.5; threshold weight: 9.75
 
 This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site substitutions affect QA reports only and do not change the High Jewelry Reference Gate.
 
@@ -17,8 +17,9 @@ This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site 
 - Cartier replaced by David Yurman.
 - Tiffany & Co. replaced by Mejuri.
 - Bulgari replaced by Brilliant Earth.
-- Harry Winston replaced by VRAI.
-- Chaumet replaced by Aurate.
+- Harry Winston replaced by Blue Nile.
+- Chaumet replaced by VRAI.
+- Mikimoto replaced by Aurate.
 
 ## Blocked Sites
 
@@ -29,14 +30,30 @@ This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site 
 - Chaumet (canonical; weight 1.5).
 - Mikimoto (canonical; weight 1.5).
 - Swarovski (reserve; weight 1).
-- Blue Nile (reserve; weight 1).
 - Monica Vinader (reserve; weight 1).
 - Pandora US (reserve; weight 1).
-- Kendra Scott (reserve; weight 1).
 
 ## Top Mismatches
 
-- None in comparable metrics.
+- home / desktop / chrome / fullBleed: Elysia=false; baseline=true (17/19.5)
+- home / desktop / visual-tone / roundedControlCount: Elysia=2; baseline=median 0; IQR 0-0; weight=19.5
+- home / desktop / visual-tone / pillLikeControlCount: Elysia=2; baseline=median 0; IQR 0-0; weight=19.5
+- home / desktop / interaction / focusableCount: Elysia=21; baseline=median 28; IQR 24-33; weight=19.5
+- home / desktop / commerce / addToCartTextPresent: Elysia=true; baseline=false (15.5/19.5)
+- home / desktop / commerce / checkoutTextPresent: Elysia=true; baseline=false (15.5/19.5)
+- home / tablet / chrome / topPx: Elysia=3849; baseline=median 1028; IQR 27-3803; weight=19.5
+- home / tablet / chrome / fullBleed: Elysia=false; baseline=true (17/19.5)
+- home / tablet / visual-tone / roundedControlCount: Elysia=2; baseline=median 0; IQR 0-0; weight=19.5
+- home / tablet / visual-tone / pillLikeControlCount: Elysia=2; baseline=median 0; IQR 0-0; weight=19.5
+- home / tablet / commerce / addToCartTextPresent: Elysia=true; baseline=false (15.5/19.5)
+- home / tablet / commerce / checkoutTextPresent: Elysia=true; baseline=false (15.5/19.5)
+- home / mobile / chrome / fullBleed: Elysia=false; baseline=true (17/19.5)
+- home / mobile / visual-tone / roundedControlCount: Elysia=2; baseline=median 0; IQR 0-0; weight=19.5
+- home / mobile / visual-tone / pillLikeControlCount: Elysia=2; baseline=median 0; IQR 0-0; weight=19.5
+- home / mobile / accessibility / hasAriaExpanded: Elysia=true; baseline=false (10/19.5)
+- home / mobile / commerce / addToCartTextPresent: Elysia=true; baseline=false (15.5/19.5)
+- home / mobile / commerce / checkoutTextPresent: Elysia=true; baseline=false (15.5/19.5)
+- home / mobile / density / controlsPer1000Px: Elysia=30.457; baseline=median 23.98; IQR 9.2-29.43; weight=19.5
 
 ## Lessons
 

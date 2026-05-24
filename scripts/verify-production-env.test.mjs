@@ -1,9 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import {
   getProductionEnvValidationError,
   verifyProductionEnv,
   verifyProductionReadiness,
+  main,
 } from "./verify-production-env.mjs";
 
 describe("production environment validation", () => {
@@ -52,6 +53,33 @@ describe("production environment validation", () => {
         UPSTASH_REDIS_REST_TOKEN: "token",
       }),
     ).toEqual({ ok: true });
+  });
+
+  it("skips production readiness locally unless force is requested", () => {
+    expect(
+      verifyProductionReadiness({
+        NODE_ENV: "development",
+        VERCEL: undefined,
+        VERCEL_ENV: undefined,
+      }),
+    ).toEqual({ ok: true });
+  });
+
+  it("forces production readiness validation outside Vercel production", () => {
+    expect(
+      verifyProductionReadiness(
+        {
+          NODE_ENV: "development",
+          VERCEL: undefined,
+          VERCEL_ENV: undefined,
+        },
+        { force: true },
+      ),
+    ).toEqual({
+      ok: false,
+      error:
+        "Missing production provider environment variables: UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN, STORE_FROM_EMAIL, OPERATIONS_EMAIL, CARD_COM_TERMINAL, CARD_COM_API_NAME, CARD_COM_API_PASSWORD, CARD_COM_WEBHOOK_SECRET, SMS_PROVIDER_API_KEY, TYPESENSE_HOST, TYPESENSE_API_KEY, BREVO_API_KEY or RESEND_API_KEY, JOB_RUNNER_SECRET or CRON_SECRET, AI_GATEWAY_API_KEY or VERCEL_OIDC_TOKEN or GOOGLE_GENERATIVE_AI_API_KEY",
+    });
   });
 
   it("fails production readiness clearly when Amazon-level provider env is absent", () => {
@@ -116,5 +144,24 @@ describe("production environment validation", () => {
         AI_GATEWAY_API_KEY: "ai-key",
       }),
     ).toEqual({ ok: true });
+  });
+
+  it("wires the CLI force flag to readiness validation", () => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      expect(
+        main(
+          {
+            NODE_ENV: "development",
+            VERCEL: undefined,
+            VERCEL_ENV: undefined,
+          },
+          ["--readiness", "--force"],
+        ),
+      ).toBe(1);
+    } finally {
+      errorSpy.mockRestore();
+    }
   });
 });

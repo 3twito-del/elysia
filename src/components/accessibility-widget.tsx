@@ -331,7 +331,13 @@ export function AccessibilityWidget() {
 
   useEffect(() => {
     shouldRestoreTriggerFocusRef.current = false;
-    setIsOpen(false);
+    const closeFrame = window.requestAnimationFrame(() => {
+      setIsOpen(false);
+    });
+
+    return () => {
+      window.cancelAnimationFrame(closeFrame);
+    };
   }, [pathname]);
 
   useEffect(() => {

@@ -9,6 +9,7 @@ import {
 } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
+import { pathToFileURL } from "node:url";
 
 import sharp from "sharp";
 
@@ -24,28 +25,81 @@ const referenceFileExtensions = new Set([
   ".tsx",
 ]);
 const referenceRoots = ["src", "docs"];
-const publicDir = path.join(process.cwd(), "public");
 const avifQuality = 58;
 const avifEffort = 5;
-const force = process.argv.includes("--force");
-const dryRun = process.argv.includes("--check");
 
-const sourceImages = await findSourceImages(publicDir);
-const usableAvifBySourceUrl = new Map();
-const summary = {
-  converted: 0,
-  current: 0,
-  skippedLarger: 0,
-  failed: 0,
-  referenceFilesUpdated: 0,
-  referencesUpdated: 0,
-  sourceBytes: 0,
-  avifBytes: 0,
-};
+export async function convertPublicImagesToAvif({
+  check = false,
+  cwd = process.cwd(),
+  error = console.error,
+  force = false,
+  logger = console.log,
+  warn = console.warn,
+} = {}) {
+  const publicDir = path.join(cwd, "public");
+  const sourceImages = await findSourceImages(publicDir);
+  const usableAvifBySourceUrl = new Map();
+  const summary = {
+    converted: 0,
+    current: 0,
+    failed: 0,
+    referenceFilesUpdated: 0,
+    referencesUpdated: 0,
+    skippedLarger: 0,
+    sourceBytes: 0,
+    staleAssets: 0,
+    staleReferences: 0,
+    avifBytes: 0,
+  };
 
-for (const sourcePath of sourceImages) {
+  for (const sourcePath of sourceImages) {
+    await processSourceImage({
+      check,
+      force,
+      publicDir,
+      sourcePath,
+      summary,
+      usableAvifBySourceUrl,
+      warn,
+    });
+  }
+
+  await updateSourceReferences(usableAvifBySourceUrl, summary, {
+    cwd,
+    write: !check,
+  });
+
+  if (check) {
+    summary.staleReferences = summary.referencesUpdated;
+  }
+
+  logger(formatSummary(summary, check, sourceImages.length));
+
+  const ok =
+    summary.failed === 0 &&
+    (!check || (summary.staleAssets === 0 && summary.staleReferences === 0));
+
+  if (!ok && check) {
+    error(
+      "[images:avif] check failed. Run node scripts/convert-public-images-to-avif.mjs to repair assets and references.",
+    );
+  }
+
+  return { ok, summary };
+}
+
+async function processSourceImage({
+  check,
+  force,
+  publicDir,
+  sourcePath,
+  summary,
+  usableAvifBySourceUrl,
+  warn,
+}) {
   const avifPath = getAvifPath(sourcePath);
   const sourceStats = await stat(sourcePath);
+
   summary.sourceBytes += sourceStats.size;
 
   const existingAvifStats = await statIfExists(avifPath);
@@ -57,82 +111,142 @@ for (const sourcePath of sourceImages) {
   if (!force && isCurrent) {
     summary.current += 1;
     summary.avifBytes += existingAvifStats.size;
-    usableAvifBySourceUrl.set(toPublicUrl(sourcePath), toPublicUrl(avifPath));
-    continue;
+    usableAvifBySourceUrl.set(
+      toPublicUrl(sourcePath, publicDir),
+      toPublicUrl(avifPath, publicDir),
+    );
+    return;
   }
 
   try {
-    const tempPath = `${avifPath}.tmp-${process.pid}`;
-
-    if (!dryRun) {
-      await mkdir(path.dirname(avifPath), { recursive: true });
-      await sharp(sourcePath)
-        .rotate()
-        .avif({
-          effort: avifEffort,
-          quality: avifQuality,
-        })
-        .toFile(tempPath);
+    if (check) {
+      await checkSourceImage({
+        avifPath,
+        existingAvifStats,
+        publicDir,
+        sourcePath,
+        sourceStats,
+        summary,
+        usableAvifBySourceUrl,
+      });
+      return;
     }
 
-    const avifStats = dryRun
-      ? existingAvifStats
-      : await stat(tempPath).catch(() => null);
-
-    if (!avifStats || avifStats.size >= sourceStats.size) {
-      if (!dryRun) {
-        await rm(tempPath, { force: true });
-      }
-
-      if (existingAvifStats && existingAvifStats.size < sourceStats.size) {
-        summary.current += 1;
-        summary.avifBytes += existingAvifStats.size;
-        usableAvifBySourceUrl.set(
-          toPublicUrl(sourcePath),
-          toPublicUrl(avifPath),
-        );
-      } else {
-        summary.skippedLarger += 1;
-      }
-
-      continue;
-    }
-
-    if (!dryRun) {
-      await rename(tempPath, avifPath);
-    }
-
-    summary.converted += 1;
-    summary.avifBytes += avifStats.size;
-    usableAvifBySourceUrl.set(toPublicUrl(sourcePath), toPublicUrl(avifPath));
-  } catch (error) {
+    await convertSourceImage({
+      avifPath,
+      existingAvifStats,
+      publicDir,
+      sourcePath,
+      sourceStats,
+      summary,
+      usableAvifBySourceUrl,
+    });
+  } catch (caughtError) {
     summary.failed += 1;
-    console.warn(
-      `[images:avif] Failed to convert ${path.relative(process.cwd(), sourcePath)}: ${
-        error instanceof Error ? error.message : String(error)
-      }`,
+    warn(
+      `[images:avif] Failed to convert ${path.relative(
+        process.cwd(),
+        sourcePath,
+      )}: ${caughtError instanceof Error ? caughtError.message : String(caughtError)}`,
     );
   }
 }
 
-if (!dryRun) {
-  await updateSourceReferences(usableAvifBySourceUrl, summary);
+async function checkSourceImage({
+  avifPath,
+  publicDir,
+  sourcePath,
+  sourceStats,
+  summary,
+  usableAvifBySourceUrl,
+}) {
+  const generatedAvif = await sharp(sourcePath)
+    .rotate()
+    .avif({
+      effort: avifEffort,
+      quality: avifQuality,
+    })
+    .toBuffer();
+
+  if (generatedAvif.length >= sourceStats.size) {
+    summary.skippedLarger += 1;
+    return;
+  }
+
+  summary.staleAssets += 1;
+  summary.avifBytes += generatedAvif.length;
+  usableAvifBySourceUrl.set(
+    toPublicUrl(sourcePath, publicDir),
+    toPublicUrl(avifPath, publicDir),
+  );
 }
 
-console.log(
-  [
-    `[images:avif] scanned=${sourceImages.length}`,
+async function convertSourceImage({
+  avifPath,
+  existingAvifStats,
+  publicDir,
+  sourcePath,
+  sourceStats,
+  summary,
+  usableAvifBySourceUrl,
+}) {
+  const tempPath = `${avifPath}.tmp-${process.pid}`;
+
+  await mkdir(path.dirname(avifPath), { recursive: true });
+  await sharp(sourcePath)
+    .rotate()
+    .avif({
+      effort: avifEffort,
+      quality: avifQuality,
+    })
+    .toFile(tempPath);
+
+  const avifStats = await stat(tempPath).catch(() => null);
+
+  if (!avifStats || avifStats.size >= sourceStats.size) {
+    await rm(tempPath, { force: true });
+
+    if (
+      existingAvifStats &&
+      existingAvifStats.mtimeMs >= sourceStats.mtimeMs &&
+      existingAvifStats.size < sourceStats.size
+    ) {
+      summary.current += 1;
+      summary.avifBytes += existingAvifStats.size;
+      usableAvifBySourceUrl.set(
+        toPublicUrl(sourcePath, publicDir),
+        toPublicUrl(avifPath, publicDir),
+      );
+    } else {
+      summary.skippedLarger += 1;
+    }
+
+    return;
+  }
+
+  await rename(tempPath, avifPath);
+
+  summary.converted += 1;
+  summary.avifBytes += avifStats.size;
+  usableAvifBySourceUrl.set(
+    toPublicUrl(sourcePath, publicDir),
+    toPublicUrl(avifPath, publicDir),
+  );
+}
+
+function formatSummary(summary, check, scanned) {
+  return [
+    `[images:avif] scanned=${scanned}`,
     `converted=${summary.converted}`,
     `current=${summary.current}`,
     `skipped-larger=${summary.skippedLarger}`,
     `failed=${summary.failed}`,
     `references=${summary.referencesUpdated}`,
+    `stale-assets=${summary.staleAssets}`,
+    `stale-references=${summary.staleReferences}`,
+    `mode=${check ? "check" : "write"}`,
     `saved=${formatBytes(summary.sourceBytes - summary.avifBytes)}`,
-  ].join(" "),
-);
-
-if (summary.failed > 0) {
-  process.exitCode = 1;
+  ].join(" ");
 }
 
 async function findSourceImages(root) {
@@ -158,13 +272,15 @@ async function findSourceImages(root) {
   return images;
 }
 
-async function updateSourceReferences(avifBySourceUrl, summary) {
+async function updateSourceReferences(
+  avifBySourceUrl,
+  summary,
+  { cwd, write },
+) {
   const referenceFiles = [];
 
   for (const root of referenceRoots) {
-    referenceFiles.push(
-      ...(await findReferenceFiles(path.join(process.cwd(), root))),
-    );
+    referenceFiles.push(...(await findReferenceFiles(path.join(cwd, root))));
   }
 
   for (const filePath of referenceFiles) {
@@ -186,7 +302,10 @@ async function updateSourceReferences(avifBySourceUrl, summary) {
 
     if (updatedReferencesInFile === 0 || nextSource === source) continue;
 
-    await writeFile(filePath, nextSource, "utf8");
+    if (write) {
+      await writeFile(filePath, nextSource, "utf8");
+    }
+
     summary.referenceFilesUpdated += 1;
     summary.referencesUpdated += updatedReferencesInFile;
   }
@@ -229,12 +348,16 @@ async function findReferenceFiles(root) {
 async function statIfExists(filePath) {
   try {
     return await stat(filePath);
-  } catch (error) {
-    if (error && typeof error === "object" && "code" in error) {
-      if (error.code === "ENOENT") return null;
+  } catch (caughtError) {
+    if (
+      caughtError &&
+      typeof caughtError === "object" &&
+      "code" in caughtError
+    ) {
+      if (caughtError.code === "ENOENT") return null;
     }
 
-    throw error;
+    throw caughtError;
   }
 }
 
@@ -244,7 +367,7 @@ function getAvifPath(sourcePath) {
   return `${sourcePath.slice(0, -extension.length)}.avif`;
 }
 
-function toPublicUrl(filePath) {
+function toPublicUrl(filePath, publicDir) {
   const relativePath = path.relative(publicDir, filePath);
 
   return `/${relativePath.split(path.sep).join("/")}`;
@@ -257,4 +380,21 @@ function formatBytes(bytes) {
     return `${(absoluteBytes / 1024).toFixed(1)}KB`;
 
   return `${(absoluteBytes / 1024 / 1024).toFixed(2)}MB`;
+}
+
+if (isDirectExecution()) {
+  const result = await convertPublicImagesToAvif({
+    check: process.argv.includes("--check"),
+    force: process.argv.includes("--force"),
+  });
+
+  if (!result.ok) {
+    process.exitCode = 1;
+  }
+}
+
+function isDirectExecution() {
+  const entry = process.argv[1];
+
+  return Boolean(entry) && import.meta.url === pathToFileURL(entry).href;
 }

@@ -96,9 +96,10 @@ test.describe("header benchmark extractor", () => {
 
       if (part.id === "plp" || part.id === "product-card") {
         expect(snapshot.metrics.priceTextPresent, part.id).toBe(true);
-        expect(Number(snapshot.metrics.productLinkCount), part.id).toBeGreaterThan(
-          0,
-        );
+        expect(
+          Number(snapshot.metrics.productLinkCount),
+          part.id,
+        ).toBeGreaterThan(0);
         expect(Number(snapshot.metrics.imageCount), part.id).toBeGreaterThan(0);
       }
     }

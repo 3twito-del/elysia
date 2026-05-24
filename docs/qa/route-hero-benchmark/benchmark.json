@@ -101,9 +101,9 @@
           "visibleElementCount": 1,
           "semanticTag": "section",
           "topPx": 0,
-          "heightPx": 628,
+          "heightPx": 800,
           "widthRatio": 1,
-          "areaRatio": 0.6978,
+          "areaRatio": 0.8889,
           "fullBleed": true,
           "hasBorder": false,
           "hasShadow": false,
@@ -116,27 +116,27 @@
           "boxedControlRatio": 1,
           "aquaAccentCount": 0,
           "decorativeGradient": false,
-          "linkCount": 2,
-          "buttonCount": 2,
-          "focusableCount": 2,
+          "linkCount": 1,
+          "buttonCount": 1,
+          "focusableCount": 1,
           "minTapTargetPx": 48,
           "tapTargetPassRatio": 1,
           "ariaLabelCount": 0,
           "namedControlRatio": 1,
           "hasAriaCurrent": false,
           "hasAriaExpanded": false,
-          "textLength": 108,
+          "textLength": 99,
           "headingCount": 1,
-          "paragraphCount": 1,
+          "paragraphCount": 2,
           "formControlCount": 0,
-          "imageCount": 4,
+          "imageCount": 1,
           "videoCount": 0,
           "productLinkCount": 0,
           "priceTextPresent": false,
           "addToCartTextPresent": false,
           "checkoutTextPresent": false,
-          "linksPer1000Px": 3.185,
-          "controlsPer1000Px": 3.185
+          "linksPer1000Px": 1.25,
+          "controlsPer1000Px": 1.25
         },
         "loadStatus": "ok",
         "siteName": "Elysia",
@@ -159,9 +159,9 @@
           "visibleElementCount": 1,
           "semanticTag": "section",
           "topPx": 0,
-          "heightPx": 598,
+          "heightPx": 770,
           "widthRatio": 1,
-          "areaRatio": 0.6644,
+          "areaRatio": 0.8556,
           "fullBleed": true,
           "hasBorder": false,
           "hasShadow": false,
@@ -174,27 +174,27 @@
           "boxedControlRatio": 1,
           "aquaAccentCount": 0,
           "decorativeGradient": false,
-          "linkCount": 2,
-          "buttonCount": 2,
-          "focusableCount": 2,
+          "linkCount": 1,
+          "buttonCount": 1,
+          "focusableCount": 1,
           "minTapTargetPx": 48,
           "tapTargetPassRatio": 1,
           "ariaLabelCount": 0,
           "namedControlRatio": 1,
           "hasAriaCurrent": false,
           "hasAriaExpanded": false,
-          "textLength": 108,
+          "textLength": 99,
           "headingCount": 1,
-          "paragraphCount": 1,
+          "paragraphCount": 2,
           "formControlCount": 0,
-          "imageCount": 4,
+          "imageCount": 1,
           "videoCount": 0,
           "productLinkCount": 0,
           "priceTextPresent": false,
           "addToCartTextPresent": false,
           "checkoutTextPresent": false,
-          "linksPer1000Px": 3.344,
-          "controlsPer1000Px": 3.344
+          "linksPer1000Px": 1.299,
+          "controlsPer1000Px": 1.299
         },
         "loadStatus": "ok",
         "siteName": "Elysia",
@@ -217,9 +217,9 @@
           "visibleElementCount": 1,
           "semanticTag": "section",
           "topPx": 0,
-          "heightPx": 512,
+          "heightPx": 768,
           "widthRatio": 1,
-          "areaRatio": 0.6066,
+          "areaRatio": 0.91,
           "fullBleed": true,
           "hasBorder": false,
           "hasShadow": false,
@@ -232,27 +232,27 @@
           "boxedControlRatio": 1,
           "aquaAccentCount": 0,
           "decorativeGradient": false,
-          "linkCount": 2,
-          "buttonCount": 2,
-          "focusableCount": 2,
+          "linkCount": 1,
+          "buttonCount": 1,
+          "focusableCount": 1,
           "minTapTargetPx": 48,
           "tapTargetPassRatio": 1,
           "ariaLabelCount": 0,
           "namedControlRatio": 1,
           "hasAriaCurrent": false,
           "hasAriaExpanded": false,
-          "textLength": 108,
+          "textLength": 99,
           "headingCount": 1,
-          "paragraphCount": 1,
+          "paragraphCount": 2,
           "formControlCount": 0,
-          "imageCount": 4,
+          "imageCount": 1,
           "videoCount": 0,
           "productLinkCount": 0,
           "priceTextPresent": false,
           "addToCartTextPresent": false,
           "checkoutTextPresent": false,
-          "linksPer1000Px": 3.906,
-          "controlsPer1000Px": 3.906
+          "linksPer1000Px": 1.302,
+          "controlsPer1000Px": 1.302
         },
         "loadStatus": "ok",
         "siteName": "Elysia",
@@ -276,9 +276,9 @@
           "semanticTag": "section",
           "topPx": 0,
           "heightPx": 278,
-          "widthRatio": 1,
-          "areaRatio": 0.3094,
-          "fullBleed": true,
+          "widthRatio": 0.993,
+          "areaRatio": 0.3073,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -299,7 +299,7 @@
           "namedControlRatio": 1,
           "hasAriaCurrent": false,
           "hasAriaExpanded": false,
-          "textLength": 65,
+          "textLength": 62,
           "headingCount": 1,
           "paragraphCount": 2,
           "formControlCount": 0,
@@ -334,9 +334,9 @@
           "semanticTag": "section",
           "topPx": 0,
           "heightPx": 206,
-          "widthRatio": 1,
-          "areaRatio": 0.2287,
-          "fullBleed": true,
+          "widthRatio": 0.987,
+          "areaRatio": 0.2258,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -357,7 +357,7 @@
           "namedControlRatio": 1,
           "hasAriaCurrent": false,
           "hasAriaExpanded": false,
-          "textLength": 65,
+          "textLength": 62,
           "headingCount": 1,
           "paragraphCount": 2,
           "formControlCount": 0,
@@ -392,9 +392,9 @@
           "semanticTag": "section",
           "topPx": 0,
           "heightPx": 200,
-          "widthRatio": 1,
-          "areaRatio": 0.2375,
-          "fullBleed": true,
+          "widthRatio": 0.974,
+          "areaRatio": 0.2314,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -415,7 +415,7 @@
           "namedControlRatio": 1,
           "hasAriaCurrent": false,
           "hasAriaExpanded": false,
-          "textLength": 65,
+          "textLength": 62,
           "headingCount": 1,
           "paragraphCount": 2,
           "formControlCount": 0,
@@ -450,9 +450,9 @@
           "semanticTag": "section",
           "topPx": 0,
           "heightPx": 278,
-          "widthRatio": 1,
-          "areaRatio": 0.3094,
-          "fullBleed": true,
+          "widthRatio": 0.993,
+          "areaRatio": 0.3073,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -473,7 +473,7 @@
           "namedControlRatio": 1,
           "hasAriaCurrent": false,
           "hasAriaExpanded": false,
-          "textLength": 88,
+          "textLength": 83,
           "headingCount": 1,
           "paragraphCount": 2,
           "formControlCount": 0,
@@ -508,9 +508,9 @@
           "semanticTag": "section",
           "topPx": 0,
           "heightPx": 206,
-          "widthRatio": 1,
-          "areaRatio": 0.2287,
-          "fullBleed": true,
+          "widthRatio": 0.987,
+          "areaRatio": 0.2258,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -531,7 +531,7 @@
           "namedControlRatio": 1,
           "hasAriaCurrent": false,
           "hasAriaExpanded": false,
-          "textLength": 88,
+          "textLength": 83,
           "headingCount": 1,
           "paragraphCount": 2,
           "formControlCount": 0,
@@ -566,9 +566,9 @@
           "semanticTag": "section",
           "topPx": 0,
           "heightPx": 225,
-          "widthRatio": 1,
-          "areaRatio": 0.2664,
-          "fullBleed": true,
+          "widthRatio": 0.974,
+          "areaRatio": 0.2596,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -589,7 +589,7 @@
           "namedControlRatio": 1,
           "hasAriaCurrent": false,
           "hasAriaExpanded": false,
-          "textLength": 88,
+          "textLength": 83,
           "headingCount": 1,
           "paragraphCount": 2,
           "formControlCount": 0,
@@ -624,9 +624,9 @@
           "semanticTag": "section",
           "topPx": 0,
           "heightPx": 363,
-          "widthRatio": 1,
-          "areaRatio": 0.4035,
-          "fullBleed": true,
+          "widthRatio": 0.993,
+          "areaRatio": 0.4007,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -647,7 +647,7 @@
           "namedControlRatio": 1,
           "hasAriaCurrent": false,
           "hasAriaExpanded": false,
-          "textLength": 142,
+          "textLength": 134,
           "headingCount": 1,
           "paragraphCount": 2,
           "formControlCount": 0,
@@ -682,9 +682,9 @@
           "semanticTag": "section",
           "topPx": 0,
           "heightPx": 265,
-          "widthRatio": 1,
-          "areaRatio": 0.2943,
-          "fullBleed": true,
+          "widthRatio": 0.987,
+          "areaRatio": 0.2905,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -705,7 +705,7 @@
           "namedControlRatio": 1,
           "hasAriaCurrent": false,
           "hasAriaExpanded": false,
-          "textLength": 142,
+          "textLength": 134,
           "headingCount": 1,
           "paragraphCount": 2,
           "formControlCount": 0,
@@ -740,9 +740,9 @@
           "semanticTag": "section",
           "topPx": 0,
           "heightPx": 268,
-          "widthRatio": 1,
-          "areaRatio": 0.3174,
-          "fullBleed": true,
+          "widthRatio": 0.974,
+          "areaRatio": 0.3092,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -763,7 +763,7 @@
           "namedControlRatio": 1,
           "hasAriaCurrent": false,
           "hasAriaExpanded": false,
-          "textLength": 142,
+          "textLength": 134,
           "headingCount": 1,
           "paragraphCount": 2,
           "formControlCount": 0,
@@ -798,9 +798,9 @@
           "semanticTag": "section",
           "topPx": 0,
           "heightPx": 335,
-          "widthRatio": 1,
-          "areaRatio": 0.3721,
-          "fullBleed": true,
+          "widthRatio": 0.993,
+          "areaRatio": 0.3695,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -821,7 +821,7 @@
           "namedControlRatio": 1,
           "hasAriaCurrent": false,
           "hasAriaExpanded": false,
-          "textLength": 107,
+          "textLength": 103,
           "headingCount": 1,
           "paragraphCount": 2,
           "formControlCount": 0,
@@ -856,9 +856,9 @@
           "semanticTag": "section",
           "topPx": 0,
           "heightPx": 239,
-          "widthRatio": 1,
-          "areaRatio": 0.2656,
-          "fullBleed": true,
+          "widthRatio": 0.987,
+          "areaRatio": 0.2622,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -879,7 +879,7 @@
           "namedControlRatio": 1,
           "hasAriaCurrent": false,
           "hasAriaExpanded": false,
-          "textLength": 107,
+          "textLength": 103,
           "headingCount": 1,
           "paragraphCount": 2,
           "formControlCount": 0,
@@ -914,9 +914,9 @@
           "semanticTag": "section",
           "topPx": 0,
           "heightPx": 244,
-          "widthRatio": 1,
-          "areaRatio": 0.2885,
-          "fullBleed": true,
+          "widthRatio": 0.974,
+          "areaRatio": 0.2811,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -937,7 +937,7 @@
           "namedControlRatio": 1,
           "hasAriaCurrent": false,
           "hasAriaExpanded": false,
-          "textLength": 107,
+          "textLength": 103,
           "headingCount": 1,
           "paragraphCount": 2,
           "formControlCount": 0,
@@ -1184,16 +1184,14 @@
     {
       "elysiaValue": "section",
       "corpusBaseline": {
-        "majorityValue": "main",
-        "sampleWeight": 18.5,
-        "supportWeight": 10,
+        "reason": "No weighted reference majority reached the active threshold.",
         "type": "category"
       },
-      "evidenceSiteCount": 14,
-      "evidenceWeight": 10,
+      "evidenceSiteCount": 0,
+      "evidenceWeight": 18.5,
       "group": "chrome",
       "key": "semanticTag",
-      "matchStatus": "mismatch",
+      "matchStatus": "notComparable",
       "targetLabel": "home",
       "viewport": "desktop"
     },
@@ -1217,13 +1215,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 628,
+      "elysiaValue": 800,
       "corpusBaseline": {
-        "max": 7466,
-        "median": 3935,
+        "max": 6230,
+        "median": 2485,
         "min": 138,
         "q1": 900,
-        "q3": 5129,
+        "q3": 4956,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -1240,7 +1238,7 @@
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 1,
+        "min": 0.989,
         "q1": 1,
         "q3": 1,
         "sampleWeight": 18.5,
@@ -1255,13 +1253,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 0.6978,
+      "elysiaValue": 0.8889,
       "corpusBaseline": {
-        "max": 8.2953,
-        "median": 4.3728,
+        "max": 6.9217,
+        "median": 2.7611,
         "min": 0.1531,
         "q1": 1,
-        "q3": 5.6987,
+        "q3": 5.5062,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -1278,11 +1276,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 18.5,
+        "supportWeight": 17,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 18.5,
+      "evidenceWeight": 17,
       "group": "chrome",
       "key": "fullBleed",
       "matchStatus": "match",
@@ -1388,7 +1386,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
+        "max": 7,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -1407,7 +1405,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 24,
+        "max": 7,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -1426,11 +1424,11 @@
     {
       "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 0.262,
-        "median": 0.081,
+        "max": 0.25,
+        "median": 0.073,
         "min": 0,
-        "q1": 0.036,
-        "q3": 0.189,
+        "q1": 0,
+        "q3": 0.14,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -1478,12 +1476,12 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 2,
+      "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 186,
-        "median": 49,
+        "max": 185,
+        "median": 35,
         "min": 0,
-        "q1": 19,
+        "q1": 16,
         "q3": 92,
         "sampleWeight": 18.5,
         "type": "number"
@@ -1497,13 +1495,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 2,
+      "elysiaValue": 1,
       "corpusBaseline": {
         "max": 56,
         "median": 10,
         "min": 0,
-        "q1": 6,
-        "q3": 17,
+        "q1": 0,
+        "q3": 16,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -1511,17 +1509,17 @@
       "evidenceWeight": 18.5,
       "group": "interaction",
       "key": "buttonCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "home",
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 2,
+      "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 195,
-        "median": 62,
+        "max": 194,
+        "median": 60,
         "min": 0,
-        "q1": 16,
+        "q1": 12,
         "q3": 115,
         "sampleWeight": 18.5,
         "type": "number"
@@ -1559,8 +1557,8 @@
         "max": 1,
         "median": 0.4,
         "min": 0.065,
-        "q1": 0.128,
-        "q3": 0.563,
+        "q1": 0.129,
+        "q3": 0.676,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -1575,10 +1573,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 179,
-        "median": 31,
+        "max": 180,
+        "median": 30,
         "min": 0,
-        "q1": 12,
+        "q1": 1,
         "q3": 101,
         "sampleWeight": 18.5,
         "type": "number"
@@ -1596,7 +1594,7 @@
       "corpusBaseline": {
         "max": 1,
         "median": 0.986,
-        "min": 0.804,
+        "min": 0.8,
         "q1": 0.964,
         "q3": 1,
         "sampleWeight": 18.5,
@@ -1643,13 +1641,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 108,
+      "elysiaValue": 99,
       "corpusBaseline": {
-        "max": 1322156,
-        "median": 16207,
+        "max": 1375594,
+        "median": 15905,
         "min": 19,
-        "q1": 1735,
-        "q3": 39992,
+        "q1": 1057,
+        "q3": 30392,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -1665,10 +1663,10 @@
       "elysiaValue": 1,
       "corpusBaseline": {
         "max": 90,
-        "median": 15,
+        "median": 10,
         "min": 1,
-        "q1": 4,
-        "q3": 34,
+        "q1": 3,
+        "q3": 32,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -1681,13 +1679,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 2,
       "corpusBaseline": {
         "max": 1221,
-        "median": 16,
+        "median": 13,
         "min": 0,
         "q1": 2,
-        "q3": 52,
+        "q3": 33,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -1695,7 +1693,7 @@
       "evidenceWeight": 18.5,
       "group": "content",
       "key": "paragraphCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "home",
       "viewport": "desktop"
     },
@@ -1719,12 +1717,12 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 4,
+      "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 395,
+        "max": 414,
         "median": 18,
         "min": 0,
-        "q1": 3,
+        "q1": 0,
         "q3": 70,
         "sampleWeight": 18.5,
         "type": "number"
@@ -1780,11 +1778,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 11,
+        "supportWeight": 9.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 11,
+      "evidenceWeight": 9.5,
       "group": "commerce",
       "key": "priceTextPresent",
       "matchStatus": "mismatch",
@@ -1796,11 +1794,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 15.5,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 15.5,
+      "evidenceWeight": 14,
       "group": "commerce",
       "key": "addToCartTextPresent",
       "matchStatus": "mismatch",
@@ -1812,11 +1810,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 15.5,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 15.5,
+      "evidenceWeight": 14,
       "group": "commerce",
       "key": "checkoutTextPresent",
       "matchStatus": "mismatch",
@@ -1824,12 +1822,12 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 3.185,
+      "elysiaValue": 1.25,
       "corpusBaseline": {
-        "max": 206.667,
+        "max": 205.556,
         "median": 10.686,
         "min": 0,
-        "q1": 4.828,
+        "q1": 2.617,
         "q3": 22.133,
         "sampleWeight": 18.5,
         "type": "number"
@@ -1843,12 +1841,12 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 3.185,
+      "elysiaValue": 1.25,
       "corpusBaseline": {
-        "max": 216.667,
+        "max": 215.556,
         "median": 14.96,
         "min": 0,
-        "q1": 3.049,
+        "q1": 2.617,
         "q3": 28.247,
         "sampleWeight": 18.5,
         "type": "number"
@@ -1857,7 +1855,7 @@
       "evidenceWeight": 18.5,
       "group": "density",
       "key": "controlsPer1000Px",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "home",
       "viewport": "desktop"
     },
@@ -1918,16 +1916,14 @@
     {
       "elysiaValue": "section",
       "corpusBaseline": {
-        "majorityValue": "main",
-        "sampleWeight": 18.5,
-        "supportWeight": 10,
+        "reason": "No weighted reference majority reached the active threshold.",
         "type": "category"
       },
-      "evidenceSiteCount": 14,
-      "evidenceWeight": 10,
+      "evidenceSiteCount": 0,
+      "evidenceWeight": 18.5,
       "group": "chrome",
       "key": "semanticTag",
-      "matchStatus": "mismatch",
+      "matchStatus": "notComparable",
       "targetLabel": "home",
       "viewport": "tablet"
     },
@@ -1937,8 +1933,8 @@
         "max": 224,
         "median": 0,
         "min": -4941,
-        "q1": -2986,
-        "q3": 0,
+        "q1": -2110,
+        "q3": 21,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -1951,13 +1947,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 598,
+      "elysiaValue": 770,
       "corpusBaseline": {
-        "max": 11582,
-        "median": 3815,
+        "max": 9463,
+        "median": 3473,
         "min": 98,
         "q1": 900,
-        "q3": 5969,
+        "q3": 4500,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -1974,7 +1970,7 @@
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 1,
+        "min": 0.979,
         "q1": 1,
         "q3": 1,
         "sampleWeight": 18.5,
@@ -1989,13 +1985,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 0.6644,
+      "elysiaValue": 0.8556,
       "corpusBaseline": {
-        "max": 12.8688,
-        "median": 4.239,
+        "max": 10.5139,
+        "median": 3.8592,
         "min": 0.1087,
         "q1": 1,
-        "q3": 6.6321,
+        "q3": 5.0002,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -2012,11 +2008,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 18.5,
+        "supportWeight": 17,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 18.5,
+      "evidenceWeight": 17,
       "group": "chrome",
       "key": "fullBleed",
       "matchStatus": "match",
@@ -2122,7 +2118,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
+        "max": 8,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -2141,7 +2137,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 24,
+        "max": 7,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -2161,10 +2157,10 @@
       "elysiaValue": 1,
       "corpusBaseline": {
         "max": 0.855,
-        "median": 0.127,
+        "median": 0.105,
         "min": 0,
-        "q1": 0.047,
-        "q3": 0.25,
+        "q1": 0,
+        "q3": 0.213,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -2212,13 +2208,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 2,
+      "elysiaValue": 1,
       "corpusBaseline": {
         "max": 100,
-        "median": 32,
+        "median": 24,
         "min": 0,
-        "q1": 19,
-        "q3": 49,
+        "q1": 16,
+        "q3": 42,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -2231,13 +2227,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 2,
+      "elysiaValue": 1,
       "corpusBaseline": {
         "max": 87,
         "median": 13,
         "min": 0,
-        "q1": 8,
-        "q3": 21,
+        "q1": 0,
+        "q3": 18,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -2245,18 +2241,18 @@
       "evidenceWeight": 18.5,
       "group": "interaction",
       "key": "buttonCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "home",
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 2,
+      "elysiaValue": 1,
       "corpusBaseline": {
         "max": 110,
-        "median": 53,
+        "median": 41,
         "min": 0,
-        "q1": 16,
-        "q3": 103,
+        "q1": 12,
+        "q3": 76,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -2291,10 +2287,10 @@
       "elysiaValue": 1,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.415,
+        "median": 0.394,
         "min": 0.083,
         "q1": 0.336,
-        "q3": 0.563,
+        "q3": 0.707,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -2309,10 +2305,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 176,
-        "median": 38,
+        "max": 177,
+        "median": 32,
         "min": 0,
-        "q1": 12,
+        "q1": 0,
         "q3": 101,
         "sampleWeight": 18.5,
         "type": "number"
@@ -2321,7 +2317,7 @@
       "evidenceWeight": 18.5,
       "group": "accessibility",
       "key": "ariaLabelCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "home",
       "viewport": "tablet"
     },
@@ -2330,7 +2326,7 @@
       "corpusBaseline": {
         "max": 1,
         "median": 0.972,
-        "min": 0.786,
+        "min": 0.78,
         "q1": 0.917,
         "q3": 1,
         "sampleWeight": 18.5,
@@ -2377,13 +2373,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 108,
+      "elysiaValue": 99,
       "corpusBaseline": {
-        "max": 1335155,
-        "median": 17214,
+        "max": 1375873,
+        "median": 15905,
         "min": 19,
-        "q1": 1581,
-        "q3": 39726,
+        "q1": 1057,
+        "q3": 34225,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -2398,11 +2394,11 @@
     {
       "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 40,
-        "median": 10,
+        "max": 36,
+        "median": 8,
         "min": 1,
-        "q1": 4,
-        "q3": 29,
+        "q1": 3,
+        "q3": 25,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -2415,13 +2411,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 2,
       "corpusBaseline": {
         "max": 91,
         "median": 13,
         "min": 0,
         "q1": 2,
-        "q3": 51,
+        "q3": 39,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -2429,7 +2425,7 @@
       "evidenceWeight": 18.5,
       "group": "content",
       "key": "paragraphCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "home",
       "viewport": "tablet"
     },
@@ -2453,12 +2449,12 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 4,
+      "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 396,
-        "median": 32,
+        "max": 416,
+        "median": 22,
         "min": 0,
-        "q1": 18,
+        "q1": 12,
         "q3": 95,
         "sampleWeight": 18.5,
         "type": "number"
@@ -2530,11 +2526,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 15.5,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 15.5,
+      "evidenceWeight": 14,
       "group": "commerce",
       "key": "addToCartTextPresent",
       "matchStatus": "mismatch",
@@ -2546,11 +2542,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 15.5,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 15.5,
+      "evidenceWeight": 14,
       "group": "commerce",
       "key": "checkoutTextPresent",
       "matchStatus": "mismatch",
@@ -2558,12 +2554,12 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 3.344,
+      "elysiaValue": 1.299,
       "corpusBaseline": {
-        "max": 35.556,
-        "median": 6.029,
+        "max": 38.889,
+        "median": 5.998,
         "min": 0,
-        "q1": 4.607,
+        "q1": 4.021,
         "q3": 10.888,
         "sampleWeight": 18.5,
         "type": "number"
@@ -2577,13 +2573,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 3.344,
+      "elysiaValue": 1.299,
       "corpusBaseline": {
-        "max": 58.889,
+        "max": 63.333,
         "median": 11.308,
         "min": 0,
-        "q1": 4.607,
-        "q3": 23.975,
+        "q1": 3.133,
+        "q3": 26.407,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -2654,11 +2650,11 @@
       "corpusBaseline": {
         "majorityValue": "main",
         "sampleWeight": 18.5,
-        "supportWeight": 11,
+        "supportWeight": 9.5,
         "type": "category"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 11,
+      "evidenceWeight": 9.5,
       "group": "chrome",
       "key": "semanticTag",
       "matchStatus": "mismatch",
@@ -2670,9 +2666,9 @@
       "corpusBaseline": {
         "max": 124,
         "median": 0,
-        "min": -5742,
-        "q1": -3392,
-        "q3": 0,
+        "min": -6462,
+        "q1": -3944,
+        "q3": 21,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -2685,13 +2681,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 512,
+      "elysiaValue": 768,
       "corpusBaseline": {
-        "max": 8978,
-        "median": 4492,
-        "min": 844,
-        "q1": 3479,
-        "q3": 5743,
+        "max": 8453,
+        "median": 4275,
+        "min": 224,
+        "q1": 844,
+        "q3": 5075,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -2708,7 +2704,7 @@
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 1,
+        "min": 0.959,
         "q1": 1,
         "q3": 1,
         "sampleWeight": 18.5,
@@ -2723,13 +2719,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 0.6066,
+      "elysiaValue": 0.91,
       "corpusBaseline": {
-        "max": 10.6376,
-        "median": 5.3218,
-        "min": 1,
-        "q1": 4.1216,
-        "q3": 6.805,
+        "max": 10.0148,
+        "median": 5.0649,
+        "min": 0.2544,
+        "q1": 1,
+        "q3": 6.0128,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -2746,11 +2742,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 18.5,
+        "supportWeight": 17,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 18.5,
+      "evidenceWeight": 17,
       "group": "chrome",
       "key": "fullBleed",
       "matchStatus": "match",
@@ -2856,11 +2852,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
-        "median": 1,
+        "max": 16,
+        "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 5,
+        "q3": 2,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -2875,11 +2871,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 24,
-        "median": 1,
+        "max": 16,
+        "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 3,
+        "q3": 2,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -2895,10 +2891,10 @@
       "elysiaValue": 1,
       "corpusBaseline": {
         "max": 0.86,
-        "median": 0.209,
+        "median": 0.163,
         "min": 0,
-        "q1": 0.076,
-        "q3": 0.265,
+        "q1": 0.012,
+        "q3": 0.25,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -2946,13 +2942,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 2,
+      "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 567,
+        "max": 569,
         "median": 32,
-        "min": 1,
-        "q1": 23,
-        "q3": 49,
+        "min": 0,
+        "q1": 19,
+        "q3": 44,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -2965,13 +2961,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 2,
+      "elysiaValue": 1,
       "corpusBaseline": {
         "max": 91,
-        "median": 17,
+        "median": 15,
         "min": 0,
-        "q1": 8,
-        "q3": 30,
+        "q1": 2,
+        "q3": 31,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -2984,13 +2980,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 2,
+      "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 578,
-        "median": 53,
-        "min": 3,
-        "q1": 36,
-        "q3": 102,
+        "max": 580,
+        "median": 57,
+        "min": 0,
+        "q1": 16,
+        "q3": 75,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -3007,8 +3003,8 @@
       "corpusBaseline": {
         "max": 26,
         "median": 16,
-        "min": 1,
-        "q1": 3,
+        "min": 0,
+        "q1": 1,
         "q3": 20,
         "sampleWeight": 18.5,
         "type": "number"
@@ -3024,11 +3020,11 @@
     {
       "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 0.667,
-        "median": 0.434,
+        "max": 1,
+        "median": 0.404,
         "min": 0,
         "q1": 0.191,
-        "q3": 0.563,
+        "q3": 0.613,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -3043,11 +3039,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 176,
-        "median": 38,
+        "max": 177,
+        "median": 32,
         "min": 0,
-        "q1": 21,
-        "q3": 64,
+        "q1": 13,
+        "q3": 57,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -3063,9 +3059,9 @@
       "elysiaValue": 1,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.973,
-        "min": 0.333,
-        "q1": 0.815,
+        "median": 0.977,
+        "min": 0.786,
+        "q1": 0.917,
         "q3": 1,
         "sampleWeight": 18.5,
         "type": "number"
@@ -3099,11 +3095,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 18.5,
-        "supportWeight": 14,
+        "supportWeight": 13,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 14,
+      "evidenceWeight": 13,
       "group": "accessibility",
       "key": "hasAriaExpanded",
       "matchStatus": "match",
@@ -3111,13 +3107,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 108,
+      "elysiaValue": 99,
       "corpusBaseline": {
-        "max": 1321620,
-        "median": 17214,
+        "max": 1375613,
+        "median": 15905,
         "min": 60,
         "q1": 1668,
-        "q3": 39594,
+        "q3": 29569,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -3132,11 +3128,11 @@
     {
       "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 41,
-        "median": 10,
+        "max": 42,
+        "median": 8,
         "min": 0,
-        "q1": 4,
-        "q3": 33,
+        "q1": 3,
+        "q3": 25,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -3149,13 +3145,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 2,
       "corpusBaseline": {
         "max": 91,
-        "median": 33,
+        "median": 24,
         "min": 0,
         "q1": 3,
-        "q3": 59,
+        "q3": 51,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -3187,7 +3183,7 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 4,
+      "elysiaValue": 1,
       "corpusBaseline": {
         "max": 175,
         "median": 56,
@@ -3264,11 +3260,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 14,
+        "supportWeight": 12.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 14,
+      "evidenceWeight": 12.5,
       "group": "commerce",
       "key": "addToCartTextPresent",
       "matchStatus": "mismatch",
@@ -3280,11 +3276,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 14,
+        "supportWeight": 12.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 14,
+      "evidenceWeight": 12.5,
       "group": "commerce",
       "key": "checkoutTextPresent",
       "matchStatus": "mismatch",
@@ -3292,12 +3288,12 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 3.906,
+      "elysiaValue": 1.302,
       "corpusBaseline": {
-        "max": 78.073,
-        "median": 7.313,
-        "min": 1.185,
-        "q1": 5.422,
+        "max": 78.349,
+        "median": 5.874,
+        "min": 0,
+        "q1": 5.206,
         "q3": 10.033,
         "sampleWeight": 18.5,
         "type": "number"
@@ -3311,12 +3307,12 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 3.906,
+      "elysiaValue": 1.302,
       "corpusBaseline": {
-        "max": 79.588,
-        "median": 11.361,
-        "min": 3.45,
-        "q1": 8.015,
+        "max": 79.863,
+        "median": 9.415,
+        "min": 0,
+        "q1": 3.854,
         "q3": 26.668,
         "sampleWeight": 18.5,
         "type": "number"
@@ -3386,16 +3382,14 @@
     {
       "elysiaValue": "section",
       "corpusBaseline": {
-        "majorityValue": "main",
-        "sampleWeight": 18.5,
-        "supportWeight": 10,
+        "reason": "No weighted reference majority reached the active threshold.",
         "type": "category"
       },
-      "evidenceSiteCount": 14,
-      "evidenceWeight": 10,
+      "evidenceSiteCount": 0,
+      "evidenceWeight": 18.5,
       "group": "chrome",
       "key": "semanticTag",
-      "matchStatus": "mismatch",
+      "matchStatus": "notComparable",
       "targetLabel": "category",
       "viewport": "desktop"
     },
@@ -3421,11 +3415,11 @@
     {
       "elysiaValue": 278,
       "corpusBaseline": {
-        "max": 7466,
-        "median": 3935,
+        "max": 6230,
+        "median": 2485,
         "min": 138,
         "q1": 900,
-        "q3": 5129,
+        "q3": 4956,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -3438,11 +3432,11 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 0.993,
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 1,
+        "min": 0.989,
         "q1": 1,
         "q3": 1,
         "sampleWeight": 18.5,
@@ -3457,13 +3451,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 0.3094,
+      "elysiaValue": 0.3073,
       "corpusBaseline": {
-        "max": 8.2953,
-        "median": 4.3728,
+        "max": 6.9217,
+        "median": 2.7611,
         "min": 0.1531,
         "q1": 1,
-        "q3": 5.6987,
+        "q3": 5.5062,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -3476,18 +3470,18 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 18.5,
+        "supportWeight": 17,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 18.5,
+      "evidenceWeight": 17,
       "group": "chrome",
       "key": "fullBleed",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "category",
       "viewport": "desktop"
     },
@@ -3590,7 +3584,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
+        "max": 7,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -3609,7 +3603,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 24,
+        "max": 7,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -3628,11 +3622,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 0.262,
-        "median": 0.081,
+        "max": 0.25,
+        "median": 0.073,
         "min": 0,
-        "q1": 0.036,
-        "q3": 0.189,
+        "q1": 0,
+        "q3": 0.14,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -3682,10 +3676,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 186,
-        "median": 49,
+        "max": 185,
+        "median": 35,
         "min": 0,
-        "q1": 19,
+        "q1": 16,
         "q3": 92,
         "sampleWeight": 18.5,
         "type": "number"
@@ -3704,8 +3698,8 @@
         "max": 56,
         "median": 10,
         "min": 0,
-        "q1": 6,
-        "q3": 17,
+        "q1": 0,
+        "q3": 16,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -3713,17 +3707,17 @@
       "evidenceWeight": 18.5,
       "group": "interaction",
       "key": "buttonCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "category",
       "viewport": "desktop"
     },
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 195,
-        "median": 62,
+        "max": 194,
+        "median": 60,
         "min": 0,
-        "q1": 16,
+        "q1": 12,
         "q3": 115,
         "sampleWeight": 18.5,
         "type": "number"
@@ -3761,8 +3755,8 @@
         "max": 1,
         "median": 0.4,
         "min": 0.065,
-        "q1": 0.128,
-        "q3": 0.563,
+        "q1": 0.129,
+        "q3": 0.676,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -3777,10 +3771,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 179,
-        "median": 31,
+        "max": 180,
+        "median": 30,
         "min": 0,
-        "q1": 12,
+        "q1": 1,
         "q3": 101,
         "sampleWeight": 18.5,
         "type": "number"
@@ -3798,7 +3792,7 @@
       "corpusBaseline": {
         "max": 1,
         "median": 0.986,
-        "min": 0.804,
+        "min": 0.8,
         "q1": 0.964,
         "q3": 1,
         "sampleWeight": 18.5,
@@ -3845,13 +3839,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 65,
+      "elysiaValue": 62,
       "corpusBaseline": {
-        "max": 1322156,
-        "median": 16207,
+        "max": 1375594,
+        "median": 15905,
         "min": 19,
-        "q1": 1735,
-        "q3": 39992,
+        "q1": 1057,
+        "q3": 30392,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -3867,10 +3861,10 @@
       "elysiaValue": 1,
       "corpusBaseline": {
         "max": 90,
-        "median": 15,
+        "median": 10,
         "min": 1,
-        "q1": 4,
-        "q3": 34,
+        "q1": 3,
+        "q3": 32,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -3886,10 +3880,10 @@
       "elysiaValue": 2,
       "corpusBaseline": {
         "max": 1221,
-        "median": 16,
+        "median": 13,
         "min": 0,
         "q1": 2,
-        "q3": 52,
+        "q3": 33,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -3923,10 +3917,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 395,
+        "max": 414,
         "median": 18,
         "min": 0,
-        "q1": 3,
+        "q1": 0,
         "q3": 70,
         "sampleWeight": 18.5,
         "type": "number"
@@ -3935,7 +3929,7 @@
       "evidenceWeight": 18.5,
       "group": "media",
       "key": "imageCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "category",
       "viewport": "desktop"
     },
@@ -3982,11 +3976,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 11,
+        "supportWeight": 9.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 11,
+      "evidenceWeight": 9.5,
       "group": "commerce",
       "key": "priceTextPresent",
       "matchStatus": "mismatch",
@@ -3998,11 +3992,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 15.5,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 15.5,
+      "evidenceWeight": 14,
       "group": "commerce",
       "key": "addToCartTextPresent",
       "matchStatus": "mismatch",
@@ -4014,11 +4008,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 15.5,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 15.5,
+      "evidenceWeight": 14,
       "group": "commerce",
       "key": "checkoutTextPresent",
       "matchStatus": "mismatch",
@@ -4028,10 +4022,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 206.667,
+        "max": 205.556,
         "median": 10.686,
         "min": 0,
-        "q1": 4.828,
+        "q1": 2.617,
         "q3": 22.133,
         "sampleWeight": 18.5,
         "type": "number"
@@ -4047,10 +4041,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 216.667,
+        "max": 215.556,
         "median": 14.96,
         "min": 0,
-        "q1": 3.049,
+        "q1": 2.617,
         "q3": 28.247,
         "sampleWeight": 18.5,
         "type": "number"
@@ -4120,16 +4114,14 @@
     {
       "elysiaValue": "section",
       "corpusBaseline": {
-        "majorityValue": "main",
-        "sampleWeight": 18.5,
-        "supportWeight": 10,
+        "reason": "No weighted reference majority reached the active threshold.",
         "type": "category"
       },
-      "evidenceSiteCount": 14,
-      "evidenceWeight": 10,
+      "evidenceSiteCount": 0,
+      "evidenceWeight": 18.5,
       "group": "chrome",
       "key": "semanticTag",
-      "matchStatus": "mismatch",
+      "matchStatus": "notComparable",
       "targetLabel": "category",
       "viewport": "tablet"
     },
@@ -4139,8 +4131,8 @@
         "max": 224,
         "median": 0,
         "min": -4941,
-        "q1": -2986,
-        "q3": 0,
+        "q1": -2110,
+        "q3": 21,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -4155,11 +4147,11 @@
     {
       "elysiaValue": 206,
       "corpusBaseline": {
-        "max": 11582,
-        "median": 3815,
+        "max": 9463,
+        "median": 3473,
         "min": 98,
         "q1": 900,
-        "q3": 5969,
+        "q3": 4500,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -4172,11 +4164,11 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 0.987,
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 1,
+        "min": 0.979,
         "q1": 1,
         "q3": 1,
         "sampleWeight": 18.5,
@@ -4191,13 +4183,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 0.2287,
+      "elysiaValue": 0.2258,
       "corpusBaseline": {
-        "max": 12.8688,
-        "median": 4.239,
+        "max": 10.5139,
+        "median": 3.8592,
         "min": 0.1087,
         "q1": 1,
-        "q3": 6.6321,
+        "q3": 5.0002,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -4210,18 +4202,18 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 18.5,
+        "supportWeight": 17,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 18.5,
+      "evidenceWeight": 17,
       "group": "chrome",
       "key": "fullBleed",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "category",
       "viewport": "tablet"
     },
@@ -4324,7 +4316,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
+        "max": 8,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -4343,7 +4335,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 24,
+        "max": 7,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -4363,10 +4355,10 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 0.855,
-        "median": 0.127,
+        "median": 0.105,
         "min": 0,
-        "q1": 0.047,
-        "q3": 0.25,
+        "q1": 0,
+        "q3": 0.213,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -4417,10 +4409,10 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 100,
-        "median": 32,
+        "median": 24,
         "min": 0,
-        "q1": 19,
-        "q3": 49,
+        "q1": 16,
+        "q3": 42,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -4438,8 +4430,8 @@
         "max": 87,
         "median": 13,
         "min": 0,
-        "q1": 8,
-        "q3": 21,
+        "q1": 0,
+        "q3": 18,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -4447,7 +4439,7 @@
       "evidenceWeight": 18.5,
       "group": "interaction",
       "key": "buttonCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "category",
       "viewport": "tablet"
     },
@@ -4455,10 +4447,10 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 110,
-        "median": 53,
+        "median": 41,
         "min": 0,
-        "q1": 16,
-        "q3": 103,
+        "q1": 12,
+        "q3": 76,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -4493,10 +4485,10 @@
       "elysiaValue": 1,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.415,
+        "median": 0.394,
         "min": 0.083,
         "q1": 0.336,
-        "q3": 0.563,
+        "q3": 0.707,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -4511,10 +4503,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 176,
-        "median": 38,
+        "max": 177,
+        "median": 32,
         "min": 0,
-        "q1": 12,
+        "q1": 0,
         "q3": 101,
         "sampleWeight": 18.5,
         "type": "number"
@@ -4523,7 +4515,7 @@
       "evidenceWeight": 18.5,
       "group": "accessibility",
       "key": "ariaLabelCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "category",
       "viewport": "tablet"
     },
@@ -4532,7 +4524,7 @@
       "corpusBaseline": {
         "max": 1,
         "median": 0.972,
-        "min": 0.786,
+        "min": 0.78,
         "q1": 0.917,
         "q3": 1,
         "sampleWeight": 18.5,
@@ -4579,13 +4571,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 65,
+      "elysiaValue": 62,
       "corpusBaseline": {
-        "max": 1335155,
-        "median": 17214,
+        "max": 1375873,
+        "median": 15905,
         "min": 19,
-        "q1": 1581,
-        "q3": 39726,
+        "q1": 1057,
+        "q3": 34225,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -4600,11 +4592,11 @@
     {
       "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 40,
-        "median": 10,
+        "max": 36,
+        "median": 8,
         "min": 1,
-        "q1": 4,
-        "q3": 29,
+        "q1": 3,
+        "q3": 25,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -4623,7 +4615,7 @@
         "median": 13,
         "min": 0,
         "q1": 2,
-        "q3": 51,
+        "q3": 39,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -4657,10 +4649,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 396,
-        "median": 32,
+        "max": 416,
+        "median": 22,
         "min": 0,
-        "q1": 18,
+        "q1": 12,
         "q3": 95,
         "sampleWeight": 18.5,
         "type": "number"
@@ -4732,11 +4724,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 15.5,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 15.5,
+      "evidenceWeight": 14,
       "group": "commerce",
       "key": "addToCartTextPresent",
       "matchStatus": "mismatch",
@@ -4748,11 +4740,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 15.5,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 15.5,
+      "evidenceWeight": 14,
       "group": "commerce",
       "key": "checkoutTextPresent",
       "matchStatus": "mismatch",
@@ -4762,10 +4754,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 35.556,
-        "median": 6.029,
+        "max": 38.889,
+        "median": 5.998,
         "min": 0,
-        "q1": 4.607,
+        "q1": 4.021,
         "q3": 10.888,
         "sampleWeight": 18.5,
         "type": "number"
@@ -4781,11 +4773,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 58.889,
+        "max": 63.333,
         "median": 11.308,
         "min": 0,
-        "q1": 4.607,
-        "q3": 23.975,
+        "q1": 3.133,
+        "q3": 26.407,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -4856,11 +4848,11 @@
       "corpusBaseline": {
         "majorityValue": "main",
         "sampleWeight": 18.5,
-        "supportWeight": 11,
+        "supportWeight": 9.5,
         "type": "category"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 11,
+      "evidenceWeight": 9.5,
       "group": "chrome",
       "key": "semanticTag",
       "matchStatus": "mismatch",
@@ -4872,9 +4864,9 @@
       "corpusBaseline": {
         "max": 124,
         "median": 0,
-        "min": -5742,
-        "q1": -3392,
-        "q3": 0,
+        "min": -6462,
+        "q1": -3944,
+        "q3": 21,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -4889,11 +4881,11 @@
     {
       "elysiaValue": 200,
       "corpusBaseline": {
-        "max": 8978,
-        "median": 4492,
-        "min": 844,
-        "q1": 3479,
-        "q3": 5743,
+        "max": 8453,
+        "median": 4275,
+        "min": 224,
+        "q1": 844,
+        "q3": 5075,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -4906,11 +4898,11 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 0.974,
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 1,
+        "min": 0.959,
         "q1": 1,
         "q3": 1,
         "sampleWeight": 18.5,
@@ -4925,13 +4917,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 0.2375,
+      "elysiaValue": 0.2314,
       "corpusBaseline": {
-        "max": 10.6376,
-        "median": 5.3218,
-        "min": 1,
-        "q1": 4.1216,
-        "q3": 6.805,
+        "max": 10.0148,
+        "median": 5.0649,
+        "min": 0.2544,
+        "q1": 1,
+        "q3": 6.0128,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -4944,18 +4936,18 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 18.5,
+        "supportWeight": 17,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 18.5,
+      "evidenceWeight": 17,
       "group": "chrome",
       "key": "fullBleed",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "category",
       "viewport": "mobile"
     },
@@ -5058,11 +5050,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
-        "median": 1,
+        "max": 16,
+        "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 5,
+        "q3": 2,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -5077,11 +5069,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 24,
-        "median": 1,
+        "max": 16,
+        "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 3,
+        "q3": 2,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -5097,10 +5089,10 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 0.86,
-        "median": 0.209,
+        "median": 0.163,
         "min": 0,
-        "q1": 0.076,
-        "q3": 0.265,
+        "q1": 0.012,
+        "q3": 0.25,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -5150,11 +5142,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 567,
+        "max": 569,
         "median": 32,
-        "min": 1,
-        "q1": 23,
-        "q3": 49,
+        "min": 0,
+        "q1": 19,
+        "q3": 44,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -5170,10 +5162,10 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 91,
-        "median": 17,
+        "median": 15,
         "min": 0,
-        "q1": 8,
-        "q3": 30,
+        "q1": 2,
+        "q3": 31,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -5188,11 +5180,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 578,
-        "median": 53,
-        "min": 3,
-        "q1": 36,
-        "q3": 102,
+        "max": 580,
+        "median": 57,
+        "min": 0,
+        "q1": 16,
+        "q3": 75,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -5209,8 +5201,8 @@
       "corpusBaseline": {
         "max": 26,
         "median": 16,
-        "min": 1,
-        "q1": 3,
+        "min": 0,
+        "q1": 1,
         "q3": 20,
         "sampleWeight": 18.5,
         "type": "number"
@@ -5226,11 +5218,11 @@
     {
       "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 0.667,
-        "median": 0.434,
+        "max": 1,
+        "median": 0.404,
         "min": 0,
         "q1": 0.191,
-        "q3": 0.563,
+        "q3": 0.613,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -5245,11 +5237,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 176,
-        "median": 38,
+        "max": 177,
+        "median": 32,
         "min": 0,
-        "q1": 21,
-        "q3": 64,
+        "q1": 13,
+        "q3": 57,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -5265,9 +5257,9 @@
       "elysiaValue": 1,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.973,
-        "min": 0.333,
-        "q1": 0.815,
+        "median": 0.977,
+        "min": 0.786,
+        "q1": 0.917,
         "q3": 1,
         "sampleWeight": 18.5,
         "type": "number"
@@ -5301,11 +5293,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 18.5,
-        "supportWeight": 14,
+        "supportWeight": 13,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 14,
+      "evidenceWeight": 13,
       "group": "accessibility",
       "key": "hasAriaExpanded",
       "matchStatus": "match",
@@ -5313,13 +5305,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 65,
+      "elysiaValue": 62,
       "corpusBaseline": {
-        "max": 1321620,
-        "median": 17214,
+        "max": 1375613,
+        "median": 15905,
         "min": 60,
         "q1": 1668,
-        "q3": 39594,
+        "q3": 29569,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -5334,11 +5326,11 @@
     {
       "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 41,
-        "median": 10,
+        "max": 42,
+        "median": 8,
         "min": 0,
-        "q1": 4,
-        "q3": 33,
+        "q1": 3,
+        "q3": 25,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -5354,10 +5346,10 @@
       "elysiaValue": 2,
       "corpusBaseline": {
         "max": 91,
-        "median": 33,
+        "median": 24,
         "min": 0,
         "q1": 3,
-        "q3": 59,
+        "q3": 51,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -5466,11 +5458,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 14,
+        "supportWeight": 12.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 14,
+      "evidenceWeight": 12.5,
       "group": "commerce",
       "key": "addToCartTextPresent",
       "matchStatus": "mismatch",
@@ -5482,11 +5474,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 14,
+        "supportWeight": 12.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 14,
+      "evidenceWeight": 12.5,
       "group": "commerce",
       "key": "checkoutTextPresent",
       "matchStatus": "mismatch",
@@ -5496,10 +5488,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 78.073,
-        "median": 7.313,
-        "min": 1.185,
-        "q1": 5.422,
+        "max": 78.349,
+        "median": 5.874,
+        "min": 0,
+        "q1": 5.206,
         "q3": 10.033,
         "sampleWeight": 18.5,
         "type": "number"
@@ -5515,10 +5507,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 79.588,
-        "median": 11.361,
-        "min": 3.45,
-        "q1": 8.015,
+        "max": 79.863,
+        "median": 9.415,
+        "min": 0,
+        "q1": 3.854,
         "q3": 26.668,
         "sampleWeight": 18.5,
         "type": "number"
@@ -5588,16 +5580,14 @@
     {
       "elysiaValue": "section",
       "corpusBaseline": {
-        "majorityValue": "main",
-        "sampleWeight": 18.5,
-        "supportWeight": 10,
+        "reason": "No weighted reference majority reached the active threshold.",
         "type": "category"
       },
-      "evidenceSiteCount": 14,
-      "evidenceWeight": 10,
+      "evidenceSiteCount": 0,
+      "evidenceWeight": 18.5,
       "group": "chrome",
       "key": "semanticTag",
-      "matchStatus": "mismatch",
+      "matchStatus": "notComparable",
       "targetLabel": "search",
       "viewport": "desktop"
     },
@@ -5623,11 +5613,11 @@
     {
       "elysiaValue": 278,
       "corpusBaseline": {
-        "max": 7466,
-        "median": 3935,
+        "max": 6230,
+        "median": 2485,
         "min": 138,
         "q1": 900,
-        "q3": 5129,
+        "q3": 4956,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -5640,11 +5630,11 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 0.993,
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 1,
+        "min": 0.989,
         "q1": 1,
         "q3": 1,
         "sampleWeight": 18.5,
@@ -5659,13 +5649,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 0.3094,
+      "elysiaValue": 0.3073,
       "corpusBaseline": {
-        "max": 8.2953,
-        "median": 4.3728,
+        "max": 6.9217,
+        "median": 2.7611,
         "min": 0.1531,
         "q1": 1,
-        "q3": 5.6987,
+        "q3": 5.5062,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -5678,18 +5668,18 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 18.5,
+        "supportWeight": 17,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 18.5,
+      "evidenceWeight": 17,
       "group": "chrome",
       "key": "fullBleed",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "search",
       "viewport": "desktop"
     },
@@ -5792,7 +5782,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
+        "max": 7,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -5811,7 +5801,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 24,
+        "max": 7,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -5830,11 +5820,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 0.262,
-        "median": 0.081,
+        "max": 0.25,
+        "median": 0.073,
         "min": 0,
-        "q1": 0.036,
-        "q3": 0.189,
+        "q1": 0,
+        "q3": 0.14,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -5884,10 +5874,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 186,
-        "median": 49,
+        "max": 185,
+        "median": 35,
         "min": 0,
-        "q1": 19,
+        "q1": 16,
         "q3": 92,
         "sampleWeight": 18.5,
         "type": "number"
@@ -5906,8 +5896,8 @@
         "max": 56,
         "median": 10,
         "min": 0,
-        "q1": 6,
-        "q3": 17,
+        "q1": 0,
+        "q3": 16,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -5915,17 +5905,17 @@
       "evidenceWeight": 18.5,
       "group": "interaction",
       "key": "buttonCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "search",
       "viewport": "desktop"
     },
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 195,
-        "median": 62,
+        "max": 194,
+        "median": 60,
         "min": 0,
-        "q1": 16,
+        "q1": 12,
         "q3": 115,
         "sampleWeight": 18.5,
         "type": "number"
@@ -5963,8 +5953,8 @@
         "max": 1,
         "median": 0.4,
         "min": 0.065,
-        "q1": 0.128,
-        "q3": 0.563,
+        "q1": 0.129,
+        "q3": 0.676,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -5979,10 +5969,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 179,
-        "median": 31,
+        "max": 180,
+        "median": 30,
         "min": 0,
-        "q1": 12,
+        "q1": 1,
         "q3": 101,
         "sampleWeight": 18.5,
         "type": "number"
@@ -6000,7 +5990,7 @@
       "corpusBaseline": {
         "max": 1,
         "median": 0.986,
-        "min": 0.804,
+        "min": 0.8,
         "q1": 0.964,
         "q3": 1,
         "sampleWeight": 18.5,
@@ -6047,13 +6037,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 88,
+      "elysiaValue": 83,
       "corpusBaseline": {
-        "max": 1322156,
-        "median": 16207,
+        "max": 1375594,
+        "median": 15905,
         "min": 19,
-        "q1": 1735,
-        "q3": 39992,
+        "q1": 1057,
+        "q3": 30392,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -6069,10 +6059,10 @@
       "elysiaValue": 1,
       "corpusBaseline": {
         "max": 90,
-        "median": 15,
+        "median": 10,
         "min": 1,
-        "q1": 4,
-        "q3": 34,
+        "q1": 3,
+        "q3": 32,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -6088,10 +6078,10 @@
       "elysiaValue": 2,
       "corpusBaseline": {
         "max": 1221,
-        "median": 16,
+        "median": 13,
         "min": 0,
         "q1": 2,
-        "q3": 52,
+        "q3": 33,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -6125,10 +6115,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 395,
+        "max": 414,
         "median": 18,
         "min": 0,
-        "q1": 3,
+        "q1": 0,
         "q3": 70,
         "sampleWeight": 18.5,
         "type": "number"
@@ -6137,7 +6127,7 @@
       "evidenceWeight": 18.5,
       "group": "media",
       "key": "imageCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "search",
       "viewport": "desktop"
     },
@@ -6184,11 +6174,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 11,
+        "supportWeight": 9.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 11,
+      "evidenceWeight": 9.5,
       "group": "commerce",
       "key": "priceTextPresent",
       "matchStatus": "mismatch",
@@ -6200,11 +6190,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 15.5,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 15.5,
+      "evidenceWeight": 14,
       "group": "commerce",
       "key": "addToCartTextPresent",
       "matchStatus": "mismatch",
@@ -6216,11 +6206,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 15.5,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 15.5,
+      "evidenceWeight": 14,
       "group": "commerce",
       "key": "checkoutTextPresent",
       "matchStatus": "mismatch",
@@ -6230,10 +6220,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 206.667,
+        "max": 205.556,
         "median": 10.686,
         "min": 0,
-        "q1": 4.828,
+        "q1": 2.617,
         "q3": 22.133,
         "sampleWeight": 18.5,
         "type": "number"
@@ -6249,10 +6239,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 216.667,
+        "max": 215.556,
         "median": 14.96,
         "min": 0,
-        "q1": 3.049,
+        "q1": 2.617,
         "q3": 28.247,
         "sampleWeight": 18.5,
         "type": "number"
@@ -6322,16 +6312,14 @@
     {
       "elysiaValue": "section",
       "corpusBaseline": {
-        "majorityValue": "main",
-        "sampleWeight": 18.5,
-        "supportWeight": 10,
+        "reason": "No weighted reference majority reached the active threshold.",
         "type": "category"
       },
-      "evidenceSiteCount": 14,
-      "evidenceWeight": 10,
+      "evidenceSiteCount": 0,
+      "evidenceWeight": 18.5,
       "group": "chrome",
       "key": "semanticTag",
-      "matchStatus": "mismatch",
+      "matchStatus": "notComparable",
       "targetLabel": "search",
       "viewport": "tablet"
     },
@@ -6341,8 +6329,8 @@
         "max": 224,
         "median": 0,
         "min": -4941,
-        "q1": -2986,
-        "q3": 0,
+        "q1": -2110,
+        "q3": 21,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -6357,11 +6345,11 @@
     {
       "elysiaValue": 206,
       "corpusBaseline": {
-        "max": 11582,
-        "median": 3815,
+        "max": 9463,
+        "median": 3473,
         "min": 98,
         "q1": 900,
-        "q3": 5969,
+        "q3": 4500,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -6374,11 +6362,11 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 0.987,
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 1,
+        "min": 0.979,
         "q1": 1,
         "q3": 1,
         "sampleWeight": 18.5,
@@ -6393,13 +6381,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 0.2287,
+      "elysiaValue": 0.2258,
       "corpusBaseline": {
-        "max": 12.8688,
-        "median": 4.239,
+        "max": 10.5139,
+        "median": 3.8592,
         "min": 0.1087,
         "q1": 1,
-        "q3": 6.6321,
+        "q3": 5.0002,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -6412,18 +6400,18 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 18.5,
+        "supportWeight": 17,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 18.5,
+      "evidenceWeight": 17,
       "group": "chrome",
       "key": "fullBleed",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "search",
       "viewport": "tablet"
     },
@@ -6526,7 +6514,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
+        "max": 8,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -6545,7 +6533,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 24,
+        "max": 7,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -6565,10 +6553,10 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 0.855,
-        "median": 0.127,
+        "median": 0.105,
         "min": 0,
-        "q1": 0.047,
-        "q3": 0.25,
+        "q1": 0,
+        "q3": 0.213,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -6619,10 +6607,10 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 100,
-        "median": 32,
+        "median": 24,
         "min": 0,
-        "q1": 19,
-        "q3": 49,
+        "q1": 16,
+        "q3": 42,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -6640,8 +6628,8 @@
         "max": 87,
         "median": 13,
         "min": 0,
-        "q1": 8,
-        "q3": 21,
+        "q1": 0,
+        "q3": 18,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -6649,7 +6637,7 @@
       "evidenceWeight": 18.5,
       "group": "interaction",
       "key": "buttonCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "search",
       "viewport": "tablet"
     },
@@ -6657,10 +6645,10 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 110,
-        "median": 53,
+        "median": 41,
         "min": 0,
-        "q1": 16,
-        "q3": 103,
+        "q1": 12,
+        "q3": 76,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -6695,10 +6683,10 @@
       "elysiaValue": 1,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.415,
+        "median": 0.394,
         "min": 0.083,
         "q1": 0.336,
-        "q3": 0.563,
+        "q3": 0.707,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -6713,10 +6701,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 176,
-        "median": 38,
+        "max": 177,
+        "median": 32,
         "min": 0,
-        "q1": 12,
+        "q1": 0,
         "q3": 101,
         "sampleWeight": 18.5,
         "type": "number"
@@ -6725,7 +6713,7 @@
       "evidenceWeight": 18.5,
       "group": "accessibility",
       "key": "ariaLabelCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "search",
       "viewport": "tablet"
     },
@@ -6734,7 +6722,7 @@
       "corpusBaseline": {
         "max": 1,
         "median": 0.972,
-        "min": 0.786,
+        "min": 0.78,
         "q1": 0.917,
         "q3": 1,
         "sampleWeight": 18.5,
@@ -6781,13 +6769,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 88,
+      "elysiaValue": 83,
       "corpusBaseline": {
-        "max": 1335155,
-        "median": 17214,
+        "max": 1375873,
+        "median": 15905,
         "min": 19,
-        "q1": 1581,
-        "q3": 39726,
+        "q1": 1057,
+        "q3": 34225,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -6802,11 +6790,11 @@
     {
       "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 40,
-        "median": 10,
+        "max": 36,
+        "median": 8,
         "min": 1,
-        "q1": 4,
-        "q3": 29,
+        "q1": 3,
+        "q3": 25,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -6825,7 +6813,7 @@
         "median": 13,
         "min": 0,
         "q1": 2,
-        "q3": 51,
+        "q3": 39,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -6859,10 +6847,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 396,
-        "median": 32,
+        "max": 416,
+        "median": 22,
         "min": 0,
-        "q1": 18,
+        "q1": 12,
         "q3": 95,
         "sampleWeight": 18.5,
         "type": "number"
@@ -6934,11 +6922,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 15.5,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 15.5,
+      "evidenceWeight": 14,
       "group": "commerce",
       "key": "addToCartTextPresent",
       "matchStatus": "mismatch",
@@ -6950,11 +6938,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 15.5,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 15.5,
+      "evidenceWeight": 14,
       "group": "commerce",
       "key": "checkoutTextPresent",
       "matchStatus": "mismatch",
@@ -6964,10 +6952,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 35.556,
-        "median": 6.029,
+        "max": 38.889,
+        "median": 5.998,
         "min": 0,
-        "q1": 4.607,
+        "q1": 4.021,
         "q3": 10.888,
         "sampleWeight": 18.5,
         "type": "number"
@@ -6983,11 +6971,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 58.889,
+        "max": 63.333,
         "median": 11.308,
         "min": 0,
-        "q1": 4.607,
-        "q3": 23.975,
+        "q1": 3.133,
+        "q3": 26.407,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -7058,11 +7046,11 @@
       "corpusBaseline": {
         "majorityValue": "main",
         "sampleWeight": 18.5,
-        "supportWeight": 11,
+        "supportWeight": 9.5,
         "type": "category"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 11,
+      "evidenceWeight": 9.5,
       "group": "chrome",
       "key": "semanticTag",
       "matchStatus": "mismatch",
@@ -7074,9 +7062,9 @@
       "corpusBaseline": {
         "max": 124,
         "median": 0,
-        "min": -5742,
-        "q1": -3392,
-        "q3": 0,
+        "min": -6462,
+        "q1": -3944,
+        "q3": 21,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -7091,11 +7079,11 @@
     {
       "elysiaValue": 225,
       "corpusBaseline": {
-        "max": 8978,
-        "median": 4492,
-        "min": 844,
-        "q1": 3479,
-        "q3": 5743,
+        "max": 8453,
+        "median": 4275,
+        "min": 224,
+        "q1": 844,
+        "q3": 5075,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -7108,11 +7096,11 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 0.974,
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 1,
+        "min": 0.959,
         "q1": 1,
         "q3": 1,
         "sampleWeight": 18.5,
@@ -7127,13 +7115,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 0.2664,
+      "elysiaValue": 0.2596,
       "corpusBaseline": {
-        "max": 10.6376,
-        "median": 5.3218,
-        "min": 1,
-        "q1": 4.1216,
-        "q3": 6.805,
+        "max": 10.0148,
+        "median": 5.0649,
+        "min": 0.2544,
+        "q1": 1,
+        "q3": 6.0128,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -7146,18 +7134,18 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 18.5,
+        "supportWeight": 17,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 18.5,
+      "evidenceWeight": 17,
       "group": "chrome",
       "key": "fullBleed",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "search",
       "viewport": "mobile"
     },
@@ -7260,11 +7248,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
-        "median": 1,
+        "max": 16,
+        "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 5,
+        "q3": 2,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -7279,11 +7267,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 24,
-        "median": 1,
+        "max": 16,
+        "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 3,
+        "q3": 2,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -7299,10 +7287,10 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 0.86,
-        "median": 0.209,
+        "median": 0.163,
         "min": 0,
-        "q1": 0.076,
-        "q3": 0.265,
+        "q1": 0.012,
+        "q3": 0.25,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -7352,11 +7340,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 567,
+        "max": 569,
         "median": 32,
-        "min": 1,
-        "q1": 23,
-        "q3": 49,
+        "min": 0,
+        "q1": 19,
+        "q3": 44,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -7372,10 +7360,10 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 91,
-        "median": 17,
+        "median": 15,
         "min": 0,
-        "q1": 8,
-        "q3": 30,
+        "q1": 2,
+        "q3": 31,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -7390,11 +7378,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 578,
-        "median": 53,
-        "min": 3,
-        "q1": 36,
-        "q3": 102,
+        "max": 580,
+        "median": 57,
+        "min": 0,
+        "q1": 16,
+        "q3": 75,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -7411,8 +7399,8 @@
       "corpusBaseline": {
         "max": 26,
         "median": 16,
-        "min": 1,
-        "q1": 3,
+        "min": 0,
+        "q1": 1,
         "q3": 20,
         "sampleWeight": 18.5,
         "type": "number"
@@ -7428,11 +7416,11 @@
     {
       "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 0.667,
-        "median": 0.434,
+        "max": 1,
+        "median": 0.404,
         "min": 0,
         "q1": 0.191,
-        "q3": 0.563,
+        "q3": 0.613,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -7447,11 +7435,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 176,
-        "median": 38,
+        "max": 177,
+        "median": 32,
         "min": 0,
-        "q1": 21,
-        "q3": 64,
+        "q1": 13,
+        "q3": 57,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -7467,9 +7455,9 @@
       "elysiaValue": 1,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.973,
-        "min": 0.333,
-        "q1": 0.815,
+        "median": 0.977,
+        "min": 0.786,
+        "q1": 0.917,
         "q3": 1,
         "sampleWeight": 18.5,
         "type": "number"
@@ -7503,11 +7491,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 18.5,
-        "supportWeight": 14,
+        "supportWeight": 13,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 14,
+      "evidenceWeight": 13,
       "group": "accessibility",
       "key": "hasAriaExpanded",
       "matchStatus": "match",
@@ -7515,13 +7503,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 88,
+      "elysiaValue": 83,
       "corpusBaseline": {
-        "max": 1321620,
-        "median": 17214,
+        "max": 1375613,
+        "median": 15905,
         "min": 60,
         "q1": 1668,
-        "q3": 39594,
+        "q3": 29569,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -7536,11 +7524,11 @@
     {
       "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 41,
-        "median": 10,
+        "max": 42,
+        "median": 8,
         "min": 0,
-        "q1": 4,
-        "q3": 33,
+        "q1": 3,
+        "q3": 25,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -7556,10 +7544,10 @@
       "elysiaValue": 2,
       "corpusBaseline": {
         "max": 91,
-        "median": 33,
+        "median": 24,
         "min": 0,
         "q1": 3,
-        "q3": 59,
+        "q3": 51,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -7668,11 +7656,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 14,
+        "supportWeight": 12.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 14,
+      "evidenceWeight": 12.5,
       "group": "commerce",
       "key": "addToCartTextPresent",
       "matchStatus": "mismatch",
@@ -7684,11 +7672,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 14,
+        "supportWeight": 12.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 14,
+      "evidenceWeight": 12.5,
       "group": "commerce",
       "key": "checkoutTextPresent",
       "matchStatus": "mismatch",
@@ -7698,10 +7686,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 78.073,
-        "median": 7.313,
-        "min": 1.185,
-        "q1": 5.422,
+        "max": 78.349,
+        "median": 5.874,
+        "min": 0,
+        "q1": 5.206,
         "q3": 10.033,
         "sampleWeight": 18.5,
         "type": "number"
@@ -7717,10 +7705,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 79.588,
-        "median": 11.361,
-        "min": 3.45,
-        "q1": 8.015,
+        "max": 79.863,
+        "median": 9.415,
+        "min": 0,
+        "q1": 3.854,
         "q3": 26.668,
         "sampleWeight": 18.5,
         "type": "number"
@@ -7790,16 +7778,14 @@
     {
       "elysiaValue": "section",
       "corpusBaseline": {
-        "majorityValue": "main",
-        "sampleWeight": 18.5,
-        "supportWeight": 10,
+        "reason": "No weighted reference majority reached the active threshold.",
         "type": "category"
       },
-      "evidenceSiteCount": 14,
-      "evidenceWeight": 10,
+      "evidenceSiteCount": 0,
+      "evidenceWeight": 18.5,
       "group": "chrome",
       "key": "semanticTag",
-      "matchStatus": "mismatch",
+      "matchStatus": "notComparable",
       "targetLabel": "service",
       "viewport": "desktop"
     },
@@ -7825,11 +7811,11 @@
     {
       "elysiaValue": 363,
       "corpusBaseline": {
-        "max": 7466,
-        "median": 3935,
+        "max": 6230,
+        "median": 2485,
         "min": 138,
         "q1": 900,
-        "q3": 5129,
+        "q3": 4956,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -7842,11 +7828,11 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 0.993,
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 1,
+        "min": 0.989,
         "q1": 1,
         "q3": 1,
         "sampleWeight": 18.5,
@@ -7861,13 +7847,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 0.4035,
+      "elysiaValue": 0.4007,
       "corpusBaseline": {
-        "max": 8.2953,
-        "median": 4.3728,
+        "max": 6.9217,
+        "median": 2.7611,
         "min": 0.1531,
         "q1": 1,
-        "q3": 5.6987,
+        "q3": 5.5062,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -7880,18 +7866,18 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 18.5,
+        "supportWeight": 17,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 18.5,
+      "evidenceWeight": 17,
       "group": "chrome",
       "key": "fullBleed",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "service",
       "viewport": "desktop"
     },
@@ -7994,7 +7980,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
+        "max": 7,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -8013,7 +7999,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 24,
+        "max": 7,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -8032,11 +8018,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 0.262,
-        "median": 0.081,
+        "max": 0.25,
+        "median": 0.073,
         "min": 0,
-        "q1": 0.036,
-        "q3": 0.189,
+        "q1": 0,
+        "q3": 0.14,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -8086,10 +8072,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 186,
-        "median": 49,
+        "max": 185,
+        "median": 35,
         "min": 0,
-        "q1": 19,
+        "q1": 16,
         "q3": 92,
         "sampleWeight": 18.5,
         "type": "number"
@@ -8108,8 +8094,8 @@
         "max": 56,
         "median": 10,
         "min": 0,
-        "q1": 6,
-        "q3": 17,
+        "q1": 0,
+        "q3": 16,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -8117,17 +8103,17 @@
       "evidenceWeight": 18.5,
       "group": "interaction",
       "key": "buttonCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "service",
       "viewport": "desktop"
     },
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 195,
-        "median": 62,
+        "max": 194,
+        "median": 60,
         "min": 0,
-        "q1": 16,
+        "q1": 12,
         "q3": 115,
         "sampleWeight": 18.5,
         "type": "number"
@@ -8165,8 +8151,8 @@
         "max": 1,
         "median": 0.4,
         "min": 0.065,
-        "q1": 0.128,
-        "q3": 0.563,
+        "q1": 0.129,
+        "q3": 0.676,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -8181,10 +8167,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 179,
-        "median": 31,
+        "max": 180,
+        "median": 30,
         "min": 0,
-        "q1": 12,
+        "q1": 1,
         "q3": 101,
         "sampleWeight": 18.5,
         "type": "number"
@@ -8202,7 +8188,7 @@
       "corpusBaseline": {
         "max": 1,
         "median": 0.986,
-        "min": 0.804,
+        "min": 0.8,
         "q1": 0.964,
         "q3": 1,
         "sampleWeight": 18.5,
@@ -8249,13 +8235,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 142,
+      "elysiaValue": 134,
       "corpusBaseline": {
-        "max": 1322156,
-        "median": 16207,
+        "max": 1375594,
+        "median": 15905,
         "min": 19,
-        "q1": 1735,
-        "q3": 39992,
+        "q1": 1057,
+        "q3": 30392,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -8271,10 +8257,10 @@
       "elysiaValue": 1,
       "corpusBaseline": {
         "max": 90,
-        "median": 15,
+        "median": 10,
         "min": 1,
-        "q1": 4,
-        "q3": 34,
+        "q1": 3,
+        "q3": 32,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -8290,10 +8276,10 @@
       "elysiaValue": 2,
       "corpusBaseline": {
         "max": 1221,
-        "median": 16,
+        "median": 13,
         "min": 0,
         "q1": 2,
-        "q3": 52,
+        "q3": 33,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -8327,10 +8313,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 395,
+        "max": 414,
         "median": 18,
         "min": 0,
-        "q1": 3,
+        "q1": 0,
         "q3": 70,
         "sampleWeight": 18.5,
         "type": "number"
@@ -8339,7 +8325,7 @@
       "evidenceWeight": 18.5,
       "group": "media",
       "key": "imageCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "service",
       "viewport": "desktop"
     },
@@ -8386,11 +8372,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 11,
+        "supportWeight": 9.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 11,
+      "evidenceWeight": 9.5,
       "group": "commerce",
       "key": "priceTextPresent",
       "matchStatus": "mismatch",
@@ -8402,11 +8388,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 15.5,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 15.5,
+      "evidenceWeight": 14,
       "group": "commerce",
       "key": "addToCartTextPresent",
       "matchStatus": "mismatch",
@@ -8418,11 +8404,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 15.5,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 15.5,
+      "evidenceWeight": 14,
       "group": "commerce",
       "key": "checkoutTextPresent",
       "matchStatus": "mismatch",
@@ -8432,10 +8418,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 206.667,
+        "max": 205.556,
         "median": 10.686,
         "min": 0,
-        "q1": 4.828,
+        "q1": 2.617,
         "q3": 22.133,
         "sampleWeight": 18.5,
         "type": "number"
@@ -8451,10 +8437,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 216.667,
+        "max": 215.556,
         "median": 14.96,
         "min": 0,
-        "q1": 3.049,
+        "q1": 2.617,
         "q3": 28.247,
         "sampleWeight": 18.5,
         "type": "number"
@@ -8524,16 +8510,14 @@
     {
       "elysiaValue": "section",
       "corpusBaseline": {
-        "majorityValue": "main",
-        "sampleWeight": 18.5,
-        "supportWeight": 10,
+        "reason": "No weighted reference majority reached the active threshold.",
         "type": "category"
       },
-      "evidenceSiteCount": 14,
-      "evidenceWeight": 10,
+      "evidenceSiteCount": 0,
+      "evidenceWeight": 18.5,
       "group": "chrome",
       "key": "semanticTag",
-      "matchStatus": "mismatch",
+      "matchStatus": "notComparable",
       "targetLabel": "service",
       "viewport": "tablet"
     },
@@ -8543,8 +8527,8 @@
         "max": 224,
         "median": 0,
         "min": -4941,
-        "q1": -2986,
-        "q3": 0,
+        "q1": -2110,
+        "q3": 21,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -8559,11 +8543,11 @@
     {
       "elysiaValue": 265,
       "corpusBaseline": {
-        "max": 11582,
-        "median": 3815,
+        "max": 9463,
+        "median": 3473,
         "min": 98,
         "q1": 900,
-        "q3": 5969,
+        "q3": 4500,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -8576,11 +8560,11 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 0.987,
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 1,
+        "min": 0.979,
         "q1": 1,
         "q3": 1,
         "sampleWeight": 18.5,
@@ -8595,13 +8579,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 0.2943,
+      "elysiaValue": 0.2905,
       "corpusBaseline": {
-        "max": 12.8688,
-        "median": 4.239,
+        "max": 10.5139,
+        "median": 3.8592,
         "min": 0.1087,
         "q1": 1,
-        "q3": 6.6321,
+        "q3": 5.0002,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -8614,18 +8598,18 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 18.5,
+        "supportWeight": 17,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 18.5,
+      "evidenceWeight": 17,
       "group": "chrome",
       "key": "fullBleed",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "service",
       "viewport": "tablet"
     },
@@ -8728,7 +8712,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
+        "max": 8,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -8747,7 +8731,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 24,
+        "max": 7,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -8767,10 +8751,10 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 0.855,
-        "median": 0.127,
+        "median": 0.105,
         "min": 0,
-        "q1": 0.047,
-        "q3": 0.25,
+        "q1": 0,
+        "q3": 0.213,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -8821,10 +8805,10 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 100,
-        "median": 32,
+        "median": 24,
         "min": 0,
-        "q1": 19,
-        "q3": 49,
+        "q1": 16,
+        "q3": 42,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -8842,8 +8826,8 @@
         "max": 87,
         "median": 13,
         "min": 0,
-        "q1": 8,
-        "q3": 21,
+        "q1": 0,
+        "q3": 18,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -8851,7 +8835,7 @@
       "evidenceWeight": 18.5,
       "group": "interaction",
       "key": "buttonCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "service",
       "viewport": "tablet"
     },
@@ -8859,10 +8843,10 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 110,
-        "median": 53,
+        "median": 41,
         "min": 0,
-        "q1": 16,
-        "q3": 103,
+        "q1": 12,
+        "q3": 76,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -8897,10 +8881,10 @@
       "elysiaValue": 1,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.415,
+        "median": 0.394,
         "min": 0.083,
         "q1": 0.336,
-        "q3": 0.563,
+        "q3": 0.707,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -8915,10 +8899,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 176,
-        "median": 38,
+        "max": 177,
+        "median": 32,
         "min": 0,
-        "q1": 12,
+        "q1": 0,
         "q3": 101,
         "sampleWeight": 18.5,
         "type": "number"
@@ -8927,7 +8911,7 @@
       "evidenceWeight": 18.5,
       "group": "accessibility",
       "key": "ariaLabelCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "service",
       "viewport": "tablet"
     },
@@ -8936,7 +8920,7 @@
       "corpusBaseline": {
         "max": 1,
         "median": 0.972,
-        "min": 0.786,
+        "min": 0.78,
         "q1": 0.917,
         "q3": 1,
         "sampleWeight": 18.5,
@@ -8983,13 +8967,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 142,
+      "elysiaValue": 134,
       "corpusBaseline": {
-        "max": 1335155,
-        "median": 17214,
+        "max": 1375873,
+        "median": 15905,
         "min": 19,
-        "q1": 1581,
-        "q3": 39726,
+        "q1": 1057,
+        "q3": 34225,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -9004,11 +8988,11 @@
     {
       "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 40,
-        "median": 10,
+        "max": 36,
+        "median": 8,
         "min": 1,
-        "q1": 4,
-        "q3": 29,
+        "q1": 3,
+        "q3": 25,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -9027,7 +9011,7 @@
         "median": 13,
         "min": 0,
         "q1": 2,
-        "q3": 51,
+        "q3": 39,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -9061,10 +9045,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 396,
-        "median": 32,
+        "max": 416,
+        "median": 22,
         "min": 0,
-        "q1": 18,
+        "q1": 12,
         "q3": 95,
         "sampleWeight": 18.5,
         "type": "number"
@@ -9136,11 +9120,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 15.5,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 15.5,
+      "evidenceWeight": 14,
       "group": "commerce",
       "key": "addToCartTextPresent",
       "matchStatus": "mismatch",
@@ -9152,11 +9136,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 15.5,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 15.5,
+      "evidenceWeight": 14,
       "group": "commerce",
       "key": "checkoutTextPresent",
       "matchStatus": "mismatch",
@@ -9166,10 +9150,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 35.556,
-        "median": 6.029,
+        "max": 38.889,
+        "median": 5.998,
         "min": 0,
-        "q1": 4.607,
+        "q1": 4.021,
         "q3": 10.888,
         "sampleWeight": 18.5,
         "type": "number"
@@ -9185,11 +9169,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 58.889,
+        "max": 63.333,
         "median": 11.308,
         "min": 0,
-        "q1": 4.607,
-        "q3": 23.975,
+        "q1": 3.133,
+        "q3": 26.407,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -9260,11 +9244,11 @@
       "corpusBaseline": {
         "majorityValue": "main",
         "sampleWeight": 18.5,
-        "supportWeight": 11,
+        "supportWeight": 9.5,
         "type": "category"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 11,
+      "evidenceWeight": 9.5,
       "group": "chrome",
       "key": "semanticTag",
       "matchStatus": "mismatch",
@@ -9276,9 +9260,9 @@
       "corpusBaseline": {
         "max": 124,
         "median": 0,
-        "min": -5742,
-        "q1": -3392,
-        "q3": 0,
+        "min": -6462,
+        "q1": -3944,
+        "q3": 21,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -9293,11 +9277,11 @@
     {
       "elysiaValue": 268,
       "corpusBaseline": {
-        "max": 8978,
-        "median": 4492,
-        "min": 844,
-        "q1": 3479,
-        "q3": 5743,
+        "max": 8453,
+        "median": 4275,
+        "min": 224,
+        "q1": 844,
+        "q3": 5075,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -9310,11 +9294,11 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 0.974,
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 1,
+        "min": 0.959,
         "q1": 1,
         "q3": 1,
         "sampleWeight": 18.5,
@@ -9329,13 +9313,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 0.3174,
+      "elysiaValue": 0.3092,
       "corpusBaseline": {
-        "max": 10.6376,
-        "median": 5.3218,
-        "min": 1,
-        "q1": 4.1216,
-        "q3": 6.805,
+        "max": 10.0148,
+        "median": 5.0649,
+        "min": 0.2544,
+        "q1": 1,
+        "q3": 6.0128,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -9348,18 +9332,18 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 18.5,
+        "supportWeight": 17,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 18.5,
+      "evidenceWeight": 17,
       "group": "chrome",
       "key": "fullBleed",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "service",
       "viewport": "mobile"
     },
@@ -9462,11 +9446,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
-        "median": 1,
+        "max": 16,
+        "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 5,
+        "q3": 2,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -9481,11 +9465,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 24,
-        "median": 1,
+        "max": 16,
+        "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 3,
+        "q3": 2,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -9501,10 +9485,10 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 0.86,
-        "median": 0.209,
+        "median": 0.163,
         "min": 0,
-        "q1": 0.076,
-        "q3": 0.265,
+        "q1": 0.012,
+        "q3": 0.25,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -9554,11 +9538,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 567,
+        "max": 569,
         "median": 32,
-        "min": 1,
-        "q1": 23,
-        "q3": 49,
+        "min": 0,
+        "q1": 19,
+        "q3": 44,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -9574,10 +9558,10 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 91,
-        "median": 17,
+        "median": 15,
         "min": 0,
-        "q1": 8,
-        "q3": 30,
+        "q1": 2,
+        "q3": 31,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -9592,11 +9576,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 578,
-        "median": 53,
-        "min": 3,
-        "q1": 36,
-        "q3": 102,
+        "max": 580,
+        "median": 57,
+        "min": 0,
+        "q1": 16,
+        "q3": 75,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -9613,8 +9597,8 @@
       "corpusBaseline": {
         "max": 26,
         "median": 16,
-        "min": 1,
-        "q1": 3,
+        "min": 0,
+        "q1": 1,
         "q3": 20,
         "sampleWeight": 18.5,
         "type": "number"
@@ -9630,11 +9614,11 @@
     {
       "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 0.667,
-        "median": 0.434,
+        "max": 1,
+        "median": 0.404,
         "min": 0,
         "q1": 0.191,
-        "q3": 0.563,
+        "q3": 0.613,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -9649,11 +9633,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 176,
-        "median": 38,
+        "max": 177,
+        "median": 32,
         "min": 0,
-        "q1": 21,
-        "q3": 64,
+        "q1": 13,
+        "q3": 57,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -9669,9 +9653,9 @@
       "elysiaValue": 1,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.973,
-        "min": 0.333,
-        "q1": 0.815,
+        "median": 0.977,
+        "min": 0.786,
+        "q1": 0.917,
         "q3": 1,
         "sampleWeight": 18.5,
         "type": "number"
@@ -9705,11 +9689,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 18.5,
-        "supportWeight": 14,
+        "supportWeight": 13,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 14,
+      "evidenceWeight": 13,
       "group": "accessibility",
       "key": "hasAriaExpanded",
       "matchStatus": "match",
@@ -9717,13 +9701,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 142,
+      "elysiaValue": 134,
       "corpusBaseline": {
-        "max": 1321620,
-        "median": 17214,
+        "max": 1375613,
+        "median": 15905,
         "min": 60,
         "q1": 1668,
-        "q3": 39594,
+        "q3": 29569,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -9738,11 +9722,11 @@
     {
       "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 41,
-        "median": 10,
+        "max": 42,
+        "median": 8,
         "min": 0,
-        "q1": 4,
-        "q3": 33,
+        "q1": 3,
+        "q3": 25,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -9758,10 +9742,10 @@
       "elysiaValue": 2,
       "corpusBaseline": {
         "max": 91,
-        "median": 33,
+        "median": 24,
         "min": 0,
         "q1": 3,
-        "q3": 59,
+        "q3": 51,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -9870,11 +9854,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 14,
+        "supportWeight": 12.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 14,
+      "evidenceWeight": 12.5,
       "group": "commerce",
       "key": "addToCartTextPresent",
       "matchStatus": "mismatch",
@@ -9886,11 +9870,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 14,
+        "supportWeight": 12.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 14,
+      "evidenceWeight": 12.5,
       "group": "commerce",
       "key": "checkoutTextPresent",
       "matchStatus": "mismatch",
@@ -9900,10 +9884,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 78.073,
-        "median": 7.313,
-        "min": 1.185,
-        "q1": 5.422,
+        "max": 78.349,
+        "median": 5.874,
+        "min": 0,
+        "q1": 5.206,
         "q3": 10.033,
         "sampleWeight": 18.5,
         "type": "number"
@@ -9919,10 +9903,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 79.588,
-        "median": 11.361,
-        "min": 3.45,
-        "q1": 8.015,
+        "max": 79.863,
+        "median": 9.415,
+        "min": 0,
+        "q1": 3.854,
         "q3": 26.668,
         "sampleWeight": 18.5,
         "type": "number"
@@ -9992,16 +9976,14 @@
     {
       "elysiaValue": "section",
       "corpusBaseline": {
-        "majorityValue": "main",
-        "sampleWeight": 18.5,
-        "supportWeight": 10,
+        "reason": "No weighted reference majority reached the active threshold.",
         "type": "category"
       },
-      "evidenceSiteCount": 14,
-      "evidenceWeight": 10,
+      "evidenceSiteCount": 0,
+      "evidenceWeight": 18.5,
       "group": "chrome",
       "key": "semanticTag",
-      "matchStatus": "mismatch",
+      "matchStatus": "notComparable",
       "targetLabel": "privacy",
       "viewport": "desktop"
     },
@@ -10027,11 +10009,11 @@
     {
       "elysiaValue": 335,
       "corpusBaseline": {
-        "max": 7466,
-        "median": 3935,
+        "max": 6230,
+        "median": 2485,
         "min": 138,
         "q1": 900,
-        "q3": 5129,
+        "q3": 4956,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -10044,11 +10026,11 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 0.993,
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 1,
+        "min": 0.989,
         "q1": 1,
         "q3": 1,
         "sampleWeight": 18.5,
@@ -10063,13 +10045,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 0.3721,
+      "elysiaValue": 0.3695,
       "corpusBaseline": {
-        "max": 8.2953,
-        "median": 4.3728,
+        "max": 6.9217,
+        "median": 2.7611,
         "min": 0.1531,
         "q1": 1,
-        "q3": 5.6987,
+        "q3": 5.5062,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -10082,18 +10064,18 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 18.5,
+        "supportWeight": 17,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 18.5,
+      "evidenceWeight": 17,
       "group": "chrome",
       "key": "fullBleed",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "privacy",
       "viewport": "desktop"
     },
@@ -10196,7 +10178,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
+        "max": 7,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -10215,7 +10197,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 24,
+        "max": 7,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -10234,11 +10216,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 0.262,
-        "median": 0.081,
+        "max": 0.25,
+        "median": 0.073,
         "min": 0,
-        "q1": 0.036,
-        "q3": 0.189,
+        "q1": 0,
+        "q3": 0.14,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -10288,10 +10270,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 186,
-        "median": 49,
+        "max": 185,
+        "median": 35,
         "min": 0,
-        "q1": 19,
+        "q1": 16,
         "q3": 92,
         "sampleWeight": 18.5,
         "type": "number"
@@ -10310,8 +10292,8 @@
         "max": 56,
         "median": 10,
         "min": 0,
-        "q1": 6,
-        "q3": 17,
+        "q1": 0,
+        "q3": 16,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -10319,17 +10301,17 @@
       "evidenceWeight": 18.5,
       "group": "interaction",
       "key": "buttonCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "privacy",
       "viewport": "desktop"
     },
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 195,
-        "median": 62,
+        "max": 194,
+        "median": 60,
         "min": 0,
-        "q1": 16,
+        "q1": 12,
         "q3": 115,
         "sampleWeight": 18.5,
         "type": "number"
@@ -10367,8 +10349,8 @@
         "max": 1,
         "median": 0.4,
         "min": 0.065,
-        "q1": 0.128,
-        "q3": 0.563,
+        "q1": 0.129,
+        "q3": 0.676,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -10383,10 +10365,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 179,
-        "median": 31,
+        "max": 180,
+        "median": 30,
         "min": 0,
-        "q1": 12,
+        "q1": 1,
         "q3": 101,
         "sampleWeight": 18.5,
         "type": "number"
@@ -10404,7 +10386,7 @@
       "corpusBaseline": {
         "max": 1,
         "median": 0.986,
-        "min": 0.804,
+        "min": 0.8,
         "q1": 0.964,
         "q3": 1,
         "sampleWeight": 18.5,
@@ -10451,13 +10433,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 107,
+      "elysiaValue": 103,
       "corpusBaseline": {
-        "max": 1322156,
-        "median": 16207,
+        "max": 1375594,
+        "median": 15905,
         "min": 19,
-        "q1": 1735,
-        "q3": 39992,
+        "q1": 1057,
+        "q3": 30392,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -10473,10 +10455,10 @@
       "elysiaValue": 1,
       "corpusBaseline": {
         "max": 90,
-        "median": 15,
+        "median": 10,
         "min": 1,
-        "q1": 4,
-        "q3": 34,
+        "q1": 3,
+        "q3": 32,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -10492,10 +10474,10 @@
       "elysiaValue": 2,
       "corpusBaseline": {
         "max": 1221,
-        "median": 16,
+        "median": 13,
         "min": 0,
         "q1": 2,
-        "q3": 52,
+        "q3": 33,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -10529,10 +10511,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 395,
+        "max": 414,
         "median": 18,
         "min": 0,
-        "q1": 3,
+        "q1": 0,
         "q3": 70,
         "sampleWeight": 18.5,
         "type": "number"
@@ -10541,7 +10523,7 @@
       "evidenceWeight": 18.5,
       "group": "media",
       "key": "imageCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "privacy",
       "viewport": "desktop"
     },
@@ -10588,11 +10570,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 11,
+        "supportWeight": 9.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 11,
+      "evidenceWeight": 9.5,
       "group": "commerce",
       "key": "priceTextPresent",
       "matchStatus": "mismatch",
@@ -10604,11 +10586,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 15.5,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 15.5,
+      "evidenceWeight": 14,
       "group": "commerce",
       "key": "addToCartTextPresent",
       "matchStatus": "mismatch",
@@ -10620,11 +10602,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 15.5,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 15.5,
+      "evidenceWeight": 14,
       "group": "commerce",
       "key": "checkoutTextPresent",
       "matchStatus": "mismatch",
@@ -10634,10 +10616,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 206.667,
+        "max": 205.556,
         "median": 10.686,
         "min": 0,
-        "q1": 4.828,
+        "q1": 2.617,
         "q3": 22.133,
         "sampleWeight": 18.5,
         "type": "number"
@@ -10653,10 +10635,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 216.667,
+        "max": 215.556,
         "median": 14.96,
         "min": 0,
-        "q1": 3.049,
+        "q1": 2.617,
         "q3": 28.247,
         "sampleWeight": 18.5,
         "type": "number"
@@ -10726,16 +10708,14 @@
     {
       "elysiaValue": "section",
       "corpusBaseline": {
-        "majorityValue": "main",
-        "sampleWeight": 18.5,
-        "supportWeight": 10,
+        "reason": "No weighted reference majority reached the active threshold.",
         "type": "category"
       },
-      "evidenceSiteCount": 14,
-      "evidenceWeight": 10,
+      "evidenceSiteCount": 0,
+      "evidenceWeight": 18.5,
       "group": "chrome",
       "key": "semanticTag",
-      "matchStatus": "mismatch",
+      "matchStatus": "notComparable",
       "targetLabel": "privacy",
       "viewport": "tablet"
     },
@@ -10745,8 +10725,8 @@
         "max": 224,
         "median": 0,
         "min": -4941,
-        "q1": -2986,
-        "q3": 0,
+        "q1": -2110,
+        "q3": 21,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -10761,11 +10741,11 @@
     {
       "elysiaValue": 239,
       "corpusBaseline": {
-        "max": 11582,
-        "median": 3815,
+        "max": 9463,
+        "median": 3473,
         "min": 98,
         "q1": 900,
-        "q3": 5969,
+        "q3": 4500,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -10778,11 +10758,11 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 0.987,
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 1,
+        "min": 0.979,
         "q1": 1,
         "q3": 1,
         "sampleWeight": 18.5,
@@ -10797,13 +10777,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 0.2656,
+      "elysiaValue": 0.2622,
       "corpusBaseline": {
-        "max": 12.8688,
-        "median": 4.239,
+        "max": 10.5139,
+        "median": 3.8592,
         "min": 0.1087,
         "q1": 1,
-        "q3": 6.6321,
+        "q3": 5.0002,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -10816,18 +10796,18 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 18.5,
+        "supportWeight": 17,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 18.5,
+      "evidenceWeight": 17,
       "group": "chrome",
       "key": "fullBleed",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "privacy",
       "viewport": "tablet"
     },
@@ -10930,7 +10910,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
+        "max": 8,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -10949,7 +10929,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 24,
+        "max": 7,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -10969,10 +10949,10 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 0.855,
-        "median": 0.127,
+        "median": 0.105,
         "min": 0,
-        "q1": 0.047,
-        "q3": 0.25,
+        "q1": 0,
+        "q3": 0.213,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -11023,10 +11003,10 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 100,
-        "median": 32,
+        "median": 24,
         "min": 0,
-        "q1": 19,
-        "q3": 49,
+        "q1": 16,
+        "q3": 42,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -11044,8 +11024,8 @@
         "max": 87,
         "median": 13,
         "min": 0,
-        "q1": 8,
-        "q3": 21,
+        "q1": 0,
+        "q3": 18,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -11053,7 +11033,7 @@
       "evidenceWeight": 18.5,
       "group": "interaction",
       "key": "buttonCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "privacy",
       "viewport": "tablet"
     },
@@ -11061,10 +11041,10 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 110,
-        "median": 53,
+        "median": 41,
         "min": 0,
-        "q1": 16,
-        "q3": 103,
+        "q1": 12,
+        "q3": 76,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -11099,10 +11079,10 @@
       "elysiaValue": 1,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.415,
+        "median": 0.394,
         "min": 0.083,
         "q1": 0.336,
-        "q3": 0.563,
+        "q3": 0.707,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -11117,10 +11097,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 176,
-        "median": 38,
+        "max": 177,
+        "median": 32,
         "min": 0,
-        "q1": 12,
+        "q1": 0,
         "q3": 101,
         "sampleWeight": 18.5,
         "type": "number"
@@ -11129,7 +11109,7 @@
       "evidenceWeight": 18.5,
       "group": "accessibility",
       "key": "ariaLabelCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "privacy",
       "viewport": "tablet"
     },
@@ -11138,7 +11118,7 @@
       "corpusBaseline": {
         "max": 1,
         "median": 0.972,
-        "min": 0.786,
+        "min": 0.78,
         "q1": 0.917,
         "q3": 1,
         "sampleWeight": 18.5,
@@ -11185,13 +11165,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 107,
+      "elysiaValue": 103,
       "corpusBaseline": {
-        "max": 1335155,
-        "median": 17214,
+        "max": 1375873,
+        "median": 15905,
         "min": 19,
-        "q1": 1581,
-        "q3": 39726,
+        "q1": 1057,
+        "q3": 34225,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -11206,11 +11186,11 @@
     {
       "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 40,
-        "median": 10,
+        "max": 36,
+        "median": 8,
         "min": 1,
-        "q1": 4,
-        "q3": 29,
+        "q1": 3,
+        "q3": 25,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -11229,7 +11209,7 @@
         "median": 13,
         "min": 0,
         "q1": 2,
-        "q3": 51,
+        "q3": 39,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -11263,10 +11243,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 396,
-        "median": 32,
+        "max": 416,
+        "median": 22,
         "min": 0,
-        "q1": 18,
+        "q1": 12,
         "q3": 95,
         "sampleWeight": 18.5,
         "type": "number"
@@ -11338,11 +11318,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 15.5,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 15.5,
+      "evidenceWeight": 14,
       "group": "commerce",
       "key": "addToCartTextPresent",
       "matchStatus": "mismatch",
@@ -11354,11 +11334,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 15.5,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 15.5,
+      "evidenceWeight": 14,
       "group": "commerce",
       "key": "checkoutTextPresent",
       "matchStatus": "mismatch",
@@ -11368,10 +11348,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 35.556,
-        "median": 6.029,
+        "max": 38.889,
+        "median": 5.998,
         "min": 0,
-        "q1": 4.607,
+        "q1": 4.021,
         "q3": 10.888,
         "sampleWeight": 18.5,
         "type": "number"
@@ -11387,11 +11367,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 58.889,
+        "max": 63.333,
         "median": 11.308,
         "min": 0,
-        "q1": 4.607,
-        "q3": 23.975,
+        "q1": 3.133,
+        "q3": 26.407,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -11462,11 +11442,11 @@
       "corpusBaseline": {
         "majorityValue": "main",
         "sampleWeight": 18.5,
-        "supportWeight": 11,
+        "supportWeight": 9.5,
         "type": "category"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 11,
+      "evidenceWeight": 9.5,
       "group": "chrome",
       "key": "semanticTag",
       "matchStatus": "mismatch",
@@ -11478,9 +11458,9 @@
       "corpusBaseline": {
         "max": 124,
         "median": 0,
-        "min": -5742,
-        "q1": -3392,
-        "q3": 0,
+        "min": -6462,
+        "q1": -3944,
+        "q3": 21,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -11495,11 +11475,11 @@
     {
       "elysiaValue": 244,
       "corpusBaseline": {
-        "max": 8978,
-        "median": 4492,
-        "min": 844,
-        "q1": 3479,
-        "q3": 5743,
+        "max": 8453,
+        "median": 4275,
+        "min": 224,
+        "q1": 844,
+        "q3": 5075,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -11512,11 +11492,11 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 0.974,
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 1,
+        "min": 0.959,
         "q1": 1,
         "q3": 1,
         "sampleWeight": 18.5,
@@ -11531,13 +11511,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 0.2885,
+      "elysiaValue": 0.2811,
       "corpusBaseline": {
-        "max": 10.6376,
-        "median": 5.3218,
-        "min": 1,
-        "q1": 4.1216,
-        "q3": 6.805,
+        "max": 10.0148,
+        "median": 5.0649,
+        "min": 0.2544,
+        "q1": 1,
+        "q3": 6.0128,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -11550,18 +11530,18 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 18.5,
+        "supportWeight": 17,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 18.5,
+      "evidenceWeight": 17,
       "group": "chrome",
       "key": "fullBleed",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "privacy",
       "viewport": "mobile"
     },
@@ -11664,11 +11644,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
-        "median": 1,
+        "max": 16,
+        "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 5,
+        "q3": 2,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -11683,11 +11663,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 24,
-        "median": 1,
+        "max": 16,
+        "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 3,
+        "q3": 2,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -11703,10 +11683,10 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 0.86,
-        "median": 0.209,
+        "median": 0.163,
         "min": 0,
-        "q1": 0.076,
-        "q3": 0.265,
+        "q1": 0.012,
+        "q3": 0.25,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -11756,11 +11736,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 567,
+        "max": 569,
         "median": 32,
-        "min": 1,
-        "q1": 23,
-        "q3": 49,
+        "min": 0,
+        "q1": 19,
+        "q3": 44,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -11776,10 +11756,10 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 91,
-        "median": 17,
+        "median": 15,
         "min": 0,
-        "q1": 8,
-        "q3": 30,
+        "q1": 2,
+        "q3": 31,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -11794,11 +11774,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 578,
-        "median": 53,
-        "min": 3,
-        "q1": 36,
-        "q3": 102,
+        "max": 580,
+        "median": 57,
+        "min": 0,
+        "q1": 16,
+        "q3": 75,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -11815,8 +11795,8 @@
       "corpusBaseline": {
         "max": 26,
         "median": 16,
-        "min": 1,
-        "q1": 3,
+        "min": 0,
+        "q1": 1,
         "q3": 20,
         "sampleWeight": 18.5,
         "type": "number"
@@ -11832,11 +11812,11 @@
     {
       "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 0.667,
-        "median": 0.434,
+        "max": 1,
+        "median": 0.404,
         "min": 0,
         "q1": 0.191,
-        "q3": 0.563,
+        "q3": 0.613,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -11851,11 +11831,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 176,
-        "median": 38,
+        "max": 177,
+        "median": 32,
         "min": 0,
-        "q1": 21,
-        "q3": 64,
+        "q1": 13,
+        "q3": 57,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -11871,9 +11851,9 @@
       "elysiaValue": 1,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.973,
-        "min": 0.333,
-        "q1": 0.815,
+        "median": 0.977,
+        "min": 0.786,
+        "q1": 0.917,
         "q3": 1,
         "sampleWeight": 18.5,
         "type": "number"
@@ -11907,11 +11887,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 18.5,
-        "supportWeight": 14,
+        "supportWeight": 13,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 14,
+      "evidenceWeight": 13,
       "group": "accessibility",
       "key": "hasAriaExpanded",
       "matchStatus": "match",
@@ -11919,13 +11899,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 107,
+      "elysiaValue": 103,
       "corpusBaseline": {
-        "max": 1321620,
-        "median": 17214,
+        "max": 1375613,
+        "median": 15905,
         "min": 60,
         "q1": 1668,
-        "q3": 39594,
+        "q3": 29569,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -11940,11 +11920,11 @@
     {
       "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 41,
-        "median": 10,
+        "max": 42,
+        "median": 8,
         "min": 0,
-        "q1": 4,
-        "q3": 33,
+        "q1": 3,
+        "q3": 25,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -11960,10 +11940,10 @@
       "elysiaValue": 2,
       "corpusBaseline": {
         "max": 91,
-        "median": 33,
+        "median": 24,
         "min": 0,
         "q1": 3,
-        "q3": 59,
+        "q3": 51,
         "sampleWeight": 18.5,
         "type": "number"
       },
@@ -12072,11 +12052,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 14,
+        "supportWeight": 12.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 14,
+      "evidenceWeight": 12.5,
       "group": "commerce",
       "key": "addToCartTextPresent",
       "matchStatus": "mismatch",
@@ -12088,11 +12068,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18.5,
-        "supportWeight": 14,
+        "supportWeight": 12.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 14,
+      "evidenceWeight": 12.5,
       "group": "commerce",
       "key": "checkoutTextPresent",
       "matchStatus": "mismatch",
@@ -12102,10 +12082,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 78.073,
-        "median": 7.313,
-        "min": 1.185,
-        "q1": 5.422,
+        "max": 78.349,
+        "median": 5.874,
+        "min": 0,
+        "q1": 5.206,
         "q3": 10.033,
         "sampleWeight": 18.5,
         "type": "number"
@@ -12121,10 +12101,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 79.588,
-        "median": 11.361,
-        "min": 3.45,
-        "q1": 8.015,
+        "max": 79.863,
+        "median": 9.415,
+        "min": 0,
+        "q1": 3.854,
         "q3": 26.668,
         "sampleWeight": 18.5,
         "type": "number"
@@ -12142,7 +12122,7 @@
     "id": "route-hero",
     "title": "Route Hero"
   },
-  "runAt": "2026-05-20T00:05:08.489Z",
+  "runAt": "2026-05-24T15:23:49.078Z",
   "sites": [
     {
       "enoughViewportCount": 0,
@@ -13207,9 +13187,9 @@
             "visibleElementCount": 1,
             "semanticTag": "main",
             "topPx": 64,
-            "heightPx": 7746,
+            "heightPx": 8453,
             "widthRatio": 1,
-            "areaRatio": 9.1772,
+            "areaRatio": 10.0148,
             "fullBleed": true,
             "hasBorder": false,
             "hasShadow": false,
@@ -13219,30 +13199,30 @@
             "transparentBackground": true,
             "roundedControlCount": 16,
             "pillLikeControlCount": 16,
-            "boxedControlRatio": 0.222,
+            "boxedControlRatio": 0.213,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 42,
-            "buttonCount": 30,
-            "focusableCount": 72,
+            "linkCount": 44,
+            "buttonCount": 31,
+            "focusableCount": 75,
             "minTapTargetPx": 6,
-            "tapTargetPassRatio": 0.597,
-            "ariaLabelCount": 50,
+            "tapTargetPassRatio": 0.613,
+            "ariaLabelCount": 57,
             "namedControlRatio": 1,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 19744,
+            "textLength": 21122,
             "headingCount": 0,
-            "paragraphCount": 59,
+            "paragraphCount": 68,
             "formControlCount": 0,
             "imageCount": 62,
-            "videoCount": 0,
+            "videoCount": 1,
             "productLinkCount": 0,
             "priceTextPresent": false,
             "addToCartTextPresent": false,
             "checkoutTextPresent": false,
-            "linksPer1000Px": 5.422,
-            "controlsPer1000Px": 9.296
+            "linksPer1000Px": 5.206,
+            "controlsPer1000Px": 8.873
           },
           "loadStatus": "ok",
           "siteName": "Graff",
@@ -13390,7 +13370,7 @@
             "elementCount": 1,
             "visibleElementCount": 1,
             "semanticTag": "main",
-            "topPx": -5742,
+            "topPx": -5543,
             "heightPx": 4275,
             "widthRatio": 1,
             "areaRatio": 5.0649,
@@ -13850,7 +13830,7 @@
             "focusableCount": 0,
             "minTapTargetPx": 0,
             "tapTargetPassRatio": 1,
-            "ariaLabelCount": 0,
+            "ariaLabelCount": 1,
             "namedControlRatio": 1,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
@@ -13966,8 +13946,8 @@
             "focusableCount": 3,
             "minTapTargetPx": 20.8,
             "tapTargetPassRatio": 0,
-            "ariaLabelCount": 8,
-            "namedControlRatio": 0.333,
+            "ariaLabelCount": 13,
+            "namedControlRatio": 1,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
             "textLength": 60,
@@ -14383,44 +14363,44 @@
             "elementFound": true,
             "elementCount": 1,
             "visibleElementCount": 1,
-            "semanticTag": "main",
-            "topPx": 0,
-            "heightPx": 7466,
-            "widthRatio": 1,
-            "areaRatio": 8.2953,
-            "fullBleed": true,
+            "semanticTag": "body",
+            "topPx": 21,
+            "heightPx": 206,
+            "widthRatio": 0.989,
+            "areaRatio": 0.2262,
+            "fullBleed": false,
             "hasBorder": false,
             "hasShadow": false,
             "lowShadow": true,
             "isStickyOrFixed": false,
             "neutralBackground": true,
             "transparentBackground": true,
-            "roundedControlCount": 23,
-            "pillLikeControlCount": 24,
-            "boxedControlRatio": 0.262,
+            "roundedControlCount": 0,
+            "pillLikeControlCount": 0,
+            "boxedControlRatio": 0,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 79,
-            "buttonCount": 23,
-            "focusableCount": 103,
-            "minTapTargetPx": 3,
-            "tapTargetPassRatio": 0.534,
-            "ariaLabelCount": 67,
+            "linkCount": 0,
+            "buttonCount": 0,
+            "focusableCount": 0,
+            "minTapTargetPx": 0,
+            "tapTargetPassRatio": 1,
+            "ariaLabelCount": 0,
             "namedControlRatio": 1,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 39992,
-            "headingCount": 40,
-            "paragraphCount": 67,
-            "formControlCount": 1,
-            "imageCount": 32,
+            "textLength": 121,
+            "headingCount": 2,
+            "paragraphCount": 3,
+            "formControlCount": 0,
+            "imageCount": 0,
             "videoCount": 0,
             "productLinkCount": 0,
-            "priceTextPresent": true,
-            "addToCartTextPresent": true,
-            "checkoutTextPresent": true,
-            "linksPer1000Px": 10.582,
-            "controlsPer1000Px": 13.796
+            "priceTextPresent": false,
+            "addToCartTextPresent": false,
+            "checkoutTextPresent": false,
+            "linksPer1000Px": 0,
+            "controlsPer1000Px": 0
           },
           "loadStatus": "ok",
           "siteName": "Buccellati",
@@ -14441,44 +14421,44 @@
             "elementFound": true,
             "elementCount": 1,
             "visibleElementCount": 1,
-            "semanticTag": "main",
-            "topPx": 0,
-            "heightPx": 11582,
-            "widthRatio": 1,
-            "areaRatio": 12.8688,
-            "fullBleed": true,
+            "semanticTag": "body",
+            "topPx": 21,
+            "heightPx": 206,
+            "widthRatio": 0.979,
+            "areaRatio": 0.224,
+            "fullBleed": false,
             "hasBorder": false,
             "hasShadow": false,
             "lowShadow": true,
             "isStickyOrFixed": false,
             "neutralBackground": true,
             "transparentBackground": true,
-            "roundedControlCount": 23,
-            "pillLikeControlCount": 24,
-            "boxedControlRatio": 0.262,
+            "roundedControlCount": 0,
+            "pillLikeControlCount": 0,
+            "boxedControlRatio": 0,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 79,
-            "buttonCount": 23,
-            "focusableCount": 103,
-            "minTapTargetPx": 3,
-            "tapTargetPassRatio": 0.515,
-            "ariaLabelCount": 65,
+            "linkCount": 0,
+            "buttonCount": 0,
+            "focusableCount": 0,
+            "minTapTargetPx": 0,
+            "tapTargetPassRatio": 1,
+            "ariaLabelCount": 0,
             "namedControlRatio": 1,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 39726,
-            "headingCount": 40,
-            "paragraphCount": 65,
-            "formControlCount": 1,
-            "imageCount": 32,
+            "textLength": 122,
+            "headingCount": 2,
+            "paragraphCount": 3,
+            "formControlCount": 0,
+            "imageCount": 0,
             "videoCount": 0,
             "productLinkCount": 0,
-            "priceTextPresent": true,
-            "addToCartTextPresent": true,
-            "checkoutTextPresent": true,
-            "linksPer1000Px": 6.821,
-            "controlsPer1000Px": 8.893
+            "priceTextPresent": false,
+            "addToCartTextPresent": false,
+            "checkoutTextPresent": false,
+            "linksPer1000Px": 0,
+            "controlsPer1000Px": 0
           },
           "loadStatus": "ok",
           "siteName": "Buccellati",
@@ -14499,44 +14479,44 @@
             "elementFound": true,
             "elementCount": 1,
             "visibleElementCount": 1,
-            "semanticTag": "main",
-            "topPx": 0,
-            "heightPx": 8978,
-            "widthRatio": 1,
-            "areaRatio": 10.6376,
-            "fullBleed": true,
+            "semanticTag": "body",
+            "topPx": 21,
+            "heightPx": 224,
+            "widthRatio": 0.959,
+            "areaRatio": 0.2544,
+            "fullBleed": false,
             "hasBorder": false,
             "hasShadow": false,
             "lowShadow": true,
             "isStickyOrFixed": false,
             "neutralBackground": true,
             "transparentBackground": true,
-            "roundedControlCount": 23,
-            "pillLikeControlCount": 24,
-            "boxedControlRatio": 0.265,
+            "roundedControlCount": 0,
+            "pillLikeControlCount": 0,
+            "boxedControlRatio": 0,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 78,
-            "buttonCount": 23,
-            "focusableCount": 102,
-            "minTapTargetPx": 3,
-            "tapTargetPassRatio": 0.51,
-            "ariaLabelCount": 64,
+            "linkCount": 0,
+            "buttonCount": 0,
+            "focusableCount": 0,
+            "minTapTargetPx": 0,
+            "tapTargetPassRatio": 1,
+            "ariaLabelCount": 0,
             "namedControlRatio": 1,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 39594,
-            "headingCount": 40,
-            "paragraphCount": 64,
-            "formControlCount": 1,
-            "imageCount": 32,
+            "textLength": 123,
+            "headingCount": 2,
+            "paragraphCount": 3,
+            "formControlCount": 0,
+            "imageCount": 0,
             "videoCount": 0,
             "productLinkCount": 0,
-            "priceTextPresent": true,
-            "addToCartTextPresent": true,
-            "checkoutTextPresent": true,
-            "linksPer1000Px": 8.688,
-            "controlsPer1000Px": 11.361
+            "priceTextPresent": false,
+            "addToCartTextPresent": false,
+            "checkoutTextPresent": false,
+            "linksPer1000Px": 0,
+            "controlsPer1000Px": 0
           },
           "loadStatus": "ok",
           "siteName": "Buccellati",
@@ -14684,7 +14664,7 @@
             "elementCount": 1,
             "visibleElementCount": 1,
             "semanticTag": "main",
-            "topPx": -3392,
+            "topPx": -4207,
             "heightPx": 4767,
             "widthRatio": 1,
             "areaRatio": 5.6481,
@@ -14764,20 +14744,20 @@
             "neutralBackground": true,
             "transparentBackground": false,
             "roundedControlCount": 2,
-            "pillLikeControlCount": 1,
+            "pillLikeControlCount": 0,
             "boxedControlRatio": 0.036,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 186,
+            "linkCount": 185,
             "buttonCount": 6,
-            "focusableCount": 195,
-            "minTapTargetPx": 1,
-            "tapTargetPassRatio": 0.128,
+            "focusableCount": 194,
+            "minTapTargetPx": 13,
+            "tapTargetPassRatio": 0.129,
             "ariaLabelCount": 17,
             "namedControlRatio": 0.964,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 423556,
+            "textLength": 423427,
             "headingCount": 90,
             "paragraphCount": 1221,
             "formControlCount": 1,
@@ -14787,8 +14767,8 @@
             "priceTextPresent": false,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
-            "linksPer1000Px": 206.667,
-            "controlsPer1000Px": 216.667
+            "linksPer1000Px": 205.556,
+            "controlsPer1000Px": 215.556
           },
           "loadStatus": "ok",
           "siteName": "Pomellato",
@@ -14822,31 +14802,31 @@
             "neutralBackground": true,
             "transparentBackground": false,
             "roundedControlCount": 8,
-            "pillLikeControlCount": 1,
-            "boxedControlRatio": 0.31,
+            "pillLikeControlCount": 0,
+            "boxedControlRatio": 0.317,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 32,
+            "linkCount": 31,
             "buttonCount": 13,
-            "focusableCount": 42,
-            "minTapTargetPx": 1,
-            "tapTargetPassRatio": 0.69,
+            "focusableCount": 41,
+            "minTapTargetPx": 13,
+            "tapTargetPassRatio": 0.707,
             "ariaLabelCount": 38,
-            "namedControlRatio": 0.786,
+            "namedControlRatio": 0.78,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 186381,
+            "textLength": 186252,
             "headingCount": 8,
             "paragraphCount": 69,
             "formControlCount": 1,
             "imageCount": 22,
             "videoCount": 2,
             "productLinkCount": 0,
-            "priceTextPresent": false,
+            "priceTextPresent": true,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
-            "linksPer1000Px": 35.556,
-            "controlsPer1000Px": 46.667
+            "linksPer1000Px": 34.444,
+            "controlsPer1000Px": 45.556
           },
           "loadStatus": "ok",
           "siteName": "Pomellato",
@@ -14900,7 +14880,7 @@
             "imageCount": 22,
             "videoCount": 2,
             "productLinkCount": 0,
-            "priceTextPresent": false,
+            "priceTextPresent": true,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
             "linksPer1000Px": 37.915,
@@ -14961,7 +14941,7 @@
             "namedControlRatio": 0.864,
             "hasAriaCurrent": false,
             "hasAriaExpanded": true,
-            "textLength": 30405,
+            "textLength": 30392,
             "headingCount": 34,
             "paragraphCount": 91,
             "formControlCount": 2,
@@ -14995,9 +14975,9 @@
             "visibleElementCount": 1,
             "semanticTag": "body",
             "topPx": 0,
-            "heightPx": 5953,
+            "heightPx": 5949,
             "widthRatio": 1,
-            "areaRatio": 6.6141,
+            "areaRatio": 6.6102,
             "fullBleed": true,
             "hasBorder": false,
             "hasShadow": false,
@@ -15019,7 +14999,7 @@
             "namedControlRatio": 0.815,
             "hasAriaCurrent": false,
             "hasAriaExpanded": true,
-            "textLength": 30396,
+            "textLength": 30383,
             "headingCount": 34,
             "paragraphCount": 91,
             "formControlCount": 2,
@@ -15029,8 +15009,8 @@
             "priceTextPresent": true,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
-            "linksPer1000Px": 11.423,
-            "controlsPer1000Px": 15.455
+            "linksPer1000Px": 11.43,
+            "controlsPer1000Px": 15.464
           },
           "loadStatus": "ok",
           "siteName": "David Yurman",
@@ -15077,7 +15057,7 @@
             "namedControlRatio": 0.815,
             "hasAriaCurrent": false,
             "hasAriaExpanded": true,
-            "textLength": 30396,
+            "textLength": 30383,
             "headingCount": 34,
             "paragraphCount": 91,
             "formControlCount": 2,
@@ -15145,7 +15125,7 @@
             "namedControlRatio": 0.991,
             "hasAriaCurrent": true,
             "hasAriaExpanded": true,
-            "textLength": 3479,
+            "textLength": 3453,
             "headingCount": 7,
             "paragraphCount": 52,
             "formControlCount": 0,
@@ -15178,7 +15158,7 @@
             "elementCount": 1,
             "visibleElementCount": 1,
             "semanticTag": "main",
-            "topPx": -2986,
+            "topPx": -2110,
             "heightPx": 7003,
             "widthRatio": 1,
             "areaRatio": 7.7807,
@@ -15203,7 +15183,7 @@
             "namedControlRatio": 0.972,
             "hasAriaCurrent": true,
             "hasAriaExpanded": true,
-            "textLength": 3484,
+            "textLength": 3458,
             "headingCount": 7,
             "paragraphCount": 51,
             "formControlCount": 0,
@@ -15236,7 +15216,7 @@
             "elementCount": 1,
             "visibleElementCount": 1,
             "semanticTag": "main",
-            "topPx": -2164,
+            "topPx": -1341,
             "heightPx": 5743,
             "widthRatio": 1,
             "areaRatio": 6.805,
@@ -15261,7 +15241,7 @@
             "namedControlRatio": 0.973,
             "hasAriaCurrent": true,
             "hasAriaExpanded": true,
-            "textLength": 3494,
+            "textLength": 3468,
             "headingCount": 7,
             "paragraphCount": 51,
             "formControlCount": 0,
@@ -15325,11 +15305,11 @@
             "focusableCount": 121,
             "minTapTargetPx": 12,
             "tapTargetPassRatio": 0.388,
-            "ariaLabelCount": 179,
+            "ariaLabelCount": 180,
             "namedControlRatio": 0.959,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 491276,
+            "textLength": 491534,
             "headingCount": 36,
             "paragraphCount": 27,
             "formControlCount": 1,
@@ -15383,15 +15363,15 @@
             "focusableCount": 107,
             "minTapTargetPx": 12,
             "tapTargetPassRatio": 0.336,
-            "ariaLabelCount": 176,
+            "ariaLabelCount": 177,
             "namedControlRatio": 0.963,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 491266,
+            "textLength": 491521,
             "headingCount": 36,
             "paragraphCount": 27,
             "formControlCount": 1,
-            "imageCount": 176,
+            "imageCount": 175,
             "videoCount": 0,
             "productLinkCount": 1,
             "priceTextPresent": true,
@@ -15436,16 +15416,16 @@
             "boxedControlRatio": 0.012,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 567,
+            "linkCount": 569,
             "buttonCount": 45,
-            "focusableCount": 578,
+            "focusableCount": 580,
             "minTapTargetPx": 1,
-            "tapTargetPassRatio": 0.206,
-            "ariaLabelCount": 176,
-            "namedControlRatio": 0.979,
+            "tapTargetPassRatio": 0.195,
+            "ariaLabelCount": 177,
+            "namedControlRatio": 0.981,
             "hasAriaCurrent": true,
             "hasAriaExpanded": false,
-            "textLength": 491268,
+            "textLength": 491519,
             "headingCount": 36,
             "paragraphCount": 27,
             "formControlCount": 3,
@@ -15455,8 +15435,8 @@
             "priceTextPresent": true,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
-            "linksPer1000Px": 78.073,
-            "controlsPer1000Px": 79.588
+            "linksPer1000Px": 78.349,
+            "controlsPer1000Px": 79.863
           },
           "loadStatus": "ok",
           "siteName": "Brilliant Earth",
@@ -15501,19 +15481,19 @@
             "transparentBackground": false,
             "roundedControlCount": 7,
             "pillLikeControlCount": 3,
-            "boxedControlRatio": 0.107,
+            "boxedControlRatio": 0.1,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 32,
-            "buttonCount": 18,
-            "focusableCount": 56,
+            "linkCount": 35,
+            "buttonCount": 19,
+            "focusableCount": 60,
             "minTapTargetPx": 13.08,
-            "tapTargetPassRatio": 0.446,
-            "ariaLabelCount": 31,
-            "namedControlRatio": 0.804,
+            "tapTargetPassRatio": 0.417,
+            "ariaLabelCount": 32,
+            "namedControlRatio": 0.8,
             "hasAriaCurrent": false,
             "hasAriaExpanded": true,
-            "textLength": 1322156,
+            "textLength": 1375594,
             "headingCount": 4,
             "paragraphCount": 0,
             "formControlCount": 4,
@@ -15523,8 +15503,8 @@
             "priceTextPresent": true,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
-            "linksPer1000Px": 35.556,
-            "controlsPer1000Px": 62.222
+            "linksPer1000Px": 38.889,
+            "controlsPer1000Px": 66.667
           },
           "loadStatus": "ok",
           "siteName": "Blue Nile",
@@ -15559,19 +15539,19 @@
             "transparentBackground": false,
             "roundedControlCount": 5,
             "pillLikeControlCount": 3,
-            "boxedControlRatio": 0.075,
+            "boxedControlRatio": 0.07,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 32,
-            "buttonCount": 17,
-            "focusableCount": 53,
+            "linkCount": 35,
+            "buttonCount": 18,
+            "focusableCount": 57,
             "minTapTargetPx": 13.08,
-            "tapTargetPassRatio": 0.415,
-            "ariaLabelCount": 31,
-            "namedControlRatio": 0.792,
+            "tapTargetPassRatio": 0.386,
+            "ariaLabelCount": 32,
+            "namedControlRatio": 0.789,
             "hasAriaCurrent": false,
             "hasAriaExpanded": true,
-            "textLength": 1335155,
+            "textLength": 1375873,
             "headingCount": 4,
             "paragraphCount": 0,
             "formControlCount": 2,
@@ -15581,8 +15561,8 @@
             "priceTextPresent": true,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
-            "linksPer1000Px": 35.556,
-            "controlsPer1000Px": 58.889
+            "linksPer1000Px": 38.889,
+            "controlsPer1000Px": 63.333
           },
           "loadStatus": "ok",
           "siteName": "Blue Nile",
@@ -15617,19 +15597,19 @@
             "transparentBackground": false,
             "roundedControlCount": 5,
             "pillLikeControlCount": 3,
-            "boxedControlRatio": 0.075,
+            "boxedControlRatio": 0.07,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 32,
-            "buttonCount": 17,
-            "focusableCount": 53,
+            "linkCount": 35,
+            "buttonCount": 18,
+            "focusableCount": 57,
             "minTapTargetPx": 13.08,
-            "tapTargetPassRatio": 0.434,
-            "ariaLabelCount": 31,
-            "namedControlRatio": 0.792,
+            "tapTargetPassRatio": 0.404,
+            "ariaLabelCount": 32,
+            "namedControlRatio": 0.789,
             "hasAriaCurrent": false,
             "hasAriaExpanded": true,
-            "textLength": 1321620,
+            "textLength": 1375613,
             "headingCount": 4,
             "paragraphCount": 0,
             "formControlCount": 2,
@@ -15639,8 +15619,8 @@
             "priceTextPresent": true,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
-            "linksPer1000Px": 37.915,
-            "controlsPer1000Px": 62.796
+            "linksPer1000Px": 41.469,
+            "controlsPer1000Px": 67.536
           },
           "loadStatus": "ok",
           "siteName": "Blue Nile",
@@ -15697,11 +15677,11 @@
             "namedControlRatio": 0.968,
             "hasAriaCurrent": false,
             "hasAriaExpanded": true,
-            "textLength": 63879,
+            "textLength": 65187,
             "headingCount": 11,
             "paragraphCount": 13,
             "formControlCount": 4,
-            "imageCount": 395,
+            "imageCount": 414,
             "videoCount": 0,
             "productLinkCount": 1,
             "priceTextPresent": true,
@@ -15743,30 +15723,30 @@
             "transparentBackground": false,
             "roundedControlCount": 2,
             "pillLikeControlCount": 2,
-            "boxedControlRatio": 0.087,
+            "boxedControlRatio": 0.105,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 60,
-            "buttonCount": 11,
-            "focusableCount": 69,
+            "linkCount": 63,
+            "buttonCount": 14,
+            "focusableCount": 76,
             "minTapTargetPx": 15,
-            "tapTargetPassRatio": 0.217,
-            "ariaLabelCount": 102,
-            "namedControlRatio": 0.971,
+            "tapTargetPassRatio": 0.237,
+            "ariaLabelCount": 105,
+            "namedControlRatio": 0.974,
             "hasAriaCurrent": false,
             "hasAriaExpanded": true,
-            "textLength": 63943,
+            "textLength": 65669,
             "headingCount": 11,
             "paragraphCount": 13,
             "formControlCount": 5,
-            "imageCount": 396,
+            "imageCount": 416,
             "videoCount": 0,
             "productLinkCount": 1,
             "priceTextPresent": true,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
-            "linksPer1000Px": 20.848,
-            "controlsPer1000Px": 23.975
+            "linksPer1000Px": 21.89,
+            "controlsPer1000Px": 26.407
           },
           "loadStatus": "ok",
           "siteName": "Kendra Scott",
@@ -15788,10 +15768,10 @@
             "elementCount": 1,
             "visibleElementCount": 1,
             "semanticTag": "main",
-            "topPx": -4581,
-            "heightPx": 4492,
+            "topPx": -6462,
+            "heightPx": 6373,
             "widthRatio": 1,
-            "areaRatio": 5.3218,
+            "areaRatio": 7.5505,
             "fullBleed": true,
             "hasBorder": false,
             "hasShadow": false,
@@ -15804,27 +15784,27 @@
             "boxedControlRatio": 0,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 36,
-            "buttonCount": 0,
-            "focusableCount": 36,
+            "linkCount": 58,
+            "buttonCount": 2,
+            "focusableCount": 60,
             "minTapTargetPx": 20,
-            "tapTargetPassRatio": 0.667,
-            "ariaLabelCount": 21,
-            "namedControlRatio": 0.972,
+            "tapTargetPassRatio": 0.733,
+            "ariaLabelCount": 23,
+            "namedControlRatio": 0.95,
             "hasAriaCurrent": false,
-            "hasAriaExpanded": false,
-            "textLength": 1639,
-            "headingCount": 41,
-            "paragraphCount": 22,
+            "hasAriaExpanded": true,
+            "textLength": 2582,
+            "headingCount": 42,
+            "paragraphCount": 24,
             "formControlCount": 0,
-            "imageCount": 70,
+            "imageCount": 73,
             "videoCount": 1,
             "productLinkCount": 0,
             "priceTextPresent": true,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
-            "linksPer1000Px": 8.015,
-            "controlsPer1000Px": 8.015
+            "linksPer1000Px": 9.101,
+            "controlsPer1000Px": 9.415
           },
           "loadStatus": "ok",
           "siteName": "Kendra Scott",
@@ -16742,7 +16722,7 @@
             "namedControlRatio": 1,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 7384,
+            "textLength": 7512,
             "headingCount": 2,
             "paragraphCount": 1,
             "formControlCount": 0,
@@ -16845,11 +16825,11 @@
     }
   ],
   "summary": {
-    "alignmentRatio": 0.6065040650406504,
-    "comparableMetricCount": 615,
-    "matchCount": 373,
-    "mismatchCount": 242,
-    "notComparableCount": 0,
+    "alignmentRatio": 0.6297520661157024,
+    "comparableMetricCount": 605,
+    "matchCount": 381,
+    "mismatchCount": 224,
+    "notComparableCount": 10,
     "referenceSitesEnoughData": 14,
     "status": "warn",
     "thresholdWeight": 9.25,

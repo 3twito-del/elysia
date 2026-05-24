@@ -107,10 +107,10 @@
           "visibleElementCount": 1,
           "semanticTag": "main",
           "topPx": 0,
-          "heightPx": 1079,
-          "widthRatio": 1,
-          "areaRatio": 1.1987,
-          "fullBleed": true,
+          "heightPx": 1112,
+          "widthRatio": 0.993,
+          "areaRatio": 1.2268,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -119,30 +119,30 @@
           "transparentBackground": true,
           "roundedControlCount": 0,
           "pillLikeControlCount": 0,
-          "boxedControlRatio": 0.476,
-          "aquaAccentCount": 2,
+          "boxedControlRatio": 0.556,
+          "aquaAccentCount": 0,
           "decorativeGradient": false,
-          "linkCount": 12,
-          "buttonCount": 6,
-          "focusableCount": 21,
-          "minTapTargetPx": 20,
-          "tapTargetPassRatio": 0.571,
+          "linkCount": 9,
+          "buttonCount": 10,
+          "focusableCount": 18,
+          "minTapTargetPx": 32,
+          "tapTargetPassRatio": 0.667,
           "ariaLabelCount": 6,
-          "namedControlRatio": 0.952,
+          "namedControlRatio": 0.944,
           "hasAriaCurrent": false,
-          "hasAriaExpanded": true,
-          "textLength": 745,
+          "hasAriaExpanded": false,
+          "textLength": 865,
           "headingCount": 4,
-          "paragraphCount": 6,
-          "formControlCount": 2,
+          "paragraphCount": 7,
+          "formControlCount": 1,
           "imageCount": 0,
           "videoCount": 0,
           "productLinkCount": 0,
           "priceTextPresent": false,
           "addToCartTextPresent": true,
           "checkoutTextPresent": true,
-          "linksPer1000Px": 11.123,
-          "controlsPer1000Px": 19.465
+          "linksPer1000Px": 8.095,
+          "controlsPer1000Px": 16.189
         },
         "loadStatus": "ok",
         "siteName": "Elysia",
@@ -165,10 +165,10 @@
           "visibleElementCount": 1,
           "semanticTag": "main",
           "topPx": 0,
-          "heightPx": 997,
-          "widthRatio": 1,
-          "areaRatio": 1.1078,
-          "fullBleed": true,
+          "heightPx": 1000,
+          "widthRatio": 0.987,
+          "areaRatio": 1.0967,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -177,30 +177,30 @@
           "transparentBackground": true,
           "roundedControlCount": 0,
           "pillLikeControlCount": 0,
-          "boxedControlRatio": 0.733,
-          "aquaAccentCount": 2,
+          "boxedControlRatio": 0.556,
+          "aquaAccentCount": 0,
           "decorativeGradient": false,
-          "linkCount": 5,
-          "buttonCount": 7,
-          "focusableCount": 15,
-          "minTapTargetPx": 20,
-          "tapTargetPassRatio": 0.867,
+          "linkCount": 9,
+          "buttonCount": 10,
+          "focusableCount": 18,
+          "minTapTargetPx": 30,
+          "tapTargetPassRatio": 0.667,
           "ariaLabelCount": 6,
-          "namedControlRatio": 0.933,
+          "namedControlRatio": 0.944,
           "hasAriaCurrent": false,
-          "hasAriaExpanded": true,
-          "textLength": 745,
+          "hasAriaExpanded": false,
+          "textLength": 865,
           "headingCount": 4,
-          "paragraphCount": 6,
-          "formControlCount": 2,
+          "paragraphCount": 7,
+          "formControlCount": 1,
           "imageCount": 0,
           "videoCount": 0,
           "productLinkCount": 0,
           "priceTextPresent": false,
           "addToCartTextPresent": true,
           "checkoutTextPresent": true,
-          "linksPer1000Px": 5.015,
-          "controlsPer1000Px": 15.044
+          "linksPer1000Px": 8.999,
+          "controlsPer1000Px": 17.999
         },
         "loadStatus": "ok",
         "siteName": "Elysia",
@@ -222,11 +222,11 @@
           "elementCount": 1,
           "visibleElementCount": 1,
           "semanticTag": "main",
-          "topPx": 118,
-          "heightPx": 1415,
-          "widthRatio": 1,
-          "areaRatio": 1.6765,
-          "fullBleed": true,
+          "topPx": 0,
+          "heightPx": 1414,
+          "widthRatio": 0.974,
+          "areaRatio": 1.6324,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -235,30 +235,30 @@
           "transparentBackground": true,
           "roundedControlCount": 0,
           "pillLikeControlCount": 0,
-          "boxedControlRatio": 0.733,
-          "aquaAccentCount": 2,
+          "boxedControlRatio": 0.692,
+          "aquaAccentCount": 0,
           "decorativeGradient": false,
-          "linkCount": 5,
-          "buttonCount": 7,
-          "focusableCount": 15,
-          "minTapTargetPx": 18,
-          "tapTargetPassRatio": 0.867,
+          "linkCount": 3,
+          "buttonCount": 9,
+          "focusableCount": 13,
+          "minTapTargetPx": 26.41,
+          "tapTargetPassRatio": 0.846,
           "ariaLabelCount": 6,
-          "namedControlRatio": 0.933,
+          "namedControlRatio": 0.923,
           "hasAriaCurrent": false,
           "hasAriaExpanded": true,
-          "textLength": 745,
+          "textLength": 865,
           "headingCount": 4,
-          "paragraphCount": 6,
-          "formControlCount": 2,
+          "paragraphCount": 7,
+          "formControlCount": 1,
           "imageCount": 0,
           "videoCount": 0,
           "productLinkCount": 0,
           "priceTextPresent": false,
           "addToCartTextPresent": true,
           "checkoutTextPresent": true,
-          "linksPer1000Px": 3.534,
-          "controlsPer1000Px": 10.601
+          "linksPer1000Px": 2.122,
+          "controlsPer1000Px": 9.194
         },
         "loadStatus": "ok",
         "siteName": "Elysia",
@@ -281,10 +281,10 @@
           "visibleElementCount": 1,
           "semanticTag": "main",
           "topPx": 0,
-          "heightPx": 1076,
-          "widthRatio": 1,
-          "areaRatio": 1.1954,
-          "fullBleed": true,
+          "heightPx": 1109,
+          "widthRatio": 0.993,
+          "areaRatio": 1.2235,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -293,30 +293,30 @@
           "transparentBackground": true,
           "roundedControlCount": 0,
           "pillLikeControlCount": 0,
-          "boxedControlRatio": 0.471,
-          "aquaAccentCount": 2,
+          "boxedControlRatio": 0.571,
+          "aquaAccentCount": 0,
           "decorativeGradient": false,
-          "linkCount": 12,
-          "buttonCount": 4,
-          "focusableCount": 17,
-          "minTapTargetPx": 20,
-          "tapTargetPassRatio": 0.529,
+          "linkCount": 9,
+          "buttonCount": 8,
+          "focusableCount": 14,
+          "minTapTargetPx": 36,
+          "tapTargetPassRatio": 0.643,
           "ariaLabelCount": 6,
-          "namedControlRatio": 0.941,
+          "namedControlRatio": 0.929,
           "hasAriaCurrent": false,
-          "hasAriaExpanded": true,
-          "textLength": 821,
+          "hasAriaExpanded": false,
+          "textLength": 914,
           "headingCount": 3,
-          "paragraphCount": 8,
-          "formControlCount": 2,
+          "paragraphCount": 9,
+          "formControlCount": 1,
           "imageCount": 0,
           "videoCount": 0,
           "productLinkCount": 0,
           "priceTextPresent": false,
           "addToCartTextPresent": true,
           "checkoutTextPresent": true,
-          "linksPer1000Px": 11.154,
-          "controlsPer1000Px": 15.801
+          "linksPer1000Px": 8.116,
+          "controlsPer1000Px": 12.626
         },
         "loadStatus": "ok",
         "siteName": "Elysia",
@@ -339,10 +339,10 @@
           "visibleElementCount": 1,
           "semanticTag": "main",
           "topPx": 0,
-          "heightPx": 1346,
-          "widthRatio": 1,
-          "areaRatio": 1.4956,
-          "fullBleed": true,
+          "heightPx": 1321,
+          "widthRatio": 0.987,
+          "areaRatio": 1.4487,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -351,30 +351,30 @@
           "transparentBackground": true,
           "roundedControlCount": 0,
           "pillLikeControlCount": 0,
-          "boxedControlRatio": 0.818,
-          "aquaAccentCount": 2,
+          "boxedControlRatio": 0.571,
+          "aquaAccentCount": 0,
           "decorativeGradient": false,
-          "linkCount": 5,
-          "buttonCount": 5,
-          "focusableCount": 11,
-          "minTapTargetPx": 20,
-          "tapTargetPassRatio": 0.909,
+          "linkCount": 9,
+          "buttonCount": 8,
+          "focusableCount": 14,
+          "minTapTargetPx": 30,
+          "tapTargetPassRatio": 0.643,
           "ariaLabelCount": 6,
-          "namedControlRatio": 0.909,
+          "namedControlRatio": 0.929,
           "hasAriaCurrent": false,
-          "hasAriaExpanded": true,
-          "textLength": 821,
+          "hasAriaExpanded": false,
+          "textLength": 914,
           "headingCount": 3,
-          "paragraphCount": 8,
-          "formControlCount": 2,
+          "paragraphCount": 9,
+          "formControlCount": 1,
           "imageCount": 0,
           "videoCount": 0,
           "productLinkCount": 0,
           "priceTextPresent": false,
           "addToCartTextPresent": true,
           "checkoutTextPresent": true,
-          "linksPer1000Px": 3.715,
-          "controlsPer1000Px": 8.172
+          "linksPer1000Px": 6.813,
+          "controlsPer1000Px": 10.598
         },
         "loadStatus": "ok",
         "siteName": "Elysia",
@@ -396,11 +396,11 @@
           "elementCount": 1,
           "visibleElementCount": 1,
           "semanticTag": "main",
-          "topPx": 118,
-          "heightPx": 1564,
-          "widthRatio": 1,
-          "areaRatio": 1.853,
-          "fullBleed": true,
+          "topPx": 0,
+          "heightPx": 1535,
+          "widthRatio": 0.974,
+          "areaRatio": 1.7721,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -409,30 +409,30 @@
           "transparentBackground": true,
           "roundedControlCount": 0,
           "pillLikeControlCount": 0,
-          "boxedControlRatio": 0.818,
-          "aquaAccentCount": 2,
+          "boxedControlRatio": 0.778,
+          "aquaAccentCount": 0,
           "decorativeGradient": false,
-          "linkCount": 5,
-          "buttonCount": 5,
-          "focusableCount": 11,
-          "minTapTargetPx": 18,
-          "tapTargetPassRatio": 0.909,
+          "linkCount": 3,
+          "buttonCount": 7,
+          "focusableCount": 9,
+          "minTapTargetPx": 26.41,
+          "tapTargetPassRatio": 0.889,
           "ariaLabelCount": 6,
-          "namedControlRatio": 0.909,
+          "namedControlRatio": 0.889,
           "hasAriaCurrent": false,
           "hasAriaExpanded": true,
-          "textLength": 821,
+          "textLength": 914,
           "headingCount": 3,
-          "paragraphCount": 8,
-          "formControlCount": 2,
+          "paragraphCount": 9,
+          "formControlCount": 1,
           "imageCount": 0,
           "videoCount": 0,
           "productLinkCount": 0,
           "priceTextPresent": false,
           "addToCartTextPresent": true,
           "checkoutTextPresent": true,
-          "linksPer1000Px": 3.197,
-          "controlsPer1000Px": 7.033
+          "linksPer1000Px": 1.954,
+          "controlsPer1000Px": 5.863
         },
         "loadStatus": "ok",
         "siteName": "Elysia",
@@ -658,11 +658,11 @@
       "corpusBaseline": {
         "majorityValue": "main",
         "sampleWeight": 19.5,
-        "supportWeight": 13.5,
+        "supportWeight": 12,
         "type": "category"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 13.5,
+      "evidenceWeight": 12,
       "group": "chrome",
       "key": "semanticTag",
       "matchStatus": "match",
@@ -674,8 +674,8 @@
       "corpusBaseline": {
         "max": 180,
         "median": 0,
-        "min": -4129,
-        "q1": -8,
+        "min": -36396,
+        "q1": -1340,
         "q3": 125,
         "sampleWeight": 19.5,
         "type": "number"
@@ -689,13 +689,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 1079,
+      "elysiaValue": 1112,
       "corpusBaseline": {
-        "max": 7466,
-        "median": 4192,
-        "min": 726,
+        "max": 6230,
+        "median": 3935,
+        "min": 206,
         "q1": 900,
-        "q3": 5129,
+        "q3": 4956,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -708,11 +708,11 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 0.993,
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 1,
+        "min": 0.989,
         "q1": 1,
         "q3": 1,
         "sampleWeight": 19.5,
@@ -727,13 +727,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 1.1987,
+      "elysiaValue": 1.2268,
       "corpusBaseline": {
-        "max": 8.2953,
-        "median": 4.6578,
-        "min": 0.8072,
+        "max": 6.9217,
+        "median": 4.3728,
+        "min": 0.2262,
         "q1": 1,
-        "q3": 5.6987,
+        "q3": 5.5062,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -746,18 +746,18 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 19.5,
-        "supportWeight": 19.5,
+        "supportWeight": 18,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
+      "evidenceWeight": 18,
       "group": "chrome",
       "key": "fullBleed",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "ai",
       "viewport": "desktop"
     },
@@ -860,7 +860,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
+        "max": 7,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -879,11 +879,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 24,
-        "median": 1,
+        "max": 7,
+        "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 3,
+        "q3": 2,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -896,13 +896,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 0.476,
+      "elysiaValue": 0.556,
       "corpusBaseline": {
         "max": 0.444,
-        "median": 0.125,
+        "median": 0.1,
         "min": 0,
-        "q1": 0.036,
-        "q3": 0.189,
+        "q1": 0,
+        "q3": 0.144,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -915,7 +915,7 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 2,
+      "elysiaValue": 0,
       "corpusBaseline": {
         "max": 0,
         "median": 0,
@@ -929,7 +929,7 @@
       "evidenceWeight": 19.5,
       "group": "visual-tone",
       "key": "aquaAccentCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "ai",
       "viewport": "desktop"
     },
@@ -950,13 +950,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 12,
+      "elysiaValue": 9,
       "corpusBaseline": {
-        "max": 186,
-        "median": 32,
+        "max": 185,
+        "median": 27,
         "min": 0,
         "q1": 16,
-        "q3": 94,
+        "q3": 95,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -969,13 +969,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 6,
+      "elysiaValue": 10,
       "corpusBaseline": {
         "max": 74,
-        "median": 10,
+        "median": 8,
         "min": 0,
-        "q1": 2,
-        "q3": 17,
+        "q1": 0,
+        "q3": 16,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -988,12 +988,12 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 21,
+      "elysiaValue": 18,
       "corpusBaseline": {
-        "max": 195,
-        "median": 56,
+        "max": 194,
+        "median": 37,
         "min": 0,
-        "q1": 16,
+        "q1": 12,
         "q3": 115,
         "sampleWeight": 19.5,
         "type": "number"
@@ -1007,7 +1007,7 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 20,
+      "elysiaValue": 32,
       "corpusBaseline": {
         "max": 340,
         "median": 15.34,
@@ -1023,620 +1023,2088 @@
       "key": "minTapTargetPx",
       "matchStatus": "match",
       "targetLabel": "ai",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": 0.667,
+      "corpusBaseline": {
+        "max": 1,
+        "median": 0.417,
+        "min": 0.083,
+        "q1": 0.144,
+        "q3": 0.75,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "interaction",
+      "key": "tapTargetPassRatio",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": 6,
+      "corpusBaseline": {
+        "max": 196,
+        "median": 18,
+        "min": 0,
+        "q1": 2,
+        "q3": 86,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "accessibility",
+      "key": "ariaLabelCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": 0.944,
+      "corpusBaseline": {
+        "max": 1,
+        "median": 0.994,
+        "min": 0.8,
+        "q1": 0.964,
+        "q3": 1,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "accessibility",
+      "key": "namedControlRatio",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": false,
+      "corpusBaseline": {
+        "majorityValue": false,
+        "sampleWeight": 19.5,
+        "supportWeight": 15.5,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 15.5,
+      "group": "accessibility",
+      "key": "hasAriaCurrent",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": false,
+      "corpusBaseline": {
+        "majorityValue": false,
+        "sampleWeight": 19.5,
+        "supportWeight": 12,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 12,
+      "group": "accessibility",
+      "key": "hasAriaExpanded",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": 865,
+      "corpusBaseline": {
+        "max": 1375594,
+        "median": 11748,
+        "min": 121,
+        "q1": 1057,
+        "q3": 17214,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "content",
+      "key": "textLength",
+      "matchStatus": "mismatch",
+      "targetLabel": "ai",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": 4,
+      "corpusBaseline": {
+        "max": 97,
+        "median": 12,
+        "min": 1,
+        "q1": 3,
+        "q3": 32,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "content",
+      "key": "headingCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": 7,
+      "corpusBaseline": {
+        "max": 1221,
+        "median": 16,
+        "min": 0,
+        "q1": 3,
+        "q3": 33,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "content",
+      "key": "paragraphCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": 1,
+      "corpusBaseline": {
+        "max": 4,
+        "median": 0,
+        "min": 0,
+        "q1": 0,
+        "q3": 1,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "content",
+      "key": "formControlCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": 0,
+      "corpusBaseline": {
+        "max": 178,
+        "median": 18,
+        "min": 0,
+        "q1": 1,
+        "q3": 70,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "media",
+      "key": "imageCount",
+      "matchStatus": "mismatch",
+      "targetLabel": "ai",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": 0,
+      "corpusBaseline": {
+        "max": 2,
+        "median": 0,
+        "min": 0,
+        "q1": 0,
+        "q3": 1,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "media",
+      "key": "videoCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": 0,
+      "corpusBaseline": {
+        "max": 80,
+        "median": 0,
+        "min": 0,
+        "q1": 0,
+        "q3": 1,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "commerce",
+      "key": "productLinkCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": false,
+      "corpusBaseline": {
+        "majorityValue": false,
+        "sampleWeight": 19.5,
+        "supportWeight": 10,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 10,
+      "group": "commerce",
+      "key": "priceTextPresent",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": true,
+      "corpusBaseline": {
+        "majorityValue": true,
+        "sampleWeight": 19.5,
+        "supportWeight": 15,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 15,
+      "group": "commerce",
+      "key": "addToCartTextPresent",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": true,
+      "corpusBaseline": {
+        "majorityValue": true,
+        "sampleWeight": 19.5,
+        "supportWeight": 15,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 15,
+      "group": "commerce",
+      "key": "checkoutTextPresent",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": 8.095,
+      "corpusBaseline": {
+        "max": 205.556,
+        "median": 8.259,
+        "min": 0,
+        "q1": 3.509,
+        "q3": 23.134,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "density",
+      "key": "linksPer1000Px",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": 16.189,
+      "corpusBaseline": {
+        "max": 215.556,
+        "median": 11.012,
+        "min": 0,
+        "q1": 3.049,
+        "q3": 44.076,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "density",
+      "key": "controlsPer1000Px",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": true,
+      "corpusBaseline": {
+        "majorityValue": true,
+        "sampleWeight": 19.5,
+        "supportWeight": 19.5,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "elementFound",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 1,
+      "corpusBaseline": {
+        "max": 5,
+        "median": 1,
+        "min": 1,
+        "q1": 1,
+        "q3": 1,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "elementCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 1,
+      "corpusBaseline": {
+        "max": 3,
+        "median": 1,
+        "min": 1,
+        "q1": 1,
+        "q3": 1,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "visibleElementCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": "main",
+      "corpusBaseline": {
+        "majorityValue": "main",
+        "sampleWeight": 19.5,
+        "supportWeight": 12,
+        "type": "category"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 12,
+      "group": "chrome",
+      "key": "semanticTag",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 0,
+      "corpusBaseline": {
+        "max": 169,
+        "median": 0,
+        "min": -4941,
+        "q1": -2110,
+        "q3": 56,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "topPx",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 1000,
+      "corpusBaseline": {
+        "max": 9463,
+        "median": 3815,
+        "min": 206,
+        "q1": 900,
+        "q3": 4500,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "heightPx",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 0.987,
+      "corpusBaseline": {
+        "max": 1,
+        "median": 1,
+        "min": 0.979,
+        "q1": 1,
+        "q3": 1,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "widthRatio",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 1.0967,
+      "corpusBaseline": {
+        "max": 10.5139,
+        "median": 4.239,
+        "min": 0.224,
+        "q1": 1,
+        "q3": 5.0002,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "areaRatio",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": false,
+      "corpusBaseline": {
+        "majorityValue": true,
+        "sampleWeight": 19.5,
+        "supportWeight": 18,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 18,
+      "group": "chrome",
+      "key": "fullBleed",
+      "matchStatus": "mismatch",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": false,
+      "corpusBaseline": {
+        "majorityValue": false,
+        "sampleWeight": 19.5,
+        "supportWeight": 19.5,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "hasBorder",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": false,
+      "corpusBaseline": {
+        "majorityValue": false,
+        "sampleWeight": 19.5,
+        "supportWeight": 19.5,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "hasShadow",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": true,
+      "corpusBaseline": {
+        "majorityValue": true,
+        "sampleWeight": 19.5,
+        "supportWeight": 19.5,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "lowShadow",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": false,
+      "corpusBaseline": {
+        "majorityValue": false,
+        "sampleWeight": 19.5,
+        "supportWeight": 19.5,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "isStickyOrFixed",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": true,
+      "corpusBaseline": {
+        "majorityValue": true,
+        "sampleWeight": 19.5,
+        "supportWeight": 19.5,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "visual-tone",
+      "key": "neutralBackground",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": true,
+      "corpusBaseline": {
+        "majorityValue": true,
+        "sampleWeight": 19.5,
+        "supportWeight": 15,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 15,
+      "group": "visual-tone",
+      "key": "transparentBackground",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 0,
+      "corpusBaseline": {
+        "max": 8,
+        "median": 0,
+        "min": 0,
+        "q1": 0,
+        "q3": 2,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "visual-tone",
+      "key": "roundedControlCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 0,
+      "corpusBaseline": {
+        "max": 7,
+        "median": 0,
+        "min": 0,
+        "q1": 0,
+        "q3": 2,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "visual-tone",
+      "key": "pillLikeControlCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 0.556,
+      "corpusBaseline": {
+        "max": 0.855,
+        "median": 0.127,
+        "min": 0,
+        "q1": 0,
+        "q3": 0.317,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "visual-tone",
+      "key": "boxedControlRatio",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 0,
+      "corpusBaseline": {
+        "max": 0,
+        "median": 0,
+        "min": 0,
+        "q1": 0,
+        "q3": 0,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "visual-tone",
+      "key": "aquaAccentCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": false,
+      "corpusBaseline": {
+        "majorityValue": false,
+        "sampleWeight": 19.5,
+        "supportWeight": 19.5,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "visual-tone",
+      "key": "decorativeGradient",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 9,
+      "corpusBaseline": {
+        "max": 100,
+        "median": 23,
+        "min": 0,
+        "q1": 16,
+        "q3": 35,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "interaction",
+      "key": "linkCount",
+      "matchStatus": "mismatch",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 10,
+      "corpusBaseline": {
+        "max": 87,
+        "median": 10,
+        "min": 0,
+        "q1": 0,
+        "q3": 18,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "interaction",
+      "key": "buttonCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 18,
+      "corpusBaseline": {
+        "max": 149,
+        "median": 34,
+        "min": 0,
+        "q1": 12,
+        "q3": 71,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "interaction",
+      "key": "focusableCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 30,
+      "corpusBaseline": {
+        "max": 240,
+        "median": 14.39,
+        "min": 0,
+        "q1": 1,
+        "q3": 20,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "interaction",
+      "key": "minTapTargetPx",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 0.667,
+      "corpusBaseline": {
+        "max": 1,
+        "median": 0.5,
+        "min": 0.083,
+        "q1": 0.336,
+        "q3": 0.741,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "interaction",
+      "key": "tapTargetPassRatio",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 6,
+      "corpusBaseline": {
+        "max": 182,
+        "median": 30,
+        "min": 0,
+        "q1": 1,
+        "q3": 86,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "accessibility",
+      "key": "ariaLabelCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 0.944,
+      "corpusBaseline": {
+        "max": 1,
+        "median": 0.98,
+        "min": 0.78,
+        "q1": 0.917,
+        "q3": 1,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "accessibility",
+      "key": "namedControlRatio",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": false,
+      "corpusBaseline": {
+        "majorityValue": false,
+        "sampleWeight": 19.5,
+        "supportWeight": 14,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 14,
+      "group": "accessibility",
+      "key": "hasAriaCurrent",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": false,
+      "corpusBaseline": {
+        "majorityValue": false,
+        "sampleWeight": 19.5,
+        "supportWeight": 13.5,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 13.5,
+      "group": "accessibility",
+      "key": "hasAriaExpanded",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 865,
+      "corpusBaseline": {
+        "max": 1375873,
+        "median": 11748,
+        "min": 122,
+        "q1": 1057,
+        "q3": 34225,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "content",
+      "key": "textLength",
+      "matchStatus": "mismatch",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 4,
+      "corpusBaseline": {
+        "max": 97,
+        "median": 10,
+        "min": 1,
+        "q1": 3,
+        "q3": 25,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "content",
+      "key": "headingCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 7,
+      "corpusBaseline": {
+        "max": 91,
+        "median": 13,
+        "min": 0,
+        "q1": 3,
+        "q3": 39,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "content",
+      "key": "paragraphCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 1,
+      "corpusBaseline": {
+        "max": 3,
+        "median": 0,
+        "min": 0,
+        "q1": 0,
+        "q3": 1,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "content",
+      "key": "formControlCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 0,
+      "corpusBaseline": {
+        "max": 178,
+        "median": 22,
+        "min": 0,
+        "q1": 12,
+        "q3": 95,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "media",
+      "key": "imageCount",
+      "matchStatus": "mismatch",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 0,
+      "corpusBaseline": {
+        "max": 2,
+        "median": 0,
+        "min": 0,
+        "q1": 0,
+        "q3": 1,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "media",
+      "key": "videoCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 0,
+      "corpusBaseline": {
+        "max": 80,
+        "median": 0,
+        "min": 0,
+        "q1": 0,
+        "q3": 1,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "commerce",
+      "key": "productLinkCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": false,
+      "corpusBaseline": {
+        "majorityValue": true,
+        "sampleWeight": 19.5,
+        "supportWeight": 12.5,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 12.5,
+      "group": "commerce",
+      "key": "priceTextPresent",
+      "matchStatus": "mismatch",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": true,
+      "corpusBaseline": {
+        "majorityValue": true,
+        "sampleWeight": 19.5,
+        "supportWeight": 15,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 15,
+      "group": "commerce",
+      "key": "addToCartTextPresent",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": true,
+      "corpusBaseline": {
+        "majorityValue": true,
+        "sampleWeight": 19.5,
+        "supportWeight": 15,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 15,
+      "group": "commerce",
+      "key": "checkoutTextPresent",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 8.999,
+      "corpusBaseline": {
+        "max": 38.889,
+        "median": 6.029,
+        "min": 0,
+        "q1": 4.207,
+        "q3": 10.888,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "density",
+      "key": "linksPer1000Px",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": 17.999,
+      "corpusBaseline": {
+        "max": 63.333,
+        "median": 9.714,
+        "min": 0,
+        "q1": 4.607,
+        "q3": 21.278,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "density",
+      "key": "controlsPer1000Px",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "tablet"
+    },
+    {
+      "elysiaValue": true,
+      "corpusBaseline": {
+        "majorityValue": true,
+        "sampleWeight": 19.5,
+        "supportWeight": 19.5,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "elementFound",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 1,
+      "corpusBaseline": {
+        "max": 5,
+        "median": 1,
+        "min": 1,
+        "q1": 1,
+        "q3": 1,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "elementCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 1,
+      "corpusBaseline": {
+        "max": 3,
+        "median": 1,
+        "min": 1,
+        "q1": 1,
+        "q3": 1,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "visibleElementCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": "main",
+      "corpusBaseline": {
+        "majorityValue": "main",
+        "sampleWeight": 19.5,
+        "supportWeight": 11,
+        "type": "category"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 11,
+      "group": "chrome",
+      "key": "semanticTag",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 0,
+      "corpusBaseline": {
+        "max": 124,
+        "median": 0,
+        "min": -5543,
+        "q1": -1341,
+        "q3": 21,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "topPx",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 1414,
+      "corpusBaseline": {
+        "max": 8453,
+        "median": 4767,
+        "min": 224,
+        "q1": 844,
+        "q3": 5743,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "heightPx",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 0.974,
+      "corpusBaseline": {
+        "max": 1,
+        "median": 1,
+        "min": 0.959,
+        "q1": 1,
+        "q3": 1,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "widthRatio",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 1.6324,
+      "corpusBaseline": {
+        "max": 10.0148,
+        "median": 5.6481,
+        "min": 0.2544,
+        "q1": 1,
+        "q3": 6.805,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "areaRatio",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": false,
+      "corpusBaseline": {
+        "majorityValue": true,
+        "sampleWeight": 19.5,
+        "supportWeight": 18,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 18,
+      "group": "chrome",
+      "key": "fullBleed",
+      "matchStatus": "mismatch",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": false,
+      "corpusBaseline": {
+        "majorityValue": false,
+        "sampleWeight": 19.5,
+        "supportWeight": 19.5,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "hasBorder",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": false,
+      "corpusBaseline": {
+        "majorityValue": false,
+        "sampleWeight": 19.5,
+        "supportWeight": 19.5,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "hasShadow",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": true,
+      "corpusBaseline": {
+        "majorityValue": true,
+        "sampleWeight": 19.5,
+        "supportWeight": 19.5,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "lowShadow",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": false,
+      "corpusBaseline": {
+        "majorityValue": false,
+        "sampleWeight": 19.5,
+        "supportWeight": 19.5,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "isStickyOrFixed",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": true,
+      "corpusBaseline": {
+        "majorityValue": true,
+        "sampleWeight": 19.5,
+        "supportWeight": 19.5,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "visual-tone",
+      "key": "neutralBackground",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": true,
+      "corpusBaseline": {
+        "majorityValue": true,
+        "sampleWeight": 19.5,
+        "supportWeight": 15,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 15,
+      "group": "visual-tone",
+      "key": "transparentBackground",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 0,
+      "corpusBaseline": {
+        "max": 16,
+        "median": 0,
+        "min": 0,
+        "q1": 0,
+        "q3": 7,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "visual-tone",
+      "key": "roundedControlCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 0,
+      "corpusBaseline": {
+        "max": 16,
+        "median": 0,
+        "min": 0,
+        "q1": 0,
+        "q3": 3,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "visual-tone",
+      "key": "pillLikeControlCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 0.692,
+      "corpusBaseline": {
+        "max": 0.86,
+        "median": 0.163,
+        "min": 0,
+        "q1": 0.012,
+        "q3": 0.31,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "visual-tone",
+      "key": "boxedControlRatio",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 0,
+      "corpusBaseline": {
+        "max": 0,
+        "median": 0,
+        "min": 0,
+        "q1": 0,
+        "q3": 0,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "visual-tone",
+      "key": "aquaAccentCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": false,
+      "corpusBaseline": {
+        "majorityValue": false,
+        "sampleWeight": 19.5,
+        "supportWeight": 19.5,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "visual-tone",
+      "key": "decorativeGradient",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 3,
+      "corpusBaseline": {
+        "max": 569,
+        "median": 32,
+        "min": 0,
+        "q1": 16,
+        "q3": 44,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "interaction",
+      "key": "linkCount",
+      "matchStatus": "mismatch",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 9,
+      "corpusBaseline": {
+        "max": 91,
+        "median": 15,
+        "min": 0,
+        "q1": 8,
+        "q3": 31,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "interaction",
+      "key": "buttonCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 13,
+      "corpusBaseline": {
+        "max": 580,
+        "median": 47,
+        "min": 0,
+        "q1": 16,
+        "q3": 75,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "interaction",
+      "key": "focusableCount",
+      "matchStatus": "mismatch",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 26.41,
+      "corpusBaseline": {
+        "max": 26,
+        "median": 14.39,
+        "min": 0,
+        "q1": 1,
+        "q3": 20,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "interaction",
+      "key": "minTapTargetPx",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 0.846,
+      "corpusBaseline": {
+        "max": 1,
+        "median": 0.404,
+        "min": 0.083,
+        "q1": 0.172,
+        "q3": 0.643,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "interaction",
+      "key": "tapTargetPassRatio",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 6,
+      "corpusBaseline": {
+        "max": 177,
+        "median": 38,
+        "min": 0,
+        "q1": 12,
+        "q3": 57,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "accessibility",
+      "key": "ariaLabelCount",
+      "matchStatus": "mismatch",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 0.923,
+      "corpusBaseline": {
+        "max": 1,
+        "median": 0.981,
+        "min": 0.786,
+        "q1": 0.917,
+        "q3": 1,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "accessibility",
+      "key": "namedControlRatio",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": false,
+      "corpusBaseline": {
+        "majorityValue": false,
+        "sampleWeight": 19.5,
+        "supportWeight": 14.5,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 14.5,
+      "group": "accessibility",
+      "key": "hasAriaCurrent",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": true,
+      "corpusBaseline": {
+        "majorityValue": false,
+        "sampleWeight": 19.5,
+        "supportWeight": 13.5,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 13.5,
+      "group": "accessibility",
+      "key": "hasAriaExpanded",
+      "matchStatus": "mismatch",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 865,
+      "corpusBaseline": {
+        "max": 1375613,
+        "median": 15905,
+        "min": 123,
+        "q1": 4205,
+        "q3": 29569,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "content",
+      "key": "textLength",
+      "matchStatus": "mismatch",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 4,
+      "corpusBaseline": {
+        "max": 36,
+        "median": 10,
+        "min": 0,
+        "q1": 3,
+        "q3": 32,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "content",
+      "key": "headingCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 7,
+      "corpusBaseline": {
+        "max": 91,
+        "median": 13,
+        "min": 0,
+        "q1": 3,
+        "q3": 59,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "content",
+      "key": "paragraphCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 1,
+      "corpusBaseline": {
+        "max": 3,
+        "median": 0,
+        "min": 0,
+        "q1": 0,
+        "q3": 1,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "content",
+      "key": "formControlCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 0,
+      "corpusBaseline": {
+        "max": 175,
+        "median": 56,
+        "min": 0,
+        "q1": 18,
+        "q3": 95,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "media",
+      "key": "imageCount",
+      "matchStatus": "mismatch",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 0,
+      "corpusBaseline": {
+        "max": 4,
+        "median": 1,
+        "min": 0,
+        "q1": 0,
+        "q3": 2,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "media",
+      "key": "videoCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 0,
+      "corpusBaseline": {
+        "max": 48,
+        "median": 0,
+        "min": 0,
+        "q1": 0,
+        "q3": 0,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "commerce",
+      "key": "productLinkCount",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": false,
+      "corpusBaseline": {
+        "majorityValue": true,
+        "sampleWeight": 19.5,
+        "supportWeight": 13,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 13,
+      "group": "commerce",
+      "key": "priceTextPresent",
+      "matchStatus": "mismatch",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": true,
+      "corpusBaseline": {
+        "majorityValue": true,
+        "sampleWeight": 19.5,
+        "supportWeight": 14,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 14,
+      "group": "commerce",
+      "key": "addToCartTextPresent",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": true,
+      "corpusBaseline": {
+        "majorityValue": true,
+        "sampleWeight": 19.5,
+        "supportWeight": 14,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 14,
+      "group": "commerce",
+      "key": "checkoutTextPresent",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 2.122,
+      "corpusBaseline": {
+        "max": 78.349,
+        "median": 5.462,
+        "min": 0,
+        "q1": 3.854,
+        "q3": 12.884,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "density",
+      "key": "linksPer1000Px",
+      "matchStatus": "mismatch",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": 9.194,
+      "corpusBaseline": {
+        "max": 79.863,
+        "median": 9.02,
+        "min": 0,
+        "q1": 3.854,
+        "q3": 26.668,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "density",
+      "key": "controlsPer1000Px",
+      "matchStatus": "match",
+      "targetLabel": "ai",
+      "viewport": "mobile"
+    },
+    {
+      "elysiaValue": true,
+      "corpusBaseline": {
+        "majorityValue": true,
+        "sampleWeight": 19.5,
+        "supportWeight": 19.5,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "elementFound",
+      "matchStatus": "match",
+      "targetLabel": "stylist",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": 1,
+      "corpusBaseline": {
+        "max": 5,
+        "median": 1,
+        "min": 1,
+        "q1": 1,
+        "q3": 1,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "elementCount",
+      "matchStatus": "match",
+      "targetLabel": "stylist",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": 1,
+      "corpusBaseline": {
+        "max": 5,
+        "median": 1,
+        "min": 1,
+        "q1": 1,
+        "q3": 1,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "visibleElementCount",
+      "matchStatus": "match",
+      "targetLabel": "stylist",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": "main",
+      "corpusBaseline": {
+        "majorityValue": "main",
+        "sampleWeight": 19.5,
+        "supportWeight": 12,
+        "type": "category"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 12,
+      "group": "chrome",
+      "key": "semanticTag",
+      "matchStatus": "match",
+      "targetLabel": "stylist",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": 0,
+      "corpusBaseline": {
+        "max": 180,
+        "median": 0,
+        "min": -36396,
+        "q1": -1340,
+        "q3": 125,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "topPx",
+      "matchStatus": "match",
+      "targetLabel": "stylist",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": 1109,
+      "corpusBaseline": {
+        "max": 6230,
+        "median": 3935,
+        "min": 206,
+        "q1": 900,
+        "q3": 4956,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "heightPx",
+      "matchStatus": "match",
+      "targetLabel": "stylist",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": 0.993,
+      "corpusBaseline": {
+        "max": 1,
+        "median": 1,
+        "min": 0.989,
+        "q1": 1,
+        "q3": 1,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "widthRatio",
+      "matchStatus": "match",
+      "targetLabel": "stylist",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": 1.2235,
+      "corpusBaseline": {
+        "max": 6.9217,
+        "median": 4.3728,
+        "min": 0.2262,
+        "q1": 1,
+        "q3": 5.5062,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "areaRatio",
+      "matchStatus": "match",
+      "targetLabel": "stylist",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": false,
+      "corpusBaseline": {
+        "majorityValue": true,
+        "sampleWeight": 19.5,
+        "supportWeight": 18,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 18,
+      "group": "chrome",
+      "key": "fullBleed",
+      "matchStatus": "mismatch",
+      "targetLabel": "stylist",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": false,
+      "corpusBaseline": {
+        "majorityValue": false,
+        "sampleWeight": 19.5,
+        "supportWeight": 19.5,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "hasBorder",
+      "matchStatus": "match",
+      "targetLabel": "stylist",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": false,
+      "corpusBaseline": {
+        "majorityValue": false,
+        "sampleWeight": 19.5,
+        "supportWeight": 19.5,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "hasShadow",
+      "matchStatus": "match",
+      "targetLabel": "stylist",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": true,
+      "corpusBaseline": {
+        "majorityValue": true,
+        "sampleWeight": 19.5,
+        "supportWeight": 19.5,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "lowShadow",
+      "matchStatus": "match",
+      "targetLabel": "stylist",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": false,
+      "corpusBaseline": {
+        "majorityValue": false,
+        "sampleWeight": 19.5,
+        "supportWeight": 19.5,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "chrome",
+      "key": "isStickyOrFixed",
+      "matchStatus": "match",
+      "targetLabel": "stylist",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": true,
+      "corpusBaseline": {
+        "majorityValue": true,
+        "sampleWeight": 19.5,
+        "supportWeight": 19.5,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "visual-tone",
+      "key": "neutralBackground",
+      "matchStatus": "match",
+      "targetLabel": "stylist",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": true,
+      "corpusBaseline": {
+        "majorityValue": true,
+        "sampleWeight": 19.5,
+        "supportWeight": 15,
+        "type": "boolean"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 15,
+      "group": "visual-tone",
+      "key": "transparentBackground",
+      "matchStatus": "match",
+      "targetLabel": "stylist",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": 0,
+      "corpusBaseline": {
+        "max": 7,
+        "median": 0,
+        "min": 0,
+        "q1": 0,
+        "q3": 2,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "visual-tone",
+      "key": "roundedControlCount",
+      "matchStatus": "match",
+      "targetLabel": "stylist",
+      "viewport": "desktop"
+    },
+    {
+      "elysiaValue": 0,
+      "corpusBaseline": {
+        "max": 7,
+        "median": 0,
+        "min": 0,
+        "q1": 0,
+        "q3": 2,
+        "sampleWeight": 19.5,
+        "type": "number"
+      },
+      "evidenceSiteCount": 15,
+      "evidenceWeight": 19.5,
+      "group": "visual-tone",
+      "key": "pillLikeControlCount",
+      "matchStatus": "match",
+      "targetLabel": "stylist",
       "viewport": "desktop"
     },
     {
       "elysiaValue": 0.571,
       "corpusBaseline": {
-        "max": 1,
-        "median": 0.446,
-        "min": 0.083,
-        "q1": 0.144,
-        "q3": 0.741,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "interaction",
-      "key": "tapTargetPassRatio",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": 6,
-      "corpusBaseline": {
-        "max": 195,
-        "median": 30,
-        "min": 0,
-        "q1": 12,
-        "q3": 86,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "accessibility",
-      "key": "ariaLabelCount",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": 0.952,
-      "corpusBaseline": {
-        "max": 1,
-        "median": 0.994,
-        "min": 0.804,
-        "q1": 0.964,
-        "q3": 1,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "accessibility",
-      "key": "namedControlRatio",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": false,
-      "corpusBaseline": {
-        "majorityValue": false,
-        "sampleWeight": 19.5,
-        "supportWeight": 14.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 14.5,
-      "group": "accessibility",
-      "key": "hasAriaCurrent",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": true,
-      "corpusBaseline": {
-        "majorityValue": false,
-        "sampleWeight": 19.5,
-        "supportWeight": 10.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 10.5,
-      "group": "accessibility",
-      "key": "hasAriaExpanded",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": 745,
-      "corpusBaseline": {
-        "max": 1324459,
-        "median": 15905,
-        "min": 663,
-        "q1": 1735,
-        "q3": 39992,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "content",
-      "key": "textLength",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": 4,
-      "corpusBaseline": {
-        "max": 97,
-        "median": 15,
-        "min": 1,
-        "q1": 4,
-        "q3": 36,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "content",
-      "key": "headingCount",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": 6,
-      "corpusBaseline": {
-        "max": 1221,
-        "median": 26,
-        "min": 0,
-        "q1": 3,
-        "q3": 67,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "content",
-      "key": "paragraphCount",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": 2,
-      "corpusBaseline": {
-        "max": 39,
-        "median": 11,
+        "max": 0.444,
+        "median": 0.1,
         "min": 0,
         "q1": 0,
-        "q3": 19,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "content",
-      "key": "formControlCount",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": 0,
-      "corpusBaseline": {
-        "max": 178,
-        "median": 18,
-        "min": 0,
-        "q1": 3,
-        "q3": 70,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "media",
-      "key": "imageCount",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": 0,
-      "corpusBaseline": {
-        "max": 2,
-        "median": 0,
-        "min": 0,
-        "q1": 0,
-        "q3": 1,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "media",
-      "key": "videoCount",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": 0,
-      "corpusBaseline": {
-        "max": 80,
-        "median": 0,
-        "min": 0,
-        "q1": 0,
-        "q3": 1,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "commerce",
-      "key": "productLinkCount",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": false,
-      "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 19.5,
-        "supportWeight": 11,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 11,
-      "group": "commerce",
-      "key": "priceTextPresent",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": true,
-      "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 19.5,
-        "supportWeight": 16.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 16.5,
-      "group": "commerce",
-      "key": "addToCartTextPresent",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": true,
-      "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 19.5,
-        "supportWeight": 16.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 16.5,
-      "group": "commerce",
-      "key": "checkoutTextPresent",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": 11.123,
-      "corpusBaseline": {
-        "max": 206.667,
-        "median": 10.582,
-        "min": 0,
-        "q1": 4.828,
-        "q3": 24.866,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "density",
-      "key": "linksPer1000Px",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": 19.465,
-      "corpusBaseline": {
-        "max": 216.667,
-        "median": 13.796,
-        "min": 0,
-        "q1": 5.921,
-        "q3": 47.616,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "density",
-      "key": "controlsPer1000Px",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": true,
-      "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 19.5,
-        "supportWeight": 19.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "elementFound",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": 1,
-      "corpusBaseline": {
-        "max": 5,
-        "median": 1,
-        "min": 1,
-        "q1": 1,
-        "q3": 1,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "elementCount",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": 1,
-      "corpusBaseline": {
-        "max": 3,
-        "median": 1,
-        "min": 1,
-        "q1": 1,
-        "q3": 1,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "visibleElementCount",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": "main",
-      "corpusBaseline": {
-        "majorityValue": "main",
-        "sampleWeight": 19.5,
-        "supportWeight": 13.5,
-        "type": "category"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 13.5,
-      "group": "chrome",
-      "key": "semanticTag",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": 0,
-      "corpusBaseline": {
-        "max": 169,
-        "median": 0,
-        "min": -4941,
-        "q1": -2986,
-        "q3": 56,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "topPx",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": 997,
-      "corpusBaseline": {
-        "max": 11582,
-        "median": 3830,
-        "min": 824,
-        "q1": 900,
-        "q3": 5969,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "heightPx",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": 1,
-      "corpusBaseline": {
-        "max": 1,
-        "median": 1,
-        "min": 1,
-        "q1": 1,
-        "q3": 1,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "widthRatio",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": 1.1078,
-      "corpusBaseline": {
-        "max": 12.8688,
-        "median": 4.2553,
-        "min": 0.9151,
-        "q1": 1,
-        "q3": 6.6321,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "areaRatio",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": true,
-      "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 19.5,
-        "supportWeight": 19.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "fullBleed",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": false,
-      "corpusBaseline": {
-        "majorityValue": false,
-        "sampleWeight": 19.5,
-        "supportWeight": 19.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "hasBorder",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": false,
-      "corpusBaseline": {
-        "majorityValue": false,
-        "sampleWeight": 19.5,
-        "supportWeight": 19.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "hasShadow",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": true,
-      "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 19.5,
-        "supportWeight": 19.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "lowShadow",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": false,
-      "corpusBaseline": {
-        "majorityValue": false,
-        "sampleWeight": 19.5,
-        "supportWeight": 19.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "isStickyOrFixed",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": true,
-      "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 19.5,
-        "supportWeight": 19.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "visual-tone",
-      "key": "neutralBackground",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": true,
-      "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 19.5,
-        "supportWeight": 15,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 15,
-      "group": "visual-tone",
-      "key": "transparentBackground",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": 0,
-      "corpusBaseline": {
-        "max": 23,
-        "median": 0,
-        "min": 0,
-        "q1": 0,
-        "q3": 5,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "visual-tone",
-      "key": "roundedControlCount",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": 0,
-      "corpusBaseline": {
-        "max": 24,
-        "median": 1,
-        "min": 0,
-        "q1": 0,
-        "q3": 2,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "visual-tone",
-      "key": "pillLikeControlCount",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": 0.733,
-      "corpusBaseline": {
-        "max": 0.855,
-        "median": 0.206,
-        "min": 0,
-        "q1": 0.047,
-        "q3": 0.31,
+        "q3": 0.144,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -1645,11 +3113,11 @@
       "group": "visual-tone",
       "key": "boxedControlRatio",
       "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
+      "targetLabel": "stylist",
+      "viewport": "desktop"
     },
     {
-      "elysiaValue": 2,
+      "elysiaValue": 0,
       "corpusBaseline": {
         "max": 0,
         "median": 0,
@@ -1663,9 +3131,9 @@
       "evidenceWeight": 19.5,
       "group": "visual-tone",
       "key": "aquaAccentCount",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "tablet"
+      "matchStatus": "match",
+      "targetLabel": "stylist",
+      "viewport": "desktop"
     },
     {
       "elysiaValue": false,
@@ -1680,1485 +3148,17 @@
       "group": "visual-tone",
       "key": "decorativeGradient",
       "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
+      "targetLabel": "stylist",
+      "viewport": "desktop"
     },
     {
-      "elysiaValue": 5,
+      "elysiaValue": 9,
       "corpusBaseline": {
-        "max": 100,
-        "median": 24,
-        "min": 0,
-        "q1": 16,
-        "q3": 49,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "interaction",
-      "key": "linkCount",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": 7,
-      "corpusBaseline": {
-        "max": 87,
-        "median": 10,
-        "min": 0,
-        "q1": 2,
-        "q3": 21,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "interaction",
-      "key": "buttonCount",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": 15,
-      "corpusBaseline": {
-        "max": 148,
-        "median": 42,
-        "min": 0,
-        "q1": 16,
-        "q3": 103,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "interaction",
-      "key": "focusableCount",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": 20,
-      "corpusBaseline": {
-        "max": 240,
-        "median": 14.39,
-        "min": 0,
-        "q1": 1,
-        "q3": 20,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "interaction",
-      "key": "minTapTargetPx",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": 0.867,
-      "corpusBaseline": {
-        "max": 1,
-        "median": 0.5,
-        "min": 0.083,
-        "q1": 0.336,
-        "q3": 0.69,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "interaction",
-      "key": "tapTargetPassRatio",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": 6,
-      "corpusBaseline": {
-        "max": 181,
-        "median": 38,
-        "min": 0,
-        "q1": 12,
-        "q3": 86,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "accessibility",
-      "key": "ariaLabelCount",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": 0.933,
-      "corpusBaseline": {
-        "max": 1,
-        "median": 0.98,
-        "min": 0.786,
-        "q1": 0.917,
-        "q3": 1,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "accessibility",
-      "key": "namedControlRatio",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": false,
-      "corpusBaseline": {
-        "majorityValue": false,
-        "sampleWeight": 19.5,
-        "supportWeight": 13,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 13,
-      "group": "accessibility",
-      "key": "hasAriaCurrent",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": true,
-      "corpusBaseline": {
-        "majorityValue": false,
-        "sampleWeight": 19.5,
-        "supportWeight": 10.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 10.5,
-      "group": "accessibility",
-      "key": "hasAriaExpanded",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": 745,
-      "corpusBaseline": {
-        "max": 1327239,
-        "median": 15905,
-        "min": 387,
-        "q1": 1057,
-        "q3": 39726,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "content",
-      "key": "textLength",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": 4,
-      "corpusBaseline": {
-        "max": 97,
-        "median": 11,
-        "min": 1,
-        "q1": 4,
-        "q3": 29,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "content",
-      "key": "headingCount",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": 6,
-      "corpusBaseline": {
-        "max": 91,
+        "max": 185,
         "median": 27,
         "min": 0,
-        "q1": 3,
-        "q3": 65,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "content",
-      "key": "paragraphCount",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": 2,
-      "corpusBaseline": {
-        "max": 49,
-        "median": 10,
-        "min": 0,
-        "q1": 0,
-        "q3": 22,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "content",
-      "key": "formControlCount",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": 0,
-      "corpusBaseline": {
-        "max": 178,
-        "median": 32,
-        "min": 0,
-        "q1": 18,
-        "q3": 95,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "media",
-      "key": "imageCount",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": 0,
-      "corpusBaseline": {
-        "max": 2,
-        "median": 0,
-        "min": 0,
-        "q1": 0,
-        "q3": 1,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "media",
-      "key": "videoCount",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": 0,
-      "corpusBaseline": {
-        "max": 80,
-        "median": 0,
-        "min": 0,
-        "q1": 0,
-        "q3": 1,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "commerce",
-      "key": "productLinkCount",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": false,
-      "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 19.5,
-        "supportWeight": 12.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 12.5,
-      "group": "commerce",
-      "key": "priceTextPresent",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": true,
-      "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 19.5,
-        "supportWeight": 16.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 16.5,
-      "group": "commerce",
-      "key": "addToCartTextPresent",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": true,
-      "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 19.5,
-        "supportWeight": 16.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 16.5,
-      "group": "commerce",
-      "key": "checkoutTextPresent",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": 5.015,
-      "corpusBaseline": {
-        "max": 35.556,
-        "median": 6.821,
-        "min": 0,
-        "q1": 4.607,
-        "q3": 10.887,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "density",
-      "key": "linksPer1000Px",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": 15.044,
-      "corpusBaseline": {
-        "max": 58.889,
-        "median": 9.714,
-        "min": 0,
-        "q1": 5.696,
-        "q3": 22.168,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "density",
-      "key": "controlsPer1000Px",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "tablet"
-    },
-    {
-      "elysiaValue": true,
-      "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 19.5,
-        "supportWeight": 19.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "elementFound",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 1,
-      "corpusBaseline": {
-        "max": 5,
-        "median": 1,
-        "min": 1,
-        "q1": 1,
-        "q3": 1,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "elementCount",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 1,
-      "corpusBaseline": {
-        "max": 3,
-        "median": 1,
-        "min": 1,
-        "q1": 1,
-        "q3": 1,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "visibleElementCount",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": "main",
-      "corpusBaseline": {
-        "majorityValue": "main",
-        "sampleWeight": 19.5,
-        "supportWeight": 13.5,
-        "type": "category"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 13.5,
-      "group": "chrome",
-      "key": "semanticTag",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 118,
-      "corpusBaseline": {
-        "max": 165,
-        "median": 0,
-        "min": -5742,
-        "q1": -2164,
-        "q3": 56,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "topPx",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 1415,
-      "corpusBaseline": {
-        "max": 8978,
-        "median": 4884,
-        "min": 844,
-        "q1": 3479,
-        "q3": 6641,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "heightPx",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 1,
-      "corpusBaseline": {
-        "max": 1,
-        "median": 1,
-        "min": 1,
-        "q1": 1,
-        "q3": 1,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "widthRatio",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 1.6765,
-      "corpusBaseline": {
-        "max": 10.6376,
-        "median": 5.7865,
-        "min": 1,
-        "q1": 4.1216,
-        "q3": 7.8679,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "areaRatio",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": true,
-      "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 19.5,
-        "supportWeight": 19.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "fullBleed",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": false,
-      "corpusBaseline": {
-        "majorityValue": false,
-        "sampleWeight": 19.5,
-        "supportWeight": 19.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "hasBorder",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": false,
-      "corpusBaseline": {
-        "majorityValue": false,
-        "sampleWeight": 19.5,
-        "supportWeight": 19.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "hasShadow",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": true,
-      "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 19.5,
-        "supportWeight": 19.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "lowShadow",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": false,
-      "corpusBaseline": {
-        "majorityValue": false,
-        "sampleWeight": 19.5,
-        "supportWeight": 19.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "isStickyOrFixed",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": true,
-      "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 19.5,
-        "supportWeight": 19.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "visual-tone",
-      "key": "neutralBackground",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": true,
-      "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 19.5,
-        "supportWeight": 15,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 15,
-      "group": "visual-tone",
-      "key": "transparentBackground",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 0,
-      "corpusBaseline": {
-        "max": 23,
-        "median": 1,
-        "min": 0,
-        "q1": 0,
-        "q3": 8,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "visual-tone",
-      "key": "roundedControlCount",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 0,
-      "corpusBaseline": {
-        "max": 24,
-        "median": 1,
-        "min": 0,
-        "q1": 0,
-        "q3": 7,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "visual-tone",
-      "key": "pillLikeControlCount",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 0.733,
-      "corpusBaseline": {
-        "max": 0.86,
-        "median": 0.222,
-        "min": 0,
-        "q1": 0.076,
-        "q3": 0.31,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "visual-tone",
-      "key": "boxedControlRatio",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 2,
-      "corpusBaseline": {
-        "max": 0,
-        "median": 0,
-        "min": 0,
-        "q1": 0,
-        "q3": 0,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "visual-tone",
-      "key": "aquaAccentCount",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": false,
-      "corpusBaseline": {
-        "majorityValue": false,
-        "sampleWeight": 19.5,
-        "supportWeight": 19.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "visual-tone",
-      "key": "decorativeGradient",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 5,
-      "corpusBaseline": {
-        "max": 567,
-        "median": 32,
-        "min": 16,
-        "q1": 23,
-        "q3": 49,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "interaction",
-      "key": "linkCount",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 7,
-      "corpusBaseline": {
-        "max": 91,
-        "median": 17,
-        "min": 0,
-        "q1": 8,
-        "q3": 30,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "interaction",
-      "key": "buttonCount",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 15,
-      "corpusBaseline": {
-        "max": 578,
-        "median": 53,
-        "min": 12,
-        "q1": 27,
-        "q3": 102,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "interaction",
-      "key": "focusableCount",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 18,
-      "corpusBaseline": {
-        "max": 190,
-        "median": 14.39,
-        "min": 1,
-        "q1": 3,
-        "q3": 20,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "interaction",
-      "key": "minTapTargetPx",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 0.867,
-      "corpusBaseline": {
-        "max": 1,
-        "median": 0.434,
-        "min": 0.083,
-        "q1": 0.173,
-        "q3": 0.597,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "interaction",
-      "key": "tapTargetPassRatio",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 6,
-      "corpusBaseline": {
-        "max": 176,
-        "median": 50,
-        "min": 0,
-        "q1": 18,
-        "q3": 86,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "accessibility",
-      "key": "ariaLabelCount",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 0.933,
-      "corpusBaseline": {
-        "max": 1,
-        "median": 0.979,
-        "min": 0.786,
-        "q1": 0.917,
-        "q3": 1,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "accessibility",
-      "key": "namedControlRatio",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": false,
-      "corpusBaseline": {
-        "majorityValue": false,
-        "sampleWeight": 19.5,
-        "supportWeight": 14.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 14.5,
-      "group": "accessibility",
-      "key": "hasAriaCurrent",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": true,
-      "corpusBaseline": {
-        "majorityValue": false,
-        "sampleWeight": 19.5,
-        "supportWeight": 10.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 10.5,
-      "group": "accessibility",
-      "key": "hasAriaExpanded",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 745,
-      "corpusBaseline": {
-        "max": 1324287,
-        "median": 17214,
-        "min": 387,
-        "q1": 3895,
-        "q3": 39594,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "content",
-      "key": "textLength",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 4,
-      "corpusBaseline": {
-        "max": 97,
-        "median": 20,
-        "min": 0,
-        "q1": 8,
-        "q3": 33,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "content",
-      "key": "headingCount",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 6,
-      "corpusBaseline": {
-        "max": 91,
-        "median": 33,
-        "min": 0,
-        "q1": 5,
-        "q3": 64,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "content",
-      "key": "paragraphCount",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 2,
-      "corpusBaseline": {
-        "max": 49,
-        "median": 10,
-        "min": 0,
-        "q1": 0,
-        "q3": 22,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "content",
-      "key": "formControlCount",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 0,
-      "corpusBaseline": {
-        "max": 178,
-        "median": 62,
-        "min": 12,
-        "q1": 22,
-        "q3": 95,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "media",
-      "key": "imageCount",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 0,
-      "corpusBaseline": {
-        "max": 4,
-        "median": 1,
-        "min": 0,
-        "q1": 0,
-        "q3": 2,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "media",
-      "key": "videoCount",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 0,
-      "corpusBaseline": {
-        "max": 80,
-        "median": 0,
-        "min": 0,
-        "q1": 0,
-        "q3": 1,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "commerce",
-      "key": "productLinkCount",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": false,
-      "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 19.5,
-        "supportWeight": 14,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 14,
-      "group": "commerce",
-      "key": "priceTextPresent",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": true,
-      "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 19.5,
-        "supportWeight": 16.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 16.5,
-      "group": "commerce",
-      "key": "addToCartTextPresent",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": true,
-      "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 19.5,
-        "supportWeight": 16.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 16.5,
-      "group": "commerce",
-      "key": "checkoutTextPresent",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 3.534,
-      "corpusBaseline": {
-        "max": 78.073,
-        "median": 5.874,
-        "min": 3.079,
-        "q1": 5.38,
-        "q3": 13.402,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "density",
-      "key": "linksPer1000Px",
-      "matchStatus": "mismatch",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": 10.601,
-      "corpusBaseline": {
-        "max": 79.588,
-        "median": 11.361,
-        "min": 3.45,
-        "q1": 7.078,
-        "q3": 26.668,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "density",
-      "key": "controlsPer1000Px",
-      "matchStatus": "match",
-      "targetLabel": "ai",
-      "viewport": "mobile"
-    },
-    {
-      "elysiaValue": true,
-      "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 19.5,
-        "supportWeight": 19.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "elementFound",
-      "matchStatus": "match",
-      "targetLabel": "stylist",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": 1,
-      "corpusBaseline": {
-        "max": 5,
-        "median": 1,
-        "min": 1,
-        "q1": 1,
-        "q3": 1,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "elementCount",
-      "matchStatus": "match",
-      "targetLabel": "stylist",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": 1,
-      "corpusBaseline": {
-        "max": 5,
-        "median": 1,
-        "min": 1,
-        "q1": 1,
-        "q3": 1,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "visibleElementCount",
-      "matchStatus": "match",
-      "targetLabel": "stylist",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": "main",
-      "corpusBaseline": {
-        "majorityValue": "main",
-        "sampleWeight": 19.5,
-        "supportWeight": 13.5,
-        "type": "category"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 13.5,
-      "group": "chrome",
-      "key": "semanticTag",
-      "matchStatus": "match",
-      "targetLabel": "stylist",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": 0,
-      "corpusBaseline": {
-        "max": 180,
-        "median": 0,
-        "min": -4129,
-        "q1": -8,
-        "q3": 125,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "topPx",
-      "matchStatus": "match",
-      "targetLabel": "stylist",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": 1076,
-      "corpusBaseline": {
-        "max": 7466,
-        "median": 4192,
-        "min": 726,
-        "q1": 900,
-        "q3": 5129,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "heightPx",
-      "matchStatus": "match",
-      "targetLabel": "stylist",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": 1,
-      "corpusBaseline": {
-        "max": 1,
-        "median": 1,
-        "min": 1,
-        "q1": 1,
-        "q3": 1,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "widthRatio",
-      "matchStatus": "match",
-      "targetLabel": "stylist",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": 1.1954,
-      "corpusBaseline": {
-        "max": 8.2953,
-        "median": 4.6578,
-        "min": 0.8072,
-        "q1": 1,
-        "q3": 5.6987,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "areaRatio",
-      "matchStatus": "match",
-      "targetLabel": "stylist",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": true,
-      "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 19.5,
-        "supportWeight": 19.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "fullBleed",
-      "matchStatus": "match",
-      "targetLabel": "stylist",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": false,
-      "corpusBaseline": {
-        "majorityValue": false,
-        "sampleWeight": 19.5,
-        "supportWeight": 19.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "hasBorder",
-      "matchStatus": "match",
-      "targetLabel": "stylist",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": false,
-      "corpusBaseline": {
-        "majorityValue": false,
-        "sampleWeight": 19.5,
-        "supportWeight": 19.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "hasShadow",
-      "matchStatus": "match",
-      "targetLabel": "stylist",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": true,
-      "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 19.5,
-        "supportWeight": 19.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "lowShadow",
-      "matchStatus": "match",
-      "targetLabel": "stylist",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": false,
-      "corpusBaseline": {
-        "majorityValue": false,
-        "sampleWeight": 19.5,
-        "supportWeight": 19.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "chrome",
-      "key": "isStickyOrFixed",
-      "matchStatus": "match",
-      "targetLabel": "stylist",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": true,
-      "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 19.5,
-        "supportWeight": 19.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "visual-tone",
-      "key": "neutralBackground",
-      "matchStatus": "match",
-      "targetLabel": "stylist",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": true,
-      "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 19.5,
-        "supportWeight": 15,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 15,
-      "group": "visual-tone",
-      "key": "transparentBackground",
-      "matchStatus": "match",
-      "targetLabel": "stylist",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": 0,
-      "corpusBaseline": {
-        "max": 23,
-        "median": 0,
-        "min": 0,
-        "q1": 0,
-        "q3": 2,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "visual-tone",
-      "key": "roundedControlCount",
-      "matchStatus": "match",
-      "targetLabel": "stylist",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": 0,
-      "corpusBaseline": {
-        "max": 24,
-        "median": 1,
-        "min": 0,
-        "q1": 0,
-        "q3": 3,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "visual-tone",
-      "key": "pillLikeControlCount",
-      "matchStatus": "match",
-      "targetLabel": "stylist",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": 0.471,
-      "corpusBaseline": {
-        "max": 0.444,
-        "median": 0.125,
-        "min": 0,
-        "q1": 0.036,
-        "q3": 0.189,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "visual-tone",
-      "key": "boxedControlRatio",
-      "matchStatus": "match",
-      "targetLabel": "stylist",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": 2,
-      "corpusBaseline": {
-        "max": 0,
-        "median": 0,
-        "min": 0,
-        "q1": 0,
-        "q3": 0,
-        "sampleWeight": 19.5,
-        "type": "number"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "visual-tone",
-      "key": "aquaAccentCount",
-      "matchStatus": "mismatch",
-      "targetLabel": "stylist",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": false,
-      "corpusBaseline": {
-        "majorityValue": false,
-        "sampleWeight": 19.5,
-        "supportWeight": 19.5,
-        "type": "boolean"
-      },
-      "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
-      "group": "visual-tone",
-      "key": "decorativeGradient",
-      "matchStatus": "match",
-      "targetLabel": "stylist",
-      "viewport": "desktop"
-    },
-    {
-      "elysiaValue": 12,
-      "corpusBaseline": {
-        "max": 186,
-        "median": 32,
-        "min": 0,
         "q1": 16,
-        "q3": 94,
+        "q3": 95,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -3171,13 +3171,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 4,
+      "elysiaValue": 8,
       "corpusBaseline": {
         "max": 74,
-        "median": 10,
+        "median": 8,
         "min": 0,
-        "q1": 2,
-        "q3": 17,
+        "q1": 0,
+        "q3": 16,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -3190,12 +3190,12 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 17,
+      "elysiaValue": 14,
       "corpusBaseline": {
-        "max": 195,
-        "median": 56,
+        "max": 194,
+        "median": 37,
         "min": 0,
-        "q1": 16,
+        "q1": 12,
         "q3": 115,
         "sampleWeight": 19.5,
         "type": "number"
@@ -3209,7 +3209,7 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 20,
+      "elysiaValue": 36,
       "corpusBaseline": {
         "max": 340,
         "median": 15.34,
@@ -3228,13 +3228,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 0.529,
+      "elysiaValue": 0.643,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.446,
+        "median": 0.417,
         "min": 0.083,
         "q1": 0.144,
-        "q3": 0.741,
+        "q3": 0.75,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -3249,10 +3249,10 @@
     {
       "elysiaValue": 6,
       "corpusBaseline": {
-        "max": 195,
-        "median": 30,
+        "max": 196,
+        "median": 18,
         "min": 0,
-        "q1": 12,
+        "q1": 2,
         "q3": 86,
         "sampleWeight": 19.5,
         "type": "number"
@@ -3261,16 +3261,16 @@
       "evidenceWeight": 19.5,
       "group": "accessibility",
       "key": "ariaLabelCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "stylist",
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 0.941,
+      "elysiaValue": 0.929,
       "corpusBaseline": {
         "max": 1,
         "median": 0.994,
-        "min": 0.804,
+        "min": 0.8,
         "q1": 0.964,
         "q3": 1,
         "sampleWeight": 19.5,
@@ -3289,11 +3289,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 14.5,
+        "supportWeight": 15.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 14.5,
+      "evidenceWeight": 15.5,
       "group": "accessibility",
       "key": "hasAriaCurrent",
       "matchStatus": "match",
@@ -3301,29 +3301,29 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 10.5,
+        "supportWeight": 12,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 10.5,
+      "evidenceWeight": 12,
       "group": "accessibility",
       "key": "hasAriaExpanded",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "stylist",
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 821,
+      "elysiaValue": 914,
       "corpusBaseline": {
-        "max": 1324459,
-        "median": 15905,
-        "min": 663,
-        "q1": 1735,
-        "q3": 39992,
+        "max": 1375594,
+        "median": 11748,
+        "min": 121,
+        "q1": 1057,
+        "q3": 17214,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -3339,10 +3339,10 @@
       "elysiaValue": 3,
       "corpusBaseline": {
         "max": 97,
-        "median": 15,
+        "median": 12,
         "min": 1,
-        "q1": 4,
-        "q3": 36,
+        "q1": 3,
+        "q3": 32,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -3350,18 +3350,18 @@
       "evidenceWeight": 19.5,
       "group": "content",
       "key": "headingCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "stylist",
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 8,
+      "elysiaValue": 9,
       "corpusBaseline": {
         "max": 1221,
-        "median": 26,
+        "median": 16,
         "min": 0,
         "q1": 3,
-        "q3": 67,
+        "q3": 33,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -3374,13 +3374,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 2,
+      "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 39,
-        "median": 11,
+        "max": 4,
+        "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 19,
+        "q3": 1,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -3398,7 +3398,7 @@
         "max": 178,
         "median": 18,
         "min": 0,
-        "q1": 3,
+        "q1": 1,
         "q3": 70,
         "sampleWeight": 19.5,
         "type": "number"
@@ -3452,16 +3452,16 @@
     {
       "elysiaValue": false,
       "corpusBaseline": {
-        "majorityValue": true,
+        "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 11,
+        "supportWeight": 10,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 11,
+      "evidenceWeight": 10,
       "group": "commerce",
       "key": "priceTextPresent",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "stylist",
       "viewport": "desktop"
     },
@@ -3470,11 +3470,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 19.5,
-        "supportWeight": 16.5,
+        "supportWeight": 15,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 16.5,
+      "evidenceWeight": 15,
       "group": "commerce",
       "key": "addToCartTextPresent",
       "matchStatus": "match",
@@ -3486,11 +3486,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 19.5,
-        "supportWeight": 16.5,
+        "supportWeight": 15,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 16.5,
+      "evidenceWeight": 15,
       "group": "commerce",
       "key": "checkoutTextPresent",
       "matchStatus": "match",
@@ -3498,13 +3498,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 11.154,
+      "elysiaValue": 8.116,
       "corpusBaseline": {
-        "max": 206.667,
-        "median": 10.582,
+        "max": 205.556,
+        "median": 8.259,
         "min": 0,
-        "q1": 4.828,
-        "q3": 24.866,
+        "q1": 3.509,
+        "q3": 23.134,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -3517,13 +3517,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 15.801,
+      "elysiaValue": 12.626,
       "corpusBaseline": {
-        "max": 216.667,
-        "median": 13.796,
+        "max": 215.556,
+        "median": 11.012,
         "min": 0,
-        "q1": 5.921,
-        "q3": 47.616,
+        "q1": 3.049,
+        "q3": 44.076,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -3594,11 +3594,11 @@
       "corpusBaseline": {
         "majorityValue": "main",
         "sampleWeight": 19.5,
-        "supportWeight": 13.5,
+        "supportWeight": 12,
         "type": "category"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 13.5,
+      "evidenceWeight": 12,
       "group": "chrome",
       "key": "semanticTag",
       "matchStatus": "match",
@@ -3611,7 +3611,7 @@
         "max": 169,
         "median": 0,
         "min": -4941,
-        "q1": -2986,
+        "q1": -2110,
         "q3": 56,
         "sampleWeight": 19.5,
         "type": "number"
@@ -3625,13 +3625,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 1346,
+      "elysiaValue": 1321,
       "corpusBaseline": {
-        "max": 11582,
-        "median": 3830,
-        "min": 824,
+        "max": 9463,
+        "median": 3815,
+        "min": 206,
         "q1": 900,
-        "q3": 5969,
+        "q3": 4500,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -3644,11 +3644,11 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 0.987,
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 1,
+        "min": 0.979,
         "q1": 1,
         "q3": 1,
         "sampleWeight": 19.5,
@@ -3663,13 +3663,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 1.4956,
+      "elysiaValue": 1.4487,
       "corpusBaseline": {
-        "max": 12.8688,
-        "median": 4.2553,
-        "min": 0.9151,
+        "max": 10.5139,
+        "median": 4.239,
+        "min": 0.224,
         "q1": 1,
-        "q3": 6.6321,
+        "q3": 5.0002,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -3682,18 +3682,18 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 19.5,
-        "supportWeight": 19.5,
+        "supportWeight": 18,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
+      "evidenceWeight": 18,
       "group": "chrome",
       "key": "fullBleed",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "stylist",
       "viewport": "tablet"
     },
@@ -3796,11 +3796,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
+        "max": 8,
         "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 5,
+        "q3": 2,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -3815,8 +3815,8 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 24,
-        "median": 1,
+        "max": 7,
+        "median": 0,
         "min": 0,
         "q1": 0,
         "q3": 2,
@@ -3832,13 +3832,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 0.818,
+      "elysiaValue": 0.571,
       "corpusBaseline": {
         "max": 0.855,
-        "median": 0.206,
+        "median": 0.127,
         "min": 0,
-        "q1": 0.047,
-        "q3": 0.31,
+        "q1": 0,
+        "q3": 0.317,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -3851,7 +3851,7 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 2,
+      "elysiaValue": 0,
       "corpusBaseline": {
         "max": 0,
         "median": 0,
@@ -3865,7 +3865,7 @@
       "evidenceWeight": 19.5,
       "group": "visual-tone",
       "key": "aquaAccentCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "stylist",
       "viewport": "tablet"
     },
@@ -3886,13 +3886,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 5,
+      "elysiaValue": 9,
       "corpusBaseline": {
         "max": 100,
-        "median": 24,
+        "median": 23,
         "min": 0,
         "q1": 16,
-        "q3": 49,
+        "q3": 35,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -3905,13 +3905,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 5,
+      "elysiaValue": 8,
       "corpusBaseline": {
         "max": 87,
         "median": 10,
         "min": 0,
-        "q1": 2,
-        "q3": 21,
+        "q1": 0,
+        "q3": 18,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -3924,13 +3924,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 11,
+      "elysiaValue": 14,
       "corpusBaseline": {
-        "max": 148,
-        "median": 42,
+        "max": 149,
+        "median": 34,
         "min": 0,
-        "q1": 16,
-        "q3": 103,
+        "q1": 12,
+        "q3": 71,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -3938,12 +3938,12 @@
       "evidenceWeight": 19.5,
       "group": "interaction",
       "key": "focusableCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "stylist",
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 20,
+      "elysiaValue": 30,
       "corpusBaseline": {
         "max": 240,
         "median": 14.39,
@@ -3962,13 +3962,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 0.909,
+      "elysiaValue": 0.643,
       "corpusBaseline": {
         "max": 1,
         "median": 0.5,
         "min": 0.083,
         "q1": 0.336,
-        "q3": 0.69,
+        "q3": 0.741,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -3983,10 +3983,10 @@
     {
       "elysiaValue": 6,
       "corpusBaseline": {
-        "max": 181,
-        "median": 38,
+        "max": 182,
+        "median": 30,
         "min": 0,
-        "q1": 12,
+        "q1": 1,
         "q3": 86,
         "sampleWeight": 19.5,
         "type": "number"
@@ -3995,16 +3995,16 @@
       "evidenceWeight": 19.5,
       "group": "accessibility",
       "key": "ariaLabelCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "stylist",
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 0.909,
+      "elysiaValue": 0.929,
       "corpusBaseline": {
         "max": 1,
         "median": 0.98,
-        "min": 0.786,
+        "min": 0.78,
         "q1": 0.917,
         "q3": 1,
         "sampleWeight": 19.5,
@@ -4023,11 +4023,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 13,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 13,
+      "evidenceWeight": 14,
       "group": "accessibility",
       "key": "hasAriaCurrent",
       "matchStatus": "match",
@@ -4035,29 +4035,29 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 10.5,
+        "supportWeight": 13.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 10.5,
+      "evidenceWeight": 13.5,
       "group": "accessibility",
       "key": "hasAriaExpanded",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "stylist",
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 821,
+      "elysiaValue": 914,
       "corpusBaseline": {
-        "max": 1327239,
-        "median": 15905,
-        "min": 387,
+        "max": 1375873,
+        "median": 11748,
+        "min": 122,
         "q1": 1057,
-        "q3": 39726,
+        "q3": 34225,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4073,10 +4073,10 @@
       "elysiaValue": 3,
       "corpusBaseline": {
         "max": 97,
-        "median": 11,
+        "median": 10,
         "min": 1,
-        "q1": 4,
-        "q3": 29,
+        "q1": 3,
+        "q3": 25,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4084,18 +4084,18 @@
       "evidenceWeight": 19.5,
       "group": "content",
       "key": "headingCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "stylist",
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 8,
+      "elysiaValue": 9,
       "corpusBaseline": {
         "max": 91,
-        "median": 27,
+        "median": 13,
         "min": 0,
         "q1": 3,
-        "q3": 65,
+        "q3": 39,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4108,13 +4108,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 2,
+      "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 49,
-        "median": 10,
+        "max": 3,
+        "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 22,
+        "q3": 1,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4130,9 +4130,9 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 178,
-        "median": 32,
+        "median": 22,
         "min": 0,
-        "q1": 18,
+        "q1": 12,
         "q3": 95,
         "sampleWeight": 19.5,
         "type": "number"
@@ -4204,11 +4204,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 19.5,
-        "supportWeight": 16.5,
+        "supportWeight": 15,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 16.5,
+      "evidenceWeight": 15,
       "group": "commerce",
       "key": "addToCartTextPresent",
       "matchStatus": "match",
@@ -4220,11 +4220,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 19.5,
-        "supportWeight": 16.5,
+        "supportWeight": 15,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 16.5,
+      "evidenceWeight": 15,
       "group": "commerce",
       "key": "checkoutTextPresent",
       "matchStatus": "match",
@@ -4232,13 +4232,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 3.715,
+      "elysiaValue": 6.813,
       "corpusBaseline": {
-        "max": 35.556,
-        "median": 6.821,
+        "max": 38.889,
+        "median": 6.029,
         "min": 0,
-        "q1": 4.607,
-        "q3": 10.887,
+        "q1": 4.207,
+        "q3": 10.888,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4246,18 +4246,18 @@
       "evidenceWeight": 19.5,
       "group": "density",
       "key": "linksPer1000Px",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "stylist",
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 8.172,
+      "elysiaValue": 10.598,
       "corpusBaseline": {
-        "max": 58.889,
+        "max": 63.333,
         "median": 9.714,
         "min": 0,
-        "q1": 5.696,
-        "q3": 22.168,
+        "q1": 4.607,
+        "q3": 21.278,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4328,11 +4328,11 @@
       "corpusBaseline": {
         "majorityValue": "main",
         "sampleWeight": 19.5,
-        "supportWeight": 13.5,
+        "supportWeight": 11,
         "type": "category"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 13.5,
+      "evidenceWeight": 11,
       "group": "chrome",
       "key": "semanticTag",
       "matchStatus": "match",
@@ -4340,13 +4340,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 118,
+      "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 165,
+        "max": 124,
         "median": 0,
-        "min": -5742,
-        "q1": -2164,
-        "q3": 56,
+        "min": -5543,
+        "q1": -1341,
+        "q3": 21,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4354,18 +4354,18 @@
       "evidenceWeight": 19.5,
       "group": "chrome",
       "key": "topPx",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "stylist",
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 1564,
+      "elysiaValue": 1535,
       "corpusBaseline": {
-        "max": 8978,
-        "median": 4884,
-        "min": 844,
-        "q1": 3479,
-        "q3": 6641,
+        "max": 8453,
+        "median": 4767,
+        "min": 224,
+        "q1": 844,
+        "q3": 5743,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4373,16 +4373,16 @@
       "evidenceWeight": 19.5,
       "group": "chrome",
       "key": "heightPx",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "stylist",
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 0.974,
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 1,
+        "min": 0.959,
         "q1": 1,
         "q3": 1,
         "sampleWeight": 19.5,
@@ -4397,13 +4397,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 1.853,
+      "elysiaValue": 1.7721,
       "corpusBaseline": {
-        "max": 10.6376,
-        "median": 5.7865,
-        "min": 1,
-        "q1": 4.1216,
-        "q3": 7.8679,
+        "max": 10.0148,
+        "median": 5.6481,
+        "min": 0.2544,
+        "q1": 1,
+        "q3": 6.805,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4411,23 +4411,23 @@
       "evidenceWeight": 19.5,
       "group": "chrome",
       "key": "areaRatio",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "stylist",
       "viewport": "mobile"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 19.5,
-        "supportWeight": 19.5,
+        "supportWeight": 18,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 19.5,
+      "evidenceWeight": 18,
       "group": "chrome",
       "key": "fullBleed",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "stylist",
       "viewport": "mobile"
     },
@@ -4530,11 +4530,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
-        "median": 1,
+        "max": 16,
+        "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 8,
+        "q3": 7,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4549,11 +4549,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 24,
-        "median": 1,
+        "max": 16,
+        "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 7,
+        "q3": 3,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4566,12 +4566,12 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 0.818,
+      "elysiaValue": 0.778,
       "corpusBaseline": {
         "max": 0.86,
-        "median": 0.222,
+        "median": 0.163,
         "min": 0,
-        "q1": 0.076,
+        "q1": 0.012,
         "q3": 0.31,
         "sampleWeight": 19.5,
         "type": "number"
@@ -4585,7 +4585,7 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 2,
+      "elysiaValue": 0,
       "corpusBaseline": {
         "max": 0,
         "median": 0,
@@ -4599,7 +4599,7 @@
       "evidenceWeight": 19.5,
       "group": "visual-tone",
       "key": "aquaAccentCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "stylist",
       "viewport": "mobile"
     },
@@ -4620,13 +4620,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 5,
+      "elysiaValue": 3,
       "corpusBaseline": {
-        "max": 567,
+        "max": 569,
         "median": 32,
-        "min": 16,
-        "q1": 23,
-        "q3": 49,
+        "min": 0,
+        "q1": 16,
+        "q3": 44,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4639,13 +4639,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 5,
+      "elysiaValue": 7,
       "corpusBaseline": {
         "max": 91,
-        "median": 17,
+        "median": 15,
         "min": 0,
         "q1": 8,
-        "q3": 30,
+        "q3": 31,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4658,13 +4658,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 11,
+      "elysiaValue": 9,
       "corpusBaseline": {
-        "max": 578,
-        "median": 53,
-        "min": 12,
-        "q1": 27,
-        "q3": 102,
+        "max": 580,
+        "median": 47,
+        "min": 0,
+        "q1": 16,
+        "q3": 75,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4677,12 +4677,12 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 18,
+      "elysiaValue": 26.41,
       "corpusBaseline": {
-        "max": 190,
+        "max": 26,
         "median": 14.39,
-        "min": 1,
-        "q1": 3,
+        "min": 0,
+        "q1": 1,
         "q3": 20,
         "sampleWeight": 19.5,
         "type": "number"
@@ -4696,13 +4696,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 0.909,
+      "elysiaValue": 0.889,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.434,
+        "median": 0.404,
         "min": 0.083,
-        "q1": 0.173,
-        "q3": 0.597,
+        "q1": 0.172,
+        "q3": 0.643,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4717,11 +4717,11 @@
     {
       "elysiaValue": 6,
       "corpusBaseline": {
-        "max": 176,
-        "median": 50,
+        "max": 177,
+        "median": 38,
         "min": 0,
-        "q1": 18,
-        "q3": 86,
+        "q1": 12,
+        "q3": 57,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4734,10 +4734,10 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 0.909,
+      "elysiaValue": 0.889,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.979,
+        "median": 0.981,
         "min": 0.786,
         "q1": 0.917,
         "q3": 1,
@@ -4773,11 +4773,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 10.5,
+        "supportWeight": 13.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 10.5,
+      "evidenceWeight": 13.5,
       "group": "accessibility",
       "key": "hasAriaExpanded",
       "matchStatus": "mismatch",
@@ -4785,13 +4785,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 821,
+      "elysiaValue": 914,
       "corpusBaseline": {
-        "max": 1324287,
-        "median": 17214,
-        "min": 387,
-        "q1": 3895,
-        "q3": 39594,
+        "max": 1375613,
+        "median": 15905,
+        "min": 123,
+        "q1": 4205,
+        "q3": 29569,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4806,11 +4806,11 @@
     {
       "elysiaValue": 3,
       "corpusBaseline": {
-        "max": 97,
-        "median": 20,
+        "max": 36,
+        "median": 10,
         "min": 0,
-        "q1": 8,
-        "q3": 33,
+        "q1": 3,
+        "q3": 32,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4818,18 +4818,18 @@
       "evidenceWeight": 19.5,
       "group": "content",
       "key": "headingCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "stylist",
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 8,
+      "elysiaValue": 9,
       "corpusBaseline": {
         "max": 91,
-        "median": 33,
+        "median": 13,
         "min": 0,
-        "q1": 5,
-        "q3": 64,
+        "q1": 3,
+        "q3": 59,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4842,13 +4842,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 2,
+      "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 49,
-        "median": 10,
+        "max": 3,
+        "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 22,
+        "q3": 1,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4863,10 +4863,10 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 178,
-        "median": 62,
-        "min": 12,
-        "q1": 22,
+        "max": 175,
+        "median": 56,
+        "min": 0,
+        "q1": 18,
         "q3": 95,
         "sampleWeight": 19.5,
         "type": "number"
@@ -4901,11 +4901,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 80,
+        "max": 48,
         "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 1,
+        "q3": 0,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4922,11 +4922,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 19.5,
-        "supportWeight": 14,
+        "supportWeight": 13,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 14,
+      "evidenceWeight": 13,
       "group": "commerce",
       "key": "priceTextPresent",
       "matchStatus": "mismatch",
@@ -4938,11 +4938,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 19.5,
-        "supportWeight": 16.5,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 16.5,
+      "evidenceWeight": 14,
       "group": "commerce",
       "key": "addToCartTextPresent",
       "matchStatus": "match",
@@ -4954,11 +4954,11 @@
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 19.5,
-        "supportWeight": 16.5,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 16.5,
+      "evidenceWeight": 14,
       "group": "commerce",
       "key": "checkoutTextPresent",
       "matchStatus": "match",
@@ -4966,13 +4966,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 3.197,
+      "elysiaValue": 1.954,
       "corpusBaseline": {
-        "max": 78.073,
-        "median": 5.874,
-        "min": 3.079,
-        "q1": 5.38,
-        "q3": 13.402,
+        "max": 78.349,
+        "median": 5.462,
+        "min": 0,
+        "q1": 3.854,
+        "q3": 12.884,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4985,12 +4985,12 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 7.033,
+      "elysiaValue": 5.863,
       "corpusBaseline": {
-        "max": 79.588,
-        "median": 11.361,
-        "min": 3.45,
-        "q1": 7.078,
+        "max": 79.863,
+        "median": 9.02,
+        "min": 0,
+        "q1": 3.854,
         "q3": 26.668,
         "sampleWeight": 19.5,
         "type": "number"
@@ -4999,7 +4999,7 @@
       "evidenceWeight": 19.5,
       "group": "density",
       "key": "controlsPer1000Px",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "stylist",
       "viewport": "mobile"
     }
@@ -5008,7 +5008,7 @@
     "id": "ai-stylist",
     "title": "AI Stylist"
   },
-  "runAt": "2026-05-19T19:33:18.092Z",
+  "runAt": "2026-05-24T15:23:49.078Z",
   "sites": [
     {
       "enoughViewportCount": 0,
@@ -6073,9 +6073,9 @@
             "visibleElementCount": 1,
             "semanticTag": "main",
             "topPx": 64,
-            "heightPx": 7746,
+            "heightPx": 8453,
             "widthRatio": 1,
-            "areaRatio": 9.1772,
+            "areaRatio": 10.0148,
             "fullBleed": true,
             "hasBorder": false,
             "hasShadow": false,
@@ -6085,30 +6085,30 @@
             "transparentBackground": true,
             "roundedControlCount": 16,
             "pillLikeControlCount": 16,
-            "boxedControlRatio": 0.222,
+            "boxedControlRatio": 0.213,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 42,
-            "buttonCount": 30,
-            "focusableCount": 72,
+            "linkCount": 44,
+            "buttonCount": 31,
+            "focusableCount": 75,
             "minTapTargetPx": 6,
-            "tapTargetPassRatio": 0.597,
-            "ariaLabelCount": 50,
+            "tapTargetPassRatio": 0.613,
+            "ariaLabelCount": 57,
             "namedControlRatio": 1,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 19744,
+            "textLength": 21122,
             "headingCount": 0,
-            "paragraphCount": 59,
+            "paragraphCount": 68,
             "formControlCount": 0,
             "imageCount": 62,
-            "videoCount": 0,
+            "videoCount": 1,
             "productLinkCount": 0,
             "priceTextPresent": false,
             "addToCartTextPresent": false,
             "checkoutTextPresent": false,
-            "linksPer1000Px": 5.422,
-            "controlsPer1000Px": 9.296
+            "linksPer1000Px": 5.206,
+            "controlsPer1000Px": 8.873
           },
           "loadStatus": "ok",
           "siteName": "Graff",
@@ -6168,7 +6168,7 @@
             "textLength": 16207,
             "headingCount": 15,
             "paragraphCount": 26,
-            "formControlCount": 19,
+            "formControlCount": 0,
             "imageCount": 0,
             "videoCount": 0,
             "productLinkCount": 1,
@@ -6222,11 +6222,11 @@
             "ariaLabelCount": 129,
             "namedControlRatio": 1,
             "hasAriaCurrent": true,
-            "hasAriaExpanded": true,
+            "hasAriaExpanded": false,
             "textLength": 34225,
             "headingCount": 25,
             "paragraphCount": 39,
-            "formControlCount": 49,
+            "formControlCount": 0,
             "imageCount": 137,
             "videoCount": 0,
             "productLinkCount": 0,
@@ -6256,7 +6256,7 @@
             "elementCount": 1,
             "visibleElementCount": 1,
             "semanticTag": "main",
-            "topPx": -5742,
+            "topPx": -5543,
             "heightPx": 4275,
             "widthRatio": 1,
             "areaRatio": 5.0649,
@@ -6280,11 +6280,11 @@
             "ariaLabelCount": 128,
             "namedControlRatio": 1,
             "hasAriaCurrent": true,
-            "hasAriaExpanded": true,
+            "hasAriaExpanded": false,
             "textLength": 29569,
             "headingCount": 25,
             "paragraphCount": 39,
-            "formControlCount": 49,
+            "formControlCount": 0,
             "imageCount": 137,
             "videoCount": 0,
             "productLinkCount": 0,
@@ -6716,7 +6716,7 @@
             "focusableCount": 8,
             "minTapTargetPx": 19.19,
             "tapTargetPassRatio": 0.75,
-            "ariaLabelCount": 1,
+            "ariaLabelCount": 2,
             "namedControlRatio": 1,
             "hasAriaCurrent": true,
             "hasAriaExpanded": true,
@@ -6832,8 +6832,8 @@
             "focusableCount": 47,
             "minTapTargetPx": 14.39,
             "tapTargetPassRatio": 0.106,
-            "ariaLabelCount": 15,
-            "namedControlRatio": 0.957,
+            "ariaLabelCount": 48,
+            "namedControlRatio": 1,
             "hasAriaCurrent": false,
             "hasAriaExpanded": true,
             "textLength": 5518,
@@ -7094,7 +7094,7 @@
             "textLength": 15905,
             "headingCount": 20,
             "paragraphCount": 33,
-            "formControlCount": 22,
+            "formControlCount": 2,
             "imageCount": 95,
             "videoCount": 1,
             "productLinkCount": 1,
@@ -7124,10 +7124,10 @@
             "elementCount": 1,
             "visibleElementCount": 1,
             "semanticTag": "body",
-            "topPx": -3601,
-            "heightPx": 4501,
+            "topPx": -3536,
+            "heightPx": 4500,
             "widthRatio": 1,
-            "areaRatio": 5.0007,
+            "areaRatio": 5.0002,
             "fullBleed": true,
             "hasBorder": false,
             "hasShadow": false,
@@ -7152,15 +7152,15 @@
             "textLength": 15905,
             "headingCount": 20,
             "paragraphCount": 33,
-            "formControlCount": 22,
+            "formControlCount": 3,
             "imageCount": 95,
             "videoCount": 1,
             "productLinkCount": 1,
             "priceTextPresent": true,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
-            "linksPer1000Px": 10.887,
-            "controlsPer1000Px": 15.775
+            "linksPer1000Px": 10.888,
+            "controlsPer1000Px": 15.777
           },
           "loadStatus": "ok",
           "siteName": "Messika",
@@ -7210,7 +7210,7 @@
             "textLength": 15905,
             "headingCount": 20,
             "paragraphCount": 33,
-            "formControlCount": 22,
+            "formControlCount": 3,
             "imageCount": 95,
             "videoCount": 1,
             "productLinkCount": 1,
@@ -7249,44 +7249,44 @@
             "elementFound": true,
             "elementCount": 1,
             "visibleElementCount": 1,
-            "semanticTag": "main",
-            "topPx": 0,
-            "heightPx": 7466,
-            "widthRatio": 1,
-            "areaRatio": 8.2953,
-            "fullBleed": true,
+            "semanticTag": "body",
+            "topPx": 21,
+            "heightPx": 206,
+            "widthRatio": 0.989,
+            "areaRatio": 0.2262,
+            "fullBleed": false,
             "hasBorder": false,
             "hasShadow": false,
             "lowShadow": true,
             "isStickyOrFixed": false,
             "neutralBackground": true,
             "transparentBackground": true,
-            "roundedControlCount": 23,
-            "pillLikeControlCount": 24,
-            "boxedControlRatio": 0.262,
+            "roundedControlCount": 0,
+            "pillLikeControlCount": 0,
+            "boxedControlRatio": 0,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 79,
-            "buttonCount": 23,
-            "focusableCount": 103,
-            "minTapTargetPx": 3,
-            "tapTargetPassRatio": 0.534,
-            "ariaLabelCount": 67,
+            "linkCount": 0,
+            "buttonCount": 0,
+            "focusableCount": 0,
+            "minTapTargetPx": 0,
+            "tapTargetPassRatio": 1,
+            "ariaLabelCount": 0,
             "namedControlRatio": 1,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 39992,
-            "headingCount": 40,
-            "paragraphCount": 67,
-            "formControlCount": 17,
-            "imageCount": 32,
+            "textLength": 121,
+            "headingCount": 2,
+            "paragraphCount": 3,
+            "formControlCount": 0,
+            "imageCount": 0,
             "videoCount": 0,
             "productLinkCount": 0,
-            "priceTextPresent": true,
-            "addToCartTextPresent": true,
-            "checkoutTextPresent": true,
-            "linksPer1000Px": 10.582,
-            "controlsPer1000Px": 13.796
+            "priceTextPresent": false,
+            "addToCartTextPresent": false,
+            "checkoutTextPresent": false,
+            "linksPer1000Px": 0,
+            "controlsPer1000Px": 0
           },
           "loadStatus": "ok",
           "siteName": "Buccellati",
@@ -7307,44 +7307,44 @@
             "elementFound": true,
             "elementCount": 1,
             "visibleElementCount": 1,
-            "semanticTag": "main",
-            "topPx": 0,
-            "heightPx": 11582,
-            "widthRatio": 1,
-            "areaRatio": 12.8688,
-            "fullBleed": true,
+            "semanticTag": "body",
+            "topPx": 21,
+            "heightPx": 206,
+            "widthRatio": 0.979,
+            "areaRatio": 0.224,
+            "fullBleed": false,
             "hasBorder": false,
             "hasShadow": false,
             "lowShadow": true,
             "isStickyOrFixed": false,
             "neutralBackground": true,
             "transparentBackground": true,
-            "roundedControlCount": 23,
-            "pillLikeControlCount": 24,
-            "boxedControlRatio": 0.262,
+            "roundedControlCount": 0,
+            "pillLikeControlCount": 0,
+            "boxedControlRatio": 0,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 79,
-            "buttonCount": 23,
-            "focusableCount": 103,
-            "minTapTargetPx": 3,
-            "tapTargetPassRatio": 0.515,
-            "ariaLabelCount": 65,
+            "linkCount": 0,
+            "buttonCount": 0,
+            "focusableCount": 0,
+            "minTapTargetPx": 0,
+            "tapTargetPassRatio": 1,
+            "ariaLabelCount": 0,
             "namedControlRatio": 1,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 39726,
-            "headingCount": 40,
-            "paragraphCount": 65,
-            "formControlCount": 17,
-            "imageCount": 32,
+            "textLength": 122,
+            "headingCount": 2,
+            "paragraphCount": 3,
+            "formControlCount": 0,
+            "imageCount": 0,
             "videoCount": 0,
             "productLinkCount": 0,
-            "priceTextPresent": true,
-            "addToCartTextPresent": true,
-            "checkoutTextPresent": true,
-            "linksPer1000Px": 6.821,
-            "controlsPer1000Px": 8.893
+            "priceTextPresent": false,
+            "addToCartTextPresent": false,
+            "checkoutTextPresent": false,
+            "linksPer1000Px": 0,
+            "controlsPer1000Px": 0
           },
           "loadStatus": "ok",
           "siteName": "Buccellati",
@@ -7365,44 +7365,44 @@
             "elementFound": true,
             "elementCount": 1,
             "visibleElementCount": 1,
-            "semanticTag": "main",
-            "topPx": 0,
-            "heightPx": 8978,
-            "widthRatio": 1,
-            "areaRatio": 10.6376,
-            "fullBleed": true,
+            "semanticTag": "body",
+            "topPx": 21,
+            "heightPx": 224,
+            "widthRatio": 0.959,
+            "areaRatio": 0.2544,
+            "fullBleed": false,
             "hasBorder": false,
             "hasShadow": false,
             "lowShadow": true,
             "isStickyOrFixed": false,
             "neutralBackground": true,
             "transparentBackground": true,
-            "roundedControlCount": 23,
-            "pillLikeControlCount": 24,
-            "boxedControlRatio": 0.265,
+            "roundedControlCount": 0,
+            "pillLikeControlCount": 0,
+            "boxedControlRatio": 0,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 78,
-            "buttonCount": 23,
-            "focusableCount": 102,
-            "minTapTargetPx": 3,
-            "tapTargetPassRatio": 0.51,
-            "ariaLabelCount": 64,
+            "linkCount": 0,
+            "buttonCount": 0,
+            "focusableCount": 0,
+            "minTapTargetPx": 0,
+            "tapTargetPassRatio": 1,
+            "ariaLabelCount": 0,
             "namedControlRatio": 1,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 39594,
-            "headingCount": 40,
-            "paragraphCount": 64,
-            "formControlCount": 17,
-            "imageCount": 32,
+            "textLength": 123,
+            "headingCount": 2,
+            "paragraphCount": 3,
+            "formControlCount": 0,
+            "imageCount": 0,
             "videoCount": 0,
             "productLinkCount": 0,
-            "priceTextPresent": true,
-            "addToCartTextPresent": true,
-            "checkoutTextPresent": true,
-            "linksPer1000Px": 8.688,
-            "controlsPer1000Px": 11.361
+            "priceTextPresent": false,
+            "addToCartTextPresent": false,
+            "checkoutTextPresent": false,
+            "linksPer1000Px": 0,
+            "controlsPer1000Px": 0
           },
           "loadStatus": "ok",
           "siteName": "Buccellati",
@@ -7462,7 +7462,7 @@
             "textLength": 1735,
             "headingCount": 32,
             "paragraphCount": 16,
-            "formControlCount": 2,
+            "formControlCount": 0,
             "imageCount": 70,
             "videoCount": 2,
             "productLinkCount": 0,
@@ -7520,7 +7520,7 @@
             "textLength": 1581,
             "headingCount": 29,
             "paragraphCount": 13,
-            "formControlCount": 2,
+            "formControlCount": 0,
             "imageCount": 64,
             "videoCount": 2,
             "productLinkCount": 0,
@@ -7550,7 +7550,7 @@
             "elementCount": 1,
             "visibleElementCount": 1,
             "semanticTag": "main",
-            "topPx": -3392,
+            "topPx": -4207,
             "heightPx": 4767,
             "widthRatio": 1,
             "areaRatio": 5.6481,
@@ -7578,7 +7578,7 @@
             "textLength": 1668,
             "headingCount": 33,
             "paragraphCount": 13,
-            "formControlCount": 2,
+            "formControlCount": 0,
             "imageCount": 72,
             "videoCount": 2,
             "productLinkCount": 0,
@@ -7618,7 +7618,7 @@
             "elementCount": 1,
             "visibleElementCount": 1,
             "semanticTag": "body",
-            "topPx": 0,
+            "topPx": -36396,
             "heightPx": 900,
             "widthRatio": 1,
             "areaRatio": 1,
@@ -7630,31 +7630,31 @@
             "neutralBackground": true,
             "transparentBackground": false,
             "roundedControlCount": 2,
-            "pillLikeControlCount": 1,
+            "pillLikeControlCount": 0,
             "boxedControlRatio": 0.036,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 186,
+            "linkCount": 185,
             "buttonCount": 6,
-            "focusableCount": 195,
-            "minTapTargetPx": 1,
-            "tapTargetPassRatio": 0.128,
+            "focusableCount": 194,
+            "minTapTargetPx": 13,
+            "tapTargetPassRatio": 0.129,
             "ariaLabelCount": 17,
             "namedControlRatio": 0.964,
             "hasAriaCurrent": false,
-            "hasAriaExpanded": true,
-            "textLength": 423579,
+            "hasAriaExpanded": false,
+            "textLength": 423427,
             "headingCount": 90,
             "paragraphCount": 1221,
-            "formControlCount": 11,
+            "formControlCount": 1,
             "imageCount": 3,
             "videoCount": 0,
             "productLinkCount": 0,
             "priceTextPresent": false,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
-            "linksPer1000Px": 206.667,
-            "controlsPer1000Px": 216.667
+            "linksPer1000Px": 205.556,
+            "controlsPer1000Px": 215.556
           },
           "loadStatus": "ok",
           "siteName": "Pomellato",
@@ -7688,31 +7688,31 @@
             "neutralBackground": true,
             "transparentBackground": false,
             "roundedControlCount": 8,
-            "pillLikeControlCount": 1,
-            "boxedControlRatio": 0.31,
+            "pillLikeControlCount": 0,
+            "boxedControlRatio": 0.317,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 32,
-            "buttonCount": 5,
-            "focusableCount": 42,
-            "minTapTargetPx": 1,
-            "tapTargetPassRatio": 0.69,
+            "linkCount": 31,
+            "buttonCount": 13,
+            "focusableCount": 41,
+            "minTapTargetPx": 13,
+            "tapTargetPassRatio": 0.707,
             "ariaLabelCount": 38,
-            "namedControlRatio": 0.786,
+            "namedControlRatio": 0.78,
             "hasAriaCurrent": false,
-            "hasAriaExpanded": true,
-            "textLength": 186381,
+            "hasAriaExpanded": false,
+            "textLength": 186252,
             "headingCount": 8,
             "paragraphCount": 69,
-            "formControlCount": 10,
+            "formControlCount": 1,
             "imageCount": 22,
             "videoCount": 2,
             "productLinkCount": 0,
-            "priceTextPresent": false,
+            "priceTextPresent": true,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
-            "linksPer1000Px": 35.556,
-            "controlsPer1000Px": 46.667
+            "linksPer1000Px": 34.444,
+            "controlsPer1000Px": 45.556
           },
           "loadStatus": "ok",
           "siteName": "Pomellato",
@@ -7751,22 +7751,22 @@
             "aquaAccentCount": 0,
             "decorativeGradient": false,
             "linkCount": 32,
-            "buttonCount": 5,
+            "buttonCount": 13,
             "focusableCount": 42,
             "minTapTargetPx": 1,
             "tapTargetPassRatio": 0.643,
             "ariaLabelCount": 38,
             "namedControlRatio": 0.786,
             "hasAriaCurrent": false,
-            "hasAriaExpanded": true,
+            "hasAriaExpanded": false,
             "textLength": 186381,
             "headingCount": 8,
             "paragraphCount": 69,
-            "formControlCount": 10,
+            "formControlCount": 1,
             "imageCount": 22,
             "videoCount": 2,
             "productLinkCount": 0,
-            "priceTextPresent": false,
+            "priceTextPresent": true,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
             "linksPer1000Px": 37.915,
@@ -7805,7 +7805,7 @@
             "topPx": -8,
             "heightPx": 4956,
             "widthRatio": 1,
-            "areaRatio": 5.5064,
+            "areaRatio": 5.5062,
             "fullBleed": true,
             "hasBorder": false,
             "hasShadow": false,
@@ -7827,18 +7827,18 @@
             "namedControlRatio": 0.864,
             "hasAriaCurrent": false,
             "hasAriaExpanded": true,
-            "textLength": 30405,
+            "textLength": 30392,
             "headingCount": 34,
             "paragraphCount": 91,
-            "formControlCount": 39,
+            "formControlCount": 2,
             "imageCount": 106,
             "videoCount": 0,
             "productLinkCount": 4,
             "priceTextPresent": true,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
-            "linksPer1000Px": 18.564,
-            "controlsPer1000Px": 22.196
+            "linksPer1000Px": 18.565,
+            "controlsPer1000Px": 22.197
           },
           "loadStatus": "ok",
           "siteName": "David Yurman",
@@ -7885,10 +7885,10 @@
             "namedControlRatio": 0.815,
             "hasAriaCurrent": false,
             "hasAriaExpanded": true,
-            "textLength": 30396,
+            "textLength": 30383,
             "headingCount": 34,
             "paragraphCount": 91,
-            "formControlCount": 39,
+            "formControlCount": 2,
             "imageCount": 106,
             "videoCount": 0,
             "productLinkCount": 4,
@@ -7919,9 +7919,9 @@
             "visibleElementCount": 1,
             "semanticTag": "body",
             "topPx": 0,
-            "heightPx": 5074,
+            "heightPx": 5075,
             "widthRatio": 1,
-            "areaRatio": 6.0116,
+            "areaRatio": 6.0128,
             "fullBleed": true,
             "hasBorder": false,
             "hasShadow": false,
@@ -7943,18 +7943,18 @@
             "namedControlRatio": 0.815,
             "hasAriaCurrent": false,
             "hasAriaExpanded": true,
-            "textLength": 30396,
+            "textLength": 30383,
             "headingCount": 34,
             "paragraphCount": 91,
-            "formControlCount": 39,
+            "formControlCount": 2,
             "imageCount": 106,
             "videoCount": 0,
             "productLinkCount": 4,
             "priceTextPresent": true,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
-            "linksPer1000Px": 13.402,
-            "controlsPer1000Px": 18.132
+            "linksPer1000Px": 13.4,
+            "controlsPer1000Px": 18.129
           },
           "loadStatus": "ok",
           "siteName": "David Yurman",
@@ -7987,9 +7987,9 @@
             "visibleElementCount": 5,
             "semanticTag": "main",
             "topPx": -1340,
-            "heightPx": 3780,
+            "heightPx": 4107,
             "widthRatio": 1,
-            "areaRatio": 4.2003,
+            "areaRatio": 4.5629,
             "fullBleed": true,
             "hasBorder": false,
             "hasShadow": false,
@@ -8002,27 +8002,27 @@
             "boxedControlRatio": 0.144,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 94,
+            "linkCount": 95,
             "buttonCount": 74,
-            "focusableCount": 180,
+            "focusableCount": 181,
             "minTapTargetPx": 10,
             "tapTargetPassRatio": 0.144,
-            "ariaLabelCount": 195,
+            "ariaLabelCount": 196,
             "namedControlRatio": 0.994,
             "hasAriaCurrent": true,
             "hasAriaExpanded": true,
-            "textLength": 4018,
-            "headingCount": 11,
-            "paragraphCount": 58,
-            "formControlCount": 24,
+            "textLength": 4328,
+            "headingCount": 12,
+            "paragraphCount": 60,
+            "formControlCount": 0,
             "imageCount": 65,
             "videoCount": 2,
             "productLinkCount": 48,
             "priceTextPresent": true,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
-            "linksPer1000Px": 24.866,
-            "controlsPer1000Px": 47.616
+            "linksPer1000Px": 23.134,
+            "controlsPer1000Px": 44.076
           },
           "loadStatus": "ok",
           "siteName": "Mejuri",
@@ -8044,10 +8044,10 @@
             "elementCount": 5,
             "visibleElementCount": 3,
             "semanticTag": "main",
-            "topPx": -2986,
-            "heightPx": 6676,
+            "topPx": -2110,
+            "heightPx": 7003,
             "widthRatio": 1,
-            "areaRatio": 7.418,
+            "areaRatio": 7.7807,
             "fullBleed": true,
             "hasBorder": false,
             "hasShadow": false,
@@ -8057,30 +8057,30 @@
             "transparentBackground": true,
             "roundedControlCount": 0,
             "pillLikeControlCount": 0,
-            "boxedControlRatio": 0.176,
+            "boxedControlRatio": 0.174,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 73,
+            "linkCount": 74,
             "buttonCount": 63,
-            "focusableCount": 148,
+            "focusableCount": 149,
             "minTapTargetPx": 10,
-            "tapTargetPassRatio": 0.176,
-            "ariaLabelCount": 181,
+            "tapTargetPassRatio": 0.174,
+            "ariaLabelCount": 182,
             "namedControlRatio": 0.98,
             "hasAriaCurrent": true,
             "hasAriaExpanded": true,
-            "textLength": 3885,
-            "headingCount": 11,
-            "paragraphCount": 57,
-            "formControlCount": 24,
+            "textLength": 4195,
+            "headingCount": 12,
+            "paragraphCount": 59,
+            "formControlCount": 0,
             "imageCount": 65,
             "videoCount": 2,
             "productLinkCount": 48,
             "priceTextPresent": true,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
-            "linksPer1000Px": 10.934,
-            "controlsPer1000Px": 22.168
+            "linksPer1000Px": 10.567,
+            "controlsPer1000Px": 21.278
           },
           "loadStatus": "ok",
           "siteName": "Mejuri",
@@ -8102,10 +8102,10 @@
             "elementCount": 5,
             "visibleElementCount": 3,
             "semanticTag": "main",
-            "topPx": -2164,
-            "heightPx": 5341,
+            "topPx": -1341,
+            "heightPx": 5743,
             "widthRatio": 1,
-            "areaRatio": 6.3285,
+            "areaRatio": 6.805,
             "fullBleed": true,
             "hasBorder": false,
             "hasShadow": false,
@@ -8115,30 +8115,30 @@
             "transparentBackground": true,
             "roundedControlCount": 0,
             "pillLikeControlCount": 0,
-            "boxedControlRatio": 0.173,
+            "boxedControlRatio": 0.172,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 73,
+            "linkCount": 74,
             "buttonCount": 65,
-            "focusableCount": 150,
+            "focusableCount": 151,
             "minTapTargetPx": 10,
-            "tapTargetPassRatio": 0.173,
-            "ariaLabelCount": 159,
+            "tapTargetPassRatio": 0.172,
+            "ariaLabelCount": 160,
             "namedControlRatio": 0.98,
             "hasAriaCurrent": true,
             "hasAriaExpanded": true,
-            "textLength": 3895,
-            "headingCount": 11,
-            "paragraphCount": 57,
-            "formControlCount": 24,
+            "textLength": 4205,
+            "headingCount": 12,
+            "paragraphCount": 59,
+            "formControlCount": 0,
             "imageCount": 65,
             "videoCount": 2,
             "productLinkCount": 48,
             "priceTextPresent": true,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
-            "linksPer1000Px": 13.667,
-            "controlsPer1000Px": 28.083
+            "linksPer1000Px": 12.884,
+            "controlsPer1000Px": 26.291
           },
           "loadStatus": "ok",
           "siteName": "Mejuri",
@@ -8191,14 +8191,14 @@
             "focusableCount": 121,
             "minTapTargetPx": 12,
             "tapTargetPassRatio": 0.388,
-            "ariaLabelCount": 179,
+            "ariaLabelCount": 180,
             "namedControlRatio": 0.959,
-            "hasAriaCurrent": true,
+            "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 506668,
+            "textLength": 491534,
             "headingCount": 36,
             "paragraphCount": 27,
-            "formControlCount": 16,
+            "formControlCount": 1,
             "imageCount": 176,
             "videoCount": 0,
             "productLinkCount": 1,
@@ -8249,15 +8249,15 @@
             "focusableCount": 107,
             "minTapTargetPx": 12,
             "tapTargetPassRatio": 0.336,
-            "ariaLabelCount": 176,
+            "ariaLabelCount": 177,
             "namedControlRatio": 0.963,
-            "hasAriaCurrent": true,
+            "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 506653,
+            "textLength": 491521,
             "headingCount": 36,
             "paragraphCount": 27,
-            "formControlCount": 16,
-            "imageCount": 175,
+            "formControlCount": 1,
+            "imageCount": 176,
             "videoCount": 0,
             "productLinkCount": 1,
             "priceTextPresent": true,
@@ -8302,27 +8302,27 @@
             "boxedControlRatio": 0.012,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 567,
+            "linkCount": 569,
             "buttonCount": 45,
-            "focusableCount": 578,
+            "focusableCount": 580,
             "minTapTargetPx": 1,
-            "tapTargetPassRatio": 0.206,
-            "ariaLabelCount": 176,
-            "namedControlRatio": 0.979,
+            "tapTargetPassRatio": 0.195,
+            "ariaLabelCount": 177,
+            "namedControlRatio": 0.981,
             "hasAriaCurrent": true,
             "hasAriaExpanded": false,
-            "textLength": 506654,
+            "textLength": 491519,
             "headingCount": 36,
             "paragraphCount": 27,
-            "formControlCount": 16,
+            "formControlCount": 3,
             "imageCount": 175,
             "videoCount": 0,
             "productLinkCount": 1,
             "priceTextPresent": true,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
-            "linksPer1000Px": 78.073,
-            "controlsPer1000Px": 79.588
+            "linksPer1000Px": 78.349,
+            "controlsPer1000Px": 79.863
           },
           "loadStatus": "ok",
           "siteName": "Brilliant Earth",
@@ -8367,30 +8367,30 @@
             "transparentBackground": false,
             "roundedControlCount": 7,
             "pillLikeControlCount": 3,
-            "boxedControlRatio": 0.107,
+            "boxedControlRatio": 0.1,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 32,
-            "buttonCount": 18,
-            "focusableCount": 56,
+            "linkCount": 35,
+            "buttonCount": 19,
+            "focusableCount": 60,
             "minTapTargetPx": 13.08,
-            "tapTargetPassRatio": 0.446,
-            "ariaLabelCount": 31,
-            "namedControlRatio": 0.804,
+            "tapTargetPassRatio": 0.417,
+            "ariaLabelCount": 32,
+            "namedControlRatio": 0.8,
             "hasAriaCurrent": false,
             "hasAriaExpanded": true,
-            "textLength": 1324459,
+            "textLength": 1375594,
             "headingCount": 4,
             "paragraphCount": 0,
-            "formControlCount": 36,
+            "formControlCount": 4,
             "imageCount": 18,
             "videoCount": 1,
             "productLinkCount": 0,
             "priceTextPresent": true,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
-            "linksPer1000Px": 35.556,
-            "controlsPer1000Px": 62.222
+            "linksPer1000Px": 38.889,
+            "controlsPer1000Px": 66.667
           },
           "loadStatus": "ok",
           "siteName": "Blue Nile",
@@ -8425,30 +8425,30 @@
             "transparentBackground": false,
             "roundedControlCount": 5,
             "pillLikeControlCount": 3,
-            "boxedControlRatio": 0.075,
+            "boxedControlRatio": 0.07,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 32,
-            "buttonCount": 17,
-            "focusableCount": 53,
+            "linkCount": 35,
+            "buttonCount": 18,
+            "focusableCount": 57,
             "minTapTargetPx": 13.08,
-            "tapTargetPassRatio": 0.415,
-            "ariaLabelCount": 31,
-            "namedControlRatio": 0.792,
+            "tapTargetPassRatio": 0.386,
+            "ariaLabelCount": 32,
+            "namedControlRatio": 0.789,
             "hasAriaCurrent": false,
             "hasAriaExpanded": true,
-            "textLength": 1327239,
+            "textLength": 1375873,
             "headingCount": 4,
             "paragraphCount": 0,
-            "formControlCount": 36,
+            "formControlCount": 2,
             "imageCount": 18,
             "videoCount": 1,
             "productLinkCount": 0,
             "priceTextPresent": true,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
-            "linksPer1000Px": 35.556,
-            "controlsPer1000Px": 58.889
+            "linksPer1000Px": 38.889,
+            "controlsPer1000Px": 63.333
           },
           "loadStatus": "ok",
           "siteName": "Blue Nile",
@@ -8483,30 +8483,30 @@
             "transparentBackground": false,
             "roundedControlCount": 5,
             "pillLikeControlCount": 3,
-            "boxedControlRatio": 0.075,
+            "boxedControlRatio": 0.07,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 32,
-            "buttonCount": 17,
-            "focusableCount": 53,
+            "linkCount": 35,
+            "buttonCount": 18,
+            "focusableCount": 57,
             "minTapTargetPx": 13.08,
-            "tapTargetPassRatio": 0.434,
-            "ariaLabelCount": 31,
-            "namedControlRatio": 0.792,
+            "tapTargetPassRatio": 0.404,
+            "ariaLabelCount": 32,
+            "namedControlRatio": 0.789,
             "hasAriaCurrent": false,
             "hasAriaExpanded": true,
-            "textLength": 1324287,
+            "textLength": 1375613,
             "headingCount": 4,
             "paragraphCount": 0,
-            "formControlCount": 36,
+            "formControlCount": 2,
             "imageCount": 18,
             "videoCount": 1,
             "productLinkCount": 0,
             "priceTextPresent": true,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
-            "linksPer1000Px": 37.915,
-            "controlsPer1000Px": 62.796
+            "linksPer1000Px": 41.469,
+            "controlsPer1000Px": 67.536
           },
           "loadStatus": "ok",
           "siteName": "Blue Nile",
@@ -8621,7 +8621,7 @@
             "namedControlRatio": 1,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 387,
+            "textLength": 11748,
             "headingCount": 9,
             "paragraphCount": 10,
             "formControlCount": 0,
@@ -8679,7 +8679,7 @@
             "namedControlRatio": 1,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 387,
+            "textLength": 11748,
             "headingCount": 9,
             "paragraphCount": 10,
             "formControlCount": 0,
@@ -8722,7 +8722,7 @@
             "elementCount": 1,
             "visibleElementCount": 1,
             "semanticTag": "main",
-            "topPx": 136,
+            "topPx": 157,
             "heightPx": 4192,
             "widthRatio": 1,
             "areaRatio": 4.6578,
@@ -8747,7 +8747,7 @@
             "namedControlRatio": 1,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 7397,
+            "textLength": 7677,
             "headingCount": 97,
             "paragraphCount": 86,
             "formControlCount": 0,
@@ -8805,7 +8805,7 @@
             "namedControlRatio": 1,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 7397,
+            "textLength": 7677,
             "headingCount": 97,
             "paragraphCount": 86,
             "formControlCount": 0,
@@ -8837,11 +8837,11 @@
             "elementFound": true,
             "elementCount": 1,
             "visibleElementCount": 1,
-            "semanticTag": "main",
-            "topPx": 165,
-            "heightPx": 3229,
+            "semanticTag": "body",
+            "topPx": 0,
+            "heightPx": 844,
             "widthRatio": 1,
-            "areaRatio": 3.826,
+            "areaRatio": 1,
             "fullBleed": true,
             "hasBorder": false,
             "hasShadow": false,
@@ -8854,27 +8854,27 @@
             "boxedControlRatio": 0,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 27,
+            "linkCount": 0,
             "buttonCount": 0,
-            "focusableCount": 27,
-            "minTapTargetPx": 190,
+            "focusableCount": 0,
+            "minTapTargetPx": 0,
             "tapTargetPassRatio": 1,
-            "ariaLabelCount": 86,
+            "ariaLabelCount": 0,
             "namedControlRatio": 1,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 7397,
-            "headingCount": 97,
-            "paragraphCount": 86,
+            "textLength": 7512,
+            "headingCount": 2,
+            "paragraphCount": 1,
             "formControlCount": 0,
-            "imageCount": 178,
-            "videoCount": 1,
-            "productLinkCount": 80,
-            "priceTextPresent": true,
-            "addToCartTextPresent": true,
-            "checkoutTextPresent": true,
-            "linksPer1000Px": 8.361,
-            "controlsPer1000Px": 8.361
+            "imageCount": 0,
+            "videoCount": 0,
+            "productLinkCount": 0,
+            "priceTextPresent": false,
+            "addToCartTextPresent": false,
+            "checkoutTextPresent": false,
+            "linksPer1000Px": 0,
+            "controlsPer1000Px": 0
           },
           "loadStatus": "ok",
           "siteName": "Aurate",
@@ -9541,13 +9541,13 @@
     }
   ],
   "summary": {
-    "alignmentRatio": 0.7479674796747967,
+    "alignmentRatio": 0.8495934959349594,
     "comparableMetricCount": 246,
-    "matchCount": 184,
-    "mismatchCount": 62,
+    "matchCount": 209,
+    "mismatchCount": 37,
     "notComparableCount": 0,
     "referenceSitesEnoughData": 15,
-    "status": "warn",
+    "status": "pass",
     "thresholdWeight": 9.75,
     "totalMetricCount": 246
   },

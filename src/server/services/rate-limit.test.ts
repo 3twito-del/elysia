@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   assertSharedRateLimitConfig,
@@ -64,6 +64,41 @@ describe("rate limit service", () => {
     ).not.toThrow();
   });
 
+  it("falls back to the local limiter instead of failing request handlers when shared runtime config is unavailable", async () => {
+    const originalEnv = {
+      NODE_ENV: process.env.NODE_ENV,
+      UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
+      UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
+      VERCEL: process.env.VERCEL,
+      VERCEL_ENV: process.env.VERCEL_ENV,
+    };
+    const errorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
+
+    setEnv("NODE_ENV", "production");
+    setEnv("VERCEL", "1");
+    setEnv("VERCEL_ENV", "production");
+    deleteEnv("UPSTASH_REDIS_REST_URL");
+    deleteEnv("UPSTASH_REDIS_REST_TOKEN");
+
+    try {
+      await expect(
+        consumeRateLimit({
+          key: "test:production-fallback",
+          limit: 1,
+          windowMs: 60_000,
+        }),
+      ).resolves.toMatchObject({
+        allowed: true,
+        remaining: 0,
+      });
+    } finally {
+      restoreEnv(originalEnv);
+      errorSpy.mockRestore();
+    }
+  });
+
   it("accepts production Vercel runtimes when shared rate-limit env is configured", () => {
     expect(() =>
       assertSharedRateLimitConfig({
@@ -84,3 +119,31 @@ describe("rate limit service", () => {
     expect(key).not.toContain("dana@example.com");
   });
 });
+
+function restoreEnv(
+  env: Record<
+    | "NODE_ENV"
+    | "UPSTASH_REDIS_REST_TOKEN"
+    | "UPSTASH_REDIS_REST_URL"
+    | "VERCEL"
+    | "VERCEL_ENV",
+    string | undefined
+  >,
+) {
+  for (const [key, value] of Object.entries(env)) {
+    if (value === undefined) {
+      deleteEnv(key);
+      continue;
+    }
+
+    setEnv(key, value);
+  }
+}
+
+function setEnv(key: string, value: string) {
+  process.env[key] = value;
+}
+
+function deleteEnv(key: string) {
+  delete process.env[key];
+}

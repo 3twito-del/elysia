@@ -107,10 +107,10 @@
           "visibleElementCount": 3,
           "semanticTag": "main",
           "topPx": 0,
-          "heightPx": 1480,
-          "widthRatio": 1,
-          "areaRatio": 1.6446,
-          "fullBleed": true,
+          "heightPx": 1513,
+          "widthRatio": 0.993,
+          "areaRatio": 1.6696,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -119,30 +119,30 @@
           "transparentBackground": true,
           "roundedControlCount": 0,
           "pillLikeControlCount": 0,
-          "boxedControlRatio": 0.789,
-          "aquaAccentCount": 6,
+          "boxedControlRatio": 0.857,
+          "aquaAccentCount": 0,
           "decorativeGradient": false,
-          "linkCount": 14,
-          "buttonCount": 3,
-          "focusableCount": 38,
-          "minTapTargetPx": 20,
-          "tapTargetPassRatio": 0.789,
+          "linkCount": 11,
+          "buttonCount": 7,
+          "focusableCount": 35,
+          "minTapTargetPx": 36,
+          "tapTargetPassRatio": 0.857,
           "ariaLabelCount": 4,
-          "namedControlRatio": 0.579,
-          "hasAriaCurrent": true,
-          "hasAriaExpanded": true,
-          "textLength": 1326,
+          "namedControlRatio": 0.543,
+          "hasAriaCurrent": false,
+          "hasAriaExpanded": false,
+          "textLength": 1440,
           "headingCount": 7,
-          "paragraphCount": 26,
-          "formControlCount": 33,
+          "paragraphCount": 27,
+          "formControlCount": 21,
           "imageCount": 0,
           "videoCount": 0,
           "productLinkCount": 0,
           "priceTextPresent": false,
           "addToCartTextPresent": true,
           "checkoutTextPresent": true,
-          "linksPer1000Px": 9.459,
-          "controlsPer1000Px": 25.673
+          "linksPer1000Px": 7.27,
+          "controlsPer1000Px": 23.131
         },
         "loadStatus": "ok",
         "siteName": "Elysia",
@@ -165,10 +165,10 @@
           "visibleElementCount": 3,
           "semanticTag": "main",
           "topPx": 0,
-          "heightPx": 2044,
-          "widthRatio": 1,
-          "areaRatio": 2.271,
-          "fullBleed": true,
+          "heightPx": 2047,
+          "widthRatio": 0.987,
+          "areaRatio": 2.2447,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -177,30 +177,30 @@
           "transparentBackground": true,
           "roundedControlCount": 0,
           "pillLikeControlCount": 0,
-          "boxedControlRatio": 0.969,
-          "aquaAccentCount": 6,
+          "boxedControlRatio": 0.857,
+          "aquaAccentCount": 0,
           "decorativeGradient": false,
-          "linkCount": 7,
-          "buttonCount": 4,
-          "focusableCount": 32,
-          "minTapTargetPx": 20,
-          "tapTargetPassRatio": 0.969,
+          "linkCount": 11,
+          "buttonCount": 7,
+          "focusableCount": 35,
+          "minTapTargetPx": 30,
+          "tapTargetPassRatio": 0.857,
           "ariaLabelCount": 4,
-          "namedControlRatio": 0.5,
-          "hasAriaCurrent": true,
-          "hasAriaExpanded": true,
-          "textLength": 1326,
+          "namedControlRatio": 0.543,
+          "hasAriaCurrent": false,
+          "hasAriaExpanded": false,
+          "textLength": 1440,
           "headingCount": 7,
-          "paragraphCount": 26,
-          "formControlCount": 33,
+          "paragraphCount": 27,
+          "formControlCount": 21,
           "imageCount": 0,
           "videoCount": 0,
           "productLinkCount": 0,
           "priceTextPresent": false,
           "addToCartTextPresent": true,
           "checkoutTextPresent": true,
-          "linksPer1000Px": 3.425,
-          "controlsPer1000Px": 15.656
+          "linksPer1000Px": 5.374,
+          "controlsPer1000Px": 17.099
         },
         "loadStatus": "ok",
         "siteName": "Elysia",
@@ -222,11 +222,11 @@
           "elementCount": 3,
           "visibleElementCount": 3,
           "semanticTag": "main",
-          "topPx": 118,
-          "heightPx": 2919,
-          "widthRatio": 1,
-          "areaRatio": 3.4584,
-          "fullBleed": true,
+          "topPx": 0,
+          "heightPx": 2918,
+          "widthRatio": 0.974,
+          "areaRatio": 3.3686,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -235,30 +235,30 @@
           "transparentBackground": true,
           "roundedControlCount": 0,
           "pillLikeControlCount": 0,
-          "boxedControlRatio": 0.969,
-          "aquaAccentCount": 6,
+          "boxedControlRatio": 0.967,
+          "aquaAccentCount": 0,
           "decorativeGradient": false,
-          "linkCount": 7,
-          "buttonCount": 4,
-          "focusableCount": 32,
-          "minTapTargetPx": 18,
-          "tapTargetPassRatio": 0.969,
+          "linkCount": 5,
+          "buttonCount": 6,
+          "focusableCount": 30,
+          "minTapTargetPx": 26.41,
+          "tapTargetPassRatio": 0.967,
           "ariaLabelCount": 4,
-          "namedControlRatio": 0.5,
-          "hasAriaCurrent": true,
+          "namedControlRatio": 0.467,
+          "hasAriaCurrent": false,
           "hasAriaExpanded": true,
-          "textLength": 1326,
+          "textLength": 1440,
           "headingCount": 7,
-          "paragraphCount": 26,
-          "formControlCount": 33,
+          "paragraphCount": 27,
+          "formControlCount": 21,
           "imageCount": 0,
           "videoCount": 0,
           "productLinkCount": 0,
           "priceTextPresent": false,
           "addToCartTextPresent": true,
           "checkoutTextPresent": true,
-          "linksPer1000Px": 2.398,
-          "controlsPer1000Px": 10.963
+          "linksPer1000Px": 1.714,
+          "controlsPer1000Px": 10.281
         },
         "loadStatus": "ok",
         "siteName": "Elysia",
@@ -281,10 +281,10 @@
           "visibleElementCount": 3,
           "semanticTag": "main",
           "topPx": 0,
-          "heightPx": 613,
-          "widthRatio": 1,
-          "areaRatio": 0.6816,
-          "fullBleed": true,
+          "heightPx": 998,
+          "widthRatio": 0.993,
+          "areaRatio": 1.1012,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -293,30 +293,30 @@
           "transparentBackground": true,
           "roundedControlCount": 0,
           "pillLikeControlCount": 0,
-          "boxedControlRatio": 0.556,
-          "aquaAccentCount": 6,
+          "boxedControlRatio": 0.667,
+          "aquaAccentCount": 0,
           "decorativeGradient": false,
-          "linkCount": 12,
-          "buttonCount": 3,
-          "focusableCount": 18,
-          "minTapTargetPx": 20,
-          "tapTargetPassRatio": 0.556,
+          "linkCount": 9,
+          "buttonCount": 7,
+          "focusableCount": 15,
+          "minTapTargetPx": 36,
+          "tapTargetPassRatio": 0.667,
           "ariaLabelCount": 5,
-          "namedControlRatio": 0.889,
+          "namedControlRatio": 0.867,
           "hasAriaCurrent": false,
-          "hasAriaExpanded": true,
-          "textLength": 376,
+          "hasAriaExpanded": false,
+          "textLength": 490,
           "headingCount": 1,
-          "paragraphCount": 14,
-          "formControlCount": 17,
+          "paragraphCount": 15,
+          "formControlCount": 3,
           "imageCount": 0,
           "videoCount": 0,
           "productLinkCount": 0,
           "priceTextPresent": false,
           "addToCartTextPresent": true,
           "checkoutTextPresent": true,
-          "linksPer1000Px": 19.561,
-          "controlsPer1000Px": 29.342
+          "linksPer1000Px": 9.018,
+          "controlsPer1000Px": 15.03
         },
         "loadStatus": "ok",
         "siteName": "Elysia",
@@ -339,10 +339,10 @@
           "visibleElementCount": 3,
           "semanticTag": "main",
           "topPx": 0,
-          "heightPx": 789,
-          "widthRatio": 1,
-          "areaRatio": 0.8763,
-          "fullBleed": true,
+          "heightPx": 968,
+          "widthRatio": 0.987,
+          "areaRatio": 1.0616,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -351,30 +351,30 @@
           "transparentBackground": true,
           "roundedControlCount": 0,
           "pillLikeControlCount": 0,
-          "boxedControlRatio": 0.917,
-          "aquaAccentCount": 6,
+          "boxedControlRatio": 0.667,
+          "aquaAccentCount": 0,
           "decorativeGradient": false,
-          "linkCount": 5,
-          "buttonCount": 4,
-          "focusableCount": 12,
-          "minTapTargetPx": 20,
-          "tapTargetPassRatio": 0.917,
+          "linkCount": 9,
+          "buttonCount": 7,
+          "focusableCount": 15,
+          "minTapTargetPx": 30,
+          "tapTargetPassRatio": 0.667,
           "ariaLabelCount": 5,
-          "namedControlRatio": 0.833,
+          "namedControlRatio": 0.867,
           "hasAriaCurrent": false,
-          "hasAriaExpanded": true,
-          "textLength": 376,
+          "hasAriaExpanded": false,
+          "textLength": 490,
           "headingCount": 1,
-          "paragraphCount": 14,
-          "formControlCount": 17,
+          "paragraphCount": 15,
+          "formControlCount": 3,
           "imageCount": 0,
           "videoCount": 0,
           "productLinkCount": 0,
           "priceTextPresent": false,
           "addToCartTextPresent": true,
           "checkoutTextPresent": true,
-          "linksPer1000Px": 6.34,
-          "controlsPer1000Px": 15.216
+          "linksPer1000Px": 9.298,
+          "controlsPer1000Px": 15.496
         },
         "loadStatus": "ok",
         "siteName": "Elysia",
@@ -396,11 +396,11 @@
           "elementCount": 3,
           "visibleElementCount": 3,
           "semanticTag": "main",
-          "topPx": 118,
-          "heightPx": 1108,
-          "widthRatio": 1,
-          "areaRatio": 1.3127,
-          "fullBleed": true,
+          "topPx": 0,
+          "heightPx": 1113,
+          "widthRatio": 0.974,
+          "areaRatio": 1.2843,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -409,30 +409,30 @@
           "transparentBackground": true,
           "roundedControlCount": 0,
           "pillLikeControlCount": 0,
-          "boxedControlRatio": 0.917,
-          "aquaAccentCount": 6,
+          "boxedControlRatio": 0.9,
+          "aquaAccentCount": 0,
           "decorativeGradient": false,
-          "linkCount": 5,
-          "buttonCount": 4,
-          "focusableCount": 12,
-          "minTapTargetPx": 18,
-          "tapTargetPassRatio": 0.917,
+          "linkCount": 3,
+          "buttonCount": 6,
+          "focusableCount": 10,
+          "minTapTargetPx": 26.41,
+          "tapTargetPassRatio": 0.9,
           "ariaLabelCount": 5,
-          "namedControlRatio": 0.833,
+          "namedControlRatio": 0.8,
           "hasAriaCurrent": false,
           "hasAriaExpanded": true,
-          "textLength": 376,
+          "textLength": 490,
           "headingCount": 1,
-          "paragraphCount": 14,
-          "formControlCount": 17,
+          "paragraphCount": 15,
+          "formControlCount": 3,
           "imageCount": 0,
           "videoCount": 0,
           "productLinkCount": 0,
           "priceTextPresent": false,
           "addToCartTextPresent": true,
           "checkoutTextPresent": true,
-          "linksPer1000Px": 4.513,
-          "controlsPer1000Px": 10.831
+          "linksPer1000Px": 2.697,
+          "controlsPer1000Px": 8.989
         },
         "loadStatus": "ok",
         "siteName": "Elysia",
@@ -455,10 +455,10 @@
           "visibleElementCount": 3,
           "semanticTag": "main",
           "topPx": 0,
-          "heightPx": 1480,
-          "widthRatio": 1,
-          "areaRatio": 1.6446,
-          "fullBleed": true,
+          "heightPx": 1513,
+          "widthRatio": 0.993,
+          "areaRatio": 1.6696,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -467,30 +467,30 @@
           "transparentBackground": true,
           "roundedControlCount": 0,
           "pillLikeControlCount": 0,
-          "boxedControlRatio": 0.789,
-          "aquaAccentCount": 6,
+          "boxedControlRatio": 0.857,
+          "aquaAccentCount": 0,
           "decorativeGradient": false,
-          "linkCount": 14,
-          "buttonCount": 3,
-          "focusableCount": 38,
-          "minTapTargetPx": 20,
-          "tapTargetPassRatio": 0.789,
+          "linkCount": 11,
+          "buttonCount": 7,
+          "focusableCount": 35,
+          "minTapTargetPx": 36,
+          "tapTargetPassRatio": 0.857,
           "ariaLabelCount": 4,
-          "namedControlRatio": 0.579,
-          "hasAriaCurrent": true,
-          "hasAriaExpanded": true,
-          "textLength": 1326,
+          "namedControlRatio": 0.543,
+          "hasAriaCurrent": false,
+          "hasAriaExpanded": false,
+          "textLength": 1440,
           "headingCount": 7,
-          "paragraphCount": 26,
-          "formControlCount": 33,
+          "paragraphCount": 27,
+          "formControlCount": 21,
           "imageCount": 0,
           "videoCount": 0,
           "productLinkCount": 0,
           "priceTextPresent": false,
           "addToCartTextPresent": true,
           "checkoutTextPresent": true,
-          "linksPer1000Px": 9.459,
-          "controlsPer1000Px": 25.673
+          "linksPer1000Px": 7.27,
+          "controlsPer1000Px": 23.131
         },
         "loadStatus": "ok",
         "siteName": "Elysia",
@@ -513,10 +513,10 @@
           "visibleElementCount": 3,
           "semanticTag": "main",
           "topPx": 0,
-          "heightPx": 2044,
-          "widthRatio": 1,
-          "areaRatio": 2.271,
-          "fullBleed": true,
+          "heightPx": 2047,
+          "widthRatio": 0.987,
+          "areaRatio": 2.2447,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -525,30 +525,30 @@
           "transparentBackground": true,
           "roundedControlCount": 0,
           "pillLikeControlCount": 0,
-          "boxedControlRatio": 0.969,
-          "aquaAccentCount": 6,
+          "boxedControlRatio": 0.857,
+          "aquaAccentCount": 0,
           "decorativeGradient": false,
-          "linkCount": 7,
-          "buttonCount": 4,
-          "focusableCount": 32,
-          "minTapTargetPx": 20,
-          "tapTargetPassRatio": 0.969,
+          "linkCount": 11,
+          "buttonCount": 7,
+          "focusableCount": 35,
+          "minTapTargetPx": 30,
+          "tapTargetPassRatio": 0.857,
           "ariaLabelCount": 4,
-          "namedControlRatio": 0.5,
-          "hasAriaCurrent": true,
-          "hasAriaExpanded": true,
-          "textLength": 1326,
+          "namedControlRatio": 0.543,
+          "hasAriaCurrent": false,
+          "hasAriaExpanded": false,
+          "textLength": 1440,
           "headingCount": 7,
-          "paragraphCount": 26,
-          "formControlCount": 33,
+          "paragraphCount": 27,
+          "formControlCount": 21,
           "imageCount": 0,
           "videoCount": 0,
           "productLinkCount": 0,
           "priceTextPresent": false,
           "addToCartTextPresent": true,
           "checkoutTextPresent": true,
-          "linksPer1000Px": 3.425,
-          "controlsPer1000Px": 15.656
+          "linksPer1000Px": 5.374,
+          "controlsPer1000Px": 17.099
         },
         "loadStatus": "ok",
         "siteName": "Elysia",
@@ -570,11 +570,11 @@
           "elementCount": 3,
           "visibleElementCount": 3,
           "semanticTag": "main",
-          "topPx": 118,
-          "heightPx": 2919,
-          "widthRatio": 1,
-          "areaRatio": 3.4584,
-          "fullBleed": true,
+          "topPx": 0,
+          "heightPx": 2918,
+          "widthRatio": 0.974,
+          "areaRatio": 3.3686,
+          "fullBleed": false,
           "hasBorder": false,
           "hasShadow": false,
           "lowShadow": true,
@@ -583,30 +583,30 @@
           "transparentBackground": true,
           "roundedControlCount": 0,
           "pillLikeControlCount": 0,
-          "boxedControlRatio": 0.969,
-          "aquaAccentCount": 6,
+          "boxedControlRatio": 0.967,
+          "aquaAccentCount": 0,
           "decorativeGradient": false,
-          "linkCount": 7,
-          "buttonCount": 4,
-          "focusableCount": 32,
-          "minTapTargetPx": 18,
-          "tapTargetPassRatio": 0.969,
+          "linkCount": 5,
+          "buttonCount": 6,
+          "focusableCount": 30,
+          "minTapTargetPx": 26.41,
+          "tapTargetPassRatio": 0.967,
           "ariaLabelCount": 4,
-          "namedControlRatio": 0.5,
-          "hasAriaCurrent": true,
+          "namedControlRatio": 0.467,
+          "hasAriaCurrent": false,
           "hasAriaExpanded": true,
-          "textLength": 1326,
+          "textLength": 1440,
           "headingCount": 7,
-          "paragraphCount": 26,
-          "formControlCount": 33,
+          "paragraphCount": 27,
+          "formControlCount": 21,
           "imageCount": 0,
           "videoCount": 0,
           "productLinkCount": 0,
           "priceTextPresent": false,
           "addToCartTextPresent": true,
           "checkoutTextPresent": true,
-          "linksPer1000Px": 2.398,
-          "controlsPer1000Px": 10.963
+          "linksPer1000Px": 1.714,
+          "controlsPer1000Px": 10.281
         },
         "loadStatus": "ok",
         "siteName": "Elysia",
@@ -795,7 +795,7 @@
         "max": 25,
         "median": 4,
         "min": 1,
-        "q1": 3,
+        "q1": 2,
         "q3": 6,
         "sampleWeight": 18,
         "type": "number"
@@ -832,11 +832,11 @@
       "corpusBaseline": {
         "majorityValue": "main",
         "sampleWeight": 18,
-        "supportWeight": 12.5,
+        "supportWeight": 11,
         "type": "category"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 12.5,
+      "evidenceWeight": 11,
       "group": "chrome",
       "key": "semanticTag",
       "matchStatus": "match",
@@ -846,7 +846,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 75861,
+        "max": 39465,
         "median": 92,
         "min": -4129,
         "q1": 0,
@@ -863,13 +863,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 1480,
+      "elysiaValue": 1513,
       "corpusBaseline": {
-        "max": 7466,
-        "median": 1520,
+        "max": 6113,
+        "median": 835,
         "min": 21,
         "q1": 173,
-        "q3": 4560,
+        "q3": 4107,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -882,11 +882,11 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 0.993,
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 0.023,
+        "min": 0.018,
         "q1": 0.427,
         "q3": 1,
         "sampleWeight": 18,
@@ -901,13 +901,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 1.6446,
+      "elysiaValue": 1.6696,
       "corpusBaseline": {
-        "max": 8.2953,
-        "median": 1.6891,
-        "min": 0.0005,
+        "max": 6.7921,
+        "median": 0.9278,
+        "min": 0.0004,
         "q1": 0.0606,
-        "q3": 5.0667,
+        "q3": 4.5629,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -920,18 +920,18 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18,
-        "supportWeight": 13.5,
+        "supportWeight": 12,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 13.5,
+      "evidenceWeight": 12,
       "group": "chrome",
       "key": "fullBleed",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "service",
       "viewport": "desktop"
     },
@@ -1034,7 +1034,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
+        "max": 7,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -1053,11 +1053,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 25,
+        "max": 4,
         "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 2,
+        "q3": 1,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -1070,12 +1070,12 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 0.789,
+      "elysiaValue": 0.857,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.274,
-        "min": 0.033,
-        "q1": 0.19,
+        "median": 0.222,
+        "min": 0,
+        "q1": 0.111,
         "q3": 0.5,
         "sampleWeight": 18,
         "type": "number"
@@ -1089,7 +1089,7 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 6,
+      "elysiaValue": 0,
       "corpusBaseline": {
         "max": 0,
         "median": 0,
@@ -1103,7 +1103,7 @@
       "evidenceWeight": 18,
       "group": "visual-tone",
       "key": "aquaAccentCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "service",
       "viewport": "desktop"
     },
@@ -1124,13 +1124,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 14,
+      "elysiaValue": 11,
       "corpusBaseline": {
         "max": 103,
-        "median": 16,
+        "median": 6,
         "min": 0,
-        "q1": 2,
-        "q3": 30,
+        "q1": 1,
+        "q3": 27,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -1143,10 +1143,10 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 3,
+      "elysiaValue": 7,
       "corpusBaseline": {
         "max": 56,
-        "median": 3,
+        "median": 2,
         "min": 0,
         "q1": 1,
         "q3": 12,
@@ -1162,13 +1162,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 38,
+      "elysiaValue": 35,
       "corpusBaseline": {
-        "max": 115,
-        "median": 18,
-        "min": 2,
-        "q1": 6,
-        "q3": 42,
+        "max": 116,
+        "median": 10,
+        "min": 0,
+        "q1": 4,
+        "q3": 30,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -1176,16 +1176,16 @@
       "evidenceWeight": 18,
       "group": "interaction",
       "key": "focusableCount",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "service",
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 20,
+      "elysiaValue": 36,
       "corpusBaseline": {
         "max": 48,
         "median": 17,
-        "min": 1,
+        "min": 0,
         "q1": 13,
         "q3": 20,
         "sampleWeight": 18,
@@ -1200,13 +1200,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 0.789,
+      "elysiaValue": 0.857,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.519,
+        "median": 0.595,
         "min": 0.12,
         "q1": 0.333,
-        "q3": 0.8,
+        "q3": 0.967,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -1221,11 +1221,11 @@
     {
       "elysiaValue": 4,
       "corpusBaseline": {
-        "max": 141,
-        "median": 6,
+        "max": 142,
+        "median": 3,
         "min": 0,
-        "q1": 1,
-        "q3": 69,
+        "q1": 0,
+        "q3": 48,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -1238,13 +1238,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 0.579,
+      "elysiaValue": 0.543,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.952,
+        "median": 0.966,
         "min": 0.5,
         "q1": 0.889,
-        "q3": 0.991,
+        "q3": 1,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -1257,23 +1257,23 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 18,
-        "supportWeight": 13,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 13,
+      "evidenceWeight": 14,
       "group": "accessibility",
       "key": "hasAriaCurrent",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "service",
       "viewport": "desktop"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 18,
@@ -1284,18 +1284,18 @@
       "evidenceWeight": 13,
       "group": "accessibility",
       "key": "hasAriaExpanded",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "service",
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 1326,
+      "elysiaValue": 1440,
       "corpusBaseline": {
-        "max": 40037,
-        "median": 1151,
+        "max": 27627,
+        "median": 687,
         "min": 18,
-        "q1": 577,
-        "q3": 11758,
+        "q1": 145,
+        "q3": 11304,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -1311,10 +1311,10 @@
       "elysiaValue": 7,
       "corpusBaseline": {
         "max": 97,
-        "median": 3,
+        "median": 2,
         "min": 0,
         "q1": 1,
-        "q3": 15,
+        "q3": 10,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -1327,13 +1327,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 26,
+      "elysiaValue": 27,
       "corpusBaseline": {
         "max": 87,
-        "median": 4,
+        "median": 3,
         "min": 0,
         "q1": 2,
-        "q3": 26,
+        "q3": 18,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -1341,18 +1341,18 @@
       "evidenceWeight": 18,
       "group": "content",
       "key": "paragraphCount",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "service",
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 33,
+      "elysiaValue": 21,
       "corpusBaseline": {
-        "max": 36,
-        "median": 2,
-        "min": 1,
+        "max": 9,
+        "median": 1,
+        "min": 0,
         "q1": 1,
-        "q3": 19,
+        "q3": 1,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -1371,7 +1371,7 @@
         "median": 1,
         "min": 0,
         "q1": 0,
-        "q3": 32,
+        "q3": 18,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -1426,11 +1426,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 18,
-        "supportWeight": 11.5,
+        "supportWeight": 13,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 11.5,
+      "evidenceWeight": 13,
       "group": "commerce",
       "key": "priceTextPresent",
       "matchStatus": "match",
@@ -1440,43 +1440,39 @@
     {
       "elysiaValue": true,
       "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 18,
-        "supportWeight": 10.5,
+        "reason": "No weighted reference majority reached the active threshold.",
         "type": "boolean"
       },
-      "evidenceSiteCount": 14,
-      "evidenceWeight": 10.5,
+      "evidenceSiteCount": 0,
+      "evidenceWeight": 18,
       "group": "commerce",
       "key": "addToCartTextPresent",
-      "matchStatus": "match",
+      "matchStatus": "notComparable",
       "targetLabel": "service",
       "viewport": "desktop"
     },
     {
       "elysiaValue": true,
       "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 18,
-        "supportWeight": 10.5,
+        "reason": "No weighted reference majority reached the active threshold.",
         "type": "boolean"
       },
-      "evidenceSiteCount": 14,
-      "evidenceWeight": 10.5,
+      "evidenceSiteCount": 0,
+      "evidenceWeight": 18,
       "group": "commerce",
       "key": "checkoutTextPresent",
-      "matchStatus": "match",
+      "matchStatus": "notComparable",
       "targetLabel": "service",
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 9.459,
+      "elysiaValue": 7.27,
       "corpusBaseline": {
         "max": 1285.714,
-        "median": 5.849,
+        "median": 5.788,
         "min": 0,
-        "q1": 3.509,
-        "q3": 12.698,
+        "q1": 2.617,
+        "q3": 11.932,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -1489,12 +1485,12 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 25.673,
+      "elysiaValue": 23.131,
       "corpusBaseline": {
         "max": 1428.571,
-        "median": 14.198,
-        "min": 2.395,
-        "q1": 6.352,
+        "median": 13.765,
+        "min": 0,
+        "q1": 2.945,
         "q3": 40.925,
         "sampleWeight": 18,
         "type": "number"
@@ -1530,7 +1526,7 @@
         "median": 4,
         "min": 1,
         "q1": 2,
-        "q3": 7,
+        "q3": 6,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -1566,11 +1562,11 @@
       "corpusBaseline": {
         "majorityValue": "main",
         "sampleWeight": 19.5,
-        "supportWeight": 12.5,
+        "supportWeight": 11,
         "type": "category"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 12.5,
+      "evidenceWeight": 11,
       "group": "chrome",
       "key": "semanticTag",
       "matchStatus": "match",
@@ -1581,7 +1577,7 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 9195,
-        "median": 20,
+        "median": 21,
         "min": -4941,
         "q1": 0,
         "q3": 169,
@@ -1597,13 +1593,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 2044,
+      "elysiaValue": 2047,
       "corpusBaseline": {
-        "max": 11582,
-        "median": 825,
+        "max": 7003,
+        "median": 824,
         "min": 21,
         "q1": 169,
-        "q3": 3830,
+        "q3": 3815,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -1616,11 +1612,11 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 0.987,
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 0.044,
+        "min": 0.034,
         "q1": 0.958,
         "q3": 1,
         "sampleWeight": 19.5,
@@ -1635,13 +1631,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 2.271,
+      "elysiaValue": 2.2447,
       "corpusBaseline": {
-        "max": 12.8688,
-        "median": 0.9167,
-        "min": 0.001,
+        "max": 7.7807,
+        "median": 0.9151,
+        "min": 0.0008,
         "q1": 0.1798,
-        "q3": 4.2553,
+        "q3": 4.239,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -1654,18 +1650,18 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 19.5,
-        "supportWeight": 12.5,
+        "supportWeight": 11,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 12.5,
+      "evidenceWeight": 11,
       "group": "chrome",
       "key": "fullBleed",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "service",
       "viewport": "tablet"
     },
@@ -1768,11 +1764,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
+        "max": 7,
         "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 2,
+        "q3": 1,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -1787,11 +1783,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 25,
+        "max": 2,
         "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 2,
+        "q3": 1,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -1804,12 +1800,12 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 0.969,
+      "elysiaValue": 0.857,
       "corpusBaseline": {
         "max": 1,
         "median": 0.333,
         "min": 0,
-        "q1": 0.111,
+        "q1": 0.033,
         "q3": 0.7,
         "sampleWeight": 19.5,
         "type": "number"
@@ -1823,7 +1819,7 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 6,
+      "elysiaValue": 0,
       "corpusBaseline": {
         "max": 0,
         "median": 0,
@@ -1837,7 +1833,7 @@
       "evidenceWeight": 19.5,
       "group": "visual-tone",
       "key": "aquaAccentCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "service",
       "viewport": "tablet"
     },
@@ -1858,13 +1854,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 7,
+      "elysiaValue": 11,
       "corpusBaseline": {
-        "max": 79,
-        "median": 16,
+        "max": 42,
+        "median": 6,
         "min": 0,
-        "q1": 1,
-        "q3": 24,
+        "q1": 0,
+        "q3": 23,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -1877,7 +1873,7 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 4,
+      "elysiaValue": 7,
       "corpusBaseline": {
         "max": 88,
         "median": 2,
@@ -1896,13 +1892,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 32,
+      "elysiaValue": 35,
       "corpusBaseline": {
         "max": 112,
-        "median": 18,
-        "min": 1,
-        "q1": 4,
-        "q3": 34,
+        "median": 10,
+        "min": 0,
+        "q1": 2,
+        "q3": 30,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -1910,16 +1906,16 @@
       "evidenceWeight": 19.5,
       "group": "interaction",
       "key": "focusableCount",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "service",
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 20,
+      "elysiaValue": 30,
       "corpusBaseline": {
         "max": 48,
         "median": 19.98,
-        "min": 1,
+        "min": 0,
         "q1": 13,
         "q3": 24,
         "sampleWeight": 19.5,
@@ -1934,13 +1930,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 0.969,
+      "elysiaValue": 0.857,
       "corpusBaseline": {
         "max": 1,
         "median": 0.5,
         "min": 0,
         "q1": 0.333,
-        "q3": 0.759,
+        "q3": 0.967,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -1955,11 +1951,11 @@
     {
       "elysiaValue": 4,
       "corpusBaseline": {
-        "max": 141,
-        "median": 6,
+        "max": 142,
+        "median": 2,
         "min": 0,
-        "q1": 1,
-        "q3": 67,
+        "q1": 0,
+        "q3": 41,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -1972,7 +1968,7 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 0.5,
+      "elysiaValue": 0.543,
       "corpusBaseline": {
         "max": 1,
         "median": 0.92,
@@ -1991,45 +1987,45 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 13,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 13,
+      "evidenceWeight": 14,
       "group": "accessibility",
       "key": "hasAriaCurrent",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "service",
       "viewport": "tablet"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 14.5,
+        "supportWeight": 16,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 14.5,
+      "evidenceWeight": 16,
       "group": "accessibility",
       "key": "hasAriaExpanded",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "service",
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 1326,
+      "elysiaValue": 1440,
       "corpusBaseline": {
-        "max": 39771,
+        "max": 34266,
         "median": 687,
         "min": 6,
-        "q1": 145,
-        "q3": 11024,
+        "q1": 123,
+        "q3": 11304,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2045,10 +2041,10 @@
       "elysiaValue": 7,
       "corpusBaseline": {
         "max": 97,
-        "median": 3,
+        "median": 2,
         "min": 0,
         "q1": 0,
-        "q3": 25,
+        "q3": 10,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2061,13 +2057,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 26,
+      "elysiaValue": 27,
       "corpusBaseline": {
         "max": 87,
-        "median": 4,
+        "median": 3,
         "min": 0,
         "q1": 0,
-        "q3": 39,
+        "q3": 13,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2075,18 +2071,18 @@
       "evidenceWeight": 19.5,
       "group": "content",
       "key": "paragraphCount",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "service",
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 33,
+      "elysiaValue": 21,
       "corpusBaseline": {
-        "max": 50,
-        "median": 2,
-        "min": 1,
+        "max": 9,
+        "median": 1,
+        "min": 0,
         "q1": 1,
-        "q3": 19,
+        "q3": 1,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2102,7 +2098,7 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 178,
-        "median": 12,
+        "median": 1,
         "min": 0,
         "q1": 0,
         "q3": 56,
@@ -2160,11 +2156,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 11.5,
+        "supportWeight": 13,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 11.5,
+      "evidenceWeight": 13,
       "group": "commerce",
       "key": "priceTextPresent",
       "matchStatus": "match",
@@ -2174,7 +2170,7 @@
     {
       "elysiaValue": true,
       "corpusBaseline": {
-        "majorityValue": true,
+        "majorityValue": false,
         "sampleWeight": 19.5,
         "supportWeight": 10.5,
         "type": "boolean"
@@ -2183,14 +2179,14 @@
       "evidenceWeight": 10.5,
       "group": "commerce",
       "key": "addToCartTextPresent",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "service",
       "viewport": "tablet"
     },
     {
       "elysiaValue": true,
       "corpusBaseline": {
-        "majorityValue": true,
+        "majorityValue": false,
         "sampleWeight": 19.5,
         "supportWeight": 10.5,
         "type": "boolean"
@@ -2199,18 +2195,18 @@
       "evidenceWeight": 10.5,
       "group": "commerce",
       "key": "checkoutTextPresent",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "service",
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 3.425,
+      "elysiaValue": 5.374,
       "corpusBaseline": {
         "max": 1285.714,
-        "median": 5.882,
+        "median": 4.961,
         "min": 0,
-        "q1": 4.021,
-        "q3": 6.821,
+        "q1": 0,
+        "q3": 6.029,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2218,17 +2214,17 @@
       "evidenceWeight": 19.5,
       "group": "density",
       "key": "linksPer1000Px",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "service",
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 15.656,
+      "elysiaValue": 17.099,
       "corpusBaseline": {
         "max": 1428.571,
         "median": 12.142,
-        "min": 2.424,
-        "q1": 6.528,
+        "min": 0,
+        "q1": 5.696,
         "q3": 29.357,
         "sampleWeight": 19.5,
         "type": "number"
@@ -2283,7 +2279,7 @@
         "median": 2,
         "min": 1,
         "q1": 1,
-        "q3": 3,
+        "q3": 2,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2300,11 +2296,11 @@
       "corpusBaseline": {
         "majorityValue": "main",
         "sampleWeight": 19.5,
-        "supportWeight": 12.5,
+        "supportWeight": 11,
         "type": "category"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 12.5,
+      "evidenceWeight": 11,
       "group": "chrome",
       "key": "semanticTag",
       "matchStatus": "match",
@@ -2312,11 +2308,11 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 118,
+      "elysiaValue": 0,
       "corpusBaseline": {
         "max": 4280,
         "median": 20,
-        "min": -5742,
+        "min": -5543,
         "q1": 0,
         "q3": 77,
         "sampleWeight": 19.5,
@@ -2326,18 +2322,18 @@
       "evidenceWeight": 19.5,
       "group": "chrome",
       "key": "topPx",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "service",
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 2919,
+      "elysiaValue": 2918,
       "corpusBaseline": {
-        "max": 8978,
-        "median": 4151,
-        "min": 21,
-        "q1": 164,
-        "q3": 5341,
+        "max": 8453,
+        "median": 3479,
+        "min": 30,
+        "q1": 170,
+        "q3": 5197,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2350,12 +2346,12 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 0.974,
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 0.086,
-        "q1": 0.923,
+        "min": 0.171,
+        "q1": 0.949,
         "q3": 1,
         "sampleWeight": 19.5,
         "type": "number"
@@ -2369,13 +2365,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 3.4584,
+      "elysiaValue": 3.3686,
       "corpusBaseline": {
-        "max": 10.6376,
-        "median": 4.9183,
-        "min": 0.0021,
-        "q1": 0.1784,
-        "q3": 6.3285,
+        "max": 10.0148,
+        "median": 4.1216,
+        "min": 0.0081,
+        "q1": 0.1911,
+        "q3": 6.1576,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2388,18 +2384,18 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 19.5,
-        "supportWeight": 12.5,
+        "supportWeight": 12,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 12.5,
+      "evidenceWeight": 12,
       "group": "chrome",
       "key": "fullBleed",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "service",
       "viewport": "mobile"
     },
@@ -2502,11 +2498,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
+        "max": 16,
         "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 7,
+        "q3": 2,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2521,7 +2517,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 25,
+        "max": 16,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -2538,12 +2534,12 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 0.969,
+      "elysiaValue": 0.967,
       "corpusBaseline": {
         "max": 0.862,
-        "median": 0.276,
+        "median": 0.234,
         "min": 0,
-        "q1": 0.111,
+        "q1": 0,
         "q3": 0.483,
         "sampleWeight": 19.5,
         "type": "number"
@@ -2557,7 +2553,7 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 6,
+      "elysiaValue": 0,
       "corpusBaseline": {
         "max": 0,
         "median": 0,
@@ -2571,7 +2567,7 @@
       "evidenceWeight": 19.5,
       "group": "visual-tone",
       "key": "aquaAccentCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "service",
       "viewport": "mobile"
     },
@@ -2592,13 +2588,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 7,
+      "elysiaValue": 5,
       "corpusBaseline": {
-        "max": 78,
-        "median": 19,
+        "max": 44,
+        "median": 16,
         "min": 0,
-        "q1": 2,
-        "q3": 33,
+        "q1": 0,
+        "q3": 28,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2611,13 +2607,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 4,
+      "elysiaValue": 6,
       "corpusBaseline": {
         "max": 92,
-        "median": 12,
+        "median": 4,
         "min": 0,
-        "q1": 1,
-        "q3": 24,
+        "q1": 0,
+        "q3": 15,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2630,13 +2626,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 32,
+      "elysiaValue": 30,
       "corpusBaseline": {
         "max": 116,
-        "median": 29,
-        "min": 1,
-        "q1": 6,
-        "q3": 74,
+        "median": 18,
+        "min": 0,
+        "q1": 4,
+        "q3": 49,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2649,13 +2645,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 18,
+      "elysiaValue": 26.41,
       "corpusBaseline": {
         "max": 26,
-        "median": 18,
-        "min": 1,
-        "q1": 12,
-        "q3": 21,
+        "median": 17,
+        "min": 0,
+        "q1": 6,
+        "q3": 20,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2668,13 +2664,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 0.969,
+      "elysiaValue": 0.967,
       "corpusBaseline": {
-        "max": 0.967,
+        "max": 1,
         "median": 0.488,
         "min": 0,
-        "q1": 0.193,
-        "q3": 0.5,
+        "q1": 0.191,
+        "q3": 0.623,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2690,10 +2686,10 @@
       "elysiaValue": 4,
       "corpusBaseline": {
         "max": 128,
-        "median": 15,
+        "median": 6,
         "min": 0,
-        "q1": 2,
-        "q3": 66,
+        "q1": 0,
+        "q3": 53,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2706,13 +2702,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 0.5,
+      "elysiaValue": 0.467,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.967,
+        "median": 0.977,
         "min": 0,
         "q1": 0.889,
-        "q3": 0.99,
+        "q3": 0.991,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2725,18 +2721,18 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 14.5,
+        "supportWeight": 15.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 14.5,
+      "evidenceWeight": 15.5,
       "group": "accessibility",
       "key": "hasAriaCurrent",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "service",
       "viewport": "mobile"
     },
@@ -2745,11 +2741,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 14.5,
+        "supportWeight": 17,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 14.5,
+      "evidenceWeight": 17,
       "group": "accessibility",
       "key": "hasAriaExpanded",
       "matchStatus": "mismatch",
@@ -2757,13 +2753,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 1326,
+      "elysiaValue": 1440,
       "corpusBaseline": {
-        "max": 39639,
+        "max": 29610,
         "median": 1668,
         "min": 6,
-        "q1": 145,
-        "q3": 19838,
+        "q1": 123,
+        "q3": 11758,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2778,11 +2774,11 @@
     {
       "elysiaValue": 7,
       "corpusBaseline": {
-        "max": 97,
-        "median": 6,
+        "max": 33,
+        "median": 2,
         "min": 0,
         "q1": 0,
-        "q3": 32,
+        "q3": 10,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2795,13 +2791,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 26,
+      "elysiaValue": 27,
       "corpusBaseline": {
-        "max": 87,
-        "median": 5,
+        "max": 68,
+        "median": 3,
         "min": 0,
         "q1": 0,
-        "q3": 49,
+        "q3": 13,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2809,18 +2805,18 @@
       "evidenceWeight": 19.5,
       "group": "content",
       "key": "paragraphCount",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "service",
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 33,
+      "elysiaValue": 21,
       "corpusBaseline": {
-        "max": 50,
-        "median": 2,
-        "min": 1,
-        "q1": 1,
-        "q3": 19,
+        "max": 9,
+        "median": 1,
+        "min": 0,
+        "q1": 0,
+        "q3": 2,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2835,11 +2831,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 178,
-        "median": 32,
+        "max": 137,
+        "median": 12,
         "min": 0,
         "q1": 0,
-        "q3": 62,
+        "q3": 56,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2873,7 +2869,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 80,
+        "max": 40,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -2894,11 +2890,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 10,
+        "supportWeight": 12.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 10,
+      "evidenceWeight": 12.5,
       "group": "commerce",
       "key": "priceTextPresent",
       "matchStatus": "match",
@@ -2908,43 +2904,43 @@
     {
       "elysiaValue": true,
       "corpusBaseline": {
-        "majorityValue": true,
+        "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 10.5,
+        "supportWeight": 11.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 10.5,
+      "evidenceWeight": 11.5,
       "group": "commerce",
       "key": "addToCartTextPresent",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "service",
       "viewport": "mobile"
     },
     {
       "elysiaValue": true,
       "corpusBaseline": {
-        "majorityValue": true,
+        "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 10.5,
+        "supportWeight": 11.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 10.5,
+      "evidenceWeight": 11.5,
       "group": "commerce",
       "key": "checkoutTextPresent",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "service",
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 2.398,
+      "elysiaValue": 1.714,
       "corpusBaseline": {
-        "max": 1285.714,
-        "median": 5.462,
+        "max": 50,
+        "median": 5.206,
         "min": 0,
-        "q1": 3.854,
-        "q3": 7.676,
+        "q1": 0,
+        "q3": 5.874,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2952,18 +2948,18 @@
       "evidenceWeight": 19.5,
       "group": "density",
       "key": "linksPer1000Px",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "service",
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 10.963,
+      "elysiaValue": 10.281,
       "corpusBaseline": {
-        "max": 1428.571,
-        "median": 11.695,
-        "min": 4.336,
-        "q1": 7.379,
-        "q3": 27.136,
+        "max": 233.333,
+        "median": 9.11,
+        "min": 0,
+        "q1": 5.58,
+        "q3": 25,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -2997,7 +2993,7 @@
         "max": 25,
         "median": 4,
         "min": 1,
-        "q1": 3,
+        "q1": 2,
         "q3": 6,
         "sampleWeight": 18,
         "type": "number"
@@ -3034,11 +3030,11 @@
       "corpusBaseline": {
         "majorityValue": "main",
         "sampleWeight": 18,
-        "supportWeight": 12.5,
+        "supportWeight": 11,
         "type": "category"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 12.5,
+      "evidenceWeight": 11,
       "group": "chrome",
       "key": "semanticTag",
       "matchStatus": "match",
@@ -3048,7 +3044,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 75861,
+        "max": 39465,
         "median": 92,
         "min": -4129,
         "q1": 0,
@@ -3065,13 +3061,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 613,
+      "elysiaValue": 998,
       "corpusBaseline": {
-        "max": 7466,
-        "median": 1520,
+        "max": 6113,
+        "median": 835,
         "min": 21,
         "q1": 173,
-        "q3": 4560,
+        "q3": 4107,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -3084,11 +3080,11 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 0.993,
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 0.023,
+        "min": 0.018,
         "q1": 0.427,
         "q3": 1,
         "sampleWeight": 18,
@@ -3103,13 +3099,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 0.6816,
+      "elysiaValue": 1.1012,
       "corpusBaseline": {
-        "max": 8.2953,
-        "median": 1.6891,
-        "min": 0.0005,
+        "max": 6.7921,
+        "median": 0.9278,
+        "min": 0.0004,
         "q1": 0.0606,
-        "q3": 5.0667,
+        "q3": 4.5629,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -3122,18 +3118,18 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18,
-        "supportWeight": 13.5,
+        "supportWeight": 12,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 13.5,
+      "evidenceWeight": 12,
       "group": "chrome",
       "key": "fullBleed",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "account",
       "viewport": "desktop"
     },
@@ -3236,7 +3232,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
+        "max": 7,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -3255,11 +3251,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 25,
+        "max": 4,
         "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 2,
+        "q3": 1,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -3272,12 +3268,12 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 0.556,
+      "elysiaValue": 0.667,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.274,
-        "min": 0.033,
-        "q1": 0.19,
+        "median": 0.222,
+        "min": 0,
+        "q1": 0.111,
         "q3": 0.5,
         "sampleWeight": 18,
         "type": "number"
@@ -3291,7 +3287,7 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 6,
+      "elysiaValue": 0,
       "corpusBaseline": {
         "max": 0,
         "median": 0,
@@ -3305,7 +3301,7 @@
       "evidenceWeight": 18,
       "group": "visual-tone",
       "key": "aquaAccentCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "account",
       "viewport": "desktop"
     },
@@ -3326,13 +3322,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 12,
+      "elysiaValue": 9,
       "corpusBaseline": {
         "max": 103,
-        "median": 16,
+        "median": 6,
         "min": 0,
-        "q1": 2,
-        "q3": 30,
+        "q1": 1,
+        "q3": 27,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -3345,10 +3341,10 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 3,
+      "elysiaValue": 7,
       "corpusBaseline": {
         "max": 56,
-        "median": 3,
+        "median": 2,
         "min": 0,
         "q1": 1,
         "q3": 12,
@@ -3364,13 +3360,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 18,
+      "elysiaValue": 15,
       "corpusBaseline": {
-        "max": 115,
-        "median": 18,
-        "min": 2,
-        "q1": 6,
-        "q3": 42,
+        "max": 116,
+        "median": 10,
+        "min": 0,
+        "q1": 4,
+        "q3": 30,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -3383,11 +3379,11 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 20,
+      "elysiaValue": 36,
       "corpusBaseline": {
         "max": 48,
         "median": 17,
-        "min": 1,
+        "min": 0,
         "q1": 13,
         "q3": 20,
         "sampleWeight": 18,
@@ -3402,13 +3398,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 0.556,
+      "elysiaValue": 0.667,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.519,
+        "median": 0.595,
         "min": 0.12,
         "q1": 0.333,
-        "q3": 0.8,
+        "q3": 0.967,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -3423,11 +3419,11 @@
     {
       "elysiaValue": 5,
       "corpusBaseline": {
-        "max": 141,
-        "median": 6,
+        "max": 142,
+        "median": 3,
         "min": 0,
-        "q1": 1,
-        "q3": 69,
+        "q1": 0,
+        "q3": 48,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -3440,13 +3436,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 0.889,
+      "elysiaValue": 0.867,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.952,
+        "median": 0.966,
         "min": 0.5,
         "q1": 0.889,
-        "q3": 0.991,
+        "q3": 1,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -3463,11 +3459,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 18,
-        "supportWeight": 13,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 13,
+      "evidenceWeight": 14,
       "group": "accessibility",
       "key": "hasAriaCurrent",
       "matchStatus": "match",
@@ -3475,7 +3471,7 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 18,
@@ -3486,18 +3482,18 @@
       "evidenceWeight": 13,
       "group": "accessibility",
       "key": "hasAriaExpanded",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "account",
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 376,
+      "elysiaValue": 490,
       "corpusBaseline": {
-        "max": 40037,
-        "median": 1151,
+        "max": 27627,
+        "median": 687,
         "min": 18,
-        "q1": 577,
-        "q3": 11758,
+        "q1": 145,
+        "q3": 11304,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -3505,7 +3501,7 @@
       "evidenceWeight": 18,
       "group": "content",
       "key": "textLength",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "account",
       "viewport": "desktop"
     },
@@ -3513,10 +3509,10 @@
       "elysiaValue": 1,
       "corpusBaseline": {
         "max": 97,
-        "median": 3,
+        "median": 2,
         "min": 0,
         "q1": 1,
-        "q3": 15,
+        "q3": 10,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -3529,13 +3525,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 14,
+      "elysiaValue": 15,
       "corpusBaseline": {
         "max": 87,
-        "median": 4,
+        "median": 3,
         "min": 0,
         "q1": 2,
-        "q3": 26,
+        "q3": 18,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -3548,13 +3544,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 17,
+      "elysiaValue": 3,
       "corpusBaseline": {
-        "max": 36,
-        "median": 2,
-        "min": 1,
+        "max": 9,
+        "median": 1,
+        "min": 0,
         "q1": 1,
-        "q3": 19,
+        "q3": 1,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -3562,7 +3558,7 @@
       "evidenceWeight": 18,
       "group": "content",
       "key": "formControlCount",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "account",
       "viewport": "desktop"
     },
@@ -3573,7 +3569,7 @@
         "median": 1,
         "min": 0,
         "q1": 0,
-        "q3": 32,
+        "q3": 18,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -3628,11 +3624,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 18,
-        "supportWeight": 11.5,
+        "supportWeight": 13,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 11.5,
+      "evidenceWeight": 13,
       "group": "commerce",
       "key": "priceTextPresent",
       "matchStatus": "match",
@@ -3642,43 +3638,39 @@
     {
       "elysiaValue": true,
       "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 18,
-        "supportWeight": 10.5,
+        "reason": "No weighted reference majority reached the active threshold.",
         "type": "boolean"
       },
-      "evidenceSiteCount": 14,
-      "evidenceWeight": 10.5,
+      "evidenceSiteCount": 0,
+      "evidenceWeight": 18,
       "group": "commerce",
       "key": "addToCartTextPresent",
-      "matchStatus": "match",
+      "matchStatus": "notComparable",
       "targetLabel": "account",
       "viewport": "desktop"
     },
     {
       "elysiaValue": true,
       "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 18,
-        "supportWeight": 10.5,
+        "reason": "No weighted reference majority reached the active threshold.",
         "type": "boolean"
       },
-      "evidenceSiteCount": 14,
-      "evidenceWeight": 10.5,
+      "evidenceSiteCount": 0,
+      "evidenceWeight": 18,
       "group": "commerce",
       "key": "checkoutTextPresent",
-      "matchStatus": "match",
+      "matchStatus": "notComparable",
       "targetLabel": "account",
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 19.561,
+      "elysiaValue": 9.018,
       "corpusBaseline": {
         "max": 1285.714,
-        "median": 5.849,
+        "median": 5.788,
         "min": 0,
-        "q1": 3.509,
-        "q3": 12.698,
+        "q1": 2.617,
+        "q3": 11.932,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -3686,17 +3678,17 @@
       "evidenceWeight": 18,
       "group": "density",
       "key": "linksPer1000Px",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "account",
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 29.342,
+      "elysiaValue": 15.03,
       "corpusBaseline": {
         "max": 1428.571,
-        "median": 14.198,
-        "min": 2.395,
-        "q1": 6.352,
+        "median": 13.765,
+        "min": 0,
+        "q1": 2.945,
         "q3": 40.925,
         "sampleWeight": 18,
         "type": "number"
@@ -3732,7 +3724,7 @@
         "median": 4,
         "min": 1,
         "q1": 2,
-        "q3": 7,
+        "q3": 6,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -3768,11 +3760,11 @@
       "corpusBaseline": {
         "majorityValue": "main",
         "sampleWeight": 19.5,
-        "supportWeight": 12.5,
+        "supportWeight": 11,
         "type": "category"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 12.5,
+      "evidenceWeight": 11,
       "group": "chrome",
       "key": "semanticTag",
       "matchStatus": "match",
@@ -3783,7 +3775,7 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 9195,
-        "median": 20,
+        "median": 21,
         "min": -4941,
         "q1": 0,
         "q3": 169,
@@ -3799,13 +3791,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 789,
+      "elysiaValue": 968,
       "corpusBaseline": {
-        "max": 11582,
-        "median": 825,
+        "max": 7003,
+        "median": 824,
         "min": 21,
         "q1": 169,
-        "q3": 3830,
+        "q3": 3815,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -3818,11 +3810,11 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 0.987,
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 0.044,
+        "min": 0.034,
         "q1": 0.958,
         "q3": 1,
         "sampleWeight": 19.5,
@@ -3837,13 +3829,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 0.8763,
+      "elysiaValue": 1.0616,
       "corpusBaseline": {
-        "max": 12.8688,
-        "median": 0.9167,
-        "min": 0.001,
+        "max": 7.7807,
+        "median": 0.9151,
+        "min": 0.0008,
         "q1": 0.1798,
-        "q3": 4.2553,
+        "q3": 4.239,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -3856,18 +3848,18 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 19.5,
-        "supportWeight": 12.5,
+        "supportWeight": 11,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 12.5,
+      "evidenceWeight": 11,
       "group": "chrome",
       "key": "fullBleed",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "account",
       "viewport": "tablet"
     },
@@ -3970,11 +3962,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
+        "max": 7,
         "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 2,
+        "q3": 1,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -3989,11 +3981,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 25,
+        "max": 2,
         "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 2,
+        "q3": 1,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4006,12 +3998,12 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 0.917,
+      "elysiaValue": 0.667,
       "corpusBaseline": {
         "max": 1,
         "median": 0.333,
         "min": 0,
-        "q1": 0.111,
+        "q1": 0.033,
         "q3": 0.7,
         "sampleWeight": 19.5,
         "type": "number"
@@ -4025,7 +4017,7 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 6,
+      "elysiaValue": 0,
       "corpusBaseline": {
         "max": 0,
         "median": 0,
@@ -4039,7 +4031,7 @@
       "evidenceWeight": 19.5,
       "group": "visual-tone",
       "key": "aquaAccentCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "account",
       "viewport": "tablet"
     },
@@ -4060,13 +4052,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 5,
+      "elysiaValue": 9,
       "corpusBaseline": {
-        "max": 79,
-        "median": 16,
+        "max": 42,
+        "median": 6,
         "min": 0,
-        "q1": 1,
-        "q3": 24,
+        "q1": 0,
+        "q3": 23,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4079,7 +4071,7 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 4,
+      "elysiaValue": 7,
       "corpusBaseline": {
         "max": 88,
         "median": 2,
@@ -4098,13 +4090,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 12,
+      "elysiaValue": 15,
       "corpusBaseline": {
         "max": 112,
-        "median": 18,
-        "min": 1,
-        "q1": 4,
-        "q3": 34,
+        "median": 10,
+        "min": 0,
+        "q1": 2,
+        "q3": 30,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4117,11 +4109,11 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 20,
+      "elysiaValue": 30,
       "corpusBaseline": {
         "max": 48,
         "median": 19.98,
-        "min": 1,
+        "min": 0,
         "q1": 13,
         "q3": 24,
         "sampleWeight": 19.5,
@@ -4136,13 +4128,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 0.917,
+      "elysiaValue": 0.667,
       "corpusBaseline": {
         "max": 1,
         "median": 0.5,
         "min": 0,
         "q1": 0.333,
-        "q3": 0.759,
+        "q3": 0.967,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4157,11 +4149,11 @@
     {
       "elysiaValue": 5,
       "corpusBaseline": {
-        "max": 141,
-        "median": 6,
+        "max": 142,
+        "median": 2,
         "min": 0,
-        "q1": 1,
-        "q3": 67,
+        "q1": 0,
+        "q3": 41,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4174,7 +4166,7 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 0.833,
+      "elysiaValue": 0.867,
       "corpusBaseline": {
         "max": 1,
         "median": 0.92,
@@ -4197,11 +4189,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 13,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 13,
+      "evidenceWeight": 14,
       "group": "accessibility",
       "key": "hasAriaCurrent",
       "matchStatus": "match",
@@ -4209,29 +4201,29 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 14.5,
+        "supportWeight": 16,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 14.5,
+      "evidenceWeight": 16,
       "group": "accessibility",
       "key": "hasAriaExpanded",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "account",
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 376,
+      "elysiaValue": 490,
       "corpusBaseline": {
-        "max": 39771,
+        "max": 34266,
         "median": 687,
         "min": 6,
-        "q1": 145,
-        "q3": 11024,
+        "q1": 123,
+        "q3": 11304,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4247,10 +4239,10 @@
       "elysiaValue": 1,
       "corpusBaseline": {
         "max": 97,
-        "median": 3,
+        "median": 2,
         "min": 0,
         "q1": 0,
-        "q3": 25,
+        "q3": 10,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4263,13 +4255,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 14,
+      "elysiaValue": 15,
       "corpusBaseline": {
         "max": 87,
-        "median": 4,
+        "median": 3,
         "min": 0,
         "q1": 0,
-        "q3": 39,
+        "q3": 13,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4277,18 +4269,18 @@
       "evidenceWeight": 19.5,
       "group": "content",
       "key": "paragraphCount",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "account",
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 17,
+      "elysiaValue": 3,
       "corpusBaseline": {
-        "max": 50,
-        "median": 2,
-        "min": 1,
+        "max": 9,
+        "median": 1,
+        "min": 0,
         "q1": 1,
-        "q3": 19,
+        "q3": 1,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4296,7 +4288,7 @@
       "evidenceWeight": 19.5,
       "group": "content",
       "key": "formControlCount",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "account",
       "viewport": "tablet"
     },
@@ -4304,7 +4296,7 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 178,
-        "median": 12,
+        "median": 1,
         "min": 0,
         "q1": 0,
         "q3": 56,
@@ -4362,11 +4354,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 11.5,
+        "supportWeight": 13,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 11.5,
+      "evidenceWeight": 13,
       "group": "commerce",
       "key": "priceTextPresent",
       "matchStatus": "match",
@@ -4376,7 +4368,7 @@
     {
       "elysiaValue": true,
       "corpusBaseline": {
-        "majorityValue": true,
+        "majorityValue": false,
         "sampleWeight": 19.5,
         "supportWeight": 10.5,
         "type": "boolean"
@@ -4385,14 +4377,14 @@
       "evidenceWeight": 10.5,
       "group": "commerce",
       "key": "addToCartTextPresent",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "account",
       "viewport": "tablet"
     },
     {
       "elysiaValue": true,
       "corpusBaseline": {
-        "majorityValue": true,
+        "majorityValue": false,
         "sampleWeight": 19.5,
         "supportWeight": 10.5,
         "type": "boolean"
@@ -4401,18 +4393,18 @@
       "evidenceWeight": 10.5,
       "group": "commerce",
       "key": "checkoutTextPresent",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "account",
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 6.34,
+      "elysiaValue": 9.298,
       "corpusBaseline": {
         "max": 1285.714,
-        "median": 5.882,
+        "median": 4.961,
         "min": 0,
-        "q1": 4.021,
-        "q3": 6.821,
+        "q1": 0,
+        "q3": 6.029,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4420,17 +4412,17 @@
       "evidenceWeight": 19.5,
       "group": "density",
       "key": "linksPer1000Px",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "account",
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 15.216,
+      "elysiaValue": 15.496,
       "corpusBaseline": {
         "max": 1428.571,
         "median": 12.142,
-        "min": 2.424,
-        "q1": 6.528,
+        "min": 0,
+        "q1": 5.696,
         "q3": 29.357,
         "sampleWeight": 19.5,
         "type": "number"
@@ -4485,7 +4477,7 @@
         "median": 2,
         "min": 1,
         "q1": 1,
-        "q3": 3,
+        "q3": 2,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4502,11 +4494,11 @@
       "corpusBaseline": {
         "majorityValue": "main",
         "sampleWeight": 19.5,
-        "supportWeight": 12.5,
+        "supportWeight": 11,
         "type": "category"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 12.5,
+      "evidenceWeight": 11,
       "group": "chrome",
       "key": "semanticTag",
       "matchStatus": "match",
@@ -4514,11 +4506,11 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 118,
+      "elysiaValue": 0,
       "corpusBaseline": {
         "max": 4280,
         "median": 20,
-        "min": -5742,
+        "min": -5543,
         "q1": 0,
         "q3": 77,
         "sampleWeight": 19.5,
@@ -4528,18 +4520,18 @@
       "evidenceWeight": 19.5,
       "group": "chrome",
       "key": "topPx",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "account",
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 1108,
+      "elysiaValue": 1113,
       "corpusBaseline": {
-        "max": 8978,
-        "median": 4151,
-        "min": 21,
-        "q1": 164,
-        "q3": 5341,
+        "max": 8453,
+        "median": 3479,
+        "min": 30,
+        "q1": 170,
+        "q3": 5197,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4552,12 +4544,12 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 0.974,
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 0.086,
-        "q1": 0.923,
+        "min": 0.171,
+        "q1": 0.949,
         "q3": 1,
         "sampleWeight": 19.5,
         "type": "number"
@@ -4571,13 +4563,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 1.3127,
+      "elysiaValue": 1.2843,
       "corpusBaseline": {
-        "max": 10.6376,
-        "median": 4.9183,
-        "min": 0.0021,
-        "q1": 0.1784,
-        "q3": 6.3285,
+        "max": 10.0148,
+        "median": 4.1216,
+        "min": 0.0081,
+        "q1": 0.1911,
+        "q3": 6.1576,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4590,18 +4582,18 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 19.5,
-        "supportWeight": 12.5,
+        "supportWeight": 12,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 12.5,
+      "evidenceWeight": 12,
       "group": "chrome",
       "key": "fullBleed",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "account",
       "viewport": "mobile"
     },
@@ -4704,11 +4696,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
+        "max": 16,
         "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 7,
+        "q3": 2,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4723,7 +4715,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 25,
+        "max": 16,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -4740,12 +4732,12 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 0.917,
+      "elysiaValue": 0.9,
       "corpusBaseline": {
         "max": 0.862,
-        "median": 0.276,
+        "median": 0.234,
         "min": 0,
-        "q1": 0.111,
+        "q1": 0,
         "q3": 0.483,
         "sampleWeight": 19.5,
         "type": "number"
@@ -4759,7 +4751,7 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 6,
+      "elysiaValue": 0,
       "corpusBaseline": {
         "max": 0,
         "median": 0,
@@ -4773,7 +4765,7 @@
       "evidenceWeight": 19.5,
       "group": "visual-tone",
       "key": "aquaAccentCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "account",
       "viewport": "mobile"
     },
@@ -4794,13 +4786,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 5,
+      "elysiaValue": 3,
       "corpusBaseline": {
-        "max": 78,
-        "median": 19,
+        "max": 44,
+        "median": 16,
         "min": 0,
-        "q1": 2,
-        "q3": 33,
+        "q1": 0,
+        "q3": 28,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4813,13 +4805,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 4,
+      "elysiaValue": 6,
       "corpusBaseline": {
         "max": 92,
-        "median": 12,
+        "median": 4,
         "min": 0,
-        "q1": 1,
-        "q3": 24,
+        "q1": 0,
+        "q3": 15,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4832,13 +4824,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 12,
+      "elysiaValue": 10,
       "corpusBaseline": {
         "max": 116,
-        "median": 29,
-        "min": 1,
-        "q1": 6,
-        "q3": 74,
+        "median": 18,
+        "min": 0,
+        "q1": 4,
+        "q3": 49,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4851,13 +4843,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 18,
+      "elysiaValue": 26.41,
       "corpusBaseline": {
         "max": 26,
-        "median": 18,
-        "min": 1,
-        "q1": 12,
-        "q3": 21,
+        "median": 17,
+        "min": 0,
+        "q1": 6,
+        "q3": 20,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4870,13 +4862,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 0.917,
+      "elysiaValue": 0.9,
       "corpusBaseline": {
-        "max": 0.967,
+        "max": 1,
         "median": 0.488,
         "min": 0,
-        "q1": 0.193,
-        "q3": 0.5,
+        "q1": 0.191,
+        "q3": 0.623,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4892,10 +4884,10 @@
       "elysiaValue": 5,
       "corpusBaseline": {
         "max": 128,
-        "median": 15,
+        "median": 6,
         "min": 0,
-        "q1": 2,
-        "q3": 66,
+        "q1": 0,
+        "q3": 53,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4908,13 +4900,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 0.833,
+      "elysiaValue": 0.8,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.967,
+        "median": 0.977,
         "min": 0,
         "q1": 0.889,
-        "q3": 0.99,
+        "q3": 0.991,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4931,11 +4923,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 14.5,
+        "supportWeight": 15.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 14.5,
+      "evidenceWeight": 15.5,
       "group": "accessibility",
       "key": "hasAriaCurrent",
       "matchStatus": "match",
@@ -4947,11 +4939,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 14.5,
+        "supportWeight": 17,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 14.5,
+      "evidenceWeight": 17,
       "group": "accessibility",
       "key": "hasAriaExpanded",
       "matchStatus": "mismatch",
@@ -4959,13 +4951,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 376,
+      "elysiaValue": 490,
       "corpusBaseline": {
-        "max": 39639,
+        "max": 29610,
         "median": 1668,
         "min": 6,
-        "q1": 145,
-        "q3": 19838,
+        "q1": 123,
+        "q3": 11758,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4980,11 +4972,11 @@
     {
       "elysiaValue": 1,
       "corpusBaseline": {
-        "max": 97,
-        "median": 6,
+        "max": 33,
+        "median": 2,
         "min": 0,
         "q1": 0,
-        "q3": 32,
+        "q3": 10,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -4997,13 +4989,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 14,
+      "elysiaValue": 15,
       "corpusBaseline": {
-        "max": 87,
-        "median": 5,
+        "max": 68,
+        "median": 3,
         "min": 0,
         "q1": 0,
-        "q3": 49,
+        "q3": 13,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -5011,18 +5003,18 @@
       "evidenceWeight": 19.5,
       "group": "content",
       "key": "paragraphCount",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "account",
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 17,
+      "elysiaValue": 3,
       "corpusBaseline": {
-        "max": 50,
-        "median": 2,
-        "min": 1,
-        "q1": 1,
-        "q3": 19,
+        "max": 9,
+        "median": 1,
+        "min": 0,
+        "q1": 0,
+        "q3": 2,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -5030,18 +5022,18 @@
       "evidenceWeight": 19.5,
       "group": "content",
       "key": "formControlCount",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "account",
       "viewport": "mobile"
     },
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 178,
-        "median": 32,
+        "max": 137,
+        "median": 12,
         "min": 0,
         "q1": 0,
-        "q3": 62,
+        "q3": 56,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -5075,7 +5067,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 80,
+        "max": 40,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -5096,11 +5088,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 10,
+        "supportWeight": 12.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 10,
+      "evidenceWeight": 12.5,
       "group": "commerce",
       "key": "priceTextPresent",
       "matchStatus": "match",
@@ -5110,43 +5102,43 @@
     {
       "elysiaValue": true,
       "corpusBaseline": {
-        "majorityValue": true,
+        "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 10.5,
+        "supportWeight": 11.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 10.5,
+      "evidenceWeight": 11.5,
       "group": "commerce",
       "key": "addToCartTextPresent",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "account",
       "viewport": "mobile"
     },
     {
       "elysiaValue": true,
       "corpusBaseline": {
-        "majorityValue": true,
+        "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 10.5,
+        "supportWeight": 11.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 10.5,
+      "evidenceWeight": 11.5,
       "group": "commerce",
       "key": "checkoutTextPresent",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "account",
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 4.513,
+      "elysiaValue": 2.697,
       "corpusBaseline": {
-        "max": 1285.714,
-        "median": 5.462,
+        "max": 50,
+        "median": 5.206,
         "min": 0,
-        "q1": 3.854,
-        "q3": 7.676,
+        "q1": 0,
+        "q3": 5.874,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -5159,13 +5151,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 10.831,
+      "elysiaValue": 8.989,
       "corpusBaseline": {
-        "max": 1428.571,
-        "median": 11.695,
-        "min": 4.336,
-        "q1": 7.379,
-        "q3": 27.136,
+        "max": 233.333,
+        "median": 9.11,
+        "min": 0,
+        "q1": 5.58,
+        "q3": 25,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -5199,7 +5191,7 @@
         "max": 25,
         "median": 4,
         "min": 1,
-        "q1": 3,
+        "q1": 2,
         "q3": 6,
         "sampleWeight": 18,
         "type": "number"
@@ -5236,11 +5228,11 @@
       "corpusBaseline": {
         "majorityValue": "main",
         "sampleWeight": 18,
-        "supportWeight": 12.5,
+        "supportWeight": 11,
         "type": "category"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 12.5,
+      "evidenceWeight": 11,
       "group": "chrome",
       "key": "semanticTag",
       "matchStatus": "match",
@@ -5250,7 +5242,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 75861,
+        "max": 39465,
         "median": 92,
         "min": -4129,
         "q1": 0,
@@ -5267,13 +5259,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 1480,
+      "elysiaValue": 1513,
       "corpusBaseline": {
-        "max": 7466,
-        "median": 1520,
+        "max": 6113,
+        "median": 835,
         "min": 21,
         "q1": 173,
-        "q3": 4560,
+        "q3": 4107,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -5286,11 +5278,11 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 0.993,
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 0.023,
+        "min": 0.018,
         "q1": 0.427,
         "q3": 1,
         "sampleWeight": 18,
@@ -5305,13 +5297,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 1.6446,
+      "elysiaValue": 1.6696,
       "corpusBaseline": {
-        "max": 8.2953,
-        "median": 1.6891,
-        "min": 0.0005,
+        "max": 6.7921,
+        "median": 0.9278,
+        "min": 0.0004,
         "q1": 0.0606,
-        "q3": 5.0667,
+        "q3": 4.5629,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -5324,18 +5316,18 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 18,
-        "supportWeight": 13.5,
+        "supportWeight": 12,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 13.5,
+      "evidenceWeight": 12,
       "group": "chrome",
       "key": "fullBleed",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "branches",
       "viewport": "desktop"
     },
@@ -5438,7 +5430,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
+        "max": 7,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -5457,11 +5449,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 25,
+        "max": 4,
         "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 2,
+        "q3": 1,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -5474,12 +5466,12 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 0.789,
+      "elysiaValue": 0.857,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.274,
-        "min": 0.033,
-        "q1": 0.19,
+        "median": 0.222,
+        "min": 0,
+        "q1": 0.111,
         "q3": 0.5,
         "sampleWeight": 18,
         "type": "number"
@@ -5493,7 +5485,7 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 6,
+      "elysiaValue": 0,
       "corpusBaseline": {
         "max": 0,
         "median": 0,
@@ -5507,7 +5499,7 @@
       "evidenceWeight": 18,
       "group": "visual-tone",
       "key": "aquaAccentCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "branches",
       "viewport": "desktop"
     },
@@ -5528,13 +5520,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 14,
+      "elysiaValue": 11,
       "corpusBaseline": {
         "max": 103,
-        "median": 16,
+        "median": 6,
         "min": 0,
-        "q1": 2,
-        "q3": 30,
+        "q1": 1,
+        "q3": 27,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -5547,10 +5539,10 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 3,
+      "elysiaValue": 7,
       "corpusBaseline": {
         "max": 56,
-        "median": 3,
+        "median": 2,
         "min": 0,
         "q1": 1,
         "q3": 12,
@@ -5566,13 +5558,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 38,
+      "elysiaValue": 35,
       "corpusBaseline": {
-        "max": 115,
-        "median": 18,
-        "min": 2,
-        "q1": 6,
-        "q3": 42,
+        "max": 116,
+        "median": 10,
+        "min": 0,
+        "q1": 4,
+        "q3": 30,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -5580,16 +5572,16 @@
       "evidenceWeight": 18,
       "group": "interaction",
       "key": "focusableCount",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "branches",
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 20,
+      "elysiaValue": 36,
       "corpusBaseline": {
         "max": 48,
         "median": 17,
-        "min": 1,
+        "min": 0,
         "q1": 13,
         "q3": 20,
         "sampleWeight": 18,
@@ -5604,13 +5596,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 0.789,
+      "elysiaValue": 0.857,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.519,
+        "median": 0.595,
         "min": 0.12,
         "q1": 0.333,
-        "q3": 0.8,
+        "q3": 0.967,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -5625,11 +5617,11 @@
     {
       "elysiaValue": 4,
       "corpusBaseline": {
-        "max": 141,
-        "median": 6,
+        "max": 142,
+        "median": 3,
         "min": 0,
-        "q1": 1,
-        "q3": 69,
+        "q1": 0,
+        "q3": 48,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -5642,13 +5634,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 0.579,
+      "elysiaValue": 0.543,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.952,
+        "median": 0.966,
         "min": 0.5,
         "q1": 0.889,
-        "q3": 0.991,
+        "q3": 1,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -5661,23 +5653,23 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 18,
-        "supportWeight": 13,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 13,
+      "evidenceWeight": 14,
       "group": "accessibility",
       "key": "hasAriaCurrent",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "branches",
       "viewport": "desktop"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 18,
@@ -5688,18 +5680,18 @@
       "evidenceWeight": 13,
       "group": "accessibility",
       "key": "hasAriaExpanded",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "branches",
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 1326,
+      "elysiaValue": 1440,
       "corpusBaseline": {
-        "max": 40037,
-        "median": 1151,
+        "max": 27627,
+        "median": 687,
         "min": 18,
-        "q1": 577,
-        "q3": 11758,
+        "q1": 145,
+        "q3": 11304,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -5715,10 +5707,10 @@
       "elysiaValue": 7,
       "corpusBaseline": {
         "max": 97,
-        "median": 3,
+        "median": 2,
         "min": 0,
         "q1": 1,
-        "q3": 15,
+        "q3": 10,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -5731,13 +5723,13 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 26,
+      "elysiaValue": 27,
       "corpusBaseline": {
         "max": 87,
-        "median": 4,
+        "median": 3,
         "min": 0,
         "q1": 2,
-        "q3": 26,
+        "q3": 18,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -5745,18 +5737,18 @@
       "evidenceWeight": 18,
       "group": "content",
       "key": "paragraphCount",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "branches",
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 33,
+      "elysiaValue": 21,
       "corpusBaseline": {
-        "max": 36,
-        "median": 2,
-        "min": 1,
+        "max": 9,
+        "median": 1,
+        "min": 0,
         "q1": 1,
-        "q3": 19,
+        "q3": 1,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -5775,7 +5767,7 @@
         "median": 1,
         "min": 0,
         "q1": 0,
-        "q3": 32,
+        "q3": 18,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -5830,11 +5822,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 18,
-        "supportWeight": 11.5,
+        "supportWeight": 13,
         "type": "boolean"
       },
       "evidenceSiteCount": 14,
-      "evidenceWeight": 11.5,
+      "evidenceWeight": 13,
       "group": "commerce",
       "key": "priceTextPresent",
       "matchStatus": "match",
@@ -5844,43 +5836,39 @@
     {
       "elysiaValue": true,
       "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 18,
-        "supportWeight": 10.5,
+        "reason": "No weighted reference majority reached the active threshold.",
         "type": "boolean"
       },
-      "evidenceSiteCount": 14,
-      "evidenceWeight": 10.5,
+      "evidenceSiteCount": 0,
+      "evidenceWeight": 18,
       "group": "commerce",
       "key": "addToCartTextPresent",
-      "matchStatus": "match",
+      "matchStatus": "notComparable",
       "targetLabel": "branches",
       "viewport": "desktop"
     },
     {
       "elysiaValue": true,
       "corpusBaseline": {
-        "majorityValue": true,
-        "sampleWeight": 18,
-        "supportWeight": 10.5,
+        "reason": "No weighted reference majority reached the active threshold.",
         "type": "boolean"
       },
-      "evidenceSiteCount": 14,
-      "evidenceWeight": 10.5,
+      "evidenceSiteCount": 0,
+      "evidenceWeight": 18,
       "group": "commerce",
       "key": "checkoutTextPresent",
-      "matchStatus": "match",
+      "matchStatus": "notComparable",
       "targetLabel": "branches",
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 9.459,
+      "elysiaValue": 7.27,
       "corpusBaseline": {
         "max": 1285.714,
-        "median": 5.849,
+        "median": 5.788,
         "min": 0,
-        "q1": 3.509,
-        "q3": 12.698,
+        "q1": 2.617,
+        "q3": 11.932,
         "sampleWeight": 18,
         "type": "number"
       },
@@ -5893,12 +5881,12 @@
       "viewport": "desktop"
     },
     {
-      "elysiaValue": 25.673,
+      "elysiaValue": 23.131,
       "corpusBaseline": {
         "max": 1428.571,
-        "median": 14.198,
-        "min": 2.395,
-        "q1": 6.352,
+        "median": 13.765,
+        "min": 0,
+        "q1": 2.945,
         "q3": 40.925,
         "sampleWeight": 18,
         "type": "number"
@@ -5934,7 +5922,7 @@
         "median": 4,
         "min": 1,
         "q1": 2,
-        "q3": 7,
+        "q3": 6,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -5970,11 +5958,11 @@
       "corpusBaseline": {
         "majorityValue": "main",
         "sampleWeight": 19.5,
-        "supportWeight": 12.5,
+        "supportWeight": 11,
         "type": "category"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 12.5,
+      "evidenceWeight": 11,
       "group": "chrome",
       "key": "semanticTag",
       "matchStatus": "match",
@@ -5985,7 +5973,7 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 9195,
-        "median": 20,
+        "median": 21,
         "min": -4941,
         "q1": 0,
         "q3": 169,
@@ -6001,13 +5989,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 2044,
+      "elysiaValue": 2047,
       "corpusBaseline": {
-        "max": 11582,
-        "median": 825,
+        "max": 7003,
+        "median": 824,
         "min": 21,
         "q1": 169,
-        "q3": 3830,
+        "q3": 3815,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6020,11 +6008,11 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 0.987,
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 0.044,
+        "min": 0.034,
         "q1": 0.958,
         "q3": 1,
         "sampleWeight": 19.5,
@@ -6039,13 +6027,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 2.271,
+      "elysiaValue": 2.2447,
       "corpusBaseline": {
-        "max": 12.8688,
-        "median": 0.9167,
-        "min": 0.001,
+        "max": 7.7807,
+        "median": 0.9151,
+        "min": 0.0008,
         "q1": 0.1798,
-        "q3": 4.2553,
+        "q3": 4.239,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6058,18 +6046,18 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 19.5,
-        "supportWeight": 12.5,
+        "supportWeight": 11,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 12.5,
+      "evidenceWeight": 11,
       "group": "chrome",
       "key": "fullBleed",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "branches",
       "viewport": "tablet"
     },
@@ -6172,11 +6160,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
+        "max": 7,
         "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 2,
+        "q3": 1,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6191,11 +6179,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 25,
+        "max": 2,
         "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 2,
+        "q3": 1,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6208,12 +6196,12 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 0.969,
+      "elysiaValue": 0.857,
       "corpusBaseline": {
         "max": 1,
         "median": 0.333,
         "min": 0,
-        "q1": 0.111,
+        "q1": 0.033,
         "q3": 0.7,
         "sampleWeight": 19.5,
         "type": "number"
@@ -6227,7 +6215,7 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 6,
+      "elysiaValue": 0,
       "corpusBaseline": {
         "max": 0,
         "median": 0,
@@ -6241,7 +6229,7 @@
       "evidenceWeight": 19.5,
       "group": "visual-tone",
       "key": "aquaAccentCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "branches",
       "viewport": "tablet"
     },
@@ -6262,13 +6250,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 7,
+      "elysiaValue": 11,
       "corpusBaseline": {
-        "max": 79,
-        "median": 16,
+        "max": 42,
+        "median": 6,
         "min": 0,
-        "q1": 1,
-        "q3": 24,
+        "q1": 0,
+        "q3": 23,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6281,7 +6269,7 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 4,
+      "elysiaValue": 7,
       "corpusBaseline": {
         "max": 88,
         "median": 2,
@@ -6300,13 +6288,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 32,
+      "elysiaValue": 35,
       "corpusBaseline": {
         "max": 112,
-        "median": 18,
-        "min": 1,
-        "q1": 4,
-        "q3": 34,
+        "median": 10,
+        "min": 0,
+        "q1": 2,
+        "q3": 30,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6314,16 +6302,16 @@
       "evidenceWeight": 19.5,
       "group": "interaction",
       "key": "focusableCount",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "branches",
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 20,
+      "elysiaValue": 30,
       "corpusBaseline": {
         "max": 48,
         "median": 19.98,
-        "min": 1,
+        "min": 0,
         "q1": 13,
         "q3": 24,
         "sampleWeight": 19.5,
@@ -6338,13 +6326,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 0.969,
+      "elysiaValue": 0.857,
       "corpusBaseline": {
         "max": 1,
         "median": 0.5,
         "min": 0,
         "q1": 0.333,
-        "q3": 0.759,
+        "q3": 0.967,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6359,11 +6347,11 @@
     {
       "elysiaValue": 4,
       "corpusBaseline": {
-        "max": 141,
-        "median": 6,
+        "max": 142,
+        "median": 2,
         "min": 0,
-        "q1": 1,
-        "q3": 67,
+        "q1": 0,
+        "q3": 41,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6376,7 +6364,7 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 0.5,
+      "elysiaValue": 0.543,
       "corpusBaseline": {
         "max": 1,
         "median": 0.92,
@@ -6395,45 +6383,45 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 13,
+        "supportWeight": 14,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 13,
+      "evidenceWeight": 14,
       "group": "accessibility",
       "key": "hasAriaCurrent",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "branches",
       "viewport": "tablet"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 14.5,
+        "supportWeight": 16,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 14.5,
+      "evidenceWeight": 16,
       "group": "accessibility",
       "key": "hasAriaExpanded",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "branches",
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 1326,
+      "elysiaValue": 1440,
       "corpusBaseline": {
-        "max": 39771,
+        "max": 34266,
         "median": 687,
         "min": 6,
-        "q1": 145,
-        "q3": 11024,
+        "q1": 123,
+        "q3": 11304,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6449,10 +6437,10 @@
       "elysiaValue": 7,
       "corpusBaseline": {
         "max": 97,
-        "median": 3,
+        "median": 2,
         "min": 0,
         "q1": 0,
-        "q3": 25,
+        "q3": 10,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6465,13 +6453,13 @@
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 26,
+      "elysiaValue": 27,
       "corpusBaseline": {
         "max": 87,
-        "median": 4,
+        "median": 3,
         "min": 0,
         "q1": 0,
-        "q3": 39,
+        "q3": 13,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6479,18 +6467,18 @@
       "evidenceWeight": 19.5,
       "group": "content",
       "key": "paragraphCount",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "branches",
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 33,
+      "elysiaValue": 21,
       "corpusBaseline": {
-        "max": 50,
-        "median": 2,
-        "min": 1,
+        "max": 9,
+        "median": 1,
+        "min": 0,
         "q1": 1,
-        "q3": 19,
+        "q3": 1,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6506,7 +6494,7 @@
       "elysiaValue": 0,
       "corpusBaseline": {
         "max": 178,
-        "median": 12,
+        "median": 1,
         "min": 0,
         "q1": 0,
         "q3": 56,
@@ -6564,11 +6552,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 11.5,
+        "supportWeight": 13,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 11.5,
+      "evidenceWeight": 13,
       "group": "commerce",
       "key": "priceTextPresent",
       "matchStatus": "match",
@@ -6578,7 +6566,7 @@
     {
       "elysiaValue": true,
       "corpusBaseline": {
-        "majorityValue": true,
+        "majorityValue": false,
         "sampleWeight": 19.5,
         "supportWeight": 10.5,
         "type": "boolean"
@@ -6587,14 +6575,14 @@
       "evidenceWeight": 10.5,
       "group": "commerce",
       "key": "addToCartTextPresent",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "branches",
       "viewport": "tablet"
     },
     {
       "elysiaValue": true,
       "corpusBaseline": {
-        "majorityValue": true,
+        "majorityValue": false,
         "sampleWeight": 19.5,
         "supportWeight": 10.5,
         "type": "boolean"
@@ -6603,18 +6591,18 @@
       "evidenceWeight": 10.5,
       "group": "commerce",
       "key": "checkoutTextPresent",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "branches",
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 3.425,
+      "elysiaValue": 5.374,
       "corpusBaseline": {
         "max": 1285.714,
-        "median": 5.882,
+        "median": 4.961,
         "min": 0,
-        "q1": 4.021,
-        "q3": 6.821,
+        "q1": 0,
+        "q3": 6.029,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6622,17 +6610,17 @@
       "evidenceWeight": 19.5,
       "group": "density",
       "key": "linksPer1000Px",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "branches",
       "viewport": "tablet"
     },
     {
-      "elysiaValue": 15.656,
+      "elysiaValue": 17.099,
       "corpusBaseline": {
         "max": 1428.571,
         "median": 12.142,
-        "min": 2.424,
-        "q1": 6.528,
+        "min": 0,
+        "q1": 5.696,
         "q3": 29.357,
         "sampleWeight": 19.5,
         "type": "number"
@@ -6687,7 +6675,7 @@
         "median": 2,
         "min": 1,
         "q1": 1,
-        "q3": 3,
+        "q3": 2,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6704,11 +6692,11 @@
       "corpusBaseline": {
         "majorityValue": "main",
         "sampleWeight": 19.5,
-        "supportWeight": 12.5,
+        "supportWeight": 11,
         "type": "category"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 12.5,
+      "evidenceWeight": 11,
       "group": "chrome",
       "key": "semanticTag",
       "matchStatus": "match",
@@ -6716,11 +6704,11 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 118,
+      "elysiaValue": 0,
       "corpusBaseline": {
         "max": 4280,
         "median": 20,
-        "min": -5742,
+        "min": -5543,
         "q1": 0,
         "q3": 77,
         "sampleWeight": 19.5,
@@ -6730,18 +6718,18 @@
       "evidenceWeight": 19.5,
       "group": "chrome",
       "key": "topPx",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "branches",
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 2919,
+      "elysiaValue": 2918,
       "corpusBaseline": {
-        "max": 8978,
-        "median": 4151,
-        "min": 21,
-        "q1": 164,
-        "q3": 5341,
+        "max": 8453,
+        "median": 3479,
+        "min": 30,
+        "q1": 170,
+        "q3": 5197,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6754,12 +6742,12 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 1,
+      "elysiaValue": 0.974,
       "corpusBaseline": {
         "max": 1,
         "median": 1,
-        "min": 0.086,
-        "q1": 0.923,
+        "min": 0.171,
+        "q1": 0.949,
         "q3": 1,
         "sampleWeight": 19.5,
         "type": "number"
@@ -6773,13 +6761,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 3.4584,
+      "elysiaValue": 3.3686,
       "corpusBaseline": {
-        "max": 10.6376,
-        "median": 4.9183,
-        "min": 0.0021,
-        "q1": 0.1784,
-        "q3": 6.3285,
+        "max": 10.0148,
+        "median": 4.1216,
+        "min": 0.0081,
+        "q1": 0.1911,
+        "q3": 6.1576,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6792,18 +6780,18 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": true,
         "sampleWeight": 19.5,
-        "supportWeight": 12.5,
+        "supportWeight": 12,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 12.5,
+      "evidenceWeight": 12,
       "group": "chrome",
       "key": "fullBleed",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "branches",
       "viewport": "mobile"
     },
@@ -6906,11 +6894,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 23,
+        "max": 16,
         "median": 0,
         "min": 0,
         "q1": 0,
-        "q3": 7,
+        "q3": 2,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -6925,7 +6913,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 25,
+        "max": 16,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -6942,12 +6930,12 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 0.969,
+      "elysiaValue": 0.967,
       "corpusBaseline": {
         "max": 0.862,
-        "median": 0.276,
+        "median": 0.234,
         "min": 0,
-        "q1": 0.111,
+        "q1": 0,
         "q3": 0.483,
         "sampleWeight": 19.5,
         "type": "number"
@@ -6961,7 +6949,7 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 6,
+      "elysiaValue": 0,
       "corpusBaseline": {
         "max": 0,
         "median": 0,
@@ -6975,7 +6963,7 @@
       "evidenceWeight": 19.5,
       "group": "visual-tone",
       "key": "aquaAccentCount",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "branches",
       "viewport": "mobile"
     },
@@ -6996,13 +6984,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 7,
+      "elysiaValue": 5,
       "corpusBaseline": {
-        "max": 78,
-        "median": 19,
+        "max": 44,
+        "median": 16,
         "min": 0,
-        "q1": 2,
-        "q3": 33,
+        "q1": 0,
+        "q3": 28,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -7015,13 +7003,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 4,
+      "elysiaValue": 6,
       "corpusBaseline": {
         "max": 92,
-        "median": 12,
+        "median": 4,
         "min": 0,
-        "q1": 1,
-        "q3": 24,
+        "q1": 0,
+        "q3": 15,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -7034,13 +7022,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 32,
+      "elysiaValue": 30,
       "corpusBaseline": {
         "max": 116,
-        "median": 29,
-        "min": 1,
-        "q1": 6,
-        "q3": 74,
+        "median": 18,
+        "min": 0,
+        "q1": 4,
+        "q3": 49,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -7053,13 +7041,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 18,
+      "elysiaValue": 26.41,
       "corpusBaseline": {
         "max": 26,
-        "median": 18,
-        "min": 1,
-        "q1": 12,
-        "q3": 21,
+        "median": 17,
+        "min": 0,
+        "q1": 6,
+        "q3": 20,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -7072,13 +7060,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 0.969,
+      "elysiaValue": 0.967,
       "corpusBaseline": {
-        "max": 0.967,
+        "max": 1,
         "median": 0.488,
         "min": 0,
-        "q1": 0.193,
-        "q3": 0.5,
+        "q1": 0.191,
+        "q3": 0.623,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -7094,10 +7082,10 @@
       "elysiaValue": 4,
       "corpusBaseline": {
         "max": 128,
-        "median": 15,
+        "median": 6,
         "min": 0,
-        "q1": 2,
-        "q3": 66,
+        "q1": 0,
+        "q3": 53,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -7110,13 +7098,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 0.5,
+      "elysiaValue": 0.467,
       "corpusBaseline": {
         "max": 1,
-        "median": 0.967,
+        "median": 0.977,
         "min": 0,
         "q1": 0.889,
-        "q3": 0.99,
+        "q3": 0.991,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -7129,18 +7117,18 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": true,
+      "elysiaValue": false,
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 14.5,
+        "supportWeight": 15.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 14.5,
+      "evidenceWeight": 15.5,
       "group": "accessibility",
       "key": "hasAriaCurrent",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "branches",
       "viewport": "mobile"
     },
@@ -7149,11 +7137,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 14.5,
+        "supportWeight": 17,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 14.5,
+      "evidenceWeight": 17,
       "group": "accessibility",
       "key": "hasAriaExpanded",
       "matchStatus": "mismatch",
@@ -7161,13 +7149,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 1326,
+      "elysiaValue": 1440,
       "corpusBaseline": {
-        "max": 39639,
+        "max": 29610,
         "median": 1668,
         "min": 6,
-        "q1": 145,
-        "q3": 19838,
+        "q1": 123,
+        "q3": 11758,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -7182,11 +7170,11 @@
     {
       "elysiaValue": 7,
       "corpusBaseline": {
-        "max": 97,
-        "median": 6,
+        "max": 33,
+        "median": 2,
         "min": 0,
         "q1": 0,
-        "q3": 32,
+        "q3": 10,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -7199,13 +7187,13 @@
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 26,
+      "elysiaValue": 27,
       "corpusBaseline": {
-        "max": 87,
-        "median": 5,
+        "max": 68,
+        "median": 3,
         "min": 0,
         "q1": 0,
-        "q3": 49,
+        "q3": 13,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -7213,18 +7201,18 @@
       "evidenceWeight": 19.5,
       "group": "content",
       "key": "paragraphCount",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "branches",
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 33,
+      "elysiaValue": 21,
       "corpusBaseline": {
-        "max": 50,
-        "median": 2,
-        "min": 1,
-        "q1": 1,
-        "q3": 19,
+        "max": 9,
+        "median": 1,
+        "min": 0,
+        "q1": 0,
+        "q3": 2,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -7239,11 +7227,11 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 178,
-        "median": 32,
+        "max": 137,
+        "median": 12,
         "min": 0,
         "q1": 0,
-        "q3": 62,
+        "q3": 56,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -7277,7 +7265,7 @@
     {
       "elysiaValue": 0,
       "corpusBaseline": {
-        "max": 80,
+        "max": 40,
         "median": 0,
         "min": 0,
         "q1": 0,
@@ -7298,11 +7286,11 @@
       "corpusBaseline": {
         "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 10,
+        "supportWeight": 12.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 10,
+      "evidenceWeight": 12.5,
       "group": "commerce",
       "key": "priceTextPresent",
       "matchStatus": "match",
@@ -7312,43 +7300,43 @@
     {
       "elysiaValue": true,
       "corpusBaseline": {
-        "majorityValue": true,
+        "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 10.5,
+        "supportWeight": 11.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 10.5,
+      "evidenceWeight": 11.5,
       "group": "commerce",
       "key": "addToCartTextPresent",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "branches",
       "viewport": "mobile"
     },
     {
       "elysiaValue": true,
       "corpusBaseline": {
-        "majorityValue": true,
+        "majorityValue": false,
         "sampleWeight": 19.5,
-        "supportWeight": 10.5,
+        "supportWeight": 11.5,
         "type": "boolean"
       },
       "evidenceSiteCount": 15,
-      "evidenceWeight": 10.5,
+      "evidenceWeight": 11.5,
       "group": "commerce",
       "key": "checkoutTextPresent",
-      "matchStatus": "match",
+      "matchStatus": "mismatch",
       "targetLabel": "branches",
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 2.398,
+      "elysiaValue": 1.714,
       "corpusBaseline": {
-        "max": 1285.714,
-        "median": 5.462,
+        "max": 50,
+        "median": 5.206,
         "min": 0,
-        "q1": 3.854,
-        "q3": 7.676,
+        "q1": 0,
+        "q3": 5.874,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -7356,18 +7344,18 @@
       "evidenceWeight": 19.5,
       "group": "density",
       "key": "linksPer1000Px",
-      "matchStatus": "mismatch",
+      "matchStatus": "match",
       "targetLabel": "branches",
       "viewport": "mobile"
     },
     {
-      "elysiaValue": 10.963,
+      "elysiaValue": 10.281,
       "corpusBaseline": {
-        "max": 1428.571,
-        "median": 11.695,
-        "min": 4.336,
-        "q1": 7.379,
-        "q3": 27.136,
+        "max": 233.333,
+        "median": 9.11,
+        "min": 0,
+        "q1": 5.58,
+        "q3": 25,
         "sampleWeight": 19.5,
         "type": "number"
       },
@@ -7384,7 +7372,7 @@
     "id": "service-account",
     "title": "Service Account"
   },
-  "runAt": "2026-05-19T19:33:18.092Z",
+  "runAt": "2026-05-24T15:23:49.078Z",
   "sites": [
     {
       "enoughViewportCount": 0,
@@ -8449,9 +8437,9 @@
             "visibleElementCount": 2,
             "semanticTag": "main",
             "topPx": 64,
-            "heightPx": 7746,
+            "heightPx": 8453,
             "widthRatio": 1,
-            "areaRatio": 9.1772,
+            "areaRatio": 10.0148,
             "fullBleed": true,
             "hasBorder": false,
             "hasShadow": false,
@@ -8461,30 +8449,30 @@
             "transparentBackground": true,
             "roundedControlCount": 16,
             "pillLikeControlCount": 16,
-            "boxedControlRatio": 0.243,
+            "boxedControlRatio": 0.234,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 42,
-            "buttonCount": 31,
-            "focusableCount": 74,
+            "linkCount": 44,
+            "buttonCount": 32,
+            "focusableCount": 77,
             "minTapTargetPx": 6,
-            "tapTargetPassRatio": 0.608,
-            "ariaLabelCount": 51,
-            "namedControlRatio": 0.986,
+            "tapTargetPassRatio": 0.623,
+            "ariaLabelCount": 58,
+            "namedControlRatio": 0.987,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 19838,
+            "textLength": 21216,
             "headingCount": 0,
-            "paragraphCount": 59,
+            "paragraphCount": 68,
             "formControlCount": 1,
             "imageCount": 62,
-            "videoCount": 0,
+            "videoCount": 1,
             "productLinkCount": 0,
             "priceTextPresent": false,
             "addToCartTextPresent": false,
             "checkoutTextPresent": false,
-            "linksPer1000Px": 5.422,
-            "controlsPer1000Px": 9.554
+            "linksPer1000Px": 5.206,
+            "controlsPer1000Px": 9.11
           },
           "loadStatus": "ok",
           "siteName": "Graff",
@@ -8544,7 +8532,7 @@
             "textLength": 16207,
             "headingCount": 15,
             "paragraphCount": 26,
-            "formControlCount": 19,
+            "formControlCount": 0,
             "imageCount": 0,
             "videoCount": 0,
             "productLinkCount": 1,
@@ -8598,11 +8586,11 @@
             "ariaLabelCount": 129,
             "namedControlRatio": 0.991,
             "hasAriaCurrent": true,
-            "hasAriaExpanded": true,
+            "hasAriaExpanded": false,
             "textLength": 34266,
             "headingCount": 25,
             "paragraphCount": 39,
-            "formControlCount": 50,
+            "formControlCount": 1,
             "imageCount": 137,
             "videoCount": 0,
             "productLinkCount": 0,
@@ -8632,7 +8620,7 @@
             "elementCount": 7,
             "visibleElementCount": 2,
             "semanticTag": "main",
-            "topPx": -5742,
+            "topPx": -5543,
             "heightPx": 4275,
             "widthRatio": 1,
             "areaRatio": 5.0649,
@@ -8656,11 +8644,11 @@
             "ariaLabelCount": 128,
             "namedControlRatio": 0.991,
             "hasAriaCurrent": true,
-            "hasAriaExpanded": true,
+            "hasAriaExpanded": false,
             "textLength": 29610,
             "headingCount": 25,
             "paragraphCount": 39,
-            "formControlCount": 50,
+            "formControlCount": 1,
             "imageCount": 137,
             "videoCount": 0,
             "productLinkCount": 0,
@@ -8728,7 +8716,7 @@
             "textLength": 27627,
             "headingCount": 3,
             "paragraphCount": 4,
-            "formControlCount": 12,
+            "formControlCount": 9,
             "imageCount": 12,
             "videoCount": 1,
             "productLinkCount": 0,
@@ -8786,7 +8774,7 @@
             "textLength": 27627,
             "headingCount": 3,
             "paragraphCount": 4,
-            "formControlCount": 12,
+            "formControlCount": 9,
             "imageCount": 12,
             "videoCount": 1,
             "productLinkCount": 0,
@@ -8844,7 +8832,7 @@
             "textLength": 27627,
             "headingCount": 3,
             "paragraphCount": 4,
-            "formControlCount": 12,
+            "formControlCount": 9,
             "imageCount": 12,
             "videoCount": 1,
             "productLinkCount": 0,
@@ -9092,8 +9080,8 @@
             "focusableCount": 10,
             "minTapTargetPx": 19.19,
             "tapTargetPassRatio": 0.8,
-            "ariaLabelCount": 1,
-            "namedControlRatio": 0.9,
+            "ariaLabelCount": 3,
+            "namedControlRatio": 1,
             "hasAriaCurrent": true,
             "hasAriaExpanded": true,
             "textLength": 682,
@@ -9208,8 +9196,8 @@
             "focusableCount": 49,
             "minTapTargetPx": 14.39,
             "tapTargetPassRatio": 0.143,
-            "ariaLabelCount": 15,
-            "namedControlRatio": 0.939,
+            "ariaLabelCount": 48,
+            "namedControlRatio": 0.98,
             "hasAriaCurrent": false,
             "hasAriaExpanded": true,
             "textLength": 5525,
@@ -9623,46 +9611,46 @@
           "enoughData": true,
           "metrics": {
             "elementFound": true,
-            "elementCount": 15,
-            "visibleElementCount": 3,
-            "semanticTag": "main",
-            "topPx": 0,
-            "heightPx": 7466,
-            "widthRatio": 1,
-            "areaRatio": 8.2953,
-            "fullBleed": true,
+            "elementCount": 1,
+            "visibleElementCount": 1,
+            "semanticTag": "body",
+            "topPx": 21,
+            "heightPx": 206,
+            "widthRatio": 0.989,
+            "areaRatio": 0.2262,
+            "fullBleed": false,
             "hasBorder": false,
             "hasShadow": false,
             "lowShadow": true,
             "isStickyOrFixed": false,
             "neutralBackground": true,
             "transparentBackground": true,
-            "roundedControlCount": 23,
-            "pillLikeControlCount": 25,
-            "boxedControlRatio": 0.274,
+            "roundedControlCount": 0,
+            "pillLikeControlCount": 0,
+            "boxedControlRatio": 0,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 79,
-            "buttonCount": 24,
-            "focusableCount": 106,
-            "minTapTargetPx": 3,
-            "tapTargetPassRatio": 0.519,
-            "ariaLabelCount": 69,
-            "namedControlRatio": 0.991,
+            "linkCount": 0,
+            "buttonCount": 0,
+            "focusableCount": 0,
+            "minTapTargetPx": 0,
+            "tapTargetPassRatio": 1,
+            "ariaLabelCount": 0,
+            "namedControlRatio": 1,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 40037,
-            "headingCount": 40,
-            "paragraphCount": 67,
-            "formControlCount": 19,
-            "imageCount": 32,
+            "textLength": 121,
+            "headingCount": 2,
+            "paragraphCount": 3,
+            "formControlCount": 0,
+            "imageCount": 0,
             "videoCount": 0,
             "productLinkCount": 0,
-            "priceTextPresent": true,
-            "addToCartTextPresent": true,
-            "checkoutTextPresent": true,
-            "linksPer1000Px": 10.582,
-            "controlsPer1000Px": 14.198
+            "priceTextPresent": false,
+            "addToCartTextPresent": false,
+            "checkoutTextPresent": false,
+            "linksPer1000Px": 0,
+            "controlsPer1000Px": 0
           },
           "loadStatus": "ok",
           "siteName": "Buccellati",
@@ -9681,46 +9669,46 @@
           "enoughData": true,
           "metrics": {
             "elementFound": true,
-            "elementCount": 15,
-            "visibleElementCount": 3,
-            "semanticTag": "main",
-            "topPx": 0,
-            "heightPx": 11582,
-            "widthRatio": 1,
-            "areaRatio": 12.8688,
-            "fullBleed": true,
+            "elementCount": 1,
+            "visibleElementCount": 1,
+            "semanticTag": "body",
+            "topPx": 21,
+            "heightPx": 206,
+            "widthRatio": 0.979,
+            "areaRatio": 0.224,
+            "fullBleed": false,
             "hasBorder": false,
             "hasShadow": false,
             "lowShadow": true,
             "isStickyOrFixed": false,
             "neutralBackground": true,
             "transparentBackground": true,
-            "roundedControlCount": 23,
-            "pillLikeControlCount": 25,
-            "boxedControlRatio": 0.274,
+            "roundedControlCount": 0,
+            "pillLikeControlCount": 0,
+            "boxedControlRatio": 0,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 79,
-            "buttonCount": 24,
-            "focusableCount": 106,
-            "minTapTargetPx": 3,
-            "tapTargetPassRatio": 0.5,
-            "ariaLabelCount": 67,
-            "namedControlRatio": 0.991,
+            "linkCount": 0,
+            "buttonCount": 0,
+            "focusableCount": 0,
+            "minTapTargetPx": 0,
+            "tapTargetPassRatio": 1,
+            "ariaLabelCount": 0,
+            "namedControlRatio": 1,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 39771,
-            "headingCount": 40,
-            "paragraphCount": 65,
-            "formControlCount": 19,
-            "imageCount": 32,
+            "textLength": 122,
+            "headingCount": 2,
+            "paragraphCount": 3,
+            "formControlCount": 0,
+            "imageCount": 0,
             "videoCount": 0,
             "productLinkCount": 0,
-            "priceTextPresent": true,
-            "addToCartTextPresent": true,
-            "checkoutTextPresent": true,
-            "linksPer1000Px": 6.821,
-            "controlsPer1000Px": 9.152
+            "priceTextPresent": false,
+            "addToCartTextPresent": false,
+            "checkoutTextPresent": false,
+            "linksPer1000Px": 0,
+            "controlsPer1000Px": 0
           },
           "loadStatus": "ok",
           "siteName": "Buccellati",
@@ -9739,46 +9727,46 @@
           "enoughData": true,
           "metrics": {
             "elementFound": true,
-            "elementCount": 15,
-            "visibleElementCount": 3,
-            "semanticTag": "main",
-            "topPx": 0,
-            "heightPx": 8978,
-            "widthRatio": 1,
-            "areaRatio": 10.6376,
-            "fullBleed": true,
+            "elementCount": 1,
+            "visibleElementCount": 1,
+            "semanticTag": "body",
+            "topPx": 21,
+            "heightPx": 224,
+            "widthRatio": 0.959,
+            "areaRatio": 0.2544,
+            "fullBleed": false,
             "hasBorder": false,
             "hasShadow": false,
             "lowShadow": true,
             "isStickyOrFixed": false,
             "neutralBackground": true,
             "transparentBackground": true,
-            "roundedControlCount": 23,
-            "pillLikeControlCount": 25,
-            "boxedControlRatio": 0.276,
+            "roundedControlCount": 0,
+            "pillLikeControlCount": 0,
+            "boxedControlRatio": 0,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 78,
-            "buttonCount": 24,
-            "focusableCount": 105,
-            "minTapTargetPx": 3,
-            "tapTargetPassRatio": 0.495,
-            "ariaLabelCount": 66,
-            "namedControlRatio": 0.99,
+            "linkCount": 0,
+            "buttonCount": 0,
+            "focusableCount": 0,
+            "minTapTargetPx": 0,
+            "tapTargetPassRatio": 1,
+            "ariaLabelCount": 0,
+            "namedControlRatio": 1,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 39639,
-            "headingCount": 40,
-            "paragraphCount": 64,
-            "formControlCount": 19,
-            "imageCount": 32,
+            "textLength": 123,
+            "headingCount": 2,
+            "paragraphCount": 3,
+            "formControlCount": 0,
+            "imageCount": 0,
             "videoCount": 0,
             "productLinkCount": 0,
-            "priceTextPresent": true,
-            "addToCartTextPresent": true,
-            "checkoutTextPresent": true,
-            "linksPer1000Px": 8.688,
-            "controlsPer1000Px": 11.695
+            "priceTextPresent": false,
+            "addToCartTextPresent": false,
+            "checkoutTextPresent": false,
+            "linksPer1000Px": 0,
+            "controlsPer1000Px": 0
           },
           "loadStatus": "ok",
           "siteName": "Buccellati",
@@ -9838,7 +9826,7 @@
             "textLength": 1958,
             "headingCount": 33,
             "paragraphCount": 18,
-            "formControlCount": 6,
+            "formControlCount": 1,
             "imageCount": 70,
             "videoCount": 2,
             "productLinkCount": 0,
@@ -9896,7 +9884,7 @@
             "textLength": 1581,
             "headingCount": 29,
             "paragraphCount": 13,
-            "formControlCount": 2,
+            "formControlCount": 0,
             "imageCount": 64,
             "videoCount": 2,
             "productLinkCount": 0,
@@ -9926,7 +9914,7 @@
             "elementCount": 4,
             "visibleElementCount": 1,
             "semanticTag": "main",
-            "topPx": -3392,
+            "topPx": -4207,
             "heightPx": 4767,
             "widthRatio": 1,
             "areaRatio": 5.6481,
@@ -9954,7 +9942,7 @@
             "textLength": 1668,
             "headingCount": 33,
             "paragraphCount": 13,
-            "formControlCount": 2,
+            "formControlCount": 0,
             "imageCount": 72,
             "videoCount": 2,
             "productLinkCount": 0,
@@ -9994,7 +9982,7 @@
             "elementCount": 1,
             "visibleElementCount": 1,
             "semanticTag": "form",
-            "topPx": 75861,
+            "topPx": 39465,
             "heightPx": 173,
             "widthRatio": 0.316,
             "areaRatio": 0.0606,
@@ -10052,7 +10040,7 @@
             "elementCount": 1,
             "visibleElementCount": 1,
             "semanticTag": "form",
-            "topPx": 3889,
+            "topPx": 3865,
             "heightPx": 170,
             "widthRatio": 0.974,
             "areaRatio": 0.184,
@@ -10178,7 +10166,7 @@
             "elementCount": 4,
             "visibleElementCount": 1,
             "semanticTag": "form",
-            "topPx": 4270,
+            "topPx": 4269,
             "heightPx": 147,
             "widthRatio": 1,
             "areaRatio": 0.1629,
@@ -10294,7 +10282,7 @@
             "elementCount": 4,
             "visibleElementCount": 1,
             "semanticTag": "form",
-            "topPx": 4190,
+            "topPx": 4191,
             "heightPx": 164,
             "widthRatio": 0.918,
             "areaRatio": 0.1784,
@@ -10363,9 +10351,9 @@
             "visibleElementCount": 1,
             "semanticTag": "main",
             "topPx": -1340,
-            "heightPx": 3780,
+            "heightPx": 4107,
             "widthRatio": 1,
-            "areaRatio": 4.2003,
+            "areaRatio": 4.5629,
             "fullBleed": true,
             "hasBorder": false,
             "hasShadow": false,
@@ -10375,30 +10363,30 @@
             "transparentBackground": true,
             "roundedControlCount": 0,
             "pillLikeControlCount": 0,
-            "boxedControlRatio": 0.2,
+            "boxedControlRatio": 0.198,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 48,
+            "linkCount": 49,
             "buttonCount": 56,
-            "focusableCount": 115,
+            "focusableCount": 116,
             "minTapTargetPx": 10,
-            "tapTargetPassRatio": 0.183,
-            "ariaLabelCount": 141,
+            "tapTargetPassRatio": 0.181,
+            "ariaLabelCount": 142,
             "namedControlRatio": 0.991,
             "hasAriaCurrent": true,
             "hasAriaExpanded": true,
-            "textLength": 3143,
-            "headingCount": 6,
-            "paragraphCount": 50,
-            "formControlCount": 20,
+            "textLength": 3453,
+            "headingCount": 7,
+            "paragraphCount": 52,
+            "formControlCount": 0,
             "imageCount": 56,
             "videoCount": 2,
             "productLinkCount": 40,
             "priceTextPresent": true,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
-            "linksPer1000Px": 12.698,
-            "controlsPer1000Px": 30.421
+            "linksPer1000Px": 11.932,
+            "controlsPer1000Px": 28.247
           },
           "loadStatus": "ok",
           "siteName": "Mejuri",
@@ -10420,10 +10408,10 @@
             "elementCount": 25,
             "visibleElementCount": 1,
             "semanticTag": "main",
-            "topPx": -2986,
-            "heightPx": 6676,
+            "topPx": -2110,
+            "heightPx": 7003,
             "widthRatio": 1,
-            "areaRatio": 7.418,
+            "areaRatio": 7.7807,
             "fullBleed": true,
             "hasBorder": false,
             "hasShadow": false,
@@ -10433,30 +10421,30 @@
             "transparentBackground": true,
             "roundedControlCount": 0,
             "pillLikeControlCount": 0,
-            "boxedControlRatio": 0.215,
+            "boxedControlRatio": 0.213,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 41,
+            "linkCount": 42,
             "buttonCount": 55,
-            "focusableCount": 107,
+            "focusableCount": 108,
             "minTapTargetPx": 12,
-            "tapTargetPassRatio": 0.196,
-            "ariaLabelCount": 141,
+            "tapTargetPassRatio": 0.194,
+            "ariaLabelCount": 142,
             "namedControlRatio": 0.972,
             "hasAriaCurrent": true,
             "hasAriaExpanded": true,
-            "textLength": 3148,
-            "headingCount": 6,
-            "paragraphCount": 49,
-            "formControlCount": 20,
+            "textLength": 3458,
+            "headingCount": 7,
+            "paragraphCount": 51,
+            "formControlCount": 0,
             "imageCount": 56,
             "videoCount": 2,
             "productLinkCount": 40,
             "priceTextPresent": true,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
-            "linksPer1000Px": 6.141,
-            "controlsPer1000Px": 16.027
+            "linksPer1000Px": 5.998,
+            "controlsPer1000Px": 15.423
           },
           "loadStatus": "ok",
           "siteName": "Mejuri",
@@ -10478,10 +10466,10 @@
             "elementCount": 25,
             "visibleElementCount": 1,
             "semanticTag": "main",
-            "topPx": -2164,
-            "heightPx": 5341,
+            "topPx": -1341,
+            "heightPx": 5743,
             "widthRatio": 1,
-            "areaRatio": 6.3285,
+            "areaRatio": 6.805,
             "fullBleed": true,
             "hasBorder": false,
             "hasShadow": false,
@@ -10491,30 +10479,30 @@
             "transparentBackground": true,
             "roundedControlCount": 0,
             "pillLikeControlCount": 0,
-            "boxedControlRatio": 0.211,
+            "boxedControlRatio": 0.209,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 41,
+            "linkCount": 42,
             "buttonCount": 57,
-            "focusableCount": 109,
+            "focusableCount": 110,
             "minTapTargetPx": 12,
-            "tapTargetPassRatio": 0.193,
-            "ariaLabelCount": 123,
-            "namedControlRatio": 0.972,
+            "tapTargetPassRatio": 0.191,
+            "ariaLabelCount": 124,
+            "namedControlRatio": 0.973,
             "hasAriaCurrent": true,
             "hasAriaExpanded": true,
-            "textLength": 3158,
-            "headingCount": 6,
-            "paragraphCount": 49,
-            "formControlCount": 20,
+            "textLength": 3468,
+            "headingCount": 7,
+            "paragraphCount": 51,
+            "formControlCount": 0,
             "imageCount": 56,
             "videoCount": 2,
             "productLinkCount": 40,
             "priceTextPresent": true,
             "addToCartTextPresent": true,
             "checkoutTextPresent": true,
-            "linksPer1000Px": 7.676,
-            "controlsPer1000Px": 20.407
+            "linksPer1000Px": 7.313,
+            "controlsPer1000Px": 19.152
           },
           "loadStatus": "ok",
           "siteName": "Mejuri",
@@ -10758,7 +10746,7 @@
             "textLength": 145,
             "headingCount": 0,
             "paragraphCount": 0,
-            "formControlCount": 36,
+            "formControlCount": 4,
             "imageCount": 1,
             "videoCount": 0,
             "productLinkCount": 0,
@@ -10816,7 +10804,7 @@
             "textLength": 145,
             "headingCount": 0,
             "paragraphCount": 0,
-            "formControlCount": 36,
+            "formControlCount": 2,
             "imageCount": 1,
             "videoCount": 0,
             "productLinkCount": 0,
@@ -10874,7 +10862,7 @@
             "textLength": 145,
             "headingCount": 0,
             "paragraphCount": 0,
-            "formControlCount": 36,
+            "formControlCount": 2,
             "imageCount": 1,
             "videoCount": 0,
             "productLinkCount": 0,
@@ -10997,7 +10985,7 @@
             "namedControlRatio": 0.966,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 397,
+            "textLength": 11758,
             "headingCount": 9,
             "paragraphCount": 10,
             "formControlCount": 1,
@@ -11055,7 +11043,7 @@
             "namedControlRatio": 0.966,
             "hasAriaCurrent": false,
             "hasAriaExpanded": false,
-            "textLength": 397,
+            "textLength": 11758,
             "headingCount": 9,
             "paragraphCount": 10,
             "formControlCount": 1,
@@ -11098,10 +11086,10 @@
             "elementCount": 5,
             "visibleElementCount": 3,
             "semanticTag": "form",
-            "topPx": 36,
+            "topPx": 57,
             "heightPx": 21,
-            "widthRatio": 0.023,
-            "areaRatio": 0.0005,
+            "widthRatio": 0.018,
+            "areaRatio": 0.0004,
             "fullBleed": false,
             "hasBorder": false,
             "hasShadow": false,
@@ -11121,12 +11109,12 @@
             "tapTargetPassRatio": 0.967,
             "ariaLabelCount": 86,
             "namedControlRatio": 0.967,
-            "hasAriaCurrent": true,
+            "hasAriaCurrent": false,
             "hasAriaExpanded": true,
-            "textLength": 11024,
+            "textLength": 11304,
             "headingCount": 97,
             "paragraphCount": 87,
-            "formControlCount": 7,
+            "formControlCount": 1,
             "imageCount": 178,
             "videoCount": 1,
             "productLinkCount": 80,
@@ -11158,8 +11146,8 @@
             "semanticTag": "form",
             "topPx": 57,
             "heightPx": 21,
-            "widthRatio": 0.044,
-            "areaRatio": 0.001,
+            "widthRatio": 0.034,
+            "areaRatio": 0.0008,
             "fullBleed": false,
             "hasBorder": false,
             "hasShadow": false,
@@ -11179,12 +11167,12 @@
             "tapTargetPassRatio": 0.967,
             "ariaLabelCount": 86,
             "namedControlRatio": 0.967,
-            "hasAriaCurrent": true,
+            "hasAriaCurrent": false,
             "hasAriaExpanded": true,
-            "textLength": 11024,
+            "textLength": 11304,
             "headingCount": 97,
             "paragraphCount": 87,
-            "formControlCount": 7,
+            "formControlCount": 1,
             "imageCount": 178,
             "videoCount": 1,
             "productLinkCount": 80,
@@ -11211,14 +11199,14 @@
           "enoughData": true,
           "metrics": {
             "elementFound": true,
-            "elementCount": 5,
-            "visibleElementCount": 3,
-            "semanticTag": "form",
-            "topPx": 76,
-            "heightPx": 21,
-            "widthRatio": 0.086,
-            "areaRatio": 0.0021,
-            "fullBleed": false,
+            "elementCount": 1,
+            "visibleElementCount": 1,
+            "semanticTag": "body",
+            "topPx": 0,
+            "heightPx": 844,
+            "widthRatio": 1,
+            "areaRatio": 1,
+            "fullBleed": true,
             "hasBorder": false,
             "hasShadow": false,
             "lowShadow": true,
@@ -11227,30 +11215,30 @@
             "transparentBackground": true,
             "roundedControlCount": 0,
             "pillLikeControlCount": 0,
-            "boxedControlRatio": 0.033,
+            "boxedControlRatio": 0,
             "aquaAccentCount": 0,
             "decorativeGradient": false,
-            "linkCount": 27,
-            "buttonCount": 2,
-            "focusableCount": 30,
-            "minTapTargetPx": 21,
-            "tapTargetPassRatio": 0.967,
-            "ariaLabelCount": 86,
-            "namedControlRatio": 0.967,
-            "hasAriaCurrent": true,
-            "hasAriaExpanded": true,
-            "textLength": 11024,
-            "headingCount": 97,
-            "paragraphCount": 87,
-            "formControlCount": 7,
-            "imageCount": 178,
-            "videoCount": 1,
-            "productLinkCount": 80,
-            "priceTextPresent": true,
-            "addToCartTextPresent": true,
-            "checkoutTextPresent": true,
-            "linksPer1000Px": 1285.714,
-            "controlsPer1000Px": 1428.571
+            "linkCount": 0,
+            "buttonCount": 0,
+            "focusableCount": 0,
+            "minTapTargetPx": 0,
+            "tapTargetPassRatio": 1,
+            "ariaLabelCount": 0,
+            "namedControlRatio": 1,
+            "hasAriaCurrent": false,
+            "hasAriaExpanded": false,
+            "textLength": 7512,
+            "headingCount": 2,
+            "paragraphCount": 1,
+            "formControlCount": 0,
+            "imageCount": 0,
+            "videoCount": 0,
+            "productLinkCount": 0,
+            "priceTextPresent": false,
+            "addToCartTextPresent": false,
+            "checkoutTextPresent": false,
+            "linksPer1000Px": 0,
+            "controlsPer1000Px": 0
           },
           "loadStatus": "ok",
           "siteName": "Aurate",
@@ -11917,11 +11905,11 @@
     }
   ],
   "summary": {
-    "alignmentRatio": 0.8943089430894309,
-    "comparableMetricCount": 369,
-    "matchCount": 330,
-    "mismatchCount": 39,
-    "notComparableCount": 0,
+    "alignmentRatio": 0.8732782369146006,
+    "comparableMetricCount": 363,
+    "matchCount": 317,
+    "mismatchCount": 46,
+    "notComparableCount": 6,
     "referenceSitesEnoughData": 15,
     "status": "pass",
     "thresholdWeight": 9.75,

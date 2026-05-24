@@ -1,13 +1,13 @@
 # Checkout Benchmark
 
-Generated: 2026-05-19T19:33:18.092Z
+Generated: 2026-05-24T15:23:49.078Z
 
 ## Summary
 
-- Status: warn
+- Status: pass
 - Active corpus: 15/15 sites produced enough data
-- Alignment: 77%
-- Metrics: 95 match, 28 mismatch, 0 not comparable
+- Alignment: 85%
+- Metrics: 105 match, 18 mismatch, 0 not comparable
 - Active weight: 19.5; threshold weight: 9.75
 
 This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site substitutions affect QA reports only and do not change the High Jewelry Reference Gate.
@@ -35,30 +35,24 @@ This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site 
 
 ## Top Mismatches
 
-- checkout / desktop / visual-tone / aquaAccentCount: Elysia=4; baseline=median 0; IQR 0-0; weight=19.5
-- checkout / desktop / accessibility / ariaLabelCount: Elysia=3; baseline=median 30; IQR 12-86; weight=19.5
-- checkout / desktop / accessibility / hasAriaExpanded: Elysia=true; baseline=false (10.5/19.5)
-- checkout / desktop / content / textLength: Elysia=1593; baseline=median 15905; IQR 1735-39992; weight=19.5
-- checkout / desktop / content / headingCount: Elysia=3; baseline=median 15; IQR 4-36; weight=19.5
-- checkout / desktop / media / imageCount: Elysia=0; baseline=median 18; IQR 3-70; weight=19.5
-- checkout / desktop / commerce / priceTextPresent: Elysia=false; baseline=true (11/19.5)
-- checkout / tablet / visual-tone / aquaAccentCount: Elysia=4; baseline=median 0; IQR 0-0; weight=19.5
-- checkout / tablet / interaction / linkCount: Elysia=9; baseline=median 24; IQR 16-49; weight=19.5
-- checkout / tablet / accessibility / ariaLabelCount: Elysia=3; baseline=median 38; IQR 12-86; weight=19.5
-- checkout / tablet / accessibility / hasAriaExpanded: Elysia=true; baseline=false (10.5/19.5)
-- checkout / tablet / content / headingCount: Elysia=3; baseline=median 10; IQR 4-29; weight=19.5
-- checkout / tablet / media / imageCount: Elysia=0; baseline=median 32; IQR 18-95; weight=19.5
-- checkout / tablet / commerce / priceTextPresent: Elysia=false; baseline=true (12.5/19.5)
-- checkout / tablet / density / linksPer1000Px: Elysia=3.903; baseline=median 6.39; IQR 4.61-10.89; weight=19.5
-- checkout / mobile / chrome / topPx: Elysia=118; baseline=median 0; IQR -2164-56; weight=19.5
-- checkout / mobile / chrome / heightPx: Elysia=2678; baseline=median 4884; IQR 3479-6641; weight=19.5
-- checkout / mobile / chrome / areaRatio: Elysia=3.1729; baseline=median 5.79; IQR 4.12-7.87; weight=19.5
-- checkout / mobile / visual-tone / aquaAccentCount: Elysia=4; baseline=median 0; IQR 0-0; weight=19.5
-- checkout / mobile / interaction / linkCount: Elysia=9; baseline=median 32; IQR 23-49; weight=19.5
-- checkout / mobile / interaction / buttonCount: Elysia=5; baseline=median 17; IQR 8-30; weight=19.5
-- checkout / mobile / accessibility / ariaLabelCount: Elysia=3; baseline=median 50; IQR 18-86; weight=19.5
-- checkout / mobile / accessibility / hasAriaExpanded: Elysia=true; baseline=false (10.5/19.5)
-- checkout / mobile / content / textLength: Elysia=1593; baseline=median 17214; IQR 3158-39594; weight=19.5
+- checkout / desktop / chrome / fullBleed: Elysia=false; baseline=true (18/19.5)
+- checkout / desktop / interaction / linkCount: Elysia=13; baseline=median 27; IQR 16-92; weight=19.5
+- checkout / desktop / content / paragraphCount: Elysia=37; baseline=median 16; IQR 3-33; weight=19.5
+- checkout / desktop / content / formControlCount: Elysia=18; baseline=median 0; IQR 0-1; weight=19.5
+- checkout / desktop / media / imageCount: Elysia=0; baseline=median 18; IQR 1-70; weight=19.5
+- checkout / desktop / commerce / priceTextPresent: Elysia=true; baseline=false (10/19.5)
+- checkout / tablet / chrome / fullBleed: Elysia=false; baseline=true (18/19.5)
+- checkout / tablet / interaction / linkCount: Elysia=13; baseline=median 23; IQR 16-35; weight=19.5
+- checkout / tablet / content / formControlCount: Elysia=18; baseline=median 0; IQR 0-1; weight=19.5
+- checkout / tablet / media / imageCount: Elysia=0; baseline=median 22; IQR 12-95; weight=19.5
+- checkout / mobile / chrome / fullBleed: Elysia=false; baseline=true (18/19.5)
+- checkout / mobile / interaction / linkCount: Elysia=7; baseline=median 32; IQR 16-44; weight=19.5
+- checkout / mobile / accessibility / ariaLabelCount: Elysia=3; baseline=median 38; IQR 12-57; weight=19.5
+- checkout / mobile / accessibility / hasAriaExpanded: Elysia=true; baseline=false (13.5/19.5)
+- checkout / mobile / content / textLength: Elysia=1711; baseline=median 15905; IQR 3468-29569; weight=19.5
+- checkout / mobile / content / formControlCount: Elysia=18; baseline=median 0; IQR 0-1; weight=19.5
+- checkout / mobile / media / imageCount: Elysia=0; baseline=median 56; IQR 18-95; weight=19.5
+- checkout / mobile / density / linksPer1000Px: Elysia=2.628; baseline=median 5.46; IQR 3.85-10.03; weight=19.5
 
 ## Lessons
 

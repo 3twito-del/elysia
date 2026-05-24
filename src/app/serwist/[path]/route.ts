@@ -9,12 +9,7 @@ const revision =
 
 export const { dynamic, dynamicParams, revalidate, generateStaticParams, GET } =
   createSerwistRoute({
-    additionalPrecacheEntries: [
-      { url: "/offline", revision },
-      { url: "/pwa/icons/icon-192.avif", revision },
-      { url: "/pwa/icons/icon-512.avif", revision },
-      { url: "/pwa/icons/maskable-512.avif", revision },
-    ],
+    additionalPrecacheEntries: [{ url: "/offline", revision }],
     swSrc: "src/app/sw.ts",
     useNativeEsbuild: true,
   });

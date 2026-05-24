@@ -565,17 +565,17 @@ model PushCampaign {
 }
 
 model PushDelivery {
-  id             String            @id @default(cuid())
+  id             String           @id @default(cuid())
   campaignId     String?
   subscriptionId String
   endpoint       String
-  status         String            @default("PENDING")
+  status         String           @default("PENDING")
   error          String?
   deliveredAt    DateTime?
-  campaign       PushCampaign?     @relation(fields: [campaignId], references: [id], onDelete: SetNull)
-  subscription   PushSubscription  @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
+  campaign       PushCampaign?    @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  subscription   PushSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
 
   @@index([campaignId])
   @@index([subscriptionId, status])

@@ -660,7 +660,7 @@ test.describe("accessibility and responsive guardrails", () => {
       );
     }, accessibilityStorageKey);
 
-    await page.goto("/", { waitUntil: "networkidle" });
+    await page.goto("/", { waitUntil: "domcontentloaded" });
 
     await expect
       .poll(() =>
@@ -745,35 +745,42 @@ test.describe("accessibility and responsive guardrails", () => {
 
     await expect(homeHero).toBeVisible();
     await expect(homeHero.getByRole("heading").first()).toBeVisible();
-    const heroServiceLink = homeHero.locator(
-      'a.home-hero-service-link[href="/service"]',
+    const heroCollectionLink = homeHero.locator(
+      'a.home-hero-cta-primary[href="/category/rings"]',
     );
 
-    await expect(heroServiceLink).toBeVisible();
-    const heroServiceLinkStyles = await heroServiceLink.evaluate((element) => {
-      const styles = window.getComputedStyle(element);
+    await expect(heroCollectionLink).toBeVisible();
+    await expect(
+      homeHero.locator('a.home-hero-service-link[href="/service"]'),
+    ).toHaveCount(0);
+    const heroCollectionLinkStyles = await heroCollectionLink.evaluate(
+      (element) => {
+        const styles = window.getComputedStyle(element);
 
-      return {
-        backgroundColor: styles.backgroundColor,
-        color: styles.color,
-      };
-    });
-
-    expect(heroServiceLinkStyles.color).toBe("rgb(255, 255, 255)");
-    expect(heroServiceLinkStyles.backgroundColor).not.toBe(
-      "rgb(255, 255, 255)",
+        return {
+          backgroundColor: styles.backgroundColor,
+          color: styles.color,
+        };
+      },
     );
-    const heroServiceLinkShine = await heroServiceLink.evaluate((element) => {
-      const styles = window.getComputedStyle(element, "::after");
 
-      return {
-        animationName: styles.animationName,
-        content: styles.content,
-      };
-    });
+    expect(heroCollectionLinkStyles.backgroundColor).toMatch(
+      /^rgba?\(255, 255, 255(?:, (?:0\.9[5-9]|1))?\)$/,
+    );
+    expect(heroCollectionLinkStyles.color).not.toBe("rgb(255, 255, 255)");
+    const heroCollectionLinkShine = await heroCollectionLink.evaluate(
+      (element) => {
+        const styles = window.getComputedStyle(element, "::after");
 
-    expect(heroServiceLinkShine.content).toBe("none");
-    expect(heroServiceLinkShine.animationName).toBe("none");
+        return {
+          animationName: styles.animationName,
+          content: styles.content,
+        };
+      },
+    );
+
+    expect(heroCollectionLinkShine.content).toBe("none");
+    expect(heroCollectionLinkShine.animationName).toBe("none");
     expect(homeHeroBox?.width ?? 0).toBeGreaterThanOrEqual(
       (viewport?.width ?? 0) - 2,
     );
@@ -838,7 +845,7 @@ test.describe("accessibility and responsive guardrails", () => {
   }) => {
     test.skip((page.viewportSize()?.width ?? 0) < 1024, "desktop-only check");
 
-    await page.goto("/", { waitUntil: "networkidle" });
+    await page.goto("/", { waitUntil: "domcontentloaded" });
 
     const offsets = await page.evaluate(() => {
       const header = document.querySelector("header");
@@ -909,7 +916,7 @@ test.describe("cookie consent flow", () => {
       );
     });
 
-    await page.goto("/", { waitUntil: "networkidle" });
+    await page.goto("/", { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(100);
 
     await expect(
@@ -925,7 +932,7 @@ test.describe("cookie consent flow", () => {
       )
       .toBe(false);
 
-    await page.reload({ waitUntil: "networkidle" });
+    await page.reload({ waitUntil: "domcontentloaded" });
     await page.waitForTimeout(100);
 
     await expect(

@@ -43,9 +43,7 @@ function findIconListDuplicates(file: string) {
   return [...source.matchAll(arrayPattern)].flatMap((match) => {
     const arrayName = match[1];
     const body = match[2] ?? "";
-    const icons = [
-      ...body.matchAll(/\bicon:\s*([A-Z][A-Za-z0-9_]*)\b/g),
-    ]
+    const icons = [...body.matchAll(/\bicon:\s*([A-Z][A-Za-z0-9_]*)\b/g)]
       .map((iconMatch) => iconMatch[1])
       .filter((icon): icon is string => Boolean(icon));
 
