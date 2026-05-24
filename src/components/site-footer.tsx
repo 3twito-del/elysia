@@ -13,7 +13,6 @@ import {
   MapPin,
   Ruler,
   Search,
-  Share2,
   ShoppingBag,
   UserRound,
   WandSparkles,
@@ -45,10 +44,20 @@ const serviceLinks = [
 const primaryServiceLinks = serviceLinks.slice(0, 7);
 const secondaryServiceLinks = serviceLinks.slice(7);
 
-const socialLink = {
-  href: "https://www.instagram.com/elysia.one/",
-  label: "רשתות חברתיות",
-};
+const socialLinks = [
+  {
+    href: "https://www.instagram.com/elysia.one/",
+    label: "אינסטגרם",
+    ariaLabel: "אינסטגרם של Elysia",
+    icon: "instagram",
+  },
+  {
+    href: "https://www.tiktok.com/@elysia.one",
+    label: "טיקטוק",
+    ariaLabel: "טיקטוק של Elysia",
+    icon: "tiktok",
+  },
+] as const;
 
 export async function SiteFooter() {
   const categories = await getCatalogCategories();
@@ -293,16 +302,23 @@ export async function SiteFooter() {
             >
               הצהרת נגישות
             </Link>
-            <a
-              aria-label="רשתות חברתיות של Elysia"
-              className="hover:text-foreground inline-flex min-h-8 items-center gap-1.5 transition"
-              href={socialLink.href}
-              rel="noreferrer"
-              target="_blank"
-            >
-              <Share2 aria-hidden="true" className="size-4" />
-              {socialLink.label}
-            </a>
+            {socialLinks.map((item) => (
+              <a
+                aria-label={item.ariaLabel}
+                className="group/social hover:text-foreground inline-flex min-h-8 items-center gap-1.5 transition"
+                href={item.href}
+                key={item.href}
+                rel="noreferrer"
+                target="_blank"
+              >
+                <span
+                  aria-hidden="true"
+                  className="social-footer-icon"
+                  data-social-icon={item.icon}
+                />
+                {item.label}
+              </a>
+            ))}
           </nav>
         </div>
       </div>

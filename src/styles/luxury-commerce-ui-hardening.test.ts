@@ -64,6 +64,12 @@ describe("luxury commerce UI hardening", () => {
     expect(footer).toContain(
       "const secondaryServiceLinks = serviceLinks.slice(7)",
     );
+    expect(footer).toContain("const socialLinks = [");
+    expect(footer).toContain("https://www.instagram.com/elysia.one/");
+    expect(footer).toContain("https://www.tiktok.com/@elysia.one");
+    expect(footer).toContain("group/social");
+    expect(read("src/styles/globals.css")).toContain(".social-footer-icon");
+    expect(footer).not.toContain("<Share2");
     expect(footer).not.toContain("lg:grid-cols-2 lg:gap-x-5");
   });
 

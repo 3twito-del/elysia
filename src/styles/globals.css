@@ -1470,6 +1470,64 @@ footer nav a:focus-visible {
   text-decoration-thickness: 0.12em;
 }
 
+.social-footer-icon {
+  position: relative;
+  display: inline-grid;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  color: var(--foreground);
+  transition: border-color 180ms ease;
+}
+
+footer nav a:hover .social-footer-icon,
+footer nav a:focus-visible .social-footer-icon {
+  border-color: var(--glass-border-strong);
+}
+
+.social-footer-icon::before,
+.social-footer-icon::after {
+  content: "";
+  position: absolute;
+  display: block;
+}
+
+.social-footer-icon[data-social-icon="instagram"]::before {
+  width: 0.64rem;
+  height: 0.64rem;
+  border: 1.35px solid currentColor;
+  border-radius: 0.24rem;
+}
+
+.social-footer-icon[data-social-icon="instagram"]::after {
+  width: 0.13rem;
+  height: 0.13rem;
+  border-radius: 999px;
+  background: currentColor;
+  transform: translate(-0.2rem, -0.2rem);
+}
+
+.social-footer-icon[data-social-icon="tiktok"]::before {
+  width: 0.28rem;
+  height: 0.64rem;
+  border-top: 1.4px solid currentColor;
+  border-right: 1.4px solid currentColor;
+  transform: translate(0.04rem, -0.08rem) skewY(-7deg);
+}
+
+.social-footer-icon[data-social-icon="tiktok"]::after {
+  width: 0.34rem;
+  height: 0.34rem;
+  border: 1.4px solid currentColor;
+  border-top-color: transparent;
+  border-right-color: transparent;
+  border-radius: 999px;
+  transform: translate(-0.12rem, 0.18rem) rotate(-12deg);
+}
+
 .brand-product-media {
   border-bottom-color: rgb(16 24 28 / 8%);
 }
