@@ -96,6 +96,8 @@ export const ConversationScrollButton = ({
           "dark:bg-background dark:hover:bg-muted absolute bottom-4 left-[50%] translate-x-[-50%] rounded-full",
           className,
         )}
+        data-icon-tooltip="גלילה לתחתית"
+        data-icon-tooltip-placement="top"
         onClick={handleScrollToBottom}
         size="icon"
         type="button"
@@ -169,6 +171,8 @@ export const ConversationDownload = ({
         "dark:bg-background dark:hover:bg-muted absolute top-4 right-4 rounded-full",
         className,
       )}
+      data-icon-tooltip="הורדה"
+      data-icon-tooltip-placement="top"
       onClick={handleDownload}
       size="icon"
       type="button"

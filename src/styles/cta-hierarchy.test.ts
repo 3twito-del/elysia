@@ -45,12 +45,14 @@ describe("public CTA hierarchy", () => {
     expect(css).not.toContain("--accent: oklch(0.94 0 0);");
   });
 
-  it("keeps floating home hero CTA buttons visually static on hover", () => {
+  it("keeps the floating home hero CTA focused on the collection action", () => {
     const css = read("src/styles/globals.css");
     const home = read("src/app/page.tsx");
 
     expect(home).toContain("home-hero-actions");
-    expect(home).toContain("home-hero-service-link");
+    expect(home).toContain("home-hero-cta-primary");
+    expect(home).not.toContain("home-hero-service-link");
+    expect(home).not.toContain('href="/service"');
     expect(home).not.toContain("home-hero-cta-secondary");
     expect(css).toContain('.home-hero-actions [data-slot="button"]');
     expect(css).toContain(

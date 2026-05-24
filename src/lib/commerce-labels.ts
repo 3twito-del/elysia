@@ -107,7 +107,7 @@ export function getProductAvailabilityLabel(availableQuantity: number) {
 }
 
 export function getPublicStockStatusLabel(quantity: number) {
-  return quantity > 0 ? "זמין להזמנה" : "אזל זמנית";
+  return quantity > 0 ? "זמין במלאי" : "אזל זמנית";
 }
 
 export function getPublicProductCommerceStatus({
@@ -148,7 +148,7 @@ export function getPublicProductCommerceStatus({
     canAddToCart: true,
     cardCtaLabel: "צפייה וקנייה",
     ctaLabel: "הוספה לסל",
-    label: "זמין להזמנה",
+    label: "זמין במלאי",
     serviceReason: "ready",
   } as const;
 }

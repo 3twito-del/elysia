@@ -21,7 +21,6 @@ import {
 
 import { WishlistButton } from "./wishlist-button";
 import { PushOptInButton } from "~/components/push-opt-in-button";
-import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { StatusMessage } from "~/components/ui/status-message";
 import {
@@ -312,17 +311,6 @@ export function ProductPurchasePanel({
                   : "אין וריאציה זמינה"}
               </p>
             </div>
-            <Badge
-              className="rounded-full"
-              variant={
-                selectedVariantAvailable ||
-                availabilityMode !== "READY_TO_ORDER"
-                  ? "outline"
-                  : "destructive"
-              }
-            >
-              {commerceStatus.label}
-            </Badge>
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -357,12 +345,6 @@ export function ProductPurchasePanel({
             <span className="flex items-center gap-1.5">
               <PackageCheck className="size-4" aria-hidden="true" />
               {selectedVariant ? commerceStatus.label : "בדיקת זמינות"}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="size-4" aria-hidden="true" />
-              {selectedVariantAvailable
-                ? commerceStatus.label
-                : "מומלץ לבדוק מול שירות הלקוחות"}
             </span>
           </div>
           {savedSizeMatch ? (

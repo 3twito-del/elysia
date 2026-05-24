@@ -1,61 +1,53 @@
 import Link from "next/link";
 import {
-  Accessibility,
-  Bot,
   ChevronDown,
   CircleHelp,
-  FileText,
-  Gem,
-  Gift,
   Headphones,
   Info,
-  LockKeyhole,
   MapPin,
   Ruler,
-  Search,
   ShoppingBag,
   UserRound,
   WandSparkles,
 } from "lucide-react";
+import { SiInstagram, SiTiktok } from "react-icons/si";
 
 import { NewsletterForm } from "~/components/newsletter-form";
-import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import { getCatalogCategories } from "~/server/services/catalog";
 
 const serviceLinks = [
   { href: "/about", label: "אודות Elysia", icon: Info },
-  { href: "/search", label: "חיפוש בקטלוג", icon: Search },
   { href: "/branches", label: "סניפים ושירות", icon: MapPin },
   { href: "/account", label: "אזור לקוח", icon: UserRound },
   { href: "/checkout", label: "קופה ותשלום", icon: ShoppingBag },
   { href: "/faq", label: "שאלות ותשובות", icon: CircleHelp },
   { href: "/service", label: "שירות לקוחות", icon: Headphones },
   { href: "/size-guide", label: "מדריך מידות", icon: Ruler },
-  { href: "/gifts", label: "מתנות", icon: Gift },
-  { href: "/ai", label: "התאמה חכמה", icon: Bot },
   { href: "/stylist", label: "ייעוץ אישי", icon: WandSparkles },
-  { href: "/terms", label: "תקנון האתר", icon: FileText },
-  { href: "/privacy", label: "מדיניות פרטיות", icon: LockKeyhole },
-  { href: "/accessibility", label: "הצהרת נגישות", icon: Accessibility },
-  { href: "/category/rings", label: "טבעות מובילות", icon: Gem },
 ];
 
 const primaryServiceLinks = serviceLinks.slice(0, 7);
 const secondaryServiceLinks = serviceLinks.slice(7);
+
+const policyLinks = [
+  { href: "/terms", label: "תקנון האתר" },
+  { href: "/privacy", label: "מדיניות פרטיות" },
+  { href: "/accessibility", label: "הצהרת נגישות" },
+] as const;
 
 const socialLinks = [
   {
     href: "https://www.instagram.com/elysia.one/",
     label: "אינסטגרם",
     ariaLabel: "אינסטגרם של Elysia",
-    icon: "instagram",
+    icon: SiInstagram,
   },
   {
     href: "https://www.tiktok.com/@elysia.one",
     label: "טיקטוק",
     ariaLabel: "טיקטוק של Elysia",
-    icon: "tiktok",
+    icon: SiTiktok,
   },
 ] as const;
 
@@ -64,7 +56,7 @@ export async function SiteFooter() {
 
   return (
     <footer className="bg-transparent">
-      <div className="mx-auto max-w-7xl px-4 pt-12 pb-8 sm:px-6 sm:pt-14 sm:pb-10 md:min-h-[55rem] md:py-14 lg:min-h-[32rem] lg:py-20">
+      <div className="mx-auto max-w-7xl px-4 pt-10 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:px-6 sm:pt-12 sm:pb-12 md:py-14 lg:py-16">
         <div className="grid gap-8 md:grid-cols-2 md:items-start lg:grid-cols-[1.3fr_0.55fr_0.64fr_0.64fr_1fr]">
           <section className="max-w-lg">
             <Link
@@ -80,14 +72,6 @@ export async function SiteFooter() {
               רכישה מאובטחת ושירות אישי לבחירת תכשיט או מתנה.
             </p>
             <NewsletterForm />
-            <div className="mt-6 flex flex-col gap-2 sm:flex-row">
-              <Button asChild variant="outline">
-                <Link href="/search">
-                  חיפוש בקטלוג
-                  <Search aria-hidden="true" className="size-4" />
-                </Link>
-              </Button>
-            </div>
           </section>
 
           <div className="grid gap-3 md:hidden">
@@ -116,9 +100,9 @@ export async function SiteFooter() {
                 <li>
                   <Link
                     className="hover:text-foreground inline-flex min-h-9 items-center transition"
-                    href="/gifts"
+                    href="/search"
                   >
-                    מתנות
+                    חיפוש בקטלוג
                   </Link>
                 </li>
               </ul>
@@ -170,16 +154,6 @@ export async function SiteFooter() {
                   כל המכירות מתקיימות אונליין בשלב זה, עם משלוח עד הבית ושירות
                   לקוחות שמלווה את ההזמנה.
                 </p>
-                <Button
-                  asChild
-                  className="w-full justify-between"
-                  variant="outline"
-                >
-                  <Link href="/faq">
-                    שאלות נפוצות
-                    <CircleHelp aria-hidden="true" className="size-4" />
-                  </Link>
-                </Button>
               </div>
             </details>
           </div>
@@ -200,9 +174,9 @@ export async function SiteFooter() {
               <li>
                 <Link
                   className="hover:text-foreground inline-flex min-h-8 items-center transition"
-                  href="/gifts"
+                  href="/search"
                 >
-                  מתנות
+                  חיפוש בקטלוג
                 </Link>
               </li>
             </ul>
@@ -263,62 +237,51 @@ export async function SiteFooter() {
               כל המכירות מתקיימות אונליין בשלב זה. ההזמנות נשלחות לכתובת הלקוח,
               וצוות השירות זמין לייעוץ, התאמה ומעקב אחרי ההזמנה.
             </p>
-            <Button
-              asChild
-              className="mt-6 w-full justify-between"
-              variant="outline"
-            >
-              <Link href="/faq">
-                שאלות נפוצות
-                <CircleHelp aria-hidden="true" className="size-4" />
-              </Link>
-            </Button>
           </section>
         </div>
 
-        <Separator className="my-8" />
+        <Separator className="my-7 sm:my-8" />
 
-        <div className="text-muted-foreground flex flex-col justify-between gap-4 text-sm lg:flex-row lg:items-center">
-          <span>2026 Elysia. כל הזכויות שמורות.</span>
+        <div className="text-muted-foreground grid gap-5 text-sm sm:gap-4 lg:grid-cols-[1fr_auto_auto] lg:items-center">
+          <span className="text-center lg:text-start">
+            2026 Elysia. כל הזכויות שמורות.
+          </span>
           <nav
             aria-label="קישורי מדיניות"
-            className="flex flex-wrap items-center gap-x-4 gap-y-2"
+            className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 lg:justify-start"
           >
-            <Link
-              className="hover:text-foreground inline-flex min-h-8 items-center transition"
-              href="/terms"
-            >
-              תקנון האתר
-            </Link>
-            <Link
-              className="hover:text-foreground inline-flex min-h-8 items-center transition"
-              href="/privacy"
-            >
-              מדיניות פרטיות
-            </Link>
-            <Link
-              className="hover:text-foreground inline-flex min-h-8 items-center transition"
-              href="/accessibility"
-            >
-              הצהרת נגישות
-            </Link>
-            {socialLinks.map((item) => (
-              <a
-                aria-label={item.ariaLabel}
-                className="group/social hover:text-foreground inline-flex min-h-8 items-center gap-1.5 transition"
+            {policyLinks.map((item) => (
+              <Link
+                className="hover:text-foreground inline-flex min-h-8 items-center transition"
                 href={item.href}
                 key={item.href}
-                rel="noreferrer"
-                target="_blank"
               >
-                <span
-                  aria-hidden="true"
-                  className="social-footer-icon"
-                  data-social-icon={item.icon}
-                />
                 {item.label}
-              </a>
+              </Link>
             ))}
+          </nav>
+          <nav
+            aria-label="רשתות חברתיות"
+            className="flex items-center justify-center gap-2 lg:justify-end"
+          >
+            {socialLinks.map((item) => {
+              const Icon = item.icon;
+
+              return (
+                <a
+                  aria-label={item.ariaLabel}
+                  className="footer-social-link hover:text-foreground text-foreground inline-grid size-9 place-items-center rounded-full border border-[var(--glass-border)] transition"
+                  data-icon-tooltip={item.label}
+                  data-icon-tooltip-placement="top"
+                  href={item.href}
+                  key={item.href}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  <Icon aria-hidden="true" className="size-4" />
+                </a>
+              );
+            })}
           </nav>
         </div>
       </div>

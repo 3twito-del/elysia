@@ -260,6 +260,8 @@ export const MessageBranchPrevious = ({
   return (
     <Button
       aria-label="הצגת תשובה קודמת"
+      data-icon-tooltip="תשובה קודמת"
+      data-icon-tooltip-placement="top"
       disabled={totalBranches <= 1}
       onClick={goToPrevious}
       size="icon-sm"
@@ -283,6 +285,8 @@ export const MessageBranchNext = ({
   return (
     <Button
       aria-label="הצגת תשובה הבאה"
+      data-icon-tooltip="תשובה הבאה"
+      data-icon-tooltip-placement="top"
       disabled={totalBranches <= 1}
       onClick={goToNext}
       size="icon-sm"

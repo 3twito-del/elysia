@@ -106,10 +106,6 @@ export default async function ProductPage({
   const productFacts = [
     { label: "חומר", value: product.material },
     { label: "קולקציה", value: product.collection },
-    {
-      label: "זמינות",
-      value: commerceStatus.label,
-    },
     { label: "מק״ט", value: product.sku },
   ];
   const productCommerceDetails = [
@@ -177,9 +173,6 @@ export default async function ProductPage({
                   {formatPrice(product.compareAt)}
                 </span>
               ) : null}
-              <span className="border-border text-muted-foreground mb-1 rounded-full border px-3 py-1 text-xs">
-                {commerceStatus.label}
-              </span>
             </div>
 
             {commerceHighlights.length > 0 ? (

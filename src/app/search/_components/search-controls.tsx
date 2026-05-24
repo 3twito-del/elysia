@@ -318,7 +318,7 @@ function AvailabilityField({ input }: { input: ProductSearchInput }) {
           type="checkbox"
           value="1"
         />
-        <span className="min-w-0 truncate">זמין להזמנה</span>
+        <span className="min-w-0 truncate">זמין במלאי</span>
         {input.availableOnly ? (
           <Check aria-hidden="true" className="ms-auto size-3.5 shrink-0" />
         ) : null}

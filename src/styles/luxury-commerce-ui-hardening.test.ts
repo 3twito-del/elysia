@@ -30,12 +30,12 @@ describe("luxury commerce UI hardening", () => {
     expect(source).toContain('href="/branches"');
     expect(source).toContain("Headset");
     expect(source).not.toContain("MapPin");
-    expect(source).toContain('data-header-tooltip="חיפוש"');
-    expect(source).toContain('data-header-tooltip="סניפים ושירות"');
-    expect(source).toContain('data-header-tooltip="אזור לקוח"');
-    expect(source).toContain('data-header-tooltip="סל קניות"');
+    expect(source).toContain('data-icon-tooltip="חיפוש"');
+    expect(source).toContain('data-icon-tooltip="סניפים ושירות"');
+    expect(source).toContain('data-icon-tooltip="אזור לקוח"');
+    expect(source).toContain('data-icon-tooltip="סל קניות"');
     expect(read("src/styles/globals.css")).toContain(
-      ".site-header .site-header-action[data-header-tooltip]::after",
+      "[data-icon-tooltip]::after",
     );
   });
 
@@ -67,9 +67,12 @@ describe("luxury commerce UI hardening", () => {
     expect(footer).toContain("const socialLinks = [");
     expect(footer).toContain("https://www.instagram.com/elysia.one/");
     expect(footer).toContain("https://www.tiktok.com/@elysia.one");
-    expect(footer).toContain("group/social");
-    expect(read("src/styles/globals.css")).toContain(".social-footer-icon");
+    expect(footer).toContain("SiInstagram");
+    expect(footer).toContain("SiTiktok");
+    expect(footer).toContain("footer-social-link");
+    expect(read("src/styles/globals.css")).toContain(".footer-social-link");
     expect(footer).not.toContain("<Share2");
+    expect(footer).not.toContain("data-social-icon");
     expect(footer).not.toContain("lg:grid-cols-2 lg:gap-x-5");
   });
 

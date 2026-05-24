@@ -1,0 +1,29 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
+import { describe, expect, it } from "vitest";
+
+const root = process.cwd();
+
+describe("PwaProvider", () => {
+  it("keeps normal development sessions from using stale service worker HTML", () => {
+    const source = read("src/components/pwa-provider.tsx");
+
+    expect(source).toContain('process.env.NODE_ENV !== "production"');
+    expect(source).toContain("!nav.webdriver");
+    expect(source).toContain("unregisterDevelopmentServiceWorkers");
+    expect(source).toContain("caches.delete");
+    expect(source).toContain("runtime.location?.reload()");
+  });
+
+  it("keeps the explicit e2e PWA opt-in available", () => {
+    const source = read("src/components/pwa-provider.tsx");
+
+    expect(source).toContain("elysia:pwa-e2e");
+    expect(source).toContain("runtime.localStorage?.getItem");
+  });
+});
+
+function read(relativePath: string) {
+  return readFileSync(path.join(root, relativePath), "utf8");
+}

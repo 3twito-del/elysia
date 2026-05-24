@@ -795,7 +795,7 @@ function getActiveSearchFilters(
   if (input.availableOnly) {
     filters.push({
       key: "availableOnly",
-      label: "זמין להזמנה",
+      label: "זמין במלאי",
       href: createSearchHref({
         ...hrefInput,
         availableOnly: undefined,

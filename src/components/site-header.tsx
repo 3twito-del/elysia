@@ -161,7 +161,11 @@ export function SiteHeader() {
               size="icon"
               variant="ghost"
             >
-              <Link data-header-tooltip="חיפוש" href="/search">
+              <Link
+                data-icon-tooltip="חיפוש"
+                data-icon-tooltip-placement="bottom"
+                href="/search"
+              >
                 <Search aria-hidden="true" className="size-5" />
                 <span className="sr-only">חיפוש</span>
               </Link>
@@ -172,7 +176,11 @@ export function SiteHeader() {
               size="icon"
               variant="ghost"
             >
-              <Link data-header-tooltip="סניפים ושירות" href="/branches">
+              <Link
+                data-icon-tooltip="סניפים ושירות"
+                data-icon-tooltip-placement="bottom"
+                href="/branches"
+              >
                 <Headset aria-hidden="true" className="size-5" />
                 <span className="sr-only">סניפים ושירות</span>
               </Link>
@@ -183,7 +191,11 @@ export function SiteHeader() {
               size="icon"
               variant="ghost"
             >
-              <Link data-header-tooltip="אזור לקוח" href="/account">
+              <Link
+                data-icon-tooltip="אזור לקוח"
+                data-icon-tooltip-placement="bottom"
+                href="/account"
+              >
                 <UserRound aria-hidden="true" className="size-5" />
                 <span className="sr-only">אזור לקוח</span>
               </Link>
@@ -194,7 +206,10 @@ export function SiteHeader() {
               size="icon"
               variant="ghost"
             >
-              <CartCountLink data-header-tooltip="סל קניות" />
+              <CartCountLink
+                data-icon-tooltip="סל קניות"
+                data-icon-tooltip-placement="bottom"
+              />
             </Button>
           </div>
         </div>

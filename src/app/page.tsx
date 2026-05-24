@@ -105,12 +105,6 @@ export default async function Home() {
                 />
               </Link>
             </Button>
-            <Link
-              className="home-hero-service-link inline-flex min-h-11 items-center justify-center text-sm font-medium text-white underline-offset-4 transition-colors outline-none hover:text-white/82 hover:underline focus-visible:ring-3 focus-visible:ring-white/45 sm:min-h-0"
-              href="/service"
-            >
-              שירות לקוחות
-            </Link>
           </div>
         </div>
       </RevealSection>
@@ -218,11 +212,6 @@ export default async function Home() {
       <RevealSection className="brand-page-band" id="featured">
         <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-10">
           <CommerceSectionHeader
-            action={
-              <Button asChild variant="outline">
-                <Link href="/category/rings">טבעות מובילות</Link>
-              </Button>
-            }
             eyebrow="נבחרים"
             title="תכשיטים זמינים לקנייה"
           />

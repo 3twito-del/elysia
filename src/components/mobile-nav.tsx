@@ -115,6 +115,8 @@ export function MobileNav({
         <Button
           aria-label="פתיחת ניווט"
           className="site-header-action md:hidden"
+          data-icon-tooltip="פתיחת ניווט"
+          data-icon-tooltip-placement="bottom"
           data-testid="mobile-nav-trigger"
           size="icon"
           type="button"
@@ -149,6 +151,8 @@ export function MobileNav({
               <Button
                 aria-label="סגירת ניווט"
                 className="mobile-nav-close"
+                data-icon-tooltip="סגירה"
+                data-icon-tooltip-placement="bottom"
                 data-testid="mobile-nav-close"
                 size="icon"
                 type="button"

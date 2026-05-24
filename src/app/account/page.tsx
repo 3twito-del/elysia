@@ -429,6 +429,8 @@ export default async function AccountPage() {
                       <input name="itemId" type="hidden" value={item.id} />
                       <Button
                         aria-label={`הסרת ${item.variant.product.name} מהמועדפים`}
+                        data-icon-tooltip="הסרה"
+                        data-icon-tooltip-placement="top"
                         size="icon"
                         type="submit"
                         variant="ghost"
@@ -537,7 +539,7 @@ export default async function AccountPage() {
                 actions={
                   <>
                     <Button asChild variant="outline">
-                      <Link href="/faq">שאלות נפוצות</Link>
+                      <Link href="/faq">שאלות ותשובות</Link>
                     </Button>
                     <Button asChild>
                       <Link href="/service">שירות לקוחות</Link>

@@ -67,6 +67,8 @@ function FavoriteSubmitButton({
         "hover:bg-background hover:text-foreground hover:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
         isSaved && "text-red-700 dark:text-red-300",
       )}
+      data-icon-tooltip={isSaved ? "נשמר במועדפים" : "שמירה למועדפים"}
+      data-icon-tooltip-placement="top"
       disabled={pending}
       size="icon"
       type="submit"

@@ -417,6 +417,8 @@ export function CartCheckoutForm() {
                     <div className="col-span-2 flex items-center justify-end gap-2 sm:col-span-1">
                       <Button
                         aria-label={`הפחתת כמות עבור ${item.productName}`}
+                        data-icon-tooltip="הפחתה"
+                        data-icon-tooltip-placement="top"
                         onClick={() => {
                           if (!sessionKey) return;
                           const payload = {
@@ -456,6 +458,8 @@ export function CartCheckoutForm() {
                       </span>
                       <Button
                         aria-label={`הוספת כמות עבור ${item.productName}`}
+                        data-icon-tooltip="הוספה"
+                        data-icon-tooltip-placement="top"
                         onClick={() => {
                           if (!sessionKey) return;
                           const payload = {
@@ -487,6 +491,8 @@ export function CartCheckoutForm() {
                       </Button>
                       <Button
                         aria-label={`הסרת ${item.productName} מהסל`}
+                        data-icon-tooltip="הסרה"
+                        data-icon-tooltip-placement="top"
                         onClick={() => {
                           if (!sessionKey) return;
                           const payload = { itemId: item.id };

@@ -637,7 +637,7 @@ function AvailabilitySelect({ defaultValue }: { defaultValue: string }) {
       name="availabilityMode"
       required
     >
-      <option value="READY_TO_ORDER">זמין להזמנה</option>
+      <option value="READY_TO_ORDER">זמין במלאי</option>
       <option value="MADE_TO_ORDER">בהזמנה אישית</option>
       <option value="CONSULTATION">לתיאום ייעוץ</option>
     </select>

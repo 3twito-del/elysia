@@ -38,6 +38,10 @@ describe("public floating chrome contract", () => {
 
     expect(widget).toContain('data-accessibility-widget-trigger="true"');
     expect(widget).toContain("fixed right-4");
+    expect(widget).toContain("var(--public-bottom-safe-offset,1rem)");
+    expect(widget).toContain('data-icon-tooltip="תפריט נגישות"');
+    expect(widget).toContain("hideFloatingTriggerForPage");
+    expect(widget).toContain("הסתרת הכפתור בדף זה");
     expect(widget).toContain("left-auto");
     expect(widget).toContain('variant="outline"');
     expect(widget).toContain("bg-background");

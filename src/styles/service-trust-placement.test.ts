@@ -40,6 +40,25 @@ describe("commerce service trust placement", () => {
     );
   });
 
+  it("keeps product availability copy from repeating in the buy area", () => {
+    const productPage = read("src/app/product/[slug]/page.tsx");
+    const purchasePanel = read(
+      "src/app/product/[slug]/_components/product-purchase-panel.tsx",
+    );
+
+    expect(productPage).not.toContain("value: commerceStatus.label");
+    expect(purchasePanel).not.toContain("<Badge");
+    expect(purchasePanel).toContain(
+      'selectedVariant ? commerceStatus.label : "בדיקת זמינות"',
+    );
+    expect(
+      countOccurrences(purchasePanel, "selectedVariant ? commerceStatus.label"),
+    ).toBe(1);
+    expect(purchasePanel).not.toContain(
+      "selectedVariantAvailable\n                ? commerceStatus.label",
+    );
+  });
+
   it("keeps checkout task content first and trust details before the save action", () => {
     const checkoutPage = read("src/app/checkout/page.tsx");
     const checkoutForm = read(
@@ -77,7 +96,21 @@ describe("commerce service trust placement", () => {
     expect(footer).toContain('href: "/checkout"');
     expect(footer).toContain('href: "/service"');
     expect(footer).toContain('id="footer-online-service"');
-    expect(footer).toContain('href="/faq"');
+    expect(footer).toContain('href: "/faq"');
+    expect(footer).toContain("שאלות ותשובות");
+    expect(footer).not.toContain("שאלות נפוצות");
+    expect(countOccurrences(footer, 'href="/search"')).toBe(2);
+    expect(footer).not.toContain('href: "/search"');
+    expect(footer).not.toContain('href: "/ai"');
+    expect(footer).not.toContain('href: "/category/rings"');
+    expect(footer).not.toContain('href="/gifts"');
+    expect(footer).not.toContain('href: "/gifts"');
+    expect(countOccurrences(footer, 'href: "/terms"')).toBe(1);
+    expect(countOccurrences(footer, 'href: "/privacy"')).toBe(1);
+    expect(countOccurrences(footer, 'href: "/accessibility"')).toBe(1);
+    expect(footer).not.toContain('href="/terms"');
+    expect(footer).not.toContain('href="/privacy"');
+    expect(footer).not.toContain('href="/accessibility"');
   });
 });
 
@@ -91,4 +124,8 @@ function indexOf(source: string, pattern: string) {
   expect(index, pattern).toBeGreaterThanOrEqual(0);
 
   return index;
+}
+
+function countOccurrences(source: string, pattern: string) {
+  return source.split(pattern).length - 1;
 }

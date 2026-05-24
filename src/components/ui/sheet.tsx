@@ -135,9 +135,11 @@ function SheetContent({
         {showCloseButton && (
           <SheetPrimitive.Close data-slot="sheet-close" asChild>
             <Button
-              variant="ghost"
               className="absolute end-3 top-3"
+              data-icon-tooltip="סגירה"
+              data-icon-tooltip-placement="bottom"
               size="icon-sm"
+              variant="ghost"
             >
               <XIcon aria-hidden="true" />
               <span className="sr-only">סגירה</span>

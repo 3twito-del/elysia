@@ -7,6 +7,7 @@ import {
   CaseSensitive,
   CirclePause,
   Contrast,
+  EyeOff,
   Minus,
   Plus,
   RotateCcw,
@@ -211,6 +212,9 @@ export function AccessibilityWidget() {
   const triggerButtonRef = useRef<HTMLButtonElement>(null);
   const shouldRestoreTriggerFocusRef = useRef(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [hiddenTriggerPathname, setHiddenTriggerPathname] = useState<
+    string | null
+  >(null);
   const settingsSnapshot = useSyncExternalStore(
     subscribeToAccessibilitySettings,
     getClientSettingsSnapshot,
@@ -321,27 +325,37 @@ export function AccessibilityWidget() {
   }
 
   const currentScaleIndex = getScaleIndex(settings.textScale);
+  const isTriggerHidden = hiddenTriggerPathname === pathname;
   const closeMenu = () => {
     shouldRestoreTriggerFocusRef.current = true;
     setIsOpen(false);
   };
+  const hideFloatingTriggerForPage = () => {
+    shouldRestoreTriggerFocusRef.current = false;
+    setIsOpen(false);
+    setHiddenTriggerPathname(pathname);
+  };
 
   return (
     <>
-      <Button
-        aria-expanded={isOpen}
-        aria-haspopup="dialog"
-        aria-label="פתיחת תפריט נגישות"
-        className="public-floating-control public-floating-trigger bg-background text-foreground focus-visible:outline-foreground/50 fixed right-4 bottom-[calc(max(var(--floating-stack-bottom,1rem),var(--public-floating-bar-offset,1rem))+env(safe-area-inset-bottom))] left-auto z-50 size-11 rounded-full shadow-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid sm:right-6 sm:size-12"
-        data-accessibility-widget-trigger="true"
-        onClick={() => setIsOpen(true)}
-        ref={triggerButtonRef}
-        size="icon-lg"
-        type="button"
-        variant="outline"
-      >
-        <Accessibility className="size-6" aria-hidden="true" />
-      </Button>
+      {!isTriggerHidden && (
+        <Button
+          aria-expanded={isOpen}
+          aria-haspopup="dialog"
+          aria-label="פתיחת תפריט נגישות"
+          className="public-floating-control public-floating-trigger bg-background text-foreground focus-visible:outline-foreground/50 fixed right-4 bottom-[calc(max(var(--floating-stack-bottom,1rem),var(--public-floating-bar-offset,1rem),var(--public-bottom-safe-offset,1rem))+env(safe-area-inset-bottom))] left-auto z-50 size-11 rounded-full shadow-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid sm:right-6 sm:size-12"
+          data-accessibility-widget-trigger="true"
+          data-icon-tooltip="תפריט נגישות"
+          data-icon-tooltip-placement="top"
+          onClick={() => setIsOpen(true)}
+          ref={triggerButtonRef}
+          size="icon-lg"
+          type="button"
+          variant="outline"
+        >
+          <Accessibility className="size-6" aria-hidden="true" />
+        </Button>
+      )}
 
       {isOpen && (
         <div className="fixed inset-0 z-[90]" dir="rtl">
@@ -376,6 +390,8 @@ export function AccessibilityWidget() {
               </div>
               <Button
                 aria-label="סגירת תפריט נגישות"
+                data-icon-tooltip="סגירה"
+                data-icon-tooltip-placement="top"
                 onClick={closeMenu}
                 ref={closeButtonRef}
                 size="icon-sm"
@@ -400,6 +416,8 @@ export function AccessibilityWidget() {
               <div className="grid grid-cols-[auto_1fr_auto] items-center gap-2">
                 <Button
                   aria-label="הקטנת טקסט"
+                  data-icon-tooltip="הקטנת טקסט"
+                  data-icon-tooltip-placement="top"
                   disabled={currentScaleIndex <= 0}
                   onClick={() =>
                     updateSettings((current) => ({
@@ -447,6 +465,8 @@ export function AccessibilityWidget() {
 
                 <Button
                   aria-label="הגדלת טקסט"
+                  data-icon-tooltip="הגדלת טקסט"
+                  data-icon-tooltip-placement="top"
                   disabled={currentScaleIndex >= textScaleOptions.length - 1}
                   onClick={() =>
                     updateSettings((current) => ({
@@ -510,7 +530,16 @@ export function AccessibilityWidget() {
               />
             </div>
 
-            <div className="glass-inset -mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-lg border-t p-4 sm:flex-row sm:justify-end">
+            <div className="glass-inset -mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-lg border-t p-4 sm:flex-row sm:flex-wrap sm:justify-end">
+              <Button
+                className="justify-between"
+                onClick={hideFloatingTriggerForPage}
+                type="button"
+                variant="ghost"
+              >
+                הסתרת הכפתור בדף זה
+                <EyeOff className="size-4" aria-hidden="true" />
+              </Button>
               <Button
                 className="justify-between"
                 onClick={() => updateSettings(defaultSettings)}
