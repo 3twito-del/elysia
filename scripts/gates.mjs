@@ -125,10 +125,11 @@ export const gateDefinitions = [
   {
     name: "gate:runtime",
     description:
-      "Auto-fix, build once, start preview, then run smoke, e2e, and visual QA.",
+      "Auto-fix, build once, start preview, then run smoke, e2e, visual QA, and performance QA.",
     needsFix: true,
     preview: true,
     steps: [
+      step("Check QA route inventory", "pnpm", ["qa:routes"]),
       step("Run smoke checks", "node", ["scripts/smoke.mjs"], {
         env: ({ baseUrl }) => ({ SMOKE_BASE_URL: baseUrl }),
       }),
@@ -142,6 +143,31 @@ export const gateDefinitions = [
         "-File",
         "scripts/visual-qa-agent-browser.ps1",
         "-BaseUrl",
+        ({ baseUrl }) => baseUrl,
+      ]),
+      step("Run strict performance QA", "pnpm", [
+        "exec",
+        "tsx",
+        "scripts/qa-site-audit.ts",
+        "--performance-only",
+        "--base-url",
+        ({ baseUrl }) => baseUrl,
+      ]),
+    ],
+  },
+  {
+    name: "gate:qa",
+    description:
+      "Auto-fix, build, start preview, then run full route inventory and cross-browser QA audit artifacts.",
+    needsFix: true,
+    preview: true,
+    steps: [
+      step("Check QA route inventory", "pnpm", ["qa:routes"]),
+      step("Run full QA site audit", "pnpm", [
+        "exec",
+        "tsx",
+        "scripts/qa-site-audit.ts",
+        "--base-url",
         ({ baseUrl }) => baseUrl,
       ]),
     ],
@@ -174,14 +200,17 @@ export const gateDefinitions = [
   {
     name: "gate:public:local",
     description:
-      "Auto-fix, then benchmark all public parts locally without external crawling.",
+      "Auto-fix, build, start preview, then benchmark all public parts locally without external crawling.",
     needsFix: true,
+    preview: true,
     steps: [
       step("Run local public benchmarks", "pnpm", [
         "exec",
         "tsx",
         "scripts/benchmarks/site-benchmark.ts",
         "--all",
+        "--base-url",
+        ({ baseUrl }) => baseUrl,
         "--skip-external",
       ]),
     ],
@@ -189,14 +218,17 @@ export const gateDefinitions = [
   {
     name: "gate:public:live",
     description:
-      "Auto-fix, then benchmark all public parts against live reference sites.",
+      "Auto-fix, build, start preview, then benchmark all public parts against live reference sites.",
     needsFix: true,
+    preview: true,
     steps: [
       step("Run live public benchmarks", "pnpm", [
         "exec",
         "tsx",
         "scripts/benchmarks/site-benchmark.ts",
         "--all",
+        "--base-url",
+        ({ baseUrl }) => baseUrl,
         "--replace-blocked",
       ]),
     ],
@@ -234,6 +266,7 @@ export const gateDefinitions = [
       "gate:db",
       "gate:build",
       "gate:runtime",
+      "gate:qa",
       "gate:security",
       "gate:public:live",
     ],
@@ -321,8 +354,20 @@ function step(label, command, args, options = {}) {
 
 function buildStep() {
   return step("Build Next.js app", "pnpm", ["build"], {
+    env: () => buildSafeCatalogEnv(),
     marksBuild: true,
   });
+}
+
+function buildSafeCatalogEnv() {
+  return {
+    AI_SEMANTIC_SEARCH_ENABLED: "false",
+    CATALOG_DB_ERROR_FALLBACK: "1",
+    E2E_CATALOG_FIXTURES: "1",
+    TYPESENSE_API_KEY: "",
+    TYPESENSE_HOST: "",
+    VERCEL_ENV: "preview",
+  };
 }
 
 function prismaGenerateStep() {
@@ -472,7 +517,7 @@ async function withPreviewServer(context, callback) {
   const previewProcess = spawn(previewCommand.command, previewCommand.args, {
     cwd: context.cwd,
     detached: true,
-    env: { ...process.env, PORT: `${port}` },
+    env: { ...process.env, ...buildSafeCatalogEnv(), PORT: `${port}` },
     stdio: "inherit",
   });
 

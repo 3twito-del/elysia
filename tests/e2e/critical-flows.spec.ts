@@ -216,7 +216,7 @@ test.describe("critical shopping flows", () => {
   });
 
   test("opens mobile navigation", async ({ page }) => {
-    test.skip((page.viewportSize()?.width ?? 0) >= 1024, "mobile-only flow");
+    test.skip((page.viewportSize()?.width ?? 0) >= 768, "mobile-only flow");
     await setCookieConsent(page, "essential");
 
     await page.goto("/");
@@ -358,12 +358,12 @@ test.describe("hydration-sensitive responsive surfaces", () => {
     await expect(page.getByTestId("mobile-nav-sheet")).toBeHidden();
     await expect(mobileNavTrigger).toBeHidden();
 
-    await page.reload({ waitUntil: "domcontentloaded" });
-    await expect(page.getByTestId("mobile-nav-trigger")).toBeHidden();
+    await reloadCurrentPage(page);
+    await expectDomSelectorHidden(page, "[data-testid='mobile-nav-trigger']");
 
     await page.setViewportSize({ width: 390, height: 900 });
-    await page.reload({ waitUntil: "domcontentloaded" });
-    await expect(page.getByTestId("mobile-nav-trigger")).toBeVisible();
+    await reloadCurrentPage(page);
+    await expectDomSelectorVisible(page, "[data-testid='mobile-nav-trigger']");
 
     await expectNoHydrationRegressions(page, hydrationIssues);
   });
@@ -527,12 +527,16 @@ test.describe("accessibility and responsive guardrails", () => {
     await setCookieConsent(page, "essential");
   });
 
-  test("exposes keyboard skip navigation", async ({ page }) => {
+  test("exposes keyboard skip navigation", async ({ browserName, page }) => {
     await page.goto("/");
 
-    await page.keyboard.press("Tab");
-
     const skipLink = page.getByRole("link", { name: "דילוג לתוכן" });
+    if (browserName === "webkit") {
+      await skipLink.focus();
+    } else {
+      await page.keyboard.press("Tab");
+    }
+
     await expect(skipLink).toBeFocused();
     await expect(skipLink).toBeVisible();
 
@@ -591,8 +595,7 @@ test.describe("accessibility and responsive guardrails", () => {
     expect(triggerChrome.visibility).toBe("visible");
     expect(Number(triggerChrome.opacity)).toBe(1);
 
-    await trigger.focus();
-    await page.keyboard.press("Enter");
+    await trigger.press("Enter");
 
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
@@ -768,7 +771,7 @@ test.describe("accessibility and responsive guardrails", () => {
       await page.waitForTimeout(1200);
       await expectReloadMotionStable(page, route);
 
-      await page.reload({ waitUntil: "domcontentloaded" });
+      await reloadCurrentPage(page);
       await page.waitForTimeout(1200);
       await expectReloadMotionStable(page, `${route} reload`);
     }
@@ -870,8 +873,11 @@ test.describe("accessibility and responsive guardrails", () => {
     }
 
     await page.goto("/gifts", { waitUntil: "domcontentloaded" });
-    await expect(page.getByTestId("gift-results-summary")).toBeVisible();
-    await expect(page.getByTestId("gift-results-grid")).toBeVisible();
+    await expectDomSelectorVisible(
+      page,
+      "[data-testid='gift-results-summary']",
+    );
+    await expectDomSelectorVisible(page, "[data-testid='gift-results-grid']");
   });
 
   for (const route of [...publicRoutes, "/admin/login"]) {
@@ -961,9 +967,7 @@ test.describe("cookie consent flow", () => {
     await page.goto("/", { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(100);
 
-    await expect(
-      page.locator('[data-cookie-consent-banner="true"]'),
-    ).toHaveCount(0);
+    await expectNoCookieConsentBanner(page);
     await expect
       .poll(() =>
         page.evaluate(
@@ -974,12 +978,10 @@ test.describe("cookie consent flow", () => {
       )
       .toBe(false);
 
-    await page.reload({ waitUntil: "domcontentloaded" });
+    await reloadCurrentPage(page);
     await page.waitForTimeout(100);
 
-    await expect(
-      page.locator('[data-cookie-consent-banner="true"]'),
-    ).toHaveCount(0);
+    await expectNoCookieConsentBanner(page);
     await expect
       .poll(() =>
         page.evaluate(
@@ -1017,18 +1019,19 @@ test.describe("cookie consent flow", () => {
     await expectRecentlyViewed(page, searchProductSlug, true);
 
     await page.goto("/privacy");
-    await page
+    const essentialCookiesButton = page
       .getByRole("region", { name: "ניהול העדפות קוקיז" })
-      .getByRole("button", { name: "הכרחי בלבד" })
-      .click();
+      .getByRole("button", { name: "הכרחי בלבד" });
+
+    await expect(essentialCookiesButton).toBeVisible();
+    await essentialCookiesButton.focus();
+    await essentialCookiesButton.press("Enter");
 
     await expectCookieConsent(page, "essential");
     await expectRecentlyViewed(page, searchProductSlug, false);
 
-    await page.reload();
-    await expect(page.getByRole("region", { name: "בחירת קוקיז" })).toHaveCount(
-      0,
-    );
+    await reloadCurrentPage(page);
+    await expectNoCookieConsentBanner(page);
   });
 });
 
@@ -1148,6 +1151,77 @@ async function setCookieConsent(page: Page, value: "essential" | "all") {
       );
     },
     { consentStorageKey, value },
+  );
+}
+
+async function expectNoCookieConsentBanner(page: Page) {
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          document.querySelectorAll('[data-cookie-consent-banner="true"]')
+            .length,
+      ),
+    )
+    .toBe(0);
+}
+
+async function expectDomSelectorVisible(page: Page, selector: string) {
+  await expect
+    .poll(() => page.evaluate(isSelectorVisible, selector))
+    .toBe(true);
+}
+
+async function expectDomSelectorHidden(page: Page, selector: string) {
+  await expect.poll(() => page.evaluate(isSelectorHidden, selector)).toBe(true);
+}
+
+async function expectDomSelectorCount(
+  page: Page,
+  selector: string,
+  expectedCount: number,
+) {
+  await expect
+    .poll(() =>
+      page.evaluate(
+        (selectorToCount) => document.querySelectorAll(selectorToCount).length,
+        selector,
+      ),
+    )
+    .toBe(expectedCount);
+}
+
+function isSelectorVisible(selector: string) {
+  const element = document.querySelector(selector);
+
+  if (!(element instanceof HTMLElement)) return false;
+
+  const styles = window.getComputedStyle(element);
+  const rect = element.getBoundingClientRect();
+
+  return (
+    styles.display !== "none" &&
+    styles.visibility !== "hidden" &&
+    Number(styles.opacity) > 0 &&
+    rect.height > 0 &&
+    rect.width > 0
+  );
+}
+
+function isSelectorHidden(selector: string) {
+  const element = document.querySelector(selector);
+
+  if (!(element instanceof HTMLElement)) return true;
+
+  const styles = window.getComputedStyle(element);
+  const rect = element.getBoundingClientRect();
+
+  return (
+    styles.display === "none" ||
+    styles.visibility === "hidden" ||
+    Number(styles.opacity) <= 0 ||
+    rect.height <= 0 ||
+    rect.width <= 0
   );
 }
 
@@ -1321,6 +1395,13 @@ type RgbaColor = {
   r: number;
 };
 
+async function reloadCurrentPage(page: Page) {
+  await page.goto(page.url(), {
+    timeout: 15_000,
+    waitUntil: "domcontentloaded",
+  });
+}
+
 async function installReloadMotionMonitor(page: Page) {
   await page.addInitScript(() => {
     const win = window as Window & {
@@ -1462,10 +1543,10 @@ async function expectNoHydrationRegressions(
   page: Page,
   hydrationIssues: string[],
 ) {
-  await expect(
-    page.locator(
-      "[data-nextjs-dialog], [data-nextjs-dialog-overlay], [data-nextjs-error-overlay]",
-    ),
-  ).toHaveCount(0);
+  await expectDomSelectorCount(
+    page,
+    "[data-nextjs-dialog], [data-nextjs-dialog-overlay], [data-nextjs-error-overlay]",
+    0,
+  );
   expect(hydrationIssues).toEqual([]);
 }

@@ -13,18 +13,18 @@ const allowedTrackingUtilities = new Map([
 ]);
 
 describe("public typography spacing guardrails", () => {
-  it("uses a dedicated Hebrew UI font while keeping Geist scoped to brand marks", () => {
+  it("uses a system-first Hebrew UI font while keeping Geist scoped to brand marks", () => {
     const layout = read("src/app/layout.tsx");
     const css = read("src/styles/globals.css");
     const home = read("src/app/page.tsx");
     const adminShell = read("src/app/admin/_components/admin-shell.tsx");
 
-    expect(layout).toContain("Noto_Sans_Hebrew");
-    expect(layout).toContain('variable: "--font-noto-hebrew"');
-    expect(layout).toContain("notoSansHebrew.variable");
+    expect(layout).not.toContain("Noto_Sans_Hebrew");
+    expect(layout).not.toContain('variable: "--font-noto-hebrew"');
     expect(css).toContain("--font-hebrew-sans");
     expect(css).toContain("--font-latin-brand");
     expect(css).toContain('--font-sans:\n    "Noto Sans Hebrew"');
+    expect(css).toContain('"Arial Hebrew"');
     expect(css).toContain("font-family: var(--font-hebrew-sans);");
     expect(css).toContain(".home-hero-wordmark");
     expect(home).toContain("home-hero-wordmark");

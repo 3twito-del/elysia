@@ -1,13 +1,13 @@
 # Service Account Benchmark
 
-Generated: 2026-05-24T18:11:04.807Z
+Generated: 2026-05-25T19:58:14.597Z
 
 ## Summary
 
 - Status: pass
 - Active corpus: 15/15 sites produced enough data
 - Alignment: 87%
-- Metrics: 317 match, 46 mismatch, 6 not comparable
+- Metrics: 314 match, 46 mismatch, 9 not comparable
 - Active weight: 19.5; threshold weight: 9.75
 
 This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site substitutions affect QA reports only and do not change the High Jewelry Reference Gate.
@@ -38,27 +38,27 @@ This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site 
 - service / desktop / chrome / fullBleed: Elysia=false; baseline=true (12/18)
 - service / desktop / interaction / focusableCount: Elysia=35; baseline=median 10; IQR 4-30; weight=18
 - service / desktop / content / paragraphCount: Elysia=27; baseline=median 3; IQR 2-18; weight=18
-- service / desktop / content / formControlCount: Elysia=21; baseline=median 1; IQR 1-1; weight=18
+- service / desktop / content / formControlCount: Elysia=21; baseline=median 1; IQR 0-1; weight=18
 - service / tablet / chrome / fullBleed: Elysia=false; baseline=true (11/19.5)
-- service / tablet / interaction / focusableCount: Elysia=35; baseline=median 18; IQR 2-34; weight=19.5
+- service / tablet / interaction / focusableCount: Elysia=35; baseline=median 10; IQR 2-30; weight=19.5
 - service / tablet / content / paragraphCount: Elysia=27; baseline=median 3; IQR 0-13; weight=19.5
 - service / tablet / content / formControlCount: Elysia=21; baseline=median 1; IQR 1-1; weight=19.5
 - service / tablet / commerce / addToCartTextPresent: Elysia=true; baseline=false (10.5/19.5)
 - service / tablet / commerce / checkoutTextPresent: Elysia=true; baseline=false (10.5/19.5)
-- service / mobile / chrome / fullBleed: Elysia=false; baseline=true (12/19.5)
-- service / mobile / accessibility / hasAriaExpanded: Elysia=true; baseline=false (17/19.5)
-- service / mobile / content / paragraphCount: Elysia=27; baseline=median 3; IQR 0-13; weight=19.5
-- service / mobile / content / formControlCount: Elysia=21; baseline=median 1; IQR 0-2; weight=19.5
-- service / mobile / commerce / addToCartTextPresent: Elysia=true; baseline=false (11.5/19.5)
-- service / mobile / commerce / checkoutTextPresent: Elysia=true; baseline=false (11.5/19.5)
+- service / mobile / chrome / fullBleed: Elysia=false; baseline=true (10.5/18)
+- service / mobile / accessibility / hasAriaExpanded: Elysia=true; baseline=false (15.5/18)
+- service / mobile / content / paragraphCount: Elysia=27; baseline=median 3; IQR 0-10; weight=18
+- service / mobile / content / formControlCount: Elysia=21; baseline=median 1; IQR 1-2; weight=18
+- service / mobile / commerce / addToCartTextPresent: Elysia=true; baseline=false (10/18)
+- service / mobile / commerce / checkoutTextPresent: Elysia=true; baseline=false (10/18)
 - account / desktop / chrome / fullBleed: Elysia=false; baseline=true (12/18)
-- account / desktop / content / formControlCount: Elysia=3; baseline=median 1; IQR 1-1; weight=18
+- account / desktop / content / formControlCount: Elysia=3; baseline=median 1; IQR 0-1; weight=18
 - account / tablet / chrome / fullBleed: Elysia=false; baseline=true (11/19.5)
 - account / tablet / content / paragraphCount: Elysia=15; baseline=median 3; IQR 0-13; weight=19.5
 - account / tablet / content / formControlCount: Elysia=3; baseline=median 1; IQR 1-1; weight=19.5
 - account / tablet / commerce / addToCartTextPresent: Elysia=true; baseline=false (10.5/19.5)
 - account / tablet / commerce / checkoutTextPresent: Elysia=true; baseline=false (10.5/19.5)
-- account / tablet / density / linksPer1000Px: Elysia=9.298; baseline=median 4.81; IQR 0-6; weight=19.5
+- account / tablet / density / linksPer1000Px: Elysia=9.298; baseline=median 4.96; IQR 0-6.03; weight=19.5
 
 ## Lessons
 

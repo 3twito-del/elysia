@@ -778,12 +778,13 @@ export async function ensureLocalServer(baseUrl: string) {
   if (!isLocalhostUrl(baseUrl) || (await canReach(baseUrl))) return null;
 
   const isWindows = process.platform === "win32";
+  const serverEnv = buildLocalBenchmarkServerEnv(baseUrl);
   const child = spawn(
     isWindows ? "cmd.exe" : "pnpm",
     isWindows ? ["/d", "/s", "/c", "pnpm", "dev"] : ["dev"],
     {
       cwd: process.cwd(),
-      env: { ...process.env, BROWSER: "none" },
+      env: { ...process.env, ...serverEnv },
       stdio: "pipe",
     },
   );
@@ -798,6 +799,28 @@ export async function ensureLocalServer(baseUrl: string) {
   await waitForUrl(baseUrl, 120_000, child);
 
   return child;
+}
+
+function buildLocalBenchmarkServerEnv(baseUrl: string) {
+  const safeEnv: Record<string, string> = {
+    AI_SEMANTIC_SEARCH_ENABLED: "false",
+    BROWSER: "none",
+    CATALOG_DB_ERROR_FALLBACK: "1",
+    E2E_CATALOG_FIXTURES: "1",
+    TYPESENSE_API_KEY: "",
+    TYPESENSE_HOST: "",
+    VERCEL_ENV: "preview",
+  };
+
+  try {
+    const url = new URL(baseUrl);
+
+    if (url.port) safeEnv.PORT = url.port;
+  } catch {
+    // Keep the default Next.js dev port when the URL cannot be parsed.
+  }
+
+  return safeEnv;
 }
 
 export function stopLocalServer(child: ChildProcessWithoutNullStreams | null) {

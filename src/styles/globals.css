@@ -107,8 +107,8 @@
   --scrollbar-thumb-hover: rgb(91 101 106 / 38%);
   --scrollbar-track: transparent;
   --font-hebrew-sans:
-    var(--font-noto-hebrew), "Noto Sans Hebrew", "Noto Sans Hebrew Fallback",
-    ui-sans-serif, system-ui, sans-serif;
+    "Noto Sans Hebrew", "Arial Hebrew", Arial, ui-sans-serif, system-ui,
+    sans-serif;
   --font-latin-brand:
     var(--font-cormorant-garamond), "Cormorant Garamond", Georgia,
     "Times New Roman", serif;

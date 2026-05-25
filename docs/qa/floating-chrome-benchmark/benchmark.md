@@ -1,13 +1,13 @@
 # Floating Chrome Benchmark
 
-Generated: 2026-05-24T18:11:04.807Z
+Generated: 2026-05-25T19:58:14.597Z
 
 ## Summary
 
 - Status: warn
 - Active corpus: 15/15 sites produced enough data
-- Alignment: 68%
-- Metrics: 168 match, 78 mismatch, 0 not comparable
+- Alignment: 69%
+- Metrics: 168 match, 76 mismatch, 2 not comparable
 - Active weight: 19.5; threshold weight: 9.75
 
 This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site substitutions affect QA reports only and do not change the High Jewelry Reference Gate.
@@ -45,20 +45,20 @@ This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site 
 - product / desktop / interaction / buttonCount: Elysia=56; baseline=median 8; IQR 0-16; weight=19.5
 - product / desktop / accessibility / ariaLabelCount: Elysia=91; baseline=median 18; IQR 1-86; weight=19.5
 - product / desktop / content / paragraphCount: Elysia=72; baseline=median 16; IQR 3-33; weight=19.5
-- product / desktop / commerce / productLinkCount: Elysia=72; baseline=median 0; IQR 0-1; weight=19.5
+- product / desktop / commerce / productLinkCount: Elysia=70; baseline=median 0; IQR 0-1; weight=19.5
 - product / desktop / commerce / priceTextPresent: Elysia=true; baseline=false (10/19.5)
-- product / desktop / density / linksPer1000Px: Elysia=54.721; baseline=median 8.26; IQR 3.51-18.57; weight=19.5
-- product / desktop / density / controlsPer1000Px: Elysia=76.321; baseline=median 11.01; IQR 3.05-28.25; weight=19.5
+- product / desktop / density / linksPer1000Px: Elysia=54.721; baseline=median 8.26; IQR 3.51-18.51; weight=19.5
+- product / desktop / density / controlsPer1000Px: Elysia=76.321; baseline=median 11.01; IQR 3.05-28; weight=19.5
 - product / tablet / chrome / elementCount: Elysia=17; baseline=median 1; IQR 1-1; weight=19.5
 - product / tablet / chrome / visibleElementCount: Elysia=17; baseline=median 1; IQR 1-1; weight=19.5
 - product / tablet / chrome / semanticTag: Elysia="section"; baseline="main" (12/19.5)
 - product / tablet / chrome / topPx: Elysia=68; baseline=median 0; IQR -2110-56; weight=19.5
 - product / tablet / chrome / fullBleed: Elysia=false; baseline=true (18/19.5)
+- product / tablet / visual-tone / roundedControlCount: Elysia=4; baseline=median 0; IQR 0-2; weight=19.5
 - product / tablet / visual-tone / pillLikeControlCount: Elysia=4; baseline=median 0; IQR 0-2; weight=19.5
 - product / tablet / visual-tone / aquaAccentCount: Elysia=4; baseline=median 0; IQR 0-0; weight=19.5
-- product / tablet / interaction / linkCount: Elysia=76; baseline=median 24; IQR 16-36; weight=19.5
-- product / tablet / interaction / buttonCount: Elysia=56; baseline=median 13; IQR 0-18; weight=19.5
-- product / tablet / interaction / focusableCount: Elysia=106; baseline=median 42; IQR 16-71; weight=19.5
+- product / tablet / interaction / linkCount: Elysia=76; baseline=median 23; IQR 16-35; weight=19.5
+- product / tablet / interaction / buttonCount: Elysia=56; baseline=median 10; IQR 0-18; weight=19.5
 
 ## Lessons
 

@@ -1,4 +1,4 @@
-﻿import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 import { HEADER_BENCHMARK_VIEWPORTS } from "../../scripts/header-benchmark";
 import { captureBenchmarkSnapshot } from "../../scripts/benchmarks/core";
@@ -67,19 +67,14 @@ test.describe("header benchmark extractor", () => {
         .catch(() => undefined);
 
       if (part.id === "plp") {
-        await page
-          .locator(
-            "[data-testid='category-results-grid'], [data-testid='search-results-grid'], [data-testid='gift-results-grid']",
-          )
-          .first()
-          .waitFor({ state: "visible" });
+        await waitForVisibleSelector(
+          page,
+          "[data-testid='category-results-grid'], [data-testid='search-results-grid'], [data-testid='gift-results-grid']",
+        );
       }
 
       if (part.id === "product-card") {
-        await page
-          .locator("[data-testid='product-card']")
-          .first()
-          .waitFor({ state: "visible" });
+        await waitForVisibleSelector(page, "[data-testid='product-card']");
       }
 
       const snapshot = await captureBenchmarkSnapshot(
@@ -105,3 +100,26 @@ test.describe("header benchmark extractor", () => {
     }
   });
 });
+
+async function waitForVisibleSelector(page: Page, selector: string) {
+  await expect
+    .poll(() => page.evaluate(isSelectorVisible, selector))
+    .toBe(true);
+}
+
+function isSelectorVisible(selector: string) {
+  const element = document.querySelector(selector);
+
+  if (!(element instanceof HTMLElement)) return false;
+
+  const styles = window.getComputedStyle(element);
+  const rect = element.getBoundingClientRect();
+
+  return (
+    styles.display !== "none" &&
+    styles.visibility !== "hidden" &&
+    Number(styles.opacity) > 0 &&
+    rect.height > 0 &&
+    rect.width > 0
+  );
+}

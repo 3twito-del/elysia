@@ -1,13 +1,13 @@
 # PDP Benchmark
 
-Generated: 2026-05-24T18:11:04.807Z
+Generated: 2026-05-25T19:58:14.597Z
 
 ## Summary
 
 - Status: warn
 - Active corpus: 15/15 sites produced enough data
-- Alignment: 79%
-- Metrics: 97 match, 26 mismatch, 0 not comparable
+- Alignment: 80%
+- Metrics: 97 match, 25 mismatch, 1 not comparable
 - Active weight: 19.5; threshold weight: 9.75
 
 This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site substitutions affect QA reports only and do not change the High Jewelry Reference Gate.
@@ -40,25 +40,25 @@ This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site 
 - product / desktop / visual-tone / aquaAccentCount: Elysia=2; baseline=median 0; IQR 0-0; weight=19.5
 - product / desktop / interaction / buttonCount: Elysia=32; baseline=median 8; IQR 0-16; weight=19.5
 - product / desktop / content / paragraphCount: Elysia=42; baseline=median 16; IQR 3-33; weight=19.5
-- product / desktop / commerce / productLinkCount: Elysia=36; baseline=median 0; IQR 0-1; weight=19.5
+- product / desktop / commerce / productLinkCount: Elysia=35; baseline=median 0; IQR 0-1; weight=19.5
 - product / desktop / commerce / priceTextPresent: Elysia=true; baseline=false (10/19.5)
-- product / tablet / chrome / heightPx: Elysia=7709; baseline=median 3830; IQR 900-5969; weight=19.5
-- product / tablet / chrome / areaRatio: Elysia=8.4539; baseline=median 4.26; IQR 1-6.63; weight=19.5
+- product / tablet / chrome / heightPx: Elysia=7705; baseline=median 3815; IQR 900-4500; weight=19.5
+- product / tablet / chrome / areaRatio: Elysia=8.4496; baseline=median 4.24; IQR 1-5; weight=19.5
 - product / tablet / chrome / fullBleed: Elysia=false; baseline=true (18/19.5)
 - product / tablet / visual-tone / transparentBackground: Elysia=false; baseline=true (15/19.5)
 - product / tablet / visual-tone / aquaAccentCount: Elysia=2; baseline=median 0; IQR 0-0; weight=19.5
-- product / tablet / interaction / linkCount: Elysia=47; baseline=median 24; IQR 16-36; weight=19.5
-- product / tablet / interaction / buttonCount: Elysia=32; baseline=median 13; IQR 0-18; weight=19.5
+- product / tablet / interaction / linkCount: Elysia=47; baseline=median 23; IQR 16-35; weight=19.5
+- product / tablet / interaction / buttonCount: Elysia=32; baseline=median 10; IQR 0-18; weight=19.5
 - product / tablet / content / paragraphCount: Elysia=42; baseline=median 13; IQR 3-39; weight=19.5
-- product / tablet / media / imageCount: Elysia=14; baseline=median 56; IQR 18-95; weight=19.5
-- product / tablet / commerce / productLinkCount: Elysia=36; baseline=median 0; IQR 0-1; weight=19.5
-- product / mobile / chrome / heightPx: Elysia=10349; baseline=median 4767; IQR 844-5743; weight=19.5
-- product / mobile / chrome / areaRatio: Elysia=11.9479; baseline=median 5.65; IQR 1-6.81; weight=19.5
-- product / mobile / chrome / fullBleed: Elysia=false; baseline=true (18/19.5)
-- product / mobile / visual-tone / transparentBackground: Elysia=false; baseline=true (15/19.5)
-- product / mobile / visual-tone / aquaAccentCount: Elysia=2; baseline=median 0; IQR 0-0; weight=19.5
-- product / mobile / accessibility / hasAriaExpanded: Elysia=true; baseline=false (13.5/19.5)
-- product / mobile / content / textLength: Elysia=3425; baseline=median 15905; IQR 3447-29569; weight=19.5
+- product / tablet / commerce / productLinkCount: Elysia=35; baseline=median 0; IQR 0-1; weight=19.5
+- product / mobile / chrome / heightPx: Elysia=10325; baseline=median 4275; IQR 844-5743; weight=18
+- product / mobile / chrome / areaRatio: Elysia=11.9202; baseline=median 5.06; IQR 1-6.81; weight=18
+- product / mobile / chrome / fullBleed: Elysia=false; baseline=true (16.5/18)
+- product / mobile / visual-tone / transparentBackground: Elysia=false; baseline=true (13.5/18)
+- product / mobile / visual-tone / aquaAccentCount: Elysia=2; baseline=median 0; IQR 0-0; weight=18
+- product / mobile / accessibility / hasAriaExpanded: Elysia=true; baseline=false (12/18)
+- product / mobile / content / textLength: Elysia=3436; baseline=median 15905; IQR 5518-29569; weight=18
+- product / mobile / media / imageCount: Elysia=14; baseline=median 45; IQR 18-95; weight=18
 
 ## Lessons
 

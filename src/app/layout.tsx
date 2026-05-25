@@ -1,12 +1,7 @@
 import "~/styles/globals.css";
 
 import { type Metadata, type Viewport } from "next";
-import {
-  Cormorant_Garamond,
-  Geist,
-  Geist_Mono,
-  Noto_Sans_Hebrew,
-} from "next/font/google";
+import { Cormorant_Garamond, Geist, Geist_Mono } from "next/font/google";
 
 import { CookieConsentBanner } from "~/components/cookie-consent-banner";
 import { DeferredAccessibilityWidget } from "~/components/deferred-accessibility-widget";
@@ -76,14 +71,7 @@ const cormorantGaramond = Cormorant_Garamond({
   weight: ["400", "500", "600"],
 });
 
-const notoSansHebrew = Noto_Sans_Hebrew({
-  subsets: ["hebrew"],
-  variable: "--font-noto-hebrew",
-  weight: "variable",
-});
-
 const fontClassName = [
-  notoSansHebrew.variable,
   cormorantGaramond.variable,
   geistSans.variable,
   geistMono.variable,

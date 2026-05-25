@@ -1,13 +1,13 @@
 # Header Benchmark: High-Jewelry Alignment
 
-Generated: 2026-05-24T18:11:04.807Z
+Generated: 2026-05-25T19:58:14.597Z
 
 ## Summary
 
 - Status: pass
 - Active corpus: 12/12 sites produced enough data
-- Alignment: 85%
-- Metrics: 146 match, 25 mismatch, 0 not comparable
+- Alignment: 86%
+- Metrics: 145 match, 23 mismatch, 3 not comparable
 - Active weight: 16; threshold weight: 8
 
 This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site substitutions affect QA reports only and do not change the High Jewelry Reference Gate.
@@ -39,7 +39,6 @@ This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site 
 
 - home / desktop / chrome / fullBleed: Elysia=false; baseline=true (14.5/16)
 - home / desktop / chrome / hasBorder: Elysia=true; baseline=false (14.5/16)
-- home / desktop / visual-tone / transparentBackground: Elysia=true; baseline=false (8.5/16)
 - home / desktop / interaction / linkCount: Elysia=9; baseline=median 4; IQR 1-8; weight=16
 - home / desktop / accessibility / hasAriaExpanded: Elysia=false; baseline=true (9/16)
 - home / desktop / media / imageCount: Elysia=0; baseline=median 63; IQR 1-104; weight=16
@@ -58,9 +57,9 @@ This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site 
 - home / tablet / navigation / desktopNavVisible: Elysia=true; baseline=false (9.5/16)
 - home / tablet / navigation / navVisibleLinkCount: Elysia=9; baseline=median 2; IQR 1-7; weight=16
 - home / tablet / interaction / mobileNavTriggerVisible: Elysia=false; baseline=true (10.5/16)
-- home / mobile / chrome / fullBleed: Elysia=false; baseline=true (13.5/15)
-- home / mobile / chrome / hasBorder: Elysia=true; baseline=false (13.5/15)
-- home / mobile / media / imageCount: Elysia=0; baseline=median 44; IQR 1-104; weight=15
+- home / mobile / chrome / fullBleed: Elysia=false; baseline=true (12/13.5)
+- home / mobile / chrome / hasBorder: Elysia=true; baseline=false (13.5/13.5)
+- home / mobile / brand / brandWordmarkOnly: Elysia=true; baseline=false (10.5/13.5)
 
 ## Lessons
 

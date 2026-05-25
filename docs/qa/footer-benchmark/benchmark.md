@@ -1,6 +1,6 @@
 # Footer Benchmark
 
-Generated: 2026-05-24T18:11:04.807Z
+Generated: 2026-05-25T19:58:14.597Z
 
 ## Summary
 
@@ -36,23 +36,23 @@ This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site 
 ## Top Mismatches
 
 - home / desktop / chrome / fullBleed: Elysia=false; baseline=true (17/19.5)
-- home / desktop / visual-tone / roundedControlCount: Elysia=2; baseline=median 0; IQR 0-0; weight=19.5
-- home / desktop / visual-tone / pillLikeControlCount: Elysia=2; baseline=median 0; IQR 0-0; weight=19.5
 - home / desktop / interaction / focusableCount: Elysia=21; baseline=median 28; IQR 24-33; weight=19.5
-- home / desktop / commerce / addToCartTextPresent: Elysia=true; baseline=false (15.5/19.5)
-- home / desktop / commerce / checkoutTextPresent: Elysia=true; baseline=false (15.5/19.5)
+- home / desktop / commerce / addToCartTextPresent: Elysia=true; baseline=false (14.5/19.5)
+- home / desktop / commerce / checkoutTextPresent: Elysia=true; baseline=false (14.5/19.5)
+- home / tablet / chrome / topPx: Elysia=3845; baseline=median 1028; IQR 27-3803; weight=19.5
 - home / tablet / chrome / fullBleed: Elysia=false; baseline=true (17/19.5)
 - home / tablet / visual-tone / roundedControlCount: Elysia=2; baseline=median 0; IQR 0-0; weight=19.5
 - home / tablet / visual-tone / pillLikeControlCount: Elysia=2; baseline=median 0; IQR 0-0; weight=19.5
 - home / tablet / commerce / addToCartTextPresent: Elysia=true; baseline=false (15.5/19.5)
 - home / tablet / commerce / checkoutTextPresent: Elysia=true; baseline=false (15.5/19.5)
-- home / mobile / chrome / fullBleed: Elysia=false; baseline=true (17/19.5)
-- home / mobile / visual-tone / roundedControlCount: Elysia=2; baseline=median 0; IQR 0-0; weight=19.5
-- home / mobile / visual-tone / pillLikeControlCount: Elysia=2; baseline=median 0; IQR 0-0; weight=19.5
-- home / mobile / accessibility / hasAriaExpanded: Elysia=true; baseline=false (10/19.5)
-- home / mobile / commerce / addToCartTextPresent: Elysia=true; baseline=false (15.5/19.5)
-- home / mobile / commerce / checkoutTextPresent: Elysia=true; baseline=false (15.5/19.5)
-- home / mobile / density / controlsPer1000Px: Elysia=30.457; baseline=median 23.98; IQR 9.2-29.43; weight=19.5
+- home / mobile / chrome / heightPx: Elysia=760; baseline=median 996; IQR 782-1325; weight=18
+- home / mobile / chrome / fullBleed: Elysia=false; baseline=true (15.5/18)
+- home / mobile / visual-tone / roundedControlCount: Elysia=2; baseline=median 0; IQR 0-0; weight=18
+- home / mobile / visual-tone / pillLikeControlCount: Elysia=2; baseline=median 0; IQR 0-0; weight=18
+- home / mobile / accessibility / hasAriaExpanded: Elysia=true; baseline=false (10/18)
+- home / mobile / commerce / addToCartTextPresent: Elysia=true; baseline=false (15.5/18)
+- home / mobile / commerce / checkoutTextPresent: Elysia=true; baseline=false (15.5/18)
+- home / mobile / density / controlsPer1000Px: Elysia=31.579; baseline=median 19.41; IQR 9.2-29.43; weight=18
 
 ## Lessons
 

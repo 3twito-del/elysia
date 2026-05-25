@@ -30,6 +30,7 @@ const expectedGateNames = [
   "gate:e2e",
   "gate:visual",
   "gate:runtime",
+  "gate:qa",
   "gate:coherence",
   "gate:public:local",
   "gate:public:live",
@@ -55,6 +56,7 @@ describe("manual quality gates", () => {
     expect(getGateDefinition("gate:full")?.includes).toContain(
       "gate:public:live",
     );
+    expect(getGateDefinition("gate:full")?.includes).toContain("gate:qa");
   });
 
   it("keeps the ship gate strict without live public benchmarks", () => {
@@ -63,6 +65,7 @@ describe("manual quality gates", () => {
     expect(shipIncludes).toContain("gate:coherence");
     expect(shipIncludes).toContain("gate:runtime");
     expect(shipIncludes).toContain("gate:security");
+    expect(shipIncludes).not.toContain("gate:qa");
     expect(shipIncludes).not.toContain("gate:public:live");
   });
 
@@ -71,6 +74,27 @@ describe("manual quality gates", () => {
 
     expect(commandText).not.toMatch(/(^|\s)--watch(\s|$)/u);
     expect(commandText).not.toMatch(/(^|\s)watch(\s|$)/u);
+  });
+
+  it("keeps local preview gates on the same build-safe catalog fixtures", () => {
+    const gatesSource = readFileSync(
+      path.join(repoRoot, "scripts/gates.mjs"),
+      "utf8",
+    );
+
+    expect(gatesSource).toContain(
+      "env: { ...process.env, ...buildSafeCatalogEnv(), PORT: `${port}` }",
+    );
+  });
+
+  it("runs public benchmarks against the production preview server", () => {
+    for (const gateName of ["gate:public:local", "gate:public:live"]) {
+      const gate = getGateDefinition(gateName);
+      const commandText = (gate?.steps ?? []).map(formatStepCommand).join("\n");
+
+      expect(gate?.preview).toBe(true);
+      expect(commandText).toContain("--base-url");
+    }
   });
 
   it("does not introduce local commit hooks", () => {
