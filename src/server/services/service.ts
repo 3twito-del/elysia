@@ -13,6 +13,7 @@ import {
 } from "~/lib/service-validation";
 import { db } from "~/server/db";
 import { mediaProvider } from "~/server/adapters/media";
+import { shouldUseCatalogFixtures } from "~/server/services/catalog-fixtures";
 import { BUSINESS_EVENTS, createOutboxEvent } from "~/server/services/outbox";
 
 const defaultServiceSettings = {
@@ -98,6 +99,10 @@ export type ServiceRequestListInput = z.infer<
 export { serviceRequestListInputSchema };
 
 export async function getServiceSettings() {
+  if (shouldUseCatalogFixtures()) {
+    return defaultServiceSettings;
+  }
+
   const settings = await db.serviceSettings.findUnique({
     where: { id: defaultServiceSettings.id },
   });
@@ -117,6 +122,10 @@ export async function getPublicContactSettings() {
 }
 
 export async function getActiveContactTopics() {
+  if (shouldUseCatalogFixtures()) {
+    return defaultContactTopics;
+  }
+
   const topics = await db.contactTopic.findMany({
     where: { isActive: true },
     orderBy: [{ sortOrder: "asc" }, { label: "asc" }],
@@ -126,6 +135,10 @@ export async function getActiveContactTopics() {
 }
 
 export async function getPublicPhysicalBranches() {
+  if (shouldUseCatalogFixtures()) {
+    return [];
+  }
+
   const settings = await getServiceSettings();
 
   if (!settings.physicalBranchesEnabled) return [];

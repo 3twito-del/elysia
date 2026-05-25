@@ -14,6 +14,15 @@ import {
   getCatalogCategoryImage,
   getDisplayCatalogImages,
 } from "~/server/services/catalog-assets";
+import {
+  getFixtureCatalogBranches,
+  getFixtureCatalogCategories,
+  getFixtureCatalogCategoryBySlug,
+  getFixtureCatalogProductBySlug,
+  getFixtureFeaturedCatalogProducts,
+  listFixtureCatalogProducts,
+  shouldUseCatalogFixtures,
+} from "~/server/services/catalog-fixtures";
 import type {
   CatalogBranch,
   CatalogCategory,
@@ -45,6 +54,10 @@ type CatalogProductRecord = Prisma.ProductGetPayload<{
 
 const getCatalogCategoriesCached = unstable_cache(
   async (): Promise<CatalogCategory[]> => {
+    if (shouldUseCatalogFixtures()) {
+      return getFixtureCatalogCategories();
+    }
+
     const categories = await db.category.findMany({
       orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
       include: createCategoryImageInclude(),
@@ -66,6 +79,10 @@ export const getCatalogCategories = cache(
 export async function getCatalogCategoryBySlug(slug: string) {
   const getCatalogCategoryBySlugCached = unstable_cache(
     async () => {
+      if (shouldUseCatalogFixtures()) {
+        return getFixtureCatalogCategoryBySlug(slug);
+      }
+
       const category = await db.category.findUnique({
         where: { slug },
         include: createCategoryImageInclude(),
@@ -91,6 +108,10 @@ export const getCatalogCategoryBySlugCachedRequest = cache(
 
 const getCatalogBranchesCached = unstable_cache(
   async (): Promise<CatalogBranch[]> => {
+    if (shouldUseCatalogFixtures()) {
+      return getFixtureCatalogBranches();
+    }
+
     const settings = await db.serviceSettings.findUnique({
       where: { id: "default" },
     });
@@ -122,6 +143,10 @@ export const getCatalogBranches = cache(
 
 const getFeaturedCatalogProductsCached = unstable_cache(
   async (take: number) => {
+    if (shouldUseCatalogFixtures()) {
+      return getFixtureFeaturedCatalogProducts(take);
+    }
+
     const records = await db.product.findMany({
       where: ACTIVE_PRODUCT_WHERE,
       include: createCatalogProductInclude(),
@@ -173,6 +198,10 @@ function selectFeaturedCatalogProducts(
 export async function listCatalogProducts(input: { category?: string } = {}) {
   const getCatalogProductsCached = unstable_cache(
     async () => {
+      if (shouldUseCatalogFixtures()) {
+        return listFixtureCatalogProducts(input);
+      }
+
       const records = await db.product.findMany({
         where: {
           ...ACTIVE_PRODUCT_WHERE,
@@ -202,6 +231,10 @@ export const listCatalogProductsCachedRequest = cache(listCatalogProducts);
 export async function getCatalogProductBySlug(slug: string) {
   const getCatalogProductBySlugCached = unstable_cache(
     async () => {
+      if (shouldUseCatalogFixtures()) {
+        return getFixtureCatalogProductBySlug(slug);
+      }
+
       const record = await db.product.findFirst({
         where: { ...ACTIVE_PRODUCT_WHERE, slug },
         include: createCatalogProductInclude(),

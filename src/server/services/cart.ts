@@ -5,6 +5,15 @@ import { z } from "zod";
 import { db } from "~/server/db";
 import { getActiveCouponValue, normalizeCouponCode } from "./coupons";
 import { DEFAULT_CATALOG_IMAGE } from "~/server/services/catalog";
+import {
+  addFixtureCartItem,
+  getFixtureCartBySession,
+  mergeFixtureGuestCartToCustomer,
+  removeFixtureCartItem,
+  shouldUseFixtureCart,
+  updateFixtureCartItemQuantity,
+  updateFixtureCartOptions,
+} from "~/server/services/cart-fixtures";
 import { calculateOrderTotal } from "~/server/services/pricing";
 
 const CART_TTL_DAYS = 30;
@@ -59,6 +68,11 @@ export type CartSummary = Awaited<ReturnType<typeof mapCartSummary>>;
 
 export async function getCartBySession(sessionKey: string) {
   const parsed = cartSessionKeySchema.parse(sessionKey);
+
+  if (shouldUseFixtureCart()) {
+    return getFixtureCartBySession(parsed);
+  }
+
   const cart = await findActiveCartBySession(parsed);
 
   return cart ? mapCartSummary(cart, "DELIVERY") : null;
@@ -68,6 +82,10 @@ export async function addCartItem(
   input: z.infer<typeof addCartItemInputSchema>,
 ) {
   const parsed = addCartItemInputSchema.parse(input);
+
+  if (shouldUseFixtureCart()) {
+    return addFixtureCartItem(parsed);
+  }
 
   const cart = await db.$transaction(async (tx) => {
     const cart = await getOrCreateActiveCart(tx, parsed.sessionKey);
@@ -135,6 +153,10 @@ export async function updateCartItemQuantity(
 ) {
   const parsed = updateCartItemInputSchema.parse(input);
 
+  if (shouldUseFixtureCart()) {
+    return updateFixtureCartItemQuantity(parsed);
+  }
+
   const cart = await requireActiveCartBySession(parsed.sessionKey);
   const item = cart.items.find((item) => item.id === parsed.itemId);
 
@@ -154,6 +176,11 @@ export async function removeCartItem(
   input: z.infer<typeof removeCartItemInputSchema>,
 ) {
   const parsed = removeCartItemInputSchema.parse(input);
+
+  if (shouldUseFixtureCart()) {
+    return removeFixtureCartItem(parsed);
+  }
+
   const cart = await requireActiveCartBySession(parsed.sessionKey);
   const item = cart.items.find((item) => item.id === parsed.itemId);
 
@@ -170,6 +197,11 @@ export async function updateCartOptions(
   input: z.infer<typeof updateCartOptionsInputSchema>,
 ) {
   const parsed = updateCartOptionsInputSchema.parse(input);
+
+  if (shouldUseFixtureCart()) {
+    return updateFixtureCartOptions(parsed);
+  }
+
   const cart = await requireActiveCartBySession(parsed.sessionKey);
 
   const updated = await db.cart.update({
@@ -190,6 +222,11 @@ export async function mergeGuestCartToCustomer(input: {
   customerId: string;
 }) {
   const sessionKey = cartSessionKeySchema.parse(input.sessionKey);
+
+  if (shouldUseFixtureCart()) {
+    return mergeFixtureGuestCartToCustomer({ sessionKey });
+  }
+
   const cart = await findActiveCartBySession(sessionKey);
 
   if (!cart) return null;

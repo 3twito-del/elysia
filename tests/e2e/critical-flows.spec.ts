@@ -4,6 +4,7 @@ const consentStorageKey = "elysia_cookie_consent";
 const accessibilityStorageKey = "elysia.accessibility-settings";
 const recentlyViewedStorageKey = "elysia_recently_viewed";
 const cartStorageKey = "elysia_cart_session";
+const pwaDevCleanupStorageKey = "elysia:pwa-dev-cleanup";
 const cartProductSlug = "hera-bracelet";
 const cartProductName = "צמיד Hera";
 const madeToOrderProductSlug = "muse-pearl-earrings";
@@ -236,13 +237,15 @@ test.describe("critical shopping flows", () => {
     test.skip((page.viewportSize()?.width ?? 0) >= 1024, "mobile-only flow");
     await setCookieConsent(page, "essential");
 
-    await page.goto("/category/earrings", { waitUntil: "domcontentloaded" });
+    await page.goto("/category/earrings", { waitUntil: "networkidle" });
     const filterTrigger = visibleByTestId(page, "category-filter-trigger");
 
     await expect(visibleByTestId(page, "category-results-grid")).toBeVisible();
     await expect(filterTrigger).toHaveCount(1);
     await expect(filterTrigger).toBeVisible();
+    await expect(filterTrigger).toHaveAttribute("aria-expanded", "false");
     await filterTrigger.click();
+    await expect(filterTrigger).toHaveAttribute("aria-expanded", "true");
     await expect(page.getByRole("dialog")).toBeVisible();
     await page
       .getByTestId("category-filter-sheet")
@@ -252,8 +255,15 @@ test.describe("critical shopping flows", () => {
     await expect(page.getByTestId("category-filter-sheet")).toBeHidden();
     await expect(page).toHaveURL(/sort=price-asc/);
 
-    await page.goto("/category/earrings", { waitUntil: "domcontentloaded" });
-    await visibleByTestId(page, "category-filter-trigger").click();
+    await page.goto("/category/earrings", { waitUntil: "networkidle" });
+    const secondFilterTrigger = visibleByTestId(
+      page,
+      "category-filter-trigger",
+    );
+
+    await expect(secondFilterTrigger).toHaveAttribute("aria-expanded", "false");
+    await secondFilterTrigger.click();
+    await expect(secondFilterTrigger).toHaveAttribute("aria-expanded", "true");
     await expect(page.getByTestId("category-filter-sheet")).toBeVisible();
     await page.setViewportSize({ width: 1024, height: 900 });
     await expect(page.getByTestId("category-filter-sheet")).toBeHidden();
@@ -1071,15 +1081,29 @@ test.describe("access control surfaces", () => {
 });
 
 async function clearBrowserState(page: Page) {
-  await page.goto("/");
+  await page.addInitScript((storageKey) => {
+    window.sessionStorage.setItem(storageKey, "1");
+  }, pwaDevCleanupStorageKey);
+  await page.goto("/offline", { waitUntil: "domcontentloaded" });
   await page.evaluate(
-    ({ cartStorageKey, consentStorageKey, recentlyViewedStorageKey }) => {
+    ({
+      cartStorageKey,
+      consentStorageKey,
+      pwaDevCleanupStorageKey,
+      recentlyViewedStorageKey,
+    }) => {
+      window.sessionStorage.setItem(pwaDevCleanupStorageKey, "1");
       window.localStorage.removeItem(consentStorageKey);
       window.localStorage.removeItem(recentlyViewedStorageKey);
       window.localStorage.removeItem(cartStorageKey);
       document.cookie = "elysia_cart_session=; Path=/; Max-Age=0";
     },
-    { cartStorageKey, consentStorageKey, recentlyViewedStorageKey },
+    {
+      cartStorageKey,
+      consentStorageKey,
+      pwaDevCleanupStorageKey,
+      recentlyViewedStorageKey,
+    },
   );
 }
 

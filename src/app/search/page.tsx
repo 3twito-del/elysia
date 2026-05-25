@@ -35,6 +35,7 @@ import {
   type CatalogCategory,
   type CatalogProduct,
 } from "~/server/services/catalog";
+import { shouldUseCatalogFixtures } from "~/server/services/catalog-fixtures";
 import {
   createProductSearchHref,
   createSearchHref,
@@ -957,6 +958,7 @@ async function recordSearchEvent(
   input: ProductSearchInput,
   resultCount: number,
 ) {
+  if (shouldUseCatalogFixtures()) return;
   if (!input.query && !input.category) return;
 
   await db.searchEvent

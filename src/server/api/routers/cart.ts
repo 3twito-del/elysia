@@ -19,6 +19,7 @@ import {
 import { getActiveCouponValue } from "~/server/services/coupons";
 import { calculateOrderTotal } from "~/server/services/pricing";
 import { scheduleCartReminder } from "~/server/services/push";
+import { shouldUseFixtureCart } from "~/server/services/cart-fixtures";
 
 export const cartRouter = createTRPCRouter({
   get: publicProcedure
@@ -30,9 +31,11 @@ export const cartRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       const cart = await addCartItem(input);
 
-      await scheduleCartReminder({ sessionKey: input.sessionKey }).catch(
-        () => undefined,
-      );
+      if (!shouldUseFixtureCart()) {
+        await scheduleCartReminder({ sessionKey: input.sessionKey }).catch(
+          () => undefined,
+        );
+      }
 
       return cart;
     }),

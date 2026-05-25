@@ -59,6 +59,7 @@ export async function resolveSemanticSearchIntent(
   );
 
   if (!input.query?.trim()) return deterministic;
+  if (isAiSemanticSearchDisabled()) return deterministic;
   if (!shouldUseAiForSemanticIntent(deterministic)) return deterministic;
 
   const cacheKey = createIntentCacheKey(input, options);
@@ -177,6 +178,13 @@ function createSemanticIntentPrompt(
 
 function shouldUseAiForSemanticIntent(intent: SemanticSearchIntent) {
   return intent.confidence !== "high";
+}
+
+function isAiSemanticSearchDisabled() {
+  return (
+    process.env.AI_SEMANTIC_SEARCH_ENABLED === "0" ||
+    process.env.AI_SEMANTIC_SEARCH_ENABLED === "false"
+  );
 }
 
 function getSemanticIntentCandidates(
