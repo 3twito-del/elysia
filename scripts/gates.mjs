@@ -39,8 +39,7 @@ export const gateDefinitions = [
   {
     name: "gate:quick",
     description:
-      "Auto-fix, then run formatting, lint, typecheck, and Prisma validation.",
-    needsFix: true,
+      "Run formatting, lint, typecheck, Prisma validation, and AVIF checks without writing files.",
     steps: [
       step("Check formatting", "pnpm", ["format:check"]),
       step("Lint", "pnpm", ["lint"]),
@@ -54,18 +53,15 @@ export const gateDefinitions = [
   },
   {
     name: "gate:test",
-    description: "Auto-fix, then run Vitest unit and integration tests.",
-    needsFix: true,
+    description: "Run Vitest unit and integration tests without writing files.",
     steps: [step("Run Vitest", "pnpm", ["test"])],
   },
   {
     name: "gate:db",
     description:
-      "Auto-fix, then validate Prisma, deploy migrations, seed, and check migration status.",
-    needsFix: true,
+      "Validate Prisma, deploy migrations, seed, and check migration status.",
     steps: [
       step("Validate Prisma schema", "pnpm", ["exec", "prisma", "validate"]),
-      prismaGenerateStep(),
       step("Deploy database migrations", "pnpm", ["db:migrate"]),
       step("Seed database", "pnpm", ["db:seed"]),
       step("Check migration status", "pnpm", [
@@ -78,14 +74,12 @@ export const gateDefinitions = [
   },
   {
     name: "gate:build",
-    description: "Auto-fix, then run a production Next.js build.",
-    needsFix: true,
+    description: "Run a production Next.js build without writing source assets.",
     steps: [buildStep()],
   },
   {
     name: "gate:smoke",
-    description: "Auto-fix, build, start preview, then run HTTP smoke checks.",
-    needsFix: true,
+    description: "Build, start preview, then run HTTP smoke checks.",
     preview: true,
     steps: [
       step("Run smoke checks", "node", ["scripts/smoke.mjs"], {
@@ -95,8 +89,7 @@ export const gateDefinitions = [
   },
   {
     name: "gate:e2e",
-    description: "Auto-fix, build, start preview, then run Playwright flows.",
-    needsFix: true,
+    description: "Build, start preview, then run Playwright flows.",
     preview: true,
     steps: [
       step("Run Playwright", "pnpm", ["e2e"], {
@@ -107,8 +100,7 @@ export const gateDefinitions = [
   {
     name: "gate:visual",
     description:
-      "Auto-fix, build, start preview, then run agent-browser visual QA.",
-    needsFix: true,
+      "Build, start preview, then run agent-browser visual QA.",
     preview: true,
     steps: [
       step("Run visual QA", powerShellCommand(), [
@@ -125,8 +117,7 @@ export const gateDefinitions = [
   {
     name: "gate:runtime",
     description:
-      "Auto-fix, build once, start preview, then run smoke, e2e, visual QA, and performance QA.",
-    needsFix: true,
+      "Build once, start preview, then run smoke, e2e, visual QA, and performance QA.",
     preview: true,
     steps: [
       step("Check QA route inventory", "pnpm", ["qa:routes"]),
@@ -158,8 +149,7 @@ export const gateDefinitions = [
   {
     name: "gate:qa",
     description:
-      "Auto-fix, build, start preview, then run full route inventory and cross-browser QA audit artifacts.",
-    needsFix: true,
+      "Build, start preview, then run full route inventory and cross-browser QA audit artifacts.",
     preview: true,
     steps: [
       step("Check QA route inventory", "pnpm", ["qa:routes"]),
@@ -200,8 +190,7 @@ export const gateDefinitions = [
   {
     name: "gate:public:local",
     description:
-      "Auto-fix, build, start preview, then benchmark all public parts locally without external crawling.",
-    needsFix: true,
+      "Build, start preview, then benchmark all public parts locally without external crawling.",
     preview: true,
     steps: [
       step("Run local public benchmarks", "pnpm", [
@@ -218,8 +207,7 @@ export const gateDefinitions = [
   {
     name: "gate:public:live",
     description:
-      "Auto-fix, build, start preview, then benchmark all public parts against live reference sites.",
-    needsFix: true,
+      "Build, start preview, then benchmark all public parts against live reference sites.",
     preview: true,
     steps: [
       step("Run live public benchmarks", "pnpm", [
@@ -258,9 +246,9 @@ export const gateDefinitions = [
   {
     name: "gate:full",
     description:
-      "Auto-fix once, then run quick, test, db, build/runtime, security, and live public benchmarks.",
-    needsFix: true,
+      "Run explicit fixes once, then quick, test, db, build/runtime, security, and live public benchmarks.",
     includes: [
+      "gate:fix",
       "gate:quick",
       "gate:test",
       "gate:db",
@@ -274,9 +262,9 @@ export const gateDefinitions = [
   {
     name: "gate:ship",
     description:
-      "Run the release gate minus live public benchmarks for routine production deploys.",
-    needsFix: true,
+      "Run explicit fixes once, then the release gate minus live public benchmarks for routine production deploys.",
     includes: [
+      "gate:fix",
       "gate:coherence",
       "gate:quick",
       "gate:test",
@@ -389,7 +377,6 @@ function createGateContext({ cwd = process.cwd(), logger = console.log } = {}) {
   return {
     buildRan: false,
     cwd,
-    fixRan: false,
     logger,
     previewBaseUrl: "",
     previewProcess: null,
@@ -406,12 +393,7 @@ async function runGateDefinition(gate, context) {
 
   if (gate.name === "gate:fix") {
     await runSteps(gate.steps ?? [], context, gate.name, {});
-    context.fixRan = true;
     return;
-  }
-
-  if (gate.needsFix) {
-    await runFixIfNeeded(context);
   }
 
   if (gate.preview) {
@@ -432,18 +414,6 @@ async function runGateDefinition(gate, context) {
   }
 
   await runSteps(gate.steps ?? [], context, gate.name, {});
-}
-
-async function runFixIfNeeded(context) {
-  if (context.fixRan) return;
-
-  const fixGate = getGateDefinition("gate:fix");
-
-  if (!fixGate) throw new Error("gate:fix is not registered.");
-
-  context.logger("\n[gate:fix] Running deterministic auto-fixers once.");
-  await runSteps(fixGate.steps ?? [], context, "gate:fix", {});
-  context.fixRan = true;
 }
 
 async function runBuildIfNeeded(context) {

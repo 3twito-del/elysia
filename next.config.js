@@ -3,7 +3,8 @@
  * for Docker builds.
  */
 import "./src/env.js";
-import { withSerwist } from "@serwist/turbopack";
+
+const isProduction = process.env.NODE_ENV === "production";
 
 const securityHeaders = [
   {
@@ -66,4 +67,8 @@ const config = {
   },
 };
 
-export default withSerwist(config);
+const nextConfig = isProduction
+  ? (await import("@serwist/turbopack")).withSerwist(config)
+  : config;
+
+export default nextConfig;

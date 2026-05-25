@@ -78,8 +78,19 @@ without running long live benchmarks.
 
 ## QA Commands
 
-- `pnpm check`: lint, typecheck, and unit/integration tests.
-- `pnpm build`: production build and environment validation.
+- `pnpm dev`: stable webpack local development server without Turbopack or
+  development service-worker compilation.
+- `pnpm dev:turbo`: opt-in Turbopack development server for explicit
+  compatibility checks.
+- `pnpm verify:fast`: lint, typecheck, and unit/integration tests. Use this for
+  ordinary local changes and PR feedback.
+- `pnpm check`: legacy alias for lint, typecheck, and unit/integration tests.
+- `pnpm build`: production build, environment validation, and AVIF drift check.
+  It does not repair assets; run `pnpm gate:fix` or `pnpm images:avif` for
+  writes.
+- `pnpm verify:full`: explicit full release verification alias for
+  `pnpm gate:release`. It needs a reachable DB, Playwright browsers, network
+  access, and production-readiness provider secrets.
 - `pnpm smoke`: HTTP smoke check against `SMOKE_BASE_URL`.
 - `pnpm e2e`: Playwright desktop and mobile flows. The local suite runs with a
   single worker to avoid shared dev-server and browser-state flakiness.
@@ -90,37 +101,37 @@ without running long live benchmarks.
 
 Quality gates are manual `pnpm gate:*` commands. They do not run in watch mode,
 do not install pre-commit hooks, and should be invoked only when the operator
-chooses the matching depth.
+chooses the matching depth. `pnpm gate:fix` is the only gate stage that writes
+repo-tracked source or asset files; other gates validate the current tree.
 
 - `pnpm gate:list`: prints the gate catalog.
 - `pnpm gate:fix`: applies deterministic repairs: Prisma format/generate,
   public AVIF conversion/reference updates, ESLint fixes, and Prettier writes.
-- `pnpm gate:quick`: runs `gate:fix`, then format check, lint, typecheck,
-  Prisma validate, and AVIF check mode.
-- `pnpm gate:test`: runs `gate:fix`, then Vitest.
-- `pnpm gate:db`: runs `gate:fix`, then Prisma validate/generate, migration
-  deploy, seed, and migration status.
-- `pnpm gate:build`: runs `gate:fix`, then `next build`.
-- `pnpm gate:smoke`, `pnpm gate:e2e`, and `pnpm gate:visual`: run `gate:fix`,
-  build once, start a managed `next start` preview server, then run the named
-  runtime check.
-- `pnpm gate:runtime`: runs `gate:fix`, builds once, starts preview, then runs
+- `pnpm gate:quick`: runs format check, lint, typecheck, Prisma validate, and
+  AVIF check mode without writing files.
+- `pnpm gate:test`: runs Vitest without writing files.
+- `pnpm gate:db`: validates Prisma, deploys migrations, seeds, and checks
+  migration status.
+- `pnpm gate:build`: runs `next build` without writing source assets.
+- `pnpm gate:smoke`, `pnpm gate:e2e`, and `pnpm gate:visual`: build once,
+  start a managed `next start` preview server, then run the named runtime check.
+- `pnpm gate:runtime`: builds once, starts preview, then runs
   smoke, Playwright, and agent-browser visual QA.
 - `pnpm gate:coherence`: runs the coherence contract, lint, typecheck, and
   focused static/Vitest coverage for the gate catalog, AI element accessibility,
   admin commerce, AI model/planner, search, and search state.
-- `pnpm gate:public:local`: runs all public benchmark parts with
-  `--skip-external`.
-- `pnpm gate:public:live`: runs all public benchmark parts against live
-  reference sites with blocked-site replacement enabled.
+- `pnpm gate:public:local`: builds preview and runs all public benchmark parts
+  with `--skip-external`.
+- `pnpm gate:public:live`: builds preview and runs all public benchmark parts
+  against live reference sites with blocked-site replacement enabled.
 - `pnpm gate:security`: checks frozen lockfile install integrity and
   `pnpm audit --prod`.
 - `pnpm gate:prod`: forces production-readiness env validation locally.
-- `pnpm gate:full`: runs fix once, then quick, test, db, build/runtime,
-  security, and live public benchmarks.
-- `pnpm gate:ship`: runs the deploy gate for routine production releases:
-  coherence, quick, test, DB, build, runtime, and security. It intentionally
-  excludes `gate:public:live`.
+- `pnpm gate:full`: explicitly runs `gate:fix` once, then quick, test, db,
+  build/runtime, QA, security, and live public benchmarks.
+- `pnpm gate:ship`: explicitly runs `gate:fix` once, then the deploy gate for
+  routine production releases: coherence, quick, test, DB, build, runtime, and
+  security. It intentionally excludes `gate:public:live`.
 - `pnpm gate:release`: runs `gate:full` plus `gate:prod`.
 
 Prerequisites: DB gates need a reachable `DATABASE_URL`; runtime gates need a
@@ -129,18 +140,45 @@ browsers; visual QA needs `agent-browser` and PowerShell; live benchmarks and
 security audit need network access; production readiness needs real provider
 secrets in the environment.
 
+## Autonomous Gate Escalation
+
+When a user reports a problem, or an operator notices a problem while working,
+run the relevant gate without waiting for an explicit request. Choose the
+smallest high-signal check first, then escalate only when the evidence or touched
+surface justifies the time cost.
+
+- High confidence or high blast radius: run the specific gate immediately
+  (`gate:build` for build/config/PWA, `gate:db` for schema or migration work,
+  `gate:runtime` for preview-only failures, `gate:coherence` for architectural
+  boundary changes).
+- Medium confidence: run the cheapest focused check first, usually
+  `pnpm verify:fast`, a targeted Vitest command, or a browser/dev-server
+  verification. Escalate to the matching gate if the focused check fails or the
+  issue remains plausible.
+- Low confidence: gather runtime logs, browser evidence, or static references
+  first; do not start broad gates until there is a concrete signal.
+- Mutating repair remains explicit to `pnpm gate:fix`. If a deterministic repair
+  is needed, run `gate:fix`, inspect the resulting diff, then rerun the smallest
+  validation gate that covers the changed surface.
+- Use `pnpm verify:full` only for deliberate full release verification or when
+  multiple independent risk areas changed and provider/DB/network prerequisites
+  are available.
+
 ## Production Deploy
 
-Use `gate:ship` as the standing pre-deploy gate. Use `gate:full` only before a
-manual high-risk release where live public benchmark duration is acceptable.
+Use `verify:fast` while iterating locally, `gate:coherence` before opening or
+updating a PR, and `gate:ship` as the standing pre-deploy gate. Use
+`verify:full` only for explicit full release verification where DB, provider
+secrets, network access, and live benchmark duration are acceptable.
 
-1. Run `pnpm gate:coherence`.
-2. Run `pnpm gate:ship`.
-3. Run `git diff --check` and inspect `git status --short`.
-4. If generated QA markdown has trailing blank lines, clean only
+1. Run `pnpm verify:fast`.
+2. Run `pnpm gate:coherence`.
+3. Run `pnpm gate:ship`.
+4. Run `git diff --check` and inspect `git status --short`.
+5. If generated QA markdown has trailing blank lines, clean only
    `docs/qa/*.md`.
-5. Deploy the linked Vercel project with:
+6. Deploy the linked Vercel project with:
    `vercel pull --yes --environment=production`,
    `vercel build --prod`, and
    `vercel deploy --prebuilt --prod`.
-6. Smoke the production URL with the same route coverage as `scripts/smoke.mjs`.
+7. Smoke the production URL with the same route coverage as `scripts/smoke.mjs`.

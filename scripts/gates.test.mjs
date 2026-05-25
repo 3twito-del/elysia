@@ -76,6 +76,33 @@ describe("manual quality gates", () => {
     expect(commandText).not.toMatch(/(^|\s)watch(\s|$)/u);
   });
 
+  it("keeps local development and fast verification non-mutating by default", () => {
+    expect(packageJson.scripts.dev).toBe("next dev --webpack");
+    expect(packageJson.scripts["dev:turbo"]).toBe("next dev --turbopack");
+    expect(packageJson.scripts.predev).toBeUndefined();
+    expect(packageJson.scripts.prebuild).toBe(
+      "node scripts/verify-production-env.mjs && node scripts/convert-public-images-to-avif.mjs --check",
+    );
+    expect(packageJson.scripts["verify:fast"]).toBe(
+      "pnpm lint && pnpm typecheck && pnpm test",
+    );
+    expect(packageJson.scripts["verify:full"]).toBe("pnpm gate:release");
+  });
+
+  it("keeps gate:fix as the only mutating gate stage", () => {
+    expect(getGateDefinition("gate:full")?.includes?.[0]).toBe("gate:fix");
+    expect(getGateDefinition("gate:ship")?.includes?.[0]).toBe("gate:fix");
+
+    for (const gate of gateDefinitions) {
+      expect(gate.needsFix).toBeUndefined();
+      if (gate.name === "gate:fix") continue;
+
+      const commandText = (gate.steps ?? []).map(formatStepCommand).join("\n");
+
+      expect(stepCommandsWriteFiles(commandText)).toBe(false);
+    }
+  });
+
   it("keeps local preview gates on the same build-safe catalog fixtures", () => {
     const gatesSource = readFileSync(
       path.join(repoRoot, "scripts/gates.mjs"),
@@ -106,3 +133,14 @@ describe("manual quality gates", () => {
     expect(existsSync(path.join(repoRoot, ".husky"))).toBe(false);
   });
 });
+
+function stepCommandsWriteFiles(commandText) {
+  return (
+    commandText.includes("--fix") ||
+    commandText.includes("--write") ||
+    commandText.includes("prisma format") ||
+    commandText.includes("prisma generate") ||
+    (commandText.includes("scripts/convert-public-images-to-avif.mjs") &&
+      !commandText.includes("--check"))
+  );
+}

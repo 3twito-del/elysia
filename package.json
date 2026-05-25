@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "prebuild": "node scripts/verify-production-env.mjs && node scripts/convert-public-images-to-avif.mjs",
+    "prebuild": "node scripts/verify-production-env.mjs && node scripts/convert-public-images-to-avif.mjs --check",
     "build": "next build",
     "benchmark:header": "tsx scripts/header-benchmark.ts",
     "benchmark:header:local": "tsx scripts/header-benchmark.ts --skip-external",
@@ -17,7 +17,8 @@
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
-    "dev": "next dev --turbopack",
+    "dev": "next dev --webpack",
+    "dev:turbo": "next dev --turbopack",
     "e2e": "playwright test",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "format:write": "prettier --write \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
@@ -44,7 +45,6 @@
     "postinstall": "prisma generate",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "predev": "node scripts/convert-public-images-to-avif.mjs",
     "preview": "next build && next start",
     "production:readiness": "node scripts/verify-production-env.mjs --readiness",
     "qa:performance": "tsx scripts/qa-site-audit.ts --performance-only",
@@ -56,6 +56,8 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "verify": "pnpm check && pnpm build && pnpm format:check",
+    "verify:fast": "pnpm lint && pnpm typecheck && pnpm test",
+    "verify:full": "pnpm gate:release",
     "verify:runtime": "pnpm smoke && pnpm e2e && pnpm visual:qa"
   },
   "dependencies": {
