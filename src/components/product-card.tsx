@@ -227,7 +227,7 @@ function StaticKineticImageFrame({ children }: { children: ReactNode }) {
       className="kinetic-image-motion"
       data-kinetic-image
       data-motion-enabled="false"
-      data-motion-reduced="false"
+      data-motion-reduced="true"
       data-motion-scope="static"
     >
       <div className="kinetic-image-layer">{children}</div>

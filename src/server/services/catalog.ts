@@ -21,6 +21,7 @@ import {
   getFixtureCatalogProductBySlug,
   getFixtureFeaturedCatalogProducts,
   listFixtureCatalogProducts,
+  shouldFallbackToCatalogFixturesOnDatabaseError,
   shouldUseCatalogFixtures,
 } from "~/server/services/catalog-fixtures";
 import type {
@@ -52,20 +53,106 @@ type CatalogProductRecord = Prisma.ProductGetPayload<{
   include: ReturnType<typeof createCatalogProductInclude>;
 }>;
 
-const getCatalogCategoriesCached = unstable_cache(
-  async (): Promise<CatalogCategory[]> => {
-    if (shouldUseCatalogFixtures()) {
-      return getFixtureCatalogCategories();
+function getCatalogDataSourceCacheKey() {
+  if (shouldUseCatalogFixtures()) return "fixtures";
+
+  return shouldFallbackToCatalogFixturesOnDatabaseError()
+    ? "database-with-fixture-fallback"
+    : "database";
+}
+
+async function readCatalogData<T>({
+  database,
+  fallback,
+  label,
+}: {
+  database: () => Promise<T>;
+  fallback: () => Promise<T> | T;
+  label: string;
+}) {
+  if (shouldUseCatalogFixtures()) {
+    return fallback();
+  }
+
+  try {
+    return await database();
+  } catch (error) {
+    if (
+      !shouldFallbackToCatalogFixturesOnDatabaseError() ||
+      !isCatalogDatabaseReadError(error)
+    ) {
+      throw error;
     }
 
-    const categories = await db.category.findMany({
-      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
-      include: createCategoryImageInclude(),
-    });
+    warnCatalogFixtureFallback(label, error);
 
-    return categories.map(mapCatalogCategory);
+    return fallback();
+  }
+}
+
+const catalogFallbackWarningKeys = new Set<string>();
+const catalogDatabaseReadErrorCodes = new Set([
+  "P1000",
+  "P1001",
+  "P1002",
+  "P1008",
+  "P1017",
+  "P2024",
+]);
+
+function isCatalogDatabaseReadError(error: unknown) {
+  const code =
+    error && typeof error === "object" && "code" in error
+      ? (error as { code?: unknown }).code
+      : undefined;
+  const message = getCatalogErrorMessage(error);
+
+  return (
+    (typeof code === "string" && catalogDatabaseReadErrorCodes.has(code)) ||
+    /Can't reach database server|Authentication failed|Timed out fetching a new connection|Unable to start a transaction|Connection pool timeout|DATABASE_URL is required/i.test(
+      message,
+    )
+  );
+}
+
+function getCatalogErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function warnCatalogFixtureFallback(label: string, error: unknown) {
+  const warningKey = label.split(":")[0] ?? label;
+
+  if (catalogFallbackWarningKeys.has(warningKey)) return;
+
+  catalogFallbackWarningKeys.add(warningKey);
+  console.warn(
+    `[catalog] Falling back to fixture data for ${warningKey} after database read failed: ${getCatalogLogMessage(error)}`,
+  );
+}
+
+function getCatalogLogMessage(error: unknown) {
+  return getCatalogErrorMessage(error)
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 240);
+}
+
+const getCatalogCategoriesCached = unstable_cache(
+  async (): Promise<CatalogCategory[]> => {
+    return readCatalogData({
+      label: "categories",
+      fallback: getFixtureCatalogCategories,
+      database: async () => {
+        const categories = await db.category.findMany({
+          orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+          include: createCategoryImageInclude(),
+        });
+
+        return categories.map(mapCatalogCategory);
+      },
+    });
   },
-  ["catalog:categories"],
+  ["catalog:categories", getCatalogDataSourceCacheKey()],
   {
     revalidate: CATALOG_REVALIDATE_SECONDS,
     tags: [CATALOG_CACHE_TAGS.categories],
@@ -79,20 +166,22 @@ export const getCatalogCategories = cache(
 export async function getCatalogCategoryBySlug(slug: string) {
   const getCatalogCategoryBySlugCached = unstable_cache(
     async () => {
-      if (shouldUseCatalogFixtures()) {
-        return getFixtureCatalogCategoryBySlug(slug);
-      }
+      return readCatalogData({
+        label: `category:${slug}`,
+        fallback: () => getFixtureCatalogCategoryBySlug(slug),
+        database: async () => {
+          const category = await db.category.findUnique({
+            where: { slug },
+            include: createCategoryImageInclude(),
+          });
 
-      const category = await db.category.findUnique({
-        where: { slug },
-        include: createCategoryImageInclude(),
+          if (!category) return null;
+
+          return mapCatalogCategory(category);
+        },
       });
-
-      if (!category) return null;
-
-      return mapCatalogCategory(category);
     },
-    [`catalog:category:${slug}`],
+    ["catalog:category", getCatalogDataSourceCacheKey(), slug],
     {
       revalidate: CATALOG_REVALIDATE_SECONDS,
       tags: [CATALOG_CACHE_TAGS.categories, categoryCacheTag(slug)],
@@ -108,29 +197,31 @@ export const getCatalogCategoryBySlugCachedRequest = cache(
 
 const getCatalogBranchesCached = unstable_cache(
   async (): Promise<CatalogBranch[]> => {
-    if (shouldUseCatalogFixtures()) {
-      return getFixtureCatalogBranches();
-    }
+    return readCatalogData({
+      label: "branches",
+      fallback: getFixtureCatalogBranches,
+      database: async () => {
+        const settings = await db.serviceSettings.findUnique({
+          where: { id: "default" },
+        });
 
-    const settings = await db.serviceSettings.findUnique({
-      where: { id: "default" },
-    });
+        if (!settings?.physicalBranchesEnabled) return [];
 
-    if (!settings?.physicalBranchesEnabled) return [];
+        const branches = await db.branch.findMany({
+          where: {
+            kind: "PHYSICAL",
+            isActive: true,
+            isApproved: true,
+            isPublic: true,
+          },
+          orderBy: [{ sortOrder: "asc" }, { city: "asc" }, { name: "asc" }],
+        });
 
-    const branches = await db.branch.findMany({
-      where: {
-        kind: "PHYSICAL",
-        isActive: true,
-        isApproved: true,
-        isPublic: true,
+        return branches.map(mapCatalogBranch);
       },
-      orderBy: [{ sortOrder: "asc" }, { city: "asc" }, { name: "asc" }],
     });
-
-    return branches.map(mapCatalogBranch);
   },
-  ["catalog:branches"],
+  ["catalog:branches", getCatalogDataSourceCacheKey()],
   {
     revalidate: CATALOG_REVALIDATE_SECONDS,
     tags: [CATALOG_CACHE_TAGS.branches],
@@ -143,19 +234,24 @@ export const getCatalogBranches = cache(
 
 const getFeaturedCatalogProductsCached = unstable_cache(
   async (take: number) => {
-    if (shouldUseCatalogFixtures()) {
-      return getFixtureFeaturedCatalogProducts(take);
-    }
+    return readCatalogData({
+      label: "featured-products",
+      fallback: () => getFixtureFeaturedCatalogProducts(take),
+      database: async () => {
+        const records = await db.product.findMany({
+          where: ACTIVE_PRODUCT_WHERE,
+          include: createCatalogProductInclude(),
+          orderBy: [{ createdAt: "desc" }],
+        });
 
-    const records = await db.product.findMany({
-      where: ACTIVE_PRODUCT_WHERE,
-      include: createCatalogProductInclude(),
-      orderBy: [{ createdAt: "desc" }],
+        return selectFeaturedCatalogProducts(
+          records.map(mapCatalogProduct),
+          take,
+        );
+      },
     });
-
-    return selectFeaturedCatalogProducts(records.map(mapCatalogProduct), take);
   },
-  ["catalog:featured-products:v5"],
+  ["catalog:featured-products:v5", getCatalogDataSourceCacheKey()],
   {
     revalidate: CATALOG_REVALIDATE_SECONDS,
     tags: [CATALOG_CACHE_TAGS.products],
@@ -198,22 +294,30 @@ function selectFeaturedCatalogProducts(
 export async function listCatalogProducts(input: { category?: string } = {}) {
   const getCatalogProductsCached = unstable_cache(
     async () => {
-      if (shouldUseCatalogFixtures()) {
-        return listFixtureCatalogProducts(input);
-      }
+      return readCatalogData({
+        label: input.category
+          ? `products:category:${input.category}`
+          : "products",
+        fallback: () => listFixtureCatalogProducts(input),
+        database: async () => {
+          const records = await db.product.findMany({
+            where: {
+              ...ACTIVE_PRODUCT_WHERE,
+              ...(input.category ? { category: { slug: input.category } } : {}),
+            },
+            include: createCatalogProductInclude(),
+            orderBy: [{ createdAt: "desc" }],
+          });
 
-      const records = await db.product.findMany({
-        where: {
-          ...ACTIVE_PRODUCT_WHERE,
-          ...(input.category ? { category: { slug: input.category } } : {}),
+          return records.map(mapCatalogProduct);
         },
-        include: createCatalogProductInclude(),
-        orderBy: [{ createdAt: "desc" }],
       });
-
-      return records.map(mapCatalogProduct);
     },
-    [`catalog:products:v5:${input.category ?? "all"}`],
+    [
+      "catalog:products:v5",
+      getCatalogDataSourceCacheKey(),
+      input.category ?? "all",
+    ],
     {
       revalidate: CATALOG_REVALIDATE_SECONDS,
       tags: [
@@ -231,18 +335,20 @@ export const listCatalogProductsCachedRequest = cache(listCatalogProducts);
 export async function getCatalogProductBySlug(slug: string) {
   const getCatalogProductBySlugCached = unstable_cache(
     async () => {
-      if (shouldUseCatalogFixtures()) {
-        return getFixtureCatalogProductBySlug(slug);
-      }
+      return readCatalogData({
+        label: `product:${slug}`,
+        fallback: () => getFixtureCatalogProductBySlug(slug),
+        database: async () => {
+          const record = await db.product.findFirst({
+            where: { ...ACTIVE_PRODUCT_WHERE, slug },
+            include: createCatalogProductInclude(),
+          });
 
-      const record = await db.product.findFirst({
-        where: { ...ACTIVE_PRODUCT_WHERE, slug },
-        include: createCatalogProductInclude(),
+          return record ? mapCatalogProduct(record) : null;
+        },
       });
-
-      return record ? mapCatalogProduct(record) : null;
     },
-    [`catalog:product:v5:${slug}`],
+    ["catalog:product:v5", getCatalogDataSourceCacheKey(), slug],
     {
       revalidate: CATALOG_REVALIDATE_SECONDS,
       tags: [CATALOG_CACHE_TAGS.products, productCacheTag(slug)],
@@ -272,7 +378,7 @@ const getCatalogFacetsCached = unstable_cache(
 
     return getCatalogFacetsFromProducts(products);
   },
-  ["catalog:facets:v5"],
+  ["catalog:facets:v5", getCatalogDataSourceCacheKey()],
   {
     revalidate: CATALOG_REVALIDATE_SECONDS,
     tags: [CATALOG_CACHE_TAGS.facets, CATALOG_CACHE_TAGS.products],

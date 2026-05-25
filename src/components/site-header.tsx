@@ -107,6 +107,7 @@ export function SiteHeader() {
             className="brand-header-mark site-header-link flex min-w-0 shrink-0 items-center justify-self-center md:justify-self-start"
             dir="ltr"
             href="/"
+            prefetch={false}
           >
             <span className="truncate text-[1.65rem] font-medium tracking-normal sm:text-3xl lg:text-[2.35rem]">
               Elysia

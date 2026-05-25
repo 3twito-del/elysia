@@ -1,4 +1,8 @@
 import { db } from "~/server/db";
+import {
+  getFixtureCatalogProductBySlug,
+  shouldUseCatalogFixtures,
+} from "~/server/services/catalog-fixtures";
 
 export async function recordProductClickEvent(input: {
   productSlug: string;
@@ -6,6 +10,10 @@ export async function recordProductClickEvent(input: {
   position?: number;
   sessionKey?: string;
 }) {
+  if (shouldUseCatalogFixtures()) {
+    return Boolean(getFixtureCatalogProductBySlug(input.productSlug));
+  }
+
   const product = await db.product.findUnique({
     where: { slug: input.productSlug },
     select: { id: true },
@@ -31,6 +39,10 @@ export async function recordProductViewEvent(input: {
   customerId?: string;
   path?: string;
 }) {
+  if (shouldUseCatalogFixtures()) {
+    return Boolean(getFixtureCatalogProductBySlug(input.productSlug));
+  }
+
   const product = await db.product.findUnique({
     where: { slug: input.productSlug },
     select: { id: true },

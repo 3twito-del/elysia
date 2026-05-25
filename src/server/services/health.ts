@@ -1,10 +1,13 @@
 import { env } from "~/env";
 import { notificationProvider } from "~/server/adapters/notifications";
 import { db } from "~/server/db";
+import { shouldFallbackToCatalogFixturesOnDatabaseError } from "~/server/services/catalog-fixtures";
 
 export type HealthChecks = Awaited<ReturnType<typeof createHealthChecks>>;
 
 export async function createHealthChecks() {
+  const isVercelPreview = process.env.VERCEL_ENV === "preview";
+
   return {
     database: await checkDatabase(),
     search:
@@ -22,15 +25,15 @@ export async function createHealthChecks() {
       env.CARD_COM_API_PASSWORD &&
       env.CARD_COM_WEBHOOK_SECRET
         ? "configured"
-        : env.NODE_ENV === "production"
-          ? "missing"
-          : "mock-fallback",
+        : "manual-checkout",
     jobs:
       env.JOB_RUNNER_SECRET || env.CRON_SECRET
         ? "secured"
-        : env.NODE_ENV === "production"
-          ? "missing-secret"
-          : "dev-open",
+        : isVercelPreview
+          ? "preview-disabled"
+          : env.NODE_ENV === "production"
+            ? "missing-secret"
+            : "dev-open",
   };
 }
 
@@ -45,6 +48,8 @@ async function checkDatabase() {
     await db.$queryRaw`SELECT 1`;
     return "up";
   } catch {
-    return "down";
+    return shouldFallbackToCatalogFixturesOnDatabaseError()
+      ? "degraded-fallback"
+      : "down";
   }
 }

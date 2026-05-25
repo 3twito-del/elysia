@@ -13,7 +13,10 @@ import {
 } from "~/lib/service-validation";
 import { db } from "~/server/db";
 import { mediaProvider } from "~/server/adapters/media";
-import { shouldUseCatalogFixtures } from "~/server/services/catalog-fixtures";
+import {
+  shouldFallbackToCatalogFixturesOnDatabaseError,
+  shouldUseCatalogFixtures,
+} from "~/server/services/catalog-fixtures";
 import { BUSINESS_EVENTS, createOutboxEvent } from "~/server/services/outbox";
 
 const defaultServiceSettings = {
@@ -99,15 +102,17 @@ export type ServiceRequestListInput = z.infer<
 export { serviceRequestListInputSchema };
 
 export async function getServiceSettings() {
-  if (shouldUseCatalogFixtures()) {
-    return defaultServiceSettings;
-  }
+  return readPublicServiceData({
+    label: "settings",
+    fallback: () => defaultServiceSettings,
+    database: async () => {
+      const settings = await db.serviceSettings.findUnique({
+        where: { id: defaultServiceSettings.id },
+      });
 
-  const settings = await db.serviceSettings.findUnique({
-    where: { id: defaultServiceSettings.id },
+      return settings ?? defaultServiceSettings;
+    },
   });
-
-  return settings ?? defaultServiceSettings;
 }
 
 export async function getPublicContactSettings() {
@@ -122,35 +127,39 @@ export async function getPublicContactSettings() {
 }
 
 export async function getActiveContactTopics() {
-  if (shouldUseCatalogFixtures()) {
-    return defaultContactTopics;
-  }
+  return readPublicServiceData({
+    label: "contact-topics",
+    fallback: () => defaultContactTopics,
+    database: async () => {
+      const topics = await db.contactTopic.findMany({
+        where: { isActive: true },
+        orderBy: [{ sortOrder: "asc" }, { label: "asc" }],
+      });
 
-  const topics = await db.contactTopic.findMany({
-    where: { isActive: true },
-    orderBy: [{ sortOrder: "asc" }, { label: "asc" }],
+      return topics.length > 0 ? topics : defaultContactTopics;
+    },
   });
-
-  return topics.length > 0 ? topics : defaultContactTopics;
 }
 
 export async function getPublicPhysicalBranches() {
-  if (shouldUseCatalogFixtures()) {
-    return [];
-  }
+  return readPublicServiceData({
+    label: "branches",
+    fallback: () => [],
+    database: async () => {
+      const settings = await getServiceSettings();
 
-  const settings = await getServiceSettings();
+      if (!settings.physicalBranchesEnabled) return [];
 
-  if (!settings.physicalBranchesEnabled) return [];
-
-  return db.branch.findMany({
-    where: {
-      kind: "PHYSICAL",
-      isActive: true,
-      isApproved: true,
-      isPublic: true,
+      return db.branch.findMany({
+        where: {
+          kind: "PHYSICAL",
+          isActive: true,
+          isApproved: true,
+          isPublic: true,
+        },
+        orderBy: [{ sortOrder: "asc" }, { city: "asc" }, { name: "asc" }],
+      });
     },
-    orderBy: [{ sortOrder: "asc" }, { city: "asc" }, { name: "asc" }],
   });
 }
 
@@ -495,6 +504,71 @@ export function shouldShowPhysicalBranches(input: {
   physicalBranchesEnabled: boolean;
 }) {
   return input.physicalBranchesEnabled;
+}
+
+const publicServiceFallbackWarningKeys = new Set<string>();
+
+async function readPublicServiceData<T>({
+  database,
+  fallback,
+  label,
+}: {
+  database: () => Promise<T>;
+  fallback: () => Promise<T> | T;
+  label: string;
+}) {
+  if (shouldUseCatalogFixtures()) {
+    return fallback();
+  }
+
+  try {
+    return await database();
+  } catch (error) {
+    if (
+      !shouldFallbackToCatalogFixturesOnDatabaseError() ||
+      !isPublicServiceDatabaseReadError(error)
+    ) {
+      throw error;
+    }
+
+    warnPublicServiceFallback(label, error);
+
+    return fallback();
+  }
+}
+
+function isPublicServiceDatabaseReadError(error: unknown) {
+  const code =
+    error && typeof error === "object" && "code" in error
+      ? (error as { code?: unknown }).code
+      : undefined;
+  const message = getPublicServiceErrorMessage(error);
+
+  return (
+    (typeof code === "string" &&
+      ["P1000", "P1001", "P1002", "P1008", "P1017", "P2024"].includes(code)) ||
+    /Can't reach database server|Authentication failed|Timed out fetching a new connection|Unable to start a transaction|Connection pool timeout|DATABASE_URL is required/i.test(
+      message,
+    )
+  );
+}
+
+function getPublicServiceErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function warnPublicServiceFallback(label: string, error: unknown) {
+  if (publicServiceFallbackWarningKeys.has(label)) return;
+
+  publicServiceFallbackWarningKeys.add(label);
+  console.warn(
+    `[service] Falling back to default public ${label} after database read failed: ${getPublicServiceErrorMessage(
+      error,
+    )
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 240)}`,
+  );
 }
 
 function getValidatedServiceRequestFiles(files: File[]) {

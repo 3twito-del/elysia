@@ -2,6 +2,9 @@ import { defineConfig, devices } from "@playwright/test";
 
 const baseURL = process.env.E2E_BASE_URL ?? "http://localhost:3000";
 const webServerReadyUrl = new URL("/manifest.webmanifest", baseURL).toString();
+const webServerCommand =
+  process.env.E2E_WEB_SERVER_COMMAND ??
+  "pnpm exec next build && pnpm exec next start -p 3000";
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -10,15 +13,16 @@ export default defineConfig({
   webServer: process.env.E2E_BASE_URL
     ? undefined
     : {
-        command: "pnpm exec next dev --webpack",
+        command: webServerCommand,
         env: {
           AI_SEMANTIC_SEARCH_ENABLED: "false",
           E2E_CATALOG_FIXTURES: "1",
           TYPESENSE_API_KEY: "",
           TYPESENSE_HOST: "",
+          VERCEL_ENV: "preview",
         },
-        reuseExistingServer: !process.env.CI,
-        timeout: 120_000,
+        reuseExistingServer: process.env.E2E_REUSE_EXISTING_SERVER === "1",
+        timeout: 180_000,
         url: webServerReadyUrl,
       },
   expect: {

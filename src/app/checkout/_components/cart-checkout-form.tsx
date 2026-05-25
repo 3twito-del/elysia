@@ -361,7 +361,7 @@ export function CartCheckoutForm() {
                 פריטים בסל
               </CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-3">
+            <CardContent className="grid min-h-72 gap-3">
               {cartQuery.isLoading || !sessionKey ? (
                 <LoadingState label="טוען סל..." variant="plain" />
               ) : cartQuery.error ? (

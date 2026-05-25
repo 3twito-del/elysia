@@ -63,7 +63,7 @@ export function StaticKineticImageFrame({
       className="kinetic-image-motion"
       data-kinetic-image
       data-motion-enabled="false"
-      data-motion-reduced="false"
+      data-motion-reduced="true"
       data-motion-scope="static"
       data-scroll-motion={scrollMotion ? "true" : "false"}
     >
@@ -90,7 +90,7 @@ export function StaticCinematicHeroSequence({
       aria-hidden="true"
       className={cn("cinematic-hero-sequence")}
       data-motion-continuous="false"
-      data-motion-reduced="false"
+      data-motion-reduced="true"
       data-motion-scope={motionScope}
       data-testid={testId}
     >

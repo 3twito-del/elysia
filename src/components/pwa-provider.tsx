@@ -35,12 +35,18 @@ export function PwaProvider({ children }: PwaProviderProps) {
     shouldEnablePwaRegistration,
     getServerPwaRegistrationSnapshot,
   );
+  const hydrated = useSyncExternalStore(
+    subscribeToPwaRegistrationStore,
+    getClientHydrationSnapshot,
+    getServerPwaRegistrationSnapshot,
+  );
 
   useEffect(() => {
+    if (!hydrated) return;
     if (enabled || process.env.NODE_ENV === "production") return;
 
     void unregisterDevelopmentServiceWorkers();
-  }, [enabled]);
+  }, [enabled, hydrated]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -61,6 +67,10 @@ function subscribeToPwaRegistrationStore() {
 
 function getServerPwaRegistrationSnapshot() {
   return false;
+}
+
+function getClientHydrationSnapshot() {
+  return true;
 }
 
 function shouldEnablePwaRegistration() {

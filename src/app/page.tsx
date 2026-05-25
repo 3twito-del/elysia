@@ -50,7 +50,7 @@ export default async function Home() {
           data-motion-intensity="cinematic"
           data-motion-media="true"
           data-motion-parallax="false"
-          data-motion-reduced="false"
+          data-motion-reduced="true"
           data-motion-scope="home-hero"
         >
           <div className="motion-media-content absolute inset-0 min-h-[var(--home-hero-height)]">

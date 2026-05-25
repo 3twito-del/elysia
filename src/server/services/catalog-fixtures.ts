@@ -73,6 +73,10 @@ export function shouldUseCatalogFixtures() {
   );
 }
 
+export function shouldFallbackToCatalogFixturesOnDatabaseError() {
+  return process.env.CATALOG_DB_ERROR_FALLBACK === "1";
+}
+
 export function getFixtureCatalogCategories() {
   return fixtureCategories;
 }

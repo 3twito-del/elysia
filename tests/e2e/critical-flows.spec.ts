@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 
 const consentStorageKey = "elysia_cookie_consent";
 const accessibilityStorageKey = "elysia.accessibility-settings";
@@ -725,6 +725,38 @@ test.describe("accessibility and responsive guardrails", () => {
     expect(kineticImageTransform).toBe("none");
   });
 
+  test("keeps selected size controls readable on hover and focus", async ({
+    page,
+  }) => {
+    await page.goto("/size-guide?kind=ring", { waitUntil: "domcontentloaded" });
+
+    const selectedSizeControls = page
+      .getByTestId("size-guide-tool")
+      .locator("button[aria-pressed='true']");
+
+    await expect(selectedSizeControls).toHaveCount(2);
+
+    for (
+      let index = 0;
+      index < (await selectedSizeControls.count());
+      index += 1
+    ) {
+      const control = selectedSizeControls.nth(index);
+
+      await expectReadableControl(control, `selected size control ${index}`);
+      await control.hover();
+      await expectReadableControl(
+        control,
+        `selected size control ${index} hover`,
+      );
+      await control.focus();
+      await expectReadableControl(
+        control,
+        `selected size control ${index} focus`,
+      );
+    }
+  });
+
   test("does not replay entrance motion during public reloads", async ({
     page,
   }) => {
@@ -1166,6 +1198,128 @@ async function expectNoHorizontalOverflow(page: Page) {
 
   expect(overflow).toBeLessThanOrEqual(1);
 }
+
+async function expectReadableControl(locator: Locator, label: string) {
+  const readability = await locator.evaluate((element) => {
+    const styles = window.getComputedStyle(element);
+    const rect = element.getBoundingClientRect();
+    const text = (element.textContent ?? "").trim();
+    const foreground = parseCssColor(styles.color) ?? {
+      a: 1,
+      b: 0,
+      g: 0,
+      r: 0,
+    };
+    const background = getEffectiveBackgroundColor(element);
+
+    return {
+      contrast: getContrastRatio(foreground, background),
+      height: rect.height,
+      opacity: Number(styles.opacity),
+      text,
+      visibility: styles.visibility,
+      width: rect.width,
+    };
+
+    function getEffectiveBackgroundColor(target: Element) {
+      const colors: RgbaColor[] = [];
+      let current: Element | null = target;
+
+      while (current) {
+        const color = parseCssColor(
+          window.getComputedStyle(current).backgroundColor,
+        );
+
+        if (color && color.a > 0) {
+          colors.unshift(color);
+        }
+
+        current = current.parentElement;
+      }
+
+      return colors.reduce(
+        (background, color) => compositeColor(color, background),
+        { a: 1, b: 255, g: 255, r: 255 } satisfies RgbaColor,
+      );
+    }
+
+    function parseCssColor(value: string): RgbaColor | null {
+      const match = /^rgba?\(([^)]+)\)$/u.exec(value);
+
+      if (!match) return null;
+
+      const parts = match[1]!
+        .split(",")
+        .map((part) => Number.parseFloat(part.trim()));
+      const [r, g, b, a = 1] = parts;
+
+      if (![r, g, b, a].every((part) => Number.isFinite(part))) return null;
+
+      return { a, b: b!, g: g!, r: r! };
+    }
+
+    function compositeColor(foreground: RgbaColor, background: RgbaColor) {
+      const alpha = foreground.a + background.a * (1 - foreground.a);
+
+      if (alpha <= 0) return { a: 0, b: 0, g: 0, r: 0 };
+
+      return {
+        a: alpha,
+        b:
+          (foreground.b * foreground.a +
+            background.b * background.a * (1 - foreground.a)) /
+          alpha,
+        g:
+          (foreground.g * foreground.a +
+            background.g * background.a * (1 - foreground.a)) /
+          alpha,
+        r:
+          (foreground.r * foreground.a +
+            background.r * background.a * (1 - foreground.a)) /
+          alpha,
+      };
+    }
+
+    function getContrastRatio(foreground: RgbaColor, background: RgbaColor) {
+      const lighter = Math.max(
+        getRelativeLuminance(foreground),
+        getRelativeLuminance(background),
+      );
+      const darker = Math.min(
+        getRelativeLuminance(foreground),
+        getRelativeLuminance(background),
+      );
+
+      return (lighter + 0.05) / (darker + 0.05);
+    }
+
+    function getRelativeLuminance(color: RgbaColor) {
+      const [r, g, b] = [color.r, color.g, color.b].map((channel) => {
+        const normalized = channel / 255;
+
+        return normalized <= 0.03928
+          ? normalized / 12.92
+          : ((normalized + 0.055) / 1.055) ** 2.4;
+      });
+
+      return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
+    }
+  });
+
+  expect(readability.text, `${label} has visible text`).not.toBe("");
+  expect(readability.visibility, `${label} is visible`).toBe("visible");
+  expect(readability.opacity, `${label} is opaque`).toBeGreaterThan(0.95);
+  expect(readability.width, `${label} has width`).toBeGreaterThan(0);
+  expect(readability.height, `${label} has height`).toBeGreaterThan(0);
+  expect(readability.contrast, `${label} contrast`).toBeGreaterThanOrEqual(4.5);
+}
+
+type RgbaColor = {
+  a: number;
+  b: number;
+  g: number;
+  r: number;
+};
 
 async function installReloadMotionMonitor(page: Page) {
   await page.addInitScript(() => {

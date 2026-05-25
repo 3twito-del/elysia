@@ -32,7 +32,7 @@ const publicRouteChecks = [
   {
     path: "/branches",
     statuses: [307],
-    includesAnywhere: ["/faq"],
+    includesAnywhere: ["/service"],
   },
   {
     path: "/gifts",

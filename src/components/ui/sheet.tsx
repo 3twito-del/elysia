@@ -68,9 +68,46 @@ function Sheet({
 }
 
 function SheetTrigger({
+  asChild,
+  children,
+  disabled,
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Trigger>) {
-  return <SheetPrimitive.Trigger data-slot="sheet-trigger" {...props} />;
+  const hydrated = useHydrated();
+
+  if (!hydrated) {
+    const fallbackProps = {
+      ...props,
+      "data-hydrated": "false",
+      "data-slot": "sheet-trigger",
+      disabled: true,
+    };
+
+    if (asChild && React.isValidElement(children)) {
+      return React.cloneElement(
+        children as React.ReactElement<Record<string, unknown>>,
+        fallbackProps,
+      );
+    }
+
+    return (
+      <button type="button" {...fallbackProps}>
+        {children}
+      </button>
+    );
+  }
+
+  return (
+    <SheetPrimitive.Trigger
+      asChild={asChild}
+      data-hydrated={hydrated ? "true" : "false"}
+      data-slot="sheet-trigger"
+      disabled={disabled}
+      {...props}
+    >
+      {children}
+    </SheetPrimitive.Trigger>
+  );
 }
 
 function SheetClose({
@@ -208,3 +245,23 @@ export {
   SheetTitle,
   SheetDescription,
 };
+
+function useHydrated() {
+  return React.useSyncExternalStore(
+    subscribeToNoopStore,
+    getClientSnapshot,
+    getServerSnapshot,
+  );
+}
+
+function subscribeToNoopStore() {
+  return () => undefined;
+}
+
+function getClientSnapshot() {
+  return true;
+}
+
+function getServerSnapshot() {
+  return false;
+}
