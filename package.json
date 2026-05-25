@@ -141,8 +141,10 @@
       "qs": "6.15.2",
       "svix": "1.92.2"
     },
+    "ignoredBuiltDependencies": [
+      "agent-browser"
+    ],
     "onlyBuiltDependencies": [
-      "agent-browser",
       "@prisma/client",
       "@prisma/engines",
       "@swc/core",
