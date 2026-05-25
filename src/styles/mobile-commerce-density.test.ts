@@ -124,7 +124,7 @@ describe("mobile commerce density", () => {
     );
     expect(search).toContain("mt-5 grid gap-4 sm:mt-8");
     expect(productCard).toContain("relative aspect-[5/4] overflow-hidden");
-    expect(productCard).toContain("flex min-h-36 flex-1 flex-col");
+    expect(productCard).toContain("flex min-h-32 flex-1 flex-col");
     expect(productCard).toContain("line-clamp-1 min-h-5");
   });
 });

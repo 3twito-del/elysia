@@ -30,13 +30,14 @@ describe("image performance guardrails", () => {
     expect(source).toContain("(min-width: 640px) 50vw");
   });
 
-  it("does not viewport-prefetch repeated product card links", () => {
+  it("does not viewport-prefetch the repeated product card link", () => {
     const source = readFileSync(
       path.join(process.cwd(), "src/components/product-card.tsx"),
       "utf8",
     );
 
-    expect(source.match(/prefetch=\{false\}/g)).toHaveLength(2);
+    expect(source).toContain("group/product-link block h-full");
+    expect(source.match(/prefetch=\{false\}/g)).toHaveLength(1);
   });
 
   it("prioritizes only the initial product gallery image and lazy-loads later active images", () => {

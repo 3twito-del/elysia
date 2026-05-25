@@ -1906,22 +1906,6 @@ footer nav a:focus-visible {
   box-shadow: none !important;
 }
 
-.product-card-cta:not(:disabled) {
-  border-color: rgb(16 24 28 / 12%) !important;
-  background: #ffffff !important;
-  color: var(--foreground) !important;
-  box-shadow: none !important;
-}
-
-.product-card-cta:not(:disabled):hover,
-.product-card-cta:not(:disabled):focus-visible {
-  --tw-ring-color: rgb(16 24 28 / 14%) !important;
-  border-color: rgb(16 24 28 / 24%) !important;
-  background: #ffffff !important;
-  color: var(--foreground) !important;
-  box-shadow: none !important;
-}
-
 .ai-recommendation-card {
   transition:
     border-color var(--motion-fast) var(--ease-motion-standard),

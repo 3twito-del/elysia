@@ -54,16 +54,15 @@ describe("luxury commerce UI hardening", () => {
     expect(mobileNav).toContain("grid-cols-4");
     expect(mobileNav).not.toContain("<Gem");
     expect(footer).not.toContain("bg-background rounded-md border");
-    expect(footer).toContain(
-      'className="group border-b border-[var(--glass-border)]"',
-    );
-    expect(footer).toContain("lg:grid-cols-[1.3fr_0.55fr_0.64fr_0.64fr_1fr]");
-    expect(footer).toContain(
-      "const primaryServiceLinks = serviceLinks.slice(0, 7)",
-    );
-    expect(footer).toContain(
-      "const secondaryServiceLinks = serviceLinks.slice(7)",
-    );
+    expect(footer).toContain("border-t border-[var(--glass-border)] pt-10");
+    expect(footer).toContain("lg:grid-cols-[1.28fr_0.72fr_0.72fr_0.72fr]");
+    expect(footer).toContain("function FooterNav");
+    expect(footer).toContain('title="קטלוג"');
+    expect(footer).toContain('title="שירות וקנייה"');
+    expect(footer).toContain('title="מידע"');
+    expect(footer).not.toContain("primaryServiceLinks");
+    expect(footer).not.toContain("secondaryServiceLinks");
+    expect(footer).not.toContain("שירות וקנייה - המשך");
     expect(footer).toContain("const socialLinks = [");
     expect(footer).toContain("https://www.instagram.com/elysia.one/");
     expect(footer).toContain("https://www.tiktok.com/@elysia.one");

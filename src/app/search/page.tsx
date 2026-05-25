@@ -7,7 +7,6 @@ import {
   Grid2X2,
   List,
   Search,
-  ShoppingBag,
   Sparkles,
   X,
 } from "lucide-react";
@@ -474,9 +473,6 @@ function SearchResultListItem({
     ? Math.round(((compareAt - product.price) / compareAt) * 100)
     : undefined;
   const href = createProductSearchHref(product.slug, searchContext);
-  const actionHref = commerceStatus.canAddToCart
-    ? href
-    : createProductServiceHref(product, commerceStatus.serviceReason);
   const commerceHighlights = (product.commerceHighlights ?? []).slice(0, 2);
   const productDetails = [
     product.categoryName,
@@ -486,19 +482,17 @@ function SearchResultListItem({
   ].filter((detail): detail is string => Boolean(detail));
 
   return (
-    <article
+    <Link
       aria-label={product.name}
       className={cn(
-        "product-card-shell group/list grid min-h-full overflow-hidden rounded-md border-y border-[var(--glass-border)] bg-transparent shadow-none transition focus-within:ring-3 focus-within:ring-[var(--glass-focus)] md:grid-cols-[minmax(10rem,14rem)_1fr]",
+        "product-card-shell group/list grid min-h-full overflow-hidden rounded-md border-y border-[var(--glass-border)] bg-transparent shadow-none transition focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none md:grid-cols-[minmax(10rem,14rem)_1fr]",
         isUnavailable && "bg-muted/30",
       )}
       data-testid="search-result-list-item"
+      href={href}
+      prefetch={false}
     >
-      <Link
-        aria-label={`צפייה במוצר ${product.name}`}
-        className="brand-product-media glass-inset relative block aspect-[5/4] overflow-hidden focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none md:aspect-square"
-        href={href}
-      >
+      <div className="brand-product-media glass-inset relative block aspect-[5/4] overflow-hidden md:aspect-square">
         <Image
           alt={product.name}
           blurDataURL={SEARCH_RESULT_IMAGE_BLUR_DATA_URL}
@@ -520,7 +514,7 @@ function SearchResultListItem({
             ) : null}
           </div>
         ) : null}
-      </Link>
+      </div>
 
       <div className="grid min-w-0 gap-4 py-[var(--ui-card-padding)] md:grid-cols-[minmax(0,1fr)_minmax(11rem,auto)] md:pe-[var(--ui-card-padding)]">
         <div className="min-w-0">
@@ -530,7 +524,10 @@ function SearchResultListItem({
               <Badge variant="secondary">{product.material}</Badge>
             ) : null}
           </div>
-          <h3 className="line-clamp-2 text-lg leading-7 font-medium" dir="auto">
+          <h3
+            className="group-hover/list:text-muted-foreground group-focus-visible/list:text-muted-foreground line-clamp-2 text-lg leading-7 font-medium transition-colors duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)]"
+            dir="auto"
+          >
             {product.name}
           </h3>
           <p className="text-muted-foreground mt-2 line-clamp-2 text-sm leading-6">
@@ -604,32 +601,10 @@ function SearchResultListItem({
               <span className="truncate">{commerceStatus.label}</span>
             </span>
           </div>
-          <Button
-            asChild
-            className="product-card-cta min-h-10 w-full gap-2"
-            variant="outline"
-          >
-            <Link
-              aria-label={`${commerceStatus.cardCtaLabel}: ${product.name}`}
-              href={actionHref}
-            >
-              <ShoppingBag aria-hidden="true" className="size-4" />
-              {commerceStatus.cardCtaLabel}
-            </Link>
-          </Button>
         </div>
       </div>
-    </article>
+    </Link>
   );
-}
-
-function createProductServiceHref(
-  product: Pick<CatalogProduct, "name" | "sku">,
-  reason: string,
-) {
-  const productReference = `${product.name} (${product.sku})`;
-
-  return `/service?productReference=${encodeURIComponent(productReference)}&reason=${encodeURIComponent(reason)}`;
 }
 
 function getActiveSearchFilters(

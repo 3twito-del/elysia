@@ -1,10 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ShoppingBag, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 import { Badge } from "~/components/ui/badge";
-import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { ProductCardFavoriteButton } from "~/components/product-card-favorite-button";
 import { getPublicProductCommerceStatus } from "~/lib/commerce-labels";
@@ -65,9 +64,6 @@ export function ProductCard({
     ? Math.round(((compareAt - product.price) / compareAt) * 100)
     : undefined;
   const href = createProductHref(product.slug, searchContext);
-  const actionHref = commerceStatus.canAddToCart
-    ? href
-    : createProductServiceHref(product, commerceStatus.serviceReason);
   const commerceHighlights = product.commerceHighlights ?? [];
   const imageObjectPosition = getProductCardImageObjectPosition(product);
   const productDetails = [product.material, product.stone].filter(
@@ -78,7 +74,7 @@ export function ProductCard({
     <Card
       aria-label={product.name}
       className={cn(
-        "product-card-shell group/card h-full min-w-0 gap-0 overflow-hidden rounded-md border-0 bg-transparent py-0 shadow-none transition focus-within:ring-3 focus-within:ring-[var(--glass-focus)]",
+        "product-card-shell group/card relative h-full min-w-0 gap-0 overflow-hidden rounded-md border-0 bg-transparent py-0 shadow-none transition focus-within:ring-3 focus-within:ring-[var(--glass-focus)]",
         isUnavailable && "bg-muted/30",
       )}
       data-public-floating-avoid="true"
@@ -86,7 +82,7 @@ export function ProductCard({
     >
       <Link
         aria-label={`צפייה במוצר ${product.name}`}
-        className="block focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
+        className="group/product-link block h-full min-w-0 focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
         href={href}
         prefetch={false}
       >
@@ -116,105 +112,93 @@ export function ProductCard({
             </div>
           ) : null}
         </div>
-      </Link>
-      <CardContent className="flex min-h-36 flex-1 flex-col gap-2.5 px-0 pt-3 pb-0 sm:min-h-44 sm:gap-3">
-        <div className="flex items-start justify-between gap-2.5 sm:gap-3">
-          <div className="min-w-0">
-            <h3
-              className="line-clamp-2 min-h-10 text-base leading-[1.4] font-medium sm:min-h-11 sm:leading-[1.45]"
-              dir="auto"
-            >
-              {product.name}
-            </h3>
-            <p className="text-muted-foreground mt-1 line-clamp-1 min-h-5 text-sm leading-5 sm:line-clamp-2 sm:min-h-9">
-              {product.shortDescription}
-            </p>
-            <div
-              className="text-muted-foreground mt-1.5 flex min-h-5 flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-5 sm:mt-2"
-              data-testid="product-card-attributes"
-            >
-              {productDetails.map((detail, index) => (
-                <span
-                  className="max-w-full min-w-0 truncate"
-                  key={`${detail}-${index}`}
-                >
-                  {detail}
-                </span>
-              ))}
-            </div>
-            {matchReason ? (
-              <p
-                className="text-muted-foreground mt-2 inline-flex max-w-full items-center gap-1.5 rounded-md border border-[var(--glass-border)] bg-[var(--glass-inset-bg)] px-2 py-1 text-xs"
-                data-testid="product-card-match-reason"
+        <CardContent className="flex min-h-32 flex-1 flex-col gap-2.5 px-0 pt-3 pb-0 sm:min-h-40 sm:gap-3">
+          <div className="flex items-start justify-between gap-2.5 sm:gap-3">
+            <div className="min-w-0">
+              <h3
+                className="group-hover/product-link:text-muted-foreground group-focus-visible/product-link:text-muted-foreground line-clamp-2 min-h-10 text-base leading-[1.4] font-medium transition-colors duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)] sm:min-h-11 sm:leading-[1.45]"
+                dir="auto"
               >
-                <Sparkles aria-hidden="true" className="size-3.5 shrink-0" />
-                <span className="truncate">{matchReason}</span>
+                {product.name}
+              </h3>
+              <p className="text-muted-foreground mt-1 line-clamp-1 min-h-5 text-sm leading-5 sm:line-clamp-2 sm:min-h-9">
+                {product.shortDescription}
               </p>
-            ) : null}
-            {commerceHighlights.length > 0 ? (
               <div
-                className="text-muted-foreground mt-2 grid gap-1 text-xs leading-5"
-                data-testid="product-card-highlights"
+                className="text-muted-foreground mt-1.5 flex min-h-5 flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-5 sm:mt-2"
+                data-testid="product-card-attributes"
               >
-                {commerceHighlights.slice(0, 2).map((highlight) => (
-                  <span className="line-clamp-1" key={highlight}>
-                    {highlight}
+                {productDetails.map((detail, index) => (
+                  <span
+                    className="max-w-full min-w-0 truncate"
+                    key={`${detail}-${index}`}
+                  >
+                    {detail}
                   </span>
                 ))}
               </div>
-            ) : null}
-          </div>
-          <ProductCardFavoriteButton
-            productName={product.name}
-            productSlug={product.slug}
-          />
-        </div>
-
-        <div className="mt-auto grid gap-2.5">
-          <div className="grid min-h-12 grid-cols-[minmax(0,1fr)_auto] items-end gap-2.5 sm:min-h-16 sm:gap-3">
-            <div className="min-w-0">
-              <p className="text-muted-foreground text-xs">מחיר</p>
-              {compareAt ? (
-                <span className="text-muted-foreground mt-1 block text-xs line-through">
-                  {formatPrice(compareAt)}
-                </span>
+              {matchReason ? (
+                <p
+                  className="text-muted-foreground mt-2 inline-flex max-w-full items-center gap-1.5 rounded-md border border-[var(--glass-border)] bg-[var(--glass-inset-bg)] px-2 py-1 text-xs"
+                  data-testid="product-card-match-reason"
+                >
+                  <Sparkles aria-hidden="true" className="size-3.5 shrink-0" />
+                  <span className="truncate">{matchReason}</span>
+                </p>
               ) : null}
-              <span className="block text-lg leading-6 font-semibold sm:text-xl sm:leading-7">
-                {formatPrice(product.price)}
-              </span>
+              {commerceHighlights.length > 0 ? (
+                <div
+                  className="text-muted-foreground mt-2 grid gap-1 text-xs leading-5"
+                  data-testid="product-card-highlights"
+                >
+                  {commerceHighlights.slice(0, 2).map((highlight) => (
+                    <span className="line-clamp-1" key={highlight}>
+                      {highlight}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
             </div>
-            <span
-              className={cn(
-                "brand-icon-well flex max-w-32 shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs",
-                isAvailable ? "text-muted-foreground" : "text-foreground",
-              )}
-            >
+          </div>
+
+          <div className="mt-auto grid gap-2.5">
+            <div className="grid min-h-10 grid-cols-[minmax(0,1fr)_auto] items-end gap-2.5 sm:min-h-12 sm:gap-3">
+              <div className="min-w-0">
+                <p className="text-muted-foreground text-xs">מחיר</p>
+                {compareAt ? (
+                  <span className="text-muted-foreground mt-1 block text-xs line-through">
+                    {formatPrice(compareAt)}
+                  </span>
+                ) : null}
+                <span className="block text-lg leading-6 font-semibold sm:text-xl sm:leading-7">
+                  {formatPrice(product.price)}
+                </span>
+              </div>
               <span
                 className={cn(
-                  "size-2 shrink-0 rounded-full",
-                  isAvailable ? "bg-emerald-500" : "bg-muted-foreground",
+                  "brand-icon-well flex max-w-32 shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs",
+                  isAvailable ? "text-muted-foreground" : "text-foreground",
                 )}
-                aria-hidden="true"
-              />
-              <span className="truncate">{commerceStatus.label}</span>
-            </span>
+              >
+                <span
+                  className={cn(
+                    "size-2 shrink-0 rounded-full",
+                    isAvailable ? "bg-emerald-500" : "bg-muted-foreground",
+                  )}
+                  aria-hidden="true"
+                />
+                <span className="truncate">{commerceStatus.label}</span>
+              </span>
+            </div>
           </div>
-          <Button
-            asChild
-            className="product-card-cta min-h-10 w-full gap-2 sm:min-h-11"
-            variant="outline"
-          >
-            <Link
-              aria-label={`${commerceStatus.cardCtaLabel}: ${product.name}`}
-              href={actionHref}
-              prefetch={false}
-            >
-              <ShoppingBag className="size-4" aria-hidden="true" />
-              {commerceStatus.cardCtaLabel}
-            </Link>
-          </Button>
-        </div>
-      </CardContent>
+        </CardContent>
+      </Link>
+      <div className="bg-background absolute top-2.5 right-2.5 z-10 rounded-md">
+        <ProductCardFavoriteButton
+          productName={product.name}
+          productSlug={product.slug}
+        />
+      </div>
     </Card>
   );
 }
@@ -239,15 +223,6 @@ function getProductCardImageObjectPosition(product: CatalogProduct) {
   );
 
   return focusRule?.position ?? DEFAULT_PRODUCT_CARD_IMAGE_POSITION;
-}
-
-function createProductServiceHref(product: CatalogProduct, reason: string) {
-  const params = new URLSearchParams({
-    productReference: `${product.name} (${product.sku})`,
-    reason,
-  });
-
-  return `/service?${params.toString()}`;
 }
 
 function createProductHref(

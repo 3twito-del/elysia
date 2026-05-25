@@ -92,23 +92,19 @@ describe("public CTA hierarchy", () => {
     expect(wishlistSource).toContain('variant="outline"');
   });
 
-  it("keeps listing card CTA states white and out of aqua or warm treatments", () => {
+  it("keeps listing cards browse-first with purchase CTAs reserved for PDP", () => {
     const css = read("src/styles/globals.css");
-    const baseBlock = extractCssBlock(css, ".product-card-cta:not(:disabled)");
-    const hoverBlock = extractCssBlock(
-      css,
-      ".product-card-cta:not(:disabled):hover",
-    );
+    const productCard = read("src/components/product-card.tsx");
+    const searchSource = read("src/app/search/page.tsx");
 
-    expect(baseBlock).toContain("border-color: rgb(16 24 28 / 12%)");
-    expect(baseBlock).toContain("background: #ffffff");
-    expect(hoverBlock).toContain("--tw-ring-color: rgb(16 24 28 / 14%)");
-    expect(hoverBlock).toContain("border-color: rgb(16 24 28 / 24%)");
-    expect(hoverBlock).toContain("background: #ffffff");
-    expect(hoverBlock).toContain("box-shadow: none");
-    expect(`${baseBlock}\n${hoverBlock}`).not.toMatch(
-      /brand-aqua|66 201 190|#42c9be|125 87 70|#fffaf7|#fff3ec/i,
-    );
+    expect(productCard).toContain("group/product-link block h-full");
+    expect(productCard).toContain("ProductCardFavoriteButton");
+    expect(productCard).not.toContain('className="product-card-cta');
+    expect(productCard).not.toContain("<Button");
+    expect(productCard).not.toContain("ShoppingBag");
+    expect(searchSource).not.toContain("product-card-cta");
+    expect(searchSource).not.toContain("ShoppingBag");
+    expect(css).not.toContain(".product-card-cta");
   });
 
   it("keeps recovery and filter action groups from presenting two default CTAs", () => {
@@ -133,15 +129,4 @@ function read(relativePath: string) {
 
 function countOccurrences(source: string, pattern: string) {
   return source.split(pattern).length - 1;
-}
-
-function extractCssBlock(source: string, selector: string) {
-  const start = source.indexOf(selector);
-
-  if (start === -1) return "";
-
-  const openBrace = source.indexOf("{", start);
-  const closeBrace = source.indexOf("}", openBrace);
-
-  return source.slice(start, closeBrace + 1);
 }

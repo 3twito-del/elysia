@@ -95,12 +95,21 @@ describe("commerce service trust placement", () => {
 
     expect(footer).toContain('href: "/checkout"');
     expect(footer).toContain('href: "/service"');
-    expect(footer).toContain('id="footer-online-service"');
     expect(footer).toContain('href: "/faq"');
     expect(footer).toContain("שאלות ותשובות");
     expect(footer).not.toContain("שאלות נפוצות");
-    expect(countOccurrences(footer, 'href="/search"')).toBe(2);
-    expect(footer).not.toContain('href: "/search"');
+    expect(footer).toContain('title="קטלוג"');
+    expect(footer).toContain('title="שירות וקנייה"');
+    expect(footer).toContain('title="מידע"');
+    expect(countOccurrences(footer, 'title="קטלוג"')).toBe(1);
+    expect(countOccurrences(footer, 'title="שירות וקנייה"')).toBe(1);
+    expect(countOccurrences(footer, 'title="מידע"')).toBe(1);
+    expect(countOccurrences(footer, 'href: "/search"')).toBe(1);
+    expect(footer).not.toContain('href="/search"');
+    expect(footer).not.toContain("primaryServiceLinks");
+    expect(footer).not.toContain("secondaryServiceLinks");
+    expect(footer).not.toContain("שירות וקנייה - המשך");
+    expect(footer).not.toContain("footer-online-service");
     expect(footer).not.toContain('href: "/ai"');
     expect(footer).not.toContain('href: "/category/rings"');
     expect(footer).not.toContain('href="/gifts"');
