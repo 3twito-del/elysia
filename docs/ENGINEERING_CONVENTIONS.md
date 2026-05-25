@@ -85,9 +85,10 @@ without running long live benchmarks.
 - `pnpm verify:fast`: lint, typecheck, and unit/integration tests. Use this for
   ordinary local changes and PR feedback.
 - `pnpm check`: legacy alias for lint, typecheck, and unit/integration tests.
-- `pnpm build`: production build, environment validation, and AVIF drift check.
-  It does not repair assets; run `pnpm gate:fix` or `pnpm images:avif` for
-  writes.
+- `pnpm build`: Next.js build, environment validation, and AVIF drift check. It
+  uses catalog fixtures/fallbacks outside Vercel production so local and preview
+  builds do not depend on a reachable catalog database. It does not repair
+  assets; run `pnpm gate:fix` or `pnpm images:avif` for writes.
 - `pnpm verify:full`: explicit full release verification alias for
   `pnpm gate:release`. It needs a reachable DB, Playwright browsers, network
   access, and production-readiness provider secrets.

@@ -18,6 +18,10 @@ const repoRoot = path.resolve(
 const packageJson = JSON.parse(
   readFileSync(path.join(repoRoot, "package.json"), "utf8"),
 );
+const buildScript = readFileSync(
+  path.join(repoRoot, "scripts/build.mjs"),
+  "utf8",
+);
 
 const expectedGateNames = [
   "gate:list",
@@ -77,6 +81,7 @@ describe("manual quality gates", () => {
   });
 
   it("keeps local development and fast verification non-mutating by default", () => {
+    expect(packageJson.scripts.build).toBe("node scripts/build.mjs");
     expect(packageJson.scripts.dev).toBe("next dev --webpack");
     expect(packageJson.scripts["dev:turbo"]).toBe("next dev --turbopack");
     expect(packageJson.scripts.predev).toBeUndefined();
@@ -87,6 +92,13 @@ describe("manual quality gates", () => {
       "pnpm lint && pnpm typecheck && pnpm test",
     );
     expect(packageJson.scripts["verify:full"]).toBe("pnpm gate:release");
+  });
+
+  it("keeps non-production builds independent from catalog database availability", () => {
+    expect(buildScript).toContain('process.env.VERCEL_ENV === "production"');
+    expect(buildScript).toContain("CATALOG_DB_ERROR_FALLBACK");
+    expect(buildScript).toContain("E2E_CATALOG_FIXTURES");
+    expect(buildScript).toContain('"next build"');
   });
 
   it("keeps gate:fix as the only mutating gate stage", () => {
