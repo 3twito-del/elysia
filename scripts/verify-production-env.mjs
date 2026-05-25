@@ -1,6 +1,8 @@
 import { pathToFileURL } from "node:url";
 
 const requiredVercelEnv = [
+  "AUTH_SECRET",
+  "DATABASE_URL",
   "UPSTASH_REDIS_REST_URL",
   "UPSTASH_REDIS_REST_TOKEN",
 ];

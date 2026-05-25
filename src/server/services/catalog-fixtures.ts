@@ -69,12 +69,21 @@ const fixtureProducts: CatalogProduct[] = getSeedProducts().map(mapSeedProduct);
 export function shouldUseCatalogFixtures() {
   return (
     process.env.E2E_CATALOG_FIXTURES === "1" ||
-    process.env.CATALOG_FIXTURE_FALLBACK === "1"
+    process.env.CATALOG_FIXTURE_FALLBACK === "1" ||
+    (isVercelPreview() && !hasDatabaseUrl())
   );
 }
 
 export function shouldFallbackToCatalogFixturesOnDatabaseError() {
-  return process.env.CATALOG_DB_ERROR_FALLBACK === "1";
+  return process.env.CATALOG_DB_ERROR_FALLBACK === "1" || isVercelPreview();
+}
+
+function isVercelPreview() {
+  return process.env.VERCEL === "1" && process.env.VERCEL_ENV === "preview";
+}
+
+function hasDatabaseUrl() {
+  return Boolean(process.env.DATABASE_URL?.trim());
 }
 
 export function getFixtureCatalogCategories() {

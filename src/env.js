@@ -1,20 +1,22 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
+const requiresProductionRuntimeEnv =
+  (process.env.VERCEL === "1" && process.env.VERCEL_ENV === "production") ||
+  process.env.REQUIRE_PRODUCTION_RUNTIME_ENV === "1";
+
 export const env = createEnv({
   /**
    * Specify your server-side environment variables schema here. This way you can ensure the app
    * isn't built with invalid env vars.
    */
   server: {
-    AUTH_SECRET:
-      process.env.NODE_ENV === "production"
-        ? z.string()
-        : z.string().optional(),
-    DATABASE_URL:
-      process.env.NODE_ENV === "production"
-        ? z.string().url()
-        : z.string().url().optional(),
+    AUTH_SECRET: requiresProductionRuntimeEnv
+      ? z.string()
+      : z.string().optional(),
+    DATABASE_URL: requiresProductionRuntimeEnv
+      ? z.string().url()
+      : z.string().url().optional(),
     ADMIN_BOOTSTRAP_EMAIL: z.string().email().optional(),
     ADMIN_BOOTSTRAP_PASSWORD: z.string().min(12).optional(),
     ADMIN_BOOTSTRAP_NAME: z.string().optional(),
