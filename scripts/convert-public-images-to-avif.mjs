@@ -103,12 +103,13 @@ async function processSourceImage({
   summary.sourceBytes += sourceStats.size;
 
   const existingAvifStats = await statIfExists(avifPath);
+  const hasUsableExistingAvif =
+    existingAvifStats && existingAvifStats.size < sourceStats.size;
   const isCurrent =
-    existingAvifStats &&
-    existingAvifStats.mtimeMs >= sourceStats.mtimeMs &&
-    existingAvifStats.size < sourceStats.size;
+    hasUsableExistingAvif &&
+    existingAvifStats.mtimeMs >= sourceStats.mtimeMs;
 
-  if (!force && isCurrent) {
+  if (!force && (isCurrent || (check && hasUsableExistingAvif))) {
     summary.current += 1;
     summary.avifBytes += existingAvifStats.size;
     usableAvifBySourceUrl.set(

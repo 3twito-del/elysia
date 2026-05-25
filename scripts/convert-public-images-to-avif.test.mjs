@@ -1,5 +1,12 @@
 import { existsSync } from "node:fs";
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import {
+  mkdir,
+  mkdtemp,
+  readFile,
+  rm,
+  utimes,
+  writeFile,
+} from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -66,6 +73,34 @@ describe("public image AVIF conversion", () => {
     expect(checkResult.ok).toBe(true);
     expect(checkResult.summary.staleAssets).toBe(0);
     expect(checkResult.summary.staleReferences).toBe(0);
+  });
+
+  it("does not treat checkout mtimes as AVIF drift in check mode", async () => {
+    const cwd = await createImageFixture();
+
+    await convertPublicImagesToAvif({
+      cwd,
+      error: quiet,
+      logger: quiet,
+      warn: quiet,
+    });
+
+    const avifFile = path.join(cwd, "public", "hero.avif");
+    const checkoutLikeTime = new Date("2020-01-01T00:00:00.000Z");
+
+    await utimes(avifFile, checkoutLikeTime, checkoutLikeTime);
+
+    const checkResult = await convertPublicImagesToAvif({
+      check: true,
+      cwd,
+      error: quiet,
+      logger: quiet,
+      warn: quiet,
+    });
+
+    expect(checkResult.ok).toBe(true);
+    expect(checkResult.summary.current).toBe(1);
+    expect(checkResult.summary.staleAssets).toBe(0);
   });
 });
 
