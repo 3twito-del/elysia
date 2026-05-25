@@ -325,27 +325,27 @@ export function ProductPurchasePanel({
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {variants.map((variant) => (
-              <Button
-                aria-label={getVariantButtonLabel(variant, availabilityMode)}
-                aria-pressed={selectedSku === variant.sku}
-                className={cn(
-                  "min-h-11 min-w-12 rounded-full px-4",
-                  selectedSku === variant.sku &&
-                    "bg-foreground text-background hover:bg-foreground/90 hover:text-background",
-                )}
-                disabled={
-                  availabilityMode === "READY_TO_ORDER" &&
-                  variant.availableQuantity <= 0
-                }
-                key={variant.sku}
-                onClick={() => setSelectedSku(variant.sku)}
-                type="button"
-                variant="outline"
-              >
-                {variant.size ?? variant.name}
-              </Button>
-            ))}
+            {variants.map((variant) => {
+              const isSelected = selectedSku === variant.sku;
+
+              return (
+                <Button
+                  aria-label={getVariantButtonLabel(variant, availabilityMode)}
+                  aria-pressed={isSelected}
+                  className="min-h-11 min-w-12 rounded-full px-4"
+                  disabled={
+                    availabilityMode === "READY_TO_ORDER" &&
+                    variant.availableQuantity <= 0
+                  }
+                  key={variant.sku}
+                  onClick={() => setSelectedSku(variant.sku)}
+                  type="button"
+                  variant={isSelected ? "default" : "outline"}
+                >
+                  {variant.size ?? variant.name}
+                </Button>
+              );
+            })}
           </div>
 
           <div

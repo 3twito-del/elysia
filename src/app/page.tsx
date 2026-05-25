@@ -54,7 +54,7 @@ export default async function Home() {
           data-motion-scope="home-hero"
         >
           <div className="motion-media-content absolute inset-0 min-h-[var(--home-hero-height)]">
-            <StaticKineticImageFrame>
+            <StaticKineticImageFrame scrollMotion={false}>
               <StaticCinematicHeroSequence
                 priority
                 motionScope="home-hero"

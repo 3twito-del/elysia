@@ -51,7 +51,13 @@ export function BrandMediaPanel({
   );
 }
 
-export function StaticKineticImageFrame({ children }: { children: ReactNode }) {
+export function StaticKineticImageFrame({
+  children,
+  scrollMotion = false,
+}: {
+  children: ReactNode;
+  scrollMotion?: boolean;
+}) {
   return (
     <div
       className="kinetic-image-motion"
@@ -59,6 +65,7 @@ export function StaticKineticImageFrame({ children }: { children: ReactNode }) {
       data-motion-enabled="false"
       data-motion-reduced="false"
       data-motion-scope="static"
+      data-scroll-motion={scrollMotion ? "true" : "false"}
     >
       <div className="kinetic-image-layer">{children}</div>
     </div>
