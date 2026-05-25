@@ -126,7 +126,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         variant="catalog"
       />
       <RevealSection
-        className="mx-auto max-w-7xl px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y-wide)]"
+        className="mx-auto w-full max-w-[96rem] px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y)]"
         id="search-controls"
       >
         <SearchControls
@@ -313,7 +313,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         ) : (
           <>
             <RevealGrid
-              className="mt-5 grid gap-3 sm:mt-8 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4"
+              className="mt-5 grid gap-4 sm:mt-8 sm:grid-cols-2 lg:grid-cols-4"
               data-testid="search-results-grid"
               variant="cards"
             >
@@ -489,7 +489,7 @@ function SearchResultListItem({
     <article
       aria-label={product.name}
       className={cn(
-        "product-card-shell group/list grid min-h-full overflow-hidden rounded-md border border-[var(--glass-border)] bg-[var(--glass-panel-bg)] shadow-none transition focus-within:ring-3 focus-within:ring-[var(--glass-focus)] md:grid-cols-[minmax(10rem,14rem)_1fr]",
+        "product-card-shell group/list grid min-h-full overflow-hidden rounded-md border-y border-[var(--glass-border)] bg-transparent shadow-none transition focus-within:ring-3 focus-within:ring-[var(--glass-focus)] md:grid-cols-[minmax(10rem,14rem)_1fr]",
         isUnavailable && "bg-muted/30",
       )}
       data-testid="search-result-list-item"
@@ -522,7 +522,7 @@ function SearchResultListItem({
         ) : null}
       </Link>
 
-      <div className="grid min-w-0 gap-4 p-[var(--ui-card-padding)] md:grid-cols-[minmax(0,1fr)_minmax(11rem,auto)]">
+      <div className="grid min-w-0 gap-4 py-[var(--ui-card-padding)] md:grid-cols-[minmax(0,1fr)_minmax(11rem,auto)] md:pe-[var(--ui-card-padding)]">
         <div className="min-w-0">
           <div className="mb-2 flex flex-wrap gap-2">
             <Badge variant="outline">{product.categoryName}</Badge>
@@ -530,13 +530,9 @@ function SearchResultListItem({
               <Badge variant="secondary">{product.material}</Badge>
             ) : null}
           </div>
-          <Link
-            className="line-clamp-2 text-lg leading-7 font-medium underline-offset-4 hover:underline focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
-            dir="auto"
-            href={href}
-          >
+          <h3 className="line-clamp-2 text-lg leading-7 font-medium" dir="auto">
             {product.name}
-          </Link>
+          </h3>
           <p className="text-muted-foreground mt-2 line-clamp-2 text-sm leading-6">
             {product.shortDescription}
           </p>

@@ -33,6 +33,7 @@ export default async function Home() {
     searchCatalogProducts({ category: "rings" }),
   ]);
   const featuredProducts = ringProducts.slice(0, 4);
+  const heroCategoryLinks = categories.slice(0, 3);
 
   return (
     <main>
@@ -93,7 +94,7 @@ export default async function Home() {
           data-testid="home-hero-actions"
           dir="rtl"
         >
-          <div className="motion-copy-item flex flex-col items-stretch gap-3 px-3 [--motion-copy-delay:170ms] sm:flex-row sm:items-center sm:justify-end sm:gap-5 sm:px-0">
+          <div className="motion-copy-item grid items-stretch gap-3 px-3 [--motion-copy-delay:170ms] sm:justify-items-end sm:px-0">
             <Button
               asChild
               className="home-hero-cta-primary text-foreground hover:text-foreground border-white bg-white shadow-none hover:border-white hover:bg-white"
@@ -107,6 +108,22 @@ export default async function Home() {
                 />
               </Link>
             </Button>
+            {heroCategoryLinks.length > 0 ? (
+              <nav
+                aria-label="קישורי קטגוריות מהירים"
+                className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-white/82 sm:justify-end"
+              >
+                {heroCategoryLinks.map((category) => (
+                  <Link
+                    className="border-b border-white/35 pb-1 transition-colors hover:border-white hover:text-white focus-visible:border-white focus-visible:text-white focus-visible:outline-none"
+                    href={`/category/${category.slug}`}
+                    key={category.slug}
+                  >
+                    {category.name}
+                  </Link>
+                ))}
+              </nav>
+            ) : null}
           </div>
         </div>
       </RevealSection>

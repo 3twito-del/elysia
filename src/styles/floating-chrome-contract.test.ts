@@ -41,8 +41,8 @@ describe("public floating chrome contract", () => {
     const widget = read("src/components/accessibility-widget.tsx");
 
     expect(widget).toContain('data-accessibility-widget-trigger="true"');
-    expect(widget).toContain("fixed right-4");
-    expect(widget).toContain("var(--public-bottom-safe-offset,1rem)");
+    expect(widget).toContain("fixed right-3");
+    expect(widget).toContain("var(--public-bottom-safe-offset,0.75rem)");
     expect(widget).toContain('data-icon-tooltip="תפריט נגישות"');
     expect(widget).toContain("hideFloatingTriggerForPage");
     expect(widget).toContain("הסתרת הכפתור בדף זה");
@@ -79,7 +79,7 @@ describe("public floating chrome contract", () => {
     );
     expect(banner).not.toContain("--public-cookie-top-offset");
     expect(countOccurrences(banner, "--public-bottom-safe-offset")).toBe(4);
-    expect(banner).toContain("sm:w-[min(calc(100vw-2rem),22rem)]");
+    expect(banner).toContain("sm:w-[min(calc(100vw-2rem),20rem)]");
     expect(banner).toContain(
       "bottom-[calc(0.75rem+env(safe-area-inset-bottom))]",
     );

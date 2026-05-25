@@ -40,9 +40,11 @@ export function SearchControls({
   input,
   viewMode,
 }: SearchControlsProps) {
+  const shouldShowAdvancedFilters = activeFilterCount > 0;
+
   return (
     <div
-      className="brand-control-panel rounded-md p-[var(--ui-panel-padding)]"
+      className="border-y border-[var(--glass-border)] py-4"
       data-testid="search-form"
     >
       <form
@@ -58,12 +60,26 @@ export function SearchControls({
             חיפוש
           </Button>
         </div>
-        <div className="grid items-end gap-3 border-t border-[var(--glass-border)] pt-3 lg:grid-cols-[repeat(3,minmax(9rem,1fr))_minmax(8rem,0.8fr)_minmax(9rem,0.9fr)]">
-          <FacetSearchFields facets={facets} input={input} />
-          <AvailabilityField input={input} />
-          <PreservedModeInput input={input} />
-          <PreservedViewInput viewMode={viewMode} />
-        </div>
+        <details
+          className="group/search-advanced border-t border-[var(--glass-border)] pt-3"
+          open={shouldShowAdvancedFilters}
+        >
+          <summary className="text-muted-foreground hover:text-foreground flex min-h-9 cursor-pointer list-none items-center justify-between gap-3 text-sm outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]">
+            <span className="inline-flex items-center gap-2">
+              <SlidersHorizontal aria-hidden="true" className="size-4" />
+              {"\u05e1\u05d9\u05e0\u05d5\u05df \u05de\u05ea\u05e7\u05d3\u05dd"}
+            </span>
+            {activeFilterCount > 0 ? (
+              <Badge variant="secondary">{activeFilterCount}</Badge>
+            ) : null}
+          </summary>
+          <div className="mt-3 grid items-end gap-3 lg:grid-cols-[repeat(3,minmax(9rem,1fr))_minmax(8rem,0.8fr)_minmax(9rem,0.9fr)]">
+            <FacetSearchFields facets={facets} input={input} />
+            <AvailabilityField input={input} />
+            <PreservedModeInput input={input} />
+            <PreservedViewInput viewMode={viewMode} />
+          </div>
+        </details>
       </form>
 
       <div

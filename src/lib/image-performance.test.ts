@@ -36,7 +36,7 @@ describe("image performance guardrails", () => {
       "utf8",
     );
 
-    expect(source.match(/prefetch=\{false\}/g)).toHaveLength(3);
+    expect(source.match(/prefetch=\{false\}/g)).toHaveLength(2);
   });
 
   it("prioritizes only the initial product gallery image and lazy-loads later active images", () => {

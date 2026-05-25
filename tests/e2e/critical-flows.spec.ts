@@ -157,7 +157,7 @@ test.describe("critical shopping flows", () => {
     ).toBeVisible();
     const productResultLink = page
       .getByTestId("search-results-grid")
-      .getByRole("link", { exact: true, name: searchProductName })
+      .getByRole("link", { name: new RegExp(escapeRegExp(searchProductName)) })
       .first();
 
     const productHref = await productResultLink.getAttribute("href");
@@ -1515,6 +1515,10 @@ async function expectReloadMotionStable(page: Page, label: string) {
 
 function visibleByTestId(page: Page, testId: string) {
   return page.getByTestId(testId).filter({ visible: true });
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function trackHydrationIssues(page: Page) {

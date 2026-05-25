@@ -73,7 +73,7 @@ export function CookieConsentBanner() {
   return (
     <section
       aria-label="בחירת קוקיז"
-      className="minimal-scroll bg-background fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-50 max-h-[32dvh] overflow-y-auto rounded-md border border-[var(--glass-border)] px-3 py-2 shadow-[0_12px_30px_oklch(0_0_0_/_7%)] sm:inset-x-auto sm:right-4 sm:bottom-4 sm:w-[min(calc(100vw-2rem),22rem)] sm:px-4 sm:py-3"
+      className="minimal-scroll bg-background fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-50 max-h-[24dvh] overflow-y-auto rounded-md border border-[var(--glass-border)] px-3 py-2 shadow-none sm:inset-x-auto sm:right-4 sm:bottom-4 sm:w-[min(calc(100vw-2rem),20rem)] sm:px-3 sm:py-2.5"
       data-cookie-consent-banner="true"
       ref={bannerRef}
     >

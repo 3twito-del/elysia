@@ -85,7 +85,7 @@
   --brand-aqua-soft: #effcfb;
   --brand-aqua-deep: #071516;
   --brand-aqua-ring: rgb(66 201 190 / 34%);
-  --brand-accent: var(--brand-aqua);
+  --brand-accent: var(--action-primary);
   --action-primary: var(--brand-ink);
   --action-primary-foreground: #ffffff;
   --action-primary-hover: #252b2d;
@@ -180,8 +180,8 @@
   --card-foreground: oklch(0.97 0.018 185);
   --popover: oklch(0.2 0.026 195);
   --popover-foreground: oklch(0.97 0.018 185);
-  --primary: var(--brand-aqua);
-  --primary-foreground: var(--brand-aqua-deep);
+  --primary: var(--action-primary);
+  --primary-foreground: var(--action-primary-foreground);
   --secondary: oklch(0.24 0.04 190);
   --secondary-foreground: oklch(0.97 0.018 185);
   --muted: oklch(0.24 0.04 190);
@@ -202,8 +202,8 @@
   --action-primary-hover: oklch(1 0 0);
   --sidebar: oklch(0.2 0.026 195);
   --sidebar-foreground: oklch(0.97 0.018 185);
-  --sidebar-primary: var(--brand-aqua);
-  --sidebar-primary-foreground: var(--brand-aqua-deep);
+  --sidebar-primary: var(--action-primary);
+  --sidebar-primary-foreground: var(--action-primary-foreground);
   --sidebar-accent: oklch(0.24 0.04 190);
   --sidebar-accent-foreground: oklch(0.97 0.018 185);
   --sidebar-border: oklch(0.72 0.08 190 / 24%);
@@ -1441,14 +1441,14 @@ main
 .brand-gallery-frame,
 .brand-similar-section {
   border-color: var(--glass-border) !important;
-  box-shadow: 0 1px 0 oklch(0 0 0 / 1.5%);
+  box-shadow: none;
 }
 
 .brand-gallery-frame {
-  border: 1px solid rgb(16 24 28 / 10%);
+  border: 0;
   border-radius: var(--radius-md);
-  background: var(--glass-panel-bg);
-  padding: 0.4rem;
+  background: transparent;
+  padding: 0;
 }
 
 .brand-icon-well,
@@ -1519,7 +1519,7 @@ footer nav a:focus-visible {
 }
 
 .brand-product-media {
-  border-bottom-color: rgb(16 24 28 / 8%);
+  border-bottom-color: transparent;
 }
 
 .glass-panel,
@@ -1888,9 +1888,9 @@ footer nav a:focus-visible {
 
 .public-motion-shell [data-slot="button"].product-primary-cta:not(:disabled),
 [data-slot="button"].product-primary-cta:not(:disabled) {
-  border-color: var(--brand-accent) !important;
-  background: var(--brand-accent) !important;
-  color: var(--brand-aqua-deep) !important;
+  border-color: var(--action-primary) !important;
+  background: var(--action-primary) !important;
+  color: var(--action-primary-foreground) !important;
   box-shadow: none !important;
 }
 
@@ -1900,9 +1900,9 @@ footer nav a:focus-visible {
   [data-slot="button"].product-primary-cta:not(:disabled):focus-visible,
 [data-slot="button"].product-primary-cta:not(:disabled):hover,
 [data-slot="button"].product-primary-cta:not(:disabled):focus-visible {
-  border-color: var(--brand-accent) !important;
-  background: var(--brand-accent) !important;
-  color: var(--brand-aqua-deep) !important;
+  border-color: var(--action-primary-hover) !important;
+  background: var(--action-primary-hover) !important;
+  color: var(--action-primary-foreground) !important;
   box-shadow: none !important;
 }
 
@@ -1919,7 +1919,7 @@ footer nav a:focus-visible {
   border-color: rgb(16 24 28 / 24%) !important;
   background: #ffffff !important;
   color: var(--foreground) !important;
-  box-shadow: 0 8px 18px rgb(16 24 28 / 4%) !important;
+  box-shadow: none !important;
 }
 
 .ai-recommendation-card {
@@ -2000,7 +2000,7 @@ footer nav a:focus-visible {
   border-color: rgb(16 24 28 / 10%);
   background: rgb(255 255 255 / 92%);
   color: var(--foreground);
-  box-shadow: 0 8px 18px rgb(0 0 0 / 5%);
+  box-shadow: none;
 }
 
 .motion-reveal,

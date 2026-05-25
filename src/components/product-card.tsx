@@ -78,7 +78,7 @@ export function ProductCard({
     <Card
       aria-label={product.name}
       className={cn(
-        "product-card-shell group/card h-full min-w-0 overflow-hidden rounded-md border-0 py-0 shadow-none transition focus-within:ring-3 focus-within:ring-[var(--glass-focus)]",
+        "product-card-shell group/card h-full min-w-0 gap-0 overflow-hidden rounded-md border-0 bg-transparent py-0 shadow-none transition focus-within:ring-3 focus-within:ring-[var(--glass-focus)]",
         isUnavailable && "bg-muted/30",
       )}
       data-public-floating-avoid="true"
@@ -90,7 +90,7 @@ export function ProductCard({
         href={href}
         prefetch={false}
       >
-        <div className="brand-product-media glass-inset bg-muted relative aspect-[5/4] overflow-hidden border-0 sm:aspect-[4/5]">
+        <div className="brand-product-media bg-muted/60 relative aspect-[5/4] overflow-hidden rounded-md border-0 sm:aspect-[4/5]">
           <StaticKineticImageFrame>
             <Image
               alt={product.name}
@@ -117,17 +117,15 @@ export function ProductCard({
           ) : null}
         </div>
       </Link>
-      <CardContent className="flex min-h-40 flex-1 flex-col gap-2.5 p-[var(--ui-card-padding)] sm:min-h-52 sm:gap-3">
+      <CardContent className="flex min-h-36 flex-1 flex-col gap-2.5 px-0 pt-3 pb-0 sm:min-h-44 sm:gap-3">
         <div className="flex items-start justify-between gap-2.5 sm:gap-3">
           <div className="min-w-0">
-            <Link
-              className="line-clamp-2 min-h-10 text-base leading-[1.4] font-medium underline-offset-4 hover:underline focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none sm:min-h-11 sm:leading-[1.45]"
+            <h3
+              className="line-clamp-2 min-h-10 text-base leading-[1.4] font-medium sm:min-h-11 sm:leading-[1.45]"
               dir="auto"
-              href={href}
-              prefetch={false}
             >
               {product.name}
-            </Link>
+            </h3>
             <p className="text-muted-foreground mt-1 line-clamp-1 min-h-5 text-sm leading-5 sm:line-clamp-2 sm:min-h-9">
               {product.shortDescription}
             </p>
@@ -187,7 +185,7 @@ export function ProductCard({
             </div>
             <span
               className={cn(
-                "brand-icon-well glass-inset flex max-w-32 shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs",
+                "brand-icon-well flex max-w-32 shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs",
                 isAvailable ? "text-muted-foreground" : "text-foreground",
               )}
             >

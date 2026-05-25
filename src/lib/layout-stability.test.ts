@@ -12,8 +12,8 @@ describe("layout stability guardrails", () => {
       "relative aspect-[5/4] overflow-hidden",
     );
     expect(productCardSource).toContain("sm:aspect-[4/5]");
-    expect(productCardSource).toContain("flex min-h-40 flex-1 flex-col");
-    expect(productCardSource).toContain("sm:min-h-52");
+    expect(productCardSource).toContain("flex min-h-36 flex-1 flex-col");
+    expect(productCardSource).toContain("sm:min-h-44");
     expect(productCardSource).toContain("grid min-h-12");
     expect(productCardSource).toContain("sm:min-h-16");
     expect(productCardSource).toContain("product-card-cta min-h-10");

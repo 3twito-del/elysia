@@ -12,7 +12,7 @@ const buttonVariants = cva(
         default:
           "border-[var(--action-primary)] bg-[var(--action-primary)] text-[var(--action-primary-foreground)] shadow-none hover:border-[var(--action-primary-hover)] hover:bg-[var(--action-primary-hover)] hover:text-[var(--action-primary-foreground)]",
         brandAccent:
-          "border-[var(--brand-aqua)] bg-[var(--brand-aqua)] text-[var(--brand-aqua-deep)] shadow-none hover:border-[var(--brand-aqua)] hover:bg-[var(--brand-aqua)] hover:text-[var(--brand-aqua-deep)]",
+          "border-[var(--brand-accent)] bg-[var(--brand-accent)] text-[var(--action-primary-foreground)] shadow-none hover:border-[var(--action-primary-hover)] hover:bg-[var(--action-primary-hover)] hover:text-[var(--action-primary-foreground)]",
         outline:
           "border-[var(--glass-border)] bg-background text-foreground shadow-none hover:border-[var(--glass-border-strong)] aria-expanded:border-[var(--glass-border-strong)] dark:border-input dark:bg-input/30 dark:hover:border-[var(--glass-border-strong)] dark:hover:bg-accent",
         secondary:

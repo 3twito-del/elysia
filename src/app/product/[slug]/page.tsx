@@ -134,17 +134,17 @@ export default async function ProductPage({
       />
 
       <RevealSection
-        className="mx-auto grid max-w-[86rem] gap-7 px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:grid-cols-[minmax(0,1.08fr)_minmax(21rem,0.72fr)] lg:gap-10 lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y)]"
+        className="mx-auto grid w-full max-w-[96rem] gap-6 px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.42fr)] lg:gap-10 lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y)]"
         dir="ltr"
         id="product-buy"
         initialVisible
       >
-        <div className="order-2 min-w-0 lg:order-none">
+        <div className="order-1 min-w-0 lg:order-none">
           <ProductGallery images={uniqueImages} productName={product.name} />
         </div>
 
         <aside
-          className="order-1 min-w-0 lg:sticky lg:top-24 lg:order-none lg:self-start"
+          className="order-2 min-w-0 lg:sticky lg:top-24 lg:order-none lg:self-start"
           dir="rtl"
         >
           <div className="mx-auto max-w-xl lg:mx-0">
@@ -160,7 +160,7 @@ export default async function ProductPage({
             >
               {product.name}
             </h1>
-            <p className="text-muted-foreground mt-4 max-w-prose text-base leading-7">
+            <p className="text-muted-foreground mt-4 line-clamp-3 max-w-prose text-base leading-7 sm:line-clamp-none">
               {product.shortDescription}
             </p>
 
@@ -221,12 +221,12 @@ export default async function ProductPage({
 
             {productCommerceDetails.length > 0 ? (
               <dl
-                className="mt-5 grid gap-3"
+                className="mt-5 grid gap-2 sm:grid-cols-2"
                 data-testid="product-commerce-details"
               >
                 {productCommerceDetails.map((detail) => (
                   <div
-                    className="glass-inset rounded-md border p-3"
+                    className="rounded-md border border-[var(--glass-border)] p-3"
                     key={detail.label}
                   >
                     <dt className="text-muted-foreground text-xs">
@@ -242,10 +242,10 @@ export default async function ProductPage({
       </RevealSection>
 
       <RevealSection
-        className="brand-page-band border-y px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]"
+        className="brand-page-band border-y px-[var(--ui-page-x)] py-[var(--ui-section-y)] lg:px-[var(--ui-page-x-wide)]"
         id="product-details"
       >
-        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.88fr_1.12fr] lg:gap-12">
+        <div className="mx-auto grid max-w-[96rem] gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:gap-10">
           <CommerceSectionHeader
             className="mb-0"
             eyebrow="הסטודיו של Elysia"
@@ -334,8 +334,8 @@ function ProductRecommendationRails({
               id={headingId}
               title={rail.title}
             />
-            <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {rail.products.map((recommended) => (
+            <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {rail.products.slice(0, 3).map((recommended) => (
                 <ProductCard key={recommended.slug} product={recommended} />
               ))}
             </div>

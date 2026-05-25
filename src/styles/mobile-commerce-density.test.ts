@@ -118,13 +118,13 @@ describe("mobile commerce density", () => {
     expect(category).toContain(
       "mb-5 hidden border-b border-[var(--glass-border)] pb-4 lg:block",
     );
-    expect(category).toContain("grid gap-3 sm:grid-cols-2 sm:gap-4");
+    expect(category).toContain("grid gap-4 sm:grid-cols-2 lg:grid-cols-3");
     expect(search).toContain(
       "px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)]",
     );
-    expect(search).toContain("mt-5 grid gap-3 sm:mt-8");
+    expect(search).toContain("mt-5 grid gap-4 sm:mt-8");
     expect(productCard).toContain("relative aspect-[5/4] overflow-hidden");
-    expect(productCard).toContain("flex min-h-40 flex-1 flex-col");
+    expect(productCard).toContain("flex min-h-36 flex-1 flex-col");
     expect(productCard).toContain("line-clamp-1 min-h-5");
   });
 });

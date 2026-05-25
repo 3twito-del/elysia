@@ -6,14 +6,14 @@ import { describe, expect, it } from "vitest";
 const root = process.cwd();
 
 describe("public CTA hierarchy", () => {
-  it("keeps the default button variant neutral and reserves aqua for explicit accent use", () => {
+  it("keeps the default and explicit accent button variants neutral", () => {
     const buttonSource = read("src/components/ui/button.tsx");
 
     expect(buttonSource).toMatch(
       /default:\s*"[^"]*bg-\[var\(--action-primary\)\][^"]*text-\[var\(--action-primary-foreground\)\]/,
     );
     expect(buttonSource).toMatch(
-      /brandAccent:\s*"[^"]*bg-\[var\(--brand-aqua\)\][^"]*text-\[var\(--brand-aqua-deep\)\]/,
+      /brandAccent:\s*"[^"]*bg-\[var\(--brand-accent\)\][^"]*text-\[var\(--action-primary-foreground\)\]/,
     );
     expect(buttonSource).toMatch(/outline:\s*"[^"]*bg-background/);
     expect(buttonSource).toMatch(/secondary:\s*"[^"]*bg-background/);
@@ -87,7 +87,7 @@ describe("public CTA hierarchy", () => {
     expect(source).toContain("commerceStatus.ctaLabel");
     expect(source).toContain("serviceHref");
     expect(read("src/styles/globals.css")).toContain(
-      "background: var(--brand-accent) !important;",
+      "background: var(--action-primary) !important;",
     );
     expect(wishlistSource).toContain('variant="outline"');
   });
@@ -105,7 +105,7 @@ describe("public CTA hierarchy", () => {
     expect(hoverBlock).toContain("--tw-ring-color: rgb(16 24 28 / 14%)");
     expect(hoverBlock).toContain("border-color: rgb(16 24 28 / 24%)");
     expect(hoverBlock).toContain("background: #ffffff");
-    expect(hoverBlock).toContain("rgb(16 24 28 / 4%)");
+    expect(hoverBlock).toContain("box-shadow: none");
     expect(`${baseBlock}\n${hoverBlock}`).not.toMatch(
       /brand-aqua|66 201 190|#42c9be|125 87 70|#fffaf7|#fff3ec/i,
     );
