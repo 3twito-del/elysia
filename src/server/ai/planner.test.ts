@@ -51,7 +51,7 @@ describe("AI planner", () => {
 
   it("routes order support only when lookup signals are present", () => {
     const planning = createAiPlanningContext(
-      "איפה ההזמנה שלי? APH-20260506-ABC123",
+      "איפה ההזמנה שלי? ELY-20260506-ABC123",
     );
 
     expect(planning.kind).toBe("order_support");
@@ -106,7 +106,7 @@ describe("AI planner", () => {
   it("uses recent order context for short support follow-ups", () => {
     const planning = createAiPlanningContext({
       latestUserText: "איפה זה עומד?",
-      recentUserTexts: ["יש לי הזמנה APH-20260506-ABC123", "איפה זה עומד?"],
+      recentUserTexts: ["יש לי הזמנה ELY-20260506-ABC123", "איפה זה עומד?"],
     });
 
     expect(planning.kind).toBe("order_support");
@@ -126,7 +126,7 @@ describe("AI planner", () => {
 
   it("marks complete order lookups as high confidence", () => {
     const planning = createAiPlanningContext(
-      "מה סטטוס הזמנה APH-20260506-ABC123? dana@example.com",
+      "מה סטטוס הזמנה ELY-20260506-ABC123? dana@example.com",
     );
 
     expect(planning.kind).toBe("order_support");

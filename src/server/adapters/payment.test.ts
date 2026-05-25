@@ -43,7 +43,7 @@ describe("payment adapter", () => {
   it("creates a mock CardCom checkout when credentials are absent", async () => {
     const session = await paymentProvider.createCheckout({
       orderId: "order_1",
-      orderNumber: "APH-1001",
+      orderNumber: "ELY-1001",
       amount: 1290,
       currency: "ILS",
       customerEmail: "customer@example.com",
@@ -56,7 +56,7 @@ describe("payment adapter", () => {
   });
 
   it("verifies HMAC signed CardCom webhook bodies", () => {
-    const rawBody = JSON.stringify({ orderNumber: "APH-1001" });
+    const rawBody = JSON.stringify({ orderNumber: "ELY-1001" });
     const signature = createHmac("sha256", "webhook-secret")
       .update(rawBody)
       .digest("hex");
@@ -71,7 +71,7 @@ describe("payment adapter", () => {
   });
 
   it("rejects stale timestamped CardCom webhook signatures", () => {
-    const rawBody = JSON.stringify({ orderNumber: "APH-1001" });
+    const rawBody = JSON.stringify({ orderNumber: "ELY-1001" });
     const timestamp = "1760000000";
     const signature = createHmac("sha256", "webhook-secret")
       .update(`${timestamp}.${rawBody}`)
@@ -119,14 +119,14 @@ describe("payment adapter", () => {
     expect(
       isCardComDevelopmentWebhookPayload({
         provider: "cardcom",
-        orderNumber: "APH-1001",
+        orderNumber: "ELY-1001",
       }),
     ).toBe(true);
     expect(isCardComDevelopmentWebhookPayload({})).toBe(false);
     expect(
       isCardComDevelopmentWebhookPayload({
         provider: "other",
-        orderNumber: "APH-1001",
+        orderNumber: "ELY-1001",
       }),
     ).toBe(false);
   });

@@ -98,7 +98,7 @@ export const DETERMINISTIC_AI_EVAL_CASES = [
   },
   {
     name: "order support only exposes order lookup",
-    input: "מה סטטוס הזמנה APH-20260506-ABC123?",
+    input: "מה סטטוס הזמנה ELY-20260506-ABC123?",
     expectedKind: AI_RUN_KIND.orderSupport,
     expectedTools: ["orderSupport"],
     expectedConfidence: "medium",
@@ -107,7 +107,7 @@ export const DETERMINISTIC_AI_EVAL_CASES = [
   },
   {
     name: "complete order support has high confidence",
-    input: "מה סטטוס הזמנה APH-20260506-ABC123? dana@example.com",
+    input: "מה סטטוס הזמנה ELY-20260506-ABC123? dana@example.com",
     expectedKind: AI_RUN_KIND.orderSupport,
     expectedTools: ["orderSupport"],
     expectedConfidence: "high",
@@ -118,7 +118,7 @@ export const DETERMINISTIC_AI_EVAL_CASES = [
     name: "order status phrasing exposes only order lookup",
     input: {
       latestUserText: "איפה זה עומד?",
-      recentUserTexts: ["יש לי הזמנה APH-20260506-ABC123", "איפה זה עומד?"],
+      recentUserTexts: ["יש לי הזמנה ELY-20260506-ABC123", "איפה זה עומד?"],
     },
     expectedKind: AI_RUN_KIND.orderSupport,
     expectedTools: ["orderSupport"],

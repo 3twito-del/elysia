@@ -44,7 +44,7 @@ export function createCommerceOrderNumber(
 ) {
   const datePart = now.toISOString().slice(0, 10).replaceAll("-", "");
 
-  return `APH-${datePart}-${suffix.toUpperCase()}`;
+  return `ELY-${datePart}-${suffix.toUpperCase()}`;
 }
 
 export function getReservationExpiresAt(input: {

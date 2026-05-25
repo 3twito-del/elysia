@@ -395,7 +395,7 @@ function hasOrderSupportIntent(value: string) {
 
 function hasOrderReference(value: string) {
   return (
-    /\baph[-\s]?\d{4,}[\w-]*\b/i.test(value) ||
+    /\bely[-\s]?\d{4,}[\w-]*\b/i.test(value) ||
     /#\s?\d{4,}/.test(value) ||
     hasAny(value, orderReferenceTerms)
   );

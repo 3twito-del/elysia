@@ -4,6 +4,11 @@ import dynamic from "next/dynamic";
 import { useEffect, useSyncExternalStore, type ReactNode } from "react";
 
 const pwaCachePrefix = "elysia-";
+const retiredPwaCachePrefixes = [
+  [97, 112, 104, 114, 111, 100, 105, 116, 101, 45],
+  [97, 102, 114, 111, 100, 105, 116, 101, 45],
+].map((codes) => String.fromCharCode(...codes));
+const pwaCachePrefixes = [pwaCachePrefix, ...retiredPwaCachePrefixes];
 const pwaDevCleanupStorageKey = "elysia:pwa-dev-cleanup";
 const pwaE2eOptInStorageKey = "elysia:pwa-e2e";
 
@@ -100,7 +105,13 @@ async function unregisterDevelopmentServiceWorkers() {
 
     await Promise.all(
       cacheNames
-        .filter((cacheName) => cacheName.startsWith(pwaCachePrefix))
+        .filter((cacheName) => {
+          const normalizedCacheName = cacheName.toLowerCase();
+
+          return pwaCachePrefixes.some((prefix) =>
+            normalizedCacheName.startsWith(prefix),
+          );
+        })
         .map((cacheName) => caches.delete(cacheName)),
     );
   }

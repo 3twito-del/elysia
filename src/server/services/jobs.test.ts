@@ -25,19 +25,19 @@ describe("outbox job helpers", () => {
   it("builds email messages from outbox payloads", () => {
     const message = createOutboxEmailMessage({
       customerEmail: "dana@example.com",
-      orderNumber: "APH-20260428-AB12CD",
+      orderNumber: "ELY-20260428-AB12CD",
       template: "cart_checkout_created",
     });
 
     expect(message?.to).toBe("dana@example.com");
-    expect(message?.subject).toContain("APH-20260428-AB12CD");
+    expect(message?.subject).toContain("ELY-20260428-AB12CD");
     expect(message?.body).toContain("cart_checkout_created");
   });
 
   it("skips email messages without a recipient", () => {
     expect(
       createOutboxEmailMessage({
-        orderNumber: "APH-20260428-AB12CD",
+        orderNumber: "ELY-20260428-AB12CD",
       }),
     ).toBeNull();
   });

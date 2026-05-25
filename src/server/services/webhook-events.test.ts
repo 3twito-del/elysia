@@ -30,7 +30,7 @@ describe("webhook event helpers", () => {
   it("redacts sensitive payment payload fields before persistence", () => {
     expect(
       redactWebhookPayload({
-        orderNumber: "APH-1001",
+        orderNumber: "ELY-1001",
         CardOwnerEmail: "customer@example.com",
         CardToken: "tok_123",
         nested: {
@@ -39,7 +39,7 @@ describe("webhook event helpers", () => {
         },
       }),
     ).toEqual({
-      orderNumber: "APH-1001",
+      orderNumber: "ELY-1001",
       CardOwnerEmail: "[redacted]",
       CardToken: "[redacted]",
       nested: {

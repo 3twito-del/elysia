@@ -117,7 +117,7 @@ export type SeedProduct = {
 const manualProducts = [
   {
     slug: "venus-line-ring",
-    sku: "APH-RG-001",
+    sku: "ELY-RG-001",
     name: "טבעת Venus Line",
     shortDescription: "טבעת זהב דקה עם יהלום יחיד ונוכחות שקטה.",
     description:
@@ -131,7 +131,7 @@ const manualProducts = [
     tags: ["יוקרה נגישה", "סטודיו מודרני", "אירוסין", "מתנה"],
     variants: [
       {
-        sku: "APH-RG-001-52",
+        sku: "ELY-RG-001-52",
         name: "מידה 52",
         size: "52",
         metalColor: "זהב צהוב",
@@ -142,7 +142,7 @@ const manualProducts = [
         safetyStock: 1,
       },
       {
-        sku: "APH-RG-001-54",
+        sku: "ELY-RG-001-54",
         name: "מידה 54",
         size: "54",
         metalColor: "זהב צהוב",
@@ -156,7 +156,7 @@ const manualProducts = [
   },
   {
     slug: "muse-pearl-earrings",
-    sku: "APH-ER-018",
+    sku: "ELY-ER-018",
     name: "עגילי Muse Pearl",
     shortDescription: "עגילי פנינה קטנים בזהב צהוב למראה נקי.",
     description:
@@ -170,7 +170,7 @@ const manualProducts = [
     tags: ["יוקרה נגישה", "סטודיו מודרני", "פנינה", "מתנה"],
     variants: [
       {
-        sku: "APH-ER-018-STD",
+        sku: "ELY-ER-018-STD",
         name: "זוג עגילים",
         size: null,
         metalColor: "זהב צהוב",
@@ -184,7 +184,7 @@ const manualProducts = [
   },
   {
     slug: "selene-chain",
-    sku: "APH-NK-044",
+    sku: "ELY-NK-044",
     name: "שרשרת Selene",
     shortDescription: "שרשרת זהב לבן עם תליון אורכי דק.",
     description:
@@ -198,7 +198,7 @@ const manualProducts = [
     tags: ["יוקרה נגישה", "סטודיו מודרני", "שכבות", "מתנה"],
     variants: [
       {
-        sku: "APH-NK-044-42",
+        sku: "ELY-NK-044-42",
         name: "42 ס״מ",
         size: "42",
         metalColor: "זהב לבן",
@@ -209,7 +209,7 @@ const manualProducts = [
         safetyStock: 1,
       },
       {
-        sku: "APH-NK-044-45",
+        sku: "ELY-NK-044-45",
         name: "45 ס״מ",
         size: "45",
         metalColor: "זהב לבן",
@@ -223,7 +223,7 @@ const manualProducts = [
   },
   {
     slug: "hera-bracelet",
-    sku: "APH-BR-027",
+    sku: "ELY-BR-027",
     name: "צמיד Hera",
     shortDescription: "צמיד חוליות דק בזהב צהוב עם סגירה שטוחה.",
     description:
@@ -237,7 +237,7 @@ const manualProducts = [
     tags: ["יוקרה נגישה", "סטודיו מודרני", "יום יום", "שכבות"],
     variants: [
       {
-        sku: "APH-BR-027-S",
+        sku: "ELY-BR-027-S",
         name: "S",
         size: "S",
         metalColor: "זהב צהוב",
@@ -248,7 +248,7 @@ const manualProducts = [
         safetyStock: 1,
       },
       {
-        sku: "APH-BR-027-M",
+        sku: "ELY-BR-027-M",
         name: "M",
         size: "M",
         metalColor: "זהב צהוב",
@@ -474,7 +474,7 @@ function createGeneratedProduct(
     index % 6 === 0 ? null : pick(seedStones, index + blueprint.offset);
   const collection = pick(seedCollections, index + blueprint.offset);
   const serial = String(index + 100).padStart(3, "0");
-  const sku = `APH-${blueprint.skuPrefix}-T${serial}`;
+  const sku = `ELY-${blueprint.skuPrefix}-T${serial}`;
   const basePrice =
     blueprint.priceBase +
     (index % 12) * blueprint.priceStep +

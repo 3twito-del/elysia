@@ -44,7 +44,7 @@ describe("manual order service", () => {
   it("creates deterministic order numbers when suffix and date are provided", () => {
     expect(
       createManualOrderNumber(new Date("2026-04-27T08:00:00.000Z"), "ab12cd"),
-    ).toBe("APH-20260427-AB12CD");
+    ).toBe("ELY-20260427-AB12CD");
   });
 
   it("reserves manual orders for 24 hours", () => {
@@ -137,12 +137,12 @@ describe("manual order service", () => {
   it("creates audit metadata for manual order status changes", () => {
     expect(
       createManualOrderStatusAuditMetadata({
-        orderNumber: "APH-20260427-AB12CD",
+        orderNumber: "ELY-20260427-AB12CD",
         oldStatus: "PENDING_PAYMENT",
         newStatus: "PAID",
       }),
     ).toEqual({
-      orderNumber: "APH-20260427-AB12CD",
+      orderNumber: "ELY-20260427-AB12CD",
       oldStatus: "PENDING_PAYMENT",
       newStatus: "PAID",
     });
@@ -151,7 +151,7 @@ describe("manual order service", () => {
   it("formats and describes manual order customer confirmations", () => {
     const message = createManualOrderCustomerMessage({
       orderId: "order_1",
-      orderNumber: "APH-20260427-AB12CD",
+      orderNumber: "ELY-20260427-AB12CD",
       customerName: "Dana",
       customerEmail: "dana@example.com",
       customerPhone: "0501234567",
@@ -166,7 +166,7 @@ describe("manual order service", () => {
     });
 
     expect(message.to).toBe("dana@example.com");
-    expect(message.subject).toContain("APH-20260427-AB12CD");
+    expect(message.subject).toContain("ELY-20260427-AB12CD");
     expect(message.body).toContain("Venus Line Ring");
     expect(message.body).toContain(formatManualOrderAmount(1290));
   });
@@ -174,7 +174,7 @@ describe("manual order service", () => {
   it("creates operational manual order notifications", () => {
     const message = createManualOrderOperationsMessage({
       orderId: "order_1",
-      orderNumber: "APH-20260427-AB12CD",
+      orderNumber: "ELY-20260427-AB12CD",
       customerName: "Dana",
       customerEmail: "dana@example.com",
       customerPhone: "0501234567",
@@ -188,7 +188,7 @@ describe("manual order service", () => {
       reservationExpiresAt: new Date("2026-04-28T08:00:00.000Z"),
     });
 
-    expect(message.subject).toContain("APH-20260427-AB12CD");
+    expect(message.subject).toContain("ELY-20260427-AB12CD");
     expect(message.body).toContain("dana@example.com");
     expect(message.body).toContain("RING-VENUS");
   });

@@ -16,7 +16,7 @@ describe("order workflow helpers", () => {
   it("creates stable commerce order numbers", () => {
     expect(
       createCommerceOrderNumber(new Date("2026-04-28T08:00:00.000Z"), "ab12cd"),
-    ).toBe("APH-20260428-AB12CD");
+    ).toBe("ELY-20260428-AB12CD");
   });
 
   it("calculates reservation expiry from an explicit duration", () => {

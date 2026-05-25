@@ -8,7 +8,7 @@ import {
 
 describe("coupon helpers", () => {
   it("normalizes coupon codes", () => {
-    expect(normalizeCouponCode(" aph10 ")).toBe("APH10");
+    expect(normalizeCouponCode(" ely10 ")).toBe("ELY10");
     expect(normalizeCouponCode("   ")).toBeNull();
   });
 
@@ -40,7 +40,7 @@ describe("coupon helpers", () => {
   it("returns active coupon values from a normalized lookup", async () => {
     const findUnique = vi.fn().mockResolvedValue({
       amountOff: 50,
-      code: "APH10",
+      code: "ELY10",
       endsAt: null,
       id: "coupon_1",
       isActive: true,
@@ -51,13 +51,13 @@ describe("coupon helpers", () => {
     });
 
     await expect(
-      getActiveCouponValue(" aph10 ", makeCouponClient(findUnique)),
+      getActiveCouponValue(" ely10 ", makeCouponClient(findUnique)),
     ).resolves.toEqual({
-      code: "APH10",
+      code: "ELY10",
       id: "coupon_1",
       value: { amountOff: 50, percentOff: 10 },
     });
-    expect(findUnique).toHaveBeenCalledWith({ where: { code: "APH10" } });
+    expect(findUnique).toHaveBeenCalledWith({ where: { code: "ELY10" } });
   });
 
   it("returns null for inactive, expired, or exhausted coupon records", async () => {

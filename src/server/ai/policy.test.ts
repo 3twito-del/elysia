@@ -53,7 +53,7 @@ describe("AI tool policy", () => {
     expect(() =>
       assertAiToolPolicy({
         toolName: "orderSupport",
-        toolInput: { orderNumber: "APH-1", email: "dana@example.com" },
+        toolInput: { orderNumber: "ELY-1", email: "dana@example.com" },
         context: createPolicyContext(AI_RUN_KIND.orderSupport),
       }),
     ).not.toThrow();
@@ -61,7 +61,7 @@ describe("AI tool policy", () => {
     expect(() =>
       assertAiToolPolicy({
         toolName: "orderSupport",
-        toolInput: { orderNumber: "APH-1" },
+        toolInput: { orderNumber: "ELY-1" },
         context: createPolicyContext(AI_RUN_KIND.orderSupport),
       }),
     ).toThrow(AiToolPolicyError);

@@ -12,6 +12,8 @@ describe("PwaProvider", () => {
     expect(source).toContain('process.env.NODE_ENV !== "production"');
     expect(source).toContain("!nav.webdriver");
     expect(source).toContain("unregisterDevelopmentServiceWorkers");
+    expect(source).toContain("retiredPwaCachePrefixes");
+    expect(source).toContain("normalizedCacheName.startsWith(prefix)");
     expect(source).toContain("caches.delete");
     expect(source).toContain("runtime.location?.reload()");
   });

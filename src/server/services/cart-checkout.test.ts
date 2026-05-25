@@ -17,7 +17,7 @@ describe("cart checkout service", () => {
         new Date("2026-04-28T08:00:00.000Z"),
         "ab12cd",
       ),
-    ).toBe("APH-20260428-AB12CD");
+    ).toBe("ELY-20260428-AB12CD");
   });
 
   it("reserves cart checkout orders for 30 minutes", () => {
