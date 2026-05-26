@@ -122,7 +122,7 @@ async function createCartCheckoutOrderInTransaction(
   if (cart.items.length === 0) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "הסל ריק. יש להוסיף פריטים לפני מעבר לקופה.",
+      message: "הסל שלך עדיין ריק.",
     });
   }
 

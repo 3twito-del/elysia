@@ -11,6 +11,15 @@ const madeToOrderProductSlug = "muse-pearl-earrings";
 const madeToOrderProductName = "עגילי Muse Pearl";
 const searchProductSlug = "venus-line-ring";
 const searchProductName = "טבעת Venus Line";
+const checkoutEmptyTitle =
+  "\u05d4\u05e1\u05dc \u05e9\u05dc\u05da \u05e2\u05d3\u05d9\u05d9\u05df \u05e8\u05d9\u05e7";
+const checkoutCatalogCta =
+  "\u05d4\u05de\u05e9\u05da \u05d1\u05d7\u05d9\u05e8\u05d4 \u05d1\u05e7\u05d8\u05dc\u05d5\u05d2";
+const forbiddenCheckoutStateText = [
+  "\u05d8\u05d5\u05e2\u05df \u05e1\u05dc...",
+  "\u05d9\u05e6\u05d9\u05e8\u05ea \u05e1\u05dc \u05de\u05e7\u05d5\u05de\u05d9 \u05e2\u05d3\u05d9\u05d9\u05df \u05d1\u05d8\u05e2\u05d9\u05e0\u05d4.",
+  "\u05e1\u05dc \u05de\u05e7\u05d5\u05de\u05d9",
+] as const;
 const publicRoutes = [
   "/",
   "/search?q=venus",
@@ -199,7 +208,17 @@ test.describe("critical shopping flows", () => {
 
     await page.goto("/checkout");
     await expect(page.getByTestId("cart-checkout-form")).toBeVisible();
-    await expect(page.getByTestId("checkout-empty-cart")).toBeVisible();
+    const checkoutEmptyState = page.getByTestId("checkout-empty-cart");
+
+    await expect(checkoutEmptyState).toBeVisible();
+    await expect(checkoutEmptyState).toContainText(checkoutEmptyTitle);
+    await expect(
+      checkoutEmptyState.getByRole("link", { name: checkoutCatalogCta }),
+    ).toBeVisible();
+
+    for (const stateText of forbiddenCheckoutStateText) {
+      await expect(page.locator("body")).not.toContainText(stateText);
+    }
   });
 
   test("shows category not-found recovery", async ({ page }) => {

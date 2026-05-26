@@ -19,6 +19,7 @@ import {
   PackageCheck,
   Plus,
   ShieldCheck,
+  ShoppingBag,
   Trash2,
   Truck,
 } from "lucide-react";
@@ -168,6 +169,9 @@ export function CartCheckoutForm() {
 
   const cart = cartQuery.data;
   const cartItemCount = cart?.items.length ?? 0;
+  const isCartLoading = cartQuery.isLoading || !sessionKey;
+  const shouldShowEmptyCartState =
+    !isCartLoading && (Boolean(cartQuery.error) || !cart?.items.length);
   const subtotal = cart?.totals.subtotal ?? 0;
   const discount = cart?.totals.discount ?? 0;
   const shippingAmount = cartItemCount > 0 ? 29 : 0;
@@ -336,6 +340,14 @@ export function CartCheckoutForm() {
     );
   }
 
+  if (isCartLoading) {
+    return <CheckoutLoadingSkeleton />;
+  }
+
+  if (shouldShowEmptyCartState || !cart?.items.length) {
+    return <CheckoutEmptyCartState />;
+  }
+
   return (
     <>
       <form
@@ -362,190 +374,139 @@ export function CartCheckoutForm() {
               </CardTitle>
             </CardHeader>
             <CardContent className="grid min-h-72 gap-3">
-              {cartQuery.isLoading || !sessionKey ? (
-                <CartItemsSkeleton />
-              ) : cartQuery.error ? (
-                <div className="glass-inset grid gap-3 rounded-md border p-4 text-sm">
-                  <p className="font-medium">הסל לא זמין כרגע.</p>
-                  <p className="text-muted-foreground">
-                    אפשר לנסות שוב או להמשיך לבחור פריטים מהקטלוג.
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      onClick={() => void cartQuery.refetch()}
-                      type="button"
-                      variant="secondary"
+              {cart.items.map((item) => (
+                <div
+                  className="bg-background grid grid-cols-[68px_minmax(0,1fr)] gap-3 rounded-md border p-3 sm:grid-cols-[68px_minmax(0,1fr)_auto] sm:items-center"
+                  key={item.id}
+                >
+                  <Link
+                    aria-label={`צפייה במוצר ${item.productName}`}
+                    className="bg-muted relative size-[68px] overflow-hidden rounded-md border border-[var(--glass-border)]"
+                    href={`/product/${item.productSlug}`}
+                  >
+                    <Image
+                      alt=""
+                      className="media-color object-cover"
+                      fill
+                      sizes="72px"
+                      src={item.productImage}
+                    />
+                  </Link>
+                  <div className="min-w-0">
+                    <Link
+                      className="line-clamp-2 font-medium hover:underline"
+                      dir="auto"
+                      href={`/product/${item.productSlug}`}
                     >
-                      נסו שוב
+                      {item.productName}
+                    </Link>
+                    <p className="text-muted-foreground text-sm">
+                      {item.variantName} · {formatPrice(item.unitPrice)}
+                    </p>
+                    <p
+                      className="text-foreground mt-1 text-sm font-semibold"
+                      data-testid="checkout-line-total"
+                    >
+                      סכום שורה: {formatPrice(item.lineTotal)}
+                    </p>
+                  </div>
+                  <div className="col-span-2 flex items-center justify-end gap-2 sm:col-span-1">
+                    <Button
+                      aria-label={`הפחתת כמות עבור ${item.productName}`}
+                      data-icon-tooltip="הפחתה"
+                      data-icon-tooltip-placement="top"
+                      onClick={() => {
+                        if (!sessionKey) return;
+                        const payload = {
+                          itemId: item.id,
+                          quantity: item.quantity - 1,
+                        };
+
+                        if (isOffline) {
+                          queueOfflineCartMutation("cart.updateItem", payload);
+                          return;
+                        }
+
+                        updateItem.mutate({ sessionKey, ...payload });
+                      }}
+                      size="icon"
+                      type="button"
+                      variant="outline"
+                      disabled={
+                        item.quantity <= 1 ||
+                        updateItem.isPending ||
+                        checkoutSubmissionLocked
+                      }
+                    >
+                      <Minus aria-hidden="true" className="size-4" />
+                      <span className="sr-only">הפחתה</span>
                     </Button>
-                    <Button asChild variant="outline">
-                      <Link href="/category/rings">חזרה לקטלוג</Link>
+                    <span
+                      aria-atomic="true"
+                      aria-label={`כמות ${item.productName}: ${item.quantity}`}
+                      aria-live="polite"
+                      className="grid h-10 w-10 place-items-center text-sm font-medium"
+                    >
+                      {item.quantity}
+                    </span>
+                    <Button
+                      aria-label={`הוספת כמות עבור ${item.productName}`}
+                      data-icon-tooltip="הוספה"
+                      data-icon-tooltip-placement="top"
+                      onClick={() => {
+                        if (!sessionKey) return;
+                        const payload = {
+                          itemId: item.id,
+                          quantity: item.quantity + 1,
+                        };
+
+                        if (isOffline) {
+                          queueOfflineCartMutation("cart.updateItem", payload);
+                          return;
+                        }
+
+                        updateItem.mutate({ sessionKey, ...payload });
+                      }}
+                      size="icon"
+                      type="button"
+                      variant="outline"
+                      disabled={
+                        item.quantity >= 10 ||
+                        updateItem.isPending ||
+                        checkoutSubmissionLocked
+                      }
+                    >
+                      <Plus aria-hidden="true" className="size-4" />
+                      <span className="sr-only">הוספה</span>
+                    </Button>
+                    <Button
+                      aria-label={`הסרת ${item.productName} מהסל`}
+                      data-icon-tooltip="הסרה"
+                      data-icon-tooltip-placement="top"
+                      onClick={() => {
+                        if (!sessionKey) return;
+                        const payload = { itemId: item.id };
+
+                        if (isOffline) {
+                          queueOfflineCartMutation("cart.removeItem", payload);
+                          return;
+                        }
+
+                        removeItem.mutate({ sessionKey, ...payload });
+                      }}
+                      size="icon"
+                      type="button"
+                      variant="ghost"
+                      disabled={
+                        removeItem.isPending || checkoutSubmissionLocked
+                      }
+                    >
+                      <Trash2 aria-hidden="true" className="size-4" />
+                      <span className="sr-only">הסרה</span>
                     </Button>
                   </div>
                 </div>
-              ) : cart?.items.length ? (
-                cart.items.map((item) => (
-                  <div
-                    className="bg-background grid grid-cols-[68px_minmax(0,1fr)] gap-3 rounded-md border p-3 sm:grid-cols-[68px_minmax(0,1fr)_auto] sm:items-center"
-                    key={item.id}
-                  >
-                    <Link
-                      aria-label={`צפייה במוצר ${item.productName}`}
-                      className="bg-muted relative size-[68px] overflow-hidden rounded-md border border-[var(--glass-border)]"
-                      href={`/product/${item.productSlug}`}
-                    >
-                      <Image
-                        alt=""
-                        className="media-color object-cover"
-                        fill
-                        sizes="72px"
-                        src={item.productImage}
-                      />
-                    </Link>
-                    <div className="min-w-0">
-                      <Link
-                        className="line-clamp-2 font-medium hover:underline"
-                        dir="auto"
-                        href={`/product/${item.productSlug}`}
-                      >
-                        {item.productName}
-                      </Link>
-                      <p className="text-muted-foreground text-sm">
-                        {item.variantName} · {formatPrice(item.unitPrice)}
-                      </p>
-                      <p
-                        className="text-foreground mt-1 text-sm font-semibold"
-                        data-testid="checkout-line-total"
-                      >
-                        סכום שורה: {formatPrice(item.lineTotal)}
-                      </p>
-                    </div>
-                    <div className="col-span-2 flex items-center justify-end gap-2 sm:col-span-1">
-                      <Button
-                        aria-label={`הפחתת כמות עבור ${item.productName}`}
-                        data-icon-tooltip="הפחתה"
-                        data-icon-tooltip-placement="top"
-                        onClick={() => {
-                          if (!sessionKey) return;
-                          const payload = {
-                            itemId: item.id,
-                            quantity: item.quantity - 1,
-                          };
-
-                          if (isOffline) {
-                            queueOfflineCartMutation(
-                              "cart.updateItem",
-                              payload,
-                            );
-                            return;
-                          }
-
-                          updateItem.mutate({ sessionKey, ...payload });
-                        }}
-                        size="icon"
-                        type="button"
-                        variant="outline"
-                        disabled={
-                          item.quantity <= 1 ||
-                          updateItem.isPending ||
-                          checkoutSubmissionLocked
-                        }
-                      >
-                        <Minus aria-hidden="true" className="size-4" />
-                        <span className="sr-only">הפחתה</span>
-                      </Button>
-                      <span
-                        aria-atomic="true"
-                        aria-label={`כמות ${item.productName}: ${item.quantity}`}
-                        aria-live="polite"
-                        className="grid h-10 w-10 place-items-center text-sm font-medium"
-                      >
-                        {item.quantity}
-                      </span>
-                      <Button
-                        aria-label={`הוספת כמות עבור ${item.productName}`}
-                        data-icon-tooltip="הוספה"
-                        data-icon-tooltip-placement="top"
-                        onClick={() => {
-                          if (!sessionKey) return;
-                          const payload = {
-                            itemId: item.id,
-                            quantity: item.quantity + 1,
-                          };
-
-                          if (isOffline) {
-                            queueOfflineCartMutation(
-                              "cart.updateItem",
-                              payload,
-                            );
-                            return;
-                          }
-
-                          updateItem.mutate({ sessionKey, ...payload });
-                        }}
-                        size="icon"
-                        type="button"
-                        variant="outline"
-                        disabled={
-                          item.quantity >= 10 ||
-                          updateItem.isPending ||
-                          checkoutSubmissionLocked
-                        }
-                      >
-                        <Plus aria-hidden="true" className="size-4" />
-                        <span className="sr-only">הוספה</span>
-                      </Button>
-                      <Button
-                        aria-label={`הסרת ${item.productName} מהסל`}
-                        data-icon-tooltip="הסרה"
-                        data-icon-tooltip-placement="top"
-                        onClick={() => {
-                          if (!sessionKey) return;
-                          const payload = { itemId: item.id };
-
-                          if (isOffline) {
-                            queueOfflineCartMutation(
-                              "cart.removeItem",
-                              payload,
-                            );
-                            return;
-                          }
-
-                          removeItem.mutate({ sessionKey, ...payload });
-                        }}
-                        size="icon"
-                        type="button"
-                        variant="ghost"
-                        disabled={
-                          removeItem.isPending || checkoutSubmissionLocked
-                        }
-                      >
-                        <Trash2 aria-hidden="true" className="size-4" />
-                        <span className="sr-only">הסרה</span>
-                      </Button>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <EmptyState
-                  className="min-h-44"
-                  description="הסל ריק. אפשר לחזור לקטלוג ולבחור תכשיט לפני שמירת הזמנה."
-                  icon={PackageCheck}
-                  testId="checkout-empty-cart"
-                  title="אין פריטים בסל"
-                  variant="inset"
-                  actions={
-                    <>
-                      <Button asChild variant="secondary">
-                        <Link href="/category/rings">בחירת תכשיטים</Link>
-                      </Button>
-                      <Button asChild variant="outline">
-                        <Link href="/search">חיפוש בקטלוג</Link>
-                      </Button>
-                    </>
-                  }
-                />
-              )}
+              ))}
             </CardContent>
           </Card>
 
@@ -773,7 +734,7 @@ export function CartCheckoutForm() {
                   <span>{formatPrice(orderTotal)}</span>
                 </div>
               </div>
-              {cart?.couponCode ? (
+              {cart.couponCode ? (
                 <Badge className="w-fit" variant="secondary">
                   {cart.couponCode}
                 </Badge>
@@ -838,32 +799,98 @@ export function CartCheckoutForm() {
   );
 }
 
-function CartItemsSkeleton() {
+function CheckoutEmptyCartState() {
   return (
-    <div
-      aria-label="הסל מתעדכן"
-      aria-live="polite"
-      className="grid gap-3"
-      role="status"
+    <section
+      className="mx-auto max-w-3xl px-[var(--ui-page-x)] py-[var(--ui-section-y)] sm:px-6"
+      data-testid="cart-checkout-form"
     >
-      {Array.from({ length: 3 }).map((_, index) => (
-        <div
-          className="bg-background grid grid-cols-[68px_minmax(0,1fr)] gap-3 rounded-md border p-3 sm:grid-cols-[68px_minmax(0,1fr)_auto] sm:items-center"
-          key={index}
-        >
-          <Skeleton className="size-[68px]" />
-          <div className="grid min-w-0 gap-2">
-            <Skeleton className="h-4 w-44 max-w-full" />
-            <Skeleton className="h-3 w-32 max-w-full" />
-            <Skeleton className="h-3 w-28 max-w-full" />
-          </div>
-          <div className="col-span-2 flex justify-end gap-2 sm:col-span-1">
-            <Skeleton className="size-10" />
-            <Skeleton className="size-10" />
-            <Skeleton className="size-10" />
-          </div>
+      <EmptyState
+        className="min-h-[22rem]"
+        description="אפשר להמשיך לבחור תכשיטים מהקטלוג ולחזור לקופה כשהבחירה מוכנה."
+        icon={ShoppingBag}
+        testId="checkout-empty-cart"
+        title="הסל שלך עדיין ריק"
+        variant="panel"
+        actions={
+          <>
+            <Button asChild variant="secondary">
+              <Link href="/search">המשך בחירה בקטלוג</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/category/rings">טבעות נבחרות</Link>
+            </Button>
+          </>
+        }
+      />
+    </section>
+  );
+}
+
+function CheckoutLoadingSkeleton() {
+  return (
+    <section
+      aria-busy="true"
+      className="mx-auto grid max-w-7xl gap-5 px-[var(--ui-page-x)] pt-[var(--ui-section-y-tight)] pb-[var(--ui-section-y)] lg:grid-cols-[minmax(0,1fr)_352px] lg:items-start lg:px-[var(--ui-page-x-wide)]"
+      data-testid="checkout-loading-skeleton"
+    >
+      <div aria-hidden="true" className="grid gap-4">
+        <div className="grid gap-2">
+          <Skeleton className="h-7 w-40" />
+          <Skeleton className="h-4 w-full max-w-2xl" />
         </div>
-      ))}
-    </div>
+        <Card className="rounded-md" size="sm">
+          <CardContent className="grid gap-3 pt-6">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div
+                className="bg-background grid grid-cols-[68px_minmax(0,1fr)] gap-3 rounded-md border p-3 sm:grid-cols-[68px_minmax(0,1fr)_auto] sm:items-center"
+                key={index}
+              >
+                <Skeleton className="size-[68px]" />
+                <div className="grid min-w-0 gap-2">
+                  <Skeleton className="h-4 w-44 max-w-full" />
+                  <Skeleton className="h-3 w-32 max-w-full" />
+                  <Skeleton className="h-3 w-28 max-w-full" />
+                </div>
+                <div className="col-span-2 flex justify-end gap-2 sm:col-span-1">
+                  <Skeleton className="size-10" />
+                  <Skeleton className="size-10" />
+                  <Skeleton className="size-10" />
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <Card className="rounded-md" key={index} size="sm">
+              <CardContent className="grid gap-3 pt-6">
+                <Skeleton className="h-5 w-28" />
+                <Skeleton className="h-11 w-full" />
+                <Skeleton className="h-11 w-full" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+      <aside aria-hidden="true">
+        <Card className="rounded-md lg:sticky lg:top-24" size="sm">
+          <CardContent className="grid gap-4 pt-6">
+            <Skeleton className="h-6 w-24" />
+            <div className="grid gap-3">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-2/3" />
+            </div>
+            <Separator />
+            <Skeleton className="h-11 w-full" />
+            <div className="grid gap-2">
+              <Skeleton className="h-16 w-full" />
+              <Skeleton className="h-16 w-full" />
+            </div>
+          </CardContent>
+        </Card>
+      </aside>
+    </section>
   );
 }

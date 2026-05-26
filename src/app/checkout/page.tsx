@@ -10,20 +10,23 @@ export const metadata = {
 
 export default async function CheckoutPage() {
   return (
-    <main>
+    <>
       <SiteHeader />
-      <CommercePageHero
-        description="סל, משלוח עד הבית וקופה מאובטחת עם פרטי מסירה, שמירת מלאי ושירות לפני חיוב."
-        eyebrow="קופה ושירות"
-        title="קופה מאובטחת"
-        variant="checkout"
-      />
-      <RevealSection id="checkout-form">
-        <div id="checkout-service" />
-        <TRPCReactProvider>
-          <CartCheckoutForm />
-        </TRPCReactProvider>
-      </RevealSection>
-    </main>
+
+      <main>
+        <CommercePageHero
+          description="סל, משלוח עד הבית וקופה מאובטחת עם פרטי מסירה, שמירת מלאי ושירות לפני חיוב."
+          eyebrow="קופה ושירות"
+          title="קופה מאובטחת"
+          variant="checkout"
+        />
+        <RevealSection id="checkout-form">
+          <div id="checkout-service" />
+          <TRPCReactProvider>
+            <CartCheckoutForm />
+          </TRPCReactProvider>
+        </RevealSection>
+      </main>
+    </>
   );
 }
