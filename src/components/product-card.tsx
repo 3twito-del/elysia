@@ -81,7 +81,7 @@ export function ProductCard({
       data-testid="product-card"
     >
       <Link
-        aria-label={`צפייה במוצר ${product.name}`}
+        aria-label={`צפייה בפריט ${product.name}`}
         className="group/product-link block h-full min-w-0 focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
         href={href}
         prefetch={false}

@@ -349,5 +349,5 @@ export async function orderSupportWithAiAudit(
 }
 
 function createGiftSummary(input: RecommendGiftInput) {
-  return `ל-${input.occasion} עבור ${input.relation}, הייתי מתחיל מתכשיטים זמינים מהקטלוג שמתאימים לתקציב ולסגנון שנבחרו.`;
+  return `ל-${input.occasion} עבור ${input.relation}, הייתי מתחיל מתכשיטים זמינים מהקטלוג שמתאימים לטווח המחיר ולסגנון שנבחרו.`;
 }

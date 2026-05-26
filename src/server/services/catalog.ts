@@ -651,7 +651,7 @@ function getDisplayProductDescription(input: {
 
   const stoneText = input.stone ? ` עם ${input.stone}` : "";
 
-  return `${input.name} משלב ${input.material}${stoneText} בקו נקי ונוח לענידה. מתאים לשילוב יומיומי, מתנה או אירוע, עם פירוט מלא של מידה, חומר וזמינות לפני רכישה.`;
+  return `${input.name} משלב ${input.material}${stoneText} בקו נקי ונוח לענידה. מתאים לשילוב יומיומי, מתנה או אירוע, עם פירוט מדויק של מידה, חומר וזמינות לפני הזמנה.`;
 }
 
 function getDisplayCommerceHighlights(record: CatalogProductRecord) {
@@ -660,7 +660,7 @@ function getDisplayCommerceHighlights(record: CatalogProductRecord) {
   }
 
   return [
-    record.warranty ?? "אחריות ושירות לאחר רכישה",
+    record.warranty ?? "אחריות ושירות לאחר מסירה",
     record.deliveryPromise ?? "משלוח מתואם עד הבית",
     record.careInstructions ?? "הנחיות טיפול מצורפות לכל פריט",
   ];

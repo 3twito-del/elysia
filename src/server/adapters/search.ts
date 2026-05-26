@@ -869,7 +869,7 @@ function getActiveSemanticSignals(intent: SemanticSearchIntent) {
     intent.hardFilters.material ? `חומר: ${intent.hardFilters.material}` : null,
     intent.hardFilters.stone ? `אבן: ${intent.hardFilters.stone}` : null,
     intent.hardFilters.maxPrice
-      ? `תקציב עד ${intent.hardFilters.maxPrice.toLocaleString("he-IL")} ₪`
+      ? `טווח מחיר עד ${intent.hardFilters.maxPrice.toLocaleString("he-IL")} ₪`
       : null,
     intent.recipient ? `למי: ${intent.recipient}` : null,
     intent.occasion ? `אירוע: ${intent.occasion}` : null,

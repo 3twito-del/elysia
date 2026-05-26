@@ -40,7 +40,7 @@ export function CookiePreferencesPanel() {
             </p>
             <p className="text-muted-foreground mt-2 leading-8">
               ניתן לשנות את הבחירה בכל רגע. מעבר ל״הכרחי בלבד״ עוצר מדידה ומוחק
-              מהדפדפן את רשימת המוצרים שנצפו לאחרונה.
+              מהדפדפן את רשימת הפריטים שנצפו לאחרונה.
             </p>
           </div>
 

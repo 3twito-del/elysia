@@ -57,13 +57,13 @@ const spotlightActions = [
   {
     href: "/stylist",
     label: "סטייליסט אישי",
-    description: "התאמה לפי תקציב וסגנון",
+    description: "התאמה לפי סגנון, חומר ומידה",
     icon: Sparkles,
   },
   {
     href: "/gifts",
     label: "מתנות",
-    description: "בחירה מהירה לפי אירוע",
+    description: "בחירה מדויקת לפי רגע ומחווה",
     icon: Gift,
   },
   {
@@ -75,7 +75,7 @@ const spotlightActions = [
   {
     href: "/search",
     label: "כל הקטלוג",
-    description: "חיפוש טבעות, עגילים וצמידים",
+    description: "חיפוש לפי תכשיט, חומר ואבן",
     icon: Search,
   },
 ] as const;
@@ -166,7 +166,7 @@ export function MobileNav({
             className="text-muted-foreground mobile-nav-animated-item mt-2 text-sm leading-6"
             style={getMobileNavStaggerStyle(1)}
           >
-            תכשיטים אונליין, ייעוץ אישי ושירות לקוחות נגיש.
+            תכשיטים בקו מדוד, ייעוץ אישי ושירות שקט.
           </p>
         </div>
 

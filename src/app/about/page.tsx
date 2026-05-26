@@ -48,7 +48,7 @@ const editorialImages = [
     src: "/brand/v2/content-editorial.avif",
   },
   {
-    alt: "טבעת זהב ויהלומים בצילום מוצר נקי",
+    alt: "טבעת זהב ויהלומים בצילום פריט נקי",
     className: "aspect-[5/4]",
     sizes: "(min-width: 1024px) 22vw, (min-width: 640px) 46vw, 100vw",
     src: "/brand/v2/product-focus.avif",
@@ -78,8 +78,8 @@ const storyImages = [
 
 const values = [
   {
-    title: "שקיפות לפני רגש",
-    text: "חומר, מידה, מחיר וזמינות מוצגים לפני שהלקוחה צריכה לנחש. היוקרה נשארת ברורה.",
+    title: "בהירות לפני בחירה",
+    text: "חומר, מידה, מחיר וזמינות מוצגים בשפה נקייה לפני שהלקוחה צריכה לנחש.",
     icon: ShieldCheck,
   },
   {
@@ -94,7 +94,7 @@ const values = [
   },
   {
     title: "שירות שממשיך",
-    text: "ייעוץ, הזמנה, משלוח, החלפה ושאלות אחרי קנייה נבנים כחוויה אחת ולא כתחנות נפרדות.",
+    text: "ייעוץ, הזמנה, משלוח, החלפה ושאלות אחרי מסירה נבנים כחוויה אחת ולא כתחנות נפרדות.",
     icon: Handshake,
   },
 ] satisfies IconItem[];
@@ -107,12 +107,12 @@ const standards = [
   },
   {
     title: "חיפוש בלי רעש",
-    text: "הקטלוג מוביל לפי צורך, תקציב, חומר וקטגוריה בלי להכריח מסלול רכישה אחד.",
+    text: "הקטלוג מוביל לפי צורך, טווח מחיר, חומר וקטגוריה בלי להכריח מסלול אחד.",
     icon: Search,
   },
   {
     title: "אישור לפני פעולה",
-    text: "הלקוחה מקבלת סימני אמון ברורים לפני הזמנה, לא רק אחרי שהמוצר בעגלה.",
+    text: "הלקוחה מקבלת סימני אמון ברורים לפני שמירת הזמנה, לא רק בסוף הדרך.",
     icon: BadgeCheck,
   },
   {
@@ -148,7 +148,7 @@ const workflow = [
 export const metadata: Metadata = {
   title: "אודות",
   description:
-    "Elysia היא סטודיו תכשיטים ישראלי מודרני עם קטלוג אונליין, פרטי מוצר ברורים ושירות אישי לפני ואחרי הזמנה.",
+    "Elysia היא סטודיו תכשיטים ישראלי עם קטלוג דיגיטלי, פרטי פריט ברורים ושירות אישי לפני ואחרי הזמנה.",
   openGraph: {
     title: "אודות Elysia",
     description:
@@ -181,7 +181,7 @@ export default function AboutPage() {
             </>
           }
           className="[&_.commerce-page-hero-inner]:pb-6 lg:[&_.commerce-page-hero-inner]:pb-8"
-          description="Elysia היא סטודיו תכשיטים ישראלי שמבקש להפוך רכישת תכשיט אונליין לדבר ברור, יפה ואנושי. פחות רעש מסביב לבחירה, יותר חומר, אור, פרופורציה ושירות."
+          description="Elysia היא סטודיו תכשיטים ישראלי שמבקש להפוך בחירת תכשיט מרחוק לדבר ברור, יפה ואנושי. פחות רעש מסביב לבחירה, יותר חומר, אור, פרופורציה ושירות."
           eyebrow="אודות Elysia"
           id="page-hero"
           media={{
@@ -191,8 +191,8 @@ export default function AboutPage() {
             slides: cinematicRouteMedia.about,
           }}
           metrics={[
-            { label: "מיקוד", value: "תכשיטים אונליין" },
-            { label: "גישה", value: "יוקרה נגישה" },
+            { label: "מיקוד", value: "תכשיטי סטודיו" },
+            { label: "גישה", value: "דיוק מאופק" },
             { label: "שירות", value: "אישי ומדוד" },
           ]}
           metricsMode="inline"
@@ -209,12 +209,12 @@ export default function AboutPage() {
             <div>
               <p className="text-muted-foreground text-sm">הגישה שלנו</p>
               <h2 className="mt-3 max-w-2xl text-3xl leading-tight font-semibold sm:text-4xl">
-                לא מספרים על יוקרה מרחוק. מראים אותה קרוב, בקצב שאפשר לבחור בו.
+                לא מכריזים על יוקרה. מראים חומר, קו ואור בקצב שאפשר לבחור בו.
               </h2>
               <div className="text-muted-foreground mt-5 grid max-w-2xl gap-4 text-base leading-8">
                 <p>
                   תכשיט טוב מתחיל בפרופורציה, בחומר ובשקט. אנחנו מציגים כל פריט
-                  כך שאפשר לראות את הקו, להבין את המידה, לבדוק את המחיר ולהרגיש
+                  כך שאפשר לראות את הקו, להבין את המידה, לאמת את הפרטים ולהרגיש
                   בטוחים לפני ההזמנה.
                 </p>
                 <p>
@@ -232,9 +232,7 @@ export default function AboutPage() {
                 </div>
                 <div className="border-t border-[var(--glass-border)] pt-3">
                   <dt className="text-muted-foreground text-xs">מסירה</dt>
-                  <dd className="mt-1 text-xl font-semibold">
-                    אונליין עד הבית
-                  </dd>
+                  <dd className="mt-1 text-xl font-semibold">עד הבית</dd>
                 </div>
                 <div className="border-t border-[var(--glass-border)] pt-3">
                   <dt className="text-muted-foreground text-xs">שירות</dt>
@@ -320,7 +318,7 @@ export default function AboutPage() {
             <div>
               <p className="text-muted-foreground text-sm">סטנדרט שירות</p>
               <h2 className="mt-3 text-3xl leading-tight font-semibold sm:text-4xl">
-                לפני רכישה צריכה להיות תשובה: חומר, מידה, זמינות ומסירה.
+                לפני הזמנה צריכה להיות תשובה: חומר, מידה, זמינות ומסירה.
               </h2>
               <p className="text-muted-foreground mt-5 leading-8">
                 בכל פריט אנחנו מעדיפים מידע שאפשר לפעול לפיו: תקריב שמראה גימור,

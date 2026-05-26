@@ -431,7 +431,7 @@ export function ProductPurchasePanel({
         </div>
 
         <div
-          aria-label="אמון ושירות בקנייה"
+          aria-label="אמון ושירות בהזמנה"
           className="grid gap-2"
           data-testid="product-commerce-trust"
         >

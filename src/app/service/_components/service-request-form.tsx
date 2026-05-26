@@ -152,10 +152,10 @@ export function ServiceRequestForm({
         <Field
           defaultValue={defaultProductReference}
           error={state.fieldErrors?.productReference}
-          label="מוצר או קישור"
+          label="פריט או קישור"
           name="productReference"
           pending={pending}
-          placeholder="שם מוצר, מק״ט או קישור"
+          placeholder="שם פריט, מק״ט או קישור"
         />
       </div>
 

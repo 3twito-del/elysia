@@ -16,7 +16,7 @@ export default function manifest(): ExtendedManifest {
     name: "Elysia",
     short_name: "Elysia",
     description:
-      "סטודיו תכשיטים ישראלי עם קטלוג, סל, שירות אישי וקנייה אונליין.",
+      "סטודיו תכשיטים ישראלי עם קטלוג דיגיטלי, שירות אישי והזמנה שקטה.",
     start_url: "/?source=pwa",
     scope: "/",
     lang: "he",

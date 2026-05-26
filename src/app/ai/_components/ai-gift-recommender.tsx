@@ -61,8 +61,8 @@ export function AiGiftRecommender() {
           </div>
           <h2 className="text-xl font-semibold">שאלון מתנה חכם</h2>
           <p className="text-muted-foreground mt-2 max-w-2xl text-sm leading-6">
-            הזינו קשר, אירוע, תקציב וסגנון. ההמלצות יישארו בתוך מוצרים קיימים
-            בקטלוג.
+            הזינו קשר, אירוע, טווח מחיר וסגנון. ההמלצות יישארו בתוך פריטים
+            קיימים בקטלוג.
           </p>
         </div>
         <Sparkles aria-hidden="true" className="text-foreground size-6" />
@@ -101,7 +101,7 @@ export function AiGiftRecommender() {
           <Field
             error={fieldErrors.budget}
             htmlFor="ai-gift-budget"
-            label="תקציב"
+            label="טווח מחיר"
           >
             <Input
               aria-invalid={Boolean(fieldErrors.budget)}
@@ -154,11 +154,11 @@ export function AiGiftRecommender() {
           <AiProductRecommendations
             products={recommendGift.data.products}
             source="gift"
-            title="מוצרים מומלצים למתנה"
+            title="פריטים מומלצים למתנה"
           />
           {recommendGift.data.products.length === 0 ? (
             <p className="text-muted-foreground text-sm">
-              לא נמצאו מוצרים זמינים בתקציב ובסגנון שבחרת.
+              לא נמצאו פריטים זמינים בטווח המחיר ובסגנון שבחרת.
             </p>
           ) : null}
         </div>

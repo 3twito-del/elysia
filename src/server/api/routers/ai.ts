@@ -79,7 +79,7 @@ export const aiRouter = createTRPCRouter({
       description: [
         `${input.name} הוא פריט ${input.category} מודרני עם נוכחות עדינה.`,
         `החומר המרכזי הוא ${input.material}${input.stone ? ` בשילוב ${input.stone}` : ""}.`,
-        "הפרטים, הזמינות והמחיר מוצגים לפני רכישה כדי לאפשר בחירה ברורה ושקטה.",
+        "הפרטים, הזמינות והמחיר מוצגים לפני הזמנה כדי לאפשר בחירה ברורה ושקטה.",
       ].join("\n\n"),
     })),
 });

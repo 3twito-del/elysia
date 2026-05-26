@@ -228,11 +228,11 @@ export function CartCheckoutForm() {
   const postDiscountSubtotal = Math.max(0, subtotal - discount);
   const hasPricingReview = Boolean(
     cart?.items.length &&
-      hasCheckoutPricingReview({
-        items: cart.items,
-        subtotal,
-        total: orderTotal,
-      }),
+    hasCheckoutPricingReview({
+      items: cart.items,
+      subtotal,
+      total: orderTotal,
+    }),
   );
   const subtotalLabel = getCheckoutAmountLabel(subtotal, {
     requiresPositive: cartItemCount > 0,
@@ -427,7 +427,7 @@ export function CartCheckoutForm() {
                 <Link href="/account">אזור לקוח</Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href="/">המשך קנייה</Link>
+                <Link href="/">המשך בחירה</Link>
               </Button>
             </div>
           </CardContent>
@@ -497,7 +497,7 @@ export function CartCheckoutForm() {
                   key={item.id}
                 >
                   <Link
-                    aria-label={`צפייה במוצר ${item.productName}`}
+                    aria-label={`צפייה בפריט ${item.productName}`}
                     className="bg-muted relative size-[68px] overflow-hidden rounded-md border border-[var(--glass-border)]"
                     href={`/product/${item.productSlug}`}
                   >
@@ -859,7 +859,9 @@ export function CartCheckoutForm() {
                 </div>
                 <div className="flex justify-between">
                   <span>מחיר פריטים</span>
-                  <span data-testid="checkout-items-price">{subtotalLabel}</span>
+                  <span data-testid="checkout-items-price">
+                    {subtotalLabel}
+                  </span>
                 </div>
                 {discount > 0 ? (
                   <div className="flex justify-between">
@@ -980,8 +982,8 @@ function CheckoutEmptyCartState() {
             הסל שלך ממתין לבחירה הראשונה
           </h2>
           <p className="text-muted-foreground mt-4 max-w-xl text-sm leading-7 sm:text-base">
-            חזרי לקולקציה ובחרי את התכשיט שילווה את הרגע הבא. הקופה תמתין כאן
-            עם סיכום ברור, שמירת מלאי ושירות אישי לפני חיוב.
+            חזרי לקולקציה ובחרי את התכשיט שילווה את הרגע הבא. הקופה תמתין כאן עם
+            סיכום ברור, שמירת מלאי ושירות אישי לפני חיוב.
           </p>
           <div className="mt-7 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <Button asChild>

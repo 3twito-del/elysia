@@ -248,7 +248,7 @@ export default async function AccountPage() {
                 value="מאובטח"
               />
               <MetricCard
-                detail="מוצרים שמורים לקנייה"
+                detail="פריטים שמורים לבחירה מאוחרת"
                 icon={Heart}
                 label="מועדפים"
                 variant="soft"
@@ -384,7 +384,7 @@ export default async function AccountPage() {
             <CardContent className="grid gap-3">
               {wishlistItems.length === 0 ? (
                 <EmptyState
-                  description="עדיין לא נשמרו מוצרים."
+                  description="עדיין לא נשמרו פריטים."
                   icon={Heart}
                   title="אין פריטים מועדפים"
                   variant="inset"

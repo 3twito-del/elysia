@@ -248,7 +248,7 @@ export function createSemanticMatchReason(
     product.price <= intent.hardFilters.maxPrice
   ) {
     reasons.push(
-      `בתקציב עד ${intent.hardFilters.maxPrice.toLocaleString("he-IL")} ₪`,
+      `בטווח מחיר עד ${intent.hardFilters.maxPrice.toLocaleString("he-IL")} ₪`,
     );
   }
 

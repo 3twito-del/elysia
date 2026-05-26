@@ -48,7 +48,7 @@ export async function generateMetadata({
   const product = await getCatalogProductBySlug(slug);
 
   return {
-    title: product?.name ?? "מוצר",
+    title: product?.name ?? "פריט",
     description: product?.shortDescription,
     openGraph: product
       ? {
@@ -249,7 +249,7 @@ export default async function ProductPage({
           <CommerceSectionHeader
             className="mb-0"
             eyebrow="הסטודיו של Elysia"
-            title="תכשיט שנבחר כמו פריט אייקוני, לא כמו עוד מוצר בקטלוג."
+            title="תכשיט שנבחר כמו פריט אייקוני, לא כמו עוד שורה בקטלוג."
           />
 
           <div className="grid gap-8">

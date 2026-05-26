@@ -5,7 +5,7 @@ export const newsletterInputSchema = z.object({
 });
 
 export const wishlistInputSchema = z.object({
-  productSlug: z.string().trim().min(1, "לא נמצא מוצר לשמירה."),
+  productSlug: z.string().trim().min(1, "לא נמצא פריט לשמירה."),
 });
 
 export const adminLoginInputSchema = z.object({

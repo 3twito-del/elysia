@@ -109,7 +109,7 @@ async function createManualOrderInTransaction(
   if (!product) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "המוצר לא נמצא או אינו פעיל.",
+      message: "הפריט לא נמצא או אינו פעיל.",
     });
   }
 
@@ -120,7 +120,7 @@ async function createManualOrderInTransaction(
   if (!variant) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "למוצר אין וריאציה זמינה להזמנה.",
+      message: "לפריט אין וריאציה זמינה להזמנה.",
     });
   }
 
@@ -129,7 +129,7 @@ async function createManualOrderInTransaction(
   if (!price) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "למוצר אין מחיר פעיל בשקלים.",
+      message: "לפריט אין מחיר פעיל בשקלים.",
     });
   }
 
@@ -145,7 +145,7 @@ async function createManualOrderInTransaction(
   if (!inventoryItem) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "אין מלאי מוגדר למוצר בערוץ שנבחר.",
+      message: "אין מלאי מוגדר לפריט בערוץ שנבחר.",
     });
   }
 

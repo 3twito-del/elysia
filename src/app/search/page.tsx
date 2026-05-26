@@ -121,7 +121,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
       <main>
         <CommercePageHero
-          description="חיפוש קטלוג עם סינון לפי קטגוריה, חומר, אבן, תקציב וזמינות."
+          description="חיפוש קטלוג עם סינון לפי קטגוריה, חומר, אבן, טווח מחיר וזמינות."
           eyebrow="קטלוג Elysia"
           title="חיפוש בקטלוג"
           variant="catalog"
@@ -756,7 +756,8 @@ async function getSearchRecoveryActions(
     };
 
     candidates.push({
-      description: "שומר את מילת החיפוש ומסיר קטגוריה, חומר, אבן, תקציב ומיון.",
+      description:
+        "שומר את מילת החיפוש ומסיר קטגוריה, חומר, אבן, טווח מחיר ומיון.",
       href: createSearchHref({ ...queryOnlyInput, view: viewMode }),
       input: queryOnlyInput,
       label: "ניקוי פילטרים",
@@ -786,7 +787,7 @@ async function getSearchRecoveryActions(
     };
 
     candidates.push({
-      description: "פותח את כל מוצרי הקטלוג ללא חיפוש ופילטרים.",
+      description: "פותח את כל פריטי הקטלוג ללא חיפוש ופילטרים.",
       href: createSearchHref({ ...allCatalogInput, view: viewMode }),
       input: allCatalogInput,
       label: "כל הקטלוג",

@@ -16,7 +16,7 @@ const catalogLinks = [
 ] as const;
 
 const commerceLinks = [
-  { href: "/checkout", label: "קופה ותשלום" },
+  { href: "/checkout", label: "קופה והזמנה" },
   { href: "/service", label: "שירות לקוחות" },
   { href: "/faq", label: "שאלות ותשובות" },
   { href: "/size-guide", label: "מדריך מידות" },
@@ -65,8 +65,8 @@ export function SiteFooter() {
               </span>
             </Link>
             <p className="text-muted-foreground mt-6 max-w-md text-sm leading-8 sm:text-[0.95rem]">
-              סטודיו תכשיטים ישראלי עם קולקציות מדודות, רכישה אונליין ושירות
-              אישי שמלווה את הבחירה בעדינות.
+              סטודיו תכשיטים ישראלי לקולקציות מדודות, חומר בהיר ושירות אישי
+              שמלווה את הבחירה בעדינות.
             </p>
             <div className="mt-7 max-w-md">
               <p className="text-foreground text-xs font-medium">
@@ -82,7 +82,7 @@ export function SiteFooter() {
             data-footer-nav-root
           >
             <FooterNav links={catalogLinks} title="קטלוג" />
-            <FooterNav links={commerceLinks} title="שירות וקנייה" />
+            <FooterNav links={commerceLinks} title="שירות והזמנה" />
             <FooterNav links={informationLinks} title="מידע" />
           </nav>
         </div>
@@ -94,7 +94,7 @@ export function SiteFooter() {
             data-testid="footer-copyright"
           >
             2026 Elysia. כל הזכויות שמורות. כל הזמנה מטופלת בתשומת לב, מאריזה
-            ועד שירות לאחר קנייה.
+            ועד שירות לאחר מסירה.
           </p>
           <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-center md:gap-8">
             <nav

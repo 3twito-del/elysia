@@ -204,14 +204,14 @@ function getSeedAvailabilityMode(slug: string) {
 
 function getSeedCommerceHighlights(slug: string) {
   if (slug === "muse-pearl-earrings") {
-    return ["מחיר גלוי לפני התאמה", "ייצור לפי מידה וגוון"];
+    return ["מחיר ברור לפני התאמה", "ייצור לפי מידה וגוון"];
   }
 
   if (slug === "venus-line-ring") {
     return ["ייעוץ התאמה לפני שמירה", "בחירת אבן מאומתת"];
   }
 
-  return ["מחיר גלוי לפני שמירה", "בדיקת איכות לפני מסירה"];
+  return ["מחיר ברור לפני שמירה", "בדיקת איכות לפני מסירה"];
 }
 
 function getUniqueValues(values: string[]) {

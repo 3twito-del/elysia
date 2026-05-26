@@ -45,9 +45,7 @@ describe("luxury commerce UI hardening", () => {
 
     expect(mobileNav).not.toContain("h-auto min-h-14 flex-col");
     expect(mobileNav).not.toContain('variant="outline"');
-    expect(mobileNav).toContain(
-      "תכשיטים אונליין, ייעוץ אישי ושירות לקוחות נגיש.",
-    );
+    expect(mobileNav).toContain("תכשיטים בקו מדוד, ייעוץ אישי ושירות שקט.");
     expect(mobileNav).not.toContain("׳³");
     expect(mobileNav).toContain("after:h-px");
     expect(mobileNav).toContain('href: "/branches"');
@@ -61,11 +59,11 @@ describe("luxury commerce UI hardening", () => {
     expect(footer).toContain("site-footer-nav grid md:grid-cols-3");
     expect(footer).toContain("function FooterNav");
     expect(footer).toContain('title="קטלוג"');
-    expect(footer).toContain('title="שירות וקנייה"');
+    expect(footer).toContain('title="שירות והזמנה"');
     expect(footer).toContain('title="מידע"');
     expect(footer).not.toContain("primaryServiceLinks");
     expect(footer).not.toContain("secondaryServiceLinks");
-    expect(footer).not.toContain("שירות וקנייה - המשך");
+    expect(footer).not.toContain("שירות והזמנה - המשך");
     expect(footer).toContain("const socialLinks = [");
     expect(footer).toContain("https://www.instagram.com/elysia.one/");
     expect(footer).toContain("https://www.tiktok.com/@elysia.one");

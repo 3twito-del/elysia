@@ -142,8 +142,8 @@ export default async function CategoryPage({
   const hasActiveFilters = activeFilterCount > 0;
   const pageRangeLabel =
     sortedProducts.length > 0
-      ? `${visibleStart}-${visibleEnd} מתוך ${sortedProducts.length} מוצרים`
-      : "0 מוצרים";
+      ? `${visibleStart}-${visibleEnd} מתוך ${sortedProducts.length} פריטים`
+      : "0 פריטים";
 
   return (
     <>
@@ -153,7 +153,7 @@ export default async function CategoryPage({
         <CommercePageHero
           description={
             category.description ??
-            "בחירה מסוננת מתוך קטלוג התכשיטים, עם רכישה אונליין ומחירים בשקלים."
+            "בחירה מסוננת מתוך קטלוג התכשיטים, עם הזמנה דיגיטלית ומחירים בשקלים."
           }
           eyebrow="קטלוג Elysia"
           id="page-hero"
@@ -199,7 +199,7 @@ export default async function CategoryPage({
                     סינון מדויק
                   </SheetTitle>
                   <SheetDescription>
-                    בחרו סדר הצגה, סוג תכשיט, חומר, אבן ותקציב.
+                    בחרו סדר הצגה, סוג תכשיט, חומר, אבן וטווח מחיר.
                   </SheetDescription>
                 </SheetHeader>
                 <div className="p-[var(--ui-panel-padding)]">
@@ -393,7 +393,7 @@ function CategoryEmptyState({
       description="אפשר לנקות את הבחירה או להרחיב את החיפוש בכל הקטלוג."
       icon={Gem}
       testId="category-empty-state"
-      title="לא נמצאו מוצרים בהתאמה הזו"
+      title="לא נמצאו פריטים בהתאמה הזו"
     />
   );
 }
@@ -415,7 +415,7 @@ function CategoryPagination({
 
   return (
     <nav
-      aria-label="עמודי מוצרים"
+      aria-label="עמודי פריטים"
       className="mt-8 flex flex-col items-center justify-between gap-3 sm:flex-row"
     >
       <p className="text-muted-foreground text-sm">

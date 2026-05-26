@@ -90,8 +90,8 @@ export function SiteHeader() {
         dir="rtl"
       >
         <p className="sr-only">
-          Elysia היא סטודיו תכשיטים אונליין עם ניווט לקטלוג, חיפוש מוצרים, שירות
-          לקוחות, אזור לקוח, סל קניות וקישורים לטבעות, שרשראות, עגילים וצמידים.
+          Elysia היא סטודיו תכשיטים עם ניווט לקולקציות, חיפוש פריטים, שירות
+          לקוחות, אזור לקוח, סל וקישורים לטבעות, שרשראות, עגילים וצמידים.
         </p>
         <div className="mx-auto grid h-16 max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 sm:px-6 md:h-[4.25rem] md:grid-cols-[auto_1fr_auto] md:gap-3 lg:h-[6.125rem] lg:gap-5">
           <div className="flex items-center justify-self-start md:hidden">

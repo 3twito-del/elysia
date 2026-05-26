@@ -63,7 +63,7 @@ export function addFixtureCartItem(input: {
   if (product.availabilityMode !== "READY_TO_ORDER") {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "המוצר הזה דורש תיאום עם שירות הלקוחות לפני הזמנה.",
+      message: "הפריט הזה דורש תיאום עם שירות הלקוחות לפני הזמנה.",
     });
   }
 
@@ -77,7 +77,7 @@ export function addFixtureCartItem(input: {
   if (!Number.isFinite(variant.price) || variant.price <= 0) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "מחיר המוצר דורש בדיקה לפני הוספה לסל.",
+      message: "מחיר הפריט דורש בדיקה לפני הוספה לסל.",
     });
   }
 

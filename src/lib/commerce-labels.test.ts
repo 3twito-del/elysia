@@ -42,8 +42,8 @@ describe("commerce labels", () => {
     expect(getPublicStockStatusLabel(4)).toBe("זמין במלאי");
     expect(getStockQuantityLabel(0)).toBe("לא זמין");
     expect(getStockQuantityLabel(4)).toBe("4 במלאי");
-    expect(getItemCountLabel(1)).toBe("מוצר אחד");
-    expect(getItemCountLabel(3)).toBe("3 מוצרים");
+    expect(getItemCountLabel(1)).toBe("פריט אחד");
+    expect(getItemCountLabel(3)).toBe("3 פריטים");
   });
 
   it("maps public commerce status from availability mode and quantity", () => {
@@ -54,7 +54,7 @@ describe("commerce labels", () => {
       }),
     ).toMatchObject({
       canAddToCart: true,
-      cardCtaLabel: "צפייה וקנייה",
+      cardCtaLabel: "לפרטי הפריט",
       ctaLabel: "הוספה לסל",
       label: "זמין במלאי",
     });

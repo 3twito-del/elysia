@@ -12,16 +12,16 @@ import { env } from "~/env";
 
 const appName = "Elysia";
 const appDescription =
-  "רשת תכשיטים ישראלית בעיצוב יוקרה נגישה: טבעות, שרשראות, עגילים, צמידים, מתנות ורכישה אונליין.";
+  "סטודיו תכשיטים ישראלי לטבעות, שרשראות, עגילים וצמידים, עם דיוק חומרי, אור שקט, שירות אישי והזמנה דיגיטלית.";
 
 export const metadata: Metadata = {
   applicationName: appName,
   title: {
-    default: "Elysia | תכשיטי סטודיו מודרניים",
+    default: "Elysia | סטודיו תכשיטים ישראלי",
     template: "%s | Elysia",
   },
   description:
-    "רשת תכשיטים ישראלית במיצוב יוקרה נגישה: טבעות, שרשראות, עגילים, צמידים, מתנות ורכישה אונליין.",
+    "סטודיו תכשיטים ישראלי לטבעות, שרשראות, עגילים וצמידים, עם דיוק חומרי, אור שקט, שירות אישי והזמנה דיגיטלית.",
   manifest: "/manifest.webmanifest",
   icons: [
     { rel: "icon", url: "/favicon.ico" },
@@ -38,8 +38,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(env.SITE_URL ?? "https://elysia.co.il"),
   openGraph: {
     title: "Elysia",
-    description:
-      "תכשיטי סטודיו מודרניים בעברית, עם מסחר אונליין מלא ושירות אישי.",
+    description: "תכשיטי סטודיו בעברית, עם בחירה דיגיטלית מדויקת ושירות אישי.",
     locale: "he_IL",
     siteName: appName,
     type: "website",

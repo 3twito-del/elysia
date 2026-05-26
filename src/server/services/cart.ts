@@ -107,7 +107,7 @@ export async function addCartItem(
     if (variant?.product.status !== "ACTIVE") {
       throw new TRPCError({
         code: "BAD_REQUEST",
-        message: "המוצר אינו זמין להוספה לסל.",
+        message: "הפריט אינו זמין להוספה לסל.",
       });
     }
 
@@ -128,7 +128,7 @@ export async function addCartItem(
     if (!Number.isFinite(unitPrice) || unitPrice <= 0) {
       throw new TRPCError({
         code: "BAD_REQUEST",
-        message: "מחיר המוצר דורש בדיקה לפני הוספה לסל.",
+        message: "מחיר הפריט דורש בדיקה לפני הוספה לסל.",
       });
     }
 

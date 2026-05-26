@@ -39,7 +39,7 @@ import type { AiRecommendedProductInput } from "~/lib/ai-product-recommendations
 import { cn } from "~/lib/utils";
 
 const suggestions = [
-  "מתנה לאמא עד 700 ש״ח בסגנון עדין",
+  "מתנה לאמא סביב 700 ש״ח בסגנון עדין",
   "טבעת זהב צהוב שמתאימה לענידה יומיומית",
   "עגילים עדינים לכלה, בלי תחושה כבדה",
 ];
@@ -96,8 +96,8 @@ export function StylistChat({ compact = false }: StylistChatProps) {
                   סטייליסט תכשיטים אישי
                 </h2>
                 <p className="text-muted-foreground max-w-2xl text-sm leading-6">
-                  מאתרים התאמות בקטלוג לפי תקציב, אירוע, חומר וסגנון, ומציגים את
-                  הפריטים עצמם אחרי ההמלצה.
+                  מאתרים התאמות בקטלוג לפי טווח מחיר, אירוע, חומר וסגנון,
+                  ומציגים את הפריטים עצמם אחרי ההמלצה.
                 </p>
               </div>
             </div>
@@ -141,7 +141,7 @@ export function StylistChat({ compact = false }: StylistChatProps) {
                         איך אפשר להתאים לך תכשיט?
                       </h3>
                       <p className="text-muted-foreground text-sm leading-6">
-                        כתבו תקציב, אירוע, סגנון או פריט שמעניין אתכם.
+                        כתבו טווח מחיר, אירוע, סגנון או פריט שמעניין אתכם.
                       </p>
                     </div>
                     <div className="flex flex-wrap justify-center gap-2">
@@ -216,7 +216,7 @@ export function StylistChat({ compact = false }: StylistChatProps) {
               <PromptInputTextarea
                 className="max-h-32 min-h-14 py-3 pr-4 pl-14 leading-6"
                 onChange={(event) => setInput(event.currentTarget.value)}
-                placeholder="לדוגמה: מתנה עד 900 ש״ח למישהי שאוהבת זהב לבן"
+                placeholder="לדוגמה: מתנה סביב 900 ש״ח למישהי שאוהבת זהב לבן"
                 value={input}
               />
               <PromptInputSubmit

@@ -36,7 +36,7 @@ export function AiProductRecommendations({
 
   return (
     <section
-      aria-label={title ?? "המלצות מוצרים חכמות"}
+      aria-label={title ?? "המלצות פריטים חכמות"}
       className={cn("grid gap-3", className)}
     >
       <div className="flex flex-wrap items-end justify-between gap-2">

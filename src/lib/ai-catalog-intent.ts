@@ -175,7 +175,7 @@ export function createAiMatchReason(
     typeof product.price === "number" &&
     product.price <= intent.maxPrice
   ) {
-    reasons.push(`נשאר בתקציב עד ${formatBudget(intent.maxPrice)}`);
+    reasons.push(`נשאר בטווח מחיר עד ${formatBudget(intent.maxPrice)}`);
   }
 
   if (

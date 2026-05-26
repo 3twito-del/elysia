@@ -98,7 +98,7 @@ export function SearchControls({
               className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2"
             />
             <Input
-              aria-label="חיפוש מוצר, חומר, אבן, אירוע או תקציב"
+              aria-label="חיפוש פריט, חומר, אבן, אירוע או טווח מחיר"
               className="h-11 ps-10 pe-3"
               defaultValue={input.query}
               name="q"
@@ -151,7 +151,7 @@ export function SearchControls({
                 סינון מדויק
               </SheetTitle>
               <SheetDescription>
-                בחרו סוג תכשיט, חומר, אבן, קולקציה, תקציב וסדר הצגה.
+                בחרו סוג תכשיט, חומר, אבן, קולקציה, טווח מחיר וסדר הצגה.
               </SheetDescription>
             </SheetHeader>
             <form
@@ -197,7 +197,7 @@ function PrimarySearchFields({
             className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2"
           />
           <Input
-            aria-label="חיפוש מוצר, חומר, אבן, אירוע או תקציב"
+            aria-label="חיפוש פריט, חומר, אבן, אירוע או טווח מחיר"
             className="h-11 ps-10 pe-3"
             defaultValue={input.query}
             name="q"
@@ -215,7 +215,7 @@ function PrimarySearchFields({
         placeholder="כל הסוגים"
         value={input.category}
       />
-      <SearchControlField label="תקציב">
+      <SearchControlField label="טווח מחיר">
         <Input
           aria-label="מחיר מקסימלי"
           className="h-11"

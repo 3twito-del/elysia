@@ -25,7 +25,7 @@ export default async function SizeGuidePage({
     <main>
       <SiteHeader />
       <CommercePageHero
-        description="מדידה פשוטה לפי תכשיט, טבלת עזר קצרה ושמירה אחת שמלווה אותך בעמודי המוצר."
+        description="מדידה פשוטה לפי תכשיט, טבלת עזר קצרה ושמירה אחת שמלווה אותך בעמודי הפריט."
         eyebrow="מידות והתאמה"
         title="מדריך מידות"
         variant="checkout"

@@ -146,7 +146,7 @@ export function getPublicProductCommerceStatus({
 
   return {
     canAddToCart: true,
-    cardCtaLabel: "צפייה וקנייה",
+    cardCtaLabel: "לפרטי הפריט",
     ctaLabel: "הוספה לסל",
     label: "זמין במלאי",
     serviceReason: "ready",
@@ -157,7 +157,7 @@ export function getStockQuantityLabel(quantity: number) {
   return quantity > 0 ? `${quantity} במלאי` : "לא זמין";
 }
 
-export function getItemCountLabel(count: number, singular = "מוצר") {
+export function getItemCountLabel(count: number, singular = "פריט") {
   if (count === 1) return `${singular} אחד`;
 
   return `${count} ${singular}ים`;

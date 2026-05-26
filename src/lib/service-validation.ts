@@ -52,7 +52,7 @@ export const publicServiceRequestInputSchema = z.object({
   phone,
   email,
   orderNumber: optionalTrimmedString(80, "מספר ההזמנה ארוך מדי."),
-  productReference: optionalTrimmedString(240, "פרטי המוצר ארוכים מדי."),
+  productReference: optionalTrimmedString(240, "פרטי הפריט ארוכים מדי."),
   preferredContact: z.enum(serviceContactPreferences).default("ANY"),
   preferredContactTime: optionalTrimmedString(160, "זמן החזרה ארוך מדי."),
   message: requiredText("יש לכתוב בקצרה במה נוכל לעזור.", 2_000),

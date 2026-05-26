@@ -318,8 +318,8 @@ function getCategoryFilterSections({
       }),
     },
     {
-      description: "תקרת מחיר שמתאימה לרכישה הנוכחית.",
-      title: "תקציב",
+      description: "טווח מחיר שמחזיק את הבחירה הנוכחית.",
+      title: "טווח מחיר",
       options: priceOptions.map((price) => {
         const active = filters.maxPrice === price;
         const count = filterCounts.maxPrices.get(price) ?? 0;

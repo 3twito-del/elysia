@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const footerHeadings = ["קטלוג", "שירות וקנייה", "מידע"] as const;
+const footerHeadings = ["קטלוג", "שירות והזמנה", "מידע"] as const;
 const categoryRoutes = [
   "/category/rings",
   "/category/necklaces",
@@ -82,7 +82,7 @@ test.describe("footer DOM and accessibility structure", () => {
       "קישורי מדיניות",
       "רשתות חברתיות",
     ]);
-    expect(footerState.text).not.toContain("שירות וקנייה - המשך");
+    expect(footerState.text).not.toContain("שירות והזמנה - המשך");
     expect(footerState.text).not.toContain("שירות אונליין");
 
     for (const heading of footerHeadings) {
@@ -96,9 +96,9 @@ test.describe("footer DOM and accessibility structure", () => {
 
     expect(countOccurrences(ariaSnapshot, "- contentinfo:")).toBe(1);
     expect(countOccurrences(ariaSnapshot, 'heading "קטלוג"')).toBe(1);
-    expect(countOccurrences(ariaSnapshot, 'heading "שירות וקנייה"')).toBe(1);
+    expect(countOccurrences(ariaSnapshot, 'heading "שירות והזמנה"')).toBe(1);
     expect(countOccurrences(ariaSnapshot, 'heading "מידע"')).toBe(1);
-    expect(ariaSnapshot).not.toContain("שירות וקנייה - המשך");
+    expect(ariaSnapshot).not.toContain("שירות והזמנה - המשך");
     expect(ariaSnapshot).not.toContain("שירות אונליין");
 
     if ((page.viewportSize()?.width ?? 0) >= 768) {
@@ -119,18 +119,14 @@ test.describe("footer DOM and accessibility structure", () => {
       );
 
       await disclosureSummaries.nth(0).click();
-      await expect.poll(() => getFooterDisclosureOpenStates(page)).toEqual([
-        true,
-        false,
-        false,
-      ]);
+      await expect
+        .poll(() => getFooterDisclosureOpenStates(page))
+        .toEqual([true, false, false]);
 
       await disclosureSummaries.nth(1).click();
-      await expect.poll(() => getFooterDisclosureOpenStates(page)).toEqual([
-        false,
-        true,
-        false,
-      ]);
+      await expect
+        .poll(() => getFooterDisclosureOpenStates(page))
+        .toEqual([false, true, false]);
     }
   });
 
@@ -144,10 +140,10 @@ test.describe("footer DOM and accessibility structure", () => {
     expect(countOccurrences(html, "<footer")).toBe(1);
     expect(countOccurrences(html, "<main")).toBe(1);
     expect(countOccurrences(html, "<header")).toBe(1);
-    expect(countOccurrences(html, "שירות וקנייה")).toBe(1);
+    expect(countOccurrences(html, "שירות והזמנה")).toBe(1);
     expect(countOccurrences(html, "קטגוריות")).toBe(0);
     expect(html).not.toContain("שירות אונליין");
-    expect(html).not.toContain("ניווט שירות וקנייה");
+    expect(html).not.toContain("ניווט שירות והזמנה");
     expect(html).not.toContain("ניווט קטלוג");
   });
 
