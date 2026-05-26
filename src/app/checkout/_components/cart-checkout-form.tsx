@@ -15,9 +15,11 @@ import {
   CheckCircle2,
   Clock3,
   Gift,
+  MessageCircle,
   Minus,
   PackageCheck,
   Plus,
+  Search,
   ShieldCheck,
   ShoppingBag,
   Trash2,
@@ -27,7 +29,6 @@ import {
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { EmptyState } from "~/components/ui/empty-state";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Separator } from "~/components/ui/separator";
@@ -83,6 +84,24 @@ const checkoutTrustItems = [
     detail: "ההזמנות נשלחות לכתובת שתבחרו",
     icon: Truck,
     label: "משלוח עד הבית",
+  },
+] as const;
+
+const checkoutEmptyLinks = [
+  {
+    href: "/category/rings",
+    label: "טבעות",
+    text: "בחירה מדויקת ליום יום ולאירוע.",
+  },
+  {
+    href: "/category/necklaces",
+    label: "שרשראות",
+    text: "קווים עדינים ושכבות נקיות.",
+  },
+  {
+    href: "/service",
+    label: "שירות לקוחות",
+    text: "עזרה בבחירה, מידה או מתנה.",
   },
 ] as const;
 
@@ -183,7 +202,9 @@ export function CartCheckoutForm() {
   const subtotal = cart?.totals.subtotal ?? 0;
   const discount = cart?.totals.discount ?? 0;
   const shippingAmount = cartItemCount > 0 ? 29 : 0;
+  const totalItemQuantity = cart?.itemCount ?? 0;
   const orderTotal = Math.max(0, subtotal - discount + shippingAmount);
+  const postDiscountSubtotal = Math.max(0, subtotal - discount);
   const hasPricingReview = Boolean(
     cart?.items.length &&
       hasCheckoutPricingReview({
@@ -202,6 +223,16 @@ export function CartCheckoutForm() {
         requiresPositive: cartItemCount > 0,
         reviewLabel: checkoutTotalReviewLabel,
       });
+  const postDiscountSubtotalLabel = hasPricingReview
+    ? checkoutTotalReviewLabel
+    : getCheckoutAmountLabel(postDiscountSubtotal, {
+        requiresPositive: cartItemCount > 0,
+        reviewLabel: checkoutTotalReviewLabel,
+      });
+  const shippingLabel =
+    cartItemCount > 0 && shippingAmount <= 0
+      ? "כלול"
+      : formatPrice(shippingAmount);
   const checkoutErrors = validateCheckoutFields({
     cartItemCount,
     city,
@@ -772,7 +803,21 @@ export function CartCheckoutForm() {
               <div className="grid gap-2 text-sm">
                 <div className="flex justify-between">
                   <span>פריטים</span>
-                  <span data-testid="checkout-subtotal">{subtotalLabel}</span>
+                  <span data-testid="checkout-item-count">
+                    {cartItemCount}{" "}
+                    {cartItemCount === 1 ? "סוג פריט" : "סוגי פריטים"}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>כמות</span>
+                  <span data-testid="checkout-item-quantity">
+                    {totalItemQuantity}{" "}
+                    {totalItemQuantity === 1 ? "פריט" : "פריטים"}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>מחיר פריטים</span>
+                  <span data-testid="checkout-items-price">{subtotalLabel}</span>
                 </div>
                 {discount > 0 ? (
                   <div className="flex justify-between">
@@ -782,7 +827,13 @@ export function CartCheckoutForm() {
                 ) : null}
                 <div className="flex justify-between">
                   <span>משלוח</span>
-                  <span>{formatPrice(shippingAmount)}</span>
+                  <span data-testid="checkout-shipping">{shippingLabel}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>סכום ביניים</span>
+                  <span data-testid="checkout-subtotal">
+                    {postDiscountSubtotalLabel}
+                  </span>
                 </div>
                 <Separator />
                 <div className="flex justify-between text-base font-semibold">
@@ -869,27 +920,67 @@ export function CartCheckoutForm() {
 function CheckoutEmptyCartState() {
   return (
     <section
-      className="mx-auto max-w-3xl px-[var(--ui-page-x)] py-[var(--ui-section-y)] sm:px-6"
+      className="mx-auto max-w-6xl px-[var(--ui-page-x)] py-[var(--ui-section-y)] sm:px-6"
       data-testid="cart-checkout-form"
     >
-      <EmptyState
-        className="min-h-[22rem]"
-        description="אפשר להמשיך לבחור תכשיטים מהקטלוג ולחזור לקופה כשהבחירה מוכנה."
-        icon={ShoppingBag}
-        testId="checkout-empty-cart"
-        title="הסל שלך עדיין ריק"
-        variant="panel"
-        actions={
-          <>
-            <Button asChild variant="secondary">
-              <Link href="/search">המשך בחירה בקטלוג</Link>
+      <div
+        className="glass-panel grid min-h-[28rem] gap-8 rounded-md border p-6 sm:p-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(18rem,0.9fr)] lg:items-center lg:p-10"
+        data-testid="checkout-empty-cart"
+      >
+        <div className="max-w-2xl">
+          <div className="glass-inset mb-5 grid size-12 place-items-center rounded-full border">
+            <ShoppingBag aria-hidden="true" className="size-5" />
+          </div>
+          <h2 className="text-2xl font-semibold tracking-normal sm:text-3xl">
+            הסל שלך עדיין ריק
+          </h2>
+          <p className="text-muted-foreground mt-4 max-w-xl text-sm leading-7 sm:text-base">
+            אפשר לבחור תכשיט בקצב שלך ולחזור לקופה כשהבחירה מוכנה. ההזמנה
+            נשמרת לבדיקה אישית לפני חיוב.
+          </p>
+          <div className="mt-7 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+            <Button asChild>
+              <Link href="/category/rings">
+                חזרה לקולקציה
+                <ShoppingBag aria-hidden="true" className="size-4" />
+              </Link>
             </Button>
             <Button asChild variant="outline">
-              <Link href="/category/rings">טבעות נבחרות</Link>
+              <Link href="/search">
+                חיפוש בקטלוג
+                <Search aria-hidden="true" className="size-4" />
+              </Link>
             </Button>
-          </>
-        }
-      />
+            <Button asChild variant="ghost">
+              <Link href="/service">
+                ייעוץ אישי
+                <MessageCircle aria-hidden="true" className="size-4" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+
+        <div
+          aria-label="אפשרויות המשך"
+          className="grid gap-3 text-sm"
+          data-testid="checkout-empty-actions"
+        >
+          {checkoutEmptyLinks.map((item) => (
+            <Link
+              className="glass-inset group grid gap-1 rounded-md border p-4 transition hover:border-[var(--glass-border-strong)]"
+              href={item.href}
+              key={item.href}
+            >
+              <span className="font-medium transition group-hover:underline">
+                {item.label}
+              </span>
+              <span className="text-muted-foreground leading-6">
+                {item.text}
+              </span>
+            </Link>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }

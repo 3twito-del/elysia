@@ -14,7 +14,10 @@ const searchProductName = "טבעת Venus Line";
 const checkoutEmptyTitle =
   "\u05d4\u05e1\u05dc \u05e9\u05dc\u05da \u05e2\u05d3\u05d9\u05d9\u05df \u05e8\u05d9\u05e7";
 const checkoutCatalogCta =
-  "\u05d4\u05de\u05e9\u05da \u05d1\u05d7\u05d9\u05e8\u05d4 \u05d1\u05e7\u05d8\u05dc\u05d5\u05d2";
+  "\u05d7\u05d6\u05e8\u05d4 \u05dc\u05e7\u05d5\u05dc\u05e7\u05e6\u05d9\u05d4";
+const checkoutAdviceLink =
+  "\u05d9\u05d9\u05e2\u05d5\u05e5 \u05d0\u05d9\u05e9\u05d9";
+const zeroShekelPattern = /^\D*0\D*\u20aa\D*$/u;
 const forbiddenCheckoutStateText = [
   "\u05d8\u05d5\u05e2\u05df \u05e1\u05dc...",
   "\u05d9\u05e6\u05d9\u05e8\u05ea \u05e1\u05dc \u05de\u05e7\u05d5\u05de\u05d9 \u05e2\u05d3\u05d9\u05d9\u05df \u05d1\u05d8\u05e2\u05d9\u05e0\u05d4.",
@@ -109,9 +112,22 @@ test.describe("critical shopping flows", () => {
     );
     await expect(
       page.getByTestId("checkout-line-total-amount").first(),
-    ).not.toHaveText(/^\D*0\D*₪\D*$/u);
+    ).not.toHaveText(zeroShekelPattern);
+    await expect(page.getByTestId("checkout-item-count")).toContainText(
+      "סוג פריט",
+    );
+    await expect(page.getByTestId("checkout-item-quantity")).toContainText("1");
+    await expect(page.getByTestId("checkout-items-price")).not.toHaveText(
+      zeroShekelPattern,
+    );
+    await expect(page.getByTestId("checkout-shipping")).not.toHaveText(
+      zeroShekelPattern,
+    );
+    await expect(page.getByTestId("checkout-subtotal")).not.toHaveText(
+      zeroShekelPattern,
+    );
     await expect(page.getByTestId("checkout-order-total")).not.toHaveText(
-      /^\D*0\D*₪\D*$/u,
+      zeroShekelPattern,
     );
     await expect(page.getByTestId("checkout-order-total")).not.toContainText(
       "בבדיקה",
@@ -224,6 +240,15 @@ test.describe("critical shopping flows", () => {
     await expect(
       checkoutEmptyState.getByRole("link", { name: checkoutCatalogCta }),
     ).toBeVisible();
+    await expect(
+      checkoutEmptyState.getByRole("link", {
+        exact: true,
+        name: checkoutAdviceLink,
+      }),
+    ).toBeVisible();
+    await expect(page.getByTestId("checkout-empty-actions")).toContainText(
+      "שירות לקוחות",
+    );
 
     for (const stateText of forbiddenCheckoutStateText) {
       await expect(page.locator("body")).not.toContainText(stateText);
