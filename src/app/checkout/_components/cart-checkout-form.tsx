@@ -55,6 +55,14 @@ import {
   rememberOfflineCartSnapshot,
 } from "~/lib/pwa-offline";
 import { api } from "~/trpc/react";
+import {
+  checkoutPricingReviewMessage,
+  checkoutPriceReviewLabel,
+  checkoutTotalReviewLabel,
+  getCheckoutAmountLabel,
+  getFriendlyCheckoutErrorMessage,
+  hasCheckoutPricingReview,
+} from "./checkout-display";
 import { FieldError, ReservationCountdown } from "./checkout-status";
 import { CheckoutStepBadge } from "./checkout-step-badge";
 
@@ -176,6 +184,24 @@ export function CartCheckoutForm() {
   const discount = cart?.totals.discount ?? 0;
   const shippingAmount = cartItemCount > 0 ? 29 : 0;
   const orderTotal = Math.max(0, subtotal - discount + shippingAmount);
+  const hasPricingReview = Boolean(
+    cart?.items.length &&
+      hasCheckoutPricingReview({
+        items: cart.items,
+        subtotal,
+        total: orderTotal,
+      }),
+  );
+  const subtotalLabel = getCheckoutAmountLabel(subtotal, {
+    requiresPositive: cartItemCount > 0,
+    reviewLabel: checkoutTotalReviewLabel,
+  });
+  const orderTotalLabel = hasPricingReview
+    ? checkoutTotalReviewLabel
+    : getCheckoutAmountLabel(orderTotal, {
+        requiresPositive: cartItemCount > 0,
+        reviewLabel: checkoutTotalReviewLabel,
+      });
   const checkoutErrors = validateCheckoutFields({
     cartItemCount,
     city,
@@ -190,9 +216,22 @@ export function CartCheckoutForm() {
   const checkoutIssues = getCheckoutIssueList(checkoutErrors);
   const checkoutSubmissionLocked = createOrder.isPending || submitLocked;
   const checkoutLocked = checkoutSubmissionLocked || isOffline;
-  const canSubmit = !hasCheckoutErrors(checkoutErrors) && !checkoutLocked;
+  const canSubmit =
+    !hasCheckoutErrors(checkoutErrors) && !checkoutLocked && !hasPricingReview;
   const cartMutationError =
     updateItem.error ?? removeItem.error ?? updateOptions.error;
+  const cartMutationErrorMessage = cartMutationError
+    ? getFriendlyCheckoutErrorMessage(
+        cartMutationError,
+        "לא הצלחנו לעדכן את הסל כרגע. נסו שוב בעוד רגע.",
+      )
+    : null;
+  const createOrderErrorMessage = createOrder.error
+    ? getFriendlyCheckoutErrorMessage(
+        createOrder.error,
+        "לא הצלחנו לשמור את ההזמנה כרגע. בדקו שהפרטים מלאים ונסו שוב.",
+      )
+    : null;
   const optionMutationInput = useMemo(
     () =>
       sessionKey
@@ -220,7 +259,12 @@ export function CartCheckoutForm() {
               ? `${checkoutIssues.length} פרטים חסרים`
               : "מוכן לשמירת הזמנה"}
           </p>
-          <p className="text-lg font-semibold">{formatPrice(orderTotal)}</p>
+          <p className="text-lg font-semibold">{orderTotalLabel}</p>
+          {hasPricingReview ? (
+            <p className="text-muted-foreground truncate text-xs">
+              נדרש אישור מחיר
+            </p>
+          ) : null}
         </div>
         <Button disabled={!canSubmit} form={checkoutFormId} type="submit">
           שמירה
@@ -401,13 +445,23 @@ export function CartCheckoutForm() {
                       {item.productName}
                     </Link>
                     <p className="text-muted-foreground text-sm">
-                      {item.variantName} · {formatPrice(item.unitPrice)}
+                      {item.variantName} ·{" "}
+                      {getCheckoutAmountLabel(item.unitPrice, {
+                        requiresPositive: true,
+                        reviewLabel: checkoutPriceReviewLabel,
+                      })}
                     </p>
                     <p
                       className="text-foreground mt-1 text-sm font-semibold"
                       data-testid="checkout-line-total"
                     >
-                      סכום שורה: {formatPrice(item.lineTotal)}
+                      סכום שורה:{" "}
+                      <span data-testid="checkout-line-total-amount">
+                        {getCheckoutAmountLabel(item.lineTotal, {
+                          requiresPositive: true,
+                          reviewLabel: checkoutPriceReviewLabel,
+                        })}
+                      </span>
                     </p>
                   </div>
                   <div className="col-span-2 flex items-center justify-end gap-2 sm:col-span-1">
@@ -718,12 +772,14 @@ export function CartCheckoutForm() {
               <div className="grid gap-2 text-sm">
                 <div className="flex justify-between">
                   <span>פריטים</span>
-                  <span>{formatPrice(subtotal)}</span>
+                  <span data-testid="checkout-subtotal">{subtotalLabel}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span>הנחה</span>
-                  <span>{formatPrice(discount)}</span>
-                </div>
+                {discount > 0 ? (
+                  <div className="flex justify-between">
+                    <span>הנחה</span>
+                    <span>{formatPrice(discount)}</span>
+                  </div>
+                ) : null}
                 <div className="flex justify-between">
                   <span>משלוח</span>
                   <span>{formatPrice(shippingAmount)}</span>
@@ -731,8 +787,14 @@ export function CartCheckoutForm() {
                 <Separator />
                 <div className="flex justify-between text-base font-semibold">
                   <span>סך הכל</span>
-                  <span>{formatPrice(orderTotal)}</span>
+                  <span data-testid="checkout-order-total">
+                    {orderTotalLabel}
+                  </span>
                 </div>
+                <p className="text-muted-foreground text-xs leading-5">
+                  שמירת ההזמנה אינה מחייבת תשלום מיידי; נציג יאשר זמינות ומחיר
+                  לפני חיוב.
+                </p>
               </div>
               {cart.couponCode ? (
                 <Badge className="w-fit" variant="secondary">
@@ -768,9 +830,14 @@ export function CartCheckoutForm() {
                   </ul>
                 </div>
               ) : null}
-              {cartMutationError ? (
+              {hasPricingReview ? (
                 <StatusMessage tone="error">
-                  {cartMutationError.message}
+                  {checkoutPricingReviewMessage}
+                </StatusMessage>
+              ) : null}
+              {cartMutationErrorMessage ? (
+                <StatusMessage tone="error">
+                  {cartMutationErrorMessage}
                 </StatusMessage>
               ) : null}
               {isOffline ? (
@@ -779,9 +846,9 @@ export function CartCheckoutForm() {
                   כשהחיבור יחזור.
                 </StatusMessage>
               ) : null}
-              {createOrder.error ? (
+              {createOrderErrorMessage ? (
                 <StatusMessage tone="error">
-                  {createOrder.error.message}
+                  {createOrderErrorMessage}
                 </StatusMessage>
               ) : null}
               <Button disabled={!canSubmit} size="lg" type="submit">

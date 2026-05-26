@@ -63,14 +63,21 @@ export function addFixtureCartItem(input: {
   if (product.availabilityMode !== "READY_TO_ORDER") {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "This product is routed to service before ordering.",
+      message: "המוצר הזה דורש תיאום עם שירות הלקוחות לפני הזמנה.",
     });
   }
 
   if (variant.availableQuantity <= 0) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "This variant is not available for cart fixtures.",
+      message: "האפשרות שנבחרה אינה זמינה כרגע.",
+    });
+  }
+
+  if (!Number.isFinite(variant.price) || variant.price <= 0) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "מחיר המוצר דורש בדיקה לפני הוספה לסל.",
     });
   }
 
@@ -110,7 +117,7 @@ export function updateFixtureCartItemQuantity(input: {
   if (!item) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "Fixture cart item was not found.",
+      message: "הפריט לא נמצא בסל.",
     });
   }
 
@@ -131,7 +138,7 @@ export function removeFixtureCartItem(input: {
   if (cart.items.length === initialLength) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "Fixture cart item was not found.",
+      message: "הפריט לא נמצא בסל.",
     });
   }
 
@@ -190,7 +197,7 @@ function requireFixtureCart(sessionKey: string) {
   if (!cart) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "Fixture cart was not found.",
+      message: "לא נמצא סל פעיל.",
     });
   }
 
@@ -224,7 +231,7 @@ function findFixtureVariant(variantSku: string): {
 
   throw new TRPCError({
     code: "NOT_FOUND",
-    message: "Fixture product variant was not found.",
+    message: "האפשרות שנבחרה אינה זמינה כרגע.",
   });
 }
 

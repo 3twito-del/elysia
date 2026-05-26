@@ -107,6 +107,15 @@ test.describe("critical shopping flows", () => {
     await expect(page.getByTestId("checkout-line-total").first()).toContainText(
       "סכום שורה",
     );
+    await expect(
+      page.getByTestId("checkout-line-total-amount").first(),
+    ).not.toHaveText(/^\D*0\D*₪\D*$/u);
+    await expect(page.getByTestId("checkout-order-total")).not.toHaveText(
+      /^\D*0\D*₪\D*$/u,
+    );
+    await expect(page.getByTestId("checkout-order-total")).not.toContainText(
+      "בבדיקה",
+    );
     await expect(page.locator('[aria-label^="כמות "]')).toContainText("1");
   });
 

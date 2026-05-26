@@ -113,6 +113,24 @@ test.describe("footer DOM and accessibility structure", () => {
       ).toBeLessThanOrEqual(8);
     } else {
       expect(footerState.disclosureOpenStates).toEqual([false, false, false]);
+
+      const disclosureSummaries = page.locator(
+        "footer [data-footer-nav-disclosure] summary",
+      );
+
+      await disclosureSummaries.nth(0).click();
+      await expect.poll(() => getFooterDisclosureOpenStates(page)).toEqual([
+        true,
+        false,
+        false,
+      ]);
+
+      await disclosureSummaries.nth(1).click();
+      await expect.poll(() => getFooterDisclosureOpenStates(page)).toEqual([
+        false,
+        true,
+        false,
+      ]);
     }
   });
 
@@ -294,4 +312,16 @@ async function getCategoryFooterState(page: {
       ).map((element) => element.tagName.toLowerCase()),
     };
   });
+}
+
+async function getFooterDisclosureOpenStates(page: {
+  evaluate: <T>(callback: () => T) => Promise<T>;
+}) {
+  return page.evaluate(() =>
+    Array.from(
+      document.querySelectorAll<HTMLDetailsElement>(
+        "footer [data-footer-nav-disclosure]",
+      ),
+    ).map((details) => details.open),
+  );
 }

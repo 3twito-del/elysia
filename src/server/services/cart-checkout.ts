@@ -101,6 +101,25 @@ export function assertCartReservationAvailable(input: {
   }
 }
 
+export function assertCartCheckoutPricesAvailable(
+  items: Array<{ quantity: number; unitPrice: unknown }>,
+) {
+  const hasUnavailablePrice = items.some((item) => {
+    const unitPrice = Number(item.unitPrice);
+
+    return (
+      item.quantity <= 0 || !Number.isFinite(unitPrice) || unitPrice <= 0
+    );
+  });
+
+  if (hasUnavailablePrice) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "מחיר אחד הפריטים דורש בדיקה לפני שמירת ההזמנה.",
+    });
+  }
+}
+
 export async function createCartCheckoutOrder(input: CartCheckoutInput) {
   const parsed = cartCheckoutInputSchema.parse(input);
   const result = await db.$transaction((tx) =>
@@ -125,6 +144,8 @@ async function createCartCheckoutOrderInTransaction(
       message: "הסל שלך עדיין ריק.",
     });
   }
+
+  assertCartCheckoutPricesAvailable(cart.items);
 
   const branch = await resolveOnlineFulfillmentBranch(tx, input, cart);
 

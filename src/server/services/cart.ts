@@ -125,6 +125,13 @@ export async function addCartItem(
       Number(variant.prices[0]?.amount ?? variant.product.basePrice) +
       Number(variant.priceDelta);
 
+    if (!Number.isFinite(unitPrice) || unitPrice <= 0) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "מחיר המוצר דורש בדיקה לפני הוספה לסל.",
+      });
+    }
+
     if (existingItem) {
       await tx.cartItem.update({
         where: { id: existingItem.id },

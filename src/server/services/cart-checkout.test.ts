@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { describe, expect, it } from "vitest";
 
 import {
+  assertCartCheckoutPricesAvailable,
   assertCartReservationAvailable,
   cartCheckoutInputSchema,
   createCartCheckoutOrderNumber,
@@ -96,6 +97,15 @@ describe("cart checkout service", () => {
         safetyStock: 1,
         requested: 2,
       }),
+    ).toThrow(TRPCError);
+  });
+
+  it("rejects checkout items without a usable price", () => {
+    expect(() =>
+      assertCartCheckoutPricesAvailable([
+        { quantity: 1, unitPrice: 0 },
+        { quantity: 1, unitPrice: 1290 },
+      ]),
     ).toThrow(TRPCError);
   });
 

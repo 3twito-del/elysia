@@ -6,7 +6,6 @@ import { SiInstagram, SiTiktok } from "react-icons/si";
 
 import { NewsletterForm } from "~/components/newsletter-form";
 import { SiteFooterDisclosures } from "~/components/site-footer-disclosures";
-import { Separator } from "~/components/ui/separator";
 
 const catalogLinks = [
   { href: "/category/rings", label: "טבעות" },
@@ -52,10 +51,10 @@ const socialLinks = [
 
 export function SiteFooter() {
   return (
-    <footer className="bg-transparent" dir="rtl">
-      <div className="mx-auto max-w-7xl px-4 pt-12 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:px-6 sm:pt-16 sm:pb-14 lg:pt-20 lg:pb-16">
-        <div className="grid gap-10 border-t border-[var(--glass-border)] pt-10 sm:pt-12 md:grid-cols-[minmax(18rem,0.95fr)_minmax(0,1.45fr)] md:gap-12 lg:grid-cols-[minmax(20rem,1fr)_minmax(0,1.9fr)] lg:gap-16">
-          <section className="max-w-xl md:max-w-md lg:max-w-xl">
+    <footer className="site-footer bg-transparent" dir="rtl">
+      <div className="site-footer-inner mx-auto max-w-7xl px-4 pt-10 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:px-6 sm:pt-14 sm:pb-14 lg:pt-20 lg:pb-16">
+        <div className="site-footer-primary grid gap-9 md:grid-cols-[minmax(18rem,0.95fr)_minmax(0,1.45fr)] md:gap-12 lg:grid-cols-[minmax(20rem,1fr)_minmax(0,1.9fr)] lg:gap-16">
+          <section className="site-footer-brand max-w-xl md:max-w-md lg:max-w-xl">
             <Link
               aria-label="Elysia - עמוד הבית"
               className="brand-footer-mark inline-flex items-center"
@@ -79,7 +78,8 @@ export function SiteFooter() {
 
           <nav
             aria-label="ניווט תחתון"
-            className="grid gap-8 sm:grid-cols-3 md:gap-10 lg:gap-12"
+            className="site-footer-nav grid md:grid-cols-3 md:gap-10 lg:gap-12"
+            data-footer-nav-root
           >
             <FooterNav links={catalogLinks} title="קטלוג" />
             <FooterNav links={commerceLinks} title="שירות וקנייה" />
@@ -88,9 +88,7 @@ export function SiteFooter() {
         </div>
         <SiteFooterDisclosures />
 
-        <Separator className="my-9 sm:my-10" />
-
-        <div className="text-muted-foreground grid gap-5 text-sm md:grid-cols-[minmax(18rem,0.95fr)_minmax(0,1.45fr)] md:items-center md:gap-12 lg:grid-cols-[minmax(20rem,1fr)_minmax(0,1.9fr)] lg:gap-16">
+        <div className="site-footer-legal text-muted-foreground grid gap-5 text-sm md:grid-cols-[minmax(18rem,0.95fr)_minmax(0,1.45fr)] md:items-center md:gap-12 lg:grid-cols-[minmax(20rem,1fr)_minmax(0,1.9fr)] lg:gap-16">
           <p
             className="max-w-xl text-center leading-7 md:text-start"
             data-testid="footer-copyright"
