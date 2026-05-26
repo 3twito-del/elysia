@@ -19,7 +19,6 @@ import {
   Minus,
   PackageCheck,
   Plus,
-  Search,
   ShieldCheck,
   ShoppingBag,
   Trash2,
@@ -100,8 +99,31 @@ const checkoutEmptyLinks = [
   },
   {
     href: "/service",
-    label: "ייעוץ מהסטודיו",
+    label: "קבלת ייעוץ אישי",
     text: "עזרה בבחירה, מידה או הקדשה אישית.",
+  },
+] as const;
+
+const checkoutProgressSteps = [
+  {
+    detail: "בדיקת הפריטים והכמויות",
+    label: "סל",
+    value: "1",
+  },
+  {
+    detail: "פרטי קשר לאישור ההזמנה",
+    label: "פרטים",
+    value: "2",
+  },
+  {
+    detail: "כתובת ומשלוח עד הבית",
+    label: "מסירה",
+    value: "3",
+  },
+  {
+    detail: "הטבות, סיכום ושמירה",
+    label: "סיכום",
+    value: "4",
   },
 ] as const;
 
@@ -438,6 +460,27 @@ export function CartCheckoutForm() {
             <p className="text-muted-foreground mt-1.5 max-w-3xl text-sm leading-6 sm:text-base">
               סל רב-פריטים עם שמירת מלאי, פרטי מסירה וקופון.
             </p>
+          </div>
+
+          <div
+            aria-label="שלבי הקופה"
+            className="glass-panel grid gap-2 rounded-md border p-3 text-sm sm:grid-cols-4"
+            data-testid="checkout-progress-steps"
+          >
+            {checkoutProgressSteps.map((step) => (
+              <div
+                className="glass-inset grid gap-1 rounded-md border p-3"
+                key={step.value}
+              >
+                <div className="flex items-center gap-2">
+                  <CheckoutStepBadge value={step.value} />
+                  <p className="font-medium">{step.label}</p>
+                </div>
+                <p className="text-muted-foreground text-xs leading-5">
+                  {step.detail}
+                </p>
+              </div>
+            ))}
           </div>
 
           <Card className="rounded-md" size="sm">
@@ -943,20 +986,14 @@ function CheckoutEmptyCartState() {
           </p>
           <div className="mt-7 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <Button asChild>
-              <Link href="/category/rings">
-                גילוי תכשיטים
+              <Link href="/search">
+                חזרה לקולקציה
                 <ShoppingBag aria-hidden="true" className="size-4" />
               </Link>
             </Button>
             <Button asChild variant="outline">
-              <Link href="/search">
-                חיפוש בקטלוג
-                <Search aria-hidden="true" className="size-4" />
-              </Link>
-            </Button>
-            <Button asChild variant="ghost">
               <Link href="/service">
-                ייעוץ אישי
+                קבלת ייעוץ אישי
                 <MessageCircle aria-hidden="true" className="size-4" />
               </Link>
             </Button>

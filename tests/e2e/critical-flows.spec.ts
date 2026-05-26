@@ -14,9 +14,9 @@ const searchProductName = "טבעת Venus Line";
 const checkoutEmptyTitle =
   "\u05d4\u05e1\u05dc \u05e9\u05dc\u05da \u05de\u05de\u05ea\u05d9\u05df \u05dc\u05d1\u05d7\u05d9\u05e8\u05d4 \u05d4\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4";
 const checkoutCatalogCta =
-  "\u05d2\u05d9\u05dc\u05d5\u05d9 \u05ea\u05db\u05e9\u05d9\u05d8\u05d9\u05dd";
+  "\u05d7\u05d6\u05e8\u05d4 \u05dc\u05e7\u05d5\u05dc\u05e7\u05e6\u05d9\u05d4";
 const checkoutAdviceLink =
-  "\u05d9\u05d9\u05e2\u05d5\u05e5 \u05d0\u05d9\u05e9\u05d9";
+  "\u05e7\u05d1\u05dc\u05ea \u05d9\u05d9\u05e2\u05d5\u05e5 \u05d0\u05d9\u05e9\u05d9";
 const zeroShekelPattern = /^\D*0\D*\u20aa\D*$/u;
 const forbiddenCheckoutStateText = [
   "\u05d8\u05d5\u05e2\u05df \u05e1\u05dc...",
@@ -107,6 +107,12 @@ test.describe("critical shopping flows", () => {
     await expect(
       page.getByRole("button", { name: /הוספת כמות עבור/ }),
     ).toBeVisible();
+    await expect(page.getByTestId("checkout-progress-steps")).toContainText(
+      "סל",
+    );
+    await expect(page.getByTestId("checkout-progress-steps")).toContainText(
+      "סיכום",
+    );
     await expect(page.getByTestId("checkout-line-total").first()).toContainText(
       "סכום שורה",
     );
@@ -247,7 +253,7 @@ test.describe("critical shopping flows", () => {
       }),
     ).toBeVisible();
     await expect(page.getByTestId("checkout-empty-actions")).toContainText(
-      "ייעוץ מהסטודיו",
+      "קבלת ייעוץ אישי",
     );
 
     for (const stateText of forbiddenCheckoutStateText) {
