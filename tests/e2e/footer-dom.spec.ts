@@ -7,6 +7,14 @@ const categoryRoutes = [
   "/category/earrings",
   "/category/bracelets",
 ] as const;
+const legacyFooterCategories =
+  "\u05e7\u05d8\u05d2\u05d5\u05e8\u05d9\u05d5\u05ea";
+const legacyFooterOnlineService =
+  "\u05e9\u05d9\u05e8\u05d5\u05ea \u05d0\u05d5\u05e0\u05dc\u05d9\u05d9\u05df";
+const legacyCatalogNavLabel =
+  "\u05e0\u05d9\u05d5\u05d5\u05d8 \u05e7\u05d8\u05dc\u05d5\u05d2";
+const legacyCommerceNavLabel =
+  "\u05e0\u05d9\u05d5\u05d5\u05d8 \u05e9\u05d9\u05e8\u05d5\u05ea \u05d5\u05e7\u05e0\u05d9\u05d9\u05d4";
 
 test.describe("footer DOM and accessibility structure", () => {
   test("renders a single RTL Hebrew footer without duplicate nav columns", async ({
@@ -123,6 +131,85 @@ test.describe("footer DOM and accessibility structure", () => {
     expect(html).not.toContain("שירות אונליין");
     expect(html).not.toContain("ניווט שירות וקנייה");
     expect(html).not.toContain("ניווט קטלוג");
+  });
+
+  test("keeps search page ordered before the single global footer", async ({
+    page,
+    request,
+  }) => {
+    const response = await request.get("/search");
+    const html = await response.text();
+
+    expect(response.ok()).toBe(true);
+    expect(countOccurrences(html, "<footer")).toBe(1);
+    expect(countOccurrences(html, "<main")).toBe(1);
+    expect(countOccurrences(html, "<header")).toBe(1);
+    expect(countOccurrences(html, footerHeadings[1])).toBe(1);
+    expect(countOccurrences(html, legacyFooterCategories)).toBe(0);
+    expect(html).not.toContain(legacyFooterOnlineService);
+    expect(html).not.toContain(legacyCatalogNavLabel);
+    expect(html).not.toContain(legacyCommerceNavLabel);
+
+    await page.goto("/search", { waitUntil: "domcontentloaded" });
+    await page.waitForSelector(
+      '[data-testid="search-results-summary"], [data-testid="search-empty-state"], [data-testid="search-results-grid"], [data-testid="search-results-list"]',
+    );
+
+    const searchState = await page.evaluate(() => {
+      const header = document.querySelector("header");
+      const main = document.querySelector("main");
+      const footer = document.querySelector("footer");
+      const searchContent =
+        document.querySelector("#search-controls") ??
+        document.querySelector("#search-results-section");
+      const comesBefore = (first: Element | null, second: Element | null) =>
+        Boolean(
+          first &&
+          second &&
+          (first.compareDocumentPosition(second) &
+            Node.DOCUMENT_POSITION_FOLLOWING) !==
+            0,
+        );
+
+      return {
+        footerCount: document.querySelectorAll("footer").length,
+        footerHeadingTexts: footer
+          ? Array.from(footer.querySelectorAll("h1,h2,h3,h4,h5,h6")).map(
+              (heading) => (heading.textContent ?? "").trim(),
+            )
+          : [],
+        footerText: (footer?.textContent ?? "").replace(/\s+/g, " ").trim(),
+        headerBeforeMain: comesBefore(header, main),
+        headerCount: document.querySelectorAll("header").length,
+        mainBeforeFooter: comesBefore(main, footer),
+        mainCount: document.querySelectorAll("main").length,
+        navLabels: footer
+          ? Array.from(footer.querySelectorAll("nav")).map(
+              (nav) => nav.getAttribute("aria-label") ?? "",
+            )
+          : [],
+        searchContentBeforeFooter: comesBefore(searchContent, footer),
+        sequence: Array.from(
+          document.querySelectorAll("header, main, footer"),
+        ).map((element) => element.tagName.toLowerCase()),
+      };
+    });
+
+    expect(searchState.headerCount).toBe(1);
+    expect(searchState.mainCount).toBe(1);
+    expect(searchState.footerCount).toBe(1);
+    expect(searchState.headerBeforeMain).toBe(true);
+    expect(searchState.mainBeforeFooter).toBe(true);
+    expect(searchState.searchContentBeforeFooter).toBe(true);
+    expect(searchState.sequence).toEqual(["header", "main", "footer"]);
+    expect(searchState.footerHeadingTexts).toEqual([...footerHeadings]);
+    expect(searchState.navLabels).toEqual([
+      "\u05e0\u05d9\u05d5\u05d5\u05d8 \u05ea\u05d7\u05ea\u05d5\u05df",
+      "\u05e7\u05d9\u05e9\u05d5\u05e8\u05d9 \u05de\u05d3\u05d9\u05e0\u05d9\u05d5\u05ea",
+      "\u05e8\u05e9\u05ea\u05d5\u05ea \u05d7\u05d1\u05e8\u05ea\u05d9\u05d5\u05ea",
+    ]);
+    expect(searchState.footerText).not.toContain(legacyFooterCategories);
+    expect(searchState.footerText).not.toContain(legacyFooterOnlineService);
   });
 
   test("keeps category routes ordered as header, main content, then one footer", async ({

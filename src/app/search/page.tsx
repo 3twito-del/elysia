@@ -116,231 +116,238 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   after(() => recordSearchEvent(input, result.total));
 
   return (
-    <main>
+    <>
       <SiteHeader />
-      <CommercePageHero
-        description="חיפוש קטלוג עם סינון לפי קטגוריה, חומר, אבן, תקציב וזמינות."
-        eyebrow="קטלוג Elysia"
-        title="חיפוש בקטלוג"
-        variant="catalog"
-      />
-      <RevealSection
-        className="mx-auto w-full max-w-[96rem] px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y)]"
-        id="search-controls"
-      >
-        <SearchControls
-          activeFilterCount={activeRefinementCount}
-          categories={categories}
-          clearFiltersHref={clearFiltersHref}
-          facets={facets}
-          input={input}
-          viewMode={viewMode}
+
+      <main>
+        <CommercePageHero
+          description="חיפוש קטלוג עם סינון לפי קטגוריה, חומר, אבן, תקציב וזמינות."
+          eyebrow="קטלוג Elysia"
+          title="חיפוש בקטלוג"
+          variant="catalog"
         />
-
-        {hasActiveFilters ? (
-          <div
-            aria-label="פילטרים פעילים"
-            className="mt-4 flex flex-wrap items-center gap-2 text-sm"
-          >
-            {activeFilters.map((filter) => (
-              <Badge
-                asChild
-                className="h-8 gap-1 pr-3 pl-2"
-                key={filter.key}
-                variant="outline"
-              >
-                <Link href={filter.href} scroll={false}>
-                  <span>{filter.label}</span>
-                  <X aria-hidden="true" className="size-3" />
-                  <span className="sr-only">הסרת פילטר</span>
-                </Link>
-              </Badge>
-            ))}
-            <Button asChild size="sm" variant="ghost">
-              <Link href={resetAllHref} scroll={false}>
-                איפוס הכל
-              </Link>
-            </Button>
-          </div>
-        ) : null}
-
-        <section
-          aria-labelledby="search-results"
-          className="mt-4 border-b border-[var(--glass-border)] pb-4 sm:mt-6"
-          data-testid="search-results-summary"
-          id="search-results-section"
+        <RevealSection
+          className="mx-auto w-full max-w-[96rem] px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y)]"
+          id="search-controls"
         >
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="text-base font-medium" id="search-results">
-                {resultSummary}
-              </h2>
-              <p className="text-muted-foreground text-sm">
-                {input.query
-                  ? `עבור "${input.query}"`
-                  : hasActiveFilters
-                    ? "לפי הבחירה הפעילה"
-                    : "כל התכשיטים שנמצאו בקטלוג"}
-              </p>
-              <p
-                className="text-muted-foreground mt-1 text-xs"
-                data-testid="search-result-count"
-              >
-                {resultDetail}
-              </p>
-              <p className="text-muted-foreground mt-1 text-xs">
-                מיון: {getSortLabel(input.sort ?? "relevance")} · תצוגה:{" "}
-                {getSearchViewLabel(viewMode)} ·{" "}
-                {result.mode === "semantic"
-                  ? "\u05d7\u05d9\u05e4\u05d5\u05e9 \u05d7\u05db\u05dd"
-                  : "\u05d7\u05d9\u05e4\u05d5\u05e9 \u05e7\u05dc\u05d0\u05e1\u05d9"}
-              </p>
-              {result.activeSemanticSignals.length > 0 ? (
-                <div
-                  aria-label="\u05e4\u05d9\u05e8\u05d5\u05e9 \u05d7\u05d9\u05e4\u05d5\u05e9 \u05d7\u05db\u05dd"
-                  className="mt-3 flex flex-wrap gap-2"
-                  data-testid="semantic-search-signals"
-                >
-                  {result.activeSemanticSignals.slice(0, 6).map((signal) => (
-                    <Badge className="gap-1" key={signal} variant="secondary">
-                      <Sparkles aria-hidden="true" className="size-3" />
-                      <span>{signal}</span>
-                    </Badge>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <SearchModeToggle input={input} viewMode={viewMode} />
-              <SearchViewToggle input={input} viewMode={viewMode} />
-              {hasActiveFilters ? (
-                <Button asChild size="sm" variant="ghost">
-                  <Link
-                    href={
-                      hasActiveRefinements ? clearFiltersHref : resetAllHref
-                    }
-                    scroll={false}
-                  >
-                    איפוס
-                  </Link>
-                </Button>
-              ) : null}
-            </div>
-          </div>
-        </section>
-
-        {result.hits.length === 0 ? (
-          <EmptyState
-            className="mt-6 sm:mt-10"
-            description={
-              <>
-                אפשר לנקות את הבחירה, לעבור לקטגוריה פתוחה, או להרחיב את החיפוש
-                בכל הקטלוג.
-              </>
-            }
-            icon={Search}
-            testId="search-empty-state"
-            title="לא נמצאו תוצאות"
-            actions={
-              <>
-                {recoveryActions.length > 0 ? (
-                  <span
-                    className="contents"
-                    data-testid="search-recovery-actions"
-                  >
-                    {recoveryActions.map((action) => (
-                      <Button asChild key={action.href} variant="outline">
-                        <Link
-                          href={action.href}
-                          scroll={false}
-                          title={action.description}
-                        >
-                          <span>{action.label}</span>
-                          <span className="text-xs opacity-75">
-                            {formatSearchResultCount(action.total)}
-                          </span>
-                        </Link>
-                      </Button>
-                    ))}
-                  </span>
-                ) : null}
-                {hasActiveFilters ? (
-                  <Button asChild variant="outline">
-                    <Link href={resetAllHref} scroll={false}>
-                      איפוס חיפוש
-                    </Link>
-                  </Button>
-                ) : null}
-                {firstCategory ? (
-                  <Button asChild variant="outline">
-                    <Link href={`/category/${firstCategory.slug}`}>
-                      {firstCategory.name}
-                    </Link>
-                  </Button>
-                ) : null}
-              </>
-            }
+          <SearchControls
+            activeFilterCount={activeRefinementCount}
+            categories={categories}
+            clearFiltersHref={clearFiltersHref}
+            facets={facets}
+            input={input}
+            viewMode={viewMode}
           />
-        ) : viewMode === "list" ? (
-          <>
-            <RevealGrid
-              className="mt-5 grid gap-3 sm:mt-8"
-              data-testid="search-results-list"
-              variant="compact"
-            >
-              {result.hits.map((product, index) => (
-                <SearchResultListItem
-                  imagePriority={index < 2}
-                  key={product.slug}
-                  matchReason={result.hitMetaBySlug[product.slug]?.matchReason}
-                  product={product}
-                  searchContext={{
-                    position: (result.page - 1) * result.perPage + index,
-                    query: input.query,
-                  }}
-                />
-              ))}
-            </RevealGrid>
 
-            <SearchPagination
-              currentPage={result.page}
-              input={input}
-              totalPages={result.totalPages}
-              viewMode={viewMode}
-            />
-          </>
-        ) : (
-          <>
-            <RevealGrid
-              className="mt-5 grid gap-4 sm:mt-8 sm:grid-cols-2 lg:grid-cols-4"
-              data-testid="search-results-grid"
-              variant="cards"
+          {hasActiveFilters ? (
+            <div
+              aria-label="פילטרים פעילים"
+              className="mt-4 flex flex-wrap items-center gap-2 text-sm"
             >
-              {result.hits.map((product, index) => (
-                <ProductCard
-                  imagePriority={index < 4}
-                  imageSizes="(min-width: 1280px) 18rem, (min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                  key={product.slug}
-                  matchReason={result.hitMetaBySlug[product.slug]?.matchReason}
-                  product={product}
-                  searchContext={{
-                    position: (result.page - 1) * result.perPage + index,
-                    query: input.query,
-                  }}
-                />
+              {activeFilters.map((filter) => (
+                <Badge
+                  asChild
+                  className="h-8 gap-1 pr-3 pl-2"
+                  key={filter.key}
+                  variant="outline"
+                >
+                  <Link href={filter.href} scroll={false}>
+                    <span>{filter.label}</span>
+                    <X aria-hidden="true" className="size-3" />
+                    <span className="sr-only">הסרת פילטר</span>
+                  </Link>
+                </Badge>
               ))}
-            </RevealGrid>
+              <Button asChild size="sm" variant="ghost">
+                <Link href={resetAllHref} scroll={false}>
+                  איפוס הכל
+                </Link>
+              </Button>
+            </div>
+          ) : null}
 
-            <SearchPagination
-              currentPage={result.page}
-              input={input}
-              totalPages={result.totalPages}
-              viewMode={viewMode}
+          <section
+            aria-labelledby="search-results"
+            className="mt-4 border-b border-[var(--glass-border)] pb-4 sm:mt-6"
+            data-testid="search-results-summary"
+            id="search-results-section"
+          >
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-base font-medium" id="search-results">
+                  {resultSummary}
+                </h2>
+                <p className="text-muted-foreground text-sm">
+                  {input.query
+                    ? `עבור "${input.query}"`
+                    : hasActiveFilters
+                      ? "לפי הבחירה הפעילה"
+                      : "כל התכשיטים שנמצאו בקטלוג"}
+                </p>
+                <p
+                  className="text-muted-foreground mt-1 text-xs"
+                  data-testid="search-result-count"
+                >
+                  {resultDetail}
+                </p>
+                <p className="text-muted-foreground mt-1 text-xs">
+                  מיון: {getSortLabel(input.sort ?? "relevance")} · תצוגה:{" "}
+                  {getSearchViewLabel(viewMode)} ·{" "}
+                  {result.mode === "semantic"
+                    ? "\u05d7\u05d9\u05e4\u05d5\u05e9 \u05d7\u05db\u05dd"
+                    : "\u05d7\u05d9\u05e4\u05d5\u05e9 \u05e7\u05dc\u05d0\u05e1\u05d9"}
+                </p>
+                {result.activeSemanticSignals.length > 0 ? (
+                  <div
+                    aria-label="\u05e4\u05d9\u05e8\u05d5\u05e9 \u05d7\u05d9\u05e4\u05d5\u05e9 \u05d7\u05db\u05dd"
+                    className="mt-3 flex flex-wrap gap-2"
+                    data-testid="semantic-search-signals"
+                  >
+                    {result.activeSemanticSignals.slice(0, 6).map((signal) => (
+                      <Badge className="gap-1" key={signal} variant="secondary">
+                        <Sparkles aria-hidden="true" className="size-3" />
+                        <span>{signal}</span>
+                      </Badge>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <SearchModeToggle input={input} viewMode={viewMode} />
+                <SearchViewToggle input={input} viewMode={viewMode} />
+                {hasActiveFilters ? (
+                  <Button asChild size="sm" variant="ghost">
+                    <Link
+                      href={
+                        hasActiveRefinements ? clearFiltersHref : resetAllHref
+                      }
+                      scroll={false}
+                    >
+                      איפוס
+                    </Link>
+                  </Button>
+                ) : null}
+              </div>
+            </div>
+          </section>
+
+          {result.hits.length === 0 ? (
+            <EmptyState
+              className="mt-6 sm:mt-10"
+              description={
+                <>
+                  אפשר לנקות את הבחירה, לעבור לקטגוריה פתוחה, או להרחיב את
+                  החיפוש בכל הקטלוג.
+                </>
+              }
+              icon={Search}
+              testId="search-empty-state"
+              title="לא נמצאו תוצאות"
+              actions={
+                <>
+                  {recoveryActions.length > 0 ? (
+                    <span
+                      className="contents"
+                      data-testid="search-recovery-actions"
+                    >
+                      {recoveryActions.map((action) => (
+                        <Button asChild key={action.href} variant="outline">
+                          <Link
+                            href={action.href}
+                            scroll={false}
+                            title={action.description}
+                          >
+                            <span>{action.label}</span>
+                            <span className="text-xs opacity-75">
+                              {formatSearchResultCount(action.total)}
+                            </span>
+                          </Link>
+                        </Button>
+                      ))}
+                    </span>
+                  ) : null}
+                  {hasActiveFilters ? (
+                    <Button asChild variant="outline">
+                      <Link href={resetAllHref} scroll={false}>
+                        איפוס חיפוש
+                      </Link>
+                    </Button>
+                  ) : null}
+                  {firstCategory ? (
+                    <Button asChild variant="outline">
+                      <Link href={`/category/${firstCategory.slug}`}>
+                        {firstCategory.name}
+                      </Link>
+                    </Button>
+                  ) : null}
+                </>
+              }
             />
-          </>
-        )}
-      </RevealSection>
-    </main>
+          ) : viewMode === "list" ? (
+            <>
+              <RevealGrid
+                className="mt-5 grid gap-3 sm:mt-8"
+                data-testid="search-results-list"
+                variant="compact"
+              >
+                {result.hits.map((product, index) => (
+                  <SearchResultListItem
+                    imagePriority={index < 2}
+                    key={product.slug}
+                    matchReason={
+                      result.hitMetaBySlug[product.slug]?.matchReason
+                    }
+                    product={product}
+                    searchContext={{
+                      position: (result.page - 1) * result.perPage + index,
+                      query: input.query,
+                    }}
+                  />
+                ))}
+              </RevealGrid>
+
+              <SearchPagination
+                currentPage={result.page}
+                input={input}
+                totalPages={result.totalPages}
+                viewMode={viewMode}
+              />
+            </>
+          ) : (
+            <>
+              <RevealGrid
+                className="mt-5 grid gap-4 sm:mt-8 sm:grid-cols-2 lg:grid-cols-4"
+                data-testid="search-results-grid"
+                variant="cards"
+              >
+                {result.hits.map((product, index) => (
+                  <ProductCard
+                    imagePriority={index < 4}
+                    imageSizes="(min-width: 1280px) 18rem, (min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                    key={product.slug}
+                    matchReason={
+                      result.hitMetaBySlug[product.slug]?.matchReason
+                    }
+                    product={product}
+                    searchContext={{
+                      position: (result.page - 1) * result.perPage + index,
+                      query: input.query,
+                    }}
+                  />
+                ))}
+              </RevealGrid>
+
+              <SearchPagination
+                currentPage={result.page}
+                input={input}
+                totalPages={result.totalPages}
+                viewMode={viewMode}
+              />
+            </>
+          )}
+        </RevealSection>
+      </main>
+    </>
   );
 }
 
