@@ -22,7 +22,7 @@ import { getPublicServiceProfile } from "~/server/services/service";
 export const metadata: Metadata = {
   title: "שירות לקוחות",
   description:
-    "שירות אונליין וטלפוני של Elysia להזמנות, תיקונים, החזרות, מידות, פרטיות ונגישות.",
+    "שירות דיגיטלי וטלפוני של Elysia להזמנות, תיקונים, החזרות, מידות, פרטיות ונגישות.",
 };
 
 export const dynamic = "force-dynamic";
@@ -79,7 +79,7 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
         <div className="grid gap-6 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
           <section className="grid gap-5" aria-labelledby="service-contact">
             <div>
-              <Badge variant="secondary">שירות אונליין</Badge>
+              <Badge variant="secondary">שירות דיגיטלי</Badge>
               <h2 className="mt-3 text-2xl font-semibold" id="service-contact">
                 כל ערוצי השירות במקום אחד
               </h2>

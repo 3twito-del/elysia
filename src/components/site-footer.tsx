@@ -1,11 +1,20 @@
+"use client";
+
 import Link from "next/link";
-import { SiInstagram, SiTiktok } from "react-icons/si";
 import { ChevronDown } from "lucide-react";
+import { SiInstagram, SiTiktok } from "react-icons/si";
 
 import { NewsletterForm } from "~/components/newsletter-form";
 import { SiteFooterDisclosures } from "~/components/site-footer-disclosures";
 import { Separator } from "~/components/ui/separator";
-import { getCatalogCategories } from "~/server/services/catalog";
+
+const catalogLinks = [
+  { href: "/category/rings", label: "טבעות" },
+  { href: "/category/necklaces", label: "שרשראות" },
+  { href: "/category/earrings", label: "עגילים" },
+  { href: "/category/bracelets", label: "צמידים" },
+  { href: "/search", label: "חיפוש בקטלוג" },
+] as const;
 
 const commerceLinks = [
   { href: "/checkout", label: "קופה ותשלום" },
@@ -41,17 +50,7 @@ const socialLinks = [
   },
 ] as const;
 
-export async function SiteFooter() {
-  const categories = await getCatalogCategories();
-
-  const catalogLinks = [
-    ...categories.map((category) => ({
-      href: `/category/${category.slug}`,
-      label: category.name,
-    })),
-    { href: "/search", label: "חיפוש בקטלוג" },
-  ];
-
+export function SiteFooter() {
   return (
     <footer className="bg-transparent" dir="rtl">
       <div className="mx-auto max-w-7xl px-4 pt-12 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:px-6 sm:pt-16 sm:pb-14 lg:pt-20 lg:pb-16">
@@ -78,23 +77,14 @@ export async function SiteFooter() {
             </div>
           </section>
 
-          <div className="grid gap-8 sm:grid-cols-3 md:gap-10 lg:gap-12">
-            <FooterNav
-              ariaLabel="ניווט קטלוג"
-              links={catalogLinks}
-              title="קטלוג"
-            />
-            <FooterNav
-              ariaLabel="ניווט שירות וקנייה"
-              links={commerceLinks}
-              title="שירות וקנייה"
-            />
-            <FooterNav
-              ariaLabel="ניווט מידע"
-              links={informationLinks}
-              title="מידע"
-            />
-          </div>
+          <nav
+            aria-label="ניווט תחתון"
+            className="grid gap-8 sm:grid-cols-3 md:gap-10 lg:gap-12"
+          >
+            <FooterNav links={catalogLinks} title="קטלוג" />
+            <FooterNav links={commerceLinks} title="שירות וקנייה" />
+            <FooterNav links={informationLinks} title="מידע" />
+          </nav>
         </div>
         <SiteFooterDisclosures />
 
@@ -154,42 +144,34 @@ export async function SiteFooter() {
 }
 
 function FooterNav({
-  ariaLabel,
   links,
   title,
 }: {
-  ariaLabel: string;
   links: readonly { href: string; label: string }[];
   title: string;
 }) {
   return (
-    <nav aria-label={ariaLabel}>
-      <details
-        className="footer-nav-disclosure"
-        data-footer-nav-disclosure
-        open
-      >
-        <summary className="footer-nav-summary">
-          <h2 className="text-foreground text-xs font-medium">{title}</h2>
-          <ChevronDown
-            aria-hidden="true"
-            className="footer-nav-chevron size-4"
-            strokeWidth={1.8}
-          />
-        </summary>
-        <ul className="text-muted-foreground mt-5 grid gap-3 text-sm">
-          {links.map((item) => (
-            <li key={item.href}>
-              <Link
-                className="hover:text-foreground inline-flex min-h-8 items-center transition"
-                href={item.href}
-              >
-                {item.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </details>
-    </nav>
+    <details className="footer-nav-disclosure" data-footer-nav-disclosure open>
+      <summary className="footer-nav-summary">
+        <h2 className="text-foreground text-xs font-medium">{title}</h2>
+        <ChevronDown
+          aria-hidden="true"
+          className="footer-nav-chevron size-4"
+          strokeWidth={1.8}
+        />
+      </summary>
+      <ul className="text-muted-foreground mt-5 grid gap-3 text-sm">
+        {links.map((item) => (
+          <li key={item.href}>
+            <Link
+              className="hover:text-foreground inline-flex min-h-8 items-center transition"
+              href={item.href}
+            >
+              {item.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </details>
   );
 }

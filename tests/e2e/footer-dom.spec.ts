@@ -70,9 +70,7 @@ test.describe("footer DOM and accessibility structure", () => {
     expect(footerState.htmlLang).toBe("he");
     expect(footerState.headingTexts).toEqual([...footerHeadings]);
     expect(footerState.navLabels).toEqual([
-      "ניווט קטלוג",
-      "ניווט שירות וקנייה",
-      "ניווט מידע",
+      "ניווט תחתון",
       "קישורי מדיניות",
       "רשתות חברתיות",
     ]);
@@ -108,6 +106,23 @@ test.describe("footer DOM and accessibility structure", () => {
     } else {
       expect(footerState.disclosureOpenStates).toEqual([false, false, false]);
     }
+  });
+
+  test("keeps service page footer sections out of duplicate SSR payload", async ({
+    request,
+  }) => {
+    const response = await request.get("/service");
+    const html = await response.text();
+
+    expect(response.ok()).toBe(true);
+    expect(countOccurrences(html, "<footer")).toBe(1);
+    expect(countOccurrences(html, "<main")).toBe(1);
+    expect(countOccurrences(html, "<header")).toBe(1);
+    expect(countOccurrences(html, "שירות וקנייה")).toBe(1);
+    expect(countOccurrences(html, "קטגוריות")).toBe(0);
+    expect(html).not.toContain("שירות אונליין");
+    expect(html).not.toContain("ניווט שירות וקנייה");
+    expect(html).not.toContain("ניווט קטלוג");
   });
 
   test("keeps category routes ordered as header, main content, then one footer", async ({
