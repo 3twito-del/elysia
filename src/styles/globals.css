@@ -1501,6 +1501,58 @@ footer nav a {
   outline: none;
 }
 
+.footer-nav-disclosure {
+  border-bottom: 1px solid var(--glass-border);
+  padding-block: 1.15rem;
+}
+
+.footer-nav-summary {
+  display: flex;
+  cursor: pointer;
+  list-style: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.footer-nav-summary::-webkit-details-marker {
+  display: none;
+}
+
+.footer-nav-summary h2 {
+  font-size: 0.95rem;
+}
+
+.footer-nav-chevron {
+  color: var(--foreground);
+  transition: transform var(--motion-fast) var(--ease-motion-standard);
+}
+
+.footer-nav-disclosure[open] .footer-nav-chevron {
+  transform: rotate(180deg);
+}
+
+@media (min-width: 640px) {
+  .footer-nav-disclosure {
+    border-bottom: 0;
+    padding-block: 0;
+  }
+
+  .footer-nav-summary {
+    cursor: default;
+    justify-content: flex-start;
+    pointer-events: none;
+  }
+
+  .footer-nav-summary h2 {
+    font-size: 0.75rem;
+  }
+
+  .footer-nav-chevron {
+    display: none;
+  }
+}
+
 footer nav a:hover,
 footer nav a:focus-visible {
   color: var(--foreground);

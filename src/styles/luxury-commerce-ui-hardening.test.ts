@@ -55,7 +55,10 @@ describe("luxury commerce UI hardening", () => {
     expect(mobileNav).not.toContain("<Gem");
     expect(footer).not.toContain("bg-background rounded-md border");
     expect(footer).toContain("border-t border-[var(--glass-border)] pt-10");
-    expect(footer).toContain("lg:grid-cols-[1.28fr_0.72fr_0.72fr_0.72fr]");
+    expect(footer).toContain(
+      "md:grid-cols-[minmax(18rem,0.95fr)_minmax(0,1.45fr)]",
+    );
+    expect(footer).toContain("grid gap-8 sm:grid-cols-3");
     expect(footer).toContain("function FooterNav");
     expect(footer).toContain('title="קטלוג"');
     expect(footer).toContain('title="שירות וקנייה"');

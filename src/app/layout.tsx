@@ -88,9 +88,8 @@ export default function RootLayout({
             דילוג לתוכן
           </a>
           <div id="main-content" tabIndex={-1}>
-            <PublicMotionProvider footer={<SiteFooter />}>
-              {children}
-            </PublicMotionProvider>
+            <PublicMotionProvider>{children}</PublicMotionProvider>
+            <SiteFooter />
           </div>
           <CookieConsentBanner />
           <DeferredAccessibilityWidget />

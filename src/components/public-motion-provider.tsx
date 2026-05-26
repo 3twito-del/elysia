@@ -21,7 +21,6 @@ import {
 
 type PublicMotionProviderProps = {
   children: ReactNode;
-  footer?: ReactNode;
 };
 
 type MotionState = "visible" | "enter" | "exit";
@@ -98,10 +97,7 @@ export function usePublicMotion() {
   return useContext(PublicMotionContext);
 }
 
-export function PublicMotionProvider({
-  children,
-  footer,
-}: PublicMotionProviderProps) {
+export function PublicMotionProvider({ children }: PublicMotionProviderProps) {
   const pathname = usePathname();
   const shouldReduceMotion = usePrefersReducedMotion();
   const isAdminRoute = pathname.startsWith("/admin");
@@ -538,10 +534,7 @@ export function PublicMotionProvider({
     <PublicMotionContext.Provider value={motionContextValue}>
       <div className="public-motion-shell" data-motion-state={motionState}>
         <div aria-hidden="true" className="public-motion-ambient" />
-        <div className="public-motion-content">
-          {renderedChildren}
-          {footer}
-        </div>
+        <div className="public-motion-content">{renderedChildren}</div>
       </div>
     </PublicMotionContext.Provider>
   );
