@@ -261,6 +261,64 @@ test.describe("critical shopping flows", () => {
     }
   });
 
+  test("renders empty checkout content in the initial HTML", async ({
+    request,
+  }) => {
+    const response = await request.get("/checkout");
+
+    expect(response.ok()).toBe(true);
+
+    const html = await response.text();
+
+    expect(html).toContain(checkoutEmptyTitle);
+    expect(html).toContain("חזרי לקולקציה");
+    expect(html).toContain(checkoutCatalogCta);
+    expect(html).toContain(checkoutAdviceLink);
+    expect(html).not.toContain("checkout-loading-skeleton");
+
+    for (const stateText of forbiddenCheckoutStateText) {
+      expect(html).not.toContain(stateText);
+    }
+  });
+
+  test("renders empty checkout fallback without JavaScript", async ({
+    baseURL,
+    browser,
+  }) => {
+    const context = await browser.newContext({
+      javaScriptEnabled: false,
+      locale: "he-IL",
+      viewport: { height: 844, width: 390 },
+    });
+    const page = await context.newPage();
+
+    try {
+      await page.goto(
+        new URL("/checkout", baseURL ?? "http://localhost:3000").toString(),
+      );
+      const checkoutEmptyState = page.getByTestId("checkout-empty-cart");
+
+      await expect(checkoutEmptyState).toBeVisible();
+      await expect(checkoutEmptyState).toContainText(checkoutEmptyTitle);
+      await expect(checkoutEmptyState).toContainText("חזרי לקולקציה");
+      await expect(
+        checkoutEmptyState.getByRole("link", { name: checkoutCatalogCta }),
+      ).toBeVisible();
+      await expect(
+        checkoutEmptyState.getByRole("link", {
+          exact: true,
+          name: checkoutAdviceLink,
+        }),
+      ).toBeVisible();
+
+      for (const stateText of forbiddenCheckoutStateText) {
+        await expect(page.locator("body")).not.toContainText(stateText);
+      }
+    } finally {
+      await context.close();
+    }
+  });
+
   test("shows category not-found recovery", async ({ page }) => {
     await setCookieConsent(page, "essential");
 

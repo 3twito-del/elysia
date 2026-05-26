@@ -31,7 +31,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Separator } from "~/components/ui/separator";
-import { Skeleton } from "~/components/ui/skeleton";
 import { StatusMessage } from "~/components/ui/status-message";
 import { Textarea } from "~/components/ui/textarea";
 import {
@@ -218,7 +217,7 @@ export function CartCheckoutForm() {
 
   const cart = cartQuery.data;
   const cartItemCount = cart?.items.length ?? 0;
-  const isCartLoading = cartQuery.isLoading || !sessionKey;
+  const isCartLoading = Boolean(sessionKey) && cartQuery.isLoading;
   const shouldShowEmptyCartState =
     !isCartLoading && (Boolean(cartQuery.error) || !cart?.items.length);
   const subtotal = cart?.totals.subtotal ?? 0;
@@ -438,7 +437,7 @@ export function CartCheckoutForm() {
   }
 
   if (isCartLoading) {
-    return <CheckoutLoadingSkeleton />;
+    return <CheckoutEmptyCartState />;
   }
 
   if (shouldShowEmptyCartState || !cart?.items.length) {
@@ -1021,74 +1020,6 @@ function CheckoutEmptyCartState() {
           ))}
         </div>
       </div>
-    </section>
-  );
-}
-
-function CheckoutLoadingSkeleton() {
-  return (
-    <section
-      aria-busy="true"
-      className="mx-auto grid max-w-7xl gap-5 px-[var(--ui-page-x)] pt-[var(--ui-section-y-tight)] pb-[var(--ui-section-y)] lg:grid-cols-[minmax(0,1fr)_352px] lg:items-start lg:px-[var(--ui-page-x-wide)]"
-      data-testid="checkout-loading-skeleton"
-    >
-      <div aria-hidden="true" className="grid gap-4">
-        <div className="grid gap-2">
-          <Skeleton className="h-7 w-40" />
-          <Skeleton className="h-4 w-full max-w-2xl" />
-        </div>
-        <Card className="rounded-md" size="sm">
-          <CardContent className="grid gap-3 pt-6">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <div
-                className="bg-background grid grid-cols-[68px_minmax(0,1fr)] gap-3 rounded-md border p-3 sm:grid-cols-[68px_minmax(0,1fr)_auto] sm:items-center"
-                key={index}
-              >
-                <Skeleton className="size-[68px]" />
-                <div className="grid min-w-0 gap-2">
-                  <Skeleton className="h-4 w-44 max-w-full" />
-                  <Skeleton className="h-3 w-32 max-w-full" />
-                  <Skeleton className="h-3 w-28 max-w-full" />
-                </div>
-                <div className="col-span-2 flex justify-end gap-2 sm:col-span-1">
-                  <Skeleton className="size-10" />
-                  <Skeleton className="size-10" />
-                  <Skeleton className="size-10" />
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-        <div className="grid gap-4 sm:grid-cols-2">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <Card className="rounded-md" key={index} size="sm">
-              <CardContent className="grid gap-3 pt-6">
-                <Skeleton className="h-5 w-28" />
-                <Skeleton className="h-11 w-full" />
-                <Skeleton className="h-11 w-full" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-      <aside aria-hidden="true">
-        <Card className="rounded-md lg:sticky lg:top-24" size="sm">
-          <CardContent className="grid gap-4 pt-6">
-            <Skeleton className="h-6 w-24" />
-            <div className="grid gap-3">
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-2/3" />
-            </div>
-            <Separator />
-            <Skeleton className="h-11 w-full" />
-            <div className="grid gap-2">
-              <Skeleton className="h-16 w-full" />
-              <Skeleton className="h-16 w-full" />
-            </div>
-          </CardContent>
-        </Card>
-      </aside>
     </section>
   );
 }
