@@ -54,6 +54,16 @@ describe("public typography spacing guardrails", () => {
     expect(adminShell).toContain("py-[var(--ui-section-y)]");
   });
 
+  it("balances public text wrapping to avoid orphan words and overflow", () => {
+    const css = read("src/styles/globals.css");
+
+    expect(css).toContain("text-wrap: pretty;");
+    expect(css).toContain("text-wrap: balance;");
+    expect(css).toContain("overflow-wrap: anywhere;");
+    expect(css).toContain('[data-slot="button"]');
+    expect(css).toContain(".commerce-page-hero-title");
+  });
+
   it("keeps public text letter spacing normal except documented shortcut labels", () => {
     const violations = sourceRoots
       .flatMap(walk)

@@ -260,6 +260,25 @@
     scroll-margin-top: var(--anchor-scroll-offset);
   }
   :where(
+    p,
+    li,
+    figcaption,
+    blockquote,
+    dd,
+    dt,
+    label,
+    summary,
+    [data-slot="badge"],
+    [data-slot="button"]
+  ) {
+    text-wrap: pretty;
+    overflow-wrap: anywhere;
+  }
+  :where(h1, h2, h3, h4, h5, h6, legend, .commerce-page-hero-title) {
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+  }
+  :where(
       a[href],
       button,
       input[type="button"],
