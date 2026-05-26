@@ -623,15 +623,15 @@ function Field({
 function AvailabilitySelect({ defaultValue }: { defaultValue: string }) {
   return (
     <select
-      aria-label="מצב זמינות מסחרי"
+      aria-label="מצב בחירה"
       className="glass-control h-10 rounded-md border px-3 text-sm"
       defaultValue={defaultValue}
       name="availabilityMode"
       required
     >
-      <option value="READY_TO_ORDER">זמין במלאי</option>
+      <option value="READY_TO_ORDER">זמין</option>
       <option value="MADE_TO_ORDER">בהזמנה אישית</option>
-      <option value="CONSULTATION">לתיאום ייעוץ</option>
+      <option value="CONSULTATION">לייעוץ</option>
     </select>
   );
 }

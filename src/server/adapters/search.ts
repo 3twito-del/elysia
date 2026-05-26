@@ -865,11 +865,11 @@ function getTypesenseVectorDistance(hit: unknown) {
 function getActiveSemanticSignals(intent: SemanticSearchIntent) {
   return [
     intent.semanticQuery ? `פירוש: ${intent.semanticQuery}` : null,
-    intent.hardFilters.category ? "סוג תכשיט מזוהה" : null,
+    intent.hardFilters.category ? "קטגוריה מזוהה" : null,
     intent.hardFilters.material ? `חומר: ${intent.hardFilters.material}` : null,
     intent.hardFilters.stone ? `אבן: ${intent.hardFilters.stone}` : null,
     intent.hardFilters.maxPrice
-      ? `טווח מחיר עד ${intent.hardFilters.maxPrice.toLocaleString("he-IL")} ₪`
+      ? `מחיר עד ${intent.hardFilters.maxPrice.toLocaleString("he-IL")} ₪`
       : null,
     intent.recipient ? `למי: ${intent.recipient}` : null,
     intent.occasion ? `אירוע: ${intent.occasion}` : null,

@@ -2,7 +2,7 @@ import type { CinematicHeroSlide } from "~/components/cinematic-hero-sequence";
 
 export const brandHeroSlides = [
   {
-    alt: "טבעות יהלום על משטח סטודיו בגוון אקווה",
+    alt: "טבעות יהלום על משטח אקווה נקי",
     src: "/brand/v2/hero-rings.avif",
   },
   {
@@ -10,7 +10,7 @@ export const brandHeroSlides = [
     src: "/brand/v2/hero-pearls.avif",
   },
   {
-    alt: "תכשיטי יהלום וזכוכית בתאורת סטודיו אקווה",
+    alt: "תכשיטי יהלום וזכוכית בתאורת אקווה רכה",
     src: "/brand/v2/hero-glass.avif",
   },
 ] satisfies CinematicHeroSlide[];
@@ -28,7 +28,7 @@ export const cinematicRouteMedia = {
   ],
   account: [
     {
-      alt: "מגש שירות תכשיטים עם פנינים וזכוכית אקווה לאזור לקוח",
+      alt: "מגש שירות תכשיטים עם פנינים וזכוכית אקווה לאזור אישי",
       src: "/brand/v2/service-task.avif",
     },
     brandHeroSlides[2]!,
@@ -49,7 +49,7 @@ export const cinematicRouteMedia = {
   ],
   checkout: [
     {
-      alt: "מגש אריזה ושירות לקופה ומשלוח תכשיטים",
+      alt: "מגש אריזה ושירות לסיכום בחירה ומסירת תכשיטים",
       src: "/brand/v2/service-task.avif",
     },
     brandHeroSlides[2]!,
@@ -73,7 +73,7 @@ export const cinematicRouteMedia = {
   ],
   home: [
     {
-      alt: "סצנת תכשיטי יוקרה בתאורת סטודיו אקווה",
+      alt: "תכשיטים באור אקווה רך",
       src: "/brand/v2/editorial-home.avif",
     },
     ...brandHeroSlides,
@@ -97,24 +97,24 @@ export const cinematicRouteMedia = {
   ],
   search: [
     {
-      alt: "קטלוג תכשיטים על אבן שחורה וזכוכית אקווה",
+      alt: "מבחר תכשיטים על אבן שחורה וזכוכית אקווה",
       src: "/brand/v2/commerce-search.avif",
     },
     {
-      alt: "טבעות ויהלומים בסצנת קטגוריה קולנועית",
+      alt: "טבעות ויהלומים בסצנת משפחת תכשיטים קולנועית",
       src: "/brand/v2/category-rings.avif",
     },
   ],
   service: [
     {
-      alt: "מגש שירות לקוחות עם אריזת תכשיטים ופנינים",
+      alt: "מגש שירות אישי עם אריזת תכשיטים ופנינים",
       src: "/brand/v2/service-task.avif",
     },
     brandHeroSlides[2]!,
   ],
   stylist: [
     {
-      alt: "קטלוג תכשיטים כהה להתאמת סטייליסט אישית",
+      alt: "מבחר תכשיטים כהה להתאמת סטייליסט אישית",
       src: "/brand/v2/commerce-catalog.avif",
     },
     brandHeroSlides[2]!,

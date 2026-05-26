@@ -11,7 +11,7 @@ import { getPublicServiceProfile } from "~/server/services/service";
 export const metadata: Metadata = {
   title: "שירות",
   description:
-    "שירות Elysia אונליין ובטלפון, עם מיקומי שירות מאושרים כאשר הם זמינים.",
+    "שירות Elysia מרחוק ובטלפון, עם מיקומי שירות מאושרים כאשר הם זמינים.",
 };
 
 export const dynamic = "force-dynamic";
@@ -31,8 +31,8 @@ export default async function BranchesPage() {
       <SiteHeader />
       <CommercePageHero
         description="מיקומי שירות מאושרים של Elysia, כולל פרטי קשר, שעות ותיאום לפני הגעה."
-        eyebrow="סניפים ושירות"
-        title="סניפים ושירות"
+        eyebrow="שירות"
+        title="שירות"
         variant="content"
       />
 

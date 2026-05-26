@@ -29,7 +29,7 @@ export const CartCountLink = forwardRef<HTMLAnchorElement, CartCountLinkProps>(
   ({ className, prefetch = false, ...props }, ref) => {
     const [itemCount, setItemCount] = useState(0);
     const cartLabel =
-      itemCount > 0 ? `סל קניות, ${itemCount} פריטים` : "סל קניות";
+      itemCount > 0 ? `הבחירה שלי, ${itemCount} תכשיטים` : "הבחירה שלי";
 
     useEffect(() => {
       let cancelled = false;

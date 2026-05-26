@@ -1,8 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Sparkles } from "lucide-react";
-
 import { Badge } from "~/components/ui/badge";
 import { Card, CardContent } from "~/components/ui/card";
 import { ProductCardFavoriteButton } from "~/components/product-card-favorite-button";
@@ -14,7 +12,6 @@ import type { CatalogProduct } from "~/server/services/catalog";
 type ProductCardProps = {
   imagePriority?: boolean;
   imageSizes?: string;
-  matchReason?: string;
   product: CatalogProduct;
   searchContext?: {
     query?: string;
@@ -41,7 +38,6 @@ const PRODUCT_CARD_IMAGE_POSITION_BY_SOURCE = [
 export function ProductCard({
   imagePriority = false,
   imageSizes = DEFAULT_PRODUCT_CARD_IMAGE_SIZES,
-  matchReason,
   product,
   searchContext,
 }: ProductCardProps) {
@@ -56,19 +52,13 @@ export function ProductCard({
   const isAvailable = commerceStatus.canAddToCart;
   const isUnavailable =
     product.availabilityMode === "READY_TO_ORDER" && onlineStockQuantity <= 0;
-  const compareAt =
-    typeof product.compareAt === "number" && product.compareAt > product.price
-      ? product.compareAt
-      : undefined;
-  const discountPercent = compareAt
-    ? Math.round(((compareAt - product.price) / compareAt) * 100)
-    : undefined;
   const href = createProductHref(product.slug, searchContext);
-  const commerceHighlights = product.commerceHighlights ?? [];
   const imageObjectPosition = getProductCardImageObjectPosition(product);
   const productDetails = [product.material, product.stone].filter(
     (detail): detail is string => Boolean(detail),
   );
+  const shouldShowAvailability =
+    isUnavailable || product.availabilityMode !== "READY_TO_ORDER";
 
   return (
     <Card
@@ -81,7 +71,7 @@ export function ProductCard({
       data-testid="product-card"
     >
       <Link
-        aria-label={`צפייה בפריט ${product.name}`}
+        aria-label={`צפייה בתכשיט ${product.name}`}
         className="group/product-link block h-full min-w-0 focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
         href={href}
         prefetch={false}
@@ -100,19 +90,13 @@ export function ProductCard({
               style={{ objectPosition: imageObjectPosition }}
             />
           </StaticKineticImageFrame>
-          {discountPercent || isUnavailable ? (
+          {isUnavailable ? (
             <div className="absolute top-2.5 left-2.5 flex items-start gap-2">
-              {discountPercent ? (
-                <Badge className="font-semibold" dir="ltr" variant="default">
-                  -{discountPercent}%
-                </Badge>
-              ) : isUnavailable ? (
-                <Badge variant="destructive">לא זמין</Badge>
-              ) : null}
+              <Badge variant="destructive">לא פנוי כרגע</Badge>
             </div>
           ) : null}
         </div>
-        <CardContent className="flex min-h-32 flex-1 flex-col gap-2.5 px-0 pt-3 pb-0 sm:min-h-40 sm:gap-3">
+        <CardContent className="flex min-h-28 flex-1 flex-col gap-2.5 px-0 pt-3 pb-0 sm:min-h-32 sm:gap-3">
           <div className="flex items-start justify-between gap-2.5 sm:gap-3">
             <div className="min-w-0">
               <h3
@@ -121,9 +105,6 @@ export function ProductCard({
               >
                 {product.name}
               </h3>
-              <p className="text-muted-foreground mt-1 line-clamp-1 min-h-5 text-sm leading-5 sm:line-clamp-2 sm:min-h-9">
-                {product.shortDescription}
-              </p>
               <div
                 className="text-muted-foreground mt-1.5 flex min-h-5 flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-5 sm:mt-2"
                 data-testid="product-card-attributes"
@@ -137,58 +118,33 @@ export function ProductCard({
                   </span>
                 ))}
               </div>
-              {matchReason ? (
-                <p
-                  className="text-muted-foreground mt-2 inline-flex max-w-full items-center gap-1.5 rounded-md border border-[var(--glass-border)] bg-[var(--glass-inset-bg)] px-2 py-1 text-xs"
-                  data-testid="product-card-match-reason"
-                >
-                  <Sparkles aria-hidden="true" className="size-3.5 shrink-0" />
-                  <span className="truncate">{matchReason}</span>
-                </p>
-              ) : null}
-              {commerceHighlights.length > 0 ? (
-                <div
-                  className="text-muted-foreground mt-2 grid gap-1 text-xs leading-5"
-                  data-testid="product-card-highlights"
-                >
-                  {commerceHighlights.slice(0, 2).map((highlight) => (
-                    <span className="line-clamp-1" key={highlight}>
-                      {highlight}
-                    </span>
-                  ))}
-                </div>
-              ) : null}
             </div>
           </div>
 
           <div className="mt-auto grid gap-2.5">
             <div className="grid min-h-10 grid-cols-[minmax(0,1fr)_auto] items-end gap-2.5 sm:min-h-12 sm:gap-3">
               <div className="min-w-0">
-                <p className="text-muted-foreground text-xs">מחיר</p>
-                {compareAt ? (
-                  <span className="text-muted-foreground mt-1 block text-xs line-through">
-                    {formatPrice(compareAt)}
-                  </span>
-                ) : null}
                 <span className="block text-lg leading-6 font-semibold sm:text-xl sm:leading-7">
                   {formatPrice(product.price)}
                 </span>
               </div>
-              <span
-                className={cn(
-                  "brand-icon-well flex max-w-32 shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs",
-                  isAvailable ? "text-muted-foreground" : "text-foreground",
-                )}
-              >
+              {shouldShowAvailability ? (
                 <span
                   className={cn(
-                    "size-2 shrink-0 rounded-full",
-                    isAvailable ? "bg-emerald-500" : "bg-muted-foreground",
+                    "brand-icon-well flex max-w-32 shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs",
+                    isAvailable ? "text-muted-foreground" : "text-foreground",
                   )}
-                  aria-hidden="true"
-                />
-                <span className="truncate">{commerceStatus.label}</span>
-              </span>
+                >
+                  <span
+                    className={cn(
+                      "size-2 shrink-0 rounded-full",
+                      isAvailable ? "bg-emerald-500" : "bg-muted-foreground",
+                    )}
+                    aria-hidden="true"
+                  />
+                  <span className="truncate">{commerceStatus.label}</span>
+                </span>
+              ) : null}
             </div>
           </div>
         </CardContent>

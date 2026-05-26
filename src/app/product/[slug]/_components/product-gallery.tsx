@@ -74,9 +74,9 @@ export function ProductGallery({
               <ImageOff className="size-5" aria-hidden="true" />
             </span>
             <div>
-              <p className="font-medium">תמונת פריט תעלה בקרוב</p>
+              <p className="font-medium">תמונת תכשיט תעלה בקרוב</p>
               <p className="text-muted-foreground mt-2 text-sm">
-                פרטי הפריט, המחיר והזמינות עדיין מוצגים בעמוד.
+                פרטי התכשיט, המחיר וההתאמה עדיין מוצגים בעמוד.
               </p>
             </div>
           </div>
@@ -87,7 +87,7 @@ export function ProductGallery({
 
   return (
     <div
-      aria-label={`גלריית פריט עבור ${productName}`}
+      aria-label={`גלריית תכשיט עבור ${productName}`}
       className={cn("grid gap-4", className)}
       role="group"
     >
@@ -135,7 +135,7 @@ export function ProductGallery({
 
       {galleryImages.length > 1 ? (
         <div
-          aria-label="תמונות פריט"
+          aria-label="תמונות תכשיט"
           className="grid grid-cols-4 gap-3 sm:grid-cols-5 lg:grid-cols-4"
         >
           {galleryImages.map((image, index) => (

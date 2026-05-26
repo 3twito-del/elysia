@@ -15,7 +15,7 @@ describe("checkout validation", () => {
       phone: "0501234567",
     });
 
-    expect(errors.city).toBe("יש להזין עיר למשלוח.");
+    expect(errors.city).toBe("יש להזין עיר למסירה.");
     expect(errors.street).toBe("יש להזין רחוב ומספר.");
     expect(hasCheckoutErrors(errors)).toBe(true);
   });
@@ -49,7 +49,7 @@ describe("checkout validation", () => {
     });
 
     expect(getCheckoutIssueList(errors)).toEqual([
-      "יש להוסיף לפחות פריט אחד לסל.",
+      "יש לבחור לפחות תכשיט אחד.",
       "יש להזין שם מלא.",
       "יש להזין טלפון תקין.",
       "יש להזין אימייל תקין.",

@@ -90,8 +90,8 @@ export function SiteHeader() {
         dir="rtl"
       >
         <p className="sr-only">
-          Elysia היא סטודיו תכשיטים עם ניווט לקולקציות, חיפוש פריטים, שירות
-          לקוחות, אזור לקוח, סל וקישורים לטבעות, שרשראות, עגילים וצמידים.
+          Elysia היא בית תכשיטים עם ניווט לקולקציות, חיפוש במבחר, שירות אישי,
+          אזור אישי, הבחירה שלי וקישורים לטבעות, שרשראות, עגילים וצמידים.
         </p>
         <div className="mx-auto grid h-16 max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 sm:px-6 md:h-[4.25rem] md:grid-cols-[auto_1fr_auto] md:gap-3 lg:h-[6.125rem] lg:gap-5">
           <div className="flex items-center justify-self-start md:hidden">
@@ -178,12 +178,12 @@ export function SiteHeader() {
               variant="ghost"
             >
               <Link
-                data-icon-tooltip="סניפים ושירות"
+                data-icon-tooltip="שירות"
                 data-icon-tooltip-placement="bottom"
                 href="/branches"
               >
                 <Headset aria-hidden="true" className="size-5" />
-                <span className="sr-only">סניפים ושירות</span>
+                <span className="sr-only">שירות</span>
               </Link>
             </Button>
             <Button
@@ -193,12 +193,12 @@ export function SiteHeader() {
               variant="ghost"
             >
               <Link
-                data-icon-tooltip="אזור לקוח"
+                data-icon-tooltip="אזור אישי"
                 data-icon-tooltip-placement="bottom"
                 href="/account"
               >
                 <UserRound aria-hidden="true" className="size-5" />
-                <span className="sr-only">אזור לקוח</span>
+                <span className="sr-only">אזור אישי</span>
               </Link>
             </Button>
             <Button
@@ -208,7 +208,7 @@ export function SiteHeader() {
               variant="ghost"
             >
               <CartCountLink
-                data-icon-tooltip="סל קניות"
+                data-icon-tooltip="הבחירה שלי"
                 data-icon-tooltip-placement="bottom"
               />
             </Button>

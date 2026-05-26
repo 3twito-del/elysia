@@ -71,10 +71,10 @@ export const productsPerPage = 6;
 export const priceOptions = [750, 1000, 1500] as const;
 export const defaultCategorySort = "popular" satisfies CategorySort;
 export const sortOptions = [
-  { value: "popular", label: "המומלצים תחילה" },
-  { value: "price-asc", label: "מחיר עולה" },
-  { value: "price-desc", label: "מחיר יורד" },
-  { value: "newest", label: "החדשים תחילה" },
+  { value: "popular", label: "מומלצים" },
+  { value: "price-asc", label: "מחיר: נמוך לגבוה" },
+  { value: "price-desc", label: "מחיר: גבוה לנמוך" },
+  { value: "newest", label: "חדשים" },
 ] as const satisfies ReadonlyArray<{ value: CategorySort; label: string }>;
 
 export function getCategoryRouteState({
@@ -249,8 +249,8 @@ function getCategoryFilterSections({
 }): CategoryFilterSection[] {
   const sections = [
     {
-      description: "סדר הצגה לפי התאמה, מחיר או פריטים חדשים.",
-      title: "סדר הצגה",
+      description: "מיון לפי התאמה, מחיר או בחירות חדשות.",
+      title: "מיון",
       options: sortOptions.map((option) => {
         const active = filters.sort === option.value;
 
@@ -267,8 +267,8 @@ function getCategoryFilterSections({
       }),
     },
     {
-      description: "מעבר נקי בין סוגי תכשיטים בלי לאבד את הבחירה.",
-      title: "סוג תכשיט",
+      description: "בחירה לפי קטגוריית תכשיט.",
+      title: "קטגוריה",
       options: categories.map((item) => {
         const active = item.slug === slug;
         const count = categoryCounts.get(item.slug) ?? 0;
@@ -282,7 +282,7 @@ function getCategoryFilterSections({
       }),
     },
     {
-      description: "מתכת וגוון שמשנים את האופי של כל פריט.",
+      description: "בחירה לפי מתכת וגוון.",
       title: "חומר",
       options: materialOptions.map((material) => {
         const active = filters.material === material;
@@ -300,7 +300,7 @@ function getCategoryFilterSections({
       }),
     },
     {
-      description: "מרכז חזותי: יהלום, פנינה או אבן צבע.",
+      description: "בחירה לפי אבן.",
       title: "אבן",
       options: stoneOptions.map((stone) => {
         const active = filters.stone === stone;
@@ -318,8 +318,8 @@ function getCategoryFilterSections({
       }),
     },
     {
-      description: "טווח מחיר שמחזיק את הבחירה הנוכחית.",
-      title: "טווח מחיר",
+      description: "מחיר שמחזיק את הבחירה הנוכחית.",
+      title: "מחיר",
       options: priceOptions.map((price) => {
         const active = filters.maxPrice === price;
         const count = filterCounts.maxPrices.get(price) ?? 0;

@@ -26,11 +26,11 @@ export default function OfflinePage() {
             className="text-3xl font-semibold tracking-normal sm:text-4xl"
             id="offline-title"
           >
-            אין חיבור זמין כרגע
+            אין חיבור פעיל כרגע
           </h1>
           <p className="text-muted-foreground max-w-xl leading-7">
-            אפשר להמשיך לצפות בעמודים ובתכשיטים שכבר נטענו. סל, קופה, חשבון
-            ותשלום יחזרו לפעולה מלאה כשהחיבור יתחדש.
+            אפשר להמשיך לצפות בעמודים ובתכשיטים שכבר נטענו. הבחירה האישית, סיום
+            ההזמנה, החשבון והתשלום יחזרו לפעולה מלאה כשהחיבור יתחדש.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
@@ -43,7 +43,7 @@ export default function OfflinePage() {
           <Button asChild variant="outline">
             <Link href="/search">
               <Search aria-hidden="true" className="size-4" />
-              קטלוג
+              המבחר
             </Link>
           </Button>
         </div>

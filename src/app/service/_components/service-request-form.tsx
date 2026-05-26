@@ -78,7 +78,7 @@ export function ServiceRequestForm({
         setOfflineState({
           ok: false,
           message:
-            "לא הצלחנו לשמור את הפנייה במצב לא מקוון. השאירו את הקבצים זמינים ונסו שוב כשיש חיבור.",
+            "לא הצלחנו לשמור את הפנייה במצב לא מקוון. השאירו את הקבצים אצלכם ונסו שוב כשיש חיבור.",
         }),
       );
   }
@@ -152,10 +152,10 @@ export function ServiceRequestForm({
         <Field
           defaultValue={defaultProductReference}
           error={state.fieldErrors?.productReference}
-          label="פריט או קישור"
+          label="שם השם התכשיט או קישור"
           name="productReference"
           pending={pending}
-          placeholder="שם פריט, מק״ט או קישור"
+          placeholder="שם תכשיט, מק״ט או קישור"
         />
       </div>
 
@@ -186,7 +186,7 @@ export function ServiceRequestForm({
       </div>
 
       <div className="grid gap-2">
-        <Label htmlFor="message">מה נוכל לבדוק?</Label>
+        <Label htmlFor="message">תיאור הפנייה</Label>
         <FieldError message={state.fieldErrors?.message} />
         <Textarea
           className="min-h-32"
@@ -201,7 +201,7 @@ export function ServiceRequestForm({
       <div className="bg-background grid gap-3 rounded-md border p-3">
         <Label className="flex items-center gap-2" htmlFor="attachments">
           <Paperclip aria-hidden="true" className="size-4" />
-          תמונות או PDF
+          קבצים מצורפים
         </Label>
         <Input
           accept={serviceRequestAcceptedFileTypes.join(",")}
@@ -233,7 +233,7 @@ export function ServiceRequestForm({
         disabled={pending}
         type="submit"
       >
-        שליחת פנייה
+        שליחה
         <Send aria-hidden="true" className="size-4" />
       </Button>
     </form>

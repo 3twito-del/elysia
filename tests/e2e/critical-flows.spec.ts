@@ -11,8 +11,7 @@ const madeToOrderProductSlug = "muse-pearl-earrings";
 const madeToOrderProductName = "עגילי Muse Pearl";
 const searchProductSlug = "venus-line-ring";
 const searchProductName = "טבעת Venus Line";
-const checkoutEmptyTitle =
-  "\u05d4\u05e1\u05dc \u05e9\u05dc\u05da \u05de\u05de\u05ea\u05d9\u05df \u05dc\u05d1\u05d7\u05d9\u05e8\u05d4 \u05d4\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4";
+const checkoutEmptyTitle = "הבחירה שלך ממתינה לתכשיט הראשון";
 const checkoutCatalogCta =
   "\u05d7\u05d6\u05e8\u05d4 \u05dc\u05e7\u05d5\u05dc\u05e7\u05e6\u05d9\u05d4";
 const checkoutAdviceLink =
@@ -89,38 +88,44 @@ test.describe("critical shopping flows", () => {
       );
     }
 
-    await page.getByRole("button", { exact: true, name: "הוספה לסל" }).click();
-    await expect(page.getByText(/נוספה לסל|הפריט נוסף לסל/)).toBeVisible();
+    await page
+      .getByRole("button", { exact: true, name: "צירוף לבחירה" })
+      .click();
+    await expect(
+      page.getByText(/צורפה לבחירה|התכשיט צורף לבחירה/),
+    ).toBeVisible();
     await expect(
       page.locator("a[href='/checkout'] .cart-count-badge"),
     ).toHaveText("1");
 
     await page.goto("/checkout");
 
-    await expect(page.getByRole("heading", { name: /סל וקופה/ })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: /הבחירה שלי/ }),
+    ).toBeVisible();
     await expect(
       page.getByRole("link", { name: new RegExp(cartProductName) }).first(),
     ).toBeVisible();
     await expect(
-      page.getByRole("button", { name: /שמירת הזמנה/ }),
+      page.getByRole("button", { name: /אישור הבחירה/ }),
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: /הוספת כמות עבור/ }),
     ).toBeVisible();
     await expect(page.getByTestId("checkout-progress-steps")).toContainText(
-      "סל",
+      "בחירה",
     );
     await expect(page.getByTestId("checkout-progress-steps")).toContainText(
       "סיכום",
     );
     await expect(page.getByTestId("checkout-line-total").first()).toContainText(
-      "סכום שורה",
+      "סה״כ",
     );
     await expect(
       page.getByTestId("checkout-line-total-amount").first(),
     ).not.toHaveText(zeroShekelPattern);
     await expect(page.getByTestId("checkout-item-count")).toContainText(
-      "סוג פריט",
+      "סוג תכשיט",
     );
     await expect(page.getByTestId("checkout-item-quantity")).toContainText("1");
     await expect(page.getByTestId("checkout-items-price")).not.toHaveText(
@@ -136,7 +141,7 @@ test.describe("critical shopping flows", () => {
       zeroShekelPattern,
     );
     await expect(page.getByTestId("checkout-order-total")).not.toContainText(
-      "בבדיקה",
+      "לאישור",
     );
     await expect(page.locator('[aria-label^="כמות "]')).toContainText("1");
   });
@@ -193,7 +198,7 @@ test.describe("critical shopping flows", () => {
     await page.goto("/search?q=venus");
 
     await expect(
-      page.getByRole("heading", { name: /חיפוש בקטלוג/ }),
+      page.getByRole("heading", { name: /חיפוש במבחר/ }),
     ).toBeVisible();
     const productResultLink = page
       .getByTestId("search-results-grid")
@@ -234,7 +239,7 @@ test.describe("critical shopping flows", () => {
 
     await expect(categoryEmptyState).toBeVisible();
     await expect(
-      categoryEmptyState.getByRole("link", { name: "איפוס פילטרים" }),
+      categoryEmptyState.getByRole("link", { name: "איפוס סינונים" }),
     ).toBeVisible();
 
     await page.goto("/checkout");
@@ -328,7 +333,7 @@ test.describe("critical shopping flows", () => {
 
     await expect(notFoundState).toBeVisible();
     await expect(
-      notFoundState.getByRole("link", { name: "חיפוש בקטלוג" }),
+      notFoundState.getByRole("link", { name: "חיפוש במבחר" }),
     ).toBeVisible();
   });
 
@@ -667,10 +672,10 @@ test.describe("accessibility and responsive guardrails", () => {
     await page.goto("/");
 
     await expect(
-      page.getByRole("search", { name: "חיפוש בקטלוג" }),
+      page.getByRole("search", { name: "חיפוש במבחר" }),
     ).toBeVisible();
     await expect(
-      page.getByRole("textbox", { name: "חיפוש מוצר בקטלוג" }),
+      page.getByRole("textbox", { name: "חיפוש תכשיט במבחר" }),
     ).toBeVisible();
     await expect(
       page.getByRole("button", { exact: true, name: "חיפוש" }),

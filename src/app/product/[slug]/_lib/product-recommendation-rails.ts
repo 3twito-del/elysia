@@ -65,7 +65,7 @@ export function getProductRecommendationRails({
       predicate: () => true,
       product,
       rails,
-      title: "מומלצים מהקטלוג",
+      title: "מומלצים מהמבחר",
       usedSlugs,
     });
   }

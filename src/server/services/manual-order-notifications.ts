@@ -31,7 +31,7 @@ export function createManualOrderCustomerMessage(
   const fulfillmentText =
     input.fulfillmentMethod === "PICKUP"
       ? `תיאום שירות דרך ${input.branchName}`
-      : "משלוח לכתובת שנמסרה";
+      : "מסירה לכתובת שנמסרה";
 
   return {
     to: input.customerEmail,
@@ -39,13 +39,13 @@ export function createManualOrderCustomerMessage(
     subject: `בקשת ההזמנה ${input.orderNumber} התקבלה`,
     body: [
       `${input.customerName} שלום,`,
-      `בקשת ההזמנה שלך ב-Elysia התקבלה ונשמרה לטיפול נציג.`,
+      `בקשת ההזמנה שלך ב-Elysia התקבלה ונשמרה לטיפול אישי.`,
       `מספר הזמנה: ${input.orderNumber}`,
-      `פריט: ${input.productName}`,
+      `תכשיט: ${input.productName}`,
       `כמות: ${input.quantity}`,
       `סכום לתשלום באישור ידני: ${formatManualOrderAmount(input.total)}`,
       `אופן קבלה: ${fulfillmentText}`,
-      `המלאי נשמר עד ${formatHebrewDateTime(input.reservationExpiresAt)}.`,
+      `התכשיטים נשמרו עד ${formatHebrewDateTime(input.reservationExpiresAt)}.`,
       `צוות Elysia יחזור אליך לאישור סופי והמשך טיפול.`,
     ].join("\n\n"),
   };
@@ -63,14 +63,14 @@ export function createManualOrderOperationsMessage(
       `לקוח: ${input.customerName}`,
       `אימייל: ${input.customerEmail}`,
       `טלפון: ${input.customerPhone}`,
-      `פריט: ${input.productName}`,
+      `תכשיט: ${input.productName}`,
       `SKU: ${input.sku}`,
       `כמות: ${input.quantity}`,
       `סכום: ${formatManualOrderAmount(input.total)}`,
       `ערוץ שירות: ${input.branchName}`,
       `טלפון שירות: ${input.branchPhone}`,
       `Fulfillment: ${input.fulfillmentMethod}`,
-      `שמירת מלאי עד: ${input.reservationExpiresAt.toISOString()}`,
+      `שמירת התכשיטים עד: ${input.reservationExpiresAt.toISOString()}`,
     ].join("\n"),
   };
 }

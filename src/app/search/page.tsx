@@ -69,7 +69,7 @@ const SEARCH_RESULT_IMAGE_BLUR_DATA_URL =
   "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='10'%20height='8'%20viewBox='0%200%2010%208'%3E%3Crect%20width='10'%20height='8'%20fill='%23eef6f7'/%3E%3C/svg%3E";
 
 export const metadata = {
-  title: "חיפוש",
+  title: "חיפוש במבחר",
 };
 
 export const dynamic = "force-dynamic";
@@ -111,8 +111,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     result.total > 0
       ? `עמוד ${result.page} מתוך ${result.totalPages} · ${result.perPage} תוצאות בעמוד`
       : recoveryActions.length > 0
-        ? "נמצאו דרכי הרחבה עם תוצאות זמינות"
-        : "אפשר לנקות בחירות או לעבור לקטלוג המלא";
+        ? "נמצאו כיוונים פתוחים יותר"
+        : "אפשר לנקות בחירות או לעבור למבחר המלא";
   after(() => recordSearchEvent(input, result.total));
 
   return (
@@ -121,9 +121,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
       <main>
         <CommercePageHero
-          description="חיפוש קטלוג עם סינון לפי קטגוריה, חומר, אבן, טווח מחיר וזמינות."
-          eyebrow="קטלוג Elysia"
-          title="חיפוש בקטלוג"
+          description="חיפוש במבחר עם סינון לפי קטגוריה, חומר, אבן, מחיר ורלוונטיות."
+          eyebrow="מבחר Elysia"
+          title="חיפוש במבחר"
           variant="catalog"
         />
         <RevealSection
@@ -141,7 +141,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
           {hasActiveFilters ? (
             <div
-              aria-label="פילטרים פעילים"
+              aria-label="סינונים פעילים"
               className="mt-4 flex flex-wrap items-center gap-2 text-sm"
             >
               {activeFilters.map((filter) => (
@@ -154,7 +154,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                   <Link href={filter.href} scroll={false}>
                     <span>{filter.label}</span>
                     <X aria-hidden="true" className="size-3" />
-                    <span className="sr-only">הסרת פילטר</span>
+                    <span className="sr-only">הסרת סינון</span>
                   </Link>
                 </Badge>
               ))}
@@ -182,7 +182,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                     ? `עבור "${input.query}"`
                     : hasActiveFilters
                       ? "לפי הבחירה הפעילה"
-                      : "כל התכשיטים שנמצאו בקטלוג"}
+                      : "כל התוצאות במבחר."}
                 </p>
                 <p
                   className="text-muted-foreground mt-1 text-xs"
@@ -236,8 +236,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               className="mt-6 sm:mt-10"
               description={
                 <>
-                  אפשר לנקות את הבחירה, לעבור לקטגוריה פתוחה, או להרחיב את
-                  החיפוש בכל הקטלוג.
+                  אפשר לנקות את הבחירה, לעבור למשפחת תכשיטים פתוחה, או להרחיב את
+                  החיפוש בכל המבחר.
                 </>
               }
               icon={Search}
@@ -294,9 +294,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                   <SearchResultListItem
                     imagePriority={index < 2}
                     key={product.slug}
-                    matchReason={
-                      result.hitMetaBySlug[product.slug]?.matchReason
-                    }
                     product={product}
                     searchContext={{
                       position: (result.page - 1) * result.perPage + index,
@@ -325,9 +322,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                     imagePriority={index < 4}
                     imageSizes="(min-width: 1280px) 18rem, (min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                     key={product.slug}
-                    matchReason={
-                      result.hitMetaBySlug[product.slug]?.matchReason
-                    }
                     product={product}
                     searchContext={{
                       position: (result.page - 1) * result.perPage + index,
@@ -401,7 +395,7 @@ function SearchViewToggle({
     {
       href: createSearchHref({ ...input, page: undefined, view: "grid" }),
       icon: Grid2X2,
-      label: "גריד",
+      label: "תמונות",
       value: "grid" as const,
     },
     {
@@ -449,12 +443,10 @@ function SearchViewToggle({
 
 function SearchResultListItem({
   imagePriority,
-  matchReason,
   product,
   searchContext,
 }: {
   imagePriority?: boolean;
-  matchReason?: string;
   product: CatalogProduct;
   searchContext?: {
     query?: string;
@@ -472,21 +464,12 @@ function SearchResultListItem({
   const isAvailable = commerceStatus.canAddToCart;
   const isUnavailable =
     product.availabilityMode === "READY_TO_ORDER" && !isAvailable;
-  const compareAt =
-    typeof product.compareAt === "number" && product.compareAt > product.price
-      ? product.compareAt
-      : undefined;
-  const discountPercent = compareAt
-    ? Math.round(((compareAt - product.price) / compareAt) * 100)
-    : undefined;
   const href = createProductSearchHref(product.slug, searchContext);
-  const commerceHighlights = (product.commerceHighlights ?? []).slice(0, 2);
-  const productDetails = [
-    product.categoryName,
-    product.material,
-    product.stone,
-    product.collection,
-  ].filter((detail): detail is string => Boolean(detail));
+  const productDetails = [product.material, product.stone].filter(
+    (detail): detail is string => Boolean(detail),
+  );
+  const shouldShowAvailability =
+    isUnavailable || product.availabilityMode !== "READY_TO_ORDER";
 
   return (
     <Link
@@ -510,47 +493,23 @@ function SearchResultListItem({
           sizes="(min-width: 1024px) 14rem, (min-width: 768px) 28vw, 100vw"
           src={product.image}
         />
-        {discountPercent || isUnavailable ? (
+        {isUnavailable ? (
           <div className="absolute top-2.5 left-2.5 flex items-start gap-2">
-            {discountPercent ? (
-              <Badge className="font-semibold" dir="ltr" variant="default">
-                -{discountPercent}%
-              </Badge>
-            ) : isUnavailable ? (
-              <Badge variant="destructive">לא זמין</Badge>
-            ) : null}
+            <Badge variant="destructive">לא פנוי כרגע</Badge>
           </div>
         ) : null}
       </div>
 
       <div className="grid min-w-0 gap-4 py-[var(--ui-card-padding)] md:grid-cols-[minmax(0,1fr)_minmax(11rem,auto)] md:pe-[var(--ui-card-padding)]">
         <div className="min-w-0">
-          <div className="mb-2 flex flex-wrap gap-2">
-            <Badge variant="outline">{product.categoryName}</Badge>
-            {product.material ? (
-              <Badge variant="secondary">{product.material}</Badge>
-            ) : null}
-          </div>
           <h3
             className="group-hover/list:text-muted-foreground group-focus-visible/list:text-muted-foreground line-clamp-2 text-lg leading-7 font-medium transition-colors duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)]"
             dir="auto"
           >
             {product.name}
           </h3>
-          <p className="text-muted-foreground mt-2 line-clamp-2 text-sm leading-6">
-            {product.shortDescription}
-          </p>
-          {matchReason ? (
-            <p
-              className="text-muted-foreground mt-2 inline-flex max-w-full items-center gap-1.5 rounded-md border border-[var(--glass-border)] bg-[var(--glass-inset-bg)] px-2.5 py-1.5 text-xs"
-              data-testid="search-result-match-reason"
-            >
-              <Sparkles aria-hidden="true" className="size-3.5 shrink-0" />
-              <span className="truncate">{matchReason}</span>
-            </p>
-          ) : null}
           <div
-            className="text-muted-foreground mt-3 flex min-h-5 flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-5"
+            className="text-muted-foreground mt-2 flex min-h-5 flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-5"
             data-testid="search-result-list-attributes"
           >
             {productDetails.map((detail, index) => (
@@ -567,46 +526,30 @@ function SearchResultListItem({
               </span>
             ))}
           </div>
-          {commerceHighlights.length > 0 ? (
-            <ul className="text-muted-foreground mt-3 flex flex-wrap gap-2 text-xs">
-              {commerceHighlights.map((highlight) => (
-                <li
-                  className="rounded-md border border-[var(--glass-border)] bg-[var(--glass-inset-bg)] px-2.5 py-1"
-                  key={highlight}
-                >
-                  {highlight}
-                </li>
-              ))}
-            </ul>
-          ) : null}
         </div>
 
         <div className="grid content-between gap-3 md:min-w-44 md:text-end">
           <div>
-            <p className="text-muted-foreground text-xs">מחיר</p>
-            {compareAt ? (
-              <span className="text-muted-foreground mt-1 block text-xs line-through">
-                {formatPrice(compareAt)}
-              </span>
-            ) : null}
             <span className="block text-xl leading-7 font-semibold">
               {formatPrice(product.price)}
             </span>
-            <span
-              className={cn(
-                "mt-2 inline-flex max-w-full items-center gap-1.5 rounded-md border border-[var(--glass-border)] px-2.5 py-1.5 text-xs",
-                isAvailable ? "text-muted-foreground" : "text-foreground",
-              )}
-            >
+            {shouldShowAvailability ? (
               <span
-                aria-hidden="true"
                 className={cn(
-                  "size-2 shrink-0 rounded-full",
-                  isAvailable ? "bg-emerald-500" : "bg-muted-foreground",
+                  "mt-2 inline-flex max-w-full items-center gap-1.5 rounded-md border border-[var(--glass-border)] px-2.5 py-1.5 text-xs",
+                  isAvailable ? "text-muted-foreground" : "text-foreground",
                 )}
-              />
-              <span className="truncate">{commerceStatus.label}</span>
-            </span>
+              >
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    "size-2 shrink-0 rounded-full",
+                    isAvailable ? "bg-emerald-500" : "bg-muted-foreground",
+                  )}
+                />
+                <span className="truncate">{commerceStatus.label}</span>
+              </span>
+            ) : null}
           </div>
         </div>
       </div>
@@ -700,7 +643,7 @@ function getActiveSearchFilters(
   if (input.availableOnly) {
     filters.push({
       key: "availableOnly",
-      label: "זמין במלאי",
+      label: "זמין",
       href: createSearchHref({
         ...hrefInput,
         availableOnly: undefined,
@@ -757,10 +700,10 @@ async function getSearchRecoveryActions(
 
     candidates.push({
       description:
-        "שומר את מילת החיפוש ומסיר קטגוריה, חומר, אבן, טווח מחיר ומיון.",
+        "שומר את מילת החיפוש ומסיר משפחת תכשיט, חומר, אבן, מחיר ומיון.",
       href: createSearchHref({ ...queryOnlyInput, view: viewMode }),
       input: queryOnlyInput,
-      label: "ניקוי פילטרים",
+      label: "ניקוי סינונים",
     });
   }
 
@@ -787,10 +730,10 @@ async function getSearchRecoveryActions(
     };
 
     candidates.push({
-      description: "פותח את כל פריטי הקטלוג ללא חיפוש ופילטרים.",
+      description: "פותח את המבט המלא על המבחר, בלי חיפוש וסינונים.",
       href: createSearchHref({ ...allCatalogInput, view: viewMode }),
       input: allCatalogInput,
-      label: "כל הקטלוג",
+      label: "כל המבחר",
     });
   }
 
@@ -915,8 +858,8 @@ function SearchPagination({
 }
 
 function getSortLabel(sort: NonNullable<ProductSearchInput["sort"]>) {
-  if (sort === "price-asc") return "מחיר עולה";
-  if (sort === "price-desc") return "מחיר יורד";
+  if (sort === "price-asc") return "מחיר: נמוך לגבוה";
+  if (sort === "price-desc") return "מחיר: גבוה לנמוך";
   if (sort === "newest") return "חדש";
   if (sort === "popular") return "פופולרי";
 
@@ -924,7 +867,7 @@ function getSortLabel(sort: NonNullable<ProductSearchInput["sort"]>) {
 }
 
 function getSearchViewLabel(viewMode: SearchViewMode) {
-  return viewMode === "list" ? "רשימה" : "גריד";
+  return viewMode === "list" ? "רשימה" : "תמונות";
 }
 
 function formatSearchResultCount(count: number) {

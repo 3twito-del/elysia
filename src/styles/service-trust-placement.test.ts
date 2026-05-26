@@ -49,7 +49,7 @@ describe("commerce service trust placement", () => {
     expect(productPage).not.toContain("value: commerceStatus.label");
     expect(purchasePanel).not.toContain("<Badge");
     expect(purchasePanel).toContain(
-      'selectedVariant ? commerceStatus.label : "בדיקת זמינות"',
+      'selectedVariant ? commerceStatus.label : "בירור התאמה"',
     );
     expect(
       countOccurrences(purchasePanel, "selectedVariant ? commerceStatus.label"),
@@ -98,10 +98,10 @@ describe("commerce service trust placement", () => {
     expect(footer).toContain('href: "/faq"');
     expect(footer).toContain("שאלות ותשובות");
     expect(footer).not.toContain("שאלות נפוצות");
-    expect(footer).toContain('title="קטלוג"');
+    expect(footer).toContain('title="הקולקציה"');
     expect(footer).toContain('title="שירות והזמנה"');
     expect(footer).toContain('title="מידע"');
-    expect(countOccurrences(footer, 'title="קטלוג"')).toBe(1);
+    expect(countOccurrences(footer, 'title="הקולקציה"')).toBe(1);
     expect(countOccurrences(footer, 'title="שירות והזמנה"')).toBe(1);
     expect(countOccurrences(footer, 'title="מידע"')).toBe(1);
     expect(countOccurrences(footer, 'href: "/search"')).toBe(1);

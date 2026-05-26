@@ -120,8 +120,8 @@ export function ProductPurchasePanel({
       setCartMessageTone("success");
       setCartMessage(
         addedVariant?.size
-          ? `${addedVariant.size} נוספה לסל`
-          : "הפריט נוסף לסל",
+          ? `${addedVariant.size} צורפה לבחירה`
+          : "התכשיט צורף לבחירה",
       );
       dispatchCartUpdated();
     },
@@ -208,23 +208,19 @@ export function ProductPurchasePanel({
     })
       .then(() => {
         setCartMessageTone("success");
-        setCartMessage(
-          "׳”׳₪׳¨׳™׳˜ ׳ ׳©׳׳¨ ׳׳¡׳ ׳›׳¨׳•׳ ׳•׳™׳×׳•׳•׳¡׳£ ׳׳¡׳ ׳›׳©׳”׳—׳™׳‘׳•׳¨ ׳™׳×׳—׳“׳©.",
-        );
+        setCartMessage("התכשיט נשמר לסנכרון ויצורף לבחירה כשהחיבור יתחדש.");
         dispatchCartUpdated();
       })
       .catch(() => {
         setCartMessageTone("error");
-        setCartMessage(
-          "׳׳ ׳”׳¦׳׳—׳ ׳• ׳׳©׳׳•׳¨ ׳׳× ׳”׳₪׳¢׳•׳׳” ׳‘׳׳¦׳‘ ׳׳ ׳׳§׳•׳•׳.",
-        );
+        setCartMessage("לא הצלחנו לשמור את הבחירה במצב לא מקוון.");
       });
   }
 
   function handleAddToCart() {
     if (!selectedVariant || !selectedVariantAvailable) {
       setCartMessageTone("error");
-      setCartMessage("הפריט זמין דרך שירות הלקוחות לפני הזמנה.");
+      setCartMessage("התכשיט פתוח דרך השירות האישי לפני הזמנה.");
       return;
     }
 
@@ -238,12 +234,12 @@ export function ProductPurchasePanel({
       })
         .then(() => {
           setCartMessageTone("success");
-          setCartMessage("הפריט נשמר לסנכרון ויתווסף לסל כשהחיבור יתחדש.");
+          setCartMessage("התכשיט נשמר לסנכרון ויצורף לבחירה כשהחיבור יתחדש.");
           dispatchCartUpdated();
         })
         .catch(() => {
           setCartMessageTone("error");
-          setCartMessage("לא הצלחנו לשמור את הפעולה במצב לא מקוון.");
+          setCartMessage("לא הצלחנו לשמור את הבחירה במצב לא מקוון.");
         });
       return;
     }
@@ -273,17 +269,17 @@ export function ProductPurchasePanel({
         {selectedVariantAvailable ? (
           <Button
             aria-describedby="product-variant-feedback"
-            aria-label={`הוספה לסל: ${productName}`}
+            aria-label={`צירוף לבחירה: ${productName}`}
             className="product-primary-cta order-1"
             disabled={addToCartDisabled}
             onClick={handleAddToCart}
             type="button"
           >
             {addItem.isPending
-              ? "הוספה לסל"
+              ? "צירוף לבחירה"
               : selectedVariantAvailable
-                ? "הוספה לסל"
-                : "לא זמין"}
+                ? "צירוף לבחירה"
+                : "לא פנוי כרגע"}
             <PackageCheck aria-hidden="true" className="size-4" />
           </Button>
         ) : (
@@ -319,7 +315,7 @@ export function ProductPurchasePanel({
               <p className="text-muted-foreground mt-1 text-sm">
                 {selectedVariant
                   ? getVariantDisplayName(selectedVariant)
-                  : "אין וריאציה זמינה"}
+                  : "אין התאמה פנויה"}
               </p>
             </div>
           </div>
@@ -355,7 +351,7 @@ export function ProductPurchasePanel({
           >
             <span className="flex items-center gap-1.5">
               <PackageCheck className="size-4" aria-hidden="true" />
-              {selectedVariant ? commerceStatus.label : "בדיקת זמינות"}
+              {selectedVariant ? commerceStatus.label : "בירור התאמה"}
             </span>
           </div>
           {savedSizeMatch ? (
@@ -378,11 +374,11 @@ export function ProductPurchasePanel({
               <p className="text-muted-foreground mt-1">
                 {savedSizeMatch.exact
                   ? savedSizeMatch.available
-                    ? "בחרנו עבורך את הווריאנט המתאים."
-                    : "הווריאנט במידה הזו אינו זמין כרגע."
+                    ? "בחרנו עבורך את המידה המתאימה."
+                    : "המידה הזו אינה פנויה כרגע."
                   : savedSizeMatch.available
-                    ? "בחרנו עבורך את הווריאנט הקרוב ביותר שזמין עכשיו."
-                    : "המידה הקרובה ביותר אינה זמינה כרגע."}
+                    ? "בחרנו עבורך את המידה הקרובה ביותר שפנויה עכשיו."
+                    : "המידה הקרובה ביותר אינה פנויה כרגע."}
               </p>
             </div>
           ) : null}
@@ -399,10 +395,10 @@ export function ProductPurchasePanel({
               type="button"
             >
               {addItem.isPending
-                ? "הוספה לסל"
+                ? "צירוף לבחירה"
                 : selectedVariantAvailable
-                  ? "הוספה לסל"
-                  : "לא זמין"}
+                  ? "צירוף לבחירה"
+                  : "לא פנוי כרגע"}
               <PackageCheck aria-hidden="true" className="size-4" />
             </Button>
           ) : (
@@ -423,7 +419,7 @@ export function ProductPurchasePanel({
           </WishlistButton>
           {!selectedVariantAvailable ? (
             <PushOptInButton
-              label="עדכנו אותי כשחוזר למלאי"
+              label="עדכנו אותי כשהוא פנוי לבחירה"
               marketing
               productSlug={productSlug}
             />
@@ -431,7 +427,7 @@ export function ProductPurchasePanel({
         </div>
 
         <div
-          aria-label="אמון ושירות בהזמנה"
+          aria-label="שירות ואישור בהזמנה"
           className="grid gap-2"
           data-testid="product-commerce-trust"
         >
@@ -441,9 +437,9 @@ export function ProductPurchasePanel({
               className="mt-0.5 size-4 shrink-0"
             />
             <div className="min-w-0">
-              <p className="font-medium">אימות לפני חיוב</p>
+              <p className="font-medium">אישור לפני השלמה</p>
               <p className="text-muted-foreground mt-0.5 leading-5">
-                נציג יאשר פרטי מידה, מלאי ומסירה לפני השלמת התהליך.
+                פרטים מאומתים לפני הזמנה.
               </p>
             </div>
           </div>
@@ -452,7 +448,7 @@ export function ProductPurchasePanel({
             <div className="min-w-0">
               <p className="font-medium">החלפות והחזרות</p>
               <p className="text-muted-foreground mt-0.5 leading-5">
-                החזרה או החלפה מתואמת עם שירות הלקוחות לפי מדיניות האתר.
+                החזרה או החלפה בתיאום אישי לפי מדיניות Elysia.
               </p>
             </div>
           </div>
@@ -474,7 +470,7 @@ export function ProductPurchasePanel({
             </StatusMessage>
             {cartMessageTone === "success" ? (
               <Button asChild size="sm" variant="secondary">
-                <Link href="/checkout">מעבר לסל</Link>
+                <Link href="/checkout">לסיכום הבחירה</Link>
               </Button>
             ) : null}
           </div>
@@ -500,7 +496,7 @@ export function ProductPurchasePanel({
               ))
             ) : (
               <span className="text-muted-foreground text-sm">
-                לפי הווריאציה הזמינה
+                לפי ההתאמה הפנויה
               </span>
             )}
           </div>

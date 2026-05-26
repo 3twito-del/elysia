@@ -25,7 +25,7 @@ export default async function AccessibilityPage() {
       <SiteHeader />
 
       <CommercePageHero
-        description="אנחנו פועלים להנגיש את האתר והשירותים הדיגיטליים כך שיהיו זמינים, ברורים ונוחים לשימוש."
+        description="אנחנו פועלים להנגיש את האתר והשירות כך שיהיו זמינים, ברורים ונוחים לשימוש."
         eyebrow="נגישות"
         title="הצהרת נגישות"
         variant="content"
@@ -45,11 +45,11 @@ export default async function AccessibilityPage() {
             </div>
             <p className="text-muted-foreground mt-4 leading-8">
               האתר נבנה במטרה לעמוד בדרישות תקנות שוויון זכויות לאנשים עם
-              מוגבלות (התאמות נגישות לשירות), התשע&quot;ג-2013, ובהתאם לעקרונות
+              מוגבלות (התאמות נגישות לשירות), התשע&quot;ג-2013, ובהתאם למידע ושירות
               תקן ישראלי 5568 המבוסס על הנחיות WCAG 2.0 ברמה AA ככל האפשר.
             </p>
             <p className="text-muted-foreground mt-4 leading-8">
-              לצד זאת, נגישות מלאה מחייבת בדיקה מקצועית שוטפת. אם מצאתם רכיב,
+              לצד זאת, נגישות מלאה מחייבת בחינה מקצועית שוטפת. אם מצאתם רכיב,
               תוכן או תהליך שאינו נגיש, נשמח לקבל פרטים כדי לתקן אותו במהירות.
             </p>
           </section>
@@ -58,7 +58,7 @@ export default async function AccessibilityPage() {
 
           <section aria-labelledby="accessibility-tools">
             <h2 className="text-2xl font-semibold" id="accessibility-tools">
-              התאמות זמינות באתר
+              התאמות נגישות באתר
             </h2>
             <ul className="text-muted-foreground mt-4 grid gap-3 leading-8">
               <li>כפתור נגישות קבוע לפתיחת תפריט התאמות מכל עמוד ציבורי.</li>

@@ -30,55 +30,55 @@ const homeSlides = cinematicRouteMedia.home.slice(0, 1);
 const quickSearchSuggestions = [
   { href: "/search?q=טבעת%20זהב", label: "טבעת זהב" },
   { href: "/search?q=עגילי%20פנינה", label: "עגילי פנינה" },
-  { href: "/search?maxPrice=700", label: "מתנה סביב 700" },
+  { href: "/search?maxPrice=700", label: "מתנה עד 700 ₪" },
   { href: "/search?category=rings", label: "טבעות" },
 ] as const;
 
 const collectionCopy: Record<string, string> = {
-  bracelets: "קווים נקיים לשכבה עדינה על היד.",
-  earrings: "אור קטן סביב הפנים, ליום ולערב.",
-  necklaces: "שרשראות שנבנות בשכבות שקטות.",
-  rings: "טבעות שנשארות קרובות למחווה.",
+  bracelets: "צמידים לענידה יומיומית.",
+  earrings: "עגילים ליום ולערב.",
+  necklaces: "שרשראות לענידה יחידה או בשכבות.",
+  rings: "טבעות ליום ולערב.",
 };
 
 const materialPrinciples = [
   {
-    title: "מתכת שמחזיקה קו",
-    text: "זהב, כסף וגימורים בהירים נבחרים לפי איך שהם פוגשים אור, עור ותנועה.",
+    title: "מתכת",
+    text: "זהב, כסף וגימורים בהירים במבחר עדכני.",
   },
   {
-    title: "אבנים ללא עודף",
-    text: "יהלום, פנינה וזירקון מוצגים במינון שמכבד את הפריט ולא מכסה עליו.",
+    title: "אבנים",
+    text: "יהלומים, פנינים ואבני צבע לפי דגם.",
   },
   {
-    title: "פרופורציה לפני קישוט",
-    text: "כל תכשיט נבחן ביחס ליד, לצוואר או לפנים, כדי להרגיש טבעי ולא מקרי.",
+    title: "מבנה וגימור",
+    text: "מידות, אורך ומשקל מופיעים בפרטי המוצר.",
   },
 ] as const;
 
 const giftRitual = [
   {
-    title: "בחירה",
-    text: "מתחילים ברגע: יום הולדת, תודה, התחלה חדשה או מחווה שקטה.",
+    title: "בחירת מתנה",
+    text: "בחירה לפי אירוע, סגנון וטווח מחיר.",
   },
   {
-    title: "דיוק",
-    text: "בודקים מידה, חומר, טווח מחיר וזמינות לפני שממשיכים להזמנה.",
+    title: "התאמה",
+    text: "ניתן לסנן לפי מידה, חומר וטווח מחיר.",
   },
   {
-    title: "מסירה",
-    text: "האריזה, הברכה והשירות נבנים כחלק מהתכשיט עצמו.",
+    title: "משלוח",
+    text: "אפשרויות אריזה וברכה זמינות במהלך ההזמנה.",
   },
 ] as const;
 
 export const metadata: Metadata = {
-  title: "Maison תכשיטים ישראלי",
+  title: "תכשיטים",
   description:
-    "עמוד הבית של Elysia: סטודיו תכשיטים ישראלי עם קולקציות חתימה, חומריות שקטה, טקס מתנה, ייעוץ אישי ומבחר פריטים אוצרותי.",
+    "עמוד הבית של Elysia: תכשיטים עם קולקציות, חומריות שקטה, מתנות, ייעוץ אישי ומבחר נבחר.",
   openGraph: {
-    title: "Elysia | Maison תכשיטים ישראלי",
+    title: "Elysia | תכשיטים",
     description:
-      "קולקציות תכשיטים מדודות, בחירה דיגיטלית ושירות אישי שנבנים סביב שקט, חומר ודיוק.",
+      "קולקציות תכשיטים מדודות ושירות אישי שנבנים סביב שקט, חומר והתאמה.",
     images: [{ url: "/brand/v2/editorial-home.avif" }],
   },
 };
@@ -132,7 +132,7 @@ export default async function Home() {
             dir="rtl"
           >
             <p className="motion-copy-item text-xs font-medium tracking-normal text-white/78">
-              סטודיו תכשיטים ישראלי
+              תכשיטים
             </p>
             <h1
               className="home-hero-wordmark motion-copy-item mt-4 text-right text-5xl leading-[0.96] font-medium tracking-normal sm:text-7xl lg:text-[6rem]"
@@ -141,11 +141,10 @@ export default async function Home() {
               Elysia
             </h1>
             <p className="motion-copy-item mt-5 max-w-2xl text-xl leading-8 text-white/94 [--motion-copy-delay:90ms] sm:text-3xl sm:leading-10">
-              Maison קטן לתכשיטים שנבחרים בשקט, נענדים לאורך זמן ונשארים קרובים.
+              תכשיטים ליום, לערב ולרגעים מיוחדים.
             </p>
             <p className="motion-copy-item mt-4 max-w-xl text-sm leading-7 text-white/78 [--motion-copy-delay:130ms] sm:text-base sm:leading-8">
-              קולקציות חתימה, חומריות מדודה ושירות אישי לפני הבחירה, בזמן ההזמנה
-              ולאחר המסירה.
+              קולקציות תכשיטים, שירות אישי והזמנה מקוונת.
             </p>
           </div>
         </div>
@@ -162,7 +161,7 @@ export default async function Home() {
               size="lg"
             >
               <Link href="/category/rings">
-                כניסה לקולקציות
+                לקולקציות
                 <ArrowLeft
                   aria-hidden="true"
                   className="home-hero-cta-icon size-4"
@@ -196,12 +195,12 @@ export default async function Home() {
         <CommerceSectionHeader
           action={
             <Button asChild size="sm" variant="outline">
-              <Link href="/search">כל הקולקציה</Link>
+              <Link href="/search">לכל הקולקציות</Link>
             </Button>
           }
-          description="ארבע נקודות כניסה עריכתיות אל הקטלוג, לפי מחווה, חומר וקו."
-          eyebrow="קולקציות חתימה"
-          title="לא מתחילים בפריט. מתחילים בתחושה."
+          description="טבעות, שרשראות, עגילים וצמידים במבחר אחד."
+          eyebrow="קולקציות"
+          title="מבחר לפי קטגוריה"
         />
         <RevealGrid
           className="grid grid-cols-2 gap-2.5 sm:gap-x-4 sm:gap-y-6 lg:grid-cols-4"
@@ -258,7 +257,7 @@ export default async function Home() {
         <div className="mx-auto grid max-w-7xl gap-8 px-[var(--ui-page-x)] py-[var(--ui-section-y)] sm:px-[var(--ui-page-x-wide)] lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center">
           <div className="bg-muted relative min-h-[22rem] overflow-hidden rounded-md sm:min-h-[28rem]">
             <Image
-              alt="תכשיטי זהב ופנינים על זכוכית אקווה בתאורת סטודיו"
+              alt="תכשיטי זהב ופנינים על זכוכית אקווה בתאורה רכה"
               className="media-color-rich object-cover"
               fill
               sizes="(min-width: 1024px) 48vw, 100vw"
@@ -267,9 +266,9 @@ export default async function Home() {
           </div>
           <div className="grid gap-6">
             <CommerceSectionHeader
-              description="היוקרה של Elysia אינה נשענת על עודף. היא נשענת על משקל נכון, מפגש אור עדין והבטחה שהפריט יישאר שימושי גם אחרי הרגע הראשון."
-              eyebrow="אומנות וחומרים"
-              title="חומר, אור ופרופורציה לפני כל דבר אחר."
+              description="כל פריט מוצג לפי חומר, גימור, מידה ושימוש."
+              eyebrow="חומרים"
+              title="חומרים, גימור ונוכחות"
             />
             <div className="grid gap-4">
               {materialPrinciples.map((item) => (
@@ -292,13 +291,13 @@ export default async function Home() {
         <div className="mx-auto grid max-w-7xl gap-8 px-[var(--ui-page-x)] py-[var(--ui-section-y)] sm:px-[var(--ui-page-x-wide)] lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-start">
           <div>
             <CommerceSectionHeader
-              description="מתנה טובה אינה צריכה להיות רועשת. היא צריכה להגיע בזמן הנכון, בגודל הנכון, עם מספיק שקט כדי לזכור אותה."
-              eyebrow="טקס מתנה"
-              title="מחשבה קטנה שמגיעה עטופה בדיוק."
+              description="מבחר מתנות לפי קטגוריה, חומר וטווח מחיר."
+              eyebrow="מתנות"
+              title="מתנות תכשיטים"
             />
             <Button asChild className="mt-6" variant="outline">
               <Link href="/gifts">
-                מתנות תכשיטים
+                למתנות
                 <PackageCheck aria-hidden="true" className="size-4" />
               </Link>
             </Button>
@@ -329,14 +328,14 @@ export default async function Home() {
         <div className="mx-auto grid max-w-7xl gap-8 px-[var(--ui-page-x)] py-[var(--ui-section-y)] sm:px-[var(--ui-page-x-wide)] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center">
           <div className="grid gap-6">
             <CommerceSectionHeader
-              description="כשמידה, שכבות, מתנה או חומר דורשים עוד עין, הייעוץ האישי נכנס בשקט. לא כדי לבחור במקומך, אלא כדי לדייק את הבחירה שכבר התחילה."
+              description="שירות אישי זמין לשאלות על מידה, חומר, מתנה או התאמה."
               eyebrow="ייעוץ אישי"
-              title="עין נוספת לפני החלטה קטנה וחשובה."
+              title="עזרה בבחירה"
             />
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Button asChild>
                 <Link href="/stylist">
-                  התחלת ייעוץ אישי
+                  לייעוץ אישי
                   <MessageCircle aria-hidden="true" className="size-4" />
                 </Link>
               </Button>
@@ -364,13 +363,13 @@ export default async function Home() {
       >
         <div className="mx-auto grid max-w-7xl gap-4 px-[var(--ui-page-x)] py-5 sm:px-[var(--ui-page-x-wide)] sm:py-6 lg:grid-cols-[minmax(15rem,0.7fr)_minmax(0,1.9fr)] lg:items-center">
           <div className="min-w-0">
-            <p className="text-muted-foreground text-sm">חיפוש שקט</p>
-            <h2 className="text-2xl font-medium">אם כבר יודעים מה מחפשים.</h2>
+            <p className="text-muted-foreground text-sm">חיפוש</p>
+            <h2 className="text-2xl font-medium">חיפוש במבחר</h2>
           </div>
           <div className="grid min-w-0 gap-3">
             <form
               action="/search"
-              aria-label="חיפוש בקטלוג"
+              aria-label="חיפוש במבחר"
               className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]"
               data-testid="home-quick-search-form"
               role="search"
@@ -381,10 +380,10 @@ export default async function Home() {
                   className="text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2"
                 />
                 <Input
-                  aria-label="חיפוש פריט בקטלוג"
+                  aria-label="חיפוש תכשיט במבחר"
                   className="bg-background h-[3.25rem] rounded-md border-[var(--glass-border)] pr-11 pl-3 text-sm shadow-none focus-visible:border-[var(--glass-border-strong)]"
                   name="q"
-                  placeholder="טבעת זהב, עגילי פנינה, מתנה סביב 700..."
+                  placeholder="טבעת זהב, עגילי פנינה, מתנה עד 700 ₪..."
                 />
               </div>
               <Button className="h-[3.25rem] gap-2 px-5" type="submit">
@@ -417,14 +416,14 @@ export default async function Home() {
             action={
               <Button asChild size="sm" variant="outline">
                 <Link href="/search">
-                  צפייה במבחר המלא
+                  למבחר המלא
                   <Gem aria-hidden="true" className="size-4" />
                 </Link>
               </Button>
             }
-            description="מעט פריטים, מספיק כיוון. מבחר שמראה את היד של הסטודיו לפני שהוא מציג את כל המדף."
-            eyebrow="מבחר אוצרותי"
-            title="פריטים שנבחרו לפתוח איתם את הדלת."
+            description="מבחר ראשוני מתוך הקולקציה."
+            eyebrow="מבחר נבחר"
+            title="פריטים נבחרים"
           />
           <RevealGrid
             className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"

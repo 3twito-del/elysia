@@ -62,7 +62,7 @@ function validateDeliveryAddressForSchema(
 
   context.addIssue({
     code: z.ZodIssueCode.custom,
-    message: "כתובת משלוח נדרשת להזמנת משלוח.",
+    message: "כתובת מסירה נדרשת לבחירה במסירה עד הבית.",
     path: ["shippingAddress"],
   });
 }
@@ -96,7 +96,7 @@ export function assertCartReservationAvailable(input: {
   if (!canReserveStock(input)) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "אין מספיק מלאי זמין לשמירת כל הפריטים.",
+      message: "הבחירה אינה פנויה במלואה לשמירה.",
     });
   }
 }
@@ -107,15 +107,13 @@ export function assertCartCheckoutPricesAvailable(
   const hasUnavailablePrice = items.some((item) => {
     const unitPrice = Number(item.unitPrice);
 
-    return (
-      item.quantity <= 0 || !Number.isFinite(unitPrice) || unitPrice <= 0
-    );
+    return item.quantity <= 0 || !Number.isFinite(unitPrice) || unitPrice <= 0;
   });
 
   if (hasUnavailablePrice) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "מחיר אחד הפריטים דורש בדיקה לפני שמירת ההזמנה.",
+      message: "אחד המחירים דורש אישור אישי לפני השלמת ההזמנה.",
     });
   }
 }
@@ -141,7 +139,7 @@ async function createCartCheckoutOrderInTransaction(
   if (cart.items.length === 0) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "הסל שלך עדיין ריק.",
+      message: "הבחירה שלך עדיין ריקה.",
     });
   }
 
@@ -199,7 +197,7 @@ async function createCartCheckoutOrderInTransaction(
     if (!inventoryItem) {
       throw new TRPCError({
         code: "BAD_REQUEST",
-        message: `המלאי עבור ${item.variant.product.name} אינו זמין כרגע.`,
+        message: `${item.variant.product.name} אינו פנוי כרגע לבחירה.`,
       });
     }
 
@@ -265,7 +263,7 @@ async function createCartCheckoutOrderInTransaction(
     if (reserved.count !== 1) {
       throw new TRPCError({
         code: "CONFLICT",
-        message: "המלאי השתנה בזמן יצירת ההזמנה. נסו שוב.",
+        message: "מצב הבחירה השתנה בזמן יצירת ההזמנה. נסו שוב.",
       });
     }
 
@@ -408,7 +406,7 @@ async function resolveOnlineFulfillmentBranch(
 
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "מקור המלאי שנבחר לא נמצא.",
+      message: "מקור ההתאמה שנבחר לא נמצא.",
     });
   }
 
@@ -446,7 +444,7 @@ async function resolveOnlineFulfillmentBranch(
 
   throw new TRPCError({
     code: "BAD_REQUEST",
-    message: "אין מספיק מלאי זמין לשמירת ההזמנה.",
+    message: "הבחירה אינה פנויה במלואה לשמירה.",
   });
 }
 
@@ -466,7 +464,7 @@ async function getActiveCheckoutCart(
   if (!cart) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "לא נמצא סל פעיל לקופה.",
+      message: "לא נמצאה בחירה פעילה לסיום ההזמנה.",
     });
   }
 
@@ -482,7 +480,7 @@ async function resolveCoupon(
   if (rawCode && !coupon) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "קוד הקופון אינו תקף להזמנה הזו.",
+      message: "קוד ההטבה אינו תקף להזמנה הזו.",
     });
   }
 

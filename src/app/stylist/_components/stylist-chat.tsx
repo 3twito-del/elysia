@@ -39,9 +39,9 @@ import type { AiRecommendedProductInput } from "~/lib/ai-product-recommendations
 import { cn } from "~/lib/utils";
 
 const suggestions = [
-  "מתנה לאמא סביב 700 ש״ח בסגנון עדין",
-  "טבעת זהב צהוב שמתאימה לענידה יומיומית",
-  "עגילים עדינים לכלה, בלי תחושה כבדה",
+  "מתנה עד 700 ₪",
+  "טבעת זהב צהוב ליום־יום",
+  "עגילים עדינים לכלה",
 ];
 
 type StylistChatProps = {
@@ -84,7 +84,7 @@ export function StylistChat({ compact = false }: StylistChatProps) {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="grid gap-2">
               <Badge className="w-fit" variant="secondary">
-                סטייליסט Elysia
+                ייעוץ Elysia
               </Badge>
               <div className="grid gap-1">
                 <h2
@@ -93,11 +93,11 @@ export function StylistChat({ compact = false }: StylistChatProps) {
                     compact ? "text-xl" : "text-2xl",
                   )}
                 >
-                  סטייליסט תכשיטים אישי
+                  עזרה בבחירה אישי
                 </h2>
                 <p className="text-muted-foreground max-w-2xl text-sm leading-6">
-                  מאתרים התאמות בקטלוג לפי טווח מחיר, אירוע, חומר וסגנון,
-                  ומציגים את הפריטים עצמם אחרי ההמלצה.
+                  מאתרים התאמות במבחר לפי מחיר, אירוע, חומר וסגנון, ומציגים
+                  את התכשיטים עצמם אחרי ההמלצה.
                 </p>
               </div>
             </div>
@@ -138,10 +138,10 @@ export function StylistChat({ compact = false }: StylistChatProps) {
                     </div>
                     <div className="grid gap-2">
                       <h3 className="text-lg font-semibold">
-                        איך אפשר להתאים לך תכשיט?
+                        מה תרצו למצוא?
                       </h3>
                       <p className="text-muted-foreground text-sm leading-6">
-                        כתבו טווח מחיר, אירוע, סגנון או פריט שמעניין אתכם.
+                        כתבו מחיר, אירוע, סגנון או תכשיט שמעניין אתכם.
                       </p>
                     </div>
                     <div className="flex flex-wrap justify-center gap-2">
@@ -194,9 +194,9 @@ export function StylistChat({ compact = false }: StylistChatProps) {
                     className="mt-0.5 size-5 shrink-0"
                   />
                   <div className="grid gap-2">
-                    <p className="font-medium">הסטייליסט לא זמין כרגע.</p>
+                    <p className="font-medium">הסטייליסט אינו פתוח כרגע.</p>
                     <p className="text-muted-foreground leading-6">
-                      שירות ההתאמה אינו זמין כרגע. נסו שוב בעוד דקה.
+                      שירות ההתאמה אינו פתוח כרגע. נסו שוב בעוד דקה.
                     </p>
                     <Button
                       className="w-fit"
@@ -235,7 +235,7 @@ export function StylistChat({ compact = false }: StylistChatProps) {
               </PromptInputSubmit>
             </PromptInput>
             <p className="text-muted-foreground mt-3 text-xs leading-5">
-              ההמלצות הן כלי עזר. זמינות, מידה והתאמה סופית יאושרו בקופה.
+              ההמלצות אינן מחליפות בדיקת מידה, זמינות ופרטי הזמנה.
             </p>
           </div>
         </div>
@@ -327,11 +327,11 @@ function SearchCatalogToolResult({
   queryText?: string;
 }) {
   if (part.state === "output-error") {
-    return <StatusMessage tone="error">הקטלוג אינו זמין כרגע.</StatusMessage>;
+    return <StatusMessage tone="error">המבחר אינו פתוח כרגע.</StatusMessage>;
   }
 
   if (part.state !== "output-available") {
-    return <LoadingState label="מאתרים התאמות בקטלוג" variant="inline" />;
+    return <LoadingState label="מאתרים התאמות במבחר" variant="inline" />;
   }
 
   const products = Array.isArray(part.output)
@@ -345,7 +345,7 @@ function SearchCatalogToolResult({
       products={products}
       queryText={queryText}
       source="stylist"
-      title="פריטים שמתאימים לבקשה"
+      title="בחירות שמתאימות לבקשה"
     />
   );
 }
@@ -363,7 +363,7 @@ function SafeActionToolResult({
         <div className="grid gap-1">
           <p className="font-medium">{getToolLabel(part.type)}</p>
           <p className="text-muted-foreground leading-6">
-            פעולה זו דורשת אישור לפני ביצוע.
+            הבחירה הזו דורשת אישור לפני המשך.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -404,20 +404,20 @@ function SafeActionToolResult({
 
   if (part.state === "output-denied") {
     return (
-      <StatusMessage tone="neutral">הפעולה לא בוצעה לאחר דחייה.</StatusMessage>
+      <StatusMessage tone="neutral">הבחירה לא בוצעה לאחר דחייה.</StatusMessage>
     );
   }
 
   if (part.state === "output-error") {
     return (
       <StatusMessage tone="error">
-        לא ניתן היה להשלים את הפעולה כרגע.
+        לא ניתן היה להשלים את הבחירה כרגע.
       </StatusMessage>
     );
   }
 
   if (part.state !== "output-available") {
-    return <LoadingState label="מבצעים פעולה מאובטחת" variant="inline" />;
+    return <LoadingState label="מאשרים בחירה מאובטחת" variant="inline" />;
   }
 
   return (
@@ -429,7 +429,7 @@ function SafeActionToolResult({
 
 function getToolLabel(type: string) {
   if (type === "tool-saveStyleProfile") return "שמירת פרופיל סגנון";
-  if (type === "tool-createTryOnSession") return "פתיחת מדידה וירטואלית";
+  if (type === "tool-createTryOnSession") return "פתיחת מידה";
   if (type === "tool-orderSupport") return "בדיקת הזמנה";
 
   return "פעולת התאמה";
@@ -437,7 +437,7 @@ function getToolLabel(type: string) {
 
 function getToolOutputText(output: unknown) {
   if (typeof output !== "object" || output === null) {
-    return "הפעולה הושלמה.";
+    return "הבחירה הושלמה.";
   }
 
   const record = output as Record<string, unknown>;
@@ -445,7 +445,7 @@ function getToolOutputText(output: unknown) {
     (value): value is string => typeof value === "string" && value.length > 0,
   );
 
-  return parts.length > 0 ? parts.join(" ") : "הפעולה הושלמה.";
+  return parts.length > 0 ? parts.join(" ") : "הבחירה הושלמה.";
 }
 
 function getNearestUserText(messages: UIMessage[], messageIndex: number) {

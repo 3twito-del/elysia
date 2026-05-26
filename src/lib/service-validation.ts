@@ -31,7 +31,7 @@ export const maxServiceRequestFileBytes = 10 * 1024 * 1024;
 const requiredText = (message: string, maxLength: number) =>
   z.string().trim().min(1, message).max(maxLength, "הטקסט ארוך מדי.");
 
-const requiredId = (message = "חסר מזהה לביצוע הפעולה.") =>
+const requiredId = (message = "חסר פרט לביצוע הבקשה.") =>
   z.string().trim().min(1, message).max(128, "המזהה ארוך מדי.");
 
 const email = z
@@ -52,7 +52,7 @@ export const publicServiceRequestInputSchema = z.object({
   phone,
   email,
   orderNumber: optionalTrimmedString(80, "מספר ההזמנה ארוך מדי."),
-  productReference: optionalTrimmedString(240, "פרטי הפריט ארוכים מדי."),
+  productReference: optionalTrimmedString(240, "פרטי התכשיט ארוכים מדי."),
   preferredContact: z.enum(serviceContactPreferences).default("ANY"),
   preferredContactTime: optionalTrimmedString(160, "זמן החזרה ארוך מדי."),
   message: requiredText("יש לכתוב בקצרה במה נוכל לעזור.", 2_000),

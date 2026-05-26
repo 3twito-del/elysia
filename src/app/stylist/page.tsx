@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { DeferredStylistChat } from "./_components/deferred-stylist-chat";
 
 export const metadata = {
-  title: "סטייליסט תכשיטים",
+  title: "עזרה בבחירה",
 };
 
 export default function StylistPage() {
@@ -15,10 +15,10 @@ export default function StylistPage() {
     <main>
       <SiteHeader />
       <CommercePageHero
-        description="ייעוץ תכשיטים לפי סגנון, טווח מחיר ואירוע, עם המלצות שנשארות בתוך קטלוג פעיל."
+        description="ייעוץ תכשיטים לפי סגנון, מחיר ואירוע, עם המלצות שנשארות בתוך המבחר הפעיל."
         eyebrow="ייעוץ אישי"
         id="page-hero"
-        title="סטייליסט תכשיטים"
+        title="עזרה בבחירה"
         variant="content"
       />
       <RevealSection
@@ -35,25 +35,25 @@ export default function StylistPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Sparkles aria-hidden="true" className="size-5" />
-                  מה הסטייליסט יודע לעשות
+                  אפשרויות ייעוץ
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-muted-foreground grid gap-3 text-sm leading-7">
-                <p>התאמת מתנה לפי קשר, אירוע, טווח מחיר וסגנון.</p>
-                <p>סינון לפי פריטים זמינים וחומרים מתוך הקטלוג.</p>
-                <p>הכנה למדידה וירטואלית דרך ספק מדידה פנימי.</p>
+                <p>התאמת מתנה לפי קשר, אירוע, מחיר וסגנון.</p>
+                <p>סינון לפי קטגוריה, חומר וזמינות.</p>
+                <p>סיוע ראשוני בבחירת מידה.</p>
               </CardContent>
             </Card>
             <Card className="rounded-md">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <WandSparkles className="size-5" />
-                  מדידה וירטואלית
+                  מידה
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-muted-foreground text-sm leading-7">
-                אפשר לפתוח בקשת מדידה מתמונת פריט או מפרטי מידה, ולקבל הכוונה
-                לפני שמירת ההזמנה.
+                אפשר לפתוח בקשת מדידה מתמונת תכשיט או מפרטי מידה, ולקבל הכוונה
+                לפני אישור הבחירה.
               </CardContent>
             </Card>
           </RevealGrid>

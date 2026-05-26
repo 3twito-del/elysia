@@ -74,7 +74,7 @@ export async function saveWishlistItem(
   if (!parsed.success) {
     return {
       ok: false,
-      message: parsed.error.issues[0]?.message ?? "לא נמצא פריט לשמירה.",
+      message: parsed.error.issues[0]?.message ?? "לא נמצאה בחירה לשמירה.",
     };
   }
 
@@ -83,7 +83,7 @@ export async function saveWishlistItem(
   if (!session?.user?.id || session.user.adminUserId) {
     return {
       ok: false,
-      message: "יש להתחבר לאזור הלקוח כדי לשמור פריט.",
+      message: "יש להתחבר לאזור הלקוח כדי לשמור בחירה.",
     };
   }
 
@@ -112,7 +112,7 @@ export async function saveWishlistItem(
   if (!variant) {
     return {
       ok: false,
-      message: "לא נמצאה וריאציה זמינה לשמירה.",
+      message: "לא נמצאה התאמה פנויה לשמירה.",
     };
   }
 
@@ -138,5 +138,5 @@ export async function saveWishlistItem(
 
   revalidatePath(`/product/${parsed.data.productSlug}`);
   revalidatePath("/account");
-  return { ok: true, message: "הפריט נשמר למועדפים" };
+  return { ok: true, message: "התכשיט נשמר לבחירות השמורות" };
 }

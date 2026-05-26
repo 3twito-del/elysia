@@ -47,12 +47,12 @@ describe("checkout display helpers", () => {
       getFriendlyCheckoutErrorMessage({
         message: "Fixture cart item was not found.",
       }),
-    ).toBe("הפריט כבר לא זמין בסל. רעננו את העמוד ונסו שוב.");
+    ).toBe("הבחירה הזו אינה פנויה כרגע. רעננו את העמוד ונסו שוב.");
 
     expect(
       getFriendlyCheckoutErrorMessage({
-        message: "מחיר אחד הפריטים דורש בדיקה לפני שמירת ההזמנה.",
+        message: "אחד המחירים דורש אישור אישי לפני השלמת ההזמנה.",
       }),
-    ).toBe("מחיר אחד הפריטים דורש בדיקה לפני שמירת ההזמנה.");
+    ).toBe("אחד המחירים דורש אישור אישי לפני השלמת ההזמנה.");
   });
 });

@@ -2,7 +2,7 @@ const orderStatusLabels: Readonly<Record<string, string>> = {
   PENDING_PAYMENT: "ממתין לתשלום",
   PAID: "שולם ידנית",
   PREPARING: "בהכנה",
-  READY_FOR_PICKUP: "מוכן למשלוח",
+  READY_FOR_PICKUP: "מוכן למסירה",
   SHIPPED: "נשלח",
   COMPLETED: "הושלם",
   CANCELLED: "בוטל",
@@ -37,7 +37,7 @@ const shipmentStatusLabels: Readonly<Record<string, string>> = {
 };
 
 const returnStatusLabels: Readonly<Record<string, string>> = {
-  REQUESTED: "בבדיקה",
+  REQUESTED: "בטיפול",
   APPROVED: "אושר",
   REJECTED: "נדחה",
   REFUNDED: "זוכה",
@@ -50,7 +50,7 @@ const integrationStatusLabels: Readonly<Record<string, string>> = {
   "missing-key": "חסר מפתח",
   "missing-email": "חסר אימייל",
   "missing-config": "חסרה הגדרה",
-  "local-dev-fallback": "מצב בדיקה",
+  "local-dev-fallback": "מצב פיתוח",
 };
 
 export type PublicProductAvailabilityMode =
@@ -96,7 +96,7 @@ export function getIntegrationStatusLabel(status: string) {
 }
 
 export function getFulfillmentMethodLabel(method: string) {
-  return method === "PICKUP" ? "אונליין" : "משלוח";
+  return method === "PICKUP" ? "שירות מרחוק" : "מסירה עד הבית";
 }
 
 export function getProductAvailabilityLabel(availableQuantity: number) {
@@ -107,7 +107,7 @@ export function getProductAvailabilityLabel(availableQuantity: number) {
 }
 
 export function getPublicStockStatusLabel(quantity: number) {
-  return quantity > 0 ? "זמין במלאי" : "אזל זמנית";
+  return quantity > 0 ? "זמין" : "לא פנוי כרגע";
 }
 
 export function getPublicProductCommerceStatus({
@@ -129,7 +129,7 @@ export function getPublicProductCommerceStatus({
       canAddToCart: false,
       cardCtaLabel: "תיאום ייעוץ",
       ctaLabel: "תיאום ייעוץ",
-      label: "לתיאום ייעוץ",
+      label: "לייעוץ",
       serviceReason: "consultation",
     } as const;
   }
@@ -137,27 +137,27 @@ export function getPublicProductCommerceStatus({
   if (availableQuantity <= 0) {
     return {
       canAddToCart: false,
-      cardCtaLabel: "בדיקת זמינות",
-      ctaLabel: "בדיקת זמינות",
-      label: "בדיקת זמינות",
+      cardCtaLabel: "בירור התאמה",
+      ctaLabel: "בירור התאמה",
+      label: "בירור התאמה",
       serviceReason: "availability",
     } as const;
   }
 
   return {
     canAddToCart: true,
-    cardCtaLabel: "לפרטי הפריט",
-    ctaLabel: "הוספה לסל",
-    label: "זמין במלאי",
+    cardCtaLabel: "לפרטי התכשיט",
+    ctaLabel: "צירוף לבחירה",
+    label: "זמין",
     serviceReason: "ready",
   } as const;
 }
 
 export function getStockQuantityLabel(quantity: number) {
-  return quantity > 0 ? `${quantity} במלאי` : "לא זמין";
+  return quantity > 0 ? `${quantity} פנויים לבחירה` : "לא פנוי כרגע";
 }
 
-export function getItemCountLabel(count: number, singular = "פריט") {
+export function getItemCountLabel(count: number, singular = "תכשיט") {
   if (count === 1) return `${singular} אחד`;
 
   return `${count} ${singular}ים`;

@@ -16,7 +16,7 @@ export default function manifest(): ExtendedManifest {
     name: "Elysia",
     short_name: "Elysia",
     description:
-      "סטודיו תכשיטים ישראלי עם קטלוג דיגיטלי, שירות אישי והזמנה שקטה.",
+      "בית תכשיטים ישראלי עם קולקציה אוצרותית, שירות אישי והזמנה שקטה.",
     start_url: "/?source=pwa",
     scope: "/",
     lang: "he",
@@ -63,9 +63,9 @@ export default function manifest(): ExtendedManifest {
     ],
     shortcuts: [
       {
-        name: "קטלוג תכשיטים",
-        short_name: "קטלוג",
-        description: "פתיחת קטלוג Elysia",
+        name: "מבחר Elysia",
+        short_name: "המבחר",
+        description: "פתיחת מבחר Elysia",
         url: "/search?source=pwa-shortcut",
         icons: [
           {
@@ -76,9 +76,9 @@ export default function manifest(): ExtendedManifest {
         ],
       },
       {
-        name: "סל וקופה",
-        short_name: "סל",
-        description: "מעבר לסל הקניות",
+        name: "הבחירה שלי",
+        short_name: "הבחירה",
+        description: "מעבר לסיכום הבחירה",
         url: "/checkout?source=pwa-shortcut",
         icons: [
           {
@@ -89,9 +89,9 @@ export default function manifest(): ExtendedManifest {
         ],
       },
       {
-        name: "שירות לקוחות",
+        name: "שירות אישי",
         short_name: "שירות",
-        description: "פתיחת פנייה לשירות",
+        description: "פנייה לשירות לשירות",
         url: "/service?source=pwa-shortcut",
         icons: [
           {
@@ -104,7 +104,7 @@ export default function manifest(): ExtendedManifest {
       {
         name: "מדריך מידות",
         short_name: "מידות",
-        description: "שמירת מידה מקומית להתאמה מהירה",
+        description: "שמירה מקומית להתאמה מהירה",
         url: "/size-guide?source=pwa-shortcut",
         icons: [
           {

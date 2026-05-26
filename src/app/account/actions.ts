@@ -220,7 +220,7 @@ export async function saveCustomerSizeAction(
   if (session?.user?.adminUserId) {
     return {
       ok: false,
-      message: "אזור מידות לקוח זמין ללקוחות בלבד.",
+      message: "אזור המידות האישי מיועד ללקוחות בלבד.",
     };
   }
 
@@ -296,7 +296,7 @@ export async function syncCustomerSavedSizesAction(
   if (session?.user?.adminUserId) {
     return {
       ok: false,
-      message: "אזור מידות לקוח זמין ללקוחות בלבד.",
+      message: "אזור המידות האישי מיועד ללקוחות בלבד.",
     };
   }
 

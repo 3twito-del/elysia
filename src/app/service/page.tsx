@@ -20,9 +20,9 @@ import { Separator } from "~/components/ui/separator";
 import { getPublicServiceProfile } from "~/server/services/service";
 
 export const metadata: Metadata = {
-  title: "שירות לקוחות",
+  title: "שירות אישי",
   description:
-    "שירות דיגיטלי וטלפוני של Elysia להזמנות, תיקונים, החזרות, מידות, פרטיות ונגישות.",
+    "שירות אישי וטלפוני של Elysia להזמנות, תיקונים, החזרות, מידות, פרטיות ונגישות.",
 };
 
 export const dynamic = "force-dynamic";
@@ -31,22 +31,22 @@ const serviceTracks = [
   {
     icon: MessageSquareText,
     title: "פנייה כללית",
-    text: "שאלה על פריט, מתנה, זמינות, משלוח או התאמה לפני הזמנה.",
+    text: "שאלות על תכשיט, מתנה, מידה או הזמנה.",
   },
   {
     icon: Wrench,
-    title: "תיקונים ואחריות",
-    text: "בדיקת מקרה, צירוף תמונות, תיעוד מצב התכשיט ותיאום טיפול המשך.",
+    title: "תיקון ואחריות",
+    text: "פנייה בנושא תיקון, אחריות או בדיקת מוצר.",
   },
   {
     icon: RotateCcw,
     title: "החלפות והחזרות",
-    text: "בקשות החלפה, החזרה או בירור אחרי הזמנה בהתאם למדיניות האתר.",
+    text: "פנייה בנושא החלפה או החזרה לפי מדיניות האתר.",
   },
   {
     icon: Ruler,
-    title: "מידה והתאמה",
-    text: "התייעצות לפני בחירת מידה, פרופורציה, מתנה או התאמה אישית.",
+    title: "מידות",
+    text: "עזרה בבחירת מידה, אורך או התאמה.",
   },
 ] as const;
 
@@ -69,9 +69,9 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
       <SiteHeader />
 
       <CommercePageHero
-        description="שירות Elysia פועל אונליין ובטלפון בלבד: הזמנות, תיקונים, התאמת מידה, החזרות, נגישות ופרטיות מטופלים במקום אחד."
+        description="שירות להזמנות, מידות, החזרות ופניות נוספות במקום אחד."
         eyebrow="שירות Elysia"
-        title="שירות לקוחות"
+        title="שירות אישי"
         variant="content"
       />
 
@@ -79,12 +79,12 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
         <div className="grid gap-6 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
           <section className="grid gap-5" aria-labelledby="service-contact">
             <div>
-              <Badge variant="secondary">שירות דיגיטלי</Badge>
+              <Badge variant="secondary">שירות אישי</Badge>
               <h2 className="mt-3 text-2xl font-semibold" id="service-contact">
-                כל ערוצי השירות במקום אחד
+                כל הפניות במקום אחד
               </h2>
               <p className="text-muted-foreground mt-2 max-w-prose leading-7">
-                הפעילות מתבצעת אונליין או בטלפון, עם תיעוד מסודר לכל פנייה והמשך
+                הפעילות מתבצעת מרחוק או בטלפון, עם תיעוד מסודר לכל פנייה והמשך
                 טיפול לפי הנושא.
               </p>
             </div>
@@ -145,19 +145,19 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
               </div>
               <Separator className="my-5" />
               <div className="grid gap-3 sm:grid-cols-3">
-                <TrustItem icon={Clock3} label="חזרה מסודרת" />
+                <TrustItem icon={Clock3} label="מענה מסודר" />
                 <TrustItem icon={ShieldCheck} label="תיעוד מאובטח" />
-                <TrustItem icon={Sparkles} label="שירות מותאם" />
+                <TrustItem icon={Sparkles} label="שירות אישי" />
               </div>
             </div>
           </section>
 
           <section aria-labelledby="service-form" id="service-form">
             <div className="mb-4">
-              <Badge variant="outline">פתיחת פנייה</Badge>
-              <h2 className="mt-3 text-2xl font-semibold">פתיחת פנייה</h2>
+              <Badge variant="outline">פנייה לשירות</Badge>
+              <h2 className="mt-3 text-2xl font-semibold">פנייה לשירות</h2>
               <p className="text-muted-foreground mt-2 text-sm leading-6">
-                בחרו נושא, הוסיפו פרטים וקבצים אם צריך, והפנייה תיכנס לטיפול.
+                בחרו נושא והשאירו פרטים. נחזור אליכם בהתאם לפנייה.
               </p>
             </div>
             <ServiceRequestForm

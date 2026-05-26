@@ -109,7 +109,7 @@ async function createManualOrderInTransaction(
   if (!product) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "הפריט לא נמצא או אינו פעיל.",
+      message: "התכשיט לא נמצא או אינו פתוח לבחירה.",
     });
   }
 
@@ -120,7 +120,7 @@ async function createManualOrderInTransaction(
   if (!variant) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "לפריט אין וריאציה זמינה להזמנה.",
+      message: "לתכשיט אין התאמה פנויה להזמנה.",
     });
   }
 
@@ -129,7 +129,7 @@ async function createManualOrderInTransaction(
   if (!price) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "לפריט אין מחיר פעיל בשקלים.",
+      message: "לתכשיט אין פרטי מחיר פעילים בשקלים.",
     });
   }
 
@@ -145,7 +145,7 @@ async function createManualOrderInTransaction(
   if (!inventoryItem) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "אין מלאי מוגדר לפריט בערוץ שנבחר.",
+      message: "אין התאמה מוגדרת לתכשיט בערוץ שנבחר.",
     });
   }
 
@@ -250,7 +250,7 @@ async function createManualOrderInTransaction(
   if (reserved.count !== 1) {
     throw new TRPCError({
       code: "CONFLICT",
-      message: "המלאי השתנה בזמן יצירת ההזמנה. נסו שוב.",
+      message: "מצב הבחירה השתנה בזמן יצירת ההזמנה. נסו שוב.",
     });
   }
 
@@ -401,7 +401,7 @@ export async function listAdminOrders(input: { limit?: number } = {}) {
     email: order.email,
     phone: order.phone,
     recipientName: order.recipientName,
-    branchName: order.branch?.name ?? "שירות אונליין",
+    branchName: order.branch?.name ?? "שירות מרחוק",
     branchCity: order.branch?.city ?? "",
     createdAt: order.createdAt,
     itemCount: order.items.reduce((sum, item) => sum + item.quantity, 0),

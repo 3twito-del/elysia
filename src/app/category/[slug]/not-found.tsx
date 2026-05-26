@@ -14,17 +14,17 @@ export default function CategoryNotFound() {
           actions={
             <>
               <Button asChild>
-                <Link href="/search">חיפוש בקטלוג</Link>
+                <Link href="/search">חיפוש במבחר</Link>
               </Button>
               <Button asChild variant="outline">
                 <Link href="/">חזרה לעמוד הבית</Link>
               </Button>
             </>
           }
-          description="יכול להיות שהקישור השתנה או שהקטגוריה אינה פעילה. אפשר להמשיך דרך החיפוש או לחזור לקולקציות הראשיות."
+          description="יכול להיות שהקישור השתנה או שמשפחת התכשיטים אינה פעילה. אפשר להמשיך דרך החיפוש או לחזור לקולקציות הראשיות."
           icon={SearchX}
           testId="category-not-found-empty-state"
-          title="הקטגוריה לא נמצאה"
+          title="המשפחה לא נמצאה"
         />
       </section>
     </main>

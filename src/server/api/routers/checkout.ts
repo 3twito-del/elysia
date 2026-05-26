@@ -37,7 +37,7 @@ export const checkoutRouter = createTRPCRouter({
       if (!rateLimit.allowed) {
         throw new TRPCError({
           code: "TOO_MANY_REQUESTS",
-          message: "יותר מדי ניסיונות קופה. נסו שוב בעוד כמה דקות.",
+          message: "יותר מדי ניסיונות לסיום הזמנה. נסו שוב בעוד כמה דקות.",
         });
       }
 
@@ -56,7 +56,7 @@ export const checkoutRouter = createTRPCRouter({
       if (!rateLimit.allowed) {
         throw new TRPCError({
           code: "TOO_MANY_REQUESTS",
-          message: "יותר מדי ניסיונות קופה. נסו שוב בעוד כמה דקות.",
+          message: "יותר מדי ניסיונות לסיום הזמנה. נסו שוב בעוד כמה דקות.",
         });
       }
 

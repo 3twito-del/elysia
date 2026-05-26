@@ -75,7 +75,7 @@ export default async function OrderDetailPage({
         <Button asChild className="mb-6 gap-2" variant="ghost">
           <Link href="/account">
             <ArrowRight aria-hidden="true" className="size-4" />
-            אזור לקוח
+            אזור אישי
           </Link>
         </Button>
         <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -95,13 +95,13 @@ export default async function OrderDetailPage({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <PackageCheck aria-hidden="true" className="size-5" />
-                פריטים
+                תכשיטים
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
               {order.items.length === 0 ? (
                 <StatusMessage tone="neutral">
-                  לא נמצאו פריטים שמורים להזמנה הזו.
+                  לא נמצאו בחירות שמורות להזמנה הזו.
                 </StatusMessage>
               ) : (
                 order.items.map((item) => (
@@ -130,15 +130,15 @@ export default async function OrderDetailPage({
             </CardHeader>
             <CardContent className="grid gap-3 text-sm">
               <div className="flex justify-between">
-                <span>פריטים</span>
+                <span>תכשיטים</span>
                 <span>{formatPrice(Number(order.subtotal))}</span>
               </div>
               <div className="flex justify-between">
-                <span>הנחה</span>
+                <span>הטבה</span>
                 <span>{formatPrice(Number(order.discountTotal))}</span>
               </div>
               <div className="flex justify-between">
-                <span>משלוח</span>
+                <span>מסירה</span>
                 <span>{formatPrice(Number(order.shippingTotal))}</span>
               </div>
               <Separator />
@@ -147,7 +147,7 @@ export default async function OrderDetailPage({
                 <span>{formatPrice(Number(order.total))}</span>
               </div>
               <Separator />
-              <p className="text-muted-foreground">משלוח לכתובת שנמסרה</p>
+              <p className="text-muted-foreground">מסירה לכתובת שנמסרה</p>
               <p className="text-muted-foreground">
                 תשלום: {getPaymentStatusLabel(order.payments[0]?.status)}
               </p>
@@ -156,14 +156,14 @@ export default async function OrderDetailPage({
 
           <Card className="rounded-md lg:col-span-2" id="order-support">
             <CardHeader>
-              <CardTitle>משלוח והחזרות</CardTitle>
+              <CardTitle>משלוחים והחזרות</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-5 lg:grid-cols-2">
               <div className="grid gap-3">
-                <h2 className="font-medium">משלוח</h2>
+                <h2 className="font-medium">מסירה</h2>
                 {order.shipments.length === 0 ? (
                   <StatusMessage tone="neutral" variant="plain">
-                    עדיין אין פרטי משלוח להזמנה.
+                    עדיין אין פרטי מסירה להזמנה.
                   </StatusMessage>
                 ) : (
                   order.shipments.map((shipment) => (
@@ -175,7 +175,7 @@ export default async function OrderDetailPage({
                         {getShipmentStatusLabel(shipment.status)}
                       </Badge>
                       <p className="text-muted-foreground">
-                        {shipment.provider ?? "משלוח"}{" "}
+                        {shipment.provider ?? "מסירה"}{" "}
                         {shipment.tracking ? `· ${shipment.tracking}` : ""}
                       </p>
                     </div>

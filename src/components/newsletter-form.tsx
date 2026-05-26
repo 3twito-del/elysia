@@ -37,7 +37,7 @@ export function NewsletterForm() {
       .catch(() =>
         setOfflineState({
           ok: false,
-          message: "לא הצלחנו לשמור את ההרשמה במצב לא מקוון.",
+          message: "לא הצלחנו לקבל את ההרשמה במצב לא מקוון.",
         }),
       );
   }

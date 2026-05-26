@@ -71,14 +71,14 @@ function getSeedAvailabilityMode(slug: string): SeedAvailabilityMode {
 
 function getSeedCommerceHighlights(slug: string) {
   if (slug === "muse-pearl-earrings") {
-    return ["מחיר גלוי לפני התאמה", "ייצור לפי מידה וגוון"];
+    return ["פרטי ההתאמה יאושרו מראש", "הכנה אישית במידה ובגוון"];
   }
 
   if (slug === "venus-line-ring") {
-    return ["ייעוץ התאמה לפני שמירה", "בחירת אבן מאומתת"];
+    return ["שיחת התאמה לפני הבחירה", "אבן שנבחנה בקפידה"];
   }
 
-  return ["מחיר גלוי לפני שמירה", "בדיקת איכות לפני מסירה"];
+  return ["פרטים מאומתים לפני הזמנה", "נבדק בקפידה לפני מסירה"];
 }
 
 async function main() {
@@ -216,7 +216,7 @@ async function main() {
         id: "topic_partnership",
         slug: "partnership",
         label: "שיתוף פעולה",
-        description: "פנייה עסקית, תוכן או שיתוף פעולה.",
+        description: "פנייה לבית Elysia, תוכן או שיתוף פעולה.",
         sortOrder: 70,
       },
     ],
@@ -226,7 +226,7 @@ async function main() {
     prisma.branch.create({
       data: {
         slug: "online-service",
-        name: "שירות אונליין",
+        name: "שירות מרחוק",
         address: "Online",
         city: "Online",
         phone: "054-727-7455",
@@ -236,7 +236,7 @@ async function main() {
           friday: "09:30-13:00",
           saturday: "סגור",
         },
-        services: ["שירות אונליין", "מענה טלפוני", "תיאום תיקונים"],
+        services: ["שירות מרחוק", "מענה טלפוני", "תיאום תיקונים"],
         kind: "ONLINE",
         isApproved: true,
         isPublic: false,
@@ -264,7 +264,7 @@ async function main() {
           friday: "09:30-14:00",
           saturday: "סגור",
         },
-        services: ["איסוף מהחנות", "מדידה", "ייעוץ מתנות", "שינוי מידה"],
+        services: ["איסוף מבית Elysia", "מדידה", "ייעוץ מתנות", "שינוי מידה"],
       },
     }),
     prisma.branch.create({
@@ -287,7 +287,7 @@ async function main() {
           friday: "09:30-13:30",
           saturday: "סגור",
         },
-        services: ["איסוף מהחנות", "פגישת כלה", "ייעוץ יהלומים"],
+        services: ["איסוף מבית Elysia", "פגישת כלה", "ייעוץ יהלומים"],
       },
     }),
   ]);
@@ -326,8 +326,8 @@ async function main() {
         basePrice: productData.basePrice,
         availabilityMode: getSeedAvailabilityMode(productData.slug),
         commerceHighlights: getSeedCommerceHighlights(productData.slug),
-        deliveryPromise: "משלוח עד הבית לאחר אימות פרטי ההזמנה.",
-        returnPolicy: "החלפה או החזרה מתואמת לפי מדיניות האתר.",
+        deliveryPromise: "מסירה עד הבית לאחר אישור הפרטים.",
+        returnPolicy: "החלפה או החזרה בתיאום אישי לפי מדיניות Elysia.",
         careInstructions: "מומלץ להימנע ממגע עם בושם, כלור וחומרי ניקוי.",
         warranty: "אחריות לשנה על פגמי ייצור ושירות ניקוי ראשוני ללא עלות.",
         tags: productData.tags,

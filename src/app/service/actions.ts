@@ -71,7 +71,7 @@ export async function createServiceRequestAction(
       message:
         error instanceof Error
           ? error.message
-          : "לא הצלחנו לשמור את הפנייה כרגע. נסו שוב.",
+          : "לא הצלחנו לקבל את הפנייה כרגע. נסו שוב.",
     };
   }
 

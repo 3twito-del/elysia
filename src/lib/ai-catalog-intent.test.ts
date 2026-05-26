@@ -60,7 +60,7 @@ describe("AI catalog intent", () => {
         },
         intent,
       ),
-    ).toContain("סוג הפריט תואם לבקשה");
+    ).toContain("סוג התכשיט תואם לבקשה");
   });
 
   it("includes a formatted budget in match reasons", () => {

@@ -187,7 +187,7 @@ export async function executeOrderSupport(input: OrderSupportInput) {
     summary: `הזמנה ${order.orderNumber} נמצאת בסטטוס ${order.status}.`,
     nextStep:
       order.status === "PENDING_PAYMENT"
-        ? "ההזמנה ממתינה לתשלום או אישור נציג."
+        ? "ההזמנה ממתינה לאישור אישי."
         : "נעדכן בכל שינוי סטטוס.",
     paymentStatus: order.payments[0]?.status ?? "PENDING",
   };
@@ -349,5 +349,5 @@ export async function orderSupportWithAiAudit(
 }
 
 function createGiftSummary(input: RecommendGiftInput) {
-  return `ל-${input.occasion} עבור ${input.relation}, הייתי מתחיל מתכשיטים זמינים מהקטלוג שמתאימים לטווח המחיר ולסגנון שנבחרו.`;
+  return `ל-${input.occasion} עבור ${input.relation}, הייתי מתחיל מבחירות פתוחות בקולקציה שמתאימות לטווח המחיר ולסגנון שנבחרו.`;
 }

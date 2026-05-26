@@ -36,7 +36,7 @@ function FilterPanelContent({
           <div className="grid gap-1">
             <p className="text-foreground text-sm font-medium">סינון מדויק</p>
             <p className="text-muted-foreground text-xs leading-5">
-              בחירה לפי סוג, חומר, אבן וטווח מחיר.
+              סינון לפי סוג, חומר, אבן ומחיר.
             </p>
           </div>
           {data.activeFilterCount > 0 && (
@@ -185,7 +185,7 @@ function FilterOptionLink({
         aria-disabled="true"
         className={className}
         data-disabled="true"
-        title="אין תוצאות זמינות"
+        title="אין התאמות פתוחות"
       >
         {content}
       </span>
@@ -254,14 +254,14 @@ export function FilterPanelFallback({ resetHref }: { resetHref: string }) {
     <div className="grid gap-3 text-sm">
       <div className="text-muted-foreground flex items-center gap-2">
         <RotateCw aria-hidden="true" className="size-4" />
-        <span>הפילטרים אינם זמינים כרגע.</span>
+        <span>הסינון אינו פתוח כרגע.</span>
       </div>
       <Link
         className="hover:border-foreground inline-flex min-h-8 w-fit items-center border-b border-[var(--glass-border)] px-1 text-sm font-medium transition-colors focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
         href={resetHref}
         scroll={false}
       >
-        איפוס פילטרים
+        איפוס סינונים
       </Link>
     </div>
   );

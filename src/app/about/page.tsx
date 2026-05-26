@@ -40,7 +40,7 @@ type ImageTile = {
 
 const editorialImages = [
   {
-    alt: "טבעות כסף ויהלומים על משטח סטודיו בגוון אקווה",
+    alt: "טבעות כסף ויהלומים על משטח אקווה נקי",
     className:
       "col-span-2 aspect-[16/10] sm:col-span-1 sm:row-span-2 sm:aspect-[4/5]",
     loading: "eager",
@@ -48,13 +48,13 @@ const editorialImages = [
     src: "/brand/v2/content-editorial.avif",
   },
   {
-    alt: "טבעת זהב ויהלומים בצילום פריט נקי",
+    alt: "טבעת זהב ויהלומים בצילום תכשיט נקי",
     className: "aspect-[5/4]",
     sizes: "(min-width: 1024px) 22vw, (min-width: 640px) 46vw, 100vw",
     src: "/brand/v2/product-focus.avif",
   },
   {
-    alt: "תכשיטי פנינה וזכוכית בסטודיו אקווה",
+    alt: "תכשיטי פנינה וזכוכית בתאורת אקווה רכה",
     className: "aspect-[5/4]",
     sizes: "(min-width: 1024px) 22vw, (min-width: 640px) 46vw, 100vw",
     src: "/brand/v2/hero-pearls.avif",
@@ -78,69 +78,69 @@ const storyImages = [
 
 const values = [
   {
-    title: "בהירות לפני בחירה",
-    text: "חומר, מידה, מחיר וזמינות מוצגים בשפה נקייה לפני שהלקוחה צריכה לנחש.",
+    title: "מידע ברור",
+    text: "חומר, מידה ומחיר מוצגים בעמוד המוצר.",
     icon: ShieldCheck,
   },
   {
-    title: "חומר במרכז",
-    text: "התמונה, הפרופורציה והפירוט הטכני מקבלים קדימות על פני מסרים רועשים או קישוטים עודפים.",
+    title: "חומרים",
+    text: "התמונות ופרטי החומר מוצגים לפני ההזמנה.",
     icon: Gem,
   },
   {
-    title: "התאמה שימושית",
-    text: "אנחנו בודקים איך התכשיט יישב ביום יום: על היד, על הצוואר, באירוע ובשגרה.",
+    title: "התאמה",
+    text: "מידות, אורך ומשקל מוצגים כאשר המידע זמין.",
     icon: Ruler,
   },
   {
-    title: "שירות שממשיך",
-    text: "ייעוץ, הזמנה, משלוח, החלפה ושאלות אחרי מסירה נבנים כחוויה אחת ולא כתחנות נפרדות.",
+    title: "שירות",
+    text: "שירות זמין בנושאי הזמנה, משלוח, החלפה והחזרה.",
     icon: Handshake,
   },
 ] satisfies IconItem[];
 
 const standards = [
   {
-    title: "צילום שמראה פרטים",
-    text: "צפיפות התמונות מכוונת להחלטה: מבט אווירה, תקריב חומר ותמונה שמסבירה שימוש.",
+    title: "תמונות מוצר",
+    text: "תמונות המוצר מציגות את הפריט מזוויות שונות.",
     icon: Camera,
   },
   {
-    title: "חיפוש בלי רעש",
-    text: "הקטלוג מוביל לפי צורך, טווח מחיר, חומר וקטגוריה בלי להכריח מסלול אחד.",
+    title: "חיפוש",
+    text: "המבחר נפתח לפי צורך, מחיר, חומר ומשפחת תכשיט בלי להכריח מסלול אחד.",
     icon: Search,
   },
   {
-    title: "אישור לפני פעולה",
-    text: "הלקוחה מקבלת סימני אמון ברורים לפני שמירת הזמנה, לא רק בסוף הדרך.",
+    title: "לפני ההזמנה",
+    text: "פרטי המוצר וההזמנה מוצגים לפני אישור.",
     icon: BadgeCheck,
   },
   {
-    title: "אריזה ומסירה",
-    text: "החוויה לא מסתיימת בכפתור התשלום. גם פתיחת האריזה צריכה להרגיש מדויקת.",
+    title: "אריזה ומשלוח",
+    text: "פרטי אריזה ומשלוח מופיעים בתהליך ההזמנה.",
     icon: PackageCheck,
   },
   {
-    title: "מענה אנושי",
-    text: "במקומות שבהם בחירה דיגיטלית לא מספיקה, השירות נכנס בעדינות ולא משתלט.",
+    title: "שירות אישי",
+    text: "שירות אישי זמין כאשר נדרש מידע נוסף.",
     icon: Headphones,
   },
 ] satisfies IconItem[];
 
 const workflow = [
   {
-    title: "עורכים את הקולקציה",
-    text: "כל פריט נכנס לקטלוג עם תפקיד ברור: מתנה, יום יום, אירוע, או בחירה אישית מאוד.",
+    title: "הקולקציה",
+    text: "כל תכשיט נכנס לקולקציה עם תפקיד ברור: מתנה, יום יום, אירוע, או הבחירה שלי מאוד.",
     icon: PenLine,
   },
   {
-    title: "בודקים שימוש אמיתי",
-    text: "אנחנו מסתכלים על משקל, סגירה, אורך, שכבות ונוחות לפני שממליצים על פריט לרגע מסוים.",
+    title: "פרטי מוצר",
+    text: "פרטי המוצר כוללים חומר, מידה, מחיר ומידע נוסף לפי הדגם.",
     icon: Store,
   },
   {
-    title: "מלווים אחרי ההזמנה",
-    text: "משלוח, שאלה, התאמה או החלפה נשארים חלק מהמותג ולא נספח תפעולי.",
+    title: "שירות לאחר הזמנה",
+    text: "שירות זמין גם לאחר ביצוע ההזמנה.",
     icon: Truck,
   },
 ] satisfies IconItem[];
@@ -148,11 +148,11 @@ const workflow = [
 export const metadata: Metadata = {
   title: "אודות",
   description:
-    "Elysia היא סטודיו תכשיטים ישראלי עם קטלוג דיגיטלי, פרטי פריט ברורים ושירות אישי לפני ואחרי הזמנה.",
+    "Elysia היא בית תכשיטים ישראלי עם קולקציה אוצרותית, פרטי תכשיט ברורים ושירות אישי לפני ההזמנה ולאחריה.",
   openGraph: {
-    title: "אודות Elysia",
+    title: "Elysia",
     description:
-      "סטודיו תכשיטים ישראלי שמחבר יופי נקי, חומר גלוי, בחירה מדויקת ושירות אישי.",
+      "בית תכשיטים ישראלי שמחבר יופי נקי, חומר גלוי, בחירה מדויקת ושירות אישי.",
     images: [{ url: "/brand/v2/content-editorial.avif" }],
   },
 };
@@ -168,35 +168,35 @@ export default function AboutPage() {
             <>
               <Button asChild>
                 <Link href="/search">
-                  לקטלוג
+                  למבחר
                   <Search aria-hidden="true" className="size-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline">
                 <Link href="/service">
-                  שירות לקוחות
+                  שירות אישי
                   <Headphones aria-hidden="true" className="size-4" />
                 </Link>
               </Button>
             </>
           }
           className="[&_.commerce-page-hero-inner]:pb-6 lg:[&_.commerce-page-hero-inner]:pb-8"
-          description="Elysia היא סטודיו תכשיטים ישראלי שמבקש להפוך בחירת תכשיט מרחוק לדבר ברור, יפה ואנושי. פחות רעש מסביב לבחירה, יותר חומר, אור, פרופורציה ושירות."
-          eyebrow="אודות Elysia"
+          description="Elysia מציגה קולקציות תכשיטים בקו נקי, עם מידע ברור, שירות אישי והזמנה מקוונת."
+          eyebrow="Elysia"
           id="page-hero"
           media={{
-            alt: "תכשיטי Elysia על משטח סטודיו בגוון אקווה",
+            alt: "תכשיטי Elysia על משטח אקווה נקי",
             priority: true,
             sizes: "(min-width: 1024px) 34vw, 100vw",
             slides: cinematicRouteMedia.about,
           }}
           metrics={[
-            { label: "מיקוד", value: "תכשיטי סטודיו" },
+            { label: "מיקוד", value: "תכשיטי בית" },
             { label: "גישה", value: "דיוק מאופק" },
             { label: "שירות", value: "אישי ומדוד" },
           ]}
           metricsMode="inline"
-          title="סטודיו תכשיטים שמעדיף דיוק על רעש."
+          title="תכשיטים בקו נקי."
           variant="content"
         />
 
@@ -207,18 +207,18 @@ export default function AboutPage() {
         >
           <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
             <div>
-              <p className="text-muted-foreground text-sm">הגישה שלנו</p>
+              <p className="text-muted-foreground text-sm">הגישה</p>
               <h2 className="mt-3 max-w-2xl text-3xl leading-tight font-semibold sm:text-4xl">
-                לא מכריזים על יוקרה. מראים חומר, קו ואור בקצב שאפשר לבחור בו.
+                תכשיטים, מידע ושירות במקום אחד.
               </h2>
               <div className="text-muted-foreground mt-5 grid max-w-2xl gap-4 text-base leading-8">
                 <p>
-                  תכשיט טוב מתחיל בפרופורציה, בחומר ובשקט. אנחנו מציגים כל פריט
+                  תכשיט טוב מתחיל בפרופורציה, בחומר ובשקט. אנחנו מציגים כל תכשיט
                   כך שאפשר לראות את הקו, להבין את המידה, לאמת את הפרטים ולהרגיש
                   בטוחים לפני ההזמנה.
                 </p>
                 <p>
-                  לצד הקטלוג יש שירות אישי שמכיר את הרגע: מתנה, מידה, אירוע או
+                  לצד הקולקציה יש שירות אישי שמכיר את הרגע: מתנה, מידה, אירוע או
                   בחירה יומיומית. המטרה אינה למהר את ההחלטה, אלא להפוך אותה
                   לברורה יותר.
                 </p>
@@ -227,7 +227,7 @@ export default function AboutPage() {
                 <div className="border-t border-[var(--glass-border)] pt-3">
                   <dt className="text-muted-foreground text-xs">חומר</dt>
                   <dd className="mt-1 text-xl font-semibold">
-                    זהב, כסף ופנינים
+                    זהב, כסף, פנינים ואבנים
                   </dd>
                 </div>
                 <div className="border-t border-[var(--glass-border)] pt-3">
@@ -237,7 +237,7 @@ export default function AboutPage() {
                 <div className="border-t border-[var(--glass-border)] pt-3">
                   <dt className="text-muted-foreground text-xs">שירות</dt>
                   <dd className="mt-1 text-xl font-semibold">
-                    לפני ואחרי הזמנה
+                    לפני ההזמנה ולאחריה
                   </dd>
                 </div>
               </dl>
@@ -255,7 +255,7 @@ export default function AboutPage() {
           <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-14">
             <div className="grid gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-start">
               <div>
-                <p className="text-muted-foreground text-sm">הסיפור שלנו</p>
+                <p className="text-muted-foreground text-sm">Elysia</p>
                 <h2 className="mt-3 max-w-3xl text-3xl leading-tight font-semibold sm:text-4xl">
                   Elysia נבנתה כדי שהבחירה בתכשיט תרגיש מדויקת לפני שהיא מרגישה
                   חגיגית.
@@ -267,7 +267,7 @@ export default function AboutPage() {
                     פרופורציה נכונה ושירות שמכבד את הזמן של הלקוחה.
                   </p>
                   <p>
-                    לכן אנחנו בוחרים פריטים שנראים טוב מקרוב ונשארים נוחים
+                    לכן אנחנו בוחרים תכשיטים שנראים טוב מקרוב ונשארים נוחים
                     בשימוש: טבעת שאפשר לענוד כל יום, שרשרת שמחזיקה שכבות, עגילים
                     שלא מכבידים ומתנה שמגיעה ארוזה נכון.
                   </p>
@@ -294,9 +294,9 @@ export default function AboutPage() {
           id="about-values"
         >
           <div className="mb-7 max-w-3xl">
-            <p className="text-muted-foreground text-sm">עקרונות</p>
+            <p className="text-muted-foreground text-sm">מידע ושירות</p>
             <h2 className="mt-3 text-3xl leading-tight font-semibold sm:text-4xl">
-              ארבע הבטחות שמחזיקות את הקטלוג, את ההזמנה ואת השירות.
+              מידע ברור לאורך תהליך הבחירה וההזמנה.
             </h2>
           </div>
 
@@ -316,14 +316,14 @@ export default function AboutPage() {
         >
           <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[0.84fr_1.16fr] lg:py-14">
             <div>
-              <p className="text-muted-foreground text-sm">סטנדרט שירות</p>
+              <p className="text-muted-foreground text-sm">שירות</p>
               <h2 className="mt-3 text-3xl leading-tight font-semibold sm:text-4xl">
-                לפני הזמנה צריכה להיות תשובה: חומר, מידה, זמינות ומסירה.
+                לפני ההזמנה מוצגים חומר, מידה, מחיר ומשלוח.
               </h2>
               <p className="text-muted-foreground mt-5 leading-8">
-                בכל פריט אנחנו מעדיפים מידע שאפשר לפעול לפיו: תקריב שמראה גימור,
-                תיאור קצר שמסביר שימוש, מחיר ברור ושירות שמאפשר לוודא התאמה לפני
-                שמירת ההזמנה.
+                בכל תכשיט אנחנו מעדיפים מידע שאפשר לפעול לפיו: תקריב שמראה
+                גימור, תיאור קצר שמסביר שימוש, מחיר ברור ושירות שמאפשר לוודא
+                התאמה לפני אישור הבחירה.
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
                 <Button asChild variant="outline">
@@ -355,7 +355,7 @@ export default function AboutPage() {
             <div>
               <Sparkles aria-hidden="true" className="size-7" />
               <h2 className="mt-4 max-w-3xl text-3xl leading-tight font-semibold sm:text-4xl">
-                Elysia לא מבקשת שתבחרו מהר. היא מבקשת שתבחרו נכון.
+                Elysia מאפשרת לבחור, לבדוק ולהזמין במקום אחד.
               </h2>
               <p className="text-muted-foreground mt-4 max-w-3xl leading-8">
                 יש תכשיטים שמתחילים בתמונה ויש תכשיטים שמתחילים באדם. אנחנו
@@ -366,13 +366,13 @@ export default function AboutPage() {
             <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
               <Button asChild>
                 <Link href="/search">
-                  חיפוש בקטלוג
+                  חיפוש במבחר
                   <Search aria-hidden="true" className="size-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline">
                 <Link href="/service">
-                  ייעוץ ושירות
+                  שירות אישי
                   <Headphones aria-hidden="true" className="size-4" />
                 </Link>
               </Button>

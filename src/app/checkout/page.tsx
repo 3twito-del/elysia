@@ -5,7 +5,7 @@ import { SiteHeader } from "~/components/site-header";
 import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata = {
-  title: "סל וקופה",
+  title: "הבחירה שלי",
 };
 
 export default async function CheckoutPage() {
@@ -15,9 +15,9 @@ export default async function CheckoutPage() {
 
       <main>
         <CommercePageHero
-          description="סל, משלוח עד הבית וקופה מאובטחת עם פרטי מסירה, שמירת מלאי ושירות לפני חיוב."
-          eyebrow="קופה ושירות"
-          title="קופה מאובטחת"
+          description="סיכום פריטים, פרטי משלוח ואישור הזמנה."
+          eyebrow="הבחירה שלי"
+          title="סיום הזמנה"
           variant="checkout"
         />
         <RevealSection id="checkout-form">

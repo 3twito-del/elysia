@@ -43,7 +43,7 @@ export function ReservationCountdown({ expiresAt }: { expiresAt: Date }) {
 
   return (
     <div className="glass-inset rounded-md border p-4">
-      <p className="text-muted-foreground text-sm">שמירת מלאי</p>
+      <p className="text-muted-foreground text-sm">שמירת התכשיטים</p>
       <p aria-live="polite" className="mt-1 text-2xl font-semibold">
         {countdownText}
       </p>

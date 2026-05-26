@@ -24,14 +24,14 @@ export default function CategoryError({
                 ניסיון נוסף
               </Button>
               <Button asChild variant="outline">
-                <Link href="/search">חיפוש בקטלוג</Link>
+                <Link href="/search">חיפוש במבחר</Link>
               </Button>
             </>
           }
-          description="הקטגוריה אינה זמינה כרגע. אפשר לנסות שוב או לעבור לחיפוש הרחב."
+          description="משפחת התכשיטים אינה פתוחה כרגע. אפשר לנסות שוב או לעבור לחיפוש הרחב."
           icon={AlertTriangle}
           testId="category-error-empty-state"
-          title="הקטגוריה אינה זמינה"
+          title="המשפחה אינה פתוחה כרגע"
         />
       </section>
     </main>

@@ -144,9 +144,9 @@ const guideCopy = {
     icon: Circle,
     inputLabel: "מידת טבעת אירופאית",
     instructions: [
-      "השתמשי בטבעת קיימת שיושבת בנוחות על אותה אצבע.",
-      "אם את מודדת אצבע, בדקי בסוף היום כשהיד בטמפרטורה רגילה.",
-      "בין שתי מידות, טבעות רחבות בדרך כלל מרגישות טוב יותר במידה הגדולה.",
+      "מדדו טבעת קיימת שמתאימה לאותה אצבע.",
+      "מדדו בסוף היום, כשהיד בטמפרטורה רגילה.",
+      "בין שתי מידות, מומלץ לבחור במידה הגדולה.",
     ],
     placeholder: "לדוגמה: 54",
     presets: ["48", "50", "52", "54", "56", "58", "60"],
@@ -157,7 +157,7 @@ const guideCopy = {
       { measurement: "56-58", size: "בינונית" },
       { measurement: "60 ומעלה", size: "גדולה" },
     ],
-    tip: "המספר האירופאי קרוב להיקף האצבע במ״מ, ולכן הוא נוח להשוואה בין דגמים.",
+    tip: "המידה האירופאית מבוססת בקירוב על היקף האצבע במ״מ.",
     title: "טבעות",
   },
 } satisfies Record<SizeFitKind, GuideCopy>;
@@ -217,14 +217,14 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="grid gap-1">
             <h2 className="text-lg font-semibold tracking-normal">
-              בחירת סוג תכשיט
+              בחירת קטגוריה
             </h2>
             <p className="text-muted-foreground text-sm">
-              הזיני מידה קיימת או מדידה פשוטה ושמרי להמשך.
+              הזינו מידה קיימת או בחרו מידה מהטבלה.
             </p>
           </div>
           <div className="brand-surface w-full rounded-md px-4 py-3 text-sm md:w-64">
-            <span className="text-muted-foreground block">מידה פעילה</span>
+            <span className="text-muted-foreground block">מידה נבחרת:</span>
             <strong className="mt-1 block truncate text-base">
               {savedSummary}
             </strong>
@@ -232,7 +232,7 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
         </div>
 
         <div
-          aria-label="בחירת סוג תכשיט"
+          aria-label="בחירת קטגוריה"
           className="grid grid-cols-2 gap-2 md:grid-cols-4"
           role="group"
         >
@@ -270,7 +270,7 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
             <div className="grid gap-1">
               <h3 className="text-lg font-semibold">{activeCopy.title}</h3>
               <p className="text-muted-foreground text-sm">
-                טווח נתמך: {activeCopy.range}
+                טווח מידות: {activeCopy.range}
               </p>
             </div>
             <CheckCircle2
@@ -322,7 +322,7 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
 
           <Button className="w-full gap-2" type="submit">
             <Save aria-hidden="true" className="size-4" />
-            שמירת מידה
+            שמירה
           </Button>
 
           <div aria-live="polite" className="grid gap-2">
@@ -369,7 +369,7 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
           </ol>
 
           <div className="grid gap-3 border-t border-[var(--glass-border)] pt-5">
-            <h4 className="text-sm font-semibold">טבלת עזר</h4>
+            <h4 className="text-sm font-semibold">טבלת מידות</h4>
             <div className="grid gap-2 text-sm">
               {activeCopy.rows.map((row) => (
                 <div

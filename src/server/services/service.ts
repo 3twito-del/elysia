@@ -59,7 +59,7 @@ export const defaultContactTopics = [
   {
     id: "topic_sizing",
     slug: "sizing",
-    label: "מידה והתאמה",
+    label: "מידות",
     description: "ייעוץ מידה, התאמה או בחירת מתנה.",
     sortOrder: 50,
   },
@@ -74,7 +74,7 @@ export const defaultContactTopics = [
     id: "topic_partnership",
     slug: "partnership",
     label: "שיתוף פעולה",
-    description: "פנייה עסקית, תוכן או שיתוף פעולה.",
+    description: "פנייה לבית Elysia, תוכן או שיתוף פעולה.",
     sortOrder: 70,
   },
 ];
@@ -584,7 +584,7 @@ function getValidatedServiceRequestFiles(files: File[]) {
         file.type as (typeof serviceRequestAcceptedFileTypes)[number],
       )
     ) {
-      throw new Error("ניתן לצרף תמונות או PDF בלבד.");
+      throw new Error("ניתן לצרף קבצים מצורפים בלבד.");
     }
 
     if (file.size > maxServiceRequestFileBytes) {

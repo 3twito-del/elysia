@@ -1,18 +1,18 @@
 UPDATE "Product"
 SET
-  "commerceHighlights" = ARRAY['מחיר גלוי לפני שמירה', 'בדיקת איכות לפני מסירה']::TEXT[],
-  "deliveryPromise" = COALESCE("deliveryPromise", 'משלוח עד הבית לאחר אימות פרטי ההזמנה.'),
-  "returnPolicy" = COALESCE("returnPolicy", 'החלפה או החזרה מתואמת לפי מדיניות האתר.')
+  "commerceHighlights" = ARRAY['פרטים מאומתים לפני הזמנה', 'נבדק בקפידה לפני מסירה']::TEXT[],
+  "deliveryPromise" = COALESCE("deliveryPromise", 'מסירה עד הבית לאחר אישור הפרטים.'),
+  "returnPolicy" = COALESCE("returnPolicy", 'החלפה או החזרה בתיאום אישי ובהתאם למדיניות Elysia.')
 WHERE cardinality("commerceHighlights") = 0;
 
 UPDATE "Product"
 SET
   "availabilityMode" = 'MADE_TO_ORDER',
-  "commerceHighlights" = ARRAY['מחיר גלוי לפני התאמה', 'ייצור לפי מידה וגוון']::TEXT[]
+  "commerceHighlights" = ARRAY['פרטי ההתאמה יאושרו מראש', 'הכנה אישית במידה ובגוון']::TEXT[]
 WHERE "slug" = 'muse-pearl-earrings';
 
 UPDATE "Product"
 SET
   "availabilityMode" = 'CONSULTATION',
-  "commerceHighlights" = ARRAY['ייעוץ התאמה לפני שמירה', 'בחירת אבן מאומתת']::TEXT[]
+  "commerceHighlights" = ARRAY['שיחת התאמה לפני הבחירה', 'אבן שנבחנה בקפידה']::TEXT[]
 WHERE "slug" = 'venus-line-ring';

@@ -104,7 +104,7 @@ export function getSearchEmbeddingConfig(
 export function buildProductEmbeddingText(product: CatalogProduct) {
   return [
     `שם: ${product.name}`,
-    `קטגוריה: ${product.categoryName}`,
+    `משפחת תכשיט: ${product.categoryName}`,
     `תיאור קצר: ${product.shortDescription}`,
     `תיאור: ${product.description}`,
     `חומר: ${product.material}`,

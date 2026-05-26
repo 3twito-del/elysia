@@ -163,7 +163,7 @@ function VerifyButton() {
       variant="secondary"
     >
       <LogIn aria-hidden="true" className="size-4" />
-      כניסה לאזור לקוח
+      כניסה לאזור אישי
     </Button>
   );
 }

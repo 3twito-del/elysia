@@ -49,7 +49,7 @@ export function SearchControls({
     >
       <form
         action="/search"
-        aria-label="חיפוש בקטלוג"
+        aria-label="חיפוש במבחר"
         className="hidden gap-3 lg:grid"
         role="search"
       >
@@ -67,7 +67,7 @@ export function SearchControls({
           <summary className="text-muted-foreground hover:text-foreground flex min-h-9 cursor-pointer list-none items-center justify-between gap-3 text-sm outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]">
             <span className="inline-flex items-center gap-2">
               <SlidersHorizontal aria-hidden="true" className="size-4" />
-              {"\u05e1\u05d9\u05e0\u05d5\u05df \u05de\u05ea\u05e7\u05d3\u05dd"}
+              {"\u05e1\u05d9\u05e0\u05d5\u05df \u05e2\u05d3\u05d9\u05df"}
             </span>
             {activeFilterCount > 0 ? (
               <Badge variant="secondary">{activeFilterCount}</Badge>
@@ -88,7 +88,7 @@ export function SearchControls({
       >
         <form
           action="/search"
-          aria-label="חיפוש מהיר בקטלוג"
+          aria-label="חיפוש מהיר במבחר"
           className="grid grid-cols-[minmax(0,1fr)_auto] gap-2"
           role="search"
         >
@@ -98,7 +98,7 @@ export function SearchControls({
               className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2"
             />
             <Input
-              aria-label="חיפוש פריט, חומר, אבן, אירוע או טווח מחיר"
+              aria-label="חיפוש תכשיט, חומר, אבן, אירוע או מחיר"
               className="h-11 ps-10 pe-3"
               defaultValue={input.query}
               name="q"
@@ -130,7 +130,7 @@ export function SearchControls({
                   aria-hidden="true"
                   className="text-foreground size-4"
                 />
-                סינון מדויק
+                סינון
               </span>
               {activeFilterCount > 0 ? (
                 <Badge className="absolute -top-2 -left-2" variant="secondary">
@@ -148,10 +148,10 @@ export function SearchControls({
             <SheetHeader className="border-b border-[var(--glass-border)] pe-12 text-right">
               <SheetTitle className="flex items-center gap-2">
                 <SlidersHorizontal aria-hidden="true" className="size-4" />
-                סינון מדויק
+                סינון
               </SheetTitle>
               <SheetDescription>
-                בחרו סוג תכשיט, חומר, אבן, קולקציה, טווח מחיר וסדר הצגה.
+                בחרו קטגוריה, חומר, אבן, קולקציה, מחיר ומיון.
               </SheetDescription>
             </SheetHeader>
             <form
@@ -166,7 +166,7 @@ export function SearchControls({
               <PreservedModeInput input={input} />
               <PreservedViewInput viewMode={viewMode} />
               <div className="grid grid-cols-2 gap-2 pt-1">
-                <Button type="submit">הצגת תוצאות</Button>
+                <Button type="submit">הצגת התאמות</Button>
                 <Button asChild variant="outline">
                   <SheetClose asChild>
                     <Link href={clearFiltersHref}>איפוס</Link>
@@ -197,7 +197,7 @@ function PrimarySearchFields({
             className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2"
           />
           <Input
-            aria-label="חיפוש פריט, חומר, אבן, אירוע או טווח מחיר"
+            aria-label="חיפוש תכשיט, חומר, אבן, אירוע או מחיר"
             className="h-11 ps-10 pe-3"
             defaultValue={input.query}
             name="q"
@@ -206,16 +206,16 @@ function PrimarySearchFields({
         </div>
       </SearchControlField>
       <SearchSelectField
-        label="סוג תכשיט"
+        label="קטגוריה"
         name="category"
         options={categories.map((category) => ({
           label: category.name,
           value: category.slug,
         }))}
-        placeholder="כל הסוגים"
+        placeholder="כל הקטגוריות"
         value={input.category}
       />
-      <SearchControlField label="טווח מחיר">
+      <SearchControlField label="מחיר">
         <Input
           aria-label="מחיר מקסימלי"
           className="h-11"
@@ -227,14 +227,14 @@ function PrimarySearchFields({
         />
       </SearchControlField>
       <SearchSelectField
-        label="סדר הצגה"
+        label="מיון"
         name="sort"
         options={[
           { label: "התאמה", value: "relevance" },
-          { label: "מחיר עולה", value: "price-asc" },
-          { label: "מחיר יורד", value: "price-desc" },
-          { label: "החדשים תחילה", value: "newest" },
-          { label: "המומלצים תחילה", value: "popular" },
+          { label: "מחיר: נמוך לגבוה", value: "price-asc" },
+          { label: "מחיר: גבוה לנמוך", value: "price-desc" },
+          { label: "חדשים", value: "newest" },
+          { label: "מומלצים", value: "popular" },
         ]}
         placeholder="התאמה"
         value={input.sort ?? "relevance"}
@@ -320,7 +320,7 @@ function SearchSelectField({
 
 function AvailabilityField({ input }: { input: ProductSearchInput }) {
   return (
-    <SearchControlField label="זמינות">
+    <SearchControlField label="התאמה">
       <label
         className={cn(
           "glass-control flex h-11 min-w-0 items-center gap-2 rounded-md border px-3 text-sm transition-colors focus-within:border-[var(--glass-border-strong)] focus-within:ring-3 focus-within:ring-[var(--glass-focus)]",
@@ -334,7 +334,7 @@ function AvailabilityField({ input }: { input: ProductSearchInput }) {
           type="checkbox"
           value="1"
         />
-        <span className="min-w-0 truncate">זמין במלאי</span>
+        <span className="min-w-0 truncate">זמין</span>
         {input.availableOnly ? (
           <Check aria-hidden="true" className="ms-auto size-3.5 shrink-0" />
         ) : null}

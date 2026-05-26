@@ -12,24 +12,24 @@ const catalogLinks = [
   { href: "/category/necklaces", label: "שרשראות" },
   { href: "/category/earrings", label: "עגילים" },
   { href: "/category/bracelets", label: "צמידים" },
-  { href: "/search", label: "חיפוש בקטלוג" },
+  { href: "/search", label: "חיפוש במבחר" },
 ] as const;
 
 const commerceLinks = [
-  { href: "/checkout", label: "קופה והזמנה" },
-  { href: "/service", label: "שירות לקוחות" },
+  { href: "/checkout", label: "הבחירה שלי" },
+  { href: "/service", label: "שירות אישי" },
   { href: "/faq", label: "שאלות ותשובות" },
   { href: "/size-guide", label: "מדריך מידות" },
 ] as const;
 
 const informationLinks = [
-  { href: "/about", label: "אודות Elysia" },
-  { href: "/branches", label: "סניפים ושירות" },
-  { href: "/account", label: "אזור לקוח" },
+  { href: "/about", label: "Elysia" },
+  { href: "/branches", label: "שירות" },
+  { href: "/account", label: "אזור אישי" },
 ] as const;
 
 const policyLinks = [
-  { href: "/terms", label: "תקנון האתר" },
+  { href: "/terms", label: "תקנון" },
   { href: "/privacy", label: "מדיניות פרטיות" },
   { href: "/accessibility", label: "הצהרת נגישות" },
 ] as const;
@@ -65,12 +65,11 @@ export function SiteFooter() {
               </span>
             </Link>
             <p className="text-muted-foreground mt-6 max-w-md text-sm leading-8 sm:text-[0.95rem]">
-              סטודיו תכשיטים ישראלי לקולקציות מדודות, חומר בהיר ושירות אישי
-              שמלווה את הבחירה בעדינות.
+              קולקציות תכשיטים, שירות אישי והזמנה מקוונת.
             </p>
             <div className="mt-7 max-w-md">
               <p className="text-foreground text-xs font-medium">
-                עדכונים שקטים
+                עדכונים
               </p>
               <NewsletterForm />
             </div>
@@ -81,8 +80,8 @@ export function SiteFooter() {
             className="site-footer-nav grid md:grid-cols-3 md:gap-10 lg:gap-12"
             data-footer-nav-root
           >
-            <FooterNav links={catalogLinks} title="קטלוג" />
-            <FooterNav links={commerceLinks} title="שירות והזמנה" />
+            <FooterNav links={catalogLinks} title="קולקציות" />
+            <FooterNav links={commerceLinks} title="שירות" />
             <FooterNav links={informationLinks} title="מידע" />
           </nav>
         </div>
@@ -93,8 +92,7 @@ export function SiteFooter() {
             className="max-w-xl text-center leading-7 md:text-start"
             data-testid="footer-copyright"
           >
-            2026 Elysia. כל הזכויות שמורות. כל הזמנה מטופלת בתשומת לב, מאריזה
-            ועד שירות לאחר מסירה.
+            2026 Elysia. כל הזכויות שמורות. שירות זמין לפני ההזמנה ולאחריה.
           </p>
           <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-center md:gap-8">
             <nav

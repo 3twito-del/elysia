@@ -116,7 +116,7 @@ const softSignalRules = [
   },
   {
     signal: "evening",
-    terms: ["ערב", "יוקרתי", "חגיגי", "evening", "luxury", "dressy"],
+    terms: ["ערב", "מאופק", "חגיגי", "evening", "luxury", "dressy"],
   },
   {
     signal: "mother",
@@ -248,7 +248,7 @@ export function createSemanticMatchReason(
     product.price <= intent.hardFilters.maxPrice
   ) {
     reasons.push(
-      `בטווח מחיר עד ${intent.hardFilters.maxPrice.toLocaleString("he-IL")} ₪`,
+      `במחיר עד ${intent.hardFilters.maxPrice.toLocaleString("he-IL")} ₪`,
     );
   }
 
@@ -264,7 +264,7 @@ export function createSemanticMatchReason(
 
   return reasons.length > 0
     ? reasons.slice(0, 2).join(" · ")
-    : "התאמה סמנטית מתוך הקטלוג";
+    : "התאמה עדינה מן הקולקציה";
 }
 
 export function productMatchesSemanticExclusions(

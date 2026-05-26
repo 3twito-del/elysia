@@ -47,7 +47,7 @@ describe("AI commerce tools", () => {
           price: 690,
           formattedPrice: "690 ₪",
           image: "https://example.com/ring.jpg",
-          matchReason: "סוג הפריט תואם לבקשה",
+          matchReason: "סוג התכשיט תואם לבקשה",
           category: "טבעות",
           material: "זהב צהוב 14K",
           description: "טבעת עדינה",

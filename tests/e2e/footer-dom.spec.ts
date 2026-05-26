@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const footerHeadings = ["קטלוג", "שירות והזמנה", "מידע"] as const;
+const footerHeadings = ["הקולקציה", "שירות והזמנה", "מידע"] as const;
 const categoryRoutes = [
   "/category/rings",
   "/category/necklaces",
@@ -95,7 +95,7 @@ test.describe("footer DOM and accessibility structure", () => {
     const ariaSnapshot = await page.locator("body").ariaSnapshot();
 
     expect(countOccurrences(ariaSnapshot, "- contentinfo:")).toBe(1);
-    expect(countOccurrences(ariaSnapshot, 'heading "קטלוג"')).toBe(1);
+    expect(countOccurrences(ariaSnapshot, 'heading "הקולקציה"')).toBe(1);
     expect(countOccurrences(ariaSnapshot, 'heading "שירות והזמנה"')).toBe(1);
     expect(countOccurrences(ariaSnapshot, 'heading "מידע"')).toBe(1);
     expect(ariaSnapshot).not.toContain("שירות והזמנה - המשך");

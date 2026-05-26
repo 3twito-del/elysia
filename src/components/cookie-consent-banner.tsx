@@ -87,8 +87,8 @@ export function CookieConsentBanner() {
               בחירת קוקיז באתר Elysia
             </h2>
             <p className="text-muted-foreground mt-1 line-clamp-1 max-w-3xl text-[0.68rem] leading-5 sm:text-sm sm:leading-6">
-              אנו משתמשים בקוקיז חיוניים להפעלת האתר והסל. באישורכם נשתמש גם
-              במדידה ושיפור חוויית הבחירה, כולל פריטים שנצפו לאחרונה.
+              אנו משתמשים בקוקיז חיוניים להפעלת האתר והבחירה שלך. באישורכם נשתמש
+              גם במדידה ושיפור חוויית הבחירה, כולל בחירות שנצפו לאחרונה.
               <Link
                 className="text-foreground ms-1 underline underline-offset-4"
                 href="/privacy"

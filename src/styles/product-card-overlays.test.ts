@@ -7,25 +7,28 @@ describe("product card overlay budget", () => {
   it("keeps product image overlays limited to decision-critical badges", () => {
     const source = read("src/components/product-card.tsx");
 
-    expect(countOccurrences(source, "<Badge")).toBe(2);
+    expect(countOccurrences(source, "<Badge")).toBe(1);
     expect(source).not.toContain("product.collection");
-    expect(source).toContain("discountPercent");
-    expect(source).toContain("לא זמין");
+    expect(source).not.toContain("discountPercent");
+    expect(source).not.toContain("product.compareAt");
+    expect(source).toContain("לא פנוי כרגע");
     expect(source).not.toContain("absolute inset-x-2.5 bottom-2.5");
     expect(source).not.toContain(
       '<Badge className="max-w-full font-normal" variant="outline">',
     );
   });
 
-  it("keeps material and stone available as quiet card metadata instead of media overlays", () => {
+  it("keeps product cards minimal with material and stone as quiet metadata", () => {
     const source = read("src/components/product-card.tsx");
 
     expect(source).toContain(
       "const productDetails = [product.material, product.stone]",
     );
     expect(source).toContain('data-testid="product-card-attributes"');
-    expect(source).toContain('data-testid="product-card-highlights"');
-    expect(source).toContain("commerceHighlights.slice(0, 2)");
+    expect(source).not.toContain("product.shortDescription");
+    expect(source).not.toContain("commerceHighlights");
+    expect(source).not.toContain('data-testid="product-card-highlights"');
+    expect(source).not.toContain("matchReason");
     expect(source).toMatch(/productDetails\.map\(\(detail, index\) =>/);
   });
 });

@@ -44,8 +44,8 @@ type MobileNavProps = {
 const quickActions = [
   { href: "/search", label: "חיפוש", icon: Search },
   { href: "/branches", label: "סניפים", icon: MapPin },
-  { href: "/checkout", label: "סל", icon: ShoppingBag },
-  { href: "/account", label: "אזור לקוח", icon: UserRound },
+  { href: "/checkout", label: "הבחירה", icon: ShoppingBag },
+  { href: "/account", label: "אזור אישי", icon: UserRound },
 ] as const;
 
 const serviceActions = [
@@ -74,7 +74,7 @@ const spotlightActions = [
   },
   {
     href: "/search",
-    label: "כל הקטלוג",
+    label: "כל המבחר",
     description: "חיפוש לפי תכשיט, חומר ואבן",
     icon: Search,
   },
@@ -123,7 +123,7 @@ export function MobileNav({
           variant="ghost"
         >
           <Menu aria-hidden="true" className="size-5" />
-          <span className="sr-only">פתח ניווט</span>
+          <span className="sr-only">תפריט</span>
         </Button>
       </SheetTrigger>
       <SheetContent
@@ -247,14 +247,14 @@ export function MobileNav({
           />
 
           <nav
-            aria-label="ניווט קטלוג"
+            aria-label="ניווט הקולקציה"
             className="mobile-nav-section grid gap-1"
           >
             <p
               className="text-muted-foreground mobile-nav-animated-item px-1 text-xs font-medium"
               style={getMobileNavStaggerStyle(12)}
             >
-              קטלוג
+              הקולקציה
             </p>
             {catalogItems.map((item, index) => {
               const isActive =

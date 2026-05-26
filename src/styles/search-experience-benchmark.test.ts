@@ -77,9 +77,12 @@ describe("search experience benchmark contract", () => {
 
     expect(page).toContain("getPublicProductCommerceStatus");
     expect(page).toContain("product.availabilityMode");
-    expect(page).toContain("(product.commerceHighlights ?? []).slice(0, 2)");
-    expect(page).toContain("product.categoryName");
-    expect(page).toContain("product.material");
+    expect(page).toContain(
+      "const productDetails = [product.material, product.stone]",
+    );
+    expect(page).not.toContain("product.commerceHighlights");
+    expect(page).not.toContain("product.categoryName");
+    expect(page).not.toContain("matchReason");
     expect(page).not.toContain("getProductAvailabilityLabel");
     expect(page).not.toContain("visibleFacets");
   });

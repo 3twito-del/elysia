@@ -39,23 +39,31 @@ const ACTIVE_PRODUCT_WHERE = {
 const CATALOG_REVALIDATE_SECONDS = 60 * 60;
 const publicCatalogCopyReplacements = [
   ["יוקרה נגישה", "דיוק מאופק"],
-  ["רשת תכשיטים", "סטודיו תכשיטים"],
-  ["רכישה אונליין", "הזמנה דיגיטלית"],
-  ["קנייה אונליין", "הזמנה דיגיטלית"],
+  ["רשת תכשיטים", "בית תכשיטים"],
+  ["סטודיו תכשיטים אונליין", "בית תכשיטים ישראלי"],
+  ["סטודיו תכשיטים ישראלי", "בית תכשיטים ישראלי"],
+  ["תכשיטים זמינים לקנייה", "בחירות נבחרות מן הקולקציה"],
+  ["רכישה אונליין", "הבחירה שלי באתר"],
+  ["קנייה אונליין", "הבחירה שלי באתר"],
   ["חוויית הקנייה", "חוויית הבחירה"],
-  ["מחיר גלוי", "מחיר ברור"],
+  ["מחיר גלוי לפני שמירה", "פרטים מאומתים לפני הזמנה"],
+  ["מחיר גלוי לפני התאמה", "פרטי ההתאמה יאושרו מראש"],
+  ["מחיר גלוי", "בהירות מלאה לפני הבחירה"],
+  ["בדיקת איכות לפני מסירה", "נבדק בקפידה לפני מסירה"],
   ["שירות וקנייה", "שירות והזמנה"],
   ["לאחר קנייה", "לאחר מסירה"],
-  ["צפייה וקנייה", "לפרטי הפריט"],
-  ["מוצרים מומלצים", "פריטים מומלצים"],
-  ["מוצרים שנצפו", "פריטים שנצפו"],
-  ["מוצרים קיימים", "פריטים קיימים"],
-  ["מסחר אונליין", "בחירה דיגיטלית"],
-  ["קטלוג אונליין", "קטלוג דיגיטלי"],
-  ["תקציב", "טווח מחיר"],
-  ["מוצרים", "פריטים"],
-  ["מוצר", "פריט"],
-  ["רכישה", "הזמנה"],
+  ["צפייה וקנייה", "לפרטי התכשיט"],
+  ["מוצרים מומלצים", "בחירות מומלצות"],
+  ["מוצרים שנצפו", "בחירות שנצפו"],
+  ["מוצרים קיימים", "בחירות קיימות"],
+  ["מסחר אונליין", "הבחירה שלי"],
+  ["קטלוג אונליין", "עולם התכשיטים של Elysia"],
+  ["קטלוג דיגיטלי", "עולם התכשיטים של Elysia"],
+  ["הזמנה דיגיטלית", "הזמנה אישית"],
+  ["תקציב", "מחיר"],
+  ["מוצרים", "תכשיטים"],
+  ["מוצר", "תכשיט"],
+  ["רכישה", "בחירה"],
 ] as const;
 export { DEFAULT_CATALOG_IMAGE };
 
@@ -585,10 +593,10 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
     availabilityMode: record.availabilityMode,
     commerceHighlights: getDisplayCommerceHighlights(record),
     deliveryPromise: normalizePublicCatalogCopy(
-      record.deliveryPromise ?? "משלוח עד הבית לאחר אימות פרטי ההזמנה.",
+      record.deliveryPromise ?? "מסירה עד הבית לאחר אישור הפרטים.",
     ),
     returnPolicy: normalizePublicCatalogCopy(
-      record.returnPolicy ?? "החלפה או החזרה מתואמת לפי מדיניות האתר.",
+      record.returnPolicy ?? "החלפה או החזרה בתיאום אישי לפי מדיניות Elysia.",
     ),
     careInstructions: record.careInstructions
       ? normalizePublicCatalogCopy(record.careInstructions)
@@ -684,7 +692,7 @@ function getDisplayProductDescription(input: {
 
   const stoneText = input.stone ? ` עם ${input.stone}` : "";
 
-  return `${input.name} משלב ${input.material}${stoneText} בקו נקי ונוח לענידה. מתאים לשילוב יומיומי, מתנה או אירוע, עם פירוט מדויק של מידה, חומר וזמינות לפני הזמנה.`;
+  return `${input.name} משלב ${input.material}${stoneText} בקו נקי ונוח לענידה. מתאים לשילוב יומיומי, מתנה או אירוע, עם פרטי מידה, חומר ומחיר שמוצגים בשפה ברורה.`;
 }
 
 function getDisplayCommerceHighlights(record: CatalogProductRecord) {
@@ -693,23 +701,25 @@ function getDisplayCommerceHighlights(record: CatalogProductRecord) {
   }
 
   return [
-    normalizePublicCatalogCopy(record.warranty ?? "אחריות ושירות לאחר מסירה"),
-    normalizePublicCatalogCopy(record.deliveryPromise ?? "משלוח מתואם עד הבית"),
+    normalizePublicCatalogCopy(record.warranty ?? "שירות אישי לפני הבחירה"),
     normalizePublicCatalogCopy(
-      record.careInstructions ?? "הנחיות טיפול מצורפות לכל פריט",
+      record.deliveryPromise ?? "מסירה מתואמת עד הבית",
+    ),
+    normalizePublicCatalogCopy(
+      record.careInstructions ?? "הנחיות טיפול מצורפות לכל תכשיט",
     ),
   ];
 }
 
 function isGeneratedCatalogDescription(description: string) {
   return (
-    description.includes("בדיקות קטלוג") ||
+    description.includes("בדיקות מבחר") ||
     description.includes("תצוגת עמוד מוצר")
   );
 }
 
 function getDisplayProductTags(tags: string[]) {
-  return tags.filter((tag) => tag !== "בדיקות קטלוג");
+  return tags.filter((tag) => tag !== "בדיקות מבחר");
 }
 
 function mapCatalogBranch(record: {

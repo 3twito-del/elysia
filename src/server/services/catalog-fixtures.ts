@@ -42,12 +42,12 @@ const categoryBySlug = new Map(
 const fixtureBranches: CatalogBranch[] = [
   {
     slug: "online-service",
-    name: "שירות אונליין",
+    name: "שירות מרחוק",
     city: "Online",
     address: "Online",
     phone: "054-727-7455",
     whatsapp: "972547277455",
-    services: ["שירות אונליין", "מענה טלפוני", "תיאום תיקונים"],
+    services: ["שירות מרחוק", "מענה טלפוני", "תיאום תיקונים"],
     openingHours: {
       sundayThursday: "10:00-18:00",
       friday: "09:30-13:00",
@@ -144,8 +144,8 @@ function mapSeedProduct(product: SeedProduct): CatalogProduct {
     description: product.description,
     availabilityMode: getSeedAvailabilityMode(product.slug),
     commerceHighlights: getSeedCommerceHighlights(product.slug),
-    deliveryPromise: "משלוח עד הבית לאחר אימות פרטי ההזמנה.",
-    returnPolicy: "החלפה או החזרה מתואמת לפי מדיניות האתר.",
+    deliveryPromise: "מסירה עד הבית לאחר אישור הפרטים.",
+    returnPolicy: "החלפה או החזרה בתיאום אישי לפי מדיניות Elysia.",
     careInstructions: "מומלץ להימנע ממגע עם בושם, כלור וחומרי ניקוי.",
     warranty: "אחריות לשנה על פגמי ייצור ושירות ניקוי ראשוני ללא עלות.",
     price: variants[0]?.price ?? Number(product.basePrice),
@@ -168,7 +168,7 @@ function mapSeedProduct(product: SeedProduct): CatalogProduct {
         .map((variant) => variant.size)
         .filter((value): value is string => Boolean(value)),
     ),
-    tags: product.tags.filter((tag) => tag !== "בדיקות קטלוג"),
+    tags: product.tags.filter((tag) => tag !== "בדיקות מבחר"),
     inventory,
   };
 }
@@ -204,14 +204,14 @@ function getSeedAvailabilityMode(slug: string) {
 
 function getSeedCommerceHighlights(slug: string) {
   if (slug === "muse-pearl-earrings") {
-    return ["מחיר ברור לפני התאמה", "ייצור לפי מידה וגוון"];
+    return ["פרטי ההתאמה יאושרו מראש", "הכנה אישית במידה ובגוון"];
   }
 
   if (slug === "venus-line-ring") {
-    return ["ייעוץ התאמה לפני שמירה", "בחירת אבן מאומתת"];
+    return ["שיחת התאמה לפני הבחירה", "אבן שנבחנה בקפידה"];
   }
 
-  return ["מחיר ברור לפני שמירה", "בדיקת איכות לפני מסירה"];
+  return ["פרטים מאומתים לפני הזמנה", "נבדק בקפידה לפני מסירה"];
 }
 
 function getUniqueValues(values: string[]) {

@@ -82,14 +82,14 @@ export const DETERMINISTIC_AI_EVAL_CASES = [
   },
   {
     name: "try-on enables catalog search and approved try-on creation",
-    input: "אני רוצה מדידה וירטואלית לטבעת ונוס",
+    input: "אני רוצה מידה לטבעת ונוס",
     expectedKind: AI_RUN_KIND.tryOn,
     expectedTools: ["searchCatalog", "createTryOnSession"],
     expectedConfidence: "high",
   },
   {
     name: "vague try-on asks for product before approved action",
-    input: "אני רוצה מדידה וירטואלית",
+    input: "אני רוצה מידה",
     expectedKind: AI_RUN_KIND.tryOn,
     expectedTools: ["searchCatalog", "createTryOnSession"],
     expectedConfidence: "medium",

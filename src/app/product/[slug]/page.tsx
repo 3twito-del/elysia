@@ -14,7 +14,6 @@ import { CommerceSectionHeader } from "~/components/commerce-section-header";
 import { ProductCard } from "~/components/product-card";
 import { SiteHeader } from "~/components/site-header";
 import { RevealSection } from "~/components/reveal";
-import { Badge } from "~/components/ui/badge";
 import { getPublicProductCommerceStatus } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
 import { stringifyJsonLd } from "~/lib/json-ld";
@@ -48,7 +47,7 @@ export async function generateMetadata({
   const product = await getCatalogProductBySlug(slug);
 
   return {
-    title: product?.name ?? "פריט",
+    title: product?.name ?? "תכשיט",
     description: product?.shortDescription,
     openGraph: product
       ? {
@@ -105,11 +104,14 @@ export default async function ProductPage({
   });
   const productFacts = [
     { label: "חומר", value: product.material },
+    { label: "אבן", value: product.stone },
     { label: "קולקציה", value: product.collection },
-    { label: "מק״ט", value: product.sku },
-  ];
+  ].filter(
+    (fact): fact is { label: string; value: string } =>
+      typeof fact.value === "string" && fact.value.length > 0,
+  );
   const productCommerceDetails = [
-    { label: "משלוח", value: product.deliveryPromise },
+    { label: "מסירה", value: product.deliveryPromise },
     { label: "החזרה", value: product.returnPolicy },
     { label: "אחריות", value: product.warranty },
     { label: "טיפול", value: product.careInstructions },
@@ -117,7 +119,11 @@ export default async function ProductPage({
     (detail): detail is { label: string; value: string } =>
       typeof detail.value === "string" && detail.value.length > 0,
   );
-  const commerceHighlights = product.commerceHighlights ?? [];
+  const productTrustNotes = [
+    "פרטים מאומתים לפני הזמנה",
+    "נבדק בקפידה לפני מסירה",
+    "ייעוץ אישי לבחירת מידה",
+  ];
 
   return (
     <main className="bg-background">
@@ -168,26 +174,19 @@ export default async function ProductPage({
               <span className="text-2xl font-semibold tracking-normal sm:text-3xl">
                 {formatPrice(product.price)}
               </span>
-              {product.compareAt ? (
-                <span className="text-muted-foreground pb-1 text-sm line-through">
-                  {formatPrice(product.compareAt)}
-                </span>
-              ) : null}
             </div>
 
-            {commerceHighlights.length > 0 ? (
-              <ul
-                className="text-muted-foreground mt-5 grid gap-2 text-sm leading-6"
-                data-testid="product-commerce-highlights"
-              >
-                {commerceHighlights.slice(0, 4).map((highlight) => (
-                  <li className="flex gap-2" key={highlight}>
-                    <span aria-hidden="true">-</span>
-                    <span>{highlight}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
+            <ul
+              className="text-muted-foreground mt-5 grid gap-2 text-sm leading-6"
+              data-testid="product-commerce-highlights"
+            >
+              {productTrustNotes.map((note) => (
+                <li className="flex gap-2" key={note}>
+                  <span aria-hidden="true">-</span>
+                  <span>{note}</span>
+                </li>
+              ))}
+            </ul>
 
             <div className="mt-7">
               <TRPCReactProvider>
@@ -248,8 +247,8 @@ export default async function ProductPage({
         <div className="mx-auto grid max-w-[96rem] gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:gap-10">
           <CommerceSectionHeader
             className="mb-0"
-            eyebrow="הסטודיו של Elysia"
-            title="תכשיט שנבחר כמו פריט אייקוני, לא כמו עוד שורה בקטלוג."
+            eyebrow="הבית של Elysia"
+            title="תכשיט שנבחר כמו אייקון אישי, לא כמו עוד שורה במבחר."
           />
 
           <div className="grid gap-8">
@@ -264,14 +263,14 @@ export default async function ProductPage({
                 title="אחריות ושירות"
               />
               <ServiceRow
-                description="החזרה או החלפה לפי מדיניות האתר, באמצעות משלוח מתואם."
+                description="החזרה או החלפה לפי מדיניות Elysia, באמצעות מסירה מתואמת."
                 icon={RotateCcw}
                 title="החלפות והחזרות"
               />
               <ServiceRow
                 description="אפשר לקבל ייעוץ אישי לבחירת מידה, התאמה ומתנה לפני השלמת ההזמנה."
                 icon={Gem}
-                title="ייעוץ אונליין"
+                title="ייעוץ אישי"
               />
             </div>
           </div>
@@ -325,11 +324,6 @@ function ProductRecommendationRails({
             key={rail.id}
           >
             <CommerceSectionHeader
-              action={
-                <Badge className="rounded-full" variant="outline">
-                  מתוך הקטלוג
-                </Badge>
-              }
               eyebrow="בחירה משלימה"
               id={headingId}
               title={rail.title}

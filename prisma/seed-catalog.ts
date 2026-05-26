@@ -16,7 +16,7 @@ export const seedCategories = [
   {
     slug: "earrings",
     name: "עגילים",
-    description: "עגילי סטודיו מודרניים בזהב, פנינים ויהלומים.",
+    description: "עגילים מודרניים בזהב, פנינים ויהלומים בקו מאופק.",
     sortOrder: 3,
   },
   {
@@ -46,7 +46,7 @@ export const seedStones = [
 export const seedCollections = [
   {
     slug: "studio-light",
-    name: "אור סטודיו",
+    name: "אור רך",
     description: "קולקציית בסיס נקייה עם קווים דקים וזהב חם.",
     heroImageUrl: "/brand/v2/commerce-catalog.avif",
     isFeatured: true,
@@ -60,7 +60,7 @@ export const seedCollections = [
   },
   {
     slug: "daily-icons",
-    name: "אייקונים יומיים",
+    name: "בחירות יומיות",
     description: "תכשיטים קלים לשילוב יומיומי עם גימור נקי.",
     heroImageUrl: "/brand/v2/hero-glass.avif",
     isFeatured: false,
@@ -68,13 +68,13 @@ export const seedCollections = [
   {
     slug: "evening-glow",
     name: "זוהר ערב",
-    description: "פריטים מבריקים לערב, אירועים ומתנות עם נוכחות.",
+    description: "בחירות מבריקות לערב, אירועים ומתנות עם נוכחות.",
     heroImageUrl: "/brand/v2/service-task.avif",
     isFeatured: false,
   },
   {
     slug: "gift-studio",
-    name: "סטודיו מתנות",
+    name: "מתנות בשקט",
     description: "בחירות מוכנות למתנות לפי תקציב, סגנון ואירוע.",
     heroImageUrl: "/brand/v2/commerce-gifts.avif",
     isFeatured: false,
@@ -121,14 +121,14 @@ const manualProducts = [
     name: "טבעת Venus Line",
     shortDescription: "טבעת זהב דקה עם יהלום יחיד ונוכחות שקטה.",
     description:
-      "טבעת יומיומית בעבודת סטודיו נקייה. מתאימה כמתנה, טבעת שכבות או טבעת הצעה עדינה.",
+      "טבעת יומיומית בעבודה נקייה. מתאימה כמתנה, טבעת שכבות או טבעת הצעה עדינה.",
     categorySlug: "rings",
     materialSlug: "yellow-gold",
     stoneSlug: "diamond",
     basePrice: "1290",
     collectionSlugs: ["studio-light", "bridal-edit"],
     image: "/brand/v2/category-rings.avif",
-    tags: ["יוקרה נגישה", "סטודיו מודרני", "אירוסין", "מתנה"],
+    tags: ["דיוק מאופק", "קו מודרני", "אירוסין", "מתנה"],
     variants: [
       {
         sku: "ELY-RG-001-52",
@@ -160,14 +160,14 @@ const manualProducts = [
     name: "עגילי Muse Pearl",
     shortDescription: "עגילי פנינה קטנים בזהב צהוב למראה נקי.",
     description:
-      "עגילים קלאסיים במראה סטודיו מודרני, עם פנינה טבעית ונעילה נוחה לשימוש יומיומי.",
+      "עגילים קלאסיים בקו מודרני מאופק, עם פנינה טבעית ונעילה נוחה לשימוש יומיומי.",
     categorySlug: "earrings",
     materialSlug: "yellow-gold",
     stoneSlug: "pearl",
     basePrice: "690",
     collectionSlugs: ["studio-light"],
     image: "/brand/v2/category-earrings.avif",
-    tags: ["יוקרה נגישה", "סטודיו מודרני", "פנינה", "מתנה"],
+    tags: ["דיוק מאופק", "קו מודרני", "פנינה", "מתנה"],
     variants: [
       {
         sku: "ELY-ER-018-STD",
@@ -195,7 +195,7 @@ const manualProducts = [
     basePrice: "980",
     collectionSlugs: ["studio-light"],
     image: "/brand/v2/category-necklaces.avif",
-    tags: ["יוקרה נגישה", "סטודיו מודרני", "שכבות", "מתנה"],
+    tags: ["דיוק מאופק", "קו מודרני", "שכבות", "מתנה"],
     variants: [
       {
         sku: "ELY-NK-044-42",
@@ -234,7 +234,7 @@ const manualProducts = [
     basePrice: "840",
     collectionSlugs: ["studio-light"],
     image: "/brand/v2/category-bracelets.avif",
-    tags: ["יוקרה נגישה", "סטודיו מודרני", "יום יום", "שכבות"],
+    tags: ["דיוק מאופק", "קו מודרני", "יום יום", "שכבות"],
     variants: [
       {
         sku: "ELY-BR-027-S",
@@ -383,9 +383,9 @@ const designFamilies = [
   { slug: "daphne", name: "Daphne", hebrew: "דפנה", tags: ["אלגנטי", "אירוע"] },
   { slug: "noor", name: "Noor", hebrew: "אור", tags: ["מודרני", "קל"] },
   { slug: "gaia", name: "Gaia", hebrew: "גאיה", tags: ["טבעי", "אבן חן"] },
-  { slug: "ariel", name: "Ariel", hebrew: "אריאל", tags: ["יוקרתי", "נקי"] },
+  { slug: "ariel", name: "Ariel", hebrew: "אריאל", tags: ["מאופק", "נקי"] },
   { slug: "eden", name: "Eden", hebrew: "עדן", tags: ["רך", "מתנה"] },
-  { slug: "lyra", name: "Lyra", hebrew: "לירה", tags: ["סטודיו", "ערב"] },
+  { slug: "lyra", name: "Lyra", hebrew: "לירה", tags: ["קו נקי", "ערב"] },
   { slug: "talia", name: "Talia", hebrew: "טליה", tags: ["יומיומי", "שכבות"] },
   { slug: "mika", name: "Mika", hebrew: "מיקה", tags: ["מינימלי", "קל"] },
   { slug: "sivan", name: "Sivan", hebrew: "סיון", tags: ["חגיגי", "מתנה"] },
@@ -394,7 +394,7 @@ const designFamilies = [
     slug: "zohar",
     name: "Zohar",
     hebrew: "זוהר",
-    tags: ["מבריק", "יוקרה נגישה"],
+    tags: ["מבריק", "אור רך"],
   },
 ] as const;
 
@@ -558,7 +558,7 @@ function createTags(input: {
       ...input.familyTags,
       input.materialName,
       input.stoneName ?? "ללא אבן",
-      "יוקרה נגישה",
+      "אור רך",
       ...(input.collectionSlugs.includes("gift-studio") || input.index % 4 === 0
         ? ["מתנה"]
         : []),
@@ -574,7 +574,7 @@ function createGeneratedProductDescription(input: {
 }) {
   const stoneText = input.stoneName ? ` עם ${input.stoneName}` : "";
 
-  return `${input.name} משלב ${input.materialName}${stoneText} בקו נקי ונוח לענידה. מתאים לשילוב יומיומי, מתנה או אירוע, עם פירוט מלא של מידה, חומר וזמינות לפני רכישה.`;
+  return `${input.name} משלב ${input.materialName}${stoneText} בקו נקי ונוח לענידה. מתאים לשילוב יומיומי, מתנה או אירוע, עם פרטי מידה, חומר ומחיר שמוצגים בשפה ברורה.`;
 }
 
 function createVariants(input: {

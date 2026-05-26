@@ -1,9 +1,9 @@
 import { formatPrice } from "~/lib/format";
 
-export const checkoutPriceReviewLabel = "מחיר בבדיקה";
-export const checkoutTotalReviewLabel = "סכום בבדיקה";
+export const checkoutPriceReviewLabel = "מחיר לאישור";
+export const checkoutTotalReviewLabel = "סכום לאישור";
 export const checkoutPricingReviewMessage =
-  "מחיר אחד הפריטים דורש בדיקה לפני שמירת ההזמנה. נציג יאשר את הפרטים לפני חיוב.";
+  "אחד המחירים דורש אישור אישי לפני השלמת ההזמנה.";
 
 type CheckoutDisplayError = {
   message?: string;
@@ -57,29 +57,29 @@ export function getCheckoutAmountLabel(
 
 export function getFriendlyCheckoutErrorMessage(
   error: CheckoutDisplayError | null | undefined,
-  fallback = "לא הצלחנו להשלים את הפעולה כרגע. נסו שוב בעוד רגע.",
+  fallback = "לא הצלחנו להשלים את הבקשה כרגע. נסו שוב בעוד רגע.",
 ) {
   const rawMessage = error?.message?.trim();
 
   if (!rawMessage) return fallback;
 
   if (/סל.*ריק/u.test(rawMessage) || rawMessage.includes("לא נמצא סל")) {
-    return "הסל שלך עדיין ריק.";
+    return "הבחירה שלך עדיין ריקה.";
   }
 
-  if (/פריט.*לא נמצא|לא נמצא.*פריט/u.test(rawMessage)) {
-    return "הפריט כבר לא זמין בסל. רעננו את העמוד ונסו שוב.";
+  if (/תכשיט.*לא נמצא|לא נמצא.*תכשיט/u.test(rawMessage)) {
+    return "הבחירה הזו אינה פנויה כרגע. רעננו את העמוד ונסו שוב.";
   }
 
   if (/cart item|product variant/i.test(rawMessage)) {
-    return "הפריט כבר לא זמין בסל. רעננו את העמוד ונסו שוב.";
+    return "הבחירה הזו אינה פנויה כרגע. רעננו את העמוד ונסו שוב.";
   }
 
   if (/fixture cart|local cart|session/i.test(rawMessage)) {
-    return "הסל שלך עדיין ריק.";
+    return "הבחירה שלך עדיין ריקה.";
   }
 
-  if (/מחיר|מלאי|קופון|כתובת/u.test(rawMessage)) {
+  if (/מחיר|הטבה|כתובת/u.test(rawMessage)) {
     return rawMessage;
   }
 

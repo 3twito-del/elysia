@@ -69,19 +69,19 @@ const checkoutFormId = "cart-checkout-form";
 
 const checkoutTrustItems = [
   {
-    detail: "שמירת מלאי זמנית עד אישור ההזמנה",
+    detail: "התכשיטים נשמרים עד סיום ההזמנה",
     icon: Clock3,
-    label: "מלאי נשמר",
+    label: "הבחירה נשמרת",
   },
   {
-    detail: "חיוב מתבצע רק לאחר אימות נציג",
+    detail: "הפרטים יאומתו לפני השלמת ההזמנה",
     icon: ShieldCheck,
-    label: "בדיקה לפני חיוב",
+    label: "אישור אישי",
   },
   {
-    detail: "ההזמנות נשלחות לכתובת שתבחרו",
+    detail: "המסירה תתואם לפי הכתובת שנבחרה",
     icon: Truck,
-    label: "משלוח עד הבית",
+    label: "מסירה עד הבית",
   },
 ] as const;
 
@@ -98,29 +98,29 @@ const checkoutEmptyLinks = [
   },
   {
     href: "/service",
-    label: "לקבלת ייעוץ אישי",
+    label: "לייעוץ אישי",
     text: "עזרה בבחירה, מידה או הקדשה אישית.",
   },
 ] as const;
 
 const checkoutProgressSteps = [
   {
-    detail: "בדיקת הפריטים והכמויות",
-    label: "סל",
+    detail: "סקירה אחרונה של הבחירה",
+    label: "בחירה",
     value: "1",
   },
   {
-    detail: "פרטי קשר לאישור ההזמנה",
+    detail: "פרטים לאישור אישי",
     label: "פרטים",
     value: "2",
   },
   {
-    detail: "כתובת ומשלוח עד הבית",
+    detail: "כתובת ומסירה",
     label: "מסירה",
     value: "3",
   },
   {
-    detail: "הטבות, סיכום ושמירה",
+    detail: "הטבה וסיכום",
     label: "סיכום",
     value: "4",
   },
@@ -275,13 +275,13 @@ export function CartCheckoutForm() {
   const cartMutationErrorMessage = cartMutationError
     ? getFriendlyCheckoutErrorMessage(
         cartMutationError,
-        "לא הצלחנו לעדכן את הסל כרגע. נסו שוב בעוד רגע.",
+        "לא הצלחנו לעדכן את הבחירה כרגע. נסו שוב בעוד רגע.",
       )
     : null;
   const createOrderErrorMessage = createOrder.error
     ? getFriendlyCheckoutErrorMessage(
         createOrder.error,
-        "לא הצלחנו לשמור את ההזמנה כרגע. בדקו שהפרטים מלאים ונסו שוב.",
+        "לא הצלחנו לשמור את הבחירה כרגע. בדקו שהפרטים מולאו ונסו שוב.",
       )
     : null;
   const optionMutationInput = useMemo(
@@ -309,17 +309,17 @@ export function CartCheckoutForm() {
           <p className="text-muted-foreground truncate text-xs">
             {checkoutIssues.length > 0
               ? `${checkoutIssues.length} פרטים חסרים`
-              : "מוכן לשמירת הזמנה"}
+              : "מוכן לאישור הבחירה"}
           </p>
           <p className="text-lg font-semibold">{orderTotalLabel}</p>
           {hasPricingReview ? (
             <p className="text-muted-foreground truncate text-xs">
-              נדרש אישור מחיר
+              נדרש אישור פרטים
             </p>
           ) : null}
         </div>
         <Button disabled={!canSubmit} form={checkoutFormId} type="submit">
-          שמירה
+          אישור
           <PackageCheck aria-hidden="true" className="size-4" />
         </Button>
       </div>
@@ -403,12 +403,12 @@ export function CartCheckoutForm() {
             <div className="glass-inset mb-4 grid size-12 place-items-center rounded-full border">
               <CheckCircle2 aria-hidden="true" className="size-6" />
             </div>
-            <CardTitle className="text-3xl">ההזמנה נשמרה</CardTitle>
+            <CardTitle className="text-3xl">הבחירה נשמרה</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-5 leading-7">
             <p className="text-muted-foreground">
-              מספר ההזמנה הוא {createOrder.data.orderNumber}. המלאי נשמר עד
-              לסיום חלון התשלום.
+              מספר ההזמנה הוא {createOrder.data.orderNumber}. התכשיטים נשמרו
+              עבורך עד לסיום חלון התשלום.
             </p>
             <ReservationCountdown
               expiresAt={createOrder.data.reservationExpiresAt}
@@ -419,12 +419,12 @@ export function CartCheckoutForm() {
                 {formatPrice(createOrder.data.totals.total)}
               </p>
               <p className="text-muted-foreground mt-2 text-sm">
-                {createOrder.data.itemCount} פריטים
+                {createOrder.data.itemCount} תכשיטים
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
               <Button asChild>
-                <Link href="/account">אזור לקוח</Link>
+                <Link href="/account">אזור אישי</Link>
               </Button>
               <Button asChild variant="outline">
                 <Link href="/">המשך בחירה</Link>
@@ -455,14 +455,14 @@ export function CartCheckoutForm() {
       >
         <div className="grid gap-4">
           <div>
-            <h2 className="text-xl font-semibold sm:text-2xl">סל וקופה</h2>
+            <h2 className="text-xl font-semibold sm:text-2xl">הבחירה שלי</h2>
             <p className="text-muted-foreground mt-1.5 max-w-3xl text-sm leading-6 sm:text-base">
-              סל רב-פריטים עם שמירת מלאי, פרטי מסירה וקופון.
+              סיכום תכשיטים שנבחרו, פרטי מסירה והטבה.
             </p>
           </div>
 
           <div
-            aria-label="שלבי הקופה"
+            aria-label="שלבי סיום ההזמנה"
             className="glass-panel grid gap-2 rounded-md border p-3 text-sm sm:grid-cols-4"
             data-testid="checkout-progress-steps"
           >
@@ -487,7 +487,7 @@ export function CartCheckoutForm() {
               <CardTitle className="flex items-center gap-2">
                 <CheckoutStepBadge value="1" />
                 <PackageCheck aria-hidden="true" className="size-5" />
-                פריטים בסל
+                התכשיטים שנבחרו
               </CardTitle>
             </CardHeader>
             <CardContent className="grid min-h-72 gap-3">
@@ -497,7 +497,7 @@ export function CartCheckoutForm() {
                   key={item.id}
                 >
                   <Link
-                    aria-label={`צפייה בפריט ${item.productName}`}
+                    aria-label={`צפייה בתכשיט ${item.productName}`}
                     className="bg-muted relative size-[68px] overflow-hidden rounded-md border border-[var(--glass-border)]"
                     href={`/product/${item.productSlug}`}
                   >
@@ -528,7 +528,7 @@ export function CartCheckoutForm() {
                       className="text-foreground mt-1 text-sm font-semibold"
                       data-testid="checkout-line-total"
                     >
-                      סכום שורה:{" "}
+                      סה״כ:{" "}
                       <span data-testid="checkout-line-total-amount">
                         {getCheckoutAmountLabel(item.lineTotal, {
                           requiresPositive: true,
@@ -607,7 +607,7 @@ export function CartCheckoutForm() {
                       <span className="sr-only">הוספה</span>
                     </Button>
                     <Button
-                      aria-label={`הסרת ${item.productName} מהסל`}
+                      aria-label={`הסרת ${item.productName} מהבחירה`}
                       data-icon-tooltip="הסרה"
                       data-icon-tooltip-placement="top"
                       onClick={() => {
@@ -641,13 +641,13 @@ export function CartCheckoutForm() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckoutStepBadge value="2" />
-                פרטי לקוח
+                פרטים לאישור
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
               <p className="text-muted-foreground text-sm">
-                הפרטים משמשים לאישור ההזמנה ולתיאום מסירה. נציג יאמת את הפרטים
-                לפני חיוב.
+                הפרטים יאפשרו לנו לאשר את ההזמנה ולתאם מסירה. הם יאומתו לפני
+                השלמת ההזמנה.
               </p>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
@@ -723,9 +723,9 @@ export function CartCheckoutForm() {
               <div className="bg-background flex items-start gap-3 rounded-md border p-3.5 text-sm">
                 <Truck className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
                 <div>
-                  <p className="font-medium">משלוח עד הבית</p>
+                  <p className="font-medium">מסירה עד הבית</p>
                   <p className="text-muted-foreground mt-1">
-                    בשלב זה המכירות באתר מתקיימות אונליין בלבד.
+                    המסירה תתואם לפי הכתובת שתבחרו.
                   </p>
                 </div>
               </div>
@@ -792,7 +792,7 @@ export function CartCheckoutForm() {
             <CardContent className="grid gap-3">
               <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
                 <div>
-                  <Label htmlFor="coupon">קופון</Label>
+                  <Label htmlFor="coupon">קוד הטבה</Label>
                   <Input
                     disabled={checkoutLocked}
                     id="coupon"
@@ -813,7 +813,7 @@ export function CartCheckoutForm() {
                   type="button"
                   variant="secondary"
                 >
-                  החלה
+                  אישור
                 </Button>
               </div>
               <label className="glass-inset flex min-h-11 items-center gap-3 rounded-md border px-3 text-sm">
@@ -844,33 +844,33 @@ export function CartCheckoutForm() {
             <CardContent className="grid gap-4">
               <div className="grid gap-2 text-sm">
                 <div className="flex justify-between">
-                  <span>פריטים</span>
+                  <span>תכשיטים</span>
                   <span data-testid="checkout-item-count">
                     {cartItemCount}{" "}
-                    {cartItemCount === 1 ? "סוג פריט" : "סוגי פריטים"}
+                    {cartItemCount === 1 ? "קטגוריה" : "סוגי תכשיטים"}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span>כמות</span>
                   <span data-testid="checkout-item-quantity">
                     {totalItemQuantity}{" "}
-                    {totalItemQuantity === 1 ? "פריט" : "פריטים"}
+                    {totalItemQuantity === 1 ? "תכשיט" : "תכשיטים"}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span>מחיר פריטים</span>
+                  <span>סכום התכשיטים</span>
                   <span data-testid="checkout-items-price">
                     {subtotalLabel}
                   </span>
                 </div>
                 {discount > 0 ? (
                   <div className="flex justify-between">
-                    <span>הנחה</span>
+                    <span>הטבה</span>
                     <span>{formatPrice(discount)}</span>
                   </div>
                 ) : null}
                 <div className="flex justify-between">
-                  <span>משלוח</span>
+                  <span>מסירה</span>
                   <span data-testid="checkout-shipping">{shippingLabel}</span>
                 </div>
                 <div className="flex justify-between">
@@ -887,8 +887,7 @@ export function CartCheckoutForm() {
                   </span>
                 </div>
                 <p className="text-muted-foreground text-xs leading-5">
-                  שמירת ההזמנה אינה מחייבת תשלום מיידי; נציג יאשר זמינות ומחיר
-                  לפני חיוב.
+                  ההזמנה תושלם רק לאחר אישור הפרטים והסכום.
                 </p>
               </div>
               {cart.couponCode ? (
@@ -917,7 +916,7 @@ export function CartCheckoutForm() {
               </div>
               {checkoutIssues.length > 0 ? (
                 <div className="glass-inset rounded-md border p-3 text-sm">
-                  <p className="font-medium">לפני שמירת ההזמנה</p>
+                  <p className="font-medium">לפני אישור הבחירה</p>
                   <ul className="text-muted-foreground mt-2 grid list-inside list-disc gap-1">
                     {checkoutIssues.map((issue) => (
                       <li key={issue}>{issue}</li>
@@ -937,8 +936,8 @@ export function CartCheckoutForm() {
               ) : null}
               {isOffline ? (
                 <StatusMessage tone="error">
-                  הקופה דורשת חיבור פעיל. פעולות סל נתמכות יישמרו ויסתנכרנו
-                  כשהחיבור יחזור.
+                  סיום ההזמנה דורש חיבור פעיל. פעולות בחירה נתמכות יישמרו
+                  ויסתנכרנו כשהחיבור יחזור.
                 </StatusMessage>
               ) : null}
               {createOrderErrorMessage ? (
@@ -947,7 +946,7 @@ export function CartCheckoutForm() {
                 </StatusMessage>
               ) : null}
               <Button disabled={!canSubmit} size="lg" type="submit">
-                שמירת הזמנה
+                אישור הבחירה
                 <PackageCheck aria-hidden="true" className="size-4" />
               </Button>
             </CardContent>
@@ -976,25 +975,25 @@ function CheckoutEmptyCartState() {
             <ShoppingBag aria-hidden="true" className="size-5" />
           </div>
           <p className="text-muted-foreground text-xs font-medium">
-            קופה אישית
+            הבחירה שלי
           </p>
           <h2 className="mt-3 text-2xl font-semibold tracking-normal sm:text-3xl">
-            הסל שלך ממתין לבחירה הראשונה
+            הבחירה שלך ריקה
           </h2>
           <p className="text-muted-foreground mt-4 max-w-xl text-sm leading-7 sm:text-base">
-            חזרי לקולקציה ובחרי את התכשיט שילווה את הרגע הבא. הקופה תמתין כאן עם
-            סיכום ברור, שמירת מלאי ושירות אישי לפני חיוב.
+            חזרי לקולקציה ובחרי את התכשיט שילווה את הרגע הבא. הסיכום ימתין כאן
+            עם סיכום ברור, שמירת התכשיטים ושירות אישי לפני אישור.
           </p>
           <div className="mt-7 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <Button asChild>
               <Link href="/search">
-                חזרה לקולקציה
+                לקולקציה
                 <ShoppingBag aria-hidden="true" className="size-4" />
               </Link>
             </Button>
             <Button asChild variant="outline">
               <Link href="/service">
-                לקבלת ייעוץ אישי
+                לייעוץ אישי
                 <MessageCircle aria-hidden="true" className="size-4" />
               </Link>
             </Button>

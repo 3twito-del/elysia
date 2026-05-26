@@ -24,10 +24,10 @@ export default async function GiftsPage() {
     <main>
       <SiteHeader />
       <CommercePageHero
-        description="בחירות מתנה מדודות עם אריזה, ברכה אישית והתאמה לפי רגע, חומר וטווח מחיר."
+        description="בחירות מתנה מדודות עם אריזה, ברכה אישית והתאמה לפי רגע, חומר ומחיר."
         eyebrow="מתנות Elysia"
         id="page-hero"
-        title="מתנות תכשיטים"
+        title="למתנות"
         variant="catalog"
       />
       <RevealSection className="mx-auto max-w-7xl px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y)]">
@@ -39,10 +39,10 @@ export default async function GiftsPage() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-base font-medium" id="gift-results">
-                בחירות זמינות עכשיו
+                בחירות פתוחות עכשיו
               </h2>
               <p className="text-muted-foreground text-sm">
-                {products.length} פריטים שמתאימים למתנה
+                {products.length} בחירות שמתאימות למתנה
               </p>
             </div>
             <Link

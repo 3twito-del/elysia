@@ -26,10 +26,10 @@ export default function AccountError({
                   ניסיון חוזר
                 </Button>
               }
-              description="אזור הלקוח אינו זמין כרגע. אפשר לנסות שוב בלי לאבד את הסשן."
+              description="האזור האישי אינו פתוח כרגע. אפשר לנסות שוב בלי לאבד את הסשן."
               icon={AlertTriangle}
               testId="account-error-boundary"
-              title="אזור הלקוח אינו זמין"
+              title="האזור האישי אינו פתוח כרגע"
               variant="inset"
             />
           </CardContent>

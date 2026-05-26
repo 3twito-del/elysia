@@ -50,7 +50,7 @@ const categoryMetadataBySlug: Record<
   { description: string; title: string }
 > = {
   bracelets: {
-    description: "צמידים וצמידי טניס מודרניים, בזהב, כסף ופנינים.",
+    description: "צמידים וצמידי טניס מודרניים, בזהב, כסף, פנינים ואבנים.",
     title: "צמידים",
   },
   earrings: {
@@ -62,7 +62,7 @@ const categoryMetadataBySlug: Record<
     title: "שרשראות",
   },
   rings: {
-    description: "טבעות זהב, יהלומים ואבני חן ליום יום ולאירועים.",
+    description: "טבעות זהב, יהלומים ואבני חן ליום ולערב.",
     title: "טבעות",
   },
 };
@@ -79,7 +79,7 @@ export async function generateMetadata({
   const category = categoryMetadataBySlug[slug];
 
   return {
-    title: category?.title ?? "קטגוריה",
+    title: category?.title ?? "משפחת תכשיטים",
     description: category?.description,
   };
 }
@@ -142,8 +142,8 @@ export default async function CategoryPage({
   const hasActiveFilters = activeFilterCount > 0;
   const pageRangeLabel =
     sortedProducts.length > 0
-      ? `${visibleStart}-${visibleEnd} מתוך ${sortedProducts.length} פריטים`
-      : "0 פריטים";
+      ? `${visibleStart}-${visibleEnd} מתוך ${sortedProducts.length} בחירות`
+      : "0 בחירות";
 
   return (
     <>
@@ -153,9 +153,9 @@ export default async function CategoryPage({
         <CommercePageHero
           description={
             category.description ??
-            "בחירה מסוננת מתוך קטלוג התכשיטים, עם הזמנה דיגיטלית ומחירים בשקלים."
+            "בחירה מדודה בקולקציה, עם חומר ברור והזמנה אישית."
           }
-          eyebrow="קטלוג Elysia"
+          eyebrow="קולקציית Elysia"
           id="page-hero"
           title={category.name}
           variant="catalog"
@@ -167,10 +167,10 @@ export default async function CategoryPage({
               <p className="font-medium">{pageRangeLabel}</p>
               <p className="text-muted-foreground text-xs">
                 {hasActiveFilters
-                  ? `${activeFilterCount} פילטרים פעילים`
+                  ? `${activeFilterCount} סינונים פעילים`
                   : hasCategoryProducts
-                    ? "כל הפריטים בקטגוריה"
-                    : "הקטגוריה בעדכון"}
+                    ? "כל הבחירות במשפחה"
+                    : "המשפחה בעדכון"}
               </p>
             </div>
             <CategoryFilterSheet activeFilterCount={activeFilterCount}>
@@ -196,10 +196,10 @@ export default async function CategoryPage({
                 <SheetHeader className="border-b border-[var(--glass-border)] p-[var(--ui-panel-padding)]">
                   <SheetTitle className="flex items-center gap-2">
                     <SlidersHorizontal aria-hidden="true" className="size-4" />
-                    סינון מדויק
+                    סינון
                   </SheetTitle>
                   <SheetDescription>
-                    בחרו סדר הצגה, סוג תכשיט, חומר, אבן וטווח מחיר.
+                    בחרו מיון, קטגוריה, חומר, אבן ומחיר.
                   </SheetDescription>
                 </SheetHeader>
                 <div className="p-[var(--ui-panel-padding)]">
@@ -242,7 +242,7 @@ export default async function CategoryPage({
               <div className="pb-4">
                 <h2 className="flex items-center gap-2 text-base font-medium">
                   <SlidersHorizontal aria-hidden="true" className="size-4" />
-                  סינון מדויק
+                  סינון
                 </h2>
               </div>
               <div>
@@ -269,7 +269,7 @@ export default async function CategoryPage({
                         ? `עמוד ${currentPage} מתוך ${totalPages}`
                         : hasActiveFilters
                           ? "התוצאות מסוננות לפי הבחירה שלך"
-                          : "כל הפריטים הזמינים בקטגוריה"}
+                          : "הבחירות הפתוחות במשפחה הזו"}
                     <span className="mx-2">·</span>
                     <span>מיון: {currentSortLabel}</span>
                   </p>
@@ -362,14 +362,14 @@ function CategoryEmptyState({
         actions={
           <>
             <Button asChild variant="outline">
-              <Link href="/search">חיפוש בכל הקטלוג</Link>
+              <Link href="/search">חיפוש בכל המבחר</Link>
             </Button>
           </>
         }
-        description="הקטגוריה קיימת, אבל אין בה כרגע פריטים פעילים. אפשר לעבור לחיפוש הרחב או לפתוח קטגוריה זמינה אחרת."
+        description="המשפחה קיימת, אבל אין בה כרגע בחירות פתוחות. אפשר לעבור לחיפוש הרחב או לפתוח משפחה אחרת."
         icon={Gem}
         testId="category-empty-state"
-        title="הקטגוריה מתעדכנת"
+        title="המשפחה מתעדכנת"
       />
     );
   }
@@ -381,19 +381,19 @@ function CategoryEmptyState({
           {hasActiveFilters ? (
             <Button asChild variant="outline">
               <Link href={resetHref} scroll={false}>
-                איפוס פילטרים
+                איפוס סינונים
               </Link>
             </Button>
           ) : null}
           <Button asChild variant="outline">
-            <Link href="/search">חיפוש בכל הקטלוג</Link>
+            <Link href="/search">חיפוש בכל המבחר</Link>
           </Button>
         </>
       }
-      description="אפשר לנקות את הבחירה או להרחיב את החיפוש בכל הקטלוג."
+      description="אפשר לנקות את הבחירה או להרחיב את החיפוש בכל המבחר."
       icon={Gem}
       testId="category-empty-state"
-      title="לא נמצאו פריטים בהתאמה הזו"
+      title="לא נמצאה התאמה בבחירה הזו"
     />
   );
 }
@@ -415,7 +415,7 @@ function CategoryPagination({
 
   return (
     <nav
-      aria-label="עמודי פריטים"
+      aria-label="עמודי בחירות"
       className="mt-8 flex flex-col items-center justify-between gap-3 sm:flex-row"
     >
       <p className="text-muted-foreground text-sm">

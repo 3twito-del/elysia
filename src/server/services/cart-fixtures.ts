@@ -63,21 +63,21 @@ export function addFixtureCartItem(input: {
   if (product.availabilityMode !== "READY_TO_ORDER") {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "הפריט הזה דורש תיאום עם שירות הלקוחות לפני הזמנה.",
+      message: "התכשיט הזה דורש תיאום עם השירות האישי לפני הזמנה.",
     });
   }
 
   if (variant.availableQuantity <= 0) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "האפשרות שנבחרה אינה זמינה כרגע.",
+      message: "האפשרות שנבחרה אינה פנויה כרגע.",
     });
   }
 
   if (!Number.isFinite(variant.price) || variant.price <= 0) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "מחיר הפריט דורש בדיקה לפני הוספה לסל.",
+      message: "פרטי המחיר דורשים אישור לפני צירוף לבחירה.",
     });
   }
 
@@ -117,7 +117,7 @@ export function updateFixtureCartItemQuantity(input: {
   if (!item) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "הפריט לא נמצא בסל.",
+      message: "התכשיט לא נמצא בבחירה.",
     });
   }
 
@@ -138,7 +138,7 @@ export function removeFixtureCartItem(input: {
   if (cart.items.length === initialLength) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "הפריט לא נמצא בסל.",
+      message: "התכשיט לא נמצא בבחירה.",
     });
   }
 
@@ -197,7 +197,7 @@ function requireFixtureCart(sessionKey: string) {
   if (!cart) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "לא נמצא סל פעיל.",
+      message: "לא נמצאה בחירה פעילה.",
     });
   }
 
@@ -231,7 +231,7 @@ function findFixtureVariant(variantSku: string): {
 
   throw new TRPCError({
     code: "NOT_FOUND",
-    message: "האפשרות שנבחרה אינה זמינה כרגע.",
+    message: "האפשרות שנבחרה אינה פנויה כרגע.",
   });
 }
 

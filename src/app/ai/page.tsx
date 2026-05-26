@@ -28,7 +28,7 @@ export default async function AiPage({ searchParams }: AiPageProps) {
     <main className="min-h-screen">
       <SiteHeader />
       <CommercePageHero
-        description="כלי התאמה מחוברים לקטלוג Elysia ומציגים פריטים זמינים לפי כוונה, טווח מחיר וסגנון."
+        description="כלי התאמה מחוברים למבחר של Elysia ומציגים בחירות פתוחות לפי כוונה, מחיר וסגנון."
         eyebrow="התאמה חכמה"
         id="page-hero"
         title="התאמה חכמה לתכשיט"
@@ -88,9 +88,9 @@ export default async function AiPage({ searchParams }: AiPageProps) {
               <Sparkles aria-hidden="true" className="size-4" />
             </div>
             <p className="text-muted-foreground max-w-4xl">
-              תמיכה בהזמנה, שמירת פרופיל סגנון ומדידה וירטואלית נשארים זמינים
-              דרך אזור הלקוח ועמודי הפריט. ההמלצות כאן מתמקדות בפריטים שאפשר
-              לפתוח, לבדוק ולהזמין מתוך הקטלוג.
+              תמיכה בהזמנה, שמירת פרופיל סגנון ומידה נשארים זמינים
+              דרך אזור הלקוח ועמודי התכשיט. ההמלצות כאן מתמקדות בבחירות שאפשר
+              לפתוח, לבחון ולהזמין בקולקציה.
             </p>
           </section>
         </div>

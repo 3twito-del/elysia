@@ -27,7 +27,7 @@ describe("AI commerce validation", () => {
     expect(parsed.success).toBe(false);
     if (!parsed.success) {
       expect(getZodFieldErrors(parsed.error)).toMatchObject({
-        budget: "יש להזין טווח מחיר גדול מאפס.",
+        budget: "יש להזין מחיר גדול מאפס.",
         occasion: "יש להזין אירוע.",
         relation: "יש להזין למי המתנה.",
       });

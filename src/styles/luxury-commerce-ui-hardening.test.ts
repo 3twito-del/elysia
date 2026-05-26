@@ -31,9 +31,9 @@ describe("luxury commerce UI hardening", () => {
     expect(source).toContain("Headset");
     expect(source).not.toContain("MapPin");
     expect(source).toContain('data-icon-tooltip="חיפוש"');
-    expect(source).toContain('data-icon-tooltip="סניפים ושירות"');
-    expect(source).toContain('data-icon-tooltip="אזור לקוח"');
-    expect(source).toContain('data-icon-tooltip="סל קניות"');
+    expect(source).toContain('data-icon-tooltip="שירות"');
+    expect(source).toContain('data-icon-tooltip="אזור אישי"');
+    expect(source).toContain('data-icon-tooltip="הבחירה שלי"');
     expect(read("src/styles/globals.css")).toContain(
       "[data-icon-tooltip]::after",
     );
@@ -58,7 +58,7 @@ describe("luxury commerce UI hardening", () => {
     );
     expect(footer).toContain("site-footer-nav grid md:grid-cols-3");
     expect(footer).toContain("function FooterNav");
-    expect(footer).toContain('title="קטלוג"');
+    expect(footer).toContain('title="הקולקציה"');
     expect(footer).toContain('title="שירות והזמנה"');
     expect(footer).toContain('title="מידע"');
     expect(footer).not.toContain("primaryServiceLinks");

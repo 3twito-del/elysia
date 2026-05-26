@@ -33,17 +33,17 @@ describe("commerce labels", () => {
   });
 
   it("formats fulfillment, availability, stock, and count labels", () => {
-    expect(getFulfillmentMethodLabel("PICKUP")).toBe("אונליין");
-    expect(getFulfillmentMethodLabel("DELIVERY")).toBe("משלוח");
-    expect(getProductAvailabilityLabel(0)).toBe("בדיקת זמינות");
-    expect(getProductAvailabilityLabel(1)).toBe("זמין במלאי");
-    expect(getProductAvailabilityLabel(3)).toBe("זמין במלאי");
-    expect(getPublicStockStatusLabel(0)).toBe("אזל זמנית");
-    expect(getPublicStockStatusLabel(4)).toBe("זמין במלאי");
-    expect(getStockQuantityLabel(0)).toBe("לא זמין");
-    expect(getStockQuantityLabel(4)).toBe("4 במלאי");
-    expect(getItemCountLabel(1)).toBe("פריט אחד");
-    expect(getItemCountLabel(3)).toBe("3 פריטים");
+    expect(getFulfillmentMethodLabel("PICKUP")).toBe("שירות מרחוק");
+    expect(getFulfillmentMethodLabel("DELIVERY")).toBe("מסירה עד הבית");
+    expect(getProductAvailabilityLabel(0)).toBe("בירור התאמה");
+    expect(getProductAvailabilityLabel(1)).toBe("זמין");
+    expect(getProductAvailabilityLabel(3)).toBe("זמין");
+    expect(getPublicStockStatusLabel(0)).toBe("לא פנוי כרגע");
+    expect(getPublicStockStatusLabel(4)).toBe("זמין");
+    expect(getStockQuantityLabel(0)).toBe("לא פנוי כרגע");
+    expect(getStockQuantityLabel(4)).toBe("4 פנויים לבחירה");
+    expect(getItemCountLabel(1)).toBe("תכשיט אחד");
+    expect(getItemCountLabel(3)).toBe("3 תכשיטים");
   });
 
   it("maps public commerce status from availability mode and quantity", () => {
@@ -54,9 +54,9 @@ describe("commerce labels", () => {
       }),
     ).toMatchObject({
       canAddToCart: true,
-      cardCtaLabel: "לפרטי הפריט",
-      ctaLabel: "הוספה לסל",
-      label: "זמין במלאי",
+      cardCtaLabel: "לפרטי התכשיט",
+      ctaLabel: "צירוף לבחירה",
+      label: "זמין",
     });
     expect(
       getPublicProductCommerceStatus({
@@ -77,7 +77,7 @@ describe("commerce labels", () => {
     ).toMatchObject({
       canAddToCart: false,
       ctaLabel: "תיאום ייעוץ",
-      label: "לתיאום ייעוץ",
+      label: "לייעוץ",
       serviceReason: "consultation",
     });
   });

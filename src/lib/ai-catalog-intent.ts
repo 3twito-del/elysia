@@ -163,7 +163,7 @@ export function createAiMatchReason(
     product.categorySlug ?? normalizeCategory(product.category);
 
   if (intent.category && productCategory === intent.category) {
-    reasons.push("סוג הפריט תואם לבקשה");
+    reasons.push("סוג התכשיט תואם לבקשה");
   }
 
   if (intent.material && product.material === intent.material) {
@@ -175,7 +175,7 @@ export function createAiMatchReason(
     typeof product.price === "number" &&
     product.price <= intent.maxPrice
   ) {
-    reasons.push(`נשאר בטווח מחיר עד ${formatBudget(intent.maxPrice)}`);
+    reasons.push(`נשאר במחיר עד ${formatBudget(intent.maxPrice)}`);
   }
 
   if (
@@ -187,7 +187,7 @@ export function createAiMatchReason(
 
   return reasons.length > 0
     ? reasons.slice(0, 2).join(" · ")
-    : "חלופה קרובה מתוך הקטלוג הקיים";
+    : "חלופה קרובה מן הקולקציה";
 }
 
 function normalizeCategory(value?: string) {

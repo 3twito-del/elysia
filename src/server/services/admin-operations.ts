@@ -128,7 +128,7 @@ export async function getAdminOperationsOverview() {
       total: Number(order.total),
       branchName: physicalBranchesEnabled
         ? (order.branch?.name ?? null)
-        : "שירות אונליין",
+        : "שירות מרחוק",
       createdAt: order.createdAt,
     })),
     openOrders,
@@ -208,7 +208,7 @@ export async function listAdminOrders(input: AdminOrderListInput) {
     branches: branches.map((branch) => ({
       id: branch.id,
       city: physicalBranchesEnabled ? branch.city : "",
-      name: physicalBranchesEnabled ? branch.name : "שירות אונליין",
+      name: physicalBranchesEnabled ? branch.name : "שירות מרחוק",
       slug: branch.slug,
     })),
     items: orders.map((order) => ({
@@ -221,8 +221,8 @@ export async function listAdminOrders(input: AdminOrderListInput) {
       phone: order.phone,
       recipientName: order.recipientName,
       branchName: physicalBranchesEnabled
-        ? (order.branch?.name ?? "שירות אונליין")
-        : "שירות אונליין",
+        ? (order.branch?.name ?? "שירות מרחוק")
+        : "שירות מרחוק",
       branchCity: physicalBranchesEnabled ? (order.branch?.city ?? "") : "",
       createdAt: order.createdAt,
       itemCount: order.items.reduce((sum, item) => sum + item.quantity, 0),
@@ -334,7 +334,7 @@ export async function listAdminCatalog(input: AdminCatalogListInput) {
     branches: branches.map((branch) => ({
       id: branch.id,
       slug: branch.slug,
-      name: physicalBranchesEnabled ? branch.name : "שירות אונליין",
+      name: physicalBranchesEnabled ? branch.name : "שירות מרחוק",
       city: physicalBranchesEnabled ? branch.city : "",
     })),
     categories: categories.map((category) => ({
@@ -396,7 +396,7 @@ export async function listAdminCatalog(input: AdminCatalogListInput) {
           branchId: item.branchId,
           branchName: physicalBranchesEnabled
             ? item.branch.name
-            : "שירות אונליין",
+            : "שירות מרחוק",
           quantity: item.quantity,
           reserved: item.reserved,
           safetyStock: item.safetyStock,
@@ -490,13 +490,13 @@ export async function listAdminInventory(input: AdminInventoryListInput) {
     branches: branches.map((branch) => ({
       id: branch.id,
       city: physicalBranchesEnabled ? branch.city : "",
-      name: physicalBranchesEnabled ? branch.name : "שירות אונליין",
+      name: physicalBranchesEnabled ? branch.name : "שירות מרחוק",
       slug: branch.slug,
     })),
     items: items.map((item) => ({
       id: item.id,
       branchId: item.branchId,
-      branchName: physicalBranchesEnabled ? item.branch.name : "שירות אונליין",
+      branchName: physicalBranchesEnabled ? item.branch.name : "שירות מרחוק",
       branchCity: physicalBranchesEnabled ? item.branch.city : "",
       categoryName: item.variant.product.category.name,
       productName: item.variant.product.name,
@@ -664,7 +664,7 @@ export async function listAdminAppointments(input: AdminAppointmentListInput) {
     branches: branches.map((branch) => ({
       id: branch.id,
       city: physicalBranchesEnabled ? branch.city : "",
-      name: physicalBranchesEnabled ? branch.name : "שירות אונליין",
+      name: physicalBranchesEnabled ? branch.name : "שירות מרחוק",
       slug: branch.slug,
     })),
     items: appointments.map((appointment) => ({
@@ -678,7 +678,7 @@ export async function listAdminAppointments(input: AdminAppointmentListInput) {
       notes: appointment.notes,
       branchName: physicalBranchesEnabled
         ? appointment.branch.name
-        : "שירות אונליין",
+        : "שירות מרחוק",
       branchCity: physicalBranchesEnabled ? appointment.branch.city : "",
       customerId: appointment.customerId,
     })),
@@ -761,7 +761,7 @@ export async function getAdminOrderDetail(orderId: string) {
     branch: order.branch
       ? {
           id: order.branch.id,
-          name: physicalBranchesEnabled ? order.branch.name : "שירות אונליין",
+          name: physicalBranchesEnabled ? order.branch.name : "שירות מרחוק",
           city: physicalBranchesEnabled ? order.branch.city : "",
           phone: physicalBranchesEnabled
             ? order.branch.phone
@@ -817,7 +817,7 @@ export async function getAdminOrderDetail(orderId: string) {
     })),
     inventoryLedgers: inventoryLedgers.map((entry) => ({
       id: entry.id,
-      branchName: physicalBranchesEnabled ? entry.branch.name : "שירות אונליין",
+      branchName: physicalBranchesEnabled ? entry.branch.name : "שירות מרחוק",
       variantSku: entry.variant.sku,
       delta: entry.delta,
       reason: entry.reason,
@@ -1008,7 +1008,7 @@ function createOrderTimeline(order: {
     { label: "נוצרה", at: order.createdAt },
     { label: "שולמה", at: order.paidAt },
     { label: "בהכנה", at: order.preparingAt },
-    { label: "מוכן למשלוח", at: order.readyForPickupAt },
+    { label: "מוכן למסירה", at: order.readyForPickupAt },
     { label: "נשלחה", at: order.shippedAt },
     { label: "הושלמה", at: order.completedAt },
     { label: "בוטלה", at: order.cancelledAt },

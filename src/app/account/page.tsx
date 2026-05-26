@@ -40,7 +40,7 @@ import { db } from "~/server/db";
 import { DEFAULT_CATALOG_IMAGE } from "~/server/services/catalog";
 
 export const metadata = {
-  title: "אזור לקוח",
+  title: "אזור אישי",
 };
 
 export const dynamic = "force-dynamic";
@@ -154,10 +154,10 @@ export default async function AccountPage() {
             </form>
           </>
         }
-        description="הסשן הנוכחי שייך למשתמש ניהול. אזור לקוחות מציג נתוני לקוח בלבד, כדי לא לערבב בין תפעול לבין פרטים אישיים."
+        description="הסשן הנוכחי שייך למשתמש ניהול. האזור האישי מציג נתוני לקוח בלבד, כדי לשמור על הפרדה ברורה מפרטי הניהול."
         icon={ShieldCheck}
         testId="account-admin-forbidden"
-        title="אזור לקוחות זמין ללקוחות בלבד"
+        title="האזור האישי מיועד ללקוחות בלבד"
       />
     );
   }
@@ -178,10 +178,10 @@ export default async function AccountPage() {
             </form>
           </>
         }
-        description="פרטי החשבון אינם זמינים כרגע. הנתונים לא נמחקו, ואפשר לנסות שוב בעוד רגע."
+        description="פרטי החשבון אינם פתוחים כרגע. הנתונים לא נמחקו, ואפשר לנסות שוב בעוד רגע."
         icon={AlertTriangle}
         testId="account-load-error"
-        title="אזור הלקוח אינו זמין"
+        title="האזור האישי אינו פתוח כרגע"
       />
     );
   }
@@ -216,20 +216,20 @@ export default async function AccountPage() {
         <SiteHeader />
         <CommercePageHero
           className="account-entry-intro"
-          description="כניסה מאובטחת להזמנות, מועדפים, מידות שמורות, שירות ופרטיות."
-          eyebrow="אזור לקוח"
-          title="אזור לקוח"
+          description="כניסה להזמנות, מועדפים, מידות ופרטי חשבון."
+          eyebrow="אזור אישי"
+          title="אזור אישי"
           variant="checkout"
         />
         <RevealSection
-          aria-label="כניסה לאזור לקוח"
+          aria-label="כניסה לאזור אישי"
           className="mx-auto max-w-7xl scroll-mt-24 px-4 pt-1 pb-8 sm:scroll-mt-28 sm:px-6 sm:pt-3 sm:pb-10"
           id="account-login"
         >
           <div className="grid gap-5 lg:grid-cols-[minmax(0,400px)_1fr]">
             <Card className="rounded-md" size="sm">
               <CardHeader className="border-b border-[var(--glass-border)] pb-4">
-                <CardTitle>כניסת לקוח</CardTitle>
+                <CardTitle>כניסה</CardTitle>
               </CardHeader>
               <CardContent>
                 <CustomerOtpForm />
@@ -248,7 +248,7 @@ export default async function AccountPage() {
                 value="מאובטח"
               />
               <MetricCard
-                detail="פריטים שמורים לבחירה מאוחרת"
+                detail="פריטים שנשמרו להמשך"
                 icon={Heart}
                 label="מועדפים"
                 variant="soft"
@@ -262,11 +262,11 @@ export default async function AccountPage() {
                 value="פרופיל"
               />
               <MetricCard
-                detail="ייעוץ אונליין ושירות אישי"
+                detail="פניות ושירות אישי"
                 icon={ShieldCheck}
                 label="שירות"
                 variant="soft"
-                value="זמין"
+                value="פתוח"
               />
             </RevealGrid>
           </div>
@@ -283,8 +283,8 @@ export default async function AccountPage() {
       <CommercePageHero
         className="account-entry-intro"
         description="כל ההזמנות, המועדפים, המידות, הכתובות והפרטיות שלך במקום אחד."
-        eyebrow="אזור לקוח"
-        title="אזור לקוח"
+        eyebrow="אזור אישי"
+        title="אזור אישי"
         variant="checkout"
       />
       <RevealSection
@@ -310,7 +310,7 @@ export default async function AccountPage() {
             value={String(customer.orders.length)}
           />
           <MetricCard
-            detail="פריטים שמורים"
+            detail="בחירות שמורות"
             icon={Heart}
             label="מועדפים"
             value={String(wishlistItems.length)}
@@ -325,7 +325,7 @@ export default async function AccountPage() {
             detail="ייעוץ ומעקב אחרי הזמנות"
             icon={ShieldCheck}
             label="שירות"
-            value="אונליין"
+            value="מרחוק"
           />
         </RevealGrid>
 
@@ -384,13 +384,13 @@ export default async function AccountPage() {
             <CardContent className="grid gap-3">
               {wishlistItems.length === 0 ? (
                 <EmptyState
-                  description="עדיין לא נשמרו פריטים."
+                  description="עדיין לא נשמרה בחירה."
                   icon={Heart}
-                  title="אין פריטים מועדפים"
+                  title="אין בחירות שמורות"
                   variant="inset"
                   actions={
                     <Button asChild variant="outline">
-                      <Link href="/search">חיפוש בקטלוג</Link>
+                      <Link href="/search">חיפוש במבחר</Link>
                     </Button>
                   }
                 />
@@ -532,9 +532,9 @@ export default async function AccountPage() {
             </CardHeader>
             <CardContent className="grid gap-3">
               <EmptyState
-                description="אפשר לקבל ייעוץ אישי, עזרה בבחירת מידה ומעקב אחרי הזמנות דרך שירות הלקוחות."
+                description="אפשר לקבל ייעוץ אישי, עזרה בבחירת מידה ומעקב אחרי הזמנות דרך השירות האישי."
                 icon={ShieldCheck}
-                title="שירות אונליין"
+                title="שירות אישי"
                 variant="inset"
                 actions={
                   <>
@@ -542,7 +542,7 @@ export default async function AccountPage() {
                       <Link href="/faq">שאלות ותשובות</Link>
                     </Button>
                     <Button asChild>
-                      <Link href="/service">שירות לקוחות</Link>
+                      <Link href="/service">שירות אישי</Link>
                     </Button>
                   </>
                 }
