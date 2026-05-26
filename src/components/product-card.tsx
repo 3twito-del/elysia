@@ -60,7 +60,7 @@ export function ProductCard({
   const productMeta = productDetails.join(" · ");
   const primaryCommerceLabel = isAvailable
     ? formatPrice(product.price)
-    : commerceStatus.label;
+    : "לייעוץ אישי";
 
   return (
     <Card
@@ -96,7 +96,7 @@ export function ProductCard({
           {isUnavailable ? (
             <div className="absolute top-2.5 left-2.5 flex items-start gap-2">
               <Badge className="product-card-status-badge" variant="outline">
-                לייעוץ
+                לייעוץ אישי
               </Badge>
             </div>
           ) : null}
@@ -128,6 +128,9 @@ export function ProductCard({
               )}
             >
               {primaryCommerceLabel}
+            </span>
+            <span className="product-card-cta text-muted-foreground mt-2 inline-flex w-fit border-b border-[var(--glass-border)] pb-0.5 text-xs font-medium transition-colors group-hover/product-link:border-foreground group-hover/product-link:text-foreground">
+              לפרטי התכשיט
             </span>
           </div>
         </CardContent>

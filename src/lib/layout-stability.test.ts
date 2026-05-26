@@ -17,11 +17,13 @@ describe("layout stability guardrails", () => {
     expect(productCardSource).toContain("sm:aspect-[4/5]");
     expect(productCardSource).toContain("flex min-h-28 flex-1 flex-col");
     expect(productCardSource).toContain("sm:min-h-32");
-    expect(productCardSource).toContain("grid min-h-10");
-    expect(productCardSource).toContain("sm:min-h-12");
+    expect(productCardSource).toContain("line-clamp-2 min-h-10");
+    expect(productCardSource).toContain("sm:min-h-11");
     expect(productCardSource).toContain("group/product-link block h-full");
     expect(productCardSource).toContain("absolute top-2.5 right-2.5");
-    expect(productCardSource).not.toContain("product-card-cta");
+    expect(productCardSource).toContain("product-card-cta");
+    expect(productCardSource).not.toContain("מחיר גלוי לפני שמירה");
+    expect(productCardSource).not.toContain("בדיקת איכות לפני מסירה");
 
     expect(
       statSync(categoryLoadingPath, { throwIfNoEntry: false }),

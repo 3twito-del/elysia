@@ -34,9 +34,9 @@ function FilterPanelContent({
       <div className="grid gap-4 pb-1">
         <div className="flex items-start justify-between gap-3">
           <div className="grid gap-1">
-            <p className="text-foreground text-sm font-medium">סינון מדויק</p>
+            <p className="text-foreground text-sm font-medium">סינון</p>
             <p className="text-muted-foreground text-xs leading-5">
-              סינון לפי סוג, חומר, אבן ומחיר.
+              סינון לפי קטגוריה, חומר, אבן, מחיר, סגנון, אירוע וקולקציה.
             </p>
           </div>
           {data.activeFilterCount > 0 && (

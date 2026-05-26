@@ -30,6 +30,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "~/components/ui/sheet";
+import { getCategoryBrandSlides } from "~/lib/brand-media";
 import {
   getCatalogCategories,
   getCatalogFacetsFromProducts,
@@ -44,28 +45,41 @@ type CategoryPageProps = CategoryRouteProps & {
   searchParams: Promise<CategorySearchParams>;
 };
 
+type CategoryLuxuryCopy = {
+  description: string;
+  intro: string;
+  title: string;
+};
+
 export const revalidate = 3600;
-const categoryMetadataBySlug: Record<
-  string,
-  { description: string; title: string }
-> = {
+
+const categoryLuxuryCopyBySlug: Record<string, CategoryLuxuryCopy> = {
   bracelets: {
-    description: "צמידים וצמידי טניס מודרניים, בזהב, כסף, פנינים ואבנים.",
+    description:
+      "קווים נקיים, חוליות דקות ונוכחות מאוזנת על היד. כל צמיד מוצג עם חומר, מידה ומחיר כדי לאפשר בחירה שקטה ובטוחה.",
+    intro: "צמידים לענידה יומיומית, שכבה עדינה ומתנה אישית.",
     title: "צמידים",
   },
   earrings: {
-    description: "עגילים עדינים, תלויים וסטים משלימים לכל יום ולאירועים.",
+    description:
+      "עגילים שנבחרו לפי אור סביב הפנים, משקל נוח וגימור מוקפד. המבחר נע בין נקודת אור קטנה לבין נוכחות אלגנטית לערב.",
+    intro: "עגילים ליום, לערב ולרגעים שמבקשים דיוק קטן.",
     title: "עגילים",
   },
   necklaces: {
-    description: "שרשראות עדינות, תליונים וסטים משלימים.",
+    description:
+      "שרשראות ותליונים בקו מאופק, לענידה יחידה או בשכבות. הדגש הוא על אורך, חומר ואבן שנשארים קרובים בלי להעמיס.",
+    intro: "שרשראות עדינות שמחזיקות קו נקי לאורך זמן.",
     title: "שרשראות",
   },
   rings: {
-    description: "טבעות זהב, יהלומים ואבני חן ליום ולערב.",
+    description:
+      "טבעות זהב, יהלומים ואבני חן שנבחרו לפי פרופורציה, נוחות ונוכחות שקטה. כל פריט מוביל לבחירה ברורה לפני ההזמנה.",
+    intro: "טבעות ליום, לערב, להצעה ולמתנה אישית.",
     title: "טבעות",
   },
 };
+
 export async function generateStaticParams() {
   const categories = await getCatalogCategories();
 
@@ -76,11 +90,11 @@ export async function generateMetadata({
   params,
 }: CategoryRouteProps): Promise<Metadata> {
   const { slug } = await params;
-  const category = categoryMetadataBySlug[slug];
+  const copy = categoryLuxuryCopyBySlug[slug];
 
   return {
-    title: category?.title ?? "משפחת תכשיטים",
-    description: category?.description,
+    title: copy?.title ?? "קולקציית Elysia",
+    description: copy?.description,
   };
 }
 
@@ -100,6 +114,13 @@ export default async function CategoryPage({
     notFound();
   }
 
+  const categoryCopy = categoryLuxuryCopyBySlug[slug] ?? {
+    description:
+      category.description ||
+      "בחירות מתוך הקולקציה, עם חומר ברור, פרטים מדויקים ושירות אישי לפני ההזמנה.",
+    intro: "בחירות מתוך הקולקציה של Elysia.",
+    title: category.name,
+  };
   const facets = getCatalogFacetsFromProducts(catalogProducts);
   const categoryState = getCategoryRouteState({
     catalogProducts,
@@ -142,22 +163,41 @@ export default async function CategoryPage({
   const hasActiveFilters = activeFilterCount > 0;
   const pageRangeLabel =
     sortedProducts.length > 0
-      ? `${visibleStart}-${visibleEnd} מתוך ${sortedProducts.length} בחירות`
-      : "0 בחירות";
+      ? `${visibleStart}–${visibleEnd} מתוך ${sortedProducts.length} פריטים`
+      : "0 פריטים";
 
   return (
     <>
       <SiteHeader />
 
-      <main>
+      <main dir="rtl">
+        <CategoryBreadcrumbs categoryName={categoryCopy.title} />
+
         <CommercePageHero
           description={
-            category.description ??
-            "בחירה מדודה בקולקציה, עם חומר ברור והזמנה אישית."
+            <>
+              <span>{categoryCopy.intro}</span>
+              <br />
+              <span>{categoryCopy.description}</span>
+            </>
           }
-          eyebrow="קולקציית Elysia"
+          eyebrow="בחירות מתוך הקולקציה"
           id="page-hero"
-          title={category.name}
+          media={{
+            alt: `${categoryCopy.title} מתוך קולקציית Elysia`,
+            priority: true,
+            sizes:
+              "(min-width: 1024px) 34vw, (min-width: 640px) 60vw, 100vw",
+            slides: getCategoryBrandSlides(slug),
+          }}
+          metrics={[
+            { label: "פריטים", value: baseProducts.length },
+            { label: "חומרים", value: facets.materials.length },
+            { label: "קולקציות", value: facets.collections.length },
+          ]}
+          metricsMode="inline"
+          showMediaOnMobile
+          title={categoryCopy.title}
           variant="catalog"
         />
 
@@ -169,8 +209,8 @@ export default async function CategoryPage({
                 {hasActiveFilters
                   ? `${activeFilterCount} סינונים פעילים`
                   : hasCategoryProducts
-                    ? "כל הבחירות במשפחה"
-                    : "המשפחה בעדכון"}
+                    ? "כל הפריטים בקטגוריה"
+                    : "הקטגוריה מתעדכנת"}
               </p>
             </div>
             <CategoryFilterSheet activeFilterCount={activeFilterCount}>
@@ -199,7 +239,7 @@ export default async function CategoryPage({
                     סינון
                   </SheetTitle>
                   <SheetDescription>
-                    בחרו מיון, קטגוריה, חומר, אבן ומחיר.
+                    קטגוריה, חומר, אבן, מחיר, סגנון, אירוע וקולקציה.
                   </SheetDescription>
                 </SheetHeader>
                 <div className="p-[var(--ui-panel-padding)]">
@@ -233,21 +273,19 @@ export default async function CategoryPage({
 
         <div className="h-px" id="category-filters" />
 
-        <RevealSection className="mx-auto grid w-full max-w-[96rem] gap-5 px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:grid-cols-[260px_1fr] lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y)]">
+        <RevealSection className="mx-auto grid w-full max-w-[96rem] gap-8 px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:grid-cols-[270px_1fr] lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y)]">
           <aside
             className="hidden lg:block"
             data-testid="category-filter-panel"
           >
-            <div className="sticky top-24 border-y border-[var(--glass-border)] py-4">
+            <div className="sticky top-24 border-y border-[var(--glass-border)] py-5">
               <div className="pb-4">
                 <h2 className="flex items-center gap-2 text-base font-medium">
                   <SlidersHorizontal aria-hidden="true" className="size-4" />
                   סינון
                 </h2>
               </div>
-              <div>
-                <DeferredCategoryFilterPanel data={filterPayload} />
-              </div>
+              <DeferredCategoryFilterPanel data={filterPayload} />
             </div>
           </aside>
 
@@ -256,7 +294,7 @@ export default async function CategoryPage({
             className="min-w-0"
             id="category-products"
           >
-            <div className="mb-5 hidden border-b border-[var(--glass-border)] pb-4 lg:block">
+            <div className="mb-8 hidden border-b border-[var(--glass-border)] pb-5 lg:block">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h2 className="text-base font-medium" id="category-results">
@@ -264,25 +302,23 @@ export default async function CategoryPage({
                   </h2>
                   <p className="text-muted-foreground text-sm">
                     {!hasCategoryProducts
-                      ? "נעדכן את הבחירה בקרוב"
+                      ? "נעדכן את הקטגוריה בקרוב"
                       : filteredProducts.length > productsPerPage
                         ? `עמוד ${currentPage} מתוך ${totalPages}`
                         : hasActiveFilters
                           ? "התוצאות מסוננות לפי הבחירה שלך"
-                          : "הבחירות הפתוחות במשפחה הזו"}
+                          : "בחירות פתוחות מתוך הקולקציה"}
                     <span className="mx-2">·</span>
                     <span>מיון: {currentSortLabel}</span>
                   </p>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {hasActiveFilters && (
-                    <Button asChild size="sm" variant="ghost">
-                      <Link href={resetHref} scroll={false}>
-                        איפוס
-                      </Link>
-                    </Button>
-                  )}
-                </div>
+                {hasActiveFilters && (
+                  <Button asChild size="sm" variant="ghost">
+                    <Link href={resetHref} scroll={false}>
+                      איפוס
+                    </Link>
+                  </Button>
+                )}
               </div>
               {activeFilters.length > 0 && (
                 <div
@@ -310,7 +346,7 @@ export default async function CategoryPage({
             {filteredProducts.length > 0 ? (
               <>
                 <RevealGrid
-                  className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+                  className="grid gap-x-5 gap-y-10 sm:grid-cols-2 lg:grid-cols-3"
                   data-testid="category-results-grid"
                   variant="cards"
                 >
@@ -347,6 +383,26 @@ export default async function CategoryPage({
   );
 }
 
+function CategoryBreadcrumbs({ categoryName }: { categoryName: string }) {
+  return (
+    <nav
+      aria-label="פירורי לחם"
+      className="mx-auto flex w-full max-w-[96rem] items-center gap-2 px-[var(--ui-page-x)] pt-6 text-xs text-muted-foreground sm:px-[var(--ui-page-x-wide)]"
+      dir="rtl"
+    >
+      <Link className="hover:text-foreground transition-colors" href="/">
+        בית
+      </Link>
+      <span aria-hidden="true">›</span>
+      <Link className="hover:text-foreground transition-colors" href="/search">
+        קולקציות
+      </Link>
+      <span aria-hidden="true">›</span>
+      <span className="text-foreground">{categoryName}</span>
+    </nav>
+  );
+}
+
 function CategoryEmptyState({
   hasActiveFilters,
   hasCategoryProducts,
@@ -360,16 +416,14 @@ function CategoryEmptyState({
     return (
       <EmptyState
         actions={
-          <>
-            <Button asChild variant="outline">
-              <Link href="/search">חיפוש בכל המבחר</Link>
-            </Button>
-          </>
+          <Button asChild variant="outline">
+            <Link href="/search">חיפוש בכל המבחר</Link>
+          </Button>
         }
-        description="המשפחה קיימת, אבל אין בה כרגע בחירות פתוחות. אפשר לעבור לחיפוש הרחב או לפתוח משפחה אחרת."
+        description="הקטגוריה קיימת, אך אין בה כרגע פריטים פתוחים. אפשר לעבור לחיפוש הרחב או לבחור קטגוריה אחרת."
         icon={Gem}
         testId="category-empty-state"
-        title="המשפחה מתעדכנת"
+        title="הקטגוריה מתעדכנת"
       />
     );
   }
@@ -393,7 +447,7 @@ function CategoryEmptyState({
       description="אפשר לנקות את הבחירה או להרחיב את החיפוש בכל המבחר."
       icon={Gem}
       testId="category-empty-state"
-      title="לא נמצאה התאמה בבחירה הזו"
+      title="לא נמצאה התאמה לבחירה הזו"
     />
   );
 }
@@ -415,8 +469,8 @@ function CategoryPagination({
 
   return (
     <nav
-      aria-label="עמודי בחירות"
-      className="mt-8 flex flex-col items-center justify-between gap-3 sm:flex-row"
+      aria-label="עמודי פריטים"
+      className="mt-10 flex flex-col items-center justify-between gap-3 sm:flex-row"
     >
       <p className="text-muted-foreground text-sm">
         עמוד {currentPage} מתוך {totalPages}
@@ -445,7 +499,7 @@ function CategoryPagination({
               className="text-muted-foreground grid h-8 min-w-8 place-items-center rounded-md border border-transparent px-2 text-sm"
               key={`ellipsis-${index}`}
             >
-              …
+              ...
             </span>
           ) : (
             <Button

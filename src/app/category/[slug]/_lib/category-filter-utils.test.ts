@@ -28,6 +28,11 @@ describe("getCategoryFilterCounts", () => {
       ],
       { material: "gold" },
       [750, 1500, 2000],
+      {
+        collectionOptions: ["classic"],
+        occasionOptions: ["gift"],
+        styleOptions: ["delicate"],
+      },
     );
 
     expect(counts.materials.get("gold")).toBe(2);
@@ -57,6 +62,11 @@ describe("getCategoryFilterCounts", () => {
       ],
       { material: "silver", stone: "diamond" },
       [1500],
+      {
+        collectionOptions: ["classic"],
+        occasionOptions: ["gift"],
+        styleOptions: ["delicate"],
+      },
     );
 
     expect(counts.materials.get("gold")).toBe(1);
@@ -64,18 +74,55 @@ describe("getCategoryFilterCounts", () => {
     expect(counts.stones.get("diamond")).toBeUndefined();
     expect(counts.stones.get("pearl")).toBe(1);
   });
+
+  it("counts style, occasion, and collection filters from product tags", () => {
+    const counts = getCategoryFilterCounts(
+      [
+        makeProduct({
+          collections: ["classic"],
+          inventory: { "tel-aviv": 2 },
+          material: "gold",
+          price: 700,
+          stone: "diamond",
+          tags: ["delicate", "gift"],
+        }),
+        makeProduct({
+          collections: ["bridal"],
+          inventory: { jerusalem: 1 },
+          material: "gold",
+          price: 900,
+          stone: "pearl",
+          tags: ["modern", "event"],
+        }),
+      ],
+      { style: "delicate" },
+      [1000],
+      {
+        collectionOptions: ["classic", "bridal"],
+        occasionOptions: ["gift", "event"],
+        styleOptions: ["delicate", "modern"],
+      },
+    );
+
+    expect(counts.styles.get("delicate")).toBe(1);
+    expect(counts.styles.get("modern")).toBe(1);
+    expect(counts.occasions.get("gift")).toBe(1);
+    expect(counts.occasions.get("event")).toBeUndefined();
+    expect(counts.collections.get("classic")).toBe(1);
+    expect(counts.collections.get("bridal")).toBeUndefined();
+  });
 });
 
 function makeProduct(
   overrides: Pick<CatalogProduct, "inventory" | "material" | "price"> &
-    Partial<Pick<CatalogProduct, "stone">>,
+    Partial<Pick<CatalogProduct, "collections" | "stone" | "tags">>,
 ): CatalogProduct {
   return {
     availabilityMode: "READY_TO_ORDER",
     categoryName: "Category",
     categorySlug: "category",
     collection: "classic",
-    collections: ["classic"],
+    collections: overrides.collections ?? ["classic"],
     commerceHighlights: [],
     createdAt: new Date("2026-01-01T00:00:00Z"),
     description: "Description",
@@ -92,7 +139,7 @@ function makeProduct(
     sku: "SKU",
     slug: `${overrides.material}-${overrides.price}`,
     stone: overrides.stone,
-    tags: [],
+    tags: overrides.tags ?? [],
     variants: [],
   };
 }

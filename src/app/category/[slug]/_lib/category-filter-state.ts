@@ -1,5 +1,6 @@
 import {
   getCategoryFilterCounts,
+  matchesCategoryFilterSelection,
   type CategoryFilterCounts,
 } from "./category-filter-utils";
 import { formatPrice } from "~/lib/format";
@@ -11,20 +12,26 @@ import {
 } from "~/server/services/catalog";
 
 export type CategorySearchParams = {
+  collection?: string | string[];
   material?: string | string[];
-  stone?: string | string[];
   maxPrice?: string | string[];
-  sort?: string | string[];
+  occasion?: string | string[];
   page?: string | string[];
+  sort?: string | string[];
+  stone?: string | string[];
+  style?: string | string[];
 };
 
 export type CategorySort = "popular" | "price-asc" | "price-desc" | "newest";
 
 export type CategoryFilters = {
+  collection?: string;
   material?: string;
-  stone?: string;
   maxPrice?: number;
+  occasion?: string;
   sort: CategorySort;
+  stone?: string;
+  style?: string;
 };
 
 export type ActiveFilter = {
@@ -77,6 +84,29 @@ export const sortOptions = [
   { value: "newest", label: "חדשים" },
 ] as const satisfies ReadonlyArray<{ value: CategorySort; label: string }>;
 
+const styleOptions = [
+  "עדין",
+  "נקי",
+  "קלאסי",
+  "מודרני",
+  "מינימלי",
+  "אלגנטי",
+  "מאופק",
+  "רך",
+  "קו נקי",
+  "טבעי",
+] as const;
+
+const occasionOptions = [
+  "יום יום",
+  "יומיומי",
+  "ערב",
+  "אירוע",
+  "מתנה",
+  "אירוסין",
+  "חגיגי",
+] as const;
+
 export function getCategoryRouteState({
   catalogProducts,
   categories,
@@ -90,19 +120,20 @@ export function getCategoryRouteState({
   query: CategorySearchParams;
   slug: string;
 }): CategoryRouteState {
-  const filters = parseCategoryFilters(query, {
-    materialOptions: facets.materials,
-    stoneOptions: facets.stones,
-  });
   const baseProducts = filterCatalogProducts(catalogProducts, {
     category: slug,
   });
-  const filteredProducts = filterCatalogProducts(catalogProducts, {
-    category: slug,
-    material: filters.material,
-    stone: filters.stone,
-    maxPrice: filters.maxPrice,
+  const collectionOptions = getCategoryCollectionOptions(baseProducts, facets);
+  const filters = parseCategoryFilters(query, {
+    collectionOptions,
+    materialOptions: facets.materials,
+    occasionOptions,
+    stoneOptions: facets.stones,
+    styleOptions,
   });
+  const filteredProducts = baseProducts.filter((product) =>
+    matchesCategoryFilterSelection(product, filters),
+  );
   const categoryCounts = getCategoryCounts(
     categories,
     filters,
@@ -114,12 +145,18 @@ export function getCategoryRouteState({
     baseProducts,
     filters,
     priceOptions,
+    {
+      collectionOptions,
+      occasionOptions,
+      styleOptions,
+    },
   );
   const resetHref = createCategoryHref(slug, {});
   const currentSortLabel = getCategorySortLabel(filters.sort);
   const sections = getCategoryFilterSections({
     categories,
     categoryCounts,
+    collectionOptions,
     filterCounts,
     filters,
     materialOptions: facets.materials,
@@ -206,12 +243,8 @@ export function createCategoryPageHref(
   filters: CategoryFilters,
   page: number,
 ) {
-  const params = new URLSearchParams();
+  const params = getCategoryUrlParams(filters);
 
-  if (filters.material) params.set("material", filters.material);
-  if (filters.stone) params.set("stone", filters.stone);
-  if (filters.maxPrice) params.set("maxPrice", String(filters.maxPrice));
-  if (filters.sort !== defaultCategorySort) params.set("sort", filters.sort);
   if (page > 1) params.set("page", String(page));
 
   const query = params.toString();
@@ -222,7 +255,15 @@ export function createCategoryPageHref(
 export function createCategoryFilterQueryString(query: CategorySearchParams) {
   const params = new URLSearchParams();
 
-  for (const key of ["material", "stone", "maxPrice", "sort"] as const) {
+  for (const key of [
+    "material",
+    "stone",
+    "maxPrice",
+    "style",
+    "occasion",
+    "collection",
+    "sort",
+  ] as const) {
     const value = getFirstParam(query[key]);
     if (value) params.set(key, value);
   }
@@ -233,6 +274,7 @@ export function createCategoryFilterQueryString(query: CategorySearchParams) {
 function getCategoryFilterSections({
   categories,
   categoryCounts,
+  collectionOptions,
   filterCounts,
   filters,
   materialOptions,
@@ -241,6 +283,7 @@ function getCategoryFilterSections({
 }: {
   categories: CatalogCategory[];
   categoryCounts: Map<string, number>;
+  collectionOptions: string[];
   filterCounts: CategoryFilterCounts;
   filters: CategoryFilters;
   materialOptions: string[];
@@ -249,7 +292,7 @@ function getCategoryFilterSections({
 }): CategoryFilterSection[] {
   const sections = [
     {
-      description: "מיון לפי התאמה, מחיר או בחירות חדשות.",
+      description: "מיון לפי המלצה, מחיר או פריטים חדשים.",
       title: "מיון",
       options: sortOptions.map((option) => {
         const active = filters.sort === option.value;
@@ -318,7 +361,7 @@ function getCategoryFilterSections({
       }),
     },
     {
-      description: "מחיר שמחזיק את הבחירה הנוכחית.",
+      description: "בחירה לפי טווח מחיר.",
       title: "מחיר",
       options: priceOptions.map((price) => {
         const active = filters.maxPrice === price;
@@ -332,6 +375,60 @@ function getCategoryFilterSections({
             maxPrice: active ? undefined : price,
           }),
           label: `עד ${formatPrice(price)}`,
+        };
+      }),
+    },
+    {
+      description: "קו עיצובי שמכוון את הבחירה.",
+      title: "סגנון",
+      options: styleOptions.map((style) => {
+        const active = filters.style === style;
+        const count = filterCounts.styles.get(style) ?? 0;
+
+        return {
+          active,
+          disabled: !active && count === 0,
+          href: createCategoryHref(slug, {
+            ...filters,
+            style: active ? undefined : style,
+          }),
+          label: style,
+        };
+      }),
+    },
+    {
+      description: "בחירה לפי רגע, מתנה או שימוש.",
+      title: "אירוע",
+      options: occasionOptions.map((occasion) => {
+        const active = filters.occasion === occasion;
+        const count = filterCounts.occasions.get(occasion) ?? 0;
+
+        return {
+          active,
+          disabled: !active && count === 0,
+          href: createCategoryHref(slug, {
+            ...filters,
+            occasion: active ? undefined : occasion,
+          }),
+          label: occasion,
+        };
+      }),
+    },
+    {
+      description: "בחירה מתוך עריכה קיימת של הקולקציה.",
+      title: "קולקציה",
+      options: collectionOptions.map((collection) => {
+        const active = filters.collection === collection;
+        const count = filterCounts.collections.get(collection) ?? 0;
+
+        return {
+          active,
+          disabled: !active && count === 0,
+          href: createCategoryHref(slug, {
+            ...filters,
+            collection: active ? undefined : collection,
+          }),
+          label: collection,
         };
       }),
     },
@@ -354,23 +451,38 @@ function isVisibleFilterOption(option: CategoryFilterOption) {
 function parseCategoryFilters(
   searchParams: CategorySearchParams,
   options: {
-    materialOptions: string[];
-    stoneOptions: string[];
+    collectionOptions: readonly string[];
+    materialOptions: readonly string[];
+    occasionOptions: readonly string[];
+    stoneOptions: readonly string[];
+    styleOptions: readonly string[];
   },
 ): CategoryFilters {
+  const collection = getFirstParam(searchParams.collection);
   const material = getFirstParam(searchParams.material);
-  const stone = getFirstParam(searchParams.stone);
   const maxPrice = getFirstParam(searchParams.maxPrice);
+  const occasion = getFirstParam(searchParams.occasion);
   const sort = getFirstParam(searchParams.sort);
+  const stone = getFirstParam(searchParams.stone);
+  const style = getFirstParam(searchParams.style);
 
   return {
+    collection:
+      collection && options.collectionOptions.includes(collection)
+        ? collection
+        : undefined,
     material:
       material && options.materialOptions.includes(material)
         ? material
         : undefined,
-    stone: stone && options.stoneOptions.includes(stone) ? stone : undefined,
     maxPrice: getValidMaxPrice(maxPrice),
+    occasion:
+      occasion && options.occasionOptions.includes(occasion)
+        ? occasion
+        : undefined,
     sort: getValidCategorySort(sort),
+    stone: stone && options.stoneOptions.includes(stone) ? stone : undefined,
+    style: style && options.styleOptions.includes(style) ? style : undefined,
   };
 }
 
@@ -401,6 +513,30 @@ function getActiveFilters(slug: string, filters: CategoryFilters) {
     });
   }
 
+  if (filters.style) {
+    activeFilters.push({
+      key: "style",
+      label: `סגנון: ${filters.style}`,
+      href: createCategoryHref(slug, { ...filters, style: undefined }),
+    });
+  }
+
+  if (filters.occasion) {
+    activeFilters.push({
+      key: "occasion",
+      label: `אירוע: ${filters.occasion}`,
+      href: createCategoryHref(slug, { ...filters, occasion: undefined }),
+    });
+  }
+
+  if (filters.collection) {
+    activeFilters.push({
+      key: "collection",
+      label: `קולקציה: ${filters.collection}`,
+      href: createCategoryHref(slug, { ...filters, collection: undefined }),
+    });
+  }
+
   if (filters.sort !== defaultCategorySort) {
     activeFilters.push({
       key: "sort",
@@ -416,18 +552,26 @@ function getActiveFilters(slug: string, filters: CategoryFilters) {
 }
 
 function createCategoryHref(slug: string, filters: Partial<CategoryFilters>) {
+  const params = getCategoryUrlParams(filters);
+  const query = params.toString();
+
+  return query ? `/category/${slug}?${query}` : `/category/${slug}`;
+}
+
+function getCategoryUrlParams(filters: Partial<CategoryFilters>) {
   const params = new URLSearchParams();
 
   if (filters.material) params.set("material", filters.material);
   if (filters.stone) params.set("stone", filters.stone);
   if (filters.maxPrice) params.set("maxPrice", String(filters.maxPrice));
+  if (filters.style) params.set("style", filters.style);
+  if (filters.occasion) params.set("occasion", filters.occasion);
+  if (filters.collection) params.set("collection", filters.collection);
   if (filters.sort && filters.sort !== defaultCategorySort) {
     params.set("sort", filters.sort);
   }
 
-  const query = params.toString();
-
-  return query ? `/category/${slug}?${query}` : `/category/${slug}`;
+  return params;
 }
 
 function getValidMaxPrice(value?: string) {
@@ -466,15 +610,34 @@ function getCategoryCounts(
   products: CatalogProduct[],
 ) {
   const entries = categories.map((category) => {
-    const categoryProducts = filterCatalogProducts(products, {
-      category: category.slug,
-      material: filters.material,
-      maxPrice: filters.maxPrice,
-      stone: filters.stone,
-    });
+    const categoryProducts = products
+      .filter((product) => product.categorySlug === category.slug)
+      .filter((product) => matchesCategoryFilterSelection(product, filters));
 
     return [category.slug, categoryProducts.length] as const;
   });
 
   return new Map(entries);
+}
+
+function getCategoryCollectionOptions(
+  products: CatalogProduct[],
+  facets: CatalogFacets,
+) {
+  const values = new Set<string>();
+
+  for (const product of products) {
+    for (const collection of product.collections) {
+      values.add(collection);
+    }
+  }
+
+  for (const collection of facets.collections) {
+    if (values.has(collection)) continue;
+    if (products.some((product) => product.collections.includes(collection))) {
+      values.add(collection);
+    }
+  }
+
+  return Array.from(values);
 }
