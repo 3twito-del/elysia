@@ -29,8 +29,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { EmptyState } from "~/components/ui/empty-state";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { LoadingState } from "~/components/ui/loading-state";
 import { Separator } from "~/components/ui/separator";
+import { Skeleton } from "~/components/ui/skeleton";
 import { StatusMessage } from "~/components/ui/status-message";
 import { Textarea } from "~/components/ui/textarea";
 import {
@@ -219,7 +219,7 @@ export function CartCheckoutForm() {
           <p className="text-lg font-semibold">{formatPrice(orderTotal)}</p>
         </div>
         <Button disabled={!canSubmit} form={checkoutFormId} type="submit">
-          {checkoutLocked ? "שומר..." : "שמירה"}
+          שמירה
           <PackageCheck aria-hidden="true" className="size-4" />
         </Button>
       </div>
@@ -363,10 +363,10 @@ export function CartCheckoutForm() {
             </CardHeader>
             <CardContent className="grid min-h-72 gap-3">
               {cartQuery.isLoading || !sessionKey ? (
-                <LoadingState label="טוען סל..." variant="plain" />
+                <CartItemsSkeleton />
               ) : cartQuery.error ? (
                 <div className="glass-inset grid gap-3 rounded-md border p-4 text-sm">
-                  <p className="font-medium">לא הצלחנו לטעון את הסל.</p>
+                  <p className="font-medium">הסל לא זמין כרגע.</p>
                   <p className="text-muted-foreground">
                     אפשר לנסות שוב או להמשיך לבחור פריטים מהקטלוג.
                   </p>
@@ -376,7 +376,7 @@ export function CartCheckoutForm() {
                       type="button"
                       variant="secondary"
                     >
-                      טעינה מחדש
+                      נסו שוב
                     </Button>
                     <Button asChild variant="outline">
                       <Link href="/category/rings">חזרה לקטלוג</Link>
@@ -824,7 +824,7 @@ export function CartCheckoutForm() {
                 </StatusMessage>
               ) : null}
               <Button disabled={!canSubmit} size="lg" type="submit">
-                {checkoutLocked ? "שומר הזמנה..." : "שמירת הזמנה"}
+                שמירת הזמנה
                 <PackageCheck aria-hidden="true" className="size-4" />
               </Button>
             </CardContent>
@@ -835,5 +835,35 @@ export function CartCheckoutForm() {
         ? createPortal(mobileCheckoutBar, document.body)
         : null}
     </>
+  );
+}
+
+function CartItemsSkeleton() {
+  return (
+    <div
+      aria-label="הסל מתעדכן"
+      aria-live="polite"
+      className="grid gap-3"
+      role="status"
+    >
+      {Array.from({ length: 3 }).map((_, index) => (
+        <div
+          className="bg-background grid grid-cols-[68px_minmax(0,1fr)] gap-3 rounded-md border p-3 sm:grid-cols-[68px_minmax(0,1fr)_auto] sm:items-center"
+          key={index}
+        >
+          <Skeleton className="size-[68px]" />
+          <div className="grid min-w-0 gap-2">
+            <Skeleton className="h-4 w-44 max-w-full" />
+            <Skeleton className="h-3 w-32 max-w-full" />
+            <Skeleton className="h-3 w-28 max-w-full" />
+          </div>
+          <div className="col-span-2 flex justify-end gap-2 sm:col-span-1">
+            <Skeleton className="size-10" />
+            <Skeleton className="size-10" />
+            <Skeleton className="size-10" />
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }

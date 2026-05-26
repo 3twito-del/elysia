@@ -9,10 +9,9 @@ export default function CategoryLoading() {
 
       <section
         aria-busy="true"
-        aria-label="טוען קטגוריה"
+        aria-label="תוכן הקטגוריה מתעדכן"
         className="bg-background relative overflow-hidden border-b border-[var(--glass-border)]"
       >
-        <span className="sr-only">טוען קטגוריה</span>
         <div
           aria-hidden="true"
           className="absolute inset-x-0 top-0 h-px overflow-hidden bg-[var(--glass-border)]"

@@ -95,7 +95,7 @@ function SubmitButton() {
       variant="outline"
     >
       <Mail aria-hidden="true" className="size-4" />
-      {pending ? "שומר..." : "הרשמה"}
+      הרשמה
     </Button>
   );
 }

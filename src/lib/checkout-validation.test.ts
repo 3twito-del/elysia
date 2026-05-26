@@ -49,7 +49,6 @@ describe("checkout validation", () => {
     });
 
     expect(getCheckoutIssueList(errors)).toEqual([
-      "יצירת סל מקומי עדיין בטעינה.",
       "יש להוסיף לפחות פריט אחד לסל.",
       "יש להזין שם מלא.",
       "יש להזין טלפון תקין.",

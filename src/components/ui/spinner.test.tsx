@@ -8,7 +8,7 @@ describe("Spinner", () => {
     const markup = renderToStaticMarkup(<Spinner />);
 
     expect(markup).toContain('role="status"');
-    expect(markup).toContain('aria-label="טוען"');
+    expect(markup).toContain('aria-label="בהמתנה"');
   });
 
   it("does not keep an accessible label when rendered decoratively", () => {

@@ -212,7 +212,7 @@ function SubmitButton() {
   return (
     <Button className="gap-2" disabled={pending} type="submit">
       <Ruler aria-hidden="true" className="size-4" />
-      {pending ? "שומר..." : "שמירת מידה"}
+      שמירת מידה
     </Button>
   );
 }

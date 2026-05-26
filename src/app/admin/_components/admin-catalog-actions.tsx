@@ -44,8 +44,7 @@ export function AdminProductStatusAction({
   const [feedback, setFeedback] = useState<AdminMutationFeedback>();
   const mutation = api.admin.updateProductStatus.useMutation({
     onError: (error) => setFeedback({ message: error.message, tone: "error" }),
-    onMutate: () =>
-      setFeedback({ message: "מעדכן סטטוס מוצר...", tone: "neutral" }),
+    onMutate: () => setFeedback(undefined),
     onSuccess: async () => {
       await utils.admin.catalog.invalidate();
       router.refresh();
@@ -63,11 +62,7 @@ export function AdminProductStatusAction({
         type="button"
         variant="outline"
       >
-        {mutation.isPending
-          ? "מעדכן..."
-          : nextStatus === "ACTIVE"
-            ? "הפעלה"
-            : "ארכוב"}
+        {nextStatus === "ACTIVE" ? "הפעלה" : "ארכוב"}
       </Button>
       <AdminMutationStatus feedback={feedback} />
     </div>
@@ -82,8 +77,7 @@ export function AdminProductCommerceForm({ product }: { product: Product }) {
   const [fieldErrors, setFieldErrors] = useState<FormFieldErrors>({});
   const mutation = api.admin.updateProductCommerce.useMutation({
     onError: (error) => setFeedback({ message: error.message, tone: "error" }),
-    onMutate: () =>
-      setFeedback({ message: "שומר שכבת מסחר...", tone: "neutral" }),
+    onMutate: () => setFeedback(undefined),
     onSuccess: async () => {
       await utils.admin.catalog.invalidate();
       router.refresh();
@@ -200,7 +194,7 @@ export function AdminProductCommerceForm({ product }: { product: Product }) {
         <AdminMutationStatus feedback={feedback} />
         <Button disabled={mutation.isPending} size="sm" type="submit">
           <Save aria-hidden="true" className="size-4" />
-          {mutation.isPending ? "שומר..." : "שמירת מסחר"}
+          שמירת מסחר
         </Button>
       </form>
     </details>
@@ -226,7 +220,7 @@ export function AdminInventoryEditor({
   const [fieldErrors, setFieldErrors] = useState<FormFieldErrors>({});
   const mutation = api.admin.updateInventory.useMutation({
     onError: (error) => setFeedback({ message: error.message, tone: "error" }),
-    onMutate: () => setFeedback({ message: "שומר מלאי...", tone: "neutral" }),
+    onMutate: () => setFeedback(undefined),
     onSuccess: async () => {
       await utils.admin.catalog.invalidate();
       router.refresh();
@@ -285,9 +279,7 @@ export function AdminInventoryEditor({
           variant="outline"
         >
           <Save aria-hidden="true" className="size-4" />
-          <span className="sr-only">
-            {mutation.isPending ? "שומר מלאי" : "שמירת מלאי"}
-          </span>
+          <span className="sr-only">שמירת מלאי</span>
         </Button>
       </div>
       <AdminMutationStatus feedback={feedback} />
@@ -301,7 +293,7 @@ export function AdminCouponStatusAction({ coupon }: { coupon: Coupon }) {
   const [feedback, setFeedback] = useState<AdminMutationFeedback>();
   const mutation = api.admin.updateCouponStatus.useMutation({
     onError: (error) => setFeedback({ message: error.message, tone: "error" }),
-    onMutate: () => setFeedback({ message: "מעדכן קופון...", tone: "neutral" }),
+    onMutate: () => setFeedback(undefined),
     onSuccess: async () => {
       await utils.admin.catalog.invalidate();
       router.refresh();
@@ -320,7 +312,7 @@ export function AdminCouponStatusAction({ coupon }: { coupon: Coupon }) {
         type="button"
         variant="outline"
       >
-        {mutation.isPending ? "מעדכן..." : coupon.isActive ? "כיבוי" : "הפעלה"}
+        {coupon.isActive ? "כיבוי" : "הפעלה"}
       </Button>
       <AdminMutationStatus feedback={feedback} />
     </div>
@@ -334,7 +326,7 @@ export function AdminCouponCreateForm() {
   const [fieldErrors, setFieldErrors] = useState<FormFieldErrors>({});
   const mutation = api.admin.createCoupon.useMutation({
     onError: (error) => setFeedback({ message: error.message, tone: "error" }),
-    onMutate: () => setFeedback({ message: "יוצר קופון...", tone: "neutral" }),
+    onMutate: () => setFeedback(undefined),
     onSuccess: async () => {
       await utils.admin.catalog.invalidate();
       router.refresh();
@@ -411,7 +403,7 @@ export function AdminCouponCreateForm() {
       />
       <Button disabled={mutation.isPending} type="submit">
         <Plus aria-hidden="true" className="size-4" />
-        {mutation.isPending ? "יוצר..." : "קופון"}
+        קופון
       </Button>
       <div className="md:col-span-5">
         <AdminMutationStatus feedback={feedback} />
@@ -427,7 +419,7 @@ export function AdminProductCreateForm({ catalog }: { catalog: AdminCatalog }) {
   const [fieldErrors, setFieldErrors] = useState<FormFieldErrors>({});
   const mutation = api.admin.createProduct.useMutation({
     onError: (error) => setFeedback({ message: error.message, tone: "error" }),
-    onMutate: () => setFeedback({ message: "יוצר מוצר...", tone: "neutral" }),
+    onMutate: () => setFeedback(undefined),
     onSuccess: async () => {
       await utils.admin.catalog.invalidate();
       router.refresh();
@@ -567,7 +559,7 @@ export function AdminProductCreateForm({ catalog }: { catalog: AdminCatalog }) {
       <AdminMutationStatus feedback={feedback} />
       <Button disabled={mutation.isPending} type="submit">
         <Plus aria-hidden="true" className="size-4" />
-        {mutation.isPending ? "יוצר מוצר..." : "יצירת מוצר"}
+        יצירת מוצר
       </Button>
     </form>
   );

@@ -46,7 +46,7 @@ function SubmitButton({ children }: { children: ReactNode }) {
       type="submit"
       variant="outline"
     >
-      {pending ? "שומר..." : children}
+      {children}
     </Button>
   );
 }

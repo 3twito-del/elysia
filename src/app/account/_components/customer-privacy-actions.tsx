@@ -71,7 +71,7 @@ export function CustomerPrivacyActions() {
           variant="outline"
         >
           <Trash2 aria-hidden="true" className="size-4" />
-          {pending ? "מוחק נתונים..." : "מחיקת נתונים"}
+          מחיקת נתונים
         </Button>
       </form>
     </div>

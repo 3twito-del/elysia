@@ -178,10 +178,10 @@ export default async function AccountPage() {
             </form>
           </>
         }
-        description="לא הצלחנו לטעון את ההזמנות, הכתובות והמועדפים כרגע. הנתונים לא נמחקו, ואפשר לנסות שוב בעוד רגע."
+        description="פרטי החשבון אינם זמינים כרגע. הנתונים לא נמחקו, ואפשר לנסות שוב בעוד רגע."
         icon={AlertTriangle}
         testId="account-load-error"
-        title="לא ניתן לטעון את אזור הלקוח"
+        title="אזור הלקוח אינו זמין"
       />
     );
   }

@@ -9,7 +9,7 @@ const LazyAiGiftPanel = dynamic(
   {
     loading: () => (
       <div className="brand-surface grid min-h-[420px] place-items-center p-5">
-        <LoadingState label="טוענים את שאלון המתנה" />
+        <LoadingState label="שאלון המתנה מתעדכן" />
       </div>
     ),
     ssr: false,

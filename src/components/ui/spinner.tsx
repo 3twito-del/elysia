@@ -18,7 +18,7 @@ function Spinner({
   return (
     <Loader2Icon
       aria-hidden={ariaHidden}
-      aria-label={isDecorative ? undefined : (ariaLabel ?? "טוען")}
+      aria-label={isDecorative ? undefined : (ariaLabel ?? "בהמתנה")}
       className={cn("size-4 animate-spin", className)}
       role={role ?? (isDecorative ? "presentation" : "status")}
       {...props}

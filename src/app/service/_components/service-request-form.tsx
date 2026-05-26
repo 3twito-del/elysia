@@ -233,7 +233,7 @@ export function ServiceRequestForm({
         disabled={pending}
         type="submit"
       >
-        {pending ? "שולח..." : "שליחת פנייה"}
+        שליחת פנייה
         <Send aria-hidden="true" className="size-4" />
       </Button>
     </form>

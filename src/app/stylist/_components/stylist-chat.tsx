@@ -327,11 +327,7 @@ function SearchCatalogToolResult({
   queryText?: string;
 }) {
   if (part.state === "output-error") {
-    return (
-      <StatusMessage tone="error">
-        לא ניתן היה לטעון מוצרים מהקטלוג כרגע.
-      </StatusMessage>
-    );
+    return <StatusMessage tone="error">הקטלוג אינו זמין כרגע.</StatusMessage>;
   }
 
   if (part.state !== "output-available") {

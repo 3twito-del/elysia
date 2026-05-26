@@ -175,7 +175,7 @@ function SubmitButton() {
   return (
     <Button className="w-fit gap-2" disabled={pending} type="submit">
       <MapPin aria-hidden="true" className="size-4" />
-      {pending ? "שומר כתובת..." : "שמירת כתובת"}
+      שמירת כתובת
     </Button>
   );
 }

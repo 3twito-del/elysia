@@ -28,10 +28,10 @@ export default function CategoryError({
               </Button>
             </>
           }
-          description="טעינת הקטגוריה נכשלה. אפשר לנסות שוב או לעבור לחיפוש הרחב עד שהמידע יתרענן."
+          description="הקטגוריה אינה זמינה כרגע. אפשר לנסות שוב או לעבור לחיפוש הרחב."
           icon={AlertTriangle}
           testId="category-error-empty-state"
-          title="לא הצלחנו לטעון את הקטגוריה"
+          title="הקטגוריה אינה זמינה"
         />
       </section>
     </main>

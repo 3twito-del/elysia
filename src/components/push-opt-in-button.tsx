@@ -58,7 +58,7 @@ export function PushOptInButton({
         variant="outline"
       >
         <Bell aria-hidden="true" className="size-4" />
-        {pending ? "מפעיל..." : label}
+        {label}
       </Button>
       {message ? (
         <StatusMessage size="xs" tone={tone} variant="plain">

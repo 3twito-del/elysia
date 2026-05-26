@@ -49,7 +49,7 @@ export type ConversationEmptyStateProps = ComponentProps<"div"> & {
 
 export const ConversationEmptyState = ({
   className,
-  title = "אין הודעות עדיין",
+  title = "השיחה תופיע כאן",
   description = "התחילו שיחה כדי לראות כאן הודעות",
   icon,
   children,
@@ -131,7 +131,7 @@ const defaultFormatMessage = (message: UIMessage): string => {
       ? "משתמש"
       : message.role === "assistant"
         ? "עוזר"
-        : "מערכת";
+        : "Elysia";
   return `**${roleLabel}:** ${getMessageText(message)}`;
 };
 

@@ -39,7 +39,7 @@ export function AdminAppointmentActions({
   const [feedback, setFeedback] = useState<AdminMutationFeedback>();
   const mutation = api.admin.updateAppointmentStatus.useMutation({
     onError: (error) => setFeedback({ message: error.message, tone: "error" }),
-    onMutate: () => setFeedback({ message: "מעדכן תור...", tone: "neutral" }),
+    onMutate: () => setFeedback(undefined),
     onSuccess: () => {
       router.refresh();
       setFeedback({ message: "התור עודכן.", tone: "success" });
@@ -56,11 +56,7 @@ export function AdminAppointmentActions({
       <div className="flex flex-wrap gap-2">
         {actions.map((action) => (
           <Button
-            aria-label={
-              mutation.isPending
-                ? `מעדכן תור: ${action.label}`
-                : `עדכון תור: ${action.label}`
-            }
+            aria-label={`עדכון תור: ${action.label}`}
             disabled={mutation.isPending}
             key={action.status}
             onClick={() =>
@@ -73,7 +69,7 @@ export function AdminAppointmentActions({
             type="button"
             variant={action.status === "CANCELLED" ? "outline" : "secondary"}
           >
-            {mutation.isPending ? "מעדכן..." : action.label}
+            {action.label}
           </Button>
         ))}
       </div>

@@ -20,7 +20,7 @@ export default function AccountLoading() {
         className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12"
         dir="rtl"
       >
-        <LoadingState label="טוען אזור לקוח..." variant="plain" />
+        <LoadingState label="אזור הלקוח מתעדכן" variant="plain" />
         <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
           {accountSections.map(({ icon: Icon, label }) => (
             <Card className="rounded-md" key={label}>

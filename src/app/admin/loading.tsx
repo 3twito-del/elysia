@@ -19,7 +19,7 @@ const metrics = [
 export default function AdminLoading() {
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6" dir="rtl">
-      <LoadingState label="טוען נתוני תפעול..." variant="plain" />
+      <LoadingState label="מסך הניהול מתעדכן" variant="plain" />
       <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         {metrics.map(({ icon: Icon, label }) => (
           <Card className="rounded-md" key={label}>

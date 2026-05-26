@@ -26,10 +26,10 @@ export default function AdminError({
                 ניסיון חוזר
               </Button>
             }
-            description="לא הצלחנו לטעון את מסך הניהול. הפעולה לא בוצעה, ואפשר לרענן את הנתונים."
+            description="מסך הניהול אינו זמין כרגע. הפעולה לא בוצעה, ואפשר לנסות שוב."
             icon={AlertTriangle}
             testId="admin-error-boundary"
-            title="שגיאה בטעינת הניהול"
+            title="מסך הניהול אינו זמין"
             variant="inset"
           />
         </CardContent>

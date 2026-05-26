@@ -31,7 +31,7 @@ describe("AI elements accessibility guardrails", () => {
     const source = readSource("src/components/ai-elements/conversation.tsx");
 
     expect(source).not.toMatch(/No messages yet|Start a conversation/);
-    expect(source).toContain('title = "אין הודעות עדיין"');
+    expect(source).toContain('title = "השיחה תופיע כאן"');
     expect(source).toContain(
       'description = "התחילו שיחה כדי לראות כאן הודעות"',
     );

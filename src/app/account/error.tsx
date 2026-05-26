@@ -26,10 +26,10 @@ export default function AccountError({
                   ניסיון חוזר
                 </Button>
               }
-              description="לא הצלחנו לטעון את אזור הלקוח כרגע. אפשר לנסות שוב בלי לאבד את הסשן."
+              description="אזור הלקוח אינו זמין כרגע. אפשר לנסות שוב בלי לאבד את הסשן."
               icon={AlertTriangle}
               testId="account-error-boundary"
-              title="שגיאה בטעינת אזור הלקוח"
+              title="אזור הלקוח אינו זמין"
               variant="inset"
             />
           </CardContent>

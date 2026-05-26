@@ -50,7 +50,7 @@ const integrationStatusLabels: Readonly<Record<string, string>> = {
   "missing-key": "חסר מפתח",
   "missing-email": "חסר אימייל",
   "missing-config": "חסרה הגדרה",
-  "local-dev-fallback": "Fallback מקומי",
+  "local-dev-fallback": "מצב בדיקה",
 };
 
 export type PublicProductAvailabilityMode =

@@ -280,7 +280,7 @@ export function ProductPurchasePanel({
             type="button"
           >
             {addItem.isPending
-              ? "מוסיף..."
+              ? "הוספה לסל"
               : selectedVariantAvailable
                 ? "הוספה לסל"
                 : "לא זמין"}
@@ -399,7 +399,7 @@ export function ProductPurchasePanel({
               type="button"
             >
               {addItem.isPending
-                ? "מוסיף..."
+                ? "הוספה לסל"
                 : selectedVariantAvailable
                   ? "הוספה לסל"
                   : "לא זמין"}

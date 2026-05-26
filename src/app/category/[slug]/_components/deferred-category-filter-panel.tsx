@@ -254,7 +254,7 @@ export function FilterPanelFallback({ resetHref }: { resetHref: string }) {
     <div className="grid gap-3 text-sm">
       <div className="text-muted-foreground flex items-center gap-2">
         <RotateCw aria-hidden="true" className="size-4" />
-        <span>לא ניתן לטעון פילטרים כרגע.</span>
+        <span>הפילטרים אינם זמינים כרגע.</span>
       </div>
       <Link
         className="hover:border-foreground inline-flex min-h-8 w-fit items-center border-b border-[var(--glass-border)] px-1 text-sm font-medium transition-colors focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"

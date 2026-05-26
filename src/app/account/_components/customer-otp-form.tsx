@@ -147,11 +147,7 @@ function RequestButton({
   return (
     <Button className="w-full gap-2" disabled={pending} type="submit">
       <Send aria-hidden="true" className="size-4" />
-      {pending
-        ? "שולח קוד..."
-        : hasVerificationTarget
-          ? "שליחת קוד נוסף"
-          : "שליחת קוד"}
+      {hasVerificationTarget ? "שליחת קוד נוסף" : "שליחת קוד"}
     </Button>
   );
 }
@@ -167,7 +163,7 @@ function VerifyButton() {
       variant="secondary"
     >
       <LogIn aria-hidden="true" className="size-4" />
-      {pending ? "בודק קוד..." : "כניסה לאזור לקוח"}
+      כניסה לאזור לקוח
     </Button>
   );
 }

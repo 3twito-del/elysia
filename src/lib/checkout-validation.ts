@@ -40,14 +40,9 @@ export function validateCheckoutFields({
   quantity = 1,
   requireCart = false,
   requireQuantity = false,
-  sessionReady = true,
   street = "",
 }: CheckoutValidationInput): CheckoutFieldErrors {
   const errors: CheckoutFieldErrors = {};
-
-  if (!sessionReady) {
-    errors.session = "יצירת סל מקומי עדיין בטעינה.";
-  }
 
   if (requireCart && cartItemCount < 1) {
     errors.quantity = "יש להוסיף לפחות פריט אחד לסל.";

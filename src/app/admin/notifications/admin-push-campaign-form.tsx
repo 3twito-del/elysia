@@ -81,7 +81,7 @@ function SubmitButton() {
   return (
     <Button className="w-fit gap-2" disabled={pending} type="submit">
       <Send aria-hidden="true" className="size-4" />
-      {pending ? "שומר..." : "יצירת קמפיין"}
+      יצירת קמפיין
     </Button>
   );
 }
