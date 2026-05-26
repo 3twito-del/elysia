@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Search } from "lucide-react";
+import {
+  ArrowLeft,
+  Gem,
+  MessageCircle,
+  PackageCheck,
+  Search,
+} from "lucide-react";
 
 import {
   StaticCinematicHeroSequence,
@@ -15,7 +22,7 @@ import { Input } from "~/components/ui/input";
 import { cinematicRouteMedia, getCategoryBrandSlides } from "~/lib/brand-media";
 import {
   getCatalogCategories,
-  searchCatalogProducts,
+  getFeaturedCatalogProducts,
 } from "~/server/services/catalog";
 
 const homeSlides = cinematicRouteMedia.home.slice(0, 1);
@@ -27,12 +34,62 @@ const quickSearchSuggestions = [
   { href: "/search?category=rings", label: "טבעות" },
 ] as const;
 
+const collectionCopy: Record<string, string> = {
+  bracelets: "קווים נקיים לשכבה עדינה על היד.",
+  earrings: "אור קטן סביב הפנים, ליום ולערב.",
+  necklaces: "שרשראות שנבנות בשכבות שקטות.",
+  rings: "טבעות שנשארות קרובות למחווה.",
+};
+
+const materialPrinciples = [
+  {
+    title: "מתכת שמחזיקה קו",
+    text: "זהב, כסף וגימורים בהירים נבחרים לפי איך שהם פוגשים אור, עור ותנועה.",
+  },
+  {
+    title: "אבנים ללא עודף",
+    text: "יהלום, פנינה וזירקון מוצגים במינון שמכבד את הפריט ולא מכסה עליו.",
+  },
+  {
+    title: "פרופורציה לפני קישוט",
+    text: "כל תכשיט נבחן ביחס ליד, לצוואר או לפנים, כדי להרגיש טבעי ולא מקרי.",
+  },
+] as const;
+
+const giftRitual = [
+  {
+    title: "בחירה",
+    text: "מתחילים ברגע: יום הולדת, תודה, התחלה חדשה או מחווה שקטה.",
+  },
+  {
+    title: "דיוק",
+    text: "בודקים מידה, חומר, תקציב וזמינות לפני שממשיכים להזמנה.",
+  },
+  {
+    title: "מסירה",
+    text: "האריזה, הברכה והשירות נבנים כחלק מהתכשיט עצמו.",
+  },
+] as const;
+
+export const metadata: Metadata = {
+  title: "Maison תכשיטים ישראלי",
+  description:
+    "עמוד הבית של Elysia: סטודיו תכשיטים ישראלי עם קולקציות חתימה, חומריות שקטה, טקס מתנה, ייעוץ אישי ומבחר פריטים אוצרותי.",
+  openGraph: {
+    title: "Elysia | Maison תכשיטים ישראלי",
+    description:
+      "קולקציות תכשיטים מדודות, רכישה אונליין ושירות אישי שנבנים סביב בחירה שקטה.",
+    images: [{ url: "/brand/v2/editorial-home.avif" }],
+  },
+};
+
 export default async function Home() {
-  const [categories, ringProducts] = await Promise.all([
+  const [categories, featuredProducts] = await Promise.all([
     getCatalogCategories(),
-    searchCatalogProducts({ category: "rings" }),
+    getFeaturedCatalogProducts(8),
   ]);
-  const featuredProducts = ringProducts.slice(0, 4);
+  const signatureCollections = categories.slice(0, 4);
+  const curatedProducts = featuredProducts.slice(0, 4);
   const heroCategoryLinks = categories.slice(0, 3);
 
   return (
@@ -65,26 +122,30 @@ export default async function Home() {
             </StaticKineticImageFrame>
           </div>
         </div>
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.02),rgba(0,0,0,0.16)_44%,rgba(0,0,0,0.58))]" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.68),rgba(0,0,0,0.12)_58%,rgba(0,0,0,0.22))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.02),rgba(0,0,0,0.18)_42%,rgba(0,0,0,0.62))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.70),rgba(0,0,0,0.10)_58%,rgba(0,0,0,0.24))]" />
         <div className="absolute inset-x-0 top-0 h-px bg-white opacity-30" />
         <div className="relative min-h-[var(--home-hero-height)]">
           <div
-            className="motion-hero-copy absolute top-[var(--hero-edge)] right-[var(--hero-edge)] w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),48rem)] text-right text-white lg:w-[min(48rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
+            className="motion-hero-copy absolute top-[var(--hero-edge)] right-[var(--hero-edge)] w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),50rem)] text-right text-white lg:w-[min(50rem,calc(52vw_-_var(--hero-edge)_-_2rem))]"
             data-testid="home-hero-copy"
             dir="rtl"
           >
+            <p className="motion-copy-item text-xs font-medium tracking-normal text-white/78">
+              סטודיו תכשיטים ישראלי
+            </p>
             <h1
-              className="home-hero-wordmark motion-copy-item text-right text-5xl leading-[0.96] font-medium tracking-normal sm:text-7xl lg:text-[6rem]"
+              className="home-hero-wordmark motion-copy-item mt-4 text-right text-5xl leading-[0.96] font-medium tracking-normal sm:text-7xl lg:text-[6rem]"
               dir="ltr"
             >
               Elysia
             </h1>
-            <p className="motion-copy-item mt-4 max-w-xl text-base leading-7 text-white/90 [--motion-copy-delay:90ms] sm:mt-5 sm:text-[1.05rem] sm:leading-8">
-              תכשיטים מדויקים לרגעים שנשארים.
+            <p className="motion-copy-item mt-5 max-w-2xl text-xl leading-8 text-white/94 [--motion-copy-delay:90ms] sm:text-3xl sm:leading-10">
+              Maison קטן לתכשיטים שנבחרים בשקט, נענדים לאורך זמן ונשארים קרובים.
             </p>
-            <p className="motion-copy-item mt-2 max-w-xl text-sm leading-6 text-white/78 [--motion-copy-delay:130ms] sm:text-base sm:leading-7">
-              קולקציה ישראלית נקייה בטבעות, שרשראות, עגילים וצמידים.
+            <p className="motion-copy-item mt-4 max-w-xl text-sm leading-7 text-white/78 [--motion-copy-delay:130ms] sm:text-base sm:leading-8">
+              קולקציות חתימה, חומריות מדודה ושירות אישי לפני הבחירה, בזמן
+              ההזמנה ולאחר המסירה.
             </p>
           </div>
         </div>
@@ -101,7 +162,7 @@ export default async function Home() {
               size="lg"
             >
               <Link href="/category/rings">
-                לקולקציה
+                כניסה לקולקציות
                 <ArrowLeft
                   aria-hidden="true"
                   className="home-hero-cta-icon size-4"
@@ -110,7 +171,7 @@ export default async function Home() {
             </Button>
             {heroCategoryLinks.length > 0 ? (
               <nav
-                aria-label="קישורי קטגוריות מהירים"
+                aria-label="קישורי קולקציות מהירים"
                 className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-white/82 sm:justify-end"
               >
                 {heroCategoryLinks.map((category) => (
@@ -135,17 +196,18 @@ export default async function Home() {
         <CommerceSectionHeader
           action={
             <Button asChild size="sm" variant="outline">
-              <Link href="/search">כל הקטלוג</Link>
+              <Link href="/search">כל הקולקציה</Link>
             </Button>
           }
-          eyebrow="קטגוריות"
-          title="מסלול קצר למוצר הנכון"
+          description="ארבע נקודות כניסה עריכתיות אל הקטלוג, לפי מחווה, חומר וקו."
+          eyebrow="קולקציות חתימה"
+          title="לא מתחילים במוצר. מתחילים בתחושה."
         />
         <RevealGrid
           className="grid grid-cols-2 gap-2.5 sm:gap-x-4 sm:gap-y-6 lg:grid-cols-4"
           variant="media"
         >
-          {categories.map((category) => (
+          {signatureCollections.map((category) => (
             <Link
               className="group/card block w-full min-w-0 outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
               data-testid="home-category-tile"
@@ -163,11 +225,16 @@ export default async function Home() {
                     category.image
                   }
                 />
-                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(16,19,20,0.48),rgba(16,19,20,0.08)_58%,rgba(255,255,255,0.04))] sm:bg-[linear-gradient(to_top,rgba(16,19,20,0.18),rgba(16,19,20,0.02)_42%,rgba(255,255,255,0.04))]" />
+                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(16,19,20,0.54),rgba(16,19,20,0.12)_56%,rgba(255,255,255,0.04))] sm:bg-[linear-gradient(to_top,rgba(16,19,20,0.24),rgba(16,19,20,0.03)_44%,rgba(255,255,255,0.04))]" />
                 <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-3 text-white sm:hidden">
-                  <h3 className="min-w-0 text-base leading-5 font-medium">
-                    {category.name}
-                  </h3>
+                  <div className="min-w-0">
+                    <h3 className="min-w-0 text-base leading-5 font-medium">
+                      {category.name}
+                    </h3>
+                    <p className="mt-1 line-clamp-2 text-xs leading-5 text-white/78">
+                      {collectionCopy[category.slug] ?? category.description}
+                    </p>
+                  </div>
                   <ArrowLeft aria-hidden="true" className="size-4 shrink-0" />
                 </div>
               </div>
@@ -175,6 +242,9 @@ export default async function Home() {
                 <h3 className="group-hover/card:text-muted-foreground group-focus-visible/card:text-muted-foreground min-w-0 text-base leading-6 font-medium transition-colors duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)] sm:text-lg">
                   {category.name}
                 </h3>
+                <p className="text-muted-foreground mx-auto mt-1 max-w-48 text-sm leading-6">
+                  {collectionCopy[category.slug] ?? category.description}
+                </p>
               </div>
             </Link>
           ))}
@@ -183,12 +253,119 @@ export default async function Home() {
 
       <RevealSection
         className="brand-page-band border-y border-[var(--glass-border)]"
+        id="materials"
+      >
+        <div className="mx-auto grid max-w-7xl gap-8 px-[var(--ui-page-x)] py-[var(--ui-section-y)] sm:px-[var(--ui-page-x-wide)] lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center">
+          <div className="relative min-h-[22rem] overflow-hidden rounded-md bg-muted sm:min-h-[28rem]">
+            <Image
+              alt="תכשיטי זהב ופנינים על זכוכית אקווה בתאורת סטודיו"
+              className="media-color-rich object-cover"
+              fill
+              sizes="(min-width: 1024px) 48vw, 100vw"
+              src="/brand/v2/content-editorial.avif"
+            />
+          </div>
+          <div className="grid gap-6">
+            <CommerceSectionHeader
+              description="היוקרה של Elysia אינה נשענת על עודף. היא נשענת על משקל נכון, מפגש אור עדין והבטחה שהפריט יישאר שימושי גם אחרי הרגע הראשון."
+              eyebrow="אומנות וחומרים"
+              title="חומר, אור ופרופורציה לפני כל דבר אחר."
+            />
+            <div className="grid gap-4">
+              {materialPrinciples.map((item) => (
+                <section
+                  className="border-t border-[var(--glass-border)] pt-4"
+                  key={item.title}
+                >
+                  <h3 className="text-lg font-medium">{item.title}</h3>
+                  <p className="text-muted-foreground mt-2 max-w-2xl text-sm leading-7">
+                    {item.text}
+                  </p>
+                </section>
+              ))}
+            </div>
+          </div>
+        </div>
+      </RevealSection>
+
+      <RevealSection className="brand-page-band" id="gift-ritual">
+        <div className="mx-auto grid max-w-7xl gap-8 px-[var(--ui-page-x)] py-[var(--ui-section-y)] sm:px-[var(--ui-page-x-wide)] lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-start">
+          <div>
+            <CommerceSectionHeader
+              description="מתנה טובה אינה צריכה להיות רועשת. היא צריכה להגיע בזמן הנכון, בגודל הנכון, עם מספיק שקט כדי לזכור אותה."
+              eyebrow="טקס מתנה"
+              title="מחשבה קטנה שמגיעה עטופה בדיוק."
+            />
+            <Button asChild className="mt-6" variant="outline">
+              <Link href="/gifts">
+                מתנות תכשיטים
+                <PackageCheck aria-hidden="true" className="size-4" />
+              </Link>
+            </Button>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {giftRitual.map((item, index) => (
+              <section
+                className="border-t border-[var(--glass-border)] pt-4"
+                key={item.title}
+              >
+                <p className="text-muted-foreground text-sm" dir="ltr">
+                  0{index + 1}
+                </p>
+                <h3 className="mt-4 text-xl font-medium">{item.title}</h3>
+                <p className="text-muted-foreground mt-3 text-sm leading-7">
+                  {item.text}
+                </p>
+              </section>
+            ))}
+          </div>
+        </div>
+      </RevealSection>
+
+      <RevealSection
+        className="brand-page-band border-y border-[var(--glass-border)]"
+        id="personal-advice"
+      >
+        <div className="mx-auto grid max-w-7xl gap-8 px-[var(--ui-page-x)] py-[var(--ui-section-y)] sm:px-[var(--ui-page-x-wide)] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center">
+          <div className="grid gap-6">
+            <CommerceSectionHeader
+              description="כשמידה, שכבות, מתנה או חומר דורשים עוד עין, הייעוץ האישי נכנס בשקט. לא כדי לבחור במקומך, אלא כדי לדייק את הבחירה שכבר התחילה."
+              eyebrow="ייעוץ אישי"
+              title="עין נוספת לפני החלטה קטנה וחשובה."
+            />
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <Button asChild>
+                <Link href="/stylist">
+                  התחלת ייעוץ אישי
+                  <MessageCircle aria-hidden="true" className="size-4" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/size-guide">מדריך מידות</Link>
+              </Button>
+            </div>
+          </div>
+          <div className="relative min-h-[22rem] overflow-hidden rounded-md bg-muted sm:min-h-[28rem]">
+            <Image
+              alt="מגש שירות עם אריזת תכשיטים ופנינים"
+              className="media-color-rich object-cover"
+              fill
+              priority
+              sizes="(min-width: 1024px) 42vw, 100vw"
+              src="/brand/v2/service-task.avif"
+            />
+          </div>
+        </div>
+      </RevealSection>
+
+      <RevealSection
+        className="brand-page-band border-y border-[var(--glass-border)]"
         id="quick-search"
       >
         <div className="mx-auto grid max-w-7xl gap-4 px-[var(--ui-page-x)] py-5 sm:px-[var(--ui-page-x-wide)] sm:py-6 lg:grid-cols-[minmax(15rem,0.7fr)_minmax(0,1.9fr)] lg:items-center">
           <div className="min-w-0">
-            <p className="text-muted-foreground text-sm">חיפוש מהיר</p>
-            <h2 className="text-2xl font-medium">מה תרצי למצוא היום?</h2>
+            <p className="text-muted-foreground text-sm">חיפוש שקט</p>
+            <h2 className="text-2xl font-medium">אם כבר יודעים מה מחפשים.</h2>
           </div>
           <div className="grid min-w-0 gap-3">
             <form
@@ -235,16 +412,25 @@ export default async function Home() {
       </RevealSection>
 
       <RevealSection className="brand-page-band" id="featured">
-        <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-10">
+        <div className="mx-auto max-w-7xl px-[var(--ui-page-x)] py-[var(--ui-section-y)] sm:px-[var(--ui-page-x-wide)]">
           <CommerceSectionHeader
-            eyebrow="נבחרים"
-            title="תכשיטים זמינים לקנייה"
+            action={
+              <Button asChild size="sm" variant="outline">
+                <Link href="/search">
+                  צפייה במבחר המלא
+                  <Gem aria-hidden="true" className="size-4" />
+                </Link>
+              </Button>
+            }
+            description="מעט פריטים, מספיק כיוון. מבחר שמראה את היד של הסטודיו לפני שהוא מציג את כל המדף."
+            eyebrow="מבחר אוצרותי"
+            title="פריטים שנבחרו לפתוח איתם את הדלת."
           />
           <RevealGrid
-            className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+            className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
             variant="cards"
           >
-            {featuredProducts.map((product, index) => (
+            {curatedProducts.map((product, index) => (
               <ProductCard
                 imagePriority={index < 4}
                 key={product.slug}
