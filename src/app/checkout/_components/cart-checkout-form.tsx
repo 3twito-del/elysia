@@ -90,18 +90,18 @@ const checkoutTrustItems = [
 const checkoutEmptyLinks = [
   {
     href: "/category/rings",
-    label: "טבעות",
-    text: "בחירה מדויקת ליום יום ולאירוע.",
+    label: "קולקציית טבעות",
+    text: "בחירה מדויקת ליום יום, אירוע או מתנה אישית.",
   },
   {
     href: "/category/necklaces",
-    label: "שרשראות",
-    text: "קווים עדינים ושכבות נקיות.",
+    label: "שרשראות עדינות",
+    text: "קווים נקיים ושכבות שנבחרות בנחת.",
   },
   {
     href: "/service",
-    label: "שירות לקוחות",
-    text: "עזרה בבחירה, מידה או מתנה.",
+    label: "ייעוץ מהסטודיו",
+    text: "עזרה בבחירה, מידה או הקדשה אישית.",
   },
 ] as const;
 
@@ -924,24 +924,27 @@ function CheckoutEmptyCartState() {
       data-testid="cart-checkout-form"
     >
       <div
-        className="glass-panel grid min-h-[28rem] gap-8 rounded-md border p-6 sm:p-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(18rem,0.9fr)] lg:items-center lg:p-10"
+        className="glass-panel grid min-h-[30rem] gap-8 rounded-md border p-6 sm:p-10 lg:grid-cols-[minmax(0,1.12fr)_minmax(18rem,0.88fr)] lg:items-center lg:p-12"
         data-testid="checkout-empty-cart"
       >
         <div className="max-w-2xl">
           <div className="glass-inset mb-5 grid size-12 place-items-center rounded-full border">
             <ShoppingBag aria-hidden="true" className="size-5" />
           </div>
-          <h2 className="text-2xl font-semibold tracking-normal sm:text-3xl">
-            הסל שלך עדיין ריק
+          <p className="text-muted-foreground text-xs font-medium">
+            קופה אישית
+          </p>
+          <h2 className="mt-3 text-2xl font-semibold tracking-normal sm:text-3xl">
+            הסל שלך ממתין לבחירה הראשונה
           </h2>
           <p className="text-muted-foreground mt-4 max-w-xl text-sm leading-7 sm:text-base">
-            אפשר לבחור תכשיט בקצב שלך ולחזור לקופה כשהבחירה מוכנה. ההזמנה
-            נשמרת לבדיקה אישית לפני חיוב.
+            חזרי לקולקציה ובחרי את התכשיט שילווה את הרגע הבא. הקופה תמתין כאן
+            עם סיכום ברור, שמירת מלאי ושירות אישי לפני חיוב.
           </p>
           <div className="mt-7 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <Button asChild>
               <Link href="/category/rings">
-                חזרה לקולקציה
+                גילוי תכשיטים
                 <ShoppingBag aria-hidden="true" className="size-4" />
               </Link>
             </Button>
@@ -962,7 +965,7 @@ function CheckoutEmptyCartState() {
 
         <div
           aria-label="אפשרויות המשך"
-          className="grid gap-3 text-sm"
+          className="grid gap-3 text-sm lg:ps-2"
           data-testid="checkout-empty-actions"
         >
           {checkoutEmptyLinks.map((item) => (
