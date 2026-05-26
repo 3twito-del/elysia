@@ -57,18 +57,21 @@ export function ProductCard({
   const productDetails = [product.material, product.stone].filter(
     (detail): detail is string => Boolean(detail),
   );
-  const shouldShowAvailability =
-    isUnavailable || product.availabilityMode !== "READY_TO_ORDER";
+  const productMeta = productDetails.join(" · ");
+  const primaryCommerceLabel = isAvailable
+    ? formatPrice(product.price)
+    : commerceStatus.label;
 
   return (
     <Card
       aria-label={product.name}
       className={cn(
         "product-card-shell group/card relative h-full min-w-0 gap-0 overflow-hidden rounded-md border-0 bg-transparent py-0 shadow-none transition focus-within:ring-3 focus-within:ring-[var(--glass-focus)]",
-        isUnavailable && "bg-muted/30",
+        isUnavailable && "opacity-90",
       )}
       data-public-floating-avoid="true"
       data-testid="product-card"
+      dir="rtl"
     >
       <Link
         aria-label={`צפייה בתכשיט ${product.name}`}
@@ -76,12 +79,12 @@ export function ProductCard({
         href={href}
         prefetch={false}
       >
-        <div className="brand-product-media bg-muted/60 relative aspect-[5/4] overflow-hidden rounded-md border-0 sm:aspect-[4/5]">
+        <div className="brand-product-media product-card-media bg-muted/60 relative aspect-[5/4] overflow-hidden rounded-md border-0 sm:aspect-[4/5]">
           <StaticKineticImageFrame>
             <Image
               alt={product.name}
               blurDataURL={PRODUCT_IMAGE_BLUR_DATA_URL}
-              className="media-color object-cover transition duration-[700ms] ease-[var(--ease-motion-standard)] group-hover/card:scale-[1.015]"
+              className="media-color product-card-image object-cover transition duration-[900ms] ease-[var(--ease-motion-standard)] group-hover/card:scale-[1.018]"
               fill
               placeholder="blur"
               priority={imagePriority}
@@ -92,64 +95,44 @@ export function ProductCard({
           </StaticKineticImageFrame>
           {isUnavailable ? (
             <div className="absolute top-2.5 left-2.5 flex items-start gap-2">
-              <Badge variant="destructive">לא פנוי כרגע</Badge>
+              <Badge className="product-card-status-badge" variant="outline">
+                לייעוץ
+              </Badge>
             </div>
           ) : null}
         </div>
-        <CardContent className="flex min-h-28 flex-1 flex-col gap-2.5 px-0 pt-3 pb-0 sm:min-h-32 sm:gap-3">
-          <div className="flex items-start justify-between gap-2.5 sm:gap-3">
-            <div className="min-w-0">
+        <CardContent className="flex min-h-28 flex-1 flex-col px-0 pt-4 pb-0 sm:min-h-32">
+          <div className="min-w-0">
+            <div className="grid min-w-0 gap-1.5">
               <h3
-                className="group-hover/product-link:text-muted-foreground group-focus-visible/product-link:text-muted-foreground line-clamp-2 min-h-10 text-base leading-[1.4] font-medium transition-colors duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)] sm:min-h-11 sm:leading-[1.45]"
-                dir="auto"
+                className="product-card-title group-hover/product-link:text-muted-foreground group-focus-visible/product-link:text-muted-foreground line-clamp-2 min-h-10 text-base leading-[1.42] font-medium transition-colors duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)] sm:min-h-11 sm:leading-[1.45]"
+                dir="rtl"
               >
                 {product.name}
               </h3>
               <div
-                className="text-muted-foreground mt-1.5 flex min-h-5 flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-5 sm:mt-2"
+                className="product-card-attributes text-muted-foreground min-h-5 truncate text-xs leading-5"
                 data-testid="product-card-attributes"
+                title={productMeta}
               >
-                {productDetails.map((detail, index) => (
-                  <span
-                    className="max-w-full min-w-0 truncate"
-                    key={`${detail}-${index}`}
-                  >
-                    {detail}
-                  </span>
-                ))}
+                {productMeta}
               </div>
             </div>
           </div>
 
-          <div className="mt-auto grid gap-2.5">
-            <div className="grid min-h-10 grid-cols-[minmax(0,1fr)_auto] items-end gap-2.5 sm:min-h-12 sm:gap-3">
-              <div className="min-w-0">
-                <span className="block text-lg leading-6 font-semibold sm:text-xl sm:leading-7">
-                  {formatPrice(product.price)}
-                </span>
-              </div>
-              {shouldShowAvailability ? (
-                <span
-                  className={cn(
-                    "brand-icon-well flex max-w-32 shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs",
-                    isAvailable ? "text-muted-foreground" : "text-foreground",
-                  )}
-                >
-                  <span
-                    className={cn(
-                      "size-2 shrink-0 rounded-full",
-                      isAvailable ? "bg-emerald-500" : "bg-muted-foreground",
-                    )}
-                    aria-hidden="true"
-                  />
-                  <span className="truncate">{commerceStatus.label}</span>
-                </span>
-              ) : null}
-            </div>
+          <div className="mt-auto pt-4">
+            <span
+              className={cn(
+                "product-card-commerce block truncate text-[0.94rem] leading-6 font-medium sm:text-base",
+                isAvailable ? "text-foreground" : "text-muted-foreground",
+              )}
+            >
+              {primaryCommerceLabel}
+            </span>
           </div>
         </CardContent>
       </Link>
-      <div className="bg-background absolute top-2.5 right-2.5 z-10 rounded-md">
+      <div className="product-card-favorite absolute top-2.5 right-2.5 z-10 rounded-md">
         <ProductCardFavoriteButton
           productName={product.name}
           productSlug={product.slug}

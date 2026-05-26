@@ -11,7 +11,8 @@ describe("product card overlay budget", () => {
     expect(source).not.toContain("product.collection");
     expect(source).not.toContain("discountPercent");
     expect(source).not.toContain("product.compareAt");
-    expect(source).toContain("לא פנוי כרגע");
+    expect(source).toContain("product-card-status-badge");
+    expect(source).toContain("לייעוץ");
     expect(source).not.toContain("absolute inset-x-2.5 bottom-2.5");
     expect(source).not.toContain(
       '<Badge className="max-w-full font-normal" variant="outline">',
@@ -24,12 +25,14 @@ describe("product card overlay budget", () => {
     expect(source).toContain(
       "const productDetails = [product.material, product.stone]",
     );
+    expect(source).toContain('const productMeta = productDetails.join(" · ")');
     expect(source).toContain('data-testid="product-card-attributes"');
     expect(source).not.toContain("product.shortDescription");
     expect(source).not.toContain("commerceHighlights");
     expect(source).not.toContain('data-testid="product-card-highlights"');
     expect(source).not.toContain("matchReason");
-    expect(source).toMatch(/productDetails\.map\(\(detail, index\) =>/);
+    expect(source).not.toContain("productDetails.map");
+    expect(source).toContain("{productMeta}");
   });
 });
 

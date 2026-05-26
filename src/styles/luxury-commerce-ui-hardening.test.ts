@@ -58,8 +58,8 @@ describe("luxury commerce UI hardening", () => {
     );
     expect(footer).toContain("site-footer-nav grid md:grid-cols-3");
     expect(footer).toContain("function FooterNav");
-    expect(footer).toContain('title="הקולקציה"');
-    expect(footer).toContain('title="שירות והזמנה"');
+    expect(footer).toContain('title="קולקציות"');
+    expect(footer).toContain('title="שירות"');
     expect(footer).toContain('title="מידע"');
     expect(footer).not.toContain("primaryServiceLinks");
     expect(footer).not.toContain("secondaryServiceLinks");

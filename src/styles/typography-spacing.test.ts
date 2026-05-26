@@ -61,7 +61,7 @@ describe("public typography spacing guardrails", () => {
     expect(css).toContain("text-wrap: balance;");
     expect(css).toContain("overflow-wrap: anywhere;");
     expect(css).toContain('[data-slot="button"]');
-    expect(css).toContain(".commerce-page-hero-title");
+    expect(css).toContain(":where(h1, h2, h3, h4, h5, h6, legend)");
   });
 
   it("keeps public text letter spacing normal except documented shortcut labels", () => {

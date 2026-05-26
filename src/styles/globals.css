@@ -274,7 +274,7 @@
     text-wrap: pretty;
     overflow-wrap: anywhere;
   }
-  :where(h1, h2, h3, h4, h5, h6, legend, .commerce-page-hero-title) {
+  :where(h1, h2, h3, h4, h5, h6, legend) {
     text-wrap: balance;
     overflow-wrap: anywhere;
   }
@@ -1633,6 +1633,69 @@ footer nav a:focus-visible {
 
 .brand-product-media {
   border-bottom-color: transparent;
+}
+
+.product-card-shell {
+  isolation: isolate;
+  direction: rtl;
+}
+
+.product-card-media {
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 10%), transparent),
+    var(--muted);
+  transition:
+    background-color var(--motion-ui) var(--ease-motion-standard),
+    opacity var(--motion-ui) var(--ease-motion-standard);
+}
+
+.product-card-media::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgb(16 24 28 / 5%);
+  border-radius: inherit;
+  transition: border-color var(--motion-ui) var(--ease-motion-standard);
+}
+
+.product-card-shell:hover .product-card-media::after,
+.product-card-shell:focus-within .product-card-media::after {
+  border-color: rgb(16 24 28 / 12%);
+}
+
+.product-card-image {
+  transform-origin: center;
+}
+
+.product-card-title {
+  text-wrap: balance;
+  letter-spacing: 0;
+}
+
+.product-card-attributes {
+  letter-spacing: 0;
+}
+
+.product-card-commerce {
+  font-variant-numeric: tabular-nums;
+}
+
+.product-card-status-badge {
+  border-color: rgb(16 24 28 / 12%);
+  background: rgb(255 255 255 / 88%);
+  color: var(--foreground);
+  font-weight: 500;
+  box-shadow: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.product-card-favorite {
+  border: 1px solid rgb(16 24 28 / 8%);
+  background: rgb(255 255 255 / 86%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .glass-panel,
