@@ -4,9 +4,12 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 describe("layout stability guardrails", () => {
-  it("keeps product cards and category loading placeholders on stable dimensions", () => {
+  it("keeps product cards stable and avoids category route-level loading shells", () => {
     const productCardSource = readSource("src/components/product-card.tsx");
-    const loadingSource = readSource("src/app/category/[slug]/loading.tsx");
+    const categoryLoadingPath = path.join(
+      process.cwd(),
+      "src/app/category/[slug]/loading.tsx",
+    );
 
     expect(productCardSource).toContain(
       "relative aspect-[5/4] overflow-hidden",
@@ -20,10 +23,9 @@ describe("layout stability guardrails", () => {
     expect(productCardSource).toContain("absolute top-2.5 right-2.5");
     expect(productCardSource).not.toContain("product-card-cta");
 
-    expect(loadingSource).toContain("const previewRows = 3");
-    expect(loadingSource).toContain("grid gap-3 sm:grid-cols-2 lg:grid-cols-3");
-    expect(loadingSource).toContain("h-4 w-3/4");
-    expect(loadingSource).toContain("h-7 w-20");
+    expect(
+      statSync(categoryLoadingPath, { throwIfNoEntry: false }),
+    ).toBeUndefined();
   });
 
   it("keeps shared hover interactions from reflowing layout", () => {

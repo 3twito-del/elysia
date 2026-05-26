@@ -1,6 +1,12 @@
 import { expect, test } from "@playwright/test";
 
 const footerHeadings = ["קטלוג", "שירות וקנייה", "מידע"] as const;
+const categoryRoutes = [
+  "/category/rings",
+  "/category/necklaces",
+  "/category/earrings",
+  "/category/bracelets",
+] as const;
 
 test.describe("footer DOM and accessibility structure", () => {
   test("renders a single RTL Hebrew footer without duplicate nav columns", async ({
@@ -103,8 +109,87 @@ test.describe("footer DOM and accessibility structure", () => {
       expect(footerState.disclosureOpenStates).toEqual([false, false, false]);
     }
   });
+
+  test("keeps category routes ordered as header, main content, then one footer", async ({
+    page,
+  }) => {
+    for (const route of categoryRoutes) {
+      const response = await page.goto(route, {
+        waitUntil: "domcontentloaded",
+      });
+      expect(response?.ok(), route).toBe(true);
+
+      const earlyState = await getCategoryFooterState(page);
+
+      expect(earlyState.loadingShellCount, route).toBe(0);
+      expect(earlyState.headerCount, route).toBe(1);
+      expect(earlyState.mainCount, route).toBe(1);
+      expect(earlyState.footerCount, route).toBe(1);
+      expect(earlyState.headerBeforeMain, route).toBe(true);
+      expect(earlyState.mainBeforeFooter, route).toBe(true);
+
+      await page.waitForSelector(
+        '[data-testid="category-results-grid"], [data-testid="category-empty-state"]',
+      );
+
+      const finalState = await getCategoryFooterState(page);
+
+      expect(finalState.loadingShellCount, route).toBe(0);
+      expect(finalState.headerCount, route).toBe(1);
+      expect(finalState.mainCount, route).toBe(1);
+      expect(finalState.footerCount, route).toBe(1);
+      expect(finalState.productsBeforeFooter, route).toBe(true);
+      expect(finalState.sequence, route).toEqual(["header", "main", "footer"]);
+    }
+  });
 });
 
 function countOccurrences(source: string, pattern: string) {
   return source.split(pattern).length - 1;
+}
+
+async function getCategoryFooterState(page: {
+  evaluate: <T>(callback: () => T) => Promise<T>;
+}) {
+  return page.evaluate(() => {
+    const header = document.querySelector("header");
+    const main = document.querySelector("main");
+    const footer = document.querySelector("footer");
+    const products = document.querySelector("#category-products");
+    const absoluteTop = (element: Element) => {
+      const rect = element.getBoundingClientRect();
+
+      return rect.top + window.scrollY;
+    };
+    const absoluteBottom = (element: Element) => {
+      const rect = element.getBoundingClientRect();
+
+      return rect.bottom + window.scrollY;
+    };
+    const comesBefore = (first: Element | null, second: Element | null) =>
+      Boolean(
+        first &&
+        second &&
+        (first.compareDocumentPosition(second) &
+          Node.DOCUMENT_POSITION_FOLLOWING) !==
+          0,
+      );
+
+    return {
+      footerCount: document.querySelectorAll("footer").length,
+      headerBeforeMain: comesBefore(header, main),
+      headerCount: document.querySelectorAll("header").length,
+      loadingShellCount: document.querySelectorAll(
+        '[data-testid="category-loading-state"]',
+      ).length,
+      mainBeforeFooter: comesBefore(main, footer),
+      mainCount: document.querySelectorAll("main").length,
+      productsBeforeFooter: Boolean(
+        products && footer && absoluteBottom(products) <= absoluteTop(footer),
+      ),
+      sequence: Array.from(
+        document.querySelectorAll("header, main, footer"),
+      ).map((element) => element.tagName.toLowerCase()),
+    };
+  });
 }

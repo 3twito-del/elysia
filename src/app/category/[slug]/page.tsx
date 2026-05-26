@@ -146,199 +146,204 @@ export default async function CategoryPage({
       : "0 מוצרים";
 
   return (
-    <main>
+    <>
       <SiteHeader />
 
-      <CommercePageHero
-        description={
-          category.description ??
-          "בחירה מסוננת מתוך קטלוג התכשיטים, עם רכישה אונליין ומחירים בשקלים."
-        }
-        eyebrow="קטלוג Elysia"
-        id="page-hero"
-        title={category.name}
-        variant="catalog"
-      />
+      <main>
+        <CommercePageHero
+          description={
+            category.description ??
+            "בחירה מסוננת מתוך קטלוג התכשיטים, עם רכישה אונליין ומחירים בשקלים."
+          }
+          eyebrow="קטלוג Elysia"
+          id="page-hero"
+          title={category.name}
+          variant="catalog"
+        />
 
-      <div className="bg-background sticky top-16 z-30 border-b border-[var(--glass-border)] lg:hidden">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-[var(--ui-page-x)] py-3 sm:px-[var(--ui-page-x-wide)]">
-          <div className="text-sm">
-            <p className="font-medium">{pageRangeLabel}</p>
-            <p className="text-muted-foreground text-xs">
-              {hasActiveFilters
-                ? `${activeFilterCount} פילטרים פעילים`
-                : hasCategoryProducts
-                  ? "כל הפריטים בקטגוריה"
-                  : "הקטגוריה בעדכון"}
-            </p>
+        <div className="bg-background sticky top-16 z-30 border-b border-[var(--glass-border)] lg:hidden">
+          <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-[var(--ui-page-x)] py-3 sm:px-[var(--ui-page-x-wide)]">
+            <div className="text-sm">
+              <p className="font-medium">{pageRangeLabel}</p>
+              <p className="text-muted-foreground text-xs">
+                {hasActiveFilters
+                  ? `${activeFilterCount} פילטרים פעילים`
+                  : hasCategoryProducts
+                    ? "כל הפריטים בקטגוריה"
+                    : "הקטגוריה בעדכון"}
+              </p>
+            </div>
+            <CategoryFilterSheet activeFilterCount={activeFilterCount}>
+              <Button
+                className="gap-2"
+                data-testid="category-filter-trigger"
+                type="button"
+                variant="outline"
+              >
+                <Filter aria-hidden="true" className="size-4" />
+                סינון
+                {activeFilterCount > 0 && (
+                  <Badge className="h-5 px-1.5" variant="secondary">
+                    {activeFilterCount}
+                  </Badge>
+                )}
+              </Button>
+              <SheetContent
+                className="w-[min(92vw,390px)] overflow-y-auto p-0"
+                data-testid="category-filter-sheet"
+                side="right"
+              >
+                <SheetHeader className="border-b border-[var(--glass-border)] p-[var(--ui-panel-padding)]">
+                  <SheetTitle className="flex items-center gap-2">
+                    <SlidersHorizontal aria-hidden="true" className="size-4" />
+                    סינון מדויק
+                  </SheetTitle>
+                  <SheetDescription>
+                    בחרו סדר הצגה, סוג תכשיט, חומר, אבן ותקציב.
+                  </SheetDescription>
+                </SheetHeader>
+                <div className="p-[var(--ui-panel-padding)]">
+                  <DeferredCategoryFilterPanel
+                    closeOnSelect
+                    data={filterPayload}
+                  />
+                </div>
+                <div className="bg-popover sticky bottom-0 grid grid-cols-2 gap-2 border-t border-[var(--glass-border)] p-[var(--ui-panel-padding)]">
+                  {hasActiveFilters ? (
+                    <Button asChild variant="outline">
+                      <Link href={resetHref} scroll={false}>
+                        איפוס
+                      </Link>
+                    </Button>
+                  ) : (
+                    <Button disabled type="button" variant="outline">
+                      איפוס
+                    </Button>
+                  )}
+                  <SheetClose asChild>
+                    <Button type="button" variant="secondary">
+                      סגירה
+                    </Button>
+                  </SheetClose>
+                </div>
+              </SheetContent>
+            </CategoryFilterSheet>
           </div>
-          <CategoryFilterSheet activeFilterCount={activeFilterCount}>
-            <Button
-              className="gap-2"
-              data-testid="category-filter-trigger"
-              type="button"
-              variant="outline"
-            >
-              <Filter aria-hidden="true" className="size-4" />
-              סינון
-              {activeFilterCount > 0 && (
-                <Badge className="h-5 px-1.5" variant="secondary">
-                  {activeFilterCount}
-                </Badge>
-              )}
-            </Button>
-            <SheetContent
-              className="w-[min(92vw,390px)] overflow-y-auto p-0"
-              data-testid="category-filter-sheet"
-              side="right"
-            >
-              <SheetHeader className="border-b border-[var(--glass-border)] p-[var(--ui-panel-padding)]">
-                <SheetTitle className="flex items-center gap-2">
+        </div>
+
+        <div className="h-px" id="category-filters" />
+
+        <RevealSection className="mx-auto grid w-full max-w-[96rem] gap-5 px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:grid-cols-[260px_1fr] lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y)]">
+          <aside
+            className="hidden lg:block"
+            data-testid="category-filter-panel"
+          >
+            <div className="sticky top-24 border-y border-[var(--glass-border)] py-4">
+              <div className="pb-4">
+                <h2 className="flex items-center gap-2 text-base font-medium">
                   <SlidersHorizontal aria-hidden="true" className="size-4" />
                   סינון מדויק
-                </SheetTitle>
-                <SheetDescription>
-                  בחרו סדר הצגה, סוג תכשיט, חומר, אבן ותקציב.
-                </SheetDescription>
-              </SheetHeader>
-              <div className="p-[var(--ui-panel-padding)]">
-                <DeferredCategoryFilterPanel
-                  closeOnSelect
-                  data={filterPayload}
-                />
-              </div>
-              <div className="bg-popover sticky bottom-0 grid grid-cols-2 gap-2 border-t border-[var(--glass-border)] p-[var(--ui-panel-padding)]">
-                {hasActiveFilters ? (
-                  <Button asChild variant="outline">
-                    <Link href={resetHref} scroll={false}>
-                      איפוס
-                    </Link>
-                  </Button>
-                ) : (
-                  <Button disabled type="button" variant="outline">
-                    איפוס
-                  </Button>
-                )}
-                <SheetClose asChild>
-                  <Button type="button" variant="secondary">
-                    סגירה
-                  </Button>
-                </SheetClose>
-              </div>
-            </SheetContent>
-          </CategoryFilterSheet>
-        </div>
-      </div>
-
-      <div className="h-px" id="category-filters" />
-
-      <RevealSection className="mx-auto grid w-full max-w-[96rem] gap-5 px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:grid-cols-[260px_1fr] lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y)]">
-        <aside className="hidden lg:block" data-testid="category-filter-panel">
-          <div className="sticky top-24 border-y border-[var(--glass-border)] py-4">
-            <div className="pb-4">
-              <h2 className="flex items-center gap-2 text-base font-medium">
-                <SlidersHorizontal aria-hidden="true" className="size-4" />
-                סינון מדויק
-              </h2>
-            </div>
-            <div>
-              <DeferredCategoryFilterPanel data={filterPayload} />
-            </div>
-          </div>
-        </aside>
-
-        <section
-          aria-labelledby="category-results"
-          className="min-w-0"
-          id="category-products"
-        >
-          <div className="mb-5 hidden border-b border-[var(--glass-border)] pb-4 lg:block">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h2 className="text-base font-medium" id="category-results">
-                  {pageRangeLabel}
                 </h2>
-                <p className="text-muted-foreground text-sm">
-                  {!hasCategoryProducts
-                    ? "נעדכן את הבחירה בקרוב"
-                    : filteredProducts.length > productsPerPage
-                      ? `עמוד ${currentPage} מתוך ${totalPages}`
-                      : hasActiveFilters
-                        ? "התוצאות מסוננות לפי הבחירה שלך"
-                        : "כל הפריטים הזמינים בקטגוריה"}
-                  <span className="mx-2">·</span>
-                  <span>מיון: {currentSortLabel}</span>
-                </p>
               </div>
-              <div className="flex flex-wrap gap-2">
-                {hasActiveFilters && (
-                  <Button asChild size="sm" variant="ghost">
-                    <Link href={resetHref} scroll={false}>
-                      איפוס
-                    </Link>
-                  </Button>
-                )}
+              <div>
+                <DeferredCategoryFilterPanel data={filterPayload} />
               </div>
             </div>
-            {activeFilters.length > 0 && (
-              <div
-                aria-label="בחירות פעילות"
-                className="mt-4 flex flex-wrap gap-2"
-              >
-                {activeFilters.map((filter) => (
-                  <Badge
-                    asChild
-                    className="h-7 max-w-full gap-1 pr-2 pl-1"
-                    key={filter.key}
-                    variant="outline"
-                  >
-                    <Link href={filter.href} scroll={false}>
-                      <span className="min-w-0 truncate">{filter.label}</span>
-                      <X aria-hidden="true" className="size-3" />
-                      <span className="sr-only">הסרת בחירה</span>
-                    </Link>
-                  </Badge>
-                ))}
+          </aside>
+
+          <section
+            aria-labelledby="category-results"
+            className="min-w-0"
+            id="category-products"
+          >
+            <div className="mb-5 hidden border-b border-[var(--glass-border)] pb-4 lg:block">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h2 className="text-base font-medium" id="category-results">
+                    {pageRangeLabel}
+                  </h2>
+                  <p className="text-muted-foreground text-sm">
+                    {!hasCategoryProducts
+                      ? "נעדכן את הבחירה בקרוב"
+                      : filteredProducts.length > productsPerPage
+                        ? `עמוד ${currentPage} מתוך ${totalPages}`
+                        : hasActiveFilters
+                          ? "התוצאות מסוננות לפי הבחירה שלך"
+                          : "כל הפריטים הזמינים בקטגוריה"}
+                    <span className="mx-2">·</span>
+                    <span>מיון: {currentSortLabel}</span>
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {hasActiveFilters && (
+                    <Button asChild size="sm" variant="ghost">
+                      <Link href={resetHref} scroll={false}>
+                        איפוס
+                      </Link>
+                    </Button>
+                  )}
+                </div>
               </div>
-            )}
-          </div>
-
-          {filteredProducts.length > 0 ? (
-            <>
-              <RevealGrid
-                className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-                data-testid="category-results-grid"
-                variant="cards"
-              >
-                {pageProducts.map((product, index) => (
-                  <ProductCard
-                    imagePriority={index === 0}
-                    imageSizes="(min-width: 1280px) 18rem, (min-width: 1024px) calc((100vw - 24rem) / 2), (min-width: 640px) 50vw, 100vw"
-                    key={product.slug}
-                    product={product}
-                  />
-                ))}
-              </RevealGrid>
-
-              {totalPages > 1 && (
-                <CategoryPagination
-                  currentPage={currentPage}
-                  filters={filters}
-                  slug={slug}
-                  totalPages={totalPages}
-                />
+              {activeFilters.length > 0 && (
+                <div
+                  aria-label="בחירות פעילות"
+                  className="mt-4 flex flex-wrap gap-2"
+                >
+                  {activeFilters.map((filter) => (
+                    <Badge
+                      asChild
+                      className="h-7 max-w-full gap-1 pr-2 pl-1"
+                      key={filter.key}
+                      variant="outline"
+                    >
+                      <Link href={filter.href} scroll={false}>
+                        <span className="min-w-0 truncate">{filter.label}</span>
+                        <X aria-hidden="true" className="size-3" />
+                        <span className="sr-only">הסרת בחירה</span>
+                      </Link>
+                    </Badge>
+                  ))}
+                </div>
               )}
-            </>
-          ) : (
-            <CategoryEmptyState
-              hasActiveFilters={hasActiveFilters}
-              hasCategoryProducts={hasCategoryProducts}
-              resetHref={resetHref}
-            />
-          )}
-        </section>
-      </RevealSection>
-    </main>
+            </div>
+
+            {filteredProducts.length > 0 ? (
+              <>
+                <RevealGrid
+                  className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+                  data-testid="category-results-grid"
+                  variant="cards"
+                >
+                  {pageProducts.map((product, index) => (
+                    <ProductCard
+                      imagePriority={index === 0}
+                      imageSizes="(min-width: 1280px) 18rem, (min-width: 1024px) calc((100vw - 24rem) / 2), (min-width: 640px) 50vw, 100vw"
+                      key={product.slug}
+                      product={product}
+                    />
+                  ))}
+                </RevealGrid>
+
+                {totalPages > 1 && (
+                  <CategoryPagination
+                    currentPage={currentPage}
+                    filters={filters}
+                    slug={slug}
+                    totalPages={totalPages}
+                  />
+                )}
+              </>
+            ) : (
+              <CategoryEmptyState
+                hasActiveFilters={hasActiveFilters}
+                hasCategoryProducts={hasCategoryProducts}
+                resetHref={resetHref}
+              />
+            )}
+          </section>
+        </RevealSection>
+      </main>
+    </>
   );
 }
 
