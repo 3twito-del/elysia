@@ -16,7 +16,7 @@ const checkoutEmptyTitle =
 const checkoutCatalogCta =
   "\u05d7\u05d6\u05e8\u05d4 \u05dc\u05e7\u05d5\u05dc\u05e7\u05e6\u05d9\u05d4";
 const checkoutAdviceLink =
-  "\u05e7\u05d1\u05dc\u05ea \u05d9\u05d9\u05e2\u05d5\u05e5 \u05d0\u05d9\u05e9\u05d9";
+  "\u05dc\u05e7\u05d1\u05dc\u05ea \u05d9\u05d9\u05e2\u05d5\u05e5 \u05d0\u05d9\u05e9\u05d9";
 const zeroShekelPattern = /^\D*0\D*\u20aa\D*$/u;
 const forbiddenCheckoutStateText = [
   "\u05d8\u05d5\u05e2\u05df \u05e1\u05dc...",
@@ -253,7 +253,7 @@ test.describe("critical shopping flows", () => {
       }),
     ).toBeVisible();
     await expect(page.getByTestId("checkout-empty-actions")).toContainText(
-      "קבלת ייעוץ אישי",
+      "לקבלת ייעוץ אישי",
     );
 
     for (const stateText of forbiddenCheckoutStateText) {

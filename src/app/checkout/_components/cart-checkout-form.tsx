@@ -99,7 +99,7 @@ const checkoutEmptyLinks = [
   },
   {
     href: "/service",
-    label: "קבלת ייעוץ אישי",
+    label: "לקבלת ייעוץ אישי",
     text: "עזרה בבחירה, מידה או הקדשה אישית.",
   },
 ] as const;
@@ -993,7 +993,7 @@ function CheckoutEmptyCartState() {
             </Button>
             <Button asChild variant="outline">
               <Link href="/service">
-                קבלת ייעוץ אישי
+                לקבלת ייעוץ אישי
                 <MessageCircle aria-hidden="true" className="size-4" />
               </Link>
             </Button>
