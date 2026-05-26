@@ -37,6 +37,26 @@ const ACTIVE_PRODUCT_WHERE = {
   status: "ACTIVE",
 } satisfies Prisma.ProductWhereInput;
 const CATALOG_REVALIDATE_SECONDS = 60 * 60;
+const publicCatalogCopyReplacements = [
+  ["יוקרה נגישה", "דיוק מאופק"],
+  ["רשת תכשיטים", "סטודיו תכשיטים"],
+  ["רכישה אונליין", "הזמנה דיגיטלית"],
+  ["קנייה אונליין", "הזמנה דיגיטלית"],
+  ["חוויית הקנייה", "חוויית הבחירה"],
+  ["מחיר גלוי", "מחיר ברור"],
+  ["שירות וקנייה", "שירות והזמנה"],
+  ["לאחר קנייה", "לאחר מסירה"],
+  ["צפייה וקנייה", "לפרטי הפריט"],
+  ["מוצרים מומלצים", "פריטים מומלצים"],
+  ["מוצרים שנצפו", "פריטים שנצפו"],
+  ["מוצרים קיימים", "פריטים קיימים"],
+  ["מסחר אונליין", "בחירה דיגיטלית"],
+  ["קטלוג אונליין", "קטלוג דיגיטלי"],
+  ["תקציב", "טווח מחיר"],
+  ["מוצרים", "פריטים"],
+  ["מוצר", "פריט"],
+  ["רכישה", "הזמנה"],
+] as const;
 export { DEFAULT_CATALOG_IMAGE };
 
 export { formatPrice };
@@ -560,16 +580,22 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
     name: displayName,
     categorySlug: record.category.slug,
     categoryName: record.category.name,
-    shortDescription: record.shortDescription,
+    shortDescription: normalizePublicCatalogCopy(record.shortDescription),
     description: displayDescription,
     availabilityMode: record.availabilityMode,
     commerceHighlights: getDisplayCommerceHighlights(record),
-    deliveryPromise:
+    deliveryPromise: normalizePublicCatalogCopy(
       record.deliveryPromise ?? "משלוח עד הבית לאחר אימות פרטי ההזמנה.",
-    returnPolicy:
+    ),
+    returnPolicy: normalizePublicCatalogCopy(
       record.returnPolicy ?? "החלפה או החזרה מתואמת לפי מדיניות האתר.",
-    careInstructions: record.careInstructions ?? undefined,
-    warranty: record.warranty ?? undefined,
+    ),
+    careInstructions: record.careInstructions
+      ? normalizePublicCatalogCopy(record.careInstructions)
+      : undefined,
+    warranty: record.warranty
+      ? normalizePublicCatalogCopy(record.warranty)
+      : undefined,
     price: defaultPrice,
     compareAt: getCompareAt(defaultVariant),
     createdAt: record.createdAt,
@@ -639,6 +665,13 @@ function getDisplayProductName(name: string) {
   return name.replace(/\s+\d{3}$/u, "");
 }
 
+function normalizePublicCatalogCopy(value: string) {
+  return publicCatalogCopyReplacements.reduce(
+    (text, [from, to]) => text.split(from).join(to),
+    value,
+  );
+}
+
 function getDisplayProductDescription(input: {
   description: string;
   material: string;
@@ -646,7 +679,7 @@ function getDisplayProductDescription(input: {
   stone?: string;
 }) {
   if (!isGeneratedCatalogDescription(input.description)) {
-    return input.description;
+    return normalizePublicCatalogCopy(input.description);
   }
 
   const stoneText = input.stone ? ` עם ${input.stone}` : "";
@@ -656,13 +689,15 @@ function getDisplayProductDescription(input: {
 
 function getDisplayCommerceHighlights(record: CatalogProductRecord) {
   if (record.commerceHighlights.length > 0) {
-    return record.commerceHighlights;
+    return record.commerceHighlights.map(normalizePublicCatalogCopy);
   }
 
   return [
-    record.warranty ?? "אחריות ושירות לאחר מסירה",
-    record.deliveryPromise ?? "משלוח מתואם עד הבית",
-    record.careInstructions ?? "הנחיות טיפול מצורפות לכל פריט",
+    normalizePublicCatalogCopy(record.warranty ?? "אחריות ושירות לאחר מסירה"),
+    normalizePublicCatalogCopy(record.deliveryPromise ?? "משלוח מתואם עד הבית"),
+    normalizePublicCatalogCopy(
+      record.careInstructions ?? "הנחיות טיפול מצורפות לכל פריט",
+    ),
   ];
 }
 
@@ -738,7 +773,9 @@ function mapCatalogCategory(category: {
   return {
     slug: category.slug,
     name: category.name,
-    description: category.description ?? "",
+    description: category.description
+      ? normalizePublicCatalogCopy(category.description)
+      : "",
     image,
     imageUrl: image,
   };
