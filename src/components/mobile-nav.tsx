@@ -7,7 +7,6 @@ import {
   CircleHelp,
   Gift,
   Headphones,
-  MapPin,
   Menu,
   Ruler,
   Search,
@@ -43,7 +42,7 @@ type MobileNavProps = {
 
 const quickActions = [
   { href: "/search", label: "חיפוש", icon: Search },
-  { href: "/branches", label: "סניפים", icon: MapPin },
+  { href: "/branches", label: "אונליין", icon: Headphones },
   { href: "/checkout", label: "הבחירה", icon: ShoppingBag },
   { href: "/account", label: "אזור אישי", icon: UserRound },
 ] as const;
@@ -71,12 +70,6 @@ const spotlightActions = [
     label: "מדריך מידות",
     description: "טבעות, צמידים, שרשראות ועגילים",
     icon: Ruler,
-  },
-  {
-    href: "/search",
-    label: "כל המבחר",
-    description: "חיפוש לפי תכשיט, חומר ואבן",
-    icon: Search,
   },
 ] as const;
 
@@ -137,7 +130,7 @@ export function MobileNav({
           קישורי ניווט ראשיים לאתר Elysia.
         </SheetDescription>
 
-        <div className="mobile-nav-header border-b border-[var(--glass-border)] px-4 py-4">
+        <div className="mobile-nav-header border-b border-[var(--glass-border)] px-4 py-3.5">
           <div className="flex items-start justify-between gap-3">
             <Link
               className="brand-header-mark site-header-link mobile-nav-animated-item inline-flex min-h-10 items-center"
@@ -170,7 +163,7 @@ export function MobileNav({
           </p>
         </div>
 
-        <div className="grid gap-4 p-4">
+        <div className="grid gap-3 p-3.5">
           <div className="grid grid-cols-4 gap-2">
             {quickActions.map((item, index) => {
               const Icon = item.icon;
@@ -180,7 +173,7 @@ export function MobileNav({
                 <Link
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "mobile-nav-quick-action mobile-nav-animated-item text-muted-foreground hover:text-foreground grid min-h-14 place-items-center gap-1.5 rounded-md px-2 text-center text-xs transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+                    "mobile-nav-quick-action mobile-nav-animated-item text-muted-foreground hover:text-foreground grid min-h-12 place-items-center gap-1 rounded-md px-2 text-center text-xs transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
                     isActive && "text-foreground font-semibold",
                   )}
                   href={item.href}
@@ -213,7 +206,7 @@ export function MobileNav({
                 <Link
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "mobile-nav-feature-link mobile-nav-animated-item group/nav-feature grid min-h-16 grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-[var(--glass-border)] px-1 py-2.5 outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+                    "mobile-nav-feature-link mobile-nav-animated-item group/nav-feature grid min-h-[3.75rem] grid-cols-[auto_1fr_auto] items-center gap-2.5 border-b border-[var(--glass-border)] px-1 py-2 outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
                     isActive && "text-foreground font-semibold",
                   )}
                   href={item.href}
@@ -221,7 +214,7 @@ export function MobileNav({
                   onClick={closeNav}
                   style={getMobileNavStaggerStyle(7 + index)}
                 >
-                  <span className="mobile-nav-feature-icon grid size-9 place-items-center rounded-md border border-[var(--glass-border)]">
+                  <span className="mobile-nav-feature-icon grid size-8 place-items-center rounded-md border border-[var(--glass-border)]">
                     <Icon aria-hidden="true" className="size-4" />
                   </span>
                   <span className="grid min-w-0 gap-0.5">

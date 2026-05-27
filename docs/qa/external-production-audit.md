@@ -61,9 +61,30 @@ Viewports checked:
 - Desktop: 1440 x 900
 - Mobile: 390 x 844
 
-## Working Tree Fixes
+## Production Update
 
-Fixed locally after this audit:
+Deployment:
+
+- Commit: `a7e0ae8` (`Fix public QA regressions`)
+- Branch: `qa/full-site-hardening`
+- Vercel deployment: `dpl_5xya518u26oVdxsPim1vUgKQnHKQ`
+- Deployment URL: `https://elysia-hyjhtoopj-ariel-twitos-projects.vercel.app`
+- Production alias: `https://elysia-jewellery.com`
+- Status: `READY`
+
+Production smoke after deployment:
+
+- `/robots.txt`: HTTP 200, `text/plain`
+- `/sitemap.xml`: HTTP 200, `application/xml`
+- `/gifts`: HTTP 200, 24 product links rendered
+- `/search?q=טבעת`: HTTP 200, 24 product links rendered, no empty state
+- `/product/does-not-exist`: HTTP 404 with branded HTML
+- `/admin/login`: HTTP 200
+- Vercel error logs for the new deployment: no errors found in the sampled window
+
+## Deployed Fixes
+
+Fixed, committed, pushed, and deployed after this audit:
 
 - Added `/robots.txt` and `/sitemap.xml` metadata routes.
 - Added e2e coverage that verifies `robots.txt` and `sitemap.xml` return successful responses.
@@ -80,15 +101,49 @@ Fixed locally after this audit:
 - Removed `networkidle` dependence from the mobile category-filter e2e reload path.
 - Added targeted regression coverage for search page reconciliation, `/gifts` density, and combined floating chrome offsets.
 
-Still open after the local fixes:
+## Follow-Up Local Fixes
 
-- Broader decision on whether `/branches` should remain a redirect/service alias or become a real branch page when physical branches are enabled.
+Fixed locally after the branch and accessibility decisions on 2026-05-27:
+
+- `/branches` no longer redirects away when no physical branches exist. It now renders an online-only service state while preserving the physical branch-list path for future enabled branches.
+- Mobile navigation no longer labels the future branch path as physical `סניפים`; the quick action now reads `אונליין`, and the sheet is shorter by removing a duplicate search feature row and tightening spacing.
+- Home category imagery now has meaningful image `alt` text, while the enclosing category link has a concise `aria-label` to avoid repeated screen-reader names.
+- The repeated hidden site-header introduction was shortened to a compact landmark description.
+- Admin login now records audit events for successful, invalid-credential, and rate-limited login attempts using hashed email identifiers instead of raw email.
+- Added unit coverage for admin-login audit metadata.
+
+Manual mobile pass after the follow-up fixes:
+
+- Local production server: `http://127.0.0.1:3050` with `E2E_CATALOG_FIXTURES=1` and `CATALOG_DB_ERROR_FALLBACK=1`.
+- `/branches`: HTTP 200; H1 `חנות אונליין`; visible state `אין סניפים פיזיים בשלב זה`; no console or page errors.
+- Home category tiles: screen-reader link names are concise, for example `טבעות: טבעות ליום ולערב.`
+- Mobile menu: opens correctly; quick actions show `חיפוש`, `אונליין`, `הבחירה`, `אזור אישי`; no physical-branch wording.
+- Product mobile pass with cookie banner visible: accessibility button sits above the cookie banner; fixed/sticky element overlap check returned no intersections.
+
+Verification after the final local changes:
+
+- `pnpm.cmd lint`
+- `pnpm.cmd typecheck`
+- `pnpm.cmd test`: 116 files, 463 tests passed
+- `pnpm.cmd format:check`
+- `pnpm.cmd build`
+- `pnpm.cmd e2e tests/e2e/critical-flows.spec.ts --project=chromium-mobile --grep "opens mobile navigation|keeps /branches inside the viewport width|keeps the cinematic hero reserved"` with `E2E_BASE_URL=http://127.0.0.1:3050`: 3 passed
+
+Still open after the production deploy:
+
+- Deploy the follow-up local fixes above and repeat production smoke on `/branches`, `/`, `/product/hera-bracelet`, and `/admin/login`.
 
 ## High Priority
 
 ### Search result count does not match rendered products
 
-Status: fixed locally.
+Status: fixed in production.
+
+Production verification:
+
+- `/search?q=טבעת` returned HTTP 200.
+- The sampled production HTML rendered 24 product links.
+- The sampled production HTML did not include the no-results empty state.
 
 Evidence:
 
@@ -109,7 +164,12 @@ Recommended fix:
 
 ### Gifts page renders the full catalog at once
 
-Status: fixed locally.
+Status: fixed in production.
+
+Production verification:
+
+- `/gifts` returned HTTP 200.
+- The sampled production HTML rendered 24 product links instead of the previous 299.
 
 Evidence:
 
@@ -132,6 +192,13 @@ Recommended fix:
 
 ### robots.txt and sitemap.xml are missing in production
 
+Status: fixed in production.
+
+Production verification:
+
+- `/robots.txt` returned HTTP 200 with `text/plain`.
+- `/sitemap.xml` returned HTTP 200 with `application/xml`.
+
 Evidence:
 
 - `/robots.txt` returns HTTP 404.
@@ -153,6 +220,8 @@ Recommended fix:
 
 ### Branches route points to personal-service content
 
+Status: fixed locally, pending production deploy.
+
 Evidence:
 
 - `/branches` returned HTTP 200 on desktop and mobile.
@@ -167,10 +236,13 @@ User impact:
 
 Recommended fix:
 
-- If Elysia has physical branches or pickup locations, create branch-specific content for `/branches`.
-- If there are no branches, rename links consistently to personal service and redirect or remove `/branches`.
+- Keep `/branches` as the future branch infrastructure route.
+- While there are no physical branches, render the online-only state and avoid physical-branch wording in navigation.
+- When `physicalBranchesEnabled` is true and approved public branches exist, render the branch list with address, phone, services, and opening-hour text.
 
 ### AI and stylist textareas are missing accessible labels
+
+Status: fixed in production.
 
 Evidence:
 
@@ -190,7 +262,7 @@ Recommended fix:
 
 ### Floating accessibility control overlaps commerce UI on mobile
 
-Status: fixed locally for the cookie-banner plus sticky-commerce-bar offset case. Still worth validating visually on production after deployment.
+Status: fixed in production for the cookie-banner plus sticky-commerce-bar offset case. Still worth validating visually during a manual mobile product-page pass.
 
 Evidence:
 
@@ -209,6 +281,12 @@ Recommended fix:
 - Re-test with the cookie banner visible and dismissed.
 
 ### 404 states are inconsistent and partially unbranded
+
+Status: fixed in production for unknown product and unknown category recovery states.
+
+Production verification:
+
+- `/product/does-not-exist` returned HTTP 404 with branded HTML.
 
 Evidence:
 
@@ -229,6 +307,8 @@ Recommended fix:
 
 ### Category tile images need explicit alt intent
 
+Status: fixed locally, pending production deploy.
+
 Evidence:
 
 - Home category tile images were detected without `alt`.
@@ -240,9 +320,12 @@ User impact:
 
 Recommended fix:
 
-- Use descriptive `alt` for meaningful category imagery, or `alt=""` for decorative images inside links that already contain the category name.
+- Use descriptive `alt` for meaningful category imagery.
+- Keep category link accessible names concise with `aria-label` so the image alt does not duplicate the visible heading and copy.
 
 ### Screen-reader intro is verbose
+
+Status: fixed locally, pending production deploy.
 
 Evidence:
 
@@ -261,6 +344,8 @@ Recommended fix:
 ## Low Priority
 
 ### Public admin login exposure should be intentional
+
+Status: partially fixed in production; follow-up audit logging fixed locally, pending production deploy. The admin login page is now `noindex`, unauthenticated admin deep links preserve the requested `next` path, and login attempts are rate-limited. The current lockout behavior is rate-limit based: 5 attempts per admin email per 15 minutes.
 
 Evidence:
 
@@ -283,6 +368,8 @@ Recommended fix:
 
 ### PWA manifest has a service shortcut copy typo
 
+Status: fixed in production.
+
 Evidence:
 
 - `/manifest.webmanifest` returns HTTP 200 and valid manifest JSON.
@@ -297,6 +384,8 @@ Recommended fix:
 - Change the shortcut description to a single clear phrase, for example `request personal service` in Hebrew.
 
 ### Mobile menu is functional but visually dense
+
+Status: fixed locally, pending production deploy.
 
 Evidence:
 
@@ -313,9 +402,14 @@ Recommended fix:
 
 ## Passed Checks
 
+- Latest deployment `dpl_5xya518u26oVdxsPim1vUgKQnHKQ` is `READY` and aliased to `https://elysia-jewellery.com`.
+- Latest production smoke confirmed `/robots.txt`, `/sitemap.xml`, `/gifts`, `/search?q=טבעת`, `/product/does-not-exist`, and `/admin/login`.
+- `/gifts` now renders 24 initial product links in the sampled production HTML.
+- `/search?q=טבעת` now renders 24 product links and no empty state in the sampled production HTML.
+- Vercel logs for the new deployment had no sampled error entries.
 - No Next.js error overlay found on checked routes.
 - No console errors found in the sampled routes.
-- No 4xx/5xx responses found during the sampled route loads.
+- No unexpected 4xx/5xx responses found during the sampled route loads; explicit not-found routes returned expected 404 responses.
 - Home, category, product, service, and gifts routes returned HTTP 200.
 - `/api/health` previously returned `ok: true` after production deploy.
 - Mobile navigation opens and closes the document scroll as expected.
@@ -357,6 +451,8 @@ Recommended fix:
 
 ## Follow-Up Repo Search Notes
 
-- Existing structure tests keep `/gifts` as a PLP route, but do not cap the number of initially rendered cards.
-- Existing search UI includes an empty-state path, but no discovered test currently proves that visible product cards, result counts, and empty state agree with each other.
-- Existing cookie and accessibility components are covered by targeted tests, but the overlap between cookie banner, accessibility widget, and sticky commerce controls should be tested as an integrated mobile state.
+- Structure tests now keep `/gifts` as a PLP route and assert the 24-card initial cap.
+- Search adapter tests now cover stale, undersized, out-of-range, final-page, and genuinely empty Typesense pages.
+- Floating chrome contract tests now cover the combined cookie-banner plus sticky-commerce-bar mobile offset.
+- E2E coverage now includes `robots.txt`, `sitemap.xml`, branded category/product not-found states, admin deep-link preservation, checkout empty-state copy, and size-guide save-button naming.
+- `/branches` remains the only product/IA decision intentionally left open.

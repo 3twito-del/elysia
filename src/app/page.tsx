@@ -209,6 +209,9 @@ export default async function Home() {
         >
           {signatureCollections.map((category) => (
             <Link
+              aria-label={`${category.name}: ${
+                collectionCopy[category.slug] ?? category.description
+              }`}
               className="ui-equal-item group/card w-full min-w-0 outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
               data-testid="home-category-tile"
               href={`/category/${category.slug}`}
@@ -216,7 +219,9 @@ export default async function Home() {
             >
               <div className="bg-muted relative aspect-[4/3] overflow-hidden rounded-md sm:aspect-[4/5] sm:min-h-[220px]">
                 <Image
-                  alt=""
+                  alt={`${category.name} מתוך קולקציות Elysia: ${
+                    collectionCopy[category.slug] ?? category.description
+                  }`}
                   className="media-color object-cover object-center transition duration-[700ms] ease-[var(--ease-motion-standard)] group-hover/card:scale-[1.015]"
                   fill
                   sizes="(min-width: 1280px) 18rem, (min-width: 1024px) 25vw, 50vw"

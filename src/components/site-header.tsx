@@ -89,10 +89,7 @@ export function SiteHeader() {
         data-over-media={isOverHomeHero ? "true" : undefined}
         dir="rtl"
       >
-        <p className="sr-only">
-          Elysia היא בית תכשיטים עם ניווט לקולקציות, חיפוש במבחר, שירות אישי,
-          אזור אישי, הבחירה שלי וקישורים לטבעות, שרשראות, עגילים וצמידים.
-        </p>
+        <p className="sr-only">Elysia: ניווט ראשי, חיפוש, שירות והבחירה שלי.</p>
         <div className="mx-auto grid h-16 max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 sm:px-6 md:h-[4.25rem] md:grid-cols-[auto_1fr_auto] md:gap-3 lg:h-[6.125rem] lg:gap-5">
           <div className="flex items-center justify-self-start md:hidden">
             <MobileNav
