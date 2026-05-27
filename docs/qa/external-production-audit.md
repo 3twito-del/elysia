@@ -82,6 +82,23 @@ Production smoke after deployment:
 - `/admin/login`: HTTP 200
 - Vercel error logs for the new deployment: no errors found in the sampled window
 
+Follow-up production deployment:
+
+- Commit: `5ce0888` (`Resolve branch and accessibility audit follow-ups`)
+- Branch: `qa/full-site-hardening`
+- Vercel deployment: `dpl_3JwvUJVfUddrfQrckL9nWD6BTwyj`
+- Deployment URL: `https://elysia-meq43gpyu-ariel-twitos-projects.vercel.app`
+- Production alias: `https://elysia-jewellery.com`
+- Status: `READY`
+
+Follow-up production smoke:
+
+- `/branches`: HTTP 200, H1 `חנות אונליין`, online-only state rendered.
+- `/`: HTTP 200, category link `aria-label` for `טבעות: טבעות ליום ולערב.` rendered.
+- `/product/hera-bracelet`: HTTP 200.
+- `/admin/login`: HTTP 200 and `noindex` still present.
+- Vercel error logs for the follow-up deployment: no error logs found in the sampled window.
+
 ## Deployed Fixes
 
 Fixed, committed, pushed, and deployed after this audit:
@@ -101,9 +118,9 @@ Fixed, committed, pushed, and deployed after this audit:
 - Removed `networkidle` dependence from the mobile category-filter e2e reload path.
 - Added targeted regression coverage for search page reconciliation, `/gifts` density, and combined floating chrome offsets.
 
-## Follow-Up Local Fixes
+## Follow-Up Deployed Fixes
 
-Fixed locally after the branch and accessibility decisions on 2026-05-27:
+Fixed, pushed, deployed, and smoke-tested after the branch and accessibility decisions on 2026-05-27:
 
 - `/branches` no longer redirects away when no physical branches exist. It now renders an online-only service state while preserving the physical branch-list path for future enabled branches.
 - Mobile navigation no longer labels the future branch path as physical `סניפים`; the quick action now reads `אונליין`, and the sheet is shorter by removing a duplicate search feature row and tightening spacing.
@@ -120,6 +137,13 @@ Manual mobile pass after the follow-up fixes:
 - Mobile menu: opens correctly; quick actions show `חיפוש`, `אונליין`, `הבחירה`, `אזור אישי`; no physical-branch wording.
 - Product mobile pass with cookie banner visible: accessibility button sits above the cookie banner; fixed/sticky element overlap check returned no intersections.
 
+Production mobile pass after deployment:
+
+- `/branches`: H1 `חנות אונליין`, state `אין סניפים פיזיים בשלב זה`, and no console/page errors.
+- Mobile menu: quick action `אונליין` appears in place of physical-branch wording.
+- `/product/hera-bracelet`: fixed/sticky element overlap check returned no intersections with the cookie banner and accessibility control visible.
+- Production browser console and page-error checks were clean in the sampled pass.
+
 Verification after the final local changes:
 
 - `pnpm.cmd lint`
@@ -129,9 +153,10 @@ Verification after the final local changes:
 - `pnpm.cmd build`
 - `pnpm.cmd e2e tests/e2e/critical-flows.spec.ts --project=chromium-mobile --grep "opens mobile navigation|keeps /branches inside the viewport width|keeps the cinematic hero reserved"` with `E2E_BASE_URL=http://127.0.0.1:3050`: 3 passed
 
-Still open after the production deploy:
+Remaining open items after the follow-up production deploy:
 
-- Deploy the follow-up local fixes above and repeat production smoke on `/branches`, `/`, `/product/hera-bracelet`, and `/admin/login`.
+- No unresolved issue remains from the approved follow-up set.
+- Optional future hardening: add a separate account-disable lockout or additional access layer for `/admin/login` if the business wants stronger controls than the current rate-limit-based lockout.
 
 ## High Priority
 
@@ -220,7 +245,7 @@ Recommended fix:
 
 ### Branches route points to personal-service content
 
-Status: fixed locally, pending production deploy.
+Status: fixed in production.
 
 Evidence:
 
@@ -307,7 +332,7 @@ Recommended fix:
 
 ### Category tile images need explicit alt intent
 
-Status: fixed locally, pending production deploy.
+Status: fixed in production.
 
 Evidence:
 
@@ -325,7 +350,7 @@ Recommended fix:
 
 ### Screen-reader intro is verbose
 
-Status: fixed locally, pending production deploy.
+Status: fixed in production.
 
 Evidence:
 
@@ -345,7 +370,7 @@ Recommended fix:
 
 ### Public admin login exposure should be intentional
 
-Status: partially fixed in production; follow-up audit logging fixed locally, pending production deploy. The admin login page is now `noindex`, unauthenticated admin deep links preserve the requested `next` path, and login attempts are rate-limited. The current lockout behavior is rate-limit based: 5 attempts per admin email per 15 minutes.
+Status: fixed in production for the confirmed policy. The admin login page is `noindex`, unauthenticated admin deep links preserve the requested `next` path, login attempts are rate-limited, and login attempts are audited with hashed email identifiers. The current lockout behavior is rate-limit based: 5 attempts per admin email per 15 minutes.
 
 Evidence:
 
@@ -385,7 +410,7 @@ Recommended fix:
 
 ### Mobile menu is functional but visually dense
 
-Status: fixed locally, pending production deploy.
+Status: fixed in production.
 
 Evidence:
 
@@ -402,8 +427,11 @@ Recommended fix:
 
 ## Passed Checks
 
-- Latest deployment `dpl_5xya518u26oVdxsPim1vUgKQnHKQ` is `READY` and aliased to `https://elysia-jewellery.com`.
-- Latest production smoke confirmed `/robots.txt`, `/sitemap.xml`, `/gifts`, `/search?q=טבעת`, `/product/does-not-exist`, and `/admin/login`.
+- Latest follow-up deployment `dpl_3JwvUJVfUddrfQrckL9nWD6BTwyj` is `READY` and aliased to `https://elysia-jewellery.com`.
+- Follow-up production smoke confirmed `/branches`, `/`, `/product/hera-bracelet`, and `/admin/login`.
+- Follow-up manual production mobile pass found no fixed/sticky overlap between the accessibility control and cookie banner on `/product/hera-bracelet`.
+- Previous production deployment `dpl_5xya518u26oVdxsPim1vUgKQnHKQ` was `READY` and aliased to `https://elysia-jewellery.com`.
+- Previous production smoke confirmed `/robots.txt`, `/sitemap.xml`, `/gifts`, `/search?q=טבעת`, `/product/does-not-exist`, and `/admin/login`.
 - `/gifts` now renders 24 initial product links in the sampled production HTML.
 - `/search?q=טבעת` now renders 24 product links and no empty state in the sampled production HTML.
 - Vercel logs for the new deployment had no sampled error entries.
