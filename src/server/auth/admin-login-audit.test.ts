@@ -27,4 +27,20 @@ describe("admin login audit", () => {
     expect(serialized).not.toContain("Admin@Example.com");
     expect(serialized).not.toContain("admin@example.com");
   });
+
+  it("records disabled admin login attempts without raw email", () => {
+    const metadata = createAdminLoginAuditMetadata({
+      email: "disabled-admin@example.com",
+      outcome: "disabled",
+      redirectTo: "/admin",
+    });
+    const serialized = JSON.stringify(metadata);
+
+    expect(metadata).toMatchObject({
+      outcome: "disabled",
+      redirectTo: "/admin",
+    });
+    expect(metadata.emailHash).toMatch(/^[a-f0-9]{64}$/);
+    expect(serialized).not.toContain("disabled-admin@example.com");
+  });
 });

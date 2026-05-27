@@ -6,10 +6,11 @@ import { redirect } from "next/navigation";
 import { adminLoginInputSchema } from "~/lib/public-action-validation";
 import { signIn, signOut } from "~/server/auth";
 import {
-  findAdminUserIdForLoginAudit,
+  findAdminLoginAuditTarget,
   recordAdminLoginAudit,
 } from "~/server/auth/admin-login-audit";
 import { sanitizeAdminRedirect } from "~/server/auth/admin-redirect";
+import { inactiveAdminLoginMessage } from "~/server/auth/admin-user-status";
 import {
   assertRateLimit,
   createRateLimitKey,
@@ -39,9 +40,8 @@ export async function adminLoginAction(
   }
 
   const redirectTo = sanitizeAdminRedirect(parsed.data.next);
-  const auditAdminUserId = await findAdminUserIdForLoginAudit(
-    parsed.data.email,
-  );
+  const auditTarget = await findAdminLoginAuditTarget(parsed.data.email);
+  const auditAdminUserId = auditTarget?.id ?? null;
 
   try {
     await assertRateLimit({
@@ -49,6 +49,17 @@ export async function adminLoginAction(
       limit: 5,
       windowMs: 15 * 60_000,
     });
+
+    if (auditTarget?.disabledAt) {
+      await recordAdminLoginAudit({
+        adminUserId: auditAdminUserId,
+        email: parsed.data.email,
+        outcome: "disabled",
+        redirectTo,
+      });
+
+      return { message: inactiveAdminLoginMessage };
+    }
 
     await signIn("admin", {
       email: parsed.data.email,
@@ -89,7 +100,7 @@ export async function adminLoginAction(
         redirectTo,
       });
 
-      return { message: "פרטי ההתחברות אינם תואמים לאדמין פעיל." };
+      return { message: inactiveAdminLoginMessage };
     }
 
     throw error;

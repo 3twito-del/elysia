@@ -4,6 +4,7 @@ import type { Prisma } from "@prisma/client";
 import { db } from "~/server/db";
 
 export type AdminLoginAuditOutcome =
+  | "disabled"
   | "invalid_credentials"
   | "rate_limited"
   | "success";
@@ -16,13 +17,13 @@ type AdminLoginAuditInput = {
   retryAfterSeconds?: number;
 };
 
-export async function findAdminUserIdForLoginAudit(email: string) {
+export async function findAdminLoginAuditTarget(email: string) {
   const admin = await db.adminUser.findUnique({
-    select: { id: true },
+    select: { disabledAt: true, id: true },
     where: { email: email.trim().toLowerCase() },
   });
 
-  return admin?.id ?? null;
+  return admin;
 }
 
 export async function recordAdminLoginAudit(input: AdminLoginAuditInput) {

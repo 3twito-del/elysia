@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { db } from "~/server/db";
 import { verifyCustomerOtp } from "~/server/services/customer-otp";
+import { isAdminUserEnabled } from "./admin-user-status";
 import { verifyPassword } from "./password";
 
 declare module "next-auth" {
@@ -92,7 +93,7 @@ export const authConfig = {
           include: { role: true },
         });
 
-        if (!admin?.passwordHash) {
+        if (!isAdminUserEnabled(admin)) {
           return null;
         }
 

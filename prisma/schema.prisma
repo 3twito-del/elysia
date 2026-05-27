@@ -953,10 +953,13 @@ model AdminUser {
   name         String
   email        String     @unique
   passwordHash String?
+  disabledAt   DateTime?
   role         Role       @relation(fields: [roleId], references: [id])
   user         User?      @relation(fields: [userId], references: [id])
   auditLogs    AuditLog[]
   createdAt    DateTime   @default(now())
+
+  @@index([disabledAt])
 }
 
 model AuditLog {

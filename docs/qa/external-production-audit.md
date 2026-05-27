@@ -99,6 +99,24 @@ Follow-up production smoke:
 - `/admin/login`: HTTP 200 and `noindex` still present.
 - Vercel error logs for the follow-up deployment: no error logs found in the sampled window.
 
+Admin hardening production deployment:
+
+- Commit: `ce274bf` plus local audit hardening changes.
+- Branch: `qa/full-site-hardening`.
+- Vercel deployment: `dpl_BJqxgexnxQT2hMsvhtH7mADBjC4f`.
+- Deployment URL: `https://elysia-l99otkeje-ariel-twitos-projects.vercel.app`.
+- Production alias: `https://elysia-jewellery.com`.
+- Status: `READY`.
+- Migration applied during remote production build: `20260527120000_admin_user_disable_lockout`.
+
+Admin hardening production smoke:
+
+- `/api/health`: HTTP 200, `application/json`.
+- `/admin/login`: HTTP 200, `text/html`.
+- `/robots.txt`: HTTP 200, `text/plain`.
+- `/sitemap.xml`: HTTP 200, `application/xml`.
+- Vercel error logs for the admin hardening deployment: no error logs found in the sampled 30-minute window.
+
 ## Deployed Fixes
 
 Fixed, committed, pushed, and deployed after this audit:
@@ -153,10 +171,17 @@ Verification after the final local changes:
 - `pnpm.cmd build`
 - `pnpm.cmd e2e tests/e2e/critical-flows.spec.ts --project=chromium-mobile --grep "opens mobile navigation|keeps /branches inside the viewport width|keeps the cinematic hero reserved"` with `E2E_BASE_URL=http://127.0.0.1:3050`: 3 passed
 
-Remaining open items after the follow-up production deploy:
+Additional admin hardening implemented after closure:
+
+- Added an `AdminUser.disabledAt` account-disable lockout field with a production migration.
+- Disabled admin users are rejected during login and when resolving existing admin sessions.
+- Disabled admin login attempts are audited as `admin_login_disabled` with hashed email metadata.
+- Added unit coverage for admin account status and disabled-login audit metadata.
+
+Closure status after the follow-up production deploy:
 
 - No unresolved issue remains from the approved follow-up set.
-- Optional future hardening: add a separate account-disable lockout or additional access layer for `/admin/login` if the business wants stronger controls than the current rate-limit-based lockout.
+- Account-disable lockout hardening has been migrated, deployed, and smoke-tested in production in addition to the existing rate-limit-based lockout.
 
 ## High Priority
 
@@ -287,7 +312,7 @@ Recommended fix:
 
 ### Floating accessibility control overlaps commerce UI on mobile
 
-Status: fixed in production for the cookie-banner plus sticky-commerce-bar offset case. Still worth validating visually during a manual mobile product-page pass.
+Status: fixed in production.
 
 Evidence:
 
@@ -370,7 +395,7 @@ Recommended fix:
 
 ### Public admin login exposure should be intentional
 
-Status: fixed in production for the confirmed policy. The admin login page is `noindex`, unauthenticated admin deep links preserve the requested `next` path, login attempts are rate-limited, and login attempts are audited with hashed email identifiers. The current lockout behavior is rate-limit based: 5 attempts per admin email per 15 minutes.
+Status: fixed in production for the confirmed policy. Additional account-disable lockout hardening is deployed in production. The admin login page is `noindex`, unauthenticated admin deep links preserve the requested `next` path, login attempts are rate-limited, disabled admin accounts are blocked by the new implementation, and login attempts are audited with hashed email identifiers. The current rate-limit behavior is 5 attempts per admin email per 15 minutes.
 
 Evidence:
 
@@ -387,8 +412,8 @@ User impact:
 
 Recommended fix:
 
-- Confirm this route has rate limiting, lockout behavior, audit logging, and `noindex`.
-- Consider whether the route should be hidden behind an additional access layer if the platform supports it.
+- Confirm this route has rate limiting, account-disable lockout behavior, audit logging, and `noindex`.
+- Consider whether the route should also be hidden behind an infrastructure access layer if the platform supports it.
 - Preserve the original admin destination in `next` when redirecting unauthenticated admin subroutes.
 
 ### PWA manifest has a service shortcut copy typo
@@ -462,7 +487,8 @@ Recommended fix:
 - Image accessibility:
   - Meaningful images should have non-empty `alt`; decorative images should have `alt=""`.
 - Route semantics:
-  - `/branches` should either render branch/location content or redirect to the service route with consistent link labels.
+  - `/branches` should render the online-only state while no physical branches are enabled.
+  - Public navigation should avoid physical-branch wording while the online-only state is active.
 - SEO discovery:
   - `/robots.txt` should return HTTP 200 with `text/plain`.
   - `/sitemap.xml` should return HTTP 200 with XML and include public storefront URLs only.
@@ -472,6 +498,7 @@ Recommended fix:
   - `/ai` and `/stylist` message textareas should have an accessible name.
 - Admin routing:
   - Unauthenticated admin deep links should preserve the intended `next` path and admin login should be `noindex`.
+  - Disabled admin accounts should be rejected during login and existing session resolution.
 - PWA manifest:
   - Shortcut names and descriptions should pass a copy lint or snapshot check.
 - Commerce flow:
@@ -483,4 +510,5 @@ Recommended fix:
 - Search adapter tests now cover stale, undersized, out-of-range, final-page, and genuinely empty Typesense pages.
 - Floating chrome contract tests now cover the combined cookie-banner plus sticky-commerce-bar mobile offset.
 - E2E coverage now includes `robots.txt`, `sitemap.xml`, branded category/product not-found states, admin deep-link preservation, checkout empty-state copy, and size-guide save-button naming.
-- `/branches` remains the only product/IA decision intentionally left open.
+- `/branches` product/IA decision is resolved for the current business state: online-only service is active until physical branches are enabled and approved for public display.
+- Admin account-disable lockout is implemented and deployed with `AdminUser.disabledAt`, auth/session enforcement, audit metadata, and unit tests.

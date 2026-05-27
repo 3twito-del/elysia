@@ -3,6 +3,7 @@ import type { AdminPermission } from "@prisma/client";
 import type { Session } from "next-auth";
 
 import { db } from "~/server/db";
+import { isAdminUserEnabled } from "./admin-user-status";
 
 export type AuthorizedAdmin = {
   id: string;
@@ -34,7 +35,7 @@ export async function getAdminFromSession(
     include: { role: true },
   });
 
-  if (!admin?.passwordHash) {
+  if (!isAdminUserEnabled(admin)) {
     return null;
   }
 
