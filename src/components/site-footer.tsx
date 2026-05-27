@@ -80,8 +80,8 @@ export function SiteFooter() {
             className="site-footer-nav grid md:grid-cols-3 md:gap-10 lg:gap-12"
             data-footer-nav-root
           >
-            <FooterNav links={catalogLinks} title="קולקציות" />
-            <FooterNav links={commerceLinks} title="שירות" />
+            <FooterNav links={catalogLinks} title="הקולקציה" />
+            <FooterNav links={commerceLinks} title="שירות והזמנה" />
             <FooterNav links={informationLinks} title="מידע" />
           </nav>
         </div>

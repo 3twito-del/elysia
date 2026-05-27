@@ -66,7 +66,7 @@ export function ProductCard({
     <Card
       aria-label={product.name}
       className={cn(
-        "product-card-shell group/card relative h-full min-w-0 gap-0 overflow-hidden rounded-md border-0 bg-transparent py-0 shadow-none transition focus-within:ring-3 focus-within:ring-[var(--glass-focus)]",
+        "ui-equal-item product-card-shell group/card relative h-full min-w-0 gap-0 overflow-hidden rounded-md border-0 bg-transparent py-0 shadow-none transition focus-within:ring-3 focus-within:ring-[var(--glass-focus)]",
         isUnavailable && "opacity-90",
       )}
       data-public-floating-avoid="true"
@@ -105,13 +105,15 @@ export function ProductCard({
           <div className="min-w-0">
             <div className="grid min-w-0 gap-1.5">
               <h3
-                className="product-card-title group-hover/product-link:text-muted-foreground group-focus-visible/product-link:text-muted-foreground line-clamp-2 min-h-10 text-base leading-[1.42] font-medium transition-colors duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)] sm:min-h-11 sm:leading-[1.45]"
+                className="ui-text-slot product-card-title group-hover/product-link:text-muted-foreground group-focus-visible/product-link:text-muted-foreground text-base font-medium transition-colors duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)] [--ui-text-slot-line-height:1.45rem]"
+                data-lines="2"
                 dir="rtl"
               >
                 {product.name}
               </h3>
               <div
-                className="product-card-attributes text-muted-foreground min-h-5 truncate text-xs leading-5"
+                className="ui-text-slot product-card-attributes text-muted-foreground truncate text-xs [--ui-text-slot-line-height:1.25rem]"
+                data-lines="1"
                 data-testid="product-card-attributes"
                 title={productMeta}
               >
@@ -129,7 +131,7 @@ export function ProductCard({
             >
               {primaryCommerceLabel}
             </span>
-            <span className="product-card-cta text-muted-foreground mt-2 inline-flex w-fit border-b border-[var(--glass-border)] pb-0.5 text-xs font-medium transition-colors group-hover/product-link:border-foreground group-hover/product-link:text-foreground">
+            <span className="text-muted-foreground product-card-cta mt-2 inline-flex w-fit border-b border-[var(--glass-border)] pb-0.5 text-xs font-medium transition-colors group-hover/product-link:border-foreground group-hover/product-link:text-foreground">
               לפרטי התכשיט
             </span>
           </div>

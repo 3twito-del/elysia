@@ -54,7 +54,8 @@ export default async function GiftsPage() {
           </div>
         </section>
         <RevealGrid
-          className="mt-5 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4"
+          className="ui-equal-grid mt-5 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4"
+          data-layout-equal-group="gift-products"
           data-testid="gift-results-grid"
           variant="cards"
         >

@@ -294,7 +294,7 @@ export default async function CategoryPage({
             className="min-w-0"
             id="category-products"
           >
-            <div className="mb-8 hidden border-b border-[var(--glass-border)] pb-5 lg:block">
+            <div className="mb-5 hidden border-b border-[var(--glass-border)] pb-4 lg:block">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h2 className="text-base font-medium" id="category-results">
@@ -346,7 +346,8 @@ export default async function CategoryPage({
             {filteredProducts.length > 0 ? (
               <>
                 <RevealGrid
-                  className="grid gap-x-5 gap-y-10 sm:grid-cols-2 lg:grid-cols-3"
+                  className="ui-equal-grid grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+                  data-layout-equal-group="category-products"
                   data-testid="category-results-grid"
                   variant="cards"
                 >

@@ -203,12 +203,13 @@ export default async function Home() {
           title="מבחר לפי קטגוריה"
         />
         <RevealGrid
-          className="grid grid-cols-2 gap-2.5 sm:gap-x-4 sm:gap-y-6 lg:grid-cols-4"
+          className="ui-equal-grid grid grid-cols-2 gap-2.5 sm:gap-x-4 sm:gap-y-6 lg:grid-cols-4"
+          data-layout-equal-group="home-category-tiles"
           variant="media"
         >
           {signatureCollections.map((category) => (
             <Link
-              className="group/card block w-full min-w-0 outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
+              className="ui-equal-item group/card w-full min-w-0 outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
               data-testid="home-category-tile"
               href={`/category/${category.slug}`}
               key={category.slug}
@@ -227,10 +228,16 @@ export default async function Home() {
                 <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(16,19,20,0.54),rgba(16,19,20,0.12)_56%,rgba(255,255,255,0.04))] sm:bg-[linear-gradient(to_top,rgba(16,19,20,0.24),rgba(16,19,20,0.03)_44%,rgba(255,255,255,0.04))]" />
                 <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-3 text-white sm:hidden">
                   <div className="min-w-0">
-                    <h3 className="min-w-0 text-base leading-5 font-medium">
+                    <h3
+                      className="ui-text-slot min-w-0 text-base font-medium"
+                      data-lines="1"
+                    >
                       {category.name}
                     </h3>
-                    <p className="mt-1 line-clamp-2 text-xs leading-5 text-white/78">
+                    <p
+                      className="ui-text-slot mt-1 text-xs text-white/78 [--ui-text-slot-line-height:1.25rem]"
+                      data-lines="2"
+                    >
                       {collectionCopy[category.slug] ?? category.description}
                     </p>
                   </div>
@@ -238,10 +245,16 @@ export default async function Home() {
                 </div>
               </div>
               <div className="mt-3 hidden border-b border-[var(--glass-border)] pb-3 text-center sm:block">
-                <h3 className="group-hover/card:text-muted-foreground group-focus-visible/card:text-muted-foreground min-w-0 text-base leading-6 font-medium transition-colors duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)] sm:text-lg">
+                <h3
+                  className="ui-text-slot group-hover/card:text-muted-foreground group-focus-visible/card:text-muted-foreground min-w-0 text-base font-medium transition-colors duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)] sm:text-lg"
+                  data-lines="1"
+                >
                   {category.name}
                 </h3>
-                <p className="text-muted-foreground mx-auto mt-1 max-w-48 text-sm leading-6">
+                <p
+                  className="ui-text-slot text-muted-foreground mx-auto mt-1 max-w-48 text-sm"
+                  data-lines="2"
+                >
                   {collectionCopy[category.slug] ?? category.description}
                 </p>
               </div>
@@ -426,7 +439,8 @@ export default async function Home() {
             title="פריטים נבחרים"
           />
           <RevealGrid
-            className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+            className="ui-equal-grid mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+            data-layout-equal-group="home-featured-products"
             variant="cards"
           >
             {curatedProducts.map((product, index) => (
