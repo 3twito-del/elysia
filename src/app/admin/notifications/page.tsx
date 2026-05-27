@@ -31,7 +31,10 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function AdminNotificationsPage() {
-  const access = await getAdminPageAccess("SYSTEM_CONFIG");
+  const access = await getAdminPageAccess(
+    "SYSTEM_CONFIG",
+    "/admin/notifications",
+  );
 
   if (access.denied) return <AdminForbidden {...access.denied} />;
 

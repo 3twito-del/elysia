@@ -61,8 +61,8 @@ export function AiGiftRecommender() {
           </div>
           <h2 className="text-xl font-semibold">שאלון מתנה חכם</h2>
           <p className="text-muted-foreground mt-2 max-w-2xl text-sm leading-6">
-            הזינו קשר, אירוע, מחיר וסגנון. ההמלצות יישארו בתוך בחירות
-            קיימים במבחר.
+            הזינו קשר, אירוע, מחיר וסגנון. ההמלצות יישארו בתוך בחירות קיימים
+            במבחר.
           </p>
         </div>
         <Sparkles aria-hidden="true" className="text-foreground size-6" />

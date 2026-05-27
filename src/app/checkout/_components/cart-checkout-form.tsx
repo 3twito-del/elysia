@@ -98,7 +98,7 @@ const checkoutEmptyLinks = [
   },
   {
     href: "/service",
-    label: "לייעוץ אישי",
+    label: "לקבלת ייעוץ אישי",
     text: "עזרה בבחירה, מידה או הקדשה אישית.",
   },
 ] as const;
@@ -847,7 +847,7 @@ export function CartCheckoutForm() {
                   <span>תכשיטים</span>
                   <span data-testid="checkout-item-count">
                     {cartItemCount}{" "}
-                    {cartItemCount === 1 ? "קטגוריה" : "סוגי תכשיטים"}
+                    {cartItemCount === 1 ? "סוג תכשיט" : "סוגי תכשיטים"}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -978,7 +978,7 @@ function CheckoutEmptyCartState() {
             הבחירה שלי
           </p>
           <h2 className="mt-3 text-2xl font-semibold tracking-normal sm:text-3xl">
-            הבחירה שלך ריקה
+            הבחירה שלך ממתינה לתכשיט הראשון
           </h2>
           <p className="text-muted-foreground mt-4 max-w-xl text-sm leading-7 sm:text-base">
             חזרי לקולקציה ובחרי את התכשיט שילווה את הרגע הבא. הסיכום ימתין כאן
@@ -987,13 +987,13 @@ function CheckoutEmptyCartState() {
           <div className="mt-7 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <Button asChild>
               <Link href="/search">
-                לקולקציה
+                חזרה לקולקציה
                 <ShoppingBag aria-hidden="true" className="size-4" />
               </Link>
             </Button>
             <Button asChild variant="outline">
               <Link href="/service">
-                לייעוץ אישי
+                לקבלת ייעוץ אישי
                 <MessageCircle aria-hidden="true" className="size-4" />
               </Link>
             </Button>

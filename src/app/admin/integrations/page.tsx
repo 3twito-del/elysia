@@ -54,7 +54,10 @@ function optionalParam(value: string | string[] | undefined) {
 export default async function AdminIntegrationsPage({
   searchParams,
 }: AdminIntegrationsPageProps) {
-  const access = await getAdminPageAccess("SYSTEM_CONFIG");
+  const access = await getAdminPageAccess(
+    "SYSTEM_CONFIG",
+    "/admin/integrations",
+  );
 
   if (access.denied) return <AdminForbidden {...access.denied} />;
 

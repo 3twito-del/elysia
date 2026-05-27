@@ -322,7 +322,7 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
 
           <Button className="w-full gap-2" type="submit">
             <Save aria-hidden="true" className="size-4" />
-            שמירה
+            שמירת מידה
           </Button>
 
           <div aria-live="polite" className="grid gap-2">

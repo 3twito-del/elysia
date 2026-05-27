@@ -50,11 +50,11 @@ type AdminOrderDetailPageProps = {
 export default async function AdminOrderDetailPage({
   params,
 }: AdminOrderDetailPageProps) {
-  const access = await getAdminPageAccess("ORDERS_READ");
+  const { id } = await params;
+  const access = await getAdminPageAccess("ORDERS_READ", `/admin/orders/${id}`);
 
   if (access.denied) return <AdminForbidden {...access.denied} />;
 
-  const { id } = await params;
   const order = await getAdminOrderDetail(id).catch((error: unknown) => {
     if (process.env.NODE_ENV === "development") {
       console.error("[admin] failed to load order detail", error);

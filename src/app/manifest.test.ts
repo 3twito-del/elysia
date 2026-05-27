@@ -23,8 +23,13 @@ describe("PWA manifest", () => {
         expect.objectContaining({
           url: "/size-guide?source=pwa-shortcut",
         }),
+        expect.objectContaining({
+          description: "פנייה לשירות אישי",
+          url: "/service?source=pwa-shortcut",
+        }),
       ]),
     );
+    expect(JSON.stringify(data.shortcuts)).not.toContain("לשירות לשירות");
     expect(data).not.toHaveProperty("file_handlers");
     expect(data).not.toHaveProperty("protocol_handlers");
   });

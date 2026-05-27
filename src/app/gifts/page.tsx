@@ -9,16 +9,20 @@ import {
   searchCatalogProducts,
 } from "~/server/services/catalog";
 
+const GIFT_RESULTS_LIMIT = 24;
+
 export const metadata = {
   title: "מתנות",
 };
 
 export default async function GiftsPage() {
   const giftProducts = await searchCatalogProducts({ query: "מתנה" });
-  const products =
+  const sourceProducts =
     giftProducts.length > 0
       ? giftProducts
       : await getFeaturedCatalogProducts(8);
+  const products = sourceProducts.slice(0, GIFT_RESULTS_LIMIT);
+  const hiddenProductsCount = sourceProducts.length - products.length;
 
   return (
     <main>
@@ -42,7 +46,9 @@ export default async function GiftsPage() {
                 בחירות פתוחות עכשיו
               </h2>
               <p className="text-muted-foreground text-sm">
-                {products.length} בחירות שמתאימות למתנה
+                {hiddenProductsCount > 0
+                  ? `${products.length} מתוך ${sourceProducts.length} בחירות למתנה`
+                  : `${products.length} בחירות שמתאימות למתנה`}
               </p>
             </div>
             <Link

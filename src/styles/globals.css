@@ -2329,6 +2329,17 @@ html[data-public-floating-bar-visible="true"] .public-motion-content {
       var(--public-bottom-safe-offset, 0px) + env(safe-area-inset-bottom)
     );
   }
+
+  html[data-cookie-banner-open="true"][data-public-floating-bar-visible="true"]
+    .public-motion-content {
+    padding-bottom: calc(
+      max(
+          var(--public-bottom-safe-offset, 0px),
+          var(--public-floating-bar-offset, 0px)
+        ) +
+        env(safe-area-inset-bottom)
+    );
+  }
 }
 
 @media (min-width: 640px) {

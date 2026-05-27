@@ -29,6 +29,7 @@ import {
   hasTypesenseConfig,
   normalizeSearchPagination,
   paginateSearchHits,
+  shouldFallbackToLocalSearchPage,
 } from "./search-utils";
 
 export {
@@ -36,6 +37,7 @@ export {
   getProductsCollectionName,
   normalizeSearchPagination,
   paginateSearchHits,
+  shouldFallbackToLocalSearchPage,
   shouldUseLocalSearchFallback,
 } from "./search-utils";
 
@@ -322,20 +324,32 @@ async function searchTypesenseKeywordProducts(
   const productsBySlug = new Map(
     products.map((product) => [product.slug, product] as const),
   );
+  const hits = slugs
+    .map((slug) => productsBySlug.get(slug))
+    .filter((product): product is CatalogProduct => Boolean(product));
+  const found =
+    typeof response.found === "number" ? response.found : slugs.length;
+
+  if (
+    shouldFallbackToLocalSearchPage({
+      found,
+      indexedHits: slugs.length,
+      page: pagination.page,
+      perPage: pagination.perPage,
+      resolvedHits: hits.length,
+    })
+  ) {
+    return searchLocalProducts({ ...input, mode: "classic" });
+  }
 
   return {
-    hits: slugs
-      .map((slug) => productsBySlug.get(slug))
-      .filter((product): product is CatalogProduct => Boolean(product)),
+    hits,
     engine: "typesense",
     facets: mapTypesenseFacets(response.facet_counts ?? []),
     hitMetaBySlug: {},
     activeSemanticSignals: [],
     mode: "classic",
-    ...createSearchResultMeta(
-      typeof response.found === "number" ? response.found : slugs.length,
-      pagination,
-    ),
+    ...createSearchResultMeta(found, pagination),
   };
 }
 
@@ -389,7 +403,8 @@ async function searchTypesenseSemanticProducts(
   const productsBySlug = new Map(
     products.map((product) => [product.slug, product] as const),
   );
-  const hits = (response.hits ?? [])
+  const responseHits = response.hits ?? [];
+  const indexedHits = responseHits
     .map((hit) => {
       const product = productsBySlug.get(hit.document.slug);
       if (!product) return undefined;
@@ -400,13 +415,28 @@ async function searchTypesenseSemanticProducts(
       (
         item,
       ): item is {
-        hit: NonNullable<typeof response.hits>[number];
+        hit: (typeof responseHits)[number];
         product: CatalogProduct;
       } => Boolean(item),
-    )
-    .filter(({ product }) =>
-      productMatchesSemanticExclusions(product, intent.excludedTerms),
     );
+  const found =
+    typeof response.found === "number" ? response.found : responseHits.length;
+
+  if (
+    shouldFallbackToLocalSearchPage({
+      found,
+      indexedHits: responseHits.length,
+      page: pagination.page,
+      perPage: pagination.perPage,
+      resolvedHits: indexedHits.length,
+    })
+  ) {
+    return searchLocalSemanticProducts(context);
+  }
+
+  const hits = indexedHits.filter(({ product }) =>
+    productMatchesSemanticExclusions(product, intent.excludedTerms),
+  );
   const hitMetaBySlug = Object.fromEntries(
     hits.map(({ hit, product }) => {
       const vectorDistance = getTypesenseVectorDistance(hit);
@@ -433,10 +463,7 @@ async function searchTypesenseSemanticProducts(
     activeSemanticSignals: getActiveSemanticSignals(intent),
     interpretedQuery: intent.semanticQuery,
     mode: "semantic",
-    ...createSearchResultMeta(
-      typeof response.found === "number" ? response.found : hits.length,
-      pagination,
-    ),
+    ...createSearchResultMeta(found, pagination),
   };
 }
 

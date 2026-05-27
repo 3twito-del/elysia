@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { LockKeyhole } from "lucide-react";
@@ -9,7 +10,11 @@ import { auth } from "~/server/auth";
 import { getAdminFromSession } from "~/server/auth/admin-access";
 import { sanitizeAdminRedirect } from "~/server/auth/admin-redirect";
 
-export const metadata = {
+export const metadata: Metadata = {
+  robots: {
+    follow: false,
+    index: false,
+  },
   title: "כניסת אדמין",
 };
 

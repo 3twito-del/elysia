@@ -40,7 +40,7 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function AdminOverviewPage() {
-  const access = await getAdminPageAccess("ORDERS_READ");
+  const access = await getAdminPageAccess("ORDERS_READ", "/admin");
 
   if (access.denied) {
     return <AdminForbidden {...access.denied} />;

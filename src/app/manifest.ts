@@ -91,7 +91,7 @@ export default function manifest(): ExtendedManifest {
       {
         name: "שירות אישי",
         short_name: "שירות",
-        description: "פנייה לשירות לשירות",
+        description: "פנייה לשירות אישי",
         url: "/service?source=pwa-shortcut",
         icons: [
           {

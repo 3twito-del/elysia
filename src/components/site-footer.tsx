@@ -68,9 +68,7 @@ export function SiteFooter() {
               קולקציות תכשיטים, שירות אישי והזמנה מקוונת.
             </p>
             <div className="mt-7 max-w-md">
-              <p className="text-foreground text-xs font-medium">
-                עדכונים
-              </p>
+              <p className="text-foreground text-xs font-medium">עדכונים</p>
               <NewsletterForm />
             </div>
           </section>

@@ -131,7 +131,7 @@ export function ProductCard({
             >
               {primaryCommerceLabel}
             </span>
-            <span className="text-muted-foreground product-card-cta mt-2 inline-flex w-fit border-b border-[var(--glass-border)] pb-0.5 text-xs font-medium transition-colors group-hover/product-link:border-foreground group-hover/product-link:text-foreground">
+            <span className="text-muted-foreground product-card-cta group-hover/product-link:border-foreground group-hover/product-link:text-foreground mt-2 inline-flex w-fit border-b border-[var(--glass-border)] pb-0.5 text-xs font-medium transition-colors">
               לפרטי התכשיט
             </span>
           </div>

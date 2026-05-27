@@ -11,7 +11,7 @@ describe("Serwist route", () => {
 
     expect(source).toContain('process.env.NODE_ENV === "production"');
     expect(source).toContain('await import("@serwist/turbopack")');
-    expect(source).not.toContain('import { withSerwist }');
+    expect(source).not.toContain("import { withSerwist }");
   });
 
   it("does not duplicate automatically discovered public icon assets in the precache list", () => {

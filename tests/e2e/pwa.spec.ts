@@ -48,6 +48,17 @@ test.describe("PWA runtime", () => {
       ]),
     );
 
+    const [robotsResponse, sitemapResponse] = await Promise.all([
+      page.request.get("/robots.txt"),
+      page.request.get("/sitemap.xml"),
+    ]);
+
+    expect(robotsResponse.ok()).toBe(true);
+    expect(robotsResponse.headers()["content-type"]).toContain("text/plain");
+    expect(await robotsResponse.text()).toContain("Sitemap:");
+    expect(sitemapResponse.ok()).toBe(true);
+    expect(sitemapResponse.headers()["content-type"]).toContain("xml");
+
     await waitForPwaRegistration(page);
     await expectNotificationPromptRequested(page);
   });

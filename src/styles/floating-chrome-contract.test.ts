@@ -31,6 +31,15 @@ describe("public floating chrome contract", () => {
       'html[data-public-floating-bar-visible="true"] .public-motion-content',
     );
     expect(css).toContain("var(--public-bottom-safe-offset, 0px)");
+    expect(
+      extractBetween(
+        css,
+        "@media (max-width: 639px)",
+        "@media (min-width: 640px)",
+      ),
+    ).toContain(
+      'html[data-cookie-banner-open="true"][data-public-floating-bar-visible="true"]',
+    );
     expect(css).toContain(
       "[data-icon-tooltip]:not(.fixed):not(.absolute):not(.sticky)",
     );
@@ -122,6 +131,16 @@ describe("public floating chrome contract", () => {
 
 function read(relativePath: string) {
   return readFileSync(path.join(root, relativePath), "utf8");
+}
+
+function extractBetween(source: string, start: string, end: string) {
+  const startIndex = source.indexOf(start);
+  expect(startIndex).toBeGreaterThanOrEqual(0);
+
+  const endIndex = source.indexOf(end, startIndex);
+  expect(endIndex).toBeGreaterThan(startIndex);
+
+  return source.slice(startIndex, endIndex);
 }
 
 function countOccurrences(source: string, pattern: string) {

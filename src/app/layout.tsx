@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   formatDetection: {
     telephone: false,
   },
-  metadataBase: new URL(env.SITE_URL ?? "https://elysia.co.il"),
+  metadataBase: new URL(env.SITE_URL ?? "https://elysia-jewellery.com"),
   openGraph: {
     title: "Elysia",
     description: "תכשיטי בית בעברית, עם בחירה מדויקת ושירות אישי.",

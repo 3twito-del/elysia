@@ -54,7 +54,7 @@ function optionalParam(value: string | string[] | undefined) {
 export default async function AdminInventoryPage({
   searchParams,
 }: AdminInventoryPageProps) {
-  const access = await getAdminPageAccess("INVENTORY_READ");
+  const access = await getAdminPageAccess("INVENTORY_READ", "/admin/inventory");
 
   if (access.denied) return <AdminForbidden {...access.denied} />;
 

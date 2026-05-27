@@ -2,6 +2,7 @@ import type { AdminPermission } from "@prisma/client";
 import { redirect } from "next/navigation";
 
 import { auth } from "~/server/auth";
+import { sanitizeAdminRedirect } from "~/server/auth/admin-redirect";
 import {
   getAdminFromSession,
   hasAdminPermission,
@@ -15,6 +16,7 @@ export type AdminAccessDenied = {
 
 export async function getAdminPageAccess(
   permission: AdminPermission,
+  nextPath = "/admin",
 ): Promise<
   | { admin: AuthorizedAdmin; denied?: never }
   | { admin: AuthorizedAdmin | null; denied: AdminAccessDenied }
@@ -22,7 +24,9 @@ export async function getAdminPageAccess(
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/admin/login?next=/admin");
+    const next = encodeURIComponent(sanitizeAdminRedirect(nextPath));
+
+    redirect(`/admin/login?next=${next}`);
   }
 
   const admin = await getAdminFromSession(session).catch((error: unknown) => {

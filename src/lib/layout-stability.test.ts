@@ -58,9 +58,15 @@ describe("layout stability guardrails", () => {
     expect(cssSource).toContain("--ui-text-slot-lines: 2");
     expect(cssSource).toContain(".ui-equal-grid");
     expect(cssSource).toContain(".ui-equal-item");
-    expect(homeSource).toContain('data-layout-equal-group="home-category-tiles"');
-    expect(homeSource).toContain('data-layout-equal-group="home-featured-products"');
-    expect(categorySource).toContain('data-layout-equal-group="category-products"');
+    expect(homeSource).toContain(
+      'data-layout-equal-group="home-category-tiles"',
+    );
+    expect(homeSource).toContain(
+      'data-layout-equal-group="home-featured-products"',
+    );
+    expect(categorySource).toContain(
+      'data-layout-equal-group="category-products"',
+    );
   });
 
   it("keeps the full cinematic hero reserved for the home route", () => {

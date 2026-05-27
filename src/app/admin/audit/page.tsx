@@ -50,7 +50,7 @@ function optionalParam(value: string | string[] | undefined) {
 export default async function AdminAuditPage({
   searchParams,
 }: AdminAuditPageProps) {
-  const access = await getAdminPageAccess("SYSTEM_CONFIG");
+  const access = await getAdminPageAccess("SYSTEM_CONFIG", "/admin/audit");
 
   if (access.denied) return <AdminForbidden {...access.denied} />;
 

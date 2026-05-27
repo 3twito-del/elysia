@@ -33,6 +33,7 @@ import {
 import { getCategoryBrandSlides } from "~/lib/brand-media";
 import {
   getCatalogCategories,
+  getCatalogCategoryBySlugCachedRequest,
   getCatalogFacetsFromProducts,
   listCatalogProductsCachedRequest,
 } from "~/server/services/catalog";
@@ -91,10 +92,25 @@ export async function generateMetadata({
 }: CategoryRouteProps): Promise<Metadata> {
   const { slug } = await params;
   const copy = categoryLuxuryCopyBySlug[slug];
+  const category = copy
+    ? null
+    : await getCatalogCategoryBySlugCachedRequest(slug);
+
+  if (!copy && !category) {
+    return {
+      title: "המשפחה לא נמצאה",
+      description:
+        "הקישור לקולקציית Elysia אינו פעיל. אפשר להמשיך לחיפוש במבחר או לחזור לעמוד הבית.",
+      robots: {
+        follow: false,
+        index: false,
+      },
+    };
+  }
 
   return {
-    title: copy?.title ?? "קולקציית Elysia",
-    description: copy?.description,
+    title: copy?.title ?? category?.name ?? "קולקציית Elysia",
+    description: copy?.description ?? category?.description,
   };
 }
 
@@ -186,8 +202,7 @@ export default async function CategoryPage({
           media={{
             alt: `${categoryCopy.title} מתוך קולקציית Elysia`,
             priority: true,
-            sizes:
-              "(min-width: 1024px) 34vw, (min-width: 640px) 60vw, 100vw",
+            sizes: "(min-width: 1024px) 34vw, (min-width: 640px) 60vw, 100vw",
             slides: getCategoryBrandSlides(slug),
           }}
           metrics={[
@@ -388,7 +403,7 @@ function CategoryBreadcrumbs({ categoryName }: { categoryName: string }) {
   return (
     <nav
       aria-label="פירורי לחם"
-      className="mx-auto flex w-full max-w-[96rem] items-center gap-2 px-[var(--ui-page-x)] pt-6 text-xs text-muted-foreground sm:px-[var(--ui-page-x-wide)]"
+      className="text-muted-foreground mx-auto flex w-full max-w-[96rem] items-center gap-2 px-[var(--ui-page-x)] pt-6 text-xs sm:px-[var(--ui-page-x-wide)]"
       dir="rtl"
     >
       <Link className="hover:text-foreground transition-colors" href="/">

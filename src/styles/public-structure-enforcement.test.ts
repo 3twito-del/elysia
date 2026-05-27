@@ -68,6 +68,8 @@ describe("public structure enforcement", () => {
     const gifts = read("src/app/gifts/page.tsx");
 
     expect(gifts).toContain('variant="catalog"');
+    expect(gifts).toContain("const GIFT_RESULTS_LIMIT = 24");
+    expect(gifts).toContain("sourceProducts.slice(0, GIFT_RESULTS_LIMIT)");
     expect(gifts).toContain('data-testid="gift-results-summary"');
     expect(gifts).toContain('data-testid="gift-results-grid"');
     expect(gifts).not.toContain('id="gift-products"');

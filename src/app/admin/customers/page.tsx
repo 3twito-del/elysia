@@ -53,7 +53,7 @@ function optionalParam(value: string | string[] | undefined) {
 export default async function AdminCustomersPage({
   searchParams,
 }: AdminCustomersPageProps) {
-  const access = await getAdminPageAccess("CUSTOMER_VIEW");
+  const access = await getAdminPageAccess("CUSTOMER_VIEW", "/admin/customers");
 
   if (access.denied) return <AdminForbidden {...access.denied} />;
 

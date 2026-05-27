@@ -337,6 +337,19 @@ test.describe("critical shopping flows", () => {
     ).toBeVisible();
   });
 
+  test("shows product not-found recovery", async ({ page }) => {
+    await setCookieConsent(page, "essential");
+
+    await page.goto("/product/not-a-real-product");
+
+    const notFoundState = page.getByTestId("product-not-found-empty-state");
+
+    await expect(notFoundState).toBeVisible();
+    await expect(
+      notFoundState.getByRole("link", { name: "חיפוש במבחר" }),
+    ).toBeVisible();
+  });
+
   test("opens mobile navigation", async ({ page }) => {
     test.skip((page.viewportSize()?.width ?? 0) >= 768, "mobile-only flow");
     await setCookieConsent(page, "essential");
@@ -359,7 +372,7 @@ test.describe("critical shopping flows", () => {
     test.skip((page.viewportSize()?.width ?? 0) >= 1024, "mobile-only flow");
     await setCookieConsent(page, "essential");
 
-    await page.goto("/category/earrings", { waitUntil: "networkidle" });
+    await page.goto("/category/earrings", { waitUntil: "domcontentloaded" });
     const filterTrigger = visibleByTestId(page, "category-filter-trigger");
 
     await expect(visibleByTestId(page, "category-results-grid")).toBeVisible();
@@ -377,7 +390,7 @@ test.describe("critical shopping flows", () => {
     await expect(page.getByTestId("category-filter-sheet")).toBeHidden();
     await expect(page).toHaveURL(/sort=price-asc/);
 
-    await page.goto("/category/earrings", { waitUntil: "networkidle" });
+    await page.goto("/category/earrings", { waitUntil: "domcontentloaded" });
     const secondFilterTrigger = visibleByTestId(
       page,
       "category-filter-trigger",
@@ -437,7 +450,7 @@ test.describe("critical shopping flows", () => {
     await expect(page.getByTestId("mobile-search-filter-sheet")).toBeHidden();
     await expect(searchFilterTrigger).toBeFocused();
 
-    await page.goto("/category/earrings", { waitUntil: "networkidle" });
+    await page.goto("/category/earrings", { waitUntil: "domcontentloaded" });
     const categoryFilterTrigger = visibleByTestId(
       page,
       "category-filter-trigger",
@@ -1188,6 +1201,7 @@ test.describe("access control surfaces", () => {
     ]) {
       await page.goto(route);
       await expect(page).toHaveURL(/\/admin\/login\?next=/);
+      await expect(page.locator('input[name="next"]')).toHaveValue(route);
     }
   });
 
