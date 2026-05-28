@@ -67,9 +67,9 @@ without running long live benchmarks.
   `scripts/coherence-contract.mjs` with a reason. The current allowed
   orchestration exceptions are:
   `src/server/services/admin-operations.ts`,
-  `src/server/adapters/search.ts`, `src/app/search/page.tsx`,
-  `src/app/checkout/_components/cart-checkout-form.tsx`, and
-  `scripts/benchmarks/core.ts`.
+  `src/server/adapters/search.ts`, `src/app/search/page.tsx`, and
+  `src/app/checkout/_components/cart-checkout-form.tsx`,
+  `src/server/services/catalog.ts`, and `scripts/qa-site-audit.ts`.
 - New or moved code must not introduce unapproved `TODO`, `FIXME`, `HACK`, or
   `@ts-ignore` markers.
 - Stable public import paths may remain as facades, but the implementation

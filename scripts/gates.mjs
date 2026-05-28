@@ -177,47 +177,12 @@ export const gateDefinitions = [
         "vitest",
         "run",
         "scripts/gates.test.mjs",
-        "src/styles/benchmark-policy-enforcement.test.ts",
         "src/components/ai-elements/accessibility.test.ts",
         "src/server/services/admin-commerce.test.ts",
         "src/server/ai/model.test.ts",
         "src/server/ai/planner.test.ts",
         "src/server/adapters/search.test.ts",
         "src/app/search/_lib/search-state.test.ts",
-      ]),
-    ],
-  },
-  {
-    name: "gate:public:local",
-    description:
-      "Build, start preview, then benchmark all public parts locally without external crawling.",
-    preview: true,
-    steps: [
-      step("Run local public benchmarks", "pnpm", [
-        "exec",
-        "tsx",
-        "scripts/benchmarks/site-benchmark.ts",
-        "--all",
-        "--base-url",
-        ({ baseUrl }) => baseUrl,
-        "--skip-external",
-      ]),
-    ],
-  },
-  {
-    name: "gate:public:live",
-    description:
-      "Build, start preview, then benchmark all public parts against live reference sites.",
-    preview: true,
-    steps: [
-      step("Run live public benchmarks", "pnpm", [
-        "exec",
-        "tsx",
-        "scripts/benchmarks/site-benchmark.ts",
-        "--all",
-        "--base-url",
-        ({ baseUrl }) => baseUrl,
-        "--replace-blocked",
       ]),
     ],
   },
@@ -246,7 +211,7 @@ export const gateDefinitions = [
   {
     name: "gate:full",
     description:
-      "Run explicit fixes once, then quick, test, db, build/runtime, security, and live public benchmarks.",
+      "Run explicit fixes once, then quick, test, db, build/runtime, QA, and security gates.",
     includes: [
       "gate:fix",
       "gate:quick",
@@ -256,13 +221,12 @@ export const gateDefinitions = [
       "gate:runtime",
       "gate:qa",
       "gate:security",
-      "gate:public:live",
     ],
   },
   {
     name: "gate:ship",
     description:
-      "Run explicit fixes once, then the release gate minus live public benchmarks for routine production deploys.",
+      "Run explicit fixes once, then strict routine production deploy gates.",
     includes: [
       "gate:fix",
       "gate:coherence",

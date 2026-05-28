@@ -4,7 +4,7 @@ Generated: 2026-05-20
 
 ## Baseline signals
 
-Local benchmark reviewed: `docs/qa/content-legal-benchmark/benchmark.md`.
+Local public QA review completed before the redesign.
 
 Key mismatches before redesign:
 

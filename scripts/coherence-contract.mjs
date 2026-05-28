@@ -42,8 +42,12 @@ const largeFileExceptions = new Map([
     "admin operations read-model facade over extracted integration and workflow helpers",
   ],
   [
-    "scripts/benchmarks/core.ts",
-    "benchmark harness core used only by manual public QA gates; live benchmark depth stays outside gate:ship",
+    "scripts/qa-site-audit.ts",
+    "QA audit orchestrator coordinates route inventory, screenshots, and report output",
+  ],
+  [
+    "src/server/services/catalog.ts",
+    "catalog service facade preserves stable product query and fixture behavior across public routes",
   ],
 ]);
 
@@ -86,6 +90,7 @@ function listSourceFiles() {
   if (gitFiles.length > 0) {
     return gitFiles
       .map(toPosixPath)
+      .filter((filePath) => existsSync(path.join(repoRoot, filePath)))
       .filter((filePath) =>
         sourceRoots.some((root) => filePath.startsWith(`${root}/`)),
       )

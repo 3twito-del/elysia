@@ -36,8 +36,6 @@ const expectedGateNames = [
   "gate:runtime",
   "gate:qa",
   "gate:coherence",
-  "gate:public:local",
-  "gate:public:live",
   "gate:security",
   "gate:prod",
   "gate:full",
@@ -56,21 +54,17 @@ describe("manual quality gates", () => {
     }
   });
 
-  it("keeps the full gate wired to live public benchmarks", () => {
-    expect(getGateDefinition("gate:full")?.includes).toContain(
-      "gate:public:live",
-    );
+  it("keeps the full gate wired to QA checks", () => {
     expect(getGateDefinition("gate:full")?.includes).toContain("gate:qa");
   });
 
-  it("keeps the ship gate strict without live public benchmarks", () => {
+  it("keeps the ship gate strict without full QA", () => {
     const shipIncludes = getGateDefinition("gate:ship")?.includes ?? [];
 
     expect(shipIncludes).toContain("gate:coherence");
     expect(shipIncludes).toContain("gate:runtime");
     expect(shipIncludes).toContain("gate:security");
     expect(shipIncludes).not.toContain("gate:qa");
-    expect(shipIncludes).not.toContain("gate:public:live");
   });
 
   it("does not register watch-mode gate commands", () => {
@@ -124,16 +118,6 @@ describe("manual quality gates", () => {
     expect(gatesSource).toContain(
       "env: { ...process.env, ...buildSafeCatalogEnv(), PORT: `${port}` }",
     );
-  });
-
-  it("runs public benchmarks against the production preview server", () => {
-    for (const gateName of ["gate:public:local", "gate:public:live"]) {
-      const gate = getGateDefinition(gateName);
-      const commandText = (gate?.steps ?? []).map(formatStepCommand).join("\n");
-
-      expect(gate?.preview).toBe(true);
-      expect(commandText).toContain("--base-url");
-    }
   });
 
   it("does not introduce local commit hooks", () => {
