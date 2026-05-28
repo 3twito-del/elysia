@@ -1,13 +1,13 @@
 # PDP Benchmark
 
-Generated: 2026-05-25T19:58:14.597Z
+Generated: 2026-05-27T16:02:09.958Z
 
 ## Summary
 
-- Status: warn
+- Status: pass
 - Active corpus: 15/15 sites produced enough data
-- Alignment: 80%
-- Metrics: 97 match, 25 mismatch, 1 not comparable
+- Alignment: 82%
+- Metrics: 101 match, 22 mismatch, 0 not comparable
 - Active weight: 19.5; threshold weight: 9.75
 
 This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site substitutions affect QA reports only and do not change the High Jewelry Reference Gate.
@@ -16,10 +16,10 @@ This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site 
 
 - Cartier replaced by David Yurman.
 - Tiffany & Co. replaced by Mejuri.
-- Bulgari replaced by Brilliant Earth.
-- Harry Winston replaced by Blue Nile.
-- Chaumet replaced by VRAI.
-- Mikimoto replaced by Aurate.
+- Bulgari replaced by Blue Nile.
+- Harry Winston replaced by VRAI.
+- Chaumet replaced by Aurate.
+- Mikimoto replaced by Kendra Scott.
 
 ## Blocked Sites
 
@@ -30,6 +30,7 @@ This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site 
 - Chaumet (canonical; weight 1.5).
 - Mikimoto (canonical; weight 1.5).
 - Swarovski (reserve; weight 1).
+- Brilliant Earth (reserve; weight 1).
 - Monica Vinader (reserve; weight 1).
 - Pandora US (reserve; weight 1).
 
@@ -37,28 +38,26 @@ This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site 
 
 - product / desktop / chrome / fullBleed: Elysia=false; baseline=true (18/19.5)
 - product / desktop / visual-tone / transparentBackground: Elysia=false; baseline=true (15/19.5)
-- product / desktop / visual-tone / aquaAccentCount: Elysia=2; baseline=median 0; IQR 0-0; weight=19.5
-- product / desktop / interaction / buttonCount: Elysia=32; baseline=median 8; IQR 0-16; weight=19.5
-- product / desktop / content / paragraphCount: Elysia=42; baseline=median 16; IQR 3-33; weight=19.5
-- product / desktop / commerce / productLinkCount: Elysia=35; baseline=median 0; IQR 0-1; weight=19.5
-- product / desktop / commerce / priceTextPresent: Elysia=true; baseline=false (10/19.5)
-- product / tablet / chrome / heightPx: Elysia=7705; baseline=median 3815; IQR 900-4500; weight=19.5
-- product / tablet / chrome / areaRatio: Elysia=8.4496; baseline=median 4.24; IQR 1-5; weight=19.5
+- product / desktop / interaction / buttonCount: Elysia=17; baseline=median 10; IQR 0-13; weight=19.5
+- product / desktop / commerce / productLinkCount: Elysia=9; baseline=median 0; IQR 0-1; weight=19.5
+- product / tablet / chrome / heightPx: Elysia=6489; baseline=median 3803; IQR 900-5952; weight=19.5
+- product / tablet / chrome / areaRatio: Elysia=7.1164; baseline=median 4.23; IQR 1-6.61; weight=19.5
 - product / tablet / chrome / fullBleed: Elysia=false; baseline=true (18/19.5)
 - product / tablet / visual-tone / transparentBackground: Elysia=false; baseline=true (15/19.5)
-- product / tablet / visual-tone / aquaAccentCount: Elysia=2; baseline=median 0; IQR 0-0; weight=19.5
-- product / tablet / interaction / linkCount: Elysia=47; baseline=median 23; IQR 16-35; weight=19.5
-- product / tablet / interaction / buttonCount: Elysia=32; baseline=median 10; IQR 0-18; weight=19.5
-- product / tablet / content / paragraphCount: Elysia=42; baseline=median 13; IQR 3-39; weight=19.5
-- product / tablet / commerce / productLinkCount: Elysia=35; baseline=median 0; IQR 0-1; weight=19.5
-- product / mobile / chrome / heightPx: Elysia=10325; baseline=median 4275; IQR 844-5743; weight=18
-- product / mobile / chrome / areaRatio: Elysia=11.9202; baseline=median 5.06; IQR 1-6.81; weight=18
-- product / mobile / chrome / fullBleed: Elysia=false; baseline=true (16.5/18)
-- product / mobile / visual-tone / transparentBackground: Elysia=false; baseline=true (13.5/18)
-- product / mobile / visual-tone / aquaAccentCount: Elysia=2; baseline=median 0; IQR 0-0; weight=18
-- product / mobile / accessibility / hasAriaExpanded: Elysia=true; baseline=false (12/18)
-- product / mobile / content / textLength: Elysia=3436; baseline=median 15905; IQR 5518-29569; weight=18
-- product / mobile / media / imageCount: Elysia=14; baseline=median 45; IQR 18-95; weight=18
+- product / tablet / media / imageCount: Elysia=11; baseline=median 45; IQR 12-95; weight=19.5
+- product / tablet / commerce / productLinkCount: Elysia=9; baseline=median 0; IQR 0-0; weight=19.5
+- product / tablet / density / linksPer1000Px: Elysia=3.082; baseline=median 4.84; IQR 4.02-10.89; weight=19.5
+- product / mobile / chrome / heightPx: Elysia=7116; baseline=median 4767; IQR 844-5743; weight=19.5
+- product / mobile / chrome / areaRatio: Elysia=8.2151; baseline=median 5.65; IQR 1-6.81; weight=19.5
+- product / mobile / chrome / fullBleed: Elysia=false; baseline=true (18/19.5)
+- product / mobile / visual-tone / transparentBackground: Elysia=false; baseline=true (16/19.5)
+- product / mobile / interaction / linkCount: Elysia=14; baseline=median 32; IQR 16-40; weight=19.5
+- product / mobile / accessibility / hasAriaExpanded: Elysia=true; baseline=false (14.5/19.5)
+- product / mobile / content / textLength: Elysia=1967; baseline=median 11748; IQR 1972-29583; weight=19.5
+- product / mobile / media / imageCount: Elysia=11; baseline=median 56; IQR 18-95; weight=19.5
+- product / mobile / commerce / productLinkCount: Elysia=9; baseline=median 0; IQR 0-0; weight=19.5
+- product / mobile / density / linksPer1000Px: Elysia=1.967; baseline=median 5.46; IQR 3.85-10.03; weight=19.5
+- product / mobile / density / controlsPer1000Px: Elysia=3.794; baseline=median 8.87; IQR 3.85-18.46; weight=19.5
 
 ## Lessons
 
@@ -73,3 +72,4 @@ This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site 
 
 The JSON artifact contains `canonicalCorpus`, `activeCorpus`, `substitutions`, `blockedSites`, `activeWeight`, `thresholdWeight`, `viewports`, `sites`, `elysia`, `metrics`, and `summary`.
 Each metric includes `key`, `group`, `targetLabel`, `viewport`, `elysiaValue`, `corpusBaseline`, `matchStatus`, `evidenceSiteCount`, and `evidenceWeight`.
+

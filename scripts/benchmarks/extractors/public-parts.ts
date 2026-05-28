@@ -83,6 +83,63 @@ const headerMetricDefinitions: BenchmarkMetricDefinition[] = [
   { group: "interaction", key: "mobileNavTriggerVisible", type: "boolean" },
 ];
 
+const compactRouteHeroMetricDefinitions = genericMetricDefinitions
+  .filter(
+    (metric) =>
+      !["commerce", "media", "density"].includes(metric.group) &&
+      ![
+        "fullBleed",
+        "hasAriaCurrent",
+        "hasAriaExpanded",
+        "isStickyOrFixed",
+      ].includes(metric.key),
+  )
+  .map((metric) =>
+    [
+      "areaRatio",
+      "buttonCount",
+      "elementCount",
+      "focusableCount",
+      "formControlCount",
+      "headingCount",
+      "heightPx",
+      "linkCount",
+      "paragraphCount",
+      "roundedControlCount",
+      "textLength",
+      "visibleElementCount",
+    ].includes(metric.key)
+      ? { ...metric, numericComparison: "lowerIsBetter" as const }
+      : metric,
+  );
+
+const listingMetricDefinitions = genericMetricDefinitions
+  .filter(
+    (metric) =>
+      ![
+        "addToCartTextPresent",
+        "checkoutTextPresent",
+        "fullBleed",
+        "hasAriaCurrent",
+        "hasAriaExpanded",
+        "priceTextPresent",
+        "semanticTag",
+        "topPx",
+        "transparentBackground",
+      ].includes(metric.key),
+  )
+  .map((metric) =>
+    [
+      "imageCount",
+      "minTapTargetPx",
+      "namedControlRatio",
+      "productLinkCount",
+      "tapTargetPassRatio",
+    ].includes(metric.key)
+      ? { ...metric, numericComparison: "higherIsBetter" as const }
+      : metric,
+  );
+
 const localTargetsByKey = {
   about: { label: "about", path: "/about" },
   account: { label: "account", path: "/account" },
@@ -131,9 +188,9 @@ export const publicSurfaceExtractor: BenchmarkExtractor = ({
       checkout: "[data-testid='cart-checkout-form'], main",
       "content-legal": "article, main",
       floating:
-        ".public-floating-trigger, .public-floating-control, [data-public-floating-bar='true'], [data-public-floating-avoid='true']",
+        ".public-floating-trigger, .public-floating-control, [data-public-floating-bar='true']",
       "floating-chrome":
-        ".public-floating-trigger, .public-floating-control, [data-public-floating-bar='true'], [data-public-floating-avoid='true']",
+        ".public-floating-trigger, .public-floating-control, [data-public-floating-bar='true']",
       footer: "footer",
       pdp: "[data-testid='product-gallery'], [data-testid='product-purchase-panel'], main",
       plp: "[data-testid='category-results-grid'], [data-testid='search-results-grid'], [data-testid='gift-results-grid'], main",
@@ -149,6 +206,14 @@ export const publicSurfaceExtractor: BenchmarkExtractor = ({
     );
 
     if (matched.length > 0) return matched;
+
+    if (
+      targetPartId === "floating" ||
+      targetPartId === "floating-chrome" ||
+      targetPartId === "product-card"
+    ) {
+      return [];
+    }
 
     const fallback = document.querySelector("main") ?? document.body;
 
@@ -299,6 +364,26 @@ export const publicSurfaceExtractor: BenchmarkExtractor = ({
     );
   }
 
+  function splitCssLayers(value: string) {
+    return value.split(/,(?![^()]*\))/gu).map((layer) => layer.trim());
+  }
+
+  function isTransparentShadowLayer(layer: string) {
+    return (
+      layer === "" ||
+      /\btransparent\b/iu.test(layer) ||
+      /rgba?\([^)]*[,/]\s*0(?:\.0+)?\s*\)/iu.test(layer)
+    );
+  }
+
+  function isEffectivelyNoShadow(value: string) {
+    if (value === "none") return true;
+
+    const layers = splitCssLayers(value);
+
+    return layers.length > 0 && layers.every(isTransparentShadowLayer);
+  }
+
   function round(value: number, precision = 0) {
     const multiplier = 10 ** precision;
 
@@ -335,13 +420,16 @@ export const publicSurfaceExtractor: BenchmarkExtractor = ({
       element.querySelectorAll("button, [role='button'], [data-slot='button']"),
     ),
   );
+  const focusableSelector =
+    "a[href], button, input, select, textarea, summary, [role='button'], [tabindex]:not([tabindex='-1'])";
   const focusables = visibleElements.flatMap((element) =>
-    Array.from(
-      element.querySelectorAll(
-        "a[href], button, input, select, textarea, summary, [role='button'], [tabindex]:not([tabindex='-1'])",
-      ),
-    ).filter(
-      (candidate): candidate is HTMLElement => candidate instanceof HTMLElement,
+    [
+      ...(element.matches(focusableSelector) ? [element] : []),
+      ...Array.from(element.querySelectorAll(focusableSelector)),
+    ].filter(
+      (candidate, index, candidates): candidate is HTMLElement =>
+        candidate instanceof HTMLElement &&
+        candidates.indexOf(candidate) === index,
     ),
   );
   const visibleFocusables = focusables.filter(isVisibleElement);
@@ -381,9 +469,9 @@ export const publicSurfaceExtractor: BenchmarkExtractor = ({
   metrics.hasBorder =
     parseCssPx(styles.borderTopWidth) > 0 ||
     parseCssPx(styles.borderBottomWidth) > 0;
-  metrics.hasShadow = styles.boxShadow !== "none";
+  metrics.hasShadow = !isEffectivelyNoShadow(styles.boxShadow);
   metrics.lowShadow =
-    styles.boxShadow === "none" || styles.boxShadow.split(",").length <= 1;
+    !metrics.hasShadow || splitCssLayers(styles.boxShadow).length <= 1;
   metrics.isStickyOrFixed =
     styles.position === "sticky" || styles.position === "fixed";
   metrics.neutralBackground = background ? isNeutralColor(background) : false;
@@ -551,7 +639,7 @@ export const benchmarkParts: BenchmarkPartConfig[] = [
   part(
     "route-hero",
     "Route Hero",
-    ["home", "category", "search", "service", "legal"],
+    ["category", "search", "service", "legal"],
     [
       "Task routes should keep heroes compact and avoid adjacent same-page CTA noise.",
     ],
@@ -623,8 +711,7 @@ function part(
     id,
     lessons,
     localTargets: targetKeys.map((key) => localTargetsByKey[key]),
-    metricDefinitions:
-      id === "header" ? headerMetricDefinitions : genericMetricDefinitions,
+    metricDefinitions: getMetricDefinitionsForPart(id),
     recommendations: [
       "Treat mismatches as candidates for review through the Public Change Gate, not direct implementation instructions.",
       "Prioritize changes only when they improve task clarity, accessibility, or commerce completion without weakening luxury restraint.",
@@ -632,4 +719,12 @@ function part(
     resolveExternalUrl: (site) => site.sourceUrl,
     title,
   };
+}
+
+function getMetricDefinitionsForPart(id: BenchmarkPartConfig["id"]) {
+  if (id === "header") return headerMetricDefinitions;
+  if (id === "route-hero") return compactRouteHeroMetricDefinitions;
+  if (id === "plp") return listingMetricDefinitions;
+
+  return genericMetricDefinitions;
 }

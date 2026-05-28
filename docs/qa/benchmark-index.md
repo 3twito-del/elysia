@@ -1,6 +1,6 @@
 # Public Benchmark Index
 
-Generated: 2026-05-25T20:08:38.101Z
+Generated: 2026-05-28T02:04:43.947Z
 
 ## Latest Results
 
@@ -8,11 +8,11 @@ Generated: 2026-05-25T20:08:38.101Z
 | --- | --- | ---: | ---: | --- | --- |
 | Header | pass | 86% | 12/12 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Aurate; Harry Winston -> Kendra Scott | [report](./header-benchmark/benchmark.md) |
 | Footer | pass | 85% | 15/15 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Brilliant Earth; Harry Winston -> Blue Nile; Chaumet -> VRAI; Mikimoto -> Aurate | [report](./footer-benchmark/benchmark.md) |
-| Floating Chrome | warn | 69% | 15/15 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Brilliant Earth; Harry Winston -> Blue Nile; Chaumet -> VRAI; Mikimoto -> Aurate | [report](./floating-chrome-benchmark/benchmark.md) |
-| Route Hero | warn | 64% | 14/14 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Brilliant Earth; Harry Winston -> Blue Nile; Chaumet -> Kendra Scott | [report](./route-hero-benchmark/benchmark.md) |
-| PLP Search Gifts | warn | 70% | 15/15 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Brilliant Earth; Harry Winston -> Blue Nile; Chaumet -> VRAI; Mikimoto -> Aurate | [report](./plp-benchmark/benchmark.md) |
-| Product Card | warn | 64% | 15/15 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Brilliant Earth; Harry Winston -> Blue Nile; Chaumet -> VRAI; Mikimoto -> Aurate | [report](./product-card-benchmark/benchmark.md) |
-| PDP | warn | 80% | 15/15 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Brilliant Earth; Harry Winston -> Blue Nile; Chaumet -> VRAI; Mikimoto -> Aurate | [report](./pdp-benchmark/benchmark.md) |
+| Floating Chrome | inconclusive | 88% | 0/0 | None | [report](./floating-chrome-benchmark/benchmark.md) |
+| Route Hero | pass | 95% | 13/13 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Blue Nile; Harry Winston -> Kendra Scott | [report](./route-hero-benchmark/benchmark.md) |
+| PLP Search Gifts | pass | 83% | 15/15 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Blue Nile; Harry Winston -> VRAI; Chaumet -> Aurate; Mikimoto -> Kendra Scott | [report](./plp-benchmark/benchmark.md) |
+| Product Card | inconclusive | 80% | 2/2 | Cartier -> Mejuri | [report](./product-card-benchmark/benchmark.md) |
+| PDP | pass | 82% | 15/15 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Blue Nile; Harry Winston -> VRAI; Chaumet -> Aurate; Mikimoto -> Kendra Scott | [report](./pdp-benchmark/benchmark.md) |
 | Checkout | pass | 85% | 15/15 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Brilliant Earth; Harry Winston -> Blue Nile; Chaumet -> VRAI; Mikimoto -> Aurate | [report](./checkout-benchmark/benchmark.md) |
 | Service Account | pass | 87% | 15/15 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Brilliant Earth; Harry Winston -> Blue Nile; Chaumet -> VRAI; Mikimoto -> Aurate | [report](./service-account-benchmark/benchmark.md) |
 | Content Legal | pass | 89% | 15/15 | Cartier -> David Yurman; Tiffany & Co. -> Mejuri; Bulgari -> Brilliant Earth; Harry Winston -> Blue Nile; Chaumet -> VRAI; Mikimoto -> Aurate | [report](./content-legal-benchmark/benchmark.md) |
@@ -29,3 +29,4 @@ Generated: 2026-05-25T20:08:38.101Z
 1. Prioritize repeated mismatches that appear across header, listing, PDP, and checkout surfaces.
 2. Route any public UI adjustment through `docs/PUBLIC_CHANGE_GATE.md` before implementation.
 3. Re-run the affected benchmark locally after design changes, then run live reference crawling before changing policy.
+

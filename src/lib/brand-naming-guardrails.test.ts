@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -70,7 +70,8 @@ function getTrackedTextFiles() {
   })
     .split(/\r?\n/)
     .filter(Boolean)
-    .filter(isTextFile);
+    .filter(isTextFile)
+    .filter((file) => existsSync(path.join(root, file)));
 }
 
 function isTextFile(file: string) {
