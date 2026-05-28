@@ -121,18 +121,16 @@ repo-tracked source or asset files; other gates validate the current tree.
 - `pnpm gate:coherence`: runs the coherence contract, lint, typecheck, and
   focused static/Vitest coverage for the gate catalog, AI element accessibility,
   admin commerce, AI model/planner, search, and search state.
-- `pnpm gate:public:local`: builds preview and runs all public benchmark parts
-  with `--skip-external`.
-- `pnpm gate:public:live`: builds preview and runs all public benchmark parts
-  against live reference sites with blocked-site replacement enabled.
+- `pnpm gate:qa`: builds preview, checks route inventory, and runs the full
+  route QA site audit.
 - `pnpm gate:security`: checks frozen lockfile install integrity and
   `pnpm audit --prod`.
 - `pnpm gate:prod`: forces production-readiness env validation locally.
 - `pnpm gate:full`: explicitly runs `gate:fix` once, then quick, test, db,
-  build/runtime, QA, security, and live public benchmarks.
+  build/runtime, QA, and security gates.
 - `pnpm gate:ship`: explicitly runs `gate:fix` once, then the deploy gate for
   routine production releases: coherence, quick, test, DB, build, runtime, and
-  security. It intentionally excludes `gate:public:live`.
+  security.
 - `pnpm gate:release`: runs `gate:full` plus `gate:prod`.
 
 Prerequisites: DB gates need a reachable `DATABASE_URL`; runtime gates need a

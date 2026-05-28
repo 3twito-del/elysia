@@ -4,7 +4,7 @@ Generated: 2026-05-20
 
 ## Baseline signals
 
-Local public QA review completed before the redesign.
+Local benchmark reviewed before the redesign.
 
 Key mismatches before redesign:
 
