@@ -198,6 +198,8 @@ export const publicSurfaceExtractor: BenchmarkExtractor = ({
         "[data-testid='product-card'], article, a[href*='/product/']",
       "route-hero":
         "[data-testid='cinematic-page-hero'], .commerce-page-hero, main > section:first-of-type",
+      "search-control":
+        "#search-controls, [data-testid='mobile-search-controls'], [data-testid='home-quick-search-form']",
       "service-account": "form, main",
     };
     const selector = selectors[targetPartId] ?? "main";
@@ -635,6 +637,7 @@ export const benchmarkParts: BenchmarkPartConfig[] = [
     [
       "Cookie, accessibility, and purchase chrome must avoid covering task controls.",
     ],
+    { externalComparison: false },
   ),
   part(
     "route-hero",
@@ -659,6 +662,7 @@ export const benchmarkParts: BenchmarkPartConfig[] = [
     [
       "Product cards should keep media, product facts, price/status, and actions scannable.",
     ],
+    { minReferenceSitesForConclusiveReport: 3 },
   ),
   part(
     "pdp",
@@ -705,13 +709,20 @@ function part(
   title: string,
   targetKeys: Array<keyof typeof localTargetsByKey>,
   lessons: string[],
+  options: Pick<
+    BenchmarkPartConfig,
+    "externalComparison" | "minReferenceSitesForConclusiveReport"
+  > = {},
 ): BenchmarkPartConfig {
   return {
+    externalComparison: options.externalComparison,
     extractor: publicSurfaceExtractor,
     id,
     lessons,
     localTargets: targetKeys.map((key) => localTargetsByKey[key]),
     metricDefinitions: getMetricDefinitionsForPart(id),
+    minReferenceSitesForConclusiveReport:
+      options.minReferenceSitesForConclusiveReport,
     recommendations: [
       "Treat mismatches as candidates for review through the Public Change Gate, not direct implementation instructions.",
       "Prioritize changes only when they improve task clarity, accessibility, or commerce completion without weakening luxury restraint.",

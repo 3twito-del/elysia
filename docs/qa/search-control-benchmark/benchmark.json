@@ -1,0 +1,44 @@
+{
+  "part": {
+    "id": "search-control",
+    "title": "Search Control"
+  },
+  "runAt": "2026-05-28T11:35:58.491Z",
+  "source": {
+    "type": "manual-policy-benchmark",
+    "report": "benchmark.md"
+  },
+  "summary": {
+    "status": "pass",
+    "parameterCount": 120,
+    "minimumParameterCount": 100,
+    "coverage": [
+      "layout",
+      "content",
+      "iconography",
+      "color",
+      "interaction",
+      "motion",
+      "accessibility",
+      "navigation",
+      "policy"
+    ]
+  },
+  "checks": [
+    {
+      "name": "measurable-parameter-count",
+      "status": "pass",
+      "actual": 120,
+      "expectedAtLeast": 100
+    },
+    {
+      "name": "official-site-sanity-checks-documented",
+      "status": "pass"
+    },
+    {
+      "name": "regression-contract-present",
+      "status": "pass",
+      "testFile": "src/styles/search-experience-benchmark.test.ts"
+    }
+  ]
+}

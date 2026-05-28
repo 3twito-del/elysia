@@ -139,11 +139,13 @@ export type BenchmarkExtractor = (input: {
 };
 
 export type BenchmarkPartConfig = {
+  externalComparison?: boolean;
   extractor: BenchmarkExtractor;
   id: string;
   lessons: string[];
   localTargets: BenchmarkTarget[];
   metricDefinitions: BenchmarkMetricDefinition[];
+  minReferenceSitesForConclusiveReport?: number;
   recommendations: string[];
   resolveExternalUrl?: (site: BenchmarkCorpusSite) => string;
   title: string;
@@ -266,6 +268,9 @@ export async function runBenchmarkParts(
   try {
     const runAt = new Date().toISOString();
     const elysiaSnapshotsByPart = new Map<string, BenchmarkSnapshot[]>();
+    const externalConfigs = configs.filter(
+      (config) => config.externalComparison !== false,
+    );
 
     for (const config of configs) {
       elysiaSnapshotsByPart.set(
@@ -278,13 +283,13 @@ export async function runBenchmarkParts(
       ? emptySnapshotMap(configs)
       : await captureCorpusSitesForParts(
           browser,
-          configs,
+          externalConfigs,
           canonicalBenchmarkSites,
         );
     const needsReserveSnapshots =
       !options.skipExternal &&
       options.replaceBlocked &&
-      configs.some((config) => {
+      externalConfigs.some((config) => {
         const canonicalSnapshots =
           canonicalSnapshotsByPart.get(config.id) ?? [];
         const blockedCount = canonicalBenchmarkSites.filter(
@@ -298,17 +303,19 @@ export async function runBenchmarkParts(
     const reserveSnapshotsByPart = needsReserveSnapshots
       ? await captureCorpusSitesForParts(
           browser,
-          configs,
+          externalConfigs,
           reserveBenchmarkSites,
         )
       : emptySnapshotMap(configs);
 
     return configs.map((config) => {
+      const skipExternalForPart =
+        options.skipExternal || config.externalComparison === false;
       const elysiaSnapshots = elysiaSnapshotsByPart.get(config.id) ?? [];
-      const canonicalSnapshots = options.skipExternal
+      const canonicalSnapshots = skipExternalForPart
         ? []
         : (canonicalSnapshotsByPart.get(config.id) ?? []);
-      const blockedCanonicalCount = options.skipExternal
+      const blockedCanonicalCount = skipExternalForPart
         ? 0
         : canonicalBenchmarkSites.filter(
             (site) =>
@@ -323,7 +330,7 @@ export async function runBenchmarkParts(
         replacementSites,
         replacementSnapshots,
       } =
-        !options.skipExternal &&
+        !skipExternalForPart &&
         options.replaceBlocked &&
         blockedCanonicalCount > 0
           ? selectReplacementSites(
@@ -346,7 +353,7 @@ export async function runBenchmarkParts(
         replacementSnapshots,
         replacementSites,
         runAt,
-        skipExternal: options.skipExternal,
+        skipExternal: skipExternalForPart,
       });
     });
   } finally {
@@ -509,6 +516,9 @@ export function createBenchmarkReport({
   const status = getReportStatus({
     alignmentRatio,
     elysia,
+    minReferenceSites:
+      config.minReferenceSitesForConclusiveReport ??
+      MIN_REFERENCE_SITES_FOR_CONCLUSIVE_REPORT,
     referenceSitesEnoughData,
     skipExternal,
   });
@@ -1338,17 +1348,19 @@ function weightedPercentile(
 function getReportStatus({
   alignmentRatio,
   elysia,
+  minReferenceSites,
   referenceSitesEnoughData,
   skipExternal,
 }: {
   alignmentRatio: number | null;
   elysia: BenchmarkSiteResult;
+  minReferenceSites: number;
   referenceSitesEnoughData: number;
   skipExternal: boolean;
 }): BenchmarkStatus {
   if (skipExternal) return "local-only";
   if (elysia.enoughViewportCount < 2) return "inconclusive";
-  if (referenceSitesEnoughData < MIN_REFERENCE_SITES_FOR_CONCLUSIVE_REPORT) {
+  if (referenceSitesEnoughData < minReferenceSites) {
     return "inconclusive";
   }
 

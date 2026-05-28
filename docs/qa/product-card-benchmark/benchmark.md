@@ -1,20 +1,21 @@
 # Product Card Benchmark
 
-Generated: 2026-05-28T01:39:01.864Z
+Generated: 2026-05-28T11:27:21.617Z
 
 ## Summary
 
-- Status: inconclusive
-- Active corpus: 2/2 sites produced enough data
-- Alignment: 80%
-- Metrics: 392 match, 100 mismatch, 0 not comparable
-- Active weight: 2.5; threshold weight: 1.25
+- Status: pass
+- Active corpus: 3/3 sites produced enough data
+- Alignment: 81%
+- Metrics: 388 match, 92 mismatch, 12 not comparable
+- Active weight: 3.5; threshold weight: 1.75
 
 This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site substitutions affect QA reports only and do not change the High Jewelry Reference Gate.
 
 ## Corpus Substitutions
 
 - Cartier replaced by Mejuri.
+- Tiffany & Co. replaced by Aurate.
 
 ## Blocked Sites
 
@@ -39,35 +40,34 @@ This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site 
 - VRAI (reserve; weight 1).
 - Monica Vinader (reserve; weight 1).
 - Pandora US (reserve; weight 1).
-- Aurate (reserve; weight 1).
 - Kendra Scott (reserve; weight 1).
 
 ## Top Mismatches
 
-- home / desktop / chrome / semanticTag: Elysia="div"; baseline="article" (1.5/2.5)
-- home / desktop / chrome / topPx: Elysia=3187; baseline=median -2815; IQR -2815-2135; weight=2.5
-- home / desktop / content / headingCount: Elysia=8; baseline=median 4; IQR 0-4; weight=2.5
-- home / desktop / commerce / priceTextPresent: Elysia=true; baseline=false (1.5/2.5)
-- home / desktop / commerce / addToCartTextPresent: Elysia=false; baseline=true (2.5/2.5)
-- home / desktop / commerce / checkoutTextPresent: Elysia=false; baseline=true (2.5/2.5)
-- home / tablet / chrome / semanticTag: Elysia="div"; baseline="article" (1.5/2.5)
-- home / tablet / chrome / topPx: Elysia=4496; baseline=median -2678; IQR -2678-1798; weight=2.5
-- home / tablet / chrome / heightPx: Elysia=587; baseline=median 286; IQR 286-433; weight=2.5
-- home / tablet / content / headingCount: Elysia=8; baseline=median 4; IQR 0-4; weight=2.5
-- home / tablet / commerce / priceTextPresent: Elysia=true; baseline=false (1.5/2.5)
-- home / tablet / commerce / addToCartTextPresent: Elysia=false; baseline=true (2.5/2.5)
-- home / tablet / commerce / checkoutTextPresent: Elysia=false; baseline=true (2.5/2.5)
-- home / tablet / density / linksPer1000Px: Elysia=6.818; baseline=median 13.97; IQR 13.97-87.78; weight=2.5
-- home / mobile / chrome / semanticTag: Elysia="div"; baseline="article" (1.5/2.5)
-- home / mobile / chrome / topPx: Elysia=3887; baseline=median -3140; IQR -3140-1516; weight=2.5
+- home / desktop / chrome / semanticTag: Elysia="div"; baseline="article" (2.5/3.5)
+- home / desktop / chrome / topPx: Elysia=3187; baseline=median 1100; IQR -2815-2135; weight=3.5
+- home / desktop / content / headingCount: Elysia=8; baseline=median 4; IQR 0-4; weight=3.5
+- home / desktop / commerce / priceTextPresent: Elysia=true; baseline=false (2.5/3.5)
+- home / desktop / commerce / addToCartTextPresent: Elysia=false; baseline=true (2.5/3.5)
+- home / desktop / commerce / checkoutTextPresent: Elysia=false; baseline=true (2.5/3.5)
+- home / tablet / chrome / semanticTag: Elysia="div"; baseline="article" (2.5/3.5)
+- home / tablet / chrome / topPx: Elysia=4496; baseline=median 922; IQR -2678-1112; weight=3.5
+- home / tablet / chrome / heightPx: Elysia=587; baseline=median 286; IQR 277-433; weight=3.5
+- home / tablet / content / headingCount: Elysia=8; baseline=median 4; IQR 0-4; weight=3.5
+- home / tablet / commerce / priceTextPresent: Elysia=true; baseline=false (2.5/3.5)
+- home / tablet / commerce / addToCartTextPresent: Elysia=false; baseline=true (2.5/3.5)
+- home / tablet / commerce / checkoutTextPresent: Elysia=false; baseline=true (2.5/3.5)
+- home / tablet / density / linksPer1000Px: Elysia=6.818; baseline=median 14.42; IQR 13.97-87.78; weight=3.5
+- home / mobile / chrome / topPx: Elysia=3887; baseline=median -3141; IQR -3141-1516; weight=2.5
 - home / mobile / chrome / heightPx: Elysia=434; baseline=median 421; IQR 251-421; weight=2.5
 - home / mobile / content / headingCount: Elysia=8; baseline=median 4; IQR 0-4; weight=2.5
-- home / mobile / commerce / priceTextPresent: Elysia=true; baseline=false (1.5/2.5)
 - home / mobile / commerce / addToCartTextPresent: Elysia=false; baseline=true (2.5/2.5)
 - home / mobile / commerce / checkoutTextPresent: Elysia=false; baseline=true (2.5/2.5)
 - home / mobile / density / linksPer1000Px: Elysia=9.221; baseline=median 9.49; IQR 9.49-143.44; weight=2.5
-- category / desktop / chrome / semanticTag: Elysia="div"; baseline="article" (1.5/2.5)
-- category / desktop / chrome / heightPx: Elysia=585; baseline=median 549; IQR 370-549; weight=2.5
+- category / desktop / chrome / semanticTag: Elysia="div"; baseline="article" (2.5/3.5)
+- category / desktop / chrome / heightPx: Elysia=585; baseline=median 376; IQR 370-549; weight=3.5
+- category / desktop / content / headingCount: Elysia=12; baseline=median 4; IQR 0-4; weight=3.5
+- category / desktop / commerce / priceTextPresent: Elysia=true; baseline=false (2.5/3.5)
 
 ## Lessons
 

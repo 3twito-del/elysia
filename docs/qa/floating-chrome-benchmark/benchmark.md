@@ -1,10 +1,10 @@
 # Floating Chrome Benchmark
 
-Generated: 2026-05-28T01:30:32.830Z
+Generated: 2026-05-28T11:27:21.617Z
 
 ## Summary
 
-- Status: inconclusive
+- Status: local-only
 - Active corpus: 0/0 sites produced enough data
 - Alignment: 88%
 - Metrics: 138 match, 18 mismatch, 90 not comparable
@@ -18,31 +18,7 @@ This benchmark measures Elysia against the high-jewelry QA corpus. Reserve-site 
 
 ## Blocked Sites
 
-- Cartier (canonical; weight 1.5).
-- Tiffany & Co. (canonical; weight 1.5).
-- Van Cleef & Arpels (canonical; weight 1.5).
-- Bulgari (canonical; weight 1.5).
-- Harry Winston (canonical; weight 1.5).
-- Graff (canonical; weight 1.5).
-- Chopard (canonical; weight 1.5).
-- Boucheron (canonical; weight 1.5).
-- Chaumet (canonical; weight 1.5).
-- Piaget (canonical; weight 1.5).
-- Mikimoto (canonical; weight 1.5).
-- Messika (canonical; weight 1.5).
-- Buccellati (canonical; weight 1.5).
-- De Beers (canonical; weight 1.5).
-- Pomellato (canonical; weight 1.5).
-- David Yurman (reserve; weight 1).
-- Swarovski (reserve; weight 1).
-- Mejuri (reserve; weight 1).
-- Brilliant Earth (reserve; weight 1).
-- Blue Nile (reserve; weight 1).
-- VRAI (reserve; weight 1).
-- Monica Vinader (reserve; weight 1).
-- Pandora US (reserve; weight 1).
-- Aurate (reserve; weight 1).
-- Kendra Scott (reserve; weight 1).
+- None.
 
 ## Top Mismatches
 
