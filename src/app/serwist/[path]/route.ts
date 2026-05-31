@@ -29,11 +29,22 @@ async function createProductionSerwistRoute(): Promise<SerwistRoute> {
       encoding: "utf-8",
     }).stdout.trim() || randomUUID();
 
-  return createSerwistRoute({
+  const route = createSerwistRoute({
     additionalPrecacheEntries: [{ url: "/offline", revision }],
     swSrc: "src/app/sw.ts",
     useNativeEsbuild: true,
   });
+
+  return {
+    ...route,
+    // Vercel prebuilt packaging can miss static route-handler bodies for
+    // generated extension routes like /serwist/sw.js. Serving the Serwist
+    // output through a normal lambda keeps the artifact deployable.
+    dynamic: "force-dynamic",
+    dynamicParams: true,
+    generateStaticParams: () => [],
+    revalidate: 0,
+  };
 }
 
 function createDevelopmentSerwistRoute(): SerwistRoute {

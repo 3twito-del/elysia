@@ -25,7 +25,7 @@ describe("smoke checks", () => {
         "/category/necklaces",
         "/category/earrings",
         "/category/bracelets",
-        "/product/venus-line-ring",
+        "/product/elysia-supplier-silver-halo-ring",
         "/checkout",
         "/account",
         "/api/webhooks/cardcom",
@@ -36,6 +36,28 @@ describe("smoke checks", () => {
     for (const path of protectedAdminPaths) {
       expect(paths).toContain(path);
     }
+  });
+
+  it("keeps search smoke product-backed without depending on one seeded slug", () => {
+    const check = smokeChecks.find((item) => item.path === "/search?q=venus");
+
+    expect(check).toBeDefined();
+    expect(check.includes).toEqual([
+      'data-testid="search-form"',
+      'data-testid="search-results-grid"',
+    ]);
+    expect(
+      evaluateSmokeCheck(check, {
+        body: `
+          <form data-testid="search-form"></form>
+          <section data-testid="search-results-grid">
+            <a href="/product/elysia-supplier-silver-halo-ring">טבעת</a>
+          </section>
+        `,
+        headers: {},
+        status: 200,
+      }).ok,
+    ).toBe(true);
   });
 
   it("accepts protected admin redirects from either location or body", () => {

@@ -122,5 +122,6 @@ function createProduct(overrides: Partial<CatalogProduct> & { slug: string }) {
       },
     ],
     ...rest,
+    source: rest.source ?? "OWN",
   } satisfies CatalogProduct;
 }

@@ -6,6 +6,7 @@ const authMock = vi.hoisted(() => vi.fn());
 const dbMocks = vi.hoisted(() => ({
   auditLogCreate: vi.fn(),
   customerFindUnique: vi.fn(),
+  shopifyOrderMirrorFindMany: vi.fn(),
 }));
 
 vi.mock("~/server/auth", () => ({
@@ -19,6 +20,9 @@ vi.mock("~/server/db", () => ({
     },
     customer: {
       findUnique: dbMocks.customerFindUnique,
+    },
+    shopifyOrderMirror: {
+      findMany: dbMocks.shopifyOrderMirrorFindMany,
     },
   },
 }));
@@ -36,6 +40,7 @@ describe("customer privacy export route", () => {
       },
     });
     dbMocks.customerFindUnique.mockResolvedValue(createCustomerExport());
+    dbMocks.shopifyOrderMirrorFindMany.mockResolvedValue([]);
     dbMocks.auditLogCreate.mockResolvedValue({ id: "audit_1" });
   });
 
@@ -77,6 +82,7 @@ describe("customer privacy export route", () => {
       customer: {
         id: "customer_1",
         email: "dana@example.com",
+        shopifyOrderMirrors: [],
       },
     });
     expect(dbMocks.auditLogCreate).toHaveBeenCalledWith({

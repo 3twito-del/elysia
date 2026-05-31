@@ -114,6 +114,9 @@ describe("admin operations helpers", () => {
     expect(getStatusByName(integrations, "Typesense search")).toBe(
       "configured",
     );
+    expect(getStatusByName(integrations, "Shopify dropshipping")).toBe(
+      "local-fallback",
+    );
     expect(getStatusByName(integrations, "Outbox jobs")).toBe("configured");
     expect(getStatusByName(integrations, "AI commerce")).toBe("configured");
     expect(getStatusByName(integrations, "Vercel platform controls")).toBe(
@@ -139,6 +142,9 @@ describe("admin operations helpers", () => {
     );
     expect(getStatusByName(integrations, "Typesense search")).toBe(
       "missing-secret",
+    );
+    expect(getStatusByName(integrations, "Shopify dropshipping")).toBe(
+      "local-fallback",
     );
     expect(getStatusByName(integrations, "Outbox jobs")).toBe("missing-secret");
     expect(getStatusByName(integrations, "AI commerce")).toBe("missing-secret");

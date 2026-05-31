@@ -80,7 +80,15 @@ async function loadCustomerAccount(userId: string) {
     },
   });
 
-  return customer;
+  if (!customer) return null;
+
+  const shopifyOrderMirrors = await db.shopifyOrderMirror.findMany({
+    where: { customerEmail: customer.email },
+    orderBy: { createdAt: "desc" },
+    take: 5,
+  });
+
+  return { ...customer, shopifyOrderMirrors };
 }
 
 function AccountStatePage({
@@ -276,6 +284,8 @@ export default async function AccountPage() {
   }
 
   const wishlistItems = customer.wishlist?.items ?? [];
+  const accountOrderCount =
+    customer.orders.length + customer.shopifyOrderMirrors.length;
 
   return (
     <main>
@@ -307,7 +317,7 @@ export default async function AccountPage() {
             detail="הזמנות אחרונות"
             icon={PackageCheck}
             label="הזמנות"
-            value={String(customer.orders.length)}
+            value={String(accountOrderCount)}
           />
           <MetricCard
             detail="בחירות שמורות"
@@ -339,7 +349,7 @@ export default async function AccountPage() {
               <CardTitle>הזמנות אחרונות</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-3">
-              {customer.orders.length === 0 ? (
+              {accountOrderCount === 0 ? (
                 <EmptyState
                   description="אין הזמנות משויכות לחשבון הזה עדיין."
                   icon={PackageCheck}
@@ -352,23 +362,43 @@ export default async function AccountPage() {
                   }
                 />
               ) : (
-                customer.orders.map((order) => (
-                  <Link
-                    className="glass-inset flex min-w-0 items-center justify-between gap-4 rounded-md border p-3"
-                    href={`/account/orders/${order.id}`}
-                    key={order.id}
-                  >
-                    <div className="min-w-0">
-                      <p className="font-medium">{order.orderNumber}</p>
-                      <Badge className="mt-1 w-fit" variant="secondary">
-                        {getOrderStatusLabel(order.status)}
-                      </Badge>
+                <>
+                  {customer.orders.map((order) => (
+                    <Link
+                      className="glass-inset flex min-w-0 items-center justify-between gap-4 rounded-md border p-3"
+                      href={`/account/orders/${order.id}`}
+                      key={order.id}
+                    >
+                      <div className="min-w-0">
+                        <p className="font-medium">{order.orderNumber}</p>
+                        <Badge className="mt-1 w-fit" variant="secondary">
+                          {getOrderStatusLabel(order.status)}
+                        </Badge>
+                      </div>
+                      <span className="shrink-0 font-medium">
+                        {formatPrice(Number(order.total))}
+                      </span>
+                    </Link>
+                  ))}
+                  {customer.shopifyOrderMirrors.map((order) => (
+                    <div
+                      className="glass-inset flex min-w-0 items-center justify-between gap-4 rounded-md border p-3"
+                      key={order.id}
+                    >
+                      <div className="min-w-0">
+                        <p className="font-medium">
+                          {order.shopifyOrderName ?? order.shopifyOrderId}
+                        </p>
+                        <Badge className="mt-1 w-fit" variant="outline">
+                          הזמנת ספק
+                        </Badge>
+                      </div>
+                      <span className="shrink-0 font-medium">
+                        {formatPrice(Number(order.total))}
+                      </span>
                     </div>
-                    <span className="shrink-0 font-medium">
-                      {formatPrice(Number(order.total))}
-                    </span>
-                  </Link>
-                ))
+                  ))}
+                </>
               )}
             </CardContent>
           </Card>

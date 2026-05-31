@@ -60,6 +60,11 @@ export async function GET() {
     return notFoundJson("Customer not found.");
   }
 
+  const shopifyOrderMirrors = await db.shopifyOrderMirror.findMany({
+    where: { customerEmail: customer.email },
+    orderBy: { createdAt: "desc" },
+  });
+
   await db.auditLog.create({
     data: {
       action: "customer_data_exported",
@@ -76,7 +81,10 @@ export async function GET() {
     JSON.stringify(
       {
         exportedAt: new Date().toISOString(),
-        customer,
+        customer: {
+          ...customer,
+          shopifyOrderMirrors,
+        },
       },
       null,
       2,

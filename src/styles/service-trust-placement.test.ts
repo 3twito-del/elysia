@@ -48,11 +48,15 @@ describe("commerce service trust placement", () => {
 
     expect(productPage).not.toContain("value: commerceStatus.label");
     expect(purchasePanel).not.toContain("<Badge");
+    expect(purchasePanel).toContain("const selectedVariantStatusLabel =");
     expect(purchasePanel).toContain(
-      'selectedVariant ? commerceStatus.label : "בירור התאמה"',
+      'selectedVariant ? selectedVariantStatusLabel : "בירור התאמה"',
     );
     expect(
-      countOccurrences(purchasePanel, "selectedVariant ? commerceStatus.label"),
+      countOccurrences(
+        purchasePanel,
+        "selectedVariant ? selectedVariantStatusLabel",
+      ),
     ).toBe(1);
     expect(purchasePanel).not.toContain(
       "selectedVariantAvailable\n                ? commerceStatus.label",

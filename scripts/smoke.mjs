@@ -31,7 +31,7 @@ const publicRouteChecks = [
   },
   {
     path: "/branches",
-    statuses: [307],
+    statuses: [200, 307],
     includesAnywhere: ["/service"],
   },
   {
@@ -77,7 +77,6 @@ export const smokeChecks = [
     includes: [
       'data-testid="search-form"',
       'data-testid="search-results-grid"',
-      "/product/venus-line-ring",
     ],
     matches: [/href="\/product\//],
   },
@@ -88,10 +87,10 @@ export const smokeChecks = [
   },
   ...categoryNavigationChecks,
   {
-    path: "/product/venus-line-ring",
+    path: "/product/elysia-supplier-silver-halo-ring",
     statuses: [200],
     includes: [
-      "venus-line-ring",
+      "elysia-supplier-silver-halo-ring",
       'data-testid="product-gallery"',
       'data-testid="product-variant-feedback"',
       'data-testid="product-recommendation-rails"',

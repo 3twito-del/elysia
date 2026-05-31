@@ -302,6 +302,65 @@ export default async function AdminOrdersPage({
           />
         </CardContent>
       </Card>
+
+      {data.shopifyMirrors.length > 0 ? (
+        <Card className="mt-6 rounded-md">
+          <CardHeader>
+            <CardTitle>הזמנות ספק מ-Shopify</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <AdminTableScrollHint />
+            <Table className="min-w-[920px]">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Shopify</TableHead>
+                  <TableHead>לקוח</TableHead>
+                  <TableHead>סכום</TableHead>
+                  <TableHead>תשלום</TableHead>
+                  <TableHead>מילוי</TableHead>
+                  <TableHead>ספק</TableHead>
+                  <TableHead>תאריך</TableHead>
+                  <TableHead>פעולה</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data.shopifyMirrors.map((order) => (
+                  <TableRow key={order.id}>
+                    <TableCell className="font-medium">
+                      {order.shopifyOrderName ?? order.shopifyOrderId}
+                    </TableCell>
+                    <TableCell>{order.customerEmail ?? "-"}</TableCell>
+                    <TableCell>{formatPrice(order.total)}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline">
+                        {order.financialStatus ?? "unknown"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="secondary">
+                        {order.fulfillmentStatus ?? "pending"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{order.supplierKey ?? "shopify"}</TableCell>
+                    <TableCell>
+                      {formatHebrewDateTime(order.createdAt)}
+                    </TableCell>
+                    <TableCell>
+                      {order.adminUrl ? (
+                        <Button asChild size="sm" variant="outline">
+                          <Link href={order.adminUrl}>Shopify</Link>
+                        </Button>
+                      ) : (
+                        <span className="text-muted-foreground text-xs">-</span>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      ) : null}
     </AdminShell>
   );
 }

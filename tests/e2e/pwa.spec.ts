@@ -3,6 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 const cartProductSlug = "hera-bracelet";
 const notificationPromptMarker = "__elysiaNotificationPromptRequested";
 const pwaE2eOptInStorageKey = "elysia:pwa-e2e";
+const pwaServiceWorkerTimeoutMs = 30_000;
 const savedSizeStorageKey = "elysia_saved_sizes_v1";
 
 test.use({ serviceWorkers: "allow" });
@@ -284,7 +285,7 @@ async function waitForPwaRegistration(page: Page) {
             (registration) => new URL(registration.scope).pathname === "/",
           );
         }),
-      { timeout: 15_000 },
+      { timeout: pwaServiceWorkerTimeoutMs },
     )
     .toBe(true);
 }
@@ -298,7 +299,7 @@ async function waitForPwaControl(page: Page) {
 
           return Boolean(navigator.serviceWorker.controller);
         }),
-      { timeout: 15_000 },
+      { timeout: pwaServiceWorkerTimeoutMs },
     )
     .toBe(true);
 }

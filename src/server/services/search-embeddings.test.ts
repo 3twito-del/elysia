@@ -89,5 +89,6 @@ function makeProduct(overrides: Partial<CatalogProduct> = {}): CatalogProduct {
     tags: [],
     variants: [],
     ...overrides,
+    source: overrides.source ?? "OWN",
   };
 }

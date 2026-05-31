@@ -183,6 +183,12 @@ export function CartCheckoutForm() {
       setSubmitLocked(false);
     },
   });
+  const createShopifyCheckout =
+    api.checkout.createShopifyDropshipCheckout.useMutation({
+      onSuccess: (checkout) => {
+        window.location.href = checkout.checkoutUrl;
+      },
+    });
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() =>
@@ -216,46 +222,66 @@ export function CartCheckoutForm() {
   }, [cartQuery.data, sessionKey]);
 
   const cart = cartQuery.data;
-  const cartItemCount = cart?.items.length ?? 0;
+  const ownItems = useMemo(
+    () => cart?.items.filter((item) => item.source === "OWN") ?? [],
+    [cart?.items],
+  );
+  const dropshipItems = useMemo(
+    () =>
+      cart?.items.filter((item) => item.source === "DROPSHIP_SHOPIFY") ?? [],
+    [cart?.items],
+  );
+  const localCartItemCount = ownItems.length;
+  const hasOwnItems = ownItems.length > 0;
+  const hasDropshipItems = dropshipItems.length > 0;
+  const ownSubtotal = ownItems.reduce((sum, item) => sum + item.lineTotal, 0);
+  const dropshipSubtotal = dropshipItems.reduce(
+    (sum, item) => sum + item.lineTotal,
+    0,
+  );
+  const localCheckoutTotals = cart?.groups.own;
   const isCartLoading = Boolean(sessionKey) && cartQuery.isLoading;
   const shouldShowEmptyCartState =
     !isCartLoading && (Boolean(cartQuery.error) || !cart?.items.length);
-  const subtotal = cart?.totals.subtotal ?? 0;
-  const discount = cart?.totals.discount ?? 0;
-  const shippingAmount = cartItemCount > 0 ? 29 : 0;
-  const totalItemQuantity = cart?.itemCount ?? 0;
-  const orderTotal = Math.max(0, subtotal - discount + shippingAmount);
+  const subtotal = localCheckoutTotals?.subtotal ?? 0;
+  const discount = localCheckoutTotals?.discount ?? 0;
+  const shippingAmount = localCheckoutTotals?.shipping ?? 0;
+  const totalItemQuantity = ownItems.reduce(
+    (sum, item) => sum + item.quantity,
+    0,
+  );
+  const orderTotal = localCheckoutTotals?.total ?? 0;
   const postDiscountSubtotal = Math.max(0, subtotal - discount);
   const hasPricingReview = Boolean(
-    cart?.items.length &&
+    ownItems.length &&
     hasCheckoutPricingReview({
-      items: cart.items,
+      items: ownItems,
       subtotal,
       total: orderTotal,
     }),
   );
   const subtotalLabel = getCheckoutAmountLabel(subtotal, {
-    requiresPositive: cartItemCount > 0,
+    requiresPositive: localCartItemCount > 0,
     reviewLabel: checkoutTotalReviewLabel,
   });
   const orderTotalLabel = hasPricingReview
     ? checkoutTotalReviewLabel
     : getCheckoutAmountLabel(orderTotal, {
-        requiresPositive: cartItemCount > 0,
+        requiresPositive: localCartItemCount > 0,
         reviewLabel: checkoutTotalReviewLabel,
       });
   const postDiscountSubtotalLabel = hasPricingReview
     ? checkoutTotalReviewLabel
     : getCheckoutAmountLabel(postDiscountSubtotal, {
-        requiresPositive: cartItemCount > 0,
+        requiresPositive: localCartItemCount > 0,
         reviewLabel: checkoutTotalReviewLabel,
       });
   const shippingLabel =
-    cartItemCount > 0 && shippingAmount <= 0
+    localCartItemCount > 0 && shippingAmount <= 0
       ? "כלול"
       : formatPrice(shippingAmount);
   const checkoutErrors = validateCheckoutFields({
-    cartItemCount,
+    cartItemCount: localCartItemCount,
     city,
     email,
     fulfillmentMethod,
@@ -266,10 +292,14 @@ export function CartCheckoutForm() {
     street,
   });
   const checkoutIssues = getCheckoutIssueList(checkoutErrors);
-  const checkoutSubmissionLocked = createOrder.isPending || submitLocked;
+  const checkoutSubmissionLocked =
+    createOrder.isPending || createShopifyCheckout.isPending || submitLocked;
   const checkoutLocked = checkoutSubmissionLocked || isOffline;
   const canSubmit =
-    !hasCheckoutErrors(checkoutErrors) && !checkoutLocked && !hasPricingReview;
+    hasOwnItems &&
+    !hasCheckoutErrors(checkoutErrors) &&
+    !checkoutLocked &&
+    !hasPricingReview;
   const cartMutationError =
     updateItem.error ?? removeItem.error ?? updateOptions.error;
   const cartMutationErrorMessage = cartMutationError
@@ -284,6 +314,28 @@ export function CartCheckoutForm() {
         "לא הצלחנו לשמור את הבחירה כרגע. בדקו שהפרטים מולאו ונסו שוב.",
       )
     : null;
+  const createShopifyCheckoutErrorMessage = createShopifyCheckout.error
+    ? getFriendlyCheckoutErrorMessage(
+        createShopifyCheckout.error,
+        "לא הצלחנו לפתוח את קופת הספק כרגע. נסו שוב בעוד רגע.",
+      )
+    : null;
+  const checkoutDisplayGroups = [
+    {
+      description: "פריטים שממשיכים לקופה המקומית באתר.",
+      items: ownItems,
+      label: "פריטים מהחנות",
+      source: "OWN",
+      subtotal: ownSubtotal,
+    },
+    {
+      description: "פריטי ספק שיושלמו בקופת Shopify נפרדת.",
+      items: dropshipItems,
+      label: "פריטים מהספק",
+      source: "DROPSHIP_SHOPIFY",
+      subtotal: dropshipSubtotal,
+    },
+  ].filter((group) => group.items.length > 0);
   const optionMutationInput = useMemo(
     () =>
       sessionKey
@@ -381,6 +433,12 @@ export function CartCheckoutForm() {
       giftMessage: giftMessage || undefined,
       couponCode: couponCode || undefined,
     });
+  }
+
+  function handleShopifyCheckout() {
+    if (isOffline || !sessionKey || !hasDropshipItems) return;
+
+    createShopifyCheckout.mutate({ sessionKey });
   }
 
   function queueOfflineCartMutation(
@@ -490,7 +548,25 @@ export function CartCheckoutForm() {
                 התכשיטים שנבחרו
               </CardTitle>
             </CardHeader>
-            <CardContent className="grid min-h-72 gap-3">
+            <CardContent className="grid min-h-72 gap-4">
+              <div className="grid gap-2 sm:grid-cols-2">
+                {checkoutDisplayGroups.map((group) => (
+                  <div
+                    className="glass-inset rounded-md border p-3"
+                    key={group.source}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="font-medium">{group.label}</p>
+                      <Badge variant="secondary">
+                        {formatPrice(group.subtotal)}
+                      </Badge>
+                    </div>
+                    <p className="text-muted-foreground mt-1 text-xs leading-5">
+                      {group.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
               {cart.items.map((item) => (
                 <div
                   className="bg-background grid grid-cols-[68px_minmax(0,1fr)] gap-3 rounded-md border p-3 sm:grid-cols-[68px_minmax(0,1fr)_auto] sm:items-center"
@@ -517,6 +593,11 @@ export function CartCheckoutForm() {
                     >
                       {item.productName}
                     </Link>
+                    <Badge className="mt-1 w-fit" variant="outline">
+                      {item.source === "DROPSHIP_SHOPIFY"
+                        ? "פריט ספק"
+                        : "פריט מהחנות"}
+                    </Badge>
                     <p className="text-muted-foreground text-sm">
                       {item.variantName} ·{" "}
                       {getCheckoutAmountLabel(item.unitPrice, {
@@ -846,8 +927,8 @@ export function CartCheckoutForm() {
                 <div className="flex justify-between">
                   <span>תכשיטים</span>
                   <span data-testid="checkout-item-count">
-                    {cartItemCount}{" "}
-                    {cartItemCount === 1 ? "סוג תכשיט" : "סוגי תכשיטים"}
+                    {localCartItemCount}{" "}
+                    {localCartItemCount === 1 ? "סוג תכשיט" : "סוגי תכשיטים"}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -945,6 +1026,30 @@ export function CartCheckoutForm() {
                   {createOrderErrorMessage}
                 </StatusMessage>
               ) : null}
+              {createShopifyCheckoutErrorMessage ? (
+                <StatusMessage tone="error">
+                  {createShopifyCheckoutErrorMessage}
+                </StatusMessage>
+              ) : null}
+              {hasDropshipItems ? (
+                <div className="glass-inset rounded-md border p-3 text-sm">
+                  <p className="font-medium">קופת ספק נפרדת</p>
+                  <p className="text-muted-foreground mt-1 leading-6">
+                    {dropshipItems.length} פריטי ספק יושלמו בקופת Shopify
+                    מאובטחת, בנפרד מהפריטים המקומיים.
+                  </p>
+                  <Button
+                    className="mt-3 w-full"
+                    disabled={isOffline || createShopifyCheckout.isPending}
+                    onClick={handleShopifyCheckout}
+                    type="button"
+                    variant="outline"
+                  >
+                    מעבר לקופת הספק
+                    <ShoppingBag aria-hidden="true" className="size-4" />
+                  </Button>
+                </div>
+              ) : null}
               <Button disabled={!canSubmit} size="lg" type="submit">
                 אישור הבחירה
                 <PackageCheck aria-hidden="true" className="size-4" />
@@ -953,7 +1058,7 @@ export function CartCheckoutForm() {
           </Card>
         </aside>
       </form>
-      {canRenderStickyBar && cartItemCount > 0
+      {canRenderStickyBar && hasOwnItems
         ? createPortal(mobileCheckoutBar, document.body)
         : null}
     </>

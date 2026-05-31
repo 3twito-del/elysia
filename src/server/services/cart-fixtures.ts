@@ -18,10 +18,16 @@ const CART_TTL_DAYS = 30;
 
 type FixtureCartItem = {
   id: string;
+  externalHandle?: string;
+  externalProductId?: string;
+  externalProvider?: string;
+  externalVariantId?: string;
   productImage: string;
   productName: string;
   productSlug: string;
   quantity: number;
+  source: "OWN" | "DROPSHIP_SHOPIFY";
+  supplierKey?: string;
   unitPrice: number;
   variantName: string;
   variantSku: string;
@@ -93,10 +99,16 @@ export function addFixtureCartItem(input: {
   } else {
     cart.items.push({
       id: itemId,
+      externalHandle: product.externalHandle,
+      externalProductId: product.externalProductId,
+      externalProvider: product.externalProvider,
+      externalVariantId: variant.externalVariantId,
       productImage: product.images[0] ?? product.image ?? DEFAULT_CATALOG_IMAGE,
       productName: product.name,
       productSlug: product.slug,
       quantity: input.quantity,
+      source: product.source,
+      supplierKey: product.supplierKey,
       unitPrice: variant.price,
       variantName: variant.name,
       variantSku: variant.sku,
@@ -240,8 +252,21 @@ function mapFixtureCartSummary(
   fulfillmentMethod: "DELIVERY" | "PICKUP",
 ): CartSummary {
   const items = cart.items.map((item) => ({
-    ...item,
+    id: item.id,
+    externalHandle: item.externalHandle,
+    externalProductId: item.externalProductId,
+    externalProvider: item.externalProvider,
+    externalVariantId: item.externalVariantId,
     lineTotal: item.unitPrice * item.quantity,
+    productImage: item.productImage,
+    productName: item.productName,
+    productSlug: item.productSlug,
+    quantity: item.quantity,
+    source: item.source,
+    supplierKey: item.supplierKey,
+    unitPrice: item.unitPrice,
+    variantName: item.variantName,
+    variantSku: item.variantSku,
   }));
   const totals = calculateOrderTotal({
     items,
@@ -258,9 +283,57 @@ function mapFixtureCartSummary(
     id: cart.id,
     itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
     items,
+    groups: groupFixtureCartItemsBySource(items, fulfillmentMethod),
     sessionKey: cart.sessionKey,
     status: cart.status,
     totals,
+  };
+}
+
+function groupFixtureCartItemsBySource(
+  items: Array<{
+    lineTotal: number;
+    quantity: number;
+    source: "OWN" | "DROPSHIP_SHOPIFY";
+    unitPrice: number;
+  }>,
+  fulfillmentMethod: "DELIVERY" | "PICKUP",
+) {
+  const own = items.filter((item) => item.source === "OWN");
+  const dropshipShopify = items.filter(
+    (item) => item.source === "DROPSHIP_SHOPIFY",
+  );
+
+  return {
+    own: summarizeFixtureCartGroup(own, {
+      shipping: fulfillmentMethod === "DELIVERY" ? 29 : 0,
+    }),
+    dropshipShopify: summarizeFixtureCartGroup(dropshipShopify),
+  };
+}
+
+function summarizeFixtureCartGroup(
+  items: Array<{
+    lineTotal: number;
+    quantity: number;
+    unitPrice: number;
+  }>,
+  options: {
+    shipping?: number;
+  } = {},
+) {
+  const totals = calculateOrderTotal({
+    items,
+    shipping: items.length > 0 ? (options.shipping ?? 0) : 0,
+  });
+
+  return {
+    itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
+    lineCount: items.length,
+    subtotal: totals.subtotal,
+    discount: totals.discount,
+    shipping: totals.shipping,
+    total: totals.total,
   };
 }
 

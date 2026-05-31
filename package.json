@@ -44,6 +44,8 @@
     "qa:performance": "tsx scripts/qa-site-audit.ts --performance-only",
     "qa:routes": "tsx scripts/qa-route-inventory.ts --check",
     "qa:site": "tsx scripts/qa-site-audit.ts",
+    "shopify:dropship:doctor": "node scripts/shopify-dropship-doctor.mjs",
+    "shopify:dropship:sync": "tsx scripts/sync-shopify-dropship-catalog.ts",
     "smoke": "node scripts/smoke.mjs",
     "visual:qa": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/visual-qa-agent-browser.ps1",
     "start": "next start",
@@ -52,7 +54,8 @@
     "verify": "pnpm check && pnpm build && pnpm format:check",
     "verify:fast": "pnpm lint && pnpm typecheck && pnpm test",
     "verify:full": "pnpm gate:release",
-    "verify:runtime": "pnpm smoke && pnpm e2e && pnpm visual:qa"
+    "verify:runtime": "pnpm smoke && pnpm e2e && pnpm visual:qa",
+    "vercel:env:upsert": "node scripts/vercel-env-upsert.mjs"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.64",

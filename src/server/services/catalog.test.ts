@@ -135,6 +135,7 @@ function makeProduct(
     sizes: [],
     sku: overrides.sku ?? "SKU",
     slug: overrides.slug,
+    source: overrides.source ?? "OWN",
     stone: overrides.stone,
     tags: overrides.tags ?? [],
     variants: [],

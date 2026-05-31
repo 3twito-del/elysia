@@ -198,6 +198,7 @@ export default async function ProductPage({
                   productName={product.name}
                   productReference={`${product.name} (${product.sku})`}
                   productSlug={product.slug}
+                  productSource={product.source}
                   variants={product.variants}
                 />
               </TRPCReactProvider>

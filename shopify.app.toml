@@ -1,0 +1,18 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "d67252343ae0e581a61f400d8b29b9c6"
+application_url = "https://elysia-jewellery.com"
+embedded = false
+name = "Elysia Dropship API"
+
+[webhooks]
+api_version = "2026-04"
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_products,read_orders,read_publications,write_publications,unauthenticated_read_product_listings,unauthenticated_write_checkouts"
+optional_scopes = [ "write_products" ]
+use_legacy_install_flow = false
+
+[auth]
+redirect_urls = [ ]

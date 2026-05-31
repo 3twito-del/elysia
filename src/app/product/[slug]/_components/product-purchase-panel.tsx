@@ -25,7 +25,9 @@ import {
   getInitialVariantSku,
   getVariantButtonLabel,
   getVariantDisplayName,
+  getVariantStatusLabel,
   isRecoverableOfflineCartError,
+  isVariantSelectableForCart,
 } from "./product-purchase-utils";
 import { PushOptInButton } from "~/components/push-opt-in-button";
 import { Button } from "~/components/ui/button";
@@ -57,7 +59,10 @@ import {
   subscribeToSavedSizeUpdates,
 } from "~/lib/size-fit-storage";
 import { cn } from "~/lib/utils";
-import type { CatalogProductVariant } from "~/server/services/catalog";
+import type {
+  CatalogProduct,
+  CatalogProductVariant,
+} from "~/server/services/catalog-types";
 import { api } from "~/trpc/react";
 
 type ProductPurchasePanelProps = {
@@ -65,6 +70,7 @@ type ProductPurchasePanelProps = {
   productName: string;
   productReference: string;
   categorySlug: string;
+  productSource: CatalogProduct["source"];
   availabilityMode: PublicProductAvailabilityMode;
   price: number;
   variants: CatalogProductVariant[];
@@ -76,6 +82,7 @@ export function ProductPurchasePanel({
   productName,
   productReference,
   categorySlug,
+  productSource,
   availabilityMode,
   price,
   variants,
@@ -100,13 +107,23 @@ export function ProductPurchasePanel({
   const sizeKind = getSizeKindForCategory(categorySlug);
   const selectedVariant =
     variants.find((variant) => variant.sku === selectedSku) ?? variants[0];
+  const isShopifyDropship = productSource === "DROPSHIP_SHOPIFY";
   const selectedVariantPrice = selectedVariant?.price ?? price;
   const selectedVariantQuantity = selectedVariant?.availableQuantity ?? 0;
   const commerceStatus = getPublicProductCommerceStatus({
     availableQuantity: selectedVariantQuantity,
     availabilityMode,
   });
-  const selectedVariantAvailable = commerceStatus.canAddToCart;
+  const selectedVariantAvailable = isVariantSelectableForCart({
+    availabilityMode,
+    productSource,
+    variant: selectedVariant,
+  });
+  const selectedVariantStatusLabel = getVariantStatusLabel({
+    availabilityMode,
+    productSource,
+    variant: selectedVariant,
+  });
   const serviceHref = createProductServiceHref({
     productReference,
     reason: commerceStatus.serviceReason,
@@ -326,10 +343,15 @@ export function ProductPurchasePanel({
 
               return (
                 <Button
-                  aria-label={getVariantButtonLabel(variant, availabilityMode)}
+                  aria-label={getVariantButtonLabel(
+                    variant,
+                    availabilityMode,
+                    productSource,
+                  )}
                   aria-pressed={isSelected}
                   className="min-h-11 min-w-12 rounded-full px-4"
                   disabled={
+                    !isShopifyDropship &&
                     availabilityMode === "READY_TO_ORDER" &&
                     variant.availableQuantity <= 0
                   }
@@ -351,7 +373,7 @@ export function ProductPurchasePanel({
           >
             <span className="flex items-center gap-1.5">
               <PackageCheck className="size-4" aria-hidden="true" />
-              {selectedVariant ? commerceStatus.label : "בירור התאמה"}
+              {selectedVariant ? selectedVariantStatusLabel : "בירור התאמה"}
             </span>
           </div>
           {savedSizeMatch ? (

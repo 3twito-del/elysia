@@ -97,6 +97,11 @@ const smokeApiRoutes = [
     path: "/api/webhooks/cloudinary",
     statuses: [401, 400],
   },
+  {
+    method: "POST" as const,
+    path: "/api/webhooks/shopify/orders",
+    statuses: [401, 400],
+  },
 ] as const;
 
 export function getQaRouteInventory({

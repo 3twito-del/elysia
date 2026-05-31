@@ -90,6 +90,7 @@ async function main() {
     prisma.outboxEvent.deleteMany(),
     prisma.integrationJob.deleteMany(),
     prisma.webhookEvent.deleteMany(),
+    prisma.shopifyOrderMirror.deleteMany(),
     prisma.productClickEvent.deleteMany(),
     prisma.productViewEvent.deleteMany(),
     prisma.searchEvent.deleteMany(),

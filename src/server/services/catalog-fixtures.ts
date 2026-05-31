@@ -137,6 +137,7 @@ function mapSeedProduct(product: SeedProduct): CatalogProduct {
   return {
     slug: product.slug,
     sku: product.sku,
+    source: "OWN",
     name: product.name.replace(/\s+\d{3}$/u, ""),
     categorySlug: product.categorySlug,
     categoryName: category?.name ?? product.categorySlug,

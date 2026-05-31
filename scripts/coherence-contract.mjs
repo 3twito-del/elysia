@@ -49,6 +49,14 @@ const largeFileExceptions = new Map([
     "src/server/services/catalog.ts",
     "catalog service facade preserves stable product query and fixture behavior across public routes",
   ],
+  [
+    "src/server/adapters/shopify.ts",
+    "Shopify adapter keeps provider GraphQL schemas, mapping, webhook verification, and checkout calls behind the stable adapter facade",
+  ],
+  [
+    "scripts/shopify-dropship-doctor.mjs",
+    "operational Shopify readiness diagnostic combines database, Shopify scope, Storefront token, and webhook checks for rollout safety",
+  ],
 ]);
 
 const debtMarkers = [

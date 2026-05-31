@@ -50,11 +50,17 @@ type CartWithItems = Cart & {
   items: Array<
     CartItem & {
       variant: {
+        externalVariantId: string | null;
         sku: string;
         name: string;
         product: {
           slug: string;
           name: string;
+          source: "OWN" | "DROPSHIP_SHOPIFY";
+          externalProvider: string | null;
+          externalProductId: string | null;
+          externalHandle: string | null;
+          supplierKey: string | null;
           media: Array<{
             url: string;
           }>;
@@ -65,6 +71,7 @@ type CartWithItems = Cart & {
 };
 
 export type CartSummary = Awaited<ReturnType<typeof mapCartSummary>>;
+type CartGroupCoupon = Parameters<typeof calculateOrderTotal>[0]["coupon"];
 
 export async function getCartBySession(sessionKey: string) {
   const parsed = cartSessionKeySchema.parse(sessionKey);
@@ -321,7 +328,13 @@ async function mapCartSummary(cart: CartWithItems, fulfillmentMethod: string) {
     productSlug: item.variant.product.slug,
     productName: item.variant.product.name,
     productImage: item.variant.product.media[0]?.url ?? DEFAULT_CATALOG_IMAGE,
+    source: item.variant.product.source,
+    externalProvider: item.variant.product.externalProvider ?? undefined,
+    externalProductId: item.variant.product.externalProductId ?? undefined,
+    externalHandle: item.variant.product.externalHandle ?? undefined,
+    supplierKey: item.variant.product.supplierKey ?? undefined,
     variantSku: item.variant.sku,
+    externalVariantId: item.variant.externalVariantId ?? undefined,
     variantName: item.variant.name,
     quantity: item.quantity,
     unitPrice: Number(item.unitPrice),
@@ -345,8 +358,66 @@ async function mapCartSummary(cart: CartWithItems, fulfillmentMethod: string) {
     couponValid: cart.couponCode ? Boolean(coupon) : undefined,
     expiresAt: cart.expiresAt,
     items,
+    groups: groupCartItemsBySource(items, {
+      coupon: coupon?.value,
+      fulfillmentMethod,
+    }),
     itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
     totals,
+  };
+}
+
+function groupCartItemsBySource(
+  items: Array<{
+    lineTotal: number;
+    quantity: number;
+    source: "OWN" | "DROPSHIP_SHOPIFY";
+    unitPrice: number;
+  }>,
+  options: {
+    coupon?: CartGroupCoupon;
+    fulfillmentMethod: string;
+  },
+) {
+  const own = items.filter((item) => item.source === "OWN");
+  const dropshipShopify = items.filter(
+    (item) => item.source === "DROPSHIP_SHOPIFY",
+  );
+
+  return {
+    own: summarizeCartGroup(own, {
+      coupon: options.coupon,
+      shipping: options.fulfillmentMethod === "DELIVERY" ? 29 : 0,
+    }),
+    dropshipShopify: summarizeCartGroup(dropshipShopify),
+  };
+}
+
+function summarizeCartGroup(
+  items: Array<{
+    lineTotal: number;
+    quantity: number;
+    source: "OWN" | "DROPSHIP_SHOPIFY";
+    unitPrice: number;
+  }>,
+  options: {
+    coupon?: CartGroupCoupon;
+    shipping?: number;
+  } = {},
+) {
+  const totals = calculateOrderTotal({
+    coupon: options.coupon,
+    items,
+    shipping: items.length > 0 ? (options.shipping ?? 0) : 0,
+  });
+
+  return {
+    itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
+    lineCount: items.length,
+    subtotal: totals.subtotal,
+    discount: totals.discount,
+    shipping: totals.shipping,
+    total: totals.total,
   };
 }
 
@@ -361,11 +432,17 @@ const cartInclude = {
       variant: {
         select: {
           sku: true,
+          externalVariantId: true,
           name: true,
           product: {
             select: {
               slug: true,
               name: true,
+              source: true,
+              externalProvider: true,
+              externalProductId: true,
+              externalHandle: true,
+              supplierKey: true,
               media: {
                 where: { kind: "IMAGE" },
                 orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }],

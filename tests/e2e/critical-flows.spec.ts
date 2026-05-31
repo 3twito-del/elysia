@@ -461,6 +461,7 @@ test.describe("critical shopping flows", () => {
       "aria-expanded",
       "false",
     );
+    await expect(categoryFilterTrigger).toBeEnabled();
     await categoryFilterTrigger.press("Enter");
     await expect(page.getByTestId("category-filter-sheet")).toBeVisible();
     await page.keyboard.press("Escape");

@@ -118,6 +118,35 @@ export function assertCartCheckoutPricesAvailable(
   }
 }
 
+export function assertCartCheckoutOwnItems(
+  items: Array<{
+    variant: {
+      product: {
+        source: "OWN" | "DROPSHIP_SHOPIFY";
+      };
+    };
+  }>,
+) {
+  if (items.some((item) => item.variant.product.source !== "OWN")) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "פריטי ספק דורשים סיום הזמנה נפרד דרך קופת הספק.",
+    });
+  }
+}
+
+export function getCartCheckoutOwnItems<
+  T extends {
+    variant: {
+      product: {
+        source: "OWN" | "DROPSHIP_SHOPIFY";
+      };
+    };
+  },
+>(items: T[]) {
+  return items.filter((item) => item.variant.product.source === "OWN");
+}
+
 export async function createCartCheckoutOrder(input: CartCheckoutInput) {
   const parsed = cartCheckoutInputSchema.parse(input);
   const result = await db.$transaction((tx) =>
@@ -143,12 +172,23 @@ async function createCartCheckoutOrderInTransaction(
     });
   }
 
-  assertCartCheckoutPricesAvailable(cart.items);
+  const ownItems = getCartCheckoutOwnItems(cart.items);
 
-  const branch = await resolveOnlineFulfillmentBranch(tx, input, cart);
+  if (ownItems.length === 0) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "אין פריטים מקומיים לסיום הזמנה באתר.",
+    });
+  }
+
+  assertCartCheckoutPricesAvailable(ownItems);
+
+  const branch = await resolveOnlineFulfillmentBranch(tx, input, {
+    items: ownItems,
+  });
 
   const coupon = await resolveCoupon(tx, input.couponCode ?? cart.couponCode);
-  const items = cart.items.map((item) => ({
+  const items = ownItems.map((item) => ({
     cartItemId: item.id,
     variantId: item.variantId,
     name: createOrderItemName({
@@ -184,7 +224,7 @@ async function createCartCheckoutOrderInTransaction(
     shippingAddress: input.shippingAddress,
   });
 
-  for (const item of cart.items) {
+  for (const item of ownItems) {
     const inventoryItem = await tx.inventoryItem.findUnique({
       where: {
         branchId_variantId: {
@@ -238,7 +278,7 @@ async function createCartCheckoutOrderInTransaction(
     },
   });
 
-  for (const item of cart.items) {
+  for (const item of ownItems) {
     const reserved = await tx.inventoryItem.updateMany({
       where: {
         branchId: branch.id,
@@ -304,20 +344,42 @@ async function createCartCheckoutOrderInTransaction(
     },
   });
 
-  await tx.cart.update({
-    where: { id: cart.id },
-    data: {
-      customerId: customer.id,
-      status: "CONVERTED",
-      giftWrap: input.giftWrap,
-      giftMessage: input.giftMessage,
-      couponCode: coupon?.code,
-      mergeMetadata: {
-        checkedOutAt: new Date().toISOString(),
-        orderId: order.id,
+  if (ownItems.length === cart.items.length) {
+    await tx.cart.update({
+      where: { id: cart.id },
+      data: {
+        customerId: customer.id,
+        status: "CONVERTED",
+        giftWrap: input.giftWrap,
+        giftMessage: input.giftMessage,
+        couponCode: coupon?.code,
+        mergeMetadata: {
+          checkedOutAt: new Date().toISOString(),
+          orderId: order.id,
+        },
       },
-    },
-  });
+    });
+  } else {
+    await tx.cartItem.deleteMany({
+      where: {
+        id: { in: ownItems.map((item) => item.id) },
+      },
+    });
+    await tx.cart.update({
+      where: { id: cart.id },
+      data: {
+        customerId: customer.id,
+        giftWrap: input.giftWrap,
+        giftMessage: input.giftMessage,
+        couponCode: coupon?.code,
+        mergeMetadata: {
+          localCheckoutCompletedAt: new Date().toISOString(),
+          localOrderId: order.id,
+          remainingSource: "DROPSHIP_SHOPIFY",
+        },
+      },
+    });
+  }
 
   if (coupon) {
     await tx.coupon.update({

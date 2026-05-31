@@ -585,6 +585,11 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
   return {
     slug: record.slug,
     sku: record.sku,
+    source: record.source,
+    externalProvider: record.externalProvider ?? undefined,
+    externalProductId: record.externalProductId ?? undefined,
+    externalHandle: record.externalHandle ?? undefined,
+    supplierKey: record.supplierKey ?? undefined,
     name: displayName,
     categorySlug: record.category.slug,
     categoryName: record.category.name,
@@ -617,6 +622,7 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
     variants: record.variants.map((variant) => ({
       sku: variant.sku,
       name: variant.name,
+      externalVariantId: variant.externalVariantId ?? undefined,
       size: variant.size ?? undefined,
       metalColor: variant.metalColor ?? undefined,
       stoneColor: variant.stoneColor ?? undefined,

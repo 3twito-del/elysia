@@ -67,6 +67,24 @@ describe("cart service", () => {
     expect(summary).toMatchObject({
       couponCode: "SAVE10",
       couponValid: true,
+      groups: {
+        dropshipShopify: {
+          discount: 0,
+          itemCount: 0,
+          lineCount: 0,
+          shipping: 0,
+          subtotal: 0,
+          total: 0,
+        },
+        own: {
+          discount: 110,
+          itemCount: 3,
+          lineCount: 2,
+          shipping: 29,
+          subtotal: 1100,
+          total: 1019,
+        },
+      },
       itemCount: 3,
       items: [
         {
@@ -74,7 +92,9 @@ describe("cart service", () => {
           lineTotal: 1000,
           productSlug: "venus-line-ring",
           quantity: 2,
+          source: "OWN",
           unitPrice: 500,
+          externalVariantId: undefined,
           variantSku: "RING-VENUS",
         },
         {
@@ -82,7 +102,9 @@ describe("cart service", () => {
           lineTotal: 100,
           productSlug: "noor-earrings",
           quantity: 1,
+          source: "OWN",
           unitPrice: 100,
+          externalVariantId: undefined,
           variantSku: "EAR-NOOR",
         },
       ],
@@ -158,6 +180,45 @@ describe("cart service", () => {
     });
   });
 
+  it("splits mixed carts into local and Shopify dropship groups", async () => {
+    dbMocks.cartFindFirst.mockResolvedValueOnce(
+      makeCart({
+        items: [
+          makeCartItem({ id: "item_1", quantity: 1, unitPrice: 500 }),
+          makeCartItem({
+            id: "item_2",
+            productSlug: "supplier-necklace",
+            quantity: 2,
+            source: "DROPSHIP_SHOPIFY",
+            unitPrice: 300,
+            variantSku: "SHOPIFY-NECKLACE",
+          }),
+        ],
+      }),
+    );
+
+    const summary = await getCartBySession("session-key-123456789");
+
+    expect(summary?.groups).toEqual({
+      dropshipShopify: {
+        discount: 0,
+        itemCount: 2,
+        lineCount: 1,
+        shipping: 0,
+        subtotal: 600,
+        total: 600,
+      },
+      own: {
+        discount: 0,
+        itemCount: 1,
+        lineCount: 1,
+        shipping: 29,
+        subtotal: 500,
+        total: 529,
+      },
+    });
+  });
+
   it("updates item quantities only after finding the item in the active cart", async () => {
     dbMocks.cartFindFirst
       .mockResolvedValueOnce(
@@ -215,6 +276,7 @@ function makeCartItem(
     id?: string;
     productSlug?: string;
     quantity?: number;
+    source?: "OWN" | "DROPSHIP_SHOPIFY";
     unitPrice?: number;
     variantSku?: string;
   } = {},
@@ -228,9 +290,14 @@ function makeCartItem(
     variant: {
       name: "Default",
       product: {
+        externalHandle: null,
+        externalProductId: null,
+        externalProvider: null,
         media: [{ url: "/venus.png" }],
         name: "Venus Line Ring",
         slug: overrides.productSlug ?? "venus-line-ring",
+        source: overrides.source ?? "OWN",
+        supplierKey: null,
       },
       sku: overrides.variantSku ?? "RING-VENUS",
     },

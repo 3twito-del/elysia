@@ -2,6 +2,7 @@ import type { OrderStatus, Prisma } from "@prisma/client";
 
 import { env } from "~/env";
 import { notificationProvider } from "~/server/adapters/notifications";
+import { getShopifyAdminOrderUrl } from "~/server/adapters/shopify";
 import { db } from "~/server/db";
 import { DEFAULT_CATALOG_IMAGE } from "~/server/services/catalog";
 import {
@@ -170,7 +171,38 @@ export async function listAdminOrders(input: AdminOrderListInput) {
       : {}),
   };
   const orderBy = getAdminOrderSort(parsed.sort);
-  const [totalItems, orders, branches] = await Promise.all([
+  const shopifyMirrorWhere: Prisma.ShopifyOrderMirrorWhereInput = {
+    ...(parsed.dateFrom || parsed.dateTo
+      ? {
+          createdAt: {
+            ...(parsed.dateFrom ? { gte: parsed.dateFrom } : {}),
+            ...(parsed.dateTo ? { lte: parsed.dateTo } : {}),
+          },
+        }
+      : {}),
+    ...(parsed.query
+      ? {
+          OR: [
+            {
+              shopifyOrderId: {
+                contains: parsed.query,
+                mode: "insensitive",
+              },
+            },
+            {
+              shopifyOrderName: {
+                contains: parsed.query,
+                mode: "insensitive",
+              },
+            },
+            {
+              customerEmail: { contains: parsed.query, mode: "insensitive" },
+            },
+          ],
+        }
+      : {}),
+  };
+  const [totalItems, orders, branches, shopifyMirrors] = await Promise.all([
     db.order.count({ where }),
     db.order.findMany({
       where,
@@ -200,6 +232,11 @@ export async function listAdminOrders(input: AdminOrderListInput) {
         { city: "asc" },
         { name: "asc" },
       ],
+    }),
+    db.shopifyOrderMirror.findMany({
+      where: shopifyMirrorWhere,
+      orderBy: { createdAt: "desc" },
+      take: 10,
     }),
   ]);
 
@@ -244,6 +281,23 @@ export async function listAdminOrders(input: AdminOrderListInput) {
             deliveredAt: order.shipments[0].deliveredAt,
           }
         : null,
+    })),
+    shopifyMirrors: shopifyMirrors.map((order) => ({
+      id: order.id,
+      shopifyOrderId: order.shopifyOrderId,
+      shopifyOrderName: order.shopifyOrderName,
+      customerEmail: order.customerEmail,
+      financialStatus: order.financialStatus,
+      fulfillmentStatus: order.fulfillmentStatus,
+      supplierKey: order.supplierKey,
+      total: Number(order.total),
+      currency: order.currency,
+      createdAt: order.createdAt,
+      processedAt: order.processedAt,
+      adminUrl: getShopifyAdminOrderUrl({
+        shopDomain: env.SHOPIFY_STORE_DOMAIN,
+        shopifyOrderId: order.shopifyOrderId,
+      }),
     })),
     pageInfo: createAdminPageInfo({
       page: parsed.page,
@@ -975,6 +1029,13 @@ export function getAdminIntegrationStatuses(): AdminIntegrationSummary[] {
     notificationProviderName: notificationProvider.providerName(),
     operationsEmail: env.OPERATIONS_EMAIL,
     resendApiKey: env.RESEND_API_KEY,
+    shopifyAdminAccessToken: env.SHOPIFY_ADMIN_ACCESS_TOKEN,
+    shopifyClientId: env.SHOPIFY_CLIENT_ID,
+    shopifyClientSecret: env.SHOPIFY_CLIENT_SECRET,
+    shopifyDropshipEnabled: env.SHOPIFY_DROPSHIP_ENABLED,
+    shopifyStoreDomain: env.SHOPIFY_STORE_DOMAIN,
+    shopifyStorefrontAccessToken: env.SHOPIFY_STOREFRONT_ACCESS_TOKEN,
+    shopifyWebhookSecret: env.SHOPIFY_WEBHOOK_SECRET,
     smsProviderApiKey: env.SMS_PROVIDER_API_KEY,
     storeFromEmail: env.STORE_FROM_EMAIL,
     typesenseApiKey: env.TYPESENSE_API_KEY,

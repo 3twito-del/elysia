@@ -11,6 +11,7 @@ describe("health readiness", () => {
         jobs: "preview-disabled",
         payment: "manual-checkout",
         search: "configured",
+        shopifyDropship: "optional-disabled",
       }),
     ).toBe(true);
 
@@ -21,6 +22,7 @@ describe("health readiness", () => {
         jobs: "secured",
         payment: "manual-checkout",
         search: "configured",
+        shopifyDropship: "optional-disabled",
       }),
     ).toBe(false);
   });

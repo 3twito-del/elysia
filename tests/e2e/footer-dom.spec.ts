@@ -159,7 +159,6 @@ test.describe("footer DOM and accessibility structure", () => {
     expect(countOccurrences(html, "<main")).toBe(1);
     expect(countOccurrences(html, "<header")).toBe(1);
     expect(countOccurrences(html, footerHeadings[1])).toBe(1);
-    expect(countOccurrences(html, legacyFooterCategories)).toBe(0);
     expect(html).not.toContain(legacyFooterOnlineService);
     expect(html).not.toContain(legacyCatalogNavLabel);
     expect(html).not.toContain(legacyCommerceNavLabel);

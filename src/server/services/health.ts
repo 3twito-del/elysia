@@ -14,6 +14,14 @@ export async function createHealthChecks() {
       env.TYPESENSE_HOST && env.TYPESENSE_API_KEY
         ? "configured"
         : "local-fallback",
+    shopifyDropship:
+      env.SHOPIFY_DROPSHIP_ENABLED &&
+      env.SHOPIFY_STORE_DOMAIN &&
+      (env.SHOPIFY_STOREFRONT_ACCESS_TOKEN ||
+        env.SHOPIFY_ADMIN_ACCESS_TOKEN ||
+        (env.SHOPIFY_CLIENT_ID && env.SHOPIFY_CLIENT_SECRET))
+        ? "configured"
+        : "optional-disabled",
     email: notificationProvider.isOperational()
       ? notificationProvider.providerName()
       : env.NODE_ENV === "production"
