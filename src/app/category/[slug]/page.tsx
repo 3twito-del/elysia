@@ -227,6 +227,14 @@ export default async function CategoryPage({
                     ? "כל הפריטים בקטגוריה"
                     : "הקטגוריה מתעדכנת"}
               </p>
+              {hasActiveFilters ? (
+                <p
+                  className="text-muted-foreground max-w-[13rem] truncate text-xs"
+                  data-testid="category-mobile-active-refinement-summary"
+                >
+                  {formatCategoryActiveSelectionPreview(activeFilters)}
+                </p>
+              ) : null}
             </div>
             <CategoryFilterSheet activeFilterCount={activeFilterCount}>
               <Button
@@ -336,25 +344,41 @@ export default async function CategoryPage({
                 )}
               </div>
               {activeFilters.length > 0 && (
-                <div
+                <section
                   aria-label="בחירות פעילות"
-                  className="mt-4 flex flex-wrap gap-2"
+                  className="mt-4 border-y border-[var(--glass-border)] py-3"
+                  data-testid="category-active-refinement-summary"
                 >
-                  {activeFilters.map((filter) => (
-                    <Badge
-                      asChild
-                      className="h-7 max-w-full gap-1 pr-2 pl-1"
-                      key={filter.key}
-                      variant="outline"
-                    >
-                      <Link href={filter.href} scroll={false}>
-                        <span className="min-w-0 truncate">{filter.label}</span>
-                        <X aria-hidden="true" className="size-3" />
-                        <span className="sr-only">הסרת בחירה</span>
-                      </Link>
-                    </Badge>
-                  ))}
-                </div>
+                  <div className="mb-3 min-w-0 text-sm">
+                    <p className="font-medium">
+                      {formatCategoryActiveSelectionCount(activeFilterCount)}
+                    </p>
+                    <p className="text-muted-foreground truncate text-xs">
+                      {formatCategoryActiveSelectionPreview(activeFilters)}
+                    </p>
+                  </div>
+                  <div
+                    className="flex flex-wrap gap-1.5"
+                    data-testid="category-active-refinement-list"
+                  >
+                    {activeFilters.map((filter) => (
+                      <Badge
+                        asChild
+                        className="h-7 max-w-full gap-1 pr-2 pl-1"
+                        key={filter.key}
+                        variant="outline"
+                      >
+                        <Link href={filter.href} scroll={false}>
+                          <span className="min-w-0 truncate">
+                            {filter.label}
+                          </span>
+                          <X aria-hidden="true" className="size-3" />
+                          <span className="sr-only">הסרת בחירה</span>
+                        </Link>
+                      </Badge>
+                    ))}
+                  </div>
+                </section>
               )}
             </div>
 
@@ -551,6 +575,22 @@ function CategoryPagination({
       </div>
     </nav>
   );
+}
+
+function formatCategoryActiveSelectionCount(count: number) {
+  return count === 1
+    ? "\u05d1\u05d7\u05d9\u05e8\u05d4 \u05e4\u05e2\u05d9\u05dc\u05d4 \u05d0\u05d7\u05ea"
+    : `${count} \u05d1\u05d7\u05d9\u05e8\u05d5\u05ea \u05e4\u05e2\u05d9\u05dc\u05d5\u05ea`;
+}
+
+function formatCategoryActiveSelectionPreview(
+  filters: Array<{ label: string }>,
+) {
+  const labels = filters.slice(0, 3).map((filter) => filter.label);
+  const hiddenCount = Math.max(filters.length - labels.length, 0);
+  const preview = labels.join(" \u00b7 ");
+
+  return hiddenCount > 0 ? `${preview} +${hiddenCount}` : preview;
 }
 
 function getPaginationPages(currentPage: number, totalPages: number) {

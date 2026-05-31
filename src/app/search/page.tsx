@@ -140,30 +140,46 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           />
 
           {hasActiveFilters ? (
-            <div
+            <section
               aria-label="סינונים פעילים"
-              className="mt-4 flex flex-wrap items-center gap-2 text-sm"
+              className="mt-4 border-y border-[var(--glass-border)] py-3 text-sm"
+              data-testid="search-active-refinement-summary"
             >
-              {activeFilters.map((filter) => (
-                <Badge
-                  asChild
-                  className="h-8 gap-1 pr-3 pl-2"
-                  key={filter.key}
-                  variant="outline"
-                >
-                  <Link href={filter.href} scroll={false}>
-                    <span>{filter.label}</span>
-                    <X aria-hidden="true" className="size-3" />
-                    <span className="sr-only">הסרת סינון</span>
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                  <p className="font-medium">
+                    {formatActiveSelectionCount(activeFilters.length)}
+                  </p>
+                  <p className="text-muted-foreground truncate text-xs">
+                    {formatActiveSelectionPreview(activeFilters)}
+                  </p>
+                </div>
+                <Button asChild size="sm" variant="ghost">
+                  <Link href={resetAllHref} scroll={false}>
+                    {"\u05d0\u05d9\u05e4\u05d5\u05e1 \u05d4\u05db\u05dc"}
                   </Link>
-                </Badge>
-              ))}
-              <Button asChild size="sm" variant="ghost">
-                <Link href={resetAllHref} scroll={false}>
-                  איפוס הכל
-                </Link>
-              </Button>
-            </div>
+                </Button>
+              </div>
+              <div
+                className="mt-3 flex flex-wrap items-center gap-1.5"
+                data-testid="search-active-refinement-list"
+              >
+                {activeFilters.map((filter) => (
+                  <Badge
+                    asChild
+                    className="h-8 max-w-full gap-1 pr-3 pl-2"
+                    key={filter.key}
+                    variant="outline"
+                  >
+                    <Link href={filter.href} scroll={false}>
+                      <span className="min-w-0 truncate">{filter.label}</span>
+                      <X aria-hidden="true" className="size-3 shrink-0" />
+                      <span className="sr-only">הסרת סינון</span>
+                    </Link>
+                  </Badge>
+                ))}
+              </div>
+            </section>
           ) : null}
 
           <section
@@ -868,6 +884,20 @@ function getSortLabel(sort: NonNullable<ProductSearchInput["sort"]>) {
 
 function getSearchViewLabel(viewMode: SearchViewMode) {
   return viewMode === "list" ? "רשימה" : "תמונות";
+}
+
+function formatActiveSelectionCount(count: number) {
+  return count === 1
+    ? "\u05d1\u05d7\u05d9\u05e8\u05d4 \u05e4\u05e2\u05d9\u05dc\u05d4 \u05d0\u05d7\u05ea"
+    : `${count} \u05d1\u05d7\u05d9\u05e8\u05d5\u05ea \u05e4\u05e2\u05d9\u05dc\u05d5\u05ea`;
+}
+
+function formatActiveSelectionPreview(filters: ActiveSearchFilter[]) {
+  const labels = filters.slice(0, 3).map((filter) => filter.label);
+  const hidden = Math.max(filters.length - labels.length, 0);
+  const compact = labels.join(" \u00b7 ");
+
+  return hidden > 0 ? `${compact} +${hidden}` : compact;
 }
 
 function formatSearchResultCount(count: number) {

@@ -220,21 +220,23 @@ product code is edited.
 
 - `ID`: I-007
 - `Aspect`: Public UX and Brand
-- `Status`: Needs Benchmark
+- `Status`: Done
 - `Priority`: P2
 - `Effort`: M
-- `Source/Evidence`: New candidate idea; benchmark required against search,
-  PLP, gifts, and category guidance in `docs/FULL_PRODUCT_BENCHMARK.md`
+- `Source/Evidence`: `docs/qa/search-category-filter-density-benchmark.md`,
+  search, PLP, gifts, and category guidance in
+  `docs/FULL_PRODUCT_BENCHMARK.md`
 - `Target Surface`: `/search`, `/category/[slug]`, `/gifts`, filter sheets,
   active refinement summaries, sort controls
-- `Improvement`: Consider tightening filter density and active filter summaries
-  so shoppers can scan applied choices, counts, and recovery actions faster on
-  mobile and desktop.
-- `Acceptance Checks`: Benchmark decision records whether the change is
-  supported; if supported, active refinements remain tappable, readable, and do
-  not crowd product discovery controls.
-- `Verification`: Run the benchmark workflow first; implementation verification
-  would require route tests, visual QA, and filter utility tests.
+- `Improvement`: Added compact active refinement summaries on search and
+  category routes so shoppers can scan applied choices faster on mobile and
+  desktop without moving filters, sort controls, recovery, or grids below
+  storytelling content.
+- `Acceptance Checks`: Benchmark decision recorded weighted support of `16.5`
+  against a threshold of `11.25`; active refinements remain individually
+  tappable, readable, removable, and do not crowd product discovery controls.
+- `Verification`: `pnpm test -- src/app/search/_lib/search-state.test.ts src/app/category/[slug]/_lib/category-filter-state.test.ts src/styles/discovery-filter-density.test.ts`
+  plus visual smoke for `/search` and `/category/earrings` with active filters.
 
 ### I-008 PDP Purchase Confidence Pass
 
