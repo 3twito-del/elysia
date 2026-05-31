@@ -4,6 +4,7 @@ import {
   okJson,
   payloadTooLargeJson,
   rateLimitedJson,
+  serviceUnavailableJson,
   unauthorizedJson,
 } from "~/server/http/api-response";
 import { readSafeText } from "~/server/http/safe-json";
@@ -75,7 +76,15 @@ export async function POST(req: Request) {
     status: "RECEIVED",
     fallbackEventType: "cardcom.webhook",
   });
-  const paymentResult = await applyCardComWebhook(payload);
+  let paymentResult: Awaited<ReturnType<typeof applyCardComWebhook>>;
+
+  try {
+    paymentResult = await applyCardComWebhook(payload);
+  } catch (error) {
+    console.error("[webhook:cardcom:process-failed]", error);
+
+    return serviceUnavailableJson("CardCom webhook processing is unavailable.");
+  }
 
   return okJson({
     ok: true,

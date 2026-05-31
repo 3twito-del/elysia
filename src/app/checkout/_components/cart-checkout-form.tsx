@@ -234,11 +234,20 @@ export function CartCheckoutForm() {
   const localCartItemCount = ownItems.length;
   const hasOwnItems = ownItems.length > 0;
   const hasDropshipItems = dropshipItems.length > 0;
+  const hasMixedSourceCart = hasOwnItems && hasDropshipItems;
   const ownSubtotal = ownItems.reduce((sum, item) => sum + item.lineTotal, 0);
   const dropshipSubtotal = dropshipItems.reduce(
     (sum, item) => sum + item.lineTotal,
     0,
   );
+  const dropshipTotalQuantity = dropshipItems.reduce(
+    (sum, item) => sum + item.quantity,
+    0,
+  );
+  const dropshipSubtotalLabel = getCheckoutAmountLabel(dropshipSubtotal, {
+    requiresPositive: hasDropshipItems,
+    reviewLabel: checkoutTotalReviewLabel,
+  });
   const localCheckoutTotals = cart?.groups.own;
   const isCartLoading = Boolean(sessionKey) && cartQuery.isLoading;
   const shouldShowEmptyCartState =
@@ -300,6 +309,17 @@ export function CartCheckoutForm() {
     !hasCheckoutErrors(checkoutErrors) &&
     !checkoutLocked &&
     !hasPricingReview;
+  const checkoutIntroCopy = hasMixedSourceCart
+    ? "הבחירה מחולקת לשני מסלולים: פריטי החנות יאושרו כאן, ופריטי הספק יושלמו בקופה נפרדת."
+    : hasDropshipItems
+      ? "הבחירה כוללת פריטי ספק בלבד. הסיום ייפתח בקופת Shopify מאובטחת, ללא מילוי פרטי מסירה באתר."
+      : "סיכום תכשיטים שנבחרו, פרטי מסירה והטבה.";
+  const localCheckoutButtonLabel = hasMixedSourceCart
+    ? "אישור פריטי החנות"
+    : "אישור הבחירה";
+  const supplierCheckoutDescription = hasMixedSourceCart
+    ? `${dropshipItems.length} פריטי ספק יושלמו בקופת Shopify מאובטחת, בנפרד מהפריטים המקומיים.`
+    : `${dropshipItems.length} פריטי ספק יושלמו בקופת Shopify מאובטחת. פרטי התשלום והמסירה ייאספו שם.`;
   const cartMutationError =
     updateItem.error ?? removeItem.error ?? updateOptions.error;
   const cartMutationErrorMessage = cartMutationError
@@ -361,7 +381,9 @@ export function CartCheckoutForm() {
           <p className="text-muted-foreground truncate text-xs">
             {checkoutIssues.length > 0
               ? `${checkoutIssues.length} פרטים חסרים`
-              : "מוכן לאישור הבחירה"}
+              : hasMixedSourceCart
+                ? "מוכן לאישור פריטי החנות"
+                : "מוכן לאישור הבחירה"}
           </p>
           <p className="text-lg font-semibold">{orderTotalLabel}</p>
           {hasPricingReview ? (
@@ -515,30 +537,37 @@ export function CartCheckoutForm() {
           <div>
             <h2 className="text-xl font-semibold sm:text-2xl">הבחירה שלי</h2>
             <p className="text-muted-foreground mt-1.5 max-w-3xl text-sm leading-6 sm:text-base">
-              סיכום תכשיטים שנבחרו, פרטי מסירה והטבה.
+              {checkoutIntroCopy}
             </p>
           </div>
 
-          <div
-            aria-label="שלבי סיום ההזמנה"
-            className="glass-panel grid gap-2 rounded-md border p-3 text-sm sm:grid-cols-4"
-            data-testid="checkout-progress-steps"
-          >
-            {checkoutProgressSteps.map((step) => (
-              <div
-                className="glass-inset grid gap-1 rounded-md border p-3"
-                key={step.value}
-              >
-                <div className="flex items-center gap-2">
-                  <CheckoutStepBadge value={step.value} />
-                  <p className="font-medium">{step.label}</p>
+          {hasOwnItems ? (
+            <div
+              aria-label="שלבי סיום ההזמנה"
+              className="glass-panel grid gap-2 rounded-md border p-3 text-sm sm:grid-cols-4"
+              data-testid="checkout-progress-steps"
+            >
+              {checkoutProgressSteps.map((step) => (
+                <div
+                  className="glass-inset grid gap-1 rounded-md border p-3"
+                  key={step.value}
+                >
+                  <div className="flex items-center gap-2">
+                    <CheckoutStepBadge value={step.value} />
+                    <p className="font-medium">{step.label}</p>
+                  </div>
+                  <p className="text-muted-foreground text-xs leading-5">
+                    {step.detail}
+                  </p>
                 </div>
-                <p className="text-muted-foreground text-xs leading-5">
-                  {step.detail}
-                </p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <StatusMessage testId="checkout-supplier-only-message">
+              אין צורך למלא פרטי מסירה באתר עבור בחירה שמכילה פריטי ספק בלבד.
+              המעבר לקופה המאובטחת של הספק יפתח את מסלול התשלום והמסירה.
+            </StatusMessage>
+          )}
 
           <Card className="rounded-md" size="sm">
             <CardHeader>
@@ -549,10 +578,14 @@ export function CartCheckoutForm() {
               </CardTitle>
             </CardHeader>
             <CardContent className="grid min-h-72 gap-4">
-              <div className="grid gap-2 sm:grid-cols-2">
+              <div
+                className="grid gap-2 sm:grid-cols-2"
+                data-testid="checkout-source-groups"
+              >
                 {checkoutDisplayGroups.map((group) => (
                   <div
                     className="glass-inset rounded-md border p-3"
+                    data-testid={`checkout-source-group-${group.source.toLowerCase()}`}
                     key={group.source}
                   >
                     <div className="flex items-center justify-between gap-2">
@@ -718,284 +751,343 @@ export function CartCheckoutForm() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-md" size="sm">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CheckoutStepBadge value="2" />
-                פרטים לאישור
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-4">
-              <p className="text-muted-foreground text-sm">
-                הפרטים יאפשרו לנו לאשר את ההזמנה ולתאם מסירה. הם יאומתו לפני
-                השלמת ההזמנה.
-              </p>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div>
-                  <Label htmlFor="name">שם מלא</Label>
-                  <FieldError
-                    id="name-error"
-                    message={getVisibleFieldError("name")}
-                  />
-                  <Input
-                    aria-describedby="name-error"
-                    aria-invalid={Boolean(getVisibleFieldError("name"))}
-                    disabled={checkoutLocked}
-                    id="name"
-                    minLength={2}
-                    onBlur={() => markFieldTouched("name")}
-                    onChange={(event) => setName(event.currentTarget.value)}
-                    required
-                    value={name}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="phone">טלפון</Label>
-                  <FieldError
-                    id="phone-error"
-                    message={getVisibleFieldError("phone")}
-                  />
-                  <Input
-                    aria-describedby="phone-error"
-                    aria-invalid={Boolean(getVisibleFieldError("phone"))}
-                    disabled={checkoutLocked}
-                    id="phone"
-                    minLength={7}
-                    onBlur={() => markFieldTouched("phone")}
-                    onChange={(event) => setPhone(event.currentTarget.value)}
-                    placeholder="05X-XXXXXXX"
-                    required
-                    type="tel"
-                    value={phone}
-                  />
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="email">אימייל</Label>
-                <FieldError
-                  id="email-error"
-                  message={getVisibleFieldError("email")}
-                />
-                <Input
-                  aria-describedby="email-error"
-                  aria-invalid={Boolean(getVisibleFieldError("email"))}
-                  disabled={checkoutLocked}
-                  id="email"
-                  onBlur={() => markFieldTouched("email")}
-                  onChange={(event) => setEmail(event.currentTarget.value)}
-                  placeholder="name@example.com"
-                  required
-                  type="email"
-                  value={email}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="rounded-md" size="sm">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CheckoutStepBadge value="3" />
-                <Truck aria-hidden="true" className="size-5" />
-                מסירה
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-4">
-              <div className="bg-background flex items-start gap-3 rounded-md border p-3.5 text-sm">
-                <Truck className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-                <div>
-                  <p className="font-medium">מסירה עד הבית</p>
-                  <p className="text-muted-foreground mt-1">
-                    המסירה תתואם לפי הכתובת שתבחרו.
+          {hasOwnItems ? (
+            <>
+              <Card className="rounded-md" size="sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CheckoutStepBadge value="2" />
+                    פרטים לאישור
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="grid gap-4">
+                  <p className="text-muted-foreground text-sm">
+                    הפרטים יאפשרו לנו לאשר את ההזמנה ולתאם מסירה. הם יאומתו לפני
+                    השלמת ההזמנה.
                   </p>
-                </div>
-              </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div>
-                  <Label htmlFor="city">עיר</Label>
-                  <FieldError
-                    id="city-error"
-                    message={getVisibleFieldError("city")}
-                  />
-                  <Input
-                    aria-describedby="city-error"
-                    aria-invalid={Boolean(getVisibleFieldError("city"))}
-                    disabled={checkoutLocked}
-                    id="city"
-                    minLength={2}
-                    onBlur={() => markFieldTouched("city")}
-                    onChange={(event) => setCity(event.currentTarget.value)}
-                    required
-                    value={city}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="street">רחוב ומספר</Label>
-                  <FieldError
-                    id="street-error"
-                    message={getVisibleFieldError("street")}
-                  />
-                  <Input
-                    aria-describedby="street-error"
-                    aria-invalid={Boolean(getVisibleFieldError("street"))}
-                    disabled={checkoutLocked}
-                    id="street"
-                    minLength={2}
-                    onBlur={() => markFieldTouched("street")}
-                    onChange={(event) => setStreet(event.currentTarget.value)}
-                    required
-                    value={street}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="postalCode">מיקוד</Label>
-                  <Input
-                    disabled={checkoutLocked}
-                    id="postalCode"
-                    onChange={(event) =>
-                      setPostalCode(event.currentTarget.value)
-                    }
-                    value={postalCode}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <Label htmlFor="name">שם מלא</Label>
+                      <FieldError
+                        id="name-error"
+                        message={getVisibleFieldError("name")}
+                      />
+                      <Input
+                        aria-describedby="name-error"
+                        aria-invalid={Boolean(getVisibleFieldError("name"))}
+                        disabled={checkoutLocked}
+                        id="name"
+                        minLength={2}
+                        onBlur={() => markFieldTouched("name")}
+                        onChange={(event) => setName(event.currentTarget.value)}
+                        required
+                        value={name}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="phone">טלפון</Label>
+                      <FieldError
+                        id="phone-error"
+                        message={getVisibleFieldError("phone")}
+                      />
+                      <Input
+                        aria-describedby="phone-error"
+                        aria-invalid={Boolean(getVisibleFieldError("phone"))}
+                        disabled={checkoutLocked}
+                        id="phone"
+                        minLength={7}
+                        onBlur={() => markFieldTouched("phone")}
+                        onChange={(event) =>
+                          setPhone(event.currentTarget.value)
+                        }
+                        placeholder="05X-XXXXXXX"
+                        required
+                        type="tel"
+                        value={phone}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="email">אימייל</Label>
+                    <FieldError
+                      id="email-error"
+                      message={getVisibleFieldError("email")}
+                    />
+                    <Input
+                      aria-describedby="email-error"
+                      aria-invalid={Boolean(getVisibleFieldError("email"))}
+                      disabled={checkoutLocked}
+                      id="email"
+                      onBlur={() => markFieldTouched("email")}
+                      onChange={(event) => setEmail(event.currentTarget.value)}
+                      placeholder="name@example.com"
+                      required
+                      type="email"
+                      value={email}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
 
-          <Card className="rounded-md" size="sm">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CheckoutStepBadge value="4" />
-                <Gift aria-hidden="true" className="size-5" />
-                הטבות ומתנה
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-3">
-              <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
-                <div>
-                  <Label htmlFor="coupon">קוד הטבה</Label>
-                  <Input
+              <Card className="rounded-md" size="sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CheckoutStepBadge value="3" />
+                    <Truck aria-hidden="true" className="size-5" />
+                    מסירה
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="grid gap-4">
+                  <div className="bg-background flex items-start gap-3 rounded-md border p-3.5 text-sm">
+                    <Truck
+                      className="mt-0.5 size-4 shrink-0"
+                      aria-hidden="true"
+                    />
+                    <div>
+                      <p className="font-medium">מסירה עד הבית</p>
+                      <p className="text-muted-foreground mt-1">
+                        המסירה תתואם לפי הכתובת שתבחרו.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <Label htmlFor="city">עיר</Label>
+                      <FieldError
+                        id="city-error"
+                        message={getVisibleFieldError("city")}
+                      />
+                      <Input
+                        aria-describedby="city-error"
+                        aria-invalid={Boolean(getVisibleFieldError("city"))}
+                        disabled={checkoutLocked}
+                        id="city"
+                        minLength={2}
+                        onBlur={() => markFieldTouched("city")}
+                        onChange={(event) => setCity(event.currentTarget.value)}
+                        required
+                        value={city}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="street">רחוב ומספר</Label>
+                      <FieldError
+                        id="street-error"
+                        message={getVisibleFieldError("street")}
+                      />
+                      <Input
+                        aria-describedby="street-error"
+                        aria-invalid={Boolean(getVisibleFieldError("street"))}
+                        disabled={checkoutLocked}
+                        id="street"
+                        minLength={2}
+                        onBlur={() => markFieldTouched("street")}
+                        onChange={(event) =>
+                          setStreet(event.currentTarget.value)
+                        }
+                        required
+                        value={street}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="postalCode">מיקוד</Label>
+                      <Input
+                        disabled={checkoutLocked}
+                        id="postalCode"
+                        onChange={(event) =>
+                          setPostalCode(event.currentTarget.value)
+                        }
+                        value={postalCode}
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="rounded-md" size="sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CheckoutStepBadge value="4" />
+                    <Gift aria-hidden="true" className="size-5" />
+                    הטבות ומתנה
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="grid gap-3">
+                  <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
+                    <div>
+                      <Label htmlFor="coupon">קוד הטבה</Label>
+                      <Input
+                        disabled={checkoutLocked}
+                        id="coupon"
+                        onChange={(event) =>
+                          setCouponCode(event.currentTarget.value)
+                        }
+                        value={couponCode}
+                      />
+                    </div>
+                    <Button
+                      className="self-end"
+                      disabled={
+                        !optionMutationInput ||
+                        updateOptions.isPending ||
+                        checkoutSubmissionLocked
+                      }
+                      onClick={applyOptions}
+                      type="button"
+                      variant="secondary"
+                    >
+                      אישור
+                    </Button>
+                  </div>
+                  <label className="glass-inset flex min-h-11 items-center gap-3 rounded-md border px-3 text-sm">
+                    <input
+                      checked={giftWrap}
+                      disabled={checkoutLocked}
+                      onChange={(event) =>
+                        setGiftWrap(event.currentTarget.checked)
+                      }
+                      type="checkbox"
+                    />
+                    אריזת מתנה
+                  </label>
+                  <Textarea
                     disabled={checkoutLocked}
-                    id="coupon"
                     onChange={(event) =>
-                      setCouponCode(event.currentTarget.value)
+                      setGiftMessage(event.currentTarget.value)
                     }
-                    value={couponCode}
+                    placeholder="ברכה אישית"
+                    value={giftMessage}
                   />
-                </div>
-                <Button
-                  className="self-end"
-                  disabled={
-                    !optionMutationInput ||
-                    updateOptions.isPending ||
-                    checkoutSubmissionLocked
-                  }
-                  onClick={applyOptions}
-                  type="button"
-                  variant="secondary"
-                >
-                  אישור
-                </Button>
-              </div>
-              <label className="glass-inset flex min-h-11 items-center gap-3 rounded-md border px-3 text-sm">
-                <input
-                  checked={giftWrap}
-                  disabled={checkoutLocked}
-                  onChange={(event) => setGiftWrap(event.currentTarget.checked)}
-                  type="checkbox"
-                />
-                אריזת מתנה
-              </label>
-              <Textarea
-                disabled={checkoutLocked}
-                onChange={(event) => setGiftMessage(event.currentTarget.value)}
-                placeholder="ברכה אישית"
-                value={giftMessage}
-              />
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            </>
+          ) : null}
         </div>
 
         <aside>
           <Card className="rounded-md lg:sticky lg:top-24" size="sm">
             <CardHeader>
               <CheckoutStepBadge value="5" />
-              <CardTitle>סיכום</CardTitle>
+              <CardTitle>
+                {hasOwnItems
+                  ? hasMixedSourceCart
+                    ? "סיכום פריטי החנות"
+                    : "סיכום"
+                  : "סיכום פריטי הספק"}
+              </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
-              <div className="grid gap-2 text-sm">
-                <div className="flex justify-between">
-                  <span>תכשיטים</span>
-                  <span data-testid="checkout-item-count">
-                    {localCartItemCount}{" "}
-                    {localCartItemCount === 1 ? "סוג תכשיט" : "סוגי תכשיטים"}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span>כמות</span>
-                  <span data-testid="checkout-item-quantity">
-                    {totalItemQuantity}{" "}
-                    {totalItemQuantity === 1 ? "תכשיט" : "תכשיטים"}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span>סכום התכשיטים</span>
-                  <span data-testid="checkout-items-price">
-                    {subtotalLabel}
-                  </span>
-                </div>
-                {discount > 0 ? (
+              {hasOwnItems ? (
+                <div className="grid gap-2 text-sm">
                   <div className="flex justify-between">
-                    <span>הטבה</span>
-                    <span>{formatPrice(discount)}</span>
+                    <span>תכשיטים</span>
+                    <span data-testid="checkout-item-count">
+                      {localCartItemCount}{" "}
+                      {localCartItemCount === 1 ? "סוג תכשיט" : "סוגי תכשיטים"}
+                    </span>
                   </div>
-                ) : null}
-                <div className="flex justify-between">
-                  <span>מסירה</span>
-                  <span data-testid="checkout-shipping">{shippingLabel}</span>
+                  <div className="flex justify-between">
+                    <span>כמות</span>
+                    <span data-testid="checkout-item-quantity">
+                      {totalItemQuantity}{" "}
+                      {totalItemQuantity === 1 ? "תכשיט" : "תכשיטים"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>סכום התכשיטים</span>
+                    <span data-testid="checkout-items-price">
+                      {subtotalLabel}
+                    </span>
+                  </div>
+                  {discount > 0 ? (
+                    <div className="flex justify-between">
+                      <span>הטבה</span>
+                      <span>{formatPrice(discount)}</span>
+                    </div>
+                  ) : null}
+                  <div className="flex justify-between">
+                    <span>מסירה</span>
+                    <span data-testid="checkout-shipping">{shippingLabel}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>סכום ביניים</span>
+                    <span data-testid="checkout-subtotal">
+                      {postDiscountSubtotalLabel}
+                    </span>
+                  </div>
+                  <Separator />
+                  <div className="flex justify-between text-base font-semibold">
+                    <span>סך הכל</span>
+                    <span data-testid="checkout-order-total">
+                      {orderTotalLabel}
+                    </span>
+                  </div>
+                  <p className="text-muted-foreground text-xs leading-5">
+                    {hasMixedSourceCart
+                      ? "הסכום הזה כולל רק את פריטי החנות. פריטי הספק יושלמו וישולמו בקופה נפרדת."
+                      : "ההזמנה תושלם רק לאחר אישור הפרטים והסכום."}
+                  </p>
                 </div>
-                <div className="flex justify-between">
-                  <span>סכום ביניים</span>
-                  <span data-testid="checkout-subtotal">
-                    {postDiscountSubtotalLabel}
-                  </span>
+              ) : (
+                <div
+                  className="grid gap-2 text-sm"
+                  data-testid="checkout-dropship-only-summary"
+                >
+                  <div className="flex justify-between">
+                    <span>פריטי ספק</span>
+                    <span data-testid="checkout-dropship-item-count">
+                      {dropshipItems.length}{" "}
+                      {dropshipItems.length === 1
+                        ? "סוג תכשיט"
+                        : "סוגי תכשיטים"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>כמות</span>
+                    <span data-testid="checkout-dropship-item-quantity">
+                      {dropshipTotalQuantity}{" "}
+                      {dropshipTotalQuantity === 1 ? "תכשיט" : "תכשיטים"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-base font-semibold">
+                    <span>סכום פריטי הספק</span>
+                    <span data-testid="checkout-dropship-subtotal">
+                      {dropshipSubtotalLabel}
+                    </span>
+                  </div>
+                  <p className="text-muted-foreground text-xs leading-5">
+                    התשלום, פרטי המסירה ואישור ההזמנה יושלמו בקופת הספק
+                    המאובטחת. לא נוצרת כאן הזמנה מקומית עבור פריטי ספק בלבד.
+                  </p>
                 </div>
-                <Separator />
-                <div className="flex justify-between text-base font-semibold">
-                  <span>סך הכל</span>
-                  <span data-testid="checkout-order-total">
-                    {orderTotalLabel}
-                  </span>
-                </div>
-                <p className="text-muted-foreground text-xs leading-5">
-                  ההזמנה תושלם רק לאחר אישור הפרטים והסכום.
-                </p>
-              </div>
-              {cart.couponCode ? (
+              )}
+              {hasOwnItems && cart.couponCode ? (
                 <Badge className="w-fit" variant="secondary">
                   {cart.couponCode}
                 </Badge>
               ) : null}
-              <div className="grid gap-2 text-xs">
-                {checkoutTrustItems.map((item) => (
-                  <div
-                    className="glass-inset flex items-start gap-2 rounded-md border p-3"
-                    key={item.label}
-                  >
-                    <item.icon
-                      aria-hidden="true"
-                      className="mt-0.5 size-4 shrink-0"
-                    />
-                    <div className="min-w-0">
-                      <p className="font-medium">{item.label}</p>
-                      <p className="text-muted-foreground mt-0.5">
-                        {item.detail}
-                      </p>
+              {hasOwnItems ? (
+                <div className="grid gap-2 text-xs">
+                  {checkoutTrustItems.map((item) => (
+                    <div
+                      className="glass-inset flex items-start gap-2 rounded-md border p-3"
+                      key={item.label}
+                    >
+                      <item.icon
+                        aria-hidden="true"
+                        className="mt-0.5 size-4 shrink-0"
+                      />
+                      <div className="min-w-0">
+                        <p className="font-medium">{item.label}</p>
+                        <p className="text-muted-foreground mt-0.5">
+                          {item.detail}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-              {checkoutIssues.length > 0 ? (
+                  ))}
+                </div>
+              ) : null}
+              {hasOwnItems && checkoutIssues.length > 0 ? (
                 <div className="glass-inset rounded-md border p-3 text-sm">
                   <p className="font-medium">לפני אישור הבחירה</p>
                   <ul className="text-muted-foreground mt-2 grid list-inside list-disc gap-1">
@@ -1005,7 +1097,7 @@ export function CartCheckoutForm() {
                   </ul>
                 </div>
               ) : null}
-              {hasPricingReview ? (
+              {hasOwnItems && hasPricingReview ? (
                 <StatusMessage tone="error">
                   {checkoutPricingReviewMessage}
                 </StatusMessage>
@@ -1021,7 +1113,7 @@ export function CartCheckoutForm() {
                   ויסתנכרנו כשהחיבור יחזור.
                 </StatusMessage>
               ) : null}
-              {createOrderErrorMessage ? (
+              {hasOwnItems && createOrderErrorMessage ? (
                 <StatusMessage tone="error">
                   {createOrderErrorMessage}
                 </StatusMessage>
@@ -1035,11 +1127,11 @@ export function CartCheckoutForm() {
                 <div className="glass-inset rounded-md border p-3 text-sm">
                   <p className="font-medium">קופת ספק נפרדת</p>
                   <p className="text-muted-foreground mt-1 leading-6">
-                    {dropshipItems.length} פריטי ספק יושלמו בקופת Shopify
-                    מאובטחת, בנפרד מהפריטים המקומיים.
+                    {supplierCheckoutDescription}
                   </p>
                   <Button
                     className="mt-3 w-full"
+                    data-testid="shopify-dropship-checkout-button"
                     disabled={isOffline || createShopifyCheckout.isPending}
                     onClick={handleShopifyCheckout}
                     type="button"
@@ -1050,10 +1142,17 @@ export function CartCheckoutForm() {
                   </Button>
                 </div>
               ) : null}
-              <Button disabled={!canSubmit} size="lg" type="submit">
-                אישור הבחירה
-                <PackageCheck aria-hidden="true" className="size-4" />
-              </Button>
+              {hasOwnItems ? (
+                <Button
+                  data-testid="local-checkout-submit-button"
+                  disabled={!canSubmit}
+                  size="lg"
+                  type="submit"
+                >
+                  {localCheckoutButtonLabel}
+                  <PackageCheck aria-hidden="true" className="size-4" />
+                </Button>
+              ) : null}
             </CardContent>
           </Card>
         </aside>

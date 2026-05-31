@@ -4,6 +4,7 @@ import {
   okJson,
   payloadTooLargeJson,
   rateLimitedJson,
+  serviceUnavailableJson,
   unauthorizedJson,
 } from "~/server/http/api-response";
 import { readSafeText } from "~/server/http/safe-json";
@@ -61,7 +62,24 @@ export async function POST(req: Request) {
     return unauthorizedJson("Invalid Shopify signature.");
   }
 
-  const mirror = await mirrorShopifyOrderWebhook(payload);
+  await recordWebhookEvent({
+    provider: "shopify",
+    rawBody,
+    payload,
+    status: "RECEIVED",
+    fallbackEventType: "shopify.orders.webhook",
+  });
+
+  let mirror: Awaited<ReturnType<typeof mirrorShopifyOrderWebhook>>;
+
+  try {
+    mirror = await mirrorShopifyOrderWebhook(payload);
+  } catch (error) {
+    console.error("[webhook:shopify:process-failed]", error);
+
+    return serviceUnavailableJson("Shopify webhook processing is unavailable.");
+  }
+
   const event = await recordWebhookEvent({
     provider: "shopify",
     rawBody,

@@ -8,6 +8,7 @@ import {
   forbiddenJson,
   okJson,
   rateLimitedJson,
+  serviceUnavailableJson,
   unauthorizedJson,
 } from "~/server/http/api-response";
 import { BUSINESS_EVENTS, enqueueOutboxEvent } from "~/server/services/outbox";
@@ -46,23 +47,37 @@ export async function POST(req: Request) {
     return forbiddenJson("Forbidden.");
   }
 
-  const result = await searchProvider.indexProducts();
+  let result: Awaited<ReturnType<typeof searchProvider.indexProducts>>;
 
-  await enqueueOutboxEvent({
-    type: BUSINESS_EVENTS.searchReindexRequested,
-    aggregateType: "SearchIndex",
-    aggregateId: "products",
-    idempotencyKey: `${BUSINESS_EVENTS.searchReindexRequested}:products:${Date.now()}`,
-    payload: {
-      requestedBy: admin.id,
-      embedded: result.embedded ?? 0,
-      embeddingDimension: result.embeddingDimension ?? null,
-      embeddingModel: result.embeddingModel ?? null,
-      indexed: result.indexed,
-      engine: result.engine,
-      semantic: result.semantic ?? false,
-    },
-  });
+  try {
+    result = await searchProvider.indexProducts();
+  } catch (error) {
+    console.error("[search:reindex-failed]", error);
+
+    return serviceUnavailableJson("Search reindex provider is unavailable.");
+  }
+
+  try {
+    await enqueueOutboxEvent({
+      type: BUSINESS_EVENTS.searchReindexRequested,
+      aggregateType: "SearchIndex",
+      aggregateId: "products",
+      idempotencyKey: `${BUSINESS_EVENTS.searchReindexRequested}:products:${Date.now()}`,
+      payload: {
+        requestedBy: admin.id,
+        embedded: result.embedded ?? 0,
+        embeddingDimension: result.embeddingDimension ?? null,
+        embeddingModel: result.embeddingModel ?? null,
+        indexed: result.indexed,
+        engine: result.engine,
+        semantic: result.semantic ?? false,
+      },
+    });
+  } catch (error) {
+    console.error("[search:reindex-audit-failed]", error);
+
+    return serviceUnavailableJson("Search reindex audit is unavailable.");
+  }
 
   return okJson({
     ok: true,

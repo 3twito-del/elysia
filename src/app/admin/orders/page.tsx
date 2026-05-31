@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ClipboardList, Search } from "lucide-react";
+import { ClipboardList, ExternalLink, Search } from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
 import {
@@ -202,6 +202,10 @@ export default async function AdminOrdersPage({
               </Button>
             ) : null}
           </form>
+          <p className="text-muted-foreground mt-3 text-xs leading-5">
+            סטטוס, מסירה ומיקום מסננים את תור ההזמנות המקומיות. חיפוש חופשי כולל
+            גם רשומות Shopify mirror לקריאה בלבד.
+          </p>
         </CardContent>
       </Card>
 
@@ -214,10 +218,11 @@ export default async function AdminOrdersPage({
         </CardHeader>
         <CardContent>
           <AdminTableScrollHint />
-          <Table className="min-w-[1040px]">
+          <Table className="min-w-[1120px]">
             <TableHeader>
               <TableRow>
                 <TableHead>מספר</TableHead>
+                <TableHead>מקור</TableHead>
                 <TableHead>לקוח</TableHead>
                 <TableHead>סכום</TableHead>
                 <TableHead>סטטוס</TableHead>
@@ -233,16 +238,24 @@ export default async function AdminOrdersPage({
             <TableBody>
               {data.items.length === 0 ? (
                 <TableEmptyRow
-                  colSpan={9}
+                  colSpan={10}
                   description="שנו סינון או המתינו להזמנות חדשות מהאתר."
                   icon={ClipboardList}
                   title="אין הזמנות מתאימות"
                 />
               ) : (
                 data.items.map((order) => (
-                  <TableRow key={order.id}>
+                  <TableRow data-testid="admin-local-order-row" key={order.id}>
                     <TableCell className="font-medium">
                       {order.orderNumber}
+                    </TableCell>
+                    <TableCell>
+                      <div className="grid gap-1">
+                        <Badge variant="secondary">{order.sourceLabel}</Badge>
+                        <span className="text-muted-foreground text-xs">
+                          {order.sourceDescription}
+                        </span>
+                      </div>
                     </TableCell>
                     <TableCell>
                       <div className="grid gap-1">
@@ -281,7 +294,9 @@ export default async function AdminOrdersPage({
                     </TableCell>
                     <TableCell>
                       <Button asChild size="sm" variant="outline">
-                        <Link href={`/admin/orders/${order.id}`}>טיפול</Link>
+                        <Link href={`/admin/orders/${order.id}`}>
+                          טיפול מקומי
+                        </Link>
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -304,16 +319,24 @@ export default async function AdminOrdersPage({
       </Card>
 
       {data.shopifyMirrors.length > 0 ? (
-        <Card className="mt-6 rounded-md">
-          <CardHeader>
-            <CardTitle>הזמנות ספק מ-Shopify</CardTitle>
+        <Card className="mt-6 rounded-md" data-testid="admin-shopify-mirrors">
+          <CardHeader className="gap-2">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <CardTitle>הזמנות ספק מ-Shopify</CardTitle>
+              <Badge variant="outline">לצפייה בלבד</Badge>
+            </div>
+            <p className="text-muted-foreground text-sm leading-6">
+              רשומות mirror לקריאה בלבד. Capture, refund ו-fulfillment להזמנות
+              ספק מתבצעים ב-Shopify עד שתהיה אינטגרציית פעולות מלאה.
+            </p>
           </CardHeader>
           <CardContent>
             <AdminTableScrollHint />
-            <Table className="min-w-[920px]">
+            <Table className="min-w-[1040px]">
               <TableHeader>
                 <TableRow>
                   <TableHead>Shopify</TableHead>
+                  <TableHead>מקור</TableHead>
                   <TableHead>לקוח</TableHead>
                   <TableHead>סכום</TableHead>
                   <TableHead>תשלום</TableHead>
@@ -325,20 +348,33 @@ export default async function AdminOrdersPage({
               </TableHeader>
               <TableBody>
                 {data.shopifyMirrors.map((order) => (
-                  <TableRow key={order.id}>
+                  <TableRow
+                    data-testid="admin-shopify-mirror-row"
+                    key={order.id}
+                  >
                     <TableCell className="font-medium">
                       {order.shopifyOrderName ?? order.shopifyOrderId}
+                    </TableCell>
+                    <TableCell>
+                      <div className="grid gap-1">
+                        <Badge variant="secondary">{order.sourceLabel}</Badge>
+                        {order.readOnly ? (
+                          <Badge className="w-fit" variant="outline">
+                            לקריאה בלבד
+                          </Badge>
+                        ) : null}
+                      </div>
                     </TableCell>
                     <TableCell>{order.customerEmail ?? "-"}</TableCell>
                     <TableCell>{formatPrice(order.total)}</TableCell>
                     <TableCell>
                       <Badge variant="outline">
-                        {order.financialStatus ?? "unknown"}
+                        {order.financialStatusLabel}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <Badge variant="secondary">
-                        {order.fulfillmentStatus ?? "pending"}
+                        {order.fulfillmentStatusLabel}
                       </Badge>
                     </TableCell>
                     <TableCell>{order.supplierKey ?? "shopify"}</TableCell>
@@ -348,16 +384,37 @@ export default async function AdminOrdersPage({
                     <TableCell>
                       {order.adminUrl ? (
                         <Button asChild size="sm" variant="outline">
-                          <Link href={order.adminUrl}>Shopify</Link>
+                          <Link
+                            href={order.adminUrl}
+                            rel="noreferrer"
+                            target="_blank"
+                          >
+                            פתיחה ב-Shopify
+                            <ExternalLink
+                              aria-hidden="true"
+                              className="size-3.5"
+                            />
+                          </Link>
                         </Button>
                       ) : (
-                        <span className="text-muted-foreground text-xs">-</span>
+                        <span className="text-muted-foreground text-xs">
+                          לקריאה בלבד
+                        </span>
                       )}
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
+          </CardContent>
+        </Card>
+      ) : data.shopifyMirrorsHiddenByLocalFilters ? (
+        <Card className="mt-6 rounded-md">
+          <CardContent className="p-4">
+            <p className="text-muted-foreground text-sm leading-6">
+              רשומות Shopify mirror מוסתרות בזמן שסינוני סטטוס, מסירה או מיקום
+              מקומיים פעילים. נקו את הסינון כדי להציג הזמנות ספק לקריאה בלבד.
+            </p>
           </CardContent>
         </Card>
       ) : null}

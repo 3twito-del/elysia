@@ -82,6 +82,21 @@ describe("Shopify dropship checkout", () => {
     ).rejects.toBeInstanceOf(TRPCError);
     expect(shopifyMocks.createCart).not.toHaveBeenCalled();
   });
+
+  it("rejects dropship checkout when the cart only has local items", async () => {
+    dbMocks.cartFindFirst.mockResolvedValueOnce(
+      makeCart({
+        items: [makeCartItem({ source: "OWN" })],
+      }),
+    );
+
+    await expect(
+      createShopifyDropshipCheckout({
+        sessionKey: "cart-session-123456789",
+      }),
+    ).rejects.toBeInstanceOf(TRPCError);
+    expect(shopifyMocks.createCart).not.toHaveBeenCalled();
+  });
 });
 
 function makeCart(overrides: { items?: unknown[] } = {}) {

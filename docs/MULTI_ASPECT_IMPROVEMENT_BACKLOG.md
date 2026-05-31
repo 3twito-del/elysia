@@ -115,89 +115,100 @@ Effort scale:
   cookie/accessibility spacing, mobile nav sheet, category filter sheet, and
   accessibility dialog.
 
-## Actionable Now
-
 ### I-003 Split Checkout UX and Copy Review
 
 - `ID`: I-003
 - `Aspect`: Commerce and Checkout
-- `Status`: Actionable Now
+- `Status`: Done
 - `Priority`: P1
 - `Effort`: M
 - `Source/Evidence`: `docs/SHOPIFY_DROPSHIP_IMPLEMENTATION_ROADMAP.md`,
-  checkout service tests, checkout UI behavior
+  checkout service tests, checkout UI behavior,
+  `docs/qa/split-checkout-ux-audit.md`
 - `Target Surface`: `/checkout`, cart grouping, Shopify checkout redirect, local
   checkout form, offline and disabled-provider states
-- `Improvement`: Review the UX and copy for `OWN`, Shopify-only, mixed cart,
-  offline, missing Shopify config, and missing local payment config states so
-  the split checkout model is clear without exposing confusing provider detail.
+- `Improvement`: Clarified the checkout UX and copy for `OWN`, Shopify-only,
+  mixed cart, offline, missing Shopify config, and missing local payment config
+  states so the split checkout model is clear without exposing confusing
+  provider detail.
 - `Acceptance Checks`: Each source combination has distinct user-facing copy,
   a valid action or recovery path, no fake combined payment promise, and no path
   that routes Shopify products through local payment or local products through
   Shopify checkout.
-- `Verification`: Run `pnpm test` for the cart checkout and Shopify dropship
-  checkout service tests, then include one manual checkout UI pass.
+- `Verification`: Targeted cart checkout, Shopify dropship checkout, catalog
+  fixture, and product purchase utility tests passed. `pnpm typecheck`, targeted
+  Prettier check, agent-browser checkout load check, and the focused Playwright
+  supplier-only checkout test passed on 2026-05-31.
 
 ### I-004 Order Source Label Audit
 
 - `ID`: I-004
 - `Aspect`: Admin and Operations
-- `Status`: Actionable Now
+- `Status`: Done
 - `Priority`: P1
 - `Effort`: M
 - `Source/Evidence`: `docs/SHOPIFY_DROPSHIP_IMPLEMENTATION_ROADMAP.md`,
-  account order pages, admin order pages, Shopify order mirror service tests
+  account order pages, admin order pages, Shopify order mirror service tests,
+  `docs/qa/order-source-label-audit.md`
 - `Target Surface`: Account orders, admin order list, admin order detail,
   customer summaries, operational support views
-- `Improvement`: Audit source labels and available actions for local orders and
-  Shopify mirror orders so operators cannot confuse read-only supplier-backed
-  mirrors with local orders that can be captured, refunded, fulfilled, or
-  adjusted.
+- `Improvement`: Clarified source labels and available actions for local orders
+  and Shopify mirror orders so customers and operators cannot confuse read-only
+  supplier-backed mirrors with local orders that can be captured, refunded,
+  fulfilled, or adjusted.
 - `Acceptance Checks`: Local and Shopify-backed orders have clear labels;
   Shopify mirror records expose only supported read-oriented actions; customer
   and admin wording stays consistent.
-- `Verification`: Run `pnpm test` for the Shopify order mirror and admin
-  operations service tests, then manually inspect the account and admin order
-  surfaces with representative local and Shopify records.
+- `Verification`: Targeted commerce label, order source static contract,
+  Shopify order mirror, and admin operations tests passed. `pnpm typecheck`
+  passed on 2026-05-31.
 
 ### I-005 Public Performance Sweep
 
 - `ID`: I-005
 - `Aspect`: Performance, PWA, and Reliability
-- `Status`: Actionable Now
+- `Status`: Done
 - `Priority`: P2
 - `Effort`: M
 - `Source/Evidence`: `scripts/qa-site-audit.ts`,
-  `scripts/qa-route-inventory.ts`, `docs/FULL_PRODUCT_BENCHMARK.md`
+  `scripts/qa-route-inventory.ts`, `docs/FULL_PRODUCT_BENCHMARK.md`,
+  `docs/qa/public-performance-sweep.md`
 - `Target Surface`: High-traffic public pages, dynamic category/product pages,
   search, gifts, checkout, service, content pages, offline page
-- `Improvement`: Run a performance-focused sweep against the existing QA route
-  matrix and record routes that exceed navigation, CLS, TBT, image, or console
-  error budgets.
+- `Improvement`: Ran a performance-focused sweep against the existing QA route
+  matrix and recorded whether routes exceeded navigation, CLS, TBT, image, or
+  console error budgets.
 - `Acceptance Checks`: Each finding has route, viewport, browser, metric,
   artifact path, likely cause, and recommended remediation class.
-- `Verification`: Run `pnpm qa:performance` against a stable local or preview
-  base URL and archive the generated QA artifacts.
+- `Verification`: `pnpm build`, agent-browser load check, and
+  `E2E_BASE_URL=http://localhost:3102 QA_ARTIFACT_DIR=artifacts/qa/2026-05-31-public-performance-sweep pnpm qa:performance`
+  passed on 2026-05-31. The sweep produced 48 passed route results and 0
+  failures.
+
+## Actionable Now
 
 ### I-006 Provider Negative-Path Review
 
 - `ID`: I-006
 - `Aspect`: Backend, API, and Data
-- `Status`: Actionable Now
+- `Status`: Done
 - `Priority`: P1
 - `Effort`: M
 - `Source/Evidence`: `docs/ENGINEERING_CONVENTIONS.md`, API response boundary
-  policy, provider service tests, webhook route tests
+  policy, provider service tests, webhook route tests,
+  `docs/qa/provider-negative-path-review.md`
 - `Target Surface`: Shopify, CardCom, Cloudinary, search, AI providers,
   webhooks, rate-limited API routes, job runner routes
-- `Improvement`: Review provider failure paths for consistent validation,
-  rate-limit responses, retry hints, webhook signature failures, production-only
-  config failures, and redacted operational detail.
+- `Improvement`: Reviewed and patched provider failure paths for consistent
+  validation, rate-limit responses, retry hints, webhook signature failures,
+  production-only config failures, and redacted operational detail.
 - `Acceptance Checks`: Negative paths return stable public response shapes,
   include `Retry-After` where rate-limited, do not leak secrets, and fail
   clearly in production when required provider configuration is missing.
-- `Verification`: Run relevant provider and route tests plus `pnpm test`; use
-  `pnpm production:readiness` when validating production configuration behavior.
+- `Verification`: `pnpm test -- src/app/api/webhooks/cardcom/route.test.ts src/app/api/webhooks/shopify/orders/route.test.ts src/app/api/webhooks/cloudinary/route.test.ts src/app/api/search/reindex/route.test.ts src/app/api/jobs/outbox/route.test.ts src/server/http/api-response.test.ts src/server/services/rate-limit.test.ts src/server/adapters/payment.test.ts src/server/adapters/shopify.test.ts`
+  plus `pnpm test`, `pnpm typecheck`, and `pnpm lint` passed on 2026-05-31.
+  Use `pnpm production:readiness` when validating live production
+  configuration behavior.
 
 ## Candidate Improvements
 

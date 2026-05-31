@@ -76,7 +76,7 @@ describe("commerce service trust placement", () => {
     expect(checkoutForm).toContain('data-testid="checkout-line-total"');
     expect(checkoutForm).toContain("checkoutTrustItems.map");
     expect(indexOf(checkoutForm, "checkoutTrustItems.map")).toBeLessThan(
-      indexOf(checkoutForm, '<Button disabled={!canSubmit} size="lg"'),
+      indexOf(checkoutForm, 'data-testid="local-checkout-submit-button"'),
     );
   });
 

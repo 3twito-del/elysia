@@ -89,6 +89,27 @@ describe("outbox job route", () => {
     });
     expect(jobMocks.processDueOutboxEvents).toHaveBeenCalledTimes(30);
   });
+
+  it("returns a redacted 503 when outbox processing fails", async () => {
+    const errorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
+    jobMocks.processDueOutboxEvents.mockRejectedValueOnce(
+      new Error("provider token leaked"),
+    );
+
+    try {
+      const response = await POST(createOutboxJobRequest());
+
+      expect(response.status).toBe(503);
+      await expect(response.json()).resolves.toEqual({
+        ok: false,
+        error: "Outbox job processor is unavailable.",
+      });
+    } finally {
+      errorSpy.mockRestore();
+    }
+  });
 });
 
 function createOutboxJobRequest(input: { authorization?: string } = {}) {

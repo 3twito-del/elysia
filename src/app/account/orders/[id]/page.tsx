@@ -11,6 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
 import { StatusMessage } from "~/components/ui/status-message";
 import {
+  getOrderSourceDescription,
+  getOrderSourceLabel,
   getOrderStatusLabel,
   getPaymentStatusLabel,
   getReturnStatusLabel,
@@ -85,9 +87,14 @@ export default async function OrderDetailPage({
               {order.recipientName} · {order.email}
             </p>
           </div>
-          <Badge className="w-fit" variant="secondary">
-            {getOrderStatusLabel(order.status)}
-          </Badge>
+          <div className="flex flex-wrap gap-1.5">
+            <Badge className="w-fit" variant="secondary">
+              {getOrderSourceLabel("LOCAL")}
+            </Badge>
+            <Badge className="w-fit" variant="outline">
+              {getOrderStatusLabel(order.status)}
+            </Badge>
+          </div>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
@@ -147,6 +154,9 @@ export default async function OrderDetailPage({
                 <span>{formatPrice(Number(order.total))}</span>
               </div>
               <Separator />
+              <p className="text-muted-foreground">
+                {getOrderSourceDescription("LOCAL")}
+              </p>
               <p className="text-muted-foreground">מסירה לכתובת שנמסרה</p>
               <p className="text-muted-foreground">
                 תשלום: {getPaymentStatusLabel(order.payments[0]?.status)}

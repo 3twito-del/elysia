@@ -49,7 +49,15 @@ async function runOutboxJob(req: Request) {
     return unauthorizedJson("Unauthorized job runner.");
   }
 
-  const result = await processDueOutboxEvents({ limit: 25 });
+  let result: Awaited<ReturnType<typeof processDueOutboxEvents>>;
+
+  try {
+    result = await processDueOutboxEvents({ limit: 25 });
+  } catch (error) {
+    console.error("[jobs:outbox:process-failed]", error);
+
+    return serviceUnavailableJson("Outbox job processor is unavailable.");
+  }
 
   return okJson({ ok: true, result });
 }

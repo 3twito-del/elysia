@@ -64,7 +64,10 @@ const fixtureCategories: CatalogCategory[] = seedCategories.map((category) => ({
   imageUrl: categoryImages[category.slug] ?? DEFAULT_CATALOG_IMAGE,
 }));
 
-const fixtureProducts: CatalogProduct[] = getSeedProducts().map(mapSeedProduct);
+const fixtureProducts: CatalogProduct[] = [
+  ...getSeedProducts().map(mapSeedProduct),
+  createFixtureDropshipProduct(),
+];
 
 export function shouldUseCatalogFixtures() {
   return (
@@ -171,6 +174,62 @@ function mapSeedProduct(product: SeedProduct): CatalogProduct {
     ),
     tags: product.tags.filter((tag) => tag !== "בדיקות מבחר"),
     inventory,
+  };
+}
+
+function createFixtureDropshipProduct(): CatalogProduct {
+  const category = categoryBySlug.get("rings");
+  const image = "/brand/v2/category-rings.avif";
+  const variants: CatalogProductVariant[] = [
+    {
+      sku: "elysia-supplier-silver-halo-ring-6",
+      name: "מידה 6",
+      size: "6",
+      externalVariantId: "gid://shopify/ProductVariant/1000000001",
+      price: 420,
+      inventory: { "online-service": 1 },
+      availableQuantity: 1,
+      availableBranchCount: 1,
+    },
+  ];
+
+  return {
+    slug: "elysia-supplier-silver-halo-ring",
+    sku: "elysia-supplier-silver-halo-ring",
+    source: "DROPSHIP_SHOPIFY",
+    externalProvider: "shopify",
+    externalProductId: "gid://shopify/Product/1000000001",
+    externalHandle: "elysia-supplier-silver-halo-ring",
+    supplierKey: "shopify-dropship",
+    name: "טבעת Silver Halo מהספק",
+    categorySlug: "rings",
+    categoryName: category?.name ?? "טבעות",
+    shortDescription: "טבעת כסף עדינה שמגיעה דרך ספק Shopify.",
+    description:
+      "פריט ספק לדוגמת QA שמאפשר לבדוק מסלול Checkout נפרד לפריטי Shopify ללא תלות בקטלוג חיצוני.",
+    availabilityMode: "READY_TO_ORDER",
+    commerceHighlights: [
+      "זמין דרך Shopify",
+      "התשלום והמסירה נסגרים בקופת הספק",
+    ],
+    deliveryPromise: "מסירה ותשלום יושלמו בקופת הספק.",
+    returnPolicy: "החזרות והחלפות לפי מדיניות הספק.",
+    careInstructions: "מומלץ להימנע ממגע עם בושם וחומרי ניקוי.",
+    warranty: "אחריות ספק לפריט מיובא.",
+    price: variants[0]?.price ?? 420,
+    createdAt: fixtureCreatedAt,
+    popularityScore: 0.4,
+    material: "כסף 925",
+    stone: "זירקון",
+    collection: "Supplier QA",
+    collections: ["Supplier QA"],
+    image,
+    images: [image],
+    variants,
+    metalColors: ["כסף"],
+    sizes: ["6"],
+    tags: ["Shopify", "ספק"],
+    inventory: { "online-service": 1 },
   };
 }
 

@@ -288,6 +288,7 @@ export function ProductPurchasePanel({
             aria-describedby="product-variant-feedback"
             aria-label={`צירוף לבחירה: ${productName}`}
             className="product-primary-cta order-1"
+            data-testid="product-sticky-add-to-cart-button"
             disabled={addToCartDisabled}
             onClick={handleAddToCart}
             type="button"
@@ -411,6 +412,7 @@ export function ProductPurchasePanel({
             <Button
               aria-describedby="product-variant-feedback"
               className="product-primary-cta h-12 w-full"
+              data-testid="product-add-to-cart-button"
               disabled={addToCartDisabled}
               onClick={handleAddToCart}
               size="lg"

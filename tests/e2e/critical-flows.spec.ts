@@ -7,6 +7,7 @@ const cartStorageKey = "elysia_cart_session";
 const pwaDevCleanupStorageKey = "elysia:pwa-dev-cleanup";
 const cartProductSlug = "hera-bracelet";
 const cartProductName = "צמיד Hera";
+const supplierProductSlug = "elysia-supplier-silver-halo-ring";
 const madeToOrderProductSlug = "muse-pearl-earrings";
 const madeToOrderProductName = "עגילי Muse Pearl";
 const searchProductSlug = "venus-line-ring";
@@ -144,6 +145,44 @@ test.describe("critical shopping flows", () => {
       "לאישור",
     );
     await expect(page.locator('[aria-label^="כמות "]')).toContainText("1");
+  });
+
+  test("shows supplier-only checkout without local order fields", async ({
+    page,
+  }) => {
+    await setCookieConsent(page, "essential");
+    await page.goto(`/product/${supplierProductSlug}`);
+
+    await expect(page.getByTestId("product-variant-feedback")).toContainText(
+      "Shopify",
+    );
+    await page.getByTestId("product-add-to-cart-button").click();
+    await expect(
+      page.locator("a[href='/checkout'] .cart-count-badge"),
+    ).toHaveText("1");
+
+    await page.goto("/checkout");
+
+    await expect(
+      page.getByTestId("checkout-supplier-only-message"),
+    ).toBeVisible();
+    await expect(
+      page.getByTestId("checkout-dropship-only-summary"),
+    ).toBeVisible();
+    await expect(
+      page.getByTestId("checkout-source-group-dropship_shopify"),
+    ).toBeVisible();
+    await expect(
+      page.getByTestId("shopify-dropship-checkout-button"),
+    ).toBeVisible();
+    await expect(page.getByTestId("checkout-dropship-subtotal")).not.toHaveText(
+      zeroShekelPattern,
+    );
+    await expect(page.getByTestId("checkout-progress-steps")).toHaveCount(0);
+    await expect(page.getByTestId("local-checkout-submit-button")).toHaveCount(
+      0,
+    );
+    await expect(page.locator("#name")).toHaveCount(0);
   });
 
   test("saves a ring size locally and applies it on product pages", async ({

@@ -1,6 +1,12 @@
 import type { OrderStatus, Prisma } from "@prisma/client";
 
 import { env } from "~/env";
+import {
+  getOrderSourceDescription,
+  getOrderSourceLabel,
+  getShopifyFinancialStatusLabel,
+  getShopifyFulfillmentStatusLabel,
+} from "~/lib/commerce-labels";
 import { notificationProvider } from "~/server/adapters/notifications";
 import { getShopifyAdminOrderUrl } from "~/server/adapters/shopify";
 import { db } from "~/server/db";
@@ -171,6 +177,11 @@ export async function listAdminOrders(input: AdminOrderListInput) {
       : {}),
   };
   const orderBy = getAdminOrderSort(parsed.sort);
+  const localOnlyOrderFiltersActive = [
+    Boolean(parsed.status),
+    Boolean(parsed.fulfillmentMethod),
+    physicalBranchesEnabled && Boolean(parsed.branchId),
+  ].some(Boolean);
   const shopifyMirrorWhere: Prisma.ShopifyOrderMirrorWhereInput = {
     ...(parsed.dateFrom || parsed.dateTo
       ? {
@@ -233,11 +244,13 @@ export async function listAdminOrders(input: AdminOrderListInput) {
         { name: "asc" },
       ],
     }),
-    db.shopifyOrderMirror.findMany({
-      where: shopifyMirrorWhere,
-      orderBy: { createdAt: "desc" },
-      take: 10,
-    }),
+    localOnlyOrderFiltersActive
+      ? Promise.resolve([])
+      : db.shopifyOrderMirror.findMany({
+          where: shopifyMirrorWhere,
+          orderBy: { createdAt: "desc" },
+          take: 10,
+        }),
   ]);
 
   return {
@@ -251,6 +264,10 @@ export async function listAdminOrders(input: AdminOrderListInput) {
     items: orders.map((order) => ({
       id: order.id,
       orderNumber: order.orderNumber,
+      source: "LOCAL" as const,
+      sourceLabel: getOrderSourceLabel("LOCAL"),
+      sourceDescription: getOrderSourceDescription("LOCAL"),
+      readOnly: false,
       status: order.status,
       fulfillmentMethod: order.fulfillmentMethod,
       total: Number(order.total),
@@ -282,13 +299,24 @@ export async function listAdminOrders(input: AdminOrderListInput) {
           }
         : null,
     })),
+    shopifyMirrorsHiddenByLocalFilters: localOnlyOrderFiltersActive,
     shopifyMirrors: shopifyMirrors.map((order) => ({
       id: order.id,
+      source: "SHOPIFY_MIRROR" as const,
+      sourceLabel: getOrderSourceLabel("SHOPIFY_MIRROR"),
+      sourceDescription: getOrderSourceDescription("SHOPIFY_MIRROR"),
+      readOnly: true,
       shopifyOrderId: order.shopifyOrderId,
       shopifyOrderName: order.shopifyOrderName,
       customerEmail: order.customerEmail,
       financialStatus: order.financialStatus,
+      financialStatusLabel: getShopifyFinancialStatusLabel(
+        order.financialStatus,
+      ),
       fulfillmentStatus: order.fulfillmentStatus,
+      fulfillmentStatusLabel: getShopifyFulfillmentStatusLabel(
+        order.fulfillmentStatus,
+      ),
       supplierKey: order.supplierKey,
       total: Number(order.total),
       currency: order.currency,

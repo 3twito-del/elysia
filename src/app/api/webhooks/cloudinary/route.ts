@@ -45,14 +45,24 @@ export async function POST(req: Request) {
   }
 
   const rawBody = body.text;
+  const payload = parseWebhookJson(rawBody);
   const signature = req.headers.get("x-cld-signature");
   const timestamp = req.headers.get("x-cld-timestamp");
 
   if (!verifyCloudinarySignature({ rawBody, signature, timestamp })) {
+    await recordWebhookEvent({
+      provider: "cloudinary",
+      rawBody,
+      payload,
+      status: "FAILED",
+      fallbackEventType: "cloudinary.unverified",
+    }).catch((error: unknown) => {
+      console.error("[webhook:cloudinary:record-failed]", error);
+    });
+
     return unauthorizedJson("Invalid Cloudinary signature.");
   }
 
-  const payload = parseWebhookJson(rawBody);
   const event = await recordWebhookEvent({
     provider: "cloudinary",
     rawBody,

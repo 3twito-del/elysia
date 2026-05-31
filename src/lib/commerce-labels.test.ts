@@ -7,6 +7,8 @@ import {
   getIntegrationStatusLabel,
   getItemCountLabel,
   getOrderStatusLabel,
+  getOrderSourceDescription,
+  getOrderSourceLabel,
   getPaymentStatusLabel,
   getProductAvailabilityLabel,
   getPublicProductCommerceStatus,
@@ -14,6 +16,8 @@ import {
   getProductStatusLabel,
   getReturnStatusLabel,
   getShipmentStatusLabel,
+  getShopifyFinancialStatusLabel,
+  getShopifyFulfillmentStatusLabel,
   getStockQuantityLabel,
 } from "./commerce-labels";
 
@@ -30,6 +34,22 @@ describe("commerce labels", () => {
     expect(getCouponStatusLabel(false)).toBe("כבוי");
     expect(getIntegrationStatusLabel("missing-config")).toBe("חסרה הגדרה");
     expect(getProductStatusLabel("CUSTOM_STATUS")).toBe("CUSTOM_STATUS");
+  });
+
+  it("labels local and Shopify mirror order sources consistently", () => {
+    expect(getOrderSourceLabel("LOCAL")).toBe("הזמנת חנות");
+    expect(getOrderSourceLabel("SHOPIFY_MIRROR")).toBe("הזמנת ספק");
+    expect(getOrderSourceDescription("SHOPIFY_MIRROR")).toContain(
+      "לקריאה בלבד",
+    );
+    expect(getShopifyFinancialStatusLabel("paid")).toBe("שולם ב-Shopify");
+    expect(getShopifyFinancialStatusLabel(undefined)).toBe(
+      "סטטוס תשלום לא דווח",
+    );
+    expect(getShopifyFulfillmentStatusLabel("fulfilled")).toBe(
+      "מולא על ידי הספק",
+    );
+    expect(getShopifyFulfillmentStatusLabel(null)).toBe("ממתין למילוי ספק");
   });
 
   it("formats fulfillment, availability, stock, and count labels", () => {

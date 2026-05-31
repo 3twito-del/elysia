@@ -115,6 +115,28 @@ describe("search reindex route", () => {
     });
     expect(searchMocks.indexProducts).toHaveBeenCalledTimes(10);
   });
+
+  it("returns a redacted 503 when the search provider fails", async () => {
+    const errorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
+    searchMocks.indexProducts.mockRejectedValueOnce(
+      new Error("Typesense API key leaked"),
+    );
+
+    try {
+      const response = await POST(createReindexRequest());
+
+      expect(response.status).toBe(503);
+      await expect(response.json()).resolves.toEqual({
+        ok: false,
+        error: "Search reindex provider is unavailable.",
+      });
+      expect(outboxMocks.enqueueOutboxEvent).not.toHaveBeenCalled();
+    } finally {
+      errorSpy.mockRestore();
+    }
+  });
 });
 
 function createReindexRequest() {

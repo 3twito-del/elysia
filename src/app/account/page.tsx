@@ -27,7 +27,13 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { EmptyState } from "~/components/ui/empty-state";
-import { getOrderStatusLabel } from "~/lib/commerce-labels";
+import {
+  getOrderSourceDescription,
+  getOrderSourceLabel,
+  getOrderStatusLabel,
+  getShopifyFinancialStatusLabel,
+  getShopifyFulfillmentStatusLabel,
+} from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
 import {
   formatSavedSize,
@@ -366,14 +372,23 @@ export default async function AccountPage() {
                   {customer.orders.map((order) => (
                     <Link
                       className="glass-inset flex min-w-0 items-center justify-between gap-4 rounded-md border p-3"
+                      data-testid="account-local-order"
                       href={`/account/orders/${order.id}`}
                       key={order.id}
                     >
                       <div className="min-w-0">
                         <p className="font-medium">{order.orderNumber}</p>
-                        <Badge className="mt-1 w-fit" variant="secondary">
-                          {getOrderStatusLabel(order.status)}
-                        </Badge>
+                        <div className="mt-1 flex flex-wrap gap-1.5">
+                          <Badge className="w-fit" variant="secondary">
+                            {getOrderSourceLabel("LOCAL")}
+                          </Badge>
+                          <Badge className="w-fit" variant="outline">
+                            {getOrderStatusLabel(order.status)}
+                          </Badge>
+                        </div>
+                        <p className="text-muted-foreground mt-1 text-xs">
+                          {getOrderSourceDescription("LOCAL")}
+                        </p>
                       </div>
                       <span className="shrink-0 font-medium">
                         {formatPrice(Number(order.total))}
@@ -383,15 +398,34 @@ export default async function AccountPage() {
                   {customer.shopifyOrderMirrors.map((order) => (
                     <div
                       className="glass-inset flex min-w-0 items-center justify-between gap-4 rounded-md border p-3"
+                      data-testid="account-shopify-mirror-order"
                       key={order.id}
                     >
                       <div className="min-w-0">
                         <p className="font-medium">
                           {order.shopifyOrderName ?? order.shopifyOrderId}
                         </p>
-                        <Badge className="mt-1 w-fit" variant="outline">
-                          הזמנת ספק
-                        </Badge>
+                        <div className="mt-1 flex flex-wrap gap-1.5">
+                          <Badge className="w-fit" variant="secondary">
+                            {getOrderSourceLabel("SHOPIFY_MIRROR")}
+                          </Badge>
+                          <Badge className="w-fit" variant="outline">
+                            לקריאה בלבד
+                          </Badge>
+                        </div>
+                        <p className="text-muted-foreground mt-1 text-xs leading-5">
+                          {getOrderSourceDescription("SHOPIFY_MIRROR")}
+                        </p>
+                        <p className="text-muted-foreground mt-1 text-xs leading-5">
+                          תשלום:{" "}
+                          {getShopifyFinancialStatusLabel(
+                            order.financialStatus,
+                          )}{" "}
+                          · מסירה:{" "}
+                          {getShopifyFulfillmentStatusLabel(
+                            order.fulfillmentStatus,
+                          )}
+                        </p>
                       </div>
                       <span className="shrink-0 font-medium">
                         {formatPrice(Number(order.total))}
