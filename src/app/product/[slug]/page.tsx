@@ -49,11 +49,23 @@ export async function generateMetadata({
   return {
     title: product?.name ?? "תכשיט",
     description: product?.shortDescription,
+    alternates: {
+      canonical: `/product/${slug}`,
+    },
     openGraph: product
       ? {
           title: product.name,
           description: product.shortDescription,
+          url: `/product/${slug}`,
           images: [{ url: product.image }],
+        }
+      : undefined,
+    twitter: product
+      ? {
+          card: "summary_large_image",
+          title: product.name,
+          description: product.shortDescription,
+          images: [product.image],
         }
       : undefined,
   };

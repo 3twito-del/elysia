@@ -51,14 +51,11 @@ describe("account recovery shortcuts", () => {
     );
   });
 
-  it("records benchmark support before implementation", () => {
-    const backlog = read("docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md");
+  it("keeps benchmark support evidence available after backlog replacement", () => {
     const benchmark = read(
       "docs/qa/account-recovery-service-shortcuts-benchmark.md",
     );
 
-    expect(backlog).toContain("I-009 Account Recovery and Service Shortcuts");
-    expect(backlog).toContain("`Status`: Done");
     expect(benchmark).toContain("Weighted Score`: 12.0");
     expect(benchmark).toContain("Decision`: Supported");
     expect(benchmark).toContain("Cartier");

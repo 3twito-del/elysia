@@ -76,11 +76,20 @@ describe("commerce service trust placement", () => {
     expect(checkoutPage).not.toContain('href="#checkout-service"');
     expect(checkoutPage).toContain('<div id="checkout-service" />');
     expect(checkoutPage).toContain("<CartCheckoutForm />");
-    expect(checkoutForm).toContain("const checkoutTrustItems");
+    expect(checkoutForm).toContain("getCheckoutFulfillmentSummaryRows");
     expect(checkoutForm).toContain('data-testid="checkout-line-total"');
-    expect(checkoutForm).toContain("checkoutTrustItems.map");
-    expect(indexOf(checkoutForm, "checkoutTrustItems.map")).toBeLessThan(
+    expect(checkoutForm).toContain(
+      'data-testid="checkout-delivery-confidence-summary"',
+    );
+    expect(
+      indexOf(checkoutForm, "checkoutFulfillmentSummaryRows.map"),
+    ).toBeLessThan(
       indexOf(checkoutForm, 'data-testid="local-checkout-submit-button"'),
+    );
+    expect(
+      indexOf(checkoutForm, "checkoutFulfillmentSummaryRows.map"),
+    ).toBeLessThan(
+      indexOf(checkoutForm, 'data-testid="shopify-dropship-checkout-button"'),
     );
   });
 

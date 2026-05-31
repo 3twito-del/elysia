@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { useFormStatus } from "react-dom";
 import { LockKeyhole } from "lucide-react";
 
@@ -11,6 +11,7 @@ import { Label } from "~/components/ui/label";
 import { StatusMessage } from "~/components/ui/status-message";
 
 const initialState: AdminLoginState = {};
+const adminLoginStatusId = "admin-login-status";
 
 type AdminLoginFormProps = {
   next: string;
@@ -18,13 +19,27 @@ type AdminLoginFormProps = {
 
 export function AdminLoginForm({ next }: AdminLoginFormProps) {
   const [state, formAction] = useActionState(adminLoginAction, initialState);
+  const formRef = useRef<HTMLFormElement>(null);
+  const hasLoginError = Boolean(state.message);
+
+  useEffect(() => {
+    if (hasLoginError) {
+      const emailInput = formRef.current?.elements.namedItem("email");
+
+      if (emailInput instanceof HTMLElement) {
+        emailInput.focus();
+      }
+    }
+  }, [hasLoginError, state.message]);
 
   return (
-    <form action={formAction} className="grid gap-5">
+    <form action={formAction} className="grid gap-5" ref={formRef}>
       <input name="next" type="hidden" value={next} />
       <div className="grid gap-2">
         <Label htmlFor="email">אימייל אדמין</Label>
         <Input
+          aria-describedby={hasLoginError ? adminLoginStatusId : undefined}
+          aria-invalid={hasLoginError}
           autoComplete="email"
           dir="ltr"
           id="email"
@@ -37,6 +52,8 @@ export function AdminLoginForm({ next }: AdminLoginFormProps) {
       <div className="grid gap-2">
         <Label htmlFor="password">סיסמה</Label>
         <Input
+          aria-describedby={hasLoginError ? adminLoginStatusId : undefined}
+          aria-invalid={hasLoginError}
           autoComplete="current-password"
           dir="ltr"
           id="password"
@@ -47,7 +64,9 @@ export function AdminLoginForm({ next }: AdminLoginFormProps) {
         />
       </div>
       {state.message ? (
-        <StatusMessage tone="error">{state.message}</StatusMessage>
+        <StatusMessage id={adminLoginStatusId} tone="error">
+          {state.message}
+        </StatusMessage>
       ) : null}
       <SubmitButton />
     </form>

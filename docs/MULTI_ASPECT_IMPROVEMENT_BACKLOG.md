@@ -65,150 +65,147 @@ Effort scale:
 - `M`: one focused subsystem or cross-route review.
 - `L`: multi-subsystem work, provider coordination, or live rollout validation.
 
-## Done
+## Actionable Now
 
-### I-001 Route Evidence Ledger
+### I-001 Public Metadata and Share Preview Audit
 
 - `ID`: I-001
-- `Aspect`: QA, Release, and Observability
+- `Aspect`: Public UX and Brand
 - `Status`: Done
-- `Priority`: P1
+- `Priority`: P2
 - `Effort`: M
-- `Source/Evidence`: `docs/FULL_PRODUCT_BENCHMARK.md`,
-  `scripts/qa-route-inventory.ts`, `scripts/qa-site-audit.ts`,
-  `docs/qa/route-evidence-ledger.md`
-- `Target Surface`: Public routes, account routes, admin routes, and documented
-  API routes
-- `Improvement`: Created a lightweight route evidence ledger that records the
-  latest meaningful verification signal for each significant route or route
-  group before product-changing work is accepted.
-- `Acceptance Checks`: Each tracked route group has an owner-facing evidence
-  entry with route, change class, last checked date, command or artifact, and
-  remaining risk.
-- `Verification`: `pnpm qa:routes` passed on 2026-05-31 and covered 58 app route
-  templates. A full seeded inventory artifact was generated at
-  `artifacts/qa/2026-05-31-route-evidence-ledger`.
+- `Source/Evidence`: `docs/FULL_PRODUCT_BENCHMARK.md`, public route metadata,
+  product/category/search/content route definitions
+- `Target Surface`: Public routes, product/category/search/content metadata,
+  canonical URLs, Open Graph, and Twitter share previews
+- `Improvement`: Audit title, description, canonical, and share-preview
+  consistency across public routes without changing product UI.
+- `Acceptance Checks`: Key public routes have route-appropriate metadata, no
+  stale or duplicated share copy, and no missing canonical/share-preview fields
+  where the route already supports them.
+- `Verification`: Implemented canonical, Open Graph, and Twitter metadata on
+  root, home, product, category, and search routes. Covered by
+  `src/styles/public-metadata-contract.test.ts`; verified with
+  `pnpm test -- src/styles/public-metadata-contract.test.ts
+src/styles/service-attachment-ux.test.ts
+src/styles/pwa-offline-recovery.test.ts
+src/styles/admin-empty-state-contract.test.ts`.
 
-### I-002 Floating Chrome Collision Audit
+### I-002 Public Form Error and Recovery Copy Audit
 
 - `ID`: I-002
 - `Aspect`: Accessibility, Privacy, and Security
 - `Status`: Done
 - `Priority`: P1
 - `Effort`: M
-- `Source/Evidence`: `docs/PUBLIC_CHANGE_GATE.md`,
-  `src/styles/floating-chrome-contract.test.ts`,
-  `src/components/public-motion-provider.tsx`,
-  `docs/qa/floating-chrome-collision-audit.md`
-- `Target Surface`: Cookie banner, accessibility widget, mobile navigation,
-  sheets, dialogs, sticky checkout controls, and floating public controls
-- `Improvement`: Audited overlap and focus behavior for global floating chrome so
-  it does not cover purchase controls, form controls, or recovery actions across
-  desktop and mobile viewports.
-- `Acceptance Checks`: Core public pages show no incoherent overlap at mobile,
-  tablet, or desktop sizes; focus remains visible; Escape and close behavior
-  remain predictable for modal surfaces.
-- `Verification`: `pnpm test -- src/styles/floating-chrome-contract.test.ts`
-  passed with 7 tests. Focused agent-browser visual QA passed for `/`,
-  `/product/venus-line-ring`, `/checkout`, and `/category/earrings` across
-  desktop, tablet, and mobile. Manual mobile interaction checks passed for
-  cookie/accessibility spacing, mobile nav sheet, category filter sheet, and
-  accessibility dialog.
+- `Source/Evidence`: `docs/FULL_PRODUCT_BENCHMARK.md`,
+  `docs/PUBLIC_CHANGE_GATE.md`, existing form validation and recovery patterns
+- `Target Surface`: Checkout, service, account login, newsletter, admin login,
+  and public form error states
+- `Improvement`: Standardize validation, recovery copy, and focus behavior for
+  forms so users can recover from errors without ambiguous provider or system
+  language.
+- `Acceptance Checks`: Form errors identify the field or recovery path, focus
+  behavior remains accessible, and public copy avoids leaking internal provider
+  detail.
+- `Verification`: Implemented field-linked error descriptions, invalid-state
+  flags, and first-error focus recovery across service, checkout, newsletter,
+  account OTP, and admin login forms. Sanitized account OTP fallback copy so raw
+  provider errors are not surfaced to users. Covered by
+  `src/styles/form-error-recovery-contract.test.ts`; verified with
+  `pnpm test -- src/styles/form-error-recovery-contract.test.ts
+src/styles/service-attachment-ux.test.ts
+src/components/ui/status-message.test.tsx src/lib/public-action-validation.test.ts
+src/lib/account-validation.test.ts src/app/checkout/_components/checkout-display.test.ts
+src/app/account/actions.test.ts`.
 
-### I-003 Split Checkout UX and Copy Review
+### I-003 Service Request Attachment UX Review
 
 - `ID`: I-003
+- `Aspect`: Admin and Operations
+- `Status`: Done
+- `Priority`: P2
+- `Effort`: S
+- `Source/Evidence`: Service request validation, service form copy, offline
+  service-sync behavior
+- `Target Surface`: `/service` attachment input, size/type guidance, upload
+  failure copy, and offline service request recovery
+- `Improvement`: Make attachment constraints and failure recovery clearer so
+  customers know what can be attached and what to do when an upload cannot be
+  completed.
+- `Acceptance Checks`: Attachment size/type limits are visible before submit,
+  failure copy gives a clear recovery path, and offline/service-sync messaging
+  stays consistent with the service request flow.
+- `Verification`: Implemented accessible attachment guidance, supported file
+  type copy, and offline retry copy in `/service`. Covered by
+  `src/styles/service-attachment-ux.test.ts`; verified with the focused
+  backlog test command listed under I-001.
+
+### I-004 PWA Offline Recovery and Retry Audit
+
+- `ID`: I-004
+- `Aspect`: Performance, PWA, and Reliability
+- `Status`: Done
+- `Priority`: P1
+- `Effort`: M
+- `Source/Evidence`: PWA service worker behavior, offline page, cart sync and
+  service sync routes
+- `Target Surface`: Offline page, service sync, cart sync, manifest, service
+  worker, and retry states
+- `Improvement`: Ensure offline states have clear next steps, retry behavior,
+  and no dead-end flows for cart or service request recovery.
+- `Acceptance Checks`: Offline and sync states explain what is saved, what must
+  be retried, and where the user can continue browsing or contacting service.
+- `Verification`: Implemented offline retry guidance and recovery links for
+  home, search, service, and size guide. Covered by
+  `src/styles/pwa-offline-recovery.test.ts`; verified with the focused backlog
+  test command listed under I-001.
+
+### I-005 Admin Empty-State and Bulk-Action Clarity Review
+
+- `ID`: I-005
+- `Aspect`: Admin and Operations
+- `Status`: Done
+- `Priority`: P2
+- `Effort`: M
+- `Source/Evidence`: Admin route patterns, operations guidance in
+  `docs/FULL_PRODUCT_BENCHMARK.md`, existing admin tests
+- `Target Surface`: Admin orders, catalog, inventory, service, customers,
+  empty states, loading states, error states, and supported bulk actions
+- `Improvement`: Review admin empty/loading/error states and bulk-action copy so
+  operators can distinguish unavailable data from unsupported actions.
+- `Acceptance Checks`: Admin surfaces clearly label empty data, disabled or
+  unsupported actions, and bulk-action availability without implying hidden
+  automation.
+- `Verification`: Implemented a reusable empty-state action slot and filter
+  reset recovery actions for admin orders, catalog, service, and inventory.
+  Covered by `src/styles/admin-empty-state-contract.test.ts`; verified with the
+  focused backlog test command listed under I-001.
+
+### I-008 Checkout Delivery Confidence Summary
+
+- `ID`: I-008
 - `Aspect`: Commerce and Checkout
 - `Status`: Done
 - `Priority`: P1
 - `Effort`: M
-- `Source/Evidence`: `docs/SHOPIFY_DROPSHIP_IMPLEMENTATION_ROADMAP.md`,
-  checkout service tests, checkout UI behavior,
-  `docs/qa/split-checkout-ux-audit.md`
-- `Target Surface`: `/checkout`, cart grouping, Shopify checkout redirect, local
-  checkout form, offline and disabled-provider states
-- `Improvement`: Clarified the checkout UX and copy for `OWN`, Shopify-only,
-  mixed cart, offline, missing Shopify config, and missing local payment config
-  states so the split checkout model is clear without exposing confusing
-  provider detail.
-- `Acceptance Checks`: Each source combination has distinct user-facing copy,
-  a valid action or recovery path, no fake combined payment promise, and no path
-  that routes Shopify products through local payment or local products through
-  Shopify checkout.
-- `Verification`: Targeted cart checkout, Shopify dropship checkout, catalog
-  fixture, and product purchase utility tests passed. `pnpm typecheck`, targeted
-  Prettier check, agent-browser checkout load check, and the focused Playwright
-  supplier-only checkout test passed on 2026-05-31.
-
-### I-004 Order Source Label Audit
-
-- `ID`: I-004
-- `Aspect`: Admin and Operations
-- `Status`: Done
-- `Priority`: P1
-- `Effort`: M
-- `Source/Evidence`: `docs/SHOPIFY_DROPSHIP_IMPLEMENTATION_ROADMAP.md`,
-  account order pages, admin order pages, Shopify order mirror service tests,
-  `docs/qa/order-source-label-audit.md`
-- `Target Surface`: Account orders, admin order list, admin order detail,
-  customer summaries, operational support views
-- `Improvement`: Clarified source labels and available actions for local orders
-  and Shopify mirror orders so customers and operators cannot confuse read-only
-  supplier-backed mirrors with local orders that can be captured, refunded,
-  fulfilled, or adjusted.
-- `Acceptance Checks`: Local and Shopify-backed orders have clear labels;
-  Shopify mirror records expose only supported read-oriented actions; customer
-  and admin wording stays consistent.
-- `Verification`: Targeted commerce label, order source static contract,
-  Shopify order mirror, and admin operations tests passed. `pnpm typecheck`
-  passed on 2026-05-31.
-
-### I-005 Public Performance Sweep
-
-- `ID`: I-005
-- `Aspect`: Performance, PWA, and Reliability
-- `Status`: Done
-- `Priority`: P2
-- `Effort`: M
-- `Source/Evidence`: `scripts/qa-site-audit.ts`,
-  `scripts/qa-route-inventory.ts`, `docs/FULL_PRODUCT_BENCHMARK.md`,
-  `docs/qa/public-performance-sweep.md`
-- `Target Surface`: High-traffic public pages, dynamic category/product pages,
-  search, gifts, checkout, service, content pages, offline page
-- `Improvement`: Ran a performance-focused sweep against the existing QA route
-  matrix and recorded whether routes exceeded navigation, CLS, TBT, image, or
-  console error budgets.
-- `Acceptance Checks`: Each finding has route, viewport, browser, metric,
-  artifact path, likely cause, and recommended remediation class.
-- `Verification`: `pnpm build`, agent-browser load check, and
-  `E2E_BASE_URL=http://localhost:3102 QA_ARTIFACT_DIR=artifacts/qa/2026-05-31-public-performance-sweep pnpm qa:performance`
-  passed on 2026-05-31. The sweep produced 48 passed route results and 0
-  failures.
-
-## Actionable Now
-
-### I-006 Provider Negative-Path Review
-
-- `ID`: I-006
-- `Aspect`: Backend, API, and Data
-- `Status`: Done
-- `Priority`: P1
-- `Effort`: M
-- `Source/Evidence`: `docs/ENGINEERING_CONVENTIONS.md`, API response boundary
-  policy, provider service tests, webhook route tests,
-  `docs/qa/provider-negative-path-review.md`
-- `Target Surface`: Shopify, CardCom, Cloudinary, search, AI providers,
-  webhooks, rate-limited API routes, job runner routes
-- `Improvement`: Reviewed and patched provider failure paths for consistent
-  validation, rate-limit responses, retry hints, webhook signature failures,
-  production-only config failures, and redacted operational detail.
-- `Acceptance Checks`: Negative paths return stable public response shapes,
-  include `Retry-After` where rate-limited, do not leak secrets, and fail
-  clearly in production when required provider configuration is missing.
-- `Verification`: `pnpm test -- src/app/api/webhooks/cardcom/route.test.ts src/app/api/webhooks/shopify/orders/route.test.ts src/app/api/webhooks/cloudinary/route.test.ts src/app/api/search/reindex/route.test.ts src/app/api/jobs/outbox/route.test.ts src/server/http/api-response.test.ts src/server/services/rate-limit.test.ts src/server/adapters/payment.test.ts src/server/adapters/shopify.test.ts`
-  plus `pnpm test`, `pnpm typecheck`, and `pnpm lint` passed on 2026-05-31.
-  Use `pnpm production:readiness` when validating live production
-  configuration behavior.
+- `Source/Evidence`: `docs/qa/checkout-delivery-confidence-benchmark.md`,
+  checkout source grouping, `docs/FULL_PRODUCT_BENCHMARK.md`, and
+  `docs/SHOPIFY_DROPSHIP_IMPLEMENTATION_ROADMAP.md`
+- `Target Surface`: Checkout delivery, fulfillment, local order, Shopify-only,
+  mixed cart, and offline checkout states
+- `Improvement`: Added a compact, source-aware delivery and fulfillment summary
+  to checkout using only currently supported data.
+- `Acceptance Checks`: Local checkout explains delivery and verification before
+  submit; Shopify-only checkout routes delivery/payment expectations to
+  Shopify Checkout without local-order promises; mixed checkout keeps local and
+  supplier paths separate without implying one combined delivery or payment.
+- `Verification`: Benchmark passed with weighted support of `19.5` against the
+  `11.25` threshold. Covered by
+  `src/app/checkout/_components/checkout-display.test.ts` and
+  `src/styles/service-trust-placement.test.ts`; verified with
+  `pnpm test -- src/app/checkout/_components/checkout-display.test.ts
+src/styles/service-trust-placement.test.ts`.
 
 ## Candidate Improvements
 
@@ -216,97 +213,78 @@ Candidate items are not implementable by default. Public-facing candidates must
 pass `docs/PUBLIC_CHANGE_GATE.md` or `docs/FULL_PRODUCT_BENCHMARK.md` before
 product code is edited.
 
-### I-007 Search and Category Filter Density
+### I-006 Wishlist and Shortlist Decision Support
+
+- `ID`: I-006
+- `Aspect`: Public UX and Brand
+- `Status`: Needs Benchmark
+- `Priority`: P2
+- `Effort`: M
+- `Source/Evidence`: New candidate idea; wishlist, cart, and account guidance in
+  `docs/FULL_PRODUCT_BENCHMARK.md`
+- `Target Surface`: Wishlist, cart, account wishlist card, shortlist recovery,
+  and saved product decision states
+- `Improvement`: Consider compact comparison or next-step cues that help
+  shoppers decide between saved pieces without turning wishlist into checkout.
+- `Acceptance Checks`: Benchmark decision confirms decision support improves
+  saved-item review without crowding product cards or overpromoting urgency.
+- `Verification`: Run benchmark workflow first; implementation verification
+  would require wishlist/cart route tests and visual smoke.
+
+### I-007 Product Card Quick Facts Density
 
 - `ID`: I-007
 - `Aspect`: Public UX and Brand
-- `Status`: Done
+- `Status`: Needs Benchmark
 - `Priority`: P2
 - `Effort`: M
-- `Source/Evidence`: `docs/qa/search-category-filter-density-benchmark.md`,
-  search, PLP, gifts, and category guidance in
-  `docs/FULL_PRODUCT_BENCHMARK.md`
-- `Target Surface`: `/search`, `/category/[slug]`, `/gifts`, filter sheets,
-  active refinement summaries, sort controls
-- `Improvement`: Added compact active refinement summaries on search and
-  category routes so shoppers can scan applied choices faster on mobile and
-  desktop without moving filters, sort controls, recovery, or grids below
-  storytelling content.
-- `Acceptance Checks`: Benchmark decision recorded weighted support of `12.0`
-  against a threshold of `11.25`; active refinements remain individually
-  tappable, readable, removable, and do not crowd product discovery controls.
-- `Verification`: `pnpm test -- src/app/search/_lib/search-state.test.ts src/app/category/[slug]/_lib/category-filter-state.test.ts src/styles/discovery-filter-density.test.ts`
-  plus visual smoke for `/search` and `/category/earrings` with active filters.
+- `Source/Evidence`: New candidate idea; PLP, search, gifts, and product-card
+  guidance in `docs/FULL_PRODUCT_BENCHMARK.md`
+- `Target Surface`: Product cards on category, search, gifts, recommendations,
+  and related-product surfaces
+- `Improvement`: Consider adding compact material, availability, or source facts
+  on cards without reducing scan speed or creating noisy commerce badges.
+- `Acceptance Checks`: Benchmark decision confirms quick facts improve product
+  comparison and do not make listing pages denser than the reference standard.
+- `Verification`: Run benchmark workflow first; implementation verification
+  would require product-card tests and visual smoke for listing routes.
 
-### I-008 PDP Purchase Confidence Pass
-
-- `ID`: I-008
-- `Aspect`: Public UX and Brand
-- `Status`: Done
-- `Priority`: P2
-- `Effort`: M
-- `Source/Evidence`: `docs/qa/pdp-purchase-confidence-benchmark.md`, PDP
-  route guidance in `docs/FULL_PRODUCT_BENCHMARK.md`, and
-  `docs/PUBLIC_CHANGE_GATE.md`
-- `Target Surface`: `/product/[slug]`, purchase panel, availability language,
-  service entry, recommendations, media facts
-- `Improvement`: Added compact source-aware purchase confidence rows near the
-  PDP CTA, covering selected variant state, size support, delivery/return
-  handling, and Shopify supplier checkout expectations without changing the CTA
-  hierarchy.
-- `Acceptance Checks`: Benchmark decision recorded weighted support of `16.5`
-  against a threshold of `11.25`; confidence copy stays near the purchase task,
-  avoids exact public inventory counts, and keeps service/recommendation content
-  below the buy area.
-- `Verification`: `pnpm test -- src/app/product/[slug]/_components/product-purchase-utils.test.ts src/styles/service-trust-placement.test.ts`
-  plus typecheck, lint, build, and visual smoke for owned and Shopify fixture
-  PDPs.
-
-### I-009 Account Recovery and Service Shortcuts
+### I-009 Account Order Timeline Clarity
 
 - `ID`: I-009
 - `Aspect`: Commerce and Checkout
-- `Status`: Done
+- `Status`: Needs Benchmark
 - `Priority`: P2
 - `Effort`: M
-- `Source/Evidence`: `docs/qa/account-recovery-service-shortcuts-benchmark.md`;
-  account and service route guidance in `docs/FULL_PRODUCT_BENCHMARK.md`
-- `Target Surface`: `/account`, `/account/orders/[id]`, service links, return
-  request states, privacy export
-- `Improvement`: Added compact recovery and service shortcuts for customers who
-  need order help, returns, privacy/data actions, or supplier-backed order
-  support. Service links prefill supported `/service` fields instead of
-  inventing unsupported account actions.
-- `Acceptance Checks`: Benchmark decision recorded weighted support of `12.0`
-  against a threshold of `11.25`; shortcuts remain compact, route to existing
-  service/privacy flows, preserve read-only Shopify mirror behavior, and keep
-  protected account content task-first.
-- `Verification`: `pnpm test -- src/app/account/_lib/account-recovery.test.ts src/styles/account-recovery-shortcuts.test.ts src/app/account/privacy/export/route.test.ts`
-  plus typecheck, lint, build, and browser smoke for `/account` logged-out state
-  and `/service?topic=order`.
+- `Source/Evidence`: New candidate idea; account and order guidance in
+  `docs/FULL_PRODUCT_BENCHMARK.md`
+- `Target Surface`: Account order list, local order detail, status labels,
+  return request context, and read-only Shopify mirror presentation
+- `Improvement`: Consider clearer local order timeline or status sequencing for
+  customer self-service.
+- `Acceptance Checks`: Benchmark decision confirms timeline clarity improves
+  account comprehension and does not add Shopify mirror actions beyond
+  read-only/service routing.
+- `Verification`: Run benchmark workflow first; implementation verification
+  would require account order tests and authenticated route smoke.
 
-### I-010 AI and Stylist Fallback UX
+### I-010 Homepage Discovery-to-Commerce Balance
 
 - `ID`: I-010
-- `Aspect`: Performance, PWA, and Reliability
-- `Status`: Done
+- `Aspect`: Public UX and Brand
+- `Status`: Needs Benchmark
 - `Priority`: P2
 - `Effort`: M
-- `Source/Evidence`: `docs/qa/ai-stylist-fallback-benchmark.md`; AI and
-  stylist route guidance in `docs/FULL_PRODUCT_BENCHMARK.md`, AI quota routing
-  behavior
-- `Target Surface`: `/ai`, `/stylist`, chat route, AI provider quota and
-  readiness states
-- `Improvement`: Added safe AI fallback recovery UI for stylist chat and gift
-  recommendation failures, routing customers back to search, category discovery,
-  size guidance, and service without exposing provider or model details.
-- `Acceptance Checks`: Benchmark decision recorded weighted support of `12.0`
-  against a threshold of `11.25`; AI remains a demoted service/tool experience,
-  degraded-state copy is customer-safe, and recovery paths use existing product
-  and service surfaces.
-- `Verification`: `pnpm test -- src/app/ai/_lib/ai-fallback.test.ts src/styles/ai-fallback-recovery.test.ts src/app/api/chat/route.test.ts src/server/ai/model.test.ts`
-  plus typecheck, lint, build, and browser smoke for `/stylist` and
-  `/ai?tab=gifts`.
+- `Source/Evidence`: New candidate idea; homepage and public route guidance in
+  `docs/FULL_PRODUCT_BENCHMARK.md` and `docs/PUBLIC_CHANGE_GATE.md`
+- `Target Surface`: Homepage, category entry points, search entry, featured
+  products, gifts entry, service entry, and primary discovery paths
+- `Improvement`: Consider tightening homepage discovery paths toward category,
+  search, and product entry while preserving the current brand tone.
+- `Acceptance Checks`: Benchmark decision confirms the homepage remains premium
+  and brand-appropriate while improving commerce discovery.
+- `Verification`: Run benchmark workflow first; implementation verification
+  would require homepage static tests and desktop/mobile visual smoke.
 
 ## Blocked / Deferred
 

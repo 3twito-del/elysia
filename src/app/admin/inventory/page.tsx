@@ -187,6 +187,13 @@ export default async function AdminInventoryPage({
               <TableBody>
                 {data.items.length === 0 ? (
                   <TableEmptyRow
+                    action={
+                      hasActiveFilters ? (
+                        <Button asChild size="sm" variant="outline">
+                          <Link href="/admin/inventory">ניקוי סינון</Link>
+                        </Button>
+                      ) : undefined
+                    }
                     colSpan={8}
                     description="שנו סינון או הגדירו מלאי דרך יצירת מוצר/עריכת מלאי."
                     icon={Boxes}

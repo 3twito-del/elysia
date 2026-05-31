@@ -83,15 +83,12 @@ export async function requestCustomerOtpAction(
           : "שלחנו קוד אימות ב-SMS.",
     };
   } catch (error) {
-    const fallbackMessage =
-      error instanceof Error
-        ? error.message
-        : "לא ניתן לשלוח קוד כרגע. נסו שוב.";
-
     return {
       ok: false,
       identifier,
-      message: rateLimitMessage(error) ?? fallbackMessage,
+      message:
+        rateLimitMessage(error) ??
+        "לא ניתן לשלוח קוד כרגע. בדקו את הפרטים ונסו שוב בעוד דקה.",
     };
   }
 }

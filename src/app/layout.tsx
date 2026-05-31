@@ -14,6 +14,8 @@ const appName = "Elysia";
 const appDescription =
   "בית תכשיטים ישראלי לטבעות, שרשראות, עגילים וצמידים, עם דיוק חומרי, אור שקט, שירות אישי והזמנה מדודה.";
 
+const sharePreviewImage = "/brand/v2/editorial-home.avif";
+
 export const metadata: Metadata = {
   applicationName: appName,
   title: {
@@ -36,9 +38,14 @@ export const metadata: Metadata = {
     telephone: false,
   },
   metadataBase: new URL(env.SITE_URL ?? "https://elysia-jewellery.com"),
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: "Elysia",
     description: "תכשיטי בית בעברית, עם בחירה מדויקת ושירות אישי.",
+    url: "/",
+    images: [{ url: sharePreviewImage }],
     locale: "he_IL",
     siteName: appName,
     type: "website",
@@ -47,6 +54,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: appName,
     description: appDescription,
+    images: [sharePreviewImage],
   },
 };
 

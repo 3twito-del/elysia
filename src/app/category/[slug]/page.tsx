@@ -101,6 +101,9 @@ export async function generateMetadata({
       title: "המשפחה לא נמצאה",
       description:
         "הקישור לקולקציית Elysia אינו פעיל. אפשר להמשיך לחיפוש במבחר או לחזור לעמוד הבית.",
+      alternates: {
+        canonical: `/category/${slug}`,
+      },
       robots: {
         follow: false,
         index: false,
@@ -111,6 +114,29 @@ export async function generateMetadata({
   return {
     title: copy?.title ?? category?.name ?? "קולקציית Elysia",
     description: copy?.description ?? category?.description,
+    alternates: {
+      canonical: `/category/${slug}`,
+    },
+    openGraph: {
+      title: copy?.title ?? category?.name ?? "Elysia",
+      description: copy?.description ?? category?.description,
+      url: `/category/${slug}`,
+      images: [
+        {
+          url:
+            getCategoryBrandSlides(slug)[0]?.src ??
+            "/brand/v2/editorial-home.avif",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: copy?.title ?? category?.name ?? "Elysia",
+      description: copy?.description ?? category?.description,
+      images: [
+        getCategoryBrandSlides(slug)[0]?.src ?? "/brand/v2/editorial-home.avif",
+      ],
+    },
   };
 }
 

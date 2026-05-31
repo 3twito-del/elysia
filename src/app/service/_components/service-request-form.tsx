@@ -42,6 +42,23 @@ type ServiceRequestFormProps = {
 
 const initialState: ServiceRequestActionState = {};
 const maxFileSizeMb = Math.round(maxServiceRequestFileBytes / 1024 / 1024);
+const attachmentGuidanceId = "service-attachment-guidance";
+const attachmentOfflineGuidanceId = "service-attachment-offline-guidance";
+const attachmentAcceptedFileTypeLabel = "JPG, PNG, WebP, GIF או PDF";
+const serviceFieldFocusOrder = [
+  "topicSlug",
+  "name",
+  "phone",
+  "email",
+  "orderNumber",
+  "productReference",
+  "preferredContactTime",
+  "message",
+] as const;
+
+function getFieldErrorId(name: string) {
+  return `${name}-error`;
+}
 
 export function ServiceRequestForm({
   defaultMessage,
@@ -65,8 +82,23 @@ export function ServiceRequestForm({
   useEffect(() => {
     if (state.ok) {
       formRef.current?.reset();
+      return;
     }
-  }, [state.ok]);
+
+    const firstInvalidField = serviceFieldFocusOrder.find((field) =>
+      Boolean(state.fieldErrors?.[field]),
+    );
+
+    if (firstInvalidField) {
+      window.requestAnimationFrame(() => {
+        const field = formRef.current?.elements.namedItem(firstInvalidField);
+
+        if (field instanceof HTMLElement) {
+          field.focus();
+        }
+      });
+    }
+  }, [state.fieldErrors, state.ok]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     if (navigator.onLine) return;
@@ -101,8 +133,13 @@ export function ServiceRequestForm({
     >
       <div className="grid gap-2">
         <Label htmlFor="topicSlug">נושא הפנייה</Label>
-        <FieldError message={state.fieldErrors?.topicSlug} />
+        <FieldError
+          id={getFieldErrorId("topicSlug")}
+          message={state.fieldErrors?.topicSlug}
+        />
         <select
+          aria-describedby={getFieldErrorId("topicSlug")}
+          aria-invalid={Boolean(state.fieldErrors?.topicSlug)}
           className="glass-control h-11 rounded-md border px-3 text-sm"
           defaultValue={selectedTopic}
           disabled={pending}
@@ -197,8 +234,13 @@ export function ServiceRequestForm({
 
       <div className="grid gap-2">
         <Label htmlFor="message">תיאור הפנייה</Label>
-        <FieldError message={state.fieldErrors?.message} />
+        <FieldError
+          id={getFieldErrorId("message")}
+          message={state.fieldErrors?.message}
+        />
         <Textarea
+          aria-describedby={getFieldErrorId("message")}
+          aria-invalid={Boolean(state.fieldErrors?.message)}
           className="min-h-32"
           defaultValue={defaultMessage}
           disabled={pending}
@@ -215,6 +257,7 @@ export function ServiceRequestForm({
           קבצים מצורפים
         </Label>
         <Input
+          aria-describedby={`${attachmentGuidanceId} ${attachmentOfflineGuidanceId}`}
           accept={serviceRequestAcceptedFileTypes.join(",")}
           disabled={pending}
           id="attachments"
@@ -222,9 +265,19 @@ export function ServiceRequestForm({
           name="attachments"
           type="file"
         />
-        <p className="text-muted-foreground text-xs leading-5">
+        <p
+          className="text-muted-foreground text-xs leading-5"
+          id={attachmentGuidanceId}
+        >
           ניתן לצרף עד {maxServiceRequestFiles} קבצים, עד {maxFileSizeMb}MB
-          לקובץ.
+          לקובץ. סוגי קבצים נתמכים: {attachmentAcceptedFileTypeLabel}.
+        </p>
+        <p
+          className="text-muted-foreground text-xs leading-5"
+          id={attachmentOfflineGuidanceId}
+        >
+          אם אין חיבור, הפנייה והקבצים יישמרו במכשיר ויישלחו אוטומטית כשהחיבור
+          יחזור. אם שמירה לא הצליחה, השאירו את הקבצים אצלכם ונסו שוב.
         </p>
       </div>
 
@@ -256,6 +309,7 @@ function Field({
   label,
   name,
   pending,
+  "aria-describedby": ariaDescribedBy,
   ...props
 }: {
   error?: string;
@@ -263,11 +317,15 @@ function Field({
   name: string;
   pending: boolean;
 } & Omit<ComponentProps<typeof Input>, "disabled" | "id" | "name">) {
+  const errorId = getFieldErrorId(name);
+  const describedBy = [ariaDescribedBy, errorId].filter(Boolean).join(" ");
+
   return (
     <div className="grid gap-2">
       <Label htmlFor={name}>{label}</Label>
-      <FieldError message={error} />
+      <FieldError id={errorId} message={error} />
       <Input
+        aria-describedby={describedBy}
         aria-invalid={Boolean(error)}
         disabled={pending}
         id={name}
@@ -278,10 +336,11 @@ function Field({
   );
 }
 
-function FieldError({ message }: { message?: string }) {
+function FieldError({ id, message }: { id: string; message?: string }) {
   return (
     <p
       className="text-destructive min-h-5 text-xs leading-5"
+      id={id}
       role={message ? "alert" : undefined}
     >
       {message}

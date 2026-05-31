@@ -196,6 +196,13 @@ export default async function AdminServicePage({
               <TableBody>
                 {requests.items.length === 0 ? (
                   <TableEmptyRow
+                    action={
+                      hasActiveFilters ? (
+                        <Button asChild size="sm" variant="outline">
+                          <Link href="/admin/service">ניקוי סינון</Link>
+                        </Button>
+                      ) : undefined
+                    }
                     colSpan={6}
                     description="פניות מהטופס הציבורי יופיעו כאן לטיפול ומעקב."
                     icon={Headset}

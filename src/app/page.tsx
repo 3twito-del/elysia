@@ -75,11 +75,22 @@ export const metadata: Metadata = {
   title: "תכשיטים",
   description:
     "עמוד הבית של Elysia: תכשיטים עם קולקציות, חומריות שקטה, מתנות, ייעוץ אישי ומבחר נבחר.",
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: "Elysia | תכשיטים",
     description:
       "קולקציות תכשיטים מדודות ושירות אישי שנבנים סביב שקט, חומר והתאמה.",
+    url: "/",
     images: [{ url: "/brand/v2/editorial-home.avif" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Elysia | תכשיטים",
+    description:
+      "קולקציות תכשיטים מדודות ושירות אישי שנבנים סביב שקט, חומר והתאמה.",
+    images: ["/brand/v2/editorial-home.avif"],
   },
 };
 

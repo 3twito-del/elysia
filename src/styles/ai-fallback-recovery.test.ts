@@ -33,12 +33,9 @@ describe("AI fallback recovery UI", () => {
     expect(giftRecommender).toContain("recommendGift.error.message");
   });
 
-  it("records benchmark support before implementation", () => {
-    const backlog = read("docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md");
+  it("keeps benchmark support evidence available after backlog replacement", () => {
     const benchmark = read("docs/qa/ai-stylist-fallback-benchmark.md");
 
-    expect(backlog).toContain("I-010 AI and Stylist Fallback UX");
-    expect(backlog).toContain("`Status`: Done");
     expect(benchmark).toContain("Weighted Score`: 12.0");
     expect(benchmark).toContain("Decision`: Supported");
     expect(benchmark).toContain("Cartier");

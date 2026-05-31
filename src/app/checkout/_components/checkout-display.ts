@@ -15,6 +15,20 @@ export type CheckoutPricedItem = {
   unitPrice: number;
 };
 
+export type CheckoutFulfillmentSummaryInput = {
+  dropshipItemCount: number;
+  hasDropshipItems: boolean;
+  hasOwnItems: boolean;
+  localItemCount: number;
+  shippingLabel: string;
+};
+
+export type CheckoutFulfillmentSummaryRow = {
+  detail: string;
+  key: "local" | "supplier" | "delivery" | "confirmation";
+  label: string;
+};
+
 export function isPositiveCheckoutAmount(amount: number) {
   return Number.isFinite(amount) && amount > 0;
 }
@@ -90,6 +104,81 @@ export function getFriendlyCheckoutErrorMessage(
   return rawMessage;
 }
 
+export function getCheckoutFulfillmentSummaryRows({
+  dropshipItemCount,
+  hasDropshipItems,
+  hasOwnItems,
+  localItemCount,
+  shippingLabel,
+}: CheckoutFulfillmentSummaryInput): CheckoutFulfillmentSummaryRow[] {
+  const rows: CheckoutFulfillmentSummaryRow[] = [];
+  const localApprovalVerb = localItemCount === 1 ? "יאושר" : "יאושרו";
+  const supplierContinuationVerb = dropshipItemCount === 1 ? "ימשיך" : "ימשיכו";
+
+  if (hasOwnItems) {
+    rows.push({
+      detail: `${formatCheckoutItemTypeCount(localItemCount)} ${localApprovalVerb} באתר Elysia לפני סיום התשלום.`,
+      key: "local",
+      label: "פריטי החנות",
+    });
+  }
+
+  if (hasDropshipItems) {
+    rows.push({
+      detail: hasOwnItems
+        ? `${formatCheckoutItemTypeCount(dropshipItemCount)} ${supplierContinuationVerb} לקופת Shopify נפרדת מהפריטים המקומיים.`
+        : `${formatCheckoutItemTypeCount(dropshipItemCount)} ${supplierContinuationVerb} לקופת Shopify; תשלום, כתובת וזמני מסירה ייקבעו שם.`,
+      key: "supplier",
+      label: "פריטי הספק",
+    });
+  }
+
+  if (hasOwnItems && hasDropshipItems) {
+    rows.push({
+      detail:
+        "מסירת פריטי החנות תתואם לפי הכתובת שתמלאו; פריטי הספק יקבלו פרטי מסירה בקופה הנפרדת.",
+      key: "delivery",
+      label: "מסירה",
+    });
+    rows.push({
+      detail:
+        "שני המסלולים נשארים נפרדים כדי שלא ליצור הבטחת תשלום או מסירה משותפת.",
+      key: "confirmation",
+      label: "אישור",
+    });
+
+    return rows;
+  }
+
+  if (hasOwnItems) {
+    rows.push({
+      detail: `מסירה עד הבית ${getShippingSummaryLabel(shippingLabel)} לפי הכתובת שתמלאו.`,
+      key: "delivery",
+      label: "מסירה",
+    });
+    rows.push({
+      detail: "הפרטים והסכום יאומתו לפני שמירת ההזמנה וסיום התשלום.",
+      key: "confirmation",
+      label: "אישור",
+    });
+  }
+
+  if (hasDropshipItems && !hasOwnItems) {
+    rows.push({
+      detail: "אין מילוי כתובת באתר; פרטי המסירה ייאספו בקופת Shopify.",
+      key: "delivery",
+      label: "מסירה",
+    });
+    rows.push({
+      detail: "לא נוצרת כאן הזמנה מקומית עבור פריטי ספק בלבד.",
+      key: "confirmation",
+      label: "אישור",
+    });
+  }
+
+  return rows;
+}
+
 function containsHebrew(value: string) {
   return /[\u0590-\u05ff]/u.test(value);
 }
@@ -98,4 +187,16 @@ function containsInternalCheckoutTerm(value: string) {
   return /fixture|local cart|cart item|variant|session|database|prisma|trpc|mock/i.test(
     value,
   );
+}
+
+function formatCheckoutItemTypeCount(count: number) {
+  if (count === 1) return "סוג תכשיט אחד";
+
+  return `${count} סוגי תכשיטים`;
+}
+
+function getShippingSummaryLabel(shippingLabel: string) {
+  if (shippingLabel === "כלול") return "כלולה";
+
+  return `תחושב כ-${shippingLabel}`;
 }

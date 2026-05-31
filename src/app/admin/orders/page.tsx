@@ -238,6 +238,13 @@ export default async function AdminOrdersPage({
             <TableBody>
               {data.items.length === 0 ? (
                 <TableEmptyRow
+                  action={
+                    hasActiveFilters ? (
+                      <Button asChild size="sm" variant="outline">
+                        <Link href="/admin/orders">ניקוי סינון</Link>
+                      </Button>
+                    ) : undefined
+                  }
                   colSpan={10}
                   description="שנו סינון או המתינו להזמנות חדשות מהאתר."
                   icon={ClipboardList}

@@ -13,7 +13,6 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   CheckCircle2,
-  Clock3,
   Gift,
   MessageCircle,
   Minus,
@@ -58,6 +57,7 @@ import {
   checkoutPricingReviewMessage,
   checkoutPriceReviewLabel,
   checkoutTotalReviewLabel,
+  getCheckoutFulfillmentSummaryRows,
   getCheckoutAmountLabel,
   getFriendlyCheckoutErrorMessage,
   hasCheckoutPricingReview,
@@ -66,24 +66,13 @@ import { FieldError, ReservationCountdown } from "./checkout-status";
 import { CheckoutStepBadge } from "./checkout-step-badge";
 
 const checkoutFormId = "cart-checkout-form";
-
-const checkoutTrustItems = [
-  {
-    detail: "התכשיטים נשמרים עד סיום ההזמנה",
-    icon: Clock3,
-    label: "הבחירה נשמרת",
-  },
-  {
-    detail: "הפרטים יאומתו לפני השלמת ההזמנה",
-    icon: ShieldCheck,
-    label: "אישור אישי",
-  },
-  {
-    detail: "המסירה תתואם לפי הכתובת שנבחרה",
-    icon: Truck,
-    label: "מסירה עד הבית",
-  },
-] as const;
+const checkoutFieldFocusOrder = [
+  "name",
+  "phone",
+  "email",
+  "city",
+  "street",
+] satisfies CheckoutField[];
 
 const checkoutEmptyLinks = [
   {
@@ -102,6 +91,13 @@ const checkoutEmptyLinks = [
     text: "עזרה בבחירה, מידה או הקדשה אישית.",
   },
 ] as const;
+
+const checkoutFulfillmentSummaryIcons = {
+  confirmation: ShieldCheck,
+  delivery: Truck,
+  local: PackageCheck,
+  supplier: ShoppingBag,
+} as const;
 
 const checkoutProgressSteps = [
   {
@@ -150,6 +146,7 @@ export function CartCheckoutForm() {
   const [touchedFields, setTouchedFields] = useState<Set<CheckoutField>>(
     () => new Set(),
   );
+  const checkoutFormRef = useRef<HTMLFormElement>(null);
   const submitLockedRef = useRef(false);
 
   const cartQuery = api.cart.get.useQuery(
@@ -289,6 +286,13 @@ export function CartCheckoutForm() {
     localCartItemCount > 0 && shippingAmount <= 0
       ? "כלול"
       : formatPrice(shippingAmount);
+  const checkoutFulfillmentSummaryRows = getCheckoutFulfillmentSummaryRows({
+    dropshipItemCount: dropshipItems.length,
+    hasDropshipItems,
+    hasOwnItems,
+    localItemCount: localCartItemCount,
+    shippingLabel,
+  });
   const checkoutErrors = validateCheckoutFields({
     cartItemCount: localCartItemCount,
     city,
@@ -428,9 +432,28 @@ export function CartCheckoutForm() {
     return checkoutErrors[field];
   }
 
+  function focusFirstCheckoutError() {
+    const firstInvalidField = checkoutFieldFocusOrder.find((field) =>
+      Boolean(checkoutErrors[field]),
+    );
+
+    if (!firstInvalidField) return;
+
+    const field =
+      checkoutFormRef.current?.elements.namedItem(firstInvalidField);
+
+    if (field instanceof HTMLElement) {
+      field.focus();
+    }
+  }
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSubmitAttempted(true);
+
+    if (hasCheckoutErrors(checkoutErrors)) {
+      window.requestAnimationFrame(focusFirstCheckoutError);
+    }
 
     if (isOffline || !sessionKey || !canSubmit || submitLockedRef.current) {
       return;
@@ -532,6 +555,7 @@ export function CartCheckoutForm() {
         data-testid="cart-checkout-form"
         id={checkoutFormId}
         onSubmit={handleSubmit}
+        ref={checkoutFormRef}
       >
         <div className="grid gap-4">
           <div>
@@ -1066,29 +1090,42 @@ export function CartCheckoutForm() {
                   {cart.couponCode}
                 </Badge>
               ) : null}
-              {hasOwnItems ? (
-                <div className="grid gap-2 text-xs">
-                  {checkoutTrustItems.map((item) => (
-                    <div
-                      className="glass-inset flex items-start gap-2 rounded-md border p-3"
-                      key={item.label}
-                    >
-                      <item.icon
-                        aria-hidden="true"
-                        className="mt-0.5 size-4 shrink-0"
-                      />
-                      <div className="min-w-0">
-                        <p className="font-medium">{item.label}</p>
-                        <p className="text-muted-foreground mt-0.5">
-                          {item.detail}
-                        </p>
+              {checkoutFulfillmentSummaryRows.length > 0 ? (
+                <div
+                  className="grid gap-2 text-xs"
+                  data-testid="checkout-delivery-confidence-summary"
+                >
+                  <p className="text-sm font-medium">מסירה ואישור</p>
+                  {checkoutFulfillmentSummaryRows.map((item) => {
+                    const SummaryIcon =
+                      checkoutFulfillmentSummaryIcons[item.key];
+
+                    return (
+                      <div
+                        className="glass-inset flex items-start gap-2 rounded-md border p-3"
+                        data-testid={`checkout-delivery-confidence-${item.key}`}
+                        key={item.key}
+                      >
+                        <SummaryIcon
+                          aria-hidden="true"
+                          className="mt-0.5 size-4 shrink-0"
+                        />
+                        <div className="min-w-0">
+                          <p className="font-medium">{item.label}</p>
+                          <p className="text-muted-foreground mt-0.5 leading-5">
+                            {item.detail}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : null}
               {hasOwnItems && checkoutIssues.length > 0 ? (
-                <div className="glass-inset rounded-md border p-3 text-sm">
+                <div
+                  className="glass-inset rounded-md border p-3 text-sm"
+                  id="checkout-issue-list"
+                >
                   <p className="font-medium">לפני אישור הבחירה</p>
                   <ul className="text-muted-foreground mt-2 grid list-inside list-disc gap-1">
                     {checkoutIssues.map((issue) => (

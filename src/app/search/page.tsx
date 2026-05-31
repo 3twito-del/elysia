@@ -70,6 +70,22 @@ const SEARCH_RESULT_IMAGE_BLUR_DATA_URL =
 
 export const metadata = {
   title: "חיפוש במבחר",
+  description: "חיפוש תכשיטי Elysia לפי קטגוריה, חומר, מחיר וזמינות.",
+  alternates: {
+    canonical: "/search",
+  },
+  openGraph: {
+    title: "Elysia | חיפוש תכשיטים",
+    description: "סינון וחיפוש במבחר התכשיטים של Elysia.",
+    url: "/search",
+    images: [{ url: "/brand/v2/editorial-home.avif" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Elysia | חיפוש תכשיטים",
+    description: "סינון וחיפוש במבחר התכשיטים של Elysia.",
+    images: ["/brand/v2/editorial-home.avif"],
+  },
 };
 
 export const dynamic = "force-dynamic";

@@ -34,13 +34,11 @@ describe("discovery filter density", () => {
     expect(categoryPage).toContain("formatCategoryActiveSelectionPreview");
   });
 
-  it("records benchmark support before implementation", () => {
-    const backlog = read("docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md");
+  it("keeps benchmark support evidence available after backlog replacement", () => {
     const benchmark = read(
       "docs/qa/search-category-filter-density-benchmark.md",
     );
 
-    expect(backlog).toContain("I-007 Search and Category Filter Density");
     expect(benchmark).toContain("Weighted Score`: 16.5");
     expect(benchmark).toContain("Decision`: Supported");
     expect(benchmark).toContain("Cartier");

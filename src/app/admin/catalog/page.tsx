@@ -205,6 +205,13 @@ export default async function AdminCatalogPage({
               <TableBody>
                 {catalog.products.length === 0 ? (
                   <TableEmptyRow
+                    action={
+                      hasActiveFilters ? (
+                        <Button asChild size="sm" variant="outline">
+                          <Link href="/admin/catalog">ניקוי סינון</Link>
+                        </Button>
+                      ) : undefined
+                    }
                     colSpan={7}
                     description="שנו סינון או צרו מוצר ראשון."
                     icon={PackageCheck}
