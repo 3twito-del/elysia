@@ -201,7 +201,8 @@ product code is edited.
   the production alias explicitly, and links each deploy decision to concrete
   local and production checks.
 - `Verification`: Verified with `vercel ls --yes`,
-  `vercel inspect https://elysia-8xyl6znel-ariel-twitos-projects.vercel.app`,
+  `vercel inspect https://elysia-j8xnjw9iq-ariel-twitos-projects.vercel.app`,
+  `vercel logs https://elysia-j8xnjw9iq-ariel-twitos-projects.vercel.app --level error --since 1h --json`,
   `SMOKE_BASE_URL=https://elysia-jewellery.com pnpm smoke`,
   `pnpm exec prettier --check docs/qa/production-deployment-evidence-ledger.md docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md`,
   and `git diff --check`.
