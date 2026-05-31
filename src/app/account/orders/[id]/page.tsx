@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowRight, PackageCheck } from "lucide-react";
+import { ArrowRight, LifeBuoy, PackageCheck, RotateCcw } from "lucide-react";
 
 import { ReturnRequestForm } from "../../_components/return-request-form";
+import { createAccountServiceHref } from "../../_lib/account-recovery";
 import { CommercePageHero } from "~/components/commerce-page-hero";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
@@ -80,6 +81,36 @@ export default async function OrderDetailPage({
             אזור אישי
           </Link>
         </Button>
+        <nav
+          aria-label="קיצורי טיפול בהזמנה"
+          className="mb-6 grid gap-2 sm:grid-cols-2"
+          data-testid="order-recovery-shortcuts"
+        >
+          <Button asChild className="justify-start gap-2" variant="outline">
+            <Link
+              href={createAccountServiceHref({
+                message: "אשמח לעזרה בבירור סטטוס ההזמנה.",
+                orderNumber: order.orderNumber,
+                topic: "order",
+              })}
+            >
+              <LifeBuoy aria-hidden="true" className="size-4" />
+              עזרה בהזמנה
+            </Link>
+          </Button>
+          <Button asChild className="justify-start gap-2" variant="outline">
+            <Link
+              href={createAccountServiceHref({
+                message: "אשמח לפתוח בקשת החלפה או החזרה.",
+                orderNumber: order.orderNumber,
+                topic: "returns",
+              })}
+            >
+              <RotateCcw aria-hidden="true" className="size-4" />
+              החלפה או החזרה
+            </Link>
+          </Button>
+        </nav>
         <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h2 className="text-4xl font-semibold">{order.orderNumber}</h2>

@@ -4,12 +4,15 @@ import {
   AlertTriangle,
   Heart,
   LayoutDashboard,
+  LockKeyhole,
   LogOut,
   MapPin,
   PackageCheck,
+  RotateCcw,
   Ruler,
   ShieldCheck,
   Trash2,
+  Truck,
   type LucideIcon,
 } from "lucide-react";
 import type { ReactNode } from "react";
@@ -18,6 +21,7 @@ import { CustomerOtpForm } from "./_components/customer-otp-form";
 import { CustomerAddressForm } from "./_components/customer-address-form";
 import { CustomerPrivacyActions } from "./_components/customer-privacy-actions";
 import { CustomerSavedSizesForm } from "./_components/customer-saved-sizes-form";
+import { createAccountServiceHref } from "./_lib/account-recovery";
 import { customerLogoutAction, removeWishlistItemAction } from "./actions";
 import { CommercePageHero } from "~/components/commerce-page-hero";
 import { MetricCard } from "~/components/metric-card";
@@ -292,6 +296,10 @@ export default async function AccountPage() {
   const wishlistItems = customer.wishlist?.items ?? [];
   const accountOrderCount =
     customer.orders.length + customer.shopifyOrderMirrors.length;
+  const latestLocalOrderNumber = customer.orders[0]?.orderNumber;
+  const latestSupplierOrderNumber =
+    customer.shopifyOrderMirrors[0]?.shopifyOrderName ??
+    customer.shopifyOrderMirrors[0]?.shopifyOrderId;
 
   return (
     <main>
@@ -344,6 +352,11 @@ export default async function AccountPage() {
             value="מרחוק"
           />
         </RevealGrid>
+
+        <AccountRecoveryShortcuts
+          latestLocalOrderNumber={latestLocalOrderNumber}
+          latestSupplierOrderNumber={latestSupplierOrderNumber}
+        />
 
         <div className="mt-7 grid gap-5 lg:grid-cols-2">
           <Card
@@ -426,6 +439,19 @@ export default async function AccountPage() {
                             order.fulfillmentStatus,
                           )}
                         </p>
+                        <Link
+                          className="text-foreground mt-2 inline-flex text-xs font-medium underline-offset-4 hover:underline"
+                          data-testid="account-shopify-service-link"
+                          href={createAccountServiceHref({
+                            message:
+                              "אשמח לעזרה בהזמנת ספק שמופיעה באזור האישי.",
+                            orderNumber:
+                              order.shopifyOrderName ?? order.shopifyOrderId,
+                            topic: "order",
+                          })}
+                        >
+                          עזרה בהזמנת ספק
+                        </Link>
                       </div>
                       <span className="shrink-0 font-medium">
                         {formatPrice(Number(order.total))}
@@ -632,6 +658,104 @@ export default async function AccountPage() {
         </div>
       </RevealSection>
     </main>
+  );
+}
+
+function AccountRecoveryShortcuts({
+  latestLocalOrderNumber,
+  latestSupplierOrderNumber,
+}: {
+  latestLocalOrderNumber?: string;
+  latestSupplierOrderNumber?: string;
+}) {
+  const shortcuts = [
+    {
+      description: latestLocalOrderNumber
+        ? `נפתח עם ${latestLocalOrderNumber} כבר בשדה ההזמנה.`
+        : "נפתח טופס שירות לבירור הזמנה קיימת.",
+      href: createAccountServiceHref({
+        message: "אשמח לעזרה בבירור סטטוס ההזמנה.",
+        orderNumber: latestLocalOrderNumber,
+        topic: "order",
+      }),
+      icon: PackageCheck,
+      label: "עזרה בהזמנה",
+      testId: "account-recovery-order-help",
+    },
+    {
+      description: latestLocalOrderNumber
+        ? "בקשת החלפה או החזרה עם מספר ההזמנה האחרון."
+        : "פתיחת פנייה בנושא החלפה, החזרה או זיכוי.",
+      href: createAccountServiceHref({
+        message: "אשמח לפתוח בקשת החלפה או החזרה.",
+        orderNumber: latestLocalOrderNumber,
+        topic: "returns",
+      }),
+      icon: RotateCcw,
+      label: "החלפה או החזרה",
+      testId: "account-recovery-return-help",
+    },
+    {
+      description: latestSupplierOrderNumber
+        ? `תמיכה בהזמנת ספק ${latestSupplierOrderNumber}.`
+        : "תמיכה בהזמנת ספק שמטופלת מחוץ לקופה המקומית.",
+      href: createAccountServiceHref({
+        message: "אשמח לעזרה בהזמנת ספק שמופיעה באזור האישי.",
+        orderNumber: latestSupplierOrderNumber,
+        topic: "order",
+      }),
+      icon: Truck,
+      label: "הזמנת ספק",
+      testId: "account-recovery-supplier-help",
+    },
+    {
+      description: "ייצוא נתונים, מחיקה או שאלה בנושא פרטיות ונגישות.",
+      href: "#account-privacy",
+      icon: LockKeyhole,
+      label: "פרטיות ונתונים",
+      testId: "account-recovery-privacy-help",
+    },
+  ];
+
+  return (
+    <section
+      aria-labelledby="account-recovery-title"
+      className="mt-7"
+      data-testid="account-recovery-shortcuts"
+    >
+      <div className="mb-3 flex flex-col gap-1">
+        <p className="text-muted-foreground text-xs font-medium tracking-normal uppercase">
+          קיצורי שירות
+        </p>
+        <h2 className="text-xl font-semibold" id="account-recovery-title">
+          מה צריך לפתור עכשיו?
+        </h2>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {shortcuts.map((shortcut) => {
+          const Icon = shortcut.icon;
+
+          return (
+            <Link
+              className="brand-surface interactive-lift flex min-h-28 items-start gap-3 rounded-md p-3.5"
+              data-testid={shortcut.testId}
+              href={shortcut.href}
+              key={shortcut.testId}
+            >
+              <span className="glass-inset grid size-10 shrink-0 place-items-center rounded-full border">
+                <Icon aria-hidden="true" className="size-4" />
+              </span>
+              <span className="min-w-0">
+                <span className="block font-semibold">{shortcut.label}</span>
+                <span className="text-muted-foreground mt-1 block text-sm leading-6">
+                  {shortcut.description}
+                </span>
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 

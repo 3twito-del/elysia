@@ -62,7 +62,10 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
   const query = searchParams ? await searchParams : {};
   const profile = await getPublicServiceProfile();
   const phoneHref = `tel:${profile.settings.phoneE164}`;
+  const defaultMessage = firstParam(query.message);
+  const defaultOrderNumber = firstParam(query.orderNumber);
   const defaultProductReference = firstParam(query.productReference);
+  const defaultTopicSlug = firstParam(query.topic);
 
   return (
     <main>
@@ -161,7 +164,10 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
               </p>
             </div>
             <ServiceRequestForm
+              defaultMessage={defaultMessage}
+              defaultOrderNumber={defaultOrderNumber}
               defaultProductReference={defaultProductReference}
+              defaultTopicSlug={defaultTopicSlug}
               topics={profile.topics.map((topic) => ({
                 description: topic.description,
                 label: topic.label,

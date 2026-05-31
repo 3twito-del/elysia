@@ -29,7 +29,10 @@ import {
 } from "~/lib/service-validation";
 
 type ServiceRequestFormProps = {
+  defaultMessage?: string;
+  defaultOrderNumber?: string;
   defaultProductReference?: string;
+  defaultTopicSlug?: string;
   topics: Array<{
     description?: string | null;
     label: string;
@@ -41,7 +44,10 @@ const initialState: ServiceRequestActionState = {};
 const maxFileSizeMb = Math.round(maxServiceRequestFileBytes / 1024 / 1024);
 
 export function ServiceRequestForm({
+  defaultMessage,
+  defaultOrderNumber,
   defaultProductReference,
+  defaultTopicSlug,
   topics,
 }: ServiceRequestFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
@@ -52,6 +58,9 @@ export function ServiceRequestForm({
   const [offlineState, setOfflineState] = useState<ServiceRequestActionState>(
     {},
   );
+  const selectedTopic = topics.some((topic) => topic.slug === defaultTopicSlug)
+    ? defaultTopicSlug
+    : (topics[0]?.slug ?? "");
 
   useEffect(() => {
     if (state.ok) {
@@ -95,7 +104,7 @@ export function ServiceRequestForm({
         <FieldError message={state.fieldErrors?.topicSlug} />
         <select
           className="glass-control h-11 rounded-md border px-3 text-sm"
-          defaultValue={topics[0]?.slug ?? ""}
+          defaultValue={selectedTopic}
           disabled={pending}
           id="topicSlug"
           name="topicSlug"
@@ -143,6 +152,7 @@ export function ServiceRequestForm({
 
       <div className="grid gap-3 sm:grid-cols-2">
         <Field
+          defaultValue={defaultOrderNumber}
           error={state.fieldErrors?.orderNumber}
           label="מספר הזמנה"
           name="orderNumber"
@@ -190,6 +200,7 @@ export function ServiceRequestForm({
         <FieldError message={state.fieldErrors?.message} />
         <Textarea
           className="min-h-32"
+          defaultValue={defaultMessage}
           disabled={pending}
           id="message"
           name="message"

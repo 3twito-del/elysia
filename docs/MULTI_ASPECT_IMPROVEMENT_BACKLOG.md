@@ -266,20 +266,24 @@ product code is edited.
 
 - `ID`: I-009
 - `Aspect`: Commerce and Checkout
-- `Status`: Needs Benchmark
+- `Status`: Done
 - `Priority`: P2
 - `Effort`: M
-- `Source/Evidence`: New candidate idea; account and service route guidance in
-  `docs/FULL_PRODUCT_BENCHMARK.md`
+- `Source/Evidence`: `docs/qa/account-recovery-service-shortcuts-benchmark.md`;
+  account and service route guidance in `docs/FULL_PRODUCT_BENCHMARK.md`
 - `Target Surface`: `/account`, `/account/orders/[id]`, service links, return
   request states, privacy export
-- `Improvement`: Consider adding clearer recovery or service shortcuts for
-  customers who need order help, returns, privacy export help, or supplier-backed
-  order support.
-- `Acceptance Checks`: Benchmark decision confirms the shortcuts improve
-  task-first account behavior without cluttering protected account content.
-- `Verification`: Run benchmark workflow first; implementation verification
-  would require account route tests and manual auth-state checks.
+- `Improvement`: Added compact recovery and service shortcuts for customers who
+  need order help, returns, privacy/data actions, or supplier-backed order
+  support. Service links prefill supported `/service` fields instead of
+  inventing unsupported account actions.
+- `Acceptance Checks`: Benchmark decision recorded weighted support of `12.0`
+  against a threshold of `11.25`; shortcuts remain compact, route to existing
+  service/privacy flows, preserve read-only Shopify mirror behavior, and keep
+  protected account content task-first.
+- `Verification`: `pnpm test -- src/app/account/_lib/account-recovery.test.ts src/styles/account-recovery-shortcuts.test.ts src/app/account/privacy/export/route.test.ts`
+  plus typecheck, lint, build, and browser smoke for `/account` logged-out state
+  and `/service?topic=order`.
 
 ### I-010 AI and Stylist Fallback UX
 
