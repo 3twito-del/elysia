@@ -23,6 +23,7 @@ import { WishlistButton } from "./wishlist-button";
 import {
   createProductServiceHref,
   getInitialVariantSku,
+  getPurchaseConfidenceItems,
   getVariantButtonLabel,
   getVariantDisplayName,
   getVariantStatusLabel,
@@ -72,9 +73,11 @@ type ProductPurchasePanelProps = {
   categorySlug: string;
   productSource: CatalogProduct["source"];
   availabilityMode: PublicProductAvailabilityMode;
+  deliveryPromise?: string;
   price: number;
   variants: CatalogProductVariant[];
   metalColors: string[];
+  returnPolicy?: string;
 };
 
 export function ProductPurchasePanel({
@@ -84,9 +87,11 @@ export function ProductPurchasePanel({
   categorySlug,
   productSource,
   availabilityMode,
+  deliveryPromise,
   price,
   variants,
   metalColors,
+  returnPolicy,
 }: ProductPurchasePanelProps) {
   const [selectedSku, setSelectedSku] = useState(
     getInitialVariantSku(variants),
@@ -123,6 +128,15 @@ export function ProductPurchasePanel({
     availabilityMode,
     productSource,
     variant: selectedVariant,
+  });
+  const purchaseConfidenceItems = getPurchaseConfidenceItems({
+    availabilityMode,
+    deliveryPromise,
+    productSource,
+    returnPolicy,
+    sizeKind,
+    variant: selectedVariant,
+    variantStatusLabel: selectedVariantStatusLabel,
   });
   const serviceHref = createProductServiceHref({
     productReference,
@@ -455,27 +469,25 @@ export function ProductPurchasePanel({
           className="grid gap-2"
           data-testid="product-commerce-trust"
         >
-          <div className="glass-inset flex items-start gap-2 rounded-md border p-3 text-sm">
-            <ShieldCheck
-              aria-hidden="true"
-              className="mt-0.5 size-4 shrink-0"
-            />
-            <div className="min-w-0">
-              <p className="font-medium">אישור לפני השלמה</p>
-              <p className="text-muted-foreground mt-0.5 leading-5">
-                פרטים מאומתים לפני הזמנה.
-              </p>
-            </div>
-          </div>
-          <div className="glass-inset flex items-start gap-2 rounded-md border p-3 text-sm">
-            <RotateCcw aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-            <div className="min-w-0">
-              <p className="font-medium">החלפות והחזרות</p>
-              <p className="text-muted-foreground mt-0.5 leading-5">
-                החזרה או החלפה בתיאום אישי לפי מדיניות Elysia.
-              </p>
-            </div>
-          </div>
+          {purchaseConfidenceItems.map((item) => {
+            const Icon = purchaseConfidenceIconMap[item.icon];
+
+            return (
+              <div
+                className="glass-inset flex items-start gap-2 rounded-md border p-3 text-sm"
+                data-testid={`product-purchase-confidence-${item.key}`}
+                key={item.key}
+              >
+                <Icon aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+                <div className="min-w-0">
+                  <p className="font-medium">{item.title}</p>
+                  <p className="text-muted-foreground mt-0.5 leading-5">
+                    {item.description}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         {cartMessage ? (
@@ -532,6 +544,12 @@ export function ProductPurchasePanel({
     </>
   );
 }
+
+const purchaseConfidenceIconMap = {
+  checkout: ShieldCheck,
+  fit: Ruler,
+  service: RotateCcw,
+} as const;
 
 function getMetalSwatchStyle(color: string): CSSProperties {
   const normalized = color.toLowerCase();

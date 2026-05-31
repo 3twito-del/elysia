@@ -232,7 +232,7 @@ product code is edited.
   category routes so shoppers can scan applied choices faster on mobile and
   desktop without moving filters, sort controls, recovery, or grids below
   storytelling content.
-- `Acceptance Checks`: Benchmark decision recorded weighted support of `16.5`
+- `Acceptance Checks`: Benchmark decision recorded weighted support of `12.0`
   against a threshold of `11.25`; active refinements remain individually
   tappable, readable, removable, and do not crowd product discovery controls.
 - `Verification`: `pnpm test -- src/app/search/_lib/search-state.test.ts src/app/category/[slug]/_lib/category-filter-state.test.ts src/styles/discovery-filter-density.test.ts`
@@ -242,22 +242,25 @@ product code is edited.
 
 - `ID`: I-008
 - `Aspect`: Public UX and Brand
-- `Status`: Needs Benchmark
+- `Status`: Done
 - `Priority`: P2
 - `Effort`: M
-- `Source/Evidence`: New candidate idea; benchmark required against the PDP
-  route guidance in `docs/FULL_PRODUCT_BENCHMARK.md` and
+- `Source/Evidence`: `docs/qa/pdp-purchase-confidence-benchmark.md`, PDP
+  route guidance in `docs/FULL_PRODUCT_BENCHMARK.md`, and
   `docs/PUBLIC_CHANGE_GATE.md`
 - `Target Surface`: `/product/[slug]`, purchase panel, availability language,
   service entry, recommendations, media facts
-- `Improvement`: Consider improving purchase confidence around availability,
-  sizing, service support, delivery/recovery copy, and source-specific checkout
-  expectations.
-- `Acceptance Checks`: Benchmark decision confirms supported placement and copy
-  density; the purchase panel remains the primary task area and does not become
-  marketing-heavy.
-- `Verification`: Run benchmark workflow first; implementation verification
-  would require PDP tests, product purchase utility tests, and visual QA.
+- `Improvement`: Added compact source-aware purchase confidence rows near the
+  PDP CTA, covering selected variant state, size support, delivery/return
+  handling, and Shopify supplier checkout expectations without changing the CTA
+  hierarchy.
+- `Acceptance Checks`: Benchmark decision recorded weighted support of `16.5`
+  against a threshold of `11.25`; confidence copy stays near the purchase task,
+  avoids exact public inventory counts, and keeps service/recommendation content
+  below the buy area.
+- `Verification`: `pnpm test -- src/app/product/[slug]/_components/product-purchase-utils.test.ts src/styles/service-trust-placement.test.ts`
+  plus typecheck, lint, build, and visual smoke for owned and Shopify fixture
+  PDPs.
 
 ### I-009 Account Recovery and Service Shortcuts
 

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  getPurchaseConfidenceItems,
   getVariantButtonLabel,
   getVariantStatusLabel,
   isVariantSelectableForCart,
@@ -56,5 +57,58 @@ describe("product purchase utilities", () => {
         variant: baseVariant,
       }),
     ).toBe("בירור התאמה");
+  });
+
+  it("summarizes Shopify checkout expectations without public stock precision", () => {
+    const variant = {
+      ...baseVariant,
+      availableQuantity: 12,
+      externalVariantId: "gid://shopify/ProductVariant/10",
+    };
+    const items = getPurchaseConfidenceItems({
+      availabilityMode: "READY_TO_ORDER",
+      deliveryPromise: "מסירה ותשלום יושלמו בקופת הספק.",
+      productSource: "DROPSHIP_SHOPIFY",
+      returnPolicy: "החזרות והחלפות לפי מדיניות הספק.",
+      sizeKind: "ring",
+      variant,
+      variantStatusLabel: getVariantStatusLabel({
+        availabilityMode: "READY_TO_ORDER",
+        productSource: "DROPSHIP_SHOPIFY",
+        variant,
+      }),
+    });
+    const text = items.map((item) => item.description).join(" ");
+
+    expect(items).toHaveLength(3);
+    expect(text).toContain("Shopify");
+    expect(text).toContain("קופת הספק");
+    expect(text).not.toContain("12");
+  });
+
+  it("keeps owned-product purchase confidence tied to verification and service", () => {
+    const variant = {
+      ...baseVariant,
+      availableQuantity: 2,
+    };
+    const items = getPurchaseConfidenceItems({
+      availabilityMode: "READY_TO_ORDER",
+      deliveryPromise: "מסירה עד הבית לאחר אישור הפרטים.",
+      productSource: "OWN",
+      returnPolicy: "החלפה או החזרה בתיאום אישי לפי מדיניות Elysia.",
+      sizeKind: "ring",
+      variant,
+      variantStatusLabel: getVariantStatusLabel({
+        availabilityMode: "READY_TO_ORDER",
+        productSource: "OWN",
+        variant,
+      }),
+    });
+    const checkoutItem = items.find((item) => item.key === "checkout");
+    const fitItem = items.find((item) => item.key === "fit");
+
+    expect(checkoutItem?.description).toContain("מאומתים");
+    expect(fitItem?.description).toContain("מדריך המידות");
+    expect(items.map((item) => item.description).join(" ")).not.toContain("2");
   });
 });

@@ -4,10 +4,18 @@ import {
   type PublicProductAvailabilityMode,
 } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
+import type { SizeFitKind } from "~/lib/size-fit";
 import type {
   CatalogProduct,
   CatalogProductVariant,
 } from "~/server/services/catalog-types";
+
+export type ProductPurchaseConfidenceItem = {
+  description: string;
+  icon: "checkout" | "fit" | "service";
+  key: "checkout" | "fit" | "service";
+  title: string;
+};
 
 export function createProductServiceHref(input: {
   productReference: string;
@@ -84,6 +92,42 @@ export function getVariantStatusLabel(input: {
   }).label;
 }
 
+export function getPurchaseConfidenceItems(input: {
+  availabilityMode: PublicProductAvailabilityMode;
+  deliveryPromise?: string;
+  productSource: CatalogProduct["source"];
+  returnPolicy?: string;
+  sizeKind: SizeFitKind | null;
+  variant: CatalogProductVariant | undefined;
+  variantStatusLabel: string;
+}): ProductPurchaseConfidenceItem[] {
+  return [
+    {
+      description: getCheckoutConfidenceDescription(input),
+      icon: "checkout",
+      key: "checkout",
+      title:
+        input.productSource === "DROPSHIP_SHOPIFY"
+          ? "מסלול ספק ברור"
+          : "אישור לפני השלמה",
+    },
+    {
+      description: input.sizeKind
+        ? "מדריך המידות והמידה השמורה זמינים לפני צירוף לבחירה."
+        : "אפשר לקבל ייעוץ התאמה אישי לפני השלמת ההזמנה.",
+      icon: "fit",
+      key: "fit",
+      title: input.sizeKind ? "מידה לפני צירוף" : "התאמה לפני צירוף",
+    },
+    {
+      description: getServiceConfidenceDescription(input),
+      icon: "service",
+      key: "service",
+      title: "מסירה והחלפה",
+    },
+  ];
+}
+
 export function isRecoverableOfflineCartError(error: { message: string }) {
   if (typeof navigator !== "undefined" && !navigator.onLine) return true;
 
@@ -95,6 +139,52 @@ export function isRecoverableOfflineCartError(error: { message: string }) {
     message.includes("load failed") ||
     message.includes("network")
   );
+}
+
+function getCheckoutConfidenceDescription(input: {
+  availabilityMode: PublicProductAvailabilityMode;
+  productSource: CatalogProduct["source"];
+  variant: CatalogProductVariant | undefined;
+  variantStatusLabel: string;
+}) {
+  if (!input.variant) {
+    return "בחרי מידה כדי לראות זמינות ומסלול הזמנה לפני המשך.";
+  }
+
+  if (isShopifyDropshipVariantAvailable(input)) {
+    return "המידה זמינה דרך ספק Shopify; התשלום והמסירה יושלמו בקופת הספק.";
+  }
+
+  if (
+    isVariantSelectableForCart({
+      availabilityMode: input.availabilityMode,
+      productSource: input.productSource,
+      variant: input.variant,
+    })
+  ) {
+    return `${input.variantStatusLabel}; הפרטים מאומתים לפני השלמת ההזמנה.`;
+  }
+
+  return `${input.variantStatusLabel}; אפשר לפתוח פנייה עם פרטי התכשיט.`;
+}
+
+function getServiceConfidenceDescription(input: {
+  deliveryPromise?: string;
+  productSource: CatalogProduct["source"];
+  returnPolicy?: string;
+}) {
+  const delivery =
+    input.deliveryPromise ??
+    (input.productSource === "DROPSHIP_SHOPIFY"
+      ? "מסירה ותשלום יושלמו בקופת הספק."
+      : "מסירה עד הבית לאחר אישור הפרטים.");
+  const returns =
+    input.returnPolicy ??
+    (input.productSource === "DROPSHIP_SHOPIFY"
+      ? "החזרות והחלפות לפי מדיניות הספק."
+      : "החלפה או החזרה בתיאום אישי לפי מדיניות Elysia.");
+
+  return `${delivery} ${returns}`;
 }
 
 function isShopifyDropshipVariantAvailable(input: {

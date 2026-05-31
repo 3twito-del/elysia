@@ -12,7 +12,11 @@ describe("commerce service trust placement", () => {
     );
 
     expect(purchasePanel).toContain('data-testid="product-commerce-trust"');
+    expect(purchasePanel).toContain("purchaseConfidenceItems.map");
+    expect(purchasePanel).toContain("product-purchase-confidence-${item.key}");
+    expect(purchasePanel).toContain("getPurchaseConfidenceItems");
     expect(purchasePanel).toContain("ShieldCheck");
+    expect(purchasePanel).toContain("Ruler");
     expect(purchasePanel).toContain("RotateCcw");
     expect(
       indexOf(purchasePanel, 'className="product-primary-cta h-12 w-full"'),
