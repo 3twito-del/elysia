@@ -39,6 +39,16 @@ describe("admin empty-state clarity", () => {
     expect(source).toContain('<Link href="/admin/audit">ניקוי סינון</Link>');
   });
 
+  it("keeps service queue empty states distinct for filtered and unfiltered data", () => {
+    const source = read("src/app/admin/service/page.tsx");
+
+    expect(source).toContain("אין פניות שירות מתאימות");
+    expect(source).toContain("אין פניות שירות");
+    expect(source).toContain("לא נמצאו פניות לפי הסינון הנוכחי");
+    expect(source).toContain('data-testid="admin-service-active-filters"');
+    expect(source).toContain('<Link href="/admin/service">ניקוי סינון</Link>');
+  });
+
   it("keeps integrations outbox and job filters recoverable", () => {
     const source = read("src/app/admin/integrations/page.tsx");
 
@@ -46,6 +56,8 @@ describe("admin empty-state clarity", () => {
     expect(source).toContain("const jobRunStatuses = [");
     expect(source).toContain("status: outboxStatusParam(query.outboxStatus)");
     expect(source).toContain("listAdminJobRuns(jobParams)");
+    expect(source).toContain("outboxStatusRecoveryCopy");
+    expect(source).toContain("jobRunStatusRecoveryCopy");
     expect(source).toContain('name="outboxStatus"');
     expect(source).toContain('name="jobQuery"');
     expect(source).toContain('name="jobStatus"');

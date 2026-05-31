@@ -34,6 +34,14 @@ const largeFileExceptions = new Map([
     "route-level public search composition; URL and visual contract stay stable while state helpers live in _lib",
   ],
   [
+    "src/app/account/page.tsx",
+    "account dashboard route composition; protected data orchestration remains route-local while recovery helpers live in _lib and leaf components",
+  ],
+  [
+    "src/app/admin/service/page.tsx",
+    "admin service queue route composition; filter normalization and lifecycle copy stay route-local while mutations live in actions and services",
+  ],
+  [
     "src/server/adapters/search.ts",
     "search-provider adapter facade coordinating Typesense, semantic, and local fallback paths",
   ],

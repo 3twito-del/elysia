@@ -24,6 +24,25 @@ export type ProcessOutboxResult = {
 
 type JobStatus = "COMPLETED" | "FAILED" | "SKIPPED";
 
+export function getPublicOutboxJobFailureMessage(eventType: string) {
+  if (eventType === BUSINESS_EVENTS.searchReindexRequested) {
+    return "Search reindex job failed. It will retry from the outbox when the search provider is available.";
+  }
+
+  if (eventType === BUSINESS_EVENTS.emailRequested) {
+    return "Transactional email job failed. It will retry from the outbox when email delivery is available.";
+  }
+
+  if (
+    eventType === BUSINESS_EVENTS.pushCampaignRequested ||
+    eventType === BUSINESS_EVENTS.pushCartReminderDue
+  ) {
+    return "Push notification job failed. It will retry from the outbox when push delivery is available.";
+  }
+
+  return "Outbox job failed. It will retry when the processor is available.";
+}
+
 export async function processDueOutboxEvents(input: { limit?: number } = {}) {
   const pushAutomation = await processBackInStockInterests().catch(
     (error: unknown) => ({
@@ -52,15 +71,15 @@ export async function processDueOutboxEvents(input: { limit?: number } = {}) {
       }
 
       await markOutboxEventStatus({ id: event.id, status: "PROCESSED" });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Unknown error";
+    } catch {
+      const publicMessage = getPublicOutboxJobFailureMessage(event.type);
 
       result.failed += 1;
 
       await markOutboxEventStatus({
         id: event.id,
         status: "FAILED",
-        lastError: message,
+        lastError: publicMessage,
       });
 
       await recordJobRun({
@@ -69,7 +88,7 @@ export async function processDueOutboxEvents(input: { limit?: number } = {}) {
         status: "FAILED",
         attempts: event.attempts + 1,
         metadata: { eventType: event.type },
-        lastError: message,
+        lastError: publicMessage,
       });
     }
   }

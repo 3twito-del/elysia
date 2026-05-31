@@ -73,7 +73,138 @@ Candidate items are not implementable by default. Public-facing candidates must
 pass `docs/PUBLIC_CHANGE_GATE.md` or `docs/FULL_PRODUCT_BENCHMARK.md` before
 product code is edited.
 
+### I-033 Category No-Result Recovery Depth
+
+- `ID`: I-033
+- `Aspect`: Public UX and Brand
+- `Status`: Needs Benchmark
+- `Priority`: P2
+- `Effort`: M
+- `Source/Evidence`: `/category/[slug]` filtered empty state, PLP guidance in
+  `docs/FULL_PRODUCT_BENCHMARK.md`, and `docs/PUBLIC_CHANGE_GATE.md`
+- `Target Surface`: Category filtered empty states, reset links, adjacent
+  category continuation, active refinement recovery
+- `Improvement`: Consider whether category no-result states should offer
+  clearer recovery depth, such as reset, nearby category continuation, or search
+  continuation, without turning PLP into a content page.
+- `Acceptance Checks`: Benchmark confirms recovery improves product discovery
+  while preserving listing density, active filter clarity, and route-backed
+  actions only.
+- `Verification`: Run benchmark workflow first; implementation verification
+  would require category filter state tests and public structure tests.
+
+### I-034 Product Gallery Media Fallback and Thumbnail Clarity
+
+- `ID`: I-034
+- `Aspect`: Public UX and Brand
+- `Status`: Needs Benchmark
+- `Priority`: P2
+- `Effort`: M
+- `Source/Evidence`: `/product/[slug]`, product gallery behavior, PDP media
+  guidance in `docs/FULL_PRODUCT_BENCHMARK.md`, and public visual guardrails
+- `Target Surface`: Product gallery, thumbnail controls, missing-image fallback,
+  image alt and selected-state copy
+- `Improvement`: Consider improving gallery thumbnail clarity, selected-image
+  state, and missing-media fallback without changing gallery-first PDP layout or
+  adding decorative media.
+- `Acceptance Checks`: Benchmark confirms the gallery remains product-led,
+  thumbnails are accessible and stable, and fallback states do not obscure the
+  purchase panel.
+- `Verification`: Run benchmark workflow first; implementation verification
+  would require gallery structure tests and product media guardrail tests.
+
+### I-035 Checkout Validation Summary and Payment Confidence Placement
+
+- `ID`: I-035
+- `Aspect`: Commerce and Checkout
+- `Status`: Needs Benchmark
+- `Priority`: P1
+- `Effort`: M
+- `Source/Evidence`: `/checkout`, checkout validation recovery, delivery
+  confidence benchmark, payment provider guardrails, and public checkout
+  guidance in `docs/FULL_PRODUCT_BENCHMARK.md`
+- `Target Surface`: Checkout form validation summary, payment confidence copy,
+  submit-state recovery, delivery confidence summary
+- `Improvement`: Consider clearer checkout validation and payment-confidence
+  placement near submit actions without adding optimistic payment success or
+  unsupported provider promises.
+- `Acceptance Checks`: Benchmark confirms clarity improves checkout recovery,
+  keeps payment correctness strict, and does not add provider claims that are
+  not backed by live integrations.
+- `Verification`: Run benchmark workflow first; implementation verification
+  would require checkout form tests, payment boundary tests, and service trust
+  placement tests.
+
+### I-036 Account Dashboard Data Recovery and Privacy Shortcut Clarity
+
+- `ID`: I-036
+- `Aspect`: Accessibility, Privacy, and Security
+- `Status`: Needs Benchmark
+- `Priority`: P2
+- `Effort`: M
+- `Source/Evidence`: `/account`, `/account/orders/[id]`, privacy export route,
+  account recovery shortcut benchmark, and account guidance in
+  `docs/FULL_PRODUCT_BENCHMARK.md`
+- `Target Surface`: Account dashboard recovery shortcuts, protected empty
+  states, privacy export recovery, order service links
+- `Improvement`: Consider whether account recovery and privacy actions need
+  clearer grouping or status copy without exposing protected data or adding
+  unsupported self-service actions.
+- `Acceptance Checks`: Benchmark confirms account recovery remains protected,
+  privacy actions are clear, and service links route to existing supported
+  flows only.
+- `Verification`: Run benchmark workflow first; implementation verification
+  would require account recovery tests, privacy export tests, and auth boundary
+  checks.
+
+### I-037 Offline Page Install and PWA Recovery Priority
+
+- `ID`: I-037
+- `Aspect`: Performance, PWA, and Reliability
+- `Status`: Needs Benchmark
+- `Priority`: P2
+- `Effort`: M
+- `Source/Evidence`: `/offline`, manifest shortcuts, service worker allowlist,
+  PWA offline recovery tests, and PWA guidance in
+  `docs/FULL_PRODUCT_BENCHMARK.md`
+- `Target Surface`: Offline page actions, PWA shortcut ordering, install
+  prompt copy, cached public routes
+- `Improvement`: Consider whether offline recovery should better prioritize
+  cached product discovery, size guide, service, and retry actions without
+  promising offline checkout completion.
+- `Acceptance Checks`: Benchmark confirms offline recovery remains realistic,
+  cached routes are route-backed, and install/retry copy does not imply
+  unsupported offline commerce.
+- `Verification`: Run benchmark workflow first; implementation verification
+  would require manifest tests, service worker route tests, and offline recovery
+  tests.
+
 ## Completed Work
+
+### I-028 Production Deployment Evidence Ledger
+
+- `ID`: I-028
+- `Aspect`: QA, Release, and Observability
+- `Status`: Done
+- `Priority`: P1
+- `Effort`: S
+- `Source/Evidence`: Recent production deploy flow, `scripts/smoke.mjs`,
+  Vercel deployment inspection output, and release-readiness guidance in
+  `docs/FULL_PRODUCT_BENCHMARK.md`
+- `Target Surface`: Production deploy notes, smoke evidence, release checklist
+  documentation
+- `Improvement`: Added `docs/qa/production-deployment-evidence-ledger.md` to
+  record the latest production deployment URL, production alias, smoke command,
+  smoke result, repeatable verification commands, and remaining production
+  risks without storing secrets or raw dashboard data.
+- `Acceptance Checks`: The ledger is repeatable, does not include secrets, names
+  the production alias explicitly, and links each deploy decision to concrete
+  local and production checks.
+- `Verification`: Verified with `vercel ls --yes`,
+  `vercel inspect https://elysia-8xyl6znel-ariel-twitos-projects.vercel.app`,
+  `SMOKE_BASE_URL=https://elysia-jewellery.com pnpm smoke`,
+  `pnpm exec prettier --check docs/qa/production-deployment-evidence-ledger.md docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md`,
+  and `git diff --check`.
 
 ### I-018 Production Smoke Coverage for Recent Public Decisions
 
@@ -317,6 +448,117 @@ product code is edited.
   `pnpm test -- src/styles/content-route-service-recovery.test.ts src/styles/service-trust-placement.test.ts src/styles/public-structure-enforcement.test.ts src/styles/cta-hierarchy.test.ts src/styles/mobile-commerce-density.test.ts`,
   `pnpm lint`, `pnpm typecheck`, and
   `pnpm exec prettier --check docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md docs/qa/faq-content-service-recovery-links-benchmark.md src/app/faq/page.tsx src/app/privacy/page.tsx src/app/terms/page.tsx src/app/accessibility/page.tsx src/styles/content-route-service-recovery.test.ts`.
+
+### I-029 Admin Service Queue Empty and Filter-State Audit
+
+- `ID`: I-029
+- `Aspect`: Admin and Operations
+- `Status`: Done
+- `Priority`: P2
+- `Effort`: M
+- `Source/Evidence`: `/admin/service`, existing admin empty-state contract
+  tests, service request lifecycle, and admin operations guidance in
+  `docs/FULL_PRODUCT_BENCHMARK.md`
+- `Target Surface`: `/admin/service`, service request filters, service request
+  empty/loading/error states
+- `Improvement`: Hardened the admin service queue by normalizing invalid
+  `page` and `status` query params before backend calls, adding visible active
+  filter labels, distinguishing filtered-empty from globally empty states, and
+  keeping status copy tied to shared lifecycle labels.
+- `Acceptance Checks`: Service filters have explicit reset/recovery paths,
+  empty states do not imply automation that does not exist, and request status
+  terminology stays aligned with backend lifecycle labels.
+- `Verification`: Covered by
+  `src/styles/admin-service-queue-filter-state.test.ts` and
+  `src/styles/admin-empty-state-contract.test.ts`; verified with
+  `pnpm test -- src/styles/admin-service-queue-filter-state.test.ts src/styles/admin-empty-state-contract.test.ts`,
+  `pnpm lint`, `pnpm typecheck`, and
+  `pnpm exec prettier --check docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md src/app/admin/service/page.tsx src/styles/admin-service-queue-filter-state.test.ts src/styles/admin-empty-state-contract.test.ts`.
+
+### I-030 Offline Sync Response and Retry Contract Audit
+
+- `ID`: I-030
+- `Aspect`: Performance, PWA, and Reliability
+- `Status`: Done
+- `Priority`: P1
+- `Effort`: M
+- `Source/Evidence`: `/api/pwa/sync`, `/api/pwa/sync/service-request`,
+  `src/lib/pwa-offline`, offline smoke needs, and existing PWA tests
+- `Target Surface`: Offline sync API responses, queued service requests,
+  queued cart actions, retry feedback
+- `Improvement`: Added a stable offline sync response envelope with
+  `ok`, `summary`, and `results`, preserved partial-failure retry details
+  without marking the whole request as transport-failed, and sanitized queued
+  action error copy before it reaches the PWA client.
+- `Acceptance Checks`: Offline sync responses use stable success/error shapes,
+  service-request retry failures preserve user recovery guidance, and cart sync
+  failures avoid raw provider or network detail.
+- `Verification`: Covered by
+  `src/app/api/pwa/sync/route.test.ts`,
+  `src/app/api/pwa/sync/service-request/route.test.ts`,
+  `src/server/http/api-response-boundary.test.ts`,
+  `src/styles/pwa-offline-recovery.test.ts`, and
+  `src/styles/offline-sync-response-contract.test.ts`; verified with
+  `pnpm test -- src/server/http/api-response-boundary.test.ts src/app/api/pwa/sync/route.test.ts src/app/api/pwa/sync/service-request/route.test.ts src/styles/pwa-offline-recovery.test.ts src/styles/offline-sync-response-contract.test.ts`,
+  `pnpm lint`, `pnpm typecheck`, and
+  `pnpm exec prettier --check docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md src/app/api/pwa/sync/route.ts src/app/api/pwa/sync/route.test.ts src/app/api/pwa/sync/service-request/route.ts src/app/api/pwa/sync/service-request/route.test.ts src/lib/pwa-offline.ts src/server/services/offline-sync.ts src/server/http/api-response-boundary.test.ts src/styles/pwa-offline-recovery.test.ts src/styles/offline-sync-response-contract.test.ts`.
+
+### I-031 Search Reindex and Job Failure Contract Review
+
+- `ID`: I-031
+- `Aspect`: Backend, API, and Data
+- `Status`: Done
+- `Priority`: P1
+- `Effort`: M
+- `Source/Evidence`: `/api/search/reindex`, `/api/jobs/outbox`, outbox job
+  runner tests, provider negative-path review, and API response boundary rules
+- `Target Surface`: Search reindex route, outbox job route, provider failure
+  handling, admin-visible job failure copy
+- `Improvement`: Added audit-event metadata to successful search reindex
+  responses, added a stable outbox job summary with completed/skipped/failed
+  and retryable counts, sanitized provider-backed outbox job failures before
+  persistence, and added admin recovery copy that distinguishes skipped,
+  retryable, failed, running, and completed work.
+- `Acceptance Checks`: Provider exceptions do not leak secrets, failure status
+  codes use shared response helpers, admin copy distinguishes skipped,
+  retryable, and failed work, and existing job semantics stay unchanged.
+- `Verification`: Covered by `src/app/api/search/reindex/route.test.ts`,
+  `src/app/api/jobs/outbox/route.test.ts`,
+  `src/server/services/jobs.test.ts`,
+  `src/server/http/api-response-boundary.test.ts`,
+  `src/styles/admin-empty-state-contract.test.ts`, and
+  `src/styles/search-outbox-job-failure-contract.test.ts`; verified with
+  `pnpm test -- src/app/api/search/reindex/route.test.ts src/app/api/jobs/outbox/route.test.ts src/server/services/jobs.test.ts src/server/http/api-response-boundary.test.ts src/styles/admin-empty-state-contract.test.ts src/styles/search-outbox-job-failure-contract.test.ts`,
+  `pnpm lint`, `pnpm typecheck`, and
+  `pnpm exec prettier --check docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md src/app/api/search/reindex/route.ts src/app/api/search/reindex/route.test.ts src/app/api/jobs/outbox/route.ts src/app/api/jobs/outbox/route.test.ts src/server/services/jobs.ts src/server/services/jobs.test.ts src/app/admin/integrations/page.tsx src/styles/admin-empty-state-contract.test.ts src/styles/search-outbox-job-failure-contract.test.ts`.
+
+### I-032 Cookie Consent and Privacy Control Contract Audit
+
+- `ID`: I-032
+- `Aspect`: Accessibility, Privacy, and Security
+- `Status`: Done
+- `Priority`: P2
+- `Effort`: M
+- `Source/Evidence`: Cookie banner/control behavior, privacy route,
+  accessibility route, privacy policy obligations, and public chrome collision
+  guardrails
+- `Target Surface`: Cookie preferences panel, cookie banner, privacy page,
+  floating controls, accessibility interactions
+- `Improvement`: Linked the cookie banner to explicit descriptive text, added
+  floating collision participation to the banner, made the privacy cookie
+  preference panel expose a live status region, and reflected persisted
+  essential/all choices with `aria-pressed` controls.
+- `Acceptance Checks`: Cookie actions are keyboard reachable, status feedback is
+  field-linked or region-linked, choices persist clearly, and controls do not
+  obscure critical public actions.
+- `Verification`: Covered by
+  `src/styles/cookie-privacy-controls-contract.test.ts`,
+  `src/styles/floating-chrome-contract.test.ts`,
+  `src/styles/content-route-service-recovery.test.ts`, and
+  `src/lib/accessibility-guardrails.test.ts`; verified with
+  `pnpm test -- src/styles/cookie-privacy-controls-contract.test.ts src/styles/floating-chrome-contract.test.ts src/styles/content-route-service-recovery.test.ts src/lib/accessibility-guardrails.test.ts`,
+  `pnpm lint`, `pnpm typecheck`, and
+  `pnpm exec prettier --check docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md src/components/cookie-consent-banner.tsx src/components/cookie-preferences-panel.tsx src/styles/cookie-privacy-controls-contract.test.ts src/styles/floating-chrome-contract.test.ts`.
 
 ### I-001 Public Metadata and Share Preview Audit
 

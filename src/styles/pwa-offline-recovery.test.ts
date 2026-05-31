@@ -41,8 +41,10 @@ describe("PWA offline recovery", () => {
     expect(offlineSync).toContain("syncErrorEventName");
     expect(offlineSync).toContain("service.request");
     expect(offlineSync).toContain("queueOfflineServiceRequest");
+    expect(offlineSync).toContain("readSyncResponse(response)");
 
     expect(serviceRoute).toContain("processOfflineServiceRequest");
+    expect(serviceRoute).toContain("createOfflineSyncResponse([result])");
     expect(serviceRoute).toContain("metadataJson");
     expect(serviceRoute).toContain("files");
   });

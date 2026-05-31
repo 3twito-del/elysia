@@ -23,7 +23,11 @@ export function CookiePreferencesPanel() {
   };
 
   return (
-    <section aria-labelledby="cookie-preferences">
+    <section
+      aria-describedby="cookie-preferences-status"
+      aria-labelledby="cookie-preferences"
+      data-testid="cookie-preferences-panel"
+    >
       <div className="flex items-center gap-3">
         <ShieldCheck className="size-5" aria-hidden="true" />
         <h2 className="text-2xl font-semibold" id="cookie-preferences">
@@ -34,7 +38,13 @@ export function CookiePreferencesPanel() {
       <div className="glass-inset mt-4 rounded-md border p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="flex items-center gap-2 font-medium">
+            <p
+              aria-live="polite"
+              className="flex items-center gap-2 font-medium"
+              data-testid="cookie-preferences-status"
+              id="cookie-preferences-status"
+              role="status"
+            >
               <CheckCircle2 className="size-5" aria-hidden="true" />
               {statusText}
             </p>
@@ -46,6 +56,8 @@ export function CookiePreferencesPanel() {
 
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
             <Button
+              aria-describedby="cookie-preferences-status"
+              aria-pressed={consentValue === "essential"}
               className="cookie-button-secondary"
               type="button"
               variant="outline"
@@ -55,12 +67,14 @@ export function CookiePreferencesPanel() {
               הכרחי בלבד
             </Button>
             <Button
+              aria-describedby="cookie-preferences-status"
+              aria-pressed={consentValue === "all"}
               className="cookie-button-primary"
               type="button"
               variant="default"
               onClick={() => chooseConsent("all")}
             >
-              <BarChart3 className="size-4" />
+              <BarChart3 aria-hidden="true" className="size-4" />
               אישור מדידה
             </Button>
           </div>

@@ -4,6 +4,7 @@ import {
   canExpireReservationForOrderStatus,
   createOutboxEmailMessage,
   getOutboxPayloadString,
+  getPublicOutboxJobFailureMessage,
   redactJobRecipient,
 } from "./jobs";
 
@@ -46,5 +47,17 @@ describe("outbox job helpers", () => {
     expect(redactJobRecipient("dana@example.com")).toBe("d***@example.com");
     expect(redactJobRecipient("+972-50-123-4567")).toBe("***4567");
     expect(redactJobRecipient("")).toBe("[redacted]");
+  });
+
+  it("uses public retry copy for provider-backed job failures", () => {
+    expect(
+      getPublicOutboxJobFailureMessage("search.reindex_requested"),
+    ).toContain("search provider is available");
+    expect(getPublicOutboxJobFailureMessage("email.requested")).toContain(
+      "email delivery is available",
+    );
+    expect(getPublicOutboxJobFailureMessage("unknown.event")).toBe(
+      "Outbox job failed. It will retry when the processor is available.",
+    );
   });
 });

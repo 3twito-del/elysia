@@ -74,6 +74,10 @@ describe("search reindex route", () => {
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
       ok: true,
+      audit: {
+        enqueued: true,
+        eventId: "outbox_1",
+      },
       embedded: 12,
       embeddingDimension: 768,
       embeddingModel: "google/gemini-embedding-001",
@@ -133,6 +137,28 @@ describe("search reindex route", () => {
         error: "Search reindex provider is unavailable.",
       });
       expect(outboxMocks.enqueueOutboxEvent).not.toHaveBeenCalled();
+    } finally {
+      errorSpy.mockRestore();
+    }
+  });
+
+  it("returns a redacted 503 when the search audit event cannot be recorded", async () => {
+    const errorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
+    outboxMocks.enqueueOutboxEvent.mockRejectedValueOnce(
+      new Error("database password leaked"),
+    );
+
+    try {
+      const response = await POST(createReindexRequest());
+
+      expect(response.status).toBe(503);
+      await expect(response.json()).resolves.toEqual({
+        ok: false,
+        error: "Search reindex audit is unavailable.",
+      });
+      expect(searchMocks.indexProducts).toHaveBeenCalledTimes(1);
     } finally {
       errorSpy.mockRestore();
     }

@@ -83,6 +83,7 @@ describe("public floating chrome contract", () => {
     const banner = read("src/components/cookie-consent-banner.tsx");
 
     expect(banner).toContain("--public-bottom-safe-offset");
+    expect(banner).toContain('data-public-floating-avoid="true"');
     expect(banner).toContain(
       'root.style.setProperty("--public-bottom-safe-offset", `${height}px`)',
     );

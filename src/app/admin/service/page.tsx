@@ -73,6 +73,22 @@ function optionalParam(value: string | string[] | undefined) {
   return param && param.length > 0 ? param : undefined;
 }
 
+function pageParam(value: string | string[] | undefined) {
+  const page = Number(firstParam(value) ?? 1);
+
+  return Number.isInteger(page) && page > 0 ? page : 1;
+}
+
+function serviceStatusParam(value: string | string[] | undefined) {
+  const status = optionalParam(value);
+
+  return serviceRequestStatuses.includes(
+    status as (typeof serviceRequestStatuses)[number],
+  )
+    ? (status as (typeof serviceRequestStatuses)[number])
+    : undefined;
+}
+
 export default async function AdminServicePage({
   searchParams,
 }: AdminServicePageProps) {
@@ -82,12 +98,10 @@ export default async function AdminServicePage({
 
   const query = await searchParams;
   const params = {
-    page: Number(firstParam(query.page) ?? 1),
+    page: pageParam(query.page),
     pageSize: 20,
     query: optionalParam(query.query),
-    status: optionalParam(query.status) as
-      | (typeof serviceRequestStatuses)[number]
-      | undefined,
+    status: serviceStatusParam(query.status),
     topicId: optionalParam(query.topicId),
   };
   const [requests, configuration] = await Promise.all([
@@ -110,6 +124,25 @@ export default async function AdminServicePage({
     Boolean(params.topicId),
     params.page > 1,
   ].some(Boolean);
+  const activeFilterLabels = [
+    params.query ? `חיפוש: ${params.query}` : null,
+    params.status
+      ? `סטטוס: ${getServiceRequestStatusLabel(params.status)}`
+      : null,
+    params.topicId
+      ? `נושא: ${
+          requests.topics.find((topic) => topic.id === params.topicId)?.label ??
+          "נושא לא זמין"
+        }`
+      : null,
+    params.page > 1 ? `עמוד ${params.page}` : null,
+  ].filter((label): label is string => Boolean(label));
+  const emptyTitle = hasActiveFilters
+    ? "אין פניות שירות מתאימות"
+    : "אין פניות שירות";
+  const emptyDescription = hasActiveFilters
+    ? "לא נמצאו פניות לפי הסינון הנוכחי. נקו סינון או שנו חיפוש כדי לחזור לתור השירות המלא."
+    : "פניות מהטופס הציבורי יופיעו כאן לטיפול ומעקב.";
 
   return (
     <AdminShell
@@ -170,6 +203,22 @@ export default async function AdminServicePage({
                 </Button>
               ) : null}
             </form>
+            {hasActiveFilters ? (
+              <div
+                className="text-muted-foreground mt-4 flex flex-wrap items-center gap-2 text-sm"
+                data-testid="admin-service-active-filters"
+              >
+                <span className="text-foreground font-medium">סינון פעיל</span>
+                {activeFilterLabels.map((label) => (
+                  <Badge key={label} variant="outline">
+                    {label}
+                  </Badge>
+                ))}
+                <Button asChild size="sm" variant="ghost">
+                  <Link href="/admin/service">ניקוי סינון</Link>
+                </Button>
+              </div>
+            ) : null}
           </CardContent>
         </Card>
 
@@ -204,9 +253,9 @@ export default async function AdminServicePage({
                       ) : undefined
                     }
                     colSpan={6}
-                    description="פניות מהטופס הציבורי יופיעו כאן לטיפול ומעקב."
+                    description={emptyDescription}
                     icon={Headset}
-                    title="אין פניות שירות"
+                    title={emptyTitle}
                   />
                 ) : (
                   requests.items.map((request) => (

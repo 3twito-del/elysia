@@ -50,6 +50,42 @@ export type OfflineSyncResult = {
   ok: boolean;
 };
 
+export type OfflineSyncSummary = {
+  failed: number;
+  synced: number;
+  total: number;
+};
+
+export type OfflineSyncResponse = {
+  ok: boolean;
+  results: OfflineSyncResult[];
+  summary: OfflineSyncSummary;
+};
+
+export function createOfflineSyncResponse(
+  results: OfflineSyncResult[],
+): OfflineSyncResponse {
+  const failed = results.filter((result) => !result.ok).length;
+
+  return {
+    ok: failed === 0,
+    results,
+    summary: {
+      failed,
+      synced: results.length - failed,
+      total: results.length,
+    },
+  };
+}
+
+export function getPublicOfflineSyncError(kind: string) {
+  if (kind === "service.request") {
+    return "Queued service request could not be synced. Please retry or submit the request again from the service page.";
+  }
+
+  return "Queued action could not be synced. Please retry when the connection is stable.";
+}
+
 export async function processOfflineJsonActions(
   actions: z.infer<typeof offlineJsonActionSchema>[],
 ) {
@@ -136,8 +172,8 @@ async function processOfflineAction<
     });
 
     return { actionId: action.actionId, ok: true };
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Sync failed.";
+  } catch {
+    const publicMessage = getPublicOfflineSyncError(action.kind);
 
     await db.offlineActionReceipt.update({
       where: {
@@ -147,12 +183,12 @@ async function processOfflineAction<
         },
       },
       data: {
-        lastError: message,
+        lastError: publicMessage,
         status: "FAILED",
       },
     });
 
-    return { actionId: action.actionId, error: message, ok: false };
+    return { actionId: action.actionId, error: publicMessage, ok: false };
   }
 }
 

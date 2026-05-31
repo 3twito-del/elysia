@@ -73,8 +73,10 @@ export function CookieConsentBanner() {
   return (
     <section
       aria-label="בחירת קוקיז"
+      aria-describedby="cookie-consent-summary"
       className="minimal-scroll bg-background fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-50 max-h-[24dvh] overflow-y-auto rounded-md border border-[var(--glass-border)] px-3 py-2 shadow-none sm:inset-x-auto sm:right-4 sm:bottom-4 sm:w-[min(calc(100vw-2rem),20rem)] sm:px-3 sm:py-2.5"
       data-cookie-consent-banner="true"
+      data-public-floating-avoid="true"
       ref={bannerRef}
     >
       <div className="grid gap-2">
@@ -86,7 +88,10 @@ export function CookieConsentBanner() {
             <h2 className="text-xs font-semibold sm:text-base">
               בחירת קוקיז באתר Elysia
             </h2>
-            <p className="text-muted-foreground mt-1 line-clamp-1 max-w-3xl text-[0.68rem] leading-5 sm:text-sm sm:leading-6">
+            <p
+              className="text-muted-foreground mt-1 line-clamp-1 max-w-3xl text-[0.68rem] leading-5 sm:text-sm sm:leading-6"
+              id="cookie-consent-summary"
+            >
               אנו משתמשים בקוקיז חיוניים להפעלת האתר והבחירה שלך. באישורכם נשתמש
               גם במדידה ושיפור חוויית הבחירה, כולל בחירות שנצפו לאחרונה.
               <Link
@@ -101,6 +106,7 @@ export function CookieConsentBanner() {
 
         <div className="grid shrink-0 grid-cols-2 gap-2">
           <Button
+            aria-describedby="cookie-consent-summary"
             className="cookie-button-secondary min-h-9 text-xs sm:min-h-10 sm:min-w-32 sm:text-sm"
             type="button"
             variant="outline"
@@ -110,6 +116,7 @@ export function CookieConsentBanner() {
             הכרחי בלבד
           </Button>
           <Button
+            aria-describedby="cookie-consent-summary"
             className="cookie-button-primary min-h-9 text-xs sm:min-h-10 sm:min-w-32 sm:text-sm"
             type="button"
             onClick={() => chooseConsent("all")}

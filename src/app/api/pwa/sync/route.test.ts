@@ -50,9 +50,63 @@ describe("PWA JSON sync route", () => {
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
+      ok: true,
       results: [{ actionId: "offline_action_1", ok: true }],
+      summary: { failed: 0, synced: 1, total: 1 },
     });
     expect(offlineSyncMocks.processOfflineJsonActions).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps partial failures in a stable retry envelope", async () => {
+    offlineSyncMocks.processOfflineJsonActions.mockResolvedValueOnce([
+      { actionId: "offline_action_1", ok: true },
+      {
+        actionId: "offline_action_2",
+        error:
+          "Queued action could not be synced. Please retry when the connection is stable.",
+        ok: false,
+      },
+    ]);
+
+    const response = await POST(
+      new Request("http://localhost/api/pwa/sync", {
+        body: JSON.stringify({
+          actions: [
+            {
+              actionId: "offline_action_1",
+              createdAt: new Date().toISOString(),
+              deviceId: "pwa_device_123456789",
+              kind: "newsletter.join",
+              payload: { email: "dana@example.com" },
+            },
+            {
+              actionId: "offline_action_2",
+              createdAt: new Date().toISOString(),
+              deviceId: "pwa_device_123456789",
+              kind: "cart.updateItem",
+              payload: { itemId: "item_1", quantity: 2 },
+            },
+          ],
+        }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({
+      ok: false,
+      results: [
+        { actionId: "offline_action_1", ok: true },
+        {
+          actionId: "offline_action_2",
+          error:
+            "Queued action could not be synced. Please retry when the connection is stable.",
+          ok: false,
+        },
+      ],
+      summary: { failed: 1, synced: 1, total: 2 },
+    });
   });
 
   it("rejects malformed sync payloads before processing", async () => {

@@ -38,12 +38,20 @@ export type OfflineCartSnapshot = {
 
 type SyncResult = {
   actionId: string;
-  ok: boolean;
   error?: string;
+  ok: boolean;
+};
+
+type SyncSummary = {
+  failed: number;
+  synced: number;
+  total: number;
 };
 
 type SyncResponse = {
+  ok: boolean;
   results: SyncResult[];
+  summary: SyncSummary;
 };
 
 export async function getPwaDeviceId() {
@@ -161,7 +169,11 @@ export async function syncPendingOfflineActions() {
       throw new Error("Offline sync failed.");
     }
 
-    const data = (await response.json()) as SyncResponse;
+    const data = await readSyncResponse(response);
+
+    if (!data) {
+      throw new Error("Offline sync failed.");
+    }
 
     for (const result of data.results) {
       if (result.ok) {
@@ -281,12 +293,38 @@ async function syncServiceRequest(action: OfflineActionRecord) {
   if (!response.ok) {
     return {
       actionId: action.actionId,
-      ok: false,
       error: "Service request sync failed.",
+      ok: false,
+    };
+  }
+
+  const data = await readSyncResponse(response);
+  const result =
+    data?.results.find(
+      (syncResult) => syncResult.actionId === action.actionId,
+    ) ?? data?.results[0];
+
+  if (!result?.ok) {
+    return {
+      actionId: action.actionId,
+      error: result?.error ?? "Service request sync failed.",
+      ok: false,
     };
   }
 
   return { actionId: action.actionId, ok: true };
+}
+
+async function readSyncResponse(response: Response) {
+  try {
+    const data = (await response.json()) as SyncResponse;
+
+    if (!Array.isArray(data.results)) return null;
+
+    return data;
+  } catch {
+    return null;
+  }
 }
 
 async function deleteAction(actionId: string) {

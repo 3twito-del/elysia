@@ -41,6 +41,22 @@ const outboxStatuses = [
 
 const jobRunStatuses = ["RUNNING", "COMPLETED", "FAILED", "SKIPPED"] as const;
 
+const outboxStatusRecoveryCopy = {
+  FAILED:
+    "נכשל ונשמר לנסיון חוזר לפי זמן הזמינות הבא; בדקו ספק או הגדרות אם הכשל חוזר.",
+  PENDING: "ממתין לעיבוד על ידי job runner.",
+  PROCESSING: "נמצא בעיבוד כעת.",
+  PROCESSED: "עובד בהצלחה ואין צורך בפעולת retry.",
+  PUBLISHED: "פורסם למערכת החיצונית וממתין להמשך טיפול.",
+} as const;
+
+const jobRunStatusRecoveryCopy = {
+  COMPLETED: "העבודה הסתיימה בהצלחה.",
+  FAILED: "העבודה נכשלה; בדקו ספק, סוד או תור outbox לפני הרצה חוזרת.",
+  RUNNING: "העבודה עדיין פעילה.",
+  SKIPPED: "העבודה דולגה באופן מכוון כי לא היה קלט או ספק מתאים לעיבוד.",
+} as const;
+
 export const metadata = {
   title: "Integrations | Admin",
 };
@@ -212,6 +228,7 @@ export default async function AdminIntegrationsPage({
                 <TableRow>
                   <TableHead>סוג</TableHead>
                   <TableHead>Aggregate</TableHead>
+                  <TableHead>Recovery</TableHead>
                   <TableHead>סטטוס</TableHead>
                   <TableHead>ניסיונות</TableHead>
                   <TableHead>זמין</TableHead>
@@ -227,7 +244,7 @@ export default async function AdminIntegrationsPage({
                         </Button>
                       ) : undefined
                     }
-                    colSpan={5}
+                    colSpan={6}
                     description={
                       hasActiveOutboxFilters
                         ? "שנו חיפוש או סטטוס, או נקו כדי לחזור לכל אירועי ה-outbox."
@@ -249,6 +266,9 @@ export default async function AdminIntegrationsPage({
                       <TableCell>
                         {event.aggregateType ?? "-"} ·{" "}
                         {event.aggregateId ?? "-"}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground max-w-[260px]">
+                        {outboxStatusRecoveryCopy[event.status]}
                       </TableCell>
                       <TableCell>
                         <Badge variant="secondary">{event.status}</Badge>
@@ -312,9 +332,10 @@ export default async function AdminIntegrationsPage({
               ) : null}
             </form>
             <AdminTableScrollHint />
-            <Table className="min-w-[680px]">
+            <Table className="min-w-[760px]">
               <TableHeader>
                 <TableRow>
+                  <TableHead>Recovery</TableHead>
                   <TableHead>שם</TableHead>
                   <TableHead>סטטוס</TableHead>
                   <TableHead>ניסיונות</TableHead>
@@ -332,7 +353,7 @@ export default async function AdminIntegrationsPage({
                         </Button>
                       ) : undefined
                     }
-                    colSpan={5}
+                    colSpan={6}
                     description={
                       hasActiveJobFilters
                         ? "שנו חיפוש או סטטוס, או נקו כדי לחזור לריצות האחרונות."
@@ -348,6 +369,9 @@ export default async function AdminIntegrationsPage({
                 ) : (
                   jobs.items.map((job) => (
                     <TableRow key={job.id}>
+                      <TableCell className="text-muted-foreground max-w-[260px]">
+                        {jobRunStatusRecoveryCopy[job.status]}
+                      </TableCell>
                       <TableCell className="font-medium">{job.name}</TableCell>
                       <TableCell>
                         <Badge variant="secondary">{job.status}</Badge>

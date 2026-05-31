@@ -57,8 +57,10 @@ export async function POST(req: Request) {
     return serviceUnavailableJson("Search reindex provider is unavailable.");
   }
 
+  let auditEvent: Awaited<ReturnType<typeof enqueueOutboxEvent>>;
+
   try {
-    await enqueueOutboxEvent({
+    auditEvent = await enqueueOutboxEvent({
       type: BUSINESS_EVENTS.searchReindexRequested,
       aggregateType: "SearchIndex",
       aggregateId: "products",
@@ -81,6 +83,10 @@ export async function POST(req: Request) {
 
   return okJson({
     ok: true,
+    audit: {
+      enqueued: true,
+      eventId: auditEvent.id,
+    },
     ...result,
   });
 }
