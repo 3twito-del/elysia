@@ -4,6 +4,7 @@ import { ArrowRight, LifeBuoy, PackageCheck, RotateCcw } from "lucide-react";
 
 import { ReturnRequestForm } from "../../_components/return-request-form";
 import { createAccountServiceHref } from "../../_lib/account-recovery";
+import { createAccountOrderTimeline } from "../../_lib/order-timeline";
 import { CommercePageHero } from "~/components/commerce-page-hero";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
@@ -19,7 +20,7 @@ import {
   getReturnStatusLabel,
   getShipmentStatusLabel,
 } from "~/lib/commerce-labels";
-import { formatPrice } from "~/lib/format";
+import { formatOptionalHebrewDateTime, formatPrice } from "~/lib/format";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 
@@ -64,6 +65,7 @@ export default async function OrderDetailPage({
   const canRequestReturn =
     !["PENDING_PAYMENT", "CANCELLED", "REFUNDED"].includes(order.status) &&
     order.returns.every((request) => request.status === "CANCELLED");
+  const orderTimeline = createAccountOrderTimeline(order);
 
   return (
     <main>
@@ -127,6 +129,38 @@ export default async function OrderDetailPage({
             </Badge>
           </div>
         </div>
+
+        <Card
+          className="mb-6 rounded-md"
+          data-testid="order-status-timeline"
+          id="order-timeline"
+        >
+          <CardHeader>
+            <CardTitle>רצף טיפול בהזמנה</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+              {orderTimeline.map((event) => (
+                <li
+                  className="glass-inset data-[state=current]:border-foreground/50 rounded-md border p-3 data-[state=pending]:opacity-70"
+                  data-state={event.state}
+                  key={event.id}
+                >
+                  <p className="text-xs font-medium">{event.label}</p>
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    {formatOptionalHebrewDateTime(
+                      event.at,
+                      event.state === "pending" ? "בהמשך" : "ממתין לעדכון",
+                    )}
+                  </p>
+                  <p className="text-muted-foreground mt-2 text-xs leading-5">
+                    {event.description}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          </CardContent>
+        </Card>
 
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
           <Card className="rounded-md" id="order-items">

@@ -207,84 +207,104 @@ src/app/account/actions.test.ts`.
   `pnpm test -- src/app/checkout/_components/checkout-display.test.ts
 src/styles/service-trust-placement.test.ts`.
 
-## Candidate Improvements
-
-Candidate items are not implementable by default. Public-facing candidates must
-pass `docs/PUBLIC_CHANGE_GATE.md` or `docs/FULL_PRODUCT_BENCHMARK.md` before
-product code is edited.
-
 ### I-006 Wishlist and Shortlist Decision Support
 
 - `ID`: I-006
 - `Aspect`: Public UX and Brand
-- `Status`: Needs Benchmark
+- `Status`: Done
 - `Priority`: P2
 - `Effort`: M
-- `Source/Evidence`: New candidate idea; wishlist, cart, and account guidance in
+- `Source/Evidence`: `docs/qa/wishlist-shortlist-decision-support-benchmark.md`,
+  wishlist, account, sizing, and service guidance in
   `docs/FULL_PRODUCT_BENCHMARK.md`
-- `Target Surface`: Wishlist, cart, account wishlist card, shortlist recovery,
-  and saved product decision states
-- `Improvement`: Consider compact comparison or next-step cues that help
-  shoppers decide between saved pieces without turning wishlist into checkout.
-- `Acceptance Checks`: Benchmark decision confirms decision support improves
-  saved-item review without crowding product cards or overpromoting urgency.
-- `Verification`: Run benchmark workflow first; implementation verification
-  would require wishlist/cart route tests and visual smoke.
+- `Target Surface`: Account wishlist card, shortlist recovery, saved product
+  decision states, category continuation, sizing help, and service escalation
+- `Improvement`: Added compact saved-item decision support above the account
+  wishlist list without changing product cards, cart, or checkout.
+- `Acceptance Checks`: Benchmark passed with weighted support of `12.0`
+  against the `11.25` threshold. Wishlist support appears only for saved items,
+  keeps existing product/remove controls, routes to category/search,
+  `/size-guide`, and `/service?topic=sizing`, and does not add checkout or
+  urgency actions.
+- `Verification`: Covered by
+  `src/app/account/_lib/wishlist-shortlist.test.ts` and
+  `src/styles/account-wishlist-decision-support.test.ts`; focused verification
+  command is
+  `pnpm test -- src/app/account/_lib/wishlist-shortlist.test.ts src/styles/account-wishlist-decision-support.test.ts`.
 
 ### I-007 Product Card Quick Facts Density
 
 - `ID`: I-007
 - `Aspect`: Public UX and Brand
-- `Status`: Needs Benchmark
+- `Status`: Done
 - `Priority`: P2
 - `Effort`: M
-- `Source/Evidence`: New candidate idea; PLP, search, gifts, and product-card
-  guidance in `docs/FULL_PRODUCT_BENCHMARK.md`
-- `Target Surface`: Product cards on category, search, gifts, recommendations,
-  and related-product surfaces
-- `Improvement`: Consider adding compact material, availability, or source facts
-  on cards without reducing scan speed or creating noisy commerce badges.
-- `Acceptance Checks`: Benchmark decision confirms quick facts improve product
-  comparison and do not make listing pages denser than the reference standard.
-- `Verification`: Run benchmark workflow first; implementation verification
-  would require product-card tests and visual smoke for listing routes.
+- `Source/Evidence`: `docs/qa/product-card-quick-facts-density-benchmark.md`,
+  PLP, search, gifts, and product-card guidance in
+  `docs/FULL_PRODUCT_BENCHMARK.md`
+- `Target Surface`: Product cards on category, search, gifts, home featured,
+  recommendations, and related-product surfaces
+- `Improvement`: Extended the existing quiet product-card metadata line with
+  public availability and supplier source context while preserving scan speed.
+- `Acceptance Checks`: Benchmark passed with weighted support of `12.0`
+  against the `11.25` threshold. Cards still use one text metadata line, no
+  extra badges or overlays, no checkout link, and supplier source appears only
+  for `DROPSHIP_SHOPIFY`.
+- `Verification`: Covered by `src/styles/product-card-overlays.test.ts` and
+  existing mobile density guardrails; focused verification command is
+  `pnpm test -- src/styles/product-card-overlays.test.ts src/styles/mobile-commerce-density.test.ts`.
 
 ### I-009 Account Order Timeline Clarity
 
 - `ID`: I-009
 - `Aspect`: Commerce and Checkout
-- `Status`: Needs Benchmark
+- `Status`: Done
 - `Priority`: P2
 - `Effort`: M
-- `Source/Evidence`: New candidate idea; account and order guidance in
+- `Source/Evidence`: `docs/qa/account-order-timeline-clarity-benchmark.md`,
+  account, order, service, checkout, and returns guidance in
   `docs/FULL_PRODUCT_BENCHMARK.md`
 - `Target Surface`: Account order list, local order detail, status labels,
   return request context, and read-only Shopify mirror presentation
-- `Improvement`: Consider clearer local order timeline or status sequencing for
-  customer self-service.
-- `Acceptance Checks`: Benchmark decision confirms timeline clarity improves
-  account comprehension and does not add Shopify mirror actions beyond
-  read-only/service routing.
-- `Verification`: Run benchmark workflow first; implementation verification
-  would require account order tests and authenticated route smoke.
+- `Improvement`: Added compact local-order status sequencing on account order
+  cards and full local-order timeline clarity on order detail.
+- `Acceptance Checks`: Benchmark passed with weighted support of `12.0`
+  against the `11.25` threshold. Local orders use existing timestamp/status
+  fields, Shopify mirror orders remain read-only and service-routed, and no
+  new supplier or carrier actions are introduced.
+- `Verification`: Covered by `src/app/account/_lib/order-timeline.test.ts` and
+  `src/styles/account-order-timeline.test.ts`; focused verification command is
+  `pnpm test -- src/app/account/_lib/order-timeline.test.ts src/styles/account-order-timeline.test.ts`.
 
 ### I-010 Homepage Discovery-to-Commerce Balance
 
 - `ID`: I-010
 - `Aspect`: Public UX and Brand
-- `Status`: Needs Benchmark
+- `Status`: Done
 - `Priority`: P2
 - `Effort`: M
-- `Source/Evidence`: New candidate idea; homepage and public route guidance in
+- `Source/Evidence`: `docs/qa/homepage-discovery-commerce-balance-benchmark.md`,
+  homepage, public route, PLP/search/gifts, and service guidance in
   `docs/FULL_PRODUCT_BENCHMARK.md` and `docs/PUBLIC_CHANGE_GATE.md`
 - `Target Surface`: Homepage, category entry points, search entry, featured
   products, gifts entry, service entry, and primary discovery paths
-- `Improvement`: Consider tightening homepage discovery paths toward category,
-  search, and product entry while preserving the current brand tone.
-- `Acceptance Checks`: Benchmark decision confirms the homepage remains premium
-  and brand-appropriate while improving commerce discovery.
-- `Verification`: Run benchmark workflow first; implementation verification
-  would require homepage static tests and desktop/mobile visual smoke.
+- `Improvement`: Added a compact commerce shortcut rail after category discovery
+  so search, gifts, sizing, and service paths are easier to reach without
+  changing the hero or editorial sections.
+- `Acceptance Checks`: Benchmark passed with weighted support of `12.0`
+  against the `11.25` threshold. Shortcuts use real public routes, avoid
+  same-page anchors, cards, pills, and extra hero CTAs, and leave quick search
+  before featured products.
+- `Verification`: Covered by
+  `src/styles/homepage-discovery-commerce-balance.test.ts` and existing mobile
+  density guardrails; focused verification command is
+  `pnpm test -- src/styles/homepage-discovery-commerce-balance.test.ts src/styles/mobile-commerce-density.test.ts`.
+
+## Candidate Improvements
+
+Candidate items are not implementable by default. Public-facing candidates must
+pass `docs/PUBLIC_CHANGE_GATE.md` or `docs/FULL_PRODUCT_BENCHMARK.md` before
+product code is edited.
 
 ## Blocked / Deferred
 

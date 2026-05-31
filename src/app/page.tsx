@@ -34,6 +34,13 @@ const quickSearchSuggestions = [
   { href: "/search?category=rings", label: "טבעות" },
 ] as const;
 
+const homeCommerceShortcuts = [
+  { href: "/search", label: "חיפוש במבחר" },
+  { href: "/gifts", label: "מתנות" },
+  { href: "/size-guide", label: "מידות" },
+  { href: "/service", label: "שירות אישי" },
+] as const;
+
 const collectionCopy: Record<string, string> = {
   bracelets: "צמידים לענידה יומיומית.",
   earrings: "עגילים ליום ולערב.",
@@ -277,6 +284,21 @@ export default async function Home() {
             </Link>
           ))}
         </RevealGrid>
+        <nav
+          aria-label="נתיבי בחירה מהירים"
+          className="text-muted-foreground mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-t border-[var(--glass-border)] pt-4 text-xs sm:justify-start"
+          data-testid="home-commerce-shortcuts"
+        >
+          {homeCommerceShortcuts.map((shortcut) => (
+            <Link
+              className="hover:border-foreground hover:text-foreground focus-visible:border-foreground focus-visible:text-foreground border-b border-[var(--glass-border)] pb-1 transition-colors focus-visible:outline-none"
+              href={shortcut.href}
+              key={shortcut.href}
+            >
+              {shortcut.label}
+            </Link>
+          ))}
+        </nav>
       </RevealSection>
 
       <RevealSection

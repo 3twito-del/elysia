@@ -26,13 +26,27 @@ describe("product card overlay budget", () => {
       "const productDetails = [product.material, product.stone]",
     );
     expect(source).toContain('const productMeta = productDetails.join(" · ")');
+    expect(source).toContain("const productQuickFacts = [");
+    expect(source).toContain("commerceStatus.label");
+    expect(source).toContain('product.source === "DROPSHIP_SHOPIFY"');
     expect(source).toContain('data-testid="product-card-attributes"');
     expect(source).not.toContain("product.shortDescription");
     expect(source).not.toContain("commerceHighlights");
     expect(source).not.toContain('data-testid="product-card-highlights"');
     expect(source).not.toContain("matchReason");
     expect(source).not.toContain("productDetails.map");
-    expect(source).toContain("{productMeta}");
+    expect(source).toContain("{productQuickFactsLabel}");
+  });
+
+  it("keeps quick facts benchmark evidence available", () => {
+    const benchmark = read(
+      "docs/qa/product-card-quick-facts-density-benchmark.md",
+    );
+
+    expect(benchmark).toContain("Weighted Score`: 12.0");
+    expect(benchmark).toContain("Decision`: Supported");
+    expect(benchmark).toContain("Cartier");
+    expect(benchmark).toContain("Mikimoto");
   });
 });
 

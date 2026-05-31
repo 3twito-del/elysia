@@ -22,6 +22,11 @@ import { CustomerAddressForm } from "./_components/customer-address-form";
 import { CustomerPrivacyActions } from "./_components/customer-privacy-actions";
 import { CustomerSavedSizesForm } from "./_components/customer-saved-sizes-form";
 import { createAccountServiceHref } from "./_lib/account-recovery";
+import {
+  createAccountOrderTimeline,
+  getCurrentOrderTimelineEvent,
+} from "./_lib/order-timeline";
+import { getWishlistDecisionSupport } from "./_lib/wishlist-shortlist";
 import { customerLogoutAction, removeWishlistItemAction } from "./actions";
 import { CommercePageHero } from "~/components/commerce-page-hero";
 import { MetricCard } from "~/components/metric-card";
@@ -74,11 +79,14 @@ async function loadCustomerAccount(userId: string) {
                 include: {
                   product: {
                     include: {
+                      category: true,
+                      material: true,
                       media: {
                         where: { kind: "IMAGE" },
                         orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }],
                         take: 1,
                       },
+                      stone: true,
                     },
                   },
                 },
@@ -294,6 +302,17 @@ export default async function AccountPage() {
   }
 
   const wishlistItems = customer.wishlist?.items ?? [];
+  const wishlistDecisionSupport = getWishlistDecisionSupport(
+    wishlistItems.map((item) => ({
+      categoryName: item.variant.product.category.name,
+      categorySlug: item.variant.product.category.slug,
+      materialName: item.variant.product.material.name,
+      productName: item.variant.product.name,
+      productSlug: item.variant.product.slug,
+      stoneName: item.variant.product.stone?.name,
+      variantName: item.variant.name,
+    })),
+  );
   const accountOrderCount =
     customer.orders.length + customer.shopifyOrderMirrors.length;
   const latestLocalOrderNumber = customer.orders[0]?.orderNumber;
@@ -382,32 +401,48 @@ export default async function AccountPage() {
                 />
               ) : (
                 <>
-                  {customer.orders.map((order) => (
-                    <Link
-                      className="glass-inset flex min-w-0 items-center justify-between gap-4 rounded-md border p-3"
-                      data-testid="account-local-order"
-                      href={`/account/orders/${order.id}`}
-                      key={order.id}
-                    >
-                      <div className="min-w-0">
-                        <p className="font-medium">{order.orderNumber}</p>
-                        <div className="mt-1 flex flex-wrap gap-1.5">
-                          <Badge className="w-fit" variant="secondary">
-                            {getOrderSourceLabel("LOCAL")}
-                          </Badge>
-                          <Badge className="w-fit" variant="outline">
-                            {getOrderStatusLabel(order.status)}
-                          </Badge>
+                  {customer.orders.map((order) => {
+                    const currentTimelineEvent = getCurrentOrderTimelineEvent(
+                      createAccountOrderTimeline(order),
+                    );
+
+                    return (
+                      <Link
+                        className="glass-inset flex min-w-0 items-center justify-between gap-4 rounded-md border p-3"
+                        data-testid="account-local-order"
+                        href={`/account/orders/${order.id}`}
+                        key={order.id}
+                      >
+                        <div className="min-w-0">
+                          <p className="font-medium">{order.orderNumber}</p>
+                          <div className="mt-1 flex flex-wrap gap-1.5">
+                            <Badge className="w-fit" variant="secondary">
+                              {getOrderSourceLabel("LOCAL")}
+                            </Badge>
+                            <Badge className="w-fit" variant="outline">
+                              {getOrderStatusLabel(order.status)}
+                            </Badge>
+                          </div>
+                          <p className="text-muted-foreground mt-1 text-xs">
+                            {getOrderSourceDescription("LOCAL")}
+                          </p>
+                          {currentTimelineEvent ? (
+                            <p
+                              className="text-muted-foreground mt-1 text-xs leading-5"
+                              data-testid="account-local-order-timeline"
+                            >
+                              {currentTimelineEvent.label}
+                              {" · "}
+                              {currentTimelineEvent.description}
+                            </p>
+                          ) : null}
                         </div>
-                        <p className="text-muted-foreground mt-1 text-xs">
-                          {getOrderSourceDescription("LOCAL")}
-                        </p>
-                      </div>
-                      <span className="shrink-0 font-medium">
-                        {formatPrice(Number(order.total))}
-                      </span>
-                    </Link>
-                  ))}
+                        <span className="shrink-0 font-medium">
+                          {formatPrice(Number(order.total))}
+                        </span>
+                      </Link>
+                    );
+                  })}
                   {customer.shopifyOrderMirrors.map((order) => (
                     <div
                       className="glass-inset flex min-w-0 items-center justify-between gap-4 rounded-md border p-3"
@@ -426,7 +461,10 @@ export default async function AccountPage() {
                             לקריאה בלבד
                           </Badge>
                         </div>
-                        <p className="text-muted-foreground mt-1 text-xs leading-5">
+                        <p
+                          className="text-muted-foreground mt-1 text-xs leading-5"
+                          data-testid="account-shopify-mirror-order-timeline"
+                        >
                           {getOrderSourceDescription("SHOPIFY_MIRROR")}
                         </p>
                         <p className="text-muted-foreground mt-1 text-xs leading-5">
@@ -485,52 +523,94 @@ export default async function AccountPage() {
                   }
                 />
               ) : (
-                wishlistItems.map((item) => (
-                  <div
-                    className="glass-inset flex items-center justify-between gap-4 rounded-md border p-3"
-                    key={item.id}
-                  >
-                    <Link
-                      className="flex min-w-0 flex-1 items-center gap-3"
-                      href={`/product/${item.variant.product.slug}`}
+                <>
+                  {wishlistDecisionSupport ? (
+                    <div
+                      className="glass-inset grid gap-3 rounded-md border p-3"
+                      data-testid="account-wishlist-decision-support"
                     >
-                      <span className="bg-muted relative size-14 shrink-0 overflow-hidden rounded-md border border-[var(--glass-border)]">
-                        <Image
-                          alt=""
-                          className="media-color object-cover"
-                          fill
-                          sizes="56px"
-                          src={
-                            item.variant.product.media[0]?.url ??
-                            DEFAULT_CATALOG_IMAGE
-                          }
-                        />
-                      </span>
-                      <span className="min-w-0">
-                        <span className="block truncate font-medium">
-                          {item.variant.product.name}
-                        </span>
-                        <span className="text-muted-foreground block text-xs">
-                          {item.variant.name}
-                        </span>
-                      </span>
-                    </Link>
-                    <form action={removeWishlistItemAction}>
-                      <input name="itemId" type="hidden" value={item.id} />
-                      <Button
-                        aria-label={`הסרת ${item.variant.product.name} מהמועדפים`}
-                        data-icon-tooltip="הסרה"
-                        data-icon-tooltip-placement="top"
-                        size="icon"
-                        type="submit"
-                        variant="ghost"
+                      <p className="text-sm font-medium">
+                        {wishlistDecisionSupport.summary}
+                      </p>
+                      <div className="grid gap-2 sm:grid-cols-3">
+                        {wishlistDecisionSupport.cues.map((cue) => (
+                          <div
+                            className="bg-background rounded-md border border-[var(--glass-border)] p-2"
+                            key={cue.id}
+                          >
+                            <p className="text-muted-foreground text-[0.7rem] tracking-normal uppercase">
+                              {cue.label}
+                            </p>
+                            <p className="mt-1 truncate text-xs font-medium">
+                              {cue.value}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        <Button asChild size="sm" variant="outline">
+                          <Link href={wishlistDecisionSupport.categoryHref}>
+                            המשך בקטגוריה
+                          </Link>
+                        </Button>
+                        <Button asChild size="sm" variant="outline">
+                          <Link href="/size-guide">בדיקת מידה</Link>
+                        </Button>
+                        <Button asChild size="sm" variant="ghost">
+                          <Link href={wishlistDecisionSupport.serviceHref}>
+                            ייעוץ בחירה
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
+                  ) : null}
+                  {wishlistItems.map((item) => (
+                    <div
+                      className="glass-inset flex items-center justify-between gap-4 rounded-md border p-3"
+                      key={item.id}
+                    >
+                      <Link
+                        className="flex min-w-0 flex-1 items-center gap-3"
+                        href={`/product/${item.variant.product.slug}`}
                       >
-                        <Trash2 aria-hidden="true" className="size-4" />
-                        <span className="sr-only">הסרה</span>
-                      </Button>
-                    </form>
-                  </div>
-                ))
+                        <span className="bg-muted relative size-14 shrink-0 overflow-hidden rounded-md border border-[var(--glass-border)]">
+                          <Image
+                            alt=""
+                            className="media-color object-cover"
+                            fill
+                            sizes="56px"
+                            src={
+                              item.variant.product.media[0]?.url ??
+                              DEFAULT_CATALOG_IMAGE
+                            }
+                          />
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block truncate font-medium">
+                            {item.variant.product.name}
+                          </span>
+                          <span className="text-muted-foreground block text-xs">
+                            {item.variant.name}
+                          </span>
+                        </span>
+                      </Link>
+                      <form action={removeWishlistItemAction}>
+                        <input name="itemId" type="hidden" value={item.id} />
+                        <Button
+                          aria-label={`הסרת ${item.variant.product.name} מהמועדפים`}
+                          data-icon-tooltip="הסרה"
+                          data-icon-tooltip-placement="top"
+                          size="icon"
+                          type="submit"
+                          variant="ghost"
+                        >
+                          <Trash2 aria-hidden="true" className="size-4" />
+                          <span className="sr-only">הסרה</span>
+                        </Button>
+                      </form>
+                    </div>
+                  ))}
+                </>
               )}
             </CardContent>
           </Card>

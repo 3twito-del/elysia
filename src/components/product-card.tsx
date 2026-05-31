@@ -58,6 +58,13 @@ export function ProductCard({
     (detail): detail is string => Boolean(detail),
   );
   const productMeta = productDetails.join(" · ");
+  const sourceFact = product.source === "DROPSHIP_SHOPIFY" ? "ספק מאומת" : null;
+  const productQuickFacts = [
+    productMeta,
+    commerceStatus.label,
+    sourceFact,
+  ].filter((fact): fact is string => Boolean(fact));
+  const productQuickFactsLabel = productQuickFacts.join(" · ");
   const primaryCommerceLabel = isAvailable
     ? formatPrice(product.price)
     : "לייעוץ אישי";
@@ -115,9 +122,9 @@ export function ProductCard({
                 className="ui-text-slot product-card-attributes text-muted-foreground truncate text-xs [--ui-text-slot-line-height:1.25rem]"
                 data-lines="1"
                 data-testid="product-card-attributes"
-                title={productMeta}
+                title={productQuickFactsLabel}
               >
-                {productMeta}
+                {productQuickFactsLabel}
               </div>
             </div>
           </div>
