@@ -289,21 +289,24 @@ product code is edited.
 
 - `ID`: I-010
 - `Aspect`: Performance, PWA, and Reliability
-- `Status`: Needs Benchmark
+- `Status`: Done
 - `Priority`: P2
 - `Effort`: M
-- `Source/Evidence`: New candidate idea; AI and stylist route guidance in
-  `docs/FULL_PRODUCT_BENCHMARK.md`, AI quota routing behavior
+- `Source/Evidence`: `docs/qa/ai-stylist-fallback-benchmark.md`; AI and
+  stylist route guidance in `docs/FULL_PRODUCT_BENCHMARK.md`, AI quota routing
+  behavior
 - `Target Surface`: `/ai`, `/stylist`, chat route, AI provider quota and
   readiness states
-- `Improvement`: Consider clearer fallback UX when AI providers are unavailable,
-  quota-blocked, or missing configuration, including product discovery recovery
-  paths that do not depend on generated output.
-- `Acceptance Checks`: Benchmark decision confirms the fallback remains a
-  demoted service/tool experience and does not overpromote AI on public routes.
-- `Verification`: Run benchmark workflow first; implementation verification
-  would require AI route tests, quota-router tests, and manual degraded-state
-  checks.
+- `Improvement`: Added safe AI fallback recovery UI for stylist chat and gift
+  recommendation failures, routing customers back to search, category discovery,
+  size guidance, and service without exposing provider or model details.
+- `Acceptance Checks`: Benchmark decision recorded weighted support of `12.0`
+  against a threshold of `11.25`; AI remains a demoted service/tool experience,
+  degraded-state copy is customer-safe, and recovery paths use existing product
+  and service surfaces.
+- `Verification`: `pnpm test -- src/app/ai/_lib/ai-fallback.test.ts src/styles/ai-fallback-recovery.test.ts src/app/api/chat/route.test.ts src/server/ai/model.test.ts`
+  plus typecheck, lint, build, and browser smoke for `/stylist` and
+  `/ai?tab=gifts`.
 
 ## Blocked / Deferred
 

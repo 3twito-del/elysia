@@ -3,15 +3,9 @@
 import { useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import type { ChatAddToolApproveResponseFunction, UIMessage } from "ai";
-import {
-  AlertCircle,
-  Check,
-  MessageSquare,
-  Send,
-  Sparkles,
-  X,
-} from "lucide-react";
+import { Check, MessageSquare, Send, Sparkles, X } from "lucide-react";
 
+import { AiFallbackRecovery } from "~/app/ai/_components/ai-fallback-recovery";
 import { AiProductRecommendations } from "~/components/ai-product-recommendations";
 import {
   Conversation,
@@ -185,29 +179,22 @@ export function StylistChat({ compact = false }: StylistChatProps) {
 
           <div className="border-t border-[var(--glass-border)] p-4 sm:p-5">
             {error ? (
-              <div className="glass-inset mb-4 rounded-md border p-4 text-sm">
-                <div className="flex items-start gap-3">
-                  <AlertCircle
-                    aria-hidden="true"
-                    className="mt-0.5 size-5 shrink-0"
-                  />
-                  <div className="grid gap-2">
-                    <p className="font-medium">הסטייליסט אינו פתוח כרגע.</p>
-                    <p className="text-muted-foreground leading-6">
-                      שירות ההתאמה אינו פתוח כרגע. נסו שוב בעוד דקה.
-                    </p>
-                    <Button
-                      className="w-fit"
-                      onClick={clearError}
-                      size="sm"
-                      type="button"
-                      variant="outline"
-                    >
-                      נקה הודעה
-                    </Button>
-                  </div>
-                </div>
-              </div>
+              <AiFallbackRecovery
+                actions={
+                  <Button
+                    className="w-fit"
+                    onClick={clearError}
+                    size="sm"
+                    type="button"
+                    variant="outline"
+                  >
+                    נקה הודעה
+                  </Button>
+                }
+                className="mb-4 text-sm"
+                reason={error.message}
+                source="stylist"
+              />
             ) : null}
 
             <PromptInput className="relative" dir="rtl" onSubmit={handleSubmit}>

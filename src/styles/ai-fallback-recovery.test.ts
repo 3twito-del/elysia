@@ -1,0 +1,51 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
+import { describe, expect, it } from "vitest";
+
+const root = process.cwd();
+
+describe("AI fallback recovery UI", () => {
+  it("keeps fallback recovery routed to existing discovery and service paths", () => {
+    const recovery = read("src/app/ai/_components/ai-fallback-recovery.tsx");
+    const fallback = read("src/app/ai/_lib/ai-fallback.ts");
+
+    expect(recovery).toContain(
+      "data-testid={`ai-fallback-recovery-${source}`}",
+    );
+    expect(recovery).toContain('href: "/search"');
+    expect(recovery).toContain('href: "/category/rings"');
+    expect(recovery).toContain('href: "/size-guide"');
+    expect(recovery).toContain("createAiFallbackServiceHref");
+    expect(fallback).toContain('topic: "general"');
+  });
+
+  it("uses the shared fallback on stylist chat and gift recommendation errors", () => {
+    const stylistChat = read("src/app/stylist/_components/stylist-chat.tsx");
+    const giftRecommender = read(
+      "src/app/ai/_components/ai-gift-recommender.tsx",
+    );
+
+    expect(stylistChat).toContain("AiFallbackRecovery");
+    expect(stylistChat).toContain('source="stylist"');
+    expect(giftRecommender).toContain("AiFallbackRecovery");
+    expect(giftRecommender).toContain('source="gift"');
+    expect(giftRecommender).toContain("recommendGift.error.message");
+  });
+
+  it("records benchmark support before implementation", () => {
+    const backlog = read("docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md");
+    const benchmark = read("docs/qa/ai-stylist-fallback-benchmark.md");
+
+    expect(backlog).toContain("I-010 AI and Stylist Fallback UX");
+    expect(backlog).toContain("`Status`: Done");
+    expect(benchmark).toContain("Weighted Score`: 12.0");
+    expect(benchmark).toContain("Decision`: Supported");
+    expect(benchmark).toContain("Cartier");
+    expect(benchmark).toContain("Boucheron");
+  });
+});
+
+function read(relativePath: string) {
+  return readFileSync(path.join(root, relativePath), "utf8");
+}

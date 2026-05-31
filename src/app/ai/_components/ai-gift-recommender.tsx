@@ -3,6 +3,7 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import { Gift, Sparkles } from "lucide-react";
 
+import { AiFallbackRecovery } from "./ai-fallback-recovery";
 import { AiProductRecommendations } from "~/components/ai-product-recommendations";
 import { MessageResponse } from "~/components/ai-elements/message";
 import { Button } from "~/components/ui/button";
@@ -128,10 +129,18 @@ export function AiGiftRecommender() {
           />
         </Field>
 
-        {(validationMessage ?? recommendGift.error) ? (
+        {validationMessage ? (
           <StatusMessage tone="error" variant="plain">
-            {validationMessage ?? recommendGift.error?.message}
+            {validationMessage}
           </StatusMessage>
+        ) : null}
+
+        {recommendGift.error ? (
+          <AiFallbackRecovery
+            className="text-sm"
+            reason={recommendGift.error.message}
+            source="gift"
+          />
         ) : null}
 
         <Button
