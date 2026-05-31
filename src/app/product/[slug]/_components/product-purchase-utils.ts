@@ -94,13 +94,19 @@ export function getVariantStatusLabel(input: {
 
 export function getPurchaseConfidenceItems(input: {
   availabilityMode: PublicProductAvailabilityMode;
+  careInstructions?: string;
   deliveryPromise?: string;
   productSource: CatalogProduct["source"];
   returnPolicy?: string;
   sizeKind: SizeFitKind | null;
   variant: CatalogProductVariant | undefined;
   variantStatusLabel: string;
+  warranty?: string;
 }): ProductPurchaseConfidenceItem[] {
+  const hasAftercareFacts = [input.careInstructions, input.warranty].some(
+    Boolean,
+  );
+
   return [
     {
       description: getCheckoutConfidenceDescription(input),
@@ -123,7 +129,7 @@ export function getPurchaseConfidenceItems(input: {
       description: getServiceConfidenceDescription(input),
       icon: "service",
       key: "service",
-      title: "מסירה והחלפה",
+      title: hasAftercareFacts ? "מסירה, טיפול ואחריות" : "מסירה והחלפה",
     },
   ];
 }
@@ -169,9 +175,11 @@ function getCheckoutConfidenceDescription(input: {
 }
 
 function getServiceConfidenceDescription(input: {
+  careInstructions?: string;
   deliveryPromise?: string;
   productSource: CatalogProduct["source"];
   returnPolicy?: string;
+  warranty?: string;
 }) {
   const delivery =
     input.deliveryPromise ??
@@ -183,8 +191,12 @@ function getServiceConfidenceDescription(input: {
     (input.productSource === "DROPSHIP_SHOPIFY"
       ? "החזרות והחלפות לפי מדיניות הספק."
       : "החלפה או החזרה בתיאום אישי לפי מדיניות Elysia.");
+  const aftercare = [
+    input.warranty ? `אחריות: ${input.warranty}` : null,
+    input.careInstructions ? `טיפול: ${input.careInstructions}` : null,
+  ].filter((fact): fact is string => Boolean(fact));
 
-  return `${delivery} ${returns}`;
+  return [delivery, returns, ...aftercare].join(" ");
 }
 
 function isShopifyDropshipVariantAvailable(input: {

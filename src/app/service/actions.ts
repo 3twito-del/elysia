@@ -79,7 +79,8 @@ export async function createServiceRequestAction(
 
   return {
     ok: true,
-    message: "הפנייה התקבלה. צוות Elysia יחזור אליכם בהקדם.",
+    message:
+      "הפנייה התקבלה. צוות Elysia יחזור אליכם לפי דרך הקשר שבחרתם לאחר בדיקת הפרטים.",
   };
 }
 

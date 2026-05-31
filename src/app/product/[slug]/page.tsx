@@ -205,6 +205,7 @@ export default async function ProductPage({
                 <ProductPurchasePanel
                   availabilityMode={product.availabilityMode}
                   categorySlug={product.categorySlug}
+                  careInstructions={product.careInstructions}
                   deliveryPromise={product.deliveryPromise}
                   metalColors={product.metalColors}
                   price={product.price}
@@ -214,6 +215,7 @@ export default async function ProductPage({
                   productSource={product.source}
                   returnPolicy={product.returnPolicy}
                   variants={product.variants}
+                  warranty={product.warranty}
                 />
               </TRPCReactProvider>
             </div>

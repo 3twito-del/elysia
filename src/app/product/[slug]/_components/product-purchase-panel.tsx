@@ -73,11 +73,13 @@ type ProductPurchasePanelProps = {
   categorySlug: string;
   productSource: CatalogProduct["source"];
   availabilityMode: PublicProductAvailabilityMode;
+  careInstructions?: string;
   deliveryPromise?: string;
   price: number;
   variants: CatalogProductVariant[];
   metalColors: string[];
   returnPolicy?: string;
+  warranty?: string;
 };
 
 export function ProductPurchasePanel({
@@ -85,6 +87,7 @@ export function ProductPurchasePanel({
   productName,
   productReference,
   categorySlug,
+  careInstructions,
   productSource,
   availabilityMode,
   deliveryPromise,
@@ -92,6 +95,7 @@ export function ProductPurchasePanel({
   variants,
   metalColors,
   returnPolicy,
+  warranty,
 }: ProductPurchasePanelProps) {
   const [selectedSku, setSelectedSku] = useState(
     getInitialVariantSku(variants),
@@ -131,12 +135,14 @@ export function ProductPurchasePanel({
   });
   const purchaseConfidenceItems = getPurchaseConfidenceItems({
     availabilityMode,
+    careInstructions,
     deliveryPromise,
     productSource,
     returnPolicy,
     sizeKind,
     variant: selectedVariant,
     variantStatusLabel: selectedVariantStatusLabel,
+    warranty,
   });
   const serviceHref = createProductServiceHref({
     productReference,

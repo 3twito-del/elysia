@@ -45,7 +45,7 @@ function FilterPanelContent({
               href={data.resetHref}
               variant="ghost"
             >
-              איפוס
+              איפוס הכל
             </FilterActionLink>
           )}
         </div>

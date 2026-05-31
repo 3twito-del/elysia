@@ -42,6 +42,38 @@ describe("api response boundaries", () => {
 
     expect(violations).toEqual([]);
   });
+
+  it("keeps error status responses out of success helpers", async () => {
+    const files = (
+      await Promise.all(
+        sourceRoots.map((sourceRoot) =>
+          listSourceFiles(path.join(repoRoot, sourceRoot)),
+        ),
+      )
+    ).flat();
+
+    const violations = [];
+
+    for (const file of files) {
+      const relativePath = toRepoPath(file);
+
+      if (testFilePattern.test(relativePath)) continue;
+
+      const source = await readFile(file, "utf8");
+      const calls = extractFunctionCalls(source, "okJson");
+      const errorStatusCall = calls.find((call) =>
+        /\bstatus\s*:\s*[45]\d\d\b/.test(call),
+      );
+
+      if (errorStatusCall) {
+        violations.push(
+          `${relativePath}: use error helpers instead of okJson with an error status`,
+        );
+      }
+    }
+
+    expect(violations).toEqual([]);
+  });
 });
 
 async function listSourceFiles(directory: string): Promise<string[]> {
@@ -66,4 +98,38 @@ async function listSourceFiles(directory: string): Promise<string[]> {
 
 function toRepoPath(file: string) {
   return path.relative(repoRoot, file).split(path.sep).join("/");
+}
+
+function extractFunctionCalls(source: string, functionName: string) {
+  const calls: string[] = [];
+  let searchFrom = 0;
+
+  while (searchFrom < source.length) {
+    const start = source.indexOf(`${functionName}(`, searchFrom);
+
+    if (start === -1) break;
+
+    let depth = 0;
+
+    for (
+      let index = start + functionName.length;
+      index < source.length;
+      index += 1
+    ) {
+      const char = source[index];
+
+      if (char === "(") depth += 1;
+      if (char === ")") depth -= 1;
+
+      if (depth === 0) {
+        calls.push(source.slice(start, index + 1));
+        searchFrom = index + 1;
+        break;
+      }
+    }
+
+    if (searchFrom <= start) break;
+  }
+
+  return calls;
 }

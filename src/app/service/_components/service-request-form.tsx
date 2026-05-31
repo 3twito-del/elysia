@@ -45,6 +45,7 @@ const maxFileSizeMb = Math.round(maxServiceRequestFileBytes / 1024 / 1024);
 const attachmentGuidanceId = "service-attachment-guidance";
 const attachmentOfflineGuidanceId = "service-attachment-offline-guidance";
 const attachmentAcceptedFileTypeLabel = "JPG, PNG, WebP, GIF או PDF";
+const topicGuidanceId = "service-topic-guidance";
 const serviceFieldFocusOrder = [
   "topicSlug",
   "name",
@@ -75,9 +76,16 @@ export function ServiceRequestForm({
   const [offlineState, setOfflineState] = useState<ServiceRequestActionState>(
     {},
   );
-  const selectedTopic = topics.some((topic) => topic.slug === defaultTopicSlug)
+  const initialSelectedTopic = topics.some(
+    (topic) => topic.slug === defaultTopicSlug,
+  )
     ? defaultTopicSlug
     : (topics[0]?.slug ?? "");
+  const [selectedTopicSlug, setSelectedTopicSlug] =
+    useState(initialSelectedTopic);
+  const selectedTopicDescription = topics.find(
+    (topic) => topic.slug === selectedTopicSlug,
+  )?.description;
 
   useEffect(() => {
     if (state.ok) {
@@ -111,7 +119,8 @@ export function ServiceRequestForm({
       .then(() => {
         setOfflineState({
           ok: true,
-          message: "הפנייה נשמרה ותישלח אוטומטית כשהחיבור יחזור.",
+          message:
+            "הפנייה נשמרה ותישלח אוטומטית כשהחיבור יחזור. לאחר השליחה נחזור אליכם לפי דרך הקשר שבחרתם.",
         });
         form.reset();
       })
@@ -138,13 +147,14 @@ export function ServiceRequestForm({
           message={state.fieldErrors?.topicSlug}
         />
         <select
-          aria-describedby={getFieldErrorId("topicSlug")}
+          aria-describedby={`${getFieldErrorId("topicSlug")} ${topicGuidanceId}`}
           aria-invalid={Boolean(state.fieldErrors?.topicSlug)}
           className="glass-control h-11 rounded-md border px-3 text-sm"
-          defaultValue={selectedTopic}
+          defaultValue={initialSelectedTopic}
           disabled={pending}
           id="topicSlug"
           name="topicSlug"
+          onChange={(event) => setSelectedTopicSlug(event.target.value)}
           required
         >
           {topics.map((topic) => (
@@ -153,6 +163,15 @@ export function ServiceRequestForm({
             </option>
           ))}
         </select>
+        <p
+          aria-live="polite"
+          className="text-muted-foreground text-xs leading-5"
+          data-testid="service-topic-guidance"
+          id={topicGuidanceId}
+        >
+          {selectedTopicDescription ??
+            "בחרו את הנושא הקרוב ביותר כדי שנכוון את הפנייה לצוות המתאים."}
+        </p>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">

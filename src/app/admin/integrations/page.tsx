@@ -31,6 +31,16 @@ import {
   listAdminOutboxEvents,
 } from "~/server/services/admin-operations";
 
+const outboxStatuses = [
+  "PENDING",
+  "PUBLISHED",
+  "PROCESSING",
+  "PROCESSED",
+  "FAILED",
+] as const;
+
+const jobRunStatuses = ["RUNNING", "COMPLETED", "FAILED", "SKIPPED"] as const;
+
 export const metadata = {
   title: "Integrations | Admin",
 };
@@ -51,6 +61,22 @@ function optionalParam(value: string | string[] | undefined) {
   return param && param.length > 0 ? param : undefined;
 }
 
+function outboxStatusParam(value: string | string[] | undefined) {
+  const param = firstParam(value);
+
+  return outboxStatuses.includes(param as (typeof outboxStatuses)[number])
+    ? (param as (typeof outboxStatuses)[number])
+    : undefined;
+}
+
+function jobStatusParam(value: string | string[] | undefined) {
+  const param = firstParam(value);
+
+  return jobRunStatuses.includes(param as (typeof jobRunStatuses)[number])
+    ? (param as (typeof jobRunStatuses)[number])
+    : undefined;
+}
+
 export default async function AdminIntegrationsPage({
   searchParams,
 }: AdminIntegrationsPageProps) {
@@ -66,10 +92,17 @@ export default async function AdminIntegrationsPage({
     page: Number(firstParam(query.page) ?? 1),
     pageSize: 15,
     query: optionalParam(query.query),
+    status: outboxStatusParam(query.outboxStatus),
+  };
+  const jobParams = {
+    page: 1,
+    pageSize: 10,
+    query: optionalParam(query.jobQuery),
+    status: jobStatusParam(query.jobStatus),
   };
   const [outbox, jobs] = await Promise.all([
     listAdminOutboxEvents(outboxParams),
-    listAdminJobRuns({ page: 1, pageSize: 10 }),
+    listAdminJobRuns(jobParams),
   ]).catch((error: unknown) => {
     if (process.env.NODE_ENV === "development") {
       console.error("[admin] failed to load integrations", error);
@@ -83,7 +116,12 @@ export default async function AdminIntegrationsPage({
   const integrations = getAdminIntegrationStatuses();
   const hasActiveOutboxFilters = [
     Boolean(outboxParams.query),
+    Boolean(outboxParams.status),
     outboxParams.page > 1,
+  ].some(Boolean);
+  const hasActiveJobFilters = [
+    Boolean(jobParams.query),
+    Boolean(jobParams.status),
   ].some(Boolean);
 
   return (
@@ -140,14 +178,27 @@ export default async function AdminIntegrationsPage({
           <CardContent>
             <form
               action="/admin/integrations"
-              className="mb-4 grid gap-2 sm:grid-cols-[1fr_auto_auto]"
+              className="mb-4 grid gap-2 sm:grid-cols-[1fr_160px_auto_auto]"
             >
               <Input
                 aria-label="חיפוש Outbox"
                 defaultValue={outboxParams.query}
                 name="query"
-                placeholder="חיפוש לפי סוג, סטטוס או מזהה"
+                placeholder="חיפוש לפי סוג או מזהה"
               />
+              <select
+                aria-label="סינון סטטוס Outbox"
+                className="glass-control h-11 rounded-md border px-3 text-sm"
+                defaultValue={outboxParams.status ?? ""}
+                name="outboxStatus"
+              >
+                <option value="">כל הסטטוסים</option>
+                {outboxStatuses.map((status) => (
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
+                ))}
+              </select>
               <Button type="submit">סינון</Button>
               {hasActiveOutboxFilters ? (
                 <Button asChild variant="outline">
@@ -169,10 +220,25 @@ export default async function AdminIntegrationsPage({
               <TableBody>
                 {outbox.items.length === 0 ? (
                   <TableEmptyRow
+                    action={
+                      hasActiveOutboxFilters ? (
+                        <Button asChild size="sm" variant="outline">
+                          <Link href="/admin/integrations">ניקוי סינון</Link>
+                        </Button>
+                      ) : undefined
+                    }
                     colSpan={5}
-                    description="אירועים עסקיים יופיעו לאחר יצירת הזמנות, עדכון מלאי או הודעות."
+                    description={
+                      hasActiveOutboxFilters
+                        ? "שנו חיפוש או סטטוס, או נקו כדי לחזור לכל אירועי ה-outbox."
+                        : "אירועים עסקיים יופיעו לאחר יצירת הזמנות, עדכון מלאי או הודעות."
+                    }
                     icon={Activity}
-                    title="אין אירועי outbox"
+                    title={
+                      hasActiveOutboxFilters
+                        ? "אין אירועי outbox מתאימים"
+                        : "אין אירועי outbox"
+                    }
                   />
                 ) : (
                   outbox.items.map((event) => (
@@ -199,7 +265,10 @@ export default async function AdminIntegrationsPage({
             <AdminPagination
               basePath="/admin/integrations"
               pageInfo={outbox.pageInfo}
-              searchParams={{ query: outboxParams.query }}
+              searchParams={{
+                outboxStatus: outboxParams.status,
+                query: outboxParams.query,
+              }}
             />
           </CardContent>
         </Card>
@@ -212,6 +281,36 @@ export default async function AdminIntegrationsPage({
             </CardTitle>
           </CardHeader>
           <CardContent>
+            <form
+              action="/admin/integrations"
+              className="mb-4 grid gap-2 sm:grid-cols-[1fr_160px_auto_auto]"
+            >
+              <Input
+                aria-label="חיפוש Job runs"
+                defaultValue={jobParams.query}
+                name="jobQuery"
+                placeholder="חיפוש לפי שם job"
+              />
+              <select
+                aria-label="סינון סטטוס Job runs"
+                className="glass-control h-11 rounded-md border px-3 text-sm"
+                defaultValue={jobParams.status ?? ""}
+                name="jobStatus"
+              >
+                <option value="">כל הסטטוסים</option>
+                {jobRunStatuses.map((status) => (
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
+                ))}
+              </select>
+              <Button type="submit">סינון</Button>
+              {hasActiveJobFilters ? (
+                <Button asChild variant="outline">
+                  <Link href="/admin/integrations">ניקוי</Link>
+                </Button>
+              ) : null}
+            </form>
             <AdminTableScrollHint />
             <Table className="min-w-[680px]">
               <TableHeader>
@@ -226,10 +325,25 @@ export default async function AdminIntegrationsPage({
               <TableBody>
                 {jobs.items.length === 0 ? (
                   <TableEmptyRow
+                    action={
+                      hasActiveJobFilters ? (
+                        <Button asChild size="sm" variant="outline">
+                          <Link href="/admin/integrations">ניקוי סינון</Link>
+                        </Button>
+                      ) : undefined
+                    }
                     colSpan={5}
-                    description="ריצות jobs יופיעו לאחר cron או עיבוד outbox."
+                    description={
+                      hasActiveJobFilters
+                        ? "שנו חיפוש או סטטוס, או נקו כדי לחזור לריצות האחרונות."
+                        : "ריצות jobs יופיעו לאחר cron או עיבוד outbox. המסך מציג רק פעולות שכבר נרשמו."
+                    }
                     icon={Activity}
-                    title="אין ריצות jobs"
+                    title={
+                      hasActiveJobFilters
+                        ? "אין ריצות jobs מתאימות"
+                        : "אין ריצות jobs"
+                    }
                   />
                 ) : (
                   jobs.items.map((job) => (

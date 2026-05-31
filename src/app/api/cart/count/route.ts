@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-import { okJson, rateLimitedJson } from "~/server/http/api-response";
+import {
+  okJson,
+  rateLimitedJson,
+  serviceUnavailableJson,
+} from "~/server/http/api-response";
 import {
   assertRateLimit,
   getRequestIp,
@@ -37,6 +41,6 @@ export async function GET(req: Request) {
       return rateLimitedJson(error, "Too many cart count requests.");
     }
 
-    return okJson({ itemCount: 0 }, { status: 400 });
+    return serviceUnavailableJson("Cart count is temporarily unavailable.");
   }
 }

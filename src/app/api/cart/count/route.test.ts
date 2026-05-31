@@ -64,6 +64,22 @@ describe("cart count route", () => {
       error: "Too many cart count requests.",
     });
   });
+
+  it("returns standardized error JSON when the cart service is unavailable", async () => {
+    cartMocks.getCartBySession.mockRejectedValueOnce(
+      new Error("database unavailable"),
+    );
+
+    const response = await GET(
+      createCartCountRequest("cart_session_unavailable_1234567890"),
+    );
+
+    expect(response.status).toBe(503);
+    await expect(response.json()).resolves.toEqual({
+      ok: false,
+      error: "Cart count is temporarily unavailable.",
+    });
+  });
 });
 
 function createCartCountRequest(sessionKey: string) {

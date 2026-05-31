@@ -19,7 +19,10 @@ describe("form error and recovery contract", () => {
     expect(serviceForm).toContain("getFieldErrorId");
     expect(serviceForm).toContain("window.requestAnimationFrame");
     expect(serviceForm).toContain(
-      'aria-describedby={getFieldErrorId("topicSlug")}',
+      'aria-describedby={`${getFieldErrorId("topicSlug")} ${topicGuidanceId}`}',
+    );
+    expect(serviceForm).toContain(
+      'const topicGuidanceId = "service-topic-guidance"',
     );
     expect(serviceForm).toContain(
       'aria-describedby={getFieldErrorId("message")}',

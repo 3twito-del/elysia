@@ -87,6 +87,14 @@ export default async function AccessibilityPage() {
               בפנייה בנושא נגישות מומלץ לציין את כתובת העמוד, סוג הדפדפן, תיאור
               הבעיה והטכנולוגיה המסייעת שבה נעשה שימוש, אם ישנה.
             </p>
+            <Button asChild className="mt-5" variant="secondary">
+              <Link
+                data-testid="accessibility-service-recovery-link"
+                href="/service?topic=accessibility-privacy"
+              >
+                פתיחת פנייה בנושא נגישות
+              </Link>
+            </Button>
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               <a
                 className="glass-inset hover:text-foreground flex items-center gap-3 rounded-md border p-4 transition"

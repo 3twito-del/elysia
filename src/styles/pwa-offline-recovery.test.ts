@@ -11,8 +11,25 @@ describe("PWA offline recovery", () => {
     expect(offlinePage).toContain('data-testid="offline-recovery-actions"');
     expect(offlinePage).toContain('href="/"');
     expect(offlinePage).toContain('href="/search"');
+    expect(offlinePage).toContain('href="/gifts"');
     expect(offlinePage).toContain('href="/service"');
     expect(offlinePage).toContain('href="/size-guide"');
+  });
+
+  it("keeps offline recovery routes inside the public page cache allowlist", () => {
+    const manifest = read("src/app/manifest.ts");
+    const serviceWorker = read("src/app/sw.ts");
+
+    expect(manifest).toContain('url: "/search?source=pwa-shortcut"');
+    expect(manifest).toContain('url: "/gifts?source=pwa-shortcut"');
+    expect(manifest).toContain('url: "/service?source=pwa-shortcut"');
+    expect(manifest).toContain('url: "/size-guide?source=pwa-shortcut"');
+    expect(manifest).not.toContain('url: "/checkout?source=pwa-shortcut"');
+
+    expect(serviceWorker).toContain("search|gifts");
+    expect(serviceWorker).toContain("service|ai");
+    expect(serviceWorker).toContain("size-guide|offline");
+    expect(serviceWorker).toContain("checkout(?:\\/|$)");
   });
 
   it("keeps offline sync events available for queued service requests", () => {

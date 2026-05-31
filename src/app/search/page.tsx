@@ -278,25 +278,44 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               actions={
                 <>
                   {recoveryActions.length > 0 ? (
-                    <span
-                      className="contents"
-                      data-testid="search-recovery-actions"
-                    >
-                      {recoveryActions.map((action) => (
-                        <Button asChild key={action.href} variant="outline">
-                          <Link
-                            href={action.href}
-                            scroll={false}
-                            title={action.description}
-                          >
-                            <span>{action.label}</span>
-                            <span className="text-xs opacity-75">
-                              {formatSearchResultCount(action.total)}
-                            </span>
-                          </Link>
-                        </Button>
-                      ))}
-                    </span>
+                    <>
+                      <div
+                        className="text-muted-foreground mx-auto mb-2 grid max-w-md basis-full gap-2 text-sm leading-6 sm:text-start"
+                        data-testid="search-guided-recovery"
+                      >
+                        <p className="text-foreground font-medium">
+                          כיווני המשך עם תוצאות
+                        </p>
+                        <ul className="grid gap-1.5">
+                          {recoveryActions.map((action) => (
+                            <li
+                              className="grid gap-0.5"
+                              key={`${action.href}-guidance`}
+                            >
+                              <span className="text-foreground font-medium">
+                                {action.label}
+                              </span>
+                              <span>{action.description}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <span
+                        className="contents"
+                        data-testid="search-recovery-actions"
+                      >
+                        {recoveryActions.map((action) => (
+                          <Button asChild key={action.href} variant="outline">
+                            <Link href={action.href} scroll={false}>
+                              <span>{action.label}</span>
+                              <span className="text-xs opacity-75">
+                                {formatSearchResultCount(action.total)}
+                              </span>
+                            </Link>
+                          </Button>
+                        ))}
+                      </span>
+                    </>
                   ) : null}
                   {hasActiveFilters ? (
                     <Button asChild variant="outline">

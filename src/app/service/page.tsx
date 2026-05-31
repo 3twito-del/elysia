@@ -50,6 +50,17 @@ const serviceTracks = [
   },
 ] as const;
 
+const serviceResponseExpectations = [
+  {
+    title: "חזרה בערוץ שנבחר",
+    text: "נשתמש בטלפון או באימייל לפי ההעדפה שתסמנו בטופס.",
+  },
+  {
+    title: "בירור לפי פרטי הפנייה",
+    text: "מספר הזמנה, שם תכשיט או תמונה עוזרים לקצר את הטיפול.",
+  },
+] as const;
+
 type ServicePageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
@@ -146,6 +157,18 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
                   );
                 })}
               </div>
+              <Separator className="my-5" />
+              <ul
+                className="grid gap-2 text-sm leading-6"
+                data-testid="service-response-expectations"
+              >
+                {serviceResponseExpectations.map((item) => (
+                  <li className="grid gap-0.5" key={item.title}>
+                    <span className="font-medium">{item.title}</span>
+                    <span className="text-muted-foreground">{item.text}</span>
+                  </li>
+                ))}
+              </ul>
               <Separator className="my-5" />
               <div className="grid gap-3 sm:grid-cols-3">
                 <TrustItem icon={Clock3} label="מענה מסודר" />

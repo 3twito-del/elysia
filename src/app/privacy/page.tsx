@@ -154,6 +154,14 @@ export default async function PrivacyPage() {
               למימוש זכויות, שאלות או בקשות בנושא פרטיות, יש לציין את פרטי
               הזיהוי הדרושים לטיפול בבקשה ואת מהות הפנייה.
             </p>
+            <Button asChild className="mt-5" variant="secondary">
+              <Link
+                data-testid="privacy-service-recovery-link"
+                href="/service?topic=accessibility-privacy"
+              >
+                פתיחת פנייה בנושא פרטיות
+              </Link>
+            </Button>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               <a
                 className="glass-inset hover:text-foreground flex items-center gap-3 rounded-md border p-4 transition"

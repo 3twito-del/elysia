@@ -25,7 +25,13 @@ describe("discovery filter density", () => {
       'data-testid="category-mobile-active-refinement-summary"',
     );
     expect(categoryPage).toContain(
+      'data-testid="category-mobile-filter-sort-summary"',
+    );
+    expect(categoryPage).toContain(
       'data-testid="category-active-refinement-summary"',
+    );
+    expect(categoryPage).toContain(
+      'data-testid="category-active-sort-summary"',
     );
     expect(categoryPage).toContain(
       'data-testid="category-active-refinement-list"',

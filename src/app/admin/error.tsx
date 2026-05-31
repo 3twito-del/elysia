@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
@@ -21,10 +22,17 @@ export default function AdminError({
         <CardContent className="p-4 sm:p-6">
           <EmptyState
             actions={
-              <Button className="gap-2" onClick={reset} type="button">
-                <RefreshCw aria-hidden="true" className="size-4" />
-                ניסיון חוזר
-              </Button>
+              <>
+                <Button className="gap-2" onClick={reset} type="button">
+                  <RefreshCw aria-hidden="true" className="size-4" />
+                  ניסיון חוזר
+                </Button>
+                <Button asChild variant="outline">
+                  <Link href="/admin/login?next=/admin">
+                    חזרה לכניסה לניהול
+                  </Link>
+                </Button>
+              </>
             }
             description="מסך הניהול אינו זמין כרגע. הפעולה לא בוצעה, ואפשר לנסות שוב."
             icon={AlertTriangle}

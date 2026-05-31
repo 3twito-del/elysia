@@ -111,4 +111,33 @@ describe("product purchase utilities", () => {
     expect(fitItem?.description).toContain("מדריך המידות");
     expect(items.map((item) => item.description).join(" ")).not.toContain("2");
   });
+
+  it("places care and warranty facts in the purchase confidence service item", () => {
+    const variant = {
+      ...baseVariant,
+      availableQuantity: 2,
+    };
+    const items = getPurchaseConfidenceItems({
+      availabilityMode: "READY_TO_ORDER",
+      careInstructions: "ניקוי עדין במטלית רכה.",
+      deliveryPromise: "מסירה עד הבית לאחר אישור הפרטים.",
+      productSource: "OWN",
+      returnPolicy: "החלפה או החזרה בתיאום אישי.",
+      sizeKind: "ring",
+      variant,
+      variantStatusLabel: getVariantStatusLabel({
+        availabilityMode: "READY_TO_ORDER",
+        productSource: "OWN",
+        variant,
+      }),
+      warranty: "אחריות לשנה על פגמי ייצור.",
+    });
+    const serviceItem = items.find((item) => item.key === "service");
+
+    expect(serviceItem?.title).toBe("מסירה, טיפול ואחריות");
+    expect(serviceItem?.description).toContain(
+      "אחריות: אחריות לשנה על פגמי ייצור.",
+    );
+    expect(serviceItem?.description).toContain("טיפול: ניקוי עדין במטלית רכה.");
+  });
 });

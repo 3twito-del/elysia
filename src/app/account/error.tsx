@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 
 import { SiteHeader } from "~/components/site-header";
@@ -21,10 +22,15 @@ export default function AccountError({
           <CardContent className="p-4 sm:p-6">
             <EmptyState
               actions={
-                <Button className="gap-2" onClick={reset} type="button">
-                  <RefreshCw aria-hidden="true" className="size-4" />
-                  ניסיון חוזר
-                </Button>
+                <>
+                  <Button className="gap-2" onClick={reset} type="button">
+                    <RefreshCw aria-hidden="true" className="size-4" />
+                    ניסיון חוזר
+                  </Button>
+                  <Button asChild variant="outline">
+                    <Link href="/service">פנייה לשירות</Link>
+                  </Button>
+                </>
               }
               description="האזור האישי אינו פתוח כרגע. אפשר לנסות שוב בלי לאבד את הסשן."
               icon={AlertTriangle}

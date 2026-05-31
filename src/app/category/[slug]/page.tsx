@@ -246,11 +246,14 @@ export default async function CategoryPage({
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-[var(--ui-page-x)] py-3 sm:px-[var(--ui-page-x-wide)]">
             <div className="text-sm">
               <p className="font-medium">{pageRangeLabel}</p>
-              <p className="text-muted-foreground text-xs">
+              <p
+                className="text-muted-foreground text-xs"
+                data-testid="category-mobile-filter-sort-summary"
+              >
                 {hasActiveFilters
-                  ? `${activeFilterCount} סינונים פעילים`
+                  ? `${activeFilterCount} סינונים פעילים · מיון: ${currentSortLabel}`
                   : hasCategoryProducts
-                    ? "כל הפריטים בקטגוריה"
+                    ? `כל הפריטים · מיון: ${currentSortLabel}`
                     : "הקטגוריה מתעדכנת"}
               </p>
               {hasActiveFilters ? (
@@ -301,12 +304,12 @@ export default async function CategoryPage({
                   {hasActiveFilters ? (
                     <Button asChild variant="outline">
                       <Link href={resetHref} scroll={false}>
-                        איפוס
+                        איפוס הכל
                       </Link>
                     </Button>
                   ) : (
                     <Button disabled type="button" variant="outline">
-                      איפוס
+                      איפוס הכל
                     </Button>
                   )}
                   <SheetClose asChild>
@@ -364,7 +367,7 @@ export default async function CategoryPage({
                 {hasActiveFilters && (
                   <Button asChild size="sm" variant="ghost">
                     <Link href={resetHref} scroll={false}>
-                      איפוס
+                      איפוס הכל
                     </Link>
                   </Button>
                 )}
@@ -381,6 +384,12 @@ export default async function CategoryPage({
                     </p>
                     <p className="text-muted-foreground truncate text-xs">
                       {formatCategoryActiveSelectionPreview(activeFilters)}
+                    </p>
+                    <p
+                      className="text-muted-foreground mt-1 text-xs"
+                      data-testid="category-active-sort-summary"
+                    >
+                      מיון: {currentSortLabel}
                     </p>
                   </div>
                   <div

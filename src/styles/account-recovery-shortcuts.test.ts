@@ -46,9 +46,9 @@ describe("account recovery shortcuts", () => {
     expect(serviceForm).toContain("defaultTopicSlug");
     expect(serviceForm).toContain("defaultOrderNumber");
     expect(serviceForm).toContain("defaultMessage");
-    expect(serviceForm).toContain(
-      "topics.some((topic) => topic.slug === defaultTopicSlug)",
-    );
+    expect(serviceForm).toContain("const initialSelectedTopic = topics.some");
+    expect(serviceForm).toContain("(topic) => topic.slug === defaultTopicSlug");
+    expect(serviceForm).toContain("useState(initialSelectedTopic)");
   });
 
   it("keeps benchmark support evidence available after backlog replacement", () => {

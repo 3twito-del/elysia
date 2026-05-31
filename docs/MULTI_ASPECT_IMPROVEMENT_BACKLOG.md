@@ -67,6 +67,257 @@ Effort scale:
 
 ## Actionable Now
 
+## Candidate Improvements
+
+Candidate items are not implementable by default. Public-facing candidates must
+pass `docs/PUBLIC_CHANGE_GATE.md` or `docs/FULL_PRODUCT_BENCHMARK.md` before
+product code is edited.
+
+## Completed Work
+
+### I-018 Production Smoke Coverage for Recent Public Decisions
+
+- `ID`: I-018
+- `Aspect`: QA, Release, and Observability
+- `Status`: Done
+- `Priority`: P1
+- `Effort`: M
+- `Source/Evidence`: `scripts/smoke.mjs`, recent public-decision smoke needs,
+  production release checks, and current route inventory
+- `Target Surface`: `scripts/smoke.mjs`, production smoke coverage, route checks
+- `Improvement`: Added smoke checks that cover homepage shortcuts, account
+  logged-out state, checkout availability, and public health without requiring
+  authenticated data.
+- `Acceptance Checks`: Smoke coverage validates recent public UI decisions
+  through stable public markers or route responses, avoids authenticated-only
+  assumptions, and does not require seed-specific private data.
+- `Verification`: Covered by `scripts/smoke.test.mjs`; verified with
+  `pnpm test -- scripts/smoke.test.mjs`,
+  `SMOKE_BASE_URL=https://elysia-jewellery.com pnpm smoke`, `pnpm lint`, and
+  `pnpm exec prettier --check docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md scripts/smoke.mjs scripts/smoke.test.mjs`.
+
+### I-019 Route-Level Error Boundary Recovery Audit
+
+- `ID`: I-019
+- `Aspect`: Performance, PWA, and Reliability
+- `Status`: Done
+- `Priority`: P1
+- `Effort`: M
+- `Source/Evidence`: Existing route `error.tsx` files, public/admin recovery
+  patterns, and `docs/FULL_PRODUCT_BENCHMARK.md`
+- `Target Surface`: Route `error.tsx` files, public/admin error states
+- `Improvement`: Added route-backed recovery actions to account/admin error
+  boundaries and locked all route error boundaries behind a recovery contract.
+- `Acceptance Checks`: Error boundaries use consistent retry and safe-route
+  recovery actions, preserve accessible headings/copy, avoid provider/raw error
+  details, and route users back to a real safe task.
+- `Verification`: Covered by `src/styles/route-error-boundary-recovery.test.ts`;
+  verified with
+  `pnpm test -- src/styles/route-error-boundary-recovery.test.ts`,
+  `pnpm lint`, and
+  `pnpm exec prettier --check docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md src/app/account/error.tsx src/app/admin/error.tsx src/app/category/[slug]/error.tsx src/styles/route-error-boundary-recovery.test.ts`.
+
+### I-020 Admin Audit and Outbox Empty-State Review
+
+- `ID`: I-020
+- `Aspect`: Admin and Operations
+- `Status`: Done
+- `Priority`: P2
+- `Effort`: M
+- `Source/Evidence`: Admin route patterns, audit/outbox operational needs, and
+  existing admin empty-state guardrails
+- `Target Surface`: `/admin/audit`, outbox/job/admin operational views
+- `Improvement`: Added filtered/unfiltered empty-state recovery to audit,
+  aligned outbox status filtering with supported backend inputs, and added
+  recoverable job-run filters without adding unsupported automation.
+- `Acceptance Checks`: Operators can distinguish no data, filtered-out data,
+  unavailable data, and unsupported actions; reset/recovery paths are explicit.
+- `Verification`: Covered by `src/styles/admin-empty-state-contract.test.ts`;
+  verified with `pnpm test -- src/styles/admin-empty-state-contract.test.ts`,
+  `pnpm lint`, and
+  `pnpm exec prettier --check docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md src/app/admin/audit/page.tsx src/app/admin/integrations/page.tsx src/styles/admin-empty-state-contract.test.ts`.
+
+### I-021 API Response Boundary Consistency Audit
+
+- `ID`: I-021
+- `Aspect`: Backend, API, and Data
+- `Status`: Done
+- `Priority`: P1
+- `Effort`: M
+- `Source/Evidence`: API route handlers, shared response helpers, validation
+  tests, and backend benchmark guidance in `docs/FULL_PRODUCT_BENCHMARK.md`
+- `Target Surface`: API route handlers, shared response helpers, validation
+  failures
+- `Improvement`: Replaced a cart-count error path that returned a success
+  helper with a 4xx status, and expanded the API boundary contract so error
+  status responses cannot be sent through `okJson`.
+- `Acceptance Checks`: Public and protected API routes return consistent JSON
+  envelopes, fail closed on auth/validation errors, and avoid divergent ad hoc
+  error responses.
+- `Verification`: Covered by
+  `src/server/http/api-response-boundary.test.ts`,
+  `src/server/http/api-response.test.ts`, and
+  `src/app/api/cart/count/route.test.ts`; verified with
+  `pnpm test -- src/app/api/cart/count/route.test.ts src/server/http/api-response-boundary.test.ts src/server/http/api-response.test.ts`,
+  `pnpm lint`, and
+  `pnpm exec prettier --check docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md src/app/api/cart/count/route.ts src/app/api/cart/count/route.test.ts src/server/http/api-response-boundary.test.ts src/server/http/api-response.test.ts`.
+
+### I-022 PWA Cache and Manifest Shortcut Drift Audit
+
+- `ID`: I-022
+- `Aspect`: Performance, PWA, and Reliability
+- `Status`: Done
+- `Priority`: P2
+- `Effort`: M
+- `Source/Evidence`: Service worker route allowlist, manifest shortcuts,
+  offline recovery, and current public navigation
+- `Target Surface`: Service worker route allowlist, manifest shortcuts, offline
+  recovery
+- `Improvement`: Aligned PWA shortcuts with the current public navigation by
+  replacing the live-only checkout shortcut with `/gifts`, added `/gifts` to
+  offline recovery actions, and locked shortcut/cache drift with manifest and
+  offline recovery contract tests.
+- `Acceptance Checks`: Manifest shortcuts point to real current routes, service
+  worker allowlists cover supported offline recovery paths, and offline copy does
+  not promise unsupported commerce behavior.
+- `Verification`: Covered by `src/app/manifest.test.ts`,
+  `src/app/serwist-route.test.ts`, and
+  `src/styles/pwa-offline-recovery.test.ts`; verified with
+  `pnpm test -- src/app/manifest.test.ts src/app/serwist-route.test.ts src/styles/pwa-offline-recovery.test.ts`,
+  `pnpm lint`, and
+  `pnpm exec prettier --check docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md src/app/manifest.ts src/app/manifest.test.ts src/app/offline/page.tsx src/styles/pwa-offline-recovery.test.ts src/app/serwist-route.test.ts`.
+
+### I-023 Search Empty-State Guided Recovery
+
+- `ID`: I-023
+- `Aspect`: Public UX and Brand
+- `Status`: Done
+- `Priority`: P2
+- `Effort`: M
+- `Source/Evidence`: Search route behavior, empty-state recovery patterns,
+  `docs/FULL_PRODUCT_BENCHMARK.md`, `docs/PUBLIC_CHANGE_GATE.md`, and
+  `docs/qa/search-empty-state-guided-recovery-benchmark.md`
+- `Target Surface`: `/search` empty state, query persistence, recovery links
+- `Improvement`: Added compact visible guidance for existing count-backed
+  search recovery actions, replacing hidden `title`-only explanation while
+  keeping `/search` task-first and not adding content sections or unsupported
+  destinations.
+- `Acceptance Checks`: Benchmark decision confirms the recovery pattern improves
+  search continuation while preserving PLP/search structure and scan speed.
+- `Verification`: Benchmark passed with weighted support of `16.5` against the
+  `11.25` threshold. Covered by `src/styles/search-empty-recovery.test.ts` and
+  `src/app/search/_lib/search-state.test.ts`; verified with
+  `pnpm test -- src/app/search/_lib/search-state.test.ts src/styles/search-empty-recovery.test.ts src/styles/discovery-filter-density.test.ts src/styles/cta-hierarchy.test.ts`,
+  `pnpm lint`, and
+  `pnpm exec prettier --check docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md docs/qa/search-empty-state-guided-recovery-benchmark.md src/app/search/page.tsx src/styles/search-empty-recovery.test.ts src/app/search/_lib/search-state.test.ts`.
+
+### I-024 Category Active Filter and Sort Clarity
+
+- `ID`: I-024
+- `Aspect`: Public UX and Brand
+- `Status`: Done
+- `Priority`: P2
+- `Effort`: M
+- `Source/Evidence`: Category filter behavior, PLP guidance in
+  `docs/FULL_PRODUCT_BENCHMARK.md`, `docs/PUBLIC_CHANGE_GATE.md`, and
+  `docs/qa/category-active-filter-sort-clarity-benchmark.md`
+- `Target Surface`: `/category/[slug]`, filter sheet, sort, active refinements
+- `Improvement`: Added explicit sort context to mobile and desktop active
+  refinement summaries and changed active reset actions to clear `איפוס הכל`
+  copy without adding extra PLP controls or changing product-grid density.
+- `Acceptance Checks`: Benchmark decision confirms active refinement clarity is
+  supported and does not push category pages beyond reference density.
+- `Verification`: Benchmark passed with weighted support of `16.5` against the
+  `11.25` threshold. Covered by
+  `src/styles/category-active-filter-sort-clarity.test.ts`,
+  `src/styles/discovery-filter-density.test.ts`, and
+  `src/app/category/[slug]/_lib/category-filter-state.test.ts`; verified with
+  `pnpm test -- src/app/category/[slug]/_lib/category-filter-state.test.ts src/styles/category-active-filter-sort-clarity.test.ts src/styles/discovery-filter-density.test.ts src/styles/cta-hierarchy.test.ts src/styles/mobile-commerce-density.test.ts`,
+  `pnpm lint`, `pnpm typecheck`, and
+  `pnpm exec prettier --check docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md docs/qa/category-active-filter-sort-clarity-benchmark.md src/app/category/[slug]/page.tsx src/app/category/[slug]/_components/deferred-category-filter-panel.tsx src/styles/category-active-filter-sort-clarity.test.ts src/styles/discovery-filter-density.test.ts src/app/category/[slug]/_lib/category-filter-state.test.ts`.
+
+### I-025 PDP Size, Care, and Fit Fact Placement
+
+- `ID`: I-025
+- `Aspect`: Commerce and Checkout
+- `Status`: Done
+- `Priority`: P1
+- `Effort`: M
+- `Source/Evidence`: PDP purchase-confidence guidance in
+  `docs/FULL_PRODUCT_BENCHMARK.md`, `docs/PUBLIC_CHANGE_GATE.md`, current
+  product purchase panel behavior, and
+  `docs/qa/pdp-size-care-fit-fact-placement-benchmark.md`
+- `Target Surface`: `/product/[slug]`, purchase panel, size guide,
+  care/warranty facts
+- `Improvement`: Passed existing care and warranty facts into the PDP purchase
+  panel and surfaced them inside the existing service confidence item near the
+  purchase action, while keeping gallery, options, CTA order, product detail
+  rows, and recommendation rails unchanged.
+- `Acceptance Checks`: Benchmark decision confirms the placement improves
+  purchase confidence without displacing gallery, options, price, availability,
+  or primary purchase actions.
+- `Verification`: Benchmark passed with weighted support of `16.5` against the
+  `11.25` threshold. Covered by
+  `src/app/product/[slug]/_components/product-purchase-utils.test.ts`,
+  `src/styles/product-purchase-facts-placement.test.ts`, and
+  `src/styles/service-trust-placement.test.ts`; verified with
+  `pnpm test -- src/app/product/[slug]/_components/product-purchase-utils.test.ts src/styles/product-purchase-facts-placement.test.ts src/styles/service-trust-placement.test.ts src/app/product/[slug]/_lib/product-recommendation-rails.test.ts src/styles/cta-hierarchy.test.ts src/styles/mobile-commerce-density.test.ts`,
+  `pnpm lint`, `pnpm typecheck`, and
+  `pnpm exec prettier --check docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md docs/qa/pdp-size-care-fit-fact-placement-benchmark.md src/app/product/[slug]/page.tsx src/app/product/[slug]/_components/product-purchase-panel.tsx src/app/product/[slug]/_components/product-purchase-utils.ts src/app/product/[slug]/_components/product-purchase-utils.test.ts src/styles/product-purchase-facts-placement.test.ts`.
+
+### I-026 Service Response Expectations and Contact Clarity
+
+- `ID`: I-026
+- `Aspect`: Public UX and Brand
+- `Status`: Done
+- `Priority`: P2
+- `Effort`: M
+- `Source/Evidence`: Service route behavior, service request form recovery,
+  `docs/FULL_PRODUCT_BENCHMARK.md`, `docs/PUBLIC_CHANGE_GATE.md`, and
+  `docs/qa/service-response-contact-clarity-benchmark.md`
+- `Target Surface`: `/service`, service request form, confirmation/recovery copy
+- `Improvement`: Added compact response expectations to the service route,
+  surfaced selected-topic guidance inside the form, and updated online/offline
+  confirmation copy to reference the chosen contact preference without adding
+  unsupported contact channels or hard response-time SLAs.
+- `Acceptance Checks`: Benchmark decision confirms service clarity improves
+  trust while keeping the service route compact, task-first, and route-backed.
+- `Verification`: Benchmark passed with weighted support of `16.5` against the
+  `11.25` threshold. Covered by
+  `src/styles/service-response-contact-clarity.test.ts`,
+  `src/styles/service-trust-placement.test.ts`,
+  `src/styles/service-attachment-ux.test.ts`, and
+  `src/styles/form-error-recovery-contract.test.ts`; verified with
+  `pnpm test -- src/styles/service-response-contact-clarity.test.ts src/styles/service-trust-placement.test.ts src/styles/service-attachment-ux.test.ts src/styles/form-error-recovery-contract.test.ts src/styles/cta-hierarchy.test.ts src/styles/mobile-commerce-density.test.ts`,
+  `pnpm lint`, `pnpm typecheck`, and
+  `pnpm exec prettier --check docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md docs/qa/service-response-contact-clarity-benchmark.md src/app/service/page.tsx src/app/service/_components/service-request-form.tsx src/app/service/actions.ts src/styles/service-response-contact-clarity.test.ts src/styles/service-trust-placement.test.ts src/styles/service-attachment-ux.test.ts src/styles/form-error-recovery-contract.test.ts`.
+
+### I-027 FAQ and Content Route Service Recovery Links
+
+- `ID`: I-027
+- `Aspect`: Accessibility, Privacy, and Security
+- `Status`: Done
+- `Priority`: P2
+- `Effort`: S
+- `Source/Evidence`: FAQ/content/legal route behavior,
+  `docs/FULL_PRODUCT_BENCHMARK.md`, `docs/PUBLIC_CHANGE_GATE.md`, and
+  `docs/qa/faq-content-service-recovery-links-benchmark.md`
+- `Target Surface`: `/faq`, legal/content routes, service recovery links
+- `Improvement`: Added compact route-backed service recovery links from FAQ,
+  terms, privacy, and accessibility pages to existing `/service` topics for
+  general questions, orders, privacy, and accessibility without adding new
+  channels or content sections.
+- `Acceptance Checks`: Benchmark decision confirms recovery links improve task
+  completion without crowding readable content or adding unsupported flows.
+- `Verification`: Benchmark passed with weighted support of `16.5` against the
+  `11.25` threshold. Covered by
+  `src/styles/content-route-service-recovery.test.ts`,
+  `src/styles/service-trust-placement.test.ts`, and
+  `src/styles/public-structure-enforcement.test.ts`; verified with
+  `pnpm test -- src/styles/content-route-service-recovery.test.ts src/styles/service-trust-placement.test.ts src/styles/public-structure-enforcement.test.ts src/styles/cta-hierarchy.test.ts src/styles/mobile-commerce-density.test.ts`,
+  `pnpm lint`, `pnpm typecheck`, and
+  `pnpm exec prettier --check docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md docs/qa/faq-content-service-recovery-links-benchmark.md src/app/faq/page.tsx src/app/privacy/page.tsx src/app/terms/page.tsx src/app/accessibility/page.tsx src/styles/content-route-service-recovery.test.ts`.
+
 ### I-001 Public Metadata and Share Preview Audit
 
 - `ID`: I-001
@@ -299,12 +550,6 @@ src/styles/service-trust-placement.test.ts`.
   `src/styles/homepage-discovery-commerce-balance.test.ts` and existing mobile
   density guardrails; focused verification command is
   `pnpm test -- src/styles/homepage-discovery-commerce-balance.test.ts src/styles/mobile-commerce-density.test.ts`.
-
-## Candidate Improvements
-
-Candidate items are not implementable by default. Public-facing candidates must
-pass `docs/PUBLIC_CHANGE_GATE.md` or `docs/FULL_PRODUCT_BENCHMARK.md` before
-product code is edited.
 
 ## Blocked / Deferred
 

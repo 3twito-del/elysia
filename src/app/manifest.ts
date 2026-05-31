@@ -76,10 +76,10 @@ export default function manifest(): ExtendedManifest {
         ],
       },
       {
-        name: "הבחירה שלי",
-        short_name: "הבחירה",
-        description: "מעבר לסיכום הבחירה",
-        url: "/checkout?source=pwa-shortcut",
+        name: "מתנות נבחרות",
+        short_name: "מתנות",
+        description: "פתיחת מדריך מתנות",
+        url: "/gifts?source=pwa-shortcut",
         icons: [
           {
             src: "/pwa/icons/icon-192.png",

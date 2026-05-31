@@ -22,7 +22,14 @@ const publicRouteChecks = [
   {
     path: "/",
     statuses: [200],
-    includes: ["Elysia"],
+    includes: [
+      "Elysia",
+      'data-testid="home-commerce-shortcuts"',
+      'href="/search"',
+      'href="/gifts"',
+      'href="/size-guide"',
+      'href="/service"',
+    ],
     matches: [
       /href="\/category\/rings"/,
       /href="\/checkout"/,
@@ -65,6 +72,11 @@ const categoryNavigationChecks = categoryPaths.map((path) => ({
 }));
 
 export const smokeChecks = [
+  {
+    path: "/api/health",
+    statuses: [200],
+    includes: ['"ok":true', '"timestamp"'],
+  },
   ...publicRouteChecks,
   {
     path: "/search",
@@ -100,13 +112,21 @@ export const smokeChecks = [
   {
     path: "/checkout",
     statuses: [200],
-    includes: ['data-testid="cart-checkout-form"'],
+    includes: [
+      'id="checkout-form"',
+      'id="checkout-service"',
+      'data-testid="cart-checkout-form"',
+    ],
     matches: [/href="\/category\//],
   },
   {
     path: "/account",
     statuses: [200],
-    includes: ['id="identifier"'],
+    includes: [
+      'data-testid="account-otp-request-form"',
+      'data-testid="account-identifier-input"',
+      'id="identifier"',
+    ],
   },
   {
     path: "/account/privacy/export",

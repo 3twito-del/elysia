@@ -122,6 +122,14 @@ export default async function TermsPage() {
               לכל שאלה לגבי הזמנה, ביטול, פרטיות או שימוש באתר ניתן לפנות אלינו
               בפרטים הבאים.
             </p>
+            <Button asChild className="mt-5" variant="secondary">
+              <Link
+                data-testid="terms-service-recovery-link"
+                href="/service?topic=order"
+              >
+                פתיחת פנייה בנושא הזמנה
+              </Link>
+            </Button>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               <a
                 className="glass-inset hover:text-foreground flex items-center gap-3 rounded-md border p-4 transition"

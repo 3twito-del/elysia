@@ -163,6 +163,14 @@ export default async function FaqPage() {
               אפשר לפנות לשירות האישי עם פרטי התכשיט, מספר ההזמנה או תיאור
               הבקשה.
             </p>
+            <Button asChild className="mt-5" variant="secondary">
+              <Link
+                data-testid="faq-service-recovery-link"
+                href="/service?topic=general"
+              >
+                פתיחת פנייה לשירות
+              </Link>
+            </Button>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               <a
                 className="glass-inset hover:text-foreground flex items-center gap-3 rounded-md border p-4 transition"

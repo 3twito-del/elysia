@@ -13,6 +13,7 @@ describe("smoke checks", () => {
 
     expect(paths).toEqual(
       expect.arrayContaining([
+        "/api/health",
         "/",
         "/branches",
         "/gifts",
@@ -36,6 +37,38 @@ describe("smoke checks", () => {
     for (const path of protectedAdminPaths) {
       expect(paths).toContain(path);
     }
+  });
+
+  it("covers recent public decisions without authenticated data", () => {
+    const healthCheck = smokeChecks.find((item) => item.path === "/api/health");
+    const homeCheck = smokeChecks.find((item) => item.path === "/");
+    const checkoutCheck = smokeChecks.find((item) => item.path === "/checkout");
+    const accountCheck = smokeChecks.find((item) => item.path === "/account");
+
+    expect(healthCheck?.includes).toEqual(['"ok":true', '"timestamp"']);
+    expect(homeCheck?.includes).toEqual(
+      expect.arrayContaining([
+        'data-testid="home-commerce-shortcuts"',
+        'href="/search"',
+        'href="/gifts"',
+        'href="/size-guide"',
+        'href="/service"',
+      ]),
+    );
+    expect(checkoutCheck?.includes).toEqual(
+      expect.arrayContaining([
+        'id="checkout-form"',
+        'id="checkout-service"',
+        'data-testid="cart-checkout-form"',
+      ]),
+    );
+    expect(accountCheck?.includes).toEqual(
+      expect.arrayContaining([
+        'data-testid="account-otp-request-form"',
+        'data-testid="account-identifier-input"',
+        'id="identifier"',
+      ]),
+    );
   });
 
   it("keeps search smoke product-backed without depending on one seeded slug", () => {
