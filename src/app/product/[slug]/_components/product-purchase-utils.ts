@@ -147,6 +147,29 @@ export function isRecoverableOfflineCartError(error: { message: string }) {
   );
 }
 
+export function getAddToCartFailureMessage(error: { message: string }) {
+  const message = error.message.toLowerCase();
+
+  if (
+    message.includes("stock") ||
+    message.includes("inventory") ||
+    message.includes("unavailable") ||
+    message.includes("variant")
+  ) {
+    return "ההתאמה הזו אינה זמינה כרגע. אפשר לבחור התאמה אחרת או לפנות לשירות האישי.";
+  }
+
+  if (
+    message.includes("quantity") ||
+    message.includes("amount") ||
+    message.includes("limit")
+  ) {
+    return "לא ניתן להוסיף את הכמות הזו לסל. אפשר לנסות כמות אחרת או לפנות לשירות.";
+  }
+
+  return "לא הצלחנו להוסיף לסל כרגע. הבחירה נשארה בעמוד ואפשר לנסות שוב.";
+}
+
 function getCheckoutConfidenceDescription(input: {
   availabilityMode: PublicProductAvailabilityMode;
   productSource: CatalogProduct["source"];

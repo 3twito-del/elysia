@@ -9,6 +9,17 @@ const mirrorMocks = vi.hoisted(() => ({
   mirrorShopifyOrderWebhook: vi.fn(),
 }));
 const webhookMocks = vi.hoisted(() => ({
+  createWebhookErrorSummary: vi.fn((error: unknown) => ({
+    name: error instanceof Error ? error.name : typeof error,
+  })),
+  createWebhookSafeLogContext: vi.fn(
+    (input: { provider: string; stage: string; status?: string }) => ({
+      provider: input.provider,
+      rawBodyHash: "safe-body-hash",
+      stage: input.stage,
+      status: input.status ?? "RECEIVED",
+    }),
+  ),
   parseWebhookJson: vi.fn((rawBody: string) =>
     rawBody.trim() ? (JSON.parse(rawBody) as unknown) : {},
   ),
@@ -24,6 +35,8 @@ vi.mock("~/server/services/shopify-order-mirror", () => ({
 }));
 
 vi.mock("~/server/services/webhook-events", () => ({
+  createWebhookErrorSummary: webhookMocks.createWebhookErrorSummary,
+  createWebhookSafeLogContext: webhookMocks.createWebhookSafeLogContext,
   parseWebhookJson: webhookMocks.parseWebhookJson,
   recordWebhookEvent: webhookMocks.recordWebhookEvent,
 }));
@@ -79,6 +92,19 @@ describe("Shopify order webhook route", () => {
         ok: false,
         error: "Shopify webhook processing is unavailable.",
       });
+      expect(errorSpy).toHaveBeenCalledWith(
+        "[webhook:shopify:process-failed]",
+        expect.objectContaining({
+          provider: "shopify",
+          rawBodyHash: "safe-body-hash",
+          stage: "processing",
+        }),
+        { name: "Error" },
+      );
+      const loggedOutput = JSON.stringify(errorSpy.mock.calls);
+
+      expect(loggedOutput).not.toContain("admin token leaked");
+      expect(loggedOutput).not.toContain('"message"');
       expect(webhookMocks.recordWebhookEvent).toHaveBeenCalledTimes(1);
       expect(webhookMocks.recordWebhookEvent).toHaveBeenCalledWith(
         expect.objectContaining({

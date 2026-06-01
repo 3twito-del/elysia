@@ -79,8 +79,12 @@ export function createOfflineSyncResponse(
 }
 
 export function getPublicOfflineSyncError(kind: string) {
+  if (kind.startsWith("cart.")) {
+    return "Some offline cart changes could not be synced. Review your cart, then retry when the connection is stable.";
+  }
+
   if (kind === "service.request") {
-    return "Queued service request could not be synced. Please retry or submit the request again from the service page.";
+    return "Queued service request or attachments could not be synced. Please retry or submit the request again from the service page.";
   }
 
   return "Queued action could not be synced. Please retry when the connection is stable.";

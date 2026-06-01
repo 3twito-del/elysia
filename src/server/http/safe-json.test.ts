@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { readSafeJson, readSafeText } from "./safe-json";
+import {
+  getSafeJsonFailureContract,
+  readSafeJson,
+  readSafeText,
+} from "./safe-json";
 
 describe("readSafeJson", () => {
   it("rejects empty bodies without throwing", async () => {
@@ -68,6 +72,49 @@ describe("readSafeText", () => {
     ).resolves.toEqual({
       ok: true,
       text: "hello",
+    });
+  });
+});
+
+describe("getSafeJsonFailureContract", () => {
+  it("maps empty and invalid bodies to the same redacted bad-request shape", () => {
+    expect(getSafeJsonFailureContract("empty")).toEqual({
+      status: 400,
+      body: {
+        ok: false,
+        error: "Invalid request body.",
+      },
+    });
+    expect(getSafeJsonFailureContract("invalid")).toEqual({
+      status: 400,
+      body: {
+        ok: false,
+        error: "Invalid request body.",
+      },
+    });
+  });
+
+  it("maps oversized bodies to a redacted payload-too-large shape", () => {
+    expect(getSafeJsonFailureContract("too-large")).toEqual({
+      status: 413,
+      body: {
+        ok: false,
+        error: "Request body is too large.",
+      },
+    });
+  });
+
+  it("supports endpoint-specific safe copy without exposing parser internals", () => {
+    expect(
+      getSafeJsonFailureContract("invalid", {
+        invalid: "Chat request body is invalid.",
+      }),
+    ).toEqual({
+      status: 400,
+      body: {
+        ok: false,
+        error: "Chat request body is invalid.",
+      },
     });
   });
 });

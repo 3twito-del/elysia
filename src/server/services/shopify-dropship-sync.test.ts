@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  getShopifyDropshipSyncRevalidationInput,
   isShopifyDropshipSyncEnabled,
   mapShopifyProductsToImportPlan,
   syncShopifyDropshipCatalog,
@@ -102,5 +103,39 @@ describe("Shopify dropship sync", () => {
         reason: "No priced Shopify variants are available for import.",
       },
     ]);
+  });
+
+  it("derives catalog revalidation input from imported Shopify handles and categories", () => {
+    expect(
+      getShopifyDropshipSyncRevalidationInput({
+        products: [
+          {
+            basePrice: 299,
+            categorySlug: "rings",
+            description: "Imported supplier product",
+            externalHandle: "supplier-ring",
+            externalProductId: "gid://shopify/Product/1",
+            materialSlug: "supplier",
+            name: "Supplier Ring",
+            shortDescription: "Imported",
+            sku: "SUP-RING-54",
+            supplierKey: "supplier-a",
+            tags: [],
+            variants: [
+              {
+                externalVariantId: "gid://shopify/ProductVariant/10",
+                name: "54",
+                price: 299,
+                sku: "SUP-RING-54",
+              },
+            ],
+          },
+        ],
+        skipped: [],
+      }),
+    ).toEqual({
+      categorySlugs: ["rings"],
+      productSlugs: ["supplier-ring"],
+    });
   });
 });

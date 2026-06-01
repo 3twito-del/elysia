@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { assertInternalPushTargetUrl } from "./push";
@@ -14,4 +17,34 @@ describe("push target URL guard", () => {
       assertInternalPushTargetUrl("https://example.invalid/phishing"),
     ).toThrow("Push target URL is invalid.");
   });
+
+  it("keeps user-facing unsubscribe paths available and unambiguous", () => {
+    const pushClient = read("src/lib/push-client.ts");
+    const pushButton = read("src/components/push-opt-in-button.tsx");
+    const subscriptionRoute = read("src/app/api/push/subscription/route.ts");
+
+    expect(pushClient).toContain("getExistingElysiaPushSubscription");
+    expect(pushClient).toContain("unsubscribeFromElysiaPush");
+    expect(pushClient).toContain('fetch("/api/push/subscription"');
+    expect(pushClient).toContain('method: "DELETE"');
+    expect(pushClient).toContain("subscription.unsubscribe()");
+    expect(pushClient).toContain("getPwaDeviceId()");
+
+    expect(pushButton).toContain("getExistingElysiaPushSubscription");
+    expect(pushButton).toContain("unsubscribeFromElysiaPush");
+    expect(pushButton).toContain("aria-pressed={isSubscribed}");
+    expect(pushButton).toContain("BellOff");
+    expect(pushButton).toContain("checkingSubscription");
+    expect(pushButton).toContain("result.unsubscribed");
+
+    expect(subscriptionRoute).toContain("export async function DELETE");
+    expect(subscriptionRoute).toContain("revokePushSubscription");
+    expect(subscriptionRoute).toContain(
+      "Missing push subscription identifier.",
+    );
+  });
 });
+
+function read(relativePath: string) {
+  return readFileSync(path.join(process.cwd(), relativePath), "utf8");
+}

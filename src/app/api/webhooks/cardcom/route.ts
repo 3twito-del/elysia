@@ -9,6 +9,8 @@ import {
 } from "~/server/http/api-response";
 import { readSafeText } from "~/server/http/safe-json";
 import {
+  createWebhookErrorSummary,
+  createWebhookSafeLogContext,
   parseWebhookJson,
   recordWebhookEvent,
 } from "~/server/services/webhook-events";
@@ -54,6 +56,14 @@ export async function POST(req: Request) {
     signature,
     timestamp,
   });
+  const unverifiedLogContext = createWebhookSafeLogContext({
+    fallbackEventType: "cardcom.unverified",
+    payload,
+    provider: "cardcom",
+    rawBody,
+    stage: "signature-verification",
+    status: "FAILED",
+  });
 
   if (!verified) {
     await recordWebhookEvent({
@@ -63,7 +73,11 @@ export async function POST(req: Request) {
       status: "FAILED",
       fallbackEventType: "cardcom.unverified",
     }).catch((error: unknown) => {
-      console.error("[webhook:cardcom:record-failed]", error);
+      console.error(
+        "[webhook:cardcom:record-failed]",
+        unverifiedLogContext,
+        createWebhookErrorSummary(error),
+      );
     });
 
     return unauthorizedJson("Invalid signature.");
@@ -81,7 +95,20 @@ export async function POST(req: Request) {
   try {
     paymentResult = await applyCardComWebhook(payload);
   } catch (error) {
-    console.error("[webhook:cardcom:process-failed]", error);
+    const processingLogContext = createWebhookSafeLogContext({
+      fallbackEventType: "cardcom.webhook",
+      payload,
+      provider: "cardcom",
+      rawBody,
+      stage: "processing",
+      status: "RECEIVED",
+    });
+
+    console.error(
+      "[webhook:cardcom:process-failed]",
+      processingLogContext,
+      createWebhookErrorSummary(error),
+    );
 
     return serviceUnavailableJson("CardCom webhook processing is unavailable.");
   }

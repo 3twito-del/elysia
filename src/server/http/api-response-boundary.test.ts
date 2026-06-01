@@ -11,6 +11,8 @@ const sourceRoots = ["src/app", "src/server"];
 const sourceExtensions = new Set([".js", ".jsx", ".ts", ".tsx"]);
 const testFilePattern = /\.(test|spec)\.[jt]sx?$/;
 const forbiddenJsonCalls = ["Response.json(", "NextResponse.json("] as const;
+const minimumScannedSourceFileCount = 250;
+const minimumRuntimeSourceFileCount = 190;
 
 type SourceSnapshot = {
   relativePath: string;
@@ -36,6 +38,19 @@ describe("api response boundaries", () => {
       })),
     );
   }, 15_000);
+
+  it("documents the source scan fixture size", () => {
+    const runtimeSourceCount = sources.filter(
+      ({ relativePath }) => !testFilePattern.test(relativePath),
+    ).length;
+
+    expect(sources.length).toBeGreaterThanOrEqual(
+      minimumScannedSourceFileCount,
+    );
+    expect(runtimeSourceCount).toBeGreaterThanOrEqual(
+      minimumRuntimeSourceFileCount,
+    );
+  });
 
   it("keeps route JSON responses behind shared helpers", () => {
     const violations = [];

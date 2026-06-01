@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -101,4 +104,33 @@ describe("commerce labels", () => {
       serviceReason: "consultation",
     });
   });
+
+  it("keeps order source labels wired through customer, admin, checkout, and product surfaces", () => {
+    const accountPage = read("src/app/account/page.tsx");
+    const accountOrderPage = read("src/app/account/orders/[id]/page.tsx");
+    const adminOrderPage = read("src/app/admin/orders/[id]/page.tsx");
+    const adminOrdersPage = read("src/app/admin/orders/page.tsx");
+    const checkoutForm = read(
+      "src/app/checkout/_components/cart-checkout-form.tsx",
+    );
+    const productCard = read("src/components/product-card.tsx");
+
+    for (const source of [accountPage, accountOrderPage, adminOrderPage]) {
+      expect(source).toContain("getOrderSourceLabel");
+      expect(source).toContain("getOrderSourceDescription");
+      expect(source).toContain('"LOCAL"');
+    }
+
+    expect(accountPage).toContain('"SHOPIFY_MIRROR"');
+    expect(adminOrdersPage).toContain("sourceLabel");
+    expect(adminOrdersPage).toContain("sourceDescription");
+    expect(checkoutForm).toContain('source: "OWN"');
+    expect(checkoutForm).toContain('source: "DROPSHIP_SHOPIFY"');
+    expect(productCard).toContain('product.source === "DROPSHIP_SHOPIFY"');
+    expect(productCard).toContain("sourceFact");
+  });
 });
+
+function read(relativePath: string) {
+  return readFileSync(path.join(process.cwd(), relativePath), "utf8");
+}

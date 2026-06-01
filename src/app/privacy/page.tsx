@@ -146,6 +146,25 @@ export default async function PrivacyPage() {
 
           <Separator className="my-8" />
 
+          <section
+            aria-labelledby="privacy-local-storage"
+            data-testid="privacy-local-storage-notice"
+          >
+            <h2 className="text-2xl font-semibold" id="privacy-local-storage">
+              אחסון מקומי ומדידה בהסכמה
+            </h2>
+            <p className="text-muted-foreground mt-3 leading-8">
+              מועדפים של אורחים, פריטים שנצפו לאחרונה, העדפות מידה, פעולות לא
+              מקוונות ומזהה מכשיר PWA נשמרים בדפדפן כדי להפעיל את השירות גם בלי
+              התחברות. נתונים אלו נשארים במכשיר עד מחיקה דרך הדפדפן, ניקוי נתוני
+              האתר או פעולה יזומה בממשק. מדידה, שיפור חוויית הבחירה ואירועי
+              שימוש שאינם חיוניים מופעלים רק בהתאם לבחירה בבאנר העוגיות ובהעדפות
+              העוגיות בעמוד זה.
+            </p>
+          </section>
+
+          <Separator className="my-8" />
+
           <section aria-labelledby="privacy-contact">
             <h2 className="text-2xl font-semibold" id="privacy-contact">
               פנייה בנושא פרטיות

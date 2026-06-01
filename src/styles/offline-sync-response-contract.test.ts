@@ -19,7 +19,9 @@ describe("offline sync response contract", () => {
 
     expect(offlineSync).toContain("getPublicOfflineSyncError(action.kind)");
     expect(offlineSync).toContain("Queued action could not be synced");
-    expect(offlineSync).toContain("Queued service request could not be synced");
+    expect(offlineSync).toContain(
+      "Queued service request or attachments could not be synced",
+    );
     expect(offlineSync).not.toContain("error.message");
 
     expect(offlineClient).toContain("readSyncResponse(response)");

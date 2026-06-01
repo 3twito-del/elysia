@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { SizeGuideTool } from "./_components/size-guide-tool";
+import { getSafeSizeGuideReturnContext } from "./_lib/size-guide-return";
 import { CommercePageHero } from "~/components/commerce-page-hero";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -29,11 +30,14 @@ export default async function SizeGuidePage({
   const initialKind = sizeFitKinds.includes(requestedKind as SizeFitKind)
     ? (requestedKind as SizeFitKind)
     : "ring";
-  const returnHref = getSafeSizeGuideReturnHref(requestedReturnTo);
   const productName =
     requestedProduct && requestedProduct.length <= 120
       ? requestedProduct
       : undefined;
+  const returnContext = getSafeSizeGuideReturnContext(
+    requestedReturnTo,
+    productName,
+  );
 
   return (
     <main>
@@ -49,18 +53,16 @@ export default async function SizeGuidePage({
         id="size-guide-tool"
         initialVisible
       >
-        {returnHref ? (
+        {returnContext ? (
           <div
             className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-md border border-[var(--glass-border)] px-4 py-3 text-sm"
             data-testid="size-guide-product-return-context"
           >
             <p className="text-muted-foreground leading-6">
-              {productName
-                ? `הגעתם ממוצר: ${productName}. אפשר לשמור מידה ולחזור לעמוד המוצר.`
-                : "הגעתם מעמוד מוצר. אפשר לשמור מידה ולחזור לעמוד המוצר."}
+              {returnContext.description}
             </p>
             <Button asChild size="sm" variant="outline">
-              <Link href={returnHref}>חזרה למוצר</Link>
+              <Link href={returnContext.href}>{returnContext.label}</Link>
             </Button>
           </div>
         ) : null}
@@ -72,12 +74,4 @@ export default async function SizeGuidePage({
 
 function firstParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
-}
-
-function getSafeSizeGuideReturnHref(value: string | undefined) {
-  if (!value || value.length > 180) return undefined;
-  if (!value.startsWith("/product/")) return undefined;
-  if (value.startsWith("//") || value.includes("://")) return undefined;
-
-  return value;
 }

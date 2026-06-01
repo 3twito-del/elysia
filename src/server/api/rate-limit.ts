@@ -3,6 +3,7 @@ import { TRPCError } from "@trpc/server";
 import {
   consumeRateLimit,
   getHeadersIp,
+  RateLimitExceededError,
   type RateLimitInput,
 } from "~/server/services/rate-limit";
 
@@ -17,6 +18,7 @@ export async function assertTRPCRateLimit(input: TRPCRateLimitInput) {
     throw new TRPCError({
       code: "TOO_MANY_REQUESTS",
       message: input.message ?? "Too many requests.",
+      cause: new RateLimitExceededError(result),
     });
   }
 

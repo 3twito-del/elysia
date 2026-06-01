@@ -3,6 +3,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 import { getSeedProducts, seedCategories } from "../prisma/seed-catalog";
+import { listFixtureCatalogProducts } from "../src/server/services/catalog-fixtures";
 
 export type QaRouteCoverage = "documented" | "smoke" | "visual";
 export type QaRouteKind =
@@ -33,6 +34,29 @@ export type AppRouteTemplate = {
   source: string;
   template: string;
 };
+
+export type QaRouteInventoryCadenceEntry = {
+  artifact: string;
+  command: string;
+  scope: "representative" | "all-products";
+  when: string;
+};
+
+export const qaRouteInventoryCadence = [
+  {
+    artifact: "console PASS from the app-template coverage check",
+    command: "pnpm qa:routes",
+    scope: "representative",
+    when: "Run on every route, navigation, middleware, API, or public shell change.",
+  },
+  {
+    artifact: "artifacts/qa/<date>-route-inventory/route-inventory.{json,md}",
+    command:
+      "pnpm exec tsx scripts/qa-route-inventory.ts --check --all-products --out-dir artifacts/qa/<date>-route-inventory",
+    scope: "all-products",
+    when: "Run before production release when catalog routing, product fixture coverage, search, category filters, PDP rendering, or smoke route contracts changed.",
+  },
+] as const satisfies readonly QaRouteInventoryCadenceEntry[];
 
 const staticPublicRoutes = [
   "/",
@@ -110,10 +134,9 @@ export function getQaRouteInventory({
   includeAllProducts?: boolean;
 } = {}) {
   const entries: QaRoute[] = [];
-  const products = getSeedProducts();
   const representativeProductSlugs = getRepresentativeProductSlugs();
   const productSlugs = includeAllProducts
-    ? products.map((product) => product.slug)
+    ? getRouteInventoryProductSlugs()
     : representativeProductSlugs;
 
   for (const route of staticPublicRoutes) {
@@ -161,8 +184,8 @@ export function getQaRouteInventory({
         kind: "dynamic",
         path: `/product/${slug}`,
         source: includeAllProducts
-          ? "seed-catalog-full"
-          : "seed-catalog-sample",
+          ? "catalog-fixture-full"
+          : "catalog-fixture-sample",
         template: "/product/[slug]",
       }),
     );
@@ -399,8 +422,13 @@ function routeEntry(input: {
 }
 
 function getRepresentativeProductSlugs() {
-  const products = getSeedProducts();
-  const important = ["venus-line-ring", "hera-bracelet", "muse-pearl-earrings"];
+  const products = listFixtureCatalogProducts();
+  const important = [
+    "venus-line-ring",
+    "hera-bracelet",
+    "muse-pearl-earrings",
+    "elysia-supplier-silver-halo-ring",
+  ];
   const firstByCategory = seedCategories
     .map(
       (category) =>
@@ -410,6 +438,15 @@ function getRepresentativeProductSlugs() {
     .filter((slug): slug is string => Boolean(slug));
 
   return Array.from(new Set([...important, ...firstByCategory]));
+}
+
+function getRouteInventoryProductSlugs() {
+  return Array.from(
+    new Set([
+      ...getSeedProducts().map((product) => product.slug),
+      ...listFixtureCatalogProducts().map((product) => product.slug),
+    ]),
+  );
 }
 
 function isPerformanceRoute(route: string) {
@@ -491,6 +528,15 @@ function formatRouteInventoryMarkdown(payload: {
           `| ${route.method} | \`${route.path}\` | \`${route.template}\` | ${route.kind} | ${route.coverage} | ${route.requiresAuth ? "yes" : "no"} | ${route.source} |`,
       ),
     "",
+    "## Route Inventory Cadence",
+    "",
+    "| Scope | Command | When | Expected Artifact |",
+    "| --- | --- | --- | --- |",
+    ...qaRouteInventoryCadence.map(
+      (entry) =>
+        `| ${entry.scope} | \`${entry.command}\` | ${entry.when} | ${entry.artifact} |`,
+    ),
+    "",
     "## Documented/API Routes",
     "",
     "| Method | Path | Template | Coverage | Notes |",
@@ -529,6 +575,7 @@ Options:
   --visual-routes      Print browser-visible route paths, one per line.
   --performance-routes Print performance-audited route paths, one per line.
   --all-products       Include every seeded product route.
+                       Use before production releases that affect catalog routing.
   --out-dir <path>     Write route-inventory.json and route-inventory.md.
 `);
 }

@@ -69,6 +69,134 @@ describe("layout stability guardrails", () => {
     );
   });
 
+  it("keeps public overlays out of normal flow and matched to their trigger width", () => {
+    const cssSource = readSource("src/styles/globals.css");
+    const searchControlsSource = readSource(
+      "src/app/search/_components/search-controls.tsx",
+    );
+    const sheetSource = readSource("src/components/ui/sheet.tsx");
+    const dialogSource = readSource("src/components/ui/dialog.tsx");
+    const cookieBannerSource = readSource(
+      "src/components/cookie-consent-banner.tsx",
+    );
+    const accessibilityWidgetSource = readSource(
+      "src/components/accessibility-widget.tsx",
+    );
+    const selectShellBlock = extractCssBlock(cssSource, ".public-select-shell");
+    const selectTriggerBlock = extractCssBlock(
+      cssSource,
+      ".public-select-trigger {",
+    );
+    const selectBackdropBlock = extractCssBlock(
+      cssSource,
+      ".public-select-backdrop",
+    );
+    const selectContentBlock = extractCssBlock(
+      cssSource,
+      ".public-select-content {",
+    );
+
+    expect(selectShellBlock).toContain("position: relative;");
+    expect(selectTriggerBlock).toContain("height: 2.75rem;");
+    expect(selectTriggerBlock).toContain("min-height: 2.75rem;");
+    expect(selectBackdropBlock).toContain("position: fixed;");
+    expect(selectBackdropBlock).toContain("inset: 0;");
+    expect(selectContentBlock).toContain("position: absolute;");
+    expect(selectContentBlock).toContain("top: calc(100% + 0.375rem);");
+    expect(selectContentBlock).toContain("width: 100%;");
+    expect(selectContentBlock).toContain("min-width: 100%;");
+    expect(selectContentBlock).toContain("max-width: 100%;");
+
+    expect(searchControlsSource).toContain("public-select-shell");
+    expect(searchControlsSource).toContain("public-select-trigger");
+    expect(searchControlsSource).toContain("public-select-backdrop");
+    expect(searchControlsSource).toContain("public-select-content");
+    expect(searchControlsSource).toContain('role="listbox"');
+    expect(searchControlsSource).toContain("setIsOpen(false)");
+
+    expect(sheetSource).toContain("popup-overlay fixed inset-0");
+    expect(sheetSource).toContain("sheet-content popup-surface");
+    expect(sheetSource).toContain("fixed z-[90]");
+    expect(sheetSource).toContain("right-[calc(100vw-100dvw)]");
+    expect(dialogSource).toContain("popup-overlay");
+    expect(dialogSource).toContain("fixed top-1/2 left-1/2");
+
+    expect(cookieBannerSource).toContain("fixed inset-x-3");
+    expect(cookieBannerSource).toContain("data-public-floating-avoid");
+    expect(cookieBannerSource).toContain(
+      'root.style.setProperty("--floating-stack-bottom"',
+    );
+    expect(cookieBannerSource).toContain(
+      'root.style.setProperty("--public-bottom-safe-offset"',
+    );
+
+    expect(accessibilityWidgetSource).toContain("public-floating-control");
+    expect(accessibilityWidgetSource).toContain(
+      "bottom-[calc(max(var(--floating-stack-bottom",
+    );
+    expect(accessibilityWidgetSource).toContain("fixed inset-0 z-[90]");
+  });
+
+  it("keeps floating chrome collision offsets wired to commerce controls", () => {
+    const cssSource = readSource("src/styles/globals.css");
+    const cookieBannerSource = readSource(
+      "src/components/cookie-consent-banner.tsx",
+    );
+    const accessibilityWidgetSource = readSource(
+      "src/components/accessibility-widget.tsx",
+    );
+    const productCardSource = readSource("src/components/product-card.tsx");
+    const productPageSource = readSource("src/app/product/[slug]/page.tsx");
+
+    expect(cookieBannerSource).toContain("data-cookie-consent-banner");
+    expect(cookieBannerSource).toContain("data-public-floating-avoid");
+    expect(cookieBannerSource).toContain("ResizeObserver");
+    expect(accessibilityWidgetSource).toContain("public-floating-trigger");
+    expect(accessibilityWidgetSource).toContain(
+      'data-accessibility-widget-trigger="true"',
+    );
+    expect(accessibilityWidgetSource).toContain("shouldRestoreTriggerFocusRef");
+    expect(productCardSource).toContain('data-public-floating-avoid="true"');
+    expect(productPageSource).toContain('data-public-floating-avoid="true"');
+    expect(cssSource).toContain('html[data-cookie-banner-open="true"]');
+    expect(cssSource).toContain(
+      'html[data-public-overlay-open="true"] .public-floating-control',
+    );
+    expect(cssSource).toContain('html[data-public-floating-collision="true"]');
+    expect(cssSource).toContain(
+      '.public-floating-trigger:not([data-accessibility-widget-trigger="true"])',
+    );
+  });
+
+  it("keeps mixed-script product titles wrapped without changing repeated card height", () => {
+    const cssSource = readSource("src/styles/globals.css");
+    const productCardSource = readSource("src/components/product-card.tsx");
+    const productPageSource = readSource("src/app/product/[slug]/page.tsx");
+    const recentlyViewedSource = readSource(
+      "src/app/product/[slug]/_components/recently-viewed-products.tsx",
+    );
+    const mixedTitleBlock = extractCssBlock(
+      cssSource,
+      ".product-card-title,\n.product-title-mixed-script",
+    );
+
+    expect(productCardSource).toContain("ui-text-slot product-card-title");
+    expect(productCardSource).toContain('dir="auto"');
+    expect(productPageSource).toContain("product-title-mixed-script");
+    expect(productPageSource).toContain('data-testid="product-title"');
+    expect(productPageSource).toContain("ui-equal-grid mt-5 grid gap-4");
+    expect(productPageSource).toContain(
+      "data-layout-equal-group={`product-recommendation-${rail.id}`}",
+    );
+    expect(recentlyViewedSource).toContain("ui-equal-grid mt-5 grid gap-4");
+    expect(recentlyViewedSource).toContain(
+      'data-layout-equal-group="recently-viewed-products"',
+    );
+    expect(mixedTitleBlock).toContain("overflow-wrap: anywhere;");
+    expect(mixedTitleBlock).toContain("unicode-bidi: plaintext;");
+    expect(mixedTitleBlock).toContain("letter-spacing: 0;");
+  });
+
   it("keeps the full cinematic hero reserved for the home route", () => {
     const homeSource = readSource("src/app/page.tsx");
     const publicPageSources = walk(path.join(process.cwd(), "src/app"))

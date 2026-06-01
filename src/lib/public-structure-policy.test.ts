@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -53,4 +56,53 @@ describe("public structure benchmark v4 policy", () => {
         .mandatoryExceptionReason,
     ).toBe("accessibility");
   });
+
+  it("keeps public header active states route-backed and restrained", () => {
+    const header = read("src/components/site-header.tsx");
+    const mobileNav = read("src/components/mobile-nav.tsx");
+
+    expect(header).toContain('aria-current={isActive ? "page" : undefined}');
+    expect(header).toContain("pathname === item.href");
+    expect(header).toContain("pathname.startsWith(`${item.href}/`)");
+    expect(header).toContain("desktopNavItems.map");
+    expect(header).toContain("after:h-px");
+    expect(header).not.toContain('aria-current="page"');
+    expect(header).not.toContain("bg-secondary");
+    expect(header).not.toContain("shadow-");
+
+    expect(mobileNav).toContain('aria-current={isActive ? "page" : undefined}');
+    expect(mobileNav).toContain("currentPathname === item.href");
+    expect(mobileNav).toContain("currentPathname.startsWith(`${item.href}/`)");
+    expect(mobileNav).toContain("after:h-px");
+    expect(mobileNav).not.toContain('aria-current="page"');
+  });
+
+  it("keeps mobile navigation close and focus recovery delegated to the sheet primitive", () => {
+    const mobileNav = read("src/components/mobile-nav.tsx");
+    const sheet = read("src/components/ui/sheet.tsx");
+
+    expect(mobileNav).toContain('data-testid="mobile-nav-trigger"');
+    expect(mobileNav).toContain("closeOnMediaQuery");
+    expect(mobileNav).toContain("onOpenChange={setOpen}");
+    expect(mobileNav).toContain("open={open}");
+    expect(mobileNav).toContain("<SheetTrigger asChild>");
+    expect(mobileNav).toContain("<SheetClose asChild>");
+    expect(mobileNav).toContain("const closeNav = () => setOpen(false)");
+    expect(mobileNav).toContain("onClick={closeNav}");
+    expect(mobileNav).toContain('href: "/search"');
+    expect(mobileNav).toContain('href: "/service"');
+    expect(mobileNav).toContain('href: "/account"');
+    expect(mobileNav).toContain('href: "/checkout"');
+
+    expect(sheet).toContain("Dialog as SheetPrimitive");
+    expect(sheet).toContain("<SheetPrimitive.Root");
+    expect(sheet).toContain("onOpenChange={handleOpenChange}");
+    expect(sheet).toContain("<SheetPrimitive.Trigger");
+    expect(sheet).toContain("<SheetPrimitive.Close");
+    expect(sheet).toContain("popup-overlay fixed inset-0");
+  });
 });
+
+function read(relativePath: string) {
+  return readFileSync(path.join(process.cwd(), relativePath), "utf8");
+}

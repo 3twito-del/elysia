@@ -22,6 +22,7 @@ import {
 import { WishlistButton } from "./wishlist-button";
 import {
   createProductServiceHref,
+  getAddToCartFailureMessage,
   getInitialVariantSku,
   getPurchaseConfidenceItems,
   getVariantButtonLabel,
@@ -169,7 +170,7 @@ export function ProductPurchasePanel({
       }
 
       setCartMessageTone("error");
-      setCartMessage(error.message);
+      setCartMessage(getAddToCartFailureMessage(error));
     },
   });
   const addToCartDisabled =

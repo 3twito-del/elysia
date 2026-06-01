@@ -2,8 +2,12 @@ import { NextResponse } from "next/server";
 
 import type { RateLimitExceededError } from "~/server/services/rate-limit";
 
-export function okJson<T>(data: T, init?: ResponseInit) {
+export function jsonResponse<T>(data: T, init?: ResponseInit) {
   return NextResponse.json(data, init);
+}
+
+export function okJson<T>(data: T, init?: ResponseInit) {
+  return jsonResponse(data, init);
 }
 
 export function errorJson(
@@ -11,7 +15,7 @@ export function errorJson(
   error = "Request failed.",
   init?: ResponseInit,
 ) {
-  return NextResponse.json(
+  return jsonResponse(
     { ok: false, error },
     {
       ...init,
@@ -49,6 +53,12 @@ export function rateLimitedJson(
   message = "Too many requests.",
 ) {
   return errorJson(429, message, {
-    headers: { "Retry-After": String(error.retryAfterSeconds) },
+    headers: {
+      "Retry-After": formatRetryAfterSeconds(error.retryAfterSeconds),
+    },
   });
+}
+
+function formatRetryAfterSeconds(value: number) {
+  return String(Math.max(1, Math.ceil(value)));
 }

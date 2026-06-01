@@ -3,6 +3,8 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { GET, knownSerwistAssetPaths } from "./serwist/[path]/route";
+
 const root = process.cwd();
 
 describe("Serwist route", () => {
@@ -41,7 +43,21 @@ describe("Serwist route", () => {
     expect(source).toContain('process.env.NODE_ENV === "production"');
     expect(source).toContain('await import("@serwist/turbopack")');
     expect(source).toContain("createDevelopmentSerwistRoute");
-    expect(source).toContain("new Response(null, { status: 404 })");
+    expect(source).toContain("missingSerwistAssetStatus");
+    expect(source).toContain('"Cache-Control": "no-store"');
+  });
+
+  it("documents known service worker asset paths for production smoke", () => {
+    expect(knownSerwistAssetPaths).toEqual(["sw.js"]);
+  });
+
+  it("returns a safe miss for service worker assets outside production", async () => {
+    const response = await GET(new Request("http://localhost/serwist/sw.js"), {
+      params: Promise.resolve({ path: "sw.js" }),
+    });
+
+    expect(response.status).toBe(404);
+    expect(response.headers.get("Cache-Control")).toBe("no-store");
   });
 });
 

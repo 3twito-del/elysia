@@ -27,6 +27,17 @@ export const serviceRequestAcceptedFileTypes = [
 
 export const maxServiceRequestFiles = 5;
 export const maxServiceRequestFileBytes = 10 * 1024 * 1024;
+export const serviceRequestAcceptedFileTypeLabel = "JPG, PNG, WebP, GIF או PDF";
+
+export function getServiceRequestAttachmentPolicy() {
+  return {
+    acceptedFileTypeLabel: serviceRequestAcceptedFileTypeLabel,
+    acceptedFileTypes: serviceRequestAcceptedFileTypes,
+    maxFileBytes: maxServiceRequestFileBytes,
+    maxFileSizeMb: Math.round(maxServiceRequestFileBytes / 1024 / 1024),
+    maxFiles: maxServiceRequestFiles,
+  };
+}
 
 const requiredText = (message: string, maxLength: number) =>
   z.string().trim().min(1, message).max(maxLength, "הטקסט ארוך מדי.");

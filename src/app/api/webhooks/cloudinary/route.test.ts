@@ -9,6 +9,17 @@ const envMock = vi.hoisted(() => ({
   NODE_ENV: "production",
 }));
 const webhookMocks = vi.hoisted(() => ({
+  createWebhookErrorSummary: vi.fn((error: unknown) => ({
+    name: error instanceof Error ? error.name : typeof error,
+  })),
+  createWebhookSafeLogContext: vi.fn(
+    (input: { provider: string; stage: string; status?: string }) => ({
+      provider: input.provider,
+      rawBodyHash: "safe-body-hash",
+      stage: input.stage,
+      status: input.status ?? "RECEIVED",
+    }),
+  ),
   parseWebhookJson: vi.fn((rawBody: string) =>
     rawBody.trim() ? (JSON.parse(rawBody) as unknown) : {},
   ),
@@ -20,6 +31,8 @@ vi.mock("~/env", () => ({
 }));
 
 vi.mock("~/server/services/webhook-events", () => ({
+  createWebhookErrorSummary: webhookMocks.createWebhookErrorSummary,
+  createWebhookSafeLogContext: webhookMocks.createWebhookSafeLogContext,
   parseWebhookJson: webhookMocks.parseWebhookJson,
   recordWebhookEvent: webhookMocks.recordWebhookEvent,
 }));

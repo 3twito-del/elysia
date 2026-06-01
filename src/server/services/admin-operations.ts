@@ -74,6 +74,22 @@ function getAdminBranchWhere(
     : { kind: "ONLINE" as const, isActive: true };
 }
 
+export type AdminOverviewFreshness = {
+  cadence: "per-request";
+  generatedAt: Date;
+  source: "live-database";
+};
+
+export function createAdminOverviewFreshness(
+  generatedAt = new Date(),
+): AdminOverviewFreshness {
+  return {
+    cadence: "per-request",
+    generatedAt,
+    source: "live-database",
+  };
+}
+
 export async function getAdminOperationsOverview() {
   const [
     products,
@@ -123,6 +139,7 @@ export async function getAdminOperationsOverview() {
     branches: physicalBranchesEnabled ? branches : 0,
     dueOutbox,
     failedOutbox,
+    freshness: createAdminOverviewFreshness(),
     integrations: getAdminIntegrationStatuses(),
     inventoryReserved: reserved._sum.reserved ?? 0,
     inventoryUnits: inventory._sum.quantity ?? 0,

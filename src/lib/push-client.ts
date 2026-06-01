@@ -51,6 +51,42 @@ export async function subscribeToElysiaPush(input: {
   return response.json() as Promise<{ ok: true; subscriptionId: string }>;
 }
 
+export async function getExistingElysiaPushSubscription() {
+  if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+    return null;
+  }
+
+  const registration = await navigator.serviceWorker.ready;
+
+  return registration.pushManager.getSubscription();
+}
+
+export async function unsubscribeFromElysiaPush() {
+  const subscription = await getExistingElysiaPushSubscription();
+
+  if (!subscription) {
+    return { ok: true, unsubscribed: false, updated: 0 };
+  }
+
+  const response = await fetch("/api/push/subscription", {
+    body: JSON.stringify({
+      deviceId: await getPwaDeviceId(),
+      endpoint: subscription.endpoint,
+    }),
+    headers: { "Content-Type": "application/json" },
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error("Push unsubscribe failed.");
+  }
+
+  const result = (await response.json()) as { ok: true; updated: number };
+  const unsubscribed = await subscription.unsubscribe();
+
+  return { ...result, unsubscribed };
+}
+
 function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = `${base64String}${padding}`

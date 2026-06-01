@@ -15,6 +15,17 @@ const facets = {
   stones: ["פנינה", "יהלום"],
 };
 
+const englishOptions = {
+  categories: [
+    { slug: "rings", name: "Rings" },
+    { slug: "necklaces", name: "Necklaces" },
+  ],
+  facets: {
+    materials: ["yellow gold", "white gold", "sterling silver"],
+    stones: ["diamond", "pearl"],
+  },
+};
+
 describe("semantic search intent", () => {
   it("extracts hard filters and soft signals from bridal budget searches", () => {
     const intent = resolveDeterministicSemanticSearchIntent(
@@ -71,5 +82,70 @@ describe("semantic search intent", () => {
     expect(intent.softSignals).toEqual(
       expect.arrayContaining(["gift", "mother"]),
     );
+  });
+
+  it("extracts English jewelry category material stone and price filters", () => {
+    const intent = resolveDeterministicSemanticSearchIntent(
+      {
+        query: "white gold rings with diamond under 1500",
+      },
+      englishOptions,
+    );
+
+    expect(intent.hardFilters).toMatchObject({
+      category: "rings",
+      material: "white gold",
+      maxPrice: 1500,
+      stone: "diamond",
+    });
+    expect(intent.lexicalQuery).not.toContain("1500");
+  });
+
+  it("preserves mixed-script exclusions without losing relevant hard filters", () => {
+    const intent = resolveDeterministicSemanticSearchIntent(
+      {
+        query: "rings עד 1500 diamond בלי pearl",
+      },
+      englishOptions,
+    );
+
+    expect(intent.hardFilters).toMatchObject({
+      category: "rings",
+      maxPrice: 1500,
+      stone: "diamond",
+    });
+    expect(intent.hardFilters.material).toBeUndefined();
+    expect(intent.excludedTerms).toContain("pearl");
+    expect(
+      productMatchesSemanticExclusions(
+        {
+          categorySlug: "rings",
+          material: "white gold",
+          name: "Diamond ring",
+          stone: "diamond",
+        },
+        intent.excludedTerms,
+      ),
+    ).toBe(true);
+  });
+
+  it("keeps explicit hard filters when mixed-language query text is broader", () => {
+    const intent = resolveDeterministicSemanticSearchIntent(
+      {
+        category: "rings",
+        material: "white gold",
+        query: "necklace gift without gold under 1000",
+        stone: "diamond",
+      },
+      englishOptions,
+    );
+
+    expect(intent.hardFilters).toMatchObject({
+      category: "rings",
+      material: "white gold",
+      maxPrice: 1000,
+      stone: "diamond",
+    });
+    expect(intent.softSignals).toContain("gift");
   });
 });

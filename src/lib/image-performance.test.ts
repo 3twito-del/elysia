@@ -7,21 +7,42 @@ const sourceRoots = ["src/app", "src/components"];
 const sourceExtensions = new Set([".tsx", ".ts"]);
 
 describe("image performance guardrails", () => {
-  it("keeps hero media full-viewport sized and only prioritizes the first slide", () => {
-    const source = readFileSync(
-      path.join(process.cwd(), "src/components/cinematic-hero-sequence.tsx"),
-      "utf8",
+  it("keeps route-level LCP priority limited to first-viewport media", () => {
+    const homeSource = read("src/app/page.tsx");
+    const searchSource = read("src/app/search/page.tsx");
+    const categorySource = read("src/app/category/[slug]/page.tsx");
+    const giftsSource = read("src/app/gifts/page.tsx");
+    const gallerySource = read(
+      "src/app/product/[slug]/_components/product-gallery.tsx",
     );
+    const serviceImageBlock =
+      /<Image[\s\S]*?src="\/brand\/v2\/service-task\.avif"[\s\S]*?\/>/.exec(
+        homeSource,
+      )?.[0];
+
+    expect(homeSource).toContain("<StaticCinematicHeroSequence");
+    expect(homeSource).toContain("priority\n                motionScope");
+    expect(serviceImageBlock).toBeDefined();
+    expect(serviceImageBlock).not.toContain("priority");
+    expect(homeSource).not.toContain("imagePriority={index < 4}");
+
+    expect(searchSource).toContain("imagePriority={index < 2}");
+    expect(searchSource).toContain("imagePriority={index < 4}");
+    expect(categorySource).toContain("priority: true");
+    expect(categorySource).toContain("imagePriority={index === 0}");
+    expect(giftsSource).toContain("imagePriority={index === 0}");
+    expect(gallerySource).toContain("priority={activeImageIndex === 0}");
+  });
+
+  it("keeps hero media full-viewport sized and only prioritizes the first slide", () => {
+    const source = read("src/components/cinematic-hero-sequence.tsx");
 
     expect(source).toContain('sizes = "100vw"');
     expect(source).toContain("priority={priority && index === 0}");
   });
 
   it("keeps product cards on a stable commerce aspect ratio with responsive image sizes", () => {
-    const source = readFileSync(
-      path.join(process.cwd(), "src/components/product-card.tsx"),
-      "utf8",
-    );
+    const source = read("src/components/product-card.tsx");
 
     expect(source).toContain("relative aspect-[5/4] overflow-hidden");
     expect(source).toContain("sm:aspect-[4/5]");
@@ -31,22 +52,15 @@ describe("image performance guardrails", () => {
   });
 
   it("does not viewport-prefetch the repeated product card link", () => {
-    const source = readFileSync(
-      path.join(process.cwd(), "src/components/product-card.tsx"),
-      "utf8",
-    );
+    const source = read("src/components/product-card.tsx");
 
     expect(source).toContain("group/product-link block h-full");
     expect(source.match(/prefetch=\{false\}/g)).toHaveLength(1);
   });
 
   it("prioritizes only the initial product gallery image and lazy-loads later active images", () => {
-    const source = readFileSync(
-      path.join(
-        process.cwd(),
-        "src/app/product/[slug]/_components/product-gallery.tsx",
-      ),
-      "utf8",
+    const source = read(
+      "src/app/product/[slug]/_components/product-gallery.tsx",
     );
 
     expect(source).toContain("priority={activeImageIndex === 0}");
@@ -63,14 +77,27 @@ describe("image performance guardrails", () => {
   });
 
   it("keeps category result media on explicit fixed desktop sizes", () => {
-    const categorySource = readFileSync(
-      path.join(process.cwd(), "src/app/category/[slug]/page.tsx"),
-      "utf8",
-    );
+    const categorySource = read("src/app/category/[slug]/page.tsx");
 
     expect(categorySource).toContain(
       'imageSizes="(min-width: 1280px) 18rem, (min-width: 1024px) calc((100vw - 24rem) / 2), (min-width: 640px) 50vw, 100vw"',
     );
+  });
+
+  it("keeps recommendation and recently viewed rails on inherited product-card sizes", () => {
+    const recentlyViewedSource = read(
+      "src/app/product/[slug]/_components/recently-viewed-products.tsx",
+    );
+    const productPageSource = read("src/app/product/[slug]/page.tsx");
+
+    expect(recentlyViewedSource).toContain("<ProductCard");
+    expect(recentlyViewedSource).not.toContain("imagePriority=");
+    expect(recentlyViewedSource).not.toContain("imageSizes=");
+    expect(productPageSource).toContain(
+      "data-testid={`product-recommendation-rail-${rail.id}`}",
+    );
+    expect(productPageSource).toContain("contextLabel={rail.cardContextLabel}");
+    expect(productPageSource).not.toContain("imagePriority={");
   });
 
   it("keeps fill-based next/image usage paired with explicit sizes", () => {
@@ -151,4 +178,8 @@ function getLineNumber(source: string, snippet: string) {
 
 function normalizePath(filePath: string) {
   return filePath.replaceAll(path.sep, "/");
+}
+
+function read(relativePath: string) {
+  return readFileSync(path.join(process.cwd(), relativePath), "utf8");
 }

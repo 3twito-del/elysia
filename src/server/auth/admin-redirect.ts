@@ -3,13 +3,47 @@ export function sanitizeAdminRedirect(value: unknown) {
     return "/admin";
   }
 
-  if (value === "/admin") {
-    return value;
+  const normalizedValue = normalizeRedirectValue(value);
+
+  if (normalizedValue === "/admin") {
+    return normalizedValue;
   }
 
-  if (value.startsWith("/admin/") || value.startsWith("/admin?")) {
-    return value;
+  if (
+    normalizedValue.startsWith("/admin/") ||
+    normalizedValue.startsWith("/admin?")
+  ) {
+    return normalizedValue;
   }
 
   return "/admin";
+}
+
+function normalizeRedirectValue(value: string) {
+  const trimmed = value.trim();
+  const decoded = decodeRedirectValue(trimmed).trim();
+
+  if (hasUnsafeRedirectSyntax(decoded)) {
+    return "/admin";
+  }
+
+  return decoded;
+}
+
+function decodeRedirectValue(value: string) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+function hasUnsafeRedirectSyntax(value: string) {
+  return (
+    value === "" ||
+    /[\u0000-\u001f\u007f]/u.test(value) ||
+    value.startsWith("//") ||
+    value.startsWith("\\\\") ||
+    /^[a-z][a-z0-9+.-]*:/iu.test(value)
+  );
 }

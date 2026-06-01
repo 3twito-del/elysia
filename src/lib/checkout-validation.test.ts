@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -55,4 +58,31 @@ describe("checkout validation", () => {
       "יש להזין אימייל תקין.",
     ]);
   });
+
+  it("wires checkout validation summaries to first invalid field focus", () => {
+    const checkoutForm = read(
+      "src/app/checkout/_components/cart-checkout-form.tsx",
+    );
+
+    expect(checkoutForm).toContain("checkoutFieldFocusOrder");
+    expect(checkoutForm).toContain("function focusFirstCheckoutError()");
+    expect(checkoutForm).toContain(
+      "checkoutFormRef.current?.elements.namedItem",
+    );
+    expect(checkoutForm).toContain("field.focus()");
+    expect(checkoutForm).toContain(
+      "window.requestAnimationFrame(focusFirstCheckoutError)",
+    );
+    expect(checkoutForm).toContain('id="checkout-issue-list"');
+    expect(checkoutForm).toContain('data-testid="checkout-validation-summary"');
+    expect(checkoutForm).toContain(
+      'aria-invalid={Boolean(getVisibleFieldError("name"))}',
+    );
+    expect(checkoutForm).toContain('aria-describedby="name-error"');
+    expect(checkoutForm).toContain('role="status"');
+  });
 });
+
+function read(relativePath: string) {
+  return readFileSync(path.join(process.cwd(), relativePath), "utf8");
+}

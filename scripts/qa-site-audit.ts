@@ -83,6 +83,38 @@ const browserTypes = {
   webkit,
 } satisfies Record<BrowserName, BrowserType>;
 
+export const qaArtifactStandard = {
+  directoryPattern: "artifacts/qa/<iso-timestamp>-<audit-label>",
+  files: [
+    "qa-artifact-manifest.json",
+    "route-inventory.json",
+    "route-inventory.md",
+    "site-audit.json",
+    "site-audit.md",
+    "design-review.md",
+    "screenshots/<browser>-<viewport>-r<repeat>-<route>.png",
+  ],
+  requiredMetadata: [
+    "generatedAt",
+    "baseUrl",
+    "browsers",
+    "viewports",
+    "routeSet",
+    "repeats",
+    "screenshotMode",
+  ],
+  root: "artifacts/qa",
+} as const;
+
+export const consoleErrorBudget = {
+  allowedDevelopmentOnlyPatterns: [
+    "Download the React DevTools",
+    "Fast Refresh",
+    "webpack hot update",
+  ],
+  production: "zero-console-errors",
+} as const;
+
 export async function runQaSiteAudit(options: AuditOptions) {
   const routes = options.performanceOnly
     ? getPerformanceQaRoutes()
@@ -129,7 +161,9 @@ export async function runQaSiteAudit(options: AuditOptions) {
   }
 
   const payload = {
+    artifactStandard: qaArtifactStandard,
     budgets: strictBudgets,
+    consoleErrorBudget,
     generatedAt: new Date().toISOString(),
     options,
     results,
@@ -147,6 +181,28 @@ export async function runQaSiteAudit(options: AuditOptions) {
   writeFileSync(
     path.join(options.artifactDir, "design-review.md"),
     formatDesignReviewMarkdown(payload),
+  );
+  writeFileSync(
+    path.join(options.artifactDir, "qa-artifact-manifest.json"),
+    `${JSON.stringify(
+      {
+        artifactStandard: qaArtifactStandard,
+        consoleErrorBudget,
+        files: [
+          "qa-artifact-manifest.json",
+          "route-inventory.json",
+          "route-inventory.md",
+          "site-audit.json",
+          "site-audit.md",
+          "design-review.md",
+          "screenshots/",
+        ],
+        generatedAt: payload.generatedAt,
+        options,
+      },
+      null,
+      2,
+    )}\n`,
   );
 
   return payload;
@@ -205,7 +261,10 @@ async function auditRoute({
 
   await installMetricObserver(page);
   page.on("console", (message) => {
-    if (message.type() === "error") {
+    if (
+      message.type() === "error" &&
+      !isIgnorableConsoleError(message.text(), baseUrl)
+    ) {
       consoleErrors.push(message.text());
     }
   });
@@ -641,6 +700,24 @@ function isIgnorablePageError(message: string) {
     message.includes("due to access control checks") &&
     message.includes("_rsc=")
   );
+}
+
+export function isIgnorableConsoleError(message: string, baseUrl: string) {
+  if (!isLocalDevelopmentBaseUrl(baseUrl)) return false;
+
+  return consoleErrorBudget.allowedDevelopmentOnlyPatterns.some((pattern) =>
+    message.includes(pattern),
+  );
+}
+
+function isLocalDevelopmentBaseUrl(baseUrl: string) {
+  try {
+    const hostname = new URL(baseUrl).hostname;
+
+    return hostname === "localhost" || hostname === "127.0.0.1";
+  } catch {
+    return false;
+  }
 }
 
 function safeFileName(value: string) {

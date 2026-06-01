@@ -596,6 +596,60 @@ html[data-accessibility-contrast="true"] .media-color-rich {
   filter: none;
 }
 
+html[data-accessibility-contrast="true"] .product-card-media,
+html[data-accessibility-contrast="true"] .product-card-status-badge,
+html[data-accessibility-contrast="true"] .product-card-favorite,
+html[data-accessibility-contrast="true"] .public-select-trigger,
+html[data-accessibility-contrast="true"] .public-select-content,
+html[data-accessibility-contrast="true"] .sheet-content,
+html[data-accessibility-contrast="true"] .popup-surface,
+html[data-accessibility-contrast="true"] [data-slot="badge"] {
+  border-color: var(--glass-border-strong);
+}
+
+html[data-accessibility-contrast="true"] .product-card-media::after {
+  display: none;
+}
+
+html[data-accessibility-contrast="true"] .product-card-status-badge,
+html[data-accessibility-contrast="true"] .product-card-favorite {
+  background: var(--background);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+html[data-accessibility-contrast="true"] .site-header,
+html[data-accessibility-contrast="true"]
+  .site-header[data-over-media="true"][data-header-state="transparent"] {
+  --site-header-link-color: var(--foreground);
+  --site-header-link-hover: var(--foreground);
+  border-bottom-color: var(--glass-border-strong);
+  background: var(--background);
+  color: var(--foreground);
+}
+
+html[data-accessibility-contrast="true"]
+  .site-header[data-over-media="true"][data-header-state="transparent"]
+  .text-muted-foreground {
+  color: var(--foreground);
+}
+
+html[data-accessibility-contrast="true"] .site-header .site-header-action {
+  color: var(--foreground) !important;
+}
+
+html[data-accessibility-contrast="true"]
+  .site-header
+  :where(.site-header-link, .site-header-action):focus-visible {
+  outline: 2px solid var(--foreground) !important;
+  outline-offset: 2px;
+}
+
+html[data-accessibility-contrast="true"]
+  :where(input, textarea, select, .public-select-trigger) {
+  box-shadow: 0 0 0 1px var(--glass-border-strong);
+}
+
 html[data-accessibility-motion="reduce"] *,
 html[data-accessibility-motion="reduce"] *::before,
 html[data-accessibility-motion="reduce"] *::after {
@@ -1684,8 +1738,7 @@ footer nav a:focus-visible {
 
 .product-card-media {
   background:
-    linear-gradient(180deg, rgb(255 255 255 / 10%), transparent),
-    var(--muted);
+    linear-gradient(180deg, rgb(255 255 255 / 10%), transparent), var(--muted);
   transition:
     background-color var(--motion-ui) var(--ease-motion-standard),
     opacity var(--motion-ui) var(--ease-motion-standard);
@@ -1710,8 +1763,11 @@ footer nav a:focus-visible {
   transform-origin: center;
 }
 
-.product-card-title {
+.product-card-title,
+.product-title-mixed-script {
   text-wrap: balance;
+  overflow-wrap: anywhere;
+  unicode-bidi: plaintext;
   letter-spacing: 0;
 }
 

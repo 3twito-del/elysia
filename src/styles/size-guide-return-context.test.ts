@@ -35,10 +35,14 @@ describe("size guide save context and product return path", () => {
 
   it("renders safe product return and save context on the size guide", () => {
     const page = read("src/app/size-guide/page.tsx");
+    const returnHelper = read("src/app/size-guide/_lib/size-guide-return.ts");
     const tool = read("src/app/size-guide/_components/size-guide-tool.tsx");
 
-    expect(page).toContain("getSafeSizeGuideReturnHref");
-    expect(page).toContain('value.startsWith("/product/")');
+    expect(page).toContain("getSafeSizeGuideReturnContext");
+    expect(returnHelper).toContain("productPathPattern");
+    expect(returnHelper).toContain("categoryPathPattern");
+    expect(returnHelper).toContain('value.startsWith("//")');
+    expect(returnHelper).toContain('value.includes("://")');
     expect(page).toContain('data-testid="size-guide-product-return-context"');
     expect(page).toContain("<SizeGuideTool initialKind={initialKind} />");
     expect(tool).toContain('data-testid="size-guide-save-context"');

@@ -14,6 +14,9 @@ type SerwistRoute = {
   ) => Promise<Response> | Response;
 };
 
+export const knownSerwistAssetPaths = ["sw.js"] as const;
+const missingSerwistAssetStatus = 404;
+
 const serwistRoute =
   process.env.NODE_ENV === "production"
     ? await createProductionSerwistRoute()
@@ -42,6 +45,12 @@ function createDevelopmentSerwistRoute(): SerwistRoute {
     dynamicParams: true,
     revalidate: 0,
     generateStaticParams: () => [],
-    GET: () => new Response(null, { status: 404 }),
+    GET: () =>
+      new Response(null, {
+        headers: {
+          "Cache-Control": "no-store",
+        },
+        status: missingSerwistAssetStatus,
+      }),
   };
 }

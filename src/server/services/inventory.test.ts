@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { canReserveStock, getSellableQuantity } from "./inventory";
+import {
+  canReserveStock,
+  getSellableQuantity,
+  simulateInventoryReservations,
+} from "./inventory";
 
 describe("inventory service", () => {
   it("subtracts reservations and safety stock", () => {
@@ -32,5 +36,33 @@ describe("inventory service", () => {
         requested: 4,
       }),
     ).toBe(false);
+  });
+
+  it("simulates limited-stock checkout races deterministically", () => {
+    expect(
+      simulateInventoryReservations({
+        quantity: 2,
+        reserved: 0,
+        requests: [1, 1],
+        safetyStock: 1,
+      }),
+    ).toEqual([
+      {
+        accepted: true,
+        beforeReserved: 0,
+        index: 0,
+        requested: 1,
+        reservedAfter: 1,
+        sellableAfter: 0,
+      },
+      {
+        accepted: false,
+        beforeReserved: 1,
+        index: 1,
+        requested: 1,
+        reservedAfter: 1,
+        sellableAfter: 0,
+      },
+    ]);
   });
 });

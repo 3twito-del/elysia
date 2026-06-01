@@ -87,6 +87,7 @@ export function AdminOrderActions({
               updateStatus.mutate({ orderId, status: action.status })
             }
             requiresConfirmation={action.status === "CANCELLED"}
+            targetLabel={orderId}
             variant={action.status === "CANCELLED" ? "outline" : "secondary"}
           />
         ))}
@@ -184,6 +185,7 @@ function AdminShipmentForm({
         </select>
       </div>
       <Button
+        aria-label={`שמירת משלוח להזמנה ${orderId}`}
         className="w-fit gap-2"
         disabled={mutation.isPending}
         size="sm"
@@ -295,6 +297,7 @@ function AdminRefundForm({
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button
+            aria-label={`ביצוע זיכוי להזמנה ${orderId}`}
             className="w-fit gap-2"
             disabled={mutation.isPending}
             size="sm"
@@ -334,18 +337,22 @@ function StatusActionButton({
   label,
   onConfirm,
   requiresConfirmation,
+  targetLabel,
   variant,
 }: {
   disabled: boolean;
   label: string;
   onConfirm: () => void;
   requiresConfirmation: boolean;
+  targetLabel: string;
   variant: "outline" | "secondary";
 }) {
+  const accessibleLabel = `${label} להזמנה ${targetLabel}`;
+
   if (!requiresConfirmation) {
     return (
       <Button
-        aria-label={label}
+        aria-label={accessibleLabel}
         disabled={disabled}
         onClick={onConfirm}
         size="sm"
@@ -361,7 +368,7 @@ function StatusActionButton({
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button
-          aria-label={label}
+          aria-label={accessibleLabel}
           disabled={disabled}
           size="sm"
           type="button"

@@ -125,6 +125,25 @@ Operational helper:
   enabled Shopify rollout flags or localhost database URLs unless explicitly
   overridden.
 
+Release note pattern:
+
+- Actionable release tasks: list repository changes that can be implemented,
+  tested, deployed, or rolled back by the current release owner.
+- Verification evidence: list the local commands, production smoke commands,
+  deployment URL, deployment ID, production alias, and clean error-log window.
+- Deferred supplier blockers: list supplier app connection, paid Shopify test
+  checkout, and supplier fulfillment confirmation separately from repository
+  implementation debt.
+- Deferred payment blockers: list CardCom terminal, API name, and API password
+  separately from Shopify dropship checkout readiness.
+- Deferred SMS blockers: list SMS provider credentials and delivery testing
+  separately from email, admin, and Shopify order mirror readiness.
+- Dashboard-access blockers: list Shopify dashboard or provider-dashboard
+  login/verification blockers separately from API-level readiness when CLI or
+  API checks already passed.
+- Residual risk: state what has not been proven by the release, without turning
+  blocked provider work into an actionable code task.
+
 This roadmap defines how Elysia can add Shopify as a behind-the-scenes commerce
 system for dropshipping supplier products while preserving the existing T3
 storefront and all current local commerce behavior.

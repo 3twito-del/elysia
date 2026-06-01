@@ -7,7 +7,9 @@ const root = process.cwd();
 
 describe("public select UI", () => {
   it("uses the bespoke select surface for public search filters", () => {
-    const searchControls = read("src/app/search/_components/search-controls.tsx");
+    const searchControls = read(
+      "src/app/search/_components/search-controls.tsx",
+    );
     const css = read("src/styles/globals.css");
 
     expect(searchControls).not.toContain("<select");
@@ -18,11 +20,34 @@ describe("public select UI", () => {
     expect(searchControls).toContain('className="public-select-content"');
     expect(searchControls).toContain('className="public-select-backdrop"');
     expect(searchControls).toContain('aria-haspopup="listbox"');
+    expect(searchControls).toContain(
+      "aria-controls={isOpen ? listboxId : undefined}",
+    );
+    expect(searchControls).toContain("aria-expanded={isOpen}");
     expect(searchControls).toContain('role="listbox"');
     expect(searchControls).toContain('role="option"');
-    expect(searchControls).toContain('type="hidden" value={currentValue}');
+    expect(searchControls).toContain("aria-selected={isSelected}");
+    expect(searchControls).toContain(
+      'data-highlighted={isSelected ? "" : undefined}',
+    );
+    expect(searchControls).toContain("handleTriggerKeyDown");
+    expect(searchControls).toContain("handleListKeyDown");
+    expect(searchControls).toContain('event.key === "ArrowDown"');
+    expect(searchControls).toContain('event.key === "ArrowUp"');
+    expect(searchControls).toContain('event.key === "Home"');
+    expect(searchControls).toContain('event.key === "End"');
+    expect(searchControls).toContain('event.key === "Escape"');
+    expect(searchControls).toContain("closeList({ focusTrigger: true })");
+    expect(searchControls).toContain("triggerRef.current?.focus()");
+    expect(searchControls).toContain('type="hidden"');
+    expect(searchControls).toContain("value={currentValue}");
+    expect(searchControls).toContain("pruneEmptySearchParams");
+    expect(searchControls).toContain("data-search-prune-empty");
+    expect(searchControls).toContain("data-search-default-value");
+    expect(searchControls).toContain('defaultSubmitValue="relevance"');
+    expect(searchControls).toContain("value={currentValue}");
     expect(read("src/components/ui/select.tsx")).not.toContain(
-      'data-[size=field]:h-11',
+      "data-[size=field]:h-11",
     );
     expect(css).toContain(".public-select-shell");
     expect(css).toContain(".public-select-trigger");

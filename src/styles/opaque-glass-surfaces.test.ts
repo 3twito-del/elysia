@@ -50,13 +50,13 @@ describe("opaque glass surface guardrails", () => {
       );
 
     expect(variableViolations).toEqual([]);
-    expect(extractCssBlock(css, ".popup-surface")).toMatch(
+    expect(extractCssBlock(css, ".popup-surface {")).toMatch(
       /background:\s*var\(--popover\)\s*!important;/,
     );
-    expect(extractCssBlock(css, ".popup-surface")).toMatch(
+    expect(extractCssBlock(css, ".popup-surface {")).toMatch(
       /backdrop-filter:\s*none;/,
     );
-    expect(extractCssBlock(css, ".popup-surface")).toMatch(
+    expect(extractCssBlock(css, ".popup-surface {")).toMatch(
       /-webkit-backdrop-filter:\s*none;/,
     );
   });

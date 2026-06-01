@@ -7,6 +7,7 @@ vi.mock("next/cache", () => ({
 }));
 
 import {
+  getCatalogMutationRevalidationTags,
   revalidateCatalogMutation,
   revalidateCatalogTags,
 } from "./catalog-revalidation";
@@ -28,6 +29,25 @@ describe("catalog revalidation", () => {
     );
   });
 
+  it("returns global, product, category, branch, and inventory tags for mutations", () => {
+    expect(
+      getCatalogMutationRevalidationTags({
+        branchSlugs: ["tel-aviv", "tel-aviv"],
+        categorySlugs: ["rings"],
+        productSlugs: ["venus-line-ring"],
+      }),
+    ).toEqual([
+      "products",
+      "catalog:facets",
+      "categories",
+      "branches",
+      "product:venus-line-ring",
+      "category:rings",
+      "inventory:tel-aviv",
+      "inventory:tel-aviv",
+    ]);
+  });
+
   it("revalidates global, product, category, and inventory tags for mutations", () => {
     revalidateCatalogMutation({
       branchSlugs: ["tel-aviv", "tel-aviv"],
@@ -38,6 +58,8 @@ describe("catalog revalidation", () => {
     expect(revalidateTagMock.mock.calls).toEqual([
       ["products", "max"],
       ["catalog:facets", "max"],
+      ["categories", "max"],
+      ["branches", "max"],
       ["product:venus-line-ring", "max"],
       ["category:rings", "max"],
       ["inventory:tel-aviv", "max"],

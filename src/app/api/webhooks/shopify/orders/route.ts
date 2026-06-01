@@ -9,6 +9,8 @@ import {
 } from "~/server/http/api-response";
 import { readSafeText } from "~/server/http/safe-json";
 import {
+  createWebhookErrorSummary,
+  createWebhookSafeLogContext,
   parseWebhookJson,
   recordWebhookEvent,
 } from "~/server/services/webhook-events";
@@ -49,6 +51,15 @@ export async function POST(req: Request) {
   const payload = parseWebhookJson(rawBody);
 
   if (!verifyShopifyWebhookSignature({ rawBody, signature })) {
+    const unverifiedLogContext = createWebhookSafeLogContext({
+      fallbackEventType: "shopify.orders.unverified",
+      payload,
+      provider: "shopify",
+      rawBody,
+      stage: "signature-verification",
+      status: "FAILED",
+    });
+
     await recordWebhookEvent({
       provider: "shopify",
       rawBody,
@@ -56,7 +67,11 @@ export async function POST(req: Request) {
       status: "FAILED",
       fallbackEventType: "shopify.orders.unverified",
     }).catch((error: unknown) => {
-      console.error("[webhook:shopify:record-failed]", error);
+      console.error(
+        "[webhook:shopify:record-failed]",
+        unverifiedLogContext,
+        createWebhookErrorSummary(error),
+      );
     });
 
     return unauthorizedJson("Invalid Shopify signature.");
@@ -75,7 +90,20 @@ export async function POST(req: Request) {
   try {
     mirror = await mirrorShopifyOrderWebhook(payload);
   } catch (error) {
-    console.error("[webhook:shopify:process-failed]", error);
+    const processingLogContext = createWebhookSafeLogContext({
+      fallbackEventType: "shopify.orders.webhook",
+      payload,
+      provider: "shopify",
+      rawBody,
+      stage: "processing",
+      status: "RECEIVED",
+    });
+
+    console.error(
+      "[webhook:shopify:process-failed]",
+      processingLogContext,
+      createWebhookErrorSummary(error),
+    );
 
     return serviceUnavailableJson("Shopify webhook processing is unavailable.");
   }

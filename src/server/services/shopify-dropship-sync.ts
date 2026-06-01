@@ -4,6 +4,7 @@ import type { Prisma } from "@prisma/client";
 import type { ShopifyProduct } from "~/server/adapters/shopify";
 import { shopifyDropshipProvider } from "~/server/adapters/shopify";
 import { db } from "~/server/db";
+import { revalidateCatalogMutation } from "~/server/services/catalog-revalidation";
 
 export type ShopifyDropshipSyncEnv = {
   [key: string]: string | undefined;
@@ -88,10 +89,23 @@ export async function syncShopifyDropshipCatalog(
     await upsertShopifyDropshipProduct(product);
   }
 
+  if (plan.products.length > 0) {
+    revalidateCatalogMutation(getShopifyDropshipSyncRevalidationInput(plan));
+  }
+
   return {
     ok: true,
     imported: plan.products.length,
     skipped: plan.skipped.length,
+  };
+}
+
+export function getShopifyDropshipSyncRevalidationInput(
+  plan: ShopifyDropshipImportPlan,
+) {
+  return {
+    categorySlugs: plan.products.map((product) => product.categorySlug),
+    productSlugs: plan.products.map((product) => product.externalHandle),
   };
 }
 

@@ -94,6 +94,21 @@ describe("search state helpers", () => {
     ).toBe("/product/venus-ring?q=ring&position=4");
   });
 
+  it("omits empty and default search parameters from canonical hrefs", () => {
+    expect(
+      createSearchHref({
+        query: "",
+        category: "",
+        material: "",
+        stone: "",
+        collection: "",
+        sort: "relevance",
+        mode: "semantic",
+        page: 1,
+      }),
+    ).toBe("/search");
+  });
+
   it("counts active refinements without counting the query itself", () => {
     expect(
       getActiveSearchRefinementCount({

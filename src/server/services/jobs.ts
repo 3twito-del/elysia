@@ -77,6 +77,7 @@ export async function processDueOutboxEvents(input: { limit?: number } = {}) {
       result.failed += 1;
 
       await markOutboxEventStatus({
+        attempts: event.attempts + 1,
         id: event.id,
         status: "FAILED",
         lastError: publicMessage,

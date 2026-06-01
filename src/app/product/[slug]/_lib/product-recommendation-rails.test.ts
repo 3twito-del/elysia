@@ -95,6 +95,46 @@ describe("product recommendation rails", () => {
     expect(rails[0]?.continuationHref).toBe("/search");
     expect(rails[0]?.cardContextLabel).toBe("מומלץ במבחר");
   });
+
+  it("keeps rail labels source-based instead of implying personalization", () => {
+    const current = createProduct({
+      categoryName: "Rings",
+      categorySlug: "rings",
+      collection: "Sol",
+      collections: ["Sol"],
+      material: "Gold",
+      slug: "current",
+      stone: "Diamond",
+    });
+    const rails = getProductRecommendationRails({
+      product: current,
+      products: [
+        current,
+        createProduct({
+          categoryName: "Rings",
+          categorySlug: "rings",
+          collection: "Aster",
+          collections: ["Aster"],
+          material: "Gold",
+          slug: "same-material",
+          stone: "Emerald",
+        }),
+      ],
+    });
+    const railCopy = rails
+      .flatMap((rail) => [
+        rail.cardContextLabel,
+        rail.continuationLabel,
+        rail.reason,
+        rail.title,
+      ])
+      .join(" ");
+
+    expect(railCopy).not.toMatch(/אישי|בשבילך|המלצה אישית|מותאם לך/u);
+    expect(rails.every((rail) => rail.continuationHref.startsWith("/"))).toBe(
+      true,
+    );
+  });
 });
 
 function createProduct(overrides: Partial<CatalogProduct> & { slug: string }) {

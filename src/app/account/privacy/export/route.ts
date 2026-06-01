@@ -1,11 +1,9 @@
-﻿import { NextResponse } from "next/server";
-
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 import {
+  jsonResponse,
   notFoundJson,
   rateLimitedJson,
-  unauthorizedJson,
 } from "~/server/http/api-response";
 import {
   assertRateLimit,
@@ -16,7 +14,7 @@ export async function GET() {
   const session = await auth();
 
   if (!session?.user || session.user.adminUserId) {
-    return unauthorizedJson("Unauthorized.");
+    return privacyExportUnauthorizedJson();
   }
 
   try {
@@ -77,18 +75,14 @@ export async function GET() {
     },
   });
 
-  return new NextResponse(
-    JSON.stringify(
-      {
-        exportedAt: new Date().toISOString(),
-        customer: {
-          ...customer,
-          shopifyOrderMirrors,
-        },
+  return jsonResponse(
+    {
+      exportedAt: new Date().toISOString(),
+      customer: {
+        ...customer,
+        shopifyOrderMirrors,
       },
-      null,
-      2,
-    ),
+    },
     {
       headers: {
         "Cache-Control": "no-store",
@@ -96,6 +90,27 @@ export async function GET() {
         "Content-Type": "application/json; charset=utf-8",
         "X-Content-Type-Options": "nosniff",
       },
+    },
+  );
+}
+
+function privacyExportUnauthorizedJson() {
+  return jsonResponse(
+    {
+      ok: false,
+      error: "Unauthorized.",
+      recovery: {
+        href: "/account",
+        rel: "account-sign-in",
+      },
+    },
+    {
+      headers: {
+        "Cache-Control": "no-store",
+        Link: '</account>; rel="login"',
+        "X-Content-Type-Options": "nosniff",
+      },
+      status: 401,
     },
   );
 }

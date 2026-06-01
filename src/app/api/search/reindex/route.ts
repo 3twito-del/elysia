@@ -5,12 +5,15 @@ import {
 } from "~/server/auth/admin-access";
 import { searchProvider } from "~/server/adapters/search";
 import {
+  badRequestJson,
   forbiddenJson,
   okJson,
+  payloadTooLargeJson,
   rateLimitedJson,
   serviceUnavailableJson,
   unauthorizedJson,
 } from "~/server/http/api-response";
+import { readSafeText } from "~/server/http/safe-json";
 import { BUSINESS_EVENTS, enqueueOutboxEvent } from "~/server/services/outbox";
 import {
   assertRateLimit,
@@ -45,6 +48,23 @@ export async function POST(req: Request) {
 
   if (!admin || !hasAdminPermission(admin, "CATALOG_WRITE")) {
     return forbiddenJson("Forbidden.");
+  }
+
+  const payload = await readSafeText(req, {
+    allowEmpty: true,
+    maxBytes: 1024,
+  });
+
+  if (!payload.ok) {
+    if (payload.error === "too-large") {
+      return payloadTooLargeJson("Search reindex payload is too large.");
+    }
+
+    return badRequestJson("Search reindex does not accept a request body.");
+  }
+
+  if (payload.text.trim()) {
+    return badRequestJson("Search reindex does not accept a request body.");
   }
 
   let result: Awaited<ReturnType<typeof searchProvider.indexProducts>>;

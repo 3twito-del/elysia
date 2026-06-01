@@ -2,9 +2,11 @@ import { describe, expect, it } from "vitest";
 
 import { getZodFieldErrors } from "./form-validation";
 import {
+  getServiceRequestAttachmentPolicy,
   maxServiceRequestFileBytes,
   maxServiceRequestFiles,
   publicServiceRequestInputSchema,
+  serviceRequestAcceptedFileTypeLabel,
   serviceRequestAcceptedFileTypes,
   updateServiceSettingsInputSchema,
   upsertContactTopicInputSchema,
@@ -103,6 +105,9 @@ describe("service validation", () => {
   it("documents supported service attachment limits", () => {
     expect(maxServiceRequestFiles).toBe(5);
     expect(maxServiceRequestFileBytes).toBe(10 * 1024 * 1024);
+    expect(serviceRequestAcceptedFileTypeLabel).toBe(
+      "JPG, PNG, WebP, GIF או PDF",
+    );
     expect(serviceRequestAcceptedFileTypes).toEqual([
       "image/jpeg",
       "image/png",
@@ -110,5 +115,12 @@ describe("service validation", () => {
       "image/gif",
       "application/pdf",
     ]);
+    expect(getServiceRequestAttachmentPolicy()).toEqual({
+      acceptedFileTypeLabel: "JPG, PNG, WebP, GIF או PDF",
+      acceptedFileTypes: serviceRequestAcceptedFileTypes,
+      maxFileBytes: 10 * 1024 * 1024,
+      maxFileSizeMb: 10,
+      maxFiles: 5,
+    });
   });
 });

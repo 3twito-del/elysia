@@ -63,7 +63,7 @@ describe("PWA JSON sync route", () => {
       {
         actionId: "offline_action_2",
         error:
-          "Queued action could not be synced. Please retry when the connection is stable.",
+          "Some offline cart changes could not be synced. Review your cart, then retry when the connection is stable.",
         ok: false,
       },
     ]);
@@ -101,7 +101,7 @@ describe("PWA JSON sync route", () => {
         {
           actionId: "offline_action_2",
           error:
-            "Queued action could not be synced. Please retry when the connection is stable.",
+            "Some offline cart changes could not be synced. Review your cart, then retry when the connection is stable.",
           ok: false,
         },
       ],

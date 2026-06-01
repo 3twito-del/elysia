@@ -13,16 +13,26 @@ export function revalidateCatalogTags(tags: string[]) {
   }
 }
 
+export function getCatalogMutationRevalidationTags(input: {
+  productSlugs?: string[];
+  categorySlugs?: string[];
+  branchSlugs?: string[];
+}) {
+  return [
+    CATALOG_CACHE_TAGS.products,
+    CATALOG_CACHE_TAGS.facets,
+    ...(input.categorySlugs?.length ? [CATALOG_CACHE_TAGS.categories] : []),
+    ...(input.branchSlugs?.length ? [CATALOG_CACHE_TAGS.branches] : []),
+    ...(input.productSlugs ?? []).map(productCacheTag),
+    ...(input.categorySlugs ?? []).map(categoryCacheTag),
+    ...(input.branchSlugs ?? []).map(inventoryCacheTag),
+  ];
+}
+
 export function revalidateCatalogMutation(input: {
   productSlugs?: string[];
   categorySlugs?: string[];
   branchSlugs?: string[];
 }) {
-  revalidateCatalogTags([
-    CATALOG_CACHE_TAGS.products,
-    CATALOG_CACHE_TAGS.facets,
-    ...(input.productSlugs ?? []).map(productCacheTag),
-    ...(input.categorySlugs ?? []).map(categoryCacheTag),
-    ...(input.branchSlugs ?? []).map(inventoryCacheTag),
-  ]);
+  revalidateCatalogTags(getCatalogMutationRevalidationTags(input));
 }

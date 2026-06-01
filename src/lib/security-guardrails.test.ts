@@ -56,6 +56,43 @@ describe("security guardrails", () => {
 
     expect(offenders).toEqual([]);
   });
+
+  it("keeps webhook failure logs on the safe context path", () => {
+    const webhookRoutes = [
+      "src/app/api/webhooks/cardcom/route.ts",
+      "src/app/api/webhooks/cloudinary/route.ts",
+      "src/app/api/webhooks/shopify/orders/route.ts",
+    ];
+
+    const offenders = webhookRoutes.flatMap((route) => {
+      const contents = readFileSync(join(process.cwd(), route), "utf8");
+      const issues: string[] = [];
+
+      if (!contents.includes("createWebhookSafeLogContext")) {
+        issues.push(`${route}: missing safe log context`);
+      }
+
+      if (!contents.includes("createWebhookErrorSummary")) {
+        issues.push(`${route}: missing redacted error summary`);
+      }
+
+      const consoleErrorCalls = contents.match(/console\.error\([\s\S]*?\);/g);
+
+      for (const call of consoleErrorCalls ?? []) {
+        if (/,\s*error\s*[,)]/.test(call)) {
+          issues.push(`${route}: logs raw error object`);
+        }
+
+        if (/,\s*(rawBody|payload)\s*[,)]/.test(call)) {
+          issues.push(`${route}: logs raw webhook body or payload`);
+        }
+      }
+
+      return issues;
+    });
+
+    expect(offenders).toEqual([]);
+  });
 });
 
 function getScannedFiles() {

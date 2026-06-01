@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Check, ChevronDown, Search, SlidersHorizontal } from "lucide-react";
 import {
+  type FormEvent,
   useId,
   useRef,
   useState,
@@ -56,6 +57,7 @@ export function SearchControls({
         action="/search"
         aria-label="חיפוש במבחר"
         className="hidden gap-3 lg:grid"
+        onSubmit={pruneEmptySearchParams}
         role="search"
       >
         <div className="grid items-end gap-3 lg:grid-cols-[minmax(18rem,1.45fr)_repeat(3,minmax(9rem,1fr))_auto]">
@@ -95,6 +97,7 @@ export function SearchControls({
           action="/search"
           aria-label="חיפוש מהיר במבחר"
           className="grid grid-cols-[minmax(0,1fr)_auto] gap-2"
+          onSubmit={pruneEmptySearchParams}
           role="search"
         >
           <div className="relative min-w-0">
@@ -105,6 +108,7 @@ export function SearchControls({
             <Input
               aria-label="חיפוש תכשיט, חומר, אבן, אירוע או מחיר"
               className="h-11 ps-10 pe-3"
+              data-search-prune-empty
               defaultValue={input.query}
               name="q"
               placeholder="טבעת, עגילים, מתנה..."
@@ -163,6 +167,7 @@ export function SearchControls({
               action="/search"
               aria-label="סינון תוצאות חיפוש"
               className="grid gap-4 p-4"
+              onSubmit={pruneEmptySearchParams}
               role="search"
             >
               <PrimarySearchFields categories={categories} input={input} />
@@ -204,6 +209,7 @@ function PrimarySearchFields({
           <Input
             aria-label="חיפוש תכשיט, חומר, אבן, אירוע או מחיר"
             className="h-11 ps-10 pe-3"
+            data-search-prune-empty
             defaultValue={input.query}
             name="q"
             placeholder="טבעת, עגילים, מתנה..."
@@ -225,6 +231,7 @@ function PrimarySearchFields({
         <Input
           aria-label="מחיר מקסימלי"
           className="h-11"
+          data-search-prune-empty
           defaultValue={input.maxPrice}
           min={0}
           name="maxPrice"
@@ -244,6 +251,7 @@ function PrimarySearchFields({
           { label: "מומלצים", value: "popular" },
         ]}
         placeholder="התאמה"
+        defaultSubmitValue="relevance"
         value={input.sort ?? "relevance"}
       />
     </>
@@ -297,12 +305,14 @@ function FacetSearchFields({
 }
 
 function SearchSelectField({
+  defaultSubmitValue,
   label,
   name,
   options,
   placeholder,
   value,
 }: {
+  defaultSubmitValue?: string;
   label: string;
   name: keyof ProductSearchInput;
   options: Array<{ label: string; value: string }>;
@@ -482,8 +492,49 @@ function SearchSelectField({
           </div>
         ) : null}
       </div>
-      <input name={name} type="hidden" value={currentValue} />
+      <input
+        data-search-default-value={defaultSubmitValue}
+        data-search-prune-empty
+        name={name}
+        type="hidden"
+        value={currentValue}
+      />
     </SearchControlField>
+  );
+}
+
+function pruneEmptySearchParams(event: FormEvent<HTMLFormElement>) {
+  const disabledFields: Array<
+    HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+  > = [];
+
+  for (const field of Array.from(event.currentTarget.elements)) {
+    if (!isSubmittableField(field)) continue;
+    if (!field.hasAttribute("data-search-prune-empty")) continue;
+
+    const value = field.value.trim();
+    const defaultValue = field.getAttribute("data-search-default-value");
+
+    if (value === "" || (defaultValue !== null && value === defaultValue)) {
+      field.disabled = true;
+      disabledFields.push(field);
+    }
+  }
+
+  window.setTimeout(() => {
+    for (const field of disabledFields) {
+      field.disabled = false;
+    }
+  }, 0);
+}
+
+function isSubmittableField(
+  field: Element,
+): field is HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement {
+  return (
+    field instanceof HTMLInputElement ||
+    field instanceof HTMLSelectElement ||
+    field instanceof HTMLTextAreaElement
   );
 }
 

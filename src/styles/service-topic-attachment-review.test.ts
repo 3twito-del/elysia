@@ -46,7 +46,7 @@ describe("service topic routing and attachment review", () => {
     expect(serviceForm).toContain("setSelectedAttachmentCount");
     expect(serviceForm).toContain('data-testid="service-attachment-review"');
     expect(serviceForm).toContain("event.currentTarget.files?.length ?? 0");
-    expect(serviceForm).toContain("maxServiceRequestFiles");
+    expect(serviceForm).toContain("attachmentPolicy.maxFiles");
     expect(serviceForm).toContain("maxFileSizeMb");
     expect(validation).toContain("maxServiceRequestFiles = 5");
     expect(validation).toContain("10 * 1024 * 1024");

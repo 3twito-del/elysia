@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { resetRateLimitStateForTests } from "~/server/services/rate-limit";
@@ -80,6 +83,31 @@ describe("cart count route", () => {
       error: "Cart count is temporarily unavailable.",
     });
   });
+
+  it("keeps the header cart badge fresh without exaggerated badge styling", () => {
+    const cartCountLink = read("src/components/cart-count-link.tsx");
+    const cartSession = read("src/lib/cart-session.ts");
+    const offlineSync = read("src/lib/pwa-offline.ts");
+
+    expect(cartCountLink).toContain("CART_UPDATED_EVENT");
+    expect(cartCountLink).toContain("getStoredCartSessionKey()");
+    expect(cartCountLink).toContain("getOfflineCartDelta(sessionKey)");
+    expect(cartCountLink).toContain("/api/cart/count?sessionKey=");
+    expect(cartCountLink).toContain('cache: "no-store"');
+    expect(cartCountLink).toContain('window.addEventListener("focus"');
+    expect(cartCountLink).toContain(
+      'document.addEventListener("visibilitychange"',
+    );
+    expect(cartCountLink).toContain('aria-live="polite"');
+    expect(cartCountLink).toContain('itemCount > 99 ? "99+" : itemCount');
+    expect(cartCountLink).not.toContain("shadow-");
+
+    expect(cartSession).toContain("window.dispatchEvent");
+    expect(cartSession).toContain("CART_UPDATED_EVENT");
+    expect(offlineSync).toContain(
+      "window.dispatchEvent(new Event(CART_UPDATED_EVENT))",
+    );
+  });
 });
 
 function createCartCountRequest(sessionKey: string) {
@@ -93,4 +121,8 @@ function createCartCountRequest(sessionKey: string) {
       },
     },
   );
+}
+
+function read(relativePath: string) {
+  return readFileSync(path.join(process.cwd(), relativePath), "utf8");
 }

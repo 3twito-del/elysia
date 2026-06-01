@@ -99,6 +99,22 @@ without running long live benchmarks.
 - `pnpm visual:qa`: agent-browser visual and overlay check for core routes.
 - `pnpm format:check`: formatting drift check.
 
+## Source-Scan Test Diagnostics
+
+Some guardrail tests inspect broad source trees. Treat a timeout in these tests
+as a performance signal, not as a reason to weaken the guardrail.
+
+1. Rerun the failing file directly with `pnpm test -- <path>` to separate real
+   assertion failures from suite-wide contention.
+2. If the focused test passes but the full suite times out, cache repeated file
+   discovery or reads inside the test before increasing timeouts.
+3. Keep the guardrail assertion intact; do not replace it with a snapshot that
+   stops checking the forbidden pattern.
+4. If a timeout increase is still needed, keep it local to the expensive setup
+   or test and document the source-scan size that justifies it.
+5. Rerun both the focused test and the broader command that originally exposed
+   the timeout.
+
 ## Manual Quality Gates
 
 Quality gates are manual `pnpm gate:*` commands. They do not run in watch mode,

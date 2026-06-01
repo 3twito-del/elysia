@@ -9,6 +9,17 @@ const paymentWebhookMocks = vi.hoisted(() => ({
   applyCardComWebhook: vi.fn(),
 }));
 const webhookMocks = vi.hoisted(() => ({
+  createWebhookErrorSummary: vi.fn((error: unknown) => ({
+    name: error instanceof Error ? error.name : typeof error,
+  })),
+  createWebhookSafeLogContext: vi.fn(
+    (input: { provider: string; stage: string; status?: string }) => ({
+      provider: input.provider,
+      rawBodyHash: "safe-body-hash",
+      stage: input.stage,
+      status: input.status ?? "RECEIVED",
+    }),
+  ),
   parseWebhookJson: vi.fn((rawBody: string) =>
     rawBody.trim() ? (JSON.parse(rawBody) as unknown) : {},
   ),
@@ -26,6 +37,8 @@ vi.mock("~/server/services/payment-webhooks", () => ({
 }));
 
 vi.mock("~/server/services/webhook-events", () => ({
+  createWebhookErrorSummary: webhookMocks.createWebhookErrorSummary,
+  createWebhookSafeLogContext: webhookMocks.createWebhookSafeLogContext,
   parseWebhookJson: webhookMocks.parseWebhookJson,
   recordWebhookEvent: webhookMocks.recordWebhookEvent,
 }));
@@ -81,6 +94,19 @@ describe("CardCom webhook route", () => {
         ok: false,
         error: "CardCom webhook processing is unavailable.",
       });
+      expect(errorSpy).toHaveBeenCalledWith(
+        "[webhook:cardcom:process-failed]",
+        expect.objectContaining({
+          provider: "cardcom",
+          rawBodyHash: "safe-body-hash",
+          stage: "processing",
+        }),
+        { name: "Error" },
+      );
+      const loggedOutput = JSON.stringify(errorSpy.mock.calls);
+
+      expect(loggedOutput).not.toContain("provider secret leaked");
+      expect(loggedOutput).not.toContain('"message"');
     } finally {
       errorSpy.mockRestore();
     }

@@ -32,9 +32,25 @@ Related documents:
 | Smoke command       | `SMOKE_BASE_URL=https://elysia-jewellery.com pnpm smoke`                                                                                                                         |
 | Smoke result        | PASS: 34 checks passed across health, public, checkout, account, API, and admin smoke routes                                                                                     |
 | Error log scan      | PASS: `vercel logs https://elysia-ki7m92i44-ariel-twitos-projects.vercel.app --level error --since 1h --json` returned no error entries                                          |
+| Error-log window    | PASS: clean 60-minute production error-log window after deployment alias verification                                                                                            |
 | Marker checks       | PASS: `size-guide-product-return-context`, `size-guide-save-context`, `branches-online-service-continuity`, and `branches-online-recovery-links` were present in production HTML |
 | Runtime data caveat | Smoke uses public/logged-out routes and documented unauthenticated API expectations only                                                                                         |
 | Remaining risk      | Does not prove authenticated admin workflows, paid checkout, live supplier fulfillment, or provider secrets                                                                      |
+
+## Required Release Evidence Fields
+
+Every production release note or ledger update must record:
+
+- Commit SHA.
+- Deployment URL.
+- Deployment ID.
+- Production alias URL.
+- Alias verification result from `vercel inspect`.
+- Smoke command and result.
+- Error-log scan command and result.
+- Minimum clean error-log window, currently `60 minutes` after production alias
+  verification.
+- Residual risk that remains outside repository verification.
 
 ## Verification Commands
 
@@ -48,6 +64,14 @@ $env:SMOKE_BASE_URL = "https://elysia-jewellery.com"; pnpm smoke
 pnpm exec prettier --check docs/qa/production-deployment-evidence-ledger.md docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md
 git diff --check
 ```
+
+## Post-Deploy Error-Log Rule
+
+Do not mark release evidence complete until the production deployment has a
+clean Vercel error-log scan for at least `60 minutes` after the production
+alias points at the inspected deployment. If an error appears, record the
+command, the affected route or function if known, and rerun the clean window
+after the fix is deployed.
 
 ## Smoke Route Summary
 

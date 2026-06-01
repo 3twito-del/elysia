@@ -21,10 +21,8 @@ import { StatusMessage } from "~/components/ui/status-message";
 import { Textarea } from "~/components/ui/textarea";
 import { queueOfflineServiceRequest } from "~/lib/pwa-offline";
 import {
-  maxServiceRequestFileBytes,
-  maxServiceRequestFiles,
   serviceContactPreferences,
-  serviceRequestAcceptedFileTypes,
+  getServiceRequestAttachmentPolicy,
   getServiceContactPreferenceLabel,
 } from "~/lib/service-validation";
 
@@ -41,10 +39,9 @@ type ServiceRequestFormProps = {
 };
 
 const initialState: ServiceRequestActionState = {};
-const maxFileSizeMb = Math.round(maxServiceRequestFileBytes / 1024 / 1024);
+const attachmentPolicy = getServiceRequestAttachmentPolicy();
 const attachmentGuidanceId = "service-attachment-guidance";
 const attachmentOfflineGuidanceId = "service-attachment-offline-guidance";
-const attachmentAcceptedFileTypeLabel = "JPG, PNG, WebP, GIF או PDF";
 const topicGuidanceId = "service-topic-guidance";
 const serviceFieldFocusOrder = [
   "topicSlug",
@@ -297,7 +294,7 @@ export function ServiceRequestForm({
         </Label>
         <Input
           aria-describedby={`${attachmentGuidanceId} ${attachmentOfflineGuidanceId}`}
-          accept={serviceRequestAcceptedFileTypes.join(",")}
+          accept={attachmentPolicy.acceptedFileTypes.join(",")}
           disabled={pending}
           id="attachments"
           multiple
@@ -316,16 +313,17 @@ export function ServiceRequestForm({
             {selectedAttachmentCount > 0
               ? `${selectedAttachmentCount} קבצים נבחרו לצירוף.`
               : "לא נבחרו קבצים לצירוף."}{" "}
-            המגבלות נשארות עד {maxServiceRequestFiles} קבצים ועד {maxFileSizeMb}
-            MB לקובץ.
+            המגבלות נשארות עד {attachmentPolicy.maxFiles} קבצים ועד{" "}
+            {attachmentPolicy.maxFileSizeMb}MB לקובץ.
           </p>
         </div>
         <p
           className="text-muted-foreground text-xs leading-5"
           id={attachmentGuidanceId}
         >
-          ניתן לצרף עד {maxServiceRequestFiles} קבצים, עד {maxFileSizeMb}MB
-          לקובץ. סוגי קבצים נתמכים: {attachmentAcceptedFileTypeLabel}.
+          ניתן לצרף עד {attachmentPolicy.maxFiles} קבצים, עד{" "}
+          {attachmentPolicy.maxFileSizeMb}MB לקובץ. סוגי קבצים נתמכים:{" "}
+          {attachmentPolicy.acceptedFileTypeLabel}.
         </p>
         <p
           className="text-muted-foreground text-xs leading-5"

@@ -6,6 +6,7 @@ import {
   protectedAdminPaths,
   smokeChecks,
 } from "./smoke.mjs";
+import { getQaRouteInventory } from "./qa-route-inventory.ts";
 
 describe("smoke checks", () => {
   it("covers roadmap reliability entry points", () => {
@@ -142,5 +143,38 @@ describe("smoke checks", () => {
     expect(createSmokeCheckUrl("http://localhost:3002", "account")).toBe(
       "http://localhost:3002/account",
     );
+  });
+
+  it("keeps smoke status expectations inside the route inventory contracts", () => {
+    const inventory = getQaRouteInventory({ includeAllProducts: true });
+    const inventoryByRoute = new Map(
+      inventory.map((route) => [`${route.method} ${route.path}`, route]),
+    );
+    const missingRoutes = [];
+    const statusMismatches = [];
+
+    for (const check of smokeChecks) {
+      const method = check.method ?? "GET";
+      const key = `${method} ${check.path}`;
+      const inventoryRoute = inventoryByRoute.get(key);
+
+      if (!inventoryRoute) {
+        missingRoutes.push(key);
+        continue;
+      }
+
+      const unexpectedStatuses = check.statuses.filter(
+        (status) => !inventoryRoute.expectedStatuses.includes(status),
+      );
+
+      if (unexpectedStatuses.length > 0) {
+        statusMismatches.push(
+          `${key}: smoke ${unexpectedStatuses.join(",")} not in inventory ${inventoryRoute.expectedStatuses.join(",")}`,
+        );
+      }
+    }
+
+    expect(missingRoutes).toEqual([]);
+    expect(statusMismatches).toEqual([]);
   });
 });

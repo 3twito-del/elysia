@@ -102,6 +102,29 @@ describe("public image AVIF conversion", () => {
     expect(checkResult.summary.current).toBe(1);
     expect(checkResult.summary.staleAssets).toBe(0);
   });
+
+  it("keeps AVIF drift detection wired into the production build gate", async () => {
+    const [packageJsonSource, scriptSource] = await Promise.all([
+      readFile(path.join(process.cwd(), "package.json"), "utf8"),
+      readFile(
+        path.join(process.cwd(), "scripts/convert-public-images-to-avif.mjs"),
+        "utf8",
+      ),
+    ]);
+    const packageJson = JSON.parse(packageJsonSource);
+
+    expect(packageJson.scripts.prebuild).toContain(
+      "node scripts/convert-public-images-to-avif.mjs --check",
+    );
+    expect(packageJson.scripts["images:avif"]).toBe(
+      "node scripts/convert-public-images-to-avif.mjs",
+    );
+    expect(scriptSource).toContain("const sourceExtensions = new Set");
+    expect(scriptSource).toContain('const referenceRoots = ["src", "docs"]');
+    expect(scriptSource).toContain("stale-assets=");
+    expect(scriptSource).toContain("stale-references=");
+    expect(scriptSource).toContain("[images:avif] check failed");
+  });
 });
 
 async function createImageFixture() {

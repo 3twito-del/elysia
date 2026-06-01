@@ -178,7 +178,8 @@ export default async function ProductPage({
             </div>
 
             <h1
-              className="mt-4 max-w-[17ch] text-3xl leading-[1.08] font-semibold break-words sm:text-4xl"
+              className="product-title-mixed-script mt-4 max-w-[17ch] text-3xl leading-[1.08] font-semibold break-words sm:text-4xl"
+              data-testid="product-title"
               dir="auto"
             >
               {product.name}
@@ -384,7 +385,10 @@ function ProductRecommendationRails({
                 </Link>
               </Button>
             </div>
-            <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div
+              className="ui-equal-grid mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+              data-layout-equal-group={`product-recommendation-${rail.id}`}
+            >
               {rail.products.slice(0, 3).map((recommended) => (
                 <ProductCard
                   contextLabel={rail.cardContextLabel}

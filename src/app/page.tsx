@@ -398,7 +398,6 @@ export default async function Home() {
               alt="מגש שירות עם אריזת תכשיטים ופנינים"
               className="media-color-rich object-cover"
               fill
-              priority
               sizes="(min-width: 1024px) 42vw, 100vw"
               src="/brand/v2/service-task.avif"
             />
@@ -479,12 +478,8 @@ export default async function Home() {
             data-layout-equal-group="home-featured-products"
             variant="cards"
           >
-            {curatedProducts.map((product, index) => (
-              <ProductCard
-                imagePriority={index < 4}
-                key={product.slug}
-                product={product}
-              />
+            {curatedProducts.map((product) => (
+              <ProductCard key={product.slug} product={product} />
             ))}
           </RevealGrid>
         </div>

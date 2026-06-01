@@ -39,6 +39,31 @@ describe("admin empty-state clarity", () => {
     expect(source).toContain('<Link href="/admin/audit">ניקוי סינון</Link>');
   });
 
+  it("keeps admin overview count freshness visible", () => {
+    const source = read("src/app/admin/page.tsx");
+
+    expect(source).toContain('data-testid="admin-overview-freshness"');
+    expect(source).toContain("overview.freshness.generatedAt.toISOString()");
+    expect(source).toContain(
+      "formatHebrewDateTime(overview.freshness.generatedAt)",
+    );
+  });
+
+  it("keeps admin order filters URL-backed and recoverable", () => {
+    const source = read("src/app/admin/orders/page.tsx");
+
+    expect(source).toContain('action="/admin/orders"');
+    expect(source).toContain('name="query"');
+    expect(source).toContain('name="status"');
+    expect(source).toContain('name="branchId"');
+    expect(source).toContain('name="fulfillmentMethod"');
+    expect(source).toContain('name="sort"');
+    expect(source).toContain("const activeFilterLabels = [");
+    expect(source).toContain("hasActiveFilters");
+    expect(source).toContain('<Link href="/admin/orders">');
+    expect(source).toContain("activeFilterLabels.map");
+  });
+
   it("keeps service queue empty states distinct for filtered and unfiltered data", () => {
     const source = read("src/app/admin/service/page.tsx");
 

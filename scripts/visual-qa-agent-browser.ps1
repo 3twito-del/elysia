@@ -7,6 +7,8 @@ param(
   ),
   [string[]]$Viewports = @("desktop:1440x900", "tablet:768x1024", "mobile:390x844"),
   [string]$ArtifactDir = "",
+  [string]$DeploymentId = $(if ($env:VERCEL_DEPLOYMENT_ID) { $env:VERCEL_DEPLOYMENT_ID } else { "" }),
+  [string]$RouteSetName = $(if ($env:QA_ROUTE_SET_NAME) { $env:QA_ROUTE_SET_NAME } else { "representative" }),
   [string]$ProfilePath = $(Join-Path $env:TEMP "agent-browser-cdp-elysia-$Port"),
   [switch]$AllProducts,
   [switch]$NoScreenshot,
@@ -73,6 +75,25 @@ function Stop-CdpProfileProcesses {
   }
 }
 
+function ConvertTo-SafeArtifactSegment {
+  param(
+    [string]$Value,
+    [string]$Fallback
+  )
+
+  $candidate = $Value
+  if (-not $candidate) {
+    $candidate = $Fallback
+  }
+
+  $safe = ($candidate -replace "[^a-zA-Z0-9._-]+", "-").Trim("-")
+  if (-not $safe) {
+    return $Fallback
+  }
+
+  return $safe
+}
+
 function Join-RouteUrl {
   param(
     [string]$Root,
@@ -88,8 +109,15 @@ function Join-RouteUrl {
 }
 
 function New-QAArtifactDir {
+  param(
+    [string]$DeploymentId,
+    [string]$RouteSetName
+  )
+
   $timestamp = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH-mm-ssZ")
-  $path = Join-Path (Get-Location) "artifacts\qa\$timestamp-agent-browser"
+  $routeSetSegment = ConvertTo-SafeArtifactSegment -Value $RouteSetName -Fallback "representative"
+  $deploymentSegment = ConvertTo-SafeArtifactSegment -Value $DeploymentId -Fallback "local"
+  $path = Join-Path (Get-Location) "artifacts\qa\$timestamp-$routeSetSegment-$deploymentSegment-agent-browser"
   New-Item -ItemType Directory -Path $path -Force | Out-Null
   return $path
 }
@@ -130,13 +158,27 @@ if ($explicitRoutes.Count -eq 0) {
 }
 
 if (-not $ArtifactDir) {
-  $ArtifactDir = New-QAArtifactDir
+  $ArtifactDir = New-QAArtifactDir -DeploymentId $DeploymentId -RouteSetName $(if ($AllProducts) { "all-products" } else { $RouteSetName })
 } else {
   New-Item -ItemType Directory -Path $ArtifactDir -Force | Out-Null
 }
 
 $screenshotDir = Join-Path $ArtifactDir "agent-browser-screenshots"
 New-Item -ItemType Directory -Path $screenshotDir -Force | Out-Null
+
+$runStartedAt = (Get-Date).ToUniversalTime().ToString("o")
+$metadata = [pscustomobject]@{
+  GeneratedAt = $runStartedAt
+  BaseUrl = $BaseUrl
+  DeploymentId = $(if ($DeploymentId) { $DeploymentId } else { "local" })
+  RouteSetName = $(if ($AllProducts) { "all-products" } else { $RouteSetName })
+  Viewports = $Viewports
+  Routes = $Routes
+  ArtifactNaming = "artifacts/qa/<utc>-<route-set>-<deployment-id>-agent-browser"
+  ConsoleErrorBudget = "zero production console errors; known local development-only noise must be documented outside production evidence"
+}
+
+$metadata | ConvertTo-Json -Depth 4 | Out-File -FilePath (Join-Path $ArtifactDir "agent-browser-visual-qa-metadata.json") -Encoding utf8
 
 $results = New-Object System.Collections.Generic.List[object]
 $failures = New-Object System.Collections.Generic.List[string]

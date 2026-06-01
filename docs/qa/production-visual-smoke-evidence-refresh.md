@@ -9,6 +9,36 @@
 This refresh records the production smoke and route evidence that should be
 updated after the current batch of backlog-backed changes reaches production.
 
+## Refresh Cadence
+
+- Refresh after every production deployment that changes public routes,
+  checkout, account, admin chrome, floating controls, PWA behavior, or visual QA
+  scripts.
+- Refresh after deployment aliases change, even when the code commit is
+  unchanged, so the evidence is tied to the active production domain.
+- Keep one representative route-set artifact for every release candidate.
+  Capture an all-products route-set artifact before releases that affect
+  catalog routing, product fixtures, search, category filters, or PDP media.
+
+## Artifact Naming
+
+Use this production artifact pattern:
+
+```text
+artifacts/qa/<utc-timestamp>-<route-set>-<deployment-id>-agent-browser/
+```
+
+Required metadata for each visual evidence directory:
+
+- UTC timestamp.
+- Production base URL.
+- Deployment ID or `local` for non-production checks.
+- Route set name, either `representative`, `all-products`, or an explicitly
+  named release subset.
+- Viewport set.
+- Route list.
+- Console error budget.
+
 ## Evidence Targets
 
 - `/product/elysia-supplier-silver-halo-ring?q=venus`
@@ -41,6 +71,11 @@ vercel inspect <deployment-url>
 $env:SMOKE_BASE_URL = "https://elysia-jewellery.com"; pnpm smoke
 curl.exe -I https://elysia-jewellery.com/serwist/sw.js
 vercel logs <deployment-url> --level error --since 1h --json
+$env:SMOKE_BASE_URL = "https://elysia-jewellery.com"
+$env:VERCEL_DEPLOYMENT_ID = "<deployment-id>"
+$env:QA_ROUTE_SET_NAME = "representative"
+pnpm visual:qa
+pnpm visual:qa -- -AllProducts
 ```
 
 ## Residual Risk

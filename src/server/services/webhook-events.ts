@@ -65,6 +65,36 @@ export function getWebhookEventType(payload: unknown, fallback: string) {
   );
 }
 
+export function createWebhookSafeLogContext(input: {
+  fallbackEventType: string;
+  payload: unknown;
+  provider: string;
+  rawBody: string;
+  stage: "processing" | "signature-verification";
+  status?: WebhookStatus;
+}) {
+  return {
+    eventType: getWebhookEventType(input.payload, input.fallbackEventType),
+    payloadKeys: getPayloadKeys(input.payload),
+    provider: input.provider,
+    rawBodyHash: createHash("sha256").update(input.rawBody).digest("hex"),
+    stage: input.stage,
+    status: input.status ?? "RECEIVED",
+  };
+}
+
+export function createWebhookErrorSummary(error: unknown) {
+  if (error instanceof Error) {
+    return {
+      name: error.name,
+    };
+  }
+
+  return {
+    name: typeof error,
+  };
+}
+
 export async function recordWebhookEvent(input: {
   provider: string;
   rawBody: string;
@@ -144,6 +174,14 @@ function toJson(value: unknown): Prisma.InputJsonValue {
   if (value === undefined) return {};
 
   return value as Prisma.InputJsonValue;
+}
+
+function getPayloadKeys(payload: unknown) {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return [];
+  }
+
+  return Object.keys(payload).sort().slice(0, 20);
 }
 
 function isSensitiveWebhookKey(key: string) {

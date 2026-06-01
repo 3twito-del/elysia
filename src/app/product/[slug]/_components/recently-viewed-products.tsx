@@ -43,7 +43,10 @@ export function RecentlyViewedProducts({
       >
         נצפו לאחרונה
       </h2>
-      <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div
+        className="ui-equal-grid mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+        data-layout-equal-group="recently-viewed-products"
+      >
         {viewed.map((product) => (
           <ProductCard key={product.slug} product={product} />
         ))}

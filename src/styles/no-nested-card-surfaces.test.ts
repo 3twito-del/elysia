@@ -35,6 +35,32 @@ describe("nested card surface guardrails", () => {
     expect(brandAquaSectionBlock).not.toMatch(/\bborder(?:-radius|-color)?:/);
     expect(brandAquaSectionBlock).not.toMatch(/\bbox-shadow\s*:/);
   });
+
+  it("keeps current product, checkout, account, and service surfaces covered", () => {
+    const coveredPublicSurfaces = [
+      "src/components/product-card.tsx",
+      "src/app/product/[slug]/page.tsx",
+      "src/app/checkout/_components/cart-checkout-form.tsx",
+      "src/app/account/page.tsx",
+      "src/app/service/page.tsx",
+      "src/app/service/_components/service-request-form.tsx",
+    ];
+    const nestedViolations = coveredPublicSurfaces.flatMap((sourcePath) =>
+      findNestedCardLines(read(sourcePath)).map(
+        (line) => `${sourcePath}:${line}`,
+      ),
+    );
+
+    expect(nestedViolations).toEqual([]);
+    expect(coveredPublicSurfaces.map((sourcePath) => read(sourcePath))).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("product-card-shell"),
+        expect.stringContaining("checkout-empty-cart"),
+        expect.stringContaining("account-wishlist"),
+        expect.stringContaining("service-request-form"),
+      ]),
+    );
+  });
 });
 
 function findNestedCardLines(source: string) {

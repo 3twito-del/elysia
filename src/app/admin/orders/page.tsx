@@ -344,7 +344,10 @@ export default async function AdminOrdersPage({
                     </TableCell>
                     <TableCell>
                       <Button asChild size="sm" variant="outline">
-                        <Link href={`/admin/orders/${order.id}`}>
+                        <Link
+                          aria-label={`טיפול מקומי בהזמנה ${order.id}`}
+                          href={`/admin/orders/${order.id}`}
+                        >
                           טיפול מקומי
                         </Link>
                       </Button>
@@ -435,6 +438,9 @@ export default async function AdminOrdersPage({
                       {order.adminUrl ? (
                         <Button asChild size="sm" variant="outline">
                           <Link
+                            aria-label={`פתיחה ב-Shopify להזמנה ${
+                              order.shopifyOrderName ?? order.shopifyOrderId
+                            }`}
                             href={order.adminUrl}
                             rel="noreferrer"
                             target="_blank"

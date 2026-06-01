@@ -50,9 +50,18 @@ describe("customer privacy export route", () => {
     const unauthenticated = await GET();
 
     expect(unauthenticated.status).toBe(401);
+    expect(unauthenticated.headers.get("Cache-Control")).toBe("no-store");
+    expect(unauthenticated.headers.get("Link")).toBe('</account>; rel="login"');
+    expect(unauthenticated.headers.get("X-Content-Type-Options")).toBe(
+      "nosniff",
+    );
     await expect(unauthenticated.json()).resolves.toEqual({
       ok: false,
       error: "Unauthorized.",
+      recovery: {
+        href: "/account",
+        rel: "account-sign-in",
+      },
     });
     expect(dbMocks.customerFindUnique).not.toHaveBeenCalled();
 
@@ -66,6 +75,14 @@ describe("customer privacy export route", () => {
     const admin = await GET();
 
     expect(admin.status).toBe(401);
+    await expect(admin.json()).resolves.toEqual({
+      ok: false,
+      error: "Unauthorized.",
+      recovery: {
+        href: "/account",
+        rel: "account-sign-in",
+      },
+    });
     expect(dbMocks.customerFindUnique).not.toHaveBeenCalled();
   });
 

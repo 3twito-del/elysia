@@ -4,6 +4,7 @@ import { db } from "~/server/db";
 import { shouldFallbackToCatalogFixturesOnDatabaseError } from "~/server/services/catalog-fixtures";
 
 export type HealthChecks = Awaited<ReturnType<typeof createHealthChecks>>;
+export type HealthReadinessReport = ReturnType<typeof getHealthReadinessReport>;
 
 export async function createHealthChecks() {
   const isVercelPreview = process.env.VERCEL_ENV === "preview";
@@ -47,6 +48,45 @@ export async function createHealthChecks() {
 
 export function getHealthOk(checks: HealthChecks) {
   return Object.values(checks).every(
+    (status) => !["down", "missing", "missing-secret"].includes(status),
+  );
+}
+
+export function getHealthReadinessReport(checks: HealthChecks) {
+  const appChecks = {
+    database: checks.database,
+    email: checks.email,
+    jobs: checks.jobs,
+  };
+  const optionalProviderChecks = {
+    payment: checks.payment,
+    search: checks.search,
+    shopifyDropship: checks.shopifyDropship,
+  };
+  const appOk = areHealthStatusesOk(Object.values(appChecks));
+  const optionalProvidersOk = areHealthStatusesOk(
+    Object.values(optionalProviderChecks),
+  );
+
+  return {
+    app: {
+      checks: appChecks,
+      ok: appOk,
+      status: appOk ? "ready" : "blocked",
+    },
+    optionalProviders: {
+      checks: optionalProviderChecks,
+      ok: optionalProvidersOk,
+      status: optionalProvidersOk ? "ready-or-disabled" : "blocked",
+    },
+    overall: {
+      ok: getHealthOk(checks),
+    },
+  };
+}
+
+function areHealthStatusesOk(statuses: string[]) {
+  return statuses.every(
     (status) => !["down", "missing", "missing-secret"].includes(status),
   );
 }

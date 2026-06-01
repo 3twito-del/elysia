@@ -16,18 +16,23 @@ describe("service attachment UX", () => {
     expect(form).toContain(
       "aria-describedby={`${attachmentGuidanceId} ${attachmentOfflineGuidanceId}`}",
     );
+    expect(form).toContain("getServiceRequestAttachmentPolicy");
     expect(form).toContain(
-      'accept={serviceRequestAcceptedFileTypes.join(",")}',
+      'accept={attachmentPolicy.acceptedFileTypes.join(",")}',
     );
-    expect(form).toContain("maxServiceRequestFiles");
-    expect(form).toContain("maxFileSizeMb");
-    expect(form).toContain("attachmentAcceptedFileTypeLabel");
+    expect(form).toContain("attachmentPolicy.maxFiles");
+    expect(form).toContain("attachmentPolicy.maxFileSizeMb");
+    expect(form).toContain("attachmentPolicy.acceptedFileTypeLabel");
 
     expect(validation).toContain('"image/jpeg"');
     expect(validation).toContain('"image/png"');
     expect(validation).toContain('"image/webp"');
     expect(validation).toContain('"image/gif"');
     expect(validation).toContain('"application/pdf"');
+    expect(validation).toContain(
+      'serviceRequestAcceptedFileTypeLabel = "JPG, PNG, WebP, GIF או PDF"',
+    );
+    expect(validation).toContain("getServiceRequestAttachmentPolicy");
     expect(validation).toContain("maxServiceRequestFiles = 5");
     expect(validation).toContain("10 * 1024 * 1024");
   });

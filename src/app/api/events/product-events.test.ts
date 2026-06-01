@@ -132,6 +132,77 @@ describe("product analytics routes", () => {
     expect(dbMocks.productFindUnique).not.toHaveBeenCalled();
     expect(dbMocks.productClickCreate).not.toHaveBeenCalled();
   });
+
+  it("records repeated product-view events as separate analytics observations", async () => {
+    dbMocks.productFindUnique.mockResolvedValue({ id: "product_1" });
+    const body = {
+      path: "/product/venus-line-ring",
+      productSlug: "venus-line-ring",
+      sessionKey: "session-key-123456789",
+    };
+
+    await expect(
+      postProductView(createJsonRequest("/api/events/product-view", body)),
+    ).resolves.toMatchObject({ status: 200 });
+    await expect(
+      postProductView(createJsonRequest("/api/events/product-view", body)),
+    ).resolves.toMatchObject({ status: 200 });
+
+    expect(dbMocks.productFindUnique).toHaveBeenCalledTimes(2);
+    expect(dbMocks.productViewCreate).toHaveBeenCalledTimes(2);
+    expect(dbMocks.productViewCreate).toHaveBeenNthCalledWith(1, {
+      data: {
+        customerId: undefined,
+        path: "/product/venus-line-ring",
+        productId: "product_1",
+        sessionKey: "session-key-123456789",
+      },
+    });
+    expect(dbMocks.productViewCreate).toHaveBeenNthCalledWith(2, {
+      data: {
+        customerId: undefined,
+        path: "/product/venus-line-ring",
+        productId: "product_1",
+        sessionKey: "session-key-123456789",
+      },
+    });
+  });
+
+  it("records repeated product-click events as separate analytics observations", async () => {
+    dbMocks.productFindUnique.mockResolvedValue({ id: "product_1" });
+    const body = {
+      position: 2,
+      productSlug: "venus-line-ring",
+      query: "rings",
+      sessionKey: "session-key-123456789",
+    };
+
+    await expect(
+      postProductClick(createJsonRequest("/api/events/product-click", body)),
+    ).resolves.toMatchObject({ status: 200 });
+    await expect(
+      postProductClick(createJsonRequest("/api/events/product-click", body)),
+    ).resolves.toMatchObject({ status: 200 });
+
+    expect(dbMocks.productFindUnique).toHaveBeenCalledTimes(2);
+    expect(dbMocks.productClickCreate).toHaveBeenCalledTimes(2);
+    expect(dbMocks.productClickCreate).toHaveBeenNthCalledWith(1, {
+      data: {
+        position: 2,
+        productId: "product_1",
+        query: "rings",
+        sessionKey: "session-key-123456789",
+      },
+    });
+    expect(dbMocks.productClickCreate).toHaveBeenNthCalledWith(2, {
+      data: {
+        position: 2,
+        productId: "product_1",
+        query: "rings",
+        sessionKey: "session-key-123456789",
+      },
+    });
+  });
 });
 
 function createProductViewRequest() {
@@ -142,5 +213,13 @@ function createProductViewRequest() {
       "x-forwarded-for": "203.0.113.20",
     },
     body: "{}",
+  });
+}
+
+function createJsonRequest(pathname: string, body: unknown) {
+  return new Request(`http://localhost${pathname}`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(body),
   });
 }

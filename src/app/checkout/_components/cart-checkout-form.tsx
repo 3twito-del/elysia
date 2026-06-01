@@ -86,6 +86,11 @@ const checkoutEmptyLinks = [
     text: "שרשראות לפי אורך, חומר ושימוש.",
   },
   {
+    href: "/gifts",
+    label: "מתנות",
+    text: "בחירות לפי מחיר, אירוע או סגנון.",
+  },
+  {
     href: "/service",
     label: "לקבלת ייעוץ",
     text: "עזרה בבחירה, מידה או הקדשה.",

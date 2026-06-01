@@ -5,10 +5,12 @@ const dbMocks = vi.hoisted(() => ({
   cartUpdate: vi.fn(),
   cartItemUpdate: vi.fn(),
   couponFindUnique: vi.fn(),
+  transaction: vi.fn(),
 }));
 
 vi.mock("~/server/db", () => ({
   db: {
+    $transaction: dbMocks.transaction,
     cart: {
       findFirst: dbMocks.cartFindFirst,
       update: dbMocks.cartUpdate,
@@ -23,7 +25,9 @@ vi.mock("~/server/db", () => ({
 }));
 
 import {
+  addCartItem,
   getCartBySession,
+  mergeGuestCartToCustomer,
   updateCartItemQuantity,
   updateCartOptions,
 } from "./cart";
@@ -246,6 +250,104 @@ describe("cart service", () => {
     expect(summary?.itemCount).toBe(3);
     expect(summary?.totals.subtotal).toBe(1500);
   });
+
+  it("rejects malformed cart session keys before reading cart state", async () => {
+    await expect(getCartBySession("short")).rejects.toThrow();
+    await expect(
+      updateCartOptions({
+        fulfillmentMethod: "DELIVERY",
+        sessionKey: "short",
+      }),
+    ).rejects.toThrow();
+
+    expect(dbMocks.cartFindFirst).not.toHaveBeenCalled();
+  });
+
+  it("merges guest carts to a customer with merge metadata", async () => {
+    dbMocks.cartFindFirst.mockResolvedValueOnce(makeCart({ id: "guest_cart" }));
+    dbMocks.cartUpdate.mockResolvedValueOnce(
+      makeCart({
+        customerId: "customer_1",
+        id: "guest_cart",
+        mergeMetadata: {
+          mergedAt: "2026-06-01T00:00:00.000Z",
+          mergedFromSessionKey: "session-key-123456789",
+        },
+      }),
+    );
+
+    const summary = await mergeGuestCartToCustomer({
+      customerId: "customer_1",
+      sessionKey: "session-key-123456789",
+    });
+    const updateInput = getFirstMockArg(dbMocks.cartUpdate) as {
+      data: {
+        customerId: string;
+        mergeMetadata: {
+          mergedAt: string;
+          mergedFromSessionKey: string;
+        };
+      };
+      where: { id: string };
+    };
+
+    expect(updateInput.where).toEqual({ id: "guest_cart" });
+    expect(updateInput.data.customerId).toBe("customer_1");
+    expect(updateInput.data.mergeMetadata.mergedFromSessionKey).toBe(
+      "session-key-123456789",
+    );
+    expect(
+      new Date(updateInput.data.mergeMetadata.mergedAt).toString(),
+    ).not.toBe("Invalid Date");
+    expect(summary?.sessionKey).toBe("session-key-123456789");
+  });
+
+  it("increments an existing cart line instead of creating duplicate variant rows", async () => {
+    const tx = makeCartTransaction();
+    dbMocks.transaction.mockImplementationOnce(async (callback: unknown) => {
+      const transactionCallback = callback as (
+        txClient: ReturnType<typeof makeCartTransaction>,
+      ) => Promise<unknown>;
+
+      return transactionCallback(tx);
+    });
+    tx.cart.findFirst.mockResolvedValueOnce(makeCart({ id: "cart_1" }));
+    tx.productVariant.findUnique.mockResolvedValueOnce({
+      id: "variant_1",
+      priceDelta: 0,
+      prices: [{ amount: 500 }],
+      product: {
+        basePrice: 500,
+        status: "ACTIVE",
+      },
+    });
+    tx.cartItem.findFirst.mockResolvedValueOnce({
+      branchId: null,
+      cartId: "cart_1",
+      id: "item_1",
+      variantId: "variant_1",
+    });
+    tx.cartFindUniqueOrThrowResult = makeCart({
+      id: "cart_1",
+      items: [makeCartItem({ id: "item_1", quantity: 3, unitPrice: 500 })],
+    });
+
+    const summary = await addCartItem({
+      quantity: 2,
+      sessionKey: "session-key-123456789",
+      variantSku: "RING-VENUS",
+    });
+
+    expect(tx.cartItem.update).toHaveBeenCalledWith({
+      data: {
+        quantity: { increment: 2 },
+        unitPrice: 500,
+      },
+      where: { id: "item_1" },
+    });
+    expect(tx.cartItem.create).not.toHaveBeenCalled();
+    expect(summary.itemCount).toBe(3);
+  });
 });
 
 function makeCart(overrides: Record<string, unknown> = {}) {
@@ -303,4 +405,28 @@ function makeCartItem(
     },
     variantId: "variant_1",
   };
+}
+
+function makeCartTransaction() {
+  const tx = {
+    branch: {
+      findUnique: vi.fn(),
+    },
+    cart: {
+      create: vi.fn(),
+      findFirst: vi.fn(),
+      findUniqueOrThrow: vi.fn(async () => tx.cartFindUniqueOrThrowResult),
+    },
+    cartFindUniqueOrThrowResult: makeCart(),
+    cartItem: {
+      create: vi.fn(),
+      findFirst: vi.fn(),
+      update: vi.fn(),
+    },
+    productVariant: {
+      findUnique: vi.fn(),
+    },
+  };
+
+  return tx;
 }

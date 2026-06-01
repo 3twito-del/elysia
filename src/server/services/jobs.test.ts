@@ -7,6 +7,7 @@ import {
   getPublicOutboxJobFailureMessage,
   redactJobRecipient,
 } from "./jobs";
+import { getOutboxRetryAvailableAt, getOutboxRetryDelayMs } from "./outbox";
 
 describe("outbox job helpers", () => {
   it("extracts string and numeric payload values", () => {
@@ -58,6 +59,46 @@ describe("outbox job helpers", () => {
     );
     expect(getPublicOutboxJobFailureMessage("unknown.event")).toBe(
       "Outbox job failed. It will retry when the processor is available.",
+    );
+  });
+
+  it("keeps failed outbox retries bounded and jittered by event id", () => {
+    const firstDelay = getOutboxRetryDelayMs({
+      attempts: 1,
+      seed: "outbox_event_1",
+    });
+    const sameFirstDelay = getOutboxRetryDelayMs({
+      attempts: 1,
+      seed: "outbox_event_1",
+    });
+    const otherFirstDelay = getOutboxRetryDelayMs({
+      attempts: 1,
+      seed: "outbox_event_2",
+    });
+    const laterDelay = getOutboxRetryDelayMs({
+      attempts: 6,
+      seed: "outbox_event_1",
+    });
+
+    expect(firstDelay).toBe(sameFirstDelay);
+    expect(firstDelay).not.toBe(otherFirstDelay);
+    expect(firstDelay).toBeGreaterThanOrEqual(2 * 60_000);
+    expect(firstDelay).toBeLessThan(3 * 60_000);
+    expect(laterDelay).toBeLessThanOrEqual(60 * 60_000);
+    expect(laterDelay).toBeGreaterThan(firstDelay);
+  });
+
+  it("calculates retry timestamps from the provided clock", () => {
+    const now = new Date("2026-06-01T10:00:00.000Z");
+    const retryAt = getOutboxRetryAvailableAt({
+      attempts: 2,
+      now,
+      seed: "outbox_event_1",
+    });
+
+    expect(retryAt.getTime()).toBe(
+      now.getTime() +
+        getOutboxRetryDelayMs({ attempts: 2, seed: "outbox_event_1" }),
     );
   });
 });

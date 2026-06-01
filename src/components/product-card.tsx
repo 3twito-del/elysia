@@ -124,7 +124,7 @@ export function ProductCard({
               <h3
                 className="ui-text-slot product-card-title group-hover/product-link:text-muted-foreground group-focus-visible/product-link:text-muted-foreground text-base font-medium transition-colors duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)] [--ui-text-slot-line-height:1.45rem]"
                 data-lines="2"
-                dir="rtl"
+                dir="auto"
               >
                 {product.name}
               </h3>

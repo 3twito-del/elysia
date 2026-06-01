@@ -77,6 +77,14 @@ describe("product recommendation rail return context", () => {
     expect(recentlyViewed).toContain(
       'className="border-border mx-auto mt-9 max-w-7xl border-t pt-7"',
     );
+    expect(recentlyViewed).toContain("ui-equal-grid mt-5 grid gap-4");
+    expect(recentlyViewed).toContain(
+      'data-layout-equal-group="recently-viewed-products"',
+    );
+    expect(productPage).toContain("ui-equal-grid mt-5 grid gap-4");
+    expect(productPage).toContain(
+      "data-layout-equal-group={`product-recommendation-${rail.id}`}",
+    );
     expect(recentlyViewed).not.toContain("max-w-[96rem]");
   });
 });

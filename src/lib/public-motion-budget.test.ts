@@ -108,6 +108,47 @@ describe("public motion budget", () => {
     expect(productCardSource).toContain("function StaticKineticImageFrame");
     expect(productCardSource).toContain('data-motion-scope="static"');
   });
+
+  it("keeps reduced-motion inventory explicit for hero, cards, route transitions, and feedback", () => {
+    const css = read("src/styles/globals.css");
+    const productGallerySource = read(
+      "src/app/product/[slug]/_components/product-gallery.tsx",
+    );
+    const purchasePanelSource = read(
+      "src/app/product/[slug]/_components/product-purchase-panel.tsx",
+    );
+    const productCardSource = read("src/components/product-card.tsx");
+
+    for (const selector of [
+      ".public-motion-shell",
+      ".motion-reveal",
+      ".motion-reveal-item",
+      ".motion-media-frame",
+      ".motion-media-content",
+      ".motion-hero-copy",
+      ".motion-copy-item",
+      ".motion-status-pop",
+      ".motion-sticky-purchase",
+      ".motion-thumbnail-button",
+    ]) {
+      expect(css).toContain(selector);
+    }
+
+    expect(css).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(css).toContain("animation: none !important;");
+    expect(css).toContain("transition: none !important;");
+    expect(productGallerySource).toContain("useResolvedReducedMotion");
+    expect(productGallerySource).toContain(
+      "duration: shouldReduceMotion ? 0 : 0.38",
+    );
+    expect(productGallerySource).toContain(
+      "initial={shouldReduceMotion ? false : { opacity: 0, scale: 1.006 }}",
+    );
+    expect(purchasePanelSource).toContain("motion-status-pop");
+    expect(purchasePanelSource).toContain("motion-sticky-purchase");
+    expect(productCardSource).toContain('data-motion-reduced="true"');
+    expect(productCardSource).toContain('data-motion-scope="static"');
+  });
 });
 
 function read(relativePath: string) {

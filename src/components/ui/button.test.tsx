@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
@@ -39,4 +41,38 @@ describe("Button", () => {
     expect(markup).not.toContain("bg-background");
     expect(markup).not.toContain("text-foreground");
   });
+
+  it("keeps modal-like surfaces on Radix focus management with named close controls", () => {
+    const dialog = read("src/components/ui/dialog.tsx");
+    const sheet = read("src/components/ui/sheet.tsx");
+    const searchControls = read(
+      "src/app/search/_components/search-controls.tsx",
+    );
+
+    expect(dialog).toContain("DialogPrimitive.Root");
+    expect(dialog).toContain("DialogPrimitive.Content");
+    expect(dialog).toContain(
+      'DialogPrimitive.Close data-slot="dialog-close" asChild',
+    );
+    expect(dialog).toContain('<span className="sr-only">');
+    expect(dialog).not.toContain("onKeyDown");
+
+    expect(sheet).toContain("SheetPrimitive.Root");
+    expect(sheet).toContain("onOpenChange={handleOpenChange}");
+    expect(sheet).toContain("SheetPrimitive.Trigger");
+    expect(sheet).toContain("SheetPrimitive.Content");
+    expect(sheet).toContain(
+      'SheetPrimitive.Close data-slot="sheet-close" asChild',
+    );
+    expect(sheet).toContain("useHydrated()");
+
+    expect(searchControls).toContain('event.key === "Escape"');
+    expect(searchControls).toContain("closeList({ focusTrigger: true })");
+  });
 });
+
+const root = process.cwd();
+
+function read(relativePath: string) {
+  return readFileSync(path.join(root, relativePath), "utf8");
+}

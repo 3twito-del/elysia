@@ -1,11 +1,37 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import {
+  getAddToCartFailureMessage,
   getPurchaseConfidenceItems,
   getVariantButtonLabel,
   getVariantStatusLabel,
   isVariantSelectableForCart,
 } from "./product-purchase-utils";
+
+it("maps add-to-cart failures to customer-safe recovery copy", () => {
+  expect(
+    getAddToCartFailureMessage({
+      message: "Inventory reservation failed for variant abc",
+    }),
+  ).toBe(
+    "ההתאמה הזו אינה זמינה כרגע. אפשר לבחור התאמה אחרת או לפנות לשירות האישי.",
+  );
+  expect(
+    getAddToCartFailureMessage({
+      message: "Quantity limit exceeded",
+    }),
+  ).toBe(
+    "לא ניתן להוסיף את הכמות הזו לסל. אפשר לנסות כמות אחרת או לפנות לשירות.",
+  );
+  expect(
+    getAddToCartFailureMessage({
+      message: "database connection timeout",
+    }),
+  ).toBe("לא הצלחנו להוסיף לסל כרגע. הבחירה נשארה בעמוד ואפשר לנסות שוב.");
+});
 
 const baseVariant = {
   availableBranchCount: 0,
@@ -43,6 +69,12 @@ describe("product purchase utilities", () => {
   });
 
   it("keeps owned zero-stock variants on the service inquiry path", () => {
+    const buttonLabel = getVariantButtonLabel(
+      baseVariant,
+      "READY_TO_ORDER",
+      "OWN",
+    );
+
     expect(
       isVariantSelectableForCart({
         availabilityMode: "READY_TO_ORDER",
@@ -50,6 +82,8 @@ describe("product purchase utilities", () => {
         variant: baseVariant,
       }),
     ).toBe(false);
+    expect(buttonLabel).not.toMatch(/\b0\b.*(?:available|stock|inventory)/i);
+    expect(buttonLabel).not.toContain("availableQuantity");
     expect(
       getVariantStatusLabel({
         availabilityMode: "READY_TO_ORDER",
@@ -57,6 +91,25 @@ describe("product purchase utilities", () => {
         variant: baseVariant,
       }),
     ).toBe("בירור התאמה");
+  });
+
+  it("keeps unavailable PDP variant controls disabled without exposing stock", () => {
+    const panel = readFileSync(
+      path.join(
+        process.cwd(),
+        "src/app/product/[slug]/_components/product-purchase-panel.tsx",
+      ),
+      "utf8",
+    );
+
+    expect(panel).toContain("selectedVariantAvailable");
+    expect(panel).toContain("addToCartDisabled");
+    expect(panel).toContain("disabled={addToCartDisabled}");
+    expect(panel).toContain("!selectedVariantAvailable");
+    expect(panel).toContain("variant.availableQuantity <= 0");
+    expect(panel).toContain("commerceStatus.ctaLabel");
+    expect(panel).not.toContain("selectedVariantQuantity}");
+    expect(panel).not.toContain("availableQuantity}");
   });
 
   it("summarizes Shopify checkout expectations without public stock precision", () => {
