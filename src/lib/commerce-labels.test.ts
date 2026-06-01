@@ -75,7 +75,7 @@ describe("commerce labels", () => {
     ).toMatchObject({
       canAddToCart: true,
       cardCtaLabel: "לפרטי התכשיט",
-      ctaLabel: "צירוף לבחירה",
+      ctaLabel: "הוספה לסל",
       label: "זמין",
     });
     expect(

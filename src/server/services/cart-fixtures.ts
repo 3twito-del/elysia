@@ -83,7 +83,7 @@ export function addFixtureCartItem(input: {
   if (!Number.isFinite(variant.price) || variant.price <= 0) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "פרטי המחיר דורשים אישור לפני צירוף לבחירה.",
+      message: "פרטי המחיר דורשים אישור לפני הוספה לסל.",
     });
   }
 

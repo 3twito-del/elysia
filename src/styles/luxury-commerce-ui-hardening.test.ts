@@ -33,7 +33,7 @@ describe("luxury commerce UI hardening", () => {
     expect(source).toContain('data-icon-tooltip="חיפוש"');
     expect(source).toContain('data-icon-tooltip="שירות"');
     expect(source).toContain('data-icon-tooltip="אזור אישי"');
-    expect(source).toContain('data-icon-tooltip="הבחירה שלי"');
+    expect(source).toContain('data-icon-tooltip="סל קניות"');
     expect(read("src/styles/globals.css")).toContain(
       "[data-icon-tooltip]::after",
     );
@@ -189,6 +189,8 @@ describe("luxury commerce UI hardening", () => {
     expect(favorite).not.toContain("shadow-[0_8px");
     expect(favorite).not.toContain("brand-aqua-soft");
     expect(favorite).toContain('variant="ghost"');
+    expect(favorite).toContain('data-icon-tooltip-placement="bottom"');
+    expect(favorite).toContain("product-card-favorite-status");
     expect(productCard).toContain("product-card-shell");
     expect(productCard).toContain("border-0");
     expect(productCard).toContain("shadow-none");

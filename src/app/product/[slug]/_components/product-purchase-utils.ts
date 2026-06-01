@@ -119,11 +119,11 @@ export function getPurchaseConfidenceItems(input: {
     },
     {
       description: input.sizeKind
-        ? "מדריך המידות והמידה השמורה זמינים לפני צירוף לבחירה."
+        ? "מדריך המידות והמידה השמורה זמינים לפני הוספה לסל."
         : "אפשר לקבל ייעוץ התאמה לפני השלמת ההזמנה.",
       icon: "fit",
       key: "fit",
-      title: input.sizeKind ? "מידה לפני צירוף" : "התאמה לפני צירוף",
+      title: input.sizeKind ? "מידה לפני הוספה" : "התאמה לפני הוספה",
     },
     {
       description: getServiceConfidenceDescription(input),

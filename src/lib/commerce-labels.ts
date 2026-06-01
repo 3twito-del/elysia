@@ -205,7 +205,7 @@ export function getPublicProductCommerceStatus({
   return {
     canAddToCart: true,
     cardCtaLabel: "לפרטי התכשיט",
-    ctaLabel: "צירוף לבחירה",
+    ctaLabel: "הוספה לסל",
     label: "זמין",
     serviceReason: "ready",
   } as const;

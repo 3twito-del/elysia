@@ -66,6 +66,19 @@ describe("product recommendation rail return context", () => {
     expect(railBlock).not.toContain("limited");
     expect(railBlock).not.toContain("urgent");
   });
+
+  it("keeps recently viewed cards aligned to the same PDP rail width", () => {
+    const productPage = read("src/app/product/[slug]/page.tsx");
+    const recentlyViewed = read(
+      "src/app/product/[slug]/_components/recently-viewed-products.tsx",
+    );
+
+    expect(productPage).toContain('className="mx-auto mt-10 grid max-w-7xl');
+    expect(recentlyViewed).toContain(
+      'className="border-border mx-auto mt-9 max-w-7xl border-t pt-7"',
+    );
+    expect(recentlyViewed).not.toContain("max-w-[96rem]");
+  });
 });
 
 function read(relativePath: string) {

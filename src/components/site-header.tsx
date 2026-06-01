@@ -205,7 +205,7 @@ export function SiteHeader() {
               variant="ghost"
             >
               <CartCountLink
-                data-icon-tooltip="הבחירה שלי"
+                data-icon-tooltip="סל קניות"
                 data-icon-tooltip-placement="bottom"
               />
             </Button>

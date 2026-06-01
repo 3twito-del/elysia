@@ -135,7 +135,7 @@ export async function addCartItem(
     if (!Number.isFinite(unitPrice) || unitPrice <= 0) {
       throw new TRPCError({
         code: "BAD_REQUEST",
-        message: "פרטי המחיר דורשים אישור לפני צירוף לבחירה.",
+        message: "פרטי המחיר דורשים אישור לפני הוספה לסל.",
       });
     }
 

@@ -89,12 +89,8 @@ test.describe("critical shopping flows", () => {
       );
     }
 
-    await page
-      .getByRole("button", { exact: true, name: "צירוף לבחירה" })
-      .click();
-    await expect(
-      page.getByText(/צורפה לבחירה|התכשיט צורף לבחירה/),
-    ).toBeVisible();
+    await page.getByRole("button", { exact: true, name: "הוספה לסל" }).click();
+    await expect(page.getByText(/נוספה לסל|התכשיט נוסף לסל/)).toBeVisible();
     await expect(
       page.locator("a[href='/checkout'] .cart-count-badge"),
     ).toHaveText("1");

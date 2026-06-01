@@ -157,8 +157,8 @@ export function ProductPurchasePanel({
       setCartMessageTone("success");
       setCartMessage(
         addedVariant?.size
-          ? `${addedVariant.size} צורפה לבחירה`
-          : "התכשיט צורף לבחירה",
+          ? `מידה ${addedVariant.size} נוספה לסל`
+          : "התכשיט נוסף לסל",
       );
       dispatchCartUpdated();
     },
@@ -245,7 +245,7 @@ export function ProductPurchasePanel({
     })
       .then(() => {
         setCartMessageTone("success");
-        setCartMessage("התכשיט נשמר לסנכרון ויצורף לבחירה כשהחיבור יתחדש.");
+        setCartMessage("התכשיט נשמר לסנכרון ויתווסף לסל כשהחיבור יתחדש.");
         dispatchCartUpdated();
       })
       .catch(() => {
@@ -271,7 +271,7 @@ export function ProductPurchasePanel({
       })
         .then(() => {
           setCartMessageTone("success");
-          setCartMessage("התכשיט נשמר לסנכרון ויצורף לבחירה כשהחיבור יתחדש.");
+          setCartMessage("התכשיט נשמר לסנכרון ויתווסף לסל כשהחיבור יתחדש.");
           dispatchCartUpdated();
         })
         .catch(() => {
@@ -306,7 +306,7 @@ export function ProductPurchasePanel({
         {selectedVariantAvailable ? (
           <Button
             aria-describedby="product-variant-feedback"
-            aria-label={`צירוף לבחירה: ${productName}`}
+            aria-label={`הוספה לסל: ${productName}`}
             className="product-primary-cta order-1"
             data-testid="product-sticky-add-to-cart-button"
             disabled={addToCartDisabled}
@@ -314,9 +314,9 @@ export function ProductPurchasePanel({
             type="button"
           >
             {addItem.isPending
-              ? "צירוף לבחירה"
+              ? "מוסיפים לסל"
               : selectedVariantAvailable
-                ? "צירוף לבחירה"
+                ? "הוספה לסל"
                 : "לא פנוי כרגע"}
             <PackageCheck aria-hidden="true" className="size-4" />
           </Button>
@@ -442,9 +442,9 @@ export function ProductPurchasePanel({
               type="button"
             >
               {addItem.isPending
-                ? "צירוף לבחירה"
+                ? "מוסיפים לסל"
                 : selectedVariantAvailable
-                  ? "צירוף לבחירה"
+                  ? "הוספה לסל"
                   : "לא פנוי כרגע"}
               <PackageCheck aria-hidden="true" className="size-4" />
             </Button>
@@ -515,7 +515,7 @@ export function ProductPurchasePanel({
             </StatusMessage>
             {cartMessageTone === "success" ? (
               <Button asChild size="sm" variant="secondary">
-                <Link href="/checkout">לסיכום הבחירה</Link>
+                <Link href="/checkout">לסל הקניות</Link>
               </Button>
             ) : null}
           </div>

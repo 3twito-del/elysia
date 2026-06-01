@@ -15,6 +15,7 @@ import {
 } from "~/server/services/rate-limit";
 
 export type PublicActionState = {
+  code?: "AUTH_REQUIRED";
   ok?: boolean;
   message?: string;
 };
@@ -82,8 +83,9 @@ export async function saveWishlistItem(
 
   if (!session?.user?.id || session.user.adminUserId) {
     return {
+      code: "AUTH_REQUIRED",
       ok: false,
-      message: "יש להתחבר לאזור הלקוח כדי לשמור בחירה.",
+      message: "אפשר לשמור במועדפים גם בלי התחברות.",
     };
   }
 

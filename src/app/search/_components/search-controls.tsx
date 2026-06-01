@@ -1,8 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Check, Search, SlidersHorizontal } from "lucide-react";
-import type { ReactNode } from "react";
+import { Check, ChevronDown, Search, SlidersHorizontal } from "lucide-react";
+import {
+  useId,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react";
 
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -29,8 +35,7 @@ type SearchControlsProps = {
   viewMode: "grid" | "list";
 };
 
-const searchSelectClassName =
-  "glass-control h-11 w-full min-w-0 rounded-md border px-3 text-sm outline-none transition-colors focus-visible:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]";
+const publicSelectEmptyValue = "__elysia_empty_selection__";
 
 export function SearchControls({
   activeFilterCount,
@@ -206,6 +211,7 @@ function PrimarySearchFields({
         </div>
       </SearchControlField>
       <SearchSelectField
+        key={`category-${input.category ?? ""}`}
         label="קטגוריה"
         name="category"
         options={categories.map((category) => ({
@@ -227,6 +233,7 @@ function PrimarySearchFields({
         />
       </SearchControlField>
       <SearchSelectField
+        key={`sort-${input.sort ?? "relevance"}`}
         label="מיון"
         name="sort"
         options={[
@@ -253,6 +260,7 @@ function FacetSearchFields({
   return (
     <>
       <SearchSelectField
+        key={`material-${input.material ?? ""}`}
         label="חומר"
         name="material"
         options={facets.materials.map((material) => ({
@@ -263,6 +271,7 @@ function FacetSearchFields({
         value={input.material}
       />
       <SearchSelectField
+        key={`stone-${input.stone ?? ""}`}
         label="אבן"
         name="stone"
         options={facets.stones.map((stone) => ({
@@ -273,6 +282,7 @@ function FacetSearchFields({
         value={input.stone}
       />
       <SearchSelectField
+        key={`collection-${input.collection ?? ""}`}
         label="קולקציה"
         name="collection"
         options={facets.collections.map((collection) => ({
@@ -299,22 +309,180 @@ function SearchSelectField({
   placeholder: string;
   value?: string;
 }) {
+  const listboxId = useId();
+  const normalizedValue = value ?? "";
+  const optionRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const [currentValue, setCurrentValue] = useState(normalizedValue);
+  const [isOpen, setIsOpen] = useState(false);
+  const selectedValue = currentValue || publicSelectEmptyValue;
+  const showPlaceholderItem = !options.some(
+    (option) => option.label === placeholder,
+  );
+  const selectOptions = [
+    ...(showPlaceholderItem
+      ? [{ label: placeholder, value: publicSelectEmptyValue }]
+      : []),
+    ...options,
+  ];
+  const selectedIndex = Math.max(
+    0,
+    selectOptions.findIndex((option) => option.value === selectedValue),
+  );
+  const selectedLabel =
+    selectOptions.find((option) => option.value === selectedValue)?.label ??
+    placeholder;
+
+  function focusOption(index: number) {
+    window.requestAnimationFrame(() => {
+      optionRefs.current[index]?.focus();
+    });
+  }
+
+  function openList(index = selectedIndex) {
+    setIsOpen(true);
+    focusOption(index);
+  }
+
+  function closeList({ focusTrigger = false } = {}) {
+    setIsOpen(false);
+
+    if (focusTrigger) {
+      window.requestAnimationFrame(() => {
+        triggerRef.current?.focus();
+      });
+    }
+  }
+
+  function selectValue(nextValue: string) {
+    setCurrentValue(nextValue === publicSelectEmptyValue ? "" : nextValue);
+    closeList({ focusTrigger: true });
+  }
+
+  function handleTriggerKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
+    if (
+      event.key === "ArrowDown" ||
+      event.key === "Enter" ||
+      event.key === " "
+    ) {
+      event.preventDefault();
+      openList();
+      return;
+    }
+
+    if (event.key === "Escape") {
+      closeList();
+    }
+  }
+
+  function handleListKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    const activeIndex = optionRefs.current.findIndex(
+      (option) => option === document.activeElement,
+    );
+    const currentIndex = activeIndex >= 0 ? activeIndex : selectedIndex;
+    const lastIndex = selectOptions.length - 1;
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeList({ focusTrigger: true });
+      return;
+    }
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      focusOption(currentIndex === lastIndex ? 0 : currentIndex + 1);
+      return;
+    }
+
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      focusOption(currentIndex === 0 ? lastIndex : currentIndex - 1);
+      return;
+    }
+
+    if (event.key === "Home") {
+      event.preventDefault();
+      focusOption(0);
+      return;
+    }
+
+    if (event.key === "End") {
+      event.preventDefault();
+      focusOption(lastIndex);
+    }
+  }
+
   return (
     <SearchControlField label={label}>
-      <select
-        aria-label={label}
-        autoComplete="off"
-        className={searchSelectClassName}
-        defaultValue={value ?? ""}
-        name={name}
-      >
-        <option value="">{placeholder}</option>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+      <div className="public-select-shell">
+        <button
+          aria-label={label}
+          aria-controls={isOpen ? listboxId : undefined}
+          aria-expanded={isOpen}
+          aria-haspopup="listbox"
+          className="public-select-trigger"
+          data-testid={`public-select-trigger-${name}`}
+          data-state={isOpen ? "open" : "closed"}
+          onClick={() => {
+            if (isOpen) {
+              closeList();
+            } else {
+              openList();
+            }
+          }}
+          onKeyDown={handleTriggerKeyDown}
+          ref={triggerRef}
+          type="button"
+        >
+          <span data-public-select-value>{selectedLabel}</span>
+          <ChevronDown aria-hidden="true" className="size-4 shrink-0" />
+        </button>
+        {isOpen ? (
+          <button
+            aria-label="סגירת בחירה"
+            className="public-select-backdrop"
+            onClick={() => closeList()}
+            tabIndex={-1}
+            type="button"
+          />
+        ) : null}
+        {isOpen ? (
+          <div
+            aria-label={label}
+            className="public-select-content"
+            data-testid={`public-select-content-${name}`}
+            id={listboxId}
+            onKeyDown={handleListKeyDown}
+            role="listbox"
+            tabIndex={-1}
+          >
+            {selectOptions.map((option, index) => {
+              const isSelected = option.value === selectedValue;
+
+              return (
+                <button
+                  aria-selected={isSelected}
+                  className="public-select-option"
+                  data-highlighted={isSelected ? "" : undefined}
+                  key={option.value}
+                  onClick={() => selectValue(option.value)}
+                  ref={(node) => {
+                    optionRefs.current[index] = node;
+                  }}
+                  role="option"
+                  type="button"
+                >
+                  <span>{option.label}</span>
+                  {isSelected ? (
+                    <Check aria-hidden="true" className="size-3.5 shrink-0" />
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
+      </div>
+      <input name={name} type="hidden" value={currentValue} />
     </SearchControlField>
   );
 }
@@ -352,10 +520,10 @@ function SearchControlField({
   label: string;
 }) {
   return (
-    <label className="grid min-w-0 gap-1.5 text-sm">
+    <div className="grid min-w-0 gap-1.5 text-sm">
       <span className="text-muted-foreground text-xs">{label}</span>
       {children}
-    </label>
+    </div>
   );
 }
 

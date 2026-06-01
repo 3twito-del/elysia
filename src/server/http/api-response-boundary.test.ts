@@ -2,7 +2,7 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 
 const currentFile = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(currentFile), "../../..");
@@ -12,8 +12,15 @@ const sourceExtensions = new Set([".js", ".jsx", ".ts", ".tsx"]);
 const testFilePattern = /\.(test|spec)\.[jt]sx?$/;
 const forbiddenJsonCalls = ["Response.json(", "NextResponse.json("] as const;
 
+type SourceSnapshot = {
+  relativePath: string;
+  source: string;
+};
+
 describe("api response boundaries", () => {
-  it("keeps route JSON responses behind shared helpers", async () => {
+  let sources: SourceSnapshot[] = [];
+
+  beforeAll(async () => {
     const files = (
       await Promise.all(
         sourceRoots.map((sourceRoot) =>
@@ -22,15 +29,21 @@ describe("api response boundaries", () => {
       )
     ).flat();
 
+    sources = await Promise.all(
+      files.map(async (file) => ({
+        relativePath: toRepoPath(file),
+        source: await readFile(file, "utf8"),
+      })),
+    );
+  }, 15_000);
+
+  it("keeps route JSON responses behind shared helpers", () => {
     const violations = [];
 
-    for (const file of files) {
-      const relativePath = toRepoPath(file);
-
+    for (const { relativePath, source } of sources) {
       if (allowedResponseFiles.has(relativePath)) continue;
       if (testFilePattern.test(relativePath)) continue;
 
-      const source = await readFile(file, "utf8");
       const calls = forbiddenJsonCalls.filter((call) => source.includes(call));
 
       for (const call of calls) {
@@ -43,23 +56,12 @@ describe("api response boundaries", () => {
     expect(violations).toEqual([]);
   });
 
-  it("keeps error status responses out of success helpers", async () => {
-    const files = (
-      await Promise.all(
-        sourceRoots.map((sourceRoot) =>
-          listSourceFiles(path.join(repoRoot, sourceRoot)),
-        ),
-      )
-    ).flat();
-
+  it("keeps error status responses out of success helpers", () => {
     const violations = [];
 
-    for (const file of files) {
-      const relativePath = toRepoPath(file);
-
+    for (const { relativePath, source } of sources) {
       if (testFilePattern.test(relativePath)) continue;
 
-      const source = await readFile(file, "utf8");
       const calls = extractFunctionCalls(source, "okJson");
       const errorStatusCall = calls.find((call) =>
         /\bstatus\s*:\s*[45]\d\d\b/.test(call),
