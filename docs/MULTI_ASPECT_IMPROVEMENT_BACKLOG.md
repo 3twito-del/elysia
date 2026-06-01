@@ -2,7 +2,7 @@
 
 Status: active cross-product improvement tracker.
 
-Last reviewed: 2026-05-31.
+Last reviewed: 2026-06-01.
 
 This document tracks practical Elysia improvements across product, commerce,
 operations, reliability, accessibility, privacy, security, QA, and release
@@ -73,93 +73,118 @@ Candidate items are not implementable by default. Public-facing candidates must
 pass `docs/PUBLIC_CHANGE_GATE.md` or `docs/FULL_PRODUCT_BENCHMARK.md` before
 product code is edited.
 
-### I-034 Product Gallery Media Fallback and Thumbnail Clarity
+No candidate improvements remain. New public-facing candidates must pass
+`docs/PUBLIC_CHANGE_GATE.md` or `docs/FULL_PRODUCT_BENCHMARK.md` before product
+code is edited.
 
-- `ID`: I-034
-- `Aspect`: Public UX and Brand
-- `Status`: Needs Benchmark
-- `Priority`: P2
-- `Effort`: M
-- `Source/Evidence`: `/product/[slug]`, product gallery behavior, PDP media
-  guidance in `docs/FULL_PRODUCT_BENCHMARK.md`, and public visual guardrails
-- `Target Surface`: Product gallery, thumbnail controls, missing-image fallback,
-  image alt and selected-state copy
-- `Improvement`: Consider improving gallery thumbnail clarity, selected-image
-  state, and missing-media fallback without changing gallery-first PDP layout or
-  adding decorative media.
-- `Acceptance Checks`: Benchmark confirms the gallery remains product-led,
-  thumbnails are accessible and stable, and fallback states do not obscure the
-  purchase panel.
-- `Verification`: Run benchmark workflow first; implementation verification
-  would require gallery structure tests and product media guardrail tests.
-
-### I-035 Checkout Validation Summary and Payment Confidence Placement
-
-- `ID`: I-035
-- `Aspect`: Commerce and Checkout
-- `Status`: Needs Benchmark
-- `Priority`: P1
-- `Effort`: M
-- `Source/Evidence`: `/checkout`, checkout validation recovery, delivery
-  confidence benchmark, payment provider guardrails, and public checkout
-  guidance in `docs/FULL_PRODUCT_BENCHMARK.md`
-- `Target Surface`: Checkout form validation summary, payment confidence copy,
-  submit-state recovery, delivery confidence summary
-- `Improvement`: Consider clearer checkout validation and payment-confidence
-  placement near submit actions without adding optimistic payment success or
-  unsupported provider promises.
-- `Acceptance Checks`: Benchmark confirms clarity improves checkout recovery,
-  keeps payment correctness strict, and does not add provider claims that are
-  not backed by live integrations.
-- `Verification`: Run benchmark workflow first; implementation verification
-  would require checkout form tests, payment boundary tests, and service trust
-  placement tests.
-
-### I-036 Account Dashboard Data Recovery and Privacy Shortcut Clarity
-
-- `ID`: I-036
-- `Aspect`: Accessibility, Privacy, and Security
-- `Status`: Needs Benchmark
-- `Priority`: P2
-- `Effort`: M
-- `Source/Evidence`: `/account`, `/account/orders/[id]`, privacy export route,
-  account recovery shortcut benchmark, and account guidance in
-  `docs/FULL_PRODUCT_BENCHMARK.md`
-- `Target Surface`: Account dashboard recovery shortcuts, protected empty
-  states, privacy export recovery, order service links
-- `Improvement`: Consider whether account recovery and privacy actions need
-  clearer grouping or status copy without exposing protected data or adding
-  unsupported self-service actions.
-- `Acceptance Checks`: Benchmark confirms account recovery remains protected,
-  privacy actions are clear, and service links route to existing supported
-  flows only.
-- `Verification`: Run benchmark workflow first; implementation verification
-  would require account recovery tests, privacy export tests, and auth boundary
-  checks.
+## Completed Work
 
 ### I-037 Offline Page Install and PWA Recovery Priority
 
 - `ID`: I-037
 - `Aspect`: Performance, PWA, and Reliability
-- `Status`: Needs Benchmark
+- `Status`: Done
 - `Priority`: P2
 - `Effort`: M
 - `Source/Evidence`: `/offline`, manifest shortcuts, service worker allowlist,
-  PWA offline recovery tests, and PWA guidance in
-  `docs/FULL_PRODUCT_BENCHMARK.md`
+  PWA offline recovery tests, `docs/FULL_PRODUCT_BENCHMARK.md`, and
+  `docs/qa/offline-page-install-pwa-recovery-priority-benchmark.md`
 - `Target Surface`: Offline page actions, PWA shortcut ordering, install
-  prompt copy, cached public routes
-- `Improvement`: Consider whether offline recovery should better prioritize
-  cached product discovery, size guide, service, and retry actions without
-  promising offline checkout completion.
-- `Acceptance Checks`: Benchmark confirms offline recovery remains realistic,
-  cached routes are route-backed, and install/retry copy does not imply
-  unsupported offline commerce.
-- `Verification`: Run benchmark workflow first; implementation verification
-  would require manifest tests, service worker route tests, and offline recovery
-  tests.
+  context copy, cached public routes
+- `Improvement`: Added realistic install/cache recovery context to the offline
+  page, prioritized route-backed discovery, gifts, sizing, service, and retry
+  actions, and aligned manifest shortcut ordering with that recovery priority
+  without promising offline checkout, account, or payment completion.
+- `Acceptance Checks`: Benchmark decision confirms offline recovery can
+  prioritize cached product discovery and service/sizing routes when
+  checkout/payment completion remains explicitly online-only.
+- `Verification`: Benchmark passed with weighted support of `12.0` against the
+  `11.25` threshold. Covered by
+  `src/styles/offline-page-install-pwa-recovery-priority.test.ts`,
+  `src/styles/pwa-offline-recovery.test.ts`, `src/app/manifest.test.ts`, and
+  `src/app/serwist-route.test.ts`; verified with
+  `pnpm test -- src/styles/offline-page-install-pwa-recovery-priority.test.ts src/styles/pwa-offline-recovery.test.ts src/app/manifest.test.ts src/app/serwist-route.test.ts`.
 
-## Completed Work
+### I-036 Account Dashboard Data Recovery and Privacy Shortcut Clarity
+
+- `ID`: I-036
+- `Aspect`: Accessibility, Privacy, and Security
+- `Status`: Done
+- `Priority`: P2
+- `Effort`: M
+- `Source/Evidence`: `/account`, `/account/orders/[id]`, privacy export route,
+  account recovery shortcut benchmark, `docs/FULL_PRODUCT_BENCHMARK.md`, and
+  `docs/qa/account-dashboard-privacy-shortcut-clarity-benchmark.md`
+- `Target Surface`: Account dashboard recovery shortcuts, protected empty
+  states, privacy export recovery, privacy deletion, order service links
+- `Improvement`: Added protected privacy action context inside the account
+  privacy card while keeping the existing privacy shortcut anchored to
+  `#account-privacy`, preserving export and deletion as the only direct privacy
+  actions, and avoiding unsupported self-service account changes.
+- `Acceptance Checks`: Benchmark decision confirms account privacy grouping can
+  become clearer when protected data is not exposed and service links remain
+  routed through supported flows only.
+- `Verification`: Benchmark passed with weighted support of `12.0` against the
+  `11.25` threshold. Covered by
+  `src/styles/account-dashboard-privacy-shortcut-clarity.test.ts`,
+  `src/styles/account-recovery-shortcuts.test.ts`, and
+  `src/styles/cookie-privacy-controls-contract.test.ts`; verified with
+  `pnpm test -- src/styles/account-dashboard-privacy-shortcut-clarity.test.ts src/styles/account-recovery-shortcuts.test.ts src/styles/cookie-privacy-controls-contract.test.ts`.
+
+### I-035 Checkout Validation Summary and Payment Confidence Placement
+
+- `ID`: I-035
+- `Aspect`: Commerce and Checkout
+- `Status`: Done
+- `Priority`: P1
+- `Effort`: M
+- `Source/Evidence`: `/checkout`, checkout validation recovery, delivery
+  confidence benchmark, payment provider guardrails,
+  `docs/FULL_PRODUCT_BENCHMARK.md`, and
+  `docs/qa/checkout-validation-payment-confidence-benchmark.md`
+- `Target Surface`: Checkout form validation summary, payment confidence copy,
+  submit-state recovery, delivery confidence summary
+- `Improvement`: Marked checkout issue recovery as a validation summary with
+  live status semantics and added source-aware payment confidence copy directly
+  before local and Shopify submit actions without adding CardCom, paid Shopify,
+  guaranteed delivery, or combined payment promises.
+- `Acceptance Checks`: Benchmark decision confirms validation and payment
+  confidence can move closer to submit actions when local and supplier payment
+  paths remain separate and provider claims remain strict.
+- `Verification`: Benchmark passed with weighted support of `16.5` against the
+  `11.25` threshold. Covered by
+  `src/styles/checkout-validation-payment-confidence.test.ts`,
+  `src/app/checkout/_components/checkout-display.test.ts`,
+  `src/styles/service-trust-placement.test.ts`, and
+  `src/styles/form-error-recovery-contract.test.ts`; verified with
+  `pnpm test -- src/styles/checkout-validation-payment-confidence.test.ts src/app/checkout/_components/checkout-display.test.ts src/styles/service-trust-placement.test.ts src/styles/form-error-recovery-contract.test.ts`.
+
+### I-034 Product Gallery Media Fallback and Thumbnail Clarity
+
+- `ID`: I-034
+- `Aspect`: Public UX and Brand
+- `Status`: Done
+- `Priority`: P2
+- `Effort`: M
+- `Source/Evidence`: `/product/[slug]`, product gallery behavior, PDP media
+  guidance in `docs/FULL_PRODUCT_BENCHMARK.md`, public visual guardrails, and
+  `docs/qa/product-gallery-media-fallback-thumbnail-clarity-benchmark.md`
+- `Target Surface`: Product gallery, thumbnail controls, missing-image fallback,
+  image alt and selected-state copy
+- `Improvement`: Added visible and polite live selected-image status to
+  multi-image galleries, strengthened active thumbnail state with a stable data
+  marker, and updated main image alt text with product and image position while
+  keeping the existing missing-media fallback and gallery-first PDP layout.
+- `Acceptance Checks`: Benchmark decision confirms gallery clarity can improve
+  selected-state and fallback comprehension while remaining product-led and
+  inside the existing gallery component.
+- `Verification`: Benchmark passed with weighted support of `16.5` against the
+  `11.25` threshold. Covered by
+  `src/styles/product-gallery-media-fallback-thumbnail-clarity.test.ts`,
+  `src/styles/product-led-media.test.ts`,
+  `src/styles/product-purchase-facts-placement.test.ts`, and
+  `src/styles/service-trust-placement.test.ts`; verified with
+  `pnpm test -- src/styles/product-gallery-media-fallback-thumbnail-clarity.test.ts src/styles/product-led-media.test.ts src/styles/product-purchase-facts-placement.test.ts src/styles/service-trust-placement.test.ts`.
 
 ### I-033 Category No-Result Recovery Depth
 

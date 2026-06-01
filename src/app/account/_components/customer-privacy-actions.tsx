@@ -26,6 +26,17 @@ export function CustomerPrivacyActions() {
 
   return (
     <div className="grid gap-4">
+      <div
+        className="glass-inset rounded-md border p-3 text-sm"
+        data-testid="account-privacy-shortcut-context"
+      >
+        <p className="font-medium">ניהול פרטיות ונתוני חשבון</p>
+        <ul className="text-muted-foreground mt-2 grid list-inside list-disc gap-1 leading-6">
+          <li>ייצוא נתוני החשבון נשאר זמין בקובץ מוגן.</li>
+          <li>מחיקה דורשת אישור מפורש לפני פעולה קבועה.</li>
+          <li>שאלות פרטיות או נגישות ממשיכות דרך שירות אישי.</li>
+        </ul>
+      </div>
       <Button asChild className="w-fit gap-2" variant="outline">
         <a href="/account/privacy/export">
           <Download aria-hidden="true" className="size-4" />

@@ -51,16 +51,20 @@ export default function OfflinePage() {
           ))}
         </ul>
         <div
+          className="glass-inset rounded-md border p-4 text-sm leading-6"
+          data-testid="offline-install-context"
+        >
+          <p className="font-medium">התקנה ושחזור מהיר</p>
+          <p className="text-muted-foreground mt-1">
+            כשהאפליקציה מותקנת אפשר לפתוח במהירות עמודים ציבוריים שנטענו
+            לאחרונה. סיום הזמנה, חשבון ותשלום דורשים חיבור פעיל.
+          </p>
+        </div>
+        <div
           className="flex flex-wrap gap-3"
           data-testid="offline-recovery-actions"
         >
           <Button asChild>
-            <Link href="/">
-              <RefreshCw aria-hidden="true" className="size-4" />
-              ניסיון חוזר
-            </Link>
-          </Button>
-          <Button asChild variant="outline">
             <Link href="/search">
               <Search aria-hidden="true" className="size-4" />
               המבחר
@@ -73,15 +77,21 @@ export default function OfflinePage() {
             </Link>
           </Button>
           <Button asChild variant="outline">
+            <Link href="/size-guide">
+              <Ruler aria-hidden="true" className="size-4" />
+              מידות
+            </Link>
+          </Button>
+          <Button asChild variant="outline">
             <Link href="/service">
               <LifeBuoy aria-hidden="true" className="size-4" />
               שירות
             </Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/size-guide">
-              <Ruler aria-hidden="true" className="size-4" />
-              מידות
+            <Link href="/">
+              <RefreshCw aria-hidden="true" className="size-4" />
+              ניסיון חוזר
             </Link>
           </Button>
         </div>

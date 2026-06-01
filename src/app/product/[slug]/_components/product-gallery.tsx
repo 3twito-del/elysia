@@ -26,6 +26,8 @@ export function ProductGallery({
   const shouldReduceMotion = useResolvedReducedMotion();
   const activeImageIndex = Math.min(activeIndex, galleryImages.length - 1);
   const activeImage = galleryImages[activeImageIndex];
+  const activeImagePosition = activeImageIndex + 1;
+  const galleryImageCount = galleryImages.length;
 
   function activateThumbnail(nextIndex: number, shouldFocus = false) {
     if (galleryImages.length === 0) return;
@@ -113,7 +115,7 @@ export function ProductGallery({
             }}
           >
             <Image
-              alt={productName}
+              alt={`${productName}, תמונה ${activeImagePosition} מתוך ${galleryImageCount}`}
               className="media-color object-cover"
               fill
               loading={activeImageIndex === 0 ? undefined : "lazy"}
@@ -123,17 +125,28 @@ export function ProductGallery({
             />
           </motion.div>
         </AnimatePresence>
-        {galleryImages.length > 1 ? (
+        {galleryImageCount > 1 ? (
           <Badge
             className="bg-background text-foreground absolute bottom-4 left-4 rounded-full px-3"
             variant="secondary"
           >
-            {activeImageIndex + 1}/{galleryImages.length}
+            {activeImagePosition}/{galleryImageCount}
           </Badge>
         ) : null}
       </div>
 
-      {galleryImages.length > 1 ? (
+      {galleryImageCount > 1 ? (
+        <p
+          aria-live="polite"
+          className="text-muted-foreground text-sm"
+          data-testid="product-gallery-selection-status"
+        >
+          מוצגת תמונה {activeImagePosition} מתוך {galleryImageCount} של{" "}
+          {productName}
+        </p>
+      ) : null}
+
+      {galleryImageCount > 1 ? (
         <div
           aria-label="תמונות תכשיט"
           className="grid grid-cols-4 gap-3 sm:grid-cols-5 lg:grid-cols-4"
@@ -149,6 +162,9 @@ export function ProductGallery({
                   ? "border-foreground ring-foreground ring-1"
                   : "hover:border-foreground/60",
               )}
+              data-gallery-selected={
+                activeImageIndex === index ? "true" : "false"
+              }
               data-testid="product-gallery-thumbnail"
               key={image}
               onClick={() => activateThumbnail(index)}

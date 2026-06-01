@@ -21,8 +21,8 @@ describe("PWA manifest", () => {
     expect(data.shortcuts?.map((shortcut) => shortcut.url)).toEqual([
       "/search?source=pwa-shortcut",
       "/gifts?source=pwa-shortcut",
-      "/service?source=pwa-shortcut",
       "/size-guide?source=pwa-shortcut",
+      "/service?source=pwa-shortcut",
     ]);
     expect(data.shortcuts).toEqual(
       expect.arrayContaining([

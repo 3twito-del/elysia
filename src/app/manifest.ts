@@ -89,10 +89,10 @@ export default function manifest(): ExtendedManifest {
         ],
       },
       {
-        name: "שירות אישי",
-        short_name: "שירות",
-        description: "פנייה לשירות אישי",
-        url: "/service?source=pwa-shortcut",
+        name: "מדריך מידות",
+        short_name: "מידות",
+        description: "שמירה מקומית להתאמה מהירה",
+        url: "/size-guide?source=pwa-shortcut",
         icons: [
           {
             src: "/pwa/icons/icon-192.png",
@@ -102,10 +102,10 @@ export default function manifest(): ExtendedManifest {
         ],
       },
       {
-        name: "מדריך מידות",
-        short_name: "מידות",
-        description: "שמירה מקומית להתאמה מהירה",
-        url: "/size-guide?source=pwa-shortcut",
+        name: "שירות אישי",
+        short_name: "שירות",
+        description: "פנייה לשירות אישי",
+        url: "/service?source=pwa-shortcut",
         icons: [
           {
             src: "/pwa/icons/icon-192.png",

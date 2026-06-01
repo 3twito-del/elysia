@@ -324,6 +324,11 @@ export function CartCheckoutForm() {
   const supplierCheckoutDescription = hasMixedSourceCart
     ? `${dropshipItems.length} פריטי ספק יושלמו בקופת Shopify מאובטחת, בנפרד מהפריטים המקומיים.`
     : `${dropshipItems.length} פריטי ספק יושלמו בקופת Shopify מאובטחת. פרטי התשלום והמסירה ייאספו שם.`;
+  const checkoutPaymentConfidenceCopy = hasMixedSourceCart
+    ? "הסכום המקומי יאושר כאן לפני המשך התשלום; פריטי הספק ישולמו בקופת Shopify נפרדת."
+    : hasDropshipItems && !hasOwnItems
+      ? "התשלום, פרטי המסירה ואישור ההזמנה יתבצעו בקופת Shopify. לא נוצרת כאן הזמנה מקומית עבור פריטי ספק בלבד."
+      : "הפרטים והסכום יאומתו לפני שמירת הבחירה; התשלום לא נגבה בשלב זה.";
   const cartMutationError =
     updateItem.error ?? removeItem.error ?? updateOptions.error;
   const cartMutationErrorMessage = cartMutationError
@@ -1124,7 +1129,10 @@ export function CartCheckoutForm() {
               {hasOwnItems && checkoutIssues.length > 0 ? (
                 <div
                   className="glass-inset rounded-md border p-3 text-sm"
+                  data-testid="checkout-validation-summary"
                   id="checkout-issue-list"
+                  role="status"
+                  aria-live="polite"
                 >
                   <p className="font-medium">לפני אישור הבחירה</p>
                   <ul className="text-muted-foreground mt-2 grid list-inside list-disc gap-1">
@@ -1160,6 +1168,20 @@ export function CartCheckoutForm() {
                   {createShopifyCheckoutErrorMessage}
                 </StatusMessage>
               ) : null}
+              {(hasOwnItems || hasDropshipItems) && (
+                <div
+                  className="glass-inset flex items-start gap-2 rounded-md border p-3 text-sm"
+                  data-testid="checkout-payment-confidence"
+                >
+                  <ShieldCheck
+                    aria-hidden="true"
+                    className="mt-0.5 size-4 shrink-0"
+                  />
+                  <p className="text-muted-foreground leading-6">
+                    {checkoutPaymentConfidenceCopy}
+                  </p>
+                </div>
+              )}
               {hasDropshipItems ? (
                 <div className="glass-inset rounded-md border p-3 text-sm">
                   <p className="font-medium">קופת ספק נפרדת</p>
