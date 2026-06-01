@@ -78,6 +78,7 @@ export function NewsletterForm() {
           aria-label="אימייל להרשמה לעדכונים"
           aria-describedby={newsletterDescription}
           aria-invalid={hasNewsletterError}
+          autoComplete="email"
           dir="ltr"
           id="newsletter-email"
           name="email"

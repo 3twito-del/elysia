@@ -833,6 +833,7 @@ export function CartCheckoutForm() {
                       <Input
                         aria-describedby="name-error"
                         aria-invalid={Boolean(getVisibleFieldError("name"))}
+                        autoComplete="name"
                         disabled={checkoutLocked}
                         id="name"
                         minLength={2}
@@ -851,6 +852,7 @@ export function CartCheckoutForm() {
                       <Input
                         aria-describedby="phone-error"
                         aria-invalid={Boolean(getVisibleFieldError("phone"))}
+                        autoComplete="tel"
                         disabled={checkoutLocked}
                         id="phone"
                         minLength={7}
@@ -874,6 +876,7 @@ export function CartCheckoutForm() {
                     <Input
                       aria-describedby="email-error"
                       aria-invalid={Boolean(getVisibleFieldError("email"))}
+                      autoComplete="email"
                       disabled={checkoutLocked}
                       id="email"
                       onBlur={() => markFieldTouched("email")}
@@ -918,6 +921,7 @@ export function CartCheckoutForm() {
                       <Input
                         aria-describedby="city-error"
                         aria-invalid={Boolean(getVisibleFieldError("city"))}
+                        autoComplete="address-level2"
                         disabled={checkoutLocked}
                         id="city"
                         minLength={2}
@@ -936,6 +940,7 @@ export function CartCheckoutForm() {
                       <Input
                         aria-describedby="street-error"
                         aria-invalid={Boolean(getVisibleFieldError("street"))}
+                        autoComplete="street-address"
                         disabled={checkoutLocked}
                         id="street"
                         minLength={2}
@@ -950,6 +955,7 @@ export function CartCheckoutForm() {
                     <div>
                       <Label htmlFor="postalCode">מיקוד</Label>
                       <Input
+                        autoComplete="postal-code"
                         disabled={checkoutLocked}
                         id="postalCode"
                         onChange={(event) =>
@@ -975,6 +981,7 @@ export function CartCheckoutForm() {
                     <div>
                       <Label htmlFor="coupon">קוד הטבה</Label>
                       <Input
+                        autoComplete="off"
                         disabled={checkoutLocked}
                         id="coupon"
                         onChange={(event) =>
