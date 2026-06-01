@@ -67,6 +67,9 @@ Effort scale:
 
 ## Actionable Now
 
+No actionable non-blocked improvements remain. New non-blocked items should be
+added only when they are still pending implementation.
+
 ## Candidate Improvements
 
 Candidate items are not implementable by default. Public-facing candidates must

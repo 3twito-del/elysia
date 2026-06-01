@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   useActionState,
   useEffect,
@@ -11,6 +12,7 @@ import {
   CheckCircle2,
   Circle,
   Gem,
+  LogIn,
   Ruler,
   Save,
   Sparkles,
@@ -229,6 +231,22 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
               {savedSummary}
             </strong>
           </div>
+        </div>
+
+        <div
+          className="glass-inset flex flex-wrap items-center justify-between gap-3 rounded-md border p-3 text-sm"
+          data-testid="size-guide-save-context"
+        >
+          <p className="text-muted-foreground leading-6">
+            שמירת מידה מתבצעת במכשיר מיד. לקוחות מחוברים יכולים לסנכרן אותה
+            לחשבון כדי להשתמש בה גם בעמודי מוצר עתידיים.
+          </p>
+          <Button asChild size="sm" variant="ghost">
+            <Link href="/account#account-sizes">
+              אזור המידות
+              <LogIn aria-hidden="true" className="size-4" />
+            </Link>
+          </Button>
         </div>
 
         <div

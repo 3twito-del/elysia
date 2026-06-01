@@ -42,6 +42,12 @@ const onlineServiceHighlights = [
   },
 ] as const;
 
+const onlineContinuitySteps = [
+  "בחירת תכשיט ומידה ממשיכה דרך קטלוג, חיפוש ומדריך מידות.",
+  "שאלות על התאמה, מתנה או הזמנה נשלחות דרך טופס השירות הקיים.",
+  "כאשר ייפתחו נקודות שירות פיזיות, פרטי כתובת ושעות יופיעו כאן לפני הגעה.",
+] as const;
+
 export default async function BranchesPage() {
   const profile = await getPublicServiceProfile();
   const hasPhysicalBranches =
@@ -139,6 +145,28 @@ export default async function BranchesPage() {
                     <Headphones aria-hidden="true" className="size-4" />
                   </Link>
                 </Button>
+              </div>
+              <div
+                className="mt-6 grid gap-3 rounded-md border border-[var(--glass-border)] p-4 text-sm"
+                data-testid="branches-online-service-continuity"
+              >
+                <h3 className="font-medium">המשכיות שירות אונליין</h3>
+                <ul className="text-muted-foreground grid gap-2 leading-6">
+                  {onlineContinuitySteps.map((step) => (
+                    <li key={step}>{step}</li>
+                  ))}
+                </ul>
+                <div
+                  className="flex flex-wrap gap-2"
+                  data-testid="branches-online-recovery-links"
+                >
+                  <Button asChild size="sm" variant="outline">
+                    <Link href="/size-guide">מדריך מידות</Link>
+                  </Button>
+                  <Button asChild size="sm" variant="outline">
+                    <Link href="/service?topic=general">שאלת שירות</Link>
+                  </Button>
+                </div>
               </div>
             </section>
 

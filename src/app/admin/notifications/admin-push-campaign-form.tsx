@@ -16,7 +16,13 @@ import { Textarea } from "~/components/ui/textarea";
 
 const initialState: AdminPushCampaignState = {};
 
-export function AdminPushCampaignForm() {
+type AdminPushCampaignFormProps = {
+  configured: boolean;
+};
+
+export function AdminPushCampaignForm({
+  configured,
+}: AdminPushCampaignFormProps) {
   const [state, formAction] = useActionState(
     createPushCampaignAction,
     initialState,
@@ -61,9 +67,15 @@ export function AdminPushCampaignForm() {
         <Label htmlFor="scheduledAt">תזמון אופציונלי</Label>
         <Input id="scheduledAt" name="scheduledAt" type="datetime-local" />
       </div>
-      <label className="glass-inset flex min-h-11 items-center gap-3 rounded-md border px-3 text-sm">
-        <input name="sendNow" type="checkbox" />
-        שליחה לעיבוד מיד אחרי יצירת הקמפיין
+      <label
+        className="glass-inset flex min-h-11 items-center gap-3 rounded-md border px-3 text-sm"
+        data-testid="admin-push-send-now-readiness"
+      >
+        <input disabled={!configured} name="sendNow" type="checkbox" />
+        <span>
+          שליחה לעיבוד מיד אחרי יצירת הקמפיין
+          {!configured ? " (זמין אחרי הגדרת VAPID)" : ""}
+        </span>
       </label>
       {state.message ? (
         <StatusMessage tone={state.ok ? "success" : "error"}>

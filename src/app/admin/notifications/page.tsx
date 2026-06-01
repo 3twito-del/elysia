@@ -71,7 +71,22 @@ export default async function AdminNotificationsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <AdminPushCampaignForm />
+            <div
+              className="mb-4 rounded-md border border-[var(--glass-border)] p-3 text-sm"
+              data-testid="admin-notification-readiness"
+            >
+              <p className="font-medium">
+                {configured
+                  ? "התראות Push מוכנות לשליחה"
+                  : "שליחת Push אינה פעילה"}
+              </p>
+              <p className="text-muted-foreground mt-1 leading-6">
+                {configured
+                  ? "קמפיינים חדשים יכולים להישמר, לתזמן ולהישלח דרך outbox."
+                  : "חסרות הגדרות VAPID. אפשר לשמור קמפיין כטיוטה, אבל שליחה מיידית וכפתורי שליחה יישארו כבויים עד שההגדרות יושלמו."}
+              </p>
+            </div>
+            <AdminPushCampaignForm configured={configured} />
           </CardContent>
         </Card>
 
@@ -83,6 +98,15 @@ export default async function AdminNotificationsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {!configured ? (
+              <p
+                className="text-muted-foreground mb-3 text-sm leading-6"
+                data-testid="admin-notification-send-disabled-copy"
+              >
+                שליחה כבויה כי מפתחות VAPID אינם מוגדרים. לאחר השלמת ההגדרות
+                ניתן להפעיל קמפיינים קיימים מהטבלה.
+              </p>
+            ) : null}
             <AdminTableScrollHint />
             <Table className="min-w-[840px]">
               <TableHeader>
@@ -117,6 +141,11 @@ export default async function AdminNotificationsPage() {
                         <TableCell>{campaign.segment}</TableCell>
                         <TableCell>
                           <Badge variant="secondary">{campaign.status}</Badge>
+                          {campaign.lastError ? (
+                            <p className="text-muted-foreground mt-1 text-xs leading-5">
+                              {campaign.lastError}
+                            </p>
+                          ) : null}
                         </TableCell>
                         <TableCell>
                           {sentCount}/{campaign.deliveries.length}

@@ -88,6 +88,28 @@ export default async function AdminInventoryPage({
     params.sort !== "updated-desc",
     params.page > 1,
   ].some(Boolean);
+  const activeFilterLabels = [
+    params.query ? `חיפוש: ${params.query}` : null,
+    showPhysicalBranches && params.branchId
+      ? `מיקום: ${
+          data.branches.find((branch) => branch.id === params.branchId)?.name ??
+          "מיקום לא זמין"
+        }`
+      : null,
+    params.sort !== "updated-desc"
+      ? `מיון: ${getInventorySortLabel(params.sort)}`
+      : null,
+    params.page > 1 ? `עמוד ${params.page}` : null,
+  ].filter((label): label is string => Boolean(label));
+  const lowStockItems = data.items
+    .filter((item) => item.sellable <= item.safetyStock)
+    .slice(0, 3);
+  const emptyTitle = hasActiveFilters
+    ? "אין פריטי מלאי שמתאימים לסינון"
+    : "אין פריטי מלאי";
+  const emptyDescription = hasActiveFilters
+    ? "לא נמצאו פריטי מלאי לפי הסינון הנוכחי. נקו סינון או שנו חיפוש כדי לחזור לרשימת המלאי המלאה."
+    : "הגדירו מלאי דרך יצירת מוצר או עריכת מלאי כדי להתחיל מעקב.";
 
   return (
     <AdminShell
@@ -157,6 +179,22 @@ export default async function AdminInventoryPage({
                 </Button>
               ) : null}
             </form>
+            {hasActiveFilters ? (
+              <div
+                className="text-muted-foreground mt-4 flex flex-wrap items-center gap-2 text-sm"
+                data-testid="admin-inventory-active-filters"
+              >
+                <span className="text-foreground font-medium">סינון פעיל</span>
+                {activeFilterLabels.map((label) => (
+                  <Badge key={label} variant="outline">
+                    {label}
+                  </Badge>
+                ))}
+                <Button asChild size="sm" variant="ghost">
+                  <Link href="/admin/inventory">ניקוי סינון</Link>
+                </Button>
+              </div>
+            ) : null}
           </CardContent>
         </Card>
 
@@ -168,6 +206,27 @@ export default async function AdminInventoryPage({
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {lowStockItems.length > 0 ? (
+              <div
+                className="mb-4 grid gap-3 rounded-md border border-[var(--glass-border)] p-3 text-sm"
+                data-testid="admin-inventory-low-stock-recovery"
+              >
+                <div>
+                  <p className="font-medium">פריטים לבדיקה תפעולית</p>
+                  <p className="text-muted-foreground mt-1 leading-6">
+                    הפריטים הבאים נמצאים במלאי זמין נמוך או מתחת למלאי הביטחון
+                    ומופיעים כאן לפי הסינון הנוכחי.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {lowStockItems.map((item) => (
+                    <Badge key={item.id} variant="outline">
+                      {item.productName}: {getStockQuantityLabel(item.sellable)}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            ) : null}
             <AdminTableScrollHint />
             <Table className="min-w-[1040px]">
               <TableHeader>
@@ -195,9 +254,9 @@ export default async function AdminInventoryPage({
                       ) : undefined
                     }
                     colSpan={8}
-                    description="שנו סינון או הגדירו מלאי דרך יצירת מוצר/עריכת מלאי."
+                    description={emptyDescription}
                     icon={Boxes}
-                    title="אין פריטי מלאי"
+                    title={emptyTitle}
                   />
                 ) : (
                   data.items.map((item) => (
@@ -274,4 +333,17 @@ export default async function AdminInventoryPage({
       </TRPCReactProvider>
     </AdminShell>
   );
+}
+
+function getInventorySortLabel(
+  sort: "updated-desc" | "available-asc" | "available-desc",
+) {
+  switch (sort) {
+    case "available-asc":
+      return "זמין נמוך";
+    case "available-desc":
+      return "זמין גבוה";
+    case "updated-desc":
+      return "עודכן לאחרונה";
+  }
 }

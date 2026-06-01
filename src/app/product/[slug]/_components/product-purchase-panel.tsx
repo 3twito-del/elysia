@@ -343,7 +343,10 @@ export function ProductPurchasePanel({
                 {sizeKind ? (
                   <Link
                     className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-xs font-medium underline-offset-4 hover:underline"
-                    href={getSizeGuideHref(sizeKind)}
+                    href={getSizeGuideHref(sizeKind, {
+                      productName,
+                      returnTo: `/product/${productSlug}`,
+                    })}
                   >
                     <Ruler aria-hidden="true" className="size-3.5" />
                     מדריך מידות

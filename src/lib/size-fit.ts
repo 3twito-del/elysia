@@ -129,8 +129,19 @@ export function getSizeKindLabel(kind: SizeFitKind) {
   return "עגילים";
 }
 
-export function getSizeGuideHref(kind?: SizeFitKind) {
-  return kind ? `/size-guide?kind=${kind}` : "/size-guide";
+export function getSizeGuideHref(
+  kind?: SizeFitKind,
+  options?: { productName?: string; returnTo?: string },
+) {
+  const params = new URLSearchParams();
+
+  if (kind) params.set("kind", kind);
+  if (options?.returnTo) params.set("returnTo", options.returnTo);
+  if (options?.productName) params.set("product", options.productName);
+
+  const query = params.toString();
+
+  return query ? `/size-guide?${query}` : "/size-guide";
 }
 
 export function findBestVariantForSavedSize<TVariant extends SizeFitVariant>(
