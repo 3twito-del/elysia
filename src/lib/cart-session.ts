@@ -37,7 +37,7 @@ function writeStoredSessionKey(sessionKey: string) {
   try {
     window.localStorage.setItem(CART_SESSION_STORAGE_KEY, sessionKey);
   } catch {
-    // Some privacy modes block localStorage writes. The cookie is enough for continuity.
+    // Some privacy modes block localStorage writes; the in-memory value still covers the current action.
   }
 }
 
