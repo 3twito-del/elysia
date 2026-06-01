@@ -172,6 +172,7 @@ export default async function AdminServicePage({
               />
               <select
                 aria-label="סינון לפי סטטוס"
+                autoComplete="off"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
                 defaultValue={params.status ?? ""}
                 name="status"
@@ -185,6 +186,7 @@ export default async function AdminServicePage({
               </select>
               <select
                 aria-label="סינון לפי נושא"
+                autoComplete="off"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
                 defaultValue={params.topicId ?? ""}
                 name="topicId"
@@ -365,6 +367,7 @@ export default async function AdminServicePage({
                           />
                           <select
                             aria-label="עדכון סטטוס פנייה"
+                            autoComplete="off"
                             className="glass-control h-10 rounded-md border px-3 text-sm"
                             defaultValue={request.status}
                             name="status"

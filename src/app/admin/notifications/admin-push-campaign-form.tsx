@@ -52,6 +52,7 @@ export function AdminPushCampaignForm({
         <div className="grid gap-2">
           <Label htmlFor="segment">סגמנט</Label>
           <select
+            autoComplete="off"
             className="glass-control h-10 rounded-md border px-3 text-sm"
             defaultValue="MARKETING_OPT_IN"
             id="segment"

@@ -157,6 +157,7 @@ export default async function AdminAppointmentsPage({
               />
               <select
                 aria-label="סינון לפי סטטוס תור"
+                autoComplete="off"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
                 defaultValue={params.status ?? ""}
                 name="status"
@@ -171,6 +172,7 @@ export default async function AdminAppointmentsPage({
               {showPhysicalBranches ? (
                 <select
                   aria-label="סינון תורים לפי מיקום פיזי"
+                  autoComplete="off"
                   className="glass-control h-11 rounded-md border px-3 text-sm"
                   defaultValue={params.branchId ?? ""}
                   name="branchId"
@@ -185,6 +187,7 @@ export default async function AdminAppointmentsPage({
               ) : null}
               <select
                 aria-label="מיון תורים"
+                autoComplete="off"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
                 defaultValue={params.sort}
                 name="sort"

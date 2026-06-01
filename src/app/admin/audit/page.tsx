@@ -114,6 +114,7 @@ export default async function AdminAuditPage({
             />
             <select
               aria-label="מיון אירועי Audit"
+              autoComplete="off"
               className="glass-control h-11 rounded-md border px-3 text-sm"
               defaultValue={params.sort}
               name="sort"

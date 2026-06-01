@@ -157,6 +157,7 @@ export function ServiceRequestForm({
         <select
           aria-describedby={`${getFieldErrorId("topicSlug")} ${topicGuidanceId}`}
           aria-invalid={Boolean(state.fieldErrors?.topicSlug)}
+          autoComplete="off"
           className="glass-control h-11 rounded-md border px-3 text-sm"
           defaultValue={initialSelectedTopic}
           disabled={pending}
@@ -247,6 +248,7 @@ export function ServiceRequestForm({
         <div className="grid gap-2">
           <Label htmlFor="preferredContact">דרך חזרה מועדפת</Label>
           <select
+            autoComplete="off"
             className="glass-control h-11 rounded-md border px-3 text-sm"
             defaultValue="ANY"
             disabled={pending}

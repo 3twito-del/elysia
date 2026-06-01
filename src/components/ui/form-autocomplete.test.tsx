@@ -33,7 +33,7 @@ describe("form autocomplete contract", () => {
     );
   });
 
-  it("keeps native recognizable form fields from omitting autocomplete", () => {
+  it("keeps native form fields from omitting autocomplete", () => {
     const violations = listNativeAutocompleteViolations();
 
     expect(violations).toEqual([]);
@@ -76,7 +76,7 @@ function getNativeAutocompleteViolations(filePath: string) {
 
       if (
         visibleFieldTags.has(tagName) &&
-        isRecognizedField(node, sourceFile)
+        needsAutocomplete(node, sourceFile)
       ) {
         const location = sourceFile.getLineAndCharacterOfPosition(
           node.getStart(sourceFile),
@@ -96,10 +96,11 @@ function getNativeAutocompleteViolations(filePath: string) {
   return violations;
 }
 
-function isRecognizedField(
+function needsAutocomplete(
   node: ts.JsxOpeningElement | ts.JsxSelfClosingElement,
   sourceFile: ts.SourceFile,
 ) {
+  const tagName = node.tagName.getText(sourceFile);
   const fieldType = getJsxAttributeValue(node, "type", sourceFile) ?? "text";
 
   if (ignoredFieldTypes.has(fieldType)) {
@@ -108,6 +109,10 @@ function isRecognizedField(
 
   if (getJsxAttributeValue(node, "autoComplete", sourceFile)) {
     return false;
+  }
+
+  if (tagName === "select") {
+    return true;
   }
 
   const fieldIdentity = [

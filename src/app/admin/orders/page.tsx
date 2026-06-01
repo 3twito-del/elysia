@@ -169,6 +169,7 @@ export default async function AdminOrdersPage({
             />
             <select
               aria-label="סינון לפי סטטוס הזמנה"
+              autoComplete="off"
               className="glass-control h-11 rounded-md border px-3 text-sm"
               defaultValue={params.status ?? ""}
               name="status"
@@ -183,6 +184,7 @@ export default async function AdminOrdersPage({
             {showPhysicalBranches ? (
               <select
                 aria-label="סינון לפי מיקום פיזי"
+                autoComplete="off"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
                 defaultValue={params.branchId ?? ""}
                 name="branchId"
@@ -197,6 +199,7 @@ export default async function AdminOrdersPage({
             ) : null}
             <select
               aria-label="סינון לפי אופן מסירה"
+              autoComplete="off"
               className="glass-control h-11 rounded-md border px-3 text-sm"
               defaultValue={params.fulfillmentMethod ?? ""}
               name="fulfillmentMethod"
@@ -209,6 +212,7 @@ export default async function AdminOrdersPage({
             </select>
             <select
               aria-label="מיון הזמנות"
+              autoComplete="off"
               className="glass-control h-11 rounded-md border px-3 text-sm"
               defaultValue={params.sort}
               name="sort"

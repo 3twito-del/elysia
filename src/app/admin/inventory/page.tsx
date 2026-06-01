@@ -150,6 +150,7 @@ export default async function AdminInventoryPage({
               {showPhysicalBranches ? (
                 <select
                   aria-label="סינון לפי מיקום פיזי"
+                  autoComplete="off"
                   className="glass-control h-11 rounded-md border px-3 text-sm"
                   defaultValue={params.branchId ?? ""}
                   name="branchId"
@@ -164,6 +165,7 @@ export default async function AdminInventoryPage({
               ) : null}
               <select
                 aria-label="מיון מלאי"
+                autoComplete="off"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
                 defaultValue={params.sort}
                 name="sort"

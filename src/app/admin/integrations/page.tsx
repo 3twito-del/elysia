@@ -204,6 +204,7 @@ export default async function AdminIntegrationsPage({
               />
               <select
                 aria-label="סינון סטטוס Outbox"
+                autoComplete="off"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
                 defaultValue={outboxParams.status ?? ""}
                 name="outboxStatus"
@@ -313,6 +314,7 @@ export default async function AdminIntegrationsPage({
               />
               <select
                 aria-label="סינון סטטוס Job runs"
+                autoComplete="off"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
                 defaultValue={jobParams.status ?? ""}
                 name="jobStatus"

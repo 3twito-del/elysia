@@ -171,8 +171,9 @@ function AdminShipmentForm({
           value={tracking}
         />
         <select
-          className="glass-control h-9 rounded-md border px-2 text-xs"
           aria-invalid={Boolean(fieldErrors.status)}
+          autoComplete="off"
+          className="glass-control h-9 rounded-md border px-2 text-xs"
           disabled={mutation.isPending}
           onChange={(event) => setStatus(event.currentTarget.value)}
           value={status}

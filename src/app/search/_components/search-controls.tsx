@@ -303,6 +303,7 @@ function SearchSelectField({
     <SearchControlField label={label}>
       <select
         aria-label={label}
+        autoComplete="off"
         className={searchSelectClassName}
         defaultValue={value ?? ""}
         name={name}

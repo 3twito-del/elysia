@@ -624,6 +624,7 @@ function AvailabilitySelect({ defaultValue }: { defaultValue: string }) {
   return (
     <select
       aria-label="מצב בחירה"
+      autoComplete="off"
       className="glass-control h-10 rounded-md border px-3 text-sm"
       defaultValue={defaultValue}
       name="availabilityMode"
@@ -648,6 +649,7 @@ function Select({
   return (
     <select
       aria-label={getSelectAriaLabel(name)}
+      autoComplete="off"
       className="glass-control h-10 rounded-md border px-3 text-sm"
       name={name}
       required={!optional}

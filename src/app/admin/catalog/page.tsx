@@ -127,6 +127,7 @@ export default async function AdminCatalogPage({
               />
               <select
                 aria-label="סינון לפי סטטוס מוצר"
+                autoComplete="off"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
                 defaultValue={params.status ?? ""}
                 name="status"
@@ -140,6 +141,7 @@ export default async function AdminCatalogPage({
               </select>
               <select
                 aria-label="סינון לפי קטגוריה"
+                autoComplete="off"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
                 defaultValue={params.categoryId ?? ""}
                 name="categoryId"
@@ -153,6 +155,7 @@ export default async function AdminCatalogPage({
               </select>
               <select
                 aria-label="מיון מוצרים"
+                autoComplete="off"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
                 defaultValue={params.sort}
                 name="sort"
