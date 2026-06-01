@@ -122,6 +122,20 @@ export default async function BranchesPage() {
           className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-14"
           data-testid="branches-online-only-state"
         >
+          <section
+            aria-label="סטטוס שירות"
+            className="mb-6 flex flex-col gap-3 border-y border-[var(--glass-border)] py-4 sm:flex-row sm:items-center sm:justify-between"
+            data-testid="branches-online-status-banner"
+          >
+            <div>
+              <p className="text-sm font-medium">שירות אונליין בלבד</p>
+              <p className="text-muted-foreground text-sm">
+                אין קבלת קהל או איסוף מסניף כרגע; רכישה, מדידה ושאלות שירות
+                ממשיכות דרך האתר.
+              </p>
+            </div>
+            <Badge variant="secondary">מעודכן לעכשיו</Badge>
+          </section>
           <div className="grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-start">
             <section>
               <Badge variant="secondary">אונליין בלבד</Badge>

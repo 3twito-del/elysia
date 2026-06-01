@@ -4,13 +4,13 @@ import { describe, expect, it } from "vitest";
 
 const historicalBenchmarkBacklogIds = new Set(
   Array.from(
-    { length: 200 },
+    { length: 300 },
     (_, index) => `I-${String(index + 1).padStart(3, "0")}`,
   ),
 );
 const activeBacklogRotation = {
-  end: 300,
-  start: 201,
+  end: 400,
+  start: 301,
 } as const;
 
 describe("QA benchmark traceability", () => {
@@ -24,6 +24,9 @@ describe("QA benchmark traceability", () => {
 
         return id;
       }),
+    );
+    const activeBacklogNumbers = Array.from(activeBacklogIds, (id) =>
+      Number(id.slice(2)),
     );
     const qaDocs = readdirSync(path.join(root, "docs", "qa"))
       .filter((entry) => entry.endsWith(".md"))
@@ -54,15 +57,18 @@ describe("QA benchmark traceability", () => {
     });
 
     expect(read("docs/qa/benchmark-traceability.md")).toContain("I-199");
-    expect(read("docs/qa/benchmark-traceability.md")).toContain("I-201");
     expect(read("docs/qa/benchmark-traceability.md")).toContain("I-300");
-    for (
-      let idNumber = activeBacklogRotation.start;
-      idNumber <= activeBacklogRotation.end;
-      idNumber += 1
-    ) {
-      expect(activeBacklogIds.has(`I-${idNumber}`)).toBe(true);
-    }
+    expect(read("docs/qa/benchmark-traceability.md")).toContain("I-301");
+    expect(read("docs/qa/benchmark-traceability.md")).toContain("I-400");
+    expect(activeBacklogNumbers.length).toBeGreaterThan(0);
+    expect(
+      activeBacklogNumbers.every(
+        (idNumber) =>
+          idNumber >= activeBacklogRotation.start &&
+          idNumber <= activeBacklogRotation.end,
+      ),
+    ).toBe(true);
+    expect(backlog).not.toContain("| Done |");
     expect(offenders).toEqual([]);
   });
 });

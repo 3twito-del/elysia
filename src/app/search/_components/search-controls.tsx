@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Check, ChevronDown, Search, SlidersHorizontal } from "lucide-react";
+import { Check, ChevronDown, Search, SlidersHorizontal, X } from "lucide-react";
 import {
   type FormEvent,
   useId,
@@ -31,6 +31,7 @@ type SearchControlsProps = {
   activeFilterCount: number;
   categories: CatalogCategory[];
   clearFiltersHref: string;
+  clearSearchHref: string;
   facets: CatalogFacets;
   input: ProductSearchInput;
   viewMode: "grid" | "list";
@@ -42,11 +43,13 @@ export function SearchControls({
   activeFilterCount,
   categories,
   clearFiltersHref,
+  clearSearchHref,
   facets,
   input,
   viewMode,
 }: SearchControlsProps) {
   const shouldShowAdvancedFilters = activeFilterCount > 0;
+  const hasQuery = Boolean(input.query?.trim());
 
   return (
     <div
@@ -61,7 +64,11 @@ export function SearchControls({
         role="search"
       >
         <div className="grid items-end gap-3 lg:grid-cols-[minmax(18rem,1.45fr)_repeat(3,minmax(9rem,1fr))_auto]">
-          <PrimarySearchFields categories={categories} input={input} />
+          <PrimarySearchFields
+            categories={categories}
+            clearSearchHref={clearSearchHref}
+            input={input}
+          />
           <Button className="h-11 gap-2" type="submit">
             <Search aria-hidden="true" className="size-4" />
             חיפוש
@@ -107,12 +114,13 @@ export function SearchControls({
             />
             <Input
               aria-label="חיפוש תכשיט, חומר, אבן, אירוע או מחיר"
-              className="h-11 ps-10 pe-3"
+              className={cn("h-11 ps-10", hasQuery ? "pe-10" : "pe-3")}
               data-search-prune-empty
               defaultValue={input.query}
               name="q"
               placeholder="טבעת, עגילים, מתנה..."
             />
+            {hasQuery ? <SearchClearQueryLink href={clearSearchHref} /> : null}
           </div>
           <PreservedSearchInputs input={input} viewMode={viewMode} />
           <Button
@@ -170,7 +178,11 @@ export function SearchControls({
               onSubmit={pruneEmptySearchParams}
               role="search"
             >
-              <PrimarySearchFields categories={categories} input={input} />
+              <PrimarySearchFields
+                categories={categories}
+                clearSearchHref={clearSearchHref}
+                input={input}
+              />
               <FacetSearchFields facets={facets} input={input} />
               <AvailabilityField input={input} />
               <PreservedModeInput input={input} />
@@ -193,11 +205,15 @@ export function SearchControls({
 
 function PrimarySearchFields({
   categories,
+  clearSearchHref,
   input,
 }: {
   categories: CatalogCategory[];
+  clearSearchHref: string;
   input: ProductSearchInput;
 }) {
+  const hasQuery = Boolean(input.query?.trim());
+
   return (
     <>
       <SearchControlField label="חיפוש">
@@ -208,12 +224,13 @@ function PrimarySearchFields({
           />
           <Input
             aria-label="חיפוש תכשיט, חומר, אבן, אירוע או מחיר"
-            className="h-11 ps-10 pe-3"
+            className={cn("h-11 ps-10", hasQuery ? "pe-10" : "pe-3")}
             data-search-prune-empty
             defaultValue={input.query}
             name="q"
             placeholder="טבעת, עגילים, מתנה..."
           />
+          {hasQuery ? <SearchClearQueryLink href={clearSearchHref} /> : null}
         </div>
       </SearchControlField>
       <SearchSelectField
@@ -255,6 +272,20 @@ function PrimarySearchFields({
         value={input.sort ?? "relevance"}
       />
     </>
+  );
+}
+
+function SearchClearQueryLink({ href }: { href: string }) {
+  return (
+    <Link
+      aria-label="ניקוי חיפוש"
+      className="text-muted-foreground hover:text-foreground absolute top-1/2 left-2 grid size-7 -translate-y-1/2 place-items-center rounded-md transition outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
+      data-testid="search-clear-query"
+      href={href}
+      scroll={false}
+    >
+      <X aria-hidden="true" className="size-4" />
+    </Link>
   );
 }
 

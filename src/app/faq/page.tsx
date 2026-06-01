@@ -115,6 +115,32 @@ export default async function FaqPage() {
           </Link>
         </div>
 
+        <section
+          aria-label="סינון מהיר לפי נושא"
+          className="mt-6 border-y border-[var(--glass-border)] py-4"
+          data-testid="faq-topic-filter-list"
+        >
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-medium">סינון מהיר</p>
+              <p className="text-muted-foreground text-sm">
+                קפיצה ישירה לנושא שמעניין אתכם.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {faqGroups.map((group, index) => (
+                <Link
+                  className="border-border hover:border-foreground/50 hover:bg-muted/60 rounded-full border px-3 py-1.5 text-sm transition"
+                  href={`#faq-group-${index + 1}`}
+                  key={group.title}
+                >
+                  {group.title}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <div className="brand-surface mt-8 p-6 sm:p-8" id="faq-groups">
           <div className="grid gap-10">
             {faqGroups.map((group, index) => {

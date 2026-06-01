@@ -109,6 +109,10 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     page: undefined,
     view: viewMode,
   });
+  const clearSearchHref = createSearchHref({
+    mode: input.mode,
+    view: viewMode,
+  });
   const resetAllHref = createSearchHref({ mode: input.mode, view: viewMode });
   const recoveryActions =
     result.total === 0 ? await getSearchRecoveryActions(input, viewMode) : [];
@@ -149,6 +153,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           <SearchControls
             activeFilterCount={activeRefinementCount}
             categories={categories}
+            clearSearchHref={clearSearchHref}
             clearFiltersHref={clearFiltersHref}
             facets={facets}
             input={input}

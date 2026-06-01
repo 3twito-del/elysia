@@ -12,6 +12,14 @@ export const metadata = {
   title: "מדריך מידות",
 };
 
+const printRulerTicks = ["0", "1", "2", "3", "4", "5", "6"] as const;
+
+const sizeMeasurementSteps = [
+  "מדדו על משטח ישר ובלי למשוך את הסרט.",
+  "השוו לטבלת המידה של טבעת, צמיד או שרשרת.",
+  "אם אתם בין מידות, בחרו את המידה הנוחה יותר לשימוש יומי.",
+] as const;
+
 type SizeGuidePageProps = {
   searchParams?: Promise<{
     kind?: string | string[];
@@ -53,6 +61,56 @@ export default async function SizeGuidePage({
         id="size-guide-tool"
         initialVisible
       >
+        <section
+          aria-labelledby="size-guide-measurement-title"
+          className="mb-5 grid gap-4 border-y border-[var(--glass-border)] py-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]"
+          data-testid="size-guide-measurement-overview"
+        >
+          <div>
+            <p className="text-muted-foreground text-xs font-medium uppercase">
+              כיול ומדידה
+            </p>
+            <h2
+              className="mt-2 text-lg font-medium text-balance"
+              id="size-guide-measurement-title"
+            >
+              התחילו מסרגל בדיקה קצר
+            </h2>
+            <p className="text-muted-foreground mt-2 text-sm leading-6">
+              להדפסה, הגדירו קנה מידה 100% ובדקו שהמרווחים כאן נשארים עקביים
+              לפני שמשווים למידה.
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(12rem,0.9fr)]">
+            <ol className="text-muted-foreground grid gap-2 text-sm leading-6">
+              {sizeMeasurementSteps.map((step) => (
+                <li className="flex gap-2" key={step}>
+                  <span aria-hidden="true">-</span>
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ol>
+            <div
+              aria-label="סרגל הדפסה בסנטימטרים"
+              className="rounded-md border border-[var(--glass-border)] p-3"
+              data-testid="size-guide-print-ruler"
+            >
+              <div className="border-foreground/60 flex h-10 items-end justify-between border-b">
+                {printRulerTicks.map((tick) => (
+                  <span
+                    className="border-foreground/60 relative flex h-6 min-w-0 items-start border-s ps-1 text-[0.7rem] tabular-nums"
+                    key={tick}
+                  >
+                    {tick}
+                  </span>
+                ))}
+              </div>
+              <p className="text-muted-foreground mt-2 text-xs">
+                סנטימטרים להצלבת קנה מידה לפני מדידה.
+              </p>
+            </div>
+          </div>
+        </section>
         {returnContext ? (
           <div
             className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-md border border-[var(--glass-border)] px-4 py-3 text-sm"

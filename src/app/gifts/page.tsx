@@ -11,6 +11,51 @@ import {
 
 const GIFT_RESULTS_LIMIT = 24;
 
+const giftBudgetChips = [
+  {
+    href: "/search?q=%D7%9E%D7%AA%D7%A0%D7%94&maxPrice=250",
+    label: "עד 250 ₪",
+  },
+  {
+    href: "/search?q=%D7%9E%D7%AA%D7%A0%D7%94&maxPrice=500",
+    label: "עד 500 ₪",
+  },
+  {
+    href: "/search?q=%D7%9E%D7%AA%D7%A0%D7%94&maxPrice=900",
+    label: "עד 900 ₪",
+  },
+] as const;
+
+const giftRecipientChips = [
+  {
+    href: "/search?q=%D7%9E%D7%AA%D7%A0%D7%94%20%D7%9C%D7%90%D7%9E%D7%90",
+    label: "לאמא",
+  },
+  {
+    href: "/search?q=%D7%9E%D7%AA%D7%A0%D7%94%20%D7%9C%D7%91%D7%AA%20%D7%96%D7%95%D7%92",
+    label: "לבת זוג",
+  },
+  {
+    href: "/search?q=%D7%9E%D7%AA%D7%A0%D7%94%20%D7%9C%D7%97%D7%91%D7%A8%D7%94",
+    label: "לחברה",
+  },
+] as const;
+
+const giftOccasionChips = [
+  {
+    href: "/search?q=%D7%9E%D7%AA%D7%A0%D7%AA%20%D7%99%D7%95%D7%9D%20%D7%94%D7%95%D7%9C%D7%93%D7%AA",
+    label: "יום הולדת",
+  },
+  {
+    href: "/search?q=%D7%9E%D7%AA%D7%A0%D7%AA%20%D7%99%D7%95%D7%9D%20%D7%A0%D7%99%D7%A9%D7%95%D7%90%D7%99%D7%9F",
+    label: "יום נישואין",
+  },
+  {
+    href: "/search?q=%D7%9E%D7%AA%D7%A0%D7%94%20%D7%9C%D7%97%D7%92",
+    label: "חג",
+  },
+] as const;
+
 export const metadata = {
   title: "מתנות",
 };
@@ -59,6 +104,32 @@ export default async function GiftsPage() {
             </Link>
           </div>
         </section>
+        <section
+          aria-labelledby="gift-discovery-title"
+          className="mt-5 grid gap-4 border-b border-[var(--glass-border)] pb-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.4fr)]"
+          data-testid="gift-discovery-chips"
+        >
+          <div>
+            <p className="text-muted-foreground text-xs font-medium uppercase">
+              מדריך בחירה מהיר
+            </p>
+            <h2
+              className="mt-2 text-lg font-medium text-balance"
+              id="gift-discovery-title"
+            >
+              התחילו מתקציב, נמען או אירוע
+            </h2>
+            <p className="text-muted-foreground mt-2 text-sm leading-6">
+              כל בחירה פותחת חיפוש מוכן ומצמצמת את המבחר בלי להסתיר את שאר
+              אפשרויות הסינון.
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <GiftChipGroup label="תקציב" links={giftBudgetChips} />
+            <GiftChipGroup label="למי" links={giftRecipientChips} />
+            <GiftChipGroup label="אירוע" links={giftOccasionChips} />
+          </div>
+        </section>
         <RevealGrid
           className="ui-equal-grid mt-5 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4"
           data-layout-equal-group="gift-products"
@@ -75,5 +146,30 @@ export default async function GiftsPage() {
         </RevealGrid>
       </RevealSection>
     </main>
+  );
+}
+
+function GiftChipGroup({
+  label,
+  links,
+}: {
+  label: string;
+  links: ReadonlyArray<{ href: string; label: string }>;
+}) {
+  return (
+    <div className="min-w-0">
+      <h3 className="text-sm font-medium">{label}</h3>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {links.map((link) => (
+          <Link
+            className="border-border hover:border-foreground/50 hover:bg-muted/60 rounded-full border px-3 py-1.5 text-sm transition"
+            href={link.href}
+            key={link.href}
+          >
+            {link.label}
+          </Link>
+        ))}
+      </div>
+    </div>
   );
 }

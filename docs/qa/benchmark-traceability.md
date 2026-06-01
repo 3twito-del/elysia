@@ -12,17 +12,19 @@ historical benchmark ID in the traceability test.
 ## Historical IDs
 
 The first QA benchmark pass used IDs `I-003` through `I-047`. Later completed
-backlog rotations used IDs `I-101` through `I-200`. Those IDs remain valid
+backlog rotations used IDs `I-101` through `I-300`. Those IDs remain valid
 historical references for benchmark documents whose purpose is preserving
 evidence from earlier passes. New benchmark documents should use a current
 backlog ID unless the document explicitly preserves historical evidence.
 
 ## Active Rotation
 
-The current active multi-aspect backlog rotation uses IDs `I-201` through
-`I-300`. When that batch is retired, update
-`src/styles/qa-benchmark-traceability.test.ts` so those IDs become explicitly
-historical before adding the next active rotation.
+The current active multi-aspect backlog rotation uses IDs in the `I-301`
+through `I-400` range. Completed items are removed from the active table after
+verification, so the traceability check validates the active range instead of
+requiring every ID in the range to remain present. When that batch is retired,
+update `src/styles/qa-benchmark-traceability.test.ts` so those IDs become
+explicitly historical before adding the next active rotation.
 
 ## Check
 
