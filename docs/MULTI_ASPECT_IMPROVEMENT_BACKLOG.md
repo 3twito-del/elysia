@@ -73,9 +73,93 @@ Candidate items are not implementable by default. Public-facing candidates must
 pass `docs/PUBLIC_CHANGE_GATE.md` or `docs/FULL_PRODUCT_BENCHMARK.md` before
 product code is edited.
 
-No candidate improvements remain. New public-facing candidates must pass
-`docs/PUBLIC_CHANGE_GATE.md` or `docs/FULL_PRODUCT_BENCHMARK.md` before product
-code is edited.
+### I-038 Product Recommendation Rail Relevance and Return Context
+
+- `ID`: I-038
+- `Aspect`: Public UX and Brand
+- `Status`: Needs Benchmark
+- `Priority`: P2
+- `Effort`: M
+- `Source/Evidence`: `/product/[slug]`, product recommendation rails,
+  search/category return context, PDP guidance in
+  `docs/FULL_PRODUCT_BENCHMARK.md`, and public structure guardrails
+- `Target Surface`: PDP recommendation rails, related-product grouping,
+  category/search continuation, product-card context labels
+- `Improvement`: Consider improving recommendation rail relevance and
+  return-to-discovery context without adding editorial sections, urgency copy,
+  or checkout shortcuts inside the PDP recommendation area.
+- `Acceptance Checks`: Benchmark confirms related products remain product-led,
+  route-backed, and compact; return context improves discovery without changing
+  PDP gallery/purchase priority.
+- `Verification`: Run benchmark workflow first; implementation verification
+  would require recommendation rail tests, product-card context tests, and
+  public structure enforcement tests.
+
+### I-039 Cart Quantity Recovery and Mobile Checkout Summary Clarity
+
+- `ID`: I-039
+- `Aspect`: Commerce and Checkout
+- `Status`: Needs Benchmark
+- `Priority`: P1
+- `Effort`: M
+- `Source/Evidence`: `/checkout`, cart quantity mutations, mobile checkout
+  sticky summary, offline cart mutation queue, checkout validation tests, and
+  commerce guidance in `docs/FULL_PRODUCT_BENCHMARK.md`
+- `Target Surface`: Checkout cart item controls, quantity update recovery,
+  mobile sticky summary, cart mutation errors, offline cart update copy
+- `Improvement`: Consider clearer quantity-update recovery and mobile summary
+  state without changing split local/Shopify checkout ownership or promising
+  offline checkout completion.
+- `Acceptance Checks`: Benchmark confirms cart recovery improves confidence,
+  keeps checkout source boundaries explicit, and does not add unsupported
+  payment, inventory, or fulfillment claims.
+- `Verification`: Run benchmark workflow first; implementation verification
+  would require checkout form tests, offline sync tests, and service trust
+  placement tests.
+
+### I-040 Service Request Topic Routing and Attachment Review Clarity
+
+- `ID`: I-040
+- `Aspect`: Admin and Operations
+- `Status`: Needs Benchmark
+- `Priority`: P2
+- `Effort`: M
+- `Source/Evidence`: `/service`, service topic defaults from account/order
+  recovery links, attachment validation, offline service request sync, and
+  service response benchmarks
+- `Target Surface`: Service request topic selection, account/order prefilled
+  service links, attachment review copy, queued offline service requests
+- `Improvement`: Consider making service topic routing and attachment review
+  clearer before submit without adding new support channels, unsupported SLA
+  promises, or admin-only data to the public service flow.
+- `Acceptance Checks`: Benchmark confirms service routing stays supported,
+  attachments remain constrained by existing validation, and offline service
+  sync copy remains realistic.
+- `Verification`: Run benchmark workflow first; implementation verification
+  would require service attachment tests, account recovery shortcut tests, and
+  offline sync response contract tests.
+
+### I-041 Admin Customer and Order Filter Recovery Audit
+
+- `ID`: I-041
+- `Aspect`: Admin and Operations
+- `Status`: Needs Benchmark
+- `Priority`: P2
+- `Effort`: M
+- `Source/Evidence`: `/admin/orders`, `/admin/customers`, `/admin/service`,
+  existing admin empty-state contracts, audit logs, and operational guidance in
+  `docs/FULL_PRODUCT_BENCHMARK.md`
+- `Target Surface`: Admin order/customer/service filters, filtered empty
+  states, reset links, pagination recovery, audit-safe operational copy
+- `Improvement`: Consider improving admin filter recovery across customer,
+  order, and service views without adding unsupported bulk automation, data
+  exports, or provider dashboard assumptions.
+- `Acceptance Checks`: Benchmark confirms operators can recover from filtered
+  empty states, pagination remains route-backed, and admin copy avoids exposing
+  private or provider-only details.
+- `Verification`: Run benchmark workflow first; implementation verification
+  would require admin empty-state contract tests, route-level error boundary
+  tests, and audit/outbox failure tests.
 
 ## Completed Work
 
