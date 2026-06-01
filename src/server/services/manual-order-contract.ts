@@ -93,8 +93,7 @@ export function assertManualReservationAvailable(input: {
   if (!canReserveStock(input)) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message:
-        "׳׳™׳ ׳׳¡׳₪׳™׳§ ׳׳׳׳™ ׳–׳׳™׳ ׳׳©׳׳™׳¨׳× ׳”׳”׳–׳׳ ׳” ׳‘׳¢׳¨׳•׳¥ ׳©׳ ׳‘׳—׳¨.",
+      message: "אין מספיק מלאי זמין לשמירת ההזמנה בערוץ שנבחר.",
     });
   }
 }
@@ -112,8 +111,7 @@ export function assertManualOrderTransitionAllowed(input: {
   if (!allowedStatuses.includes(nextStatus)) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message:
-        "׳׳ ׳ ׳™׳×׳ ׳׳‘׳¦׳¢ ׳׳¢׳‘׳¨ ׳¡׳˜׳˜׳•׳¡ ׳–׳” ׳׳”׳–׳׳ ׳” ׳™׳“׳ ׳™׳×.",
+      message: "לא ניתן לבצע מעבר סטטוס זה להזמנה ידנית.",
     });
   }
 
@@ -123,8 +121,7 @@ export function assertManualOrderTransitionAllowed(input: {
   ) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message:
-        "׳”׳–׳׳ ׳× ׳׳©׳׳•׳— ׳׳ ׳™׳›׳•׳׳” ׳׳¢׳‘׳•׳¨ ׳׳¡׳˜׳˜׳•׳¡ ׳׳•׳›׳ ׳׳×׳™׳׳•׳.",
+      message: "הזמנת משלוח לא יכולה לעבור לסטטוס מוכן לתיאום.",
     });
   }
 
@@ -134,8 +131,7 @@ export function assertManualOrderTransitionAllowed(input: {
   ) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message:
-        "׳”׳–׳׳ ׳× ׳×׳™׳׳•׳ ׳׳™׳ ׳” ׳™׳›׳•׳׳” ׳׳¢׳‘׳•׳¨ ׳׳¡׳˜׳˜׳•׳¡ ׳ ׳©׳׳—׳”.",
+      message: "הזמנת תיאום אינה יכולה לעבור לסטטוס נשלחה.",
     });
   }
 }
@@ -163,7 +159,7 @@ function validateDeliveryAddressForSchema(
 
   context.addIssue({
     code: z.ZodIssueCode.custom,
-    message: "׳›׳×׳•׳‘׳× ׳׳©׳׳•׳— ׳ ׳“׳¨׳©׳× ׳׳”׳–׳׳ ׳× ׳׳©׳׳•׳—.",
+    message: "כתובת משלוח נדרשת להזמנת משלוח.",
     path: ["shippingAddress"],
   });
 }

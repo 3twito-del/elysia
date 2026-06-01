@@ -6,7 +6,10 @@
   "scripts": {
     "prebuild": "node scripts/verify-production-env.mjs && node scripts/convert-public-images-to-avif.mjs --check",
     "build": "node scripts/build.mjs",
-    "check": "pnpm lint && pnpm typecheck && pnpm test",
+    "check": "pnpm copy:check && pnpm lint && pnpm typecheck && pnpm test",
+    "copy:apply": "tsx scripts/site-copy.ts apply",
+    "copy:check": "tsx scripts/site-copy.ts check",
+    "copy:sync": "tsx scripts/site-copy.ts sync",
     "db:generate": "prisma generate",
     "db:migrate:dev": "prisma migrate dev",
     "db:migrate": "prisma migrate deploy",

@@ -12,15 +12,13 @@ export const appointmentsRouter = createTRPCRouter({
         key: createRateLimitKey("appointment", input.phone),
         limit: 4,
         windowMs: 60 * 60_000,
-        message:
-          "׳™׳•׳×׳¨ ׳׳“׳™ ׳‘׳§׳©׳•׳× ׳׳₪׳’׳™׳©׳”. ׳ ׳¡׳• ׳©׳•׳‘ ׳׳׳•׳—׳¨ ׳™׳•׳×׳¨.",
+        message: "יותר מדי בקשות לפגישה. נסו שוב מאוחר יותר.",
       });
       await assertTRPCRateLimit({
         key: `appointment-ip:${getTRPCRequestIp(ctx.headers)}`,
         limit: 20,
         windowMs: 60 * 60_000,
-        message:
-          "׳™׳•׳×׳¨ ׳׳“׳™ ׳‘׳§׳©׳•׳× ׳׳₪׳’׳™׳©׳”. ׳ ׳¡׳• ׳©׳•׳‘ ׳׳׳•׳—׳¨ ׳™׳•׳×׳¨.",
+        message: "יותר מדי בקשות לפגישה. נסו שוב מאוחר יותר.",
       });
 
       return createAppointmentRequest({

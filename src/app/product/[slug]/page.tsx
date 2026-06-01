@@ -139,7 +139,7 @@ export default async function ProductPage({
   const productTrustNotes = [
     "פרטים מאומתים לפני הזמנה",
     "נבדק בקפידה לפני מסירה",
-    "ייעוץ אישי לבחירת מידה",
+    "ייעוץ לבחירת מידה",
   ];
 
   return (
@@ -270,7 +270,7 @@ export default async function ProductPage({
           <CommerceSectionHeader
             className="mb-0"
             eyebrow="הבית של Elysia"
-            title="תכשיט שנבחר כמו אייקון אישי, לא כמו עוד שורה במבחר."
+            title="פרטי מוצר, שירות והזמנה במקום אחד."
           />
 
           <div className="grid gap-8">
@@ -290,9 +290,9 @@ export default async function ProductPage({
                 title="החלפות והחזרות"
               />
               <ServiceRow
-                description="אפשר לקבל ייעוץ אישי לבחירת מידה, התאמה ומתנה לפני השלמת ההזמנה."
+                description="אפשר לקבל ייעוץ לבחירת מידה, התאמה ומתנה לפני השלמת ההזמנה."
                 icon={Gem}
-                title="ייעוץ אישי"
+                title="ייעוץ"
               />
             </div>
           </div>

@@ -75,11 +75,11 @@ export const aiRouter = createTRPCRouter({
       }),
     )
     .query(({ input }) => ({
-      shortDescription: `${input.name} ב${input.material}${input.stone ? ` עם ${input.stone}` : ""}, בעיצוב נקי לשימוש יומיומי ומתנה מדויקת.`,
+      shortDescription: `${input.name} ב${input.material}${input.stone ? ` עם ${input.stone}` : ""}, בעיצוב נקי לשימוש יומיומי או למתנה.`,
       description: [
         `${input.name} הוא תכשיט ${input.category} מודרני עם נוכחות עדינה.`,
         `החומר המרכזי הוא ${input.material}${input.stone ? ` בשילוב ${input.stone}` : ""}.`,
-        "פרטי המחיר, ההתאמה והחומר מוצגים לפני הזמנה כדי לאפשר בחירה ברורה ושקטה.",
+        "פרטי המחיר, ההתאמה והחומר מוצגים לפני הזמנה כדי לאפשר בחירה ברורה.",
       ].join("\n\n"),
     })),
 });

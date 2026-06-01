@@ -83,7 +83,7 @@ export function getWishlistDecisionSupport(
       },
     ],
     serviceHref: createWishlistServiceHref(items),
-    summary: `נשמרו ${items.length} ${items.length === 1 ? "בחירה" : "בחירות"} להשוואה שקטה לפני החלטה.`,
+    summary: `נשמרו ${items.length} ${items.length === 1 ? "בחירה" : "בחירות"} להשוואה לפני החלטה.`,
   };
 }
 
@@ -95,7 +95,7 @@ function createWishlistServiceHref(items: WishlistShortlistItem[]) {
     .join(", ");
   const params = new URLSearchParams({
     message:
-      "אשמח לעזרה בהתאמת מידה או בהשוואה בין הפריטים ששמרתי באזור האישי.",
+      "אשמח לעזרה בהתאמת מידה או בהשוואה בין הפריטים ששמרתי באזור הלקוח.",
     topic: "sizing",
   });
 

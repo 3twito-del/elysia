@@ -38,7 +38,7 @@ const ACTIVE_PRODUCT_WHERE = {
 } satisfies Prisma.ProductWhereInput;
 const CATALOG_REVALIDATE_SECONDS = 60 * 60;
 const publicCatalogCopyReplacements = [
-  ["יוקרה נגישה", "דיוק מאופק"],
+  ["יוקרה נגישה", "מידע ברור"],
   ["רשת תכשיטים", "בית תכשיטים"],
   ["סטודיו תכשיטים אונליין", "בית תכשיטים ישראלי"],
   ["סטודיו תכשיטים ישראלי", "בית תכשיטים ישראלי"],

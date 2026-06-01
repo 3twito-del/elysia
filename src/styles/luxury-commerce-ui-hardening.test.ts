@@ -45,7 +45,7 @@ describe("luxury commerce UI hardening", () => {
 
     expect(mobileNav).not.toContain("h-auto min-h-14 flex-col");
     expect(mobileNav).not.toContain('variant="outline"');
-    expect(mobileNav).toContain("תכשיטים בקו מדוד, ייעוץ אישי ושירות שקט.");
+    expect(mobileNav).toContain("תכשיטים, מידע, הזמנה ושירות.");
     expect(mobileNav).not.toContain("׳³");
     expect(mobileNav).toContain("after:h-px");
     expect(mobileNav).toContain('href: "/branches"');

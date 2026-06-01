@@ -62,7 +62,7 @@ const spotlightActions = [
   {
     href: "/gifts",
     label: "מתנות",
-    description: "בחירה מדויקת לפי רגע ומחווה",
+    description: "בחירה לפי מחיר, אירוע וחומר",
     icon: Gift,
   },
   {
@@ -159,7 +159,7 @@ export function MobileNav({
             className="text-muted-foreground mobile-nav-animated-item mt-2 text-sm leading-6"
             style={getMobileNavStaggerStyle(1)}
           >
-            תכשיטים בקו מדוד, ייעוץ אישי ושירות שקט.
+            תכשיטים, מידע, הזמנה ושירות.
           </p>
         </div>
 

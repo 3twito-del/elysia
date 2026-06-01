@@ -78,17 +78,17 @@ const checkoutEmptyLinks = [
   {
     href: "/category/rings",
     label: "קולקציית טבעות",
-    text: "בחירה מדויקת ליום יום, אירוע או מתנה אישית.",
+    text: "טבעות ליום יום, אירוע או מתנה.",
   },
   {
     href: "/category/necklaces",
     label: "שרשראות עדינות",
-    text: "קווים נקיים ושכבות שנבחרות בנחת.",
+    text: "שרשראות לפי אורך, חומר ושימוש.",
   },
   {
     href: "/service",
-    label: "לקבלת ייעוץ אישי",
-    text: "עזרה בבחירה, מידה או הקדשה אישית.",
+    label: "לקבלת ייעוץ",
+    text: "עזרה בבחירה, מידה או הקדשה.",
   },
 ] as const;
 
@@ -1273,8 +1273,8 @@ function CheckoutEmptyCartState() {
             הבחירה שלך ממתינה לתכשיט הראשון
           </h2>
           <p className="text-muted-foreground mt-4 max-w-xl text-sm leading-7 sm:text-base">
-            חזרי לקולקציה ובחרי את התכשיט שילווה את הרגע הבא. הסיכום ימתין כאן
-            עם סיכום ברור, שמירת התכשיטים ושירות אישי לפני אישור.
+            חזרי לקולקציה ובחרי תכשיט. הסיכום ימתין כאן עם פירוט הפריטים, שמירה
+            לבחירה ושירות לפני אישור.
           </p>
           <div className="mt-7 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <Button asChild>
@@ -1285,7 +1285,7 @@ function CheckoutEmptyCartState() {
             </Button>
             <Button asChild variant="outline">
               <Link href="/service">
-                לקבלת ייעוץ אישי
+                לקבלת ייעוץ
                 <MessageCircle aria-hidden="true" className="size-4" />
               </Link>
             </Button>

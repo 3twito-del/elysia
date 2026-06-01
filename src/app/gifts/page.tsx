@@ -28,7 +28,7 @@ export default async function GiftsPage() {
     <main>
       <SiteHeader />
       <CommercePageHero
-        description="בחירות מתנה מדודות עם אריזה, ברכה אישית והתאמה לפי רגע, חומר ומחיר."
+        description="בחירות מתנה לפי מחיר, חומר, אירוע ואפשרות לאריזה או ברכה."
         eyebrow="מתנות Elysia"
         id="page-hero"
         title="למתנות"
@@ -55,7 +55,7 @@ export default async function GiftsPage() {
               className="text-muted-foreground hover:text-foreground text-sm font-medium underline-offset-4 hover:underline"
               href="/search?q=%D7%9E%D7%AA%D7%A0%D7%94"
             >
-              חיפוש מתנה מדויק
+              חיפוש מתנה
             </Link>
           </div>
         </section>

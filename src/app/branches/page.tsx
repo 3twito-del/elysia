@@ -19,7 +19,7 @@ import { getPublicServiceProfile } from "~/server/services/service";
 export const metadata: Metadata = {
   title: "חנות אונליין ושירות",
   description:
-    "Elysia פועלת כרגע כחנות אונליין עם שירות אישי. מיקומי שירות יוצגו כאן כאשר סניפים פיזיים יהיו זמינים.",
+    "Elysia פועלת כרגע כחנות אונליין עם שירות דרך האתר. מיקומי שירות יוצגו כאן כאשר סניפים פיזיים יהיו זמינים.",
 };
 
 export const dynamic = "force-dynamic";
@@ -31,7 +31,7 @@ const onlineServiceHighlights = [
     icon: Search,
   },
   {
-    title: "שירות אישי",
+    title: "שירות",
     text: "שאלות על מידה, מתנה או התאמה מטופלות דרך טופס השירות.",
     icon: Headphones,
   },

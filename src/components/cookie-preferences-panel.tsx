@@ -13,7 +13,7 @@ export function CookiePreferencesPanel() {
   const consentValue = useCookieConsentValue();
   const statusText =
     consentValue === "all"
-      ? "מאושרים קוקיז חיוניים וגם מדידה ושיפור חוויה."
+      ? "מאושרים קוקיז חיוניים וגם מדידה לשיפור האתר."
       : consentValue === "essential"
         ? "מאושרים קוקיז חיוניים בלבד."
         : "עדיין לא נשמרה בחירת קוקיז בדפדפן זה.";

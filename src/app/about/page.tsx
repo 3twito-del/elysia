@@ -148,11 +148,10 @@ const workflow = [
 export const metadata: Metadata = {
   title: "אודות",
   description:
-    "Elysia היא בית תכשיטים ישראלי עם קולקציה אוצרותית, פרטי תכשיט ברורים ושירות אישי לפני ההזמנה ולאחריה.",
+    "Elysia היא בית תכשיטים ישראלי עם פרטי מוצר ברורים, הזמנה מקוונת ושירות לפני ההזמנה ולאחריה.",
   openGraph: {
     title: "Elysia",
-    description:
-      "בית תכשיטים ישראלי שמחבר יופי נקי, חומר גלוי, בחירה מדויקת ושירות אישי.",
+    description: "בית תכשיטים ישראלי עם מידע ברור על חומר, מידה, מחיר ושירות.",
     images: [{ url: "/brand/v2/content-editorial.avif" }],
   },
 };
@@ -181,7 +180,7 @@ export default function AboutPage() {
             </>
           }
           className="[&_.commerce-page-hero-inner]:pb-6 lg:[&_.commerce-page-hero-inner]:pb-8"
-          description="Elysia מציגה קולקציות תכשיטים בקו נקי, עם מידע ברור, שירות אישי והזמנה מקוונת."
+          description="Elysia מציגה קולקציות תכשיטים עם מידע ברור, שירות והזמנה מקוונת."
           eyebrow="Elysia"
           id="page-hero"
           media={{
@@ -193,10 +192,10 @@ export default function AboutPage() {
           metrics={[
             { label: "מיקוד", value: "תכשיטי בית" },
             { label: "גישה", value: "דיוק מאופק" },
-            { label: "שירות", value: "אישי ומדוד" },
+            { label: "שירות", value: "לפני ואחרי הזמנה" },
           ]}
           metricsMode="inline"
-          title="תכשיטים בקו נקי."
+          title="תכשיטים עם פרטים ברורים."
           variant="content"
         />
 
@@ -213,14 +212,13 @@ export default function AboutPage() {
               </h2>
               <div className="text-muted-foreground mt-5 grid max-w-2xl gap-4 text-base leading-8">
                 <p>
-                  תכשיט טוב מתחיל בפרופורציה, בחומר ובשקט. אנחנו מציגים כל תכשיט
-                  כך שאפשר לראות את הקו, להבין את המידה, לאמת את הפרטים ולהרגיש
-                  בטוחים לפני ההזמנה.
+                  תכשיט טוב מתחיל בפרופורציה, בחומר ובמידע ברור. אנחנו מציגים כל
+                  תכשיט כך שאפשר לראות את המבנה, להבין את המידה ולאמת את הפרטים
+                  לפני ההזמנה.
                 </p>
                 <p>
-                  לצד הקולקציה יש שירות אישי שמכיר את הרגע: מתנה, מידה, אירוע או
-                  בחירה יומיומית. המטרה אינה למהר את ההחלטה, אלא להפוך אותה
-                  לברורה יותר.
+                  לצד הקולקציה יש שירות לשאלות על מתנה, מידה, אירוע או בחירה
+                  יומיומית. המטרה היא לצמצם אי־ודאות לפני אישור ההזמנה.
                 </p>
               </div>
               <dl className="mt-7 grid gap-3 sm:grid-cols-3">
@@ -257,14 +255,13 @@ export default function AboutPage() {
               <div>
                 <p className="text-muted-foreground text-sm">Elysia</p>
                 <h2 className="mt-3 max-w-3xl text-3xl leading-tight font-semibold sm:text-4xl">
-                  Elysia נבנתה כדי שהבחירה בתכשיט תרגיש מדויקת לפני שהיא מרגישה
-                  חגיגית.
+                  Elysia נבנתה כדי שהבחירה בתכשיט תהיה ברורה לפני אישור ההזמנה.
                 </h2>
                 <div className="text-muted-foreground mt-5 grid max-w-3xl gap-4 leading-8">
                   <p>
                     מאחורי המותג עומדת תפיסה פשוטה: תכשיט יפה באמת לא צריך
                     להסתמך על מסתורין. הוא צריך תמונה טובה, פרטים ברורים,
-                    פרופורציה נכונה ושירות שמכבד את הזמן של הלקוחה.
+                    פרופורציה נכונה ושירות שמכבד את הזמן של הלקוח.
                   </p>
                   <p>
                     לכן אנחנו בוחרים תכשיטים שנראים טוב מקרוב ונשארים נוחים
@@ -358,9 +355,8 @@ export default function AboutPage() {
                 Elysia מאפשרת לבחור, לבדוק ולהזמין במקום אחד.
               </h2>
               <p className="text-muted-foreground mt-4 max-w-3xl leading-8">
-                יש תכשיטים שמתחילים בתמונה ויש תכשיטים שמתחילים באדם. אנחנו
-                מעדיפים להתחיל באדם: בסגנון שלו, ברגע שלו, ובשאלה מה הוא רוצה
-                לזכור.
+                יש תכשיטים שמתחילים בתמונה ויש תכשיטים שמתחילים בצורך. אנחנו
+                מעדיפים להתחיל בצורך: מידה, חומר, תקציב ושימוש.
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">

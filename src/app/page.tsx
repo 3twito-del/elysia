@@ -81,22 +81,20 @@ const giftRitual = [
 export const metadata: Metadata = {
   title: "תכשיטים",
   description:
-    "עמוד הבית של Elysia: תכשיטים עם קולקציות, חומריות שקטה, מתנות, ייעוץ אישי ומבחר נבחר.",
+    "עמוד הבית של Elysia: תכשיטים, מתנות, מידע מוצר ברור והזמנה מקוונת.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: "Elysia | תכשיטים",
-    description:
-      "קולקציות תכשיטים מדודות ושירות אישי שנבנים סביב שקט, חומר והתאמה.",
+    description: "קולקציות תכשיטים עם מידע ברור על חומר, מידה, מחיר והזמנה.",
     url: "/",
     images: [{ url: "/brand/v2/editorial-home.avif" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Elysia | תכשיטים",
-    description:
-      "קולקציות תכשיטים מדודות ושירות אישי שנבנים סביב שקט, חומר והתאמה.",
+    description: "קולקציות תכשיטים עם מידע ברור על חומר, מידה, מחיר והזמנה.",
     images: ["/brand/v2/editorial-home.avif"],
   },
 };
@@ -159,10 +157,10 @@ export default async function Home() {
               Elysia
             </h1>
             <p className="motion-copy-item mt-5 max-w-2xl text-xl leading-8 text-white/94 [--motion-copy-delay:90ms] sm:text-3xl sm:leading-10">
-              תכשיטים ליום, לערב ולרגעים מיוחדים.
+              תכשיטים ליום, לערב ולמתנות.
             </p>
             <p className="motion-copy-item mt-4 max-w-xl text-sm leading-7 text-white/78 [--motion-copy-delay:130ms] sm:text-base sm:leading-8">
-              קולקציות תכשיטים, שירות אישי והזמנה מקוונת.
+              קולקציות תכשיטים, מידע ברור והזמנה מקוונת.
             </p>
           </div>
         </div>
@@ -379,14 +377,14 @@ export default async function Home() {
         <div className="mx-auto grid max-w-7xl gap-8 px-[var(--ui-page-x)] py-[var(--ui-section-y)] sm:px-[var(--ui-page-x-wide)] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center">
           <div className="grid gap-6">
             <CommerceSectionHeader
-              description="שירות אישי זמין לשאלות על מידה, חומר, מתנה או התאמה."
-              eyebrow="ייעוץ אישי"
+              description="אפשר לקבל עזרה בשאלות על מידה, חומר, מתנה או התאמה."
+              eyebrow="ייעוץ"
               title="עזרה בבחירה"
             />
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Button asChild>
                 <Link href="/stylist">
-                  לייעוץ אישי
+                  לייעוץ
                   <MessageCircle aria-hidden="true" className="size-4" />
                 </Link>
               </Button>

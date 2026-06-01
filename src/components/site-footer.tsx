@@ -17,7 +17,7 @@ const catalogLinks = [
 
 const commerceLinks = [
   { href: "/checkout", label: "הבחירה שלי" },
-  { href: "/service", label: "שירות אישי" },
+  { href: "/service", label: "שירות" },
   { href: "/faq", label: "שאלות ותשובות" },
   { href: "/size-guide", label: "מדריך מידות" },
 ] as const;
@@ -65,7 +65,7 @@ export function SiteFooter() {
               </span>
             </Link>
             <p className="text-muted-foreground mt-6 max-w-md text-sm leading-8 sm:text-[0.95rem]">
-              קולקציות תכשיטים, שירות אישי והזמנה מקוונת.
+              קולקציות תכשיטים, מידע ברור והזמנה מקוונת.
             </p>
             <div className="mt-7 max-w-md">
               <p className="text-foreground text-xs font-medium">עדכונים</p>

@@ -20,9 +20,9 @@ import { Separator } from "~/components/ui/separator";
 import { getPublicServiceProfile } from "~/server/services/service";
 
 export const metadata: Metadata = {
-  title: "שירות אישי",
+  title: "שירות",
   description:
-    "שירות אישי וטלפוני של Elysia להזמנות, תיקונים, החזרות, מידות, פרטיות ונגישות.",
+    "שירות של Elysia להזמנות, תיקונים, החזרות, מידות, פרטיות ונגישות.",
 };
 
 export const dynamic = "force-dynamic";
@@ -85,7 +85,7 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
       <CommercePageHero
         description="שירות להזמנות, מידות, החזרות ופניות נוספות במקום אחד."
         eyebrow="שירות Elysia"
-        title="שירות אישי"
+        title="שירות"
         variant="content"
       />
 
@@ -93,7 +93,7 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
         <div className="grid gap-6 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
           <section className="grid gap-5" aria-labelledby="service-contact">
             <div>
-              <Badge variant="secondary">שירות אישי</Badge>
+              <Badge variant="secondary">שירות</Badge>
               <h2 className="mt-3 text-2xl font-semibold" id="service-contact">
                 כל הפניות במקום אחד
               </h2>
@@ -173,7 +173,7 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
               <div className="grid gap-3 sm:grid-cols-3">
                 <TrustItem icon={Clock3} label="מענה מסודר" />
                 <TrustItem icon={ShieldCheck} label="תיעוד מאובטח" />
-                <TrustItem icon={Sparkles} label="שירות אישי" />
+                <TrustItem icon={Sparkles} label="שירות" />
               </div>
             </div>
           </section>

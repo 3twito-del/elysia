@@ -20,7 +20,7 @@ export async function createAppointmentRequest(input: {
   if (!branch) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "׳׳₪׳©׳¨׳•׳× ׳”׳©׳™׳¨׳•׳× ׳©׳ ׳‘׳—׳¨׳” ׳׳ ׳ ׳׳¦׳׳”.",
+      message: "אפשרות השירות שנבחרה לא נמצאה.",
     });
   }
 
@@ -73,8 +73,8 @@ async function sendAppointmentConfirmation(input: {
   await notificationProvider
     .sendEmail({
       to: input.email,
-      subject: "׳‘׳§׳©׳× ׳”׳₪׳’׳™׳©׳” ׳©׳׳ ׳”׳×׳§׳‘׳׳”",
-      body: `׳§׳™׳‘׳׳ ׳• ׳׳× ׳‘׳§׳©׳×׳ ׳׳₪׳’׳™׳©׳” ׳‘׳ ׳•׳©׳ ${input.topic}. ׳¦׳•׳•׳× Elysia ׳™׳—׳–׳•׳¨ ׳׳׳™׳ ׳׳׳™׳©׳•׳¨.`,
+      subject: "בקשת הפגישה שלך התקבלה",
+      body: `קיבלנו את בקשתך לפגישה בנושא ${input.topic}. צוות Elysia יחזור אליך לאישור.`,
       idempotencyKey: `appointment_confirmation:${input.appointmentId}`,
     })
     .catch(async (error: unknown) => {

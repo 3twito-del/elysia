@@ -12,7 +12,7 @@ import { env } from "~/env";
 
 const appName = "Elysia";
 const appDescription =
-  "בית תכשיטים ישראלי לטבעות, שרשראות, עגילים וצמידים, עם דיוק חומרי, אור שקט, שירות אישי והזמנה מדודה.";
+  "בית תכשיטים ישראלי לטבעות, שרשראות, עגילים וצמידים, עם מידע ברור על חומר, מידה, מחיר והזמנה מקוונת.";
 
 const sharePreviewImage = "/brand/v2/editorial-home.avif";
 
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     template: "%s | Elysia",
   },
   description:
-    "בית תכשיטים ישראלי לטבעות, שרשראות, עגילים וצמידים, עם דיוק חומרי, אור שקט, שירות אישי והזמנה מדודה.",
+    "בית תכשיטים ישראלי לטבעות, שרשראות, עגילים וצמידים, עם מידע ברור על חומר, מידה, מחיר והזמנה מקוונת.",
   manifest: "/manifest.webmanifest",
   icons: [
     { rel: "icon", url: "/favicon.ico" },
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Elysia",
-    description: "תכשיטי בית בעברית, עם בחירה מדויקת ושירות אישי.",
+    description: "תכשיטי בית בעברית, עם מידע ברור ושירות הזמנה.",
     url: "/",
     images: [{ url: sharePreviewImage }],
     locale: "he_IL",

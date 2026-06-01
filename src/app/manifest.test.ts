@@ -34,7 +34,7 @@ describe("PWA manifest", () => {
           url: "/size-guide?source=pwa-shortcut",
         }),
         expect.objectContaining({
-          description: "פנייה לשירות אישי",
+          description: "פנייה לשירות",
           url: "/service?source=pwa-shortcut",
         }),
       ]),

@@ -19,7 +19,7 @@ import { getPublicContactSettings } from "~/server/services/service";
 export const metadata: Metadata = {
   title: "תקנון",
   description:
-    "תקנון ותנאי שימוש באתר Elysia, לרבות שימוש באתר, הזמנות, תשלום, מסירה, ביטולים ושירות אישי.",
+    "תקנון ותנאי שימוש באתר Elysia, לרבות שימוש באתר, הזמנות, תשלום, מסירה, ביטולים ושירות.",
 };
 
 export const dynamic = "force-dynamic";
@@ -67,7 +67,7 @@ export default async function TermsPage() {
       <SiteHeader />
 
       <CommercePageHero
-        description="תנאי השימוש באתר Elysia, כולל הזמנות, תשלום, מסירה, ביטולים ושירות אישי."
+        description="תנאי השימוש באתר Elysia, כולל הזמנות, תשלום, מסירה, ביטולים ושירות."
         eyebrow="תקנון ומדיניות"
         title="תקנון"
         variant="content"
@@ -116,7 +116,7 @@ export default async function TermsPage() {
 
           <section aria-labelledby="terms-contact">
             <h2 className="text-2xl font-semibold" id="terms-contact">
-              שירות אישי ופניות
+              שירות ופניות
             </h2>
             <p className="text-muted-foreground mt-3 leading-8">
               לכל שאלה לגבי הזמנה, ביטול, פרטיות או שימוש באתר ניתן לפנות אלינו

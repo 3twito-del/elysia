@@ -22,7 +22,7 @@ export const cinematicRouteMedia = {
       src: "/brand/v2/content-editorial.avif",
     },
     {
-      alt: "זכוכית אקווה ותכשיטי פנינה בעיצוב שקט",
+      alt: "זכוכית אקווה ותכשיטי פנינה על רקע נקי",
       src: "/brand/v2/content-policy.avif",
     },
   ],

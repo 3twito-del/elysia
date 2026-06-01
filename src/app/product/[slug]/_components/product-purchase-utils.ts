@@ -120,7 +120,7 @@ export function getPurchaseConfidenceItems(input: {
     {
       description: input.sizeKind
         ? "מדריך המידות והמידה השמורה זמינים לפני צירוף לבחירה."
-        : "אפשר לקבל ייעוץ התאמה אישי לפני השלמת ההזמנה.",
+        : "אפשר לקבל ייעוץ התאמה לפני השלמת ההזמנה.",
       icon: "fit",
       key: "fit",
       title: input.sizeKind ? "מידה לפני צירוף" : "התאמה לפני צירוף",

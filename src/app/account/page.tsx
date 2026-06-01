@@ -288,7 +288,7 @@ export default async function AccountPage() {
                 value="פרופיל"
               />
               <MetricCard
-                detail="פניות ושירות אישי"
+                detail="פניות ושירות"
                 icon={ShieldCheck}
                 label="שירות"
                 variant="soft"
@@ -482,7 +482,7 @@ export default async function AccountPage() {
                           data-testid="account-shopify-service-link"
                           href={createAccountServiceHref({
                             message:
-                              "אשמח לעזרה בהזמנת ספק שמופיעה באזור האישי.",
+                              "אשמח לעזרה בהזמנת ספק שמופיעה באזור הלקוח.",
                             orderNumber:
                               order.shopifyOrderName ?? order.shopifyOrderId,
                             topic: "order",
@@ -702,9 +702,9 @@ export default async function AccountPage() {
             </CardHeader>
             <CardContent className="grid gap-3">
               <EmptyState
-                description="אפשר לקבל ייעוץ אישי, עזרה בבחירת מידה ומעקב אחרי הזמנות דרך השירות האישי."
+                description="אפשר לקבל ייעוץ, עזרה בבחירת מידה ומעקב אחרי הזמנות דרך השירות."
                 icon={ShieldCheck}
-                title="שירות אישי"
+                title="שירות"
                 variant="inset"
                 actions={
                   <>
@@ -712,7 +712,7 @@ export default async function AccountPage() {
                       <Link href="/faq">שאלות ותשובות</Link>
                     </Button>
                     <Button asChild>
-                      <Link href="/service">שירות אישי</Link>
+                      <Link href="/service">שירות</Link>
                     </Button>
                   </>
                 }
@@ -780,7 +780,7 @@ function AccountRecoveryShortcuts({
         ? `תמיכה בהזמנת ספק ${latestSupplierOrderNumber}.`
         : "תמיכה בהזמנת ספק שמטופלת מחוץ לקופה המקומית.",
       href: createAccountServiceHref({
-        message: "אשמח לעזרה בהזמנת ספק שמופיעה באזור האישי.",
+        message: "אשמח לעזרה בהזמנת ספק שמופיעה באזור הלקוח.",
         orderNumber: latestSupplierOrderNumber,
         topic: "order",
       }),
