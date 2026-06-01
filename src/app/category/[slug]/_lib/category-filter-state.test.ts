@@ -40,6 +40,54 @@ describe("getCategoryRouteState", () => {
       ]),
     );
   });
+
+  it("builds route-backed no-result recovery actions for adjacent categories", () => {
+    const state = getCategoryRouteState({
+      catalogProducts: [
+        makeProduct({
+          categorySlug: "rings",
+          material: "gold",
+          price: 900,
+          slug: "ring-a",
+        }),
+        makeProduct({
+          categorySlug: "earrings",
+          material: "silver",
+          price: 1300,
+          slug: "earring-a",
+        }),
+        makeProduct({
+          categorySlug: "bracelets",
+          material: "gold",
+          price: 1100,
+          slug: "bracelet-a",
+        }),
+      ],
+      categories: [
+        makeCategory("rings"),
+        makeCategory("earrings"),
+        makeCategory("bracelets"),
+      ],
+      facets: {
+        collections: ["classic"],
+        materials: ["gold", "silver"],
+        priceRange: { max: 1300, min: 900 },
+        stones: ["diamond"],
+      },
+      query: { material: "silver" },
+      slug: "rings",
+    });
+
+    expect(state.filteredProducts).toHaveLength(0);
+    expect(state.noResultRecoveryActions).toEqual([
+      expect.objectContaining({
+        href: "/category/earrings?material=silver",
+        label: "earrings",
+        total: 1,
+      }),
+    ]);
+    expect(state.searchRecoveryHref).toBe("/search?material=silver");
+  });
 });
 
 function makeCategory(slug: string): CatalogCategory {
@@ -53,7 +101,8 @@ function makeCategory(slug: string): CatalogCategory {
 }
 
 function makeProduct(
-  overrides: Pick<CatalogProduct, "categorySlug" | "price" | "slug">,
+  overrides: Pick<CatalogProduct, "categorySlug" | "price" | "slug"> &
+    Partial<CatalogProduct>,
 ): CatalogProduct {
   return {
     availabilityMode: "READY_TO_ORDER",
@@ -67,7 +116,7 @@ function makeProduct(
     image: "/product.png",
     images: ["/product.png"],
     inventory: { online: 1 },
-    material: "gold",
+    material: overrides.material ?? "gold",
     metalColors: [],
     name: overrides.slug,
     popularityScore: 1,

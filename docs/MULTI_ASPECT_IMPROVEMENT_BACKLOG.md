@@ -73,26 +73,6 @@ Candidate items are not implementable by default. Public-facing candidates must
 pass `docs/PUBLIC_CHANGE_GATE.md` or `docs/FULL_PRODUCT_BENCHMARK.md` before
 product code is edited.
 
-### I-033 Category No-Result Recovery Depth
-
-- `ID`: I-033
-- `Aspect`: Public UX and Brand
-- `Status`: Needs Benchmark
-- `Priority`: P2
-- `Effort`: M
-- `Source/Evidence`: `/category/[slug]` filtered empty state, PLP guidance in
-  `docs/FULL_PRODUCT_BENCHMARK.md`, and `docs/PUBLIC_CHANGE_GATE.md`
-- `Target Surface`: Category filtered empty states, reset links, adjacent
-  category continuation, active refinement recovery
-- `Improvement`: Consider whether category no-result states should offer
-  clearer recovery depth, such as reset, nearby category continuation, or search
-  continuation, without turning PLP into a content page.
-- `Acceptance Checks`: Benchmark confirms recovery improves product discovery
-  while preserving listing density, active filter clarity, and route-backed
-  actions only.
-- `Verification`: Run benchmark workflow first; implementation verification
-  would require category filter state tests and public structure tests.
-
 ### I-034 Product Gallery Media Fallback and Thumbnail Clarity
 
 - `ID`: I-034
@@ -180,6 +160,34 @@ product code is edited.
   tests.
 
 ## Completed Work
+
+### I-033 Category No-Result Recovery Depth
+
+- `ID`: I-033
+- `Aspect`: Public UX and Brand
+- `Status`: Done
+- `Priority`: P2
+- `Effort`: M
+- `Source/Evidence`: `/category/[slug]` filtered empty state, PLP guidance in
+  `docs/FULL_PRODUCT_BENCHMARK.md`, `docs/PUBLIC_CHANGE_GATE.md`, and
+  `docs/qa/category-no-result-recovery-depth-benchmark.md`
+- `Target Surface`: Category filtered empty states, reset links, adjacent
+  category continuation, active refinement recovery
+- `Improvement`: Added compact no-result recovery inside the existing category
+  empty state with route-backed adjacent category continuations, reset, and
+  search continuation. Category continuations appear only when the current
+  filter selection returns products in another category.
+- `Acceptance Checks`: Benchmark decision confirms category recovery can deepen
+  product discovery while preserving listing density, active filter clarity,
+  and route-backed actions only.
+- `Verification`: Benchmark passed with weighted support of `16.5` against the
+  `11.25` threshold. Covered by
+  `src/app/category/[slug]/_lib/category-filter-state.test.ts`,
+  `src/styles/category-no-result-recovery-depth.test.ts`,
+  `src/styles/category-active-filter-sort-clarity.test.ts`,
+  `src/styles/discovery-filter-density.test.ts`, and
+  `src/styles/public-structure-enforcement.test.ts`; verified with
+  `pnpm test -- src/app/category/[slug]/_lib/category-filter-state.test.ts src/styles/category-no-result-recovery-depth.test.ts src/styles/category-active-filter-sort-clarity.test.ts src/styles/discovery-filter-density.test.ts src/styles/public-structure-enforcement.test.ts`.
 
 ### I-028 Production Deployment Evidence Ledger
 

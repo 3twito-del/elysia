@@ -62,6 +62,13 @@ export type CategoryFilterPayload = {
   sections: CategoryFilterSection[];
 };
 
+export type CategoryNoResultRecoveryAction = {
+  description: string;
+  href: string;
+  label: string;
+  total: number;
+};
+
 export type CategoryRouteState = {
   activeFilterCount: number;
   activeFilters: ActiveFilter[];
@@ -70,7 +77,9 @@ export type CategoryRouteState = {
   filterCounts: CategoryFilterCounts;
   filteredProducts: CatalogProduct[];
   filters: CategoryFilters;
+  noResultRecoveryActions: CategoryNoResultRecoveryAction[];
   resetHref: string;
+  searchRecoveryHref: string;
   sections: CategoryFilterSection[];
 };
 
@@ -163,6 +172,13 @@ export function getCategoryRouteState({
     slug,
     stoneOptions: facets.stones,
   });
+  const noResultRecoveryActions = getCategoryNoResultRecoveryActions({
+    categories,
+    categoryCounts,
+    filters,
+    slug,
+  });
+  const searchRecoveryHref = createCategorySearchRecoveryHref(filters);
 
   return {
     activeFilterCount,
@@ -172,7 +188,9 @@ export function getCategoryRouteState({
     filterCounts,
     filteredProducts,
     filters,
+    noResultRecoveryActions,
     resetHref,
+    searchRecoveryHref,
     sections,
   };
 }
@@ -551,11 +569,58 @@ function getActiveFilters(slug: string, filters: CategoryFilters) {
   return activeFilters;
 }
 
+function getCategoryNoResultRecoveryActions({
+  categories,
+  categoryCounts,
+  filters,
+  slug,
+}: {
+  categories: CatalogCategory[];
+  categoryCounts: Map<string, number>;
+  filters: CategoryFilters;
+  slug: string;
+}) {
+  return categories
+    .filter((category) => category.slug !== slug)
+    .map((category) => ({
+      category,
+      total: categoryCounts.get(category.slug) ?? 0,
+    }))
+    .filter(({ total }) => total > 0)
+    .slice(0, 2)
+    .map(({ category, total }) => ({
+      description: formatCategoryRecoveryDescription(total),
+      href: createCategoryHref(category.slug, filters),
+      label: category.name,
+      total,
+    }));
+}
+
+function formatCategoryRecoveryDescription(total: number) {
+  return total === 1
+    ? "פריט אחד מתאים לבחירה הפעילה בקטגוריה הזו"
+    : `${total} פריטים מתאימים לבחירה הפעילה בקטגוריה הזו`;
+}
+
 function createCategoryHref(slug: string, filters: Partial<CategoryFilters>) {
   const params = getCategoryUrlParams(filters);
   const query = params.toString();
 
   return query ? `/category/${slug}?${query}` : `/category/${slug}`;
+}
+
+function createCategorySearchRecoveryHref(filters: CategoryFilters) {
+  const params = new URLSearchParams();
+
+  if (filters.material) params.set("material", filters.material);
+  if (filters.stone) params.set("stone", filters.stone);
+  if (filters.maxPrice) params.set("maxPrice", String(filters.maxPrice));
+  if (filters.collection) params.set("collection", filters.collection);
+  if (filters.sort !== defaultCategorySort) params.set("sort", filters.sort);
+
+  const query = params.toString();
+
+  return query ? `/search?${query}` : "/search";
 }
 
 function getCategoryUrlParams(filters: Partial<CategoryFilters>) {

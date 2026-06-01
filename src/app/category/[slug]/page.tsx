@@ -14,6 +14,7 @@ import {
   sortCategoryProducts as sortCategoryRouteProducts,
   toCategoryFilterPayload,
   type CategoryFilters,
+  type CategoryNoResultRecoveryAction,
   type CategorySearchParams,
 } from "./_lib/category-filter-state";
 import { CommercePageHero } from "~/components/commerce-page-hero";
@@ -178,7 +179,9 @@ export default async function CategoryPage({
     currentSortLabel,
     filteredProducts,
     filters,
+    noResultRecoveryActions,
     resetHref,
+    searchRecoveryHref,
   } = categoryState;
   const filterPayload = toCategoryFilterPayload(categoryState);
   const requestedPage = getValidCategoryPage(getCategoryFirstParam(query.page));
@@ -448,7 +451,9 @@ export default async function CategoryPage({
               <CategoryEmptyState
                 hasActiveFilters={hasActiveFilters}
                 hasCategoryProducts={hasCategoryProducts}
+                recoveryActions={noResultRecoveryActions}
                 resetHref={resetHref}
+                searchRecoveryHref={searchRecoveryHref}
               />
             )}
           </section>
@@ -481,21 +486,34 @@ function CategoryBreadcrumbs({ categoryName }: { categoryName: string }) {
 function CategoryEmptyState({
   hasActiveFilters,
   hasCategoryProducts,
+  recoveryActions,
   resetHref,
+  searchRecoveryHref,
 }: {
   hasActiveFilters: boolean;
   hasCategoryProducts: boolean;
+  recoveryActions: CategoryNoResultRecoveryAction[];
   resetHref: string;
+  searchRecoveryHref: string;
 }) {
   if (!hasCategoryProducts) {
     return (
       <EmptyState
         actions={
-          <Button asChild variant="outline">
-            <Link href="/search">חיפוש בכל המבחר</Link>
-          </Button>
+          <>
+            <CategoryRecoveryGuidance actions={recoveryActions} />
+            <CategoryRecoveryActions actions={recoveryActions} />
+            <Button asChild variant="outline">
+              <Link
+                data-testid="category-search-recovery-link"
+                href={searchRecoveryHref}
+              >
+                חיפוש בכל המבחר
+              </Link>
+            </Button>
+          </>
         }
-        description="הקטגוריה קיימת, אך אין בה כרגע פריטים פתוחים. אפשר לעבור לחיפוש הרחב או לבחור קטגוריה אחרת."
+        description="הקטגוריה קיימת, אך אין בה כרגע פריטים פתוחים. אפשר לעבור לחיפוש הרחב או לבחור קטגוריה אחרת עם התאמות."
         icon={Gem}
         testId="category-empty-state"
         title="הקטגוריה מתעדכנת"
@@ -514,17 +532,77 @@ function CategoryEmptyState({
               </Link>
             </Button>
           ) : null}
+          <CategoryRecoveryGuidance actions={recoveryActions} />
+          <CategoryRecoveryActions actions={recoveryActions} />
           <Button asChild variant="outline">
-            <Link href="/search">חיפוש בכל המבחר</Link>
+            <Link
+              data-testid="category-search-recovery-link"
+              href={searchRecoveryHref}
+              scroll={false}
+            >
+              המשך בחיפוש
+            </Link>
           </Button>
         </>
       }
-      description="אפשר לנקות את הבחירה או להרחיב את החיפוש בכל המבחר."
+      description="אפשר לנקות את הבחירה, לעבור לקטגוריה קרובה עם תוצאות, או להרחיב את החיפוש בכל המבחר."
       icon={Gem}
       testId="category-empty-state"
       title="לא נמצאה התאמה לבחירה הזו"
     />
   );
+}
+
+function CategoryRecoveryGuidance({
+  actions,
+}: {
+  actions: CategoryNoResultRecoveryAction[];
+}) {
+  if (actions.length === 0) return null;
+
+  return (
+    <div
+      className="text-muted-foreground mx-auto mb-2 grid max-w-md basis-full gap-2 text-sm leading-6 sm:text-start"
+      data-testid="category-no-result-recovery"
+    >
+      <p className="text-foreground font-medium">קטגוריות עם התאמה לבחירה</p>
+      <ul className="grid gap-1.5">
+        {actions.map((action) => (
+          <li className="grid gap-0.5" key={`${action.href}-guidance`}>
+            <span className="text-foreground font-medium">{action.label}</span>
+            <span>{action.description}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function CategoryRecoveryActions({
+  actions,
+}: {
+  actions: CategoryNoResultRecoveryAction[];
+}) {
+  if (actions.length === 0) return null;
+
+  return (
+    <span className="contents" data-testid="category-recovery-actions">
+      {actions.map((action) => (
+        <Button asChild key={action.href} variant="outline">
+          <Link href={action.href} scroll={false}>
+            <span>{action.label}</span>
+            <span className="text-xs opacity-75">
+              {formatCategoryRecoveryResultCount(action.total)}
+            </span>
+          </Link>
+        </Button>
+      ))}
+    </span>
+  );
+}
+
+function formatCategoryRecoveryResultCount(total: number) {
+  return total === 1 ? "פריט אחד" : `${total} פריטים`;
 }
 
 function CategoryPagination({
