@@ -24,7 +24,7 @@ const commerceLinks = [
 
 const informationLinks = [
   { href: "/about", label: "Elysia" },
-  { href: "/branches", label: "שירות" },
+  { href: "/branches", label: "סניפים" },
   { href: "/account", label: "אזור אישי" },
 ] as const;
 

@@ -22,6 +22,10 @@ const buildScript = readFileSync(
   path.join(repoRoot, "scripts/build.mjs"),
   "utf8",
 );
+const engineeringConventions = readFileSync(
+  path.join(repoRoot, "docs/ENGINEERING_CONVENTIONS.md"),
+  "utf8",
+);
 
 const expectedGateNames = [
   "gate:list",
@@ -86,6 +90,20 @@ describe("manual quality gates", () => {
       "pnpm lint && pnpm typecheck && pnpm test",
     );
     expect(packageJson.scripts["verify:full"]).toBe("pnpm gate:release");
+  });
+
+  it("documents wall-clock regression budgets for local verification commands", () => {
+    expect(engineeringConventions).toContain("## Test Wall-Clock Budgets");
+    expect(engineeringConventions).toContain("2x the budget");
+    expect(engineeringConventions).toContain("more than 60 seconds slower");
+    expect(engineeringConventions).toContain("`pnpm test -- <path>`");
+    expect(engineeringConventions).toContain("15 seconds");
+    expect(engineeringConventions).toContain("`pnpm test`");
+    expect(engineeringConventions).toContain("60 seconds");
+    expect(engineeringConventions).toContain("`pnpm verify:fast`");
+    expect(engineeringConventions).toContain("180 seconds");
+    expect(engineeringConventions).toContain("`pnpm qa:routes`");
+    expect(engineeringConventions).toContain("20 seconds");
   });
 
   it("keeps non-production builds independent from catalog database availability", () => {

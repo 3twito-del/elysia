@@ -85,7 +85,7 @@ export function MobileNav({
 }: MobileNavProps) {
   const [open, setOpen] = useState(false);
   const closeNav = () => setOpen(false);
-  const catalogItems = items.slice(0, 5);
+  const catalogItems = items.slice(0, 4);
   const editorialItems = items
     .slice(5)
     .filter(

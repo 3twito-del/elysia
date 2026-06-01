@@ -78,6 +78,27 @@ describe("image performance guardrails", () => {
     expect(headerSource).not.toContain("prefetch={true}");
   });
 
+  it("keeps external connection hints on the current media and font whitelist", () => {
+    const layoutSource = read("src/app/layout.tsx");
+    const nextConfigSource = read("next.config.js");
+    const remoteHostnames = Array.from(
+      nextConfigSource.matchAll(/hostname:\s*"(?<hostname>[^"]+)"/g),
+    ).map((match) => match.groups?.hostname);
+
+    expect(layoutSource).not.toMatch(
+      /rel=["'](?:preconnect|dns-prefetch)["']/u,
+    );
+    expect(layoutSource).toContain("next/font/google");
+    expect(remoteHostnames).toEqual([
+      "images.unsplash.com",
+      "res.cloudinary.com",
+      "upload.wikimedia.org",
+      "cdn.shopify.com",
+    ]);
+    expect(nextConfigSource).not.toContain("fonts.googleapis.com");
+    expect(nextConfigSource).not.toContain("fonts.gstatic.com");
+  });
+
   it("prioritizes only the initial product gallery image and lazy-loads later active images", () => {
     const source = read(
       "src/app/product/[slug]/_components/product-gallery.tsx",

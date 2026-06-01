@@ -3,6 +3,7 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { getQaRouteInventory } from "../../scripts/qa-route-inventory";
 import { GET, knownSerwistAssetPaths } from "./serwist/[path]/route";
 
 const root = process.cwd();
@@ -47,6 +48,59 @@ describe("Serwist route", () => {
     expect(source).toContain('"Cache-Control": "no-store"');
   });
 
+  it("keeps service worker runtime route patterns aligned with the QA route inventory", () => {
+    const source = read("src/app/sw.ts");
+    const inventory = getQaRouteInventory({ includeAllProducts: true });
+    const expectedPublicInventoryRoutes = inventory
+      .filter(
+        (route) =>
+          route.includeInVisualQa &&
+          !route.requiresAuth &&
+          ["dynamic", "public", "pwa"].includes(route.kind),
+      )
+      .map((route) => stripQuery(route.path));
+
+    expect(source).toContain("publicPagePattern");
+    expect(source).toContain("liveOnlyPattern");
+    expect(source).toContain("category\\/");
+    expect(source).toContain("product\\/");
+    expect(source).toContain("search");
+    expect(source).toContain("gifts");
+    expect(source).toContain("branches");
+    expect(source).toContain("about");
+    expect(source).toContain("faq");
+    expect(source).toContain("privacy");
+    expect(source).toContain("terms");
+    expect(source).toContain("accessibility");
+    expect(source).toContain("service");
+    expect(source).toContain("ai");
+    expect(source).toContain("stylist");
+    expect(source).toContain("size-guide");
+    expect(source).toContain("offline");
+    expect(source).toContain("api\\/");
+    expect(source).toContain("admin(?:\\/|$)");
+    expect(source).toContain("account(?:\\/|$)");
+    expect(source).toContain("checkout(?:\\/|$)");
+    expect(source).toContain("NetworkFirst");
+    expect(source).toContain("NetworkOnly");
+    expect(expectedPublicInventoryRoutes).toEqual(
+      expect.arrayContaining([
+        "/",
+        "/search",
+        "/gifts",
+        "/branches",
+        "/about",
+        "/faq",
+        "/privacy",
+        "/terms",
+        "/accessibility",
+        "/offline",
+        "/category/rings",
+        "/product/venus-line-ring",
+      ]),
+    );
+  });
+
   it("documents known service worker asset paths for production smoke", () => {
     expect(knownSerwistAssetPaths).toEqual(["sw.js"]);
   });
@@ -63,4 +117,8 @@ describe("Serwist route", () => {
 
 function read(relativePath: string) {
   return readFileSync(path.join(root, relativePath), "utf8");
+}
+
+function stripQuery(route: string) {
+  return route.split("?")[0] ?? route;
 }

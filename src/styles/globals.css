@@ -2524,6 +2524,52 @@ html[data-public-floating-bar-visible="true"] .public-motion-content {
   }
 }
 
+@media print {
+  *,
+  *::before,
+  *::after {
+    background: transparent !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 11pt;
+  }
+
+  .site-header,
+  footer,
+  [data-cookie-consent-banner="true"],
+  [data-accessibility-widget-trigger="true"],
+  .public-floating-control,
+  .public-motion-ambient,
+  .motion-media-frame {
+    display: none !important;
+  }
+
+  #main-content,
+  main {
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  main a {
+    color: #000 !important;
+    text-decoration: underline;
+    text-underline-offset: 0.14em;
+  }
+
+  p,
+  li {
+    break-inside: avoid;
+  }
+}
+
 .cart-count-badge {
   animation: motion-badge-pop var(--motion-feedback) var(--ease-motion-feedback)
     both;

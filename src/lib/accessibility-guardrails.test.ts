@@ -33,6 +33,65 @@ describe("accessibility guardrails", () => {
     expect(css).toContain("--glass-focus: oklch(0 0 0 / 52%);");
   });
 
+  it("keeps the skip link as the first keyboard recovery target", () => {
+    const layout = readFileSync(
+      path.join(process.cwd(), "src/app/layout.tsx"),
+      "utf8",
+    );
+    const css = readFileSync(
+      path.join(process.cwd(), "src/styles/globals.css"),
+      "utf8",
+    );
+    const providerIndex = layout.indexOf("<PwaProvider>");
+    const skipLinkIndex = layout.indexOf('className="skip-link"');
+    const mainTargetIndex = layout.indexOf('id="main-content"');
+
+    expect(providerIndex).toBeGreaterThan(-1);
+    expect(skipLinkIndex).toBeGreaterThan(providerIndex);
+    expect(skipLinkIndex).toBeLessThan(mainTargetIndex);
+    expect(layout).toContain('href="#main-content"');
+    expect(layout).toContain('id="main-content"');
+    expect(layout).toContain("tabIndex={-1}");
+    expect(css).toContain(".skip-link:focus,\n.skip-link:focus-visible");
+    expect(css).toContain("transform: translateY(0);");
+    expect(css).toContain("outline: 3px solid var(--glass-focus);");
+    expect(css).toContain("#main-content:focus");
+    expect(css).toContain("outline: none;");
+  });
+
+  it("keeps focus-visible ring tokens on core interactive primitives", () => {
+    const focusSources = [
+      "src/components/ui/button.tsx",
+      "src/components/ui/input.tsx",
+      "src/components/ui/textarea.tsx",
+      "src/components/ui/select.tsx",
+      "src/components/ui/sheet.tsx",
+      "src/components/ui/dialog.tsx",
+      "src/components/site-header.tsx",
+      "src/components/mobile-nav.tsx",
+      "src/styles/globals.css",
+    ];
+    const offenders = focusSources.filter((file) => {
+      const source = readFileSync(path.join(process.cwd(), file), "utf8");
+
+      return (
+        !source.includes("focus-visible") ||
+        !source.includes("var(--glass-focus)")
+      );
+    });
+    const css = readFileSync(
+      path.join(process.cwd(), "src/styles/globals.css"),
+      "utf8",
+    );
+
+    expect(offenders).toEqual([]);
+    expect(css).toContain(
+      ":where(.site-header-link, .site-header-action):focus-visible",
+    );
+    expect(css).toContain(".public-select-trigger:focus-visible");
+    expect(css).toContain(".skip-link:focus-visible");
+  });
+
   it("keeps literal icon-sized buttons accessible by name", () => {
     const offenders = SOURCE_ROOTS.flatMap((root) =>
       listTsxFiles(path.join(process.cwd(), root)),
@@ -134,6 +193,25 @@ describe("accessibility guardrails", () => {
         "utf8",
       ),
     ).toContain("<CookiePreferencesPanel />");
+  });
+
+  it("keeps legal routes readable in print without interactive chrome", () => {
+    const css = readFileSync(
+      path.join(process.cwd(), "src/styles/globals.css"),
+      "utf8",
+    );
+    const printBlock = extractCssBlock(css, "@media print");
+
+    expect(printBlock).toContain("background: #fff !important;");
+    expect(printBlock).toContain("color: #000 !important;");
+    expect(printBlock).toContain(".site-header");
+    expect(printBlock).toContain("footer");
+    expect(printBlock).toContain('[data-cookie-consent-banner="true"]');
+    expect(printBlock).toContain('[data-accessibility-widget-trigger="true"]');
+    expect(printBlock).toContain("#main-content");
+    expect(printBlock).toContain("main");
+    expect(printBlock).toContain("box-shadow: none !important;");
+    expect(printBlock).toContain("break-inside: avoid;");
   });
 
   it("keeps high-contrast product and checkout surfaces legible", () => {

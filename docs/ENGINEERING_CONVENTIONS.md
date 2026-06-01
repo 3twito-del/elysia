@@ -99,6 +99,21 @@ without running long live benchmarks.
 - `pnpm visual:qa`: agent-browser visual and overlay check for core routes.
 - `pnpm format:check`: formatting drift check.
 
+## Test Wall-Clock Budgets
+
+Use these budgets as release-prep regression signals, not hard CI timeouts.
+Record the machine, command, and before/after duration when a run is more than
+2x the budget or more than 60 seconds slower than the last clean local run.
+
+- `pnpm test -- <path>`: focused Vitest files should usually finish within
+  15 seconds.
+- `pnpm test`: default unit and integration tests should usually finish within
+  60 seconds.
+- `pnpm verify:fast`: lint, typecheck, and tests should usually finish within
+  180 seconds on the local Windows workspace.
+- `pnpm qa:routes`: route-inventory checks should usually finish within
+  20 seconds.
+
 ## Source-Scan Test Diagnostics
 
 Some guardrail tests inspect broad source trees. Treat a timeout in these tests

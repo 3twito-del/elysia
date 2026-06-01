@@ -133,4 +133,131 @@ describe("QA route inventory", () => {
 
     expect(offenders).toEqual([]);
   });
+
+  it("keeps footer route groups explicit, unique, and purpose-scoped", () => {
+    const footer = readFileSync(
+      path.join(process.cwd(), "src/components/site-footer.tsx"),
+      "utf8",
+    );
+    const groups = {
+      catalogLinks: extractFooterHrefLabels(footer, "catalogLinks"),
+      commerceLinks: extractFooterHrefLabels(footer, "commerceLinks"),
+      informationLinks: extractFooterHrefLabels(footer, "informationLinks"),
+      policyLinks: extractFooterHrefLabels(footer, "policyLinks"),
+    };
+    const routeInventory = getQaRouteInventory({ includeAllProducts: true });
+    const knownRoutes = new Set(
+      routeInventory.flatMap((route) => [route.path, route.template]),
+    );
+    const allInternalLinks = Object.values(groups).flat();
+
+    expect(groups.catalogLinks.map((link) => link.href)).toEqual([
+      "/category/rings",
+      "/category/necklaces",
+      "/category/earrings",
+      "/category/bracelets",
+      "/search",
+    ]);
+    expect(groups.commerceLinks.map((link) => link.href)).toEqual([
+      "/checkout",
+      "/service",
+      "/faq",
+      "/size-guide",
+    ]);
+    expect(groups.informationLinks.map((link) => link.href)).toEqual([
+      "/about",
+      "/branches",
+      "/account",
+    ]);
+    expect(groups.policyLinks.map((link) => link.href)).toEqual([
+      "/terms",
+      "/privacy",
+      "/accessibility",
+    ]);
+    expect(new Set(allInternalLinks.map((link) => link.href)).size).toBe(
+      allInternalLinks.length,
+    );
+    expect(new Set(allInternalLinks.map((link) => link.label)).size).toBe(
+      allInternalLinks.length,
+    );
+    expect(
+      allInternalLinks.every(
+        (link) => link.label.trim().length > 0 && knownRoutes.has(link.href),
+      ),
+    ).toBe(true);
+  });
+
+  it("keeps production smoke roster representative across public, admin, API, and PWA routes", () => {
+    const inventory = getQaRouteInventory({ includeAllProducts: true });
+    const routeKinds = new Set(inventory.map((route) => route.kind));
+    const visualRoutes = inventory
+      .filter((route) => route.includeInVisualQa)
+      .map((route) => route.path);
+    const apiSmokeRoutes = inventory.filter(
+      (route) => route.kind === "api" && route.coverage === "smoke",
+    );
+    const apiSmokeByCommand = new Map(
+      apiSmokeRoutes.map((route) => [`${route.method} ${route.path}`, route]),
+    );
+
+    expect(routeKinds).toEqual(
+      new Set(["account", "admin", "api", "dynamic", "public", "pwa"]),
+    );
+    expect(visualRoutes).toEqual(
+      expect.arrayContaining([
+        "/",
+        "/search?q=venus",
+        "/gifts",
+        "/account",
+        "/offline",
+        "/category/rings",
+        "/product/venus-line-ring",
+        "/admin",
+        "/admin/login",
+      ]),
+    );
+    expect(
+      apiSmokeRoutes.map((route) => `${route.method} ${route.path}`),
+    ).toEqual([
+      "GET /api/health",
+      "GET /api/cart/count",
+      "GET /account/privacy/export",
+      "POST /api/chat",
+      "POST /api/webhooks/cardcom",
+      "POST /api/webhooks/cloudinary",
+      "POST /api/webhooks/shopify/orders",
+    ]);
+    expect(apiSmokeByCommand.get("GET /api/health")?.expectedStatuses).toEqual([
+      200,
+    ]);
+    expect(
+      apiSmokeByCommand.get("GET /account/privacy/export")?.expectedStatuses,
+    ).toEqual([401]);
+    expect(apiSmokeByCommand.get("POST /api/chat")?.expectedStatuses).toEqual([
+      400,
+    ]);
+    expect(
+      apiSmokeRoutes.every(
+        (route) => !route.includeInVisualQa && route.liveMode === "read-only",
+      ),
+    ).toBe(true);
+  });
 });
+
+function extractFooterHrefLabels(source: string, constName: string) {
+  const match = new RegExp(
+    `const ${constName} = \\[([\\s\\S]*?)\\] as const;`,
+    "u",
+  ).exec(source);
+
+  expect(match?.[1]).toBeDefined();
+
+  return Array.from(
+    (match?.[1] ?? "").matchAll(
+      /\{\s*href:\s*"(?<href>[^"]+)",\s*label:\s*"(?<label>[^"]+)"/gu,
+    ),
+  ).map((entry) => ({
+    href: entry.groups?.href ?? "",
+    label: entry.groups?.label ?? "",
+  }));
+}

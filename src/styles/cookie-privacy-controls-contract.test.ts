@@ -57,6 +57,34 @@ describe("cookie and privacy controls contract", () => {
     expect(privacyPage).toContain("העוגיות בעמוד זה");
   });
 
+  it("keeps cookie consent audit records redacted and minimal", () => {
+    const source = read("src/lib/cookie-consent.ts");
+    const recordStart = source.indexOf("export type CookieConsentRecord");
+    const recordEnd = source.indexOf("};", recordStart);
+    const recordBlock = source.slice(recordStart, recordEnd + 2);
+    const forbiddenAuditFields = [
+      "ipAddress",
+      "userAgent",
+      "requestId",
+      "anonymousId",
+      "deviceId",
+      "sessionId",
+      "customerId",
+      "email",
+      "headers",
+    ];
+
+    expect(recordStart).toBeGreaterThan(-1);
+    expect(recordBlock).toContain("value: CookieConsentValue;");
+    expect(recordBlock).toContain("updatedAt: string;");
+    for (const field of forbiddenAuditFields) {
+      expect(source).not.toContain(field);
+    }
+    expect(source).not.toMatch(/\bnavigator\b/u);
+    expect(source).not.toContain("document.cookie");
+    expect(source).toContain("detail: record");
+  });
+
   it("keeps the PWA device id local and documented as browser-controlled", () => {
     const privacyPage = read("src/app/privacy/page.tsx");
     const pwaOffline = read("src/lib/pwa-offline.ts");

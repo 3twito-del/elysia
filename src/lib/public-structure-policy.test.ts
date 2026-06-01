@@ -3,6 +3,7 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { getQaRouteInventory } from "../../scripts/qa-route-inventory";
 import {
   PUBLIC_STRUCTURE_BENCHMARK_TOTAL_WEIGHT,
   PUBLIC_STRUCTURE_KEEP_THRESHOLD,
@@ -77,6 +78,45 @@ describe("public structure benchmark v4 policy", () => {
     expect(mobileNav).not.toContain('aria-current="page"');
   });
 
+  it("keeps header and mobile navigation labels unique and route-backed", () => {
+    const header = read("src/components/site-header.tsx");
+    const mobileNav = read("src/components/mobile-nav.tsx");
+    const routeInventory = getQaRouteInventory({ includeAllProducts: true });
+    const knownRoutes = new Set(
+      routeInventory.flatMap((route) => [route.path, route.template]),
+    );
+    const headerLinks = extractConstHrefLabels(header, "navItems");
+    const mobileSections = [
+      extractConstHrefLabels(mobileNav, "quickActions"),
+      extractConstHrefLabels(mobileNav, "serviceActions"),
+      extractConstHrefLabels(mobileNav, "spotlightActions"),
+    ];
+
+    expect(headerLinks.map((item) => item.href)).toEqual([
+      "/category/rings",
+      "/category/necklaces",
+      "/category/earrings",
+      "/category/bracelets",
+      "/gifts",
+      "/about",
+      "/service",
+    ]);
+    expect(header).toContain("const desktopNavItems = navItems.slice(0, 4)");
+    expect(mobileNav).toContain("const catalogItems = items.slice(0, 4)");
+    expect(mobileNav).toContain(".slice(5)");
+
+    for (const section of [headerLinks, ...mobileSections]) {
+      expect(new Set(section.map((item) => item.href)).size).toBe(
+        section.length,
+      );
+      expect(new Set(section.map((item) => item.label)).size).toBe(
+        section.length,
+      );
+      expect(section.every((item) => knownRoutes.has(item.href))).toBe(true);
+      expect(section.every((item) => !/[A-Za-z]/u.test(item.label))).toBe(true);
+    }
+  });
+
   it("keeps mobile navigation close and focus recovery delegated to the sheet primitive", () => {
     const mobileNav = read("src/components/mobile-nav.tsx");
     const sheet = read("src/components/ui/sheet.tsx");
@@ -105,4 +145,22 @@ describe("public structure benchmark v4 policy", () => {
 
 function read(relativePath: string) {
   return readFileSync(path.join(process.cwd(), relativePath), "utf8");
+}
+
+function extractConstHrefLabels(source: string, constName: string) {
+  const match = new RegExp(
+    `const ${constName}(?::[^=]+)? = \\[([\\s\\S]*?)\\](?: as const)?;`,
+    "u",
+  ).exec(source);
+
+  expect(match?.[1]).toBeDefined();
+
+  return Array.from(
+    (match?.[1] ?? "").matchAll(
+      /\{\s*href:\s*"(?<href>[^"]+)",\s*label:\s*"(?<label>[^"]+)"/gu,
+    ),
+  ).map((entry) => ({
+    href: entry.groups?.href ?? "",
+    label: entry.groups?.label ?? "",
+  }));
 }
