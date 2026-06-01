@@ -29,6 +29,10 @@ import { TableEmptyRow } from "~/components/ui/table-empty-row";
 import { getStockQuantityLabel } from "~/lib/commerce-labels";
 import { formatHebrewDateTime } from "~/lib/format";
 import { listAdminInventory } from "~/server/services/admin-operations";
+import {
+  getInventoryLowStockThresholdCopy,
+  isInventoryLowStock,
+} from "~/server/services/inventory";
 import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata = {
@@ -102,7 +106,13 @@ export default async function AdminInventoryPage({
     params.page > 1 ? `עמוד ${params.page}` : null,
   ].filter((label): label is string => Boolean(label));
   const lowStockItems = data.items
-    .filter((item) => item.sellable <= item.safetyStock)
+    .filter((item) =>
+      isInventoryLowStock({
+        quantity: item.quantity,
+        reserved: item.reserved,
+        safetyStock: item.safetyStock,
+      }),
+    )
     .slice(0, 3);
   const emptyTitle = hasActiveFilters
     ? "אין פריטי מלאי שמתאימים לסינון"
@@ -218,6 +228,11 @@ export default async function AdminInventoryPage({
                   <p className="text-muted-foreground mt-1 leading-6">
                     הפריטים הבאים נמצאים במלאי זמין נמוך או מתחת למלאי הביטחון
                     ומופיעים כאן לפי הסינון הנוכחי.
+                  </p>
+                  <p className="text-muted-foreground mt-1 text-xs leading-5">
+                    {getInventoryLowStockThresholdCopy({
+                      safetyStock: lowStockItems[0]?.safetyStock ?? 0,
+                    })}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">

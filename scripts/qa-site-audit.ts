@@ -115,6 +115,28 @@ export const consoleErrorBudget = {
   production: "zero-console-errors",
 } as const;
 
+export const inpSensitiveControlAudit = {
+  controls: [
+    {
+      route: "/category/rings",
+      selector: "[data-testid='category-filter-trigger']",
+      workflow: "open category filter sheet",
+    },
+    {
+      route: "/search?q=ring",
+      selector: "[data-testid='mobile-search-filter-trigger']",
+      workflow: "open search filter sheet",
+    },
+    {
+      route: "/checkout",
+      selector: "[data-testid='local-checkout-submit-button']",
+      workflow: "checkout submit",
+    },
+  ],
+  metric: "TBT proxy plus manual INP probe",
+  routeSubset: "performance",
+} as const;
+
 export async function runQaSiteAudit(options: AuditOptions) {
   const routes = options.performanceOnly
     ? getPerformanceQaRoutes()
@@ -165,6 +187,7 @@ export async function runQaSiteAudit(options: AuditOptions) {
     budgets: strictBudgets,
     consoleErrorBudget,
     generatedAt: new Date().toISOString(),
+    inpSensitiveControlAudit,
     options,
     results,
     summary: summarizeResults(results),

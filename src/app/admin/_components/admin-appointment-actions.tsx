@@ -8,25 +8,10 @@ import {
   type AdminMutationFeedback,
 } from "./admin-mutation-status";
 import { Button } from "~/components/ui/button";
+import { getAllowedAppointmentStatusTransitions } from "~/lib/appointment-validation";
 import { api } from "~/trpc/react";
 
 type AppointmentStatus = "REQUESTED" | "CONFIRMED" | "COMPLETED" | "CANCELLED";
-
-const actionsByStatus: Record<
-  AppointmentStatus,
-  Array<{ label: string; status: AppointmentStatus }>
-> = {
-  CANCELLED: [],
-  COMPLETED: [],
-  CONFIRMED: [
-    { label: "הושלם", status: "COMPLETED" },
-    { label: "ביטול", status: "CANCELLED" },
-  ],
-  REQUESTED: [
-    { label: "אישור", status: "CONFIRMED" },
-    { label: "ביטול", status: "CANCELLED" },
-  ],
-};
 
 export function AdminAppointmentActions({
   appointmentId,
@@ -45,7 +30,12 @@ export function AdminAppointmentActions({
       setFeedback({ message: "התור עודכן.", tone: "success" });
     },
   });
-  const actions = actionsByStatus[status];
+  const actions = getAllowedAppointmentStatusTransitions(status).map(
+    (nextStatus) => ({
+      label: getAppointmentActionLabel(nextStatus),
+      status: nextStatus,
+    }),
+  );
 
   if (actions.length === 0) {
     return <span className="text-muted-foreground text-xs">אין פעולות</span>;
@@ -76,4 +66,17 @@ export function AdminAppointmentActions({
       <AdminMutationStatus feedback={feedback} />
     </div>
   );
+}
+
+function getAppointmentActionLabel(status: AppointmentStatus) {
+  switch (status) {
+    case "CANCELLED":
+      return "ביטול";
+    case "COMPLETED":
+      return "הושלם";
+    case "CONFIRMED":
+      return "אישור";
+    case "REQUESTED":
+      return "החזרה לבקשה";
+  }
 }

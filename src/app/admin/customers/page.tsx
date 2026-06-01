@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Search, Users } from "lucide-react";
+import { Search, ShieldCheck, Users } from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
 import {
@@ -170,6 +170,27 @@ export default async function AdminCustomersPage({
               </Button>
             </div>
           ) : null}
+        </CardContent>
+      </Card>
+
+      <Card
+        className="mt-6 rounded-md"
+        data-testid="admin-customer-privacy-handoff"
+      >
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ShieldCheck aria-hidden="true" className="size-5" />
+            בקשות פרטיות
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="text-muted-foreground grid gap-3 text-sm leading-6">
+          <p>
+            בקשות ייצוא או מחיקה מטופלות דרך אזור הלקוח ותהליך פרטיות מאומת. אין
+            לחשוף מכאן נתוני חשבון מלאים או קבצי ייצוא.
+          </p>
+          <Button asChild className="w-fit" size="sm" variant="outline">
+            <Link href="/account/privacy/export">מסלול ייצוא ללקוח</Link>
+          </Button>
         </CardContent>
       </Card>
 

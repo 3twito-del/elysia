@@ -3,7 +3,7 @@ import {
   matchesCategoryFilterSelection,
   type CategoryFilterCounts,
 } from "./category-filter-utils";
-import { formatPrice } from "~/lib/format";
+import { formatInlinePrice } from "~/lib/format";
 import {
   filterCatalogProducts,
   type CatalogCategory,
@@ -392,7 +392,7 @@ function getCategoryFilterSections({
             ...filters,
             maxPrice: active ? undefined : price,
           }),
-          label: `עד ${formatPrice(price)}`,
+          label: `עד ${formatInlinePrice(price)}`,
         };
       }),
     },
@@ -526,7 +526,7 @@ function getActiveFilters(slug: string, filters: CategoryFilters) {
   if (filters.maxPrice) {
     activeFilters.push({
       key: "maxPrice",
-      label: `עד ${formatPrice(filters.maxPrice)}`,
+      label: `עד ${formatInlinePrice(filters.maxPrice)}`,
       href: createCategoryHref(slug, { ...filters, maxPrice: undefined }),
     });
   }

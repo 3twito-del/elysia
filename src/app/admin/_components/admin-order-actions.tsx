@@ -310,7 +310,7 @@ function AdminRefundForm({
         </AlertDialogTrigger>
         <AlertDialogContent dir="rtl">
           <AlertDialogHeader>
-            <AlertDialogTitle>לאשר זיכוי להזמנה?</AlertDialogTitle>
+            <AlertDialogTitle>לאשר זיכוי להזמנה {orderId}?</AlertDialogTitle>
             <AlertDialogDescription>
               הפעולה תעדכן את סטטוס ההזמנה והתשלומים לזיכוי, ותיצור אירוע הודעה
               ללקוח. החזרת מלאי תתבצע רק אם האפשרות סומנה.
@@ -379,9 +379,10 @@ function StatusActionButton({
       </AlertDialogTrigger>
       <AlertDialogContent dir="rtl">
         <AlertDialogHeader>
-          <AlertDialogTitle>לאשר ביטול הזמנה?</AlertDialogTitle>
+          <AlertDialogTitle>לאשר ביטול הזמנה {targetLabel}?</AlertDialogTitle>
           <AlertDialogDescription>
-            ביטול ישחרר שמירות מלאי, יעדכן תשלום ידני לכשל ויירשם ב-audit.
+            ביטול ההזמנה ישחרר שמירות מלאי, יעדכן תשלום ידני לכשל ויירשם
+            ב-audit. זו פעולה תפעולית שלא ממשיכה הכנה או מסירה.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

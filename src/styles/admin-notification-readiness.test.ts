@@ -16,10 +16,17 @@ describe("admin notification readiness", () => {
     expect(page).toContain(
       'data-testid="admin-notification-send-disabled-copy"',
     );
-    expect(page).toContain("<AdminPushCampaignForm configured={configured} />");
+    expect(page).toContain("getPushCampaignAudienceSummary");
+    expect(page).toContain("audienceSummary={audienceSummary}");
+    expect(page).toContain("configured={configured}");
     expect(page).toContain("campaign.lastError");
     expect(form).toContain("type AdminPushCampaignFormProps");
+    expect(form).toContain(
+      "audienceSummary: Record<PushCampaignSegment, number>",
+    );
     expect(form).toContain("configured: boolean");
+    expect(form).toContain('data-testid="admin-push-dry-run-preview"');
+    expect(form).toContain("createPushCampaignDryRunPreview");
     expect(form).toContain('data-testid="admin-push-send-now-readiness"');
     expect(form).toContain("disabled={!configured}");
     expect(form).toContain("זמין אחרי הגדרת VAPID");

@@ -3,7 +3,11 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { assertInternalPushTargetUrl } from "./push";
+import {
+  assertInternalPushTargetUrl,
+  createPushCampaignDryRunPreview,
+  pushCampaignSegments,
+} from "./push";
 
 describe("push target URL guard", () => {
   it("normalizes same-origin relative URLs", () => {
@@ -42,6 +46,36 @@ describe("push target URL guard", () => {
     expect(subscriptionRoute).toContain(
       "Missing push subscription identifier.",
     );
+  });
+
+  it("creates dry-run previews for campaign payload and audience gaps", () => {
+    expect(pushCampaignSegments).toEqual([
+      "MARKETING_OPT_IN",
+      "TRANSACTIONAL_OPT_IN",
+      "ALL_ACTIVE",
+    ]);
+    expect(
+      createPushCampaignDryRunPreview({
+        audienceCount: 0,
+        body: " New collection ",
+        configured: true,
+        segment: "MARKETING_OPT_IN",
+        targetUrl: "/search?q=rings",
+        title: " Rings ",
+      }),
+    ).toEqual({
+      audienceCount: 0,
+      canSend: false,
+      invalidTargetCase: null,
+      missingSubscriptionCase:
+        "No active push subscriptions match this segment.",
+      payload: {
+        body: "New collection",
+        segment: "MARKETING_OPT_IN",
+        targetUrl: "/search?q=rings",
+        title: "Rings",
+      },
+    });
   });
 });
 

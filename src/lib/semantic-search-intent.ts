@@ -1,4 +1,5 @@
 import { resolveAiCatalogSearchIntent } from "~/lib/ai-catalog-intent";
+import { formatInlinePrice } from "~/lib/format";
 
 export type SearchMode = "semantic" | "classic";
 
@@ -247,9 +248,7 @@ export function createSemanticMatchReason(
     typeof product.price === "number" &&
     product.price <= intent.hardFilters.maxPrice
   ) {
-    reasons.push(
-      `במחיר עד ${intent.hardFilters.maxPrice.toLocaleString("he-IL")} ₪`,
-    );
+    reasons.push(`במחיר עד ${formatInlinePrice(intent.hardFilters.maxPrice)}`);
   }
 
   if (intent.softSignals.includes("bridal")) {

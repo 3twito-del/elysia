@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 
 import {
   canReserveStock,
+  getInventoryLowStockThresholdCopy,
   getSellableQuantity,
+  isInventoryLowStock,
   simulateInventoryReservations,
 } from "./inventory";
 
@@ -36,6 +38,18 @@ describe("inventory service", () => {
         requested: 4,
       }),
     ).toBe(false);
+  });
+
+  it("documents the low-stock threshold used by admin inventory views", () => {
+    expect(
+      isInventoryLowStock({ quantity: 5, reserved: 2, safetyStock: 3 }),
+    ).toBe(true);
+    expect(
+      isInventoryLowStock({ quantity: 8, reserved: 1, safetyStock: 2 }),
+    ).toBe(false);
+    expect(getInventoryLowStockThresholdCopy({ safetyStock: 3 })).toContain(
+      "זמין קטן או שווה למלאי הביטחון (3)",
+    );
   });
 
   it("simulates limited-stock checkout races deterministically", () => {

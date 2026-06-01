@@ -66,6 +66,9 @@ describe("product purchase utilities", () => {
     expect(
       getVariantButtonLabel(variant, "READY_TO_ORDER", "DROPSHIP_SHOPIFY"),
     ).toContain("זמין דרך Shopify");
+    expect(
+      getVariantButtonLabel(variant, "READY_TO_ORDER", "DROPSHIP_SHOPIFY"),
+    ).toContain("\u2068");
   });
 
   it("keeps owned zero-stock variants on the service inquiry path", () => {

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   consoleErrorBudget,
+  inpSensitiveControlAudit,
   isIgnorableConsoleError,
   qaArtifactStandard,
 } from "./qa-site-audit";
@@ -53,5 +54,26 @@ describe("QA site audit contracts", () => {
         "http://localhost:3000",
       ),
     ).toBe(false);
+  });
+
+  it("documents INP-sensitive control probes for performance runs", () => {
+    expect(inpSensitiveControlAudit.routeSubset).toBe("performance");
+    expect(inpSensitiveControlAudit.metric).toContain("INP");
+    expect(inpSensitiveControlAudit.controls).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          route: "/category/rings",
+          selector: "[data-testid='category-filter-trigger']",
+        }),
+        expect.objectContaining({
+          route: "/search?q=ring",
+          selector: "[data-testid='mobile-search-filter-trigger']",
+        }),
+        expect.objectContaining({
+          route: "/checkout",
+          selector: "[data-testid='local-checkout-submit-button']",
+        }),
+      ]),
+    );
   });
 });

@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { createAppointmentInputSchema } from "./appointment-validation";
+import {
+  createAppointmentInputSchema,
+  getAdminAppointmentTransitionError,
+  getAllowedAppointmentStatusTransitions,
+} from "./appointment-validation";
 import { getZodFieldErrors } from "./form-validation";
 
 describe("appointment validation", () => {
@@ -43,5 +47,29 @@ describe("appointment validation", () => {
         topic: "יש להזין נושא לפגישה.",
       });
     }
+  });
+
+  it("defines admin appointment workflow transitions", () => {
+    expect(getAllowedAppointmentStatusTransitions("REQUESTED")).toEqual([
+      "CONFIRMED",
+      "CANCELLED",
+    ]);
+    expect(getAllowedAppointmentStatusTransitions("CONFIRMED")).toEqual([
+      "COMPLETED",
+      "CANCELLED",
+    ]);
+    expect(getAllowedAppointmentStatusTransitions("COMPLETED")).toEqual([]);
+    expect(
+      getAdminAppointmentTransitionError({
+        from: "COMPLETED",
+        to: "CONFIRMED",
+      }),
+    ).toBe("מעבר סטטוס התור אינו אפשרי מהמצב הנוכחי.");
+    expect(
+      getAdminAppointmentTransitionError({
+        from: "REQUESTED",
+        to: "CANCELLED",
+      }),
+    ).toBeNull();
   });
 });

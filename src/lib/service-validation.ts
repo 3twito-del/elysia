@@ -39,6 +39,53 @@ export function getServiceRequestAttachmentPolicy() {
   };
 }
 
+export type ServiceRequestTriageFact = {
+  key: "attachment" | "contact" | "order" | "product";
+  label: string;
+  tone: "neutral" | "warning";
+};
+
+export function getServiceRequestTriageFacts(input: {
+  attachmentCount: number;
+  orderNumber?: string | null;
+  preferredContact: string;
+  productReference?: string | null;
+}) {
+  const facts: ServiceRequestTriageFact[] = [];
+
+  if (input.attachmentCount > 0) {
+    facts.push({
+      key: "attachment",
+      label: `${input.attachmentCount} קבצים`,
+      tone: "warning",
+    });
+  }
+
+  if (input.productReference?.trim()) {
+    facts.push({
+      key: "product",
+      label: "יש מוצר",
+      tone: "neutral",
+    });
+  }
+
+  if (input.orderNumber?.trim()) {
+    facts.push({
+      key: "order",
+      label: "יש הזמנה",
+      tone: "neutral",
+    });
+  }
+
+  facts.push({
+    key: "contact",
+    label: `חזרה: ${getServiceContactPreferenceLabel(input.preferredContact)}`,
+    tone: input.preferredContact === "ANY" ? "neutral" : "warning",
+  });
+
+  return facts;
+}
+
 const requiredText = (message: string, maxLength: number) =>
   z.string().trim().min(1, message).max(maxLength, "הטקסט ארוך מדי.");
 

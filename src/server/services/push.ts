@@ -2,8 +2,17 @@ import webPush from "web-push";
 import { z } from "zod";
 
 import { env } from "~/env";
+import {
+  normalizeInternalPushTargetUrl,
+  pushCampaignSegments,
+} from "~/lib/push-campaign-preview";
 import { db } from "~/server/db";
 import { BUSINESS_EVENTS, enqueueOutboxEvent } from "~/server/services/outbox";
+
+export {
+  createPushCampaignDryRunPreview,
+  pushCampaignSegments,
+} from "~/lib/push-campaign-preview";
 
 const pushPayloadSchema = z.object({
   body: z.string().trim().min(1).max(180),
@@ -35,9 +44,7 @@ export const pushPreferencesInputSchema = z.object({
 export const pushCampaignInputSchema = z.object({
   body: z.string().trim().min(1).max(180),
   scheduledAt: z.coerce.date().optional(),
-  segment: z
-    .enum(["MARKETING_OPT_IN", "TRANSACTIONAL_OPT_IN", "ALL_ACTIVE"])
-    .default("MARKETING_OPT_IN"),
+  segment: z.enum(pushCampaignSegments).default("MARKETING_OPT_IN"),
   targetUrl: z.string().trim().min(1).max(1024),
   title: z.string().trim().min(1).max(80),
 });
@@ -213,6 +220,22 @@ export async function listPushCampaigns() {
     orderBy: { createdAt: "desc" },
     take: 50,
   });
+}
+
+export async function getPushCampaignAudienceSummary() {
+  const entries = await Promise.all(
+    pushCampaignSegments.map(async (segment) => [
+      segment,
+      await db.pushSubscription.count({
+        where: getCampaignSubscriptionWhere(segment),
+      }),
+    ]),
+  );
+
+  return Object.fromEntries(entries) as Record<
+    (typeof pushCampaignSegments)[number],
+    number
+  >;
 }
 
 export async function enqueuePushCampaign(
@@ -507,14 +530,7 @@ export function assertInternalPushTargetUrl(value: string) {
   const baseUrl = env.SITE_URL ?? "https://elysia.co.il";
 
   try {
-    const url = new URL(value, baseUrl);
-    const base = new URL(baseUrl);
-
-    if (url.origin !== base.origin) {
-      throw new Error("Push target URL must stay on Elysia.");
-    }
-
-    return `${url.pathname}${url.search}${url.hash}`;
+    return normalizeInternalPushTargetUrl(value, baseUrl);
   } catch {
     throw new Error("Push target URL is invalid.");
   }

@@ -20,6 +20,7 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { EmptyState } from "~/components/ui/empty-state";
 import { getPublicProductCommerceStatus } from "~/lib/commerce-labels";
+import { formatInlinePrice, formatPrice } from "~/lib/format";
 import { cn } from "~/lib/utils";
 import { db } from "~/server/db";
 import {
@@ -30,7 +31,6 @@ import {
 import {
   getCatalogCategories,
   getCatalogFacets,
-  formatPrice,
   type CatalogCategory,
   type CatalogProduct,
 } from "~/server/services/catalog";
@@ -682,7 +682,7 @@ function getActiveSearchFilters(
   if (input.maxPrice) {
     filters.push({
       key: "maxPrice",
-      label: `עד ${formatPrice(input.maxPrice)}`,
+      label: `עד ${formatInlinePrice(input.maxPrice)}`,
       href: createSearchHref({
         ...hrefInput,
         maxPrice: undefined,

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { getZodFieldErrors } from "./form-validation";
 import {
+  getServiceRequestTriageFacts,
   getServiceRequestAttachmentPolicy,
   maxServiceRequestFileBytes,
   maxServiceRequestFiles,
@@ -122,5 +123,21 @@ describe("service validation", () => {
       maxFileSizeMb: 10,
       maxFiles: 5,
     });
+  });
+
+  it("summarizes admin triage facts without opening the full request", () => {
+    expect(
+      getServiceRequestTriageFacts({
+        attachmentCount: 2,
+        orderNumber: "EL-1001",
+        preferredContact: "WHATSAPP",
+        productReference: "/product/venus-line-ring",
+      }),
+    ).toEqual([
+      { key: "attachment", label: "2 קבצים", tone: "warning" },
+      { key: "product", label: "יש מוצר", tone: "neutral" },
+      { key: "order", label: "יש הזמנה", tone: "neutral" },
+      { key: "contact", label: "חזרה: וואטסאפ", tone: "warning" },
+    ]);
   });
 });

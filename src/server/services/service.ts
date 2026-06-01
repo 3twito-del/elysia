@@ -2,6 +2,7 @@ import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 
 import {
+  getServiceRequestTriageFacts,
   maxServiceRequestFileBytes,
   maxServiceRequestFiles,
   publicServiceRequestInputSchema,
@@ -317,6 +318,12 @@ export async function listAdminServiceRequests(input: ServiceRequestListInput) {
       adminNotes: request.adminNotes,
       createdAt: request.createdAt,
       updatedAt: request.updatedAt,
+      triageFacts: getServiceRequestTriageFacts({
+        attachmentCount: request.attachments.length,
+        orderNumber: request.orderNumber,
+        preferredContact: request.preferredContact,
+        productReference: request.productReference,
+      }),
       attachments: request.attachments.map((attachment) => ({
         id: attachment.id,
         provider: attachment.provider,

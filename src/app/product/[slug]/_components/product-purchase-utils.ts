@@ -3,7 +3,7 @@ import {
   getPublicStockStatusLabel,
   type PublicProductAvailabilityMode,
 } from "~/lib/commerce-labels";
-import { formatPrice } from "~/lib/format";
+import { formatInlinePrice } from "~/lib/format";
 import type { SizeFitKind } from "~/lib/size-fit";
 import type {
   CatalogProduct,
@@ -47,7 +47,7 @@ export function getVariantButtonLabel(
   productSource: CatalogProduct["source"] = "OWN",
 ) {
   if (isShopifyDropshipVariantAvailable({ productSource, variant })) {
-    return `${getVariantDisplayName(variant)}, ${formatPrice(variant.price)}, זמין דרך Shopify`;
+    return `${getVariantDisplayName(variant)}, ${formatInlinePrice(variant.price)}, זמין דרך Shopify`;
   }
 
   const commerceStatus = getPublicProductCommerceStatus({
@@ -59,7 +59,7 @@ export function getVariantButtonLabel(
       ? getPublicStockStatusLabel(variant.availableQuantity)
       : commerceStatus.label;
 
-  return `${getVariantDisplayName(variant)}, ${formatPrice(variant.price)}, ${availability}`;
+  return `${getVariantDisplayName(variant)}, ${formatInlinePrice(variant.price)}, ${availability}`;
 }
 
 export function isVariantSelectableForCart(input: {

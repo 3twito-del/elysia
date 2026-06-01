@@ -299,6 +299,23 @@ export default async function AdminServicePage({
                               {request.preferredContactTime}
                             </span>
                           ) : null}
+                          <div
+                            className="flex flex-wrap gap-1"
+                            data-testid="admin-service-triage-facts"
+                          >
+                            {request.triageFacts.map((fact) => (
+                              <Badge
+                                key={fact.key}
+                                variant={
+                                  fact.tone === "warning"
+                                    ? "secondary"
+                                    : "outline"
+                                }
+                              >
+                                {fact.label}
+                              </Badge>
+                            ))}
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell className="align-top">

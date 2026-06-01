@@ -22,7 +22,11 @@ import {
 } from "~/components/ui/table";
 import { TableEmptyRow } from "~/components/ui/table-empty-row";
 import { formatOptionalHebrewDateTime } from "~/lib/format";
-import { isPushConfigured, listPushCampaigns } from "~/server/services/push";
+import {
+  getPushCampaignAudienceSummary,
+  isPushConfigured,
+  listPushCampaigns,
+} from "~/server/services/push";
 
 export const metadata = {
   title: "Push Notifications | Admin",
@@ -38,15 +42,18 @@ export default async function AdminNotificationsPage() {
 
   if (access.denied) return <AdminForbidden {...access.denied} />;
 
-  const campaigns = await listPushCampaigns().catch((error: unknown) => {
+  const [campaigns, audienceSummary] = await Promise.all([
+    listPushCampaigns(),
+    getPushCampaignAudienceSummary(),
+  ]).catch((error: unknown) => {
     if (process.env.NODE_ENV === "development") {
       console.error("[admin] failed to load push campaigns", error);
     }
 
-    return null;
+    return [null, null] as const;
   });
 
-  if (!campaigns) return <AdminDatabaseFallback />;
+  if (!campaigns || !audienceSummary) return <AdminDatabaseFallback />;
 
   const configured = isPushConfigured();
 
@@ -86,7 +93,10 @@ export default async function AdminNotificationsPage() {
                   : "חסרות הגדרות VAPID. אפשר לשמור קמפיין כטיוטה, אבל שליחה מיידית וכפתורי שליחה יישארו כבויים עד שההגדרות יושלמו."}
               </p>
             </div>
-            <AdminPushCampaignForm configured={configured} />
+            <AdminPushCampaignForm
+              audienceSummary={audienceSummary}
+              configured={configured}
+            />
           </CardContent>
         </Card>
 

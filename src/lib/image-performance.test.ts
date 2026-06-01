@@ -58,6 +58,26 @@ describe("image performance guardrails", () => {
     expect(source.match(/prefetch=\{false\}/g)).toHaveLength(1);
   });
 
+  it("keeps broad navigation prefetch limited to high-intent category routes", () => {
+    const prefetchSource = read("src/components/category-route-prefetch.ts");
+    const headerSource = read("src/components/site-header.tsx");
+
+    expect(prefetchSource).toContain("categoryRoutePrefetchPolicy");
+    expect(prefetchSource).toContain('allowedHrefPrefix: "/category/"');
+    expect(prefetchSource).toContain('broadNavPrefetch: "intent-only"');
+    expect(prefetchSource).toContain("connection?.saveData");
+    expect(prefetchSource).toContain('"slow-2g", "2g"');
+
+    expect(headerSource).toContain("categoryNavHrefs");
+    expect(headerSource).toContain(".filter(isCategoryHref)");
+    expect(headerSource).toContain("onPointerEnter=");
+    expect(headerSource).toContain("onFocus=");
+    expect(headerSource).toContain(
+      "prefetch={categoryHref ? true : undefined}",
+    );
+    expect(headerSource).not.toContain("prefetch={true}");
+  });
+
   it("prioritizes only the initial product gallery image and lazy-loads later active images", () => {
     const source = read(
       "src/app/product/[slug]/_components/product-gallery.tsx",

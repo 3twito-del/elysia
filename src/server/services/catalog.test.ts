@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { getAdminCatalogImageValidationSummary } from "~/server/adapters/media";
 import {
   filterCatalogProducts,
   getCatalogAvailability,
@@ -105,6 +106,32 @@ describe("catalog availability helpers", () => {
       { available: false, branch: branches[1], quantity: 0 },
       { available: false, branch: branches[2], quantity: 0 },
     ]);
+  });
+});
+
+describe("admin catalog image validation", () => {
+  it("summarizes image format alt and size failures before save", () => {
+    expect(
+      getAdminCatalogImageValidationSummary({
+        alt: "",
+        bytes: 6 * 1024 * 1024,
+        url: "https://cdn.example.invalid/product.bmp",
+      }),
+    ).toMatchObject({
+      ok: false,
+      issues: [
+        { code: "missing-alt" },
+        { code: "unsupported-format" },
+        { code: "oversized" },
+      ],
+    });
+    expect(
+      getAdminCatalogImageValidationSummary({
+        alt: "Venus ring",
+        contentType: "image/webp",
+        url: "https://cdn.example.invalid/product.webp",
+      }).ok,
+    ).toBe(true);
   });
 });
 

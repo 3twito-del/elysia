@@ -6,6 +6,20 @@ export function getSellableQuantity(input: {
   return Math.max(0, input.quantity - input.reserved - input.safetyStock);
 }
 
+export function isInventoryLowStock(input: {
+  quantity: number;
+  reserved: number;
+  safetyStock: number;
+}) {
+  return getSellableQuantity(input) <= input.safetyStock;
+}
+
+export function getInventoryLowStockThresholdCopy(input: {
+  safetyStock: number;
+}) {
+  return `סף בדיקה: זמין קטן או שווה למלאי הביטחון (${input.safetyStock}).`;
+}
+
 export function canReserveStock(input: {
   quantity: number;
   reserved: number;

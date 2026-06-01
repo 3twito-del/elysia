@@ -33,10 +33,49 @@ describe("admin empty-state clarity", () => {
   it("keeps audit empty states distinct for filtered and unfiltered data", () => {
     const source = read("src/app/admin/audit/page.tsx");
 
+    expect(source).toContain('action="/admin/audit"');
+    expect(source).toContain('aria-label="חיפוש Audit"');
+    expect(source).toContain('aria-label="סינון לפי Entity"');
+    expect(source).toContain('aria-label="מיון אירועי Audit"');
+    expect(source).toContain("defaultValue={params.query}");
+    expect(source).toContain("defaultValue={params.entity}");
+    expect(source).toContain("defaultValue={params.sort}");
     expect(source).toContain("אין אירועי audit מתאימים");
     expect(source).toContain("אין אירועי audit");
     expect(source).toContain("שנו סינון או נקו");
     expect(source).toContain('<Link href="/admin/audit">ניקוי סינון</Link>');
+  });
+
+  it("keeps admin mutation and table disabled states singular and explained", () => {
+    const mutationStatus = read(
+      "src/app/admin/_components/admin-mutation-status.tsx",
+    );
+    const catalogActions = read(
+      "src/app/admin/_components/admin-catalog-actions.tsx",
+    );
+    const orderActions = read(
+      "src/app/admin/_components/admin-order-actions.tsx",
+    );
+    const tableTools = read("src/app/admin/_components/admin-table-tools.tsx");
+
+    expect(mutationStatus).toContain("StatusMessage");
+    expect(catalogActions).not.toContain("mutation.error.message");
+    expect(tableTools).toContain("אין עמוד קודם");
+    expect(tableTools).toContain("אין עמוד הבא");
+    expect(orderActions).toContain("לאשר ביטול הזמנה {targetLabel}?");
+    expect(orderActions).toContain("לאשר זיכוי להזמנה {orderId}?");
+  });
+
+  it("keeps catalog image validation visible before product creation", () => {
+    const catalogActions = read(
+      "src/app/admin/_components/admin-catalog-actions.tsx",
+    );
+
+    expect(catalogActions).toContain(
+      'data-testid="admin-catalog-image-validation-summary"',
+    );
+    expect(catalogActions).toContain("JPG, PNG, WebP, GIF או AVIF");
+    expect(catalogActions).toContain("עד 5MB");
   });
 
   it("keeps admin overview count freshness visible", () => {
@@ -67,11 +106,34 @@ describe("admin empty-state clarity", () => {
   it("keeps service queue empty states distinct for filtered and unfiltered data", () => {
     const source = read("src/app/admin/service/page.tsx");
 
+    expect(source).toContain('data-testid="admin-service-triage-facts"');
     expect(source).toContain("אין פניות שירות מתאימות");
     expect(source).toContain("אין פניות שירות");
     expect(source).toContain("לא נמצאו פניות לפי הסינון הנוכחי");
     expect(source).toContain('data-testid="admin-service-active-filters"');
     expect(source).toContain('<Link href="/admin/service">ניקוי סינון</Link>');
+  });
+
+  it("keeps admin customer privacy handoff separate from data tables", () => {
+    const source = read("src/app/admin/customers/page.tsx");
+
+    expect(source).toContain('data-testid="admin-customer-privacy-handoff"');
+    expect(source).toContain('href="/account/privacy/export"');
+    expect(source).toMatch(/אין\s+לחשוף מכאן נתוני חשבון מלאים/);
+  });
+
+  it("keeps admin loading states reserving table-like space", () => {
+    const adminLoading = read("src/app/admin/loading.tsx");
+    const accountLoading = read("src/app/account/loading.tsx");
+
+    expect(adminLoading).toContain(
+      'data-testid="admin-loading-table-skeleton"',
+    );
+    expect(adminLoading).toContain("min-h-[24rem]");
+    expect(accountLoading).toContain(
+      'data-testid="account-loading-detail-skeletons"',
+    );
+    expect(accountLoading).toContain("min-h-[26rem]");
   });
 
   it("keeps integrations outbox and job filters recoverable", () => {

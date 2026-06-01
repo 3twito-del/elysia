@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -30,4 +33,44 @@ describe("admin commerce helpers", () => {
       shouldRestockRefundedOrder({ status: "COMPLETED", restockItems: false }),
     ).toBe(false);
   });
+
+  it("keeps multi-step admin mutations inside transaction boundaries", () => {
+    const source = read("src/server/services/admin-commerce.ts");
+
+    for (const operation of [
+      "upsertAdminShipment",
+      "refundAdminOrder",
+      "updateAdminAppointmentStatus",
+      "createAdminProduct",
+      "updateAdminProductCommerce",
+      "updateAdminProductStatus",
+      "updateAdminInventory",
+      "createAdminCoupon",
+      "updateAdminCouponStatus",
+    ]) {
+      expect(getFunctionSource(source, operation)).toContain("db.$transaction");
+    }
+
+    const refundSource = getFunctionSource(source, "refundAdminOrder");
+
+    expect(refundSource).toContain("tx.returnRequest");
+    expect(refundSource).toContain("releaseOutstandingReservationsForRefund");
+    expect(refundSource).toContain("tx.payment.updateMany");
+    expect(refundSource).toContain("tx.order.update");
+    expect(refundSource).not.toContain("db.payment.updateMany");
+    expect(refundSource).not.toContain("db.order.update");
+  });
 });
+
+function getFunctionSource(source: string, functionName: string) {
+  const start = source.indexOf(`export async function ${functionName}`);
+  const next = source.indexOf("\nexport async function ", start + 1);
+
+  expect(start).toBeGreaterThanOrEqual(0);
+
+  return source.slice(start, next === -1 ? source.length : next);
+}
+
+function read(relativePath: string) {
+  return readFileSync(path.join(process.cwd(), relativePath), "utf8");
+}

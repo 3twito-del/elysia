@@ -519,7 +519,16 @@ export function AdminProductCreateForm({ catalog }: { catalog: AdminCatalog }) {
           <Field name="variantSku" placeholder="מק״ט וריאציה" />
           <Field name="variantName" placeholder="שם וריאציה" />
         </div>
-        <Field name="imageUrl" optional placeholder="כתובת תמונה" />
+        <div className="grid gap-2">
+          <Field name="imageUrl" optional placeholder="כתובת תמונה" />
+          <p
+            className="text-muted-foreground text-xs leading-5"
+            data-testid="admin-catalog-image-validation-summary"
+          >
+            תמונת מוצר צריכה להיות JPG, PNG, WebP, GIF או AVIF, עד 5MB. שם המוצר
+            משמש כטקסט חלופי בתצוגת הקטלוג.
+          </p>
+        </div>
         <Textarea name="shortDescription" placeholder="תיאור קצר" required />
         <Textarea name="description" placeholder="תיאור מלא" required />
         <div className="grid gap-3 md:grid-cols-2">
@@ -549,11 +558,6 @@ export function AdminProductCreateForm({ catalog }: { catalog: AdminCatalog }) {
       {getFieldErrorList(fieldErrors).length > 0 ? (
         <StatusMessage tone="error" variant="plain">
           {getFieldErrorList(fieldErrors).join(" ")}
-        </StatusMessage>
-      ) : null}
-      {mutation.error ? (
-        <StatusMessage tone="error" variant="plain">
-          {mutation.error.message}
         </StatusMessage>
       ) : null}
       <AdminMutationStatus feedback={feedback} />

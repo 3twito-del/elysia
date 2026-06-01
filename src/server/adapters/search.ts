@@ -8,6 +8,7 @@ import {
   type SearchMode,
   type SemanticSearchIntent,
 } from "~/lib/semantic-search-intent";
+import { formatInlinePrice } from "~/lib/format";
 import { resolveSemanticSearchIntent } from "~/server/ai/search-intent";
 import {
   getCatalogCategories,
@@ -896,7 +897,7 @@ function getActiveSemanticSignals(intent: SemanticSearchIntent) {
     intent.hardFilters.material ? `חומר: ${intent.hardFilters.material}` : null,
     intent.hardFilters.stone ? `אבן: ${intent.hardFilters.stone}` : null,
     intent.hardFilters.maxPrice
-      ? `מחיר עד ${intent.hardFilters.maxPrice.toLocaleString("he-IL")} ₪`
+      ? `מחיר עד ${formatInlinePrice(intent.hardFilters.maxPrice)}`
       : null,
     intent.recipient ? `למי: ${intent.recipient}` : null,
     intent.occasion ? `אירוע: ${intent.occasion}` : null,
