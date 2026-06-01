@@ -18,6 +18,35 @@ describe("api response helpers", () => {
     await expect(response.json()).resolves.toEqual({ ok: true, value: 1 });
   });
 
+  it("serializes non-plain JSON values predictably", async () => {
+    const circular: Record<string, unknown> = {};
+    circular.self = circular;
+    const circularArray: unknown[] = [];
+    circularArray.push(circularArray);
+    const response = okJson({
+      createdAt: new Date("2026-06-01T00:00:00.000Z"),
+      id: 123n,
+      nested: {
+        dropped: undefined,
+        values: [1n, undefined, Symbol("private")],
+      },
+      circular,
+      circularArray,
+    });
+
+    await expect(response.json()).resolves.toEqual({
+      createdAt: "2026-06-01T00:00:00.000Z",
+      id: "123",
+      nested: {
+        values: ["1", null, null],
+      },
+      circular: {
+        self: "[Circular]",
+      },
+      circularArray: ["[Circular]"],
+    });
+  });
+
   it("standardizes error JSON payloads", async () => {
     const badRequest = badRequestJson("Bad input.");
     const forbidden = forbiddenJson("Forbidden.");

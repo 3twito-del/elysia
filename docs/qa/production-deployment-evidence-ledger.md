@@ -21,6 +21,8 @@ Related documents:
 | Field               | Evidence                                                                                                                                                                         |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Evidence date       | 2026-06-01                                                                                                                                                                       |
+| Branch              | `qa/full-site-hardening`                                                                                                                                                        |
+| Commit SHA          | Pending next production release update                                                                                                                                          |
 | Vercel project      | `ariel-twitos-projects/elysia`                                                                                                                                                   |
 | Deployment URL      | `https://elysia-ki7m92i44-ariel-twitos-projects.vercel.app`                                                                                                                      |
 | Deployment ID       | `dpl_QpPFbYnWAFn2qteRhRiX3LmWNgd1`                                                                                                                                               |
@@ -31,6 +33,7 @@ Related documents:
 | Additional aliases  | `https://elysia-ariel-twitos-projects.vercel.app`, `https://elysia-3twito-9803-ariel-twitos-projects.vercel.app`                                                                 |
 | Smoke command       | `SMOKE_BASE_URL=https://elysia-jewellery.com pnpm smoke`                                                                                                                         |
 | Smoke result        | PASS: 34 checks passed across health, public, checkout, account, API, and admin smoke routes                                                                                     |
+| Health result       | PASS: `/api/health` returned 200 during smoke                                                                                                                                    |
 | Error log scan      | PASS: `vercel logs https://elysia-ki7m92i44-ariel-twitos-projects.vercel.app --level error --since 1h --json` returned no error entries                                          |
 | Error-log window    | PASS: clean 60-minute production error-log window after deployment alias verification                                                                                            |
 | Marker checks       | PASS: `size-guide-product-return-context`, `size-guide-save-context`, `branches-online-service-continuity`, and `branches-online-recovery-links` were present in production HTML |
@@ -41,11 +44,14 @@ Related documents:
 
 Every production release note or ledger update must record:
 
+- Branch name.
 - Commit SHA.
 - Deployment URL.
 - Deployment ID.
+- Deployment target.
 - Production alias URL.
 - Alias verification result from `vercel inspect`.
+- Health check result against the production alias.
 - Smoke command and result.
 - Error-log scan command and result.
 - Minimum clean error-log window, currently `60 minutes` after production alias
@@ -57,6 +63,8 @@ Every production release note or ledger update must record:
 Run these commands from the repository root when updating this ledger:
 
 ```powershell
+git rev-parse --abbrev-ref HEAD
+git rev-parse HEAD
 vercel ls --yes
 vercel inspect https://elysia-ki7m92i44-ariel-twitos-projects.vercel.app
 vercel logs https://elysia-ki7m92i44-ariel-twitos-projects.vercel.app --level error --since 1h --json
@@ -72,6 +80,27 @@ clean Vercel error-log scan for at least `60 minutes` after the production
 alias points at the inspected deployment. If an error appears, record the
 command, the affected route or function if known, and rerun the clean window
 after the fix is deployed.
+
+Repeatable log scan command:
+
+```powershell
+vercel logs <deployment-url> --level error --since 1h --json
+```
+
+## Rollback Decision Tree
+
+1. If the production alias points to a deployment with customer-visible 5xx
+   errors, broken checkout, or provider webhook failures, run
+   `vercel rollback <deployment-url>` to restore the last known-good production
+   deployment.
+2. If the candidate deployment is healthy but the alias still points to an older
+   deployment, run `vercel promote <deployment-url>` and then repeat smoke,
+   health, and log checks.
+3. If the deployment failed before readiness or has build/runtime errors, fix
+   the branch, redeploy, and start a new ledger entry instead of promoting or
+   rolling back blindly.
+4. Record the chosen action, operator, command, resulting alias target, and
+   residual risk in this ledger or the release note.
 
 ## Smoke Route Summary
 

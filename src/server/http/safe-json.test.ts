@@ -44,6 +44,52 @@ describe("readSafeJson", () => {
     });
   });
 
+  it("parses Date-shaped strings and nested unknown values without coercion", async () => {
+    await expect(
+      readSafeJson(
+        new Request("http://localhost", {
+          method: "POST",
+          body: JSON.stringify({
+            createdAt: new Date("2026-06-01T00:00:00.000Z"),
+            nested: { values: [1, null, false] },
+            omitted: undefined,
+          }),
+        }),
+      ),
+    ).resolves.toEqual({
+      ok: true,
+      data: {
+        createdAt: "2026-06-01T00:00:00.000Z",
+        nested: { values: [1, null, false] },
+      },
+    });
+  });
+
+  it("rejects unsupported BigInt and undefined JSON tokens as invalid bodies", async () => {
+    await expect(
+      readSafeJson(
+        new Request("http://localhost", {
+          method: "POST",
+          body: '{"id": 1n}',
+        }),
+      ),
+    ).resolves.toEqual({
+      ok: false,
+      error: "invalid",
+    });
+    await expect(
+      readSafeJson(
+        new Request("http://localhost", {
+          method: "POST",
+          body: '{"value": undefined}',
+        }),
+      ),
+    ).resolves.toEqual({
+      ok: false,
+      error: "invalid",
+    });
+  });
+
   it("rejects bodies that exceed the configured byte limit", async () => {
     await expect(
       readSafeJson(

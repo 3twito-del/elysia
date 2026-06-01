@@ -613,6 +613,7 @@ export function checkCopyMapEntries(
 ): CheckResult {
   const errors: string[] = [];
   const currentById = new Map(currentEntries.map((entry) => [entry.id, entry]));
+  const currentPaths = new Set(currentEntries.map((entry) => entry.path));
   let pendingApprovedChanges = 0;
 
   for (const entry of currentEntries) {
@@ -649,6 +650,12 @@ export function checkCopyMapEntries(
     if (!currentById.has(existingEntry.id)) {
       errors.push(
         `Stale copy map entry: ${existingEntry.id} (${existingEntry.path})`,
+      );
+    }
+
+    if (!currentPaths.has(existingEntry.path)) {
+      errors.push(
+        `Stale copy map source path: ${existingEntry.path} (${existingEntry.id})`,
       );
     }
   }

@@ -1,4 +1,5 @@
 import { resolveAiCatalogSearchIntent } from "~/lib/ai-catalog-intent";
+import { normalizePositivePriceBound } from "~/lib/price-filter";
 import {
   DEFAULT_SEARCH_PER_PAGE,
   type ProductSearchInput,
@@ -203,9 +204,7 @@ function normalizeCatalogValue(value: string | undefined, allowed: string[]) {
 }
 
 function normalizeMaxPrice(value?: string) {
-  const parsed = Number(value);
-
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
+  return normalizePositivePriceBound(value);
 }
 
 function normalizePage(value?: string) {
@@ -225,7 +224,7 @@ function normalizeSort(value?: string): ProductSearchInput["sort"] {
     return value;
   }
 
-  return undefined;
+  return "relevance";
 }
 
 function normalizeSearchMode(value?: string): ProductSearchInput["mode"] {

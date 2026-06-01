@@ -5,6 +5,7 @@ import type {
   CatalogProduct,
 } from "~/server/services/catalog";
 import {
+  createCategoryFilterQueryString,
   getCategoryRouteState,
   toCategoryFilterPayload,
 } from "./category-filter-state";
@@ -90,6 +91,40 @@ describe("getCategoryRouteState", () => {
       "maxPrice",
       "sort",
     ]);
+  });
+
+  it("normalizes invalid price and tracking params out of reset-safe filter state", () => {
+    const state = getCategoryRouteState({
+      catalogProducts: [
+        makeProduct({
+          categorySlug: "rings",
+          material: "gold",
+          price: 900,
+          slug: "ring-a",
+        }),
+      ],
+      categories: [makeCategory("rings")],
+      facets: {
+        collections: ["classic"],
+        materials: ["gold"],
+        priceRange: { max: 900, min: 900 },
+        stones: ["diamond"],
+      },
+      query: {
+        material: "gold",
+        maxPrice: "-1000",
+        page: "3",
+        sort: "unsupported",
+      },
+      slug: "rings",
+    });
+
+    expect(state.filters.maxPrice).toBeUndefined();
+    expect(state.filters.sort).toBe("popular");
+    expect(state.resetHref).toBe("/category/rings");
+    expect(
+      createCategoryFilterQueryString({ material: "gold", page: "3" }),
+    ).toBe("material=gold");
   });
 
   it("builds route-backed no-result recovery actions for adjacent categories", () => {

@@ -47,6 +47,7 @@ export async function convertPublicImagesToAvif({
     referencesUpdated: 0,
     skippedLarger: 0,
     sourceBytes: 0,
+    staleAssetDiffs: [],
     staleAssets: 0,
     staleReferences: 0,
     avifBytes: 0,
@@ -106,8 +107,7 @@ async function processSourceImage({
   const hasUsableExistingAvif =
     existingAvifStats && existingAvifStats.size < sourceStats.size;
   const isCurrent =
-    hasUsableExistingAvif &&
-    existingAvifStats.mtimeMs >= sourceStats.mtimeMs;
+    hasUsableExistingAvif && existingAvifStats.mtimeMs >= sourceStats.mtimeMs;
 
   if (!force && (isCurrent || (check && hasUsableExistingAvif))) {
     summary.current += 1;
@@ -155,6 +155,7 @@ async function processSourceImage({
 
 async function checkSourceImage({
   avifPath,
+  existingAvifStats,
   publicDir,
   sourcePath,
   sourceStats,
@@ -176,6 +177,14 @@ async function checkSourceImage({
 
   summary.staleAssets += 1;
   summary.avifBytes += generatedAvif.length;
+  summary.staleAssetDiffs.push({
+    avif: toPublicUrl(avifPath, publicDir),
+    currentAvifBytes: existingAvifStats?.size ?? null,
+    expectedAvifBytes: generatedAvif.length,
+    expectedSavingsBytes: sourceStats.size - generatedAvif.length,
+    source: toPublicUrl(sourcePath, publicDir),
+    sourceBytes: sourceStats.size,
+  });
   usableAvifBySourceUrl.set(
     toPublicUrl(sourcePath, publicDir),
     toPublicUrl(avifPath, publicDir),
@@ -236,7 +245,7 @@ async function convertSourceImage({
 }
 
 function formatSummary(summary, check, scanned) {
-  return [
+  const summaryLine = [
     `[images:avif] scanned=${scanned}`,
     `converted=${summary.converted}`,
     `current=${summary.current}`,
@@ -247,7 +256,25 @@ function formatSummary(summary, check, scanned) {
     `stale-references=${summary.staleReferences}`,
     `mode=${check ? "check" : "write"}`,
     `saved=${formatBytes(summary.sourceBytes - summary.avifBytes)}`,
+    `pending-stale-savings=${formatBytes(getPendingStaleSavings(summary))}`,
   ].join(" ");
+
+  if (!check || summary.staleAssetDiffs.length === 0) return summaryLine;
+
+  return [
+    summaryLine,
+    ...summary.staleAssetDiffs.map(
+      (diff) =>
+        `[images:avif] stale ${diff.source} -> ${diff.avif} expected-saving=${formatBytes(diff.expectedSavingsBytes)} source=${formatBytes(diff.sourceBytes)} avif=${formatBytes(diff.expectedAvifBytes)}`,
+    ),
+  ].join("\n");
+}
+
+function getPendingStaleSavings(summary) {
+  return summary.staleAssetDiffs.reduce(
+    (total, diff) => total + diff.expectedSavingsBytes,
+    0,
+  );
 }
 
 async function findSourceImages(root) {

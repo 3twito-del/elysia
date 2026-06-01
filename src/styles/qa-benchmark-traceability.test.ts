@@ -8,6 +8,10 @@ const historicalBenchmarkBacklogIds = new Set(
     (_, index) => `I-${String(index + 1).padStart(3, "0")}`,
   ),
 );
+const activeBacklogRotation = {
+  end: 300,
+  start: 201,
+} as const;
 
 describe("QA benchmark traceability", () => {
   it("keeps benchmark backlog references current or intentionally historical", () => {
@@ -50,6 +54,15 @@ describe("QA benchmark traceability", () => {
     });
 
     expect(read("docs/qa/benchmark-traceability.md")).toContain("I-199");
+    expect(read("docs/qa/benchmark-traceability.md")).toContain("I-201");
+    expect(read("docs/qa/benchmark-traceability.md")).toContain("I-300");
+    for (
+      let idNumber = activeBacklogRotation.start;
+      idNumber <= activeBacklogRotation.end;
+      idNumber += 1
+    ) {
+      expect(activeBacklogIds.has(`I-${idNumber}`)).toBe(true);
+    }
     expect(offenders).toEqual([]);
   });
 });

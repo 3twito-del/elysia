@@ -74,6 +74,31 @@ describe("site copy tooling", () => {
     ]);
   });
 
+  it("reports copy-map entries whose source path no longer exists", () => {
+    const [entry] = extractCopyEntriesFromText(
+      "src/app/demo/page.tsx",
+      "export const label = '׳©׳׳™׳¨׳”';",
+    );
+
+    expect(entry).toBeDefined();
+
+    const markdown = renderCopyMap([
+      {
+        ...(entry as CopyEntry),
+        id: "copy.src-app-retired-page.001",
+        path: "src/app/retired/page.tsx",
+      },
+    ]);
+    const parsed = parseCopyMap(markdown);
+    const result = checkCopyMapEntries([entry as CopyEntry], parsed);
+
+    expect(result.errors).toEqual([
+      "Missing copy map entry: copy.src-app-demo-page.001 (src/app/demo/page.tsx:1)",
+      "Stale copy map entry: copy.src-app-retired-page.001 (src/app/retired/page.tsx)",
+      "Stale copy map source path: src/app/retired/page.tsx (copy.src-app-retired-page.001)",
+    ]);
+  });
+
   it("applies approved copy back to source text ranges", () => {
     const source = `
       export const label = "שמירה";

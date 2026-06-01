@@ -17,6 +17,13 @@ historical references for benchmark documents whose purpose is preserving
 evidence from earlier passes. New benchmark documents should use a current
 backlog ID unless the document explicitly preserves historical evidence.
 
+## Active Rotation
+
+The current active multi-aspect backlog rotation uses IDs `I-201` through
+`I-300`. When that batch is retired, update
+`src/styles/qa-benchmark-traceability.test.ts` so those IDs become explicitly
+historical before adding the next active rotation.
+
 ## Check
 
 Run:

@@ -31,18 +31,30 @@ describe("public image AVIF conversion", () => {
     const cwd = await createImageFixture();
     const sourceFile = path.join(cwd, "src", "page.ts");
     const before = await readFile(sourceFile, "utf8");
+    const logs = [];
 
     const result = await convertPublicImagesToAvif({
       check: true,
       cwd,
       error: quiet,
-      logger: quiet,
+      logger: (message) => logs.push(message),
       warn: quiet,
     });
 
     expect(result.ok).toBe(false);
     expect(result.summary.staleAssets).toBe(1);
     expect(result.summary.staleReferences).toBe(1);
+    expect(result.summary.staleAssetDiffs).toEqual([
+      expect.objectContaining({
+        avif: "/hero.avif",
+        expectedSavingsBytes: expect.any(Number),
+        source: "/hero.png",
+      }),
+    ]);
+    expect(logs.join("\n")).toContain("pending-stale-savings=");
+    expect(logs.join("\n")).toContain(
+      "[images:avif] stale /hero.png -> /hero.avif expected-saving=",
+    );
     expect(existsSync(path.join(cwd, "public", "hero.avif"))).toBe(false);
     expect(await readFile(sourceFile, "utf8")).toBe(before);
   });
@@ -123,6 +135,7 @@ describe("public image AVIF conversion", () => {
     expect(scriptSource).toContain('const referenceRoots = ["src", "docs"]');
     expect(scriptSource).toContain("stale-assets=");
     expect(scriptSource).toContain("stale-references=");
+    expect(scriptSource).toContain("pending-stale-savings=");
     expect(scriptSource).toContain("[images:avif] check failed");
   });
 });

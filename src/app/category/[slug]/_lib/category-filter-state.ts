@@ -4,6 +4,7 @@ import {
   type CategoryFilterCounts,
 } from "./category-filter-utils";
 import { formatInlinePrice } from "~/lib/format";
+import { normalizeAllowedPriceBound } from "~/lib/price-filter";
 import {
   filterCatalogProducts,
   type CatalogCategory,
@@ -640,9 +641,7 @@ function getCategoryUrlParams(filters: Partial<CategoryFilters>) {
 }
 
 function getValidMaxPrice(value?: string) {
-  const parsed = Number(value);
-
-  return priceOptions.find((price) => price === parsed);
+  return normalizeAllowedPriceBound(value, priceOptions);
 }
 
 function getValidCategorySort(value?: string): CategorySort {

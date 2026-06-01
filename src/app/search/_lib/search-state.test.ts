@@ -96,6 +96,20 @@ describe("search state helpers", () => {
 
   it("omits empty and default search parameters from canonical hrefs", () => {
     expect(
+      normalizeSearchInput(
+        {
+          maxPrice: "-700",
+          page: "0",
+          sort: "unsupported",
+        },
+        { categories, facets },
+      ),
+    ).toMatchObject({
+      maxPrice: undefined,
+      page: undefined,
+      sort: "relevance",
+    });
+    expect(
       createSearchHref({
         query: "",
         category: "",
@@ -120,6 +134,13 @@ describe("search state helpers", () => {
         mode: "semantic",
       }),
     ).toBe(3);
+    expect(
+      getActiveSearchRefinementCount({
+        query: "ring",
+        sort: "relevance",
+        mode: "semantic",
+      }),
+    ).toBe(0);
   });
 
   it("dedupes recovery links and creates compact pagination windows", () => {

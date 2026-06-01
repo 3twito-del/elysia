@@ -115,6 +115,30 @@ as a performance signal, not as a reason to weaken the guardrail.
 5. Rerun both the focused test and the broader command that originally exposed
    the timeout.
 
+## Flaky Test Policy
+
+Do not hide flaky tests by deleting assertions, weakening source scans, or
+moving failures out of the default Vitest suite. A flaky-test change must record
+the owner, observed failure mode, affected command, and follow-up condition in
+the PR or release note.
+
+Allowed responses:
+
+- Isolate shared mutable state with per-test setup/teardown.
+- Add deterministic waits only around real asynchronous boundaries.
+- Cache expensive file discovery in broad source-scan tests when timeouts are
+  caused by repeated reads.
+- Increase a timeout only for the narrow test that needs it, with the source
+  size or runtime evidence that justified the increase.
+
+Disallowed responses:
+
+- Skipping a test without a dated owner and remediation condition.
+- Replacing behavioral assertions with snapshots that no longer check the
+  regression.
+- Retrying a failing test in CI without also keeping a local command that can
+  reproduce and diagnose the failure.
+
 ## Manual Quality Gates
 
 Quality gates are manual `pnpm gate:*` commands. They do not run in watch mode,

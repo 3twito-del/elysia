@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import type { RateLimitExceededError } from "~/server/services/rate-limit";
 
 export function jsonResponse<T>(data: T, init?: ResponseInit) {
-  return NextResponse.json(data, init);
+  return NextResponse.json(toJsonSafeValue(data), init);
 }
 
 export function okJson<T>(data: T, init?: ResponseInit) {
@@ -61,4 +61,74 @@ export function rateLimitedJson(
 
 function formatRetryAfterSeconds(value: number) {
   return String(Math.max(1, Math.ceil(value)));
+}
+
+function toJsonSafeValue(
+  value: unknown,
+  seen = new WeakSet<object>(),
+): unknown {
+  if (value instanceof Date) return value.toISOString();
+
+  if (typeof value === "bigint") return value.toString();
+
+  if (
+    value === null ||
+    typeof value === "boolean" ||
+    typeof value === "number" ||
+    typeof value === "string"
+  ) {
+    return value;
+  }
+
+  if (
+    typeof value === "undefined" ||
+    typeof value === "function" ||
+    typeof value === "symbol"
+  ) {
+    return undefined;
+  }
+
+  if (Array.isArray(value)) {
+    if (seen.has(value)) return "[Circular]";
+
+    seen.add(value);
+
+    const safeItems = value.map((item) => toJsonSafeValue(item, seen) ?? null);
+
+    seen.delete(value);
+
+    return safeItems;
+  }
+
+  if (typeof value === "object") {
+    if (seen.has(value)) return "[Circular]";
+
+    seen.add(value);
+
+    const toJson = (value as { toJSON?: () => unknown }).toJSON;
+
+    if (typeof toJson === "function") {
+      const safeJsonValue = toJsonSafeValue(toJson.call(value), seen);
+
+      seen.delete(value);
+
+      return safeJsonValue;
+    }
+
+    const result: Record<string, unknown> = {};
+
+    for (const [key, nestedValue] of Object.entries(value)) {
+      const safeValue = toJsonSafeValue(nestedValue, seen);
+
+      if (typeof safeValue !== "undefined") {
+        result[key] = safeValue;
+      }
+    }
+
+    seen.delete(value);
+
+    return result;
+  }
+
+  return value;
 }
