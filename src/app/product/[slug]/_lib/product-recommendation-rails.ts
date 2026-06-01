@@ -1,8 +1,12 @@
 import type { CatalogProduct } from "~/server/services/catalog";
 
 export type ProductRecommendationRail = {
+  cardContextLabel: string;
+  continuationHref: string;
+  continuationLabel: string;
   id: "collection" | "category" | "material" | "popular";
   products: CatalogProduct[];
+  reason: string;
   title: string;
 };
 
@@ -31,6 +35,12 @@ export function getProductRecommendationRails({
       candidate.collections.includes(product.collection),
     product,
     rails,
+    cardContextLabel: "מאותה קולקציה",
+    continuationHref: createSearchContinuationHref({
+      collection: product.collection,
+    }),
+    continuationLabel: `המשך בקולקציית ${product.collection}`,
+    reason: `נבחרו תכשיטים שחולקים את קולקציית ${product.collection}.`,
     title: `עוד מקולקציית ${product.collection}`,
     usedSlugs,
   });
@@ -41,6 +51,10 @@ export function getProductRecommendationRails({
     predicate: (candidate) => candidate.categorySlug === product.categorySlug,
     product,
     rails,
+    cardContextLabel: "אותה קטגוריה",
+    continuationHref: `/category/${product.categorySlug}`,
+    continuationLabel: `המשך בקטגוריית ${product.categoryName}`,
+    reason: `המשך בחירה בתוך קטגוריית ${product.categoryName}.`,
     title: `עוד בקטגוריית ${product.categoryName}`,
     usedSlugs,
   });
@@ -53,6 +67,14 @@ export function getProductRecommendationRails({
       Boolean(product.stone && candidate.stone === product.stone),
     product,
     rails,
+    cardContextLabel: product.stone ? "חומר או אבן דומים" : "חומר דומה",
+    continuationHref: createSearchContinuationHref({
+      material: product.material,
+    }),
+    continuationLabel: `חיפוש ${product.material}`,
+    reason: product.stone
+      ? `התאמה לפי ${product.material} או ${product.stone}.`
+      : `התאמה לפי ${product.material}.`,
     title: `בחירה דומה ב${product.material}`,
     usedSlugs,
   });
@@ -65,6 +87,10 @@ export function getProductRecommendationRails({
       predicate: () => true,
       product,
       rails,
+      cardContextLabel: "מומלץ במבחר",
+      continuationHref: "/search",
+      continuationLabel: "פתיחת כל המבחר",
+      reason: "מוצרים זמינים ופופולריים מהמבחר כאשר אין התאמה ישירה.",
       title: "מומלצים מהמבחר",
       usedSlugs,
     });
@@ -74,11 +100,15 @@ export function getProductRecommendationRails({
 }
 
 function addRail(input: {
+  cardContextLabel: string;
   candidates: CatalogProduct[];
+  continuationHref: string;
+  continuationLabel: string;
   id: ProductRecommendationRail["id"];
   maxProductsPerRail: number;
   predicate: (product: CatalogProduct) => boolean;
   product: CatalogProduct;
+  reason: string;
   rails: ProductRecommendationRail[];
   title: string;
   usedSlugs: Set<string>;
@@ -104,10 +134,28 @@ function addRail(input: {
   }
 
   input.rails.push({
+    cardContextLabel: input.cardContextLabel,
+    continuationHref: input.continuationHref,
+    continuationLabel: input.continuationLabel,
     id: input.id,
     products: selected,
+    reason: input.reason,
     title: input.title,
   });
+}
+
+function createSearchContinuationHref(input: {
+  collection?: string;
+  material?: string;
+}) {
+  const params = new URLSearchParams();
+
+  if (input.collection) params.set("collection", input.collection);
+  if (input.material) params.set("material", input.material);
+
+  const query = params.toString();
+
+  return query ? `/search?${query}` : "/search";
 }
 
 function scoreRecommendation(

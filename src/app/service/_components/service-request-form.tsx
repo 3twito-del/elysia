@@ -83,14 +83,21 @@ export function ServiceRequestForm({
     : (topics[0]?.slug ?? "");
   const [selectedTopicSlug, setSelectedTopicSlug] =
     useState(initialSelectedTopic);
-  const selectedTopicDescription = topics.find(
+  const [selectedAttachmentCount, setSelectedAttachmentCount] = useState(0);
+  const selectedTopic = topics.find(
     (topic) => topic.slug === selectedTopicSlug,
-  )?.description;
+  );
+  const selectedTopicDescription = selectedTopic?.description;
+  const selectedTopicLabel = selectedTopic?.label ?? "נושא כללי";
 
   useEffect(() => {
     if (state.ok) {
       formRef.current?.reset();
-      return;
+      const resetFrame = window.requestAnimationFrame(() => {
+        setSelectedAttachmentCount(0);
+      });
+
+      return () => window.cancelAnimationFrame(resetFrame);
     }
 
     const firstInvalidField = serviceFieldFocusOrder.find((field) =>
@@ -123,6 +130,7 @@ export function ServiceRequestForm({
             "הפנייה נשמרה ותישלח אוטומטית כשהחיבור יחזור. לאחר השליחה נחזור אליכם לפי דרך הקשר שבחרתם.",
         });
         form.reset();
+        setSelectedAttachmentCount(0);
       })
       .catch(() =>
         setOfflineState({
@@ -172,6 +180,16 @@ export function ServiceRequestForm({
           {selectedTopicDescription ??
             "בחרו את הנושא הקרוב ביותר כדי שנכוון את הפנייה לצוות המתאים."}
         </p>
+        <div
+          className="glass-inset rounded-md border p-3 text-xs leading-5"
+          data-testid="service-topic-routing-review"
+        >
+          <p className="font-medium">ניתוב הפנייה</p>
+          <p className="text-muted-foreground mt-1">
+            הפנייה תישלח לפי הנושא {selectedTopicLabel} ותטופל דרך ערוץ השירות
+            שבחרתם.
+          </p>
+        </div>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
@@ -282,8 +300,24 @@ export function ServiceRequestForm({
           id="attachments"
           multiple
           name="attachments"
+          onChange={(event) =>
+            setSelectedAttachmentCount(event.currentTarget.files?.length ?? 0)
+          }
           type="file"
         />
+        <div
+          className="glass-inset rounded-md border p-3 text-xs leading-5"
+          data-testid="service-attachment-review"
+        >
+          <p className="font-medium">סקירת קבצים לפני שליחה</p>
+          <p className="text-muted-foreground mt-1">
+            {selectedAttachmentCount > 0
+              ? `${selectedAttachmentCount} קבצים נבחרו לצירוף.`
+              : "לא נבחרו קבצים לצירוף."}{" "}
+            המגבלות נשארות עד {maxServiceRequestFiles} קבצים ועד {maxFileSizeMb}
+            MB לקובץ.
+          </p>
+        </div>
         <p
           className="text-muted-foreground text-xs leading-5"
           id={attachmentGuidanceId}

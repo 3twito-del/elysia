@@ -329,6 +329,16 @@ export function CartCheckoutForm() {
     : hasDropshipItems && !hasOwnItems
       ? "התשלום, פרטי המסירה ואישור ההזמנה יתבצעו בקופת Shopify. לא נוצרת כאן הזמנה מקומית עבור פריטי ספק בלבד."
       : "הפרטים והסכום יאומתו לפני שמירת הבחירה; התשלום לא נגבה בשלב זה.";
+  const checkoutQuantityRecoveryCopy = isOffline
+    ? "שינויי כמות והסרה נשמרים במכשיר ויסתנכרנו כשהחיבור יחזור. סיום הזמנה עדיין דורש חיבור פעיל."
+    : updateItem.isPending || removeItem.isPending
+      ? "מעדכנים את הכמות ואת הסיכום לפני אישור הבחירה."
+      : "שינויי כמות מתעדכנים בסיכום לפני אישור הבחירה; מגבלת הכמות נשמרת לכל פריט.";
+  const mobileCheckoutSummaryCopy = hasMixedSourceCart
+    ? `${totalItemQuantity} תכשיטי חנות · ${dropshipTotalQuantity} פריטי ספק בנפרד`
+    : hasDropshipItems && !hasOwnItems
+      ? `${dropshipTotalQuantity} פריטי ספק ימשיכו לקופת Shopify`
+      : `${totalItemQuantity} תכשיטים בקופה המקומית`;
   const cartMutationError =
     updateItem.error ?? removeItem.error ?? updateOptions.error;
   const cartMutationErrorMessage = cartMutationError
@@ -384,6 +394,7 @@ export function CartCheckoutForm() {
       className="public-floating-control glass-chrome fixed inset-x-3 bottom-[calc(var(--floating-stack-bottom,0px)+0.75rem+env(safe-area-inset-bottom))] z-40 rounded-md border p-2 shadow-none md:hidden"
       data-public-floating-bar="true"
       data-public-floating-avoid="true"
+      data-testid="mobile-checkout-summary"
     >
       <div className="mx-auto grid max-w-md grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
         <div className="min-w-0">
@@ -395,6 +406,12 @@ export function CartCheckoutForm() {
                 : "מוכן לאישור הבחירה"}
           </p>
           <p className="text-lg font-semibold">{orderTotalLabel}</p>
+          <p
+            className="text-muted-foreground truncate text-xs"
+            data-testid="mobile-checkout-source-context"
+          >
+            {mobileCheckoutSummaryCopy}
+          </p>
           {hasPricingReview ? (
             <p className="text-muted-foreground truncate text-xs">
               נדרש אישור פרטים
@@ -777,6 +794,18 @@ export function CartCheckoutForm() {
                   </div>
                 </div>
               ))}
+              <div
+                className="glass-inset flex items-start gap-2 rounded-md border p-3 text-sm"
+                data-testid="checkout-quantity-recovery"
+              >
+                <PackageCheck
+                  aria-hidden="true"
+                  className="mt-0.5 size-4 shrink-0"
+                />
+                <p className="text-muted-foreground leading-6">
+                  {checkoutQuantityRecoveryCopy}
+                </p>
+              </div>
             </CardContent>
           </Card>
 

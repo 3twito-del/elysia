@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Gem, RotateCcw, ShieldCheck } from "lucide-react";
@@ -14,6 +15,7 @@ import { CommerceSectionHeader } from "~/components/commerce-section-header";
 import { ProductCard } from "~/components/product-card";
 import { SiteHeader } from "~/components/site-header";
 import { RevealSection } from "~/components/reveal";
+import { Button } from "~/components/ui/button";
 import { getPublicProductCommerceStatus } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
 import { stringifyJsonLd } from "~/lib/json-ld";
@@ -114,6 +116,9 @@ export default async function ProductPage({
     product,
     products: allProducts,
   });
+  const searchReturnHref = search.q
+    ? createSearchReturnHref(search.q)
+    : undefined;
   const productFacts = [
     { label: "חומר", value: product.material },
     { label: "אבן", value: product.stone },
@@ -293,7 +298,13 @@ export default async function ProductPage({
           </div>
         </div>
 
-        <ProductRecommendationRails rails={recommendationRails} />
+        <ProductRecommendationRails
+          rails={recommendationRails}
+          searchReturnHref={searchReturnHref}
+          searchReturnLabel={
+            search.q ? `חזרה לתוצאות עבור "${search.q}"` : undefined
+          }
+        />
         <RecentlyViewedProducts
           currentSlug={product.slug}
           products={allProducts}
@@ -319,8 +330,12 @@ function ServiceRow({ description, icon: Icon, title }: ServiceRowProps) {
 
 function ProductRecommendationRails({
   rails,
+  searchReturnHref,
+  searchReturnLabel,
 }: {
   rails: ProductRecommendationRail[];
+  searchReturnHref?: string;
+  searchReturnLabel?: string;
 }) {
   if (rails.length === 0) return null;
 
@@ -330,6 +345,19 @@ function ProductRecommendationRails({
       data-testid="product-recommendation-rails"
       id="similar-products"
     >
+      {searchReturnHref && searchReturnLabel ? (
+        <div
+          className="flex flex-wrap items-center justify-between gap-3"
+          data-testid="product-discovery-return-context"
+        >
+          <p className="text-muted-foreground text-sm leading-6">
+            הגעתם ממסלול חיפוש. אפשר לחזור לתוצאות בלי לאבד את ההקשר.
+          </p>
+          <Button asChild size="sm" variant="outline">
+            <Link href={searchReturnHref}>{searchReturnLabel}</Link>
+          </Button>
+        </div>
+      ) : null}
       {rails.map((rail) => {
         const headingId = `product-recommendation-${rail.id}`;
 
@@ -345,9 +373,24 @@ function ProductRecommendationRails({
               id={headingId}
               title={rail.title}
             />
+            <div
+              className="text-muted-foreground mt-2 flex flex-wrap items-center justify-between gap-3 text-sm leading-6"
+              data-testid="product-recommendation-rail-context"
+            >
+              <p>{rail.reason}</p>
+              <Button asChild size="sm" variant="ghost">
+                <Link href={rail.continuationHref}>
+                  {rail.continuationLabel}
+                </Link>
+              </Button>
+            </div>
             <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {rail.products.slice(0, 3).map((recommended) => (
-                <ProductCard key={recommended.slug} product={recommended} />
+                <ProductCard
+                  contextLabel={rail.cardContextLabel}
+                  key={recommended.slug}
+                  product={recommended}
+                />
               ))}
             </div>
           </section>
@@ -355,4 +398,10 @@ function ProductRecommendationRails({
       })}
     </div>
   );
+}
+
+function createSearchReturnHref(query: string) {
+  const params = new URLSearchParams({ q: query });
+
+  return `/search?${params.toString()}`;
 }

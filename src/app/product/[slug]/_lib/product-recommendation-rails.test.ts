@@ -53,6 +53,17 @@ describe("product recommendation rails", () => {
     expect(
       rails.flatMap((rail) => rail.products.map((item) => item.slug)),
     ).toEqual(["same-collection", "same-category", "same-material"]);
+    expect(rails.map((rail) => rail.cardContextLabel)).toEqual([
+      "מאותה קולקציה",
+      "אותה קטגוריה",
+      "חומר או אבן דומים",
+    ]);
+    expect(rails.map((rail) => rail.continuationHref)).toEqual([
+      "/search?collection=Sol",
+      "/category/rings",
+      "/search?material=Gold",
+    ]);
+    expect(rails.every((rail) => rail.reason.length > 0)).toBe(true);
   });
 
   it("falls back to popular catalog products when there are no direct matches", () => {
@@ -81,6 +92,8 @@ describe("product recommendation rails", () => {
     expect(rails).toHaveLength(1);
     expect(rails[0]?.id).toBe("popular");
     expect(rails[0]?.products[0]?.slug).toBe("popular");
+    expect(rails[0]?.continuationHref).toBe("/search");
+    expect(rails[0]?.cardContextLabel).toBe("מומלץ במבחר");
   });
 });
 

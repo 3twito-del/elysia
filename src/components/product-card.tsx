@@ -10,6 +10,7 @@ import { cn } from "~/lib/utils";
 import type { CatalogProduct } from "~/server/services/catalog";
 
 type ProductCardProps = {
+  contextLabel?: string;
   imagePriority?: boolean;
   imageSizes?: string;
   product: CatalogProduct;
@@ -36,6 +37,7 @@ const PRODUCT_CARD_IMAGE_POSITION_BY_SOURCE = [
 ] as const;
 
 export function ProductCard({
+  contextLabel,
   imagePriority = false,
   imageSizes = DEFAULT_PRODUCT_CARD_IMAGE_SIZES,
   product,
@@ -111,6 +113,14 @@ export function ProductCard({
         <CardContent className="flex min-h-28 flex-1 flex-col px-0 pt-4 pb-0 sm:min-h-32">
           <div className="min-w-0">
             <div className="grid min-w-0 gap-1.5">
+              {contextLabel ? (
+                <p
+                  className="text-muted-foreground truncate text-xs font-medium"
+                  data-testid="product-card-context-label"
+                >
+                  {contextLabel}
+                </p>
+              ) : null}
               <h3
                 className="ui-text-slot product-card-title group-hover/product-link:text-muted-foreground group-focus-visible/product-link:text-muted-foreground text-base font-medium transition-colors duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)] [--ui-text-slot-line-height:1.45rem]"
                 data-lines="2"

@@ -73,95 +73,126 @@ Candidate items are not implementable by default. Public-facing candidates must
 pass `docs/PUBLIC_CHANGE_GATE.md` or `docs/FULL_PRODUCT_BENCHMARK.md` before
 product code is edited.
 
-### I-038 Product Recommendation Rail Relevance and Return Context
+No candidate improvements remain. New public-facing candidates must pass
+`docs/PUBLIC_CHANGE_GATE.md` or `docs/FULL_PRODUCT_BENCHMARK.md` before product
+code is edited.
 
-- `ID`: I-038
-- `Aspect`: Public UX and Brand
-- `Status`: Needs Benchmark
-- `Priority`: P2
-- `Effort`: M
-- `Source/Evidence`: `/product/[slug]`, product recommendation rails,
-  search/category return context, PDP guidance in
-  `docs/FULL_PRODUCT_BENCHMARK.md`, and public structure guardrails
-- `Target Surface`: PDP recommendation rails, related-product grouping,
-  category/search continuation, product-card context labels
-- `Improvement`: Consider improving recommendation rail relevance and
-  return-to-discovery context without adding editorial sections, urgency copy,
-  or checkout shortcuts inside the PDP recommendation area.
-- `Acceptance Checks`: Benchmark confirms related products remain product-led,
-  route-backed, and compact; return context improves discovery without changing
-  PDP gallery/purchase priority.
-- `Verification`: Run benchmark workflow first; implementation verification
-  would require recommendation rail tests, product-card context tests, and
-  public structure enforcement tests.
-
-### I-039 Cart Quantity Recovery and Mobile Checkout Summary Clarity
-
-- `ID`: I-039
-- `Aspect`: Commerce and Checkout
-- `Status`: Needs Benchmark
-- `Priority`: P1
-- `Effort`: M
-- `Source/Evidence`: `/checkout`, cart quantity mutations, mobile checkout
-  sticky summary, offline cart mutation queue, checkout validation tests, and
-  commerce guidance in `docs/FULL_PRODUCT_BENCHMARK.md`
-- `Target Surface`: Checkout cart item controls, quantity update recovery,
-  mobile sticky summary, cart mutation errors, offline cart update copy
-- `Improvement`: Consider clearer quantity-update recovery and mobile summary
-  state without changing split local/Shopify checkout ownership or promising
-  offline checkout completion.
-- `Acceptance Checks`: Benchmark confirms cart recovery improves confidence,
-  keeps checkout source boundaries explicit, and does not add unsupported
-  payment, inventory, or fulfillment claims.
-- `Verification`: Run benchmark workflow first; implementation verification
-  would require checkout form tests, offline sync tests, and service trust
-  placement tests.
-
-### I-040 Service Request Topic Routing and Attachment Review Clarity
-
-- `ID`: I-040
-- `Aspect`: Admin and Operations
-- `Status`: Needs Benchmark
-- `Priority`: P2
-- `Effort`: M
-- `Source/Evidence`: `/service`, service topic defaults from account/order
-  recovery links, attachment validation, offline service request sync, and
-  service response benchmarks
-- `Target Surface`: Service request topic selection, account/order prefilled
-  service links, attachment review copy, queued offline service requests
-- `Improvement`: Consider making service topic routing and attachment review
-  clearer before submit without adding new support channels, unsupported SLA
-  promises, or admin-only data to the public service flow.
-- `Acceptance Checks`: Benchmark confirms service routing stays supported,
-  attachments remain constrained by existing validation, and offline service
-  sync copy remains realistic.
-- `Verification`: Run benchmark workflow first; implementation verification
-  would require service attachment tests, account recovery shortcut tests, and
-  offline sync response contract tests.
+## Completed Work
 
 ### I-041 Admin Customer and Order Filter Recovery Audit
 
 - `ID`: I-041
 - `Aspect`: Admin and Operations
-- `Status`: Needs Benchmark
+- `Status`: Done
 - `Priority`: P2
 - `Effort`: M
 - `Source/Evidence`: `/admin/orders`, `/admin/customers`, `/admin/service`,
-  existing admin empty-state contracts, audit logs, and operational guidance in
-  `docs/FULL_PRODUCT_BENCHMARK.md`
+  existing admin empty-state contracts, audit logs, operational guidance in
+  `docs/FULL_PRODUCT_BENCHMARK.md`, and
+  `docs/qa/admin-customer-order-filter-recovery-benchmark.md`
 - `Target Surface`: Admin order/customer/service filters, filtered empty
   states, reset links, pagination recovery, audit-safe operational copy
-- `Improvement`: Consider improving admin filter recovery across customer,
-  order, and service views without adding unsupported bulk automation, data
-  exports, or provider dashboard assumptions.
-- `Acceptance Checks`: Benchmark confirms operators can recover from filtered
-  empty states, pagination remains route-backed, and admin copy avoids exposing
-  private or provider-only details.
-- `Verification`: Run benchmark workflow first; implementation verification
-  would require admin empty-state contract tests, route-level error boundary
-  tests, and audit/outbox failure tests.
+- `Improvement`: Added active-filter summaries and filtered/unfiltered
+  empty-state distinctions to admin order and customer tables while preserving
+  route-backed reset links, existing service queue recovery, and protected
+  admin data boundaries.
+- `Acceptance Checks`: Benchmark decision confirms protected admin filters can
+  expose clearer recovery when reset links remain route-backed and no bulk
+  automation, exports, or provider dashboard assumptions are added.
+- `Verification`: Benchmark passed with weighted support of `12.0` against the
+  `11.25` threshold. Covered by
+  `src/styles/admin-customer-order-filter-recovery.test.ts`,
+  `src/styles/admin-empty-state-contract.test.ts`,
+  `src/styles/admin-service-queue-filter-state.test.ts`,
+  `src/styles/route-error-boundary-recovery.test.ts`, and
+  `src/styles/search-outbox-job-failure-contract.test.ts`; verified with
+  `pnpm test -- src/styles/admin-customer-order-filter-recovery.test.ts src/styles/admin-empty-state-contract.test.ts src/styles/admin-service-queue-filter-state.test.ts src/styles/route-error-boundary-recovery.test.ts src/styles/search-outbox-job-failure-contract.test.ts`.
 
-## Completed Work
+### I-040 Service Request Topic Routing and Attachment Review Clarity
+
+- `ID`: I-040
+- `Aspect`: Admin and Operations
+- `Status`: Done
+- `Priority`: P2
+- `Effort`: M
+- `Source/Evidence`: `/service`, service topic defaults from account/order
+  recovery links, attachment validation, offline service request sync, service
+  response benchmarks, and
+  `docs/qa/service-topic-attachment-review-benchmark.md`
+- `Target Surface`: Service request topic selection, account/order prefilled
+  service links, attachment review copy, queued offline service requests
+- `Improvement`: Added selected-topic routing review and attachment count
+  review inside the existing public service form without changing validation,
+  online submission, offline queueing, supported topics, or response-time copy.
+- `Acceptance Checks`: Benchmark decision confirms service routing and
+  attachment review can become clearer when the form continues to use existing
+  topics, existing validation limits, and existing online/offline submission
+  behavior only.
+- `Verification`: Benchmark passed with weighted support of `16.5` against the
+  `11.25` threshold. Covered by
+  `src/styles/service-topic-attachment-review.test.ts`,
+  `src/styles/service-response-contact-clarity.test.ts`,
+  `src/styles/service-attachment-ux.test.ts`,
+  `src/styles/account-recovery-shortcuts.test.ts`, and
+  `src/styles/offline-sync-response-contract.test.ts`; verified with
+  `pnpm test -- src/styles/service-topic-attachment-review.test.ts src/styles/service-response-contact-clarity.test.ts src/styles/service-attachment-ux.test.ts src/styles/account-recovery-shortcuts.test.ts src/styles/offline-sync-response-contract.test.ts`.
+
+### I-039 Cart Quantity Recovery and Mobile Checkout Summary Clarity
+
+- `ID`: I-039
+- `Aspect`: Commerce and Checkout
+- `Status`: Done
+- `Priority`: P1
+- `Effort`: M
+- `Source/Evidence`: `/checkout`, cart quantity mutations, mobile checkout
+  sticky summary, offline cart mutation queue, checkout validation tests,
+  commerce guidance in `docs/FULL_PRODUCT_BENCHMARK.md`, and
+  `docs/qa/checkout-quantity-mobile-summary-benchmark.md`
+- `Target Surface`: Checkout cart item controls, quantity update recovery,
+  mobile sticky summary, cart mutation errors, offline cart update copy
+- `Improvement`: Added quantity recovery copy near cart item controls and a
+  source-aware mobile checkout summary line for local, supplier-only, and mixed
+  carts without changing local submit, Shopify supplier handoff, payment copy,
+  or offline checkout boundaries.
+- `Acceptance Checks`: Benchmark decision confirms quantity recovery and mobile
+  summary clarity can improve checkout confidence when split checkout ownership
+  remains explicit and unsupported payment, inventory, fulfillment, and offline
+  checkout claims are not added.
+- `Verification`: Benchmark passed with weighted support of `16.5` against the
+  `11.25` threshold. Covered by
+  `src/styles/checkout-quantity-mobile-summary.test.ts`,
+  `src/styles/checkout-validation-payment-confidence.test.ts`,
+  `src/app/checkout/_components/checkout-display.test.ts`, and
+  `src/styles/pwa-offline-recovery.test.ts`; verified with
+  `pnpm test -- src/styles/checkout-quantity-mobile-summary.test.ts src/styles/checkout-validation-payment-confidence.test.ts src/app/checkout/_components/checkout-display.test.ts src/styles/pwa-offline-recovery.test.ts`.
+
+### I-038 Product Recommendation Rail Relevance and Return Context
+
+- `ID`: I-038
+- `Aspect`: Public UX and Brand
+- `Status`: Done
+- `Priority`: P2
+- `Effort`: M
+- `Source/Evidence`: `/product/[slug]`, product recommendation rails,
+  search/category return context, PDP guidance in
+  `docs/FULL_PRODUCT_BENCHMARK.md`, public structure guardrails, and
+  `docs/qa/product-recommendation-rail-return-context-benchmark.md`
+- `Target Surface`: PDP recommendation rails, related-product grouping,
+  category/search continuation, product-card context labels
+- `Improvement`: Added rail reason copy, route-backed continuation links,
+  optional product-card context labels, and search-origin return context while
+  keeping recommendation rails below product details and out of checkout or
+  urgency flows.
+- `Acceptance Checks`: Benchmark decision confirms PDP recommendations can show
+  compact relevance and return context when the rail stays product-led,
+  route-backed, and below the gallery/purchase/detail priority.
+- `Verification`: Benchmark passed with weighted support of `16.5` against the
+  `11.25` threshold. Covered by
+  `src/styles/product-recommendation-rail-return-context.test.ts`,
+  `src/app/product/[slug]/_lib/product-recommendation-rails.test.ts`,
+  `src/styles/product-card-overlays.test.ts`, and
+  `src/styles/public-structure-enforcement.test.ts`; verified with
+  `pnpm test -- src/styles/product-recommendation-rail-return-context.test.ts src/app/product/[slug]/_lib/product-recommendation-rails.test.ts src/styles/product-card-overlays.test.ts src/styles/public-structure-enforcement.test.ts`.
 
 ### I-037 Offline Page Install and PWA Recovery Priority
 

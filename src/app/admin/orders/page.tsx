@@ -110,6 +110,29 @@ export default async function AdminOrdersPage({
     Boolean(params.status),
     params.page > 1,
   ].some(Boolean);
+  const activeFilterLabels = [
+    params.query ? `חיפוש: ${params.query}` : null,
+    params.status ? `סטטוס: ${getOrderStatusLabel(params.status)}` : null,
+    showPhysicalBranches && params.branchId
+      ? `מיקום: ${
+          data.branches.find((branch) => branch.id === params.branchId)?.name ??
+          "מיקום לא זמין"
+        }`
+      : null,
+    params.fulfillmentMethod
+      ? `מסירה: ${getFulfillmentMethodLabel(params.fulfillmentMethod)}`
+      : null,
+    params.sort !== "created-desc"
+      ? `מיון: ${getOrderSortLabel(params.sort)}`
+      : null,
+    params.page > 1 ? `עמוד ${params.page}` : null,
+  ].filter((label): label is string => Boolean(label));
+  const emptyTitle = hasActiveFilters
+    ? "אין הזמנות שמתאימות לסינון"
+    : "אין הזמנות";
+  const emptyDescription = hasActiveFilters
+    ? "לא נמצאו הזמנות לפי הסינון הנוכחי. נקו סינון או שנו חיפוש כדי לחזור לתור ההזמנות המלא."
+    : "הזמנות חדשות מהאתר יופיעו כאן לטיפול ומעקב.";
 
   return (
     <AdminShell
@@ -202,6 +225,22 @@ export default async function AdminOrdersPage({
               </Button>
             ) : null}
           </form>
+          {hasActiveFilters ? (
+            <div
+              className="text-muted-foreground mt-4 flex flex-wrap items-center gap-2 text-sm"
+              data-testid="admin-order-active-filters"
+            >
+              <span className="text-foreground font-medium">סינון פעיל</span>
+              {activeFilterLabels.map((label) => (
+                <Badge key={label} variant="outline">
+                  {label}
+                </Badge>
+              ))}
+              <Button asChild size="sm" variant="ghost">
+                <Link href="/admin/orders">ניקוי סינון</Link>
+              </Button>
+            </div>
+          ) : null}
           <p className="text-muted-foreground mt-3 text-xs leading-5">
             סטטוס, מסירה ומיקום מסננים את תור ההזמנות המקומיות. חיפוש חופשי כולל
             גם רשומות Shopify mirror לקריאה בלבד.
@@ -246,9 +285,9 @@ export default async function AdminOrdersPage({
                     ) : undefined
                   }
                   colSpan={10}
-                  description="שנו סינון או המתינו להזמנות חדשות מהאתר."
+                  description={emptyDescription}
                   icon={ClipboardList}
-                  title="אין הזמנות מתאימות"
+                  title={emptyTitle}
                 />
               ) : (
                 data.items.map((order) => (
@@ -427,4 +466,19 @@ export default async function AdminOrdersPage({
       ) : null}
     </AdminShell>
   );
+}
+
+function getOrderSortLabel(
+  sort: "created-desc" | "created-asc" | "total-desc" | "total-asc",
+) {
+  switch (sort) {
+    case "created-asc":
+      return "ישנות תחילה";
+    case "total-desc":
+      return "סכום גבוה";
+    case "total-asc":
+      return "סכום נמוך";
+    case "created-desc":
+      return "חדשות תחילה";
+  }
 }
