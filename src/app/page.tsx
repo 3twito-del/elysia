@@ -44,7 +44,7 @@ const homeCommerceShortcuts = [
 const collectionCopy: Record<string, string> = {
   bracelets: "צמידים לענידה יומיומית.",
   earrings: "עגילים ליום ולערב.",
-  necklaces: "שרשראות לענידה יחידה או בשכבות.",
+  necklaces: "שרשראות ליום ולערב.",
   rings: "טבעות ליום ולערב.",
 };
 
