@@ -22,6 +22,19 @@ describe("Serwist route", () => {
     expect(source).not.toContain("/pwa/icons/");
   });
 
+  it("does not assume git stdout exists when resolving the runtime revision", () => {
+    const source = read("src/app/serwist/[path]/route.ts");
+
+    expect(source).toContain("stdout?.trim() || randomUUID()");
+  });
+
+  it("keeps the production service worker route static instead of forcing a runtime lambda", () => {
+    const source = read("src/app/serwist/[path]/route.ts");
+
+    expect(source).toContain("return createSerwistRoute({");
+    expect(source).not.toContain("Vercel prebuilt packaging");
+  });
+
   it("keeps Serwist out of development route compilation", () => {
     const source = read("src/app/serwist/[path]/route.ts");
 
