@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   Headphones,
+  Mail,
   MapPin,
   PackageCheck,
   Phone,
@@ -184,23 +185,92 @@ export default async function BranchesPage() {
               </div>
             </section>
 
-            <div className="grid gap-4 sm:grid-cols-3">
-              {onlineServiceHighlights.map((item) => {
-                const Icon = item.icon;
-
-                return (
-                  <section
-                    className="border-t border-[var(--glass-border)] pt-4"
-                    key={item.title}
+            <div className="grid gap-5">
+              <section
+                aria-labelledby="branches-contact-channels"
+                className="grid gap-3 rounded-md border border-[var(--glass-border)] p-4"
+                data-testid="branches-contact-channel-cards"
+              >
+                <div>
+                  <h3 className="font-medium" id="branches-contact-channels">
+                    ערוצי קשר זמינים
+                  </h3>
+                  <p className="text-muted-foreground mt-1 text-sm leading-6">
+                    כל ערוץ מוביל לפעולה אחת ברורה בלי לרמוז על קבלת קהל.
+                  </p>
+                </div>
+                <div className="grid gap-2 sm:grid-cols-3">
+                  <a
+                    className="border-border hover:border-foreground/50 hover:bg-muted/60 rounded-md border p-3 text-sm transition"
+                    href={`tel:${profile.settings.phoneE164}`}
                   >
-                    <Icon aria-hidden="true" className="size-5" />
-                    <h3 className="mt-4 text-lg font-medium">{item.title}</h3>
-                    <p className="text-muted-foreground mt-2 text-sm leading-7">
-                      {item.text}
-                    </p>
-                  </section>
-                );
-              })}
+                    <Phone aria-hidden="true" className="mb-3 size-4" />
+                    <span className="block font-medium">טלפון</span>
+                    <span className="text-muted-foreground mt-1 block">
+                      {profile.settings.displayPhone}
+                    </span>
+                  </a>
+                  <a
+                    className="border-border hover:border-foreground/50 hover:bg-muted/60 rounded-md border p-3 text-sm transition"
+                    href={`mailto:${profile.settings.serviceEmail}`}
+                  >
+                    <Mail aria-hidden="true" className="mb-3 size-4" />
+                    <span className="block font-medium">אימייל</span>
+                    <span className="text-muted-foreground mt-1 block break-all">
+                      {profile.settings.serviceEmail}
+                    </span>
+                  </a>
+                  <Link
+                    className="border-border hover:border-foreground/50 hover:bg-muted/60 rounded-md border p-3 text-sm transition"
+                    href="/service?topic=general"
+                  >
+                    <Headphones aria-hidden="true" className="mb-3 size-4" />
+                    <span className="block font-medium">פניית שירות</span>
+                    <span className="text-muted-foreground mt-1 block">
+                      טופס מסודר באתר
+                    </span>
+                  </Link>
+                </div>
+              </section>
+
+              <section
+                aria-labelledby="branches-map-placeholder-title"
+                className="rounded-md border border-dashed border-[var(--glass-border)] p-5"
+                data-testid="branches-map-placeholder"
+              >
+                <MapPin aria-hidden="true" className="size-5" />
+                <h3
+                  className="mt-4 text-lg font-medium"
+                  id="branches-map-placeholder-title"
+                >
+                  מפת סניפים תופיע כשייפתחו נקודות שירות
+                </h3>
+                <p className="text-muted-foreground mt-2 text-sm leading-7">
+                  עד אז, כל בחירה, מדידה ותיאום שירות מתבצעים דרך האתר.
+                </p>
+                <Button asChild className="mt-4" size="sm" variant="outline">
+                  <Link href="/service?topic=general">שאלת שירות</Link>
+                </Button>
+              </section>
+
+              <div className="grid gap-4 sm:grid-cols-3">
+                {onlineServiceHighlights.map((item) => {
+                  const Icon = item.icon;
+
+                  return (
+                    <section
+                      className="border-t border-[var(--glass-border)] pt-4"
+                      key={item.title}
+                    >
+                      <Icon aria-hidden="true" className="size-5" />
+                      <h3 className="mt-4 text-lg font-medium">{item.title}</h3>
+                      <p className="text-muted-foreground mt-2 text-sm leading-7">
+                        {item.text}
+                      </p>
+                    </section>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </RevealSection>

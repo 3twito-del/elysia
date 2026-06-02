@@ -160,6 +160,12 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             viewMode={viewMode}
           />
 
+          <SearchCategoryChips
+            categories={categories}
+            input={input}
+            viewMode={viewMode}
+          />
+
           {hasActiveFilters ? (
             <section
               aria-label="סינונים פעילים"
@@ -336,6 +342,11 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                       </Link>
                     </Button>
                   ) : null}
+                  <SearchNoResultsSuggestions
+                    categories={categories}
+                    input={input}
+                    viewMode={viewMode}
+                  />
                 </>
               }
             />
@@ -398,6 +409,119 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         </RevealSection>
       </main>
     </>
+  );
+}
+
+function SearchCategoryChips({
+  categories,
+  input,
+  viewMode,
+}: {
+  categories: CatalogCategory[];
+  input: ProductSearchInput;
+  viewMode: SearchViewMode;
+}) {
+  if (categories.length === 0) return null;
+
+  const allCategoriesHref = createSearchHref({
+    ...input,
+    category: undefined,
+    page: undefined,
+    view: viewMode,
+  });
+
+  return (
+    <section
+      aria-label="סינון מהיר לפי קטגוריה"
+      className="mt-4 flex flex-col gap-2 border-b border-[var(--glass-border)] pb-4 text-sm sm:flex-row sm:items-center"
+      data-testid="search-category-chips"
+    >
+      <span className="text-muted-foreground shrink-0">קטגוריה</span>
+      <div className="flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0">
+        <Button
+          asChild
+          className="h-8 shrink-0"
+          size="sm"
+          variant={!input.category ? "secondary" : "outline"}
+        >
+          <Link
+            aria-current={!input.category ? "page" : undefined}
+            href={allCategoriesHref}
+            scroll={false}
+          >
+            כל הקטגוריות
+          </Link>
+        </Button>
+        {categories.map((category) => {
+          const active = input.category === category.slug;
+          const href = createSearchHref({
+            ...input,
+            category: category.slug,
+            page: undefined,
+            view: viewMode,
+          });
+
+          return (
+            <Button
+              asChild
+              className="h-8 shrink-0"
+              key={category.slug}
+              size="sm"
+              variant={active ? "secondary" : "outline"}
+            >
+              <Link
+                aria-current={active ? "page" : undefined}
+                href={href}
+                scroll={false}
+              >
+                {category.name}
+              </Link>
+            </Button>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function SearchNoResultsSuggestions({
+  categories,
+  input,
+  viewMode,
+}: {
+  categories: CatalogCategory[];
+  input: ProductSearchInput;
+  viewMode: SearchViewMode;
+}) {
+  const suggestions = categories.slice(0, 4);
+
+  if (suggestions.length === 0) return null;
+
+  return (
+    <div
+      className="mx-auto mt-2 flex basis-full flex-wrap justify-center gap-2"
+      data-testid="search-no-results-category-suggestions"
+    >
+      <span className="text-muted-foreground basis-full text-center text-sm">
+        נסו להתחיל מקטגוריה פתוחה:
+      </span>
+      {suggestions.map((category) => (
+        <Button asChild key={category.slug} variant="outline">
+          <Link
+            href={createSearchHref({
+              ...input,
+              category: category.slug,
+              page: undefined,
+              query: undefined,
+              view: viewMode,
+            })}
+            scroll={false}
+          >
+            {category.name}
+          </Link>
+        </Button>
+      ))}
+    </div>
   );
 }
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import {
   Clock3,
   Mail,
@@ -184,6 +185,46 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
               <h2 className="mt-3 text-2xl font-semibold">פנייה לשירות</h2>
               <p className="text-muted-foreground mt-2 text-sm leading-6">
                 בחרו נושא והשאירו פרטים. נחזור אליכם בהתאם לפנייה.
+              </p>
+            </div>
+            <section
+              aria-labelledby="service-topic-cards-title"
+              className="mb-4 grid gap-3 rounded-md border border-[var(--glass-border)] p-4"
+              data-testid="service-topic-cards"
+            >
+              <div>
+                <h3 className="font-medium" id="service-topic-cards-title">
+                  בחירת נושא מהירה
+                </h3>
+                <p className="text-muted-foreground mt-1 text-sm leading-6">
+                  בחירה מכאן ממלאת את נושא הפנייה ומקצרת את הטופס.
+                </p>
+              </div>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {profile.topics.slice(0, 6).map((topic) => (
+                  <Link
+                    className="border-border hover:border-foreground/50 hover:bg-muted/60 rounded-md border p-3 text-sm transition"
+                    href={`/service?topic=${topic.slug}#service-form`}
+                    key={topic.slug}
+                  >
+                    <span className="font-medium">{topic.label}</span>
+                    {topic.description ? (
+                      <span className="text-muted-foreground mt-1 block leading-6">
+                        {topic.description}
+                      </span>
+                    ) : null}
+                  </Link>
+                ))}
+              </div>
+            </section>
+            <div
+              className="text-muted-foreground mb-4 flex gap-2 rounded-md border border-[var(--glass-border)] px-4 py-3 text-sm leading-6"
+              data-testid="service-response-time-note"
+            >
+              <Clock3 aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+              <p>
+                הפניות מטופלות לפי סדר קבלה ונושא הפנייה. אם צירפתם מספר הזמנה
+                או שם מוצר, נוכל לחזור עם תשובה ממוקדת יותר.
               </p>
             </div>
             <ServiceRequestForm

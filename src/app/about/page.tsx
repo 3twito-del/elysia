@@ -145,6 +145,39 @@ const workflow = [
   },
 ] satisfies IconItem[];
 
+const brandTimeline = [
+  {
+    title: "בחירה",
+    text: "מתחילים ממשפחת תכשיט, תקציב או צורך: יום יום, מתנה או אירוע.",
+  },
+  {
+    title: "בדיקה",
+    text: "משווים חומר, מידה, מחיר ותמונות לפני שמוסיפים לסל.",
+  },
+  {
+    title: "שירות",
+    text: "אם חסר פרט, עוברים לשירות עם הקשר ברור למוצר או לנושא.",
+  },
+] as const;
+
+const materialFacts = [
+  {
+    title: "חומר",
+    text: "כרטיסי מוצר מציגים חומר כאשר המידע זמין בקטלוג.",
+    icon: Gem,
+  },
+  {
+    title: "מידה",
+    text: "מדריך המידות מסייע להשוות טבעת, צמיד, שרשרת או עגילים.",
+    icon: Ruler,
+  },
+  {
+    title: "מסירה",
+    text: "הזמנה ושירות מתבצעים אונליין כל עוד אין נקודת שירות פיזית.",
+    icon: Truck,
+  },
+] satisfies IconItem[];
+
 export const metadata: Metadata = {
   title: "אודות",
   description:
@@ -282,6 +315,92 @@ export default function AboutPage() {
               {storyImages.map((image) => (
                 <EditorialImage image={image} key={image.src} />
               ))}
+            </div>
+          </div>
+        </RevealSection>
+
+        <RevealSection
+          className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-14"
+          id="about-practical-proof"
+          variant="none"
+        >
+          <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+            <section
+              aria-labelledby="about-brand-timeline-title"
+              data-testid="about-brand-timeline"
+            >
+              <p className="text-muted-foreground text-sm">תהליך הבחירה</p>
+              <h2
+                className="mt-3 text-3xl leading-tight font-semibold sm:text-4xl"
+                id="about-brand-timeline-title"
+              >
+                שלושה צעדים לפני הזמנה.
+              </h2>
+              <ol className="mt-6 grid gap-4">
+                {brandTimeline.map((item, index) => (
+                  <li
+                    className="grid grid-cols-[auto_minmax(0,1fr)] gap-4 border-t border-[var(--glass-border)] pt-4"
+                    key={item.title}
+                  >
+                    <span className="glass-inset grid size-9 place-items-center rounded-md border text-sm font-medium tabular-nums">
+                      {index + 1}
+                    </span>
+                    <span>
+                      <span className="block font-semibold">{item.title}</span>
+                      <span className="text-muted-foreground mt-1 block leading-7">
+                        {item.text}
+                      </span>
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </section>
+
+            <div className="grid gap-4">
+              <section
+                aria-labelledby="about-material-facts-title"
+                data-testid="about-material-facts"
+              >
+                <h2
+                  className="text-xl font-semibold"
+                  id="about-material-facts-title"
+                >
+                  עובדות שימושיות לבחירה
+                </h2>
+                <RevealGrid
+                  className="mt-4 grid gap-3 sm:grid-cols-3"
+                  variant="compact"
+                >
+                  {materialFacts.map((fact) => (
+                    <IconCard item={fact} key={fact.title} />
+                  ))}
+                </RevealGrid>
+              </section>
+
+              <section
+                aria-labelledby="about-care-teaser-title"
+                className="rounded-md border border-[var(--glass-border)] p-5"
+                data-testid="about-care-teaser"
+              >
+                <Sparkles aria-hidden="true" className="size-5" />
+                <h2
+                  className="mt-4 text-xl font-semibold"
+                  id="about-care-teaser-title"
+                >
+                  שאלות על טיפול, מידה או התאמה
+                </h2>
+                <p className="text-muted-foreground mt-2 leading-7">
+                  אפשר לעבור לשאלות ותשובות או לפתוח פנייה עם פרטי המוצר והצורך.
+                </p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <Button asChild size="sm" variant="outline">
+                    <Link href="/faq#faq-group-2">שאלות על מידות</Link>
+                  </Button>
+                  <Button asChild size="sm" variant="outline">
+                    <Link href="/service?topic=general">פנייה לשירות</Link>
+                  </Button>
+                </div>
+              </section>
             </div>
           </div>
         </RevealSection>
