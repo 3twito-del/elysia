@@ -391,12 +391,21 @@ export default async function AccountPage() {
                 <EmptyState
                   description="אין הזמנות משויכות לחשבון הזה עדיין."
                   icon={PackageCheck}
+                  testId="account-empty-orders"
                   title="אין הזמנות"
                   variant="inset"
                   actions={
-                    <Button asChild variant="outline">
-                      <Link href="/category/rings">בחירת תכשיט ראשון</Link>
-                    </Button>
+                    <>
+                      <Button asChild variant="outline">
+                        <Link href="/category/rings">בחירת תכשיט ראשון</Link>
+                      </Button>
+                      <Button asChild variant="outline">
+                        <Link href="/gifts">מתנות</Link>
+                      </Button>
+                      <Button asChild>
+                        <Link href="/search">חיפוש במבחר</Link>
+                      </Button>
+                    </>
                   }
                 />
               ) : (

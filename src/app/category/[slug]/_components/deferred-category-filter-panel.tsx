@@ -89,14 +89,20 @@ function FilterSelectionSummary({
   sections: CategoryFilterPayload["sections"];
 }) {
   return (
-    <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-xs">
+    <dl
+      className="grid grid-cols-2 gap-x-4 gap-y-3 text-xs"
+      data-testid="category-filter-selection-summary"
+    >
       {sections.map((section) => {
         const activeOption = section.options.find((option) => option.active);
 
         return (
           <div className="min-w-0" key={section.title}>
             <dt className="text-muted-foreground">{section.title}</dt>
-            <dd className="text-foreground truncate font-medium">
+            <dd
+              className="text-foreground truncate font-medium"
+              data-testid="category-filter-section-current"
+            >
               {activeOption?.label ?? "כל האפשרויות"}
             </dd>
           </div>
@@ -128,6 +134,15 @@ function FilterSection({
         <p className="text-muted-foreground text-xs leading-5">
           {section.description}
         </p>
+        {section.title === "מחיר" ? (
+          <div
+            className="text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1 text-xs"
+            data-testid="category-price-filter-labels"
+          >
+            <span>מינימום: כל מחיר</span>
+            <span>מקסימום: לפי בחירה</span>
+          </div>
+        ) : null}
       </div>
       <ul className="grid gap-1">
         {section.options.map((option) => (

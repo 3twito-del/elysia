@@ -1021,6 +1021,7 @@ export function CartCheckoutForm() {
                     אריזת מתנה
                   </label>
                   <Textarea
+                    aria-describedby="checkout-order-note-hint"
                     disabled={checkoutLocked}
                     onChange={(event) =>
                       setGiftMessage(event.currentTarget.value)
@@ -1028,6 +1029,14 @@ export function CartCheckoutForm() {
                     placeholder="ברכה אישית"
                     value={giftMessage}
                   />
+                  <p
+                    className="text-muted-foreground text-xs leading-5"
+                    data-testid="checkout-order-note-hint"
+                    id="checkout-order-note-hint"
+                  >
+                    אפשר לציין ברכה, העדפת אריזה או העדפת מסירה. אין לכתוב מספרי
+                    אשראי, סיסמאות או מידע רגיש.
+                  </p>
                 </CardContent>
               </Card>
             </>

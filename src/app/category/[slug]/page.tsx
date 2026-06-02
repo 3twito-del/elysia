@@ -295,6 +295,15 @@ export default async function CategoryPage({
                   <SheetDescription>
                     קטגוריה, חומר, אבן, מחיר, סגנון, אירוע וקולקציה.
                   </SheetDescription>
+                  <p
+                    className="text-muted-foreground text-xs leading-5"
+                    data-testid="category-filter-sheet-summary"
+                  >
+                    {pageRangeLabel} · מיון: {currentSortLabel}
+                    {hasActiveFilters
+                      ? ` · ${activeFilterCount} בחירות פעילות`
+                      : ""}
+                  </p>
                 </SheetHeader>
                 <div className="p-[var(--ui-panel-padding)]">
                   <DeferredCategoryFilterPanel
@@ -352,7 +361,9 @@ export default async function CategoryPage({
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h2 className="text-base font-medium" id="category-results">
-                    {pageRangeLabel}
+                    <span data-testid="category-result-count">
+                      {pageRangeLabel}
+                    </span>
                   </h2>
                   <p className="text-muted-foreground text-sm">
                     {!hasCategoryProducts
@@ -363,7 +374,9 @@ export default async function CategoryPage({
                           ? "התוצאות מסוננות לפי הבחירה שלך"
                           : "בחירות פתוחות מתוך הקולקציה"}
                     <span className="mx-2">·</span>
-                    <span>מיון: {currentSortLabel}</span>
+                    <span data-testid="category-current-sort-label">
+                      מיון: {currentSortLabel}
+                    </span>
                   </p>
                 </div>
                 {hasActiveFilters && (
@@ -445,6 +458,10 @@ export default async function CategoryPage({
                     totalPages={totalPages}
                   />
                 )}
+                <CategoryEditorialNote
+                  categoryName={categoryCopy.title}
+                  description={categoryCopy.description}
+                />
               </>
             ) : (
               <CategoryEmptyState
@@ -467,6 +484,7 @@ function CategoryBreadcrumbs({ categoryName }: { categoryName: string }) {
     <nav
       aria-label="פירורי לחם"
       className="text-muted-foreground mx-auto flex w-full max-w-[96rem] items-center gap-2 px-[var(--ui-page-x)] pt-6 text-xs sm:px-[var(--ui-page-x-wide)]"
+      data-testid="category-breadcrumbs"
       dir="rtl"
     >
       <Link className="hover:text-foreground transition-colors" href="/">
@@ -479,6 +497,30 @@ function CategoryBreadcrumbs({ categoryName }: { categoryName: string }) {
       <span aria-hidden="true">›</span>
       <span className="text-foreground">{categoryName}</span>
     </nav>
+  );
+}
+
+function CategoryEditorialNote({
+  categoryName,
+  description,
+}: {
+  categoryName: string;
+  description: string;
+}) {
+  return (
+    <details
+      className="mt-8 border-y border-[var(--glass-border)] py-4 text-sm"
+      data-testid="category-editorial-care-note"
+    >
+      <summary className="flex cursor-pointer items-center justify-between gap-3 font-medium">
+        <span>הערת בחירה וטיפול</span>
+        <span className="text-muted-foreground text-xs">{categoryName}</span>
+      </summary>
+      <p className="text-muted-foreground mt-3 max-w-3xl leading-7">
+        {description} מומלץ לשמור את הפריט בנפרד, להימנע ממגע ממושך עם מים
+        ובושם, ולבחור מידה או אורך לפי שימוש יומיומי.
+      </p>
+    </details>
   );
 }
 
