@@ -23,9 +23,18 @@ import { cinematicRouteMedia, getCategoryBrandSlides } from "~/lib/brand-media";
 import {
   getCatalogCategories,
   getFeaturedCatalogProducts,
+  listCatalogProducts,
 } from "~/server/services/catalog";
 
 const homeSlides = cinematicRouteMedia.home.slice(0, 1);
+
+const homeHeroMediaCaption = "בתמונה: טבעות ופנינים בגימור עדין";
+
+const homeTrustNotes = [
+  { icon: Gem, label: "חומר ומידה גלויים" },
+  { icon: PackageCheck, label: "הזמנה ומשלוח אונליין" },
+  { icon: MessageCircle, label: "שירות לפני ואחרי בחירה" },
+] as const;
 
 const quickSearchSuggestions = [
   { href: "/search?q=טבעת%20זהב", label: "טבעת זהב" },
@@ -100,13 +109,26 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const [categories, featuredProducts] = await Promise.all([
+  const [categories, featuredProducts, allProducts] = await Promise.all([
     getCatalogCategories(),
     getFeaturedCatalogProducts(8),
+    listCatalogProducts(),
   ]);
   const signatureCollections = categories.slice(0, 4);
   const curatedProducts = featuredProducts.slice(0, 4);
   const heroCategoryLinks = categories.slice(0, 3);
+  const categoryProductCounts = allProducts.reduce((counts, product) => {
+    counts.set(
+      product.categorySlug,
+      (counts.get(product.categorySlug) ?? 0) + 1,
+    );
+
+    return counts;
+  }, new Map<string, number>());
+  const homeCategoryChips = signatureCollections.map((category) => ({
+    ...category,
+    productCount: categoryProductCounts.get(category.slug) ?? 0,
+  }));
 
   return (
     <main>
@@ -141,6 +163,26 @@ export default async function Home() {
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.02),rgba(0,0,0,0.18)_42%,rgba(0,0,0,0.62))]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.70),rgba(0,0,0,0.10)_58%,rgba(0,0,0,0.24))]" />
         <div className="absolute inset-x-0 top-0 h-px bg-white opacity-30" />
+        <div
+          className="absolute right-[var(--hero-edge)] bottom-[calc(10rem+env(safe-area-inset-bottom))] z-10 max-w-[16rem] text-right text-xs text-white/78 sm:bottom-[calc(var(--hero-edge)+4.25rem)]"
+          data-testid="home-hero-media-caption"
+          dir="rtl"
+        >
+          <span className="rounded-full border border-white/25 bg-[var(--brand-ink)] px-3 py-1.5">
+            {homeHeroMediaCaption}
+          </span>
+        </div>
+        <div
+          className="absolute right-[var(--hero-edge)] bottom-[calc(var(--hero-edge)+1rem)] z-10 hidden w-28 text-white/75 sm:block"
+          data-testid="home-hero-slide-progress"
+          dir="ltr"
+        >
+          <div className="flex items-center gap-2 text-[0.7rem] tabular-nums">
+            <span>01</span>
+            <span className="h-px flex-1 bg-white" />
+            <span>{String(homeSlides.length).padStart(2, "0")}</span>
+          </div>
+        </div>
         <div className="relative min-h-[var(--home-hero-height)]">
           <div
             className="motion-hero-copy absolute top-[var(--hero-edge)] right-[var(--hero-edge)] w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),50rem)] text-right text-white lg:w-[min(50rem,calc(52vw_-_var(--hero-edge)_-_2rem))]"
@@ -200,6 +242,20 @@ export default async function Home() {
                 ))}
               </nav>
             ) : null}
+            <ul
+              className="motion-copy-item flex flex-wrap justify-center gap-2 text-[0.7rem] text-white/76 [--motion-copy-delay:210ms] sm:justify-end"
+              data-testid="home-hero-trust-notes"
+            >
+              {homeTrustNotes.map(({ icon: Icon, label }) => (
+                <li
+                  className="inline-flex items-center gap-1 rounded-full border border-white/20 bg-[var(--brand-ink)] px-2.5 py-1"
+                  key={label}
+                >
+                  <Icon aria-hidden="true" className="size-3" />
+                  <span>{label}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </RevealSection>
@@ -297,6 +353,32 @@ export default async function Home() {
             </Link>
           ))}
         </nav>
+      </RevealSection>
+
+      <RevealSection
+        className="mx-auto max-w-7xl px-[var(--ui-page-x)] pb-5 sm:px-[var(--ui-page-x-wide)]"
+        id="home-service-strip"
+        variant="none"
+      >
+        <section
+          className="grid gap-3 border-y border-[var(--glass-border)] py-4 text-sm sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
+          data-testid="home-service-strip"
+        >
+          <div>
+            <p className="font-medium">צריכים התאמה לפני בחירה?</p>
+            <p className="text-muted-foreground mt-1 leading-6">
+              עזרה במידה, חומר או מתנה נשארת זמינה בלי להוציא אתכם מהמבחר.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2 sm:justify-end">
+            <Button asChild size="sm" variant="outline">
+              <Link href="/service?topic=general">שאלת שירות</Link>
+            </Button>
+            <Button asChild size="sm" variant="outline">
+              <Link href="/size-guide">מדריך מידות</Link>
+            </Button>
+          </div>
+        </section>
       </RevealSection>
 
       <RevealSection
@@ -473,6 +555,25 @@ export default async function Home() {
             eyebrow="מבחר נבחר"
             title="פריטים נבחרים"
           />
+          <nav
+            aria-label="קטגוריות מהירות לפי כמות פריטים"
+            className="mt-4 flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0"
+            data-testid="home-category-count-chips"
+          >
+            {homeCategoryChips.map((category) => (
+              <Link
+                className="hover:border-foreground hover:text-foreground focus-visible:border-foreground focus-visible:text-foreground inline-flex min-h-10 shrink-0 items-center gap-2 rounded-md border border-[var(--glass-border)] px-3 text-sm transition-colors focus-visible:outline-none"
+                data-testid="home-category-count-chip"
+                href={`/category/${category.slug}`}
+                key={category.slug}
+              >
+                <span>{category.name}</span>
+                <span className="text-muted-foreground text-xs">
+                  {formatHomeCategoryCount(category.productCount)}
+                </span>
+              </Link>
+            ))}
+          </nav>
           <RevealGrid
             className="ui-equal-grid mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
             data-layout-equal-group="home-featured-products"
@@ -486,4 +587,12 @@ export default async function Home() {
       </RevealSection>
     </main>
   );
+}
+
+function formatHomeCategoryCount(count: number) {
+  if (count === 1) {
+    return "פריט אחד";
+  }
+
+  return `${count} פריטים`;
 }

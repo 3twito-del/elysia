@@ -11,6 +11,17 @@ describe("homepage discovery to commerce balance", () => {
 
     expect(home).toContain("const homeCommerceShortcuts = [");
     expect(home).toContain('data-testid="home-commerce-shortcuts"');
+    expect(home).toContain("const homeHeroMediaCaption =");
+    expect(home).toContain('data-testid="home-hero-media-caption"');
+    expect(home).toContain('data-testid="home-hero-slide-progress"');
+    expect(home).toContain('data-testid="home-hero-trust-notes"');
+    expect(home).toContain("listCatalogProducts()");
+    expect(home).toContain("homeCategoryChips");
+    expect(home).toContain("formatHomeCategoryCount");
+    expect(home).toContain('data-testid="home-category-count-chips"');
+    expect(home).toContain('data-testid="home-category-count-chip"');
+    expect(home).toContain('data-testid="home-service-strip"');
+    expect(home).toContain('href="/service?topic=general"');
     expect(home).toContain('href: "/search"');
     expect(home).toContain('href: "/gifts"');
     expect(home).toContain('href: "/size-guide"');
@@ -19,10 +30,16 @@ describe("homepage discovery to commerce balance", () => {
       indexOf(home, 'data-testid="home-commerce-shortcuts"'),
     );
     expect(indexOf(home, 'data-testid="home-commerce-shortcuts"')).toBeLessThan(
+      indexOf(home, 'data-testid="home-service-strip"'),
+    );
+    expect(indexOf(home, 'data-testid="home-service-strip"')).toBeLessThan(
       indexOf(home, 'id="materials"'),
     );
     expect(indexOf(home, 'id="quick-search"')).toBeLessThan(
-      indexOf(home, 'id="featured"'),
+      indexOf(home, 'data-testid="home-category-count-chips"'),
+    );
+    expect(indexOf(home, 'id="featured"')).toBeLessThan(
+      indexOf(home, 'data-testid="home-category-count-chips"'),
     );
     expect(home).not.toContain('href="#featured"');
     expect(home).not.toContain('href="#categories"');
