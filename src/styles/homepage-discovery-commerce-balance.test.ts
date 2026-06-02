@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 const root = process.cwd();
 
 describe("homepage discovery to commerce balance", () => {
-  it("adds commerce shortcuts after category discovery without changing the hero", () => {
+  it("keeps homepage shortcuts useful without duplicating product navigation", () => {
     const home = read("src/app/page.tsx");
 
     expect(home).toContain("const homeCommerceShortcuts = [");
@@ -19,17 +19,15 @@ describe("homepage discovery to commerce balance", () => {
     expect(home).toContain('data-testid="home-hero-cta-row"');
     expect(home).toContain("home-hero-help-cta");
     expect(home).toContain('href="/stylist"');
-    expect(home).toContain("listCatalogProducts()");
-    expect(home).toContain("homeCategoryChips");
-    expect(home).toContain("formatHomeCategoryCount");
-    expect(home).toContain("homeProductRailTabs");
-    expect(home).toContain('data-testid="home-product-rail-tabs"');
-    expect(home).toContain('data-testid="home-product-rail-tab"');
-    expect(home).toContain('data-home-rail-active={tab.current ? "true"');
-    expect(home).toContain('href: "/search?sort=newest"');
-    expect(home).toContain('href: "/search?sort=popular"');
-    expect(home).toContain('data-testid="home-category-count-chips"');
-    expect(home).toContain('data-testid="home-category-count-chip"');
+    expect(home).not.toContain("listCatalogProducts()");
+    expect(home).not.toContain("homeCategoryChips");
+    expect(home).not.toContain("formatHomeCategoryCount");
+    expect(home).not.toContain("homeProductRailTabs");
+    expect(home).not.toContain('data-testid="home-product-rail-tabs"');
+    expect(home).not.toContain('data-testid="home-product-rail-tab"');
+    expect(home).not.toContain('data-home-rail-active={tab.current ? "true"');
+    expect(home).not.toContain('data-testid="home-category-count-chips"');
+    expect(home).not.toContain('data-testid="home-category-count-chip"');
     expect(home).toContain('data-testid="home-service-strip"');
     expect(home).toContain('href="/service?topic=general"');
     expect(home).toContain('href: "/search"');
@@ -46,13 +44,10 @@ describe("homepage discovery to commerce balance", () => {
       indexOf(home, 'id="materials"'),
     );
     expect(indexOf(home, 'id="quick-search"')).toBeLessThan(
-      indexOf(home, 'data-testid="home-category-count-chips"'),
+      indexOf(home, 'id="featured"'),
     );
     expect(indexOf(home, 'id="featured"')).toBeLessThan(
-      indexOf(home, 'data-testid="home-product-rail-tabs"'),
-    );
-    expect(indexOf(home, 'data-testid="home-product-rail-tabs"')).toBeLessThan(
-      indexOf(home, 'data-testid="home-category-count-chips"'),
+      indexOf(home, 'data-layout-equal-group="home-featured-products"'),
     );
     expect(copyBlock(home, "const homeCommerceShortcuts = [")).not.toContain(
       'href: "#featured"',

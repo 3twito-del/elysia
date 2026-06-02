@@ -23,7 +23,6 @@ import { cinematicRouteMedia, getCategoryBrandSlides } from "~/lib/brand-media";
 import {
   getCatalogCategories,
   getFeaturedCatalogProducts,
-  listCatalogProducts,
 } from "~/server/services/catalog";
 
 const homeSlides = cinematicRouteMedia.home.slice(0, 1);
@@ -49,33 +48,6 @@ const homeCommerceShortcuts = [
   { href: "/gifts", label: "מתנות" },
   { href: "/size-guide", label: "מידות" },
   { href: "/service", label: "שירות אישי" },
-] as const;
-
-const homeProductRailTabs = [
-  {
-    href: "#featured",
-    label: "נבחרים",
-    meta: "מוצג עכשיו",
-    current: true,
-  },
-  {
-    href: "/search?sort=newest",
-    label: "חדשים",
-    meta: "לפי תאריך",
-    current: false,
-  },
-  {
-    href: "/gifts",
-    label: "מתנות",
-    meta: "לפי אירוע",
-    current: false,
-  },
-  {
-    href: "/search?sort=popular",
-    label: "פופולריים",
-    meta: "בחירות חוזרות",
-    current: false,
-  },
 ] as const;
 
 const collectionCopy: Record<string, string> = {
@@ -137,26 +109,13 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const [categories, featuredProducts, allProducts] = await Promise.all([
+  const [categories, featuredProducts] = await Promise.all([
     getCatalogCategories(),
     getFeaturedCatalogProducts(8),
-    listCatalogProducts(),
   ]);
   const signatureCollections = categories.slice(0, 4);
   const curatedProducts = featuredProducts.slice(0, 4);
   const heroCategoryLinks = categories.slice(0, 3);
-  const categoryProductCounts = allProducts.reduce((counts, product) => {
-    counts.set(
-      product.categorySlug,
-      (counts.get(product.categorySlug) ?? 0) + 1,
-    );
-
-    return counts;
-  }, new Map<string, number>());
-  const homeCategoryChips = signatureCollections.map((category) => ({
-    ...category,
-    productCount: categoryProductCounts.get(category.slug) ?? 0,
-  }));
 
   return (
     <main>
@@ -611,48 +570,6 @@ export default async function Home() {
             eyebrow="מבחר נבחר"
             title="פריטים נבחרים"
           />
-          <nav
-            aria-label="מסילות מוצרים בבית"
-            className="mt-4 flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0"
-            data-testid="home-product-rail-tabs"
-          >
-            {homeProductRailTabs.map((tab) => (
-              <Link
-                aria-current={tab.current ? "page" : undefined}
-                className={
-                  tab.current
-                    ? "text-foreground inline-flex min-h-11 shrink-0 items-center gap-2 rounded-md border border-[var(--foreground)] px-3 text-sm font-medium"
-                    : "text-muted-foreground hover:border-foreground hover:text-foreground focus-visible:border-foreground focus-visible:text-foreground inline-flex min-h-11 shrink-0 items-center gap-2 rounded-md border border-[var(--glass-border)] px-3 text-sm transition-colors focus-visible:outline-none"
-                }
-                data-home-rail-active={tab.current ? "true" : undefined}
-                data-testid="home-product-rail-tab"
-                href={tab.href}
-                key={tab.href}
-              >
-                <span>{tab.label}</span>
-                <span className="text-xs">{tab.meta}</span>
-              </Link>
-            ))}
-          </nav>
-          <nav
-            aria-label="קטגוריות מהירות לפי כמות פריטים"
-            className="mt-4 flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0"
-            data-testid="home-category-count-chips"
-          >
-            {homeCategoryChips.map((category) => (
-              <Link
-                className="hover:border-foreground hover:text-foreground focus-visible:border-foreground focus-visible:text-foreground inline-flex min-h-10 shrink-0 items-center gap-2 rounded-md border border-[var(--glass-border)] px-3 text-sm transition-colors focus-visible:outline-none"
-                data-testid="home-category-count-chip"
-                href={`/category/${category.slug}`}
-                key={category.slug}
-              >
-                <span>{category.name}</span>
-                <span className="text-muted-foreground text-xs">
-                  {formatHomeCategoryCount(category.productCount)}
-                </span>
-              </Link>
-            ))}
-          </nav>
           <RevealGrid
             className="ui-equal-grid mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
             data-layout-equal-group="home-featured-products"
@@ -666,12 +583,4 @@ export default async function Home() {
       </RevealSection>
     </main>
   );
-}
-
-function formatHomeCategoryCount(count: number) {
-  if (count === 1) {
-    return "פריט אחד";
-  }
-
-  return `${count} פריטים`;
 }
