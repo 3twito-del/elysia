@@ -26,8 +26,9 @@ export const metadata: Metadata = {
     "בית תכשיטים ישראלי לטבעות, שרשראות, עגילים וצמידים, עם מידע ברור על חומר, מידה, מחיר והזמנה מקוונת.",
   manifest: "/manifest.webmanifest",
   icons: [
-    { rel: "icon", url: "/favicon.ico" },
-    { rel: "apple-touch-icon", url: "/apple-touch-icon.png" },
+    { rel: "icon", type: "image/svg+xml", url: "/favicon.svg" },
+    { rel: "icon", sizes: "any", url: "/favicon.ico" },
+    { rel: "apple-touch-icon", sizes: "180x180", url: "/apple-touch-icon.png" },
   ],
   appleWebApp: {
     capable: true,

@@ -59,7 +59,7 @@ const runtimeCaching: RuntimeCaching[] = [
   {
     matcher: ({ sameOrigin, url }) =>
       sameOrigin &&
-      /\/(?:favicon\.ico|apple-touch-icon\.png|pwa\/icons\/.+\.png)$/i.test(
+      /\/(?:favicon\.(?:ico|svg)|apple-touch-icon\.png|pwa\/icons\/.+\.png)$/i.test(
         url.pathname,
       ),
     handler: new CacheFirst({
