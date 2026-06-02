@@ -16,6 +16,7 @@ import type {
 
 type ProductCardProps = {
   contextLabel?: string;
+  display?: "standard" | "editorial";
   imagePriority?: boolean;
   imageSizes?: string;
   product: CatalogProduct;
@@ -43,11 +44,13 @@ const PRODUCT_CARD_IMAGE_POSITION_BY_SOURCE = [
 
 export function ProductCard({
   contextLabel,
+  display = "standard",
   imagePriority = false,
   imageSizes = DEFAULT_PRODUCT_CARD_IMAGE_SIZES,
   product,
   searchContext,
 }: ProductCardProps) {
+  const isEditorialDisplay = display === "editorial";
   const onlineStockQuantity = Object.values(product.inventory).reduce(
     (total, quantity) => total + quantity,
     0,
@@ -139,7 +142,7 @@ export function ProductCard({
               />
             ) : null}
           </StaticKineticImageFrame>
-          {productCardBadge ? (
+          {!isEditorialDisplay && productCardBadge ? (
             <div
               className="product-card-badge-stack absolute top-2.5 left-2.5 z-10 max-w-[calc(100%-4.75rem)]"
               data-testid="product-card-badge"
@@ -166,15 +169,18 @@ export function ProductCard({
               >
                 {product.name}
               </h3>
-              <div
-                className="ui-text-slot product-card-attributes text-muted-foreground truncate text-xs [--ui-text-slot-line-height:1.25rem]"
-                data-lines="1"
-                data-testid="product-card-attributes"
-                title={productQuickFactsLabel}
-              >
-                {productQuickFactsLabel}
-              </div>
-              {materialBadgeLabel || swatches.length > 0 ? (
+              {!isEditorialDisplay ? (
+                <div
+                  className="ui-text-slot product-card-attributes text-muted-foreground truncate text-xs [--ui-text-slot-line-height:1.25rem]"
+                  data-lines="1"
+                  data-testid="product-card-attributes"
+                  title={productQuickFactsLabel}
+                >
+                  {productQuickFactsLabel}
+                </div>
+              ) : null}
+              {!isEditorialDisplay &&
+              (materialBadgeLabel || swatches.length > 0) ? (
                 <div
                   className="product-card-material-cues flex min-h-5 min-w-0 flex-wrap items-center gap-1.5"
                   data-testid="product-card-material-cues"
@@ -242,7 +248,7 @@ export function ProductCard({
           </div>
         </CardContent>
       </Link>
-      {quickAddVariant ? (
+      {!isEditorialDisplay && quickAddVariant ? (
         <div className="mt-3" data-public-floating-avoid="true">
           <ProductCardQuickAddButton
             productName={product.name}
@@ -250,12 +256,14 @@ export function ProductCard({
           />
         </div>
       ) : null}
-      <div className="product-card-favorite absolute top-2.5 right-2.5 z-10 rounded-md">
-        <ProductCardFavoriteButton
-          productName={product.name}
-          productSlug={product.slug}
-        />
-      </div>
+      {!isEditorialDisplay ? (
+        <div className="product-card-favorite absolute top-2.5 right-2.5 z-10 rounded-md">
+          <ProductCardFavoriteButton
+            productName={product.name}
+            productSlug={product.slug}
+          />
+        </div>
+      ) : null}
     </Card>
   );
 }

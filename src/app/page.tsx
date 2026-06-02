@@ -114,15 +114,15 @@ export default async function Home() {
     getFeaturedCatalogProducts(8),
   ]);
   const signatureCollections = categories.slice(0, 4);
-  const curatedProducts = featuredProducts.slice(0, 4);
+  const curatedProducts = featuredProducts.slice(0, 2);
   const heroCategoryLinks = categories.slice(0, 3);
 
   return (
-    <main>
+    <main className="home-luxury-page">
       <SiteHeader />
 
       <RevealSection
-        className="relative isolate min-h-[var(--home-hero-height)] w-screen max-w-none overflow-hidden [--hero-edge:clamp(1.15rem,4vw,5rem)] [--home-hero-height:clamp(30rem,78svh,39rem)] sm:[--home-hero-height:clamp(40rem,78svh,52rem)] lg:[--hero-edge:clamp(3rem,4vw,5rem)]"
+        className="relative isolate min-h-[var(--home-hero-height)] w-screen max-w-none overflow-hidden [--hero-edge:clamp(1.25rem,4vw,5.75rem)] [--home-hero-height:clamp(33rem,82svh,43rem)] sm:[--home-hero-height:clamp(43rem,82svh,56rem)] lg:[--hero-edge:clamp(3.5rem,5vw,6.5rem)]"
         data-testid="cinematic-page-hero"
         id="page-hero"
         initialVisible
@@ -184,7 +184,7 @@ export default async function Home() {
         ) : null}
         <div className="relative min-h-[var(--home-hero-height)]">
           <div
-            className="motion-hero-copy absolute top-[calc(var(--hero-edge)+1.65rem)] right-[var(--hero-edge)] w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),50rem)] text-right text-white sm:top-[var(--hero-edge)] lg:w-[min(50rem,calc(52vw_-_var(--hero-edge)_-_2rem))]"
+            className="motion-hero-copy absolute top-[calc(var(--hero-edge)+2.75rem)] right-[var(--hero-edge)] w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),46rem)] text-right text-white sm:top-[calc(var(--hero-edge)+1.5rem)] lg:w-[min(46rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
             data-testid="home-hero-copy"
             dir="rtl"
           >
@@ -192,28 +192,28 @@ export default async function Home() {
               תכשיטים
             </p>
             <h1
-              className="home-hero-wordmark motion-copy-item mt-3 text-right text-4xl leading-[0.98] font-medium tracking-normal sm:mt-4 sm:text-7xl lg:text-[6rem]"
+              className="home-hero-wordmark motion-copy-item mt-4 text-right text-4xl leading-[0.98] font-medium tracking-normal sm:mt-5 sm:text-7xl lg:text-[6rem]"
               dir="ltr"
             >
               Elysia
             </h1>
-            <p className="motion-copy-item mt-4 max-w-2xl text-lg leading-7 text-white/94 [--motion-copy-delay:90ms] sm:mt-5 sm:text-3xl sm:leading-10">
+            <p className="motion-copy-item mt-5 max-w-2xl text-lg leading-8 text-white/94 [--motion-copy-delay:90ms] sm:mt-7 sm:text-3xl sm:leading-10">
               תכשיטים ליום, לערב ולמתנות.
             </p>
-            <p className="motion-copy-item mt-3 max-w-[19rem] text-sm leading-6 text-white/78 [--motion-copy-delay:130ms] sm:mt-4 sm:max-w-xl sm:leading-8">
+            <p className="motion-copy-item mt-4 max-w-[19rem] text-sm leading-7 text-white/76 [--motion-copy-delay:130ms] sm:mt-6 sm:max-w-lg sm:leading-8">
               קולקציות תכשיטים, מידע ברור והזמנה מקוונת.
             </p>
           </div>
         </div>
 
         <div
-          className="home-hero-actions motion-hero-copy absolute inset-x-4 bottom-[calc(2rem+env(safe-area-inset-bottom))] w-auto text-white sm:inset-x-auto sm:bottom-[var(--hero-edge)] sm:left-[var(--hero-edge)] sm:w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),36rem)] lg:w-[min(36rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
+          className="home-hero-actions motion-hero-copy absolute inset-x-5 bottom-[calc(2.75rem+env(safe-area-inset-bottom))] w-auto text-white sm:inset-x-auto sm:bottom-[calc(var(--hero-edge)+0.75rem)] sm:left-[var(--hero-edge)] sm:w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),36rem)] lg:w-[min(36rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
           data-testid="home-hero-actions"
           dir="rtl"
         >
-          <div className="motion-copy-item grid items-stretch gap-3 [--motion-copy-delay:170ms] sm:justify-items-end">
+          <div className="motion-copy-item grid items-stretch gap-5 [--motion-copy-delay:170ms] sm:justify-items-end">
             <div
-              className="grid gap-2 sm:grid-cols-2 sm:justify-end"
+              className="grid gap-3 sm:grid-cols-2 sm:justify-end"
               data-testid="home-hero-cta-row"
             >
               <Button
@@ -231,7 +231,7 @@ export default async function Home() {
               </Button>
               <Button
                 asChild
-                className="home-hero-help-cta border-white bg-[var(--brand-ink)] text-white hover:border-white hover:bg-[var(--brand-ink)] hover:text-white"
+                className="home-hero-help-cta hidden border-white bg-[var(--brand-ink)] text-white hover:border-white hover:bg-[var(--brand-ink)] hover:text-white sm:inline-flex"
                 size="lg"
                 variant="outline"
               >
@@ -244,7 +244,7 @@ export default async function Home() {
             {heroCategoryLinks.length > 0 ? (
               <nav
                 aria-label="קישורי קולקציות מהירים"
-                className="hidden flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-white/82 sm:flex sm:justify-end"
+                className="hidden flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs text-white/78 lg:flex lg:justify-end"
               >
                 {heroCategoryLinks.map((category) => (
                   <Link
@@ -263,7 +263,7 @@ export default async function Home() {
             >
               {homeTrustNotes.map(({ icon: Icon, label }) => (
                 <li
-                  className="inline-flex items-center gap-1 rounded-full border border-white/20 bg-[var(--brand-ink)] px-2.5 py-1"
+                  className="inline-flex items-center gap-1.5 border-b border-white/24 pb-1"
                   key={label}
                 >
                   <Icon aria-hidden="true" className="size-3" />
@@ -276,7 +276,7 @@ export default async function Home() {
       </RevealSection>
 
       <RevealSection
-        className="mx-auto max-w-7xl px-[var(--ui-page-x)] py-5 sm:px-6 sm:py-10"
+        className="home-luxury-section mx-auto max-w-[88rem] px-[var(--ui-page-x)] py-14 sm:px-6 sm:py-24 lg:py-32"
         id="categories"
       >
         <CommerceSectionHeader
@@ -290,7 +290,7 @@ export default async function Home() {
           title="מבחר לפי קטגוריה"
         />
         <RevealGrid
-          className="ui-equal-grid grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-x-4 sm:gap-y-6 lg:grid-cols-4"
+          className="ui-equal-grid grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-12 lg:grid-cols-4"
           data-layout-equal-group="home-category-tiles"
           variant="media"
         >
@@ -304,7 +304,7 @@ export default async function Home() {
               href={`/category/${category.slug}`}
               key={category.slug}
             >
-              <div className="bg-muted relative aspect-[4/3] overflow-hidden rounded-md sm:aspect-[4/5] sm:min-h-[220px]">
+              <div className="bg-muted relative aspect-[4/5] overflow-hidden rounded-md sm:min-h-[360px] lg:min-h-[420px]">
                 <Image
                   alt={`${category.name} מתוך קולקציות Elysia: ${
                     collectionCopy[category.slug] ?? category.description
@@ -336,7 +336,7 @@ export default async function Home() {
                   <ArrowLeft aria-hidden="true" className="size-4 shrink-0" />
                 </div>
               </div>
-              <div className="mt-3 hidden border-b border-[var(--glass-border)] pb-3 text-center sm:block">
+              <div className="mt-5 hidden border-b border-[var(--glass-border)] pb-5 text-center sm:block">
                 <h3
                   className="ui-text-slot group-hover/card:text-muted-foreground group-focus-visible/card:text-muted-foreground min-w-0 text-base font-medium transition-colors duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)] sm:text-lg"
                   data-lines="1"
@@ -355,7 +355,7 @@ export default async function Home() {
         </RevealGrid>
         <nav
           aria-label="נתיבי בחירה מהירים"
-          className="text-muted-foreground mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-t border-[var(--glass-border)] pt-4 text-xs sm:justify-start"
+          className="text-muted-foreground mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 border-t border-[var(--glass-border)] pt-8 text-sm sm:justify-start"
           data-testid="home-commerce-shortcuts"
         >
           {homeCommerceShortcuts.map((shortcut) => (
@@ -371,12 +371,12 @@ export default async function Home() {
       </RevealSection>
 
       <RevealSection
-        className="mx-auto max-w-7xl px-[var(--ui-page-x)] pb-5 sm:px-[var(--ui-page-x-wide)]"
+        className="mx-auto max-w-5xl px-[var(--ui-page-x)] py-8 sm:px-[var(--ui-page-x-wide)] sm:py-12"
         id="home-service-strip"
         variant="none"
       >
         <section
-          className="grid gap-3 border-y border-[var(--glass-border)] py-4 text-sm sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
+          className="grid gap-6 border-y border-[var(--glass-border)] py-8 text-sm sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:py-10"
           data-testid="home-service-strip"
         >
           <div>
@@ -397,11 +397,11 @@ export default async function Home() {
       </RevealSection>
 
       <RevealSection
-        className="brand-page-band border-y border-[var(--glass-border)]"
+        className="home-luxury-section brand-page-band border-y border-[var(--glass-border)]"
         id="materials"
       >
-        <div className="mx-auto grid max-w-7xl gap-8 px-[var(--ui-page-x)] py-[var(--ui-section-y)] sm:px-[var(--ui-page-x-wide)] lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center">
-          <div className="bg-muted relative min-h-[22rem] overflow-hidden rounded-md sm:min-h-[28rem]">
+        <div className="mx-auto grid max-w-[88rem] gap-12 px-[var(--ui-page-x)] py-20 sm:px-[var(--ui-page-x-wide)] sm:py-28 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)] lg:items-center lg:gap-20 lg:py-36">
+          <div className="bg-muted relative min-h-[25rem] overflow-hidden rounded-md sm:min-h-[34rem] lg:min-h-[40rem]">
             <Image
               alt="תכשיטי זהב ופנינים על זכוכית אקווה בתאורה רכה"
               className="media-color-rich object-cover"
@@ -410,16 +410,16 @@ export default async function Home() {
               src="/brand/v2/content-editorial.avif"
             />
           </div>
-          <div className="grid gap-6">
+          <div className="grid gap-10">
             <CommerceSectionHeader
               description="כל פריט מוצג לפי חומר, גימור, מידה ושימוש."
               eyebrow="חומרים"
               title="חומרים, גימור ונוכחות"
             />
-            <div className="grid gap-4">
+            <div className="grid gap-8">
               {materialPrinciples.map((item) => (
                 <section
-                  className="border-t border-[var(--glass-border)] pt-4"
+                  className="border-t border-[var(--glass-border)] pt-7"
                   key={item.title}
                 >
                   <h3 className="text-lg font-medium">{item.title}</h3>
@@ -433,8 +433,11 @@ export default async function Home() {
         </div>
       </RevealSection>
 
-      <RevealSection className="brand-page-band" id="gift-ritual">
-        <div className="mx-auto grid max-w-7xl gap-8 px-[var(--ui-page-x)] py-[var(--ui-section-y)] sm:px-[var(--ui-page-x-wide)] lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-start">
+      <RevealSection
+        className="home-luxury-section brand-page-band"
+        id="gift-ritual"
+      >
+        <div className="mx-auto grid max-w-[88rem] gap-12 px-[var(--ui-page-x)] py-20 sm:px-[var(--ui-page-x-wide)] sm:py-28 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:items-start lg:gap-20 lg:py-36">
           <div>
             <CommerceSectionHeader
               description="מבחר מתנות לפי קטגוריה, חומר וטווח מחיר."
@@ -448,10 +451,10 @@ export default async function Home() {
               </Link>
             </Button>
           </div>
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-8 sm:grid-cols-3 sm:gap-6 lg:gap-10">
             {giftRitual.map((item, index) => (
               <section
-                className="border-t border-[var(--glass-border)] pt-4"
+                className="border-t border-[var(--glass-border)] pt-7"
                 key={item.title}
               >
                 <p className="text-muted-foreground text-right text-sm tabular-nums">
@@ -468,11 +471,11 @@ export default async function Home() {
       </RevealSection>
 
       <RevealSection
-        className="brand-page-band border-y border-[var(--glass-border)]"
+        className="home-luxury-section brand-page-band border-y border-[var(--glass-border)]"
         id="personal-advice"
       >
-        <div className="mx-auto grid max-w-7xl gap-8 px-[var(--ui-page-x)] py-[var(--ui-section-y)] sm:px-[var(--ui-page-x-wide)] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center">
-          <div className="grid gap-6">
+        <div className="mx-auto grid max-w-[88rem] gap-12 px-[var(--ui-page-x)] py-20 sm:px-[var(--ui-page-x-wide)] sm:py-28 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1fr)] lg:items-center lg:gap-20 lg:py-36">
+          <div className="grid gap-10">
             <CommerceSectionHeader
               description="אפשר לקבל עזרה בשאלות על מידה, חומר, מתנה או התאמה."
               eyebrow="ייעוץ"
@@ -490,7 +493,7 @@ export default async function Home() {
               </Button>
             </div>
           </div>
-          <div className="bg-muted relative min-h-[22rem] overflow-hidden rounded-md sm:min-h-[28rem]">
+          <div className="bg-muted relative min-h-[25rem] overflow-hidden rounded-md sm:min-h-[34rem] lg:min-h-[40rem]">
             <Image
               alt="מגש שירות עם אריזת תכשיטים ופנינים"
               className="media-color-rich object-cover"
@@ -503,19 +506,19 @@ export default async function Home() {
       </RevealSection>
 
       <RevealSection
-        className="brand-page-band border-y border-[var(--glass-border)]"
+        className="home-luxury-section brand-page-band border-y border-[var(--glass-border)]"
         id="quick-search"
       >
-        <div className="mx-auto grid max-w-7xl gap-4 px-[var(--ui-page-x)] py-5 sm:px-[var(--ui-page-x-wide)] sm:py-6 lg:grid-cols-[minmax(15rem,0.7fr)_minmax(0,1.9fr)] lg:items-center">
+        <div className="mx-auto grid max-w-[76rem] gap-8 px-[var(--ui-page-x)] py-16 sm:px-[var(--ui-page-x-wide)] sm:py-24 lg:grid-cols-[minmax(14rem,0.55fr)_minmax(0,1.45fr)] lg:items-center lg:gap-14">
           <div className="min-w-0">
             <p className="text-muted-foreground text-sm">חיפוש</p>
             <h2 className="text-2xl font-medium">חיפוש במבחר</h2>
           </div>
-          <div className="grid min-w-0 gap-3">
+          <div className="grid min-w-0 gap-5">
             <form
               action="/search"
               aria-label="חיפוש במבחר"
-              className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]"
+              className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]"
               data-testid="home-quick-search-form"
               role="search"
             >
@@ -526,24 +529,24 @@ export default async function Home() {
                 />
                 <Input
                   aria-label="חיפוש תכשיט במבחר"
-                  className="bg-background h-[3.25rem] rounded-md border-[var(--glass-border)] pr-11 pl-3 text-sm shadow-none focus-visible:border-[var(--glass-border-strong)]"
+                  className="bg-background h-14 rounded-md border-[var(--glass-border)] pr-12 pl-4 text-base shadow-none focus-visible:border-[var(--glass-border-strong)]"
                   name="q"
                   placeholder="טבעת זהב, עגילי פנינה, מתנה עד 700 ₪..."
                 />
               </div>
-              <Button className="h-[3.25rem] gap-2 px-5" type="submit">
+              <Button className="h-14 gap-2 px-7" type="submit">
                 חיפוש
                 <Search aria-hidden="true" className="size-4" />
               </Button>
             </form>
             <div
               aria-label="חיפושים מהירים"
-              className="flex min-w-0 flex-nowrap items-center gap-2 overflow-x-auto pb-1"
+              className="flex min-w-0 flex-nowrap items-center gap-3 overflow-x-auto pb-1"
               data-testid="home-quick-search-suggestions"
             >
               {quickSearchSuggestions.map((suggestion) => (
                 <Link
-                  className="hover:bg-muted hover:text-foreground inline-flex min-h-8 shrink-0 items-center rounded-md border border-[var(--glass-border)] bg-transparent px-3 text-xs font-medium transition-[background-color,border-color,color,outline-color,opacity] duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)] outline-none hover:border-[var(--glass-border-strong)] focus-visible:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
+                  className="hover:bg-muted hover:text-foreground inline-flex min-h-9 shrink-0 items-center rounded-md border border-[var(--glass-border)] bg-transparent px-4 text-sm font-medium transition-[background-color,border-color,color,outline-color,opacity] duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)] outline-none hover:border-[var(--glass-border-strong)] focus-visible:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
                   href={suggestion.href}
                   key={suggestion.href}
                 >
@@ -555,8 +558,11 @@ export default async function Home() {
         </div>
       </RevealSection>
 
-      <RevealSection className="brand-page-band" id="featured">
-        <div className="mx-auto max-w-7xl px-[var(--ui-page-x)] py-[var(--ui-section-y)] sm:px-[var(--ui-page-x-wide)]">
+      <RevealSection
+        className="home-luxury-section brand-page-band"
+        id="featured"
+      >
+        <div className="mx-auto max-w-[76rem] px-[var(--ui-page-x)] py-20 sm:px-[var(--ui-page-x-wide)] sm:py-28 lg:py-36">
           <CommerceSectionHeader
             action={
               <Button asChild size="sm" variant="outline">
@@ -571,12 +577,17 @@ export default async function Home() {
             title="פריטים נבחרים"
           />
           <RevealGrid
-            className="ui-equal-grid mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+            className="ui-equal-grid mt-10 grid gap-10 sm:grid-cols-2 lg:gap-14"
             data-layout-equal-group="home-featured-products"
             variant="cards"
           >
             {curatedProducts.map((product) => (
-              <ProductCard key={product.slug} product={product} />
+              <ProductCard
+                display="editorial"
+                imageSizes="(min-width: 1024px) 34rem, (min-width: 640px) 50vw, 100vw"
+                key={product.slug}
+                product={product}
+              />
             ))}
           </RevealGrid>
         </div>

@@ -7,9 +7,9 @@ describe("mobile commerce density", () => {
   it("keeps the home mobile first viewport editorial before quick search", () => {
     const source = read("src/app/page.tsx");
 
-    expect(source).toContain("[--home-hero-height:clamp(30rem,78svh,39rem)]");
+    expect(source).toContain("[--home-hero-height:clamp(33rem,82svh,43rem)]");
     expect(source).toContain(
-      "sm:[--home-hero-height:clamp(40rem,78svh,52rem)]",
+      "sm:[--home-hero-height:clamp(43rem,82svh,56rem)]",
     );
     expect(countOccurrences(source, "min-h-[var(--home-hero-height)]")).toBe(4);
     expect(indexOf(source, 'id="categories"')).toBeLessThan(
@@ -26,9 +26,9 @@ describe("mobile commerce density", () => {
 
     expect(source).toContain('data-testid="home-quick-search-suggestions"');
     expect(source).toContain(
-      "flex min-w-0 flex-nowrap items-center gap-2 overflow-x-auto pb-1",
+      "flex min-w-0 flex-nowrap items-center gap-3 overflow-x-auto pb-1",
     );
-    expect(source).toContain("inline-flex min-h-8 shrink-0 items-center");
+    expect(source).toContain("inline-flex min-h-9 shrink-0 items-center");
     expect(source).not.toContain(
       'className="flex flex-wrap items-center gap-2"',
     );
@@ -114,17 +114,20 @@ describe("mobile commerce density", () => {
     const search = read("src/app/search/page.tsx");
     const productCard = read("src/components/product-card.tsx");
 
-    expect(home).toContain("px-[var(--ui-page-x)] py-5 sm:px-6 sm:py-10");
-    expect(home).toContain("grid grid-cols-1 gap-3 sm:grid-cols-2");
+    expect(home).toContain(
+      "home-luxury-section mx-auto max-w-[88rem] px-[var(--ui-page-x)] py-14 sm:px-6 sm:py-24 lg:py-32",
+    );
+    expect(home).toContain("grid grid-cols-1 gap-8 sm:grid-cols-2");
     expect(home).toContain('data-testid="home-category-tile"');
     expect(home).toContain(
-      "relative aspect-[4/3] overflow-hidden rounded-md sm:aspect-[4/5] sm:min-h-[220px]",
+      "relative aspect-[4/5] overflow-hidden rounded-md sm:min-h-[360px] lg:min-h-[420px]",
     );
     expect(home).toContain("absolute inset-x-0 bottom-0");
     expect(home).toContain("sm:hidden");
     expect(home).toContain("hidden border-b border-[var(--glass-border)]");
     expect(home).not.toContain("brand-surface interactive-lift group/card");
     expect(home).not.toContain("group-hover/card:underline");
+    expect(home).toContain('display="editorial"');
     expect(category).toContain(
       "px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)]",
     );

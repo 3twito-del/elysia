@@ -29,6 +29,10 @@ describe("homepage discovery to commerce balance", () => {
     expect(home).not.toContain('data-testid="home-category-count-chips"');
     expect(home).not.toContain('data-testid="home-category-count-chip"');
     expect(home).toContain('data-testid="home-service-strip"');
+    expect(home).toContain("home-luxury-page");
+    expect(home).toContain("home-luxury-section");
+    expect(home).toContain("featuredProducts.slice(0, 2)");
+    expect(home).toContain('display="editorial"');
     expect(home).toContain('href="/service?topic=general"');
     expect(home).toContain('href: "/search"');
     expect(home).toContain('href: "/gifts"');

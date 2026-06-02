@@ -111,14 +111,14 @@ describe("visible site improvement affordances", () => {
     const accountPage = read("src/app/account/page.tsx");
     const home = read("src/app/page.tsx");
 
-    expect(home).toContain("[--home-hero-height:clamp(30rem,78svh,39rem)]");
-    expect(home).toContain("sm:[--home-hero-height:clamp(40rem,78svh,52rem)]");
+    expect(home).toContain("[--home-hero-height:clamp(33rem,82svh,43rem)]");
+    expect(home).toContain("sm:[--home-hero-height:clamp(43rem,82svh,56rem)]");
     expect(home).toContain('data-testid="home-hero-copy"');
     expect(home).toContain("w-[min(calc(100%_-_var(--hero-edge)");
-    expect(home).toContain("max-w-2xl text-lg leading-7");
-    expect(home).toContain("max-w-[19rem] text-sm leading-6");
+    expect(home).toContain("max-w-2xl text-lg leading-8");
+    expect(home).toContain("max-w-[19rem] text-sm leading-7");
     expect(home).toContain('data-testid="home-hero-cta-row"');
-    expect(home).toContain("grid gap-2 sm:grid-cols-2");
+    expect(home).toContain("grid gap-3 sm:grid-cols-2");
     expect(accountPage).toContain('id="account-login"');
     expect(accountPage).toContain("<CustomerOtpForm />");
     expect(accountPage).toContain('id="account-benefits"');
