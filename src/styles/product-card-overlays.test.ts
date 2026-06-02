@@ -12,6 +12,8 @@ describe("product card overlay budget", () => {
     expect(source).not.toContain("discountPercent");
     expect(source).not.toContain("product.compareAt");
     expect(source).toContain("product-card-status-badge");
+    expect(source).toContain('data-testid="product-card-image-skeleton"');
+    expect(source).toContain("product-card-image-skeleton absolute inset-0");
     expect(source).toContain("לייעוץ");
     expect(source).not.toContain("absolute inset-x-2.5 bottom-2.5");
     expect(source).not.toContain(

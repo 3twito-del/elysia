@@ -31,7 +31,7 @@ describe("luxury commerce UI hardening", () => {
     expect(source).toContain("Headset");
     expect(source).not.toContain("MapPin");
     expect(source).toContain('data-icon-tooltip="חיפוש"');
-    expect(source).toContain('data-icon-tooltip="שירות"');
+    expect(source).toContain('data-icon-tooltip="סניפים ושירות"');
     expect(source).toContain('data-icon-tooltip="אזור אישי"');
     expect(source).toContain('data-icon-tooltip="סל קניות"');
     expect(read("src/styles/globals.css")).toContain(

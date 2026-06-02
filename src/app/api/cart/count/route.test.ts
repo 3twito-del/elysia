@@ -99,6 +99,10 @@ describe("cart count route", () => {
       'document.addEventListener("visibilitychange"',
     );
     expect(cartCountLink).toContain('aria-live="polite"');
+    expect(cartCountLink).toContain(
+      'data-cart-state={itemCount > 0 ? "filled" : "empty"}',
+    );
+    expect(cartCountLink).toContain('data-testid="cart-count-empty-state"');
     expect(cartCountLink).toContain('itemCount > 99 ? "99+" : itemCount');
     expect(cartCountLink).not.toContain("shadow-");
 

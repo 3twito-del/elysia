@@ -88,7 +88,12 @@ export function ProductCard({
         href={href}
         prefetch={false}
       >
-        <div className="brand-product-media product-card-media bg-muted/60 relative aspect-[5/4] overflow-hidden rounded-md border-0 sm:aspect-[4/5]">
+        <div className="brand-product-media product-card-media bg-muted relative aspect-[5/4] overflow-hidden rounded-md border-0 sm:aspect-[4/5]">
+          <span
+            aria-hidden="true"
+            className="product-card-image-skeleton absolute inset-0"
+            data-testid="product-card-image-skeleton"
+          />
           <StaticKineticImageFrame>
             <Image
               alt={product.name}

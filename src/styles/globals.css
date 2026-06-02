@@ -1759,7 +1759,12 @@ footer nav a:focus-visible {
   border-color: rgb(16 24 28 / 12%);
 }
 
+.product-card-image-skeleton {
+  background: var(--muted);
+}
+
 .product-card-image {
+  z-index: 1;
   transform-origin: center;
 }
 

@@ -96,6 +96,25 @@ describe("visible site improvement affordances", () => {
     expect(about).toContain("/faq#faq-group-2");
     expect(about).toContain("/service?topic=general");
   });
+
+  it("keeps header cart, service, footer policy, and social labels visible", () => {
+    const cart = read("src/components/cart-count-link.tsx");
+    const footer = read("src/components/site-footer.tsx");
+    const header = read("src/components/site-header.tsx");
+
+    expect(header).toContain('data-icon-tooltip="סניפים ושירות"');
+    expect(header).toContain('href="/branches"');
+    expect(cart).toContain(
+      'data-cart-state={itemCount > 0 ? "filled" : "empty"}',
+    );
+    expect(cart).toContain('data-testid="cart-count-empty-state"');
+    expect(cart).toContain("cart-count-badge");
+    expect(cart).toContain('itemCount > 99 ? "99+" : itemCount');
+    expect(footer).toContain('data-testid="footer-policy-heading"');
+    expect(footer).toContain("min-h-10 items-center");
+    expect(footer).toContain("data-icon-tooltip={item.label}");
+    expect(footer).toContain("title={item.label}");
+  });
 });
 
 function read(relativePath: string) {

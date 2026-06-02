@@ -50,6 +50,33 @@ const homeCommerceShortcuts = [
   { href: "/service", label: "שירות אישי" },
 ] as const;
 
+const homeProductRailTabs = [
+  {
+    href: "#featured",
+    label: "נבחרים",
+    meta: "מוצג עכשיו",
+    current: true,
+  },
+  {
+    href: "/search?sort=newest",
+    label: "חדשים",
+    meta: "לפי תאריך",
+    current: false,
+  },
+  {
+    href: "/gifts",
+    label: "מתנות",
+    meta: "לפי אירוע",
+    current: false,
+  },
+  {
+    href: "/search?sort=popular",
+    label: "פופולריים",
+    meta: "בחירות חוזרות",
+    current: false,
+  },
+] as const;
+
 const collectionCopy: Record<string, string> = {
   bracelets: "צמידים לענידה יומיומית.",
   earrings: "עגילים ליום ולערב.",
@@ -150,6 +177,14 @@ export default async function Home() {
           data-motion-scope="home-hero"
         >
           <div className="motion-media-content absolute inset-0 min-h-[var(--home-hero-height)]">
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 bg-cover bg-center"
+              data-testid="home-hero-media-fallback"
+              style={{
+                backgroundImage: "url('/brand/v2/editorial-home.avif')",
+              }}
+            />
             <StaticKineticImageFrame scrollMotion={false}>
               <StaticCinematicHeroSequence
                 priority
@@ -213,19 +248,35 @@ export default async function Home() {
           dir="rtl"
         >
           <div className="motion-copy-item grid items-stretch gap-3 px-3 [--motion-copy-delay:170ms] sm:justify-items-end sm:px-0">
-            <Button
-              asChild
-              className="home-hero-cta-primary text-foreground hover:text-foreground border-white bg-white shadow-none hover:border-white hover:bg-white"
-              size="lg"
+            <div
+              className="grid gap-2 sm:grid-cols-2 sm:justify-end"
+              data-testid="home-hero-cta-row"
             >
-              <Link href="/category/rings">
-                לקולקציות
-                <ArrowLeft
-                  aria-hidden="true"
-                  className="home-hero-cta-icon size-4"
-                />
-              </Link>
-            </Button>
+              <Button
+                asChild
+                className="home-hero-cta-primary text-foreground hover:text-foreground border-white bg-white shadow-none hover:border-white hover:bg-white"
+                size="lg"
+              >
+                <Link href="/category/rings">
+                  לקולקציות
+                  <ArrowLeft
+                    aria-hidden="true"
+                    className="home-hero-cta-icon size-4"
+                  />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                className="home-hero-help-cta border-white bg-[var(--brand-ink)] text-white hover:border-white hover:bg-[var(--brand-ink)] hover:text-white"
+                size="lg"
+                variant="outline"
+              >
+                <Link href="/stylist">
+                  ייעוץ סטיילינג
+                  <MessageCircle aria-hidden="true" className="size-4" />
+                </Link>
+              </Button>
+            </div>
             {heroCategoryLinks.length > 0 ? (
               <nav
                 aria-label="קישורי קולקציות מהירים"
@@ -555,6 +606,29 @@ export default async function Home() {
             eyebrow="מבחר נבחר"
             title="פריטים נבחרים"
           />
+          <nav
+            aria-label="מסילות מוצרים בבית"
+            className="mt-4 flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0"
+            data-testid="home-product-rail-tabs"
+          >
+            {homeProductRailTabs.map((tab) => (
+              <Link
+                aria-current={tab.current ? "page" : undefined}
+                className={
+                  tab.current
+                    ? "text-foreground inline-flex min-h-11 shrink-0 items-center gap-2 rounded-md border border-[var(--foreground)] px-3 text-sm font-medium"
+                    : "text-muted-foreground hover:border-foreground hover:text-foreground focus-visible:border-foreground focus-visible:text-foreground inline-flex min-h-11 shrink-0 items-center gap-2 rounded-md border border-[var(--glass-border)] px-3 text-sm transition-colors focus-visible:outline-none"
+                }
+                data-home-rail-active={tab.current ? "true" : undefined}
+                data-testid="home-product-rail-tab"
+                href={tab.href}
+                key={tab.href}
+              >
+                <span>{tab.label}</span>
+                <span className="text-xs">{tab.meta}</span>
+              </Link>
+            ))}
+          </nav>
           <nav
             aria-label="קטגוריות מהירות לפי כמות פריטים"
             className="mt-4 flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0"

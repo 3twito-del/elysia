@@ -175,12 +175,12 @@ export function SiteHeader() {
               variant="ghost"
             >
               <Link
-                data-icon-tooltip="שירות"
+                data-icon-tooltip="סניפים ושירות"
                 data-icon-tooltip-placement="bottom"
                 href="/branches"
               >
                 <Headset aria-hidden="true" className="size-5" />
-                <span className="sr-only">שירות</span>
+                <span className="sr-only">סניפים ושירות</span>
               </Link>
             </Button>
             <Button

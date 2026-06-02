@@ -15,9 +15,19 @@ describe("homepage discovery to commerce balance", () => {
     expect(home).toContain('data-testid="home-hero-media-caption"');
     expect(home).toContain('data-testid="home-hero-slide-progress"');
     expect(home).toContain('data-testid="home-hero-trust-notes"');
+    expect(home).toContain('data-testid="home-hero-media-fallback"');
+    expect(home).toContain('data-testid="home-hero-cta-row"');
+    expect(home).toContain("home-hero-help-cta");
+    expect(home).toContain('href="/stylist"');
     expect(home).toContain("listCatalogProducts()");
     expect(home).toContain("homeCategoryChips");
     expect(home).toContain("formatHomeCategoryCount");
+    expect(home).toContain("homeProductRailTabs");
+    expect(home).toContain('data-testid="home-product-rail-tabs"');
+    expect(home).toContain('data-testid="home-product-rail-tab"');
+    expect(home).toContain('data-home-rail-active={tab.current ? "true"');
+    expect(home).toContain('href: "/search?sort=newest"');
+    expect(home).toContain('href: "/search?sort=popular"');
     expect(home).toContain('data-testid="home-category-count-chips"');
     expect(home).toContain('data-testid="home-category-count-chip"');
     expect(home).toContain('data-testid="home-service-strip"');
@@ -39,9 +49,14 @@ describe("homepage discovery to commerce balance", () => {
       indexOf(home, 'data-testid="home-category-count-chips"'),
     );
     expect(indexOf(home, 'id="featured"')).toBeLessThan(
+      indexOf(home, 'data-testid="home-product-rail-tabs"'),
+    );
+    expect(indexOf(home, 'data-testid="home-product-rail-tabs"')).toBeLessThan(
       indexOf(home, 'data-testid="home-category-count-chips"'),
     );
-    expect(home).not.toContain('href="#featured"');
+    expect(copyBlock(home, "const homeCommerceShortcuts = [")).not.toContain(
+      'href: "#featured"',
+    );
     expect(home).not.toContain('href="#categories"');
   });
 
@@ -65,4 +80,11 @@ function indexOf(source: string, pattern: string) {
   const index = source.indexOf(pattern);
   expect(index, pattern).toBeGreaterThanOrEqual(0);
   return index;
+}
+
+function copyBlock(source: string, startPattern: string) {
+  const start = indexOf(source, startPattern);
+  const end = source.indexOf("] as const;", start);
+  expect(end).toBeGreaterThan(start);
+  return source.slice(start, end);
 }

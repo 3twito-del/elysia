@@ -93,20 +93,28 @@ export function SiteFooter() {
             2026 Elysia. כל הזכויות שמורות. שירות זמין לפני ההזמנה ולאחריה.
           </p>
           <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-center md:gap-8">
-            <nav
-              aria-label="קישורי מדיניות"
-              className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 md:justify-start"
-            >
-              {policyLinks.map((item) => (
-                <Link
-                  className="hover:text-foreground inline-flex min-h-8 items-center transition"
-                  href={item.href}
-                  key={item.href}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
+            <div className="grid gap-2">
+              <p
+                className="text-foreground text-center text-xs font-medium md:text-start"
+                data-testid="footer-policy-heading"
+              >
+                מדיניות
+              </p>
+              <nav
+                aria-label="קישורי מדיניות"
+                className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 md:justify-start"
+              >
+                {policyLinks.map((item) => (
+                  <Link
+                    className="hover:text-foreground inline-flex min-h-10 items-center transition"
+                    href={item.href}
+                    key={item.href}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+            </div>
             <nav
               aria-label="רשתות חברתיות"
               className="flex items-center justify-center gap-2 md:justify-end"
@@ -124,6 +132,7 @@ export function SiteFooter() {
                     key={item.href}
                     rel="noreferrer"
                     target="_blank"
+                    title={item.label}
                   >
                     <Icon aria-hidden="true" className="size-4" />
                   </a>
