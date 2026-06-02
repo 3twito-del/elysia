@@ -89,6 +89,9 @@ describe("visible site improvement affordances", () => {
 
   it("keeps the size guide measurement overview and print ruler visible", () => {
     const sizeGuide = read("src/app/size-guide/page.tsx");
+    const sizeGuideTool = read(
+      "src/app/size-guide/_components/size-guide-tool.tsx",
+    );
 
     expect(sizeGuide).toContain("printRulerTicks");
     expect(sizeGuide).toContain("sizeMeasurementSteps");
@@ -96,15 +99,34 @@ describe("visible site improvement affordances", () => {
       'data-testid="size-guide-measurement-overview"',
     );
     expect(sizeGuide).toContain('data-testid="size-guide-print-ruler"');
+    expect(sizeGuideTool).toContain('data-testid="size-guide-unit-toggle"');
+    expect(sizeGuideTool).toContain('data-testid="size-guide-unit-summary"');
+    expect(sizeGuideTool).toContain("getSizeGuideUnitOptions");
+    expect(sizeGuideTool).toContain("formatSizeGuideMeasurement");
+    expect(sizeGuideTool).toContain("formatRingMeasurementAsUs");
   });
 
   it("keeps service topic cards and response expectations visible", () => {
     const service = read("src/app/service/page.tsx");
+    const serviceActions = read("src/app/service/actions.ts");
+    const serviceForm = read(
+      "src/app/service/_components/service-request-form.tsx",
+    );
 
     expect(service).toContain('data-testid="service-topic-cards"');
     expect(service).toContain('data-testid="service-response-time-note"');
     expect(service).toContain("/service?topic=${topic.slug}#service-form");
     expect(service).toContain("defaultTopicSlug");
+    expect(service).toContain("serviceEmail={profile.settings.serviceEmail}");
+    expect(serviceActions).toContain("requestReference");
+    expect(serviceActions).toContain("createServiceRequestReference");
+    expect(serviceForm).toContain(
+      'data-testid="service-request-success-reference"',
+    );
+    expect(serviceForm).toContain(
+      'data-testid="service-request-success-contact-link"',
+    );
+    expect(serviceForm).toContain("serviceReferenceMailto");
   });
 
   it("keeps about timeline, material facts, and care routing visible", () => {

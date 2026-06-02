@@ -52,6 +52,8 @@ type SizeGuideRow = {
   size: string;
 };
 
+type SizeGuideUnit = "cm" | "eu" | "mm" | "us";
+
 type GuideCopy = {
   icon: LucideIcon;
   inputLabel: string;
@@ -70,6 +72,13 @@ const defaultManualValues = {
   necklace: "45",
   ring: "54",
 } satisfies Record<SizeFitKind, string>;
+
+const sizeGuideUnitLabels = {
+  cm: "ס״מ",
+  eu: "EU",
+  mm: "מ״מ",
+  us: "US",
+} satisfies Record<SizeGuideUnit, string>;
 
 const guideCopy = {
   bracelet: {
@@ -166,6 +175,9 @@ const guideCopy = {
 
 export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
   const [activeKind, setActiveKind] = useState<SizeFitKind>(initialKind);
+  const [activeUnit, setActiveUnit] = useState<SizeGuideUnit>(
+    getDefaultSizeGuideUnit(initialKind),
+  );
   const [manualValue, setManualValue] = useState(
     defaultManualValues[initialKind],
   );
@@ -175,6 +187,7 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
     {},
   );
   const activeCopy = guideCopy[activeKind];
+  const activeUnitOptions = getSizeGuideUnitOptions(activeKind);
   const normalizedManualValue = normalizeSavedSize(activeKind, manualValue);
   const savedSummary = normalizedManualValue
     ? formatSavedSize(activeKind, normalizedManualValue)
@@ -233,6 +246,46 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
           </div>
         </div>
 
+        {activeUnitOptions.length > 0 ? (
+          <div
+            className="glass-inset flex flex-col gap-3 rounded-md border p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
+            data-testid="size-guide-unit-toggle"
+          >
+            <div>
+              <p className="font-medium">יחידות תצוגה</p>
+              <p
+                className="text-muted-foreground mt-1 text-xs leading-5"
+                data-testid="size-guide-unit-summary"
+              >
+                {getSizeGuideUnitSummary(activeKind, activeUnit)}
+              </p>
+            </div>
+            <div
+              aria-label="בחירת יחידות למדריך המידות"
+              className="flex flex-wrap gap-2"
+              role="group"
+            >
+              {activeUnitOptions.map((unit) => {
+                const isSelected = activeUnit === unit;
+
+                return (
+                  <Button
+                    aria-pressed={isSelected}
+                    className="min-w-14"
+                    key={unit}
+                    onClick={() => setActiveUnit(unit)}
+                    size="sm"
+                    type="button"
+                    variant={isSelected ? "default" : "outline"}
+                  >
+                    {sizeGuideUnitLabels[unit]}
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
+
         <div
           className="glass-inset flex flex-wrap items-center justify-between gap-3 rounded-md border p-3 text-sm"
           data-testid="size-guide-save-context"
@@ -263,7 +316,10 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
                 aria-pressed={isActive}
                 className="min-h-12 justify-center gap-2"
                 key={kind}
-                onClick={() => setActiveKind(kind)}
+                onClick={() => {
+                  setActiveKind(kind);
+                  setActiveUnit(getDefaultSizeGuideUnit(kind));
+                }}
                 type="button"
                 variant={isActive ? "default" : "outline"}
               >
@@ -394,7 +450,13 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
                   className="grid gap-2 rounded-md border border-[var(--glass-border)] px-3 py-2 sm:grid-cols-[1fr_auto] sm:items-center"
                   key={`${row.measurement}-${row.size}`}
                 >
-                  <span>{row.measurement}</span>
+                  <span>
+                    {formatSizeGuideMeasurement(
+                      activeKind,
+                      row.measurement,
+                      activeUnit,
+                    )}
+                  </span>
                   <strong className="font-semibold">{row.size}</strong>
                 </div>
               ))}
@@ -408,6 +470,85 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
       </div>
     </section>
   );
+}
+
+function getDefaultSizeGuideUnit(kind: SizeFitKind): SizeGuideUnit {
+  if (kind === "ring") return "eu";
+  if (kind === "earring") return "eu";
+
+  return "cm";
+}
+
+function getSizeGuideUnitOptions(kind: SizeFitKind): SizeGuideUnit[] {
+  if (kind === "ring") return ["eu", "us", "mm"];
+  if (kind === "earring") return [];
+
+  return ["cm", "mm"];
+}
+
+function getSizeGuideUnitSummary(kind: SizeFitKind, unit: SizeGuideUnit) {
+  if (kind === "ring") {
+    if (unit === "us") return "טבלת הטבעות מוצגת בקירוב למידות US.";
+    if (unit === "mm") return "מידת EU מוצגת גם כהיקף אצבע במ״מ.";
+
+    return "מידות הטבעות מוצגות כברירת מחדל בשיטת EU.";
+  }
+
+  if (unit === "mm") return "המידות מוצגות במ״מ להשוואה מדויקת יותר.";
+
+  return "המידות מוצגות בס״מ כמו סרט מדידה ביתי.";
+}
+
+function formatSizeGuideMeasurement(
+  kind: SizeFitKind,
+  measurement: string,
+  unit: SizeGuideUnit,
+) {
+  if (kind === "ring") {
+    if (unit === "eu") return `EU ${measurement}`;
+    if (unit === "us") return formatRingMeasurementAsUs(measurement);
+
+    return formatRingMeasurementAsMillimeters(measurement);
+  }
+
+  if ((kind === "bracelet" || kind === "necklace") && unit === "mm") {
+    return formatCentimeterMeasurementAsMillimeters(measurement);
+  }
+
+  return measurement;
+}
+
+function formatCentimeterMeasurementAsMillimeters(measurement: string) {
+  return measurement
+    .replace(/\d+(?:\.\d+)?/g, (value) =>
+      String(Math.round(Number(value) * 10)),
+    )
+    .replace(/ס״מ|ס"מ|cm/gi, "מ״מ");
+}
+
+function formatRingMeasurementAsMillimeters(measurement: string) {
+  const withUnits = measurement.replace(/\d+(?:\.\d+)?/g, (value) =>
+    String(Math.round(Number(value))),
+  );
+
+  return withUnits.includes("מ״מ") ? withUnits : `${withUnits} מ״מ`;
+}
+
+function formatRingMeasurementAsUs(measurement: string) {
+  const converted = measurement.replace(/\d+(?:\.\d+)?/g, (value) =>
+    formatUsRingSize(Number(value)),
+  );
+
+  return `US ${converted}`;
+}
+
+function formatUsRingSize(euSize: number) {
+  const rawUsSize = (euSize - 36.5) / 2.55;
+  const roundedQuarter = Math.round(rawUsSize * 4) / 4;
+
+  return Number.isInteger(roundedQuarter)
+    ? String(roundedQuarter)
+    : roundedQuarter.toFixed(2).replace(/0$/u, "");
 }
 
 function PresetButtons({

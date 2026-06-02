@@ -31,6 +31,7 @@ type ServiceRequestFormProps = {
   defaultOrderNumber?: string;
   defaultProductReference?: string;
   defaultTopicSlug?: string;
+  serviceEmail: string;
   topics: Array<{
     description?: string | null;
     label: string;
@@ -63,6 +64,7 @@ export function ServiceRequestForm({
   defaultOrderNumber,
   defaultProductReference,
   defaultTopicSlug,
+  serviceEmail,
   topics,
 }: ServiceRequestFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
@@ -85,6 +87,11 @@ export function ServiceRequestForm({
     (topic) => topic.slug === selectedTopicSlug,
   );
   const selectedTopicDescription = selectedTopic?.description;
+  const serviceReferenceMailto = state.requestReference
+    ? `mailto:${serviceEmail}?subject=${encodeURIComponent(
+        `עדכון לפנייה ${state.requestReference}`,
+      )}`
+    : `mailto:${serviceEmail}`;
   const selectedTopicLabel = selectedTopic?.label ?? "נושא כללי";
 
   useEffect(() => {
@@ -338,6 +345,30 @@ export function ServiceRequestForm({
         <StatusMessage tone={state.ok ? "success" : "error"}>
           {state.message}
         </StatusMessage>
+      ) : null}
+      {state.ok && state.requestReference ? (
+        <div
+          className="glass-inset grid gap-2 rounded-md border p-3 text-sm leading-6"
+          data-testid="service-request-success-reference"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="text-muted-foreground">מספר פנייה</span>
+            <strong className="font-mono text-base tracking-normal">
+              {state.requestReference}
+            </strong>
+          </div>
+          <p className="text-muted-foreground">
+            שמרו את המספר לעדכון עתידי. הצוות יבדוק את הפרטים, הקבצים וההקשר של
+            המוצר או ההזמנה לפני חזרה אליכם.
+          </p>
+          <a
+            className="w-fit text-sm font-medium underline underline-offset-4"
+            data-testid="service-request-success-contact-link"
+            href={serviceReferenceMailto}
+          >
+            עדכון נוסף באימייל השירות
+          </a>
+        </div>
       ) : null}
       {offlineState.message ? (
         <StatusMessage tone={offlineState.ok ? "success" : "error"}>

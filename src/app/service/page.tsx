@@ -232,6 +232,7 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
               defaultOrderNumber={defaultOrderNumber}
               defaultProductReference={defaultProductReference}
               defaultTopicSlug={defaultTopicSlug}
+              serviceEmail={profile.settings.serviceEmail}
               topics={profile.topics.map((topic) => ({
                 description: topic.description,
                 label: topic.label,

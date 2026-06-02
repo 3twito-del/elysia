@@ -19,6 +19,7 @@ export type ServiceRequestActionState = {
   fieldErrors?: FormFieldErrors;
   message?: string;
   ok?: boolean;
+  requestReference?: string;
 };
 
 export async function createServiceRequestAction(
@@ -61,10 +62,19 @@ export async function createServiceRequestAction(
   }
 
   try {
-    await createPublicServiceRequest({
+    const request = await createPublicServiceRequest({
       data: parsed.data,
       files: formData.getAll("attachments").filter(isFile),
     });
+    const requestReference = createServiceRequestReference(request.id);
+
+    revalidatePath("/service");
+
+    return {
+      ok: true,
+      requestReference,
+      message: `הפנייה התקבלה. מספר הפנייה הוא ${requestReference}. צוות Elysia יחזור אליכם לפי דרך הקשר שבחרתם לאחר בדיקת הפרטים.`,
+    };
   } catch (error) {
     return {
       ok: false,
@@ -74,16 +84,17 @@ export async function createServiceRequestAction(
           : "לא הצלחנו לקבל את הפנייה כרגע. נסו שוב.",
     };
   }
-
-  revalidatePath("/service");
-
-  return {
-    ok: true,
-    message:
-      "הפנייה התקבלה. צוות Elysia יחזור אליכם לפי דרך הקשר שבחרתם לאחר בדיקת הפרטים.",
-  };
 }
 
 function isFile(value: FormDataEntryValue): value is File {
   return typeof File !== "undefined" && value instanceof File;
+}
+
+function createServiceRequestReference(id: string) {
+  const compactId = id
+    .replace(/[^a-z0-9]/giu, "")
+    .slice(-8)
+    .toUpperCase();
+
+  return `SR-${compactId || "NEW"}`;
 }
