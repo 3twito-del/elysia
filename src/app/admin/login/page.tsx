@@ -4,6 +4,7 @@ import Link from "next/link";
 import { LockKeyhole } from "lucide-react";
 
 import { AdminLoginForm } from "./_components/admin-login-form";
+import { BrandLogo } from "~/components/brand-logo";
 import { Badge } from "~/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { auth } from "~/server/auth";
@@ -39,13 +40,12 @@ export default async function AdminLoginPage({
       <section className="mx-auto grid min-h-screen max-w-7xl items-center px-[var(--ui-page-x)] py-[var(--ui-section-y)] lg:px-[var(--ui-page-x-wide)]">
         <div className="mx-auto grid w-full max-w-md gap-6">
           <Link
+            aria-label="Elysia - עמוד הבית"
             className="brand-header-mark mx-auto inline-flex items-center"
             dir="ltr"
             href="/"
           >
-            <span className="text-xl font-semibold tracking-normal">
-              Elysia
-            </span>
+            <BrandLogo className="h-6 w-auto max-w-[8rem]" />
           </Link>
           <div>
             <Badge className="mb-4" variant="secondary">

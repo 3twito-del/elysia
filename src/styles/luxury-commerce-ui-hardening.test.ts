@@ -25,7 +25,11 @@ describe("luxury commerce UI hardening", () => {
     expect(navBlock).not.toContain("shadow-");
     expect(navBlock).toContain("after:h-px");
     expect(navBlock).toContain('aria-current={isActive ? "page" : undefined}');
-    expect(brandBlock).toContain("Elysia");
+    expect(source).toContain(
+      'import { BrandLogo } from "~/components/brand-logo";',
+    );
+    expect(brandBlock).toContain('aria-label="Elysia -');
+    expect(brandBlock).toContain("<BrandLogo");
     expect(brandBlock).not.toContain("<Gem");
     expect(source).toContain('href="/branches"');
     expect(source).toContain("Headset");

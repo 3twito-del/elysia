@@ -17,6 +17,7 @@ import {
   X,
 } from "lucide-react";
 
+import { BrandLogo } from "~/components/brand-logo";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import {
@@ -166,12 +167,13 @@ export function MobileNav({
         <div className="mobile-nav-header border-b border-[var(--glass-border)] px-4 py-3.5">
           <div className="flex items-start justify-between gap-3">
             <Link
+              aria-label="Elysia - עמוד הבית"
               className="brand-header-mark site-header-link mobile-nav-animated-item inline-flex min-h-10 items-center"
               href="/"
               onClick={closeNav}
               style={getMobileNavStaggerStyle(0)}
             >
-              <span className="text-lg font-semibold">Elysia</span>
+              <BrandLogo className="h-5 w-auto max-w-[7rem]" />
             </Link>
             <SheetClose asChild>
               <Button

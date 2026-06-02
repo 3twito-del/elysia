@@ -9,6 +9,7 @@ import {
   isCategoryHref,
   useCategoryRoutePrefetch,
 } from "~/components/category-route-prefetch";
+import { BrandLogo } from "~/components/brand-logo";
 import { CartCountLink } from "~/components/cart-count-link";
 import { MobileNav, type HeaderNavItem } from "~/components/mobile-nav";
 import { Button } from "~/components/ui/button";
@@ -102,13 +103,12 @@ export function SiteHeader() {
 
           <Link
             className="brand-header-mark site-header-link flex min-w-0 shrink-0 items-center justify-self-center md:justify-self-start"
+            aria-label="Elysia - עמוד הבית"
             dir="ltr"
             href="/"
             prefetch={false}
           >
-            <span className="truncate text-[1.65rem] font-medium tracking-normal sm:text-3xl lg:text-[2.35rem]">
-              Elysia
-            </span>
+            <BrandLogo className="h-6 w-auto max-w-[8rem] sm:h-7 sm:max-w-[9rem] lg:h-9 lg:max-w-[11.5rem]" />
           </Link>
 
           <nav

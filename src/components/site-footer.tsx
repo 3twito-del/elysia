@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { SiInstagram, SiTiktok } from "react-icons/si";
 
+import { BrandLogo } from "~/components/brand-logo";
 import { NewsletterForm } from "~/components/newsletter-form";
 import { SiteFooterDisclosures } from "~/components/site-footer-disclosures";
 
@@ -60,9 +61,7 @@ export function SiteFooter() {
               className="brand-footer-mark inline-flex items-center"
               href="/"
             >
-              <span className="text-4xl leading-none font-[var(--font-latin-brand)] font-medium tracking-normal sm:text-5xl">
-                Elysia
-              </span>
+              <BrandLogo className="h-10 w-auto max-w-[13rem] sm:h-12 sm:max-w-[15.5rem]" />
             </Link>
             <p className="text-muted-foreground mt-6 max-w-md text-sm leading-8 sm:text-[0.95rem]">
               קולקציות תכשיטים, מידע ברור והזמנה מקוונת.

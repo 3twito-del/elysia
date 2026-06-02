@@ -1589,13 +1589,20 @@ main
   letter-spacing: 0;
 }
 
+.brand-logo {
+  display: block;
+  flex: none;
+  color: inherit;
+  overflow: visible;
+}
+
 .brand-footer-mark,
 .home-hero-wordmark,
 .admin-brand-mark {
   font-family: var(--font-latin-brand);
 }
 
-.brand-header-mark svg {
+.brand-header-mark svg:not(.brand-logo) {
   width: 1.25rem;
   height: 1.25rem;
   flex: none;
@@ -1603,8 +1610,8 @@ main
   stroke-width: 2.15;
 }
 
-.brand-header-mark svg,
-.brand-footer-mark svg,
+.brand-header-mark svg:not(.brand-logo),
+.brand-footer-mark svg:not(.brand-logo),
 .brand-branch-card svg,
 .brand-accent-card svg,
 .brand-icon-well svg {
