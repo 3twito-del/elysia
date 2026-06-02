@@ -123,13 +123,7 @@ export const CartCountLink = forwardRef<HTMLAnchorElement, CartCountLinkProps>(
           >
             {itemCount > 99 ? "99+" : itemCount}
           </span>
-        ) : (
-          <span
-            aria-hidden="true"
-            className="cart-count-empty-state absolute -top-0.5 -right-0.5 size-2 rounded-full border border-current"
-            data-testid="cart-count-empty-state"
-          />
-        )}
+        ) : null}
         <span aria-atomic="true" aria-live="polite" className="sr-only">
           {cartLabel}
         </span>

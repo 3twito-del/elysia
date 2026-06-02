@@ -7,7 +7,7 @@ describe("mobile commerce density", () => {
   it("keeps the home mobile first viewport editorial before quick search", () => {
     const source = read("src/app/page.tsx");
 
-    expect(source).toContain("[--home-hero-height:clamp(35rem,86svh,44rem)]");
+    expect(source).toContain("[--home-hero-height:clamp(30rem,78svh,39rem)]");
     expect(source).toContain(
       "sm:[--home-hero-height:clamp(40rem,78svh,52rem)]",
     );
@@ -102,7 +102,7 @@ describe("mobile commerce density", () => {
     const productCard = read("src/components/product-card.tsx");
 
     expect(home).toContain("px-[var(--ui-page-x)] py-5 sm:px-6 sm:py-10");
-    expect(home).toContain("grid grid-cols-2 gap-2.5");
+    expect(home).toContain("grid grid-cols-1 gap-3 sm:grid-cols-2");
     expect(home).toContain('data-testid="home-category-tile"');
     expect(home).toContain(
       "relative aspect-[4/3] overflow-hidden rounded-md sm:aspect-[4/5] sm:min-h-[220px]",

@@ -27,6 +27,7 @@ import {
 } from "~/server/services/catalog";
 
 const homeSlides = cinematicRouteMedia.home.slice(0, 1);
+const hasMultipleHomeHeroSlides = homeSlides.length > 1;
 
 const homeHeroMediaCaption = "בתמונה: טבעות ופנינים בגימור עדין";
 
@@ -162,7 +163,7 @@ export default async function Home() {
       <SiteHeader />
 
       <RevealSection
-        className="relative isolate min-h-[var(--home-hero-height)] w-screen max-w-none overflow-hidden [--hero-edge:clamp(1.15rem,4vw,5rem)] [--home-hero-height:clamp(35rem,86svh,44rem)] sm:[--home-hero-height:clamp(40rem,78svh,52rem)] lg:[--hero-edge:clamp(3rem,4vw,5rem)]"
+        className="relative isolate min-h-[var(--home-hero-height)] w-screen max-w-none overflow-hidden [--hero-edge:clamp(1.15rem,4vw,5rem)] [--home-hero-height:clamp(30rem,78svh,39rem)] sm:[--home-hero-height:clamp(40rem,78svh,52rem)] lg:[--hero-edge:clamp(3rem,4vw,5rem)]"
         data-testid="cinematic-page-hero"
         id="page-hero"
         initialVisible
@@ -198,29 +199,33 @@ export default async function Home() {
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.02),rgba(0,0,0,0.18)_42%,rgba(0,0,0,0.62))]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.70),rgba(0,0,0,0.10)_58%,rgba(0,0,0,0.24))]" />
         <div className="absolute inset-x-0 top-0 h-px bg-white opacity-30" />
-        <div
-          className="absolute right-[var(--hero-edge)] bottom-[calc(10rem+env(safe-area-inset-bottom))] z-10 max-w-[16rem] text-right text-xs text-white/78 sm:bottom-[calc(var(--hero-edge)+4.25rem)]"
-          data-testid="home-hero-media-caption"
-          dir="rtl"
-        >
-          <span className="rounded-full border border-white/25 bg-[var(--brand-ink)] px-3 py-1.5">
-            {homeHeroMediaCaption}
-          </span>
-        </div>
-        <div
-          className="absolute right-[var(--hero-edge)] bottom-[calc(var(--hero-edge)+1rem)] z-10 hidden w-28 text-white/75 sm:block"
-          data-testid="home-hero-slide-progress"
-          dir="ltr"
-        >
-          <div className="flex items-center gap-2 text-[0.7rem] tabular-nums">
-            <span>01</span>
-            <span className="h-px flex-1 bg-white" />
-            <span>{String(homeSlides.length).padStart(2, "0")}</span>
-          </div>
-        </div>
+        {hasMultipleHomeHeroSlides ? (
+          <>
+            <div
+              className="absolute right-[var(--hero-edge)] bottom-[calc(var(--hero-edge)+4.25rem)] z-10 hidden max-w-[16rem] text-right text-xs text-white/78 sm:block"
+              data-testid="home-hero-media-caption"
+              dir="rtl"
+            >
+              <span className="rounded-full border border-white/25 bg-[var(--brand-ink)] px-3 py-1.5">
+                {homeHeroMediaCaption}
+              </span>
+            </div>
+            <div
+              className="absolute right-[var(--hero-edge)] bottom-[calc(var(--hero-edge)+1rem)] z-10 hidden w-28 text-white/75 sm:block"
+              data-testid="home-hero-slide-progress"
+              dir="ltr"
+            >
+              <div className="flex items-center gap-2 text-[0.7rem] tabular-nums">
+                <span>01</span>
+                <span className="h-px flex-1 bg-white" />
+                <span>{String(homeSlides.length).padStart(2, "0")}</span>
+              </div>
+            </div>
+          </>
+        ) : null}
         <div className="relative min-h-[var(--home-hero-height)]">
           <div
-            className="motion-hero-copy absolute top-[var(--hero-edge)] right-[var(--hero-edge)] w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),50rem)] text-right text-white lg:w-[min(50rem,calc(52vw_-_var(--hero-edge)_-_2rem))]"
+            className="motion-hero-copy absolute top-[calc(var(--hero-edge)+1.65rem)] right-[var(--hero-edge)] w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),50rem)] text-right text-white sm:top-[var(--hero-edge)] lg:w-[min(50rem,calc(52vw_-_var(--hero-edge)_-_2rem))]"
             data-testid="home-hero-copy"
             dir="rtl"
           >
@@ -228,26 +233,26 @@ export default async function Home() {
               תכשיטים
             </p>
             <h1
-              className="home-hero-wordmark motion-copy-item mt-4 text-right text-5xl leading-[0.96] font-medium tracking-normal sm:text-7xl lg:text-[6rem]"
+              className="home-hero-wordmark motion-copy-item mt-3 text-right text-4xl leading-[0.98] font-medium tracking-normal sm:mt-4 sm:text-7xl lg:text-[6rem]"
               dir="ltr"
             >
               Elysia
             </h1>
-            <p className="motion-copy-item mt-5 max-w-2xl text-xl leading-8 text-white/94 [--motion-copy-delay:90ms] sm:text-3xl sm:leading-10">
+            <p className="motion-copy-item mt-4 max-w-2xl text-lg leading-7 text-white/94 [--motion-copy-delay:90ms] sm:mt-5 sm:text-3xl sm:leading-10">
               תכשיטים ליום, לערב ולמתנות.
             </p>
-            <p className="motion-copy-item mt-4 max-w-xl text-sm leading-7 text-white/78 [--motion-copy-delay:130ms] sm:text-base sm:leading-8">
+            <p className="motion-copy-item mt-3 max-w-[19rem] text-sm leading-6 text-white/78 [--motion-copy-delay:130ms] sm:mt-4 sm:max-w-xl sm:leading-8">
               קולקציות תכשיטים, מידע ברור והזמנה מקוונת.
             </p>
           </div>
         </div>
 
         <div
-          className="home-hero-actions motion-hero-copy absolute inset-x-4 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] w-auto text-white sm:inset-x-auto sm:bottom-[var(--hero-edge)] sm:left-[var(--hero-edge)] sm:w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),36rem)] lg:w-[min(36rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
+          className="home-hero-actions motion-hero-copy absolute inset-x-4 bottom-[calc(2rem+env(safe-area-inset-bottom))] w-auto text-white sm:inset-x-auto sm:bottom-[var(--hero-edge)] sm:left-[var(--hero-edge)] sm:w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),36rem)] lg:w-[min(36rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
           data-testid="home-hero-actions"
           dir="rtl"
         >
-          <div className="motion-copy-item grid items-stretch gap-3 px-3 [--motion-copy-delay:170ms] sm:justify-items-end sm:px-0">
+          <div className="motion-copy-item grid items-stretch gap-3 [--motion-copy-delay:170ms] sm:justify-items-end">
             <div
               className="grid gap-2 sm:grid-cols-2 sm:justify-end"
               data-testid="home-hero-cta-row"
@@ -280,7 +285,7 @@ export default async function Home() {
             {heroCategoryLinks.length > 0 ? (
               <nav
                 aria-label="קישורי קולקציות מהירים"
-                className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-white/82 sm:justify-end"
+                className="hidden flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-white/82 sm:flex sm:justify-end"
               >
                 {heroCategoryLinks.map((category) => (
                   <Link
@@ -294,7 +299,7 @@ export default async function Home() {
               </nav>
             ) : null}
             <ul
-              className="motion-copy-item flex flex-wrap justify-center gap-2 text-[0.7rem] text-white/76 [--motion-copy-delay:210ms] sm:justify-end"
+              className="motion-copy-item hidden flex-wrap justify-center gap-2 text-[0.7rem] text-white/76 [--motion-copy-delay:210ms] sm:flex sm:justify-end"
               data-testid="home-hero-trust-notes"
             >
               {homeTrustNotes.map(({ icon: Icon, label }) => (
@@ -326,7 +331,7 @@ export default async function Home() {
           title="מבחר לפי קטגוריה"
         />
         <RevealGrid
-          className="ui-equal-grid grid grid-cols-2 gap-2.5 sm:gap-x-4 sm:gap-y-6 lg:grid-cols-4"
+          className="ui-equal-grid grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-x-4 sm:gap-y-6 lg:grid-cols-4"
           data-layout-equal-group="home-category-tiles"
           variant="media"
         >
@@ -347,7 +352,7 @@ export default async function Home() {
                   }`}
                   className="media-color object-cover object-center transition duration-[700ms] ease-[var(--ease-motion-standard)] group-hover/card:scale-[1.015]"
                   fill
-                  sizes="(min-width: 1280px) 18rem, (min-width: 1024px) 25vw, 50vw"
+                  sizes="(min-width: 1280px) 18rem, (min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                   src={
                     getCategoryBrandSlides(category.slug)[0]?.src ??
                     category.image
@@ -490,7 +495,7 @@ export default async function Home() {
                 className="border-t border-[var(--glass-border)] pt-4"
                 key={item.title}
               >
-                <p className="text-muted-foreground text-sm" dir="ltr">
+                <p className="text-muted-foreground text-right text-sm tabular-nums">
                   0{index + 1}
                 </p>
                 <h3 className="mt-4 text-xl font-medium">{item.title}</h3>

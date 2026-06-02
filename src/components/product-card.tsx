@@ -67,10 +67,8 @@ export function ProductCard({
     availableQuantity: onlineStockQuantity,
     product,
   });
-  const productCardBadges = getProductCardBadges({
-    isUnavailable,
+  const productCardBadge = getProductCardBadge({
     lowStock,
-    product,
     sale,
   });
   const productDetails = [product.material, product.stone].filter(
@@ -141,14 +139,12 @@ export function ProductCard({
               />
             ) : null}
           </StaticKineticImageFrame>
-          {productCardBadges.length > 0 ? (
+          {productCardBadge ? (
             <div
-              className="product-card-badge-stack absolute top-2.5 left-2.5 z-10 flex max-w-[calc(100%-4.75rem)] flex-col items-start gap-1.5"
-              data-testid="product-card-badges"
+              className="product-card-badge-stack absolute top-2.5 left-2.5 z-10 max-w-[calc(100%-4.75rem)]"
+              data-testid="product-card-badge"
             >
-              {productCardBadges.map((badge) => (
-                <ProductCardBadge badge={badge} key={badge.key} />
-              ))}
+              <ProductCardBadge badge={productCardBadge} />
             </div>
           ) : null}
         </div>
@@ -265,7 +261,7 @@ export function ProductCard({
 }
 
 type ProductCardBadgeModel = {
-  key: "low-stock" | "sale" | "source" | "unavailable";
+  key: "low-stock" | "sale";
   label: string;
 };
 
@@ -323,31 +319,19 @@ function isProductCardLowStock(input: {
   );
 }
 
-function getProductCardBadges(input: {
-  isUnavailable: boolean;
+function getProductCardBadge(input: {
   lowStock: boolean;
-  product: CatalogProduct;
   sale: ReturnType<typeof getProductCardSale>;
-}) {
-  const badges: ProductCardBadgeModel[] = [];
-
-  if (input.isUnavailable) {
-    badges.push({ key: "unavailable", label: "לייעוץ אישי" });
-  }
-
+}): ProductCardBadgeModel | null {
   if (input.sale) {
-    badges.push({ key: "sale", label: "הנחה" });
+    return { key: "sale", label: "הנחה" };
   }
 
   if (input.lowStock) {
-    badges.push({ key: "low-stock", label: "מלאי מוגבל" });
+    return { key: "low-stock", label: "מלאי מוגבל" };
   }
 
-  if (input.product.source === "DROPSHIP_SHOPIFY") {
-    badges.push({ key: "source", label: "ספק מאומת" });
-  }
-
-  return badges;
+  return null;
 }
 
 function getProductCardMaterialBadgeLabel(product: CatalogProduct) {

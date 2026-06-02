@@ -4,7 +4,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 describe("product card overlay budget", () => {
-  it("keeps product image overlays limited to decision-critical badge stack", () => {
+  it("keeps product image overlays limited to one decision-critical badge", () => {
     const source = read("src/components/product-card.tsx");
 
     expect(countOccurrences(source, "<Badge")).toBe(1);
@@ -12,12 +12,14 @@ describe("product card overlay budget", () => {
     expect(source).not.toContain("discountPercent");
     expect(source).toContain("product-card-status-badge");
     expect(source).toContain("product-card-badge-stack");
-    expect(source).toContain('data-testid="product-card-badges"');
+    expect(source).toContain('data-testid="product-card-badge"');
     expect(source).toContain("data-product-card-badge={badge.key}");
+    expect(source).toContain("function getProductCardBadge");
     expect(source).toContain('key: "sale"');
-    expect(source).toContain('key: "source"');
     expect(source).toContain('key: "low-stock"');
-    expect(source).toContain('key: "unavailable"');
+    expect(source).not.toContain('key: "source"');
+    expect(source).not.toContain('key: "unavailable"');
+    expect(source).not.toContain("flex-col items-start gap-1.5");
     expect(source).toContain("isPublicSellableQuantityLowStock");
     expect(source).toContain("מלאי מוגבל");
     expect(source).toContain('data-testid="product-card-image-skeleton"');

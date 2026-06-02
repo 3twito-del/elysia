@@ -102,7 +102,7 @@ describe("cart count route", () => {
     expect(cartCountLink).toContain(
       'data-cart-state={itemCount > 0 ? "filled" : "empty"}',
     );
-    expect(cartCountLink).toContain('data-testid="cart-count-empty-state"');
+    expect(cartCountLink).not.toContain('data-testid="cart-count-empty-state"');
     expect(cartCountLink).toContain('itemCount > 99 ? "99+" : itemCount');
     expect(cartCountLink).not.toContain("shadow-");
 

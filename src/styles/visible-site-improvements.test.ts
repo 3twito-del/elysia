@@ -111,12 +111,12 @@ describe("visible site improvement affordances", () => {
     const accountPage = read("src/app/account/page.tsx");
     const home = read("src/app/page.tsx");
 
-    expect(home).toContain("[--home-hero-height:clamp(35rem,86svh,44rem)]");
+    expect(home).toContain("[--home-hero-height:clamp(30rem,78svh,39rem)]");
     expect(home).toContain("sm:[--home-hero-height:clamp(40rem,78svh,52rem)]");
     expect(home).toContain('data-testid="home-hero-copy"');
     expect(home).toContain("w-[min(calc(100%_-_var(--hero-edge)");
-    expect(home).toContain("max-w-2xl text-xl leading-8");
-    expect(home).toContain("max-w-xl text-sm leading-7");
+    expect(home).toContain("max-w-2xl text-lg leading-7");
+    expect(home).toContain("max-w-[19rem] text-sm leading-6");
     expect(home).toContain('data-testid="home-hero-cta-row"');
     expect(home).toContain("grid gap-2 sm:grid-cols-2");
     expect(accountPage).toContain('id="account-login"');
@@ -222,7 +222,7 @@ describe("visible site improvement affordances", () => {
     expect(cart).toContain(
       'data-cart-state={itemCount > 0 ? "filled" : "empty"}',
     );
-    expect(cart).toContain('data-testid="cart-count-empty-state"');
+    expect(cart).not.toContain('data-testid="cart-count-empty-state"');
     expect(cart).toContain("cart-count-badge");
     expect(cart).toContain('itemCount > 99 ? "99+" : itemCount');
     expect(footer).toContain('data-testid="footer-policy-heading"');
@@ -395,7 +395,7 @@ describe("visible site improvement affordances", () => {
     expect(productCard).toContain("relative aspect-[5/4] overflow-hidden");
     expect(productCard).toContain("sm:aspect-[4/5]");
     expect(productCard).toContain('data-testid="product-card-image-skeleton"');
-    expect(productCard).toContain('data-testid="product-card-badges"');
+    expect(productCard).toContain('data-testid="product-card-badge"');
     expect(productCard).toContain('data-testid="product-card-material-cues"');
     expect(productCard).toContain('data-testid="product-card-price"');
     expect(productCard).toContain("<ProductCardQuickAddButton");
