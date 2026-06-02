@@ -538,12 +538,12 @@ export default async function Home() {
             </form>
             <div
               aria-label="חיפושים מהירים"
-              className="flex flex-wrap items-center gap-2"
+              className="flex min-w-0 flex-nowrap items-center gap-2 overflow-x-auto pb-1"
               data-testid="home-quick-search-suggestions"
             >
               {quickSearchSuggestions.map((suggestion) => (
                 <Link
-                  className="hover:bg-muted hover:text-foreground inline-flex min-h-8 items-center rounded-md border border-[var(--glass-border)] bg-transparent px-3 text-xs font-medium transition-[background-color,border-color,color,outline-color,opacity] duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)] outline-none hover:border-[var(--glass-border-strong)] focus-visible:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
+                  className="hover:bg-muted hover:text-foreground inline-flex min-h-8 shrink-0 items-center rounded-md border border-[var(--glass-border)] bg-transparent px-3 text-xs font-medium transition-[background-color,border-color,color,outline-color,opacity] duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)] outline-none hover:border-[var(--glass-border-strong)] focus-visible:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
                   href={suggestion.href}
                   key={suggestion.href}
                 >

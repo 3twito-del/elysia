@@ -21,6 +21,19 @@ describe("mobile commerce density", () => {
     expect(source).not.toContain("brand-control-panel grid gap-2 p-1.5");
   });
 
+  it("keeps home quick search suggestions in one horizontal scroll row", () => {
+    const source = read("src/app/page.tsx");
+
+    expect(source).toContain('data-testid="home-quick-search-suggestions"');
+    expect(source).toContain(
+      "flex min-w-0 flex-nowrap items-center gap-2 overflow-x-auto pb-1",
+    );
+    expect(source).toContain("inline-flex min-h-8 shrink-0 items-center");
+    expect(source).not.toContain(
+      'className="flex flex-wrap items-center gap-2"',
+    );
+  });
+
   it("keeps home hero imagery independent from page scroll", () => {
     const home = read("src/app/page.tsx");
     const css = read("src/styles/globals.css");
