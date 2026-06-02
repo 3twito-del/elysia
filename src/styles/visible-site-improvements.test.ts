@@ -256,6 +256,19 @@ describe("visible site improvement affordances", () => {
     expect(favorite).toContain("aria-pressed={isSaved}");
     expect(favorite).toContain('isSaved && "fill-current"');
     expect(favorite).toContain("subscribeToGuestWishlist");
+    expect(productPage).toContain("createProductServiceHref");
+    expect(productPage).toContain("productSourceLabel");
+    expect(productPage).toContain('data-testid="product-media-caption"');
+    expect(productPage).toContain(
+      'data-testid="product-price-availability-row"',
+    );
+    expect(productPage).toContain(
+      'data-testid="product-delivery-estimate-badge"',
+    );
+    expect(productPage).toContain('data-testid="product-support-context-link"');
+    expect(productPage).toContain("<details");
+    expect(productPage).toContain("<summary");
+    expect(productPage).toContain("group-open:rotate-180");
     expect(productPage).toContain("rail.reason");
     expect(productPage).toContain("contextLabel={rail.cardContextLabel}");
     expect(productPage).toContain(

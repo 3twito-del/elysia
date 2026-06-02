@@ -1,11 +1,19 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Gem, RotateCcw, ShieldCheck } from "lucide-react";
+import {
+  ChevronDown,
+  Gem,
+  MessageCircle,
+  RotateCcw,
+  ShieldCheck,
+  Truck,
+} from "lucide-react";
 
 import { ProductAnalytics } from "./_components/product-analytics";
 import { ProductGallery } from "./_components/product-gallery";
 import { ProductPurchasePanel } from "./_components/product-purchase-panel";
+import { createProductServiceHref } from "./_components/product-purchase-utils";
 import { RecentlyViewedProducts } from "./_components/recently-viewed-products";
 import {
   getProductRecommendationRails,
@@ -15,6 +23,7 @@ import { CommerceSectionHeader } from "~/components/commerce-section-header";
 import { ProductCard } from "~/components/product-card";
 import { SiteHeader } from "~/components/site-header";
 import { RevealSection } from "~/components/reveal";
+import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { getPublicProductCommerceStatus } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
@@ -95,6 +104,23 @@ export default async function ProductPage({
     availabilityMode: product.availabilityMode,
   });
   const uniqueImages = Array.from(new Set(product.images));
+  const productSourceLabel =
+    product.source === "DROPSHIP_SHOPIFY"
+      ? "מקור: ספק מאומת"
+      : "מקור: סטודיו Elysia";
+  const productMediaCaptionParts = [
+    product.material ? `חומר: ${product.material}` : undefined,
+    product.stone ? `אבן: ${product.stone}` : undefined,
+    product.collection ? `קולקציה: ${product.collection}` : undefined,
+  ].filter((part): part is string => Boolean(part));
+  const productMediaCaption =
+    productMediaCaptionParts.length > 0
+      ? `בתמונה: ${productMediaCaptionParts.join(" · ")}.`
+      : undefined;
+  const productSupportHref = createProductServiceHref({
+    productReference: `${product.name} (${product.sku})`,
+    reason: "שאלת התאמה, מידה, חומר או מסירה לפני הזמנה.",
+  });
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -164,6 +190,14 @@ export default async function ProductPage({
       >
         <div className="order-1 min-w-0 lg:order-none">
           <ProductGallery images={uniqueImages} productName={product.name} />
+          {productMediaCaption ? (
+            <p
+              className="text-muted-foreground mt-3 text-sm leading-6"
+              data-testid="product-media-caption"
+            >
+              {productMediaCaption}
+            </p>
+          ) : null}
         </div>
 
         <aside
@@ -188,10 +222,30 @@ export default async function ProductPage({
               {product.shortDescription}
             </p>
 
-            <div className="mt-6 flex flex-wrap items-end gap-3">
-              <span className="text-2xl font-semibold tracking-normal sm:text-3xl">
-                {formatPrice(product.price)}
-              </span>
+            <div
+              className="mt-6 grid gap-3"
+              data-testid="product-price-availability-row"
+            >
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-2xl font-semibold tracking-normal sm:text-3xl">
+                  {formatPrice(product.price)}
+                </span>
+                <Badge variant="secondary">{commerceStatus.label}</Badge>
+                <Badge variant="outline">{productSourceLabel}</Badge>
+              </div>
+
+              {product.deliveryPromise ? (
+                <div
+                  className="glass-inset flex items-start gap-2 rounded-md border border-[var(--glass-border)] p-3 text-sm leading-6"
+                  data-testid="product-delivery-estimate-badge"
+                >
+                  <Truck
+                    aria-hidden="true"
+                    className="mt-0.5 size-4 shrink-0"
+                  />
+                  <span>{product.deliveryPromise}</span>
+                </div>
+              ) : null}
             </div>
 
             <ul
@@ -226,6 +280,24 @@ export default async function ProductPage({
               </TRPCReactProvider>
             </div>
 
+            <div
+              className="mt-4 flex flex-col gap-3 rounded-md border border-[var(--glass-border)] p-3 text-sm leading-6 sm:flex-row sm:items-center sm:justify-between"
+              data-testid="product-support-context-link"
+            >
+              <div className="flex min-w-0 gap-2">
+                <MessageCircle
+                  aria-hidden="true"
+                  className="mt-1 size-4 shrink-0"
+                />
+                <p className="text-muted-foreground">
+                  צריכים לוודא מידה, חומר או מסירה? נצרף את המוצר לפנייה.
+                </p>
+              </div>
+              <Button asChild className="shrink-0" size="sm" variant="outline">
+                <Link href={productSupportHref}>שאלה על המוצר</Link>
+              </Button>
+            </div>
+
             <dl
               className="border-border mt-7 grid divide-y border-y"
               data-public-floating-avoid="true"
@@ -242,22 +314,28 @@ export default async function ProductPage({
             </dl>
 
             {productCommerceDetails.length > 0 ? (
-              <dl
-                className="mt-5 grid gap-2 sm:grid-cols-2"
+              <div
+                className="mt-5 grid gap-2"
                 data-testid="product-commerce-details"
               >
                 {productCommerceDetails.map((detail) => (
-                  <div
-                    className="rounded-md border border-[var(--glass-border)] p-3"
+                  <details
+                    className="group rounded-md border border-[var(--glass-border)] p-3"
                     key={detail.label}
                   >
-                    <dt className="text-muted-foreground text-xs">
-                      {detail.label}
-                    </dt>
-                    <dd className="mt-1 text-sm leading-6">{detail.value}</dd>
-                  </div>
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none [&::-webkit-details-marker]:hidden">
+                      <span>{detail.label}</span>
+                      <ChevronDown
+                        aria-hidden="true"
+                        className="size-4 shrink-0 transition-transform group-open:rotate-180"
+                      />
+                    </summary>
+                    <p className="text-muted-foreground mt-2 text-sm leading-6">
+                      {detail.value}
+                    </p>
+                  </details>
                 ))}
-              </dl>
+              </div>
             ) : null}
           </div>
         </aside>
