@@ -176,6 +176,12 @@ describe("visible site improvement affordances", () => {
     expect(mobileNav).toContain("const serviceActions = [");
     expect(mobileNav).toContain("const catalogItems = items.slice(0, 4)");
     expect(mobileNav).toContain("const editorialItems = items");
+    expect(mobileNav).toContain("RECENTLY_VIEWED_STORAGE_KEY");
+    expect(mobileNav).toContain("useCookieConsentValue");
+    expect(mobileNav).toContain("getRecentlyViewedProductHref");
+    expect(mobileNav).toContain(
+      'data-testid="mobile-nav-recently-viewed-shortcut"',
+    );
     expect(mobileNav).toContain('aria-current={isActive ? "page" : undefined}');
     expect(mobileNav).toContain("currentPathname === item.href");
     expect(mobileNav).toContain("currentPathname.startsWith(`${item.href}/`)");
@@ -323,6 +329,9 @@ describe("visible site improvement affordances", () => {
     const checkoutForm = read(
       "src/app/checkout/_components/cart-checkout-form.tsx",
     );
+    const checkoutStatus = read(
+      "src/app/checkout/_components/checkout-status.tsx",
+    );
 
     expect(checkoutForm).toContain('data-testid="checkout-progress-steps"');
     expect(checkoutForm).toContain("checkoutProgressSteps.map");
@@ -344,6 +353,13 @@ describe("visible site improvement affordances", () => {
     expect(checkoutForm).toContain("getCheckoutFulfillmentSummaryRows");
     expect(checkoutDisplay).toContain('key: "delivery"');
     expect(checkoutDisplay).toContain('key: "supplier"');
+    expect(checkoutForm).toContain("CheckoutPaymentStatus");
+    expect(checkoutForm).toContain("checkoutPaymentStatusKind");
+    expect(checkoutStatus).toContain('data-testid="checkout-payment-status"');
+    expect(checkoutStatus).toContain("data-payment-status={status}");
+    expect(checkoutStatus).toContain('"loading"');
+    expect(checkoutStatus).toContain('"retry"');
+    expect(checkoutStatus).toContain('"unavailable"');
     expect(checkoutForm).toContain("checkoutFieldFocusOrder");
     expect(checkoutForm).toContain("function focusFirstCheckoutError()");
     expect(checkoutForm).toContain('data-testid="checkout-validation-summary"');

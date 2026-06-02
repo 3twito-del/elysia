@@ -62,7 +62,12 @@ import {
   getFriendlyCheckoutErrorMessage,
   hasCheckoutPricingReview,
 } from "./checkout-display";
-import { FieldError, ReservationCountdown } from "./checkout-status";
+import {
+  CheckoutPaymentStatus,
+  FieldError,
+  ReservationCountdown,
+  type CheckoutPaymentStatusKind,
+} from "./checkout-status";
 import { CheckoutStepBadge } from "./checkout-step-badge";
 
 const checkoutFormId = "cart-checkout-form";
@@ -364,6 +369,13 @@ export function CartCheckoutForm() {
         "לא הצלחנו לפתוח את קופת הספק כרגע. נסו שוב בעוד רגע.",
       )
     : null;
+  const checkoutPaymentStatusKind: CheckoutPaymentStatusKind = isOffline
+    ? "unavailable"
+    : createOrder.isPending || createShopifyCheckout.isPending
+      ? "loading"
+      : createOrderErrorMessage || createShopifyCheckoutErrorMessage
+        ? "retry"
+        : "ready";
   const checkoutDisplayGroups = [
     {
       description: "פריטים שממשיכים לקופה המקומית באתר.",
@@ -1231,6 +1243,9 @@ export function CartCheckoutForm() {
                     {checkoutPaymentConfidenceCopy}
                   </p>
                 </div>
+              )}
+              {(hasOwnItems || hasDropshipItems) && (
+                <CheckoutPaymentStatus status={checkoutPaymentStatusKind} />
               )}
               {hasDropshipItems ? (
                 <div className="glass-inset rounded-md border p-3 text-sm">

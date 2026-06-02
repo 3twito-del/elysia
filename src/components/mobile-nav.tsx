@@ -7,6 +7,7 @@ import {
   CircleHelp,
   Gift,
   Headphones,
+  History,
   Menu,
   Ruler,
   Search,
@@ -26,6 +27,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "~/components/ui/sheet";
+import {
+  COOKIE_CONSENT_EVENT,
+  RECENTLY_VIEWED_STORAGE_KEY,
+} from "~/lib/cookie-consent";
+import { useCookieConsentValue } from "~/lib/use-cookie-consent";
 import { cn } from "~/lib/utils";
 
 export type HeaderNavItem = {
@@ -84,6 +90,10 @@ export function MobileNav({
   onOpenCategoryPrefetch,
 }: MobileNavProps) {
   const [open, setOpen] = useState(false);
+  const consentValue = useCookieConsentValue();
+  const [recentlyViewedProductHref, setRecentlyViewedProductHref] = useState<
+    string | null
+  >(null);
   const closeNav = () => setOpen(false);
   const catalogItems = items.slice(0, 4);
   const editorialItems = items
@@ -97,6 +107,29 @@ export function MobileNav({
       onOpenCategoryPrefetch?.();
     }
   }, [onOpenCategoryPrefetch, open]);
+
+  useEffect(() => {
+    const syncRecentlyViewedShortcut = () => {
+      if (consentValue !== "all") {
+        setRecentlyViewedProductHref(null);
+        return;
+      }
+
+      setRecentlyViewedProductHref(getRecentlyViewedProductHref());
+    };
+
+    syncRecentlyViewedShortcut();
+    window.addEventListener("storage", syncRecentlyViewedShortcut);
+    window.addEventListener(COOKIE_CONSENT_EVENT, syncRecentlyViewedShortcut);
+
+    return () => {
+      window.removeEventListener("storage", syncRecentlyViewedShortcut);
+      window.removeEventListener(
+        COOKIE_CONSENT_EVENT,
+        syncRecentlyViewedShortcut,
+      );
+    };
+  }, [consentValue]);
 
   return (
     <Sheet
@@ -232,6 +265,31 @@ export function MobileNav({
                 </Link>
               );
             })}
+            {recentlyViewedProductHref ? (
+              <Link
+                className="mobile-nav-feature-link mobile-nav-animated-item group/nav-feature grid min-h-[3.75rem] grid-cols-[auto_1fr_auto] items-center gap-2.5 border-b border-[var(--glass-border)] px-1 py-2 outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
+                data-testid="mobile-nav-recently-viewed-shortcut"
+                href={recentlyViewedProductHref}
+                onClick={closeNav}
+                style={getMobileNavStaggerStyle(10)}
+              >
+                <span className="mobile-nav-feature-icon grid size-8 place-items-center rounded-md border border-[var(--glass-border)]">
+                  <History aria-hidden="true" className="size-4" />
+                </span>
+                <span className="grid min-w-0 gap-0.5">
+                  <span className="truncate text-[0.95rem] font-medium">
+                    נצפה לאחרונה
+                  </span>
+                  <span className="text-muted-foreground truncate text-xs">
+                    חזרה מהירה למוצר האחרון שפתחתם
+                  </span>
+                </span>
+                <ArrowLeft
+                  aria-hidden="true"
+                  className="mobile-nav-feature-arrow size-4"
+                />
+              </Link>
+            ) : null}
           </nav>
 
           <Separator
@@ -346,4 +404,20 @@ export function MobileNav({
       </SheetContent>
     </Sheet>
   );
+}
+
+function getRecentlyViewedProductHref() {
+  try {
+    const parsed: unknown = JSON.parse(
+      window.localStorage.getItem(RECENTLY_VIEWED_STORAGE_KEY) ?? "[]",
+    );
+
+    const firstSlug = Array.isArray(parsed)
+      ? parsed.find((value): value is string => typeof value === "string")
+      : undefined;
+
+    return firstSlug ? `/product/${firstSlug}` : null;
+  } catch {
+    return null;
+  }
 }
