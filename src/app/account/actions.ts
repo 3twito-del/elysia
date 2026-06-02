@@ -4,6 +4,7 @@ import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
+import { z } from "zod";
 
 import {
   requestCustomerOtp,
@@ -43,6 +44,16 @@ export type AccountActionState = {
   ok?: boolean;
   message?: string;
 };
+
+export type GuestWishlistMergeState = AccountActionState & {
+  duplicateCount?: number;
+  mergedCount?: number;
+  requestedCount?: number;
+};
+
+const guestWishlistMergeInputSchema = z
+  .array(z.string().trim().min(1).max(120))
+  .max(100);
 
 export async function requestCustomerOtpAction(
   _state: CustomerOtpState,
@@ -390,6 +401,118 @@ export async function removeWishlistItemAction(formData: FormData) {
   });
 
   revalidatePath("/account");
+}
+
+export async function mergeGuestWishlistAction(
+  productSlugs: string[],
+): Promise<GuestWishlistMergeState> {
+  const parsed = guestWishlistMergeInputSchema.safeParse(productSlugs);
+
+  if (!parsed.success) {
+    return {
+      ok: false,
+      message: "לא ניתן לסנכרן את המועדפים המקומיים כרגע.",
+    };
+  }
+
+  const session = await auth();
+
+  if (!session?.user?.id || session.user.adminUserId) {
+    return {
+      ok: false,
+      message: "יש להתחבר לאזור הלקוח כדי לסנכרן מועדפים.",
+    };
+  }
+
+  const uniqueSlugs = Array.from(new Set(parsed.data));
+
+  if (uniqueSlugs.length === 0) {
+    return { mergedCount: 0, ok: true, requestedCount: 0 };
+  }
+
+  const customer = await db.customer.findUnique({
+    where: { userId: session.user.id },
+    include: {
+      wishlist: {
+        include: {
+          items: true,
+        },
+      },
+    },
+  });
+
+  if (!customer) {
+    return {
+      ok: false,
+      message: "לא נמצא פרופיל לקוח פעיל.",
+    };
+  }
+
+  const [wishlist, products] = await Promise.all([
+    db.wishlist.upsert({
+      where: { customerId: customer.id },
+      update: {},
+      create: { customerId: customer.id },
+    }),
+    db.product.findMany({
+      where: {
+        slug: { in: uniqueSlugs },
+        status: "ACTIVE",
+      },
+      include: {
+        variants: {
+          orderBy: { isDefault: "desc" },
+          take: 1,
+        },
+      },
+    }),
+  ]);
+  const existingVariantIds = new Set(
+    customer.wishlist?.items.map((item) => item.variantId) ?? [],
+  );
+  const variantIds = Array.from(
+    new Set(
+      products
+        .map((product) => product.variants[0]?.id)
+        .filter((variantId): variantId is string => Boolean(variantId)),
+    ),
+  );
+  const newVariantIds = variantIds.filter(
+    (variantId) => !existingVariantIds.has(variantId),
+  );
+
+  if (newVariantIds.length > 0) {
+    await db.$transaction(
+      newVariantIds.map((variantId) =>
+        db.wishlistItem.upsert({
+          where: {
+            wishlistId_variantId: {
+              wishlistId: wishlist.id,
+              variantId,
+            },
+          },
+          update: {},
+          create: {
+            wishlistId: wishlist.id,
+            variantId,
+          },
+        }),
+      ),
+    );
+
+    revalidatePath("/account");
+  }
+
+  return {
+    duplicateCount: Math.max(variantIds.length - newVariantIds.length, 0),
+    mergedCount: newVariantIds.length,
+    ok: true,
+    requestedCount: uniqueSlugs.length,
+    message:
+      newVariantIds.length > 0
+        ? `${newVariantIds.length} פריטים מהמועדפים המקומיים נוספו לחשבון.`
+        : "המועדפים המקומיים כבר קיימים בחשבון.",
+  };
 }
 
 export async function requestReturnAction(

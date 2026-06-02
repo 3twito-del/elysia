@@ -141,6 +141,13 @@ export const smokeChecks = [
     includes: ['"ok":false', '"error":"Invalid request body."'],
   },
   {
+    path: "/api/cart/items",
+    method: "POST",
+    body: "{}",
+    statuses: [400],
+    includes: ['"ok":false'],
+  },
+  {
     path: "/api/webhooks/cardcom",
     method: "POST",
     body: "{}",

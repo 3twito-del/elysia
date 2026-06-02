@@ -10,7 +10,10 @@ import type {
   CatalogProduct,
   CatalogProductVariant,
 } from "~/server/services/catalog-types";
-import { normalizeCouponCode } from "~/server/services/coupons";
+import {
+  getPublicCouponStatusMessage,
+  normalizeCouponCode,
+} from "~/server/services/coupons";
 import { calculateOrderTotal } from "~/server/services/pricing";
 import type { CartSummary } from "~/server/services/cart";
 
@@ -275,6 +278,10 @@ function mapFixtureCartSummary(
 
   return {
     couponCode: cart.couponCode,
+    couponMessage: cart.couponCode
+      ? getPublicCouponStatusMessage("unknown")
+      : undefined,
+    couponStatus: cart.couponCode ? "unknown" : undefined,
     couponValid: cart.couponCode ? false : undefined,
     currency: cart.currency,
     expiresAt: cart.expiresAt,

@@ -70,6 +70,8 @@ describe("cart service", () => {
 
     expect(summary).toMatchObject({
       couponCode: "SAVE10",
+      couponMessage: "קוד ההטבה נקלט והסכום עודכן בסיכום.",
+      couponStatus: "success",
       couponValid: true,
       groups: {
         dropshipShopify: {
@@ -172,6 +174,8 @@ describe("cart service", () => {
     });
     expect(summary).toMatchObject({
       couponCode: "SAVE20",
+      couponMessage: "קוד ההטבה נקלט והסכום עודכן בסיכום.",
+      couponStatus: "success",
       couponValid: true,
       giftMessage: "Happy birthday",
       giftWrap: true,
@@ -180,6 +184,41 @@ describe("cart service", () => {
         shipping: 0,
         subtotal: 500,
         total: 480,
+      },
+    });
+  });
+
+  it("keeps expired coupon status visible without applying a discount", async () => {
+    dbMocks.cartFindFirst.mockResolvedValueOnce(
+      makeCart({
+        couponCode: "OLD",
+        items: [makeCartItem({ quantity: 1, unitPrice: 500 })],
+      }),
+    );
+    dbMocks.couponFindUnique.mockResolvedValueOnce({
+      amountOff: null,
+      code: "OLD",
+      endsAt: new Date("2026-01-01T00:00:00.000Z"),
+      id: "coupon_1",
+      isActive: true,
+      maxUses: null,
+      percentOff: 10,
+      startsAt: new Date("2025-01-01T00:00:00.000Z"),
+      usedCount: 0,
+    });
+
+    const summary = await getCartBySession("session-key-123456789");
+
+    expect(summary).toMatchObject({
+      couponCode: "OLD",
+      couponMessage: "קוד ההטבה פג תוקף ואינו זמין להזמנה הזו.",
+      couponStatus: "expired",
+      couponValid: false,
+      totals: {
+        discount: 0,
+        shipping: 29,
+        subtotal: 500,
+        total: 529,
       },
     });
   });

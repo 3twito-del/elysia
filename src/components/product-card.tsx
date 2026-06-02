@@ -1,13 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { Badge } from "~/components/ui/badge";
 import { Card, CardContent } from "~/components/ui/card";
 import { ProductCardFavoriteButton } from "~/components/product-card-favorite-button";
+import { ProductCardQuickAddButton } from "~/components/product-card-quick-add-button";
 import { getPublicProductCommerceStatus } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
 import { cn } from "~/lib/utils";
-import type { CatalogProduct } from "~/server/services/catalog";
+import { isPublicSellableQuantityLowStock } from "~/server/services/inventory";
+import type {
+  CatalogProduct,
+  CatalogProductVariant,
+} from "~/server/services/catalog";
 
 type ProductCardProps = {
   contextLabel?: string;
@@ -56,6 +61,18 @@ export function ProductCard({
     product.availabilityMode === "READY_TO_ORDER" && onlineStockQuantity <= 0;
   const href = createProductHref(product.slug, searchContext);
   const imageObjectPosition = getProductCardImageObjectPosition(product);
+  const secondaryImage = getProductCardSecondaryImage(product);
+  const sale = getProductCardSale(product);
+  const lowStock = isProductCardLowStock({
+    availableQuantity: onlineStockQuantity,
+    product,
+  });
+  const productCardBadges = getProductCardBadges({
+    isUnavailable,
+    lowStock,
+    product,
+    sale,
+  });
   const productDetails = [product.material, product.stone].filter(
     (detail): detail is string => Boolean(detail),
   );
@@ -70,6 +87,12 @@ export function ProductCard({
   const primaryCommerceLabel = isAvailable
     ? formatPrice(product.price)
     : "לייעוץ אישי";
+  const materialBadgeLabel = getProductCardMaterialBadgeLabel(product);
+  const swatches = getProductCardSwatches(product);
+  const quickAddVariant = getProductCardQuickAddVariant({
+    availableQuantity: onlineStockQuantity,
+    product,
+  });
 
   return (
     <Card
@@ -84,7 +107,7 @@ export function ProductCard({
     >
       <Link
         aria-label={`צפייה בתכשיט ${product.name}`}
-        className="group/product-link block h-full min-w-0 focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
+        className="group/product-link block min-w-0 focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
         href={href}
         prefetch={false}
       >
@@ -106,12 +129,26 @@ export function ProductCard({
               src={product.image}
               style={{ objectPosition: imageObjectPosition }}
             />
+            {secondaryImage ? (
+              <Image
+                alt=""
+                aria-hidden="true"
+                className="media-color product-card-hover-image object-cover opacity-0 transition duration-[520ms] ease-[var(--ease-motion-standard)] group-focus-within/card:opacity-100 group-hover/card:opacity-100"
+                fill
+                sizes={imageSizes}
+                src={secondaryImage}
+                style={{ objectPosition: imageObjectPosition }}
+              />
+            ) : null}
           </StaticKineticImageFrame>
-          {isUnavailable ? (
-            <div className="absolute top-2.5 left-2.5 flex items-start gap-2">
-              <Badge className="product-card-status-badge" variant="outline">
-                לייעוץ אישי
-              </Badge>
+          {productCardBadges.length > 0 ? (
+            <div
+              className="product-card-badge-stack absolute top-2.5 left-2.5 z-10 flex max-w-[calc(100%-4.75rem)] flex-col items-start gap-1.5"
+              data-testid="product-card-badges"
+            >
+              {productCardBadges.map((badge) => (
+                <ProductCardBadge badge={badge} key={badge.key} />
+              ))}
             </div>
           ) : null}
         </div>
@@ -141,17 +178,67 @@ export function ProductCard({
               >
                 {productQuickFactsLabel}
               </div>
+              {materialBadgeLabel || swatches.length > 0 ? (
+                <div
+                  className="product-card-material-cues flex min-h-5 min-w-0 flex-wrap items-center gap-1.5"
+                  data-testid="product-card-material-cues"
+                >
+                  {materialBadgeLabel ? (
+                    <span
+                      className="product-card-material-badge max-w-full truncate rounded-full border border-[var(--glass-border)] px-2 py-0.5 text-[0.68rem] leading-4 font-medium"
+                      data-testid="product-card-material-badge"
+                    >
+                      {materialBadgeLabel}
+                    </span>
+                  ) : null}
+                  {swatches.length > 0 ? (
+                    <span
+                      aria-label="גווני חומר זמינים"
+                      className="inline-flex items-center gap-1"
+                      data-testid="product-card-swatches"
+                    >
+                      {swatches.map((swatch) => (
+                        <span
+                          aria-label={swatch.label}
+                          className="product-card-swatch size-3 rounded-full border border-black/10"
+                          data-material-swatch="true"
+                          key={swatch.key}
+                          role="img"
+                          style={swatch.style}
+                          title={swatch.label}
+                        />
+                      ))}
+                    </span>
+                  ) : null}
+                </div>
+              ) : null}
             </div>
           </div>
 
           <div className="mt-auto pt-4">
             <span
+              data-sale={sale ? "true" : "false"}
+              data-testid="product-card-price"
               className={cn(
-                "product-card-commerce block truncate text-[0.94rem] leading-6 font-medium sm:text-base",
+                "product-card-commerce block text-[0.94rem] leading-6 font-medium sm:text-base",
                 isAvailable ? "text-foreground" : "text-muted-foreground",
               )}
             >
-              {primaryCommerceLabel}
+              {isAvailable ? (
+                <span className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                  <span className="truncate">{formatPrice(product.price)}</span>
+                  {sale ? (
+                    <span
+                      aria-label={`מחיר קודם ${formatPrice(sale.compareAt)}`}
+                      className="text-muted-foreground text-xs leading-5 font-normal line-through decoration-[var(--glass-border-strong)]"
+                    >
+                      {formatPrice(sale.compareAt)}
+                    </span>
+                  ) : null}
+                </span>
+              ) : (
+                primaryCommerceLabel
+              )}
             </span>
             <span className="text-muted-foreground product-card-cta group-hover/product-link:border-foreground group-hover/product-link:text-foreground mt-2 inline-flex w-fit border-b border-[var(--glass-border)] pb-0.5 text-xs font-medium transition-colors">
               לפרטי התכשיט
@@ -159,6 +246,14 @@ export function ProductCard({
           </div>
         </CardContent>
       </Link>
+      {quickAddVariant ? (
+        <div className="mt-3" data-public-floating-avoid="true">
+          <ProductCardQuickAddButton
+            productName={product.name}
+            variantSku={quickAddVariant.sku}
+          />
+        </div>
+      ) : null}
       <div className="product-card-favorite absolute top-2.5 right-2.5 z-10 rounded-md">
         <ProductCardFavoriteButton
           productName={product.name}
@@ -166,6 +261,23 @@ export function ProductCard({
         />
       </div>
     </Card>
+  );
+}
+
+type ProductCardBadgeModel = {
+  key: "low-stock" | "sale" | "source" | "unavailable";
+  label: string;
+};
+
+function ProductCardBadge({ badge }: { badge: ProductCardBadgeModel }) {
+  return (
+    <Badge
+      className="product-card-status-badge max-w-full truncate"
+      data-product-card-badge={badge.key}
+      variant="outline"
+    >
+      {badge.label}
+    </Badge>
   );
 }
 
@@ -189,6 +301,146 @@ function getProductCardImageObjectPosition(product: CatalogProduct) {
   );
 
   return focusRule?.position ?? DEFAULT_PRODUCT_CARD_IMAGE_POSITION;
+}
+
+function getProductCardSecondaryImage(product: CatalogProduct) {
+  return product.images.find((image) => image !== product.image);
+}
+
+function getProductCardSale(product: CatalogProduct) {
+  if (!product.compareAt || product.compareAt <= product.price) return null;
+
+  return { compareAt: product.compareAt };
+}
+
+function isProductCardLowStock(input: {
+  availableQuantity: number;
+  product: CatalogProduct;
+}) {
+  return (
+    input.product.availabilityMode === "READY_TO_ORDER" &&
+    isPublicSellableQuantityLowStock(input.availableQuantity)
+  );
+}
+
+function getProductCardBadges(input: {
+  isUnavailable: boolean;
+  lowStock: boolean;
+  product: CatalogProduct;
+  sale: ReturnType<typeof getProductCardSale>;
+}) {
+  const badges: ProductCardBadgeModel[] = [];
+
+  if (input.isUnavailable) {
+    badges.push({ key: "unavailable", label: "לייעוץ אישי" });
+  }
+
+  if (input.sale) {
+    badges.push({ key: "sale", label: "הנחה" });
+  }
+
+  if (input.lowStock) {
+    badges.push({ key: "low-stock", label: "מלאי מוגבל" });
+  }
+
+  if (input.product.source === "DROPSHIP_SHOPIFY") {
+    badges.push({ key: "source", label: "ספק מאומת" });
+  }
+
+  return badges;
+}
+
+function getProductCardMaterialBadgeLabel(product: CatalogProduct) {
+  const normalizedStone = product.stone?.toLowerCase() ?? "";
+
+  if (normalizedStone.includes("פנינ") || normalizedStone.includes("pearl")) {
+    return product.stone;
+  }
+
+  return product.material || product.stone;
+}
+
+function getProductCardSwatches(product: CatalogProduct) {
+  const materialSwatches = product.metalColors.map((color) => ({
+    key: `metal-${color}`,
+    label: `גוון מתכת: ${color}`,
+    style: getProductCardSwatchStyle(color),
+  }));
+
+  if (materialSwatches.length > 0) return materialSwatches.slice(0, 3);
+
+  return product.stone
+    ? [
+        {
+          key: `stone-${product.stone}`,
+          label: `אבן: ${product.stone}`,
+          style: getProductCardSwatchStyle(product.stone),
+        },
+      ]
+    : [];
+}
+
+function getProductCardSwatchStyle(value: string): CSSProperties {
+  const normalized = value.toLowerCase();
+
+  if (
+    normalized.includes("ורוד") ||
+    normalized.includes("rose") ||
+    normalized.includes("pink")
+  ) {
+    return {
+      background:
+        "linear-gradient(135deg, #f7d7c7 0%, #c98e79 48%, #fff2eb 100%)",
+    };
+  }
+
+  if (
+    normalized.includes("לבן") ||
+    normalized.includes("כסף") ||
+    normalized.includes("silver") ||
+    normalized.includes("white")
+  ) {
+    return {
+      background:
+        "linear-gradient(135deg, #ffffff 0%, #d7d9dd 48%, #f7f7f4 100%)",
+    };
+  }
+
+  if (
+    normalized.includes("פנינ") ||
+    normalized.includes("pearl") ||
+    normalized.includes("diamond") ||
+    normalized.includes("יהלום")
+  ) {
+    return {
+      background:
+        "linear-gradient(135deg, #ffffff 0%, #e5e8e8 52%, #effcfb 100%)",
+    };
+  }
+
+  return {
+    background:
+      "linear-gradient(135deg, #fff0b8 0%, #d4a63d 48%, #fff7d9 100%)",
+  };
+}
+
+function getProductCardQuickAddVariant(input: {
+  availableQuantity: number;
+  product: CatalogProduct;
+}): CatalogProductVariant | null {
+  const [variant] = input.product.variants;
+
+  if (!variant) return null;
+  if (input.product.source !== "OWN") return null;
+  if (input.product.availabilityMode !== "READY_TO_ORDER") return null;
+  if (input.availableQuantity <= 0 || variant.availableQuantity <= 0) {
+    return null;
+  }
+  if (input.product.variants.length !== 1) return null;
+  if (input.product.sizes.length > 1) return null;
+  if (input.product.metalColors.length > 1) return null;
+
+  return variant;
 }
 
 function createProductHref(

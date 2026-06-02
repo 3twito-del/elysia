@@ -14,6 +14,15 @@ export function isInventoryLowStock(input: {
   return getSellableQuantity(input) <= input.safetyStock;
 }
 
+export const PUBLIC_LOW_STOCK_MAX_SELLABLE_QUANTITY = 2;
+
+export function isPublicSellableQuantityLowStock(availableQuantity: number) {
+  return (
+    availableQuantity > 0 &&
+    availableQuantity <= PUBLIC_LOW_STOCK_MAX_SELLABLE_QUANTITY
+  );
+}
+
 export function getInventoryLowStockThresholdCopy(input: {
   safetyStock: number;
 }) {

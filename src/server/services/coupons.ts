@@ -7,6 +7,21 @@ import type { z } from "zod";
 type CouponValue = z.infer<typeof couponSchema>;
 type CouponClient = Pick<Prisma.TransactionClient, "coupon">;
 
+export type CouponEvaluationStatus =
+  | "expired"
+  | "ineligible"
+  | "none"
+  | "success"
+  | "unknown";
+
+export type CouponEvaluation = {
+  code: string | null;
+  id?: string;
+  message?: string;
+  status: CouponEvaluationStatus;
+  value?: CouponValue;
+};
+
 export function normalizeCouponCode(code?: string | null) {
   const normalized = code?.trim().toUpperCase();
 
@@ -31,6 +46,51 @@ export function isCouponUsable(input: {
   return true;
 }
 
+export async function evaluateCouponCode(
+  code?: string | null,
+  client: CouponClient = db,
+): Promise<CouponEvaluation> {
+  const normalized = normalizeCouponCode(code);
+
+  if (!normalized) {
+    return { code: null, status: "none" };
+  }
+
+  const coupon = await client.coupon.findUnique({
+    where: { code: normalized },
+  });
+
+  if (!coupon) {
+    return {
+      code: normalized,
+      message: "קוד ההטבה לא נמצא. בדקו את האיות או נסו קוד אחר.",
+      status: "unknown",
+    };
+  }
+
+  const status = getCouponEvaluationStatus(coupon);
+
+  if (status !== "success") {
+    return {
+      code: normalized,
+      id: coupon.id,
+      message: getPublicCouponStatusMessage(status),
+      status,
+    };
+  }
+
+  return {
+    code: coupon.code,
+    id: coupon.id,
+    message: getPublicCouponStatusMessage("success"),
+    status,
+    value: {
+      percentOff: coupon.percentOff ?? undefined,
+      amountOff: coupon.amountOff ? Number(coupon.amountOff) : undefined,
+    },
+  };
+}
+
 export async function getActiveCouponValue(
   code?: string | null,
   client: CouponClient = db,
@@ -39,22 +99,52 @@ export async function getActiveCouponValue(
   code: string;
   value: CouponValue;
 } | null> {
-  const normalized = normalizeCouponCode(code);
+  const evaluation = await evaluateCouponCode(code, client);
 
-  if (!normalized) return null;
-
-  const coupon = await client.coupon.findUnique({
-    where: { code: normalized },
-  });
-
-  if (!coupon || !isCouponUsable(coupon)) return null;
+  if (evaluation.status !== "success" || !evaluation.value || !evaluation.id) {
+    return null;
+  }
 
   return {
-    id: coupon.id,
-    code: coupon.code,
-    value: {
-      percentOff: coupon.percentOff ?? undefined,
-      amountOff: coupon.amountOff ? Number(coupon.amountOff) : undefined,
-    },
+    code: evaluation.code ?? "",
+    id: evaluation.id,
+    value: evaluation.value,
   };
+}
+
+export function getPublicCouponStatusMessage(
+  status: Exclude<CouponEvaluationStatus, "none">,
+) {
+  if (status === "success") {
+    return "קוד ההטבה נקלט והסכום עודכן בסיכום.";
+  }
+
+  if (status === "expired") {
+    return "קוד ההטבה פג תוקף ואינו זמין להזמנה הזו.";
+  }
+
+  if (status === "unknown") {
+    return "קוד ההטבה לא נמצא. בדקו את האיות או נסו קוד אחר.";
+  }
+
+  return "קוד ההטבה אינו מתאים להזמנה הזו.";
+}
+
+function getCouponEvaluationStatus(input: {
+  endsAt: Date | null;
+  isActive: boolean;
+  maxUses: number | null;
+  startsAt: Date;
+  usedCount: number;
+}): Exclude<CouponEvaluationStatus, "none" | "unknown"> {
+  const now = new Date();
+
+  if (input.endsAt && input.endsAt <= now) return "expired";
+  if (!input.isActive) return "ineligible";
+  if (input.startsAt > now) return "ineligible";
+  if (input.maxUses !== null && input.usedCount >= input.maxUses) {
+    return "ineligible";
+  }
+
+  return "success";
 }

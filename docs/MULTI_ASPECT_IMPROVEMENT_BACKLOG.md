@@ -2,7 +2,7 @@
 
 Status: active cross-product improvement tracker.
 
-Last reviewed: 2026-06-01.
+Last reviewed: 2026-06-02.
 
 This document tracks practical Elysia improvements across product, commerce,
 operations, reliability, accessibility, privacy, security, QA, and release
@@ -71,23 +71,31 @@ Deep review basis: `docs/FULL_PRODUCT_BENCHMARK.md`,
 `scripts/qa-site-audit.ts`, `docs/qa/*`, `src/app`, `src/components`,
 `src/lib`, and `src/server`.
 
-Completed items are intentionally removed from this active backlog. The
-following active items are visible user-facing site improvements. For every item,
-`Target Surface` states where a shopper sees the work, and `Improvement` states
-how the change becomes visible in the interface. Public-facing implementation
-work must still follow `docs/PUBLIC_CHANGE_GATE.md` before product code changes.
+Completed items are intentionally removed from this active backlog.
 
-| ID    | Aspect                | Status         | Priority | Effort | Source/Evidence                                                                         | Target Surface                  | Improvement                                                                     | Acceptance Checks                                                           | Verification                    |
-| ----- | --------------------- | -------------- | -------- | ------ | --------------------------------------------------------------------------------------- | ------------------------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------- |
-| I-328 | Commerce and Checkout | Actionable Now | P2       | S      | `src/components/product-card.tsx`                                                       | Product cards in category grids | Visible as sale, source, and availability badges with a clear hierarchy.        | Badges do not cover product faces, title, or price.                         | Product-card overlay test.      |
-| I-332 | Commerce and Checkout | Actionable Now | P2       | M      | `src/app/category/[slug]/page.tsx`, `src/components/product-card.tsx`                   | Product material cues           | Visible as small material or color swatches on product cards where data exists. | Swatches are labeled for screen readers and do not replace product names.   | Accessibility and visual smoke. |
-| I-361 | Commerce and Checkout | Actionable Now | P2       | M      | `src/components/product-card.tsx`                                                       | Product card hover media        | Visible as a secondary image on hover or focus where alternate media exists.    | Motion is disabled or simplified for reduced-motion users.                  | Card interaction smoke.         |
-| I-362 | Commerce and Checkout | Actionable Now | P1       | M      | `src/components/product-card.tsx`, `src/server/services/cart.ts`                        | Product card quick add          | Visible as a compact quick-add button for simple in-stock products.             | Button is hidden when variant choice is required.                           | Cart and card tests.            |
-| I-364 | Commerce and Checkout | Actionable Now | P2       | S      | `src/components/product-card.tsx`, `src/lib/format.ts`                                  | Product card sale price         | Visible as current price and previous price styling when sale data exists.      | Sale price remains readable and previous price is not mistaken for current. | Product-card test.              |
-| I-365 | Public UX and Brand   | Actionable Now | P2       | S      | `src/components/product-card.tsx`                                                       | Product card material badge     | Visible as a small material badge such as gold, silver, or pearl.               | Badge is optional and never replaces title or price.                        | Visual source test.             |
-| I-367 | Commerce and Checkout | Actionable Now | P2       | S      | `src/components/product-card.tsx`, `src/server/services/inventory.ts`                   | Product stock cue               | Visible as a restrained low-stock badge only when inventory is genuinely low.   | Badge does not create false urgency.                                        | Inventory display test.         |
-| I-374 | Commerce and Checkout | Actionable Now | P1       | S      | `src/app/checkout/_components/cart-checkout-form.tsx`, `src/server/services/coupons.ts` | Coupon field                    | Visible as success, expired, ineligible, or unknown coupon messages.            | Coupon messages are specific and translated.                                | Coupon tests.                   |
-| I-382 | Commerce and Checkout | Actionable Now | P2       | M      | `src/app/account/page.tsx`, `src/lib/guest-wishlist.ts`                                 | Wishlist merge notice           | Visible as a short notice after sign-in when guest wishlist items are merged.   | Notice names count merged and avoids duplicate product cards.               | Wishlist merge test.            |
+No active actionable items remain in this review batch.
+
+The previous active items were completed and removed after focused
+implementation and verification for product cards, coupon messaging, and guest
+wishlist merge behavior. Evidence was recorded through:
+
+- `pnpm test -- src/styles/product-card-overlays.test.ts src/app/api/cart/items/route.test.ts src/server/services/inventory.test.ts src/styles/public-palette.test.ts src/styles/visible-site-improvements.test.ts`
+- `pnpm test -- src/server/services/coupons.test.ts src/server/services/cart.test.ts src/styles/visible-site-improvements.test.ts`
+- `pnpm test -- src/app/account/actions.test.ts src/styles/guest-wishlist-saving.test.ts src/styles/account-wishlist-decision-support.test.ts`
+- `pnpm typecheck`
+- `pnpm qa:routes`
+- `pnpm exec tsx scripts/qa-route-inventory.ts --check --all-products --out-dir artifacts/qa/2026-06-02-route-evidence-ledger`
+- `pnpm check`
+- `pnpm build`
+- `pnpm format:check`
+- `SMOKE_BASE_URL=http://localhost:3000 pnpm smoke` against fixture-backed local server
+- `pnpm exec playwright test tests/e2e/critical-flows.spec.ts --project=chromium-desktop --grep "adds a product to cart and shows it in checkout"`
+- `pnpm exec playwright test tests/e2e/critical-flows.spec.ts --project=chromium-desktop --grep "shows supplier-only checkout without local order fields|shows recoverable no-results and empty checkout states"`
+- `pnpm exec playwright test tests/e2e/critical-flows.spec.ts --project=chromium-desktop --grep "renders empty checkout fallback without JavaScript|renders empty checkout content in the initial HTML"`
+
+`pnpm e2e` was also attempted against a local dev server and timed out after
+10 minutes with broad existing environment-sensitive failures; the focused
+checkout/cart e2e paths above passed.
 
 ## Candidate Improvements
 

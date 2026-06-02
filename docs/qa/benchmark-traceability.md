@@ -26,6 +26,11 @@ requiring every ID in the range to remain present. When that batch is retired,
 update `src/styles/qa-benchmark-traceability.test.ts` so those IDs become
 explicitly historical before adding the next active rotation.
 
+If a review pass completes every actionable item in the active table, the
+backlog may explicitly state that no active actionable items remain. In that
+case the traceability check allows an empty active table while blocked and
+deferred items remain tracked in their own section.
+
 ## Check
 
 Run:

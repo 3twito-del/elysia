@@ -17,8 +17,10 @@ const approvedBrandTokens = new Set([
   "--brand-aqua-ring",
   "--brand-accent",
 ]);
-const approvedWarmMaterialPath =
-  "src/app/product/[slug]/_components/product-purchase-panel.tsx";
+const approvedWarmMaterialPaths = new Set([
+  "src/app/product/[slug]/_components/product-purchase-panel.tsx",
+  "src/components/product-card.tsx",
+]);
 
 describe("public palette guardrails", () => {
   it("keeps the public brand palette limited to cool commerce tokens", () => {
@@ -39,7 +41,7 @@ describe("public palette guardrails", () => {
         const relativePath = toPosixPath(path.relative(root, file));
         const source = readFileSync(file, "utf8");
 
-        if (relativePath === approvedWarmMaterialPath) {
+        if (approvedWarmMaterialPaths.has(relativePath)) {
           return source.includes('data-material-swatch="true"')
             ? []
             : [`${relativePath} is missing documented material swatches`];

@@ -395,6 +395,11 @@ describe("visible site improvement affordances", () => {
     expect(productCard).toContain("relative aspect-[5/4] overflow-hidden");
     expect(productCard).toContain("sm:aspect-[4/5]");
     expect(productCard).toContain('data-testid="product-card-image-skeleton"');
+    expect(productCard).toContain('data-testid="product-card-badges"');
+    expect(productCard).toContain('data-testid="product-card-material-cues"');
+    expect(productCard).toContain('data-testid="product-card-price"');
+    expect(productCard).toContain("<ProductCardQuickAddButton");
+    expect(productCard).toContain("product-card-hover-image");
     expect(productCard).toContain("ui-equal-item product-card-shell");
     expect(productCard).toContain("ui-text-slot product-card-title");
     expect(productCard).toContain('dir="auto"');
@@ -446,6 +451,9 @@ describe("visible site improvement affordances", () => {
     expect(checkoutForm).toContain("checkoutFieldFocusOrder");
     expect(checkoutForm).toContain("function focusFirstCheckoutError()");
     expect(checkoutForm).toContain('data-testid="checkout-validation-summary"');
+    expect(checkoutForm).toContain("couponFeedbackMessage");
+    expect(checkoutForm).toContain('testId="checkout-coupon-status"');
+    expect(checkoutForm).toContain('id="checkout-coupon-status"');
     expect(checkoutForm).toContain("<FieldError");
     expect(checkoutForm).toContain('data-testid="mobile-checkout-summary"');
     expect(checkoutForm).toContain('data-public-floating-bar="true"');

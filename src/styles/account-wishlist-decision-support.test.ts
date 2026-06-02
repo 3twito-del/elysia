@@ -17,7 +17,11 @@ describe("account wishlist decision support", () => {
     expect(accountPage).toContain('href="/size-guide"');
     expect(accountPage).toContain("wishlistDecisionSupport.categoryHref");
     expect(accountPage).toContain("wishlistDecisionSupport.serviceHref");
+    expect(accountPage).toContain("<GuestWishlistMergeNotice />");
     expect(accountPage).toContain("{wishlistItems.map");
+    expect(indexOf(accountPage, "<GuestWishlistMergeNotice />")).toBeLessThan(
+      indexOf(accountPage, "{wishlistItems.map"),
+    );
     expect(indexOf(accountPage, "wishlistDecisionSupport ?")).toBeLessThan(
       indexOf(accountPage, "{wishlistItems.map"),
     );

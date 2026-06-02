@@ -82,6 +82,21 @@ export function removeGuestWishlistItem(productSlug: string) {
   return slugs;
 }
 
+export function clearGuestWishlistItems() {
+  if (typeof window === "undefined") return [];
+
+  try {
+    window.localStorage.removeItem(GUEST_WISHLIST_STORAGE_KEY);
+    window.dispatchEvent(
+      new CustomEvent(GUEST_WISHLIST_UPDATED_EVENT, { detail: { slugs: [] } }),
+    );
+  } catch {
+    return readGuestWishlistSlugs();
+  }
+
+  return [];
+}
+
 export function subscribeToGuestWishlist(callback: () => void) {
   if (typeof window === "undefined") {
     return () => undefined;

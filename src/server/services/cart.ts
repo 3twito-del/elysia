@@ -3,7 +3,7 @@ import type { Cart, CartItem, Prisma } from "@prisma/client";
 import { z } from "zod";
 
 import { db } from "~/server/db";
-import { getActiveCouponValue, normalizeCouponCode } from "./coupons";
+import { evaluateCouponCode, normalizeCouponCode } from "./coupons";
 import { DEFAULT_CATALOG_IMAGE } from "~/server/services/catalog";
 import {
   addFixtureCartItem,
@@ -340,7 +340,9 @@ async function mapCartSummary(cart: CartWithItems, fulfillmentMethod: string) {
     unitPrice: Number(item.unitPrice),
     lineTotal: Number(item.unitPrice) * item.quantity,
   }));
-  const coupon = await getActiveCouponValue(cart.couponCode);
+  const couponEvaluation = await evaluateCouponCode(cart.couponCode);
+  const coupon =
+    couponEvaluation.status === "success" ? couponEvaluation : undefined;
   const totals = calculateOrderTotal({
     items,
     shipping: fulfillmentMethod === "DELIVERY" ? 29 : 0,
@@ -355,7 +357,12 @@ async function mapCartSummary(cart: CartWithItems, fulfillmentMethod: string) {
     giftWrap: cart.giftWrap,
     giftMessage: cart.giftMessage,
     couponCode: normalizeCouponCode(cart.couponCode),
-    couponValid: cart.couponCode ? Boolean(coupon) : undefined,
+    couponMessage: couponEvaluation.message,
+    couponStatus:
+      couponEvaluation.status === "none" ? undefined : couponEvaluation.status,
+    couponValid: cart.couponCode
+      ? couponEvaluation.status === "success"
+      : undefined,
     expiresAt: cart.expiresAt,
     items,
     groups: groupCartItemsBySource(items, {

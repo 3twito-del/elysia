@@ -19,6 +19,7 @@ import type { ReactNode } from "react";
 
 import { CustomerOtpForm } from "./_components/customer-otp-form";
 import { CustomerAddressForm } from "./_components/customer-address-form";
+import { GuestWishlistMergeNotice } from "./_components/guest-wishlist-merge-notice";
 import { CustomerPrivacyActions } from "./_components/customer-privacy-actions";
 import { CustomerSavedSizesForm } from "./_components/customer-saved-sizes-form";
 import { createAccountServiceHref } from "./_lib/account-recovery";
@@ -376,6 +377,7 @@ export default async function AccountPage() {
           latestLocalOrderNumber={latestLocalOrderNumber}
           latestSupplierOrderNumber={latestSupplierOrderNumber}
         />
+        <GuestWishlistMergeNotice />
 
         <div className="mt-7 grid gap-5 lg:grid-cols-2">
           <Card

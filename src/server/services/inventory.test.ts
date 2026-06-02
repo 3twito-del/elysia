@@ -4,6 +4,7 @@ import {
   canReserveStock,
   getInventoryLowStockThresholdCopy,
   getSellableQuantity,
+  isPublicSellableQuantityLowStock,
   isInventoryLowStock,
   simulateInventoryReservations,
 } from "./inventory";
@@ -50,6 +51,13 @@ describe("inventory service", () => {
     expect(getInventoryLowStockThresholdCopy({ safetyStock: 3 })).toContain(
       "זמין קטן או שווה למלאי הביטחון (3)",
     );
+  });
+
+  it("keeps public low-stock cues restrained to positive limited availability", () => {
+    expect(isPublicSellableQuantityLowStock(0)).toBe(false);
+    expect(isPublicSellableQuantityLowStock(1)).toBe(true);
+    expect(isPublicSellableQuantityLowStock(2)).toBe(true);
+    expect(isPublicSellableQuantityLowStock(3)).toBe(false);
   });
 
   it("simulates limited-stock checkout races deterministically", () => {

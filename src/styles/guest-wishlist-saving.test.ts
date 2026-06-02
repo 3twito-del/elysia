@@ -23,6 +23,7 @@ describe("guest wishlist saving", () => {
     );
     expect(guestWishlist).toContain("subscribeToGuestWishlist");
     expect(guestWishlist).toContain("removeGuestWishlistItem");
+    expect(guestWishlist).toContain("clearGuestWishlistItems");
     expect(productCardFavorite).toContain('nextState.code === "AUTH_REQUIRED"');
     expect(productCardFavorite).toContain("saveGuestWishlistItem(productSlug)");
     expect(productCardFavorite).toContain(
@@ -49,6 +50,7 @@ describe("guest wishlist saving", () => {
     expect(guestWishlist).toContain("window.localStorage.setItem");
     expect(guestWishlist).toContain("GUEST_WISHLIST_UPDATED_EVENT");
     expect(guestWishlist).toContain("window.dispatchEvent");
+    expect(guestWishlist).toContain("window.localStorage.removeItem");
     expect(guestWishlist).toContain('window.addEventListener("storage"');
     expect(guestWishlist).toContain("event.key === GUEST_WISHLIST_STORAGE_KEY");
     expect(guestWishlist).toContain("MAX_GUEST_WISHLIST_ITEMS");
@@ -89,6 +91,30 @@ describe("guest wishlist saving", () => {
     );
     expect(productCardFavorite).toContain("disabled={pending}");
     expect(productCardFavorite).toContain('type="submit"');
+  });
+
+  it("merges guest wishlist items after customer sign-in without duplicate cards", () => {
+    const accountPage = read("src/app/account/page.tsx");
+    const accountActions = read("src/app/account/actions.ts");
+    const mergeNotice = read(
+      "src/app/account/_components/guest-wishlist-merge-notice.tsx",
+    );
+
+    expect(accountPage).toContain("<GuestWishlistMergeNotice />");
+    expect(accountActions).toContain("mergeGuestWishlistAction");
+    expect(accountActions).toContain("guestWishlistMergeInputSchema");
+    expect(accountActions).toContain("new Set(parsed.data)");
+    expect(accountActions).toContain("db.wishlistItem.upsert");
+    expect(accountActions).toContain("wishlistId_variantId");
+    expect(accountActions).toContain("mergedCount");
+    expect(mergeNotice).toContain('"use client"');
+    expect(mergeNotice).toContain("readGuestWishlistSlugs()");
+    expect(mergeNotice).toContain("mergeGuestWishlistAction(slugs)");
+    expect(mergeNotice).toContain("clearGuestWishlistItems()");
+    expect(mergeNotice).toContain("router.refresh()");
+    expect(mergeNotice).toContain(
+      'testId="account-guest-wishlist-merge-notice"',
+    );
   });
 });
 

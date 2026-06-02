@@ -54,7 +54,7 @@ describe("image performance guardrails", () => {
   it("does not viewport-prefetch the repeated product card link", () => {
     const source = read("src/components/product-card.tsx");
 
-    expect(source).toContain("group/product-link block h-full");
+    expect(source).toContain("group/product-link block min-w-0");
     expect(source.match(/prefetch=\{false\}/g)).toHaveLength(1);
   });
 

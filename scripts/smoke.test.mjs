@@ -30,6 +30,7 @@ describe("smoke checks", () => {
         "/product/elysia-supplier-silver-halo-ring",
         "/checkout",
         "/account",
+        "/api/cart/items",
         "/api/webhooks/cardcom",
         "/admin/login?next=https://evil.example/admin",
       ]),

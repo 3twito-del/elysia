@@ -221,6 +221,7 @@ describe("QA route inventory", () => {
     ).toEqual([
       "GET /api/health",
       "GET /api/cart/count",
+      "POST /api/cart/items",
       "GET /account/privacy/export",
       "POST /api/chat",
       "POST /api/webhooks/cardcom",
@@ -236,6 +237,9 @@ describe("QA route inventory", () => {
     expect(apiSmokeByCommand.get("POST /api/chat")?.expectedStatuses).toEqual([
       400,
     ]);
+    expect(
+      apiSmokeByCommand.get("POST /api/cart/items")?.expectedStatuses,
+    ).toEqual([400]);
     expect(
       apiSmokeRoutes.every(
         (route) => !route.includeInVisualQa && route.liveMode === "read-only",

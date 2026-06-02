@@ -26,6 +26,7 @@ const productPurchasePanelPath = path.join(
   root,
   "src/app/product/[slug]/_components/product-purchase-panel.tsx",
 );
+const productCardPath = path.join(root, "src/components/product-card.tsx");
 
 describe("public UI color guard", () => {
   it("keeps warm color names and tokens out of public UI and hero files", () => {
@@ -84,24 +85,41 @@ describe("public UI color guard", () => {
 
   it("documents product material swatches as the only public warm-color exception", () => {
     const productPurchasePanel = readFileSync(productPurchasePanelPath, "utf8");
+    const productCard = readFileSync(productCardPath, "utf8");
     const swatchBlock = extractFunctionBlock(
       productPurchasePanel,
       "function getMetalSwatchStyle",
     );
+    const cardSwatchBlock = extractFunctionBlock(
+      productCard,
+      "function getProductCardSwatchStyle",
+    );
 
     expect(productPurchasePanel).toContain('data-material-swatch="true"');
+    expect(productCard).toContain('data-material-swatch="true"');
     expect(swatchBlock).toMatch(/linear-gradient/);
+    expect(cardSwatchBlock).toMatch(/linear-gradient/);
     expect(swatchBlock).toMatch(/#fff0b8|#d4a63d|#f7d7c7|#c98e79/);
+    expect(cardSwatchBlock).toMatch(/#fff0b8|#d4a63d|#f7d7c7|#c98e79/);
   });
 });
 
 function removeApprovedWarmColorExceptions(file: string, content: string) {
-  if (file !== productPurchasePanelPath) return content;
+  if (file === productPurchasePanelPath) {
+    return content.replace(
+      extractFunctionBlock(content, "function getMetalSwatchStyle"),
+      "",
+    );
+  }
 
-  return content.replace(
-    extractFunctionBlock(content, "function getMetalSwatchStyle"),
-    "",
-  );
+  if (file === productCardPath) {
+    return content.replace(
+      extractFunctionBlock(content, "function getProductCardSwatchStyle"),
+      "",
+    );
+  }
+
+  return content;
 }
 
 function extractProductImageBlurDataUrl(source: string) {

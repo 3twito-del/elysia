@@ -28,6 +28,9 @@ describe("QA benchmark traceability", () => {
     const activeBacklogNumbers = Array.from(activeBacklogIds, (id) =>
       Number(id.slice(2)),
     );
+    const activeBatchIsEmpty = backlog.includes(
+      "No active actionable items remain in this review batch.",
+    );
     const qaDocs = readdirSync(path.join(root, "docs", "qa"))
       .filter((entry) => entry.endsWith(".md"))
       .map((entry) => `docs/qa/${entry}`);
@@ -60,7 +63,11 @@ describe("QA benchmark traceability", () => {
     expect(read("docs/qa/benchmark-traceability.md")).toContain("I-300");
     expect(read("docs/qa/benchmark-traceability.md")).toContain("I-301");
     expect(read("docs/qa/benchmark-traceability.md")).toContain("I-400");
-    expect(activeBacklogNumbers.length).toBeGreaterThan(0);
+    if (activeBatchIsEmpty) {
+      expect(activeBacklogNumbers).toHaveLength(0);
+    } else {
+      expect(activeBacklogNumbers.length).toBeGreaterThan(0);
+    }
     expect(
       activeBacklogNumbers.every(
         (idNumber) =>

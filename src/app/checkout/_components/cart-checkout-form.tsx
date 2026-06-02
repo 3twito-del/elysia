@@ -97,7 +97,7 @@ const checkoutEmptyLinks = [
   },
   {
     href: "/service",
-    label: "לקבלת ייעוץ",
+    label: "לקבלת ייעוץ אישי",
     text: "עזרה בבחירה, מידה או הקדשה.",
   },
 ] as const;
@@ -268,6 +268,15 @@ export function CartCheckoutForm() {
   );
   const orderTotal = localCheckoutTotals?.total ?? 0;
   const postDiscountSubtotal = Math.max(0, subtotal - discount);
+  const couponFeedbackMessage = updateOptions.isPending
+    ? "בודקים את קוד ההטבה."
+    : cart?.couponMessage;
+  const couponFeedbackTone =
+    cart?.couponStatus === "success"
+      ? "success"
+      : updateOptions.isPending
+        ? "neutral"
+        : "error";
   const hasPricingReview = Boolean(
     ownItems.length &&
     hasCheckoutPricingReview({
@@ -998,6 +1007,11 @@ export function CartCheckoutForm() {
                     <div>
                       <Label htmlFor="coupon">קוד הטבה</Label>
                       <Input
+                        aria-describedby={
+                          couponFeedbackMessage
+                            ? "checkout-coupon-status"
+                            : undefined
+                        }
                         autoComplete="off"
                         disabled={checkoutLocked}
                         id="coupon"
@@ -1021,6 +1035,17 @@ export function CartCheckoutForm() {
                       אישור
                     </Button>
                   </div>
+                  {couponFeedbackMessage ? (
+                    <StatusMessage
+                      id="checkout-coupon-status"
+                      role={couponFeedbackTone === "error" ? "alert" : "status"}
+                      testId="checkout-coupon-status"
+                      tone={couponFeedbackTone}
+                      variant="plain"
+                    >
+                      {couponFeedbackMessage}
+                    </StatusMessage>
+                  ) : null}
                   <label className="glass-inset flex min-h-11 items-center gap-3 rounded-md border px-3 text-sm">
                     <input
                       checked={giftWrap}
@@ -1321,7 +1346,7 @@ function CheckoutEmptyCartState() {
             </Button>
             <Button asChild variant="outline">
               <Link href="/service">
-                לקבלת ייעוץ
+                לקבלת ייעוץ אישי
                 <MessageCircle aria-hidden="true" className="size-4" />
               </Link>
             </Button>

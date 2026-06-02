@@ -1768,6 +1768,11 @@ footer nav a:focus-visible {
   transform-origin: center;
 }
 
+.product-card-hover-image {
+  z-index: 2;
+  transform-origin: center;
+}
+
 .product-card-title,
 .product-title-mixed-script {
   text-wrap: balance;
@@ -1780,8 +1785,23 @@ footer nav a:focus-visible {
   letter-spacing: 0;
 }
 
+.product-card-material-badge {
+  border-color: rgb(16 24 28 / 10%);
+  background: rgb(255 255 255 / 74%);
+  color: var(--foreground);
+}
+
+.product-card-swatch {
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 48%);
+}
+
 .product-card-commerce {
   font-variant-numeric: tabular-nums;
+}
+
+.product-card-quick-add-button {
+  border-color: rgb(16 24 28 / 12%) !important;
+  background: rgb(255 255 255 / 88%) !important;
 }
 
 .product-card-status-badge {
