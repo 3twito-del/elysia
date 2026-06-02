@@ -8,6 +8,7 @@ import { Button } from "~/components/ui/button";
 import { StatusMessage } from "~/components/ui/status-message";
 import {
   isGuestWishlistSaved,
+  removeGuestWishlistItem,
   saveGuestWishlistItem,
   subscribeToGuestWishlist,
 } from "~/lib/guest-wishlist";
@@ -45,6 +46,16 @@ export function ProductCardFavoriteButton({
 
     if (pending) return;
 
+    if (guestSaved) {
+      removeGuestWishlistItem(productSlug);
+      setGuestSaved(false);
+      setState({
+        ok: true,
+        message: "הוסר מהמועדפים בדפדפן זה",
+      });
+      return;
+    }
+
     const formData = new FormData(event.currentTarget);
 
     setPending(true);
@@ -71,6 +82,7 @@ export function ProductCardFavoriteButton({
     <form className="relative shrink-0" onSubmit={handleSubmit}>
       <input name="productSlug" type="hidden" value={productSlug} />
       <FavoriteSubmitButton
+        canRemove={guestSaved}
         hasMessage={hasMessage}
         isSaved={isSaved}
         pending={pending}
@@ -80,6 +92,7 @@ export function ProductCardFavoriteButton({
       {hasMessage ? (
         <StatusMessage
           className="product-card-favorite-status absolute top-[calc(100%+0.45rem)] right-0 z-30 w-max max-w-[min(16rem,calc(100vw-2rem))] rounded-md border bg-[var(--popover)] px-2.5 py-1.5 shadow-none"
+          data-testid="product-card-favorite-feedback"
           id={statusId}
           role={state.ok === false ? "alert" : "status"}
           size="xs"
@@ -94,12 +107,14 @@ export function ProductCardFavoriteButton({
 }
 
 function FavoriteSubmitButton({
+  canRemove,
   hasMessage,
   isSaved,
   pending,
   productName,
   statusId,
 }: {
+  canRemove: boolean;
   hasMessage: boolean;
   isSaved: boolean;
   pending: boolean;
@@ -115,7 +130,7 @@ function FavoriteSubmitButton({
   return (
     <Button
       aria-describedby={statusId}
-      aria-label={label}
+      aria-label={canRemove ? `הסרה מהמועדפים: ${productName}` : label}
       aria-pressed={isSaved}
       className={cn(
         "h-10 w-10 shrink-0 rounded-md border border-transparent bg-transparent shadow-none",

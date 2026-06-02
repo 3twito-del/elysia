@@ -22,8 +22,13 @@ describe("guest wishlist saving", () => {
       'GUEST_WISHLIST_STORAGE_KEY = "elysia_guest_wishlist"',
     );
     expect(guestWishlist).toContain("subscribeToGuestWishlist");
+    expect(guestWishlist).toContain("removeGuestWishlistItem");
     expect(productCardFavorite).toContain('nextState.code === "AUTH_REQUIRED"');
     expect(productCardFavorite).toContain("saveGuestWishlistItem(productSlug)");
+    expect(productCardFavorite).toContain(
+      "removeGuestWishlistItem(productSlug)",
+    );
+    expect(productCardFavorite).toContain("הוסר מהמועדפים בדפדפן זה");
     expect(productCardFavorite).toContain("נשמר במועדפים בדפדפן זה");
     expect(productWishlist).toContain('nextState.code === "AUTH_REQUIRED"');
     expect(productWishlist).toContain("saveGuestWishlistItem(productSlug)");
@@ -68,9 +73,14 @@ describe("guest wishlist saving", () => {
 
     expect(productCardFavorite).toContain("aria-pressed={isSaved}");
     expect(productCardFavorite).toContain("aria-describedby={statusId}");
+    expect(productCardFavorite).toContain("canRemove");
+    expect(productCardFavorite).toContain("הסרה מהמועדפים");
     expect(productCardFavorite).toContain("data-icon-tooltip=");
     expect(productCardFavorite).toContain("hasMessage ? undefined");
     expect(productCardFavorite).toContain("product-card-favorite-status");
+    expect(productCardFavorite).toContain(
+      'data-testid="product-card-favorite-feedback"',
+    );
     expect(productCardFavorite).toContain(
       'role={state.ok === false ? "alert" : "status"}',
     );

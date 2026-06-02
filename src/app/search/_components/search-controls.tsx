@@ -26,6 +26,7 @@ import {
 import { cn } from "~/lib/utils";
 import type { ProductSearchInput } from "~/server/adapters/search";
 import type { CatalogCategory, CatalogFacets } from "~/server/services/catalog";
+import { SearchHistoryList } from "./search-history-list";
 
 type SearchControlsProps = {
   activeFilterCount: number;
@@ -199,6 +200,11 @@ export function SearchControls({
           </SheetContent>
         </Sheet>
       </div>
+      <SearchHistoryList
+        currentQuery={input.query}
+        mode={input.mode}
+        viewMode={viewMode}
+      />
     </div>
   );
 }

@@ -3,10 +3,18 @@
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
 import { useRef, useState, type KeyboardEvent } from "react";
-import { ImageOff } from "lucide-react";
+import { ImageOff, Maximize2 } from "lucide-react";
 
 import { useResolvedReducedMotion } from "~/components/motion-preference";
 import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
 import { cn } from "~/lib/utils";
 
 type ProductGalleryProps = {
@@ -133,6 +141,41 @@ export function ProductGallery({
             {activeImagePosition}/{galleryImageCount}
           </Badge>
         ) : null}
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button
+              aria-label={`הגדלת תמונת ${productName}`}
+              className="bg-background text-foreground hover:bg-background absolute top-4 right-4 h-9 gap-1.5 rounded-full px-3 text-xs shadow-sm"
+              data-testid="product-gallery-zoom-trigger"
+              type="button"
+              variant="secondary"
+            >
+              <Maximize2 aria-hidden="true" className="size-3.5" />
+              הגדלה
+            </Button>
+          </DialogTrigger>
+          <DialogContent
+            className="w-[min(96vw,72rem)] max-w-none p-3 sm:p-4"
+            data-testid="product-gallery-zoom-dialog"
+            dir="rtl"
+          >
+            <DialogTitle className="sr-only">
+              תצוגה מוגדלת של {productName}
+            </DialogTitle>
+            <DialogDescription className="sr-only">
+              אפשר לסגור את התצוגה המוגדלת ולחזור לגלריית המוצר.
+            </DialogDescription>
+            <div className="brand-gallery-frame relative aspect-[4/5] overflow-hidden rounded-md sm:aspect-[5/4] lg:aspect-[4/3]">
+              <Image
+                alt={`${productName}, תמונה מוגדלת ${activeImagePosition} מתוך ${galleryImageCount}`}
+                className="media-color object-contain"
+                fill
+                sizes="(min-width: 1280px) 72rem, 96vw"
+                src={activeImage}
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {galleryImageCount > 1 ? (

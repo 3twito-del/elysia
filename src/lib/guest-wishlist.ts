@@ -56,6 +56,32 @@ export function saveGuestWishlistItem(productSlug: string) {
   return slugs;
 }
 
+export function removeGuestWishlistItem(productSlug: string) {
+  const slug = productSlug.trim();
+
+  if (!slug || typeof window === "undefined") {
+    return readGuestWishlistSlugs();
+  }
+
+  const slugs = readGuestWishlistSlugs().filter(
+    (savedSlug) => savedSlug !== slug,
+  );
+
+  try {
+    window.localStorage.setItem(
+      GUEST_WISHLIST_STORAGE_KEY,
+      JSON.stringify(slugs),
+    );
+    window.dispatchEvent(
+      new CustomEvent(GUEST_WISHLIST_UPDATED_EVENT, { detail: { slugs } }),
+    );
+  } catch {
+    return readGuestWishlistSlugs();
+  }
+
+  return slugs;
+}
+
 export function subscribeToGuestWishlist(callback: () => void) {
   if (typeof window === "undefined") {
     return () => undefined;

@@ -32,6 +32,37 @@ describe("visible site improvement affordances", () => {
     expect(search).toContain("category: category.slug");
   });
 
+  it("keeps search history visible, capped, clearable, and route-backed", () => {
+    const controls = read("src/app/search/_components/search-controls.tsx");
+    const historyList = read(
+      "src/app/search/_components/search-history-list.tsx",
+    );
+    const history = read("src/lib/search-history.ts");
+
+    expect(controls).toContain("<SearchHistoryList");
+    expect(historyList).toContain('data-testid="search-history-list"');
+    expect(historyList).toContain('data-testid="search-history-query"');
+    expect(historyList).toContain('data-testid="search-history-clear"');
+    expect(historyList).toContain("saveSearchHistoryQuery");
+    expect(historyList).toContain("clearSearchHistoryQueries");
+    expect(historyList).toContain("createSearchHistoryHref");
+    expect(history).toContain("SEARCH_HISTORY_LIMIT = 6");
+    expect(history).toContain("SEARCH_HISTORY_STORAGE_KEY");
+    expect(history).toContain("subscribeToSearchHistory");
+  });
+
+  it("keeps the search loading route dense and layout-stable", () => {
+    const loading = read("src/app/search/loading.tsx");
+
+    expect(loading).toContain("DEFAULT_SEARCH_PER_PAGE");
+    expect(loading).toContain('data-testid="search-loading-controls-skeleton"');
+    expect(loading).toContain('data-testid="search-loading-card-skeletons"');
+    expect(loading).toContain('data-testid="search-loading-card-skeleton"');
+    expect(loading).toContain("ui-equal-grid");
+    expect(loading).toContain("aspect-[5/4]");
+    expect(loading).toContain("sm:aspect-[4/5]");
+  });
+
   it("keeps the gifts page discovery chips visible and routed to search", () => {
     const gifts = read("src/app/gifts/page.tsx");
 
@@ -41,6 +72,39 @@ describe("visible site improvement affordances", () => {
     expect(gifts).toContain('data-testid="gift-discovery-chips"');
     expect(gifts).toContain("GiftChipGroup");
     expect(gifts).toContain("/search?q=%D7%9E%D7%AA%D7%A0%D7%94");
+  });
+
+  it("keeps the gifts empty state from dead-ending shoppers", () => {
+    const gifts = read("src/app/gifts/page.tsx");
+
+    expect(gifts).toContain("<EmptyState");
+    expect(gifts).toContain('testId="gifts-empty-state"');
+    expect(gifts).toContain('data-testid="gifts-empty-state-reset"');
+    expect(gifts).toContain('href="/gifts"');
+    expect(gifts).toContain("products.length > 0");
+  });
+
+  it("keeps gift product budget callouts visible when price data supports them", () => {
+    const gifts = read("src/app/gifts/page.tsx");
+
+    expect(gifts).toContain("giftBudgetThresholds");
+    expect(gifts).toContain("getGiftBudgetContextLabel(product)");
+    expect(gifts).toContain(
+      "contextLabel={getGiftBudgetContextLabel(product)}",
+    );
+    expect(gifts).toContain("product.price <= budget");
+    expect(gifts).toContain("formatInlinePrice(threshold)");
+  });
+
+  it("keeps gift bundle recommendations explicit and item-specific", () => {
+    const gifts = read("src/app/gifts/page.tsx");
+
+    expect(gifts).toContain("getGiftBundlePairs(products)");
+    expect(gifts).toContain('data-testid="gift-bundle-recommendations"');
+    expect(gifts).toContain('data-testid="gift-bundle-pair"');
+    expect(gifts).toContain("products: [CatalogProduct, CatalogProduct]");
+    expect(gifts).toContain('contextLabel="חלק משילוב מתנה"');
+    expect(gifts).toContain("categoryProducts.length < 2");
   });
 
   it("keeps the home mobile hero and account entry readable without blocking browsing", () => {
@@ -219,6 +283,9 @@ describe("visible site improvement affordances", () => {
     const filterPanel = read(
       "src/app/category/[slug]/_components/deferred-category-filter-panel.tsx",
     );
+    const paginationLink = read(
+      "src/app/category/[slug]/_components/category-pagination-link.tsx",
+    );
 
     expect(category).toContain('data-testid="category-breadcrumbs"');
     expect(category).toContain('data-testid="category-result-count"');
@@ -239,6 +306,14 @@ describe("visible site improvement affordances", () => {
       'data-testid="category-filter-section-current"',
     );
     expect(filterPanel).toContain('data-testid="category-price-filter-labels"');
+    expect(category).toContain("CategoryPaginationLink");
+    expect(category).toContain('testId="category-pagination-next"');
+    expect(paginationLink).toContain(
+      'data-loading={isLoading ? "true" : "false"}',
+    );
+    expect(paginationLink).toContain("aria-busy={isLoading}");
+    expect(paginationLink).toContain("setIsLoading(true)");
+    expect(paginationLink).toContain("event.preventDefault()");
   });
 
   it("keeps PDP gallery, purchase, recommendations, and card stability visible", () => {
@@ -266,6 +341,11 @@ describe("visible site improvement affordances", () => {
     expect(gallery).toContain("data-gallery-selected=");
     expect(gallery).toContain("aria-current={activeImageIndex === index}");
     expect(gallery).toContain("aria-pressed={activeImageIndex === index}");
+    expect(gallery).toContain('data-testid="product-gallery-zoom-trigger"');
+    expect(gallery).toContain('data-testid="product-gallery-zoom-dialog"');
+    expect(gallery).toContain("<DialogTrigger asChild>");
+    expect(gallery).toContain("DialogContent");
+    expect(gallery).toContain("הגדלה");
     expect(gallery).toContain('"border-foreground ring-foreground ring-1"');
     expect(gallery).toContain("handleThumbnailKeyDown");
     expect(purchasePanel).toContain("getSizeGuideHref(sizeKind");
@@ -284,6 +364,9 @@ describe("visible site improvement affordances", () => {
     expect(favorite).toContain("aria-pressed={isSaved}");
     expect(favorite).toContain('isSaved && "fill-current"');
     expect(favorite).toContain("subscribeToGuestWishlist");
+    expect(favorite).toContain("removeGuestWishlistItem(productSlug)");
+    expect(favorite).toContain('data-testid="product-card-favorite-feedback"');
+    expect(favorite).toContain("הוסר מהמועדפים בדפדפן זה");
     expect(productPage).toContain("createProductServiceHref");
     expect(productPage).toContain("productSourceLabel");
     expect(productPage).toContain('data-testid="product-media-caption"');

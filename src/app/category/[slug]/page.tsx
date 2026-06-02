@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Filter, Gem, SlidersHorizontal, X } from "lucide-react";
 
 import { CategoryFilterSheet } from "./_components/category-filter-sheet";
+import { CategoryPaginationLink } from "./_components/category-pagination-link";
 import { DeferredCategoryFilterPanel } from "./_components/deferred-category-filter-panel";
 import {
   createCategoryPageHref,
@@ -678,9 +679,12 @@ function CategoryPagination({
           variant="outline"
         >
           {currentPage > 1 ? (
-            <Link href={createCategoryPageHref(slug, filters, previousPage)}>
+            <CategoryPaginationLink
+              href={createCategoryPageHref(slug, filters, previousPage)}
+              testId="category-pagination-previous"
+            >
               הקודם
-            </Link>
+            </CategoryPaginationLink>
           ) : (
             <span>הקודם</span>
           )}
@@ -702,12 +706,13 @@ function CategoryPagination({
               size="sm"
               variant={page === currentPage ? "secondary" : "outline"}
             >
-              <Link
+              <CategoryPaginationLink
                 aria-current={page === currentPage ? "page" : undefined}
                 href={createCategoryPageHref(slug, filters, page)}
+                testId="category-pagination-page"
               >
                 {page}
-              </Link>
+              </CategoryPaginationLink>
             </Button>
           ),
         )}
@@ -719,9 +724,12 @@ function CategoryPagination({
           variant="outline"
         >
           {currentPage < totalPages ? (
-            <Link href={createCategoryPageHref(slug, filters, nextPage)}>
+            <CategoryPaginationLink
+              href={createCategoryPageHref(slug, filters, nextPage)}
+              testId="category-pagination-next"
+            >
               הבא
-            </Link>
+            </CategoryPaginationLink>
           ) : (
             <span>הבא</span>
           )}
