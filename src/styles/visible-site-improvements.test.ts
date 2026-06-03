@@ -358,12 +358,20 @@ describe("visible site improvement affordances", () => {
       'data-testid="product-gallery-fullscreen-trigger"',
     );
     expect(gallery).toContain(
+      'data-testid="product-gallery-touch-zoom-trigger"',
+    );
+    expect(gallery).toContain(
       'data-testid="product-gallery-fullscreen-dialog"',
     );
     expect(gallery).toContain('data-testid="product-gallery-fullscreen-stage"');
+    expect(gallery).toContain(
+      'data-testid="product-gallery-fullscreen-zoom-toggle"',
+    );
     expect(gallery).toContain('testId: "product-gallery-thumbnail-rail"');
     expect(gallery).toContain('data-testid="product-gallery-previous"');
     expect(gallery).toContain('data-testid="product-gallery-next"');
+    expect(gallery).toContain("data-gallery-zoomed=");
+    expect(gallery).toContain("aria-pressed={isViewerZoomed}");
     expect(gallery).toContain("<DialogTrigger asChild>");
     expect(gallery).toContain("DialogContent");
     expect(gallery).toContain("מסך מלא");

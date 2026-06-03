@@ -69,6 +69,8 @@ It replaces the narrower thumbnail-clarity decision in
 ## Implementation Decision
 
 - Replace the small zoom dialog with a full-viewport gallery viewer.
+- Add a touch magnifier affordance inside the main media area that opens the
+  same full-viewport viewer in an enlarged inspection state.
 - Keep the PDP main image bounded and `object-contain` so large source images do
   not crop or pretend to be magnification.
 - Use stable scroll rails for thumbnails in both the PDP and full-screen viewer.
@@ -83,6 +85,8 @@ It replaces the narrower thumbnail-clarity decision in
   state.
 - Full-screen viewer occupies the viewport, uses a bounded image stage, supports
   next/previous and keyboard navigation, and returns focus to the trigger.
+- Touch viewports expose an in-image magnifier trigger, and full-screen viewing
+  exposes close, image navigation, and magnification controls.
 - Thumbnail rail supports many images without horizontal page overflow.
 - Supplier sync preserves all Shopify images fetched by the adapter.
 - Missing-media fallback remains compact and keeps purchase details visible.
@@ -98,6 +102,6 @@ It replaces the narrower thumbnail-clarity decision in
 
 ## Residual Risk
 
-This benchmark supports a full-gallery image viewer, not deep pan/zoom,
-augmented try-on, video media, or a broader PDP redesign. Those changes require
-a separate public benchmark decision.
+This benchmark supports a full-gallery image viewer with a basic touch
+magnifier state, not augmented try-on, video media, or a broader PDP redesign.
+Those changes require a separate public benchmark decision.

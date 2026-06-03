@@ -33,9 +33,15 @@ describe("product gallery media fallback and thumbnail clarity", () => {
       'data-testid="product-gallery-fullscreen-trigger"',
     );
     expect(gallery).toContain(
+      'data-testid="product-gallery-touch-zoom-trigger"',
+    );
+    expect(gallery).toContain(
       'data-testid="product-gallery-fullscreen-dialog"',
     );
     expect(gallery).toContain('data-testid="product-gallery-fullscreen-stage"');
+    expect(gallery).toContain(
+      'data-testid="product-gallery-fullscreen-zoom-toggle"',
+    );
     expect(gallery).toContain(
       'data-testid="product-gallery-fullscreen-status"',
     );
@@ -51,6 +57,9 @@ describe("product gallery media fallback and thumbnail clarity", () => {
     expect(gallery).toContain("product-gallery-main-frame");
     expect(gallery).toContain("product-gallery-thumbnail-rail");
     expect(gallery).toContain("object-contain");
+    expect(gallery).toContain("data-gallery-zoomed=");
+    expect(gallery).toContain("setIsViewerZoomed(true)");
+    expect(gallery).toContain("aria-pressed={isViewerZoomed}");
     expect(gallery).toContain("100dvh");
     expect(gallery).toContain("100dvw");
     expect(gallery).toContain("mainGalleryImageSizes");

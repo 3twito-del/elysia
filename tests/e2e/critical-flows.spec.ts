@@ -1312,17 +1312,40 @@ async function expectProductGalleryFullScreenNavigation(
   const fullscreenTrigger = page.getByTestId(
     "product-gallery-fullscreen-trigger",
   );
+  const touchZoomTrigger = page.getByTestId(
+    "product-gallery-touch-zoom-trigger",
+  );
   const mainGalleryBox = await page
     .getByTestId("product-gallery")
     .boundingBox();
 
   await expect(fullscreenTrigger).toBeVisible();
+  if ((page.viewportSize()?.width ?? 0) < 640) {
+    await expect(touchZoomTrigger).toBeVisible();
+    await touchZoomTrigger.click();
+    await expect(
+      page.getByTestId("product-gallery-fullscreen-dialog"),
+    ).toBeVisible();
+    await expect(
+      page.getByTestId("product-gallery-fullscreen-stage"),
+    ).toHaveAttribute("data-gallery-zoomed", "true");
+    await page.getByTestId("product-gallery-fullscreen-close").click();
+    await expect(
+      page.getByTestId("product-gallery-fullscreen-dialog"),
+    ).toBeHidden();
+  }
   await fullscreenTrigger.click();
   await expect(
     page.getByTestId("product-gallery-fullscreen-dialog"),
   ).toBeVisible();
   await expect(
     page.getByTestId("product-gallery-fullscreen-stage"),
+  ).toBeVisible();
+  await expect(
+    page.getByTestId("product-gallery-fullscreen-stage"),
+  ).toHaveAttribute("data-gallery-zoomed", "false");
+  await expect(
+    page.getByTestId("product-gallery-fullscreen-zoom-toggle"),
   ).toBeVisible();
 
   const fullscreenLayout = await page.evaluate(() => {
