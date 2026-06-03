@@ -95,7 +95,7 @@ export function SiteHeader() {
           dir="ltr"
         >
           <div
-            className="[grid-column:3] flex min-w-0 items-center gap-5 justify-self-end sm:gap-7"
+            className="[grid-column:3] [grid-row:1] flex min-w-0 items-center gap-5 justify-self-end sm:gap-7"
             dir="rtl"
           >
             <MobileNav
@@ -119,7 +119,7 @@ export function SiteHeader() {
           </div>
 
           <Link
-            className="brand-header-mark site-header-link [grid-column:2] flex min-w-0 shrink-0 items-center justify-self-center"
+            className="brand-header-mark site-header-link [grid-column:2] [grid-row:1] flex min-w-0 shrink-0 items-center justify-self-center"
             aria-label="Elysia - עמוד הבית"
             dir="ltr"
             href="/"
@@ -129,7 +129,7 @@ export function SiteHeader() {
           </Link>
 
           <div
-            className="[grid-column:1] flex min-w-0 items-center gap-3 justify-self-start sm:gap-5"
+            className="[grid-column:1] [grid-row:1] flex min-w-0 items-center gap-3 justify-self-start sm:gap-5"
             dir="rtl"
           >
             <Link

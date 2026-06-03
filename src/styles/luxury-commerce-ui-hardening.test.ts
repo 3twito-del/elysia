@@ -26,6 +26,8 @@ describe("luxury commerce UI hardening", () => {
     expect(source).toContain('href="/account#account-wishlist"');
     expect(source).toContain("[grid-column:3]");
     expect(source).toContain("[grid-column:1]");
+    expect(source).toContain("[grid-column:2]");
+    expect(source.match(/\[grid-row:1\]/g)).toHaveLength(3);
     expect(source).not.toContain("desktopNavItems");
     expect(source).not.toContain("<nav");
     expect(source).not.toContain("CartCountLink");
