@@ -71,6 +71,9 @@ describe("luxury commerce UI hardening", () => {
       "clip-path: inset(0 0 0 18%);",
     );
     expect(footer).not.toContain("bg-background rounded-md border");
+    expect(footer).toContain(
+      "brand-footer-mark hidden items-center sm:inline-flex",
+    );
     expect(footer).toContain("site-footer-inner");
     expect(footer).toContain(
       "md:grid-cols-[minmax(18rem,0.95fr)_minmax(0,1.45fr)]",

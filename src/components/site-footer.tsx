@@ -58,7 +58,7 @@ export function SiteFooter() {
           <section className="site-footer-brand max-w-xl md:max-w-md lg:max-w-xl">
             <Link
               aria-label="Elysia - עמוד הבית"
-              className="brand-footer-mark inline-flex items-center"
+              className="brand-footer-mark hidden items-center sm:inline-flex"
               href="/"
             >
               <BrandLogo className="h-10 w-auto max-w-[13rem] sm:h-12 sm:max-w-[15.5rem]" />
