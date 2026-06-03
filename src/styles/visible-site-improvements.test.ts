@@ -110,9 +110,11 @@ describe("visible site improvement affordances", () => {
   it("keeps the home mobile hero and account entry readable without blocking browsing", () => {
     const accountPage = read("src/app/account/page.tsx");
     const home = read("src/app/page.tsx");
+    const styles = read("src/styles/globals.css");
 
-    expect(home).toContain("[--home-hero-height:clamp(33rem,82svh,43rem)]");
-    expect(home).toContain("sm:[--home-hero-height:clamp(43rem,82svh,56rem)]");
+    expect(home).toContain("home-cinematic-hero");
+    expect(styles).toContain(".home-cinematic-hero");
+    expect(styles).toContain("calc(100svh - var(--site-header-height))");
     expect(home).toContain('data-testid="home-hero-copy"');
     expect(home).toContain("w-[min(calc(100%_-_var(--hero-edge)");
     expect(home).toContain("max-w-2xl text-lg leading-8");
@@ -205,20 +207,28 @@ describe("visible site improvement affordances", () => {
     expect(about).toContain("/service?topic=general");
   });
 
-  it("keeps header cart, service, footer policy, and social labels visible", () => {
+  it("keeps header split actions, footer policy, and social labels visible", () => {
     const cart = read("src/components/cart-count-link.tsx");
     const footer = read("src/components/site-footer.tsx");
     const header = read("src/components/site-header.tsx");
     const styles = read("src/styles/globals.css");
 
-    expect(header).toContain('data-icon-tooltip="סניפים ושירות"');
-    expect(header).toContain('href="/branches"');
+    expect(header).toContain('dir="rtl"');
+    expect(header).toContain('triggerLabel="תפריט"');
+    expect(header).toContain('aria-label="חיפוש"');
+    expect(header).toContain('aria-label="צרו קשר"');
+    expect(header).toContain('href="/account#account-wishlist"');
+    expect(header).toContain('data-icon-tooltip="מועדפים"');
+    expect(header).toContain('data-icon-tooltip="אזור אישי"');
+    expect(header).not.toContain("CartCountLink");
+    expect(header).not.toContain("desktopNavItems");
     expect(header).toContain("HOME_HEADER_SOLID_SCROLL_Y");
     expect(header).toContain("setHasScrolled");
     expect(header).toContain('window.addEventListener("scroll"');
     expect(header).toContain("data-header-state={headerState}");
     expect(styles).toContain('.site-header[data-header-state="solid"]');
     expect(styles).toContain("background: var(--background);");
+    expect(styles).toContain(".site-header .site-header-label-action");
     expect(cart).toContain(
       'data-cart-state={itemCount > 0 ? "filled" : "empty"}',
     );
@@ -238,6 +248,9 @@ describe("visible site improvement affordances", () => {
     expect(mobileNav).toContain("const quickActions = [");
     expect(mobileNav).toContain("const spotlightActions = [");
     expect(mobileNav).toContain("const serviceActions = [");
+    expect(mobileNav).toContain("mobile-nav-panel-luxury");
+    expect(mobileNav).toContain('data-nav-variant="luxury-editorial"');
+    expect(mobileNav).toContain("mobile-nav-quick-list");
     expect(mobileNav).toContain("const catalogItems = items.slice(0, 4)");
     expect(mobileNav).toContain("const editorialItems = items");
     expect(mobileNav).toContain("RECENTLY_VIEWED_STORAGE_KEY");
@@ -337,19 +350,30 @@ describe("visible site improvement affordances", () => {
     );
     const styles = read("src/styles/globals.css");
 
-    expect(gallery).toContain('data-testid="product-gallery-thumbnail"');
+    expect(gallery).toContain('thumbnailTestId: "product-gallery-thumbnail"');
     expect(gallery).toContain("data-gallery-selected=");
     expect(gallery).toContain("aria-current={activeImageIndex === index}");
     expect(gallery).toContain("aria-pressed={activeImageIndex === index}");
-    expect(gallery).toContain('data-testid="product-gallery-zoom-trigger"');
-    expect(gallery).toContain('data-testid="product-gallery-zoom-dialog"');
+    expect(gallery).toContain(
+      'data-testid="product-gallery-fullscreen-trigger"',
+    );
+    expect(gallery).toContain(
+      'data-testid="product-gallery-fullscreen-dialog"',
+    );
+    expect(gallery).toContain('data-testid="product-gallery-fullscreen-stage"');
+    expect(gallery).toContain('testId: "product-gallery-thumbnail-rail"');
+    expect(gallery).toContain('data-testid="product-gallery-previous"');
+    expect(gallery).toContain('data-testid="product-gallery-next"');
     expect(gallery).toContain("<DialogTrigger asChild>");
     expect(gallery).toContain("DialogContent");
-    expect(gallery).toContain("הגדלה");
+    expect(gallery).toContain("מסך מלא");
+    expect(gallery).not.toContain('data-testid="product-gallery-zoom-trigger"');
+    expect(gallery).not.toContain('data-testid="product-gallery-zoom-dialog"');
     expect(gallery).toContain('"border-foreground ring-foreground ring-1"');
     expect(gallery).toContain("handleThumbnailKeyDown");
     expect(purchasePanel).toContain("getSizeGuideHref(sizeKind");
     expect(purchasePanel).toContain('data-testid="product-variant-feedback"');
+    expect(purchasePanel).toContain('data-testid="product-cart-checkout-link"');
     expect(purchasePanel).toContain("getVariantButtonLabel(");
     expect(purchasePanel).toContain("variant.availableQuantity <= 0");
     expect(purchaseUtils).toContain("getPublicStockStatusLabel");

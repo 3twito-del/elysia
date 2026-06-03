@@ -285,11 +285,13 @@ describe("accessibility guardrails", () => {
     );
     expect(header).toContain("brand-header-mark site-header-link");
     expect(header).toContain("site-header-action");
+    expect(header).toContain("site-header-label-action");
     expect(header).toContain('href="/search"');
-    expect(header).toContain('href="/branches"');
+    expect(header).toContain('href="/service"');
+    expect(header).toContain('href="/account#account-wishlist"');
     expect(header).toContain('href="/account"');
-    expect(header).toContain("CartCountLink");
-    expect(header.match(/data-icon-tooltip=/g)).toHaveLength(4);
+    expect(header).not.toContain("CartCountLink");
+    expect(header.match(/data-icon-tooltip=/g)).toHaveLength(2);
   });
 
   it("keeps product image alt text descriptive without duplicating decorative thumbnails", () => {

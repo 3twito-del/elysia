@@ -335,7 +335,11 @@ export function ProductPurchasePanel({
 
   return (
     <>
-      <div className="grid gap-6" data-public-floating-avoid="true">
+      <div
+        className="grid gap-6"
+        data-public-floating-avoid="true"
+        data-testid="product-purchase-panel"
+      >
         <div className="grid gap-3">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
@@ -516,7 +520,9 @@ export function ProductPurchasePanel({
             </StatusMessage>
             {cartMessageTone === "success" ? (
               <Button asChild size="sm" variant="secondary">
-                <Link href="/checkout">לסל הקניות</Link>
+                <Link data-testid="product-cart-checkout-link" href="/checkout">
+                  לסל הקניות
+                </Link>
               </Button>
             ) : null}
           </div>

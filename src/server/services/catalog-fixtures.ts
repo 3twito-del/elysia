@@ -24,6 +24,37 @@ const categoryImages = {
   rings: "/brand/v2/category-rings.avif",
 } satisfies Record<string, string>;
 
+const categoryGalleryImages: Record<string, string[]> = {
+  bracelets: [
+    "/brand/v2/category-bracelets.avif",
+    "/brand/v2/hero-glass.avif",
+    "/brand/v2/commerce-gifts.avif",
+    "/brand/v2/product-focus.avif",
+    "/brand/v2/editorial-home.avif",
+  ],
+  earrings: [
+    "/brand/v2/category-earrings.avif",
+    "/brand/v2/hero-pearls.avif",
+    "/brand/v2/service-task.avif",
+    "/brand/v2/product-focus.avif",
+    "/brand/v2/commerce-catalog.avif",
+  ],
+  necklaces: [
+    "/brand/v2/category-necklaces.avif",
+    "/brand/v2/hero-pearls.avif",
+    "/brand/v2/commerce-catalog.avif",
+    "/brand/v2/product-focus.avif",
+    "/brand/v2/editorial-home.avif",
+  ],
+  rings: [
+    "/brand/v2/category-rings.avif",
+    "/brand/v2/product-focus.avif",
+    "/brand/v2/hero-rings.avif",
+    "/brand/v2/commerce-catalog.avif",
+    "/brand/v2/editorial-home.avif",
+  ],
+};
+
 const materialBySlug = new Map(
   seedMaterials.map((material) => [material.slug, material.name] as const),
 );
@@ -135,7 +166,11 @@ function mapSeedProduct(product: SeedProduct): CatalogProduct {
 
     return acc;
   }, {});
-  const images = [product.image || DEFAULT_CATALOG_IMAGE];
+  const images = getFixtureProductImages({
+    categorySlug: product.categorySlug,
+    primaryImage: product.image,
+    slug: product.slug,
+  });
 
   return {
     slug: product.slug,
@@ -179,7 +214,15 @@ function mapSeedProduct(product: SeedProduct): CatalogProduct {
 
 function createFixtureDropshipProduct(): CatalogProduct {
   const category = categoryBySlug.get("rings");
-  const image = "/brand/v2/category-rings.avif";
+  const images = [
+    "/brand/v2/category-rings.avif",
+    "/brand/v2/product-focus.avif",
+    "/brand/v2/hero-rings.avif",
+    "/brand/v2/commerce-catalog.avif",
+    "/brand/v2/editorial-home.avif",
+    "/brand/v2/hero-glass.avif",
+  ];
+  const image = images[0] ?? DEFAULT_CATALOG_IMAGE;
   const variants: CatalogProductVariant[] = [
     {
       sku: "elysia-supplier-silver-halo-ring-6",
@@ -224,7 +267,7 @@ function createFixtureDropshipProduct(): CatalogProduct {
     collection: "Supplier QA",
     collections: ["Supplier QA"],
     image,
-    images: [image],
+    images,
     variants,
     metalColors: ["כסף"],
     sizes: ["6"],
@@ -262,6 +305,25 @@ function getSeedAvailabilityMode(slug: string) {
   return "READY_TO_ORDER";
 }
 
+function getFixtureProductImages(input: {
+  categorySlug: string;
+  primaryImage: string;
+  slug: string;
+}) {
+  const fallbackImages = categoryGalleryImages[input.categorySlug] ?? [
+    DEFAULT_CATALOG_IMAGE,
+  ];
+  const primaryImage =
+    input.primaryImage || fallbackImages[0] || DEFAULT_CATALOG_IMAGE;
+  const startIndex = getStableIndex(input.slug, fallbackImages.length);
+  const rotatedImages = [
+    ...fallbackImages.slice(startIndex),
+    ...fallbackImages.slice(0, startIndex),
+  ];
+
+  return Array.from(new Set([primaryImage, ...rotatedImages])).slice(0, 6);
+}
+
 function getSeedCommerceHighlights(slug: string) {
   if (slug === "muse-pearl-earrings") {
     return ["פרטי ההתאמה יאושרו מראש", "הכנה אישית במידה ובגוון"];
@@ -276,4 +338,14 @@ function getSeedCommerceHighlights(slug: string) {
 
 function getUniqueValues(values: string[]) {
   return Array.from(new Set(values));
+}
+
+function getStableIndex(value: string, length: number) {
+  let hash = 0;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
+  }
+
+  return length > 0 ? hash % length : 0;
 }

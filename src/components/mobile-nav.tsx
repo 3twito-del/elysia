@@ -41,10 +41,14 @@ export type HeaderNavItem = {
 };
 
 type MobileNavProps = {
+  closeOnMediaQuery?: string | false;
   currentPathname: string;
   items: HeaderNavItem[];
   onCategoryIntent?: (href: string) => void;
   onOpenCategoryPrefetch?: () => void;
+  triggerClassName?: string;
+  triggerLabel?: string;
+  triggerMode?: "icon" | "label";
 };
 
 const quickActions = [
@@ -85,10 +89,14 @@ function getMobileNavStaggerStyle(index: number) {
 }
 
 export function MobileNav({
+  closeOnMediaQuery = "(min-width: 768px)",
   currentPathname,
   items,
   onCategoryIntent,
   onOpenCategoryPrefetch,
+  triggerClassName,
+  triggerLabel = "תפריט",
+  triggerMode = "icon",
 }: MobileNavProps) {
   const [open, setOpen] = useState(false);
   const consentValue = useCookieConsentValue();
@@ -134,28 +142,42 @@ export function MobileNav({
 
   return (
     <Sheet
-      closeOnMediaQuery="(min-width: 768px)"
+      closeOnMediaQuery={closeOnMediaQuery || undefined}
       onOpenChange={setOpen}
       open={open}
     >
       <SheetTrigger asChild>
         <Button
           aria-label="פתיחת ניווט"
-          className="site-header-action md:hidden"
-          data-icon-tooltip="פתיחת ניווט"
-          data-icon-tooltip-placement="bottom"
+          className={cn(
+            "site-header-action",
+            triggerMode === "icon"
+              ? "md:hidden"
+              : "site-header-label-action gap-2 px-0",
+            triggerClassName,
+          )}
+          data-icon-tooltip={triggerMode === "icon" ? "פתיחת ניווט" : undefined}
+          data-icon-tooltip-placement={
+            triggerMode === "icon" ? "bottom" : undefined
+          }
           data-testid="mobile-nav-trigger"
-          size="icon"
+          size={triggerMode === "icon" ? "icon" : "default"}
           type="button"
           variant="ghost"
         >
           <Menu aria-hidden="true" className="size-5" />
-          <span className="sr-only">תפריט</span>
+          <span
+            className={triggerMode === "icon" ? "sr-only" : "hidden sm:inline"}
+          >
+            {triggerLabel}
+          </span>
         </Button>
       </SheetTrigger>
       <SheetContent
-        className="mobile-nav-panel w-[min(90vw,23.5rem)] overflow-y-auto p-0"
+        className="mobile-nav-panel mobile-nav-panel-luxury w-[min(100dvw,31rem)] overflow-y-auto p-0"
+        data-nav-variant="luxury-editorial"
         data-testid="mobile-nav-sheet"
+        dir="rtl"
         showCloseButton={false}
         side="right"
       >
@@ -164,17 +186,8 @@ export function MobileNav({
           קישורי ניווט ראשיים לאתר Elysia.
         </SheetDescription>
 
-        <div className="mobile-nav-header border-b border-[var(--glass-border)] px-4 py-3.5">
-          <div className="flex items-start justify-between gap-3">
-            <Link
-              aria-label="Elysia - עמוד הבית"
-              className="brand-header-mark site-header-link mobile-nav-animated-item inline-flex min-h-10 items-center"
-              href="/"
-              onClick={closeNav}
-              style={getMobileNavStaggerStyle(0)}
-            >
-              <BrandLogo className="h-5 w-auto max-w-[7rem]" />
-            </Link>
+        <div className="mobile-nav-header border-b border-[var(--glass-border)] px-5 py-5 sm:px-7">
+          <div className="flex min-h-11 items-center justify-between gap-4">
             <SheetClose asChild>
               <Button
                 aria-label="סגירת ניווט"
@@ -189,17 +202,29 @@ export function MobileNav({
                 <X aria-hidden="true" className="size-5" />
               </Button>
             </SheetClose>
+            <Link
+              aria-label="Elysia - עמוד הבית"
+              className="brand-header-mark site-header-link mobile-nav-animated-item inline-flex min-h-10 items-center justify-self-end"
+              href="/"
+              onClick={closeNav}
+              style={getMobileNavStaggerStyle(0)}
+            >
+              <BrandLogo className="h-5 w-auto max-w-[7.25rem]" />
+            </Link>
           </div>
           <p
-            className="text-muted-foreground mobile-nav-animated-item mt-2 text-sm leading-6"
+            className="mobile-nav-animated-item text-foreground mt-6 max-w-[24rem] text-[1.05rem] leading-8"
             style={getMobileNavStaggerStyle(1)}
           >
             תכשיטים, מידע, הזמנה ושירות.
           </p>
         </div>
 
-        <div className="grid gap-3 p-3.5">
-          <div className="grid grid-cols-4 gap-2">
+        <div className="mobile-nav-luxury-body grid gap-8 px-5 py-6 sm:px-7">
+          <nav
+            aria-label="קיצורי שירות"
+            className="mobile-nav-quick-list grid border-y border-[var(--glass-border)]"
+          >
             {quickActions.map((item, index) => {
               const Icon = item.icon;
               const isActive = currentPathname === item.href;
@@ -208,7 +233,7 @@ export function MobileNav({
                 <Link
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "mobile-nav-quick-action mobile-nav-animated-item text-muted-foreground hover:text-foreground grid min-h-12 place-items-center gap-1 rounded-md px-2 text-center text-xs transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+                    "mobile-nav-quick-action mobile-nav-animated-item text-muted-foreground hover:text-foreground grid min-h-[3.25rem] grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-[var(--glass-border)] px-0 text-sm transition-colors outline-none last:border-b-0 focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
                     isActive && "text-foreground font-semibold",
                   )}
                   href={item.href}
@@ -217,18 +242,22 @@ export function MobileNav({
                   style={getMobileNavStaggerStyle(2 + index)}
                 >
                   <Icon aria-hidden="true" className="size-4" />
-                  {item.label}
+                  <span>{item.label}</span>
+                  <ArrowLeft
+                    aria-hidden="true"
+                    className="mobile-nav-feature-arrow size-4"
+                  />
                 </Link>
               );
             })}
-          </div>
+          </nav>
 
           <nav
             aria-label="מסלולים מהירים"
-            className="mobile-nav-feature-list grid gap-1"
+            className="mobile-nav-feature-list grid gap-0"
           >
             <p
-              className="text-muted-foreground mobile-nav-animated-item px-1 text-xs font-medium"
+              className="mobile-nav-section-kicker text-muted-foreground mobile-nav-animated-item text-xs font-medium"
               style={getMobileNavStaggerStyle(6)}
             >
               בחירה מהירה
@@ -241,7 +270,7 @@ export function MobileNav({
                 <Link
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "mobile-nav-feature-link mobile-nav-animated-item group/nav-feature grid min-h-[3.75rem] grid-cols-[auto_1fr_auto] items-center gap-2.5 border-b border-[var(--glass-border)] px-1 py-2 outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+                    "mobile-nav-feature-link mobile-nav-animated-item group/nav-feature grid min-h-[4.25rem] grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-[var(--glass-border)] px-0 py-3 outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
                     isActive && "text-foreground font-semibold",
                   )}
                   href={item.href}
@@ -249,7 +278,7 @@ export function MobileNav({
                   onClick={closeNav}
                   style={getMobileNavStaggerStyle(7 + index)}
                 >
-                  <span className="mobile-nav-feature-icon grid size-8 place-items-center rounded-md border border-[var(--glass-border)]">
+                  <span className="mobile-nav-feature-icon grid size-9 place-items-center">
                     <Icon aria-hidden="true" className="size-4" />
                   </span>
                   <span className="grid min-w-0 gap-0.5">
@@ -269,13 +298,13 @@ export function MobileNav({
             })}
             {recentlyViewedProductHref ? (
               <Link
-                className="mobile-nav-feature-link mobile-nav-animated-item group/nav-feature grid min-h-[3.75rem] grid-cols-[auto_1fr_auto] items-center gap-2.5 border-b border-[var(--glass-border)] px-1 py-2 outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
+                className="mobile-nav-feature-link mobile-nav-animated-item group/nav-feature grid min-h-[4.25rem] grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-[var(--glass-border)] px-0 py-3 outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
                 data-testid="mobile-nav-recently-viewed-shortcut"
                 href={recentlyViewedProductHref}
                 onClick={closeNav}
                 style={getMobileNavStaggerStyle(10)}
               >
-                <span className="mobile-nav-feature-icon grid size-8 place-items-center rounded-md border border-[var(--glass-border)]">
+                <span className="mobile-nav-feature-icon grid size-9 place-items-center">
                   <History aria-hidden="true" className="size-4" />
                 </span>
                 <span className="grid min-w-0 gap-0.5">
@@ -301,10 +330,10 @@ export function MobileNav({
 
           <nav
             aria-label="ניווט הקולקציה"
-            className="mobile-nav-section grid gap-1"
+            className="mobile-nav-section grid gap-0"
           >
             <p
-              className="text-muted-foreground mobile-nav-animated-item px-1 text-xs font-medium"
+              className="mobile-nav-section-kicker text-muted-foreground mobile-nav-animated-item text-xs font-medium"
               style={getMobileNavStaggerStyle(12)}
             >
               הקולקציה
@@ -318,9 +347,9 @@ export function MobileNav({
                 <Link
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "mobile-nav-link mobile-nav-animated-item text-muted-foreground hover:text-foreground relative inline-flex min-h-10 items-center rounded-md px-1 text-[0.96rem] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+                    "mobile-nav-link mobile-nav-animated-item text-muted-foreground hover:text-foreground relative inline-flex min-h-[3.05rem] items-center border-b border-[var(--glass-border)] px-0 text-[1.08rem] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
                     isActive &&
-                      "text-foreground after:bg-foreground font-semibold after:absolute after:inset-x-1 after:bottom-1 after:h-px after:content-['']",
+                      "text-foreground after:bg-foreground font-semibold after:absolute after:inset-x-0 after:bottom-0 after:h-px after:content-['']",
                   )}
                   data-testid="mobile-nav-link"
                   href={item.href}
@@ -349,10 +378,10 @@ export function MobileNav({
 
           <nav
             aria-label="ניווט שירות"
-            className="mobile-nav-section grid gap-1"
+            className="mobile-nav-section grid gap-0"
           >
             <p
-              className="text-muted-foreground mobile-nav-animated-item px-1 text-xs font-medium"
+              className="mobile-nav-section-kicker text-muted-foreground mobile-nav-animated-item text-xs font-medium"
               style={getMobileNavStaggerStyle(19)}
             >
               שירות
@@ -365,9 +394,9 @@ export function MobileNav({
                 <Link
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "mobile-nav-link mobile-nav-animated-item text-muted-foreground hover:text-foreground relative inline-flex min-h-10 items-center gap-2 rounded-md px-1 text-[0.96rem] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+                    "mobile-nav-link mobile-nav-animated-item text-muted-foreground hover:text-foreground relative inline-flex min-h-[3.05rem] items-center gap-2 border-b border-[var(--glass-border)] px-0 text-[1.08rem] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
                     isActive &&
-                      "text-foreground after:bg-foreground font-semibold after:absolute after:inset-x-1 after:bottom-1 after:h-px after:content-['']",
+                      "text-foreground after:bg-foreground font-semibold after:absolute after:inset-x-0 after:bottom-0 after:h-px after:content-['']",
                   )}
                   data-testid="mobile-nav-link"
                   href={item.href}
@@ -387,9 +416,9 @@ export function MobileNav({
                 <Link
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "mobile-nav-link mobile-nav-animated-item text-muted-foreground hover:text-foreground relative inline-flex min-h-10 items-center rounded-md px-1 text-[0.96rem] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+                    "mobile-nav-link mobile-nav-animated-item text-muted-foreground hover:text-foreground relative inline-flex min-h-[3.05rem] items-center border-b border-[var(--glass-border)] px-0 text-[1.08rem] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
                     isActive &&
-                      "text-foreground after:bg-foreground font-semibold after:absolute after:inset-x-1 after:bottom-1 after:h-px after:content-['']",
+                      "text-foreground after:bg-foreground font-semibold after:absolute after:inset-x-0 after:bottom-0 after:h-px after:content-['']",
                   )}
                   data-testid="mobile-nav-link"
                   href={item.href}

@@ -6,19 +6,19 @@ import { describe, expect, it } from "vitest";
 const root = process.cwd();
 
 describe("product gallery media fallback and thumbnail clarity", () => {
-  it("keeps benchmark support evidence available", () => {
-    const benchmark = read(
-      "docs/qa/product-gallery-media-fallback-thumbnail-clarity-benchmark.md",
-    );
+  it("keeps full-gallery benchmark support evidence available", () => {
+    const benchmark = read("docs/qa/product-gallery-full-gallery-benchmark.md");
 
     expect(benchmark).toContain("I-034");
-    expect(benchmark).toContain("Weighted Score`: 16.5");
+    expect(benchmark).toContain("Weighted Score`: 37.5");
     expect(benchmark).toContain("Decision`: Supported");
     expect(benchmark).toContain("Cartier");
     expect(benchmark).toContain("Tiffany");
+    expect(benchmark).toContain("David Yurman");
+    expect(benchmark).toContain("Kendra Scott");
   });
 
-  it("keeps product gallery selected-state and fallback clarity testable", () => {
+  it("keeps product gallery selected-state, full-screen viewer, and fallback clarity testable", () => {
     const gallery = read(
       "src/app/product/[slug]/_components/product-gallery.tsx",
     );
@@ -27,11 +27,36 @@ describe("product gallery media fallback and thumbnail clarity", () => {
     expect(gallery).toContain('data-testid="product-gallery-selection-status"');
     expect(gallery).toContain('aria-live="polite"');
     expect(gallery).toContain("data-gallery-selected=");
-    expect(gallery).toContain('data-testid="product-gallery-thumbnail"');
+    expect(gallery).toContain('thumbnailTestId: "product-gallery-thumbnail"');
+    expect(gallery).toContain('testId: "product-gallery-thumbnail-rail"');
+    expect(gallery).toContain(
+      'data-testid="product-gallery-fullscreen-trigger"',
+    );
+    expect(gallery).toContain(
+      'data-testid="product-gallery-fullscreen-dialog"',
+    );
+    expect(gallery).toContain('data-testid="product-gallery-fullscreen-stage"');
+    expect(gallery).toContain(
+      'data-testid="product-gallery-fullscreen-status"',
+    );
+    expect(gallery).toContain('data-testid="product-gallery-previous"');
+    expect(gallery).toContain('data-testid="product-gallery-next"');
+    expect(gallery).toContain(
+      'testId: "product-gallery-fullscreen-thumbnail-rail"',
+    );
     expect(gallery).toContain("activeImagePosition");
     expect(gallery).toContain("galleryImageCount");
     expect(gallery).toContain("aria-current={activeImageIndex === index}");
     expect(gallery).toContain("aria-pressed={activeImageIndex === index}");
+    expect(gallery).toContain("product-gallery-main-frame");
+    expect(gallery).toContain("product-gallery-thumbnail-rail");
+    expect(gallery).toContain("object-contain");
+    expect(gallery).toContain("100dvh");
+    expect(gallery).toContain("100dvw");
+    expect(gallery).toContain("mainGalleryImageSizes");
+    expect(gallery).toContain("galleryThumbnailImageSizes");
+    expect(gallery).not.toContain('data-testid="product-gallery-zoom-dialog"');
+    expect(gallery).not.toContain('data-testid="product-gallery-zoom-trigger"');
     expect(gallery).toContain(
       "alt={`${productName}, תמונה ${activeImagePosition} מתוך ${galleryImageCount}`}",
     );
@@ -47,7 +72,9 @@ describe("product gallery media fallback and thumbnail clarity", () => {
     );
     expect(
       indexOf(gallery, 'data-testid="product-gallery-selection-status"'),
-    ).toBeLessThan(indexOf(gallery, 'data-testid="product-gallery-thumbnail"'));
+    ).toBeLessThan(
+      indexOf(gallery, 'testId: "product-gallery-thumbnail-rail"'),
+    );
   });
 });
 

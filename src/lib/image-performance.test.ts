@@ -61,6 +61,7 @@ describe("image performance guardrails", () => {
   it("keeps broad navigation prefetch limited to high-intent category routes", () => {
     const prefetchSource = read("src/components/category-route-prefetch.ts");
     const headerSource = read("src/components/site-header.tsx");
+    const mobileNavSource = read("src/components/mobile-nav.tsx");
 
     expect(prefetchSource).toContain("categoryRoutePrefetchPolicy");
     expect(prefetchSource).toContain('allowedHrefPrefix: "/category/"');
@@ -70,12 +71,19 @@ describe("image performance guardrails", () => {
 
     expect(headerSource).toContain("categoryNavHrefs");
     expect(headerSource).toContain(".filter(isCategoryHref)");
-    expect(headerSource).toContain("onPointerEnter=");
-    expect(headerSource).toContain("onFocus=");
     expect(headerSource).toContain(
-      "prefetch={categoryHref ? true : undefined}",
+      "onCategoryIntent={categoryPrefetch.prefetch}",
+    );
+    expect(headerSource).toContain(
+      "onOpenCategoryPrefetch={categoryPrefetch.prefetchAll}",
+    );
+    expect(mobileNavSource).toContain("onPointerEnter=");
+    expect(mobileNavSource).toContain("onFocus=");
+    expect(mobileNavSource).toContain(
+      'item.href.startsWith("/category/") ? true : undefined',
     );
     expect(headerSource).not.toContain("prefetch={true}");
+    expect(mobileNavSource).not.toContain("prefetch={true}");
   });
 
   it("keeps external connection hints on the current media and font whitelist", () => {
@@ -109,12 +117,15 @@ describe("image performance guardrails", () => {
       'loading={activeImageIndex === 0 ? undefined : "lazy"}',
     );
     expect(source).toContain(
-      'sizes="(min-width: 1280px) 58vw, (min-width: 1024px) 54vw, 100vw"',
+      'const mainGalleryImageSizes =\n  "(min-width: 1280px) 58vw, (min-width: 1024px) 54vw, 100vw";',
     );
     expect(source).toContain('loading="lazy"');
     expect(source).toContain(
-      'sizes="(min-width: 1024px) 12vw, (min-width: 640px) 18vw, 24vw"',
+      'const galleryThumbnailImageSizes =\n  "(min-width: 1024px) 5.5rem, (min-width: 640px) 5rem, 4.5rem";',
     );
+    expect(source).toContain("sizes={mainGalleryImageSizes}");
+    expect(source).toContain("sizes={galleryThumbnailImageSizes}");
+    expect(source).toContain('sizes="100vw"');
   });
 
   it("keeps category result media on explicit fixed desktop sizes", () => {

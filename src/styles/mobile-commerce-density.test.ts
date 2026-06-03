@@ -6,11 +6,12 @@ import { describe, expect, it } from "vitest";
 describe("mobile commerce density", () => {
   it("keeps the home mobile first viewport editorial before quick search", () => {
     const source = read("src/app/page.tsx");
+    const css = read("src/styles/globals.css");
 
-    expect(source).toContain("[--home-hero-height:clamp(33rem,82svh,43rem)]");
-    expect(source).toContain(
-      "sm:[--home-hero-height:clamp(43rem,82svh,56rem)]",
-    );
+    expect(source).toContain("home-cinematic-hero");
+    expect(css).toContain(".home-cinematic-hero");
+    expect(css).toContain("calc(100svh - var(--site-header-height))");
+    expect(css).toContain("31rem");
     expect(countOccurrences(source, "min-h-[var(--home-hero-height)]")).toBe(4);
     expect(indexOf(source, 'id="categories"')).toBeLessThan(
       indexOf(source, 'id="quick-search"'),

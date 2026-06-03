@@ -42,7 +42,21 @@ describe("Shopify dropship sync", () => {
           description: "Imported supplier product",
           handle: "supplier-ring",
           id: "gid://shopify/Product/1",
-          images: [{ url: "https://cdn.shopify.com/ring.jpg" }],
+          images: [
+            {
+              altText: "Supplier ring on hand",
+              height: 1200,
+              url: "https://cdn.shopify.com/ring.jpg",
+              width: 1200,
+            },
+            {
+              altText: "Supplier ring detail",
+              height: 1200,
+              url: "https://cdn.shopify.com/ring-detail.jpg",
+              width: 1200,
+            },
+            { url: "https://cdn.shopify.com/ring.jpg" },
+          ],
           productType: "Rings",
           tags: ["dropship"],
           title: "Supplier Ring",
@@ -68,7 +82,20 @@ describe("Shopify dropship sync", () => {
       categorySlug: "rings",
       externalHandle: "supplier-ring",
       externalProductId: "gid://shopify/Product/1",
-      imageUrl: "https://cdn.shopify.com/ring.jpg",
+      images: [
+        {
+          altText: "Supplier ring on hand",
+          height: 1200,
+          url: "https://cdn.shopify.com/ring.jpg",
+          width: 1200,
+        },
+        {
+          altText: "Supplier ring detail",
+          height: 1200,
+          url: "https://cdn.shopify.com/ring-detail.jpg",
+          width: 1200,
+        },
+      ],
       supplierKey: "supplier-a",
       variants: [
         {
@@ -115,6 +142,7 @@ describe("Shopify dropship sync", () => {
             description: "Imported supplier product",
             externalHandle: "supplier-ring",
             externalProductId: "gid://shopify/Product/1",
+            images: [],
             materialSlug: "supplier",
             name: "Supplier Ring",
             shortDescription: "Imported",

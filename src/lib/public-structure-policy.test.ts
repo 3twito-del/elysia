@@ -58,15 +58,17 @@ describe("public structure benchmark v4 policy", () => {
     ).toBe("accessibility");
   });
 
-  it("keeps public header active states route-backed and restrained", () => {
+  it("keeps public header split actions and sheet active states restrained", () => {
     const header = read("src/components/site-header.tsx");
     const mobileNav = read("src/components/mobile-nav.tsx");
 
-    expect(header).toContain('aria-current={isActive ? "page" : undefined}');
-    expect(header).toContain("pathname === item.href");
-    expect(header).toContain("pathname.startsWith(`${item.href}/`)");
-    expect(header).toContain("desktopNavItems.map");
-    expect(header).toContain("after:h-px");
+    expect(header).toContain('triggerLabel="תפריט"');
+    expect(header).toContain('triggerMode="label"');
+    expect(header).toContain('aria-label="חיפוש"');
+    expect(header).toContain('aria-label="צרו קשר"');
+    expect(header).toContain('href="/account#account-wishlist"');
+    expect(header).not.toContain("desktopNavItems.map");
+    expect(header).not.toContain("<nav");
     expect(header).not.toContain('aria-current="page"');
     expect(header).not.toContain("bg-secondary");
     expect(header).not.toContain("shadow-");
@@ -101,7 +103,7 @@ describe("public structure benchmark v4 policy", () => {
       "/about",
       "/service",
     ]);
-    expect(header).toContain("const desktopNavItems = navItems.slice(0, 4)");
+    expect(header).toContain('triggerLabel="תפריט"');
     expect(mobileNav).toContain("const catalogItems = items.slice(0, 4)");
     expect(mobileNav).toContain(".slice(5)");
 

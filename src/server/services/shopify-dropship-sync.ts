@@ -17,7 +17,12 @@ export type ShopifyDropshipImportProduct = {
   description: string;
   externalHandle: string;
   externalProductId: string;
-  imageUrl?: string;
+  images: Array<{
+    altText?: string;
+    height?: number;
+    url: string;
+    width?: number;
+  }>;
   materialSlug: string;
   name: string;
   shortDescription: string;
@@ -142,6 +147,8 @@ export function mapShopifyProductsToImportPlan(input: {
 
     if (!defaultVariant) return [];
 
+    const images = normalizeShopifyProductImages(product.images);
+
     return [
       {
         basePrice: defaultVariant.price,
@@ -151,7 +158,7 @@ export function mapShopifyProductsToImportPlan(input: {
           `${product.title} is supplied through the Shopify dropshipping channel.`,
         externalHandle: product.handle,
         externalProductId: product.id,
-        imageUrl: product.images[0]?.url,
+        images,
         materialSlug: "supplier",
         name: product.title,
         shortDescription:
@@ -172,16 +179,18 @@ async function upsertShopifyDropshipProduct(
   product: ShopifyDropshipImportProduct,
 ) {
   await db.$transaction(async (tx) => {
+    const primaryImageUrl = product.images[0]?.url;
+    const categoryImageData = primaryImageUrl
+      ? { imageUrl: primaryImageUrl }
+      : {};
     const category = await tx.category.upsert({
       where: { slug: product.categorySlug },
-      update: {
-        imageUrl: product.imageUrl,
-      },
+      update: categoryImageData,
       create: {
         slug: product.categorySlug,
         name: toTitle(product.categorySlug),
         description: "Supplier dropshipping collection.",
-        imageUrl: product.imageUrl,
+        imageUrl: primaryImageUrl,
       },
     });
     const material = await tx.material.upsert({
@@ -232,34 +241,10 @@ async function upsertShopifyDropshipProduct(
       select: { id: true },
     });
 
-    if (product.imageUrl) {
-      const primaryMedia = await tx.productMedia.findFirst({
-        where: {
-          productId: savedProduct.id,
-          isPrimary: true,
-          kind: "IMAGE",
-        },
-      });
-
-      if (primaryMedia) {
-        await tx.productMedia.update({
-          where: { id: primaryMedia.id },
-          data: {
-            alt: product.name,
-            url: product.imageUrl,
-          },
-        });
-      } else {
-        await tx.productMedia.create({
-          data: {
-            productId: savedProduct.id,
-            url: product.imageUrl,
-            alt: product.name,
-            isPrimary: true,
-          },
-        });
-      }
-    }
+    await syncShopifyDropshipProductMedia(tx, {
+      product,
+      productId: savedProduct.id,
+    });
 
     for (const [index, variant] of product.variants.entries()) {
       const savedVariant = await upsertShopifyDropshipVariant(tx, {
@@ -274,6 +259,36 @@ async function upsertShopifyDropshipProduct(
         variantId: savedVariant.id,
       });
     }
+  });
+}
+
+async function syncShopifyDropshipProductMedia(
+  tx: Prisma.TransactionClient,
+  input: {
+    product: ShopifyDropshipImportProduct;
+    productId: string;
+  },
+) {
+  await tx.productMedia.deleteMany({
+    where: {
+      productId: input.productId,
+      kind: "IMAGE",
+    },
+  });
+
+  if (input.product.images.length === 0) return;
+
+  await tx.productMedia.createMany({
+    data: input.product.images.map((image, index) => ({
+      alt: image.altText ?? input.product.name,
+      height: image.height ?? null,
+      isPrimary: index === 0,
+      kind: "IMAGE",
+      productId: input.productId,
+      sortOrder: index,
+      url: image.url,
+      width: image.width ?? null,
+    })),
   });
 }
 
@@ -367,6 +382,29 @@ async function syncShopifyDropshipVariantPrice(
 
 function createFallbackSku(handle: string, index: number) {
   return `SHOPIFY-${toSlug(handle).toUpperCase()}-${index + 1}`;
+}
+
+function normalizeShopifyProductImages(
+  images: ShopifyProduct["images"],
+): ShopifyDropshipImportProduct["images"] {
+  const seenUrls = new Set<string>();
+
+  return images.flatMap((image) => {
+    const url = image.url.trim();
+
+    if (!url || seenUrls.has(url)) return [];
+
+    seenUrls.add(url);
+
+    return [
+      {
+        altText: image.altText?.trim() || undefined,
+        height: image.height,
+        url,
+        width: image.width,
+      },
+    ];
+  });
 }
 
 function toSlug(value: string) {

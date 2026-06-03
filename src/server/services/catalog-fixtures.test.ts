@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 
 import {
+  getFixtureCatalogProductBySlug,
   shouldFallbackToCatalogFixturesOnDatabaseError,
   shouldUseCatalogFixtures,
 } from "./catalog-fixtures";
@@ -65,6 +66,18 @@ describe("catalog fixture flags", () => {
 
     expect(shouldUseCatalogFixtures()).toBe(false);
     expect(shouldFallbackToCatalogFixturesOnDatabaseError()).toBe(true);
+  });
+});
+
+describe("catalog fixture product media", () => {
+  it("keeps representative owned and supplier products on multi-image galleries", () => {
+    expect(
+      getFixtureCatalogProductBySlug("hera-bracelet")?.images.length,
+    ).toBeGreaterThanOrEqual(4);
+    expect(
+      getFixtureCatalogProductBySlug("elysia-supplier-silver-halo-ring")?.images
+        .length,
+    ).toBeGreaterThanOrEqual(6);
   });
 });
 

@@ -6,40 +6,44 @@ import { describe, expect, it } from "vitest";
 const root = process.cwd();
 
 describe("luxury commerce UI hardening", () => {
-  it("keeps public header navigation typographic instead of button-framed", () => {
+  it("keeps public header in the split luxury nav structure", () => {
     const source = read("src/components/site-header.tsx");
-    const navBlock = extractBetween(
-      source,
-      "<nav\n            aria-label=",
-      "</nav>",
-    );
     const brandBlock = extractBetween(
       source,
       '<Link\n            className="brand-header-mark',
       "</Link>",
     );
 
-    expect(navBlock).not.toContain("<Button");
-    expect(navBlock).not.toContain("bg-secondary");
-    expect(navBlock).not.toContain("ring-1");
-    expect(navBlock).not.toContain("shadow-");
-    expect(navBlock).toContain("after:h-px");
-    expect(navBlock).toContain('aria-current={isActive ? "page" : undefined}');
+    expect(source).toContain('dir="rtl"');
+    expect(source).toContain("grid-cols-[1fr_auto_1fr]");
+    expect(source).toContain('triggerLabel="תפריט"');
+    expect(source).toContain('triggerMode="label"');
+    expect(source).toContain('aria-label="חיפוש"');
+    expect(source).toContain("<Search");
+    expect(source).toContain('aria-label="צרו קשר"');
+    expect(source).toContain("<Heart");
+    expect(source).toContain("<UserRound");
+    expect(source).toContain('href="/account#account-wishlist"');
+    expect(source).toContain("[grid-column:3]");
+    expect(source).toContain("[grid-column:1]");
+    expect(source).not.toContain("desktopNavItems");
+    expect(source).not.toContain("<nav");
+    expect(source).not.toContain("CartCountLink");
+    expect(source).not.toContain("Headset");
     expect(source).toContain(
       'import { BrandLogo } from "~/components/brand-logo";',
     );
     expect(brandBlock).toContain('aria-label="Elysia -');
     expect(brandBlock).toContain("<BrandLogo");
     expect(brandBlock).not.toContain("<Gem");
-    expect(source).toContain('href="/branches"');
-    expect(source).toContain("Headset");
     expect(source).not.toContain("MapPin");
-    expect(source).toContain('data-icon-tooltip="חיפוש"');
-    expect(source).toContain('data-icon-tooltip="סניפים ושירות"');
+    expect(source).toContain('data-icon-tooltip="מועדפים"');
     expect(source).toContain('data-icon-tooltip="אזור אישי"');
-    expect(source).toContain('data-icon-tooltip="סל קניות"');
     expect(read("src/styles/globals.css")).toContain(
       "[data-icon-tooltip]::after",
+    );
+    expect(read("src/styles/globals.css")).toContain(
+      ".site-header .site-header-label-action",
     );
   });
 
@@ -49,12 +53,21 @@ describe("luxury commerce UI hardening", () => {
 
     expect(mobileNav).not.toContain("h-auto min-h-14 flex-col");
     expect(mobileNav).not.toContain('variant="outline"');
+    expect(mobileNav).toContain("mobile-nav-panel-luxury");
+    expect(mobileNav).toContain('data-nav-variant="luxury-editorial"');
+    expect(mobileNav).toContain("mobile-nav-quick-list");
     expect(mobileNav).toContain("תכשיטים, מידע, הזמנה ושירות.");
     expect(mobileNav).not.toContain("׳³");
     expect(mobileNav).toContain("after:h-px");
     expect(mobileNav).toContain('href: "/branches"');
-    expect(mobileNav).toContain("grid-cols-4");
+    expect(mobileNav).not.toContain("grid-cols-4");
     expect(mobileNav).not.toContain("<Gem");
+    expect(read("src/styles/globals.css")).toContain(
+      ".mobile-nav-panel-luxury",
+    );
+    expect(read("src/styles/globals.css")).toContain(
+      "clip-path: inset(0 0 0 18%);",
+    );
     expect(footer).not.toContain("bg-background rounded-md border");
     expect(footer).toContain("site-footer-inner");
     expect(footer).toContain(

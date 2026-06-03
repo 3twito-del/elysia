@@ -122,7 +122,7 @@ export default async function Home() {
       <SiteHeader />
 
       <RevealSection
-        className="relative isolate min-h-[var(--home-hero-height)] w-screen max-w-none overflow-hidden [--hero-edge:clamp(1.25rem,4vw,5.75rem)] [--home-hero-height:clamp(33rem,82svh,43rem)] sm:[--home-hero-height:clamp(43rem,82svh,56rem)] lg:[--hero-edge:clamp(3.5rem,5vw,6.5rem)]"
+        className="home-cinematic-hero relative isolate min-h-[var(--home-hero-height)] w-screen max-w-none overflow-hidden [--hero-edge:clamp(1.25rem,4vw,5.75rem)] lg:[--hero-edge:clamp(3.5rem,5vw,6.5rem)]"
         data-testid="cinematic-page-hero"
         id="page-hero"
         initialVisible

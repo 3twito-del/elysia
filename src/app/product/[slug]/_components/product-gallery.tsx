@@ -2,14 +2,26 @@
 
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
-import { useRef, useState, type KeyboardEvent } from "react";
-import { ImageOff, Maximize2 } from "lucide-react";
+import {
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type MutableRefObject,
+} from "react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ImageOff,
+  Maximize2,
+  X,
+} from "lucide-react";
 
 import { useResolvedReducedMotion } from "~/components/motion-preference";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogTitle,
@@ -23,6 +35,13 @@ type ProductGalleryProps = {
   productName: string;
 };
 
+type ThumbnailRefs = Array<HTMLButtonElement | null>;
+
+const mainGalleryImageSizes =
+  "(min-width: 1280px) 58vw, (min-width: 1024px) 54vw, 100vw";
+const galleryThumbnailImageSizes =
+  "(min-width: 1024px) 5.5rem, (min-width: 640px) 5rem, 4.5rem";
+
 export function ProductGallery({
   className,
   images,
@@ -30,14 +49,22 @@ export function ProductGallery({
 }: ProductGalleryProps) {
   const galleryImages = Array.from(new Set(images)).filter(Boolean);
   const [activeIndex, setActiveIndex] = useState(0);
-  const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const thumbnailRefs = useRef<ThumbnailRefs>([]);
+  const viewerThumbnailRefs = useRef<ThumbnailRefs>([]);
   const shouldReduceMotion = useResolvedReducedMotion();
   const activeImageIndex = Math.min(activeIndex, galleryImages.length - 1);
   const activeImage = galleryImages[activeImageIndex];
   const activeImagePosition = activeImageIndex + 1;
   const galleryImageCount = galleryImages.length;
 
-  function activateThumbnail(nextIndex: number, shouldFocus = false) {
+  function activateThumbnail(
+    nextIndex: number,
+    options: {
+      refs?: MutableRefObject<ThumbnailRefs>;
+      shouldFocus?: boolean;
+    } = {},
+  ) {
     if (galleryImages.length === 0) return;
 
     const boundedIndex =
@@ -45,9 +72,9 @@ export function ProductGallery({
 
     setActiveIndex(boundedIndex);
 
-    if (shouldFocus) {
+    if (options.shouldFocus && options.refs) {
       window.requestAnimationFrame(() => {
-        thumbnailRefs.current[boundedIndex]?.focus();
+        options.refs?.current[boundedIndex]?.focus();
       });
     }
   }
@@ -55,6 +82,7 @@ export function ProductGallery({
   function handleThumbnailKeyDown(
     event: KeyboardEvent<HTMLButtonElement>,
     index: number,
+    refs: MutableRefObject<ThumbnailRefs>,
   ) {
     const nextKeyMap: Partial<Record<string, number>> = {
       ArrowDown: index + 1,
@@ -69,7 +97,76 @@ export function ProductGallery({
     if (nextIndex === undefined) return;
 
     event.preventDefault();
-    activateThumbnail(nextIndex, true);
+    activateThumbnail(nextIndex, { refs, shouldFocus: true });
+  }
+
+  function handleViewerKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    const nextKeyMap: Partial<Record<string, number>> = {
+      ArrowDown: activeImageIndex + 1,
+      ArrowRight: activeImageIndex + 1,
+      ArrowLeft: activeImageIndex - 1,
+      ArrowUp: activeImageIndex - 1,
+      End: galleryImages.length - 1,
+      Home: 0,
+    };
+    const nextIndex = nextKeyMap[event.key];
+
+    if (nextIndex === undefined) return;
+
+    event.preventDefault();
+    activateThumbnail(nextIndex);
+  }
+
+  function renderThumbnailRail(input: {
+    refs: MutableRefObject<ThumbnailRefs>;
+    testId: string;
+    thumbnailTestId: string;
+  }) {
+    if (galleryImageCount <= 1) return null;
+
+    return (
+      <div
+        aria-label="תמונות תכשיט"
+        className="product-gallery-thumbnail-rail minimal-scroll flex max-w-full gap-2 overflow-x-auto overscroll-x-contain pb-1"
+        data-testid={input.testId}
+      >
+        {galleryImages.map((image, index) => (
+          <button
+            aria-label={`הצגת תמונה ${index + 1} של ${productName}`}
+            aria-current={activeImageIndex === index}
+            aria-pressed={activeImageIndex === index}
+            className={cn(
+              "motion-thumbnail-button border-border bg-card relative aspect-[4/5] w-[4.5rem] shrink-0 overflow-hidden rounded-md border transition focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none sm:w-20 lg:w-[5.5rem]",
+              activeImageIndex === index
+                ? "border-foreground ring-foreground ring-1"
+                : "hover:border-foreground/60",
+            )}
+            data-gallery-selected={
+              activeImageIndex === index ? "true" : "false"
+            }
+            data-testid={input.thumbnailTestId}
+            key={image}
+            onClick={() => activateThumbnail(index)}
+            onKeyDown={(event) =>
+              handleThumbnailKeyDown(event, index, input.refs)
+            }
+            ref={(node) => {
+              input.refs.current[index] = node;
+            }}
+            type="button"
+          >
+            <Image
+              alt=""
+              className="media-color object-cover"
+              fill
+              loading="lazy"
+              sizes={galleryThumbnailImageSizes}
+              src={image}
+            />
+          </button>
+        ))}
+      </div>
+    );
   }
 
   if (!activeImage) {
@@ -102,7 +199,7 @@ export function ProductGallery({
       role="group"
     >
       <div
-        className="brand-gallery-frame relative aspect-[4/5] overflow-hidden rounded-md sm:aspect-[5/4] lg:aspect-[4/3]"
+        className="brand-gallery-frame product-gallery-main-frame relative aspect-[4/5] max-h-[min(78vh,44rem)] overflow-hidden rounded-md bg-[var(--secondary)] sm:aspect-[5/4] lg:aspect-[4/3]"
         data-motion-gallery="product"
         data-testid="product-gallery"
       >
@@ -124,11 +221,11 @@ export function ProductGallery({
           >
             <Image
               alt={`${productName}, תמונה ${activeImagePosition} מתוך ${galleryImageCount}`}
-              className="media-color object-cover"
+              className="media-color object-contain"
               fill
               loading={activeImageIndex === 0 ? undefined : "lazy"}
               priority={activeImageIndex === 0}
-              sizes="(min-width: 1280px) 58vw, (min-width: 1024px) 54vw, 100vw"
+              sizes={mainGalleryImageSizes}
               src={activeImage}
             />
           </motion.div>
@@ -141,38 +238,122 @@ export function ProductGallery({
             {activeImagePosition}/{galleryImageCount}
           </Badge>
         ) : null}
-        <Dialog>
+        <Dialog open={isViewerOpen} onOpenChange={setIsViewerOpen}>
           <DialogTrigger asChild>
             <Button
-              aria-label={`הגדלת תמונת ${productName}`}
+              aria-label={`פתיחת גלריית מסך מלא עבור ${productName}`}
               className="bg-background text-foreground hover:bg-background absolute top-4 right-4 h-9 gap-1.5 rounded-full px-3 text-xs shadow-sm"
-              data-testid="product-gallery-zoom-trigger"
+              data-testid="product-gallery-fullscreen-trigger"
               type="button"
               variant="secondary"
             >
               <Maximize2 aria-hidden="true" className="size-3.5" />
-              הגדלה
+              מסך מלא
             </Button>
           </DialogTrigger>
           <DialogContent
-            className="w-[min(96vw,72rem)] max-w-none p-3 sm:p-4"
-            data-testid="product-gallery-zoom-dialog"
+            className="bg-background fixed !inset-0 !top-0 !left-0 z-[100] grid !h-[100dvh] !w-[100dvw] !max-w-none !translate-x-0 !translate-y-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden !rounded-none !border-0 !p-0 sm:!max-w-none"
+            data-testid="product-gallery-fullscreen-dialog"
             dir="rtl"
+            onKeyDown={handleViewerKeyDown}
+            showCloseButton={false}
+            style={{ animation: "none", transform: "none" }}
           >
             <DialogTitle className="sr-only">
-              תצוגה מוגדלת של {productName}
+              גלריית תמונות של {productName}
             </DialogTitle>
             <DialogDescription className="sr-only">
-              אפשר לסגור את התצוגה המוגדלת ולחזור לגלריית המוצר.
+              ניתן לעבור בין תמונות התכשיט, לסגור ולחזור לעמוד המוצר.
             </DialogDescription>
-            <div className="brand-gallery-frame relative aspect-[4/5] overflow-hidden rounded-md sm:aspect-[5/4] lg:aspect-[4/3]">
-              <Image
-                alt={`${productName}, תמונה מוגדלת ${activeImagePosition} מתוך ${galleryImageCount}`}
-                className="media-color object-contain"
-                fill
-                sizes="(min-width: 1280px) 72rem, 96vw"
-                src={activeImage}
-              />
+
+            <div className="border-border flex h-14 items-center justify-between gap-3 border-b px-3 sm:px-5">
+              <p
+                aria-live="polite"
+                className="text-muted-foreground min-w-0 truncate text-sm"
+                data-testid="product-gallery-fullscreen-status"
+              >
+                תמונה {activeImagePosition} מתוך {galleryImageCount} של{" "}
+                {productName}
+              </p>
+              <DialogClose asChild>
+                <Button
+                  aria-label="סגירת גלריית מסך מלא"
+                  data-testid="product-gallery-fullscreen-close"
+                  size="icon-sm"
+                  type="button"
+                  variant="ghost"
+                >
+                  <X aria-hidden="true" className="size-4" />
+                </Button>
+              </DialogClose>
+            </div>
+
+            <div
+              className="relative grid min-h-0 place-items-center px-3 py-3 sm:px-16 sm:py-5"
+              data-testid="product-gallery-fullscreen-stage"
+            >
+              <AnimatePresence initial={false} mode="popLayout">
+                <motion.div
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="relative h-full max-h-[calc(100dvh-10rem)] w-full"
+                  exit={
+                    shouldReduceMotion
+                      ? { opacity: 1, scale: 1 }
+                      : { opacity: 0, scale: 0.996 }
+                  }
+                  initial={
+                    shouldReduceMotion ? false : { opacity: 0, scale: 1.006 }
+                  }
+                  key={`viewer-${activeImage}`}
+                  transition={{
+                    duration: shouldReduceMotion ? 0 : 0.28,
+                    ease: [0.2, 0, 0, 1],
+                  }}
+                >
+                  <Image
+                    alt={`${productName}, תמונה במסך מלא ${activeImagePosition} מתוך ${galleryImageCount}`}
+                    className="media-color object-contain"
+                    fill
+                    sizes="100vw"
+                    src={activeImage}
+                  />
+                </motion.div>
+              </AnimatePresence>
+
+              {galleryImageCount > 1 ? (
+                <>
+                  <Button
+                    aria-label="התמונה הקודמת"
+                    className="bg-background/92 absolute top-1/2 right-3 hidden -translate-y-1/2 rounded-full shadow-none sm:inline-flex"
+                    data-testid="product-gallery-previous"
+                    onClick={() => activateThumbnail(activeImageIndex - 1)}
+                    size="icon-lg"
+                    type="button"
+                    variant="secondary"
+                  >
+                    <ChevronRight aria-hidden="true" className="size-5" />
+                  </Button>
+                  <Button
+                    aria-label="התמונה הבאה"
+                    className="bg-background/92 absolute top-1/2 left-3 hidden -translate-y-1/2 rounded-full shadow-none sm:inline-flex"
+                    data-testid="product-gallery-next"
+                    onClick={() => activateThumbnail(activeImageIndex + 1)}
+                    size="icon-lg"
+                    type="button"
+                    variant="secondary"
+                  >
+                    <ChevronLeft aria-hidden="true" className="size-5" />
+                  </Button>
+                </>
+              ) : null}
+            </div>
+
+            <div className="border-border border-t px-3 py-3 sm:px-5">
+              {renderThumbnailRail({
+                refs: viewerThumbnailRefs,
+                testId: "product-gallery-fullscreen-thumbnail-rail",
+                thumbnailTestId: "product-gallery-fullscreen-thumbnail",
+              })}
             </div>
           </DialogContent>
         </Dialog>
@@ -189,46 +370,11 @@ export function ProductGallery({
         </p>
       ) : null}
 
-      {galleryImageCount > 1 ? (
-        <div
-          aria-label="תמונות תכשיט"
-          className="grid grid-cols-4 gap-3 sm:grid-cols-5 lg:grid-cols-4"
-        >
-          {galleryImages.map((image, index) => (
-            <button
-              aria-label={`הצגת תמונה ${index + 1} של ${productName}`}
-              aria-current={activeImageIndex === index}
-              aria-pressed={activeImageIndex === index}
-              className={cn(
-                "motion-thumbnail-button border-border bg-card relative aspect-[4/5] overflow-hidden rounded-md border transition focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none",
-                activeImageIndex === index
-                  ? "border-foreground ring-foreground ring-1"
-                  : "hover:border-foreground/60",
-              )}
-              data-gallery-selected={
-                activeImageIndex === index ? "true" : "false"
-              }
-              data-testid="product-gallery-thumbnail"
-              key={image}
-              onClick={() => activateThumbnail(index)}
-              onKeyDown={(event) => handleThumbnailKeyDown(event, index)}
-              ref={(node) => {
-                thumbnailRefs.current[index] = node;
-              }}
-              type="button"
-            >
-              <Image
-                alt=""
-                className="media-color object-cover"
-                fill
-                loading="lazy"
-                sizes="(min-width: 1024px) 12vw, (min-width: 640px) 18vw, 24vw"
-                src={image}
-              />
-            </button>
-          ))}
-        </div>
-      ) : null}
+      {renderThumbnailRail({
+        refs: thumbnailRefs,
+        testId: "product-gallery-thumbnail-rail",
+        thumbnailTestId: "product-gallery-thumbnail",
+      })}
     </div>
   );
 }

@@ -1083,6 +1083,10 @@ main > header + [aria-hidden="true"] + [data-testid="cinematic-page-hero"] {
   padding-top: var(--site-header-height);
 }
 
+.home-cinematic-hero {
+  --home-hero-height: max(calc(100svh - var(--site-header-height)), 31rem);
+}
+
 main
   > header
   + [aria-hidden="true"]
@@ -1378,7 +1382,7 @@ main
 }
 
 .site-header[data-over-media="true"][data-header-state="transparent"] {
-  --site-header-link-color: rgb(255 255 255 / 78%);
+  --site-header-link-color: rgb(255 255 255 / 88%);
   --site-header-link-hover: white;
   color: white;
 }
@@ -1414,6 +1418,18 @@ main
   transition:
     color var(--motion-fast) var(--ease-motion-standard),
     outline-color var(--motion-fast) var(--ease-motion-standard) !important;
+}
+
+.site-header .site-header-label-action {
+  border-radius: 0;
+  color: var(--site-header-link-color);
+  line-height: 1;
+  text-decoration: none;
+}
+
+.site-header .site-header-label-action:hover,
+.site-header .site-header-label-action:focus-visible {
+  color: var(--site-header-link-hover);
 }
 
 .site-header .site-header-action:hover,
@@ -1490,7 +1506,7 @@ main
 }
 
 .mobile-nav-panel {
-  --mobile-nav-item-step: 30ms;
+  --mobile-nav-item-step: 34ms;
   gap: 0;
   overflow-x: hidden;
   border-left-color: var(--glass-border) !important;
@@ -1498,6 +1514,13 @@ main
   transform-origin: right center;
   backface-visibility: hidden;
   will-change: transform, opacity;
+}
+
+.mobile-nav-panel-luxury {
+  --mobile-nav-item-step: 40ms;
+  border-left-color: var(--glass-border) !important;
+  background: var(--background) !important;
+  box-shadow: -2rem 0 5rem rgb(16 24 28 / 16%);
 }
 
 .mobile-nav-panel[data-state="open"] {
@@ -1515,11 +1538,25 @@ main
   background: var(--background);
 }
 
+.mobile-nav-panel-luxury .mobile-nav-header {
+  min-height: 11.75rem;
+  background: var(--background);
+}
+
+.mobile-nav-luxury-body {
+  background: var(--background);
+}
+
 .mobile-nav-close {
   border-color: transparent !important;
   background: transparent !important;
   color: var(--foreground) !important;
   box-shadow: none !important;
+}
+
+.mobile-nav-panel-luxury .mobile-nav-close {
+  block-size: 2.75rem;
+  inline-size: 2.75rem;
 }
 
 .mobile-nav-panel[data-state="open"] .mobile-nav-close svg {
@@ -1542,6 +1579,10 @@ main
   animation: mobile-nav-item-out 160ms var(--ease-motion-standard) both;
 }
 
+.mobile-nav-section-kicker {
+  margin-bottom: 0.85rem;
+}
+
 .mobile-nav-quick-action,
 .mobile-nav-link,
 .mobile-nav-feature-link,
@@ -1552,6 +1593,17 @@ main
     border-color var(--motion-fast) var(--ease-motion-standard),
     color var(--motion-fast) var(--ease-motion-standard),
     transform var(--motion-fast) var(--ease-motion-standard);
+}
+
+.mobile-nav-panel-luxury .mobile-nav-quick-action,
+.mobile-nav-panel-luxury .mobile-nav-link,
+.mobile-nav-panel-luxury .mobile-nav-feature-link {
+  border-radius: 0;
+}
+
+.mobile-nav-panel-luxury .mobile-nav-quick-action > svg:first-child,
+.mobile-nav-panel-luxury .mobile-nav-feature-icon {
+  color: var(--foreground);
 }
 
 .mobile-nav-quick-action:hover,
@@ -1565,6 +1617,10 @@ main
   color: var(--foreground);
 }
 
+.mobile-nav-panel-luxury .mobile-nav-feature-link {
+  color: var(--foreground);
+}
+
 .mobile-nav-feature-link:hover,
 .mobile-nav-feature-link:focus-visible {
   border-color: rgb(16 24 28 / 12%);
@@ -1573,8 +1629,7 @@ main
 
 .mobile-nav-feature-link:hover .mobile-nav-feature-icon,
 .mobile-nav-feature-link:focus-visible .mobile-nav-feature-icon {
-  border-color: rgb(16 24 28 / 14%);
-  background: rgb(16 24 28 / 4%);
+  color: var(--foreground);
 }
 
 .mobile-nav-feature-link:hover .mobile-nav-feature-arrow,
@@ -2811,23 +2866,27 @@ html[data-public-floating-bar-visible="true"] .public-motion-content {
 
 @keyframes mobile-nav-panel-in {
   from {
-    opacity: 0.98;
-    transform: translate3d(104%, 0, 0) scaleX(0.985);
+    opacity: 0.99;
+    clip-path: inset(0 0 0 18%);
+    transform: translate3d(100%, 0, 0);
   }
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scaleX(1);
+    clip-path: inset(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 @keyframes mobile-nav-panel-out {
   from {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scaleX(1);
+    clip-path: inset(0);
+    transform: translate3d(0, 0, 0);
   }
   to {
-    opacity: 0.98;
-    transform: translate3d(104%, 0, 0) scaleX(0.985);
+    opacity: 0.99;
+    clip-path: inset(0 0 0 18%);
+    transform: translate3d(100%, 0, 0);
   }
 }
 
