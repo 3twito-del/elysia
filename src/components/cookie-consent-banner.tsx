@@ -10,6 +10,7 @@ import {
   type CookieConsentValue,
   writeCookieConsent,
 } from "~/lib/cookie-consent";
+import { cn } from "~/lib/utils";
 import { useCookieConsentValue } from "~/lib/use-cookie-consent";
 
 export function CookieConsentBanner() {
@@ -17,6 +18,7 @@ export function CookieConsentBanner() {
   const consentValue = useCookieConsentValue();
   const bannerRef = useRef<HTMLElement>(null);
   const isAdminRoute = pathname.startsWith("/admin");
+  const isHomeRoute = pathname === "/";
 
   useEffect(() => {
     const root = document.documentElement;
@@ -74,7 +76,10 @@ export function CookieConsentBanner() {
     <section
       aria-label="בחירת קוקיז"
       aria-describedby="cookie-consent-summary"
-      className="minimal-scroll bg-background fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-50 max-h-[24dvh] overflow-y-auto rounded-md border border-[var(--glass-border)] px-3 py-2 shadow-none sm:inset-x-auto sm:right-4 sm:bottom-4 sm:w-[min(calc(100vw-2rem),20rem)] sm:px-3 sm:py-2.5"
+      className={cn(
+        "minimal-scroll bg-background fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-50 max-h-[24dvh] overflow-y-auto rounded-md border border-[var(--glass-border)] px-3 py-2 shadow-none sm:inset-x-auto sm:bottom-4 sm:w-[min(calc(100vw-2rem),20rem)] sm:px-3 sm:py-2.5",
+        isHomeRoute ? "sm:left-4" : "sm:right-4",
+      )}
       data-cookie-consent-banner="true"
       data-public-floating-avoid="true"
       ref={bannerRef}

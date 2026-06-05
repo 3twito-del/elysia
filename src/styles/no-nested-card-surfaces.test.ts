@@ -27,13 +27,15 @@ describe("nested card surface guardrails", () => {
   it("keeps shared page bands from becoming section cards", () => {
     const css = read("src/styles/globals.css");
     const brandPageBandBlock = extractCssBlock(css, ".brand-page-band");
-    const brandAquaSectionBlock = extractCssBlock(css, ".brand-aqua-section");
+    const boutiqueFinalCtaBlock = extractCssBlock(css, ".boutique-final-cta");
 
     expect(brandPageBandBlock).not.toMatch(/\bborder(?:-radius|-color)?:/);
     expect(brandPageBandBlock).not.toMatch(/\bbox-shadow\s*:/);
-    expect(brandAquaSectionBlock).toMatch(/background:\s*var\(--background\)/);
-    expect(brandAquaSectionBlock).not.toMatch(/\bborder(?:-radius|-color)?:/);
-    expect(brandAquaSectionBlock).not.toMatch(/\bbox-shadow\s*:/);
+    expect(boutiqueFinalCtaBlock).toMatch(
+      /background:\s*var\(--brand-porcelain\)/,
+    );
+    expect(boutiqueFinalCtaBlock).not.toMatch(/\bborder(?:-radius|-color)?:/);
+    expect(boutiqueFinalCtaBlock).not.toMatch(/\bbox-shadow\s*:/);
   });
 
   it("keeps current product, checkout, account, and service surfaces covered", () => {

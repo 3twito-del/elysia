@@ -6,57 +6,48 @@ import { describe, expect, it } from "vitest";
 const root = process.cwd();
 
 describe("homepage discovery to commerce balance", () => {
-  it("keeps homepage shortcuts useful without duplicating product navigation", () => {
+  it("keeps the homepage as a boutique brand entry rather than a catalog index", () => {
     const home = read("src/app/page.tsx");
 
-    expect(home).toContain("const homeCommerceShortcuts = [");
-    expect(home).toContain('data-testid="home-commerce-shortcuts"');
-    expect(home).toContain("const homeHeroMediaCaption =");
-    expect(home).toContain('data-testid="home-hero-media-caption"');
-    expect(home).toContain('data-testid="home-hero-slide-progress"');
-    expect(home).toContain('data-testid="home-hero-trust-notes"');
-    expect(home).toContain('data-testid="home-hero-media-fallback"');
+    expect(home).toContain(
+      'const boutiqueHeroImage = "/brand/boutique/lifestyle-hero.avif";',
+    );
+    expect(home).toContain("const collectionImageBySlug");
+    expect(home).toContain("const homeTrustNotes = [");
+    expect(home).toContain("const storyPrinciples = [");
+    expect(home).toContain('data-testid="home-hero-statement"');
+    expect(home).toContain('data-testid="home-hero-primary-cta"');
     expect(home).toContain('data-testid="home-hero-cta-row"');
-    expect(home).toContain("home-hero-help-cta");
-    expect(home).toContain('href="/stylist"');
-    expect(home).not.toContain("listCatalogProducts()");
-    expect(home).not.toContain("homeCategoryChips");
-    expect(home).not.toContain("formatHomeCategoryCount");
-    expect(home).not.toContain("homeProductRailTabs");
-    expect(home).not.toContain('data-testid="home-product-rail-tabs"');
-    expect(home).not.toContain('data-testid="home-product-rail-tab"');
-    expect(home).not.toContain('data-home-rail-active={tab.current ? "true"');
-    expect(home).not.toContain('data-testid="home-category-count-chips"');
-    expect(home).not.toContain('data-testid="home-category-count-chip"');
+    expect(home).toContain('href="#collections"');
+    expect(home).toContain('id="collections"');
+    expect(home).toContain("boutique-collection-card");
+    expect(home).toContain('id="featured"');
+    expect(home).toContain("featuredProducts.slice(0, 4)");
+    expect(home).toContain('display={index < 2 ? "editorial" : "standard"}');
+    expect(home).toContain('id="trust"');
     expect(home).toContain('data-testid="home-service-strip"');
-    expect(home).toContain("home-luxury-page");
-    expect(home).toContain("home-luxury-section");
-    expect(home).toContain("featuredProducts.slice(0, 2)");
-    expect(home).toContain('display="editorial"');
-    expect(home).toContain('href="/service?topic=general"');
-    expect(home).toContain('href: "/search"');
-    expect(home).toContain('href: "/gifts"');
-    expect(home).toContain('href: "/size-guide"');
-    expect(home).toContain('href: "/service"');
-    expect(indexOf(home, 'data-testid="home-category-tile"')).toBeLessThan(
-      indexOf(home, 'data-testid="home-commerce-shortcuts"'),
-    );
-    expect(indexOf(home, 'data-testid="home-commerce-shortcuts"')).toBeLessThan(
-      indexOf(home, 'data-testid="home-service-strip"'),
-    );
-    expect(indexOf(home, 'data-testid="home-service-strip"')).toBeLessThan(
-      indexOf(home, 'id="materials"'),
-    );
-    expect(indexOf(home, 'id="quick-search"')).toBeLessThan(
+    expect(home).toContain('id="story"');
+    expect(home).toContain('id="boutique-cta"');
+    expect(home).not.toContain("listCatalogProducts()");
+    expect(home).not.toContain("const homeCommerceShortcuts = [");
+    expect(home).not.toContain('data-testid="home-commerce-shortcuts"');
+    expect(home).not.toContain('data-testid="home-hero-trust-notes"');
+    expect(home).not.toContain("home-hero-help-cta");
+    expect(home).not.toContain('href="/stylist"');
+    expect(home).not.toContain('data-testid="home-product-rail-tabs"');
+    expect(home).not.toContain('id="quick-search"');
+    expect(indexOf(home, 'id="collections"')).toBeLessThan(
       indexOf(home, 'id="featured"'),
     );
     expect(indexOf(home, 'id="featured"')).toBeLessThan(
-      indexOf(home, 'data-layout-equal-group="home-featured-products"'),
+      indexOf(home, 'id="trust"'),
     );
-    expect(copyBlock(home, "const homeCommerceShortcuts = [")).not.toContain(
-      'href: "#featured"',
+    expect(indexOf(home, 'id="trust"')).toBeLessThan(
+      indexOf(home, 'id="story"'),
     );
-    expect(home).not.toContain('href="#categories"');
+    expect(indexOf(home, 'id="story"')).toBeLessThan(
+      indexOf(home, 'id="boutique-cta"'),
+    );
   });
 
   it("records benchmark support for the restrained homepage shortcut rail", () => {
@@ -79,11 +70,4 @@ function indexOf(source: string, pattern: string) {
   const index = source.indexOf(pattern);
   expect(index, pattern).toBeGreaterThanOrEqual(0);
   return index;
-}
-
-function copyBlock(source: string, startPattern: string) {
-  const start = indexOf(source, startPattern);
-  const end = source.indexOf("] as const;", start);
-  expect(end).toBeGreaterThan(start);
-  return source.slice(start, end);
 }

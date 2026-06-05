@@ -8,7 +8,7 @@ describe("product card overlay budget", () => {
     const source = read("src/components/product-card.tsx");
 
     expect(countOccurrences(source, "<Badge")).toBe(1);
-    expect(source).not.toContain("product.collection");
+    expect(source).toContain("getPublicCollectionName(product.collection)");
     expect(source).not.toContain("discountPercent");
     expect(source).toContain("product-card-status-badge");
     expect(source).toContain("product-card-badge-stack");
@@ -92,16 +92,17 @@ describe("product card overlay budget", () => {
     expect(route).toContain("addCartItem(parsed.data)");
   });
 
-  it("keeps product cards minimal with material and stone as quiet metadata", () => {
+  it("keeps product cards minimal with product facts as quiet metadata", () => {
     const source = read("src/components/product-card.tsx");
 
-    expect(source).toContain(
-      "const productDetails = [product.material, product.stone]",
-    );
-    expect(source).toContain('const productMeta = productDetails.join(" · ")');
+    expect(source).toContain("const productDetails = [");
+    expect(source).toContain("product.material");
+    expect(source).toContain("product.stone");
+    expect(source).toContain("publicCollectionName");
+    expect(source).toContain("const productMeta = productDetails.join");
     expect(source).toContain("const productQuickFacts = [");
     expect(source).toContain("commerceStatus.label");
-    expect(source).toContain('product.source === "DROPSHIP_SHOPIFY"');
+    expect(source).not.toContain('product.source === "DROPSHIP_SHOPIFY"');
     expect(source).toContain('data-testid="product-card-attributes"');
     expect(source).not.toContain("product.shortDescription");
     expect(source).not.toContain("commerceHighlights");

@@ -213,7 +213,7 @@ export function ProductGallery({
       role="group"
     >
       <div
-        className="brand-gallery-frame product-gallery-main-frame relative aspect-[5/4] max-h-[min(78vh,44rem)] overflow-hidden rounded-md bg-[var(--secondary)] sm:aspect-[5/4] lg:aspect-[4/3]"
+        className="brand-gallery-frame product-gallery-main-frame relative aspect-[4/5] max-h-[min(82vh,46rem)] overflow-hidden rounded-md bg-[var(--secondary)] sm:aspect-[5/4] lg:aspect-[4/3]"
         data-motion-gallery="product"
         data-testid="product-gallery"
       >
@@ -235,7 +235,7 @@ export function ProductGallery({
           >
             <Image
               alt={`${productName}, תמונה ${activeImagePosition} מתוך ${galleryImageCount}`}
-              className="media-color object-contain"
+              className="media-color object-cover"
               fill
               loading={activeImageIndex === 0 ? undefined : "lazy"}
               priority={activeImageIndex === 0}
@@ -265,7 +265,7 @@ export function ProductGallery({
             <DialogTrigger asChild>
               <Button
                 aria-label={`פתיחת גלריית מסך מלא עבור ${productName}`}
-                className="bg-background/95 text-foreground hover:bg-background size-9 rounded-full p-0 shadow-sm backdrop-blur"
+                className="bg-background text-foreground hover:bg-background size-9 rounded-full p-0 shadow-sm"
                 data-icon-tooltip="מסך מלא"
                 data-testid="product-gallery-fullscreen-trigger"
                 onClick={(event) => {
@@ -282,7 +282,7 @@ export function ProductGallery({
             </DialogTrigger>
             <Button
               aria-label={`הגדלת תמונת התכשיט עבור ${productName}`}
-              className="bg-background/95 text-foreground hover:bg-background rounded-full shadow-sm backdrop-blur sm:hidden"
+              className="bg-background text-foreground hover:bg-background rounded-full shadow-sm sm:hidden"
               data-icon-tooltip="הגדלה"
               data-testid="product-gallery-touch-zoom-trigger"
               onClick={(event) => {
@@ -406,7 +406,7 @@ export function ProductGallery({
                 <>
                   <Button
                     aria-label="התמונה הקודמת"
-                    className="bg-background/92 absolute top-1/2 right-5 -translate-y-1/2 rounded-full shadow-none sm:right-4"
+                    className="bg-background absolute top-1/2 right-5 -translate-y-1/2 rounded-full shadow-none sm:right-4"
                     data-testid="product-gallery-previous"
                     onClick={() => activateThumbnail(activeImageIndex - 1)}
                     size="icon-lg"
@@ -417,7 +417,7 @@ export function ProductGallery({
                   </Button>
                   <Button
                     aria-label="התמונה הבאה"
-                    className="bg-background/92 absolute top-1/2 left-5 -translate-y-1/2 rounded-full shadow-none sm:left-4"
+                    className="bg-background absolute top-1/2 left-5 -translate-y-1/2 rounded-full shadow-none sm:left-4"
                     data-testid="product-gallery-next"
                     onClick={() => activateThumbnail(activeImageIndex + 1)}
                     size="icon-lg"

@@ -29,8 +29,13 @@ import { getPublicProductCommerceStatus } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
 import { stringifyJsonLd } from "~/lib/json-ld";
 import {
+  getPublicCollectionName,
+  getPublicProductName,
+} from "~/lib/product-display";
+import {
   getCatalogProductBySlug,
   listCatalogProducts,
+  type CatalogProduct,
 } from "~/server/services/catalog";
 import { TRPCReactProvider } from "~/trpc/react";
 
@@ -45,6 +50,14 @@ type ServiceRowProps = {
   title: string;
 };
 
+const boutiqueImageByCategorySlug: Record<string, string> = {
+  bracelets: "/brand/boutique/category-bracelets.avif",
+  earrings: "/brand/boutique/category-earrings.avif",
+  necklaces: "/brand/boutique/category-necklaces.avif",
+  rings: "/brand/boutique/category-rings.avif",
+};
+const boutiqueProductDetailImage = "/brand/boutique/product-detail.avif";
+
 export async function generateStaticParams() {
   const products = await listCatalogProducts();
 
@@ -56,16 +69,19 @@ export async function generateMetadata({
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
   const product = await getCatalogProductBySlug(slug);
+  const publicProductName = product
+    ? getPublicProductName(product.name)
+    : undefined;
 
   return {
-    title: product?.name ?? "תכשיט",
+    title: publicProductName ?? "תכשיט",
     description: product?.shortDescription,
     alternates: {
       canonical: `/product/${slug}`,
     },
     openGraph: product
       ? {
-          title: product.name,
+          title: publicProductName ?? product.name,
           description: product.shortDescription,
           url: `/product/${slug}`,
           images: [{ url: product.image }],
@@ -74,7 +90,7 @@ export async function generateMetadata({
     twitter: product
       ? {
           card: "summary_large_image",
-          title: product.name,
+          title: publicProductName ?? product.name,
           description: product.shortDescription,
           images: [product.image],
         }
@@ -95,6 +111,8 @@ export default async function ProductPage({
 
   if (!product) notFound();
 
+  const publicProductName = getPublicProductName(product.name);
+  const publicCollectionName = getPublicCollectionName(product.collection);
   const onlineStockQuantity = Object.values(product.inventory).reduce(
     (total, quantity) => total + quantity,
     0,
@@ -103,28 +121,24 @@ export default async function ProductPage({
     availableQuantity: onlineStockQuantity,
     availabilityMode: product.availabilityMode,
   });
-  const uniqueImages = Array.from(new Set(product.images));
-  const productSourceLabel =
-    product.source === "DROPSHIP_SHOPIFY"
-      ? "מקור: ספק מאומת"
-      : "מקור: סטודיו Elysia";
+  const uniqueImages = getProductBoutiqueGalleryImages(product);
   const productMediaCaptionParts = [
     product.material ? `חומר: ${product.material}` : undefined,
     product.stone ? `אבן: ${product.stone}` : undefined,
-    product.collection ? `קולקציה: ${product.collection}` : undefined,
+    publicCollectionName ? `קולקציה: ${publicCollectionName}` : undefined,
   ].filter((part): part is string => Boolean(part));
   const productMediaCaption =
     productMediaCaptionParts.length > 0
       ? `בתמונה: ${productMediaCaptionParts.join(" · ")}.`
       : undefined;
   const productSupportHref = createProductServiceHref({
-    productReference: `${product.name} (${product.sku})`,
+    productReference: `${publicProductName} (${product.sku})`,
     reason: "שאלת התאמה, מידה, חומר או מסירה לפני הזמנה.",
   });
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: product.name,
+    name: publicProductName,
     sku: product.sku,
     image: product.image,
     description: product.shortDescription,
@@ -148,7 +162,7 @@ export default async function ProductPage({
   const productFacts = [
     { label: "חומר", value: product.material },
     { label: "אבן", value: product.stone },
-    { label: "קולקציה", value: product.collection },
+    { label: "קולקציה", value: publicCollectionName },
   ].filter(
     (fact): fact is { label: string; value: string } =>
       typeof fact.value === "string" && fact.value.length > 0,
@@ -163,9 +177,18 @@ export default async function ProductPage({
       typeof detail.value === "string" && detail.value.length > 0,
   );
   const productTrustNotes = [
-    "פרטים מאומתים לפני הזמנה",
-    "נבדק בקפידה לפני מסירה",
-    "ייעוץ לבחירת מידה",
+    {
+      icon: ShieldCheck,
+      label: "פרטים מאומתים לפני הזמנה",
+    },
+    {
+      icon: Gem,
+      label: "נבדק בקפידה לפני מסירה",
+    },
+    {
+      icon: Truck,
+      label: "ייעוץ ומסירה בתיאום אישי",
+    },
   ];
 
   return (
@@ -189,7 +212,10 @@ export default async function ProductPage({
         initialVisible
       >
         <div className="order-1 min-w-0 lg:order-none">
-          <ProductGallery images={uniqueImages} productName={product.name} />
+          <ProductGallery
+            images={uniqueImages}
+            productName={publicProductName}
+          />
           {productMediaCaption ? (
             <p
               className="text-muted-foreground mt-3 text-sm leading-6"
@@ -216,7 +242,7 @@ export default async function ProductPage({
               data-testid="product-title"
               dir="auto"
             >
-              {product.name}
+              {publicProductName}
             </h1>
             <p className="text-muted-foreground mt-4 line-clamp-3 max-w-prose text-base leading-7 sm:line-clamp-none">
               {product.shortDescription}
@@ -231,7 +257,6 @@ export default async function ProductPage({
                   {formatPrice(product.price)}
                 </span>
                 <Badge variant="secondary">{commerceStatus.label}</Badge>
-                <Badge variant="outline">{productSourceLabel}</Badge>
               </div>
 
               {product.deliveryPromise ? (
@@ -252,12 +277,19 @@ export default async function ProductPage({
               className="text-muted-foreground mt-5 grid gap-2 text-sm leading-6"
               data-testid="product-commerce-highlights"
             >
-              {productTrustNotes.map((note) => (
-                <li className="flex gap-2" key={note}>
-                  <span aria-hidden="true">-</span>
-                  <span>{note}</span>
-                </li>
-              ))}
+              {productTrustNotes.map((note) => {
+                const Icon = note.icon;
+
+                return (
+                  <li
+                    className="product-detail-trust-item flex items-center gap-2"
+                    key={note.label}
+                  >
+                    <Icon aria-hidden="true" className="size-4 shrink-0" />
+                    <span>{note.label}</span>
+                  </li>
+                );
+              })}
             </ul>
 
             <div className="mt-7">
@@ -269,8 +301,8 @@ export default async function ProductPage({
                   deliveryPromise={product.deliveryPromise}
                   metalColors={product.metalColors}
                   price={product.price}
-                  productName={product.name}
-                  productReference={`${product.name} (${product.sku})`}
+                  productName={publicProductName}
+                  productReference={`${publicProductName} (${product.sku})`}
                   productSlug={product.slug}
                   productSource={product.source}
                   returnPolicy={product.returnPolicy}
@@ -464,7 +496,7 @@ function ProductRecommendationRails({
               </Button>
             </div>
             <div
-              className="ui-equal-grid mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+              className="ui-equal-grid mt-5 grid gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-3"
               data-layout-equal-group={`product-recommendation-${rail.id}`}
             >
               {rail.products.slice(0, 3).map((recommended) => (
@@ -486,4 +518,21 @@ function createSearchReturnHref(query: string) {
   const params = new URLSearchParams({ q: query });
 
   return `/search?${params.toString()}`;
+}
+
+function getProductBoutiqueGalleryImages(product: CatalogProduct) {
+  const categoryLifestyleImage =
+    boutiqueImageByCategorySlug[product.categorySlug];
+
+  return Array.from(
+    new Set(
+      [
+         product.image,
+         ...product.images,
+         categoryLifestyleImage,
+         boutiqueProductDetailImage,
+         "/brand/boutique/lifestyle-hero.avif",
+      ].filter((image): image is string => Boolean(image)),
+    ),
+  ).slice(0, 6);
 }

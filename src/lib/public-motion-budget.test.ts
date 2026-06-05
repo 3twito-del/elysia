@@ -69,7 +69,8 @@ describe("public motion budget", () => {
       'const allowsContinuousMotion = motionScope === "home-hero";',
     );
     expect(sequenceSource).toContain("!allowsContinuousMotion");
-    expect(homeSource).toContain('motionScope="home-hero"');
+    expect(homeSource).toContain("boutique-home-hero");
+    expect(homeSource).not.toContain("<CinematicHeroSequence");
     expect(brandMediaPanelSource).not.toContain('motionScope="home-hero"');
     expect(productCardSource).not.toContain('motionScope="home-hero"');
     expect(loadingCss).not.toContain("@keyframes category-loading-progress");

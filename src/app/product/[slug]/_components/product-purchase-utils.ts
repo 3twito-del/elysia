@@ -4,6 +4,7 @@ import {
   type PublicProductAvailabilityMode,
 } from "~/lib/commerce-labels";
 import { formatInlinePrice } from "~/lib/format";
+import { getPublicVariantOptionName } from "~/lib/product-display";
 import type { SizeFitKind } from "~/lib/size-fit";
 import type {
   CatalogProduct,
@@ -38,7 +39,7 @@ export function getInitialVariantSku(variants: CatalogProductVariant[]) {
 }
 
 export function getVariantDisplayName(variant: CatalogProductVariant) {
-  return variant.size ?? variant.name;
+  return variant.size ?? getPublicVariantOptionName(variant.name);
 }
 
 export function getVariantButtonLabel(
@@ -47,7 +48,7 @@ export function getVariantButtonLabel(
   productSource: CatalogProduct["source"] = "OWN",
 ) {
   if (isShopifyDropshipVariantAvailable({ productSource, variant })) {
-    return `${getVariantDisplayName(variant)}, ${formatInlinePrice(variant.price)}, זמין דרך Shopify`;
+    return `${getVariantDisplayName(variant)}, ${formatInlinePrice(variant.price)}, זמין להזמנה`;
   }
 
   const commerceStatus = getPublicProductCommerceStatus({
@@ -84,7 +85,7 @@ export function getVariantStatusLabel(input: {
 }) {
   if (!input.variant) return "בירור התאמה";
 
-  if (isShopifyDropshipVariantAvailable(input)) return "זמין דרך Shopify";
+  if (isShopifyDropshipVariantAvailable(input)) return "זמין להזמנה";
 
   return getPublicProductCommerceStatus({
     availabilityMode: input.availabilityMode,
@@ -114,7 +115,7 @@ export function getPurchaseConfidenceItems(input: {
       key: "checkout",
       title:
         input.productSource === "DROPSHIP_SHOPIFY"
-          ? "מסלול ספק ברור"
+          ? "מסלול הזמנה מאובטח"
           : "אישור לפני השלמה",
     },
     {
@@ -181,7 +182,7 @@ function getCheckoutConfidenceDescription(input: {
   }
 
   if (isShopifyDropshipVariantAvailable(input)) {
-    return "המידה זמינה דרך ספק Shopify; התשלום והמסירה יושלמו בקופת הספק.";
+    return "המידה זמינה להזמנה; התשלום והמסירה יושלמו בקופה מאובטחת.";
   }
 
   if (
@@ -207,12 +208,12 @@ function getServiceConfidenceDescription(input: {
   const delivery =
     input.deliveryPromise ??
     (input.productSource === "DROPSHIP_SHOPIFY"
-      ? "מסירה ותשלום יושלמו בקופת הספק."
+      ? "מסירה ותשלום יושלמו בקופה מאובטחת."
       : "מסירה עד הבית לאחר אישור הפרטים.");
   const returns =
     input.returnPolicy ??
     (input.productSource === "DROPSHIP_SHOPIFY"
-      ? "החזרות והחלפות לפי מדיניות הספק."
+      ? "החלפות והחזרות מטופלות בתיאום שירות אישי."
       : "החלפה או החזרה בתיאום אישי לפי מדיניות Elysia.");
   const aftercare = [
     input.warranty ? `אחריות: ${input.warranty}` : null,

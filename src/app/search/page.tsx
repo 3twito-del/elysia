@@ -21,6 +21,7 @@ import { Button } from "~/components/ui/button";
 import { EmptyState } from "~/components/ui/empty-state";
 import { getPublicProductCommerceStatus } from "~/lib/commerce-labels";
 import { formatInlinePrice, formatPrice } from "~/lib/format";
+import { getPublicProductName } from "~/lib/product-display";
 import { cn } from "~/lib/utils";
 import { db } from "~/server/db";
 import {
@@ -66,7 +67,7 @@ type SearchRecoveryAction = {
 };
 
 const SEARCH_RESULT_IMAGE_BLUR_DATA_URL =
-  "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='10'%20height='8'%20viewBox='0%200%2010%208'%3E%3Crect%20width='10'%20height='8'%20fill='%23eef6f7'/%3E%3C/svg%3E";
+  "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='10'%20height='8'%20viewBox='0%200%2010%208'%3E%3Crect%20width='10'%20height='8'%20fill='%23f3eee8'/%3E%3C/svg%3E";
 
 export const metadata = {
   title: "חיפוש במבחר",
@@ -78,13 +79,13 @@ export const metadata = {
     title: "Elysia | חיפוש תכשיטים",
     description: "סינון וחיפוש במבחר התכשיטים של Elysia.",
     url: "/search",
-    images: [{ url: "/brand/v2/editorial-home.avif" }],
+    images: [{ url: "/brand/boutique/lifestyle-hero.avif" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Elysia | חיפוש תכשיטים",
     description: "סינון וחיפוש במבחר התכשיטים של Elysia.",
-    images: ["/brand/v2/editorial-home.avif"],
+    images: ["/brand/boutique/lifestyle-hero.avif"],
   },
 };
 
@@ -645,6 +646,7 @@ function SearchResultListItem({
   const isUnavailable =
     product.availabilityMode === "READY_TO_ORDER" && !isAvailable;
   const href = createProductSearchHref(product.slug, searchContext);
+  const publicProductName = getPublicProductName(product.name);
   const productDetails = [product.material, product.stone].filter(
     (detail): detail is string => Boolean(detail),
   );
@@ -653,7 +655,7 @@ function SearchResultListItem({
 
   return (
     <Link
-      aria-label={product.name}
+      aria-label={publicProductName}
       className={cn(
         "product-card-shell group/list grid min-h-full overflow-hidden rounded-md border-y border-[var(--glass-border)] bg-transparent shadow-none transition focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none md:grid-cols-[minmax(10rem,14rem)_1fr]",
         isUnavailable && "bg-muted/30",
@@ -664,7 +666,7 @@ function SearchResultListItem({
     >
       <div className="brand-product-media glass-inset relative block aspect-[5/4] overflow-hidden md:aspect-square">
         <Image
-          alt={product.name}
+          alt={publicProductName}
           blurDataURL={SEARCH_RESULT_IMAGE_BLUR_DATA_URL}
           className="media-color object-cover transition duration-[700ms] ease-[var(--ease-motion-standard)] group-hover/list:scale-[1.015]"
           fill
@@ -686,7 +688,7 @@ function SearchResultListItem({
             className="group-hover/list:text-muted-foreground group-focus-visible/list:text-muted-foreground line-clamp-2 text-lg leading-7 font-medium transition-colors duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)]"
             dir="auto"
           >
-            {product.name}
+            {publicProductName}
           </h3>
           <div
             className="text-muted-foreground mt-2 flex min-h-5 flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-5"

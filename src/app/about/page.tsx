@@ -40,39 +40,39 @@ type ImageTile = {
 
 const editorialImages = [
   {
-    alt: "טבעות כסף ויהלומים על משטח אקווה נקי",
+    alt: "טבעות עדינות בצילום בוטיק חם על משטח בהיר",
     className:
       "col-span-2 aspect-[16/10] sm:col-span-1 sm:row-span-2 sm:aspect-[4/5]",
     loading: "eager",
     sizes: "(min-width: 1024px) 28vw, (min-width: 640px) 46vw, 100vw",
-    src: "/brand/v2/content-editorial.avif",
+    src: "/brand/boutique/category-rings.avif",
   },
   {
-    alt: "טבעת זהב ויהלומים בצילום תכשיט נקי",
+    alt: "שרשראות עדינות על גוף בצילום בוטיק נקי",
     className: "aspect-[5/4]",
     sizes: "(min-width: 1024px) 22vw, (min-width: 640px) 46vw, 100vw",
-    src: "/brand/v2/product-focus.avif",
+    src: "/brand/boutique/category-necklaces.avif",
   },
   {
-    alt: "תכשיטי פנינה וזכוכית בתאורת אקווה רכה",
+    alt: "עגיל עדין בצילום תקריב רך",
     className: "aspect-[5/4]",
     sizes: "(min-width: 1024px) 22vw, (min-width: 640px) 46vw, 100vw",
-    src: "/brand/v2/hero-pearls.avif",
+    src: "/brand/boutique/category-earrings.avif",
   },
 ] satisfies ImageTile[];
 
 const storyImages = [
   {
-    alt: "קומפוזיציית תכשיטים עריכתית עם טבעות וזכוכית אקווה",
+    alt: "תכשיט עדין על גוף בתאורה רכה וחמה",
     className: "aspect-[16/10]",
     sizes: "(min-width: 1024px) 54vw, 100vw",
-    src: "/brand/elysia-aqua-about.avif",
+    src: "/brand/boutique/lifestyle-hero.avif",
   },
   {
-    alt: "מגש שירות עם אריזה ותכשיטי פנינה",
+    alt: "צמידים עדינים על יד בצילום בוטיק",
     className: "aspect-[4/3]",
     sizes: "(min-width: 1024px) 24vw, 100vw",
-    src: "/brand/v2/service-task.avif",
+    src: "/brand/boutique/category-bracelets.avif",
   },
 ] satisfies ImageTile[];
 
@@ -185,7 +185,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Elysia",
     description: "בית תכשיטים ישראלי עם מידע ברור על חומר, מידה, מחיר ושירות.",
-    images: [{ url: "/brand/v2/content-editorial.avif" }],
+    images: [{ url: "/brand/boutique/lifestyle-hero.avif" }],
   },
 };
 
@@ -217,7 +217,7 @@ export default function AboutPage() {
           eyebrow="Elysia"
           id="page-hero"
           media={{
-            alt: "תכשיטי Elysia על משטח אקווה נקי",
+            alt: "תכשיטי Elysia בצילום בוטיק רך",
             priority: true,
             sizes: "(min-width: 1024px) 34vw, 100vw",
             slides: cinematicRouteMedia.about,

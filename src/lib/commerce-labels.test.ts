@@ -126,8 +126,10 @@ describe("commerce labels", () => {
     expect(adminOrdersPage).toContain("sourceDescription");
     expect(checkoutForm).toContain('source: "OWN"');
     expect(checkoutForm).toContain('source: "DROPSHIP_SHOPIFY"');
-    expect(productCard).toContain('product.source === "DROPSHIP_SHOPIFY"');
-    expect(productCard).toContain("sourceFact");
+    expect(productCard).toContain("getPublicProductCommerceStatus");
+    expect(productCard).toContain("getPublicProductName");
+    expect(productCard).not.toContain('product.source === "DROPSHIP_SHOPIFY"');
+    expect(productCard).not.toContain("sourceFact");
   });
 });
 

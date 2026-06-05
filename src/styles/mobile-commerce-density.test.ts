@@ -4,55 +4,60 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 describe("mobile commerce density", () => {
-  it("keeps the home mobile first viewport editorial before quick search", () => {
+  it("keeps the home mobile first viewport as a boutique hero before commerce", () => {
     const source = read("src/app/page.tsx");
     const css = read("src/styles/globals.css");
 
     expect(source).toContain("home-cinematic-hero");
+    expect(source).toContain("boutique-home-hero");
     expect(css).toContain(".home-cinematic-hero");
-    expect(css).toContain("calc(100svh - var(--site-header-height))");
-    expect(css).toContain("31rem");
-    expect(countOccurrences(source, "min-h-[var(--home-hero-height)]")).toBe(4);
-    expect(indexOf(source, 'id="categories"')).toBeLessThan(
-      indexOf(source, 'id="quick-search"'),
+    expect(css).toContain(".boutique-home-hero");
+    expect(css).toContain("clamp(36rem, 92svh, 54rem)");
+    expect(source).toContain('data-testid="home-hero-statement"');
+    expect(source).toContain('data-testid="home-hero-primary-cta"');
+    expect(countOccurrences(source, "min-h-[var(--home-hero-height)]")).toBe(1);
+    expect(indexOf(source, 'id="page-hero"')).toBeLessThan(
+      indexOf(source, 'id="collections"'),
     );
-    expect(indexOf(source, 'id="quick-search"')).toBeLessThan(
+    expect(indexOf(source, 'id="collections"')).toBeLessThan(
       indexOf(source, 'id="featured"'),
     );
+    expect(source).not.toContain('id="quick-search"');
+    expect(source).not.toContain('data-testid="home-hero-trust-notes"');
     expect(source).not.toContain("brand-control-panel grid gap-2 p-1.5");
   });
 
-  it("keeps home quick search suggestions in one horizontal scroll row", () => {
+  it("keeps home collection entry visual and compact on mobile", () => {
     const source = read("src/app/page.tsx");
+    const css = read("src/styles/globals.css");
 
-    expect(source).toContain('data-testid="home-quick-search-suggestions"');
+    expect(source).toContain('data-layout-equal-group="home-category-tiles"');
+    expect(source).toContain("boutique-collection-card");
     expect(source).toContain(
-      "flex min-w-0 flex-nowrap items-center gap-3 overflow-x-auto pb-1",
+      "boutique-collection-grid grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4",
     );
-    expect(source).toContain("inline-flex min-h-9 shrink-0 items-center");
-    expect(source).not.toContain(
-      'className="flex flex-wrap items-center gap-2"',
-    );
+    expect(source).toContain("function CollectionCard");
+    expect(css).toContain(".boutique-collection-media");
+    expect(css).toContain("aspect-ratio: 4 / 5;");
+    expect(source).not.toContain('data-testid="home-quick-search-suggestions"');
   });
 
-  it("keeps home hero imagery independent from page scroll", () => {
+  it("keeps home hero imagery static, full-bleed, and independent from page scroll", () => {
     const home = read("src/app/page.tsx");
     const css = read("src/styles/globals.css");
-    const cinematicHeroSequence = read(
-      "src/components/cinematic-hero-sequence.tsx",
-    );
-    const kineticImageMotion = read("src/components/kinetic-image-motion.tsx");
     const publicMotionProvider = read(
       "src/components/public-motion-provider.tsx",
     );
     const reveal = read("src/components/reveal.tsx");
 
     expect(home).not.toContain("\n          parallax");
-    expect(home).toContain("scrollMotion={false}");
-    expect(kineticImageMotion).toContain("scrollDepth: 0");
-    expect(kineticImageMotion).toContain(
-      "if (!shouldUsePointerMotion && !scrollDepth) return;",
-    );
+    expect(home).not.toContain("scrollMotion=");
+    expect(home).not.toContain("CinematicHeroSequence");
+    expect(home).toContain('className="boutique-hero-image object-cover"');
+    expect(home).toContain('sizes="100vw"');
+    expect(home).toContain("src={boutiqueHeroImage}");
+    expect(css).toContain(".boutique-hero-image");
+    expect(css).toContain(".boutique-hero-scrim");
     expect(publicMotionProvider).toContain(
       "const [suppressInitialReveal, setSuppressInitialReveal] = useState(true)",
     );
@@ -62,10 +67,6 @@ describe("mobile commerce density", () => {
     expect(reveal).toContain("initialVisible = true");
     expect(reveal).toContain(
       "const [ref, isVisible] = useRevealInView<HTMLDivElement>(true)",
-    );
-    expect(cinematicHeroSequence).toContain("function getInitialSlideStyle");
-    expect(cinematicHeroSequence).toContain(
-      "transform: `scale(${index === 0 ? 1.018 : 1.045})`",
     );
     expect(css).toContain(
       ".motion-hero-copy .motion-copy-item {\n  animation: none;",
@@ -116,26 +117,27 @@ describe("mobile commerce density", () => {
     const productCard = read("src/components/product-card.tsx");
 
     expect(home).toContain(
-      "home-luxury-section mx-auto max-w-[88rem] px-[var(--ui-page-x)] py-14 sm:px-6 sm:py-24 lg:py-32",
+      "home-luxury-section boutique-section mx-auto max-w-[92rem] px-[var(--ui-page-x)]",
     );
-    expect(home).toContain("grid grid-cols-1 gap-8 sm:grid-cols-2");
-    expect(home).toContain('data-testid="home-category-tile"');
     expect(home).toContain(
-      "relative aspect-[4/5] overflow-hidden rounded-md sm:min-h-[360px] lg:min-h-[420px]",
+      "boutique-collection-grid grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4",
     );
-    expect(home).toContain("absolute inset-x-0 bottom-0");
-    expect(home).toContain("sm:hidden");
-    expect(home).toContain("hidden border-b border-[var(--glass-border)]");
+    expect(home).toContain('data-layout-equal-group="home-category-tiles"');
+    expect(home).toContain("boutique-collection-media");
+    expect(home).toContain("boutique-featured-grid grid gap-7");
+    expect(home).toContain('id="trust"');
     expect(home).not.toContain("brand-surface interactive-lift group/card");
     expect(home).not.toContain("group-hover/card:underline");
-    expect(home).toContain('display="editorial"');
+    expect(home).toContain('display={index < 2 ? "editorial" : "standard"}');
     expect(category).toContain(
       "px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)]",
     );
     expect(category).toContain(
       "mb-5 hidden border-b border-[var(--glass-border)] pb-4 lg:block",
     );
-    expect(category).toContain("grid gap-4 sm:grid-cols-2 lg:grid-cols-3");
+    expect(category).toContain(
+      "grid gap-x-7 gap-y-10 sm:grid-cols-2 xl:grid-cols-3",
+    );
     expect(search).toContain(
       "px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)]",
     );

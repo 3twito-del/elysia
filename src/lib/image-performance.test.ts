@@ -15,15 +15,23 @@ describe("image performance guardrails", () => {
     const gallerySource = read(
       "src/app/product/[slug]/_components/product-gallery.tsx",
     );
-    const serviceImageBlock =
-      /<Image[\s\S]*?src="\/brand\/v2\/service-task\.avif"[\s\S]*?\/>/.exec(
-        homeSource,
-      )?.[0];
+    const homeImageTags =
+      homeSource.match(/<Image(?=[\s/>])[\s\S]*?\/>/g) ?? [];
+    const homeHeroImageBlock = homeImageTags.find((tag) =>
+      tag.includes("src={boutiqueHeroImage}"),
+    );
+    const giftImageBlock = homeImageTags.find((tag) =>
+      tag.includes('src="/brand/boutique/category-bracelets.avif"'),
+    );
 
-    expect(homeSource).toContain("<StaticCinematicHeroSequence");
-    expect(homeSource).toContain("priority\n                motionScope");
-    expect(serviceImageBlock).toBeDefined();
-    expect(serviceImageBlock).not.toContain("priority");
+    expect(homeSource).toContain(
+      'className="boutique-hero-image object-cover"',
+    );
+    expect(homeHeroImageBlock).toBeDefined();
+    expect(homeHeroImageBlock).toContain("priority");
+    expect(giftImageBlock).toBeDefined();
+    expect(giftImageBlock).not.toContain("priority");
+    expect(homeSource).not.toContain("<StaticCinematicHeroSequence");
     expect(homeSource).not.toContain("imagePriority={index < 4}");
 
     expect(searchSource).toContain("imagePriority={index < 2}");

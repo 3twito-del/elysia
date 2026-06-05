@@ -14,7 +14,7 @@ const appName = "Elysia";
 const appDescription =
   "בית תכשיטים ישראלי לטבעות, שרשראות, עגילים וצמידים, עם מידע ברור על חומר, מידה, מחיר והזמנה מקוונת.";
 
-const sharePreviewImage = "/brand/v2/editorial-home.avif";
+const sharePreviewImage = "/brand/boutique/lifestyle-hero.avif";
 
 export const metadata: Metadata = {
   applicationName: appName,
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#101314",
+  themeColor: "#fbf8f4",
 };
 
 const geistSans = Geist({

@@ -126,7 +126,7 @@ export async function generateMetadata({
         {
           url:
             getCategoryBrandSlides(slug)[0]?.src ??
-            "/brand/v2/editorial-home.avif",
+            "/brand/boutique/lifestyle-hero.avif",
         },
       ],
     },
@@ -135,7 +135,8 @@ export async function generateMetadata({
       title: copy?.title ?? category?.name ?? "Elysia",
       description: copy?.description ?? category?.description,
       images: [
-        getCategoryBrandSlides(slug)[0]?.src ?? "/brand/v2/editorial-home.avif",
+        getCategoryBrandSlides(slug)[0]?.src ??
+          "/brand/boutique/lifestyle-hero.avif",
       ],
     },
   };
@@ -337,7 +338,7 @@ export default async function CategoryPage({
 
         <div className="h-px" id="category-filters" />
 
-        <RevealSection className="mx-auto grid w-full max-w-[96rem] gap-8 px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:grid-cols-[270px_1fr] lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y)]">
+        <RevealSection className="mx-auto grid w-full max-w-[96rem] gap-10 px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:grid-cols-[minmax(13rem,16rem)_1fr] lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y)]">
           <aside
             className="hidden lg:block"
             data-testid="category-filter-panel"
@@ -436,7 +437,7 @@ export default async function CategoryPage({
             {filteredProducts.length > 0 ? (
               <>
                 <RevealGrid
-                  className="ui-equal-grid grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+                  className="ui-equal-grid grid gap-x-7 gap-y-10 sm:grid-cols-2 xl:grid-cols-3"
                   data-layout-equal-group="category-products"
                   data-testid="category-results-grid"
                   variant="cards"

@@ -48,35 +48,35 @@ export const seedCollections = [
     slug: "studio-light",
     name: "אור רך",
     description: "קולקציית בסיס נקייה עם קווים דקים וזהב חם.",
-    heroImageUrl: "/brand/v2/commerce-catalog.avif",
+    heroImageUrl: "/brand/boutique/lifestyle-hero.avif",
     isFeatured: true,
   },
   {
     slug: "bridal-edit",
     name: "בחירת כלה",
     description: "בחירות מדויקות להצעות, חתונות וסטים חגיגיים.",
-    heroImageUrl: "/brand/v2/category-rings.avif",
+    heroImageUrl: "/brand/boutique/category-rings.avif",
     isFeatured: true,
   },
   {
     slug: "daily-icons",
     name: "בחירות יומיות",
     description: "תכשיטים קלים לשילוב יומיומי עם גימור נקי.",
-    heroImageUrl: "/brand/v2/hero-glass.avif",
+    heroImageUrl: "/brand/boutique/category-necklaces.avif",
     isFeatured: false,
   },
   {
     slug: "evening-glow",
     name: "זוהר ערב",
     description: "בחירות מבריקות לערב, אירועים ומתנות עם נוכחות.",
-    heroImageUrl: "/brand/v2/service-task.avif",
+    heroImageUrl: "/brand/boutique/category-earrings.avif",
     isFeatured: false,
   },
   {
     slug: "gift-studio",
     name: "מתנות בשקט",
     description: "בחירות מוכנות למתנות לפי תקציב, סגנון ואירוע.",
-    heroImageUrl: "/brand/v2/commerce-gifts.avif",
+    heroImageUrl: "/brand/boutique/category-bracelets.avif",
     isFeatured: false,
   },
 ] as const;
@@ -127,7 +127,7 @@ const manualProducts = [
     stoneSlug: "diamond",
     basePrice: "1290",
     collectionSlugs: ["studio-light", "bridal-edit"],
-    image: "/brand/v2/category-rings.avif",
+    image: "/brand/boutique/category-rings.avif",
     tags: ["דיוק מאופק", "קו מודרני", "אירוסין", "מתנה"],
     variants: [
       {
@@ -166,7 +166,7 @@ const manualProducts = [
     stoneSlug: "pearl",
     basePrice: "690",
     collectionSlugs: ["studio-light"],
-    image: "/brand/v2/category-earrings.avif",
+    image: "/brand/boutique/category-earrings.avif",
     tags: ["דיוק מאופק", "קו מודרני", "פנינה", "מתנה"],
     variants: [
       {
@@ -194,7 +194,7 @@ const manualProducts = [
     stoneSlug: "diamond",
     basePrice: "980",
     collectionSlugs: ["studio-light"],
-    image: "/brand/v2/category-necklaces.avif",
+    image: "/brand/boutique/category-necklaces.avif",
     tags: ["דיוק מאופק", "קו מודרני", "שכבות", "מתנה"],
     variants: [
       {
@@ -233,7 +233,7 @@ const manualProducts = [
     stoneSlug: null,
     basePrice: "840",
     collectionSlugs: ["studio-light"],
-    image: "/brand/v2/category-bracelets.avif",
+    image: "/brand/boutique/category-bracelets.avif",
     tags: ["דיוק מאופק", "קו מודרני", "יום יום", "שכבות"],
     variants: [
       {
@@ -281,7 +281,7 @@ const categoryBlueprints = {
     productKind: "טבעת",
     skuPrefix: "RG",
     generatedSlugPrefix: "ring",
-    image: "/brand/v2/category-rings.avif",
+    image: "/brand/boutique/category-rings.avif",
     priceBase: 690,
     priceStep: 65,
     variantPriceStep: 45,
@@ -299,7 +299,7 @@ const categoryBlueprints = {
     productKind: "שרשרת",
     skuPrefix: "NK",
     generatedSlugPrefix: "necklace",
-    image: "/brand/v2/category-necklaces.avif",
+    image: "/brand/boutique/category-necklaces.avif",
     priceBase: 620,
     priceStep: 55,
     variantPriceStep: 35,
@@ -317,7 +317,7 @@ const categoryBlueprints = {
     productKind: "עגילי",
     skuPrefix: "ER",
     generatedSlugPrefix: "earrings",
-    image: "/brand/v2/category-earrings.avif",
+    image: "/brand/boutique/category-earrings.avif",
     priceBase: 360,
     priceStep: 48,
     variantPriceStep: 30,
@@ -335,7 +335,7 @@ const categoryBlueprints = {
     productKind: "צמיד",
     skuPrefix: "BR",
     generatedSlugPrefix: "bracelet",
-    image: "/brand/v2/category-bracelets.avif",
+    image: "/brand/boutique/category-bracelets.avif",
     priceBase: 520,
     priceStep: 52,
     variantPriceStep: 40,
@@ -353,24 +353,24 @@ const categoryBlueprints = {
 
 const categoryImageVariants = {
   rings: [
-    "/brand/v2/category-rings.avif",
-    "/brand/v2/product-focus.avif",
-    "/brand/v2/hero-rings.avif",
+    "/brand/boutique/category-rings.avif",
+    "/brand/boutique/lifestyle-hero.avif",
+    "/brand/boutique/category-necklaces.avif",
   ],
   necklaces: [
-    "/brand/v2/category-necklaces.avif",
-    "/brand/v2/hero-pearls.avif",
-    "/brand/v2/commerce-catalog.avif",
+    "/brand/boutique/category-necklaces.avif",
+    "/brand/boutique/lifestyle-hero.avif",
+    "/brand/boutique/category-earrings.avif",
   ],
   earrings: [
-    "/brand/v2/category-earrings.avif",
-    "/brand/v2/hero-pearls.avif",
-    "/brand/v2/service-task.avif",
+    "/brand/boutique/category-earrings.avif",
+    "/brand/boutique/lifestyle-hero.avif",
+    "/brand/boutique/category-rings.avif",
   ],
   bracelets: [
-    "/brand/v2/category-bracelets.avif",
-    "/brand/v2/hero-glass.avif",
-    "/brand/v2/commerce-gifts.avif",
+    "/brand/boutique/category-bracelets.avif",
+    "/brand/boutique/lifestyle-hero.avif",
+    "/brand/boutique/category-rings.avif",
   ],
 } satisfies Record<SeedCategorySlug, readonly string[]>;
 

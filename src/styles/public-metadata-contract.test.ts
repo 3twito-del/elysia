@@ -18,8 +18,9 @@ describe("public metadata contract", () => {
     expect(home).toContain('canonical: "/"');
     expect(home).toContain('url: "/"');
     expect(home).toContain(
-      'images: [{ url: "/brand/v2/editorial-home.avif" }]',
+      'const boutiqueHeroImage = "/brand/boutique/lifestyle-hero.avif";',
     );
+    expect(home).toContain("images: [{ url: boutiqueHeroImage }]");
     expect(home).toContain("twitter:");
   });
 
@@ -41,7 +42,7 @@ describe("public metadata contract", () => {
     expect(search).toContain('canonical: "/search"');
     expect(search).toContain('url: "/search"');
     expect(search).toContain(
-      'images: [{ url: "/brand/v2/editorial-home.avif" }]',
+      'images: [{ url: "/brand/boutique/lifestyle-hero.avif" }]',
     );
   });
 });

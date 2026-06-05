@@ -1,33 +1,37 @@
-export const DEFAULT_CATALOG_IMAGE = "/brand/v2/commerce-catalog.avif";
+export const DEFAULT_CATALOG_IMAGE = "/brand/boutique/lifestyle-hero.avif";
 
 const CATALOG_IMAGE_VARIANTS: Record<string, readonly string[]> = {
   rings: [
-    "/brand/v2/category-rings.avif",
-    "/brand/v2/product-focus.avif",
-    "/brand/v2/hero-rings.avif",
+    "/brand/boutique/category-rings.avif",
+    "/brand/boutique/lifestyle-hero.avif",
+    "/brand/boutique/product-detail.avif",
+    "/brand/boutique/category-necklaces.avif",
   ],
   necklaces: [
-    "/brand/v2/category-necklaces.avif",
-    "/brand/v2/hero-pearls.avif",
-    "/brand/v2/commerce-catalog.avif",
+    "/brand/boutique/category-necklaces.avif",
+    "/brand/boutique/lifestyle-hero.avif",
+    "/brand/boutique/product-detail.avif",
+    "/brand/boutique/category-earrings.avif",
   ],
   earrings: [
-    "/brand/v2/category-earrings.avif",
-    "/brand/v2/hero-pearls.avif",
-    "/brand/v2/service-task.avif",
+    "/brand/boutique/category-earrings.avif",
+    "/brand/boutique/lifestyle-hero.avif",
+    "/brand/boutique/product-detail.avif",
+    "/brand/boutique/category-rings.avif",
   ],
   bracelets: [
-    "/brand/v2/category-bracelets.avif",
-    "/brand/v2/hero-glass.avif",
-    "/brand/v2/commerce-gifts.avif",
+    "/brand/boutique/category-bracelets.avif",
+    "/brand/boutique/lifestyle-hero.avif",
+    "/brand/boutique/product-detail.avif",
+    "/brand/boutique/category-rings.avif",
   ],
 };
 
 const CATEGORY_CATALOG_IMAGES: Record<string, string> = {
-  bracelets: "/brand/v2/category-bracelets.avif",
-  earrings: "/brand/v2/category-earrings.avif",
-  necklaces: "/brand/v2/category-necklaces.avif",
-  rings: "/brand/v2/category-rings.avif",
+  bracelets: "/brand/boutique/category-bracelets.avif",
+  earrings: "/brand/boutique/category-earrings.avif",
+  necklaces: "/brand/boutique/category-necklaces.avif",
+  rings: "/brand/boutique/category-rings.avif",
 };
 
 export function getCatalogCategoryImage(input: {
@@ -55,6 +59,12 @@ export function getDisplayCatalogImages(input: {
     return input.images;
   }
 
+  if (input.images.length > 0 && usesLegacyCatalogMedia) {
+    const categoryImage = CATEGORY_CATALOG_IMAGES[input.categorySlug];
+
+    if (categoryImage) return [categoryImage];
+  }
+
   const variants = CATALOG_IMAGE_VARIANTS[input.categorySlug];
 
   if (!variants || variants.length === 0) {
@@ -67,7 +77,21 @@ export function getDisplayCatalogImages(input: {
 }
 
 function isLegacyCatalogImage(image: string) {
-  return image.startsWith("https://images.unsplash.com/");
+  return (
+    image.startsWith("https://images.unsplash.com/") ||
+    image.startsWith("/brand/cinematic/") ||
+    image.startsWith("/brand/v2/") ||
+    image.startsWith("/brand/elysia-aqua") ||
+    isShopifyCategoryPlaceholderImage(image)
+  );
+}
+
+function isShopifyCategoryPlaceholderImage(image: string) {
+  if (!image.startsWith("https://cdn.shopify.com/")) return false;
+
+  return /\/category-(?:bracelets|earrings|necklaces|rings)\.avif(?:\?|$)/i.test(
+    image,
+  );
 }
 
 function getStableIndex(value: string, length: number) {

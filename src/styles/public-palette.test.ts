@@ -9,12 +9,14 @@ const publicSourceRoots = ["src/app", "src/components", "src/styles"].map(
 );
 const approvedBrandTokens = new Set([
   "--brand-porcelain",
+  "--brand-ivory",
+  "--brand-blush",
+  "--brand-champagne",
+  "--brand-sage",
+  "--brand-pearl",
   "--brand-ink",
-  "--brand-platinum",
-  "--brand-aqua",
-  "--brand-aqua-soft",
-  "--brand-aqua-deep",
-  "--brand-aqua-ring",
+  "--brand-espresso",
+  "--brand-gold-muted",
   "--brand-accent",
 ]);
 const approvedWarmMaterialPaths = new Set([
@@ -23,7 +25,7 @@ const approvedWarmMaterialPaths = new Set([
 ]);
 
 describe("public palette guardrails", () => {
-  it("keeps the public brand palette limited to cool commerce tokens", () => {
+  it("keeps the public brand palette limited to soft-luxury boutique tokens", () => {
     const css = read("src/styles/globals.css");
     const brandTokens = Array.from(
       css.matchAll(/(--brand-[\w-]+)\s*:/g),

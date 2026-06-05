@@ -27,8 +27,8 @@ describe("accessibility guardrails", () => {
       "utf8",
     );
 
-    expect(css).toContain("--brand-aqua-ring: rgb(66 201 190 / 34%);");
-    expect(css).toContain("--glass-focus: rgb(16 24 28 / 16%);");
+    expect(css).toContain("--brand-gold-muted: #b49a6a;");
+    expect(css).toContain("--glass-focus: rgb(180 154 106 / 26%);");
     expect(css).toContain("--glass-focus: rgb(226 232 236 / 42%);");
     expect(css).toContain("--glass-focus: oklch(0 0 0 / 52%);");
   });
@@ -318,13 +318,11 @@ describe("accessibility guardrails", () => {
       "utf8",
     );
 
-    expect(productCard).toContain("alt={product.name}");
+    expect(productCard).toContain("alt={publicProductName}");
     expect(productCard).toContain("aria-label={`");
-    expect(productCard).toContain("product.name");
-    expect(productPage).toContain(
-      "<ProductGallery images={uniqueImages} productName={product.name} />",
-    );
-    expect(productPage).toContain("productName={product.name}");
+    expect(productCard).toContain("publicProductName");
+    expect(productPage).toContain("productName={publicProductName}");
+    expect(productPage).toContain("getPublicProductName(product.name)");
     expect(productGallery).toContain("productName");
     expect(productGallery).toContain("activeImagePosition");
     expect(productGallery).toContain("galleryImageCount");

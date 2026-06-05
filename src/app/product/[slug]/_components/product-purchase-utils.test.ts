@@ -62,10 +62,10 @@ describe("product purchase utilities", () => {
         productSource: "DROPSHIP_SHOPIFY",
         variant,
       }),
-    ).toBe("זמין דרך Shopify");
+    ).toBe("זמין להזמנה");
     expect(
       getVariantButtonLabel(variant, "READY_TO_ORDER", "DROPSHIP_SHOPIFY"),
-    ).toContain("זמין דרך Shopify");
+    ).toContain("זמין להזמנה");
     expect(
       getVariantButtonLabel(variant, "READY_TO_ORDER", "DROPSHIP_SHOPIFY"),
     ).toContain("\u2068");
@@ -123,9 +123,9 @@ describe("product purchase utilities", () => {
     };
     const items = getPurchaseConfidenceItems({
       availabilityMode: "READY_TO_ORDER",
-      deliveryPromise: "מסירה ותשלום יושלמו בקופת הספק.",
+      deliveryPromise: "מסירה ותשלום יושלמו בקופה מאובטחת.",
       productSource: "DROPSHIP_SHOPIFY",
-      returnPolicy: "החזרות והחלפות לפי מדיניות הספק.",
+      returnPolicy: "החלפות והחזרות מטופלות בתיאום שירות אישי.",
       sizeKind: "ring",
       variant,
       variantStatusLabel: getVariantStatusLabel({
@@ -137,8 +137,9 @@ describe("product purchase utilities", () => {
     const text = items.map((item) => item.description).join(" ");
 
     expect(items).toHaveLength(3);
-    expect(text).toContain("Shopify");
-    expect(text).toContain("קופת הספק");
+    expect(text).toContain("קופה מאובטחת");
+    expect(text).not.toContain("Shopify");
+    expect(text).not.toContain("קופת הספק");
     expect(text).not.toContain("12");
   });
 

@@ -16,6 +16,11 @@ type SerwistRoute = {
 
 export const knownSerwistAssetPaths = ["sw.js"] as const;
 const missingSerwistAssetStatus = 404;
+const serwistPrecacheIgnores = [
+  "**/node_modules/**/*",
+  "public/brand/elysia-aqua*.png",
+  "public/brand/cinematic/*.png",
+] as const;
 
 const serwistRoute =
   process.env.NODE_ENV === "production"
@@ -34,6 +39,7 @@ async function createProductionSerwistRoute(): Promise<SerwistRoute> {
 
   return createSerwistRoute({
     additionalPrecacheEntries: [{ url: "/offline", revision }],
+    globIgnores: [...serwistPrecacheIgnores],
     swSrc: "src/app/sw.ts",
     useNativeEsbuild: true,
   });

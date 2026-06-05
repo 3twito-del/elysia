@@ -398,13 +398,21 @@ function normalizeShopifyProductImages(
 
     return [
       {
-        altText: image.altText?.trim() || undefined,
+        altText: normalizeOptionalShopifyText(image.altText),
         height: image.height,
         url,
         width: image.width,
       },
     ];
   });
+}
+
+function normalizeOptionalShopifyText(value: string | null | undefined) {
+  const trimmed = value?.trim();
+
+  if (trimmed === undefined || trimmed.length === 0) return undefined;
+
+  return trimmed;
 }
 
 function toSlug(value: string) {

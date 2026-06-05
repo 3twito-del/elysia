@@ -31,11 +31,11 @@ describe("public CTA hierarchy", () => {
   it("keeps public surface tokens light, neutral, and separate from aqua CTAs", () => {
     const css = read("src/styles/globals.css");
 
-    expect(css).toContain("--secondary: #f6f8f9;");
-    expect(css).toContain("--muted: #f6f8f9;");
-    expect(css).toContain("--accent: #f4f7f8;");
-    expect(css).toContain("--glass-border: #e2e8ec;");
-    expect(css).toContain("--glass-border-strong: #b8c5cc;");
+    expect(css).toContain("--secondary: #f3eee8;");
+    expect(css).toContain("--muted: #f2eee9;");
+    expect(css).toContain("--accent: #ead8d2;");
+    expect(css).toContain("--glass-border: #e4dbd0;");
+    expect(css).toContain("--glass-border-strong: #c4b19c;");
     expect(css).toContain("--action-primary: var(--brand-ink);");
     expect(css).toContain(".glass-control:not(:disabled)");
     expect(css).toContain('[data-slot="button"][data-variant="secondary"]');
@@ -51,9 +51,12 @@ describe("public CTA hierarchy", () => {
 
     expect(home).toContain("home-hero-actions");
     expect(home).toContain("home-hero-cta-primary");
+    expect(home).toContain('data-testid="home-hero-primary-cta"');
     expect(home).not.toContain("home-hero-service-link");
     expect(home).not.toContain('href="/service"');
     expect(home).not.toContain("home-hero-cta-secondary");
+    expect(home).not.toContain("home-hero-help-cta");
+    expect(home).not.toContain('data-testid="home-hero-trust-notes"');
     expect(css).toContain('.home-hero-actions [data-slot="button"]');
     expect(css).toContain(
       '.home-hero-actions [data-slot="button"]:not(:disabled):hover',

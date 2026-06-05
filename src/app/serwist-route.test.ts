@@ -38,6 +38,17 @@ describe("Serwist route", () => {
     expect(source).not.toContain("Vercel prebuilt packaging");
   });
 
+  it("keeps oversized legacy PNG source images out of the precache manifest", () => {
+    const routeSource = read("src/app/serwist/[path]/route.ts");
+    const configSource = read("next.config.js");
+
+    expect(routeSource).toContain("serwistPrecacheIgnores");
+    expect(routeSource).toContain('"public/brand/elysia-aqua*.png"');
+    expect(routeSource).toContain('"public/brand/cinematic/*.png"');
+    expect(routeSource).toContain("globIgnores: [...serwistPrecacheIgnores]");
+    expect(configSource).not.toContain("maximumFileSizeToCacheInBytes");
+  });
+
   it("keeps Serwist out of development route compilation", () => {
     const source = read("src/app/serwist/[path]/route.ts");
 

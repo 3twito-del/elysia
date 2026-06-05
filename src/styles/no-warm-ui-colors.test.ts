@@ -3,23 +3,25 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 const root = process.cwd();
-const forbiddenUiPatterns = [
-  /brand-champagne/i,
-  /244\s+213\s+138/i,
-  /#f4d58a/i,
-  /#f4f0ea/i,
-  /#ddd6cc/i,
-  /#f7d7c7/i,
-  /#c98e79/i,
-  /#fff2eb/i,
-  /#fff0b8/i,
-  /#d4a63d/i,
-  /#fff7d9/i,
-  /\byellow\b/i,
-  /\bamber\b/i,
-  /\bchampagne\b/i,
-  /\brose\b/i,
-  /\bgold\b/i,
+const forbiddenLegacyUiPatterns = [
+  /brand-aqua/i,
+  /42c9be/i,
+  /66\s+201\s+190/i,
+  /#eef6f7/i,
+  /#effcfb/i,
+  /elysia-aqua/i,
+];
+
+const approvedBoutiqueTokens = [
+  "--brand-porcelain",
+  "--brand-ivory",
+  "--brand-blush",
+  "--brand-champagne",
+  "--brand-sage",
+  "--brand-pearl",
+  "--brand-ink",
+  "--brand-espresso",
+  "--brand-gold-muted",
 ];
 
 const productPurchasePanelPath = path.join(
@@ -29,7 +31,7 @@ const productPurchasePanelPath = path.join(
 const productCardPath = path.join(root, "src/components/product-card.tsx");
 
 describe("public UI color guard", () => {
-  it("keeps warm color names and tokens out of public UI and hero files", () => {
+  it("keeps legacy aqua color names and tokens out of public UI and hero files", () => {
     const files = [
       path.join(root, "src/styles/globals.css"),
       ...walk(path.join(root, "src/components")).filter(isUiFile),
@@ -49,12 +51,20 @@ describe("public UI color guard", () => {
         readFileSync(file, "utf8"),
       );
 
-      return forbiddenUiPatterns
+      return forbiddenLegacyUiPatterns
         .filter((pattern) => pattern.test(content))
         .map((pattern) => `${path.relative(root, file)} matched ${pattern}`);
     });
 
     expect(violations).toEqual([]);
+  });
+
+  it("keeps boutique palette tokens explicit in global CSS", () => {
+    const css = readFileSync(path.join(root, "src/styles/globals.css"), "utf8");
+
+    for (const token of approvedBoutiqueTokens) {
+      expect(css).toContain(`${token}:`);
+    }
   });
 
   it("keeps hero media alt text material-neutral", () => {
@@ -63,10 +73,10 @@ describe("public UI color guard", () => {
       "utf8",
     );
 
-    expect(brandMedia).not.toMatch(/\bgold\b/i);
+    expect(brandMedia).not.toMatch(/\baqua\b/i);
   });
 
-  it("keeps product blur placeholders cool-neutral", () => {
+  it("keeps product blur placeholders warm-neutral and free of legacy aqua", () => {
     const productCardSource = readFileSync(
       path.join(root, "src/components/product-card.tsx"),
       "utf8",
@@ -75,11 +85,11 @@ describe("public UI color guard", () => {
       extractProductImageBlurDataUrl(productCardSource),
     );
 
-    const violations = forbiddenUiPatterns
+    const violations = forbiddenLegacyUiPatterns
       .filter((pattern) => pattern.test(decodedBlurData))
       .map((pattern) => `PRODUCT_IMAGE_BLUR_DATA_URL matched ${pattern}`);
 
-    expect(decodedBlurData).toContain("#eef6f7");
+    expect(decodedBlurData).toContain("#f3eee8");
     expect(violations).toEqual([]);
   });
 

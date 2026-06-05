@@ -114,13 +114,17 @@ describe("visible site improvement affordances", () => {
 
     expect(home).toContain("home-cinematic-hero");
     expect(styles).toContain(".home-cinematic-hero");
-    expect(styles).toContain("calc(100svh - var(--site-header-height))");
+    expect(styles).toContain("clamp(36rem, 92svh, 54rem)");
     expect(home).toContain('data-testid="home-hero-copy"');
-    expect(home).toContain("w-[min(calc(100%_-_var(--hero-edge)");
-    expect(home).toContain("max-w-2xl text-lg leading-8");
-    expect(home).toContain("max-w-[19rem] text-sm leading-7");
+    expect(home).toContain('data-testid="home-hero-statement"');
+    expect(home).toContain('data-testid="home-hero-primary-cta"');
+    expect(home).toContain("boutique-home-hero");
+    expect(home).toContain("max-w-[min(38rem,calc(100vw-2.5rem))]");
+    expect(home).toContain("sm:max-w-[min(38rem,46vw)]");
+    expect(home).toContain("home-hero-statement motion-copy-item");
     expect(home).toContain('data-testid="home-hero-cta-row"');
-    expect(home).toContain("grid gap-3 sm:grid-cols-2");
+    expect(home).not.toContain('data-testid="home-hero-trust-notes"');
+    expect(home).not.toContain("home-hero-help-cta");
     expect(accountPage).toContain('id="account-login"');
     expect(accountPage).toContain("<CustomerOtpForm />");
     expect(accountPage).toContain('id="account-benefits"');
@@ -400,7 +404,8 @@ describe("visible site improvement affordances", () => {
     expect(favorite).toContain('data-testid="product-card-favorite-feedback"');
     expect(favorite).toContain("הוסר מהמועדפים בדפדפן זה");
     expect(productPage).toContain("createProductServiceHref");
-    expect(productPage).toContain("productSourceLabel");
+    expect(productPage).toContain("getPublicProductName");
+    expect(productPage).toContain("getPublicCollectionName");
     expect(productPage).toContain('data-testid="product-media-caption"');
     expect(productPage).toContain(
       'data-testid="product-price-availability-row"',

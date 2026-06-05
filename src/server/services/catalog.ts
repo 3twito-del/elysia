@@ -3,6 +3,13 @@ import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
 import { formatPrice } from "~/lib/format";
+import {
+  getPublicCategoryName,
+  getPublicCollectionName,
+  getPublicMaterialName,
+  getPublicStoneName,
+  getPublicVariantOptionName,
+} from "~/lib/product-display";
 import { db } from "~/server/db";
 import {
   CATALOG_CACHE_TAGS,
@@ -36,6 +43,7 @@ import type {
 const ACTIVE_PRODUCT_WHERE = {
   status: "ACTIVE",
 } satisfies Prisma.ProductWhereInput;
+const CATALOG_MEDIA_VERSION = "boutique-v6";
 const CATALOG_REVALIDATE_SECONDS = 60 * 60;
 const publicCatalogCopyReplacements = [
   ["יוקרה נגישה", "מידע ברור"],
@@ -82,11 +90,13 @@ type CatalogProductRecord = Prisma.ProductGetPayload<{
 }>;
 
 function getCatalogDataSourceCacheKey() {
-  if (shouldUseCatalogFixtures()) return "fixtures";
+  if (shouldUseCatalogFixtures()) return `fixtures:${CATALOG_MEDIA_VERSION}`;
 
-  return shouldFallbackToCatalogFixturesOnDatabaseError()
+  const source = shouldFallbackToCatalogFixturesOnDatabaseError()
     ? "database-with-fixture-fallback"
     : "database";
+
+  return `${source}:${CATALOG_MEDIA_VERSION}`;
 }
 
 async function readCatalogData<T>({
@@ -574,11 +584,22 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
   }
 
   const displayName = getDisplayProductName(record.name);
+  const displayMaterial = getPublicMaterialName(
+    record.material.name,
+    displayName,
+  );
+  const displayStone = getPublicStoneName(record.stone?.name);
+  const displayCollections = getUniqueValues(
+    record.collections
+      .map((collection) => getPublicCollectionName(collection.name))
+      .filter((collection): collection is string => Boolean(collection)),
+  );
+  const displayCollection = displayCollections[0] ?? "Signature edit";
   const displayDescription = getDisplayProductDescription({
     description: record.description,
-    material: record.material.name,
+    material: displayMaterial,
     name: displayName,
-    stone: record.stone?.name,
+    stone: displayStone,
   });
   const displayTags = getDisplayProductTags(record.tags);
 
@@ -592,7 +613,10 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
     supplierKey: record.supplierKey ?? undefined,
     name: displayName,
     categorySlug: record.category.slug,
-    categoryName: record.category.name,
+    categoryName: getPublicCategoryName(
+      record.category.slug,
+      record.category.name,
+    ),
     shortDescription: normalizePublicCatalogCopy(record.shortDescription),
     description: displayDescription,
     availabilityMode: record.availabilityMode,
@@ -613,19 +637,24 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
     compareAt: getCompareAt(defaultVariant),
     createdAt: record.createdAt,
     popularityScore: record._count.viewEvents + record._count.clickEvents * 2,
-    material: record.material.name,
-    stone: record.stone?.name,
-    collection: record.collections[0]?.name ?? "Elysia",
-    collections: record.collections.map((collection) => collection.name),
+    material: displayMaterial,
+    stone: displayStone,
+    collection: displayCollection,
+    collections:
+      displayCollections.length > 0 ? displayCollections : [displayCollection],
     image: displayImages[0] ?? DEFAULT_CATALOG_IMAGE,
     images: displayImages.length > 0 ? displayImages : [DEFAULT_CATALOG_IMAGE],
     variants: record.variants.map((variant) => ({
       sku: variant.sku,
-      name: variant.name,
+      name: getPublicVariantOptionName(variant.name),
       externalVariantId: variant.externalVariantId ?? undefined,
       size: variant.size ?? undefined,
-      metalColor: variant.metalColor ?? undefined,
-      stoneColor: variant.stoneColor ?? undefined,
+      metalColor: variant.metalColor
+        ? getPublicVariantOptionName(variant.metalColor)
+        : undefined,
+      stoneColor: variant.stoneColor
+        ? getPublicVariantOptionName(variant.stoneColor)
+        : undefined,
       price: getVariantPrice(variant, Number(record.basePrice)),
       inventory: variantInventories.get(variant.sku)?.inventory ?? {},
       availableQuantity:
@@ -636,7 +665,8 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
     metalColors: getUniqueValues(
       record.variants
         .map((variant) => variant.metalColor)
-        .filter((value): value is string => Boolean(value)),
+        .filter((value): value is string => Boolean(value))
+        .map(getPublicVariantOptionName),
     ),
     sizes: getUniqueValues(
       record.variants
@@ -788,7 +818,7 @@ function mapCatalogCategory(category: {
 
   return {
     slug: category.slug,
-    name: category.name,
+    name: getPublicCategoryName(category.slug, category.name),
     description: category.description
       ? normalizePublicCatalogCopy(category.description)
       : "",

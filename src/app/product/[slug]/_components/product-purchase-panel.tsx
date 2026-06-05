@@ -336,7 +336,7 @@ export function ProductPurchasePanel({
   return (
     <>
       <div
-        className="grid gap-6"
+        className="product-purchase-surface grid gap-6"
         data-public-floating-avoid="true"
         data-testid="product-purchase-panel"
       >
@@ -389,7 +389,7 @@ export function ProductPurchasePanel({
                   type="button"
                   variant={isSelected ? "default" : "outline"}
                 >
-                  {variant.size ?? variant.name}
+                  {getVariantDisplayName(variant)}
                 </Button>
               );
             })}

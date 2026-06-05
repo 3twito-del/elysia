@@ -7,6 +7,7 @@ import {
   type SeedProduct,
 } from "../../../prisma/seed-catalog";
 
+import { getPublicCategoryName } from "~/lib/product-display";
 import { DEFAULT_CATALOG_IMAGE } from "~/server/services/catalog-assets";
 import type {
   CatalogBranch,
@@ -18,40 +19,44 @@ import type {
 const fixtureCreatedAt = new Date("2026-01-01T00:00:00.000Z");
 
 const categoryImages = {
-  bracelets: "/brand/v2/category-bracelets.avif",
-  earrings: "/brand/v2/category-earrings.avif",
-  necklaces: "/brand/v2/category-necklaces.avif",
-  rings: "/brand/v2/category-rings.avif",
+  bracelets: "/brand/boutique/category-bracelets.avif",
+  earrings: "/brand/boutique/category-earrings.avif",
+  necklaces: "/brand/boutique/category-necklaces.avif",
+  rings: "/brand/boutique/category-rings.avif",
 } satisfies Record<string, string>;
 
 const categoryGalleryImages: Record<string, string[]> = {
   bracelets: [
-    "/brand/v2/category-bracelets.avif",
-    "/brand/v2/hero-glass.avif",
-    "/brand/v2/commerce-gifts.avif",
-    "/brand/v2/product-focus.avif",
-    "/brand/v2/editorial-home.avif",
+    "/brand/boutique/category-bracelets.avif",
+    "/brand/boutique/lifestyle-hero.avif",
+    "/brand/boutique/product-detail.avif",
+    "/brand/boutique/category-rings.avif",
+    "/brand/boutique/category-necklaces.avif",
+    "/brand/boutique/category-earrings.avif",
   ],
   earrings: [
-    "/brand/v2/category-earrings.avif",
-    "/brand/v2/hero-pearls.avif",
-    "/brand/v2/service-task.avif",
-    "/brand/v2/product-focus.avif",
-    "/brand/v2/commerce-catalog.avif",
+    "/brand/boutique/category-earrings.avif",
+    "/brand/boutique/lifestyle-hero.avif",
+    "/brand/boutique/product-detail.avif",
+    "/brand/boutique/category-necklaces.avif",
+    "/brand/boutique/category-rings.avif",
+    "/brand/boutique/category-bracelets.avif",
   ],
   necklaces: [
-    "/brand/v2/category-necklaces.avif",
-    "/brand/v2/hero-pearls.avif",
-    "/brand/v2/commerce-catalog.avif",
-    "/brand/v2/product-focus.avif",
-    "/brand/v2/editorial-home.avif",
+    "/brand/boutique/category-necklaces.avif",
+    "/brand/boutique/lifestyle-hero.avif",
+    "/brand/boutique/product-detail.avif",
+    "/brand/boutique/category-earrings.avif",
+    "/brand/boutique/category-rings.avif",
+    "/brand/boutique/category-bracelets.avif",
   ],
   rings: [
-    "/brand/v2/category-rings.avif",
-    "/brand/v2/product-focus.avif",
-    "/brand/v2/hero-rings.avif",
-    "/brand/v2/commerce-catalog.avif",
-    "/brand/v2/editorial-home.avif",
+    "/brand/boutique/category-rings.avif",
+    "/brand/boutique/lifestyle-hero.avif",
+    "/brand/boutique/product-detail.avif",
+    "/brand/boutique/category-necklaces.avif",
+    "/brand/boutique/category-earrings.avif",
+    "/brand/boutique/category-bracelets.avif",
   ],
 };
 
@@ -89,7 +94,7 @@ const fixtureBranches: CatalogBranch[] = [
 
 const fixtureCategories: CatalogCategory[] = seedCategories.map((category) => ({
   slug: category.slug,
-  name: category.name,
+  name: getPublicCategoryName(category.slug, category.name),
   description: category.description,
   image: categoryImages[category.slug] ?? DEFAULT_CATALOG_IMAGE,
   imageUrl: categoryImages[category.slug] ?? DEFAULT_CATALOG_IMAGE,
@@ -178,7 +183,9 @@ function mapSeedProduct(product: SeedProduct): CatalogProduct {
     source: "OWN",
     name: product.name.replace(/\s+\d{3}$/u, ""),
     categorySlug: product.categorySlug,
-    categoryName: category?.name ?? product.categorySlug,
+    categoryName: category
+      ? getPublicCategoryName(category.slug, category.name)
+      : product.categorySlug,
     shortDescription: product.shortDescription,
     description: product.description,
     availabilityMode: getSeedAvailabilityMode(product.slug),
@@ -215,12 +222,12 @@ function mapSeedProduct(product: SeedProduct): CatalogProduct {
 function createFixtureDropshipProduct(): CatalogProduct {
   const category = categoryBySlug.get("rings");
   const images = [
-    "/brand/v2/category-rings.avif",
-    "/brand/v2/product-focus.avif",
-    "/brand/v2/hero-rings.avif",
-    "/brand/v2/commerce-catalog.avif",
-    "/brand/v2/editorial-home.avif",
-    "/brand/v2/hero-glass.avif",
+    "/brand/boutique/category-rings.avif",
+    "/brand/boutique/lifestyle-hero.avif",
+    "/brand/boutique/product-detail.avif",
+    "/brand/boutique/category-necklaces.avif",
+    "/brand/boutique/category-earrings.avif",
+    "/brand/boutique/category-bracelets.avif",
   ];
   const image = images[0] ?? DEFAULT_CATALOG_IMAGE;
   const variants: CatalogProductVariant[] = [
@@ -244,34 +251,36 @@ function createFixtureDropshipProduct(): CatalogProduct {
     externalProductId: "gid://shopify/Product/1000000001",
     externalHandle: "elysia-supplier-silver-halo-ring",
     supplierKey: "shopify-dropship",
-    name: "טבעת Silver Halo מהספק",
+    name: "טבעת Silver Halo",
     categorySlug: "rings",
-    categoryName: category?.name ?? "טבעות",
-    shortDescription: "טבעת כסף עדינה שמגיעה דרך ספק Shopify.",
+    categoryName: category
+      ? getPublicCategoryName(category.slug, category.name)
+      : "טבעות",
+    shortDescription: "טבעת כסף עדינה עם שיבוץ זירקון במראה נקי ורך.",
     description:
-      "פריט ספק לדוגמת QA שמאפשר לבדוק מסלול Checkout נפרד לפריטי Shopify ללא תלות בקטלוג חיצוני.",
+      "טבעת Silver Halo משלבת קו כסף דק עם שיבוץ זירקון נקי, ומתאימה לענידה יומיומית או לשילוב עם טבעות נוספות.",
     availabilityMode: "READY_TO_ORDER",
     commerceHighlights: [
-      "זמין דרך Shopify",
-      "התשלום והמסירה נסגרים בקופת הספק",
+      "זמין להזמנה אונליין",
+      "פרטי התשלום והמסירה יאושרו בקופה מאובטחת",
     ],
-    deliveryPromise: "מסירה ותשלום יושלמו בקופת הספק.",
-    returnPolicy: "החזרות והחלפות לפי מדיניות הספק.",
+    deliveryPromise: "מסירה עד הבית לאחר אישור פרטי ההזמנה.",
+    returnPolicy: "החלפה או החזרה בתיאום אישי לפי מדיניות Elysia.",
     careInstructions: "מומלץ להימנע ממגע עם בושם וחומרי ניקוי.",
-    warranty: "אחריות ספק לפריט מיובא.",
+    warranty: "אחריות לשנה על פגמי ייצור ושירות ניקוי ראשוני ללא עלות.",
     price: variants[0]?.price ?? 420,
     createdAt: fixtureCreatedAt,
     popularityScore: 0.4,
     material: "כסף 925",
     stone: "זירקון",
-    collection: "Supplier QA",
-    collections: ["Supplier QA"],
+    collection: "Signature edit",
+    collections: ["Signature edit"],
     image,
     images,
     variants,
     metalColors: ["כסף"],
     sizes: ["6"],
-    tags: ["Shopify", "ספק"],
+    tags: ["כסף", "זירקון", "בחירה נבחרת"],
     inventory: { "online-service": 1 },
   };
 }
@@ -313,8 +322,9 @@ function getFixtureProductImages(input: {
   const fallbackImages = categoryGalleryImages[input.categorySlug] ?? [
     DEFAULT_CATALOG_IMAGE,
   ];
-  const primaryImage =
-    input.primaryImage || fallbackImages[0] || DEFAULT_CATALOG_IMAGE;
+  const primaryImage = input.primaryImage.trim()
+    ? input.primaryImage
+    : (fallbackImages[0] ?? DEFAULT_CATALOG_IMAGE);
   const startIndex = getStableIndex(input.slug, fallbackImages.length);
   const rotatedImages = [
     ...fallbackImages.slice(startIndex),

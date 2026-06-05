@@ -185,11 +185,15 @@ describe("layout stability guardrails", () => {
     expect(productCardSource).toContain('dir="auto"');
     expect(productPageSource).toContain("product-title-mixed-script");
     expect(productPageSource).toContain('data-testid="product-title"');
-    expect(productPageSource).toContain("ui-equal-grid mt-5 grid gap-4");
+    expect(productPageSource).toContain(
+      "ui-equal-grid mt-5 grid gap-x-7 gap-y-10",
+    );
     expect(productPageSource).toContain(
       "data-layout-equal-group={`product-recommendation-${rail.id}`}",
     );
-    expect(recentlyViewedSource).toContain("ui-equal-grid mt-5 grid gap-4");
+    expect(recentlyViewedSource).toContain(
+      "ui-equal-grid mt-5 grid gap-x-7 gap-y-10",
+    );
     expect(recentlyViewedSource).toContain(
       'data-layout-equal-group="recently-viewed-products"',
     );

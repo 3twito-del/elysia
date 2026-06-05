@@ -947,13 +947,16 @@ test.describe("accessibility and responsive guardrails", () => {
     await expect(homeHero).toBeVisible();
     await expect(homeHero.getByRole("heading").first()).toBeVisible();
     const heroCollectionLink = homeHero.locator(
-      'a.home-hero-cta-primary[href="/category/rings"]',
+      'a.home-hero-cta-primary[href="#collections"]',
     );
 
     await expect(heroCollectionLink).toBeVisible();
+    await expect(page.getByTestId("home-hero-statement")).toBeVisible();
     await expect(
       homeHero.locator('a.home-hero-service-link[href="/service"]'),
     ).toHaveCount(0);
+    await expect(homeHero.locator(".home-hero-help-cta")).toHaveCount(0);
+    await expect(page.getByTestId("home-hero-trust-notes")).toHaveCount(0);
     const heroCollectionLinkStyles = await heroCollectionLink.evaluate(
       (element) => {
         const styles = window.getComputedStyle(element);
@@ -966,7 +969,7 @@ test.describe("accessibility and responsive guardrails", () => {
     );
 
     expect(heroCollectionLinkStyles.backgroundColor).toMatch(
-      /^rgba?\(255, 255, 255(?:, (?:0\.9[5-9]|1))?\)$/,
+      /^rgba?\(255, 250, 244(?:, (?:0\.9[0-9]|1))?\)$/,
     );
     expect(heroCollectionLinkStyles.color).not.toBe("rgb(255, 255, 255)");
     const heroCollectionLinkShine = await heroCollectionLink.evaluate(
@@ -1057,38 +1060,38 @@ test.describe("accessibility and responsive guardrails", () => {
         '[data-testid="cinematic-page-hero"]',
       );
       const copy = document.querySelector('[data-testid="home-hero-copy"]');
+      const statement = document.querySelector(
+        '[data-testid="home-hero-statement"]',
+      );
       const actions = document.querySelector(
         '[data-testid="home-hero-actions"]',
       );
 
-      if (!header || !hero || !copy || !actions) {
+      if (!header || !hero || !copy || !statement || !actions) {
         throw new Error("Missing home hero alignment targets.");
       }
 
       const headerRect = header.getBoundingClientRect();
       const heroRect = hero.getBoundingClientRect();
       const copyRect = copy.getBoundingClientRect();
+      const statementRect = statement.getBoundingClientRect();
       const actionsRect = actions.getBoundingClientRect();
 
       return {
-        actionsBottom: Math.round(heroRect.bottom - actionsRect.bottom),
-        actionsLeft: Math.round(actionsRect.left - heroRect.left),
         headerHeight: Math.round(headerRect.height),
         heroTop: Math.round(heroRect.top),
         copyRight: Math.round(heroRect.right - copyRect.right),
         copyTop: Math.round(copyRect.top - heroRect.top),
+        copyBottom: Math.round(heroRect.bottom - copyRect.bottom),
+        ctaAfterStatement: Math.round(actionsRect.top - statementRect.bottom),
       };
     });
 
     expect(offsets.heroTop).toBe(0);
-    expect(
-      Math.abs(offsets.copyRight - offsets.actionsLeft),
-    ).toBeLessThanOrEqual(1);
-    expect(
-      Math.abs(offsets.copyTop - offsets.actionsBottom - offsets.headerHeight),
-    ).toBeLessThanOrEqual(16);
     expect(offsets.copyRight).toBeGreaterThanOrEqual(48);
-    expect(offsets.copyTop).toBeGreaterThanOrEqual(offsets.headerHeight + 32);
+    expect(offsets.copyTop).toBeGreaterThanOrEqual(offsets.headerHeight + 48);
+    expect(offsets.copyBottom).toBeGreaterThanOrEqual(40);
+    expect(offsets.ctaAfterStatement).toBeGreaterThanOrEqual(24);
   });
 });
 
