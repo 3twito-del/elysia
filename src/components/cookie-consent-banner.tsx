@@ -26,7 +26,6 @@ export function CookieConsentBanner() {
     if (isAdminRoute || consentValue === undefined || consentValue !== null) {
       delete root.dataset.cookieBannerOpen;
       root.style.removeProperty("--floating-stack-bottom");
-      root.style.removeProperty("--public-bottom-safe-offset");
       return;
     }
 
@@ -35,7 +34,6 @@ export function CookieConsentBanner() {
     const syncOffset = () => {
       const height = bannerRef.current?.getBoundingClientRect().height ?? 0;
       root.style.setProperty("--floating-stack-bottom", `${height + 16}px`);
-      root.style.setProperty("--public-bottom-safe-offset", `${height}px`);
     };
 
     syncOffset();
@@ -47,7 +45,6 @@ export function CookieConsentBanner() {
         window.removeEventListener("resize", syncOffset);
         delete root.dataset.cookieBannerOpen;
         root.style.removeProperty("--floating-stack-bottom");
-        root.style.removeProperty("--public-bottom-safe-offset");
       };
     }
 
@@ -60,7 +57,6 @@ export function CookieConsentBanner() {
       window.removeEventListener("resize", syncOffset);
       delete root.dataset.cookieBannerOpen;
       root.style.removeProperty("--floating-stack-bottom");
-      root.style.removeProperty("--public-bottom-safe-offset");
     };
   }, [consentValue, isAdminRoute]);
 

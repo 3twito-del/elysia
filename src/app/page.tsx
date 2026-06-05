@@ -61,14 +61,14 @@ const curationCriteria = [
 export const metadata: Metadata = {
   title: "Elysia | First collection coming soon",
   description:
-    "Elysia is a pre-launch jewellery brand world for quiet radiance, intimate detail, and everyday elegance.",
+    "Elysia is a pre-launch jewellery brand world for soft gold, skin-close detail, and quiet light.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: "Elysia | First collection coming soon",
     description:
-      "A boutique jewellery brand world in formation: soft light, skin-close detail, and restrained feminine elegance.",
+      "A boutique jewellery brand world in formation: soft gold, skin-close detail, and quiet light.",
     url: "/",
     images: [{ url: boutiqueHeroImage }],
   },
@@ -76,7 +76,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Elysia | First collection coming soon",
     description:
-      "A boutique jewellery brand world in formation: soft light, skin-close detail, and restrained feminine elegance.",
+      "A boutique jewellery brand world in formation: soft gold, skin-close detail, and quiet light.",
     images: [boutiqueHeroImage],
   },
 };
@@ -112,9 +112,6 @@ export default function Home() {
           data-testid="home-hero-copy"
           dir="ltr"
         >
-          <p className="motion-copy-item prelaunch-hero-kicker">
-            Elysia Jewellery
-          </p>
           <h1 className="home-hero-wordmark motion-copy-item prelaunch-hero-wordmark">
             Elysia
           </h1>
@@ -122,8 +119,7 @@ export default function Home() {
             className="home-hero-statement motion-copy-item prelaunch-hero-statement [--motion-copy-delay:90ms]"
             data-testid="home-hero-statement"
           >
-            Jewellery for quiet radiance, intimate detail, and everyday
-            elegance.
+            Soft gold, close to skin.
           </p>
           <div
             className="home-hero-actions motion-copy-item prelaunch-hero-actions [--motion-copy-delay:130ms]"

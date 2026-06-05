@@ -130,9 +130,7 @@ describe("layout stability guardrails", () => {
     expect(cookieBannerSource).toContain(
       'root.style.setProperty("--floating-stack-bottom"',
     );
-    expect(cookieBannerSource).toContain(
-      'root.style.setProperty("--public-bottom-safe-offset"',
-    );
+    expect(cookieBannerSource).not.toContain("--public-bottom-safe-offset");
 
     expect(accessibilityWidgetSource).toContain("public-floating-control");
     expect(accessibilityWidgetSource).toContain(
@@ -163,6 +161,12 @@ describe("layout stability guardrails", () => {
     expect(productCardSource).toContain('data-public-floating-avoid="true"');
     expect(productPageSource).toContain('data-public-floating-avoid="true"');
     expect(cssSource).toContain('html[data-cookie-banner-open="true"]');
+    expect(cssSource).not.toContain(
+      'html[data-cookie-banner-open="true"] .home-hero-copy',
+    );
+    expect(cssSource).not.toContain(
+      'html[data-cookie-banner-open="true"] .public-motion-content',
+    );
     expect(cssSource).toContain(
       'html[data-public-overlay-open="true"] .public-floating-control',
     );

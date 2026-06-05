@@ -25,21 +25,15 @@ describe("public floating chrome contract", () => {
       "top: calc(var(--site-header-height) + 1rem + env(safe-area-inset-top))",
     );
     expect(css).toContain(
-      'html[data-cookie-banner-open="true"] .public-motion-content',
-    );
-    expect(css).toContain(
       'html[data-public-floating-bar-visible="true"] .public-motion-content',
     );
-    expect(css).toContain("var(--public-bottom-safe-offset, 0px)");
-    expect(
-      extractBetween(
-        css,
-        "@media (max-width: 639px)",
-        "@media (min-width: 640px)",
-      ),
-    ).toContain(
-      'html[data-cookie-banner-open="true"][data-public-floating-bar-visible="true"]',
+    expect(css).not.toContain(
+      'html[data-cookie-banner-open="true"] .public-motion-content',
     );
+    expect(css).not.toContain(
+      'html[data-cookie-banner-open="true"] .home-hero-copy',
+    );
+    expect(css).not.toContain("var(--public-bottom-safe-offset, 0px)");
     expect(css).toContain(
       "[data-icon-tooltip]:not(.fixed):not(.absolute):not(.sticky)",
     );
@@ -51,7 +45,7 @@ describe("public floating chrome contract", () => {
 
     expect(widget).toContain('data-accessibility-widget-trigger="true"');
     expect(widget).toContain("fixed right-3");
-    expect(widget).toContain("var(--public-bottom-safe-offset,0.75rem)");
+    expect(widget).toContain("var(--public-floating-bar-offset,0.75rem)");
     expect(widget).toContain('data-icon-tooltip="תפריט נגישות"');
     expect(widget).toContain("hideFloatingTriggerForPage");
     expect(widget).toContain("הסתרת הכפתור בדף זה");
@@ -66,6 +60,7 @@ describe("public floating chrome contract", () => {
     expect(widget).toContain("focus-visible:outline-solid");
     expect(widget).not.toContain("fixed bottom");
     expect(widget).not.toContain("left-4");
+    expect(widget).not.toContain("var(--public-bottom-safe-offset");
     expect(widget).not.toContain('variant="default"');
   });
 
@@ -79,16 +74,17 @@ describe("public floating chrome contract", () => {
     expect(banner).toContain('data-cookie-consent-banner="true"');
   });
 
-  it("syncs cookie banner height into the shared bottom content offset", () => {
+  it("keeps the cookie banner fixed without reserving document space", () => {
     const banner = read("src/components/cookie-consent-banner.tsx");
 
-    expect(banner).toContain("--public-bottom-safe-offset");
+    expect(banner).toContain("--floating-stack-bottom");
     expect(banner).toContain('data-public-floating-avoid="true"');
     expect(banner).toContain(
-      'root.style.setProperty("--public-bottom-safe-offset", `${height}px`)',
+      'root.style.setProperty("--floating-stack-bottom", `${height + 16}px`)',
     );
+    expect(banner).not.toContain("--public-bottom-safe-offset");
     expect(banner).not.toContain("--public-cookie-top-offset");
-    expect(countOccurrences(banner, "--public-bottom-safe-offset")).toBe(4);
+    expect(countOccurrences(banner, "--floating-stack-bottom")).toBe(4);
     expect(banner).toContain("sm:w-[min(calc(100vw-2rem),20rem)]");
     expect(banner).toContain(
       "bottom-[calc(0.75rem+env(safe-area-inset-bottom))]",
@@ -132,16 +128,6 @@ describe("public floating chrome contract", () => {
 
 function read(relativePath: string) {
   return readFileSync(path.join(root, relativePath), "utf8");
-}
-
-function extractBetween(source: string, start: string, end: string) {
-  const startIndex = source.indexOf(start);
-  expect(startIndex).toBeGreaterThanOrEqual(0);
-
-  const endIndex = source.indexOf(end, startIndex);
-  expect(endIndex).toBeGreaterThan(startIndex);
-
-  return source.slice(startIndex, endIndex);
 }
 
 function countOccurrences(source: string, pattern: string) {

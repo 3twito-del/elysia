@@ -1167,7 +1167,7 @@ test.describe("cookie consent flow", () => {
     });
     await expect(acceptCookiesButton).toHaveCSS(
       "background-color",
-      "rgb(16, 19, 20)",
+      "rgb(29, 25, 22)",
     );
     await acceptCookiesButton.click();
 
