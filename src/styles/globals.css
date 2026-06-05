@@ -2342,6 +2342,27 @@ footer nav a:focus-visible {
   transition-timing-function: var(--ease-motion-standard);
 }
 
+.home-hero-action-stack {
+  max-width: min(100%, 30rem);
+}
+
+.home-hero-cta-row {
+  width: min(100%, 27rem);
+}
+
+.home-hero-quick-links {
+  max-width: min(100%, 24rem);
+}
+
+.home-hero-trust-notes {
+  max-width: min(100%, 27rem);
+  line-height: 1.45;
+}
+
+.home-hero-trust-notes li {
+  min-height: 1.35rem;
+}
+
 .home-hero-actions [data-slot="button"]:not(:disabled):hover,
 .home-hero-actions [data-slot="button"]:not(:disabled):focus-visible {
   box-shadow: none !important;

@@ -207,13 +207,13 @@ export default async function Home() {
         </div>
 
         <div
-          className="home-hero-actions motion-hero-copy absolute inset-x-5 bottom-[calc(2.75rem+env(safe-area-inset-bottom))] w-auto text-white sm:inset-x-auto sm:bottom-[calc(var(--hero-edge)+0.75rem)] sm:left-[var(--hero-edge)] sm:w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),36rem)] lg:w-[min(36rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
+          className="home-hero-actions motion-hero-copy absolute inset-x-5 bottom-[calc(2.75rem+env(safe-area-inset-bottom))] w-auto text-white sm:inset-x-auto sm:bottom-[calc(var(--hero-edge)+1.5rem)] sm:left-[var(--hero-edge)] sm:w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),30rem)] lg:w-[min(30rem,calc(50vw_-_var(--hero-edge)_-_3rem))]"
           data-testid="home-hero-actions"
           dir="rtl"
         >
-          <div className="motion-copy-item grid items-stretch gap-5 [--motion-copy-delay:170ms] sm:justify-items-end">
+          <div className="home-hero-action-stack motion-copy-item grid items-stretch gap-6 [--motion-copy-delay:170ms] sm:justify-items-start lg:gap-7">
             <div
-              className="grid gap-3 sm:grid-cols-2 sm:justify-end"
+              className="home-hero-cta-row grid gap-3 sm:grid-cols-2 sm:justify-start"
               data-testid="home-hero-cta-row"
             >
               <Button
@@ -244,7 +244,7 @@ export default async function Home() {
             {heroCategoryLinks.length > 0 ? (
               <nav
                 aria-label="קישורי קולקציות מהירים"
-                className="hidden flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs text-white/78 lg:flex lg:justify-end"
+                className="home-hero-quick-links hidden flex-wrap items-center justify-start gap-x-7 gap-y-3 text-xs text-white/78 lg:flex"
               >
                 {heroCategoryLinks.map((category) => (
                   <Link
@@ -258,7 +258,7 @@ export default async function Home() {
               </nav>
             ) : null}
             <ul
-              className="motion-copy-item hidden flex-wrap justify-center gap-2 text-[0.7rem] text-white/76 [--motion-copy-delay:210ms] sm:flex sm:justify-end"
+              className="home-hero-trust-notes motion-copy-item hidden flex-wrap justify-start gap-x-5 gap-y-2 text-[0.7rem] text-white/76 [--motion-copy-delay:210ms] sm:flex"
               data-testid="home-hero-trust-notes"
             >
               {homeTrustNotes.map(({ icon: Icon, label }) => (
