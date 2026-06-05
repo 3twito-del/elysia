@@ -13,18 +13,18 @@ const boutiqueHeroImage = "/brand/boutique/lifestyle-hero.avif";
 const moodPrinciples = [
   {
     image: "/brand/boutique/product-detail.avif",
-    title: "אור",
-    text: "זוהר רך על עור, מתכת וצל לפני שמתחיל סיפור של פריט.",
+    title: "צילום",
+    text: "תאורה טבעית, רקע נקי וקרבה מספקת כדי לראות חומר וגימור.",
   },
   {
     image: "/brand/boutique/category-necklaces.avif",
-    title: "פרט",
-    text: "רגעי תכשיט קרובים לגוף, בתחושה נלבשת, נוגעת ואינטימית.",
+    title: "פרופורציה",
+    text: "בחינת אורך, משקל ונראות על הגוף לפני הרחבת המבחר.",
   },
   {
     image: "/brand/boutique/category-bracelets.avif",
-    title: "אינטימיות",
-    text: "צלליות שקטות, טקסטורה חמימה ואיפוק במקום רעש קטלוגי.",
+    title: "שימוש",
+    text: "פריטים שנועדו לענידה יומיומית, עם גימור ברור ונראות מאופקת.",
   },
 ] as const;
 
@@ -45,30 +45,30 @@ const collectionSignals = [
 
 const curationCriteria = [
   {
-    title: "כנות חומרית",
-    text: "רק פריטים עם מידע חומרי ברור וגימור שמתאים לענידה יומיומית ייכנסו לקולקציה הראשונה.",
+    title: "חומר",
+    text: "כל פריט יכלול מידע ברור על חומר, ציפוי ואופן תחזוקה.",
   },
   {
-    title: "מידתיות על הגוף",
-    text: "קנה מידה, נפילה וצללית קודמים לכמות. כל כיוון נבחן לפי האופן שבו הוא יושב קרוב לגוף.",
+    title: "מידה",
+    text: "אורך, היקף ומשקל ייבדקו מול שימוש יומיומי ונוחות ענידה.",
   },
   {
-    title: "שקט שנשאר",
-    text: "הקולקציה צריכה להרגיש נשית ועכשווית בלי להפוך לצעקנית, עונתית או חולפת.",
+    title: "מבחר",
+    text: "הקולקציה תיפתח במבחר מצומצם במקום ברשימת מוצרים רחבה מדי.",
   },
 ] as const;
 
 export const metadata: Metadata = {
   title: "Elysia | הקולקציה הראשונה בדרך",
   description:
-    "Elysia הוא עולם מותגי לתכשיטים נשיים, אור רך, פרטים קרובים לעור ואלגנטיות שקטה.",
+    "Elysia הוא מותג תכשיטים בהקמה עם קולקציה ראשונה מצומצמת, מידע חומרי ברור ותהליך בחירה מדויק.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: "Elysia | הקולקציה הראשונה בדרך",
     description:
-      "עולם מותגי בוטיקי בהתהוות: זהב רך, פרטים קרובים לעור ואור שקט.",
+      "מותג תכשיטים בהקמה עם קולקציה ראשונה מצומצמת ותהליך בחירה מבוקר.",
     url: "/",
     images: [{ url: boutiqueHeroImage }],
   },
@@ -76,7 +76,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Elysia | הקולקציה הראשונה בדרך",
     description:
-      "עולם מותגי בוטיקי בהתהוות: זהב רך, פרטים קרובים לעור ואור שקט.",
+      "מותג תכשיטים בהקמה עם קולקציה ראשונה מצומצמת ותהליך בחירה מבוקר.",
     images: [boutiqueHeroImage],
   },
 };
@@ -119,7 +119,7 @@ export default function Home() {
             className="home-hero-statement motion-copy-item prelaunch-hero-statement [--motion-copy-delay:90ms]"
             data-testid="home-hero-statement"
           >
-            Soft gold, close to skin.
+            Jewellery selected by material, fit, and finish.
           </p>
           <div
             className="home-hero-actions motion-copy-item prelaunch-hero-actions [--motion-copy-delay:130ms]"
@@ -155,9 +155,9 @@ export default function Home() {
         id="mood"
       >
         <SectionIntro
-          eyebrow="האווירה של Elysia"
-          title="אור, פרט, אינטימיות."
-          text="דף הבית נפתח קודם כעולם מותגי, ורק אחר כך ככניסה לחנות."
+          eyebrow="כיוון האתר"
+          title="צילום, פרופורציה, שימוש."
+          text="דף הבית מציג את שפת המותג ואת הקריטריונים לקולקציה לפני כניסה למוצרים."
         />
         <RevealGrid
           className="prelaunch-mood-grid"
@@ -168,7 +168,7 @@ export default function Home() {
             <figure className="prelaunch-mood-item" key={principle.title}>
               <span className="prelaunch-mood-image">
                 <Image
-                  alt={`${principle.title} - כיוון אווירה עבור Elysia`}
+                  alt={`${principle.title} - כיוון חזותי עבור Elysia`}
                   className="object-cover"
                   fill
                   sizes="(min-width: 1024px) 28vw, (min-width: 640px) 50vw, 100vw"
@@ -191,9 +191,9 @@ export default function Home() {
         <div className="prelaunch-split">
           <div className="prelaunch-split-copy">
             <SectionIntro
-              eyebrow="הקולקציה הראשונה בדרך"
-              title="נבחר בקפידה, לא נערם כמלאי."
-              text="עד שהפריטים הסופיים יאושרו, דף הבית מציג את הכיוון החזותי: צלליות, טקסטורה ואווירה במקום עומק מלאי מדומה."
+              eyebrow="הקולקציה הראשונה"
+              title="מבחר מצומצם לפי חומר, גימור ומידה."
+              text="עד לפרסום הפריטים הסופיים, האתר מציג כיוון חזותי וקריטריוני בחירה במקום קטלוג מלאכותי."
             />
           </div>
           <div
@@ -221,9 +221,9 @@ export default function Home() {
         id="materials"
       >
         <SectionIntro
-          eyebrow="קריטריוני אוצרות"
-          title="סטנדרטים לפני הבטחות."
-          text="סטנדרטים של חומר, גימור ותחושת ענידה יוצגו כקריטריוני בחירה עד לאישור הקולקציה הסופית."
+          eyebrow="קריטריונים"
+          title="המידע שיוצג לפני פתיחת המכירה."
+          text="הקולקציה תוצג עם נתוני חומר, מידה, גימור והמלצות תחזוקה."
         />
         <div
           className="prelaunch-criteria-grid"
@@ -243,13 +243,24 @@ export default function Home() {
         className="prelaunch-section prelaunch-journal-section"
         id="journal"
       >
-        <div className="prelaunch-journal">
-          <p className="prelaunch-eyebrow">יומן</p>
-          <h2>רשימות על אור, מתכת והעריכה הראשונה.</h2>
-          <p>
-            היומן ירכז את המחקר החזותי שמאחורי Elysia: רפרנסים, הערות חומר,
-            בחינת צלליות וההתהוות האיטית של הקולקציה הראשונה.
-          </p>
+        <div className="prelaunch-media-note">
+          <div className="prelaunch-journal">
+            <p className="prelaunch-eyebrow">עדכונים</p>
+            <h2>תיעוד התקדמות הקולקציה.</h2>
+            <p>
+              אזור זה ירכז עדכונים קצרים על בחירת פריטים, בדיקות חומר,
+              צילומים ותאריכי פתיחה.
+            </p>
+          </div>
+          <figure className="prelaunch-note-image">
+            <Image
+              alt="צילום תקריב של תכשיט לצורך תיעוד קולקציה"
+              className="object-cover"
+              fill
+              sizes="(min-width: 1024px) 32vw, 100vw"
+              src="/brand/boutique/product-detail.avif"
+            />
+          </figure>
         </div>
       </RevealSection>
 
@@ -259,11 +270,10 @@ export default function Home() {
       >
         <div className="prelaunch-waitlist-grid">
           <div>
-            <p className="prelaunch-eyebrow">הצטרפות לקולקציה הראשונה</p>
-            <h2>להיכנס לעולם לפני שהחנות נפתחת.</h2>
+            <p className="prelaunch-eyebrow">עדכון השקה</p>
+            <h2>קבלת הודעה כשהקולקציה נפתחת.</h2>
             <p>
-              נשלח הודעה ראשונה כש־Elysia תהיה מוכנה לחשוף את הבחירה הערוכה
-              של הקולקציה הראשונה.
+              נשלח הודעה אחת עם פתיחת הקולקציה הראשונה ופרטי זמינות ראשוניים.
             </p>
           </div>
           <div className="prelaunch-waitlist-form">
@@ -276,13 +286,24 @@ export default function Home() {
         className="prelaunch-section prelaunch-about-section"
         id="about-elysia"
       >
-        <div className="prelaunch-about">
-          <p className="prelaunch-eyebrow">על Elysia</p>
-          <h2>מותג תכשיטים בוטיקי בהתהוות.</h2>
-          <p>
-            Elysia מתגבשת סביב אלגנטיות נשית ומינימלית: אור חמים, פרטים
-            קרובים לעור, ברק מאופק וקולקציה ראשונה שנבחרת בקפידה ולא בכמות.
-          </p>
+        <div className="prelaunch-media-note prelaunch-media-note-reverse">
+          <div className="prelaunch-about">
+            <p className="prelaunch-eyebrow">על Elysia</p>
+            <h2>מותג תכשיטים בהקמה.</h2>
+            <p>
+              Elysia מתמקדת במבחר תכשיטים מצומצם, צילום ברור, מידע חומרי
+              נגיש ותהליך רכישה פשוט.
+            </p>
+          </div>
+          <figure className="prelaunch-note-image">
+            <Image
+              alt="צילום שרשרת עדינה כחלק משפת המותג"
+              className="object-cover"
+              fill
+              sizes="(min-width: 1024px) 32vw, 100vw"
+              src="/brand/boutique/category-necklaces.avif"
+            />
+          </figure>
         </div>
       </RevealSection>
     </main>

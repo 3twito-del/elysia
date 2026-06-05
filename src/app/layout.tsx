@@ -1,7 +1,12 @@
 import "~/styles/globals.css";
 
 import { type Metadata, type Viewport } from "next";
-import { Cormorant_Garamond, Geist, Geist_Mono } from "next/font/google";
+import {
+  Cormorant_Garamond,
+  Geist,
+  Geist_Mono,
+  Rubik,
+} from "next/font/google";
 
 import { CookieConsentBanner } from "~/components/cookie-consent-banner";
 import { DeferredAccessibilityWidget } from "~/components/deferred-accessibility-widget";
@@ -73,6 +78,12 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
 });
 
+const rubik = Rubik({
+  subsets: ["hebrew", "latin"],
+  variable: "--font-rubik",
+  weight: ["400", "500", "600", "700"],
+});
+
 const cormorantGaramond = Cormorant_Garamond({
   subsets: ["latin"],
   variable: "--font-cormorant-garamond",
@@ -83,6 +94,7 @@ const fontClassName = [
   cormorantGaramond.variable,
   geistSans.variable,
   geistMono.variable,
+  rubik.variable,
 ].join(" ");
 
 export default function RootLayout({

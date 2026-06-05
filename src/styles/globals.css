@@ -7,11 +7,11 @@
 
 @theme inline {
   --font-heading:
-    "Noto Sans Hebrew", "Noto Sans Hebrew Fallback", ui-sans-serif, system-ui,
-    sans-serif;
+    "Rubik", "Rubik Fallback", "Noto Sans Hebrew",
+    "Noto Sans Hebrew Fallback", ui-sans-serif, system-ui, sans-serif;
   --font-sans:
-    "Noto Sans Hebrew", "Noto Sans Hebrew Fallback", ui-sans-serif, system-ui,
-    sans-serif;
+    "Rubik", "Rubik Fallback", "Noto Sans Hebrew",
+    "Noto Sans Hebrew Fallback", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -109,8 +109,8 @@
   --scrollbar-thumb-hover: rgb(125 107 90 / 42%);
   --scrollbar-track: transparent;
   --font-hebrew-sans:
-    "Noto Sans Hebrew", "Arial Hebrew", Arial, ui-sans-serif, system-ui,
-    sans-serif;
+    var(--font-rubik), "Rubik", "Noto Sans Hebrew", "Arial Hebrew", Arial,
+    ui-sans-serif, system-ui, sans-serif;
   --font-latin-brand:
     var(--font-cormorant-garamond), "Cormorant Garamond", Georgia,
     "Times New Roman", serif;
@@ -1576,16 +1576,16 @@ main
 
 .prelaunch-hero-wordmark {
   margin-top: 0;
-  font-family: var(--font-latin-brand);
-  font-size: clamp(3.2rem, 5.8vw, 5rem);
-  font-weight: 500;
-  line-height: 0.94;
+  font-family: var(--font-hebrew-sans);
+  font-size: clamp(2.9rem, 5.2vw, 4.6rem);
+  font-weight: 600;
+  line-height: 1.02;
 }
 
 .prelaunch-hero-statement {
   margin-top: clamp(1.1rem, 2.4vw, 1.65rem);
   max-width: 24rem;
-  font-family: var(--font-geist-sans), var(--font-hebrew-sans);
+  font-family: var(--font-hebrew-sans);
   font-size: clamp(1.05rem, 1.65vw, 1.55rem);
   font-weight: 400;
   line-height: 1.48;
@@ -1606,7 +1606,7 @@ main
 .prelaunch-section {
   max-width: 92rem;
   margin-inline: auto;
-  padding: clamp(4.25rem, 8vw, 8rem) var(--ui-page-x);
+  padding: clamp(2.75rem, 5vw, 5.25rem) var(--ui-page-x);
 }
 
 .prelaunch-section-intro {
@@ -1619,11 +1619,11 @@ main
 .prelaunch-waitlist-grid h2,
 .prelaunch-about h2 {
   margin-top: 0.65rem;
-  max-width: 52rem;
-  font-family: var(--font-latin-brand);
-  font-size: clamp(2.2rem, 5vw, 5.2rem);
-  font-weight: 400;
-  line-height: 0.98;
+  max-width: 42rem;
+  font-family: var(--font-hebrew-sans);
+  font-size: clamp(1.65rem, 2.7vw, 2.85rem);
+  font-weight: 600;
+  line-height: 1.14;
 }
 
 .prelaunch-section-intro > p:last-child,
@@ -1641,6 +1641,17 @@ main
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+.prelaunch-mood-section {
+  display: grid;
+  grid-template-columns: minmax(18rem, 0.8fr) minmax(0, 1.45fr);
+  align-items: end;
+  gap: clamp(1.5rem, 3.5vw, 3rem);
+}
+
+.prelaunch-mood-section .prelaunch-section-intro {
+  margin-bottom: 0;
 }
 
 .prelaunch-mood-item {
@@ -1752,7 +1763,7 @@ main
 }
 
 .prelaunch-journal-section {
-  padding-block: clamp(3rem, 6vw, 6rem);
+  padding-block: clamp(2.75rem, 5vw, 5.25rem);
 }
 
 .prelaunch-journal,
@@ -1781,13 +1792,61 @@ main
 }
 
 .prelaunch-about-section {
-  padding-bottom: clamp(5rem, 8vw, 9rem);
+  padding-bottom: clamp(3.5rem, 6vw, 6.5rem);
+}
+
+.prelaunch-media-note {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(18rem, 1fr);
+  align-items: center;
+  max-width: 92rem;
+  margin-inline: auto;
+  gap: clamp(1.5rem, 4vw, 4rem);
+}
+
+.prelaunch-media-note-reverse {
+  grid-template-columns: minmax(18rem, 1fr) minmax(0, 0.8fr);
+}
+
+.prelaunch-media-note-reverse .prelaunch-note-image {
+  order: -1;
+}
+
+.prelaunch-note-image {
+  position: relative;
+  min-height: clamp(18rem, 32vw, 34rem);
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--brand-pearl);
+}
+
+.prelaunch-note-image::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgb(29 25 22 / 7%);
+  border-radius: inherit;
+}
+
+.prelaunch-media-note .prelaunch-journal,
+.prelaunch-media-note .prelaunch-about {
+  max-width: 34rem;
+  margin-inline: 0;
+  text-align: start;
 }
 
 @media (max-width: 1023px) {
   .prelaunch-split,
-  .prelaunch-waitlist-grid {
+  .prelaunch-waitlist-grid,
+  .prelaunch-mood-section,
+  .prelaunch-media-note,
+  .prelaunch-media-note-reverse {
     grid-template-columns: 1fr;
+  }
+
+  .prelaunch-media-note-reverse .prelaunch-note-image {
+    order: 0;
   }
 
   .prelaunch-mood-grid,
@@ -1802,6 +1861,10 @@ main
 
   .prelaunch-mood-image {
     min-height: 14rem;
+  }
+
+  .prelaunch-note-image {
+    min-height: 18rem;
   }
 }
 
@@ -1829,7 +1892,7 @@ main
   }
 
   .prelaunch-hero-wordmark {
-    font-size: clamp(3.4rem, 16vw, 4.9rem);
+    font-size: clamp(2.85rem, 14vw, 4.2rem);
   }
 
   .prelaunch-hero-statement {
@@ -1839,7 +1902,7 @@ main
   }
 
   .prelaunch-section {
-    padding-block: clamp(3.5rem, 14vw, 5rem);
+    padding-block: clamp(2.6rem, 11vw, 4.2rem);
   }
 
   .prelaunch-mood-item {
@@ -1856,6 +1919,9 @@ main
     min-height: 18rem;
   }
 
+  .prelaunch-note-image {
+    min-height: 16rem;
+  }
 }
 
 .site-header {
@@ -2213,7 +2279,6 @@ main
 }
 
 .brand-footer-mark,
-.home-hero-wordmark,
 .admin-brand-mark {
   font-family: var(--font-latin-brand);
 }

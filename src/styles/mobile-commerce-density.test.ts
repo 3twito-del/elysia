@@ -41,9 +41,13 @@ describe("mobile commerce density", () => {
     );
     expect(source).toContain("prelaunch-mood-grid");
     expect(source).toContain("prelaunch-collection-board");
+    expect(source).toContain("prelaunch-media-note");
+    expect(source).toContain("prelaunch-note-image");
     expect(source).toContain('data-testid="prelaunch-first-collection-board"');
     expect(css).toContain(".prelaunch-mood-grid");
     expect(css).toContain(".prelaunch-collection-board");
+    expect(css).toContain(".prelaunch-media-note");
+    expect(css).toContain(".prelaunch-note-image");
     expect(css).toContain("aspect-ratio: 4 / 5;");
     expect(source).not.toContain(
       'data-layout-equal-group="home-category-tiles"',

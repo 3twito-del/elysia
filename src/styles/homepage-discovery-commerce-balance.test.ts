@@ -21,8 +21,10 @@ describe("homepage pre-launch brand world", () => {
     expect(home).toContain('href="#waitlist"');
     expect(home).toContain("הצטרפות לקולקציה הראשונה");
     expect(home).toContain("First collection coming soon");
-    expect(home).toContain("האווירה של Elysia");
-    expect(home).toContain("אור, פרט, אינטימיות.");
+    expect(home).toContain("כיוון האתר");
+    expect(home).toContain("צילום, פרופורציה, שימוש.");
+    expect(home).toContain("prelaunch-media-note");
+    expect(home).toContain("prelaunch-note-image");
     expect(home).toContain('id="mood"');
     expect(home).toContain('id="first-collection"');
     expect(home).toContain('id="materials"');
