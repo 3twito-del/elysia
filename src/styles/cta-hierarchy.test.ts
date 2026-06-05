@@ -53,7 +53,7 @@ describe("public CTA hierarchy", () => {
     expect(home).toContain("home-hero-cta-primary");
     expect(home).toContain('data-testid="home-hero-primary-cta"');
     expect(home).toContain('href="#waitlist"');
-    expect(home).toContain("Join the first collection");
+    expect(home).toContain("הצטרפות לקולקציה הראשונה");
     expect(home).toContain("First collection coming soon");
     expect(home).not.toContain("home-hero-service-link");
     expect(home).not.toContain('href="/service"');

@@ -19,8 +19,10 @@ describe("homepage pre-launch brand world", () => {
     expect(home).toContain('data-testid="home-hero-statement"');
     expect(home).toContain('data-testid="home-hero-primary-cta"');
     expect(home).toContain('href="#waitlist"');
-    expect(home).toContain("Join the first collection");
+    expect(home).toContain("הצטרפות לקולקציה הראשונה");
     expect(home).toContain("First collection coming soon");
+    expect(home).toContain("האווירה של Elysia");
+    expect(home).toContain("אור, פרט, אינטימיות.");
     expect(home).toContain('id="mood"');
     expect(home).toContain('id="first-collection"');
     expect(home).toContain('id="materials"');
@@ -62,24 +64,17 @@ describe("homepage pre-launch brand world", () => {
     );
   });
 
-  it("keeps the home header in pre-launch mode without commerce actions", () => {
+  it("keeps the home header on the regular public navigation", () => {
     const header = read("src/components/site-header.tsx");
 
-    expect(header).toContain("const prelaunchNavItems = [");
-    expect(header).toContain('{ href: "#about-elysia", label: "About" }');
-    expect(header).toContain(
-      '{ href: "#first-collection", label: "First Collection" }',
-    );
-    expect(header).toContain('{ href: "#journal", label: "Journal" }');
-    expect(header).toContain(
-      '{ href: "/service?topic=general", label: "Contact" }',
-    );
-    expect(header).toContain('data-home-prelaunch={isHome ? "true"');
-    expect(header).toContain('aria-label="Pre-launch navigation"');
-    expect(header).toContain("isHome ? (");
-    expect(indexOf(header, "prelaunchNavItems.map")).toBeLessThan(
-      indexOf(header, "<MobileNav"),
-    );
+    expect(header).not.toContain("const prelaunchNavItems = [");
+    expect(header).not.toContain('aria-label="Pre-launch navigation"');
+    expect(header).not.toContain("prelaunchNavItems.map");
+    expect(header).not.toContain("data-home-prelaunch");
+    expect(header).toContain("<MobileNav");
+    expect(header).toContain('href="/search"');
+    expect(header).toContain('href="/service"');
+    expect(header).toContain('href="/account#account-wishlist"');
     expect(indexOf(header, "<MobileNav")).toBeLessThan(
       indexOf(header, 'href="/search"'),
     );

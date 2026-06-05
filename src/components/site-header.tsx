@@ -22,12 +22,6 @@ const navItems: HeaderNavItem[] = [
   { href: "/about", label: "אודות" },
   { href: "/service", label: "שירות" },
 ];
-const prelaunchNavItems = [
-  { href: "#about-elysia", label: "About" },
-  { href: "#first-collection", label: "First Collection" },
-  { href: "#journal", label: "Journal" },
-  { href: "/service?topic=general", label: "Contact" },
-] as const;
 const categoryNavHrefs = navItems
   .map((item) => item.href)
   .filter(isCategoryHref);
@@ -91,7 +85,6 @@ export function SiteHeader() {
       <header
         className="site-header fixed inset-x-0 top-0 z-50 h-16 md:h-[4.25rem] lg:h-[6.125rem]"
         data-header-state={headerState}
-        data-home-prelaunch={isHome ? "true" : undefined}
         data-over-media={isOverHomeHero ? "true" : undefined}
         dir="rtl"
       >
@@ -106,44 +99,24 @@ export function SiteHeader() {
             className="[grid-column:3] [grid-row:1] flex min-w-0 items-center gap-5 justify-self-end sm:gap-7"
             dir="rtl"
           >
-            {isHome ? (
-              <nav
-                aria-label="Pre-launch navigation"
-                className="prelaunch-header-nav-row"
-                dir="ltr"
-              >
-                {prelaunchNavItems.map((item) => (
-                  <Link
-                    className="site-header-link prelaunch-header-link"
-                    href={item.href}
-                    key={item.href}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </nav>
-            ) : (
-              <>
-                <MobileNav
-                  closeOnMediaQuery={false}
-                  currentPathname={pathname}
-                  items={navItems}
-                  onCategoryIntent={categoryPrefetch.prefetch}
-                  onOpenCategoryPrefetch={categoryPrefetch.prefetchAll}
-                  triggerClassName="min-h-10 text-[0.94rem] font-medium"
-                  triggerLabel="תפריט"
-                  triggerMode="label"
-                />
-                <Link
-                  aria-label="חיפוש"
-                  className="site-header-link site-header-label-action inline-flex min-h-10 items-center gap-2 text-[0.94rem] font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
-                  href="/search"
-                >
-                  <Search aria-hidden="true" className="size-5" />
-                  <span className="hidden sm:inline">חיפוש</span>
-                </Link>
-              </>
-            )}
+            <MobileNav
+              closeOnMediaQuery={false}
+              currentPathname={pathname}
+              items={navItems}
+              onCategoryIntent={categoryPrefetch.prefetch}
+              onOpenCategoryPrefetch={categoryPrefetch.prefetchAll}
+              triggerClassName="min-h-10 text-[0.94rem] font-medium"
+              triggerLabel="תפריט"
+              triggerMode="label"
+            />
+            <Link
+              aria-label="חיפוש"
+              className="site-header-link site-header-label-action inline-flex min-h-10 items-center gap-2 text-[0.94rem] font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
+              href="/search"
+            >
+              <Search aria-hidden="true" className="size-5" />
+              <span className="hidden sm:inline">חיפוש</span>
+            </Link>
           </div>
 
           <Link
@@ -160,51 +133,43 @@ export function SiteHeader() {
             className="[grid-column:1] [grid-row:1] flex min-w-0 items-center gap-3 justify-self-start sm:gap-5"
             dir="rtl"
           >
-            {isHome ? (
-              <p className="prelaunch-header-note" dir="ltr">
-                Coming soon
-              </p>
-            ) : (
-              <>
-                <Link
-                  aria-label="צרו קשר"
-                  className="site-header-link site-header-label-action hidden min-h-10 items-center text-[0.94rem] font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] md:inline-flex"
-                  href="/service"
-                >
-                  צרו קשר
-                </Link>
-                <Button
-                  asChild
-                  className="site-header-action size-10 sm:size-11"
-                  size="icon"
-                  variant="ghost"
-                >
-                  <Link
-                    data-icon-tooltip="מועדפים"
-                    data-icon-tooltip-placement="bottom"
-                    href="/account#account-wishlist"
-                  >
-                    <Heart aria-hidden="true" className="size-5" />
-                    <span className="sr-only">מועדפים</span>
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  className="site-header-action size-10 sm:size-11"
-                  size="icon"
-                  variant="ghost"
-                >
-                  <Link
-                    data-icon-tooltip="אזור אישי"
-                    data-icon-tooltip-placement="bottom"
-                    href="/account"
-                  >
-                    <UserRound aria-hidden="true" className="size-5" />
-                    <span className="sr-only">אזור אישי</span>
-                  </Link>
-                </Button>
-              </>
-            )}
+            <Link
+              aria-label="צרו קשר"
+              className="site-header-link site-header-label-action hidden min-h-10 items-center text-[0.94rem] font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] md:inline-flex"
+              href="/service"
+            >
+              צרו קשר
+            </Link>
+            <Button
+              asChild
+              className="site-header-action size-10 sm:size-11"
+              size="icon"
+              variant="ghost"
+            >
+              <Link
+                data-icon-tooltip="מועדפים"
+                data-icon-tooltip-placement="bottom"
+                href="/account#account-wishlist"
+              >
+                <Heart aria-hidden="true" className="size-5" />
+                <span className="sr-only">מועדפים</span>
+              </Link>
+            </Button>
+            <Button
+              asChild
+              className="site-header-action size-10 sm:size-11"
+              size="icon"
+              variant="ghost"
+            >
+              <Link
+                data-icon-tooltip="אזור אישי"
+                data-icon-tooltip-placement="bottom"
+                href="/account"
+              >
+                <UserRound aria-hidden="true" className="size-5" />
+                <span className="sr-only">אזור אישי</span>
+              </Link>
+            </Button>
           </div>
         </div>
       </header>

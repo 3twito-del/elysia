@@ -67,8 +67,10 @@ describe("public structure benchmark v4 policy", () => {
     expect(header).toContain('aria-label="חיפוש"');
     expect(header).toContain('aria-label="צרו קשר"');
     expect(header).toContain('href="/account#account-wishlist"');
-    expect(header).toContain("const prelaunchNavItems = [");
-    expect(header).toContain('aria-label="Pre-launch navigation"');
+    expect(header).not.toContain("const prelaunchNavItems = [");
+    expect(header).not.toContain('aria-label="Pre-launch navigation"');
+    expect(header).not.toContain("data-home-prelaunch");
+    expect(header).toContain("<MobileNav");
     expect(header).not.toContain("desktopNavItems.map");
     expect(header).not.toContain('aria-current="page"');
     expect(header).not.toContain("bg-secondary");

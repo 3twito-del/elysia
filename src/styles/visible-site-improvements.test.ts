@@ -224,9 +224,11 @@ describe("visible site improvement affordances", () => {
     expect(header).toContain('aria-label="חיפוש"');
     expect(header).toContain('aria-label="צרו קשר"');
     expect(header).toContain('href="/account#account-wishlist"');
-    expect(header).toContain("const prelaunchNavItems = [");
-    expect(header).toContain('aria-label="Pre-launch navigation"');
-    expect(header).toContain('data-home-prelaunch={isHome ? "true"');
+    expect(header).not.toContain("const prelaunchNavItems = [");
+    expect(header).not.toContain('aria-label="Pre-launch navigation"');
+    expect(header).not.toContain("data-home-prelaunch");
+    expect(header).toContain("<MobileNav");
+    expect(header).toContain('href="/search"');
     expect(header).toContain('data-icon-tooltip="מועדפים"');
     expect(header).toContain('data-icon-tooltip="אזור אישי"');
     expect(header).not.toContain("CartCountLink");

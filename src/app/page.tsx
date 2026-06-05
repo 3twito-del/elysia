@@ -13,70 +13,70 @@ const boutiqueHeroImage = "/brand/boutique/lifestyle-hero.avif";
 const moodPrinciples = [
   {
     image: "/brand/boutique/product-detail.avif",
-    title: "Light",
-    text: "A soft glow across skin, metal, and shadow before any product story begins.",
+    title: "אור",
+    text: "זוהר רך על עור, מתכת וצל לפני שמתחיל סיפור של פריט.",
   },
   {
     image: "/brand/boutique/category-necklaces.avif",
-    title: "Detail",
-    text: "Near-body jewellery moments that feel touched, worn, and close.",
+    title: "פרט",
+    text: "רגעי תכשיט קרובים לגוף, בתחושה נלבשת, נוגעת ואינטימית.",
   },
   {
     image: "/brand/boutique/category-bracelets.avif",
-    title: "Intimacy",
-    text: "Quiet silhouettes, warm texture, and restraint instead of catalogue noise.",
+    title: "אינטימיות",
+    text: "צלליות שקטות, טקסטורה חמימה ואיפוק במקום רעש קטלוגי.",
   },
 ] as const;
 
 const collectionSignals = [
   {
     image: "/brand/boutique/category-rings.avif",
-    label: "Slender forms",
+    label: "צורות עדינות",
   },
   {
     image: "/brand/boutique/category-earrings.avif",
-    label: "Skin-close shine",
+    label: "ברק קרוב לעור",
   },
   {
     image: "/brand/boutique/category-bracelets.avif",
-    label: "Soft daily layering",
+    label: "שכבות יומיומיות רכות",
   },
 ] as const;
 
 const curationCriteria = [
   {
-    title: "Material honesty",
-    text: "Only pieces with clear material information and a finish that supports daily wear will enter the first collection.",
+    title: "כנות חומרית",
+    text: "רק פריטים עם מידע חומרי ברור וגימור שמתאים לענידה יומיומית ייכנסו לקולקציה הראשונה.",
   },
   {
-    title: "Body proportion",
-    text: "Scale, drape, and silhouette matter before quantity. Each direction is judged by how it sits near the body.",
+    title: "מידתיות על הגוף",
+    text: "קנה מידה, נפילה וצללית קודמים לכמות. כל כיוון נבחן לפי האופן שבו הוא יושב קרוב לגוף.",
   },
   {
-    title: "Quiet longevity",
-    text: "The collection should feel feminine and current without becoming loud, seasonal, or disposable.",
+    title: "שקט שנשאר",
+    text: "הקולקציה צריכה להרגיש נשית ועכשווית בלי להפוך לצעקנית, עונתית או חולפת.",
   },
 ] as const;
 
 export const metadata: Metadata = {
-  title: "Elysia | First collection coming soon",
+  title: "Elysia | הקולקציה הראשונה בדרך",
   description:
-    "Elysia is a pre-launch jewellery brand world for soft gold, skin-close detail, and quiet light.",
+    "Elysia הוא עולם מותגי לתכשיטים נשיים, אור רך, פרטים קרובים לעור ואלגנטיות שקטה.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "Elysia | First collection coming soon",
+    title: "Elysia | הקולקציה הראשונה בדרך",
     description:
-      "A boutique jewellery brand world in formation: soft gold, skin-close detail, and quiet light.",
+      "עולם מותגי בוטיקי בהתהוות: זהב רך, פרטים קרובים לעור ואור שקט.",
     url: "/",
     images: [{ url: boutiqueHeroImage }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Elysia | First collection coming soon",
+    title: "Elysia | הקולקציה הראשונה בדרך",
     description:
-      "A boutique jewellery brand world in formation: soft gold, skin-close detail, and quiet light.",
+      "עולם מותגי בוטיקי בהתהוות: זהב רך, פרטים קרובים לעור ואור שקט.",
     images: [boutiqueHeroImage],
   },
 };
@@ -127,8 +127,12 @@ export default function Home() {
           >
             <div className="home-hero-cta-row" data-testid="home-hero-cta-row">
               <Button asChild className="home-hero-cta-primary" size="lg">
-                <Link data-testid="home-hero-primary-cta" href="#waitlist">
-                  Join the first collection
+                <Link
+                  data-testid="home-hero-primary-cta"
+                  dir="rtl"
+                  href="#waitlist"
+                >
+                  הצטרפות לקולקציה הראשונה
                   <ArrowRight
                     aria-hidden="true"
                     className="home-hero-cta-icon size-4"
@@ -151,9 +155,9 @@ export default function Home() {
         id="mood"
       >
         <SectionIntro
-          eyebrow="The Elysia mood"
-          title="Light, detail, intimacy."
-          text="The site now opens as a brand atmosphere before it behaves like a store."
+          eyebrow="האווירה של Elysia"
+          title="אור, פרט, אינטימיות."
+          text="דף הבית נפתח קודם כעולם מותגי, ורק אחר כך ככניסה לחנות."
         />
         <RevealGrid
           className="prelaunch-mood-grid"
@@ -164,7 +168,7 @@ export default function Home() {
             <figure className="prelaunch-mood-item" key={principle.title}>
               <span className="prelaunch-mood-image">
                 <Image
-                  alt={`${principle.title} mood direction for Elysia`}
+                  alt={`${principle.title} - כיוון אווירה עבור Elysia`}
                   className="object-cover"
                   fill
                   sizes="(min-width: 1024px) 28vw, (min-width: 640px) 50vw, 100vw"
@@ -187,9 +191,9 @@ export default function Home() {
         <div className="prelaunch-split">
           <div className="prelaunch-split-copy">
             <SectionIntro
-              eyebrow="The coming first collection"
-              title="Carefully selected, never mass-listed."
-              text="Until the real pieces are chosen, the homepage should show the visual direction: silhouettes, texture, and mood rather than fake inventory depth."
+              eyebrow="הקולקציה הראשונה בדרך"
+              title="נבחר בקפידה, לא נערם כמלאי."
+              text="עד שהפריטים הסופיים יאושרו, דף הבית מציג את הכיוון החזותי: צלליות, טקסטורה ואווירה במקום עומק מלאי מדומה."
             />
           </div>
           <div
@@ -199,7 +203,7 @@ export default function Home() {
             {collectionSignals.map((signal) => (
               <figure className="prelaunch-signal" key={signal.label}>
                 <Image
-                  alt={`${signal.label} visual direction`}
+                  alt={`${signal.label} - כיוון חזותי`}
                   className="object-cover"
                   fill
                   sizes="(min-width: 1024px) 18vw, 33vw"
@@ -217,9 +221,9 @@ export default function Home() {
         id="materials"
       >
         <SectionIntro
-          eyebrow="Curation criteria"
-          title="Standards before claims."
-          text="Material standards will be presented as selection criteria until the final collection is confirmed."
+          eyebrow="קריטריוני אוצרות"
+          title="סטנדרטים לפני הבטחות."
+          text="סטנדרטים של חומר, גימור ותחושת ענידה יוצגו כקריטריוני בחירה עד לאישור הקולקציה הסופית."
         />
         <div
           className="prelaunch-criteria-grid"
@@ -240,12 +244,11 @@ export default function Home() {
         id="journal"
       >
         <div className="prelaunch-journal">
-          <p className="prelaunch-eyebrow">Journal</p>
-          <h2>Notes on light, metal, and the first edit.</h2>
+          <p className="prelaunch-eyebrow">יומן</p>
+          <h2>רשימות על אור, מתכת והעריכה הראשונה.</h2>
           <p>
-            The journal will hold the visual research behind Elysia: references,
-            material notes, silhouette studies, and the slow formation of the
-            first collection.
+            היומן ירכז את המחקר החזותי שמאחורי Elysia: רפרנסים, הערות חומר,
+            בחינת צלליות וההתהוות האיטית של הקולקציה הראשונה.
           </p>
         </div>
       </RevealSection>
@@ -256,11 +259,11 @@ export default function Home() {
       >
         <div className="prelaunch-waitlist-grid">
           <div>
-            <p className="prelaunch-eyebrow">Join the first collection</p>
-            <h2>Enter the world before the store opens.</h2>
+            <p className="prelaunch-eyebrow">הצטרפות לקולקציה הראשונה</p>
+            <h2>להיכנס לעולם לפני שהחנות נפתחת.</h2>
             <p>
-              Receive the first collection note when Elysia is ready to reveal
-              its edited selection.
+              נשלח הודעה ראשונה כש־Elysia תהיה מוכנה לחשוף את הבחירה הערוכה
+              של הקולקציה הראשונה.
             </p>
           </div>
           <div className="prelaunch-waitlist-form">
@@ -274,12 +277,11 @@ export default function Home() {
         id="about-elysia"
       >
         <div className="prelaunch-about">
-          <p className="prelaunch-eyebrow">About Elysia</p>
-          <h2>A boutique jewellery brand in formation.</h2>
+          <p className="prelaunch-eyebrow">על Elysia</p>
+          <h2>מותג תכשיטים בוטיקי בהתהוות.</h2>
           <p>
-            Elysia is being shaped around feminine minimal elegance: warm light,
-            skin-close details, restrained shine, and a first collection chosen
-            with care rather than volume.
+            Elysia מתגבשת סביב אלגנטיות נשית ומינימלית: אור חמים, פרטים
+            קרובים לעור, ברק מאופק וקולקציה ראשונה שנבחרת בקפידה ולא בכמות.
           </p>
         </div>
       </RevealSection>
