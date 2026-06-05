@@ -1,371 +1,310 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowLeft,
-  Gem,
-  PackageCheck,
-  RotateCcw,
-  ShieldCheck,
-  Sparkles,
-  Truck,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
-import { CommerceSectionHeader } from "~/components/commerce-section-header";
-import { ProductCard } from "~/components/product-card";
+import { NewsletterForm } from "~/components/newsletter-form";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
-import {
-  getCatalogCategories,
-  getFeaturedCatalogProducts,
-  type CatalogCategory,
-} from "~/server/services/catalog";
 
 const boutiqueHeroImage = "/brand/boutique/lifestyle-hero.avif";
 
-const collectionImageBySlug: Record<string, string> = {
-  bracelets: "/brand/boutique/category-bracelets.avif",
-  earrings: "/brand/boutique/category-earrings.avif",
-  necklaces: "/brand/boutique/category-necklaces.avif",
-  rings: "/brand/boutique/category-rings.avif",
-};
-
-const collectionCopy: Record<string, string> = {
-  bracelets: "צמידים דקים לענידה יומיומית ולשכבות.",
-  earrings: "עגילים רכים ליום, ערב ומתנה.",
-  necklaces: "שרשראות עדינות עם נוכחות קרובה לגוף.",
-  rings: "טבעות נקיות עם פרופורציה נשית.",
-};
-
-const preferredCollectionOrder = [
-  "rings",
-  "necklaces",
-  "earrings",
-  "bracelets",
-] as const;
-
-const homeTrustNotes = [
-  { icon: Gem, label: "חומרים וגימור מאומתים" },
-  { icon: ShieldCheck, label: "אחריות ושירות אחרי קנייה" },
-  { icon: Truck, label: "משלוח ותיאום מסירה" },
-  { icon: RotateCcw, label: "החלפות לפי מדיניות" },
-] as const;
-
-const storyPrinciples = [
+const moodPrinciples = [
   {
-    title: "בחירה מדויקת",
-    text: "מבחר מצומצם שמדגיש פרופורציה, חומר ונוחות ענידה.",
+    image: "/brand/boutique/product-detail.avif",
+    title: "Light",
+    text: "A soft glow across skin, metal, and shadow before any product story begins.",
   },
   {
-    title: "צילום שמראה קנה מידה",
-    text: "תכשיט צריך להרגיש מוחשי לפני שמוסיפים אותו לסל.",
+    image: "/brand/boutique/category-necklaces.avif",
+    title: "Detail",
+    text: "Near-body jewellery moments that feel touched, worn, and close.",
   },
   {
-    title: "שירות שקט וברור",
-    text: "מידע על חומר, מידה, אחריות ומסירה מוצג קרוב לרכישה.",
+    image: "/brand/boutique/category-bracelets.avif",
+    title: "Intimacy",
+    text: "Quiet silhouettes, warm texture, and restraint instead of catalogue noise.",
+  },
+] as const;
+
+const collectionSignals = [
+  {
+    image: "/brand/boutique/category-rings.avif",
+    label: "Slender forms",
+  },
+  {
+    image: "/brand/boutique/category-earrings.avif",
+    label: "Skin-close shine",
+  },
+  {
+    image: "/brand/boutique/category-bracelets.avif",
+    label: "Soft daily layering",
+  },
+] as const;
+
+const curationCriteria = [
+  {
+    title: "Material honesty",
+    text: "Only pieces with clear material information and a finish that supports daily wear will enter the first collection.",
+  },
+  {
+    title: "Body proportion",
+    text: "Scale, drape, and silhouette matter before quantity. Each direction is judged by how it sits near the body.",
+  },
+  {
+    title: "Quiet longevity",
+    text: "The collection should feel feminine and current without becoming loud, seasonal, or disposable.",
   },
 ] as const;
 
 export const metadata: Metadata = {
-  title: "תכשיטים",
+  title: "Elysia | First collection coming soon",
   description:
-    "Elysia Jewellery: חנות תכשיטי בוטיק אונליין עם קולקציות נשיות, נקיות ומודרניות.",
+    "Elysia is a pre-launch jewellery brand world for quiet radiance, intimate detail, and everyday elegance.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "Elysia | תכשיטי בוטיק",
+    title: "Elysia | First collection coming soon",
     description:
-      "קולקציות תכשיטים נשיות, נקיות ומודרניות עם חוויית קנייה שקטה וברורה.",
+      "A boutique jewellery brand world in formation: soft light, skin-close detail, and restrained feminine elegance.",
     url: "/",
     images: [{ url: boutiqueHeroImage }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Elysia | תכשיטי בוטיק",
+    title: "Elysia | First collection coming soon",
     description:
-      "קולקציות תכשיטים נשיות, נקיות ומודרניות עם חוויית קנייה שקטה וברורה.",
+      "A boutique jewellery brand world in formation: soft light, skin-close detail, and restrained feminine elegance.",
     images: [boutiqueHeroImage],
   },
 };
 
-export default async function Home() {
-  const [categories, featuredProducts] = await Promise.all([
-    getCatalogCategories(),
-    getFeaturedCatalogProducts(8),
-  ]);
-  const signatureCollections = getSignatureCollections(categories);
-  const curatedProducts = featuredProducts.slice(0, 4);
-
+export default function Home() {
   return (
-    <main className="home-luxury-page">
+    <main
+      className="home-luxury-page prelaunch-home-page"
+      data-testid="prelaunch-homepage"
+    >
       <SiteHeader />
 
       <RevealSection
-        className="home-cinematic-hero boutique-home-hero relative isolate min-h-[var(--home-hero-height)] w-screen max-w-none overflow-hidden"
+        className="home-cinematic-hero prelaunch-hero relative isolate min-h-[var(--home-hero-height)] w-screen max-w-none overflow-hidden"
         data-testid="cinematic-page-hero"
         id="page-hero"
         initialVisible
         variant="hero"
       >
         <Image
-          alt="תכשיט זהב עדין על גוף בתאורת חלון רכה"
-          className="boutique-hero-image object-cover"
+          alt="Close-up gold jewellery worn near skin in soft natural light"
+          className="prelaunch-hero-image object-cover"
           fill
           priority
           sizes="100vw"
           src={boutiqueHeroImage}
         />
-        <div className="boutique-hero-scrim absolute inset-0" />
-        <div className="boutique-hero-wash absolute inset-0" />
+        <div className="prelaunch-hero-scrim absolute inset-0" />
+        <div className="prelaunch-hero-luminosity absolute inset-0" />
 
         <div
-          className="home-hero-copy motion-hero-copy absolute inset-x-5 bottom-[calc(2.5rem+env(safe-area-inset-bottom))] z-10 flex max-w-[min(38rem,calc(100vw-2.5rem))] flex-col items-start text-right text-white sm:inset-x-auto sm:right-[clamp(4rem,8vw,9rem)] sm:bottom-[clamp(3rem,8vw,7rem)] sm:max-w-[min(38rem,46vw)]"
+          className="home-hero-copy motion-hero-copy prelaunch-hero-copy absolute z-10 flex max-w-[min(38rem,calc(100vw-2.5rem))] flex-col items-start text-left sm:max-w-[min(40rem,42vw)]"
           data-testid="home-hero-copy"
-          dir="rtl"
+          dir="ltr"
         >
-          <p className="motion-copy-item text-xs font-medium tracking-normal text-white/78">
+          <p className="motion-copy-item prelaunch-hero-kicker">
             Elysia Jewellery
           </p>
-          <h1
-            className="home-hero-wordmark motion-copy-item mt-4 text-5xl leading-[0.96] font-medium tracking-normal text-white sm:text-7xl lg:text-[6.5rem]"
-            dir="ltr"
-          >
+          <h1 className="home-hero-wordmark motion-copy-item prelaunch-hero-wordmark">
             Elysia
           </h1>
           <p
-            className="home-hero-statement motion-copy-item mt-7 max-w-xl text-2xl leading-[1.18] font-light text-white/94 [--motion-copy-delay:90ms] sm:text-4xl sm:leading-[1.15] lg:text-5xl lg:leading-[1.1]"
+            className="home-hero-statement motion-copy-item prelaunch-hero-statement [--motion-copy-delay:90ms]"
             data-testid="home-hero-statement"
           >
-            תכשיטים עדינים שנענדים כמו אור קרוב לגוף.
+            Jewellery for quiet radiance, intimate detail, and everyday
+            elegance.
           </p>
-
           <div
-            className="home-hero-actions motion-copy-item mt-8 [--motion-copy-delay:130ms]"
+            className="home-hero-actions motion-copy-item prelaunch-hero-actions [--motion-copy-delay:130ms]"
             data-testid="home-hero-actions"
           >
             <div className="home-hero-cta-row" data-testid="home-hero-cta-row">
               <Button asChild className="home-hero-cta-primary" size="lg">
-                <Link data-testid="home-hero-primary-cta" href="#collections">
-                  לקולקציות
-                  <ArrowLeft
+                <Link data-testid="home-hero-primary-cta" href="#waitlist">
+                  Join the first collection
+                  <ArrowRight
                     aria-hidden="true"
                     className="home-hero-cta-icon size-4"
                   />
                 </Link>
               </Button>
             </div>
+            <p
+              className="prelaunch-hero-secondary-line"
+              data-testid="home-hero-secondary-line"
+            >
+              First collection coming soon
+            </p>
           </div>
         </div>
       </RevealSection>
 
       <RevealSection
-        className="home-luxury-section boutique-section mx-auto max-w-[92rem] px-[var(--ui-page-x)] py-16 sm:px-[var(--ui-page-x-wide)] sm:py-24 lg:py-32"
-        id="collections"
+        className="prelaunch-section prelaunch-mood-section"
+        id="mood"
       >
-        <CommerceSectionHeader
-          action={
-            <Button asChild size="sm" variant="outline">
-              <Link href="/search">לכל הקולקציות</Link>
-            </Button>
-          }
-          description="כניסה לפי סוג תכשיט, עם צילום שמראה איך הוא מרגיש על גוף ולא רק כמוצר מבודד."
-          eyebrow="קולקציות"
-          title="בחירה לפי רגע, גוף ותנועה"
+        <SectionIntro
+          eyebrow="The Elysia mood"
+          title="Light, detail, intimacy."
+          text="The site now opens as a brand atmosphere before it behaves like a store."
         />
         <RevealGrid
-          className="boutique-collection-grid grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4"
-          data-layout-equal-group="home-category-tiles"
+          className="prelaunch-mood-grid"
+          data-layout-equal-group="prelaunch-mood-principles"
           variant="media"
         >
-          {signatureCollections.map((category) => (
-            <CollectionCard category={category} key={category.slug} />
+          {moodPrinciples.map((principle) => (
+            <figure className="prelaunch-mood-item" key={principle.title}>
+              <span className="prelaunch-mood-image">
+                <Image
+                  alt={`${principle.title} mood direction for Elysia`}
+                  className="object-cover"
+                  fill
+                  sizes="(min-width: 1024px) 28vw, (min-width: 640px) 50vw, 100vw"
+                  src={principle.image}
+                />
+              </span>
+              <figcaption>
+                <h3>{principle.title}</h3>
+                <p>{principle.text}</p>
+              </figcaption>
+            </figure>
           ))}
         </RevealGrid>
       </RevealSection>
 
       <RevealSection
-        className="home-luxury-section boutique-section boutique-featured-band"
-        id="featured"
+        className="prelaunch-section prelaunch-first-collection-section"
+        id="first-collection"
       >
-        <div className="mx-auto max-w-[92rem] px-[var(--ui-page-x)] py-16 sm:px-[var(--ui-page-x-wide)] sm:py-24 lg:py-32">
-          <CommerceSectionHeader
-            action={
-              <Button asChild size="sm" variant="outline">
-                <Link href="/search">
-                  למבחר המלא
-                  <Gem aria-hidden="true" className="size-4" />
-                </Link>
-              </Button>
-            }
-            description="עריכה מצומצמת של פריטים שנבחרו להציג את השפה של Elysia."
-            eyebrow="בחירה נבחרת"
-            title="פריטים נבחרים בלבד"
-          />
-          <RevealGrid
-            className="boutique-featured-grid grid gap-7 sm:grid-cols-2 lg:grid-cols-4"
-            data-layout-equal-group="home-featured-products"
-            variant="cards"
+        <div className="prelaunch-split">
+          <div className="prelaunch-split-copy">
+            <SectionIntro
+              eyebrow="The coming first collection"
+              title="Carefully selected, never mass-listed."
+              text="Until the real pieces are chosen, the homepage should show the visual direction: silhouettes, texture, and mood rather than fake inventory depth."
+            />
+          </div>
+          <div
+            className="prelaunch-collection-board"
+            data-testid="prelaunch-first-collection-board"
           >
-            {curatedProducts.map((product, index) => (
-              <ProductCard
-                display={index < 2 ? "editorial" : "standard"}
-                imagePriority={index === 0}
-                imageSizes="(min-width: 1280px) 21rem, (min-width: 640px) 50vw, 100vw"
-                key={product.slug}
-                product={product}
-              />
+            {collectionSignals.map((signal) => (
+              <figure className="prelaunch-signal" key={signal.label}>
+                <Image
+                  alt={`${signal.label} visual direction`}
+                  className="object-cover"
+                  fill
+                  sizes="(min-width: 1024px) 18vw, 33vw"
+                  src={signal.image}
+                />
+                <figcaption>{signal.label}</figcaption>
+              </figure>
             ))}
-          </RevealGrid>
+          </div>
         </div>
       </RevealSection>
 
       <RevealSection
-        className="home-luxury-section boutique-section mx-auto max-w-[92rem] px-[var(--ui-page-x)] py-14 sm:px-[var(--ui-page-x-wide)] sm:py-20"
-        id="trust"
+        className="prelaunch-section prelaunch-criteria-section"
+        id="materials"
       >
+        <SectionIntro
+          eyebrow="Curation criteria"
+          title="Standards before claims."
+          text="Material standards will be presented as selection criteria until the final collection is confirmed."
+        />
         <div
-          className="boutique-trust-strip grid gap-5 border-y border-[var(--glass-border)] py-8 sm:grid-cols-2 lg:grid-cols-4"
-          data-testid="home-service-strip"
+          className="prelaunch-criteria-grid"
+          data-testid="prelaunch-curation-criteria"
         >
-          {homeTrustNotes.map(({ icon: Icon, label }) => (
-            <section className="boutique-trust-item" key={label}>
-              <Icon aria-hidden="true" className="size-4" />
-              <h2>{label}</h2>
-              <p>מידע קצר וברור לפני רכישה, בלי עומס ובלי הבטחות רועשות.</p>
+          {curationCriteria.map((item, index) => (
+            <section className="prelaunch-criterion" key={item.title}>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
             </section>
           ))}
         </div>
       </RevealSection>
 
       <RevealSection
-        className="home-luxury-section boutique-section boutique-story-band"
-        id="story"
+        className="prelaunch-section prelaunch-journal-section"
+        id="journal"
       >
-        <div className="boutique-story-block mx-auto grid max-w-[92rem] gap-10 px-[var(--ui-page-x)] py-16 sm:px-[var(--ui-page-x-wide)] sm:py-24 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:items-center lg:gap-16 lg:py-32">
-          <div className="boutique-story-media relative min-h-[28rem] overflow-hidden rounded-md">
-            <Image
-              alt="שרשראות זהב עדינות על גוף בתאורה רכה"
-              className="object-cover"
-              fill
-              sizes="(min-width: 1024px) 45vw, 100vw"
-              src="/brand/boutique/category-necklaces.avif"
-            />
+        <div className="prelaunch-journal">
+          <p className="prelaunch-eyebrow">Journal</p>
+          <h2>Notes on light, metal, and the first edit.</h2>
+          <p>
+            The journal will hold the visual research behind Elysia: references,
+            material notes, silhouette studies, and the slow formation of the
+            first collection.
+          </p>
+        </div>
+      </RevealSection>
+
+      <RevealSection
+        className="prelaunch-section prelaunch-waitlist-section"
+        id="waitlist"
+      >
+        <div className="prelaunch-waitlist-grid">
+          <div>
+            <p className="prelaunch-eyebrow">Join the first collection</p>
+            <h2>Enter the world before the store opens.</h2>
+            <p>
+              Receive the first collection note when Elysia is ready to reveal
+              its edited selection.
+            </p>
           </div>
-          <div className="boutique-story-copy">
-            <CommerceSectionHeader
-              description="התכשיט לא נמדד רק במחיר או בשם הדגם, אלא בתחושה שלו על גוף, ביחס שלו לאור ובשקט שהוא מוסיף למראה."
-              eyebrow="הבית של Elysia"
-              title="בוטיק תכשיטים עם קצב עדין"
-            />
-            <div className="grid gap-6">
-              {storyPrinciples.map((item, index) => (
-                <section className="boutique-story-principle" key={item.title}>
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  <div>
-                    <h3>{item.title}</h3>
-                    <p>{item.text}</p>
-                  </div>
-                </section>
-              ))}
-            </div>
+          <div className="prelaunch-waitlist-form">
+            <NewsletterForm />
           </div>
         </div>
       </RevealSection>
 
       <RevealSection
-        className="home-luxury-section boutique-section boutique-gift-band mx-auto grid max-w-[92rem] gap-10 px-[var(--ui-page-x)] py-16 sm:px-[var(--ui-page-x-wide)] sm:py-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center lg:py-32"
-        id="gift-ritual"
+        className="prelaunch-section prelaunch-about-section"
+        id="about-elysia"
       >
-        <div className="boutique-gift-copy">
-          <CommerceSectionHeader
-            description="מתנה טובה צריכה להרגיש אישית, מדויקת וארוזה נכון מהרגע הראשון."
-            eyebrow="מתנות"
-            title="רגע קטן שמרגיש אישי"
-          />
-          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <Button asChild>
-              <Link href="/gifts">
-                למתנות
-                <PackageCheck aria-hidden="true" className="size-4" />
-              </Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="/service?topic=general">
-                עזרה בבחירה
-                <Sparkles aria-hidden="true" className="size-4" />
-              </Link>
-            </Button>
-          </div>
-        </div>
-        <div className="boutique-gift-media relative min-h-[24rem] overflow-hidden rounded-md sm:min-h-[32rem]">
-          <Image
-            alt="צמידי זהב עדינים על משי ואבן בהירה"
-            className="object-cover"
-            fill
-            sizes="(min-width: 1024px) 45vw, 100vw"
-            src="/brand/boutique/category-bracelets.avif"
-          />
-        </div>
-      </RevealSection>
-
-      <RevealSection
-        className="home-luxury-section boutique-final-cta border-y border-[var(--glass-border)]"
-        id="boutique-cta"
-      >
-        <div className="mx-auto flex max-w-[76rem] flex-col items-center gap-6 px-[var(--ui-page-x)] py-16 text-center sm:px-[var(--ui-page-x-wide)] sm:py-24">
-          <p className="text-muted-foreground text-sm">Elysia Jewellery</p>
-          <h2 className="max-w-3xl text-3xl leading-tight font-medium sm:text-5xl">
-            התחילי מתכשיט אחד שמרגיש שלך.
-          </h2>
-          <Button asChild size="lg">
-            <Link href="/search">
-              צפייה במבחר
-              <ArrowLeft aria-hidden="true" className="size-4" />
-            </Link>
-          </Button>
+        <div className="prelaunch-about">
+          <p className="prelaunch-eyebrow">About Elysia</p>
+          <h2>A boutique jewellery brand in formation.</h2>
+          <p>
+            Elysia is being shaped around feminine minimal elegance: warm light,
+            skin-close details, restrained shine, and a first collection chosen
+            with care rather than volume.
+          </p>
         </div>
       </RevealSection>
     </main>
   );
 }
 
-function CollectionCard({ category }: { category: CatalogCategory }) {
-  const image =
-    collectionImageBySlug[category.slug] ??
-    "/brand/boutique/lifestyle-hero.avif";
-  const description = collectionCopy[category.slug] ?? category.description;
-
+function SectionIntro({
+  eyebrow,
+  text,
+  title,
+}: {
+  eyebrow: string;
+  text: string;
+  title: string;
+}) {
   return (
-    <Link
-      aria-label={`${category.name}: ${description}`}
-      className="boutique-collection-card group/card"
-      data-testid="home-category-tile"
-      href={`/category/${category.slug}`}
-    >
-      <span className="boutique-collection-media">
-        <Image
-          alt={`${category.name} מתוך קולקציות Elysia`}
-          className="object-cover transition duration-[700ms] ease-[var(--ease-motion-standard)] group-hover/card:scale-[1.02]"
-          fill
-          sizes="(min-width: 1280px) 21rem, (min-width: 640px) 50vw, 100vw"
-          src={image}
-        />
-      </span>
-      <span className="boutique-collection-copy">
-        <span>
-          <span className="boutique-collection-title">{category.name}</span>
-          <span className="boutique-collection-description">{description}</span>
-        </span>
-        <ArrowLeft aria-hidden="true" className="size-4" />
-      </span>
-    </Link>
+    <div className="prelaunch-section-intro">
+      <p className="prelaunch-eyebrow">{eyebrow}</p>
+      <h2>{title}</h2>
+      <p>{text}</p>
+    </div>
   );
-}
-
-function getSignatureCollections(categories: CatalogCategory[]) {
-  return preferredCollectionOrder
-    .map((slug) => categories.find((category) => category.slug === slug))
-    .filter((category): category is CatalogCategory => Boolean(category));
 }

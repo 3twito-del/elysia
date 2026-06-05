@@ -60,9 +60,12 @@ describe("layout stability guardrails", () => {
     expect(cssSource).toContain(".ui-equal-grid");
     expect(cssSource).toContain(".ui-equal-item");
     expect(homeSource).toContain(
+      'data-layout-equal-group="prelaunch-mood-principles"',
+    );
+    expect(homeSource).not.toContain(
       'data-layout-equal-group="home-category-tiles"',
     );
-    expect(homeSource).toContain(
+    expect(homeSource).not.toContain(
       'data-layout-equal-group="home-featured-products"',
     );
     expect(categorySource).toContain(

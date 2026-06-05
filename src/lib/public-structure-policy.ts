@@ -60,7 +60,7 @@ export const publicStructurePolicy = {
   homeBrandHeroThenCommerceEntry: allow(
     25,
     [evidence.baymardJewelry, evidence.tiffanyRings, evidence.vanCleefRings],
-    "Home may open with one brand-led hero only when category, search, or product entry follows immediately.",
+    "Home may open with one pre-launch brand world before any category, search, or product entry appears.",
   ),
   plpTitleControlsGridFirst: allow(
     32,

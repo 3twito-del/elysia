@@ -45,15 +45,19 @@ describe("public CTA hierarchy", () => {
     expect(css).not.toContain("--accent: oklch(0.94 0 0);");
   });
 
-  it("keeps the floating home hero CTA focused on the collection action", () => {
+  it("keeps the floating home hero CTA focused on the pre-launch waitlist action", () => {
     const css = read("src/styles/globals.css");
     const home = read("src/app/page.tsx");
 
     expect(home).toContain("home-hero-actions");
     expect(home).toContain("home-hero-cta-primary");
     expect(home).toContain('data-testid="home-hero-primary-cta"');
+    expect(home).toContain('href="#waitlist"');
+    expect(home).toContain("Join the first collection");
+    expect(home).toContain("First collection coming soon");
     expect(home).not.toContain("home-hero-service-link");
     expect(home).not.toContain('href="/service"');
+    expect(home).not.toContain('href="/search"');
     expect(home).not.toContain("home-hero-cta-secondary");
     expect(home).not.toContain("home-hero-help-cta");
     expect(home).not.toContain('data-testid="home-hero-trust-notes"');

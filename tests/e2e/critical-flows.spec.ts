@@ -947,7 +947,7 @@ test.describe("accessibility and responsive guardrails", () => {
     await expect(homeHero).toBeVisible();
     await expect(homeHero.getByRole("heading").first()).toBeVisible();
     const heroCollectionLink = homeHero.locator(
-      'a.home-hero-cta-primary[href="#collections"]',
+      'a.home-hero-cta-primary[href="#waitlist"]',
     );
 
     await expect(heroCollectionLink).toBeVisible();

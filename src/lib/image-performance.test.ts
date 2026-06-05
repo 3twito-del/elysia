@@ -20,17 +20,20 @@ describe("image performance guardrails", () => {
     const homeHeroImageBlock = homeImageTags.find((tag) =>
       tag.includes("src={boutiqueHeroImage}"),
     );
-    const giftImageBlock = homeImageTags.find((tag) =>
-      tag.includes('src="/brand/boutique/category-bracelets.avif"'),
+    const nonHeroImageBlocks = homeImageTags.filter(
+      (tag) => !tag.includes("src={boutiqueHeroImage}"),
     );
 
     expect(homeSource).toContain(
-      'className="boutique-hero-image object-cover"',
+      'className="prelaunch-hero-image object-cover"',
     );
     expect(homeHeroImageBlock).toBeDefined();
     expect(homeHeroImageBlock).toContain("priority");
-    expect(giftImageBlock).toBeDefined();
-    expect(giftImageBlock).not.toContain("priority");
+    expect(homeSource).toContain("src={principle.image}");
+    expect(homeSource).toContain("src={signal.image}");
+    expect(nonHeroImageBlocks.some((tag) => tag.includes("priority"))).toBe(
+      false,
+    );
     expect(homeSource).not.toContain("<StaticCinematicHeroSequence");
     expect(homeSource).not.toContain("imagePriority={index < 4}");
 

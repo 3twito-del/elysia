@@ -118,11 +118,13 @@ describe("visible site improvement affordances", () => {
     expect(home).toContain('data-testid="home-hero-copy"');
     expect(home).toContain('data-testid="home-hero-statement"');
     expect(home).toContain('data-testid="home-hero-primary-cta"');
-    expect(home).toContain("boutique-home-hero");
+    expect(home).toContain("prelaunch-hero");
     expect(home).toContain("max-w-[min(38rem,calc(100vw-2.5rem))]");
-    expect(home).toContain("sm:max-w-[min(38rem,46vw)]");
+    expect(home).toContain("sm:max-w-[min(40rem,42vw)]");
     expect(home).toContain("home-hero-statement motion-copy-item");
     expect(home).toContain('data-testid="home-hero-cta-row"');
+    expect(home).toContain('data-testid="home-hero-secondary-line"');
+    expect(home).toContain('href="#waitlist"');
     expect(home).not.toContain('data-testid="home-hero-trust-notes"');
     expect(home).not.toContain("home-hero-help-cta");
     expect(accountPage).toContain('id="account-login"');
@@ -222,6 +224,9 @@ describe("visible site improvement affordances", () => {
     expect(header).toContain('aria-label="חיפוש"');
     expect(header).toContain('aria-label="צרו קשר"');
     expect(header).toContain('href="/account#account-wishlist"');
+    expect(header).toContain("const prelaunchNavItems = [");
+    expect(header).toContain('aria-label="Pre-launch navigation"');
+    expect(header).toContain('data-home-prelaunch={isHome ? "true"');
     expect(header).toContain('data-icon-tooltip="מועדפים"');
     expect(header).toContain('data-icon-tooltip="אזור אישי"');
     expect(header).not.toContain("CartCountLink");

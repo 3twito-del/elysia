@@ -4,41 +4,51 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 describe("mobile commerce density", () => {
-  it("keeps the home mobile first viewport as a boutique hero before commerce", () => {
+  it("keeps the home mobile first viewport as a pre-launch brand hero before commerce", () => {
     const source = read("src/app/page.tsx");
     const css = read("src/styles/globals.css");
 
     expect(source).toContain("home-cinematic-hero");
-    expect(source).toContain("boutique-home-hero");
+    expect(source).toContain("prelaunch-hero");
     expect(css).toContain(".home-cinematic-hero");
-    expect(css).toContain(".boutique-home-hero");
+    expect(css).toContain(".prelaunch-hero");
     expect(css).toContain("clamp(36rem, 92svh, 54rem)");
     expect(source).toContain('data-testid="home-hero-statement"');
     expect(source).toContain('data-testid="home-hero-primary-cta"');
+    expect(source).toContain('data-testid="home-hero-secondary-line"');
+    expect(source).toContain('href="#waitlist"');
     expect(countOccurrences(source, "min-h-[var(--home-hero-height)]")).toBe(1);
     expect(indexOf(source, 'id="page-hero"')).toBeLessThan(
-      indexOf(source, 'id="collections"'),
+      indexOf(source, 'id="mood"'),
     );
-    expect(indexOf(source, 'id="collections"')).toBeLessThan(
-      indexOf(source, 'id="featured"'),
+    expect(indexOf(source, 'id="mood"')).toBeLessThan(
+      indexOf(source, 'id="first-collection"'),
     );
     expect(source).not.toContain('id="quick-search"');
+    expect(source).not.toContain('id="collections"');
+    expect(source).not.toContain('id="featured"');
+    expect(source).not.toContain("<ProductCard");
     expect(source).not.toContain('data-testid="home-hero-trust-notes"');
     expect(source).not.toContain("brand-control-panel grid gap-2 p-1.5");
   });
 
-  it("keeps home collection entry visual and compact on mobile", () => {
+  it("keeps the pre-launch mood and collection direction visual without category cards", () => {
     const source = read("src/app/page.tsx");
     const css = read("src/styles/globals.css");
 
-    expect(source).toContain('data-layout-equal-group="home-category-tiles"');
-    expect(source).toContain("boutique-collection-card");
     expect(source).toContain(
-      "boutique-collection-grid grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4",
+      'data-layout-equal-group="prelaunch-mood-principles"',
     );
-    expect(source).toContain("function CollectionCard");
-    expect(css).toContain(".boutique-collection-media");
+    expect(source).toContain("prelaunch-mood-grid");
+    expect(source).toContain("prelaunch-collection-board");
+    expect(source).toContain('data-testid="prelaunch-first-collection-board"');
+    expect(css).toContain(".prelaunch-mood-grid");
+    expect(css).toContain(".prelaunch-collection-board");
     expect(css).toContain("aspect-ratio: 4 / 5;");
+    expect(source).not.toContain(
+      'data-layout-equal-group="home-category-tiles"',
+    );
+    expect(source).not.toContain("function CollectionCard");
     expect(source).not.toContain('data-testid="home-quick-search-suggestions"');
   });
 
@@ -53,11 +63,11 @@ describe("mobile commerce density", () => {
     expect(home).not.toContain("\n          parallax");
     expect(home).not.toContain("scrollMotion=");
     expect(home).not.toContain("CinematicHeroSequence");
-    expect(home).toContain('className="boutique-hero-image object-cover"');
+    expect(home).toContain('className="prelaunch-hero-image object-cover"');
     expect(home).toContain('sizes="100vw"');
     expect(home).toContain("src={boutiqueHeroImage}");
-    expect(css).toContain(".boutique-hero-image");
-    expect(css).toContain(".boutique-hero-scrim");
+    expect(css).toContain(".prelaunch-hero-image");
+    expect(css).toContain(".prelaunch-hero-scrim");
     expect(publicMotionProvider).toContain(
       "const [suppressInitialReveal, setSuppressInitialReveal] = useState(true)",
     );
@@ -116,19 +126,21 @@ describe("mobile commerce density", () => {
     const search = read("src/app/search/page.tsx");
     const productCard = read("src/components/product-card.tsx");
 
+    expect(home).toContain("prelaunch-section prelaunch-mood-section");
     expect(home).toContain(
-      "home-luxury-section boutique-section mx-auto max-w-[92rem] px-[var(--ui-page-x)]",
+      "prelaunch-section prelaunch-first-collection-section",
     );
-    expect(home).toContain(
-      "boutique-collection-grid grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4",
-    );
-    expect(home).toContain('data-layout-equal-group="home-category-tiles"');
-    expect(home).toContain("boutique-collection-media");
-    expect(home).toContain("boutique-featured-grid grid gap-7");
-    expect(home).toContain('id="trust"');
+    expect(home).toContain("prelaunch-section prelaunch-criteria-section");
+    expect(home).toContain("prelaunch-section prelaunch-waitlist-section");
+    expect(home).toContain("<NewsletterForm />");
+    expect(home).not.toContain('data-layout-equal-group="home-category-tiles"');
+    expect(home).not.toContain("boutique-featured-grid grid gap-7");
+    expect(home).not.toContain('id="trust"');
     expect(home).not.toContain("brand-surface interactive-lift group/card");
     expect(home).not.toContain("group-hover/card:underline");
-    expect(home).toContain('display={index < 2 ? "editorial" : "standard"}');
+    expect(home).not.toContain(
+      'display={index < 2 ? "editorial" : "standard"}',
+    );
     expect(category).toContain(
       "px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)]",
     );
