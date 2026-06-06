@@ -27,75 +27,73 @@ const categoryEditorialCopy: Record<
   { description: string; kicker: string }
 > = {
   bracelets: {
-    description: "צמידים דקים ושכבות רכות לענידה יומיומית או למתנה.",
-    kicker: "תנועה רכה על היד",
+    description: "צמידים לענידה יומיומית.",
+    kicker: "צמידים",
   },
   earrings: {
-    description: "עגילים קרובים לעור, קלים לענידה ונקיים בפרופורציה.",
-    kicker: "ברק עדין לפנים",
+    description: "עגילים ליום ולערב.",
+    kicker: "עגילים",
   },
   necklaces: {
-    description: "שרשראות ותליונים לשכבות, לאורכים נקיים ולנקודת אור יומיומית.",
-    kicker: "קו עדין לצוואר",
+    description: "שרשראות ליום ולערב.",
+    kicker: "שרשראות",
   },
   rings: {
-    description: "טבעות בזהב, כסף ואבנים בגזרה שקטה ופרטי מידה ברורים.",
-    kicker: "צורה, מידה וגימור",
+    description: "טבעות ליום ולערב.",
+    kicker: "טבעות",
   },
 };
 
 const materialTrust = [
   {
     icon: Gem,
-    title: "חומרים ברורים",
-    text: "כל תכשיט מציג חומר, אבן, גוון וגימור בשפה פשוטה לפני בחירה.",
+    title: "מתכת",
+    text: "זהב, כסף וגימורים בהירים במבחר עדכני.",
   },
   {
     icon: Ruler,
-    title: "מידות לפני הזמנה",
-    text: "מידה, אורך או היקף מוצגים במקום אחד, עם מסלול שירות לשאלה פתוחה.",
+    title: "אבנים",
+    text: "יהלומים, פנינים ואבני צבע לפי דגם.",
   },
   {
     icon: ShieldCheck,
-    title: "שירות לאחר מסירה",
-    text: "אחריות, טיפול, החלפות והחזרות נשארים חלק גלוי ממסע הרכישה.",
+    title: "מבנה וגימור",
+    text: "מידות, אורך ומשקל מופיעים בפרטי המוצר.",
   },
 ] as const;
 
 const editorialPrinciples = [
   {
-    title: "צילום קרוב וברור",
-    text: "תמונות התכשיט נבחרות כדי להציג חומר, קנה מידה וגימור בלי עומס.",
+    title: "בחירת מתנה",
+    text: "בחירה לפי אירוע, סגנון וטווח מחיר.",
   },
   {
-    title: "מבחר מצומצם ומכוון",
-    text: "הקטלוג נשאר פתוח, אך הממשק נותן לכל פריט מרחב, מחיר ברור והקשר חומרי.",
+    title: "התאמה",
+    text: "ניתן לסנן לפי מידה, חומר וטווח מחיר.",
   },
   {
-    title: "בחירה שקטה",
-    text: "חיפוש, סינון, סל, אזור אישי ושירות נשארים פשוטים וברורים.",
+    title: "משלוח",
+    text: "אפשרויות אריזה וברכה זמינות במהלך ההזמנה.",
   },
 ] as const;
 
 export const metadata: Metadata = {
-  title: "Elysia | בית תכשיטים בוטיק",
+  title: "Elysia | תכשיטים",
   description:
-    "Elysia הוא בית תכשיטים בוטיק עם קטלוג טבעות, שרשראות, עגילים, צמידים ומתנות, מידע חומרי ברור ושירות לקראת הזמנה.",
+    "עמוד הבית של Elysia: תכשיטים, מתנות, מידע מוצר ברור והזמנה מקוונת.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "Elysia | בית תכשיטים בוטיק",
-    description:
-      "תכשיטים בגישה בוטיקית, עם קטלוג פעיל, סינון שקט, עמודי מוצר מלאים ושירות לקראת הזמנה.",
+    title: "Elysia | תכשיטים",
+    description: "קולקציות תכשיטים עם מידע ברור על חומר, מידה, מחיר והזמנה.",
     url: "/",
     images: [{ url: boutiqueHeroImage }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Elysia | בית תכשיטים בוטיק",
-    description:
-      "תכשיטים בגישה בוטיקית, עם קטלוג פעיל, סינון שקט, עמודי מוצר מלאים ושירות לקראת הזמנה.",
+    title: "Elysia | תכשיטים",
+    description: "קולקציות תכשיטים עם מידע ברור על חומר, מידה, מחיר והזמנה.",
     images: [boutiqueHeroImage],
   },
 };
@@ -167,7 +165,7 @@ export default async function Home() {
                   dir="rtl"
                   href="/search"
                 >
-                  כל התכשיטים
+                  לכל הקולקציות
                   <ArrowLeft
                     aria-hidden="true"
                     className="home-hero-cta-icon size-4"
@@ -185,10 +183,10 @@ export default async function Home() {
       >
         <SectionHeader
           actionHref="/search"
-          actionLabel="פתיחת כל המבחר"
-          eyebrow="כניסה לקולקציה"
-          text="מבחר תכשיטים ערוך לפי חומר, מידה וסגנון."
-          title="מבחר תכשיטים שקט, ערוך לפי משפחות."
+          actionLabel="לכל הקולקציות"
+          eyebrow="קולקציות"
+          text="טבעות, שרשראות, עגילים וצמידים במבחר אחד."
+          title="מבחר לפי קטגוריה"
         />
         <RevealGrid
           className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
@@ -209,10 +207,10 @@ export default async function Home() {
         <div className="mx-auto max-w-[92rem]">
           <SectionHeader
             actionHref="/search?sort=newest"
-            actionLabel="עוד מהקטלוג"
-            eyebrow="תצוגת קטלוג"
-            text="פרטים ברורים, בחירה שקטה ושירות לפני ההזמנה."
-            title="תצוגה ראשונה של פריטים, בלי צפיפות ובלי רעש."
+            actionLabel="למבחר המלא"
+            eyebrow="מבחר נבחר"
+            text="מבחר ראשוני מתוך הקולקציה."
+            title="פריטים נבחרים"
           />
           {featuredProducts.length > 0 ? (
             <RevealGrid
@@ -238,9 +236,9 @@ export default async function Home() {
         id="materials"
       >
         <SectionHeader
-          eyebrow="חומר, מידה, שירות"
-          text="חומר, מידה, מחיר ושירות מוצגים בשפה קצרה וברורה לפני בחירה."
-          title="יוקרה רכה נשענת על מידע ברור."
+          eyebrow="חומרים"
+          text="כל פריט מוצג לפי חומר, גימור, מידה ושימוש."
+          title="חומרים, גימור ונוכחות"
         />
         <div
           className="grid gap-5 border-y border-[var(--glass-border)] py-6 md:grid-cols-3"
@@ -277,10 +275,10 @@ export default async function Home() {
           <div>
             <SectionHeader
               actionHref="/about"
-              actionLabel="על Elysia"
-              eyebrow="About Elysia"
-              text="Elysia היא בית תכשיטים בוטיק עם בחירה שקטה, פרטים ברורים ושירות לפני ההזמנה ולאחריה."
-              title="תכשיטים עדינים לשימוש יומי, מתנה ואירוע."
+              actionLabel="אודות"
+              eyebrow="Elysia"
+              text="Elysia מציגה קולקציות תכשיטים עם מידע ברור, שירות והזמנה מקוונת."
+              title="תכשיטים עם פרטים ברורים."
             />
             <div className="grid gap-4">
               {editorialPrinciples.map((principle, index) => (
@@ -311,8 +309,8 @@ export default async function Home() {
               התחילו מהמבחר, או בקשו עזרה לפני בחירה.
             </h2>
             <p className="storefront-final-text">
-              המגוון יעודכן בהדרגה. אפשר לעיין בתכשיטים, לשמור מועדפים
-              ולפנות לשירות לפני בחירה.
+              המגוון יעודכן בהדרגה. אפשר לעיין בתכשיטים, לשמור מועדפים ולפנות
+              לשירות לפני בחירה.
             </p>
             <div className="storefront-final-actions">
               <Button asChild>
@@ -390,7 +388,7 @@ function HomeCategoryCard({ category }: { category: CatalogCategory }) {
     >
       <span className="boutique-collection-media">
         <Image
-          alt={`${category.name} מתוך קולקציית Elysia`}
+          alt={`${category.name} מתוך קולקציות Elysia`}
           className="media-color object-cover"
           fill
           sizes="(min-width: 1024px) 22vw, (min-width: 640px) 50vw, 100vw"
@@ -400,7 +398,7 @@ function HomeCategoryCard({ category }: { category: CatalogCategory }) {
       <span className="boutique-collection-copy">
         <span className="min-w-0">
           <span className="storefront-eyebrow">
-            {copy?.kicker ?? "בחירה מתוך הקטלוג"}
+            {copy?.kicker ?? "מבחר לפי קטגוריה"}
           </span>
           <span className="boutique-collection-title">{category.name}</span>
           <span className="boutique-collection-description">

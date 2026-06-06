@@ -551,8 +551,9 @@ describe("visible site improvement affordances", () => {
     );
     expect(checkoutForm).toContain('data-testid="checkout-empty-cart"');
     expect(checkoutForm).toContain("checkoutEmptyLinks.map");
-    expect(checkoutForm).toContain('href: "/search"');
-    expect(checkoutForm).toContain('href: "/size-guide"');
+    expect(checkoutForm).toContain('href: "/category/rings"');
+    expect(checkoutForm).toContain('href: "/category/necklaces"');
+    expect(checkoutForm).toContain('href: "/gifts"');
     expect(checkoutForm).toContain('href="/search"');
     expect(checkoutForm).toContain('href="/service"');
     expect(checkoutForm).toContain("checkout-boutique-panel");

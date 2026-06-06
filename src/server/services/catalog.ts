@@ -47,7 +47,7 @@ const ACTIVE_PRODUCT_WHERE = {
 const CATALOG_MEDIA_VERSION = "boutique-v8";
 const CATALOG_REVALIDATE_SECONDS = 60 * 60;
 const publicCatalogCopyReplacements = [
-  ["יוקרה שקטה", "מידע ברור"],
+  ["יוקרה", "מידע ברור"],
   ["רשת תכשיטים", "תכשיטי Elysia"],
   ["תכשיטים אונליין", "תכשיטי Elysia"],
   ["תכשיטי Elysia", "תכשיטי Elysia"],

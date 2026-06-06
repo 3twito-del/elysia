@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "prebuild": "node scripts/verify-production-env.mjs && node scripts/convert-public-images-to-avif.mjs --check",
+    "prebuild": "pnpm copy:check && node scripts/verify-production-env.mjs && node scripts/convert-public-images-to-avif.mjs --check",
     "build": "node scripts/build.mjs",
     "check": "pnpm copy:check && pnpm lint && pnpm typecheck && pnpm test",
     "copy:apply": "tsx scripts/site-copy.ts apply",
@@ -40,6 +40,7 @@
     "gate:visual": "node scripts/gates.mjs visual",
     "images:avif": "node scripts/convert-public-images-to-avif.mjs",
     "postinstall": "prisma generate",
+    "prepare": "simple-git-hooks",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "preview": "next build && next start",
@@ -126,11 +127,15 @@
     "prisma": "^6.6.0",
     "serwist": "^9.5.11",
     "sharp": "0.34.5",
+    "simple-git-hooks": "^2.13.1",
     "tailwindcss": "^4.0.15",
     "tsx": "^4.21.0",
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.27.0",
     "vitest": "^4.1.5"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm copy:check"
   },
   "ct3aMetadata": {
     "initVersion": "7.40.0"

@@ -223,7 +223,7 @@ export default function AboutPage() {
           }}
           metrics={[
             { label: "מיקוד", value: "תכשיטי Elysia" },
-            { label: "גישה", value: "דיוק שקט" },
+            { label: "גישה", value: "דיוק מאופק" },
             { label: "שירות", value: "לפני ואחרי הזמנה" },
           ]}
           metricsMode="inline"

@@ -81,19 +81,24 @@ const checkoutFieldFocusOrder = [
 
 const checkoutEmptyLinks = [
   {
-    href: "/search",
-    label: "בחירה מדויקת",
-    text: "פתיחת כל הקולקציה לבחירה שקטה לפי משפחה, חומר ומחיר.",
+    href: "/category/rings",
+    label: "קולקציית טבעות",
+    text: "טבעות ליום יום, אירוע או מתנה.",
   },
   {
-    href: "/size-guide",
-    label: "חומרים וגימור מאומתים",
-    text: "מידות, חומרים ופרטי התאמה נשארים זמינים לפני הוספה לסל.",
+    href: "/category/necklaces",
+    label: "שרשראות עדינות",
+    text: "שרשראות לפי אורך, חומר ושימוש.",
+  },
+  {
+    href: "/gifts",
+    label: "מתנות",
+    text: "בחירות לפי מחיר, אירוע או סגנון.",
   },
   {
     href: "/service",
-    label: "שירות לפני הזמנה",
-    text: "אפשר לקבל עזרה בבחירה, מידה או התאמה לפני מעבר לתשלום.",
+    label: "לקבלת ייעוץ בבחירה",
+    text: "עזרה בבחירה, מידה או הקדשה.",
   },
 ] as const;
 
@@ -374,7 +379,7 @@ export function CartCheckoutForm() {
       )
     : null;
   const createShopifyCheckoutErrorMessage = createShopifyCheckout.error
-      ? getFriendlyCheckoutErrorMessage(
+    ? getFriendlyCheckoutErrorMessage(
         createShopifyCheckout.error,
         "לא הצלחנו לפתוח את הקופה הנפרדת. נסו שוב.",
       )
@@ -559,7 +564,9 @@ export function CartCheckoutForm() {
           </CardHeader>
           <CardContent className="grid gap-5 leading-7">
             <p className="text-muted-foreground">
-              מספר ההזמנה הוא {createOrder.data.orderNumber}. התכשיטים נשמרו עד לסיום חלון התשלום.</p>
+              מספר ההזמנה הוא {createOrder.data.orderNumber}. התכשיטים נשמרו עד
+              לסיום חלון התשלום.
+            </p>
             <ReservationCountdown
               expiresAt={createOrder.data.reservationExpiresAt}
             />
@@ -634,7 +641,10 @@ export function CartCheckoutForm() {
               ))}
             </div>
           ) : (
-            <StatusMessage testId="checkout-supplier-only-message">אין צורך בפרטי מסירה באתר עבור פריטים אלה. המעבר לקופה נפרדת יפתח תשלום ומסירה.</StatusMessage>
+            <StatusMessage testId="checkout-supplier-only-message">
+              אין צורך בפרטי מסירה באתר עבור פריטים אלה. המעבר לקופה נפרדת יפתח
+              תשלום ומסירה.
+            </StatusMessage>
           )}
 
           <Card className="checkout-boutique-panel rounded-md" size="sm">
@@ -844,7 +854,9 @@ export function CartCheckoutForm() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-4">
-                  <p className="text-muted-foreground text-sm">הפרטים ישמשו לאישור ההזמנה ולתיאום מסירה.</p>
+                  <p className="text-muted-foreground text-sm">
+                    הפרטים ישמשו לאישור ההזמנה ולתיאום מסירה.
+                  </p>
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div>
                       <Label htmlFor="name">שם מלא</Label>
@@ -1066,7 +1078,10 @@ export function CartCheckoutForm() {
                     className="text-muted-foreground text-xs leading-5"
                     data-testid="checkout-order-note-hint"
                     id="checkout-order-note-hint"
-                  >ניתן לציין ברכה, אריזה או העדפת מסירה. אין לכתוב אשראי, סיסמאות או מידע רגיש.</p>
+                  >
+                    ניתן לציין ברכה, אריזה או העדפת מסירה. אין לכתוב אשראי,
+                    סיסמאות או מידע רגיש.
+                  </p>
                 </CardContent>
               </Card>
             </>
@@ -1163,7 +1178,10 @@ export function CartCheckoutForm() {
                       {dropshipSubtotalLabel}
                     </span>
                   </div>
-                  <p className="text-muted-foreground text-xs leading-5">תשלום, מסירה ואישור הזמנה יושלמו בקופה נפרדת. לא נוצרת כאן הזמנה מקומית.</p>
+                  <p className="text-muted-foreground text-xs leading-5">
+                    תשלום, מסירה ואישור הזמנה יושלמו בקופה נפרדת. לא נוצרת כאן
+                    הזמנה מקומית.
+                  </p>
                 </div>
               )}
               {hasOwnItems && cart.couponCode ? (
@@ -1246,7 +1264,9 @@ export function CartCheckoutForm() {
                 </StatusMessage>
               ) : null}
               {isOffline ? (
-                <StatusMessage tone="error">סיום הזמנה דורש חיבור. פעולות נתמכות יסתנכרנו כשהחיבור יחזור.</StatusMessage>
+                <StatusMessage tone="error">
+                  סיום הזמנה דורש חיבור. פעולות נתמכות יסתנכרנו כשהחיבור יחזור.
+                </StatusMessage>
               ) : null}
               {hasOwnItems && createOrderErrorMessage ? (
                 <StatusMessage tone="error">
@@ -1340,23 +1360,26 @@ function CheckoutEmptyCartState() {
           <div className="checkout-empty-icon glass-inset mb-5 grid size-12 place-items-center rounded-full border">
             <ShoppingBag aria-hidden="true" className="size-5" />
           </div>
-          <p className="text-muted-foreground text-xs font-medium">סל קניות</p>
+          <p className="text-muted-foreground text-xs font-medium">
+            הבחירה שלי
+          </p>
           <h2 className="mt-3 text-2xl font-semibold tracking-normal sm:text-3xl">
-            הסל שלך עדיין שקט.
+            הבחירה שלך ממתינה לתכשיט הראשון
           </h2>
           <p className="text-muted-foreground mt-4 max-w-xl text-sm leading-7 sm:text-base">
-            כשתבחרי תכשיט, הוא יופיע כאן עם פרטי מידה, חומר ומסירה.
+            חזרי לקולקציה ובחרי תכשיט. הסיכום ימתין כאן עם פירוט הפריטים, שמירה
+            לבחירה ושירות לפני אישור.
           </p>
           <div className="mt-7 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <Button asChild>
               <Link href="/search">
-                צפייה בקולקציות
+                חזרה לקולקציה
                 <ShoppingBag aria-hidden="true" className="size-4" />
               </Link>
             </Button>
             <Button asChild variant="outline">
               <Link href="/service">
-                עזרה בבחירה
+                לקבלת ייעוץ בבחירה
                 <MessageCircle aria-hidden="true" className="size-4" />
               </Link>
             </Button>

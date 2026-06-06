@@ -84,7 +84,7 @@ describe("manual quality gates", () => {
     expect(packageJson.scripts["dev:turbo"]).toBe("next dev --turbopack");
     expect(packageJson.scripts.predev).toBeUndefined();
     expect(packageJson.scripts.prebuild).toBe(
-      "node scripts/verify-production-env.mjs && node scripts/convert-public-images-to-avif.mjs --check",
+      "pnpm copy:check && node scripts/verify-production-env.mjs && node scripts/convert-public-images-to-avif.mjs --check",
     );
     expect(packageJson.scripts["verify:fast"]).toBe(
       "pnpm lint && pnpm typecheck && pnpm test",
@@ -138,8 +138,12 @@ describe("manual quality gates", () => {
     );
   });
 
-  it("does not introduce local commit hooks", () => {
-    expect(packageJson.scripts.prepare).toBeUndefined();
+  it("uses a repo-managed copy-map pre-commit hook", () => {
+    expect(packageJson.scripts.prepare).toBe("simple-git-hooks");
+    expect(packageJson.devDependencies?.["simple-git-hooks"]).toBeDefined();
+    expect(packageJson["simple-git-hooks"]?.["pre-commit"]).toBe(
+      "pnpm copy:check",
+    );
     expect(packageJson.dependencies?.husky).toBeUndefined();
     expect(packageJson.devDependencies?.husky).toBeUndefined();
     expect(packageJson.dependencies?.["lint-staged"]).toBeUndefined();

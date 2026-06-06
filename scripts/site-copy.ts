@@ -49,6 +49,9 @@ const PRODUCT_MANAGED_FILES = new Set([
   normalizePath("src/server/services/shopify-dropship-sync.ts"),
 ]);
 
+const CURRENT_TEXT_TITLES = ["טקסט נוכחי", "טקסט באתר", "׳˜׳§׳¡׳˜ ׳‘׳׳×׳¨"];
+const PROPOSED_TEXT_TITLES = ["טקסט מוצע", "נוסח מאושר", "׳ ׳•׳¡׳— ׳׳׳•׳©׳¨"];
+
 type CopyKind =
   | "jsx-text"
   | "jsx-attribute"
@@ -67,6 +70,7 @@ export type CopyEntry = {
   id: string;
   kind: CopyKind;
   line: number;
+  locator: string;
   path: string;
   replacementKind: ReplacementKind;
   source: string;
@@ -74,10 +78,15 @@ export type CopyEntry = {
   start: number;
 };
 
+type InternalCopyEntry = CopyEntry & {
+  locatorBase: string;
+};
+
 type ExistingEntry = {
   approved: string;
   id: string;
   kind: CopyKind;
+  locator: string;
   path: string;
   source: string;
   sourceHash: string;
@@ -101,10 +110,6 @@ function toRelativePath(filePath: string) {
   return normalizePath(path.relative(ROOT_DIR, filePath));
 }
 
-function hasHebrew(value: string) {
-  return /[\u0590-\u05FF]/u.test(value);
-}
-
 function sha1(value: string) {
   return createHash("sha1").update(value).digest("hex").slice(0, 12);
 }
@@ -118,8 +123,26 @@ function slugify(value: string) {
     .slice(0, 80);
 }
 
-function makeEntryId(relativePath: string, index: number) {
-  return `copy.${slugify(relativePath)}.${String(index + 1).padStart(3, "0")}`;
+function makeEntryId(
+  relativePath: string,
+  locator: string,
+  index: number,
+  usedIds: Set<string>,
+) {
+  const pathSlug = slugify(relativePath) || "source";
+  const locatorSlug = slugify(locator) || `entry-${index + 1}`;
+  const baseId = `copy.${pathSlug}.${locatorSlug}`;
+  let id = baseId;
+  let collisionIndex = 2;
+
+  while (usedIds.has(id)) {
+    id = `${baseId}.${String(collisionIndex).padStart(2, "0")}`;
+    collisionIndex += 1;
+  }
+
+  usedIds.add(id);
+
+  return id;
 }
 
 function escapeAttribute(value: string) {
@@ -149,6 +172,52 @@ function getLineAndColumn(sourceFile: ts.SourceFile, position: number) {
 
 function normalizeJsxText(value: string) {
   return value.replace(/\s+/gu, " ").trim();
+}
+
+function normalizeTextValue(value: string) {
+  return value.replace(/\r\n?/gu, "\n");
+}
+
+function getDeclarationName(node: ts.Node) {
+  if (
+    (ts.isFunctionDeclaration(node) ||
+      ts.isFunctionExpression(node) ||
+      ts.isMethodDeclaration(node) ||
+      ts.isClassDeclaration(node)) &&
+    node.name
+  ) {
+    return node.name.getText();
+  }
+
+  if (ts.isArrowFunction(node) || ts.isFunctionExpression(node)) {
+    const parent = node.parent;
+
+    if (ts.isVariableDeclaration(parent) && ts.isIdentifier(parent.name)) {
+      return parent.name.text;
+    }
+  }
+
+  if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name)) {
+    return node.name.text;
+  }
+
+  return undefined;
+}
+
+function getScopeName(node: ts.Node) {
+  let current: ts.Node | undefined = node.parent;
+
+  while (current) {
+    const declarationName = getDeclarationName(current);
+
+    if (declarationName) {
+      return declarationName;
+    }
+
+    current = current.parent;
+  }
+
+  return "module";
 }
 
 function getPropertyName(node: ts.Node) {
@@ -190,6 +259,31 @@ function getNearestPropertyName(node: ts.Node) {
   }
 
   return undefined;
+}
+
+function getPropertyPath(node: ts.Node) {
+  const propertyNames: string[] = [];
+  let current: ts.Node | undefined = node.parent;
+
+  while (current) {
+    const propertyName = getPropertyName(current);
+
+    if (propertyName) {
+      propertyNames.unshift(propertyName);
+    }
+
+    if (
+      ts.isCallExpression(current) ||
+      ts.isFunctionLike(current) ||
+      ts.isSourceFile(current)
+    ) {
+      break;
+    }
+
+    current = current.parent;
+  }
+
+  return propertyNames.join(".");
 }
 
 function getFunctionName(node: ts.Node) {
@@ -243,6 +337,50 @@ function isNodeName(node: ts.Node) {
   }
 
   return ts.isImportDeclaration(parent) || ts.isExportDeclaration(parent);
+}
+
+function getJsxElementName(node: ts.Node) {
+  let current: ts.Node | undefined = node;
+
+  while (current) {
+    if (ts.isJsxElement(current)) {
+      return current.openingElement.tagName.getText();
+    }
+
+    if (ts.isJsxSelfClosingElement(current)) {
+      return current.tagName.getText();
+    }
+
+    current = current.parent;
+  }
+
+  return undefined;
+}
+
+function getJsxAttributeName(node: ts.Node) {
+  let current: ts.Node | undefined = node;
+
+  while (current) {
+    if (ts.isJsxAttribute(current)) {
+      return current.name.getText();
+    }
+
+    if (ts.isJsxElement(current) || ts.isJsxSelfClosingElement(current)) {
+      return undefined;
+    }
+
+    current = current.parent;
+  }
+
+  return undefined;
+}
+
+function safeLocatorPart(value: string) {
+  return value.replace(
+    /[\u0000-\u001f\u007f-\u009f\u2028\u2029]/gu,
+    (character) =>
+      `\\u${character.codePointAt(0)?.toString(16).padStart(4, "0") ?? "0000"}`,
+  );
 }
 
 function isProductManagedContext(node: ts.Node, relativePath: string) {
@@ -299,8 +437,36 @@ function classifyNode(
   return "string";
 }
 
+function locatorBaseForEntry(
+  node: ts.Node,
+  replacementKind: ReplacementKind,
+  kind: CopyKind,
+) {
+  const scopeName = safeLocatorPart(getScopeName(node));
+  const propertyPath = safeLocatorPart(getPropertyPath(node));
+  const elementName = getJsxElementName(node);
+  const attributeName = getJsxAttributeName(node);
+  const parts = [`scope:${scopeName}`, `kind:${kind}`];
+
+  if (propertyPath) {
+    parts.push(`property:${propertyPath}`);
+  }
+
+  if (elementName) {
+    parts.push(`jsx:${safeLocatorPart(elementName)}`);
+  }
+
+  if (attributeName) {
+    parts.push(`attribute:${safeLocatorPart(attributeName)}`);
+  }
+
+  parts.push(`replace:${replacementKind}`);
+
+  return parts.join(" > ");
+}
+
 function createEntry(
-  entries: CopyEntry[],
+  entries: InternalCopyEntry[],
   sourceFile: ts.SourceFile,
   relativePath: string,
   node: ts.Node,
@@ -309,10 +475,13 @@ function createEntry(
   end: number,
   replacementKind: ReplacementKind,
 ) {
+  const normalizedSource = normalizeTextValue(source);
   const cleanedSource =
-    replacementKind === "jsx-text" ? normalizeJsxText(source) : source.trim();
+    replacementKind === "jsx-text"
+      ? normalizeJsxText(normalizedSource)
+      : normalizedSource.trim();
 
-  if (!cleanedSource || !hasHebrew(cleanedSource)) {
+  if (!cleanedSource) {
     return;
   }
 
@@ -326,6 +495,8 @@ function createEntry(
     id: "",
     kind,
     line: location.line,
+    locator: "",
+    locatorBase: locatorBaseForEntry(node, replacementKind, kind),
     path: relativePath,
     replacementKind,
     source: cleanedSource,
@@ -340,9 +511,38 @@ function getTemplateSource(
 ) {
   return node.templateSpans.reduce(
     (value, span) =>
-      `${value}\${${span.expression.getText(sourceFile)}}}${span.literal.text}`,
+      `${value}\${${span.expression.getText(sourceFile)}}${span.literal.text}`,
     node.head.text,
   );
+}
+
+function withStableIdsAndLocators(entries: InternalCopyEntry[]) {
+  const locatorCounts = new Map<string, number>();
+  const usedIds = new Set<string>();
+
+  return entries.map((entry, index): CopyEntry => {
+    const locatorIndex = locatorCounts.get(entry.locatorBase) ?? 0;
+    locatorCounts.set(entry.locatorBase, locatorIndex + 1);
+
+    const locator = `${entry.locatorBase} #${String(locatorIndex + 1).padStart(
+      3,
+      "0",
+    )}`;
+    return {
+      approved: entry.approved,
+      column: entry.column,
+      end: entry.end,
+      id: makeEntryId(entry.path, locator, index, usedIds),
+      kind: entry.kind,
+      line: entry.line,
+      locator,
+      path: entry.path,
+      replacementKind: entry.replacementKind,
+      source: entry.source,
+      sourceHash: entry.sourceHash,
+      start: entry.start,
+    };
+  });
 }
 
 export function extractCopyEntriesFromText(
@@ -359,7 +559,7 @@ export function extractCopyEntriesFromText(
     true,
     scriptKind,
   );
-  const entries: CopyEntry[] = [];
+  const entries: InternalCopyEntry[] = [];
 
   function visit(node: ts.Node) {
     if (ts.isJsxText(node)) {
@@ -409,10 +609,7 @@ export function extractCopyEntriesFromText(
 
   visit(sourceFile);
 
-  return entries.map((entry, index) => ({
-    ...entry,
-    id: makeEntryId(relativePath, index),
-  }));
+  return withStableIdsAndLocators(entries);
 }
 
 async function walkSourceFiles(dirPath: string): Promise<SourceFileInfo[]> {
@@ -485,6 +682,18 @@ function blockValue(block: string, title: string) {
   return block.slice(valueStart, valueEnd);
 }
 
+function blockValueByTitles(block: string, titles: string[]) {
+  for (const title of titles) {
+    const value = blockValue(block, title);
+
+    if (value) {
+      return value;
+    }
+  }
+
+  return "";
+}
+
 function readAttribute(block: string, name: string) {
   const match = new RegExp(`${name}="([^"]*)"`, "u").exec(block);
 
@@ -493,7 +702,8 @@ function readAttribute(block: string, name: string) {
 
 export function parseCopyMap(markdown: string) {
   const entries = new Map<string, ExistingEntry>();
-  const blocks = markdown
+  const normalizedMarkdown = markdown.replace(/\r\n/gu, "\n");
+  const blocks = normalizedMarkdown
     .split(`<!-- ${ENTRY_MARKER} `)
     .slice(1)
     .map((block) => block.slice(0, block.indexOf(`<!-- /${ENTRY_MARKER} -->`)));
@@ -504,11 +714,12 @@ export function parseCopyMap(markdown: string) {
     if (!id) continue;
 
     entries.set(id, {
-      approved: blockValue(block, "נוסח מאושר"),
+      approved: blockValueByTitles(block, PROPOSED_TEXT_TITLES),
       id,
       kind: readAttribute(block, "kind") as CopyKind,
+      locator: readAttribute(block, "locator"),
       path: readAttribute(block, "path"),
-      source: blockValue(block, "טקסט באתר"),
+      source: blockValueByTitles(block, CURRENT_TEXT_TITLES),
       sourceHash: readAttribute(block, "sourceHash"),
     });
   }
@@ -530,19 +741,22 @@ function renderEntry(entry: CopyEntry) {
   return [
     `<!-- ${ENTRY_MARKER} id="${escapeAttribute(entry.id)}" path="${escapeAttribute(
       entry.path,
-    )}" kind="${entry.kind}" sourceHash="${entry.sourceHash}" -->`,
+    )}" kind="${entry.kind}" locator="${escapeAttribute(
+      entry.locator,
+    )}" sourceHash="${entry.sourceHash}" -->`,
     `### \`${entry.id}\``,
     "",
     `- מקור: \`${entry.path}:${entry.line}:${entry.column}\``,
+    `- מזהה מקום: \`${entry.locator}\``,
     `- סוג: \`${entry.kind}\``,
     `- סטטוס: \`${status}\``,
     "",
-    "#### טקסט באתר",
+    "#### טקסט נוכחי",
     TEXT_FENCE,
     entry.source,
     "~~~",
     "",
-    "#### נוסח מאושר",
+    "#### טקסט מוצע",
     TEXT_FENCE,
     entry.approved,
     "~~~",
@@ -561,36 +775,145 @@ export function renderCopyMap(entries: CopyEntry[]) {
     "",
     "<!--",
     "Generated by pnpm copy:sync.",
-    "Edit only the 'נוסח מאושר' fenced blocks. Run pnpm copy:apply to apply approved copy to the site.",
+    "Edit only the 'טקסט מוצע' fenced blocks. Run pnpm copy:apply to apply proposed copy to the site.",
     "Product content that is editable in admin is intentionally excluded.",
     `generatedAt=${generatedAt}`,
     `entries=${entries.length}`,
     `pendingApply=${pendingCount}`,
     "-->",
     "",
-    "מסמך פעיל לעריכת טקסטים באתר. אין לשנות את מזהי הפריטים או metadata בהערות.",
+    "מסמך פעיל לעריכת טקסטים באתר. אין לשנות את מזהי הפריטים, מזהי המקום או metadata בהערות.",
+    "כל שינוי טקסטואלי בקוד האתר חייב להתבטא כאן; תוכן מוצר שמנוהל במסך האדמין מוחרג בכוונה.",
     "",
     ...entries.map(renderEntry),
     "",
   ].join("\n")}`;
 }
 
-function mergeEntriesWithExisting(
+function locatorKey(
+  entry: Pick<CopyEntry | ExistingEntry, "kind" | "locator" | "path">,
+) {
+  return entry.locator
+    ? `${entry.path}\u0000${entry.locator}\u0000${entry.kind}`
+    : "";
+}
+
+function sourceKey(
+  entry: Pick<CopyEntry | ExistingEntry, "kind" | "path" | "source">,
+) {
+  return `${entry.path}\u0000${entry.kind}\u0000${entry.source}`;
+}
+
+function buildExistingQueues(
+  entries: ExistingEntry[],
+  keyForEntry: (entry: ExistingEntry) => string,
+) {
+  const queues = new Map<string, ExistingEntry[]>();
+
+  for (const entry of entries) {
+    const key = keyForEntry(entry);
+
+    if (!key) continue;
+
+    const queue = queues.get(key) ?? [];
+    queue.push(entry);
+    queues.set(key, queue);
+  }
+
+  return queues;
+}
+
+function takeQueuedMatch(
+  queues: Map<string, ExistingEntry[]>,
+  key: string,
+  usedExistingIds: Set<string>,
+) {
+  const queue = queues.get(key);
+
+  if (!queue) return undefined;
+
+  while (queue.length > 0) {
+    const entry = queue.shift();
+
+    if (entry && !usedExistingIds.has(entry.id)) {
+      return entry;
+    }
+  }
+
+  return undefined;
+}
+
+function idMatchIsValid(existingEntry: ExistingEntry, entry: CopyEntry) {
+  if (existingEntry.path !== entry.path || existingEntry.kind !== entry.kind) {
+    return false;
+  }
+
+  if (
+    existingEntry.locator &&
+    existingEntry.locator !== entry.locator &&
+    existingEntry.source !== entry.source
+  ) {
+    return false;
+  }
+
+  return true;
+}
+
+function matchEntriesWithExisting(
   entries: CopyEntry[],
   existingEntries: Map<string, ExistingEntry>,
 ) {
-  return entries.map((entry) => {
-    const existingEntry = existingEntries.get(entry.id);
-    const approved =
-      existingEntry && existingEntry.approved !== existingEntry.source
-        ? existingEntry.approved
-        : entry.source;
+  const existingValues = [...existingEntries.values()];
+  const byLocator = buildExistingQueues(existingValues, locatorKey);
+  const bySource = buildExistingQueues(existingValues, sourceKey);
+  const usedExistingIds = new Set<string>();
 
-    return {
-      ...entry,
-      approved,
-    };
+  return entries.map((entry) => {
+    const existingById = existingEntries.get(entry.id);
+    let existingEntry =
+      existingById &&
+      !usedExistingIds.has(existingById.id) &&
+      idMatchIsValid(existingById, entry)
+        ? existingById
+        : undefined;
+
+    existingEntry ??= takeQueuedMatch(
+      byLocator,
+      locatorKey(entry),
+      usedExistingIds,
+    );
+    existingEntry ??= takeQueuedMatch(
+      bySource,
+      sourceKey(entry),
+      usedExistingIds,
+    );
+
+    if (existingEntry) {
+      usedExistingIds.add(existingEntry.id);
+    }
+
+    return { entry, existingEntry };
   });
+}
+
+export function mergeEntriesWithExisting(
+  entries: CopyEntry[],
+  existingEntries: Map<string, ExistingEntry>,
+) {
+  return matchEntriesWithExisting(entries, existingEntries).map(
+    ({ entry, existingEntry }) => {
+      const approved =
+        existingEntry && existingEntry.approved !== existingEntry.source
+          ? existingEntry.approved
+          : entry.source;
+
+      return {
+        ...entry,
+        approved,
+        id: existingEntry?.id ?? entry.id,
+      };
+    },
+  );
 }
 
 export async function syncCopyMap() {
@@ -612,13 +935,12 @@ export function checkCopyMapEntries(
   existingEntries: Map<string, ExistingEntry>,
 ): CheckResult {
   const errors: string[] = [];
-  const currentById = new Map(currentEntries.map((entry) => [entry.id, entry]));
+  const matched = matchEntriesWithExisting(currentEntries, existingEntries);
+  const matchedExistingIds = new Set<string>();
   const currentPaths = new Set(currentEntries.map((entry) => entry.path));
   let pendingApprovedChanges = 0;
 
-  for (const entry of currentEntries) {
-    const existingEntry = existingEntries.get(entry.id);
-
+  for (const { entry, existingEntry } of matched) {
     if (!existingEntry) {
       errors.push(
         `Missing copy map entry: ${entry.id} (${entry.path}:${entry.line})`,
@@ -626,9 +948,23 @@ export function checkCopyMapEntries(
       continue;
     }
 
+    matchedExistingIds.add(existingEntry.id);
+
     if (existingEntry.path !== entry.path) {
       errors.push(
-        `Path mismatch for ${entry.id}: ${existingEntry.path} != ${entry.path}`,
+        `Path mismatch for ${existingEntry.id}: ${existingEntry.path} != ${entry.path}`,
+      );
+    }
+
+    if (existingEntry.kind !== entry.kind) {
+      errors.push(
+        `Kind mismatch for ${existingEntry.id}: ${existingEntry.kind} != ${entry.kind}`,
+      );
+    }
+
+    if (existingEntry.locator !== entry.locator) {
+      errors.push(
+        `Locator is out of sync for ${existingEntry.id} (${entry.path}:${entry.line})`,
       );
     }
 
@@ -637,7 +973,7 @@ export function checkCopyMapEntries(
       existingEntry.source !== entry.source
     ) {
       errors.push(
-        `Source text is out of sync for ${entry.id} (${entry.path}:${entry.line})`,
+        `Source text is out of sync for ${existingEntry.id} (${entry.path}:${entry.line})`,
       );
     }
 
@@ -647,7 +983,7 @@ export function checkCopyMapEntries(
   }
 
   for (const existingEntry of existingEntries.values()) {
-    if (!currentById.has(existingEntry.id)) {
+    if (!matchedExistingIds.has(existingEntry.id)) {
       errors.push(
         `Stale copy map entry: ${existingEntry.id} (${existingEntry.path})`,
       );
@@ -799,9 +1135,10 @@ async function main() {
     }
 
     if (result.pendingApprovedChanges > 0) {
-      console.log(
-        `Copy map is synced. ${result.pendingApprovedChanges} approved entries are pending pnpm copy:apply.`,
+      console.error(
+        `Copy map has ${result.pendingApprovedChanges} proposed entries pending. Run pnpm copy:apply.`,
       );
+      process.exitCode = 1;
       return;
     }
 
