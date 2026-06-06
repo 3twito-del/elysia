@@ -36,7 +36,7 @@ export async function createShopifyDropshipCheckout(
   if (!cart) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "לא נמצאה בחירה פעילה לסיום הזמנת הספק.",
+      message: "לא נמצאה בחירה פעילה לסיום הזמנה נפרדת.",
     });
   }
 
@@ -47,7 +47,7 @@ export async function createShopifyDropshipCheckout(
   if (dropshipItems.length === 0) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "אין פריטי ספק שדורשים קופה נפרדת.",
+      message: "אין פריטים שדורשים קופה נפרדת.",
     });
   }
 
@@ -58,7 +58,7 @@ export async function createShopifyDropshipCheckout(
   if (missingVariantMapping) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "פריט ספק חסר מזהה Shopify Variant.",
+      message: "חסר מזהה פריט לקופה הנפרדת.",
     });
   }
 

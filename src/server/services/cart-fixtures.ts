@@ -92,6 +92,7 @@ export function addFixtureCartItem(input: {
 
   const itemId = getFixtureItemId(input.variantSku, input.branchSlug);
   const existingItem = cart.items.find((item) => item.id === itemId);
+  const requiresSeparateCheckout = product.requiresSeparateCheckout;
 
   if (existingItem) {
     existingItem.quantity = Math.min(
@@ -102,16 +103,18 @@ export function addFixtureCartItem(input: {
   } else {
     cart.items.push({
       id: itemId,
-      externalHandle: product.externalHandle,
-      externalProductId: product.externalProductId,
-      externalProvider: product.externalProvider,
-      externalVariantId: variant.externalVariantId,
+      externalHandle: requiresSeparateCheckout ? product.slug : undefined,
+      externalProductId: requiresSeparateCheckout ? product.sku : undefined,
+      externalProvider: requiresSeparateCheckout
+        ? "separate-checkout"
+        : undefined,
+      externalVariantId: requiresSeparateCheckout ? variant.sku : undefined,
       productImage: product.images[0] ?? product.image ?? DEFAULT_CATALOG_IMAGE,
       productName: product.name,
       productSlug: product.slug,
       quantity: input.quantity,
-      source: product.source,
-      supplierKey: product.supplierKey,
+      source: requiresSeparateCheckout ? "DROPSHIP_SHOPIFY" : "OWN",
+      supplierKey: requiresSeparateCheckout ? "separate-checkout" : undefined,
       unitPrice: variant.price,
       variantName: variant.name,
       variantSku: variant.sku,

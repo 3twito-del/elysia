@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
 import { hashPassword } from "../src/server/auth/password";
+import { siteContact, siteWhatsapp } from "../src/config/site-contact";
 import {
   getSeedProducts,
   seedCategories,
@@ -162,9 +163,9 @@ async function main() {
   await prisma.serviceSettings.create({
     data: {
       id: "default",
-      phoneE164: "+972547277455",
-      displayPhone: "054-727-7455",
-      serviceEmail: "3twito@gmail.com",
+      phoneE164: siteContact.phoneE164,
+      displayPhone: siteContact.phoneDisplay,
+      serviceEmail: siteContact.email,
       physicalBranchesEnabled: false,
     },
   });
@@ -217,7 +218,7 @@ async function main() {
         id: "topic_partnership",
         slug: "partnership",
         label: "שיתוף פעולה",
-        description: "פנייה לבית Elysia, תוכן או שיתוף פעולה.",
+        description: "פנייה ל-Elysia, תוכן או שיתוף פעולה.",
         sortOrder: 70,
       },
     ],
@@ -230,8 +231,8 @@ async function main() {
         name: "שירות מרחוק",
         address: "Online",
         city: "Online",
-        phone: "054-727-7455",
-        whatsapp: "972547277455",
+        phone: siteContact.phoneDisplay,
+        whatsapp: siteWhatsapp,
         openingHours: {
           sundayThursday: "10:00-18:00",
           friday: "09:30-13:00",
@@ -265,7 +266,7 @@ async function main() {
           friday: "09:30-14:00",
           saturday: "סגור",
         },
-        services: ["איסוף מבית Elysia", "מדידה", "ייעוץ מתנות", "שינוי מידה"],
+        services: ["איסוף מ-Elysia", "מדידה", "ייעוץ מתנות", "שינוי מידה"],
       },
     }),
     prisma.branch.create({
@@ -288,7 +289,7 @@ async function main() {
           friday: "09:30-13:30",
           saturday: "סגור",
         },
-        services: ["איסוף מבית Elysia", "פגישת כלה", "ייעוץ יהלומים"],
+        services: ["איסוף מ-Elysia", "ייעוץ כלה", "ייעוץ יהלומים"],
       },
     }),
   ]);

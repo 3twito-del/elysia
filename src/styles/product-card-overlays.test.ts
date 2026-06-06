@@ -73,7 +73,7 @@ describe("product card overlay budget", () => {
     const route = read("src/app/api/cart/items/route.ts");
 
     expect(source).toContain("function getProductCardQuickAddVariant");
-    expect(source).toContain('input.product.source !== "OWN"');
+    expect(source).toContain("input.product.requiresSeparateCheckout");
     expect(source).toContain(
       'input.product.availabilityMode !== "READY_TO_ORDER"',
     );
@@ -103,6 +103,7 @@ describe("product card overlay budget", () => {
     expect(source).toContain("const productQuickFacts = [");
     expect(source).toContain("commerceStatus.label");
     expect(source).not.toContain('product.source === "DROPSHIP_SHOPIFY"');
+    expect(source).not.toContain("DROPSHIP_SHOPIFY");
     expect(source).toContain('data-testid="product-card-attributes"');
     expect(source).not.toContain("product.shortDescription");
     expect(source).not.toContain("commerceHighlights");

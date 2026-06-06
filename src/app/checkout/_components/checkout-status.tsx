@@ -15,19 +15,19 @@ const checkoutPaymentStatusCopy = {
   loading: {
     icon: Clock3,
     label: "בודקים את פרטי התשלום",
-    text: "הכפתורים נעולים לרגע כדי למנוע שליחה כפולה.",
+    text: "הכפתורים נעולים למניעת שליחה כפולה.",
     tone: "text-muted-foreground",
   },
   ready: {
     icon: CheckCircle2,
     label: "מוכן לאישור בטוח",
-    text: "התשלום לא נגבה בשלב זה. הסכום והפרטים יאושרו לפני המשך.",
+    text: "אין חיוב בשלב זה. הסכום והפרטים יאושרו לפני המשך.",
     tone: "text-muted-foreground",
   },
   retry: {
     icon: AlertCircle,
     label: "נדרש ניסיון חוזר",
-    text: "לא זוהה חיוב כפול. בדקו את ההודעה מעל ונסו שוב כשהפרטים תקינים.",
+    text: "לא זוהה חיוב כפול. בדקו את ההודעה ונסו שוב.",
     tone: "text-destructive",
   },
   unavailable: {

@@ -1,6 +1,7 @@
 import webPush from "web-push";
 import { z } from "zod";
 
+import { siteContact } from "~/config/site-contact";
 import { env } from "~/env";
 import {
   normalizeInternalPushTargetUrl,
@@ -346,11 +347,11 @@ export async function sendCartReminder(sessionKey: string) {
   for (const subscription of subscriptions) {
     const result = await sendPushToSubscription({
       auth: subscription.auth,
-      body: "הבחירה שלך עדיין ממתינה. אפשר לחזור אליה כשנוח לך.",
+      body: "הבחירה עדיין ממתינה. אפשר לחזור אליה כשנוח לך.",
       endpoint: subscription.endpoint,
       p256dh: subscription.p256dh,
       tag: `cart:${cart.id}`,
-      title: "הבחירה שלך ב-Elysia נשמרה",
+      title: "הבחירה ב-Elysia נשמרה",
       url: "/checkout",
     });
 
@@ -507,7 +508,7 @@ function configureWebPush() {
   }
 
   webPush.setVapidDetails(
-    env.VAPID_SUBJECT ?? `mailto:${env.OPERATIONS_EMAIL ?? "3twito@gmail.com"}`,
+    env.VAPID_SUBJECT ?? `mailto:${env.OPERATIONS_EMAIL ?? siteContact.email}`,
     publicKey,
     privateKey,
   );

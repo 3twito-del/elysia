@@ -17,18 +17,18 @@ import { env } from "~/env";
 
 const appName = "Elysia";
 const appDescription =
-  "בית תכשיטים ישראלי לטבעות, שרשראות, עגילים וצמידים, עם מידע ברור על חומר, מידה, מחיר והזמנה מקוונת.";
+  "תכשיטי Elysia: טבעות, שרשראות, עגילים וצמידים עם חומר, מידה, מחיר והזמנה מקוונת.";
 
 const sharePreviewImage = "/brand/boutique/lifestyle-hero.avif";
 
 export const metadata: Metadata = {
   applicationName: appName,
   title: {
-    default: "Elysia | בית תכשיטים ישראלי",
+    default: "Elysia | תכשיטים",
     template: "%s | Elysia",
   },
   description:
-    "בית תכשיטים ישראלי לטבעות, שרשראות, עגילים וצמידים, עם מידע ברור על חומר, מידה, מחיר והזמנה מקוונת.",
+    "תכשיטי Elysia: טבעות, שרשראות, עגילים וצמידים עם חומר, מידה, מחיר והזמנה מקוונת.",
   manifest: "/manifest.webmanifest",
   icons: [
     { rel: "icon", type: "image/svg+xml", url: "/favicon.svg" },
@@ -44,12 +44,16 @@ export const metadata: Metadata = {
     telephone: false,
   },
   metadataBase: new URL(env.SITE_URL ?? "https://elysia-jewellery.com"),
+  robots: {
+    follow: false,
+    index: false,
+  },
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: "Elysia",
-    description: "תכשיטי בית בעברית, עם מידע ברור ושירות הזמנה.",
+    description: "תכשיטי Elysia בעברית, עם מידע ברור והזמנה מקוונת.",
     url: "/",
     images: [{ url: sharePreviewImage }],
     locale: "he_IL",

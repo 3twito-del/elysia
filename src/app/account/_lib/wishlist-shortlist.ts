@@ -95,7 +95,7 @@ function createWishlistServiceHref(items: WishlistShortlistItem[]) {
     .join(", ");
   const params = new URLSearchParams({
     message:
-      "אשמח לעזרה בהתאמת מידה או בהשוואה בין הפריטים ששמרתי באזור הלקוח.",
+      "אבקש עזרה בהתאמת מידה או בהשוואה בין הפריטים ששמרתי.",
     topic: "sizing",
   });
 

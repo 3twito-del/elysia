@@ -61,10 +61,7 @@ import {
   subscribeToSavedSizeUpdates,
 } from "~/lib/size-fit-storage";
 import { cn } from "~/lib/utils";
-import type {
-  CatalogProduct,
-  CatalogProductVariant,
-} from "~/server/services/catalog-types";
+import type { CatalogProductVariant } from "~/server/services/catalog-types";
 import { api } from "~/trpc/react";
 
 type ProductPurchasePanelProps = {
@@ -72,7 +69,7 @@ type ProductPurchasePanelProps = {
   productName: string;
   productReference: string;
   categorySlug: string;
-  productSource: CatalogProduct["source"];
+  requiresSeparateCheckout: boolean;
   availabilityMode: PublicProductAvailabilityMode;
   careInstructions?: string;
   deliveryPromise?: string;
@@ -89,7 +86,7 @@ export function ProductPurchasePanel({
   productReference,
   categorySlug,
   careInstructions,
-  productSource,
+  requiresSeparateCheckout,
   availabilityMode,
   deliveryPromise,
   price,
@@ -117,7 +114,7 @@ export function ProductPurchasePanel({
   const sizeKind = getSizeKindForCategory(categorySlug);
   const selectedVariant =
     variants.find((variant) => variant.sku === selectedSku) ?? variants[0];
-  const isShopifyDropship = productSource === "DROPSHIP_SHOPIFY";
+  const usesSeparateCheckout = requiresSeparateCheckout;
   const selectedVariantPrice = selectedVariant?.price ?? price;
   const selectedVariantQuantity = selectedVariant?.availableQuantity ?? 0;
   const commerceStatus = getPublicProductCommerceStatus({
@@ -126,19 +123,19 @@ export function ProductPurchasePanel({
   });
   const selectedVariantAvailable = isVariantSelectableForCart({
     availabilityMode,
-    productSource,
+    requiresSeparateCheckout,
     variant: selectedVariant,
   });
   const selectedVariantStatusLabel = getVariantStatusLabel({
     availabilityMode,
-    productSource,
+    requiresSeparateCheckout,
     variant: selectedVariant,
   });
   const purchaseConfidenceItems = getPurchaseConfidenceItems({
     availabilityMode,
     careInstructions,
     deliveryPromise,
-    productSource,
+    requiresSeparateCheckout,
     returnPolicy,
     sizeKind,
     variant: selectedVariant,
@@ -258,7 +255,7 @@ export function ProductPurchasePanel({
   function handleAddToCart() {
     if (!selectedVariant || !selectedVariantAvailable) {
       setCartMessageTone("error");
-      setCartMessage("התכשיט פתוח דרך השירות האישי לפני הזמנה.");
+      setCartMessage("התכשיט פתוח דרך השירות לפני הזמנה.");
       return;
     }
 
@@ -375,12 +372,12 @@ export function ProductPurchasePanel({
                   aria-label={getVariantButtonLabel(
                     variant,
                     availabilityMode,
-                    productSource,
+                    requiresSeparateCheckout,
                   )}
                   aria-pressed={isSelected}
                   className="min-h-11 min-w-12 rounded-full px-4"
                   disabled={
-                    !isShopifyDropship &&
+                    !usesSeparateCheckout &&
                     availabilityMode === "READY_TO_ORDER" &&
                     variant.availableQuantity <= 0
                   }
@@ -415,8 +412,7 @@ export function ProductPurchasePanel({
               )}
               data-testid="product-saved-size-match"
             >
-              <p className="font-medium">
-                המידה השמורה שלך:{" "}
+              <p className="font-medium">המידה השמורה:{" "}
                 {formatSavedSize(
                   savedSizeMatch.kind,
                   savedSizeMatch.normalizedValue,
@@ -425,10 +421,10 @@ export function ProductPurchasePanel({
               <p className="text-muted-foreground mt-1">
                 {savedSizeMatch.exact
                   ? savedSizeMatch.available
-                    ? "בחרנו עבורך את המידה המתאימה."
+                    ? "המידה המתאימה נבחרה."
                     : "המידה הזו אינה פנויה כרגע."
                   : savedSizeMatch.available
-                    ? "בחרנו עבורך את המידה הקרובה ביותר שפנויה עכשיו."
+                    ? "נבחרה המידה הקרובה ביותר הזמינה."
                     : "המידה הקרובה ביותר אינה פנויה כרגע."}
               </p>
             </div>
@@ -465,9 +461,7 @@ export function ProductPurchasePanel({
               </Link>
             </Button>
           )}
-          <WishlistButton productSlug={productSlug}>
-            שמירה למועדפים
-            <Heart aria-hidden="true" className="size-4" />
+          <WishlistButton productSlug={productSlug}>שמירה למועדפים<Heart aria-hidden="true" className="size-4" />
           </WishlistButton>
           {!selectedVariantAvailable ? (
             <PushOptInButton

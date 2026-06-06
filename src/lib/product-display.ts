@@ -7,11 +7,13 @@ const publicCategoryNameBySlug: Record<string, string> = {
 
 export function getPublicProductName(name: string) {
   const cleaned = name
-    .replace(/^Elysia Supplier\s+/iu, "")
+    .replace(/\bElysia\s+Supplier\b/giu, "Elysia")
+    .replace(/\bSupplier\b|\bShopify\b|\bDropship(?:ping)?\b/giu, "")
     .replace(/\s+מהספק$/u, "")
+    .replace(/\s{2,}/g, " ")
     .trim();
 
-  return cleaned || name;
+  return cleaned && !hasPrivateCatalogLabel(cleaned) ? cleaned : "תכשיט Elysia";
 }
 
 export function getPublicCollectionName(collection?: string | null) {

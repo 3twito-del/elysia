@@ -130,8 +130,7 @@ export function ServiceRequestForm({
       .then(() => {
         setOfflineState({
           ok: true,
-          message:
-            "הפנייה נשמרה ותישלח אוטומטית כשהחיבור יחזור. לאחר השליחה נחזור אליכם לפי דרך הקשר שבחרתם.",
+          message: "הפנייה נשמרה במכשיר. כשהחיבור יחזור אפשר לנסות לשלוח שוב.",
         });
         form.reset();
         setSelectedAttachmentCount(0);
@@ -139,8 +138,7 @@ export function ServiceRequestForm({
       .catch(() =>
         setOfflineState({
           ok: false,
-          message:
-            "לא הצלחנו לשמור את הפנייה במצב לא מקוון. השאירו את הקבצים אצלכם ונסו שוב כשיש חיבור.",
+          message: "לא הצלחנו לשלוח. בדקו את החיבור ונסו שוב.",
         }),
       );
   }
@@ -183,7 +181,7 @@ export function ServiceRequestForm({
           id={topicGuidanceId}
         >
           {selectedTopicDescription ??
-            "בחרו את הנושא הקרוב ביותר כדי שנכוון את הפנייה לצוות המתאים."}
+            "בחרו את הנושא הקרוב ביותר לניתוב הפנייה."}
         </p>
         <div
           className="glass-inset rounded-md border p-3 text-xs leading-5"
@@ -191,8 +189,8 @@ export function ServiceRequestForm({
         >
           <p className="font-medium">ניתוב הפנייה</p>
           <p className="text-muted-foreground mt-1">
-            הפנייה תישלח לפי הנושא {selectedTopicLabel} ותטופל דרך ערוץ השירות
-            שבחרתם.
+            הפנייה תישלח לפי הנושא {selectedTopicLabel} ותטופל בערוץ השירות
+            שנבחר.
           </p>
         </div>
       </div>
@@ -212,7 +210,7 @@ export function ServiceRequestForm({
           label="טלפון"
           name="phone"
           pending={pending}
-          placeholder="054-727-7455"
+          placeholder="05X-XXXXXXX"
           required
           type="tel"
         />
@@ -241,7 +239,7 @@ export function ServiceRequestForm({
         <Field
           defaultValue={defaultProductReference}
           error={state.fieldErrors?.productReference}
-          label="שם השם התכשיט או קישור"
+          label="שם התכשיט או קישור"
           name="productReference"
           pending={pending}
           placeholder="שם תכשיט, מק״ט או קישור"
@@ -250,7 +248,7 @@ export function ServiceRequestForm({
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="grid gap-2">
-          <Label htmlFor="preferredContact">דרך חזרה מועדפת</Label>
+          <Label htmlFor="preferredContact">דרך חזרה</Label>
           <select
             autoComplete="off"
             className="glass-control h-11 rounded-md border px-3 text-sm"
@@ -289,7 +287,7 @@ export function ServiceRequestForm({
           disabled={pending}
           id="message"
           name="message"
-          placeholder="כתבו בקצרה את הבקשה, פרטי התכשיט, מצב התיקון או השאלה."
+          placeholder="כתבו בקצרה את הבקשה, פרטי התכשיט או השאלה."
           required
         />
       </div>
@@ -335,10 +333,7 @@ export function ServiceRequestForm({
         <p
           className="text-muted-foreground text-xs leading-5"
           id={attachmentOfflineGuidanceId}
-        >
-          אם אין חיבור, הפנייה והקבצים יישמרו במכשיר ויישלחו אוטומטית כשהחיבור
-          יחזור. אם שמירה לא הצליחה, השאירו את הקבצים אצלכם ונסו שוב.
-        </p>
+        >אם השליחה לא הצליחה, בדקו את החיבור ונסו שוב.</p>
       </div>
 
       {state.message ? (
@@ -357,10 +352,7 @@ export function ServiceRequestForm({
               {state.requestReference}
             </strong>
           </div>
-          <p className="text-muted-foreground">
-            שמרו את המספר לעדכון עתידי. הצוות יבדוק את הפרטים, הקבצים וההקשר של
-            המוצר או ההזמנה לפני חזרה אליכם.
-          </p>
+          <p className="text-muted-foreground">שמרו את המספר לעדכון. הצוות יבדוק פרטים וקבצים לפני חזרה.</p>
           <a
             className="w-fit text-sm font-medium underline underline-offset-4"
             data-testid="service-request-success-contact-link"

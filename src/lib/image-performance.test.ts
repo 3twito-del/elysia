@@ -12,28 +12,29 @@ describe("image performance guardrails", () => {
     const searchSource = read("src/app/search/page.tsx");
     const categorySource = read("src/app/category/[slug]/page.tsx");
     const giftsSource = read("src/app/gifts/page.tsx");
+    const homeHeroVideoSource = read("src/components/home-hero-video.tsx");
     const gallerySource = read(
       "src/app/product/[slug]/_components/product-gallery.tsx",
     );
     const homeImageTags =
       homeSource.match(/<Image(?=[\s/>])[\s\S]*?\/>/g) ?? [];
-    const homeHeroImageBlock = homeImageTags.find((tag) =>
-      tag.includes("src={boutiqueHeroImage}"),
-    );
-    const nonHeroImageBlocks = homeImageTags.filter(
-      (tag) => !tag.includes("src={boutiqueHeroImage}"),
-    );
 
     expect(homeSource).toContain(
       'className="storefront-hero-image object-cover"',
     );
-    expect(homeHeroImageBlock).toBeDefined();
-    expect(homeHeroImageBlock).toContain("priority");
+    expect(homeSource).toContain("<HomeHeroVideo");
+    expect(homeSource).toContain('as="video"');
+    expect(homeSource).toContain("fetchPriority=\"high\"");
+    expect(homeSource).toContain("posterSrc={boutiqueHeroPoster}");
+    expect(homeSource).toContain("webmSrc={boutiqueHeroVideoWebm}");
+    expect(homeHeroVideoSource).toContain('preload="auto"');
+    expect(homeHeroVideoSource).toContain('video.preload = "auto";');
+    expect(homeHeroVideoSource).toContain("video.load();");
+    expect(homeHeroVideoSource).toContain("void video.play().catch");
+    expect(homeHeroVideoSource).not.toContain('preload="metadata"');
     expect(homeSource).toContain("src={category.image}");
     expect(homeSource).toContain("<ProductCard");
-    expect(nonHeroImageBlocks.some((tag) => tag.includes("priority"))).toBe(
-      false,
-    );
+    expect(homeImageTags.some((tag) => tag.includes("priority"))).toBe(false);
     expect(homeSource).not.toContain("<StaticCinematicHeroSequence");
     expect(homeSource).not.toContain("imagePriority={index < 4}");
     expect(homeSource).not.toContain("imagePriority={index === 0}");

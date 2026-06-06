@@ -34,8 +34,8 @@ export function getSafeSizeGuideReturnContext(
   if (productPathPattern.test(url.pathname)) {
     return {
       description: productName
-        ? `הגעתם ממוצר: ${productName}. אפשר לשמור מידה ולחזור לעמוד המוצר.`
-        : "הגעתם מעמוד מוצר. אפשר לשמור מידה ולחזור לעמוד המוצר.",
+        ? `הגעתם ממוצר: ${productName}. ניתן לשמור מידה ולחזור.`
+        : "הגעתם מעמוד מוצר. ניתן לשמור מידה ולחזור.",
       href,
       label: "חזרה למוצר",
       surface: "product",
@@ -45,7 +45,7 @@ export function getSafeSizeGuideReturnContext(
   if (categoryPathPattern.test(url.pathname)) {
     return {
       description:
-        "הגעתם מקטגוריה. אפשר לשמור מידה ולחזור לבחירה בלי לאבד את ההקשר.",
+        "הגעתם מקטגוריה. ניתן לשמור מידה ולחזור בלי לאבד הקשר.",
       href,
       label: "חזרה לקטגוריה",
       surface: "category",

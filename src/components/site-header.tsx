@@ -90,9 +90,7 @@ export function SiteHeader() {
         data-over-media={isOverHomeHero ? "true" : undefined}
         dir="rtl"
       >
-        <p className="sr-only">
-          Elysia: ניווט ראשי, חיפוש, שירות, מועדפים ואזור אישי.
-        </p>
+        <p className="sr-only">Elysia: ניווט ראשי, חיפוש, שירות, מועדפים ואזור אישי.</p>
         <div
           className="grid h-16 w-full grid-cols-[1fr_auto_1fr] items-center px-4 sm:px-6 md:h-[4.25rem] md:px-10 lg:h-[6.125rem] lg:px-16"
           dir="ltr"
@@ -136,11 +134,11 @@ export function SiteHeader() {
             dir="rtl"
           >
             <Link
-              aria-label="צרו קשר"
+              aria-label="שירות"
               className="site-header-link site-header-label-action hidden min-h-10 items-center text-[0.94rem] font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] md:inline-flex"
               href="/service"
             >
-              צרו קשר
+              שירות
             </Link>
             <Button
               asChild

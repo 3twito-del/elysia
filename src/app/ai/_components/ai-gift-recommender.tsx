@@ -24,7 +24,7 @@ export function AiGiftRecommender() {
   const [relation, setRelation] = useState("אמא");
   const [occasion, setOccasion] = useState("יום הולדת");
   const [budget, setBudget] = useState("700");
-  const [style, setStyle] = useState("עדין, יומיומי");
+  const [style, setStyle] = useState("נקי, יומיומי");
   const [fieldErrors, setFieldErrors] = useState<FormFieldErrors>({});
   const [validationMessage, setValidationMessage] = useState<string | null>(
     null,
@@ -60,11 +60,8 @@ export function AiGiftRecommender() {
             <Gift aria-hidden="true" className="size-4" />
             התאמת מתנה
           </div>
-          <h2 className="text-xl font-semibold">שאלון מתנה חכם</h2>
-          <p className="text-muted-foreground mt-2 max-w-2xl text-sm leading-6">
-            הזינו קשר, אירוע, מחיר וסגנון. ההמלצות יישארו בתוך בחירות קיימים
-            במבחר.
-          </p>
+          <h2 className="text-xl font-semibold">שאלון מתנה</h2>
+          <p className="text-muted-foreground mt-2 max-w-2xl text-sm leading-6">הזינו קשר, אירוע, מחיר וסגנון. ההמלצות יישארו בתוך המלאי הקיים.</p>
         </div>
         <Sparkles aria-hidden="true" className="text-foreground size-6" />
       </div>
@@ -124,7 +121,7 @@ export function AiGiftRecommender() {
             disabled={recommendGift.isPending}
             id="ai-gift-style"
             onChange={(event) => setStyle(event.currentTarget.value)}
-            placeholder="לדוגמה: עדין, זהב לבן, שימוש יומיומי"
+            placeholder="לדוגמה: נקי, זהב לבן, שימוש יומיומי"
             value={style}
           />
         </Field>

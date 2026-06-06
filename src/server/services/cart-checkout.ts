@@ -130,7 +130,7 @@ export function assertCartCheckoutOwnItems(
   if (items.some((item) => item.variant.product.source !== "OWN")) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "פריטי ספק דורשים סיום הזמנה נפרד דרך קופת הספק.",
+      message: "פריטים אלה דורשים סיום הזמנה נפרד.",
     });
   }
 }
@@ -168,7 +168,7 @@ async function createCartCheckoutOrderInTransaction(
   if (cart.items.length === 0) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "הבחירה שלך עדיין ריקה.",
+      message: "הבחירה עדיין ריקה.",
     });
   }
 

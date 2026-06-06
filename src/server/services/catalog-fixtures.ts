@@ -7,6 +7,7 @@ import {
   type SeedProduct,
 } from "../../../prisma/seed-catalog";
 
+import { siteContact, siteWhatsapp } from "~/config/site-contact";
 import { getPublicCategoryName } from "~/lib/product-display";
 import { DEFAULT_CATALOG_IMAGE } from "~/server/services/catalog-assets";
 import type {
@@ -81,8 +82,8 @@ const fixtureBranches: CatalogBranch[] = [
     name: "שירות מרחוק",
     city: "Online",
     address: "Online",
-    phone: "054-727-7455",
-    whatsapp: "972547277455",
+    phone: siteContact.phoneDisplay,
+    whatsapp: siteWhatsapp,
     services: ["שירות מרחוק", "מענה טלפוני", "תיאום תיקונים"],
     openingHours: {
       sundayThursday: "10:00-18:00",
@@ -180,7 +181,7 @@ function mapSeedProduct(product: SeedProduct): CatalogProduct {
   return {
     slug: product.slug,
     sku: product.sku,
-    source: "OWN",
+    requiresSeparateCheckout: false,
     name: product.name.replace(/\s+\d{3}$/u, ""),
     categorySlug: product.categorySlug,
     categoryName: category
@@ -235,7 +236,7 @@ function createFixtureDropshipProduct(): CatalogProduct {
       sku: "elysia-supplier-silver-halo-ring-6",
       name: "מידה 6",
       size: "6",
-      externalVariantId: "gid://shopify/ProductVariant/1000000001",
+      separateCheckoutAvailable: true,
       price: 420,
       inventory: { "online-service": 1 },
       availableQuantity: 1,
@@ -246,11 +247,7 @@ function createFixtureDropshipProduct(): CatalogProduct {
   return {
     slug: "elysia-supplier-silver-halo-ring",
     sku: "elysia-supplier-silver-halo-ring",
-    source: "DROPSHIP_SHOPIFY",
-    externalProvider: "shopify",
-    externalProductId: "gid://shopify/Product/1000000001",
-    externalHandle: "elysia-supplier-silver-halo-ring",
-    supplierKey: "shopify-dropship",
+    requiresSeparateCheckout: true,
     name: "טבעת Silver Halo",
     categorySlug: "rings",
     categoryName: category

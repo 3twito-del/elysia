@@ -54,15 +54,14 @@ export function NewsletterForm() {
       .then(() => {
         setOfflineState({
           ok: true,
-          message: "ההרשמה נשמרה ותסתנכרן כשהחיבור יחזור.",
+          message: "ההרשמה נשמרה במכשיר.",
         });
         form.reset();
       })
       .catch(() =>
         setOfflineState({
           ok: false,
-          message:
-            "לא הצלחנו לשמור את ההרשמה במצב לא מקוון. בדקו את כתובת האימייל ונסו שוב כשהחיבור יחזור.",
+          message: "לא הצלחנו לשלוח. בדקו את החיבור ונסו שוב.",
         }),
       );
   }
@@ -92,10 +91,7 @@ export function NewsletterForm() {
       <p
         className="text-muted-foreground text-xs leading-5"
         id={newsletterEmailHintId}
-      >
-        נשלח עדכוני קולקציות בלבד. אם אין חיבור, ההרשמה תישמר ותישלח כשהחיבור
-        יחזור.
-      </p>
+      >נשלח עדכוני קולקציות בלבד. אם השליחה לא הצליחה, נסו שוב בעוד רגע.</p>
       {state.message ? (
         <StatusMessage
           id={newsletterStatusId}

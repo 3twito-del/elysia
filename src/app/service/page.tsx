@@ -23,7 +23,7 @@ import { getPublicServiceProfile } from "~/server/services/service";
 export const metadata: Metadata = {
   title: "שירות",
   description:
-    "שירות של Elysia להזמנות, תיקונים, החזרות, מידות, פרטיות ונגישות.",
+    "שירות Elysia להזמנות, תיקונים, החזרות, מידות, פרטיות ונגישות.",
 };
 
 export const dynamic = "force-dynamic";
@@ -47,7 +47,7 @@ const serviceTracks = [
   {
     icon: Ruler,
     title: "מידות",
-    text: "עזרה בבחירת מידה, אורך או התאמה.",
+    text: "עזרה במידה, אורך או התאמה.",
   },
 ] as const;
 
@@ -58,7 +58,7 @@ const serviceResponseExpectations = [
   },
   {
     title: "בירור לפי פרטי הפנייה",
-    text: "מספר הזמנה, שם תכשיט או תמונה עוזרים לקצר את הטיפול.",
+    text: "מספר הזמנה, שם תכשיט או תמונה מקצרים טיפול.",
   },
 ] as const;
 
@@ -84,7 +84,7 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
       <SiteHeader />
 
       <CommercePageHero
-        description="שירות להזמנות, מידות, החזרות ופניות נוספות במקום אחד."
+        description="שירות להזמנות, מידות, החזרות ופניות נוספות."
         eyebrow="שירות Elysia"
         title="שירות"
         variant="content"
@@ -95,13 +95,8 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
           <section className="grid gap-5" aria-labelledby="service-contact">
             <div>
               <Badge variant="secondary">שירות</Badge>
-              <h2 className="mt-3 text-2xl font-semibold" id="service-contact">
-                כל הפניות במקום אחד
-              </h2>
-              <p className="text-muted-foreground mt-2 max-w-prose leading-7">
-                הפעילות מתבצעת מרחוק או בטלפון, עם תיעוד מסודר לכל פנייה והמשך
-                טיפול לפי הנושא.
-              </p>
+              <h2 className="mt-3 text-2xl font-semibold" id="service-contact">כל הפניות</h2>
+              <p className="text-muted-foreground mt-2 max-w-prose leading-7">הפעילות מתבצעת מרחוק או בטלפון, עם תיעוד לכל פנייה.</p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
@@ -183,9 +178,7 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
             <div className="mb-4">
               <Badge variant="outline">פנייה לשירות</Badge>
               <h2 className="mt-3 text-2xl font-semibold">פנייה לשירות</h2>
-              <p className="text-muted-foreground mt-2 text-sm leading-6">
-                בחרו נושא והשאירו פרטים. נחזור אליכם בהתאם לפנייה.
-              </p>
+              <p className="text-muted-foreground mt-2 text-sm leading-6">בחרו נושא והשאירו פרטים. נחזור בהתאם לפנייה.</p>
             </div>
             <section
               aria-labelledby="service-topic-cards-title"
@@ -222,10 +215,7 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
               data-testid="service-response-time-note"
             >
               <Clock3 aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-              <p>
-                הפניות מטופלות לפי סדר קבלה ונושא הפנייה. אם צירפתם מספר הזמנה
-                או שם מוצר, נוכל לחזור עם תשובה ממוקדת יותר.
-              </p>
+              <p>פניות מטופלות לפי סדר קבלה ונושא. מספר הזמנה או שם מוצר מאפשרים תשובה ממוקדת.</p>
             </div>
             <ServiceRequestForm
               defaultMessage={defaultMessage}

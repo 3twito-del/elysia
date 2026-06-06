@@ -310,9 +310,7 @@ export function ProductGallery({
             <DialogTitle className="sr-only">
               גלריית תמונות של {productName}
             </DialogTitle>
-            <DialogDescription className="sr-only">
-              ניתן לעבור בין תמונות התכשיט, לסגור ולחזור לעמוד המוצר.
-            </DialogDescription>
+            <DialogDescription className="sr-only">ניתן לעבור בין תמונות התכשיט ולחזור לעמוד המוצר.</DialogDescription>
 
             <div
               className="border-border flex h-14 items-center justify-between gap-3 border-b px-3 sm:px-5"

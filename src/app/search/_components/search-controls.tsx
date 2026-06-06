@@ -82,7 +82,7 @@ export function SearchControls({
           <summary className="text-muted-foreground hover:text-foreground flex min-h-9 cursor-pointer list-none items-center justify-between gap-3 text-sm outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]">
             <span className="inline-flex items-center gap-2">
               <SlidersHorizontal aria-hidden="true" className="size-4" />
-              {"\u05e1\u05d9\u05e0\u05d5\u05df \u05e2\u05d3\u05d9\u05df"}
+              {"סינון נקי"}
             </span>
             {activeFilterCount > 0 ? (
               <Badge variant="secondary">{activeFilterCount}</Badge>

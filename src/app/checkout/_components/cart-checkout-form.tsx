@@ -117,7 +117,7 @@ const checkoutProgressSteps = [
     value: "1",
   },
   {
-    detail: "פרטים לאישור אישי",
+    detail: "פרטים לאישור",
     label: "פרטים",
     value: "2",
   },
@@ -334,30 +334,30 @@ export function CartCheckoutForm() {
     !checkoutLocked &&
     !hasPricingReview;
   const checkoutIntroCopy = hasMixedSourceCart
-    ? "הבחירה מחולקת לשני מסלולים: פריטי החנות יאושרו כאן, ופריטי הספק יושלמו בקופה נפרדת."
+    ? "הבחירה מחולקת לשני מסלולים: פריטי חנות יאושרו כאן; פריטים נפרדים יושלמו בקופה נפרדת."
     : hasDropshipItems
-      ? "הבחירה כוללת פריטי ספק בלבד. הסיום ייפתח בקופת Shopify מאובטחת, ללא מילוי פרטי מסירה באתר."
+      ? "הבחירה תושלם בקופה נפרדת."
       : "סיכום תכשיטים שנבחרו, פרטי מסירה והטבה.";
   const localCheckoutButtonLabel = hasMixedSourceCart
     ? "המשך לתשלום עבור פריטי החנות"
     : "המשך לתשלום";
   const supplierCheckoutDescription = hasMixedSourceCart
-    ? `${dropshipItems.length} פריטי ספק יושלמו בקופת Shopify מאובטחת, בנפרד מהפריטים המקומיים.`
-    : `${dropshipItems.length} פריטי ספק יושלמו בקופת Shopify מאובטחת. פרטי התשלום והמסירה ייאספו שם.`;
+    ? `${dropshipItems.length} פריטים נפרדים יושלמו בקופה נפרדת מהפריטים המקומיים.`
+    : `${dropshipItems.length} פריטים נפרדים יושלמו בקופה נפרדת. תשלום ומסירה ייאספו שם.`;
   const checkoutPaymentConfidenceCopy = hasMixedSourceCart
-    ? "הסכום המקומי יאושר כאן לפני המשך התשלום; פריטי הספק ישולמו בקופת Shopify נפרדת."
+    ? "הסכום המקומי יאושר כאן; הפריטים הנפרדים ישולמו בקופה נפרדת."
     : hasDropshipItems && !hasOwnItems
-      ? "התשלום, פרטי המסירה ואישור ההזמנה יתבצעו בקופת Shopify. לא נוצרת כאן הזמנה מקומית עבור פריטי ספק בלבד."
-      : "הפרטים והסכום יאומתו לפני שמירת הבחירה; התשלום לא נגבה בשלב זה.";
+      ? "תשלום, מסירה ואישור הזמנה יתבצעו בקופה נפרדת. לא נוצרת כאן הזמנה מקומית."
+      : "הפרטים והסכום יאומתו לפני שמירה; אין חיוב בשלב זה.";
   const checkoutQuantityRecoveryCopy = isOffline
     ? "שינויי כמות והסרה נשמרים במכשיר ויסתנכרנו כשהחיבור יחזור. המשך לתשלום עדיין דורש חיבור פעיל."
     : updateItem.isPending || removeItem.isPending
       ? "מעדכנים את הכמות ואת הסיכום לפני המעבר לתשלום."
       : "שינויי כמות מתעדכנים בסיכום לפני המעבר לתשלום; מגבלת הכמות נשמרת לכל פריט.";
   const mobileCheckoutSummaryCopy = hasMixedSourceCart
-    ? `${totalItemQuantity} תכשיטי חנות · ${dropshipTotalQuantity} פריטי ספק בנפרד`
+    ? `${totalItemQuantity} תכשיטי חנות · ${dropshipTotalQuantity} פריטים בנפרד`
     : hasDropshipItems && !hasOwnItems
-      ? `${dropshipTotalQuantity} פריטי ספק ימשיכו לקופת Shopify`
+      ? `${dropshipTotalQuantity} פריטים ימשיכו לקופה נפרדת`
       : `${totalItemQuantity} תכשיטים בקופה המקומית`;
   const cartMutationError =
     updateItem.error ?? removeItem.error ?? updateOptions.error;
@@ -370,13 +370,13 @@ export function CartCheckoutForm() {
   const createOrderErrorMessage = createOrder.error
     ? getFriendlyCheckoutErrorMessage(
         createOrder.error,
-        "לא הצלחנו לשמור את הבחירה כרגע. בדקו שהפרטים מולאו ונסו שוב.",
+        "לא הצלחנו לשמור את הבחירה. בדקו פרטים ונסו שוב.",
       )
     : null;
   const createShopifyCheckoutErrorMessage = createShopifyCheckout.error
-    ? getFriendlyCheckoutErrorMessage(
+      ? getFriendlyCheckoutErrorMessage(
         createShopifyCheckout.error,
-        "לא הצלחנו לפתוח את קופת הספק כרגע. נסו שוב בעוד רגע.",
+        "לא הצלחנו לפתוח את הקופה הנפרדת. נסו שוב.",
       )
     : null;
   const checkoutPaymentStatusKind: CheckoutPaymentStatusKind = isOffline
@@ -395,9 +395,9 @@ export function CartCheckoutForm() {
       subtotal: ownSubtotal,
     },
     {
-      description: "פריטי ספק שיושלמו בקופת Shopify נפרדת.",
+      description: "פריטים שיושלמו בקופה נפרדת.",
       items: dropshipItems,
-      label: "פריטים מהספק",
+      label: "פריטים נפרדים",
       source: "DROPSHIP_SHOPIFY",
       subtotal: dropshipSubtotal,
     },
@@ -559,9 +559,7 @@ export function CartCheckoutForm() {
           </CardHeader>
           <CardContent className="grid gap-5 leading-7">
             <p className="text-muted-foreground">
-              מספר ההזמנה הוא {createOrder.data.orderNumber}. התכשיטים נשמרו
-              עבורך עד לסיום חלון התשלום.
-            </p>
+              מספר ההזמנה הוא {createOrder.data.orderNumber}. התכשיטים נשמרו עד לסיום חלון התשלום.</p>
             <ReservationCountdown
               expiresAt={createOrder.data.reservationExpiresAt}
             />
@@ -636,10 +634,7 @@ export function CartCheckoutForm() {
               ))}
             </div>
           ) : (
-            <StatusMessage testId="checkout-supplier-only-message">
-              אין צורך למלא פרטי מסירה באתר עבור בחירה שמכילה פריטי ספק בלבד.
-              המעבר לקופה המאובטחת של הספק יפתח את מסלול התשלום והמסירה.
-            </StatusMessage>
+            <StatusMessage testId="checkout-supplier-only-message">אין צורך בפרטי מסירה באתר עבור פריטים אלה. המעבר לקופה נפרדת יפתח תשלום ומסירה.</StatusMessage>
           )}
 
           <Card className="checkout-boutique-panel rounded-md" size="sm">
@@ -701,7 +696,7 @@ export function CartCheckoutForm() {
                     </Link>
                     <Badge className="mt-1 w-fit" variant="outline">
                       {item.source === "DROPSHIP_SHOPIFY"
-                        ? "פריט ספק"
+                        ? "פריט נפרד"
                         : "פריט מהחנות"}
                     </Badge>
                     <p className="text-muted-foreground text-sm">
@@ -849,10 +844,7 @@ export function CartCheckoutForm() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-4">
-                  <p className="text-muted-foreground text-sm">
-                    הפרטים יאפשרו לנו לאשר את ההזמנה ולתאם מסירה. הם יאומתו לפני
-                    השלמת ההזמנה.
-                  </p>
+                  <p className="text-muted-foreground text-sm">הפרטים ישמשו לאישור ההזמנה ולתיאום מסירה.</p>
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div>
                       <Label htmlFor="name">שם מלא</Label>
@@ -1067,17 +1059,14 @@ export function CartCheckoutForm() {
                     onChange={(event) =>
                       setGiftMessage(event.currentTarget.value)
                     }
-                    placeholder="ברכה אישית"
+                    placeholder="ברכה"
                     value={giftMessage}
                   />
                   <p
                     className="text-muted-foreground text-xs leading-5"
                     data-testid="checkout-order-note-hint"
                     id="checkout-order-note-hint"
-                  >
-                    אפשר לציין ברכה, העדפת אריזה או העדפת מסירה. אין לכתוב מספרי
-                    אשראי, סיסמאות או מידע רגיש.
-                  </p>
+                  >ניתן לציין ברכה, אריזה או העדפת מסירה. אין לכתוב אשראי, סיסמאות או מידע רגיש.</p>
                 </CardContent>
               </Card>
             </>
@@ -1092,7 +1081,7 @@ export function CartCheckoutForm() {
             <CardHeader className="checkout-boutique-card-header">
               <CheckoutStepBadge value="5" />
               <CardTitle>
-                {hasOwnItems ? "סיכום הזמנה" : "סיכום פריטי הספק"}
+                {hasOwnItems ? "סיכום הזמנה" : "סיכום פריטים נפרדים"}
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
@@ -1143,7 +1132,7 @@ export function CartCheckoutForm() {
                   </div>
                   <p className="text-muted-foreground text-xs leading-5">
                     {hasMixedSourceCart
-                      ? "הסכום הזה כולל רק את פריטי החנות. פריטי הספק יושלמו וישולמו בקופה נפרדת."
+                      ? "הסכום כולל רק פריטי חנות. פריטים נפרדים יושלמו בקופה נפרדת."
                       : "ההזמנה תושלם רק לאחר אישור הפרטים והסכום."}
                   </p>
                 </div>
@@ -1153,7 +1142,7 @@ export function CartCheckoutForm() {
                   data-testid="checkout-dropship-only-summary"
                 >
                   <div className="flex justify-between">
-                    <span>פריטי ספק</span>
+                    <span>פריטים נפרדים</span>
                     <span data-testid="checkout-dropship-item-count">
                       {dropshipItems.length}{" "}
                       {dropshipItems.length === 1
@@ -1169,15 +1158,12 @@ export function CartCheckoutForm() {
                     </span>
                   </div>
                   <div className="flex justify-between text-base font-semibold">
-                    <span>סכום פריטי הספק</span>
+                    <span>סכום הפריטים</span>
                     <span data-testid="checkout-dropship-subtotal">
                       {dropshipSubtotalLabel}
                     </span>
                   </div>
-                  <p className="text-muted-foreground text-xs leading-5">
-                    התשלום, פרטי המסירה ואישור ההזמנה יושלמו בקופת הספק
-                    המאובטחת. לא נוצרת כאן הזמנה מקומית עבור פריטי ספק בלבד.
-                  </p>
+                  <p className="text-muted-foreground text-xs leading-5">תשלום, מסירה ואישור הזמנה יושלמו בקופה נפרדת. לא נוצרת כאן הזמנה מקומית.</p>
                 </div>
               )}
               {hasOwnItems && cart.couponCode ? (
@@ -1260,10 +1246,7 @@ export function CartCheckoutForm() {
                 </StatusMessage>
               ) : null}
               {isOffline ? (
-                <StatusMessage tone="error">
-                  סיום ההזמנה דורש חיבור פעיל. פעולות בחירה נתמכות יישמרו
-                  ויסתנכרנו כשהחיבור יחזור.
-                </StatusMessage>
+                <StatusMessage tone="error">סיום הזמנה דורש חיבור. פעולות נתמכות יסתנכרנו כשהחיבור יחזור.</StatusMessage>
               ) : null}
               {hasOwnItems && createOrderErrorMessage ? (
                 <StatusMessage tone="error">
@@ -1294,7 +1277,7 @@ export function CartCheckoutForm() {
               )}
               {hasDropshipItems ? (
                 <div className="glass-inset rounded-md border p-3 text-sm">
-                  <p className="font-medium">קופת ספק נפרדת</p>
+                  <p className="font-medium">קופה נפרדת</p>
                   <p className="text-muted-foreground mt-1 leading-6">
                     {supplierCheckoutDescription}
                   </p>
@@ -1306,7 +1289,7 @@ export function CartCheckoutForm() {
                     type="button"
                     variant="outline"
                   >
-                    מעבר לקופת הספק
+                    מעבר לקופה
                     <ShoppingBag aria-hidden="true" className="size-4" />
                   </Button>
                 </div>

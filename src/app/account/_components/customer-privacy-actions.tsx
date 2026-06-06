@@ -34,7 +34,7 @@ export function CustomerPrivacyActions() {
         <ul className="text-muted-foreground mt-2 grid list-inside list-disc gap-1 leading-6">
           <li>ייצוא נתוני החשבון נשאר זמין בקובץ מוגן.</li>
           <li>מחיקה דורשת אישור מפורש לפני פעולה קבועה.</li>
-          <li>שאלות פרטיות או נגישות ממשיכות דרך שירות אישי.</li>
+          <li>שאלות פרטיות או נגישות ממשיכות דרך השירות.</li>
         </ul>
       </div>
       <Button asChild className="w-fit gap-2" variant="outline">

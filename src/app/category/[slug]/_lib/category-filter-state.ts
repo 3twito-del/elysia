@@ -94,28 +94,9 @@ export const sortOptions = [
   { value: "newest", label: "חדשים" },
 ] as const satisfies ReadonlyArray<{ value: CategorySort; label: string }>;
 
-const styleOptions = [
-  "עדין",
-  "נקי",
-  "קלאסי",
-  "מודרני",
-  "מינימלי",
-  "אלגנטי",
-  "מאופק",
-  "רך",
-  "קו נקי",
-  "טבעי",
-] as const;
+const styleOptions = [] as const;
 
-const occasionOptions = [
-  "יום יום",
-  "יומיומי",
-  "ערב",
-  "אירוע",
-  "מתנה",
-  "אירוסין",
-  "חגיגי",
-] as const;
+const occasionOptions = [] as const;
 
 export function getCategoryRouteState({
   catalogProducts,
@@ -599,8 +580,8 @@ function getCategoryNoResultRecoveryActions({
 
 function formatCategoryRecoveryDescription(total: number) {
   return total === 1
-    ? "פריט אחד מתאים לבחירה הפעילה בקטגוריה הזו"
-    : `${total} פריטים מתאימים לבחירה הפעילה בקטגוריה הזו`;
+    ? "נמצאה התאמה לסינון הפעיל"
+    : "נמצאו התאמות לסינון הפעיל";
 }
 
 function createCategoryHref(slug: string, filters: Partial<CategoryFilters>) {

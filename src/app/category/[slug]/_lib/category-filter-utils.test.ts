@@ -138,7 +138,7 @@ function makeProduct(
     sizes: [],
     sku: "SKU",
     slug: `${overrides.material}-${overrides.price}`,
-    source: "OWN",
+    requiresSeparateCheckout: false,
     stone: overrides.stone,
     tags: overrides.tags ?? [],
     variants: [],

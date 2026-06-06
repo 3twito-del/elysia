@@ -12,7 +12,7 @@ import { getPublicContactSettings } from "~/server/services/service";
 export const metadata: Metadata = {
   title: "הצהרת נגישות",
   description:
-    "הצהרת הנגישות של Elysia, פירוט התאמות באתר ופרטי פנייה בנושא נגישות.",
+    "הצהרת נגישות של Elysia: התאמות באתר ופרטי פנייה.",
 };
 
 export const dynamic = "force-dynamic";
@@ -21,15 +21,16 @@ export default async function AccessibilityPage() {
   const contact = await getPublicContactSettings();
 
   return (
-    <main>
+    <>
       <SiteHeader />
 
-      <CommercePageHero
-        description="אנחנו פועלים להנגיש את האתר והשירות כך שיהיו זמינים, ברורים ונוחים לשימוש."
-        eyebrow="נגישות"
-        title="הצהרת נגישות"
-        variant="content"
-      />
+      <main>
+        <CommercePageHero
+          description="האתר והשירות מיועדים להיות זמינים, ברורים ונוחים לשימוש."
+          eyebrow="נגישות"
+          title="הצהרת נגישות"
+          variant="content"
+        />
 
       <RevealSection className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:py-14">
         <div className="brand-surface p-6 sm:p-8">
@@ -43,16 +44,8 @@ export default async function AccessibilityPage() {
                 רמת הנגישות באתר
               </h2>
             </div>
-            <p className="text-muted-foreground mt-4 leading-8">
-              האתר נבנה במטרה לעמוד בדרישות תקנות שוויון זכויות לאנשים עם
-              מוגבלות (התאמות נגישות לשירות), התשע&quot;ג-2013, ובהתאם למידע
-              ושירות תקן ישראלי 5568 המבוסס על הנחיות WCAG 2.0 ברמה AA ככל
-              האפשר.
-            </p>
-            <p className="text-muted-foreground mt-4 leading-8">
-              לצד זאת, נגישות מלאה מחייבת בחינה מקצועית שוטפת. אם מצאתם רכיב,
-              תוכן או תהליך שאינו נגיש, נשמח לקבל פרטים כדי לתקן אותו במהירות.
-            </p>
+            <p className="text-muted-foreground mt-4 leading-8">האתר נבנה בהתאם לתקנות הנגישות ולתקן ישראלי 5568, המבוסס על WCAG 2.0 ברמה AA ככל האפשר.</p>
+            <p className="text-muted-foreground mt-4 leading-8">נגישות דורשת בדיקה שוטפת. אם מצאתם רכיב לא נגיש, ניתן לפנות אלינו עם הפרטים.</p>
           </section>
 
           <Separator className="my-8" />
@@ -62,18 +55,13 @@ export default async function AccessibilityPage() {
               התאמות נגישות באתר
             </h2>
             <ul className="text-muted-foreground mt-4 grid gap-3 leading-8">
-              <li>כפתור נגישות קבוע לפתיחת תפריט התאמות מכל עמוד ציבורי.</li>
-              <li>אפשרות להגדלת טקסט בשלוש רמות.</li>
+              <li>כפתור נגישות קבוע לפתיחת התאמות מכל עמוד ציבורי.</li>
+              <li>הגדלת טקסט בשלוש רמות.</li>
               <li>מצב ניגודיות גבוהה לשיפור קריאות הטקסט והרכיבים.</li>
               <li>הדגשת קישורים בקו תחתון.</li>
-              <li>הפחתת אנימציות ומעברי עמוד למשתמשים הרגישים לתנועה.</li>
-              <li>
-                אפשרות להסתרה זמנית של כפתור הנגישות הצף בעמוד הנוכחי, בלי להסיר
-                את קישור הצהרת הנגישות הקבוע בפוטר.
-              </li>
-              <li>
-                שימוש בכותרות, כפתורים וקישורים סמנטיים התומכים בניווט מקלדת.
-              </li>
+              <li>הפחתת אנימציות ומעברים.</li>
+              <li>הסתרה זמנית של כפתור הנגישות הצף, בלי להסיר את קישור ההצהרה בפוטר.</li>
+              <li>כותרות, כפתורים וקישורים סמנטיים לניווט מקלדת.</li>
             </ul>
           </section>
 
@@ -83,10 +71,7 @@ export default async function AccessibilityPage() {
             <h2 className="text-2xl font-semibold" id="accessibility-contact">
               פנייה בנושא נגישות
             </h2>
-            <p className="text-muted-foreground mt-4 leading-8">
-              בפנייה בנושא נגישות מומלץ לציין את כתובת העמוד, סוג הדפדפן, תיאור
-              הבעיה והטכנולוגיה המסייעת שבה נעשה שימוש, אם ישנה.
-            </p>
+            <p className="text-muted-foreground mt-4 leading-8">בפנייה בנושא נגישות יש לציין עמוד, דפדפן, תיאור בעיה וטכנולוגיה מסייעת, אם קיימת.</p>
             <Button asChild className="mt-5" variant="secondary">
               <Link
                 data-testid="accessibility-service-recovery-link"
@@ -125,6 +110,7 @@ export default async function AccessibilityPage() {
           </div>
         </div>
       </RevealSection>
-    </main>
+      </main>
+    </>
   );
 }

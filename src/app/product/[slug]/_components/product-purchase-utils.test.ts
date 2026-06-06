@@ -17,20 +17,20 @@ it("maps add-to-cart failures to customer-safe recovery copy", () => {
       message: "Inventory reservation failed for variant abc",
     }),
   ).toBe(
-    "ההתאמה הזו אינה זמינה כרגע. אפשר לבחור התאמה אחרת או לפנות לשירות האישי.",
+    "ההתאמה אינה זמינה. ניתן לבחור אחרת או לפנות לשירות.",
   );
   expect(
     getAddToCartFailureMessage({
       message: "Quantity limit exceeded",
     }),
   ).toBe(
-    "לא ניתן להוסיף את הכמות הזו לסל. אפשר לנסות כמות אחרת או לפנות לשירות.",
+    "לא ניתן להוסיף כמות זו לסל. נסו כמות אחרת או פנו לשירות.",
   );
   expect(
     getAddToCartFailureMessage({
       message: "database connection timeout",
     }),
-  ).toBe("לא הצלחנו להוסיף לסל כרגע. הבחירה נשארה בעמוד ואפשר לנסות שוב.");
+  ).toBe("לא הצלחנו להוסיף לסל. ניתן לנסות שוב.");
 });
 
 const baseVariant = {
@@ -43,31 +43,31 @@ const baseVariant = {
 };
 
 describe("product purchase utilities", () => {
-  it("treats Shopify dropship variants with external mappings as selectable", () => {
+  it("treats separate-checkout variants as selectable", () => {
     const variant = {
       ...baseVariant,
-      externalVariantId: "gid://shopify/ProductVariant/10",
+      separateCheckoutAvailable: true,
     };
 
     expect(
       isVariantSelectableForCart({
         availabilityMode: "READY_TO_ORDER",
-        productSource: "DROPSHIP_SHOPIFY",
+        requiresSeparateCheckout: true,
         variant,
       }),
     ).toBe(true);
     expect(
       getVariantStatusLabel({
         availabilityMode: "READY_TO_ORDER",
-        productSource: "DROPSHIP_SHOPIFY",
+        requiresSeparateCheckout: true,
         variant,
       }),
     ).toBe("זמין להזמנה");
     expect(
-      getVariantButtonLabel(variant, "READY_TO_ORDER", "DROPSHIP_SHOPIFY"),
+      getVariantButtonLabel(variant, "READY_TO_ORDER", true),
     ).toContain("זמין להזמנה");
     expect(
-      getVariantButtonLabel(variant, "READY_TO_ORDER", "DROPSHIP_SHOPIFY"),
+      getVariantButtonLabel(variant, "READY_TO_ORDER", true),
     ).toContain("\u2068");
   });
 
@@ -75,13 +75,13 @@ describe("product purchase utilities", () => {
     const buttonLabel = getVariantButtonLabel(
       baseVariant,
       "READY_TO_ORDER",
-      "OWN",
+      false,
     );
 
     expect(
       isVariantSelectableForCart({
         availabilityMode: "READY_TO_ORDER",
-        productSource: "OWN",
+        requiresSeparateCheckout: false,
         variant: baseVariant,
       }),
     ).toBe(false);
@@ -90,7 +90,7 @@ describe("product purchase utilities", () => {
     expect(
       getVariantStatusLabel({
         availabilityMode: "READY_TO_ORDER",
-        productSource: "OWN",
+        requiresSeparateCheckout: false,
         variant: baseVariant,
       }),
     ).toBe("בירור התאמה");
@@ -115,22 +115,22 @@ describe("product purchase utilities", () => {
     expect(panel).not.toContain("availableQuantity}");
   });
 
-  it("summarizes Shopify checkout expectations without public stock precision", () => {
+  it("summarizes separate checkout expectations without public stock precision", () => {
     const variant = {
       ...baseVariant,
       availableQuantity: 12,
-      externalVariantId: "gid://shopify/ProductVariant/10",
+      separateCheckoutAvailable: true,
     };
     const items = getPurchaseConfidenceItems({
       availabilityMode: "READY_TO_ORDER",
       deliveryPromise: "מסירה ותשלום יושלמו בקופה מאובטחת.",
-      productSource: "DROPSHIP_SHOPIFY",
+      requiresSeparateCheckout: true,
       returnPolicy: "החלפות והחזרות מטופלות בתיאום שירות אישי.",
       sizeKind: "ring",
       variant,
       variantStatusLabel: getVariantStatusLabel({
         availabilityMode: "READY_TO_ORDER",
-        productSource: "DROPSHIP_SHOPIFY",
+        requiresSeparateCheckout: true,
         variant,
       }),
     });
@@ -151,20 +151,20 @@ describe("product purchase utilities", () => {
     const items = getPurchaseConfidenceItems({
       availabilityMode: "READY_TO_ORDER",
       deliveryPromise: "מסירה עד הבית לאחר אישור הפרטים.",
-      productSource: "OWN",
+      requiresSeparateCheckout: false,
       returnPolicy: "החלפה או החזרה בתיאום אישי לפי מדיניות Elysia.",
       sizeKind: "ring",
       variant,
       variantStatusLabel: getVariantStatusLabel({
         availabilityMode: "READY_TO_ORDER",
-        productSource: "OWN",
+        requiresSeparateCheckout: false,
         variant,
       }),
     });
     const checkoutItem = items.find((item) => item.key === "checkout");
     const fitItem = items.find((item) => item.key === "fit");
 
-    expect(checkoutItem?.description).toContain("מאומתים");
+    expect(checkoutItem?.description).toContain("יאומתו");
     expect(fitItem?.description).toContain("מדריך המידות");
     expect(items.map((item) => item.description).join(" ")).not.toContain("2");
   });
@@ -178,13 +178,13 @@ describe("product purchase utilities", () => {
       availabilityMode: "READY_TO_ORDER",
       careInstructions: "ניקוי עדין במטלית רכה.",
       deliveryPromise: "מסירה עד הבית לאחר אישור הפרטים.",
-      productSource: "OWN",
+      requiresSeparateCheckout: false,
       returnPolicy: "החלפה או החזרה בתיאום אישי.",
       sizeKind: "ring",
       variant,
       variantStatusLabel: getVariantStatusLabel({
         availabilityMode: "READY_TO_ORDER",
-        productSource: "OWN",
+        requiresSeparateCheckout: false,
         variant,
       }),
       warranty: "אחריות לשנה על פגמי ייצור.",

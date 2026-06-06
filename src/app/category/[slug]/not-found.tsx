@@ -22,7 +22,7 @@ export default function CategoryNotFound() {
               </Button>
             </>
           }
-          description="יכול להיות שהקישור השתנה או שמשפחת התכשיטים אינה פעילה. אפשר להמשיך דרך החיפוש או לחזור לקולקציות הראשיות."
+          description="ייתכן שהקישור השתנה או שהקטגוריה אינה פעילה. ניתן להמשיך לחיפוש או לחזור לקולקציות."
           icon={SearchX}
           testId="category-not-found-empty-state"
           title="המשפחה לא נמצאה"

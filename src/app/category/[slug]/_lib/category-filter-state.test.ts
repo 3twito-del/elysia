@@ -211,7 +211,7 @@ function makeProduct(
     sizes: [],
     sku: overrides.slug.toUpperCase(),
     slug: overrides.slug,
-    source: "OWN",
+    requiresSeparateCheckout: false,
     stone: "diamond",
     tags: [],
     variants: [],

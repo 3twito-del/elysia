@@ -12,6 +12,7 @@ import {
   upsertContactTopicInputSchema,
   upsertServiceBranchInputSchema,
 } from "~/lib/service-validation";
+import { siteContact } from "~/config/site-contact";
 import { db } from "~/server/db";
 import { mediaProvider } from "~/server/adapters/media";
 import {
@@ -22,9 +23,9 @@ import { BUSINESS_EVENTS, createOutboxEvent } from "~/server/services/outbox";
 
 const defaultServiceSettings = {
   id: "default",
-  phoneE164: "+972547277455",
-  displayPhone: "054-727-7455",
-  serviceEmail: "3twito@gmail.com",
+  phoneE164: siteContact.phoneE164,
+  displayPhone: siteContact.phoneDisplay,
+  serviceEmail: siteContact.email,
   physicalBranchesEnabled: false,
 };
 
@@ -75,7 +76,7 @@ export const defaultContactTopics = [
     id: "topic_partnership",
     slug: "partnership",
     label: "שיתוף פעולה",
-    description: "פנייה לבית Elysia, תוכן או שיתוף פעולה.",
+    description: "פנייה ל-Elysia, תוכן או שיתוף פעולה.",
     sortOrder: 70,
   },
 ];

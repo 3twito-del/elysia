@@ -9,7 +9,7 @@ import { Badge } from "~/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 export const metadata = {
-  title: "התאמה חכמה",
+  title: "התאמה",
 };
 
 type AiPageProps = {
@@ -28,10 +28,10 @@ export default async function AiPage({ searchParams }: AiPageProps) {
     <main className="min-h-screen">
       <SiteHeader />
       <CommercePageHero
-        description="כלי התאמה מחוברים למבחר של Elysia ומציגים בחירות פתוחות לפי כוונה, מחיר וסגנון."
-        eyebrow="התאמה חכמה"
+        description="כלי התאמה מחוברים למבחר Elysia ומציגים בחירות לפי כוונה, מחיר וסגנון."
+        eyebrow="התאמה"
         id="page-hero"
-        title="התאמה חכמה לתכשיט"
+        title="התאמה לתכשיט"
         variant="content"
       />
       <RevealSection
@@ -61,9 +61,7 @@ export default async function AiPage({ searchParams }: AiPageProps) {
                   className="text-muted-foreground hover:text-foreground data-[state=active]:text-foreground min-h-10 min-w-0 cursor-pointer gap-2 rounded-none border-0 bg-transparent px-1.5 pt-1 pb-2 text-sm font-semibold shadow-none hover:bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none"
                   value="stylist"
                 >
-                  <MessageSquare aria-hidden="true" className="size-4" />
-                  סטייליסט
-                </TabsTrigger>
+                  <MessageSquare aria-hidden="true" className="size-4" />יועץ התאמה</TabsTrigger>
                 <TabsTrigger
                   className="text-muted-foreground hover:text-foreground data-[state=active]:text-foreground min-h-10 min-w-0 cursor-pointer gap-2 rounded-none border-0 bg-transparent px-1.5 pt-1 pb-2 text-sm font-semibold shadow-none hover:bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none"
                   value="gifts"
@@ -87,11 +85,7 @@ export default async function AiPage({ searchParams }: AiPageProps) {
             <div className="brand-icon-well flex size-10 items-center justify-center rounded-md border">
               <Sparkles aria-hidden="true" className="size-4" />
             </div>
-            <p className="text-muted-foreground max-w-4xl">
-              תמיכה בהזמנה, שמירת פרופיל סגנון ומידה נשארים זמינים דרך אזור
-              הלקוח ועמודי התכשיט. ההמלצות כאן מתמקדות בבחירות שאפשר לפתוח,
-              לבחון ולהזמין בקולקציה.
-            </p>
+            <p className="text-muted-foreground max-w-4xl">הזמנה, פרופיל סגנון ומידה זמינים באזור הלקוח ובעמודי המוצר. ההמלצות מתמקדות בפריטים פתוחים במלאי.</p>
           </section>
         </div>
       </RevealSection>

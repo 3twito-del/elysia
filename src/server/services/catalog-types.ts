@@ -26,7 +26,7 @@ export type CatalogBranch = {
 export type CatalogProductVariant = {
   sku: string;
   name: string;
-  externalVariantId?: string;
+  separateCheckoutAvailable?: boolean;
   size?: string;
   metalColor?: string;
   stoneColor?: string;
@@ -39,11 +39,7 @@ export type CatalogProductVariant = {
 export type CatalogProduct = {
   slug: string;
   sku: string;
-  source: "OWN" | "DROPSHIP_SHOPIFY";
-  externalProvider?: string;
-  externalProductId?: string;
-  externalHandle?: string;
-  supplierKey?: string;
+  requiresSeparateCheckout: boolean;
   name: string;
   categorySlug: string;
   categoryName: string;

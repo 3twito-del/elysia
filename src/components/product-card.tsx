@@ -92,7 +92,7 @@ export function ProductCard({
   const productQuickFactsLabel = productQuickFacts.join(" · ");
   const primaryCommerceLabel = isAvailable
     ? formatPrice(product.price)
-    : "לייעוץ אישי";
+    : "לייעוץ";
   const materialBadgeLabel = getProductCardMaterialBadgeLabel(product);
   const swatches = getProductCardSwatches(product);
   const quickAddVariant = getProductCardQuickAddVariant({
@@ -429,7 +429,7 @@ function getProductCardQuickAddVariant(input: {
   const [variant] = input.product.variants;
 
   if (!variant) return null;
-  if (input.product.source !== "OWN") return null;
+  if (input.product.requiresSeparateCheckout) return null;
   if (input.product.availabilityMode !== "READY_TO_ORDER") return null;
   if (input.availableQuantity <= 0 || variant.availableQuantity <= 0) {
     return null;

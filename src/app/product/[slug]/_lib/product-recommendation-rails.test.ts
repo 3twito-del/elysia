@@ -175,6 +175,6 @@ function createProduct(overrides: Partial<CatalogProduct> & { slug: string }) {
       },
     ],
     ...rest,
-    source: rest.source ?? "OWN",
+    requiresSeparateCheckout: rest.requiresSeparateCheckout ?? false,
   } satisfies CatalogProduct;
 }

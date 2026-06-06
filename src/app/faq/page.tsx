@@ -21,7 +21,7 @@ import { getPublicContactSettings } from "~/server/services/service";
 export const metadata: Metadata = {
   title: "שאלות ותשובות",
   description:
-    "שאלות ותשובות על בחירה ב-Elysia, התאמת תכשיטים, מידות, מסירה, החזרות ומתנות.",
+    "שאלות ותשובות על בחירה, התאמה, מידות, מסירה, החזרות ומתנות.",
 };
 
 export const dynamic = "force-dynamic";
@@ -34,7 +34,7 @@ const faqGroups = [
       {
         question: "איך יודעים אם פריט זמין?",
         answer:
-          "הזמינות מופיעה בעמוד המוצר ומתעדכנת לפי המידע באתר. להזמנות מיוחדות ניתן לפנות לשירות.",
+          "הזמינות מופיעה בעמוד המוצר. להזמנות מיוחדות ניתן לפנות לשירות.",
       },
       {
         question: "האם המחירים כוללים מע״מ?",
@@ -53,16 +53,16 @@ const faqGroups = [
     items: [
       {
         question: "איך בוחרים מידת טבעת?",
-        answer: "ניתן להיעזר במדריך המידות או לפנות לשירות לפני ההזמנה.",
+        answer: "ניתן להיעזר במדריך המידות או לפנות לשירות.",
       },
       {
         question: "האם אפשר לקבל עזרה בבחירת מתנה?",
         answer:
-          "כן. אזור המתנות מאפשר לבחור לפי מחיר, אירוע, חומר וסגנון. אפשר לפנות לשירות האישי כדי לאמת התאמה לפני הזמנה.",
+          "כן. ניתן לבחור לפי מחיר, אירוע, חומר וסגנון, או לפנות לשירות לאימות התאמה.",
       },
       {
         question: "האם ניתן לצרף ברכה או אריזת מתנה?",
-        answer: "כאשר האפשרות זמינה, ניתן להוסיף ברכה או אריזה במהלך ההזמנה.",
+        answer: "כאשר זמין, ניתן להוסיף ברכה או אריזה בהזמנה.",
       },
     ],
   },
@@ -185,10 +185,7 @@ export default async function FaqPage() {
             <h2 className="text-2xl font-semibold" id="faq-contact">
               לא מצאתם תשובה?
             </h2>
-            <p className="text-muted-foreground mt-3 leading-8">
-              אפשר לפנות לשירות האישי עם פרטי התכשיט, מספר ההזמנה או תיאור
-              הבקשה.
-            </p>
+            <p className="text-muted-foreground mt-3 leading-8">ניתן לפנות לשירות עם פרטי התכשיט, מספר הזמנה או תיאור הבקשה.</p>
             <Button asChild className="mt-5" variant="secondary">
               <Link
                 data-testid="faq-service-recovery-link"

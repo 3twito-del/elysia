@@ -12,6 +12,15 @@ describe("homepage boutique commerce bridge", () => {
     expect(home).toContain(
       'const boutiqueHeroImage = "/brand/boutique/lifestyle-hero.avif";',
     );
+    expect(home).toContain(
+      'const boutiqueHeroPoster = "/brand/boutique/lifestyle-hero-poster.avif";',
+    );
+    expect(home).toContain(
+      'const boutiqueHeroVideoWebm = "/brand/boutique/lifestyle-hero.webm";',
+    );
+    expect(home).toContain(
+      'const boutiqueHeroVideoMp4 = "/brand/boutique/lifestyle-hero.mp4";',
+    );
     expect(home).toContain("getCatalogCategories");
     expect(home).toContain("getFeaturedCatalogProducts(4)");
     expect(home).toContain("<ProductCard");

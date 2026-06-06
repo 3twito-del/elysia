@@ -48,7 +48,7 @@ describe("checkout display helpers", () => {
       getFriendlyCheckoutErrorMessage({
         message: "Fixture cart item was not found.",
       }),
-    ).toBe("הבחירה הזו אינה פנויה כרגע. רעננו את העמוד ונסו שוב.");
+    ).toBe("הבחירה אינה פנויה כרגע. רעננו ונסו שוב.");
 
     expect(
       getFriendlyCheckoutErrorMessage({
@@ -68,24 +68,24 @@ describe("checkout display helpers", () => {
       }),
     ).toEqual([
       {
-        detail: "2 סוגי תכשיטים יאושרו באתר Elysia לפני סיום התשלום.",
+        detail: "2 סוגי תכשיטים יאושרו באתר Elysia לפני תשלום.",
         key: "local",
         label: "פריטי החנות",
       },
       {
-        detail: "מסירה עד הבית כלולה לפי הכתובת שתמלאו.",
+        detail: "מסירה עד הבית כלולה לפי הכתובת.",
         key: "delivery",
         label: "מסירה",
       },
       {
-        detail: "הפרטים והסכום יאומתו לפני שמירת ההזמנה וסיום התשלום.",
+        detail: "הפרטים והסכום יאומתו לפני שמירה ותשלום.",
         key: "confirmation",
         label: "אישור",
       },
     ]);
   });
 
-  it("keeps Shopify-only delivery confidence scoped to the supplier checkout", () => {
+  it("keeps separate-checkout delivery confidence scoped to the separate checkout", () => {
     const rows = getCheckoutFulfillmentSummaryRows({
       dropshipItemCount: 1,
       hasDropshipItems: true,
@@ -97,17 +97,17 @@ describe("checkout display helpers", () => {
     expect(rows).toEqual([
       {
         detail:
-          "סוג תכשיט אחד ימשיך לקופת Shopify; תשלום, כתובת וזמני מסירה ייקבעו שם.",
+          "סוג תכשיט אחד ימשיך לקופה נפרדת; תשלום ומסירה ייקבעו שם.",
         key: "supplier",
-        label: "פריטי הספק",
+        label: "פריטים נפרדים",
       },
       {
-        detail: "אין מילוי כתובת באתר; פרטי המסירה ייאספו בקופת Shopify.",
+        detail: "אין מילוי כתובת באתר; פרטי המסירה ייאספו בקופה הנפרדת.",
         key: "delivery",
         label: "מסירה",
       },
       {
-        detail: "לא נוצרת כאן הזמנה מקומית עבור פריטי ספק בלבד.",
+        detail: "לא נוצרת כאן הזמנה מקומית עבור פריטים אלה.",
         key: "confirmation",
         label: "אישור",
       },
@@ -126,24 +126,24 @@ describe("checkout display helpers", () => {
       }),
     ).toEqual([
       {
-        detail: "סוג תכשיט אחד יאושר באתר Elysia לפני סיום התשלום.",
+        detail: "סוג תכשיט אחד יאושר באתר Elysia לפני תשלום.",
         key: "local",
         label: "פריטי החנות",
       },
       {
-        detail: "2 סוגי תכשיטים ימשיכו לקופת Shopify נפרדת מהפריטים המקומיים.",
+        detail: "2 סוגי תכשיטים ימשיכו לקופה נפרדת.",
         key: "supplier",
-        label: "פריטי הספק",
+        label: "פריטים נפרדים",
       },
       {
         detail:
-          "מסירת פריטי החנות תתואם לפי הכתובת שתמלאו; פריטי הספק יקבלו פרטי מסירה בקופה הנפרדת.",
+          "מסירת פריטי חנות תתואם לפי הכתובת; פריטים נפרדים יקבלו מסירה בקופה נפרדת.",
         key: "delivery",
         label: "מסירה",
       },
       {
         detail:
-          "שני המסלולים נשארים נפרדים כדי שלא ליצור הבטחת תשלום או מסירה משותפת.",
+          "שני המסלולים נשארים נפרדים.",
         key: "confirmation",
         label: "אישור",
       },

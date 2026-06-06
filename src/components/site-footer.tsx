@@ -13,11 +13,11 @@ const catalogLinks = [
   { href: "/category/necklaces", label: "שרשראות" },
   { href: "/category/earrings", label: "עגילים" },
   { href: "/category/bracelets", label: "צמידים" },
-  { href: "/search", label: "חיפוש במבחר" },
+  { href: "/search", label: "חיפוש" },
 ] as const;
 
 const commerceLinks = [
-  { href: "/checkout", label: "הבחירה שלי" },
+  { href: "/checkout", label: "סל" },
   { href: "/service", label: "שירות" },
   { href: "/faq", label: "שאלות ותשובות" },
   { href: "/size-guide", label: "מדריך מידות" },

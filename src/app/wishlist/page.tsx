@@ -227,7 +227,7 @@ function CustomerWishlistPanel({ customer }: { customer: CustomerWishlist }) {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <CardTitle className="flex items-center gap-2">
             <Heart aria-hidden="true" className="size-5" />
-            התכשיטים השמורים
+            התכשיטים במועדפים
           </CardTitle>
           <div className="flex flex-wrap gap-2">
             <Button asChild size="sm" variant="outline">

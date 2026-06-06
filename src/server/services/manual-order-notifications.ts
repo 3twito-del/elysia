@@ -39,7 +39,7 @@ export function createManualOrderCustomerMessage(
     subject: `בקשת ההזמנה ${input.orderNumber} התקבלה`,
     body: [
       `${input.customerName} שלום,`,
-      `בקשת ההזמנה שלך ב-Elysia התקבלה ונשמרה לטיפול אישי.`,
+      `בקשת ההזמנה שלך ב-Elysia התקבלה ונשמרה לטיפול.`,
       `מספר הזמנה: ${input.orderNumber}`,
       `תכשיט: ${input.productName}`,
       `כמות: ${input.quantity}`,

@@ -112,7 +112,7 @@ describe("public CTA hierarchy", () => {
     expect(productCard).toContain("ProductCardFavoriteButton");
     expect(productCard).toContain("function getProductCardQuickAddVariant");
     expect(productCard).toContain("<ProductCardQuickAddButton");
-    expect(productCard).toContain('input.product.source !== "OWN"');
+    expect(productCard).toContain("input.product.requiresSeparateCheckout");
     expect(productCard).toContain("input.product.variants.length !== 1");
     expect(productCard).not.toContain('className="product-card-cta');
     expect(productCard).not.toContain("<Button");

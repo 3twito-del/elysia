@@ -53,7 +53,7 @@ describe("mobile commerce density", () => {
     expect(source).not.toContain('data-testid="home-quick-search-suggestions"');
   });
 
-  it("keeps home hero imagery static, full-bleed, and independent from page scroll", () => {
+  it("keeps home hero video static, full-bleed, and independent from page scroll", () => {
     const home = read("src/app/page.tsx");
     const css = read("src/styles/globals.css");
     const publicMotionProvider = read(
@@ -64,10 +64,24 @@ describe("mobile commerce density", () => {
     expect(home).not.toContain("\n          parallax");
     expect(home).not.toContain("scrollMotion=");
     expect(home).not.toContain("CinematicHeroSequence");
+    expect(home).toContain(
+      'const boutiqueHeroPoster = "/brand/boutique/lifestyle-hero-poster.avif";',
+    );
+    expect(home).toContain(
+      'const boutiqueHeroVideoWebm = "/brand/boutique/lifestyle-hero.webm";',
+    );
+    expect(home).toContain(
+      'const boutiqueHeroVideoMp4 = "/brand/boutique/lifestyle-hero.mp4";',
+    );
+    expect(home).toContain('as="video"');
+    expect(home).toContain("fetchPriority=\"high\"");
+    expect(home).toContain("<HomeHeroVideo");
     expect(home).toContain('className="storefront-hero-image object-cover"');
-    expect(home).toContain('sizes="100vw"');
-    expect(home).toContain("src={boutiqueHeroImage}");
+    expect(home).toContain("posterSrc={boutiqueHeroPoster}");
+    expect(home).toContain("webmSrc={boutiqueHeroVideoWebm}");
+    expect(home).toContain("mp4Src={boutiqueHeroVideoMp4}");
     expect(css).toContain(".storefront-hero-image");
+    expect(css).toContain("object-fit: cover;");
     expect(css).toContain(".storefront-hero-scrim");
     expect(publicMotionProvider).toContain(
       "const [suppressInitialReveal, setSuppressInitialReveal] = useState(true)",

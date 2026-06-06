@@ -17,7 +17,7 @@ const printRulerTicks = ["0", "1", "2", "3", "4", "5", "6"] as const;
 const sizeMeasurementSteps = [
   "מדדו על משטח ישר ובלי למשוך את הסרט.",
   "השוו לטבלת המידה של טבעת, צמיד או שרשרת.",
-  "אם אתם בין מידות, בחרו את המידה הנוחה יותר לשימוש יומי.",
+  "אם אתם בין מידות, בחרו את הנוחה לשימוש יומי.",
 ] as const;
 
 type SizeGuidePageProps = {
@@ -76,10 +76,7 @@ export default async function SizeGuidePage({
             >
               התחילו מסרגל בדיקה קצר
             </h2>
-            <p className="text-muted-foreground mt-2 text-sm leading-6">
-              להדפסה, הגדירו קנה מידה 100% ובדקו שהמרווחים כאן נשארים עקביים
-              לפני שמשווים למידה.
-            </p>
+            <p className="text-muted-foreground mt-2 text-sm leading-6">להדפסה, הגדירו קנה מידה 100% ובדקו מרווחים לפני השוואה.</p>
           </div>
           <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(12rem,0.9fr)]">
             <ol className="text-muted-foreground grid gap-2 text-sm leading-6">

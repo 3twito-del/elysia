@@ -91,7 +91,7 @@ export default async function OrderDetailPage({
           <Button asChild className="justify-start gap-2" variant="outline">
             <Link
               href={createAccountServiceHref({
-                message: "אשמח לעזרה בבירור סטטוס ההזמנה.",
+                message: "אבקש עזרה בבירור סטטוס ההזמנה.",
                 orderNumber: order.orderNumber,
                 topic: "order",
               })}

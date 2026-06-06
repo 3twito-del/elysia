@@ -152,18 +152,18 @@ export function mapShopifyProductsToImportPlan(input: {
     return [
       {
         basePrice: defaultVariant.price,
-        categorySlug: toSlug(product.productType ?? "dropshipping"),
+        categorySlug: toSlug(product.productType ?? "rings"),
         description:
           product.description.trim() ||
-          `${product.title} is supplied through the Shopify dropshipping channel.`,
+          "פריט מתוך עריכת Elysia, עם פרטי חומר ומידה המוצגים לפני בחירה.",
         externalHandle: product.handle,
         externalProductId: product.id,
         images,
-        materialSlug: "supplier",
+        materialSlug: "selected-finish",
         name: product.title,
         shortDescription:
           product.description.trim().slice(0, 180) ||
-          "Supplier-backed jewelry selection.",
+          "פריט מתוך עריכת Elysia עם פרטים ברורים לפני בחירה.",
         sku: defaultVariant.sku,
         supplierKey: input.supplierKey,
         tags: product.tags,
@@ -189,7 +189,7 @@ async function upsertShopifyDropshipProduct(
       create: {
         slug: product.categorySlug,
         name: toTitle(product.categorySlug),
-        description: "Supplier dropshipping collection.",
+        description: "בחירות תכשיטים מתוך עריכת Elysia.",
         imageUrl: primaryImageUrl,
       },
     });
@@ -198,7 +198,7 @@ async function upsertShopifyDropshipProduct(
       update: {},
       create: {
         slug: product.materialSlug,
-        name: "Supplier selection",
+        name: "גימור נבחר",
       },
     });
     const syncedAt = new Date();

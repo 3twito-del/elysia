@@ -20,7 +20,7 @@ describe("luxury commerce UI hardening", () => {
     expect(source).toContain('triggerMode="label"');
     expect(source).toContain('aria-label="חיפוש"');
     expect(source).toContain("<Search");
-    expect(source).toContain('aria-label="צרו קשר"');
+    expect(source).toContain('aria-label="שירות"');
     expect(source).toContain("<Heart");
     expect(source).toContain("<UserRound");
     expect(source).toContain('href="/wishlist"');

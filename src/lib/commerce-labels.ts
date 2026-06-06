@@ -55,34 +55,34 @@ const integrationStatusLabels: Readonly<Record<string, string>> = {
 
 const orderSourceLabels = {
   LOCAL: "הזמנת חנות",
-  SHOPIFY_MIRROR: "הזמנת ספק",
+  SHOPIFY_MIRROR: "הזמנה נפרדת",
 } as const;
 
 const orderSourceDescriptions = {
   LOCAL: "מטופלת במערכת המקומית של Elysia.",
-  SHOPIFY_MIRROR: "רשומת Shopify לקריאה בלבד; טיפול ותשלום מתבצעים אצל הספק.",
+  SHOPIFY_MIRROR: "רשומה לקריאה בלבד; המשך טיפול דרך שירות Elysia.",
 } as const;
 
 const shopifyFinancialStatusLabels: Readonly<Record<string, string>> = {
-  authorized: "אושר ב-Shopify",
-  paid: "שולם ב-Shopify",
-  partially_paid: "שולם חלקית ב-Shopify",
-  partially_refunded: "זוכה חלקית ב-Shopify",
-  pending: "ממתין ב-Shopify",
-  refunded: "זוכה ב-Shopify",
-  voided: "בוטל ב-Shopify",
+  authorized: "אושר",
+  paid: "שולם",
+  partially_paid: "שולם חלקית",
+  partially_refunded: "זוכה חלקית",
+  pending: "ממתין",
+  refunded: "זוכה",
+  voided: "בוטל",
 };
 
 const shopifyFulfillmentStatusLabels: Readonly<Record<string, string>> = {
-  fulfilled: "מולא על ידי הספק",
-  in_progress: "בטיפול הספק",
-  on_hold: "מושהה אצל הספק",
-  open: "ממתין לספק",
-  partial: "מולא חלקית על ידי הספק",
-  pending: "ממתין לספק",
-  restocked: "הוחזר למלאי הספק",
-  scheduled: "מתוזמן אצל הספק",
-  unfulfilled: "טרם מולא אצל הספק",
+  fulfilled: "הושלם",
+  in_progress: "בטיפול",
+  on_hold: "מושהה",
+  open: "ממתין",
+  partial: "הושלם חלקית",
+  pending: "ממתין",
+  restocked: "הוחזר למלאי",
+  scheduled: "מתוזמן",
+  unfulfilled: "טרם הושלם",
 };
 
 export type OrderSourceKind = keyof typeof orderSourceLabels;
@@ -150,7 +150,7 @@ export function getShopifyFulfillmentStatusLabel(
 ) {
   return status
     ? getMappedLabel(shopifyFulfillmentStatusLabels, status)
-    : "ממתין למילוי ספק";
+    : "ממתין לעדכון";
 }
 
 export function getFulfillmentMethodLabel(method: string) {

@@ -15,7 +15,7 @@ export default function manifest(): ExtendedManifest {
     id: "/",
     name: "Elysia",
     short_name: "Elysia",
-    description: "בית תכשיטים ישראלי עם מידע מוצר ברור, שירות והזמנה מקוונת.",
+    description: "תכשיטי Elysia עם מידע מוצר, שירות והזמנה מקוונת.",
     start_url: "/?source=pwa",
     scope: "/",
     lang: "he",
@@ -101,7 +101,7 @@ export default function manifest(): ExtendedManifest {
         ],
       },
       {
-        name: "שירות אישי",
+        name: "שירות",
         short_name: "שירות",
         description: "פנייה לשירות",
         url: "/service?source=pwa-shortcut",

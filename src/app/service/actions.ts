@@ -57,7 +57,7 @@ export async function createServiceRequestAction(
       ok: false,
       message:
         rateLimitMessage(error) ??
-        "נשלחו יותר מדי פניות בפרק זמן קצר. נסו שוב מאוחר יותר.",
+        "נשלחו יותר מדי פניות בזמן קצר. נסו שוב מאוחר יותר.",
     };
   }
 
@@ -73,7 +73,7 @@ export async function createServiceRequestAction(
     return {
       ok: true,
       requestReference,
-      message: `הפנייה התקבלה. מספר הפנייה הוא ${requestReference}. צוות Elysia יחזור אליכם לפי דרך הקשר שבחרתם לאחר בדיקת הפרטים.`,
+      message: `הפנייה התקבלה. מספר הפנייה: ${requestReference}. צוות Elysia יחזור לאחר בדיקת הפרטים.`,
     };
   } catch (error) {
     return {

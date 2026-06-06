@@ -2140,11 +2140,22 @@ main
 }
 
 .storefront-hero-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   object-position: 38% 50%;
 }
 
 .storefront-hero-scrim {
   background:
+    linear-gradient(
+      to bottom,
+      rgb(20 17 15 / 46%) 0%,
+      rgb(20 17 15 / 28%) var(--site-header-height),
+      transparent calc(var(--site-header-height) + 5rem)
+    ),
     linear-gradient(
       to right,
       rgb(20 17 15 / 78%) 0%,

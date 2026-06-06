@@ -60,8 +60,8 @@ describe("service response and contact clarity", () => {
       "src/app/service/_components/service-request-form.tsx",
     );
 
-    expect(serviceActions).toContain("לפי דרך הקשר שבחרתם");
-    expect(serviceForm).toContain("לפי דרך הקשר שבחרתם");
+    expect(serviceActions).toContain("יחזור לאחר בדיקת הפרטים");
+    expect(serviceForm).toContain("שמרו את המספר לעדכון");
     expect(serviceActions).not.toContain("24 שעות");
     expect(serviceForm).not.toContain("24 שעות");
   });

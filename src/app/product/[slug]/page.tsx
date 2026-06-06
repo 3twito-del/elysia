@@ -304,7 +304,7 @@ export default async function ProductPage({
                   productName={publicProductName}
                   productReference={`${publicProductName} (${product.sku})`}
                   productSlug={product.slug}
-                  productSource={product.source}
+                  requiresSeparateCheckout={product.requiresSeparateCheckout}
                   returnPolicy={product.returnPolicy}
                   variants={product.variants}
                   warranty={product.warranty}
@@ -321,9 +321,7 @@ export default async function ProductPage({
                   aria-hidden="true"
                   className="mt-1 size-4 shrink-0"
                 />
-                <p className="text-muted-foreground">
-                  צריכים לוודא מידה, חומר או מסירה? נצרף את המוצר לפנייה.
-                </p>
+                <p className="text-muted-foreground">לוודא מידה, חומר או מסירה? נצרף את המוצר לפנייה.</p>
               </div>
               <Button asChild className="shrink-0" size="sm" variant="outline">
                 <Link href={productSupportHref}>שאלה על המוצר</Link>
@@ -381,7 +379,7 @@ export default async function ProductPage({
           <CommerceSectionHeader
             className="mb-0"
             eyebrow="הבית של Elysia"
-            title="פרטי מוצר, שירות והזמנה במקום אחד."
+            title="פרטי מוצר, שירות והזמנה."
           />
 
           <div className="grid gap-8">
@@ -391,17 +389,17 @@ export default async function ProductPage({
 
             <div className="brand-surface divide-border divide-y overflow-hidden rounded-md">
               <ServiceRow
-                description="אחריות לשנה על פגמי ייצור ושירות ניקוי ראשוני ללא עלות."
+                description="אחריות לשנה על פגמי ייצור וניקוי ראשוני ללא עלות."
                 icon={ShieldCheck}
                 title="אחריות ושירות"
               />
               <ServiceRow
-                description="החזרה או החלפה לפי מדיניות Elysia, באמצעות מסירה מתואמת."
+                description="החזרה או החלפה לפי מדיניות Elysia."
                 icon={RotateCcw}
                 title="החלפות והחזרות"
               />
               <ServiceRow
-                description="אפשר לקבל ייעוץ לבחירת מידה, התאמה ומתנה לפני השלמת ההזמנה."
+                description="ניתן לקבל ייעוץ מידה, התאמה ומתנה לפני הזמנה."
                 icon={Gem}
                 title="ייעוץ"
               />
@@ -461,9 +459,7 @@ function ProductRecommendationRails({
           className="flex flex-wrap items-center justify-between gap-3"
           data-testid="product-discovery-return-context"
         >
-          <p className="text-muted-foreground text-sm leading-6">
-            הגעתם ממסלול חיפוש. אפשר לחזור לתוצאות בלי לאבד את ההקשר.
-          </p>
+          <p className="text-muted-foreground text-sm leading-6">הגעתם מחיפוש. ניתן לחזור לתוצאות בלי לאבד הקשר.</p>
           <Button asChild size="sm" variant="outline">
             <Link href={searchReturnHref}>{searchReturnLabel}</Link>
           </Button>
@@ -480,7 +476,7 @@ function ProductRecommendationRails({
             key={rail.id}
           >
             <CommerceSectionHeader
-              eyebrow="בחירה משלימה"
+              eyebrow="התאמה נוספת"
               id={headingId}
               title={rail.title}
             />

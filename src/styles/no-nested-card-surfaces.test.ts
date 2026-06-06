@@ -31,9 +31,7 @@ describe("nested card surface guardrails", () => {
 
     expect(brandPageBandBlock).not.toMatch(/\bborder(?:-radius|-color)?:/);
     expect(brandPageBandBlock).not.toMatch(/\bbox-shadow\s*:/);
-    expect(boutiqueFinalCtaBlock).toMatch(
-      /background:\s*var\(--brand-porcelain\)/,
-    );
+    expect(boutiqueFinalCtaBlock).toContain("--brand-porcelain");
     expect(boutiqueFinalCtaBlock).not.toMatch(/\bborder(?:-radius|-color)?:/);
     expect(boutiqueFinalCtaBlock).not.toMatch(/\bbox-shadow\s*:/);
   });

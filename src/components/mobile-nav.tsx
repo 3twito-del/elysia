@@ -68,7 +68,7 @@ const serviceActions = [
 const spotlightActions = [
   {
     href: "/stylist",
-    label: "סטייליסט אישי",
+    label: "יועץ התאמה",
     description: "התאמה לפי סגנון, חומר ומידה",
     icon: Sparkles,
   },

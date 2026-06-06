@@ -9,18 +9,9 @@ export default function robots(): MetadataRoute.Robots {
     host: siteUrl,
     rules: [
       {
-        allow: "/",
-        disallow: [
-          "/admin",
-          "/admin/",
-          "/api/",
-          "/account/orders/",
-          "/account/privacy/export",
-          "/offline",
-        ],
+        disallow: "/",
         userAgent: "*",
       },
     ],
-    sitemap: new URL("/sitemap.xml", siteUrl).toString(),
   };
 }

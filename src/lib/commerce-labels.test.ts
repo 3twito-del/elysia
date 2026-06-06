@@ -41,18 +41,18 @@ describe("commerce labels", () => {
 
   it("labels local and Shopify mirror order sources consistently", () => {
     expect(getOrderSourceLabel("LOCAL")).toBe("הזמנת חנות");
-    expect(getOrderSourceLabel("SHOPIFY_MIRROR")).toBe("הזמנת ספק");
+    expect(getOrderSourceLabel("SHOPIFY_MIRROR")).toBe("הזמנה נפרדת");
     expect(getOrderSourceDescription("SHOPIFY_MIRROR")).toContain(
       "לקריאה בלבד",
     );
-    expect(getShopifyFinancialStatusLabel("paid")).toBe("שולם ב-Shopify");
+    expect(getShopifyFinancialStatusLabel("paid")).toBe("שולם");
     expect(getShopifyFinancialStatusLabel(undefined)).toBe(
       "סטטוס תשלום לא דווח",
     );
     expect(getShopifyFulfillmentStatusLabel("fulfilled")).toBe(
-      "מולא על ידי הספק",
+      "הושלם",
     );
-    expect(getShopifyFulfillmentStatusLabel(null)).toBe("ממתין למילוי ספק");
+    expect(getShopifyFulfillmentStatusLabel(null)).toBe("ממתין לעדכון");
   });
 
   it("formats fulfillment, availability, stock, and count labels", () => {

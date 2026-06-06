@@ -28,7 +28,7 @@ export default function CategoryError({
               </Button>
             </>
           }
-          description="משפחת התכשיטים אינה פתוחה כרגע. אפשר לנסות שוב או לעבור לחיפוש הרחב."
+          description="הקטגוריה אינה פתוחה כרגע. ניתן לנסות שוב או לעבור לחיפוש."
           icon={AlertTriangle}
           testId="category-error-empty-state"
           title="המשפחה אינה פתוחה כרגע"

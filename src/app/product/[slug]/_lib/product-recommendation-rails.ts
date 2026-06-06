@@ -40,7 +40,7 @@ export function getProductRecommendationRails({
       collection: product.collection,
     }),
     continuationLabel: `המשך בקולקציית ${product.collection}`,
-    reason: `נבחרו תכשיטים שחולקים את קולקציית ${product.collection}.`,
+    reason: `תכשיטים מקולקציית ${product.collection}.`,
     title: `עוד מקולקציית ${product.collection}`,
     usedSlugs,
   });
@@ -90,7 +90,7 @@ export function getProductRecommendationRails({
       cardContextLabel: "מומלץ במבחר",
       continuationHref: "/search",
       continuationLabel: "פתיחת כל המבחר",
-      reason: "מוצרים זמינים ופופולריים מהמבחר כאשר אין התאמה ישירה.",
+      reason: "מוצרים זמינים כאשר אין התאמה ישירה.",
       title: "מומלצים מהמבחר",
       usedSlugs,
     });

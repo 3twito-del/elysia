@@ -6,10 +6,7 @@ import {
 import { formatInlinePrice } from "~/lib/format";
 import { getPublicVariantOptionName } from "~/lib/product-display";
 import type { SizeFitKind } from "~/lib/size-fit";
-import type {
-  CatalogProduct,
-  CatalogProductVariant,
-} from "~/server/services/catalog-types";
+import type { CatalogProductVariant } from "~/server/services/catalog-types";
 
 export type ProductPurchaseConfidenceItem = {
   description: string;
@@ -45,9 +42,9 @@ export function getVariantDisplayName(variant: CatalogProductVariant) {
 export function getVariantButtonLabel(
   variant: CatalogProductVariant,
   availabilityMode: PublicProductAvailabilityMode,
-  productSource: CatalogProduct["source"] = "OWN",
+  requiresSeparateCheckout = false,
 ) {
-  if (isShopifyDropshipVariantAvailable({ productSource, variant })) {
+  if (isSeparateCheckoutVariantAvailable({ requiresSeparateCheckout, variant })) {
     return `${getVariantDisplayName(variant)}, ${formatInlinePrice(variant.price)}, זמין להזמנה`;
   }
 
@@ -65,12 +62,12 @@ export function getVariantButtonLabel(
 
 export function isVariantSelectableForCart(input: {
   availabilityMode: PublicProductAvailabilityMode;
-  productSource: CatalogProduct["source"];
+  requiresSeparateCheckout: boolean;
   variant: CatalogProductVariant | undefined;
 }) {
   if (!input.variant) return false;
 
-  if (isShopifyDropshipVariantAvailable(input)) return true;
+  if (isSeparateCheckoutVariantAvailable(input)) return true;
 
   return getPublicProductCommerceStatus({
     availabilityMode: input.availabilityMode,
@@ -80,12 +77,12 @@ export function isVariantSelectableForCart(input: {
 
 export function getVariantStatusLabel(input: {
   availabilityMode: PublicProductAvailabilityMode;
-  productSource: CatalogProduct["source"];
+  requiresSeparateCheckout: boolean;
   variant: CatalogProductVariant | undefined;
 }) {
   if (!input.variant) return "בירור התאמה";
 
-  if (isShopifyDropshipVariantAvailable(input)) return "זמין להזמנה";
+  if (isSeparateCheckoutVariantAvailable(input)) return "זמין להזמנה";
 
   return getPublicProductCommerceStatus({
     availabilityMode: input.availabilityMode,
@@ -97,7 +94,7 @@ export function getPurchaseConfidenceItems(input: {
   availabilityMode: PublicProductAvailabilityMode;
   careInstructions?: string;
   deliveryPromise?: string;
-  productSource: CatalogProduct["source"];
+  requiresSeparateCheckout: boolean;
   returnPolicy?: string;
   sizeKind: SizeFitKind | null;
   variant: CatalogProductVariant | undefined;
@@ -114,14 +111,14 @@ export function getPurchaseConfidenceItems(input: {
       icon: "checkout",
       key: "checkout",
       title:
-        input.productSource === "DROPSHIP_SHOPIFY"
+        input.requiresSeparateCheckout
           ? "מסלול הזמנה מאובטח"
           : "אישור לפני השלמה",
     },
     {
       description: input.sizeKind
         ? "מדריך המידות והמידה השמורה זמינים לפני הוספה לסל."
-        : "אפשר לקבל ייעוץ התאמה לפני השלמת ההזמנה.",
+        : "ניתן לקבל ייעוץ התאמה לפני הזמנה.",
       icon: "fit",
       key: "fit",
       title: input.sizeKind ? "מידה לפני הוספה" : "התאמה לפני הוספה",
@@ -157,7 +154,7 @@ export function getAddToCartFailureMessage(error: { message: string }) {
     message.includes("unavailable") ||
     message.includes("variant")
   ) {
-    return "ההתאמה הזו אינה זמינה כרגע. אפשר לבחור התאמה אחרת או לפנות לשירות האישי.";
+    return "ההתאמה אינה זמינה. ניתן לבחור אחרת או לפנות לשירות.";
   }
 
   if (
@@ -165,15 +162,15 @@ export function getAddToCartFailureMessage(error: { message: string }) {
     message.includes("amount") ||
     message.includes("limit")
   ) {
-    return "לא ניתן להוסיף את הכמות הזו לסל. אפשר לנסות כמות אחרת או לפנות לשירות.";
+    return "לא ניתן להוסיף כמות זו לסל. נסו כמות אחרת או פנו לשירות.";
   }
 
-  return "לא הצלחנו להוסיף לסל כרגע. הבחירה נשארה בעמוד ואפשר לנסות שוב.";
+  return "לא הצלחנו להוסיף לסל. ניתן לנסות שוב.";
 }
 
 function getCheckoutConfidenceDescription(input: {
   availabilityMode: PublicProductAvailabilityMode;
-  productSource: CatalogProduct["source"];
+  requiresSeparateCheckout: boolean;
   variant: CatalogProductVariant | undefined;
   variantStatusLabel: string;
 }) {
@@ -181,40 +178,40 @@ function getCheckoutConfidenceDescription(input: {
     return "בחרי מידה כדי לראות זמינות ומסלול הזמנה לפני המשך.";
   }
 
-  if (isShopifyDropshipVariantAvailable(input)) {
+  if (isSeparateCheckoutVariantAvailable(input)) {
     return "המידה זמינה להזמנה; התשלום והמסירה יושלמו בקופה מאובטחת.";
   }
 
   if (
     isVariantSelectableForCart({
       availabilityMode: input.availabilityMode,
-      productSource: input.productSource,
+      requiresSeparateCheckout: input.requiresSeparateCheckout,
       variant: input.variant,
     })
   ) {
-    return `${input.variantStatusLabel}; הפרטים מאומתים לפני השלמת ההזמנה.`;
+    return `${input.variantStatusLabel}; הפרטים יאומתו לפני הזמנה.`;
   }
 
-  return `${input.variantStatusLabel}; אפשר לפתוח פנייה עם פרטי התכשיט.`;
+  return `${input.variantStatusLabel}; ניתן לפתוח פנייה עם פרטי התכשיט.`;
 }
 
 function getServiceConfidenceDescription(input: {
   careInstructions?: string;
   deliveryPromise?: string;
-  productSource: CatalogProduct["source"];
+  requiresSeparateCheckout: boolean;
   returnPolicy?: string;
   warranty?: string;
 }) {
   const delivery =
     input.deliveryPromise ??
-    (input.productSource === "DROPSHIP_SHOPIFY"
+    (input.requiresSeparateCheckout
       ? "מסירה ותשלום יושלמו בקופה מאובטחת."
       : "מסירה עד הבית לאחר אישור הפרטים.");
   const returns =
     input.returnPolicy ??
-    (input.productSource === "DROPSHIP_SHOPIFY"
+    (input.requiresSeparateCheckout
       ? "החלפות והחזרות מטופלות בתיאום שירות אישי."
-      : "החלפה או החזרה בתיאום אישי לפי מדיניות Elysia.");
+      : "החלפה או החזרה לפי מדיניות Elysia.");
   const aftercare = [
     input.warranty ? `אחריות: ${input.warranty}` : null,
     input.careInstructions ? `טיפול: ${input.careInstructions}` : null,
@@ -223,12 +220,14 @@ function getServiceConfidenceDescription(input: {
   return [delivery, returns, ...aftercare].join(" ");
 }
 
-function isShopifyDropshipVariantAvailable(input: {
-  productSource: CatalogProduct["source"];
-  variant: Pick<CatalogProductVariant, "externalVariantId"> | undefined;
+function isSeparateCheckoutVariantAvailable(input: {
+  requiresSeparateCheckout: boolean;
+  variant:
+    | Pick<CatalogProductVariant, "separateCheckoutAvailable">
+    | undefined;
 }) {
   return (
-    input.productSource === "DROPSHIP_SHOPIFY" &&
-    Boolean(input.variant?.externalVariantId?.trim())
+    input.requiresSeparateCheckout &&
+    Boolean(input.variant?.separateCheckoutAvailable)
   );
 }

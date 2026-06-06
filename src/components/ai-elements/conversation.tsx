@@ -12,7 +12,7 @@ export type ConversationProps = ComponentProps<typeof StickToBottom>;
 
 export const Conversation = ({
   className,
-  "aria-label": ariaLabel = "שיחת סטייליסט",
+  "aria-label": ariaLabel = "שיחת ייעוץ",
   ...props
 }: ConversationProps) => (
   <StickToBottom

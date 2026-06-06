@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, Gem, Ruler, ShieldCheck } from "lucide-react";
 
 import { NewsletterForm } from "~/components/newsletter-form";
+import { HomeHeroVideo } from "~/components/home-hero-video";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -15,6 +16,9 @@ import {
 } from "~/server/services/catalog";
 
 const boutiqueHeroImage = "/brand/boutique/lifestyle-hero.avif";
+const boutiqueHeroPoster = "/brand/boutique/lifestyle-hero-poster.avif";
+const boutiqueHeroVideoMp4 = "/brand/boutique/lifestyle-hero.mp4";
+const boutiqueHeroVideoWebm = "/brand/boutique/lifestyle-hero.webm";
 
 const categoryOrder = ["rings", "necklaces", "earrings", "bracelets"];
 
@@ -60,16 +64,16 @@ const materialTrust = [
 
 const editorialPrinciples = [
   {
-    title: "צילום קרוב ואמיתי",
-    text: "המערכת מוכנה לתמונות גוף, ידיים, צוואר ואוזניים באור טבעי וביחס חיתוך אחיד.",
+    title: "צילום קרוב וברור",
+    text: "תמונות התכשיט נבחרות כדי להציג חומר, קנה מידה וגימור בלי עומס.",
   },
   {
     title: "מבחר מצומצם ומכוון",
     text: "הקטלוג נשאר פתוח, אך הממשק נותן לכל פריט מרחב, מחיר ברור והקשר חומרי.",
   },
   {
-    title: "מסחר שקט",
-    text: "חיפוש, סינון, חשבון, סל ושירות נשמרים פונקציונליים בלי צפיפות של מרקטפלייס.",
+    title: "בחירה שקטה",
+    text: "חיפוש, סינון, סל, אזור אישי ושירות נשארים פשוטים וברורים.",
   },
 ] as const;
 
@@ -108,6 +112,20 @@ export default async function Home() {
       className="home-luxury-page storefront-home-page"
       data-testid="storefront-homepage"
     >
+      <link
+        as="image"
+        fetchPriority="high"
+        href={boutiqueHeroPoster}
+        rel="preload"
+        type="image/avif"
+      />
+      <link
+        as="video"
+        fetchPriority="high"
+        href={boutiqueHeroVideoWebm}
+        rel="preload"
+        type="video/webm"
+      />
       <SiteHeader />
 
       <RevealSection
@@ -117,13 +135,11 @@ export default async function Home() {
         initialVisible
         variant="hero"
       >
-        <Image
-          alt="Close-up gold jewellery worn near skin in soft natural light"
+        <HomeHeroVideo
           className="storefront-hero-image object-cover"
-          fill
-          priority
-          sizes="100vw"
-          src={boutiqueHeroImage}
+          mp4Src={boutiqueHeroVideoMp4}
+          posterSrc={boutiqueHeroPoster}
+          webmSrc={boutiqueHeroVideoWebm}
         />
         <div className="storefront-hero-scrim absolute inset-0" />
         <div className="storefront-hero-wash absolute inset-0" />
@@ -171,7 +187,7 @@ export default async function Home() {
           actionHref="/search"
           actionLabel="פתיחת כל המבחר"
           eyebrow="כניסה לקולקציה"
-          text="עמודי הקטגוריה, החיפוש והסינון נשארים חלק מרכזי מהחוויה. כל כניסה מכוונת למבחר חי, לא לאזור שיווקי מנותק."
+          text="מבחר תכשיטים ערוך לפי חומר, מידה וסגנון."
           title="מבחר תכשיטים שקט, ערוך לפי משפחות."
         />
         <RevealGrid
@@ -195,7 +211,7 @@ export default async function Home() {
             actionHref="/search?sort=newest"
             actionLabel="עוד מהקטלוג"
             eyebrow="תצוגת קטלוג"
-            text="הפריטים כאן משתמשים באותו כרטיס מוצר, מחיר, מלאי, מועדפים והוספה לסל שישמשו את המלאי האמיתי."
+            text="פרטים ברורים, בחירה שקטה ושירות לפני ההזמנה."
             title="תצוגה ראשונה של פריטים, בלי צפיפות ובלי רעש."
           />
           {featuredProducts.length > 0 ? (
@@ -223,7 +239,7 @@ export default async function Home() {
       >
         <SectionHeader
           eyebrow="חומר, מידה, שירות"
-          text="העמודים המסחריים כבר בנויים סביב פרטי מוצר, זמינות, טיפול, משלוח והחזרה. הבית מציג את אותה הבטחה בשפה מותגית."
+          text="חומר, מידה, מחיר ושירות מוצגים בשפה קצרה וברורה לפני בחירה."
           title="יוקרה רכה נשענת על מידע ברור."
         />
         <div
@@ -263,8 +279,8 @@ export default async function Home() {
               actionHref="/about"
               actionLabel="על Elysia"
               eyebrow="About Elysia"
-              text="Elysia נבנית כבית תכשיטים בוטיק: קטלוג אמיתי, בחירה רגועה, ושירות שמחזיק את כל שלבי ההזמנה."
-              title="מותג תכשיטים עם שלד מסחרי מלא ועור מותגי עדין."
+              text="Elysia היא בית תכשיטים בוטיק עם בחירה שקטה, פרטים ברורים ושירות לפני ההזמנה ולאחריה."
+              title="תכשיטים עדינים לשימוש יומי, מתנה ואירוע."
             />
             <div className="grid gap-4">
               {editorialPrinciples.map((principle, index) => (
@@ -295,8 +311,8 @@ export default async function Home() {
               התחילו מהמבחר, או בקשו עזרה לפני בחירה.
             </h2>
             <p className="storefront-final-text">
-              הקטלוג נשאר פתוח לקבלת מלאי אמיתי, עם עמודי מוצר, חיפוש, סינון,
-              סל, חשבון ושירות שכבר מחוברים למסע הרכישה.
+              המגוון יעודכן בהדרגה. אפשר לעיין בתכשיטים, לשמור מועדפים
+              ולפנות לשירות לפני בחירה.
             </p>
             <div className="storefront-final-actions">
               <Button asChild>
@@ -315,7 +331,7 @@ export default async function Home() {
                 קבלו הודעה כשפריטים חדשים נכנסים למבחר.
               </h2>
               <p className="storefront-final-text">
-                הרשמה לעדכונים נשארת חלק שקט מהשירות, לצד קטלוג פעיל.
+                נשלח עדכון קצר כאשר פריטים חדשים נכנסים למבחר.
               </p>
             </div>
             <div className="storefront-final-newsletter">

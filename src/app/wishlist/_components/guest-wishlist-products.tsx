@@ -145,7 +145,7 @@ export function GuestWishlistProducts() {
             description="תכשיטים שתסמני בלב יופיעו כאן מיד, גם לפני התחברות."
             icon={Heart}
             testId="wishlist-empty-guest"
-            title="עדיין אין מועדפים שמורים."
+            title="עדיין אין מועדפים."
             variant="inset"
           />
         ) : null}
@@ -165,7 +165,7 @@ export function GuestWishlistProducts() {
             description="הפריטים שנשמרו בדפדפן כבר לא זמינים במבחר הפעיל."
             icon={Heart}
             testId="wishlist-missing-guest"
-            title="המועדפים השמורים לא זמינים כרגע."
+            title="המועדפים לא זמינים כרגע."
             variant="inset"
           />
         ) : null}
@@ -174,7 +174,7 @@ export function GuestWishlistProducts() {
           <>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-muted-foreground text-sm">
-                {products.length} תכשיטים שמורים בדפדפן הזה.
+                {products.length} תכשיטים במועדפים בדפדפן הזה.
               </p>
               <div className="flex flex-wrap gap-2">
                 <Button asChild size="sm" variant="outline">

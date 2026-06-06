@@ -75,7 +75,7 @@ export function ProductCardQuickAddButton({
       dispatchCartUpdated();
     } catch {
       setMessageTone("error");
-      setMessage("לא הצלחנו להוסיף לסל כרגע. אפשר להמשיך לפרטי התכשיט.");
+      setMessage("לא הצלחנו להוסיף לסל. ניתן להמשיך לפרטי התכשיט.");
     } finally {
       setPending(false);
     }

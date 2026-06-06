@@ -58,25 +58,25 @@ export const revalidate = 3600;
 
 const categoryLuxuryCopyBySlug: Record<string, CategoryLuxuryCopy> = {
   bracelets: {
-    description: "צמידים עם חוליות דקות, פרטי חומר, מידה ומחיר לפני בחירה.",
+    description: "צמידים דקים עם חומר, מידה ומחיר לפני בחירה.",
     intro: "צמידים לענידה יומיומית, לשילוב שכבות או למתנה.",
     title: "צמידים",
   },
   earrings: {
     description:
-      "עגילים לפי משקל, גימור, חומר ונוחות ענידה. המבחר כולל פריטים קטנים ופריטים בולטים יותר לערב.",
+      "עגילים לפי משקל, גימור, חומר ונוחות ענידה.",
     intro: "עגילים ליום, לערב ולמתנה.",
     title: "עגילים",
   },
   necklaces: {
     description:
-      "שרשראות ותליונים לענידה יחידה או בשכבות, עם דגש על אורך, חומר ואבן.",
+      "שרשראות ותליונים לענידה יחידה או בשכבות, לפי אורך, חומר ואבן.",
     intro: "שרשראות ותליונים לפי אורך, חומר ושימוש.",
     title: "שרשראות",
   },
   rings: {
     description:
-      "טבעות זהב, יהלומים ואבני חן לפי פרופורציה, נוחות, חומר ומידה.",
+      "טבעות זהב, יהלומים ואבני חן לפי פרופורציה, נוחות ומידה.",
     intro: "טבעות ליום, לערב, להצעה או למתנה.",
     title: "טבעות",
   },
@@ -101,7 +101,7 @@ export async function generateMetadata({
     return {
       title: "המשפחה לא נמצאה",
       description:
-        "הקישור לקולקציית Elysia אינו פעיל. אפשר להמשיך לחיפוש במבחר או לחזור לעמוד הבית.",
+        "הקישור לקולקציה אינו פעיל. ניתן להמשיך לחיפוש או לחזור לעמוד הבית.",
       alternates: {
         canonical: `/category/${slug}`,
       },
@@ -161,7 +161,7 @@ export default async function CategoryPage({
   const categoryCopy = categoryLuxuryCopyBySlug[slug] ?? {
     description:
       category.description ||
-      "פריטים מתוך הקולקציה עם חומר, מידה, מחיר ושירות לפני הזמנה.",
+      "פריטי קולקציה עם חומר, מידה, מחיר ושירות לפני הזמנה.",
     intro: "פריטים מתוך הקולקציה של Elysia.",
     title: category.name,
   };
@@ -200,17 +200,12 @@ export default async function CategoryPage({
     pageStartIndex,
     pageStartIndex + productsPerPage,
   );
-  const visibleStart = sortedProducts.length > 0 ? pageStartIndex + 1 : 0;
-  const visibleEnd = Math.min(
-    pageStartIndex + pageProducts.length,
-    sortedProducts.length,
-  );
   const hasCategoryProducts = baseProducts.length > 0;
   const hasActiveFilters = activeFilterCount > 0;
   const pageRangeLabel =
     sortedProducts.length > 0
-      ? `${visibleStart}–${visibleEnd} מתוך ${sortedProducts.length} פריטים`
-      : "0 פריטים";
+      ? "מבחר תכשיטים"
+      : "המבחר יעודכן בקרוב";
 
   return (
     <>
@@ -235,12 +230,6 @@ export default async function CategoryPage({
             sizes: "(min-width: 1024px) 34vw, (min-width: 640px) 60vw, 100vw",
             slides: getCategoryBrandSlides(slug),
           }}
-          metrics={[
-            { label: "פריטים", value: baseProducts.length },
-            { label: "חומרים", value: facets.materials.length },
-            { label: "קולקציות", value: facets.collections.length },
-          ]}
-          metricsMode="inline"
           showMediaOnMobile
           title={categoryCopy.title}
           variant="catalog"
@@ -257,7 +246,7 @@ export default async function CategoryPage({
                 {hasActiveFilters
                   ? `${activeFilterCount} סינונים פעילים · מיון: ${currentSortLabel}`
                   : hasCategoryProducts
-                    ? `כל הפריטים · מיון: ${currentSortLabel}`
+                    ? `מבחר תכשיטים · מיון: ${currentSortLabel}`
                     : "הקטגוריה מתעדכנת"}
               </p>
               {hasActiveFilters ? (
@@ -295,7 +284,7 @@ export default async function CategoryPage({
                     סינון
                   </SheetTitle>
                   <SheetDescription>
-                    קטגוריה, חומר, אבן, מחיר, סגנון, אירוע וקולקציה.
+                    בחרו רק מתוך מאפיינים זמינים במבחר.
                   </SheetDescription>
                   <p
                     className="text-muted-foreground text-xs leading-5"
@@ -371,9 +360,9 @@ export default async function CategoryPage({
                     {!hasCategoryProducts
                       ? "נעדכן את הקטגוריה בקרוב"
                       : filteredProducts.length > productsPerPage
-                        ? `עמוד ${currentPage} מתוך ${totalPages}`
+                        ? `עמוד ${currentPage}`
                         : hasActiveFilters
-                          ? "התוצאות מסוננות לפי הבחירה שלך"
+                          ? "התוצאות מסוננות לפי הבחירה"
                           : "בחירות פתוחות מתוך הקולקציה"}
                     <span className="mx-2">·</span>
                     <span data-testid="category-current-sort-label">
@@ -519,9 +508,7 @@ function CategoryEditorialNote({
         <span className="text-muted-foreground text-xs">{categoryName}</span>
       </summary>
       <p className="text-muted-foreground mt-3 max-w-3xl leading-7">
-        {description} מומלץ לשמור את הפריט בנפרד, להימנע ממגע ממושך עם מים
-        ובושם, ולבחור מידה או אורך לפי שימוש יומיומי.
-      </p>
+        {description}מומלץ לשמור בנפרד, להימנע ממים ובושם, ולבחור מידה לפי שימוש יומי.</p>
     </details>
   );
 }
@@ -556,7 +543,7 @@ function CategoryEmptyState({
             </Button>
           </>
         }
-        description="הקטגוריה קיימת, אך אין בה כרגע פריטים פתוחים. אפשר לעבור לחיפוש הרחב או לבחור קטגוריה אחרת עם התאמות."
+        description="הקטגוריה קיימת, אך אין בה כרגע פריטים פתוחים. ניתן לעבור לחיפוש או לבחור קטגוריה אחרת."
         icon={Gem}
         testId="category-empty-state"
         title="הקטגוריה מתעדכנת"
@@ -588,7 +575,7 @@ function CategoryEmptyState({
           </Button>
         </>
       }
-      description="אפשר לנקות את הבחירה, לעבור לקטגוריה קרובה עם תוצאות, או להרחיב את החיפוש בכל המבחר."
+      description="ניתן לנקות בחירה, לעבור לקטגוריה קרובה או להרחיב את החיפוש."
       icon={Gem}
       testId="category-empty-state"
       title="לא נמצאה התאמה לבחירה הזו"
@@ -645,7 +632,7 @@ function CategoryRecoveryActions({
 }
 
 function formatCategoryRecoveryResultCount(total: number) {
-  return total === 1 ? "פריט אחד" : `${total} פריטים`;
+  return total === 1 ? "התאמה אחת" : "התאמות";
 }
 
 function CategoryPagination({
@@ -669,7 +656,7 @@ function CategoryPagination({
       className="mt-10 flex flex-col items-center justify-between gap-3 sm:flex-row"
     >
       <p className="text-muted-foreground text-sm">
-        עמוד {currentPage} מתוך {totalPages}
+        עמוד {currentPage}
       </p>
 
       <div className="flex flex-wrap items-center justify-center gap-2">

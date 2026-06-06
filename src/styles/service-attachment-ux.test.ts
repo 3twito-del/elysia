@@ -41,9 +41,8 @@ describe("service attachment UX", () => {
     const form = read("src/app/service/_components/service-request-form.tsx");
 
     expect(form).toContain("queueOfflineServiceRequest");
-    expect(form).toContain("אם אין חיבור");
-    expect(form).toContain("יישמרו במכשיר");
-    expect(form).toContain("יישלחו אוטומטית");
+    expect(form).toContain("אם השליחה לא הצליחה");
+    expect(form).toContain("בדקו את החיבור ונסו שוב");
   });
 });
 

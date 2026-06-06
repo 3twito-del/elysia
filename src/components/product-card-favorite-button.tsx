@@ -124,7 +124,7 @@ function FavoriteSubmitButton({
   const label = pending
     ? `שומר למועדפים: ${productName}`
     : isSaved
-      ? `נשמר למועדפים: ${productName}`
+      ? `נשמר במועדפים: ${productName}`
       : `שמירה למועדפים: ${productName}`;
 
   return (

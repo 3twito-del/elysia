@@ -97,7 +97,7 @@ const guideCopy = {
       { measurement: "14-16 ס״מ", size: "S" },
       { measurement: "16-18 ס״מ", size: "M" },
       { measurement: "18-20 ס״מ", size: "L" },
-      { measurement: "20-24 ס״מ", size: "התאמה אישית" },
+      { measurement: "20-24 ס״מ", size: "התאמה" },
     ],
     tip: "אם את בין שתי מידות, בחרי את הגדולה יותר לצמידי שרשרת או צמידים עם תליונים.",
     title: "צמידים",
@@ -107,7 +107,7 @@ const guideCopy = {
     inputLabel: "סגנון עגילים מועדף",
     instructions: [
       "בחרי את הסגנון שאת עונדת בדרך כלל.",
-      "סטאד ומיני יישמרו כהעדפה עדינה; תלוי וארוך יכוונו לעיצובים עם נוכחות.",
+      "סטאד ומיני יישמרו כהעדפה נקייה; תלוי וארוך יכוונו לעיצובים עם נוכחות.",
       "ההתאמה משפיעה על המלצות סגנון, לא על מידה פיזית מחייבת.",
     ],
     placeholder: "",
@@ -123,12 +123,12 @@ const guideCopy = {
     ],
     range: "מיני, סטאד, קלאסי, תלוי ועוד",
     rows: [
-      { measurement: "עדין ויומיומי", size: "מיני / סטאד" },
+      { measurement: "נקי ויומיומי", size: "מיני / סטאד" },
       { measurement: "מאוזן", size: "קלאסי / בינוני" },
       { measurement: "נוכחות", size: "תלוי / ארוך" },
       { measurement: "קו עגול", size: "עגול" },
     ],
-    tip: "לעגילים אין מידת גוף אחת. השמירה כאן מיועדת להמלצות ולסינון סגנוני.",
+    tip: "לעגילים אין מידת גוף אחת. השמירה מיועדת להמלצות וסינון.",
     title: "עגילים",
   },
   necklace: {
@@ -148,7 +148,7 @@ const guideCopy = {
       { measurement: "50-55 ס״מ", size: "נפילה נמוכה" },
       { measurement: "60-70 ס״מ", size: "ארוך / שכבות" },
     ],
-    tip: "45 ס״מ היא נקודת פתיחה טובה לרוב השרשראות הקלאסיות.",
+    tip: "45 ס״מ היא נקודת פתיחה לרוב השרשראות הקלאסיות.",
     title: "שרשראות",
   },
   ring: {
@@ -290,10 +290,7 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
           className="glass-inset flex flex-wrap items-center justify-between gap-3 rounded-md border p-3 text-sm"
           data-testid="size-guide-save-context"
         >
-          <p className="text-muted-foreground leading-6">
-            שמירת מידה מתבצעת במכשיר מיד. לקוחות מחוברים יכולים לסנכרן אותה
-            לחשבון כדי להשתמש בה גם בעמודי מוצר עתידיים.
-          </p>
+          <p className="text-muted-foreground leading-6">המידה נשמרת במכשיר. לקוחות מחוברים יכולים לסנכרן לחשבון.</p>
           <Button asChild size="sm" variant="ghost">
             <Link href="/account#account-sizes">
               אזור המידות

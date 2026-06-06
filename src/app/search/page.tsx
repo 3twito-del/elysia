@@ -71,7 +71,7 @@ const SEARCH_RESULT_IMAGE_BLUR_DATA_URL =
 
 export const metadata = {
   title: "חיפוש במבחר",
-  description: "חיפוש תכשיטי Elysia לפי קטגוריה, חומר, מחיר וזמינות.",
+  description: "חיפוש תכשיטים לפי קטגוריה, חומר, מחיר וזמינות.",
   alternates: {
     canonical: "/search",
   },
@@ -118,22 +118,21 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const recoveryActions =
     result.total === 0 ? await getSearchRecoveryActions(input, viewMode) : [];
   const firstCategory = categories[0];
-  const visibleStart =
-    result.total > 0 ? (result.page - 1) * result.perPage + 1 : 0;
-  const visibleEnd = Math.min(result.page * result.perPage, result.total);
   const resultSummary =
-    result.total === 1
-      ? "נמצאה תוצאה אחת"
-      : result.total > 0
-        ? `מציגים ${visibleStart}-${visibleEnd} מתוך ${result.total} תוצאות`
-        : "לא נמצאו תוצאות";
+    result.total > 0
+      ? hasActiveFilters || input.query
+        ? "תכשיטים שנמצאו"
+        : "מבחר תכשיטים"
+      : "לא נמצאו תוצאות";
 
   const resultDetail =
     result.total > 0
-      ? `עמוד ${result.page} מתוך ${result.totalPages} · ${result.perPage} תוצאות בעמוד`
+      ? result.totalPages > 1
+        ? `עמוד ${result.page}`
+        : "המבחר יעודכן בהדרגה"
       : recoveryActions.length > 0
         ? "נמצאו כיוונים פתוחים יותר"
-        : "אפשר לנקות בחירות או לעבור למבחר המלא";
+        : "ניתן לנקות בחירות או לעבור למבחר המלא";
   after(() => recordSearchEvent(input, result.total));
 
   return (
@@ -142,7 +141,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
       <main>
         <CommercePageHero
-          description="חיפוש במבחר עם סינון לפי קטגוריה, חומר, אבן, מחיר ורלוונטיות."
+          description="חיפוש במבחר לפי קטגוריה, חומר, אבן, מחיר ורלוונטיות."
           eyebrow="מבחר Elysia"
           title="חיפוש במבחר"
           variant="catalog"
@@ -238,7 +237,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                   מיון: {getSortLabel(input.sort ?? "relevance")} · תצוגה:{" "}
                   {getSearchViewLabel(viewMode)} ·{" "}
                   {result.mode === "semantic"
-                    ? "\u05d7\u05d9\u05e4\u05d5\u05e9 \u05d7\u05db\u05dd"
+                    ? "חיפוש מתקדם"
                     : "\u05d7\u05d9\u05e4\u05d5\u05e9 \u05e7\u05dc\u05d0\u05e1\u05d9"}
                 </p>
                 {result.activeSemanticSignals.length > 0 ? (
@@ -279,10 +278,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             <EmptyState
               className="mt-6 sm:mt-10"
               description={
-                <>
-                  אפשר לנקות את הבחירה, לעבור למשפחת תכשיטים פתוחה, או להרחיב את
-                  החיפוש בכל המבחר.
-                </>
+                <>ניתן לנקות בחירה, לעבור לקטגוריה פתוחה או להרחיב את החיפוש.</>
               }
               icon={Search}
               testId="search-empty-state"
@@ -547,7 +543,7 @@ function SearchModeToggle({
       <Link
         aria-label={
           isClassic
-            ? "\u05de\u05e2\u05d1\u05e8 \u05dc\u05d7\u05d9\u05e4\u05d5\u05e9 \u05d7\u05db\u05dd"
+            ? "מעבר לחיפוש מתקדם"
             : "\u05de\u05e2\u05d1\u05e8 \u05dc\u05d7\u05d9\u05e4\u05d5\u05e9 \u05e7\u05dc\u05d0\u05e1\u05d9"
         }
         className="gap-1.5"
@@ -558,7 +554,7 @@ function SearchModeToggle({
         <span>
           {isClassic
             ? "\u05d7\u05d9\u05e4\u05d5\u05e9 \u05e7\u05dc\u05d0\u05e1\u05d9"
-            : "\u05d7\u05d9\u05e4\u05d5\u05e9 \u05d7\u05db\u05dd"}
+            : "חיפוש מתקדם"}
         </span>
       </Link>
     </Button>
@@ -974,7 +970,7 @@ function SearchPagination({
       className="mt-8 flex flex-col items-center justify-between gap-3 sm:flex-row"
     >
       <p className="text-muted-foreground text-sm">
-        עמוד {currentPage} מתוך {totalPages}
+        עמוד {currentPage}
       </p>
       <div className="flex flex-wrap items-center justify-center gap-2">
         <Button
@@ -1067,9 +1063,7 @@ function formatActiveSelectionPreview(filters: ActiveSearchFilter[]) {
 }
 
 function formatSearchResultCount(count: number) {
-  if (count === 1) return "תוצאה אחת";
-
-  return `${count} תוצאות`;
+  return count === 1 ? "התאמה אחת" : "התאמות";
 }
 
 async function recordSearchEvent(

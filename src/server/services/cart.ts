@@ -15,6 +15,7 @@ import {
   updateFixtureCartOptions,
 } from "~/server/services/cart-fixtures";
 import { calculateOrderTotal } from "~/server/services/pricing";
+import { getPublicCatalogSku } from "~/server/services/public-catalog-identifiers";
 
 const CART_TTL_DAYS = 30;
 
@@ -96,20 +97,7 @@ export async function addCartItem(
 
   const cart = await db.$transaction(async (tx) => {
     const cart = await getOrCreateActiveCart(tx, parsed.sessionKey);
-    const variant = await tx.productVariant.findUnique({
-      where: { sku: parsed.variantSku },
-      include: {
-        product: true,
-        prices: {
-          where: {
-            currency: "ILS",
-            OR: [{ validTo: null }, { validTo: { gt: new Date() } }],
-          },
-          orderBy: { validFrom: "desc" },
-          take: 1,
-        },
-      },
-    });
+    const variant = await findCartVariantByPublicSku(tx, parsed.variantSku);
 
     if (variant?.product.status !== "ACTIVE") {
       throw new TRPCError({
@@ -160,6 +148,47 @@ export async function addCartItem(
   });
 
   return mapCartSummary(cart, "DELIVERY");
+}
+
+async function findCartVariantByPublicSku(
+  tx: Prisma.TransactionClient,
+  variantSku: string,
+) {
+  const include = createCartVariantInclude();
+  const direct = await tx.productVariant.findUnique({
+    where: { sku: variantSku },
+    include,
+  });
+
+  if (direct) return direct;
+
+  const candidates = await tx.productVariant.findMany({
+    where: {
+      product: {
+        status: "ACTIVE",
+      },
+    },
+    include,
+  });
+
+  return (
+    candidates.find((candidate) => getPublicCatalogSku(candidate.sku) === variantSku) ??
+    null
+  );
+}
+
+function createCartVariantInclude() {
+  return {
+    product: true,
+    prices: {
+      where: {
+        currency: "ILS",
+        OR: [{ validTo: null }, { validTo: { gt: new Date() } }],
+      },
+      orderBy: { validFrom: "desc" },
+      take: 1,
+    },
+  } satisfies Prisma.ProductVariantInclude;
 }
 
 export async function updateCartItemQuantity(

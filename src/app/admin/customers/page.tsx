@@ -210,7 +210,7 @@ export default async function AdminCustomersPage({
                 <TableHead>הזמנות</TableHead>
                 <TableHead>פתוחות</TableHead>
                 <TableHead>LTV</TableHead>
-                <TableHead>מועדפים</TableHead>
+                <TableHead>שמורים</TableHead>
                 <TableHead>כתובות</TableHead>
                 <TableHead>תורים</TableHead>
                 <TableHead>עודכן</TableHead>

@@ -20,7 +20,7 @@ import { getPublicServiceProfile } from "~/server/services/service";
 export const metadata: Metadata = {
   title: "חנות אונליין ושירות",
   description:
-    "Elysia פועלת כרגע כחנות אונליין עם שירות דרך האתר. מיקומי שירות יוצגו כאן כאשר סניפים פיזיים יהיו זמינים.",
+    "Elysia פועלת כחנות אונליין. מיקומי שירות יוצגו כאן כאשר יהיו זמינים.",
 };
 
 export const dynamic = "force-dynamic";
@@ -28,25 +28,25 @@ export const dynamic = "force-dynamic";
 const onlineServiceHighlights = [
   {
     title: "בחירה אונליין",
-    text: "המבחר, המידות והחומרים זמינים לרכישה או לפנייה מכל עמוד מוצר.",
+    text: "המבחר, המידות והחומרים זמינים בכל עמוד מוצר.",
     icon: Search,
   },
   {
     title: "שירות",
-    text: "שאלות על מידה, מתנה או התאמה מטופלות דרך טופס השירות.",
+    text: "שאלות על מידה, מתנה או התאמה מטופלות דרך השירות.",
     icon: Headphones,
   },
   {
     title: "משלוח ותיאום",
-    text: "ההזמנה ממשיכה במסלול משלוח מקוון, ללא הגעה לסניף בשלב זה.",
+    text: "ההזמנה נמשכת במסלול משלוח מקוון.",
     icon: PackageCheck,
   },
 ] as const;
 
 const onlineContinuitySteps = [
-  "בחירת תכשיט ומידה ממשיכה דרך קטלוג, חיפוש ומדריך מידות.",
-  "שאלות על התאמה, מתנה או הזמנה נשלחות דרך טופס השירות הקיים.",
-  "כאשר ייפתחו נקודות שירות פיזיות, פרטי כתובת ושעות יופיעו כאן לפני הגעה.",
+  "בחירת תכשיט ומידה נמשכת דרך קטלוג, חיפוש ומדריך מידות.",
+  "שאלות על התאמה, מתנה או הזמנה נשלחות דרך השירות.",
+  "נקודות שירות פיזיות יוצגו כאן לפני פתיחתן.",
 ] as const;
 
 export default async function BranchesPage() {
@@ -60,8 +60,8 @@ export default async function BranchesPage() {
       <CommercePageHero
         description={
           hasPhysicalBranches
-            ? "מיקומי שירות מאושרים של Elysia, כולל פרטי קשר, שעות ותיאום לפני הגעה."
-            : "כרגע אין סניפים פיזיים. השירות והמכירה מתבצעים אונליין, ותשתית המיקומים תופעל כאן כאשר ייפתחו נקודות שירות."
+            ? "מיקומי שירות מאושרים של Elysia, כולל קשר, שעות ותיאום."
+            : "אין סניפים פיזיים כרגע. שירות ומכירה מתבצעים אונליין."
         }
         eyebrow="שירות"
         title={hasPhysicalBranches ? "שירות ומיקומים" : "חנות אונליין"}
@@ -130,10 +130,7 @@ export default async function BranchesPage() {
           >
             <div>
               <p className="text-sm font-medium">שירות אונליין בלבד</p>
-              <p className="text-muted-foreground text-sm">
-                אין קבלת קהל או איסוף מסניף כרגע; רכישה, מדידה ושאלות שירות
-                ממשיכות דרך האתר.
-              </p>
+              <p className="text-muted-foreground text-sm">אין קבלת קהל או איסוף מסניף כרגע; רכישה ושירות מתבצעים באתר.</p>
             </div>
             <Badge variant="secondary">מעודכן לעכשיו</Badge>
           </section>
@@ -143,10 +140,7 @@ export default async function BranchesPage() {
               <h2 className="mt-4 text-3xl font-medium">
                 אין סניפים פיזיים בשלב זה
               </h2>
-              <p className="text-muted-foreground mt-4 max-w-2xl text-sm leading-7 sm:text-base sm:leading-8">
-                Elysia פועלת כרגע כחנות מקוונת. כאשר ייפתחו סניפים או נקודות
-                שירות, הדף הזה יציג כתובות, שעות, טלפון ושירותים לכל מיקום.
-              </p>
+              <p className="text-muted-foreground mt-4 max-w-2xl text-sm leading-7 sm:text-base sm:leading-8">Elysia פועלת כחנות מקוונת. סניפים או נקודות שירות יוצגו כאן כשייפתחו.</p>
               <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <Button asChild>
                   <Link href="/search">
@@ -195,9 +189,7 @@ export default async function BranchesPage() {
                   <h3 className="font-medium" id="branches-contact-channels">
                     ערוצי קשר זמינים
                   </h3>
-                  <p className="text-muted-foreground mt-1 text-sm leading-6">
-                    כל ערוץ מוביל לפעולה אחת ברורה בלי לרמוז על קבלת קהל.
-                  </p>
+                  <p className="text-muted-foreground mt-1 text-sm leading-6">כל ערוץ מוביל לפעולה אחת ברורה.</p>
                 </div>
                 <div className="grid gap-2 sm:grid-cols-3">
                   <a
@@ -245,9 +237,7 @@ export default async function BranchesPage() {
                 >
                   מפת סניפים תופיע כשייפתחו נקודות שירות
                 </h3>
-                <p className="text-muted-foreground mt-2 text-sm leading-7">
-                  עד אז, כל בחירה, מדידה ותיאום שירות מתבצעים דרך האתר.
-                </p>
+                <p className="text-muted-foreground mt-2 text-sm leading-7">עד אז, בחירה, מדידה ושירות מתבצעים באתר.</p>
                 <Button asChild className="mt-4" size="sm" variant="outline">
                   <Link href="/service?topic=general">שאלת שירות</Link>
                 </Button>

@@ -101,7 +101,7 @@ const accountServiceStripItems = [
     label: "מעקב הזמנה",
   },
   {
-    description: "פרופיל אישי לטבעות, שרשראות וצמידים.",
+    description: "כניסה להזמנות, מועדפים, מידות ופרטי חשבון.",
     icon: Ruler,
     label: "מידות שמורות",
   },
@@ -118,7 +118,7 @@ const accountNavigationItems = [
   { href: "#account-wishlist", label: "מועדפים" },
   { href: "#account-addresses", label: "כתובות" },
   { href: "#account-sizes", label: "מידות" },
-  { href: "#account-profile", label: "פרטים אישיים" },
+  { href: "#account-profile", label: "פרופיל" },
   { href: "#account-service", label: "שירות" },
   { href: "#account-privacy", label: "פרטיות" },
 ] as const;
@@ -186,23 +186,25 @@ function AccountStatePage({
   title: ReactNode;
 }) {
   return (
-    <main className="account-boutique-page">
+    <>
       <SiteHeader />
-      <section className="mx-auto flex min-h-[60vh] max-w-3xl items-center px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]">
-        <Card className="account-boutique-panel w-full rounded-md">
-          <CardContent className="p-4 sm:p-6">
-            <EmptyState
-              actions={actions}
-              description={description}
-              icon={icon}
-              testId={testId}
-              title={title}
-              variant="inset"
-            />
-          </CardContent>
-        </Card>
-      </section>
-    </main>
+      <main className="account-boutique-page">
+        <section className="mx-auto flex min-h-[60vh] max-w-3xl items-center px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]">
+          <Card className="account-boutique-panel w-full rounded-md">
+            <CardContent className="p-4 sm:p-6">
+              <EmptyState
+                actions={actions}
+                description={description}
+                icon={icon}
+                testId={testId}
+                title={title}
+                variant="inset"
+              />
+            </CardContent>
+          </Card>
+        </section>
+      </main>
+    </>
   );
 }
 
@@ -301,18 +303,19 @@ export default async function AccountPage() {
 
   if (!session?.user || !customer) {
     return (
-      <main className="account-boutique-page account-client-page" dir="rtl">
+      <>
         <SiteHeader />
-        <AccountPageHeader
-          description="כניסה להזמנות, מועדפים, מידות, כתובות ושירות אישי - במקום אחד שקט ומאובטח."
-          eyebrow="אזור אישי"
-          title="החשבון שלך ב־Elysia"
-        />
-        <RevealSection
-          aria-label="כניסה לאזור אישי"
-          className="account-boutique-section account-entry-section mx-auto max-w-6xl scroll-mt-24 px-[var(--ui-page-x)] pt-1 pb-10 sm:scroll-mt-28 sm:pt-3 sm:pb-12 lg:px-[var(--ui-page-x-wide)]"
-          id="account-login"
-        >
+        <main className="account-boutique-page account-client-page" dir="rtl">
+          <AccountPageHeader
+            description="כניסה להזמנות, מועדפים, מידות ושירות."
+            eyebrow="אזור אישי"
+            title="החשבון שלך ב־Elysia"
+          />
+          <RevealSection
+            aria-label="כניסה לאזור אישי"
+            className="account-boutique-section account-entry-section mx-auto max-w-6xl scroll-mt-24 px-[var(--ui-page-x)] pt-1 pb-10 sm:scroll-mt-28 sm:pt-3 sm:pb-12 lg:px-[var(--ui-page-x-wide)]"
+            id="account-login"
+          >
           <div className="account-entry-layout grid gap-5 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:items-start">
             <Card
               className="account-boutique-panel account-entry-card account-login-panel rounded-md"
@@ -369,15 +372,14 @@ export default async function AccountPage() {
                     />
                   ))}
                 </div>
-                <p className="account-entry-note">
-                  הכניסה בקוד חד־פעמי תיצור או תפתח את החשבון שלך באופן מאובטח.
-                </p>
+                <p className="account-entry-note">אפשר לקבל עזרה לפני בחירה או אחרי הזמנה.</p>
               </CardContent>
             </Card>
           </div>
           <AccountServiceStrip />
-        </RevealSection>
-      </main>
+          </RevealSection>
+        </main>
+      </>
     );
   }
 
@@ -402,18 +404,19 @@ export default async function AccountPage() {
   const accountTitle = getCustomerGreetingTitle(customer);
 
   return (
-    <main className="account-boutique-page account-client-page" dir="rtl">
+    <>
       <SiteHeader />
-      <AccountPageHeader
-        description="הזמנות, מועדפים, מידות ושירות - מרוכזים עבורך במקום אחד."
-        eyebrow="אזור אישי"
-        note="כניסה מאובטחת באמצעות קוד חד־פעמי."
-        title={accountTitle}
-      />
-      <RevealSection
-        className="account-boutique-section account-client-section mx-auto max-w-6xl scroll-mt-24 px-[var(--ui-page-x)] py-7 sm:scroll-mt-28 sm:py-10 lg:px-[var(--ui-page-x-wide)]"
-        id="account-overview"
-      >
+      <main className="account-boutique-page account-client-page" dir="rtl">
+        <AccountPageHeader
+          description="הזמנות, מועדפים, מידות ושירות - מרוכזים עבורך במקום אחד."
+          eyebrow="אזור אישי"
+          note="כניסה מאובטחת באמצעות קוד חד־פעמי."
+          title={accountTitle}
+        />
+        <RevealSection
+          className="account-boutique-section account-client-section mx-auto max-w-6xl scroll-mt-24 px-[var(--ui-page-x)] py-7 sm:scroll-mt-28 sm:py-10 lg:px-[var(--ui-page-x-wide)]"
+          id="account-overview"
+        >
         <div className="account-client-shell grid gap-6 lg:grid-cols-[18rem_minmax(0,1fr)] lg:items-start">
           <AccountSidebar />
           <div className="account-client-main min-w-0">
@@ -476,7 +479,7 @@ export default async function AccountPage() {
                 <CardContent className="grid gap-3">
                   {accountOrderCount === 0 ? (
                     <EmptyState
-                      description="לאחר רכישה, סטטוס ההזמנה ופרטי המסירה יופיעו כאן."
+                      description="ניתן לשמור כתובת למסירה מהירה."
                       icon={PackageCheck}
                       testId="account-empty-orders"
                       title="עדיין אין הזמנות בחשבון זה."
@@ -579,15 +582,13 @@ export default async function AccountPage() {
                               data-testid="account-shopify-service-link"
                               href={createAccountServiceHref({
                                 message:
-                                  "אשמח לעזרה בהזמנת ספק שמופיעה באזור הלקוח.",
+                                  "אבקש עזרה בהזמנה שמופיעה באזור הלקוח.",
                                 orderNumber:
                                   order.shopifyOrderName ??
                                   order.shopifyOrderId,
                                 topic: "order",
                               })}
-                            >
-                              עזרה בהזמנת ספק
-                            </Link>
+                            >פנייה לשירות</Link>
                           </div>
                           <span className="shrink-0 font-medium">
                             {formatPrice(Number(order.total))}
@@ -736,7 +737,7 @@ export default async function AccountPage() {
                     <EmptyState
                       description="ניתן לשמור כתובת למשלוחים עתידיים לאחר רכישה או מתוך החשבון."
                       icon={MapPin}
-                      title="עדיין לא נשמרה כתובת."
+                      title="אין כתובות שמורות"
                       variant="inset"
                     />
                   ) : (
@@ -783,7 +784,7 @@ export default async function AccountPage() {
                       actions={
                         <>
                           <Button asChild variant="outline">
-                            <Link href="/size-guide">מדריך מידות</Link>
+                            <Link href="/size-guide">מה נדרש עכשיו?</Link>
                           </Button>
                           <Button asChild>
                             <Link href="/service?topic=sizing">ייעוץ אישי</Link>
@@ -878,8 +879,9 @@ export default async function AccountPage() {
             </div>
           </div>
         </div>
-      </RevealSection>
-    </main>
+        </RevealSection>
+      </main>
+    </>
   );
 }
 
@@ -1036,11 +1038,11 @@ function AccountSummaryPanel({
       action: "ניהול",
       detail:
         wishlistCount > 0
-          ? `${wishlistCount} תכשיטים שמורים לגישה מהירה.`
+          ? `${wishlistCount} תכשיטים במועדפים לגישה מהירה.`
           : "עדיין לא נשמרו תכשיטים.",
       href: "#account-wishlist",
       icon: Heart,
-      label: "פריטים שמורים",
+      label: "מועדפים",
       value: String(wishlistCount),
     },
     {
@@ -1137,7 +1139,7 @@ function AccountRecoveryShortcuts({
         ? `נפתח עם ${latestLocalOrderNumber} כבר בשדה ההזמנה.`
         : "נפתח טופס שירות לבירור הזמנה קיימת.",
       href: createAccountServiceHref({
-        message: "אשמח לעזרה בבירור סטטוס ההזמנה.",
+        message: "אבקש עזרה בבירור סטטוס ההזמנה.",
         orderNumber: latestLocalOrderNumber,
         topic: "order",
       }),
@@ -1160,15 +1162,15 @@ function AccountRecoveryShortcuts({
     },
     {
       description: latestSupplierOrderNumber
-        ? `תמיכה בהזמנת ספק ${latestSupplierOrderNumber}.`
-        : "תמיכה בהזמנת ספק שמטופלת מחוץ לקופה המקומית.",
+        ? `תמיכה בהזמנה נפרדת ${latestSupplierOrderNumber}.`
+        : "תמיכה בהזמנה נפרדת שמטופלת מחוץ לקופה המקומית.",
       href: createAccountServiceHref({
-        message: "אשמח לעזרה בהזמנת ספק שמופיעה באזור הלקוח.",
+        message: "אבקש עזרה בהזמנה שמופיעה באזור הלקוח.",
         orderNumber: latestSupplierOrderNumber,
         topic: "order",
       }),
       icon: Truck,
-      label: "הזמנת ספק",
+      label: "הזמנה נפרדת",
       testId: "account-recovery-supplier-help",
     },
     {

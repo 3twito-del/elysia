@@ -3,7 +3,7 @@ import { formatPrice } from "~/lib/format";
 export const checkoutPriceReviewLabel = "מחיר לאישור";
 export const checkoutTotalReviewLabel = "סכום לאישור";
 export const checkoutPricingReviewMessage =
-  "אחד המחירים דורש אישור אישי לפני השלמת ההזמנה.";
+  "אחד המחירים דורש אישור לפני השלמת ההזמנה.";
 
 type CheckoutDisplayError = {
   message?: string;
@@ -78,19 +78,19 @@ export function getFriendlyCheckoutErrorMessage(
   if (!rawMessage) return fallback;
 
   if (/סל.*ריק/u.test(rawMessage) || rawMessage.includes("לא נמצא סל")) {
-    return "הבחירה שלך עדיין ריקה.";
+    return "הבחירה עדיין ריקה.";
   }
 
   if (/תכשיט.*לא נמצא|לא נמצא.*תכשיט/u.test(rawMessage)) {
-    return "הבחירה הזו אינה פנויה כרגע. רעננו את העמוד ונסו שוב.";
+    return "הבחירה אינה פנויה כרגע. רעננו ונסו שוב.";
   }
 
   if (/cart item|product variant/i.test(rawMessage)) {
-    return "הבחירה הזו אינה פנויה כרגע. רעננו את העמוד ונסו שוב.";
+    return "הבחירה אינה פנויה כרגע. רעננו ונסו שוב.";
   }
 
   if (/fixture cart|local cart|session/i.test(rawMessage)) {
-    return "הבחירה שלך עדיין ריקה.";
+    return "הבחירה עדיין ריקה.";
   }
 
   if (/מחיר|הטבה|כתובת/u.test(rawMessage)) {
@@ -117,7 +117,7 @@ export function getCheckoutFulfillmentSummaryRows({
 
   if (hasOwnItems) {
     rows.push({
-      detail: `${formatCheckoutItemTypeCount(localItemCount)} ${localApprovalVerb} באתר Elysia לפני סיום התשלום.`,
+      detail: `${formatCheckoutItemTypeCount(localItemCount)} ${localApprovalVerb} באתר Elysia לפני תשלום.`,
       key: "local",
       label: "פריטי החנות",
     });
@@ -126,23 +126,23 @@ export function getCheckoutFulfillmentSummaryRows({
   if (hasDropshipItems) {
     rows.push({
       detail: hasOwnItems
-        ? `${formatCheckoutItemTypeCount(dropshipItemCount)} ${supplierContinuationVerb} לקופת Shopify נפרדת מהפריטים המקומיים.`
-        : `${formatCheckoutItemTypeCount(dropshipItemCount)} ${supplierContinuationVerb} לקופת Shopify; תשלום, כתובת וזמני מסירה ייקבעו שם.`,
+        ? `${formatCheckoutItemTypeCount(dropshipItemCount)} ${supplierContinuationVerb} לקופה נפרדת.`
+        : `${formatCheckoutItemTypeCount(dropshipItemCount)} ${supplierContinuationVerb} לקופה נפרדת; תשלום ומסירה ייקבעו שם.`,
       key: "supplier",
-      label: "פריטי הספק",
+      label: "פריטים נפרדים",
     });
   }
 
   if (hasOwnItems && hasDropshipItems) {
     rows.push({
       detail:
-        "מסירת פריטי החנות תתואם לפי הכתובת שתמלאו; פריטי הספק יקבלו פרטי מסירה בקופה הנפרדת.",
+        "מסירת פריטי חנות תתואם לפי הכתובת; פריטים נפרדים יקבלו מסירה בקופה נפרדת.",
       key: "delivery",
       label: "מסירה",
     });
     rows.push({
       detail:
-        "שני המסלולים נשארים נפרדים כדי שלא ליצור הבטחת תשלום או מסירה משותפת.",
+        "שני המסלולים נשארים נפרדים.",
       key: "confirmation",
       label: "אישור",
     });
@@ -152,12 +152,12 @@ export function getCheckoutFulfillmentSummaryRows({
 
   if (hasOwnItems) {
     rows.push({
-      detail: `מסירה עד הבית ${getShippingSummaryLabel(shippingLabel)} לפי הכתובת שתמלאו.`,
+      detail: `מסירה עד הבית ${getShippingSummaryLabel(shippingLabel)} לפי הכתובת.`,
       key: "delivery",
       label: "מסירה",
     });
     rows.push({
-      detail: "הפרטים והסכום יאומתו לפני שמירת ההזמנה וסיום התשלום.",
+      detail: "הפרטים והסכום יאומתו לפני שמירה ותשלום.",
       key: "confirmation",
       label: "אישור",
     });
@@ -165,12 +165,12 @@ export function getCheckoutFulfillmentSummaryRows({
 
   if (hasDropshipItems && !hasOwnItems) {
     rows.push({
-      detail: "אין מילוי כתובת באתר; פרטי המסירה ייאספו בקופת Shopify.",
+      detail: "אין מילוי כתובת באתר; פרטי המסירה ייאספו בקופה הנפרדת.",
       key: "delivery",
       label: "מסירה",
     });
     rows.push({
-      detail: "לא נוצרת כאן הזמנה מקומית עבור פריטי ספק בלבד.",
+      detail: "לא נוצרת כאן הזמנה מקומית עבור פריטים אלה.",
       key: "confirmation",
       label: "אישור",
     });

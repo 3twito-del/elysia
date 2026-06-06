@@ -22,7 +22,7 @@ export default function ProductNotFound() {
               </Button>
             </>
           }
-          description="יכול להיות שהקישור השתנה או שהתכשיט אינו פעיל כרגע. אפשר להמשיך דרך החיפוש או לחזור לקולקציות הראשיות."
+          description="ייתכן שהקישור השתנה או שהתכשיט אינו פעיל. ניתן להמשיך לחיפוש או לקולקציות."
           icon={SearchX}
           testId="product-not-found-empty-state"
           title="התכשיט לא נמצא"

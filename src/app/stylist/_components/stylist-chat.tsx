@@ -86,13 +86,8 @@ export function StylistChat({ compact = false }: StylistChatProps) {
                     "font-semibold",
                     compact ? "text-xl" : "text-2xl",
                   )}
-                >
-                  עזרה בבחירה אישית
-                </h2>
-                <p className="text-muted-foreground max-w-2xl text-sm leading-6">
-                  מאתרים התאמות במבחר לפי מחיר, אירוע, חומר וסגנון, ומציגים את
-                  התכשיטים עצמם אחרי ההמלצה.
-                </p>
+                >עזרה בבחירה</h2>
+                <p className="text-muted-foreground max-w-2xl text-sm leading-6">מאתרים התאמות לפי מחיר, אירוע, חומר וסגנון, מתוך המלאי הפעיל.</p>
               </div>
             </div>
             <div
@@ -199,7 +194,7 @@ export function StylistChat({ compact = false }: StylistChatProps) {
 
             <PromptInput className="relative" dir="rtl" onSubmit={handleSubmit}>
               <PromptInputTextarea
-                aria-label="תיאור הבקשה לסטייליסט"
+                aria-label="תיאור הבקשה ליועץ"
                 className="max-h-32 min-h-14 py-3 pr-4 pl-14 leading-6"
                 id="stylist-message"
                 onChange={(event) => setInput(event.currentTarget.value)}
@@ -397,9 +392,7 @@ function SafeActionToolResult({
 
   if (part.state === "output-error") {
     return (
-      <StatusMessage tone="error">
-        לא ניתן היה להשלים את הבחירה כרגע.
-      </StatusMessage>
+      <StatusMessage tone="error">לא ניתן היה להשלים את הבחירה.</StatusMessage>
     );
   }
 

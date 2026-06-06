@@ -49,12 +49,12 @@ describe("cookie and privacy controls contract", () => {
     );
     expect(pwaOffline).toContain('deviceStorageKey = "elysia_pwa_device_id"');
     expect(privacyPage).toContain('data-testid="privacy-local-storage-notice"');
-    expect(privacyPage).toContain("מועדפים של אורחים");
-    expect(privacyPage).toContain("פריטים שנצפו לאחרונה");
-    expect(privacyPage).toContain("מזהה מכשיר PWA");
-    expect(privacyPage).toContain("בבאנר");
-    expect(privacyPage).toContain("עוגיות ובהעדפות");
-    expect(privacyPage).toContain("העוגיות בעמוד זה");
+    expect(privacyPage).toContain("מועדפים");
+    expect(privacyPage).toContain("צפיות אחרונות");
+    expect(privacyPage).toContain("מזהה PWA");
+    expect(privacyPage).toContain("מדידה ואירועי שימוש");
+    expect(privacyPage).toContain("העדפות העוגיות");
+    expect(privacyPage).toContain("אחסון מקומי ומדידה בהסכמה");
   });
 
   it("keeps cookie consent audit records redacted and minimal", () => {

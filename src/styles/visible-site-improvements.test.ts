@@ -231,7 +231,7 @@ describe("visible site improvement affordances", () => {
     expect(header).toContain('dir="rtl"');
     expect(header).toContain('triggerLabel="תפריט"');
     expect(header).toContain('aria-label="חיפוש"');
-    expect(header).toContain('aria-label="צרו קשר"');
+    expect(header).toContain('aria-label="שירות"');
     expect(header).toContain('href="/wishlist"');
     expect(header).not.toContain("const prelaunchNavItems = [");
     expect(header).not.toContain('aria-label="Pre-launch navigation"');
@@ -246,9 +246,19 @@ describe("visible site improvement affordances", () => {
     expect(header).toContain("HOME_HEADER_SOLID_SCROLL_Y");
     expect(header).toContain("setHasScrolled");
     expect(header).toContain('window.addEventListener("scroll"');
+    expect(header).toContain(
+      'const headerState = isOverHomeHero ? "transparent" : "solid";',
+    );
     expect(header).toContain("data-header-state={headerState}");
     expect(styles).toContain('.site-header[data-header-state="solid"]');
     expect(styles).toContain("background: var(--background);");
+    expect(styles).toContain(
+      '.site-header[data-over-media="true"][data-header-state="transparent"]',
+    );
+    expect(styles).toContain(
+      "--site-header-link-color: rgb(255 255 255 / 88%);",
+    );
+    expect(styles).toContain("transparent calc(var(--site-header-height) + 5rem)");
     expect(styles).toContain(".site-header .site-header-label-action");
     expect(cart).toContain(
       'data-cart-state={itemCount > 0 ? "filled" : "empty"}',

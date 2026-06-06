@@ -31,6 +31,7 @@ import {
   shouldFallbackToCatalogFixturesOnDatabaseError,
   shouldUseCatalogFixtures,
 } from "~/server/services/catalog-fixtures";
+import { getPublicCatalogSku } from "~/server/services/public-catalog-identifiers";
 import type {
   CatalogBranch,
   CatalogCategory,
@@ -43,16 +44,16 @@ import type {
 const ACTIVE_PRODUCT_WHERE = {
   status: "ACTIVE",
 } satisfies Prisma.ProductWhereInput;
-const CATALOG_MEDIA_VERSION = "boutique-v6";
+const CATALOG_MEDIA_VERSION = "boutique-v8";
 const CATALOG_REVALIDATE_SECONDS = 60 * 60;
 const publicCatalogCopyReplacements = [
-  ["יוקרה נגישה", "מידע ברור"],
-  ["רשת תכשיטים", "בית תכשיטים"],
-  ["סטודיו תכשיטים אונליין", "בית תכשיטים ישראלי"],
-  ["סטודיו תכשיטים ישראלי", "בית תכשיטים ישראלי"],
+  ["יוקרה שקטה", "מידע ברור"],
+  ["רשת תכשיטים", "תכשיטי Elysia"],
+  ["סטודיו תכשיטים אונליין", "תכשיטי Elysia"],
+  ["סטודיו תכשיטים ישראלי", "תכשיטי Elysia"],
   ["תכשיטים זמינים לקנייה", "בחירות נבחרות מן הקולקציה"],
-  ["רכישה אונליין", "הבחירה שלי באתר"],
-  ["קנייה אונליין", "הבחירה שלי באתר"],
+  ["רכישה אונליין", "הבחירה באתר"],
+  ["קנייה אונליין", "הבחירה באתר"],
   ["חוויית הקנייה", "חוויית הבחירה"],
   ["מחיר גלוי לפני שמירה", "פרטים מאומתים לפני הזמנה"],
   ["מחיר גלוי לפני התאמה", "פרטי ההתאמה יאושרו מראש"],
@@ -64,7 +65,7 @@ const publicCatalogCopyReplacements = [
   ["מוצרים מומלצים", "בחירות מומלצות"],
   ["מוצרים שנצפו", "בחירות שנצפו"],
   ["מוצרים קיימים", "בחירות קיימות"],
-  ["מסחר אונליין", "הבחירה שלי"],
+  ["מסחר אונליין", "הבחירה"],
   ["קטלוג אונליין", "עולם התכשיטים של Elysia"],
   ["קטלוג דיגיטלי", "עולם התכשיטים של Elysia"],
   ["הזמנה דיגיטלית", "הזמנה אישית"],
@@ -73,6 +74,8 @@ const publicCatalogCopyReplacements = [
   ["מוצר", "תכשיט"],
   ["רכישה", "בחירה"],
 ] as const;
+const privateCatalogCopyPattern =
+  /supplier|shopify|dropship|configured as|active product|supplier-backed|supplied through|ספק/iu;
 export { DEFAULT_CATALOG_IMAGE };
 
 export { formatPrice };
@@ -599,25 +602,28 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
     description: record.description,
     material: displayMaterial,
     name: displayName,
+    source: record.source,
     stone: displayStone,
   });
   const displayTags = getDisplayProductTags(record.tags);
 
   return {
     slug: record.slug,
-    sku: record.sku,
-    source: record.source,
-    externalProvider: record.externalProvider ?? undefined,
-    externalProductId: record.externalProductId ?? undefined,
-    externalHandle: record.externalHandle ?? undefined,
-    supplierKey: record.supplierKey ?? undefined,
+    sku: getPublicCatalogSku(record.sku),
+    requiresSeparateCheckout: record.source !== "OWN",
     name: displayName,
     categorySlug: record.category.slug,
     categoryName: getPublicCategoryName(
       record.category.slug,
       record.category.name,
     ),
-    shortDescription: normalizePublicCatalogCopy(record.shortDescription),
+    shortDescription: getDisplayProductShortDescription({
+      material: displayMaterial,
+      name: displayName,
+      shortDescription: record.shortDescription,
+      source: record.source,
+      stone: displayStone,
+    }),
     description: displayDescription,
     availabilityMode: record.availabilityMode,
     commerceHighlights: getDisplayCommerceHighlights(record),
@@ -645,9 +651,10 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
     image: displayImages[0] ?? DEFAULT_CATALOG_IMAGE,
     images: displayImages.length > 0 ? displayImages : [DEFAULT_CATALOG_IMAGE],
     variants: record.variants.map((variant) => ({
-      sku: variant.sku,
+      sku: getPublicCatalogSku(variant.sku),
       name: getPublicVariantOptionName(variant.name),
-      externalVariantId: variant.externalVariantId ?? undefined,
+      separateCheckoutAvailable:
+        record.source !== "OWN" && Boolean(variant.externalVariantId?.trim()),
       size: variant.size ?? undefined,
       metalColor: variant.metalColor
         ? getPublicVariantOptionName(variant.metalColor)
@@ -706,7 +713,17 @@ function getVariantInventory(
 }
 
 function getDisplayProductName(name: string) {
-  return name.replace(/\s+\d{3}$/u, "");
+  const cleanedName = name
+    .replace(/\bElysia\s+Supplier\b/giu, "Elysia")
+    .replace(/\bSupplier\b|\bShopify\b|\bDropship(?:ping)?\b/giu, "")
+    .replace(/\s+מהספק$/u, "")
+    .replace(/\s+\d{3}$/u, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+
+  return cleanedName && !hasPrivateCatalogCopy(cleanedName)
+    ? cleanedName
+    : "תכשיט Elysia";
 }
 
 function normalizePublicCatalogCopy(value: string) {
@@ -720,24 +737,51 @@ function getDisplayProductDescription(input: {
   description: string;
   material: string;
   name: string;
+  source: CatalogProductRecord["source"];
   stone?: string;
 }) {
-  if (!isGeneratedCatalogDescription(input.description)) {
+  if (
+    input.source === "OWN" &&
+    !hasPrivateCatalogCopy(input.description) &&
+    !isGeneratedCatalogDescription(input.description)
+  ) {
     return normalizePublicCatalogCopy(input.description);
   }
 
   const stoneText = input.stone ? ` עם ${input.stone}` : "";
 
-  return `${input.name} משלב ${input.material}${stoneText} בקו נקי ונוח לענידה. מתאים לשילוב יומיומי, מתנה או אירוע, עם פרטי מידה, חומר ומחיר שמוצגים בשפה ברורה.`;
+  return `${input.name} משלב ${input.material}${stoneText} בקו נקי ונוח לענידה. פרטי מידה, חומר ומחיר מוצגים בבירור.`;
+}
+
+function getDisplayProductShortDescription(input: {
+  material: string;
+  name: string;
+  shortDescription: string;
+  source: CatalogProductRecord["source"];
+  stone?: string;
+}) {
+  if (
+    input.source === "OWN" &&
+    !hasPrivateCatalogCopy(input.shortDescription) &&
+    !isGeneratedCatalogDescription(input.shortDescription)
+  ) {
+    return normalizePublicCatalogCopy(input.shortDescription);
+  }
+
+  return `${input.name} מוצג עם פרטי חומר, מידה ומחיר לפני בחירה.`;
 }
 
 function getDisplayCommerceHighlights(record: CatalogProductRecord) {
   if (record.commerceHighlights.length > 0) {
-    return record.commerceHighlights.map(normalizePublicCatalogCopy);
+    const highlights = record.commerceHighlights
+      .filter((highlight) => !hasPrivateCatalogCopy(highlight))
+      .map(normalizePublicCatalogCopy);
+
+    if (highlights.length > 0) return highlights;
   }
 
   return [
-    normalizePublicCatalogCopy(record.warranty ?? "שירות אישי לפני הבחירה"),
+    normalizePublicCatalogCopy(record.warranty ?? "שירות לפני הבחירה"),
     normalizePublicCatalogCopy(
       record.deliveryPromise ?? "מסירה מתואמת עד הבית",
     ),
@@ -755,7 +799,13 @@ function isGeneratedCatalogDescription(description: string) {
 }
 
 function getDisplayProductTags(tags: string[]) {
-  return tags.filter((tag) => tag !== "בדיקות מבחר");
+  return tags.filter(
+    (tag) => tag !== "בדיקות מבחר" && !hasPrivateCatalogCopy(tag),
+  );
+}
+
+function hasPrivateCatalogCopy(value: string) {
+  return privateCatalogCopyPattern.test(value);
 }
 
 function mapCatalogBranch(record: {
@@ -819,12 +869,28 @@ function mapCatalogCategory(category: {
   return {
     slug: category.slug,
     name: getPublicCategoryName(category.slug, category.name),
-    description: category.description
-      ? normalizePublicCatalogCopy(category.description)
-      : "",
+    description: getDisplayCategoryDescription({
+      description: category.description,
+      name: category.name,
+      slug: category.slug,
+    }),
     image,
     imageUrl: image,
   };
+}
+
+function getDisplayCategoryDescription(input: {
+  description: string | null;
+  name: string;
+  slug: string;
+}) {
+  if (input.description && !hasPrivateCatalogCopy(input.description)) {
+    return normalizePublicCatalogCopy(input.description);
+  }
+
+  const publicName = getPublicCategoryName(input.slug, input.name);
+
+  return `${publicName} מתוך קולקציית Elysia, עם פרטי חומר, מידה ומחיר לפני בחירה.`;
 }
 
 function getVariantPrice(

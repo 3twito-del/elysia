@@ -85,7 +85,7 @@ export async function saveWishlistItem(
     return {
       code: "AUTH_REQUIRED",
       ok: false,
-      message: "אפשר לשמור במועדפים גם בלי התחברות.",
+      message: "ניתן לשמור גם בלי התחברות.",
     };
   }
 
@@ -141,5 +141,5 @@ export async function saveWishlistItem(
   revalidatePath(`/product/${parsed.data.productSlug}`);
   revalidatePath("/account");
   revalidatePath("/wishlist");
-  return { ok: true, message: "התכשיט נשמר לבחירות השמורות" };
+  return { ok: true, message: "התכשיט נשמר" };
 }

@@ -15,8 +15,8 @@ export default function StylistPage() {
     <main>
       <SiteHeader />
       <CommercePageHero
-        description="ייעוץ תכשיטים לפי סגנון, מחיר ואירוע, עם המלצות שנשארות בתוך המבחר הפעיל."
-        eyebrow="ייעוץ אישי"
+        description="ייעוץ תכשיטים לפי סגנון, מחיר ואירוע, מתוך המלאי הפעיל."
+        eyebrow="ייעוץ"
         id="page-hero"
         title="עזרה בבחירה"
         variant="content"
@@ -34,9 +34,7 @@ export default function StylistPage() {
             <Card className="rounded-md">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Sparkles aria-hidden="true" className="size-5" />
-                  אפשרויות ייעוץ
-                </CardTitle>
+                  <Sparkles aria-hidden="true" className="size-5" />ייעוץ</CardTitle>
               </CardHeader>
               <CardContent className="text-muted-foreground grid gap-3 text-sm leading-7">
                 <p>התאמת מתנה לפי קשר, אירוע, מחיר וסגנון.</p>
@@ -51,10 +49,7 @@ export default function StylistPage() {
                   מידה
                 </CardTitle>
               </CardHeader>
-              <CardContent className="text-muted-foreground text-sm leading-7">
-                אפשר לפתוח בקשת מדידה מתמונת תכשיט או מפרטי מידה, ולקבל הכוונה
-                לפני אישור הבחירה.
-              </CardContent>
+              <CardContent className="text-muted-foreground text-sm leading-7">ניתן לפתוח בקשת מדידה מתמונה או מפרטי מידה לפני אישור הבחירה.</CardContent>
             </Card>
           </RevealGrid>
         </aside>

@@ -8,7 +8,7 @@ export const metadata = {
 };
 
 const offlineRecoveryNotes = [
-  "פניות שירות שנשמרו במצב לא מקוון יישלחו מחדש כשהחיבור יחזור.",
+  "אם שליחה לא הושלמה, נסו שוב כשהחיבור יחזור.",
   "עגלת הקניות ופעולות החשבון יחזרו לפעולה מלאה אחרי רענון חיבור.",
   "עמודים שכבר נטענו עשויים להמשיך לעבוד מהמטמון של האפליקציה.",
 ] as const;
@@ -34,10 +34,7 @@ export default function OfflinePage() {
           >
             אין חיבור פעיל כרגע
           </h1>
-          <p className="text-muted-foreground max-w-xl leading-7">
-            אפשר להמשיך לצפות בעמודים ובתכשיטים שכבר נטענו. הבחירה האישית, סיום
-            ההזמנה, החשבון והתשלום יחזרו לפעולה מלאה כשהחיבור יתחדש.
-          </p>
+          <p className="text-muted-foreground max-w-xl leading-7">ניתן לצפות בעמודים שכבר נטענו. הזמנה, חשבון ותשלום יחזרו כשהחיבור יתחדש.</p>
         </div>
         <ul
           className="text-muted-foreground grid gap-2 text-sm leading-6"
@@ -55,10 +52,7 @@ export default function OfflinePage() {
           data-testid="offline-install-context"
         >
           <p className="font-medium">התקנה ושחזור מהיר</p>
-          <p className="text-muted-foreground mt-1">
-            כשהאפליקציה מותקנת אפשר לפתוח במהירות עמודים ציבוריים שנטענו
-            לאחרונה. סיום הזמנה, חשבון ותשלום דורשים חיבור פעיל.
-          </p>
+          <p className="text-muted-foreground mt-1">באפליקציה מותקנת ניתן לפתוח עמודים ציבוריים שנטענו לאחרונה. הזמנה ותשלום דורשים חיבור.</p>
         </div>
         <div
           className="flex flex-wrap gap-3"

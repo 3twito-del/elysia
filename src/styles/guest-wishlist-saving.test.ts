@@ -17,7 +17,7 @@ describe("guest wishlist saving", () => {
     );
 
     expect(actions).toContain('code: "AUTH_REQUIRED"');
-    expect(actions).toContain("אפשר לשמור במועדפים גם בלי התחברות.");
+    expect(actions).toContain("ניתן לשמור גם בלי התחברות.");
     expect(guestWishlist).toContain(
       'GUEST_WISHLIST_STORAGE_KEY = "elysia_guest_wishlist"',
     );
