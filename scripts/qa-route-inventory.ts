@@ -64,6 +64,7 @@ const staticPublicRoutes = [
   "/search?q=venus",
   "/search?q=zzzz-no-match&maxPrice=1",
   "/gifts",
+  "/wishlist",
   "/branches",
   "/checkout",
   "/account",
@@ -113,6 +114,7 @@ const documentedApiRoutes = [
 const smokeApiRoutes = [
   { method: "GET" as const, path: "/api/health", statuses: [200] },
   { method: "GET" as const, path: "/api/cart/count", statuses: [200] },
+  { method: "GET" as const, path: "/api/wishlist/products", statuses: [200] },
   { method: "POST" as const, path: "/api/cart/items", statuses: [400] },
   { method: "GET" as const, path: "/account/privacy/export", statuses: [401] },
   { method: "POST" as const, path: "/api/chat", statuses: [400] },

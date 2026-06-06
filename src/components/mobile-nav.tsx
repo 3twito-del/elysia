@@ -6,6 +6,7 @@ import {
   ArrowLeft,
   CircleHelp,
   Gift,
+  Heart,
   Headphones,
   History,
   Menu,
@@ -54,6 +55,7 @@ type MobileNavProps = {
 const quickActions = [
   { href: "/search", label: "חיפוש", icon: Search },
   { href: "/branches", label: "אונליין", icon: Headphones },
+  { href: "/wishlist", label: "מועדפים", icon: Heart },
   { href: "/checkout", label: "הבחירה", icon: ShoppingBag },
   { href: "/account", label: "אזור אישי", icon: UserRound },
 ] as const;
@@ -84,6 +86,12 @@ const spotlightActions = [
   },
 ] as const;
 
+function isCollectionNavigationItem(item: HeaderNavItem) {
+  return (
+    item.href.startsWith("/category/") || item.href === "/search?sort=newest"
+  );
+}
+
 function getMobileNavStaggerStyle(index: number) {
   return { "--mobile-nav-index": index } as CSSProperties;
 }
@@ -104,12 +112,26 @@ export function MobileNav({
     string | null
   >(null);
   const closeNav = () => setOpen(false);
-  const catalogItems = items.slice(0, 4);
+  const catalogItems = items.filter(isCollectionNavigationItem);
   const editorialItems = items
-    .slice(5)
+    .filter((item) => !isCollectionNavigationItem(item))
     .filter(
-      (item) => !serviceActions.some((action) => action.href === item.href),
+      (item) =>
+        item.href !== "/gifts" &&
+        !serviceActions.some((action) => action.href === item.href),
     );
+  const quickActionStartIndex = 2;
+  const spotlightKickerIndex = quickActionStartIndex + quickActions.length;
+  const spotlightActionStartIndex = spotlightKickerIndex + 1;
+  const recentlyViewedIndex =
+    spotlightActionStartIndex + spotlightActions.length;
+  const separatorIndex =
+    recentlyViewedIndex + (recentlyViewedProductHref ? 1 : 0);
+  const catalogKickerIndex = separatorIndex + 1;
+  const catalogStartIndex = catalogKickerIndex + 1;
+  const serviceKickerIndex = catalogStartIndex + catalogItems.length;
+  const serviceStartIndex = serviceKickerIndex + 1;
+  const editorialStartIndex = serviceStartIndex + serviceActions.length;
 
   useEffect(() => {
     if (open) {
@@ -239,7 +261,9 @@ export function MobileNav({
                   href={item.href}
                   key={item.href}
                   onClick={closeNav}
-                  style={getMobileNavStaggerStyle(2 + index)}
+                  style={getMobileNavStaggerStyle(
+                    quickActionStartIndex + index,
+                  )}
                 >
                   <Icon aria-hidden="true" className="size-4" />
                   <span>{item.label}</span>
@@ -258,7 +282,7 @@ export function MobileNav({
           >
             <p
               className="mobile-nav-section-kicker text-muted-foreground mobile-nav-animated-item text-xs font-medium"
-              style={getMobileNavStaggerStyle(6)}
+              style={getMobileNavStaggerStyle(spotlightKickerIndex)}
             >
               בחירה מהירה
             </p>
@@ -276,7 +300,9 @@ export function MobileNav({
                   href={item.href}
                   key={item.href}
                   onClick={closeNav}
-                  style={getMobileNavStaggerStyle(7 + index)}
+                  style={getMobileNavStaggerStyle(
+                    spotlightActionStartIndex + index,
+                  )}
                 >
                   <span className="mobile-nav-feature-icon grid size-9 place-items-center">
                     <Icon aria-hidden="true" className="size-4" />
@@ -302,7 +328,7 @@ export function MobileNav({
                 data-testid="mobile-nav-recently-viewed-shortcut"
                 href={recentlyViewedProductHref}
                 onClick={closeNav}
-                style={getMobileNavStaggerStyle(10)}
+                style={getMobileNavStaggerStyle(recentlyViewedIndex)}
               >
                 <span className="mobile-nav-feature-icon grid size-9 place-items-center">
                   <History aria-hidden="true" className="size-4" />
@@ -325,7 +351,7 @@ export function MobileNav({
 
           <Separator
             className="mobile-nav-animated-item"
-            style={getMobileNavStaggerStyle(11)}
+            style={getMobileNavStaggerStyle(separatorIndex)}
           />
 
           <nav
@@ -334,7 +360,7 @@ export function MobileNav({
           >
             <p
               className="mobile-nav-section-kicker text-muted-foreground mobile-nav-animated-item text-xs font-medium"
-              style={getMobileNavStaggerStyle(12)}
+              style={getMobileNavStaggerStyle(catalogKickerIndex)}
             >
               הקולקציה
             </p>
@@ -365,10 +391,8 @@ export function MobileNav({
                       ? () => onCategoryIntent?.(item.href)
                       : undefined
                   }
-                  prefetch={
-                    item.href.startsWith("/category/") ? true : undefined
-                  }
-                  style={getMobileNavStaggerStyle(13 + index)}
+                  prefetch={false}
+                  style={getMobileNavStaggerStyle(catalogStartIndex + index)}
                 >
                   {item.label}
                 </Link>
@@ -377,14 +401,14 @@ export function MobileNav({
           </nav>
 
           <nav
-            aria-label="ניווט שירות"
+            aria-label="ניווט מידע ושירות"
             className="mobile-nav-section grid gap-0"
           >
             <p
               className="mobile-nav-section-kicker text-muted-foreground mobile-nav-animated-item text-xs font-medium"
-              style={getMobileNavStaggerStyle(19)}
+              style={getMobileNavStaggerStyle(serviceKickerIndex)}
             >
-              שירות
+              מידע ושירות
             </p>
             {serviceActions.map((item, index) => {
               const Icon = item.icon;
@@ -402,7 +426,7 @@ export function MobileNav({
                   href={item.href}
                   key={item.href}
                   onClick={closeNav}
-                  style={getMobileNavStaggerStyle(20 + index)}
+                  style={getMobileNavStaggerStyle(serviceStartIndex + index)}
                 >
                   <Icon aria-hidden="true" className="size-4" />
                   {item.label}
@@ -424,7 +448,7 @@ export function MobileNav({
                   href={item.href}
                   key={item.href}
                   onClick={closeNav}
-                  style={getMobileNavStaggerStyle(22 + index)}
+                  style={getMobileNavStaggerStyle(editorialStartIndex + index)}
                 >
                   {item.label}
                 </Link>

@@ -4,55 +4,52 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 describe("mobile commerce density", () => {
-  it("keeps the home mobile first viewport as a pre-launch brand hero before commerce", () => {
+  it("keeps the home mobile first viewport brand-led while routing into commerce", () => {
     const source = read("src/app/page.tsx");
     const css = read("src/styles/globals.css");
 
     expect(source).toContain("home-cinematic-hero");
-    expect(source).toContain("prelaunch-hero");
+    expect(source).toContain("storefront-hero");
     expect(css).toContain(".home-cinematic-hero");
-    expect(css).toContain(".prelaunch-hero");
-    expect(css).toContain("clamp(36rem, 92svh, 54rem)");
+    expect(css).toContain(".storefront-hero");
+    expect(css).toContain("clamp(34rem, 84svh, 50rem)");
     expect(source).toContain('data-testid="home-hero-statement"');
     expect(source).toContain('data-testid="home-hero-primary-cta"');
-    expect(source).toContain('data-testid="home-hero-secondary-line"');
-    expect(source).toContain('href="#waitlist"');
+    expect(source).toContain('href="/search"');
     expect(countOccurrences(source, "min-h-[var(--home-hero-height)]")).toBe(1);
     expect(indexOf(source, 'id="page-hero"')).toBeLessThan(
-      indexOf(source, 'id="mood"'),
+      indexOf(source, 'id="collections"'),
     );
-    expect(indexOf(source, 'id="mood"')).toBeLessThan(
-      indexOf(source, 'id="first-collection"'),
+    expect(indexOf(source, 'id="collections"')).toBeLessThan(
+      indexOf(source, 'id="featured"'),
     );
-    expect(source).not.toContain('id="quick-search"');
-    expect(source).not.toContain('id="collections"');
-    expect(source).not.toContain('id="featured"');
-    expect(source).not.toContain("<ProductCard");
+    expect(source).toContain('data-layout-equal-group="home-category-tiles"');
+    expect(source).toContain('data-testid="home-featured-products"');
+    expect(source).toContain("<ProductCard");
+    expect(source).not.toContain('href="#waitlist"');
+    expect(source).not.toContain('data-testid="home-hero-secondary-line"');
+    expect(source).not.toContain('href="/category/rings"');
     expect(source).not.toContain('data-testid="home-hero-trust-notes"');
     expect(source).not.toContain("brand-control-panel grid gap-2 p-1.5");
   });
 
-  it("keeps the pre-launch mood and collection direction visual without category cards", () => {
+  it("keeps home collection tiles and product previews curated rather than dense", () => {
     const source = read("src/app/page.tsx");
     const css = read("src/styles/globals.css");
 
-    expect(source).toContain(
-      'data-layout-equal-group="prelaunch-mood-principles"',
-    );
-    expect(source).toContain("prelaunch-mood-grid");
-    expect(source).toContain("prelaunch-collection-board");
-    expect(source).toContain("prelaunch-media-note");
-    expect(source).toContain("prelaunch-note-image");
-    expect(source).toContain('data-testid="prelaunch-first-collection-board"');
-    expect(css).toContain(".prelaunch-mood-grid");
-    expect(css).toContain(".prelaunch-collection-board");
-    expect(css).toContain(".prelaunch-media-note");
-    expect(css).toContain(".prelaunch-note-image");
+    expect(source).toContain("function HomeCategoryCard");
+    expect(source).toContain("boutique-collection-card");
+    expect(source).toContain("boutique-collection-media");
+    expect(source).toContain("boutique-featured-band");
+    expect(source).toContain("ui-equal-grid grid gap-x-7 gap-y-10");
+    expect(source).toContain('data-testid="home-category-card"');
+    expect(source).toContain('data-testid="home-material-trust"');
+    expect(css).toContain(".boutique-collection-card");
+    expect(css).toContain(".boutique-collection-media");
+    expect(css).toContain(".boutique-trust-item");
     expect(css).toContain("aspect-ratio: 4 / 5;");
-    expect(source).not.toContain(
-      'data-layout-equal-group="home-category-tiles"',
-    );
-    expect(source).not.toContain("function CollectionCard");
+    expect(source).not.toContain('id="waitlist"');
+    expect(source).not.toContain("prelaunch-collection-board");
     expect(source).not.toContain('data-testid="home-quick-search-suggestions"');
   });
 
@@ -67,11 +64,11 @@ describe("mobile commerce density", () => {
     expect(home).not.toContain("\n          parallax");
     expect(home).not.toContain("scrollMotion=");
     expect(home).not.toContain("CinematicHeroSequence");
-    expect(home).toContain('className="prelaunch-hero-image object-cover"');
+    expect(home).toContain('className="storefront-hero-image object-cover"');
     expect(home).toContain('sizes="100vw"');
     expect(home).toContain("src={boutiqueHeroImage}");
-    expect(css).toContain(".prelaunch-hero-image");
-    expect(css).toContain(".prelaunch-hero-scrim");
+    expect(css).toContain(".storefront-hero-image");
+    expect(css).toContain(".storefront-hero-scrim");
     expect(publicMotionProvider).toContain(
       "const [suppressInitialReveal, setSuppressInitialReveal] = useState(true)",
     );
@@ -130,21 +127,15 @@ describe("mobile commerce density", () => {
     const search = read("src/app/search/page.tsx");
     const productCard = read("src/components/product-card.tsx");
 
-    expect(home).toContain("prelaunch-section prelaunch-mood-section");
-    expect(home).toContain(
-      "prelaunch-section prelaunch-first-collection-section",
-    );
-    expect(home).toContain("prelaunch-section prelaunch-criteria-section");
-    expect(home).toContain("prelaunch-section prelaunch-waitlist-section");
+    expect(home).toContain('id="collections"');
+    expect(home).toContain('id="featured"');
+    expect(home).toContain('id="materials"');
+    expect(home).toContain('id="collection-updates"');
     expect(home).toContain("<NewsletterForm />");
-    expect(home).not.toContain('data-layout-equal-group="home-category-tiles"');
-    expect(home).not.toContain("boutique-featured-grid grid gap-7");
-    expect(home).not.toContain('id="trust"');
+    expect(home).toContain('data-layout-equal-group="home-category-tiles"');
+    expect(home).toContain('data-layout-equal-group="home-featured-products"');
     expect(home).not.toContain("brand-surface interactive-lift group/card");
     expect(home).not.toContain("group-hover/card:underline");
-    expect(home).not.toContain(
-      'display={index < 2 ? "editorial" : "standard"}',
-    );
     expect(category).toContain(
       "px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)]",
     );

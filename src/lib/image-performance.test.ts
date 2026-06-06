@@ -25,17 +25,19 @@ describe("image performance guardrails", () => {
     );
 
     expect(homeSource).toContain(
-      'className="prelaunch-hero-image object-cover"',
+      'className="storefront-hero-image object-cover"',
     );
     expect(homeHeroImageBlock).toBeDefined();
     expect(homeHeroImageBlock).toContain("priority");
-    expect(homeSource).toContain("src={principle.image}");
-    expect(homeSource).toContain("src={signal.image}");
+    expect(homeSource).toContain("src={category.image}");
+    expect(homeSource).toContain("<ProductCard");
     expect(nonHeroImageBlocks.some((tag) => tag.includes("priority"))).toBe(
       false,
     );
     expect(homeSource).not.toContain("<StaticCinematicHeroSequence");
     expect(homeSource).not.toContain("imagePriority={index < 4}");
+    expect(homeSource).not.toContain("imagePriority={index === 0}");
+    expect(homeSource).not.toContain("priority={imagePriority}");
 
     expect(searchSource).toContain("imagePriority={index < 2}");
     expect(searchSource).toContain("imagePriority={index < 4}");
@@ -90,9 +92,7 @@ describe("image performance guardrails", () => {
     );
     expect(mobileNavSource).toContain("onPointerEnter=");
     expect(mobileNavSource).toContain("onFocus=");
-    expect(mobileNavSource).toContain(
-      'item.href.startsWith("/category/") ? true : undefined',
-    );
+    expect(mobileNavSource).toContain("prefetch={false}");
     expect(headerSource).not.toContain("prefetch={true}");
     expect(mobileNavSource).not.toContain("prefetch={true}");
   });

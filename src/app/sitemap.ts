@@ -12,6 +12,7 @@ const staticRoutes = [
   "/",
   "/search",
   "/gifts",
+  "/wishlist",
   "/service",
   "/stylist",
   "/ai",

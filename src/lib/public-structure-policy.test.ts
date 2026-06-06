@@ -66,7 +66,7 @@ describe("public structure benchmark v4 policy", () => {
     expect(header).toContain('triggerMode="label"');
     expect(header).toContain('aria-label="חיפוש"');
     expect(header).toContain('aria-label="צרו קשר"');
-    expect(header).toContain('href="/account#account-wishlist"');
+    expect(header).toContain('href="/wishlist"');
     expect(header).not.toContain("const prelaunchNavItems = [");
     expect(header).not.toContain('aria-label="Pre-launch navigation"');
     expect(header).not.toContain("data-home-prelaunch");
@@ -98,6 +98,7 @@ describe("public structure benchmark v4 policy", () => {
     ];
 
     expect(headerLinks.map((item) => item.href)).toEqual([
+      "/search?sort=newest",
       "/category/rings",
       "/category/necklaces",
       "/category/earrings",
@@ -107,8 +108,8 @@ describe("public structure benchmark v4 policy", () => {
       "/service",
     ]);
     expect(header).toContain('triggerLabel="תפריט"');
-    expect(mobileNav).toContain("const catalogItems = items.slice(0, 4)");
-    expect(mobileNav).toContain(".slice(5)");
+    expect(mobileNav).toContain('item.href.startsWith("/category/")');
+    expect(mobileNav).not.toContain("const catalogItems = items.slice(0, 4)");
 
     for (const section of [headerLinks, ...mobileSections]) {
       expect(new Set(section.map((item) => item.href)).size).toBe(
@@ -117,7 +118,9 @@ describe("public structure benchmark v4 policy", () => {
       expect(new Set(section.map((item) => item.label)).size).toBe(
         section.length,
       );
-      expect(section.every((item) => knownRoutes.has(item.href))).toBe(true);
+      expect(
+        section.every((item) => knownRoutes.has(toRoutePath(item.href))),
+      ).toBe(true);
       expect(section.every((item) => !/[A-Za-z]/u.test(item.label))).toBe(true);
     }
   });
@@ -136,6 +139,7 @@ describe("public structure benchmark v4 policy", () => {
     expect(mobileNav).toContain("onClick={closeNav}");
     expect(mobileNav).toContain('href: "/search"');
     expect(mobileNav).toContain('href: "/service"');
+    expect(mobileNav).toContain('href: "/wishlist"');
     expect(mobileNav).toContain('href: "/account"');
     expect(mobileNav).toContain('href: "/checkout"');
 
@@ -168,4 +172,8 @@ function extractConstHrefLabels(source: string, constName: string) {
     href: entry.groups?.href ?? "",
     label: entry.groups?.label ?? "",
   }));
+}
+
+function toRoutePath(href: string) {
+  return href.split(/[?#]/u)[0] ?? href;
 }

@@ -6,3 +6,9 @@ node_modules
 *.log
 *.tsbuildinfo
 generated
+artifacts
+playwright-report
+test-results
+.codex
+.codex-dev-server
+.tmp

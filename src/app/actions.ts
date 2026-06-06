@@ -140,5 +140,6 @@ export async function saveWishlistItem(
 
   revalidatePath(`/product/${parsed.data.productSlug}`);
   revalidatePath("/account");
+  revalidatePath("/wishlist");
   return { ok: true, message: "התכשיט נשמר לבחירות השמורות" };
 }

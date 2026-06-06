@@ -98,6 +98,9 @@ export function CustomerOtpForm() {
           </p>
         ) : null}
         <RequestButton hasVerificationTarget={canVerify} />
+        <p className="account-otp-trust-note text-muted-foreground text-xs leading-5">
+          אין צורך בסיסמה. הקוד נשלח לשימוש חד־פעמי בלבד.
+        </p>
       </form>
 
       {canVerify ? (
@@ -181,7 +184,11 @@ function RequestButton({
   const { pending } = useFormStatus();
 
   return (
-    <Button className="w-full gap-2" disabled={pending} type="submit">
+    <Button
+      className="account-primary-action w-full gap-2"
+      disabled={pending}
+      type="submit"
+    >
       <Send aria-hidden="true" className="size-4" />
       {hasVerificationTarget ? "שליחת קוד נוסף" : "שליחת קוד"}
     </Button>
@@ -193,7 +200,7 @@ function VerifyButton() {
 
   return (
     <Button
-      className="w-full gap-2"
+      className="account-secondary-action w-full gap-2"
       disabled={pending}
       type="submit"
       variant="secondary"

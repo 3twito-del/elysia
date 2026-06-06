@@ -12,11 +12,9 @@ const madeToOrderProductSlug = "muse-pearl-earrings";
 const madeToOrderProductName = "עגילי Muse Pearl";
 const searchProductSlug = "venus-line-ring";
 const searchProductName = "טבעת Venus Line";
-const checkoutEmptyTitle = "הבחירה שלך ממתינה לתכשיט הראשון";
-const checkoutCatalogCta =
-  "\u05d7\u05d6\u05e8\u05d4 \u05dc\u05e7\u05d5\u05dc\u05e7\u05e6\u05d9\u05d4";
-const checkoutAdviceLink =
-  "\u05dc\u05e7\u05d1\u05dc\u05ea \u05d9\u05d9\u05e2\u05d5\u05e5 \u05d0\u05d9\u05e9\u05d9";
+const checkoutEmptyTitle = "הסל שלך עדיין שקט.";
+const checkoutCatalogCta = "צפייה בקולקציות";
+const checkoutAdviceLink = "עזרה בבחירה";
 const zeroShekelPattern = /^\D*0\D*\u20aa\D*$/u;
 const forbiddenCheckoutStateText = [
   "\u05d8\u05d5\u05e2\u05df \u05e1\u05dc...",
@@ -71,14 +69,12 @@ test.describe("critical shopping flows", () => {
 
     await page.goto("/checkout");
 
-    await expect(
-      page.getByRole("heading", { name: /הבחירה שלי/ }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: /סל קניות/ })).toBeVisible();
     await expect(
       page.getByRole("link", { name: new RegExp(cartProductName) }).first(),
     ).toBeVisible();
     await expect(
-      page.getByRole("button", { name: /אישור הבחירה/ }),
+      page.getByRole("button", { name: /המשך לתשלום/ }),
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: /הוספת כמות עבור/ }),
@@ -293,7 +289,7 @@ test.describe("critical shopping flows", () => {
       }),
     ).toBeVisible();
     await expect(page.getByTestId("checkout-empty-actions")).toContainText(
-      "לקבלת ייעוץ אישי",
+      "שירות לפני הזמנה",
     );
 
     for (const stateText of forbiddenCheckoutStateText) {
@@ -311,7 +307,7 @@ test.describe("critical shopping flows", () => {
     const html = await response.text();
 
     expect(html).toContain(checkoutEmptyTitle);
-    expect(html).toContain("חזרי לקולקציה");
+    expect(html).toContain("כשתבחרי תכשיט");
     expect(html).toContain(checkoutCatalogCta);
     expect(html).toContain(checkoutAdviceLink);
     expect(html).not.toContain("checkout-loading-skeleton");
@@ -340,7 +336,7 @@ test.describe("critical shopping flows", () => {
 
       await expect(checkoutEmptyState).toBeVisible();
       await expect(checkoutEmptyState).toContainText(checkoutEmptyTitle);
-      await expect(checkoutEmptyState).toContainText("חזרי לקולקציה");
+      await expect(checkoutEmptyState).toContainText("כשתבחרי תכשיט");
       await expect(
         checkoutEmptyState.getByRole("link", { name: checkoutCatalogCta }),
       ).toBeVisible();
@@ -945,13 +941,17 @@ test.describe("accessibility and responsive guardrails", () => {
     const viewport = page.viewportSize();
 
     await expect(homeHero).toBeVisible();
-    await expect(homeHero.getByRole("heading").first()).toBeVisible();
+    await expect(homeHero.locator("h1.sr-only")).toHaveText("Elysia");
     const heroCollectionLink = homeHero.locator(
-      'a.home-hero-cta-primary[href="#waitlist"]',
+      'a.home-hero-cta-primary[href="/search"]',
     );
 
     await expect(heroCollectionLink).toBeVisible();
     await expect(page.getByTestId("home-hero-statement")).toBeVisible();
+    await expect(
+      homeHero.locator('a.home-hero-secondary-cta[href="/category/rings"]'),
+    ).toHaveCount(0);
+    await expect(page.getByTestId("home-hero-secondary-line")).toHaveCount(0);
     await expect(
       homeHero.locator('a.home-hero-service-link[href="/service"]'),
     ).toHaveCount(0);

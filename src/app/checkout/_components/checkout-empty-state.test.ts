@@ -14,12 +14,15 @@ describe("checkout empty cart recovery", () => {
 
     expect(source).toContain("shouldShowEmptyCartState");
     expect(source).toContain("<CheckoutEmptyCartState />");
-    expect(source).toContain('href: "/gifts"');
-    expect(source).toContain('href: "/category/rings"');
-    expect(source).toContain('href: "/category/necklaces"');
+    expect(source).toContain('href: "/search"');
+    expect(source).toContain('href: "/size-guide"');
+    expect(source).toContain('href: "/service"');
     expect(emptyState).toContain('data-testid="checkout-empty-cart"');
     expect(emptyState).toContain('href="/search"');
     expect(emptyState).toContain('href="/service"');
+    expect(emptyState).toContain("הסל שלך עדיין שקט.");
+    expect(emptyState).toContain("צפייה בקולקציות");
+    expect(emptyState).toContain("עזרה בבחירה");
     expect(emptyState).toContain("checkoutEmptyLinks.map");
     expect(emptyState).not.toContain('type="submit"');
     expect(emptyState).not.toContain("local-checkout-submit-button");

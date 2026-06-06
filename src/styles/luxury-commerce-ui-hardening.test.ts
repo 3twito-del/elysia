@@ -23,7 +23,7 @@ describe("luxury commerce UI hardening", () => {
     expect(source).toContain('aria-label="צרו קשר"');
     expect(source).toContain("<Heart");
     expect(source).toContain("<UserRound");
-    expect(source).toContain('href="/account#account-wishlist"');
+    expect(source).toContain('href="/wishlist"');
     expect(source).toContain("[grid-column:3]");
     expect(source).toContain("[grid-column:1]");
     expect(source).toContain("[grid-column:2]");
@@ -32,7 +32,8 @@ describe("luxury commerce UI hardening", () => {
     expect(source).not.toContain('aria-label="Pre-launch navigation"');
     expect(source).not.toContain("data-home-prelaunch");
     expect(source).not.toContain("desktopNavItems");
-    expect(source).not.toContain("CartCountLink");
+    expect(source).toContain("CartCountLink");
+    expect(source).toContain('className="site-header-action inline-grid');
     expect(source).not.toContain("Headset");
     expect(source).toContain(
       'import { BrandLogo } from "~/components/brand-logo";',
@@ -90,7 +91,7 @@ describe("luxury commerce UI hardening", () => {
     expect(footer).not.toContain("שירות והזמנה - המשך");
     expect(footer).toContain("const socialLinks = [");
     expect(footer).toContain("https://www.instagram.com/elysia.one/");
-    expect(footer).toContain("https://www.tiktok.com/@elysia.one");
+    expect(footer).toContain("https://www.tiktok.com/@elysia_jewellery");
     expect(footer).toContain("SiInstagram");
     expect(footer).toContain("SiTiktok");
     expect(footer).toContain("footer-social-link");

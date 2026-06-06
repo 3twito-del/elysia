@@ -221,6 +221,7 @@ describe("QA route inventory", () => {
     ).toEqual([
       "GET /api/health",
       "GET /api/cart/count",
+      "GET /api/wishlist/products",
       "POST /api/cart/items",
       "GET /account/privacy/export",
       "POST /api/chat",

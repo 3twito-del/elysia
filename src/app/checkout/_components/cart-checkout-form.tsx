@@ -81,25 +81,26 @@ const checkoutFieldFocusOrder = [
 
 const checkoutEmptyLinks = [
   {
-    href: "/category/rings",
-    label: "קולקציית טבעות",
-    text: "טבעות ליום יום, אירוע או מתנה.",
+    href: "/search",
+    label: "בחירה מדויקת",
+    text: "פתיחת כל הקולקציה לבחירה שקטה לפי משפחה, חומר ומחיר.",
   },
   {
-    href: "/category/necklaces",
-    label: "שרשראות עדינות",
-    text: "שרשראות לפי אורך, חומר ושימוש.",
-  },
-  {
-    href: "/gifts",
-    label: "מתנות",
-    text: "בחירות לפי מחיר, אירוע או סגנון.",
+    href: "/size-guide",
+    label: "חומרים וגימור מאומתים",
+    text: "מידות, חומרים ופרטי התאמה נשארים זמינים לפני הוספה לסל.",
   },
   {
     href: "/service",
-    label: "לקבלת ייעוץ אישי",
-    text: "עזרה בבחירה, מידה או הקדשה.",
+    label: "שירות לפני הזמנה",
+    text: "אפשר לקבל עזרה בבחירה, מידה או התאמה לפני מעבר לתשלום.",
   },
+] as const;
+
+const checkoutPolicyNotes = [
+  "חומרים וגימור מאומתים",
+  "אחריות ושירות אחרי קנייה",
+  "תיאום מסירה לפי זמינות",
 ] as const;
 
 const checkoutFulfillmentSummaryIcons = {
@@ -338,8 +339,8 @@ export function CartCheckoutForm() {
       ? "הבחירה כוללת פריטי ספק בלבד. הסיום ייפתח בקופת Shopify מאובטחת, ללא מילוי פרטי מסירה באתר."
       : "סיכום תכשיטים שנבחרו, פרטי מסירה והטבה.";
   const localCheckoutButtonLabel = hasMixedSourceCart
-    ? "אישור פריטי החנות"
-    : "אישור הבחירה";
+    ? "המשך לתשלום עבור פריטי החנות"
+    : "המשך לתשלום";
   const supplierCheckoutDescription = hasMixedSourceCart
     ? `${dropshipItems.length} פריטי ספק יושלמו בקופת Shopify מאובטחת, בנפרד מהפריטים המקומיים.`
     : `${dropshipItems.length} פריטי ספק יושלמו בקופת Shopify מאובטחת. פרטי התשלום והמסירה ייאספו שם.`;
@@ -349,10 +350,10 @@ export function CartCheckoutForm() {
       ? "התשלום, פרטי המסירה ואישור ההזמנה יתבצעו בקופת Shopify. לא נוצרת כאן הזמנה מקומית עבור פריטי ספק בלבד."
       : "הפרטים והסכום יאומתו לפני שמירת הבחירה; התשלום לא נגבה בשלב זה.";
   const checkoutQuantityRecoveryCopy = isOffline
-    ? "שינויי כמות והסרה נשמרים במכשיר ויסתנכרנו כשהחיבור יחזור. סיום הזמנה עדיין דורש חיבור פעיל."
+    ? "שינויי כמות והסרה נשמרים במכשיר ויסתנכרנו כשהחיבור יחזור. המשך לתשלום עדיין דורש חיבור פעיל."
     : updateItem.isPending || removeItem.isPending
-      ? "מעדכנים את הכמות ואת הסיכום לפני אישור הבחירה."
-      : "שינויי כמות מתעדכנים בסיכום לפני אישור הבחירה; מגבלת הכמות נשמרת לכל פריט.";
+      ? "מעדכנים את הכמות ואת הסיכום לפני המעבר לתשלום."
+      : "שינויי כמות מתעדכנים בסיכום לפני המעבר לתשלום; מגבלת הכמות נשמרת לכל פריט.";
   const mobileCheckoutSummaryCopy = hasMixedSourceCart
     ? `${totalItemQuantity} תכשיטי חנות · ${dropshipTotalQuantity} פריטי ספק בנפרד`
     : hasDropshipItems && !hasOwnItems
@@ -429,7 +430,7 @@ export function CartCheckoutForm() {
               ? `${checkoutIssues.length} פרטים חסרים`
               : hasMixedSourceCart
                 ? "מוכן לאישור פריטי החנות"
-                : "מוכן לאישור הבחירה"}
+                : "מוכן להמשך לתשלום"}
           </p>
           <p className="text-lg font-semibold">{orderTotalLabel}</p>
           <p
@@ -445,7 +446,7 @@ export function CartCheckoutForm() {
           ) : null}
         </div>
         <Button disabled={!canSubmit} form={checkoutFormId} type="submit">
-          אישור
+          המשך
           <PackageCheck aria-hidden="true" className="size-4" />
         </Button>
       </div>
@@ -548,8 +549,8 @@ export function CartCheckoutForm() {
 
   if (createOrder.data) {
     return (
-      <section className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
-        <Card className="rounded-md">
+      <section className="mx-auto max-w-3xl px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]">
+        <Card className="checkout-boutique-panel rounded-md">
           <CardHeader>
             <div className="glass-inset mb-4 grid size-12 place-items-center rounded-full border">
               <CheckCircle2 aria-hidden="true" className="size-6" />
@@ -599,7 +600,7 @@ export function CartCheckoutForm() {
     <>
       <form
         aria-busy={checkoutLocked}
-        className="mx-auto grid max-w-7xl gap-5 px-[var(--ui-page-x)] pt-[var(--ui-section-y-tight)] pb-[var(--ui-section-y)] lg:grid-cols-[minmax(0,1fr)_352px] lg:items-start lg:px-[var(--ui-page-x-wide)]"
+        className="checkout-boutique-form mx-auto grid max-w-7xl gap-5 px-[var(--ui-page-x)] pt-[var(--ui-section-y-tight)] pb-[var(--ui-section-y)] lg:grid-cols-[minmax(0,1fr)_minmax(19rem,24rem)] lg:items-start lg:px-[var(--ui-page-x-wide)]"
         data-testid="cart-checkout-form"
         id={checkoutFormId}
         onSubmit={handleSubmit}
@@ -607,7 +608,7 @@ export function CartCheckoutForm() {
       >
         <div className="grid gap-4">
           <div>
-            <h2 className="text-xl font-semibold sm:text-2xl">הבחירה שלי</h2>
+            <h2 className="text-xl font-semibold sm:text-2xl">סל קניות</h2>
             <p className="text-muted-foreground mt-1.5 max-w-3xl text-sm leading-6 sm:text-base">
               {checkoutIntroCopy}
             </p>
@@ -616,12 +617,12 @@ export function CartCheckoutForm() {
           {hasOwnItems ? (
             <div
               aria-label="שלבי סיום ההזמנה"
-              className="glass-panel grid gap-2 rounded-md border p-3 text-sm sm:grid-cols-4"
+              className="checkout-progress-panel glass-panel grid gap-2 rounded-md border p-3 text-sm sm:grid-cols-4"
               data-testid="checkout-progress-steps"
             >
               {checkoutProgressSteps.map((step) => (
                 <div
-                  className="glass-inset grid gap-1 rounded-md border p-3"
+                  className="checkout-progress-step glass-inset grid gap-1 rounded-md border p-3"
                   key={step.value}
                 >
                   <div className="flex items-center gap-2">
@@ -641,8 +642,8 @@ export function CartCheckoutForm() {
             </StatusMessage>
           )}
 
-          <Card className="rounded-md" size="sm">
-            <CardHeader>
+          <Card className="checkout-boutique-panel rounded-md" size="sm">
+            <CardHeader className="checkout-boutique-card-header">
               <CardTitle className="flex items-center gap-2">
                 <CheckoutStepBadge value="1" />
                 <PackageCheck aria-hidden="true" className="size-5" />
@@ -656,7 +657,7 @@ export function CartCheckoutForm() {
               >
                 {checkoutDisplayGroups.map((group) => (
                   <div
-                    className="glass-inset rounded-md border p-3"
+                    className="checkout-source-card glass-inset rounded-md border p-3"
                     data-testid={`checkout-source-group-${group.source.toLowerCase()}`}
                     key={group.source}
                   >
@@ -674,12 +675,12 @@ export function CartCheckoutForm() {
               </div>
               {cart.items.map((item) => (
                 <div
-                  className="bg-background grid grid-cols-[68px_minmax(0,1fr)] gap-3 rounded-md border p-3 sm:grid-cols-[68px_minmax(0,1fr)_auto] sm:items-center"
+                  className="checkout-boutique-item-card bg-background grid grid-cols-[68px_minmax(0,1fr)] gap-3 rounded-md border p-3 sm:grid-cols-[68px_minmax(0,1fr)_auto] sm:items-center"
                   key={item.id}
                 >
                   <Link
                     aria-label={`צפייה בתכשיט ${item.productName}`}
-                    className="bg-muted relative size-[68px] overflow-hidden rounded-md border border-[var(--glass-border)]"
+                    className="checkout-boutique-thumb bg-muted relative size-[68px] overflow-hidden rounded-md border border-[var(--glass-border)]"
                     href={`/product/${item.productSlug}`}
                   >
                     <Image
@@ -721,6 +722,9 @@ export function CartCheckoutForm() {
                           reviewLabel: checkoutPriceReviewLabel,
                         })}
                       </span>
+                    </p>
+                    <p className="text-muted-foreground mt-1 text-xs leading-5">
+                      שירות זמין לפני ההזמנה ולאחריה.
                     </p>
                   </div>
                   <div className="col-span-2 flex items-center justify-end gap-2 sm:col-span-1">
@@ -837,8 +841,8 @@ export function CartCheckoutForm() {
 
           {hasOwnItems ? (
             <>
-              <Card className="rounded-md" size="sm">
-                <CardHeader>
+              <Card className="checkout-boutique-panel rounded-md" size="sm">
+                <CardHeader className="checkout-boutique-card-header">
                   <CardTitle className="flex items-center gap-2">
                     <CheckoutStepBadge value="2" />
                     פרטים לאישור
@@ -916,8 +920,8 @@ export function CartCheckoutForm() {
                 </CardContent>
               </Card>
 
-              <Card className="rounded-md" size="sm">
-                <CardHeader>
+              <Card className="checkout-boutique-panel rounded-md" size="sm">
+                <CardHeader className="checkout-boutique-card-header">
                   <CardTitle className="flex items-center gap-2">
                     <CheckoutStepBadge value="3" />
                     <Truck aria-hidden="true" className="size-5" />
@@ -925,7 +929,7 @@ export function CartCheckoutForm() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-4">
-                  <div className="bg-background flex items-start gap-3 rounded-md border p-3.5 text-sm">
+                  <div className="checkout-service-note bg-background flex items-start gap-3 rounded-md border p-3.5 text-sm">
                     <Truck
                       className="mt-0.5 size-4 shrink-0"
                       aria-hidden="true"
@@ -994,8 +998,8 @@ export function CartCheckoutForm() {
                 </CardContent>
               </Card>
 
-              <Card className="rounded-md" size="sm">
-                <CardHeader>
+              <Card className="checkout-boutique-panel rounded-md" size="sm">
+                <CardHeader className="checkout-boutique-card-header">
                   <CardTitle className="flex items-center gap-2">
                     <CheckoutStepBadge value="4" />
                     <Gift aria-hidden="true" className="size-5" />
@@ -1081,15 +1085,14 @@ export function CartCheckoutForm() {
         </div>
 
         <aside>
-          <Card className="rounded-md lg:sticky lg:top-24" size="sm">
-            <CardHeader>
+          <Card
+            className="checkout-boutique-panel checkout-boutique-summary rounded-md lg:sticky lg:top-24"
+            size="sm"
+          >
+            <CardHeader className="checkout-boutique-card-header">
               <CheckoutStepBadge value="5" />
               <CardTitle>
-                {hasOwnItems
-                  ? hasMixedSourceCart
-                    ? "סיכום פריטי החנות"
-                    : "סיכום"
-                  : "סיכום פריטי הספק"}
+                {hasOwnItems ? "סיכום הזמנה" : "סיכום פריטי הספק"}
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
@@ -1110,7 +1113,7 @@ export function CartCheckoutForm() {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span>סכום התכשיטים</span>
+                    <span>סכום ביניים</span>
                     <span data-testid="checkout-items-price">
                       {subtotalLabel}
                     </span>
@@ -1122,18 +1125,18 @@ export function CartCheckoutForm() {
                     </div>
                   ) : null}
                   <div className="flex justify-between">
-                    <span>מסירה</span>
+                    <span>משלוח</span>
                     <span data-testid="checkout-shipping">{shippingLabel}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>סכום ביניים</span>
+                    <span>לאחר הטבה</span>
                     <span data-testid="checkout-subtotal">
                       {postDiscountSubtotalLabel}
                     </span>
                   </div>
                   <Separator />
                   <div className="flex justify-between text-base font-semibold">
-                    <span>סך הכל</span>
+                    <span>סה״כ</span>
                     <span data-testid="checkout-order-total">
                       {orderTotalLabel}
                     </span>
@@ -1213,6 +1216,23 @@ export function CartCheckoutForm() {
                   })}
                 </div>
               ) : null}
+              <div
+                className="checkout-policy-notes grid gap-2 text-xs"
+                data-testid="checkout-policy-notes"
+              >
+                {checkoutPolicyNotes.map((note) => (
+                  <div
+                    className="glass-inset flex items-center gap-2 rounded-md border px-3 py-2"
+                    key={note}
+                  >
+                    <CheckCircle2
+                      aria-hidden="true"
+                      className="size-3.5 shrink-0"
+                    />
+                    <span>{note}</span>
+                  </div>
+                ))}
+              </div>
               {hasOwnItems && checkoutIssues.length > 0 ? (
                 <div
                   className="glass-inset rounded-md border p-3 text-sm"
@@ -1221,7 +1241,7 @@ export function CartCheckoutForm() {
                   role="status"
                   aria-live="polite"
                 >
-                  <p className="font-medium">לפני אישור הבחירה</p>
+                  <p className="font-medium">לפני המשך לתשלום</p>
                   <ul className="text-muted-foreground mt-2 grid list-inside list-disc gap-1">
                     {checkoutIssues.map((issue) => (
                       <li key={issue}>{issue}</li>
@@ -1291,16 +1311,26 @@ export function CartCheckoutForm() {
                   </Button>
                 </div>
               ) : null}
-              {hasOwnItems ? (
-                <Button
-                  data-testid="local-checkout-submit-button"
-                  disabled={!canSubmit}
-                  size="lg"
-                  type="submit"
-                >
-                  {localCheckoutButtonLabel}
-                  <PackageCheck aria-hidden="true" className="size-4" />
+              {!hasOwnItems ? (
+                <Button asChild variant="outline">
+                  <Link href="/search">המשך לקולקציות</Link>
                 </Button>
+              ) : null}
+              {hasOwnItems ? (
+                <>
+                  <Button
+                    data-testid="local-checkout-submit-button"
+                    disabled={!canSubmit}
+                    size="lg"
+                    type="submit"
+                  >
+                    {localCheckoutButtonLabel}
+                    <PackageCheck aria-hidden="true" className="size-4" />
+                  </Button>
+                  <Button asChild variant="outline">
+                    <Link href="/search">המשך לקולקציות</Link>
+                  </Button>
+                </>
               ) : null}
             </CardContent>
           </Card>
@@ -1316,37 +1346,34 @@ export function CartCheckoutForm() {
 function CheckoutEmptyCartState() {
   return (
     <section
-      className="mx-auto max-w-6xl px-[var(--ui-page-x)] py-[var(--ui-section-y)] sm:px-6"
+      className="checkout-empty-section mx-auto max-w-6xl px-[var(--ui-page-x)] py-[var(--ui-section-y)] lg:px-[var(--ui-page-x-wide)]"
       data-testid="cart-checkout-form"
     >
       <div
-        className="glass-panel grid min-h-[30rem] gap-8 rounded-md border p-6 sm:p-10 lg:grid-cols-[minmax(0,1.12fr)_minmax(18rem,0.88fr)] lg:items-center lg:p-12"
+        className="checkout-empty-panel glass-panel grid gap-6 rounded-md border p-6 sm:p-8 lg:min-h-[22rem] lg:grid-cols-[minmax(0,1.12fr)_minmax(18rem,0.88fr)] lg:items-center lg:p-10"
         data-testid="checkout-empty-cart"
       >
         <div className="max-w-2xl">
-          <div className="glass-inset mb-5 grid size-12 place-items-center rounded-full border">
+          <div className="checkout-empty-icon glass-inset mb-5 grid size-12 place-items-center rounded-full border">
             <ShoppingBag aria-hidden="true" className="size-5" />
           </div>
-          <p className="text-muted-foreground text-xs font-medium">
-            הבחירה שלי
-          </p>
+          <p className="text-muted-foreground text-xs font-medium">סל קניות</p>
           <h2 className="mt-3 text-2xl font-semibold tracking-normal sm:text-3xl">
-            הבחירה שלך ממתינה לתכשיט הראשון
+            הסל שלך עדיין שקט.
           </h2>
           <p className="text-muted-foreground mt-4 max-w-xl text-sm leading-7 sm:text-base">
-            חזרי לקולקציה ובחרי תכשיט. הסיכום ימתין כאן עם פירוט הפריטים, שמירה
-            לבחירה ושירות לפני אישור.
+            כשתבחרי תכשיט, הוא יופיע כאן עם פרטי מידה, חומר ומסירה.
           </p>
           <div className="mt-7 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <Button asChild>
               <Link href="/search">
-                חזרה לקולקציה
+                צפייה בקולקציות
                 <ShoppingBag aria-hidden="true" className="size-4" />
               </Link>
             </Button>
             <Button asChild variant="outline">
               <Link href="/service">
-                לקבלת ייעוץ אישי
+                עזרה בבחירה
                 <MessageCircle aria-hidden="true" className="size-4" />
               </Link>
             </Button>

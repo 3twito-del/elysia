@@ -401,6 +401,7 @@ export async function removeWishlistItemAction(formData: FormData) {
   });
 
   revalidatePath("/account");
+  revalidatePath("/wishlist");
 }
 
 export async function mergeGuestWishlistAction(
@@ -501,6 +502,7 @@ export async function mergeGuestWishlistAction(
     );
 
     revalidatePath("/account");
+    revalidatePath("/wishlist");
   }
 
   return {

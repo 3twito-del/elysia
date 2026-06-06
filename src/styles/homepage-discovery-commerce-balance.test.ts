@@ -5,69 +5,64 @@ import { describe, expect, it } from "vitest";
 
 const root = process.cwd();
 
-describe("homepage pre-launch brand world", () => {
-  it("keeps the homepage as a brand-building environment before commerce", () => {
+describe("homepage boutique commerce bridge", () => {
+  it("keeps the homepage brand-led while opening real store entry points", () => {
     const home = read("src/app/page.tsx");
 
     expect(home).toContain(
       'const boutiqueHeroImage = "/brand/boutique/lifestyle-hero.avif";',
     );
-    expect(home).toContain("const moodPrinciples = [");
-    expect(home).toContain("const collectionSignals = [");
-    expect(home).toContain("const curationCriteria = [");
-    expect(home).toContain('data-testid="prelaunch-homepage"');
+    expect(home).toContain("getCatalogCategories");
+    expect(home).toContain("getFeaturedCatalogProducts(4)");
+    expect(home).toContain("<ProductCard");
+    expect(home).toContain("function HomeCategoryCard");
+    expect(home).toContain('data-testid="storefront-homepage"');
     expect(home).toContain('data-testid="home-hero-statement"');
     expect(home).toContain('data-testid="home-hero-primary-cta"');
-    expect(home).toContain('href="#waitlist"');
-    expect(home).toContain("הצטרפות לקולקציה הראשונה");
-    expect(home).toContain("First collection coming soon");
-    expect(home).toContain("כיוון האתר");
-    expect(home).toContain("צילום, פרופורציה, שימוש.");
-    expect(home).toContain("prelaunch-media-note");
-    expect(home).toContain("prelaunch-note-image");
-    expect(home).toContain('id="mood"');
-    expect(home).toContain('id="first-collection"');
+    expect(home).toContain('href="/search"');
+    expect(home).toContain('id="collections"');
+    expect(home).toContain('id="featured"');
     expect(home).toContain('id="materials"');
-    expect(home).toContain('id="journal"');
-    expect(home).toContain('id="waitlist"');
     expect(home).toContain('id="about-elysia"');
+    expect(home).toContain('id="first-collection"');
+    expect(home).toContain('id="collection-updates"');
+    expect(home).toContain('data-layout-equal-group="home-category-tiles"');
+    expect(home).toContain('data-testid="home-featured-products"');
+    expect(home).toContain('data-testid="home-material-trust"');
     expect(home).toContain("<NewsletterForm />");
 
-    expect(home).not.toContain("getCatalogCategories");
-    expect(home).not.toContain("getFeaturedCatalogProducts");
-    expect(home).not.toContain("<ProductCard");
-    expect(home).not.toContain("function CollectionCard");
-    expect(home).not.toContain('id="collections"');
-    expect(home).not.toContain('id="featured"');
-    expect(home).not.toContain('data-layout-equal-group="home-category-tiles"');
-    expect(home).not.toContain('data-testid="home-service-strip"');
-    expect(home).not.toContain('href="/search"');
-    expect(home).not.toContain('href="/gifts"');
+    expect(home).not.toContain('href="#waitlist"');
+    expect(home).not.toContain("First collection coming soon");
+    expect(home).not.toContain('data-testid="prelaunch-homepage"');
+    expect(home).not.toContain('id="waitlist"');
+    expect(home).not.toContain('href="/category/rings"');
+    expect(home).not.toContain('data-testid="home-hero-secondary-line"');
     expect(home).not.toContain('data-testid="home-hero-trust-notes"');
     expect(home).not.toContain("home-hero-help-cta");
 
     expect(indexOf(home, 'id="page-hero"')).toBeLessThan(
-      indexOf(home, 'id="mood"'),
+      indexOf(home, 'id="collections"'),
     );
-    expect(indexOf(home, 'id="mood"')).toBeLessThan(
-      indexOf(home, 'id="first-collection"'),
+    expect(indexOf(home, 'id="collections"')).toBeLessThan(
+      indexOf(home, 'id="featured"'),
     );
-    expect(indexOf(home, 'id="first-collection"')).toBeLessThan(
+    expect(indexOf(home, 'id="featured"')).toBeLessThan(
       indexOf(home, 'id="materials"'),
     );
     expect(indexOf(home, 'id="materials"')).toBeLessThan(
-      indexOf(home, 'id="journal"'),
-    );
-    expect(indexOf(home, 'id="journal"')).toBeLessThan(
-      indexOf(home, 'id="waitlist"'),
-    );
-    expect(indexOf(home, 'id="waitlist"')).toBeLessThan(
       indexOf(home, 'id="about-elysia"'),
+    );
+    expect(indexOf(home, 'id="about-elysia"')).toBeLessThan(
+      indexOf(home, 'id="first-collection"'),
+    );
+    expect(indexOf(home, 'id="first-collection"')).toBeLessThan(
+      indexOf(home, 'id="collection-updates"'),
     );
   });
 
   it("keeps the home header on the regular public navigation", () => {
     const header = read("src/components/site-header.tsx");
+    const mobileNav = read("src/components/mobile-nav.tsx");
 
     expect(header).not.toContain("const prelaunchNavItems = [");
     expect(header).not.toContain('aria-label="Pre-launch navigation"');
@@ -75,8 +70,11 @@ describe("homepage pre-launch brand world", () => {
     expect(header).not.toContain("data-home-prelaunch");
     expect(header).toContain("<MobileNav");
     expect(header).toContain('href="/search"');
+    expect(header).toContain("/search?sort=newest");
     expect(header).toContain('href="/service"');
-    expect(header).toContain('href="/account#account-wishlist"');
+    expect(header).toContain('href="/wishlist"');
+    expect(header).toContain("<CartCountLink");
+    expect(mobileNav).toContain('item.href.startsWith("/category/")');
     expect(indexOf(header, "<MobileNav")).toBeLessThan(
       indexOf(header, 'href="/search"'),
     );

@@ -10,10 +10,12 @@ import {
   useCategoryRoutePrefetch,
 } from "~/components/category-route-prefetch";
 import { BrandLogo } from "~/components/brand-logo";
+import { CartCountLink } from "~/components/cart-count-link";
 import { MobileNav, type HeaderNavItem } from "~/components/mobile-nav";
 import { Button } from "~/components/ui/button";
 
 const navItems: HeaderNavItem[] = [
+  { href: "/search?sort=newest", label: "חדש" },
   { href: "/category/rings", label: "טבעות" },
   { href: "/category/necklaces", label: "שרשראות" },
   { href: "/category/earrings", label: "עגילים" },
@@ -142,19 +144,24 @@ export function SiteHeader() {
             </Link>
             <Button
               asChild
-              className="site-header-action size-10 sm:size-11"
+              className="site-header-action hidden size-10 sm:inline-flex sm:size-11"
               size="icon"
               variant="ghost"
             >
               <Link
                 data-icon-tooltip="מועדפים"
                 data-icon-tooltip-placement="bottom"
-                href="/account#account-wishlist"
+                href="/wishlist"
               >
                 <Heart aria-hidden="true" className="size-5" />
                 <span className="sr-only">מועדפים</span>
               </Link>
             </Button>
+            <CartCountLink
+              className="site-header-action inline-grid size-10 place-items-center rounded-md outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] sm:size-11"
+              data-icon-tooltip="סל"
+              data-icon-tooltip-placement="bottom"
+            />
             <Button
               asChild
               className="site-header-action size-10 sm:size-11"

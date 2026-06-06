@@ -114,23 +114,32 @@ describe("visible site improvement affordances", () => {
 
     expect(home).toContain("home-cinematic-hero");
     expect(styles).toContain(".home-cinematic-hero");
-    expect(styles).toContain("clamp(36rem, 92svh, 54rem)");
+    expect(styles).toContain("clamp(34rem, 84svh, 50rem)");
     expect(home).toContain('data-testid="home-hero-copy"');
     expect(home).toContain('data-testid="home-hero-statement"');
     expect(home).toContain('data-testid="home-hero-primary-cta"');
-    expect(home).toContain("prelaunch-hero");
+    expect(home).toContain("storefront-hero");
     expect(home).toContain("max-w-[min(38rem,calc(100vw-2.5rem))]");
-    expect(home).toContain("sm:max-w-[min(40rem,42vw)]");
+    expect(home).toContain("sm:max-w-[min(42rem,45vw)]");
     expect(home).toContain("home-hero-statement motion-copy-item");
     expect(home).toContain('data-testid="home-hero-cta-row"');
-    expect(home).toContain('data-testid="home-hero-secondary-line"');
-    expect(home).toContain('href="#waitlist"');
+    expect(home).toContain('href="/search"');
+    expect(home).toContain('data-testid="home-category-tiles"');
+    expect(home).toContain('data-testid="home-featured-products"');
+    expect(home).not.toContain('data-testid="home-hero-secondary-line"');
+    expect(home).not.toContain('href="/category/rings"');
     expect(home).not.toContain('data-testid="home-hero-trust-notes"');
     expect(home).not.toContain("home-hero-help-cta");
     expect(accountPage).toContain('id="account-login"');
     expect(accountPage).toContain("<CustomerOtpForm />");
     expect(accountPage).toContain('id="account-benefits"');
-    expect(accountPage).toContain("MetricCard");
+    expect(accountPage).toContain("<AccountPageHeader");
+    expect(accountPage).toContain("account-entry-layout");
+    expect(accountPage).toContain("<AccountServiceStrip />");
+    expect(accountPage).toContain("<AccountSidebar />");
+    expect(accountPage).toContain("<AccountSummaryPanel");
+    expect(accountPage).toContain('data-testid="account-summary-panel"');
+    expect(accountPage).toContain('data-testid="account-service-strip"');
     expect(accountPage).toContain("PackageCheck");
     expect(accountPage).toContain("Heart");
     expect(accountPage).toContain("Ruler");
@@ -223,15 +232,16 @@ describe("visible site improvement affordances", () => {
     expect(header).toContain('triggerLabel="תפריט"');
     expect(header).toContain('aria-label="חיפוש"');
     expect(header).toContain('aria-label="צרו קשר"');
-    expect(header).toContain('href="/account#account-wishlist"');
+    expect(header).toContain('href="/wishlist"');
     expect(header).not.toContain("const prelaunchNavItems = [");
     expect(header).not.toContain('aria-label="Pre-launch navigation"');
     expect(header).not.toContain("data-home-prelaunch");
     expect(header).toContain("<MobileNav");
     expect(header).toContain('href="/search"');
+    expect(header).toContain("/search?sort=newest");
     expect(header).toContain('data-icon-tooltip="מועדפים"');
     expect(header).toContain('data-icon-tooltip="אזור אישי"');
-    expect(header).not.toContain("CartCountLink");
+    expect(header).toContain("CartCountLink");
     expect(header).not.toContain("desktopNavItems");
     expect(header).toContain("HOME_HEADER_SOLID_SCROLL_Y");
     expect(header).toContain("setHasScrolled");
@@ -252,6 +262,30 @@ describe("visible site improvement affordances", () => {
     expect(footer).toContain("title={item.label}");
   });
 
+  it("keeps favorites separated from the account route", () => {
+    const header = read("src/components/site-header.tsx");
+    const mobileNav = read("src/components/mobile-nav.tsx");
+    const wishlistPage = read("src/app/wishlist/page.tsx");
+    const guestWishlist = read(
+      "src/app/wishlist/_components/guest-wishlist-products.tsx",
+    );
+    const wishlistApi = read("src/app/api/wishlist/products/route.ts");
+    const sitemap = read("src/app/sitemap.ts");
+
+    expect(header).toContain('href="/wishlist"');
+    expect(header).not.toContain('href="/account#account-wishlist"');
+    expect(mobileNav).toContain('href: "/wishlist"');
+    expect(wishlistPage).toContain('title: "מועדפים"');
+    expect(wishlistPage).toContain("<GuestWishlistProducts />");
+    expect(wishlistPage).toContain("removeWishlistItemAction");
+    expect(guestWishlist).toContain('data-testid="wishlist-guest-panel"');
+    expect(guestWishlist).toContain("readGuestWishlistSlugs");
+    expect(guestWishlist).toContain("removeGuestWishlistItem");
+    expect(wishlistApi).toContain("listCatalogProductsCachedRequest");
+    expect(wishlistApi).toContain("mapWishlistProductSummary");
+    expect(sitemap).toContain('"/wishlist"');
+  });
+
   it("keeps mobile navigation grouped, active, and closable", () => {
     const mobileNav = read("src/components/mobile-nav.tsx");
     const sheet = read("src/components/ui/sheet.tsx");
@@ -262,7 +296,8 @@ describe("visible site improvement affordances", () => {
     expect(mobileNav).toContain("mobile-nav-panel-luxury");
     expect(mobileNav).toContain('data-nav-variant="luxury-editorial"');
     expect(mobileNav).toContain("mobile-nav-quick-list");
-    expect(mobileNav).toContain("const catalogItems = items.slice(0, 4)");
+    expect(mobileNav).toContain('item.href.startsWith("/category/")');
+    expect(mobileNav).not.toContain("const catalogItems = items.slice(0, 4)");
     expect(mobileNav).toContain("const editorialItems = items");
     expect(mobileNav).toContain("RECENTLY_VIEWED_STORAGE_KEY");
     expect(mobileNav).toContain("useCookieConsentValue");
@@ -506,10 +541,12 @@ describe("visible site improvement affordances", () => {
     );
     expect(checkoutForm).toContain('data-testid="checkout-empty-cart"');
     expect(checkoutForm).toContain("checkoutEmptyLinks.map");
-    expect(checkoutForm).toContain('href: "/category/rings"');
-    expect(checkoutForm).toContain('href: "/gifts"');
+    expect(checkoutForm).toContain('href: "/search"');
+    expect(checkoutForm).toContain('href: "/size-guide"');
     expect(checkoutForm).toContain('href="/search"');
     expect(checkoutForm).toContain('href="/service"');
+    expect(checkoutForm).toContain("checkout-boutique-panel");
+    expect(checkoutForm).toContain("checkout-policy-notes");
     expect(checkoutForm).toContain('data-testid="checkout-order-note-hint"');
     expect(checkoutForm).toContain(
       'aria-describedby="checkout-order-note-hint"',
@@ -538,8 +575,9 @@ describe("visible site improvement affordances", () => {
     expect(accountPage).toContain('data-testid="account-shopify-service-link"');
     expect(orderPage).toContain('data-testid="order-status-timeline"');
     expect(accountPage).toContain('testId="account-empty-orders"');
-    expect(accountPage).toContain('href="/gifts"');
     expect(accountPage).toContain('href="/search"');
+    expect(accountPage).toContain("המשך לקולקציות");
+    expect(accountPage).toContain("צפייה בקולקציות");
     expect(accountPage).toContain("<CustomerPrivacyActions />");
     expect(privacyActions).toContain(
       'data-testid="account-privacy-shortcut-context"',

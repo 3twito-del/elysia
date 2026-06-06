@@ -43,7 +43,7 @@ const socialLinks = [
     icon: SiInstagram,
   },
   {
-    href: "https://www.tiktok.com/@elysia.one",
+    href: "https://www.tiktok.com/@elysia_jewellery",
     label: "טיקטוק",
     ariaLabel: "טיקטוק של Elysia",
     icon: SiTiktok,
