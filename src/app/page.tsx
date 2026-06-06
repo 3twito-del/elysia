@@ -129,7 +129,7 @@ export default async function Home() {
         <div className="storefront-hero-wash absolute inset-0" />
 
         <div
-          className="home-hero-copy motion-hero-copy storefront-hero-copy absolute z-10 flex max-w-[min(38rem,calc(100vw-2.5rem))] flex-col items-end text-right sm:max-w-[min(42rem,45vw)]"
+          className="home-hero-copy motion-hero-copy storefront-hero-copy absolute z-10 flex max-w-[min(38rem,calc(100vw-2.5rem))] flex-col items-start text-left sm:max-w-[min(42rem,45vw)]"
           data-testid="home-hero-copy"
           dir="ltr"
         >
