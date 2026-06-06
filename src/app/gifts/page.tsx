@@ -95,7 +95,7 @@ export default async function GiftsPage() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-base font-medium" id="gift-results">
-                בחירות פתוחות עכשיו
+                בחירות זמינות עכשיו
               </h2>
               <p className="text-muted-foreground text-sm">
                 {hiddenProductsCount > 0
@@ -126,7 +126,9 @@ export default async function GiftsPage() {
             >
               התחילו מתקציב, נמען או אירוע
             </h2>
-            <p className="text-muted-foreground mt-2 text-sm leading-6">כל בחירה פותחת חיפוש מוכן ומצמצמת את המבחר בלי להסתיר סינון.</p>
+            <p className="text-muted-foreground mt-2 text-sm leading-6">
+              כל בחירה פותחת חיפוש מוכן ומצמצמת את המבחר בלי להסתיר סינון.
+            </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
             <GiftChipGroup label="תקציב" links={giftBudgetChips} />
@@ -152,7 +154,9 @@ export default async function GiftsPage() {
                   שילובי מתנה מוכנים להשוואה
                 </h2>
               </div>
-              <p className="text-muted-foreground max-w-xl text-sm leading-6">כל שילוב מציג שני תכשיטים נפרדים עם מחיר ופרטים מלאים.</p>
+              <p className="text-muted-foreground max-w-xl text-sm leading-6">
+                כל שילוב מציג שני תכשיטים נפרדים עם מחיר ופרטים מלאים.
+              </p>
             </div>
             <div className="mt-4 grid gap-5 lg:grid-cols-2">
               {bundlePairs.map((pair) => (

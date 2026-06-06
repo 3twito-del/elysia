@@ -256,14 +256,14 @@ export function createSemanticMatchReason(
   } else if (intent.softSignals.includes("daily")) {
     reasons.push("מתאים לענידה יומיומית");
   } else if (intent.softSignals.includes("delicate")) {
-    reasons.push("מראה עדין וקליל");
+    reasons.push("מראה נקי ולא כבד");
   } else if (intent.softSignals.includes("gift")) {
     reasons.push("בחירה טובה למתנה");
   }
 
   return reasons.length > 0
     ? reasons.slice(0, 2).join(" · ")
-    : "התאמה עדינה מן הקולקציה";
+    : "התאמה נקייה מן הקולקציה";
 }
 
 export function productMatchesSemanticExclusions(

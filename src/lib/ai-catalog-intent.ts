@@ -182,7 +182,7 @@ export function createAiMatchReason(
     intent.category === "earrings" &&
     mentionsSoftWeight(intent.originalQuery)
   ) {
-    reasons.push("מראה עדין שלא מרגיש כבד");
+    reasons.push("מראה נקי שאינו נראה כבד");
   }
 
   return reasons.length > 0

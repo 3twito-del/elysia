@@ -183,7 +183,7 @@ export default async function ProductPage({
     },
     {
       icon: Gem,
-      label: "נבדק בקפידה לפני מסירה",
+      label: "נבדק לפני מסירה",
     },
     {
       icon: Truck,
@@ -321,7 +321,9 @@ export default async function ProductPage({
                   aria-hidden="true"
                   className="mt-1 size-4 shrink-0"
                 />
-                <p className="text-muted-foreground">לוודא מידה, חומר או מסירה? נצרף את המוצר לפנייה.</p>
+                <p className="text-muted-foreground">
+                  לוודא מידה, חומר או מסירה? נצרף את המוצר לפנייה.
+                </p>
               </div>
               <Button asChild className="shrink-0" size="sm" variant="outline">
                 <Link href={productSupportHref}>שאלה על המוצר</Link>
@@ -378,7 +380,7 @@ export default async function ProductPage({
         <div className="mx-auto grid max-w-[96rem] gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:gap-10">
           <CommerceSectionHeader
             className="mb-0"
-            eyebrow="הבית של Elysia"
+            eyebrow="Elysia"
             title="פרטי מוצר, שירות והזמנה."
           />
 
@@ -459,7 +461,9 @@ function ProductRecommendationRails({
           className="flex flex-wrap items-center justify-between gap-3"
           data-testid="product-discovery-return-context"
         >
-          <p className="text-muted-foreground text-sm leading-6">הגעתם מחיפוש. ניתן לחזור לתוצאות בלי לאבד הקשר.</p>
+          <p className="text-muted-foreground text-sm leading-6">
+            הגעתם מחיפוש. ניתן לחזור לתוצאות בלי לאבד הקשר.
+          </p>
           <Button asChild size="sm" variant="outline">
             <Link href={searchReturnHref}>{searchReturnLabel}</Link>
           </Button>
@@ -523,11 +527,11 @@ function getProductBoutiqueGalleryImages(product: CatalogProduct) {
   return Array.from(
     new Set(
       [
-         product.image,
-         ...product.images,
-         categoryLifestyleImage,
-         boutiqueProductDetailImage,
-         "/brand/boutique/lifestyle-hero.avif",
+        product.image,
+        ...product.images,
+        categoryLifestyleImage,
+        boutiqueProductDetailImage,
+        "/brand/boutique/lifestyle-hero.avif",
       ].filter((image): image is string => Boolean(image)),
     ),
   ).slice(0, 6);

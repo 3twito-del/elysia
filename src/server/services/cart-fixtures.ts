@@ -72,7 +72,7 @@ export function addFixtureCartItem(input: {
   if (product.availabilityMode !== "READY_TO_ORDER") {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "התכשיט הזה דורש תיאום עם השירות האישי לפני הזמנה.",
+      message: "התכשיט הזה דורש תיאום עם שירות הלקוחות לפני הזמנה.",
     });
   }
 

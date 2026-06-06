@@ -28,7 +28,8 @@ class InternalTryOnProvider implements TryOnProvider {
       id: `tryon_${nanoid(10)}`,
       status: "queued",
       provider: "internal-webar",
-      message: "בקשת המדידה נשמרה. השירות האישי יחזור עם הכוונה למידה ולהתאמה.",
+      message:
+        "בקשת המדידה נשמרה. שירות הלקוחות יחזור עם הכוונה למידה ולהתאמה.",
     };
   }
 }

@@ -35,7 +35,7 @@ import { cn } from "~/lib/utils";
 const suggestions = [
   "מתנה עד 700 ₪",
   "טבעת זהב צהוב ליום־יום",
-  "עגילים עדינים לכלה",
+  "עגילים נקיים לאירוע",
 ];
 
 type StylistChatProps = {
@@ -86,8 +86,12 @@ export function StylistChat({ compact = false }: StylistChatProps) {
                     "font-semibold",
                     compact ? "text-xl" : "text-2xl",
                   )}
-                >עזרה בבחירה</h2>
-                <p className="text-muted-foreground max-w-2xl text-sm leading-6">מאתרים התאמות לפי מחיר, אירוע, חומר וסגנון, מתוך המלאי הפעיל.</p>
+                >
+                  עזרה בבחירה
+                </h2>
+                <p className="text-muted-foreground max-w-2xl text-sm leading-6">
+                  מאתרים התאמות לפי מחיר, אירוע, חומר וסגנון, מתוך המלאי הפעיל.
+                </p>
               </div>
             </div>
             <div

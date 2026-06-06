@@ -63,8 +63,7 @@ const categoryLuxuryCopyBySlug: Record<string, CategoryLuxuryCopy> = {
     title: "צמידים",
   },
   earrings: {
-    description:
-      "עגילים לפי משקל, גימור, חומר ונוחות ענידה.",
+    description: "עגילים לפי משקל, גימור, חומר ונוחות ענידה.",
     intro: "עגילים ליום, לערב ולמתנה.",
     title: "עגילים",
   },
@@ -75,8 +74,7 @@ const categoryLuxuryCopyBySlug: Record<string, CategoryLuxuryCopy> = {
     title: "שרשראות",
   },
   rings: {
-    description:
-      "טבעות זהב, יהלומים ואבני חן לפי פרופורציה, נוחות ומידה.",
+    description: "טבעות זהב, יהלומים ואבני חן לפי פרופורציה, נוחות ומידה.",
     intro: "טבעות ליום, לערב, להצעה או למתנה.",
     title: "טבעות",
   },
@@ -203,9 +201,7 @@ export default async function CategoryPage({
   const hasCategoryProducts = baseProducts.length > 0;
   const hasActiveFilters = activeFilterCount > 0;
   const pageRangeLabel =
-    sortedProducts.length > 0
-      ? "מבחר תכשיטים"
-      : "המבחר יעודכן בקרוב";
+    sortedProducts.length > 0 ? "מבחר תכשיטים" : "המבחר יעודכן בקרוב";
 
   return (
     <>
@@ -479,7 +475,7 @@ function CategoryBreadcrumbs({ categoryName }: { categoryName: string }) {
       dir="rtl"
     >
       <Link className="hover:text-foreground transition-colors" href="/">
-        בית
+        עמוד הבית
       </Link>
       <span aria-hidden="true">›</span>
       <Link className="hover:text-foreground transition-colors" href="/search">
@@ -508,7 +504,9 @@ function CategoryEditorialNote({
         <span className="text-muted-foreground text-xs">{categoryName}</span>
       </summary>
       <p className="text-muted-foreground mt-3 max-w-3xl leading-7">
-        {description}מומלץ לשמור בנפרד, להימנע ממים ובושם, ולבחור מידה לפי שימוש יומי.</p>
+        {description}מומלץ לשמור בנפרד, להימנע ממים ובושם, ולבחור מידה לפי שימוש
+        יומי.
+      </p>
     </details>
   );
 }
@@ -655,9 +653,7 @@ function CategoryPagination({
       aria-label="עמודי פריטים"
       className="mt-10 flex flex-col items-center justify-between gap-3 sm:flex-row"
     >
-      <p className="text-muted-foreground text-sm">
-        עמוד {currentPage}
-      </p>
+      <p className="text-muted-foreground text-sm">עמוד {currentPage}</p>
 
       <div className="flex flex-wrap items-center justify-center gap-2">
         <Button

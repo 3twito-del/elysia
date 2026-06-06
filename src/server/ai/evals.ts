@@ -40,7 +40,7 @@ export const DETERMINISTIC_AI_EVAL_CASES = [
   },
   {
     name: "gift finder is catalog backed only",
-    input: "מתנה לאמא עד 700 שח בסגנון עדין",
+    input: "מתנה לאמא עד 700 שח בסגנון נקי",
     expectedKind: AI_RUN_KIND.giftRecommendation,
     expectedTools: ["searchCatalog"],
     expectedConfidence: "medium",
@@ -58,10 +58,10 @@ export const DETERMINISTIC_AI_EVAL_CASES = [
   {
     name: "style and budget refinement stays catalog-backed",
     input: {
-      latestUserText: "אפשר משהו יותר עדין עד 700 שח?",
+      latestUserText: "אפשר משהו יותר נקי עד 700 שח?",
       recentUserTexts: [
         "מחפשת עגילים לכלה שלא נראים כבדים",
-        "אפשר משהו יותר עדין עד 700 שח?",
+        "אפשר משהו יותר נקי עד 700 שח?",
       ],
     },
     expectedKind: AI_RUN_KIND.catalogSearch,

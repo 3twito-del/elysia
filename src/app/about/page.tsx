@@ -180,8 +180,7 @@ const materialFacts = [
 
 export const metadata: Metadata = {
   title: "אודות",
-  description:
-    "Elysia מציגה תכשיטים עם חומר, מידה, מחיר ושירות ברור.",
+  description: "Elysia מציגה תכשיטים עם חומר, מידה, מחיר ושירות ברור.",
   openGraph: {
     title: "Elysia",
     description: "תכשיטי Elysia עם חומר, מידה, מחיר ושירות ברור.",
@@ -205,7 +204,9 @@ export default function AboutPage() {
                 </Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href="/service">שירות<Headphones aria-hidden="true" className="size-4" />
+                <Link href="/service">
+                  שירות
+                  <Headphones aria-hidden="true" className="size-4" />
                 </Link>
               </Button>
             </>
@@ -221,7 +222,7 @@ export default function AboutPage() {
             slides: cinematicRouteMedia.about,
           }}
           metrics={[
-            { label: "מיקוד", value: "תכשיטי בית" },
+            { label: "מיקוד", value: "תכשיטי Elysia" },
             { label: "גישה", value: "דיוק שקט" },
             { label: "שירות", value: "לפני ואחרי הזמנה" },
           ]}
@@ -238,10 +239,18 @@ export default function AboutPage() {
           <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
             <div>
               <p className="text-muted-foreground text-sm">הגישה</p>
-              <h2 className="mt-3 max-w-2xl text-3xl leading-tight font-semibold sm:text-4xl">תכשיטים, מידע ושירות.</h2>
+              <h2 className="mt-3 max-w-2xl text-3xl leading-tight font-semibold sm:text-4xl">
+                תכשיטים, מידע ושירות.
+              </h2>
               <div className="text-muted-foreground mt-5 grid max-w-2xl gap-4 text-base leading-8">
-                <p>תכשיט מדויק מתחיל בפרופורציה, חומר ומידע ברור. כל פריט מוצג כך שניתן לראות מבנה, מידה ופרטים לפני הזמנה.</p>
-                <p>שירות זמין לשאלות על מתנה, מידה, אירוע או שימוש יומי. המטרה: החלטה ברורה לפני הזמנה.</p>
+                <p>
+                  תכשיט מדויק מתחיל בפרופורציה, חומר ומידע ברור. כל פריט מוצג כך
+                  שניתן לראות מבנה, מידה ופרטים לפני הזמנה.
+                </p>
+                <p>
+                  שירות זמין לשאלות על מתנה, מידה, אירוע או שימוש יומי. המטרה:
+                  החלטה ברורה לפני הזמנה.
+                </p>
               </div>
               <dl className="mt-7 grid gap-3 sm:grid-cols-3">
                 <div className="border-t border-[var(--glass-border)] pt-3">
@@ -252,7 +261,7 @@ export default function AboutPage() {
                 </div>
                 <div className="border-t border-[var(--glass-border)] pt-3">
                   <dt className="text-muted-foreground text-xs">מסירה</dt>
-                  <dd className="mt-1 text-xl font-semibold">עד הבית</dd>
+                  <dd className="mt-1 text-xl font-semibold">מסירה מתואמת</dd>
                 </div>
                 <div className="border-t border-[var(--glass-border)] pt-3">
                   <dt className="text-muted-foreground text-xs">שירות</dt>
@@ -276,10 +285,18 @@ export default function AboutPage() {
             <div className="grid gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-start">
               <div>
                 <p className="text-muted-foreground text-sm">Elysia</p>
-                <h2 className="mt-3 max-w-3xl text-3xl leading-tight font-semibold sm:text-4xl">Elysia נבנתה לבחירה ברורה לפני הזמנה.</h2>
+                <h2 className="mt-3 max-w-3xl text-3xl leading-tight font-semibold sm:text-4xl">
+                  Elysia נבנתה לבחירה ברורה לפני הזמנה.
+                </h2>
                 <div className="text-muted-foreground mt-5 grid max-w-3xl gap-4 leading-8">
-                  <p>תכשיט מדויק נשען על פרופורציה, חומר, צילום ברור ושירות שמכבד זמן.</p>
-                  <p>הקולקציה נבחרת לפי קו נקי, נוחות שימוש ופרטים גלויים: טבעת ליום, שרשרת לשכבות, עגילים קלים ומתנה ארוזה היטב.</p>
+                  <p>
+                    תכשיט מדויק נשען על פרופורציה, חומר, צילום ברור ושירות שמכבד
+                    זמן.
+                  </p>
+                  <p>
+                    הקולקציה נבחרת לפי קו נקי, נוחות שימוש ופרטים גלויים: טבעת
+                    ליום, שרשרת לשכבות, עגילים קלים ומתנה ארוזה היטב.
+                  </p>
                 </div>
               </div>
 
@@ -368,7 +385,9 @@ export default function AboutPage() {
                 >
                   שאלות על טיפול, מידה או התאמה
                 </h2>
-                <p className="text-muted-foreground mt-2 leading-7">ניתן לעבור לשאלות ותשובות או לפתוח פנייה עם פרטי המוצר.</p>
+                <p className="text-muted-foreground mt-2 leading-7">
+                  ניתן לעבור לשאלות ותשובות או לפתוח פנייה עם פרטי המוצר.
+                </p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <Button asChild size="sm" variant="outline">
                     <Link href="/faq#faq-group-2">שאלות על מידות</Link>
@@ -413,7 +432,10 @@ export default function AboutPage() {
               <h2 className="mt-3 text-3xl leading-tight font-semibold sm:text-4xl">
                 לפני ההזמנה מוצגים חומר, מידה, מחיר ומשלוח.
               </h2>
-              <p className="text-muted-foreground mt-5 leading-8">בכל תכשיט נדרשים תקריב, תיאור קצר, מחיר ברור ושירות לאימות התאמה לפני הזמנה.</p>
+              <p className="text-muted-foreground mt-5 leading-8">
+                בכל תכשיט נדרשים תקריב, תיאור קצר, מחיר ברור ושירות לאימות התאמה
+                לפני הזמנה.
+              </p>
               <div className="mt-7 flex flex-wrap gap-3">
                 <Button asChild variant="outline">
                   <Link href="/category/rings">טבעות</Link>
@@ -443,8 +465,12 @@ export default function AboutPage() {
           <div className="grid gap-6 border-t border-[var(--glass-border)] pt-8 lg:grid-cols-[1fr_auto] lg:items-end">
             <div>
               <Sparkles aria-hidden="true" className="size-7" />
-              <h2 className="mt-4 max-w-3xl text-3xl leading-tight font-semibold sm:text-4xl">Elysia מאפשרת לבחור, לבדוק ולהזמין.</h2>
-              <p className="text-muted-foreground mt-4 max-w-3xl leading-8">בחירה מתחילה במידה, חומר, תקציב ושימוש.</p>
+              <h2 className="mt-4 max-w-3xl text-3xl leading-tight font-semibold sm:text-4xl">
+                Elysia מאפשרת לבחור, לבדוק ולהזמין.
+              </h2>
+              <p className="text-muted-foreground mt-4 max-w-3xl leading-8">
+                בחירה מתחילה במידה, חומר, תקציב ושימוש.
+              </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
               <Button asChild>
@@ -454,7 +480,9 @@ export default function AboutPage() {
                 </Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href="/service">שירות<Headphones aria-hidden="true" className="size-4" />
+                <Link href="/service">
+                  שירות
+                  <Headphones aria-hidden="true" className="size-4" />
                 </Link>
               </Button>
             </div>
