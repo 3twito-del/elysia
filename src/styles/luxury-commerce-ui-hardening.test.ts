@@ -206,6 +206,12 @@ describe("luxury commerce UI hardening", () => {
     const favorite = read("src/components/product-card-favorite-button.tsx");
     const productCard = read("src/components/product-card.tsx");
     const card = read("src/components/ui/card.tsx");
+    const css = read("src/styles/globals.css");
+    const favoriteTooltipCss = extractBetween(
+      css,
+      ".product-card-favorite [data-icon-tooltip]::after",
+      ".product-card-favorite [data-icon-tooltip]:focus-visible::after",
+    );
 
     expect(button).not.toMatch(/(outline|secondary):\s*"[^"]*shadow-\[0_6px/);
     expect(button).not.toMatch(
@@ -219,6 +225,9 @@ describe("luxury commerce UI hardening", () => {
     expect(favorite).toContain('variant="ghost"');
     expect(favorite).toContain('data-icon-tooltip-placement="bottom"');
     expect(favorite).toContain("product-card-favorite-status");
+    expect(favoriteTooltipCss).toContain("right: 0;");
+    expect(favoriteTooltipCss).toContain("left: auto;");
+    expect(favoriteTooltipCss).toContain("translate(0, -2px)");
     expect(productCard).toContain("product-card-shell");
     expect(productCard).toContain("border-0");
     expect(productCard).toContain("shadow-none");
