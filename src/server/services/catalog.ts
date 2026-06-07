@@ -47,32 +47,32 @@ const ACTIVE_PRODUCT_WHERE = {
 const CATALOG_MEDIA_VERSION = "boutique-v8";
 const CATALOG_REVALIDATE_SECONDS = 60 * 60;
 const publicCatalogCopyReplacements = [
-  ["יוקרה", "מידע מסודר"],
+  ["יוקרה", "נוכחות עדינה"],
   ["רשת תכשיטים", "תכשיטי Elysia"],
   ["תכשיטים אונליין", "תכשיטי Elysia"],
   ["תכשיטי Elysia", "תכשיטי Elysia"],
-  ["תכשיטים זמינים לקנייה", "בחירות נבחרות מן הקולקציה"],
-  ["רכישה אונליין", "הבחירה באתר"],
-  ["קנייה אונליין", "הבחירה באתר"],
-  ["חוויית הקנייה", "חוויית בחירה"],
+  ["תכשיטים זמינים לקנייה", "פריטים זמינים מן הקולקציה"],
+  ["רכישה אונליין", "הזמנה באתר"],
+  ["קנייה אונליין", "הזמנה באתר"],
+  ["חוויית הקנייה", "חוויית תכשיטים"],
   ["מחיר גלוי לפני שמירה", "פרטים מאומתים לפני הזמנה"],
   ["מחיר גלוי לפני התאמה", "פרטי ההתאמה יאושרו מראש"],
-  ["מחיר גלוי", "מידע לפני הבחירה"],
+  ["מחיר גלוי", "מחיר לפני הזמנה"],
   ["בדיקת איכות לפני מסירה", "נבדק לפני מסירה"],
-  ["שירות וקנייה", "שירות והזמנה"],
+  ["שירות וקנייה", "שאלה והזמנה"],
   ["לאחר קנייה", "לאחר מסירה"],
   ["צפייה וקנייה", "לפרטי התכשיט"],
-  ["מוצרים מומלצים", "בחירות מומלצות"],
-  ["מוצרים שנצפו", "בחירות שנצפו"],
-  ["מוצרים קיימים", "בחירות קיימות"],
-  ["מסחר אונליין", "הבחירה"],
+  ["מוצרים מומלצים", "תכשיטים מומלצים"],
+  ["מוצרים שנצפו", "תכשיטים שנצפו"],
+  ["מוצרים קיימים", "תכשיטים קיימים"],
+  ["מסחר אונליין", "הזמנה אונליין"],
   ["קטלוג אונליין", "תכשיטי Elysia"],
   ["קטלוג דיגיטלי", "תכשיטי Elysia"],
   ["הזמנה דיגיטלית", "הזמנה אישית"],
   ["תקציב", "מחיר"],
   ["מוצרים", "תכשיטים"],
   ["מוצר", "תכשיט"],
-  ["רכישה", "בחירה"],
+  ["רכישה", "הזמנה"],
 ] as const;
 const privateCatalogCopyPattern =
   /supplier|shopify|dropship|configured as|active product|supplier-backed|supplied through|ספק/iu;
@@ -750,7 +750,7 @@ function getDisplayProductDescription(input: {
 
   const stoneText = input.stone ? ` עם ${input.stone}` : "";
 
-  return `${input.name} משלב ${input.material}${stoneText} בקו נקי ונוח לענידה. פרטי מידה, חומר ומחיר מוצגים בבירור.`;
+  return `${input.name} משלב ${input.material}${stoneText} בקו יומיומי ונוח לענידה, עם מידה, חומר ומחיר לפני הזמנה.`;
 }
 
 function getDisplayProductShortDescription(input: {
@@ -768,7 +768,7 @@ function getDisplayProductShortDescription(input: {
     return normalizePublicCatalogCopy(input.shortDescription);
   }
 
-  return `${input.name} מוצג עם פרטי חומר, מידה ומחיר לפני בחירה.`;
+  return `${input.name} מוצג עם חומר, מידה ומחיר לפני הזמנה.`;
 }
 
 function getDisplayCommerceHighlights(record: CatalogProductRecord) {
@@ -781,7 +781,7 @@ function getDisplayCommerceHighlights(record: CatalogProductRecord) {
   }
 
   return [
-    normalizePublicCatalogCopy(record.warranty ?? "שירות לפני הבחירה"),
+    normalizePublicCatalogCopy(record.warranty ?? "מענה לפני הזמנה"),
     normalizePublicCatalogCopy(
       record.deliveryPromise ?? "מסירה מתואמת עד הבית",
     ),
@@ -890,7 +890,7 @@ function getDisplayCategoryDescription(input: {
 
   const publicName = getPublicCategoryName(input.slug, input.name);
 
-  return `${publicName} מתוך קולקציית Elysia, עם פרטי חומר, מידה ומחיר לפני בחירה.`;
+  return `${publicName} מתוך קולקציית Elysia, עם חומר, מידה ומחיר לפני הזמנה.`;
 }
 
 function getVariantPrice(

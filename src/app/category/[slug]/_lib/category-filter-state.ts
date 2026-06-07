@@ -292,7 +292,7 @@ function getCategoryFilterSections({
 }): CategoryFilterSection[] {
   const sections = [
     {
-      description: "מיון לפי המלצה, מחיר או פריטים חדשים.",
+      description: "מיון לפי המלצה, מחיר או מה שנכנס לאחרונה.",
       title: "מיון",
       options: sortOptions.map((option) => {
         const active = filters.sort === option.value;
@@ -310,7 +310,7 @@ function getCategoryFilterSections({
       }),
     },
     {
-      description: "בחירה לפי קטגוריית תכשיט.",
+      description: "מעבר בין טבעות, שרשראות, עגילים וצמידים.",
       title: "קטגוריה",
       options: categories.map((item) => {
         const active = item.slug === slug;
@@ -325,7 +325,7 @@ function getCategoryFilterSections({
       }),
     },
     {
-      description: "בחירה לפי מתכת וגוון.",
+      description: "זהב, כסף וגוונים זמינים.",
       title: "חומר",
       options: materialOptions.map((material) => {
         const active = filters.material === material;
@@ -343,7 +343,7 @@ function getCategoryFilterSections({
       }),
     },
     {
-      description: "בחירה לפי אבן.",
+      description: "פנינים, יהלומים ואבני צבע לפי המלאי.",
       title: "אבן",
       options: stoneOptions.map((stone) => {
         const active = filters.stone === stone;
@@ -361,7 +361,7 @@ function getCategoryFilterSections({
       }),
     },
     {
-      description: "בחירה לפי טווח מחיר.",
+      description: "טווח מחיר שמתאים למתנה או לעצמך.",
       title: "מחיר",
       options: priceOptions.map((price) => {
         const active = filters.maxPrice === price;
@@ -379,7 +379,7 @@ function getCategoryFilterSections({
       }),
     },
     {
-      description: "קו עיצובי שמכוון את הבחירה.",
+      description: "קו עיצובי שמכוון את הלוק.",
       title: "סגנון",
       options: styleOptions.map((style) => {
         const active = filters.style === style;
@@ -397,7 +397,7 @@ function getCategoryFilterSections({
       }),
     },
     {
-      description: "בחירה לפי רגע, מתנה או שימוש.",
+      description: "לפי רגע, מתנה או שימוש.",
       title: "אירוע",
       options: occasionOptions.map((occasion) => {
         const active = filters.occasion === occasion;
@@ -415,7 +415,7 @@ function getCategoryFilterSections({
       }),
     },
     {
-      description: "בחירה מתוך עריכה קיימת של הקולקציה.",
+      description: "פריטים מתוך עריכה קיימת של הקולקציה.",
       title: "קולקציה",
       options: collectionOptions.map((collection) => {
         const active = filters.collection === collection;

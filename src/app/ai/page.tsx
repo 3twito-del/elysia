@@ -9,7 +9,7 @@ import { Badge } from "~/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 export const metadata = {
-  title: "התאמה",
+  title: "התאמה לתכשיט",
 };
 
 type AiPageProps = {
@@ -28,10 +28,10 @@ export default async function AiPage({ searchParams }: AiPageProps) {
     <main className="min-h-screen">
       <SiteHeader />
       <CommercePageHero
-        description="כלי התאמה מחוברים למבחר Elysia ומציגים בחירות לפי כוונה, מחיר וסגנון."
+        description="עזרה בבחירת תכשיט לפי לוק, תקציב, מתנה ומידה מתוך מה שזמין עכשיו."
         eyebrow="התאמה"
         id="page-hero"
-        title="התאמה לתכשיט"
+        title="מה מתאים לרגע שלך?"
         variant="content"
       />
       <RevealSection
@@ -43,11 +43,11 @@ export default async function AiPage({ searchParams }: AiPageProps) {
             <div className="brand-control-panel grid gap-3 p-3 sm:grid-cols-[1fr_auto] sm:items-end">
               <div className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end">
                 <Badge className="w-fit" variant="secondary">
-                  כלי התאמה
+                  התאמה
                 </Badge>
                 <div className="grid gap-2">
                   <h2 className="max-w-4xl text-xl font-semibold tracking-normal sm:text-2xl">
-                    בחרו כלי
+                    בחרו איך להתחיל
                   </h2>
                 </div>
               </div>
@@ -61,7 +61,7 @@ export default async function AiPage({ searchParams }: AiPageProps) {
                   className="text-muted-foreground hover:text-foreground data-[state=active]:text-foreground min-h-10 min-w-0 cursor-pointer gap-2 rounded-none border-0 bg-transparent px-1.5 pt-1 pb-2 text-sm font-semibold shadow-none hover:bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none"
                   value="stylist"
                 >
-                  <MessageSquare aria-hidden="true" className="size-4" />יועץ התאמה</TabsTrigger>
+                  <MessageSquare aria-hidden="true" className="size-4" />יועץ לוק</TabsTrigger>
                 <TabsTrigger
                   className="text-muted-foreground hover:text-foreground data-[state=active]:text-foreground min-h-10 min-w-0 cursor-pointer gap-2 rounded-none border-0 bg-transparent px-1.5 pt-1 pb-2 text-sm font-semibold shadow-none hover:bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none"
                   value="gifts"
@@ -85,7 +85,7 @@ export default async function AiPage({ searchParams }: AiPageProps) {
             <div className="brand-icon-well flex size-10 items-center justify-center rounded-md border">
               <Sparkles aria-hidden="true" className="size-4" />
             </div>
-            <p className="text-muted-foreground max-w-4xl">הזמנה, פרופיל סגנון ומידה זמינים באזור הלקוח ובעמודי המוצר. ההמלצות מתמקדות בפריטים פתוחים במלאי.</p>
+            <p className="text-muted-foreground max-w-4xl">ההמלצות מתמקדות בפריטים שפתוחים במלאי, לפי סגנון, מחיר ומידה זמינה.</p>
           </section>
         </div>
       </RevealSection>

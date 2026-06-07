@@ -94,7 +94,7 @@ export function createAccountOrderTimeline(
     },
     {
       at: order.preparingAt ?? null,
-      description: "הצוות מכין את הבחירה למסירה.",
+      description: "הצוות מכין את התכשיטים למסירה.",
       id: "preparing",
       label: "בהכנה",
     },

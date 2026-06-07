@@ -15,7 +15,7 @@ export default function manifest(): ExtendedManifest {
     id: "/",
     name: "Elysia",
     short_name: "Elysia",
-    description: "תכשיטי Elysia עם מידע מוצר, שירות והזמנה מקוונת.",
+    description: "תכשיטי Elysia ללוק יומי, למתנה ולערב.",
     start_url: "/?source=pwa",
     scope: "/",
     lang: "he",
@@ -62,9 +62,9 @@ export default function manifest(): ExtendedManifest {
     ],
     shortcuts: [
       {
-        name: "מבחר Elysia",
-        short_name: "המבחר",
-        description: "פתיחת מבחר Elysia",
+        name: "תכשיטי Elysia",
+        short_name: "תכשיטים",
+        description: "פתיחת כל התכשיטים",
         url: "/search?source=pwa-shortcut",
         icons: [
           {
@@ -75,9 +75,9 @@ export default function manifest(): ExtendedManifest {
         ],
       },
       {
-        name: "מתנות נבחרות",
+        name: "רעיונות למתנה",
         short_name: "מתנות",
-        description: "פתיחת מדריך מתנות",
+        description: "פתיחת רעיונות למתנה",
         url: "/gifts?source=pwa-shortcut",
         icons: [
           {
@@ -90,7 +90,7 @@ export default function manifest(): ExtendedManifest {
       {
         name: "מדריך מידות",
         short_name: "מידות",
-        description: "שמירה מקומית להתאמה מהירה",
+        description: "בדיקת מידה לפני הזמנה",
         url: "/size-guide?source=pwa-shortcut",
         icons: [
           {
@@ -103,7 +103,7 @@ export default function manifest(): ExtendedManifest {
       {
         name: "שירות",
         short_name: "שירות",
-        description: "פנייה לשירות",
+        description: "שאלה לשירות",
         url: "/service?source=pwa-shortcut",
         icons: [
           {

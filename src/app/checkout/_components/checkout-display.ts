@@ -78,19 +78,19 @@ export function getFriendlyCheckoutErrorMessage(
   if (!rawMessage) return fallback;
 
   if (/סל.*ריק/u.test(rawMessage) || rawMessage.includes("לא נמצא סל")) {
-    return "הבחירה עדיין ריקה.";
+    return "הסל עדיין ריק.";
   }
 
   if (/תכשיט.*לא נמצא|לא נמצא.*תכשיט/u.test(rawMessage)) {
-    return "הבחירה אינה פנויה כרגע. רעננו ונסו שוב.";
+    return "התכשיט אינו פנוי כרגע. רעננו ונסו שוב.";
   }
 
   if (/cart item|product variant/i.test(rawMessage)) {
-    return "הבחירה אינה פנויה כרגע. רעננו ונסו שוב.";
+    return "התכשיט אינו פנוי כרגע. רעננו ונסו שוב.";
   }
 
   if (/fixture cart|local cart|session/i.test(rawMessage)) {
-    return "הבחירה עדיין ריקה.";
+    return "הסל עדיין ריק.";
   }
 
   if (/מחיר|הטבה|כתובת/u.test(rawMessage)) {

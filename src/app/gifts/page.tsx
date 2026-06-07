@@ -80,10 +80,10 @@ export default async function GiftsPage() {
     <main>
       <SiteHeader />
       <CommercePageHero
-        description="מתנות לפי מחיר, חומר, אירוע, אריזה או ברכה."
-        eyebrow="מתנות Elysia"
+        description="מתנות לפי לוק, תקציב ואירוע - מיום הולדת ועד ערב קיצי."
+        eyebrow="מתנות"
         id="page-hero"
-        title="למתנות"
+        title="מתנה שנראית אישית"
         variant="catalog"
       />
       <RevealSection className="mx-auto max-w-7xl px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y)]">
@@ -95,19 +95,19 @@ export default async function GiftsPage() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-base font-medium" id="gift-results">
-                בחירות זמינות עכשיו
+                מתנות זמינות עכשיו
               </h2>
               <p className="text-muted-foreground text-sm">
                 {hiddenProductsCount > 0
-                  ? `${products.length} מתוך ${sourceProducts.length} בחירות מתנה`
-                  : `${products.length} בחירות מתנה`}
+                  ? `${products.length} מתוך ${sourceProducts.length} רעיונות למתנה`
+                  : `${products.length} רעיונות למתנה`}
               </p>
             </div>
             <Link
               className="text-muted-foreground hover:text-foreground text-sm font-medium underline-offset-4 hover:underline"
               href="/search?q=%D7%9E%D7%AA%D7%A0%D7%94"
             >
-              חיפוש מתנה
+              חיפוש מתנה במבחר
             </Link>
           </div>
         </section>
@@ -118,16 +118,17 @@ export default async function GiftsPage() {
         >
           <div>
             <p className="text-muted-foreground text-xs font-medium uppercase">
-              מדריך בחירה מהיר
+              מאיפה מתחילים
             </p>
             <h2
               className="mt-2 text-lg font-medium text-balance"
               id="gift-discovery-title"
             >
-              התחילו מתקציב, נמען או אירוע
+              תקציב, למי, או הרגע שאליו היא הולכת
             </h2>
             <p className="text-muted-foreground mt-2 text-sm leading-6">
-              כל בחירה פותחת חיפוש מוכן ומצמצמת את המבחר בלי להסתיר סינון.
+              כל קיצור פותח חיפוש חי במבחר, כדי להגיע מהר לתכשיטים שמתאימים
+              באמת.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
@@ -145,17 +146,17 @@ export default async function GiftsPage() {
             <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="text-muted-foreground text-xs font-medium uppercase">
-                  הצעות שילוב
+                  שילובים
                 </p>
                 <h2
                   className="mt-2 text-lg font-medium"
                   id="gift-bundles-title"
                 >
-                  שילובי מתנה מוכנים להשוואה
+                  שני תכשיטים, לוק אחד
                 </h2>
               </div>
               <p className="text-muted-foreground max-w-xl text-sm leading-6">
-                כל שילוב מציג שני תכשיטים נפרדים עם מחיר ופרטים מלאים.
+                שילובים שאפשר להשוות לפי מחיר, צבע וחומר לפני שמחליטים.
               </p>
             </div>
             <div className="mt-4 grid gap-5 lg:grid-cols-2">
@@ -175,7 +176,7 @@ export default async function GiftsPage() {
                   <div className="grid gap-3 sm:grid-cols-2">
                     {pair.products.map((product) => (
                       <ProductCard
-                        contextLabel="חלק משילוב מתנה"
+                        contextLabel="חלק מלוק מתנה"
                         key={product.slug}
                         product={product}
                       />
@@ -212,21 +213,21 @@ export default async function GiftsPage() {
                     href="/gifts"
                     scroll={false}
                   >
-                    כל המתנות
+                    כל רעיונות המתנה
                   </Link>
                 </Button>
                 <Button asChild variant="outline">
                   <Link href="/search?q=%D7%9E%D7%AA%D7%A0%D7%94">
-                    חיפוש מתנה
+                    חיפוש רחב למתנה
                   </Link>
                 </Button>
               </>
             }
             className="mt-5"
-            description="אין התאמה מדויקת לבחירה הזו. ניתן לחזור למתנות או לפתוח חיפוש רחב."
+            description="לא מצאנו מתנה שמתאימה בדיוק. אפשר לפתוח חיפוש רחב יותר או לחזור לרעיונות המתנה."
             icon={Gift}
             testId="gifts-empty-state"
-            title="לא נמצאו מתנות מתאימות"
+            title="לא מצאנו מתנה מתאימה"
           />
         )}
       </RevealSection>
@@ -267,7 +268,7 @@ function getGiftBundlePairs(products: CatalogProduct[]): GiftBundlePair[] {
             CatalogProduct,
             CatalogProduct,
           ],
-          title: `${firstProduct.categoryName} כמתנה זוגית`,
+          title: `${firstProduct.categoryName} כמתנה עם נוכחות`,
         },
       ];
     })

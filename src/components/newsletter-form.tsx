@@ -61,7 +61,7 @@ export function NewsletterForm() {
       .catch(() =>
         setOfflineState({
           ok: false,
-          message: "לא הצלחנו לשלוח. בדקו את החיבור ונסו שוב.",
+          message: "לא הצלחנו לשלוח עכשיו. בדקו את החיבור ונסו שוב.",
         }),
       );
   }
@@ -91,7 +91,9 @@ export function NewsletterForm() {
       <p
         className="text-muted-foreground text-xs leading-5"
         id={newsletterEmailHintId}
-      >נשלח עדכוני קולקציות בלבד. אם השליחה לא הצליחה, נסו שוב בעוד רגע.</p>
+      >
+        נשלח עדכון קצר כשפריטים חדשים נכנסים למבחר.
+      </p>
       {state.message ? (
         <StatusMessage
           id={newsletterStatusId}
@@ -113,7 +115,7 @@ export function NewsletterForm() {
         </StatusMessage>
       ) : null}
       {state.ok || offlineState.ok ? (
-        <PushOptInButton label="עדכוני קולקציות במכשיר הזה" marketing />
+        <PushOptInButton label="עדכונים במכשיר הזה" marketing />
       ) : null}
     </form>
   );
@@ -130,7 +132,7 @@ function SubmitButton() {
       variant="outline"
     >
       <Mail aria-hidden="true" className="size-4" />
-      הרשמה
+      לקבל עדכון
     </Button>
   );
 }

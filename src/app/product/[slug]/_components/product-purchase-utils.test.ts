@@ -17,7 +17,7 @@ it("maps add-to-cart failures to customer-safe recovery copy", () => {
       message: "Inventory reservation failed for variant abc",
     }),
   ).toBe(
-    "ההתאמה אינה זמינה. ניתן לבחור אחרת או לפנות לשירות.",
+    "האפשרות הזו אינה זמינה. אפשר לבחור אחרת או לפנות לשירות.",
   );
   expect(
     getAddToCartFailureMessage({

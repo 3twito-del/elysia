@@ -102,7 +102,7 @@ export async function addCartItem(
     if (variant?.product.status !== "ACTIVE") {
       throw new TRPCError({
         code: "BAD_REQUEST",
-        message: "הבחירה הזו אינה פנויה כרגע.",
+        message: "התכשיט הזה אינו פנוי כרגע.",
       });
     }
 
@@ -206,7 +206,7 @@ export async function updateCartItemQuantity(
   if (!item) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "התכשיט לא נמצא בבחירה.",
+      message: "התכשיט לא נמצא בסל.",
     });
   }
 
@@ -233,7 +233,7 @@ export async function removeCartItem(
   if (!item) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "התכשיט לא נמצא בבחירה.",
+      message: "התכשיט לא נמצא בסל.",
     });
   }
 
@@ -326,7 +326,7 @@ async function requireActiveCartBySession(sessionKey: string) {
   if (!cart) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "לא נמצאה בחירה פעילה.",
+      message: "לא נמצא סל פעיל.",
     });
   }
 

@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { DeferredStylistChat } from "./_components/deferred-stylist-chat";
 
 export const metadata = {
-  title: "עזרה בבחירה",
+  title: "יועץ לוק",
 };
 
 export default function StylistPage() {
@@ -15,10 +15,10 @@ export default function StylistPage() {
     <main>
       <SiteHeader />
       <CommercePageHero
-        description="ייעוץ תכשיטים לפי סגנון, מחיר ואירוע, מתוך המלאי הפעיל."
-        eyebrow="ייעוץ"
+        description="שיחה קצרה למציאת תכשיט לפי לוק, אירוע, תקציב ומידה."
+        eyebrow="יועץ לוק"
         id="page-hero"
-        title="עזרה בבחירה"
+        title="איזה תכשיט נכנס ללוק?"
         variant="content"
       />
       <RevealSection
@@ -34,12 +34,12 @@ export default function StylistPage() {
             <Card className="rounded-md">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Sparkles aria-hidden="true" className="size-5" />ייעוץ</CardTitle>
+                  <Sparkles aria-hidden="true" className="size-5" />מה אפשר לבקש?</CardTitle>
               </CardHeader>
               <CardContent className="text-muted-foreground grid gap-3 text-sm leading-7">
-                <p>התאמת מתנה לפי קשר, אירוע, מחיר וסגנון.</p>
-                <p>סינון לפי קטגוריה, חומר וזמינות.</p>
-                <p>סיוע ראשוני בבחירת מידה.</p>
+                <p>מתנה לפי קשר, אירוע, מחיר וסגנון.</p>
+                <p>פריטים לפי קטגוריה, חומר וזמינות.</p>
+                <p>כיוון ראשוני למידה לפני הזמנה.</p>
               </CardContent>
             </Card>
             <Card className="rounded-md">
@@ -49,7 +49,7 @@ export default function StylistPage() {
                   מידה
                 </CardTitle>
               </CardHeader>
-              <CardContent className="text-muted-foreground text-sm leading-7">ניתן לפתוח בקשת מדידה מתמונה או מפרטי מידה לפני אישור הבחירה.</CardContent>
+              <CardContent className="text-muted-foreground text-sm leading-7">אפשר לפתוח בקשת מדידה מתמונה או מפרטי מידה לפני שמחליטים.</CardContent>
             </Card>
           </RevealGrid>
         </aside>

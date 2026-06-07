@@ -109,7 +109,7 @@ async function createManualOrderInTransaction(
   if (!product) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "התכשיט לא נמצא או אינו פתוח לבחירה.",
+      message: "התכשיט לא נמצא או אינו פתוח להזמנה.",
     });
   }
 
@@ -250,7 +250,7 @@ async function createManualOrderInTransaction(
   if (reserved.count !== 1) {
     throw new TRPCError({
       code: "CONFLICT",
-      message: "מצב הבחירה השתנה בזמן יצירת ההזמנה. נסו שוב.",
+      message: "מצב הסל השתנה בזמן יצירת ההזמנה. נסו שוב.",
     });
   }
 

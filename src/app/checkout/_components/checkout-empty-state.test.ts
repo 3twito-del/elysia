@@ -21,9 +21,9 @@ describe("checkout empty cart recovery", () => {
     expect(emptyState).toContain('data-testid="checkout-empty-cart"');
     expect(emptyState).toContain('href="/search"');
     expect(emptyState).toContain('href="/service"');
-    expect(emptyState).toContain("הבחירה שלך ממתינה לתכשיט הראשון");
+    expect(emptyState).toContain("הסל שלך ממתין לתכשיט הראשון");
     expect(emptyState).toContain("חזרה לקולקציה");
-    expect(emptyState).toContain("לקבלת ייעוץ בבחירה");
+    expect(emptyState).toContain("שאלה לפני הזמנה");
     expect(emptyState).toContain("checkoutEmptyLinks.map");
     expect(emptyState).not.toContain('type="submit"');
     expect(emptyState).not.toContain("local-checkout-submit-button");

@@ -114,7 +114,7 @@ export default async function WishlistPage() {
             </form>
           </>
         }
-        description="מועדפים מוצגים ללקוחות בלבד, כדי להפריד בין חשבון ניהול לבין בחירות אישיות."
+        description="מועדפים מוצגים ללקוחות בלבד, כדי להפריד בין חשבון ניהול לבין תכשיטים ששומרים לעצמך."
         icon={UserRound}
         testId="wishlist-admin-forbidden"
         title="מועדפים זמינים ללקוחות"
@@ -135,7 +135,7 @@ export default async function WishlistPage() {
             </Button>
           </>
         }
-        description="לא הצלחנו לפתוח את המועדפים כרגע. הנתונים לא נמחקו, ואפשר לנסות שוב בעוד רגע."
+        description="לא הצלחנו לפתוח את המועדפים כרגע. התכשיטים לא נמחקו, ואפשר לנסות שוב בעוד רגע."
         icon={AlertTriangle}
         testId="wishlist-load-error"
         title="המועדפים אינם פתוחים כרגע"
@@ -148,7 +148,7 @@ export default async function WishlistPage() {
       <SiteHeader />
       <CommercePageHero
         className="account-entry-intro account-boutique-hero wishlist-boutique-hero"
-        description="התכשיטים ששמרת להמשך, עם חזרה מהירה לבחירה וסנכרון לחשבון."
+        description="התכשיטים ששמרת להמשך, כשעוד לא החלטת מה הכי מתאים ללוק."
         eyebrow="מועדפים"
         title="מועדפים"
         variant="checkout"
@@ -251,7 +251,7 @@ function CustomerWishlistPanel({ customer }: { customer: CustomerWishlist }) {
                 <Button asChild>
                   <Link href="/search">
                     <Search aria-hidden="true" className="size-4" />
-                    חיפוש במבחר
+                    חיפוש תכשיטים
                   </Link>
                 </Button>
                 <Button asChild variant="outline">
@@ -259,7 +259,7 @@ function CustomerWishlistPanel({ customer }: { customer: CustomerWishlist }) {
                 </Button>
               </>
             }
-            description="כשתסמני תכשיט בלב, הוא יופיע כאן וישמר לחשבון שלך."
+            description="כשתסמני תכשיט בלב, הוא יופיע כאן ויישמר לחשבון שלך."
             icon={Heart}
             testId="wishlist-empty-account"
             title="אין עדיין מועדפים בחשבון."
@@ -301,7 +301,7 @@ function CustomerWishlistPanel({ customer }: { customer: CustomerWishlist }) {
                   </Button>
                   <Button asChild size="sm" variant="ghost">
                     <Link href={wishlistDecisionSupport.serviceHref}>
-                      ייעוץ בחירה
+                      ייעוץ לוק
                     </Link>
                   </Button>
                 </div>

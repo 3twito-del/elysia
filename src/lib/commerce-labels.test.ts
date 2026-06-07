@@ -64,7 +64,7 @@ describe("commerce labels", () => {
     expect(getPublicStockStatusLabel(0)).toBe("לא פנוי כרגע");
     expect(getPublicStockStatusLabel(4)).toBe("זמין");
     expect(getStockQuantityLabel(0)).toBe("לא פנוי כרגע");
-    expect(getStockQuantityLabel(4)).toBe("4 פנויים לבחירה");
+    expect(getStockQuantityLabel(4)).toBe("4 זמינים במלאי");
     expect(getItemCountLabel(1)).toBe("תכשיט אחד");
     expect(getItemCountLabel(3)).toBe("3 תכשיטים");
   });

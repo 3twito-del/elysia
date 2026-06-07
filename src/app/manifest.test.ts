@@ -30,14 +30,14 @@ describe("PWA manifest", () => {
     expect(data.shortcuts).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          description: "פתיחת מדריך מתנות",
+          description: "פתיחת רעיונות למתנה",
           url: "/gifts?source=pwa-shortcut",
         }),
         expect.objectContaining({
           url: "/size-guide?source=pwa-shortcut",
         }),
         expect.objectContaining({
-          description: "פנייה לשירות",
+          description: "שאלה לשירות",
           url: "/service?source=pwa-shortcut",
         }),
       ]),

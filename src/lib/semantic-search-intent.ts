@@ -258,7 +258,7 @@ export function createSemanticMatchReason(
   } else if (intent.softSignals.includes("delicate")) {
     reasons.push("מראה נקי ולא כבד");
   } else if (intent.softSignals.includes("gift")) {
-    reasons.push("בחירה טובה למתנה");
+    reasons.push("רעיון טוב למתנה");
   }
 
   return reasons.length > 0

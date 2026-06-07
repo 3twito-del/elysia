@@ -16,7 +16,7 @@ export function CookiePreferencesPanel() {
       ? "מאושרים קוקיז חיוניים וגם מדידה לשיפור האתר."
       : consentValue === "essential"
         ? "מאושרים קוקיז חיוניים בלבד."
-        : "עדיין לא נשמרה בחירת קוקיז בדפדפן זה.";
+        : "עדיין לא נשמרה העדפת קוקיז בדפדפן זה.";
 
   const chooseConsent = (value: CookieConsentValue) => {
     writeCookieConsent(value);
@@ -48,7 +48,7 @@ export function CookiePreferencesPanel() {
               <CheckCircle2 className="size-5" aria-hidden="true" />
               {statusText}
             </p>
-            <p className="text-muted-foreground mt-2 leading-8">ניתן לשנות בחירה בכל רגע. ״הכרחי בלבד״ עוצר מדידה ומוחק צפיות אחרונות מהדפדפן.</p>
+            <p className="text-muted-foreground mt-2 leading-8">אפשר לשנות העדפה בכל רגע. ״רק חיוניים״ עוצר מדידה ומוחק צפיות אחרונות מהדפדפן.</p>
           </div>
 
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
@@ -61,7 +61,7 @@ export function CookiePreferencesPanel() {
               onClick={() => chooseConsent("essential")}
             >
               <ShieldCheck aria-hidden="true" className="size-4" />
-              הכרחי בלבד
+              רק חיוניים
             </Button>
             <Button
               aria-describedby="cookie-preferences-status"

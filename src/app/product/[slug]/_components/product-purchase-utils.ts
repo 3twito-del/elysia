@@ -80,7 +80,7 @@ export function getVariantStatusLabel(input: {
   requiresSeparateCheckout: boolean;
   variant: CatalogProductVariant | undefined;
 }) {
-  if (!input.variant) return "בירור התאמה";
+  if (!input.variant) return "בחרי אפשרות";
 
   if (isSeparateCheckoutVariantAvailable(input)) return "זמין להזמנה";
 
@@ -121,7 +121,7 @@ export function getPurchaseConfidenceItems(input: {
         : "ניתן לקבל ייעוץ התאמה לפני הזמנה.",
       icon: "fit",
       key: "fit",
-      title: input.sizeKind ? "מידה לפני הוספה" : "התאמה לפני הוספה",
+      title: input.sizeKind ? "מידה לפני הוספה" : "שאלה לפני הוספה",
     },
     {
       description: getServiceConfidenceDescription(input),
@@ -154,7 +154,7 @@ export function getAddToCartFailureMessage(error: { message: string }) {
     message.includes("unavailable") ||
     message.includes("variant")
   ) {
-    return "ההתאמה אינה זמינה. ניתן לבחור אחרת או לפנות לשירות.";
+    return "האפשרות הזו אינה זמינה. אפשר לבחור אחרת או לפנות לשירות.";
   }
 
   if (

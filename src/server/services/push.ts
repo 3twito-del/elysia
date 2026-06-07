@@ -347,11 +347,11 @@ export async function sendCartReminder(sessionKey: string) {
   for (const subscription of subscriptions) {
     const result = await sendPushToSubscription({
       auth: subscription.auth,
-      body: "הבחירה עדיין ממתינה. אפשר לחזור אליה כשנוח לך.",
+      body: "הסל עדיין ממתין. אפשר לחזור אליו כשנוח לך.",
       endpoint: subscription.endpoint,
       p256dh: subscription.p256dh,
       tag: `cart:${cart.id}`,
-      title: "הבחירה ב-Elysia נשמרה",
+      title: "הסל ב-Elysia נשמר",
       url: "/checkout",
     });
 
@@ -397,11 +397,11 @@ export async function processBackInStockInterests() {
 
     const result = await sendPushToSubscription({
       auth: interest.subscription.auth,
-      body: `${interest.product.name} שוב פנוי לבחירה במבחר.`,
+      body: `${interest.product.name} שוב זמין במבחר.`,
       endpoint: interest.subscription.endpoint,
       p256dh: interest.subscription.p256dh,
       tag: `back-in-stock:${interest.productId}`,
-      title: "תכשיט שחיכית לו פנוי לבחירה",
+      title: "תכשיט שחיכית לו חזר למלאי",
       url: `/product/${interest.product.slug}`,
     });
 

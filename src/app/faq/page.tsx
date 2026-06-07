@@ -21,14 +21,14 @@ import { getPublicContactSettings } from "~/server/services/service";
 export const metadata: Metadata = {
   title: "שאלות ותשובות",
   description:
-    "שאלות ותשובות על בחירה, התאמה, מידות, מסירה, החזרות ומתנות.",
+    "שאלות ותשובות על תכשיטים, מידות, מסירה, החזרות ומתנות.",
 };
 
 export const dynamic = "force-dynamic";
 
 const faqGroups = [
   {
-    title: "בחירה",
+    title: "תכשיטים",
     icon: PackageCheck,
     items: [
       {
@@ -58,7 +58,7 @@ const faqGroups = [
       {
         question: "האם אפשר לקבל עזרה בבחירת מתנה?",
         answer:
-          "כן. ניתן לבחור לפי מחיר, אירוע, חומר וסגנון, או לפנות לשירות לאימות התאמה.",
+          "כן. אפשר להתחיל ממחיר, אירוע, חומר או סגנון, או לפנות לשירות עם שם התכשיט.",
       },
       {
         question: "האם ניתן לצרף ברכה או אריזת מתנה?",
@@ -94,7 +94,7 @@ export default async function FaqPage() {
       <SiteHeader />
 
       <CommercePageHero
-        description="מידע על הזמנות, מידות, מתנות, משלוחים והחזרות."
+        description="מידות, מתנות, משלוחים והחזרות - בלי לחפש בין עמודים."
         eyebrow="שירות"
         title="שאלות ותשובות"
         variant="content"
@@ -107,7 +107,7 @@ export default async function FaqPage() {
         <div className="grid gap-6 sm:grid-cols-2">
           <Link className="brand-surface interactive-lift p-5" href="/search">
             <Search className="size-5" aria-hidden="true" />
-            <p className="mt-3 font-medium">חיפוש במבחר</p>
+            <p className="mt-3 font-medium">חיפוש תכשיטים</p>
           </Link>
           <Link className="brand-surface interactive-lift p-5" href="/gifts">
             <Gift className="size-5" aria-hidden="true" />
@@ -185,7 +185,7 @@ export default async function FaqPage() {
             <h2 className="text-2xl font-semibold" id="faq-contact">
               לא מצאתם תשובה?
             </h2>
-            <p className="text-muted-foreground mt-3 leading-8">ניתן לפנות לשירות עם פרטי התכשיט, מספר הזמנה או תיאור הבקשה.</p>
+            <p className="text-muted-foreground mt-3 leading-8">אפשר לפנות לשירות עם שם התכשיט, מספר הזמנה או תיאור קצר של מה שצריך.</p>
             <Button asChild className="mt-5" variant="secondary">
               <Link
                 data-testid="faq-service-recovery-link"

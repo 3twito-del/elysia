@@ -130,7 +130,7 @@ export function ServiceRequestForm({
       .then(() => {
         setOfflineState({
           ok: true,
-          message: "הפנייה נשמרה במכשיר. כשהחיבור יחזור אפשר לנסות לשלוח שוב.",
+          message: "הפנייה נשמרה במכשיר. כשהחיבור יחזור אפשר לשלוח אותה שוב.",
         });
         form.reset();
         setSelectedAttachmentCount(0);
@@ -138,7 +138,7 @@ export function ServiceRequestForm({
       .catch(() =>
         setOfflineState({
           ok: false,
-          message: "לא הצלחנו לשלוח. בדקו את החיבור ונסו שוב.",
+          message: "לא הצלחנו לשלוח עכשיו. בדקו את החיבור ונסו שוב.",
         }),
       );
   }
@@ -181,16 +181,16 @@ export function ServiceRequestForm({
           id={topicGuidanceId}
         >
           {selectedTopicDescription ??
-            "בחרו את הנושא הקרוב ביותר לניתוב הפנייה."}
+            "בחרו את הנושא הכי קרוב למה שצריך."}
         </p>
         <div
           className="glass-inset rounded-md border p-3 text-xs leading-5"
           data-testid="service-topic-routing-review"
         >
-          <p className="font-medium">ניתוב הפנייה</p>
+          <p className="font-medium">לאן הפנייה הולכת</p>
           <p className="text-muted-foreground mt-1">
-            הפנייה תישלח לפי הנושא {selectedTopicLabel} ותטופל בערוץ השירות
-            שנבחר.
+            הפנייה תישלח לפי הנושא {selectedTopicLabel} ותטופל בדרך החזרה
+            שבחרתם.
           </p>
         </div>
       </div>
@@ -287,7 +287,7 @@ export function ServiceRequestForm({
           disabled={pending}
           id="message"
           name="message"
-          placeholder="כתבו בקצרה את הבקשה, פרטי התכשיט או השאלה."
+          placeholder="כתבו מה תרצו לבדוק, כולל שם התכשיט אם יש."
           required
         />
       </div>
@@ -313,7 +313,7 @@ export function ServiceRequestForm({
           className="glass-inset rounded-md border p-3 text-xs leading-5"
           data-testid="service-attachment-review"
         >
-          <p className="font-medium">סקירת קבצים לפני שליחה</p>
+          <p className="font-medium">קבצים לפני שליחה</p>
           <p className="text-muted-foreground mt-1">
             {selectedAttachmentCount > 0
               ? `${selectedAttachmentCount} קבצים נבחרו לצירוף.`
@@ -352,7 +352,7 @@ export function ServiceRequestForm({
               {state.requestReference}
             </strong>
           </div>
-          <p className="text-muted-foreground">שמרו את המספר לעדכון. הצוות יבדוק פרטים וקבצים לפני חזרה.</p>
+          <p className="text-muted-foreground">שמרו את המספר לעדכון. הצוות יבדוק את הפרטים והקבצים לפני חזרה.</p>
           <a
             className="w-fit text-sm font-medium underline underline-offset-4"
             data-testid="service-request-success-contact-link"

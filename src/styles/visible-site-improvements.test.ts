@@ -103,7 +103,7 @@ describe("visible site improvement affordances", () => {
     expect(gifts).toContain('data-testid="gift-bundle-recommendations"');
     expect(gifts).toContain('data-testid="gift-bundle-pair"');
     expect(gifts).toContain("products: [CatalogProduct, CatalogProduct]");
-    expect(gifts).toContain('contextLabel="חלק משילוב מתנה"');
+    expect(gifts).toContain('contextLabel="חלק מלוק מתנה"');
     expect(gifts).toContain("categoryProducts.length < 2");
   });
 
@@ -213,7 +213,7 @@ describe("visible site improvement affordances", () => {
   it("keeps about timeline, material facts, and care routing visible", () => {
     const about = read("src/app/about/page.tsx");
 
-    expect(about).toContain("brandTimeline");
+    expect(about).toContain("editorialPrinciples");
     expect(about).toContain("materialFacts");
     expect(about).toContain('data-testid="about-brand-timeline"');
     expect(about).toContain('data-testid="about-material-facts"');

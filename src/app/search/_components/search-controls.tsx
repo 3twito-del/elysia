@@ -59,7 +59,7 @@ export function SearchControls({
     >
       <form
         action="/search"
-        aria-label="חיפוש במבחר"
+        aria-label="חיפוש תכשיטים"
         className="hidden gap-3 lg:grid"
         onSubmit={pruneEmptySearchParams}
         role="search"
@@ -82,7 +82,7 @@ export function SearchControls({
           <summary className="text-muted-foreground hover:text-foreground flex min-h-9 cursor-pointer list-none items-center justify-between gap-3 text-sm outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]">
             <span className="inline-flex items-center gap-2">
               <SlidersHorizontal aria-hidden="true" className="size-4" />
-              {"סינון נקי"}
+              {"סינון לפי לוק"}
             </span>
             {activeFilterCount > 0 ? (
               <Badge variant="secondary">{activeFilterCount}</Badge>
@@ -103,7 +103,7 @@ export function SearchControls({
       >
         <form
           action="/search"
-          aria-label="חיפוש מהיר במבחר"
+          aria-label="חיפוש מהיר"
           className="grid grid-cols-[minmax(0,1fr)_auto] gap-2"
           onSubmit={pruneEmptySearchParams}
           role="search"
@@ -119,7 +119,7 @@ export function SearchControls({
               data-search-prune-empty
               defaultValue={input.query}
               name="q"
-              placeholder="טבעת, עגילים, מתנה..."
+              placeholder="טבעת, פנינה, מתנה..."
             />
             {hasQuery ? <SearchClearQueryLink href={clearSearchHref} /> : null}
           </div>
@@ -148,7 +148,7 @@ export function SearchControls({
                   aria-hidden="true"
                   className="text-foreground size-4"
                 />
-                סינון
+                סינון לפי לוק
               </span>
               {activeFilterCount > 0 ? (
                 <Badge className="absolute -top-2 -left-2" variant="secondary">
@@ -166,10 +166,11 @@ export function SearchControls({
             <SheetHeader className="border-b border-[var(--glass-border)] pe-12 text-right">
               <SheetTitle className="flex items-center gap-2">
                 <SlidersHorizontal aria-hidden="true" className="size-4" />
-                סינון
+                סינון לפי לוק
               </SheetTitle>
               <SheetDescription>
-                בחרו קטגוריה, חומר, אבן, קולקציה, מחיר ומיון.
+                בחרו קטגוריה, חומר, אבן, קולקציה, מחיר ומיון כדי להגיע מהר
+                יותר לפריטים הנכונים.
               </SheetDescription>
             </SheetHeader>
             <form
@@ -189,7 +190,7 @@ export function SearchControls({
               <PreservedModeInput input={input} />
               <PreservedViewInput viewMode={viewMode} />
               <div className="grid grid-cols-2 gap-2 pt-1">
-                <Button type="submit">הצגת התאמות</Button>
+                <Button type="submit">הצגת פריטים</Button>
                 <Button asChild variant="outline">
                   <SheetClose asChild>
                     <Link href={clearFiltersHref}>איפוס</Link>
@@ -234,7 +235,7 @@ function PrimarySearchFields({
             data-search-prune-empty
             defaultValue={input.query}
             name="q"
-            placeholder="טבעת, עגילים, מתנה..."
+            placeholder="טבעת, פנינה, מתנה..."
           />
           {hasQuery ? <SearchClearQueryLink href={clearSearchHref} /> : null}
         </div>
@@ -486,7 +487,7 @@ function SearchSelectField({
         </button>
         {isOpen ? (
           <button
-            aria-label="סגירת בחירה"
+            aria-label="סגירת רשימה"
             className="public-select-backdrop"
             onClick={() => closeList()}
             tabIndex={-1}
@@ -577,7 +578,7 @@ function isSubmittableField(
 
 function AvailabilityField({ input }: { input: ProductSearchInput }) {
   return (
-    <SearchControlField label="התאמה">
+    <SearchControlField label="זמינות">
       <label
         className={cn(
           "glass-control flex h-11 min-w-0 items-center gap-2 rounded-md border px-3 text-sm transition-colors focus-within:border-[var(--glass-border-strong)] focus-within:ring-3 focus-within:ring-[var(--glass-focus)]",

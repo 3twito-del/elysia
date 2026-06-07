@@ -93,12 +93,12 @@ const checkoutEmptyLinks = [
   {
     href: "/gifts",
     label: "מתנות",
-    text: "בחירות לפי מחיר, אירוע או סגנון.",
+    text: "רעיונות לפי מחיר, אירוע או סגנון.",
   },
   {
     href: "/service",
-    label: "לקבלת ייעוץ בבחירה",
-    text: "עזרה בבחירה, מידה או הקדשה.",
+    label: "שאלה לפני הזמנה",
+    text: "עזרה עם לוק, מידה או הקדשה.",
   },
 ] as const;
 
@@ -117,8 +117,8 @@ const checkoutFulfillmentSummaryIcons = {
 
 const checkoutProgressSteps = [
   {
-    detail: "סקירה אחרונה של הבחירה",
-    label: "בחירה",
+    detail: "סקירה אחרונה של התכשיטים",
+    label: "סל",
     value: "1",
   },
   {
@@ -339,9 +339,9 @@ export function CartCheckoutForm() {
     !checkoutLocked &&
     !hasPricingReview;
   const checkoutIntroCopy = hasMixedSourceCart
-    ? "הבחירה מחולקת לשני מסלולים: פריטי חנות יאושרו כאן; פריטים נפרדים יושלמו בקופה נפרדת."
+    ? "הסל מחולק לשני מסלולים: פריטי חנות יאושרו כאן; פריטים נפרדים יושלמו בקופה נפרדת."
     : hasDropshipItems
-      ? "הבחירה תושלם בקופה נפרדת."
+      ? "הסל ימשיך לקופה נפרדת."
       : "סיכום תכשיטים שנבחרו, פרטי מסירה והטבה.";
   const localCheckoutButtonLabel = hasMixedSourceCart
     ? "המשך לתשלום עבור פריטי החנות"
@@ -369,13 +369,13 @@ export function CartCheckoutForm() {
   const cartMutationErrorMessage = cartMutationError
     ? getFriendlyCheckoutErrorMessage(
         cartMutationError,
-        "לא הצלחנו לעדכן את הבחירה כרגע. נסו שוב בעוד רגע.",
+        "לא הצלחנו לעדכן את הסל כרגע. נסו שוב בעוד רגע.",
       )
     : null;
   const createOrderErrorMessage = createOrder.error
     ? getFriendlyCheckoutErrorMessage(
         createOrder.error,
-        "לא הצלחנו לשמור את הבחירה. בדקו פרטים ונסו שוב.",
+        "לא הצלחנו לשמור את ההזמנה. בדקו פרטים ונסו שוב.",
       )
     : null;
   const createShopifyCheckoutErrorMessage = createShopifyCheckout.error
@@ -560,7 +560,7 @@ export function CartCheckoutForm() {
             <div className="glass-inset mb-4 grid size-12 place-items-center rounded-full border">
               <CheckCircle2 aria-hidden="true" className="size-6" />
             </div>
-            <CardTitle className="text-3xl">הבחירה נשמרה</CardTitle>
+            <CardTitle className="text-3xl">ההזמנה נשמרה</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-5 leading-7">
             <p className="text-muted-foreground">
@@ -584,7 +584,7 @@ export function CartCheckoutForm() {
                 <Link href="/account">אזור אישי</Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href="/">המשך בחירה</Link>
+                <Link href="/">המשך לקולקציה</Link>
               </Button>
             </div>
           </CardContent>
@@ -802,7 +802,7 @@ export function CartCheckoutForm() {
                       <span className="sr-only">הוספה</span>
                     </Button>
                     <Button
-                      aria-label={`הסרת ${item.productName} מהבחירה`}
+                      aria-label={`הסרת ${item.productName} מהסל`}
                       data-icon-tooltip="הסרה"
                       data-icon-tooltip-placement="top"
                       onClick={() => {
@@ -1361,14 +1361,14 @@ function CheckoutEmptyCartState() {
             <ShoppingBag aria-hidden="true" className="size-5" />
           </div>
           <p className="text-muted-foreground text-xs font-medium">
-            הבחירה שלי
+            הסל שלי
           </p>
           <h2 className="mt-3 text-2xl font-semibold tracking-normal sm:text-3xl">
-            הבחירה שלך ממתינה לתכשיט הראשון
+            הסל שלך ממתין לתכשיט הראשון
           </h2>
           <p className="text-muted-foreground mt-4 max-w-xl text-sm leading-7 sm:text-base">
-            חזרי לקולקציה ובחרי תכשיט. הסיכום ימתין כאן עם פירוט הפריטים, שמירה
-            לבחירה ושירות לפני אישור.
+            חזרי לקולקציה ובחרי תכשיט. הסיכום ימתין כאן עם פירוט הפריטים
+            ושאלה לשירות לפני אישור.
           </p>
           <div className="mt-7 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <Button asChild>
@@ -1379,7 +1379,7 @@ function CheckoutEmptyCartState() {
             </Button>
             <Button asChild variant="outline">
               <Link href="/service">
-                לקבלת ייעוץ בבחירה
+                שאלה לפני הזמנה
                 <MessageCircle aria-hidden="true" className="size-4" />
               </Link>
             </Button>

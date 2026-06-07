@@ -277,7 +277,7 @@ function createFixtureDropshipProduct(): CatalogProduct {
     variants,
     metalColors: ["כסף"],
     sizes: ["6"],
-    tags: ["כסף", "זירקון", "בחירה נבחרת"],
+    tags: ["כסף", "זירקון", "פריט נבחר"],
     inventory: { "online-service": 1 },
   };
 }
@@ -337,7 +337,7 @@ function getSeedCommerceHighlights(slug: string) {
   }
 
   if (slug === "venus-line-ring") {
-    return ["שיחת התאמה לפני הבחירה", "אבן שנבחנה בקפידה"];
+    return ["שיחת התאמה לפני הזמנה", "אבן שנבחנה בקפידה"];
   }
 
   return ["פרטים מאומתים לפני הזמנה", "נבדק בקפידה לפני מסירה"];

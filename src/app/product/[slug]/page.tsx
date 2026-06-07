@@ -179,7 +179,7 @@ export default async function ProductPage({
   const productTrustNotes = [
     {
       icon: ShieldCheck,
-      label: "פרטים מאומתים לפני הזמנה",
+      label: "חומר, מידה ומחיר לפני הזמנה",
     },
     {
       icon: Gem,
@@ -187,7 +187,7 @@ export default async function ProductPage({
     },
     {
       icon: Truck,
-      label: "ייעוץ ומסירה בתיאום אישי",
+      label: "מענה לפני הזמנה ומסירה",
     },
   ];
 
@@ -381,7 +381,7 @@ export default async function ProductPage({
           <CommerceSectionHeader
             className="mb-0"
             eyebrow="Elysia"
-            title="פרטי מוצר, שירות והזמנה."
+            title="מה חשוב לדעת לפני שמזמינים"
           />
 
           <div className="grid gap-8">
@@ -393,7 +393,7 @@ export default async function ProductPage({
               <ServiceRow
                 description="אחריות לשנה על פגמי ייצור וניקוי ראשוני ללא עלות."
                 icon={ShieldCheck}
-                title="אחריות ושירות"
+                title="אחריות"
               />
               <ServiceRow
                 description="החזרה או החלפה לפי מדיניות Elysia."
@@ -403,7 +403,7 @@ export default async function ProductPage({
               <ServiceRow
                 description="ניתן לקבל ייעוץ מידה, התאמה ומתנה לפני הזמנה."
                 icon={Gem}
-                title="ייעוץ"
+                title="שאלה לפני הזמנה"
               />
             </div>
           </div>
@@ -462,7 +462,7 @@ function ProductRecommendationRails({
           data-testid="product-discovery-return-context"
         >
           <p className="text-muted-foreground text-sm leading-6">
-            הגעתם מחיפוש. ניתן לחזור לתוצאות בלי לאבד הקשר.
+            הגעתם מחיפוש. אפשר לחזור לתוצאות בלי לאבד את ההקשר.
           </p>
           <Button asChild size="sm" variant="outline">
             <Link href={searchReturnHref}>{searchReturnLabel}</Link>
@@ -480,7 +480,7 @@ function ProductRecommendationRails({
             key={rail.id}
           >
             <CommerceSectionHeader
-              eyebrow="התאמה נוספת"
+              eyebrow="עוד כיוון"
               id={headingId}
               title={rail.title}
             />

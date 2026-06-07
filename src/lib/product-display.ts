@@ -54,11 +54,11 @@ export function getPublicStoneName(stone?: string | null) {
 }
 
 export function getPublicVariantOptionName(value?: string | null) {
-  if (!value) return "בחירה";
+  if (!value) return "אפשרות";
 
   const cleaned = value.trim();
 
-  if (!cleaned || hasPrivateCatalogLabel(cleaned)) return "בחירה";
+  if (!cleaned || hasPrivateCatalogLabel(cleaned)) return "אפשרות";
   if (/^silver$/iu.test(cleaned)) return "כסף";
   if (/^gold$/iu.test(cleaned)) return "זהב";
   if (/^rose\s+gold$/iu.test(cleaned)) return "רוז גולד";

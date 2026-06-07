@@ -54,7 +54,7 @@ describe("commerce service trust placement", () => {
     expect(purchasePanel).not.toContain("<Badge");
     expect(purchasePanel).toContain("const selectedVariantStatusLabel =");
     expect(purchasePanel).toContain(
-      'selectedVariant ? selectedVariantStatusLabel : "בירור התאמה"',
+      'selectedVariant ? selectedVariantStatusLabel : "בחרי אפשרות"',
     );
     expect(
       countOccurrences(
@@ -115,17 +115,17 @@ describe("commerce service trust placement", () => {
     expect(footer).toContain('href: "/faq"');
     expect(footer).toContain("שאלות ותשובות");
     expect(footer).not.toContain("שאלות נפוצות");
-    expect(footer).toContain('title="הקולקציה"');
-    expect(footer).toContain('title="שירות והזמנה"');
-    expect(footer).toContain('title="מידע"');
-    expect(countOccurrences(footer, 'title="הקולקציה"')).toBe(1);
-    expect(countOccurrences(footer, 'title="שירות והזמנה"')).toBe(1);
-    expect(countOccurrences(footer, 'title="מידע"')).toBe(1);
+    expect(footer).toContain('title="קולקציות"');
+    expect(footer).toContain('title="שירות"');
+    expect(footer).toContain('title="Elysia"');
+    expect(countOccurrences(footer, 'title="קולקציות"')).toBe(1);
+    expect(countOccurrences(footer, 'title="שירות"')).toBe(1);
+    expect(countOccurrences(footer, 'title="Elysia"')).toBe(1);
     expect(countOccurrences(footer, 'href: "/search"')).toBe(1);
     expect(footer).not.toContain('href="/search"');
     expect(footer).not.toContain("primaryServiceLinks");
     expect(footer).not.toContain("secondaryServiceLinks");
-    expect(footer).not.toContain("שירות והזמנה - המשך");
+    expect(footer).not.toContain("שירות - המשך");
     expect(footer).not.toContain("footer-online-service");
     expect(footer).not.toContain('href: "/ai"');
     expect(countOccurrences(footer, 'href: "/category/rings"')).toBe(1);

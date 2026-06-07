@@ -212,7 +212,7 @@ export function getPublicProductCommerceStatus({
 }
 
 export function getStockQuantityLabel(quantity: number) {
-  return quantity > 0 ? `${quantity} פנויים לבחירה` : "לא פנוי כרגע";
+  return quantity > 0 ? `${quantity} זמינים במלאי` : "לא פנוי כרגע";
 }
 
 export function getItemCountLabel(count: number, singular = "תכשיט") {

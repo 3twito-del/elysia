@@ -64,10 +64,10 @@ export function SiteFooter() {
               <BrandLogo className="h-10 w-auto max-w-[13rem] sm:h-12 sm:max-w-[15.5rem]" />
             </Link>
             <p className="text-muted-foreground mt-6 max-w-md text-sm leading-8 sm:text-[0.95rem]">
-              קולקציות תכשיטים, מידע מסודר והזמנה מקוונת.
+              תכשיטים לקיץ, למתנה ולכל יום שמבקש קצת אור.
             </p>
             <div className="mt-7 max-w-md">
-              <p className="text-foreground text-xs font-medium">עדכונים</p>
+              <p className="text-foreground text-xs font-medium">מה חדש במבחר</p>
               <NewsletterForm />
             </div>
           </section>
@@ -77,9 +77,9 @@ export function SiteFooter() {
             className="site-footer-nav grid md:grid-cols-3 md:gap-10 lg:gap-12"
             data-footer-nav-root
           >
-            <FooterNav links={catalogLinks} title="הקולקציה" />
-            <FooterNav links={commerceLinks} title="שירות והזמנה" />
-            <FooterNav links={informationLinks} title="מידע" />
+            <FooterNav links={catalogLinks} title="קולקציות" />
+            <FooterNav links={commerceLinks} title="שירות" />
+            <FooterNav links={informationLinks} title="Elysia" />
           </nav>
         </div>
         <SiteFooterDisclosures />
@@ -89,7 +89,7 @@ export function SiteFooter() {
             className="max-w-xl text-center leading-7 md:text-start"
             data-testid="footer-copyright"
           >
-            2026 Elysia. כל הזכויות שמורות. שירות זמין לפני ההזמנה ולאחריה.
+            2026 Elysia. כל הזכויות שמורות. מענה זמין לפני ההזמנה ולאחריה.
           </p>
           <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-center md:gap-8">
             <div className="grid gap-2">

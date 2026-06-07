@@ -9,15 +9,15 @@ import { Button } from "~/components/ui/button";
 import { sizeFitKinds, type SizeFitKind } from "~/lib/size-fit";
 
 export const metadata = {
-  title: "מדריך מידות",
+  title: "מידות תכשיטים",
 };
 
 const printRulerTicks = ["0", "1", "2", "3", "4", "5", "6"] as const;
 
 const sizeMeasurementSteps = [
-  "מדדו על משטח ישר ובלי למשוך את הסרט.",
-  "השוו לטבלת המידה של טבעת, צמיד או שרשרת.",
-  "אם אתם בין מידות, בחרו את הנוחה לשימוש יומי.",
+  "מדדו על משטח ישר, בלי למתוח את הסרט.",
+  "השוו לטבלה של טבעת, צמיד או שרשרת.",
+  "אם אתם בין מידות, לכו על מה שיהיה נוח ביום רגיל.",
 ] as const;
 
 type SizeGuidePageProps = {
@@ -51,9 +51,9 @@ export default async function SizeGuidePage({
     <main>
       <SiteHeader />
       <CommercePageHero
-        description="מדידת טבעות, צמידים ושרשראות לפי טבלאות מידה."
-        eyebrow="מידות והתאמה"
-        title="מדריך מידות"
+        description="מדידת טבעות, צמידים ושרשראות לפני שמחליטים מה יישב הכי נכון."
+        eyebrow="מידות"
+        title="מה המידה שלך?"
         variant="checkout"
       />
       <RevealSection
@@ -68,15 +68,15 @@ export default async function SizeGuidePage({
         >
           <div>
             <p className="text-muted-foreground text-xs font-medium uppercase">
-              כיול ומדידה
+              לפני המדידה
             </p>
             <h2
               className="mt-2 text-lg font-medium text-balance"
               id="size-guide-measurement-title"
             >
-              התחילו מסרגל בדיקה קצר
+              התחילו מסרגל קצר ובדקו שהקנה מידה נכון
             </h2>
-            <p className="text-muted-foreground mt-2 text-sm leading-6">להדפסה, הגדירו קנה מידה 100% ובדקו מרווחים לפני השוואה.</p>
+            <p className="text-muted-foreground mt-2 text-sm leading-6">בהדפסה, הגדירו 100% ובדקו את המרווחים לפני שמשווים לתכשיט.</p>
           </div>
           <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(12rem,0.9fr)]">
             <ol className="text-muted-foreground grid gap-2 text-sm leading-6">
@@ -103,7 +103,7 @@ export default async function SizeGuidePage({
                 ))}
               </div>
               <p className="text-muted-foreground mt-2 text-xs">
-                סנטימטרים להצלבת קנה מידה לפני מדידה.
+                סנטימטרים לבדיקת קנה מידה לפני מדידה.
               </p>
             </div>
           </div>

@@ -248,7 +248,7 @@ export function ProductPurchasePanel({
       })
       .catch(() => {
         setCartMessageTone("error");
-        setCartMessage("לא הצלחנו לשמור את הבחירה במצב לא מקוון.");
+        setCartMessage("לא הצלחנו לשמור את התכשיט במצב לא מקוון.");
       });
   }
 
@@ -274,7 +274,7 @@ export function ProductPurchasePanel({
         })
         .catch(() => {
           setCartMessageTone("error");
-          setCartMessage("לא הצלחנו לשמור את הבחירה במצב לא מקוון.");
+          setCartMessage("לא הצלחנו לשמור את התכשיט במצב לא מקוון.");
         });
       return;
     }
@@ -399,7 +399,7 @@ export function ProductPurchasePanel({
           >
             <span className="flex items-center gap-1.5">
               <PackageCheck className="size-4" aria-hidden="true" />
-              {selectedVariant ? selectedVariantStatusLabel : "בירור התאמה"}
+              {selectedVariant ? selectedVariantStatusLabel : "בחרי אפשרות"}
             </span>
           </div>
           {savedSizeMatch ? (
@@ -465,7 +465,7 @@ export function ProductPurchasePanel({
           </WishlistButton>
           {!selectedVariantAvailable ? (
             <PushOptInButton
-              label="עדכנו אותי כשהוא פנוי לבחירה"
+              label="עדכנו אותי כשהוא חוזר למלאי"
               marketing
               productSlug={productSlug}
             />

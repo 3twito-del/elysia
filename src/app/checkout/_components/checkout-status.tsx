@@ -33,7 +33,7 @@ const checkoutPaymentStatusCopy = {
   unavailable: {
     icon: WifiOff,
     label: "תשלום לא זמין כרגע",
-    text: "המשך לתשלום דורש חיבור פעיל. פעולות הבחירה יישמרו ויוכלו להסתנכרן.",
+    text: "המשך לתשלום דורש חיבור פעיל. שינויי הסל יישמרו ויוכלו להסתנכרן.",
     tone: "text-destructive",
   },
 } satisfies Record<

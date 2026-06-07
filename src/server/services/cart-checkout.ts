@@ -62,7 +62,7 @@ function validateDeliveryAddressForSchema(
 
   context.addIssue({
     code: z.ZodIssueCode.custom,
-    message: "כתובת מסירה נדרשת לבחירה במסירה עד הבית.",
+    message: "כתובת מסירה נדרשת למסירה עד הבית.",
     path: ["shippingAddress"],
   });
 }
@@ -96,7 +96,7 @@ export function assertCartReservationAvailable(input: {
   if (!canReserveStock(input)) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "הבחירה אינה פנויה במלואה לשמירה.",
+      message: "הסל אינו פנוי במלואו לשמירה.",
     });
   }
 }
@@ -168,7 +168,7 @@ async function createCartCheckoutOrderInTransaction(
   if (cart.items.length === 0) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "הבחירה עדיין ריקה.",
+      message: "הסל עדיין ריק.",
     });
   }
 
@@ -237,7 +237,7 @@ async function createCartCheckoutOrderInTransaction(
     if (!inventoryItem) {
       throw new TRPCError({
         code: "BAD_REQUEST",
-        message: `${item.variant.product.name} אינו פנוי כרגע לבחירה.`,
+        message: `${item.variant.product.name} אינו פנוי כרגע להזמנה.`,
       });
     }
 
@@ -303,7 +303,7 @@ async function createCartCheckoutOrderInTransaction(
     if (reserved.count !== 1) {
       throw new TRPCError({
         code: "CONFLICT",
-        message: "מצב הבחירה השתנה בזמן יצירת ההזמנה. נסו שוב.",
+        message: "מצב הסל השתנה בזמן יצירת ההזמנה. נסו שוב.",
       });
     }
 
@@ -506,7 +506,7 @@ async function resolveOnlineFulfillmentBranch(
 
   throw new TRPCError({
     code: "BAD_REQUEST",
-    message: "הבחירה אינה פנויה במלואה לשמירה.",
+    message: "הסל אינו פנוי במלואו לשמירה.",
   });
 }
 
@@ -526,7 +526,7 @@ async function getActiveCheckoutCart(
   if (!cart) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "לא נמצאה בחירה פעילה לסיום ההזמנה.",
+      message: "לא נמצא סל פעיל לסיום ההזמנה.",
     });
   }
 

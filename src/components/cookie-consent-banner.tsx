@@ -87,12 +87,12 @@ export function CookieConsentBanner() {
           </div>
           <div className="min-w-0">
             <h2 className="text-xs font-semibold sm:text-base">
-              בחירת קוקיז באתר Elysia
+              קוקיז, בקצרה
             </h2>
             <p
               className="text-muted-foreground mt-1 line-clamp-1 max-w-3xl text-[0.68rem] leading-5 sm:text-sm sm:leading-6"
               id="cookie-consent-summary"
-            >אנו משתמשים בקוקיז חיוניים להפעלת האתר. באישורכם נשתמש גם במדידה ושיפור, כולל צפיות אחרונות.<Link
+            >האתר משתמש בקוקיז חיוניים להפעלה. באישורכם נשתמש גם במדידה ושיפור החוויה, כולל צפיות אחרונות.<Link
                 className="text-foreground ms-1 underline underline-offset-4"
                 href="/privacy"
               >
@@ -111,7 +111,7 @@ export function CookieConsentBanner() {
             onClick={() => chooseConsent("essential")}
           >
             <Settings aria-hidden="true" className="size-4" />
-            הכרחי בלבד
+            רק חיוניים
           </Button>
           <Button
             aria-describedby="cookie-consent-summary"
@@ -120,7 +120,7 @@ export function CookieConsentBanner() {
             onClick={() => chooseConsent("all")}
           >
             <CheckCircle2 aria-hidden="true" className="size-4" />
-            אישור הכל
+            מאשרת הכל
           </Button>
         </div>
       </div>

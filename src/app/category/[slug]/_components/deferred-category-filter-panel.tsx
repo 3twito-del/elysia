@@ -140,7 +140,7 @@ function FilterSection({
             data-testid="category-price-filter-labels"
           >
             <span>מינימום: כל מחיר</span>
-            <span>מקסימום: לפי בחירה</span>
+            <span>מקסימום: לפי סימון</span>
           </div>
         ) : null}
       </div>

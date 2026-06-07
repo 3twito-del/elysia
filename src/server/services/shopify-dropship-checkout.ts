@@ -36,7 +36,7 @@ export async function createShopifyDropshipCheckout(
   if (!cart) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "לא נמצאה בחירה פעילה לסיום הזמנה נפרדת.",
+      message: "לא נמצא סל פעיל לסיום הזמנה נפרדת.",
     });
   }
 

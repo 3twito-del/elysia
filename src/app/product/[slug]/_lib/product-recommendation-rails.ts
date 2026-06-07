@@ -54,7 +54,7 @@ export function getProductRecommendationRails({
     cardContextLabel: "אותה קטגוריה",
     continuationHref: `/category/${product.categorySlug}`,
     continuationLabel: `המשך בקטגוריית ${product.categoryName}`,
-    reason: `המשך בחירה בתוך קטגוריית ${product.categoryName}.`,
+    reason: `עוד תכשיטים מאותה קטגוריה, אם זה הכיוון של הלוק.`,
     title: `עוד בקטגוריית ${product.categoryName}`,
     usedSlugs,
   });
@@ -75,7 +75,7 @@ export function getProductRecommendationRails({
     reason: product.stone
       ? `התאמה לפי ${product.material} או ${product.stone}.`
       : `התאמה לפי ${product.material}.`,
-    title: `בחירה דומה ב${product.material}`,
+    title: `עוד תכשיטים ב${product.material}`,
     usedSlugs,
   });
 
@@ -87,11 +87,11 @@ export function getProductRecommendationRails({
       predicate: () => true,
       product,
       rails,
-      cardContextLabel: "מומלץ במבחר",
+      cardContextLabel: "מומלץ עכשיו",
       continuationHref: "/search",
-      continuationLabel: "פתיחת כל המבחר",
-      reason: "מוצרים זמינים כאשר אין התאמה ישירה.",
-      title: "מומלצים מהמבחר",
+      continuationLabel: "פתיחת כל התכשיטים",
+      reason: "פריטים זמינים כשאין התאמה ישירה.",
+      title: "עוד רעיונות להתחלה",
       usedSlugs,
     });
   }

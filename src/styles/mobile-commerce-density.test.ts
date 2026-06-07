@@ -73,7 +73,7 @@ describe("mobile commerce density", () => {
     expect(home).toContain(
       'const boutiqueHeroVideoMp4 = "/brand/boutique/lifestyle-hero.mp4";',
     );
-    expect(home).toContain('as="video"');
+    expect(home).toContain('as="image"');
     expect(home).toContain("fetchPriority=\"high\"");
     expect(home).toContain("<HomeHeroVideo");
     expect(home).toContain('className="storefront-hero-image object-cover"');

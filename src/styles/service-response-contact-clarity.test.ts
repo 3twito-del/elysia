@@ -26,8 +26,8 @@ describe("service response and contact clarity", () => {
     expect(servicePage).toContain(
       'data-testid="service-response-expectations"',
     );
-    expect(servicePage).toContain("חזרה בערוץ שנבחר");
-    expect(servicePage).toContain("בירור לפי פרטי הפנייה");
+    expect(servicePage).toContain("חוזרים בדרך שנוחה לך");
+    expect(servicePage).toContain("פרטים שמקצרים את הדרך");
     expect(servicePage).toContain("href={phoneHref}");
     expect(servicePage).toContain("mailto:${profile.settings.serviceEmail}");
     expect(servicePage).not.toContain("wa.me");
@@ -51,7 +51,7 @@ describe("service response and contact clarity", () => {
     );
     expect(serviceForm).toContain('data-testid="service-topic-guidance"');
     expect(serviceForm).toContain('aria-live="polite"');
-    expect(serviceForm).toContain("בחרו את הנושא הקרוב ביותר");
+    expect(serviceForm).toContain("בחרו את הנושא הכי קרוב");
   });
 
   it("confirms response expectations without adding a hard SLA", () => {

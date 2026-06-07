@@ -48,7 +48,7 @@ describe("checkout display helpers", () => {
       getFriendlyCheckoutErrorMessage({
         message: "Fixture cart item was not found.",
       }),
-    ).toBe("הבחירה אינה פנויה כרגע. רעננו ונסו שוב.");
+    ).toBe("התכשיט אינו פנוי כרגע. רעננו ונסו שוב.");
 
     expect(
       getFriendlyCheckoutErrorMessage({

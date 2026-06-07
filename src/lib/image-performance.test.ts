@@ -33,7 +33,7 @@ describe("image performance guardrails", () => {
     expect(aboutSource).toContain(
       'const aboutHeroImage = "/brand/boutique/about-hero-prism.avif";',
     );
-    expect(aboutSource).toContain('data-testid="cinematic-page-hero"');
+    expect(aboutSource).toContain('data-testid="about-cinematic-page-hero"');
     expect(aboutSource).toContain("src={aboutHeroImage}");
     expect(aboutSource).toContain('sizes="100vw"');
     expect(aboutSource).toContain("priority");

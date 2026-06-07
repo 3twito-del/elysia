@@ -61,7 +61,7 @@ describe("luxury commerce UI hardening", () => {
     expect(mobileNav).toContain("mobile-nav-panel-luxury");
     expect(mobileNav).toContain('data-nav-variant="luxury-editorial"');
     expect(mobileNav).toContain("mobile-nav-quick-list");
-    expect(mobileNav).toContain("תכשיטים, מידע, הזמנה ושירות.");
+    expect(mobileNav).toContain("תכשיטים ללוק, למתנה וליום רגיל שמבקש קצת אור.");
     expect(mobileNav).not.toContain("׳³");
     expect(mobileNav).toContain("after:h-px");
     expect(mobileNav).toContain('href: "/branches"');
@@ -83,12 +83,12 @@ describe("luxury commerce UI hardening", () => {
     );
     expect(footer).toContain("site-footer-nav grid md:grid-cols-3");
     expect(footer).toContain("function FooterNav");
-    expect(footer).toContain('title="הקולקציה"');
-    expect(footer).toContain('title="שירות והזמנה"');
-    expect(footer).toContain('title="מידע"');
+    expect(footer).toContain('title="קולקציות"');
+    expect(footer).toContain('title="שירות"');
+    expect(footer).toContain('title="Elysia"');
     expect(footer).not.toContain("primaryServiceLinks");
     expect(footer).not.toContain("secondaryServiceLinks");
-    expect(footer).not.toContain("שירות והזמנה - המשך");
+    expect(footer).not.toContain("שירות - המשך");
     expect(footer).toContain("const socialLinks = [");
     expect(footer).toContain("https://www.instagram.com/elysia.one/");
     expect(footer).toContain("https://www.tiktok.com/@elysia_jewellery");

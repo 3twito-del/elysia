@@ -93,7 +93,7 @@ describe("product recommendation rails", () => {
     expect(rails[0]?.id).toBe("popular");
     expect(rails[0]?.products[0]?.slug).toBe("popular");
     expect(rails[0]?.continuationHref).toBe("/search");
-    expect(rails[0]?.cardContextLabel).toBe("מומלץ במבחר");
+    expect(rails[0]?.cardContextLabel).toBe("מומלץ עכשיו");
   });
 
   it("keeps rail labels source-based instead of implying personalization", () => {

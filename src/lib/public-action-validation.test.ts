@@ -20,7 +20,7 @@ describe("public action validation", () => {
 
     expect(parsed.success).toBe(false);
     if (!parsed.success) {
-      expect(parsed.error.issues[0]?.message).toBe("לא נמצאה בחירה לשמירה.");
+      expect(parsed.error.issues[0]?.message).toBe("לא נמצא תכשיט לשמירה.");
     }
   });
 

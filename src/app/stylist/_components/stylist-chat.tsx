@@ -87,10 +87,10 @@ export function StylistChat({ compact = false }: StylistChatProps) {
                     compact ? "text-xl" : "text-2xl",
                   )}
                 >
-                  עזרה בבחירה
+                  יועץ לוק
                 </h2>
                 <p className="text-muted-foreground max-w-2xl text-sm leading-6">
-                  מאתרים התאמות לפי מחיר, אירוע, חומר וסגנון, מתוך המלאי הפעיל.
+                  מאתרים תכשיטים לפי מחיר, אירוע, חומר וסגנון, מתוך המלאי הפעיל.
                 </p>
               </div>
             </div>
@@ -349,7 +349,7 @@ function SafeActionToolResult({
         <div className="grid gap-1">
           <p className="font-medium">{getToolLabel(part.type)}</p>
           <p className="text-muted-foreground leading-6">
-            הבחירה הזו דורשת אישור לפני המשך.
+            הפעולה הזו דורשת אישור לפני המשך.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -390,18 +390,18 @@ function SafeActionToolResult({
 
   if (part.state === "output-denied") {
     return (
-      <StatusMessage tone="neutral">הבחירה לא בוצעה לאחר דחייה.</StatusMessage>
+      <StatusMessage tone="neutral">הפעולה לא בוצעה לאחר דחייה.</StatusMessage>
     );
   }
 
   if (part.state === "output-error") {
     return (
-      <StatusMessage tone="error">לא ניתן היה להשלים את הבחירה.</StatusMessage>
+      <StatusMessage tone="error">לא ניתן היה להשלים את הפעולה.</StatusMessage>
     );
   }
 
   if (part.state !== "output-available") {
-    return <LoadingState label="מאשרים בחירה מאובטחת" variant="inline" />;
+    return <LoadingState label="מאשרים פעולה מאובטחת" variant="inline" />;
   }
 
   return (
@@ -421,7 +421,7 @@ function getToolLabel(type: string) {
 
 function getToolOutputText(output: unknown) {
   if (typeof output !== "object" || output === null) {
-    return "הבחירה הושלמה.";
+    return "הפעולה הושלמה.";
   }
 
   const record = output as Record<string, unknown>;
@@ -429,7 +429,7 @@ function getToolOutputText(output: unknown) {
     (value): value is string => typeof value === "string" && value.length > 0,
   );
 
-  return parts.length > 0 ? parts.join(" ") : "הבחירה הושלמה.";
+  return parts.length > 0 ? parts.join(" ") : "הפעולה הושלמה.";
 }
 
 function getNearestUserText(messages: UIMessage[], messageIndex: number) {

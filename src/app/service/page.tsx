@@ -23,7 +23,7 @@ import { getPublicServiceProfile } from "~/server/services/service";
 export const metadata: Metadata = {
   title: "שירות",
   description:
-    "שירות Elysia להזמנות, תיקונים, החזרות, מידות, פרטיות ונגישות.",
+    "שירות Elysia להזמנות, מידות, מתנות, החזרות, פרטיות ונגישות.",
 };
 
 export const dynamic = "force-dynamic";
@@ -31,13 +31,13 @@ export const dynamic = "force-dynamic";
 const serviceTracks = [
   {
     icon: MessageSquareText,
-    title: "פנייה כללית",
-    text: "שאלות על תכשיט, מתנה, מידה או הזמנה.",
+    title: "שאלה על תכשיט",
+    text: "התלבטות על לוק, מתנה, מידה או פריט מסוים.",
   },
   {
     icon: Wrench,
     title: "תיקון ואחריות",
-    text: "פנייה בנושא תיקון, אחריות או בדיקת מוצר.",
+    text: "בדיקה של תיקון, אחריות או טיפול בתכשיט.",
   },
   {
     icon: RotateCcw,
@@ -46,19 +46,19 @@ const serviceTracks = [
   },
   {
     icon: Ruler,
-    title: "מידות",
-    text: "עזרה במידה, אורך או התאמה.",
+    title: "מידה והתאמה",
+    text: "עזרה באורך, מידה או התאמה לפני הזמנה.",
   },
 ] as const;
 
 const serviceResponseExpectations = [
   {
-    title: "חזרה בערוץ שנבחר",
+    title: "חוזרים בדרך שנוחה לך",
     text: "נשתמש בטלפון או באימייל לפי ההעדפה שתסמנו בטופס.",
   },
   {
-    title: "בירור לפי פרטי הפנייה",
-    text: "מספר הזמנה, שם תכשיט או תמונה מקצרים טיפול.",
+    title: "פרטים שמקצרים את הדרך",
+    text: "מספר הזמנה, שם תכשיט או תמונה עוזרים לתת תשובה מדויקת יותר.",
   },
 ] as const;
 
@@ -84,9 +84,9 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
       <SiteHeader />
 
       <CommercePageHero
-        description="שירות להזמנות, מידות, החזרות ופניות נוספות."
+        description="שאלה על תכשיט, מידה, מתנה או הזמנה - משאירים פרטים וממשיכים משם."
         eyebrow="שירות Elysia"
-        title="שירות"
+        title="שירות שעוזר לבחור"
         variant="content"
       />
 
@@ -95,7 +95,7 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
           <section className="grid gap-5" aria-labelledby="service-contact">
             <div>
               <Badge variant="secondary">שירות</Badge>
-              <h2 className="mt-3 text-2xl font-semibold" id="service-contact">כל הפניות</h2>
+              <h2 className="mt-3 text-2xl font-semibold" id="service-contact">איך נוח לדבר?</h2>
               <p className="text-muted-foreground mt-2 max-w-prose leading-7">הפעילות מתבצעת מרחוק או בטלפון, עם תיעוד לכל פנייה.</p>
             </div>
 
@@ -167,9 +167,9 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
               </ul>
               <Separator className="my-5" />
               <div className="grid gap-3 sm:grid-cols-3">
-                <TrustItem icon={Clock3} label="מענה מסודר" />
+                <TrustItem icon={Clock3} label="מענה אישי" />
                 <TrustItem icon={ShieldCheck} label="תיעוד מאובטח" />
-                <TrustItem icon={Sparkles} label="שירות" />
+                <TrustItem icon={Sparkles} label="לפני ואחרי הזמנה" />
               </div>
             </div>
           </section>
@@ -177,8 +177,8 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
           <section aria-labelledby="service-form" id="service-form">
             <div className="mb-4">
               <Badge variant="outline">פנייה לשירות</Badge>
-              <h2 className="mt-3 text-2xl font-semibold">פנייה לשירות</h2>
-              <p className="text-muted-foreground mt-2 text-sm leading-6">בחרו נושא והשאירו פרטים. נחזור בהתאם לפנייה.</p>
+              <h2 className="mt-3 text-2xl font-semibold">ספרו לנו במה להתמקד</h2>
+              <p className="text-muted-foreground mt-2 text-sm leading-6">בחרו נושא והשאירו פרטים. נחזור עם תשובה שמתייחסת למה שצריך.</p>
             </div>
             <section
               aria-labelledby="service-topic-cards-title"
@@ -187,10 +187,10 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
             >
               <div>
                 <h3 className="font-medium" id="service-topic-cards-title">
-                  בחירת נושא מהירה
+                  נושא מהיר
                 </h3>
                 <p className="text-muted-foreground mt-1 text-sm leading-6">
-                  בחירה מכאן ממלאת את נושא הפנייה ומקצרת את הטופס.
+                  לחיצה מכאן ממלאת את הנושא ומקצרת את הטופס.
                 </p>
               </div>
               <div className="grid gap-2 sm:grid-cols-2">
@@ -215,7 +215,7 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
               data-testid="service-response-time-note"
             >
               <Clock3 aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-              <p>פניות מטופלות לפי סדר קבלה ונושא. מספר הזמנה או שם מוצר מאפשרים תשובה ממוקדת.</p>
+              <p>פניות מטופלות לפי סדר קבלה ונושא. מספר הזמנה או שם תכשיט עוזרים לתת תשובה מדויקת יותר.</p>
             </div>
             <ServiceRequestForm
               defaultMessage={defaultMessage}

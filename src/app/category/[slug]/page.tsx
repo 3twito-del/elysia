@@ -58,24 +58,24 @@ export const revalidate = 3600;
 
 const categoryLuxuryCopyBySlug: Record<string, CategoryLuxuryCopy> = {
   bracelets: {
-    description: "צמידים דקים עם חומר, מידה ומחיר לפני בחירה.",
-    intro: "צמידים לענידה יומיומית, לשילוב שכבות או למתנה.",
+    description: "צמידים דקים לשכבות, למתנה או לברק קטן על היד.",
+    intro: "ליום רגיל, לחופשה ולערב שמבקש עוד נקודת אור.",
     title: "צמידים",
   },
   earrings: {
-    description: "עגילים לפי משקל, גימור, חומר ונוחות ענידה.",
-    intro: "עגילים ליום, לערב ולמתנה.",
+    description: "עגילים קטנים או נוכחים לפי משקל, גימור ונוחות ענידה.",
+    intro: "ליום, לערב, למשרד ולמתנה שנפתחת מיד.",
     title: "עגילים",
   },
   necklaces: {
     description:
-      "שרשראות ותליונים לענידה יחידה או בשכבות, לפי אורך, חומר ואבן.",
-    intro: "שרשראות ותליונים לפי אורך, חומר ושימוש.",
+      "שרשראות ותליונים שנראים טוב לבד או בשכבות, לפי אורך, חומר ואבן.",
+    intro: "קו על הצוואר שמשנה חולצה פשוטה, שמלה או לוק חופשה.",
     title: "שרשראות",
   },
   rings: {
     description: "טבעות זהב, יהלומים ואבני חן לפי פרופורציה, נוחות ומידה.",
-    intro: "טבעות ליום, לערב, להצעה או למתנה.",
+    intro: "טבעת אחת עם נוכחות, או כמה יחד כשבא יותר אור על היד.",
     title: "טבעות",
   },
 };
@@ -99,7 +99,7 @@ export async function generateMetadata({
     return {
       title: "המשפחה לא נמצאה",
       description:
-        "הקישור לקולקציה אינו פעיל. ניתן להמשיך לחיפוש או לחזור לעמוד הבית.",
+        "הקישור לקולקציה אינו פעיל. אפשר להמשיך לחיפוש או לחזור לעמוד הבית.",
       alternates: {
         canonical: `/category/${slug}`,
       },
@@ -159,8 +159,8 @@ export default async function CategoryPage({
   const categoryCopy = categoryLuxuryCopyBySlug[slug] ?? {
     description:
       category.description ||
-      "פריטי קולקציה עם חומר, מידה, מחיר ושירות לפני הזמנה.",
-    intro: "פריטים מתוך הקולקציה של Elysia.",
+      "פריטים מתוך הקולקציה של Elysia, עם חומר, מידה ומחיר לפני הזמנה.",
+    intro: "תכשיטים שאפשר לפתוח מהם לוק, מתנה או ערב.",
     title: category.name,
   };
   const facets = getCatalogFacetsFromProducts(catalogProducts);
@@ -201,7 +201,7 @@ export default async function CategoryPage({
   const hasCategoryProducts = baseProducts.length > 0;
   const hasActiveFilters = activeFilterCount > 0;
   const pageRangeLabel =
-    sortedProducts.length > 0 ? "מבחר תכשיטים" : "המבחר יעודכן בקרוב";
+    sortedProducts.length > 0 ? "כל התכשיטים" : "הקטגוריה מתעדכנת";
 
   return (
     <>
@@ -218,7 +218,7 @@ export default async function CategoryPage({
               <span>{categoryCopy.description}</span>
             </>
           }
-          eyebrow="מתוך הקולקציה"
+          eyebrow="קולקציה"
           id="page-hero"
           media={{
             alt: `${categoryCopy.title} מתוך קולקציית Elysia`,
@@ -242,7 +242,7 @@ export default async function CategoryPage({
                 {hasActiveFilters
                   ? `${activeFilterCount} סינונים פעילים · מיון: ${currentSortLabel}`
                   : hasCategoryProducts
-                    ? `מבחר תכשיטים · מיון: ${currentSortLabel}`
+                    ? `כל התכשיטים · מיון: ${currentSortLabel}`
                     : "הקטגוריה מתעדכנת"}
               </p>
               {hasActiveFilters ? (
@@ -262,7 +262,7 @@ export default async function CategoryPage({
                 variant="outline"
               >
                 <Filter aria-hidden="true" className="size-4" />
-                סינון
+                סינון לפי לוק
                 {activeFilterCount > 0 && (
                   <Badge className="h-5 px-1.5" variant="secondary">
                     {activeFilterCount}
@@ -277,10 +277,10 @@ export default async function CategoryPage({
                 <SheetHeader className="border-b border-[var(--glass-border)] p-[var(--ui-panel-padding)]">
                   <SheetTitle className="flex items-center gap-2">
                     <SlidersHorizontal aria-hidden="true" className="size-4" />
-                    סינון
+                    סינון לפי לוק
                   </SheetTitle>
                   <SheetDescription>
-                    בחרו רק מתוך מאפיינים זמינים במבחר.
+                    בחרו חומר, אבן, מחיר או קולקציה מתוך מה שזמין עכשיו.
                   </SheetDescription>
                   <p
                     className="text-muted-foreground text-xs leading-5"
@@ -288,7 +288,7 @@ export default async function CategoryPage({
                   >
                     {pageRangeLabel} · מיון: {currentSortLabel}
                     {hasActiveFilters
-                      ? ` · ${activeFilterCount} בחירות פעילות`
+                      ? ` · ${activeFilterCount} סינונים פעילים`
                       : ""}
                   </p>
                 </SheetHeader>
@@ -332,7 +332,7 @@ export default async function CategoryPage({
               <div className="pb-4">
                 <h2 className="flex items-center gap-2 text-base font-medium">
                   <SlidersHorizontal aria-hidden="true" className="size-4" />
-                  סינון
+                  סינון לפי לוק
                 </h2>
               </div>
               <DeferredCategoryFilterPanel data={filterPayload} />
@@ -358,8 +358,8 @@ export default async function CategoryPage({
                       : filteredProducts.length > productsPerPage
                         ? `עמוד ${currentPage}`
                         : hasActiveFilters
-                          ? "התוצאות מסוננות לפי הבחירה"
-                          : "בחירות פתוחות מתוך הקולקציה"}
+                          ? "התוצאות מסוננות לפי מה שבחרתם"
+                          : "פריטים פתוחים מתוך הקולקציה"}
                     <span className="mx-2">·</span>
                     <span data-testid="category-current-sort-label">
                       מיון: {currentSortLabel}
@@ -376,7 +376,7 @@ export default async function CategoryPage({
               </div>
               {activeFilters.length > 0 && (
                 <section
-                  aria-label="בחירות פעילות"
+                  aria-label="סינונים פעילים"
                   className="mt-4 border-y border-[var(--glass-border)] py-3"
                   data-testid="category-active-refinement-summary"
                 >
@@ -410,7 +410,7 @@ export default async function CategoryPage({
                             {filter.label}
                           </span>
                           <X aria-hidden="true" className="size-3" />
-                          <span className="sr-only">הסרת בחירה</span>
+                          <span className="sr-only">הסרת סינון</span>
                         </Link>
                       </Badge>
                     ))}
@@ -500,11 +500,11 @@ function CategoryEditorialNote({
       data-testid="category-editorial-care-note"
     >
       <summary className="flex cursor-pointer items-center justify-between gap-3 font-medium">
-        <span>הערת בחירה וטיפול</span>
+        <span>טיפ קטן לפני ענידה</span>
         <span className="text-muted-foreground text-xs">{categoryName}</span>
       </summary>
       <p className="text-muted-foreground mt-3 max-w-3xl leading-7">
-        {description}מומלץ לשמור בנפרד, להימנע ממים ובושם, ולבחור מידה לפי שימוש
+        {description} מומלץ לשמור בנפרד, להימנע ממים ובושם, ולבחור מידה לפי שימוש
         יומי.
       </p>
     </details>
@@ -536,7 +536,7 @@ function CategoryEmptyState({
                 data-testid="category-search-recovery-link"
                 href={searchRecoveryHref}
               >
-                חיפוש בכל המבחר
+                חיפוש בכל התכשיטים
               </Link>
             </Button>
           </>
@@ -573,10 +573,10 @@ function CategoryEmptyState({
           </Button>
         </>
       }
-      description="ניתן לנקות בחירה, לעבור לקטגוריה קרובה או להרחיב את החיפוש."
+      description="אפשר לנקות סינונים, לעבור לקטגוריה קרובה או להרחיב את החיפוש."
       icon={Gem}
       testId="category-empty-state"
-      title="לא נמצאה התאמה לבחירה הזו"
+      title="לא מצאנו התאמה לסינון הזה"
     />
   );
 }
@@ -593,7 +593,7 @@ function CategoryRecoveryGuidance({
       className="text-muted-foreground mx-auto mb-2 grid max-w-md basis-full gap-2 text-sm leading-6 sm:text-start"
       data-testid="category-no-result-recovery"
     >
-      <p className="text-foreground font-medium">קטגוריות עם התאמה לבחירה</p>
+      <p className="text-foreground font-medium">קטגוריות עם התאמה לסינון</p>
       <ul className="grid gap-1.5">
         {actions.map((action) => (
           <li className="grid gap-0.5" key={`${action.href}-guidance`}>
@@ -724,9 +724,7 @@ function CategoryPagination({
 }
 
 function formatCategoryActiveSelectionCount(count: number) {
-  return count === 1
-    ? "\u05d1\u05d7\u05d9\u05e8\u05d4 \u05e4\u05e2\u05d9\u05dc\u05d4 \u05d0\u05d7\u05ea"
-    : `${count} \u05d1\u05d7\u05d9\u05e8\u05d5\u05ea \u05e4\u05e2\u05d9\u05dc\u05d5\u05ea`;
+  return count === 1 ? "סינון פעיל אחד" : `${count} סינונים פעילים`;
 }
 
 function formatCategoryActiveSelectionPreview(

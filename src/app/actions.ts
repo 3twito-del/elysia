@@ -75,7 +75,7 @@ export async function saveWishlistItem(
   if (!parsed.success) {
     return {
       ok: false,
-      message: parsed.error.issues[0]?.message ?? "לא נמצאה בחירה לשמירה.",
+      message: parsed.error.issues[0]?.message ?? "לא נמצא תכשיט לשמירה.",
     };
   }
 

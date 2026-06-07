@@ -78,7 +78,7 @@ const guestAccountBenefitItems = [
     label: "מעקב אחר הזמנות וחשבוניות",
   },
   {
-    description: "מידות לטבעות, שרשראות וצמידים נשמרות לבחירה מדויקת.",
+    description: "מידות לטבעות, שרשראות וצמידים נשמרות להזמנה קלה יותר.",
     icon: Ruler,
     label: "שמירת מידות אישיות",
   },
@@ -372,7 +372,7 @@ export default async function AccountPage() {
                     />
                   ))}
                 </div>
-                <p className="account-entry-note">אפשר לקבל עזרה לפני בחירה או אחרי הזמנה.</p>
+                <p className="account-entry-note">אפשר לקבל עזרה לפני הזמנה או אחריה.</p>
               </CardContent>
             </Card>
           </div>
@@ -608,7 +608,7 @@ export default async function AccountPage() {
                 <CardHeader className="account-boutique-card-header">
                   <CardTitle>מועדפים</CardTitle>
                   <p className="text-muted-foreground text-sm leading-7">
-                    תכשיטים שנשמרו לגישה מהירה לפני בחירה או התייעצות.
+                    תכשיטים שנשמרו לגישה מהירה לפני החלטה או התייעצות.
                   </p>
                 </CardHeader>
                 <CardContent className="grid gap-3">
@@ -660,7 +660,7 @@ export default async function AccountPage() {
                             </Button>
                             <Button asChild size="sm" variant="ghost">
                               <Link href={wishlistDecisionSupport.serviceHref}>
-                                ייעוץ בחירה
+                                ייעוץ לוק
                               </Link>
                             </Button>
                           </div>
@@ -770,8 +770,8 @@ export default async function AccountPage() {
                 <CardHeader className="account-boutique-card-header">
                   <CardTitle>מידות</CardTitle>
                   <p className="text-muted-foreground text-sm leading-7">
-                    שמרי מידות לטבעות, שרשראות וצמידים כדי להפוך בחירה עתידית
-                    למהירה ומדויקת יותר.
+                    שמרי מידות לטבעות, שרשראות וצמידים כדי להפוך הזמנה עתידית
+                    לקלה ומדויקת יותר.
                   </p>
                 </CardHeader>
                 <CardContent className="grid gap-3">
@@ -824,7 +824,7 @@ export default async function AccountPage() {
                 </CardHeader>
                 <CardContent className="grid gap-3">
                   <EmptyState
-                    description="צוות השירות זמין לפנייה מסודרת לפני בחירה ולאחר רכישה."
+                    description="צוות השירות זמין לשאלה לפני הזמנה ולאחר רכישה."
                     icon={ShieldCheck}
                     title="שירות אישי"
                     variant="inset"
@@ -1050,7 +1050,7 @@ function AccountSummaryPanel({
       detail:
         savedSizeCount > 0
           ? `${savedSizeCount} מידות שמורות בפרופיל.`
-          : "אפשר לשמור מידות לבחירה מדויקת יותר.",
+          : "אפשר לשמור מידות להזמנה מדויקת יותר.",
       href: "#account-sizes",
       icon: Ruler,
       label: "מידות שמורות",
@@ -1058,7 +1058,7 @@ function AccountSummaryPanel({
     },
     {
       action: "פנייה",
-      detail: "שירות אישי זמין לבחירה, מידה, מתנה ומעקב הזמנה.",
+      detail: "שירות אישי זמין ללוק, מידה, מתנה ומעקב הזמנה.",
       href: "#account-service",
       icon: MessageCircle,
       label: "פניות שירות",

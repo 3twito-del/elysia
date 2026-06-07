@@ -70,21 +70,21 @@ const SEARCH_RESULT_IMAGE_BLUR_DATA_URL =
   "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='10'%20height='8'%20viewBox='0%200%2010%208'%3E%3Crect%20width='10'%20height='8'%20fill='%23f3eee8'/%3E%3C/svg%3E";
 
 export const metadata = {
-  title: "חיפוש במבחר",
-  description: "חיפוש תכשיטים לפי קטגוריה, חומר, מחיר וזמינות.",
+  title: "חיפוש תכשיטים",
+  description: "חיפוש תכשיטים לפי לוק, חומר, מחיר וזמינות.",
   alternates: {
     canonical: "/search",
   },
   openGraph: {
     title: "Elysia | חיפוש תכשיטים",
-    description: "סינון וחיפוש במבחר התכשיטים של Elysia.",
+    description: "מצאו טבעות, שרשראות, עגילים וצמידים לפי חומר, מחיר וסגנון.",
     url: "/search",
     images: [{ url: "/brand/boutique/lifestyle-hero.avif" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Elysia | חיפוש תכשיטים",
-    description: "סינון וחיפוש במבחר התכשיטים של Elysia.",
+    description: "מצאו טבעות, שרשראות, עגילים וצמידים לפי חומר, מחיר וסגנון.",
     images: ["/brand/boutique/lifestyle-hero.avif"],
   },
 };
@@ -122,17 +122,17 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     result.total > 0
       ? hasActiveFilters || input.query
         ? "תכשיטים שנמצאו"
-        : "מבחר תכשיטים"
+        : "כל התכשיטים"
       : "לא נמצאו תוצאות";
 
   const resultDetail =
     result.total > 0
       ? result.totalPages > 1
         ? `עמוד ${result.page}`
-        : "המבחר יעודכן בהדרגה"
+        : "המבחר מתעדכן לאורך העונה"
       : recoveryActions.length > 0
         ? "נמצאו כיוונים פתוחים יותר"
-        : "ניתן לנקות בחירות או לעבור למבחר המלא";
+        : "אפשר לנקות סינונים או לעבור לכל המלאי";
   after(() => recordSearchEvent(input, result.total));
 
   return (
@@ -141,9 +141,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
       <main>
         <CommercePageHero
-          description="חיפוש במבחר לפי קטגוריה, חומר, אבן, מחיר ורלוונטיות."
-          eyebrow="מבחר Elysia"
-          title="חיפוש במבחר"
+          description="חפשו לפי תכשיט, חומר, צבע, מחיר או רגע בלוח השנה."
+          eyebrow="חיפוש"
+          title="מה בא לך לענוד?"
           variant="catalog"
         />
         <RevealSection
@@ -224,8 +224,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                   {input.query
                     ? `עבור "${input.query}"`
                     : hasActiveFilters
-                      ? "לפי הבחירה הפעילה"
-                      : "כל התוצאות במבחר."}
+                      ? "לפי הסינון הפעיל"
+                      : "כל מה שזמין עכשיו במבחר."}
                 </p>
                 <p
                   className="text-muted-foreground mt-1 text-xs"
@@ -278,7 +278,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             <EmptyState
               className="mt-6 sm:mt-10"
               description={
-                <>ניתן לנקות בחירה, לעבור לקטגוריה פתוחה או להרחיב את החיפוש.</>
+                <>אפשר לנקות סינונים, לעבור לקטגוריה פתוחה או להרחיב את החיפוש.</>
               }
               icon={Search}
               testId="search-empty-state"
@@ -292,7 +292,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                         data-testid="search-guided-recovery"
                       >
                         <p className="text-foreground font-medium">
-                          כיווני המשך עם תוצאות
+                          כיוונים פתוחים יותר
                         </p>
                         <ul className="grid gap-1.5">
                           {recoveryActions.map((action) => (
@@ -500,7 +500,7 @@ function SearchNoResultsSuggestions({
       data-testid="search-no-results-category-suggestions"
     >
       <span className="text-muted-foreground basis-full text-center text-sm">
-        נסו להתחיל מקטגוריה פתוחה:
+        נסו להתחיל מקטגוריה:
       </span>
       {suggestions.map((category) => (
         <Button asChild key={category.slug} variant="outline">
@@ -878,7 +878,7 @@ async function getSearchRecoveryActions(
 
     candidates.push({
       description:
-        "שומר את מילת החיפוש ומסיר משפחת תכשיט, חומר, אבן, מחיר ומיון.",
+        "משאיר את מילת החיפוש ומסיר קטגוריה, חומר, אבן, מחיר ומיון.",
       href: createSearchHref({ ...queryOnlyInput, view: viewMode }),
       input: queryOnlyInput,
       label: "ניקוי סינונים",
@@ -894,7 +894,7 @@ async function getSearchRecoveryActions(
     };
 
     candidates.push({
-      description: "שומר את הבחירות הפעילות ומסיר רק את מילת החיפוש.",
+      description: "משאיר את הסינונים ומסיר רק את מילת החיפוש.",
       href: createSearchHref({ ...withoutQueryInput, view: viewMode }),
       input: withoutQueryInput,
       label: "בלי מילת החיפוש",
@@ -908,10 +908,10 @@ async function getSearchRecoveryActions(
     };
 
     candidates.push({
-      description: "פותח את המבט המלא על המבחר, בלי חיפוש וסינונים.",
+      description: "פותח את כל המלאי בלי חיפוש וסינונים.",
       href: createSearchHref({ ...allCatalogInput, view: viewMode }),
       input: allCatalogInput,
-      label: "כל המבחר",
+      label: "כל התכשיטים",
     });
   }
 
@@ -1049,9 +1049,7 @@ function getSearchViewLabel(viewMode: SearchViewMode) {
 }
 
 function formatActiveSelectionCount(count: number) {
-  return count === 1
-    ? "\u05d1\u05d7\u05d9\u05e8\u05d4 \u05e4\u05e2\u05d9\u05dc\u05d4 \u05d0\u05d7\u05ea"
-    : `${count} \u05d1\u05d7\u05d9\u05e8\u05d5\u05ea \u05e4\u05e2\u05d9\u05dc\u05d5\u05ea`;
+  return count === 1 ? "סינון פעיל אחד" : `${count} סינונים פעילים`;
 }
 
 function formatActiveSelectionPreview(filters: ActiveSearchFilter[]) {

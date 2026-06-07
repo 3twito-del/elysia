@@ -56,7 +56,7 @@ const quickActions = [
   { href: "/search", label: "חיפוש", icon: Search },
   { href: "/branches", label: "אונליין", icon: Headphones },
   { href: "/wishlist", label: "מועדפים", icon: Heart },
-  { href: "/checkout", label: "הבחירה", icon: ShoppingBag },
+  { href: "/checkout", label: "הסל", icon: ShoppingBag },
   { href: "/account", label: "אזור אישי", icon: UserRound },
 ] as const;
 
@@ -68,14 +68,14 @@ const serviceActions = [
 const spotlightActions = [
   {
     href: "/stylist",
-    label: "יועץ התאמה",
-    description: "התאמה לפי סגנון, חומר ומידה",
+    label: "יועץ לוק",
+    description: "כיוון לפי סגנון, חומר ומידה",
     icon: Sparkles,
   },
   {
     href: "/gifts",
     label: "מתנות",
-    description: "בחירה לפי מחיר, אירוע וחומר",
+    description: "רעיונות לפי מחיר, אירוע וחומר",
     icon: Gift,
   },
   {
@@ -239,7 +239,7 @@ export function MobileNav({
             className="mobile-nav-animated-item text-foreground mt-6 max-w-[24rem] text-[1.05rem] leading-8"
             style={getMobileNavStaggerStyle(1)}
           >
-            תכשיטים, מידע, הזמנה ושירות.
+            תכשיטים ללוק, למתנה וליום רגיל שמבקש קצת אור.
           </p>
         </div>
 
@@ -286,7 +286,7 @@ export function MobileNav({
               className="mobile-nav-section-kicker text-muted-foreground mobile-nav-animated-item text-xs font-medium"
               style={getMobileNavStaggerStyle(spotlightKickerIndex)}
             >
-              בחירה מהירה
+              מאיפה מתחילים?
             </p>
             {spotlightActions.map((item, index) => {
               const Icon = item.icon;
@@ -405,14 +405,14 @@ export function MobileNav({
           </nav>
 
           <nav
-            aria-label="ניווט מידע ושירות"
+            aria-label="ניווט עזרה ומידע"
             className="mobile-nav-section grid gap-0"
           >
             <p
               className="mobile-nav-section-kicker text-muted-foreground mobile-nav-animated-item text-xs font-medium"
               style={getMobileNavStaggerStyle(serviceKickerIndex)}
             >
-              מידע ושירות
+              עזרה ומידע
             </p>
             {serviceActions.map((item, index) => {
               const Icon = item.icon;

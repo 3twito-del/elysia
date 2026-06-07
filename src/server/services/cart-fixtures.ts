@@ -135,7 +135,7 @@ export function updateFixtureCartItemQuantity(input: {
   if (!item) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "התכשיט לא נמצא בבחירה.",
+      message: "התכשיט לא נמצא בסל.",
     });
   }
 
@@ -156,7 +156,7 @@ export function removeFixtureCartItem(input: {
   if (cart.items.length === initialLength) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "התכשיט לא נמצא בבחירה.",
+      message: "התכשיט לא נמצא בסל.",
     });
   }
 
@@ -215,7 +215,7 @@ function requireFixtureCart(sessionKey: string) {
   if (!cart) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "לא נמצאה בחירה פעילה.",
+      message: "לא נמצא סל פעיל.",
     });
   }
 

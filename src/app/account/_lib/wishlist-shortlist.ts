@@ -62,11 +62,11 @@ export function getWishlistDecisionSupport(
     cues: [
       {
         id: "category",
-        label: "מרכז בחירה",
+        label: "כיוון מרכזי",
         value:
           categoryCount > 1
             ? `${categoryCount} קטגוריות להשוואה`
-            : (topCategory?.label ?? "בחירות מתוך המבחר"),
+            : (topCategory?.label ?? "תכשיטים מתוך המבחר"),
       },
       {
         id: "material",
@@ -83,7 +83,7 @@ export function getWishlistDecisionSupport(
       },
     ],
     serviceHref: createWishlistServiceHref(items),
-    summary: `נשמרו ${items.length} ${items.length === 1 ? "בחירה" : "בחירות"} להשוואה לפני החלטה.`,
+    summary: `נשמרו ${items.length} ${items.length === 1 ? "תכשיט" : "תכשיטים"} להשוואה לפני החלטה.`,
   };
 }
 

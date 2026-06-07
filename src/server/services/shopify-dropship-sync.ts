@@ -155,7 +155,7 @@ export function mapShopifyProductsToImportPlan(input: {
         categorySlug: toSlug(product.productType ?? "rings"),
         description:
           product.description.trim() ||
-          "פריט מתוך עריכת Elysia, עם פרטי חומר ומידה המוצגים לפני בחירה.",
+          "פריט מתוך עריכת Elysia, עם חומר ומידה לפני הזמנה.",
         externalHandle: product.handle,
         externalProductId: product.id,
         images,
@@ -163,7 +163,7 @@ export function mapShopifyProductsToImportPlan(input: {
         name: product.title,
         shortDescription:
           product.description.trim().slice(0, 180) ||
-          "פריט מתוך עריכת Elysia עם פרטים מסודרים לפני בחירה.",
+          "פריט מתוך עריכת Elysia עם חומר ומידה לפני הזמנה.",
         sku: defaultVariant.sku,
         supplierKey: input.supplierKey,
         tags: product.tags,

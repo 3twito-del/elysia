@@ -28,19 +28,19 @@ const categoryEditorialCopy: Record<
   { description: string; kicker: string }
 > = {
   bracelets: {
-    description: "צמידים לענידה יומיומית.",
+    description: "צמידים שמוסיפים ברק גם ללוק הכי יומיומי.",
     kicker: "צמידים",
   },
   earrings: {
-    description: "עגילים ליום ולערב.",
+    description: "עגילים קטנים לערב, ליום ולכל מה שביניהם.",
     kicker: "עגילים",
   },
   necklaces: {
-    description: "שרשראות ליום ולערב.",
+    description: "שרשראות שמחזיקות הופעה בלי להתאמץ.",
     kicker: "שרשראות",
   },
   rings: {
-    description: "טבעות ליום ולערב.",
+    description: "טבעות עם נוכחות עדינה, לבד או בשכבות.",
     kicker: "טבעות",
   },
 };
@@ -49,52 +49,52 @@ const materialTrust = [
   {
     icon: Gem,
     title: "מתכת",
-    text: "זהב, כסף וגימורים בהירים במבחר עדכני.",
+    text: "זהב, כסף וגימורים חמימים שמכניסים אור ללוק.",
   },
   {
     icon: Ruler,
     title: "אבנים",
-    text: "יהלומים, פנינים ואבני צבע לפי דגם.",
+    text: "פנינים, יהלומים ואבני צבע לפי הדגם והמלאי.",
   },
   {
     icon: ShieldCheck,
-    title: "מבנה וגימור",
-    text: "מידות, אורך ומשקל מופיעים בפרטי המוצר.",
+    title: "על הגוף",
+    text: "מידה, אורך ומשקל מופיעים כדי להבין איך התכשיט יושב.",
   },
 ] as const;
 
 const editorialPrinciples = [
   {
-    title: "בחירת מתנה",
-    text: "בחירה לפי אירוע, סגנון וטווח מחיר.",
+    title: "מתנה שנראית אישית",
+    text: "מתחילים מאירוע, תקציב או סגנון ומגיעים לפריטים שמתאימים לרגע.",
   },
   {
-    title: "התאמה",
-    text: "ניתן לסנן לפי מידה, חומר וטווח מחיר.",
+    title: "לוק שלם",
+    text: "אפשר לסנן לפי חומר, צבע ומידה ולראות מה עובד יחד.",
   },
   {
-    title: "משלוח",
-    text: "אפשרויות אריזה וברכה זמינות במהלך ההזמנה.",
+    title: "אריזה ומשלוח",
+    text: "כשהאפשרות זמינה, מוסיפים ברכה או אריזה לפני סיום ההזמנה.",
   },
 ] as const;
 
 export const metadata: Metadata = {
   title: "Elysia | תכשיטים",
   description:
-    "עמוד הבית של Elysia: תכשיטים, מתנות, מידע מוצר מסודר והזמנה מקוונת.",
+    "תכשיטי Elysia לקיץ, למתנה וליומיום: זהב, פנינים ואבני צבע עם פרטי חומר, מידה ומחיר לפני הזמנה.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: "Elysia | תכשיטים",
-    description: "קולקציות תכשיטים עם מידע מסודר על חומר, מידה, מחיר והזמנה.",
+    description: "קולקציות תכשיטים לקיץ, למתנות וללוקים יומיומיים.",
     url: "/",
     images: [{ url: boutiqueHeroImage }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Elysia | תכשיטים",
-    description: "קולקציות תכשיטים עם מידע מסודר על חומר, מידה, מחיר והזמנה.",
+    description: "קולקציות תכשיטים לקיץ, למתנות וללוקים יומיומיים.",
     images: [boutiqueHeroImage],
   },
 };
@@ -137,16 +137,16 @@ export default async function Home() {
         <div className="storefront-hero-wash absolute inset-0" />
 
         <div
-          className="home-hero-copy motion-hero-copy storefront-hero-copy absolute z-10 flex max-w-[min(38rem,calc(100vw-2.5rem))] flex-col items-start text-left sm:max-w-[min(42rem,45vw)]"
+          className="home-hero-copy motion-hero-copy storefront-hero-copy absolute z-10 flex max-w-[min(38rem,calc(100vw-2.5rem))] flex-col items-start text-right sm:max-w-[min(42rem,45vw)]"
           data-testid="home-hero-copy"
-          dir="ltr"
+          dir="rtl"
         >
           <h1 className="sr-only">Elysia</h1>
           <p
             className="home-hero-statement motion-copy-item storefront-hero-statement [--motion-copy-delay:90ms]"
             data-testid="home-hero-statement"
           >
-            Jewellery selected for material, proportion, and everyday light.
+            קיץ חדש. תכשיטים שנכנסים ללוק.
           </p>
           <div
             className="home-hero-actions motion-copy-item storefront-hero-actions [--motion-copy-delay:130ms]"
@@ -160,7 +160,7 @@ export default async function Home() {
                   href="/search"
                   prefetch={false}
                 >
-                  לכל הקולקציות
+                  לכל התכשיטים
                   <ArrowLeft
                     aria-hidden="true"
                     className="home-hero-cta-icon size-4"
@@ -178,10 +178,10 @@ export default async function Home() {
       >
         <SectionHeader
           actionHref="/search"
-          actionLabel="לכל הקולקציות"
+          actionLabel="לכל התכשיטים"
           eyebrow="קולקציות"
-          text="טבעות, שרשראות, עגילים וצמידים במבחר אחד."
-          title="מבחר לפי קטגוריה"
+          text="טבעות, שרשראות, עגילים וצמידים למשרד, לחופשה ולערב."
+          title="מה נכנס ללוק שלך?"
         />
         <RevealGrid
           className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
@@ -202,10 +202,10 @@ export default async function Home() {
         <div className="mx-auto max-w-[92rem]">
           <SectionHeader
             actionHref="/search?sort=newest"
-            actionLabel="למבחר המלא"
-            eyebrow="מבחר נבחר"
-            text="מבחר ראשוני מתוך הקולקציה."
-            title="פריטים נבחרים"
+            actionLabel="לכל מה שחדש"
+            eyebrow="נבחר עכשיו"
+            text="כמה נקודות פתיחה טובות מתוך המלאי הפעיל."
+            title="פריטים שמתחילים מהם"
           />
           {featuredProducts.length > 0 ? (
             <RevealGrid
@@ -231,9 +231,9 @@ export default async function Home() {
         id="materials"
       >
         <SectionHeader
-          eyebrow="חומרים"
+          eyebrow="חומר וצבע"
           text="כל פריט מוצג לפי חומר, גימור, מידה ושימוש."
-          title="חומרים, גימור ונוכחות"
+          title="זהב, פנינים ואור של קיץ"
         />
         <div
           className="grid gap-5 border-y border-[var(--glass-border)] py-6 md:grid-cols-3"
@@ -272,8 +272,8 @@ export default async function Home() {
               actionHref="/about"
               actionLabel="אודות"
               eyebrow="Elysia"
-              text="Elysia מציגה קולקציות תכשיטים עם מידע מסודר, שירות והזמנה מקוונת."
-              title="תכשיטים עם פרטים מסודרים."
+              text="Elysia מציגה תכשיטים לקיץ, למתנה וליומיום, עם הפרטים החשובים לפני ההזמנה."
+              title="לא רק יפה בתמונה."
             />
           </div>
           <div className="boutique-story-secondary-copy">
@@ -315,17 +315,17 @@ export default async function Home() {
       >
         <div className="storefront-final-panel mx-auto max-w-[92rem]">
           <section className="storefront-final-primary">
-            <p className="storefront-eyebrow">הקולקציה הראשונה</p>
+            <p className="storefront-eyebrow">המבחר מתעדכן</p>
             <h2 className="storefront-final-title">
-              התחילו מהמבחר, או בקשו עזרה לפני בחירה.
+              מצאו תכשיט לעכשיו, או שלחו שאלה לפני ההזמנה.
             </h2>
             <p className="storefront-final-text">
-              המגוון יעודכן בהדרגה. אפשר לעיין בתכשיטים, לשמור מועדפים ולפנות
-              לשירות לפני בחירה.
+              המגוון נכנס לאתר בהדרגה. אפשר לשמור מועדפים, לבדוק מידות ולפנות
+              לשירות כשצריך עוד רגע של ודאות.
             </p>
             <div className="storefront-final-actions">
               <Button asChild>
-                <Link href="/search">פתיחת הקטלוג</Link>
+                <Link href="/search">פתיחת המבחר</Link>
               </Button>
               <Button asChild variant="outline">
                 <Link href="/service">שאלה לפני הזמנה</Link>
@@ -337,10 +337,10 @@ export default async function Home() {
             <div>
               <p className="storefront-eyebrow">עדכוני קולקציה</p>
               <h2 className="storefront-final-subtitle">
-                קבלו הודעה כשפריטים חדשים נכנסים למבחר.
+                רוצים לדעת מה חדש?
               </h2>
               <p className="storefront-final-text">
-                נשלח עדכון קצר כאשר פריטים חדשים נכנסים למבחר.
+                נשלח עדכון קצר כשפריטים חדשים נכנסים למבחר.
               </p>
             </div>
             <div className="storefront-final-newsletter">
@@ -409,7 +409,7 @@ function HomeCategoryCard({ category }: { category: CatalogCategory }) {
       <span className="boutique-collection-copy">
         <span className="min-w-0">
           <span className="storefront-eyebrow">
-            {copy?.kicker ?? "מבחר לפי קטגוריה"}
+            {copy?.kicker ?? "לפי לוק"}
           </span>
           <span className="boutique-collection-title">{category.name}</span>
           <span className="boutique-collection-description">
