@@ -315,4 +315,34 @@ describe("site copy tooling", () => {
     expect(nextSecond.id).toBe(originalSecond.id);
     expect(nextSecond.approved).toBe("Second revised");
   });
+
+  it("keeps merged ids unique when an existing id collides with a generated id", () => {
+    const entries = extractCopyEntriesFromText(
+      "src/app/demo/page.tsx",
+      `
+        export function First() {
+          return <ArrowLeft aria-hidden="true" />;
+        }
+
+        export function Second() {
+          return <ArrowLeft aria-hidden="true" />;
+        }
+      `,
+    );
+    const firstEntry = entries[0]!;
+    const secondEntry = entries[1]!;
+    const existingMarkdown = renderCopyMap([
+      {
+        ...firstEntry,
+        id: secondEntry.id,
+      },
+    ]);
+    const merged = mergeEntriesWithExisting(
+      entries,
+      parseCopyMap(existingMarkdown),
+    );
+    const mergedIds = merged.map((entry) => entry.id);
+
+    expect(new Set(mergedIds).size).toBe(merged.length);
+  });
 });

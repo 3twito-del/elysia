@@ -259,20 +259,20 @@ export default async function Home() {
       </RevealSection>
 
       <RevealSection
-        className="boutique-story-band px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]"
+        className="boutique-story-band px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-0"
         id="about-elysia"
       >
-        <div className="mx-auto grid max-w-[92rem] gap-8 lg:grid-cols-[minmax(18rem,0.85fr)_minmax(0,1.15fr)] lg:items-center">
-          <figure className="boutique-story-media relative min-h-[22rem] overflow-hidden rounded-md lg:min-h-[34rem]">
+        <div className="boutique-story-layout mx-auto grid max-w-[92rem] gap-8 lg:items-center">
+          <figure className="boutique-story-media boutique-story-media-left relative">
             <Image
-              alt="Gold necklace detail photographed in soft light"
+              alt=""
               className="object-cover"
               fill
-              sizes="(min-width: 1024px) 40vw, 100vw"
+              sizes="(min-width: 1024px) 50vw, 100vw"
               src="/brand/boutique/product-detail.avif"
             />
           </figure>
-          <div>
+          <div className="boutique-story-copy">
             <SectionHeader
               actionHref="/about"
               actionLabel="אודות"
@@ -280,6 +280,8 @@ export default async function Home() {
               text="Elysia מציגה קולקציות תכשיטים עם מידע ברור, שירות והזמנה מקוונת."
               title="תכשיטים עם פרטים ברורים."
             />
+          </div>
+          <div className="boutique-story-secondary-copy">
             <div className="grid gap-4">
               {editorialPrinciples.map((principle, index) => (
                 <section
@@ -295,8 +297,23 @@ export default async function Home() {
               ))}
             </div>
           </div>
+          <figure className="boutique-story-media boutique-story-media-right relative">
+            <Image
+              alt=""
+              className="object-cover"
+              fill
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              src="/brand/boutique/lifestyle-hero-poster.avif"
+            />
+          </figure>
         </div>
       </RevealSection>
+
+      <div
+        aria-hidden="true"
+        className="boutique-fixed-image-band"
+        id="fixed-editorial-image"
+      />
 
       <RevealSection
         className="boutique-final-cta px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]"

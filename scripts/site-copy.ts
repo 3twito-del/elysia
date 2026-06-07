@@ -900,6 +900,8 @@ export function mergeEntriesWithExisting(
   entries: CopyEntry[],
   existingEntries: Map<string, ExistingEntry>,
 ) {
+  const usedIds = new Set<string>();
+
   return matchEntriesWithExisting(entries, existingEntries).map(
     ({ entry, existingEntry }) => {
       const approved =
@@ -910,10 +912,29 @@ export function mergeEntriesWithExisting(
       return {
         ...entry,
         approved,
-        id: existingEntry?.id ?? entry.id,
+        id: uniqueMergedId(existingEntry?.id ?? entry.id, entry.id, usedIds),
       };
     },
   );
+}
+
+function uniqueMergedId(
+  preferredId: string,
+  fallbackId: string,
+  usedIds: Set<string>,
+) {
+  const baseId = usedIds.has(preferredId) ? fallbackId : preferredId;
+  let id = baseId;
+  let collisionIndex = 2;
+
+  while (usedIds.has(id)) {
+    id = `${baseId}.${String(collisionIndex).padStart(2, "0")}`;
+    collisionIndex += 1;
+  }
+
+  usedIds.add(id);
+
+  return id;
 }
 
 export async function syncCopyMap() {
