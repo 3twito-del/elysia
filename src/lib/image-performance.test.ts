@@ -24,7 +24,7 @@ describe("image performance guardrails", () => {
     );
     expect(homeSource).toContain("<HomeHeroVideo");
     expect(homeSource).toContain('as="video"');
-    expect(homeSource).toContain("fetchPriority=\"high\"");
+    expect(homeSource).toContain('fetchPriority="high"');
     expect(homeSource).toContain("posterSrc={boutiqueHeroPoster}");
     expect(homeSource).toContain("webmSrc={boutiqueHeroVideoWebm}");
     expect(homeHeroVideoSource).toContain('preload="auto"');
@@ -34,6 +34,7 @@ describe("image performance guardrails", () => {
     expect(homeHeroVideoSource).not.toContain('preload="metadata"');
     expect(homeSource).toContain("src={category.image}");
     expect(homeSource).toContain("<ProductCard");
+    expect(homeSource).toContain("<DeferredFixedBackgroundBand");
     expect(homeImageTags.some((tag) => tag.includes("priority"))).toBe(false);
     expect(homeSource).not.toContain("<StaticCinematicHeroSequence");
     expect(homeSource).not.toContain("imagePriority={index < 4}");
@@ -76,6 +77,7 @@ describe("image performance guardrails", () => {
     const prefetchSource = read("src/components/category-route-prefetch.ts");
     const headerSource = read("src/components/site-header.tsx");
     const mobileNavSource = read("src/components/mobile-nav.tsx");
+    const homeSource = read("src/app/page.tsx");
 
     expect(prefetchSource).toContain("categoryRoutePrefetchPolicy");
     expect(prefetchSource).toContain('allowedHrefPrefix: "/category/"');
@@ -91,11 +93,53 @@ describe("image performance guardrails", () => {
     expect(headerSource).toContain(
       "onOpenCategoryPrefetch={categoryPrefetch.prefetchAll}",
     );
+    expect(headerSource).not.toContain("prefetchOnHomeIdle: true");
     expect(mobileNavSource).toContain("onPointerEnter=");
     expect(mobileNavSource).toContain("onFocus=");
     expect(mobileNavSource).toContain("prefetch={false}");
+    expect(headerSource).toContain('href="/account"');
+    expect(headerSource).toContain('href="/search"');
+    expect(headerSource).toContain('href="/service"');
+    expect(headerSource).toContain('href="/wishlist"');
+    expect(
+      headerSource.match(/prefetch=\{false\}/g)?.length ?? 0,
+    ).toBeGreaterThanOrEqual(5);
+    expect(
+      homeSource.match(/prefetch=\{false\}/g)?.length ?? 0,
+    ).toBeGreaterThanOrEqual(3);
     expect(headerSource).not.toContain("prefetch={true}");
     expect(mobileNavSource).not.toContain("prefetch={true}");
+  });
+
+  it("defers the fixed editorial background until the band nears the viewport", () => {
+    const homeSource = read("src/app/page.tsx");
+    const componentSource = read(
+      "src/components/deferred-fixed-background-band.tsx",
+    );
+    const stylesSource = read("src/styles/globals.css");
+    const baseFixedBandRule =
+      /\.boutique-fixed-image-band\s*\{[\s\S]*?\n\}/u.exec(stylesSource)?.[0] ??
+      "";
+
+    expect(homeSource).toContain("<DeferredFixedBackgroundBand");
+    expect(componentSource).toContain("IntersectionObserver");
+    expect(componentSource).toContain('rootMargin: "900px 0px"');
+    expect(baseFixedBandRule).not.toContain("category-rings.avif");
+    expect(stylesSource).toContain(
+      '.boutique-fixed-image-band[data-fixed-bg-loaded="true"]',
+    );
+    expect(stylesSource).toContain(
+      'url("/brand/boutique/category-rings.avif")',
+    );
+  });
+
+  it("serves local brand media with a long-lived immutable cache policy", () => {
+    const nextConfigSource = read("next.config.js");
+
+    expect(nextConfigSource).toContain('source: "/brand/:path*"');
+    expect(nextConfigSource).toContain(
+      'value: "public, max-age=31536000, immutable"',
+    );
   });
 
   it("keeps external connection hints on the current media and font whitelist", () => {

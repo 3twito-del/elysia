@@ -33,9 +33,7 @@ export function SiteHeader() {
   const pathname = usePathname();
   const [hasScrolled, setHasScrolled] = useState(false);
   const isHome = pathname === "/";
-  const categoryPrefetch = useCategoryRoutePrefetch(categoryNavHrefs, {
-    prefetchOnHomeIdle: true,
-  });
+  const categoryPrefetch = useCategoryRoutePrefetch(categoryNavHrefs);
   const isOverHomeHero = isHome && !hasScrolled;
   const headerState = isOverHomeHero ? "transparent" : "solid";
 
@@ -90,7 +88,9 @@ export function SiteHeader() {
         data-over-media={isOverHomeHero ? "true" : undefined}
         dir="rtl"
       >
-        <p className="sr-only">Elysia: ניווט ראשי, חיפוש, שירות, מועדפים ואזור אישי.</p>
+        <p className="sr-only">
+          Elysia: ניווט ראשי, חיפוש, שירות, מועדפים ואזור אישי.
+        </p>
         <div
           className="grid h-16 w-full grid-cols-[1fr_auto_1fr] items-center px-4 sm:px-6 md:h-[4.25rem] md:px-10 lg:h-[6.125rem] lg:px-16"
           dir="ltr"
@@ -113,6 +113,7 @@ export function SiteHeader() {
               aria-label="חיפוש"
               className="site-header-link site-header-label-action inline-flex min-h-10 items-center gap-2 text-[0.94rem] font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
               href="/search"
+              prefetch={false}
             >
               <Search aria-hidden="true" className="size-5" />
               <span className="hidden sm:inline">חיפוש</span>
@@ -137,6 +138,7 @@ export function SiteHeader() {
               aria-label="שירות"
               className="site-header-link site-header-label-action hidden min-h-10 items-center text-[0.94rem] font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] md:inline-flex"
               href="/service"
+              prefetch={false}
             >
               שירות
             </Link>
@@ -150,6 +152,7 @@ export function SiteHeader() {
                 data-icon-tooltip="מועדפים"
                 data-icon-tooltip-placement="bottom"
                 href="/wishlist"
+                prefetch={false}
               >
                 <Heart aria-hidden="true" className="size-5" />
                 <span className="sr-only">מועדפים</span>
@@ -170,6 +173,7 @@ export function SiteHeader() {
                 data-icon-tooltip="אזור אישי"
                 data-icon-tooltip-placement="bottom"
                 href="/account"
+                prefetch={false}
               >
                 <UserRound aria-hidden="true" className="size-5" />
                 <span className="sr-only">אזור אישי</span>

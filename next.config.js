@@ -33,11 +33,22 @@ const securityHeaders = [
   },
 ];
 
+const immutableBrandAssetHeaders = [
+  {
+    key: "Cache-Control",
+    value: "public, max-age=31536000, immutable",
+  },
+];
+
 /** @type {import("next").NextConfig} */
 const config = {
   allowedDevOrigins: ["127.0.0.1"],
   async headers() {
     return [
+      {
+        source: "/brand/:path*",
+        headers: [...securityHeaders, ...immutableBrandAssetHeaders],
+      },
       {
         source: "/:path*",
         headers: securityHeaders,

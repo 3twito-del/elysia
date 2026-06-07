@@ -2085,6 +2085,16 @@ main
   background:
     linear-gradient(
       180deg,
+      color-mix(in srgb, var(--brand-porcelain) 96%, white 4%),
+      color-mix(in srgb, var(--brand-porcelain) 86%, var(--brand-pearl) 14%)
+    ),
+    var(--brand-porcelain);
+}
+
+.boutique-fixed-image-band[data-fixed-bg-loaded="true"] {
+  background:
+    linear-gradient(
+      180deg,
       color-mix(in srgb, var(--brand-porcelain) 28%, transparent),
       rgb(31 27 24 / 10%) 46%,
       color-mix(in srgb, var(--brand-ink) 22%, transparent)
@@ -2143,7 +2153,7 @@ main
     padding-block-start: clamp(3rem, 7vw, 6rem);
   }
 
-  .boutique-fixed-image-band {
+  .boutique-fixed-image-band[data-fixed-bg-loaded="true"] {
     background-attachment: scroll, fixed;
   }
 }

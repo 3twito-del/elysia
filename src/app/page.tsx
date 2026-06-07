@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, Gem, Ruler, ShieldCheck } from "lucide-react";
 
 import { NewsletterForm } from "~/components/newsletter-form";
+import { DeferredFixedBackgroundBand } from "~/components/deferred-fixed-background-band";
 import { HomeHeroVideo } from "~/components/home-hero-video";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
@@ -164,6 +165,7 @@ export default async function Home() {
                   data-testid="home-hero-primary-cta"
                   dir="rtl"
                   href="/search"
+                  prefetch={false}
                 >
                   לכל הקולקציות
                   <ArrowLeft
@@ -309,8 +311,7 @@ export default async function Home() {
         </div>
       </RevealSection>
 
-      <div
-        aria-hidden="true"
+      <DeferredFixedBackgroundBand
         className="boutique-fixed-image-band"
         id="fixed-editorial-image"
       />
@@ -382,7 +383,7 @@ function SectionHeader({
       {actionHref && actionLabel ? (
         <div className="commerce-section-header-action">
           <Button asChild variant="outline">
-            <Link href={actionHref}>
+            <Link href={actionHref} prefetch={false}>
               {actionLabel}
               <ArrowLeft aria-hidden="true" className="size-4" />
             </Link>

@@ -229,6 +229,7 @@ export function MobileNav({
               className="brand-header-mark site-header-link mobile-nav-animated-item inline-flex min-h-10 items-center justify-self-end"
               href="/"
               onClick={closeNav}
+              prefetch={false}
               style={getMobileNavStaggerStyle(0)}
             >
               <BrandLogo className="h-5 w-auto max-w-[7.25rem]" />
@@ -261,6 +262,7 @@ export function MobileNav({
                   href={item.href}
                   key={item.href}
                   onClick={closeNav}
+                  prefetch={false}
                   style={getMobileNavStaggerStyle(
                     quickActionStartIndex + index,
                   )}
@@ -300,6 +302,7 @@ export function MobileNav({
                   href={item.href}
                   key={item.href}
                   onClick={closeNav}
+                  prefetch={false}
                   style={getMobileNavStaggerStyle(
                     spotlightActionStartIndex + index,
                   )}
@@ -328,6 +331,7 @@ export function MobileNav({
                 data-testid="mobile-nav-recently-viewed-shortcut"
                 href={recentlyViewedProductHref}
                 onClick={closeNav}
+                prefetch={false}
                 style={getMobileNavStaggerStyle(recentlyViewedIndex)}
               >
                 <span className="mobile-nav-feature-icon grid size-9 place-items-center">
@@ -426,6 +430,7 @@ export function MobileNav({
                   href={item.href}
                   key={item.href}
                   onClick={closeNav}
+                  prefetch={false}
                   style={getMobileNavStaggerStyle(serviceStartIndex + index)}
                 >
                   <Icon aria-hidden="true" className="size-4" />
@@ -448,6 +453,7 @@ export function MobileNav({
                   href={item.href}
                   key={item.href}
                   onClick={closeNav}
+                  prefetch={false}
                   style={getMobileNavStaggerStyle(editorialStartIndex + index)}
                 >
                   {item.label}
