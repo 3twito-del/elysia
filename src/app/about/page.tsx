@@ -31,28 +31,28 @@ const aboutHeroImage = "/brand/boutique/about-hero-prism.avif";
 
 const editorialPrinciples = [
   {
-    title: "לפי הלוק",
-    text: "מתחילים ממה שמתכננים ללבוש: יום עבודה, חופשה, ערב או מתנה.",
+    title: "לפי הלוק האמיתי",
+    text: "מתחילים ממה שמתכננים ללבוש: יום עבודה, חופשה, ערב קיץ או מתנה.",
   },
   {
-    title: "לפי התחושה",
-    text: "בודקים צבע, חומר, גודל וברק לפני שמוסיפים לסל.",
+    title: "לפי חומר ואור",
+    text: "בודקים גוון מתכת, אבן, גודל וברק לפני שמוסיפים לסל.",
   },
   {
-    title: "עם מענה אנושי",
-    text: "כשיש התלבטות לגבי מידה, מתנה או משלוח, השירות נכנס לתמונה.",
+    title: "עם שירות קרוב",
+    text: "כשיש התלבטות לגבי מידה, מתנה או משלוח, אפשר לשאול לפני ההזמנה.",
   },
 ] as const;
 
 const values = [
   {
     title: "לפני שמזמינים",
-    text: "חומר, מידה ומחיר מופיעים במקום שבו מקבלים החלטה.",
+    text: "חומר, מידה, מחיר וזמינות מופיעים במקום שבו מקבלים החלטה.",
     icon: ShieldCheck,
   },
   {
     title: "חומר וצבע",
-    text: "זהב, כסף, פנינים ואבני צבע מוצגים לפי הדגם והמלאי.",
+    text: "כסף, ציפוי זהב, פנינים ואבני צבע מוצגים לפי הדגם והמלאי.",
     icon: Gem,
   },
   {
@@ -62,7 +62,7 @@ const values = [
   },
   {
     title: "אחרי ההזמנה",
-    text: "יש מענה בנושאי הזמנה, משלוח, החלפה והחזרה.",
+    text: "יש מענה בנושאי הזמנה, משלוח, החלפה, החזרה ומתנה.",
     icon: Handshake,
   },
 ] satisfies IconItem[];
@@ -80,7 +80,7 @@ const standards = [
   },
   {
     title: "אריזה ומשלוח",
-    text: "אפשרויות אריזה ומשלוח זמינות בתהליך ההזמנה.",
+    text: "אפשרויות מתנה, אריזה ומשלוח זמינות בתהליך ההזמנה.",
     icon: PackageCheck,
   },
   {
@@ -109,12 +109,13 @@ const materialFacts = [
 ] satisfies IconItem[];
 
 export const metadata: Metadata = {
-  title: "אודות",
+  title: "אודות | Elysia Jewellery",
   description:
-    "Elysia מציגה תכשיטים ללוק יומי, למתנה ולערב, עם פרטי חומר, מידה ומחיר לפני ההזמנה.",
+    "Elysia Jewellery היא בית תכשיטים בוטיקי לתכשיטים עדינים, מתנות ולוקים יומיומיים, עם חומר, מידה, מחיר ושירות לפני הזמנה.",
   openGraph: {
-    title: "Elysia",
-    description: "תכשיטי Elysia ללוק יומי, למתנה ולערב.",
+    title: "אודות Elysia Jewellery",
+    description:
+      "בית תכשיטים בוטיקי לתכשיטים עדינים, מתנות ולוקים יומיומיים.",
     images: [{ url: aboutHeroImage }],
   },
 };
@@ -159,11 +160,11 @@ export default function AboutPage() {
           >
             <p className="storefront-eyebrow">Elysia</p>
             <h1 className="about-hero-title motion-copy-item [--motion-copy-delay:80ms]">
-              תכשיטים שנכנסים לחיים האמיתיים.
+              בית תכשיטים קטן עם עין מדויקת.
             </h1>
             <p className="about-hero-statement motion-copy-item [--motion-copy-delay:120ms]">
-              טבעת לעבודה, שרשרת לחופשה, עגילים לערב וצמיד שמוסיף אור גם ליום
-              רגיל.
+              טבעת לעבודה, שרשרת לחופשה, עגילים לערב וצמיד שמוסיף אור ליום
+              רגיל - בלי להפוך את הלוק למאמץ.
             </p>
             <div className="about-hero-actions motion-copy-item [--motion-copy-delay:160ms]">
               <Button asChild className="home-hero-cta-primary" size="lg">
@@ -199,11 +200,11 @@ export default function AboutPage() {
             <div className="boutique-story-copy about-story-copy">
               <p className="storefront-eyebrow">איך בוחרים</p>
               <h2 className="about-section-title">
-                מתחילים בלוק, באור ובפרופורציה.
+                מתחילים בבגד, באור ובפרופורציה.
               </h2>
               <p className="about-section-text">
-                תכשיט טוב לא נשאר רק בתמונה. הוא צריך לעבוד עם הבגד, עם היום
-                ועם התחושה שרוצים לקחת החוצה.
+                תכשיט טוב לא נועד רק לתמונה. הוא צריך לעבוד עם הבגד, עם
+                העונה, עם קצב היום ועם התחושה שרוצים לקחת החוצה.
               </p>
               <div className="about-story-actions">
                 <Button asChild variant="outline">
@@ -266,7 +267,7 @@ export default function AboutPage() {
                 className="mt-3 text-3xl leading-tight font-semibold sm:text-4xl"
                 id="about-brand-timeline-title"
               >
-                שלושה דברים שעוזרים לבחור בלי לנחש.
+                שלושה דברים שעוזרים לבחור בלי לנחש ובלי להתפשר.
               </h2>
               <ol className="mt-6 grid gap-4">
                 {editorialPrinciples.map((item, index) => (
@@ -297,7 +298,7 @@ export default function AboutPage() {
                   className="text-xl font-semibold"
                   id="about-material-facts-title"
                 >
-                  מה כדאי לבדוק לפני ההזמנה
+                  מה כדאי לבדוק לפני שמזמינים
                 </h2>
                 <RevealGrid
                   className="mt-4 grid gap-3 sm:grid-cols-3"
@@ -370,11 +371,11 @@ export default function AboutPage() {
             <div>
               <p className="text-muted-foreground text-sm">לפני ההזמנה</p>
               <h2 className="mt-3 text-3xl leading-tight font-semibold sm:text-4xl">
-                חומר, מידה, מחיר ומשלוח - במקום אחד.
+                חומר, מידה, מחיר ומשלוח - במקום שבו מחליטים.
               </h2>
               <p className="text-muted-foreground mt-5 leading-8">
                 בכל תכשיט מופיעים תקריב, תיאור קצר, מחיר גלוי ואפשרות לפנות
-                לשירות כשצריך לוודא התאמה.
+                לשירות כשצריך לוודא התאמה, מתנה או מסירה.
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
                 <Button asChild variant="outline">
@@ -412,7 +413,7 @@ export default function AboutPage() {
             <div>
               <Sparkles aria-hidden="true" className="size-7" />
               <h2 className="mt-4 max-w-3xl text-3xl leading-tight font-semibold sm:text-4xl">
-                Elysia נועדה לרגע שבו תכשיט הופך לחלק מהלוק.
+                Elysia נועדה לרגע שבו תכשיט קטן משנה את כל הלוק.
               </h2>
               <p className="text-muted-foreground mt-4 max-w-3xl leading-8">
                 מתחילים ממידה, חומר, תקציב או שימוש - וממשיכים משם.

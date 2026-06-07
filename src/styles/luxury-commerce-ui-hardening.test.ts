@@ -61,10 +61,12 @@ describe("luxury commerce UI hardening", () => {
     expect(mobileNav).toContain("mobile-nav-panel-luxury");
     expect(mobileNav).toContain('data-nav-variant="luxury-editorial"');
     expect(mobileNav).toContain("mobile-nav-quick-list");
-    expect(mobileNav).toContain("תכשיטים ללוק, למתנה וליום רגיל שמבקש קצת אור.");
+    expect(mobileNav).toContain(
+      "תכשיטי בוטיק ללוק יומי, למתנה ולערב שמבקש קצת אור.",
+    );
     expect(mobileNav).not.toContain("׳³");
     expect(mobileNav).toContain("after:h-px");
-    expect(mobileNav).toContain('href: "/branches"');
+    expect(mobileNav).toContain('href: "/gifts"');
     expect(mobileNav).not.toContain("grid-cols-4");
     expect(mobileNav).not.toContain("<Gem");
     expect(read("src/styles/globals.css")).toContain(
@@ -179,6 +181,9 @@ describe("luxury commerce UI hardening", () => {
     expect(catalogHeroBlock).toContain("background: transparent;");
     expect(css).toContain(
       'main > header + [aria-hidden="true"] + [data-testid="cinematic-page-hero"]',
+    );
+    expect(css).toContain(
+      '+ article\n  > [data-testid="about-cinematic-page-hero"]',
     );
     expect(css).toContain("margin-top: calc(-1 * var(--site-header-height));");
     expect(css).toContain("padding-top: var(--site-header-height);");

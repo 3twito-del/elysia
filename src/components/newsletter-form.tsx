@@ -92,7 +92,7 @@ export function NewsletterForm() {
         className="text-muted-foreground text-xs leading-5"
         id={newsletterEmailHintId}
       >
-        נשלח עדכון קצר כשפריטים חדשים נכנסים למבחר.
+        נשלח רק כשיש פריטים חדשים, רעיונות למתנה או השראה קטנה לעונה.
       </p>
       {state.message ? (
         <StatusMessage

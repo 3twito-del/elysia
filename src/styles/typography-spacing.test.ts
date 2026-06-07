@@ -30,7 +30,9 @@ describe("public typography spacing guardrails", () => {
     expect(css).toContain('"Arial Hebrew"');
     expect(css).toContain("font-family: var(--font-hebrew-sans);");
     expect(css).toContain(".storefront-hero-statement");
-    expect(home).toContain('<h1 className="sr-only">Elysia</h1>');
+    expect(css).toContain(".storefront-hero-title");
+    expect(home).toContain("תכשיטים שמרגישים כמו קיץ על העור.");
+    expect(home).not.toContain('<h1 className="sr-only">Elysia</h1>');
     expect(home).not.toContain("home-hero-wordmark");
     expect(adminShell).toContain("admin-brand-mark");
   });

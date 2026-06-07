@@ -98,17 +98,21 @@ describe("public structure benchmark v4 policy", () => {
     ];
 
     expect(headerLinks.map((item) => item.href)).toEqual([
+      "/search",
       "/search?sort=newest",
       "/category/rings",
       "/category/necklaces",
       "/category/earrings",
       "/category/bracelets",
       "/gifts",
+      "/search?sort=popular",
+      "/size-guide",
       "/about",
       "/service",
     ]);
     expect(header).toContain('triggerLabel="תפריט"');
     expect(mobileNav).toContain('item.href.startsWith("/category/")');
+    expect(mobileNav).toContain('item.href.startsWith("/search")');
     expect(mobileNav).not.toContain("const catalogItems = items.slice(0, 4)");
 
     for (const section of [headerLinks, ...mobileSections]) {

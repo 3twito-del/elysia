@@ -118,7 +118,7 @@ export function getPurchaseConfidenceItems(input: {
     {
       description: input.sizeKind
         ? "מדריך המידות והמידה השמורה זמינים לפני הוספה לסל."
-        : "ניתן לקבל ייעוץ התאמה לפני הזמנה.",
+        : "אפשר לקבל ייעוץ התאמה לפני שמוסיפים לסל.",
       icon: "fit",
       key: "fit",
       title: input.sizeKind ? "מידה לפני הוספה" : "שאלה לפני הוספה",
@@ -175,11 +175,11 @@ function getCheckoutConfidenceDescription(input: {
   variantStatusLabel: string;
 }) {
   if (!input.variant) {
-    return "בחרי מידה כדי לראות זמינות ומסלול הזמנה לפני המשך.";
+    return "בחרי מידה כדי לראות זמינות, מחיר ומסלול הזמנה לפני המשך.";
   }
 
   if (isSeparateCheckoutVariantAvailable(input)) {
-    return "המידה זמינה להזמנה; התשלום והמסירה יושלמו בקופה מאובטחת.";
+    return "האפשרות זמינה להזמנה; התשלום והמסירה יושלמו בקופה מאובטחת.";
   }
 
   if (
@@ -206,7 +206,7 @@ function getServiceConfidenceDescription(input: {
     input.deliveryPromise ??
     (input.requiresSeparateCheckout
       ? "מסירה ותשלום יושלמו בקופה מאובטחת."
-      : "מסירה עד הבית לאחר אישור הפרטים.");
+      : "מסירה עד הבית לאחר אישור ההזמנה.");
   const returns =
     input.returnPolicy ??
     (input.requiresSeparateCheckout

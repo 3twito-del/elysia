@@ -1077,11 +1077,29 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
 }
 
 main > header + [aria-hidden="true"] + [data-testid="cinematic-page-hero"],
+main
+  > header
+  + [aria-hidden="true"]
+  + [data-testid="about-cinematic-page-hero"],
+main
+  > header
+  + [aria-hidden="true"]
+  + article
+  > [data-testid="about-cinematic-page-hero"],
 main > header + [aria-hidden="true"] + .commerce-page-hero {
   margin-top: calc(-1 * var(--site-header-height));
 }
 
-main > header + [aria-hidden="true"] + [data-testid="cinematic-page-hero"] {
+main > header + [aria-hidden="true"] + [data-testid="cinematic-page-hero"],
+main
+  > header
+  + [aria-hidden="true"]
+  + [data-testid="about-cinematic-page-hero"],
+main
+  > header
+  + [aria-hidden="true"]
+  + article
+  > [data-testid="about-cinematic-page-hero"] {
   padding-top: var(--site-header-height);
 }
 
@@ -2450,9 +2468,19 @@ main
   opacity: 0.72;
 }
 
+.storefront-hero-title {
+  margin-top: 0.75rem;
+  max-width: 35rem;
+  color: rgb(255 250 244 / 96%);
+  font-size: 3.75rem;
+  font-weight: 540;
+  letter-spacing: 0;
+  line-height: 0.98;
+}
+
 .storefront-hero-statement {
-  margin-top: 0;
-  max-width: 27rem;
+  margin-top: 1.15rem;
+  max-width: 31rem;
   font-family: var(--font-hebrew-sans);
   font-size: clamp(1.05rem, 1.55vw, 1.45rem);
   font-weight: 400;
@@ -2462,6 +2490,26 @@ main
 
 .storefront-hero-actions {
   margin-top: clamp(1.35rem, 2.8vw, 2rem);
+}
+
+@media (min-width: 1280px) {
+  .storefront-hero-title {
+    font-size: 4.75rem;
+  }
+}
+
+@media (max-width: 639px) {
+  .storefront-hero-title {
+    max-width: 22rem;
+    font-size: 2.75rem;
+    line-height: 1.02;
+  }
+
+  .storefront-hero-statement {
+    max-width: 21rem;
+    font-size: 0.98rem;
+    line-height: 1.62;
+  }
 }
 
 .prelaunch-home-page {

@@ -54,14 +54,14 @@ type MobileNavProps = {
 
 const quickActions = [
   { href: "/search", label: "חיפוש", icon: Search },
-  { href: "/branches", label: "אונליין", icon: Headphones },
+  { href: "/gifts", label: "מתנות", icon: Gift },
   { href: "/wishlist", label: "מועדפים", icon: Heart },
-  { href: "/checkout", label: "הסל", icon: ShoppingBag },
+  { href: "/checkout", label: "סל", icon: ShoppingBag },
   { href: "/account", label: "אזור אישי", icon: UserRound },
 ] as const;
 
 const serviceActions = [
-  { href: "/service", label: "שירות", icon: Headphones },
+  { href: "/service", label: "שירות אישי", icon: Headphones },
   { href: "/faq", label: "שאלות", icon: CircleHelp },
 ] as const;
 
@@ -69,13 +69,13 @@ const spotlightActions = [
   {
     href: "/stylist",
     label: "יועץ לוק",
-    description: "כיוון לפי סגנון, חומר ומידה",
+    description: "כיוון לפי סגנון, חומר, תקציב ומידה",
     icon: Sparkles,
   },
   {
     href: "/gifts",
     label: "מתנות",
-    description: "רעיונות לפי מחיר, אירוע וחומר",
+    description: "רעיונות לפי אירוע, תקציב וסגנון",
     icon: Gift,
   },
   {
@@ -87,9 +87,7 @@ const spotlightActions = [
 ] as const;
 
 function isCollectionNavigationItem(item: HeaderNavItem) {
-  return (
-    item.href.startsWith("/category/") || item.href === "/search?sort=newest"
-  );
+  return item.href.startsWith("/category/") || item.href.startsWith("/search");
 }
 
 function getMobileNavStaggerStyle(index: number) {
@@ -239,7 +237,7 @@ export function MobileNav({
             className="mobile-nav-animated-item text-foreground mt-6 max-w-[24rem] text-[1.05rem] leading-8"
             style={getMobileNavStaggerStyle(1)}
           >
-            תכשיטים ללוק, למתנה וליום רגיל שמבקש קצת אור.
+            תכשיטי בוטיק ללוק יומי, למתנה ולערב שמבקש קצת אור.
           </p>
         </div>
 

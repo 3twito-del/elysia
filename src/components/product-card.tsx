@@ -93,6 +93,7 @@ export function ProductCard({
   const primaryCommerceLabel = isAvailable
     ? formatPrice(product.price)
     : "לייעוץ";
+  const productDescriptor = getProductCardDescriptor(product);
   const materialBadgeLabel = getProductCardMaterialBadgeLabel(product);
   const swatches = getProductCardSwatches(product);
   const quickAddVariant = getProductCardQuickAddVariant({
@@ -184,6 +185,15 @@ export function ProductCard({
                 >
                   {productQuickFactsLabel}
                 </div>
+              ) : null}
+              {!isEditorialDisplay ? (
+                <p
+                  className="ui-text-slot text-muted-foreground/90 text-xs leading-5 [--ui-text-slot-line-height:1.25rem]"
+                  data-lines="2"
+                  data-testid="product-card-descriptor"
+                >
+                  {productDescriptor}
+                </p>
               ) : null}
               {!isEditorialDisplay &&
               (materialBadgeLabel || swatches.length > 0) ? (
@@ -346,6 +356,34 @@ function getProductCardBadge(input: {
   }
 
   return null;
+}
+
+function getProductCardDescriptor(product: CatalogProduct) {
+  if (product.categorySlug === "rings") {
+    return "נוכחות עדינה ליד, לבד או בשילוב.";
+  }
+
+  if (product.categorySlug === "necklaces") {
+    return "קו רך שמאיר חולצה, שמלה או מחשוף.";
+  }
+
+  if (product.categorySlug === "earrings") {
+    return "ברק קטן שמחזיק יום, ערב וכל מעבר ביניהם.";
+  }
+
+  if (product.categorySlug === "bracelets") {
+    return "שכבה דקה של אור על פרק היד.";
+  }
+
+  if (product.stone) {
+    return `${product.stone} שנותנת לתכשיט רגע ברור משלו.`;
+  }
+
+  if (product.material) {
+    return `${product.material} ללוק נקי, חם וקל לענידה.`;
+  }
+
+  return "פריט קטן עם נוכחות שמתחברת ללוק בלי מאמץ.";
 }
 
 function getProductCardMaterialBadgeLabel(product: CatalogProduct) {

@@ -1,7 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Filter, Gem, SlidersHorizontal, X } from "lucide-react";
+import {
+  Filter,
+  Gem,
+  Headphones,
+  Ruler,
+  SlidersHorizontal,
+  Truck,
+  X,
+} from "lucide-react";
 
 import { CategoryFilterSheet } from "./_components/category-filter-sheet";
 import { CategoryPaginationLink } from "./_components/category-pagination-link";
@@ -58,27 +66,57 @@ export const revalidate = 3600;
 
 const categoryLuxuryCopyBySlug: Record<string, CategoryLuxuryCopy> = {
   bracelets: {
-    description: "צמידים דקים לשכבות, למתנה או לברק קטן על היד.",
-    intro: "ליום רגיל, לחופשה ולערב שמבקש עוד נקודת אור.",
+    description:
+      "צמידים עדינים לשכבות, למתנה ולרגע שבו פרק היד צריך נקודת אור קטנה.",
+    intro:
+      "צמיד כסף, ציפוי זהב או אבן קטנה יכולים לשנות חולצה פשוטה, שמלת ערב או לוק חופשה.",
     title: "צמידים",
   },
   earrings: {
-    description: "עגילים קטנים או נוכחים לפי משקל, גימור ונוחות ענידה.",
-    intro: "ליום, לערב, למשרד ולמתנה שנפתחת מיד.",
+    description:
+      "עגילים קטנים או נוכחים לפי משקל, גימור ונוחות ענידה, בלי לוותר על ברק.",
+    intro:
+      "עגילי כסף, פנינים ואבני צבע ליום ארוך, ערב קיצי או מתנה שנפתחת מיד.",
     title: "עגילים",
   },
   necklaces: {
     description:
-      "שרשראות ותליונים שנראים טוב לבד או בשכבות, לפי אורך, חומר ואבן.",
-    intro: "קו על הצוואר שמשנה חולצה פשוטה, שמלה או לוק חופשה.",
+      "שרשראות ותליונים שנראים טוב לבד או בשכבות, לפי אורך, חומר, אבן וגימור.",
+    intro:
+      "קו על הצוואר שמשנה חולצה לבנה, שמלה פתוחה או לוק חופשה בלי להעמיס.",
     title: "שרשראות",
   },
   rings: {
-    description: "טבעות זהב, יהלומים ואבני חן לפי פרופורציה, נוחות ומידה.",
-    intro: "טבעת אחת עם נוכחות, או כמה יחד כשבא יותר אור על היד.",
+    description:
+      "טבעות כסף, ציפוי זהב, יהלומים ואבני חן לפי פרופורציה, נוחות ומידה.",
+    intro:
+      "טבעת אחת עם נוכחות עדינה, או כמה יחד כשבא יותר אור על היד.",
     title: "טבעות",
   },
 };
+
+const categoryTrustSignals = [
+  {
+    icon: Gem,
+    title: "חומר וגימור",
+    text: "מתכת, אבן וקולקציה מופיעים בכרטיסי המוצר.",
+  },
+  {
+    icon: Ruler,
+    title: "עזרה במידה",
+    text: "מדריך מידות ושירות לפני הזמנה כשיש התלבטות.",
+  },
+  {
+    icon: Truck,
+    title: "מסירה והחלפה",
+    text: "משלוח, החלפה והחזרה גלויים לפני checkout.",
+  },
+  {
+    icon: Headphones,
+    title: "שאלה על פריט",
+    text: "אפשר לפנות עם שם התכשיט לפני הקנייה.",
+  },
+] as const;
 
 export async function generateStaticParams() {
   const categories = await getCatalogCategories();
@@ -111,14 +149,20 @@ export async function generateMetadata({
   }
 
   return {
-    title: copy?.title ?? category?.name ?? "קולקציית Elysia",
-    description: copy?.description ?? category?.description,
+    title: `${copy?.title ?? category?.name ?? "קולקציית תכשיטים"} | Elysia Jewellery`,
+    description:
+      copy?.description ??
+      category?.description ??
+      "תכשיטי Elysia לפי קטגוריה: טבעות, שרשראות, עגילים וצמידים עם חומר, מידה ומחיר לפני הזמנה.",
     alternates: {
       canonical: `/category/${slug}`,
     },
     openGraph: {
-      title: copy?.title ?? category?.name ?? "Elysia",
-      description: copy?.description ?? category?.description,
+      title: `${copy?.title ?? category?.name ?? "קולקציית תכשיטים"} | Elysia`,
+      description:
+        copy?.description ??
+        category?.description ??
+        "תכשיטים עדינים לפי קטגוריה, חומר ומידה.",
       url: `/category/${slug}`,
       images: [
         {
@@ -130,8 +174,11 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: copy?.title ?? category?.name ?? "Elysia",
-      description: copy?.description ?? category?.description,
+      title: `${copy?.title ?? category?.name ?? "קולקציית תכשיטים"} | Elysia`,
+      description:
+        copy?.description ??
+        category?.description ??
+        "תכשיטים עדינים לפי קטגוריה, חומר ומידה.",
       images: [
         getCategoryBrandSlides(slug)[0]?.src ??
           "/brand/boutique/lifestyle-hero.avif",
@@ -159,8 +206,8 @@ export default async function CategoryPage({
   const categoryCopy = categoryLuxuryCopyBySlug[slug] ?? {
     description:
       category.description ||
-      "פריטים מתוך הקולקציה של Elysia, עם חומר, מידה ומחיר לפני הזמנה.",
-    intro: "תכשיטים שאפשר לפתוח מהם לוק, מתנה או ערב.",
+      "תכשיטים מתוך הקולקציה של Elysia, עם חומר, מידה ומחיר לפני הזמנה.",
+    intro: "פריטים שאפשר לפתוח מהם לוק, מתנה או ערב.",
     title: category.name,
   };
   const facets = getCatalogFacetsFromProducts(catalogProducts);
@@ -230,6 +277,8 @@ export default async function CategoryPage({
           title={categoryCopy.title}
           variant="catalog"
         />
+
+        <CategoryTrustStrip />
 
         <div className="bg-background sticky top-16 z-30 border-b border-[var(--glass-border)] lg:hidden">
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-[var(--ui-page-x)] py-3 sm:px-[var(--ui-page-x-wide)]">
@@ -487,6 +536,41 @@ function CategoryBreadcrumbs({ categoryName }: { categoryName: string }) {
   );
 }
 
+function CategoryTrustStrip() {
+  return (
+    <section
+      aria-label="שירות ואמון לפני בחירת תכשיט"
+      className="mx-auto w-full max-w-[96rem] px-[var(--ui-page-x)] pt-4 sm:px-[var(--ui-page-x-wide)]"
+      data-testid="category-trust-strip"
+    >
+      <div className="grid gap-3 border-y border-[var(--glass-border)] py-4 sm:grid-cols-2 lg:grid-cols-4">
+        {categoryTrustSignals.map((item) => {
+          const Icon = item.icon;
+
+          return (
+            <section
+              className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-3"
+              key={item.title}
+            >
+              <span className="glass-inset grid size-9 place-items-center rounded-md border">
+                <Icon aria-hidden="true" className="size-4" />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold">
+                  {item.title}
+                </span>
+                <span className="text-muted-foreground mt-1 block text-xs leading-5">
+                  {item.text}
+                </span>
+              </span>
+            </section>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 function CategoryEditorialNote({
   categoryName,
   description,
@@ -500,12 +584,12 @@ function CategoryEditorialNote({
       data-testid="category-editorial-care-note"
     >
       <summary className="flex cursor-pointer items-center justify-between gap-3 font-medium">
-        <span>טיפ קטן לפני ענידה</span>
+        <span>איך לענוד ולשמור</span>
         <span className="text-muted-foreground text-xs">{categoryName}</span>
       </summary>
       <p className="text-muted-foreground mt-3 max-w-3xl leading-7">
-        {description} מומלץ לשמור בנפרד, להימנע ממים ובושם, ולבחור מידה לפי שימוש
-        יומי.
+        {description} מומלץ לשמור בנפרד, להרחיק מים ובושם, ולבחור מידה לפי
+        אופן הענידה בפועל.
       </p>
     </details>
   );

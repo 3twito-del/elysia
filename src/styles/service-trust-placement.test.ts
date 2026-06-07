@@ -122,6 +122,7 @@ describe("commerce service trust placement", () => {
     expect(countOccurrences(footer, 'title="שירות"')).toBe(1);
     expect(countOccurrences(footer, 'title="Elysia"')).toBe(1);
     expect(countOccurrences(footer, 'href: "/search"')).toBe(1);
+    expect(countOccurrences(footer, 'href: "/search?sort=newest"')).toBe(1);
     expect(footer).not.toContain('href="/search"');
     expect(footer).not.toContain("primaryServiceLinks");
     expect(footer).not.toContain("secondaryServiceLinks");
@@ -132,8 +133,8 @@ describe("commerce service trust placement", () => {
     expect(countOccurrences(footer, 'href: "/category/necklaces"')).toBe(1);
     expect(countOccurrences(footer, 'href: "/category/earrings"')).toBe(1);
     expect(countOccurrences(footer, 'href: "/category/bracelets"')).toBe(1);
+    expect(countOccurrences(footer, 'href: "/gifts"')).toBe(1);
     expect(footer).not.toContain('href="/gifts"');
-    expect(footer).not.toContain('href: "/gifts"');
     expect(countOccurrences(footer, 'href: "/terms"')).toBe(1);
     expect(countOccurrences(footer, 'href: "/privacy"')).toBe(1);
     expect(countOccurrences(footer, 'href: "/accessibility"')).toBe(1);

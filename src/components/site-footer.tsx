@@ -9,18 +9,20 @@ import { NewsletterForm } from "~/components/newsletter-form";
 import { SiteFooterDisclosures } from "~/components/site-footer-disclosures";
 
 const catalogLinks = [
+  { href: "/search", label: "כל התכשיטים" },
+  { href: "/search?sort=newest", label: "חדש בקולקציה" },
   { href: "/category/rings", label: "טבעות" },
   { href: "/category/necklaces", label: "שרשראות" },
   { href: "/category/earrings", label: "עגילים" },
   { href: "/category/bracelets", label: "צמידים" },
-  { href: "/search", label: "חיפוש" },
+  { href: "/gifts", label: "מתנות" },
 ] as const;
 
 const commerceLinks = [
   { href: "/checkout", label: "סל" },
-  { href: "/service", label: "שירות" },
-  { href: "/faq", label: "שאלות ותשובות" },
   { href: "/size-guide", label: "מדריך מידות" },
+  { href: "/service", label: "שירות אישי" },
+  { href: "/faq", label: "שאלות ותשובות" },
 ] as const;
 
 const informationLinks = [
@@ -64,10 +66,13 @@ export function SiteFooter() {
               <BrandLogo className="h-10 w-auto max-w-[13rem] sm:h-12 sm:max-w-[15.5rem]" />
             </Link>
             <p className="text-muted-foreground mt-6 max-w-md text-sm leading-8 sm:text-[0.95rem]">
-              תכשיטים לקיץ, למתנה ולכל יום שמבקש קצת אור.
+              בית תכשיטים בוטיקי לתכשיטים עדינים, מתנות ולוקים יומיומיים עם
+              חומר, מידה ושירות לפני הזמנה.
             </p>
             <div className="mt-7 max-w-md">
-              <p className="text-foreground text-xs font-medium">מה חדש במבחר</p>
+              <p className="text-foreground text-xs font-medium">
+                חדש, מתנות ורעיונות לעונה
+              </p>
               <NewsletterForm />
             </div>
           </section>
@@ -89,7 +94,7 @@ export function SiteFooter() {
             className="max-w-xl text-center leading-7 md:text-start"
             data-testid="footer-copyright"
           >
-            2026 Elysia. כל הזכויות שמורות. מענה זמין לפני ההזמנה ולאחריה.
+            2026 Elysia. כל הזכויות שמורות. שירות אנושי לפני ההזמנה ולאחריה.
           </p>
           <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-center md:gap-8">
             <div className="grid gap-2">

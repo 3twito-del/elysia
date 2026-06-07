@@ -123,7 +123,7 @@ describe("QA route inventory", () => {
     ];
     const offenders = [...hrefs, ...linkHrefs].filter((href) => {
       if (href === "/") return false;
-      if (knownRoutes.has(href)) return false;
+      if (knownRoutes.has(toRoutePath(href))) return false;
       if (approvedExternalHosts.some((host) => href.startsWith(host))) {
         return false;
       }
@@ -152,17 +152,19 @@ describe("QA route inventory", () => {
     const allInternalLinks = Object.values(groups).flat();
 
     expect(groups.catalogLinks.map((link) => link.href)).toEqual([
+      "/search",
+      "/search?sort=newest",
       "/category/rings",
       "/category/necklaces",
       "/category/earrings",
       "/category/bracelets",
-      "/search",
+      "/gifts",
     ]);
     expect(groups.commerceLinks.map((link) => link.href)).toEqual([
       "/checkout",
+      "/size-guide",
       "/service",
       "/faq",
-      "/size-guide",
     ]);
     expect(groups.informationLinks.map((link) => link.href)).toEqual([
       "/about",
@@ -182,7 +184,8 @@ describe("QA route inventory", () => {
     );
     expect(
       allInternalLinks.every(
-        (link) => link.label.trim().length > 0 && knownRoutes.has(link.href),
+        (link) =>
+          link.label.trim().length > 0 && knownRoutes.has(toRoutePath(link.href)),
       ),
     ).toBe(true);
   });
@@ -265,4 +268,8 @@ function extractFooterHrefLabels(source: string, constName: string) {
     href: entry.groups?.href ?? "",
     label: entry.groups?.label ?? "",
   }));
+}
+
+function toRoutePath(href: string) {
+  return href.split("?")[0] ?? href;
 }

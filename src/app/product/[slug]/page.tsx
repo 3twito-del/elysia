@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import {
   ChevronDown,
   Gem,
+  Gift,
   MessageCircle,
   RotateCcw,
   ShieldCheck,
@@ -74,15 +75,19 @@ export async function generateMetadata({
     : undefined;
 
   return {
-    title: publicProductName ?? "תכשיט",
-    description: product?.shortDescription,
+    title: publicProductName
+      ? `${publicProductName} | Elysia Jewellery`
+      : "תכשיט | Elysia Jewellery",
+    description: product
+      ? `${product.shortDescription} חומר, מחיר, זמינות ושירות לפני הזמנה.`
+      : undefined,
     alternates: {
       canonical: `/product/${slug}`,
     },
     openGraph: product
       ? {
           title: publicProductName ?? product.name,
-          description: product.shortDescription,
+          description: `${product.shortDescription} חומר, מחיר וזמינות לפני הזמנה.`,
           url: `/product/${slug}`,
           images: [{ url: product.image }],
         }
@@ -91,7 +96,7 @@ export async function generateMetadata({
       ? {
           card: "summary_large_image",
           title: publicProductName ?? product.name,
-          description: product.shortDescription,
+          description: `${product.shortDescription} חומר, מחיר וזמינות לפני הזמנה.`,
           images: [product.image],
         }
       : undefined,
@@ -133,7 +138,7 @@ export default async function ProductPage({
       : undefined;
   const productSupportHref = createProductServiceHref({
     productReference: `${publicProductName} (${product.sku})`,
-    reason: "שאלת התאמה, מידה, חומר או מסירה לפני הזמנה.",
+    reason: "שאלת התאמה, מידה, חומר, מתנה או מסירה לפני הזמנה.",
   });
   const structuredData = {
     "@context": "https://schema.org",
@@ -143,6 +148,8 @@ export default async function ProductPage({
     image: product.image,
     description: product.shortDescription,
     brand: { "@type": "Brand", name: "Elysia" },
+    category: publicCollectionName ?? product.categorySlug,
+    material: product.material,
     offers: {
       "@type": "Offer",
       priceCurrency: "ILS",
@@ -179,17 +186,22 @@ export default async function ProductPage({
   const productTrustNotes = [
     {
       icon: ShieldCheck,
-      label: "חומר, מידה ומחיר לפני הזמנה",
+      label: "חומר, מידה ומחיר גלויים לפני הזמנה",
     },
     {
       icon: Gem,
-      label: "נבדק לפני מסירה",
+      label: "צילום ותיאור שעוזרים להבין קנה מידה",
     },
     {
       icon: Truck,
-      label: "מענה לפני הזמנה ומסירה",
+      label: "משלוח, החלפה ושירות במקום גלוי",
     },
   ];
+  const productFaqItems = getProductFaqItems({
+    deliveryPromise: product.deliveryPromise,
+    productName: publicProductName,
+    returnPolicy: product.returnPolicy,
+  });
 
   return (
     <main className="bg-background">
@@ -322,12 +334,28 @@ export default async function ProductPage({
                   className="mt-1 size-4 shrink-0"
                 />
                 <p className="text-muted-foreground">
-                  לוודא מידה, חומר או מסירה? נצרף את המוצר לפנייה.
+                  לוודא מידה, חומר, מתנה או מסירה? נצרף את המוצר לפנייה.
                 </p>
               </div>
               <Button asChild className="shrink-0" size="sm" variant="outline">
                 <Link href={productSupportHref}>שאלה על המוצר</Link>
               </Button>
+            </div>
+
+            <div
+              className="mt-4 rounded-md border border-[var(--glass-border)] p-3 text-sm leading-6"
+              data-testid="product-gift-ready-note"
+            >
+              <div className="flex gap-2">
+                <Gift aria-hidden="true" className="mt-1 size-4 shrink-0" />
+                <div>
+                  <p className="font-medium">מתאים גם כמתנה</p>
+                  <p className="text-muted-foreground mt-1">
+                    אפשר לבחור לפי אירוע, תקציב וסגנון, ולפנות לשירות אם צריך
+                    לוודא מידה או גוון לפני ההזמנה.
+                  </p>
+                </div>
+              </div>
             </div>
 
             <dl
@@ -391,21 +419,23 @@ export default async function ProductPage({
 
             <div className="brand-surface divide-border divide-y overflow-hidden rounded-md">
               <ServiceRow
-                description="אחריות לשנה על פגמי ייצור וניקוי ראשוני ללא עלות."
+                description="אחריות לשנה על פגמי ייצור, עם אפשרות לפנות לשירות לגבי טיפול בתכשיט."
                 icon={ShieldCheck}
                 title="אחריות"
               />
               <ServiceRow
-                description="החזרה או החלפה לפי מדיניות Elysia."
+                description="החלפה או החזרה לפי מדיניות Elysia, עם הסבר לפני סיום ההזמנה."
                 icon={RotateCcw}
                 title="החלפות והחזרות"
               />
               <ServiceRow
-                description="ניתן לקבל ייעוץ מידה, התאמה ומתנה לפני הזמנה."
+                description="אפשר לקבל ייעוץ מידה, התאמה ומתנה לפני הזמנה, עם שם התכשיט מצורף לפנייה."
                 icon={Gem}
                 title="שאלה לפני הזמנה"
               />
             </div>
+
+            <ProductFaq items={productFaqItems} />
           </div>
         </div>
 
@@ -425,6 +455,43 @@ export default async function ProductPage({
   );
 }
 
+function ProductFaq({
+  items,
+}: {
+  items: Array<{ answer: string; question: string }>;
+}) {
+  return (
+    <section
+      aria-labelledby="product-faq-title"
+      className="grid gap-3"
+      data-testid="product-faq"
+    >
+      <h2 className="text-xl font-semibold" id="product-faq-title">
+        שאלות לפני הזמנה
+      </h2>
+      <div className="grid gap-2">
+        {items.map((item) => (
+          <details
+            className="group rounded-md border border-[var(--glass-border)] p-3"
+            key={item.question}
+          >
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none [&::-webkit-details-marker]:hidden">
+              <span>{item.question}</span>
+              <ChevronDown
+                aria-hidden="true"
+                className="size-4 shrink-0 transition-transform group-open:rotate-180"
+              />
+            </summary>
+            <p className="text-muted-foreground mt-2 text-sm leading-6">
+              {item.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function ServiceRow({ description, icon: Icon, title }: ServiceRowProps) {
   return (
     <div className="grid gap-3 py-5 sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-4">
@@ -437,6 +504,32 @@ function ServiceRow({ description, icon: Icon, title }: ServiceRowProps) {
       </div>
     </div>
   );
+}
+
+function getProductFaqItems(input: {
+  deliveryPromise?: string;
+  productName: string;
+  returnPolicy?: string;
+}) {
+  return [
+    {
+      question: "איך יודעים אם המידה מתאימה?",
+      answer:
+        "בדקו את מדריך המידות ואת אפשרויות המידה בעמוד. אם עדיין יש התלבטות, אפשר לשלוח שאלה עם שם התכשיט לפני הזמנה.",
+    },
+    {
+      question: `${input.productName} מתאים למתנה?`,
+      answer:
+        "כן. מומלץ לבחור לפי סגנון ענידה, גוון מתכת ותקציב. אם זו מתנה עם מידה לא בטוחה, שירות הלקוחות יכול לעזור לפני הקנייה.",
+    },
+    {
+      question: "מה חשוב לדעת על משלוח והחזרה?",
+      answer: [
+        input.deliveryPromise ?? "מסירה מתבצעת לפי אפשרויות המשלוח באתר.",
+        input.returnPolicy ?? "החלפה או החזרה מתבצעות לפי מדיניות Elysia.",
+      ].join(" "),
+    },
+  ];
 }
 
 function ProductRecommendationRails({

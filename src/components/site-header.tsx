@@ -15,14 +15,17 @@ import { MobileNav, type HeaderNavItem } from "~/components/mobile-nav";
 import { Button } from "~/components/ui/button";
 
 const navItems: HeaderNavItem[] = [
+  { href: "/search", label: "הכל" },
   { href: "/search?sort=newest", label: "חדש" },
   { href: "/category/rings", label: "טבעות" },
   { href: "/category/necklaces", label: "שרשראות" },
   { href: "/category/earrings", label: "עגילים" },
   { href: "/category/bracelets", label: "צמידים" },
   { href: "/gifts", label: "מתנות" },
+  { href: "/search?sort=popular", label: "אהובים" },
+  { href: "/size-guide", label: "מידות" },
   { href: "/about", label: "אודות" },
-  { href: "/service", label: "שירות" },
+  { href: "/service", label: "שירות אישי" },
 ];
 const categoryNavHrefs = navItems
   .map((item) => item.href)
@@ -90,7 +93,8 @@ export function SiteHeader() {
         dir="rtl"
       >
         <p className="sr-only">
-          Elysia: ניווט ראשי, חיפוש, שירות, מועדפים ואזור אישי.
+          Elysia: ניווט ראשי לקולקציה, קטגוריות, מתנות, מידות, שירות,
+          מועדפים ואזור אישי.
         </p>
         <div
           className="grid h-16 w-full grid-cols-[1fr_auto_1fr] items-center px-4 sm:px-6 md:h-[4.25rem] md:px-10 lg:h-[6.125rem] lg:px-16"
@@ -141,7 +145,7 @@ export function SiteHeader() {
               href="/service"
               prefetch={false}
             >
-              שירות
+              שירות אישי
             </Link>
             <Button
               asChild
