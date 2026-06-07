@@ -160,11 +160,10 @@ export default function AboutPage() {
           >
             <p className="storefront-eyebrow">Elysia</p>
             <h1 className="about-hero-title motion-copy-item [--motion-copy-delay:80ms]">
-              בית תכשיטים קטן עם עין מדויקת.
+              מעט. מדויק. זוהר.
             </h1>
             <p className="about-hero-statement motion-copy-item [--motion-copy-delay:120ms]">
-              טבעת לעבודה, שרשרת לחופשה, עגילים לערב וצמיד שמוסיף אור ליום
-              רגיל - בלי להפוך את הלוק למאמץ.
+              בית תכשיטים בוטיקי עם עין לחומר, מידה ואור.
             </p>
             <div className="about-hero-actions motion-copy-item [--motion-copy-delay:160ms]">
               <Button asChild className="home-hero-cta-primary" size="lg">

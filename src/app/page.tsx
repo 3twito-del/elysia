@@ -178,14 +178,13 @@ export default async function Home() {
             Elysia Jewellery
           </p>
           <h1 className="storefront-hero-title motion-copy-item [--motion-copy-delay:90ms]">
-            תכשיטים שמרגישים כמו קיץ על העור.
+            קיץ חדש. זוהר נקי.
           </h1>
           <p
             className="home-hero-statement motion-copy-item storefront-hero-statement [--motion-copy-delay:90ms]"
             data-testid="home-hero-statement"
           >
-            בית תכשיטים בוטיקי לטבעות, שרשראות, עגילים וצמידים שנבחרים לפי
-            חומר, מידה ורגע אמיתי בחיים.
+            פריטים חדשים שמכניסים אור לקיץ.
           </p>
           <div
             className="home-hero-actions motion-copy-item storefront-hero-actions [--motion-copy-delay:130ms]"
@@ -199,7 +198,7 @@ export default async function Home() {
                   href="/search"
                   prefetch={false}
                 >
-                  לגלות את הקולקציה
+                  SHOP NOW
                   <ArrowLeft
                     aria-hidden="true"
                     className="home-hero-cta-icon size-4"

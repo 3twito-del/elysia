@@ -2255,20 +2255,20 @@ main
 }
 
 .about-hero-title {
-  margin-top: 0.7rem;
-  max-width: 30rem;
-  font-size: clamp(2.8rem, 7vw, 6rem);
+  margin-top: 0.65rem;
+  max-width: 21rem;
+  font-size: 2.65rem;
   font-weight: 520;
-  line-height: 0.96;
+  line-height: 1.02;
   letter-spacing: 0;
 }
 
 .about-hero-statement {
-  margin-top: clamp(1.1rem, 2.4vw, 1.75rem);
-  max-width: 31rem;
+  margin-top: 0.95rem;
+  max-width: 22rem;
   color: rgb(255 250 244 / 88%);
-  font-size: clamp(1.05rem, 1.55vw, 1.45rem);
-  line-height: 1.62;
+  font-size: 0.98rem;
+  line-height: 1.72;
 }
 
 .about-hero-actions,
@@ -2323,12 +2323,13 @@ main
   }
 
   .about-hero-title {
-    font-size: clamp(3.2rem, 14vw, 4.25rem);
+    max-width: 18rem;
+    font-size: 2.15rem;
   }
 
   .about-hero-statement {
-    max-width: 21rem;
-    font-size: 0.98rem;
+    max-width: 18rem;
+    font-size: 0.95rem;
     line-height: 1.68;
   }
 }
@@ -2470,21 +2471,21 @@ main
 
 .storefront-hero-title {
   margin-top: 0.75rem;
-  max-width: 35rem;
+  max-width: 24rem;
   color: rgb(255 250 244 / 96%);
-  font-size: 3.75rem;
-  font-weight: 540;
+  font-size: 2.55rem;
+  font-weight: 520;
   letter-spacing: 0;
-  line-height: 0.98;
+  line-height: 1.04;
 }
 
 .storefront-hero-statement {
-  margin-top: 1.15rem;
-  max-width: 31rem;
+  margin-top: 0.9rem;
+  max-width: 21rem;
   font-family: var(--font-hebrew-sans);
-  font-size: clamp(1.05rem, 1.55vw, 1.45rem);
+  font-size: 0.98rem;
   font-weight: 400;
-  line-height: 1.5;
+  line-height: 1.7;
   color: rgb(255 250 244 / 88%);
 }
 
@@ -2493,22 +2494,23 @@ main
 }
 
 @media (min-width: 1280px) {
+  .about-hero-title,
   .storefront-hero-title {
-    font-size: 4.75rem;
+    font-size: 3rem;
   }
 }
 
 @media (max-width: 639px) {
   .storefront-hero-title {
-    max-width: 22rem;
-    font-size: 2.75rem;
-    line-height: 1.02;
+    max-width: 18rem;
+    font-size: 2.05rem;
+    line-height: 1.08;
   }
 
   .storefront-hero-statement {
-    max-width: 21rem;
-    font-size: 0.98rem;
-    line-height: 1.62;
+    max-width: 18rem;
+    font-size: 0.94rem;
+    line-height: 1.65;
   }
 }
 
