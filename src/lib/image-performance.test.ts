@@ -12,6 +12,7 @@ describe("image performance guardrails", () => {
     const searchSource = read("src/app/search/page.tsx");
     const categorySource = read("src/app/category/[slug]/page.tsx");
     const giftsSource = read("src/app/gifts/page.tsx");
+    const aboutSource = read("src/app/about/page.tsx");
     const homeHeroVideoSource = read("src/components/home-hero-video.tsx");
     const gallerySource = read(
       "src/app/product/[slug]/_components/product-gallery.tsx",
@@ -29,6 +30,13 @@ describe("image performance guardrails", () => {
     expect(homeSource).toContain('fetchPriority="high"');
     expect(homeSource).toContain("posterSrc={boutiqueHeroPoster}");
     expect(homeSource).toContain("webmSrc={boutiqueHeroVideoWebm}");
+    expect(aboutSource).toContain("<HomeHeroVideo");
+    expect(aboutSource).toContain('data-testid="cinematic-page-hero"');
+    expect(aboutSource).toContain("posterSrc={aboutHeroPoster}");
+    expect(aboutSource).toContain("webmSrc={aboutHeroVideoWebm}");
+    expect(aboutSource).toContain("about-fixed-image-band");
+    expect(aboutSource).not.toContain("<CommercePageHero");
+    expect(aboutSource).not.toContain('as="video"');
     expect(homeHeroVideoSource).toContain('preload="auto"');
     expect(homeHeroVideoSource).toContain('video.preload = "auto";');
     expect(homeHeroVideoSource).toContain("video.load();");
@@ -126,7 +134,10 @@ describe("image performance guardrails", () => {
     expect(homeSource).toContain("<DeferredFixedBackgroundBand");
     expect(componentSource).toContain("IntersectionObserver");
     expect(componentSource).toContain('rootMargin: "900px 0px"');
-    expect(baseFixedBandRule).not.toContain("category-rings.avif");
+    expect(baseFixedBandRule).toContain("--boutique-fixed-image-url");
+    expect(baseFixedBandRule).not.toContain(
+      'url("/brand/boutique/category-rings.avif") center',
+    );
     expect(stylesSource).toContain("clip-path: inset(0)");
     expect(stylesSource).toContain("position: fixed");
     expect(stylesSource).toContain(
@@ -137,6 +148,9 @@ describe("image performance guardrails", () => {
     );
     expect(stylesSource).toContain(
       'url("/brand/boutique/category-rings.avif")',
+    );
+    expect(stylesSource).toContain(
+      'url("/brand/boutique/product-detail.avif")',
     );
     expect(stylesSource).toContain("background-attachment: scroll, fixed");
   });

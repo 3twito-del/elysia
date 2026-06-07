@@ -28,17 +28,18 @@ const categoryNavHrefs = navItems
   .map((item) => item.href)
   .filter(isCategoryHref);
 const HOME_HEADER_SOLID_SCROLL_Y = 8;
+const mediaOverlayHeaderPathnames = new Set(["/", "/about"]);
 
 export function SiteHeader() {
   const pathname = usePathname();
   const [hasScrolled, setHasScrolled] = useState(false);
-  const isHome = pathname === "/";
+  const isMediaOverlayRoute = mediaOverlayHeaderPathnames.has(pathname);
   const categoryPrefetch = useCategoryRoutePrefetch(categoryNavHrefs);
-  const isOverHomeHero = isHome && !hasScrolled;
+  const isOverHomeHero = isMediaOverlayRoute && !hasScrolled;
   const headerState = isOverHomeHero ? "transparent" : "solid";
 
   useEffect(() => {
-    if (pathname !== "/") return;
+    if (!isMediaOverlayRoute) return;
 
     let frame = 0;
     let restoreTimer = 0;
@@ -78,7 +79,7 @@ export function SiteHeader() {
       window.removeEventListener("resize", requestSync);
       window.removeEventListener("pageshow", requestRestoredSync);
     };
-  }, [pathname]);
+  }, [isMediaOverlayRoute]);
 
   return (
     <>

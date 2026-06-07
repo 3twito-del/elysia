@@ -3,26 +3,24 @@ import Image from "next/image";
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import {
+  ArrowLeft,
   BadgeCheck,
-  Camera,
   Gem,
   Handshake,
   Headphones,
   PackageCheck,
-  PenLine,
   Ruler,
   Search,
   ShieldCheck,
   Sparkles,
-  Store,
   Truck,
 } from "lucide-react";
 
-import { CommercePageHero } from "~/components/commerce-page-hero";
+import { DeferredFixedBackgroundBand } from "~/components/deferred-fixed-background-band";
+import { HomeHeroVideo } from "~/components/home-hero-video";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
-import { cinematicRouteMedia } from "~/lib/brand-media";
 
 type IconItem = {
   icon: LucideIcon;
@@ -30,66 +28,39 @@ type IconItem = {
   title: string;
 };
 
-type ImageTile = {
-  alt: string;
-  className: string;
-  loading?: "eager" | "lazy";
-  sizes: string;
-  src: string;
-};
+const aboutHeroPoster = "/brand/boutique/lifestyle-hero-poster.avif";
+const aboutHeroVideoMp4 = "/brand/boutique/lifestyle-hero.mp4";
+const aboutHeroVideoWebm = "/brand/boutique/lifestyle-hero.webm";
 
-const editorialImages = [
+const editorialPrinciples = [
   {
-    alt: "טבעות עדינות בצילום בוטיק חם על משטח בהיר",
-    className:
-      "col-span-2 aspect-[16/10] sm:col-span-1 sm:row-span-2 sm:aspect-[4/5]",
-    loading: "eager",
-    sizes: "(min-width: 1024px) 28vw, (min-width: 640px) 46vw, 100vw",
-    src: "/brand/boutique/category-rings.avif",
+    title: "בחירה",
+    text: "מתחילים במשפחת תכשיט, שימוש, תקציב או מתנה, ורואים את הפרטים לפני שמוסיפים לסל.",
   },
   {
-    alt: "שרשראות עדינות על גוף בצילום בוטיק נקי",
-    className: "aspect-[5/4]",
-    sizes: "(min-width: 1024px) 22vw, (min-width: 640px) 46vw, 100vw",
-    src: "/brand/boutique/category-necklaces.avif",
+    title: "מידע",
+    text: "חומר, מידה, מחיר ותמונות מוצגים באופן שמאפשר להשוות בין פריטים בלי לנחש.",
   },
   {
-    alt: "תכשיטי פנינה וזכוכית בתאורת אקווה נקייה",
-    className: "aspect-[5/4]",
-    sizes: "(min-width: 1024px) 22vw, (min-width: 640px) 46vw, 100vw",
-    src: "/brand/boutique/category-earrings.avif",
+    title: "שירות",
+    text: "כשצריך עזרה בהתאמה, מידה או משלוח, אפשר לפנות לשירות מתוך הקשר הבחירה.",
   },
-] satisfies ImageTile[];
-
-const storyImages = [
-  {
-    alt: "תכשיט עדין על גוף בתאורה רכה וחמה",
-    className: "aspect-[16/10]",
-    sizes: "(min-width: 1024px) 54vw, 100vw",
-    src: "/brand/boutique/lifestyle-hero.avif",
-  },
-  {
-    alt: "צמידים עדינים על יד בצילום בוטיק",
-    className: "aspect-[4/3]",
-    sizes: "(min-width: 1024px) 24vw, 100vw",
-    src: "/brand/boutique/category-bracelets.avif",
-  },
-] satisfies ImageTile[];
+] as const;
 
 const values = [
   {
     title: "מידע ברור",
-    text: "חומר, מידה ומחיר מוצגים בעמוד המוצר.",
+    text: "חומר, מידה ומחיר מוצגים בעמוד המוצר לפני ההזמנה.",
     icon: ShieldCheck,
   },
   {
     title: "חומרים",
-    text: "התמונות ופרטי החומר מוצגים לפני ההזמנה.",
+    text: "זהב, כסף, פנינים ואבני צבע מוצגים לפי הדגם והמידע הזמין.",
     icon: Gem,
   },
   {
     title: "התאמה",
-    text: "מידות, אורך ומשקל מוצגים כאשר המידע זמין.",
+    text: "מידות, אורך ומשקל מוצגים כאשר המידע זמין, עם מדריך מידות תומך.",
     icon: Ruler,
   },
   {
@@ -102,63 +73,25 @@ const values = [
 const standards = [
   {
     title: "תמונות מוצר",
-    text: "תמונות המוצר מציגות את הפריט מזוויות שונות.",
-    icon: Camera,
-  },
-  {
-    title: "חיפוש",
-    text: "המבחר נפתח לפי צורך, מחיר, חומר ומשפחת תכשיט.",
-    icon: Search,
+    text: "כל פריט מוצג עם תמונות שמבהירות מבנה, קנה מידה ואופי ענידה.",
+    icon: Sparkles,
   },
   {
     title: "לפני ההזמנה",
-    text: "פרטי המוצר וההזמנה מוצגים לפני אישור.",
+    text: "פרטי המוצר, מחיר ומשלוח מוצגים לפני אישור ההזמנה.",
     icon: BadgeCheck,
   },
   {
     title: "אריזה ומשלוח",
-    text: "פרטי אריזה ומשלוח מופיעים בתהליך ההזמנה.",
+    text: "אפשרויות אריזה ומשלוח זמינות בתהליך ההזמנה.",
     icon: PackageCheck,
   },
   {
-    title: "שירות",
-    text: "שירות זמין למידע נוסף.",
-    icon: Headphones,
-  },
-] satisfies IconItem[];
-
-const workflow = [
-  {
-    title: "הקולקציה",
-    text: "כל תכשיט נכנס לקולקציה עם תפקיד ברור: יום יום, מתנה או אירוע.",
-    icon: PenLine,
-  },
-  {
-    title: "פרטי מוצר",
-    text: "פרטי המוצר כוללים חומר, מידה ומחיר.",
-    icon: Store,
-  },
-  {
-    title: "שירות לאחר הזמנה",
-    text: "שירות זמין גם לאחר ביצוע ההזמנה.",
+    title: "מסירה",
+    text: "הזמנה ושירות מתבצעים אונליין, עם מענה לשאלות לפני ואחרי ההזמנה.",
     icon: Truck,
   },
 ] satisfies IconItem[];
-
-const brandTimeline = [
-  {
-    title: "בחירה",
-    text: "מתחילים ממשפחת תכשיט, תקציב או צורך.",
-  },
-  {
-    title: "בדיקה",
-    text: "משווים חומר, מידה, מחיר ותמונות לפני שמוסיפים לסל.",
-  },
-  {
-    title: "שירות",
-    text: "אם חסר פרט, עוברים לשירות בהקשר המוצר.",
-  },
-] as const;
 
 const materialFacts = [
   {
@@ -172,148 +105,150 @@ const materialFacts = [
     icon: Ruler,
   },
   {
-    title: "מסירה",
-    text: "הזמנה ושירות מתבצעים אונליין.",
-    icon: Truck,
+    title: "שירות",
+    text: "אפשר לפתוח פנייה עם פרטי המוצר לפני הבחירה.",
+    icon: Headphones,
   },
 ] satisfies IconItem[];
 
 export const metadata: Metadata = {
   title: "אודות",
-  description: "Elysia מציגה תכשיטים עם חומר, מידה, מחיר ושירות ברור.",
+  description:
+    "Elysia מציגה תכשיטים עם חומר, מידה, מחיר ושירות ברור לפני ההזמנה.",
   openGraph: {
     title: "Elysia",
-    description: "תכשיטי Elysia עם חומר, מידה, מחיר ושירות ברור.",
+    description: "תכשיטי Elysia עם חומר, מידה, מחיר ושירות ברור לפני ההזמנה.",
     images: [{ url: "/brand/boutique/lifestyle-hero.avif" }],
   },
 };
 
 export default function AboutPage() {
   return (
-    <main>
+    <main className="about-cinematic-page">
+      <link
+        as="image"
+        fetchPriority="high"
+        href={aboutHeroPoster}
+        rel="preload"
+        type="image/avif"
+      />
       <SiteHeader />
 
       <article>
-        <CommercePageHero
-          actions={
-            <>
-              <Button asChild>
-                <Link href="/search">
+        <RevealSection
+          className="home-cinematic-hero storefront-hero about-cinematic-hero relative isolate min-h-[var(--home-hero-height)] w-screen max-w-none overflow-hidden"
+          data-testid="cinematic-page-hero"
+          id="page-hero"
+          initialVisible
+          variant="hero"
+        >
+          <HomeHeroVideo
+            className="storefront-hero-image object-cover"
+            mp4Src={aboutHeroVideoMp4}
+            posterSrc={aboutHeroPoster}
+            webmSrc={aboutHeroVideoWebm}
+          />
+          <div className="storefront-hero-scrim absolute inset-0" />
+          <div className="storefront-hero-wash absolute inset-0" />
+
+          <div
+            className="about-hero-copy motion-hero-copy storefront-hero-copy absolute z-10 flex max-w-[min(39rem,calc(100vw-2.5rem))] flex-col items-start"
+            data-testid="about-hero-copy"
+            dir="rtl"
+          >
+            <p className="storefront-eyebrow">Elysia</p>
+            <h1 className="about-hero-title motion-copy-item [--motion-copy-delay:80ms]">
+              תכשיטים עם פרטים ברורים.
+            </h1>
+            <p className="about-hero-statement motion-copy-item [--motion-copy-delay:120ms]">
+              בחירה שקטה של טבעות, שרשראות, עגילים וצמידים, עם חומר, מידה ושירות
+              שמופיעים לפני ההזמנה.
+            </p>
+            <div className="about-hero-actions motion-copy-item [--motion-copy-delay:160ms]">
+              <Button asChild className="home-hero-cta-primary" size="lg">
+                <Link href="/search" prefetch={false}>
                   למבחר
-                  <Search aria-hidden="true" className="size-4" />
+                  <ArrowLeft aria-hidden="true" className="size-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline">
-                <Link href="/service">
+              <Button asChild size="lg" variant="outline">
+                <Link href="/service" prefetch={false}>
                   שירות
                   <Headphones aria-hidden="true" className="size-4" />
                 </Link>
               </Button>
-            </>
-          }
-          className="[&_.commerce-page-hero-inner]:pb-6 lg:[&_.commerce-page-hero-inner]:pb-8"
-          description="Elysia מציגה תכשיטים עם מידע ברור, שירות והזמנה מקוונת."
-          eyebrow="Elysia"
-          id="page-hero"
-          media={{
-            alt: "תכשיטי Elysia בצילום בוטיק רך",
-            priority: true,
-            sizes: "(min-width: 1024px) 34vw, 100vw",
-            slides: cinematicRouteMedia.about,
-          }}
-          metrics={[
-            { label: "מיקוד", value: "תכשיטי Elysia" },
-            { label: "גישה", value: "דיוק מאופק" },
-            { label: "שירות", value: "לפני ואחרי הזמנה" },
-          ]}
-          metricsMode="inline"
-          title="תכשיטים עם פרטים ברורים."
-          variant="content"
-        />
+            </div>
+          </div>
+        </RevealSection>
 
         <RevealSection
-          className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:py-12"
+          className="boutique-story-band about-cinematic-story px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-0"
           id="about-editorial"
-          variant="none"
         >
-          <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
-            <div>
-              <p className="text-muted-foreground text-sm">הגישה</p>
-              <h2 className="mt-3 max-w-2xl text-3xl leading-tight font-semibold sm:text-4xl">
-                תכשיטים, מידע ושירות.
+          <div className="boutique-story-layout mx-auto grid max-w-[92rem] gap-8 lg:items-center">
+            <figure className="boutique-story-media boutique-story-media-left relative">
+              <Image
+                alt=""
+                className="object-cover"
+                fill
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                src="/brand/boutique/product-detail.avif"
+              />
+            </figure>
+            <div className="boutique-story-copy about-story-copy">
+              <p className="storefront-eyebrow">הגישה</p>
+              <h2 className="about-section-title">
+                בחירה שמתחילה באור, חומר ופרופורציה.
               </h2>
-              <div className="text-muted-foreground mt-5 grid max-w-2xl gap-4 text-base leading-8">
-                <p>
-                  תכשיט מדויק מתחיל בפרופורציה, חומר ומידע ברור. כל פריט מוצג כך
-                  שניתן לראות מבנה, מידה ופרטים לפני הזמנה.
-                </p>
-                <p>
-                  שירות זמין לשאלות על מתנה, מידה, אירוע או שימוש יומי. המטרה:
-                  החלטה ברורה לפני הזמנה.
-                </p>
+              <p className="about-section-text">
+                תכשיט מדויק מתחיל בפרופורציה, חומר ומידע ברור. כל פריט מוצג כך
+                שניתן לראות מבנה, מידה ופרטים לפני הזמנה.
+              </p>
+              <div className="about-story-actions">
+                <Button asChild variant="outline">
+                  <Link href="/size-guide" prefetch={false}>
+                    מדריך מידות
+                  </Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link href="/gifts" prefetch={false}>
+                    מתנות
+                  </Link>
+                </Button>
               </div>
-              <dl className="mt-7 grid gap-3 sm:grid-cols-3">
-                <div className="border-t border-[var(--glass-border)] pt-3">
-                  <dt className="text-muted-foreground text-xs">חומר</dt>
-                  <dd className="mt-1 text-xl font-semibold">
-                    זהב, כסף, פנינים ואבנים
-                  </dd>
-                </div>
-                <div className="border-t border-[var(--glass-border)] pt-3">
-                  <dt className="text-muted-foreground text-xs">מסירה</dt>
-                  <dd className="mt-1 text-xl font-semibold">מסירה מתואמת</dd>
-                </div>
-                <div className="border-t border-[var(--glass-border)] pt-3">
-                  <dt className="text-muted-foreground text-xs">שירות</dt>
-                  <dd className="mt-1 text-xl font-semibold">
-                    לפני ההזמנה ולאחריה
-                  </dd>
-                </div>
-              </dl>
             </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              {editorialImages.map((image) => (
-                <EditorialImage image={image} key={image.src} />
-              ))}
-            </div>
-          </div>
-        </RevealSection>
-
-        <RevealSection className="brand-page-band border-y" id="about-story">
-          <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-14">
-            <div className="grid gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-start">
-              <div>
-                <p className="text-muted-foreground text-sm">Elysia</p>
-                <h2 className="mt-3 max-w-3xl text-3xl leading-tight font-semibold sm:text-4xl">
-                  Elysia נבנתה לבחירה ברורה לפני הזמנה.
-                </h2>
-                <div className="text-muted-foreground mt-5 grid max-w-3xl gap-4 leading-8">
-                  <p>
-                    תכשיט מדויק נשען על פרופורציה, חומר, צילום ברור ושירות שמכבד
-                    זמן.
-                  </p>
-                  <p>
-                    הקולקציה נבחרת לפי קו נקי, נוחות שימוש ופרטים גלויים: טבעת
-                    ליום, שרשרת לשכבות, עגילים קלים ומתנה ארוזה היטב.
-                  </p>
-                </div>
-              </div>
-
-              <RevealGrid className="grid gap-3" variant="compact">
-                {workflow.map((item) => (
-                  <IconRow item={item} key={item.title} />
+            <div className="boutique-story-secondary-copy">
+              <div className="grid gap-4">
+                {editorialPrinciples.map((principle, index) => (
+                  <section
+                    className="boutique-story-principle"
+                    key={principle.title}
+                  >
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    <div>
+                      <h3>{principle.title}</h3>
+                      <p>{principle.text}</p>
+                    </div>
+                  </section>
                 ))}
-              </RevealGrid>
+              </div>
             </div>
-
-            <div className="mt-8 grid gap-3 lg:grid-cols-[1.38fr_0.62fr]">
-              {storyImages.map((image) => (
-                <EditorialImage image={image} key={image.src} />
-              ))}
-            </div>
+            <figure className="boutique-story-media boutique-story-media-right relative">
+              <Image
+                alt=""
+                className="object-cover"
+                fill
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                src="/brand/boutique/category-necklaces.avif"
+              />
+            </figure>
           </div>
         </RevealSection>
+
+        <DeferredFixedBackgroundBand
+          className="boutique-fixed-image-band about-fixed-image-band"
+          id="about-fixed-editorial-image"
+        />
 
         <RevealSection
           className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-14"
@@ -330,10 +265,10 @@ export default function AboutPage() {
                 className="mt-3 text-3xl leading-tight font-semibold sm:text-4xl"
                 id="about-brand-timeline-title"
               >
-                שלושה צעדים לפני הזמנה.
+                שלושה דברים שכדאי לדעת לפני הזמנה.
               </h2>
               <ol className="mt-6 grid gap-4">
-                {brandTimeline.map((item, index) => (
+                {editorialPrinciples.map((item, index) => (
                   <li
                     className="grid grid-cols-[auto_minmax(0,1fr)] gap-4 border-t border-[var(--glass-border)] pt-4"
                     key={item.title}
@@ -390,10 +325,14 @@ export default function AboutPage() {
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <Button asChild size="sm" variant="outline">
-                    <Link href="/faq#faq-group-2">שאלות על מידות</Link>
+                    <Link href="/faq#faq-group-2" prefetch={false}>
+                      שאלות על מידות
+                    </Link>
                   </Button>
                   <Button asChild size="sm" variant="outline">
-                    <Link href="/service?topic=general">פנייה לשירות</Link>
+                    <Link href="/service?topic=general" prefetch={false}>
+                      פנייה לשירות
+                    </Link>
                   </Button>
                 </div>
               </section>
@@ -402,7 +341,7 @@ export default function AboutPage() {
         </RevealSection>
 
         <RevealSection
-          className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-14"
+          className="about-values-section mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-14"
           id="about-values"
         >
           <div className="mb-7 max-w-3xl">
@@ -438,13 +377,19 @@ export default function AboutPage() {
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
                 <Button asChild variant="outline">
-                  <Link href="/category/rings">טבעות</Link>
+                  <Link href="/category/rings" prefetch={false}>
+                    טבעות
+                  </Link>
                 </Button>
                 <Button asChild variant="outline">
-                  <Link href="/category/earrings">עגילים</Link>
+                  <Link href="/category/earrings" prefetch={false}>
+                    עגילים
+                  </Link>
                 </Button>
                 <Button asChild variant="outline">
-                  <Link href="/gifts">מתנות</Link>
+                  <Link href="/gifts" prefetch={false}>
+                    מתנות
+                  </Link>
                 </Button>
               </div>
             </div>
@@ -474,13 +419,13 @@ export default function AboutPage() {
             </div>
             <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
               <Button asChild>
-                <Link href="/search">
+                <Link href="/search" prefetch={false}>
                   חיפוש במבחר
                   <Search aria-hidden="true" className="size-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href="/service">
+                <Link href="/service" prefetch={false}>
                   שירות
                   <Headphones aria-hidden="true" className="size-4" />
                 </Link>
@@ -490,23 +435,6 @@ export default function AboutPage() {
         </RevealSection>
       </article>
     </main>
-  );
-}
-
-function EditorialImage({ image }: { image: ImageTile }) {
-  return (
-    <figure
-      className={`bg-muted relative overflow-hidden rounded-md border border-[var(--glass-border)] ${image.className}`}
-    >
-      <Image
-        alt={image.alt}
-        className="media-mono object-cover object-center"
-        fill
-        loading={image.loading ?? "lazy"}
-        sizes={image.sizes}
-        src={image.src}
-      />
-    </figure>
   );
 }
 
