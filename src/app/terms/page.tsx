@@ -79,7 +79,7 @@ export default async function TermsPage() {
           <div className="grid gap-6 sm:grid-cols-3">
             <div className="glass-inset rounded-md border p-4">
               <ShieldCheck className="size-5" aria-hidden="true" />
-              <p className="mt-3 font-medium">שימוש הוגן וברור</p>
+              <p className="mt-3 font-medium">שימוש הוגן ומובן</p>
             </div>
             <div className="glass-inset rounded-md border p-4">
               <Truck className="size-5" aria-hidden="true" />

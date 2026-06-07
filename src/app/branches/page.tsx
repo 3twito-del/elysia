@@ -189,7 +189,7 @@ export default async function BranchesPage() {
                   <h3 className="font-medium" id="branches-contact-channels">
                     ערוצי קשר זמינים
                   </h3>
-                  <p className="text-muted-foreground mt-1 text-sm leading-6">כל ערוץ מוביל לפעולה אחת ברורה.</p>
+                  <p className="text-muted-foreground mt-1 text-sm leading-6">כל ערוץ מוביל לפעולה אחת מוגדרת.</p>
                 </div>
                 <div className="grid gap-2 sm:grid-cols-3">
                   <a

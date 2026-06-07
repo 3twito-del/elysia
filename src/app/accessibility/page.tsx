@@ -26,7 +26,7 @@ export default async function AccessibilityPage() {
 
       <main>
         <CommercePageHero
-          description="האתר והשירות מיועדים להיות זמינים, ברורים ונוחים לשימוש."
+          description="האתר והשירות מיועדים להיות זמינים ונוחים לשימוש."
           eyebrow="נגישות"
           title="הצהרת נגישות"
           variant="content"

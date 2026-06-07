@@ -476,7 +476,7 @@ export function AccessibilityWidget() {
             <div className="grid gap-3">
               <ToggleRow
                 checked={settings.highContrast}
-                description="מעביר את הממשק לצבעים חדים וברורים יותר."
+                description="מעביר את הממשק לצבעים חדים ומובחנים יותר."
                 icon={Contrast}
                 label="ניגודיות גבוהה"
                 onChange={(checked) =>

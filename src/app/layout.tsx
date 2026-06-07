@@ -53,7 +53,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Elysia",
-    description: "תכשיטי Elysia בעברית, עם מידע ברור והזמנה מקוונת.",
+    description: "תכשיטי Elysia בעברית, עם מידע מסודר והזמנה מקוונת.",
     url: "/",
     images: [{ url: sharePreviewImage }],
     locale: "he_IL",

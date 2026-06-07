@@ -81,20 +81,20 @@ const editorialPrinciples = [
 export const metadata: Metadata = {
   title: "Elysia | תכשיטים",
   description:
-    "עמוד הבית של Elysia: תכשיטים, מתנות, מידע מוצר ברור והזמנה מקוונת.",
+    "עמוד הבית של Elysia: תכשיטים, מתנות, מידע מוצר מסודר והזמנה מקוונת.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: "Elysia | תכשיטים",
-    description: "קולקציות תכשיטים עם מידע ברור על חומר, מידה, מחיר והזמנה.",
+    description: "קולקציות תכשיטים עם מידע מסודר על חומר, מידה, מחיר והזמנה.",
     url: "/",
     images: [{ url: boutiqueHeroImage }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Elysia | תכשיטים",
-    description: "קולקציות תכשיטים עם מידע ברור על חומר, מידה, מחיר והזמנה.",
+    description: "קולקציות תכשיטים עם מידע מסודר על חומר, מידה, מחיר והזמנה.",
     images: [boutiqueHeroImage],
   },
 };
@@ -272,8 +272,8 @@ export default async function Home() {
               actionHref="/about"
               actionLabel="אודות"
               eyebrow="Elysia"
-              text="Elysia מציגה קולקציות תכשיטים עם מידע ברור, שירות והזמנה מקוונת."
-              title="תכשיטים עם פרטים ברורים."
+              text="Elysia מציגה קולקציות תכשיטים עם מידע מסודר, שירות והזמנה מקוונת."
+              title="תכשיטים עם פרטים מסודרים."
             />
           </div>
           <div className="boutique-story-secondary-copy">

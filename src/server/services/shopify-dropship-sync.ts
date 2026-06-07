@@ -163,7 +163,7 @@ export function mapShopifyProductsToImportPlan(input: {
         name: product.title,
         shortDescription:
           product.description.trim().slice(0, 180) ||
-          "פריט מתוך עריכת Elysia עם פרטים ברורים לפני בחירה.",
+          "פריט מתוך עריכת Elysia עם פרטים מסודרים לפני בחירה.",
         sku: defaultVariant.sku,
         supplierKey: input.supplierKey,
         tags: product.tags,

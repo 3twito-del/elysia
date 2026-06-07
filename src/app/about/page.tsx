@@ -49,7 +49,7 @@ const editorialPrinciples = [
 
 const values = [
   {
-    title: "מידע ברור",
+    title: "מידע מסודר",
     text: "חומר, מידה ומחיר מוצגים בעמוד המוצר לפני ההזמנה.",
     icon: ShieldCheck,
   },
@@ -114,10 +114,10 @@ const materialFacts = [
 export const metadata: Metadata = {
   title: "אודות",
   description:
-    "Elysia מציגה תכשיטים עם חומר, מידה, מחיר ושירות ברור לפני ההזמנה.",
+    "Elysia מציגה תכשיטים עם חומר, מידה, מחיר ושירות מסודר לפני ההזמנה.",
   openGraph: {
     title: "Elysia",
-    description: "תכשיטי Elysia עם חומר, מידה, מחיר ושירות ברור לפני ההזמנה.",
+    description: "תכשיטי Elysia עם חומר, מידה, מחיר ושירות מסודר לפני ההזמנה.",
     images: [{ url: "/brand/boutique/lifestyle-hero.avif" }],
   },
 };
@@ -158,7 +158,7 @@ export default function AboutPage() {
           >
             <p className="storefront-eyebrow">Elysia</p>
             <h1 className="about-hero-title motion-copy-item [--motion-copy-delay:80ms]">
-              תכשיטים עם פרטים ברורים.
+              תכשיטים עם פרטים מסודרים.
             </h1>
             <p className="about-hero-statement motion-copy-item [--motion-copy-delay:120ms]">
               בחירה שקטה של טבעות, שרשראות, עגילים וצמידים, עם חומר, מידה ושירות
@@ -201,7 +201,7 @@ export default function AboutPage() {
                 בחירה שמתחילה באור, חומר ופרופורציה.
               </h2>
               <p className="about-section-text">
-                תכשיט מדויק מתחיל בפרופורציה, חומר ומידע ברור. כל פריט מוצג כך
+                תכשיט מדויק מתחיל בפרופורציה, חומר ומידע מסודר. כל פריט מוצג כך
                 שניתן לראות מבנה, מידה ופרטים לפני הזמנה.
               </p>
               <div className="about-story-actions">
@@ -347,7 +347,7 @@ export default function AboutPage() {
           <div className="mb-7 max-w-3xl">
             <p className="text-muted-foreground text-sm">מידע ושירות</p>
             <h2 className="mt-3 text-3xl leading-tight font-semibold sm:text-4xl">
-              מידע ברור לאורך תהליך הבחירה וההזמנה.
+              מידע מסודר לאורך תהליך הבחירה וההזמנה.
             </h2>
           </div>
 
@@ -372,7 +372,7 @@ export default function AboutPage() {
                 לפני ההזמנה מוצגים חומר, מידה, מחיר ומשלוח.
               </h2>
               <p className="text-muted-foreground mt-5 leading-8">
-                בכל תכשיט נדרשים תקריב, תיאור קצר, מחיר ברור ושירות לאימות התאמה
+                בכל תכשיט נדרשים תקריב, תיאור קצר, מחיר גלוי ושירות לאימות התאמה
                 לפני הזמנה.
               </p>
               <div className="mt-7 flex flex-wrap gap-3">

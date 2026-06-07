@@ -64,7 +64,7 @@ export function SiteFooter() {
               <BrandLogo className="h-10 w-auto max-w-[13rem] sm:h-12 sm:max-w-[15.5rem]" />
             </Link>
             <p className="text-muted-foreground mt-6 max-w-md text-sm leading-8 sm:text-[0.95rem]">
-              קולקציות תכשיטים, מידע ברור והזמנה מקוונת.
+              קולקציות תכשיטים, מידע מסודר והזמנה מקוונת.
             </p>
             <div className="mt-7 max-w-md">
               <p className="text-foreground text-xs font-medium">עדכונים</p>

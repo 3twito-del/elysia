@@ -245,7 +245,7 @@ export default async function AccountPage() {
             </form>
           </>
         }
-        description="הסשן הנוכחי שייך למשתמש ניהול. האזור האישי מציג נתוני לקוח בלבד, כדי לשמור על הפרדה ברורה מפרטי הניהול."
+        description="הסשן הנוכחי שייך למשתמש ניהול. האזור האישי מציג נתוני לקוח בלבד, כדי לשמור על הפרדה מסודרת מפרטי הניהול."
         icon={ShieldCheck}
         testId="account-admin-forbidden"
         title="האזור האישי מיועד ללקוחות בלבד"
