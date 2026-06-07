@@ -258,7 +258,9 @@ describe("visible site improvement affordances", () => {
     expect(styles).toContain(
       "--site-header-link-color: rgb(255 255 255 / 88%);",
     );
-    expect(styles).toContain("transparent calc(var(--site-header-height) + 5rem)");
+    expect(styles).toContain(
+      "transparent calc(var(--site-header-height) + 5rem)",
+    );
     expect(styles).toContain(".site-header .site-header-label-action");
     expect(cart).toContain(
       'data-cart-state={itemCount > 0 ? "filled" : "empty"}',
@@ -266,7 +268,8 @@ describe("visible site improvement affordances", () => {
     expect(cart).not.toContain('data-testid="cart-count-empty-state"');
     expect(cart).toContain("cart-count-badge");
     expect(cart).toContain('itemCount > 99 ? "99+" : itemCount');
-    expect(footer).toContain('data-testid="footer-policy-heading"');
+    expect(footer).toContain('titleTestId="footer-policy-heading"');
+    expect(footer).toContain("data-testid={titleTestId}");
     expect(footer).toContain("min-h-10 items-center");
     expect(footer).toContain("data-icon-tooltip={item.label}");
     expect(footer).toContain("title={item.label}");
@@ -331,7 +334,8 @@ describe("visible site improvement affordances", () => {
     const footer = read("src/components/site-footer.tsx");
     const newsletter = read("src/components/newsletter-form.tsx");
 
-    expect(footer).toContain("<NewsletterForm />");
+    expect(footer).toContain("<NewsletterForm");
+    expect(footer).toContain('variant="footer"');
     expect(newsletter).toContain("newsletterStatusId");
     expect(newsletter).toContain("newsletterOfflineStatusId");
     expect(newsletter).toContain("aria-describedby={newsletterDescription}");
@@ -426,6 +430,9 @@ describe("visible site improvement affordances", () => {
     expect(gallery).toContain('testId: "product-gallery-thumbnail-rail"');
     expect(gallery).toContain('data-testid="product-gallery-previous"');
     expect(gallery).toContain('data-testid="product-gallery-next"');
+    expect(gallery).toContain("data-gallery-hover-zoom=");
+    expect(gallery).toContain('data-testid="product-gallery-hover-zoom-layer"');
+    expect(gallery).toContain("syncGalleryHoverZoom");
     expect(gallery).toContain("data-gallery-zoomed=");
     expect(gallery).toContain("aria-pressed={isViewerZoomed}");
     expect(gallery).toContain("<DialogTrigger asChild>");
@@ -489,6 +496,8 @@ describe("visible site improvement affordances", () => {
     expect(productCard).toContain('data-testid="product-card-price"');
     expect(productCard).toContain("<ProductCardQuickAddButton");
     expect(productCard).toContain("product-card-hover-image");
+    expect(productCard).toContain("group-hover/card:scale-[1.045]");
+    expect(productCard).toContain("group-hover/card:scale-[1.055]");
     expect(productCard).toContain("ui-equal-item product-card-shell");
     expect(productCard).toContain("ui-text-slot product-card-title");
     expect(productCard).toContain('dir="auto"');

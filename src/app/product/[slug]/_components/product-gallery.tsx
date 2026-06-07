@@ -7,6 +7,7 @@ import {
   useState,
   type KeyboardEvent,
   type MutableRefObject,
+  type PointerEvent,
 } from "react";
 import {
   ChevronLeft,
@@ -42,6 +43,7 @@ const mainGalleryImageSizes =
   "(min-width: 1280px) 58vw, (min-width: 1024px) 54vw, 100vw";
 const galleryThumbnailImageSizes =
   "(min-width: 1024px) 5.5rem, (min-width: 640px) 5rem, 4.5rem";
+const hoverFinePointerQuery = "(hover: hover) and (pointer: fine)";
 
 export function ProductGallery({
   className,
@@ -50,8 +52,10 @@ export function ProductGallery({
 }: ProductGalleryProps) {
   const galleryImages = Array.from(new Set(images)).filter(Boolean);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isHoverZoomActive, setIsHoverZoomActive] = useState(false);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [isViewerZoomed, setIsViewerZoomed] = useState(false);
+  const galleryFrameRef = useRef<HTMLDivElement | null>(null);
   const viewerTriggerRef = useRef<HTMLButtonElement | null>(null);
   const thumbnailRefs = useRef<ThumbnailRefs>([]);
   const viewerThumbnailRefs = useRef<ThumbnailRefs>([]);
@@ -123,12 +127,63 @@ export function ProductGallery({
 
   function handleViewerOpenChange(nextOpen: boolean) {
     setIsViewerOpen(nextOpen);
+    resetGalleryHoverZoom();
 
     if (!nextOpen) {
       window.requestAnimationFrame(() => {
         viewerTriggerRef.current?.focus();
       });
     }
+  }
+
+  function canUseGalleryHoverZoom(event: PointerEvent<HTMLDivElement>) {
+    if (shouldReduceMotion || event.pointerType === "touch") return false;
+
+    const target = event.target;
+    if (
+      target instanceof Element &&
+      target.closest("[data-gallery-hover-zoom-exempt]")
+    ) {
+      return false;
+    }
+
+    return window.matchMedia(hoverFinePointerQuery).matches;
+  }
+
+  function syncGalleryHoverZoom(event: PointerEvent<HTMLDivElement>) {
+    if (!canUseGalleryHoverZoom(event)) {
+      resetGalleryHoverZoom(event.currentTarget);
+      return;
+    }
+
+    const frame = event.currentTarget;
+    const rect = frame.getBoundingClientRect();
+
+    if (rect.width <= 0 || rect.height <= 0) return;
+
+    const originX = clamp(
+      ((event.clientX - rect.left) / rect.width) * 100,
+      8,
+      92,
+    );
+    const originY = clamp(
+      ((event.clientY - rect.top) / rect.height) * 100,
+      8,
+      92,
+    );
+
+    frame.style.setProperty("--gallery-hover-origin-x", `${originX}%`);
+    frame.style.setProperty("--gallery-hover-origin-y", `${originY}%`);
+
+    if (!isHoverZoomActive) {
+      setIsHoverZoomActive(true);
+    }
+  }
+
+  function resetGalleryHoverZoom(frame = galleryFrameRef.current) {
+    frame?.style.setProperty("--gallery-hover-origin-x", "50%");
+    frame?.style.setProperty("--gallery-hover-origin-y", "50%");
+    setIsHoverZoomActive(false);
   }
 
   function renderThumbnailRail(input: {
@@ -214,8 +269,14 @@ export function ProductGallery({
     >
       <div
         className="brand-gallery-frame product-gallery-main-frame relative aspect-[4/5] max-h-[min(82vh,46rem)] overflow-hidden rounded-md bg-[var(--secondary)] sm:aspect-[5/4] lg:aspect-[4/3]"
+        data-gallery-hover-zoom={isHoverZoomActive ? "true" : "false"}
         data-motion-gallery="product"
         data-testid="product-gallery"
+        onPointerCancel={(event) => resetGalleryHoverZoom(event.currentTarget)}
+        onPointerEnter={syncGalleryHoverZoom}
+        onPointerLeave={(event) => resetGalleryHoverZoom(event.currentTarget)}
+        onPointerMove={syncGalleryHoverZoom}
+        ref={galleryFrameRef}
       >
         <AnimatePresence initial={false} mode="popLayout">
           <motion.div
@@ -233,15 +294,20 @@ export function ProductGallery({
               ease: [0.2, 0, 0, 1],
             }}
           >
-            <Image
-              alt={`${productName}, תמונה ${activeImagePosition} מתוך ${galleryImageCount}`}
-              className="media-color object-cover"
-              fill
-              loading={activeImageIndex === 0 ? undefined : "lazy"}
-              priority={activeImageIndex === 0}
-              sizes={mainGalleryImageSizes}
-              src={activeImage}
-            />
+            <div
+              className="product-gallery-hover-zoom-layer absolute inset-0"
+              data-testid="product-gallery-hover-zoom-layer"
+            >
+              <Image
+                alt={`${productName}, תמונה ${activeImagePosition} מתוך ${galleryImageCount}`}
+                className="media-color product-gallery-hover-zoom-image object-cover"
+                fill
+                loading={activeImageIndex === 0 ? undefined : "lazy"}
+                priority={activeImageIndex === 0}
+                sizes={mainGalleryImageSizes}
+                src={activeImage}
+              />
+            </div>
           </motion.div>
         </AnimatePresence>
         {galleryImageCount > 1 ? (
@@ -261,7 +327,10 @@ export function ProductGallery({
           </Badge>
         ) : null}
         <Dialog open={isViewerOpen} onOpenChange={handleViewerOpenChange}>
-          <div className="absolute right-4 bottom-5 z-10 flex gap-2 sm:top-4 sm:right-4 sm:bottom-auto">
+          <div
+            className="absolute right-4 bottom-5 z-10 flex gap-2 sm:top-4 sm:right-4 sm:bottom-auto"
+            data-gallery-hover-zoom-exempt="true"
+          >
             <DialogTrigger asChild>
               <Button
                 aria-label={`פתיחת גלריית מסך מלא עבור ${productName}`}
@@ -310,7 +379,9 @@ export function ProductGallery({
             <DialogTitle className="sr-only">
               גלריית תמונות של {productName}
             </DialogTitle>
-            <DialogDescription className="sr-only">ניתן לעבור בין תמונות התכשיט ולחזור לעמוד המוצר.</DialogDescription>
+            <DialogDescription className="sr-only">
+              ניתן לעבור בין תמונות התכשיט ולחזור לעמוד המוצר.
+            </DialogDescription>
 
             <div
               className="border-border flex h-14 items-center justify-between gap-3 border-b px-3 sm:px-5"
@@ -446,4 +517,8 @@ export function ProductGallery({
       })}
     </div>
   );
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max);
 }

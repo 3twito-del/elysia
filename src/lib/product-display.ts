@@ -1,3 +1,5 @@
+import { legalPlaceholder } from "./legal-content";
+
 const publicCategoryNameBySlug: Record<string, string> = {
   bracelets: "צמידים",
   earrings: "עגילים",
@@ -37,7 +39,8 @@ export function getPublicMaterialName(
   const cleaned = material.trim();
 
   if (!cleaned || hasPrivateCatalogLabel(cleaned)) {
-    return inferMaterialFromProductName(productName) ?? "גימור נבחר";
+    // TODO: Replace with verified product material before production.
+    return inferMaterialFromProductName(productName) ?? legalPlaceholder;
   }
 
   return cleaned;

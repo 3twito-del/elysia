@@ -15,62 +15,77 @@ import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
+import {
+  privacyProviderPlaceholders,
+  privacySensitiveInfoWarning,
+} from "~/lib/legal-content";
 import { getPublicContactSettings } from "~/server/services/service";
 
 export const metadata: Metadata = {
   title: "מדיניות פרטיות",
   description:
-    "מדיניות פרטיות של Elysia: מידע שנאסף, מטרות שימוש, העברה, אבטחה וזכויות משתמשים.",
+    "מדיניות פרטיות של Elysia: סוגי מידע שנאסף, מטרות שימוש, עוגיות, דיוור, ספקי שירות, אבטחת מידע וזכויות עיון, תיקון ומחיקה.",
+  alternates: {
+    canonical: "/privacy",
+  },
 };
 
 export const dynamic = "force-dynamic";
 
 const privacySections = [
   {
-    title: "תחולת תיקון 13 לחוק הגנת הפרטיות",
-    text: "מדיניות זו נועדה לשקף את חובות השקיפות והאחריות לפי חוק הגנת הפרטיות, התשמ״א-1981, כפי שעודכן בתיקון 13 שנכנס לתוקף ביום 14 באוגוסט 2025. במסגרת זו אנו מתייחסים למידע אישי, למידע בעל רגישות מיוחדת ככל שנמסר, למטרות העיבוד, לגורמים שעשויים לקבל מידע ולזכויות המשתמשים.",
+    title: "זהות בעל השליטה במידע",
+    text: "בעל השליטה במידע הוא העסק המפעיל את אתר Elysia. יש להשלים את השם המשפטי ופרטי הקשר הייעודיים לפרטיות לפני הפעלה מסחרית מלאה.",
   },
   {
-    title: "איזה מידע נאסף",
-    text: "בעת שימוש באתר עשויים להיאסף פרטי קשר, הזמנה, כתובת, חשבון, פניות שירות, העדפות מבחר, תוכן שנשלח לכלי ההתאמה ומידע שימוש.",
+    title: "סוגי מידע שנאסף",
+    text: "בעת שימוש באתר עשויים להיאסף פרטי קשר, פרטי הזמנה, כתובת משלוח, היסטוריית פניות, העדפות מידה או מוצרים, פעולות בסל, נתוני שימוש טכניים, העדפות קוקיז ומידע שהמשתמש/ת מוסר/ת מיוזמתו בטפסים.",
   },
   {
-    title: "מידע בעל רגישות מיוחדת",
-    text: "ככלל, האתר אינו מבקש מידע רגיש שאינו דרוש להזמנה או לשירות. אם משתמש מוסר מיוזמתו מידע שעשוי להיחשב בעל רגישות מיוחדת, למשל במסגרת פנייה לשירות או ייעוץ, נעשה בו שימוש רק לצורך הטיפול בפנייה, מתן השירות, אבטחה, עמידה בדין או הגנה על זכויות.",
+    title: "מטרות השימוש",
+    text: "המידע משמש להפעלת האתר, טיפול בהזמנות, מסירה, שירות לקוחות, ניהול חשבון, מניעת הונאות, אבטחת מידע, שיפור השירות, עמידה בחובות דין ושליחת דיוור שיווקי רק כאשר הדבר מותר לפי דין ובהתאם להסכמה.",
   },
   {
-    title: "מטרות השימוש במידע",
-    text: "המידע משמש להפעלת האתר, טיפול בהזמנות, מסירה, שירות, ניהול חשבון, התאמת המלצות, שיפור האתר, מניעת הונאות, אבטחת מידע, עמידה בחובות דין ושליחת עדכונים או דיוור כאשר הדבר מותר לפי דין.",
+    title: "מידע שנמסר בעת רכישה",
+    text: "בעת רכישה או פתיחת הזמנה עשויים להימסר שם, טלפון, אימייל, כתובת, פרטי מוצר, כמות, מחיר, משלוח וסכום לתשלום. פרטי כרטיס אשראי אינם נמסרים בטפסי השירות באתר ומעובדים דרך ספק סליקה חיצוני ככל שמופעל.",
   },
   {
-    title: "בעל שליטה במאגר ומחזיקים",
-    text: "Elysia פועלת כבעלת השליטה במידע שנאסף במסגרת האתר, ונותני שירות חיצוניים עשויים לפעול כמחזיקים או מעבדים מטעמה לצורך מתן השירות. אנו משתדלים להגביל את הגישה למידע למורשים הנדרשים לכך בלבד, בהתאם למטרות המפורטות במדיניות זו.",
+    title: "פניות שירות וקבצים מצורפים",
+    text: `פניות שירות עשויות לכלול תיאור פנייה, מספר הזמנה, תמונות או קבצים. ${privacySensitiveInfoWarning} אם צורף מידע שאינו נדרש, ניתן לבקש את מחיקתו בכפוף לדין וליכולות הטכניות.`,
   },
   {
-    title: "מסירת מידע לצדדים שלישיים",
-    text: "מידע עשוי להימסר לגורמי תשתית, תשלום, מסירה, דוא״ל, SMS, אחסון, חיפוש, אבטחה, אנליטיקה ובינה מלאכותית, ככל שהדבר נדרש להפעלת השירות. מידע עשוי להימסר גם אם קיימת חובה חוקית, צו שיפוטי, דרישת רשות מוסמכת או צורך להגן על זכויות Elysia והלקוחות.",
+    title: "עוגיות וכלי מדידה",
+    text: "האתר משתמש בעוגיות ובאחסון מקומי לצרכים חיוניים כמו סל, נגישות, התחברות, אבטחה ותפעול. מדידה, אנליטיקה או שיווק יופעלו רק לאחר הסכמה מתאימה, ככל שהם קיימים באתר.",
   },
   {
-    title: "עוגיות ואחסון מקומי",
-    text: "האתר משתמש בעוגיות ואחסון מקומי לשירותים חיוניים כגון סל, התחברות, אבטחה ונגישות. מדידה ושיפור יופעלו רק לאחר אישור בבאנר הקוקיז.",
+    title: "דיוור שיווקי",
+    text: "הרשמה לעדכונים ודיוור שיווקי מתבצעת רק לאחר סימון הסכמה ייעודית שאינה מסומנת מראש. ניתן להסיר את ההרשמה בכל עת באמצעות קישור הסרה או פנייה לשירות.",
   },
   {
-    title: "אבטחת מידע ושמירה",
-    text: "אנו נוקטים אמצעים סבירים ומקובלים להגנה על מידע אישי בהתאם לסוג המידע והסיכונים. מידע נשמר כל עוד הוא נדרש למטרות שלשמן נאסף, לניהול השירות, לצרכים חשבונאיים, משפטיים או חיוניים, ולאחר מכן יימחק או יעבור אנונימיזציה ככל האפשר.",
+    title: "ספקי שירות חיצוניים",
+    text: "מידע עשוי להימסר לספקי אחסון, סליקה, דיוור, אנליטיקה, חיפוש, אבטחה, שירות לקוחות, משלוחים וספקים טכנולוגיים אחרים, רק ככל שנדרש להפעלת השירות, למטרות המפורטות במדיניות זו או לפי דין.",
   },
   {
-    title: "זכויות משתמשים",
-    text: "בהתאם לחוק הגנת הפרטיות, משתמשים רשאים לפנות בבקשה לעיין במידע עליהם, ולבקש תיקון או מחיקה של מידע שאינו נכון, שלם, נהיר או מעודכן. בקשות ייבחנו בכפוף להוראות הדין, לאימות זהות, לחובות שמירה חוקיות ולמגבלות מעשיות או משפטיות.",
+    title: "העברה מחוץ לישראל",
+    text: "ככל שספקי שירות חיצוניים מאחסנים או מעבדים מידע מחוץ לישראל, ההעברה תתבצע לפי הסדרים מקובלים ובהתאם לדין החל. יש להשלים את פרטי הספקים והמדינות הרלוונטיות ככל שידועים.",
   },
   {
-    title: "קטינים",
-    text: "השימוש באתר לצורך הזמנה מיועד לבגירים או למי שקיבלו אישור הורה או אפוטרופוס. אם נמסר לנו מידע על קטין ללא אישור מתאים, ניתן לפנות אלינו ונבחן את הבקשה בהתאם לדין.",
+    title: "אבטחת מידע",
+    text: "העסק נוקט אמצעים סבירים ומקובלים להגנה על מידע אישי בהתאם לסוג המידע והסיכון. עם זאת, אין מערכת מאובטחת באופן מוחלט, ולכן אין למסור מידע רגיש שאינו נחוץ.",
   },
   {
-    title: "עדכונים למדיניות",
-    text: "מדיניות זו עשויה להתעדכן מעת לעת כדי לשקף שינויים בשירות, בטכנולוגיה או בדין. נוסח המדיניות המחייב הוא הנוסח המפורסם באתר במועד השימוש.",
+    title: "תקופות שמירת מידע",
+    text: "מידע נשמר כל עוד הוא נדרש למטרות שלשמן נאסף, לניהול הזמנות ושירות, לעמידה בחובות חשבונאיות ומשפטיות, לאבטחה ולמניעת הונאות. לאחר מכן יימחק או יעבור אנונימיזציה ככל האפשר.",
   },
-];
+  {
+    title: "זכויות עיון, תיקון ומחיקה",
+    text: "בהתאם לדין, ניתן לפנות בבקשה לעיין במידע אישי, לתקן מידע שאינו נכון או לבקש מחיקה. בקשות ייבחנו בכפוף לאימות זהות, חובות שמירה חוקיות, זכויות צדדים שלישיים ומגבלות טכניות או משפטיות.",
+  },
+  {
+    title: "יצירת קשר בענייני פרטיות",
+    text: "לפנייה בנושא פרטיות יש לציין פרטי זיהוי, דרך חזרה ותיאור הבקשה. אין לצרף מסמכים או מידע רגיש שאינם נחוצים לטיפול בבקשה.",
+  },
+] as const;
 
 export default async function PrivacyPage() {
   const contact = await getPublicContactSettings();
@@ -81,123 +96,144 @@ export default async function PrivacyPage() {
 
       <main>
         <CommercePageHero
-          description="כיצד נאסף, נשמר ומוגן מידע אישי באתר ובשירות."
+          description="כיצד נאסף, נשמר, משותף ומוגן מידע אישי באתר ובשירות."
           eyebrow="פרטיות ומידע"
           title="מדיניות פרטיות"
           variant="content"
         />
 
-      <RevealSection className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:py-14">
-        <div className="brand-surface p-6 sm:p-8">
-          <div className="grid gap-6 sm:grid-cols-3">
-            <div className="glass-inset rounded-md border p-4">
-              <Database className="size-5" aria-hidden="true" />
-              <p className="mt-3 font-medium">מידע שנמסר ונוצר באתר</p>
-            </div>
-            <div className="glass-inset rounded-md border p-4">
-              <ShieldCheck className="size-5" aria-hidden="true" />
-              <p className="mt-3 font-medium">אבטחה ושימוש מוגבל</p>
-            </div>
-            <div className="glass-inset rounded-md border p-4">
-              <UserCheck className="size-5" aria-hidden="true" />
-              <p className="mt-3 font-medium">זכויות עיון ותיקון</p>
-            </div>
-          </div>
-
-          <div className="glass-inset mt-6 rounded-md border p-5">
-            <div className="flex items-center gap-3">
-              <ShieldCheck className="size-5" aria-hidden="true" />
-              <h2 className="text-xl font-semibold">
-                עדכון לפי תיקון 13 לחוק הגנת הפרטיות
-              </h2>
-            </div>
-            <p className="text-muted-foreground mt-3 leading-8">תיקון 13 מחזק שקיפות ואחריות בעיבוד מידע אישי. המדיניות מפרטת מידע, מטרות, מסירה, זכויות ופרטי פנייה.</p>
-          </div>
-
-          <Separator className="my-8" />
-
-          <div className="grid gap-7">
-            {privacySections.map((section, index) => {
-              const Icon = index === 3 ? Cookie : Database;
-              const sectionId = `privacy-section-${index + 1}`;
-
-              return (
-                <section aria-labelledby={sectionId} key={section.title}>
-                  <div className="flex items-center gap-3">
-                    <Icon className="size-5" aria-hidden="true" />
-                    <h2 className="text-2xl font-semibold" id={sectionId}>
-                      {section.title}
-                    </h2>
+        <RevealSection className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:py-14">
+          <div className="brand-surface p-6 sm:p-8">
+            <section aria-labelledby="privacy-controller">
+              <div className="flex items-center gap-3">
+                <ShieldCheck className="size-5" aria-hidden="true" />
+                <h2 className="text-2xl font-semibold" id="privacy-controller">
+                  פרטי בעל השליטה וספקים
+                </h2>
+              </div>
+              <dl className="mt-5 grid gap-3 sm:grid-cols-2">
+                {privacyProviderPlaceholders.map((item) => (
+                  <div
+                    className="glass-inset rounded-md border p-4"
+                    key={item.label}
+                  >
+                    <dt className="text-muted-foreground text-sm">
+                      {item.label}
+                    </dt>
+                    <dd className="mt-1 font-medium">{item.value}</dd>
                   </div>
-                  <p className="text-muted-foreground mt-3 leading-8">
-                    {section.text}
-                  </p>
-                </section>
-              );
-            })}
-          </div>
+                ))}
+              </dl>
+            </section>
 
-          <Separator className="my-8" />
+            <Separator className="my-8" />
 
-          <CookiePreferencesPanel />
-
-          <Separator className="my-8" />
-
-          <section
-            aria-labelledby="privacy-local-storage"
-            data-testid="privacy-local-storage-notice"
-          >
-            <h2 className="text-2xl font-semibold" id="privacy-local-storage">
-              אחסון מקומי ומדידה בהסכמה
-            </h2>
-            <p className="text-muted-foreground mt-3 leading-8">מועדפים, צפיות אחרונות, מידות, פעולות לא מקוונות ומזהה PWA נשמרים בדפדפן. מדידה ואירועי שימוש שאינם חיוניים מופעלים לפי העדפות העוגיות.</p>
-          </section>
-
-          <Separator className="my-8" />
-
-          <section aria-labelledby="privacy-contact">
-            <h2 className="text-2xl font-semibold" id="privacy-contact">
-              פנייה בנושא פרטיות
-            </h2>
-            <p className="text-muted-foreground mt-3 leading-8">למימוש זכויות או בקשת פרטיות יש לציין פרטי זיהוי ומהות פנייה.</p>
-            <Button asChild className="mt-5" variant="secondary">
-              <Link
-                data-testid="privacy-service-recovery-link"
-                href="/service?topic=accessibility-privacy"
-              >
-                פתיחת פנייה בנושא פרטיות
-              </Link>
-            </Button>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              <a
-                className="glass-inset hover:text-foreground flex items-center gap-3 rounded-md border p-4 transition"
-                href={`mailto:${contact.email}`}
-              >
-                <Mail className="size-5" aria-hidden="true" />
-                <span>{contact.email}</span>
-              </a>
-              <a
-                className="glass-inset hover:text-foreground flex items-center gap-3 rounded-md border p-4 transition"
-                href={contact.phoneHref}
-              >
-                <Phone className="size-5" aria-hidden="true" />
-                <span>{contact.phoneDisplay}</span>
-              </a>
+            <div className="grid gap-6 sm:grid-cols-3">
+              <div className="glass-inset rounded-md border p-4">
+                <Database className="size-5" aria-hidden="true" />
+                <p className="mt-3 font-medium">מידע שנמסר ונוצר באתר</p>
+              </div>
+              <div className="glass-inset rounded-md border p-4">
+                <Cookie className="size-5" aria-hidden="true" />
+                <p className="mt-3 font-medium">מדידה רק לאחר הסכמה</p>
+              </div>
+              <div className="glass-inset rounded-md border p-4">
+                <UserCheck className="size-5" aria-hidden="true" />
+                <p className="mt-3 font-medium">זכויות עיון, תיקון ומחיקה</p>
+              </div>
             </div>
-          </section>
 
-          <Separator className="my-8" />
+            <Separator className="my-8" />
 
-          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-            <p className="text-muted-foreground text-sm">
-              עודכן לאחרונה: 1 במאי 2026.
-            </p>
-            <Button asChild>
-              <Link href="/terms">לתקנון</Link>
-            </Button>
+            <div className="grid gap-7">
+              {privacySections.map((section, index) => {
+                const sectionId = `privacy-section-${index + 1}`;
+                const Icon = index === 5 ? Cookie : Database;
+
+                return (
+                  <section aria-labelledby={sectionId} key={section.title}>
+                    <div className="flex items-center gap-3">
+                      <Icon className="size-5" aria-hidden="true" />
+                      <h2 className="text-2xl font-semibold" id={sectionId}>
+                        {section.title}
+                      </h2>
+                    </div>
+                    <p className="text-muted-foreground mt-3 leading-8">
+                      {section.text}
+                    </p>
+                  </section>
+                );
+              })}
+            </div>
+
+            <Separator className="my-8" />
+
+            <CookiePreferencesPanel />
+
+            <Separator className="my-8" />
+
+            <section
+              aria-labelledby="privacy-local-storage"
+              data-testid="privacy-local-storage-notice"
+            >
+              <h2 className="text-2xl font-semibold" id="privacy-local-storage">
+                אחסון מקומי ומדידה בהסכמה
+              </h2>
+              <p className="text-muted-foreground mt-3 leading-8">
+                מועדפים, צפיות אחרונות, מידות, פעולות לא מקוונות ומזהה PWA
+                נשמרים בדפדפן. מדידה ואירועי שימוש שאינם חיוניים מופעלים לפי
+                העדפות העוגיות.
+              </p>
+            </section>
+
+            <Separator className="my-8" />
+
+            <section aria-labelledby="privacy-contact">
+              <h2 className="text-2xl font-semibold" id="privacy-contact">
+                פנייה בנושא פרטיות
+              </h2>
+              <p className="text-muted-foreground mt-3 leading-8">
+                למימוש זכויות או בקשת פרטיות יש לציין פרטי זיהוי ומהות פנייה.
+                {` ${privacySensitiveInfoWarning}`}
+              </p>
+              <Button asChild className="mt-5" variant="secondary">
+                <Link
+                  data-testid="privacy-service-recovery-link"
+                  href="/service?topic=accessibility-privacy"
+                >
+                  פתיחת פנייה בנושא פרטיות
+                </Link>
+              </Button>
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                <a
+                  className="glass-inset hover:text-foreground flex items-center gap-3 rounded-md border p-4 transition"
+                  href={`mailto:${contact.email}`}
+                >
+                  <Mail className="size-5" aria-hidden="true" />
+                  <span>{contact.email}</span>
+                </a>
+                <a
+                  className="glass-inset hover:text-foreground flex items-center gap-3 rounded-md border p-4 transition"
+                  href={contact.phoneHref}
+                >
+                  <Phone className="size-5" aria-hidden="true" />
+                  <span>{contact.phoneDisplay}</span>
+                </a>
+              </div>
+            </section>
+
+            <Separator className="my-8" />
+
+            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+              <p className="text-muted-foreground text-sm">
+                עודכן לאחרונה: 7 ביוני 2026
+              </p>
+              <Button asChild>
+                <Link href="/terms">לתקנון</Link>
+              </Button>
+            </div>
           </div>
-        </div>
-      </RevealSection>
+        </RevealSection>
       </main>
     </>
   );

@@ -135,9 +135,10 @@ describe("commerce service trust placement", () => {
     expect(countOccurrences(footer, 'href: "/category/bracelets"')).toBe(1);
     expect(countOccurrences(footer, 'href: "/gifts"')).toBe(1);
     expect(footer).not.toContain('href="/gifts"');
-    expect(countOccurrences(footer, 'href: "/terms"')).toBe(1);
-    expect(countOccurrences(footer, 'href: "/privacy"')).toBe(1);
-    expect(countOccurrences(footer, 'href: "/accessibility"')).toBe(1);
+    expect(footer).toContain("links={footerPolicyLinks}");
+    expect(footer).toContain("policyLinks");
+    expect(footer).toContain("cookiePreferencesLink");
+    expect(footer).toContain("footerBusinessDetails");
     expect(footer).not.toContain('href="/terms"');
     expect(footer).not.toContain('href="/privacy"');
     expect(footer).not.toContain('href="/accessibility"');

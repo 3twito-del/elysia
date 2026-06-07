@@ -46,6 +46,9 @@ describe("public structure benchmark v4 policy", () => {
     expect(routeStructurePolicy["/terms"].archetype).toBe("legal");
     expect(routeStructurePolicy["/privacy"].archetype).toBe("legal");
     expect(routeStructurePolicy["/accessibility"].archetype).toBe("legal");
+    expect(routeStructurePolicy["/shipping-returns"].archetype).toBe("legal");
+    expect(routeStructurePolicy["/warranty"].archetype).toBe("legal");
+    expect(routeStructurePolicy["/jewellery-care"].archetype).toBe("content");
   });
 
   it("keeps mandatory floating chrome exceptions explicit", () => {

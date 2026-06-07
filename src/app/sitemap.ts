@@ -22,6 +22,9 @@ const staticRoutes = [
   "/terms",
   "/privacy",
   "/accessibility",
+  "/shipping-returns",
+  "/warranty",
+  "/jewellery-care",
 ] as const;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

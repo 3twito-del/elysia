@@ -15,16 +15,31 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { PushOptInButton } from "~/components/push-opt-in-button";
 import { StatusMessage } from "~/components/ui/status-message";
+import { newsletterConsentText } from "~/lib/legal-content";
 import { queueOfflineJsonAction } from "~/lib/pwa-offline";
 
 const initialState: PublicActionState = {};
 const newsletterEmailHintId = "newsletter-email-hint";
 const newsletterStatusId = "newsletter-status";
 const newsletterOfflineStatusId = "newsletter-offline-status";
+const defaultHintText =
+  "נשלח רק כשיש פריטים חדשים, רעיונות למתנה או השראה קטנה לעונה.";
+const defaultSubmitLabel = "לקבל עדכון";
 
-export function NewsletterForm() {
+type NewsletterFormProps = {
+  hintText?: string;
+  submitLabel?: string;
+  variant?: "default" | "footer";
+};
+
+export function NewsletterForm({
+  hintText = defaultHintText,
+  submitLabel = defaultSubmitLabel,
+  variant = "default",
+}: NewsletterFormProps = {}) {
   const [state, formAction] = useActionState(joinNewsletter, initialState);
   const [offlineState, setOfflineState] = useState<PublicActionState>({});
+  const [marketingConsent, setMarketingConsent] = useState(false);
   const emailInputRef = useRef<HTMLInputElement>(null);
   const hasNewsletterError = state.ok === false || offlineState.ok === false;
   const newsletterDescription = [
@@ -49,14 +64,27 @@ export function NewsletterForm() {
     const formData = new FormData(form);
     const emailValue = formData.get("email");
     const email = typeof emailValue === "string" ? emailValue : "";
+    const hasMarketingConsent = formData.get("marketingConsent") === "on";
 
-    void queueOfflineJsonAction("newsletter.join", { email })
+    if (!hasMarketingConsent) {
+      setOfflineState({
+        ok: false,
+        message: "יש לאשר קבלת דיוור שיווקי כדי להירשם לעדכונים.",
+      });
+      return;
+    }
+
+    void queueOfflineJsonAction("newsletter.join", {
+      email,
+      marketingConsent: true,
+    })
       .then(() => {
         setOfflineState({
           ok: true,
           message: "ההרשמה נשמרה במכשיר.",
         });
         form.reset();
+        setMarketingConsent(false);
       })
       .catch(() =>
         setOfflineState({
@@ -69,7 +97,7 @@ export function NewsletterForm() {
   return (
     <form
       action={formAction}
-      className="mt-6 grid gap-2"
+      className={variant === "footer" ? "mt-5 grid gap-2" : "mt-6 grid gap-2"}
       onSubmit={handleSubmit}
     >
       <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
@@ -86,14 +114,25 @@ export function NewsletterForm() {
           required
           type="email"
         />
-        <SubmitButton />
+        <SubmitButton label={submitLabel} />
       </div>
       <p
         className="text-muted-foreground text-xs leading-5"
         id={newsletterEmailHintId}
       >
-        נשלח רק כשיש פריטים חדשים, רעיונות למתנה או השראה קטנה לעונה.
+        {hintText}
       </p>
+      <label className="text-muted-foreground flex items-start gap-2 text-xs leading-5">
+        <input
+          checked={marketingConsent}
+          className="mt-1"
+          name="marketingConsent"
+          onChange={(event) => setMarketingConsent(event.currentTarget.checked)}
+          required
+          type="checkbox"
+        />
+        <span>{newsletterConsentText}</span>
+      </label>
       {state.message ? (
         <StatusMessage
           id={newsletterStatusId}
@@ -121,7 +160,7 @@ export function NewsletterForm() {
   );
 }
 
-function SubmitButton() {
+function SubmitButton({ label }: { label: string }) {
   const { pending } = useFormStatus();
 
   return (
@@ -132,7 +171,7 @@ function SubmitButton() {
       variant="outline"
     >
       <Mail aria-hidden="true" className="size-4" />
-      לקבל עדכון
+      {label}
     </Button>
   );
 }

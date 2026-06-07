@@ -26,7 +26,7 @@ declare global {
 declare const self: ServiceWorkerGlobalScope;
 
 const publicPagePattern =
-  /^\/(?:$|category\/|product\/|search|gifts|branches|about|faq|privacy|terms|accessibility|service|ai|stylist|size-guide|offline)/;
+  /^\/(?:$|category\/|product\/|search|gifts|branches|about|faq|privacy|terms|accessibility|shipping-returns|warranty|jewellery-care|service|ai|stylist|size-guide|offline)/;
 const liveOnlyPattern =
   /^\/(?:api\/|admin(?:\/|$)|account(?:\/|$)|checkout(?:\/|$))/;
 const trustedImageHosts = new Set([

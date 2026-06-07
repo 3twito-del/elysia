@@ -39,7 +39,7 @@ describe("PWA JSON sync route", () => {
               createdAt: new Date().toISOString(),
               deviceId: "pwa_device_123456789",
               kind: "newsletter.join",
-              payload: { email: "dana@example.com" },
+              payload: { email: "dana@example.com", marketingConsent: true },
             },
           ],
         }),
@@ -77,7 +77,7 @@ describe("PWA JSON sync route", () => {
               createdAt: new Date().toISOString(),
               deviceId: "pwa_device_123456789",
               kind: "newsletter.join",
-              payload: { email: "dana@example.com" },
+              payload: { email: "dana@example.com", marketingConsent: true },
             },
             {
               actionId: "offline_action_2",

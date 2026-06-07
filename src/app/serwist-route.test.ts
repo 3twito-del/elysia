@@ -83,6 +83,9 @@ describe("Serwist route", () => {
     expect(source).toContain("privacy");
     expect(source).toContain("terms");
     expect(source).toContain("accessibility");
+    expect(source).toContain("shipping-returns");
+    expect(source).toContain("warranty");
+    expect(source).toContain("jewellery-care");
     expect(source).toContain("service");
     expect(source).toContain("ai");
     expect(source).toContain("stylist");
@@ -105,6 +108,9 @@ describe("Serwist route", () => {
         "/privacy",
         "/terms",
         "/accessibility",
+        "/shipping-returns",
+        "/warranty",
+        "/jewellery-care",
         "/offline",
         "/category/rings",
         "/product/venus-line-ring",

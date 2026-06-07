@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   useActionState,
   useEffect,
@@ -19,6 +20,7 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { StatusMessage } from "~/components/ui/status-message";
 import { Textarea } from "~/components/ui/textarea";
+import { privacySensitiveInfoWarning } from "~/lib/legal-content";
 import { queueOfflineServiceRequest } from "~/lib/pwa-offline";
 import {
   serviceContactPreferences,
@@ -43,6 +45,7 @@ const initialState: ServiceRequestActionState = {};
 const attachmentPolicy = getServiceRequestAttachmentPolicy();
 const attachmentGuidanceId = "service-attachment-guidance";
 const attachmentOfflineGuidanceId = "service-attachment-offline-guidance";
+const attachmentPrivacyWarningId = "service-attachment-privacy-warning";
 const topicGuidanceId = "service-topic-guidance";
 const serviceFieldFocusOrder = [
   "topicSlug",
@@ -298,7 +301,7 @@ export function ServiceRequestForm({
           קבצים מצורפים
         </Label>
         <Input
-          aria-describedby={`${attachmentGuidanceId} ${attachmentOfflineGuidanceId}`}
+          aria-describedby={`${attachmentGuidanceId} ${attachmentPrivacyWarningId} ${attachmentOfflineGuidanceId}`}
           accept={attachmentPolicy.acceptedFileTypes.join(",")}
           disabled={pending}
           id="attachments"
@@ -329,6 +332,17 @@ export function ServiceRequestForm({
           ניתן לצרף עד {attachmentPolicy.maxFiles} קבצים, עד{" "}
           {attachmentPolicy.maxFileSizeMb}MB לקובץ. סוגי קבצים נתמכים:{" "}
           {attachmentPolicy.acceptedFileTypeLabel}.
+        </p>
+        <p
+          className="text-muted-foreground text-xs leading-5"
+          data-testid="service-attachment-privacy-warning"
+          id={attachmentPrivacyWarningId}
+        >
+          {privacySensitiveInfoWarning} פרטים נוספים מופיעים ב{" "}
+          <Link className="underline underline-offset-4" href="/privacy">
+            מדיניות הפרטיות
+          </Link>
+          .
         </p>
         <p
           className="text-muted-foreground text-xs leading-5"

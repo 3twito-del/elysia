@@ -671,6 +671,7 @@ html[data-accessibility-motion="reduce"] .motion-copy-item,
 html[data-accessibility-motion="reduce"] .motion-status-pop,
 html[data-accessibility-motion="reduce"] .motion-sticky-purchase,
 html[data-accessibility-motion="reduce"] .motion-thumbnail-button,
+html[data-accessibility-motion="reduce"] .product-gallery-hover-zoom-layer,
 html[data-accessibility-motion="reduce"] .sheet-content,
 html[data-accessibility-motion="reduce"] .sheet-overlay,
 html[data-accessibility-motion="reduce"] .mobile-nav-panel,
@@ -3241,9 +3242,37 @@ main
 }
 
 .product-gallery-main-frame {
+  --gallery-hover-origin-x: 50%;
+  --gallery-hover-origin-y: 50%;
+  --gallery-hover-zoom-scale: 1.42;
   background:
     linear-gradient(180deg, rgb(255 250 244 / 26%), transparent),
     var(--brand-ivory);
+}
+
+.product-gallery-hover-zoom-layer {
+  transform: scale(1);
+  transform-origin: var(--gallery-hover-origin-x) var(--gallery-hover-origin-y);
+  transition:
+    transform var(--motion-media) var(--ease-motion-expressive),
+    transform-origin 90ms linear;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.product-gallery-hover-zoom-image {
+  transform: translateZ(0);
+}
+
+.product-gallery-main-frame[data-gallery-hover-zoom="true"]
+  .product-gallery-hover-zoom-layer {
+  transform: scale(var(--gallery-hover-zoom-scale));
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .product-gallery-main-frame {
+    cursor: zoom-in;
+  }
 }
 
 .product-gallery-main-frame::after {
@@ -3489,6 +3518,13 @@ footer nav a:focus-visible {
 .product-card-hover-image {
   z-index: 2;
   transform-origin: center;
+}
+
+.product-card-shell:hover .product-card-image,
+.product-card-shell:hover .product-card-hover-image,
+.product-card-shell:focus-within .product-card-image,
+.product-card-shell:focus-within .product-card-hover-image {
+  will-change: opacity, scale;
 }
 
 .product-card-title,
@@ -4723,6 +4759,7 @@ html[data-public-floating-bar-visible="true"] .public-motion-content {
   .motion-status-pop,
   .motion-sticky-purchase,
   .motion-thumbnail-button,
+  .product-gallery-hover-zoom-layer,
   .sheet-content,
   .sheet-overlay,
   .mobile-nav-panel,

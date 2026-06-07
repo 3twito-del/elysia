@@ -232,6 +232,21 @@ export const routeStructurePolicy = {
     publicStructurePolicy.legalCompactReadableContent,
     "Accessibility statement and contact content without hero anchors.",
   ),
+  "/shipping-returns": route(
+    "legal",
+    publicStructurePolicy.legalCompactReadableContent,
+    "Shipping, cancellation, return, and exchange policy without hero anchors.",
+  ),
+  "/warranty": route(
+    "legal",
+    publicStructurePolicy.legalCompactReadableContent,
+    "Warranty scope and service process without hero anchors.",
+  ),
+  "/jewellery-care": route(
+    "content",
+    publicStructurePolicy.legalCompactReadableContent,
+    "Jewellery care guidance and material sensitivity warnings without hero anchors.",
+  ),
 } as const;
 
 export function getPublicStructureDecision(key: PublicStructuralElementKey) {

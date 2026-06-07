@@ -79,6 +79,9 @@ const staticPublicRoutes = [
   "/privacy",
   "/terms",
   "/accessibility",
+  "/shipping-returns",
+  "/warranty",
+  "/jewellery-care",
   "/offline",
 ] as const;
 

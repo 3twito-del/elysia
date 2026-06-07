@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { legalPlaceholder } from "./legal-content";
 import {
   getPublicCategoryName,
   getPublicMaterialName,
@@ -13,7 +14,7 @@ describe("public product display labels", () => {
     expect(getPublicMaterialName("Supplier selection", "Silver Halo Ring")).toBe(
       "כסף 925",
     );
-    expect(getPublicMaterialName("Shopify import")).toBe("גימור נבחר");
+    expect(getPublicMaterialName("Shopify import")).toBe(legalPlaceholder);
     expect(getPublicStoneName("dropship zircon")).toBeUndefined();
     expect(getPublicVariantOptionName("Silver")).toBe("כסף");
     expect(getPublicVariantOptionName("Rose Gold")).toBe("רוז גולד");

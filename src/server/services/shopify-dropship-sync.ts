@@ -3,6 +3,7 @@ import type { Prisma } from "@prisma/client";
 
 import type { ShopifyProduct } from "~/server/adapters/shopify";
 import { shopifyDropshipProvider } from "~/server/adapters/shopify";
+import { legalPlaceholder } from "~/lib/legal-content";
 import { db } from "~/server/db";
 import { revalidateCatalogMutation } from "~/server/services/catalog-revalidation";
 
@@ -198,7 +199,8 @@ async function upsertShopifyDropshipProduct(
       update: {},
       create: {
         slug: product.materialSlug,
-        name: "גימור נבחר",
+        // TODO: Replace with verified Shopify material before production.
+        name: legalPlaceholder,
       },
     });
     const syncedAt = new Date();

@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
 import { newsletterInputSchema } from "~/lib/public-action-validation";
+import { newsletterConsentText } from "~/lib/legal-content";
 import { publicServiceRequestInputSchema } from "~/lib/service-validation";
 import { db } from "~/server/db";
 import {
@@ -237,11 +238,14 @@ async function executeJsonAction(
     await db.newsletterSubscription.upsert({
       where: { email: parsed.email },
       update: {
+        consentedAt: new Date(),
+        consentText: newsletterConsentText,
         status: "SUBSCRIBED",
         source: "pwa-offline",
       },
       create: {
         consentedAt: new Date(),
+        consentText: newsletterConsentText,
         email: parsed.email,
         source: "pwa-offline",
       },

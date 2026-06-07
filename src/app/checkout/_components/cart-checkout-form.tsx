@@ -63,6 +63,12 @@ import {
   hasCheckoutPricingReview,
 } from "./checkout-display";
 import {
+  checkoutLegalAgreementText,
+  footerBusinessDetails,
+  orderLegalLinks,
+  vatIncludedNotice,
+} from "~/lib/legal-content";
+import {
   CheckoutPaymentStatus,
   FieldError,
   ReservationCountdown,
@@ -71,6 +77,9 @@ import {
 import { CheckoutStepBadge } from "./checkout-step-badge";
 
 const checkoutFormId = "cart-checkout-form";
+const checkoutLegalAcceptanceErrorId = "checkout-legal-acceptance-error";
+const checkoutLegalAcceptanceMessage =
+  "יש לאשר את התקנון, מדיניות הפרטיות ומדיניות המשלוחים, הביטולים וההחזרות.";
 const checkoutFieldFocusOrder = [
   "name",
   "phone",
@@ -157,6 +166,7 @@ export function CartCheckoutForm() {
   const [giftWrap, setGiftWrap] = useState(false);
   const [giftMessage, setGiftMessage] = useState("");
   const [couponCode, setCouponCode] = useState("");
+  const [legalAccepted, setLegalAccepted] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [submitLocked, setSubmitLocked] = useState(false);
   const [touchedFields, setTouchedFields] = useState<Set<CheckoutField>>(
@@ -329,13 +339,21 @@ export function CartCheckoutForm() {
     sessionReady: Boolean(sessionKey),
     street,
   });
-  const checkoutIssues = getCheckoutIssueList(checkoutErrors);
+  const checkoutLegalIssue =
+    (hasOwnItems || hasDropshipItems) && !legalAccepted
+      ? checkoutLegalAcceptanceMessage
+      : null;
+  const checkoutIssues = [
+    ...getCheckoutIssueList(checkoutErrors),
+    ...(checkoutLegalIssue ? [checkoutLegalIssue] : []),
+  ];
   const checkoutSubmissionLocked =
     createOrder.isPending || createShopifyCheckout.isPending || submitLocked;
   const checkoutLocked = checkoutSubmissionLocked || isOffline;
   const canSubmit =
     hasOwnItems &&
     !hasCheckoutErrors(checkoutErrors) &&
+    legalAccepted &&
     !checkoutLocked &&
     !hasPricingReview;
   const checkoutIntroCopy = hasMixedSourceCart
@@ -491,7 +509,18 @@ export function CartCheckoutForm() {
       Boolean(checkoutErrors[field]),
     );
 
-    if (!firstInvalidField) return;
+    if (!firstInvalidField) {
+      if (!legalAccepted) {
+        const legalCheckbox =
+          checkoutFormRef.current?.elements.namedItem("legalAccepted");
+
+        if (legalCheckbox instanceof HTMLElement) {
+          legalCheckbox.focus();
+        }
+      }
+
+      return;
+    }
 
     const field =
       checkoutFormRef.current?.elements.namedItem(firstInvalidField);
@@ -505,8 +534,9 @@ export function CartCheckoutForm() {
     event.preventDefault();
     setSubmitAttempted(true);
 
-    if (hasCheckoutErrors(checkoutErrors)) {
+    if (hasCheckoutErrors(checkoutErrors) || !legalAccepted) {
       window.requestAnimationFrame(focusFirstCheckoutError);
+      return;
     }
 
     if (isOffline || !sessionKey || !canSubmit || submitLockedRef.current) {
@@ -535,6 +565,13 @@ export function CartCheckoutForm() {
   }
 
   function handleShopifyCheckout() {
+    setSubmitAttempted(true);
+
+    if (!legalAccepted) {
+      window.requestAnimationFrame(focusFirstCheckoutError);
+      return;
+    }
+
     if (isOffline || !sessionKey || !hasDropshipItems) return;
 
     createShopifyCheckout.mutate({ sessionKey });
@@ -567,21 +604,88 @@ export function CartCheckoutForm() {
               מספר ההזמנה הוא {createOrder.data.orderNumber}. התכשיטים נשמרו עד
               לסיום חלון התשלום.
             </p>
+            <div className="glass-inset rounded-md border p-4 text-sm">
+              <p className="font-medium">פרטי העסק</p>
+              <p className="text-muted-foreground mt-1">
+                {footerBusinessDetails}
+              </p>
+            </div>
             <ReservationCountdown
               expiresAt={createOrder.data.reservationExpiresAt}
             />
             <div className="glass-inset rounded-md border p-5">
+              <p className="text-muted-foreground text-sm">פרטי המוצרים</p>
+              <div className="mt-3 grid gap-3">
+                {createOrder.data.items.map((item) => (
+                  <div
+                    className="grid gap-1 border-b border-[var(--glass-border)] pb-3 last:border-b-0 last:pb-0"
+                    key={item.sku}
+                  >
+                    <p className="font-medium">{item.name}</p>
+                    <p className="text-muted-foreground text-sm">
+                      מק״ט: {item.sku} · כמות: {item.quantity} · מחיר ליחידה:{" "}
+                      {formatPrice(item.unitPrice)}
+                    </p>
+                    <p className="text-sm font-medium">
+                      סה״כ לפריט: {formatPrice(item.lineTotal)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="glass-inset rounded-md border p-5">
               <p className="text-muted-foreground text-sm">סיכום</p>
-              <p className="mt-1 text-2xl font-semibold">
-                {formatPrice(createOrder.data.totals.total)}
+              <dl className="mt-3 grid gap-2 text-sm">
+                <div className="flex justify-between gap-4">
+                  <dt>מוצרים</dt>
+                  <dd>{formatPrice(createOrder.data.totals.subtotal)}</dd>
+                </div>
+                {createOrder.data.totals.discount > 0 ? (
+                  <div className="flex justify-between gap-4">
+                    <dt>הטבה</dt>
+                    <dd>{formatPrice(createOrder.data.totals.discount)}</dd>
+                  </div>
+                ) : null}
+                <div className="flex justify-between gap-4">
+                  <dt>משלוח</dt>
+                  <dd>{formatPrice(createOrder.data.totals.shipping)}</dd>
+                </div>
+                <Separator />
+                <div className="flex justify-between gap-4 text-base font-semibold">
+                  <dt>סה״כ לתשלום</dt>
+                  <dd>{formatPrice(createOrder.data.totals.total)}</dd>
+                </div>
+              </dl>
+              <p className="text-muted-foreground mt-3 text-sm">
+                {vatIncludedNotice}
               </p>
               <p className="text-muted-foreground mt-2 text-sm">
-                {createOrder.data.itemCount} תכשיטים
+                {createOrder.data.itemCount} תכשיטים ·{" "}
+                {createOrder.data.estimatedDelivery}
               </p>
             </div>
+            <nav
+              aria-label="קישורי מדיניות להזמנה"
+              className="grid gap-2 sm:grid-cols-2"
+            >
+              {orderLegalLinks.map((item) => (
+                <Link
+                  className="glass-inset hover:text-foreground rounded-md border p-3 text-sm font-medium transition"
+                  href={item.href}
+                  key={item.href}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
             <div className="flex flex-wrap gap-3">
               <Button asChild>
                 <Link href="/account">אזור אישי</Link>
+              </Button>
+              <Button asChild variant="secondary">
+                <Link href={createOrderServiceHref(createOrder.data.orderNumber)}>
+                  יצירת קשר עם שירות הלקוחות
+                </Link>
               </Button>
               <Button asChild variant="outline">
                 <Link href="/">המשך לקולקציה</Link>
@@ -1145,6 +1249,12 @@ export function CartCheckoutForm() {
                       {orderTotalLabel}
                     </span>
                   </div>
+                  <p
+                    className="text-muted-foreground text-xs leading-5"
+                    data-testid="checkout-vat-inclusion"
+                  >
+                    {vatIncludedNotice}
+                  </p>
                   <p className="text-muted-foreground text-xs leading-5">
                     {hasMixedSourceCart
                       ? "הסכום כולל רק פריטי חנות. פריטים נפרדים יושלמו בקופה נפרדת."
@@ -1178,6 +1288,20 @@ export function CartCheckoutForm() {
                       {dropshipSubtotalLabel}
                     </span>
                   </div>
+                  <div className="flex justify-between">
+                    <span>משלוח</span>
+                    <span>יחושב בקופה נפרדת</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>סכום סופי</span>
+                    <span>יאושר בקופה נפרדת</span>
+                  </div>
+                  <p
+                    className="text-muted-foreground text-xs leading-5"
+                    data-testid="checkout-dropship-vat-inclusion"
+                  >
+                    {vatIncludedNotice}
+                  </p>
                   <p className="text-muted-foreground text-xs leading-5">
                     תשלום, מסירה ואישור הזמנה יושלמו בקופה נפרדת. לא נוצרת כאן
                     הזמנה מקומית.
@@ -1295,6 +1419,61 @@ export function CartCheckoutForm() {
               {(hasOwnItems || hasDropshipItems) && (
                 <CheckoutPaymentStatus status={checkoutPaymentStatusKind} />
               )}
+              {(hasOwnItems || hasDropshipItems) && (
+                <div
+                  className="glass-inset grid gap-3 rounded-md border p-3 text-sm"
+                  data-testid="checkout-legal-acceptance"
+                >
+                  <label className="flex items-start gap-2 leading-6">
+                    <input
+                      aria-describedby={`checkout-policy-links ${checkoutLegalAcceptanceErrorId}`}
+                      aria-invalid={Boolean(submitAttempted && !legalAccepted)}
+                      checked={legalAccepted}
+                      className="mt-1"
+                      disabled={checkoutLocked}
+                      id="checkout-legal-acceptance"
+                      name="legalAccepted"
+                      onChange={(event) =>
+                        setLegalAccepted(event.currentTarget.checked)
+                      }
+                      required={hasOwnItems}
+                      type="checkbox"
+                    />
+                    <span>{checkoutLegalAgreementText}</span>
+                  </label>
+                  <nav
+                    aria-label="קישורי מדיניות לפני תשלום"
+                    className="text-muted-foreground flex flex-wrap gap-x-4 gap-y-1 text-xs"
+                    data-testid="checkout-policy-links"
+                    id="checkout-policy-links"
+                  >
+                    <Link className="underline underline-offset-4" href="/terms">
+                      תקנון האתר
+                    </Link>
+                    <Link
+                      className="underline underline-offset-4"
+                      href="/privacy"
+                    >
+                      מדיניות פרטיות
+                    </Link>
+                    <Link
+                      className="underline underline-offset-4"
+                      href="/shipping-returns"
+                    >
+                      משלוחים, ביטולים והחזרות
+                    </Link>
+                  </nav>
+                  <p
+                    className="text-destructive min-h-5 text-xs leading-5"
+                    id={checkoutLegalAcceptanceErrorId}
+                    role={submitAttempted && !legalAccepted ? "alert" : undefined}
+                  >
+                    {submitAttempted && !legalAccepted
+                      ? checkoutLegalAcceptanceMessage
+                      : null}
+                  </p>
+                </div>
+              )}
               {hasDropshipItems ? (
                 <div className="glass-inset rounded-md border p-3 text-sm">
                   <p className="font-medium">קופה נפרדת</p>
@@ -1304,7 +1483,11 @@ export function CartCheckoutForm() {
                   <Button
                     className="mt-3 w-full"
                     data-testid="shopify-dropship-checkout-button"
-                    disabled={isOffline || createShopifyCheckout.isPending}
+                    disabled={
+                      isOffline ||
+                      createShopifyCheckout.isPending ||
+                      !legalAccepted
+                    }
                     onClick={handleShopifyCheckout}
                     type="button"
                     variant="outline"
@@ -1409,4 +1592,13 @@ function CheckoutEmptyCartState() {
       </div>
     </section>
   );
+}
+
+function createOrderServiceHref(orderNumber: string) {
+  const params = new URLSearchParams({
+    orderNumber,
+    topic: "order",
+  });
+
+  return `/service?${params.toString()}`;
 }

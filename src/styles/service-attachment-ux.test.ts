@@ -14,8 +14,12 @@ describe("service attachment UX", () => {
       'const attachmentOfflineGuidanceId = "service-attachment-offline-guidance"',
     );
     expect(form).toContain(
-      "aria-describedby={`${attachmentGuidanceId} ${attachmentOfflineGuidanceId}`}",
+      'const attachmentPrivacyWarningId = "service-attachment-privacy-warning"',
     );
+    expect(form).toContain(
+      "aria-describedby={`${attachmentGuidanceId} ${attachmentPrivacyWarningId} ${attachmentOfflineGuidanceId}`}",
+    );
+    expect(form).toContain('data-testid="service-attachment-privacy-warning"');
     expect(form).toContain("getServiceRequestAttachmentPolicy");
     expect(form).toContain(
       'accept={attachmentPolicy.acceptedFileTypes.join(",")}',

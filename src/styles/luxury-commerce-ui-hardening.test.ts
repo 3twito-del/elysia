@@ -76,14 +76,12 @@ describe("luxury commerce UI hardening", () => {
       "clip-path: inset(0 0 0 18%);",
     );
     expect(footer).not.toContain("bg-background rounded-md border");
-    expect(footer).toContain(
-      "brand-footer-mark hidden items-center sm:inline-flex",
-    );
+    expect(footer).toContain("brand-footer-mark inline-flex items-center");
     expect(footer).toContain("site-footer-inner");
     expect(footer).toContain(
-      "md:grid-cols-[minmax(18rem,0.95fr)_minmax(0,1.45fr)]",
+      "lg:grid-cols-[minmax(20rem,0.95fr)_minmax(0,1.45fr)]",
     );
-    expect(footer).toContain("site-footer-nav grid md:grid-cols-3");
+    expect(footer).toContain("site-footer-nav grid gap-0 md:grid-cols-2");
     expect(footer).toContain("function FooterNav");
     expect(footer).toContain('title="קולקציות"');
     expect(footer).toContain('title="שירות"');

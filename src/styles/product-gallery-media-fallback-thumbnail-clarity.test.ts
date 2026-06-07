@@ -56,6 +56,12 @@ describe("product gallery media fallback and thumbnail clarity", () => {
     expect(gallery).toContain("aria-pressed={activeImageIndex === index}");
     expect(gallery).toContain("product-gallery-main-frame");
     expect(gallery).toContain("product-gallery-thumbnail-rail");
+    expect(gallery).toContain("data-gallery-hover-zoom=");
+    expect(gallery).toContain('data-testid="product-gallery-hover-zoom-layer"');
+    expect(gallery).toContain("syncGalleryHoverZoom");
+    expect(gallery).toContain("resetGalleryHoverZoom");
+    expect(gallery).toContain("hoverFinePointerQuery");
+    expect(gallery).toContain('event.pointerType === "touch"');
     expect(gallery).toContain("object-contain");
     expect(gallery).toContain("data-gallery-zoomed=");
     expect(gallery).toContain("setIsViewerZoomed(true)");

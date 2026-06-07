@@ -195,6 +195,7 @@ export async function createPublicServiceRequest(input: {
       }),
     ),
   );
+  // TODO: Define and enforce backend retention/deletion policy for service request attachments.
   const request = await db.$transaction(async (tx) => {
     const created = await tx.serviceRequest.create({
       data: {

@@ -10,6 +10,10 @@ import {
   getVisualQaRoutes,
   qaRouteInventoryCadence,
 } from "./qa-route-inventory";
+import {
+  cookiePreferencesLink,
+  policyLinks,
+} from "../src/lib/legal-content";
 
 describe("QA route inventory", () => {
   it("covers every App Router page and route handler template", () => {
@@ -143,7 +147,7 @@ describe("QA route inventory", () => {
       catalogLinks: extractFooterHrefLabels(footer, "catalogLinks"),
       commerceLinks: extractFooterHrefLabels(footer, "commerceLinks"),
       informationLinks: extractFooterHrefLabels(footer, "informationLinks"),
-      policyLinks: extractFooterHrefLabels(footer, "policyLinks"),
+      policyLinks: [...policyLinks, cookiePreferencesLink],
     };
     const routeInventory = getQaRouteInventory({ includeAllProducts: true });
     const knownRoutes = new Set(
@@ -175,6 +179,10 @@ describe("QA route inventory", () => {
       "/terms",
       "/privacy",
       "/accessibility",
+      "/shipping-returns",
+      "/warranty",
+      "/jewellery-care",
+      "/privacy#cookie-preferences",
     ]);
     expect(new Set(allInternalLinks.map((link) => link.href)).size).toBe(
       allInternalLinks.length,
@@ -271,5 +279,5 @@ function extractFooterHrefLabels(source: string, constName: string) {
 }
 
 function toRoutePath(href: string) {
-  return href.split("?")[0] ?? href;
+  return href.split(/[?#]/u)[0] ?? href;
 }

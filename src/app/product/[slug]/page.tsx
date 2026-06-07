@@ -30,6 +30,12 @@ import { getPublicProductCommerceStatus } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
 import { stringifyJsonLd } from "~/lib/json-ld";
 import {
+  legalPlaceholder,
+  productSensitivityDisclaimer,
+  productVisualDisclaimer,
+  vatIncludedNotice,
+} from "~/lib/legal-content";
+import {
   getPublicCollectionName,
   getPublicProductName,
 } from "~/lib/product-display";
@@ -136,6 +142,7 @@ export default async function ProductPage({
     productMediaCaptionParts.length > 0
       ? `בתמונה: ${productMediaCaptionParts.join(" · ")}.`
       : undefined;
+  const productSale = getProductPageSale(product);
   const productSupportHref = createProductServiceHref({
     productReference: `${publicProductName} (${product.sku})`,
     reason: "שאלת התאמה, מידה, חומר, מתנה או מסירה לפני הזמנה.",
@@ -166,14 +173,10 @@ export default async function ProductPage({
   const searchReturnHref = search.q
     ? createSearchReturnHref(search.q)
     : undefined;
-  const productFacts = [
-    { label: "חומר", value: product.material },
-    { label: "אבן", value: product.stone },
-    { label: "קולקציה", value: publicCollectionName },
-  ].filter(
-    (fact): fact is { label: string; value: string } =>
-      typeof fact.value === "string" && fact.value.length > 0,
-  );
+  const productSpecRows = getProductSpecificationRows({
+    product,
+    publicCollectionName,
+  });
   const productCommerceDetails = [
     { label: "מסירה", value: product.deliveryPromise },
     { label: "החזרה", value: product.returnPolicy },
@@ -265,11 +268,35 @@ export default async function ProductPage({
               data-testid="product-price-availability-row"
             >
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-2xl font-semibold tracking-normal sm:text-3xl">
-                  {formatPrice(product.price)}
-                </span>
+                {productSale ? (
+                  <span className="grid gap-1">
+                    <span className="text-muted-foreground text-xs">
+                      מחיר מבצע
+                    </span>
+                    <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                      <span className="text-2xl font-semibold tracking-normal sm:text-3xl">
+                        {formatPrice(product.price)}
+                      </span>
+                      <span className="text-muted-foreground text-sm line-through decoration-[var(--glass-border-strong)]">
+                        מחיר קודם {formatPrice(productSale.compareAt)}
+                      </span>
+                    </span>
+                    {productSale.stockLimited ? (
+                      <span className="text-muted-foreground text-xs">
+                        עד גמר המלאי
+                      </span>
+                    ) : null}
+                  </span>
+                ) : (
+                  <span className="text-2xl font-semibold tracking-normal sm:text-3xl">
+                    {formatPrice(product.price)}
+                  </span>
+                )}
                 <Badge variant="secondary">{commerceStatus.label}</Badge>
               </div>
+              <p className="text-muted-foreground text-xs leading-5">
+                {vatIncludedNotice}
+              </p>
 
               {product.deliveryPromise ? (
                 <div
@@ -358,20 +385,37 @@ export default async function ProductPage({
               </div>
             </div>
 
-            <dl
-              className="border-border mt-7 grid divide-y border-y"
+            <section
+              aria-labelledby="product-specification-title"
+              className="border-border mt-7 grid gap-4 border-y py-4"
               data-public-floating-avoid="true"
+              data-testid="product-specification-block"
             >
-              {productFacts.map((fact) => (
-                <div
-                  className="grid grid-cols-[7rem_minmax(0,1fr)] gap-4 py-3 text-sm"
-                  key={fact.label}
-                >
-                  <dt className="text-muted-foreground">{fact.label}</dt>
-                  <dd className="font-medium">{fact.value}</dd>
-                </div>
-              ))}
-            </dl>
+              <h2
+                className="text-lg font-semibold"
+                id="product-specification-title"
+              >
+                מפרט המוצר
+              </h2>
+              <dl className="grid divide-y">
+                {productSpecRows.map((fact) => (
+                  <div
+                    className="grid gap-1 py-3 text-sm sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-4"
+                    key={fact.label}
+                  >
+                    <dt className="text-muted-foreground">{fact.label}</dt>
+                    <dd className="font-medium leading-6">{fact.value}</dd>
+                  </div>
+                ))}
+              </dl>
+              <div
+                className="text-muted-foreground grid gap-2 text-xs leading-5"
+                data-testid="product-legal-disclaimers"
+              >
+                <p>{productVisualDisclaimer}</p>
+                <p>{productSensitivityDisclaimer}</p>
+              </div>
+            </section>
 
             {productCommerceDetails.length > 0 ? (
               <div
@@ -530,6 +574,113 @@ function getProductFaqItems(input: {
       ].join(" "),
     },
   ];
+}
+
+function getProductPageSale(product: CatalogProduct) {
+  if (!product.compareAt || product.compareAt <= product.price) return null;
+
+  const availableQuantity = Object.values(product.inventory).reduce(
+    (total, quantity) => total + quantity,
+    0,
+  );
+
+  return {
+    compareAt: product.compareAt,
+    stockLimited:
+      product.availabilityMode === "READY_TO_ORDER" && availableQuantity > 0,
+  };
+}
+
+function getProductSpecificationRows(input: {
+  product: CatalogProduct;
+  publicCollectionName?: string;
+}) {
+  const { product } = input;
+  const stoneColors = getUniqueProductVariantValues(
+    product.variants.map((variant) => variant.stoneColor),
+  );
+  const colorValues = [
+    ...product.metalColors,
+    ...stoneColors.map((color) => `אבן: ${color}`),
+  ];
+
+  return [
+    {
+      label: "חומר בסיס",
+      value: getProductBaseMaterialValue(product.material),
+    },
+    { label: "ציפוי", value: getProductCoatingValue(product.material) },
+    {
+      label: "סוג אבן / פנינה / קריסטל",
+      value: product.stone ?? legalPlaceholder,
+    },
+    {
+      label: "מידה / אורך / קוטר / משקל",
+      value: getProductMeasurementValue(product),
+    },
+    {
+      label: "צבע",
+      value: colorValues.length > 0 ? colorValues.join(", ") : legalPlaceholder,
+    },
+    // TODO: Replace with verified country of manufacture before production.
+    { label: "ארץ ייצור", value: legalPlaceholder },
+    // TODO: Replace with verified manufacturer/importer before production.
+    { label: "יצרן / יבואן", value: legalPlaceholder },
+    {
+      label: "אחריות",
+      value:
+        product.warranty ??
+        "12 חודשים לפגמי ייצור בלבד, בכפוף למדיניות האחריות.",
+    },
+    {
+      label: "הוראות טיפול",
+      value:
+        product.careInstructions ??
+        "להסיר לפני מקלחת, ים, בריכה, שינה וספורט; להימנע מבושם, כלור וחומרי ניקוי.",
+    },
+    { label: "הערת רגישות למתכות", value: productSensitivityDisclaimer },
+  ];
+}
+
+function getProductBaseMaterialValue(material: string) {
+  if (!material || material === legalPlaceholder) {
+    // TODO: Replace with verified product material before production.
+    return `חומר: ${legalPlaceholder}`;
+  }
+
+  return material;
+}
+
+function getProductCoatingValue(material: string) {
+  if (/ציפוי|מצופה|plated|coating|gold fill/i.test(material)) {
+    return material;
+  }
+
+  return legalPlaceholder;
+}
+
+function getProductMeasurementValue(product: CatalogProduct) {
+  if (product.sizes.length > 0) {
+    return `מידות זמינות: ${product.sizes.join(", ")}`;
+  }
+
+  const variantSizes = getUniqueProductVariantValues(
+    product.variants.map((variant) => variant.size),
+  );
+
+  if (variantSizes.length > 0) {
+    return `מידות זמינות: ${variantSizes.join(", ")}`;
+  }
+
+  return legalPlaceholder;
+}
+
+function getUniqueProductVariantValues(values: Array<string | undefined>) {
+  return Array.from(
+    new Set(
+      values.filter((value): value is string => Boolean(value?.trim())),
+    ),
+  );
 }
 
 function ProductRecommendationRails({

@@ -129,7 +129,7 @@ export function ProductCard({
             <Image
               alt={publicProductName}
               blurDataURL={PRODUCT_IMAGE_BLUR_DATA_URL}
-              className="media-color product-card-image object-cover transition duration-[900ms] ease-[var(--ease-motion-standard)] group-hover/card:scale-[1.018]"
+              className="media-color product-card-image object-cover transition duration-[900ms] ease-[var(--ease-motion-standard)] group-focus-within/card:scale-[1.045] group-hover/card:scale-[1.045]"
               fill
               placeholder="blur"
               priority={imagePriority}
@@ -141,7 +141,7 @@ export function ProductCard({
               <Image
                 alt=""
                 aria-hidden="true"
-                className="media-color product-card-hover-image object-cover opacity-0 transition duration-[520ms] ease-[var(--ease-motion-standard)] group-focus-within/card:opacity-100 group-hover/card:opacity-100"
+                className="media-color product-card-hover-image object-cover opacity-0 transition duration-[680ms] ease-[var(--ease-motion-standard)] group-focus-within/card:scale-[1.055] group-focus-within/card:opacity-100 group-hover/card:scale-[1.055] group-hover/card:opacity-100"
                 fill
                 sizes={imageSizes}
                 src={secondaryImage}
@@ -244,7 +244,12 @@ export function ProductCard({
             >
               {isAvailable ? (
                 <span className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                  <span className="truncate">{formatPrice(product.price)}</span>
+                  <span className="truncate">
+                    {sale ? (
+                      <span className="sr-only">מחיר מבצע </span>
+                    ) : null}
+                    {formatPrice(product.price)}
+                  </span>
                   {sale ? (
                     <span
                       aria-label={`מחיר קודם ${formatPrice(sale.compareAt)}`}
@@ -348,7 +353,7 @@ function getProductCardBadge(input: {
   sale: ReturnType<typeof getProductCardSale>;
 }): ProductCardBadgeModel | null {
   if (input.sale) {
-    return { key: "sale", label: "הנחה" };
+    return { key: "sale", label: "מבצע" };
   }
 
   if (input.lowStock) {

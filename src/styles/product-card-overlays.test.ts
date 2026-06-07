@@ -47,8 +47,12 @@ describe("product card overlay budget", () => {
     expect(source).toContain("product-card-hover-image");
     expect(source).toContain("group-hover/card:opacity-100");
     expect(source).toContain("group-focus-within/card:opacity-100");
+    expect(source).toContain("group-hover/card:scale-[1.045]");
+    expect(source).toContain("group-hover/card:scale-[1.055]");
+    expect(source).toContain("group-focus-within/card:scale-[1.055]");
     expect(css).toContain(".product-card-hover-image");
     expect(css).toContain("z-index: 2;");
+    expect(css).toContain(".product-card-shell:hover .product-card-image");
   });
 
   it("keeps material cues visible, accessible, and separate from product names", () => {

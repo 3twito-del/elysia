@@ -6,6 +6,7 @@ import {
   newsletterInputSchema,
   wishlistInputSchema,
 } from "~/lib/public-action-validation";
+import { newsletterConsentText } from "~/lib/legal-content";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 import {
@@ -26,6 +27,7 @@ export async function joinNewsletter(
 ): Promise<PublicActionState> {
   const parsed = newsletterInputSchema.safeParse({
     email: formData.get("email"),
+    marketingConsent: formData.get("marketingConsent"),
   });
 
   if (!parsed.success) {
@@ -51,10 +53,14 @@ export async function joinNewsletter(
   await db.newsletterSubscription.upsert({
     where: { email: parsed.data.email },
     update: {
+      consentedAt: new Date(),
+      consentText: newsletterConsentText,
       status: "SUBSCRIBED",
       source: "site-footer",
     },
     create: {
+      consentedAt: new Date(),
+      consentText: newsletterConsentText,
       email: parsed.data.email,
       source: "site-footer",
     },

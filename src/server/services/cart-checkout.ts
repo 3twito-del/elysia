@@ -204,6 +204,7 @@ async function createCartCheckoutOrderInTransaction(
     shipping: getCartCheckoutShippingTotal(input.fulfillmentMethod),
     coupon: coupon?.value,
   });
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
   const customer = await tx.customer.upsert({
     where: { email: input.customer.email },
     update: {
@@ -399,7 +400,7 @@ async function createCartCheckoutOrderInTransaction(
       customerId: customer.id,
       total: totals.total,
       fulfillmentMethod: input.fulfillmentMethod,
-      itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
+      itemCount,
     },
   });
 
@@ -439,7 +440,20 @@ async function createCartCheckoutOrderInTransaction(
       orderId: order.id,
       orderNumber: order.orderNumber,
       customerEmail: input.customer.email,
+      discount: totals.discount,
+      estimatedDelivery:
+        "מסירה עד הבית לאחר אישור התשלום, לפי מדיניות המשלוחים.",
+      items: items.map((item) => ({
+        lineTotal: item.unitPrice * item.quantity,
+        name: item.name,
+        quantity: item.quantity,
+        sku: item.sku,
+        unitPrice: item.unitPrice,
+      })),
+      shipping: totals.shipping,
+      subtotal: totals.subtotal,
       template: "cart_checkout_created",
+      total: totals.total,
     },
   });
 
@@ -450,7 +464,16 @@ async function createCartCheckoutOrderInTransaction(
     inventoryBranchSlug: branch.slug,
     reservationExpiresAt,
     totals,
-    itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
+    itemCount,
+    estimatedDelivery:
+      "מסירה עד הבית לאחר אישור התשלום, לפי מדיניות המשלוחים.",
+    items: items.map((item) => ({
+      lineTotal: item.unitPrice * item.quantity,
+      name: item.name,
+      quantity: item.quantity,
+      sku: item.sku,
+      unitPrice: item.unitPrice,
+    })),
   };
 }
 
