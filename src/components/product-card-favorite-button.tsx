@@ -175,9 +175,7 @@ function FavoriteSubmitButton({
           "border-[rgb(29_25_22_/_18%)] bg-[rgb(255_250_244_/_94%)] text-[var(--foreground)]",
       )}
       data-favorite-saved={isSaved ? "true" : "false"}
-      data-icon-tooltip={
-        hasMessage ? undefined : isSaved ? "נשמר במועדפים" : "שמירה למועדפים"
-      }
+      data-icon-tooltip={hasMessage || isSaved ? undefined : "שמירה למועדפים"}
       data-icon-tooltip-placement="bottom"
       disabled={pending}
       size="icon"

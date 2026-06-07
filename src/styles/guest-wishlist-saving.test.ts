@@ -94,7 +94,7 @@ describe("guest wishlist saving", () => {
     expect(productCardFavorite).toContain("canRemove");
     expect(productCardFavorite).toContain("הסרה מהמועדפים");
     expect(productCardFavorite).toContain("data-icon-tooltip=");
-    expect(productCardFavorite).toContain("hasMessage ? undefined");
+    expect(productCardFavorite).toContain("hasMessage || isSaved ? undefined");
     expect(productCardFavorite).toContain("product-card-favorite-status");
     expect(productCardFavorite).toContain(
       'data-testid="product-card-favorite-feedback"',
