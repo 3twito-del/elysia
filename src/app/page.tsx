@@ -118,13 +118,6 @@ export default async function Home() {
         rel="preload"
         type="image/avif"
       />
-      <link
-        as="video"
-        fetchPriority="high"
-        href={boutiqueHeroVideoWebm}
-        rel="preload"
-        type="video/webm"
-      />
       <SiteHeader />
 
       <RevealSection

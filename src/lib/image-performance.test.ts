@@ -23,7 +23,9 @@ describe("image performance guardrails", () => {
       'className="storefront-hero-image object-cover"',
     );
     expect(homeSource).toContain("<HomeHeroVideo");
-    expect(homeSource).toContain('as="video"');
+    expect(homeSource).toContain('as="image"');
+    expect(homeSource).not.toContain('as="video"');
+    expect(homeSource).not.toContain("href={boutiqueHeroVideoWebm}");
     expect(homeSource).toContain('fetchPriority="high"');
     expect(homeSource).toContain("posterSrc={boutiqueHeroPoster}");
     expect(homeSource).toContain("webmSrc={boutiqueHeroVideoWebm}");
