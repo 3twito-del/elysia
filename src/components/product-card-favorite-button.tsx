@@ -169,10 +169,8 @@ function FavoriteSubmitButton({
       aria-label={canRemove ? `הסרה מהמועדפים: ${productName}` : label}
       aria-pressed={isSaved}
       className={cn(
-        "product-card-favorite-button h-10 w-10 shrink-0 rounded-md border border-transparent bg-transparent text-[var(--foreground)] shadow-none",
-        "hover:border-[rgb(29_25_22_/_18%)] hover:bg-[rgb(255_250_244_/_94%)] hover:text-[var(--foreground)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
-        isSaved &&
-          "border-[rgb(29_25_22_/_18%)] bg-[rgb(255_250_244_/_94%)] text-[var(--foreground)]",
+        "product-card-favorite-button h-10 w-10 shrink-0 rounded-md border border-transparent !bg-transparent text-[var(--foreground)] shadow-none",
+        "hover:border-transparent hover:!bg-transparent hover:text-[var(--foreground)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
       )}
       data-favorite-saved={isSaved ? "true" : "false"}
       data-icon-tooltip={hasMessage || isSaved ? undefined : "שמירה למועדפים"}

@@ -228,14 +228,23 @@ describe("luxury commerce UI hardening", () => {
     expect(favorite).not.toContain("shadow-[0_8px");
     expect(favorite).not.toContain("brand-aqua-soft");
     expect(favorite).not.toContain("text-red");
+    expect(favorite).not.toContain('isSaved && "border-[');
     expect(favorite).toContain("product-card-favorite-button");
+    expect(favorite).toContain("!bg-transparent");
+    expect(favorite).toContain("hover:!bg-transparent");
     expect(favorite).toContain("data-favorite-saved=");
     expect(css).toContain(".product-card-favorite:has(");
-    expect(css).toContain("border-color: rgb(29 25 22 / 24%);");
+    expect(css).toContain("border-color: rgb(29 25 22 / 14%);");
+    expect(css).toContain("background: transparent;");
+    expect(css).toContain(
+      '.product-card-favorite-button[data-favorite-saved="true"]:hover',
+    );
+    expect(css).not.toContain("border-color: rgb(29 25 22 / 32%) !important");
+    expect(css).not.toContain("background: rgb(255 250 244 / 98%) !important");
     expect(favorite).toContain('variant="ghost"');
     expect(favorite).toContain('data-icon-tooltip-placement="bottom"');
     expect(favorite).toContain("product-card-favorite-status");
-    expect(favoriteSavedIconCss).toContain("fill: rgb(29 25 22 / 54%)");
+    expect(favoriteSavedIconCss).toContain("fill: rgb(29 25 22 / 68%)");
     expect(favoriteSavedIconCss).toContain("stroke-width: 2.15");
     expect(favoriteTooltipCss).toContain("right: 0;");
     expect(favoriteTooltipCss).toContain("left: auto;");

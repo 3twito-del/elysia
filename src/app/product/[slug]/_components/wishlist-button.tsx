@@ -142,8 +142,7 @@ function SubmitButton({
       aria-pressed={isSaved}
       className={cn(
         "product-wishlist-button w-full gap-2",
-        isSaved &&
-          "border-[rgb(29_25_22_/_20%)] bg-[rgb(255_250_244_/_88%)] text-[var(--foreground)]",
+        isSaved && "text-[var(--foreground)]",
       )}
       data-favorite-saved={isSaved ? "true" : "false"}
       disabled={pending}
