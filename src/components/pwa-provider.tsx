@@ -48,12 +48,6 @@ export function PwaProvider({ children }: PwaProviderProps) {
     void unregisterDevelopmentServiceWorkers();
   }, [enabled, hydrated]);
 
-  useEffect(() => {
-    if (!enabled) return;
-
-    void registerServiceWorker();
-  }, [enabled]);
-
   return enabled ? <PwaRuntime>{children}</PwaRuntime> : children;
 }
 
@@ -140,17 +134,4 @@ async function unregisterDevelopmentServiceWorkers() {
   }
 
   runtime.location?.reload();
-}
-
-async function registerServiceWorker() {
-  const runtime = getBrowserRuntime();
-  const nav = runtime.navigator;
-
-  if (!nav || !("serviceWorker" in nav)) return;
-
-  try {
-    await nav.serviceWorker.register("/serwist/sw.js", { scope: "/" });
-  } catch (error) {
-    console.error("[pwa:register-failed]", error);
-  }
 }

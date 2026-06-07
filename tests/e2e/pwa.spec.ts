@@ -4,6 +4,7 @@ const cartProductSlug = "hera-bracelet";
 const notificationPromptMarker = "__elysiaNotificationPromptRequested";
 const pwaE2eOptInStorageKey = "elysia:pwa-e2e";
 const pwaServiceWorkerTimeoutMs = 30_000;
+const pwaPublicPagesCacheName = "elysia-v2-public-pages";
 const savedSizeStorageKey = "elysia_saved_sizes_v1";
 
 test.use({ serviceWorkers: "allow" });
@@ -308,25 +309,29 @@ async function waitForCachedPublicPage(page: Page, path: string) {
   await expect
     .poll(
       () =>
-        page.evaluate(async (pathToMatch) => {
-          if (!("caches" in window)) return false;
+        page.evaluate(
+          async ({ cacheName, path: pathToMatch }) => {
+            if (!("caches" in window)) return false;
 
-          const cache = await caches.open("elysia-public-pages");
-          const absoluteUrl = new URL(pathToMatch, window.location.origin).href;
-          const directMatch =
-            (await cache.match(pathToMatch)) ??
-            (await cache.match(absoluteUrl));
+            const cache = await caches.open(cacheName);
+            const absoluteUrl = new URL(pathToMatch, window.location.origin)
+              .href;
+            const directMatch =
+              (await cache.match(pathToMatch)) ??
+              (await cache.match(absoluteUrl));
 
-          if (directMatch) return true;
+            if (directMatch) return true;
 
-          const cachedRequests = await cache.keys();
+            const cachedRequests = await cache.keys();
 
-          return cachedRequests.some((request) => {
-            const cachedUrl = new URL(request.url);
+            return cachedRequests.some((request) => {
+              const cachedUrl = new URL(request.url);
 
-            return `${cachedUrl.pathname}${cachedUrl.search}` === pathToMatch;
-          });
-        }, path),
+              return `${cachedUrl.pathname}${cachedUrl.search}` === pathToMatch;
+            });
+          },
+          { cacheName: pwaPublicPagesCacheName, path },
+        ),
       { timeout: 15_000 },
     )
     .toBe(true);

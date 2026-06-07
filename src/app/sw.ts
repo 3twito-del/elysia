@@ -29,6 +29,18 @@ const publicPagePattern =
   /^\/(?:$|category\/|product\/|search|gifts|branches|about|faq|privacy|terms|accessibility|shipping-returns|warranty|jewellery-care|service|ai|stylist|size-guide|offline)/;
 const liveOnlyPattern =
   /^\/(?:api\/|admin(?:\/|$)|account(?:\/|$)|checkout(?:\/|$))/;
+const runtimeCachePrefix = "elysia-v2";
+const runtimeCacheNames = {
+  fonts: `${runtimeCachePrefix}-fonts`,
+  icons: `${runtimeCachePrefix}-icons`,
+  images: `${runtimeCachePrefix}-images`,
+  nextStatic: `${runtimeCachePrefix}-next-static`,
+  publicPages: `${runtimeCachePrefix}-public-pages`,
+  staticDocuments: `${runtimeCachePrefix}-static-documents`,
+} as const;
+const activeRuntimeCacheNames: ReadonlySet<string> = new Set(
+  Object.values(runtimeCacheNames),
+);
 const trustedImageHosts = new Set([
   "images.unsplash.com",
   "res.cloudinary.com",
@@ -52,7 +64,7 @@ const runtimeCaching: RuntimeCaching[] = [
     matcher: ({ sameOrigin, url }) =>
       sameOrigin && url.pathname.startsWith("/_next/static/"),
     handler: new CacheFirst({
-      cacheName: "elysia-next-static",
+      cacheName: runtimeCacheNames.nextStatic,
       plugins: [okResponse, expiration(160, 365 * 24 * 60 * 60)],
     }),
   },
@@ -63,7 +75,7 @@ const runtimeCaching: RuntimeCaching[] = [
         url.pathname,
       ),
     handler: new CacheFirst({
-      cacheName: "elysia-icons",
+      cacheName: runtimeCacheNames.icons,
       plugins: [okResponse, expiration(24, 365 * 24 * 60 * 60)],
     }),
   },
@@ -71,7 +83,7 @@ const runtimeCaching: RuntimeCaching[] = [
     matcher: ({ sameOrigin, url }) =>
       sameOrigin && /\.(?:woff2?|ttf|otf|eot)$/i.test(url.pathname),
     handler: new CacheFirst({
-      cacheName: "elysia-fonts",
+      cacheName: runtimeCacheNames.fonts,
       plugins: [okResponse, expiration(24, 365 * 24 * 60 * 60)],
     }),
   },
@@ -84,7 +96,7 @@ const runtimeCaching: RuntimeCaching[] = [
           ))) ||
       trustedImageHosts.has(url.hostname),
     handler: new StaleWhileRevalidate({
-      cacheName: "elysia-images",
+      cacheName: runtimeCacheNames.images,
       plugins: [okResponse, expiration(180, 30 * 24 * 60 * 60)],
     }),
   },
@@ -99,7 +111,7 @@ const runtimeCaching: RuntimeCaching[] = [
       (request.mode === "navigate" || request.headers.get("RSC") === "1") &&
       publicPagePattern.test(url.pathname),
     handler: new NetworkFirst({
-      cacheName: "elysia-public-pages",
+      cacheName: runtimeCacheNames.publicPages,
       networkTimeoutSeconds: 4,
       plugins: [okResponse, expiration(72, 7 * 24 * 60 * 60)],
     }),
@@ -108,7 +120,7 @@ const runtimeCaching: RuntimeCaching[] = [
     matcher: ({ sameOrigin, url }) =>
       sameOrigin && /\.(?:css|js|json|webmanifest)$/i.test(url.pathname),
     handler: new StaleWhileRevalidate({
-      cacheName: "elysia-static-documents",
+      cacheName: runtimeCacheNames.staticDocuments,
       plugins: [okResponse, expiration(80, 24 * 60 * 60)],
     }),
   },
@@ -121,10 +133,14 @@ const runtimeCaching: RuntimeCaching[] = [
 
 registerQuotaErrorCallback(async () => {
   await Promise.all(
-    ["elysia-images", "elysia-public-pages"].map((cacheName) =>
+    [runtimeCacheNames.images, runtimeCacheNames.publicPages].map((cacheName) =>
       self.caches.delete(cacheName),
     ),
   );
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(deleteRetiredRuntimeCaches());
 });
 
 const serwist = new Serwist({
@@ -170,6 +186,20 @@ self.addEventListener("notificationclick", (event) => {
 });
 
 serwist.addEventListeners();
+
+async function deleteRetiredRuntimeCaches() {
+  const cacheNames = await self.caches.keys();
+
+  await Promise.all(
+    cacheNames
+      .filter(
+        (cacheName) =>
+          cacheName.startsWith("elysia-") &&
+          !activeRuntimeCacheNames.has(cacheName),
+      )
+      .map((cacheName) => self.caches.delete(cacheName)),
+  );
+}
 
 function readPushPayload(event: PushEvent) {
   try {

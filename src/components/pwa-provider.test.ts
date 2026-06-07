@@ -30,8 +30,10 @@ describe("PwaProvider", () => {
     const runtimeSource = read("src/components/pwa-runtime.tsx");
 
     expect(providerSource).not.toContain("@serwist/turbopack/react");
+    expect(providerSource).not.toContain("registerServiceWorker");
     expect(providerSource).toContain("dynamic(");
     expect(runtimeSource).toContain("@serwist/turbopack/react");
+    expect(runtimeSource).toContain("register");
   });
 });
 

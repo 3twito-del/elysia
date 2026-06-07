@@ -97,6 +97,10 @@ describe("Serwist route", () => {
     expect(source).toContain("checkout(?:\\/|$)");
     expect(source).toContain("NetworkFirst");
     expect(source).toContain("NetworkOnly");
+    expect(source).toContain('runtimeCachePrefix = "elysia-v2"');
+    expect(source).toContain("activeRuntimeCacheNames");
+    expect(source).toContain("deleteRetiredRuntimeCaches");
+    expect(source).toContain('cacheName.startsWith("elysia-")');
     expect(expectedPublicInventoryRoutes).toEqual(
       expect.arrayContaining([
         "/",
