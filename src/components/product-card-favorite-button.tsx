@@ -50,6 +50,22 @@ export function ProductCardFavoriteButton({
     return subscribeToGuestWishlist(syncGuestSavedState);
   }, [productSlug]);
 
+  useEffect(() => {
+    if (!state.message || state.ok === false) return;
+
+    const message = state.message;
+    const ok = state.ok;
+    const timeoutId = window.setTimeout(() => {
+      setState((current) =>
+        current.message === message && current.ok === ok
+          ? { ...current, message: undefined }
+          : current,
+      );
+    }, 1800);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [state.message, state.ok]);
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 

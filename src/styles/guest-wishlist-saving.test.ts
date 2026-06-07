@@ -78,6 +78,9 @@ describe("guest wishlist saving", () => {
       expect(source).toContain('nextState.code === "AUTH_REQUIRED"');
       expect(source).toContain("setGuestSaved(true)");
       expect(source).toContain('typeof nextState.saved === "boolean"');
+      expect(source).toContain("window.setTimeout");
+      expect(source).toContain("window.clearTimeout");
+      expect(source).toContain("message: undefined");
     }
   });
 
