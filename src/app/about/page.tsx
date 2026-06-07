@@ -17,7 +17,6 @@ import {
 } from "lucide-react";
 
 import { DeferredFixedBackgroundBand } from "~/components/deferred-fixed-background-band";
-import { HomeHeroVideo } from "~/components/home-hero-video";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
@@ -28,9 +27,7 @@ type IconItem = {
   title: string;
 };
 
-const aboutHeroPoster = "/brand/boutique/lifestyle-hero-poster.avif";
-const aboutHeroVideoMp4 = "/brand/boutique/lifestyle-hero.mp4";
-const aboutHeroVideoWebm = "/brand/boutique/lifestyle-hero.webm";
+const aboutHeroImage = "/brand/boutique/about-hero-prism.avif";
 
 const editorialPrinciples = [
   {
@@ -118,7 +115,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Elysia",
     description: "תכשיטי Elysia עם חומר, מידה, מחיר ושירות מסודר לפני ההזמנה.",
-    images: [{ url: "/brand/boutique/lifestyle-hero.avif" }],
+    images: [{ url: aboutHeroImage }],
   },
 };
 
@@ -128,7 +125,7 @@ export default function AboutPage() {
       <link
         as="image"
         fetchPriority="high"
-        href={aboutHeroPoster}
+        href={aboutHeroImage}
         rel="preload"
         type="image/avif"
       />
@@ -142,11 +139,15 @@ export default function AboutPage() {
           initialVisible
           variant="hero"
         >
-          <HomeHeroVideo
+          <Image
+            alt=""
+            aria-hidden="true"
             className="storefront-hero-image object-cover"
-            mp4Src={aboutHeroVideoMp4}
-            posterSrc={aboutHeroPoster}
-            webmSrc={aboutHeroVideoWebm}
+            fill
+            fetchPriority="high"
+            priority
+            sizes="100vw"
+            src={aboutHeroImage}
           />
           <div className="storefront-hero-scrim absolute inset-0" />
           <div className="storefront-hero-wash absolute inset-0" />

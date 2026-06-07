@@ -30,12 +30,16 @@ describe("image performance guardrails", () => {
     expect(homeSource).toContain('fetchPriority="high"');
     expect(homeSource).toContain("posterSrc={boutiqueHeroPoster}");
     expect(homeSource).toContain("webmSrc={boutiqueHeroVideoWebm}");
-    expect(aboutSource).toContain("<HomeHeroVideo");
+    expect(aboutSource).toContain(
+      'const aboutHeroImage = "/brand/boutique/about-hero-prism.avif";',
+    );
     expect(aboutSource).toContain('data-testid="cinematic-page-hero"');
-    expect(aboutSource).toContain("posterSrc={aboutHeroPoster}");
-    expect(aboutSource).toContain("webmSrc={aboutHeroVideoWebm}");
+    expect(aboutSource).toContain("src={aboutHeroImage}");
+    expect(aboutSource).toContain('sizes="100vw"');
+    expect(aboutSource).toContain("priority");
     expect(aboutSource).toContain("about-fixed-image-band");
     expect(aboutSource).not.toContain("<CommercePageHero");
+    expect(aboutSource).not.toContain("<HomeHeroVideo");
     expect(aboutSource).not.toContain('as="video"');
     expect(homeHeroVideoSource).toContain('preload="auto"');
     expect(homeHeroVideoSource).toContain('video.preload = "auto";');
