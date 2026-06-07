@@ -3567,8 +3567,24 @@ footer nav a:focus-visible {
 }
 
 .product-card-favorite {
-  border: 1px solid rgb(29 25 22 / 8%);
-  background: #fffaf4;
+  border: 1px solid rgb(29 25 22 / 9%);
+  background: rgb(255 250 244 / 88%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.product-card-favorite-button svg,
+.product-wishlist-button svg {
+  transition:
+    fill var(--motion-fast) var(--ease-motion-standard),
+    stroke-width var(--motion-fast) var(--ease-motion-standard);
+  stroke-width: 1.85;
+}
+
+.product-card-favorite-button[data-favorite-saved="true"] svg,
+.product-wishlist-button[data-favorite-saved="true"] svg {
+  fill: rgb(29 25 22 / 16%);
+  stroke-width: 2;
 }
 
 .product-card-favorite [data-icon-tooltip]::after {

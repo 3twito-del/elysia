@@ -222,6 +222,9 @@ describe("luxury commerce UI hardening", () => {
     );
     expect(favorite).not.toContain("shadow-[0_8px");
     expect(favorite).not.toContain("brand-aqua-soft");
+    expect(favorite).not.toContain("text-red");
+    expect(favorite).toContain("product-card-favorite-button");
+    expect(favorite).toContain("data-favorite-saved=");
     expect(favorite).toContain('variant="ghost"');
     expect(favorite).toContain('data-icon-tooltip-placement="bottom"');
     expect(favorite).toContain("product-card-favorite-status");

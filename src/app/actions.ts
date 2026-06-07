@@ -19,6 +19,7 @@ export type PublicActionState = {
   code?: "AUTH_REQUIRED";
   ok?: boolean;
   message?: string;
+  saved?: boolean;
 };
 
 export async function joinNewsletter(
@@ -129,23 +130,37 @@ export async function saveWishlistItem(
     update: {},
     create: { customerId: customer.id },
   });
+  const wishlistIdentity = {
+    wishlistId: wishlist.id,
+    variantId: variant.id,
+  };
+  const existingItem = await db.wishlistItem.findUnique({
+    where: {
+      wishlistId_variantId: wishlistIdentity,
+    },
+  });
+
+  if (existingItem) {
+    await db.wishlistItem.delete({
+      where: { id: existingItem.id },
+    });
+
+    revalidatePath(`/product/${parsed.data.productSlug}`);
+    revalidatePath("/account");
+    revalidatePath("/wishlist");
+    return { ok: true, saved: false, message: "התכשיט הוסר מהמועדפים" };
+  }
 
   await db.wishlistItem.upsert({
     where: {
-      wishlistId_variantId: {
-        wishlistId: wishlist.id,
-        variantId: variant.id,
-      },
+      wishlistId_variantId: wishlistIdentity,
     },
     update: {},
-    create: {
-      wishlistId: wishlist.id,
-      variantId: variant.id,
-    },
+    create: wishlistIdentity,
   });
 
   revalidatePath(`/product/${parsed.data.productSlug}`);
   revalidatePath("/account");
   revalidatePath("/wishlist");
-  return { ok: true, message: "התכשיט נשמר" };
+  return { ok: true, saved: true, message: "התכשיט נשמר" };
 }

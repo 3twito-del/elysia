@@ -17,6 +17,10 @@ describe("guest wishlist saving", () => {
     );
 
     expect(actions).toContain('code: "AUTH_REQUIRED"');
+    expect(actions).toContain("saved?: boolean");
+    expect(actions).toContain("db.wishlistItem.findUnique");
+    expect(actions).toContain("saved: false");
+    expect(actions).toContain("saved: true");
     expect(actions).toContain("ניתן לשמור גם בלי התחברות.");
     expect(guestWishlist).toContain(
       'GUEST_WISHLIST_STORAGE_KEY = "elysia_guest_wishlist"',
@@ -29,9 +33,17 @@ describe("guest wishlist saving", () => {
     expect(productCardFavorite).toContain(
       "removeGuestWishlistItem(productSlug)",
     );
+    expect(productCardFavorite).toContain("setServerSavedState");
+    expect(productCardFavorite).toContain("saved: false");
+    expect(productCardFavorite).toContain("data-favorite-saved=");
+    expect(productCardFavorite).not.toContain("text-red");
     expect(productCardFavorite).toContain("הוסר מהמועדפים בדפדפן זה");
     expect(productCardFavorite).toContain("נשמר במועדפים בדפדפן זה");
     expect(productWishlist).toContain('nextState.code === "AUTH_REQUIRED"');
+    expect(productWishlist).toContain("removeGuestWishlistItem(productSlug)");
+    expect(productWishlist).toContain("setServerSavedState");
+    expect(productWishlist).toContain("saved: false");
+    expect(productWishlist).toContain("data-favorite-saved=");
     expect(productWishlist).toContain("saveGuestWishlistItem(productSlug)");
     expect(productWishlist).toContain("aria-pressed={isSaved}");
   });
@@ -65,6 +77,7 @@ describe("guest wishlist saving", () => {
       expect(source).toContain("[productSlug]");
       expect(source).toContain('nextState.code === "AUTH_REQUIRED"');
       expect(source).toContain("setGuestSaved(true)");
+      expect(source).toContain('typeof nextState.saved === "boolean"');
     }
   });
 

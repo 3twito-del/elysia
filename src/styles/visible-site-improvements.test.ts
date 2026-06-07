@@ -457,7 +457,8 @@ describe("visible site improvement affordances", () => {
       "createPortal(stickyPurchaseBar, document.body)",
     );
     expect(favorite).toContain("aria-pressed={isSaved}");
-    expect(favorite).toContain('isSaved && "fill-current"');
+    expect(favorite).toContain("data-favorite-saved=");
+    expect(favorite).not.toContain("text-red");
     expect(favorite).toContain("subscribeToGuestWishlist");
     expect(favorite).toContain("removeGuestWishlistItem(productSlug)");
     expect(favorite).toContain('data-testid="product-card-favorite-feedback"');

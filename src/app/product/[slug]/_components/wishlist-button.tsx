@@ -7,11 +7,18 @@ import { Button } from "~/components/ui/button";
 import { StatusMessage } from "~/components/ui/status-message";
 import {
   isGuestWishlistSaved,
+  removeGuestWishlistItem,
   saveGuestWishlistItem,
   subscribeToGuestWishlist,
 } from "~/lib/guest-wishlist";
+import { cn } from "~/lib/utils";
 
 const initialState: PublicActionState = {};
+
+type SavedServerState = {
+  productSlug: string;
+  saved: boolean;
+};
 
 export function WishlistButton({
   productSlug,
@@ -23,6 +30,11 @@ export function WishlistButton({
   const [state, setState] = useState(initialState);
   const [guestSaved, setGuestSaved] = useState(false);
   const [pending, setPending] = useState(false);
+  const [serverSavedState, setServerSavedState] =
+    useState<SavedServerState | null>(null);
+  const serverSaved =
+    serverSavedState?.productSlug === productSlug && serverSavedState.saved;
+  const isSaved = guestSaved || serverSaved;
 
   useEffect(() => {
     const syncGuestSavedState = () => {
@@ -38,6 +50,18 @@ export function WishlistButton({
 
     if (pending) return;
 
+    if (guestSaved) {
+      removeGuestWishlistItem(productSlug);
+      setGuestSaved(false);
+      setServerSavedState({ productSlug, saved: false });
+      setState({
+        ok: true,
+        saved: false,
+        message: "הוסר מהמועדפים בדפדפן זה",
+      });
+      return;
+    }
+
     const formData = new FormData(event.currentTarget);
 
     setPending(true);
@@ -48,8 +72,17 @@ export function WishlistButton({
       if (nextState.code === "AUTH_REQUIRED") {
         saveGuestWishlistItem(productSlug);
         setGuestSaved(true);
-        setState({ ok: true, message: "נשמר במועדפים בדפדפן זה" });
+        setServerSavedState({ productSlug, saved: false });
+        setState({
+          ok: true,
+          saved: true,
+          message: "נשמר במועדפים בדפדפן זה",
+        });
         return;
+      }
+
+      if (typeof nextState.saved === "boolean") {
+        setServerSavedState({ productSlug, saved: nextState.saved });
       }
 
       setState(nextState);
@@ -63,13 +96,13 @@ export function WishlistButton({
   return (
     <form className="grid gap-2" onSubmit={handleSubmit}>
       <input name="productSlug" type="hidden" value={productSlug} />
-      <SubmitButton isSaved={state.ok === true || guestSaved} pending={pending}>
+      <SubmitButton isSaved={isSaved} pending={pending}>
         {children}
       </SubmitButton>
       {state.message ? (
         <StatusMessage
           size="xs"
-          tone={state.ok ? "success" : "error"}
+          tone={state.ok === false ? "error" : "neutral"}
           variant="plain"
         >
           {state.message}
@@ -91,7 +124,12 @@ function SubmitButton({
   return (
     <Button
       aria-pressed={isSaved}
-      className="w-full gap-2"
+      className={cn(
+        "product-wishlist-button w-full gap-2",
+        isSaved &&
+          "border-[rgb(29_25_22_/_20%)] bg-[rgb(255_250_244_/_88%)] text-[var(--foreground)]",
+      )}
+      data-favorite-saved={isSaved ? "true" : "false"}
       disabled={pending}
       size="lg"
       type="submit"

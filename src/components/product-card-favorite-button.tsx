@@ -16,6 +16,11 @@ import { cn } from "~/lib/utils";
 
 const initialState: PublicActionState = {};
 
+type SavedServerState = {
+  productSlug: string;
+  saved: boolean;
+};
+
 type ProductCardFavoriteButtonProps = {
   productName: string;
   productSlug: string;
@@ -28,8 +33,12 @@ export function ProductCardFavoriteButton({
   const [state, setState] = useState(initialState);
   const [guestSaved, setGuestSaved] = useState(false);
   const [pending, setPending] = useState(false);
+  const [serverSavedState, setServerSavedState] =
+    useState<SavedServerState | null>(null);
   const statusId = useId();
-  const isSaved = state.ok === true || guestSaved;
+  const serverSaved =
+    serverSavedState?.productSlug === productSlug && serverSavedState.saved;
+  const isSaved = guestSaved || serverSaved;
   const hasMessage = Boolean(state.message);
 
   useEffect(() => {
@@ -49,8 +58,10 @@ export function ProductCardFavoriteButton({
     if (guestSaved) {
       removeGuestWishlistItem(productSlug);
       setGuestSaved(false);
+      setServerSavedState({ productSlug, saved: false });
       setState({
         ok: true,
+        saved: false,
         message: "הוסר מהמועדפים בדפדפן זה",
       });
       return;
@@ -66,8 +77,17 @@ export function ProductCardFavoriteButton({
       if (nextState.code === "AUTH_REQUIRED") {
         saveGuestWishlistItem(productSlug);
         setGuestSaved(true);
-        setState({ ok: true, message: "נשמר במועדפים בדפדפן זה" });
+        setServerSavedState({ productSlug, saved: false });
+        setState({
+          ok: true,
+          saved: true,
+          message: "נשמר במועדפים בדפדפן זה",
+        });
         return;
+      }
+
+      if (typeof nextState.saved === "boolean") {
+        setServerSavedState({ productSlug, saved: nextState.saved });
       }
 
       setState(nextState);
@@ -82,7 +102,7 @@ export function ProductCardFavoriteButton({
     <form className="relative shrink-0" onSubmit={handleSubmit}>
       <input name="productSlug" type="hidden" value={productSlug} />
       <FavoriteSubmitButton
-        canRemove={guestSaved}
+        canRemove={isSaved}
         hasMessage={hasMessage}
         isSaved={isSaved}
         pending={pending}
@@ -96,7 +116,7 @@ export function ProductCardFavoriteButton({
           id={statusId}
           role={state.ok === false ? "alert" : "status"}
           size="xs"
-          tone={state.ok ? "success" : "error"}
+          tone={state.ok === false ? "error" : "neutral"}
           variant="plain"
         >
           {state.message}
@@ -133,10 +153,12 @@ function FavoriteSubmitButton({
       aria-label={canRemove ? `הסרה מהמועדפים: ${productName}` : label}
       aria-pressed={isSaved}
       className={cn(
-        "h-10 w-10 shrink-0 rounded-md border border-transparent bg-transparent shadow-none",
-        "hover:bg-background hover:text-foreground hover:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
-        isSaved && "text-red-700 dark:text-red-300",
+        "product-card-favorite-button h-10 w-10 shrink-0 rounded-md border border-transparent bg-transparent text-[var(--foreground)] shadow-none",
+        "hover:border-[rgb(29_25_22_/_18%)] hover:bg-[rgb(255_250_244_/_94%)] hover:text-[var(--foreground)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+        isSaved &&
+          "border-[rgb(29_25_22_/_18%)] bg-[rgb(255_250_244_/_94%)] text-[var(--foreground)]",
       )}
+      data-favorite-saved={isSaved ? "true" : "false"}
       data-icon-tooltip={
         hasMessage ? undefined : isSaved ? "נשמר במועדפים" : "שמירה למועדפים"
       }
@@ -146,10 +168,7 @@ function FavoriteSubmitButton({
       type="submit"
       variant="ghost"
     >
-      <Heart
-        aria-hidden="true"
-        className={cn("size-4", isSaved && "fill-current")}
-      />
+      <Heart aria-hidden="true" className="size-4 fill-transparent" />
     </Button>
   );
 }
