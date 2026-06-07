@@ -2082,6 +2082,9 @@ main
   min-height: clamp(22rem, 72vh, 50rem);
   width: 100vw;
   margin-inline: calc(50% - 50vw);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   background:
     linear-gradient(
       180deg,
@@ -2092,6 +2095,17 @@ main
 }
 
 .boutique-fixed-image-band[data-fixed-bg-loaded="true"] {
+  clip-path: inset(0);
+  background: transparent;
+}
+
+.boutique-fixed-image-band[data-fixed-bg-loaded="true"]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  transform: translateZ(0);
   background:
     linear-gradient(
       180deg,
@@ -2099,7 +2113,7 @@ main
       rgb(31 27 24 / 10%) 46%,
       color-mix(in srgb, var(--brand-ink) 22%, transparent)
     ),
-    url("/brand/boutique/category-rings.avif") center / cover;
+    url("/brand/boutique/category-rings.avif") center / cover no-repeat;
 }
 
 @media (min-width: 1024px) {
@@ -2154,7 +2168,20 @@ main
   }
 
   .boutique-fixed-image-band[data-fixed-bg-loaded="true"] {
+    clip-path: none;
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--brand-porcelain) 28%, transparent),
+        rgb(31 27 24 / 10%) 46%,
+        color-mix(in srgb, var(--brand-ink) 22%, transparent)
+      ),
+      url("/brand/boutique/category-rings.avif") center / cover no-repeat;
     background-attachment: scroll, fixed;
+  }
+
+  .boutique-fixed-image-band[data-fixed-bg-loaded="true"]::before {
+    content: none;
   }
 }
 

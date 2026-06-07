@@ -125,12 +125,18 @@ describe("image performance guardrails", () => {
     expect(componentSource).toContain("IntersectionObserver");
     expect(componentSource).toContain('rootMargin: "900px 0px"');
     expect(baseFixedBandRule).not.toContain("category-rings.avif");
+    expect(stylesSource).toContain("clip-path: inset(0)");
+    expect(stylesSource).toContain("position: fixed");
     expect(stylesSource).toContain(
       '.boutique-fixed-image-band[data-fixed-bg-loaded="true"]',
     );
     expect(stylesSource).toContain(
+      '.boutique-fixed-image-band[data-fixed-bg-loaded="true"]::before',
+    );
+    expect(stylesSource).toContain(
       'url("/brand/boutique/category-rings.avif")',
     );
+    expect(stylesSource).toContain("background-attachment: scroll, fixed");
   });
 
   it("serves local brand media with a long-lived immutable cache policy", () => {
