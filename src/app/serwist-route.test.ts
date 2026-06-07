@@ -99,7 +99,12 @@ describe("Serwist route", () => {
     expect(source).toContain("NetworkOnly");
     expect(source).toContain('runtimeCachePrefix = "elysia-v2"');
     expect(source).toContain("activeRuntimeCacheNames");
+    expect(source).toContain("activateUpdatedServiceWorker");
     expect(source).toContain("deleteRetiredRuntimeCaches");
+    expect(source).toContain("reloadControlledWindowClients");
+    expect(source).toContain("self.clients.claim()");
+    expect(source).toContain('type: "window"');
+    expect(source).toContain("client.navigate(client.url)");
     expect(source).toContain('cacheName.startsWith("elysia-")');
     expect(expectedPublicInventoryRoutes).toEqual(
       expect.arrayContaining([

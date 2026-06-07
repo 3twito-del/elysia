@@ -140,7 +140,7 @@ registerQuotaErrorCallback(async () => {
 });
 
 self.addEventListener("activate", (event) => {
-  event.waitUntil(deleteRetiredRuntimeCaches());
+  event.waitUntil(activateUpdatedServiceWorker());
 });
 
 const serwist = new Serwist({
@@ -187,6 +187,12 @@ self.addEventListener("notificationclick", (event) => {
 
 serwist.addEventListeners();
 
+async function activateUpdatedServiceWorker() {
+  await deleteRetiredRuntimeCaches();
+  await self.clients.claim();
+  await reloadControlledWindowClients();
+}
+
 async function deleteRetiredRuntimeCaches() {
   const cacheNames = await self.caches.keys();
 
@@ -199,6 +205,23 @@ async function deleteRetiredRuntimeCaches() {
       )
       .map((cacheName) => self.caches.delete(cacheName)),
   );
+}
+
+async function reloadControlledWindowClients() {
+  const windowClients = await self.clients.matchAll({
+    includeUncontrolled: true,
+    type: "window",
+  });
+  const navigations: Promise<WindowClient | null | undefined>[] = [];
+
+  for (const client of windowClients) {
+    if (!client.url.startsWith(self.location.origin)) continue;
+    if (!("navigate" in client)) continue;
+
+    navigations.push(client.navigate(client.url).catch(() => undefined));
+  }
+
+  await Promise.all(navigations);
 }
 
 function readPushPayload(event: PushEvent) {
