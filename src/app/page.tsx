@@ -212,6 +212,7 @@ export default async function Home() {
 
       <RevealSection
         className="home-trust-strip mx-auto w-full max-w-[92rem] px-[var(--ui-page-x)] py-5 lg:px-[var(--ui-page-x-wide)]"
+        data-testid="home-commerce-shortcuts"
         id="why-trust-elysia"
         variant="none"
       >
