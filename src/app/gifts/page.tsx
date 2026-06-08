@@ -62,6 +62,12 @@ const giftOccasionChips = [
   },
 ] as const;
 
+const giftDecisionGroups = [
+  { label: "תקציב", links: giftBudgetChips, step: "01" },
+  { label: "למי", links: giftRecipientChips, step: "02" },
+  { label: "אירוע", links: giftOccasionChips, step: "03" },
+] as const;
+
 export const metadata = {
   title: "מתנות",
 };
@@ -113,7 +119,7 @@ export default async function GiftsPage() {
         </section>
         <section
           aria-labelledby="gift-discovery-title"
-          className="mt-5 grid gap-4 border-b border-[var(--glass-border)] pb-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.4fr)]"
+          className="mt-5 grid gap-4 border-b border-[var(--glass-border)] pb-5 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.55fr)_auto] lg:items-end"
           data-testid="gift-discovery-chips"
         >
           <div>
@@ -127,14 +133,28 @@ export default async function GiftsPage() {
               תקציב, למי, או הרגע שאליו היא הולכת
             </h2>
             <p className="text-muted-foreground mt-2 text-sm leading-6">
-              כל קיצור פותח חיפוש חי במבחר, כדי להגיע מהר לתכשיטים שמתאימים
-              באמת.
+              בחרי מסלול אחד והחיפוש ייפתח כבר עם כיוון ברור.
             </p>
           </div>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <GiftChipGroup label="תקציב" links={giftBudgetChips} />
-            <GiftChipGroup label="למי" links={giftRecipientChips} />
-            <GiftChipGroup label="אירוע" links={giftOccasionChips} />
+          <div
+            className="grid gap-2 sm:grid-cols-3"
+            data-testid="gift-finder-decision-bar"
+          >
+            {giftDecisionGroups.map((group) => (
+              <GiftChipGroup
+                key={group.label}
+                label={group.label}
+                links={group.links}
+                step={group.step}
+              />
+            ))}
+          </div>
+          <div className="flex lg:justify-end">
+            <Button asChild size="sm" variant="outline">
+              <Link href="/search?q=%D7%9E%D7%AA%D7%A0%D7%94">
+                חיפוש מתנה רחב
+              </Link>
+            </Button>
           </div>
         </section>
         {bundlePairs.length > 0 ? (
@@ -286,17 +306,22 @@ function getGiftBudgetContextLabel(product: CatalogProduct) {
 function GiftChipGroup({
   label,
   links,
+  step,
 }: {
   label: string;
   links: ReadonlyArray<{ href: string; label: string }>;
+  step: string;
 }) {
   return (
-    <div className="min-w-0">
-      <h3 className="text-sm font-medium">{label}</h3>
-      <div className="mt-2 flex flex-wrap gap-2">
+    <div className="min-w-0 rounded-md border border-[var(--glass-border)] p-3">
+      <p className="text-muted-foreground text-[0.7rem] font-medium tracking-normal uppercase">
+        {step}
+      </p>
+      <h3 className="mt-1 text-sm font-medium">{label}</h3>
+      <div className="mt-2 flex flex-wrap gap-1.5">
         {links.map((link) => (
           <Link
-            className="border-border hover:border-foreground/50 hover:bg-muted/60 rounded-full border px-3 py-1.5 text-sm transition"
+            className="border-border hover:border-foreground/50 hover:bg-muted/60 rounded-full border px-2.5 py-1 text-xs transition sm:text-sm"
             href={link.href}
             key={link.href}
           >

@@ -4414,6 +4414,10 @@ html[data-public-floating-bar-visible="true"] .public-motion-content {
   );
 }
 
+html[data-cookie-banner-placement="top"] .public-motion-content {
+  padding-top: calc(var(--floating-stack-top, 0px) + env(safe-area-inset-top));
+}
+
 @media print {
   *,
   *::before,

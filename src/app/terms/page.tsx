@@ -1,14 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  FileText,
-  Mail,
-  PackageCheck,
-  Phone,
-  ShieldCheck,
-} from "lucide-react";
+import { FileText, Mail, PackageCheck, Phone, ShieldCheck } from "lucide-react";
 
 import { CommercePageHero } from "~/components/commerce-page-hero";
+import { LegalCookiePreferencesCallout } from "~/components/legal-cookie-preferences-callout";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
@@ -175,6 +170,10 @@ export default async function TermsPage() {
                   </Link>
                 ))}
             </nav>
+
+            <Separator className="my-8" />
+
+            <LegalCookiePreferencesCallout testId="terms-cookie-preferences-callout" />
 
             <Separator className="my-8" />
 

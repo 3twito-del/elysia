@@ -3,6 +3,7 @@ import Link from "next/link";
 import { FileCheck2, ShieldCheck, Wrench } from "lucide-react";
 
 import { CommercePageHero } from "~/components/commerce-page-hero";
+import { LegalCookiePreferencesCallout } from "~/components/legal-cookie-preferences-callout";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
@@ -70,6 +71,10 @@ export default function WarrantyPage() {
                 <p className="mt-3 font-medium">בדיקה לפי פרטי ההזמנה</p>
               </div>
             </div>
+
+            <Separator className="my-8" />
+
+            <LegalCookiePreferencesCallout testId="warranty-cookie-preferences-callout" />
 
             <Separator className="my-8" />
 

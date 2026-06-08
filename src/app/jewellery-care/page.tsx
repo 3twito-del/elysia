@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AlertTriangle, Droplets, ShieldCheck, Sparkles } from "lucide-react";
 
 import { CommercePageHero } from "~/components/commerce-page-hero";
+import { LegalCookiePreferencesCallout } from "~/components/legal-cookie-preferences-callout";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
@@ -73,6 +74,10 @@ export default function JewelleryCarePage() {
                 <p className="mt-3 font-medium">להפסיק שימוש במקרה גירוי</p>
               </div>
             </div>
+
+            <Separator className="my-8" />
+
+            <LegalCookiePreferencesCallout testId="jewellery-care-cookie-preferences-callout" />
 
             <Separator className="my-8" />
 

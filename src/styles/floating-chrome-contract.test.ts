@@ -27,6 +27,9 @@ describe("public floating chrome contract", () => {
     expect(css).toContain(
       'html[data-public-floating-bar-visible="true"] .public-motion-content',
     );
+    expect(css).toContain(
+      'html[data-cookie-banner-placement="top"] .public-motion-content',
+    );
     expect(css).not.toContain(
       'html[data-cookie-banner-open="true"] .public-motion-content',
     );
@@ -46,6 +49,9 @@ describe("public floating chrome contract", () => {
     expect(widget).toContain('data-accessibility-widget-trigger="true"');
     expect(widget).toContain("fixed right-3");
     expect(widget).toContain("var(--public-floating-bar-offset,0.75rem)");
+    expect(widget).toContain("usesCheckoutTopPlacement");
+    expect(widget).toContain("--floating-stack-top");
+    expect(widget).toContain("top-[calc(var(--site-header-height)");
     expect(widget).toContain('data-icon-tooltip="תפריט נגישות"');
     expect(widget).toContain("hideFloatingTriggerForPage");
     expect(widget).toContain("הסתרת הכפתור בדף זה");
@@ -78,19 +84,26 @@ describe("public floating chrome contract", () => {
     const banner = read("src/components/cookie-consent-banner.tsx");
 
     expect(banner).toContain("--floating-stack-bottom");
+    expect(banner).toContain("--floating-stack-top");
+    expect(banner).toContain("usesCheckoutTopPlacement");
+    expect(banner).toContain("cookieBannerPlacement");
     expect(banner).toContain('data-public-floating-avoid="true"');
     expect(banner).toContain(
       'root.style.setProperty("--floating-stack-bottom", `${height + 16}px`)',
     );
+    expect(banner).toContain(
+      'root.style.setProperty("--floating-stack-top", `${height + 16}px`)',
+    );
     expect(banner).not.toContain("--public-bottom-safe-offset");
     expect(banner).not.toContain("--public-cookie-top-offset");
-    expect(countOccurrences(banner, "--floating-stack-bottom")).toBe(4);
+    expect(countOccurrences(banner, "--floating-stack-bottom")).toBe(5);
+    expect(countOccurrences(banner, "--floating-stack-top")).toBe(5);
     expect(banner).toContain("sm:w-[min(calc(100vw-2rem),20rem)]");
     expect(banner).toContain(
       "bottom-[calc(0.75rem+env(safe-area-inset-bottom))]",
     );
-    expect(banner).not.toContain(
-      "top-[calc(var(--site-header-height)+0.5rem+env(safe-area-inset-top))]",
+    expect(banner).toContain(
+      "top-[calc(var(--site-header-height)+0.75rem+env(safe-area-inset-top))]",
     );
     expect(banner).not.toContain("fixed inset-x-0 bottom-0");
   });

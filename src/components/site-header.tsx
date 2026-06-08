@@ -22,7 +22,7 @@ const navItems: HeaderNavItem[] = [
   { href: "/category/earrings", label: "עגילים" },
   { href: "/category/bracelets", label: "צמידים" },
   { href: "/gifts", label: "מתנות" },
-  { href: "/search?sort=popular", label: "אהובים" },
+  { href: "/search?sort=popular", label: "מבוקשים" },
   { href: "/size-guide", label: "מידות" },
   { href: "/about", label: "אודות" },
   { href: "/service", label: "שירות אישי" },
@@ -93,8 +93,8 @@ export function SiteHeader() {
         dir="rtl"
       >
         <p className="sr-only">
-          Elysia: ניווט ראשי לקולקציה, קטגוריות, מתנות, מידות, שירות,
-          מועדפים ואזור אישי.
+          Elysia: ניווט ראשי לקולקציה, קטגוריות, מתנות, מידות, שירות, מועדפים
+          ואזור אישי.
         </p>
         <div
           className="grid h-16 w-full grid-cols-[1fr_auto_1fr] items-center px-4 sm:px-6 md:h-[4.25rem] md:px-10 lg:h-[6.125rem] lg:px-16"

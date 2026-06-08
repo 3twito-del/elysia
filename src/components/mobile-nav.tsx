@@ -54,7 +54,6 @@ type MobileNavProps = {
 
 const quickActions = [
   { href: "/search", label: "חיפוש", icon: Search },
-  { href: "/gifts", label: "מתנות", icon: Gift },
   { href: "/wishlist", label: "מועדפים", icon: Heart },
   { href: "/checkout", label: "סל", icon: ShoppingBag },
   { href: "/account", label: "אזור אישי", icon: UserRound },
@@ -62,16 +61,11 @@ const quickActions = [
 
 const serviceActions = [
   { href: "/service", label: "שירות אישי", icon: Headphones },
+  { href: "/stylist", label: "יועץ לוק", icon: Sparkles },
   { href: "/faq", label: "שאלות", icon: CircleHelp },
 ] as const;
 
 const spotlightActions = [
-  {
-    href: "/stylist",
-    label: "יועץ לוק",
-    description: "כיוון לפי סגנון, חומר, תקציב ומידה",
-    icon: Sparkles,
-  },
   {
     href: "/gifts",
     label: "מתנות",

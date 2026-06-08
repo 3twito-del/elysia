@@ -20,6 +20,21 @@ const sizeMeasurementSteps = [
   "אם אתם בין מידות, לכו על מה שיהיה נוח ביום רגיל.",
 ] as const;
 
+const sizeGuideConfidenceNotes = [
+  {
+    title: "שומרים הקשר",
+    text: "אם הגעתם ממוצר או מקטגוריה, הקישור חזרה נשאר קרוב למדידה.",
+  },
+  {
+    title: "לא מנחשים בכוח",
+    text: "כשמידה נופלת בין שתי אפשרויות, ההמלצה נשארת זהירה ונוחה לענידה.",
+  },
+  {
+    title: "אפשר לשאול",
+    text: "אם המדידה לא חד-משמעית, שירות אישי זמין לפני החלטה.",
+  },
+] as const;
+
 type SizeGuidePageProps = {
   searchParams?: Promise<{
     kind?: string | string[];
@@ -76,7 +91,9 @@ export default async function SizeGuidePage({
             >
               התחילו מסרגל קצר ובדקו שהקנה מידה נכון
             </h2>
-            <p className="text-muted-foreground mt-2 text-sm leading-6">בהדפסה, הגדירו 100% ובדקו את המרווחים לפני שמשווים לתכשיט.</p>
+            <p className="text-muted-foreground mt-2 text-sm leading-6">
+              בהדפסה, הגדירו 100% ובדקו את המרווחים לפני שמשווים לתכשיט.
+            </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(12rem,0.9fr)]">
             <ol className="text-muted-foreground grid gap-2 text-sm leading-6">
@@ -107,6 +124,23 @@ export default async function SizeGuidePage({
               </p>
             </div>
           </div>
+        </section>
+        <section
+          aria-label="ביטחון לפני בחירת מידה"
+          className="mb-5 grid gap-3 border-b border-[var(--glass-border)] pb-5 sm:grid-cols-3"
+          data-testid="size-guide-confidence-strip"
+        >
+          {sizeGuideConfidenceNotes.map((note) => (
+            <section
+              className="rounded-md border border-[var(--glass-border)] p-3 text-sm"
+              key={note.title}
+            >
+              <h2 className="font-medium">{note.title}</h2>
+              <p className="text-muted-foreground mt-1 leading-6">
+                {note.text}
+              </p>
+            </section>
+          ))}
         </section>
         {returnContext ? (
           <div

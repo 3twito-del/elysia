@@ -126,11 +126,11 @@ export function SearchControls({
           <PreservedSearchInputs input={input} viewMode={viewMode} />
           <Button
             aria-label="חיפוש"
-            className="h-11 gap-2 px-4 text-sm"
+            className="h-11 gap-2 px-3 text-sm sm:px-4"
             type="submit"
           >
             <Search aria-hidden="true" className="text-background size-4" />
-            חיפוש
+            <span className="sr-only sm:not-sr-only">חיפוש</span>
           </Button>
         </form>
 
@@ -148,7 +148,7 @@ export function SearchControls({
                   aria-hidden="true"
                   className="text-foreground size-4"
                 />
-                סינון לפי לוק
+                סינון ומיון
               </span>
               {activeFilterCount > 0 ? (
                 <Badge className="absolute -top-2 -left-2" variant="secondary">
@@ -169,8 +169,8 @@ export function SearchControls({
                 סינון לפי לוק
               </SheetTitle>
               <SheetDescription>
-                בחרו קטגוריה, חומר, אבן, קולקציה, מחיר ומיון כדי להגיע מהר
-                יותר לפריטים הנכונים.
+                בחרו קטגוריה, חומר, אבן, קולקציה, מחיר ומיון כדי להגיע מהר יותר
+                לפריטים הנכונים.
               </SheetDescription>
             </SheetHeader>
             <form

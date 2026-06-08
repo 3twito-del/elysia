@@ -287,7 +287,11 @@ export default async function CategoryPage({
         <div className="bg-background sticky top-16 z-30 border-b border-[var(--glass-border)] lg:hidden">
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-[var(--ui-page-x)] py-3 sm:px-[var(--ui-page-x-wide)]">
             <div className="text-sm">
-              <p className="font-medium">{pageRangeLabel}</p>
+              <p className="font-medium">
+                {hasCategoryProducts
+                  ? categoryVisibleRangeLabel
+                  : pageRangeLabel}
+              </p>
               <p
                 className="text-muted-foreground text-xs"
                 data-testid="category-mobile-filter-sort-summary"
@@ -315,7 +319,7 @@ export default async function CategoryPage({
                 variant="outline"
               >
                 <Filter aria-hidden="true" className="size-4" />
-                סינון לפי לוק
+                סינון
                 {activeFilterCount > 0 && (
                   <Badge className="h-5 px-1.5" variant="secondary">
                     {activeFilterCount}

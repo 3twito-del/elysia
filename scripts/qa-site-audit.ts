@@ -31,6 +31,7 @@ type AuditOptions = {
   repeats: number;
   screenshotMode: ScreenshotMode;
   viewports: ViewportName[];
+  warmScreenshots: boolean;
 };
 
 type AuditResult = {
@@ -102,8 +103,16 @@ export const qaArtifactStandard = {
     "routeSet",
     "repeats",
     "screenshotMode",
+    "warmScreenshots",
   ],
   root: "artifacts/qa",
+} as const;
+
+export const scrollWarmedScreenshotEvidence = {
+  option: "--warm-screenshots",
+  purpose:
+    "Scroll long pages before screenshots so lazy media can enter the viewport before visual review.",
+  routeTypes: ["PDP", "search", "gifts", "homepage product rails"],
 } as const;
 
 export const consoleErrorBudget = {
@@ -168,6 +177,7 @@ export async function runQaSiteAudit(options: AuditOptions) {
               screenshotMode: options.screenshotMode,
               screenshotsDir,
               viewport,
+              warmScreenshots: options.warmScreenshots,
             });
 
             results.push(result);
@@ -241,6 +251,7 @@ async function auditRoute({
   screenshotMode,
   screenshotsDir,
   viewport,
+  warmScreenshots,
 }: {
   baseUrl: string;
   browser: Browser;
@@ -251,6 +262,7 @@ async function auditRoute({
   screenshotMode: ScreenshotMode;
   screenshotsDir: string;
   viewport: ViewportName;
+  warmScreenshots: boolean;
 }): Promise<AuditResult> {
   const viewportConfig = viewportMatrix[viewport];
   const context = await browser.newContext({
@@ -412,6 +424,10 @@ async function auditRoute({
     : null;
 
   if (screenshotPath) {
+    if (warmScreenshots) {
+      await warmPageForScreenshot(page);
+    }
+
     await page
       .screenshot({ fullPage: true, path: screenshotPath })
       .catch(async (error: unknown) => {
@@ -584,6 +600,36 @@ function buildObjectiveFindings({
   return findings.map((finding) => `${route} ${viewport}: ${finding}`);
 }
 
+async function warmPageForScreenshot(page: Page) {
+  const scrollPlan = await page
+    .evaluate(() => {
+      const viewportHeight = window.innerHeight || 844;
+      const scrollHeight = Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight,
+      );
+      const maxScrollY = Math.max(0, scrollHeight - viewportHeight);
+      const maxPositions = 10;
+
+      if (maxScrollY === 0) return [0];
+
+      const positions = Array.from({ length: maxPositions }, (_, index) =>
+        Math.round((maxScrollY * index) / (maxPositions - 1)),
+      );
+
+      return Array.from(new Set(positions));
+    })
+    .catch(() => [0]);
+
+  for (const position of scrollPlan) {
+    await page.evaluate((scrollY) => window.scrollTo(0, scrollY), position);
+    await page.waitForTimeout(80);
+  }
+
+  await page.evaluate(() => window.scrollTo(0, 0)).catch(() => undefined);
+  await page.waitForTimeout(300);
+}
+
 function summarizeResults(results: AuditResult[]) {
   const failures = results.filter((result) => result.status === "FAIL");
 
@@ -639,6 +685,7 @@ function formatAuditMarkdown(payload: {
 
 function formatDesignReviewMarkdown(payload: {
   generatedAt: string;
+  options?: { warmScreenshots?: boolean };
   results: AuditResult[];
 }) {
   const visualCandidates = payload.results.filter(
@@ -656,9 +703,11 @@ function formatDesignReviewMarkdown(payload: {
     "# Subjective Design Review Queue",
     "",
     `Generated: ${payload.generatedAt}`,
+    `Screenshot warm-up: ${payload.options?.warmScreenshots ? "enabled" : "disabled"}`,
     "",
     "No subjective design changes were applied automatically.",
     "Use the screenshots and benchmark reports to approve visual polish items one at a time.",
+    "For long PDP, search, gifts, and homepage product-rail reviews, rerun with `--warm-screenshots` before treating offscreen lazy media placeholders as broken imagery.",
     "",
     "| Route | Browser | Viewport | Screenshot | Notes |",
     "| --- | --- | --- | --- | --- |",
@@ -808,6 +857,7 @@ function parseArgs(argv = process.argv.slice(2)): AuditOptions {
       performanceOnly ? ["desktop", "mobile"] : ["desktop", "tablet", "mobile"],
       ["desktop", "tablet", "mobile"],
     ),
+    warmScreenshots: argv.includes("--warm-screenshots"),
   };
 }
 
@@ -826,6 +876,7 @@ Options:
   --performance-only         Audit the performance route subset with strict budgets.
   --repeats <n>              Repetitions per route. Defaults to 1, or 3 for performance.
   --screenshots <mode>       all, failures, none. Defaults to failures.
+  --warm-screenshots         Scroll pages before screenshots so lazy media can load.
 `);
 }
 

@@ -4,6 +4,7 @@ import {
   Clock3,
   Mail,
   MessageSquareText,
+  PackageCheck,
   Phone,
   RotateCcw,
   Ruler,
@@ -22,8 +23,7 @@ import { getPublicServiceProfile } from "~/server/services/service";
 
 export const metadata: Metadata = {
   title: "שירות",
-  description:
-    "שירות Elysia להזמנות, מידות, מתנות, החזרות, פרטיות ונגישות.",
+  description: "שירות Elysia להזמנות, מידות, מתנות, החזרות, פרטיות ונגישות.",
 };
 
 export const dynamic = "force-dynamic";
@@ -62,6 +62,33 @@ const serviceResponseExpectations = [
   },
 ] as const;
 
+const servicePriorityActions = [
+  {
+    href: "/service?topic=sizing#service-form",
+    icon: Ruler,
+    label: "לפני קנייה",
+    text: "מידה, מתנה, חומר או התאמה ללוק.",
+  },
+  {
+    href: "/service?topic=order#service-form",
+    icon: PackageCheck,
+    label: "הזמנה קיימת",
+    text: "בירור, עדכון פרטים או מסירה.",
+  },
+  {
+    href: "/service?topic=returns#service-form",
+    icon: RotateCcw,
+    label: "החלפה או החזרה",
+    text: "בדיקת מדיניות, זיכוי או חלופה.",
+  },
+  {
+    href: "/service?topic=repair#service-form",
+    icon: Wrench,
+    label: "תיקון ואחריות",
+    text: "בדיקת טיפול בתכשיט אחרי שימוש.",
+  },
+] as const;
+
 type ServicePageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
@@ -91,12 +118,18 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
       />
 
       <RevealSection className="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:py-10">
+        <ServicePriorityTriage />
+
         <div className="grid gap-6 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
           <section className="grid gap-5" aria-labelledby="service-contact">
             <div>
               <Badge variant="secondary">שירות</Badge>
-              <h2 className="mt-3 text-2xl font-semibold" id="service-contact">איך נוח לדבר?</h2>
-              <p className="text-muted-foreground mt-2 max-w-prose leading-7">הפעילות מתבצעת מרחוק או בטלפון, עם תיעוד לכל פנייה.</p>
+              <h2 className="mt-3 text-2xl font-semibold" id="service-contact">
+                איך נוח לדבר?
+              </h2>
+              <p className="text-muted-foreground mt-2 max-w-prose leading-7">
+                הפעילות מתבצעת מרחוק או בטלפון, עם תיעוד לכל פנייה.
+              </p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
@@ -177,8 +210,12 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
           <section aria-labelledby="service-form" id="service-form">
             <div className="mb-4">
               <Badge variant="outline">פנייה לשירות</Badge>
-              <h2 className="mt-3 text-2xl font-semibold">ספרו לנו במה להתמקד</h2>
-              <p className="text-muted-foreground mt-2 text-sm leading-6">בחרו נושא והשאירו פרטים. נחזור עם תשובה שמתייחסת למה שצריך.</p>
+              <h2 className="mt-3 text-2xl font-semibold">
+                ספרו לנו במה להתמקד
+              </h2>
+              <p className="text-muted-foreground mt-2 text-sm leading-6">
+                בחרו נושא והשאירו פרטים. נחזור עם תשובה שמתייחסת למה שצריך.
+              </p>
             </div>
             <section
               aria-labelledby="service-topic-cards-title"
@@ -215,7 +252,10 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
               data-testid="service-response-time-note"
             >
               <Clock3 aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-              <p>פניות מטופלות לפי סדר קבלה ונושא. מספר הזמנה או שם תכשיט עוזרים לתת תשובה מדויקת יותר.</p>
+              <p>
+                פניות מטופלות לפי סדר קבלה ונושא. מספר הזמנה או שם תכשיט עוזרים
+                לתת תשובה מדויקת יותר.
+              </p>
             </div>
             <ServiceRequestForm
               defaultMessage={defaultMessage}
@@ -233,6 +273,47 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
         </div>
       </RevealSection>
     </main>
+  );
+}
+
+function ServicePriorityTriage() {
+  return (
+    <section
+      aria-labelledby="service-priority-triage-title"
+      className="mb-6 grid gap-3 border-y border-[var(--glass-border)] py-4 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.4fr)] lg:items-center"
+      data-testid="service-priority-triage"
+    >
+      <div>
+        <p className="text-muted-foreground text-xs font-medium uppercase">
+          מסלול מהיר
+        </p>
+        <h2
+          className="mt-2 text-xl font-semibold"
+          id="service-priority-triage-title"
+        >
+          בחרו את סוג הפנייה לפני שממלאים פרטים
+        </h2>
+      </div>
+      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+        {servicePriorityActions.map((action) => {
+          const Icon = action.icon;
+
+          return (
+            <Link
+              className="border-border hover:border-foreground/50 hover:bg-muted/60 grid min-h-28 rounded-md border p-3 text-sm transition"
+              href={action.href}
+              key={action.href}
+            >
+              <Icon aria-hidden="true" className="size-4" />
+              <span className="mt-3 font-medium">{action.label}</span>
+              <span className="text-muted-foreground mt-1 leading-5">
+                {action.text}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 

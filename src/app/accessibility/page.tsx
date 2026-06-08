@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AlertTriangle, Mail, Phone, ShieldCheck } from "lucide-react";
 
 import { CommercePageHero } from "~/components/commerce-page-hero";
+import { LegalCookiePreferencesCallout } from "~/components/legal-cookie-preferences-callout";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
@@ -41,7 +42,10 @@ export default async function AccessibilityPage() {
             <section aria-labelledby="accessibility-details">
               <div className="flex items-center gap-3">
                 <ShieldCheck className="size-5" aria-hidden="true" />
-                <h2 className="text-2xl font-semibold" id="accessibility-details">
+                <h2
+                  className="text-2xl font-semibold"
+                  id="accessibility-details"
+                >
                   פרטי נגישות נדרשים
                 </h2>
               </div>
@@ -62,6 +66,10 @@ export default async function AccessibilityPage() {
 
             <Separator className="my-8" />
 
+            <LegalCookiePreferencesCallout testId="accessibility-cookie-preferences-callout" />
+
+            <Separator className="my-8" />
+
             <section aria-labelledby="accessibility-standard">
               <div className="flex items-center gap-3">
                 <ShieldCheck className="size-5" aria-hidden="true" />
@@ -74,12 +82,12 @@ export default async function AccessibilityPage() {
               </div>
               <p className="text-muted-foreground mt-4 leading-8">
                 האתר נבנה במטרה לעמוד בדרישות הנגישות החלות ובתקן ישראלי 5568,
-                המבוסס על WCAG 2.0 ברמה AA ככל האפשר. נגישות דורשת בדיקה
-                שוטפת, ולכן ייתכנו רכיבים שדורשים תיקון או התאמה נוספת.
+                המבוסס על WCAG 2.0 ברמה AA ככל האפשר. נגישות דורשת בדיקה שוטפת,
+                ולכן ייתכנו רכיבים שדורשים תיקון או התאמה נוספת.
               </p>
               <p className="text-muted-foreground mt-4 leading-8">
-                אם מצאתם רכיב שאינו נגיש, ניתן לפנות אלינו עם תיאור הבעיה,
-                כתובת העמוד, דפדפן וטכנולוגיה מסייעת שבה נעשה שימוש, אם קיימת.
+                אם מצאתם רכיב שאינו נגיש, ניתן לפנות אלינו עם תיאור הבעיה, כתובת
+                העמוד, דפדפן וטכנולוגיה מסייעת שבה נעשה שימוש, אם קיימת.
               </p>
             </section>
 
@@ -96,8 +104,8 @@ export default async function AccessibilityPage() {
                 <li>הדגשת קישורים בקו תחתון.</li>
                 <li>הפחתת אנימציות ומעברים.</li>
                 <li>
-                  הסתרה זמנית של כפתור הנגישות הצף, בלי להסיר את קישור
-                  ההצהרה בפוטר.
+                  הסתרה זמנית של כפתור הנגישות הצף, בלי להסיר את קישור ההצהרה
+                  בפוטר.
                 </li>
                 <li>כותרות, כפתורים וקישורים סמנטיים לניווט מקלדת.</li>
               </ul>
@@ -117,8 +125,8 @@ export default async function AccessibilityPage() {
               </div>
               <p className="text-muted-foreground mt-4 leading-8">
                 מגבלות ידועות: [להשלמה / לא ידועות]. אם קיימים קבצים, תמונות,
-                סרטונים, רכיבי צד שלישי או תהליכי תשלום שאינם בשליטת האתר,
-                ייתכן שהם ידרשו התאמה או חלופה נגישה.
+                סרטונים, רכיבי צד שלישי או תהליכי תשלום שאינם בשליטת האתר, ייתכן
+                שהם ידרשו התאמה או חלופה נגישה.
               </p>
             </section>
 
@@ -129,8 +137,8 @@ export default async function AccessibilityPage() {
                 פנייה בנושא נגישות
               </h2>
               <p className="text-muted-foreground mt-4 leading-8">
-                בפנייה בנושא נגישות יש לציין עמוד, דפדפן, תיאור בעיה
-                וטכנולוגיה מסייעת, אם קיימת. זמן מענה משוער: [להשלמה].
+                בפנייה בנושא נגישות יש לציין עמוד, דפדפן, תיאור בעיה וטכנולוגיה
+                מסייעת, אם קיימת. זמן מענה משוער: [להשלמה].
               </p>
               <Button asChild className="mt-5" variant="secondary">
                 <Link

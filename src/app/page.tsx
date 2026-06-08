@@ -198,7 +198,7 @@ export default async function Home() {
                   href="/search"
                   prefetch={false}
                 >
-                  SHOP NOW
+                  לכל התכשיטים
                   <ArrowLeft
                     aria-hidden="true"
                     className="home-hero-cta-icon size-4"
@@ -392,8 +392,8 @@ export default async function Home() {
               תכשיט קטן יכול לשנות את כל היום.
             </h2>
             <p className="storefront-final-text">
-              בחרי לפי לוק, תקציב או חומר. ואם זו מתנה, מידה לא בטוחה או
-              התלבטות בין שני גוונים, אפשר לשאול לפני שמזמינים.
+              בחרי לפי לוק, תקציב או חומר. ואם זו מתנה, מידה לא בטוחה או התלבטות
+              בין שני גוונים, אפשר לשאול לפני שמזמינים.
             </p>
             <div className="storefront-final-actions">
               <Button asChild>

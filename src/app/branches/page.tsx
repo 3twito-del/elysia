@@ -19,8 +19,7 @@ import { getPublicServiceProfile } from "~/server/services/service";
 
 export const metadata: Metadata = {
   title: "חנות אונליין ושירות",
-  description:
-    "Elysia פועלת כחנות אונליין. מיקומי שירות יופיעו כאן כשייפתחו.",
+  description: "Elysia פועלת כחנות אונליין. מיקומי שירות יופיעו כאן כשייפתחו.",
 };
 
 export const dynamic = "force-dynamic";
@@ -28,17 +27,17 @@ export const dynamic = "force-dynamic";
 const onlineServiceHighlights = [
   {
     title: "קונים אונליין",
-    text: "המבחר, המידות והחומרים מופיעים בכל עמוד מוצר.",
+    text: "המבחר והמידות זמינים באתר.",
     icon: Search,
   },
   {
     title: "שירות",
-    text: "שאלות על מידה, מתנה או התאמה עוברות דרך השירות.",
+    text: "שאלות עוברות דרך טופס או קשר ישיר.",
     icon: Headphones,
   },
   {
     title: "משלוח ותיאום",
-    text: "ההזמנה ממשיכה למסלול משלוח מקוון.",
+    text: "הזמנה ממשיכה למסלול משלוח מקוון.",
     icon: PackageCheck,
   },
 ] as const;
@@ -130,7 +129,9 @@ export default async function BranchesPage() {
           >
             <div>
               <p className="text-sm font-medium">שירות אונליין בלבד</p>
-              <p className="text-muted-foreground text-sm">אין קבלת קהל או איסוף מסניף כרגע; קנייה ושירות מתבצעים באתר.</p>
+              <p className="text-muted-foreground text-sm">
+                אין קבלת קהל או איסוף מסניף כרגע; קנייה ושירות מתבצעים באתר.
+              </p>
             </div>
             <Badge variant="secondary">מעודכן לעכשיו</Badge>
           </section>
@@ -140,7 +141,10 @@ export default async function BranchesPage() {
               <h2 className="mt-4 text-3xl font-medium">
                 אין סניפים פיזיים בשלב זה
               </h2>
-              <p className="text-muted-foreground mt-4 max-w-2xl text-sm leading-7 sm:text-base sm:leading-8">Elysia פועלת כחנות מקוונת. כשייפתחו סניפים או נקודות שירות, הם יופיעו כאן עם שעות וקשר.</p>
+              <p className="text-muted-foreground mt-4 max-w-2xl text-sm leading-7 sm:text-base sm:leading-8">
+                Elysia פועלת כחנות מקוונת. כשייפתחו סניפים או נקודות שירות, הם
+                יופיעו כאן עם שעות וקשר.
+              </p>
               <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <Button asChild>
                   <Link href="/search">
@@ -189,7 +193,9 @@ export default async function BranchesPage() {
                   <h3 className="font-medium" id="branches-contact-channels">
                     ערוצי קשר זמינים
                   </h3>
-                  <p className="text-muted-foreground mt-1 text-sm leading-6">בחרו את הדרך הכי נוחה לשאלה, הזמנה או התאמה.</p>
+                  <p className="text-muted-foreground mt-1 text-sm leading-6">
+                    בחרו את הדרך הכי נוחה לשאלה, הזמנה או התאמה.
+                  </p>
                 </div>
                 <div className="grid gap-2 sm:grid-cols-3">
                   <a
@@ -237,24 +243,31 @@ export default async function BranchesPage() {
                 >
                   מפת סניפים תופיע כשייפתחו נקודות שירות
                 </h3>
-                <p className="text-muted-foreground mt-2 text-sm leading-7">עד אז, חיפוש תכשיט, מדידה ושירות מתבצעים באתר.</p>
+                <p className="text-muted-foreground mt-2 text-sm leading-7">
+                  עד אז, חיפוש תכשיט, מדידה ושירות מתבצעים באתר.
+                </p>
                 <Button asChild className="mt-4" size="sm" variant="outline">
                   <Link href="/service?topic=general">שאלה לשירות</Link>
                 </Button>
               </section>
 
-              <div className="grid gap-4 sm:grid-cols-3">
+              <div
+                className="grid gap-3 sm:grid-cols-3"
+                data-testid="branches-online-compact-highlights"
+              >
                 {onlineServiceHighlights.map((item) => {
                   const Icon = item.icon;
 
                   return (
                     <section
-                      className="border-t border-[var(--glass-border)] pt-4"
+                      className="rounded-md border border-[var(--glass-border)] p-3"
                       key={item.title}
                     >
                       <Icon aria-hidden="true" className="size-5" />
-                      <h3 className="mt-4 text-lg font-medium">{item.title}</h3>
-                      <p className="text-muted-foreground mt-2 text-sm leading-7">
+                      <h3 className="mt-3 text-base font-medium">
+                        {item.title}
+                      </h3>
+                      <p className="text-muted-foreground mt-1 text-sm leading-6">
                         {item.text}
                       </p>
                     </section>

@@ -13,6 +13,17 @@ const offlineRecoveryNotes = [
   "עמודים שכבר נטענו עשויים להמשיך לעבוד מהמטמון של האפליקציה.",
 ] as const;
 
+const offlineCapabilityGroups = [
+  {
+    title: "אפשר לנסות עכשיו",
+    items: ["עמודים שכבר נפתחו", "מדריך מידות מקומי", "קריאת מדיניות ושירות"],
+  },
+  {
+    title: "דורש חיבור",
+    items: ["תשלום והזמנה", "כניסה לחשבון", "שליחת טופס או עדכון סל"],
+  },
+] as const;
+
 export default function OfflinePage() {
   return (
     <main className="bg-background text-foreground grid min-h-svh place-items-center px-4 py-12">
@@ -34,7 +45,10 @@ export default function OfflinePage() {
           >
             אין חיבור פעיל כרגע
           </h1>
-          <p className="text-muted-foreground max-w-xl leading-7">ניתן לצפות בעמודים שכבר נטענו. הזמנה, חשבון ותשלום יחזרו כשהחיבור יתחדש.</p>
+          <p className="text-muted-foreground max-w-xl leading-7">
+            ניתן לצפות בעמודים שכבר נטענו. הזמנה, חשבון ותשלום יחזרו כשהחיבור
+            יתחדש.
+          </p>
         </div>
         <ul
           className="text-muted-foreground grid gap-2 text-sm leading-6"
@@ -52,7 +66,28 @@ export default function OfflinePage() {
           data-testid="offline-install-context"
         >
           <p className="font-medium">התקנה ושחזור מהיר</p>
-          <p className="text-muted-foreground mt-1">באפליקציה מותקנת ניתן לפתוח עמודים ציבוריים שנטענו לאחרונה. הזמנה ותשלום דורשים חיבור.</p>
+          <p className="text-muted-foreground mt-1">
+            באפליקציה מותקנת ניתן לפתוח עמודים ציבוריים שנטענו לאחרונה. הזמנה
+            ותשלום דורשים חיבור.
+          </p>
+        </div>
+        <div
+          className="grid gap-3 sm:grid-cols-2"
+          data-testid="offline-capability-split"
+        >
+          {offlineCapabilityGroups.map((group) => (
+            <section
+              className="rounded-md border border-[var(--glass-border)] p-4 text-sm"
+              key={group.title}
+            >
+              <h2 className="font-medium">{group.title}</h2>
+              <ul className="text-muted-foreground mt-2 grid gap-1.5 leading-6">
+                {group.items.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </section>
+          ))}
         </div>
         <div
           className="flex flex-wrap gap-3"

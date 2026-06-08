@@ -103,6 +103,8 @@ export function GuestWishlistProducts() {
         <CardTitle>מועדפים בדפדפן זה</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-5">
+        <GuestWishlistShortlistOnboarding hasSavedSlugs={hasSavedSlugs} />
+
         {message ? (
           <StatusMessage role="status" tone="success">
             {message}
@@ -225,6 +227,46 @@ export function GuestWishlistProducts() {
     clearGuestWishlistItems();
     setMessage("המועדפים המקומיים נוקו.");
   }
+}
+
+function GuestWishlistShortlistOnboarding({
+  hasSavedSlugs,
+}: {
+  hasSavedSlugs: boolean;
+}) {
+  return (
+    <section
+      aria-label="איך מועדפים מקומיים עובדים"
+      className="grid gap-3 rounded-md border border-[var(--glass-border)] p-4 text-sm sm:grid-cols-[minmax(0,1fr)_auto]"
+      data-testid="wishlist-guest-shortlist-onboarding"
+    >
+      <div>
+        <p className="font-medium">
+          {hasSavedSlugs
+            ? "הרשימה נשמרת בדפדפן הזה"
+            : "אפשר לבנות shortlist לפני התחברות"}
+        </p>
+        <p className="text-muted-foreground mt-1 leading-6">
+          סמנו לב בפריטים שמעניינים אתכם, השוו בנחת, ואז היכנסו לחשבון כדי
+          לסנכרן את הרשימה.
+        </p>
+      </div>
+      <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+        <Link
+          className="border-border hover:border-foreground/50 hover:bg-muted/60 rounded-full border px-3 py-1.5 text-xs transition"
+          href="/search"
+        >
+          המשך חיפוש
+        </Link>
+        <Link
+          className="border-border hover:border-foreground/50 hover:bg-muted/60 rounded-full border px-3 py-1.5 text-xs transition"
+          href="/account"
+        >
+          סנכרון לחשבון
+        </Link>
+      </div>
+    </section>
+  );
 }
 
 function GuestWishlistProductCard({

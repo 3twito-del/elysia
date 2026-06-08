@@ -301,6 +301,7 @@ export function AccessibilityWidget() {
 
   const currentScaleIndex = getScaleIndex(settings.textScale);
   const isTriggerHidden = hiddenTriggerPathname === pathname;
+  const usesCheckoutTopPlacement = pathname === "/checkout";
   const closeMenu = () => {
     shouldRestoreTriggerFocusRef.current = true;
     setIsOpen(false);
@@ -319,7 +320,11 @@ export function AccessibilityWidget() {
           aria-expanded={isOpen}
           aria-haspopup="dialog"
           aria-label="פתיחת תפריט נגישות"
-          className="public-floating-control public-floating-trigger bg-background text-foreground focus-visible:outline-foreground/50 fixed right-3 bottom-[calc(max(var(--floating-stack-bottom,0.75rem),var(--public-floating-bar-offset,0.75rem))+env(safe-area-inset-bottom))] left-auto z-50 size-10 rounded-full shadow-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid sm:right-5 sm:size-11"
+          className={cn(
+            "public-floating-control public-floating-trigger bg-background text-foreground focus-visible:outline-foreground/50 fixed right-3 bottom-[calc(max(var(--floating-stack-bottom,0.75rem),var(--public-floating-bar-offset,0.75rem))+env(safe-area-inset-bottom))] left-auto z-50 size-10 rounded-full shadow-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid sm:right-5 sm:size-11",
+            usesCheckoutTopPlacement &&
+              "top-[calc(var(--site-header-height)+var(--floating-stack-top,0px)+0.75rem+env(safe-area-inset-top))] bottom-auto sm:bottom-auto",
+          )}
           data-accessibility-widget-trigger="true"
           data-icon-tooltip="תפריט נגישות"
           data-icon-tooltip-placement="top"

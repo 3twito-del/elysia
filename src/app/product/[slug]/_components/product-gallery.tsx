@@ -279,46 +279,54 @@ export function ProductGallery({
     if (galleryImageCount <= 1) return null;
 
     return (
-      <div
-        aria-label="תמונות תכשיט"
-        className="product-gallery-thumbnail-rail minimal-scroll flex max-w-full min-w-0 gap-2 overflow-x-auto overscroll-x-contain pb-1"
-        data-testid={input.testId}
-      >
-        {galleryImages.map((image, index) => (
-          <button
-            aria-label={`הצגת תמונה ${index + 1} של ${productName}`}
-            aria-current={activeImageIndex === index}
-            aria-pressed={activeImageIndex === index}
-            className={cn(
-              "motion-thumbnail-button border-border bg-card relative aspect-[4/5] w-[4.5rem] shrink-0 overflow-hidden rounded-md border transition focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none sm:w-20 lg:w-[5.5rem]",
-              activeImageIndex === index
-                ? "border-foreground ring-foreground ring-1"
-                : "hover:border-foreground/60",
-            )}
-            data-gallery-selected={
-              activeImageIndex === index ? "true" : "false"
-            }
-            data-testid={input.thumbnailTestId}
-            key={image}
-            onClick={() => activateThumbnail(index)}
-            onKeyDown={(event) =>
-              handleThumbnailKeyDown(event, index, input.refs)
-            }
-            ref={(node) => {
-              input.refs.current[index] = node;
-            }}
-            type="button"
-          >
-            <Image
-              alt=""
-              className="media-color object-cover"
-              fill
-              loading="lazy"
-              sizes={galleryThumbnailImageSizes}
-              src={image}
-            />
-          </button>
-        ))}
+      <div className="grid min-w-0 gap-2">
+        <p
+          className="text-muted-foreground text-xs"
+          data-testid={`${input.testId}-summary`}
+        >
+          תמונה {activeImagePosition} מתוך {galleryImageCount}
+        </p>
+        <div
+          aria-label="תמונות תכשיט"
+          className="product-gallery-thumbnail-rail minimal-scroll flex max-w-full min-w-0 gap-2 overflow-x-auto overscroll-x-contain pb-1"
+          data-testid={input.testId}
+        >
+          {galleryImages.map((image, index) => (
+            <button
+              aria-label={`הצגת תמונה ${index + 1} של ${productName}`}
+              aria-current={activeImageIndex === index}
+              aria-pressed={activeImageIndex === index}
+              className={cn(
+                "motion-thumbnail-button border-border bg-card relative aspect-[4/5] w-[4.5rem] shrink-0 overflow-hidden rounded-md border transition focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none sm:w-20 lg:w-[5.5rem]",
+                activeImageIndex === index
+                  ? "border-foreground ring-foreground ring-1"
+                  : "hover:border-foreground/60",
+              )}
+              data-gallery-selected={
+                activeImageIndex === index ? "true" : "false"
+              }
+              data-testid={input.thumbnailTestId}
+              key={image}
+              onClick={() => activateThumbnail(index)}
+              onKeyDown={(event) =>
+                handleThumbnailKeyDown(event, index, input.refs)
+              }
+              ref={(node) => {
+                input.refs.current[index] = node;
+              }}
+              type="button"
+            >
+              <Image
+                alt=""
+                className="media-color object-cover"
+                fill
+                loading="lazy"
+                sizes={galleryThumbnailImageSizes}
+                src={image}
+              />
+            </button>
+          ))}
+        </div>
       </div>
     );
   }

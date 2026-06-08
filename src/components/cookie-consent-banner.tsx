@@ -11,6 +11,7 @@ import {
   writeCookieConsent,
 } from "~/lib/cookie-consent";
 import { useCookieConsentValue } from "~/lib/use-cookie-consent";
+import { cn } from "~/lib/utils";
 
 export function CookieConsentBanner() {
   const pathname = usePathname();
@@ -22,20 +23,34 @@ export function CookieConsentBanner() {
     consentValue === undefined && selectedConsentValue === null;
   const bannerRef = useRef<HTMLElement>(null);
   const isAdminRoute = pathname.startsWith("/admin");
+  const usesCheckoutTopPlacement = pathname === "/checkout";
 
   useEffect(() => {
     const root = document.documentElement;
 
     if (isAdminRoute || isConsentLoading || effectiveConsentValue !== null) {
       delete root.dataset.cookieBannerOpen;
+      delete root.dataset.cookieBannerPlacement;
       root.style.removeProperty("--floating-stack-bottom");
+      root.style.removeProperty("--floating-stack-top");
       return;
     }
 
     root.dataset.cookieBannerOpen = "true";
+    root.dataset.cookieBannerPlacement = usesCheckoutTopPlacement
+      ? "top"
+      : "bottom";
 
     const syncOffset = () => {
       const height = bannerRef.current?.getBoundingClientRect().height ?? 0;
+
+      if (usesCheckoutTopPlacement) {
+        root.style.removeProperty("--floating-stack-bottom");
+        root.style.setProperty("--floating-stack-top", `${height + 16}px`);
+        return;
+      }
+
+      root.style.removeProperty("--floating-stack-top");
       root.style.setProperty("--floating-stack-bottom", `${height + 16}px`);
     };
 
@@ -47,7 +62,9 @@ export function CookieConsentBanner() {
       return () => {
         window.removeEventListener("resize", syncOffset);
         delete root.dataset.cookieBannerOpen;
+        delete root.dataset.cookieBannerPlacement;
         root.style.removeProperty("--floating-stack-bottom");
+        root.style.removeProperty("--floating-stack-top");
       };
     }
 
@@ -59,9 +76,16 @@ export function CookieConsentBanner() {
       observer.disconnect();
       window.removeEventListener("resize", syncOffset);
       delete root.dataset.cookieBannerOpen;
+      delete root.dataset.cookieBannerPlacement;
       root.style.removeProperty("--floating-stack-bottom");
+      root.style.removeProperty("--floating-stack-top");
     };
-  }, [effectiveConsentValue, isAdminRoute, isConsentLoading]);
+  }, [
+    effectiveConsentValue,
+    isAdminRoute,
+    isConsentLoading,
+    usesCheckoutTopPlacement,
+  ]);
 
   if (isAdminRoute || isConsentLoading || effectiveConsentValue !== null) {
     return null;
@@ -76,7 +100,11 @@ export function CookieConsentBanner() {
     <section
       aria-label="בחירת קוקיז"
       aria-describedby="cookie-consent-summary"
-      className="minimal-scroll bg-background fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-50 max-h-[24dvh] overflow-y-auto rounded-md border border-[var(--glass-border)] px-3 py-2 shadow-none sm:inset-x-auto sm:right-4 sm:bottom-4 sm:w-[min(calc(100vw-2rem),20rem)] sm:px-3 sm:py-2.5"
+      className={cn(
+        "minimal-scroll bg-background fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-50 max-h-[24dvh] overflow-y-auto rounded-md border border-[var(--glass-border)] px-3 py-2 shadow-none sm:inset-x-auto sm:right-4 sm:bottom-4 sm:w-[min(calc(100vw-2rem),20rem)] sm:px-3 sm:py-2.5",
+        usesCheckoutTopPlacement &&
+          "top-[calc(var(--site-header-height)+0.75rem+env(safe-area-inset-top))] bottom-auto sm:bottom-auto",
+      )}
       data-cookie-consent-banner="true"
       data-public-floating-avoid="true"
       ref={bannerRef}

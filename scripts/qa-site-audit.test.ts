@@ -5,6 +5,7 @@ import {
   inpSensitiveControlAudit,
   isIgnorableConsoleError,
   qaArtifactStandard,
+  scrollWarmedScreenshotEvidence,
 } from "./qa-site-audit";
 
 describe("QA site audit contracts", () => {
@@ -30,7 +31,16 @@ describe("QA site audit contracts", () => {
         "routeSet",
         "repeats",
         "screenshotMode",
+        "warmScreenshots",
       ]),
+    );
+  });
+
+  it("documents scroll-warmed screenshot evidence for long design reviews", () => {
+    expect(scrollWarmedScreenshotEvidence.option).toBe("--warm-screenshots");
+    expect(scrollWarmedScreenshotEvidence.purpose).toContain("lazy media");
+    expect(scrollWarmedScreenshotEvidence.routeTypes).toEqual(
+      expect.arrayContaining(["PDP", "search", "gifts"]),
     );
   });
 
