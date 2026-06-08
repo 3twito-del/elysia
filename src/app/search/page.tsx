@@ -278,7 +278,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             <EmptyState
               className="mt-6 sm:mt-10"
               description={
-                <>אפשר לנקות סינונים, לעבור לקטגוריה פתוחה או להרחיב את החיפוש.</>
+                <>
+                  אפשר לנקות סינונים, לעבור לקטגוריה פתוחה או להרחיב את החיפוש.
+                </>
               }
               icon={Search}
               testId="search-empty-state"
@@ -383,6 +385,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               >
                 {result.hits.map((product, index) => (
                   <ProductCard
+                    density="compact"
                     imagePriority={index < 4}
                     imageSizes="(min-width: 1280px) 18rem, (min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                     key={product.slug}
@@ -877,8 +880,7 @@ async function getSearchRecoveryActions(
     };
 
     candidates.push({
-      description:
-        "משאיר את מילת החיפוש ומסיר קטגוריה, חומר, אבן, מחיר ומיון.",
+      description: "משאיר את מילת החיפוש ומסיר קטגוריה, חומר, אבן, מחיר ומיון.",
       href: createSearchHref({ ...queryOnlyInput, view: viewMode }),
       input: queryOnlyInput,
       label: "ניקוי סינונים",
@@ -969,9 +971,7 @@ function SearchPagination({
       aria-label="עמודי תוצאות חיפוש"
       className="mt-8 flex flex-col items-center justify-between gap-3 sm:flex-row"
     >
-      <p className="text-muted-foreground text-sm">
-        עמוד {currentPage}
-      </p>
+      <p className="text-muted-foreground text-sm">עמוד {currentPage}</p>
       <div className="flex flex-wrap items-center justify-center gap-2">
         <Button
           asChild={currentPage > 1}

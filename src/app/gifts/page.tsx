@@ -217,6 +217,7 @@ export default async function GiftsPage() {
             {products.map((product, index) => (
               <ProductCard
                 contextLabel={getGiftBudgetContextLabel(product)}
+                density="compact"
                 imagePriority={index === 0}
                 key={product.slug}
                 product={product}

@@ -20,6 +20,7 @@ import type {
 
 type ProductCardProps = {
   contextLabel?: string;
+  density?: "standard" | "compact";
   display?: "standard" | "editorial";
   imagePriority?: boolean;
   imageSizes?: string;
@@ -48,6 +49,7 @@ const PRODUCT_CARD_IMAGE_POSITION_BY_SOURCE = [
 
 export function ProductCard({
   contextLabel,
+  density = "standard",
   display = "standard",
   imagePriority = false,
   imageSizes = DEFAULT_PRODUCT_CARD_IMAGE_SIZES,
@@ -55,6 +57,7 @@ export function ProductCard({
   searchContext,
 }: ProductCardProps) {
   const isEditorialDisplay = display === "editorial";
+  const isCompactDensity = density === "compact" && !isEditorialDisplay;
   const publicProductName = getPublicProductName(product.name);
   const publicCollectionName = getPublicCollectionName(product.collection);
   const onlineStockQuantity = Object.values(product.inventory).reduce(
@@ -109,6 +112,7 @@ export function ProductCard({
         isUnavailable && "opacity-90",
       )}
       data-public-floating-avoid="true"
+      data-product-card-density={isCompactDensity ? "compact" : "standard"}
       data-product-card-display={display}
       data-testid="product-card"
       dir="rtl"
@@ -119,7 +123,12 @@ export function ProductCard({
         href={href}
         prefetch={false}
       >
-        <div className="brand-product-media product-card-media bg-muted relative aspect-[5/4] overflow-hidden rounded-md border-0 sm:aspect-[4/5]">
+        <div
+          className={cn(
+            "brand-product-media product-card-media bg-muted relative aspect-[5/4] overflow-hidden rounded-md border-0 sm:aspect-[4/5]",
+            isCompactDensity && "product-card-media-compact",
+          )}
+        >
           <span
             aria-hidden="true"
             className="product-card-image-skeleton absolute inset-0"
@@ -158,7 +167,12 @@ export function ProductCard({
             </div>
           ) : null}
         </div>
-        <CardContent className="flex min-h-28 flex-1 flex-col px-0 pt-4 pb-0 sm:min-h-32">
+        <CardContent
+          className={cn(
+            "flex min-h-28 flex-1 flex-col px-0 pt-4 pb-0 sm:min-h-32",
+            isCompactDensity && "product-card-content-compact",
+          )}
+        >
           <div className="min-w-0">
             <div className="grid min-w-0 gap-1.5">
               {contextLabel ? (
@@ -188,7 +202,10 @@ export function ProductCard({
               ) : null}
               {!isEditorialDisplay ? (
                 <p
-                  className="ui-text-slot text-muted-foreground/90 text-xs leading-5 [--ui-text-slot-line-height:1.25rem]"
+                  className={cn(
+                    "ui-text-slot text-muted-foreground/90 text-xs leading-5 [--ui-text-slot-line-height:1.25rem]",
+                    isCompactDensity && "product-card-descriptor-compact",
+                  )}
                   data-lines="2"
                   data-testid="product-card-descriptor"
                 >
@@ -245,9 +262,7 @@ export function ProductCard({
               {isAvailable ? (
                 <span className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0.5">
                   <span className="truncate">
-                    {sale ? (
-                      <span className="sr-only">מחיר מבצע </span>
-                    ) : null}
+                    {sale ? <span className="sr-only">מחיר מבצע </span> : null}
                     {formatPrice(product.price)}
                   </span>
                   {sale ? (
@@ -270,7 +285,10 @@ export function ProductCard({
         </CardContent>
       </Link>
       {!isEditorialDisplay && quickAddVariant ? (
-        <div className="mt-3" data-public-floating-avoid="true">
+        <div
+          className={cn("mt-3", isCompactDensity && "mt-2")}
+          data-public-floating-avoid="true"
+        >
           <ProductCardQuickAddButton
             productName={publicProductName}
             variantSku={quickAddVariant.sku}

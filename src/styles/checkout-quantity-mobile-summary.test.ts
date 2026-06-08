@@ -50,6 +50,10 @@ describe("checkout quantity recovery and mobile summary", () => {
 
     expect(checkoutForm).toContain("mobileCheckoutSummaryCopy");
     expect(checkoutForm).toContain('data-testid="mobile-checkout-summary"');
+    expect(checkoutForm).toContain("showMobileCheckoutBar");
+    expect(checkoutForm).toContain(
+      "canRenderStickyBar && hasOwnItems && showMobileCheckoutBar",
+    );
     expect(checkoutForm).toContain(
       'data-testid="mobile-checkout-source-context"',
     );

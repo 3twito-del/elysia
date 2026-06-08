@@ -1,10 +1,11 @@
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
 const sourceRoots = ["src/app", "src/components"];
 const sourceExtensions = new Set([".tsx", ".ts"]);
+const root = process.cwd();
 
 describe("image performance guardrails", () => {
   it("keeps route-level LCP priority limited to first-viewport media", () => {
@@ -166,6 +167,14 @@ describe("image performance guardrails", () => {
     expect(nextConfigSource).toContain(
       'value: "public, max-age=31536000, immutable"',
     );
+  });
+
+  it("keeps the legacy checkout category thumbnail route backed by local media", () => {
+    expect(
+      existsSync(
+        path.join(root, "public", "brand", "v2", "category-bracelets.avif"),
+      ),
+    ).toBe(true);
   });
 
   it("keeps external connection hints on the current media and font whitelist", () => {

@@ -18,7 +18,11 @@ describe("mobile commerce density", () => {
     );
     expect(source).toContain('data-testid="home-hero-statement"');
     expect(source).toContain('data-testid="home-hero-primary-cta"');
+    expect(source).toContain('data-testid="home-hero-secondary-cta"');
+    expect(source).toContain('data-testid="home-hero-campaign-links"');
     expect(source).toContain('href="/search"');
+    expect(source).toContain('href="/gifts"');
+    expect(source).toContain('href: "/category/necklaces"');
     expect(countOccurrences(source, "min-h-[var(--home-hero-height)]")).toBe(1);
     expect(indexOf(source, 'id="page-hero"')).toBeLessThan(
       indexOf(source, 'id="collections"'),
@@ -143,6 +147,7 @@ describe("mobile commerce density", () => {
     const category = read("src/app/category/[slug]/page.tsx");
     const search = read("src/app/search/page.tsx");
     const productCard = read("src/components/product-card.tsx");
+    const css = read("src/styles/globals.css");
 
     expect(home).toContain('id="collections"');
     expect(home).toContain('id="featured"');
@@ -167,9 +172,18 @@ describe("mobile commerce density", () => {
     );
     expect(search).toContain("mt-5 grid gap-4 sm:mt-8");
     expect(productCard).toContain("relative aspect-[5/4] overflow-hidden");
+    expect(productCard).toContain('density?: "standard" | "compact"');
+    expect(productCard).toContain("data-product-card-density=");
+    expect(productCard).toContain("product-card-media-compact");
+    expect(category).toContain('density="compact"');
+    expect(search).toContain('density="compact"');
     expect(productCard).toContain("flex min-h-28 flex-1 flex-col");
     expect(productCard).toContain("sm:min-h-32");
     expect(productCard).toContain('data-testid="product-card-attributes"');
+    expect(css).toContain(
+      '.product-card-shell[data-product-card-density="compact"]',
+    );
+    expect(css).toContain("aspect-ratio: 6 / 5;");
   });
 });
 

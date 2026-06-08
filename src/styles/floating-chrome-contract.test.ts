@@ -136,6 +136,35 @@ describe("public floating chrome contract", () => {
     expect(purchasePanel).toContain("setShowStickyBar(rect.bottom <= 0)");
     expect(purchasePanel).toContain('rootMargin: "0px"');
     expect(purchasePanel).toContain('data-public-floating-avoid="true"');
+    expect(purchasePanel).toContain(
+      'data-testid="product-sticky-purchase-bar"',
+    );
+    expect(purchasePanel).toContain(
+      'data-testid="product-sticky-variant-state"',
+    );
+    expect(purchasePanel).toContain(
+      'data-public-floating-bar-kind="product-purchase"',
+    );
+  });
+
+  it("keeps mobile checkout summary hidden until progress leaves view", () => {
+    const checkoutForm = read(
+      "src/app/checkout/_components/cart-checkout-form.tsx",
+    );
+
+    expect(checkoutForm).toContain("checkoutProgressRef");
+    expect(checkoutForm).toContain("showMobileCheckoutBar");
+    expect(checkoutForm).toContain(
+      "setShowMobileCheckoutBar(rect.bottom <= 0)",
+    );
+    expect(checkoutForm).toContain('data-testid="checkout-progress-steps"');
+    expect(checkoutForm).toContain("ref={checkoutProgressRef}");
+    expect(checkoutForm).toContain(
+      "canRenderStickyBar && hasOwnItems && showMobileCheckoutBar",
+    );
+    expect(checkoutForm).toContain(
+      'data-public-floating-bar-kind="checkout-summary"',
+    );
   });
 });
 

@@ -118,12 +118,16 @@ describe("visible site improvement affordances", () => {
     expect(home).toContain('data-testid="home-hero-copy"');
     expect(home).toContain('data-testid="home-hero-statement"');
     expect(home).toContain('data-testid="home-hero-primary-cta"');
+    expect(home).toContain('data-testid="home-hero-secondary-cta"');
+    expect(home).toContain('data-testid="home-hero-campaign-links"');
     expect(home).toContain("storefront-hero");
     expect(home).toContain("max-w-[min(38rem,calc(100vw-2.5rem))]");
     expect(home).toContain("sm:max-w-[min(42rem,45vw)]");
     expect(home).toContain("home-hero-statement motion-copy-item");
     expect(home).toContain('data-testid="home-hero-cta-row"');
     expect(home).toContain('href="/search"');
+    expect(home).toContain('href="/gifts"');
+    expect(home).toContain('href: "/category/necklaces"');
     expect(home).toContain('data-testid="home-category-tiles"');
     expect(home).toContain('data-testid="home-featured-products"');
     expect(home).not.toContain('data-testid="home-hero-secondary-line"');

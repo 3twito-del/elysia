@@ -173,7 +173,9 @@ export function CartCheckoutForm() {
     () => new Set(),
   );
   const checkoutFormRef = useRef<HTMLFormElement>(null);
+  const checkoutProgressRef = useRef<HTMLDivElement | null>(null);
   const submitLockedRef = useRef(false);
+  const [showMobileCheckoutBar, setShowMobileCheckoutBar] = useState(false);
 
   const cartQuery = api.cart.get.useQuery(
     { sessionKey: sessionKey ?? "" },
@@ -425,6 +427,64 @@ export function CartCheckoutForm() {
       subtotal: dropshipSubtotal,
     },
   ].filter((group) => group.items.length > 0);
+
+  useEffect(() => {
+    if (!canRenderStickyBar || !hasOwnItems) {
+      const frame = window.requestAnimationFrame(() =>
+        setShowMobileCheckoutBar(false),
+      );
+
+      return () => window.cancelAnimationFrame(frame);
+    }
+
+    const checkoutProgress = checkoutProgressRef.current;
+    if (!checkoutProgress) {
+      const frame = window.requestAnimationFrame(() =>
+        setShowMobileCheckoutBar(false),
+      );
+
+      return () => window.cancelAnimationFrame(frame);
+    }
+
+    const syncMobileCheckoutBar = () => {
+      const rect = checkoutProgress.getBoundingClientRect();
+
+      setShowMobileCheckoutBar(rect.bottom <= 0);
+    };
+
+    const initialFrame = window.requestAnimationFrame(syncMobileCheckoutBar);
+
+    if (typeof IntersectionObserver !== "undefined") {
+      const observer = new IntersectionObserver(() => syncMobileCheckoutBar(), {
+        rootMargin: "0px",
+        threshold: [0, 1],
+      });
+
+      observer.observe(checkoutProgress);
+      window.addEventListener("resize", syncMobileCheckoutBar);
+      window.addEventListener("scroll", syncMobileCheckoutBar, {
+        passive: true,
+      });
+
+      return () => {
+        window.cancelAnimationFrame(initialFrame);
+        observer.disconnect();
+        window.removeEventListener("resize", syncMobileCheckoutBar);
+        window.removeEventListener("scroll", syncMobileCheckoutBar);
+      };
+    }
+
+    window.addEventListener("resize", syncMobileCheckoutBar);
+    window.addEventListener("scroll", syncMobileCheckoutBar, {
+      passive: true,
+    });
+
+    return () => {
+      window.cancelAnimationFrame(initialFrame);
+      window.removeEventListener("resize", syncMobileCheckoutBar);
+      window.removeEventListener("scroll", syncMobileCheckoutBar);
+    };
+  }, [canRenderStickyBar, hasOwnItems]);
   const optionMutationInput = useMemo(
     () =>
       sessionKey
@@ -443,6 +503,7 @@ export function CartCheckoutForm() {
     <div
       className="public-floating-control glass-chrome fixed inset-x-3 bottom-[calc(var(--floating-stack-bottom,0px)+0.75rem+env(safe-area-inset-bottom))] z-40 rounded-md border p-2 shadow-none md:hidden"
       data-public-floating-bar="true"
+      data-public-floating-bar-kind="checkout-summary"
       data-public-floating-avoid="true"
       data-testid="mobile-checkout-summary"
     >
@@ -683,7 +744,9 @@ export function CartCheckoutForm() {
                 <Link href="/account">אזור אישי</Link>
               </Button>
               <Button asChild variant="secondary">
-                <Link href={createOrderServiceHref(createOrder.data.orderNumber)}>
+                <Link
+                  href={createOrderServiceHref(createOrder.data.orderNumber)}
+                >
                   יצירת קשר עם שירות הלקוחות
                 </Link>
               </Button>
@@ -728,6 +791,7 @@ export function CartCheckoutForm() {
               aria-label="שלבי סיום ההזמנה"
               className="checkout-progress-panel glass-panel grid gap-2 rounded-md border p-3 text-sm sm:grid-cols-4"
               data-testid="checkout-progress-steps"
+              ref={checkoutProgressRef}
             >
               {checkoutProgressSteps.map((step) => (
                 <div
@@ -1447,7 +1511,10 @@ export function CartCheckoutForm() {
                     data-testid="checkout-policy-links"
                     id="checkout-policy-links"
                   >
-                    <Link className="underline underline-offset-4" href="/terms">
+                    <Link
+                      className="underline underline-offset-4"
+                      href="/terms"
+                    >
                       תקנון האתר
                     </Link>
                     <Link
@@ -1466,7 +1533,9 @@ export function CartCheckoutForm() {
                   <p
                     className="text-destructive min-h-5 text-xs leading-5"
                     id={checkoutLegalAcceptanceErrorId}
-                    role={submitAttempted && !legalAccepted ? "alert" : undefined}
+                    role={
+                      submitAttempted && !legalAccepted ? "alert" : undefined
+                    }
                   >
                     {submitAttempted && !legalAccepted
                       ? checkoutLegalAcceptanceMessage
@@ -1522,7 +1591,7 @@ export function CartCheckoutForm() {
           </Card>
         </aside>
       </form>
-      {canRenderStickyBar && hasOwnItems
+      {canRenderStickyBar && hasOwnItems && showMobileCheckoutBar
         ? createPortal(mobileCheckoutBar, document.body)
         : null}
     </>
@@ -1543,15 +1612,13 @@ function CheckoutEmptyCartState() {
           <div className="checkout-empty-icon glass-inset mb-5 grid size-12 place-items-center rounded-full border">
             <ShoppingBag aria-hidden="true" className="size-5" />
           </div>
-          <p className="text-muted-foreground text-xs font-medium">
-            הסל שלי
-          </p>
+          <p className="text-muted-foreground text-xs font-medium">הסל שלי</p>
           <h2 className="mt-3 text-2xl font-semibold tracking-normal sm:text-3xl">
             הסל שלך ממתין לתכשיט הראשון
           </h2>
           <p className="text-muted-foreground mt-4 max-w-xl text-sm leading-7 sm:text-base">
-            חזרי לקולקציה ובחרי תכשיט. הסיכום ימתין כאן עם פירוט הפריטים
-            ושאלה לשירות לפני אישור.
+            חזרי לקולקציה ובחרי תכשיט. הסיכום ימתין כאן עם פירוט הפריטים ושאלה
+            לשירות לפני אישור.
           </p>
           <div className="mt-7 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <Button asChild>

@@ -486,6 +486,7 @@ export default async function CategoryPage({
                 >
                   {pageProducts.map((product, index) => (
                     <ProductCard
+                      density="compact"
                       imagePriority={index === 0}
                       imageSizes="(min-width: 1280px) 18rem, (min-width: 1024px) calc((100vw - 24rem) / 2), (min-width: 640px) 50vw, 100vw"
                       key={product.slug}

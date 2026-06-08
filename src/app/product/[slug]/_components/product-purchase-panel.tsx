@@ -180,6 +180,9 @@ export function ProductPurchasePanel({
   });
   const addToCartDisabled =
     !selectedVariant || !selectedVariantAvailable || addItem.isPending;
+  const stickyVariantSummary = selectedVariant
+    ? `${getVariantDisplayName(selectedVariant)} / ${selectedVariantStatusLabel}`
+    : selectedVariantStatusLabel;
 
   useEffect(() => {
     if (!sizeKind) return;
@@ -297,26 +300,36 @@ export function ProductPurchasePanel({
   const stickyPurchaseBar = (
     <div
       className="public-floating-control motion-sticky-purchase glass-chrome fixed inset-x-3 bottom-[calc(var(--floating-stack-bottom,0px)+0.75rem+env(safe-area-inset-bottom))] z-40 rounded-md border p-2 shadow-none md:hidden"
+      aria-label="פעולת רכישה מהירה"
       data-public-floating-bar="true"
+      data-public-floating-bar-kind="product-purchase"
       data-public-floating-avoid="true"
+      data-testid="product-sticky-purchase-bar"
     >
-      <div className="mx-auto grid max-w-md grid-cols-[auto_minmax(0,1fr)] items-center gap-3">
-        <div className="order-2 min-w-0">
+      <div className="mx-auto grid max-w-md grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+        <div className="min-w-0">
           <p className="text-muted-foreground truncate text-xs">
             {productName}
           </p>
-          <p className="text-lg font-semibold">
+          <p className="text-base leading-6 font-semibold">
             {formatPrice(selectedVariantPrice)}
+          </p>
+          <p
+            className="text-muted-foreground truncate text-[0.68rem] leading-4"
+            data-testid="product-sticky-variant-state"
+          >
+            {stickyVariantSummary}
           </p>
         </div>
         {selectedVariantAvailable ? (
           <Button
             aria-describedby="product-variant-feedback"
             aria-label={`הוספה לסל: ${productName}`}
-            className="product-primary-cta order-1"
+            className="product-primary-cta shrink-0"
             data-testid="product-sticky-add-to-cart-button"
             disabled={addToCartDisabled}
             onClick={handleAddToCart}
+            size="sm"
             type="button"
           >
             {addItem.isPending
@@ -327,7 +340,7 @@ export function ProductPurchasePanel({
             <PackageCheck aria-hidden="true" className="size-4" />
           </Button>
         ) : (
-          <Button asChild className="product-primary-cta order-1">
+          <Button asChild className="product-primary-cta shrink-0" size="sm">
             <Link href={serviceHref}>
               {commerceStatus.ctaLabel}
               <PackageCheck aria-hidden="true" className="size-4" />

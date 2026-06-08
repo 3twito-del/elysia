@@ -2,7 +2,7 @@
 
 Status: canonical task, roadmap, and implementation-tracker document.
 
-Last consolidated: 2026-06-08.
+Last consolidated: 2026-06-09.
 
 This file replaces the previous standalone task and roadmap documents:
 
@@ -126,6 +126,19 @@ was recorded through:
   wrote `design-review.md` with `Screenshot warm-up: enabled`; it failed
   strict local performance budgets and remains evidence of metadata behavior,
   not a production performance pass.
+- 2026-06-09 implementation verification for I-325, I-326, I-327, I-339, and
+  I-340:
+  `pnpm copy:sync`, `pnpm copy:check`, `pnpm typecheck`, `pnpm lint`,
+  `pnpm qa:routes`, and
+  `pnpm test -- src/styles/mobile-commerce-density.test.ts src/styles/floating-chrome-contract.test.ts src/styles/checkout-quantity-mobile-summary.test.ts src/styles/visible-site-improvements.test.ts src/lib/image-performance.test.ts src/styles/product-card-overlays.test.ts src/lib/layout-stability.test.ts src/styles/product-led-media.test.ts`.
+- 2026-06-09 browser verification recorded `agent-browser` home desktop
+  evidence and focused mobile Playwright evidence in
+  `artifacts/qa/2026-06-09-ready-implementation-browser`: home campaign links
+  visible, search/category compact card density `compact` with media aspect
+  `1.2`, checkout sticky summary hidden while the progress panel is visible
+  and shown only after it leaves the viewport, PDP sticky purchase bar shown
+  only after the primary add-to-cart CTA leaves the viewport, zero console
+  errors, and zero failed `/brand/` or `/_next/image` responses.
 
 `pnpm e2e` was also attempted against a local dev server and timed out after
 10 minutes with broad existing environment-sensitive failures; the focused
@@ -149,13 +162,33 @@ files. A broad `agent-browser` pass was attempted for this expanded round, but
 the browser harness timed out before route review; Playwright artifacts were
 used as fallback evidence for proposal discovery.
 
+P1 design benchmark evidence for the 2026-06-08 continuation pass:
+`pnpm qa:routes` passed with 65 route templates; the focused Playwright probe
+in `artifacts/qa/2026-06-08-p1-design-benchmark/focused/p1-focused-results.json`
+recorded desktop/mobile home, mobile `/search?q=venus`, mobile
+`/product/venus-line-ring`, and populated mobile `/checkout` geometry with
+screenshots in the same directory. A representative
+`qa-site-audit` attempt against desktop/mobile wrote route inventory and
+screenshots under `artifacts/qa/2026-06-08-p1-design-benchmark/site-audit`, but
+timed out before final `site-audit` JSON; it is partial supporting evidence
+only. The focused pass found no console errors on home/search/PDP, confirmed
+the PDP sticky purchase bar appears only after the primary purchase CTA leaves
+the viewport, confirmed populated checkout visibility, and found two checkout
+QA defects: a populated checkout floating bar overlaps the progress panel in
+mobile geometry, and `_next/image` returns `400` for
+`/brand/v2/category-bracelets.avif&w=96&q=75`.
+
 ### Design Changes - Ready for User Decision
 
 None in this review pass.
 
 Implemented items removed from this section: I-308, I-309, I-310, I-311,
 I-312, I-313, I-314, I-315, I-316, I-317, I-318, I-319, I-320, I-321, I-322,
-I-323, and I-324.
+I-323, I-324, I-325, I-326, I-327, I-339, and I-340.
+
+Benchmarked items moved from `Needs Benchmark` in this continuation pass:
+I-325, I-326, I-327, and I-329. The actionable subset from that pass plus
+the objective checkout defects I-339 and I-340 were implemented on 2026-06-09.
 
 ### Design Changes - Needs Benchmark
 
@@ -202,90 +235,6 @@ I-323, and I-324.
 - `Next Decision`: User should choose whether to commission/approve the
   benchmark pass, reject the idea, or defer it.
 
-#### I-325 Full Homepage Hero Recomposition
-
-- `Aspect`: Public UX and Brand
-- `Category`: Design Changes
-- `Status`: Needs Benchmark
-- `Priority`: P1
-- `Effort`: L
-- `Target Surface`: `/` first viewport and hero-to-commerce sequencing
-- `Finding`: A stronger, bolder homepage could move beyond the current
-  cinematic hero by introducing campaign tiles, a collection teaser, or a
-  product-led editorial composition in the first viewport. That would be a
-  noticeable brand change, not a minor polish item.
-- `Evidence`: Mobile metrics for `/` recorded `scrollRatio=14.16` and
-  `productLinksFirstViewport=0`; current hero implementation is in
-  `src/app/page.tsx`.
-- `Gate Result`: Not implementation-ready. The existing policy allows one
-  editorial hero, but a full first-viewport redesign must be scored against the
-  High Jewelry Reference Gate before code is edited.
-- `Recommended Change`: Benchmark two or three home hero compositions:
-  current cinematic hero with commerce peek, split editorial campaign with
-  category teaser, and product-first seasonal launch module.
-- `Acceptance Checks`: Home remains brand-led, restrained, route-backed, and
-  immediately commercial without becoming a marketing-only landing page.
-- `Verification`: High Jewelry Gate record, home visual QA, layout stability,
-  performance/LCP review, and reduced-motion review.
-- `Next Decision`: User should choose whether to commission a homepage hero
-  benchmark.
-
-#### I-326 Mobile PLP Product Card Density Redesign
-
-- `Aspect`: Public UX and Brand
-- `Category`: Design Changes
-- `Status`: Needs Benchmark
-- `Priority`: P1
-- `Effort`: M
-- `Target Surface`: Mobile search, gifts, and category product grids
-- `Finding`: A bolder mobile PLP design could use a denser card, altered image
-  ratio, partial two-up layout, or progressive disclosure to reduce long scroll
-  fatigue. This would materially change catalog rhythm and product-card visual
-  hierarchy.
-- `Evidence`: Mobile metrics recorded `scrollRatio=18.61` for
-  `/search?q=venus`, `scrollRatio=7.53` for category routes, and a long gift
-  grid in representative screenshots.
-- `Gate Result`: Not implementation-ready. Product cards are allowed, but
-  changing ratio, column count, or mobile content density requires High Jewelry
-  and commerce-corpus scoring.
-- `Recommended Change`: Benchmark compact card variants against luxury PLP
-  references before editing `ProductCard` or grid breakpoints.
-- `Acceptance Checks`: Product image, name, material, price, availability,
-  wishlist, and supported cart action remain clear; mobile scroll length is
-  reduced without making the page feel like a discount grid.
-- `Verification`: Benchmark record, product-card visual tests, search/category
-  visual QA, and mobile screenshot warm-up.
-- `Next Decision`: User should choose whether to benchmark a denser mobile PLP
-  card system.
-
-#### I-327 PDP Sticky Purchase Bar Redesign
-
-- `Aspect`: Commerce and Checkout
-- `Category`: Design Changes
-- `Status`: Needs Benchmark
-- `Priority`: P1
-- `Effort`: M
-- `Target Surface`: Mobile `/product/[slug]`
-- `Finding`: A sticky purchase bar could make long PDPs easier to buy from,
-  especially after users scroll into specifications and recommendations. It
-  would also add another floating commerce control to a page that already has
-  cookie/accessibility chrome and gallery controls.
-- `Evidence`: Mobile PDP metrics recorded `scrollRatio=14.47`; existing public
-  policy requires floating chrome not to cover commerce controls.
-- `Gate Result`: Not implementation-ready. Sticky purchase controls are a
-  public commerce-control change and need High Jewelry/commercial benchmark
-  evidence plus collision review.
-- `Recommended Change`: Benchmark whether mobile PDP should get a sticky
-  price/add-to-cart summary after the purchase panel leaves the viewport, and
-  define collision rules before implementation.
-- `Acceptance Checks`: Sticky bar never covers gallery, variant controls,
-  service links, cookie controls, or accessibility controls; reduced-motion and
-  keyboard focus remain safe.
-- `Verification`: Benchmark record, floating chrome tests, PDP e2e add-to-cart
-  tests, and mobile visual QA.
-- `Next Decision`: User should choose whether to benchmark a sticky PDP
-  purchase bar.
-
 #### I-328 Product Story Module Before Recommendation Rails
 
 - `Aspect`: Public UX and Brand
@@ -309,34 +258,6 @@ I-323, and I-324.
 - `Verification`: Benchmark record and PDP mobile/desktop visual QA.
 - `Next Decision`: User should choose whether to benchmark a richer PDP story
   layer.
-
-#### I-329 Checkout Visual Recomposition Benchmark
-
-- `Aspect`: Commerce and Checkout
-- `Category`: Design Changes
-- `Status`: Needs Benchmark
-- `Priority`: P1
-- `Effort`: L
-- `Target Surface`: `/checkout`, cart summary, and form hierarchy
-- `Finding`: Checkout could become more boutique and more decisive through a
-  stronger two-zone layout, clearer order summary, and calmer reassurance
-  language. Because payment and order state are involved, visual ambition must
-  be weighed against correctness and clarity.
-- `Evidence`: Checkout floating chrome was fixed in the previous pass; empty
-  checkout mobile metrics now show no overflow and no overlap, but only empty
-  checkout was reviewed in detail.
-- `Gate Result`: Not implementation-ready. Checkout recomposition needs
-  commerce benchmark evidence and focused e2e coverage before code edits.
-- `Recommended Change`: Benchmark a checkout layout pass that preserves
-  payment correctness, validation, mixed-cart grouping, and provider-specific
-  checkout boundaries.
-- `Acceptance Checks`: Cart state, form validation, payment state, submit
-  progress, source-specific checkout actions, and recovery are more legible
-  without inventing a single fake checkout for mixed carts.
-- `Verification`: Benchmark record, checkout/cart e2e, visual QA with empty and
-  populated carts, and provider boundary tests.
-- `Next Decision`: User should choose whether checkout deserves a full design
-  benchmark next.
 
 #### I-330 Legal Pages Editorial Styling Benchmark
 
@@ -636,20 +557,63 @@ I-323, and I-324.
 - `Effort`: M
 - `Target Surface`: `/checkout` with own-product, supplier-product, and mixed
   cart states
-- `Finding`: Empty checkout is now visually verified after the floating chrome
-  fix, but a bolder checkout design cannot be approved without populated cart
-  states, including local, Shopify supplier-only, and mixed-cart flows.
-- `Evidence`: Previous verification covered empty checkout geometry and
-  focused `/checkout` visual QA. Existing Shopify roadmap notes require source
-  groups to stay distinct and not combine mixed carts into one fake order.
-- `Gate Result`: Blocked for broad checkout redesign. Empty-state polish can be
-  reviewed separately, but populated checkout hierarchy needs fixture evidence.
-- `Blocker`: No current visual artifact set covers populated local,
-  supplier-only, and mixed-cart checkout states.
+- `Finding`: Empty checkout and own-product populated checkout are now visually
+  verified, including the narrow populated-mobile sticky and image reliability
+  fixes, but a bolder checkout design still cannot be approved across the full
+  commerce model without Shopify supplier-only and mixed-cart visual states.
+- `Evidence`: Previous verification covered empty checkout geometry. The
+  2026-06-08 P1 benchmark added own-product populated checkout evidence in
+  `artifacts/qa/2026-06-08-p1-design-benchmark/focused/p1-focused-results.json`
+  with `populatedVisible=true`. Existing Shopify roadmap notes still require
+  source groups to stay distinct and not combine mixed carts into one fake
+  order. The 2026-06-09 implementation pass added own-product mobile evidence
+  in `artifacts/qa/2026-06-09-ready-implementation-browser/focused-results.json`,
+  with checkout sticky summary hidden while the progress panel is visible and
+  shown only after it leaves the viewport.
+- `Gate Result`: Partially unblocked. Own-product checkout can support narrow
+  checkout UI fixes, and the known narrow populated-mobile defects are fixed,
+  but broad checkout recomposition remains blocked for supplier-only and
+  mixed-cart states.
+- `Blocker`: No current visual artifact set covers populated supplier-only and
+  mixed-cart checkout states.
 - `Unblock Condition`: Provide repeatable cart fixtures or e2e setup that
-  opens checkout in all three source states.
+  opens checkout in supplier-only and mixed source states.
 - `Next Decision`: User should choose whether populated checkout fixture work
   is required before checkout redesign.
+
+#### I-329 Full Checkout Visual Recomposition Blocked by Mixed-Cart Evidence
+
+- `Aspect`: Commerce and Checkout
+- `Category`: Design Changes
+- `Status`: Blocked
+- `Priority`: P1
+- `Effort`: L
+- `Target Surface`: `/checkout`, cart summary, form hierarchy, and provider
+  source grouping
+- `Finding`: The benchmark supports a calmer boutique checkout direction, and
+  the narrow populated-mobile overlap and image defects have now been fixed.
+  A full recomposition should still wait until supplier-only and mixed-cart
+  visual evidence exists, unless the scope is explicitly limited to
+  own-product checkout only.
+- `Evidence`: Focused benchmark:
+  `artifacts/qa/2026-06-08-p1-design-benchmark/focused/p1-focused-results.json`.
+  It confirmed populated own-product checkout with `populatedVisible=true` and
+  `scrollRatio=6.2`, and recorded the historical floating-bar overlap and
+  `_next/image` `400`. The 2026-06-09 implementation pass fixed those narrow
+  defects and recorded clean own-product checkout evidence in
+  `artifacts/qa/2026-06-09-ready-implementation-browser/focused-results.json`.
+  Supplier-only and mixed-cart checkout visual states remain covered by
+  `I-337`, not by this benchmark.
+- `Gate Result`: Blocked for full redesign. High Jewelry and commerce sources
+  support visible order summary, secure payment, delivery/returns reassurance,
+  and service access near checkout, but supplier-only/mixed-cart evidence is
+  still required for a broad layout change.
+- `Blocker`: Supplier-only/mixed-cart fixture evidence is still incomplete.
+- `Unblock Condition`: Provide supplier-only and mixed-cart visual fixtures or
+  explicitly scope the redesign to local own-product checkout only.
+- `Next Decision`: User should choose whether to create supplier/mixed-cart
+  visual fixtures, scope a checkout redesign only to own-product checkout, or
+  defer full checkout recomposition.
 
 #### I-338 Expanded Agent-Browser Visual QA Blocked by Harness Instability
 

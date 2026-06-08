@@ -3575,6 +3575,33 @@ footer nav a:focus-visible {
   aspect-ratio: 4 / 5;
 }
 
+@media (max-width: 767px) {
+  .product-card-shell[data-product-card-density="compact"]
+    .product-card-media-compact {
+    aspect-ratio: 6 / 5;
+  }
+
+  .product-card-shell[data-product-card-density="compact"]
+    .product-card-content-compact {
+    min-height: 6rem;
+    padding-top: 0.75rem;
+  }
+
+  .product-card-shell[data-product-card-density="compact"] .product-card-title {
+    font-size: 0.95rem;
+  }
+
+  .product-card-shell[data-product-card-density="compact"]
+    .product-card-descriptor-compact {
+    display: none;
+  }
+
+  .product-card-shell[data-product-card-density="compact"]
+    .product-card-material-cues {
+    min-height: 1rem;
+  }
+}
+
 .product-card-image {
   z-index: 1;
   transform-origin: center;
@@ -4189,6 +4216,19 @@ footer nav a:focus-visible {
   color: white !important;
 }
 
+.home-hero-actions .home-hero-cta-secondary:not(:disabled) {
+  border-color: rgb(255 250 244 / 56%) !important;
+  background: rgb(255 250 244 / 8%) !important;
+  color: white !important;
+}
+
+.home-hero-actions .home-hero-cta-secondary:not(:disabled):hover,
+.home-hero-actions .home-hero-cta-secondary:not(:disabled):focus-visible {
+  border-color: rgb(255 250 244 / 82%) !important;
+  background: rgb(255 250 244 / 18%) !important;
+  color: white !important;
+}
+
 .home-hero-actions .home-hero-cta-icon {
   transition: transform 260ms var(--ease-motion-standard);
 }
@@ -4197,6 +4237,53 @@ footer nav a:focus-visible {
   .home-hero-cta-primary:not(:disabled):is(:hover, :focus-visible)
   .home-hero-cta-icon {
   transform: translateX(-0.25rem);
+}
+
+.home-hero-campaign-links {
+  display: grid;
+  gap: 0;
+  width: min(100%, 26rem);
+  margin-top: clamp(1.2rem, 2.5vw, 1.75rem);
+  border-block: 1px solid rgb(255 250 244 / 24%);
+}
+
+.home-hero-campaign-link {
+  display: grid;
+  gap: 0.15rem;
+  padding-block: 0.72rem;
+  color: white;
+  text-decoration: none;
+  transition:
+    color var(--motion-fast) var(--ease-motion-standard),
+    background-color var(--motion-fast) var(--ease-motion-standard);
+}
+
+.home-hero-campaign-link + .home-hero-campaign-link {
+  border-top: 1px solid rgb(255 250 244 / 16%);
+}
+
+.home-hero-campaign-link:hover,
+.home-hero-campaign-link:focus-visible {
+  background: rgb(255 250 244 / 7%);
+  color: white;
+  outline: none;
+}
+
+.home-hero-campaign-link:focus-visible {
+  outline: 2px solid rgb(255 250 244 / 72%);
+  outline-offset: 3px;
+}
+
+.home-hero-campaign-label {
+  font-size: 0.86rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.home-hero-campaign-text {
+  color: rgb(255 250 244 / 74%);
+  font-size: 0.76rem;
+  line-height: 1.45;
 }
 
 .public-motion-shell [data-slot="button"].product-primary-cta:not(:disabled),

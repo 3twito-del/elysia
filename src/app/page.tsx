@@ -109,6 +109,19 @@ const homeTrustSignals = [
   },
 ] as const;
 
+const homeHeroCampaignLinks = [
+  {
+    href: "/gifts",
+    label: "מתנות לפי רגע",
+    text: "כניסה מהירה לרעיונות עם תקציב וסגנון.",
+  },
+  {
+    href: "/category/necklaces",
+    label: "שרשראות לקיץ",
+    text: "קו עדין שמרים חולצה לבנה או שמלת ערב.",
+  },
+] as const;
+
 export const metadata: Metadata = {
   title: "Elysia Jewellery | תכשיטים בוטיקיים",
   description:
@@ -205,7 +218,38 @@ export default async function Home() {
                   />
                 </Link>
               </Button>
+              <Button
+                asChild
+                className="home-hero-cta-secondary"
+                size="lg"
+                variant="outline"
+              >
+                <Link
+                  data-testid="home-hero-secondary-cta"
+                  dir="rtl"
+                  href="/gifts"
+                  prefetch={false}
+                >
+                  מתנות
+                </Link>
+              </Button>
             </div>
+          </div>
+          <div
+            className="home-hero-campaign-links motion-copy-item [--motion-copy-delay:160ms]"
+            data-testid="home-hero-campaign-links"
+          >
+            {homeHeroCampaignLinks.map((item) => (
+              <Link
+                className="home-hero-campaign-link"
+                href={item.href}
+                key={item.href}
+                prefetch={false}
+              >
+                <span className="home-hero-campaign-label">{item.label}</span>
+                <span className="home-hero-campaign-text">{item.text}</span>
+              </Link>
+            ))}
           </div>
         </div>
       </RevealSection>
