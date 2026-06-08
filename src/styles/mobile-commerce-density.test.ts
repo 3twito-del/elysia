@@ -12,7 +12,10 @@ describe("mobile commerce density", () => {
     expect(source).toContain("storefront-hero");
     expect(css).toContain(".home-cinematic-hero");
     expect(css).toContain(".storefront-hero");
-    expect(css).toContain("clamp(34rem, 84svh, 50rem)");
+    expect(css).toContain("clamp(32rem, 78svh, 48rem)");
+    expect(css).toMatch(
+      /@media \(max-width: 767px\)[\s\S]*\.home-cinematic-hero \{[\s\S]*--home-hero-height: clamp\(28rem, 72svh, 38rem\);/,
+    );
     expect(source).toContain('data-testid="home-hero-statement"');
     expect(source).toContain('data-testid="home-hero-primary-cta"');
     expect(source).toContain('href="/search"');
@@ -74,7 +77,7 @@ describe("mobile commerce density", () => {
       'const boutiqueHeroVideoMp4 = "/brand/boutique/lifestyle-hero.mp4";',
     );
     expect(home).toContain('as="image"');
-    expect(home).toContain("fetchPriority=\"high\"");
+    expect(home).toContain('fetchPriority="high"');
     expect(home).toContain("<HomeHeroVideo");
     expect(home).toContain('className="storefront-hero-image object-cover"');
     expect(home).toContain("posterSrc={boutiqueHeroPoster}");

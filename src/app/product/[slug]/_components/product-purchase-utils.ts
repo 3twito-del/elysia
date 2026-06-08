@@ -15,6 +15,12 @@ export type ProductPurchaseConfidenceItem = {
   title: string;
 };
 
+export type ProductBeforeOrderSummaryItem = {
+  key: "delivery" | "returns" | "warranty" | "care" | "gift";
+  label: string;
+  value: string;
+};
+
 export function createProductServiceHref(input: {
   productReference: string;
   reason: string;
@@ -44,7 +50,9 @@ export function getVariantButtonLabel(
   availabilityMode: PublicProductAvailabilityMode,
   requiresSeparateCheckout = false,
 ) {
-  if (isSeparateCheckoutVariantAvailable({ requiresSeparateCheckout, variant })) {
+  if (
+    isSeparateCheckoutVariantAvailable({ requiresSeparateCheckout, variant })
+  ) {
     return `${getVariantDisplayName(variant)}, ${formatInlinePrice(variant.price)}, זמין להזמנה`;
   }
 
@@ -110,10 +118,9 @@ export function getPurchaseConfidenceItems(input: {
       description: getCheckoutConfidenceDescription(input),
       icon: "checkout",
       key: "checkout",
-      title:
-        input.requiresSeparateCheckout
-          ? "מסלול הזמנה מאובטח"
-          : "אישור לפני השלמה",
+      title: input.requiresSeparateCheckout
+        ? "מסלול הזמנה מאובטח"
+        : "אישור לפני השלמה",
     },
     {
       description: input.sizeKind
@@ -128,6 +135,54 @@ export function getPurchaseConfidenceItems(input: {
       icon: "service",
       key: "service",
       title: hasAftercareFacts ? "מסירה, טיפול ואחריות" : "מסירה והחלפה",
+    },
+  ];
+}
+
+export function getBeforeOrderSummaryItems(input: {
+  careInstructions?: string;
+  deliveryPromise?: string;
+  requiresSeparateCheckout: boolean;
+  returnPolicy?: string;
+  warranty?: string;
+}): ProductBeforeOrderSummaryItem[] {
+  return [
+    {
+      key: "delivery",
+      label: "מסירה",
+      value:
+        input.deliveryPromise ??
+        (input.requiresSeparateCheckout
+          ? "מסירה ותשלום יושלמו בקופה מאובטחת לאחר בחירת האפשרות."
+          : "מסירה עד הבית לאחר אישור פרטי ההזמנה."),
+    },
+    {
+      key: "returns",
+      label: "החלפה והחזרה",
+      value:
+        input.returnPolicy ??
+        (input.requiresSeparateCheckout
+          ? "החלפות והחזרות מטופלות בתיאום שירות אישי."
+          : "החלפה או החזרה לפי מדיניות Elysia לפני סיום ההזמנה."),
+    },
+    {
+      key: "warranty",
+      label: "אחריות",
+      value:
+        input.warranty ?? "אחריות לשנה על פגמי ייצור, בכפוף למדיניות האחריות.",
+    },
+    {
+      key: "care",
+      label: "טיפול",
+      value:
+        input.careInstructions ??
+        "מומלץ להסיר לפני מים, שינה, ספורט, בושם וחומרי ניקוי.",
+    },
+    {
+      key: "gift",
+      label: "מתנה ושירות",
+      value:
+        "אפשר לפנות לשירות לפני הזמנה כדי לוודא מידה, גוון, התאמה למתנה או מסלול מסירה.",
     },
   ];
 }
@@ -222,9 +277,7 @@ function getServiceConfidenceDescription(input: {
 
 function isSeparateCheckoutVariantAvailable(input: {
   requiresSeparateCheckout: boolean;
-  variant:
-    | Pick<CatalogProductVariant, "separateCheckoutAvailable">
-    | undefined;
+  variant: Pick<CatalogProductVariant, "separateCheckoutAvailable"> | undefined;
 }) {
   return (
     input.requiresSeparateCheckout &&

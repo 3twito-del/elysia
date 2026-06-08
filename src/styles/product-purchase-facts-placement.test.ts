@@ -39,11 +39,22 @@ describe("PDP purchase fact placement", () => {
     );
 
     expect(purchasePanel).toContain('data-testid="product-commerce-trust"');
+    expect(purchasePanel).toContain(
+      'data-testid="product-before-order-summary"',
+    );
     expect(purchasePanel).toContain("careInstructions?: string");
     expect(purchasePanel).toContain("warranty?: string");
+    expect(purchasePanel).toContain("getBeforeOrderSummaryItems({");
+    expect(purchasePanel).toContain("beforeOrderSummaryItems.map");
     expect(purchasePanel).toContain("getPurchaseConfidenceItems({");
     expect(purchasePanel).toContain("careInstructions,");
     expect(purchasePanel).toContain("warranty,");
+    expect(purchaseUtils).toContain("ProductBeforeOrderSummaryItem");
+    expect(purchaseUtils).toContain('key: "delivery"');
+    expect(purchaseUtils).toContain('key: "returns"');
+    expect(purchaseUtils).toContain('key: "warranty"');
+    expect(purchaseUtils).toContain('key: "care"');
+    expect(purchaseUtils).toContain('key: "gift"');
     expect(purchaseUtils).toContain("מסירה, טיפול ואחריות");
     expect(purchaseUtils).toContain("אחריות: ${input.warranty}");
     expect(purchaseUtils).toContain("טיפול: ${input.careInstructions}");

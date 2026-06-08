@@ -83,6 +83,7 @@ was recorded through:
 - `pnpm test -- src/styles/massive-design-ready-items.test.ts src/lib/public-structure-policy.test.ts src/lib/public-design-policy.test.ts src/styles/visible-site-improvements.test.ts src/styles/category-active-filter-sort-clarity.test.ts src/styles/discovery-filter-density.test.ts src/styles/size-guide-return-context.test.ts src/styles/offline-page-install-pwa-recovery-priority.test.ts src/styles/guest-wishlist-saving.test.ts src/styles/service-response-contact-clarity.test.ts src/app/manifest.test.ts scripts/qa-site-audit.test.ts`
 - `pnpm test -- src/styles/massive-design-ready-items.test.ts src/lib/accessibility-guardrails.test.ts src/lib/public-structure-policy.test.ts src/lib/public-design-policy.test.ts src/styles/visible-site-improvements.test.ts src/styles/size-guide-return-context.test.ts src/styles/offline-page-install-pwa-recovery-priority.test.ts src/app/product/[slug]/_components/product-purchase-utils.test.ts`
 - `pnpm test -- src/styles/massive-design-ready-items.test.ts src/lib/accessibility-guardrails.test.ts src/lib/public-structure-policy.test.ts src/lib/public-design-policy.test.ts src/styles/visible-site-improvements.test.ts src/styles/category-active-filter-sort-clarity.test.ts src/styles/discovery-filter-density.test.ts src/styles/size-guide-return-context.test.ts src/styles/offline-page-install-pwa-recovery-priority.test.ts src/styles/guest-wishlist-saving.test.ts src/styles/service-response-contact-clarity.test.ts src/app/manifest.test.ts scripts/qa-site-audit.test.ts src/app/product/[slug]/_components/product-purchase-utils.test.ts`
+- `pnpm test -- src/server/ai/search-intent.test.ts src/server/adapters/search.test.ts src/styles/massive-design-ready-items.test.ts src/styles/mobile-commerce-density.test.ts src/styles/service-trust-placement.test.ts src/styles/product-purchase-facts-placement.test.ts src/styles/visible-site-improvements.test.ts src/app/product/[slug]/_components/product-purchase-utils.test.ts`
 - `pnpm copy:check`
 - `pnpm exec prettier --check` for the public design batch files and focused
   documentation files
@@ -107,8 +108,20 @@ was recorded through:
   guide confidence strip in
   `artifacts/qa/2026-06-08-design-batch-browser-restarted/focused-public-design-isolated-results.json`.
 - The same Playwright batch captured a semantic-search timeout console error
-  on `/search?q=venus`; it was intentionally left unresolved and remains
-  tracked as `I-309`.
+  on `/search?q=venus`; it became the baseline evidence for `I-309`, which was
+  addressed in the final ready batch by silent deterministic fallback coverage
+  in `src/server/ai/search-intent.test.ts`.
+- Final ready-items browser verification recorded the mobile home commerce
+  peek, PDP before-order summary ordering, and zero
+  `semantic-search:intent` console errors in
+  `artifacts/qa/2026-06-08-final-ready-items-browser/final-ready-items-results.json`.
+  Screenshots:
+  `artifacts/qa/2026-06-08-final-ready-items-browser/home-commerce-peek.png`,
+  `artifacts/qa/2026-06-08-final-ready-items-browser/pdp-before-order-summary.png`,
+  `artifacts/qa/2026-06-08-final-ready-items-browser/playwright-home-commerce-peek-mobile.png`,
+  `artifacts/qa/2026-06-08-final-ready-items-browser/playwright-pdp-before-order-summary-mobile.png`,
+  and
+  `artifacts/qa/2026-06-08-final-ready-items-browser/playwright-search-semantic-fallback-mobile.png`.
 - `pnpm exec tsx scripts/qa-site-audit.ts --base-url http://127.0.0.1:3000 --screenshots none --browsers chromium --viewports mobile --performance-only --warm-screenshots --out-dir artifacts/qa/2026-06-08-warm-screenshot-metadata-check`
   wrote `design-review.md` with `Screenshot warm-up: enabled`; it failed
   strict local performance budgets and remains evidence of metadata behavior,
@@ -138,106 +151,11 @@ used as fallback evidence for proposal discovery.
 
 ### Design Changes - Ready for User Decision
 
-The following ready items remain after the 2026-06-08 implementation batch.
-Implemented items removed from this section: I-308, I-311, I-312,
-I-313, I-314, I-316, I-317, I-318, I-319, I-320, I-321,
-I-322, I-323, and I-324.
+None in this review pass.
 
-#### I-309 Search No-Results Recovery Without AI Quota Noise
-
-- `Aspect`: Public UX and Brand
-- `Category`: Design Changes
-- `Status`: Actionable Now
-- `Priority`: P1
-- `Effort`: M
-- `Target Surface`: `/search?q=zzzz-no-match&maxPrice=1`, no-results recovery
-- `Finding`: The no-results route renders a usable recovery state, and normal
-  search can still render product results, but expanded probes captured
-  development console errors from semantic search timeout/quota paths while
-  calculating search context. A premium search or recovery state should never
-  depend on an AI provider being available.
-- `Evidence`:
-  `artifacts/qa/2026-06-08-massive-design-proposals-playwright/massive-design-proposals-metrics.json`
-  recorded `status=200` with one console error for the no-results route. The
-  implementation-batch browser probe also captured
-  `[semantic-search:intent] TimeoutError: The operation was aborted due to timeout`
-  on `/search?q=venus` in
-  `artifacts/qa/2026-06-08-design-batch-browser-restarted/focused-public-design-batch-results.json`.
-- `Gate Result`: Ready for user decision as a mandatory backend-correctness and
-  public recovery improvement. The change should keep the same public structure
-  while making the fallback deterministic.
-- `Recommended Change`: Make no-results recovery count/category suggestions
-  degrade to classic catalog search or cached category suggestions when the AI
-  semantic path is unavailable or rate-limited.
-- `Acceptance Checks`: No-results UI remains helpful, no provider quota detail
-  reaches the browser console for the public route, and recovery links remain
-  route-backed.
-- `Verification`: Search adapter tests for AI-unavailable fallback, focused
-  no-results visual QA, and `pnpm qa:routes`.
-- `Next Decision`: User should choose whether to implement the fallback now or
-  keep accepting provider-noise risk in local/public recovery review.
-
-#### I-310 Home First-Commerce Peek Under the Cinematic Hero
-
-- `Aspect`: Public UX and Brand
-- `Category`: Design Changes
-- `Status`: Actionable Now
-- `Priority`: P1
-- `Effort`: M
-- `Target Surface`: Mobile homepage first viewport and immediate post-hero
-  entry
-- `Finding`: The homepage is cinematic and brand-led, but mobile evidence shows
-  the first viewport contains no product/category link. The mobile metrics
-  recorded `scrollRatio=14.16`, `productLinkCount=4`, and
-  `productLinksFirstViewport=0` for `/`.
-- `Evidence`:
-  `artifacts/qa/2026-06-08-massive-design-proposals-playwright/massive-design-proposals-mobile-metrics.json`
-  and
-  `artifacts/qa/2026-06-08-public-design-review-representative/screenshots/chromium-mobile-r1.png`.
-- `Gate Result`: Ready for user decision. `homeBrandHeroThenCommerceEntry` is
-  allowed with score `25`; this proposal makes the existing required commerce
-  entry more visible without replacing the editorial hero.
-- `Recommended Change`: Adjust mobile hero height/spacing so the trust strip or
-  first category/product entry peeks into the initial scroll, while preserving
-  the cinematic image/video as the homepage lead.
-- `Acceptance Checks`: H1 remains first, the hero stays product/brand led, and
-  a route-backed collection/search entry is visible or clearly hinted before
-  the first scroll feels complete.
-- `Verification`: Mobile visual QA for `/`, layout stability tests, and a
-  first-viewport probe that records category/product entry visibility.
-- `Next Decision`: User should choose whether to make the home first viewport
-  more commercial or keep the current pure cinematic opening.
-
-#### I-315 PDP Purchase Confidence Summary Reorder
-
-- `Aspect`: Public UX and Brand
-- `Category`: Design Changes
-- `Status`: Actionable Now
-- `Priority`: P1
-- `Effort`: M
-- `Target Surface`: `/product/[slug]` purchase panel and post-purchase facts
-- `Finding`: The PDP is information-rich, but mobile evidence shows a very
-  long product detail journey. The mobile metrics for
-  `/product/venus-line-ring` recorded `scrollRatio=14.47`,
-  `firstViewportInteractiveCount=12`, and `productLinkCount=9`.
-- `Evidence`:
-  `artifacts/qa/2026-06-08-massive-design-proposals-playwright/massive-design-proposals-mobile-metrics.json`
-  and
-  `artifacts/qa/2026-06-08-public-design-review-representative/screenshots/chromium-mobile-r1--product-venus-line-ring.png`.
-- `Gate Result`: Ready for user decision. `pdpGalleryPurchaseFirst` is allowed
-  with score `31`, and `trustNearPurchase` is allowed with score `24`; this
-  proposal keeps product facts near purchase and reduces repetition after the
-  buy panel.
-- `Recommended Change`: Consolidate delivery, returns, warranty, service, gift,
-  and care into one premium "before you order" summary immediately after the
-  purchase controls, with deeper details still available below.
-- `Acceptance Checks`: Gallery, title, price, availability, and add-to-cart
-  remain first. Service, returns, warranty, sizing, and gift context remain
-  visible before recommendation rails.
-- `Verification`: PDP visual QA, product purchase panel tests, and mobile
-  scroll review.
-- `Next Decision`: User should choose whether to prioritize concise purchase
-  confidence over the current full-detail sequencing.
+Implemented items removed from this section: I-308, I-309, I-310, I-311,
+I-312, I-313, I-314, I-315, I-316, I-317, I-318, I-319, I-320, I-321, I-322,
+I-323, and I-324.
 
 ### Design Changes - Needs Benchmark
 
@@ -678,8 +596,9 @@ I-322, I-323, and I-324.
   `artifacts/qa/2026-06-08-massive-design-proposals-playwright/massive-design-proposals-metrics.json`
   records semantic-search quota console noise and timeouts on `/ai` and
   `/stylist` during the expanded pass.
-- `Gate Result`: Blocked for broad AI design changes. Narrow fallback work such
-  as `I-309` may proceed separately because it reduces public recovery risk.
+- `Gate Result`: Blocked for broad AI design changes. Narrow search fallback
+  work from `I-309` was completed separately; AI/stylist visual expansion still
+  needs a stable provider and loading baseline.
 - `Blocker`: AI provider quota and route load timing are not stable enough for
   a confident design baseline.
 - `Unblock Condition`: AI routes have deterministic loading/fallback behavior

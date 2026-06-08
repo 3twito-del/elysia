@@ -12,9 +12,14 @@ describe("commerce service trust placement", () => {
     );
 
     expect(purchasePanel).toContain('data-testid="product-commerce-trust"');
+    expect(purchasePanel).toContain(
+      'data-testid="product-before-order-summary"',
+    );
+    expect(purchasePanel).toContain("beforeOrderSummaryItems.map");
     expect(purchasePanel).toContain("purchaseConfidenceItems.map");
     expect(purchasePanel).toContain("product-purchase-confidence-${item.key}");
     expect(purchasePanel).toContain("getPurchaseConfidenceItems");
+    expect(purchasePanel).toContain("getBeforeOrderSummaryItems");
     expect(purchasePanel).toContain("ShieldCheck");
     expect(purchasePanel).toContain("Ruler");
     expect(purchasePanel).toContain("RotateCcw");
@@ -23,6 +28,14 @@ describe("commerce service trust placement", () => {
     ).toBeLessThan(
       indexOf(purchasePanel, 'data-testid="product-commerce-trust"'),
     );
+    expect(
+      indexOf(purchasePanel, 'data-testid="product-commerce-trust"'),
+    ).toBeLessThan(
+      indexOf(purchasePanel, 'data-testid="product-before-order-summary"'),
+    );
+    expect(
+      indexOf(purchasePanel, 'data-testid="product-before-order-summary"'),
+    ).toBeLessThan(indexOf(purchasePanel, "purchaseConfidenceItems.map"));
     expect(
       indexOf(purchasePanel, 'data-testid="product-commerce-trust"'),
     ).toBeLessThan(indexOf(purchasePanel, "{cartMessage ?"));

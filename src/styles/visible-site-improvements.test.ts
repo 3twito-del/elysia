@@ -114,7 +114,7 @@ describe("visible site improvement affordances", () => {
 
     expect(home).toContain("home-cinematic-hero");
     expect(styles).toContain(".home-cinematic-hero");
-    expect(styles).toContain("clamp(34rem, 84svh, 50rem)");
+    expect(styles).toContain("clamp(32rem, 78svh, 48rem)");
     expect(home).toContain('data-testid="home-hero-copy"');
     expect(home).toContain('data-testid="home-hero-statement"');
     expect(home).toContain('data-testid="home-hero-primary-cta"');
@@ -477,6 +477,9 @@ describe("visible site improvement affordances", () => {
     );
     expect(productPage).toContain(
       'data-testid="product-delivery-estimate-badge"',
+    );
+    expect(purchasePanel).toContain(
+      'data-testid="product-before-order-summary"',
     );
     expect(productPage).toContain('data-testid="product-support-context-link"');
     expect(productPage).toContain("<details");

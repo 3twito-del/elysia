@@ -1105,7 +1105,7 @@ main
 }
 
 .home-cinematic-hero {
-  --home-hero-height: clamp(34rem, 84svh, 50rem);
+  --home-hero-height: clamp(32rem, 78svh, 48rem);
 }
 
 main
@@ -2864,6 +2864,10 @@ main
 }
 
 @media (max-width: 767px) {
+  .home-cinematic-hero {
+    --home-hero-height: clamp(28rem, 72svh, 38rem);
+  }
+
   .storefront-hero-image {
     object-position: 48% 50%;
   }

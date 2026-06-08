@@ -23,6 +23,7 @@ import { WishlistButton } from "./wishlist-button";
 import {
   createProductServiceHref,
   getAddToCartFailureMessage,
+  getBeforeOrderSummaryItems,
   getInitialVariantSku,
   getPurchaseConfidenceItems,
   getVariantButtonLabel,
@@ -140,6 +141,13 @@ export function ProductPurchasePanel({
     sizeKind,
     variant: selectedVariant,
     variantStatusLabel: selectedVariantStatusLabel,
+    warranty,
+  });
+  const beforeOrderSummaryItems = getBeforeOrderSummaryItems({
+    careInstructions,
+    deliveryPromise,
+    requiresSeparateCheckout,
+    returnPolicy,
     warranty,
   });
   const serviceHref = createProductServiceHref({
@@ -412,7 +420,8 @@ export function ProductPurchasePanel({
               )}
               data-testid="product-saved-size-match"
             >
-              <p className="font-medium">המידה השמורה:{" "}
+              <p className="font-medium">
+                המידה השמורה:{" "}
                 {formatSavedSize(
                   savedSizeMatch.kind,
                   savedSizeMatch.normalizedValue,
@@ -461,7 +470,9 @@ export function ProductPurchasePanel({
               </Link>
             </Button>
           )}
-          <WishlistButton productSlug={productSlug}>שמירה למועדפים<Heart aria-hidden="true" className="size-4" />
+          <WishlistButton productSlug={productSlug}>
+            שמירה למועדפים
+            <Heart aria-hidden="true" className="size-4" />
           </WishlistButton>
           {!selectedVariantAvailable ? (
             <PushOptInButton
@@ -477,6 +488,49 @@ export function ProductPurchasePanel({
           className="grid gap-2"
           data-testid="product-commerce-trust"
         >
+          <section
+            aria-labelledby="product-before-order-summary-title"
+            className="glass-inset grid gap-4 rounded-md border p-4 text-sm leading-6"
+            data-testid="product-before-order-summary"
+          >
+            <div className="flex items-start gap-2">
+              <ShieldCheck
+                aria-hidden="true"
+                className="mt-1 size-4 shrink-0"
+              />
+              <div className="min-w-0">
+                <h2
+                  className="font-semibold"
+                  id="product-before-order-summary-title"
+                >
+                  לפני שמזמינים
+                </h2>
+                <p className="text-muted-foreground mt-1">
+                  מסירה, החזרה, אחריות, טיפול ושירות מרוכזים כאן לפני ההחלטה.
+                </p>
+              </div>
+            </div>
+            <dl className="grid gap-2 sm:grid-cols-2">
+              {beforeOrderSummaryItems.map((item) => (
+                <div
+                  className="bg-background/55 rounded-md border border-[var(--glass-border)] p-3"
+                  data-testid={`product-before-order-summary-${item.key}`}
+                  key={item.key}
+                >
+                  <dt className="text-foreground font-medium">{item.label}</dt>
+                  <dd className="text-muted-foreground mt-1">{item.value}</dd>
+                </div>
+              ))}
+            </dl>
+            <Button
+              asChild
+              className="w-full sm:w-fit"
+              size="sm"
+              variant="outline"
+            >
+              <Link href={serviceHref}>שאלה לפני הזמנה</Link>
+            </Button>
+          </section>
           {purchaseConfidenceItems.map((item) => {
             const Icon = purchaseConfidenceIconMap[item.icon];
 

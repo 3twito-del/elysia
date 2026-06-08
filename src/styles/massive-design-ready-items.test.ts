@@ -77,6 +77,29 @@ describe("massive ready design items implementation", () => {
     expect(gallery).toContain("data-testid={`${input.testId}-summary`}");
     expect(gallery).toContain("תמונה {activeImagePosition} מתוך");
   });
+
+  it("implements the final ready design items for search, home, and PDP", () => {
+    const searchIntent = read("src/server/ai/search-intent.ts");
+    const styles = read("src/styles/globals.css");
+    const purchasePanel = read(
+      "src/app/product/[slug]/_components/product-purchase-panel.tsx",
+    );
+    const purchaseUtils = read(
+      "src/app/product/[slug]/_components/product-purchase-utils.ts",
+    );
+
+    expect(searchIntent).not.toContain(
+      'console.error("[semantic-search:intent]"',
+    );
+    expect(searchIntent).toContain("Public search must degrade silently");
+    expect(styles).toContain("clamp(32rem, 78svh, 48rem)");
+    expect(styles).toContain("clamp(28rem, 72svh, 38rem)");
+    expect(purchasePanel).toContain(
+      'data-testid="product-before-order-summary"',
+    );
+    expect(purchasePanel).toContain("beforeOrderSummaryItems.map");
+    expect(purchaseUtils).toContain("getBeforeOrderSummaryItems");
+  });
 });
 
 function read(relativePath: string) {
