@@ -55,7 +55,7 @@ describe("production visual smoke evidence refresh", () => {
   });
 
   it("keeps Shopify release notes split from deferred provider blockers", () => {
-    const roadmap = read("docs/SHOPIFY_DROPSHIP_IMPLEMENTATION_ROADMAP.md");
+    const roadmap = read("docs/PROJECT_TASKS.md");
 
     expect(roadmap).toContain("Release note pattern");
     expect(roadmap).toContain("Actionable release tasks");

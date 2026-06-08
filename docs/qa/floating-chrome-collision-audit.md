@@ -7,7 +7,8 @@ Status: passed baseline audit for public floating chrome.
 This audit covers cookie consent, accessibility controls, mobile navigation,
 category filter sheets, and sticky public chrome behavior at the current
 baseline. It records verification evidence for
-`docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md` item `I-002`.
+the historical task item `I-002`, now consolidated under
+`docs/PROJECT_TASKS.md`.
 
 ## Evidence
 

@@ -15,7 +15,7 @@ const activeBacklogRotation = {
 
 describe("QA benchmark traceability", () => {
   it("keeps benchmark backlog references current or intentionally historical", () => {
-    const backlog = read("docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md");
+    const backlog = read("docs/PROJECT_TASKS.md");
     const activeBacklogIds = new Set(
       Array.from(backlog.matchAll(/\|\s*(I-\d{3})\s*\|/g), (match) => {
         const id = match[1];

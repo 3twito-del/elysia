@@ -80,5 +80,4 @@ Implement a narrow checkout summary:
 
 This benchmark supports checkout copy and summary structure only. Real paid
 Shopify checkout, supplier fulfillment confirmation, and CardCom production
-credentials remain blocked in `docs/SHOPIFY_DROPSHIP_IMPLEMENTATION_ROADMAP.md`
-and the multi-aspect backlog.
+credentials remain blocked in `docs/PROJECT_TASKS.md`.

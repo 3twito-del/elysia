@@ -11,7 +11,7 @@ routes, or global QA coverage.
 
 Related documents:
 
-- `docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md`
+- `docs/PROJECT_TASKS.md`
 - `docs/FULL_PRODUCT_BENCHMARK.md`
 - `docs/PUBLIC_CHANGE_GATE.md`
 - `docs/ENGINEERING_CONVENTIONS.md`
@@ -52,7 +52,7 @@ Coverage summary:
 | Commerce discovery routes: `/search`, `/gifts`, `/category/[slug]`, `/product/[slug]`                                                                        | Public UX and Brand; Commerce and Checkout                  | Covered by route inventory, seed catalog dynamic routes, and benchmark gates | 2026-05-31   | Needs benchmark evidence before public UX changes and runtime QA for layout or filter behavior changes.                |
 | Checkout and account routes: `/checkout`, `/account`, `/account/orders/[id]`, `/account/privacy/export`                                                      | Commerce and Checkout; Accessibility, Privacy, and Security | Covered by route inventory; privacy export has smoke expectation             | 2026-05-31   | Needs flow-level tests for mutations, auth boundaries, payment paths, and source-specific checkout behavior.           |
 | Admin operations routes: `/admin`, `/admin/orders`, `/admin/catalog`, `/admin/inventory`, `/admin/customers`, `/admin/integrations`, and related admin pages | Admin and Operations                                        | Covered by route inventory with protected-route expectations                 | 2026-05-31   | Needs authenticated admin checks and data-state fixtures for workflow changes.                                         |
-| Provider and API routes: `/api/health`, cart count, cart item mutations, chat, webhooks, push, PWA sync, search reindex, events, jobs, tRPC                   | Backend, API, and Data                                      | Covered as smoke or documented protocol routes                               | 2026-06-02   | Needs route-specific negative-path tests for signatures, auth, rate limits, provider failures, and payload validation. |
+| Provider and API routes: `/api/health`, cart count, cart item mutations, chat, webhooks, push, PWA sync, search reindex, events, jobs, tRPC                  | Backend, API, and Data                                      | Covered as smoke or documented protocol routes                               | 2026-06-02   | Needs route-specific negative-path tests for signatures, auth, rate limits, provider failures, and payload validation. |
 | PWA and offline routes: `/offline`, `/serwist/[path]`, PWA sync APIs                                                                                         | Performance, PWA, and Reliability                           | Covered by route inventory and documented service-worker route               | 2026-05-31   | Needs browser/runtime verification for cache behavior, offline recovery, and queued mutation promises.                 |
 
 ## Update Rules

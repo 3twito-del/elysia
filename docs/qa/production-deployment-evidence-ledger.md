@@ -11,7 +11,7 @@ environment values, customer data, or private dashboard screenshots.
 
 Related documents:
 
-- `docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md`
+- `docs/PROJECT_TASKS.md`
 - `docs/FULL_PRODUCT_BENCHMARK.md`
 - `docs/ENGINEERING_CONVENTIONS.md`
 - `scripts/smoke.mjs`
@@ -21,8 +21,8 @@ Related documents:
 | Field               | Evidence                                                                                                                                                                         |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Evidence date       | 2026-06-01                                                                                                                                                                       |
-| Branch              | `qa/full-site-hardening`                                                                                                                                                        |
-| Commit SHA          | Pending next production release update                                                                                                                                          |
+| Branch              | `qa/full-site-hardening`                                                                                                                                                         |
+| Commit SHA          | Pending next production release update                                                                                                                                           |
 | Vercel project      | `ariel-twitos-projects/elysia`                                                                                                                                                   |
 | Deployment URL      | `https://elysia-ki7m92i44-ariel-twitos-projects.vercel.app`                                                                                                                      |
 | Deployment ID       | `dpl_QpPFbYnWAFn2qteRhRiX3LmWNgd1`                                                                                                                                               |
@@ -69,7 +69,7 @@ vercel ls --yes
 vercel inspect https://elysia-ki7m92i44-ariel-twitos-projects.vercel.app
 vercel logs https://elysia-ki7m92i44-ariel-twitos-projects.vercel.app --level error --since 1h --json
 $env:SMOKE_BASE_URL = "https://elysia-jewellery.com"; pnpm smoke
-pnpm exec prettier --check docs/qa/production-deployment-evidence-ledger.md docs/MULTI_ASPECT_IMPROVEMENT_BACKLOG.md
+pnpm exec prettier --check docs/qa/production-deployment-evidence-ledger.md docs/PROJECT_TASKS.md
 git diff --check
 ```
 
