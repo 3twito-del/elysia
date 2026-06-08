@@ -1,17 +1,13 @@
 import "~/styles/globals.css";
 
 import { type Metadata, type Viewport } from "next";
-import {
-  Cormorant_Garamond,
-  Geist,
-  Geist_Mono,
-  Rubik,
-} from "next/font/google";
+import { Cormorant_Garamond, Geist, Geist_Mono, Rubik } from "next/font/google";
 
 import { CookieConsentBanner } from "~/components/cookie-consent-banner";
 import { DeferredAccessibilityWidget } from "~/components/deferred-accessibility-widget";
 import { PwaProvider } from "~/components/pwa-provider";
 import { PublicMotionProvider } from "~/components/public-motion-provider";
+import { SiteContextMenu } from "~/components/site-context-menu";
 import { SiteFooter } from "~/components/site-footer";
 import { env } from "~/env";
 
@@ -116,6 +112,7 @@ export default function RootLayout({
             <SiteFooter />
           </div>
           <CookieConsentBanner />
+          <SiteContextMenu />
           <DeferredAccessibilityWidget />
         </PwaProvider>
       </body>
