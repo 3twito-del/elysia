@@ -9,7 +9,10 @@ import {
 
 import { siteContact, siteWhatsapp } from "~/config/site-contact";
 import { getPublicCategoryName } from "~/lib/product-display";
-import { DEFAULT_CATALOG_IMAGE } from "~/server/services/catalog-assets";
+import {
+  DEFAULT_CATALOG_IMAGE,
+  getProductCatalogImages,
+} from "~/server/services/catalog-assets";
 import type {
   CatalogBranch,
   CatalogCategory,
@@ -222,14 +225,10 @@ function mapSeedProduct(product: SeedProduct): CatalogProduct {
 
 function createFixtureDropshipProduct(): CatalogProduct {
   const category = categoryBySlug.get("rings");
-  const images = [
-    "/brand/boutique/category-rings.avif",
-    "/brand/boutique/lifestyle-hero.avif",
-    "/brand/boutique/product-detail.avif",
-    "/brand/boutique/category-necklaces.avif",
-    "/brand/boutique/category-earrings.avif",
-    "/brand/boutique/category-bracelets.avif",
-  ];
+  const images = getProductCatalogImages({
+    categorySlug: "rings",
+    slug: "elysia-supplier-silver-halo-ring",
+  });
   const image = images[0] ?? DEFAULT_CATALOG_IMAGE;
   const variants: CatalogProductVariant[] = [
     {
@@ -319,6 +318,10 @@ function getFixtureProductImages(input: {
   const fallbackImages = categoryGalleryImages[input.categorySlug] ?? [
     DEFAULT_CATALOG_IMAGE,
   ];
+  const productImages = getProductCatalogImages({
+    categorySlug: input.categorySlug,
+    slug: input.slug,
+  });
   const primaryImage = input.primaryImage.trim()
     ? input.primaryImage
     : (fallbackImages[0] ?? DEFAULT_CATALOG_IMAGE);
@@ -328,7 +331,9 @@ function getFixtureProductImages(input: {
     ...fallbackImages.slice(0, startIndex),
   ];
 
-  return Array.from(new Set([primaryImage, ...rotatedImages])).slice(0, 6);
+  return Array.from(
+    new Set([...productImages, primaryImage, ...rotatedImages]),
+  ).slice(0, 6);
 }
 
 function getSeedCommerceHighlights(slug: string) {

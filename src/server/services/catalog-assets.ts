@@ -1,5 +1,17 @@
 export const DEFAULT_CATALOG_IMAGE = "/brand/boutique/lifestyle-hero.avif";
 
+const PRODUCT_CATALOG_IMAGE_COUNT = 16;
+const PRODUCT_CATALOG_IMAGE_ORDER = [
+  10, 1, 6, 7, 4, 15, 2, 11, 3, 0, 9, 12, 14, 13, 8, 5,
+];
+
+const PRODUCT_CATALOG_IMAGE_CATEGORIES = new Set([
+  "bracelets",
+  "earrings",
+  "necklaces",
+  "rings",
+]);
+
 const CATALOG_IMAGE_VARIANTS: Record<string, readonly string[]> = {
   rings: [
     "/brand/boutique/category-rings.avif",
@@ -59,10 +71,11 @@ export function getDisplayCatalogImages(input: {
     return input.images;
   }
 
-  if (input.images.length > 0 && usesLegacyCatalogMedia) {
-    const categoryImage = CATEGORY_CATALOG_IMAGES[input.categorySlug];
-
-    if (categoryImage) return [categoryImage];
+  if (usesLegacyCatalogMedia && hasProductCatalogImages(input.categorySlug)) {
+    return getProductCatalogImages({
+      categorySlug: input.categorySlug,
+      slug: input.slug,
+    });
   }
 
   const variants = CATALOG_IMAGE_VARIANTS[input.categorySlug];
@@ -76,13 +89,84 @@ export function getDisplayCatalogImages(input: {
   return variant ? [variant] : input.images;
 }
 
+export function getProductCatalogImages(input: {
+  categorySlug: string;
+  slug: string;
+}) {
+  const primaryImageIndex = getStableIndex(
+    input.slug,
+    PRODUCT_CATALOG_IMAGE_COUNT,
+  );
+  const productImages = [0, 1].map((offset) =>
+    getProductCatalogImageByIndex({
+      categorySlug: input.categorySlug,
+      imageIndex: getProductCatalogOrderedImageIndex(
+        (primaryImageIndex + offset) % PRODUCT_CATALOG_IMAGE_COUNT,
+      ),
+    }),
+  );
+  const fallbackImages = CATALOG_IMAGE_VARIANTS[input.categorySlug] ?? [
+    DEFAULT_CATALOG_IMAGE,
+  ];
+  const startIndex = getStableIndex(input.slug, fallbackImages.length);
+  const rotatedImages = [
+    ...fallbackImages.slice(startIndex),
+    ...fallbackImages.slice(0, startIndex),
+  ];
+
+  return Array.from(new Set([...productImages, ...rotatedImages])).slice(0, 6);
+}
+
+export function getProductCatalogImage(input: {
+  categorySlug: string;
+  slug: string;
+}) {
+  if (!hasProductCatalogImages(input.categorySlug))
+    return DEFAULT_CATALOG_IMAGE;
+
+  return getProductCatalogImageByIndex({
+    categorySlug: input.categorySlug,
+    imageIndex: getProductCatalogOrderedImageIndex(
+      getStableIndex(input.slug, PRODUCT_CATALOG_IMAGE_COUNT),
+    ),
+  });
+}
+
+function getProductCatalogOrderedImageIndex(imageIndex: number) {
+  return PRODUCT_CATALOG_IMAGE_ORDER[imageIndex] ?? imageIndex;
+}
+
+function getProductCatalogImageByIndex(input: {
+  categorySlug: string;
+  imageIndex: number;
+}) {
+  if (!hasProductCatalogImages(input.categorySlug))
+    return DEFAULT_CATALOG_IMAGE;
+
+  const imageNumber = input.imageIndex + 1;
+  const paddedImageNumber = imageNumber.toString().padStart(2, "0");
+
+  return `/brand/product-catalog/${input.categorySlug}-${paddedImageNumber}.avif`;
+}
+
 function isLegacyCatalogImage(image: string) {
   return (
     image.startsWith("https://images.unsplash.com/") ||
     image.startsWith("/brand/cinematic/") ||
     image.startsWith("/brand/v2/") ||
     image.startsWith("/brand/elysia-aqua") ||
+    isBoutiqueCategoryPlaceholderImage(image) ||
     isShopifyCategoryPlaceholderImage(image)
+  );
+}
+
+function hasProductCatalogImages(categorySlug: string) {
+  return PRODUCT_CATALOG_IMAGE_CATEGORIES.has(categorySlug);
+}
+
+function isBoutiqueCategoryPlaceholderImage(image: string) {
+  return /^\/brand\/boutique\/category-(?:bracelets|earrings|necklaces|rings)\.avif$/i.test(
+    image,
   );
 }
 

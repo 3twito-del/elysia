@@ -38,13 +38,14 @@ describe("Serwist route", () => {
     expect(source).not.toContain("Vercel prebuilt packaging");
   });
 
-  it("keeps oversized legacy PNG source images out of the precache manifest", () => {
+  it("keeps the precache ignore list limited to active local build sources", () => {
     const routeSource = read("src/app/serwist/[path]/route.ts");
     const configSource = read("next.config.js");
 
     expect(routeSource).toContain("serwistPrecacheIgnores");
-    expect(routeSource).toContain('"public/brand/elysia-aqua*.png"');
-    expect(routeSource).toContain('"public/brand/cinematic/*.png"');
+    expect(routeSource).toContain('"**/node_modules/**/*"');
+    expect(routeSource).not.toContain("elysia-aqua");
+    expect(routeSource).not.toContain("cinematic/*.png");
     expect(routeSource).toContain("globIgnores: [...serwistPrecacheIgnores]");
     expect(configSource).not.toContain("maximumFileSizeToCacheInBytes");
   });

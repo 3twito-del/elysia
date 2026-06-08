@@ -1,5 +1,10 @@
 export const PRODUCTS_PER_CATEGORY = 75;
 
+const PRODUCT_CATALOG_IMAGE_COUNT = 16;
+const PRODUCT_CATALOG_IMAGE_ORDER = [
+  10, 1, 6, 7, 4, 15, 2, 11, 3, 0, 9, 12, 14, 13, 8, 5,
+];
+
 export const seedCategories = [
   {
     slug: "rings",
@@ -127,7 +132,7 @@ const manualProducts = [
     stoneSlug: "diamond",
     basePrice: "1290",
     collectionSlugs: ["studio-light", "bridal-edit"],
-    image: "/brand/boutique/category-rings.avif",
+    image: getSeedProductCatalogImage("rings", "venus-line-ring"),
     tags: ["דיוק מאופק", "קו מודרני", "אירוסין", "מתנה"],
     variants: [
       {
@@ -166,7 +171,7 @@ const manualProducts = [
     stoneSlug: "pearl",
     basePrice: "690",
     collectionSlugs: ["studio-light"],
-    image: "/brand/boutique/category-earrings.avif",
+    image: getSeedProductCatalogImage("earrings", "muse-pearl-earrings"),
     tags: ["דיוק מאופק", "קו מודרני", "פנינה", "מתנה"],
     variants: [
       {
@@ -194,7 +199,7 @@ const manualProducts = [
     stoneSlug: "diamond",
     basePrice: "980",
     collectionSlugs: ["studio-light"],
-    image: "/brand/boutique/category-necklaces.avif",
+    image: getSeedProductCatalogImage("necklaces", "selene-chain"),
     tags: ["דיוק מאופק", "קו מודרני", "שכבות", "מתנה"],
     variants: [
       {
@@ -233,7 +238,7 @@ const manualProducts = [
     stoneSlug: null,
     basePrice: "840",
     collectionSlugs: ["studio-light"],
-    image: "/brand/boutique/category-bracelets.avif",
+    image: getSeedProductCatalogImage("bracelets", "hera-bracelet"),
     tags: ["דיוק מאופק", "קו מודרני", "יום יום", "שכבות"],
     variants: [
       {
@@ -351,29 +356,6 @@ const categoryBlueprints = {
   },
 } satisfies Record<SeedCategorySlug, CategoryBlueprint>;
 
-const categoryImageVariants = {
-  rings: [
-    "/brand/boutique/category-rings.avif",
-    "/brand/boutique/lifestyle-hero.avif",
-    "/brand/boutique/category-necklaces.avif",
-  ],
-  necklaces: [
-    "/brand/boutique/category-necklaces.avif",
-    "/brand/boutique/lifestyle-hero.avif",
-    "/brand/boutique/category-earrings.avif",
-  ],
-  earrings: [
-    "/brand/boutique/category-earrings.avif",
-    "/brand/boutique/lifestyle-hero.avif",
-    "/brand/boutique/category-rings.avif",
-  ],
-  bracelets: [
-    "/brand/boutique/category-bracelets.avif",
-    "/brand/boutique/lifestyle-hero.avif",
-    "/brand/boutique/category-rings.avif",
-  ],
-} satisfies Record<SeedCategorySlug, readonly string[]>;
-
 const designFamilies = [
   { slug: "aura", name: "Aura", hebrew: "הילה", tags: ["עדין", "יום יום"] },
   { slug: "noya", name: "Noya", hebrew: "נויה", tags: ["נקי", "מתנה"] },
@@ -487,6 +469,7 @@ function createGeneratedProduct(
   );
   const stoneText = stone ? `עם ${stone.name}` : "ללא אבן";
   const name = `${blueprint.productKind} ${family.hebrew} ${detail.hebrew}`;
+  const slug = `${blueprint.generatedSlugPrefix}-${family.slug}-${detail.slug}-${serial}`;
   const description = createGeneratedProductDescription({
     materialName: material.name,
     name,
@@ -494,7 +477,7 @@ function createGeneratedProduct(
   });
 
   return {
-    slug: `${blueprint.generatedSlugPrefix}-${family.slug}-${detail.slug}-${serial}`,
+    slug,
     sku,
     name,
     shortDescription: `${blueprint.productKind} ${material.name} ${stoneText} בגימור ${detail.hebrew}.`,
@@ -504,7 +487,7 @@ function createGeneratedProduct(
     stoneSlug: stone?.slug ?? null,
     basePrice: String(basePrice),
     collectionSlugs,
-    image: pick(categoryImageVariants[categorySlug], index + blueprint.offset),
+    image: getSeedProductCatalogImage(categorySlug, slug),
     tags: createTags({
       blueprint,
       collectionSlugs,
@@ -600,6 +583,28 @@ function createVariants(input: {
     quantityJerusalem: 1 + ((input.index + variantIndex * 2) % 7),
     safetyStock: input.index % 5 === 0 ? 2 : 1,
   }));
+}
+
+function getSeedProductCatalogImage(
+  categorySlug: SeedCategorySlug,
+  slug: string,
+) {
+  const imageIndex = getStableIndex(slug, PRODUCT_CATALOG_IMAGE_COUNT);
+  const imageNumber =
+    (PRODUCT_CATALOG_IMAGE_ORDER[imageIndex] ?? imageIndex) + 1;
+  const paddedImageNumber = imageNumber.toString().padStart(2, "0");
+
+  return `/brand/product-catalog/${categorySlug}-${paddedImageNumber}.avif`;
+}
+
+function getStableIndex(value: string, length: number) {
+  let hash = 0;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
+  }
+
+  return length > 0 ? hash % length : 0;
 }
 
 function pick<T>(values: readonly T[], index: number): T {

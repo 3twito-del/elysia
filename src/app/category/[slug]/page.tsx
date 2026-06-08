@@ -82,15 +82,13 @@ const categoryLuxuryCopyBySlug: Record<string, CategoryLuxuryCopy> = {
   necklaces: {
     description:
       "שרשראות ותליונים שנראים טוב לבד או בשכבות, לפי אורך, חומר, אבן וגימור.",
-    intro:
-      "קו על הצוואר שמשנה חולצה לבנה, שמלה פתוחה או לוק חופשה בלי להעמיס.",
+    intro: "קו על הצוואר שמשנה חולצה לבנה, שמלה פתוחה או לוק חופשה בלי להעמיס.",
     title: "שרשראות",
   },
   rings: {
     description:
       "טבעות כסף, ציפוי זהב, יהלומים ואבני חן לפי פרופורציה, נוחות ומידה.",
-    intro:
-      "טבעת אחת עם נוכחות עדינה, או כמה יחד כשבא יותר אור על היד.",
+    intro: "טבעת אחת עם נוכחות עדינה, או כמה יחד כשבא יותר אור על היד.",
     title: "טבעות",
   },
 };
@@ -98,23 +96,23 @@ const categoryLuxuryCopyBySlug: Record<string, CategoryLuxuryCopy> = {
 const categoryTrustSignals = [
   {
     icon: Gem,
-    title: "חומר וגימור",
-    text: "מתכת, אבן וקולקציה מופיעים בכרטיסי המוצר.",
+    title: "פרטי תכשיט ברורים",
+    text: "מתכת, אבן, קולקציה ומחיר מופיעים לפני מעבר לדף המוצר.",
   },
   {
     icon: Ruler,
-    title: "עזרה במידה",
-    text: "מדריך מידות ושירות לפני הזמנה כשיש התלבטות.",
+    title: "מידה בלי ניחוש",
+    text: "מדריך מידות ושיחת ייעוץ זמינים לפני בחירת טבעת, צמיד או שרשרת.",
   },
   {
     icon: Truck,
-    title: "מסירה והחלפה",
-    text: "משלוח, החלפה והחזרה גלויים לפני checkout.",
+    title: "מסירה ואריזת Elysia",
+    text: "מסירה, החלפה ואריזה למתנה מוצגים לפני אישור ההזמנה.",
   },
   {
     icon: Headphones,
-    title: "שאלה על פריט",
-    text: "אפשר לפנות עם שם התכשיט לפני הקנייה.",
+    title: "יועצת לפני הזמנה",
+    text: "אפשר לשלוח שם תכשיט ולקבל תשובה על חומר, מידה או התאמה.",
   },
 ] as const;
 
@@ -249,7 +247,13 @@ export default async function CategoryPage({
   const hasActiveFilters = activeFilterCount > 0;
   const pageRangeLabel =
     sortedProducts.length > 0 ? "כל התכשיטים" : "הקטגוריה מתעדכנת";
-
+  const categoryResultCountLabel = formatCategoryResultCount(
+    sortedProducts.length,
+  );
+  const categoryVisibleRangeLabel =
+    sortedProducts.length > productsPerPage
+      ? `מציגים ${pageProducts.length} מתוך ${sortedProducts.length}`
+      : categoryResultCountLabel;
   return (
     <>
       <SiteHeader />
@@ -405,10 +409,10 @@ export default async function CategoryPage({
                     {!hasCategoryProducts
                       ? "נעדכן את הקטגוריה בקרוב"
                       : filteredProducts.length > productsPerPage
-                        ? `עמוד ${currentPage}`
+                        ? `${categoryVisibleRangeLabel} · עמוד ${currentPage}`
                         : hasActiveFilters
                           ? "התוצאות מסוננות לפי מה שבחרתם"
-                          : "פריטים פתוחים מתוך הקולקציה"}
+                          : categoryVisibleRangeLabel}
                     <span className="mx-2">·</span>
                     <span data-testid="category-current-sort-label">
                       מיון: {currentSortLabel}
@@ -540,10 +544,10 @@ function CategoryTrustStrip() {
   return (
     <section
       aria-label="שירות ואמון לפני בחירת תכשיט"
-      className="mx-auto w-full max-w-[96rem] px-[var(--ui-page-x)] pt-4 sm:px-[var(--ui-page-x-wide)]"
+      className="mx-auto w-full max-w-[96rem] px-[var(--ui-page-x)] pt-2 sm:px-[var(--ui-page-x-wide)]"
       data-testid="category-trust-strip"
     >
-      <div className="grid gap-3 border-y border-[var(--glass-border)] py-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 border-y border-[var(--glass-border)] py-3 sm:grid-cols-2 lg:grid-cols-4">
         {categoryTrustSignals.map((item) => {
           const Icon = item.icon;
 
@@ -588,8 +592,8 @@ function CategoryEditorialNote({
         <span className="text-muted-foreground text-xs">{categoryName}</span>
       </summary>
       <p className="text-muted-foreground mt-3 max-w-3xl leading-7">
-        {description} מומלץ לשמור בנפרד, להרחיק מים ובושם, ולבחור מידה לפי
-        אופן הענידה בפועל.
+        {description} מומלץ לשמור בנפרד, להרחיק מים ובושם, ולבחור מידה לפי אופן
+        הענידה בפועל.
       </p>
     </details>
   );
@@ -715,6 +719,13 @@ function CategoryRecoveryActions({
 
 function formatCategoryRecoveryResultCount(total: number) {
   return total === 1 ? "התאמה אחת" : "התאמות";
+}
+
+function formatCategoryResultCount(total: number) {
+  if (total === 0) return "אין תכשיטים";
+  if (total === 1) return "תכשיט אחד";
+
+  return `${total} תכשיטים`;
 }
 
 function CategoryPagination({

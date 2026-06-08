@@ -3,27 +3,30 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CheckCircle2, Cookie, Settings } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "~/components/ui/button";
 import {
   type CookieConsentValue,
   writeCookieConsent,
 } from "~/lib/cookie-consent";
-import { cn } from "~/lib/utils";
 import { useCookieConsentValue } from "~/lib/use-cookie-consent";
 
 export function CookieConsentBanner() {
   const pathname = usePathname();
   const consentValue = useCookieConsentValue();
+  const [selectedConsentValue, setSelectedConsentValue] =
+    useState<CookieConsentValue | null>(null);
+  const effectiveConsentValue = selectedConsentValue ?? consentValue;
+  const isConsentLoading =
+    consentValue === undefined && selectedConsentValue === null;
   const bannerRef = useRef<HTMLElement>(null);
   const isAdminRoute = pathname.startsWith("/admin");
-  const isHomeRoute = pathname === "/";
 
   useEffect(() => {
     const root = document.documentElement;
 
-    if (isAdminRoute || consentValue === undefined || consentValue !== null) {
+    if (isAdminRoute || isConsentLoading || effectiveConsentValue !== null) {
       delete root.dataset.cookieBannerOpen;
       root.style.removeProperty("--floating-stack-bottom");
       return;
@@ -58,13 +61,14 @@ export function CookieConsentBanner() {
       delete root.dataset.cookieBannerOpen;
       root.style.removeProperty("--floating-stack-bottom");
     };
-  }, [consentValue, isAdminRoute]);
+  }, [effectiveConsentValue, isAdminRoute, isConsentLoading]);
 
-  if (isAdminRoute || consentValue === undefined || consentValue !== null) {
+  if (isAdminRoute || isConsentLoading || effectiveConsentValue !== null) {
     return null;
   }
 
   const chooseConsent = (value: CookieConsentValue) => {
+    setSelectedConsentValue(value);
     writeCookieConsent(value);
   };
 
@@ -72,10 +76,7 @@ export function CookieConsentBanner() {
     <section
       aria-label="בחירת קוקיז"
       aria-describedby="cookie-consent-summary"
-      className={cn(
-        "minimal-scroll bg-background fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-50 max-h-[24dvh] overflow-y-auto rounded-md border border-[var(--glass-border)] px-3 py-2 shadow-none sm:inset-x-auto sm:bottom-4 sm:w-[min(calc(100vw-2rem),20rem)] sm:px-3 sm:py-2.5",
-        isHomeRoute ? "sm:left-4" : "sm:right-4",
-      )}
+      className="minimal-scroll bg-background fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-50 max-h-[24dvh] overflow-y-auto rounded-md border border-[var(--glass-border)] px-3 py-2 shadow-none sm:inset-x-auto sm:right-4 sm:bottom-4 sm:w-[min(calc(100vw-2rem),20rem)] sm:px-3 sm:py-2.5"
       data-cookie-consent-banner="true"
       data-public-floating-avoid="true"
       ref={bannerRef}
@@ -86,13 +87,14 @@ export function CookieConsentBanner() {
             <Cookie className="size-5" aria-hidden="true" />
           </div>
           <div className="min-w-0">
-            <h2 className="text-xs font-semibold sm:text-base">
-              קוקיז, בקצרה
-            </h2>
+            <h2 className="text-xs font-semibold sm:text-base">קוקיז, בקצרה</h2>
             <p
               className="text-muted-foreground mt-1 line-clamp-1 max-w-3xl text-[0.68rem] leading-5 sm:text-sm sm:leading-6"
               id="cookie-consent-summary"
-            >האתר משתמש בקוקיז חיוניים להפעלה. באישורכם נשתמש גם במדידה ושיפור החוויה, כולל צפיות אחרונות.<Link
+            >
+              האתר משתמש בקוקיז חיוניים להפעלה. באישורכם נשתמש גם במדידה ושיפור
+              החוויה, כולל צפיות אחרונות.
+              <Link
                 className="text-foreground ms-1 underline underline-offset-4"
                 href="/privacy"
               >

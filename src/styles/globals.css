@@ -1067,7 +1067,7 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
 }
 
 .commerce-page-hero[data-commerce-hero="catalog"] {
-  --commerce-hero-copy-max: 44rem;
+  --commerce-hero-copy-max: 38rem;
   --commerce-hero-media-min: clamp(9rem, 18vw, 14rem);
   color: var(--foreground);
   background: transparent;
@@ -1121,7 +1121,7 @@ main
   + [aria-hidden="true"]
   + .commerce-page-hero[data-commerce-hero="catalog"]
   .commerce-page-hero-inner {
-  padding-top: calc(var(--site-header-height) + var(--ui-section-y-tight));
+  padding-top: calc(var(--site-header-height) + clamp(0.85rem, 2vw, 1.35rem));
 }
 
 .commerce-page-hero-inner {
@@ -1136,9 +1136,9 @@ main
 }
 
 .commerce-page-hero[data-commerce-hero="catalog"] .commerce-page-hero-inner {
-  max-width: 78rem;
+  max-width: 96rem;
   min-height: auto;
-  padding-block: var(--ui-section-y-tight);
+  padding-block: clamp(0.85rem, 2vw, 1.35rem);
 }
 
 .commerce-page-hero[data-commerce-hero="checkout"] .commerce-page-hero-inner {

@@ -64,7 +64,9 @@ describe("seed catalog generator", () => {
       expect(categorySlugs.has(product.categorySlug)).toBe(true);
       expect(materialSlugs.has(product.materialSlug)).toBe(true);
       expect(Number(product.basePrice)).toBeGreaterThan(0);
-      expect(product.image).toMatch(/^\/brand\/boutique\/.+\.avif$/);
+      expect(product.image).toMatch(
+        /^\/brand\/product-catalog\/(?:bracelets|earrings|necklaces|rings)-\d{2}\.avif$/,
+      );
       expect(product.tags.length).toBeGreaterThan(0);
       expect(product.variants.length).toBeGreaterThan(0);
 
