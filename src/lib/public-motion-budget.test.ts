@@ -142,8 +142,8 @@ describe("public motion budget", () => {
     expect(productGallerySource).toContain(
       "duration: shouldReduceMotion ? 0 : 0.38",
     );
-    expect(productGallerySource).toContain(
-      "initial={shouldReduceMotion ? false : { opacity: 0, scale: 1.006 }}",
+    expect(productGallerySource).toMatch(
+      /initial=\{\s*shouldReduceMotion\s*\?\s*false\s*:\s*\{\s*opacity:\s*0,\s*scale:\s*1\.006\s*\}\s*\}/,
     );
     expect(purchasePanelSource).toContain("motion-status-pop");
     expect(purchasePanelSource).toContain("motion-sticky-purchase");

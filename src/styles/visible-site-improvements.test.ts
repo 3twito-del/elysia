@@ -411,6 +411,11 @@ describe("visible site improvement affordances", () => {
     const styles = read("src/styles/globals.css");
 
     expect(gallery).toContain('thumbnailTestId: "product-gallery-thumbnail"');
+    expect(gallery).toContain(
+      'data-testid="product-gallery-integrated-layout"',
+    );
+    expect(gallery).toContain('data-testid="product-gallery-secondary-stack"');
+    expect(gallery).toContain('"product-gallery-more-images-trigger"');
     expect(gallery).toContain("data-gallery-selected=");
     expect(gallery).toContain("aria-current={activeImageIndex === index}");
     expect(gallery).toContain("aria-pressed={activeImageIndex === index}");

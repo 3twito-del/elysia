@@ -1283,34 +1283,93 @@ async function expectProductGalleryFullScreenNavigation(
   page: Page,
   { requireMultiple = true }: { requireMultiple?: boolean } = {},
 ) {
+  const isDesktopMosaic = (page.viewportSize()?.width ?? 0) >= 1024;
   const galleryThumbnails = page.getByTestId("product-gallery-thumbnail");
   const galleryThumbnailCount = await galleryThumbnails.count();
 
   if (!requireMultiple && galleryThumbnailCount <= 1) return;
 
   expect(galleryThumbnailCount).toBeGreaterThan(1);
-  await expect(galleryThumbnails.first()).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
-  await galleryThumbnails.first().focus();
-  await page.keyboard.press("ArrowRight");
-  await expect(galleryThumbnails.nth(1)).toBeFocused();
-  await expect(galleryThumbnails.nth(1)).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
-  await page.keyboard.press("Home");
-  await expect(galleryThumbnails.first()).toBeFocused();
-  await expect(galleryThumbnails.first()).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
-  await galleryThumbnails.nth(1).click();
-  await expect(galleryThumbnails.nth(1)).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
+
+  if (isDesktopMosaic) {
+    await expect(
+      page.getByTestId("product-gallery-integrated-layout"),
+    ).toBeVisible();
+    await expect(
+      page.getByTestId("product-gallery-secondary-stack"),
+    ).toBeVisible();
+    await expect(galleryThumbnails.first()).toBeHidden();
+
+    const galleryLayout = await page.evaluate(() => {
+      const main = document.querySelector('[data-testid="product-gallery"]');
+      const stack = document.querySelector(
+        '[data-testid="product-gallery-secondary-stack"]',
+      );
+
+      if (!main || !stack) throw new Error("Missing PDP gallery mosaic.");
+
+      const mainRect = main.getBoundingClientRect();
+      const stackRect = stack.getBoundingClientRect();
+
+      return {
+        mainHeight: Math.round(mainRect.height),
+        mainLeft: Math.round(mainRect.left),
+        stackHeight: Math.round(stackRect.height),
+        stackLeft: Math.round(stackRect.left),
+      };
+    });
+
+    expect(galleryLayout.mainLeft).toBeGreaterThan(galleryLayout.stackLeft);
+    expect(
+      Math.abs(galleryLayout.mainHeight - galleryLayout.stackHeight),
+    ).toBeLessThanOrEqual(2);
+
+    await page.getByTestId("product-gallery-secondary-tile").first().click();
+    await expect(
+      page.getByTestId("product-gallery-selection-status"),
+    ).toContainText(/2\/\d+/);
+
+    const moreImagesTrigger = page.getByTestId(
+      "product-gallery-more-images-trigger",
+    );
+    if ((await moreImagesTrigger.count()) > 0) {
+      await moreImagesTrigger.click();
+      await expect(
+        page.getByTestId("product-gallery-fullscreen-dialog"),
+      ).toBeVisible();
+      await page.getByTestId("product-gallery-fullscreen-close").click();
+      await expect(
+        page.getByTestId("product-gallery-fullscreen-dialog"),
+      ).toBeHidden();
+    }
+  } else {
+    await expect(
+      page.getByTestId("product-gallery-secondary-stack"),
+    ).toBeHidden();
+    await expect(galleryThumbnails.first()).toBeVisible();
+    await expect(galleryThumbnails.first()).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    await galleryThumbnails.first().focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(galleryThumbnails.nth(1)).toBeFocused();
+    await expect(galleryThumbnails.nth(1)).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    await page.keyboard.press("Home");
+    await expect(galleryThumbnails.first()).toBeFocused();
+    await expect(galleryThumbnails.first()).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    await galleryThumbnails.nth(1).click();
+    await expect(galleryThumbnails.nth(1)).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+  }
 
   const fullscreenTrigger = page.getByTestId(
     "product-gallery-fullscreen-trigger",
@@ -1392,10 +1451,18 @@ async function expectProductGalleryFullScreenNavigation(
     ),
   );
 
+  const fullscreenThumbnails = page.getByTestId(
+    "product-gallery-fullscreen-thumbnail",
+  );
+  await expect(fullscreenThumbnails.first()).toBeVisible();
+  await fullscreenThumbnails.first().click();
+  await expect(
+    page.getByTestId("product-gallery-fullscreen-status"),
+  ).toContainText(/1/);
   await page.keyboard.press("ArrowRight");
   await expect(
     page.getByTestId("product-gallery-fullscreen-status"),
-  ).toContainText("3");
+  ).toContainText(/2/);
   await page.keyboard.press("Escape");
   await expect(
     page.getByTestId("product-gallery-fullscreen-dialog"),

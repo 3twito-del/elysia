@@ -55,6 +55,16 @@ describe("product gallery media fallback and thumbnail clarity", () => {
     expect(gallery).toContain("aria-current={activeImageIndex === index}");
     expect(gallery).toContain("aria-pressed={activeImageIndex === index}");
     expect(gallery).toContain("product-gallery-main-frame");
+    expect(gallery).toContain("product-gallery-integrated-layout");
+    expect(gallery).toContain(
+      'data-testid="product-gallery-integrated-layout"',
+    );
+    expect(gallery).toContain('data-testid="product-gallery-secondary-stack"');
+    expect(gallery).toContain('"product-gallery-secondary-tile"');
+    expect(gallery).toContain('"product-gallery-more-images-trigger"');
+    expect(gallery).toContain("getSecondaryGalleryImages");
+    expect(gallery).toContain("hiddenGalleryImageCount");
+    expect(gallery).toContain("openViewerFromSecondaryTile");
     expect(gallery).toContain("product-gallery-thumbnail-rail");
     expect(gallery).toContain("data-gallery-hover-zoom=");
     expect(gallery).toContain('data-testid="product-gallery-hover-zoom-layer"');
@@ -70,6 +80,7 @@ describe("product gallery media fallback and thumbnail clarity", () => {
     expect(gallery).toContain("100dvw");
     expect(gallery).toContain("mainGalleryImageSizes");
     expect(gallery).toContain("galleryThumbnailImageSizes");
+    expect(gallery).toContain("integratedGallerySecondaryImageSizes");
     expect(gallery).not.toContain('data-testid="product-gallery-zoom-dialog"');
     expect(gallery).not.toContain('data-testid="product-gallery-zoom-trigger"');
     expect(gallery).toContain(
@@ -90,6 +101,18 @@ describe("product gallery media fallback and thumbnail clarity", () => {
     ).toBeLessThan(
       indexOf(gallery, 'testId: "product-gallery-thumbnail-rail"'),
     );
+  });
+
+  it("keeps desktop mosaic styling separate from the mobile thumbnail rail", () => {
+    const css = read("src/styles/globals.css");
+
+    expect(css).toContain(".product-gallery-integrated-layout");
+    expect(css).toContain(".product-gallery-secondary-stack");
+    expect(css).toContain(".product-gallery-secondary-tile");
+    expect(css).toContain(".product-gallery-more-images-veil");
+    expect(css).toContain(".product-gallery-more-images-label");
+    expect(css).toContain("backdrop-filter: blur(4px) saturate(0.92);");
+    expect(css).toContain(".product-gallery-thumbnail-rail button");
   });
 });
 
