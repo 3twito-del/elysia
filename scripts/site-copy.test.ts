@@ -78,6 +78,51 @@ describe("site copy tooling", () => {
     expect(sources).toContain("Visible label");
   });
 
+  it("does not extract technical attributes, class helpers, or internal prop values", () => {
+    const source = `
+      import { cn } from "@/lib/utils";
+
+      const utilityClasses = cn("grid gap-2", true && "text-sm");
+      const technicalProps = {
+        className: "rounded-md border",
+        id: "checkout-panel",
+        label: "Visible label",
+      };
+
+      export function Demo() {
+        return (
+          <button
+            aria-hidden="true"
+            aria-label="Open cart"
+            className="inline-flex"
+            data-testid="cart-button"
+            id="cart-button"
+            title="Cart details"
+            type="button"
+          >
+            Cart
+          </button>
+        );
+      }
+    `;
+
+    const entries = extractCopyEntriesFromText("src/app/demo/page.tsx", source);
+    const sources = entries.map((entry) => entry.source);
+
+    expect(sources).toContain("Visible label");
+    expect(sources).toContain("Open cart");
+    expect(sources).toContain("Cart details");
+    expect(sources).toContain("Cart");
+    expect(sources).not.toContain("grid gap-2");
+    expect(sources).not.toContain("text-sm");
+    expect(sources).not.toContain("rounded-md border");
+    expect(sources).not.toContain("checkout-panel");
+    expect(sources).not.toContain("true");
+    expect(sources).not.toContain("inline-flex");
+    expect(sources).not.toContain("cart-button");
+    expect(sources).not.toContain("button");
+  });
+
   it("excludes admin-editable product copy without excluding surrounding UI labels", () => {
     const source = `
       export const productDraft = {
@@ -321,11 +366,11 @@ describe("site copy tooling", () => {
       "src/app/demo/page.tsx",
       `
         export function First() {
-          return <ArrowLeft aria-hidden="true" />;
+          return <ArrowLeft title="Back" />;
         }
 
         export function Second() {
-          return <ArrowLeft aria-hidden="true" />;
+          return <ArrowLeft title="Back" />;
         }
       `,
     );

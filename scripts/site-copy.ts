@@ -49,6 +49,58 @@ const PRODUCT_MANAGED_FILES = new Set([
   normalizePath("src/server/services/shopify-dropship-sync.ts"),
 ]);
 
+const COPY_RELEVANT_JSX_ATTRIBUTE_NAMES = new Set([
+  "alt",
+  "aria-description",
+  "aria-label",
+  "aria-roledescription",
+  "aria-valuetext",
+  "description",
+  "emptyLabel",
+  "eyebrow",
+  "label",
+  "placeholder",
+  "title",
+]);
+
+const TECHNICAL_LITERAL_PROPERTY_NAMES = new Set([
+  "aria-current",
+  "aria-describedby",
+  "aria-hidden",
+  "aria-labelledby",
+  "autoComplete",
+  "className",
+  "d",
+  "dir",
+  "height",
+  "href",
+  "htmlFor",
+  "id",
+  "inputMode",
+  "key",
+  "method",
+  "name",
+  "rel",
+  "role",
+  "size",
+  "sizes",
+  "target",
+  "testId",
+  "type",
+  "value",
+  "variant",
+  "viewBox",
+  "width",
+]);
+
+const TECHNICAL_CLASS_HELPER_NAMES = new Set([
+  "cn",
+  "clsx",
+  "cva",
+  "twJoin",
+  "twMerge",
+]);
+
 const CURRENT_TEXT_TITLES = ["טקסט נוכחי", "טקסט באתר", "׳˜׳§׳¡׳˜ ׳‘׳׳×׳¨"];
 const PROPOSED_TEXT_TITLES = ["טקסט מוצע", "נוסח מאושר", "׳ ׳•׳¡׳— ׳׳׳•׳©׳¨"];
 
@@ -375,6 +427,64 @@ function getJsxAttributeName(node: ts.Node) {
   return undefined;
 }
 
+function getCallExpressionName(node: ts.CallExpression) {
+  const expression = node.expression;
+
+  if (ts.isIdentifier(expression)) {
+    return expression.text;
+  }
+
+  if (ts.isPropertyAccessExpression(expression)) {
+    return expression.name.text;
+  }
+
+  return undefined;
+}
+
+function isInsideTechnicalClassHelper(node: ts.Node) {
+  let current: ts.Node | undefined = node.parent;
+
+  while (current) {
+    if (ts.isCallExpression(current)) {
+      const callExpressionName = getCallExpressionName(current);
+
+      if (
+        callExpressionName &&
+        TECHNICAL_CLASS_HELPER_NAMES.has(callExpressionName)
+      ) {
+        return true;
+      }
+    }
+
+    if (ts.isFunctionLike(current) || ts.isSourceFile(current)) {
+      return false;
+    }
+
+    current = current.parent;
+  }
+
+  return false;
+}
+
+function isTechnicalLiteralProperty(node: ts.Node) {
+  const propertyName = getNearestPropertyName(node);
+
+  if (!propertyName) return false;
+
+  return (
+    propertyName.startsWith("data-") ||
+    TECHNICAL_LITERAL_PROPERTY_NAMES.has(propertyName)
+  );
+}
+
+function isTechnicalJsxAttributeLiteral(node: ts.Node) {
+  const attributeName = getJsxAttributeName(node);
+
+  if (!attributeName) return false;
+
+  return !COPY_RELEVANT_JSX_ATTRIBUTE_NAMES.has(attributeName);
+}
+
 function safeLocatorPart(value: string) {
   return value.replace(
     /[\u0000-\u001f\u007f-\u009f\u2028\u2029]/gu,
@@ -407,6 +517,9 @@ function isProductManagedContext(node: ts.Node, relativePath: string) {
 function shouldSkipLiteral(node: ts.Node, relativePath: string) {
   if (isNodeName(node)) return true;
   if (ts.isLiteralTypeNode(node.parent)) return true;
+  if (isTechnicalJsxAttributeLiteral(node)) return true;
+  if (isTechnicalLiteralProperty(node)) return true;
+  if (isInsideTechnicalClassHelper(node)) return true;
 
   return isProductManagedContext(node, relativePath);
 }
