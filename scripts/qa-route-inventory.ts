@@ -134,6 +134,10 @@ const smokeApiRoutes = [
   },
 ] as const;
 
+const supplierFixtureProductSlugs = new Set([
+  "elysia-supplier-silver-halo-ring",
+]);
+
 export function getQaRouteInventory({
   includeAllProducts = false,
 }: {
@@ -189,6 +193,7 @@ export function getQaRouteInventory({
         includeInPerformance: slug === "venus-line-ring",
         kind: "dynamic",
         path: `/product/${slug}`,
+        notes: getProductRouteNotes(slug),
         source: includeAllProducts
           ? "catalog-fixture-full"
           : "catalog-fixture-sample",
@@ -455,6 +460,12 @@ function getRouteInventoryProductSlugs() {
   );
 }
 
+function getProductRouteNotes(slug: string) {
+  if (!supplierFixtureProductSlugs.has(slug)) return "";
+
+  return "Supplier fixture route; local visual QA requires E2E_CATALOG_FIXTURES=1 or an active database-backed supplier product with this slug.";
+}
+
 function isPerformanceRoute(route: string) {
   return [
     "/",
@@ -525,13 +536,13 @@ function formatRouteInventoryMarkdown(payload: {
     "",
     "## Browser-visible Routes",
     "",
-    "| Method | Path | Template | Kind | Coverage | Auth | Source |",
-    "| --- | --- | --- | --- | --- | --- | --- |",
+    "| Method | Path | Template | Kind | Coverage | Auth | Source | Notes |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- |",
     ...payload.inventory
       .filter((route) => route.includeInVisualQa)
       .map(
         (route) =>
-          `| ${route.method} | \`${route.path}\` | \`${route.template}\` | ${route.kind} | ${route.coverage} | ${route.requiresAuth ? "yes" : "no"} | ${route.source} |`,
+          `| ${route.method} | \`${route.path}\` | \`${route.template}\` | ${route.kind} | ${route.coverage} | ${route.requiresAuth ? "yes" : "no"} | ${route.source} | ${route.notes || "-"} |`,
       ),
     "",
     "## Route Inventory Cadence",

@@ -10,10 +10,7 @@ import {
   getVisualQaRoutes,
   qaRouteInventoryCadence,
 } from "./qa-route-inventory";
-import {
-  cookiePreferencesLink,
-  policyLinks,
-} from "../src/lib/legal-content";
+import { cookiePreferencesLink, policyLinks } from "../src/lib/legal-content";
 
 describe("QA route inventory", () => {
   it("covers every App Router page and route handler template", () => {
@@ -40,6 +37,16 @@ describe("QA route inventory", () => {
     expect(routes).toEqual(
       expect.arrayContaining(["/product/elysia-supplier-silver-halo-ring"]),
     );
+  });
+
+  it("documents the supplier fixture route environment requirement", () => {
+    const supplierRoute = getQaRouteInventory().find(
+      (route) => route.path === "/product/elysia-supplier-silver-halo-ring",
+    );
+
+    expect(supplierRoute?.includeInVisualQa).toBe(true);
+    expect(supplierRoute?.notes).toContain("E2E_CATALOG_FIXTURES=1");
+    expect(supplierRoute?.notes).toContain("database-backed supplier product");
   });
 
   it("keeps unsafe API routes documented instead of browser-clicked", () => {
@@ -193,7 +200,8 @@ describe("QA route inventory", () => {
     expect(
       allInternalLinks.every(
         (link) =>
-          link.label.trim().length > 0 && knownRoutes.has(toRoutePath(link.href)),
+          link.label.trim().length > 0 &&
+          knownRoutes.has(toRoutePath(link.href)),
       ),
     ).toBe(true);
   });

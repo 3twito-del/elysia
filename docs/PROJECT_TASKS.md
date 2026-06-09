@@ -178,9 +178,65 @@ QA defects: a populated checkout floating bar overlaps the progress panel in
 mobile geometry, and `_next/image` returns `400` for
 `/brand/v2/category-bracelets.avif&w=96&q=75`.
 
+Supplier and mixed-checkout unblock evidence for the 2026-06-09 continuation
+pass: the focused local Playwright probe in
+`artifacts/qa/2026-06-09-supplier-checkout-unblock/focused-results.json` ran
+against `E2E_CATALOG_FIXTURES=1` local dev and recorded `objectivePassed=true`
+for supplier-only desktop, supplier-only mobile, mixed-cart desktop, and
+mixed-cart mobile. Screenshots in the same directory cover supplier PDP,
+supplier-only checkout, mixed checkout, and scrolled mobile mixed checkout.
+The probe confirmed `/product/elysia-supplier-silver-halo-ring` returns `200`,
+supplier-only checkout shows the separate-checkout summary without local order
+fields, mixed checkout keeps own and dropship source groups visible, and the
+mobile checkout summary is source-aware after the progress panel leaves view.
+
 ### Design Changes - Ready for User Decision
 
-None in this review pass.
+#### I-329 Full Checkout Visual Recomposition After Supplier/Mixed Evidence
+
+- `Aspect`: Commerce and Checkout
+- `Category`: Design Changes
+- `Status`: Ready for User Decision
+- `Priority`: P1
+- `Effort`: L
+- `Target Surface`: `/checkout`, cart summary, form hierarchy, provider source
+  grouping, and mobile checkout summary
+- `Finding`: The checkout now has approval-grade evidence for own-product,
+  supplier-only, and mixed carts. That removes the previous fixture blocker for
+  considering a bolder visual recomposition, but the implementation scope must
+  preserve separate local and Shopify checkout paths.
+- `Evidence`: Focused benchmark:
+  `artifacts/qa/2026-06-08-p1-design-benchmark/focused/p1-focused-results.json`.
+  The 2026-06-09 implementation pass fixed the populated mobile overlap and
+  image defects and recorded clean own-product checkout evidence in
+  `artifacts/qa/2026-06-09-ready-implementation-browser/focused-results.json`.
+  The 2026-06-09 supplier/mixed unblock probe in
+  `artifacts/qa/2026-06-09-supplier-checkout-unblock/focused-results.json`
+  recorded `objectivePassed=true` for supplier-only and mixed checkout on
+  desktop and mobile.
+- `Gate Result`: Supported with strict commerce limits. The Full Product
+  Benchmark maps `/checkout` to mandatory correctness and commerce corpus
+  evidence, and `publicElementPolicy.checkoutReassurance` is `allow` with
+  score `26/37.5`, above the `18.75` threshold. This does not approve merging
+  source groups, inventing one combined provider total, hiding legal/payment
+  acceptance, or replacing either checkout path.
+- `Recommended Change`: Recompose checkout into a calmer boutique hierarchy:
+  lead with selected pieces and source grouping, make payment/service
+  confidence quieter but closer to the relevant action, reduce panel repetition,
+  and keep the local submit and Shopify checkout actions visually distinct.
+- `Acceptance Checks`: Empty, own-product, supplier-only, and mixed carts still
+  render correct state. Supplier-only checkout has no local form fields or
+  local submit button. Mixed carts show both source groups, local and Shopify
+  actions stay separate, supplier items are not included in the local order
+  total, and the mobile summary appears only after the progress panel leaves
+  the viewport with source-aware copy.
+- `Verification`: Run `pnpm qa:routes`,
+  `pnpm exec playwright test tests/e2e/critical-flows.spec.ts --project=chromium-desktop --grep "adds a product to cart and shows it in checkout|shows supplier-only checkout without local order fields"`,
+  focused mixed-cart browser evidence, checkout style tests, and route
+  inventory/benchmark traceability checks after implementation.
+- `Next Decision`: User should approve the full recomposition, reject it, or
+  scope it down to a narrower checkout polish pass before product code is
+  edited.
 
 Implemented items removed from this section: I-308, I-309, I-310, I-311,
 I-312, I-313, I-314, I-315, I-316, I-317, I-318, I-319, I-320, I-321, I-322,
@@ -314,37 +370,49 @@ the objective checkout defects I-339 and I-340 were implemented on 2026-06-09.
 - `Next Decision`: User should choose whether to reject AI promotion, benchmark
   it, or approve an explicit exception.
 
+#### I-334 Supplier-Product Merchandising Benchmark
+
+- `Aspect`: Public UX and Brand
+- `Category`: Design Changes
+- `Status`: Needs Benchmark
+- `Priority`: P1
+- `Effort`: M
+- `Target Surface`: Supplier PDPs, supplier product cards, dropship trust copy,
+  and separate-checkout reassurance
+- `Finding`: The supplier PDP route no longer blocks evidence collection when
+  local QA runs with `E2E_CATALOG_FIXTURES=1`. Supplier-specific merchandising
+  may still improve clarity, but it risks over-explaining fulfillment plumbing
+  on a luxury surface if the copy or badges become too operational.
+- `Evidence`: `artifacts/qa/2026-06-09-supplier-checkout-unblock/focused-results.json`
+  confirms supplier PDP `200` on desktop and mobile and confirms
+  supplier-only checkout source separation. `scripts/qa-route-inventory.ts`
+  now documents the supplier fixture route environment requirement in route
+  notes.
+- `Gate Result`: Not implementation-ready. The route evidence blocker is
+  resolved, but distinct supplier merchandising and provenance language should
+  be scored before changing PDP/card copy, badges, or trust hierarchy.
+- `Recommended Change`: Benchmark a restrained supplier-aware treatment:
+  clarify separate checkout near the purchase/checkout action, keep source
+  grouping visible where it affects payment, and avoid public product-card
+  labels that make supplier logistics feel like the primary product story.
+- `Acceptance Checks`: Supplier products stay purchasable and understandable;
+  checkout separation remains explicit; PDP and cards do not expose unverified
+  supplier facts, operational internals, or a lower-premium marketplace tone.
+- `Verification`: Record benchmark score and route evidence, then run supplier
+  PDP, supplier-only checkout, mixed checkout, product-card, and source-group
+  tests before implementation.
+- `Next Decision`: User should approve a supplier-merchandising benchmark,
+  reject supplier-specific public treatment, or defer until verified supplier
+  facts are complete.
+
 ## Blocked / Deferred
 
 ### Design Changes - Blocked or Exception Required
 
-#### I-304 Supplier PDP Visual Review Blocked by Local 404
-
-- `Aspect`: Public UX and Brand
-- `Category`: Design Changes
-- `Status`: Blocked
-- `Priority`: P1
-- `Effort`: S
-- `Target Surface`: `/product/elysia-supplier-silver-halo-ring`
-- `Finding`: The representative public visual audit cannot review the supplier
-  PDP because the local route returns `404` in desktop, tablet, and mobile,
-  even though the route inventory includes it as a visual route.
-- `Evidence`: `artifacts/qa/2026-06-08-public-design-review-representative/site-audit.md`
-  reports one console error and one same-origin request failure for
-  `/product/elysia-supplier-silver-halo-ring` on all three viewports. The route
-  appears in
-  `artifacts/qa/2026-06-08-public-design-review-representative/route-inventory.md`
-  as `catalog-fixture-sample`.
-- `Gate Result`: Blocked before design judgment. PDP hierarchy changes cannot
-  be evaluated for the supplier product until the route renders locally or the
-  route is explicitly removed from the public design-review route set.
-- `Blocker`: Local fixture, database, or route-inventory state does not expose
-  the supplier PDP at the configured slug.
-- `Unblock Condition`: `/product/elysia-supplier-silver-halo-ring` returns a
-  browser-visible product page in local visual QA, or the review route set is
-  updated to use a supplier PDP slug that renders reliably.
-- `Next Decision`: User should choose whether to unblock supplier PDP evidence
-  before approving any supplier-product design changes.
+Unblocked items removed or moved in this continuation pass: `I-304` resolved
+as a fixture-mode QA evidence issue, `I-334` moved to `Needs Benchmark`,
+`I-337` resolved by supplier-only and mixed-cart visual fixtures, and `I-329`
+moved to `Ready for User Decision`.
 
 #### I-305 Recovery-State Visual Review Blocked by Expected 404 Semantics
 
@@ -480,27 +548,6 @@ the objective checkout defects I-339 and I-340 were implemented on 2026-06-09.
 - `Next Decision`: User should choose whether to prioritize data completion
   before approving spec-table redesign.
 
-#### I-334 Supplier-Product Merchandising Blocked by Supplier PDP Route
-
-- `Aspect`: Public UX and Brand
-- `Category`: Design Changes
-- `Status`: Blocked
-- `Priority`: P1
-- `Effort`: M
-- `Target Surface`: Supplier PDPs, supplier product cards, dropship trust copy
-- `Finding`: Supplier products likely need distinct merchandising and trust
-  language, but the local supplier PDP used by route inventory still returns
-  `404`, so supplier-specific design cannot be judged from browser evidence.
-- `Evidence`: Same representative audit evidence as `I-304`; the route
-  `/product/elysia-supplier-silver-halo-ring` fails across desktop, tablet,
-  and mobile.
-- `Gate Result`: Blocked before design judgment.
-- `Blocker`: Supplier PDP route evidence is unavailable locally.
-- `Unblock Condition`: A reliable supplier product route renders locally, or
-  the visual route inventory is updated to a supplier slug that renders.
-- `Next Decision`: User should choose whether supplier merchandising should
-  wait for the supplier PDP unblock.
-
 #### I-335 AI/Stylist Reliability Review Blocked by Provider Quota and Harness Timeouts
 
 - `Aspect`: Performance, PWA, and Reliability
@@ -547,73 +594,6 @@ the objective checkout defects I-339 and I-340 were implemented on 2026-06-09.
   and location policy are available in a repeatable local/preview state.
 - `Next Decision`: User should choose whether to keep branches as online-only
   polish or wait for real physical branch requirements.
-
-#### I-337 Populated Checkout Visual Review Blocked by Cart Fixture State
-
-- `Aspect`: Commerce and Checkout
-- `Category`: Design Changes
-- `Status`: Blocked
-- `Priority`: P1
-- `Effort`: M
-- `Target Surface`: `/checkout` with own-product, supplier-product, and mixed
-  cart states
-- `Finding`: Empty checkout and own-product populated checkout are now visually
-  verified, including the narrow populated-mobile sticky and image reliability
-  fixes, but a bolder checkout design still cannot be approved across the full
-  commerce model without Shopify supplier-only and mixed-cart visual states.
-- `Evidence`: Previous verification covered empty checkout geometry. The
-  2026-06-08 P1 benchmark added own-product populated checkout evidence in
-  `artifacts/qa/2026-06-08-p1-design-benchmark/focused/p1-focused-results.json`
-  with `populatedVisible=true`. Existing Shopify roadmap notes still require
-  source groups to stay distinct and not combine mixed carts into one fake
-  order. The 2026-06-09 implementation pass added own-product mobile evidence
-  in `artifacts/qa/2026-06-09-ready-implementation-browser/focused-results.json`,
-  with checkout sticky summary hidden while the progress panel is visible and
-  shown only after it leaves the viewport.
-- `Gate Result`: Partially unblocked. Own-product checkout can support narrow
-  checkout UI fixes, and the known narrow populated-mobile defects are fixed,
-  but broad checkout recomposition remains blocked for supplier-only and
-  mixed-cart states.
-- `Blocker`: No current visual artifact set covers populated supplier-only and
-  mixed-cart checkout states.
-- `Unblock Condition`: Provide repeatable cart fixtures or e2e setup that
-  opens checkout in supplier-only and mixed source states.
-- `Next Decision`: User should choose whether populated checkout fixture work
-  is required before checkout redesign.
-
-#### I-329 Full Checkout Visual Recomposition Blocked by Mixed-Cart Evidence
-
-- `Aspect`: Commerce and Checkout
-- `Category`: Design Changes
-- `Status`: Blocked
-- `Priority`: P1
-- `Effort`: L
-- `Target Surface`: `/checkout`, cart summary, form hierarchy, and provider
-  source grouping
-- `Finding`: The benchmark supports a calmer boutique checkout direction, and
-  the narrow populated-mobile overlap and image defects have now been fixed.
-  A full recomposition should still wait until supplier-only and mixed-cart
-  visual evidence exists, unless the scope is explicitly limited to
-  own-product checkout only.
-- `Evidence`: Focused benchmark:
-  `artifacts/qa/2026-06-08-p1-design-benchmark/focused/p1-focused-results.json`.
-  It confirmed populated own-product checkout with `populatedVisible=true` and
-  `scrollRatio=6.2`, and recorded the historical floating-bar overlap and
-  `_next/image` `400`. The 2026-06-09 implementation pass fixed those narrow
-  defects and recorded clean own-product checkout evidence in
-  `artifacts/qa/2026-06-09-ready-implementation-browser/focused-results.json`.
-  Supplier-only and mixed-cart checkout visual states remain covered by
-  `I-337`, not by this benchmark.
-- `Gate Result`: Blocked for full redesign. High Jewelry and commerce sources
-  support visible order summary, secure payment, delivery/returns reassurance,
-  and service access near checkout, but supplier-only/mixed-cart evidence is
-  still required for a broad layout change.
-- `Blocker`: Supplier-only/mixed-cart fixture evidence is still incomplete.
-- `Unblock Condition`: Provide supplier-only and mixed-cart visual fixtures or
-  explicitly scope the redesign to local own-product checkout only.
-- `Next Decision`: User should choose whether to create supplier/mixed-cart
-  visual fixtures, scope a checkout redesign only to own-product checkout, or
-  defer full checkout recomposition.
 
 #### I-338 Expanded Agent-Browser Visual QA Blocked by Harness Instability
 
