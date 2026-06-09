@@ -575,13 +575,13 @@ function SearchViewToggle({
     {
       href: createSearchHref({ ...input, page: undefined, view: "grid" }),
       icon: Grid2X2,
-      label: "תמונות",
+      label: "טבלה",
       value: "grid" as const,
     },
     {
       href: createSearchHref({ ...input, page: undefined, view: "list" }),
       icon: List,
-      label: "רשימה",
+      label: "שורות",
       value: "list" as const,
     },
   ];
@@ -589,7 +589,9 @@ function SearchViewToggle({
   return (
     <div
       aria-label="מצב תצוגה"
-      className="glass-control flex h-8 items-center gap-1 rounded-md border p-1"
+      className="glass-control flex h-9 items-center gap-1 rounded-md border p-1"
+      data-testid="search-view-toggle"
+      data-view-mode={viewMode}
       role="group"
     >
       {views.map((view) => {
@@ -599,10 +601,17 @@ function SearchViewToggle({
         return (
           <Button
             asChild
-            className="h-6 gap-1 px-2"
+            className={cn(
+              "h-7 gap-1.5 px-2 text-xs",
+              active
+                ? "bg-[var(--foreground)] text-[var(--background)] shadow-none hover:bg-[var(--foreground)] hover:text-[var(--background)]"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+            data-active={active ? "true" : "false"}
+            data-search-view-option={view.value}
             key={view.value}
             size="sm"
-            variant={active ? "secondary" : "ghost"}
+            variant="ghost"
           >
             <Link
               aria-current={active ? "page" : undefined}
@@ -612,7 +621,7 @@ function SearchViewToggle({
               scroll={false}
             >
               <Icon aria-hidden="true" className="size-3.5" />
-              <span className="hidden sm:inline">{view.label}</span>
+              <span>{view.label}</span>
             </Link>
           </Button>
         );
@@ -656,14 +665,14 @@ function SearchResultListItem({
     <Link
       aria-label={publicProductName}
       className={cn(
-        "product-card-shell group/list grid min-h-full overflow-hidden rounded-md border-y border-[var(--glass-border)] bg-transparent shadow-none transition focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none md:grid-cols-[minmax(10rem,14rem)_1fr]",
+        "product-card-shell group/list grid min-h-[8.75rem] grid-cols-[7.25rem_minmax(0,1fr)] overflow-hidden rounded-md border-y border-[var(--glass-border)] bg-transparent shadow-none transition focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none sm:grid-cols-[9rem_minmax(0,1fr)] md:min-h-full md:grid-cols-[minmax(10rem,14rem)_1fr]",
         isUnavailable && "bg-muted/30",
       )}
       data-testid="search-result-list-item"
       href={href}
       prefetch={false}
     >
-      <div className="brand-product-media glass-inset relative block aspect-[5/4] overflow-hidden md:aspect-square">
+      <div className="brand-product-media glass-inset relative block h-full min-h-[8.75rem] overflow-hidden md:aspect-square md:min-h-0">
         <Image
           alt={publicProductName}
           blurDataURL={SEARCH_RESULT_IMAGE_BLUR_DATA_URL}
@@ -671,7 +680,7 @@ function SearchResultListItem({
           fill
           placeholder="blur"
           priority={imagePriority}
-          sizes="(min-width: 1024px) 14rem, (min-width: 768px) 28vw, 100vw"
+          sizes="(min-width: 1024px) 14rem, (min-width: 640px) 9rem, 7.25rem"
           src={product.image}
         />
         {isUnavailable ? (
@@ -681,10 +690,10 @@ function SearchResultListItem({
         ) : null}
       </div>
 
-      <div className="grid min-w-0 gap-4 py-[var(--ui-card-padding)] md:grid-cols-[minmax(0,1fr)_minmax(11rem,auto)] md:pe-[var(--ui-card-padding)]">
+      <div className="grid min-w-0 gap-2 px-3 py-3 sm:px-4 md:grid-cols-[minmax(0,1fr)_minmax(11rem,auto)] md:gap-4 md:py-[var(--ui-card-padding)] md:pe-[var(--ui-card-padding)]">
         <div className="min-w-0">
           <h3
-            className="group-hover/list:text-muted-foreground group-focus-visible/list:text-muted-foreground line-clamp-2 text-lg leading-7 font-medium transition-colors duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)]"
+            className="group-hover/list:text-muted-foreground group-focus-visible/list:text-muted-foreground line-clamp-2 text-base leading-6 font-medium transition-colors duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)] md:text-lg md:leading-7"
             dir="auto"
           >
             {publicProductName}
@@ -709,9 +718,9 @@ function SearchResultListItem({
           </div>
         </div>
 
-        <div className="grid content-between gap-3 md:min-w-44 md:text-end">
+        <div className="grid content-end gap-2 md:min-w-44 md:content-between md:text-end">
           <div>
-            <span className="block text-xl leading-7 font-semibold">
+            <span className="block text-base leading-6 font-semibold md:text-xl md:leading-7">
               {formatPrice(product.price)}
             </span>
             {shouldShowAvailability ? (
@@ -1045,7 +1054,7 @@ function getSortLabel(sort: NonNullable<ProductSearchInput["sort"]>) {
 }
 
 function getSearchViewLabel(viewMode: SearchViewMode) {
-  return viewMode === "list" ? "רשימה" : "תמונות";
+  return viewMode === "list" ? "שורות" : "טבלה";
 }
 
 function formatActiveSelectionCount(count: number) {
