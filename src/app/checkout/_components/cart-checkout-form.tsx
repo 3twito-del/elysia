@@ -126,23 +126,23 @@ const checkoutFulfillmentSummaryIcons = {
 
 const checkoutProgressSteps = [
   {
-    detail: "סקירה אחרונה של התכשיטים",
-    label: "סל",
+    detail: "תכשיטים ומסלול תשלום",
+    label: "סקירה",
     value: "1",
   },
   {
-    detail: "פרטים לאישור",
+    detail: "קשר, כתובת ומסירה",
     label: "פרטים",
     value: "2",
   },
   {
-    detail: "כתובת ומסירה",
-    label: "מסירה",
+    detail: "קוד, אריזה והערה",
+    label: "הטבה",
     value: "3",
   },
   {
-    detail: "הטבה וסיכום",
-    label: "סיכום",
+    detail: "תקנון והמשך לתשלום",
+    label: "אישור",
     value: "4",
   },
 ] as const;
@@ -825,23 +825,33 @@ export function CartCheckoutForm() {
             </CardHeader>
             <CardContent className="grid min-h-72 gap-4">
               <div
-                className="grid gap-2 sm:grid-cols-2"
+                className="checkout-source-overview grid gap-2 sm:grid-cols-2"
                 data-testid="checkout-source-groups"
               >
                 {checkoutDisplayGroups.map((group) => (
                   <div
-                    className="checkout-source-card glass-inset rounded-md border p-3"
+                    className="checkout-source-card glass-inset grid gap-3 rounded-md border p-3"
                     data-testid={`checkout-source-group-${group.source.toLowerCase()}`}
                     key={group.source}
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <p className="font-medium">{group.label}</p>
+                      <div className="min-w-0">
+                        <p className="text-muted-foreground text-xs font-medium">
+                          {group.source === "OWN" ? "מסלול באתר" : "מסלול נפרד"}
+                        </p>
+                        <p className="font-medium">{group.label}</p>
+                      </div>
                       <Badge variant="secondary">
                         {formatPrice(group.subtotal)}
                       </Badge>
                     </div>
                     <p className="text-muted-foreground mt-1 text-xs leading-5">
                       {group.description}
+                    </p>
+                    <p className="text-xs font-medium">
+                      {group.source === "OWN"
+                        ? "הסכום והמסירה יאושרו בטופס המקומי."
+                        : "התשלום והמסירה יושלמו בקופה נפרדת."}
                     </p>
                   </div>
                 ))}
@@ -1018,12 +1028,12 @@ export function CartCheckoutForm() {
                 <CardHeader className="checkout-boutique-card-header">
                   <CardTitle className="flex items-center gap-2">
                     <CheckoutStepBadge value="2" />
-                    פרטים לאישור
+                    פרטים ומסירה
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-4">
                   <p className="text-muted-foreground text-sm">
-                    הפרטים ישמשו לאישור ההזמנה ולתיאום מסירה.
+                    פרטי הקשר והכתובת נשמרים באותו שלב כדי לקצר את הטופס.
                   </p>
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div>
@@ -1089,6 +1099,79 @@ export function CartCheckoutForm() {
                       value={email}
                     />
                   </div>
+                  <div
+                    className="checkout-delivery-fields grid gap-4"
+                    data-testid="checkout-delivery-fields"
+                  >
+                    <div className="checkout-service-note bg-background flex items-start gap-3 rounded-md border p-3.5 text-sm">
+                      <Truck
+                        className="mt-0.5 size-4 shrink-0"
+                        aria-hidden="true"
+                      />
+                      <div>
+                        <p className="font-medium">מסירה עד הבית</p>
+                        <p className="text-muted-foreground mt-1">
+                          המסירה תתואם לפי הכתובת שתבחרו.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <div>
+                        <Label htmlFor="city">עיר</Label>
+                        <FieldError
+                          id="city-error"
+                          message={getVisibleFieldError("city")}
+                        />
+                        <Input
+                          aria-describedby="city-error"
+                          aria-invalid={Boolean(getVisibleFieldError("city"))}
+                          autoComplete="address-level2"
+                          disabled={checkoutLocked}
+                          id="city"
+                          minLength={2}
+                          onBlur={() => markFieldTouched("city")}
+                          onChange={(event) =>
+                            setCity(event.currentTarget.value)
+                          }
+                          required
+                          value={city}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="street">רחוב ומספר</Label>
+                        <FieldError
+                          id="street-error"
+                          message={getVisibleFieldError("street")}
+                        />
+                        <Input
+                          aria-describedby="street-error"
+                          aria-invalid={Boolean(getVisibleFieldError("street"))}
+                          autoComplete="street-address"
+                          disabled={checkoutLocked}
+                          id="street"
+                          minLength={2}
+                          onBlur={() => markFieldTouched("street")}
+                          onChange={(event) =>
+                            setStreet(event.currentTarget.value)
+                          }
+                          required
+                          value={street}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="postalCode">מיקוד</Label>
+                        <Input
+                          autoComplete="postal-code"
+                          disabled={checkoutLocked}
+                          id="postalCode"
+                          onChange={(event) =>
+                            setPostalCode(event.currentTarget.value)
+                          }
+                          value={postalCode}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
 
@@ -1096,84 +1179,6 @@ export function CartCheckoutForm() {
                 <CardHeader className="checkout-boutique-card-header">
                   <CardTitle className="flex items-center gap-2">
                     <CheckoutStepBadge value="3" />
-                    <Truck aria-hidden="true" className="size-5" />
-                    מסירה
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="grid gap-4">
-                  <div className="checkout-service-note bg-background flex items-start gap-3 rounded-md border p-3.5 text-sm">
-                    <Truck
-                      className="mt-0.5 size-4 shrink-0"
-                      aria-hidden="true"
-                    />
-                    <div>
-                      <p className="font-medium">מסירה עד הבית</p>
-                      <p className="text-muted-foreground mt-1">
-                        המסירה תתואם לפי הכתובת שתבחרו.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <div>
-                      <Label htmlFor="city">עיר</Label>
-                      <FieldError
-                        id="city-error"
-                        message={getVisibleFieldError("city")}
-                      />
-                      <Input
-                        aria-describedby="city-error"
-                        aria-invalid={Boolean(getVisibleFieldError("city"))}
-                        autoComplete="address-level2"
-                        disabled={checkoutLocked}
-                        id="city"
-                        minLength={2}
-                        onBlur={() => markFieldTouched("city")}
-                        onChange={(event) => setCity(event.currentTarget.value)}
-                        required
-                        value={city}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="street">רחוב ומספר</Label>
-                      <FieldError
-                        id="street-error"
-                        message={getVisibleFieldError("street")}
-                      />
-                      <Input
-                        aria-describedby="street-error"
-                        aria-invalid={Boolean(getVisibleFieldError("street"))}
-                        autoComplete="street-address"
-                        disabled={checkoutLocked}
-                        id="street"
-                        minLength={2}
-                        onBlur={() => markFieldTouched("street")}
-                        onChange={(event) =>
-                          setStreet(event.currentTarget.value)
-                        }
-                        required
-                        value={street}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="postalCode">מיקוד</Label>
-                      <Input
-                        autoComplete="postal-code"
-                        disabled={checkoutLocked}
-                        id="postalCode"
-                        onChange={(event) =>
-                          setPostalCode(event.currentTarget.value)
-                        }
-                        value={postalCode}
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="checkout-boutique-panel rounded-md" size="sm">
-                <CardHeader className="checkout-boutique-card-header">
-                  <CardTitle className="flex items-center gap-2">
-                    <CheckoutStepBadge value="4" />
                     <Gift aria-hidden="true" className="size-5" />
                     הטבות ומתנה
                   </CardTitle>
@@ -1262,7 +1267,7 @@ export function CartCheckoutForm() {
             size="sm"
           >
             <CardHeader className="checkout-boutique-card-header">
-              <CheckoutStepBadge value="5" />
+              <CheckoutStepBadge value="4" />
               <CardTitle>
                 {hasOwnItems ? "סיכום הזמנה" : "סיכום פריטים נפרדים"}
               </CardTitle>
@@ -1543,50 +1548,63 @@ export function CartCheckoutForm() {
                   </p>
                 </div>
               )}
-              {hasDropshipItems ? (
-                <div className="glass-inset rounded-md border p-3 text-sm">
-                  <p className="font-medium">קופה נפרדת</p>
-                  <p className="text-muted-foreground mt-1 leading-6">
-                    {supplierCheckoutDescription}
-                  </p>
-                  <Button
-                    className="mt-3 w-full"
-                    data-testid="shopify-dropship-checkout-button"
-                    disabled={
-                      isOffline ||
-                      createShopifyCheckout.isPending ||
-                      !legalAccepted
-                    }
-                    onClick={handleShopifyCheckout}
-                    type="button"
-                    variant="outline"
+              <div
+                className="checkout-action-stack grid gap-3"
+                data-testid="checkout-action-stack"
+              >
+                {hasOwnItems ? (
+                  <div
+                    className="checkout-action-panel checkout-local-action-panel glass-inset rounded-md border p-3 text-sm"
+                    data-testid="checkout-local-action-panel"
                   >
-                    מעבר לקופה
-                    <ShoppingBag aria-hidden="true" className="size-4" />
-                  </Button>
-                </div>
-              ) : null}
-              {!hasOwnItems ? (
+                    <p className="font-medium">תשלום באתר Elysia</p>
+                    <p className="text-muted-foreground mt-1 leading-6">
+                      {hasMixedSourceCart
+                        ? "הפעולה הזו תאשר רק את פריטי החנות ותשאיר את הפריטים הנפרדים במסלול שלהם."
+                        : "הפעולה הזו שומרת את פרטי ההזמנה המקומית לפני מעבר לתשלום."}
+                    </p>
+                    <Button
+                      className="mt-3 w-full"
+                      data-testid="local-checkout-submit-button"
+                      disabled={!canSubmit}
+                      size="lg"
+                      type="submit"
+                    >
+                      {localCheckoutButtonLabel}
+                      <PackageCheck aria-hidden="true" className="size-4" />
+                    </Button>
+                  </div>
+                ) : null}
+                {hasDropshipItems ? (
+                  <div
+                    className="checkout-action-panel checkout-supplier-action-panel glass-inset rounded-md border p-3 text-sm"
+                    data-testid="checkout-supplier-action-panel"
+                  >
+                    <p className="font-medium">קופה נפרדת</p>
+                    <p className="text-muted-foreground mt-1 leading-6">
+                      {supplierCheckoutDescription}
+                    </p>
+                    <Button
+                      className="mt-3 w-full"
+                      data-testid="shopify-dropship-checkout-button"
+                      disabled={
+                        isOffline ||
+                        createShopifyCheckout.isPending ||
+                        !legalAccepted
+                      }
+                      onClick={handleShopifyCheckout}
+                      type="button"
+                      variant="outline"
+                    >
+                      מעבר לקופה
+                      <ShoppingBag aria-hidden="true" className="size-4" />
+                    </Button>
+                  </div>
+                ) : null}
                 <Button asChild variant="outline">
                   <Link href="/search">המשך לקולקציות</Link>
                 </Button>
-              ) : null}
-              {hasOwnItems ? (
-                <>
-                  <Button
-                    data-testid="local-checkout-submit-button"
-                    disabled={!canSubmit}
-                    size="lg"
-                    type="submit"
-                  >
-                    {localCheckoutButtonLabel}
-                    <PackageCheck aria-hidden="true" className="size-4" />
-                  </Button>
-                  <Button asChild variant="outline">
-                    <Link href="/search">המשך לקולקציות</Link>
-                  </Button>
-                </>
-              ) : null}
+              </div>
             </CardContent>
           </Card>
         </aside>

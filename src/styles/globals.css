@@ -1651,8 +1651,40 @@ main
 .checkout-progress-step,
 .checkout-source-card,
 .checkout-service-note,
+.checkout-action-panel,
 .checkout-boutique-item-card {
   border-color: var(--boutique-border);
+  background: var(--boutique-surface-soft);
+}
+
+.checkout-source-overview {
+  align-items: stretch;
+}
+
+.checkout-source-card {
+  min-height: 100%;
+}
+
+.checkout-delivery-fields {
+  border-top: 1px solid var(--boutique-border);
+  padding-top: 1rem;
+}
+
+.checkout-action-panel {
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+
+.checkout-action-panel:hover {
+  border-color: var(--boutique-border-strong);
+}
+
+.checkout-local-action-panel {
+  background: #fffaf4;
+}
+
+.checkout-supplier-action-panel {
   background: var(--boutique-surface-soft);
 }
 

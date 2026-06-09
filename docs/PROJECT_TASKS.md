@@ -190,61 +190,25 @@ supplier-only checkout shows the separate-checkout summary without local order
 fields, mixed checkout keeps own and dropship source groups visible, and the
 mobile checkout summary is source-aware after the progress panel leaves view.
 
+I-329 implementation evidence for this continuation pass: checkout
+recomposition now keeps source review above line items, combines contact and
+delivery fields into one shorter local-details stage, and separates local
+Elysia checkout from Shopify separate checkout in distinct action panels.
+Source grouping, legal acceptance, provider separation, and mobile sticky
+source-aware summary remain guarded by tests.
+
 ### Design Changes - Ready for User Decision
 
-#### I-329 Full Checkout Visual Recomposition After Supplier/Mixed Evidence
-
-- `Aspect`: Commerce and Checkout
-- `Category`: Design Changes
-- `Status`: Ready for User Decision
-- `Priority`: P1
-- `Effort`: L
-- `Target Surface`: `/checkout`, cart summary, form hierarchy, provider source
-  grouping, and mobile checkout summary
-- `Finding`: The checkout now has approval-grade evidence for own-product,
-  supplier-only, and mixed carts. That removes the previous fixture blocker for
-  considering a bolder visual recomposition, but the implementation scope must
-  preserve separate local and Shopify checkout paths.
-- `Evidence`: Focused benchmark:
-  `artifacts/qa/2026-06-08-p1-design-benchmark/focused/p1-focused-results.json`.
-  The 2026-06-09 implementation pass fixed the populated mobile overlap and
-  image defects and recorded clean own-product checkout evidence in
-  `artifacts/qa/2026-06-09-ready-implementation-browser/focused-results.json`.
-  The 2026-06-09 supplier/mixed unblock probe in
-  `artifacts/qa/2026-06-09-supplier-checkout-unblock/focused-results.json`
-  recorded `objectivePassed=true` for supplier-only and mixed checkout on
-  desktop and mobile.
-- `Gate Result`: Supported with strict commerce limits. The Full Product
-  Benchmark maps `/checkout` to mandatory correctness and commerce corpus
-  evidence, and `publicElementPolicy.checkoutReassurance` is `allow` with
-  score `26/37.5`, above the `18.75` threshold. This does not approve merging
-  source groups, inventing one combined provider total, hiding legal/payment
-  acceptance, or replacing either checkout path.
-- `Recommended Change`: Recompose checkout into a calmer boutique hierarchy:
-  lead with selected pieces and source grouping, make payment/service
-  confidence quieter but closer to the relevant action, reduce panel repetition,
-  and keep the local submit and Shopify checkout actions visually distinct.
-- `Acceptance Checks`: Empty, own-product, supplier-only, and mixed carts still
-  render correct state. Supplier-only checkout has no local form fields or
-  local submit button. Mixed carts show both source groups, local and Shopify
-  actions stay separate, supplier items are not included in the local order
-  total, and the mobile summary appears only after the progress panel leaves
-  the viewport with source-aware copy.
-- `Verification`: Run `pnpm qa:routes`,
-  `pnpm exec playwright test tests/e2e/critical-flows.spec.ts --project=chromium-desktop --grep "adds a product to cart and shows it in checkout|shows supplier-only checkout without local order fields"`,
-  focused mixed-cart browser evidence, checkout style tests, and route
-  inventory/benchmark traceability checks after implementation.
-- `Next Decision`: User should approve the full recomposition, reject it, or
-  scope it down to a narrower checkout polish pass before product code is
-  edited.
+None in this review pass.
 
 Implemented items removed from this section: I-308, I-309, I-310, I-311,
 I-312, I-313, I-314, I-315, I-316, I-317, I-318, I-319, I-320, I-321, I-322,
-I-323, I-324, I-325, I-326, I-327, I-339, and I-340.
+I-323, I-324, I-325, I-326, I-327, I-329, I-339, and I-340.
 
 Benchmarked items moved from `Needs Benchmark` in this continuation pass:
-I-325, I-326, I-327, and I-329. The actionable subset from that pass plus
-the objective checkout defects I-339 and I-340 were implemented on 2026-06-09.
+I-325, I-326, I-327, and I-329. I-325, I-326, I-327, the objective checkout
+defects I-339 and I-340, and the later I-329 checkout recomposition were
+implemented on 2026-06-09.
 
 ### Design Changes - Needs Benchmark
 
@@ -412,7 +376,7 @@ the objective checkout defects I-339 and I-340 were implemented on 2026-06-09.
 Unblocked items removed or moved in this continuation pass: `I-304` resolved
 as a fixture-mode QA evidence issue, `I-334` moved to `Needs Benchmark`,
 `I-337` resolved by supplier-only and mixed-cart visual fixtures, and `I-329`
-moved to `Ready for User Decision`.
+was implemented after moving through `Ready for User Decision`.
 
 #### I-305 Recovery-State Visual Review Blocked by Expected 404 Semantics
 

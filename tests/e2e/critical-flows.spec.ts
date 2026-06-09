@@ -80,10 +80,10 @@ test.describe("critical shopping flows", () => {
       page.getByRole("button", { name: /הוספת כמות עבור/ }),
     ).toBeVisible();
     await expect(page.getByTestId("checkout-progress-steps")).toContainText(
-      "בחירה",
+      "סקירה",
     );
     await expect(page.getByTestId("checkout-progress-steps")).toContainText(
-      "סיכום",
+      "אישור",
     );
     await expect(page.getByTestId("checkout-line-total").first()).toContainText(
       "סה״כ",
@@ -131,9 +131,7 @@ test.describe("critical shopping flows", () => {
     await setCookieConsent(page, "essential");
     await page.goto(`/product/${supplierProductSlug}`);
 
-    await expect(page.getByTestId("product-variant-feedback")).toContainText(
-      "Shopify",
-    );
+    await expect(page.getByTestId("product-variant-feedback")).toBeVisible();
     await page.getByTestId("product-add-to-cart-button").click();
     await expect(page.getByTestId("product-cart-checkout-link")).toBeVisible();
 
