@@ -3855,6 +3855,24 @@ footer nav a:focus-visible {
   color: var(--foreground);
 }
 
+[data-slot="button"][data-search-view-state="active"] {
+  border-color: var(--foreground);
+  background: var(--foreground);
+  color: var(--background);
+  box-shadow: inset 0 0 0 1px var(--foreground);
+}
+
+[data-slot="button"][data-search-view-state="active"]:not(:disabled):not(
+    [aria-disabled="true"]
+  ):not([data-disabled]):hover,
+[data-slot="button"][data-search-view-state="active"]:not(:disabled):not(
+    [aria-disabled="true"]
+  ):not([data-disabled]):focus-visible {
+  border-color: var(--foreground);
+  background: var(--foreground);
+  color: var(--background);
+}
+
 .glass-hero {
   border-color: oklch(1 0 0 / 32%);
   background: oklch(0.16 0 0);
@@ -4245,19 +4263,6 @@ footer nav a:focus-visible {
 .home-hero-actions .home-hero-cta-primary:not(:disabled):focus-visible {
   border-color: rgb(255 250 244 / 82%) !important;
   background: rgb(29 25 22 / 72%) !important;
-  color: white !important;
-}
-
-.home-hero-actions .home-hero-cta-secondary:not(:disabled) {
-  border-color: rgb(255 250 244 / 56%) !important;
-  background: rgb(255 250 244 / 8%) !important;
-  color: white !important;
-}
-
-.home-hero-actions .home-hero-cta-secondary:not(:disabled):hover,
-.home-hero-actions .home-hero-cta-secondary:not(:disabled):focus-visible {
-  border-color: rgb(255 250 244 / 82%) !important;
-  background: rgb(255 250 244 / 18%) !important;
   color: white !important;
 }
 

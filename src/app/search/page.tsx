@@ -589,7 +589,7 @@ function SearchViewToggle({
   return (
     <div
       aria-label="מצב תצוגה"
-      className="glass-control flex h-9 items-center gap-1 rounded-md border p-1"
+      className="glass-control grid h-9 min-w-[8.75rem] grid-cols-2 items-center gap-1 rounded-md border p-1"
       data-testid="search-view-toggle"
       data-view-mode={viewMode}
       role="group"
@@ -602,12 +602,13 @@ function SearchViewToggle({
           <Button
             asChild
             className={cn(
-              "h-7 gap-1.5 px-2 text-xs",
+              "h-7 min-w-0 gap-1.5 px-2 text-xs",
               active
-                ? "bg-[var(--foreground)] text-[var(--background)] shadow-none hover:bg-[var(--foreground)] hover:text-[var(--background)]"
-                : "text-muted-foreground hover:text-foreground",
+                ? "border-[var(--foreground)] bg-[var(--foreground)] text-[var(--background)] shadow-[inset_0_0_0_1px_var(--foreground)] hover:border-[var(--foreground)] hover:bg-[var(--foreground)] hover:text-[var(--background)]"
+                : "text-muted-foreground hover:text-foreground border-transparent hover:border-[var(--glass-border-strong)] hover:bg-[var(--muted)]",
             )}
             data-active={active ? "true" : "false"}
+            data-search-view-state={active ? "active" : "inactive"}
             data-search-view-option={view.value}
             key={view.value}
             size="sm"
@@ -620,8 +621,18 @@ function SearchViewToggle({
               href={view.href}
               scroll={false}
             >
-              <Icon aria-hidden="true" className="size-3.5" />
+              <Icon
+                aria-hidden="true"
+                className={cn("size-3.5", active && "stroke-[2.5]")}
+              />
               <span>{view.label}</span>
+              {active ? (
+                <span
+                  aria-hidden="true"
+                  className="ms-0.5 size-1.5 rounded-full bg-current"
+                  data-search-view-active-marker={view.value}
+                />
+              ) : null}
             </Link>
           </Button>
         );

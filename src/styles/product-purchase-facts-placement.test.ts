@@ -62,8 +62,41 @@ describe("PDP purchase fact placement", () => {
       'data-testid="product-purchase-fact-grid"',
     );
   });
+
+  it("keeps the decision summary directly before the primary purchase action", () => {
+    const purchasePanel = read(
+      "src/app/product/[slug]/_components/product-purchase-panel.tsx",
+    );
+
+    expect(purchasePanel).toContain(
+      'data-testid="product-purchase-decision-summary"',
+    );
+    expect(purchasePanel).toContain("purchaseDecisionSummaryItems.map");
+    expect(purchasePanel).toContain('label: "בחירה"');
+    expect(purchasePanel).toContain('label: "מחיר"');
+    expect(purchasePanel).toContain('label: "זמינות"');
+    expect(purchasePanel).toContain("formatPrice(selectedVariantPrice)");
+    expect(purchasePanel).toContain("שירות אישי על הפריט");
+    expect(purchasePanel).toContain("MessageCircle");
+    expect(
+      indexOf(purchasePanel, 'data-testid="product-purchase-decision-summary"'),
+    ).toBeLessThan(
+      indexOf(purchasePanel, 'className="product-primary-cta h-12 w-full"'),
+    );
+    expect(
+      indexOf(purchasePanel, 'className="product-primary-cta h-12 w-full"'),
+    ).toBeLessThan(
+      indexOf(purchasePanel, 'data-testid="product-commerce-trust"'),
+    );
+  });
 });
 
 function read(relativePath: string) {
   return readFileSync(path.join(root, relativePath), "utf8");
+}
+
+function indexOf(source: string, pattern: string) {
+  const index = source.indexOf(pattern);
+  expect(index, pattern).toBeGreaterThanOrEqual(0);
+  return index;
 }

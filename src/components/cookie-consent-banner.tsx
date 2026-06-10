@@ -103,7 +103,7 @@ export function CookieConsentBanner() {
       className={cn(
         "minimal-scroll bg-background fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-50 max-h-[24dvh] overflow-y-auto rounded-md border border-[var(--glass-border)] px-3 py-2 shadow-none sm:inset-x-auto sm:right-4 sm:bottom-4 sm:w-[min(calc(100vw-2rem),20rem)] sm:px-3 sm:py-2.5",
         usesCheckoutTopPlacement &&
-          "top-[calc(var(--site-header-height)+0.75rem+env(safe-area-inset-top))] bottom-auto sm:bottom-auto",
+          "top-[calc(var(--site-header-height)+0.75rem+env(safe-area-inset-top))] bottom-[auto] sm:bottom-[auto]",
       )}
       data-cookie-consent-banner="true"
       data-public-floating-avoid="true"

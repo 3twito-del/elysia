@@ -13,6 +13,7 @@ import {
   AlertCircle,
   CheckCircle2,
   Heart,
+  MessageCircle,
   PackageCheck,
   RotateCcw,
   Ruler,
@@ -183,6 +184,30 @@ export function ProductPurchasePanel({
   const stickyVariantSummary = selectedVariant
     ? `${getVariantDisplayName(selectedVariant)} / ${selectedVariantStatusLabel}`
     : selectedVariantStatusLabel;
+  const selectedVariantDisplayName = selectedVariant
+    ? getVariantDisplayName(selectedVariant)
+    : "בחירת מידה";
+  const selectedVariantAvailabilityLabel = selectedVariantStatusLabel;
+  const sizeGuideHref = sizeKind
+    ? getSizeGuideHref(sizeKind, {
+        productName,
+        returnTo: `/product/${productSlug}`,
+      })
+    : undefined;
+  const purchaseDecisionSummaryItems = [
+    {
+      label: "בחירה",
+      value: selectedVariantDisplayName,
+    },
+    {
+      label: "מחיר",
+      value: formatPrice(selectedVariantPrice),
+    },
+    {
+      label: "זמינות",
+      value: selectedVariant ? selectedVariantAvailabilityLabel : "בחרי אפשרות",
+    },
+  ];
 
   useEffect(() => {
     if (!sizeKind) return;
@@ -325,7 +350,7 @@ export function ProductPurchasePanel({
           <Button
             aria-describedby="product-variant-feedback"
             aria-label={`הוספה לסל: ${productName}`}
-            className="product-primary-cta shrink-0"
+            className="product-primary-cta order-1"
             data-testid="product-sticky-add-to-cart-button"
             disabled={addToCartDisabled}
             onClick={handleAddToCart}
@@ -340,7 +365,7 @@ export function ProductPurchasePanel({
             <PackageCheck aria-hidden="true" className="size-4" />
           </Button>
         ) : (
-          <Button asChild className="product-primary-cta shrink-0" size="sm">
+          <Button asChild className="product-primary-cta order-1" size="sm">
             <Link href={serviceHref}>
               {commerceStatus.ctaLabel}
               <PackageCheck aria-hidden="true" className="size-4" />
@@ -366,10 +391,7 @@ export function ProductPurchasePanel({
                 {sizeKind ? (
                   <Link
                     className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-xs font-medium underline-offset-4 hover:underline"
-                    href={getSizeGuideHref(sizeKind, {
-                      productName,
-                      returnTo: `/product/${productSlug}`,
-                    })}
+                    href={sizeGuideHref ?? "/size-guide"}
                   >
                     <Ruler aria-hidden="true" className="size-3.5" />
                     מדריך מידות
@@ -451,6 +473,55 @@ export function ProductPurchasePanel({
               </p>
             </div>
           ) : null}
+
+          <section
+            aria-labelledby="product-purchase-decision-summary-title"
+            className="border-y border-[var(--glass-border)] py-3"
+            data-testid="product-purchase-decision-summary"
+          >
+            <div className="flex items-start gap-2">
+              <ShieldCheck
+                aria-hidden="true"
+                className="mt-1 size-4 shrink-0"
+              />
+              <div className="min-w-0">
+                <h2
+                  className="text-sm font-semibold"
+                  id="product-purchase-decision-summary-title"
+                >
+                  לפני שמוסיפים לסל
+                </h2>
+                <p className="text-muted-foreground mt-1 text-sm leading-6">
+                  הבחירה, המחיר והזמינות מסוכמים כאן כדי לבדוק התאמה לפני
+                  ההזמנה.
+                </p>
+              </div>
+            </div>
+            <dl className="mt-3 grid grid-cols-3 gap-2 text-xs">
+              {purchaseDecisionSummaryItems.map((item) => (
+                <div className="min-w-0" key={item.label}>
+                  <dt className="text-muted-foreground">{item.label}</dt>
+                  <dd className="mt-1 truncate font-medium">{item.value}</dd>
+                </div>
+              ))}
+            </dl>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {sizeGuideHref ? (
+                <Button asChild size="sm" variant="outline">
+                  <Link href={sizeGuideHref}>
+                    <Ruler aria-hidden="true" className="size-4" />
+                    מדריך מידות
+                  </Link>
+                </Button>
+              ) : null}
+              <Button asChild size="sm" variant="ghost">
+                <Link href={serviceHref}>
+                  <MessageCircle aria-hidden="true" className="size-4" />
+                  שירות אישי על הפריט
+                </Link>
+              </Button>
+            </div>
+          </section>
         </div>
 
         <div className="grid gap-3" ref={primaryCtaRef}>
@@ -526,7 +597,7 @@ export function ProductPurchasePanel({
             <dl className="grid gap-2 sm:grid-cols-2">
               {beforeOrderSummaryItems.map((item) => (
                 <div
-                  className="bg-background/55 rounded-md border border-[var(--glass-border)] p-3"
+                  className="rounded-md border border-[var(--glass-border)] p-3"
                   data-testid={`product-before-order-summary-${item.key}`}
                   key={item.key}
                 >

@@ -384,6 +384,58 @@ export function CartCheckoutForm() {
     : hasDropshipItems && !hasOwnItems
       ? `${dropshipTotalQuantity} פריטים ימשיכו לקופה נפרדת`
       : `${totalItemQuantity} תכשיטים בקופה המקומית`;
+  const checkoutReadinessSummaryItems = [
+    {
+      detail:
+        checkoutIssues.length > 0
+          ? "נציג כאן את הפרטים שחסרים לפני המשך."
+          : "הפרטים הדרושים לשלב הבא מופיעים בטופס.",
+      icon: PackageCheck,
+      key: "review",
+      label: "בדיקת פרטים",
+      value:
+        checkoutIssues.length > 0
+          ? `${checkoutIssues.length} פרטים להשלמה`
+          : hasOwnItems
+            ? "מוכן לאישור"
+            : "מוכן לקופה נפרדת",
+    },
+    {
+      detail: hasOwnItems
+        ? "כתובת המסירה תיבדק מול פרטי ההזמנה."
+        : "פרטי המסירה ייקלטו במסלול הספק.",
+      icon: Truck,
+      key: "delivery",
+      label: "מסירה",
+      value: hasMixedSourceCart
+        ? "מסלולים נפרדים"
+        : hasOwnItems
+          ? shippingLabel
+          : "בקופה נפרדת",
+    },
+    {
+      detail: hasMixedSourceCart
+        ? "פריטי החנות ופריטים נפרדים אינם מחויבים יחד."
+        : hasDropshipItems && !hasOwnItems
+          ? "התשלום מתבצע מחוץ לקופה המקומית."
+          : "המשך התשלום מגיע רק אחרי אישור הסיכום.",
+      icon: ShieldCheck,
+      key: "payment",
+      label: "תשלום",
+      value: hasPricingReview
+        ? checkoutTotalReviewLabel
+        : hasDropshipItems && !hasOwnItems
+          ? "קופה נפרדת"
+          : "אין חיוב עכשיו",
+    },
+    {
+      detail: "אפשר לפתוח פנייה לפני אישור או אחרי שמירת ההזמנה.",
+      icon: MessageCircle,
+      key: "service",
+      label: "שירות",
+      value: "לפני ואחרי",
+    },
+  ];
   const cartMutationError =
     updateItem.error ?? removeItem.error ?? updateOptions.error;
   const cartMutationErrorMessage = cartMutationError
@@ -1382,6 +1434,65 @@ export function CartCheckoutForm() {
                   {cart.couponCode}
                 </Badge>
               ) : null}
+              <section
+                aria-labelledby="checkout-readiness-summary-title"
+                className="border-y border-[var(--glass-border)] py-3"
+                data-checkout-ready={
+                  checkoutIssues.length === 0 && !hasPricingReview && !isOffline
+                    ? "true"
+                    : "false"
+                }
+                data-testid="checkout-readiness-summary"
+              >
+                <div className="flex items-start gap-2">
+                  <ShieldCheck
+                    aria-hidden="true"
+                    className="mt-1 size-4 shrink-0"
+                  />
+                  <div className="min-w-0">
+                    <h2
+                      className="text-sm font-semibold"
+                      id="checkout-readiness-summary-title"
+                    >
+                      בדיקת הזמנה לפני תשלום
+                    </h2>
+                    <p className="text-muted-foreground mt-1 text-xs leading-5">
+                      הסיכום, המסירה והתשלום מרוכזים כאן לפני המעבר לשלב הבא.
+                    </p>
+                  </div>
+                </div>
+                <dl className="mt-3 grid gap-2">
+                  {checkoutReadinessSummaryItems.map((item) => {
+                    const SummaryIcon = item.icon;
+
+                    return (
+                      <div
+                        className="grid grid-cols-[auto_minmax(0,1fr)] gap-2 text-xs"
+                        data-testid={`checkout-readiness-${item.key}`}
+                        key={item.key}
+                      >
+                        <SummaryIcon
+                          aria-hidden="true"
+                          className="mt-1 size-3.5 shrink-0"
+                        />
+                        <div className="min-w-0">
+                          <div className="flex items-baseline justify-between gap-3">
+                            <dt className="text-muted-foreground">
+                              {item.label}
+                            </dt>
+                            <dd className="text-end font-medium">
+                              {item.value}
+                            </dd>
+                          </div>
+                          <p className="text-muted-foreground mt-0.5 leading-5">
+                            {item.detail}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </dl>
+              </section>
               {checkoutFulfillmentSummaryRows.length > 0 ? (
                 <div
                   className="grid gap-2 text-xs"

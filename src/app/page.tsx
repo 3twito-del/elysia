@@ -218,21 +218,6 @@ export default async function Home() {
                   />
                 </Link>
               </Button>
-              <Button
-                asChild
-                className="home-hero-cta-secondary"
-                size="lg"
-                variant="outline"
-              >
-                <Link
-                  data-testid="home-hero-secondary-cta"
-                  dir="rtl"
-                  href="/gifts"
-                  prefetch={false}
-                >
-                  מתנות
-                </Link>
-              </Button>
             </div>
           </div>
           <div

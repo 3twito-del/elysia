@@ -8,16 +8,29 @@ const root = process.cwd();
 describe("search view mode contract", () => {
   it("keeps grid and row view controls visibly distinct", () => {
     const searchPage = read("src/app/search/page.tsx");
+    const styles = read("src/styles/globals.css");
 
     expect(searchPage).toContain('data-testid="search-view-toggle"');
     expect(searchPage).toContain("data-view-mode={viewMode}");
     expect(searchPage).toContain("data-search-view-option={view.value}");
+    expect(searchPage).toContain(
+      'data-search-view-state={active ? "active" : "inactive"}',
+    );
+    expect(searchPage).toContain("data-search-view-active-marker={view.value}");
     expect(searchPage).toContain('data-active={active ? "true" : "false"}');
     expect(searchPage).toContain('label: "טבלה"');
     expect(searchPage).toContain('label: "שורות"');
     expect(searchPage).toContain(
-      'active\n                ? "bg-[var(--foreground)] text-[var(--background)]',
+      'active\n                ? "border-[var(--foreground)] bg-[var(--foreground)] text-[var(--background)]',
     );
+    expect(searchPage).toContain(
+      "text-muted-foreground hover:text-foreground border-transparent hover:border-[var(--glass-border-strong)]",
+    );
+    expect(styles).toContain(
+      '[data-slot="button"][data-search-view-state="active"]',
+    );
+    expect(styles).toContain("background: var(--foreground);");
+    expect(styles).toContain("color: var(--background);");
     expect(searchPage).toContain(
       'return viewMode === "list" ? "שורות" : "טבלה";',
     );

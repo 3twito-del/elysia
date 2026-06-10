@@ -118,7 +118,6 @@ describe("visible site improvement affordances", () => {
     expect(home).toContain('data-testid="home-hero-copy"');
     expect(home).toContain('data-testid="home-hero-statement"');
     expect(home).toContain('data-testid="home-hero-primary-cta"');
-    expect(home).toContain('data-testid="home-hero-secondary-cta"');
     expect(home).toContain('data-testid="home-hero-campaign-links"');
     expect(home).toContain("storefront-hero");
     expect(home).toContain("max-w-[min(38rem,calc(100vw-2.5rem))]");
@@ -126,10 +125,11 @@ describe("visible site improvement affordances", () => {
     expect(home).toContain("home-hero-statement motion-copy-item");
     expect(home).toContain('data-testid="home-hero-cta-row"');
     expect(home).toContain('href="/search"');
-    expect(home).toContain('href="/gifts"');
+    expect(home).toContain('href: "/gifts"');
     expect(home).toContain('href: "/category/necklaces"');
     expect(home).toContain('data-testid="home-category-tiles"');
     expect(home).toContain('data-testid="home-featured-products"');
+    expect(home).not.toContain('data-testid="home-hero-secondary-cta"');
     expect(home).not.toContain('data-testid="home-hero-secondary-line"');
     expect(home).not.toContain('href="/category/rings"');
     expect(home).not.toContain('data-testid="home-hero-trust-notes"');
@@ -550,6 +550,8 @@ describe("visible site improvement affordances", () => {
       'data-testid="checkout-delivery-confidence-summary"',
     );
     expect(checkoutForm).toContain("getCheckoutFulfillmentSummaryRows");
+    expect(checkoutForm).toContain('data-testid="checkout-readiness-summary"');
+    expect(checkoutForm).toContain("checkoutReadinessSummaryItems.map");
     expect(checkoutDisplay).toContain('key: "delivery"');
     expect(checkoutDisplay).toContain('key: "supplier"');
     expect(checkoutForm).toContain("CheckoutPaymentStatus");

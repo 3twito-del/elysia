@@ -49,6 +49,47 @@ describe("checkout validation summary and payment confidence", () => {
     );
   });
 
+  it("keeps the checkout readiness summary before validation, payment confidence, and actions", () => {
+    const checkoutForm = read(
+      "src/app/checkout/_components/cart-checkout-form.tsx",
+    );
+
+    expect(checkoutForm).toContain('data-testid="checkout-readiness-summary"');
+    expect(checkoutForm).toContain("checkoutReadinessSummaryItems.map");
+    expect(checkoutForm).toContain("data-checkout-ready=");
+    expect(checkoutForm).toContain("checkoutIssues.length === 0");
+    expect(checkoutForm).toContain("!hasPricingReview");
+    expect(checkoutForm).toContain("!isOffline");
+    expect(checkoutForm).toContain(
+      "data-testid={`checkout-readiness-${item.key}`}",
+    );
+    expect(checkoutForm).toContain("בדיקת הזמנה לפני תשלום");
+    expect(checkoutForm).toContain("אין חיוב עכשיו");
+    expect(checkoutForm).toContain("קופה נפרדת");
+    expect(checkoutForm).toContain("MessageCircle");
+
+    expect(
+      indexOf(checkoutForm, 'data-testid="checkout-readiness-summary"'),
+    ).toBeLessThan(
+      indexOf(checkoutForm, 'data-testid="checkout-validation-summary"'),
+    );
+    expect(
+      indexOf(checkoutForm, 'data-testid="checkout-readiness-summary"'),
+    ).toBeLessThan(
+      indexOf(checkoutForm, 'data-testid="checkout-payment-confidence"'),
+    );
+    expect(
+      indexOf(checkoutForm, 'data-testid="checkout-readiness-summary"'),
+    ).toBeLessThan(
+      indexOf(checkoutForm, 'data-testid="local-checkout-submit-button"'),
+    );
+    expect(
+      indexOf(checkoutForm, 'data-testid="checkout-readiness-summary"'),
+    ).toBeLessThan(
+      indexOf(checkoutForm, 'data-testid="shopify-dropship-checkout-button"'),
+    );
+  });
+
   it("does not add unsupported payment provider promises", () => {
     const checkoutForm = read(
       "src/app/checkout/_components/cart-checkout-form.tsx",
