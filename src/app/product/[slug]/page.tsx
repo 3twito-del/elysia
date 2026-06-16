@@ -446,7 +446,10 @@ export default async function ProductPage({
         className="brand-page-band border-y px-[var(--ui-page-x)] py-[var(--ui-section-y)] lg:px-[var(--ui-page-x-wide)]"
         id="product-details"
       >
-        <div className="mx-auto grid max-w-[96rem] gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:gap-10">
+        <div
+          className="mx-auto grid max-w-[76rem] gap-8 lg:gap-10"
+          data-testid="product-service-details-layout"
+        >
           <CommerceSectionHeader
             className="mb-0"
             eyebrow="Elysia"
@@ -458,7 +461,10 @@ export default async function ProductPage({
               {product.description}
             </p>
 
-            <div className="brand-surface divide-border divide-y overflow-hidden rounded-md">
+            <div
+              className="brand-surface divide-border divide-y overflow-hidden rounded-md"
+              data-testid="product-service-summary"
+            >
               <ServiceRow
                 description="אחריות לשנה על פגמי ייצור, עם אפשרות לפנות לשירות לגבי טיפול בתכשיט."
                 icon={ShieldCheck}
@@ -535,8 +541,14 @@ function ProductFaq({
 
 function ServiceRow({ description, icon: Icon, title }: ServiceRowProps) {
   return (
-    <div className="grid gap-3 py-5 sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-4">
-      <span className="border-border bg-background flex size-10 items-center justify-center rounded-full border">
+    <div
+      className="grid gap-3 px-5 py-5 sm:grid-cols-[2.75rem_minmax(0,1fr)] sm:gap-5 sm:px-6 lg:px-7"
+      data-testid="product-service-row"
+    >
+      <span
+        className="border-border bg-background flex size-10 items-center justify-center rounded-full border"
+        data-testid="product-service-row-icon"
+      >
         <Icon aria-hidden="true" className="size-4" />
       </span>
       <div>

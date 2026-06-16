@@ -172,6 +172,57 @@ test.describe("critical shopping flows", () => {
     );
   });
 
+  test("keeps desktop PDP service details centered with inset icons", async ({
+    page,
+  }) => {
+    test.skip((page.viewportSize()?.width ?? 0) < 1024, "desktop-only layout");
+
+    await setCookieConsent(page, "essential");
+    await page.goto(`/product/${supplierProductSlug}`);
+
+    await page
+      .getByTestId("product-service-details-layout")
+      .scrollIntoViewIfNeeded();
+
+    const layout = await page.evaluate(() => {
+      const details = document.querySelector(
+        '[data-testid="product-service-details-layout"]',
+      );
+      const summary = document.querySelector(
+        '[data-testid="product-service-summary"]',
+      );
+      const row = document.querySelector('[data-testid="product-service-row"]');
+      const icon = document.querySelector(
+        '[data-testid="product-service-row-icon"]',
+      );
+
+      if (!details || !summary || !row || !icon) {
+        throw new Error("Missing PDP service detail layout elements.");
+      }
+
+      const detailsRect = details.getBoundingClientRect();
+      const summaryRect = summary.getBoundingClientRect();
+      const rowRect = row.getBoundingClientRect();
+      const iconRect = icon.getBoundingClientRect();
+
+      return {
+        detailsLeftGap: Math.round(detailsRect.left),
+        detailsRightGap: Math.round(window.innerWidth - detailsRect.right),
+        detailsWidth: Math.round(detailsRect.width),
+        iconRightInset: Math.round(rowRect.right - iconRect.right),
+        summaryWidth: Math.round(summaryRect.width),
+      };
+    });
+
+    expect(
+      Math.abs(layout.detailsLeftGap - layout.detailsRightGap),
+    ).toBeLessThanOrEqual(64);
+    expect(layout.summaryWidth).toBeGreaterThan(
+      Math.round(layout.detailsWidth * 0.86),
+    );
+    expect(layout.iconRightInset).toBeGreaterThanOrEqual(20);
+  });
+
   test("shows supplier-only checkout without local order fields", async ({
     page,
   }) => {
@@ -180,7 +231,13 @@ test.describe("critical shopping flows", () => {
 
     await expect(page.getByTestId("product-variant-feedback")).toBeVisible();
     await waitForProductPurchasePanelClientReady(page);
-    await page.getByTestId("product-add-to-cart-button").click();
+    const addToCartButton = page.getByTestId("product-add-to-cart-button");
+
+    await addToCartButton.evaluate((element) =>
+      element.scrollIntoView({ block: "center", inline: "nearest" }),
+    );
+    await expect(addToCartButton).toBeEnabled();
+    await addToCartButton.click();
     await expect(page.getByTestId("product-cart-checkout-link")).toBeVisible();
 
     await page.goto("/checkout");
