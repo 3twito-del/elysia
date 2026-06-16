@@ -39,6 +39,7 @@ describe("product gallery media fallback and thumbnail clarity", () => {
       'data-testid="product-gallery-fullscreen-dialog"',
     );
     expect(gallery).toContain('data-testid="product-gallery-fullscreen-stage"');
+    expect(gallery).toContain('data-testid="product-gallery-fullscreen-media"');
     expect(gallery).toContain(
       'data-testid="product-gallery-fullscreen-zoom-toggle"',
     );
@@ -74,6 +75,13 @@ describe("product gallery media fallback and thumbnail clarity", () => {
     expect(gallery).toContain('event.pointerType === "touch"');
     expect(gallery).toContain("object-contain");
     expect(gallery).toContain("data-gallery-zoomed=");
+    expect(gallery).toContain("product-gallery-viewer-dialog");
+    expect(gallery).toContain("product-gallery-viewer-header");
+    expect(gallery).toContain("product-gallery-viewer-stage");
+    expect(gallery).toContain("product-gallery-viewer-media-shell");
+    expect(gallery).toContain("product-gallery-viewer-nav");
+    expect(gallery).toContain("product-gallery-viewer-filmstrip-shell");
+    expect(gallery).toContain('variant: "viewer"');
     expect(gallery).toContain("setIsViewerZoomed(true)");
     expect(gallery).toContain("aria-pressed={isViewerZoomed}");
     expect(gallery).toContain("100dvh");
@@ -81,6 +89,7 @@ describe("product gallery media fallback and thumbnail clarity", () => {
     expect(gallery).toContain("mainGalleryImageSizes");
     expect(gallery).toContain("galleryThumbnailImageSizes");
     expect(gallery).toContain("integratedGallerySecondaryImageSizes");
+    expect(gallery).toContain("viewerGalleryImageSizes");
     expect(gallery).not.toContain('data-testid="product-gallery-zoom-dialog"');
     expect(gallery).not.toContain('data-testid="product-gallery-zoom-trigger"');
     expect(gallery).toContain(
@@ -113,6 +122,15 @@ describe("product gallery media fallback and thumbnail clarity", () => {
     expect(css).toContain(".product-gallery-more-images-label");
     expect(css).toContain("backdrop-filter: blur(4px) saturate(0.92);");
     expect(css).toContain(".product-gallery-thumbnail-rail button");
+    expect(css).toContain(".product-gallery-viewer-dialog");
+    expect(css).toContain(".product-gallery-viewer-header");
+    expect(css).toContain(".product-gallery-viewer-stage");
+    expect(css).toContain(".product-gallery-viewer-media-shell");
+    expect(css).toContain(".product-gallery-viewer-media-shell-zoomed");
+    expect(css).toContain(".product-gallery-viewer-nav-previous");
+    expect(css).toContain(".product-gallery-viewer-nav-next");
+    expect(css).toContain(".product-gallery-viewer-filmstrip-shell");
+    expect(css).toContain(".product-gallery-viewer-thumbnail-rail");
   });
 });
 

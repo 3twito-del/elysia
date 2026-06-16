@@ -15,6 +15,7 @@ import {
   ImageOff,
   Maximize2,
   ZoomIn,
+  ZoomOut,
   X,
 } from "lucide-react";
 
@@ -45,6 +46,8 @@ const galleryThumbnailImageSizes =
   "(min-width: 1024px) 5.5rem, (min-width: 640px) 5rem, 4.5rem";
 const integratedGallerySecondaryImageSizes =
   "(min-width: 1280px) 16vw, (min-width: 1024px) 14vw, 0px";
+const viewerGalleryImageSizes =
+  "(min-width: 1280px) min(82vw, 72rem), (min-width: 640px) 92vw, 100vw";
 const hoverFinePointerQuery = "(hover: hover) and (pointer: fine)";
 
 export function ProductGallery({
@@ -275,20 +278,37 @@ export function ProductGallery({
     refs: MutableRefObject<ThumbnailRefs>;
     testId: string;
     thumbnailTestId: string;
+    variant?: "inline" | "viewer";
   }) {
     if (galleryImageCount <= 1) return null;
 
+    const isViewerRail = input.variant === "viewer";
+
     return (
-      <div className="grid min-w-0 gap-2">
+      <div
+        className={cn(
+          "grid min-w-0 gap-2",
+          isViewerRail &&
+            "product-gallery-viewer-filmstrip min-h-0 content-center",
+        )}
+        data-gallery-rail-variant={isViewerRail ? "viewer" : "inline"}
+      >
         <p
-          className="text-muted-foreground text-xs"
+          className={cn(
+            "text-muted-foreground text-xs",
+            isViewerRail && "sr-only",
+          )}
           data-testid={`${input.testId}-summary`}
         >
           תמונה {activeImagePosition} מתוך {galleryImageCount}
         </p>
         <div
           aria-label="תמונות תכשיט"
-          className="product-gallery-thumbnail-rail minimal-scroll flex max-w-full min-w-0 gap-2 overflow-x-auto overscroll-x-contain pb-1"
+          className={cn(
+            "product-gallery-thumbnail-rail minimal-scroll flex max-w-full min-w-0 gap-2 overflow-x-auto overscroll-x-contain pb-1",
+            isViewerRail &&
+              "product-gallery-viewer-thumbnail-rail mx-auto justify-start px-1 pb-0",
+          )}
           data-testid={input.testId}
         >
           {galleryImages.map((image, index) => (
@@ -297,7 +317,10 @@ export function ProductGallery({
               aria-current={activeImageIndex === index}
               aria-pressed={activeImageIndex === index}
               className={cn(
-                "motion-thumbnail-button border-border bg-card relative aspect-[4/5] w-[4.5rem] shrink-0 overflow-hidden rounded-md border transition focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none sm:w-20 lg:w-[5.5rem]",
+                "motion-thumbnail-button border-border bg-card relative aspect-[4/5] shrink-0 overflow-hidden rounded-md border transition focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none",
+                isViewerRail
+                  ? "product-gallery-viewer-thumbnail w-[3.5rem] sm:w-[4.75rem]"
+                  : "w-[4.5rem] sm:w-20 lg:w-[5.5rem]",
                 activeImageIndex === index
                   ? "border-foreground ring-foreground ring-1"
                   : "hover:border-foreground/60",
@@ -471,7 +494,7 @@ export function ProductGallery({
               </Button>
             </div>
             <DialogContent
-              className="bg-background fixed !inset-0 !top-0 !left-0 z-[100] grid !h-[100dvh] !w-[100dvw] !max-w-none !translate-x-0 !translate-y-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden !rounded-none !border-0 !p-0 sm:!max-w-none"
+              className="product-gallery-viewer-dialog bg-background fixed !inset-0 !top-0 !left-0 z-[100] grid !h-[100dvh] !w-[100dvw] !max-w-none !translate-x-0 !translate-y-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden !rounded-none !border-0 !p-0 sm:!max-w-none"
               data-testid="product-gallery-fullscreen-dialog"
               dir="rtl"
               onKeyDown={handleViewerKeyDown}
@@ -486,19 +509,24 @@ export function ProductGallery({
               </DialogDescription>
 
               <div
-                className="border-border flex h-14 items-center justify-between gap-3 border-b px-3 sm:px-5"
+                className="product-gallery-viewer-header flex items-center justify-between gap-3"
                 dir="ltr"
               >
-                <p
-                  aria-live="polite"
-                  className="text-muted-foreground min-w-0 truncate text-right text-sm"
-                  data-testid="product-gallery-fullscreen-status"
-                  dir="rtl"
-                >
-                  תמונה {activeImagePosition} מתוך {galleryImageCount} של{" "}
-                  {productName}
-                </p>
-                <div className="flex shrink-0 items-center gap-1.5">
+                <div className="grid min-w-0 gap-0.5 text-right" dir="rtl">
+                  <p className="product-gallery-viewer-title min-w-0 truncate">
+                    {productName}
+                  </p>
+                  <p
+                    aria-label={`תמונה ${activeImagePosition} מתוך ${galleryImageCount} של ${productName}`}
+                    aria-live="polite"
+                    className="product-gallery-viewer-status min-w-0 truncate text-right"
+                    data-testid="product-gallery-fullscreen-status"
+                    dir="rtl"
+                  >
+                    {activeImagePosition}/{galleryImageCount}
+                  </p>
+                </div>
+                <div className="product-gallery-viewer-actions flex shrink-0 items-center gap-1.5">
                   <Button
                     aria-label={
                       isViewerZoomed
@@ -513,7 +541,11 @@ export function ProductGallery({
                     type="button"
                     variant="ghost"
                   >
-                    <ZoomIn aria-hidden="true" className="size-4" />
+                    {isViewerZoomed ? (
+                      <ZoomOut aria-hidden="true" className="size-4" />
+                    ) : (
+                      <ZoomIn aria-hidden="true" className="size-4" />
+                    )}
                   </Button>
                   <DialogClose asChild>
                     <Button
@@ -532,23 +564,29 @@ export function ProductGallery({
 
               <div
                 className={cn(
-                  "relative box-border grid min-h-0 w-full max-w-[100dvw] min-w-0 place-items-center px-3 py-3 sm:px-16 sm:py-5",
+                  "product-gallery-viewer-stage relative box-border grid min-h-0 w-full max-w-[100dvw] min-w-0 place-items-center",
                   isViewerZoomed
-                    ? "overflow-auto overscroll-contain"
+                    ? "product-gallery-viewer-stage-zoomed overflow-auto overscroll-contain"
                     : "overflow-hidden",
                 )}
                 data-gallery-zoomed={isViewerZoomed ? "true" : "false"}
                 data-testid="product-gallery-fullscreen-stage"
               >
                 <AnimatePresence initial={false} mode="popLayout">
-                  <motion.div
+                  <motion.button
                     animate={{ opacity: 1, scale: 1 }}
-                    className={cn(
-                      "relative",
+                    aria-label={
                       isViewerZoomed
-                        ? "h-[140%] max-h-none min-h-[32rem] w-[140%] min-w-[32rem] sm:h-[125%] sm:min-h-[42rem] sm:w-[125%] sm:min-w-[42rem]"
-                        : "h-full max-h-[calc(100dvh-10rem)] w-full",
+                        ? "ביטול הגדלת תמונת התכשיט"
+                        : "הגדלת תמונת התכשיט"
+                    }
+                    aria-pressed={isViewerZoomed}
+                    className={cn(
+                      "product-gallery-viewer-media-shell relative",
+                      isViewerZoomed &&
+                        "product-gallery-viewer-media-shell-zoomed",
                     )}
+                    data-testid="product-gallery-fullscreen-media"
                     exit={
                       shouldReduceMotion
                         ? { opacity: 1, scale: 1 }
@@ -558,26 +596,30 @@ export function ProductGallery({
                       shouldReduceMotion ? false : { opacity: 0, scale: 1.006 }
                     }
                     key={`viewer-${activeImage}`}
+                    onClick={() =>
+                      setIsViewerZoomed((currentZoom) => !currentZoom)
+                    }
                     transition={{
                       duration: shouldReduceMotion ? 0 : 0.28,
                       ease: [0.2, 0, 0, 1],
                     }}
+                    type="button"
                   >
                     <Image
                       alt={`${productName}, תמונה במסך מלא ${activeImagePosition} מתוך ${galleryImageCount}`}
                       className="media-color object-contain"
                       fill
-                      sizes="100vw"
+                      sizes={viewerGalleryImageSizes}
                       src={activeImage}
                     />
-                  </motion.div>
+                  </motion.button>
                 </AnimatePresence>
 
                 {galleryImageCount > 1 ? (
                   <>
                     <Button
                       aria-label="התמונה הקודמת"
-                      className="bg-background absolute top-1/2 right-5 -translate-y-1/2 rounded-full shadow-none sm:right-4"
+                      className="product-gallery-viewer-nav product-gallery-viewer-nav-previous"
                       data-testid="product-gallery-previous"
                       onClick={() => activateThumbnail(activeImageIndex - 1)}
                       size="icon-lg"
@@ -588,7 +630,7 @@ export function ProductGallery({
                     </Button>
                     <Button
                       aria-label="התמונה הבאה"
-                      className="bg-background absolute top-1/2 left-5 -translate-y-1/2 rounded-full shadow-none sm:left-4"
+                      className="product-gallery-viewer-nav product-gallery-viewer-nav-next"
                       data-testid="product-gallery-next"
                       onClick={() => activateThumbnail(activeImageIndex + 1)}
                       size="icon-lg"
@@ -601,11 +643,12 @@ export function ProductGallery({
                 ) : null}
               </div>
 
-              <div className="border-border border-t px-3 py-3 sm:px-5">
+              <div className="product-gallery-viewer-filmstrip-shell">
                 {renderThumbnailRail({
                   refs: viewerThumbnailRefs,
                   testId: "product-gallery-fullscreen-thumbnail-rail",
                   thumbnailTestId: "product-gallery-fullscreen-thumbnail",
+                  variant: "viewer",
                 })}
               </div>
             </DialogContent>

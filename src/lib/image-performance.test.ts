@@ -214,9 +214,12 @@ describe("image performance guardrails", () => {
     expect(source).toContain(
       'const galleryThumbnailImageSizes =\n  "(min-width: 1024px) 5.5rem, (min-width: 640px) 5rem, 4.5rem";',
     );
+    expect(source).toContain(
+      'const viewerGalleryImageSizes =\n  "(min-width: 1280px) min(82vw, 72rem), (min-width: 640px) 92vw, 100vw";',
+    );
     expect(source).toContain("sizes={mainGalleryImageSizes}");
     expect(source).toContain("sizes={galleryThumbnailImageSizes}");
-    expect(source).toContain('sizes="100vw"');
+    expect(source).toContain("sizes={viewerGalleryImageSizes}");
   });
 
   it("keeps category result media on explicit fixed desktop sizes", () => {

@@ -1411,6 +1411,14 @@ async function expectProductGalleryFullScreenNavigation(
   await expect(
     page.getByTestId("product-gallery-fullscreen-zoom-toggle"),
   ).toBeVisible();
+  await page.getByTestId("product-gallery-fullscreen-zoom-toggle").click();
+  await expect(
+    page.getByTestId("product-gallery-fullscreen-stage"),
+  ).toHaveAttribute("data-gallery-zoomed", "true");
+  await page.getByTestId("product-gallery-fullscreen-media").click();
+  await expect(
+    page.getByTestId("product-gallery-fullscreen-stage"),
+  ).toHaveAttribute("data-gallery-zoomed", "false");
 
   const fullscreenLayout = await page.evaluate(() => {
     const dialog = document.querySelector(
@@ -1419,18 +1427,44 @@ async function expectProductGalleryFullScreenNavigation(
     const stage = document.querySelector(
       '[data-testid="product-gallery-fullscreen-stage"]',
     );
+    const media = document.querySelector(
+      '[data-testid="product-gallery-fullscreen-media"]',
+    );
+    const previous = document.querySelector(
+      '[data-testid="product-gallery-previous"]',
+    );
+    const next = document.querySelector('[data-testid="product-gallery-next"]');
+    const filmstrip = document.querySelector(
+      '[data-testid="product-gallery-fullscreen-thumbnail-rail"]',
+    );
 
-    if (!dialog || !stage) {
+    if (!dialog || !stage || !media || !previous || !next || !filmstrip) {
       throw new Error("Missing full-screen gallery elements.");
     }
 
     const dialogRect = dialog.getBoundingClientRect();
     const stageRect = stage.getBoundingClientRect();
+    const mediaRect = media.getBoundingClientRect();
+    const previousRect = previous.getBoundingClientRect();
+    const nextRect = next.getBoundingClientRect();
+    const filmstripRect = filmstrip.getBoundingClientRect();
 
     return {
       dialogHeight: Math.round(dialogRect.height),
       dialogWidth: Math.round(dialogRect.width),
+      filmstripHeight: Math.round(filmstripRect.height),
+      filmstripTop: Math.round(filmstripRect.top),
+      mediaHeight: Math.round(mediaRect.height),
+      mediaLeft: Math.round(mediaRect.left),
+      mediaRight: Math.round(mediaRect.right),
+      mediaWidth: Math.round(mediaRect.width),
+      nextLeft: Math.round(nextRect.left),
+      nextRight: Math.round(nextRect.right),
+      previousLeft: Math.round(previousRect.left),
+      previousRightGap: Math.round(window.innerWidth - previousRect.right),
+      stageBottom: Math.round(stageRect.bottom),
       stageHeight: Math.round(stageRect.height),
+      stageTop: Math.round(stageRect.top),
       stageWidth: Math.round(stageRect.width),
       viewportHeight: window.innerHeight,
       viewportWidth: window.innerWidth,
@@ -1452,6 +1486,24 @@ async function expectProductGalleryFullScreenNavigation(
       Math.round(fullscreenLayout.viewportHeight * 0.45),
     ),
   );
+  expect(fullscreenLayout.mediaWidth).toBeLessThanOrEqual(
+    fullscreenLayout.viewportWidth,
+  );
+  expect(fullscreenLayout.mediaHeight).toBeGreaterThanOrEqual(
+    Math.round(fullscreenLayout.stageHeight * 0.5),
+  );
+  expect(fullscreenLayout.nextLeft).toBeGreaterThanOrEqual(0);
+  expect(fullscreenLayout.previousRightGap).toBeGreaterThanOrEqual(0);
+  expect(
+    Math.abs(fullscreenLayout.mediaLeft - fullscreenLayout.nextRight),
+  ).toBeLessThanOrEqual(96);
+  expect(
+    Math.abs(fullscreenLayout.previousLeft - fullscreenLayout.mediaRight),
+  ).toBeLessThanOrEqual(96);
+  expect(fullscreenLayout.filmstripTop).toBeGreaterThanOrEqual(
+    fullscreenLayout.stageBottom - 2,
+  );
+  expect(fullscreenLayout.filmstripHeight).toBeGreaterThanOrEqual(56);
 
   const fullscreenThumbnails = page.getByTestId(
     "product-gallery-fullscreen-thumbnail",
