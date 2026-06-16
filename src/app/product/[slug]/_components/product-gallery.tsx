@@ -664,6 +664,7 @@ export function ProductGallery({
                 <Image
                   alt={`${productName}, תמונה ${activeImagePosition} מתוך ${galleryImageCount}`}
                   className="media-color product-gallery-hover-zoom-image object-cover"
+                  data-testid="product-gallery-main-image"
                   fill
                   loading={activeImageIndex === 0 ? undefined : "lazy"}
                   priority={activeImageIndex === 0}

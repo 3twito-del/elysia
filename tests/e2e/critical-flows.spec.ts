@@ -172,6 +172,47 @@ test.describe("critical shopping flows", () => {
     );
   });
 
+  test("keeps desktop PDP primary gallery crop optically right-balanced", async ({
+    page,
+  }) => {
+    test.skip((page.viewportSize()?.width ?? 0) < 1024, "desktop-only layout");
+
+    await setCookieConsent(page, "essential");
+    await page.goto(`/product/${supplierProductSlug}`);
+
+    await expect(page.getByTestId("product-gallery")).toBeVisible();
+    await expect(page.getByTestId("product-gallery-main-image")).toBeVisible();
+
+    const crop = await page.evaluate(() => {
+      const frame = document.querySelector('[data-testid="product-gallery"]');
+      const image = document.querySelector(
+        '[data-testid="product-gallery-main-image"]',
+      );
+
+      if (!frame || !image) {
+        throw new Error("Missing PDP gallery crop elements.");
+      }
+
+      const frameRect = frame.getBoundingClientRect();
+      const imageRect = image.getBoundingClientRect();
+
+      return {
+        frameLeft: Math.round(frameRect.left),
+        frameRight: Math.round(frameRect.right),
+        imageLeft: Math.round(imageRect.left),
+        imageRight: Math.round(imageRect.right),
+        mediaCenterOffset: Math.round(
+          (imageRect.left + imageRect.right) / 2 -
+            (frameRect.left + frameRect.right) / 2,
+        ),
+      };
+    });
+
+    expect(crop.imageLeft).toBeLessThanOrEqual(crop.frameLeft + 2);
+    expect(crop.imageRight).toBeGreaterThanOrEqual(crop.frameRight + 18);
+    expect(crop.mediaCenterOffset).toBeGreaterThanOrEqual(16);
+  });
+
   test("keeps desktop PDP service details centered with inset icons", async ({
     page,
   }) => {

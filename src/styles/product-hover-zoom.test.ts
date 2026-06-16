@@ -22,11 +22,21 @@ describe("product image hover zoom", () => {
     expect(gallery).toContain(
       "window.matchMedia(hoverFinePointerQuery).matches",
     );
+    expect(gallery).toContain('data-testid="product-gallery-main-image"');
     expect(gallery).toContain("--gallery-hover-origin-x");
     expect(gallery).toContain("--gallery-hover-origin-y");
     expect(gallery).toContain("clamp(");
+    expect(css).toContain("--gallery-main-image-shift-x:");
+    expect(css).toContain("--gallery-main-image-scale: 1;");
+    expect(css).toContain(
+      "--gallery-main-image-shift-x: clamp(1rem, 2vw, 2.5rem);",
+    );
+    expect(css).toContain("--gallery-main-image-scale: 1.12;");
     expect(css).toContain("--gallery-hover-zoom-scale: 1.42;");
     expect(css).toContain(".product-gallery-hover-zoom-layer");
+    expect(css).toContain(
+      "transform: translate3d(var(--gallery-main-image-shift-x), 0, 0)",
+    );
     expect(css).toContain("transform-origin: var(--gallery-hover-origin-x)");
     expect(css).toContain(
       '.product-gallery-main-frame[data-gallery-hover-zoom="true"]',

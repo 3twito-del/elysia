@@ -3329,6 +3329,8 @@ main
 .product-gallery-main-frame {
   --gallery-hover-origin-x: 50%;
   --gallery-hover-origin-y: 50%;
+  --gallery-main-image-shift-x: 0rem;
+  --gallery-main-image-scale: 1;
   --gallery-hover-zoom-scale: 1.42;
   background:
     linear-gradient(180deg, rgb(255 250 244 / 26%), transparent),
@@ -3339,6 +3341,11 @@ main
   .product-gallery-integrated-layout {
     align-items: stretch;
     min-height: min(72vh, 42rem);
+  }
+
+  .product-gallery-main-frame {
+    --gallery-main-image-shift-x: clamp(1rem, 2vw, 2.5rem);
+    --gallery-main-image-scale: 1.12;
   }
 
   .product-gallery-integrated-layout .product-gallery-main-frame,
@@ -3363,7 +3370,9 @@ main
 }
 
 .product-gallery-hover-zoom-image {
-  transform: translateZ(0);
+  transform: translate3d(var(--gallery-main-image-shift-x), 0, 0)
+    scale(var(--gallery-main-image-scale));
+  transform-origin: center;
 }
 
 .product-gallery-main-frame[data-gallery-hover-zoom="true"]
