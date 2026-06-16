@@ -249,42 +249,47 @@ export function ProductGallery({
 
     if (dragState?.pointerId !== event.pointerId) return;
 
+    const stage = event.currentTarget;
     const deltaX = event.clientX - dragState.startX;
     const deltaY = event.clientY - dragState.startY;
     const shouldCommitSwipe =
       !options.cancelled &&
       dragState.mode === viewerDragModes.swipe.value &&
       dragState.hasMoved &&
-      Math.abs(deltaX) >= getViewerSwipeThreshold(event.currentTarget) &&
+      Math.abs(deltaX) >= getViewerSwipeThreshold(stage) &&
       Math.abs(deltaX) > Math.abs(deltaY) * 1.2;
 
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId);
+    if (stage.hasPointerCapture(event.pointerId)) {
+      stage.releasePointerCapture(event.pointerId);
     }
-    delete event.currentTarget.dataset.galleryDragging;
+    delete stage.dataset.galleryDragging;
     viewerDragStateRef.current = null;
 
     if (shouldCommitSwipe) {
       const nextIndex = activeImageIndex + (deltaX < 0 ? 1 : -1);
       const commitOffset =
         deltaX < 0
-          ? -getViewerSwipeCommitDistance(event.currentTarget)
-          : getViewerSwipeCommitDistance(event.currentTarget);
+          ? -getViewerSwipeCommitDistance(stage)
+          : getViewerSwipeCommitDistance(stage);
 
-      event.currentTarget.dataset.gallerySwipeSettling = String(true);
-      syncViewerSwipeOffset(event.currentTarget, commitOffset);
+      stage.dataset.gallerySwipeSettling = String(true);
+      syncViewerSwipeOffset(stage, commitOffset);
       viewerSwipeReleaseTimeoutRef.current = window.setTimeout(
         () => {
+          viewerSwipeReleaseTimeoutRef.current = null;
           activateThumbnail(nextIndex);
-          resetViewerSwipeTracking(event.currentTarget);
+          resetViewerSwipeTracking(stage);
         },
         shouldReduceMotion ? 0 : 150,
       );
     } else if (dragState.mode === viewerDragModes.swipe.value) {
-      event.currentTarget.dataset.gallerySwipeSettling = String(true);
-      syncViewerSwipeOffset(event.currentTarget, 0);
+      stage.dataset.gallerySwipeSettling = String(true);
+      syncViewerSwipeOffset(stage, 0);
       viewerSwipeReleaseTimeoutRef.current = window.setTimeout(
-        () => resetViewerSwipeTracking(event.currentTarget),
+        () => {
+          viewerSwipeReleaseTimeoutRef.current = null;
+          resetViewerSwipeTracking(stage);
+        },
         shouldReduceMotion ? 0 : 180,
       );
     }

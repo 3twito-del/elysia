@@ -1541,8 +1541,10 @@ async function expectProductGalleryFullScreenNavigation(
   );
   await expectGalleryStageFollowsDrag(page, "next");
   await expect(fullscreenStatus).toContainText(/2/);
+  await expectGallerySwipeSettled(page);
   await dragGalleryStage(page, "previous");
   await expect(fullscreenStatus).toContainText(/1/);
+  await expectGallerySwipeSettled(page);
   await page.keyboard.press("ArrowRight");
   await expect(fullscreenStatus).toContainText(/2/);
   await page.keyboard.press("Escape");
@@ -1615,6 +1617,29 @@ async function expectGalleryStageFollowsDrag(
 
   await page.mouse.move(endX, y, { steps: 4 });
   await page.mouse.up();
+}
+
+async function expectGallerySwipeSettled(page: Page) {
+  const stage = page.getByTestId("product-gallery-fullscreen-stage");
+
+  await expect
+    .poll(() =>
+      stage.evaluate((element) => ({
+        offset: element.getAttribute("data-gallery-swipe-offset"),
+        settling: element.getAttribute("data-gallery-swipe-settling"),
+        tracking: element.getAttribute("data-gallery-swipe-tracking"),
+        cssOffset: window
+          .getComputedStyle(element)
+          .getPropertyValue("--viewer-swipe-offset")
+          .trim(),
+      })),
+    )
+    .toEqual({
+      cssOffset: "0px",
+      offset: null,
+      settling: null,
+      tracking: null,
+    });
 }
 
 async function waitForProductPurchasePanelClientReady(page: Page) {
