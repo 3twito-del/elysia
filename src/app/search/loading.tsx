@@ -1,6 +1,6 @@
 import { Search } from "lucide-react";
 
-import { CommercePageHero } from "~/components/commerce-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { SiteHeader } from "~/components/site-header";
 import { Skeleton } from "~/components/ui/skeleton";
 import { DEFAULT_SEARCH_PER_PAGE } from "~/server/adapters/search";
@@ -9,10 +9,10 @@ export default function SearchLoading() {
   return (
     <main>
       <SiteHeader />
-      <CommercePageHero
-        description="מסדרים את התוצאות לפי החיפוש והסינון שבחרתם."
-        eyebrow="מבחר Elysia"
-        title="חיפוש במבחר"
+      <CompactPageIntro
+        description="טוענים תוצאות, ואז אפשר לפתוח חיפוש וסינון לפי צורך."
+        eyebrow="חיפוש"
+        title="חיפוש תכשיטים"
         variant="catalog"
       />
       <section

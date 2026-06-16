@@ -5,7 +5,7 @@ import { ArrowRight, LifeBuoy, PackageCheck, RotateCcw } from "lucide-react";
 import { ReturnRequestForm } from "../../_components/return-request-form";
 import { createAccountServiceHref } from "../../_lib/account-recovery";
 import { createAccountOrderTimeline } from "../../_lib/order-timeline";
-import { CommercePageHero } from "~/components/commerce-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -70,7 +70,7 @@ export default async function OrderDetailPage({
   return (
     <main>
       <SiteHeader />
-      <CommercePageHero
+      <CompactPageIntro
         description={`${order.recipientName} · ${order.email}`}
         eyebrow="פרטי הזמנה"
         title={order.orderNumber}

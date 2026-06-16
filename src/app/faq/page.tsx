@@ -11,7 +11,7 @@ import {
   Truck,
 } from "lucide-react";
 
-import { CommercePageHero } from "~/components/commerce-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
@@ -93,7 +93,7 @@ export default async function FaqPage() {
     <main>
       <SiteHeader />
 
-      <CommercePageHero
+      <CompactPageIntro
         description="מידות, מתנות, משלוחים והחזרות - בלי לחפש בין עמודים."
         eyebrow="שירות"
         title="שאלות ותשובות"

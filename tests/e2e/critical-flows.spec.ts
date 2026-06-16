@@ -432,6 +432,8 @@ test.describe("critical shopping flows", () => {
     await expect(secondFilterTrigger).toHaveAttribute("aria-expanded", "true");
     await expect(page.getByTestId("category-filter-sheet")).toBeVisible();
     await page.setViewportSize({ width: 1024, height: 900 });
+    await expect(page.getByTestId("category-filter-sheet")).toBeVisible();
+    await page.keyboard.press("Escape");
     await expect(page.getByTestId("category-filter-sheet")).toBeHidden();
   });
 
@@ -572,8 +574,10 @@ test.describe("hydration-sensitive responsive surfaces", () => {
     await expect(page.getByTestId("category-filter-sheet")).toBeVisible();
 
     await page.setViewportSize({ width: 1024, height: 900 });
+    await expect(page.getByTestId("category-filter-sheet")).toBeVisible();
+    await expect(visibleByTestId(page, "category-filter-panel")).toHaveCount(0);
+    await page.keyboard.press("Escape");
     await expect(page.getByTestId("category-filter-sheet")).toBeHidden();
-    await expect(visibleByTestId(page, "category-filter-panel")).toBeVisible();
 
     await expectNoHydrationRegressions(page, hydrationIssues);
   });

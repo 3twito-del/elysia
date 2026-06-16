@@ -93,6 +93,10 @@ export function ProductCard({
     (fact): fact is string => Boolean(fact),
   );
   const productQuickFactsLabel = productQuickFacts.join(" · ");
+  const productDecisionFacts = getProductCardDecisionFacts({
+    commerceStatusLabel: commerceStatus.label,
+    product,
+  });
   const primaryCommerceLabel = isAvailable
     ? formatPrice(product.price)
     : "לייעוץ";
@@ -112,8 +116,12 @@ export function ProductCard({
         isUnavailable && "opacity-90",
       )}
       data-public-floating-avoid="true"
+      data-product-card-availability={
+        isAvailable ? "available" : "consultation"
+      }
       data-product-card-density={isCompactDensity ? "compact" : "standard"}
       data-product-card-display={display}
+      data-product-card-sale={sale ? "true" : "false"}
       data-testid="product-card"
       dir="rtl"
     >
@@ -247,6 +255,23 @@ export function ProductCard({
                   ) : null}
                 </div>
               ) : null}
+              {!isEditorialDisplay ? (
+                <div
+                  aria-label="עיקרי בחירה"
+                  className="product-card-decision-facts flex min-h-7 min-w-0 flex-wrap items-center gap-x-2 gap-y-1 border-y border-[var(--glass-border)] py-1.5 text-[0.68rem] leading-4"
+                  data-testid="product-card-decision-facts"
+                >
+                  {productDecisionFacts.map((fact) => (
+                    <span
+                      className="product-card-decision-fact min-w-0 truncate"
+                      data-product-card-fact={fact.key}
+                      key={fact.key}
+                    >
+                      {fact.label}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
             </div>
           </div>
 
@@ -364,6 +389,26 @@ function isProductCardLowStock(input: {
     input.product.availabilityMode === "READY_TO_ORDER" &&
     isPublicSellableQuantityLowStock(input.availableQuantity)
   );
+}
+
+function getProductCardDecisionFacts(input: {
+  commerceStatusLabel: string;
+  product: CatalogProduct;
+}) {
+  const fitLabel =
+    input.product.sizes.length > 1 || input.product.metalColors.length > 1
+      ? "בחירת מידה וגוון"
+      : "פרטים לפני הזמנה";
+  const serviceLabel =
+    input.product.availabilityMode === "READY_TO_ORDER"
+      ? "שירות לפני הזמנה"
+      : "תיאום אישי";
+
+  return [
+    { key: "availability", label: input.commerceStatusLabel },
+    { key: "fit", label: fitLabel },
+    { key: "service", label: serviceLabel },
+  ] as const;
 }
 
 function getProductCardBadge(input: {

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Gift } from "lucide-react";
 
-import { CommercePageHero } from "~/components/commerce-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -85,11 +85,11 @@ export default async function GiftsPage() {
   return (
     <main>
       <SiteHeader />
-      <CommercePageHero
-        description="מתנות לפי לוק, תקציב ואירוע - מיום הולדת ועד ערב קיצי."
+      <CompactPageIntro
+        description="ראו קודם את המתנות הזמינות. תקציב, למי ואירוע זמינים כבחירה מהירה בהמשך."
         eyebrow="מתנות"
         id="page-hero"
-        title="מתנה שנראית אישית"
+        title="מתנות זמינות עכשיו"
         variant="catalog"
       />
       <RevealSection className="mx-auto max-w-7xl px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y)]">
@@ -117,6 +117,50 @@ export default async function GiftsPage() {
             </Link>
           </div>
         </section>
+        {products.length > 0 ? (
+          <RevealGrid
+            className="ui-equal-grid mt-5 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4"
+            data-layout-equal-group="gift-products"
+            data-testid="gift-results-grid"
+            variant="cards"
+          >
+            {products.map((product, index) => (
+              <ProductCard
+                contextLabel={getGiftBudgetContextLabel(product)}
+                density="compact"
+                imagePriority={index === 0}
+                key={product.slug}
+                product={product}
+              />
+            ))}
+          </RevealGrid>
+        ) : (
+          <EmptyState
+            actions={
+              <>
+                <Button asChild>
+                  <Link
+                    data-testid="gifts-empty-state-reset"
+                    href="/gifts"
+                    scroll={false}
+                  >
+                    כל רעיונות המתנה
+                  </Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link href="/search?q=%D7%9E%D7%AA%D7%A0%D7%94">
+                    חיפוש רחב למתנה
+                  </Link>
+                </Button>
+              </>
+            }
+            className="mt-5"
+            description="לא נמצאה מתנה שמתאימה כרגע. אפשר לפתוח חיפוש רחב יותר או לחזור לרעיונות המתנה."
+            icon={Gift}
+            testId="gifts-empty-state"
+            title="לא נמצאה מתנה מתאימה"
+          />
+        )}
         <section
           aria-labelledby="gift-discovery-title"
           className="mt-5 grid gap-4 border-b border-[var(--glass-border)] pb-5 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.55fr)_auto] lg:items-end"
@@ -207,50 +251,6 @@ export default async function GiftsPage() {
             </div>
           </section>
         ) : null}
-        {products.length > 0 ? (
-          <RevealGrid
-            className="ui-equal-grid mt-5 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4"
-            data-layout-equal-group="gift-products"
-            data-testid="gift-results-grid"
-            variant="cards"
-          >
-            {products.map((product, index) => (
-              <ProductCard
-                contextLabel={getGiftBudgetContextLabel(product)}
-                density="compact"
-                imagePriority={index === 0}
-                key={product.slug}
-                product={product}
-              />
-            ))}
-          </RevealGrid>
-        ) : (
-          <EmptyState
-            actions={
-              <>
-                <Button asChild>
-                  <Link
-                    data-testid="gifts-empty-state-reset"
-                    href="/gifts"
-                    scroll={false}
-                  >
-                    כל רעיונות המתנה
-                  </Link>
-                </Button>
-                <Button asChild variant="outline">
-                  <Link href="/search?q=%D7%9E%D7%AA%D7%A0%D7%94">
-                    חיפוש רחב למתנה
-                  </Link>
-                </Button>
-              </>
-            }
-            className="mt-5"
-            description="לא מצאנו מתנה שמתאימה בדיוק. אפשר לפתוח חיפוש רחב יותר או לחזור לרעיונות המתנה."
-            icon={Gift}
-            testId="gifts-empty-state"
-            title="לא מצאנו מתנה מתאימה"
-          />
-        )}
       </RevealSection>
     </main>
   );

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Mail, PackageCheck, Phone, RotateCcw, Truck } from "lucide-react";
 
-import { CommercePageHero } from "~/components/commerce-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { LegalCookiePreferencesCallout } from "~/components/legal-cookie-preferences-callout";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -81,7 +81,7 @@ export default async function ShippingReturnsPage() {
       <SiteHeader />
 
       <main>
-        <CommercePageHero
+        <CompactPageIntro
           description="מידע על משלוחים, זמני אספקה, ביטול עסקה, החלפות והחזרות באתר Elysia."
           eyebrow="מדיניות שירות"
           title="משלוחים, ביטולים והחזרות"

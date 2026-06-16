@@ -58,7 +58,7 @@ describe("image performance guardrails", () => {
 
     expect(searchSource).toContain("imagePriority={index < 2}");
     expect(searchSource).toContain("imagePriority={index < 4}");
-    expect(categorySource).toContain("priority: true");
+    expect(categorySource).not.toContain("priority: true");
     expect(categorySource).toContain("imagePriority={index === 0}");
     expect(giftsSource).toContain("imagePriority={index === 0}");
     expect(gallerySource).toContain("priority={activeImageIndex === 0}");
@@ -223,7 +223,7 @@ describe("image performance guardrails", () => {
     const categorySource = read("src/app/category/[slug]/page.tsx");
 
     expect(categorySource).toContain(
-      'imageSizes="(min-width: 1280px) 18rem, (min-width: 1024px) calc((100vw - 24rem) / 2), (min-width: 640px) 50vw, 100vw"',
+      'imageSizes="(min-width: 1280px) 30rem, (min-width: 640px) 50vw, 100vw"',
     );
   });
 

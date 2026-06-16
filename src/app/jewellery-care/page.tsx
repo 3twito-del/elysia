@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AlertTriangle, Droplets, ShieldCheck, Sparkles } from "lucide-react";
 
-import { CommercePageHero } from "~/components/commerce-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { LegalCookiePreferencesCallout } from "~/components/legal-cookie-preferences-callout";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -51,7 +51,7 @@ export default function JewelleryCarePage() {
       <SiteHeader />
 
       <main>
-        <CommercePageHero
+        <CompactPageIntro
           description="הנחיות שימוש, אחסון וניקוי שמסייעות לשמור על התכשיט ולהקטין חשיפה לנזק או רגישות."
           eyebrow="אחרי הקנייה"
           title="טיפול בתכשיטים"

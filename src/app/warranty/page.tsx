@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { FileCheck2, ShieldCheck, Wrench } from "lucide-react";
 
-import { CommercePageHero } from "~/components/commerce-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { LegalCookiePreferencesCallout } from "~/components/legal-cookie-preferences-callout";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -48,7 +48,7 @@ export default function WarrantyPage() {
       <SiteHeader />
 
       <main>
-        <CommercePageHero
+        <CompactPageIntro
           description="אחריות ל-12 חודשים לפגמי ייצור בלבד, בכפוף לבדיקה, למדיניות האתר ולכל דין."
           eyebrow="שירות לאחר קנייה"
           title="אחריות"

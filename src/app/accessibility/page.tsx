@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AlertTriangle, Mail, Phone, ShieldCheck } from "lucide-react";
 
-import { CommercePageHero } from "~/components/commerce-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { LegalCookiePreferencesCallout } from "~/components/legal-cookie-preferences-callout";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -30,7 +30,7 @@ export default async function AccessibilityPage() {
       <SiteHeader />
 
       <main>
-        <CommercePageHero
+        <CompactPageIntro
           description="האתר והשירות מיועדים להיות זמינים ונוחים לשימוש לכלל המשתמשים."
           eyebrow="נגישות"
           title="הצהרת נגישות"

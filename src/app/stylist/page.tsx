@@ -1,6 +1,6 @@
 import { Sparkles, WandSparkles } from "lucide-react";
 
-import { CommercePageHero } from "~/components/commerce-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -14,11 +14,11 @@ export default function StylistPage() {
   return (
     <main>
       <SiteHeader />
-      <CommercePageHero
-        description="שיחה קצרה למציאת תכשיט לפי לוק, אירוע, תקציב ומידה."
+      <CompactPageIntro
+        description="ענו על לוק, אירוע, תקציב ומידה וקבלו כיוון לבחירת תכשיט."
         eyebrow="יועץ לוק"
         id="page-hero"
-        title="איזה תכשיט נכנס ללוק?"
+        title="ייעוץ לבחירת תכשיט"
         variant="content"
       />
       <RevealSection

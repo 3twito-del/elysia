@@ -180,7 +180,7 @@ describe("accessibility guardrails", () => {
 
       expect(source).toContain("<main>");
       expect(source).toContain("<SiteHeader />");
-      expect(source).toContain("<CommercePageHero");
+      expect(source).toContain("<CompactPageIntro");
       expect(source).toContain('variant="content"');
       expect(source).toContain("max-w-5xl");
       expect(source).toContain(`data-testid="${route.requiredLinkTestId}"`);

@@ -143,8 +143,11 @@ describe("luxury commerce UI hardening", () => {
       "brand-control-panel mt-4 hidden gap-2.5",
     );
     expect(category).toContain(
-      "mb-5 hidden border-b border-[var(--glass-border)] pb-4 lg:block",
+      "mb-5 border-b border-[var(--glass-border)] pb-4",
     );
+    expect(category).toContain('data-testid="category-filter-trigger"');
+    expect(category).toContain('data-testid="category-filter-panel"');
+    expect(category).toContain('className="hidden"');
     expect(search).toContain(
       "mt-4 border-b border-[var(--glass-border)] pb-4 sm:mt-6",
     );

@@ -10,7 +10,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
-import { CommercePageHero } from "~/components/commerce-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
@@ -56,7 +56,7 @@ export default async function BranchesPage() {
   return (
     <main>
       <SiteHeader />
-      <CommercePageHero
+      <CompactPageIntro
         description={
           hasPhysicalBranches
             ? "מיקומי שירות מאושרים של Elysia, כולל קשר, שעות ותיאום."

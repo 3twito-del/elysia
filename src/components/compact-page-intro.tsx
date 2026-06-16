@@ -6,7 +6,9 @@ import {
   type CommercePageHeroIntent,
   type CommercePageHeroMetric,
   type CommercePageHeroMetricsMode,
+  type CommercePageHeroVariant,
 } from "~/components/commerce-page-hero";
+import { cn } from "~/lib/utils";
 
 type CompactPageIntroMetric = CommercePageHeroMetric;
 
@@ -21,6 +23,7 @@ type CompactPageIntroProps = {
   metrics?: CompactPageIntroMetric[];
   metricsMode?: CommercePageHeroMetricsMode;
   title: ReactNode;
+  variant?: CommercePageHeroVariant;
 };
 
 export function CompactPageIntro({
@@ -34,11 +37,12 @@ export function CompactPageIntro({
   metrics,
   metricsMode,
   title,
+  variant = "content",
 }: CompactPageIntroProps) {
   return (
     <CommercePageHero
       actions={actions}
-      className={className}
+      className={cn("task-first-page-intro", className)}
       density={density}
       description={description}
       eyebrow={eyebrow}
@@ -47,7 +51,7 @@ export function CompactPageIntro({
       metrics={metrics}
       metricsMode={metricsMode}
       title={title}
-      variant="content"
+      variant={variant}
     />
   );
 }

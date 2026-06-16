@@ -1,5 +1,5 @@
 import { CartCheckoutForm } from "./_components/cart-checkout-form";
-import { CommercePageHero } from "~/components/commerce-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { TRPCReactProvider } from "~/trpc/react";
@@ -14,7 +14,7 @@ export default async function CheckoutPage() {
       <SiteHeader />
 
       <main className="checkout-boutique-page">
-        <CommercePageHero
+        <CompactPageIntro
           className="checkout-boutique-hero"
           description="התכשיטים שבחרת, פרטי מסירה ושאלה אחרונה לפני התשלום."
           eyebrow="סל"

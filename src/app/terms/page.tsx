@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { FileText, Mail, PackageCheck, Phone, ShieldCheck } from "lucide-react";
 
-import { CommercePageHero } from "~/components/commerce-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { LegalCookiePreferencesCallout } from "~/components/legal-cookie-preferences-callout";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -118,7 +118,7 @@ export default async function TermsPage() {
       <SiteHeader />
 
       <main>
-        <CommercePageHero
+        <CompactPageIntro
           description="תנאי שימוש באתר Elysia: הזמנות, מחירים, תשלום, משלוחים, ביטולים, אחריות, פרטיות ושירות."
           eyebrow="תקנון ומדיניות"
           title="תקנון האתר"

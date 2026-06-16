@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { SizeGuideTool } from "./_components/size-guide-tool";
 import { getSafeSizeGuideReturnContext } from "./_lib/size-guide-return";
-import { CommercePageHero } from "~/components/commerce-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
@@ -65,10 +65,10 @@ export default async function SizeGuidePage({
   return (
     <main>
       <SiteHeader />
-      <CommercePageHero
-        description="מדידת טבעות, צמידים ושרשראות לפני שמחליטים מה יישב הכי נכון."
+      <CompactPageIntro
+        description="בחרו סוג תכשיט והשתמשו בכלי המדידה לפני הזמנה."
         eyebrow="מידות"
-        title="מה המידה שלך?"
+        title="בדיקת מידה"
         variant="checkout"
       />
       <RevealSection

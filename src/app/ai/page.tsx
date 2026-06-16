@@ -2,7 +2,7 @@ import { Gift, MessageSquare, Sparkles } from "lucide-react";
 
 import { DeferredAiGiftPanel } from "./_components/deferred-ai-gift-panel";
 import { DeferredStylistChat } from "~/app/stylist/_components/deferred-stylist-chat";
-import { CommercePageHero } from "~/components/commerce-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
@@ -27,11 +27,11 @@ export default async function AiPage({ searchParams }: AiPageProps) {
   return (
     <main className="min-h-screen">
       <SiteHeader />
-      <CommercePageHero
-        description="עזרה בבחירת תכשיט לפי לוק, תקציב, מתנה ומידה מתוך מה שזמין עכשיו."
+      <CompactPageIntro
+        description="פתחו כלי התאמה לפי תקציב, מתנה ומידה מתוך הפריטים שזמינים עכשיו."
         eyebrow="התאמה"
         id="page-hero"
-        title="מה מתאים לרגע שלך?"
+        title="התאמת תכשיט"
         variant="content"
       />
       <RevealSection

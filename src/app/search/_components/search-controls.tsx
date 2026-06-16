@@ -53,10 +53,30 @@ export function SearchControls({
   const hasQuery = Boolean(input.query?.trim());
 
   return (
-    <div
-      className="border-y border-[var(--glass-border)] py-4"
+    <details
+      className="group/search-controls border-y border-[var(--glass-border)] py-3"
       data-testid="search-form"
+      open={hasQuery || activeFilterCount > 0}
     >
+      <summary
+        className="flex min-h-10 cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
+        data-testid="search-controls-toggle"
+      >
+        <span className="inline-flex items-center gap-2">
+          <SlidersHorizontal aria-hidden="true" className="size-4" />
+          חיפוש וסינון
+        </span>
+        <span className="text-muted-foreground inline-flex items-center gap-2 text-xs">
+          {activeFilterCount > 0 ? (
+            <Badge variant="secondary">{activeFilterCount}</Badge>
+          ) : null}
+          <ChevronDown
+            aria-hidden="true"
+            className="size-4 transition-transform group-open/search-controls:rotate-180"
+          />
+        </span>
+      </summary>
+      <div className="mt-3 grid gap-3">
       <form
         action="/search"
         aria-label="חיפוש תכשיטים"
@@ -206,7 +226,8 @@ export function SearchControls({
         mode={input.mode}
         viewMode={viewMode}
       />
-    </div>
+      </div>
+    </details>
   );
 }
 

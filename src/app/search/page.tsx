@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 
 import { SearchControls } from "~/app/search/_components/search-controls";
-import { CommercePageHero } from "~/components/commerce-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -140,32 +140,16 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       <SiteHeader />
 
       <main>
-        <CommercePageHero
-          description="חפשו לפי תכשיט, חומר, צבע, מחיר או רגע בלוח השנה."
+        <CompactPageIntro
+          description="ראו את התוצאות תחילה. חיפוש, קטגוריה וסינון נפתחים לפי צורך."
           eyebrow="חיפוש"
-          title="מה בא לך לענוד?"
+          title="חיפוש תכשיטים"
           variant="catalog"
         />
         <RevealSection
           className="mx-auto w-full max-w-[96rem] px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y)]"
           id="search-controls"
         >
-          <SearchControls
-            activeFilterCount={activeRefinementCount}
-            categories={categories}
-            clearSearchHref={clearSearchHref}
-            clearFiltersHref={clearFiltersHref}
-            facets={facets}
-            input={input}
-            viewMode={viewMode}
-          />
-
-          <SearchCategoryChips
-            categories={categories}
-            input={input}
-            viewMode={viewMode}
-          />
-
           {hasActiveFilters ? (
             <section
               aria-label="סינונים פעילים"
@@ -273,6 +257,24 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               </div>
             </div>
           </section>
+
+          <div className="mt-4 grid gap-4" data-testid="search-controls-panel">
+            <SearchControls
+              activeFilterCount={activeRefinementCount}
+              categories={categories}
+              clearSearchHref={clearSearchHref}
+              clearFiltersHref={clearFiltersHref}
+              facets={facets}
+              input={input}
+              viewMode={viewMode}
+            />
+
+            <SearchCategoryChips
+              categories={categories}
+              input={input}
+              viewMode={viewMode}
+            />
+          </div>
 
           {result.hits.length === 0 ? (
             <EmptyState

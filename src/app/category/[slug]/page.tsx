@@ -26,7 +26,7 @@ import {
   type CategoryNoResultRecoveryAction,
   type CategorySearchParams,
 } from "./_lib/category-filter-state";
-import { CommercePageHero } from "~/components/commerce-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -67,28 +67,30 @@ export const revalidate = 3600;
 const categoryLuxuryCopyBySlug: Record<string, CategoryLuxuryCopy> = {
   bracelets: {
     description:
-      "צמידים עדינים לשכבות, למתנה ולרגע שבו פרק היד צריך נקודת אור קטנה.",
+      "צמידים לפי חומר, מידה, מחיר וזמינות, עם פרטי מסירה ושירות לפני הזמנה.",
     intro:
-      "צמיד כסף, ציפוי זהב או אבן קטנה יכולים לשנות חולצה פשוטה, שמלת ערב או לוק חופשה.",
+      "התחילו מהצמידים הזמינים ופתחו סינון לפי חומר, אבן, מחיר או קולקציה.",
     title: "צמידים",
   },
   earrings: {
     description:
-      "עגילים קטנים או נוכחים לפי משקל, גימור ונוחות ענידה, בלי לוותר על ברק.",
+      "עגילים לפי חומר, אבן, מחיר וזמינות, עם פרטי מוצר ברורים לפני מעבר לקופה.",
     intro:
-      "עגילי כסף, פנינים ואבני צבע ליום ארוך, ערב קיצי או מתנה שנפתחת מיד.",
+      "התחילו מהעגילים הזמינים ופתחו סינון לפי חומר, אבן, מחיר או קולקציה.",
     title: "עגילים",
   },
   necklaces: {
     description:
       "שרשראות ותליונים שנראים טוב לבד או בשכבות, לפי אורך, חומר, אבן וגימור.",
-    intro: "קו על הצוואר שמשנה חולצה לבנה, שמלה פתוחה או לוק חופשה בלי להעמיס.",
+    intro:
+      "התחילו מהשרשראות הזמינות ופתחו סינון לפי אורך, חומר, אבן, מחיר או קולקציה.",
     title: "שרשראות",
   },
   rings: {
     description:
-      "טבעות כסף, ציפוי זהב, יהלומים ואבני חן לפי פרופורציה, נוחות ומידה.",
-    intro: "טבעת אחת עם נוכחות עדינה, או כמה יחד כשבא יותר אור על היד.",
+      "טבעות לפי מידה, חומר, אבן, מחיר וזמינות, עם מדריך מידה לפני הזמנה.",
+    intro:
+      "התחילו מהטבעות הזמינות ופתחו סינון לפי מידה, חומר, אבן, מחיר או קולקציה.",
     title: "טבעות",
   },
 };
@@ -205,7 +207,8 @@ export default async function CategoryPage({
     description:
       category.description ||
       "תכשיטים מתוך הקולקציה של Elysia, עם חומר, מידה ומחיר לפני הזמנה.",
-    intro: "פריטים שאפשר לפתוח מהם לוק, מתנה או ערב.",
+    intro:
+      "התחילו מהתכשיטים הזמינים ופתחו סינון לפי חומר, אבן, מחיר או קולקציה.",
     title: category.name,
   };
   const facets = getCatalogFacetsFromProducts(catalogProducts);
@@ -261,30 +264,29 @@ export default async function CategoryPage({
       <main dir="rtl">
         <CategoryBreadcrumbs categoryName={categoryCopy.title} />
 
-        <CommercePageHero
+        <CompactPageIntro
+          actions={
+            <CategoryFilterDrawer
+              activeFilterCount={activeFilterCount}
+              currentSortLabel={currentSortLabel}
+              data={filterPayload}
+              hasActiveFilters={hasActiveFilters}
+              pageRangeLabel={pageRangeLabel}
+              resetHref={resetHref}
+            />
+          }
           description={
-            <>
-              <span>{categoryCopy.intro}</span>
-              <br />
-              <span>{categoryCopy.description}</span>
-            </>
+            hasCategoryProducts
+              ? `${categoryResultCountLabel} זמינים עכשיו. ${categoryCopy.intro}`
+              : "הקטגוריה קיימת, אבל אין בה פריטים זמינים כרגע. אפשר לעבור לחיפוש או לבחור קטגוריה אחרת."
           }
           eyebrow="קולקציה"
           id="page-hero"
-          media={{
-            alt: `${categoryCopy.title} מתוך קולקציית Elysia`,
-            priority: true,
-            sizes: "(min-width: 1024px) 34vw, (min-width: 640px) 60vw, 100vw",
-            slides: getCategoryBrandSlides(slug),
-          }}
-          showMediaOnMobile
           title={categoryCopy.title}
           variant="catalog"
         />
 
-        <CategoryTrustStrip />
-
-        <div className="bg-background sticky top-16 z-30 border-b border-[var(--glass-border)] lg:hidden">
+        <div className="hidden">
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-[var(--ui-page-x)] py-3 sm:px-[var(--ui-page-x-wide)]">
             <div className="text-sm">
               <p className="font-medium">
@@ -314,7 +316,7 @@ export default async function CategoryPage({
             <CategoryFilterSheet activeFilterCount={activeFilterCount}>
               <Button
                 className="gap-2"
-                data-testid="category-filter-trigger"
+                data-testid="category-filter-trigger-hidden"
                 type="button"
                 variant="outline"
               >
@@ -380,9 +382,9 @@ export default async function CategoryPage({
 
         <div className="h-px" id="category-filters" />
 
-        <RevealSection className="mx-auto grid w-full max-w-[96rem] gap-10 px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:grid-cols-[minmax(13rem,16rem)_1fr] lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y)]">
+        <RevealSection className="mx-auto w-full max-w-[96rem] px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y)]">
           <aside
-            className="hidden lg:block"
+            className="hidden"
             data-testid="category-filter-panel"
           >
             <div className="sticky top-24 border-y border-[var(--glass-border)] py-5">
@@ -401,7 +403,7 @@ export default async function CategoryPage({
             className="min-w-0"
             id="category-products"
           >
-            <div className="mb-5 hidden border-b border-[var(--glass-border)] pb-4 lg:block">
+            <div className="mb-5 border-b border-[var(--glass-border)] pb-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h2 className="text-base font-medium" id="category-results">
@@ -488,7 +490,7 @@ export default async function CategoryPage({
                     <ProductCard
                       density="compact"
                       imagePriority={index === 0}
-                      imageSizes="(min-width: 1280px) 18rem, (min-width: 1024px) calc((100vw - 24rem) / 2), (min-width: 640px) 50vw, 100vw"
+                      imageSizes="(min-width: 1280px) 30rem, (min-width: 640px) 50vw, 100vw"
                       key={product.slug}
                       product={product}
                     />
@@ -519,6 +521,8 @@ export default async function CategoryPage({
             )}
           </section>
         </RevealSection>
+
+        <CategoryTrustStrip />
       </main>
     </>
   );
@@ -542,6 +546,84 @@ function CategoryBreadcrumbs({ categoryName }: { categoryName: string }) {
       <span aria-hidden="true">›</span>
       <span className="text-foreground">{categoryName}</span>
     </nav>
+  );
+}
+
+function CategoryFilterDrawer({
+  activeFilterCount,
+  currentSortLabel,
+  data,
+  hasActiveFilters,
+  pageRangeLabel,
+  resetHref,
+}: {
+  activeFilterCount: number;
+  currentSortLabel: string;
+  data: ReturnType<typeof toCategoryFilterPayload>;
+  hasActiveFilters: boolean;
+  pageRangeLabel: string;
+  resetHref: string;
+}) {
+  return (
+    <CategoryFilterSheet activeFilterCount={activeFilterCount}>
+      <Button
+        className="gap-2"
+        data-testid="category-filter-trigger"
+        type="button"
+        variant="outline"
+      >
+        <Filter aria-hidden="true" className="size-4" />
+        סינון ומיון
+        {activeFilterCount > 0 ? (
+          <Badge className="h-5 px-1.5" variant="secondary">
+            {activeFilterCount}
+          </Badge>
+        ) : null}
+      </Button>
+      <SheetContent
+        className="w-[min(92vw,420px)] overflow-y-auto p-0"
+        data-testid="category-filter-sheet"
+        side="right"
+      >
+        <SheetHeader className="border-b border-[var(--glass-border)] p-[var(--ui-panel-padding)]">
+          <SheetTitle className="flex items-center gap-2">
+            <SlidersHorizontal aria-hidden="true" className="size-4" />
+            סינון לפי תכשיט
+          </SheetTitle>
+          <SheetDescription>
+            בחרו חומר, אבן, מחיר או קולקציה מתוך הפריטים שזמינים עכשיו.
+          </SheetDescription>
+          <p
+            className="text-muted-foreground text-xs leading-5"
+            data-testid="category-filter-sheet-summary"
+          >
+            {pageRangeLabel} · מיון: {currentSortLabel}
+            {hasActiveFilters ? ` · ${activeFilterCount} סינונים פעילים` : ""}
+          </p>
+        </SheetHeader>
+        <div className="p-[var(--ui-panel-padding)]">
+          <DeferredCategoryFilterPanel closeOnSelect data={data} />
+        </div>
+        <div className="bg-popover sticky bottom-0 grid grid-cols-2 gap-2 border-t border-[var(--glass-border)] p-[var(--ui-panel-padding)]">
+          {hasActiveFilters ? (
+            <Button asChild variant="outline">
+              <Link href={resetHref} scroll={false}>
+                איפוס הכל
+              </Link>
+            </Button>
+          ) : (
+            <Button disabled type="button" variant="outline">
+              איפוס הכל
+            </Button>
+          )}
+          <SheetClose asChild>
+            <Button type="button" variant="secondary">
+              סגירה
+            </Button>
+          </SheetClose>
+        </div>
+      </SheetContent>
+    </CategoryFilterSheet>
   );
 }
 

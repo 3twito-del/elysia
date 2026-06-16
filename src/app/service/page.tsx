@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 import { ServiceRequestForm } from "./_components/service-request-form";
-import { CommercePageHero } from "~/components/commerce-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
@@ -110,10 +110,10 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
     <main>
       <SiteHeader />
 
-      <CommercePageHero
-        description="שאלה על תכשיט, מידה, מתנה או הזמנה - משאירים פרטים וממשיכים משם."
+      <CompactPageIntro
+        description="בחרו נושא, השאירו פרטים ונחזור עם תשובה על תכשיט, מידה, מתנה או הזמנה."
         eyebrow="שירות Elysia"
-        title="שירות שעוזר לבחור"
+        title="פנייה לשירות"
         variant="content"
       />
 

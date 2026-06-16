@@ -19,7 +19,7 @@ import {
   removeWishlistItemAction,
 } from "../account/actions";
 import { GuestWishlistProducts } from "./_components/guest-wishlist-products";
-import { CommercePageHero } from "~/components/commerce-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
@@ -146,9 +146,9 @@ export default async function WishlistPage() {
   return (
     <main className="account-boutique-page wishlist-boutique-page">
       <SiteHeader />
-      <CommercePageHero
+      <CompactPageIntro
         className="account-entry-intro account-boutique-hero wishlist-boutique-hero"
-        description="התכשיטים ששמרת להמשך, כשעוד לא החלטת מה הכי מתאים ללוק."
+        description="התכשיטים ששמרת להשוואה, בדיקת מידה או מעבר לרכישה."
         eyebrow="מועדפים"
         title="מועדפים"
         variant="checkout"

@@ -9,7 +9,7 @@ import {
   UserCheck,
 } from "lucide-react";
 
-import { CommercePageHero } from "~/components/commerce-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { CookiePreferencesPanel } from "~/components/cookie-preferences-panel";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -95,7 +95,7 @@ export default async function PrivacyPage() {
       <SiteHeader />
 
       <main>
-        <CommercePageHero
+        <CompactPageIntro
           description="כיצד נאסף, נשמר, משותף ומוגן מידע אישי באתר ובשירות."
           eyebrow="פרטיות ומידע"
           title="מדיניות פרטיות"

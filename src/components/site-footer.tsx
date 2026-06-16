@@ -1,7 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronDown } from "lucide-react";
+import {
+  ChevronDown,
+  MessageCircle,
+  PackageCheck,
+  Ruler,
+  ShieldCheck,
+} from "lucide-react";
 import { SiInstagram, SiTiktok } from "react-icons/si";
 
 import { BrandLogo } from "~/components/brand-logo";
@@ -50,6 +56,33 @@ const socialLinks = [
     label: "טיקטוק",
     ariaLabel: "טיקטוק של Elysia",
     icon: SiTiktok,
+  },
+] as const;
+
+const footerTrustSignals = [
+  {
+    href: "/shipping-returns",
+    icon: PackageCheck,
+    label: "מסירה והחזרות",
+    text: "תיאום מסירה, החלפה והחזרה לפי מדיניות האתר.",
+  },
+  {
+    href: "/size-guide",
+    icon: Ruler,
+    label: "בחירת מידה",
+    text: "מידות טבעות, צמידים ושרשראות לפני הזמנה.",
+  },
+  {
+    href: "/warranty",
+    icon: ShieldCheck,
+    label: "אחריות ושירות",
+    text: "אחריות, תיקון ובדיקת פריט דרך שירות Elysia.",
+  },
+  {
+    href: "/service",
+    icon: MessageCircle,
+    label: "שירות אישי",
+    text: "שאלה על פריט, מתנה, מידה או הזמנה קיימת.",
   },
 ] as const;
 
@@ -108,6 +141,7 @@ export function SiteFooter() {
             />
           </nav>
         </div>
+        <FooterTrustLayer />
         <SiteFooterDisclosures />
 
         <div className="site-footer-legal grid gap-5 text-sm md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:gap-10">
@@ -186,5 +220,43 @@ function FooterNav({
         ))}
       </ul>
     </details>
+  );
+}
+
+function FooterTrustLayer() {
+  return (
+    <section
+      aria-label="אמון ושירות לפני הזמנה"
+      className="footer-trust-layer mt-12 border-y border-[var(--glass-border)] py-5"
+      data-testid="footer-trust-layer"
+    >
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {footerTrustSignals.map((item) => {
+          const Icon = item.icon;
+
+          return (
+            <Link
+              className="footer-trust-link grid min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-3 rounded-md px-0 py-1.5 transition focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
+              data-testid="footer-trust-link"
+              href={item.href}
+              key={item.href}
+            >
+              <span
+                aria-hidden="true"
+                className="glass-inset grid size-9 place-items-center rounded-md border"
+              >
+                <Icon className="size-4" />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-sm font-medium">{item.label}</span>
+                <span className="text-muted-foreground mt-1 block text-xs leading-5">
+                  {item.text}
+                </span>
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+    </section>
   );
 }
