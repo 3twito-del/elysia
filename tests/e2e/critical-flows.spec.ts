@@ -128,6 +128,50 @@ test.describe("critical shopping flows", () => {
     await expectProductGalleryFullScreenNavigation(page);
   });
 
+  test("keeps desktop PDP imagery visible while purchase details scroll", async ({
+    page,
+  }) => {
+    test.skip((page.viewportSize()?.width ?? 0) < 1024, "desktop-only layout");
+
+    await setCookieConsent(page, "essential");
+    await page.goto(`/product/${supplierProductSlug}`);
+
+    await expect(page.getByTestId("product-gallery")).toBeVisible();
+    await waitForProductPurchasePanelClientReady(page);
+    await page.getByTestId("product-commerce-trust").scrollIntoViewIfNeeded();
+
+    const layout = await page.evaluate(() => {
+      const gallery = document.querySelector('[data-testid="product-gallery"]');
+      const trust = document.querySelector(
+        '[data-testid="product-commerce-trust"]',
+      );
+
+      if (!gallery || !trust) {
+        throw new Error("Missing PDP layout elements.");
+      }
+
+      const galleryRect = gallery.getBoundingClientRect();
+      const trustRect = trust.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const getVisibleHeight = (rect: DOMRect) =>
+        Math.max(
+          0,
+          Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0),
+        );
+
+      return {
+        galleryVisibleHeight: Math.round(getVisibleHeight(galleryRect)),
+        trustVisibleHeight: Math.round(getVisibleHeight(trustRect)),
+        viewportHeight,
+      };
+    });
+
+    expect(layout.trustVisibleHeight).toBeGreaterThan(120);
+    expect(layout.galleryVisibleHeight).toBeGreaterThan(
+      Math.round(layout.viewportHeight * 0.38),
+    );
+  });
+
   test("shows supplier-only checkout without local order fields", async ({
     page,
   }) => {

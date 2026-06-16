@@ -226,7 +226,7 @@ export default async function ProductPage({
         id="product-buy"
         initialVisible
       >
-        <div className="order-1 min-w-0 lg:order-none">
+        <div className="order-1 min-w-0 lg:sticky lg:top-24 lg:order-none lg:self-start">
           <ProductGallery
             images={uniqueImages}
             productName={publicProductName}
@@ -241,10 +241,7 @@ export default async function ProductPage({
           ) : null}
         </div>
 
-        <aside
-          className="order-2 min-w-0 lg:sticky lg:top-24 lg:order-none lg:self-start"
-          dir="rtl"
-        >
+        <aside className="order-2 min-w-0 lg:order-none" dir="rtl">
           <div className="mx-auto max-w-xl lg:mx-0">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-muted-foreground text-xs font-medium tracking-normal uppercase">
@@ -404,7 +401,7 @@ export default async function ProductPage({
                     key={fact.label}
                   >
                     <dt className="text-muted-foreground">{fact.label}</dt>
-                    <dd className="font-medium leading-6">{fact.value}</dd>
+                    <dd className="leading-6 font-medium">{fact.value}</dd>
                   </div>
                 ))}
               </dl>
@@ -677,9 +674,7 @@ function getProductMeasurementValue(product: CatalogProduct) {
 
 function getUniqueProductVariantValues(values: Array<string | undefined>) {
   return Array.from(
-    new Set(
-      values.filter((value): value is string => Boolean(value?.trim())),
-    ),
+    new Set(values.filter((value): value is string => Boolean(value?.trim()))),
   );
 }
 
