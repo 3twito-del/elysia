@@ -40,6 +40,30 @@ type ProductGalleryProps = {
 
 type ThumbnailRefs = Array<HTMLButtonElement | null>;
 
+const viewerDragModes = {
+  pan: { value: "pan" },
+  swipe: { value: "swipe" },
+} as const;
+const viewerPointerTypes = {
+  mouse: { value: "mouse" },
+} as const;
+const viewerDragExemptSelector = {
+  value: "[data-gallery-drag-exempt]",
+} as const;
+
+type ViewerDragMode =
+  (typeof viewerDragModes)[keyof typeof viewerDragModes]["value"];
+
+type ViewerDragState = {
+  hasMoved: boolean;
+  mode: ViewerDragMode;
+  pointerId: number;
+  startScrollLeft: number;
+  startScrollTop: number;
+  startX: number;
+  startY: number;
+};
+
 const mainGalleryImageSizes =
   "(min-width: 1280px) 58vw, (min-width: 1024px) 54vw, 100vw";
 const galleryThumbnailImageSizes =
@@ -64,6 +88,8 @@ export function ProductGallery({
   const viewerTriggerRef = useRef<HTMLButtonElement | null>(null);
   const thumbnailRefs = useRef<ThumbnailRefs>([]);
   const viewerThumbnailRefs = useRef<ThumbnailRefs>([]);
+  const viewerDragStateRef = useRef<ViewerDragState | null>(null);
+  const viewerDragSuppressClickRef = useRef(false);
   const shouldReduceMotion = useResolvedReducedMotion();
   const activeImageIndex = Math.min(activeIndex, galleryImages.length - 1);
   const activeImage = galleryImages[activeImageIndex];
@@ -133,6 +159,101 @@ export function ProductGallery({
 
     event.preventDefault();
     activateThumbnail(nextIndex);
+  }
+
+  function handleViewerPointerDown(event: PointerEvent<HTMLDivElement>) {
+    if (!event.isPrimary) return;
+    if (
+      event.pointerType === viewerPointerTypes.mouse.value &&
+      event.button !== 0
+    ) {
+      return;
+    }
+    if (isViewerDragExemptTarget(event.target)) return;
+    if (!isViewerZoomed && galleryImageCount <= 1) return;
+
+    viewerDragSuppressClickRef.current = false;
+    viewerDragStateRef.current = {
+      hasMoved: false,
+      mode: isViewerZoomed
+        ? viewerDragModes.pan.value
+        : viewerDragModes.swipe.value,
+      pointerId: event.pointerId,
+      startScrollLeft: event.currentTarget.scrollLeft,
+      startScrollTop: event.currentTarget.scrollTop,
+      startX: event.clientX,
+      startY: event.clientY,
+    };
+  }
+
+  function handleViewerPointerMove(event: PointerEvent<HTMLDivElement>) {
+    const dragState = viewerDragStateRef.current;
+
+    if (dragState?.pointerId !== event.pointerId) return;
+
+    const deltaX = event.clientX - dragState.startX;
+    const deltaY = event.clientY - dragState.startY;
+
+    if (!dragState.hasMoved && Math.hypot(deltaX, deltaY) > 6) {
+      dragState.hasMoved = true;
+      viewerDragSuppressClickRef.current = true;
+      event.currentTarget.setPointerCapture(event.pointerId);
+      event.currentTarget.dataset.galleryDragging = String(true);
+    }
+
+    if (dragState.mode === viewerDragModes.pan.value) {
+      event.preventDefault();
+      event.currentTarget.scrollLeft = dragState.startScrollLeft - deltaX;
+      event.currentTarget.scrollTop = dragState.startScrollTop - deltaY;
+      return;
+    }
+
+    if (Math.abs(deltaX) > 8 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      event.preventDefault();
+    }
+  }
+
+  function finishViewerPointerDrag(
+    event: PointerEvent<HTMLDivElement>,
+    options: { cancelled?: boolean } = {},
+  ) {
+    const dragState = viewerDragStateRef.current;
+
+    if (dragState?.pointerId !== event.pointerId) return;
+
+    const deltaX = event.clientX - dragState.startX;
+    const deltaY = event.clientY - dragState.startY;
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    delete event.currentTarget.dataset.galleryDragging;
+    viewerDragStateRef.current = null;
+
+    if (
+      !options.cancelled &&
+      dragState.mode === viewerDragModes.swipe.value &&
+      dragState.hasMoved &&
+      Math.abs(deltaX) >= getViewerSwipeThreshold(event.currentTarget) &&
+      Math.abs(deltaX) > Math.abs(deltaY) * 1.2
+    ) {
+      activateThumbnail(activeImageIndex + (deltaX < 0 ? 1 : -1));
+    }
+
+    if (dragState.hasMoved) {
+      window.setTimeout(() => {
+        viewerDragSuppressClickRef.current = false;
+      }, 0);
+    }
+  }
+
+  function handleViewerMediaClick() {
+    if (viewerDragSuppressClickRef.current) {
+      viewerDragSuppressClickRef.current = false;
+      return;
+    }
+
+    setIsViewerZoomed((currentZoom) => !currentZoom);
   }
 
   function handleViewerOpenChange(nextOpen: boolean) {
@@ -569,8 +690,19 @@ export function ProductGallery({
                     ? "product-gallery-viewer-stage-zoomed overflow-auto overscroll-contain"
                     : "overflow-hidden",
                 )}
+                data-gallery-drag-mode={
+                  isViewerZoomed
+                    ? viewerDragModes.pan.value
+                    : viewerDragModes.swipe.value
+                }
                 data-gallery-zoomed={isViewerZoomed ? "true" : "false"}
                 data-testid="product-gallery-fullscreen-stage"
+                onPointerCancel={(event) =>
+                  finishViewerPointerDrag(event, { cancelled: true })
+                }
+                onPointerDown={handleViewerPointerDown}
+                onPointerMove={handleViewerPointerMove}
+                onPointerUp={finishViewerPointerDrag}
               >
                 <AnimatePresence initial={false} mode="popLayout">
                   <motion.button
@@ -587,6 +719,7 @@ export function ProductGallery({
                         "product-gallery-viewer-media-shell-zoomed",
                     )}
                     data-testid="product-gallery-fullscreen-media"
+                    draggable={false}
                     exit={
                       shouldReduceMotion
                         ? { opacity: 1, scale: 1 }
@@ -596,9 +729,8 @@ export function ProductGallery({
                       shouldReduceMotion ? false : { opacity: 0, scale: 1.006 }
                     }
                     key={`viewer-${activeImage}`}
-                    onClick={() =>
-                      setIsViewerZoomed((currentZoom) => !currentZoom)
-                    }
+                    onDragStart={(event) => event.preventDefault()}
+                    onClick={handleViewerMediaClick}
                     transition={{
                       duration: shouldReduceMotion ? 0 : 0.28,
                       ease: [0.2, 0, 0, 1],
@@ -608,6 +740,7 @@ export function ProductGallery({
                     <Image
                       alt={`${productName}, תמונה במסך מלא ${activeImagePosition} מתוך ${galleryImageCount}`}
                       className="media-color object-contain"
+                      draggable={false}
                       fill
                       sizes={viewerGalleryImageSizes}
                       src={activeImage}
@@ -620,6 +753,7 @@ export function ProductGallery({
                     <Button
                       aria-label="התמונה הקודמת"
                       className="product-gallery-viewer-nav product-gallery-viewer-nav-previous"
+                      data-gallery-drag-exempt="true"
                       data-testid="product-gallery-previous"
                       onClick={() => activateThumbnail(activeImageIndex - 1)}
                       size="icon-lg"
@@ -631,6 +765,7 @@ export function ProductGallery({
                     <Button
                       aria-label="התמונה הבאה"
                       className="product-gallery-viewer-nav product-gallery-viewer-nav-next"
+                      data-gallery-drag-exempt="true"
                       data-testid="product-gallery-next"
                       onClick={() => activateThumbnail(activeImageIndex + 1)}
                       size="icon-lg"
@@ -681,4 +816,17 @@ function getSecondaryGalleryImages(input: {
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
+}
+
+function getViewerSwipeThreshold(element: HTMLElement) {
+  const width = element.getBoundingClientRect().width;
+
+  return Math.min(96, Math.max(42, width * 0.08));
+}
+
+function isViewerDragExemptTarget(target: EventTarget | null) {
+  return (
+    target instanceof Element &&
+    Boolean(target.closest(viewerDragExemptSelector.value))
+  );
 }

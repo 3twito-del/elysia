@@ -58,6 +58,7 @@ test.describe("critical shopping flows", () => {
     ).toBeVisible();
     await expect(page.getByTestId("product-gallery")).toBeVisible();
     await expect(page.getByTestId("product-variant-feedback")).toBeVisible();
+    await waitForProductPurchasePanelClientReady(page);
     await expect(
       page.getByTestId("product-recommendation-rails"),
     ).toBeVisible();
@@ -134,6 +135,7 @@ test.describe("critical shopping flows", () => {
     await page.goto(`/product/${supplierProductSlug}`);
 
     await expect(page.getByTestId("product-variant-feedback")).toBeVisible();
+    await waitForProductPurchasePanelClientReady(page);
     await page.getByTestId("product-add-to-cart-button").click();
     await expect(page.getByTestId("product-cart-checkout-link")).toBeVisible();
 
@@ -1526,20 +1528,55 @@ async function expectProductGalleryFullScreenNavigation(
   const fullscreenThumbnails = page.getByTestId(
     "product-gallery-fullscreen-thumbnail",
   );
+  const fullscreenStage = page.getByTestId("product-gallery-fullscreen-stage");
+  const fullscreenStatus = page.getByTestId(
+    "product-gallery-fullscreen-status",
+  );
   await expect(fullscreenThumbnails.first()).toBeVisible();
   await fullscreenThumbnails.first().click();
-  await expect(
-    page.getByTestId("product-gallery-fullscreen-status"),
-  ).toContainText(/1/);
+  await expect(fullscreenStatus).toContainText(/1/);
+  await expect(fullscreenStage).toHaveAttribute(
+    "data-gallery-drag-mode",
+    "swipe",
+  );
+  await dragGalleryStage(page, "next");
+  await expect(fullscreenStatus).toContainText(/2/);
+  await dragGalleryStage(page, "previous");
+  await expect(fullscreenStatus).toContainText(/1/);
   await page.keyboard.press("ArrowRight");
-  await expect(
-    page.getByTestId("product-gallery-fullscreen-status"),
-  ).toContainText(/2/);
+  await expect(fullscreenStatus).toContainText(/2/);
   await page.keyboard.press("Escape");
   await expect(
     page.getByTestId("product-gallery-fullscreen-dialog"),
   ).toBeHidden();
   await expect(fullscreenTrigger).toBeFocused();
+}
+
+async function dragGalleryStage(page: Page, direction: "next" | "previous") {
+  const stage = page.getByTestId("product-gallery-fullscreen-stage");
+  const box = await stage.boundingBox();
+
+  if (!box) {
+    throw new Error("Missing full-screen gallery stage box.");
+  }
+
+  const startX =
+    direction === "next" ? box.x + box.width * 0.68 : box.x + box.width * 0.32;
+  const endX =
+    direction === "next" ? box.x + box.width * 0.32 : box.x + box.width * 0.68;
+  const y = box.y + box.height * 0.52;
+
+  await page.mouse.move(startX, y);
+  await page.mouse.down();
+  await page.mouse.move(endX, y, { steps: 8 });
+  await page.mouse.up();
+}
+
+async function waitForProductPurchasePanelClientReady(page: Page) {
+  await expect(page.getByTestId("product-purchase-panel")).toHaveAttribute(
+    "data-client-ready",
+    "true",
+  );
 }
 
 async function clearBrowserState(page: Page) {

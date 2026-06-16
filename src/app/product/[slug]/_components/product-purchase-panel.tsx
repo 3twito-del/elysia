@@ -380,6 +380,7 @@ export function ProductPurchasePanel({
     <>
       <div
         className="product-purchase-surface grid gap-6"
+        data-client-ready={String(canRenderStickyBar)}
         data-public-floating-avoid="true"
         data-testid="product-purchase-panel"
       >
