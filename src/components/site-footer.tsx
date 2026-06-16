@@ -91,8 +91,8 @@ export function SiteFooter() {
 
   return (
     <footer className="site-footer" dir="rtl">
-      <div className="site-footer-inner mx-auto max-w-7xl px-4 pt-12 pb-[calc(5.5rem+env(safe-area-inset-bottom))] sm:px-6 sm:pt-16 sm:pb-16 lg:pt-20 lg:pb-18">
-        <div className="site-footer-primary grid gap-12 lg:grid-cols-[minmax(20rem,0.95fr)_minmax(0,1.45fr)] lg:gap-16 xl:gap-20">
+      <div className="site-footer-inner mx-auto max-w-[92rem] px-[var(--ui-page-x)] pt-16 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-[var(--ui-page-x-wide)] sm:pt-20 sm:pb-20 lg:pt-24 lg:pb-24">
+        <div className="site-footer-primary grid gap-14 lg:grid-cols-[minmax(22rem,0.95fr)_minmax(0,1.35fr)] lg:gap-20 xl:gap-24">
           <section
             aria-labelledby="footer-brand-title"
             className="site-footer-brand"
@@ -107,15 +107,15 @@ export function SiteFooter() {
             <h2 className="sr-only" id="footer-brand-title">
               Elysia
             </h2>
-            <p className="site-footer-brand-text mt-6 max-w-lg text-base leading-8 sm:text-[1.05rem]">
+            <p className="site-footer-brand-text mt-7 max-w-lg text-base leading-8 sm:text-[1.05rem] sm:leading-9">
               תכשיטים עדינים, מדויקים ונקיים — לבחירה יומיומית, למתנה ולאור של
               קיץ.
             </p>
-            <div className="site-footer-newsletter mt-9 max-w-xl">
+            <div className="site-footer-newsletter mt-11 max-w-xl">
               <p className="site-footer-kicker text-xs font-medium tracking-normal">
                 הצטרפות לעדכונים
               </p>
-              <p className="site-footer-newsletter-copy mt-3 max-w-md text-sm leading-7">
+              <p className="site-footer-newsletter-copy mt-4 max-w-md text-sm leading-7 sm:leading-8">
                 קבלי עדכונים על קולקציות חדשות, מתנות ופריטים שנבחרו בקפידה.
               </p>
               <NewsletterForm
@@ -128,7 +128,7 @@ export function SiteFooter() {
 
           <nav
             aria-label="ניווט תחתון"
-            className="site-footer-nav grid gap-0 md:grid-cols-2 md:gap-x-10 md:gap-y-10 xl:grid-cols-4 xl:gap-12"
+            className="site-footer-nav grid gap-0 md:grid-cols-2 md:gap-x-14 md:gap-y-12 xl:grid-cols-4 xl:gap-x-16 xl:gap-y-14"
             data-footer-nav-root
           >
             <FooterNav links={catalogLinks} title="קולקציות" />
@@ -144,7 +144,7 @@ export function SiteFooter() {
         <FooterTrustLayer />
         <SiteFooterDisclosures />
 
-        <div className="site-footer-legal grid gap-5 text-sm md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:gap-10">
+        <div className="site-footer-legal grid gap-7 text-sm md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:gap-12">
           <div className="grid gap-2 text-center md:text-start">
             <p className="max-w-xl leading-7" data-testid="footer-copyright">
               © {currentYear} Elysia. כל הזכויות שמורות.
@@ -207,7 +207,7 @@ function FooterNav({
           strokeWidth={1.8}
         />
       </summary>
-      <ul className="mt-5 grid gap-3 text-sm">
+      <ul className="mt-6 grid gap-4 text-sm">
         {links.map((item) => (
           <li key={item.href}>
             <Link
@@ -227,16 +227,16 @@ function FooterTrustLayer() {
   return (
     <section
       aria-label="אמון ושירות לפני הזמנה"
-      className="footer-trust-layer mt-12 border-y border-[var(--glass-border)] py-5"
+      className="footer-trust-layer mt-16 border-y border-[var(--glass-border)] py-8"
       data-testid="footer-trust-layer"
     >
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4 xl:gap-8">
         {footerTrustSignals.map((item) => {
           const Icon = item.icon;
 
           return (
             <Link
-              className="footer-trust-link grid min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-3 rounded-md px-0 py-1.5 transition focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
+              className="footer-trust-link grid min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-3 rounded-md px-0 py-3 transition focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
               data-testid="footer-trust-link"
               href={item.href}
               key={item.href}
