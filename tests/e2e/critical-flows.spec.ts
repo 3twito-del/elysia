@@ -1539,7 +1539,7 @@ async function expectProductGalleryFullScreenNavigation(
     "data-gallery-drag-mode",
     "swipe",
   );
-  await dragGalleryStage(page, "next");
+  await expectGalleryStageFollowsDrag(page, "next");
   await expect(fullscreenStatus).toContainText(/2/);
   await dragGalleryStage(page, "previous");
   await expect(fullscreenStatus).toContainText(/1/);
@@ -1569,6 +1569,51 @@ async function dragGalleryStage(page: Page, direction: "next" | "previous") {
   await page.mouse.move(startX, y);
   await page.mouse.down();
   await page.mouse.move(endX, y, { steps: 8 });
+  await page.mouse.up();
+}
+
+async function expectGalleryStageFollowsDrag(
+  page: Page,
+  direction: "next" | "previous",
+) {
+  const stage = page.getByTestId("product-gallery-fullscreen-stage");
+  const track = page.getByTestId("product-gallery-fullscreen-swipe-track");
+  const box = await stage.boundingBox();
+
+  if (!box) {
+    throw new Error("Missing full-screen gallery stage box.");
+  }
+
+  const startX =
+    direction === "next" ? box.x + box.width * 0.68 : box.x + box.width * 0.32;
+  const followX = box.x + box.width * 0.5;
+  const endX =
+    direction === "next" ? box.x + box.width * 0.32 : box.x + box.width * 0.68;
+  const y = box.y + box.height * 0.52;
+
+  await page.mouse.move(startX, y);
+  await page.mouse.down();
+  await page.mouse.move(followX, y, { steps: 4 });
+
+  await expect(stage).toHaveAttribute("data-gallery-swipe-tracking", "true");
+
+  const swipeOffset = await stage.evaluate((element) =>
+    Number.parseFloat(element.getAttribute("data-gallery-swipe-offset") ?? "0"),
+  );
+
+  if (direction === "next") {
+    expect(swipeOffset).toBeLessThan(-16);
+  } else {
+    expect(swipeOffset).toBeGreaterThan(16);
+  }
+
+  await expect
+    .poll(() =>
+      track.evaluate((element) => window.getComputedStyle(element).transform),
+    )
+    .not.toBe("none");
+
+  await page.mouse.move(endX, y, { steps: 4 });
   await page.mouse.up();
 }
 

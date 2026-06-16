@@ -50,6 +50,22 @@ const viewerPointerTypes = {
 const viewerDragExemptSelector = {
   value: "[data-gallery-drag-exempt]",
 } as const;
+const viewerCurrentMediaSelector = {
+  value: "[data-gallery-viewer-current-media]",
+} as const;
+const viewerSwipeOffsetCssProperty = {
+  value: "--viewer-swipe-offset",
+} as const;
+const viewerSwipePixelUnit = {
+  value: "px",
+} as const;
+const viewerSwipeZeroOffset = {
+  value: "0px",
+} as const;
+const viewerAdjacentMediaPositions = {
+  next: { value: "next" },
+  previous: { value: "previous" },
+} as const;
 
 type ViewerDragMode =
   (typeof viewerDragModes)[keyof typeof viewerDragModes]["value"];
@@ -90,11 +106,20 @@ export function ProductGallery({
   const viewerThumbnailRefs = useRef<ThumbnailRefs>([]);
   const viewerDragStateRef = useRef<ViewerDragState | null>(null);
   const viewerDragSuppressClickRef = useRef(false);
+  const viewerSwipeReleaseTimeoutRef = useRef<number | null>(null);
   const shouldReduceMotion = useResolvedReducedMotion();
   const activeImageIndex = Math.min(activeIndex, galleryImages.length - 1);
   const activeImage = galleryImages[activeImageIndex];
   const activeImagePosition = activeImageIndex + 1;
   const galleryImageCount = galleryImages.length;
+  const previousViewerImageIndex = getLoopedGalleryIndex(
+    activeImageIndex - 1,
+    galleryImageCount,
+  );
+  const nextViewerImageIndex = getLoopedGalleryIndex(
+    activeImageIndex + 1,
+    galleryImageCount,
+  );
   const secondaryGalleryImages = getSecondaryGalleryImages({
     activeImageIndex,
     galleryImageCount,
@@ -172,6 +197,8 @@ export function ProductGallery({
     if (isViewerDragExemptTarget(event.target)) return;
     if (!isViewerZoomed && galleryImageCount <= 1) return;
 
+    clearViewerSwipeReleaseTimeout();
+    resetViewerSwipeTracking(event.currentTarget);
     viewerDragSuppressClickRef.current = false;
     viewerDragStateRef.current = {
       hasMoved: false,
@@ -210,6 +237,7 @@ export function ProductGallery({
 
     if (Math.abs(deltaX) > 8 && Math.abs(deltaX) > Math.abs(deltaY)) {
       event.preventDefault();
+      syncViewerSwipeOffset(event.currentTarget, deltaX);
     }
   }
 
@@ -223,6 +251,12 @@ export function ProductGallery({
 
     const deltaX = event.clientX - dragState.startX;
     const deltaY = event.clientY - dragState.startY;
+    const shouldCommitSwipe =
+      !options.cancelled &&
+      dragState.mode === viewerDragModes.swipe.value &&
+      dragState.hasMoved &&
+      Math.abs(deltaX) >= getViewerSwipeThreshold(event.currentTarget) &&
+      Math.abs(deltaX) > Math.abs(deltaY) * 1.2;
 
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId);
@@ -230,14 +264,29 @@ export function ProductGallery({
     delete event.currentTarget.dataset.galleryDragging;
     viewerDragStateRef.current = null;
 
-    if (
-      !options.cancelled &&
-      dragState.mode === viewerDragModes.swipe.value &&
-      dragState.hasMoved &&
-      Math.abs(deltaX) >= getViewerSwipeThreshold(event.currentTarget) &&
-      Math.abs(deltaX) > Math.abs(deltaY) * 1.2
-    ) {
-      activateThumbnail(activeImageIndex + (deltaX < 0 ? 1 : -1));
+    if (shouldCommitSwipe) {
+      const nextIndex = activeImageIndex + (deltaX < 0 ? 1 : -1);
+      const commitOffset =
+        deltaX < 0
+          ? -getViewerSwipeCommitDistance(event.currentTarget)
+          : getViewerSwipeCommitDistance(event.currentTarget);
+
+      event.currentTarget.dataset.gallerySwipeSettling = String(true);
+      syncViewerSwipeOffset(event.currentTarget, commitOffset);
+      viewerSwipeReleaseTimeoutRef.current = window.setTimeout(
+        () => {
+          activateThumbnail(nextIndex);
+          resetViewerSwipeTracking(event.currentTarget);
+        },
+        shouldReduceMotion ? 0 : 150,
+      );
+    } else if (dragState.mode === viewerDragModes.swipe.value) {
+      event.currentTarget.dataset.gallerySwipeSettling = String(true);
+      syncViewerSwipeOffset(event.currentTarget, 0);
+      viewerSwipeReleaseTimeoutRef.current = window.setTimeout(
+        () => resetViewerSwipeTracking(event.currentTarget),
+        shouldReduceMotion ? 0 : 180,
+      );
     }
 
     if (dragState.hasMoved) {
@@ -257,10 +306,12 @@ export function ProductGallery({
   }
 
   function handleViewerOpenChange(nextOpen: boolean) {
+    clearViewerSwipeReleaseTimeout();
     setIsViewerOpen(nextOpen);
     resetGalleryHoverZoom();
 
     if (!nextOpen) {
+      setIsViewerZoomed(false);
       window.requestAnimationFrame(() => {
         viewerTriggerRef.current?.focus();
       });
@@ -318,9 +369,70 @@ export function ProductGallery({
   }
 
   function openViewerFromSecondaryTile(index: number) {
+    clearViewerSwipeReleaseTimeout();
     activateThumbnail(index);
     setIsViewerZoomed(false);
     setIsViewerOpen(true);
+  }
+
+  function clearViewerSwipeReleaseTimeout() {
+    if (viewerSwipeReleaseTimeoutRef.current === null) return;
+
+    window.clearTimeout(viewerSwipeReleaseTimeoutRef.current);
+    viewerSwipeReleaseTimeoutRef.current = null;
+  }
+
+  function syncViewerSwipeOffset(stage: HTMLElement, deltaX: number) {
+    const offset = clamp(
+      deltaX,
+      -getViewerSwipeMotionLimit(stage),
+      getViewerSwipeMotionLimit(stage),
+    );
+
+    stage.style.setProperty(
+      viewerSwipeOffsetCssProperty.value,
+      String(Math.round(offset)).concat(viewerSwipePixelUnit.value),
+    );
+    stage.dataset.gallerySwipeOffset = String(Math.round(offset));
+    stage.dataset.gallerySwipeTracking = String(Math.abs(offset) > 0);
+  }
+
+  function resetViewerSwipeTracking(stage: HTMLElement | null) {
+    if (!stage) return;
+
+    stage.style.setProperty(
+      viewerSwipeOffsetCssProperty.value,
+      viewerSwipeZeroOffset.value,
+    );
+    delete stage.dataset.gallerySwipeOffset;
+    delete stage.dataset.gallerySwipeSettling;
+    delete stage.dataset.gallerySwipeTracking;
+  }
+
+  function renderViewerAdjacentMedia(input: {
+    index: number;
+    position: (typeof viewerAdjacentMediaPositions)[keyof typeof viewerAdjacentMediaPositions]["value"];
+  }) {
+    const image = galleryImages[input.index];
+    if (!image) return null;
+
+    return (
+      <div
+        aria-hidden="true"
+        className="product-gallery-viewer-media-shell product-gallery-viewer-media-shell-adjacent relative"
+        data-gallery-adjacent-media={input.position}
+        key={`${input.position}-${image}`}
+      >
+        <Image
+          alt=""
+          className="media-color object-contain"
+          draggable={false}
+          fill
+          sizes={viewerGalleryImageSizes}
+          src={image}
+        />
+      </div>
+    );
   }
 
   function renderSecondaryGalleryStack() {
@@ -704,49 +816,93 @@ export function ProductGallery({
                 onPointerMove={handleViewerPointerMove}
                 onPointerUp={finishViewerPointerDrag}
               >
-                <AnimatePresence initial={false} mode="popLayout">
-                  <motion.button
-                    animate={{ opacity: 1, scale: 1 }}
-                    aria-label={
-                      isViewerZoomed
-                        ? "ביטול הגדלת תמונת התכשיט"
-                        : "הגדלת תמונת התכשיט"
-                    }
-                    aria-pressed={isViewerZoomed}
+                <div
+                  className={cn(
+                    isViewerZoomed
+                      ? "contents"
+                      : "product-gallery-viewer-swipe-window",
+                  )}
+                  data-testid={
+                    isViewerZoomed
+                      ? undefined
+                      : "product-gallery-fullscreen-swipe-window"
+                  }
+                  dir={isViewerZoomed ? undefined : "ltr"}
+                >
+                  <div
                     className={cn(
-                      "product-gallery-viewer-media-shell relative",
-                      isViewerZoomed &&
-                        "product-gallery-viewer-media-shell-zoomed",
+                      isViewerZoomed
+                        ? "contents"
+                        : "product-gallery-viewer-swipe-track",
                     )}
-                    data-testid="product-gallery-fullscreen-media"
-                    draggable={false}
-                    exit={
-                      shouldReduceMotion
-                        ? { opacity: 1, scale: 1 }
-                        : { opacity: 0, scale: 0.996 }
+                    data-testid={
+                      isViewerZoomed
+                        ? undefined
+                        : "product-gallery-fullscreen-swipe-track"
                     }
-                    initial={
-                      shouldReduceMotion ? false : { opacity: 0, scale: 1.006 }
-                    }
-                    key={`viewer-${activeImage}`}
-                    onDragStart={(event) => event.preventDefault()}
-                    onClick={handleViewerMediaClick}
-                    transition={{
-                      duration: shouldReduceMotion ? 0 : 0.28,
-                      ease: [0.2, 0, 0, 1],
-                    }}
-                    type="button"
                   >
-                    <Image
-                      alt={`${productName}, תמונה במסך מלא ${activeImagePosition} מתוך ${galleryImageCount}`}
-                      className="media-color object-contain"
-                      draggable={false}
-                      fill
-                      sizes={viewerGalleryImageSizes}
-                      src={activeImage}
-                    />
-                  </motion.button>
-                </AnimatePresence>
+                    {!isViewerZoomed
+                      ? renderViewerAdjacentMedia({
+                          index: previousViewerImageIndex,
+                          position: viewerAdjacentMediaPositions.previous.value,
+                        })
+                      : null}
+                    <AnimatePresence initial={false} mode="popLayout">
+                      <motion.button
+                        animate={{ opacity: 1, scale: 1 }}
+                        aria-label={
+                          isViewerZoomed
+                            ? "ביטול הגדלת תמונת התכשיט"
+                            : "הגדלת תמונת התכשיט"
+                        }
+                        aria-pressed={isViewerZoomed}
+                        className={cn(
+                          "product-gallery-viewer-media-shell relative",
+                          !isViewerZoomed &&
+                            "product-gallery-viewer-media-shell-current",
+                          isViewerZoomed &&
+                            "product-gallery-viewer-media-shell-zoomed",
+                        )}
+                        data-gallery-viewer-current-media={String(true)}
+                        data-testid="product-gallery-fullscreen-media"
+                        draggable={false}
+                        exit={
+                          shouldReduceMotion
+                            ? { opacity: 1, scale: 1 }
+                            : { opacity: 0, scale: 0.996 }
+                        }
+                        initial={
+                          shouldReduceMotion
+                            ? false
+                            : { opacity: 0, scale: 1.006 }
+                        }
+                        key={`viewer-${activeImage}`}
+                        onDragStart={(event) => event.preventDefault()}
+                        onClick={handleViewerMediaClick}
+                        transition={{
+                          duration: shouldReduceMotion ? 0 : 0.28,
+                          ease: [0.2, 0, 0, 1],
+                        }}
+                        type="button"
+                      >
+                        <Image
+                          alt={`${productName}, תמונה במסך מלא ${activeImagePosition} מתוך ${galleryImageCount}`}
+                          className="media-color object-contain"
+                          draggable={false}
+                          fill
+                          sizes={viewerGalleryImageSizes}
+                          src={activeImage}
+                        />
+                      </motion.button>
+                    </AnimatePresence>
+                    {!isViewerZoomed
+                      ? renderViewerAdjacentMedia({
+                          index: nextViewerImageIndex,
+                          position: viewerAdjacentMediaPositions.next.value,
+                        })
+                      : null}
+                  </div>
+                </div>
 
                 {galleryImageCount > 1 ? (
                   <>
@@ -822,6 +978,31 @@ function getViewerSwipeThreshold(element: HTMLElement) {
   const width = element.getBoundingClientRect().width;
 
   return Math.min(96, Math.max(42, width * 0.08));
+}
+
+function getLoopedGalleryIndex(index: number, count: number) {
+  if (count <= 0) return 0;
+
+  return (index + count) % count;
+}
+
+function getViewerCurrentMediaWidth(stage: HTMLElement) {
+  const currentMedia = stage.querySelector<HTMLElement>(
+    viewerCurrentMediaSelector.value,
+  );
+
+  return (
+    currentMedia?.getBoundingClientRect().width ??
+    stage.getBoundingClientRect().width
+  );
+}
+
+function getViewerSwipeMotionLimit(stage: HTMLElement) {
+  return getViewerCurrentMediaWidth(stage) * 0.72;
+}
+
+function getViewerSwipeCommitDistance(stage: HTMLElement) {
+  return getViewerCurrentMediaWidth(stage) * 0.92;
 }
 
 function isViewerDragExemptTarget(target: EventTarget | null) {

@@ -3481,6 +3481,8 @@ main
 }
 
 .product-gallery-viewer-stage {
+  --viewer-swipe-gap: clamp(0.75rem, 2vw, 1.25rem);
+  --viewer-swipe-offset: 0px;
   padding-block: clamp(0.75rem, 2dvh, 1.5rem);
   padding-inline: clamp(4.25rem, 7vw, 7rem);
   background:
@@ -3495,6 +3497,47 @@ main
 .product-gallery-viewer-stage[data-gallery-drag-mode="pan"] {
   cursor: grab;
   touch-action: none;
+}
+
+.product-gallery-viewer-swipe-window {
+  position: relative;
+  width: var(--viewer-media-shell-width);
+  max-width: calc(100dvw - 9rem);
+  height: min(calc(100dvh - 9.25rem), 78dvh);
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  isolation: isolate;
+}
+
+.product-gallery-viewer-swipe-track {
+  position: absolute;
+  inset-block: 0;
+  left: calc((var(--viewer-media-shell-width) + var(--viewer-swipe-gap)) * -1);
+  display: flex;
+  width: calc(
+    (var(--viewer-media-shell-width) * 3) + (var(--viewer-swipe-gap) * 2)
+  );
+  height: 100%;
+  gap: var(--viewer-swipe-gap);
+  transform: translate3d(var(--viewer-swipe-offset), 0, 0);
+  transition: transform 180ms cubic-bezier(0.2, 0, 0, 1);
+  will-change: transform;
+}
+
+.product-gallery-viewer-stage[data-gallery-dragging="true"]
+  .product-gallery-viewer-swipe-track {
+  transition: none;
+}
+
+.product-gallery-viewer-stage[data-gallery-swipe-settling="true"]
+  .product-gallery-viewer-swipe-track {
+  transition: transform 180ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.product-gallery-viewer-swipe-track .product-gallery-viewer-media-shell {
+  flex: 0 0 var(--viewer-media-shell-width);
+  max-width: none;
+  height: 100%;
 }
 
 .product-gallery-viewer-media-shell {
@@ -3519,6 +3562,10 @@ main
 .product-gallery-viewer-media-shell img {
   user-select: none;
   -webkit-user-drag: none;
+}
+
+.product-gallery-viewer-media-shell-adjacent {
+  pointer-events: none;
 }
 
 .product-gallery-viewer-media-shell-zoomed {
@@ -3628,6 +3675,7 @@ main
     padding: 0.75rem 0.75rem 1rem;
   }
 
+  .product-gallery-viewer-swipe-window,
   .product-gallery-viewer-media-shell {
     max-width: calc(100dvw - 1.5rem);
     height: min(calc(100dvh - 10rem), 66dvh);
