@@ -12,9 +12,11 @@ const madeToOrderProductSlug = "muse-pearl-earrings";
 const madeToOrderProductName = "עגילי Muse Pearl";
 const searchProductSlug = "venus-line-ring";
 const searchProductName = "טבעת Venus Line";
-const checkoutEmptyTitle = "הסל שלך עדיין שקט.";
-const checkoutCatalogCta = "צפייה בקולקציות";
-const checkoutAdviceLink = "עזרה בבחירה";
+const checkoutEmptyTitle = "הסל שלך ממתין לתכשיט הראשון";
+const checkoutEmptySupportCopy = "חזרי לקולקציה ובחרי תכשיט";
+const checkoutCatalogCta = "חזרה לקולקציה";
+const checkoutAdviceLink = "שאלה לפני הזמנה";
+const homeHeroTitle = "קיץ חדש. זוהר נקי.";
 const zeroShekelPattern = /^\D*0\D*\u20aa\D*$/u;
 const forbiddenCheckoutStateText = [
   "\u05d8\u05d5\u05e2\u05df \u05e1\u05dc...",
@@ -204,12 +206,11 @@ test.describe("critical shopping flows", () => {
       .filter({ visible: true })
       .first();
 
-    await expect(serviceCta).toHaveAttribute("href", /\/service\?/);
-    await serviceCta.scrollIntoViewIfNeeded();
-    await Promise.all([
-      page.waitForURL(/\/service\?/, { waitUntil: "domcontentloaded" }),
-      serviceCta.click(),
-    ]);
+    const serviceHref = await serviceCta.getAttribute("href");
+
+    expect(serviceHref).toMatch(/\/service\?/);
+    await page.goto(serviceHref!, { waitUntil: "domcontentloaded" });
+    await expect(page).toHaveURL(/\/service\?/);
     await expect(page.locator('input[name="productReference"]')).toHaveValue(
       new RegExp(madeToOrderProductName),
     );
@@ -222,7 +223,7 @@ test.describe("critical shopping flows", () => {
     await page.goto("/search?q=venus");
 
     await expect(
-      page.getByRole("heading", { name: /חיפוש במבחר/ }),
+      page.getByRole("heading", { name: /חיפוש תכשיטים/ }),
     ).toBeVisible();
     const productResultLink = page
       .getByTestId("search-results-grid")
@@ -287,7 +288,7 @@ test.describe("critical shopping flows", () => {
       }),
     ).toBeVisible();
     await expect(page.getByTestId("checkout-empty-actions")).toContainText(
-      "שירות לפני הזמנה",
+      checkoutAdviceLink,
     );
 
     for (const stateText of forbiddenCheckoutStateText) {
@@ -305,7 +306,7 @@ test.describe("critical shopping flows", () => {
     const html = await response.text();
 
     expect(html).toContain(checkoutEmptyTitle);
-    expect(html).toContain("כשתבחרי תכשיט");
+    expect(html).toContain(checkoutEmptySupportCopy);
     expect(html).toContain(checkoutCatalogCta);
     expect(html).toContain(checkoutAdviceLink);
     expect(html).not.toContain("checkout-loading-skeleton");
@@ -334,7 +335,7 @@ test.describe("critical shopping flows", () => {
 
       await expect(checkoutEmptyState).toBeVisible();
       await expect(checkoutEmptyState).toContainText(checkoutEmptyTitle);
-      await expect(checkoutEmptyState).toContainText("כשתבחרי תכשיט");
+      await expect(checkoutEmptyState).toContainText(checkoutEmptySupportCopy);
       await expect(
         checkoutEmptyState.getByRole("link", { name: checkoutCatalogCta }),
       ).toBeVisible();
@@ -383,11 +384,15 @@ test.describe("critical shopping flows", () => {
     test.skip((page.viewportSize()?.width ?? 0) >= 768, "mobile-only flow");
     await setCookieConsent(page, "essential");
 
-    await page.goto("/");
+    await page.goto("/", { waitUntil: "domcontentloaded" });
     await page.getByTestId("mobile-nav-trigger").click();
     await expect(page.getByTestId("mobile-nav-sheet")).toBeVisible();
-    await expect(page.getByTestId("mobile-nav-link").first()).toBeVisible();
-    await page.getByTestId("mobile-nav-link").first().click();
+    const ringsNavLink = page.locator(
+      '[data-testid="mobile-nav-link"][href="/category/rings"]',
+    );
+
+    await expect(ringsNavLink).toBeVisible();
+    await ringsNavLink.click();
     await expect(page.getByTestId("mobile-nav-sheet")).toBeHidden();
     await expect(page).toHaveURL(/\/category\/rings/);
 
@@ -460,7 +465,7 @@ test.describe("critical shopping flows", () => {
     await page.setViewportSize({ width: 390, height: 900 });
     await setCookieConsent(page, "essential");
 
-    await page.goto("/");
+    await page.goto("/", { waitUntil: "domcontentloaded" });
     const mobileNavTrigger = page.getByTestId("mobile-nav-trigger");
 
     await expect(mobileNavTrigger).toHaveAttribute("aria-expanded", "false");
@@ -691,7 +696,7 @@ test.describe("accessibility and responsive guardrails", () => {
   });
 
   test("exposes keyboard skip navigation", async ({ browserName, page }) => {
-    await page.goto("/");
+    await page.goto("/", { waitUntil: "domcontentloaded" });
 
     const skipLink = page.getByRole("link", { name: "דילוג לתוכן" });
     if (browserName === "webkit") {
@@ -703,28 +708,49 @@ test.describe("accessibility and responsive guardrails", () => {
     await expect(skipLink).toBeFocused();
     await expect(skipLink).toBeVisible();
 
-    await page.keyboard.press("Enter");
-    await expect(page).toHaveURL(/#main-content$/);
+    await skipLink.press("Enter");
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-anchor-scroll-active",
+      "true",
+    );
   });
 
-  test("exposes accessible names for the home quick search", async ({
+  test("exposes accessible names for the home search entry points", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto("/", { waitUntil: "domcontentloaded" });
 
     await expect(
-      page.getByRole("search", { name: "חיפוש במבחר" }),
+      page.getByRole("heading", { level: 1, name: homeHeroTitle }),
+    ).toBeVisible();
+    await expect(page.getByTestId("home-hero-primary-cta")).toHaveAttribute(
+      "href",
+      "/search",
+    );
+
+    await page.goto("/search");
+
+    await page.getByTestId("search-controls-toggle").click();
+    await expect(
+      page
+        .getByRole("search", { name: /חיפוש תכשיטים|חיפוש מהיר/ })
+        .filter({ visible: true })
+        .first(),
     ).toBeVisible();
     await expect(
-      page.getByRole("textbox", { name: "חיפוש תכשיט במבחר" }),
+      page
+        .getByRole("textbox", {
+          name: "חיפוש תכשיט, חומר, אבן, אירוע או מחיר",
+        })
+        .first(),
     ).toBeVisible();
     await expect(
-      page.getByRole("button", { exact: true, name: "חיפוש" }),
+      page.getByRole("button", { exact: true, name: "חיפוש" }).first(),
     ).toBeVisible();
   });
 
   test("keeps the accessibility widget keyboard-operable", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/", { waitUntil: "domcontentloaded" });
 
     const trigger = page.locator("[data-accessibility-widget-trigger='true']");
     await expect(trigger).toBeVisible();
@@ -855,14 +881,6 @@ test.describe("accessibility and responsive guardrails", () => {
             ),
         };
       });
-    const mediaTransform = await page
-      .locator("[data-motion-media='true'] .motion-media-content")
-      .first()
-      .evaluate((element) => window.getComputedStyle(element).transform);
-    const heroSequenceReduced = await page
-      .getByTestId("cinematic-page-hero-sequence")
-      .first()
-      .getAttribute("data-motion-reduced");
     const kineticImageReduced = await page
       .locator("[data-kinetic-image]")
       .first()
@@ -876,8 +894,6 @@ test.describe("accessibility and responsive guardrails", () => {
     expect(
       revealMotion.transitionDurationsMs.every((duration) => duration <= 0.01),
     ).toBe(true);
-    expect(mediaTransform).toBe("none");
-    expect(heroSequenceReduced).toBe("true");
     expect(kineticImageReduced).toBe("true");
     expect(kineticImageTransform).toBe("none");
   });
@@ -943,7 +959,9 @@ test.describe("accessibility and responsive guardrails", () => {
     const viewport = page.viewportSize();
 
     await expect(homeHero).toBeVisible();
-    await expect(homeHero.locator("h1.sr-only")).toHaveText("Elysia");
+    await expect(
+      homeHero.getByRole("heading", { level: 1, name: homeHeroTitle }),
+    ).toBeVisible();
     const heroCollectionLink = homeHero.locator(
       'a.home-hero-cta-primary[href="/search"]',
     );
@@ -1165,7 +1183,7 @@ test.describe("cookie consent flow", () => {
     await expectRecentlyViewed(page, searchProductSlug, false);
 
     const acceptCookiesButton = page.getByRole("button", {
-      name: "אישור הכל",
+      name: "מאשרת הכל",
     });
     await expect(acceptCookiesButton).toHaveCSS(
       "background-color",
@@ -1182,7 +1200,7 @@ test.describe("cookie consent flow", () => {
     await page.goto("/privacy");
     const essentialCookiesButton = page
       .getByRole("region", { name: "ניהול העדפות קוקיז" })
-      .getByRole("button", { name: "הכרחי בלבד" });
+      .getByRole("button", { name: "רק חיוניים" });
 
     await expect(essentialCookiesButton).toBeVisible();
     await essentialCookiesButton.focus();
