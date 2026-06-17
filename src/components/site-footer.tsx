@@ -91,7 +91,7 @@ export function SiteFooter() {
 
   return (
     <footer className="site-footer" dir="rtl">
-      <div className="site-footer-inner mx-auto max-w-[92rem] px-[var(--ui-page-x)] pt-16 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-[var(--ui-page-x-wide)] sm:pt-20 sm:pb-20 lg:pt-24 lg:pb-24">
+      <div className="site-footer-inner mx-auto max-w-[92rem] px-[var(--ui-page-x)] pt-10 pb-[calc(4.75rem+env(safe-area-inset-bottom))] sm:px-[var(--ui-page-x-wide)] sm:pt-20 sm:pb-20 lg:pt-24 lg:pb-24">
         <div className="site-footer-primary grid gap-14 lg:grid-cols-[minmax(22rem,0.95fr)_minmax(0,1.35fr)] lg:gap-20 xl:gap-24">
           <section
             aria-labelledby="footer-brand-title"
@@ -107,15 +107,15 @@ export function SiteFooter() {
             <h2 className="sr-only" id="footer-brand-title">
               Elysia
             </h2>
-            <p className="site-footer-brand-text mt-7 max-w-lg text-base leading-8 sm:text-[1.05rem] sm:leading-9">
+            <p className="site-footer-brand-text mt-7 hidden max-w-lg text-base leading-8 sm:block sm:text-[1.05rem] sm:leading-9">
               תכשיטים עדינים, מדויקים ונקיים — לבחירה יומיומית, למתנה ולאור של
               קיץ.
             </p>
-            <div className="site-footer-newsletter mt-11 max-w-xl">
+            <div className="site-footer-newsletter mt-7 max-w-xl sm:mt-11">
               <p className="site-footer-kicker text-xs font-medium tracking-normal">
                 הצטרפות לעדכונים
               </p>
-              <p className="site-footer-newsletter-copy mt-4 max-w-md text-sm leading-7 sm:leading-8">
+              <p className="site-footer-newsletter-copy mt-4 hidden max-w-md text-sm leading-7 sm:block sm:leading-8">
                 קבלי עדכונים על קולקציות חדשות, מתנות ופריטים שנבחרו בקפידה.
               </p>
               <NewsletterForm
@@ -227,7 +227,7 @@ function FooterTrustLayer() {
   return (
     <section
       aria-label="אמון ושירות לפני הזמנה"
-      className="footer-trust-layer mt-16 border-y border-[var(--glass-border)] py-8"
+      className="footer-trust-layer mt-16 hidden border-y border-[var(--glass-border)] py-8 sm:block"
       data-testid="footer-trust-layer"
     >
       <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4 xl:gap-8">

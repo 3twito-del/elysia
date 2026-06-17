@@ -11,6 +11,9 @@ describe("massive ready design items implementation", () => {
 
     expect(controls).toContain('data-testid="mobile-search-controls"');
     expect(controls).toContain('data-testid="mobile-search-filter-trigger"');
+    expect(controls).toContain('data-testid="mobile-search-filter-sheet"');
+    expect(controls).toContain('side="right"');
+    expect(controls).not.toContain('side="bottom"');
     expect(controls).toContain("sr-only sm:not-sr-only");
     expect(controls).toContain("סינון ומיון");
   });

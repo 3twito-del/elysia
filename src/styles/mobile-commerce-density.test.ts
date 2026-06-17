@@ -187,6 +187,45 @@ describe("mobile commerce density", () => {
     );
     expect(css).toContain("aspect-ratio: 6 / 5;");
   });
+
+  it("keeps PDP purchase, search filters, and footer concise on small screens", () => {
+    const gallery = read(
+      "src/app/product/[slug]/_components/product-gallery.tsx",
+    );
+    const productPage = read("src/app/product/[slug]/page.tsx");
+    const purchasePanel = read(
+      "src/app/product/[slug]/_components/product-purchase-panel.tsx",
+    );
+    const searchControls = read(
+      "src/app/search/_components/search-controls.tsx",
+    );
+    const searchPage = read("src/app/search/page.tsx");
+    const footer = read("src/components/site-footer.tsx");
+    const newsletter = read("src/components/newsletter-form.tsx");
+    const css = read("src/styles/globals.css");
+
+    expect(gallery).toContain("product-gallery-main-frame");
+    expect(css).toContain("min-height: min(76svh, 38rem);");
+    expect(css).toContain(".motion-sticky-purchase .product-primary-cta");
+    expect(purchasePanel).not.toContain("showStickyBar");
+    expect(purchasePanel).toContain(
+      "createPortal(stickyPurchaseBar, document.body)",
+    );
+    expect(productPage).toMatch(
+      /className="[^"]*hidden[^"]*sm:block[^"]*"[\s\S]*data-testid="product-media-caption"/,
+    );
+    expect(productPage).toMatch(
+      /className="[^"]*hidden[^"]*sm:grid[^"]*"[\s\S]*data-testid="product-commerce-highlights"/,
+    );
+    expect(searchControls).toContain('side="right"');
+    expect(searchControls).not.toContain('side="bottom"');
+    expect(searchPage).toContain("h-11 shrink-0 sm:h-8");
+    expect(searchPage).toContain("hidden text-xs sm:block");
+    expect(newsletter).toContain("data-newsletter-variant={variant}");
+    expect(css).toContain('.newsletter-form[data-newsletter-variant="footer"]');
+    expect(footer).toContain("pt-10 pb-[calc(4.75rem");
+    expect(footer).toContain("footer-trust-layer mt-16 hidden");
+  });
 });
 
 function read(relativePath: string) {

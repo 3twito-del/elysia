@@ -183,10 +183,10 @@ export function SearchControls({
               </Button>
             </SheetTrigger>
             <SheetContent
-              className="max-h-[88dvh] overflow-y-auto rounded-t-md p-0"
+              className="overflow-y-auto p-0"
               data-testid="mobile-search-filter-sheet"
               dir="rtl"
-              side="bottom"
+              side="right"
             >
               <SheetHeader className="border-b border-[var(--glass-border)] pe-12 text-right">
                 <SheetTitle className="flex items-center gap-2">
@@ -214,7 +214,7 @@ export function SearchControls({
                 <AvailabilityField input={input} />
                 <PreservedModeInput input={input} />
                 <PreservedViewInput viewMode={viewMode} />
-                <div className="grid grid-cols-2 gap-2 pt-1">
+                <div className="grid gap-3 pt-1">
                   <Button type="submit">הצגת פריטים</Button>
                   <Button asChild variant="outline">
                     <SheetClose asChild>

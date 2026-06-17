@@ -216,7 +216,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                 >
                   {resultDetail}
                 </p>
-                <p className="text-muted-foreground mt-1 text-xs">
+                <p className="text-muted-foreground mt-1 hidden text-xs sm:block">
                   מיון: {getSortLabel(input.sort ?? "relevance")} · תצוגה:{" "}
                   {getSearchViewLabel(viewMode)} ·{" "}
                   {result.mode === "semantic"
@@ -441,7 +441,7 @@ function SearchCategoryChips({
       <div className="flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0">
         <Button
           asChild
-          className="h-8 shrink-0"
+          className="h-11 shrink-0 sm:h-8"
           size="sm"
           variant={!input.category ? "secondary" : "outline"}
         >
@@ -465,7 +465,7 @@ function SearchCategoryChips({
           return (
             <Button
               asChild
-              className="h-8 shrink-0"
+              className="h-11 shrink-0 sm:h-8"
               key={category.slug}
               size="sm"
               variant={active ? "secondary" : "outline"}
@@ -543,7 +543,12 @@ function SearchModeToggle({
   });
 
   return (
-    <Button asChild size="sm" variant={isClassic ? "outline" : "secondary"}>
+    <Button
+      asChild
+      className="h-11 sm:h-7"
+      size="sm"
+      variant={isClassic ? "outline" : "secondary"}
+    >
       <Link
         aria-label={
           isClassic
@@ -590,7 +595,7 @@ function SearchViewToggle({
   return (
     <div
       aria-label="מצב תצוגה"
-      className="glass-control grid h-9 min-w-[8.75rem] grid-cols-2 items-center gap-1 rounded-md border p-1"
+      className="glass-control grid h-11 min-w-[8.75rem] grid-cols-2 items-center gap-1 rounded-md border p-1 sm:h-9"
       data-testid="search-view-toggle"
       data-view-mode={viewMode}
       role="group"
@@ -603,7 +608,7 @@ function SearchViewToggle({
           <Button
             asChild
             className={cn(
-              "h-7 min-w-0 gap-1.5 px-2 text-xs",
+              "h-9 min-w-0 gap-1.5 px-2 text-xs sm:h-7",
               active
                 ? "border-[var(--foreground)] bg-[var(--foreground)] text-[var(--background)] shadow-[inset_0_0_0_1px_var(--foreground)] hover:border-[var(--foreground)] hover:bg-[var(--foreground)] hover:text-[var(--background)]"
                 : "text-muted-foreground hover:text-foreground border-transparent hover:border-[var(--glass-border-strong)] hover:bg-[var(--muted)]",

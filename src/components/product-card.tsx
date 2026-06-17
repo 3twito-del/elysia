@@ -210,7 +210,7 @@ export function ProductCard({
                 ) : null}
               </span>
             </span>
-            <span className="product-card-cta group-hover/product-link:border-foreground group-hover/product-link:text-foreground text-foreground mt-3 inline-flex min-h-9 w-fit items-center rounded-md border border-[var(--glass-border)] px-3 text-xs font-medium transition-colors">
+            <span className="product-card-cta group-hover/product-link:border-foreground group-hover/product-link:text-foreground text-foreground mt-3 inline-flex min-h-11 w-fit items-center rounded-md border border-[var(--glass-border)] px-4 text-xs font-medium transition-colors">
               לפרטי התכשיט
             </span>
           </div>

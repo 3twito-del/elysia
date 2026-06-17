@@ -3,7 +3,6 @@
 import Link from "next/link";
 import {
   useEffect,
-  useRef,
   useState,
   useSyncExternalStore,
   type CSSProperties,
@@ -105,8 +104,6 @@ export function ProductPurchasePanel({
     getClientSnapshot,
     getServerSnapshot,
   );
-  const primaryCtaRef = useRef<HTMLDivElement | null>(null);
-  const [showStickyBar, setShowStickyBar] = useState(false);
   const [cartMessage, setCartMessage] = useState<string | null>(null);
   const [cartMessageTone, setCartMessageTone] = useState<"error" | "success">(
     "success",
@@ -227,46 +224,6 @@ export function ProductPurchasePanel({
     return subscribeToSavedSizeUpdates(syncSavedSize);
   }, [sizeKind, variants]);
 
-  useEffect(() => {
-    if (!canRenderStickyBar) return;
-
-    const primaryCta = primaryCtaRef.current;
-    if (!primaryCta) return;
-
-    const syncStickyBar = () => {
-      const rect = primaryCta.getBoundingClientRect();
-
-      setShowStickyBar(rect.bottom <= 0);
-    };
-
-    syncStickyBar();
-
-    if (typeof IntersectionObserver !== "undefined") {
-      const observer = new IntersectionObserver(() => syncStickyBar(), {
-        rootMargin: "0px",
-        threshold: [0, 1],
-      });
-
-      observer.observe(primaryCta);
-      window.addEventListener("resize", syncStickyBar);
-      window.addEventListener("scroll", syncStickyBar, { passive: true });
-
-      return () => {
-        observer.disconnect();
-        window.removeEventListener("resize", syncStickyBar);
-        window.removeEventListener("scroll", syncStickyBar);
-      };
-    }
-
-    window.addEventListener("resize", syncStickyBar);
-    window.addEventListener("scroll", syncStickyBar, { passive: true });
-
-    return () => {
-      window.removeEventListener("resize", syncStickyBar);
-      window.removeEventListener("scroll", syncStickyBar);
-    };
-  }, [canRenderStickyBar]);
-
   function queueAddToCartForSync(input: {
     quantity?: number;
     sessionKey: string;
@@ -324,14 +281,14 @@ export function ProductPurchasePanel({
 
   const stickyPurchaseBar = (
     <div
-      className="public-floating-control motion-sticky-purchase glass-chrome fixed inset-x-3 bottom-[calc(var(--floating-stack-bottom,0px)+0.75rem+env(safe-area-inset-bottom))] z-40 rounded-md border p-2 shadow-none md:hidden"
+      className="public-floating-control motion-sticky-purchase glass-chrome fixed inset-x-2 bottom-[calc(var(--floating-stack-bottom,0px)+0.625rem+env(safe-area-inset-bottom))] z-40 rounded-md border p-2.5 shadow-none md:hidden"
       aria-label="פעולת רכישה מהירה"
       data-public-floating-bar="true"
       data-public-floating-bar-kind="product-purchase"
       data-public-floating-avoid="true"
       data-testid="product-sticky-purchase-bar"
     >
-      <div className="mx-auto grid max-w-md grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+      <div className="mx-auto grid max-w-lg grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
         <div className="min-w-0">
           <p className="text-muted-foreground truncate text-xs">
             {productName}
@@ -354,7 +311,7 @@ export function ProductPurchasePanel({
             data-testid="product-sticky-add-to-cart-button"
             disabled={addToCartDisabled}
             onClick={handleAddToCart}
-            size="sm"
+            size="default"
             type="button"
           >
             {addItem.isPending
@@ -365,7 +322,7 @@ export function ProductPurchasePanel({
             <PackageCheck aria-hidden="true" className="size-4" />
           </Button>
         ) : (
-          <Button asChild className="product-primary-cta order-1" size="sm">
+          <Button asChild className="product-primary-cta order-1">
             <Link href={serviceHref}>
               {commerceStatus.ctaLabel}
               <PackageCheck aria-hidden="true" className="size-4" />
@@ -525,7 +482,7 @@ export function ProductPurchasePanel({
           </section>
         </div>
 
-        <div className="grid gap-3" ref={primaryCtaRef}>
+        <div className="grid gap-3">
           {selectedVariantAvailable ? (
             <Button
               aria-describedby="product-variant-feedback"
@@ -570,7 +527,7 @@ export function ProductPurchasePanel({
 
         <div
           aria-label="שירות ואישור בהזמנה"
-          className="grid gap-2"
+          className="hidden gap-2 sm:grid"
           data-testid="product-commerce-trust"
         >
           <section
@@ -687,7 +644,7 @@ export function ProductPurchasePanel({
           </div>
         </div>
       </div>
-      {canRenderStickyBar && showStickyBar
+      {canRenderStickyBar
         ? createPortal(stickyPurchaseBar, document.body)
         : null}
     </>

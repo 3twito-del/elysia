@@ -97,7 +97,12 @@ export function NewsletterForm({
   return (
     <form
       action={formAction}
-      className={variant === "footer" ? "mt-5 grid gap-2" : "mt-6 grid gap-2"}
+      className={
+        variant === "footer"
+          ? "newsletter-form mt-5 grid gap-2"
+          : "newsletter-form mt-6 grid gap-2"
+      }
+      data-newsletter-variant={variant}
       onSubmit={handleSubmit}
     >
       <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
@@ -117,12 +122,12 @@ export function NewsletterForm({
         <SubmitButton label={submitLabel} />
       </div>
       <p
-        className="text-muted-foreground text-xs leading-5"
+        className="newsletter-form-hint text-muted-foreground text-xs leading-5"
         id={newsletterEmailHintId}
       >
         {hintText}
       </p>
-      <label className="text-muted-foreground flex items-start gap-2 text-xs leading-5">
+      <label className="newsletter-form-consent text-muted-foreground flex items-start gap-2 text-xs leading-5">
         <input
           checked={marketingConsent}
           className="mt-1"
@@ -165,7 +170,7 @@ function SubmitButton({ label }: { label: string }) {
 
   return (
     <Button
-      className="gap-2"
+      className="newsletter-submit-button gap-2"
       disabled={pending}
       type="submit"
       variant="outline"

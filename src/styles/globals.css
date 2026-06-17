@@ -3395,6 +3395,33 @@ main
   }
 }
 
+@media (max-width: 767px) {
+  .product-gallery-integrated-layout {
+    margin-inline: calc(var(--ui-page-x) * -1);
+  }
+
+  .product-gallery-main-frame {
+    aspect-ratio: 3 / 4;
+    min-height: min(76svh, 38rem);
+    max-height: none;
+    border-radius: 0;
+  }
+
+  .product-gallery-hover-zoom-image {
+    transform: translate3d(0, 0, 0) scale(1.08);
+  }
+
+  .product-gallery-thumbnail-rail {
+    gap: 0.625rem;
+    padding-inline: var(--ui-page-x);
+    scroll-padding-inline: var(--ui-page-x);
+  }
+
+  .product-gallery-thumbnail-rail button {
+    min-width: 4.25rem;
+  }
+}
+
 .product-gallery-hover-zoom-layer {
   transform: scale(1);
   transform-origin: var(--gallery-hover-origin-x) var(--gallery-hover-origin-y);
@@ -3891,6 +3918,62 @@ footer nav a {
   padding-block: 0 1.7rem;
 }
 
+@media (max-width: 767px) {
+  .site-footer-primary {
+    gap: 2.5rem;
+  }
+
+  .site-footer-newsletter .newsletter-form[data-newsletter-variant="footer"] {
+    gap: 0.625rem;
+    margin-top: 0.9rem;
+  }
+
+  .site-footer-newsletter
+    .newsletter-form[data-newsletter-variant="footer"]
+    > .grid {
+    gap: 0.625rem;
+  }
+
+  .site-footer-newsletter
+    .newsletter-form[data-newsletter-variant="footer"]
+    .newsletter-form-hint {
+    display: none;
+  }
+
+  .site-footer-newsletter
+    .newsletter-form[data-newsletter-variant="footer"]
+    .newsletter-form-consent {
+    font-size: 0.7rem;
+    line-height: 1.45;
+  }
+
+  .site-footer-newsletter
+    .newsletter-form[data-newsletter-variant="footer"]
+    .newsletter-submit-button {
+    width: 100%;
+    min-height: 2.75rem;
+  }
+
+  .footer-nav-summary {
+    min-height: 3.5rem;
+    padding-block: 0.95rem;
+  }
+
+  .footer-nav-disclosure ul {
+    gap: 0.5rem;
+    padding-block: 0 1rem;
+  }
+
+  .footer-nav-disclosure li a {
+    min-height: 2.75rem;
+  }
+
+  .site-footer-legal {
+    gap: 1.25rem;
+    font-size: 0.8rem;
+  }
+}
+
 @media (min-width: 768px) {
   .site-footer-nav {
     border-block: 0;
@@ -4189,6 +4272,37 @@ footer nav a:focus-visible {
   background: #fffaf4;
 }
 
+@media (max-width: 767px) {
+  .product-purchase-surface {
+    gap: 1rem;
+    padding-block: 1rem;
+  }
+
+  .motion-sticky-purchase {
+    min-height: 4.25rem;
+  }
+
+  .motion-sticky-purchase .product-primary-cta {
+    min-height: 2.875rem;
+    padding-inline: 1rem;
+  }
+
+  .public-motion-content
+    :where([data-slot="button"]):not(
+      [data-size="icon"],
+      [data-size="icon-xs"],
+      [data-size="icon-sm"],
+      [data-size="icon-lg"]
+    ) {
+    min-height: 2.75rem;
+  }
+
+  .product-card-cta {
+    min-height: 2.75rem;
+    padding-inline: 1rem;
+  }
+}
+
 .glass-panel,
 .glass-card,
 .glass-chrome {
@@ -4406,6 +4520,17 @@ footer nav a:focus-visible {
 .public-select-option[aria-selected="true"] {
   background: var(--foreground);
   color: var(--background);
+}
+
+@media (max-width: 767px) {
+  .public-select-trigger {
+    height: 3rem;
+    min-height: 3rem;
+  }
+
+  .public-select-option {
+    min-height: 3rem;
+  }
 }
 
 .popup-overlay {
@@ -5324,6 +5449,16 @@ html[data-cookie-banner-placement="top"] .public-motion-content {
     line-height: 1.68;
   }
 
+  .commerce-page-hero.task-first-page-intro[data-commerce-hero="catalog"]
+    .commerce-page-hero-inner {
+    padding-block: 1rem 0.85rem;
+  }
+
+  .commerce-page-hero.task-first-page-intro[data-commerce-hero="catalog"]
+    .commerce-page-hero-description {
+    display: none;
+  }
+
   .commerce-page-hero-actions {
     display: grid;
     grid-template-columns: 1fr;
@@ -5364,6 +5499,21 @@ html[data-cookie-banner-placement="top"] .public-motion-content {
 
   .public-motion-content {
     transition-duration: var(--motion-fast);
+  }
+
+  [data-testid="search-controls-panel"] {
+    gap: 0.75rem;
+  }
+
+  [data-testid="mobile-search-filter-sheet"][data-side="right"] {
+    right: calc(100vw - 100dvw) !important;
+  }
+
+  [data-testid="mobile-search-filter-sheet"]
+    form
+    > div:last-child
+    [data-slot="button"] {
+    min-height: 3rem;
   }
 }
 

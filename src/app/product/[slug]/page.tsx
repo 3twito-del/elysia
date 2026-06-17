@@ -233,7 +233,7 @@ export default async function ProductPage({
           />
           {productMediaCaption ? (
             <p
-              className="text-muted-foreground mt-3 text-sm leading-6"
+              className="text-muted-foreground mt-3 hidden text-sm leading-6 sm:block"
               data-testid="product-media-caption"
             >
               {productMediaCaption}
@@ -310,7 +310,7 @@ export default async function ProductPage({
             </div>
 
             <ul
-              className="text-muted-foreground mt-5 grid gap-2 text-sm leading-6"
+              className="text-muted-foreground mt-5 hidden gap-2 text-sm leading-6 sm:grid"
               data-testid="product-commerce-highlights"
             >
               {productTrustNotes.map((note) => {
@@ -349,7 +349,7 @@ export default async function ProductPage({
             </div>
 
             <div
-              className="mt-4 flex flex-col gap-3 rounded-md border border-[var(--glass-border)] p-3 text-sm leading-6 sm:flex-row sm:items-center sm:justify-between"
+              className="mt-4 hidden flex-col gap-3 rounded-md border border-[var(--glass-border)] p-3 text-sm leading-6 sm:flex sm:flex-row sm:items-center sm:justify-between"
               data-testid="product-support-context-link"
             >
               <div className="flex min-w-0 gap-2">
@@ -367,7 +367,7 @@ export default async function ProductPage({
             </div>
 
             <div
-              className="mt-4 rounded-md border border-[var(--glass-border)] p-3 text-sm leading-6"
+              className="mt-4 hidden rounded-md border border-[var(--glass-border)] p-3 text-sm leading-6 sm:block"
               data-testid="product-gift-ready-note"
             >
               <div className="flex gap-2">
@@ -458,12 +458,12 @@ export default async function ProductPage({
           />
 
           <div className="grid gap-8">
-            <p className="text-muted-foreground text-base leading-8">
+            <p className="text-muted-foreground hidden text-base leading-8 sm:block">
               {product.description}
             </p>
 
             <div
-              className="brand-surface divide-border divide-y overflow-hidden rounded-md"
+              className="brand-surface divide-border hidden divide-y overflow-hidden rounded-md sm:block"
               data-testid="product-service-summary"
             >
               <ServiceRow

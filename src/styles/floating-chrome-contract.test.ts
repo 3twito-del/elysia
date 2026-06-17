@@ -128,13 +128,17 @@ describe("public floating chrome contract", () => {
     expect(provider).toContain("left: window.innerWidth - guardSize");
   });
 
-  it("keeps product sticky purchase hidden until the main CTA has left view", () => {
+  it("keeps product sticky purchase fixed on mobile once the client is ready", () => {
     const purchasePanel = read(
       "src/app/product/[slug]/_components/product-purchase-panel.tsx",
     );
 
-    expect(purchasePanel).toContain("setShowStickyBar(rect.bottom <= 0)");
-    expect(purchasePanel).toContain('rootMargin: "0px"');
+    expect(purchasePanel).not.toContain("showStickyBar");
+    expect(purchasePanel).not.toContain("setShowStickyBar");
+    expect(purchasePanel).toContain("canRenderStickyBar");
+    expect(purchasePanel).toContain(
+      "createPortal(stickyPurchaseBar, document.body)",
+    );
     expect(purchasePanel).toContain('data-public-floating-avoid="true"');
     expect(purchasePanel).toContain(
       'data-testid="product-sticky-purchase-bar"',
