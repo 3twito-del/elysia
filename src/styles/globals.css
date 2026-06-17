@@ -2020,17 +2020,30 @@ main
 }
 
 .boutique-collection-card {
-  display: grid;
+  position: relative;
+  display: block;
   min-width: 0;
-  gap: 1.25rem;
   color: var(--foreground);
   text-decoration: none;
   outline: none;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--brand-pearl);
+  box-shadow: 0 1px 0 rgb(29 25 22 / 5%);
 }
 
 .boutique-collection-card:focus-visible {
-  border-radius: var(--radius-md);
   box-shadow: 0 0 0 3px var(--glass-focus);
+}
+
+.boutique-collection-card img {
+  transform: scale(1.01);
+  transition: transform 700ms var(--ease-motion-standard);
+}
+
+.boutique-collection-card:hover img,
+.boutique-collection-card:focus-visible img {
+  transform: scale(1.045);
 }
 
 .boutique-collection-media {
@@ -2054,12 +2067,23 @@ main
 }
 
 .boutique-collection-copy {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
   display: flex;
-  align-items: start;
+  align-items: end;
   justify-content: space-between;
   gap: 1.25rem;
-  border-bottom: 1px solid var(--glass-border);
-  padding-bottom: 1.35rem;
+  min-height: 42%;
+  border-bottom: 0;
+  padding: clamp(1rem, 2vw, 1.35rem);
+  color: #fffaf4;
+  background: linear-gradient(
+    180deg,
+    rgb(29 25 22 / 0%),
+    rgb(29 25 22 / 48%) 42%,
+    rgb(29 25 22 / 74%)
+  );
 }
 
 .boutique-collection-title,
@@ -2069,15 +2093,27 @@ main
 
 .boutique-collection-title {
   font-size: 1.02rem;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.4;
 }
 
 .boutique-collection-description {
-  color: var(--muted-foreground);
+  color: rgb(255 250 244 / 84%);
   margin-top: 0.4rem;
   font-size: 0.85rem;
   line-height: 1.72;
+}
+
+.boutique-collection-action {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 2.35rem;
+  height: 2.35rem;
+  border: 1px solid rgb(255 250 244 / 52%);
+  border-radius: 999px;
+  background: rgb(255 250 244 / 14%);
+  color: #fffaf4;
 }
 
 .boutique-trust-item {
@@ -3994,17 +4030,6 @@ footer nav a:focus-visible {
     .product-card-material-cues {
     min-height: 1rem;
   }
-
-  .product-card-shell[data-product-card-density="compact"]
-    .product-card-decision-facts {
-    min-height: 1.8rem;
-    padding-block: 0.45rem;
-  }
-
-  .product-card-shell[data-product-card-density="compact"]
-    .product-card-decision-fact[data-product-card-fact="service"] {
-    display: none;
-  }
 }
 
 .product-card-image {
@@ -4036,28 +4061,6 @@ footer nav a:focus-visible {
   letter-spacing: 0;
 }
 
-.product-card-decision-facts {
-  border-color: rgb(29 25 22 / 9%);
-  color: rgb(82 73 65);
-  letter-spacing: 0;
-}
-
-.product-card-decision-fact {
-  max-width: 100%;
-}
-
-.product-card-decision-fact::before {
-  content: "";
-  display: inline-block;
-  width: 0.24rem;
-  height: 0.24rem;
-  margin-inline-end: 0.38rem;
-  border-radius: 999px;
-  background: currentColor;
-  vertical-align: 0.12em;
-  opacity: 0.45;
-}
-
 .product-card-material-badge {
   border-color: rgb(29 25 22 / 10%);
   background: rgb(255 250 244 / 82%);
@@ -4070,6 +4073,15 @@ footer nav a:focus-visible {
 
 .product-card-commerce {
   font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+.product-card-price-main {
+  padding-block: 0.1rem;
+}
+
+.product-card-cta {
+  background: rgb(255 250 244 / 64%);
 }
 
 .product-card-quick-add-button {

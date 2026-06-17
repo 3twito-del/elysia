@@ -505,9 +505,9 @@ describe("visible site improvement affordances", () => {
     expect(productCard).toContain("sm:aspect-[4/5]");
     expect(productCard).toContain('data-testid="product-card-image-skeleton"');
     expect(productCard).toContain('data-testid="product-card-badge"');
-    expect(productCard).toContain('data-testid="product-card-material-cues"');
+    expect(productCard).toContain('data-testid="product-card-attributes"');
     expect(productCard).toContain('data-testid="product-card-price"');
-    expect(productCard).toContain("<ProductCardQuickAddButton");
+    expect(productCard).not.toContain("<ProductCardQuickAddButton");
     expect(productCard).toContain("product-card-hover-image");
     expect(productCard).toContain("group-hover/card:scale-[1.045]");
     expect(productCard).toContain("group-hover/card:scale-[1.055]");

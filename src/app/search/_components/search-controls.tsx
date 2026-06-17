@@ -77,155 +77,160 @@ export function SearchControls({
         </span>
       </summary>
       <div className="mt-3 grid gap-3">
-      <form
-        action="/search"
-        aria-label="חיפוש תכשיטים"
-        className="hidden gap-3 lg:grid"
-        onSubmit={pruneEmptySearchParams}
-        role="search"
-      >
-        <div className="grid items-end gap-3 lg:grid-cols-[minmax(18rem,1.45fr)_repeat(3,minmax(9rem,1fr))_auto]">
-          <PrimarySearchFields
-            categories={categories}
-            clearSearchHref={clearSearchHref}
-            input={input}
-          />
-          <Button className="h-11 gap-2" type="submit">
-            <Search aria-hidden="true" className="size-4" />
-            חיפוש
-          </Button>
-        </div>
-        <details
-          className="group/search-advanced border-t border-[var(--glass-border)] pt-3"
-          open={shouldShowAdvancedFilters}
-        >
-          <summary className="text-muted-foreground hover:text-foreground flex min-h-9 cursor-pointer list-none items-center justify-between gap-3 text-sm outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]">
-            <span className="inline-flex items-center gap-2">
-              <SlidersHorizontal aria-hidden="true" className="size-4" />
-              {"סינון לפי לוק"}
-            </span>
-            {activeFilterCount > 0 ? (
-              <Badge variant="secondary">{activeFilterCount}</Badge>
-            ) : null}
-          </summary>
-          <div className="mt-3 grid items-end gap-3 lg:grid-cols-[repeat(3,minmax(9rem,1fr))_minmax(8rem,0.8fr)_minmax(9rem,0.9fr)]">
-            <FacetSearchFields facets={facets} input={input} />
-            <AvailabilityField input={input} />
-            <PreservedModeInput input={input} />
-            <PreservedViewInput viewMode={viewMode} />
-          </div>
-        </details>
-      </form>
-
-      <div
-        className="grid gap-3 lg:hidden"
-        data-testid="mobile-search-controls"
-      >
         <form
           action="/search"
-          aria-label="חיפוש מהיר"
-          className="grid grid-cols-[minmax(0,1fr)_auto] gap-2"
+          aria-label="חיפוש תכשיטים"
+          className="hidden gap-3 lg:grid"
           onSubmit={pruneEmptySearchParams}
           role="search"
         >
-          <div className="relative min-w-0">
-            <Search
-              aria-hidden="true"
-              className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2"
+          <div className="grid items-end gap-3 lg:grid-cols-[minmax(18rem,1.45fr)_repeat(3,minmax(9rem,1fr))_auto]">
+            <PrimarySearchFields
+              categories={categories}
+              clearSearchHref={clearSearchHref}
+              input={input}
             />
-            <Input
-              aria-label="חיפוש תכשיט, חומר, אבן, אירוע או מחיר"
-              className={cn("h-11 ps-10", hasQuery ? "pe-10" : "pe-3")}
-              data-search-prune-empty
-              defaultValue={input.query}
-              name="q"
-              placeholder="טבעת, פנינה, מתנה..."
-            />
-            {hasQuery ? <SearchClearQueryLink href={clearSearchHref} /> : null}
+            <Button className="h-11 gap-2" type="submit">
+              <Search aria-hidden="true" className="size-4" />
+              חיפוש
+            </Button>
           </div>
-          <PreservedSearchInputs input={input} viewMode={viewMode} />
-          <Button
-            aria-label="חיפוש"
-            className="h-11 gap-2 px-3 text-sm sm:px-4"
-            type="submit"
+          <details
+            className="group/search-advanced border-t border-[var(--glass-border)] pt-3"
+            open={shouldShowAdvancedFilters}
           >
-            <Search aria-hidden="true" className="text-background size-4" />
-            <span className="sr-only sm:not-sr-only">חיפוש</span>
-          </Button>
-        </form>
-
-        <Sheet closeOnMediaQuery="(min-width: 768px)">
-          <SheetTrigger asChild>
-            <Button
-              aria-label="סינון ומיון"
-              className="relative h-11 w-full justify-center gap-2"
-              data-testid="mobile-search-filter-trigger"
-              type="button"
-              variant="outline"
-            >
+            <summary className="text-muted-foreground hover:text-foreground flex min-h-9 cursor-pointer list-none items-center justify-between gap-3 text-sm outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]">
               <span className="inline-flex items-center gap-2">
-                <SlidersHorizontal
-                  aria-hidden="true"
-                  className="text-foreground size-4"
-                />
-                סינון ומיון
+                <SlidersHorizontal aria-hidden="true" className="size-4" />
+                {"סינון לפי לוק"}
               </span>
               {activeFilterCount > 0 ? (
-                <Badge className="absolute -top-2 -left-2" variant="secondary">
-                  {activeFilterCount}
-                </Badge>
+                <Badge variant="secondary">{activeFilterCount}</Badge>
               ) : null}
-            </Button>
-          </SheetTrigger>
-          <SheetContent
-            className="max-h-[88dvh] overflow-y-auto rounded-t-md p-0"
-            data-testid="mobile-search-filter-sheet"
-            dir="rtl"
-            side="bottom"
-          >
-            <SheetHeader className="border-b border-[var(--glass-border)] pe-12 text-right">
-              <SheetTitle className="flex items-center gap-2">
-                <SlidersHorizontal aria-hidden="true" className="size-4" />
-                סינון לפי לוק
-              </SheetTitle>
-              <SheetDescription>
-                בחרו קטגוריה, חומר, אבן, קולקציה, מחיר ומיון כדי להגיע מהר יותר
-                לפריטים הנכונים.
-              </SheetDescription>
-            </SheetHeader>
-            <form
-              action="/search"
-              aria-label="סינון תוצאות חיפוש"
-              className="grid gap-4 p-4"
-              onSubmit={pruneEmptySearchParams}
-              role="search"
-            >
-              <PrimarySearchFields
-                categories={categories}
-                clearSearchHref={clearSearchHref}
-                input={input}
-              />
+            </summary>
+            <div className="mt-3 grid items-end gap-3 lg:grid-cols-[repeat(5,minmax(8.5rem,1fr))]">
               <FacetSearchFields facets={facets} input={input} />
               <AvailabilityField input={input} />
               <PreservedModeInput input={input} />
               <PreservedViewInput viewMode={viewMode} />
-              <div className="grid grid-cols-2 gap-2 pt-1">
-                <Button type="submit">הצגת פריטים</Button>
-                <Button asChild variant="outline">
-                  <SheetClose asChild>
-                    <Link href={clearFiltersHref}>איפוס</Link>
-                  </SheetClose>
-                </Button>
-              </div>
-            </form>
-          </SheetContent>
-        </Sheet>
-      </div>
-      <SearchHistoryList
-        currentQuery={input.query}
-        mode={input.mode}
-        viewMode={viewMode}
-      />
+            </div>
+          </details>
+        </form>
+
+        <div
+          className="grid gap-3 lg:hidden"
+          data-testid="mobile-search-controls"
+        >
+          <form
+            action="/search"
+            aria-label="חיפוש מהיר"
+            className="grid grid-cols-[minmax(0,1fr)_auto] gap-2"
+            onSubmit={pruneEmptySearchParams}
+            role="search"
+          >
+            <div className="relative min-w-0">
+              <Search
+                aria-hidden="true"
+                className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2"
+              />
+              <Input
+                aria-label="חיפוש תכשיט, חומר, אבן, אירוע או מחיר"
+                className={cn("h-11 ps-10", hasQuery ? "pe-10" : "pe-3")}
+                data-search-prune-empty
+                defaultValue={input.query}
+                name="q"
+                placeholder="טבעת, פנינה, מתנה..."
+              />
+              {hasQuery ? (
+                <SearchClearQueryLink href={clearSearchHref} />
+              ) : null}
+            </div>
+            <PreservedSearchInputs input={input} viewMode={viewMode} />
+            <Button
+              aria-label="חיפוש"
+              className="h-11 gap-2 px-3 text-sm sm:px-4"
+              type="submit"
+            >
+              <Search aria-hidden="true" className="text-background size-4" />
+              <span className="sr-only sm:not-sr-only">חיפוש</span>
+            </Button>
+          </form>
+
+          <Sheet closeOnMediaQuery="(min-width: 768px)">
+            <SheetTrigger asChild>
+              <Button
+                aria-label="סינון ומיון"
+                className="relative h-11 w-full justify-center gap-2"
+                data-testid="mobile-search-filter-trigger"
+                type="button"
+                variant="outline"
+              >
+                <span className="inline-flex items-center gap-2">
+                  <SlidersHorizontal
+                    aria-hidden="true"
+                    className="text-foreground size-4"
+                  />
+                  סינון ומיון
+                </span>
+                {activeFilterCount > 0 ? (
+                  <Badge
+                    className="absolute -top-2 -left-2"
+                    variant="secondary"
+                  >
+                    {activeFilterCount}
+                  </Badge>
+                ) : null}
+              </Button>
+            </SheetTrigger>
+            <SheetContent
+              className="max-h-[88dvh] overflow-y-auto rounded-t-md p-0"
+              data-testid="mobile-search-filter-sheet"
+              dir="rtl"
+              side="bottom"
+            >
+              <SheetHeader className="border-b border-[var(--glass-border)] pe-12 text-right">
+                <SheetTitle className="flex items-center gap-2">
+                  <SlidersHorizontal aria-hidden="true" className="size-4" />
+                  סינון לפי לוק
+                </SheetTitle>
+                <SheetDescription>
+                  בחרו חומר, מחיר, סגנון, מתנה, צבע ומיון כדי להגיע מהר יותר
+                  לפריטים הנכונים.
+                </SheetDescription>
+              </SheetHeader>
+              <form
+                action="/search"
+                aria-label="סינון תוצאות חיפוש"
+                className="grid gap-4 p-4"
+                onSubmit={pruneEmptySearchParams}
+                role="search"
+              >
+                <PrimarySearchFields
+                  categories={categories}
+                  clearSearchHref={clearSearchHref}
+                  input={input}
+                />
+                <FacetSearchFields facets={facets} input={input} />
+                <AvailabilityField input={input} />
+                <PreservedModeInput input={input} />
+                <PreservedViewInput viewMode={viewMode} />
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <Button type="submit">הצגת פריטים</Button>
+                  <Button asChild variant="outline">
+                    <SheetClose asChild>
+                      <Link href={clearFiltersHref}>איפוס</Link>
+                    </SheetClose>
+                  </Button>
+                </div>
+              </form>
+            </SheetContent>
+          </Sheet>
+        </div>
+        <SearchHistoryList
+          currentQuery={input.query}
+          mode={input.mode}
+          viewMode={viewMode}
+        />
       </div>
     </details>
   );
@@ -336,6 +341,39 @@ function FacetSearchFields({
         }))}
         placeholder="כל החומרים"
         value={input.material}
+      />
+      <SearchSelectField
+        key={`style-${input.style ?? ""}`}
+        label="סגנון"
+        name="style"
+        options={facets.styles.map((style) => ({
+          label: style,
+          value: style,
+        }))}
+        placeholder="כל הסגנונות"
+        value={input.style}
+      />
+      <SearchSelectField
+        key={`gift-${input.gift ?? ""}`}
+        label="מתנה"
+        name="gift"
+        options={facets.giftTags.map((gift) => ({
+          label: gift,
+          value: gift,
+        }))}
+        placeholder="כל המתנות"
+        value={input.gift}
+      />
+      <SearchSelectField
+        key={`color-${input.color ?? ""}`}
+        label="צבע"
+        name="color"
+        options={facets.colors.map((color) => ({
+          label: color,
+          value: color,
+        }))}
+        placeholder="כל הצבעים"
+        value={input.color}
       />
       <SearchSelectField
         key={`stone-${input.stone ?? ""}`}
@@ -650,6 +688,9 @@ function PreservedSearchInputs({
       <PreservedInput name="material" value={input.material} />
       <PreservedInput name="stone" value={input.stone} />
       <PreservedInput name="collection" value={input.collection} />
+      <PreservedInput name="style" value={input.style} />
+      <PreservedInput name="gift" value={input.gift} />
+      <PreservedInput name="color" value={input.color} />
       <PreservedInput name="maxPrice" value={input.maxPrice} />
       <PreservedInput
         name="availableOnly"

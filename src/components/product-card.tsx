@@ -1,22 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Badge } from "~/components/ui/badge";
 import { Card, CardContent } from "~/components/ui/card";
-import { ProductCardFavoriteButton } from "~/components/product-card-favorite-button";
-import { ProductCardQuickAddButton } from "~/components/product-card-quick-add-button";
-import { getPublicProductCommerceStatus } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
 import {
   getPublicCollectionName,
   getPublicProductName,
 } from "~/lib/product-display";
 import { cn } from "~/lib/utils";
-import { isPublicSellableQuantityLowStock } from "~/server/services/inventory";
-import type {
-  CatalogProduct,
-  CatalogProductVariant,
-} from "~/server/services/catalog";
+import type { CatalogProduct } from "~/server/services/catalog";
 
 type ProductCardProps = {
   contextLabel?: string;
@@ -64,49 +57,22 @@ export function ProductCard({
     (total, quantity) => total + quantity,
     0,
   );
-  const commerceStatus = getPublicProductCommerceStatus({
-    availableQuantity: onlineStockQuantity,
-    availabilityMode: product.availabilityMode,
-  });
-  const isAvailable = commerceStatus.canAddToCart;
+  const isAvailable =
+    product.availabilityMode === "READY_TO_ORDER" && onlineStockQuantity > 0;
   const isUnavailable =
     product.availabilityMode === "READY_TO_ORDER" && onlineStockQuantity <= 0;
   const href = createProductHref(product.slug, searchContext);
   const imageObjectPosition = getProductCardImageObjectPosition(product);
   const secondaryImage = getProductCardSecondaryImage(product);
   const sale = getProductCardSale(product);
-  const lowStock = isProductCardLowStock({
-    availableQuantity: onlineStockQuantity,
-    product,
-  });
   const productCardBadge = getProductCardBadge({
-    lowStock,
-    sale,
+    product,
   });
-  const productDetails = [
-    product.material,
-    product.stone,
-    publicCollectionName,
-  ].filter((detail): detail is string => Boolean(detail));
-  const productMeta = productDetails.join(" · ");
-  const productQuickFacts = [productMeta, commerceStatus.label].filter(
-    (fact): fact is string => Boolean(fact),
+  const productDetails = [product.material, publicCollectionName].filter(
+    (detail): detail is string => Boolean(detail),
   );
-  const productQuickFactsLabel = productQuickFacts.join(" · ");
-  const productDecisionFacts = getProductCardDecisionFacts({
-    commerceStatusLabel: commerceStatus.label,
-    product,
-  });
-  const primaryCommerceLabel = isAvailable
-    ? formatPrice(product.price)
-    : "לייעוץ";
+  const productMeta = productDetails.join(" · ");
   const productDescriptor = getProductCardDescriptor(product);
-  const materialBadgeLabel = getProductCardMaterialBadgeLabel(product);
-  const swatches = getProductCardSwatches(product);
-  const quickAddVariant = getProductCardQuickAddVariant({
-    availableQuantity: onlineStockQuantity,
-    product,
-  });
 
   return (
     <Card
@@ -203,9 +169,9 @@ export function ProductCard({
                   className="ui-text-slot product-card-attributes text-muted-foreground truncate text-xs [--ui-text-slot-line-height:1.25rem]"
                   data-lines="1"
                   data-testid="product-card-attributes"
-                  title={productQuickFactsLabel}
+                  title={productMeta}
                 >
-                  {productQuickFactsLabel}
+                  {productMeta}
                 </div>
               ) : null}
               {!isEditorialDisplay ? (
@@ -220,58 +186,6 @@ export function ProductCard({
                   {productDescriptor}
                 </p>
               ) : null}
-              {!isEditorialDisplay &&
-              (materialBadgeLabel || swatches.length > 0) ? (
-                <div
-                  className="product-card-material-cues flex min-h-5 min-w-0 flex-wrap items-center gap-1.5"
-                  data-testid="product-card-material-cues"
-                >
-                  {materialBadgeLabel ? (
-                    <span
-                      className="product-card-material-badge max-w-full truncate rounded-full border border-[var(--glass-border)] px-2 py-0.5 text-[0.68rem] leading-4 font-medium"
-                      data-testid="product-card-material-badge"
-                    >
-                      {materialBadgeLabel}
-                    </span>
-                  ) : null}
-                  {swatches.length > 0 ? (
-                    <span
-                      aria-label="גווני חומר זמינים"
-                      className="inline-flex items-center gap-1"
-                      data-testid="product-card-swatches"
-                    >
-                      {swatches.map((swatch) => (
-                        <span
-                          aria-label={swatch.label}
-                          className="product-card-swatch size-3 rounded-full border border-black/10"
-                          data-material-swatch="true"
-                          key={swatch.key}
-                          role="img"
-                          style={swatch.style}
-                          title={swatch.label}
-                        />
-                      ))}
-                    </span>
-                  ) : null}
-                </div>
-              ) : null}
-              {!isEditorialDisplay ? (
-                <div
-                  aria-label="עיקרי בחירה"
-                  className="product-card-decision-facts flex min-h-7 min-w-0 flex-wrap items-center gap-x-2 gap-y-1 border-y border-[var(--glass-border)] py-1.5 text-[0.68rem] leading-4"
-                  data-testid="product-card-decision-facts"
-                >
-                  {productDecisionFacts.map((fact) => (
-                    <span
-                      className="product-card-decision-fact min-w-0 truncate"
-                      data-product-card-fact={fact.key}
-                      key={fact.key}
-                    >
-                      {fact.label}
-                    </span>
-                  ))}
-                </div>
-              ) : null}
             </div>
           </div>
 
@@ -279,61 +193,35 @@ export function ProductCard({
             <span
               data-sale={sale ? "true" : "false"}
               data-testid="product-card-price"
-              className={cn(
-                "product-card-commerce block text-[0.94rem] leading-6 font-medium sm:text-base",
-                isAvailable ? "text-foreground" : "text-muted-foreground",
-              )}
+              className="product-card-commerce text-foreground block text-[1.08rem] leading-8 font-medium sm:text-[1.18rem]"
             >
-              {isAvailable ? (
-                <span className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                  <span className="truncate">
-                    {sale ? <span className="sr-only">מחיר מבצע </span> : null}
-                    {formatPrice(product.price)}
-                  </span>
-                  {sale ? (
-                    <span
-                      aria-label={`מחיר קודם ${formatPrice(sale.compareAt)}`}
-                      className="text-muted-foreground text-xs leading-5 font-normal line-through decoration-[var(--glass-border-strong)]"
-                    >
-                      {formatPrice(sale.compareAt)}
-                    </span>
-                  ) : null}
+              <span className="flex min-w-0 flex-wrap items-baseline gap-x-2.5 gap-y-1">
+                <span className="product-card-price-main truncate">
+                  {sale ? <span className="sr-only">מחיר מבצע </span> : null}
+                  {formatPrice(product.price)}
                 </span>
-              ) : (
-                primaryCommerceLabel
-              )}
+                {sale ? (
+                  <span
+                    aria-label={`מחיר קודם ${formatPrice(sale.compareAt)}`}
+                    className="text-muted-foreground text-xs leading-5 font-normal line-through decoration-[var(--glass-border-strong)]"
+                  >
+                    {formatPrice(sale.compareAt)}
+                  </span>
+                ) : null}
+              </span>
             </span>
-            <span className="text-muted-foreground product-card-cta group-hover/product-link:border-foreground group-hover/product-link:text-foreground mt-2 inline-flex w-fit border-b border-[var(--glass-border)] pb-0.5 text-xs font-medium transition-colors">
+            <span className="product-card-cta group-hover/product-link:border-foreground group-hover/product-link:text-foreground text-foreground mt-3 inline-flex min-h-9 w-fit items-center rounded-md border border-[var(--glass-border)] px-3 text-xs font-medium transition-colors">
               לפרטי התכשיט
             </span>
           </div>
         </CardContent>
       </Link>
-      {!isEditorialDisplay && quickAddVariant ? (
-        <div
-          className={cn("mt-3", isCompactDensity && "mt-2")}
-          data-public-floating-avoid="true"
-        >
-          <ProductCardQuickAddButton
-            productName={publicProductName}
-            variantSku={quickAddVariant.sku}
-          />
-        </div>
-      ) : null}
-      {!isEditorialDisplay ? (
-        <div className="product-card-favorite absolute top-2.5 right-2.5 z-10 rounded-md">
-          <ProductCardFavoriteButton
-            productName={publicProductName}
-            productSlug={product.slug}
-          />
-        </div>
-      ) : null}
     </Card>
   );
 }
 
 type ProductCardBadgeModel = {
-  key: "low-stock" | "sale";
+  key: "gift" | "gold-plated" | "new" | "silver-925";
   label: string;
 };
 
@@ -381,170 +269,103 @@ function getProductCardSale(product: CatalogProduct) {
   return { compareAt: product.compareAt };
 }
 
-function isProductCardLowStock(input: {
-  availableQuantity: number;
-  product: CatalogProduct;
-}) {
-  return (
-    input.product.availabilityMode === "READY_TO_ORDER" &&
-    isPublicSellableQuantityLowStock(input.availableQuantity)
-  );
-}
-
-function getProductCardDecisionFacts(input: {
-  commerceStatusLabel: string;
-  product: CatalogProduct;
-}) {
-  const fitLabel =
-    input.product.sizes.length > 1 || input.product.metalColors.length > 1
-      ? "בחירת מידה וגוון"
-      : "פרטים לפני הזמנה";
-  const serviceLabel =
-    input.product.availabilityMode === "READY_TO_ORDER"
-      ? "שירות לפני הזמנה"
-      : "תיאום אישי";
-
-  return [
-    { key: "availability", label: input.commerceStatusLabel },
-    { key: "fit", label: fitLabel },
-    { key: "service", label: serviceLabel },
-  ] as const;
-}
-
 function getProductCardBadge(input: {
-  lowStock: boolean;
-  sale: ReturnType<typeof getProductCardSale>;
+  product: CatalogProduct;
 }): ProductCardBadgeModel | null {
-  if (input.sale) {
-    return { key: "sale", label: "מבצע" };
+  const productLabel = getProductCardLabel(input.product);
+
+  if (productLabel) return productLabel;
+
+  return null;
+}
+
+function getProductCardLabel(
+  product: CatalogProduct,
+): ProductCardBadgeModel | null {
+  const normalizedMaterial = normalizeProductCardText(product.material);
+  const normalizedTags = product.tags.map(normalizeProductCardText);
+  const normalizedCollections = product.collections.map(
+    normalizeProductCardText,
+  );
+
+  if (
+    normalizedMaterial.includes("ציפוי") ||
+    normalizedMaterial.includes("gold plated") ||
+    normalizedMaterial.includes("plated")
+  ) {
+    return { key: "gold-plated", label: "ציפוי זהב" };
   }
 
-  if (input.lowStock) {
-    return { key: "low-stock", label: "מלאי מוגבל" };
+  if (
+    normalizedMaterial.includes("כסף") ||
+    normalizedMaterial.includes("silver") ||
+    normalizedMaterial.includes("925")
+  ) {
+    return { key: "silver-925", label: "כסף 925" };
+  }
+
+  if (
+    normalizedTags.some(
+      (tag) => tag.includes("מתנה") || tag.includes("gift"),
+    ) ||
+    normalizedCollections.some(
+      (collection) =>
+        collection.includes("מתנה") || collection.includes("gift"),
+    )
+  ) {
+    return { key: "gift", label: "מתנה" };
+  }
+
+  if (isProductCardNew(product)) {
+    return { key: "new", label: "חדש" };
   }
 
   return null;
 }
 
+function isProductCardNew(product: CatalogProduct) {
+  const createdAt =
+    product.createdAt instanceof Date
+      ? product.createdAt.getTime()
+      : Date.parse(product.createdAt);
+
+  if (Number.isNaN(createdAt)) return false;
+
+  const daysSinceCreated = (Date.now() - createdAt) / (1000 * 60 * 60 * 24);
+
+  return daysSinceCreated <= 60;
+}
+
 function getProductCardDescriptor(product: CatalogProduct) {
   if (product.categorySlug === "rings") {
-    return "נוכחות עדינה ליד, לבד או בשילוב.";
+    return "נוכחות עדינה ליד, לבד או בשכבות.";
   }
 
   if (product.categorySlug === "necklaces") {
-    return "קו רך שמאיר חולצה, שמלה או מחשוף.";
+    return "קו עדין שמאיר מחשוף ושכבות.";
   }
 
   if (product.categorySlug === "earrings") {
-    return "ברק קטן שמחזיק יום, ערב וכל מעבר ביניהם.";
+    return "ברק קטן ליום, ערב ומתנה.";
   }
 
   if (product.categorySlug === "bracelets") {
-    return "שכבה דקה של אור על פרק היד.";
+    return "שכבה נקייה לפרק היד.";
   }
 
   if (product.stone) {
-    return `${product.stone} שנותנת לתכשיט רגע ברור משלו.`;
+    return `${product.stone} שמוסיף נקודת אור עדינה.`;
   }
 
   if (product.material) {
-    return `${product.material} ללוק נקי, חם וקל לענידה.`;
+    return `${product.material} בקו נקי לענידה.`;
   }
 
-  return "פריט קטן עם נוכחות שמתחברת ללוק בלי מאמץ.";
+  return "קו נקי לענידה יומיומית.";
 }
 
-function getProductCardMaterialBadgeLabel(product: CatalogProduct) {
-  const normalizedStone = product.stone?.toLowerCase() ?? "";
-
-  if (normalizedStone.includes("פנינ") || normalizedStone.includes("pearl")) {
-    return product.stone;
-  }
-
-  return product.material || product.stone;
-}
-
-function getProductCardSwatches(product: CatalogProduct) {
-  const materialSwatches = product.metalColors.map((color) => ({
-    key: `metal-${color}`,
-    label: `גוון מתכת: ${color}`,
-    style: getProductCardSwatchStyle(color),
-  }));
-
-  if (materialSwatches.length > 0) return materialSwatches.slice(0, 3);
-
-  return product.stone
-    ? [
-        {
-          key: `stone-${product.stone}`,
-          label: `אבן: ${product.stone}`,
-          style: getProductCardSwatchStyle(product.stone),
-        },
-      ]
-    : [];
-}
-
-function getProductCardSwatchStyle(value: string): CSSProperties {
-  const normalized = value.toLowerCase();
-
-  if (
-    normalized.includes("ורוד") ||
-    normalized.includes("rose") ||
-    normalized.includes("pink")
-  ) {
-    return {
-      background:
-        "linear-gradient(135deg, #f7d7c7 0%, #c98e79 48%, #fff2eb 100%)",
-    };
-  }
-
-  if (
-    normalized.includes("לבן") ||
-    normalized.includes("כסף") ||
-    normalized.includes("silver") ||
-    normalized.includes("white")
-  ) {
-    return {
-      background:
-        "linear-gradient(135deg, #ffffff 0%, #d7d9dd 48%, #f7f7f4 100%)",
-    };
-  }
-
-  if (
-    normalized.includes("פנינ") ||
-    normalized.includes("pearl") ||
-    normalized.includes("diamond") ||
-    normalized.includes("יהלום")
-  ) {
-    return {
-      background:
-        "linear-gradient(135deg, #ffffff 0%, #e7e4df 52%, #f5efe8 100%)",
-    };
-  }
-
-  return {
-    background:
-      "linear-gradient(135deg, #fff0b8 0%, #d4a63d 48%, #fff7d9 100%)",
-  };
-}
-
-function getProductCardQuickAddVariant(input: {
-  availableQuantity: number;
-  product: CatalogProduct;
-}): CatalogProductVariant | null {
-  const [variant] = input.product.variants;
-
-  if (!variant) return null;
-  if (input.product.requiresSeparateCheckout) return null;
-  if (input.product.availabilityMode !== "READY_TO_ORDER") return null;
-  if (input.availableQuantity <= 0 || variant.availableQuantity <= 0) {
-    return null;
-  }
-  if (input.product.variants.length !== 1) return null;
-  if (input.product.sizes.length > 1) return null;
-  if (input.product.metalColors.length > 1) return null;
-
-  return variant;
+function normalizeProductCardText(value: string) {
+  return value.trim().toLowerCase();
 }
 
 function createProductHref(

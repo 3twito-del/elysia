@@ -419,7 +419,7 @@ const getCatalogFacetsCached = unstable_cache(
 
     return getCatalogFacetsFromProducts(products);
   },
-  ["catalog:facets:v5", getCatalogDataSourceCacheKey()],
+  ["catalog:facets:v6", getCatalogDataSourceCacheKey()],
   {
     revalidate: CATALOG_REVALIDATE_SECONDS,
     tags: [CATALOG_CACHE_TAGS.facets, CATALOG_CACHE_TAGS.products],
@@ -443,6 +443,13 @@ export function getCatalogFacetsFromProducts(
         .filter((value): value is string => Boolean(value)),
     ),
     collections: getUniqueValues(products.map((product) => product.collection)),
+    styles: getUniqueValues(
+      products.flatMap((product) => getCatalogProductStyles(product)),
+    ),
+    giftTags: getCatalogGiftFacetOptions(products),
+    colors: getUniqueValues(
+      products.flatMap((product) => getCatalogProductColors(product)),
+    ),
     priceRange: {
       min: prices.length > 0 ? Math.min(...prices) : 0,
       max: prices.length > 0 ? Math.max(...prices) : 0,
@@ -477,6 +484,19 @@ export function filterCatalogProducts(
       input.collection ? product.collections.includes(input.collection) : true,
     )
     .filter((product) =>
+      input.style
+        ? getCatalogProductStyles(product).includes(input.style)
+        : true,
+    )
+    .filter((product) =>
+      input.gift ? matchesCatalogGiftFacet(product, input.gift) : true,
+    )
+    .filter((product) =>
+      input.color
+        ? getCatalogProductColors(product).includes(input.color)
+        : true,
+    )
+    .filter((product) =>
       input.branch ? (product.inventory[input.branch] ?? 0) > 0 : true,
     )
     .filter((product) =>
@@ -487,6 +507,92 @@ export function filterCatalogProducts(
         ? Object.values(product.inventory).some((quantity) => quantity > 0)
         : true,
     );
+}
+
+const catalogGiftFacetLabels = {
+  gift: "מתאים למתנה",
+  under200: "עד 200 ₪",
+  pearl: "פנינים למתנה",
+} as const;
+
+function getCatalogProductStyles(product: CatalogProduct): string[] {
+  return product.collections.length > 0
+    ? product.collections
+    : [product.collection];
+}
+
+function getCatalogProductColors(product: CatalogProduct): string[] {
+  return getUniqueValues([
+    ...product.metalColors,
+    ...product.variants
+      .flatMap((variant) => [variant.metalColor, variant.stoneColor])
+      .filter((value): value is string => Boolean(value)),
+  ]);
+}
+
+function getCatalogGiftFacetOptions(products: CatalogProduct[]): string[] {
+  const options: string[] = [];
+
+  if (
+    products.some((product) =>
+      matchesCatalogGiftFacet(product, catalogGiftFacetLabels.gift),
+    )
+  ) {
+    options.push(catalogGiftFacetLabels.gift);
+  }
+
+  if (
+    products.some((product) =>
+      matchesCatalogGiftFacet(product, catalogGiftFacetLabels.under200),
+    )
+  ) {
+    options.push(catalogGiftFacetLabels.under200);
+  }
+
+  if (
+    products.some((product) =>
+      matchesCatalogGiftFacet(product, catalogGiftFacetLabels.pearl),
+    )
+  ) {
+    options.push(catalogGiftFacetLabels.pearl);
+  }
+
+  return options;
+}
+
+function matchesCatalogGiftFacet(
+  product: CatalogProduct,
+  giftFacet: string,
+): boolean {
+  if (giftFacet === catalogGiftFacetLabels.under200) {
+    return product.price <= 200;
+  }
+
+  if (giftFacet === catalogGiftFacetLabels.pearl) {
+    const normalizedStone = normalizeCatalogFacetText(product.stone);
+
+    return (
+      matchesCatalogGiftFacet(product, catalogGiftFacetLabels.gift) &&
+      (normalizedStone.includes("פנינ") || normalizedStone.includes("pearl"))
+    );
+  }
+
+  if (giftFacet !== catalogGiftFacetLabels.gift) return false;
+
+  const searchable = [
+    product.description,
+    product.shortDescription,
+    ...product.tags,
+    ...product.collections,
+  ]
+    .map((value) => normalizeCatalogFacetText(value))
+    .join(" ");
+
+  return searchable.includes("מתנה") || searchable.includes("gift");
+}
+
+function normalizeCatalogFacetText(value?: string): string {
+  return value?.trim().toLowerCase() ?? "";
 }
 
 export function getCatalogAvailability(product: CatalogProduct) {

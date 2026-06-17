@@ -11,6 +11,7 @@ import {
 import { formatInlinePrice } from "~/lib/format";
 import { resolveSemanticSearchIntent } from "~/server/ai/search-intent";
 import {
+  filterCatalogProducts,
   getCatalogCategories,
   getCatalogFacets,
   listCatalogProducts,
@@ -51,6 +52,9 @@ export type ProductSearchInput = {
   branch?: string;
   material?: string;
   stone?: string;
+  style?: string;
+  gift?: string;
+  color?: string;
   collection?: string;
   maxPrice?: number;
   availableOnly?: boolean;
@@ -138,6 +142,19 @@ class TypesenseSearchProvider implements SearchProvider {
     input: ProductSearchInput,
   ): Promise<ProductSearchResult> {
     const client = getTypesenseClient();
+
+    if (hasDerivedFacetFilter(input)) {
+      if (
+        (input.mode ?? "semantic") === "semantic" &&
+        (input.query?.trim() || input.semanticIntent)
+      ) {
+        return searchLocalSemanticProducts(
+          await createSemanticSearchContext(input),
+        );
+      }
+
+      return searchLocalProducts({ ...input, mode: "classic" });
+    }
 
     if ((input.mode ?? "semantic") === "semantic") {
       const semanticResult = await searchSemanticProducts(input, client);
@@ -628,6 +645,9 @@ function isDefaultCatalogBrowse(input: ProductSearchInput) {
     !input.branch &&
     !input.material &&
     !input.stone &&
+    !input.style &&
+    !input.gift &&
+    !input.color &&
     !input.collection &&
     !input.maxPrice &&
     !input.availableOnly
@@ -830,7 +850,43 @@ async function buildLocalFacets(input: ProductSearchInput) {
           .length,
       })),
     },
+    {
+      field: "style",
+      values: facets.styles.map((style) => ({
+        value: style,
+        count: products.filter((product) => product.collections.includes(style))
+          .length,
+      })),
+    },
+    {
+      field: "gift",
+      values: facets.giftTags.map((gift) => ({
+        value: gift,
+        count: products.filter(
+          (product) => filterCatalogProducts([product], { gift }).length > 0,
+        ).length,
+      })),
+    },
+    {
+      field: "color",
+      values: facets.colors.map((color) => ({
+        value: color,
+        count: products.filter((product) =>
+          [
+            ...product.metalColors,
+            ...product.variants.flatMap((variant) => [
+              variant.metalColor,
+              variant.stoneColor,
+            ]),
+          ].includes(color),
+        ).length,
+      })),
+    },
   ] satisfies SearchFacet[];
+}
+
+function hasDerivedFacetFilter(input: ProductSearchInput) {
+  return [input.style, input.gift, input.color].some((value) => Boolean(value));
 }
 
 function getKeywordScore(product: CatalogProduct, query?: string) {

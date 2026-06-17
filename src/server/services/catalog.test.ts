@@ -17,6 +17,7 @@ describe("catalog filtering", () => {
         description: "Diamond ring for a refined gift",
         inventory: { "tel-aviv": 2, jerusalem: 0 },
         material: "זהב לבן 14K",
+        metalColors: ["זהב לבן"],
         name: "Venus Line Ring",
         price: 1290,
         slug: "venus-line-ring",
@@ -52,10 +53,13 @@ describe("catalog filtering", () => {
         availableOnly: true,
         branch: "tel-aviv",
         collection: "bridal",
+        color: "זהב לבן",
+        gift: "מתאים למתנה",
         material: "זהב לבן 14K",
         maxPrice: 1500,
         query: "gift",
         stone: "יהלום",
+        style: "bridal",
       }).map((product) => product.slug),
     ).toEqual(["venus-line-ring"]);
   });
@@ -153,7 +157,7 @@ function makeProduct(
     images: ["/product.png"],
     inventory: overrides.inventory,
     material: overrides.material ?? "זהב",
-    metalColors: [],
+    metalColors: overrides.metalColors ?? [],
     name: overrides.name ?? "Product",
     popularityScore: 0,
     price: overrides.price ?? 1000,
@@ -165,7 +169,7 @@ function makeProduct(
     requiresSeparateCheckout: overrides.requiresSeparateCheckout ?? false,
     stone: overrides.stone,
     tags: overrides.tags ?? [],
-    variants: [],
+    variants: overrides.variants ?? [],
   };
 }
 

@@ -19,7 +19,6 @@ import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { EmptyState } from "~/components/ui/empty-state";
-import { getPublicProductCommerceStatus } from "~/lib/commerce-labels";
 import { formatInlinePrice, formatPrice } from "~/lib/format";
 import { getPublicProductName } from "~/lib/product-display";
 import { cn } from "~/lib/utils";
@@ -209,7 +208,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                     ? `עבור "${input.query}"`
                     : hasActiveFilters
                       ? "לפי הסינון הפעיל"
-                      : "כל מה שזמין עכשיו במבחר."}
+                      : "כל התכשיטים במבחר."}
                 </p>
                 <p
                   className="text-muted-foreground mt-1 text-xs"
@@ -652,11 +651,8 @@ function SearchResultListItem({
     (total, quantity) => total + quantity,
     0,
   );
-  const commerceStatus = getPublicProductCommerceStatus({
-    availabilityMode: product.availabilityMode,
-    availableQuantity: onlineStockQuantity,
-  });
-  const isAvailable = commerceStatus.canAddToCart;
+  const isAvailable =
+    product.availabilityMode === "READY_TO_ORDER" && onlineStockQuantity > 0;
   const isUnavailable =
     product.availabilityMode === "READY_TO_ORDER" && !isAvailable;
   const href = createProductSearchHref(product.slug, searchContext);
@@ -664,8 +660,6 @@ function SearchResultListItem({
   const productDetails = [product.material, product.stone].filter(
     (detail): detail is string => Boolean(detail),
   );
-  const shouldShowAvailability =
-    isUnavailable || product.availabilityMode !== "READY_TO_ORDER";
 
   return (
     <Link
@@ -692,7 +686,7 @@ function SearchResultListItem({
         {isUnavailable ? (
           <div className="absolute top-2.5 left-2.5 flex items-start gap-2">
             <Badge
-              className="h-6 border border-red-200 bg-white px-2.5 text-[0.7rem] font-semibold text-red-700 shadow-[0_8px_20px_oklch(0.18_0_0_/_18%)]"
+              className="text-foreground h-6 border border-[var(--glass-border)] bg-[var(--brand-ivory)] px-2.5 text-[0.7rem] font-semibold shadow-[0_8px_20px_oklch(0.18_0_0_/_8%)]"
               variant="ghost"
             >
               לא פנוי כרגע
@@ -734,16 +728,6 @@ function SearchResultListItem({
             <span className="block text-base leading-6 font-semibold md:text-xl md:leading-7">
               {formatPrice(product.price)}
             </span>
-            {shouldShowAvailability ? (
-              <span
-                className={cn(
-                  "mt-2 inline-flex max-w-full items-center rounded-md border border-[var(--glass-border)] px-2.5 py-1.5 text-xs",
-                  isAvailable ? "text-muted-foreground" : "text-foreground",
-                )}
-              >
-                <span className="truncate">{commerceStatus.label}</span>
-              </span>
-            ) : null}
           </div>
         </div>
       </div>
@@ -817,6 +801,42 @@ function getActiveSearchFilters(
       href: createSearchHref({
         ...hrefInput,
         collection: undefined,
+        page: undefined,
+      }),
+    });
+  }
+
+  if (input.style) {
+    filters.push({
+      key: "style",
+      label: `סגנון: ${input.style}`,
+      href: createSearchHref({
+        ...hrefInput,
+        page: undefined,
+        style: undefined,
+      }),
+    });
+  }
+
+  if (input.gift) {
+    filters.push({
+      key: "gift",
+      label: `מתנה: ${input.gift}`,
+      href: createSearchHref({
+        ...hrefInput,
+        gift: undefined,
+        page: undefined,
+      }),
+    });
+  }
+
+  if (input.color) {
+    filters.push({
+      key: "color",
+      label: `צבע: ${input.color}`,
+      href: createSearchHref({
+        ...hrefInput,
+        color: undefined,
         page: undefined,
       }),
     });
@@ -1093,6 +1113,9 @@ async function recordSearchEvent(
           material: input.material ?? null,
           stone: input.stone ?? null,
           collection: input.collection ?? null,
+          style: input.style ?? null,
+          gift: input.gift ?? null,
+          color: input.color ?? null,
           maxPrice: input.maxPrice ?? null,
           availableOnly: input.availableOnly ?? false,
           mode: input.mode ?? "semantic",

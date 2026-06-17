@@ -21,7 +21,6 @@ const approvedBrandTokens = new Set([
 ]);
 const approvedWarmMaterialPaths = new Set([
   "src/app/product/[slug]/_components/product-purchase-panel.tsx",
-  "src/components/product-card.tsx",
 ]);
 
 describe("public palette guardrails", () => {

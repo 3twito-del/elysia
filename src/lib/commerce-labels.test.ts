@@ -49,9 +49,7 @@ describe("commerce labels", () => {
     expect(getShopifyFinancialStatusLabel(undefined)).toBe(
       "סטטוס תשלום לא דווח",
     );
-    expect(getShopifyFulfillmentStatusLabel("fulfilled")).toBe(
-      "הושלם",
-    );
+    expect(getShopifyFulfillmentStatusLabel("fulfilled")).toBe("הושלם");
     expect(getShopifyFulfillmentStatusLabel(null)).toBe("ממתין לעדכון");
   });
 
@@ -126,7 +124,7 @@ describe("commerce labels", () => {
     expect(adminOrdersPage).toContain("sourceDescription");
     expect(checkoutForm).toContain('source: "OWN"');
     expect(checkoutForm).toContain('source: "DROPSHIP_SHOPIFY"');
-    expect(productCard).toContain("getPublicProductCommerceStatus");
+    expect(productCard).not.toContain("getPublicProductCommerceStatus");
     expect(productCard).toContain("getPublicProductName");
     expect(productCard).not.toContain('product.source === "DROPSHIP_SHOPIFY"');
     expect(productCard).not.toContain("sourceFact");

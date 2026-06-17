@@ -22,9 +22,9 @@ describe("layout stability guardrails", () => {
     expect(productCardSource).toContain('data-lines="2"');
     expect(productCardSource).toContain("ui-text-slot product-card-attributes");
     expect(productCardSource).toContain("group/product-link block min-w-0");
-    expect(productCardSource).toContain("absolute top-2.5 right-2.5");
     expect(productCardSource).toContain("product-card-cta");
-    expect(productCardSource).toContain("<ProductCardQuickAddButton");
+    expect(productCardSource).not.toContain("ProductCardQuickAddButton");
+    expect(productCardSource).not.toContain("ProductCardFavoriteButton");
     expect(productCardSource).not.toContain("מחיר גלוי לפני שמירה");
     expect(productCardSource).not.toContain("בדיקת איכות לפני מסירה");
 

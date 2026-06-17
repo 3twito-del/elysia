@@ -36,20 +36,20 @@ const categoryEditorialCopy: Record<
   { description: string; kicker: string }
 > = {
   bracelets: {
-    description: "צמידים דקים לשכבות, למתנה ולרגע שבו היד צריכה אור.",
-    kicker: "צמידים",
+    description: "שכבות דקות, מתנה קטנה ורגע שבו היד צריכה אור.",
+    kicker: "קטגוריה",
   },
   earrings: {
-    description: "עגילים שמחזיקים בוקר, ערב וכל מעבר ביניהם.",
-    kicker: "עגילים",
+    description: "ברק שמחזיק בוקר, ערב וכל מעבר ביניהם.",
+    kicker: "קטגוריה",
   },
   necklaces: {
-    description: "שרשראות ותליונים שמרימים חולצה פשוטה או שמלת ערב.",
-    kicker: "שרשראות",
+    description: "תליונים שמרימים חולצה פשוטה או שמלת ערב.",
+    kicker: "קטגוריה",
   },
   rings: {
-    description: "טבעות עם נוכחות עדינה, לבד, בזוג או בשכבות.",
-    kicker: "טבעות",
+    description: "נוכחות עדינה לבד, בזוג או בשכבות.",
+    kicker: "קטגוריה",
   },
 };
 
@@ -494,14 +494,17 @@ function HomeCategoryCard({ category }: { category: CatalogCategory }) {
 
   return (
     <Link
+      aria-label={`מעבר לקטגוריית ${category.name}`}
       className="boutique-collection-card"
+      data-category-slug={category.slug}
       data-testid="home-category-card"
       href={`/category/${category.slug}`}
       prefetch={false}
     >
       <span className="boutique-collection-media">
         <Image
-          alt={`${category.name} מתוך קולקציות Elysia`}
+          alt=""
+          aria-hidden="true"
           className="media-color object-cover"
           fill
           sizes="(min-width: 1024px) 22vw, (min-width: 640px) 50vw, 100vw"
@@ -518,7 +521,9 @@ function HomeCategoryCard({ category }: { category: CatalogCategory }) {
             {copy?.description ?? category.description}
           </span>
         </span>
-        <ArrowLeft aria-hidden="true" className="mt-1 size-4 shrink-0" />
+        <span className="boutique-collection-action" aria-hidden="true">
+          <ArrowLeft className="size-4" />
+        </span>
       </span>
     </Link>
   );

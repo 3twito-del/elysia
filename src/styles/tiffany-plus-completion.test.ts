@@ -18,18 +18,16 @@ describe("Tiffany plus completion guardrails", () => {
     expect(plan).toContain("Visual QA Mobile First");
     expect(plan).toContain("Guardrails");
 
-    expect(productCard).toContain("getProductCardDecisionFacts");
-    expect(productCard).toContain('data-testid="product-card-decision-facts"');
-    expect(productCard).toContain("data-product-card-fact={fact.key}");
+    expect(productCard).toContain("getProductCardLabel");
+    expect(productCard).toContain('data-testid="product-card-badge"');
+    expect(productCard).toContain("data-product-card-badge={badge.key}");
     expect(productCard).toContain("data-product-card-availability=");
     expect(productCard).toContain("data-product-card-sale=");
-    expect(
-      indexOf(productCard, 'data-testid="product-card-decision-facts"'),
-    ).toBeLessThan(indexOf(productCard, 'data-testid="product-card-price"'));
-    expect(css).toContain(".product-card-decision-facts");
-    expect(css).toContain(
-      '.product-card-decision-fact[data-product-card-fact="service"]',
+    expect(indexOf(productCard, "product-card-cta")).toBeGreaterThan(
+      indexOf(productCard, 'data-testid="product-card-price"'),
     );
+    expect(css).not.toContain(".product-card-decision-facts");
+    expect(css).not.toContain(".product-card-decision-fact::before");
 
     expect(footer).toContain("const footerTrustSignals");
     expect(footer).toContain('data-testid="footer-trust-layer"');

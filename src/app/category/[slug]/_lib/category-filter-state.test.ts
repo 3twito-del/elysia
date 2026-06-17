@@ -20,9 +20,12 @@ describe("getCategoryRouteState", () => {
       categories: [makeCategory("rings")],
       facets: {
         collections: ["classic"],
+        colors: [],
+        giftTags: [],
         materials: ["gold"],
         priceRange: { max: 1300, min: 900 },
         stones: ["diamond"],
+        styles: [],
       },
       query: { sort: "price-desc" },
       slug: "rings",
@@ -64,9 +67,12 @@ describe("getCategoryRouteState", () => {
       categories: [makeCategory("rings")],
       facets: {
         collections: ["classic"],
+        colors: [],
+        giftTags: [],
         materials: ["gold", "silver"],
         priceRange: { max: 1300, min: 900 },
         stones: ["diamond"],
+        styles: [],
       },
       query: {
         material: "gold",
@@ -106,9 +112,12 @@ describe("getCategoryRouteState", () => {
       categories: [makeCategory("rings")],
       facets: {
         collections: ["classic"],
+        colors: [],
+        giftTags: [],
         materials: ["gold"],
         priceRange: { max: 900, min: 900 },
         stones: ["diamond"],
+        styles: [],
       },
       query: {
         material: "gold",
@@ -156,9 +165,12 @@ describe("getCategoryRouteState", () => {
       ],
       facets: {
         collections: ["classic"],
+        colors: [],
+        giftTags: [],
         materials: ["gold", "silver"],
         priceRange: { max: 1300, min: 900 },
         stones: ["diamond"],
+        styles: [],
       },
       query: { material: "silver" },
       slug: "rings",

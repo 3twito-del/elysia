@@ -74,6 +74,9 @@ export type CatalogSearchInput = {
   branch?: string;
   material?: string;
   stone?: string;
+  style?: string;
+  gift?: string;
+  color?: string;
   maxPrice?: number;
   collection?: string;
   availableOnly?: boolean;
@@ -83,6 +86,9 @@ export type CatalogFacets = {
   materials: string[];
   stones: string[];
   collections: string[];
+  styles: string[];
+  giftTags: string[];
+  colors: string[];
   priceRange: {
     min: number;
     max: number;

@@ -339,7 +339,7 @@ export default async function CategoryPage({
                     סינון לפי לוק
                   </SheetTitle>
                   <SheetDescription>
-                    בחרו חומר, אבן, מחיר או קולקציה מתוך מה שזמין עכשיו.
+                    בחרו חומר, אבן, מחיר או קולקציה מתוך המבחר.
                   </SheetDescription>
                   <p
                     className="text-muted-foreground text-xs leading-5"
@@ -383,10 +383,7 @@ export default async function CategoryPage({
         <div className="h-px" id="category-filters" />
 
         <RevealSection className="mx-auto w-full max-w-[96rem] px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y)]">
-          <aside
-            className="hidden"
-            data-testid="category-filter-panel"
-          >
+          <aside className="hidden" data-testid="category-filter-panel">
             <div className="sticky top-24 border-y border-[var(--glass-border)] py-5">
               <div className="pb-4">
                 <h2 className="flex items-center gap-2 text-base font-medium">

@@ -102,26 +102,21 @@ describe("public CTA hierarchy", () => {
     expect(wishlistSource).toContain('variant="outline"');
   });
 
-  it("keeps listing cards browse-first with quick add limited to eligible cards", () => {
+  it("keeps listing cards browse-first with one details CTA", () => {
     const css = read("src/styles/globals.css");
     const productCard = read("src/components/product-card.tsx");
-    const quickAdd = read("src/components/product-card-quick-add-button.tsx");
     const searchSource = read("src/app/search/page.tsx");
 
     expect(productCard).toContain("group/product-link block min-w-0");
-    expect(productCard).toContain("ProductCardFavoriteButton");
-    expect(productCard).toContain("function getProductCardQuickAddVariant");
-    expect(productCard).toContain("<ProductCardQuickAddButton");
-    expect(productCard).toContain("input.product.requiresSeparateCheckout");
-    expect(productCard).toContain("input.product.variants.length !== 1");
-    expect(productCard).not.toContain('className="product-card-cta');
+    expect(productCard).not.toContain("ProductCardFavoriteButton");
+    expect(productCard).not.toContain("function getProductCardQuickAddVariant");
+    expect(productCard).not.toContain("<ProductCardQuickAddButton");
+    expect(productCard).toContain("product-card-cta");
     expect(productCard).not.toContain("<Button");
     expect(productCard).not.toContain("ShoppingBag");
-    expect(quickAdd).toContain('data-testid="product-card-quick-add-button"');
-    expect(quickAdd).toContain('fetch("/api/cart/items"');
     expect(searchSource).not.toContain("product-card-cta");
     expect(searchSource).not.toContain("ShoppingBag");
-    expect(css).not.toContain(".product-card-cta");
+    expect(css).toContain(".product-card-cta");
   });
 
   it("keeps recovery and filter action groups from presenting two default CTAs", () => {
