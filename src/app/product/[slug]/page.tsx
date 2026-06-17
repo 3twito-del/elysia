@@ -417,6 +417,7 @@ export default async function ProductPage({
             {productCommerceDetails.length > 0 ? (
               <div
                 className="mt-5 grid gap-2"
+                data-exclusive-details-group
                 data-testid="product-commerce-details"
               >
                 {productCommerceDetails.map((detail) => (
@@ -511,6 +512,7 @@ function ProductFaq({
     <section
       aria-labelledby="product-faq-title"
       className="grid gap-3"
+      data-exclusive-details-group
       data-testid="product-faq"
     >
       <h2 className="text-xl font-semibold" id="product-faq-title">

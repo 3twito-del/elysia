@@ -20,8 +20,7 @@ import { getPublicContactSettings } from "~/server/services/service";
 
 export const metadata: Metadata = {
   title: "שאלות ותשובות",
-  description:
-    "שאלות ותשובות על תכשיטים, מידות, מסירה, החזרות ומתנות.",
+  description: "שאלות ותשובות על תכשיטים, מידות, מסירה, החזרות ומתנות.",
 };
 
 export const dynamic = "force-dynamic";
@@ -141,7 +140,11 @@ export default async function FaqPage() {
           </div>
         </section>
 
-        <div className="brand-surface mt-8 p-6 sm:p-8" id="faq-groups">
+        <div
+          className="brand-surface mt-8 p-6 sm:p-8"
+          data-exclusive-details-group
+          id="faq-groups"
+        >
           <div className="grid gap-10">
             {faqGroups.map((group, index) => {
               const Icon = group.icon;
@@ -185,7 +188,10 @@ export default async function FaqPage() {
             <h2 className="text-2xl font-semibold" id="faq-contact">
               לא מצאתם תשובה?
             </h2>
-            <p className="text-muted-foreground mt-3 leading-8">אפשר לפנות לשירות עם שם התכשיט, מספר הזמנה או תיאור קצר של מה שצריך.</p>
+            <p className="text-muted-foreground mt-3 leading-8">
+              אפשר לפנות לשירות עם שם התכשיט, מספר הזמנה או תיאור קצר של מה
+              שצריך.
+            </p>
             <Button asChild className="mt-5" variant="secondary">
               <Link
                 data-testid="faq-service-recovery-link"
