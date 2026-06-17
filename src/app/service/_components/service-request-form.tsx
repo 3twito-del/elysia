@@ -366,7 +366,10 @@ export function ServiceRequestForm({
               {state.requestReference}
             </strong>
           </div>
-          <p className="text-muted-foreground">שמרו את המספר לעדכון. הצוות יבדוק את הפרטים והקבצים לפני חזרה.</p>
+          <p className="text-muted-foreground">
+            שמרו את המספר לעדכון. הצוות יבדוק את הפרטים והקבצים ויחזור עד 24
+            שעות ביום עסקים.
+          </p>
           <a
             className="w-fit text-sm font-medium underline underline-offset-4"
             data-testid="service-request-success-contact-link"

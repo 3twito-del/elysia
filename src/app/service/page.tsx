@@ -3,6 +3,7 @@ import Link from "next/link";
 import {
   Clock3,
   Mail,
+  MessageCircle,
   MessageSquareText,
   PackageCheck,
   Phone,
@@ -19,11 +20,15 @@ import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Separator } from "~/components/ui/separator";
-import { getPublicServiceProfile } from "~/server/services/service";
+import {
+  getPublicContactSettings,
+  getPublicServiceProfile,
+} from "~/server/services/service";
 
 export const metadata: Metadata = {
-  title: "שירות",
-  description: "שירות Elysia להזמנות, מידות, מתנות, החזרות, פרטיות ונגישות.",
+  title: "שירות תומך",
+  description:
+    "שירות תומך של Elysia להזמנות, מידות, מתנות, החזרות, פרטיות ונגישות, עם מענה עד יום עסקים.",
 };
 
 export const dynamic = "force-dynamic";
@@ -53,8 +58,8 @@ const serviceTracks = [
 
 const serviceResponseExpectations = [
   {
-    title: "חוזרים בדרך שנוחה לך",
-    text: "נשתמש בטלפון או באימייל לפי ההעדפה שתסמנו בטופס.",
+    title: "מענה עד יום עסקים",
+    text: "נחזור עד 24 שעות בימי עסקים, לפי פרטי הקשר שסומנו בטופס.",
   },
   {
     title: "פרטים שמקצרים את הדרך",
@@ -99,8 +104,10 @@ function firstParam(value: string | string[] | undefined) {
 
 export default async function ServicePage({ searchParams }: ServicePageProps) {
   const query = searchParams ? await searchParams : {};
-  const profile = await getPublicServiceProfile();
-  const phoneHref = `tel:${profile.settings.phoneE164}`;
+  const [profile, contact] = await Promise.all([
+    getPublicServiceProfile(),
+    getPublicContactSettings(),
+  ]);
   const defaultMessage = firstParam(query.message);
   const defaultOrderNumber = firstParam(query.orderNumber);
   const defaultProductReference = firstParam(query.productReference);
@@ -111,9 +118,9 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
       <SiteHeader />
 
       <CompactPageIntro
-        description="בחרו נושא, השאירו פרטים ונחזור עם תשובה על תכשיט, מידה, מתנה או הזמנה."
-        eyebrow="שירות Elysia"
-        title="פנייה לשירות"
+        description="שירות הוא שכבת תמיכה: עזרה במידה, מתנה, הזמנה, החלפה או אחריות בלי להוציא את הבחירה מהאתר."
+        eyebrow="תמיכה לפני ואחרי הזמנה"
+        title="שירות תומך"
         variant="content"
       />
 
@@ -125,17 +132,17 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
             <div>
               <Badge variant="secondary">שירות</Badge>
               <h2 className="mt-3 text-2xl font-semibold" id="service-contact">
-                איך נוח לדבר?
+                ערוצי קשר ברורים
               </h2>
               <p className="text-muted-foreground mt-2 max-w-prose leading-7">
-                הפעילות מתבצעת מרחוק או בטלפון, עם תיעוד לכל פנייה.
+                הטיפול מתבצע דרך פנייה מתועדת, עם מענה עד 24 שעות ביום עסקים.
               </p>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-3">
               <a
                 className="brand-surface interactive-lift flex min-h-16 items-center gap-3 rounded-md p-3.5"
-                href={phoneHref}
+                href={contact.phoneHref}
               >
                 <span className="glass-inset grid size-11 place-items-center rounded-full border">
                   <Phone aria-hidden="true" className="size-5" />
@@ -143,13 +150,13 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
                 <span>
                   <span className="block font-semibold">טלפון</span>
                   <span className="text-muted-foreground block text-sm">
-                    {profile.settings.displayPhone}
+                    {contact.phoneDisplay}
                   </span>
                 </span>
               </a>
               <a
                 className="brand-surface interactive-lift flex min-h-16 items-center gap-3 rounded-md p-3.5"
-                href={`mailto:${profile.settings.serviceEmail}`}
+                href={`mailto:${contact.email}`}
               >
                 <span className="glass-inset grid size-11 place-items-center rounded-full border">
                   <Mail aria-hidden="true" className="size-5" />
@@ -157,10 +164,29 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
                 <span>
                   <span className="block font-semibold">אימייל</span>
                   <span className="text-muted-foreground block text-sm">
-                    {profile.settings.serviceEmail}
+                    {contact.email}
                   </span>
                 </span>
               </a>
+              {contact.whatsappHref ? (
+                <a
+                  className="brand-surface interactive-lift flex min-h-16 items-center gap-3 rounded-md p-3.5"
+                  data-testid="service-whatsapp-link"
+                  href={contact.whatsappHref}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  <span className="glass-inset grid size-11 place-items-center rounded-full border">
+                    <MessageCircle aria-hidden="true" className="size-5" />
+                  </span>
+                  <span>
+                    <span className="block font-semibold">WhatsApp Elysia</span>
+                    <span className="text-muted-foreground block text-sm">
+                      מענה שירות ממותג
+                    </span>
+                  </span>
+                </a>
+              ) : null}
             </div>
 
             <div className="brand-surface rounded-md p-4">
@@ -253,8 +279,8 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
             >
               <Clock3 aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
               <p>
-                פניות מטופלות לפי סדר קבלה ונושא. מספר הזמנה או שם תכשיט עוזרים
-                לתת תשובה מדויקת יותר.
+                פניות מטופלות לפי סדר קבלה ונושא. זמן מענה רגיל: עד 24 שעות /
+                יום עסקים. מספר הזמנה או שם תכשיט עוזרים לתת תשובה מדויקת יותר.
               </p>
             </div>
             <ServiceRequestForm
@@ -262,7 +288,7 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
               defaultOrderNumber={defaultOrderNumber}
               defaultProductReference={defaultProductReference}
               defaultTopicSlug={defaultTopicSlug}
-              serviceEmail={profile.settings.serviceEmail}
+              serviceEmail={contact.email}
               topics={profile.topics.map((topic) => ({
                 description: topic.description,
                 label: topic.label,
@@ -291,7 +317,7 @@ function ServicePriorityTriage() {
           className="mt-2 text-xl font-semibold"
           id="service-priority-triage-title"
         >
-          בחרו את סוג הפנייה לפני שממלאים פרטים
+          בחרו את סוג הפנייה, כדי שהשירות יתמוך בהחלטה ולא יחליף אותה
         </h2>
       </div>
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">

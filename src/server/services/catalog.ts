@@ -150,7 +150,7 @@ function isCatalogDatabaseReadError(error: unknown) {
 
   return (
     (typeof code === "string" && catalogDatabaseReadErrorCodes.has(code)) ||
-    /Can't reach database server|Authentication failed|Timed out fetching a new connection|Unable to start a transaction|Connection pool timeout|DATABASE_URL is required/i.test(
+    /Can't reach database server|Authentication failed|Timed out fetching a new connection|Unable to start a transaction|Connection pool timeout|DATABASE_URL is required|Error opening a TLS connection|No credentials are available in the security package/i.test(
       message,
     )
   );

@@ -19,33 +19,34 @@ import { getPublicServiceProfile } from "~/server/services/service";
 
 export const metadata: Metadata = {
   title: "חנות אונליין ושירות",
-  description: "Elysia פועלת כחנות אונליין. מיקומי שירות יופיעו כאן כשייפתחו.",
+  description:
+    "Elysia פועלת במודל אונליין ממוקד: קטלוג, הזמנה, שירות ותיאום במקום אחד.",
 };
 
 export const dynamic = "force-dynamic";
 
 const onlineServiceHighlights = [
   {
-    title: "קונים אונליין",
-    text: "המבחר והמידות זמינים באתר.",
+    title: "בחירה אונליין",
+    text: "המבחר, המידות והמחיר זמינים לפני הזמנה.",
     icon: Search,
   },
   {
-    title: "שירות",
-    text: "שאלות עוברות דרך טופס או קשר ישיר.",
+    title: "שירות תומך",
+    text: "שאלות על מידה, מתנה או הזמנה מקבלות מענה מתועד.",
     icon: Headphones,
   },
   {
-    title: "משלוח ותיאום",
-    text: "הזמנה ממשיכה למסלול משלוח מקוון.",
+    title: "משלוח מסודר",
+    text: "הזמנה ממשיכה למסלול מסירה מקוון וברור.",
     icon: PackageCheck,
   },
 ] as const;
 
 const onlineContinuitySteps = [
   "מוצאים תכשיט דרך הקטלוג, החיפוש או מדריך המידות.",
-  "שאלות על התאמה, מתנה או הזמנה נשלחות לשירות.",
-  "נקודות שירות פיזיות יופיעו כאן לפני פתיחתן.",
+  "בוחרים מידה, חומר ומחיר באתר לפני שמוסיפים לסל.",
+  "שאלות על התאמה, מתנה או הזמנה נשלחות לשירות תומך.",
 ] as const;
 
 export default async function BranchesPage() {
@@ -60,10 +61,10 @@ export default async function BranchesPage() {
         description={
           hasPhysicalBranches
             ? "מיקומי שירות מאושרים של Elysia, כולל קשר, שעות ותיאום."
-            : "אין סניפים פיזיים כרגע. קנייה ושירות מתבצעים אונליין."
+            : "מודל אונליין ממוקד: בחירה, הזמנה, מסירה ושירות תומך במקום אחד."
         }
-        eyebrow="אונליין"
-        title={hasPhysicalBranches ? "שירות ומיקומים" : "חנות אונליין"}
+        eyebrow="אסטרטגיית אונליין"
+        title={hasPhysicalBranches ? "שירות ומיקומים" : "אונליין בלבד, בכוונה"}
         variant="content"
       />
 
@@ -128,22 +129,22 @@ export default async function BranchesPage() {
             data-testid="branches-online-status-banner"
           >
             <div>
-              <p className="text-sm font-medium">שירות אונליין בלבד</p>
+              <p className="text-sm font-medium">אונליין בלבד, בכוונה</p>
               <p className="text-muted-foreground text-sm">
-                אין קבלת קהל או איסוף מסניף כרגע; קנייה ושירות מתבצעים באתר.
+                הקטלוג, ההזמנה והשירות מרוכזים באתר כדי לשמור על תהליך ברור.
               </p>
             </div>
-            <Badge variant="secondary">מעודכן לעכשיו</Badge>
+            <Badge variant="secondary">מודל שירות פעיל</Badge>
           </section>
           <div className="grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-start">
             <section>
               <Badge variant="secondary">אונליין בלבד</Badge>
               <h2 className="mt-4 text-3xl font-medium">
-                אין סניפים פיזיים בשלב זה
+                פחות מסלול פיזי, יותר ודאות לפני הזמנה
               </h2>
               <p className="text-muted-foreground mt-4 max-w-2xl text-sm leading-7 sm:text-base sm:leading-8">
-                Elysia פועלת כחנות מקוונת. כשייפתחו סניפים או נקודות שירות, הם
-                יופיעו כאן עם שעות וקשר.
+                Elysia נבנתה כחנות מקוונת: תמונות, חומר, מידה, מחיר ושירות
+                נמצאים באותו מסלול, בלי צורך להגיע לנקודת מכירה כדי לקבל החלטה.
               </p>
               <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <Button asChild>
@@ -244,7 +245,8 @@ export default async function BranchesPage() {
                   מפת סניפים תופיע כשייפתחו נקודות שירות
                 </h3>
                 <p className="text-muted-foreground mt-2 text-sm leading-7">
-                  עד אז, חיפוש תכשיט, מדידה ושירות מתבצעים באתר.
+                  כרגע המסלול המרכזי הוא אונליין: חיפוש תכשיט, מדידה, הזמנה
+                  ושירות תומך מתבצעים באתר.
                 </p>
                 <Button asChild className="mt-4" size="sm" variant="outline">
                   <Link href="/service?topic=general">שאלה לשירות</Link>

@@ -20,7 +20,7 @@ describe("luxury commerce UI hardening", () => {
     expect(source).toContain('triggerMode="label"');
     expect(source).toContain('aria-label="חיפוש"');
     expect(source).toContain("<Search");
-    expect(source).toContain('aria-label="שירות"');
+    expect(source).toContain('aria-label="תמיכה"');
     expect(source).toContain("<Heart");
     expect(source).toContain("<UserRound");
     expect(source).toContain('href="/wishlist"');
@@ -87,7 +87,7 @@ describe("luxury commerce UI hardening", () => {
     expect(footer).toContain("md:gap-x-14 md:gap-y-12");
     expect(footer).toContain("function FooterNav");
     expect(footer).toContain('title="קולקציות"');
-    expect(footer).toContain('title="שירות"');
+    expect(footer).toContain('title="תמיכה"');
     expect(footer).toContain('title="Elysia"');
     expect(footer).not.toContain("primaryServiceLinks");
     expect(footer).not.toContain("secondaryServiceLinks");

@@ -85,7 +85,7 @@ export function SiteContextMenu() {
   const shouldDisableMenu = excludedPathPrefixes.some((prefix) =>
     pathname === prefix ? true : pathname.startsWith(`${prefix}/`),
   );
-  const supportLabel = isProductPath ? "שירות אישי על הפריט" : "שירות אישי";
+  const supportLabel = isProductPath ? "שירות אישי על הפריט" : "שירות תומך";
   const copyLabel =
     copyStatus === "copied"
       ? "הקישור הועתק"

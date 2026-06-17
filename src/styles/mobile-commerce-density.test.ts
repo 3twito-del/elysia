@@ -215,7 +215,7 @@ describe("mobile commerce density", () => {
       /className="[^"]*hidden[^"]*sm:block[^"]*"[\s\S]*data-testid="product-media-caption"/,
     );
     expect(productPage).toMatch(
-      /className="[^"]*hidden[^"]*sm:grid[^"]*"[\s\S]*data-testid="product-commerce-highlights"/,
+      /className="[^"]*hidden[^"]*sm:grid[^"]*"[\s\S]*data-testid="product-trust-block"/,
     );
     expect(searchControls).toContain('side="right"');
     expect(searchControls).not.toContain('side="bottom"');

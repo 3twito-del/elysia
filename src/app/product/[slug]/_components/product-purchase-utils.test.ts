@@ -187,13 +187,13 @@ describe("product purchase utilities", () => {
         requiresSeparateCheckout: false,
         variant,
       }),
-      warranty: "אחריות לשנה על פגמי ייצור.",
+      warranty: "אחריות 12 חודשים על פגמי ייצור.",
     });
     const serviceItem = items.find((item) => item.key === "service");
 
     expect(serviceItem?.title).toBe("מסירה, טיפול ואחריות");
     expect(serviceItem?.description).toContain(
-      "אחריות: אחריות לשנה על פגמי ייצור.",
+      "אחריות: אחריות 12 חודשים על פגמי ייצור.",
     );
     expect(serviceItem?.description).toContain("טיפול: ניקוי עדין במטלית רכה.");
   });

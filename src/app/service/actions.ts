@@ -73,7 +73,7 @@ export async function createServiceRequestAction(
     return {
       ok: true,
       requestReference,
-      message: `הפנייה התקבלה. מספר הפנייה: ${requestReference}. צוות Elysia יחזור לאחר בדיקת הפרטים.`,
+      message: `הפנייה התקבלה. מספר הפנייה: ${requestReference}. צוות Elysia יחזור עד 24 שעות ביום עסקים לאחר בדיקת הפרטים.`,
     };
   } catch (error) {
     return {

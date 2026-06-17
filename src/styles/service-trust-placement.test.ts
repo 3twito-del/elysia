@@ -110,7 +110,7 @@ describe("commerce service trust placement", () => {
     const servicePage = read("src/app/service/page.tsx");
 
     expect(servicePage).not.toContain('href="#service-form"');
-    expect(servicePage).toContain("href={phoneHref}");
+    expect(servicePage).toContain("href={contact.phoneHref}");
     expect(servicePage).toContain("const serviceTracks");
     expect(servicePage).toContain(
       '<section aria-labelledby="service-form" id="service-form">',
@@ -129,10 +129,10 @@ describe("commerce service trust placement", () => {
     expect(footer).toContain("שאלות ותשובות");
     expect(footer).not.toContain("שאלות נפוצות");
     expect(footer).toContain('title="קולקציות"');
-    expect(footer).toContain('title="שירות"');
+    expect(footer).toContain('title="תמיכה"');
     expect(footer).toContain('title="Elysia"');
     expect(countOccurrences(footer, 'title="קולקציות"')).toBe(1);
-    expect(countOccurrences(footer, 'title="שירות"')).toBe(1);
+    expect(countOccurrences(footer, 'title="תמיכה"')).toBe(1);
     expect(countOccurrences(footer, 'title="Elysia"')).toBe(1);
     expect(countOccurrences(footer, 'href: "/search"')).toBe(1);
     expect(countOccurrences(footer, 'href: "/search?sort=newest"')).toBe(1);

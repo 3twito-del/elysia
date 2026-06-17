@@ -26,6 +26,21 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
+const humanReturnSummary = [
+  {
+    title: "רוצים להחליף?",
+    text: "פותחים פנייה עם מספר הזמנה והפריט המבוקש. נבדוק זמינות ונציע המשך ברור.",
+  },
+  {
+    title: "רוצים להחזיר?",
+    text: "אל תשלחו פריט לפני הנחיות מהשירות. כך נוכל לשמור על טיפול מסודר וזיכוי נכון.",
+  },
+  {
+    title: "משהו הגיע לא תקין?",
+    text: "צרפו תמונה ותיאור קצר. נבדוק את המקרה ונחזור עד יום עסקים.",
+  },
+] as const;
+
 const shippingReturnSections = [
   {
     title: "משלוחים",
@@ -67,10 +82,6 @@ const shippingReturnSections = [
     title: "דמי ביטול, בכפוף לדין",
     text: "ככל שיחולו דמי ביטול, הם ייגבו רק בהתאם להוראות הדין. אין במדיניות זו כדי ליצור חיוב שאינו מותר לפי דין.",
   },
-  {
-    title: "יצירת קשר לביטול או החזרה",
-    text: "לפתיחת בקשת ביטול, החלפה או החזרה יש לציין מספר הזמנה, שם מלא, טלפון, אימייל, סיבת הפנייה ותמונות במקרה של פגם נטען או אי התאמה.",
-  },
 ] as const;
 
 export default async function ShippingReturnsPage() {
@@ -90,6 +101,36 @@ export default async function ShippingReturnsPage() {
 
         <RevealSection className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:py-14">
           <div className="brand-surface p-6 sm:p-8">
+            <section
+              aria-labelledby="shipping-returns-human-summary"
+              data-testid="shipping-returns-human-summary"
+            >
+              <div className="flex items-center gap-3">
+                <RotateCcw className="size-5" aria-hidden="true" />
+                <h2
+                  className="text-2xl font-semibold"
+                  id="shipping-returns-human-summary"
+                >
+                  לפני הטקסט המשפטי: כך זה עובד בפועל
+                </h2>
+              </div>
+              <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                {humanReturnSummary.map((item) => (
+                  <section
+                    className="glass-inset rounded-md border p-4"
+                    key={item.title}
+                  >
+                    <h3 className="font-medium">{item.title}</h3>
+                    <p className="text-muted-foreground mt-2 text-sm leading-6">
+                      {item.text}
+                    </p>
+                  </section>
+                ))}
+              </div>
+            </section>
+
+            <Separator className="my-8" />
+
             <section aria-labelledby="business-details">
               <div className="flex items-center gap-3">
                 <PackageCheck className="size-5" aria-hidden="true" />
@@ -152,7 +193,7 @@ export default async function ShippingReturnsPage() {
                 className="text-2xl font-semibold"
                 id="shipping-returns-contact"
               >
-                יצירת קשר לביטול או החזרה
+                פתיחת בקשת ביטול, החלפה או החזרה
               </h2>
               <p className="text-muted-foreground mt-3 leading-8">
                 ניתן לפתוח פנייה דרך שירות הלקוחות או ליצור קשר בפרטים שלהלן.

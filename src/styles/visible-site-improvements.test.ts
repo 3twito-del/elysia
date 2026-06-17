@@ -202,7 +202,8 @@ describe("visible site improvement affordances", () => {
     expect(service).toContain('data-testid="service-response-time-note"');
     expect(service).toContain("/service?topic=${topic.slug}#service-form");
     expect(service).toContain("defaultTopicSlug");
-    expect(service).toContain("serviceEmail={profile.settings.serviceEmail}");
+    expect(service).toContain("serviceEmail={contact.email}");
+    expect(service).toContain('data-testid="service-whatsapp-link"');
     expect(serviceActions).toContain("requestReference");
     expect(serviceActions).toContain("createServiceRequestReference");
     expect(serviceForm).toContain(
@@ -219,6 +220,7 @@ describe("visible site improvement affordances", () => {
 
     expect(about).toContain("editorialPrinciples");
     expect(about).toContain("materialFacts");
+    expect(about).toContain("מי עומד מאחורי Elysia");
     expect(about).toContain('data-testid="about-brand-timeline"');
     expect(about).toContain('data-testid="about-material-facts"');
     expect(about).toContain('data-testid="about-care-teaser"');
@@ -235,7 +237,7 @@ describe("visible site improvement affordances", () => {
     expect(header).toContain('dir="rtl"');
     expect(header).toContain('triggerLabel="תפריט"');
     expect(header).toContain('aria-label="חיפוש"');
-    expect(header).toContain('aria-label="שירות"');
+    expect(header).toContain('aria-label="תמיכה"');
     expect(header).toContain('href="/wishlist"');
     expect(header).not.toContain("const prelaunchNavItems = [");
     expect(header).not.toContain('aria-label="Pre-launch navigation"');

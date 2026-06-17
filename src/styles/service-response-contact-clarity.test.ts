@@ -14,9 +14,7 @@ describe("service response and contact clarity", () => {
     expect(benchmark).toContain("`Backlog Item`: I-026");
     expect(benchmark).toContain("`Weighted Score`: 16.5");
     expect(benchmark).toContain("`Decision`: Supported");
-    expect(benchmark).toContain(
-      "Keep phone, email, and the form as the only visible contact paths",
-    );
+    expect(benchmark).toContain("phone, email");
   });
 
   it("keeps service response expectations compact and channel-backed", () => {
@@ -26,11 +24,13 @@ describe("service response and contact clarity", () => {
     expect(servicePage).toContain(
       'data-testid="service-response-expectations"',
     );
-    expect(servicePage).toContain("חוזרים בדרך שנוחה לך");
+    expect(servicePage).toContain("מענה עד יום עסקים");
     expect(servicePage).toContain("פרטים שמקצרים את הדרך");
-    expect(servicePage).toContain("href={phoneHref}");
-    expect(servicePage).toContain("mailto:${profile.settings.serviceEmail}");
-    expect(servicePage).not.toContain("wa.me");
+    expect(servicePage).toContain("href={contact.phoneHref}");
+    expect(servicePage).toContain("mailto:${contact.email}");
+    expect(servicePage).toContain('data-testid="service-whatsapp-link"');
+    expect(servicePage).toContain("contact.whatsappHref");
+    expect(servicePage).toContain("עד 24 שעות");
     expect(servicePage).not.toContain("LiveChat");
   });
 
@@ -54,16 +54,16 @@ describe("service response and contact clarity", () => {
     expect(serviceForm).toContain("בחרו את הנושא הכי קרוב");
   });
 
-  it("confirms response expectations without adding a hard SLA", () => {
+  it("confirms response expectations with a clear business-day SLA", () => {
     const serviceActions = read("src/app/service/actions.ts");
     const serviceForm = read(
       "src/app/service/_components/service-request-form.tsx",
     );
 
-    expect(serviceActions).toContain("יחזור לאחר בדיקת הפרטים");
+    expect(serviceActions).toContain("יחזור עד 24 שעות ביום עסקים");
     expect(serviceForm).toContain("שמרו את המספר לעדכון");
-    expect(serviceActions).not.toContain("24 שעות");
-    expect(serviceForm).not.toContain("24 שעות");
+    expect(serviceForm).toContain("עד 24");
+    expect(serviceForm).toContain("שעות ביום עסקים");
   });
 });
 

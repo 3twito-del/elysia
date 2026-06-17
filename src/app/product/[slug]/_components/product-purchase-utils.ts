@@ -167,9 +167,10 @@ export function getBeforeOrderSummaryItems(input: {
     },
     {
       key: "warranty",
-      label: "אחריות",
+      label: "אחריות 12 חודשים",
       value:
-        input.warranty ?? "אחריות לשנה על פגמי ייצור, בכפוף למדיניות האחריות.",
+        input.warranty ??
+        "אחריות 12 חודשים על פגמי ייצור, בכפוף למדיניות האחריות.",
     },
     {
       key: "care",

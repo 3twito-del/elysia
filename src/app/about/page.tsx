@@ -253,6 +253,31 @@ export default function AboutPage() {
 
         <RevealSection
           className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-14"
+          id="about-who-is-behind-elysia"
+        >
+          <div className="grid gap-8 border-y border-[var(--glass-border)] py-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
+            <div>
+              <p className="text-muted-foreground text-sm">מי עומד מאחורי Elysia</p>
+              <h2 className="mt-3 text-3xl leading-tight font-semibold sm:text-4xl">
+                עריכה קטנה של תכשיטים שנועדו להיבחר בשקט.
+              </h2>
+            </div>
+            <div className="grid gap-4 text-muted-foreground leading-8">
+              <p>
+                Elysia נבנתה סביב רעיון פשוט: לא להציף. לבחור תכשיטים עדינים,
+                לצלם אותם בצורה שעוזרת להבין קנה מידה, ולהציג חומר, מידה ומחיר
+                לפני שמבקשים החלטה.
+              </p>
+              <p>
+                מאחורי האתר עומדת עבודה בוטיקית של בחירה, סינון ושירות תומך:
+                פחות רעש סביב המכירה, יותר מידע שימושי ברגע שבו בוחרים פריט.
+              </p>
+            </div>
+          </div>
+        </RevealSection>
+
+        <RevealSection
+          className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-14"
           id="about-practical-proof"
           variant="none"
         >

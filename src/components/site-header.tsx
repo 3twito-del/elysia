@@ -25,7 +25,7 @@ const navItems: HeaderNavItem[] = [
   { href: "/search?sort=popular", label: "מבוקשים" },
   { href: "/size-guide", label: "מידות" },
   { href: "/about", label: "אודות" },
-  { href: "/service", label: "שירות אישי" },
+  { href: "/service", label: "תמיכה" },
 ];
 const categoryNavHrefs = navItems
   .map((item) => item.href)
@@ -93,7 +93,7 @@ export function SiteHeader() {
         dir="rtl"
       >
         <p className="sr-only">
-          Elysia: ניווט ראשי לקולקציה, קטגוריות, מתנות, מידות, שירות, מועדפים
+          Elysia: ניווט ראשי לקולקציה, קטגוריות, מתנות, מידות, תמיכה, מועדפים
           ואזור אישי.
         </p>
         <div
@@ -140,12 +140,12 @@ export function SiteHeader() {
             dir="rtl"
           >
             <Link
-              aria-label="שירות"
+              aria-label="תמיכה"
               className="site-header-link site-header-label-action hidden min-h-10 items-center text-[0.94rem] font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] md:inline-flex"
               href="/service"
               prefetch={false}
             >
-              שירות אישי
+              תמיכה
             </Link>
             <Button
               asChild

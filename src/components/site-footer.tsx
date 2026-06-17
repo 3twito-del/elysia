@@ -32,7 +32,7 @@ const catalogLinks = [
 const commerceLinks = [
   { href: "/checkout", label: "סל" },
   { href: "/size-guide", label: "מדריך מידות" },
-  { href: "/service", label: "שירות אישי" },
+  { href: "/service", label: "שירות תומך" },
   { href: "/faq", label: "שאלות ותשובות" },
 ] as const;
 
@@ -63,8 +63,8 @@ const footerTrustSignals = [
   {
     href: "/shipping-returns",
     icon: PackageCheck,
-    label: "מסירה והחזרות",
-    text: "תיאום מסירה, החלפה והחזרה לפי מדיניות האתר.",
+    label: "החלפה והחזרה",
+    text: "הסבר אנושי לפני הטקסט המשפטי.",
   },
   {
     href: "/size-guide",
@@ -75,14 +75,14 @@ const footerTrustSignals = [
   {
     href: "/warranty",
     icon: ShieldCheck,
-    label: "אחריות ושירות",
-    text: "אחריות, תיקון ובדיקת פריט דרך שירות Elysia.",
+    label: "אחריות 12 חודשים",
+    text: "כיסוי לפגמי ייצור לפי מדיניות האחריות.",
   },
   {
     href: "/service",
     icon: MessageCircle,
     label: "שירות אישי",
-    text: "שאלה על פריט, מתנה, מידה או הזמנה קיימת.",
+    text: "מענה עד יום עסקים דרך ערוץ מתועד.",
   },
 ] as const;
 
@@ -132,7 +132,7 @@ export function SiteFooter() {
             data-footer-nav-root
           >
             <FooterNav links={catalogLinks} title="קולקציות" />
-            <FooterNav links={commerceLinks} title="שירות" />
+            <FooterNav links={commerceLinks} title="תמיכה" />
             <FooterNav links={informationLinks} title="Elysia" />
             <FooterNav
               links={footerPolicyLinks}

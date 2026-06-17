@@ -60,7 +60,7 @@ const quickActions = [
 ] as const;
 
 const serviceActions = [
-  { href: "/service", label: "שירות אישי", icon: Headphones },
+  { href: "/service", label: "שירות תומך", icon: Headphones },
   { href: "/stylist", label: "יועץ לוק", icon: Sparkles },
   { href: "/faq", label: "שאלות", icon: CircleHelp },
 ] as const;

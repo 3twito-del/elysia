@@ -12,7 +12,7 @@ import {
   upsertContactTopicInputSchema,
   upsertServiceBranchInputSchema,
 } from "~/lib/service-validation";
-import { siteContact } from "~/config/site-contact";
+import { siteContact, siteWhatsapp } from "~/config/site-contact";
 import { db } from "~/server/db";
 import { mediaProvider } from "~/server/adapters/media";
 import {
@@ -119,12 +119,17 @@ export async function getServiceSettings() {
 
 export async function getPublicContactSettings() {
   const settings = await getServiceSettings();
+  const whatsappNumber =
+    siteWhatsapp.replace(/\D/g, "") || settings.phoneE164.replace(/\D/g, "");
 
   return {
     email: settings.serviceEmail,
     phoneDisplay: settings.displayPhone,
     phoneHref: `tel:${settings.phoneE164}`,
     phoneE164: settings.phoneE164,
+    whatsappDisplay: settings.displayPhone,
+    whatsappHref:
+      whatsappNumber.length > 0 ? `https://wa.me/${whatsappNumber}` : null,
   };
 }
 
@@ -556,7 +561,7 @@ function isPublicServiceDatabaseReadError(error: unknown) {
   return (
     (typeof code === "string" &&
       ["P1000", "P1001", "P1002", "P1008", "P1017", "P2024"].includes(code)) ||
-    /Can't reach database server|Authentication failed|Timed out fetching a new connection|Unable to start a transaction|Connection pool timeout|DATABASE_URL is required/i.test(
+    /Can't reach database server|Authentication failed|Timed out fetching a new connection|Unable to start a transaction|Connection pool timeout|DATABASE_URL is required|Error opening a TLS connection|No credentials are available in the security package/i.test(
       message,
     )
   );

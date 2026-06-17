@@ -1,9 +1,9 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import type { LucideIcon } from "lucide-react";
 import {
   ChevronDown,
-  Gem,
   Gift,
   MessageCircle,
   RotateCcw,
@@ -53,7 +53,7 @@ type ProductPageProps = {
 
 type ServiceRowProps = {
   description: string;
-  icon: typeof Gem;
+  icon: LucideIcon;
   title: string;
 };
 
@@ -189,15 +189,15 @@ export default async function ProductPage({
   const productTrustNotes = [
     {
       icon: ShieldCheck,
-      label: "חומר, מידה ומחיר גלויים לפני הזמנה",
+      label: "אחריות 12 חודשים לפגמי ייצור",
     },
     {
-      icon: Gem,
-      label: "צילום ותיאור שעוזרים להבין קנה מידה",
+      icon: RotateCcw,
+      label: "החלפה או החזרה לפי מדיניות Elysia",
     },
     {
-      icon: Truck,
-      label: "משלוח, החלפה ושירות במקום גלוי",
+      icon: MessageCircle,
+      label: "שירות אישי לפני ואחרי הזמנה",
     },
   ];
   const productFaqItems = getProductFaqItems({
@@ -311,7 +311,7 @@ export default async function ProductPage({
 
             <ul
               className="text-muted-foreground mt-5 hidden gap-2 text-sm leading-6 sm:grid"
-              data-testid="product-commerce-highlights"
+              data-testid="product-trust-block"
             >
               {productTrustNotes.map((note) => {
                 const Icon = note.icon;
@@ -467,19 +467,19 @@ export default async function ProductPage({
               data-testid="product-service-summary"
             >
               <ServiceRow
-                description="אחריות לשנה על פגמי ייצור, עם אפשרות לפנות לשירות לגבי טיפול בתכשיט."
+                description="אחריות 12 חודשים לפגמי ייצור, עם אפשרות לפתוח בקשה מסודרת אם משהו לא תקין."
                 icon={ShieldCheck}
-                title="אחריות"
+                title="אחריות 12 חודשים"
               />
               <ServiceRow
-                description="החלפה או החזרה לפי מדיניות Elysia, עם הסבר לפני סיום ההזמנה."
+                description="החלפה או החזרה לפי מדיניות Elysia, בשפה ברורה לפני הטקסט המשפטי."
                 icon={RotateCcw}
-                title="החלפות והחזרות"
+                title="החלפה והחזרה"
               />
               <ServiceRow
                 description="אפשר לקבל ייעוץ מידה, התאמה ומתנה לפני הזמנה, עם שם התכשיט מצורף לפנייה."
-                icon={Gem}
-                title="שאלה לפני הזמנה"
+                icon={MessageCircle}
+                title="שירות אישי"
               />
             </div>
 
@@ -570,12 +570,12 @@ function getProductFaqItems(input: {
     {
       question: "איך יודעים אם המידה מתאימה?",
       answer:
-        "בדקו את מדריך המידות ואת אפשרויות המידה בעמוד. אם עדיין יש התלבטות, אפשר לשלוח שאלה עם שם התכשיט לפני הזמנה.",
+        "בדקו את מדריך המידות ואת המידות בעמוד. אם יש התלבטות, שלחו שאלה עם שם התכשיט.",
     },
     {
       question: `${input.productName} מתאים למתנה?`,
       answer:
-        "כן. מומלץ לבחור לפי סגנון ענידה, גוון מתכת ותקציב. אם זו מתנה עם מידה לא בטוחה, שירות הלקוחות יכול לעזור לפני הקנייה.",
+        "כן. מומלץ לבחור לפי סגנון, גוון ותקציב. אם המידה לא בטוחה, נוכל לעזור לפני הקנייה.",
     },
     {
       question: "מה חשוב לדעת על משלוח והחזרה?",
