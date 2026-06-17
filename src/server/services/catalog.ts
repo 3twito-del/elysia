@@ -734,7 +734,7 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
     availabilityMode: record.availabilityMode,
     commerceHighlights: getDisplayCommerceHighlights(record),
     deliveryPromise: normalizePublicCatalogCopy(
-      record.deliveryPromise ?? "מסירה עד הבית לאחר אישור הפרטים.",
+      record.deliveryPromise ?? "מסירה עד הבית לאחר השלמת התשלום.",
     ),
     returnPolicy: normalizePublicCatalogCopy(
       record.returnPolicy ?? "החלפה או החזרה בתיאום שירות לפי מדיניות Elysia.",

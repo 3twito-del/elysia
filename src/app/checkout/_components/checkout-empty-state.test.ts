@@ -14,17 +14,20 @@ describe("checkout empty cart recovery", () => {
 
     expect(source).toContain("shouldShowEmptyCartState");
     expect(source).toContain("<CheckoutEmptyCartState />");
-    expect(source).toContain('href: "/category/rings"');
-    expect(source).toContain('href: "/category/necklaces"');
-    expect(source).toContain('href: "/gifts"');
-    expect(source).toContain('href: "/service"');
+    expect(source).toContain("checkoutEmptyRecommendedProducts");
+    expect(source).toContain('href: "/product/hera-bracelet"');
+    expect(source).toContain('href: "/product/muse-pearl-earrings"');
+    expect(source).toContain('href: "/product/venus-line-ring"');
     expect(emptyState).toContain('data-testid="checkout-empty-cart"');
     expect(emptyState).toContain('href="/search"');
-    expect(emptyState).toContain('href="/service"');
-    expect(emptyState).toContain("הסל שלך ממתין לתכשיט הראשון");
-    expect(emptyState).toContain("חזרה לקולקציה");
-    expect(emptyState).toContain("שאלה לפני הזמנה");
-    expect(emptyState).toContain("checkoutEmptyLinks.map");
+    expect(emptyState).toContain('href="/gifts"');
+    expect(emptyState).toContain("התחילי מהנמכרים ביותר");
+    expect(emptyState).toContain("שלושה תכשיטים שנבחרים שוב ושוב");
+    expect(emptyState).toContain("checkoutEmptyRecommendedProducts.map");
+    expect(emptyState).toContain(
+      'data-testid="checkout-empty-recommended-product"',
+    );
+    expect(emptyState).not.toContain('href="/service"');
     expect(emptyState).not.toContain('type="submit"');
     expect(emptyState).not.toContain("local-checkout-submit-button");
     expect(emptyState).not.toContain("shopify-dropship-checkout-button");

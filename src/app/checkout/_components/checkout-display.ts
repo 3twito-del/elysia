@@ -1,9 +1,9 @@
 import { formatPrice } from "~/lib/format";
 
-export const checkoutPriceReviewLabel = "מחיר לאישור";
-export const checkoutTotalReviewLabel = "סכום לאישור";
+export const checkoutPriceReviewLabel = "מחיר לבדיקה";
+export const checkoutTotalReviewLabel = "סכום לבדיקה";
 export const checkoutPricingReviewMessage =
-  "אחד המחירים דורש אישור לפני השלמת ההזמנה.";
+  "אחד המחירים דורש בדיקה לפני שתמשיכי לתשלום.";
 
 type CheckoutDisplayError = {
   message?: string;
@@ -112,12 +112,12 @@ export function getCheckoutFulfillmentSummaryRows({
   shippingLabel,
 }: CheckoutFulfillmentSummaryInput): CheckoutFulfillmentSummaryRow[] {
   const rows: CheckoutFulfillmentSummaryRow[] = [];
-  const localApprovalVerb = localItemCount === 1 ? "יאושר" : "יאושרו";
+  const localDisplayVerb = localItemCount === 1 ? "מוצג" : "מוצגים";
   const supplierContinuationVerb = dropshipItemCount === 1 ? "ימשיך" : "ימשיכו";
 
   if (hasOwnItems) {
     rows.push({
-      detail: `${formatCheckoutItemTypeCount(localItemCount)} ${localApprovalVerb} באתר Elysia לפני תשלום.`,
+      detail: `${formatCheckoutItemTypeCount(localItemCount)} ${localDisplayVerb} באתר Elysia לפני תשלום.`,
       key: "local",
       label: "פריטי החנות",
     });
@@ -142,9 +142,9 @@ export function getCheckoutFulfillmentSummaryRows({
     });
     rows.push({
       detail:
-        "שני המסלולים נשארים נפרדים.",
+        "שני מסלולי התשלום נשארים נפרדים וברורים.",
       key: "confirmation",
-      label: "אישור",
+      label: "תשלום",
     });
 
     return rows;
@@ -157,9 +157,9 @@ export function getCheckoutFulfillmentSummaryRows({
       label: "מסירה",
     });
     rows.push({
-      detail: "הפרטים והסכום יאומתו לפני שמירה ותשלום.",
+      detail: "הסיכום נשמר לפני המעבר לתשלום.",
       key: "confirmation",
-      label: "אישור",
+      label: "תשלום",
     });
   }
 
@@ -170,9 +170,9 @@ export function getCheckoutFulfillmentSummaryRows({
       label: "מסירה",
     });
     rows.push({
-      detail: "לא נוצרת כאן הזמנה מקומית עבור פריטים אלה.",
+      detail: "ההזמנה תמשיך במסלול התשלום הנפרד.",
       key: "confirmation",
-      label: "אישור",
+      label: "תשלום",
     });
   }
 

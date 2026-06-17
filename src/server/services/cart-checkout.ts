@@ -113,7 +113,7 @@ export function assertCartCheckoutPricesAvailable(
   if (hasUnavailablePrice) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "אחד המחירים דורש אישור אישי לפני השלמת ההזמנה.",
+      message: "אחד המחירים דורש בדיקה לפני שתמשיכי לתשלום.",
     });
   }
 }
@@ -442,7 +442,7 @@ async function createCartCheckoutOrderInTransaction(
       customerEmail: input.customer.email,
       discount: totals.discount,
       estimatedDelivery:
-        "מסירה עד הבית לאחר אישור התשלום, לפי מדיניות המשלוחים.",
+        "מסירה עד הבית לאחר השלמת התשלום, לפי מדיניות המשלוחים.",
       items: items.map((item) => ({
         lineTotal: item.unitPrice * item.quantity,
         name: item.name,
@@ -466,7 +466,7 @@ async function createCartCheckoutOrderInTransaction(
     totals,
     itemCount,
     estimatedDelivery:
-      "מסירה עד הבית לאחר אישור התשלום, לפי מדיניות המשלוחים.",
+      "מסירה עד הבית לאחר השלמת התשלום, לפי מדיניות המשלוחים.",
     items: items.map((item) => ({
       lineTotal: item.unitPrice * item.quantity,
       name: item.name,

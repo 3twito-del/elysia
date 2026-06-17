@@ -28,6 +28,10 @@ describe("checkout validation summary and payment confidence", () => {
     expect(checkoutForm).toContain('role="status"');
     expect(checkoutForm).toContain('aria-live="polite"');
     expect(checkoutForm).toContain('data-testid="checkout-payment-confidence"');
+    expect(checkoutForm).toContain(
+      'data-testid="checkout-secure-payment-badge"',
+    );
+    expect(checkoutForm).toContain('data-testid="checkout-gift-wrap-upsell"');
     expect(checkoutForm).toContain("checkoutPaymentConfidenceCopy");
     expect(checkoutForm).toContain("hasMixedSourceCart");
     expect(checkoutForm).toContain("hasDropshipItems && !hasOwnItems");

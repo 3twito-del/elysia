@@ -120,7 +120,7 @@ export function getPurchaseConfidenceItems(input: {
       key: "checkout",
       title: input.requiresSeparateCheckout
         ? "מסלול הזמנה מאובטח"
-        : "אישור לפני השלמה",
+        : "סיכום לפני תשלום",
     },
     {
       description: input.sizeKind
@@ -154,7 +154,7 @@ export function getBeforeOrderSummaryItems(input: {
         input.deliveryPromise ??
         (input.requiresSeparateCheckout
           ? "מסירה ותשלום יושלמו בקופה מאובטחת לאחר בחירת האפשרות."
-          : "מסירה עד הבית לאחר אישור פרטי ההזמנה."),
+          : "מסירה עד הבית לאחר השלמת פרטי ההזמנה והתשלום."),
     },
     {
       key: "returns",
@@ -245,7 +245,7 @@ function getCheckoutConfidenceDescription(input: {
       variant: input.variant,
     })
   ) {
-    return `${input.variantStatusLabel}; הפרטים יאומתו לפני הזמנה.`;
+    return `${input.variantStatusLabel}; הפרטים יוצגו לפני הזמנה.`;
   }
 
   return `${input.variantStatusLabel}; ניתן לפתוח פנייה עם פרטי התכשיט.`;
@@ -262,7 +262,7 @@ function getServiceConfidenceDescription(input: {
     input.deliveryPromise ??
     (input.requiresSeparateCheckout
       ? "מסירה ותשלום יושלמו בקופה מאובטחת."
-      : "מסירה עד הבית לאחר אישור ההזמנה.");
+      : "מסירה עד הבית לאחר השלמת התשלום.");
   const returns =
     input.returnPolicy ??
     (input.requiresSeparateCheckout

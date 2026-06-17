@@ -150,7 +150,7 @@ describe("product purchase utilities", () => {
     };
     const items = getPurchaseConfidenceItems({
       availabilityMode: "READY_TO_ORDER",
-      deliveryPromise: "מסירה עד הבית לאחר אישור הפרטים.",
+      deliveryPromise: "מסירה עד הבית לאחר השלמת פרטי ההזמנה.",
       requiresSeparateCheckout: false,
       returnPolicy: "החלפה או החזרה בתיאום אישי לפי מדיניות Elysia.",
       sizeKind: "ring",
@@ -164,7 +164,7 @@ describe("product purchase utilities", () => {
     const checkoutItem = items.find((item) => item.key === "checkout");
     const fitItem = items.find((item) => item.key === "fit");
 
-    expect(checkoutItem?.description).toContain("יאומתו");
+    expect(checkoutItem?.description).toContain("יוצגו");
     expect(fitItem?.description).toContain("מדריך המידות");
     expect(items.map((item) => item.description).join(" ")).not.toContain("2");
   });
@@ -177,7 +177,7 @@ describe("product purchase utilities", () => {
     const items = getPurchaseConfidenceItems({
       availabilityMode: "READY_TO_ORDER",
       careInstructions: "ניקוי עדין במטלית רכה.",
-      deliveryPromise: "מסירה עד הבית לאחר אישור הפרטים.",
+      deliveryPromise: "מסירה עד הבית לאחר השלמת פרטי ההזמנה.",
       requiresSeparateCheckout: false,
       returnPolicy: "החלפה או החזרה בתיאום אישי.",
       sizeKind: "ring",

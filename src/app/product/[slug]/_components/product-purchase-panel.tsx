@@ -526,7 +526,7 @@ export function ProductPurchasePanel({
         </div>
 
         <div
-          aria-label="שירות ואישור בהזמנה"
+          aria-label="שירות וסיכום בהזמנה"
           className="hidden gap-2 sm:grid"
           data-testid="product-commerce-trust"
         >

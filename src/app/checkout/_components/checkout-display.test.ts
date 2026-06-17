@@ -52,9 +52,9 @@ describe("checkout display helpers", () => {
 
     expect(
       getFriendlyCheckoutErrorMessage({
-        message: "אחד המחירים דורש אישור אישי לפני השלמת ההזמנה.",
+        message: "אחד המחירים דורש בדיקה לפני שתמשיכי לתשלום.",
       }),
-    ).toBe("אחד המחירים דורש אישור אישי לפני השלמת ההזמנה.");
+    ).toBe("אחד המחירים דורש בדיקה לפני שתמשיכי לתשלום.");
   });
 
   it("summarizes local delivery confidence without exact fulfillment promises", () => {
@@ -68,7 +68,7 @@ describe("checkout display helpers", () => {
       }),
     ).toEqual([
       {
-        detail: "2 סוגי תכשיטים יאושרו באתר Elysia לפני תשלום.",
+        detail: "2 סוגי תכשיטים מוצגים באתר Elysia לפני תשלום.",
         key: "local",
         label: "פריטי החנות",
       },
@@ -78,9 +78,9 @@ describe("checkout display helpers", () => {
         label: "מסירה",
       },
       {
-        detail: "הפרטים והסכום יאומתו לפני שמירה ותשלום.",
+        detail: "הסיכום נשמר לפני המעבר לתשלום.",
         key: "confirmation",
-        label: "אישור",
+        label: "תשלום",
       },
     ]);
   });
@@ -107,9 +107,9 @@ describe("checkout display helpers", () => {
         label: "מסירה",
       },
       {
-        detail: "לא נוצרת כאן הזמנה מקומית עבור פריטים אלה.",
+        detail: "ההזמנה תמשיך במסלול התשלום הנפרד.",
         key: "confirmation",
-        label: "אישור",
+        label: "תשלום",
       },
     ]);
     expect(rows.map((row) => row.detail).join(" ")).not.toMatch(/יסופק|יישלח/u);
@@ -126,7 +126,7 @@ describe("checkout display helpers", () => {
       }),
     ).toEqual([
       {
-        detail: "סוג תכשיט אחד יאושר באתר Elysia לפני תשלום.",
+        detail: "סוג תכשיט אחד מוצג באתר Elysia לפני תשלום.",
         key: "local",
         label: "פריטי החנות",
       },
@@ -143,9 +143,9 @@ describe("checkout display helpers", () => {
       },
       {
         detail:
-          "שני המסלולים נשארים נפרדים.",
+          "שני מסלולי התשלום נשארים נפרדים וברורים.",
         key: "confirmation",
-        label: "אישור",
+        label: "תשלום",
       },
     ]);
   });

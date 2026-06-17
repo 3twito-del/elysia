@@ -12,10 +12,10 @@ const madeToOrderProductSlug = "muse-pearl-earrings";
 const madeToOrderProductName = "עגילי Muse Pearl";
 const searchProductSlug = "venus-line-ring";
 const searchProductName = "טבעת Venus Line";
-const checkoutEmptyTitle = "הסל שלך ממתין לתכשיט הראשון";
-const checkoutEmptySupportCopy = "חזרי לקולקציה ובחרי תכשיט";
-const checkoutCatalogCta = "חזרה לקולקציה";
-const checkoutAdviceLink = "שאלה לפני הזמנה";
+const checkoutEmptyTitle = "התחילי מהנמכרים ביותר";
+const checkoutEmptySupportCopy = "שלושה תכשיטים שנבחרים שוב ושוב";
+const checkoutCatalogCta = "התחילי מהנמכרים ביותר";
+const checkoutGiftCta = "מצאי מתנה";
 const homeHeroTitle = "קיץ חדש. זוהר נקי.";
 const zeroShekelPattern = /^\D*0\D*\u20aa\D*$/u;
 const forbiddenCheckoutStateText = [
@@ -77,7 +77,7 @@ test.describe("critical shopping flows", () => {
       page.getByRole("link", { name: new RegExp(cartProductName) }).first(),
     ).toBeVisible();
     await expect(
-      page.getByRole("button", { name: /המשך לתשלום/ }),
+      page.getByRole("button", { name: /המשיכי לתשלום/ }),
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: /הוספת כמות עבור/ }),
@@ -86,7 +86,7 @@ test.describe("critical shopping flows", () => {
       "סקירה",
     );
     await expect(page.getByTestId("checkout-progress-steps")).toContainText(
-      "אישור",
+      "תשלום",
     );
     await expect(page.getByTestId("checkout-line-total").first()).toContainText(
       "סה״כ",
@@ -428,11 +428,14 @@ test.describe("critical shopping flows", () => {
     await expect(
       checkoutEmptyState.getByRole("link", {
         exact: true,
-        name: checkoutAdviceLink,
+        name: checkoutGiftCta,
       }),
     ).toBeVisible();
+    await expect(
+      page.getByTestId("checkout-empty-recommended-product"),
+    ).toHaveCount(3);
     await expect(page.getByTestId("checkout-empty-actions")).toContainText(
-      checkoutAdviceLink,
+      cartProductName,
     );
 
     for (const stateText of forbiddenCheckoutStateText) {
@@ -452,7 +455,8 @@ test.describe("critical shopping flows", () => {
     expect(html).toContain(checkoutEmptyTitle);
     expect(html).toContain(checkoutEmptySupportCopy);
     expect(html).toContain(checkoutCatalogCta);
-    expect(html).toContain(checkoutAdviceLink);
+    expect(html).toContain(checkoutGiftCta);
+    expect(html).toContain("checkout-empty-recommended-product");
     expect(html).not.toContain("checkout-loading-skeleton");
 
     for (const stateText of forbiddenCheckoutStateText) {
@@ -486,9 +490,12 @@ test.describe("critical shopping flows", () => {
       await expect(
         checkoutEmptyState.getByRole("link", {
           exact: true,
-          name: checkoutAdviceLink,
+          name: checkoutGiftCta,
         }),
       ).toBeVisible();
+      await expect(
+        page.getByTestId("checkout-empty-recommended-product"),
+      ).toHaveCount(3);
 
       for (const stateText of forbiddenCheckoutStateText) {
         await expect(page.locator("body")).not.toContainText(stateText);

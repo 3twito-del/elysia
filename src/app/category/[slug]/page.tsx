@@ -109,7 +109,7 @@ const categoryTrustSignals = [
   {
     icon: Truck,
     title: "מסירה ואריזת Elysia",
-    text: "מסירה, החלפה ואריזה למתנה מוצגים לפני אישור ההזמנה.",
+    text: "מסירה, החלפה ואריזה למתנה מוצגים לפני תשלום.",
   },
   {
     icon: Headphones,

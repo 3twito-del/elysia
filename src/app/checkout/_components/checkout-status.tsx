@@ -20,8 +20,8 @@ const checkoutPaymentStatusCopy = {
   },
   ready: {
     icon: CheckCircle2,
-    label: "מוכן לאישור בטוח",
-    text: "אין חיוב בשלב זה. הסכום והפרטים יאושרו לפני המשך.",
+    label: "מוכן לתשלום מאובטח",
+    text: "אין חיוב בשלב זה. הסכום, המשלוח והפרטים מוצגים לפני שתמשיכי.",
     tone: "text-muted-foreground",
   },
   retry: {
@@ -33,7 +33,7 @@ const checkoutPaymentStatusCopy = {
   unavailable: {
     icon: WifiOff,
     label: "תשלום לא זמין כרגע",
-    text: "המשך לתשלום דורש חיבור פעיל. שינויי הסל יישמרו ויוכלו להסתנכרן.",
+    text: "המשיכי לתשלום כשיש חיבור פעיל. שינויי הסל יישמרו ויוכלו להסתנכרן.",
     tone: "text-destructive",
   },
 } satisfies Record<

@@ -16,7 +16,7 @@ export default async function CheckoutPage() {
       <main className="checkout-boutique-page">
         <CompactPageIntro
           className="checkout-boutique-hero"
-          description="התכשיטים שבחרת, פרטי מסירה ושאלה אחרונה לפני התשלום."
+          description="התכשיטים שבחרת, פרטי מסירה וסיכום קצר לפני תשלום מאובטח."
           eyebrow="סל"
           title="הסל שלך"
           variant="checkout"

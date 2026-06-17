@@ -90,7 +90,7 @@ const homeTrustSignals = [
   {
     icon: ShieldCheck,
     title: "תשלום מאובטח",
-    text: "הפרטים מוצגים לפני אישור ההזמנה.",
+    text: "הפרטים מוצגים לפני תשלום.",
   },
   {
     icon: Truck,

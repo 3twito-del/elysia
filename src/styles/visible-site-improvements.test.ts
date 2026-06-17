@@ -576,14 +576,21 @@ describe("visible site improvement affordances", () => {
       "createPortal(mobileCheckoutBar, document.body)",
     );
     expect(checkoutForm).toContain('data-testid="checkout-empty-cart"');
-    expect(checkoutForm).toContain("checkoutEmptyLinks.map");
-    expect(checkoutForm).toContain('href: "/category/rings"');
-    expect(checkoutForm).toContain('href: "/category/necklaces"');
-    expect(checkoutForm).toContain('href: "/gifts"');
+    expect(checkoutForm).toContain("checkoutEmptyRecommendedProducts.map");
+    expect(checkoutForm).toContain(
+      'data-testid="checkout-empty-recommended-product"',
+    );
+    expect(checkoutForm).toContain('href: "/product/hera-bracelet"');
+    expect(checkoutForm).toContain(
+      'href: "/product/muse-pearl-earrings"',
+    );
+    expect(checkoutForm).toContain('href: "/product/venus-line-ring"');
     expect(checkoutForm).toContain('href="/search"');
-    expect(checkoutForm).toContain('href="/service"');
+    expect(checkoutForm).toContain('href="/gifts"');
     expect(checkoutForm).toContain("checkout-boutique-panel");
     expect(checkoutForm).toContain("checkout-policy-notes");
+    expect(checkoutForm).toContain('data-testid="checkout-secure-payment-badge"');
+    expect(checkoutForm).toContain('data-testid="checkout-gift-wrap-upsell"');
     expect(checkoutForm).toContain('data-testid="checkout-order-note-hint"');
     expect(checkoutForm).toContain(
       'aria-describedby="checkout-order-note-hint"',
