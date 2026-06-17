@@ -190,7 +190,6 @@ serwist.addEventListeners();
 async function activateUpdatedServiceWorker() {
   await deleteRetiredRuntimeCaches();
   await self.clients.claim();
-  await reloadControlledWindowClients();
 }
 
 async function deleteRetiredRuntimeCaches() {
@@ -205,23 +204,6 @@ async function deleteRetiredRuntimeCaches() {
       )
       .map((cacheName) => self.caches.delete(cacheName)),
   );
-}
-
-async function reloadControlledWindowClients() {
-  const windowClients = await self.clients.matchAll({
-    includeUncontrolled: true,
-    type: "window",
-  });
-  const navigations: Promise<WindowClient | null | undefined>[] = [];
-
-  for (const client of windowClients) {
-    if (!client.url.startsWith(self.location.origin)) continue;
-    if (!("navigate" in client)) continue;
-
-    navigations.push(client.navigate(client.url).catch(() => undefined));
-  }
-
-  await Promise.all(navigations);
 }
 
 function readPushPayload(event: PushEvent) {
