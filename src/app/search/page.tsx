@@ -628,13 +628,6 @@ function SearchViewToggle({
                 className={cn("size-3.5", active && "stroke-[2.5]")}
               />
               <span>{view.label}</span>
-              {active ? (
-                <span
-                  aria-hidden="true"
-                  className="ms-0.5 size-1.5 rounded-full bg-current"
-                  data-search-view-active-marker={view.value}
-                />
-              ) : null}
             </Link>
           </Button>
         );
@@ -698,7 +691,12 @@ function SearchResultListItem({
         />
         {isUnavailable ? (
           <div className="absolute top-2.5 left-2.5 flex items-start gap-2">
-            <Badge variant="destructive">לא פנוי כרגע</Badge>
+            <Badge
+              className="h-6 border border-red-200 bg-white px-2.5 text-[0.7rem] font-semibold text-red-700 shadow-[0_8px_20px_oklch(0.18_0_0_/_18%)]"
+              variant="outline"
+            >
+              לא פנוי כרגע
+            </Badge>
           </div>
         ) : null}
       </div>
@@ -739,17 +737,10 @@ function SearchResultListItem({
             {shouldShowAvailability ? (
               <span
                 className={cn(
-                  "mt-2 inline-flex max-w-full items-center gap-1.5 rounded-md border border-[var(--glass-border)] px-2.5 py-1.5 text-xs",
+                  "mt-2 inline-flex max-w-full items-center rounded-md border border-[var(--glass-border)] px-2.5 py-1.5 text-xs",
                   isAvailable ? "text-muted-foreground" : "text-foreground",
                 )}
               >
-                <span
-                  aria-hidden="true"
-                  className={cn(
-                    "size-2 shrink-0 rounded-full",
-                    isAvailable ? "bg-emerald-500" : "bg-muted-foreground",
-                  )}
-                />
                 <span className="truncate">{commerceStatus.label}</span>
               </span>
             ) : null}

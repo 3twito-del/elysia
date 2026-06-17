@@ -16,7 +16,7 @@ describe("search view mode contract", () => {
     expect(searchPage).toContain(
       'data-search-view-state={active ? "active" : "inactive"}',
     );
-    expect(searchPage).toContain("data-search-view-active-marker={view.value}");
+    expect(searchPage).not.toContain("data-search-view-active-marker");
     expect(searchPage).toContain('data-active={active ? "true" : "false"}');
     expect(searchPage).toContain('label: "טבלה"');
     expect(searchPage).toContain('label: "שורות"');
@@ -46,6 +46,10 @@ describe("search view mode contract", () => {
     expect(searchPage).toContain("grid-cols-[7.25rem_minmax(0,1fr)]");
     expect(searchPage).toContain("sm:grid-cols-[9rem_minmax(0,1fr)]");
     expect(searchPage).toContain('sizes="(min-width: 1024px) 14rem');
+    expect(searchPage).toContain("bg-white");
+    expect(searchPage).toContain("text-red-700");
+    expect(searchPage).not.toContain("backdrop-blur");
+    expect(searchPage).not.toContain("bg-emerald-500");
     expect(searchPage).not.toContain(
       "brand-product-media glass-inset relative block aspect-[5/4] overflow-hidden md:aspect-square",
     );
