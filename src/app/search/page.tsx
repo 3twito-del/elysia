@@ -693,7 +693,7 @@ function SearchResultListItem({
           <div className="absolute top-2.5 left-2.5 flex items-start gap-2">
             <Badge
               className="h-6 border border-red-200 bg-white px-2.5 text-[0.7rem] font-semibold text-red-700 shadow-[0_8px_20px_oklch(0.18_0_0_/_18%)]"
-              variant="outline"
+              variant="ghost"
             >
               לא פנוי כרגע
             </Badge>
