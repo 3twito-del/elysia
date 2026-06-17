@@ -18,7 +18,8 @@ describe("mobile commerce density", () => {
     );
     expect(source).toContain('data-testid="home-hero-statement"');
     expect(source).toContain('data-testid="home-hero-primary-cta"');
-    expect(source).toContain('data-testid="home-hero-campaign-links"');
+    expect(source).toContain('data-testid="home-commerce-entry-links"');
+    expect(source).not.toContain('data-testid="home-hero-campaign-links"');
     expect(source).toContain('href="/search"');
     expect(source).toContain('href: "/gifts"');
     expect(source).toContain('href: "/category/necklaces"');

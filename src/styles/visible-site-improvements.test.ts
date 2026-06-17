@@ -118,7 +118,7 @@ describe("visible site improvement affordances", () => {
     expect(home).toContain('data-testid="home-hero-copy"');
     expect(home).toContain('data-testid="home-hero-statement"');
     expect(home).toContain('data-testid="home-hero-primary-cta"');
-    expect(home).toContain('data-testid="home-hero-campaign-links"');
+    expect(home).toContain('data-testid="home-commerce-entry-links"');
     expect(home).toContain("storefront-hero");
     expect(home).toContain("max-w-[min(38rem,calc(100vw-2.5rem))]");
     expect(home).toContain("sm:max-w-[min(42rem,45vw)]");
@@ -129,6 +129,7 @@ describe("visible site improvement affordances", () => {
     expect(home).toContain('href: "/category/necklaces"');
     expect(home).toContain('data-testid="home-category-tiles"');
     expect(home).toContain('data-testid="home-featured-products"');
+    expect(home).not.toContain('data-testid="home-hero-campaign-links"');
     expect(home).not.toContain('data-testid="home-hero-secondary-cta"');
     expect(home).not.toContain('data-testid="home-hero-secondary-line"');
     expect(home).not.toContain('href="/category/rings"');
@@ -581,15 +582,15 @@ describe("visible site improvement affordances", () => {
       'data-testid="checkout-empty-recommended-product"',
     );
     expect(checkoutForm).toContain('href: "/product/hera-bracelet"');
-    expect(checkoutForm).toContain(
-      'href: "/product/muse-pearl-earrings"',
-    );
+    expect(checkoutForm).toContain('href: "/product/muse-pearl-earrings"');
     expect(checkoutForm).toContain('href: "/product/venus-line-ring"');
     expect(checkoutForm).toContain('href="/search"');
     expect(checkoutForm).toContain('href="/gifts"');
     expect(checkoutForm).toContain("checkout-boutique-panel");
     expect(checkoutForm).toContain("checkout-policy-notes");
-    expect(checkoutForm).toContain('data-testid="checkout-secure-payment-badge"');
+    expect(checkoutForm).toContain(
+      'data-testid="checkout-secure-payment-badge"',
+    );
     expect(checkoutForm).toContain('data-testid="checkout-gift-wrap-upsell"');
     expect(checkoutForm).toContain('data-testid="checkout-order-note-hint"');
     expect(checkoutForm).toContain(

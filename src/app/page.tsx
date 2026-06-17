@@ -109,7 +109,7 @@ const homeTrustSignals = [
   },
 ] as const;
 
-const homeHeroCampaignLinks = [
+const homeCommerceEntryLinks = [
   {
     href: "/gifts",
     label: "מתנות לפי רגע",
@@ -220,22 +220,6 @@ export default async function Home() {
               </Button>
             </div>
           </div>
-          <div
-            className="home-hero-campaign-links motion-copy-item [--motion-copy-delay:160ms]"
-            data-testid="home-hero-campaign-links"
-          >
-            {homeHeroCampaignLinks.map((item) => (
-              <Link
-                className="home-hero-campaign-link"
-                href={item.href}
-                key={item.href}
-                prefetch={false}
-              >
-                <span className="home-hero-campaign-label">{item.label}</span>
-                <span className="home-hero-campaign-text">{item.text}</span>
-              </Link>
-            ))}
-          </div>
         </div>
       </RevealSection>
 
@@ -272,6 +256,23 @@ export default async function Home() {
             );
           })}
         </div>
+        <nav
+          aria-label="כניסות מהירות לקולקציה"
+          className="home-commerce-entry-links"
+          data-testid="home-commerce-entry-links"
+        >
+          {homeCommerceEntryLinks.map((item) => (
+            <Link
+              className="home-commerce-entry-link"
+              href={item.href}
+              key={item.href}
+              prefetch={false}
+            >
+              <span className="home-commerce-entry-label">{item.label}</span>
+              <span className="home-commerce-entry-text">{item.text}</span>
+            </Link>
+          ))}
+        </nav>
       </RevealSection>
 
       <RevealSection

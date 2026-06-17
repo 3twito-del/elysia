@@ -5,7 +5,8 @@ Status: master instruction document for future Elysia product benchmark reviews.
 This document consolidates public UX, commerce, performance, backend, admin,
 security, accessibility, SEO, QA, and release-readiness evaluation into one
 repeatable benchmark workflow. It augments, but does not replace,
-`docs/PUBLIC_CHANGE_GATE.md` and `docs/ENGINEERING_CONVENTIONS.md`.
+`docs/PUBLIC_CHANGE_GATE.md`, `docs/ELYSIA_DESIGN_MANIFESTO.md`, and
+`docs/ENGINEERING_CONVENTIONS.md`.
 
 ## Purpose and Decision Rules
 
@@ -21,6 +22,9 @@ Core rules:
 - Public design, UX, content, route structure, and commerce-control changes must
   pass the High Jewelry Reference Gate from `docs/PUBLIC_CHANGE_GATE.md`, unless
   a mandatory or explicit user-approved exception is recorded.
+- Public design, UX, and copy changes should also be checked against
+  `docs/ELYSIA_DESIGN_MANIFESTO.md` as an orientative, non-blocking quality
+  layer. It does not add a threshold and does not override the gate.
 - `PUBLIC_STRUCTURE_BENCHMARK_V4` remains the route-structure marker for public
   structural decisions.
 - The 30-site public benchmark corpus is secondary evidence for public commerce
@@ -48,9 +52,12 @@ exception.
    archetypes enforced in `src/lib/public-structure-policy.ts`.
 4. Public commerce benchmark corpus: the 30-site corpus defined in
    `src/lib/public-design-policy.ts`, total weight `37.5`, threshold `18.75`.
-5. Repository QA truth: route inventory, performance QA, visual QA, smoke tests,
+5. Elysia Design Manifesto: the orientative, non-blocking design authority in
+   `docs/ELYSIA_DESIGN_MANIFESTO.md`, used to choose the quieter and more
+   product-led implementation when supported options remain.
+6. Repository QA truth: route inventory, performance QA, visual QA, smoke tests,
    e2e coverage, build checks, coherence checks, and production-readiness gates.
-6. Product-specific operational evidence: current code behavior, database
+7. Product-specific operational evidence: current code behavior, database
    schema, provider contracts, logs, artifacts, support risks, and documented
    business rules.
 

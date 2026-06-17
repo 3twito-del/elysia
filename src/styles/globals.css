@@ -2149,6 +2149,65 @@ main
   padding-block: clamp(1.75rem, 3.5vw, 3rem);
 }
 
+.home-commerce-entry-links {
+  display: grid;
+  gap: 0;
+  max-width: 46rem;
+  margin-inline: auto;
+  border-block: 1px solid var(--glass-border);
+}
+
+.home-commerce-entry-link {
+  display: grid;
+  gap: 0.18rem;
+  padding-block: 0.95rem;
+  color: var(--foreground);
+  text-align: center;
+  text-decoration: none;
+  transition:
+    color var(--motion-fast) var(--ease-motion-standard),
+    background-color var(--motion-fast) var(--ease-motion-standard);
+}
+
+.home-commerce-entry-link + .home-commerce-entry-link {
+  border-top: 1px solid var(--glass-border);
+}
+
+.home-commerce-entry-link:hover,
+.home-commerce-entry-link:focus-visible {
+  background: rgb(255 250 244 / 52%);
+  color: var(--foreground);
+  outline: none;
+}
+
+.home-commerce-entry-link:focus-visible {
+  outline: 2px solid var(--foreground);
+  outline-offset: 3px;
+}
+
+.home-commerce-entry-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.home-commerce-entry-text {
+  color: var(--muted-foreground);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+@media (min-width: 768px) {
+  .home-commerce-entry-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-commerce-entry-link + .home-commerce-entry-link {
+    border-top: 0;
+    border-inline-start: 1px solid var(--glass-border);
+  }
+}
+
 [data-testid="home-material-trust"] {
   gap: clamp(1.5rem, 3vw, 2.5rem);
   padding-block: clamp(2rem, 4vw, 3.5rem);
@@ -4806,53 +4865,6 @@ footer nav a:focus-visible {
   .home-hero-cta-primary:not(:disabled):is(:hover, :focus-visible)
   .home-hero-cta-icon {
   transform: translateX(-0.25rem);
-}
-
-.home-hero-campaign-links {
-  display: grid;
-  gap: 0;
-  width: min(100%, 26rem);
-  margin-top: clamp(1.2rem, 2.5vw, 1.75rem);
-  border-block: 1px solid rgb(255 250 244 / 24%);
-}
-
-.home-hero-campaign-link {
-  display: grid;
-  gap: 0.15rem;
-  padding-block: 0.72rem;
-  color: white;
-  text-decoration: none;
-  transition:
-    color var(--motion-fast) var(--ease-motion-standard),
-    background-color var(--motion-fast) var(--ease-motion-standard);
-}
-
-.home-hero-campaign-link + .home-hero-campaign-link {
-  border-top: 1px solid rgb(255 250 244 / 16%);
-}
-
-.home-hero-campaign-link:hover,
-.home-hero-campaign-link:focus-visible {
-  background: rgb(255 250 244 / 7%);
-  color: white;
-  outline: none;
-}
-
-.home-hero-campaign-link:focus-visible {
-  outline: 2px solid rgb(255 250 244 / 72%);
-  outline-offset: 3px;
-}
-
-.home-hero-campaign-label {
-  font-size: 0.86rem;
-  font-weight: 600;
-  line-height: 1.45;
-}
-
-.home-hero-campaign-text {
-  color: rgb(255 250 244 / 74%);
-  font-size: 0.76rem;
-  line-height: 1.45;
 }
 
 .public-motion-shell [data-slot="button"].product-primary-cta:not(:disabled),

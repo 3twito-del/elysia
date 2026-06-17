@@ -21,6 +21,11 @@ stop before editing files. Implementation may continue only after the user
 explicitly approves an exception, and that exception must be recorded in the
 work summary or follow-up change note.
 
+`docs/ELYSIA_DESIGN_MANIFESTO.md` is the orientative design authority after
+this gate. It helps choose between supported implementations and keeps the
+public UI aligned with the Elysia house point of view, but it is non-blocking and
+does not approve a change that fails the High Jewelry Reference Gate.
+
 ## High Jewelry Reference Gate
 
 The Tier A-only high jewelry gate uses 15 Tier A high jewelry sites. Each site
@@ -56,12 +61,14 @@ which requires support from at least 8 of 15 sites.
    Use the broad 30-site public benchmark corpus only as secondary commerce
    usability context; the high-jewelry gate wins for luxury, content, and
    design-tone decisions.
-4. Record support as site names plus evidence URLs, then calculate the weighted
+4. Read `docs/ELYSIA_DESIGN_MANIFESTO.md` as the orientative layer for tone,
+   restraint, spacing, media, copy, mobile, and commerce emphasis.
+5. Record support as site names plus evidence URLs, then calculate the weighted
    score. A score of at least `11.25` means supported and implementable.
-5. If the score is below `11.25`, mark the request as unsupported and do not
+6. If the score is below `11.25`, mark the request as unsupported and do not
    edit code. The user may approve an explicit exception; if so, record the
    exception and implement with the exception called out.
-6. Mandatory legal, accessibility, payment, SEO, cookie, and backend-correctness
+7. Mandatory legal, accessibility, payment, SEO, cookie, and backend-correctness
    changes may pass as mandatory exceptions, but the exception must still be
    explicit.
 

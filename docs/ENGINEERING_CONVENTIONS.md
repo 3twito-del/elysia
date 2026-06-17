@@ -29,6 +29,17 @@
 - Focus states must remain visible on links, icon buttons, filter chips, and
   mobile navigation.
 
+## Public Design Work
+
+- Before changing public UI, UX, content density, commerce controls, media, or
+  copy, read `docs/ELYSIA_DESIGN_MANIFESTO.md` after applying the public gate.
+- Treat the manifesto as orientative and non-blocking: it chooses the default
+  taste direction, but it does not replace `HIGH_JEWELRY_REFERENCE_GATE` or
+  mandatory legal, accessibility, payment, security, SEO, privacy, and backend
+  correctness requirements.
+- If implementation intentionally diverges from the manifesto, record the reason
+  in the work summary or follow-up change note.
+
 ## Commerce Labels
 
 - Use `formatPrice` from `src/lib/format.ts`.
