@@ -170,10 +170,10 @@ function SheetContent({
         {showCloseButton && (
           <SheetPrimitive.Close data-slot="sheet-close" asChild>
             <Button
-              className="absolute end-3 top-3"
+              className="absolute end-2 top-2"
               data-icon-tooltip="סגירה"
               data-icon-tooltip-placement="bottom"
-              size="icon-sm"
+              size="icon"
               variant="ghost"
             >
               <XIcon aria-hidden="true" />
