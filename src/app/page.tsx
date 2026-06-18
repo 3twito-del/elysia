@@ -40,98 +40,98 @@ const categoryEditorialCopy: Record<
   { description: string; kicker: string }
 > = {
   bracelets: {
-    description: "שכבות דקות שמלוות את היד לאורך כל היום.",
-    kicker: "קטגוריה",
+    description: "צמידים מדויקים שנועדו לענידה יחידה או בשכבות.",
+    kicker: "The Edit",
   },
   earrings: {
-    description: "ברק שמחזיק מהבוקר ועד הערב.",
-    kicker: "קטגוריה",
+    description: "עגילים שנעים בטבעיות בין היומיום לרגעים של ערב.",
+    kicker: "The Edit",
   },
   necklaces: {
-    description: "תליונים שמעלים כל לוק, מהיומיומי ועד הערב.",
-    kicker: "קטגוריה",
+    description: "קווים עדינים ותליונים שמעניקים לכל מראה נקודת אור.",
+    kicker: "The Edit",
   },
   rings: {
-    description: "נוכחות עדינה — לבד, בזוג או בשכבות.",
-    kicker: "קטגוריה",
+    description: "טבעות בעלות נוכחות שקטה, לענידה לבד או בשילובים אישיים.",
+    kicker: "The Edit",
   },
 };
 
 const materialTrust = [
   {
     icon: Gem,
-    title: "חומר",
-    text: "זהב, כסף, פנינה ואבני צבע.",
+    title: "חומרים נבחרים",
+    text: "זהב, כסף, פנינים ואבני צבע, עם פירוט ברור לכל תכשיט.",
   },
   {
     icon: Ruler,
-    title: "מידה",
-    text: "מדויקת, עם מדריך מידות.",
+    title: "התאמה מדויקת",
+    text: "מדריך מידות וליווי אישי לבחירה שנכונה לך.",
   },
   {
     icon: ShieldCheck,
-    title: "שירות",
-    text: "כאן לכל שאלה, עוד לפני הבחירה.",
+    title: "שירות מתמשך",
+    text: "מענה אנושי לפני ההזמנה וגם לאחריה.",
   },
 ] as const;
 
 const editorialPrinciples = [
   {
-    title: "נבחר",
-    text: "כל פריט מצדיק את מקומו.",
+    title: "עיצוב",
+    text: "צללית ברורה שנשארת רלוונטית מעבר לעונה.",
   },
   {
-    title: "מדויק",
-    text: "חומר, גימור, אבן ומידה.",
+    title: "מלאכת מחשבת",
+    text: "חומר, גימור ופרופורציה שנבחנים עד הפרט האחרון.",
   },
   {
-    title: "אישי",
-    text: "תקציב, אירוע וסגנון משלך.",
+    title: "בחירה אישית",
+    text: "תכשיט שמתאים לסגנון, לרגע ולדרך שבה תרצי לענוד אותו.",
   },
 ] as const;
 
 const homeTrustSignals = [
   {
     icon: ShieldCheck,
-    title: "תשלום מאובטח",
-    text: "שקוף לחלוטין, עד הפרט האחרון.",
+    title: "קנייה בטוחה",
+    text: "תשלום מאובטח ומחיר ברור, עד לאישור ההזמנה.",
   },
   {
     icon: Truck,
-    title: "משלוח והחלפות",
-    text: "מסירה, החלפה והחזרה — בלי דאגות.",
+    title: "משלוח והחזרה",
+    text: "כל המידע לבחירה רגועה, לפני ואחרי הרכישה.",
   },
   {
     icon: Gift,
-    title: "אריזת מתנה",
-    text: "עטופה בעבודת יד, מוכנה להענקה.",
+    title: "אריזה מוקפדת",
+    text: "כל תכשיט מגיע מוכן לרגע שבו מעניקים אותו.",
   },
   {
     icon: Headphones,
     title: "ליווי אישי",
-    text: "אנחנו כאן, עוד לפני ההזמנה.",
+    text: "עזרה אנושית בבחירת תכשיט, מידה ומתנה.",
   },
 ] as const;
 
 export const metadata: Metadata = {
-  title: "Elysia Jewellery | תכשיטים בוטיקיים",
+  title: "Elysia Jewellery | תכשיטים בעיצוב מדויק",
   description:
-    "Elysia Jewellery היא בית תכשיטים בוטיקי לתכשיטי כסף, ציפוי זהב, פנינים ואבני צבע: טבעות, שרשראות, עגילים וצמידים למתנה, ליומיום ולערב.",
+    "קולקציה ערוכה של טבעות, שרשראות, עגילים וצמידים בכסף, ציפוי זהב, פנינים ואבני צבע, עם מדריך מידות ושירות אישי.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "Elysia Jewellery | תכשיטים בוטיקיים",
+    title: "Elysia Jewellery | תכשיטים בעיצוב מדויק",
     description:
-      "תכשיטים עדינים לקיץ, למתנות וללוקים יומיומיים, עם חומר, מידה ושירות לפני הזמנה.",
+      "קולקציה ערוכה של תכשיטים בעיצוב מדויק, עם חומרים נבחרים, מדריך מידות ושירות אישי.",
     url: "/",
     images: [{ url: boutiqueHeroImage }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Elysia Jewellery | תכשיטים בוטיקיים",
+    title: "Elysia Jewellery | תכשיטים בעיצוב מדויק",
     description:
-      "תכשיטים עדינים לקיץ, למתנות וללוקים יומיומיים, עם חומר, מידה ושירות לפני הזמנה.",
+      "קולקציה ערוכה של תכשיטים בעיצוב מדויק, עם חומרים נבחרים, מדריך מידות ושירות אישי.",
     images: [boutiqueHeroImage],
   },
 };
@@ -190,7 +190,7 @@ export default async function Home() {
             className="home-hero-statement motion-copy-item storefront-hero-statement [--motion-copy-delay:90ms]"
             data-testid="home-hero-statement"
           >
-            הקולקציה החדשה נחשפת.
+            תכשיטים שנבחרו לחיים, לא רק לרגע.
           </p>
           <div
             className="home-hero-actions motion-copy-item storefront-hero-actions [--motion-copy-delay:130ms]"
@@ -204,7 +204,7 @@ export default async function Home() {
                   href="/search"
                   prefetch={false}
                 >
-                  לכל התכשיטים
+                  לגלות את הקולקציה
                   <ArrowLeft
                     aria-hidden="true"
                     className="home-hero-cta-icon size-4"
@@ -257,10 +257,10 @@ export default async function Home() {
       >
         <SectionHeader
           actionHref="/search"
-          actionLabel="כל התכשיטים"
-          eyebrow="Shop by piece"
-          text="טבעות, שרשראות, עגילים, צמידים."
-          title="התחילי מהתכשיט."
+          actionLabel="לגלות את כל התכשיטים"
+          eyebrow="Shop by Category"
+          text="טבעות, שרשראות, עגילים וצמידים שנועדו להפוך לחלק מהסגנון שלך."
+          title="Find Your Signature"
         />
         <RevealGrid
           className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
@@ -281,9 +281,9 @@ export default async function Home() {
         <div className="mx-auto max-w-[92rem]">
           <SectionHeader
             actionHref="/search?sort=newest"
-            actionLabel="חדש בקולקציה"
-            eyebrow="New in"
-            text="קלילים לענידה, מדויקים בחומר."
+            actionLabel="לגלות מה חדש"
+            eyebrow="New Arrivals"
+            text="עיצובים חדשים, קלים לענידה ובעלי נוכחות שנשארת."
             title="Icons of Summer"
           />
           {featuredProducts.length > 0 ? (
@@ -310,9 +310,9 @@ export default async function Home() {
         id="materials"
       >
         <SectionHeader
-          eyebrow="Materials & service"
-          text="חומר, גימור, מידה ומשלוח."
-          title="הפרטים שעושים את ההבדל."
+          eyebrow="Craft & Care"
+          text="חומרים נבחרים, פרופורציות מדויקות ושירות שממשיך אחרי הבחירה."
+          title="The Details Matter"
         />
         <div
           className="grid gap-5 border-y border-[var(--glass-border)] py-6 md:grid-cols-3"
@@ -349,10 +349,10 @@ export default async function Home() {
           <div className="boutique-story-copy">
             <SectionHeader
               actionHref="/about"
-              actionLabel="אודות"
-              eyebrow="Elysia"
-              text="פחות רעש. בחירה מדויקת."
-              title="בוטיק קטן, עין מדויקת."
+              actionLabel="להכיר את Elysia"
+              eyebrow="The Elysia Point of View"
+              text="אוסף ערוך בקפידה, שבו כל תכשיט נבחר בזכות העיצוב, החומר והאופן שבו הוא מרגיש כשעונדים אותו."
+              title="A Distinct Point of View"
             />
           </div>
           <div className="boutique-story-secondary-copy">
@@ -394,31 +394,35 @@ export default async function Home() {
       >
         <div className="storefront-final-panel mx-auto max-w-[92rem]">
           <section className="storefront-final-primary">
-            <p className="storefront-eyebrow">המבחר מתעדכן</p>
-            <h2 className="storefront-final-title">
-              תכשיט קטן משנה הכול.
+            <p className="storefront-eyebrow" dir="ltr">
+              Your Next Signature
+            </p>
+            <h2 className="storefront-final-title" dir="ltr">
+              Find the One That Feels Like You
             </h2>
             <p className="storefront-final-text">
-              לוק, תקציב או חומר — ואנחנו כאן עוד לפני שמזמינים.
+              בחרי לפי סגנון, חומר או רגע. אנחנו כאן כדי לעזור לך לדייק את הבחירה.
             </p>
             <div className="storefront-final-actions">
               <Button asChild>
-                <Link href="/search">לכל התכשיטים</Link>
+                <Link href="/search">לגלות את הקולקציה</Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href="/service">שאלה לפני הזמנה</Link>
+                <Link href="/service">לקבל ייעוץ אישי</Link>
               </Button>
             </div>
           </section>
 
           <section className="storefront-final-updates" id="collection-updates">
             <div>
-              <p className="storefront-eyebrow">עדכוני קולקציה</p>
-              <h2 className="storefront-final-subtitle">
-                מכתב קצר, כשיש חדש.
+              <p className="storefront-eyebrow" dir="ltr">
+                Elysia Notes
+              </p>
+              <h2 className="storefront-final-subtitle" dir="ltr">
+                A Little Something New
               </h2>
               <p className="storefront-final-text">
-                בלי עומס. רק מה שחדש.
+                השקות חדשות, בחירות עונתיות וסיפורים מאחורי התכשיטים.
               </p>
             </div>
             <div className="storefront-final-newsletter">
@@ -447,9 +451,24 @@ function SectionHeader({
   return (
     <div className="commerce-section-header">
       <div className="commerce-section-header-copy">
-        <p className="commerce-section-header-eyebrow">{eyebrow}</p>
-        <h2 className="commerce-section-header-title">{title}</h2>
-        <p className="commerce-section-header-description">{text}</p>
+        <p
+          className="commerce-section-header-eyebrow"
+          dir={getHeroTextDirection(eyebrow)}
+        >
+          {eyebrow}
+        </p>
+        <h2
+          className="commerce-section-header-title"
+          dir={getHeroTextDirection(title)}
+        >
+          {title}
+        </h2>
+        <p
+          className="commerce-section-header-description"
+          dir={getHeroTextDirection(text)}
+        >
+          {text}
+        </p>
       </div>
       {actionHref && actionLabel ? (
         <div className="commerce-section-header-action">
@@ -470,7 +489,7 @@ function HomeCategoryCard({ category }: { category: CatalogCategory }) {
 
   return (
     <Link
-      aria-label={`מעבר לקטגוריית ${category.name}`}
+      aria-label={`לגלות את קטגוריית ${category.name}`}
       className="boutique-collection-card"
       data-category-slug={category.slug}
       data-testid="home-category-card"
@@ -490,7 +509,7 @@ function HomeCategoryCard({ category }: { category: CatalogCategory }) {
       <span className="boutique-collection-copy">
         <span className="min-w-0">
           <span className="storefront-eyebrow">
-            {copy?.kicker ?? "לפי תכשיט"}
+            {copy?.kicker ?? "The Edit"}
           </span>
           <span className="boutique-collection-title">{category.name}</span>
           <span className="boutique-collection-description">

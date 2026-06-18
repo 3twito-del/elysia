@@ -108,19 +108,19 @@ export function SiteFooter() {
               Elysia
             </span>
             <p className="site-footer-brand-text mt-7 hidden max-w-lg text-base leading-8 sm:block sm:text-[1.05rem] sm:leading-9">
-              תכשיטים עדינים, מדויקים ונקיים — לבחירה יומיומית, למתנה ולאור של
-              קיץ.
+              תכשיטים שנבחרו בזכות עיצוב מדויק, חומרים יפים והנוכחות שהם מביאים
+              לכל יום.
             </p>
             <div className="site-footer-newsletter mt-7 max-w-xl sm:mt-11">
               <p className="site-footer-kicker text-xs font-medium tracking-normal">
-                הצטרפות לעדכונים
+                Elysia Notes
               </p>
               <p className="site-footer-newsletter-copy mt-4 hidden max-w-md text-sm leading-7 sm:block sm:leading-8">
-                קבלי עדכונים על קולקציות חדשות, מתנות ופריטים שנבחרו בקפידה.
+                קולקציות חדשות, בחירות עונתיות וסיפורים מאחורי התכשיטים.
               </p>
               <NewsletterForm
-                hintText="נשלח רק כשיש קולקציה חדשה, רעיון למתנה או פריט שנבחר בקפידה."
-                submitLabel="הצטרפות לעדכונים"
+                hintText="נשלח רק כשיש משהו חדש שכדאי לראות."
+                submitLabel="להצטרף"
                 variant="footer"
               />
             </div>

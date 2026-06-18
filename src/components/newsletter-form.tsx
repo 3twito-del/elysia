@@ -22,8 +22,8 @@ const initialState: PublicActionState = {};
 const newsletterEmailHintId = "newsletter-email-hint";
 const newsletterStatusId = "newsletter-status";
 const newsletterOfflineStatusId = "newsletter-offline-status";
-const defaultHintText = "רק כשיש משהו חדש.";
-const defaultSubmitLabel = "לקבל עדכון";
+const defaultHintText = "רק כשיש משהו שבאמת כדאי לפתוח.";
+const defaultSubmitLabel = "להצטרף";
 
 type NewsletterFormProps = {
   hintText?: string;
