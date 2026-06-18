@@ -40,19 +40,19 @@ const categoryEditorialCopy: Record<
   { description: string; kicker: string }
 > = {
   bracelets: {
-    description: "שכבות דקות, מתנה קטנה ורגע שבו היד צריכה אור.",
+    description: "שכבות דקות שמלוות את היד לאורך כל היום.",
     kicker: "קטגוריה",
   },
   earrings: {
-    description: "ברק שמחזיק בוקר, ערב וכל מעבר ביניהם.",
+    description: "ברק שמחזיק מהבוקר ועד הערב.",
     kicker: "קטגוריה",
   },
   necklaces: {
-    description: "תליונים שמרימים חולצה פשוטה או שמלת ערב.",
+    description: "תליונים שמעלים כל לוק, מהיומיומי ועד הערב.",
     kicker: "קטגוריה",
   },
   rings: {
-    description: "נוכחות עדינה לבד, בזוג או בשכבות.",
+    description: "נוכחות עדינה — לבד, בזוג או בשכבות.",
     kicker: "קטגוריה",
   },
 };
@@ -61,17 +61,17 @@ const materialTrust = [
   {
     icon: Gem,
     title: "חומר",
-    text: "זהב, כסף, פנינה, אבן צבע.",
+    text: "זהב, כסף, פנינה ואבני צבע.",
   },
   {
     icon: Ruler,
     title: "מידה",
-    text: "מדויקת, עם מדריך.",
+    text: "מדויקת, עם מדריך מידות.",
   },
   {
     icon: ShieldCheck,
     title: "שירות",
-    text: "לשאול לפני שבוחרים.",
+    text: "כאן לכל שאלה, עוד לפני הבחירה.",
   },
 ] as const;
 
@@ -82,11 +82,11 @@ const editorialPrinciples = [
   },
   {
     title: "מדויק",
-    text: "חומר, גימור, אבן, מידה.",
+    text: "חומר, גימור, אבן ומידה.",
   },
   {
     title: "אישי",
-    text: "תקציב, אירוע, סגנון.",
+    text: "תקציב, אירוע וסגנון משלך.",
   },
 ] as const;
 
@@ -94,22 +94,22 @@ const homeTrustSignals = [
   {
     icon: ShieldCheck,
     title: "תשלום מאובטח",
-    text: "הכול גלוי לפני התשלום.",
+    text: "שקוף לחלוטין, עד הפרט האחרון.",
   },
   {
     icon: Truck,
-    title: "משלוח והחלפה",
-    text: "מסירה, החלפה, החזרה.",
+    title: "משלוח והחלפות",
+    text: "מסירה, החלפה והחזרה — בלי דאגות.",
   },
   {
     icon: Gift,
-    title: "מתנה מוכנה",
-    text: "ארוזה ומוכנה.",
+    title: "אריזת מתנה",
+    text: "עטופה בעבודת יד, מוכנה להענקה.",
   },
   {
     icon: Headphones,
-    title: "שירות אנושי",
-    text: "מענה לפני ההזמנה.",
+    title: "ליווי אישי",
+    text: "אנחנו כאן, עוד לפני ההזמנה.",
   },
 ] as const;
 
@@ -190,7 +190,7 @@ export default async function Home() {
             className="home-hero-statement motion-copy-item storefront-hero-statement [--motion-copy-delay:90ms]"
             data-testid="home-hero-statement"
           >
-            הקולקציה החדשה.
+            הקולקציה החדשה נחשפת.
           </p>
           <div
             className="home-hero-actions motion-copy-item storefront-hero-actions [--motion-copy-delay:130ms]"
@@ -283,7 +283,7 @@ export default async function Home() {
             actionHref="/search?sort=newest"
             actionLabel="חדש בקולקציה"
             eyebrow="New in"
-            text="קל לענידה. ברור בחומר."
+            text="קלילים לענידה, מדויקים בחומר."
             title="Icons of Summer"
           />
           {featuredProducts.length > 0 ? (
@@ -311,8 +311,8 @@ export default async function Home() {
       >
         <SectionHeader
           eyebrow="Materials & service"
-          text="חומר, גימור, מידה, משלוח."
-          title="הפרטים שסוגרים החלטה."
+          text="חומר, גימור, מידה ומשלוח."
+          title="הפרטים שעושים את ההבדל."
         />
         <div
           className="grid gap-5 border-y border-[var(--glass-border)] py-6 md:grid-cols-3"
@@ -399,7 +399,7 @@ export default async function Home() {
               תכשיט קטן משנה הכול.
             </h2>
             <p className="storefront-final-text">
-              לוק, תקציב או חומר. ואנחנו כאן לפני שמזמינים.
+              לוק, תקציב או חומר — ואנחנו כאן עוד לפני שמזמינים.
             </p>
             <div className="storefront-final-actions">
               <Button asChild>
