@@ -37,33 +37,33 @@ const serviceTracks = [
   {
     icon: MessageSquareText,
     title: "שאלה על תכשיט",
-    text: "התלבטות על לוק, מתנה, מידה או פריט מסוים.",
+    text: "לוק, מתנה, מידה.",
   },
   {
     icon: Wrench,
     title: "תיקון ואחריות",
-    text: "בדיקה של תיקון, אחריות או טיפול בתכשיט.",
+    text: "תיקון, אחריות, טיפול.",
   },
   {
     icon: RotateCcw,
     title: "החלפות והחזרות",
-    text: "פנייה בנושא החלפה או החזרה לפי מדיניות האתר.",
+    text: "החלפה או החזרה.",
   },
   {
     icon: Ruler,
     title: "מידה והתאמה",
-    text: "עזרה באורך, מידה או התאמה לפני הזמנה.",
+    text: "אורך, מידה, התאמה.",
   },
 ] as const;
 
 const serviceResponseExpectations = [
   {
     title: "מענה עד יום עסקים",
-    text: "נחזור עד 24 שעות בימי עסקים, לפי פרטי הקשר שסומנו בטופס.",
+    text: "עד 24 שעות, בימי עסקים.",
   },
   {
     title: "פרטים שמקצרים את הדרך",
-    text: "מספר הזמנה, שם תכשיט או תמונה, וכבר אפשר לדייק את התשובה.",
+    text: "מספר הזמנה, שם תכשיט, תמונה.",
   },
 ] as const;
 
@@ -72,25 +72,25 @@ const servicePriorityActions = [
     href: "/service?topic=sizing#service-form",
     icon: Ruler,
     label: "לפני קנייה",
-    text: "מידה, מתנה, חומר או התאמה ללוק.",
+    text: "מידה, חומר, התאמה.",
   },
   {
     href: "/service?topic=order#service-form",
     icon: PackageCheck,
     label: "הזמנה קיימת",
-    text: "בירור, עדכון פרטים או מסירה.",
+    text: "בירור, עדכון, מסירה.",
   },
   {
     href: "/service?topic=returns#service-form",
     icon: RotateCcw,
     label: "החלפה או החזרה",
-    text: "בדיקת מדיניות, זיכוי או חלופה.",
+    text: "מדיניות, זיכוי, חלופה.",
   },
   {
     href: "/service?topic=repair#service-form",
     icon: Wrench,
     label: "תיקון ואחריות",
-    text: "בדיקת טיפול בתכשיט אחרי שימוש.",
+    text: "טיפול אחרי שימוש.",
   },
 ] as const;
 
@@ -118,7 +118,7 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
       <SiteHeader />
 
       <CompactPageIntro
-        description="שכבת תמיכה לכל רגע של היסוס: מידה, מתנה, הזמנה, החלפה או אחריות, בלי לצאת מהאתר."
+        description="מידה, מתנה, הזמנה, החלפה, אחריות."
         eyebrow="תמיכה לפני ואחרי הזמנה"
         title="שירות תומך"
         variant="content"
@@ -135,7 +135,7 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
                 ערוצי קשר ברורים
               </h2>
               <p className="text-muted-foreground mt-2 max-w-prose leading-7">
-                כל פנייה מתועדת ומקבלת מענה עד 24 שעות ביום עסקים.
+                מתועדת. מענה עד 24 שעות ביום עסקים.
               </p>
             </div>
 
@@ -237,10 +237,10 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
             <div className="mb-4">
               <Badge variant="outline">פנייה לשירות</Badge>
               <h2 className="mt-3 text-2xl font-semibold">
-                ספרו לנו במה להתמקד
+                במה להתמקד
               </h2>
               <p className="text-muted-foreground mt-2 text-sm leading-6">
-                בחרו נושא והשאירו פרטים. נחזור עם תשובה שמתייחסת למה שצריך.
+                נושא, פרטים, ונחזור אליכם.
               </p>
             </div>
             <section
@@ -253,7 +253,7 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
                   נושא מהיר
                 </h3>
                 <p className="text-muted-foreground mt-1 text-sm leading-6">
-                  לחיצה מכאן ממלאת את הנושא ומקצרת את הטופס.
+                  לחיצה ממלאת את הנושא.
                 </p>
               </div>
               <div className="grid gap-2 sm:grid-cols-2">

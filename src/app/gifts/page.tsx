@@ -86,7 +86,7 @@ export default async function GiftsPage() {
     <main>
       <SiteHeader />
       <CompactPageIntro
-        description="קודם המתנות הזמינות. תקציב, למי ואירוע, כבחירה מהירה בהמשך."
+        description="תקציב, למי, אירוע."
         eyebrow="מתנות"
         id="page-hero"
         title="מתנות זמינות עכשיו"
@@ -155,7 +155,7 @@ export default async function GiftsPage() {
               </>
             }
             className="mt-5"
-            description="לא נמצאה מתנה שמתאימה כרגע. אפשר לפתוח חיפוש רחב יותר או לחזור לרעיונות המתנה."
+            description="אפשר חיפוש רחב יותר, או חזרה לכל הרעיונות."
             icon={Gift}
             testId="gifts-empty-state"
             title="לא נמצאה מתנה מתאימה"
@@ -174,10 +174,10 @@ export default async function GiftsPage() {
               className="mt-2 text-lg font-medium text-balance"
               id="gift-discovery-title"
             >
-              תקציב, למי, או הרגע שאליו היא הולכת
+              תקציב, למי, או הרגע
             </h2>
             <p className="text-muted-foreground mt-2 text-sm leading-6">
-              בחרי מסלול אחד והחיפוש ייפתח כבר עם כיוון ברור.
+              מסלול אחד, וכיוון ברור.
             </p>
           </div>
           <div
@@ -220,7 +220,7 @@ export default async function GiftsPage() {
                 </h2>
               </div>
               <p className="text-muted-foreground max-w-xl text-sm leading-6">
-                שילובים שאפשר להשוות לפי מחיר, צבע וחומר לפני שמחליטים.
+                מחיר, צבע, חומר.
               </p>
             </div>
             <div className="mt-4 grid gap-5 lg:grid-cols-2">
@@ -289,7 +289,7 @@ function getGiftBundlePairs(products: CatalogProduct[]): GiftBundlePair[] {
             CatalogProduct,
             CatalogProduct,
           ],
-          title: `${firstProduct.categoryName} כמתנה עם נוכחות`,
+          title: `${firstProduct.categoryName} כמתנה`,
         },
       ];
     })
