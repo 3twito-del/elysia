@@ -2158,15 +2158,60 @@ main
 }
 
 .boutique-collection-action {
+  position: relative;
+  isolation: isolate;
   display: grid;
   place-items: center;
   flex: 0 0 auto;
   width: 2.35rem;
   height: 2.35rem;
+  overflow: hidden;
   border: 1px solid rgb(255 250 244 / 52%);
   border-radius: 999px;
   background: rgb(255 250 244 / 14%);
   color: #fffaf4;
+  transition:
+    border-color 260ms var(--ease-motion-standard),
+    color 260ms var(--ease-motion-standard);
+}
+
+.boutique-collection-action::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -1px;
+  border-radius: inherit;
+  background: #fffaf4;
+  transform: scale(0);
+  transition: transform 260ms var(--ease-motion-standard);
+}
+
+.boutique-collection-action svg {
+  position: relative;
+  z-index: 1;
+}
+
+.boutique-collection-card:hover .boutique-collection-action,
+.boutique-collection-card:focus-visible .boutique-collection-action {
+  border-color: #fffaf4;
+  color: var(--foreground);
+}
+
+.boutique-collection-card:hover .boutique-collection-action::before,
+.boutique-collection-card:focus-visible .boutique-collection-action::before {
+  transform: scale(1);
+}
+
+html[data-accessibility-motion="reduce"] .boutique-collection-action,
+html[data-accessibility-motion="reduce"] .boutique-collection-action::before {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boutique-collection-action,
+  .boutique-collection-action::before {
+    transition: none;
+  }
 }
 
 .boutique-trust-item {

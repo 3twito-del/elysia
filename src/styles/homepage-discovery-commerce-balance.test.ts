@@ -86,6 +86,21 @@ describe("homepage boutique commerce bridge", () => {
     expect(css).toContain("text-align: start;");
   });
 
+  it("animates the category arrow color inversion on hover and focus", () => {
+    const css = read("src/styles/globals.css");
+
+    expect(css).toContain(".boutique-collection-action::before");
+    expect(css).toContain(
+      ".boutique-collection-card:hover .boutique-collection-action",
+    );
+    expect(css).toContain(
+      ".boutique-collection-card:focus-visible .boutique-collection-action",
+    );
+    expect(css).toContain("background: #fffaf4;");
+    expect(css).toContain("color: var(--foreground);");
+    expect(css).toContain("transform: scale(1);");
+  });
+
   it("keeps the home header on the regular public navigation", () => {
     const header = read("src/components/site-header.tsx");
     const mobileNav = read("src/components/mobile-nav.tsx");
