@@ -144,12 +144,12 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
                 className="brand-surface interactive-lift flex min-h-16 items-center gap-3 rounded-md p-3.5"
                 href={contact.phoneHref}
               >
-                <span className="glass-inset grid size-11 place-items-center rounded-full border">
+                <span className="glass-inset grid size-11 shrink-0 place-items-center rounded-full border">
                   <Phone aria-hidden="true" className="size-5" />
                 </span>
-                <span>
+                <span className="min-w-0 overflow-hidden">
                   <span className="block font-semibold">טלפון</span>
-                  <span className="text-muted-foreground block text-sm">
+                  <span className="text-muted-foreground block truncate text-sm">
                     {contact.phoneDisplay}
                   </span>
                 </span>
@@ -158,12 +158,12 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
                 className="brand-surface interactive-lift flex min-h-16 items-center gap-3 rounded-md p-3.5"
                 href={`mailto:${contact.email}`}
               >
-                <span className="glass-inset grid size-11 place-items-center rounded-full border">
+                <span className="glass-inset grid size-11 shrink-0 place-items-center rounded-full border">
                   <Mail aria-hidden="true" className="size-5" />
                 </span>
-                <span>
+                <span className="min-w-0 overflow-hidden">
                   <span className="block font-semibold">אימייל</span>
-                  <span className="text-muted-foreground block text-sm">
+                  <span className="text-muted-foreground block truncate text-sm">
                     {contact.email}
                   </span>
                 </span>
@@ -176,11 +176,11 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <span className="glass-inset grid size-11 place-items-center rounded-full border">
+                  <span className="glass-inset grid size-11 shrink-0 place-items-center rounded-full border">
                     <MessageCircle aria-hidden="true" className="size-5" />
                   </span>
-                  <span>
-                    <span className="block font-semibold">WhatsApp Elysia</span>
+                  <span className="min-w-0 overflow-hidden">
+                    <span className="block truncate font-semibold">WhatsApp Elysia</span>
                     <span className="text-muted-foreground block text-sm">
                       מענה שירות ממותג
                     </span>

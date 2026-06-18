@@ -74,7 +74,8 @@ describe("image performance guardrails", () => {
   it("keeps product cards on a stable commerce aspect ratio with responsive image sizes", () => {
     const source = read("src/components/product-card.tsx");
 
-    expect(source).toContain("relative aspect-[4/5] overflow-hidden");
+    expect(source).toContain("relative aspect-[5/4] overflow-hidden");
+    expect(source).toContain("sm:aspect-[4/5]");
     expect(source).toContain("DEFAULT_PRODUCT_CARD_IMAGE_SIZES");
     expect(source).toContain("(min-width: 1280px) 18rem");
     expect(source).toContain("(min-width: 640px) 50vw");

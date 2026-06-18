@@ -99,7 +99,7 @@ export function ProductCard({
       >
         <div
           className={cn(
-            "brand-product-media product-card-media bg-muted relative aspect-[4/5] overflow-hidden rounded-md border-0",
+            "brand-product-media product-card-media bg-muted relative aspect-[5/4] overflow-hidden rounded-md border-0 sm:aspect-[4/5]",
             isCompactDensity && "product-card-media-compact",
           )}
         >
