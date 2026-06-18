@@ -490,6 +490,7 @@ model Customer {
   aiRuns                 AiRun[]
   pushSubscriptions      PushSubscription[]
   tryOnSessions          TryOnSession[]
+  feedback               UserFeedback[]
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @updatedAt
 }
@@ -1074,4 +1075,16 @@ model IntegrationJob {
   lastError   String?
   scheduledAt DateTime  @default(now())
   finishedAt  DateTime?
+}
+
+model UserFeedback {
+  id         String    @id @default(cuid())
+  message    String
+  email      String?
+  url        String?
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  createdAt  DateTime  @default(now())
+
+  @@index([createdAt])
 }

@@ -6,6 +6,7 @@ import {
   newsletterInputSchema,
   wishlistInputSchema,
 } from "~/lib/public-action-validation";
+import { feedbackInputSchema } from "~/lib/feedback-validation";
 import { newsletterConsentText } from "~/lib/legal-content";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
@@ -163,4 +164,64 @@ export async function saveWishlistItem(
   revalidatePath("/account");
   revalidatePath("/wishlist");
   return { ok: true, saved: true, message: "התכשיט נשמר" };
+}
+
+export async function submitFeedback(
+  _state: PublicActionState,
+  formData: FormData,
+): Promise<PublicActionState> {
+  const emailValue = formData.get("email");
+  const parsed = feedbackInputSchema.safeParse({
+    message: formData.get("message"),
+    email:
+      typeof emailValue === "string" && emailValue.trim()
+        ? emailValue
+        : undefined,
+    url: formData.get("url") || undefined,
+  });
+
+  if (!parsed.success) {
+    return {
+      ok: false,
+      message: parsed.error.issues[0]?.message ?? "יש להזין פרטים תקינים.",
+    };
+  }
+
+  try {
+    await assertRateLimit({
+      key: createRateLimitKey(
+        "feedback",
+        parsed.data.email ?? "anonymous",
+      ),
+      limit: 5,
+      windowMs: 10 * 60_000,
+    });
+  } catch (error) {
+    return {
+      ok: false,
+      message: rateLimitMessage(error) ?? "לא ניתן לשלוח כרגע. נסו שוב.",
+    };
+  }
+
+  const session = await auth();
+  let customerId: string | undefined;
+
+  if (session?.user?.id && !session.user.adminUserId) {
+    const customer = await db.customer.findUnique({
+      where: { userId: session.user.id },
+      select: { id: true },
+    });
+    customerId = customer?.id;
+  }
+
+  await db.userFeedback.create({
+    data: {
+      message: parsed.data.message,
+      email: parsed.data.email || null,
+      url: parsed.data.url || null,
+      customerId: customerId ?? null,
+    },
+  });
+
+  return { ok: true, message: "תודה! הפידבק שלך התקבל." };
 }
