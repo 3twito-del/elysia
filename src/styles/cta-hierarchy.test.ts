@@ -31,11 +31,11 @@ describe("public CTA hierarchy", () => {
   it("keeps public surface tokens light, neutral, and separate from aqua CTAs", () => {
     const css = read("src/styles/globals.css");
 
-    expect(css).toContain("--secondary: #f6f2ed;");
-    expect(css).toContain("--muted: #f5f1ec;");
+    expect(css).toContain("--secondary: #faf7f3;");
+    expect(css).toContain("--muted: #f8f5f1;");
     expect(css).toContain("--accent: #ead8d2;");
-    expect(css).toContain("--glass-border: #e8e0d8;");
-    expect(css).toContain("--glass-border-strong: #cfc5b8;");
+    expect(css).toContain("--glass-border: #ece6df;");
+    expect(css).toContain("--glass-border-strong: #d8d0c8;");
     expect(css).toContain("--action-primary: var(--brand-ink);");
     expect(css).toContain(".glass-control:not(:disabled)");
     expect(css).toContain('[data-slot="button"][data-variant="secondary"]');

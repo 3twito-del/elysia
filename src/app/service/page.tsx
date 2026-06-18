@@ -139,48 +139,48 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
               </p>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid gap-2">
               <a
-                className="brand-surface interactive-lift flex min-h-16 items-center gap-3 rounded-md p-3.5"
+                className="brand-surface interactive-lift flex items-center gap-3 rounded-md px-4 py-3"
                 href={contact.phoneHref}
               >
-                <span className="glass-inset grid size-11 shrink-0 place-items-center rounded-full border">
-                  <Phone aria-hidden="true" className="size-5" />
+                <span className="glass-inset grid size-10 shrink-0 place-items-center rounded-full border">
+                  <Phone aria-hidden="true" className="size-4" />
                 </span>
-                <span className="min-w-0 overflow-hidden">
-                  <span className="block font-semibold">טלפון</span>
-                  <span className="text-muted-foreground block truncate text-sm">
+                <span className="min-w-0">
+                  <span className="block text-sm font-semibold">טלפון</span>
+                  <span className="text-muted-foreground block text-sm">
                     {contact.phoneDisplay}
                   </span>
                 </span>
               </a>
               <a
-                className="brand-surface interactive-lift flex min-h-16 items-center gap-3 rounded-md p-3.5"
+                className="brand-surface interactive-lift flex items-center gap-3 rounded-md px-4 py-3"
                 href={`mailto:${contact.email}`}
               >
-                <span className="glass-inset grid size-11 shrink-0 place-items-center rounded-full border">
-                  <Mail aria-hidden="true" className="size-5" />
+                <span className="glass-inset grid size-10 shrink-0 place-items-center rounded-full border">
+                  <Mail aria-hidden="true" className="size-4" />
                 </span>
-                <span className="min-w-0 overflow-hidden">
-                  <span className="block font-semibold">אימייל</span>
-                  <span className="text-muted-foreground block truncate text-sm">
+                <span className="min-w-0">
+                  <span className="block text-sm font-semibold">אימייל</span>
+                  <span className="text-muted-foreground block break-all text-sm">
                     {contact.email}
                   </span>
                 </span>
               </a>
               {contact.whatsappHref ? (
                 <a
-                  className="brand-surface interactive-lift flex min-h-16 items-center gap-3 rounded-md p-3.5"
+                  className="brand-surface interactive-lift flex items-center gap-3 rounded-md px-4 py-3"
                   data-testid="service-whatsapp-link"
                   href={contact.whatsappHref}
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <span className="glass-inset grid size-11 shrink-0 place-items-center rounded-full border">
-                    <MessageCircle aria-hidden="true" className="size-5" />
+                  <span className="glass-inset grid size-10 shrink-0 place-items-center rounded-full border">
+                    <MessageCircle aria-hidden="true" className="size-4" />
                   </span>
-                  <span className="min-w-0 overflow-hidden">
-                    <span className="block truncate font-semibold">WhatsApp Elysia</span>
+                  <span className="min-w-0">
+                    <span className="block text-sm font-semibold">WhatsApp Elysia</span>
                     <span className="text-muted-foreground block text-sm">
                       מענה שירות ממותג
                     </span>
