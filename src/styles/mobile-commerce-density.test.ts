@@ -18,11 +18,12 @@ describe("mobile commerce density", () => {
     );
     expect(source).toContain('data-testid="home-hero-statement"');
     expect(source).toContain('data-testid="home-hero-primary-cta"');
-    expect(source).toContain('data-testid="home-commerce-entry-links"');
+    expect(source).toContain("data-hero-copy-direction={homeHeroDirection}");
+    expect(source).not.toContain('data-testid="home-commerce-entry-links"');
     expect(source).not.toContain('data-testid="home-hero-campaign-links"');
     expect(source).toContain('href="/search"');
-    expect(source).toContain('href: "/gifts"');
-    expect(source).toContain('href: "/category/necklaces"');
+    expect(source).not.toContain('href: "/gifts"');
+    expect(source).not.toContain('href: "/category/necklaces"');
     expect(countOccurrences(source, "min-h-[var(--home-hero-height)]")).toBe(1);
     expect(indexOf(source, 'id="page-hero"')).toBeLessThan(
       indexOf(source, 'id="collections"'),
@@ -110,6 +111,14 @@ describe("mobile commerce density", () => {
     expect(css).toContain(".public-motion-content > main");
     expect(css).toContain(
       "min-height: calc(100svh + var(--site-header-height));",
+    );
+  });
+
+  it("prevents mobile full-bleed sections from inheriting desktop scrollbar gutters", () => {
+    const css = read("src/styles/globals.css");
+
+    expect(css).toMatch(
+      /@media \(max-width: 767px\)[\s\S]*html \{[\s\S]*scrollbar-gutter: auto;/,
     );
   });
 

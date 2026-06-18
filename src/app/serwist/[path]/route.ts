@@ -14,7 +14,6 @@ type SerwistRoute = {
   ) => Promise<Response> | Response;
 };
 
-export const knownSerwistAssetPaths = ["sw.js"] as const;
 const missingSerwistAssetStatus = 404;
 const serwistPrecacheIgnores = ["**/node_modules/**/*"] as const;
 

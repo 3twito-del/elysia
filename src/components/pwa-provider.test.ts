@@ -15,7 +15,8 @@ describe("PwaProvider", () => {
     expect(source).toContain("retiredPwaCachePrefixes");
     expect(source).toContain("normalizedCacheName.startsWith(prefix)");
     expect(source).toContain("caches.delete");
-    expect(source).toContain("runtime.location?.reload()");
+    expect(source).toContain("runtime.sessionStorage?.setItem");
+    expect(source).not.toContain("runtime.location?.reload()");
   });
 
   it("keeps the explicit e2e PWA opt-in available", () => {

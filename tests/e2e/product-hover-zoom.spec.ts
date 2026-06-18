@@ -67,11 +67,15 @@ test.describe("product hover zoom", () => {
     const media = card.locator(".product-card-media");
     await expect(card).toBeVisible();
     await expect(media).toBeVisible();
+    await media.scrollIntoViewIfNeeded();
+    await page.mouse.move(4, 4);
+    await page.waitForTimeout(80);
 
     const mediaBoxBefore = await media.boundingBox();
     expect(mediaBoxBefore).not.toBeNull();
 
     await media.hover();
+    await page.waitForTimeout(120);
 
     await expect
       .poll(() => getProductCardHoverMetrics(card))
@@ -113,12 +117,6 @@ async function getGalleryHoverZoomMetrics(gallery: Locator) {
 
     const styles = window.getComputedStyle(layer);
     const readScale = (targetStyles: CSSStyleDeclaration) => {
-      const individualScale = Number.parseFloat(targetStyles.scale);
-
-      if (Number.isFinite(individualScale) && individualScale > 0) {
-        return individualScale;
-      }
-
       if (targetStyles.transform.startsWith("matrix(")) {
         const [scaleX] = targetStyles.transform
           .slice("matrix(".length, -1)
@@ -126,6 +124,12 @@ async function getGalleryHoverZoomMetrics(gallery: Locator) {
           .map((value) => Number.parseFloat(value.trim()));
 
         return Number.isFinite(scaleX) ? scaleX! : 1;
+      }
+
+      const individualScale = Number.parseFloat(targetStyles.scale);
+
+      if (Number.isFinite(individualScale) && individualScale > 0) {
+        return individualScale;
       }
 
       return 1;
@@ -160,12 +164,6 @@ async function getProductCardHoverMetrics(card: Locator) {
     const primaryStyles = window.getComputedStyle(primaryImage);
     const hoverStyles = hoverImage ? window.getComputedStyle(hoverImage) : null;
     const readScale = (targetStyles: CSSStyleDeclaration) => {
-      const individualScale = Number.parseFloat(targetStyles.scale);
-
-      if (Number.isFinite(individualScale) && individualScale > 0) {
-        return individualScale;
-      }
-
       if (targetStyles.transform.startsWith("matrix(")) {
         const [scaleX] = targetStyles.transform
           .slice("matrix(".length, -1)
@@ -173,6 +171,12 @@ async function getProductCardHoverMetrics(card: Locator) {
           .map((value) => Number.parseFloat(value.trim()));
 
         return Number.isFinite(scaleX) ? scaleX! : 1;
+      }
+
+      const individualScale = Number.parseFloat(targetStyles.scale);
+
+      if (Number.isFinite(individualScale) && individualScale > 0) {
+        return individualScale;
       }
 
       return 1;

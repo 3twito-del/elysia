@@ -104,9 +104,9 @@ export function SiteFooter() {
             >
               <BrandLogo className="h-12 w-auto max-w-[14.5rem] sm:h-14 sm:max-w-[18rem]" />
             </Link>
-            <h2 className="sr-only" id="footer-brand-title">
+            <span className="sr-only" id="footer-brand-title">
               Elysia
-            </h2>
+            </span>
             <p className="site-footer-brand-text mt-7 hidden max-w-lg text-base leading-8 sm:block sm:text-[1.05rem] sm:leading-9">
               תכשיטים עדינים, מדויקים ונקיים — לבחירה יומיומית, למתנה ולאור של
               קיץ.

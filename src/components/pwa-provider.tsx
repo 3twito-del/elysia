@@ -124,14 +124,8 @@ async function unregisterDevelopmentServiceWorkers() {
   if (!removedRegistrations.some(Boolean)) return;
 
   try {
-    if (runtime.sessionStorage?.getItem(pwaDevCleanupStorageKey) === "1") {
-      return;
-    }
-
     runtime.sessionStorage?.setItem(pwaDevCleanupStorageKey, "1");
   } catch {
     return;
   }
-
-  runtime.location?.reload();
 }

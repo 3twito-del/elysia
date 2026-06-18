@@ -49,14 +49,15 @@ describe("Elysia design manifesto contract", () => {
 
     expect(home).toContain('data-testid="cinematic-page-hero"');
     expect(home).toContain('data-testid="home-hero-copy"');
+    expect(home).toContain("data-hero-copy-direction={homeHeroDirection}");
     expect(home).toContain('data-testid="home-hero-primary-cta"');
-    expect(home).toContain('data-testid="home-commerce-entry-links"');
-    expect(home).toContain("const homeCommerceEntryLinks = [");
+    expect(home).not.toContain('data-testid="home-commerce-entry-links"');
+    expect(home).not.toContain("const homeCommerceEntryLinks = [");
     expect(home).not.toContain("homeHeroCampaignLinks");
     expect(home).not.toContain('data-testid="home-hero-campaign-links"');
     expect(home).not.toContain("home-hero-campaign-link");
     expect(home).not.toContain('data-testid="home-hero-secondary-cta"');
-    expect(css).toContain(".home-commerce-entry-links");
+    expect(css).not.toContain(".home-commerce-entry-links");
     expect(css).not.toContain(".home-hero-campaign-links");
   });
 });

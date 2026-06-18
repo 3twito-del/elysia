@@ -257,7 +257,10 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             </div>
           </section>
 
-          <div className="mt-4 grid gap-4" data-testid="search-controls-panel">
+          <div
+            className="mt-4 grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4"
+            data-testid="search-controls-panel"
+          >
             <SearchControls
               activeFilterCount={activeRefinementCount}
               categories={categories}

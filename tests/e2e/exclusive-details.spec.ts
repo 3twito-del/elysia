@@ -40,14 +40,14 @@ test.describe("exclusive details accordions", () => {
     await expect(commerceDetails.nth(0)).toBeVisible();
     await expect(commerceDetails.nth(1)).toBeVisible();
 
-    await commerceDetails.nth(0).locator("summary").click();
+    await clickDetailsSummary(commerceDetails.nth(0));
     await expectOnlyDetailsOpen(
       page,
       '[data-testid="product-commerce-details"] details',
       [0],
     );
 
-    await commerceDetails.nth(1).locator("summary").click();
+    await clickDetailsSummary(commerceDetails.nth(1));
     await expectOnlyDetailsOpen(
       page,
       '[data-testid="product-commerce-details"] details',
@@ -61,14 +61,14 @@ test.describe("exclusive details accordions", () => {
     await expect(productFaqDetails.nth(0)).toBeVisible();
     await expect(productFaqDetails.nth(1)).toBeVisible();
 
-    await productFaqDetails.nth(0).locator("summary").click();
+    await clickDetailsSummary(productFaqDetails.nth(0));
     await expectOnlyDetailsOpen(
       page,
       '[data-testid="product-faq"] details',
       [0],
     );
 
-    await productFaqDetails.nth(1).locator("summary").click();
+    await clickDetailsSummary(productFaqDetails.nth(1));
     await expectOnlyDetailsOpen(
       page,
       '[data-testid="product-faq"] details',
@@ -96,6 +96,15 @@ async function expectOnlyDetailsOpen(
       }, selector),
     )
     .toEqual(expectedStates);
+}
+
+async function clickDetailsSummary(details: ReturnType<Page["locator"]>) {
+  const summary = details.locator("summary");
+
+  await summary.evaluate((element) => {
+    element.scrollIntoView({ block: "center", inline: "nearest" });
+  });
+  await summary.click();
 }
 
 async function waitForExclusiveDetailsProvider(page: Page) {

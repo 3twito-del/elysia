@@ -31,7 +31,11 @@ describe("public typography spacing guardrails", () => {
     expect(css).toContain("font-family: var(--font-hebrew-sans);");
     expect(css).toContain(".storefront-hero-statement");
     expect(css).toContain(".storefront-hero-title");
-    expect(home).toContain("קיץ חדש. זוהר נקי.");
+    expect(home).toContain('const homeHeroTitle = "The Elysia Experience";');
+    expect(home).toContain("getHeroTextDirection(homeHeroTitle)");
+    expect(home).toContain("data-hero-copy-direction={homeHeroDirection}");
+    expect(home).toContain("dir={homeHeroDirection}");
+    expect(home).not.toContain("text-right");
     expect(home).not.toContain('<h1 className="sr-only">Elysia</h1>');
     expect(home).not.toContain("home-hero-wordmark");
     expect(adminShell).toContain("admin-brand-mark");

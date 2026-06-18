@@ -6,7 +6,6 @@ import { Cormorant_Garamond, Geist, Geist_Mono, Rubik } from "next/font/google";
 import { CookieConsentBanner } from "~/components/cookie-consent-banner";
 import { DeferredAccessibilityWidget } from "~/components/deferred-accessibility-widget";
 import { ExclusiveDetailsProvider } from "~/components/exclusive-details-provider";
-import { FeedbackButton } from "~/components/feedback-button";
 import { PwaProvider } from "~/components/pwa-provider";
 import { PublicMotionProvider } from "~/components/public-motion-provider";
 import { SiteContextMenu } from "~/components/site-context-menu";
@@ -115,7 +114,6 @@ export default function RootLayout({
           <CookieConsentBanner />
           <ExclusiveDetailsProvider />
           <SiteContextMenu />
-          <FeedbackButton />
           <DeferredAccessibilityWidget />
         </PwaProvider>
       </body>

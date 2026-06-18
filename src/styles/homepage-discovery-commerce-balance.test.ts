@@ -31,6 +31,8 @@ describe("homepage boutique commerce bridge", () => {
     expect(home).toContain('href="/search"');
     expect(home).toContain('id="collections"');
     expect(home).toContain('id="featured"');
+    expect(home).toContain('title="Icons of Summer"');
+    expect(home).not.toContain('title="חדש בעונה."');
     expect(home).toContain('id="materials"');
     expect(home).toContain('id="about-elysia"');
     expect(home).toContain('id="first-collection"');
@@ -38,6 +40,7 @@ describe("homepage boutique commerce bridge", () => {
     expect(home).toContain('data-layout-equal-group="home-category-tiles"');
     expect(home).toContain('data-testid="home-featured-products"');
     expect(home).toContain('data-testid="home-material-trust"');
+    expect(home).toContain("home-materials-section");
     expect(home).toContain("<NewsletterForm />");
 
     expect(home).not.toContain('href="#waitlist"');
@@ -67,6 +70,20 @@ describe("homepage boutique commerce bridge", () => {
     expect(indexOf(home, 'id="first-collection"')).toBeLessThan(
       indexOf(home, 'id="collection-updates"'),
     );
+  });
+
+  it("keeps the materials section aligned with a single-line title", () => {
+    const css = read("src/styles/globals.css");
+
+    expect(css).toContain(".home-materials-section .commerce-section-header");
+    expect(css).toContain(
+      ".home-materials-section .commerce-section-header-title",
+    );
+    expect(css).toContain("text-wrap: nowrap;");
+    expect(css).toContain("white-space: nowrap;");
+    expect(css).toContain(".home-materials-section .boutique-trust-item");
+    expect(css).toContain("justify-items: start;");
+    expect(css).toContain("text-align: start;");
   });
 
   it("keeps the home header on the regular public navigation", () => {

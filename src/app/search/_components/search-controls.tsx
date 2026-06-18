@@ -54,12 +54,12 @@ export function SearchControls({
 
   return (
     <details
-      className="group/search-controls border-y border-[var(--glass-border)] py-3"
+      className="group/search-controls w-full min-w-0 max-w-full border-y border-[var(--glass-border)] py-3"
       data-testid="search-form"
       open={hasQuery || activeFilterCount > 0}
     >
       <summary
-        className="flex min-h-10 cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
+        className="flex min-h-10 w-full min-w-0 max-w-full cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
         data-testid="search-controls-toggle"
       >
         <span className="inline-flex items-center gap-2">

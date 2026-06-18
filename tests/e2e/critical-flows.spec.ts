@@ -16,7 +16,8 @@ const checkoutEmptyTitle = "התחילי מהנמכרים ביותר";
 const checkoutEmptySupportCopy = "שלושה תכשיטים שנבחרים שוב ושוב";
 const checkoutCatalogCta = "התחילי מהנמכרים ביותר";
 const checkoutGiftCta = "מצאי מתנה";
-const homeHeroTitle = "קיץ חדש. זוהר נקי.";
+const homeHeroTitle = "The Elysia Experience";
+const homeHeroDirection = "ltr";
 const zeroShekelPattern = /^\D*0\D*\u20aa\D*$/u;
 const forbiddenCheckoutStateText = [
   "\u05d8\u05d5\u05e2\u05df \u05e1\u05dc...",
@@ -874,6 +875,14 @@ test.describe("accessibility and responsive guardrails", () => {
     await expect(
       page.getByRole("heading", { level: 1, name: homeHeroTitle }),
     ).toBeVisible();
+    await expect(page.getByTestId("home-hero-copy")).toHaveAttribute(
+      "data-hero-copy-direction",
+      homeHeroDirection,
+    );
+    await expect(page.getByTestId("home-hero-copy")).toHaveAttribute(
+      "dir",
+      homeHeroDirection,
+    );
     await expect(page.getByTestId("home-hero-primary-cta")).toHaveAttribute(
       "href",
       "/search",
@@ -881,7 +890,10 @@ test.describe("accessibility and responsive guardrails", () => {
 
     await page.goto("/search");
 
-    await page.getByTestId("search-controls-toggle").click();
+    await page
+      .locator("#main-content")
+      .getByTestId("search-controls-toggle")
+      .click();
     await expect(
       page
         .getByRole("search", { name: /חיפוש תכשיטים|חיפוש מהיר/ })
@@ -1123,6 +1135,7 @@ test.describe("accessibility and responsive guardrails", () => {
       homeHero.locator('a.home-hero-secondary-cta[href="/category/rings"]'),
     ).toHaveCount(0);
     await expect(page.getByTestId("home-hero-secondary-line")).toHaveCount(0);
+    await expect(page.getByTestId("home-commerce-entry-links")).toHaveCount(0);
     await expect(
       homeHero.locator('a.home-hero-service-link[href="/service"]'),
     ).toHaveCount(0);

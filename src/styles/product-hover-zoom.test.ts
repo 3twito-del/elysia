@@ -64,7 +64,11 @@ describe("product image hover zoom", () => {
     expect(css).toContain(
       ".product-card-shell:focus-within .product-card-hover-image",
     );
-    expect(css).toContain("will-change: opacity, scale;");
+    expect(css).toContain("will-change: opacity, transform;");
+    expect(css).toContain(".product-card-media:hover .product-card-hover-image");
+    expect(css).toContain("pointer-events: none;");
+    expect(css).toContain(".product-card-image:hover + .product-card-hover-image");
+    expect(css).toContain("transform: scale(1.055);");
   });
 });
 

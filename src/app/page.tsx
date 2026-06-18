@@ -28,6 +28,10 @@ const boutiqueHeroImage = "/brand/boutique/lifestyle-hero.avif";
 const boutiqueHeroPoster = "/brand/boutique/lifestyle-hero-poster.avif";
 const boutiqueHeroVideoMp4 = "/brand/boutique/lifestyle-hero.mp4";
 const boutiqueHeroVideoWebm = "/brand/boutique/lifestyle-hero.webm";
+const homeHeroTitle = "The Elysia Experience";
+const homeHeroDirection = getHeroTextDirection(homeHeroTitle);
+
+type HeroTextDirection = "ltr" | "rtl";
 
 const categoryOrder = ["rings", "necklaces", "earrings", "bracelets"];
 
@@ -109,19 +113,6 @@ const homeTrustSignals = [
   },
 ] as const;
 
-const homeCommerceEntryLinks = [
-  {
-    href: "/gifts",
-    label: "מתנות",
-    text: "תקציב, סגנון, אירוע.",
-  },
-  {
-    href: "/category/necklaces",
-    label: "שרשראות",
-    text: "קו עדין לכל לוק.",
-  },
-] as const;
-
 export const metadata: Metadata = {
   title: "Elysia Jewellery | תכשיטים בוטיקיים",
   description:
@@ -168,6 +159,7 @@ export default async function Home() {
 
       <RevealSection
         className="home-cinematic-hero storefront-hero relative isolate min-h-[var(--home-hero-height)] w-screen max-w-none overflow-hidden"
+        data-hero-title-direction={homeHeroDirection}
         data-testid="cinematic-page-hero"
         id="page-hero"
         initialVisible
@@ -183,15 +175,16 @@ export default async function Home() {
         <div className="storefront-hero-wash absolute inset-0" />
 
         <div
-          className="home-hero-copy motion-hero-copy storefront-hero-copy absolute z-10 flex max-w-[min(38rem,calc(100vw-2.5rem))] flex-col items-start text-right sm:max-w-[min(42rem,45vw)]"
+          className="home-hero-copy motion-hero-copy storefront-hero-copy absolute z-10 flex max-w-[min(38rem,calc(100vw-2.5rem))] flex-col items-start sm:max-w-[min(42rem,45vw)]"
+          data-hero-copy-direction={homeHeroDirection}
           data-testid="home-hero-copy"
-          dir="rtl"
+          dir={homeHeroDirection}
         >
           <p className="storefront-eyebrow motion-copy-item [--motion-copy-delay:70ms]">
             Elysia Jewellery
           </p>
           <h1 className="storefront-hero-title motion-copy-item [--motion-copy-delay:90ms]">
-            קיץ חדש. זוהר נקי.
+            {homeHeroTitle}
           </h1>
           <p
             className="home-hero-statement motion-copy-item storefront-hero-statement [--motion-copy-delay:90ms]"
@@ -207,7 +200,7 @@ export default async function Home() {
               <Button asChild className="home-hero-cta-primary" size="lg">
                 <Link
                   data-testid="home-hero-primary-cta"
-                  dir="rtl"
+                  dir={homeHeroDirection}
                   href="/search"
                   prefetch={false}
                 >
@@ -256,23 +249,6 @@ export default async function Home() {
             );
           })}
         </div>
-        <nav
-          aria-label="כניסות מהירות לקולקציה"
-          className="home-commerce-entry-links"
-          data-testid="home-commerce-entry-links"
-        >
-          {homeCommerceEntryLinks.map((item) => (
-            <Link
-              className="home-commerce-entry-link"
-              href={item.href}
-              key={item.href}
-              prefetch={false}
-            >
-              <span className="home-commerce-entry-label">{item.label}</span>
-              <span className="home-commerce-entry-text">{item.text}</span>
-            </Link>
-          ))}
-        </nav>
       </RevealSection>
 
       <RevealSection
@@ -308,7 +284,7 @@ export default async function Home() {
             actionLabel="חדש בקולקציה"
             eyebrow="New in"
             text="קל לענידה. ברור בחומר."
-            title="חדש בעונה."
+            title="Icons of Summer"
           />
           {featuredProducts.length > 0 ? (
             <RevealGrid
@@ -330,7 +306,7 @@ export default async function Home() {
       </RevealSection>
 
       <RevealSection
-        className="boutique-section mx-auto w-full max-w-[92rem] px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]"
+        className="boutique-section home-materials-section mx-auto w-full max-w-[92rem] px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]"
         id="materials"
       >
         <SectionHeader
@@ -541,4 +517,13 @@ function getOrderedHomeCategories(categories: CatalogCategory[]) {
   );
 
   return [...ordered, ...remaining].slice(0, 4);
+}
+
+function getHeroTextDirection(title: string): HeroTextDirection {
+  for (const character of title) {
+    if (/[\u0590-\u05ff]/u.test(character)) return "rtl";
+    if (/[A-Za-z]/u.test(character)) return "ltr";
+  }
+
+  return "rtl";
 }

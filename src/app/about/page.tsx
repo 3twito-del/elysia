@@ -21,6 +21,8 @@ import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 
+import { AboutHeroAurora } from "./_components/about-hero-aurora";
+
 type IconItem = {
   icon: LucideIcon;
   text: string;
@@ -152,6 +154,8 @@ export default function AboutPage() {
           />
           <div className="storefront-hero-scrim absolute inset-0" />
           <div className="storefront-hero-wash absolute inset-0" />
+
+          <AboutHeroAurora />
 
           <div
             className="about-hero-copy motion-hero-copy storefront-hero-copy absolute z-10 flex max-w-[min(39rem,calc(100vw-2.5rem))] flex-col items-start"

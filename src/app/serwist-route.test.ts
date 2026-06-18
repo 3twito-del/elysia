@@ -4,7 +4,8 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { getQaRouteInventory } from "../../scripts/qa-route-inventory";
-import { GET, knownSerwistAssetPaths } from "./serwist/[path]/route";
+import { knownSerwistAssetPaths } from "~/lib/serwist-assets";
+import { GET } from "./serwist/[path]/route";
 
 const root = process.cwd();
 
