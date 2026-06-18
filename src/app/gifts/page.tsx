@@ -86,7 +86,7 @@ export default async function GiftsPage() {
     <main>
       <SiteHeader />
       <CompactPageIntro
-        description="ראו קודם את המתנות הזמינות. תקציב, למי ואירוע זמינים כבחירה מהירה בהמשך."
+        description="קודם המתנות הזמינות. תקציב, למי ואירוע, כבחירה מהירה בהמשך."
         eyebrow="מתנות"
         id="page-hero"
         title="מתנות זמינות עכשיו"

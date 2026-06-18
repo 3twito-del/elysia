@@ -23,7 +23,7 @@ const newsletterEmailHintId = "newsletter-email-hint";
 const newsletterStatusId = "newsletter-status";
 const newsletterOfflineStatusId = "newsletter-offline-status";
 const defaultHintText =
-  "נשלח רק כשיש פריטים חדשים, רעיונות למתנה או השראה קטנה לעונה.";
+  "רק כשיש פריטים חדשים, רעיון למתנה או השראה לעונה.";
 const defaultSubmitLabel = "לקבל עדכון";
 
 type NewsletterFormProps = {

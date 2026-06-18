@@ -56,33 +56,33 @@ const categoryEditorialCopy: Record<
 const materialTrust = [
   {
     icon: Gem,
-    title: "חומר ברור",
-    text: "זהב, כסף, פנינים ואבני צבע מוצגים לפי הדגם והמלאי.",
+    title: "חומר נאמן לעצמו",
+    text: "זהב, כסף, פנינה ואבן צבע, נאמנים לדגם ולמלאי.",
   },
   {
     icon: Ruler,
     title: "מידה בלי ניחוש",
-    text: "אורך, מידה ומשקל מופיעים כשיש נתון אמין, לצד מדריך מידות.",
+    text: "אורך, מידה ומשקל מדויקים, לצד מדריך שמסיר את ההיסוס.",
   },
   {
     icon: ShieldCheck,
-    title: "שירות לפני הזמנה",
-    text: "אפשר לפתוח פנייה על מידה, חומר, מתנה או מסירה לפני שמחליטים.",
+    title: "שירות לפני הבחירה",
+    text: "מידה, חומר, מתנה או מסירה, אפשר לשאול לפני שבוחרים.",
   },
 ] as const;
 
 const editorialPrinciples = [
   {
-    title: "נבחרו בקפידה",
-    text: "לא עוד מדף עמוס. כל פריט צריך להצדיק מקום בלוק, במתנה או ביומיום.",
+    title: "נבחר בקפידה",
+    text: "לא מדף עמוס. כל פריט מצדיק את מקומו, בלוק, במתנה, ביומיום.",
   },
   {
-    title: "נוגעים בפרטים",
-    text: "חומר, גימור, אבן ומידה מופיעים קרוב להחלטה, לא רק בסוף העמוד.",
+    title: "נוגע בפרטים",
+    text: "חומר, גימור, אבן ומידה, קרובים לרגע שבו בוחרים.",
   },
   {
-    title: "מתנה שנראית אישית",
-    text: "רעיונות לפי תקציב, אירוע וסגנון, עם אפשרות לשאול לפני הזמנה.",
+    title: "מתנה אישית",
+    text: "לפי תקציב, אירוע וסגנון, אישית ולא מקרית.",
   },
 ] as const;
 
@@ -90,7 +90,7 @@ const homeTrustSignals = [
   {
     icon: ShieldCheck,
     title: "תשלום מאובטח",
-    text: "הפרטים מוצגים לפני תשלום.",
+    text: "כל הפרטים גלויים לפני התשלום.",
   },
   {
     icon: Truck,
@@ -100,12 +100,12 @@ const homeTrustSignals = [
   {
     icon: Gift,
     title: "מתנה מוכנה",
-    text: "אפשר לבחור לפי תקציב, אירוע וסגנון.",
+    text: "ארוזה לפי תקציב, אירוע וסגנון.",
   },
   {
     icon: Headphones,
     title: "שירות אנושי",
-    text: "שאלה על מידה, חומר או התאמה לפני שמזמינים.",
+    text: "מידה, חומר או התאמה, במענה אנושי.",
   },
 ] as const;
 
@@ -113,12 +113,12 @@ const homeCommerceEntryLinks = [
   {
     href: "/gifts",
     label: "מתנות לפי רגע",
-    text: "כניסה מהירה לרעיונות עם תקציב וסגנון.",
+    text: "תקציב, סגנון ואירוע, בכניסה אחת.",
   },
   {
     href: "/category/necklaces",
     label: "שרשראות לקיץ",
-    text: "קו עדין שמרים חולצה לבנה או שמלת ערב.",
+    text: "קו עדין שמרים חולצה לבנה כמו שמלת ערב.",
   },
 ] as const;
 
@@ -197,7 +197,7 @@ export default async function Home() {
             className="home-hero-statement motion-copy-item storefront-hero-statement [--motion-copy-delay:90ms]"
             data-testid="home-hero-statement"
           >
-            פריטים חדשים שמכניסים אור לקיץ.
+            הקולקציה החדשה. עדינה, מדויקת, עשויה להאיר.
           </p>
           <div
             className="home-hero-actions motion-copy-item storefront-hero-actions [--motion-copy-delay:130ms]"
@@ -283,8 +283,8 @@ export default async function Home() {
           actionHref="/search"
           actionLabel="כל התכשיטים"
           eyebrow="Shop by piece"
-          text="טבעות, שרשראות, עגילים וצמידים שנועדו לעבוד עם בגדים אמיתיים: חולצה לבנה, שמלת ערב, תיק חוף או מתנה שנפתחת מיד."
-          title="התחילי מהתכשיט שנוגע בלוק."
+          text="טבעות, שרשראות, עגילים וצמידים שעובדים עם בגד אמיתי: חולצה לבנה, שמלת ערב, או מתנה שנפתחת מיד."
+          title="התחילי מהתכשיט."
         />
         <RevealGrid
           className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
@@ -307,7 +307,7 @@ export default async function Home() {
             actionHref="/search?sort=newest"
             actionLabel="חדש בקולקציה"
             eyebrow="New in"
-            text="פריטים שנכנסו עכשיו למבחר: קלים לענידה, ברורים בחומר, ומספיק מיוחדים כדי לשנות את כל הלוק."
+            text="נכנסו עכשיו למבחר: קלים לענידה, ברורים בחומר, ומיוחדים מספיק כדי לשנות לוק שלם."
             title="הזוהר החדש של העונה."
           />
           {featuredProducts.length > 0 ? (
@@ -335,7 +335,7 @@ export default async function Home() {
       >
         <SectionHeader
           eyebrow="Materials & service"
-          text="היופי מתחיל בתמונה, אבל ההחלטה מגיעה מהפרטים: חומר, גימור, מידה, משלוח ושירות לפני הזמנה."
+          text="היופי מתחיל בתמונה, אבל ההחלטה נסגרת בפרטים: חומר, גימור, מידה, משלוח ושירות לפני הזמנה."
           title="חומרים ברורים. שירות אנושי."
         />
         <div
@@ -375,8 +375,8 @@ export default async function Home() {
               actionHref="/about"
               actionLabel="אודות"
               eyebrow="Elysia"
-              text="Elysia נבנית כמו בוטיק קטן: פחות רעש, יותר בחירה מדויקת, צילום שמראה חומר, ושירות שנכנס כשצריך ביטחון."
-              title="בית תכשיטים קטן עם עין מאוד מדויקת."
+              text="בוטיק קטן בכוונה: פחות רעש, בחירה מדויקת, צילום שמראה חומר, ושירות שנכנס ברגע שצריך ביטחון."
+              title="בית תכשיטים קטן, עין מדויקת."
             />
           </div>
           <div className="boutique-story-secondary-copy">
@@ -423,8 +423,8 @@ export default async function Home() {
               תכשיט קטן יכול לשנות את כל היום.
             </h2>
             <p className="storefront-final-text">
-              בחרי לפי לוק, תקציב או חומר. ואם זו מתנה, מידה לא בטוחה או התלבטות
-              בין שני גוונים, אפשר לשאול לפני שמזמינים.
+              בחרי לפי לוק, תקציב או חומר. ואם זו מתנה, מידה לא ודאית או התלבטות
+              בין שני גוונים, אנחנו כאן לפני שמזמינים.
             </p>
             <div className="storefront-final-actions">
               <Button asChild>

@@ -63,7 +63,7 @@ const serviceResponseExpectations = [
   },
   {
     title: "פרטים שמקצרים את הדרך",
-    text: "מספר הזמנה, שם תכשיט או תמונה עוזרים לתת תשובה מדויקת יותר.",
+    text: "מספר הזמנה, שם תכשיט או תמונה, וכבר אפשר לדייק את התשובה.",
   },
 ] as const;
 
@@ -118,7 +118,7 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
       <SiteHeader />
 
       <CompactPageIntro
-        description="שירות הוא שכבת תמיכה: עזרה במידה, מתנה, הזמנה, החלפה או אחריות בלי להוציא את הבחירה מהאתר."
+        description="שכבת תמיכה לכל רגע של היסוס: מידה, מתנה, הזמנה, החלפה או אחריות, בלי לצאת מהאתר."
         eyebrow="תמיכה לפני ואחרי הזמנה"
         title="שירות תומך"
         variant="content"
@@ -135,7 +135,7 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
                 ערוצי קשר ברורים
               </h2>
               <p className="text-muted-foreground mt-2 max-w-prose leading-7">
-                הטיפול מתבצע דרך פנייה מתועדת, עם מענה עד 24 שעות ביום עסקים.
+                כל פנייה מתועדת ומקבלת מענה עד 24 שעות ביום עסקים.
               </p>
             </div>
 
