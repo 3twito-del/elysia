@@ -56,21 +56,21 @@
 :root {
   --background: #fbf8f4;
   --foreground: var(--brand-ink);
-  --card: oklch(1 0 0);
+  --card: #fffdf9;
   --card-foreground: var(--brand-ink);
-  --popover: oklch(1 0 0);
+  --popover: #fffdf9;
   --popover-foreground: var(--brand-ink);
   --primary: var(--brand-ink);
   --primary-foreground: oklch(1 0 0);
   --secondary: #faf7f3;
   --secondary-foreground: var(--brand-ink);
-  --muted: #f8f5f1;
+  --muted: #f6f3ef;
   --muted-foreground: #7a7168;
   --accent: #ead8d2;
   --accent-foreground: var(--brand-ink);
   --destructive: oklch(0.47 0.15 27);
   --border: #ece6df;
-  --input: #e8e1da;
+  --input: #ece6df;
   --ring: #b49a6a;
   --chart-1: #1d1916;
   --chart-2: #7d6b5a;
@@ -94,7 +94,7 @@
   --glass-panel-bg: var(--card);
   --glass-card-bg: var(--card);
   --glass-control-bg: oklch(1 0 0);
-  --glass-inset-bg: #f8f5f1;
+  --glass-inset-bg: #faf7f4;
   --glass-chrome-bg: var(--background);
   --glass-border: #ece6df;
   --glass-border-strong: #d8d0c8;

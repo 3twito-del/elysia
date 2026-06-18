@@ -32,7 +32,7 @@ describe("public CTA hierarchy", () => {
     const css = read("src/styles/globals.css");
 
     expect(css).toContain("--secondary: #faf7f3;");
-    expect(css).toContain("--muted: #f8f5f1;");
+    expect(css).toContain("--muted: #f6f3ef;");
     expect(css).toContain("--accent: #ead8d2;");
     expect(css).toContain("--glass-border: #ece6df;");
     expect(css).toContain("--glass-border-strong: #d8d0c8;");
