@@ -43,8 +43,8 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL(env.SITE_URL ?? "https://elysia-jewellery.com"),
   robots: {
-    follow: false,
-    index: false,
+    follow: true,
+    index: true,
   },
   alternates: {
     canonical: "/",
