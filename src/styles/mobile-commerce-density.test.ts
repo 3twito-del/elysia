@@ -174,7 +174,7 @@ describe("mobile commerce density", () => {
       "px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)]",
     );
     expect(search).toContain("mt-5 grid gap-4 sm:mt-8");
-    expect(productCard).toContain("relative aspect-[5/4] overflow-hidden");
+    expect(productCard).toContain("relative aspect-[4/5] overflow-hidden");
     expect(productCard).toContain('density?: "standard" | "compact"');
     expect(productCard).toContain("data-product-card-density=");
     expect(productCard).toContain("product-card-media-compact");
@@ -186,7 +186,7 @@ describe("mobile commerce density", () => {
     expect(css).toContain(
       '.product-card-shell[data-product-card-density="compact"]',
     );
-    expect(css).toContain("aspect-ratio: 6 / 5;");
+    expect(css).toContain("aspect-ratio: 4 / 5;");
   });
 
   it("keeps PDP purchase, search filters, and footer concise on small screens", () => {

@@ -59,8 +59,7 @@ describe("visible site improvement affordances", () => {
     expect(loading).toContain('data-testid="search-loading-card-skeletons"');
     expect(loading).toContain('data-testid="search-loading-card-skeleton"');
     expect(loading).toContain("ui-equal-grid");
-    expect(loading).toContain("aspect-[5/4]");
-    expect(loading).toContain("sm:aspect-[4/5]");
+    expect(loading).toContain("aspect-[4/5]");
   });
 
   it("keeps the gifts page discovery chips visible and routed to search", () => {
@@ -504,8 +503,7 @@ describe("visible site improvement affordances", () => {
     expect(recentlyViewed).toContain(
       'data-layout-equal-group="recently-viewed-products"',
     );
-    expect(productCard).toContain("relative aspect-[5/4] overflow-hidden");
-    expect(productCard).toContain("sm:aspect-[4/5]");
+    expect(productCard).toContain("relative aspect-[4/5] overflow-hidden");
     expect(productCard).toContain('data-testid="product-card-image-skeleton"');
     expect(productCard).toContain('data-testid="product-card-badge"');
     expect(productCard).toContain('data-testid="product-card-attributes"');

@@ -99,7 +99,7 @@ export function ProductCard({
       >
         <div
           className={cn(
-            "brand-product-media product-card-media bg-muted relative aspect-[5/4] overflow-hidden rounded-md border-0 sm:aspect-[4/5]",
+            "brand-product-media product-card-media bg-muted relative aspect-[4/5] overflow-hidden rounded-md border-0",
             isCompactDensity && "product-card-media-compact",
           )}
         >
@@ -158,7 +158,7 @@ export function ProductCard({
                 </p>
               ) : null}
               <h3
-                className="ui-text-slot product-card-title group-hover/product-link:text-muted-foreground group-focus-visible/product-link:text-muted-foreground text-base font-medium transition-colors duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)] [--ui-text-slot-line-height:1.45rem]"
+                className="ui-text-slot product-card-title text-base font-medium [--ui-text-slot-line-height:1.45rem]"
                 data-lines="2"
                 dir="auto"
               >

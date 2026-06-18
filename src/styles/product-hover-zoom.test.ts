@@ -59,7 +59,7 @@ describe("product image hover zoom", () => {
     expect(source).toContain("group-hover/card:scale-[1.055]");
     expect(source).toContain("group-focus-within/card:scale-[1.055]");
     expect(source).toContain("product-card-hover-image");
-    expect(source).toContain("relative aspect-[5/4] overflow-hidden");
+    expect(source).toContain("relative aspect-[4/5] overflow-hidden");
     expect(css).toContain(".product-card-shell:hover .product-card-image");
     expect(css).toContain(
       ".product-card-shell:focus-within .product-card-hover-image",

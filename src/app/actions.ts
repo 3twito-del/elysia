@@ -177,7 +177,7 @@ export async function submitFeedback(
       typeof emailValue === "string" && emailValue.trim()
         ? emailValue
         : undefined,
-    url: formData.get("url") || undefined,
+    url: formData.get("url") ?? undefined,
   });
 
   if (!parsed.success) {
@@ -217,8 +217,8 @@ export async function submitFeedback(
   await db.userFeedback.create({
     data: {
       message: parsed.data.message,
-      email: parsed.data.email || null,
-      url: parsed.data.url || null,
+      email: parsed.data.email ?? null,
+      url: parsed.data.url ?? null,
       customerId: customerId ?? null,
     },
   });

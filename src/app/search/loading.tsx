@@ -51,7 +51,7 @@ export default function SearchLoading() {
               data-testid="search-loading-card-skeleton"
               key={index}
             >
-              <Skeleton className="aspect-[5/4] w-full rounded-md sm:aspect-[4/5]" />
+              <Skeleton className="aspect-[4/5] w-full rounded-md" />
               <div className="grid min-h-28 gap-2">
                 <Skeleton className="h-5 w-4/5" />
                 <Skeleton className="h-4 w-2/3" />

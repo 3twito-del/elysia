@@ -83,7 +83,6 @@ const geistMono = Geist_Mono({
 const rubik = Rubik({
   subsets: ["hebrew", "latin"],
   variable: "--font-rubik",
-  weight: ["400", "500", "600", "700"],
 });
 
 const cormorantGaramond = Cormorant_Garamond({
