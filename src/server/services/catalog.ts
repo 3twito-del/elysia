@@ -3,6 +3,13 @@ import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
 import { formatPrice } from "~/lib/format";
+import {
+  getPublicCategoryName,
+  getPublicCollectionName,
+  getPublicMaterialName,
+  getPublicStoneName,
+  getPublicVariantOptionName,
+} from "~/lib/product-display";
 import { db } from "~/server/db";
 import {
   CATALOG_CACHE_TAGS,
@@ -21,8 +28,10 @@ import {
   getFixtureCatalogProductBySlug,
   getFixtureFeaturedCatalogProducts,
   listFixtureCatalogProducts,
+  shouldFallbackToCatalogFixturesOnDatabaseError,
   shouldUseCatalogFixtures,
 } from "~/server/services/catalog-fixtures";
+import { getPublicCatalogSku } from "~/server/services/public-catalog-identifiers";
 import type {
   CatalogBranch,
   CatalogCategory,
@@ -35,7 +44,38 @@ import type {
 const ACTIVE_PRODUCT_WHERE = {
   status: "ACTIVE",
 } satisfies Prisma.ProductWhereInput;
+const CATALOG_MEDIA_VERSION = "boutique-v10";
 const CATALOG_REVALIDATE_SECONDS = 60 * 60;
+const publicCatalogCopyReplacements = [
+  ["יוקרה", "נוכחות עדינה"],
+  ["רשת תכשיטים", "תכשיטי Elysia"],
+  ["תכשיטים אונליין", "תכשיטי Elysia"],
+  ["תכשיטי Elysia", "תכשיטי Elysia"],
+  ["תכשיטים זמינים לקנייה", "פריטים זמינים מן הקולקציה"],
+  ["רכישה אונליין", "הזמנה באתר"],
+  ["קנייה אונליין", "הזמנה באתר"],
+  ["חוויית הקנייה", "חוויית תכשיטים"],
+  ["מחיר גלוי לפני שמירה", "פרטים מאומתים לפני הזמנה"],
+  ["מחיר גלוי לפני התאמה", "פרטי ההתאמה יאושרו מראש"],
+  ["מחיר גלוי", "מחיר לפני הזמנה"],
+  ["בדיקת איכות לפני מסירה", "נבדק לפני מסירה"],
+  ["שירות וקנייה", "שאלה והזמנה"],
+  ["לאחר קנייה", "לאחר מסירה"],
+  ["צפייה וקנייה", "לפרטי התכשיט"],
+  ["מוצרים מומלצים", "תכשיטים מומלצים"],
+  ["מוצרים שנצפו", "תכשיטים שנצפו"],
+  ["מוצרים קיימים", "תכשיטים קיימים"],
+  ["מסחר אונליין", "הזמנה אונליין"],
+  ["קטלוג אונליין", "תכשיטי Elysia"],
+  ["קטלוג דיגיטלי", "תכשיטי Elysia"],
+  ["הזמנה דיגיטלית", "הזמנה אישית"],
+  ["תקציב", "מחיר"],
+  ["מוצרים", "תכשיטים"],
+  ["מוצר", "תכשיט"],
+  ["רכישה", "הזמנה"],
+] as const;
+const privateCatalogCopyPattern =
+  /supplier|shopify|dropship|configured as|active product|supplier-backed|supplied through|ספק/iu;
 export { DEFAULT_CATALOG_IMAGE };
 
 export { formatPrice };
@@ -52,20 +92,108 @@ type CatalogProductRecord = Prisma.ProductGetPayload<{
   include: ReturnType<typeof createCatalogProductInclude>;
 }>;
 
-const getCatalogCategoriesCached = unstable_cache(
-  async (): Promise<CatalogCategory[]> => {
-    if (shouldUseCatalogFixtures()) {
-      return getFixtureCatalogCategories();
+function getCatalogDataSourceCacheKey() {
+  if (shouldUseCatalogFixtures()) return `fixtures:${CATALOG_MEDIA_VERSION}`;
+
+  const source = shouldFallbackToCatalogFixturesOnDatabaseError()
+    ? "database-with-fixture-fallback"
+    : "database";
+
+  return `${source}:${CATALOG_MEDIA_VERSION}`;
+}
+
+async function readCatalogData<T>({
+  database,
+  fallback,
+  label,
+}: {
+  database: () => Promise<T>;
+  fallback: () => Promise<T> | T;
+  label: string;
+}) {
+  if (shouldUseCatalogFixtures()) {
+    return fallback();
+  }
+
+  try {
+    return await database();
+  } catch (error) {
+    if (
+      !shouldFallbackToCatalogFixturesOnDatabaseError() ||
+      !isCatalogDatabaseReadError(error)
+    ) {
+      throw error;
     }
 
-    const categories = await db.category.findMany({
-      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
-      include: createCategoryImageInclude(),
-    });
+    warnCatalogFixtureFallback(label, error);
 
-    return categories.map(mapCatalogCategory);
+    return fallback();
+  }
+}
+
+const catalogFallbackWarningKeys = new Set<string>();
+const catalogDatabaseReadErrorCodes = new Set([
+  "P1000",
+  "P1001",
+  "P1002",
+  "P1008",
+  "P1017",
+  "P2024",
+]);
+
+function isCatalogDatabaseReadError(error: unknown) {
+  const code =
+    error && typeof error === "object" && "code" in error
+      ? (error as { code?: unknown }).code
+      : undefined;
+  const message = getCatalogErrorMessage(error);
+
+  return (
+    (typeof code === "string" && catalogDatabaseReadErrorCodes.has(code)) ||
+    /Can't reach database server|Authentication failed|Timed out fetching a new connection|Unable to start a transaction|Connection pool timeout|DATABASE_URL is required|Error opening a TLS connection|No credentials are available in the security package/i.test(
+      message,
+    )
+  );
+}
+
+function getCatalogErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function warnCatalogFixtureFallback(label: string, error: unknown) {
+  const warningKey = label.split(":")[0] ?? label;
+
+  if (catalogFallbackWarningKeys.has(warningKey)) return;
+
+  catalogFallbackWarningKeys.add(warningKey);
+  console.warn(
+    `[catalog] Falling back to fixture data for ${warningKey} after database read failed: ${getCatalogLogMessage(error)}`,
+  );
+}
+
+function getCatalogLogMessage(error: unknown) {
+  return getCatalogErrorMessage(error)
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 240);
+}
+
+const getCatalogCategoriesCached = unstable_cache(
+  async (): Promise<CatalogCategory[]> => {
+    return readCatalogData({
+      label: "categories",
+      fallback: getFixtureCatalogCategories,
+      database: async () => {
+        const categories = await db.category.findMany({
+          orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+          include: createCategoryImageInclude(),
+        });
+
+        return categories.map(mapCatalogCategory);
+      },
+    });
   },
-  ["catalog:categories"],
+  ["catalog:categories", getCatalogDataSourceCacheKey()],
   {
     revalidate: CATALOG_REVALIDATE_SECONDS,
     tags: [CATALOG_CACHE_TAGS.categories],
@@ -79,20 +207,22 @@ export const getCatalogCategories = cache(
 export async function getCatalogCategoryBySlug(slug: string) {
   const getCatalogCategoryBySlugCached = unstable_cache(
     async () => {
-      if (shouldUseCatalogFixtures()) {
-        return getFixtureCatalogCategoryBySlug(slug);
-      }
+      return readCatalogData({
+        label: `category:${slug}`,
+        fallback: () => getFixtureCatalogCategoryBySlug(slug),
+        database: async () => {
+          const category = await db.category.findUnique({
+            where: { slug },
+            include: createCategoryImageInclude(),
+          });
 
-      const category = await db.category.findUnique({
-        where: { slug },
-        include: createCategoryImageInclude(),
+          if (!category) return null;
+
+          return mapCatalogCategory(category);
+        },
       });
-
-      if (!category) return null;
-
-      return mapCatalogCategory(category);
     },
-    [`catalog:category:${slug}`],
+    ["catalog:category", getCatalogDataSourceCacheKey(), slug],
     {
       revalidate: CATALOG_REVALIDATE_SECONDS,
       tags: [CATALOG_CACHE_TAGS.categories, categoryCacheTag(slug)],
@@ -108,29 +238,31 @@ export const getCatalogCategoryBySlugCachedRequest = cache(
 
 const getCatalogBranchesCached = unstable_cache(
   async (): Promise<CatalogBranch[]> => {
-    if (shouldUseCatalogFixtures()) {
-      return getFixtureCatalogBranches();
-    }
+    return readCatalogData({
+      label: "branches",
+      fallback: getFixtureCatalogBranches,
+      database: async () => {
+        const settings = await db.serviceSettings.findUnique({
+          where: { id: "default" },
+        });
 
-    const settings = await db.serviceSettings.findUnique({
-      where: { id: "default" },
-    });
+        if (!settings?.physicalBranchesEnabled) return [];
 
-    if (!settings?.physicalBranchesEnabled) return [];
+        const branches = await db.branch.findMany({
+          where: {
+            kind: "PHYSICAL",
+            isActive: true,
+            isApproved: true,
+            isPublic: true,
+          },
+          orderBy: [{ sortOrder: "asc" }, { city: "asc" }, { name: "asc" }],
+        });
 
-    const branches = await db.branch.findMany({
-      where: {
-        kind: "PHYSICAL",
-        isActive: true,
-        isApproved: true,
-        isPublic: true,
+        return branches.map(mapCatalogBranch);
       },
-      orderBy: [{ sortOrder: "asc" }, { city: "asc" }, { name: "asc" }],
     });
-
-    return branches.map(mapCatalogBranch);
   },
-  ["catalog:branches"],
+  ["catalog:branches", getCatalogDataSourceCacheKey()],
   {
     revalidate: CATALOG_REVALIDATE_SECONDS,
     tags: [CATALOG_CACHE_TAGS.branches],
@@ -143,19 +275,24 @@ export const getCatalogBranches = cache(
 
 const getFeaturedCatalogProductsCached = unstable_cache(
   async (take: number) => {
-    if (shouldUseCatalogFixtures()) {
-      return getFixtureFeaturedCatalogProducts(take);
-    }
+    return readCatalogData({
+      label: "featured-products",
+      fallback: () => getFixtureFeaturedCatalogProducts(take),
+      database: async () => {
+        const records = await db.product.findMany({
+          where: ACTIVE_PRODUCT_WHERE,
+          include: createCatalogProductInclude(),
+          orderBy: [{ createdAt: "desc" }],
+        });
 
-    const records = await db.product.findMany({
-      where: ACTIVE_PRODUCT_WHERE,
-      include: createCatalogProductInclude(),
-      orderBy: [{ createdAt: "desc" }],
+        return selectFeaturedCatalogProducts(
+          records.map(mapCatalogProduct),
+          take,
+        );
+      },
     });
-
-    return selectFeaturedCatalogProducts(records.map(mapCatalogProduct), take);
   },
-  ["catalog:featured-products:v5"],
+  ["catalog:featured-products:v5", getCatalogDataSourceCacheKey()],
   {
     revalidate: CATALOG_REVALIDATE_SECONDS,
     tags: [CATALOG_CACHE_TAGS.products],
@@ -198,22 +335,30 @@ function selectFeaturedCatalogProducts(
 export async function listCatalogProducts(input: { category?: string } = {}) {
   const getCatalogProductsCached = unstable_cache(
     async () => {
-      if (shouldUseCatalogFixtures()) {
-        return listFixtureCatalogProducts(input);
-      }
+      return readCatalogData({
+        label: input.category
+          ? `products:category:${input.category}`
+          : "products",
+        fallback: () => listFixtureCatalogProducts(input),
+        database: async () => {
+          const records = await db.product.findMany({
+            where: {
+              ...ACTIVE_PRODUCT_WHERE,
+              ...(input.category ? { category: { slug: input.category } } : {}),
+            },
+            include: createCatalogProductInclude(),
+            orderBy: [{ createdAt: "desc" }],
+          });
 
-      const records = await db.product.findMany({
-        where: {
-          ...ACTIVE_PRODUCT_WHERE,
-          ...(input.category ? { category: { slug: input.category } } : {}),
+          return records.map(mapCatalogProduct);
         },
-        include: createCatalogProductInclude(),
-        orderBy: [{ createdAt: "desc" }],
       });
-
-      return records.map(mapCatalogProduct);
     },
-    [`catalog:products:v5:${input.category ?? "all"}`],
+    [
+      "catalog:products:v5",
+      getCatalogDataSourceCacheKey(),
+      input.category ?? "all",
+    ],
     {
       revalidate: CATALOG_REVALIDATE_SECONDS,
       tags: [
@@ -231,18 +376,20 @@ export const listCatalogProductsCachedRequest = cache(listCatalogProducts);
 export async function getCatalogProductBySlug(slug: string) {
   const getCatalogProductBySlugCached = unstable_cache(
     async () => {
-      if (shouldUseCatalogFixtures()) {
-        return getFixtureCatalogProductBySlug(slug);
-      }
+      return readCatalogData({
+        label: `product:${slug}`,
+        fallback: () => getFixtureCatalogProductBySlug(slug),
+        database: async () => {
+          const record = await db.product.findFirst({
+            where: { ...ACTIVE_PRODUCT_WHERE, slug },
+            include: createCatalogProductInclude(),
+          });
 
-      const record = await db.product.findFirst({
-        where: { ...ACTIVE_PRODUCT_WHERE, slug },
-        include: createCatalogProductInclude(),
+          return record ? mapCatalogProduct(record) : null;
+        },
       });
-
-      return record ? mapCatalogProduct(record) : null;
     },
-    [`catalog:product:v5:${slug}`],
+    ["catalog:product:v5", getCatalogDataSourceCacheKey(), slug],
     {
       revalidate: CATALOG_REVALIDATE_SECONDS,
       tags: [CATALOG_CACHE_TAGS.products, productCacheTag(slug)],
@@ -272,7 +419,7 @@ const getCatalogFacetsCached = unstable_cache(
 
     return getCatalogFacetsFromProducts(products);
   },
-  ["catalog:facets:v5"],
+  ["catalog:facets:v6", getCatalogDataSourceCacheKey()],
   {
     revalidate: CATALOG_REVALIDATE_SECONDS,
     tags: [CATALOG_CACHE_TAGS.facets, CATALOG_CACHE_TAGS.products],
@@ -296,6 +443,13 @@ export function getCatalogFacetsFromProducts(
         .filter((value): value is string => Boolean(value)),
     ),
     collections: getUniqueValues(products.map((product) => product.collection)),
+    styles: getUniqueValues(
+      products.flatMap((product) => getCatalogProductStyles(product)),
+    ),
+    giftTags: getCatalogGiftFacetOptions(products),
+    colors: getUniqueValues(
+      products.flatMap((product) => getCatalogProductColors(product)),
+    ),
     priceRange: {
       min: prices.length > 0 ? Math.min(...prices) : 0,
       max: prices.length > 0 ? Math.max(...prices) : 0,
@@ -330,6 +484,19 @@ export function filterCatalogProducts(
       input.collection ? product.collections.includes(input.collection) : true,
     )
     .filter((product) =>
+      input.style
+        ? getCatalogProductStyles(product).includes(input.style)
+        : true,
+    )
+    .filter((product) =>
+      input.gift ? matchesCatalogGiftFacet(product, input.gift) : true,
+    )
+    .filter((product) =>
+      input.color
+        ? getCatalogProductColors(product).includes(input.color)
+        : true,
+    )
+    .filter((product) =>
       input.branch ? (product.inventory[input.branch] ?? 0) > 0 : true,
     )
     .filter((product) =>
@@ -340,6 +507,92 @@ export function filterCatalogProducts(
         ? Object.values(product.inventory).some((quantity) => quantity > 0)
         : true,
     );
+}
+
+const catalogGiftFacetLabels = {
+  gift: "מתאים למתנה",
+  under200: "עד 200 ₪",
+  pearl: "פנינים למתנה",
+} as const;
+
+function getCatalogProductStyles(product: CatalogProduct): string[] {
+  return product.collections.length > 0
+    ? product.collections
+    : [product.collection];
+}
+
+function getCatalogProductColors(product: CatalogProduct): string[] {
+  return getUniqueValues([
+    ...product.metalColors,
+    ...product.variants
+      .flatMap((variant) => [variant.metalColor, variant.stoneColor])
+      .filter((value): value is string => Boolean(value)),
+  ]);
+}
+
+function getCatalogGiftFacetOptions(products: CatalogProduct[]): string[] {
+  const options: string[] = [];
+
+  if (
+    products.some((product) =>
+      matchesCatalogGiftFacet(product, catalogGiftFacetLabels.gift),
+    )
+  ) {
+    options.push(catalogGiftFacetLabels.gift);
+  }
+
+  if (
+    products.some((product) =>
+      matchesCatalogGiftFacet(product, catalogGiftFacetLabels.under200),
+    )
+  ) {
+    options.push(catalogGiftFacetLabels.under200);
+  }
+
+  if (
+    products.some((product) =>
+      matchesCatalogGiftFacet(product, catalogGiftFacetLabels.pearl),
+    )
+  ) {
+    options.push(catalogGiftFacetLabels.pearl);
+  }
+
+  return options;
+}
+
+function matchesCatalogGiftFacet(
+  product: CatalogProduct,
+  giftFacet: string,
+): boolean {
+  if (giftFacet === catalogGiftFacetLabels.under200) {
+    return product.price <= 200;
+  }
+
+  if (giftFacet === catalogGiftFacetLabels.pearl) {
+    const normalizedStone = normalizeCatalogFacetText(product.stone);
+
+    return (
+      matchesCatalogGiftFacet(product, catalogGiftFacetLabels.gift) &&
+      (normalizedStone.includes("פנינ") || normalizedStone.includes("pearl"))
+    );
+  }
+
+  if (giftFacet !== catalogGiftFacetLabels.gift) return false;
+
+  const searchable = [
+    product.description,
+    product.shortDescription,
+    ...product.tags,
+    ...product.collections,
+  ]
+    .map((value) => normalizeCatalogFacetText(value))
+    .join(" ");
+
+  return searchable.includes("מתנה") || searchable.includes("gift");
+}
+
+function normalizeCatalogFacetText(value?: string): string {
+  return value?.trim().toLowerCase() ?? "";
 }
 
 export function getCatalogAvailability(product: CatalogProduct) {
@@ -440,46 +693,81 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
   }
 
   const displayName = getDisplayProductName(record.name);
+  const displayMaterial = getPublicMaterialName(
+    record.material.name,
+    displayName,
+  );
+  const displayStone = getPublicStoneName(record.stone?.name);
+  const displayCollections = getUniqueValues(
+    record.collections
+      .map((collection) => getPublicCollectionName(collection.name))
+      .filter((collection): collection is string => Boolean(collection)),
+  );
+  const displayCollection = displayCollections[0] ?? "Signature edit";
   const displayDescription = getDisplayProductDescription({
     description: record.description,
-    material: record.material.name,
+    material: displayMaterial,
     name: displayName,
-    stone: record.stone?.name,
+    source: record.source,
+    stone: displayStone,
   });
   const displayTags = getDisplayProductTags(record.tags);
 
   return {
     slug: record.slug,
-    sku: record.sku,
+    sku: getPublicCatalogSku(record.sku),
+    requiresSeparateCheckout: record.source !== "OWN",
     name: displayName,
     categorySlug: record.category.slug,
-    categoryName: record.category.name,
-    shortDescription: record.shortDescription,
+    categoryName: getPublicCategoryName(
+      record.category.slug,
+      record.category.name,
+    ),
+    shortDescription: getDisplayProductShortDescription({
+      material: displayMaterial,
+      name: displayName,
+      shortDescription: record.shortDescription,
+      source: record.source,
+      stone: displayStone,
+    }),
     description: displayDescription,
     availabilityMode: record.availabilityMode,
     commerceHighlights: getDisplayCommerceHighlights(record),
-    deliveryPromise:
-      record.deliveryPromise ?? "משלוח עד הבית לאחר אימות פרטי ההזמנה.",
-    returnPolicy:
-      record.returnPolicy ?? "החלפה או החזרה מתואמת לפי מדיניות האתר.",
-    careInstructions: record.careInstructions ?? undefined,
-    warranty: record.warranty ?? undefined,
+    deliveryPromise: normalizePublicCatalogCopy(
+      record.deliveryPromise ?? "מסירה עד הבית לאחר השלמת התשלום.",
+    ),
+    returnPolicy: normalizePublicCatalogCopy(
+      record.returnPolicy ?? "החלפה או החזרה בתיאום שירות לפי מדיניות Elysia.",
+    ),
+    careInstructions: record.careInstructions
+      ? normalizePublicCatalogCopy(record.careInstructions)
+      : undefined,
+    warranty: record.warranty
+      ? normalizePublicCatalogCopy(record.warranty)
+      : undefined,
     price: defaultPrice,
     compareAt: getCompareAt(defaultVariant),
     createdAt: record.createdAt,
     popularityScore: record._count.viewEvents + record._count.clickEvents * 2,
-    material: record.material.name,
-    stone: record.stone?.name,
-    collection: record.collections[0]?.name ?? "Elysia",
-    collections: record.collections.map((collection) => collection.name),
+    material: displayMaterial,
+    stone: displayStone,
+    collection: displayCollection,
+    collections:
+      displayCollections.length > 0 ? displayCollections : [displayCollection],
     image: displayImages[0] ?? DEFAULT_CATALOG_IMAGE,
     images: displayImages.length > 0 ? displayImages : [DEFAULT_CATALOG_IMAGE],
     variants: record.variants.map((variant) => ({
-      sku: variant.sku,
-      name: variant.name,
+      sku: getPublicCatalogSku(variant.sku),
+      name: getPublicVariantOptionName(variant.name),
+      separateCheckoutAvailable:
+        record.source !== "OWN" && Boolean(variant.externalVariantId?.trim()),
       size: variant.size ?? undefined,
-      metalColor: variant.metalColor ?? undefined,
-      stoneColor: variant.stoneColor ?? undefined,
+      metalColor: variant.metalColor
+        ? getPublicVariantOptionName(variant.metalColor)
+        : undefined,
+      stoneColor: variant.stoneColor
+        ? getPublicVariantOptionName(variant.stoneColor)
+        : undefined,
       price: getVariantPrice(variant, Number(record.basePrice)),
       inventory: variantInventories.get(variant.sku)?.inventory ?? {},
       availableQuantity:
@@ -490,7 +778,8 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
     metalColors: getUniqueValues(
       record.variants
         .map((variant) => variant.metalColor)
-        .filter((value): value is string => Boolean(value)),
+        .filter((value): value is string => Boolean(value))
+        .map(getPublicVariantOptionName),
     ),
     sizes: getUniqueValues(
       record.variants
@@ -530,45 +819,99 @@ function getVariantInventory(
 }
 
 function getDisplayProductName(name: string) {
-  return name.replace(/\s+\d{3}$/u, "");
+  const cleanedName = name
+    .replace(/\bElysia\s+Supplier\b/giu, "Elysia")
+    .replace(/\bSupplier\b|\bShopify\b|\bDropship(?:ping)?\b/giu, "")
+    .replace(/\s+מהספק$/u, "")
+    .replace(/\s+\d{3}$/u, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+
+  return cleanedName && !hasPrivateCatalogCopy(cleanedName)
+    ? cleanedName
+    : "תכשיט Elysia";
+}
+
+function normalizePublicCatalogCopy(value: string) {
+  return publicCatalogCopyReplacements.reduce(
+    (text, [from, to]) => text.split(from).join(to),
+    value,
+  );
 }
 
 function getDisplayProductDescription(input: {
   description: string;
   material: string;
   name: string;
+  source: CatalogProductRecord["source"];
   stone?: string;
 }) {
-  if (!isGeneratedCatalogDescription(input.description)) {
-    return input.description;
+  if (
+    input.source === "OWN" &&
+    !hasPrivateCatalogCopy(input.description) &&
+    !isGeneratedCatalogDescription(input.description)
+  ) {
+    return normalizePublicCatalogCopy(input.description);
   }
 
   const stoneText = input.stone ? ` עם ${input.stone}` : "";
 
-  return `${input.name} משלב ${input.material}${stoneText} בקו נקי ונוח לענידה. מתאים לשילוב יומיומי, מתנה או אירוע, עם פירוט מלא של מידה, חומר וזמינות לפני רכישה.`;
+  return `${input.name} משלב ${input.material}${stoneText} בקו יומיומי ונוח לענידה, עם מידה, חומר ומחיר לפני הזמנה.`;
+}
+
+function getDisplayProductShortDescription(input: {
+  material: string;
+  name: string;
+  shortDescription: string;
+  source: CatalogProductRecord["source"];
+  stone?: string;
+}) {
+  if (
+    input.source === "OWN" &&
+    !hasPrivateCatalogCopy(input.shortDescription) &&
+    !isGeneratedCatalogDescription(input.shortDescription)
+  ) {
+    return normalizePublicCatalogCopy(input.shortDescription);
+  }
+
+  return `${input.name} מוצג עם חומר, מידה ומחיר לפני הזמנה.`;
 }
 
 function getDisplayCommerceHighlights(record: CatalogProductRecord) {
   if (record.commerceHighlights.length > 0) {
-    return record.commerceHighlights;
+    const highlights = record.commerceHighlights
+      .filter((highlight) => !hasPrivateCatalogCopy(highlight))
+      .map(normalizePublicCatalogCopy);
+
+    if (highlights.length > 0) return highlights;
   }
 
   return [
-    record.warranty ?? "אחריות ושירות לאחר רכישה",
-    record.deliveryPromise ?? "משלוח מתואם עד הבית",
-    record.careInstructions ?? "הנחיות טיפול מצורפות לכל פריט",
+    normalizePublicCatalogCopy(record.warranty ?? "מענה לפני הזמנה"),
+    normalizePublicCatalogCopy(
+      record.deliveryPromise ?? "מסירה מתואמת עד הבית",
+    ),
+    normalizePublicCatalogCopy(
+      record.careInstructions ?? "הנחיות טיפול מצורפות לכל תכשיט",
+    ),
   ];
 }
 
 function isGeneratedCatalogDescription(description: string) {
   return (
-    description.includes("בדיקות קטלוג") ||
+    description.includes("בדיקות מבחר") ||
     description.includes("תצוגת עמוד מוצר")
   );
 }
 
 function getDisplayProductTags(tags: string[]) {
-  return tags.filter((tag) => tag !== "בדיקות קטלוג");
+  return tags.filter(
+    (tag) => tag !== "בדיקות מבחר" && !hasPrivateCatalogCopy(tag),
+  );
+}
+
+function hasPrivateCatalogCopy(value: string) {
+  return privateCatalogCopyPattern.test(value);
 }
 
 function mapCatalogBranch(record: {
@@ -631,11 +974,29 @@ function mapCatalogCategory(category: {
 
   return {
     slug: category.slug,
-    name: category.name,
-    description: category.description ?? "",
+    name: getPublicCategoryName(category.slug, category.name),
+    description: getDisplayCategoryDescription({
+      description: category.description,
+      name: category.name,
+      slug: category.slug,
+    }),
     image,
     imageUrl: image,
   };
+}
+
+function getDisplayCategoryDescription(input: {
+  description: string | null;
+  name: string;
+  slug: string;
+}) {
+  if (input.description && !hasPrivateCatalogCopy(input.description)) {
+    return normalizePublicCatalogCopy(input.description);
+  }
+
+  const publicName = getPublicCategoryName(input.slug, input.name);
+
+  return `${publicName} מתוך קולקציית Elysia, עם חומר, מידה ומחיר לפני הזמנה.`;
 }
 
 function getVariantPrice(

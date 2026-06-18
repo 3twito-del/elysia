@@ -14,6 +14,7 @@ import { db } from "~/server/db";
 
 const OTP_TTL_MINUTES = 10;
 const MAX_OTP_ATTEMPTS = 5;
+const OTP_RESEND_COOLDOWN_SECONDS = 60;
 const OTP_HASH_SCHEME = "otp-hmac-sha256";
 
 type TransactionClient = Prisma.TransactionClient;
@@ -98,6 +99,36 @@ export function getOtpExpiresAt(now = new Date()) {
   return new Date(now.getTime() + OTP_TTL_MINUTES * 60_000);
 }
 
+export function getOtpResendWaitSeconds(
+  latestCreatedAt: Date | null | undefined,
+  now = new Date(),
+) {
+  if (!latestCreatedAt) return 0;
+
+  const availableAt =
+    latestCreatedAt.getTime() + OTP_RESEND_COOLDOWN_SECONDS * 1000;
+
+  return Math.max(0, Math.ceil((availableAt - now.getTime()) / 1000));
+}
+
+export function getOtpChallengeVerificationState(
+  challenge:
+    | {
+        attempts: number;
+        consumedAt: Date | null;
+        expiresAt: Date;
+      }
+    | null
+    | undefined,
+  now = new Date(),
+) {
+  if (!challenge || challenge.consumedAt) return "invalid";
+  if (challenge.expiresAt <= now) return "expired";
+  if (challenge.attempts >= MAX_OTP_ATTEMPTS) return "locked";
+
+  return "valid";
+}
+
 export function otpHashesMatch(
   expectedHash: string,
   identifier: string,
@@ -134,7 +165,28 @@ export async function requestCustomerOtp(input: RequestCustomerOtpInput) {
   const parsed = requestCustomerOtpInputSchema.parse(input);
   const identifier = normalizeOtpIdentifier(parsed.identifier);
   const code = String(randomInt(100000, 1000000));
-  const expiresAt = getOtpExpiresAt();
+  const now = new Date();
+  const latestChallenge = await db.otpChallenge.findFirst({
+    where: {
+      identifier,
+      channel: parsed.channel,
+    },
+    orderBy: { createdAt: "desc" },
+    select: { createdAt: true },
+  });
+  const resendWaitSeconds = getOtpResendWaitSeconds(
+    latestChallenge?.createdAt,
+    now,
+  );
+
+  if (resendWaitSeconds > 0) {
+    throw new TRPCError({
+      code: "TOO_MANY_REQUESTS",
+      message: `Please wait ${resendWaitSeconds} seconds before requesting another code.`,
+    });
+  }
+
+  const expiresAt = getOtpExpiresAt(now);
 
   await db.otpChallenge.create({
     data: {
@@ -199,14 +251,20 @@ export async function verifyCustomerOtp(input: VerifyCustomerOtpInput) {
       throw invalidOtpError();
     }
 
-    if (challenge.expiresAt <= now) {
+    const challengeState = getOtpChallengeVerificationState(challenge, now);
+
+    if (challengeState === "invalid") {
+      throw invalidOtpError();
+    }
+
+    if (challengeState === "expired") {
       throw new TRPCError({
         code: "BAD_REQUEST",
         message: "הקוד פג תוקף. בקשו קוד חדש.",
       });
     }
 
-    if (challenge.attempts >= MAX_OTP_ATTEMPTS) {
+    if (challengeState === "locked") {
       throw new TRPCError({
         code: "TOO_MANY_REQUESTS",
         message: "בוצעו יותר מדי ניסיונות. בקשו קוד חדש.",

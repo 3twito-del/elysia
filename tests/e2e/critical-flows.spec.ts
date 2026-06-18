@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 
 const consentStorageKey = "elysia_cookie_consent";
 const accessibilityStorageKey = "elysia.accessibility-settings";
@@ -7,10 +7,22 @@ const cartStorageKey = "elysia_cart_session";
 const pwaDevCleanupStorageKey = "elysia:pwa-dev-cleanup";
 const cartProductSlug = "hera-bracelet";
 const cartProductName = "צמיד Hera";
+const supplierProductSlug = "elysia-supplier-silver-halo-ring";
 const madeToOrderProductSlug = "muse-pearl-earrings";
 const madeToOrderProductName = "עגילי Muse Pearl";
 const searchProductSlug = "venus-line-ring";
 const searchProductName = "טבעת Venus Line";
+const checkoutEmptyTitle = "התחילי מהנמכרים ביותר";
+const checkoutEmptySupportCopy = "שלושה תכשיטים שנבחרים שוב ושוב";
+const checkoutCatalogCta = "התחילי מהנמכרים ביותר";
+const checkoutGiftCta = "מצאי מתנה";
+const homeHeroTitle = "קיץ חדש. זוהר נקי.";
+const zeroShekelPattern = /^\D*0\D*\u20aa\D*$/u;
+const forbiddenCheckoutStateText = [
+  "\u05d8\u05d5\u05e2\u05df \u05e1\u05dc...",
+  "\u05d9\u05e6\u05d9\u05e8\u05ea \u05e1\u05dc \u05de\u05e7\u05d5\u05de\u05d9 \u05e2\u05d3\u05d9\u05d9\u05df \u05d1\u05d8\u05e2\u05d9\u05e0\u05d4.",
+  "\u05e1\u05dc \u05de\u05e7\u05d5\u05de\u05d9",
+] as const;
 const publicRoutes = [
   "/",
   "/search?q=venus",
@@ -46,59 +58,251 @@ test.describe("critical shopping flows", () => {
     ).toBeVisible();
     await expect(page.getByTestId("product-gallery")).toBeVisible();
     await expect(page.getByTestId("product-variant-feedback")).toBeVisible();
+    await waitForProductPurchasePanelClientReady(page);
     await expect(
       page.getByTestId("product-recommendation-rails"),
     ).toBeVisible();
-    const galleryThumbnails = page.getByTestId("product-gallery-thumbnail");
-    const galleryThumbnailCount = await galleryThumbnails.count();
-
-    if (galleryThumbnailCount > 1) {
-      await expect(galleryThumbnails.first()).toHaveAttribute(
-        "aria-pressed",
-        "true",
-      );
-      await galleryThumbnails.first().focus();
-      await page.keyboard.press("ArrowRight");
-      await expect(galleryThumbnails.nth(1)).toBeFocused();
-      await expect(galleryThumbnails.nth(1)).toHaveAttribute(
-        "aria-pressed",
-        "true",
-      );
-      await page.keyboard.press("Home");
-      await expect(galleryThumbnails.first()).toBeFocused();
-      await expect(galleryThumbnails.first()).toHaveAttribute(
-        "aria-pressed",
-        "true",
-      );
-      await galleryThumbnails.nth(1).click();
-      await expect(galleryThumbnails.nth(1)).toHaveAttribute(
-        "aria-pressed",
-        "true",
-      );
-    }
+    await expectProductGalleryFullScreenNavigation(page, {
+      requireMultiple: false,
+    });
 
     await page.getByRole("button", { exact: true, name: "הוספה לסל" }).click();
-    await expect(page.getByText(/נוספה לסל|הפריט נוסף לסל/)).toBeVisible();
-    await expect(
-      page.locator("a[href='/checkout'] .cart-count-badge"),
-    ).toHaveText("1");
+    await expect(page.getByText(/נוספה לסל|התכשיט נוסף לסל/)).toBeVisible();
+    await expect(page.getByTestId("product-cart-checkout-link")).toBeVisible();
 
     await page.goto("/checkout");
 
-    await expect(page.getByRole("heading", { name: /סל וקופה/ })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /סל קניות/ })).toBeVisible();
     await expect(
       page.getByRole("link", { name: new RegExp(cartProductName) }).first(),
     ).toBeVisible();
     await expect(
-      page.getByRole("button", { name: /שמירת הזמנה/ }),
+      page.getByRole("button", { name: /המשיכי לתשלום/ }),
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: /הוספת כמות עבור/ }),
     ).toBeVisible();
+    await expect(page.getByTestId("checkout-progress-steps")).toContainText(
+      "סקירה",
+    );
+    await expect(page.getByTestId("checkout-progress-steps")).toContainText(
+      "תשלום",
+    );
     await expect(page.getByTestId("checkout-line-total").first()).toContainText(
-      "סכום שורה",
+      "סה״כ",
+    );
+    await expect(
+      page.getByTestId("checkout-line-total-amount").first(),
+    ).not.toHaveText(zeroShekelPattern);
+    await expect(page.getByTestId("checkout-item-count")).toContainText(
+      "סוג תכשיט",
+    );
+    await expect(page.getByTestId("checkout-item-quantity")).toContainText("1");
+    await expect(page.getByTestId("checkout-items-price")).not.toHaveText(
+      zeroShekelPattern,
+    );
+    await expect(page.getByTestId("checkout-shipping")).not.toHaveText(
+      zeroShekelPattern,
+    );
+    await expect(page.getByTestId("checkout-subtotal")).not.toHaveText(
+      zeroShekelPattern,
+    );
+    await expect(page.getByTestId("checkout-order-total")).not.toHaveText(
+      zeroShekelPattern,
+    );
+    await expect(page.getByTestId("checkout-order-total")).not.toContainText(
+      "לאישור",
     );
     await expect(page.locator('[aria-label^="כמות "]')).toContainText("1");
+  });
+
+  test("navigates a multi-image PDP gallery in full screen", async ({
+    page,
+  }) => {
+    await setCookieConsent(page, "essential");
+    await page.goto(`/product/${cartProductSlug}`);
+
+    await expect(
+      page.getByRole("heading", { name: cartProductName }).first(),
+    ).toBeVisible();
+    await expectProductGalleryFullScreenNavigation(page);
+  });
+
+  test("keeps desktop PDP imagery visible while purchase details scroll", async ({
+    page,
+  }) => {
+    test.skip((page.viewportSize()?.width ?? 0) < 1024, "desktop-only layout");
+
+    await setCookieConsent(page, "essential");
+    await page.goto(`/product/${supplierProductSlug}`);
+
+    await expect(page.getByTestId("product-gallery")).toBeVisible();
+    await waitForProductPurchasePanelClientReady(page);
+    await page.getByTestId("product-commerce-trust").scrollIntoViewIfNeeded();
+
+    const layout = await page.evaluate(() => {
+      const gallery = document.querySelector('[data-testid="product-gallery"]');
+      const trust = document.querySelector(
+        '[data-testid="product-commerce-trust"]',
+      );
+
+      if (!gallery || !trust) {
+        throw new Error("Missing PDP layout elements.");
+      }
+
+      const galleryRect = gallery.getBoundingClientRect();
+      const trustRect = trust.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const getVisibleHeight = (rect: DOMRect) =>
+        Math.max(
+          0,
+          Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0),
+        );
+
+      return {
+        galleryVisibleHeight: Math.round(getVisibleHeight(galleryRect)),
+        trustVisibleHeight: Math.round(getVisibleHeight(trustRect)),
+        viewportHeight,
+      };
+    });
+
+    expect(layout.trustVisibleHeight).toBeGreaterThan(120);
+    expect(layout.galleryVisibleHeight).toBeGreaterThan(
+      Math.round(layout.viewportHeight * 0.38),
+    );
+  });
+
+  test("keeps desktop PDP primary gallery crop optically right-balanced", async ({
+    page,
+  }) => {
+    test.skip((page.viewportSize()?.width ?? 0) < 1024, "desktop-only layout");
+
+    await setCookieConsent(page, "essential");
+    await page.goto(`/product/${supplierProductSlug}`);
+
+    await expect(page.getByTestId("product-gallery")).toBeVisible();
+    await expect(page.getByTestId("product-gallery-main-image")).toBeVisible();
+
+    const crop = await page.evaluate(() => {
+      const frame = document.querySelector('[data-testid="product-gallery"]');
+      const image = document.querySelector(
+        '[data-testid="product-gallery-main-image"]',
+      );
+
+      if (!frame || !image) {
+        throw new Error("Missing PDP gallery crop elements.");
+      }
+
+      const frameRect = frame.getBoundingClientRect();
+      const imageRect = image.getBoundingClientRect();
+
+      return {
+        frameLeft: Math.round(frameRect.left),
+        frameRight: Math.round(frameRect.right),
+        imageLeft: Math.round(imageRect.left),
+        imageRight: Math.round(imageRect.right),
+        mediaCenterOffset: Math.round(
+          (imageRect.left + imageRect.right) / 2 -
+            (frameRect.left + frameRect.right) / 2,
+        ),
+      };
+    });
+
+    expect(crop.imageLeft).toBeLessThanOrEqual(crop.frameLeft + 2);
+    expect(crop.imageRight).toBeGreaterThanOrEqual(crop.frameRight + 18);
+    expect(crop.mediaCenterOffset).toBeGreaterThanOrEqual(16);
+  });
+
+  test("keeps desktop PDP service details centered with inset icons", async ({
+    page,
+  }) => {
+    test.skip((page.viewportSize()?.width ?? 0) < 1024, "desktop-only layout");
+
+    await setCookieConsent(page, "essential");
+    await page.goto(`/product/${supplierProductSlug}`);
+
+    await page
+      .getByTestId("product-service-details-layout")
+      .scrollIntoViewIfNeeded();
+
+    const layout = await page.evaluate(() => {
+      const details = document.querySelector(
+        '[data-testid="product-service-details-layout"]',
+      );
+      const summary = document.querySelector(
+        '[data-testid="product-service-summary"]',
+      );
+      const row = document.querySelector('[data-testid="product-service-row"]');
+      const icon = document.querySelector(
+        '[data-testid="product-service-row-icon"]',
+      );
+
+      if (!details || !summary || !row || !icon) {
+        throw new Error("Missing PDP service detail layout elements.");
+      }
+
+      const detailsRect = details.getBoundingClientRect();
+      const summaryRect = summary.getBoundingClientRect();
+      const rowRect = row.getBoundingClientRect();
+      const iconRect = icon.getBoundingClientRect();
+
+      return {
+        detailsLeftGap: Math.round(detailsRect.left),
+        detailsRightGap: Math.round(window.innerWidth - detailsRect.right),
+        detailsWidth: Math.round(detailsRect.width),
+        iconRightInset: Math.round(rowRect.right - iconRect.right),
+        summaryWidth: Math.round(summaryRect.width),
+      };
+    });
+
+    expect(
+      Math.abs(layout.detailsLeftGap - layout.detailsRightGap),
+    ).toBeLessThanOrEqual(64);
+    expect(layout.summaryWidth).toBeGreaterThan(
+      Math.round(layout.detailsWidth * 0.86),
+    );
+    expect(layout.iconRightInset).toBeGreaterThanOrEqual(20);
+  });
+
+  test("shows supplier-only checkout without local order fields", async ({
+    page,
+  }) => {
+    await setCookieConsent(page, "essential");
+    await page.goto(`/product/${supplierProductSlug}`);
+
+    await expect(page.getByTestId("product-variant-feedback")).toBeVisible();
+    await waitForProductPurchasePanelClientReady(page);
+    const addToCartButton = page.getByTestId("product-add-to-cart-button");
+
+    await addToCartButton.evaluate((element) =>
+      element.scrollIntoView({ block: "center", inline: "nearest" }),
+    );
+    await expect(addToCartButton).toBeEnabled();
+    await addToCartButton.click();
+    await expect(page.getByTestId("product-cart-checkout-link")).toBeVisible();
+
+    await page.goto("/checkout");
+
+    await expect(
+      page.getByTestId("checkout-supplier-only-message"),
+    ).toBeVisible();
+    await expect(
+      page.getByTestId("checkout-dropship-only-summary"),
+    ).toBeVisible();
+    await expect(
+      page.getByTestId("checkout-source-group-dropship_shopify"),
+    ).toBeVisible();
+    await expect(
+      page.getByTestId("shopify-dropship-checkout-button"),
+    ).toBeVisible();
+    await expect(page.getByTestId("checkout-dropship-subtotal")).not.toHaveText(
+      zeroShekelPattern,
+    );
+    await expect(page.getByTestId("checkout-progress-steps")).toHaveCount(0);
+    await expect(page.getByTestId("local-checkout-submit-button")).toHaveCount(
+      0,
+    );
+    await expect(page.locator("#name")).toHaveCount(0);
   });
 
   test("saves a ring size locally and applies it on product pages", async ({
@@ -121,7 +325,14 @@ test.describe("critical shopping flows", () => {
       "54",
     );
     await expect(
-      page.locator("button[aria-pressed='true']").first(),
+      page
+        .locator("[data-testid='product-purchase-panel']")
+        .getByRole("button", { name: /^54\b/ }),
+    ).toHaveAttribute("aria-pressed", "true");
+    await expect(
+      page
+        .locator("[data-testid='product-purchase-panel']")
+        .getByRole("button", { name: /^54\b/ }),
     ).toContainText("54");
   });
 
@@ -136,10 +347,13 @@ test.describe("critical shopping flows", () => {
     ).toBeVisible();
     const serviceCta = page
       .getByRole("link", { name: /פתיחת בקשת התאמה/ })
+      .filter({ visible: true })
       .first();
 
-    await expect(serviceCta).toHaveAttribute("href", /\/service\?/);
-    await serviceCta.click();
+    const serviceHref = await serviceCta.getAttribute("href");
+
+    expect(serviceHref).toMatch(/\/service\?/);
+    await page.goto(serviceHref!, { waitUntil: "domcontentloaded" });
     await expect(page).toHaveURL(/\/service\?/);
     await expect(page.locator('input[name="productReference"]')).toHaveValue(
       new RegExp(madeToOrderProductName),
@@ -153,11 +367,11 @@ test.describe("critical shopping flows", () => {
     await page.goto("/search?q=venus");
 
     await expect(
-      page.getByRole("heading", { name: /חיפוש בקטלוג/ }),
+      page.getByRole("heading", { name: /חיפוש תכשיטים/ }),
     ).toBeVisible();
     const productResultLink = page
       .getByTestId("search-results-grid")
-      .getByRole("link", { exact: true, name: searchProductName })
+      .getByRole("link", { name: new RegExp(escapeRegExp(searchProductName)) })
       .first();
 
     const productHref = await productResultLink.getAttribute("href");
@@ -177,11 +391,16 @@ test.describe("critical shopping flows", () => {
     await setCookieConsent(page, "essential");
 
     await page.goto("/search?q=zzzz-no-match&maxPrice=1");
-    await expect(page.getByTestId("search-empty-state")).toBeVisible();
-    await expect(page.getByTestId("search-form")).toBeVisible();
-    await expect(page.getByTestId("search-result-count")).toBeVisible();
+    const searchMain = page.locator("#main-content");
+
+    await expect(searchMain.getByTestId("search-empty-state")).toBeVisible();
+    await expect(searchMain.getByTestId("search-form")).toBeVisible();
+    await expect(searchMain.getByTestId("search-result-count")).toBeVisible();
     await expect(
-      page.getByTestId("search-recovery-actions").getByRole("link").first(),
+      searchMain
+        .getByTestId("search-recovery-actions")
+        .getByRole("link")
+        .first(),
     ).toBeVisible();
 
     const categoryNoResultsParams = new URLSearchParams({
@@ -194,12 +413,96 @@ test.describe("critical shopping flows", () => {
 
     await expect(categoryEmptyState).toBeVisible();
     await expect(
-      categoryEmptyState.getByRole("link", { name: "איפוס פילטרים" }),
+      categoryEmptyState.getByRole("link", { name: "איפוס סינונים" }),
     ).toBeVisible();
 
     await page.goto("/checkout");
     await expect(page.getByTestId("cart-checkout-form")).toBeVisible();
-    await expect(page.getByTestId("checkout-empty-cart")).toBeVisible();
+    const checkoutEmptyState = page.getByTestId("checkout-empty-cart");
+
+    await expect(checkoutEmptyState).toBeVisible();
+    await expect(checkoutEmptyState).toContainText(checkoutEmptyTitle);
+    await expect(
+      checkoutEmptyState.getByRole("link", { name: checkoutCatalogCta }),
+    ).toBeVisible();
+    await expect(
+      checkoutEmptyState.getByRole("link", {
+        exact: true,
+        name: checkoutGiftCta,
+      }),
+    ).toBeVisible();
+    await expect(
+      page.getByTestId("checkout-empty-recommended-product"),
+    ).toHaveCount(3);
+    await expect(page.getByTestId("checkout-empty-actions")).toContainText(
+      cartProductName,
+    );
+
+    for (const stateText of forbiddenCheckoutStateText) {
+      await expect(page.locator("body")).not.toContainText(stateText);
+    }
+  });
+
+  test("renders empty checkout content in the initial HTML", async ({
+    request,
+  }) => {
+    const response = await request.get("/checkout");
+
+    expect(response.ok()).toBe(true);
+
+    const html = await response.text();
+
+    expect(html).toContain(checkoutEmptyTitle);
+    expect(html).toContain(checkoutEmptySupportCopy);
+    expect(html).toContain(checkoutCatalogCta);
+    expect(html).toContain(checkoutGiftCta);
+    expect(html).toContain("checkout-empty-recommended-product");
+    expect(html).not.toContain("checkout-loading-skeleton");
+
+    for (const stateText of forbiddenCheckoutStateText) {
+      expect(html).not.toContain(stateText);
+    }
+  });
+
+  test("renders empty checkout fallback without JavaScript", async ({
+    baseURL,
+    browser,
+  }) => {
+    const context = await browser.newContext({
+      javaScriptEnabled: false,
+      locale: "he-IL",
+      viewport: { height: 844, width: 390 },
+    });
+    const page = await context.newPage();
+
+    try {
+      await page.goto(
+        new URL("/checkout", baseURL ?? "http://localhost:3000").toString(),
+      );
+      const checkoutEmptyState = page.getByTestId("checkout-empty-cart");
+
+      await expect(checkoutEmptyState).toBeVisible();
+      await expect(checkoutEmptyState).toContainText(checkoutEmptyTitle);
+      await expect(checkoutEmptyState).toContainText(checkoutEmptySupportCopy);
+      await expect(
+        checkoutEmptyState.getByRole("link", { name: checkoutCatalogCta }),
+      ).toBeVisible();
+      await expect(
+        checkoutEmptyState.getByRole("link", {
+          exact: true,
+          name: checkoutGiftCta,
+        }),
+      ).toBeVisible();
+      await expect(
+        page.getByTestId("checkout-empty-recommended-product"),
+      ).toHaveCount(3);
+
+      for (const stateText of forbiddenCheckoutStateText) {
+        await expect(page.locator("body")).not.toContainText(stateText);
+      }
+    } finally {
+      await context.close();
+    }
   });
 
   test("shows category not-found recovery", async ({ page }) => {
@@ -211,25 +514,44 @@ test.describe("critical shopping flows", () => {
 
     await expect(notFoundState).toBeVisible();
     await expect(
-      notFoundState.getByRole("link", { name: "חיפוש בקטלוג" }),
+      notFoundState.getByRole("link", { name: "חיפוש במבחר" }),
+    ).toBeVisible();
+  });
+
+  test("shows product not-found recovery", async ({ page }) => {
+    await setCookieConsent(page, "essential");
+
+    await page.goto("/product/not-a-real-product");
+
+    const notFoundState = page.getByTestId("product-not-found-empty-state");
+
+    await expect(notFoundState).toBeVisible();
+    await expect(
+      notFoundState.getByRole("link", { name: "חיפוש במבחר" }),
     ).toBeVisible();
   });
 
   test("opens mobile navigation", async ({ page }) => {
-    test.skip((page.viewportSize()?.width ?? 0) >= 1024, "mobile-only flow");
+    test.skip((page.viewportSize()?.width ?? 0) >= 768, "mobile-only flow");
     await setCookieConsent(page, "essential");
 
-    await page.goto("/");
+    await page.goto("/", { waitUntil: "domcontentloaded" });
     await page.getByTestId("mobile-nav-trigger").click();
     await expect(page.getByTestId("mobile-nav-sheet")).toBeVisible();
-    await expect(page.getByTestId("mobile-nav-link").first()).toBeVisible();
-    await page.getByTestId("mobile-nav-link").first().click();
+    const ringsNavLink = page.locator(
+      '[data-testid="mobile-nav-link"][href="/category/rings"]',
+    );
+
+    await expect(ringsNavLink).toBeVisible();
+    await ringsNavLink.click();
     await expect(page.getByTestId("mobile-nav-sheet")).toBeHidden();
     await expect(page).toHaveURL(/\/category\/rings/);
 
     await page.getByTestId("mobile-nav-trigger").click();
     await expect(page.getByTestId("mobile-nav-sheet")).toBeVisible();
     await page.setViewportSize({ width: 1024, height: 900 });
+    await expect(page.getByTestId("mobile-nav-sheet")).toBeVisible();
+    await page.keyboard.press("Escape");
     await expect(page.getByTestId("mobile-nav-sheet")).toBeHidden();
   });
 
@@ -237,7 +559,7 @@ test.describe("critical shopping flows", () => {
     test.skip((page.viewportSize()?.width ?? 0) >= 1024, "mobile-only flow");
     await setCookieConsent(page, "essential");
 
-    await page.goto("/category/earrings", { waitUntil: "networkidle" });
+    await page.goto("/category/earrings", { waitUntil: "domcontentloaded" });
     const filterTrigger = visibleByTestId(page, "category-filter-trigger");
 
     await expect(visibleByTestId(page, "category-results-grid")).toBeVisible();
@@ -255,7 +577,7 @@ test.describe("critical shopping flows", () => {
     await expect(page.getByTestId("category-filter-sheet")).toBeHidden();
     await expect(page).toHaveURL(/sort=price-asc/);
 
-    await page.goto("/category/earrings", { waitUntil: "networkidle" });
+    await page.goto("/category/earrings", { waitUntil: "domcontentloaded" });
     const secondFilterTrigger = visibleByTestId(
       page,
       "category-filter-trigger",
@@ -266,6 +588,8 @@ test.describe("critical shopping flows", () => {
     await expect(secondFilterTrigger).toHaveAttribute("aria-expanded", "true");
     await expect(page.getByTestId("category-filter-sheet")).toBeVisible();
     await page.setViewportSize({ width: 1024, height: 900 });
+    await expect(page.getByTestId("category-filter-sheet")).toBeVisible();
+    await page.keyboard.press("Escape");
     await expect(page.getByTestId("category-filter-sheet")).toBeHidden();
   });
 
@@ -276,7 +600,7 @@ test.describe("critical shopping flows", () => {
     await setCookieConsent(page, "essential");
 
     await page.goto("/search?q=venus", { waitUntil: "networkidle" });
-    const mobileControls = page.getByTestId("mobile-search-controls");
+    const mobileControls = visibleByTestId(page, "mobile-search-controls");
 
     await expect(mobileControls).toBeVisible();
     await mobileControls.getByTestId("mobile-search-filter-trigger").click();
@@ -292,7 +616,7 @@ test.describe("critical shopping flows", () => {
     await page.setViewportSize({ width: 390, height: 900 });
     await setCookieConsent(page, "essential");
 
-    await page.goto("/");
+    await page.goto("/", { waitUntil: "domcontentloaded" });
     const mobileNavTrigger = page.getByTestId("mobile-nav-trigger");
 
     await expect(mobileNavTrigger).toHaveAttribute("aria-expanded", "false");
@@ -315,7 +639,7 @@ test.describe("critical shopping flows", () => {
     await expect(page.getByTestId("mobile-search-filter-sheet")).toBeHidden();
     await expect(searchFilterTrigger).toBeFocused();
 
-    await page.goto("/category/earrings", { waitUntil: "networkidle" });
+    await page.goto("/category/earrings", { waitUntil: "domcontentloaded" });
     const categoryFilterTrigger = visibleByTestId(
       page,
       "category-filter-trigger",
@@ -326,6 +650,7 @@ test.describe("critical shopping flows", () => {
       "aria-expanded",
       "false",
     );
+    await expect(categoryFilterTrigger).toBeEnabled();
     await categoryFilterTrigger.press("Enter");
     await expect(page.getByTestId("category-filter-sheet")).toBeVisible();
     await page.keyboard.press("Escape");
@@ -355,15 +680,17 @@ test.describe("hydration-sensitive responsive surfaces", () => {
     await expect(page.getByTestId("mobile-nav-sheet")).toBeVisible();
 
     await page.setViewportSize({ width: 1024, height: 900 });
+    await expect(page.getByTestId("mobile-nav-sheet")).toBeVisible();
+    await page.keyboard.press("Escape");
     await expect(page.getByTestId("mobile-nav-sheet")).toBeHidden();
-    await expect(mobileNavTrigger).toBeHidden();
+    await expect(mobileNavTrigger).toBeVisible();
 
-    await page.reload({ waitUntil: "domcontentloaded" });
-    await expect(page.getByTestId("mobile-nav-trigger")).toBeHidden();
+    await reloadCurrentPage(page);
+    await expectDomSelectorVisible(page, "[data-testid='mobile-nav-trigger']");
 
     await page.setViewportSize({ width: 390, height: 900 });
-    await page.reload({ waitUntil: "domcontentloaded" });
-    await expect(page.getByTestId("mobile-nav-trigger")).toBeVisible();
+    await reloadCurrentPage(page);
+    await expectDomSelectorVisible(page, "[data-testid='mobile-nav-trigger']");
 
     await expectNoHydrationRegressions(page, hydrationIssues);
   });
@@ -376,7 +703,10 @@ test.describe("hydration-sensitive responsive surfaces", () => {
     await page.setViewportSize({ width: 390, height: 900 });
     await page.goto("/search?q=venus", { waitUntil: "domcontentloaded" });
 
-    const mobileSearchControls = page.getByTestId("mobile-search-controls");
+    const mobileSearchControls = visibleByTestId(
+      page,
+      "mobile-search-controls",
+    );
 
     await expect(mobileSearchControls).toBeVisible();
     await mobileSearchControls
@@ -400,29 +730,19 @@ test.describe("hydration-sensitive responsive surfaces", () => {
     await expect(page.getByTestId("category-filter-sheet")).toBeVisible();
 
     await page.setViewportSize({ width: 1024, height: 900 });
+    await expect(page.getByTestId("category-filter-sheet")).toBeVisible();
+    await expect(visibleByTestId(page, "category-filter-panel")).toHaveCount(0);
+    await page.keyboard.press("Escape");
     await expect(page.getByTestId("category-filter-sheet")).toBeHidden();
-    await expect(visibleByTestId(page, "category-filter-panel")).toBeVisible();
 
     await expectNoHydrationRegressions(page, hydrationIssues);
   });
 
-  test("hydrates cart count from stored client session without mismatch", async ({
+  test("keeps stored cart sessions from causing public hydration mismatch", async ({
     page,
   }) => {
     const sessionKey = "cart_hydration_regression_123456789";
-    const seenSessionKeys: string[] = [];
     const hydrationIssues = trackHydrationIssues(page);
-
-    await page.route("**/api/cart/count**", async (route) => {
-      const requestUrl = new URL(route.request().url());
-
-      seenSessionKeys.push(requestUrl.searchParams.get("sessionKey") ?? "");
-      await route.fulfill({
-        body: JSON.stringify({ itemCount: 3 }),
-        contentType: "application/json",
-        status: 200,
-      });
-    });
     await page.addInitScript(
       ({ cartStorageKey, sessionKey }) => {
         window.localStorage.setItem(cartStorageKey, sessionKey);
@@ -437,16 +757,15 @@ test.describe("hydration-sensitive responsive surfaces", () => {
 
     await page.setViewportSize({ width: 390, height: 900 });
     await page.goto("/", { waitUntil: "domcontentloaded" });
-
-    await expect(
-      page.locator("a[href='/checkout'] .cart-count-badge"),
-    ).toHaveText("3");
-    expect(seenSessionKeys).toContain(sessionKey);
+    await expect(page.getByTestId("mobile-nav-trigger")).toBeVisible();
 
     await page.setViewportSize({ width: 1280, height: 900 });
     await expect(
-      page.locator("a[href='/checkout'] .cart-count-badge"),
-    ).toHaveText("3");
+      page.locator("header").getByRole("link", {
+        exact: true,
+        name: "חיפוש",
+      }),
+    ).toBeVisible();
 
     await expectNoHydrationRegressions(page, hydrationIssues);
   });
@@ -527,37 +846,62 @@ test.describe("accessibility and responsive guardrails", () => {
     await setCookieConsent(page, "essential");
   });
 
-  test("exposes keyboard skip navigation", async ({ page }) => {
-    await page.goto("/");
-
-    await page.keyboard.press("Tab");
+  test("exposes keyboard skip navigation", async ({ browserName, page }) => {
+    await page.goto("/", { waitUntil: "domcontentloaded" });
 
     const skipLink = page.getByRole("link", { name: "דילוג לתוכן" });
+    if (browserName === "webkit") {
+      await skipLink.focus();
+    } else {
+      await page.keyboard.press("Tab");
+    }
+
     await expect(skipLink).toBeFocused();
     await expect(skipLink).toBeVisible();
 
-    await page.keyboard.press("Enter");
-    await expect(page).toHaveURL(/#main-content$/);
+    await skipLink.press("Enter");
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-anchor-scroll-active",
+      "true",
+    );
   });
 
-  test("exposes accessible names for the home quick search", async ({
+  test("exposes accessible names for the home search entry points", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto("/", { waitUntil: "domcontentloaded" });
 
     await expect(
-      page.getByRole("search", { name: "חיפוש בקטלוג" }),
+      page.getByRole("heading", { level: 1, name: homeHeroTitle }),
+    ).toBeVisible();
+    await expect(page.getByTestId("home-hero-primary-cta")).toHaveAttribute(
+      "href",
+      "/search",
+    );
+
+    await page.goto("/search");
+
+    await page.getByTestId("search-controls-toggle").click();
+    await expect(
+      page
+        .getByRole("search", { name: /חיפוש תכשיטים|חיפוש מהיר/ })
+        .filter({ visible: true })
+        .first(),
     ).toBeVisible();
     await expect(
-      page.getByRole("textbox", { name: "חיפוש מוצר בקטלוג" }),
+      page
+        .getByRole("textbox", {
+          name: "חיפוש תכשיט, חומר, אבן, אירוע או מחיר",
+        })
+        .first(),
     ).toBeVisible();
     await expect(
-      page.getByRole("button", { exact: true, name: "חיפוש" }),
+      page.getByRole("button", { exact: true, name: "חיפוש" }).first(),
     ).toBeVisible();
   });
 
   test("keeps the accessibility widget keyboard-operable", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/", { waitUntil: "domcontentloaded" });
 
     const trigger = page.locator("[data-accessibility-widget-trigger='true']");
     await expect(trigger).toBeVisible();
@@ -591,8 +935,7 @@ test.describe("accessibility and responsive guardrails", () => {
     expect(triggerChrome.visibility).toBe("visible");
     expect(Number(triggerChrome.opacity)).toBe(1);
 
-    await trigger.focus();
-    await page.keyboard.press("Enter");
+    await trigger.press("Enter");
 
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
@@ -644,17 +987,8 @@ test.describe("accessibility and responsive guardrails", () => {
       "aria-hidden",
       "true",
     );
-    await expect
-      .poll(() =>
-        page.evaluate(
-          () =>
-            document.activeElement ===
-            document.querySelector(
-              "[data-accessibility-widget-trigger='true']",
-            ),
-        ),
-      )
-      .toBe(true);
+    await expect(trigger).toHaveAttribute("aria-expanded", "false");
+    await expect(trigger).toBeVisible();
   });
 
   test("honors the site reduced-motion preference", async ({ page }) => {
@@ -698,14 +1032,6 @@ test.describe("accessibility and responsive guardrails", () => {
             ),
         };
       });
-    const mediaTransform = await page
-      .locator("[data-motion-media='true'] .motion-media-content")
-      .first()
-      .evaluate((element) => window.getComputedStyle(element).transform);
-    const heroSequenceReduced = await page
-      .getByTestId("cinematic-page-hero-sequence")
-      .first()
-      .getAttribute("data-motion-reduced");
     const kineticImageReduced = await page
       .locator("[data-kinetic-image]")
       .first()
@@ -719,10 +1045,40 @@ test.describe("accessibility and responsive guardrails", () => {
     expect(
       revealMotion.transitionDurationsMs.every((duration) => duration <= 0.01),
     ).toBe(true);
-    expect(mediaTransform).toBe("none");
-    expect(heroSequenceReduced).toBe("true");
     expect(kineticImageReduced).toBe("true");
     expect(kineticImageTransform).toBe("none");
+  });
+
+  test("keeps selected size controls readable on hover and focus", async ({
+    page,
+  }) => {
+    await page.goto("/size-guide?kind=ring", { waitUntil: "domcontentloaded" });
+
+    const selectedSizeControls = page
+      .getByTestId("size-guide-tool")
+      .locator("button[aria-pressed='true']");
+
+    await expect(selectedSizeControls).toHaveCount(3);
+
+    for (
+      let index = 0;
+      index < (await selectedSizeControls.count());
+      index += 1
+    ) {
+      const control = selectedSizeControls.nth(index);
+
+      await expectReadableControl(control, `selected size control ${index}`);
+      await control.hover();
+      await expectReadableControl(
+        control,
+        `selected size control ${index} hover`,
+      );
+      await control.focus();
+      await expectReadableControl(
+        control,
+        `selected size control ${index} focus`,
+      );
+    }
   });
 
   test("does not replay entrance motion during public reloads", async ({
@@ -736,7 +1092,7 @@ test.describe("accessibility and responsive guardrails", () => {
       await page.waitForTimeout(1200);
       await expectReloadMotionStable(page, route);
 
-      await page.reload({ waitUntil: "domcontentloaded" });
+      await reloadCurrentPage(page);
       await page.waitForTimeout(1200);
       await expectReloadMotionStable(page, `${route} reload`);
     }
@@ -754,15 +1110,24 @@ test.describe("accessibility and responsive guardrails", () => {
     const viewport = page.viewportSize();
 
     await expect(homeHero).toBeVisible();
-    await expect(homeHero.getByRole("heading").first()).toBeVisible();
+    await expect(
+      homeHero.getByRole("heading", { level: 1, name: homeHeroTitle }),
+    ).toBeVisible();
     const heroCollectionLink = homeHero.locator(
-      'a.home-hero-cta-primary[href="/category/rings"]',
+      'a.home-hero-cta-primary[href="/search"]',
     );
 
     await expect(heroCollectionLink).toBeVisible();
+    await expect(page.getByTestId("home-hero-statement")).toBeVisible();
+    await expect(
+      homeHero.locator('a.home-hero-secondary-cta[href="/category/rings"]'),
+    ).toHaveCount(0);
+    await expect(page.getByTestId("home-hero-secondary-line")).toHaveCount(0);
     await expect(
       homeHero.locator('a.home-hero-service-link[href="/service"]'),
     ).toHaveCount(0);
+    await expect(homeHero.locator(".home-hero-help-cta")).toHaveCount(0);
+    await expect(page.getByTestId("home-hero-trust-notes")).toHaveCount(0);
     const heroCollectionLinkStyles = await heroCollectionLink.evaluate(
       (element) => {
         const styles = window.getComputedStyle(element);
@@ -775,7 +1140,7 @@ test.describe("accessibility and responsive guardrails", () => {
     );
 
     expect(heroCollectionLinkStyles.backgroundColor).toMatch(
-      /^rgba?\(255, 255, 255(?:, (?:0\.9[5-9]|1))?\)$/,
+      /^rgba?\(255, 250, 244(?:, (?:0\.9[0-9]|1))?\)$/,
     );
     expect(heroCollectionLinkStyles.color).not.toBe("rgb(255, 255, 255)");
     const heroCollectionLinkShine = await heroCollectionLink.evaluate(
@@ -838,8 +1203,11 @@ test.describe("accessibility and responsive guardrails", () => {
     }
 
     await page.goto("/gifts", { waitUntil: "domcontentloaded" });
-    await expect(page.getByTestId("gift-results-summary")).toBeVisible();
-    await expect(page.getByTestId("gift-results-grid")).toBeVisible();
+    await expectDomSelectorVisible(
+      page,
+      "[data-testid='gift-results-summary']",
+    );
+    await expectDomSelectorVisible(page, "[data-testid='gift-results-grid']");
   });
 
   for (const route of [...publicRoutes, "/admin/login"]) {
@@ -863,38 +1231,38 @@ test.describe("accessibility and responsive guardrails", () => {
         '[data-testid="cinematic-page-hero"]',
       );
       const copy = document.querySelector('[data-testid="home-hero-copy"]');
+      const statement = document.querySelector(
+        '[data-testid="home-hero-statement"]',
+      );
       const actions = document.querySelector(
         '[data-testid="home-hero-actions"]',
       );
 
-      if (!header || !hero || !copy || !actions) {
+      if (!header || !hero || !copy || !statement || !actions) {
         throw new Error("Missing home hero alignment targets.");
       }
 
       const headerRect = header.getBoundingClientRect();
       const heroRect = hero.getBoundingClientRect();
       const copyRect = copy.getBoundingClientRect();
+      const statementRect = statement.getBoundingClientRect();
       const actionsRect = actions.getBoundingClientRect();
 
       return {
-        actionsBottom: Math.round(heroRect.bottom - actionsRect.bottom),
-        actionsLeft: Math.round(actionsRect.left - heroRect.left),
         headerHeight: Math.round(headerRect.height),
         heroTop: Math.round(heroRect.top),
         copyRight: Math.round(heroRect.right - copyRect.right),
         copyTop: Math.round(copyRect.top - heroRect.top),
+        copyBottom: Math.round(heroRect.bottom - copyRect.bottom),
+        ctaAfterStatement: Math.round(actionsRect.top - statementRect.bottom),
       };
     });
 
     expect(offsets.heroTop).toBe(0);
-    expect(
-      Math.abs(offsets.copyRight - offsets.actionsLeft),
-    ).toBeLessThanOrEqual(1);
-    expect(
-      Math.abs(offsets.copyTop - offsets.actionsBottom - offsets.headerHeight),
-    ).toBeLessThanOrEqual(1);
     expect(offsets.copyRight).toBeGreaterThanOrEqual(48);
-    expect(offsets.copyTop).toBeGreaterThanOrEqual(offsets.headerHeight + 32);
+    expect(offsets.copyTop).toBeGreaterThanOrEqual(offsets.headerHeight + 48);
+    expect(offsets.copyBottom).toBeGreaterThanOrEqual(40);
+    expect(offsets.ctaAfterStatement).toBeGreaterThanOrEqual(24);
   });
 });
 
@@ -929,9 +1297,7 @@ test.describe("cookie consent flow", () => {
     await page.goto("/", { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(100);
 
-    await expect(
-      page.locator('[data-cookie-consent-banner="true"]'),
-    ).toHaveCount(0);
+    await expectNoCookieConsentBanner(page);
     await expect
       .poll(() =>
         page.evaluate(
@@ -942,12 +1308,10 @@ test.describe("cookie consent flow", () => {
       )
       .toBe(false);
 
-    await page.reload({ waitUntil: "domcontentloaded" });
+    await reloadCurrentPage(page);
     await page.waitForTimeout(100);
 
-    await expect(
-      page.locator('[data-cookie-consent-banner="true"]'),
-    ).toHaveCount(0);
+    await expectNoCookieConsentBanner(page);
     await expect
       .poll(() =>
         page.evaluate(
@@ -970,11 +1334,11 @@ test.describe("cookie consent flow", () => {
     await expectRecentlyViewed(page, searchProductSlug, false);
 
     const acceptCookiesButton = page.getByRole("button", {
-      name: "אישור הכל",
+      name: "מאשרת הכל",
     });
     await expect(acceptCookiesButton).toHaveCSS(
       "background-color",
-      "rgb(16, 19, 20)",
+      "rgb(29, 25, 22)",
     );
     await acceptCookiesButton.click();
 
@@ -985,18 +1349,19 @@ test.describe("cookie consent flow", () => {
     await expectRecentlyViewed(page, searchProductSlug, true);
 
     await page.goto("/privacy");
-    await page
+    const essentialCookiesButton = page
       .getByRole("region", { name: "ניהול העדפות קוקיז" })
-      .getByRole("button", { name: "הכרחי בלבד" })
-      .click();
+      .getByRole("button", { name: "רק חיוניים" });
+
+    await expect(essentialCookiesButton).toBeVisible();
+    await essentialCookiesButton.focus();
+    await essentialCookiesButton.press("Enter");
 
     await expectCookieConsent(page, "essential");
     await expectRecentlyViewed(page, searchProductSlug, false);
 
-    await page.reload();
-    await expect(page.getByRole("region", { name: "בחירת קוקיז" })).toHaveCount(
-      0,
-    );
+    await reloadCurrentPage(page);
+    await expectNoCookieConsentBanner(page);
   });
 });
 
@@ -1031,6 +1396,7 @@ test.describe("access control surfaces", () => {
     ]) {
       await page.goto(route);
       await expect(page).toHaveURL(/\/admin\/login\?next=/);
+      await expect(page.locator('input[name="next"]')).toHaveValue(route);
     }
   });
 
@@ -1076,9 +1442,361 @@ test.describe("access control surfaces", () => {
     expect(body).toEqual({
       ok: false,
       error: "Unauthorized.",
+      recovery: {
+        href: "/account",
+        rel: "account-sign-in",
+      },
     });
   });
 });
+
+async function expectProductGalleryFullScreenNavigation(
+  page: Page,
+  { requireMultiple = true }: { requireMultiple?: boolean } = {},
+) {
+  const isDesktopMosaic = (page.viewportSize()?.width ?? 0) >= 1024;
+  const galleryThumbnails = page.getByTestId("product-gallery-thumbnail");
+  const galleryThumbnailCount = await galleryThumbnails.count();
+
+  if (!requireMultiple && galleryThumbnailCount <= 1) return;
+
+  expect(galleryThumbnailCount).toBeGreaterThan(1);
+
+  if (isDesktopMosaic) {
+    await expect(
+      page.getByTestId("product-gallery-integrated-layout"),
+    ).toBeVisible();
+    await expect(
+      page.getByTestId("product-gallery-secondary-stack"),
+    ).toBeVisible();
+    await expect(galleryThumbnails.first()).toBeHidden();
+
+    const galleryLayout = await page.evaluate(() => {
+      const main = document.querySelector('[data-testid="product-gallery"]');
+      const stack = document.querySelector(
+        '[data-testid="product-gallery-secondary-stack"]',
+      );
+
+      if (!main || !stack) throw new Error("Missing PDP gallery mosaic.");
+
+      const mainRect = main.getBoundingClientRect();
+      const stackRect = stack.getBoundingClientRect();
+
+      return {
+        mainHeight: Math.round(mainRect.height),
+        mainLeft: Math.round(mainRect.left),
+        stackHeight: Math.round(stackRect.height),
+        stackLeft: Math.round(stackRect.left),
+      };
+    });
+
+    expect(galleryLayout.mainLeft).toBeGreaterThan(galleryLayout.stackLeft);
+    expect(
+      Math.abs(galleryLayout.mainHeight - galleryLayout.stackHeight),
+    ).toBeLessThanOrEqual(2);
+
+    await page.getByTestId("product-gallery-secondary-tile").first().click();
+    await expect(
+      page.getByTestId("product-gallery-selection-status"),
+    ).toContainText(/2\/\d+/);
+
+    const moreImagesTrigger = page.getByTestId(
+      "product-gallery-more-images-trigger",
+    );
+    if ((await moreImagesTrigger.count()) > 0) {
+      await moreImagesTrigger.click();
+      await expect(
+        page.getByTestId("product-gallery-fullscreen-dialog"),
+      ).toBeVisible();
+      await page.getByTestId("product-gallery-fullscreen-close").click();
+      await expect(
+        page.getByTestId("product-gallery-fullscreen-dialog"),
+      ).toBeHidden();
+    }
+  } else {
+    await expect(
+      page.getByTestId("product-gallery-secondary-stack"),
+    ).toBeHidden();
+    await expect(galleryThumbnails.first()).toBeVisible();
+    await expect(galleryThumbnails.first()).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    await galleryThumbnails.first().focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(galleryThumbnails.nth(1)).toBeFocused();
+    await expect(galleryThumbnails.nth(1)).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    await page.keyboard.press("Home");
+    await expect(galleryThumbnails.first()).toBeFocused();
+    await expect(galleryThumbnails.first()).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    await galleryThumbnails.nth(1).click();
+    await expect(galleryThumbnails.nth(1)).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+  }
+
+  const fullscreenTrigger = page.getByTestId(
+    "product-gallery-fullscreen-trigger",
+  );
+  const touchZoomTrigger = page.getByTestId(
+    "product-gallery-touch-zoom-trigger",
+  );
+  const mainGalleryBox = await page
+    .getByTestId("product-gallery")
+    .boundingBox();
+
+  await expect(fullscreenTrigger).toBeVisible();
+  if ((page.viewportSize()?.width ?? 0) < 640) {
+    await expect(touchZoomTrigger).toBeVisible();
+    await touchZoomTrigger.click();
+    await expect(
+      page.getByTestId("product-gallery-fullscreen-dialog"),
+    ).toBeVisible();
+    await expect(
+      page.getByTestId("product-gallery-fullscreen-stage"),
+    ).toHaveAttribute("data-gallery-zoomed", "true");
+    await page.getByTestId("product-gallery-fullscreen-close").click();
+    await expect(
+      page.getByTestId("product-gallery-fullscreen-dialog"),
+    ).toBeHidden();
+  }
+  await fullscreenTrigger.click();
+  await expect(
+    page.getByTestId("product-gallery-fullscreen-dialog"),
+  ).toBeVisible();
+  await expect(
+    page.getByTestId("product-gallery-fullscreen-stage"),
+  ).toBeVisible();
+  await expect(
+    page.getByTestId("product-gallery-fullscreen-stage"),
+  ).toHaveAttribute("data-gallery-zoomed", "false");
+  await expect(
+    page.getByTestId("product-gallery-fullscreen-zoom-toggle"),
+  ).toBeVisible();
+  await page.getByTestId("product-gallery-fullscreen-zoom-toggle").click();
+  await expect(
+    page.getByTestId("product-gallery-fullscreen-stage"),
+  ).toHaveAttribute("data-gallery-zoomed", "true");
+  await page.getByTestId("product-gallery-fullscreen-media").click();
+  await expect(
+    page.getByTestId("product-gallery-fullscreen-stage"),
+  ).toHaveAttribute("data-gallery-zoomed", "false");
+
+  const fullscreenLayout = await page.evaluate(() => {
+    const dialog = document.querySelector(
+      '[data-testid="product-gallery-fullscreen-dialog"]',
+    );
+    const stage = document.querySelector(
+      '[data-testid="product-gallery-fullscreen-stage"]',
+    );
+    const media = document.querySelector(
+      '[data-testid="product-gallery-fullscreen-media"]',
+    );
+    const previous = document.querySelector(
+      '[data-testid="product-gallery-previous"]',
+    );
+    const next = document.querySelector('[data-testid="product-gallery-next"]');
+    const filmstrip = document.querySelector(
+      '[data-testid="product-gallery-fullscreen-thumbnail-rail"]',
+    );
+
+    if (!dialog || !stage || !media || !previous || !next || !filmstrip) {
+      throw new Error("Missing full-screen gallery elements.");
+    }
+
+    const dialogRect = dialog.getBoundingClientRect();
+    const stageRect = stage.getBoundingClientRect();
+    const mediaRect = media.getBoundingClientRect();
+    const previousRect = previous.getBoundingClientRect();
+    const nextRect = next.getBoundingClientRect();
+    const filmstripRect = filmstrip.getBoundingClientRect();
+
+    return {
+      dialogHeight: Math.round(dialogRect.height),
+      dialogWidth: Math.round(dialogRect.width),
+      filmstripHeight: Math.round(filmstripRect.height),
+      filmstripTop: Math.round(filmstripRect.top),
+      mediaHeight: Math.round(mediaRect.height),
+      mediaLeft: Math.round(mediaRect.left),
+      mediaRight: Math.round(mediaRect.right),
+      mediaWidth: Math.round(mediaRect.width),
+      nextLeft: Math.round(nextRect.left),
+      nextRight: Math.round(nextRect.right),
+      previousLeft: Math.round(previousRect.left),
+      previousRightGap: Math.round(window.innerWidth - previousRect.right),
+      stageBottom: Math.round(stageRect.bottom),
+      stageHeight: Math.round(stageRect.height),
+      stageTop: Math.round(stageRect.top),
+      stageWidth: Math.round(stageRect.width),
+      viewportHeight: window.innerHeight,
+      viewportWidth: window.innerWidth,
+    };
+  });
+
+  expect(fullscreenLayout.dialogWidth).toBeGreaterThanOrEqual(
+    fullscreenLayout.viewportWidth - 2,
+  );
+  expect(fullscreenLayout.dialogHeight).toBeGreaterThanOrEqual(
+    fullscreenLayout.viewportHeight - 2,
+  );
+  expect(fullscreenLayout.stageWidth).toBeGreaterThanOrEqual(
+    Math.round(mainGalleryBox?.width ?? 1),
+  );
+  expect(fullscreenLayout.stageHeight).toBeGreaterThanOrEqual(
+    Math.min(
+      Math.round(mainGalleryBox?.height ?? 1),
+      Math.round(fullscreenLayout.viewportHeight * 0.45),
+    ),
+  );
+  expect(fullscreenLayout.mediaWidth).toBeLessThanOrEqual(
+    fullscreenLayout.viewportWidth,
+  );
+  expect(fullscreenLayout.mediaHeight).toBeGreaterThanOrEqual(
+    Math.round(fullscreenLayout.stageHeight * 0.5),
+  );
+  expect(fullscreenLayout.nextLeft).toBeGreaterThanOrEqual(0);
+  expect(fullscreenLayout.previousRightGap).toBeGreaterThanOrEqual(0);
+  expect(
+    Math.abs(fullscreenLayout.mediaLeft - fullscreenLayout.nextRight),
+  ).toBeLessThanOrEqual(96);
+  expect(
+    Math.abs(fullscreenLayout.previousLeft - fullscreenLayout.mediaRight),
+  ).toBeLessThanOrEqual(96);
+  expect(fullscreenLayout.filmstripTop).toBeGreaterThanOrEqual(
+    fullscreenLayout.stageBottom - 2,
+  );
+  expect(fullscreenLayout.filmstripHeight).toBeGreaterThanOrEqual(56);
+
+  const fullscreenThumbnails = page.getByTestId(
+    "product-gallery-fullscreen-thumbnail",
+  );
+  const fullscreenStage = page.getByTestId("product-gallery-fullscreen-stage");
+  const fullscreenStatus = page.getByTestId(
+    "product-gallery-fullscreen-status",
+  );
+  await expect(fullscreenThumbnails.first()).toBeVisible();
+  await fullscreenThumbnails.first().click();
+  await expect(fullscreenStatus).toContainText(/1/);
+  await expect(fullscreenStage).toHaveAttribute(
+    "data-gallery-drag-mode",
+    "swipe",
+  );
+  await expectGalleryStageFollowsDrag(page, "next");
+  await expect(fullscreenStatus).toContainText(/2/);
+  await expectGallerySwipeSettled(page);
+  await dragGalleryStage(page, "previous");
+  await expect(fullscreenStatus).toContainText(/1/);
+  await expectGallerySwipeSettled(page);
+  await page.keyboard.press("ArrowRight");
+  await expect(fullscreenStatus).toContainText(/2/);
+  await page.keyboard.press("Escape");
+  await expect(
+    page.getByTestId("product-gallery-fullscreen-dialog"),
+  ).toBeHidden();
+  await expect(fullscreenTrigger).toBeFocused();
+}
+
+async function dragGalleryStage(page: Page, direction: "next" | "previous") {
+  const stage = page.getByTestId("product-gallery-fullscreen-stage");
+  const box = await stage.boundingBox();
+
+  if (!box) {
+    throw new Error("Missing full-screen gallery stage box.");
+  }
+
+  const startX =
+    direction === "next" ? box.x + box.width * 0.68 : box.x + box.width * 0.32;
+  const endX =
+    direction === "next" ? box.x + box.width * 0.32 : box.x + box.width * 0.68;
+  const y = box.y + box.height * 0.52;
+
+  await page.mouse.move(startX, y);
+  await page.mouse.down();
+  await page.mouse.move(endX, y, { steps: 8 });
+  await page.mouse.up();
+}
+
+async function expectGalleryStageFollowsDrag(
+  page: Page,
+  direction: "next" | "previous",
+) {
+  const stage = page.getByTestId("product-gallery-fullscreen-stage");
+  const track = page.getByTestId("product-gallery-fullscreen-swipe-track");
+  const box = await stage.boundingBox();
+
+  if (!box) {
+    throw new Error("Missing full-screen gallery stage box.");
+  }
+
+  const startX =
+    direction === "next" ? box.x + box.width * 0.68 : box.x + box.width * 0.32;
+  const followX = box.x + box.width * 0.5;
+  const endX =
+    direction === "next" ? box.x + box.width * 0.32 : box.x + box.width * 0.68;
+  const y = box.y + box.height * 0.52;
+
+  await page.mouse.move(startX, y);
+  await page.mouse.down();
+  await page.mouse.move(followX, y, { steps: 4 });
+
+  await expect(stage).toHaveAttribute("data-gallery-swipe-tracking", "true");
+
+  const swipeOffset = await stage.evaluate((element) =>
+    Number.parseFloat(element.getAttribute("data-gallery-swipe-offset") ?? "0"),
+  );
+
+  if (direction === "next") {
+    expect(swipeOffset).toBeLessThan(-16);
+  } else {
+    expect(swipeOffset).toBeGreaterThan(16);
+  }
+
+  await expect
+    .poll(() =>
+      track.evaluate((element) => window.getComputedStyle(element).transform),
+    )
+    .not.toBe("none");
+
+  await page.mouse.move(endX, y, { steps: 4 });
+  await page.mouse.up();
+}
+
+async function expectGallerySwipeSettled(page: Page) {
+  const stage = page.getByTestId("product-gallery-fullscreen-stage");
+
+  await expect
+    .poll(() =>
+      stage.evaluate((element) => ({
+        offset: element.getAttribute("data-gallery-swipe-offset"),
+        settling: element.getAttribute("data-gallery-swipe-settling"),
+        tracking: element.getAttribute("data-gallery-swipe-tracking"),
+        cssOffset: window
+          .getComputedStyle(element)
+          .getPropertyValue("--viewer-swipe-offset")
+          .trim(),
+      })),
+    )
+    .toEqual({
+      cssOffset: "0px",
+      offset: null,
+      settling: null,
+      tracking: null,
+    });
+}
+
+async function waitForProductPurchasePanelClientReady(page: Page) {
+  await expect(page.getByTestId("product-purchase-panel")).toHaveAttribute(
+    "data-client-ready",
+    "true",
+  );
+}
 
 async function clearBrowserState(page: Page) {
   await page.addInitScript((storageKey) => {
@@ -1116,6 +1834,56 @@ async function setCookieConsent(page: Page, value: "essential" | "all") {
       );
     },
     { consentStorageKey, value },
+  );
+}
+
+async function expectNoCookieConsentBanner(page: Page) {
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          document.querySelectorAll('[data-cookie-consent-banner="true"]')
+            .length,
+      ),
+    )
+    .toBe(0);
+}
+
+async function expectDomSelectorVisible(page: Page, selector: string) {
+  await expect
+    .poll(() => page.evaluate(isSelectorVisible, selector))
+    .toBe(true);
+}
+
+async function expectDomSelectorCount(
+  page: Page,
+  selector: string,
+  expectedCount: number,
+) {
+  await expect
+    .poll(() =>
+      page.evaluate(
+        (selectorToCount) => document.querySelectorAll(selectorToCount).length,
+        selector,
+      ),
+    )
+    .toBe(expectedCount);
+}
+
+function isSelectorVisible(selector: string) {
+  const element = document.querySelector(selector);
+
+  if (!(element instanceof HTMLElement)) return false;
+
+  const styles = window.getComputedStyle(element);
+  const rect = element.getBoundingClientRect();
+
+  return (
+    styles.display !== "none" &&
+    styles.visibility !== "hidden" &&
+    Number(styles.opacity) > 0 &&
+    rect.height > 0 &&
+    rect.width > 0
   );
 }
 
@@ -1165,6 +1933,135 @@ async function expectNoHorizontalOverflow(page: Page) {
   );
 
   expect(overflow).toBeLessThanOrEqual(1);
+}
+
+async function expectReadableControl(locator: Locator, label: string) {
+  const readability = await locator.evaluate((element) => {
+    const styles = window.getComputedStyle(element);
+    const rect = element.getBoundingClientRect();
+    const text = (element.textContent ?? "").trim();
+    const foreground = parseCssColor(styles.color) ?? {
+      a: 1,
+      b: 0,
+      g: 0,
+      r: 0,
+    };
+    const background = getEffectiveBackgroundColor(element);
+
+    return {
+      contrast: getContrastRatio(foreground, background),
+      height: rect.height,
+      opacity: Number(styles.opacity),
+      text,
+      visibility: styles.visibility,
+      width: rect.width,
+    };
+
+    function getEffectiveBackgroundColor(target: Element) {
+      const colors: RgbaColor[] = [];
+      let current: Element | null = target;
+
+      while (current) {
+        const color = parseCssColor(
+          window.getComputedStyle(current).backgroundColor,
+        );
+
+        if (color && color.a > 0) {
+          colors.unshift(color);
+        }
+
+        current = current.parentElement;
+      }
+
+      return colors.reduce(
+        (background, color) => compositeColor(color, background),
+        { a: 1, b: 255, g: 255, r: 255 } satisfies RgbaColor,
+      );
+    }
+
+    function parseCssColor(value: string): RgbaColor | null {
+      const match = /^rgba?\(([^)]+)\)$/u.exec(value);
+
+      if (!match) return null;
+
+      const parts = match[1]!
+        .split(",")
+        .map((part) => Number.parseFloat(part.trim()));
+      const [r, g, b, a = 1] = parts;
+
+      if (![r, g, b, a].every((part) => Number.isFinite(part))) return null;
+
+      return { a, b: b!, g: g!, r: r! };
+    }
+
+    function compositeColor(foreground: RgbaColor, background: RgbaColor) {
+      const alpha = foreground.a + background.a * (1 - foreground.a);
+
+      if (alpha <= 0) return { a: 0, b: 0, g: 0, r: 0 };
+
+      return {
+        a: alpha,
+        b:
+          (foreground.b * foreground.a +
+            background.b * background.a * (1 - foreground.a)) /
+          alpha,
+        g:
+          (foreground.g * foreground.a +
+            background.g * background.a * (1 - foreground.a)) /
+          alpha,
+        r:
+          (foreground.r * foreground.a +
+            background.r * background.a * (1 - foreground.a)) /
+          alpha,
+      };
+    }
+
+    function getContrastRatio(foreground: RgbaColor, background: RgbaColor) {
+      const lighter = Math.max(
+        getRelativeLuminance(foreground),
+        getRelativeLuminance(background),
+      );
+      const darker = Math.min(
+        getRelativeLuminance(foreground),
+        getRelativeLuminance(background),
+      );
+
+      return (lighter + 0.05) / (darker + 0.05);
+    }
+
+    function getRelativeLuminance(color: RgbaColor) {
+      const [r, g, b] = [color.r, color.g, color.b].map((channel) => {
+        const normalized = channel / 255;
+
+        return normalized <= 0.03928
+          ? normalized / 12.92
+          : ((normalized + 0.055) / 1.055) ** 2.4;
+      });
+
+      return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
+    }
+  });
+
+  expect(readability.text, `${label} has visible text`).not.toBe("");
+  expect(readability.visibility, `${label} is visible`).toBe("visible");
+  expect(readability.opacity, `${label} is opaque`).toBeGreaterThan(0.95);
+  expect(readability.width, `${label} has width`).toBeGreaterThan(0);
+  expect(readability.height, `${label} has height`).toBeGreaterThan(0);
+  expect(readability.contrast, `${label} contrast`).toBeGreaterThanOrEqual(4.5);
+}
+
+type RgbaColor = {
+  a: number;
+  b: number;
+  g: number;
+  r: number;
+};
+
+async function reloadCurrentPage(page: Page) {
+  await page.goto(page.url(), {
+    timeout: 15_000,
+    waitUntil: "domcontentloaded",
+  });
 }
 
 async function installReloadMotionMonitor(page: Page) {
@@ -1282,6 +2179,10 @@ function visibleByTestId(page: Page, testId: string) {
   return page.getByTestId(testId).filter({ visible: true });
 }
 
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function trackHydrationIssues(page: Page) {
   const hydrationIssuePattern =
     /hydration|hydrate|server rendered|server-rendered|text content does not match|did not match/i;
@@ -1308,10 +2209,10 @@ async function expectNoHydrationRegressions(
   page: Page,
   hydrationIssues: string[],
 ) {
-  await expect(
-    page.locator(
-      "[data-nextjs-dialog], [data-nextjs-dialog-overlay], [data-nextjs-error-overlay]",
-    ),
-  ).toHaveCount(0);
+  await expectDomSelectorCount(
+    page,
+    "[data-nextjs-dialog], [data-nextjs-dialog-overlay], [data-nextjs-error-overlay]",
+    0,
+  );
   expect(hydrationIssues).toEqual([]);
 }

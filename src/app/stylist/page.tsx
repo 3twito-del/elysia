@@ -1,24 +1,24 @@
 import { Sparkles, WandSparkles } from "lucide-react";
 
-import { CommercePageHero } from "~/components/commerce-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { DeferredStylistChat } from "./_components/deferred-stylist-chat";
 
 export const metadata = {
-  title: "סטייליסט תכשיטים",
+  title: "יועץ לוק",
 };
 
 export default function StylistPage() {
   return (
     <main>
       <SiteHeader />
-      <CommercePageHero
-        description="ייעוץ תכשיטים לפי סגנון, תקציב ואירוע, עם המלצות שנשארות בתוך קטלוג פעיל."
-        eyebrow="ייעוץ אישי"
+      <CompactPageIntro
+        description="ענו על לוק, אירוע, תקציב ומידה וקבלו כיוון לבחירת תכשיט."
+        eyebrow="יועץ לוק"
         id="page-hero"
-        title="סטייליסט תכשיטים"
+        title="ייעוץ לבחירת תכשיט"
         variant="content"
       />
       <RevealSection
@@ -34,27 +34,22 @@ export default function StylistPage() {
             <Card className="rounded-md">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Sparkles aria-hidden="true" className="size-5" />
-                  מה הסטייליסט יודע לעשות
-                </CardTitle>
+                  <Sparkles aria-hidden="true" className="size-5" />מה אפשר לבקש?</CardTitle>
               </CardHeader>
               <CardContent className="text-muted-foreground grid gap-3 text-sm leading-7">
-                <p>התאמת מתנה לפי קשר, אירוע, תקציב וסגנון.</p>
-                <p>סינון לפי מוצרים זמינים וחומרים מתוך הקטלוג.</p>
-                <p>הכנה למדידה וירטואלית דרך ספק מדידה פנימי.</p>
+                <p>מתנה לפי קשר, אירוע, מחיר וסגנון.</p>
+                <p>פריטים לפי קטגוריה, חומר וזמינות.</p>
+                <p>כיוון ראשוני למידה לפני הזמנה.</p>
               </CardContent>
             </Card>
             <Card className="rounded-md">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <WandSparkles className="size-5" />
-                  מדידה וירטואלית
+                  מידה
                 </CardTitle>
               </CardHeader>
-              <CardContent className="text-muted-foreground text-sm leading-7">
-                אפשר לפתוח בקשת מדידה מתמונת מוצר או מפרטי מידה, ולקבל הכוונה
-                לפני שמירת ההזמנה.
-              </CardContent>
+              <CardContent className="text-muted-foreground text-sm leading-7">אפשר לפתוח בקשת מדידה מתמונה או מפרטי מידה לפני שמחליטים.</CardContent>
             </Card>
           </RevealGrid>
         </aside>

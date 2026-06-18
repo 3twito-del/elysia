@@ -2,6 +2,8 @@ export type SafeJsonResult =
   | { ok: true; data: unknown }
   | { ok: false; error: "empty" | "invalid" | "too-large" };
 
+export type SafeJsonError = Extract<SafeJsonResult, { ok: false }>["error"];
+
 export type SafeTextResult =
   | { ok: true; text: string }
   | { ok: false; error: "empty" | "too-large" };
@@ -11,7 +13,22 @@ export type SafeBodyOptions = {
   maxBytes?: number;
 };
 
+export type SafeJsonFailureCopy = Partial<Record<SafeJsonError, string>>;
+
+export type SafeJsonFailureContract = {
+  status: 400 | 413;
+  body: {
+    ok: false;
+    error: string;
+  };
+};
+
 const DEFAULT_MAX_BODY_BYTES = 64 * 1024;
+const defaultSafeJsonFailureCopy = {
+  empty: "Invalid request body.",
+  invalid: "Invalid request body.",
+  "too-large": "Request body is too large.",
+} satisfies Record<SafeJsonError, string>;
 
 export async function readSafeText(
   req: Request,
@@ -75,6 +92,19 @@ export async function readSafeJson(
   } catch {
     return { ok: false, error: "invalid" };
   }
+}
+
+export function getSafeJsonFailureContract(
+  error: SafeJsonError,
+  copy: SafeJsonFailureCopy = {},
+): SafeJsonFailureContract {
+  return {
+    status: error === "too-large" ? 413 : 400,
+    body: {
+      ok: false,
+      error: copy[error] ?? defaultSafeJsonFailureCopy[error],
+    },
+  };
 }
 
 function parseContentLength(value: string | null) {

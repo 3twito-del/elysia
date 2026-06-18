@@ -6,6 +6,7 @@ import {
   protectedAdminPaths,
   smokeChecks,
 } from "./smoke.mjs";
+import { getQaRouteInventory } from "./qa-route-inventory.ts";
 
 describe("smoke checks", () => {
   it("covers roadmap reliability entry points", () => {
@@ -13,6 +14,7 @@ describe("smoke checks", () => {
 
     expect(paths).toEqual(
       expect.arrayContaining([
+        "/api/health",
         "/",
         "/branches",
         "/gifts",
@@ -25,9 +27,10 @@ describe("smoke checks", () => {
         "/category/necklaces",
         "/category/earrings",
         "/category/bracelets",
-        "/product/venus-line-ring",
+        "/product/elysia-supplier-silver-halo-ring",
         "/checkout",
         "/account",
+        "/api/cart/items",
         "/api/webhooks/cardcom",
         "/admin/login?next=https://evil.example/admin",
       ]),
@@ -36,6 +39,60 @@ describe("smoke checks", () => {
     for (const path of protectedAdminPaths) {
       expect(paths).toContain(path);
     }
+  });
+
+  it("covers recent public decisions without authenticated data", () => {
+    const healthCheck = smokeChecks.find((item) => item.path === "/api/health");
+    const homeCheck = smokeChecks.find((item) => item.path === "/");
+    const checkoutCheck = smokeChecks.find((item) => item.path === "/checkout");
+    const accountCheck = smokeChecks.find((item) => item.path === "/account");
+
+    expect(healthCheck?.includes).toEqual(['"ok":true', '"timestamp"']);
+    expect(homeCheck?.includes).toEqual(
+      expect.arrayContaining([
+        'data-testid="home-commerce-shortcuts"',
+        'href="/search"',
+        'href="/gifts"',
+        'href="/size-guide"',
+        'href="/service"',
+      ]),
+    );
+    expect(checkoutCheck?.includes).toEqual(
+      expect.arrayContaining([
+        'id="checkout-form"',
+        'id="checkout-service"',
+        'data-testid="cart-checkout-form"',
+      ]),
+    );
+    expect(accountCheck?.includes).toEqual(
+      expect.arrayContaining([
+        'data-testid="account-otp-request-form"',
+        'data-testid="account-identifier-input"',
+        'id="identifier"',
+      ]),
+    );
+  });
+
+  it("keeps search smoke product-backed without depending on one seeded slug", () => {
+    const check = smokeChecks.find((item) => item.path === "/search?q=venus");
+
+    expect(check).toBeDefined();
+    expect(check.includes).toEqual([
+      'data-testid="search-form"',
+      'data-testid="search-results-grid"',
+    ]);
+    expect(
+      evaluateSmokeCheck(check, {
+        body: `
+          <form data-testid="search-form"></form>
+          <section data-testid="search-results-grid">
+            <a href="/product/elysia-supplier-silver-halo-ring">טבעת</a>
+          </section>
+        `,
+        headers: {},
+        status: 200,
+      }).ok,
+    ).toBe(true);
   });
 
   it("accepts protected admin redirects from either location or body", () => {
@@ -87,5 +144,38 @@ describe("smoke checks", () => {
     expect(createSmokeCheckUrl("http://localhost:3002", "account")).toBe(
       "http://localhost:3002/account",
     );
+  });
+
+  it("keeps smoke status expectations inside the route inventory contracts", () => {
+    const inventory = getQaRouteInventory({ includeAllProducts: true });
+    const inventoryByRoute = new Map(
+      inventory.map((route) => [`${route.method} ${route.path}`, route]),
+    );
+    const missingRoutes = [];
+    const statusMismatches = [];
+
+    for (const check of smokeChecks) {
+      const method = check.method ?? "GET";
+      const key = `${method} ${check.path}`;
+      const inventoryRoute = inventoryByRoute.get(key);
+
+      if (!inventoryRoute) {
+        missingRoutes.push(key);
+        continue;
+      }
+
+      const unexpectedStatuses = check.statuses.filter(
+        (status) => !inventoryRoute.expectedStatuses.includes(status),
+      );
+
+      if (unexpectedStatuses.length > 0) {
+        statusMismatches.push(
+          `${key}: smoke ${unexpectedStatuses.join(",")} not in inventory ${inventoryRoute.expectedStatuses.join(",")}`,
+        );
+      }
+    }
+
+    expect(missingRoutes).toEqual([]);
+    expect(statusMismatches).toEqual([]);
   });
 });

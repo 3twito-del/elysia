@@ -26,6 +26,13 @@ export type ProductionIntegrationConfig = {
   notificationProviderName: string;
   operationsEmail?: string;
   resendApiKey?: string;
+  shopifyClientId?: string;
+  shopifyClientSecret?: string;
+  shopifyDropshipEnabled?: string;
+  shopifyAdminAccessToken?: string;
+  shopifyStoreDomain?: string;
+  shopifyStorefrontAccessToken?: string;
+  shopifyWebhookSecret?: string;
   smsProviderApiKey?: string;
   storeFromEmail?: string;
   typesenseApiKey?: string;
@@ -101,6 +108,31 @@ export function createProductionIntegrationSummaries(
       fallbackDetail: "Local catalog search fallback is active.",
       missingDetail: "Typesense host and API key are required in production.",
       name: "Typesense search",
+    }),
+    createIntegrationSummary({
+      configured: Boolean(
+        isEnabled(config.shopifyDropshipEnabled) &&
+        hasConfigValue(config.shopifyStoreDomain) &&
+        (hasConfigValue(config.shopifyStorefrontAccessToken) ||
+          hasConfigValue(config.shopifyAdminAccessToken) ||
+          (hasConfigValue(config.shopifyClientId) &&
+            hasConfigValue(config.shopifyClientSecret))) &&
+        hasConfigValue(config.shopifyWebhookSecret),
+      ),
+      fallback: true,
+      capabilities: [
+        "dropship-catalog-sync",
+        "source-split",
+        "shopify-checkout",
+        "signed-order-webhook",
+      ],
+      configuredDetail:
+        "Shopify dropshipping is enabled with Shopify API credentials and signed order webhooks.",
+      fallbackDetail:
+        "Shopify dropshipping is optional and disabled; local commerce remains primary.",
+      missingDetail:
+        "Configure Shopify API credentials and webhook signing only when dropshipping rollout is enabled.",
+      name: "Shopify dropshipping",
     }),
     createIntegrationSummary({
       configured: Boolean(
@@ -196,4 +228,8 @@ function hasVercelPlatformAccess(config: ProductionIntegrationConfig) {
 
 function hasConfigValue(value: string | undefined) {
   return Boolean(value?.trim());
+}
+
+function isEnabled(value: string | undefined) {
+  return value === "1" || value?.toLowerCase() === "true";
 }

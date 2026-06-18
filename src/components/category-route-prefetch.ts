@@ -12,6 +12,13 @@ type NavigatorConnection = {
   saveData?: boolean;
 };
 
+export const categoryRoutePrefetchPolicy = {
+  allowedHrefPrefix: "/category/",
+  broadNavPrefetch: "intent-only",
+  homeIdlePrefetch: "category-only",
+  respectsReducedData: true,
+} as const;
+
 export function useCategoryRoutePrefetch(
   hrefs: readonly string[],
   { prefetchOnHomeIdle = false }: CategoryRoutePrefetchOptions = {},
@@ -69,7 +76,7 @@ export function useCategoryRoutePrefetch(
 }
 
 export function isCategoryHref(href: string) {
-  return href.startsWith("/category/");
+  return href.startsWith(categoryRoutePrefetchPolicy.allowedHrefPrefix);
 }
 
 function canSpeculativePrefetch() {

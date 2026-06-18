@@ -29,6 +29,17 @@
 - Focus states must remain visible on links, icon buttons, filter chips, and
   mobile navigation.
 
+## Public Design Work
+
+- Before changing public UI, UX, content density, commerce controls, media, or
+  copy, read `docs/ELYSIA_DESIGN_MANIFESTO.md` after applying the public gate.
+- Treat the manifesto as orientative and non-blocking: it chooses the default
+  taste direction, but it does not replace `HIGH_JEWELRY_REFERENCE_GATE` or
+  mandatory legal, accessibility, payment, security, SEO, privacy, and backend
+  correctness requirements.
+- If implementation intentionally diverges from the manifesto, record the reason
+  in the work summary or follow-up change note.
+
 ## Commerce Labels
 
 - Use `formatPrice` from `src/lib/format.ts`.
@@ -68,8 +79,9 @@ without running long live benchmarks.
   orchestration exceptions are:
   `src/server/services/admin-operations.ts`,
   `src/server/adapters/search.ts`, `src/app/search/page.tsx`,
-  `src/app/checkout/_components/cart-checkout-form.tsx`, and
-  `scripts/benchmarks/core.ts`.
+  `src/app/account/page.tsx`, `src/app/admin/service/page.tsx`, and
+  `src/app/checkout/_components/cart-checkout-form.tsx`,
+  `src/server/services/catalog.ts`, and `scripts/qa-site-audit.ts`.
 - New or moved code must not introduce unapproved `TODO`, `FIXME`, `HACK`, or
   `@ts-ignore` markers.
 - Stable public import paths may remain as facades, but the implementation
@@ -78,49 +90,114 @@ without running long live benchmarks.
 
 ## QA Commands
 
-- `pnpm check`: lint, typecheck, and unit/integration tests.
-- `pnpm build`: production build and environment validation.
+- `pnpm dev`: stable webpack local development server without Turbopack or
+  development service-worker compilation.
+- `pnpm dev:turbo`: opt-in Turbopack development server for explicit
+  compatibility checks.
+- `pnpm verify:fast`: lint, typecheck, and unit/integration tests. Use this for
+  ordinary local changes and PR feedback.
+- `pnpm check`: legacy alias for lint, typecheck, and unit/integration tests.
+- `pnpm build`: Next.js build, environment validation, and AVIF drift check. It
+  uses catalog fixtures/fallbacks outside Vercel production so local and preview
+  builds do not depend on a reachable catalog database. It does not repair
+  assets; run `pnpm gate:fix` or `pnpm images:avif` for writes.
+- `pnpm verify:full`: explicit full release verification alias for
+  `pnpm gate:release`. It needs a reachable DB, Playwright browsers, network
+  access, and production-readiness provider secrets.
 - `pnpm smoke`: HTTP smoke check against `SMOKE_BASE_URL`.
 - `pnpm e2e`: Playwright desktop and mobile flows. The local suite runs with a
   single worker to avoid shared dev-server and browser-state flakiness.
 - `pnpm visual:qa`: agent-browser visual and overlay check for core routes.
 - `pnpm format:check`: formatting drift check.
 
+## Test Wall-Clock Budgets
+
+Use these budgets as release-prep regression signals, not hard CI timeouts.
+Record the machine, command, and before/after duration when a run is more than
+2x the budget or more than 60 seconds slower than the last clean local run.
+
+- `pnpm test -- <path>`: focused Vitest files should usually finish within
+  15 seconds.
+- `pnpm test`: default unit and integration tests should usually finish within
+  60 seconds.
+- `pnpm verify:fast`: lint, typecheck, and tests should usually finish within
+  180 seconds on the local Windows workspace.
+- `pnpm qa:routes`: route-inventory checks should usually finish within
+  20 seconds.
+
+## Source-Scan Test Diagnostics
+
+Some guardrail tests inspect broad source trees. Treat a timeout in these tests
+as a performance signal, not as a reason to weaken the guardrail.
+
+1. Rerun the failing file directly with `pnpm test -- <path>` to separate real
+   assertion failures from suite-wide contention.
+2. If the focused test passes but the full suite times out, cache repeated file
+   discovery or reads inside the test before increasing timeouts.
+3. Keep the guardrail assertion intact; do not replace it with a snapshot that
+   stops checking the forbidden pattern.
+4. If a timeout increase is still needed, keep it local to the expensive setup
+   or test and document the source-scan size that justifies it.
+5. Rerun both the focused test and the broader command that originally exposed
+   the timeout.
+
+## Flaky Test Policy
+
+Do not hide flaky tests by deleting assertions, weakening source scans, or
+moving failures out of the default Vitest suite. A flaky-test change must record
+the owner, observed failure mode, affected command, and follow-up condition in
+the PR or release note.
+
+Allowed responses:
+
+- Isolate shared mutable state with per-test setup/teardown.
+- Add deterministic waits only around real asynchronous boundaries.
+- Cache expensive file discovery in broad source-scan tests when timeouts are
+  caused by repeated reads.
+- Increase a timeout only for the narrow test that needs it, with the source
+  size or runtime evidence that justified the increase.
+
+Disallowed responses:
+
+- Skipping a test without a dated owner and remediation condition.
+- Replacing behavioral assertions with snapshots that no longer check the
+  regression.
+- Retrying a failing test in CI without also keeping a local command that can
+  reproduce and diagnose the failure.
+
 ## Manual Quality Gates
 
 Quality gates are manual `pnpm gate:*` commands. They do not run in watch mode,
 do not install pre-commit hooks, and should be invoked only when the operator
-chooses the matching depth.
+chooses the matching depth. `pnpm gate:fix` is the only gate stage that writes
+repo-tracked source or asset files; other gates validate the current tree.
 
 - `pnpm gate:list`: prints the gate catalog.
 - `pnpm gate:fix`: applies deterministic repairs: Prisma format/generate,
   public AVIF conversion/reference updates, ESLint fixes, and Prettier writes.
-- `pnpm gate:quick`: runs `gate:fix`, then format check, lint, typecheck,
-  Prisma validate, and AVIF check mode.
-- `pnpm gate:test`: runs `gate:fix`, then Vitest.
-- `pnpm gate:db`: runs `gate:fix`, then Prisma validate/generate, migration
-  deploy, seed, and migration status.
-- `pnpm gate:build`: runs `gate:fix`, then `next build`.
-- `pnpm gate:smoke`, `pnpm gate:e2e`, and `pnpm gate:visual`: run `gate:fix`,
-  build once, start a managed `next start` preview server, then run the named
-  runtime check.
-- `pnpm gate:runtime`: runs `gate:fix`, builds once, starts preview, then runs
+- `pnpm gate:quick`: runs format check, lint, typecheck, Prisma validate, and
+  AVIF check mode without writing files.
+- `pnpm gate:test`: runs Vitest without writing files.
+- `pnpm gate:db`: validates Prisma, deploys migrations, seeds, and checks
+  migration status.
+- `pnpm gate:build`: runs `next build` without writing source assets.
+- `pnpm gate:smoke`, `pnpm gate:e2e`, and `pnpm gate:visual`: build once,
+  start a managed `next start` preview server, then run the named runtime check.
+- `pnpm gate:runtime`: builds once, starts preview, then runs
   smoke, Playwright, and agent-browser visual QA.
 - `pnpm gate:coherence`: runs the coherence contract, lint, typecheck, and
   focused static/Vitest coverage for the gate catalog, AI element accessibility,
   admin commerce, AI model/planner, search, and search state.
-- `pnpm gate:public:local`: runs all public benchmark parts with
-  `--skip-external`.
-- `pnpm gate:public:live`: runs all public benchmark parts against live
-  reference sites with blocked-site replacement enabled.
+- `pnpm gate:qa`: builds preview, checks route inventory, and runs the full
+  route QA site audit.
 - `pnpm gate:security`: checks frozen lockfile install integrity and
   `pnpm audit --prod`.
 - `pnpm gate:prod`: forces production-readiness env validation locally.
-- `pnpm gate:full`: runs fix once, then quick, test, db, build/runtime,
-  security, and live public benchmarks.
-- `pnpm gate:ship`: runs the deploy gate for routine production releases:
-  coherence, quick, test, DB, build, runtime, and security. It intentionally
-  excludes `gate:public:live`.
+- `pnpm gate:full`: explicitly runs `gate:fix` once, then quick, test, db,
+  build/runtime, QA, and security gates.
+- `pnpm gate:ship`: explicitly runs `gate:fix` once, then the deploy gate for
+  routine production releases: coherence, quick, test, DB, build, runtime, and
+  security.
 - `pnpm gate:release`: runs `gate:full` plus `gate:prod`.
 
 Prerequisites: DB gates need a reachable `DATABASE_URL`; runtime gates need a
@@ -129,18 +206,45 @@ browsers; visual QA needs `agent-browser` and PowerShell; live benchmarks and
 security audit need network access; production readiness needs real provider
 secrets in the environment.
 
+## Autonomous Gate Escalation
+
+When a user reports a problem, or an operator notices a problem while working,
+run the relevant gate without waiting for an explicit request. Choose the
+smallest high-signal check first, then escalate only when the evidence or touched
+surface justifies the time cost.
+
+- High confidence or high blast radius: run the specific gate immediately
+  (`gate:build` for build/config/PWA, `gate:db` for schema or migration work,
+  `gate:runtime` for preview-only failures, `gate:coherence` for architectural
+  boundary changes).
+- Medium confidence: run the cheapest focused check first, usually
+  `pnpm verify:fast`, a targeted Vitest command, or a browser/dev-server
+  verification. Escalate to the matching gate if the focused check fails or the
+  issue remains plausible.
+- Low confidence: gather runtime logs, browser evidence, or static references
+  first; do not start broad gates until there is a concrete signal.
+- Mutating repair remains explicit to `pnpm gate:fix`. If a deterministic repair
+  is needed, run `gate:fix`, inspect the resulting diff, then rerun the smallest
+  validation gate that covers the changed surface.
+- Use `pnpm verify:full` only for deliberate full release verification or when
+  multiple independent risk areas changed and provider/DB/network prerequisites
+  are available.
+
 ## Production Deploy
 
-Use `gate:ship` as the standing pre-deploy gate. Use `gate:full` only before a
-manual high-risk release where live public benchmark duration is acceptable.
+Use `verify:fast` while iterating locally, `gate:coherence` before opening or
+updating a PR, and `gate:ship` as the standing pre-deploy gate. Use
+`verify:full` only for explicit full release verification where DB, provider
+secrets, network access, and live benchmark duration are acceptable.
 
-1. Run `pnpm gate:coherence`.
-2. Run `pnpm gate:ship`.
-3. Run `git diff --check` and inspect `git status --short`.
-4. If generated QA markdown has trailing blank lines, clean only
+1. Run `pnpm verify:fast`.
+2. Run `pnpm gate:coherence`.
+3. Run `pnpm gate:ship`.
+4. Run `git diff --check` and inspect `git status --short`.
+5. If generated QA markdown has trailing blank lines, clean only
    `docs/qa/*.md`.
-5. Deploy the linked Vercel project with:
+6. Deploy the linked Vercel project with:
    `vercel pull --yes --environment=production`,
    `vercel build --prod`, and
    `vercel deploy --prebuilt --prod`.
-6. Smoke the production URL with the same route coverage as `scripts/smoke.mjs`.
+7. Smoke the production URL with the same route coverage as `scripts/smoke.mjs`.

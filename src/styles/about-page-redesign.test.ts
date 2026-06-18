@@ -9,14 +9,17 @@ describe("about page redesign guardrails", () => {
   it("keeps the about page editorial, media-led, and compact", () => {
     const source = read("src/app/about/page.tsx");
     const localImageReferences = [
-      ...source.matchAll(/src:\s*"\/brand\/[^"]+\.avif"/g),
+      ...source.matchAll(/(?:const\s+\w+\s*=\s*|src=)"\/brand\/[^"]+\.avif"/g),
     ];
 
     expect(source).toContain('import Image from "next/image"');
-    expect(source).toContain("const editorialImages = [");
-    expect(source).toContain("const storyImages = [");
-    expect(source).toContain("function EditorialImage");
-    expect(localImageReferences.length).toBeGreaterThanOrEqual(5);
+    expect(source).toContain("const aboutHeroImage =");
+    expect(source).toContain('data-testid="about-cinematic-page-hero"');
+    expect(source).toContain("DeferredFixedBackgroundBand");
+    expect(source).toContain("boutique-story-media-left");
+    expect(source).toContain("boutique-story-media-right");
+    expect(source).toContain("about-practical-proof");
+    expect(localImageReferences.length).toBeGreaterThanOrEqual(3);
     expect(source).toContain('variant="none"');
     expect(source).not.toContain("Separator");
     expect(source).not.toContain("brand-surface mx-auto max-w-4xl");

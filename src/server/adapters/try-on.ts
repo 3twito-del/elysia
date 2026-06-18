@@ -29,7 +29,7 @@ class InternalTryOnProvider implements TryOnProvider {
       status: "queued",
       provider: "internal-webar",
       message:
-        "בקשת המדידה נשמרה. נציג יחזור עם הכוונה למידה, התאמה והמשך טיפול.",
+        "בקשת המדידה נשמרה. שירות הלקוחות יחזור עם הכוונה למידה ולהתאמה.",
     };
   }
 }

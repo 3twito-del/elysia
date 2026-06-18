@@ -61,6 +61,11 @@ describe("PWA service request sync route", () => {
     );
 
     expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({
+      ok: true,
+      results: [{ actionId: "offline_service_1", ok: true }],
+      summary: { failed: 0, synced: 1, total: 1 },
+    });
     expect(offlineSyncMocks.processOfflineServiceRequest).toHaveBeenCalledTimes(
       1,
     );

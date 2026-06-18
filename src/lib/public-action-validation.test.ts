@@ -10,9 +10,18 @@ describe("public action validation", () => {
   it("normalizes newsletter emails", () => {
     const parsed = newsletterInputSchema.parse({
       email: " DANA@EXAMPLE.COM ",
+      marketingConsent: "on",
     });
 
     expect(parsed.email).toBe("dana@example.com");
+  });
+
+  it("requires explicit newsletter marketing consent", () => {
+    const parsed = newsletterInputSchema.safeParse({
+      email: "dana@example.com",
+    });
+
+    expect(parsed.success).toBe(false);
   });
 
   it("rejects missing wishlist product slugs with Hebrew copy", () => {
@@ -20,7 +29,7 @@ describe("public action validation", () => {
 
     expect(parsed.success).toBe(false);
     if (!parsed.success) {
-      expect(parsed.error.issues[0]?.message).toBe("לא נמצא מוצר לשמירה.");
+      expect(parsed.error.issues[0]?.message).toBe("לא נמצא תכשיט לשמירה.");
     }
   });
 

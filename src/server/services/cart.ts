@@ -3,7 +3,7 @@ import type { Cart, CartItem, Prisma } from "@prisma/client";
 import { z } from "zod";
 
 import { db } from "~/server/db";
-import { getActiveCouponValue, normalizeCouponCode } from "./coupons";
+import { evaluateCouponCode, normalizeCouponCode } from "./coupons";
 import { DEFAULT_CATALOG_IMAGE } from "~/server/services/catalog";
 import {
   addFixtureCartItem,
@@ -15,6 +15,7 @@ import {
   updateFixtureCartOptions,
 } from "~/server/services/cart-fixtures";
 import { calculateOrderTotal } from "~/server/services/pricing";
+import { getPublicCatalogSku } from "~/server/services/public-catalog-identifiers";
 
 const CART_TTL_DAYS = 30;
 
@@ -50,11 +51,17 @@ type CartWithItems = Cart & {
   items: Array<
     CartItem & {
       variant: {
+        externalVariantId: string | null;
         sku: string;
         name: string;
         product: {
           slug: string;
           name: string;
+          source: "OWN" | "DROPSHIP_SHOPIFY";
+          externalProvider: string | null;
+          externalProductId: string | null;
+          externalHandle: string | null;
+          supplierKey: string | null;
           media: Array<{
             url: string;
           }>;
@@ -65,6 +72,7 @@ type CartWithItems = Cart & {
 };
 
 export type CartSummary = Awaited<ReturnType<typeof mapCartSummary>>;
+type CartGroupCoupon = Parameters<typeof calculateOrderTotal>[0]["coupon"];
 
 export async function getCartBySession(sessionKey: string) {
   const parsed = cartSessionKeySchema.parse(sessionKey);
@@ -89,25 +97,12 @@ export async function addCartItem(
 
   const cart = await db.$transaction(async (tx) => {
     const cart = await getOrCreateActiveCart(tx, parsed.sessionKey);
-    const variant = await tx.productVariant.findUnique({
-      where: { sku: parsed.variantSku },
-      include: {
-        product: true,
-        prices: {
-          where: {
-            currency: "ILS",
-            OR: [{ validTo: null }, { validTo: { gt: new Date() } }],
-          },
-          orderBy: { validFrom: "desc" },
-          take: 1,
-        },
-      },
-    });
+    const variant = await findCartVariantByPublicSku(tx, parsed.variantSku);
 
     if (variant?.product.status !== "ACTIVE") {
       throw new TRPCError({
         code: "BAD_REQUEST",
-        message: "המוצר אינו זמין להוספה לסל.",
+        message: "התכשיט הזה אינו פנוי כרגע.",
       });
     }
 
@@ -124,6 +119,13 @@ export async function addCartItem(
     const unitPrice =
       Number(variant.prices[0]?.amount ?? variant.product.basePrice) +
       Number(variant.priceDelta);
+
+    if (!Number.isFinite(unitPrice) || unitPrice <= 0) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "פרטי המחיר דורשים אישור לפני הוספה לסל.",
+      });
+    }
 
     if (existingItem) {
       await tx.cartItem.update({
@@ -148,6 +150,47 @@ export async function addCartItem(
   return mapCartSummary(cart, "DELIVERY");
 }
 
+async function findCartVariantByPublicSku(
+  tx: Prisma.TransactionClient,
+  variantSku: string,
+) {
+  const include = createCartVariantInclude();
+  const direct = await tx.productVariant.findUnique({
+    where: { sku: variantSku },
+    include,
+  });
+
+  if (direct) return direct;
+
+  const candidates = await tx.productVariant.findMany({
+    where: {
+      product: {
+        status: "ACTIVE",
+      },
+    },
+    include,
+  });
+
+  return (
+    candidates.find((candidate) => getPublicCatalogSku(candidate.sku) === variantSku) ??
+    null
+  );
+}
+
+function createCartVariantInclude() {
+  return {
+    product: true,
+    prices: {
+      where: {
+        currency: "ILS",
+        OR: [{ validTo: null }, { validTo: { gt: new Date() } }],
+      },
+      orderBy: { validFrom: "desc" },
+      take: 1,
+    },
+  } satisfies Prisma.ProductVariantInclude;
+}
+
 export async function updateCartItemQuantity(
   input: z.infer<typeof updateCartItemInputSchema>,
 ) {
@@ -161,7 +204,10 @@ export async function updateCartItemQuantity(
   const item = cart.items.find((item) => item.id === parsed.itemId);
 
   if (!item) {
-    throw new TRPCError({ code: "NOT_FOUND", message: "הפריט לא נמצא בסל." });
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "התכשיט לא נמצא בסל.",
+    });
   }
 
   await db.cartItem.update({
@@ -185,7 +231,10 @@ export async function removeCartItem(
   const item = cart.items.find((item) => item.id === parsed.itemId);
 
   if (!item) {
-    throw new TRPCError({ code: "NOT_FOUND", message: "הפריט לא נמצא בסל." });
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "התכשיט לא נמצא בסל.",
+    });
   }
 
   await db.cartItem.delete({ where: { id: parsed.itemId } });
@@ -275,7 +324,10 @@ async function requireActiveCartBySession(sessionKey: string) {
   );
 
   if (!cart) {
-    throw new TRPCError({ code: "NOT_FOUND", message: "לא נמצא סל פעיל." });
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "לא נמצא סל פעיל.",
+    });
   }
 
   return cart;
@@ -305,13 +357,21 @@ async function mapCartSummary(cart: CartWithItems, fulfillmentMethod: string) {
     productSlug: item.variant.product.slug,
     productName: item.variant.product.name,
     productImage: item.variant.product.media[0]?.url ?? DEFAULT_CATALOG_IMAGE,
+    source: item.variant.product.source,
+    externalProvider: item.variant.product.externalProvider ?? undefined,
+    externalProductId: item.variant.product.externalProductId ?? undefined,
+    externalHandle: item.variant.product.externalHandle ?? undefined,
+    supplierKey: item.variant.product.supplierKey ?? undefined,
     variantSku: item.variant.sku,
+    externalVariantId: item.variant.externalVariantId ?? undefined,
     variantName: item.variant.name,
     quantity: item.quantity,
     unitPrice: Number(item.unitPrice),
     lineTotal: Number(item.unitPrice) * item.quantity,
   }));
-  const coupon = await getActiveCouponValue(cart.couponCode);
+  const couponEvaluation = await evaluateCouponCode(cart.couponCode);
+  const coupon =
+    couponEvaluation.status === "success" ? couponEvaluation : undefined;
   const totals = calculateOrderTotal({
     items,
     shipping: fulfillmentMethod === "DELIVERY" ? 29 : 0,
@@ -326,11 +386,74 @@ async function mapCartSummary(cart: CartWithItems, fulfillmentMethod: string) {
     giftWrap: cart.giftWrap,
     giftMessage: cart.giftMessage,
     couponCode: normalizeCouponCode(cart.couponCode),
-    couponValid: cart.couponCode ? Boolean(coupon) : undefined,
+    couponMessage: couponEvaluation.message,
+    couponStatus:
+      couponEvaluation.status === "none" ? undefined : couponEvaluation.status,
+    couponValid: cart.couponCode
+      ? couponEvaluation.status === "success"
+      : undefined,
     expiresAt: cart.expiresAt,
     items,
+    groups: groupCartItemsBySource(items, {
+      coupon: coupon?.value,
+      fulfillmentMethod,
+    }),
     itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
     totals,
+  };
+}
+
+function groupCartItemsBySource(
+  items: Array<{
+    lineTotal: number;
+    quantity: number;
+    source: "OWN" | "DROPSHIP_SHOPIFY";
+    unitPrice: number;
+  }>,
+  options: {
+    coupon?: CartGroupCoupon;
+    fulfillmentMethod: string;
+  },
+) {
+  const own = items.filter((item) => item.source === "OWN");
+  const dropshipShopify = items.filter(
+    (item) => item.source === "DROPSHIP_SHOPIFY",
+  );
+
+  return {
+    own: summarizeCartGroup(own, {
+      coupon: options.coupon,
+      shipping: options.fulfillmentMethod === "DELIVERY" ? 29 : 0,
+    }),
+    dropshipShopify: summarizeCartGroup(dropshipShopify),
+  };
+}
+
+function summarizeCartGroup(
+  items: Array<{
+    lineTotal: number;
+    quantity: number;
+    source: "OWN" | "DROPSHIP_SHOPIFY";
+    unitPrice: number;
+  }>,
+  options: {
+    coupon?: CartGroupCoupon;
+    shipping?: number;
+  } = {},
+) {
+  const totals = calculateOrderTotal({
+    coupon: options.coupon,
+    items,
+    shipping: items.length > 0 ? (options.shipping ?? 0) : 0,
+  });
+
+  return {
+    itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
+    lineCount: items.length,
+    subtotal: totals.subtotal,
+    discount: totals.discount,
+    shipping: totals.shipping,
+    total: totals.total,
   };
 }
 
@@ -345,11 +468,17 @@ const cartInclude = {
       variant: {
         select: {
           sku: true,
+          externalVariantId: true,
           name: true,
           product: {
             select: {
               slug: true,
               name: true,
+              source: true,
+              externalProvider: true,
+              externalProductId: true,
+              externalHandle: true,
+              supplierKey: true,
               media: {
                 where: { kind: "IMAGE" },
                 orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }],

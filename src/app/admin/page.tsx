@@ -40,7 +40,7 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function AdminOverviewPage() {
-  const access = await getAdminPageAccess("ORDERS_READ");
+  const access = await getAdminPageAccess("ORDERS_READ", "/admin");
 
   if (access.denied) {
     return <AdminForbidden {...access.denied} />;
@@ -69,6 +69,17 @@ export default async function AdminOverviewPage() {
       description="מרכז השליטה של צוות התפעול: הזמנות פתוחות, מלאי, עבודות רקע ואינטגרציות שנדרשות להפעלה מסחרית מלאה."
       title="סקירת תפעול"
     >
+      <p
+        className="text-muted-foreground mb-4 text-sm"
+        data-testid="admin-overview-freshness"
+      >
+        נתוני הדשבורד נמשכו ממסד הנתונים בזמן{" "}
+        <time dateTime={overview.freshness.generatedAt.toISOString()}>
+          {formatHebrewDateTime(overview.freshness.generatedAt)}
+        </time>
+        .
+      </p>
+
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           detail={`${overview.activeProducts} פעילים מתוך כלל הקטלוג`}

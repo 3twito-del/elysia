@@ -34,12 +34,18 @@ describe("product-led media guardrails", () => {
     const seed = read("prisma/seed-catalog.ts");
 
     expect(catalogAssets).toContain(
-      'export const DEFAULT_CATALOG_IMAGE = "/brand/v2/commerce-catalog.avif";',
+      'export const DEFAULT_CATALOG_IMAGE = "/brand/boutique/lifestyle-hero.avif";',
     );
+    expect(catalogAssets).toContain('image.startsWith("/brand/v2/")');
+    expect(catalogAssets).toContain('image.startsWith("/brand/cinematic/")');
+    expect(catalogAssets).toContain("isShopifyCategoryPlaceholderImage");
+    expect(catalogAssets).not.toContain("/brand/v2/category-");
     expect(seed).not.toContain("images.unsplash.com");
     for (const category of ["rings", "earrings", "necklaces", "bracelets"]) {
-      expect(catalogAssets).toContain(`/brand/v2/category-${category}.avif`);
-      expect(seed).toContain(`/brand/v2/category-${category}.avif`);
+      expect(catalogAssets).toContain(
+        `/brand/boutique/category-${category}.avif`,
+      );
+      expect(seed).toContain(`/brand/boutique/category-${category}.avif`);
     }
   });
 });

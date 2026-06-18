@@ -12,13 +12,30 @@ describe("commerce service trust placement", () => {
     );
 
     expect(purchasePanel).toContain('data-testid="product-commerce-trust"');
+    expect(purchasePanel).toContain(
+      'data-testid="product-before-order-summary"',
+    );
+    expect(purchasePanel).toContain("beforeOrderSummaryItems.map");
+    expect(purchasePanel).toContain("purchaseConfidenceItems.map");
+    expect(purchasePanel).toContain("product-purchase-confidence-${item.key}");
+    expect(purchasePanel).toContain("getPurchaseConfidenceItems");
+    expect(purchasePanel).toContain("getBeforeOrderSummaryItems");
     expect(purchasePanel).toContain("ShieldCheck");
+    expect(purchasePanel).toContain("Ruler");
     expect(purchasePanel).toContain("RotateCcw");
     expect(
       indexOf(purchasePanel, 'className="product-primary-cta h-12 w-full"'),
     ).toBeLessThan(
       indexOf(purchasePanel, 'data-testid="product-commerce-trust"'),
     );
+    expect(
+      indexOf(purchasePanel, 'data-testid="product-commerce-trust"'),
+    ).toBeLessThan(
+      indexOf(purchasePanel, 'data-testid="product-before-order-summary"'),
+    );
+    expect(
+      indexOf(purchasePanel, 'data-testid="product-before-order-summary"'),
+    ).toBeLessThan(indexOf(purchasePanel, "purchaseConfidenceItems.map"));
     expect(
       indexOf(purchasePanel, 'data-testid="product-commerce-trust"'),
     ).toBeLessThan(indexOf(purchasePanel, "{cartMessage ?"));
@@ -48,11 +65,15 @@ describe("commerce service trust placement", () => {
 
     expect(productPage).not.toContain("value: commerceStatus.label");
     expect(purchasePanel).not.toContain("<Badge");
+    expect(purchasePanel).toContain("const selectedVariantStatusLabel =");
     expect(purchasePanel).toContain(
-      'selectedVariant ? commerceStatus.label : "בדיקת זמינות"',
+      'selectedVariant ? selectedVariantStatusLabel : "בחרי אפשרות"',
     );
     expect(
-      countOccurrences(purchasePanel, "selectedVariant ? commerceStatus.label"),
+      countOccurrences(
+        purchasePanel,
+        "selectedVariant ? selectedVariantStatusLabel",
+      ),
     ).toBe(1);
     expect(purchasePanel).not.toContain(
       "selectedVariantAvailable\n                ? commerceStatus.label",
@@ -68,11 +89,20 @@ describe("commerce service trust placement", () => {
     expect(checkoutPage).not.toContain('href="#checkout-service"');
     expect(checkoutPage).toContain('<div id="checkout-service" />');
     expect(checkoutPage).toContain("<CartCheckoutForm />");
-    expect(checkoutForm).toContain("const checkoutTrustItems");
+    expect(checkoutForm).toContain("getCheckoutFulfillmentSummaryRows");
     expect(checkoutForm).toContain('data-testid="checkout-line-total"');
-    expect(checkoutForm).toContain("checkoutTrustItems.map");
-    expect(indexOf(checkoutForm, "checkoutTrustItems.map")).toBeLessThan(
-      indexOf(checkoutForm, '<Button disabled={!canSubmit} size="lg"'),
+    expect(checkoutForm).toContain(
+      'data-testid="checkout-delivery-confidence-summary"',
+    );
+    expect(
+      indexOf(checkoutForm, "checkoutFulfillmentSummaryRows.map"),
+    ).toBeLessThan(
+      indexOf(checkoutForm, 'data-testid="local-checkout-submit-button"'),
+    );
+    expect(
+      indexOf(checkoutForm, "checkoutFulfillmentSummaryRows.map"),
+    ).toBeLessThan(
+      indexOf(checkoutForm, 'data-testid="shopify-dropship-checkout-button"'),
     );
   });
 
@@ -80,7 +110,7 @@ describe("commerce service trust placement", () => {
     const servicePage = read("src/app/service/page.tsx");
 
     expect(servicePage).not.toContain('href="#service-form"');
-    expect(servicePage).toContain("href={phoneHref}");
+    expect(servicePage).toContain("href={contact.phoneHref}");
     expect(servicePage).toContain("const serviceTracks");
     expect(servicePage).toContain(
       '<section aria-labelledby="service-form" id="service-form">',
@@ -95,19 +125,33 @@ describe("commerce service trust placement", () => {
 
     expect(footer).toContain('href: "/checkout"');
     expect(footer).toContain('href: "/service"');
-    expect(footer).toContain('id="footer-online-service"');
     expect(footer).toContain('href: "/faq"');
     expect(footer).toContain("שאלות ותשובות");
     expect(footer).not.toContain("שאלות נפוצות");
-    expect(countOccurrences(footer, 'href="/search"')).toBe(2);
-    expect(footer).not.toContain('href: "/search"');
+    expect(footer).toContain('title="קולקציות"');
+    expect(footer).toContain('title="תמיכה"');
+    expect(footer).toContain('title="Elysia"');
+    expect(countOccurrences(footer, 'title="קולקציות"')).toBe(1);
+    expect(countOccurrences(footer, 'title="תמיכה"')).toBe(1);
+    expect(countOccurrences(footer, 'title="Elysia"')).toBe(1);
+    expect(countOccurrences(footer, 'href: "/search"')).toBe(1);
+    expect(countOccurrences(footer, 'href: "/search?sort=newest"')).toBe(1);
+    expect(footer).not.toContain('href="/search"');
+    expect(footer).not.toContain("primaryServiceLinks");
+    expect(footer).not.toContain("secondaryServiceLinks");
+    expect(footer).not.toContain("שירות - המשך");
+    expect(footer).not.toContain("footer-online-service");
     expect(footer).not.toContain('href: "/ai"');
-    expect(footer).not.toContain('href: "/category/rings"');
+    expect(countOccurrences(footer, 'href: "/category/rings"')).toBe(1);
+    expect(countOccurrences(footer, 'href: "/category/necklaces"')).toBe(1);
+    expect(countOccurrences(footer, 'href: "/category/earrings"')).toBe(1);
+    expect(countOccurrences(footer, 'href: "/category/bracelets"')).toBe(1);
+    expect(countOccurrences(footer, 'href: "/gifts"')).toBe(1);
     expect(footer).not.toContain('href="/gifts"');
-    expect(footer).not.toContain('href: "/gifts"');
-    expect(countOccurrences(footer, 'href: "/terms"')).toBe(1);
-    expect(countOccurrences(footer, 'href: "/privacy"')).toBe(1);
-    expect(countOccurrences(footer, 'href: "/accessibility"')).toBe(1);
+    expect(footer).toContain("links={footerPolicyLinks}");
+    expect(footer).toContain("policyLinks");
+    expect(footer).toContain("cookiePreferencesLink");
+    expect(footer).toContain("footerBusinessDetails");
     expect(footer).not.toContain('href="/terms"');
     expect(footer).not.toContain('href="/privacy"');
     expect(footer).not.toContain('href="/accessibility"');

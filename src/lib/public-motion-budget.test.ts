@@ -69,7 +69,8 @@ describe("public motion budget", () => {
       'const allowsContinuousMotion = motionScope === "home-hero";',
     );
     expect(sequenceSource).toContain("!allowsContinuousMotion");
-    expect(homeSource).toContain('motionScope="home-hero"');
+    expect(homeSource).toContain("storefront-hero");
+    expect(homeSource).not.toContain("<CinematicHeroSequence");
     expect(brandMediaPanelSource).not.toContain('motionScope="home-hero"');
     expect(productCardSource).not.toContain('motionScope="home-hero"');
     expect(loadingCss).not.toContain("@keyframes category-loading-progress");
@@ -106,6 +107,47 @@ describe("public motion budget", () => {
       'from "~/components/kinetic-image-motion"',
     );
     expect(productCardSource).toContain("function StaticKineticImageFrame");
+    expect(productCardSource).toContain('data-motion-scope="static"');
+  });
+
+  it("keeps reduced-motion inventory explicit for hero, cards, route transitions, and feedback", () => {
+    const css = read("src/styles/globals.css");
+    const productGallerySource = read(
+      "src/app/product/[slug]/_components/product-gallery.tsx",
+    );
+    const purchasePanelSource = read(
+      "src/app/product/[slug]/_components/product-purchase-panel.tsx",
+    );
+    const productCardSource = read("src/components/product-card.tsx");
+
+    for (const selector of [
+      ".public-motion-shell",
+      ".motion-reveal",
+      ".motion-reveal-item",
+      ".motion-media-frame",
+      ".motion-media-content",
+      ".motion-hero-copy",
+      ".motion-copy-item",
+      ".motion-status-pop",
+      ".motion-sticky-purchase",
+      ".motion-thumbnail-button",
+    ]) {
+      expect(css).toContain(selector);
+    }
+
+    expect(css).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(css).toContain("animation: none !important;");
+    expect(css).toContain("transition: none !important;");
+    expect(productGallerySource).toContain("useResolvedReducedMotion");
+    expect(productGallerySource).toContain(
+      "duration: shouldReduceMotion ? 0 : 0.38",
+    );
+    expect(productGallerySource).toMatch(
+      /initial=\{\s*shouldReduceMotion\s*\?\s*false\s*:\s*\{\s*opacity:\s*0,\s*scale:\s*1\.006\s*\}\s*\}/,
+    );
+    expect(purchasePanelSource).toContain("motion-status-pop");
+    expect(purchasePanelSource).toContain("motion-sticky-purchase");
+    expect(productCardSource).toContain('data-motion-reduced="true"');
     expect(productCardSource).toContain('data-motion-scope="static"');
   });
 });

@@ -5,6 +5,7 @@ import { cn } from "~/lib/utils";
 type StatusMessageProps = {
   children: ReactNode;
   className?: string;
+  id?: string;
   role?: "alert" | "status";
   size?: "xs" | "sm";
   testId?: string;
@@ -15,6 +16,7 @@ type StatusMessageProps = {
 export function StatusMessage({
   children,
   className,
+  id,
   role,
   size = "sm",
   testId,
@@ -37,6 +39,7 @@ export function StatusMessage({
         className,
       )}
       data-testid={testId}
+      id={id}
       role={messageRole}
     >
       {children}

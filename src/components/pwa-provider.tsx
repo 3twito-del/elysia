@@ -35,18 +35,18 @@ export function PwaProvider({ children }: PwaProviderProps) {
     shouldEnablePwaRegistration,
     getServerPwaRegistrationSnapshot,
   );
+  const hydrated = useSyncExternalStore(
+    subscribeToPwaRegistrationStore,
+    getClientHydrationSnapshot,
+    getServerPwaRegistrationSnapshot,
+  );
 
   useEffect(() => {
+    if (!hydrated) return;
     if (enabled || process.env.NODE_ENV === "production") return;
 
     void unregisterDevelopmentServiceWorkers();
-  }, [enabled]);
-
-  useEffect(() => {
-    if (!enabled) return;
-
-    void registerServiceWorker();
-  }, [enabled]);
+  }, [enabled, hydrated]);
 
   return enabled ? <PwaRuntime>{children}</PwaRuntime> : children;
 }
@@ -61,6 +61,10 @@ function subscribeToPwaRegistrationStore() {
 
 function getServerPwaRegistrationSnapshot() {
   return false;
+}
+
+function getClientHydrationSnapshot() {
+  return true;
 }
 
 function shouldEnablePwaRegistration() {
@@ -130,17 +134,4 @@ async function unregisterDevelopmentServiceWorkers() {
   }
 
   runtime.location?.reload();
-}
-
-async function registerServiceWorker() {
-  const runtime = getBrowserRuntime();
-  const nav = runtime.navigator;
-
-  if (!nav || !("serviceWorker" in nav)) return;
-
-  try {
-    await nav.serviceWorker.register("/serwist/sw.js", { scope: "/" });
-  } catch (error) {
-    console.error("[pwa:register-failed]", error);
-  }
 }

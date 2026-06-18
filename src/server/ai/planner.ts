@@ -59,8 +59,10 @@ export function createAiPlanningContext(
     hasOrderSupportIntent(normalized) ||
     (hasAny(normalized, orderSupportActionTerms) &&
       hasAny(normalizedContext, orderIdentityTerms));
-  const tryOnIntent = hasAny(normalized, tryOnTerms);
   const styleProfileIntent = hasAny(normalized, styleProfileTerms);
+  const tryOnIntent =
+    hasAny(normalized, tryOnTerms) ||
+    (!styleProfileIntent && hasTryOnSizeIntent(normalized));
   const giftIntent = hasAny(normalized, giftTerms);
   const catalogIntent =
     hasCatalogIntent(normalized) ||
@@ -391,6 +393,10 @@ function hasOrderSupportIntent(value: string) {
   return (
     hasAny(value, orderSupportActionTerms) && hasAny(value, orderIdentityTerms)
   );
+}
+
+function hasTryOnSizeIntent(value: string) {
+  return /(?:^|\s)(?:מידה|מידת)(?:\s|$)/i.test(value);
 }
 
 function hasOrderReference(value: string) {

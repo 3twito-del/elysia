@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Search, Users } from "lucide-react";
+import { Search, ShieldCheck, Users } from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
 import {
@@ -53,7 +53,7 @@ function optionalParam(value: string | string[] | undefined) {
 export default async function AdminCustomersPage({
   searchParams,
 }: AdminCustomersPageProps) {
-  const access = await getAdminPageAccess("CUSTOMER_VIEW");
+  const access = await getAdminPageAccess("CUSTOMER_VIEW", "/admin/customers");
 
   if (access.denied) return <AdminForbidden {...access.denied} />;
 
@@ -97,6 +97,19 @@ export default async function AdminCustomersPage({
     params.sort !== "updated-desc",
     params.page > 1,
   ].some(Boolean);
+  const activeFilterLabels = [
+    params.query ? `חיפוש: ${params.query}` : null,
+    params.sort !== "updated-desc"
+      ? `מיון: ${getCustomerSortLabel(params.sort)}`
+      : null,
+    params.page > 1 ? `עמוד ${params.page}` : null,
+  ].filter((label): label is string => Boolean(label));
+  const emptyTitle = hasActiveFilters
+    ? "אין לקוחות שמתאימים לסינון"
+    : "אין לקוחות";
+  const emptyDescription = hasActiveFilters
+    ? "לא נמצאו לקוחות לפי הסינון הנוכחי. נקו סינון או שנו חיפוש כדי לחזור לרשימת הלקוחות המלאה."
+    : "חשבונות לקוח יופיעו לאחר כניסה, תור או הזמנה.";
 
   return (
     <AdminShell
@@ -125,6 +138,7 @@ export default async function AdminCustomersPage({
             />
             <select
               aria-label="מיון לקוחות"
+              autoComplete="off"
               className="glass-control h-11 rounded-md border px-3 text-sm"
               defaultValue={params.sort}
               name="sort"
@@ -140,6 +154,43 @@ export default async function AdminCustomersPage({
               </Button>
             ) : null}
           </form>
+          {hasActiveFilters ? (
+            <div
+              className="text-muted-foreground mt-4 flex flex-wrap items-center gap-2 text-sm"
+              data-testid="admin-customer-active-filters"
+            >
+              <span className="text-foreground font-medium">סינון פעיל</span>
+              {activeFilterLabels.map((label) => (
+                <Badge key={label} variant="outline">
+                  {label}
+                </Badge>
+              ))}
+              <Button asChild size="sm" variant="ghost">
+                <Link href="/admin/customers">ניקוי סינון</Link>
+              </Button>
+            </div>
+          ) : null}
+        </CardContent>
+      </Card>
+
+      <Card
+        className="mt-6 rounded-md"
+        data-testid="admin-customer-privacy-handoff"
+      >
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ShieldCheck aria-hidden="true" className="size-5" />
+            בקשות פרטיות
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="text-muted-foreground grid gap-3 text-sm leading-6">
+          <p>
+            בקשות ייצוא או מחיקה מטופלות דרך אזור הלקוח ותהליך פרטיות מאומת. אין
+            לחשוף מכאן נתוני חשבון מלאים או קבצי ייצוא.
+          </p>
+          <Button asChild className="w-fit" size="sm" variant="outline">
+            <Link href="/account/privacy/export">מסלול ייצוא ללקוח</Link>
+          </Button>
         </CardContent>
       </Card>
 
@@ -159,7 +210,7 @@ export default async function AdminCustomersPage({
                 <TableHead>הזמנות</TableHead>
                 <TableHead>פתוחות</TableHead>
                 <TableHead>LTV</TableHead>
-                <TableHead>מועדפים</TableHead>
+                <TableHead>שמורים</TableHead>
                 <TableHead>כתובות</TableHead>
                 <TableHead>תורים</TableHead>
                 <TableHead>עודכן</TableHead>
@@ -168,10 +219,17 @@ export default async function AdminCustomersPage({
             <TableBody>
               {data.items.length === 0 ? (
                 <TableEmptyRow
+                  action={
+                    hasActiveFilters ? (
+                      <Button asChild size="sm" variant="outline">
+                        <Link href="/admin/customers">ניקוי סינון</Link>
+                      </Button>
+                    ) : undefined
+                  }
                   colSpan={8}
-                  description="חשבונות לקוח יופיעו לאחר כניסה, תור או הזמנה."
+                  description={emptyDescription}
                   icon={Users}
-                  title="אין לקוחות מתאימים"
+                  title={emptyTitle}
                 />
               ) : (
                 data.items.map((customer) => (
@@ -213,4 +271,17 @@ export default async function AdminCustomersPage({
       </Card>
     </AdminShell>
   );
+}
+
+function getCustomerSortLabel(
+  sort: "updated-desc" | "orders-desc" | "ltv-desc",
+) {
+  switch (sort) {
+    case "orders-desc":
+      return "מספר הזמנות";
+    case "ltv-desc":
+      return "LTV גבוה";
+    case "updated-desc":
+      return "עודכנו לאחרונה";
+  }
 }

@@ -26,6 +26,7 @@ export type CatalogBranch = {
 export type CatalogProductVariant = {
   sku: string;
   name: string;
+  separateCheckoutAvailable?: boolean;
   size?: string;
   metalColor?: string;
   stoneColor?: string;
@@ -38,6 +39,7 @@ export type CatalogProductVariant = {
 export type CatalogProduct = {
   slug: string;
   sku: string;
+  requiresSeparateCheckout: boolean;
   name: string;
   categorySlug: string;
   categoryName: string;
@@ -72,6 +74,9 @@ export type CatalogSearchInput = {
   branch?: string;
   material?: string;
   stone?: string;
+  style?: string;
+  gift?: string;
+  color?: string;
   maxPrice?: number;
   collection?: string;
   availableOnly?: boolean;
@@ -81,6 +86,9 @@ export type CatalogFacets = {
   materials: string[];
   stones: string[];
   collections: string[];
+  styles: string[];
+  giftTags: string[];
+  colors: string[];
   priceRange: {
     min: number;
     max: number;

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   useActionState,
   useEffect,
@@ -19,17 +20,20 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { StatusMessage } from "~/components/ui/status-message";
 import { Textarea } from "~/components/ui/textarea";
+import { privacySensitiveInfoWarning } from "~/lib/legal-content";
 import { queueOfflineServiceRequest } from "~/lib/pwa-offline";
 import {
-  maxServiceRequestFileBytes,
-  maxServiceRequestFiles,
   serviceContactPreferences,
-  serviceRequestAcceptedFileTypes,
+  getServiceRequestAttachmentPolicy,
   getServiceContactPreferenceLabel,
 } from "~/lib/service-validation";
 
 type ServiceRequestFormProps = {
+  defaultMessage?: string;
+  defaultOrderNumber?: string;
   defaultProductReference?: string;
+  defaultTopicSlug?: string;
+  serviceEmail: string;
   topics: Array<{
     description?: string | null;
     label: string;
@@ -38,10 +42,32 @@ type ServiceRequestFormProps = {
 };
 
 const initialState: ServiceRequestActionState = {};
-const maxFileSizeMb = Math.round(maxServiceRequestFileBytes / 1024 / 1024);
+const attachmentPolicy = getServiceRequestAttachmentPolicy();
+const attachmentGuidanceId = "service-attachment-guidance";
+const attachmentOfflineGuidanceId = "service-attachment-offline-guidance";
+const attachmentPrivacyWarningId = "service-attachment-privacy-warning";
+const topicGuidanceId = "service-topic-guidance";
+const serviceFieldFocusOrder = [
+  "topicSlug",
+  "name",
+  "phone",
+  "email",
+  "orderNumber",
+  "productReference",
+  "preferredContactTime",
+  "message",
+] as const;
+
+function getFieldErrorId(name: string) {
+  return `${name}-error`;
+}
 
 export function ServiceRequestForm({
+  defaultMessage,
+  defaultOrderNumber,
   defaultProductReference,
+  defaultTopicSlug,
+  serviceEmail,
   topics,
 }: ServiceRequestFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
@@ -52,12 +78,49 @@ export function ServiceRequestForm({
   const [offlineState, setOfflineState] = useState<ServiceRequestActionState>(
     {},
   );
+  const initialSelectedTopic = topics.some(
+    (topic) => topic.slug === defaultTopicSlug,
+  )
+    ? defaultTopicSlug
+    : (topics[0]?.slug ?? "");
+  const [selectedTopicSlug, setSelectedTopicSlug] =
+    useState(initialSelectedTopic);
+  const [selectedAttachmentCount, setSelectedAttachmentCount] = useState(0);
+  const selectedTopic = topics.find(
+    (topic) => topic.slug === selectedTopicSlug,
+  );
+  const selectedTopicDescription = selectedTopic?.description;
+  const serviceReferenceMailto = state.requestReference
+    ? `mailto:${serviceEmail}?subject=${encodeURIComponent(
+        `עדכון לפנייה ${state.requestReference}`,
+      )}`
+    : `mailto:${serviceEmail}`;
+  const selectedTopicLabel = selectedTopic?.label ?? "נושא כללי";
 
   useEffect(() => {
     if (state.ok) {
       formRef.current?.reset();
+      const resetFrame = window.requestAnimationFrame(() => {
+        setSelectedAttachmentCount(0);
+      });
+
+      return () => window.cancelAnimationFrame(resetFrame);
     }
-  }, [state.ok]);
+
+    const firstInvalidField = serviceFieldFocusOrder.find((field) =>
+      Boolean(state.fieldErrors?.[field]),
+    );
+
+    if (firstInvalidField) {
+      window.requestAnimationFrame(() => {
+        const field = formRef.current?.elements.namedItem(firstInvalidField);
+
+        if (field instanceof HTMLElement) {
+          field.focus();
+        }
+      });
+    }
+  }, [state.fieldErrors, state.ok]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     if (navigator.onLine) return;
@@ -70,15 +133,15 @@ export function ServiceRequestForm({
       .then(() => {
         setOfflineState({
           ok: true,
-          message: "הפנייה נשמרה ותישלח אוטומטית כשהחיבור יחזור.",
+          message: "הפנייה נשמרה במכשיר. כשהחיבור יחזור אפשר לשלוח אותה שוב.",
         });
         form.reset();
+        setSelectedAttachmentCount(0);
       })
       .catch(() =>
         setOfflineState({
           ok: false,
-          message:
-            "לא הצלחנו לשמור את הפנייה במצב לא מקוון. השאירו את הקבצים זמינים ונסו שוב כשיש חיבור.",
+          message: "לא הצלחנו לשלוח עכשיו. בדקו את החיבור ונסו שוב.",
         }),
       );
   }
@@ -92,13 +155,20 @@ export function ServiceRequestForm({
     >
       <div className="grid gap-2">
         <Label htmlFor="topicSlug">נושא הפנייה</Label>
-        <FieldError message={state.fieldErrors?.topicSlug} />
+        <FieldError
+          id={getFieldErrorId("topicSlug")}
+          message={state.fieldErrors?.topicSlug}
+        />
         <select
+          aria-describedby={`${getFieldErrorId("topicSlug")} ${topicGuidanceId}`}
+          aria-invalid={Boolean(state.fieldErrors?.topicSlug)}
+          autoComplete="off"
           className="glass-control h-11 rounded-md border px-3 text-sm"
-          defaultValue={topics[0]?.slug ?? ""}
+          defaultValue={initialSelectedTopic}
           disabled={pending}
           id="topicSlug"
           name="topicSlug"
+          onChange={(event) => setSelectedTopicSlug(event.target.value)}
           required
         >
           {topics.map((topic) => (
@@ -107,6 +177,25 @@ export function ServiceRequestForm({
             </option>
           ))}
         </select>
+        <p
+          aria-live="polite"
+          className="text-muted-foreground text-xs leading-5"
+          data-testid="service-topic-guidance"
+          id={topicGuidanceId}
+        >
+          {selectedTopicDescription ??
+            "בחרו את הנושא הכי קרוב למה שצריך."}
+        </p>
+        <div
+          className="glass-inset rounded-md border p-3 text-xs leading-5"
+          data-testid="service-topic-routing-review"
+        >
+          <p className="font-medium">לאן הפנייה הולכת</p>
+          <p className="text-muted-foreground mt-1">
+            הפנייה תישלח לפי הנושא {selectedTopicLabel} ותטופל בדרך החזרה
+            שבחרתם.
+          </p>
+        </div>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
@@ -124,7 +213,7 @@ export function ServiceRequestForm({
           label="טלפון"
           name="phone"
           pending={pending}
-          placeholder="054-727-7455"
+          placeholder="05X-XXXXXXX"
           required
           type="tel"
         />
@@ -143,6 +232,7 @@ export function ServiceRequestForm({
 
       <div className="grid gap-3 sm:grid-cols-2">
         <Field
+          defaultValue={defaultOrderNumber}
           error={state.fieldErrors?.orderNumber}
           label="מספר הזמנה"
           name="orderNumber"
@@ -152,17 +242,18 @@ export function ServiceRequestForm({
         <Field
           defaultValue={defaultProductReference}
           error={state.fieldErrors?.productReference}
-          label="מוצר או קישור"
+          label="שם התכשיט או קישור"
           name="productReference"
           pending={pending}
-          placeholder="שם מוצר, מק״ט או קישור"
+          placeholder="שם תכשיט, מק״ט או קישור"
         />
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="grid gap-2">
-          <Label htmlFor="preferredContact">דרך חזרה מועדפת</Label>
+          <Label htmlFor="preferredContact">דרך חזרה</Label>
           <select
+            autoComplete="off"
             className="glass-control h-11 rounded-md border px-3 text-sm"
             defaultValue="ANY"
             disabled={pending}
@@ -186,14 +277,20 @@ export function ServiceRequestForm({
       </div>
 
       <div className="grid gap-2">
-        <Label htmlFor="message">מה נוכל לבדוק?</Label>
-        <FieldError message={state.fieldErrors?.message} />
+        <Label htmlFor="message">תיאור הפנייה</Label>
+        <FieldError
+          id={getFieldErrorId("message")}
+          message={state.fieldErrors?.message}
+        />
         <Textarea
+          aria-describedby={getFieldErrorId("message")}
+          aria-invalid={Boolean(state.fieldErrors?.message)}
           className="min-h-32"
+          defaultValue={defaultMessage}
           disabled={pending}
           id="message"
           name="message"
-          placeholder="כתבו בקצרה את הבקשה, פרטי התכשיט, מצב התיקון או השאלה."
+          placeholder="כתבו מה תרצו לבדוק, כולל שם התכשיט אם יש."
           required
         />
       </div>
@@ -201,26 +298,86 @@ export function ServiceRequestForm({
       <div className="bg-background grid gap-3 rounded-md border p-3">
         <Label className="flex items-center gap-2" htmlFor="attachments">
           <Paperclip aria-hidden="true" className="size-4" />
-          תמונות או PDF
+          קבצים מצורפים
         </Label>
         <Input
-          accept={serviceRequestAcceptedFileTypes.join(",")}
+          aria-describedby={`${attachmentGuidanceId} ${attachmentPrivacyWarningId} ${attachmentOfflineGuidanceId}`}
+          accept={attachmentPolicy.acceptedFileTypes.join(",")}
           disabled={pending}
           id="attachments"
           multiple
           name="attachments"
+          onChange={(event) =>
+            setSelectedAttachmentCount(event.currentTarget.files?.length ?? 0)
+          }
           type="file"
         />
-        <p className="text-muted-foreground text-xs leading-5">
-          ניתן לצרף עד {maxServiceRequestFiles} קבצים, עד {maxFileSizeMb}MB
-          לקובץ.
+        <div
+          className="glass-inset rounded-md border p-3 text-xs leading-5"
+          data-testid="service-attachment-review"
+        >
+          <p className="font-medium">קבצים לפני שליחה</p>
+          <p className="text-muted-foreground mt-1">
+            {selectedAttachmentCount > 0
+              ? `${selectedAttachmentCount} קבצים נבחרו לצירוף.`
+              : "לא נבחרו קבצים לצירוף."}{" "}
+            המגבלות נשארות עד {attachmentPolicy.maxFiles} קבצים ועד{" "}
+            {attachmentPolicy.maxFileSizeMb}MB לקובץ.
+          </p>
+        </div>
+        <p
+          className="text-muted-foreground text-xs leading-5"
+          id={attachmentGuidanceId}
+        >
+          ניתן לצרף עד {attachmentPolicy.maxFiles} קבצים, עד{" "}
+          {attachmentPolicy.maxFileSizeMb}MB לקובץ. סוגי קבצים נתמכים:{" "}
+          {attachmentPolicy.acceptedFileTypeLabel}.
         </p>
+        <p
+          className="text-muted-foreground text-xs leading-5"
+          data-testid="service-attachment-privacy-warning"
+          id={attachmentPrivacyWarningId}
+        >
+          {privacySensitiveInfoWarning} פרטים נוספים מופיעים ב{" "}
+          <Link className="underline underline-offset-4" href="/privacy">
+            מדיניות הפרטיות
+          </Link>
+          .
+        </p>
+        <p
+          className="text-muted-foreground text-xs leading-5"
+          id={attachmentOfflineGuidanceId}
+        >אם השליחה לא הצליחה, בדקו את החיבור ונסו שוב.</p>
       </div>
 
       {state.message ? (
         <StatusMessage tone={state.ok ? "success" : "error"}>
           {state.message}
         </StatusMessage>
+      ) : null}
+      {state.ok && state.requestReference ? (
+        <div
+          className="glass-inset grid gap-2 rounded-md border p-3 text-sm leading-6"
+          data-testid="service-request-success-reference"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="text-muted-foreground">מספר פנייה</span>
+            <strong className="font-mono text-base tracking-normal">
+              {state.requestReference}
+            </strong>
+          </div>
+          <p className="text-muted-foreground">
+            שמרו את המספר לעדכון. הצוות יבדוק את הפרטים והקבצים ויחזור עד 24
+            שעות ביום עסקים.
+          </p>
+          <a
+            className="w-fit text-sm font-medium underline underline-offset-4"
+            data-testid="service-request-success-contact-link"
+            href={serviceReferenceMailto}
+          >
+            עדכון נוסף באימייל השירות
+          </a>
+        </div>
       ) : null}
       {offlineState.message ? (
         <StatusMessage tone={offlineState.ok ? "success" : "error"}>
@@ -233,7 +390,7 @@ export function ServiceRequestForm({
         disabled={pending}
         type="submit"
       >
-        {pending ? "שולח..." : "שליחת פנייה"}
+        שליחה
         <Send aria-hidden="true" className="size-4" />
       </Button>
     </form>
@@ -245,6 +402,7 @@ function Field({
   label,
   name,
   pending,
+  "aria-describedby": ariaDescribedBy,
   ...props
 }: {
   error?: string;
@@ -252,11 +410,15 @@ function Field({
   name: string;
   pending: boolean;
 } & Omit<ComponentProps<typeof Input>, "disabled" | "id" | "name">) {
+  const errorId = getFieldErrorId(name);
+  const describedBy = [ariaDescribedBy, errorId].filter(Boolean).join(" ");
+
   return (
     <div className="grid gap-2">
       <Label htmlFor={name}>{label}</Label>
-      <FieldError message={error} />
+      <FieldError id={errorId} message={error} />
       <Input
+        aria-describedby={describedBy}
         aria-invalid={Boolean(error)}
         disabled={pending}
         id={name}
@@ -267,10 +429,11 @@ function Field({
   );
 }
 
-function FieldError({ message }: { message?: string }) {
+function FieldError({ id, message }: { id: string; message?: string }) {
   return (
     <p
       className="text-destructive min-h-5 text-xs leading-5"
+      id={id}
       role={message ? "alert" : undefined}
     >
       {message}

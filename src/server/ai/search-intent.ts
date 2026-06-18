@@ -121,9 +121,8 @@ export async function resolveSemanticSearchIntent(
         },
       });
 
-      if (process.env.NODE_ENV === "development") {
-        console.error("[semantic-search:intent]", error);
-      }
+      // Public search must degrade silently; provider telemetry is recorded
+      // above, and RSC console errors leak into browser QA sessions.
     }
   }
 

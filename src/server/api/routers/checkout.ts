@@ -15,6 +15,10 @@ import {
   createManualOrderInputSchema,
 } from "~/server/services/manual-order";
 import { createPaymentCheckoutSession } from "~/server/services/payment-checkout";
+import {
+  createShopifyDropshipCheckout,
+  shopifyDropshipCheckoutInputSchema,
+} from "~/server/services/shopify-dropship-checkout";
 
 const createPaymentInputSchema = z.object({
   orderId: z.string().trim().min(1).max(128),
@@ -37,7 +41,7 @@ export const checkoutRouter = createTRPCRouter({
       if (!rateLimit.allowed) {
         throw new TRPCError({
           code: "TOO_MANY_REQUESTS",
-          message: "יותר מדי ניסיונות קופה. נסו שוב בעוד כמה דקות.",
+          message: "יותר מדי ניסיונות לסיום הזמנה. נסו שוב בעוד כמה דקות.",
         });
       }
 
@@ -56,7 +60,7 @@ export const checkoutRouter = createTRPCRouter({
       if (!rateLimit.allowed) {
         throw new TRPCError({
           code: "TOO_MANY_REQUESTS",
-          message: "יותר מדי ניסיונות קופה. נסו שוב בעוד כמה דקות.",
+          message: "יותר מדי ניסיונות לסיום הזמנה. נסו שוב בעוד כמה דקות.",
         });
       }
 
@@ -83,5 +87,24 @@ export const checkoutRouter = createTRPCRouter({
         checkout: input,
         headers: ctx.headers,
       });
+    }),
+
+  createShopifyDropshipCheckout: publicProcedure
+    .input(shopifyDropshipCheckoutInputSchema)
+    .mutation(async ({ input }) => {
+      const rateLimit = await consumeRateLimit({
+        key: createRateLimitKey("shopify-dropship-checkout", input.sessionKey),
+        limit: 8,
+        windowMs: 15 * 60_000,
+      });
+
+      if (!rateLimit.allowed) {
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: "יותר מדי ניסיונות לקופת ספק. נסו שוב בעוד כמה דקות.",
+        });
+      }
+
+      return createShopifyDropshipCheckout(input);
     }),
 });

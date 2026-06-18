@@ -30,6 +30,75 @@ export interface MediaProvider {
   ): Promise<ServiceAttachmentUploadResult>;
 }
 
+const adminCatalogImageAllowedContentTypes = new Set([
+  "image/avif",
+  "image/gif",
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+]);
+const adminCatalogImageAllowedExtensions = new Set([
+  ".avif",
+  ".gif",
+  ".jpeg",
+  ".jpg",
+  ".png",
+  ".webp",
+]);
+const adminCatalogImageMaxBytes = 5 * 1024 * 1024;
+
+export function getAdminCatalogImageValidationSummary(input: {
+  alt?: string | null;
+  bytes?: number | null;
+  contentType?: string | null;
+  url?: string | null;
+}) {
+  const issues: Array<{
+    code: "missing-alt" | "oversized" | "unsupported-format";
+    message: string;
+  }> = [];
+  const alt = input.alt?.trim();
+  const contentType = input.contentType?.trim().toLowerCase();
+  const extension = getUrlExtension(input.url);
+
+  if (!alt) {
+    issues.push({
+      code: "missing-alt",
+      message: "Missing product image alt text.",
+    });
+  }
+
+  if (contentType && !adminCatalogImageAllowedContentTypes.has(contentType)) {
+    issues.push({
+      code: "unsupported-format",
+      message: "Unsupported product image format.",
+    });
+  } else if (
+    !contentType &&
+    extension &&
+    !adminCatalogImageAllowedExtensions.has(extension)
+  ) {
+    issues.push({
+      code: "unsupported-format",
+      message: "Unsupported product image format.",
+    });
+  }
+
+  if (input.bytes && input.bytes > adminCatalogImageMaxBytes) {
+    issues.push({
+      code: "oversized",
+      message: "Product image is larger than 5MB.",
+    });
+  }
+
+  return {
+    allowedContentTypes: Array.from(adminCatalogImageAllowedContentTypes),
+    maxBytes: adminCatalogImageMaxBytes,
+    ok: issues.length === 0,
+    issues,
+  };
+}
+
 class CloudinaryMediaProvider implements MediaProvider {
   constructor() {
     if (hasCloudinaryUploadConfig()) {
@@ -152,4 +221,19 @@ function sanitizeFilename(value: string) {
     .replace(/[^a-z0-9._-]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 80);
+}
+
+function getUrlExtension(value?: string | null) {
+  if (!value) return undefined;
+
+  try {
+    const pathname = new URL(value).pathname.toLowerCase();
+    const extension = /\.[a-z0-9]+$/u.exec(pathname)?.[0];
+
+    return extension;
+  } catch {
+    const pathname = value.split("?")[0]?.toLowerCase();
+
+    return pathname ? /\.[a-z0-9]+$/u.exec(pathname)?.[0] : undefined;
+  }
 }

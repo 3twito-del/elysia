@@ -50,7 +50,7 @@ function optionalParam(value: string | string[] | undefined) {
 export default async function AdminAuditPage({
   searchParams,
 }: AdminAuditPageProps) {
-  const access = await getAdminPageAccess("SYSTEM_CONFIG");
+  const access = await getAdminPageAccess("SYSTEM_CONFIG", "/admin/audit");
 
   if (access.denied) return <AdminForbidden {...access.denied} />;
 
@@ -114,6 +114,7 @@ export default async function AdminAuditPage({
             />
             <select
               aria-label="מיון אירועי Audit"
+              autoComplete="off"
               className="glass-control h-11 rounded-md border px-3 text-sm"
               defaultValue={params.sort}
               name="sort"
@@ -153,10 +154,25 @@ export default async function AdminAuditPage({
             <TableBody>
               {data.items.length === 0 ? (
                 <TableEmptyRow
+                  action={
+                    hasActiveFilters ? (
+                      <Button asChild size="sm" variant="outline">
+                        <Link href="/admin/audit">ניקוי סינון</Link>
+                      </Button>
+                    ) : undefined
+                  }
                   colSpan={5}
-                  description="פעולות אדמין יופיעו לאחר שינויים בהזמנות, קטלוג, מלאי ותורים."
+                  description={
+                    hasActiveFilters
+                      ? "שנו סינון או נקו כדי לחזור לכל אירועי ה-audit."
+                      : "פעולות אדמין יופיעו לאחר שינויים בהזמנות, קטלוג, מלאי ותורים."
+                  }
                   icon={History}
-                  title="אין אירועי audit"
+                  title={
+                    hasActiveFilters
+                      ? "אין אירועי audit מתאימים"
+                      : "אין אירועי audit"
+                  }
                 />
               ) : (
                 data.items.map((log) => (

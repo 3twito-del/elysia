@@ -8,7 +8,9 @@
 # testing
 /coverage
 /test-results/
+/playwright-report/
 /.tmp/
+/artifacts/qa/
 
 # database
 /prisma/db.sqlite

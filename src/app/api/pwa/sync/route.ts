@@ -11,6 +11,7 @@ import {
   RateLimitExceededError,
 } from "~/server/services/rate-limit";
 import {
+  createOfflineSyncResponse,
   offlineJsonSyncSchema,
   processOfflineJsonActions,
 } from "~/server/services/offline-sync";
@@ -41,7 +42,7 @@ export async function POST(req: Request) {
 
     const results = await processOfflineJsonActions(parsed.data.actions);
 
-    return okJson({ results });
+    return okJson(createOfflineSyncResponse(results));
   } catch (error) {
     if (error instanceof RateLimitExceededError) {
       return rateLimitedJson(error, "Too many offline sync requests.");

@@ -22,7 +22,11 @@ import {
 } from "~/components/ui/table";
 import { TableEmptyRow } from "~/components/ui/table-empty-row";
 import { formatOptionalHebrewDateTime } from "~/lib/format";
-import { isPushConfigured, listPushCampaigns } from "~/server/services/push";
+import {
+  getPushCampaignAudienceSummary,
+  isPushConfigured,
+  listPushCampaigns,
+} from "~/server/services/push";
 
 export const metadata = {
   title: "Push Notifications | Admin",
@@ -31,19 +35,25 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function AdminNotificationsPage() {
-  const access = await getAdminPageAccess("SYSTEM_CONFIG");
+  const access = await getAdminPageAccess(
+    "SYSTEM_CONFIG",
+    "/admin/notifications",
+  );
 
   if (access.denied) return <AdminForbidden {...access.denied} />;
 
-  const campaigns = await listPushCampaigns().catch((error: unknown) => {
+  const [campaigns, audienceSummary] = await Promise.all([
+    listPushCampaigns(),
+    getPushCampaignAudienceSummary(),
+  ]).catch((error: unknown) => {
     if (process.env.NODE_ENV === "development") {
       console.error("[admin] failed to load push campaigns", error);
     }
 
-    return null;
+    return [null, null] as const;
   });
 
-  if (!campaigns) return <AdminDatabaseFallback />;
+  if (!campaigns || !audienceSummary) return <AdminDatabaseFallback />;
 
   const configured = isPushConfigured();
 
@@ -68,7 +78,25 @@ export default async function AdminNotificationsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <AdminPushCampaignForm />
+            <div
+              className="mb-4 rounded-md border border-[var(--glass-border)] p-3 text-sm"
+              data-testid="admin-notification-readiness"
+            >
+              <p className="font-medium">
+                {configured
+                  ? "התראות Push מוכנות לשליחה"
+                  : "שליחת Push אינה פעילה"}
+              </p>
+              <p className="text-muted-foreground mt-1 leading-6">
+                {configured
+                  ? "קמפיינים חדשים יכולים להישמר, לתזמן ולהישלח דרך outbox."
+                  : "חסרות הגדרות VAPID. אפשר לשמור קמפיין כטיוטה, אבל שליחה מיידית וכפתורי שליחה יישארו כבויים עד שההגדרות יושלמו."}
+              </p>
+            </div>
+            <AdminPushCampaignForm
+              audienceSummary={audienceSummary}
+              configured={configured}
+            />
           </CardContent>
         </Card>
 
@@ -80,6 +108,15 @@ export default async function AdminNotificationsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {!configured ? (
+              <p
+                className="text-muted-foreground mb-3 text-sm leading-6"
+                data-testid="admin-notification-send-disabled-copy"
+              >
+                שליחה כבויה כי מפתחות VAPID אינם מוגדרים. לאחר השלמת ההגדרות
+                ניתן להפעיל קמפיינים קיימים מהטבלה.
+              </p>
+            ) : null}
             <AdminTableScrollHint />
             <Table className="min-w-[840px]">
               <TableHeader>
@@ -114,6 +151,11 @@ export default async function AdminNotificationsPage() {
                         <TableCell>{campaign.segment}</TableCell>
                         <TableCell>
                           <Badge variant="secondary">{campaign.status}</Badge>
+                          {campaign.lastError ? (
+                            <p className="text-muted-foreground mt-1 text-xs leading-5">
+                              {campaign.lastError}
+                            </p>
+                          ) : null}
                         </TableCell>
                         <TableCell>
                           {sentCount}/{campaign.deliveries.length}

@@ -2,7 +2,11 @@ import { env } from "~/env";
 import { auth } from "~/server/auth";
 import { getAdminFromSession } from "~/server/auth/admin-access";
 import { okJson } from "~/server/http/api-response";
-import { createHealthChecks, getHealthOk } from "~/server/services/health";
+import {
+  createHealthChecks,
+  getHealthOk,
+  getHealthReadinessReport,
+} from "~/server/services/health";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +20,7 @@ export async function GET() {
       ? {
           ok,
           checks,
+          readiness: getHealthReadinessReport(checks),
           timestamp: new Date().toISOString(),
         }
       : {

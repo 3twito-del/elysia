@@ -89,5 +89,6 @@ function makeProduct(overrides: Partial<CatalogProduct> = {}): CatalogProduct {
     tags: [],
     variants: [],
     ...overrides,
+    requiresSeparateCheckout: overrides.requiresSeparateCheckout ?? false,
   };
 }

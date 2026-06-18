@@ -1,8 +1,10 @@
+import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 
 import { TableCell, TableRow } from "~/components/ui/table";
 
 type TableEmptyRowProps = {
+  action?: ReactNode;
   colSpan: number;
   description: string;
   icon: LucideIcon;
@@ -10,6 +12,7 @@ type TableEmptyRowProps = {
 };
 
 export function TableEmptyRow({
+  action,
   colSpan,
   description,
   icon: Icon,
@@ -26,6 +29,7 @@ export function TableEmptyRow({
           <p className="text-muted-foreground text-sm leading-6">
             {description}
           </p>
+          {action ? <div className="pt-1">{action}</div> : null}
         </div>
       </TableCell>
     </TableRow>

@@ -3,6 +3,7 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import { Gift, Sparkles } from "lucide-react";
 
+import { AiFallbackRecovery } from "./ai-fallback-recovery";
 import { AiProductRecommendations } from "~/components/ai-product-recommendations";
 import { MessageResponse } from "~/components/ai-elements/message";
 import { Button } from "~/components/ui/button";
@@ -23,7 +24,7 @@ export function AiGiftRecommender() {
   const [relation, setRelation] = useState("אמא");
   const [occasion, setOccasion] = useState("יום הולדת");
   const [budget, setBudget] = useState("700");
-  const [style, setStyle] = useState("עדין, יומיומי");
+  const [style, setStyle] = useState("נקי, יומיומי");
   const [fieldErrors, setFieldErrors] = useState<FormFieldErrors>({});
   const [validationMessage, setValidationMessage] = useState<string | null>(
     null,
@@ -59,11 +60,8 @@ export function AiGiftRecommender() {
             <Gift aria-hidden="true" className="size-4" />
             התאמת מתנה
           </div>
-          <h2 className="text-xl font-semibold">שאלון מתנה חכם</h2>
-          <p className="text-muted-foreground mt-2 max-w-2xl text-sm leading-6">
-            הזינו קשר, אירוע, תקציב וסגנון. ההמלצות יישארו בתוך מוצרים קיימים
-            בקטלוג.
-          </p>
+          <h2 className="text-xl font-semibold">שאלון מתנה</h2>
+          <p className="text-muted-foreground mt-2 max-w-2xl text-sm leading-6">הזינו קשר, אירוע, מחיר וסגנון. ההמלצות יישארו בתוך המלאי הקיים.</p>
         </div>
         <Sparkles aria-hidden="true" className="text-foreground size-6" />
       </div>
@@ -101,7 +99,7 @@ export function AiGiftRecommender() {
           <Field
             error={fieldErrors.budget}
             htmlFor="ai-gift-budget"
-            label="תקציב"
+            label="מחיר"
           >
             <Input
               aria-invalid={Boolean(fieldErrors.budget)}
@@ -123,15 +121,23 @@ export function AiGiftRecommender() {
             disabled={recommendGift.isPending}
             id="ai-gift-style"
             onChange={(event) => setStyle(event.currentTarget.value)}
-            placeholder="לדוגמה: עדין, זהב לבן, שימוש יומיומי"
+            placeholder="לדוגמה: נקי, זהב לבן, שימוש יומיומי"
             value={style}
           />
         </Field>
 
-        {(validationMessage ?? recommendGift.error) ? (
+        {validationMessage ? (
           <StatusMessage tone="error" variant="plain">
-            {validationMessage ?? recommendGift.error?.message}
+            {validationMessage}
           </StatusMessage>
+        ) : null}
+
+        {recommendGift.error ? (
+          <AiFallbackRecovery
+            className="text-sm"
+            reason={recommendGift.error.message}
+            source="gift"
+          />
         ) : null}
 
         <Button
@@ -154,11 +160,11 @@ export function AiGiftRecommender() {
           <AiProductRecommendations
             products={recommendGift.data.products}
             source="gift"
-            title="מוצרים מומלצים למתנה"
+            title="בחירות למתנה"
           />
           {recommendGift.data.products.length === 0 ? (
             <p className="text-muted-foreground text-sm">
-              לא נמצאו מוצרים זמינים בתקציב ובסגנון שבחרת.
+              לא נמצאה התאמה פתוחה בטווח המחיר ובסגנון שבחרת.
             </p>
           ) : null}
         </div>

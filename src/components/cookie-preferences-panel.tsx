@@ -13,17 +13,21 @@ export function CookiePreferencesPanel() {
   const consentValue = useCookieConsentValue();
   const statusText =
     consentValue === "all"
-      ? "מאושרים קוקיז חיוניים וגם מדידה ושיפור חוויה."
+      ? "מאושרים קוקיז חיוניים וגם מדידה לשיפור האתר."
       : consentValue === "essential"
         ? "מאושרים קוקיז חיוניים בלבד."
-        : "עדיין לא נשמרה בחירת קוקיז בדפדפן זה.";
+        : "עדיין לא נשמרה העדפת קוקיז בדפדפן זה.";
 
   const chooseConsent = (value: CookieConsentValue) => {
     writeCookieConsent(value);
   };
 
   return (
-    <section aria-labelledby="cookie-preferences">
+    <section
+      aria-describedby="cookie-preferences-status"
+      aria-labelledby="cookie-preferences"
+      data-testid="cookie-preferences-panel"
+    >
       <div className="flex items-center gap-3">
         <ShieldCheck className="size-5" aria-hidden="true" />
         <h2 className="text-2xl font-semibold" id="cookie-preferences">
@@ -34,33 +38,40 @@ export function CookiePreferencesPanel() {
       <div className="glass-inset mt-4 rounded-md border p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="flex items-center gap-2 font-medium">
+            <p
+              aria-live="polite"
+              className="flex items-center gap-2 font-medium"
+              data-testid="cookie-preferences-status"
+              id="cookie-preferences-status"
+              role="status"
+            >
               <CheckCircle2 className="size-5" aria-hidden="true" />
               {statusText}
             </p>
-            <p className="text-muted-foreground mt-2 leading-8">
-              ניתן לשנות את הבחירה בכל רגע. מעבר ל״הכרחי בלבד״ עוצר מדידה ומוחק
-              מהדפדפן את רשימת המוצרים שנצפו לאחרונה.
-            </p>
+            <p className="text-muted-foreground mt-2 leading-8">אפשר לשנות העדפה בכל רגע. ״רק חיוניים״ עוצר מדידה ומוחק צפיות אחרונות מהדפדפן.</p>
           </div>
 
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
             <Button
+              aria-describedby="cookie-preferences-status"
+              aria-pressed={consentValue === "essential"}
               className="cookie-button-secondary"
               type="button"
               variant="outline"
               onClick={() => chooseConsent("essential")}
             >
               <ShieldCheck aria-hidden="true" className="size-4" />
-              הכרחי בלבד
+              רק חיוניים
             </Button>
             <Button
+              aria-describedby="cookie-preferences-status"
+              aria-pressed={consentValue === "all"}
               className="cookie-button-primary"
               type="button"
               variant="default"
               onClick={() => chooseConsent("all")}
             >
-              <BarChart3 className="size-4" />
+              <BarChart3 aria-hidden="true" className="size-4" />
               אישור מדידה
             </Button>
           </div>

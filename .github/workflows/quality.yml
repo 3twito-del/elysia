@@ -5,17 +5,59 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+
+env:
+  ADMIN_BOOTSTRAP_EMAIL: admin@example.com
+  ADMIN_BOOTSTRAP_NAME: CI Admin
+  ADMIN_BOOTSTRAP_PASSWORD: ci-admin-password-12345
+  AI_SEMANTIC_SEARCH_ENABLED: "false"
+  AUTH_SECRET: ci-auth-secret-for-quality-workflow
+  CATALOG_DB_ERROR_FALLBACK: "1"
+  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/elysia?schema=public
+  E2E_CATALOG_FIXTURES: "1"
+  TYPESENSE_API_KEY: ""
+  TYPESENSE_HOST: ""
+  VERCEL_ENV: preview
 
 jobs:
-  verify:
+  fast-pr:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    env:
-      ADMIN_BOOTSTRAP_EMAIL: admin@example.com
-      ADMIN_BOOTSTRAP_NAME: CI Admin
-      ADMIN_BOOTSTRAP_PASSWORD: ci-admin-password-12345
-      AUTH_SECRET: ci-auth-secret-for-quality-workflow
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/elysia?schema=public
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Copy map check
+        run: pnpm copy:check
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+  full-main:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
     services:
       postgres:
         image: postgres:16
@@ -55,6 +97,9 @@ jobs:
       - name: Install Playwright
         run: pnpm exec playwright install --with-deps chromium
 
+      - name: Copy map check
+        run: pnpm copy:check
+
       - name: Lint
         run: pnpm lint
 
@@ -69,3 +114,65 @@ jobs:
 
       - name: E2E
         run: pnpm e2e
+
+  verify-full:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    env:
+      AI_GATEWAY_API_KEY: ${{ secrets.AI_GATEWAY_API_KEY }}
+      BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+      CARD_COM_API_NAME: ${{ secrets.CARD_COM_API_NAME }}
+      CARD_COM_API_PASSWORD: ${{ secrets.CARD_COM_API_PASSWORD }}
+      CARD_COM_TERMINAL: ${{ secrets.CARD_COM_TERMINAL }}
+      CARD_COM_WEBHOOK_SECRET: ${{ secrets.CARD_COM_WEBHOOK_SECRET }}
+      CRON_SECRET: ${{ secrets.CRON_SECRET }}
+      GOOGLE_GENERATIVE_AI_API_KEY: ${{ secrets.GOOGLE_GENERATIVE_AI_API_KEY }}
+      JOB_RUNNER_SECRET: ${{ secrets.JOB_RUNNER_SECRET }}
+      OPERATIONS_EMAIL: ${{ secrets.OPERATIONS_EMAIL }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      SMS_PROVIDER_API_KEY: ${{ secrets.SMS_PROVIDER_API_KEY }}
+      STORE_FROM_EMAIL: ${{ secrets.STORE_FROM_EMAIL }}
+      TYPESENSE_API_KEY: ${{ secrets.TYPESENSE_API_KEY }}
+      TYPESENSE_HOST: ${{ secrets.TYPESENSE_HOST }}
+      UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+      UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+      VERCEL_OIDC_TOKEN: ${{ secrets.VERCEL_OIDC_TOKEN }}
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: elysia
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d elysia"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Copy map check
+        run: pnpm copy:check
+
+      - name: Full explicit verification
+        run: pnpm verify:full

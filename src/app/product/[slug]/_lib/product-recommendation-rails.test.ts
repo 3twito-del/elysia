@@ -53,6 +53,17 @@ describe("product recommendation rails", () => {
     expect(
       rails.flatMap((rail) => rail.products.map((item) => item.slug)),
     ).toEqual(["same-collection", "same-category", "same-material"]);
+    expect(rails.map((rail) => rail.cardContextLabel)).toEqual([
+      "מאותה קולקציה",
+      "אותה קטגוריה",
+      "חומר או אבן דומים",
+    ]);
+    expect(rails.map((rail) => rail.continuationHref)).toEqual([
+      "/search?collection=Sol",
+      "/category/rings",
+      "/search?material=Gold",
+    ]);
+    expect(rails.every((rail) => rail.reason.length > 0)).toBe(true);
   });
 
   it("falls back to popular catalog products when there are no direct matches", () => {
@@ -81,6 +92,48 @@ describe("product recommendation rails", () => {
     expect(rails).toHaveLength(1);
     expect(rails[0]?.id).toBe("popular");
     expect(rails[0]?.products[0]?.slug).toBe("popular");
+    expect(rails[0]?.continuationHref).toBe("/search");
+    expect(rails[0]?.cardContextLabel).toBe("מומלץ עכשיו");
+  });
+
+  it("keeps rail labels source-based instead of implying personalization", () => {
+    const current = createProduct({
+      categoryName: "Rings",
+      categorySlug: "rings",
+      collection: "Sol",
+      collections: ["Sol"],
+      material: "Gold",
+      slug: "current",
+      stone: "Diamond",
+    });
+    const rails = getProductRecommendationRails({
+      product: current,
+      products: [
+        current,
+        createProduct({
+          categoryName: "Rings",
+          categorySlug: "rings",
+          collection: "Aster",
+          collections: ["Aster"],
+          material: "Gold",
+          slug: "same-material",
+          stone: "Emerald",
+        }),
+      ],
+    });
+    const railCopy = rails
+      .flatMap((rail) => [
+        rail.cardContextLabel,
+        rail.continuationLabel,
+        rail.reason,
+        rail.title,
+      ])
+      .join(" ");
+
+    expect(railCopy).not.toMatch(/אישי|בשבילך|המלצה אישית|מותאם לך/u);
+    expect(rails.every((rail) => rail.continuationHref.startsWith("/"))).toBe(
+      true,
+    );
   });
 });
 
@@ -122,5 +175,6 @@ function createProduct(overrides: Partial<CatalogProduct> & { slug: string }) {
       },
     ],
     ...rest,
+    requiresSeparateCheckout: rest.requiresSeparateCheckout ?? false,
   } satisfies CatalogProduct;
 }

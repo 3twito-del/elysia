@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   createAdminPageInfo,
+  createAdminOverviewFreshness,
   createIntegrationSummary,
   createProductionIntegrationSummaries,
   recordAdminCustomerDataAccess,
@@ -45,6 +46,16 @@ describe("admin operations helpers", () => {
       hasPreviousPage: true,
       page: 3,
       totalPages: 3,
+    });
+  });
+
+  it("creates explicit overview freshness metadata", () => {
+    const generatedAt = new Date("2026-06-01T12:30:00.000Z");
+
+    expect(createAdminOverviewFreshness(generatedAt)).toEqual({
+      cadence: "per-request",
+      generatedAt,
+      source: "live-database",
     });
   });
 
@@ -114,6 +125,9 @@ describe("admin operations helpers", () => {
     expect(getStatusByName(integrations, "Typesense search")).toBe(
       "configured",
     );
+    expect(getStatusByName(integrations, "Shopify dropshipping")).toBe(
+      "local-fallback",
+    );
     expect(getStatusByName(integrations, "Outbox jobs")).toBe("configured");
     expect(getStatusByName(integrations, "AI commerce")).toBe("configured");
     expect(getStatusByName(integrations, "Vercel platform controls")).toBe(
@@ -140,10 +154,41 @@ describe("admin operations helpers", () => {
     expect(getStatusByName(integrations, "Typesense search")).toBe(
       "missing-secret",
     );
+    expect(getStatusByName(integrations, "Shopify dropshipping")).toBe(
+      "local-fallback",
+    );
     expect(getStatusByName(integrations, "Outbox jobs")).toBe("missing-secret");
     expect(getStatusByName(integrations, "AI commerce")).toBe("missing-secret");
     expect(getStatusByName(integrations, "Vercel platform controls")).toBe(
       "rollout-required",
+    );
+  });
+
+  it("groups integration readiness by provider family capabilities", () => {
+    const integrations = createProductionIntegrationSummaries({
+      nodeEnv: "production",
+      notificationOperational: false,
+      notificationProviderName: "missing",
+    });
+
+    expect(getCapabilitiesByName(integrations, "CardCom payments")).toEqual(
+      expect.arrayContaining(["checkout", "refund", "signed-webhook"]),
+    );
+    expect(getCapabilitiesByName(integrations, "Typesense search")).toEqual(
+      expect.arrayContaining(["search", "facets", "reindex"]),
+    );
+    expect(getCapabilitiesByName(integrations, "Shopify dropshipping")).toEqual(
+      expect.arrayContaining([
+        "dropship-catalog-sync",
+        "shopify-checkout",
+        "signed-order-webhook",
+      ]),
+    );
+    expect(getCapabilitiesByName(integrations, "SMS notifications")).toEqual(
+      expect.arrayContaining(["otp-sms", "order-status-sms"]),
+    );
+    expect(getCapabilitiesByName(integrations, "Outbox jobs")).toEqual(
+      expect.arrayContaining(["outbox", "reservation-expiry", "retry"]),
     );
   });
 
@@ -191,4 +236,12 @@ function getStatusByName(
   name: string,
 ) {
   return integrations.find((integration) => integration.name === name)?.status;
+}
+
+function getCapabilitiesByName(
+  integrations: ReturnType<typeof createProductionIntegrationSummaries>,
+  name: string,
+) {
+  return integrations.find((integration) => integration.name === name)
+    ?.capabilities;
 }

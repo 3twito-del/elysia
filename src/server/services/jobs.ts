@@ -1,5 +1,12 @@
 ﻿import type { OrderStatus, OutboxEvent, Prisma } from "@prisma/client";
 
+import { env } from "~/env";
+import { formatPrice } from "~/lib/format";
+import {
+  footerBusinessDetails,
+  orderLegalLinks,
+  vatIncludedNotice,
+} from "~/lib/legal-content";
 import { notificationProvider } from "~/server/adapters/notifications";
 import { searchProvider } from "~/server/adapters/search";
 import { db } from "~/server/db";
@@ -23,6 +30,25 @@ export type ProcessOutboxResult = {
 };
 
 type JobStatus = "COMPLETED" | "FAILED" | "SKIPPED";
+
+export function getPublicOutboxJobFailureMessage(eventType: string) {
+  if (eventType === BUSINESS_EVENTS.searchReindexRequested) {
+    return "Search reindex job failed. It will retry from the outbox when the search provider is available.";
+  }
+
+  if (eventType === BUSINESS_EVENTS.emailRequested) {
+    return "Transactional email job failed. It will retry from the outbox when email delivery is available.";
+  }
+
+  if (
+    eventType === BUSINESS_EVENTS.pushCampaignRequested ||
+    eventType === BUSINESS_EVENTS.pushCartReminderDue
+  ) {
+    return "Push notification job failed. It will retry from the outbox when push delivery is available.";
+  }
+
+  return "Outbox job failed. It will retry when the processor is available.";
+}
 
 export async function processDueOutboxEvents(input: { limit?: number } = {}) {
   const pushAutomation = await processBackInStockInterests().catch(
@@ -52,15 +78,16 @@ export async function processDueOutboxEvents(input: { limit?: number } = {}) {
       }
 
       await markOutboxEventStatus({ id: event.id, status: "PROCESSED" });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Unknown error";
+    } catch {
+      const publicMessage = getPublicOutboxJobFailureMessage(event.type);
 
       result.failed += 1;
 
       await markOutboxEventStatus({
+        attempts: event.attempts + 1,
         id: event.id,
         status: "FAILED",
-        lastError: message,
+        lastError: publicMessage,
       });
 
       await recordJobRun({
@@ -69,7 +96,7 @@ export async function processDueOutboxEvents(input: { limit?: number } = {}) {
         status: "FAILED",
         attempts: event.attempts + 1,
         metadata: { eventType: event.type },
-        lastError: message,
+        lastError: publicMessage,
       });
     }
   }
@@ -82,14 +109,27 @@ export function canExpireReservationForOrderStatus(status: OrderStatus) {
 }
 
 export function getOutboxPayloadString(payload: Prisma.JsonValue, key: string) {
-  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
-    return null;
-  }
+  if (!isJsonRecord(payload)) return null;
 
   const value = payload[key];
 
   if (typeof value === "string" && value.trim()) return value.trim();
   if (typeof value === "number") return String(value);
+
+  return null;
+}
+
+export function getOutboxPayloadNumber(payload: Prisma.JsonValue, key: string) {
+  if (!isJsonRecord(payload)) return null;
+
+  const value = payload[key];
+
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && value.trim()) {
+    const parsed = Number(value);
+
+    return Number.isFinite(parsed) ? parsed : null;
+  }
 
   return null;
 }
@@ -112,6 +152,10 @@ export function createOutboxEmailMessage(payload: Prisma.JsonValue) {
       (orderNumber ? `Elysia ${orderNumber}` : "Elysia order update"),
     body:
       body ??
+      createStructuredOrderEmailBody(payload, {
+        orderNumber,
+        template,
+      }) ??
       [
         "Elysia",
         orderNumber ? `Order: ${orderNumber}` : null,
@@ -120,6 +164,109 @@ export function createOutboxEmailMessage(payload: Prisma.JsonValue) {
         .filter(Boolean)
         .join("\n"),
   };
+}
+
+function createStructuredOrderEmailBody(
+  payload: Prisma.JsonValue,
+  input: {
+    orderNumber: string | null;
+    template: string;
+  },
+) {
+  if (!input.orderNumber) return null;
+  if (
+    ![
+      "cart_checkout_created",
+      "manual_order_created",
+      "payment_link_created",
+      "order_status_updated",
+      "shipment_updated",
+      "order_refunded",
+    ].includes(input.template)
+  ) {
+    return null;
+  }
+
+  const items = getOutboxOrderItems(payload);
+  const subtotal = getOutboxPayloadNumber(payload, "subtotal");
+  const shipping = getOutboxPayloadNumber(payload, "shipping");
+  const discount = getOutboxPayloadNumber(payload, "discount");
+  const total =
+    getOutboxPayloadNumber(payload, "total") ??
+    getOutboxPayloadNumber(payload, "amount");
+  const estimatedDelivery =
+    getOutboxPayloadString(payload, "estimatedDelivery") ??
+    "לפי מדיניות המשלוחים וזמינות ההזמנה.";
+
+  return [
+    "Elysia",
+    `מספר הזמנה: ${input.orderNumber}`,
+    footerBusinessDetails,
+    "",
+    items.length > 0 ? "פרטי מוצרים:" : "פרטי מוצרים: [להשלמה]",
+    ...items,
+    subtotal !== null ? `מחיר מוצרים: ${formatPrice(subtotal)}` : null,
+    discount && discount > 0 ? `הטבה: ${formatPrice(discount)}` : null,
+    shipping !== null ? `משלוח: ${formatPrice(shipping)}` : "משלוח: [להשלמה]",
+    total !== null ? `סה״כ לתשלום/שולם: ${formatPrice(total)}` : null,
+    vatIncludedNotice,
+    `מסירה משוערת: ${estimatedDelivery}`,
+    "",
+    "קישורים חשובים:",
+    ...orderLegalLinks.map(
+      (item) => `${item.label}: ${createPublicSiteUrl(item.href)}`,
+    ),
+    `שירות לקוחות: ${createPublicSiteUrl(
+      `/service?topic=order&orderNumber=${encodeURIComponent(
+        input.orderNumber,
+      )}`,
+    )}`,
+  ]
+    .filter((line): line is string => Boolean(line))
+    .join("\n");
+}
+
+function getOutboxOrderItems(payload: Prisma.JsonValue) {
+  if (!isJsonRecord(payload) || !Array.isArray(payload.items)) return [];
+
+  return payload.items
+    .map((item) => {
+      if (!isJsonRecord(item)) return null;
+
+      const name = typeof item.name === "string" ? item.name : "[להשלמה]";
+      const sku = typeof item.sku === "string" ? item.sku : "[להשלמה]";
+      const quantity =
+        typeof item.quantity === "number" && Number.isFinite(item.quantity)
+          ? item.quantity
+          : null;
+      const unitPrice =
+        typeof item.unitPrice === "number" && Number.isFinite(item.unitPrice)
+          ? item.unitPrice
+          : null;
+      const lineTotal =
+        typeof item.lineTotal === "number" && Number.isFinite(item.lineTotal)
+          ? item.lineTotal
+          : null;
+
+      return [
+        `- ${name}`,
+        `מק״ט: ${sku}`,
+        quantity !== null ? `כמות: ${quantity}` : null,
+        unitPrice !== null ? `מחיר יחידה: ${formatPrice(unitPrice)}` : null,
+        lineTotal !== null ? `סה״כ: ${formatPrice(lineTotal)}` : null,
+      ]
+        .filter(Boolean)
+        .join(" | ");
+    })
+    .filter((item): item is string => Boolean(item));
+}
+
+function createPublicSiteUrl(path: string) {
+  return new URL(path, env.SITE_URL ?? "https://elysia-jewellery.com").toString();
+}
+
+function isJsonRecord(value: Prisma.JsonValue): value is Prisma.JsonObject {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
 export function redactJobRecipient(value: string) {

@@ -2,15 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ExternalLink, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 import {
   normalizeAiRecommendedProducts,
   type AiRecommendedProductInput,
 } from "~/lib/ai-product-recommendations";
 import { cn } from "~/lib/utils";
-import { Badge } from "~/components/ui/badge";
-import { Button } from "~/components/ui/button";
 
 type AiProductRecommendationsProps = {
   products: readonly AiRecommendedProductInput[];
@@ -36,7 +34,7 @@ export function AiProductRecommendations({
 
   return (
     <section
-      aria-label={title ?? "המלצות מוצרים חכמות"}
+      aria-label={title ?? "המלצות תכשיטים חכמות"}
       className={cn("grid gap-3", className)}
     >
       <div className="flex flex-wrap items-end justify-between gap-2">
@@ -62,7 +60,7 @@ export function AiProductRecommendations({
             key={product.slug}
           >
             <Link
-              aria-label={`צפייה בפריט ${product.name}`}
+              aria-label={`צפייה בתכשיט ${product.name}`}
               className="focus-visible:outline-ring bg-muted relative aspect-square min-h-28 overflow-hidden rounded-md border border-[var(--glass-border)] focus-visible:ring-2"
               href={product.href}
             >
@@ -98,59 +96,29 @@ export function AiProductRecommendations({
                     {product.name}
                   </Link>
                   {product.priceLabel ? (
-                    <Badge className="shrink-0" variant="secondary">
+                    <span className="shrink-0 text-sm font-semibold">
                       {product.priceLabel}
-                    </Badge>
+                    </span>
                   ) : null}
                 </div>
 
-                {product.description ? (
-                  <p className="text-muted-foreground line-clamp-2 text-sm leading-6">
-                    {product.description}
-                  </p>
-                ) : null}
-
-                {product.matchReason ? (
-                  <p className="glass-inset rounded-md border px-3 py-2 text-xs leading-5">
-                    {product.matchReason}
-                  </p>
-                ) : null}
-              </div>
-
-              <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="text-muted-foreground flex min-w-0 flex-wrap items-center gap-2 text-xs">
-                  {product.category ? (
-                    <span className="bg-muted rounded-full border border-[var(--glass-border)] px-2 py-1">
-                      {product.category}
-                    </span>
-                  ) : null}
                   {product.material ? (
                     <span className="bg-muted rounded-full border border-[var(--glass-border)] px-2 py-1">
                       {product.material.replace(" 14K", "")}
                     </span>
                   ) : null}
-                  {product.availableOnline ? (
+                  {product.stone ? (
+                    <span className="bg-muted rounded-full border border-[var(--glass-border)] px-2 py-1">
+                      {product.stone}
+                    </span>
+                  ) : null}
+                  {product.availableOnline === false ? (
                     <span className="inline-flex items-center gap-1">
-                      זמין אונליין
+                      לא פנוי כרגע
                     </span>
                   ) : null}
                 </div>
-
-                <Button
-                  asChild
-                  className="h-9 shrink-0 gap-2 px-3"
-                  size="sm"
-                  variant="secondary"
-                >
-                  <Link href={product.href}>
-                    צפייה בפריט
-                    {resolvedLayout === "grid" ? (
-                      <ExternalLink aria-hidden="true" className="size-3.5" />
-                    ) : (
-                      <ArrowLeft aria-hidden="true" className="size-3.5" />
-                    )}
-                  </Link>
-                </Button>
               </div>
             </div>
           </article>

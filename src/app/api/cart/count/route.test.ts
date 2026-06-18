@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { resetRateLimitStateForTests } from "~/server/services/rate-limit";
@@ -64,6 +67,51 @@ describe("cart count route", () => {
       error: "Too many cart count requests.",
     });
   });
+
+  it("returns standardized error JSON when the cart service is unavailable", async () => {
+    cartMocks.getCartBySession.mockRejectedValueOnce(
+      new Error("database unavailable"),
+    );
+
+    const response = await GET(
+      createCartCountRequest("cart_session_unavailable_1234567890"),
+    );
+
+    expect(response.status).toBe(503);
+    await expect(response.json()).resolves.toEqual({
+      ok: false,
+      error: "Cart count is temporarily unavailable.",
+    });
+  });
+
+  it("keeps the header cart badge fresh without exaggerated badge styling", () => {
+    const cartCountLink = read("src/components/cart-count-link.tsx");
+    const cartSession = read("src/lib/cart-session.ts");
+    const offlineSync = read("src/lib/pwa-offline.ts");
+
+    expect(cartCountLink).toContain("CART_UPDATED_EVENT");
+    expect(cartCountLink).toContain("getStoredCartSessionKey()");
+    expect(cartCountLink).toContain("getOfflineCartDelta(sessionKey)");
+    expect(cartCountLink).toContain("/api/cart/count?sessionKey=");
+    expect(cartCountLink).toContain('cache: "no-store"');
+    expect(cartCountLink).toContain('window.addEventListener("focus"');
+    expect(cartCountLink).toContain(
+      'document.addEventListener("visibilitychange"',
+    );
+    expect(cartCountLink).toContain('aria-live="polite"');
+    expect(cartCountLink).toContain(
+      'data-cart-state={itemCount > 0 ? "filled" : "empty"}',
+    );
+    expect(cartCountLink).not.toContain('data-testid="cart-count-empty-state"');
+    expect(cartCountLink).toContain('itemCount > 99 ? "99+" : itemCount');
+    expect(cartCountLink).not.toContain("shadow-");
+
+    expect(cartSession).toContain("window.dispatchEvent");
+    expect(cartSession).toContain("CART_UPDATED_EVENT");
+    expect(offlineSync).toContain(
+      "window.dispatchEvent(new Event(CART_UPDATED_EVENT))",
+    );
+  });
 });
 
 function createCartCountRequest(sessionKey: string) {
@@ -77,4 +125,8 @@ function createCartCountRequest(sessionKey: string) {
       },
     },
   );
+}
+
+function read(relativePath: string) {
+  return readFileSync(path.join(process.cwd(), relativePath), "utf8");
 }

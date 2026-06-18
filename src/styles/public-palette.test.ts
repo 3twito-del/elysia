@@ -9,19 +9,22 @@ const publicSourceRoots = ["src/app", "src/components", "src/styles"].map(
 );
 const approvedBrandTokens = new Set([
   "--brand-porcelain",
+  "--brand-ivory",
+  "--brand-blush",
+  "--brand-champagne",
+  "--brand-sage",
+  "--brand-pearl",
   "--brand-ink",
-  "--brand-platinum",
-  "--brand-aqua",
-  "--brand-aqua-soft",
-  "--brand-aqua-deep",
-  "--brand-aqua-ring",
+  "--brand-espresso",
+  "--brand-gold-muted",
   "--brand-accent",
 ]);
-const approvedWarmMaterialPath =
-  "src/app/product/[slug]/_components/product-purchase-panel.tsx";
+const approvedWarmMaterialPaths = new Set([
+  "src/app/product/[slug]/_components/product-purchase-panel.tsx",
+]);
 
 describe("public palette guardrails", () => {
-  it("keeps the public brand palette limited to cool commerce tokens", () => {
+  it("keeps the public brand palette limited to soft-luxury boutique tokens", () => {
     const css = read("src/styles/globals.css");
     const brandTokens = Array.from(
       css.matchAll(/(--brand-[\w-]+)\s*:/g),
@@ -39,7 +42,7 @@ describe("public palette guardrails", () => {
         const relativePath = toPosixPath(path.relative(root, file));
         const source = readFileSync(file, "utf8");
 
-        if (relativePath === approvedWarmMaterialPath) {
+        if (approvedWarmMaterialPaths.has(relativePath)) {
           return source.includes('data-material-swatch="true"')
             ? []
             : [`${relativePath} is missing documented material swatches`];

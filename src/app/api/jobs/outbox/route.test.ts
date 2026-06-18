@@ -55,9 +55,47 @@ describe("outbox job route", () => {
         scanned: 1,
         skipped: 0,
       },
+      summary: {
+        completed: 1,
+        failed: 0,
+        retryable: 0,
+        scanned: 1,
+        skipped: 0,
+        status: "completed",
+      },
     });
     expect(jobMocks.processDueOutboxEvents).toHaveBeenCalledWith({
       limit: 25,
+    });
+  });
+
+  it("summarizes skipped and retryable failed jobs without changing processor counts", async () => {
+    jobMocks.processDueOutboxEvents.mockResolvedValueOnce({
+      failed: 1,
+      processed: 2,
+      scanned: 4,
+      skipped: 1,
+    });
+
+    const response = await POST(createOutboxJobRequest());
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({
+      ok: true,
+      result: {
+        failed: 1,
+        processed: 2,
+        scanned: 4,
+        skipped: 1,
+      },
+      summary: {
+        completed: 2,
+        failed: 1,
+        retryable: 1,
+        scanned: 4,
+        skipped: 1,
+        status: "retryable-failures",
+      },
     });
   });
 
@@ -88,6 +126,27 @@ describe("outbox job route", () => {
       error: "Too many outbox job requests.",
     });
     expect(jobMocks.processDueOutboxEvents).toHaveBeenCalledTimes(30);
+  });
+
+  it("returns a redacted 503 when outbox processing fails", async () => {
+    const errorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
+    jobMocks.processDueOutboxEvents.mockRejectedValueOnce(
+      new Error("provider token leaked"),
+    );
+
+    try {
+      const response = await POST(createOutboxJobRequest());
+
+      expect(response.status).toBe(503);
+      await expect(response.json()).resolves.toEqual({
+        ok: false,
+        error: "Outbox job processor is unavailable.",
+      });
+    } finally {
+      errorSpy.mockRestore();
+    }
   });
 });
 

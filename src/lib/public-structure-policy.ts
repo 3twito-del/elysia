@@ -60,7 +60,7 @@ export const publicStructurePolicy = {
   homeBrandHeroThenCommerceEntry: allow(
     25,
     [evidence.baymardJewelry, evidence.tiffanyRings, evidence.vanCleefRings],
-    "Home may open with one brand-led hero only when category, search, or product entry follows immediately.",
+    "Home may open with one pre-launch brand world before any category, search, or product entry appears.",
   ),
   plpTitleControlsGridFirst: allow(
     32,
@@ -93,6 +93,11 @@ export const publicStructurePolicy = {
     22,
     [evidence.chopardRings, evidence.mejuriRings, evidence.blueNileRings],
     "A hero or top-strip action may stay only when it opens a real control such as search, filters, login, or checkout.",
+  ),
+  taskFirstPublicIntro: allow(
+    29,
+    [evidence.baymardJewelry, evidence.tiffanyRings, evidence.wcag22],
+    "Public routes outside Home and About use compact task-first intros; poetic or decorative copy is demoted below the primary task.",
   ),
   crossRouteHeroAction: allow(
     24,
@@ -174,7 +179,7 @@ export const routeStructurePolicy = {
   ),
   "/checkout": route(
     "checkout",
-    publicStructurePolicy.checkoutTaskFirst,
+    publicStructurePolicy.taskFirstPublicIntro,
     "Cart and checkout form first.",
   ),
   "/service": route(
@@ -209,28 +214,43 @@ export const routeStructurePolicy = {
   ),
   "/branches": route(
     "service",
-    publicStructurePolicy.serviceAccountTaskFirst,
+    publicStructurePolicy.taskFirstPublicIntro,
     "Branch list first when enabled.",
   ),
   "/faq": route(
     "content",
-    publicStructurePolicy.legalCompactReadableContent,
+    publicStructurePolicy.taskFirstPublicIntro,
     "FAQ content and service recovery links.",
   ),
   "/terms": route(
     "legal",
-    publicStructurePolicy.legalCompactReadableContent,
+    publicStructurePolicy.taskFirstPublicIntro,
     "Legal text without commerce-style hero anchors.",
   ),
   "/privacy": route(
     "legal",
-    publicStructurePolicy.legalCompactReadableContent,
+    publicStructurePolicy.taskFirstPublicIntro,
     "Privacy text and cookie preferences without hero anchors.",
   ),
   "/accessibility": route(
     "legal",
-    publicStructurePolicy.legalCompactReadableContent,
+    publicStructurePolicy.taskFirstPublicIntro,
     "Accessibility statement and contact content without hero anchors.",
+  ),
+  "/shipping-returns": route(
+    "legal",
+    publicStructurePolicy.taskFirstPublicIntro,
+    "Shipping, cancellation, return, and exchange policy without hero anchors.",
+  ),
+  "/warranty": route(
+    "legal",
+    publicStructurePolicy.taskFirstPublicIntro,
+    "Warranty scope and service process without hero anchors.",
+  ),
+  "/jewellery-care": route(
+    "content",
+    publicStructurePolicy.taskFirstPublicIntro,
+    "Jewellery care guidance and material sensitivity warnings without hero anchors.",
   ),
 } as const;
 

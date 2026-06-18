@@ -1,5 +1,12 @@
 import { existsSync } from "node:fs";
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import {
+  mkdir,
+  mkdtemp,
+  readFile,
+  rm,
+  utimes,
+  writeFile,
+} from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -24,18 +31,30 @@ describe("public image AVIF conversion", () => {
     const cwd = await createImageFixture();
     const sourceFile = path.join(cwd, "src", "page.ts");
     const before = await readFile(sourceFile, "utf8");
+    const logs = [];
 
     const result = await convertPublicImagesToAvif({
       check: true,
       cwd,
       error: quiet,
-      logger: quiet,
+      logger: (message) => logs.push(message),
       warn: quiet,
     });
 
     expect(result.ok).toBe(false);
     expect(result.summary.staleAssets).toBe(1);
     expect(result.summary.staleReferences).toBe(1);
+    expect(result.summary.staleAssetDiffs).toEqual([
+      expect.objectContaining({
+        avif: "/hero.avif",
+        expectedSavingsBytes: expect.any(Number),
+        source: "/hero.png",
+      }),
+    ]);
+    expect(logs.join("\n")).toContain("pending-stale-savings=");
+    expect(logs.join("\n")).toContain(
+      "[images:avif] stale /hero.png -> /hero.avif expected-saving=",
+    );
     expect(existsSync(path.join(cwd, "public", "hero.avif"))).toBe(false);
     expect(await readFile(sourceFile, "utf8")).toBe(before);
   });
@@ -66,6 +85,58 @@ describe("public image AVIF conversion", () => {
     expect(checkResult.ok).toBe(true);
     expect(checkResult.summary.staleAssets).toBe(0);
     expect(checkResult.summary.staleReferences).toBe(0);
+  });
+
+  it("does not treat checkout mtimes as AVIF drift in check mode", async () => {
+    const cwd = await createImageFixture();
+
+    await convertPublicImagesToAvif({
+      cwd,
+      error: quiet,
+      logger: quiet,
+      warn: quiet,
+    });
+
+    const avifFile = path.join(cwd, "public", "hero.avif");
+    const checkoutLikeTime = new Date("2020-01-01T00:00:00.000Z");
+
+    await utimes(avifFile, checkoutLikeTime, checkoutLikeTime);
+
+    const checkResult = await convertPublicImagesToAvif({
+      check: true,
+      cwd,
+      error: quiet,
+      logger: quiet,
+      warn: quiet,
+    });
+
+    expect(checkResult.ok).toBe(true);
+    expect(checkResult.summary.current).toBe(1);
+    expect(checkResult.summary.staleAssets).toBe(0);
+  });
+
+  it("keeps AVIF drift detection wired into the production build gate", async () => {
+    const [packageJsonSource, scriptSource] = await Promise.all([
+      readFile(path.join(process.cwd(), "package.json"), "utf8"),
+      readFile(
+        path.join(process.cwd(), "scripts/convert-public-images-to-avif.mjs"),
+        "utf8",
+      ),
+    ]);
+    const packageJson = JSON.parse(packageJsonSource);
+
+    expect(packageJson.scripts.prebuild).toContain(
+      "node scripts/convert-public-images-to-avif.mjs --check",
+    );
+    expect(packageJson.scripts["images:avif"]).toBe(
+      "node scripts/convert-public-images-to-avif.mjs",
+    );
+    expect(scriptSource).toContain("const sourceExtensions = new Set");
+    expect(scriptSource).toContain('const referenceRoots = ["src", "docs"]');
+    expect(scriptSource).toContain("stale-assets=");
+    expect(scriptSource).toContain("stale-references=");
+    expect(scriptSource).toContain("pending-stale-savings=");
+    expect(scriptSource).toContain("[images:avif] check failed");
   });
 });
 

@@ -1,4 +1,5 @@
 import { resolveAiCatalogSearchIntent } from "~/lib/ai-catalog-intent";
+import { normalizePositivePriceBound } from "~/lib/price-filter";
 import {
   DEFAULT_SEARCH_PER_PAGE,
   type ProductSearchInput,
@@ -11,6 +12,9 @@ export type SearchParams = {
   material?: string;
   stone?: string;
   collection?: string;
+  style?: string;
+  gift?: string;
+  color?: string;
   maxPrice?: string;
   availableOnly?: string;
   mode?: string;
@@ -52,6 +56,9 @@ export function normalizeSearchInput(
     params.collection,
     options.facets.collections,
   );
+  const style = normalizeCatalogValue(params.style, options.facets.styles);
+  const gift = normalizeCatalogValue(params.gift, options.facets.giftTags);
+  const color = normalizeCatalogValue(params.color, options.facets.colors);
 
   return {
     query,
@@ -59,6 +66,9 @@ export function normalizeSearchInput(
     material,
     stone,
     collection,
+    style,
+    gift,
+    color,
     maxPrice,
     availableOnly: params.availableOnly === "1",
     mode: normalizeSearchMode(params.mode),
@@ -98,6 +108,9 @@ export function getActiveSearchRefinementCount(input: ProductSearchInput) {
     input.material,
     input.stone,
     input.collection,
+    input.style,
+    input.gift,
+    input.color,
     input.maxPrice,
     input.availableOnly,
     input.sort && input.sort !== "relevance" ? input.sort : undefined,
@@ -129,6 +142,9 @@ export function createSearchHref(input: SearchHrefInput) {
   if (input.material) params.set("material", input.material);
   if (input.stone) params.set("stone", input.stone);
   if (input.collection) params.set("collection", input.collection);
+  if (input.style) params.set("style", input.style);
+  if (input.gift) params.set("gift", input.gift);
+  if (input.color) params.set("color", input.color);
   if (input.maxPrice) params.set("maxPrice", String(input.maxPrice));
   if (input.availableOnly) params.set("availableOnly", "1");
   if (input.sort && input.sort !== "relevance") params.set("sort", input.sort);
@@ -203,9 +219,7 @@ function normalizeCatalogValue(value: string | undefined, allowed: string[]) {
 }
 
 function normalizeMaxPrice(value?: string) {
-  const parsed = Number(value);
-
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
+  return normalizePositivePriceBound(value);
 }
 
 function normalizePage(value?: string) {
@@ -225,7 +239,7 @@ function normalizeSort(value?: string): ProductSearchInput["sort"] {
     return value;
   }
 
-  return undefined;
+  return "relevance";
 }
 
 function normalizeSearchMode(value?: string): ProductSearchInput["mode"] {

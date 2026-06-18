@@ -40,17 +40,12 @@ export function validateCheckoutFields({
   quantity = 1,
   requireCart = false,
   requireQuantity = false,
-  sessionReady = true,
   street = "",
 }: CheckoutValidationInput): CheckoutFieldErrors {
   const errors: CheckoutFieldErrors = {};
 
-  if (!sessionReady) {
-    errors.session = "יצירת סל מקומי עדיין בטעינה.";
-  }
-
   if (requireCart && cartItemCount < 1) {
-    errors.quantity = "יש להוסיף לפחות פריט אחד לסל.";
+    errors.quantity = "יש לבחור לפחות תכשיט אחד.";
   }
 
   if (requireQuantity && (!Number.isInteger(quantity) || quantity < 1)) {
@@ -71,7 +66,7 @@ export function validateCheckoutFields({
 
   if (fulfillmentMethod === "DELIVERY") {
     if (city.trim().length < 2) {
-      errors.city = "יש להזין עיר למשלוח.";
+      errors.city = "יש להזין עיר למסירה.";
     }
 
     if (street.trim().length < 2) {

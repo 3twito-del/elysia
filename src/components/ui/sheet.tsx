@@ -68,9 +68,46 @@ function Sheet({
 }
 
 function SheetTrigger({
+  asChild,
+  children,
+  disabled,
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Trigger>) {
-  return <SheetPrimitive.Trigger data-slot="sheet-trigger" {...props} />;
+  const hydrated = useHydrated();
+
+  if (!hydrated) {
+    const fallbackProps = {
+      ...props,
+      "data-hydrated": "false",
+      "data-slot": "sheet-trigger",
+      disabled: true,
+    };
+
+    if (asChild && React.isValidElement(children)) {
+      return React.cloneElement(
+        children as React.ReactElement<Record<string, unknown>>,
+        fallbackProps,
+      );
+    }
+
+    return (
+      <button type="button" {...fallbackProps}>
+        {children}
+      </button>
+    );
+  }
+
+  return (
+    <SheetPrimitive.Trigger
+      asChild={asChild}
+      data-hydrated={hydrated ? "true" : "false"}
+      data-slot="sheet-trigger"
+      disabled={disabled}
+      {...props}
+    >
+      {children}
+    </SheetPrimitive.Trigger>
+  );
 }
 
 function SheetClose({
@@ -118,7 +155,7 @@ function SheetContent({
         data-slot="sheet-content"
         data-side={side}
         className={cn(
-          "sheet-content popup-surface minimal-scroll text-popover-foreground fixed z-[90] flex flex-col gap-4 text-sm motion-reduce:animate-none motion-reduce:transition-none",
+          "sheet-content popup-surface minimal-scroll text-popover-foreground fixed z-[90] flex flex-col gap-4 text-sm outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] motion-reduce:animate-none motion-reduce:transition-none",
           side === "bottom" && "inset-x-0 bottom-0 h-auto border-t",
           side === "left" &&
             "inset-y-0 left-0 h-full w-[min(88dvw,22rem)] border-r sm:max-w-sm",
@@ -133,10 +170,10 @@ function SheetContent({
         {showCloseButton && (
           <SheetPrimitive.Close data-slot="sheet-close" asChild>
             <Button
-              className="absolute end-3 top-3"
+              className="absolute end-2 top-2"
               data-icon-tooltip="סגירה"
               data-icon-tooltip-placement="bottom"
-              size="icon-sm"
+              size="icon"
               variant="ghost"
             >
               <XIcon aria-hidden="true" />
@@ -208,3 +245,23 @@ export {
   SheetTitle,
   SheetDescription,
 };
+
+function useHydrated() {
+  return React.useSyncExternalStore(
+    subscribeToNoopStore,
+    getClientSnapshot,
+    getServerSnapshot,
+  );
+}
+
+function subscribeToNoopStore() {
+  return () => undefined;
+}
+
+function getClientSnapshot() {
+  return true;
+}
+
+function getServerSnapshot() {
+  return false;
+}

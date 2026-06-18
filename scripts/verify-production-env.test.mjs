@@ -34,13 +34,15 @@ describe("production environment validation", () => {
       verifyProductionEnv({
         VERCEL: "1",
         VERCEL_ENV: "production",
+        AUTH_SECRET: "",
+        DATABASE_URL: undefined,
         UPSTASH_REDIS_REST_URL: "",
         UPSTASH_REDIS_REST_TOKEN: undefined,
       }),
     ).toEqual({
       ok: false,
       error:
-        "Missing required Vercel environment variables: UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN",
+        "Missing required Vercel environment variables: AUTH_SECRET, DATABASE_URL, UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN",
     });
   });
 
@@ -49,6 +51,8 @@ describe("production environment validation", () => {
       verifyProductionEnv({
         VERCEL: "1",
         VERCEL_ENV: "production",
+        AUTH_SECRET: "auth-secret",
+        DATABASE_URL: "postgresql://postgres:password@localhost:5432/elysia",
         UPSTASH_REDIS_REST_URL: "https://example.upstash.io",
         UPSTASH_REDIS_REST_TOKEN: "token",
       }),
@@ -78,7 +82,7 @@ describe("production environment validation", () => {
     ).toEqual({
       ok: false,
       error:
-        "Missing production provider environment variables: UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN, STORE_FROM_EMAIL, OPERATIONS_EMAIL, CARD_COM_TERMINAL, CARD_COM_API_NAME, CARD_COM_API_PASSWORD, CARD_COM_WEBHOOK_SECRET, SMS_PROVIDER_API_KEY, TYPESENSE_HOST, TYPESENSE_API_KEY, BREVO_API_KEY or RESEND_API_KEY, JOB_RUNNER_SECRET or CRON_SECRET, AI_GATEWAY_API_KEY or VERCEL_OIDC_TOKEN or GOOGLE_GENERATIVE_AI_API_KEY",
+        "Missing production provider environment variables: AUTH_SECRET, DATABASE_URL, UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN, STORE_FROM_EMAIL, OPERATIONS_EMAIL, CARD_COM_TERMINAL, CARD_COM_API_NAME, CARD_COM_API_PASSWORD, CARD_COM_WEBHOOK_SECRET, SMS_PROVIDER_API_KEY, TYPESENSE_HOST, TYPESENSE_API_KEY, BREVO_API_KEY or RESEND_API_KEY, JOB_RUNNER_SECRET or CRON_SECRET, AI_GATEWAY_API_KEY or VERCEL_OIDC_TOKEN or GOOGLE_GENERATIVE_AI_API_KEY",
     });
   });
 
@@ -87,6 +91,8 @@ describe("production environment validation", () => {
       verifyProductionReadiness({
         VERCEL: "1",
         VERCEL_ENV: "production",
+        AUTH_SECRET: "auth-secret",
+        DATABASE_URL: "postgresql://postgres:password@localhost:5432/elysia",
         UPSTASH_REDIS_REST_URL: "https://example.upstash.io",
         UPSTASH_REDIS_REST_TOKEN: "token",
         STORE_FROM_EMAIL: "orders@example.com",
@@ -104,6 +110,8 @@ describe("production environment validation", () => {
       verifyProductionReadiness({
         VERCEL: "1",
         VERCEL_ENV: "production",
+        AUTH_SECRET: "auth-secret",
+        DATABASE_URL: "postgresql://postgres:password@localhost:5432/elysia",
         UPSTASH_REDIS_REST_URL: "https://example.upstash.io",
         UPSTASH_REDIS_REST_TOKEN: "token",
         STORE_FROM_EMAIL: "orders@example.com",
@@ -128,6 +136,8 @@ describe("production environment validation", () => {
       verifyProductionReadiness({
         VERCEL: "1",
         VERCEL_ENV: "production",
+        AUTH_SECRET: "auth-secret",
+        DATABASE_URL: "postgresql://postgres:password@localhost:5432/elysia",
         UPSTASH_REDIS_REST_URL: "https://example.upstash.io",
         UPSTASH_REDIS_REST_TOKEN: "token",
         STORE_FROM_EMAIL: "orders@example.com",

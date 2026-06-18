@@ -14,6 +14,9 @@ pnpm db:seed
 pnpm dev
 ```
 
+`pnpm dev` uses the stable webpack dev server. Use `pnpm dev:turbo` only when
+explicitly checking Turbopack behavior.
+
 לפני `pnpm db:seed` חובה למלא ב־`.env`:
 
 ```env
@@ -76,9 +79,15 @@ pnpm build
 
 ## Verification
 
+Fast local and PR verification:
+
 ```bash
-pnpm format:write
-pnpm check
+pnpm verify:fast
 pnpm build
-pnpm audit --prod
+```
+
+Explicit full release verification:
+
+```bash
+pnpm verify:full
 ```

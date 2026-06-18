@@ -8,8 +8,10 @@ import {
   type SearchMode,
   type SemanticSearchIntent,
 } from "~/lib/semantic-search-intent";
+import { formatInlinePrice } from "~/lib/format";
 import { resolveSemanticSearchIntent } from "~/server/ai/search-intent";
 import {
+  filterCatalogProducts,
   getCatalogCategories,
   getCatalogFacets,
   listCatalogProducts,
@@ -29,6 +31,7 @@ import {
   hasTypesenseConfig,
   normalizeSearchPagination,
   paginateSearchHits,
+  shouldFallbackToLocalSearchPage,
 } from "./search-utils";
 
 export {
@@ -36,6 +39,7 @@ export {
   getProductsCollectionName,
   normalizeSearchPagination,
   paginateSearchHits,
+  shouldFallbackToLocalSearchPage,
   shouldUseLocalSearchFallback,
 } from "./search-utils";
 
@@ -48,6 +52,9 @@ export type ProductSearchInput = {
   branch?: string;
   material?: string;
   stone?: string;
+  style?: string;
+  gift?: string;
+  color?: string;
   collection?: string;
   maxPrice?: number;
   availableOnly?: boolean;
@@ -135,6 +142,19 @@ class TypesenseSearchProvider implements SearchProvider {
     input: ProductSearchInput,
   ): Promise<ProductSearchResult> {
     const client = getTypesenseClient();
+
+    if (hasDerivedFacetFilter(input)) {
+      if (
+        (input.mode ?? "semantic") === "semantic" &&
+        (input.query?.trim() || input.semanticIntent)
+      ) {
+        return searchLocalSemanticProducts(
+          await createSemanticSearchContext(input),
+        );
+      }
+
+      return searchLocalProducts({ ...input, mode: "classic" });
+    }
 
     if ((input.mode ?? "semantic") === "semantic") {
       const semanticResult = await searchSemanticProducts(input, client);
@@ -322,20 +342,32 @@ async function searchTypesenseKeywordProducts(
   const productsBySlug = new Map(
     products.map((product) => [product.slug, product] as const),
   );
+  const hits = slugs
+    .map((slug) => productsBySlug.get(slug))
+    .filter((product): product is CatalogProduct => Boolean(product));
+  const found =
+    typeof response.found === "number" ? response.found : slugs.length;
+
+  if (
+    shouldFallbackToLocalSearchPage({
+      found,
+      indexedHits: slugs.length,
+      page: pagination.page,
+      perPage: pagination.perPage,
+      resolvedHits: hits.length,
+    })
+  ) {
+    return searchLocalProducts({ ...input, mode: "classic" });
+  }
 
   return {
-    hits: slugs
-      .map((slug) => productsBySlug.get(slug))
-      .filter((product): product is CatalogProduct => Boolean(product)),
+    hits,
     engine: "typesense",
     facets: mapTypesenseFacets(response.facet_counts ?? []),
     hitMetaBySlug: {},
     activeSemanticSignals: [],
     mode: "classic",
-    ...createSearchResultMeta(
-      typeof response.found === "number" ? response.found : slugs.length,
-      pagination,
-    ),
+    ...createSearchResultMeta(found, pagination),
   };
 }
 
@@ -389,7 +421,8 @@ async function searchTypesenseSemanticProducts(
   const productsBySlug = new Map(
     products.map((product) => [product.slug, product] as const),
   );
-  const hits = (response.hits ?? [])
+  const responseHits = response.hits ?? [];
+  const indexedHits = responseHits
     .map((hit) => {
       const product = productsBySlug.get(hit.document.slug);
       if (!product) return undefined;
@@ -400,13 +433,28 @@ async function searchTypesenseSemanticProducts(
       (
         item,
       ): item is {
-        hit: NonNullable<typeof response.hits>[number];
+        hit: (typeof responseHits)[number];
         product: CatalogProduct;
       } => Boolean(item),
-    )
-    .filter(({ product }) =>
-      productMatchesSemanticExclusions(product, intent.excludedTerms),
     );
+  const found =
+    typeof response.found === "number" ? response.found : responseHits.length;
+
+  if (
+    shouldFallbackToLocalSearchPage({
+      found,
+      indexedHits: responseHits.length,
+      page: pagination.page,
+      perPage: pagination.perPage,
+      resolvedHits: indexedHits.length,
+    })
+  ) {
+    return searchLocalSemanticProducts(context);
+  }
+
+  const hits = indexedHits.filter(({ product }) =>
+    productMatchesSemanticExclusions(product, intent.excludedTerms),
+  );
   const hitMetaBySlug = Object.fromEntries(
     hits.map(({ hit, product }) => {
       const vectorDistance = getTypesenseVectorDistance(hit);
@@ -433,10 +481,7 @@ async function searchTypesenseSemanticProducts(
     activeSemanticSignals: getActiveSemanticSignals(intent),
     interpretedQuery: intent.semanticQuery,
     mode: "semantic",
-    ...createSearchResultMeta(
-      typeof response.found === "number" ? response.found : hits.length,
-      pagination,
-    ),
+    ...createSearchResultMeta(found, pagination),
   };
 }
 
@@ -600,6 +645,9 @@ function isDefaultCatalogBrowse(input: ProductSearchInput) {
     !input.branch &&
     !input.material &&
     !input.stone &&
+    !input.style &&
+    !input.gift &&
+    !input.color &&
     !input.collection &&
     !input.maxPrice &&
     !input.availableOnly
@@ -802,7 +850,43 @@ async function buildLocalFacets(input: ProductSearchInput) {
           .length,
       })),
     },
+    {
+      field: "style",
+      values: facets.styles.map((style) => ({
+        value: style,
+        count: products.filter((product) => product.collections.includes(style))
+          .length,
+      })),
+    },
+    {
+      field: "gift",
+      values: facets.giftTags.map((gift) => ({
+        value: gift,
+        count: products.filter(
+          (product) => filterCatalogProducts([product], { gift }).length > 0,
+        ).length,
+      })),
+    },
+    {
+      field: "color",
+      values: facets.colors.map((color) => ({
+        value: color,
+        count: products.filter((product) =>
+          [
+            ...product.metalColors,
+            ...product.variants.flatMap((variant) => [
+              variant.metalColor,
+              variant.stoneColor,
+            ]),
+          ].includes(color),
+        ).length,
+      })),
+    },
   ] satisfies SearchFacet[];
+}
+
+function hasDerivedFacetFilter(input: ProductSearchInput) {
+  return [input.style, input.gift, input.color].some((value) => Boolean(value));
 }
 
 function getKeywordScore(product: CatalogProduct, query?: string) {
@@ -865,11 +949,11 @@ function getTypesenseVectorDistance(hit: unknown) {
 function getActiveSemanticSignals(intent: SemanticSearchIntent) {
   return [
     intent.semanticQuery ? `פירוש: ${intent.semanticQuery}` : null,
-    intent.hardFilters.category ? "סוג תכשיט מזוהה" : null,
+    intent.hardFilters.category ? "קטגוריה מזוהה" : null,
     intent.hardFilters.material ? `חומר: ${intent.hardFilters.material}` : null,
     intent.hardFilters.stone ? `אבן: ${intent.hardFilters.stone}` : null,
     intent.hardFilters.maxPrice
-      ? `תקציב עד ${intent.hardFilters.maxPrice.toLocaleString("he-IL")} ₪`
+      ? `מחיר עד ${formatInlinePrice(intent.hardFilters.maxPrice)}`
       : null,
     intent.recipient ? `למי: ${intent.recipient}` : null,
     intent.occasion ? `אירוע: ${intent.occasion}` : null,

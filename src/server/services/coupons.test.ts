@@ -1,7 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 
 import {
+  evaluateCouponCode,
   getActiveCouponValue,
+  getPublicCouponStatusMessage,
   isCouponUsable,
   normalizeCouponCode,
 } from "./coupons";
@@ -58,6 +60,59 @@ describe("coupon helpers", () => {
       value: { amountOff: 50, percentOff: 10 },
     });
     expect(findUnique).toHaveBeenCalledWith({ where: { code: "ELY10" } });
+  });
+
+  it("evaluates public coupon status messages by failure reason", async () => {
+    await expect(
+      evaluateCouponCode(
+        "missing",
+        makeCouponClient(vi.fn().mockResolvedValue(null)),
+      ),
+    ).resolves.toMatchObject({
+      code: "MISSING",
+      message: getPublicCouponStatusMessage("unknown"),
+      status: "unknown",
+    });
+
+    const findUnique = vi.fn().mockResolvedValue({
+      amountOff: null,
+      code: "OLD",
+      endsAt: new Date("2026-01-01T00:00:00.000Z"),
+      id: "coupon_1",
+      isActive: true,
+      maxUses: null,
+      percentOff: 10,
+      startsAt: new Date("2025-01-01T00:00:00.000Z"),
+      usedCount: 0,
+    });
+
+    await expect(
+      evaluateCouponCode("old", makeCouponClient(findUnique)),
+    ).resolves.toMatchObject({
+      code: "OLD",
+      message: getPublicCouponStatusMessage("expired"),
+      status: "expired",
+    });
+
+    findUnique.mockResolvedValueOnce({
+      amountOff: null,
+      code: "FULL",
+      endsAt: null,
+      id: "coupon_2",
+      isActive: true,
+      maxUses: 10,
+      percentOff: 10,
+      startsAt: new Date("2026-01-01T00:00:00.000Z"),
+      usedCount: 10,
+    });
+
+    await expect(
+      evaluateCouponCode("full", makeCouponClient(findUnique)),
+    ).resolves.toMatchObject({
+      code: "FULL",
+      message: getPublicCouponStatusMessage("ineligible"),
+      status: "ineligible",
+    });
   });
 
   it("returns null for inactive, expired, or exhausted coupon records", async () => {

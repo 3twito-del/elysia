@@ -6,6 +6,29 @@ export function getSellableQuantity(input: {
   return Math.max(0, input.quantity - input.reserved - input.safetyStock);
 }
 
+export function isInventoryLowStock(input: {
+  quantity: number;
+  reserved: number;
+  safetyStock: number;
+}) {
+  return getSellableQuantity(input) <= input.safetyStock;
+}
+
+export const PUBLIC_LOW_STOCK_MAX_SELLABLE_QUANTITY = 2;
+
+export function isPublicSellableQuantityLowStock(availableQuantity: number) {
+  return (
+    availableQuantity > 0 &&
+    availableQuantity <= PUBLIC_LOW_STOCK_MAX_SELLABLE_QUANTITY
+  );
+}
+
+export function getInventoryLowStockThresholdCopy(input: {
+  safetyStock: number;
+}) {
+  return `סף בדיקה: זמין קטן או שווה למלאי הביטחון (${input.safetyStock}).`;
+}
+
 export function canReserveStock(input: {
   quantity: number;
   reserved: number;
@@ -13,4 +36,40 @@ export function canReserveStock(input: {
   requested: number;
 }) {
   return getSellableQuantity(input) >= input.requested;
+}
+
+export function simulateInventoryReservations(input: {
+  quantity: number;
+  reserved: number;
+  safetyStock: number;
+  requests: number[];
+}) {
+  let reserved = input.reserved;
+
+  return input.requests.map((requested, index) => {
+    const accepted = canReserveStock({
+      quantity: input.quantity,
+      reserved,
+      safetyStock: input.safetyStock,
+      requested,
+    });
+    const beforeReserved = reserved;
+
+    if (accepted) {
+      reserved += requested;
+    }
+
+    return {
+      accepted,
+      beforeReserved,
+      index,
+      requested,
+      reservedAfter: reserved,
+      sellableAfter: getSellableQuantity({
+        quantity: input.quantity,
+        reserved,
+        safetyStock: input.safetyStock,
+      }),
+    };
+  });
 }

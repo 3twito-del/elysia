@@ -1,6 +1,9 @@
 import { TRPCError } from "@trpc/server";
 
-import { paymentProvider } from "~/server/adapters/payment";
+import {
+  paymentProvider,
+  type CheckoutSession,
+} from "~/server/adapters/payment";
 import { db } from "~/server/db";
 import { BUSINESS_EVENTS, enqueueOutboxEvent } from "~/server/services/outbox";
 
@@ -11,6 +14,70 @@ export type CreatePaymentCheckoutInput = {
   customerEmail: string;
   returnUrl: string;
 };
+
+export type PaymentCheckoutFailureKind =
+  | "provider_unavailable"
+  | "payment_rejected"
+  | "callback_mismatch"
+  | "webhook_delay"
+  | "payment_already_recorded";
+
+const paymentCheckoutFailureMessages = {
+  provider_unavailable:
+    "Payment cannot be opened right now. Please keep the order page open and contact service if this continues.",
+  payment_rejected:
+    "The payment was not approved. No payment was recorded, so please try again or use service support.",
+  callback_mismatch:
+    "The payment link could not be verified for this order. Please return to checkout and create a fresh payment link.",
+  webhook_delay:
+    "The order is still waiting for payment confirmation. Please refresh in a moment before trying again.",
+  payment_already_recorded:
+    "Payment is already recorded for this order. Please refresh the order page before creating another payment link.",
+} as const satisfies Record<PaymentCheckoutFailureKind, string>;
+
+export function getPaymentCheckoutFailureMessage(
+  kind: PaymentCheckoutFailureKind,
+) {
+  return paymentCheckoutFailureMessages[kind];
+}
+
+export function getExistingPaymentCheckoutSessionFromPayments(
+  payments: Array<{
+    idempotencyKey: string | null;
+    provider: string;
+    providerPaymentId: string | null;
+    providerStatus: string | null;
+    rawPayload: unknown;
+    status: string;
+  }>,
+): CheckoutSession | null {
+  for (const payment of payments) {
+    if (
+      payment.provider !== "cardcom" ||
+      payment.status !== "PENDING" ||
+      payment.providerStatus !== "checkout_created" ||
+      !payment.providerPaymentId ||
+      !payment.idempotencyKey
+    ) {
+      continue;
+    }
+
+    const rawPayload = payment.rawPayload;
+
+    if (!isRecord(rawPayload) || typeof rawPayload.redirectUrl !== "string") {
+      continue;
+    }
+
+    return {
+      provider: "cardcom",
+      providerPaymentId: payment.providerPaymentId,
+      redirectUrl: rawPayload.redirectUrl,
+      idempotencyKey: payment.idempotencyKey,
+    };
+  }
+
+  return null;
+}
 
 export async function createPaymentCheckoutSession(input: {
   checkout: CreatePaymentCheckoutInput;
@@ -27,21 +94,21 @@ export async function createPaymentCheckoutSession(input: {
   ) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "Order not found.",
+      message: getPaymentCheckoutFailureMessage("callback_mismatch"),
     });
   }
 
   if (order.status !== "PENDING_PAYMENT") {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "Order is not waiting for payment.",
+      message: getPaymentCheckoutFailureMessage("webhook_delay"),
     });
   }
 
   if (order.payments.some((payment) => payment.status === "CAPTURED")) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "Order is already paid.",
+      message: getPaymentCheckoutFailureMessage("payment_already_recorded"),
     });
   }
 
@@ -50,7 +117,7 @@ export async function createPaymentCheckoutSession(input: {
   if (!amountsMatch(orderTotal, input.checkout.amount)) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "Payment amount does not match the order total.",
+      message: getPaymentCheckoutFailureMessage("callback_mismatch"),
     });
   }
 
@@ -58,12 +125,29 @@ export async function createPaymentCheckoutSession(input: {
     input.checkout.returnUrl,
     input.headers,
   );
-  const session = await paymentProvider.createCheckout({
-    ...input.checkout,
-    amount: orderTotal,
-    currency: "ILS",
-    returnUrl,
-  });
+  const existingSession = getExistingPaymentCheckoutSessionFromPayments(
+    order.payments,
+  );
+
+  if (existingSession) {
+    return existingSession;
+  }
+
+  let session: CheckoutSession;
+
+  try {
+    session = await paymentProvider.createCheckout({
+      ...input.checkout,
+      amount: orderTotal,
+      currency: "ILS",
+      returnUrl,
+    });
+  } catch {
+    throw new TRPCError({
+      code: "SERVICE_UNAVAILABLE",
+      message: getPaymentCheckoutFailureMessage("provider_unavailable"),
+    });
+  }
 
   await db.payment.upsert({
     where: { idempotencyKey: session.idempotencyKey },
@@ -120,6 +204,10 @@ export async function createPaymentCheckoutSession(input: {
   return session;
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 function amountsMatch(expected: number, actual: number) {
   return Math.round(expected * 100) === Math.round(actual * 100);
 }
@@ -131,7 +219,7 @@ function assertTrustedReturnUrl(returnUrl: string, headers: Headers) {
   if (!requestOrigin || parsedReturnUrl.origin !== requestOrigin) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "Payment return URL is not allowed.",
+      message: getPaymentCheckoutFailureMessage("callback_mismatch"),
     });
   }
 

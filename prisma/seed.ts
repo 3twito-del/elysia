@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
 import { hashPassword } from "../src/server/auth/password";
+import { siteContact, siteWhatsapp } from "../src/config/site-contact";
 import {
   getSeedProducts,
   seedCategories,
@@ -71,14 +72,14 @@ function getSeedAvailabilityMode(slug: string): SeedAvailabilityMode {
 
 function getSeedCommerceHighlights(slug: string) {
   if (slug === "muse-pearl-earrings") {
-    return ["מחיר גלוי לפני התאמה", "ייצור לפי מידה וגוון"];
+    return ["פרטי ההתאמה יאושרו מראש", "הכנה אישית במידה ובגוון"];
   }
 
   if (slug === "venus-line-ring") {
-    return ["ייעוץ התאמה לפני שמירה", "בחירת אבן מאומתת"];
+    return ["שיחת התאמה לפני הבחירה", "אבן שנבחנה בקפידה"];
   }
 
-  return ["מחיר גלוי לפני שמירה", "בדיקת איכות לפני מסירה"];
+  return ["פרטים מאומתים לפני הזמנה", "נבדק בקפידה לפני מסירה"];
 }
 
 async function main() {
@@ -90,6 +91,7 @@ async function main() {
     prisma.outboxEvent.deleteMany(),
     prisma.integrationJob.deleteMany(),
     prisma.webhookEvent.deleteMany(),
+    prisma.shopifyOrderMirror.deleteMany(),
     prisma.productClickEvent.deleteMany(),
     prisma.productViewEvent.deleteMany(),
     prisma.searchEvent.deleteMany(),
@@ -161,9 +163,9 @@ async function main() {
   await prisma.serviceSettings.create({
     data: {
       id: "default",
-      phoneE164: "+972547277455",
-      displayPhone: "054-727-7455",
-      serviceEmail: "3twito@gmail.com",
+      phoneE164: siteContact.phoneE164,
+      displayPhone: siteContact.phoneDisplay,
+      serviceEmail: siteContact.email,
       physicalBranchesEnabled: false,
     },
   });
@@ -216,7 +218,7 @@ async function main() {
         id: "topic_partnership",
         slug: "partnership",
         label: "שיתוף פעולה",
-        description: "פנייה עסקית, תוכן או שיתוף פעולה.",
+        description: "פנייה ל-Elysia, תוכן או שיתוף פעולה.",
         sortOrder: 70,
       },
     ],
@@ -226,17 +228,17 @@ async function main() {
     prisma.branch.create({
       data: {
         slug: "online-service",
-        name: "שירות אונליין",
+        name: "שירות מרחוק",
         address: "Online",
         city: "Online",
-        phone: "054-727-7455",
-        whatsapp: "972547277455",
+        phone: siteContact.phoneDisplay,
+        whatsapp: siteWhatsapp,
         openingHours: {
           sundayThursday: "10:00-18:00",
           friday: "09:30-13:00",
           saturday: "סגור",
         },
-        services: ["שירות אונליין", "מענה טלפוני", "תיאום תיקונים"],
+        services: ["שירות מרחוק", "מענה טלפוני", "תיאום תיקונים"],
         kind: "ONLINE",
         isApproved: true,
         isPublic: false,
@@ -264,7 +266,7 @@ async function main() {
           friday: "09:30-14:00",
           saturday: "סגור",
         },
-        services: ["איסוף מהחנות", "מדידה", "ייעוץ מתנות", "שינוי מידה"],
+        services: ["איסוף מ-Elysia", "מדידה", "ייעוץ מתנות", "שינוי מידה"],
       },
     }),
     prisma.branch.create({
@@ -287,7 +289,7 @@ async function main() {
           friday: "09:30-13:30",
           saturday: "סגור",
         },
-        services: ["איסוף מהחנות", "פגישת כלה", "ייעוץ יהלומים"],
+        services: ["איסוף מ-Elysia", "ייעוץ כלה", "ייעוץ יהלומים"],
       },
     }),
   ]);
@@ -326,8 +328,8 @@ async function main() {
         basePrice: productData.basePrice,
         availabilityMode: getSeedAvailabilityMode(productData.slug),
         commerceHighlights: getSeedCommerceHighlights(productData.slug),
-        deliveryPromise: "משלוח עד הבית לאחר אימות פרטי ההזמנה.",
-        returnPolicy: "החלפה או החזרה מתואמת לפי מדיניות האתר.",
+        deliveryPromise: "מסירה עד הבית לאחר אישור הפרטים.",
+        returnPolicy: "החלפה או החזרה בתיאום אישי לפי מדיניות Elysia.",
         careInstructions: "מומלץ להימנע ממגע עם בושם, כלור וחומרי ניקוי.",
         warranty: "אחריות לשנה על פגמי ייצור ושירות ניקוי ראשוני ללא עלות.",
         tags: productData.tags,

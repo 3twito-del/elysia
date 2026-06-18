@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -15,7 +18,7 @@ describe("checkout validation", () => {
       phone: "0501234567",
     });
 
-    expect(errors.city).toBe("יש להזין עיר למשלוח.");
+    expect(errors.city).toBe("יש להזין עיר למסירה.");
     expect(errors.street).toBe("יש להזין רחוב ומספר.");
     expect(hasCheckoutErrors(errors)).toBe(true);
   });
@@ -49,11 +52,37 @@ describe("checkout validation", () => {
     });
 
     expect(getCheckoutIssueList(errors)).toEqual([
-      "יצירת סל מקומי עדיין בטעינה.",
-      "יש להוסיף לפחות פריט אחד לסל.",
+      "יש לבחור לפחות תכשיט אחד.",
       "יש להזין שם מלא.",
       "יש להזין טלפון תקין.",
       "יש להזין אימייל תקין.",
     ]);
   });
+
+  it("wires checkout validation summaries to first invalid field focus", () => {
+    const checkoutForm = read(
+      "src/app/checkout/_components/cart-checkout-form.tsx",
+    );
+
+    expect(checkoutForm).toContain("checkoutFieldFocusOrder");
+    expect(checkoutForm).toContain("function focusFirstCheckoutError()");
+    expect(checkoutForm).toContain(
+      "checkoutFormRef.current?.elements.namedItem",
+    );
+    expect(checkoutForm).toContain("field.focus()");
+    expect(checkoutForm).toContain(
+      "window.requestAnimationFrame(focusFirstCheckoutError)",
+    );
+    expect(checkoutForm).toContain('id="checkout-issue-list"');
+    expect(checkoutForm).toContain('data-testid="checkout-validation-summary"');
+    expect(checkoutForm).toContain(
+      'aria-invalid={Boolean(getVisibleFieldError("name"))}',
+    );
+    expect(checkoutForm).toContain('aria-describedby="name-error"');
+    expect(checkoutForm).toContain('role="status"');
+  });
 });
+
+function read(relativePath: string) {
+  return readFileSync(path.join(process.cwd(), relativePath), "utf8");
+}

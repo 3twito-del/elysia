@@ -22,7 +22,14 @@ const publicRouteChecks = [
   {
     path: "/",
     statuses: [200],
-    includes: ["Elysia"],
+    includes: [
+      "Elysia",
+      'data-testid="home-commerce-shortcuts"',
+      'href="/search"',
+      'href="/gifts"',
+      'href="/size-guide"',
+      'href="/service"',
+    ],
     matches: [
       /href="\/category\/rings"/,
       /href="\/checkout"/,
@@ -31,8 +38,8 @@ const publicRouteChecks = [
   },
   {
     path: "/branches",
-    statuses: [307],
-    includesAnywhere: ["/faq"],
+    statuses: [200, 307],
+    includesAnywhere: ["/service"],
   },
   {
     path: "/gifts",
@@ -65,6 +72,11 @@ const categoryNavigationChecks = categoryPaths.map((path) => ({
 }));
 
 export const smokeChecks = [
+  {
+    path: "/api/health",
+    statuses: [200],
+    includes: ['"ok":true', '"timestamp"'],
+  },
   ...publicRouteChecks,
   {
     path: "/search",
@@ -77,7 +89,6 @@ export const smokeChecks = [
     includes: [
       'data-testid="search-form"',
       'data-testid="search-results-grid"',
-      "/product/venus-line-ring",
     ],
     matches: [/href="\/product\//],
   },
@@ -88,10 +99,10 @@ export const smokeChecks = [
   },
   ...categoryNavigationChecks,
   {
-    path: "/product/venus-line-ring",
+    path: "/product/elysia-supplier-silver-halo-ring",
     statuses: [200],
     includes: [
-      "venus-line-ring",
+      "elysia-supplier-silver-halo-ring",
       'data-testid="product-gallery"',
       'data-testid="product-variant-feedback"',
       'data-testid="product-recommendation-rails"',
@@ -101,13 +112,21 @@ export const smokeChecks = [
   {
     path: "/checkout",
     statuses: [200],
-    includes: ['data-testid="cart-checkout-form"'],
+    includes: [
+      'id="checkout-form"',
+      'id="checkout-service"',
+      'data-testid="cart-checkout-form"',
+    ],
     matches: [/href="\/category\//],
   },
   {
     path: "/account",
     statuses: [200],
-    includes: ['id="identifier"'],
+    includes: [
+      'data-testid="account-otp-request-form"',
+      'data-testid="account-identifier-input"',
+      'id="identifier"',
+    ],
   },
   {
     path: "/account/privacy/export",
@@ -120,6 +139,13 @@ export const smokeChecks = [
     body: "",
     statuses: [400],
     includes: ['"ok":false', '"error":"Invalid request body."'],
+  },
+  {
+    path: "/api/cart/items",
+    method: "POST",
+    body: "{}",
+    statuses: [400],
+    includes: ['"ok":false'],
   },
   {
     path: "/api/webhooks/cardcom",

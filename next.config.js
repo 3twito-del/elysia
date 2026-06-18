@@ -3,7 +3,8 @@
  * for Docker builds.
  */
 import "./src/env.js";
-import { withSerwist } from "@serwist/turbopack";
+
+const isProduction = process.env.NODE_ENV === "production";
 
 const securityHeaders = [
   {
@@ -32,11 +33,22 @@ const securityHeaders = [
   },
 ];
 
+const immutableBrandAssetHeaders = [
+  {
+    key: "Cache-Control",
+    value: "public, max-age=31536000, immutable",
+  },
+];
+
 /** @type {import("next").NextConfig} */
 const config = {
   allowedDevOrigins: ["127.0.0.1"],
   async headers() {
     return [
+      {
+        source: "/brand/:path*",
+        headers: [...securityHeaders, ...immutableBrandAssetHeaders],
+      },
       {
         source: "/:path*",
         headers: securityHeaders,
@@ -62,8 +74,16 @@ const config = {
         protocol: "https",
         hostname: "upload.wikimedia.org",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.shopify.com",
+      },
     ],
   },
 };
 
-export default withSerwist(config);
+const nextConfig = isProduction
+  ? (await import("@serwist/turbopack")).withSerwist(config)
+  : config;
+
+export default nextConfig;

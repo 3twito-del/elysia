@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { getAdminCatalogImageValidationSummary } from "~/server/adapters/media";
 import {
   filterCatalogProducts,
   getCatalogAvailability,
@@ -16,6 +17,7 @@ describe("catalog filtering", () => {
         description: "Diamond ring for a refined gift",
         inventory: { "tel-aviv": 2, jerusalem: 0 },
         material: "זהב לבן 14K",
+        metalColors: ["זהב לבן"],
         name: "Venus Line Ring",
         price: 1290,
         slug: "venus-line-ring",
@@ -51,10 +53,13 @@ describe("catalog filtering", () => {
         availableOnly: true,
         branch: "tel-aviv",
         collection: "bridal",
+        color: "זהב לבן",
+        gift: "מתאים למתנה",
         material: "זהב לבן 14K",
         maxPrice: 1500,
         query: "gift",
         stone: "יהלום",
+        style: "bridal",
       }).map((product) => product.slug),
     ).toEqual(["venus-line-ring"]);
   });
@@ -108,6 +113,32 @@ describe("catalog availability helpers", () => {
   });
 });
 
+describe("admin catalog image validation", () => {
+  it("summarizes image format alt and size failures before save", () => {
+    expect(
+      getAdminCatalogImageValidationSummary({
+        alt: "",
+        bytes: 6 * 1024 * 1024,
+        url: "https://cdn.example.invalid/product.bmp",
+      }),
+    ).toMatchObject({
+      ok: false,
+      issues: [
+        { code: "missing-alt" },
+        { code: "unsupported-format" },
+        { code: "oversized" },
+      ],
+    });
+    expect(
+      getAdminCatalogImageValidationSummary({
+        alt: "Venus ring",
+        contentType: "image/webp",
+        url: "https://cdn.example.invalid/product.webp",
+      }).ok,
+    ).toBe(true);
+  });
+});
+
 function makeProduct(
   overrides: Partial<CatalogProduct> &
     Pick<CatalogProduct, "inventory" | "slug">,
@@ -126,7 +157,7 @@ function makeProduct(
     images: ["/product.png"],
     inventory: overrides.inventory,
     material: overrides.material ?? "זהב",
-    metalColors: [],
+    metalColors: overrides.metalColors ?? [],
     name: overrides.name ?? "Product",
     popularityScore: 0,
     price: overrides.price ?? 1000,
@@ -135,9 +166,10 @@ function makeProduct(
     sizes: [],
     sku: overrides.sku ?? "SKU",
     slug: overrides.slug,
+    requiresSeparateCheckout: overrides.requiresSeparateCheckout ?? false,
     stone: overrides.stone,
     tags: overrides.tags ?? [],
-    variants: [],
+    variants: overrides.variants ?? [],
   };
 }
 

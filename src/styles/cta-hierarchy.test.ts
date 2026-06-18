@@ -6,14 +6,14 @@ import { describe, expect, it } from "vitest";
 const root = process.cwd();
 
 describe("public CTA hierarchy", () => {
-  it("keeps the default button variant neutral and reserves aqua for explicit accent use", () => {
+  it("keeps the default and explicit accent button variants neutral", () => {
     const buttonSource = read("src/components/ui/button.tsx");
 
     expect(buttonSource).toMatch(
       /default:\s*"[^"]*bg-\[var\(--action-primary\)\][^"]*text-\[var\(--action-primary-foreground\)\]/,
     );
     expect(buttonSource).toMatch(
-      /brandAccent:\s*"[^"]*bg-\[var\(--brand-aqua\)\][^"]*text-\[var\(--brand-aqua-deep\)\]/,
+      /brandAccent:\s*"[^"]*bg-\[var\(--brand-accent\)\][^"]*text-\[var\(--action-primary-foreground\)\]/,
     );
     expect(buttonSource).toMatch(/outline:\s*"[^"]*bg-background/);
     expect(buttonSource).toMatch(/secondary:\s*"[^"]*bg-background/);
@@ -31,11 +31,11 @@ describe("public CTA hierarchy", () => {
   it("keeps public surface tokens light, neutral, and separate from aqua CTAs", () => {
     const css = read("src/styles/globals.css");
 
-    expect(css).toContain("--secondary: #f6f8f9;");
-    expect(css).toContain("--muted: #f6f8f9;");
-    expect(css).toContain("--accent: #f4f7f8;");
-    expect(css).toContain("--glass-border: #e2e8ec;");
-    expect(css).toContain("--glass-border-strong: #b8c5cc;");
+    expect(css).toContain("--secondary: #f3eee8;");
+    expect(css).toContain("--muted: #f2eee9;");
+    expect(css).toContain("--accent: #ead8d2;");
+    expect(css).toContain("--glass-border: #e4dbd0;");
+    expect(css).toContain("--glass-border-strong: #c4b19c;");
     expect(css).toContain("--action-primary: var(--brand-ink);");
     expect(css).toContain(".glass-control:not(:disabled)");
     expect(css).toContain('[data-slot="button"][data-variant="secondary"]');
@@ -45,15 +45,24 @@ describe("public CTA hierarchy", () => {
     expect(css).not.toContain("--accent: oklch(0.94 0 0);");
   });
 
-  it("keeps the floating home hero CTA focused on the collection action", () => {
+  it("keeps the floating home hero CTA focused on catalogue entry", () => {
     const css = read("src/styles/globals.css");
     const home = read("src/app/page.tsx");
 
     expect(home).toContain("home-hero-actions");
     expect(home).toContain("home-hero-cta-primary");
+    expect(home).toContain('data-testid="home-hero-primary-cta"');
+    expect(home).toContain('href="/search"');
+    expect(home).toContain('id="collections"');
+    expect(home).toContain('id="featured"');
+    expect(home).not.toContain('href="#waitlist"');
+    expect(home).not.toContain("First collection coming soon");
+    expect(home).not.toContain("home-hero-secondary-cta");
+    expect(home).not.toContain('href="/category/rings"');
+    expect(home).not.toContain('data-testid="home-hero-secondary-line"');
     expect(home).not.toContain("home-hero-service-link");
-    expect(home).not.toContain('href="/service"');
-    expect(home).not.toContain("home-hero-cta-secondary");
+    expect(home).not.toContain("home-hero-help-cta");
+    expect(home).not.toContain('data-testid="home-hero-trust-notes"');
     expect(css).toContain('.home-hero-actions [data-slot="button"]');
     expect(css).toContain(
       '.home-hero-actions [data-slot="button"]:not(:disabled):hover',
@@ -69,6 +78,7 @@ describe("public CTA hierarchy", () => {
     expect(css).toContain(
       '.home-hero-actions [data-slot="button"]:focus-visible',
     );
+    expect(css).not.toContain(".home-hero-actions .home-hero-secondary-cta");
     expect(css).toContain("outline: 2px solid currentColor !important;");
     expect(css).toContain("--tw-ring-color: transparent !important;");
   });
@@ -87,28 +97,26 @@ describe("public CTA hierarchy", () => {
     expect(source).toContain("commerceStatus.ctaLabel");
     expect(source).toContain("serviceHref");
     expect(read("src/styles/globals.css")).toContain(
-      "background: var(--brand-accent) !important;",
+      "background: var(--action-primary) !important;",
     );
     expect(wishlistSource).toContain('variant="outline"');
   });
 
-  it("keeps listing card CTA states white and out of aqua or warm treatments", () => {
+  it("keeps listing cards browse-first with one details CTA", () => {
     const css = read("src/styles/globals.css");
-    const baseBlock = extractCssBlock(css, ".product-card-cta:not(:disabled)");
-    const hoverBlock = extractCssBlock(
-      css,
-      ".product-card-cta:not(:disabled):hover",
-    );
+    const productCard = read("src/components/product-card.tsx");
+    const searchSource = read("src/app/search/page.tsx");
 
-    expect(baseBlock).toContain("border-color: rgb(16 24 28 / 12%)");
-    expect(baseBlock).toContain("background: #ffffff");
-    expect(hoverBlock).toContain("--tw-ring-color: rgb(16 24 28 / 14%)");
-    expect(hoverBlock).toContain("border-color: rgb(16 24 28 / 24%)");
-    expect(hoverBlock).toContain("background: #ffffff");
-    expect(hoverBlock).toContain("rgb(16 24 28 / 4%)");
-    expect(`${baseBlock}\n${hoverBlock}`).not.toMatch(
-      /brand-aqua|66 201 190|#42c9be|125 87 70|#fffaf7|#fff3ec/i,
-    );
+    expect(productCard).toContain("group/product-link block min-w-0");
+    expect(productCard).not.toContain("ProductCardFavoriteButton");
+    expect(productCard).not.toContain("function getProductCardQuickAddVariant");
+    expect(productCard).not.toContain("<ProductCardQuickAddButton");
+    expect(productCard).toContain("product-card-cta");
+    expect(productCard).not.toContain("<Button");
+    expect(productCard).not.toContain("ShoppingBag");
+    expect(searchSource).not.toContain("product-card-cta");
+    expect(searchSource).not.toContain("ShoppingBag");
+    expect(css).toContain(".product-card-cta");
   });
 
   it("keeps recovery and filter action groups from presenting two default CTAs", () => {
@@ -133,15 +141,4 @@ function read(relativePath: string) {
 
 function countOccurrences(source: string, pattern: string) {
   return source.split(pattern).length - 1;
-}
-
-function extractCssBlock(source: string, selector: string) {
-  const start = source.indexOf(selector);
-
-  if (start === -1) return "";
-
-  const openBrace = source.indexOf("{", start);
-  const closeBrace = source.indexOf("}", openBrace);
-
-  return source.slice(start, closeBrace + 1);
 }

@@ -2,11 +2,14 @@ import { TRPCError } from "@trpc/server";
 import { describe, expect, it } from "vitest";
 
 import {
+  assertCartCheckoutPricesAvailable,
+  assertCartCheckoutOwnItems,
   assertCartReservationAvailable,
   cartCheckoutInputSchema,
   createCartCheckoutOrderNumber,
   getCartCheckoutReservationExpiresAt,
   getCartCheckoutShippingTotal,
+  getCartCheckoutOwnItems,
   isCouponUsable,
 } from "./cart-checkout";
 
@@ -97,6 +100,36 @@ describe("cart checkout service", () => {
         requested: 2,
       }),
     ).toThrow(TRPCError);
+  });
+
+  it("rejects checkout items without a usable price", () => {
+    expect(() =>
+      assertCartCheckoutPricesAvailable([
+        { quantity: 1, unitPrice: 0 },
+        { quantity: 1, unitPrice: 1290 },
+      ]),
+    ).toThrow(TRPCError);
+  });
+
+  it("rejects Shopify dropship items from local checkout", () => {
+    expect(() =>
+      assertCartCheckoutOwnItems([
+        { variant: { product: { source: "OWN" } } },
+        { variant: { product: { source: "DROPSHIP_SHOPIFY" } } },
+      ]),
+    ).toThrow(TRPCError);
+  });
+
+  it("selects only owned items for local checkout in mixed carts", () => {
+    expect(
+      getCartCheckoutOwnItems([
+        { id: "own", variant: { product: { source: "OWN" } } },
+        {
+          id: "dropship",
+          variant: { product: { source: "DROPSHIP_SHOPIFY" } },
+        },
+      ]).map((item) => item.id),
+    ).toEqual(["own"]);
   });
 
   it("requires shipping address for delivery checkout", () => {

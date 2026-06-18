@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import {
   Clock3,
   Mail,
+  MessageCircle,
   MessageSquareText,
+  PackageCheck,
   Phone,
   RotateCcw,
   Ruler,
@@ -12,17 +15,20 @@ import {
 } from "lucide-react";
 
 import { ServiceRequestForm } from "./_components/service-request-form";
-import { CommercePageHero } from "~/components/commerce-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Separator } from "~/components/ui/separator";
-import { getPublicServiceProfile } from "~/server/services/service";
+import {
+  getPublicContactSettings,
+  getPublicServiceProfile,
+} from "~/server/services/service";
 
 export const metadata: Metadata = {
-  title: "שירות לקוחות",
+  title: "שירות תומך",
   description:
-    "שירות אונליין וטלפוני של Elysia להזמנות, תיקונים, החזרות, מידות, פרטיות ונגישות.",
+    "שירות תומך של Elysia להזמנות, מידות, מתנות, החזרות, פרטיות ונגישות, עם מענה עד יום עסקים.",
 };
 
 export const dynamic = "force-dynamic";
@@ -30,23 +36,61 @@ export const dynamic = "force-dynamic";
 const serviceTracks = [
   {
     icon: MessageSquareText,
-    title: "פנייה כללית",
-    text: "שאלה על מוצר, מתנה, זמינות, משלוח או התאמה לפני הזמנה.",
+    title: "שאלה על תכשיט",
+    text: "התלבטות על לוק, מתנה, מידה או פריט מסוים.",
   },
   {
     icon: Wrench,
-    title: "תיקונים ואחריות",
-    text: "בדיקת מקרה, צירוף תמונות, תיעוד מצב התכשיט ותיאום טיפול המשך.",
+    title: "תיקון ואחריות",
+    text: "בדיקה של תיקון, אחריות או טיפול בתכשיט.",
   },
   {
     icon: RotateCcw,
     title: "החלפות והחזרות",
-    text: "בקשות החלפה, החזרה או בירור אחרי רכישה בהתאם למדיניות האתר.",
+    text: "פנייה בנושא החלפה או החזרה לפי מדיניות האתר.",
   },
   {
     icon: Ruler,
     title: "מידה והתאמה",
-    text: "התייעצות לפני בחירת מידה, פרופורציה, מתנה או התאמה אישית.",
+    text: "עזרה באורך, מידה או התאמה לפני הזמנה.",
+  },
+] as const;
+
+const serviceResponseExpectations = [
+  {
+    title: "מענה עד יום עסקים",
+    text: "נחזור עד 24 שעות בימי עסקים, לפי פרטי הקשר שסומנו בטופס.",
+  },
+  {
+    title: "פרטים שמקצרים את הדרך",
+    text: "מספר הזמנה, שם תכשיט או תמונה עוזרים לתת תשובה מדויקת יותר.",
+  },
+] as const;
+
+const servicePriorityActions = [
+  {
+    href: "/service?topic=sizing#service-form",
+    icon: Ruler,
+    label: "לפני קנייה",
+    text: "מידה, מתנה, חומר או התאמה ללוק.",
+  },
+  {
+    href: "/service?topic=order#service-form",
+    icon: PackageCheck,
+    label: "הזמנה קיימת",
+    text: "בירור, עדכון פרטים או מסירה.",
+  },
+  {
+    href: "/service?topic=returns#service-form",
+    icon: RotateCcw,
+    label: "החלפה או החזרה",
+    text: "בדיקת מדיניות, זיכוי או חלופה.",
+  },
+  {
+    href: "/service?topic=repair#service-form",
+    icon: Wrench,
+    label: "תיקון ואחריות",
+    text: "בדיקת טיפול בתכשיט אחרי שימוש.",
   },
 ] as const;
 
@@ -60,39 +104,45 @@ function firstParam(value: string | string[] | undefined) {
 
 export default async function ServicePage({ searchParams }: ServicePageProps) {
   const query = searchParams ? await searchParams : {};
-  const profile = await getPublicServiceProfile();
-  const phoneHref = `tel:${profile.settings.phoneE164}`;
+  const [profile, contact] = await Promise.all([
+    getPublicServiceProfile(),
+    getPublicContactSettings(),
+  ]);
+  const defaultMessage = firstParam(query.message);
+  const defaultOrderNumber = firstParam(query.orderNumber);
   const defaultProductReference = firstParam(query.productReference);
+  const defaultTopicSlug = firstParam(query.topic);
 
   return (
     <main>
       <SiteHeader />
 
-      <CommercePageHero
-        description="שירות Elysia פועל אונליין ובטלפון בלבד: הזמנות, תיקונים, התאמת מידה, החזרות, נגישות ופרטיות מטופלים במקום אחד."
-        eyebrow="שירות Elysia"
-        title="שירות לקוחות"
+      <CompactPageIntro
+        description="שירות הוא שכבת תמיכה: עזרה במידה, מתנה, הזמנה, החלפה או אחריות בלי להוציא את הבחירה מהאתר."
+        eyebrow="תמיכה לפני ואחרי הזמנה"
+        title="שירות תומך"
         variant="content"
       />
 
       <RevealSection className="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:py-10">
+        <ServicePriorityTriage />
+
         <div className="grid gap-6 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
           <section className="grid gap-5" aria-labelledby="service-contact">
             <div>
-              <Badge variant="secondary">שירות אונליין</Badge>
+              <Badge variant="secondary">שירות</Badge>
               <h2 className="mt-3 text-2xl font-semibold" id="service-contact">
-                כל ערוצי השירות במקום אחד
+                ערוצי קשר ברורים
               </h2>
               <p className="text-muted-foreground mt-2 max-w-prose leading-7">
-                הפעילות מתבצעת אונליין או בטלפון, עם תיעוד מסודר לכל פנייה והמשך
-                טיפול לפי הנושא.
+                הטיפול מתבצע דרך פנייה מתועדת, עם מענה עד 24 שעות ביום עסקים.
               </p>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-3">
               <a
                 className="brand-surface interactive-lift flex min-h-16 items-center gap-3 rounded-md p-3.5"
-                href={phoneHref}
+                href={contact.phoneHref}
               >
                 <span className="glass-inset grid size-11 place-items-center rounded-full border">
                   <Phone aria-hidden="true" className="size-5" />
@@ -100,13 +150,13 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
                 <span>
                   <span className="block font-semibold">טלפון</span>
                   <span className="text-muted-foreground block text-sm">
-                    {profile.settings.displayPhone}
+                    {contact.phoneDisplay}
                   </span>
                 </span>
               </a>
               <a
                 className="brand-surface interactive-lift flex min-h-16 items-center gap-3 rounded-md p-3.5"
-                href={`mailto:${profile.settings.serviceEmail}`}
+                href={`mailto:${contact.email}`}
               >
                 <span className="glass-inset grid size-11 place-items-center rounded-full border">
                   <Mail aria-hidden="true" className="size-5" />
@@ -114,10 +164,29 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
                 <span>
                   <span className="block font-semibold">אימייל</span>
                   <span className="text-muted-foreground block text-sm">
-                    {profile.settings.serviceEmail}
+                    {contact.email}
                   </span>
                 </span>
               </a>
+              {contact.whatsappHref ? (
+                <a
+                  className="brand-surface interactive-lift flex min-h-16 items-center gap-3 rounded-md p-3.5"
+                  data-testid="service-whatsapp-link"
+                  href={contact.whatsappHref}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  <span className="glass-inset grid size-11 place-items-center rounded-full border">
+                    <MessageCircle aria-hidden="true" className="size-5" />
+                  </span>
+                  <span>
+                    <span className="block font-semibold">WhatsApp Elysia</span>
+                    <span className="text-muted-foreground block text-sm">
+                      מענה שירות ממותג
+                    </span>
+                  </span>
+                </a>
+              ) : null}
             </div>
 
             <div className="brand-surface rounded-md p-4">
@@ -144,24 +213,82 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
                 })}
               </div>
               <Separator className="my-5" />
+              <ul
+                className="grid gap-2 text-sm leading-6"
+                data-testid="service-response-expectations"
+              >
+                {serviceResponseExpectations.map((item) => (
+                  <li className="grid gap-0.5" key={item.title}>
+                    <span className="font-medium">{item.title}</span>
+                    <span className="text-muted-foreground">{item.text}</span>
+                  </li>
+                ))}
+              </ul>
+              <Separator className="my-5" />
               <div className="grid gap-3 sm:grid-cols-3">
-                <TrustItem icon={Clock3} label="חזרה מסודרת" />
+                <TrustItem icon={Clock3} label="מענה אישי" />
                 <TrustItem icon={ShieldCheck} label="תיעוד מאובטח" />
-                <TrustItem icon={Sparkles} label="שירות מותאם" />
+                <TrustItem icon={Sparkles} label="לפני ואחרי הזמנה" />
               </div>
             </div>
           </section>
 
           <section aria-labelledby="service-form" id="service-form">
             <div className="mb-4">
-              <Badge variant="outline">פתיחת פנייה</Badge>
-              <h2 className="mt-3 text-2xl font-semibold">פתיחת פנייה</h2>
+              <Badge variant="outline">פנייה לשירות</Badge>
+              <h2 className="mt-3 text-2xl font-semibold">
+                ספרו לנו במה להתמקד
+              </h2>
               <p className="text-muted-foreground mt-2 text-sm leading-6">
-                בחרו נושא, הוסיפו פרטים וקבצים אם צריך, והפנייה תיכנס לטיפול.
+                בחרו נושא והשאירו פרטים. נחזור עם תשובה שמתייחסת למה שצריך.
+              </p>
+            </div>
+            <section
+              aria-labelledby="service-topic-cards-title"
+              className="mb-4 grid gap-3 rounded-md border border-[var(--glass-border)] p-4"
+              data-testid="service-topic-cards"
+            >
+              <div>
+                <h3 className="font-medium" id="service-topic-cards-title">
+                  נושא מהיר
+                </h3>
+                <p className="text-muted-foreground mt-1 text-sm leading-6">
+                  לחיצה מכאן ממלאת את הנושא ומקצרת את הטופס.
+                </p>
+              </div>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {profile.topics.slice(0, 6).map((topic) => (
+                  <Link
+                    className="border-border hover:border-foreground/50 hover:bg-muted/60 rounded-md border p-3 text-sm transition"
+                    href={`/service?topic=${topic.slug}#service-form`}
+                    key={topic.slug}
+                  >
+                    <span className="font-medium">{topic.label}</span>
+                    {topic.description ? (
+                      <span className="text-muted-foreground mt-1 block leading-6">
+                        {topic.description}
+                      </span>
+                    ) : null}
+                  </Link>
+                ))}
+              </div>
+            </section>
+            <div
+              className="text-muted-foreground mb-4 flex gap-2 rounded-md border border-[var(--glass-border)] px-4 py-3 text-sm leading-6"
+              data-testid="service-response-time-note"
+            >
+              <Clock3 aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+              <p>
+                פניות מטופלות לפי סדר קבלה ונושא. זמן מענה רגיל: עד 24 שעות /
+                יום עסקים. מספר הזמנה או שם תכשיט עוזרים לתת תשובה מדויקת יותר.
               </p>
             </div>
             <ServiceRequestForm
+              defaultMessage={defaultMessage}
+              defaultOrderNumber={defaultOrderNumber}
               defaultProductReference={defaultProductReference}
+              defaultTopicSlug={defaultTopicSlug}
+              serviceEmail={contact.email}
               topics={profile.topics.map((topic) => ({
                 description: topic.description,
                 label: topic.label,
@@ -172,6 +299,47 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
         </div>
       </RevealSection>
     </main>
+  );
+}
+
+function ServicePriorityTriage() {
+  return (
+    <section
+      aria-labelledby="service-priority-triage-title"
+      className="mb-6 grid gap-3 border-y border-[var(--glass-border)] py-4 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.4fr)] lg:items-center"
+      data-testid="service-priority-triage"
+    >
+      <div>
+        <p className="text-muted-foreground text-xs font-medium uppercase">
+          מסלול מהיר
+        </p>
+        <h2
+          className="mt-2 text-xl font-semibold"
+          id="service-priority-triage-title"
+        >
+          בחרו את סוג הפנייה, כדי שהשירות יתמוך בהחלטה ולא יחליף אותה
+        </h2>
+      </div>
+      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+        {servicePriorityActions.map((action) => {
+          const Icon = action.icon;
+
+          return (
+            <Link
+              className="border-border hover:border-foreground/50 hover:bg-muted/60 grid min-h-28 rounded-md border p-3 text-sm transition"
+              href={action.href}
+              key={action.href}
+            >
+              <Icon aria-hidden="true" className="size-4" />
+              <span className="mt-3 font-medium">{action.label}</span>
+              <span className="text-muted-foreground mt-1 leading-5">
+                {action.text}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 

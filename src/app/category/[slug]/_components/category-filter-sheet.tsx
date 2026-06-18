@@ -31,11 +31,7 @@ export function CategoryFilterSheet({
 
   if (!isValidElement(trigger)) {
     return (
-      <Sheet
-        closeOnMediaQuery="(min-width: 1024px)"
-        onOpenChange={setOpen}
-        open={open}
-      >
+      <Sheet onOpenChange={setOpen} open={open}>
         {children}
       </Sheet>
     );
@@ -44,11 +40,7 @@ export function CategoryFilterSheet({
   const triggerElement = trigger as ReactElement<FilterTriggerProps>;
 
   return (
-    <Sheet
-      closeOnMediaQuery="(min-width: 1024px)"
-      onOpenChange={setOpen}
-      open={open}
-    >
+    <Sheet onOpenChange={setOpen} open={open}>
       <SheetTrigger asChild>
         {cloneElement(triggerElement, {
           "aria-expanded": open,

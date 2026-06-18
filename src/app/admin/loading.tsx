@@ -19,8 +19,11 @@ const metrics = [
 export default function AdminLoading() {
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6" dir="rtl">
-      <LoadingState label="טוען נתוני תפעול..." variant="plain" />
-      <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+      <LoadingState label="מסך הניהול מתעדכן" variant="plain" />
+      <div
+        className="mt-8 grid min-h-40 gap-5 md:grid-cols-2 xl:grid-cols-4"
+        data-testid="admin-loading-metric-skeletons"
+      >
         {metrics.map(({ icon: Icon, label }) => (
           <Card className="rounded-md" key={label}>
             <CardHeader className="flex flex-row items-center justify-between gap-3">
@@ -38,7 +41,10 @@ export default function AdminLoading() {
           </Card>
         ))}
       </div>
-      <Card className="mt-6 rounded-md">
+      <Card
+        className="mt-6 min-h-[24rem] rounded-md"
+        data-testid="admin-loading-table-skeleton"
+      >
         <CardHeader>
           <Skeleton className="h-6 w-44" />
         </CardHeader>

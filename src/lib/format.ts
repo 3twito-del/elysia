@@ -21,6 +21,14 @@ export function formatPrice(amount: number) {
   return shekelPriceFormatter.format(amount);
 }
 
+export function isolateBidiText(value: string | number) {
+  return `\u2068${String(value)}\u2069`;
+}
+
+export function formatInlinePrice(amount: number) {
+  return isolateBidiText(formatPrice(amount));
+}
+
 export function formatHebrewDate(date: Date | string | number) {
   return hebrewDateFormatter.format(new Date(date));
 }

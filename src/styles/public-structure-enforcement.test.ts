@@ -17,18 +17,27 @@ const publicRouteFiles = [
   "src/app/account/orders/[id]/page.tsx",
   "src/app/ai/page.tsx",
   "src/app/stylist/page.tsx",
+  "src/app/wishlist/page.tsx",
+  "src/app/size-guide/page.tsx",
   "src/app/about/page.tsx",
   "src/app/branches/page.tsx",
   "src/app/faq/page.tsx",
   "src/app/terms/page.tsx",
   "src/app/privacy/page.tsx",
   "src/app/accessibility/page.tsx",
+  "src/app/shipping-returns/page.tsx",
+  "src/app/warranty/page.tsx",
+  "src/app/jewellery-care/page.tsx",
 ];
+
+const publicNonBrandRouteFiles = publicRouteFiles.filter(
+  (file) => file !== "src/app/page.tsx" && file !== "src/app/about/page.tsx",
+);
 
 describe("public structure enforcement", () => {
   it("prevents public route hero actions from linking to same-page anchors", () => {
     const violations = publicRouteFiles.flatMap((file) =>
-      extractCommercePageHeroBlocks(read(file))
+      extractPageIntroBlocks(read(file))
         .filter((block) => /href=(?:"|{")#/.test(block))
         .map(() => file),
     );
@@ -67,11 +76,47 @@ describe("public structure enforcement", () => {
   it("keeps gifts as a product-listing route, not a scroll-gated landing page", () => {
     const gifts = read("src/app/gifts/page.tsx");
 
+    expect(gifts).toContain("<CompactPageIntro");
     expect(gifts).toContain('variant="catalog"');
+    expect(gifts).toContain("const GIFT_RESULTS_LIMIT = 24");
+    expect(gifts).toContain("sourceProducts.slice(0, GIFT_RESULTS_LIMIT)");
     expect(gifts).toContain('data-testid="gift-results-summary"');
     expect(gifts).toContain('data-testid="gift-results-grid"');
     expect(gifts).not.toContain('id="gift-products"');
     expect(gifts).not.toContain("CommerceSectionHeader");
+  });
+
+  it("uses task-first intros outside home and about instead of full commerce heroes", () => {
+    const violations = publicNonBrandRouteFiles.filter((file) => {
+      const source = read(file);
+
+      return source.includes("<CommercePageHero");
+    });
+
+    expect(violations).toEqual([]);
+  });
+
+  it("keeps PLP results ahead of supporting controls and editorial content", () => {
+    const category = read("src/app/category/[slug]/page.tsx");
+    const gifts = read("src/app/gifts/page.tsx");
+    const search = read("src/app/search/page.tsx");
+    const searchControls = read("src/app/search/_components/search-controls.tsx");
+
+    expect(indexOf(category, 'data-testid="category-results-grid"')).toBeLessThan(
+      indexOf(category, 'data-testid="category-trust-strip"'),
+    );
+    expect(category).toContain('data-testid="category-filter-trigger"');
+    expect(category).toContain('className="hidden"');
+    expect(category).not.toContain("קו על הצוואר");
+    expect(category).not.toContain("משנה חולצה לבנה");
+    expect(indexOf(gifts, 'data-testid="gift-results-grid"')).toBeLessThan(
+      indexOf(gifts, 'data-testid="gift-discovery-chips"'),
+    );
+    expect(indexOf(search, 'data-testid="search-results-summary"')).toBeLessThan(
+      indexOf(search, 'data-testid="search-controls-panel"'),
+    );
+    expect(searchControls).toContain('data-testid="search-controls-toggle"');
+    expect(searchControls).toContain("<details");
   });
 
   it("documents the v4 structure policy in code and docs", () => {
@@ -83,6 +128,7 @@ describe("public structure enforcement", () => {
     expect(policy).toContain("PublicStructuralElementKey");
     expect(policy).toContain("anchorCtaPolicy");
     expect(policy).toContain("routeStructurePolicy");
+    expect(policy).toContain("taskFirstPublicIntro");
     expect(policy).toContain("benchmarkEvidenceUrl");
     expect(policy).toContain("mandatoryExceptionReason");
     expect(artifact).toContain("PUBLIC_STRUCTURE_BENCHMARK_V4");
@@ -90,12 +136,23 @@ describe("public structure enforcement", () => {
   });
 });
 
-function extractCommercePageHeroBlocks(content: string) {
-  return [...content.matchAll(/<CommercePageHero\b[\s\S]*?\/>/g)].map(
+function extractPageIntroBlocks(content: string) {
+  return [
+    ...content.matchAll(/<CommercePageHero\b[\s\S]*?\/>/g),
+    ...content.matchAll(/<CompactPageIntro\b[\s\S]*?\/>/g),
+  ].map(
     (match) => match[0] ?? "",
   );
 }
 
 function read(relativePath: string) {
   return readFileSync(path.join(root, relativePath), "utf8");
+}
+
+function indexOf(content: string, needle: string) {
+  const index = content.indexOf(needle);
+
+  expect(index, `${needle} not found`).toBeGreaterThanOrEqual(0);
+
+  return index;
 }

@@ -12,6 +12,7 @@ import {
   updateAdminProductStatusInputSchema,
   upsertAdminShipmentInputSchema,
 } from "~/lib/admin-validation";
+import { getAdminAppointmentTransitionError } from "~/lib/appointment-validation";
 import { db } from "~/server/db";
 import {
   canRefundOrderStatus,
@@ -284,6 +285,20 @@ export async function updateAdminAppointmentStatus(input: {
   const parsed = updateAdminAppointmentStatusInputSchema.parse(input.data);
 
   return db.$transaction(async (tx) => {
+    const current = await tx.appointment.findUnique({
+      where: { id: parsed.appointmentId },
+      select: { status: true },
+    });
+
+    if (!current) throw new Error("Appointment not found.");
+
+    const transitionError = getAdminAppointmentTransitionError({
+      from: current.status,
+      to: parsed.status,
+    });
+
+    if (transitionError) throw new Error(transitionError);
+
     const appointment = await tx.appointment.update({
       where: { id: parsed.appointmentId },
       data: {

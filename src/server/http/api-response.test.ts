@@ -18,6 +18,35 @@ describe("api response helpers", () => {
     await expect(response.json()).resolves.toEqual({ ok: true, value: 1 });
   });
 
+  it("serializes non-plain JSON values predictably", async () => {
+    const circular: Record<string, unknown> = {};
+    circular.self = circular;
+    const circularArray: unknown[] = [];
+    circularArray.push(circularArray);
+    const response = okJson({
+      createdAt: new Date("2026-06-01T00:00:00.000Z"),
+      id: 123n,
+      nested: {
+        dropped: undefined,
+        values: [1n, undefined, Symbol("private")],
+      },
+      circular,
+      circularArray,
+    });
+
+    await expect(response.json()).resolves.toEqual({
+      createdAt: "2026-06-01T00:00:00.000Z",
+      id: "123",
+      nested: {
+        values: ["1", null, null],
+      },
+      circular: {
+        self: "[Circular]",
+      },
+      circularArray: ["[Circular]"],
+    });
+  });
+
   it("standardizes error JSON payloads", async () => {
     const badRequest = badRequestJson("Bad input.");
     const forbidden = forbiddenJson("Forbidden.");
@@ -44,6 +73,16 @@ describe("api response helpers", () => {
 
     expect(response.status).toBe(429);
     expect(response.headers.get("Retry-After")).toBe("12");
+  });
+
+  it("normalizes retry headers to positive integer seconds", () => {
+    const response = rateLimitedJson(
+      { retryAfterSeconds: 0.2 } as Parameters<typeof rateLimitedJson>[0],
+      "Too many analytics events.",
+    );
+
+    expect(response.status).toBe(429);
+    expect(response.headers.get("Retry-After")).toBe("1");
   });
 
   it("standardizes rate-limit JSON payloads", async () => {

@@ -5,6 +5,7 @@ import {
   shouldUseLocalSearchFallback,
   paginateSearchHits,
   normalizeSearchPagination,
+  shouldFallbackToLocalSearchPage,
 } from "./search";
 
 describe("search adapter config", () => {
@@ -93,5 +94,79 @@ describe("search pagination", () => {
         normalizeSearchPagination({ page: 99, perPage: 10 }),
       ),
     ).toEqual([11, 12, 13, 14, 15]);
+  });
+});
+
+describe("typesense page reconciliation", () => {
+  it("keeps Typesense results when every indexed hit resolves to a catalog product", () => {
+    expect(
+      shouldFallbackToLocalSearchPage({
+        found: 24,
+        indexedHits: 24,
+        page: 1,
+        perPage: 24,
+        resolvedHits: 24,
+      }),
+    ).toBe(false);
+  });
+
+  it("keeps short final Typesense pages when the result total explains them", () => {
+    expect(
+      shouldFallbackToLocalSearchPage({
+        found: 25,
+        indexedHits: 1,
+        page: 2,
+        perPage: 24,
+        resolvedHits: 1,
+      }),
+    ).toBe(false);
+  });
+
+  it("falls back to local search when the indexed page contains stale catalog slugs", () => {
+    expect(
+      shouldFallbackToLocalSearchPage({
+        found: 24,
+        indexedHits: 24,
+        page: 1,
+        perPage: 24,
+        resolvedHits: 1,
+      }),
+    ).toBe(true);
+  });
+
+  it("falls back to local search when Typesense returns fewer hits than the reported page should contain", () => {
+    expect(
+      shouldFallbackToLocalSearchPage({
+        found: 300,
+        indexedHits: 1,
+        page: 1,
+        perPage: 24,
+        resolvedHits: 1,
+      }),
+    ).toBe(true);
+  });
+
+  it("falls back to local search when Typesense reports matches for an empty indexed page", () => {
+    expect(
+      shouldFallbackToLocalSearchPage({
+        found: 24,
+        indexedHits: 0,
+        page: 99,
+        perPage: 24,
+        resolvedHits: 0,
+      }),
+    ).toBe(true);
+  });
+
+  it("does not fall back for genuinely empty searches", () => {
+    expect(
+      shouldFallbackToLocalSearchPage({
+        found: 0,
+        indexedHits: 0,
+        page: 1,
+        perPage: 24,
+        resolvedHits: 0,
+      }),
+    ).toBe(false);
   });
 });

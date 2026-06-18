@@ -27,23 +27,26 @@ export function RecentlyViewedProducts({
     .filter((slug) => slug !== currentSlug)
     .map((slug) => productsBySlug.get(slug))
     .filter((product): product is CatalogProduct => Boolean(product))
-    .slice(0, 4);
+    .slice(0, 3);
 
   if (viewed.length === 0) return null;
 
   return (
     <section
       aria-labelledby="recently-viewed-products-heading"
-      className="border-border mx-auto mt-12 max-w-7xl border-t pt-10"
+      className="border-border mx-auto mt-9 max-w-7xl border-t pt-7"
       data-testid="recently-viewed-products"
     >
       <h2
-        className="text-3xl font-semibold"
+        className="text-2xl font-semibold"
         id="recently-viewed-products-heading"
       >
         נצפו לאחרונה
       </h2>
-      <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div
+        className="ui-equal-grid mt-5 grid gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-3"
+        data-layout-equal-group="recently-viewed-products"
+      >
         {viewed.map((product) => (
           <ProductCard key={product.slug} product={product} />
         ))}

@@ -29,6 +29,8 @@ import {
 } from "~/components/ui/table";
 import {
   getFulfillmentMethodLabel,
+  getOrderSourceDescription,
+  getOrderSourceLabel,
   getOrderStatusLabel,
   getPaymentStatusLabel,
   getReturnStatusLabel,
@@ -50,11 +52,11 @@ type AdminOrderDetailPageProps = {
 export default async function AdminOrderDetailPage({
   params,
 }: AdminOrderDetailPageProps) {
-  const access = await getAdminPageAccess("ORDERS_READ");
+  const { id } = await params;
+  const access = await getAdminPageAccess("ORDERS_READ", `/admin/orders/${id}`);
 
   if (access.denied) return <AdminForbidden {...access.denied} />;
 
-  const { id } = await params;
   const order = await getAdminOrderDetail(id).catch((error: unknown) => {
     if (process.env.NODE_ENV === "development") {
       console.error("[admin] failed to load order detail", error);
@@ -70,7 +72,7 @@ export default async function AdminOrderDetailPage({
     <AdminShell
       active="orders"
       admin={access.admin}
-      description="מסך עבודה מלא להזמנה אחת: סטטוס, תשלום, מסירה, החזרות, מלאי, אירועי outbox ו-audit."
+      description="מסך עבודה מלא להזמנת חנות מקומית: סטטוס, תשלום, מסירה, החזרות, מלאי, אירועי outbox ו-audit."
       eyebrow={order.orderNumber}
       title={`טיפול בהזמנה ${order.orderNumber}`}
     >
@@ -84,7 +86,8 @@ export default async function AdminOrderDetailPage({
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-5">
-              <div className="grid gap-3 md:grid-cols-4">
+              <div className="grid gap-3 md:grid-cols-5">
+                <StatusFact label="מקור" value={getOrderSourceLabel("LOCAL")} />
                 <StatusFact
                   label="סטטוס"
                   value={getOrderStatusLabel(order.status)}
@@ -117,6 +120,10 @@ export default async function AdminOrderDetailPage({
                   </div>
                 ))}
               </div>
+              <p className="text-muted-foreground text-sm leading-6">
+                {getOrderSourceDescription("LOCAL")} פעולות סטטוס, משלוח וזיכוי
+                במסך זה זמינות להזמנות חנות מקומיות בלבד.
+              </p>
             </CardContent>
           </Card>
 
@@ -271,7 +278,7 @@ export default async function AdminOrderDetailPage({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Truck aria-hidden="true" className="size-5" />
-                פעולות תפעול
+                פעולות תפעול מקומיות
               </CardTitle>
             </CardHeader>
             <CardContent>

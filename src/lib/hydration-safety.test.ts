@@ -72,4 +72,27 @@ describe("hydration safety", () => {
     expect(source).toContain("createAdminCouponClientInputSchema.safeParse");
     expect(source).not.toContain("startsAt: new Date()");
   });
+
+  it("keeps cookie consent hydration stable before browser storage resolves", () => {
+    const consentHook = read("src/lib/use-cookie-consent.ts");
+    const banner = read("src/components/cookie-consent-banner.tsx");
+    const preferences = read("src/components/cookie-preferences-panel.tsx");
+
+    expect(consentHook).toContain("useSyncExternalStore");
+    expect(consentHook).toContain("getServerCookieConsentSnapshot");
+    expect(consentHook).toContain("return undefined;");
+    expect(banner).toContain("consentValue === undefined");
+    expect(banner).toContain("return null;");
+    expect(banner).toContain("ResizeObserver");
+    expect(banner).toContain("root.dataset.cookieBannerOpen");
+    expect(banner).toContain(
+      'root.style.removeProperty("--floating-stack-bottom")',
+    );
+    expect(preferences).toContain("useCookieConsentValue()");
+    expect(preferences).not.toContain("localStorage");
+  });
 });
+
+function read(relativePath: string) {
+  return readFileSync(path.join(process.cwd(), relativePath), "utf8");
+}

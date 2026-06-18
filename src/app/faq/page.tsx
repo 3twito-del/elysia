@@ -11,7 +11,7 @@ import {
   Truck,
 } from "lucide-react";
 
-import { CommercePageHero } from "~/components/commerce-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
@@ -20,31 +20,29 @@ import { getPublicContactSettings } from "~/server/services/service";
 
 export const metadata: Metadata = {
   title: "שאלות ותשובות",
-  description:
-    "שאלות ותשובות על קנייה ב-Elysia, זמינות מוצרים, מידות, משלוחים, החזרות ומתנות.",
+  description: "שאלות ותשובות על תכשיטים, מידות, מסירה, החזרות ומתנות.",
 };
 
 export const dynamic = "force-dynamic";
 
 const faqGroups = [
   {
-    title: "קנייה ומוצרים",
+    title: "תכשיטים",
     icon: PackageCheck,
     items: [
       {
-        question: "איך יודעים אם מוצר זמין?",
+        question: "איך יודעים אם פריט זמין?",
         answer:
-          "בעמוד המוצר ובקטגוריות מוצגת זמינות לרכישה אונליין ככל שהמידע קיים במערכת. מלאי עשוי להשתנות, ולכן לפני רכישה חשובה מומלץ לוודא זמינות מול שירות הלקוחות.",
+          "הזמינות מופיעה בעמוד המוצר. להזמנות מיוחדות ניתן לפנות לשירות.",
       },
       {
-        question: "האם המחירים באתר כוללים מע״מ?",
-        answer:
-          "המחירים באתר מוצגים בשקלים חדשים וכוללים מע״מ, אלא אם צוין אחרת במפורש.",
+        question: "האם המחירים כוללים מע״מ?",
+        answer: "המחירים מוצגים בשקלים חדשים וכוללים מע״מ, אלא אם צוין אחרת.",
       },
       {
-        question: "האם התמונות זהות למוצר בפועל?",
+        question: "האם התמונות משקפות את המוצר?",
         answer:
-          "התמונות נועדו להמחשה מדויקת ככל האפשר, אך ייתכנו הבדלים קלים בגוון, ברק, גודל יחסי או תצוגה בין מסכים.",
+          "התמונות נועדו להמחשה. ייתכנו הבדלים קלים בגוון, ברק או גודל יחסי בין מסכים.",
       },
     ],
   },
@@ -54,18 +52,16 @@ const faqGroups = [
     items: [
       {
         question: "איך בוחרים מידת טבעת?",
-        answer:
-          "אפשר להיעזר במדריכי המידה באתר או להתייעץ עם נציג לפני ההזמנה. אם מדובר במתנה ואין מידה ודאית, מומלץ לבחור מוצר שניתן להחלפה.",
+        answer: "ניתן להיעזר במדריך המידות או לפנות לשירות.",
       },
       {
-        question: "האם אפשר לקבל המלצה למתנה?",
+        question: "האם אפשר לקבל עזרה בבחירת מתנה?",
         answer:
-          "כן. אזור המתנות מאפשר לבחור לפי תקציב, אירוע, חומר וסגנון. אפשר לפנות לשירות הלקוחות כדי לאמת התאמה לפני רכישה.",
+          "כן. אפשר להתחיל ממחיר, אירוע, חומר או סגנון, או לפנות לשירות עם שם התכשיט.",
       },
       {
         question: "האם ניתן לצרף ברכה או אריזת מתנה?",
-        answer:
-          "במוצרים ובהזמנות נתמכות ניתן לציין בקשה לברכה או אריזה. אם האפשרות לא מופיעה, ניתן לפנות לשירות הלקוחות לפני השלמת ההזמנה.",
+        answer: "כאשר זמין, ניתן להוסיף ברכה או אריזה בהזמנה.",
       },
     ],
   },
@@ -74,19 +70,16 @@ const faqGroups = [
     icon: Truck,
     items: [
       {
-        question: "האם המכירות מתקיימות אונליין בלבד?",
-        answer:
-          "כן. בשלב זה המכירות באתר מתקיימות אונליין בלבד, וההזמנות נשלחות לכתובת שתבחרו בתהליך הקופה.",
+        question: "האם ההזמנה מתבצעת באתר?",
+        answer: "כן. ההזמנה מתבצעת באתר ונשלחת לכתובת שנבחרה.",
       },
       {
-        question: "איך מבטלים עסקה או מחזירים מוצר?",
-        answer:
-          "ביטול עסקה, החלפה או החזרה מתבצעים בהתאם לחוק הגנת הצרכן, תקנותיו ומדיניות החנות. מוצרים מותאמים אישית או מוצרים שנעשה בהם שימוש עשויים להיות כפופים למגבלות לפי דין.",
+        question: "איך מבטלים או מחזירים הזמנה?",
+        answer: "ביטול, החלפה או החזרה מתבצעים לפי מדיניות האתר והוראות הדין.",
       },
       {
         question: "מה עושים אם התקבל מוצר פגום?",
-        answer:
-          "יש לפנות אלינו בהקדם עם מספר הזמנה, תמונה ותיאור הבעיה. נבדוק את המקרה ונציע תיקון, החלפה או פתרון אחר בהתאם לדין ולמדיניות השירות.",
+        answer: "יש לפנות לשירות עם מספר הזמנה, תמונה ותיאור המקרה.",
       },
     ],
   },
@@ -99,9 +92,9 @@ export default async function FaqPage() {
     <main>
       <SiteHeader />
 
-      <CommercePageHero
-        description="תשובות קצרות על קנייה באתר, זמינות אונליין, מידות, משלוחים ומתנות."
-        eyebrow="עזרה ושירות"
+      <CompactPageIntro
+        description="מידות, מתנות, משלוחים והחזרות - בלי לחפש בין עמודים."
+        eyebrow="שירות"
         title="שאלות ותשובות"
         variant="content"
       />
@@ -113,15 +106,45 @@ export default async function FaqPage() {
         <div className="grid gap-6 sm:grid-cols-2">
           <Link className="brand-surface interactive-lift p-5" href="/search">
             <Search className="size-5" aria-hidden="true" />
-            <p className="mt-3 font-medium">חיפוש בקטלוג</p>
+            <p className="mt-3 font-medium">חיפוש תכשיטים</p>
           </Link>
           <Link className="brand-surface interactive-lift p-5" href="/gifts">
             <Gift className="size-5" aria-hidden="true" />
-            <p className="mt-3 font-medium">מתנות לפי תקציב</p>
+            <p className="mt-3 font-medium">מתנות לפי מחיר</p>
           </Link>
         </div>
 
-        <div className="brand-surface mt-8 p-6 sm:p-8" id="faq-groups">
+        <section
+          aria-label="סינון מהיר לפי נושא"
+          className="mt-6 border-y border-[var(--glass-border)] py-4"
+          data-testid="faq-topic-filter-list"
+        >
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-medium">סינון מהיר</p>
+              <p className="text-muted-foreground text-sm">
+                קפיצה ישירה לנושא שמעניין אתכם.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {faqGroups.map((group, index) => (
+                <Link
+                  className="border-border hover:border-foreground/50 hover:bg-muted/60 rounded-full border px-3 py-1.5 text-sm transition"
+                  href={`#faq-group-${index + 1}`}
+                  key={group.title}
+                >
+                  {group.title}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <div
+          className="brand-surface mt-8 p-6 sm:p-8"
+          data-exclusive-details-group
+          id="faq-groups"
+        >
           <div className="grid gap-10">
             {faqGroups.map((group, index) => {
               const Icon = group.icon;
@@ -166,9 +189,17 @@ export default async function FaqPage() {
               לא מצאתם תשובה?
             </h2>
             <p className="text-muted-foreground mt-3 leading-8">
-              אפשר לפנות לשירות הלקוחות עם פרטי המוצר, מספר ההזמנה או תיאור
-              הבקשה.
+              אפשר לפנות לשירות עם שם התכשיט, מספר הזמנה או תיאור קצר של מה
+              שצריך.
             </p>
+            <Button asChild className="mt-5" variant="secondary">
+              <Link
+                data-testid="faq-service-recovery-link"
+                href="/service?topic=general"
+              >
+                פתיחת פנייה לשירות
+              </Link>
+            </Button>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               <a
                 className="glass-inset hover:text-foreground flex items-center gap-3 rounded-md border p-4 transition"
@@ -191,10 +222,10 @@ export default async function FaqPage() {
 
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
             <p className="text-muted-foreground text-sm">
-              עודכן לאחרונה: 29 באפריל 2026.
+              עודכן לאחרונה: 29 באפריל 2026
             </p>
             <Button asChild>
-              <Link href="/terms">לתקנון האתר</Link>
+              <Link href="/terms">לתקנון</Link>
             </Button>
           </div>
         </div>

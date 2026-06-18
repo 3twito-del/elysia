@@ -60,7 +60,10 @@ function optionalParam(value: string | string[] | undefined) {
 export default async function AdminAppointmentsPage({
   searchParams,
 }: AdminAppointmentsPageProps) {
-  const access = await getAdminPageAccess("CUSTOMER_VIEW");
+  const access = await getAdminPageAccess(
+    "CUSTOMER_VIEW",
+    "/admin/appointments",
+  );
 
   if (access.denied) return <AdminForbidden {...access.denied} />;
 
@@ -95,6 +98,28 @@ export default async function AdminAppointmentsPage({
     Boolean(params.status),
     params.page > 1,
   ].some(Boolean);
+  const activeFilterLabels = [
+    params.query ? `חיפוש: ${params.query}` : null,
+    params.status ? `סטטוס: ${getAppointmentStatusLabel(params.status)}` : null,
+    showPhysicalBranches && params.branchId
+      ? `מיקום: ${
+          data.branches.find((branch) => branch.id === params.branchId)?.name ??
+          "מיקום לא זמין"
+        }`
+      : null,
+    params.sort !== "starts-asc"
+      ? `מיון: ${getAppointmentSortLabel(params.sort)}`
+      : null,
+    params.page > 1 ? `עמוד ${params.page}` : null,
+  ].filter((label): label is string => Boolean(label));
+  const emptyTitle = hasActiveFilters
+    ? "אין תורים שמתאימים לסינון"
+    : showPhysicalBranches
+      ? "אין תורים"
+      : "אין תיאומי שירות";
+  const emptyDescription = hasActiveFilters
+    ? "לא נמצאו תורים לפי הסינון הנוכחי. נקו סינון או שנו חיפוש כדי לחזור לתור התיאומים המלא."
+    : "תורים ותיאומי שירות חדשים מהאתר יופיעו כאן לטיפול.";
 
   return (
     <AdminShell
@@ -132,6 +157,7 @@ export default async function AdminAppointmentsPage({
               />
               <select
                 aria-label="סינון לפי סטטוס תור"
+                autoComplete="off"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
                 defaultValue={params.status ?? ""}
                 name="status"
@@ -146,6 +172,7 @@ export default async function AdminAppointmentsPage({
               {showPhysicalBranches ? (
                 <select
                   aria-label="סינון תורים לפי מיקום פיזי"
+                  autoComplete="off"
                   className="glass-control h-11 rounded-md border px-3 text-sm"
                   defaultValue={params.branchId ?? ""}
                   name="branchId"
@@ -160,6 +187,7 @@ export default async function AdminAppointmentsPage({
               ) : null}
               <select
                 aria-label="מיון תורים"
+                autoComplete="off"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
                 defaultValue={params.sort}
                 name="sort"
@@ -174,6 +202,22 @@ export default async function AdminAppointmentsPage({
                 </Button>
               ) : null}
             </form>
+            {hasActiveFilters ? (
+              <div
+                className="text-muted-foreground mt-4 flex flex-wrap items-center gap-2 text-sm"
+                data-testid="admin-appointment-active-filters"
+              >
+                <span className="text-foreground font-medium">סינון פעיל</span>
+                {activeFilterLabels.map((label) => (
+                  <Badge key={label} variant="outline">
+                    {label}
+                  </Badge>
+                ))}
+                <Button asChild size="sm" variant="ghost">
+                  <Link href="/admin/appointments">ניקוי סינון</Link>
+                </Button>
+              </div>
+            ) : null}
           </CardContent>
         </Card>
 
@@ -202,10 +246,17 @@ export default async function AdminAppointmentsPage({
               <TableBody>
                 {data.items.length === 0 ? (
                   <TableEmptyRow
+                    action={
+                      hasActiveFilters ? (
+                        <Button asChild size="sm" variant="outline">
+                          <Link href="/admin/appointments">ניקוי סינון</Link>
+                        </Button>
+                      ) : undefined
+                    }
                     colSpan={6}
-                    description="תורים חדשים מהאתר יופיעו כאן לטיפול."
+                    description={emptyDescription}
                     icon={CalendarClock}
-                    title="אין תורים מתאימים"
+                    title={emptyTitle}
                   />
                 ) : (
                   data.items.map((appointment) => (
@@ -259,4 +310,13 @@ export default async function AdminAppointmentsPage({
       </TRPCReactProvider>
     </AdminShell>
   );
+}
+
+function getAppointmentSortLabel(sort: "starts-asc" | "starts-desc") {
+  switch (sort) {
+    case "starts-desc":
+      return "רחוקים תחילה";
+    case "starts-asc":
+      return "קרובים תחילה";
+  }
 }

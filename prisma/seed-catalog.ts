@@ -1,5 +1,10 @@
 export const PRODUCTS_PER_CATEGORY = 75;
 
+const PRODUCT_CATALOG_IMAGE_COUNT = 16;
+const PRODUCT_CATALOG_IMAGE_ORDER = [
+  10, 1, 6, 7, 4, 15, 2, 11, 3, 0, 9, 12, 14, 13, 8, 5,
+];
+
 export const seedCategories = [
   {
     slug: "rings",
@@ -16,7 +21,7 @@ export const seedCategories = [
   {
     slug: "earrings",
     name: "עגילים",
-    description: "עגילי סטודיו מודרניים בזהב, פנינים ויהלומים.",
+    description: "עגילים מודרניים בזהב, פנינים ויהלומים בקו מאופק.",
     sortOrder: 3,
   },
   {
@@ -46,37 +51,37 @@ export const seedStones = [
 export const seedCollections = [
   {
     slug: "studio-light",
-    name: "אור סטודיו",
+    name: "אור רך",
     description: "קולקציית בסיס נקייה עם קווים דקים וזהב חם.",
-    heroImageUrl: "/brand/v2/commerce-catalog.avif",
+    heroImageUrl: "/brand/boutique/lifestyle-hero.avif",
     isFeatured: true,
   },
   {
     slug: "bridal-edit",
     name: "בחירת כלה",
     description: "בחירות מדויקות להצעות, חתונות וסטים חגיגיים.",
-    heroImageUrl: "/brand/v2/category-rings.avif",
+    heroImageUrl: "/brand/boutique/category-rings.avif",
     isFeatured: true,
   },
   {
     slug: "daily-icons",
-    name: "אייקונים יומיים",
+    name: "בחירות יומיות",
     description: "תכשיטים קלים לשילוב יומיומי עם גימור נקי.",
-    heroImageUrl: "/brand/v2/hero-glass.avif",
+    heroImageUrl: "/brand/boutique/category-necklaces.avif",
     isFeatured: false,
   },
   {
     slug: "evening-glow",
     name: "זוהר ערב",
-    description: "פריטים מבריקים לערב, אירועים ומתנות עם נוכחות.",
-    heroImageUrl: "/brand/v2/service-task.avif",
+    description: "בחירות מבריקות לערב, אירועים ומתנות עם נוכחות.",
+    heroImageUrl: "/brand/boutique/category-earrings.avif",
     isFeatured: false,
   },
   {
     slug: "gift-studio",
-    name: "סטודיו מתנות",
+    name: "מתנות בשקט",
     description: "בחירות מוכנות למתנות לפי תקציב, סגנון ואירוע.",
-    heroImageUrl: "/brand/v2/commerce-gifts.avif",
+    heroImageUrl: "/brand/boutique/category-bracelets.avif",
     isFeatured: false,
   },
 ] as const;
@@ -121,14 +126,14 @@ const manualProducts = [
     name: "טבעת Venus Line",
     shortDescription: "טבעת זהב דקה עם יהלום יחיד ונוכחות שקטה.",
     description:
-      "טבעת יומיומית בעבודת סטודיו נקייה. מתאימה כמתנה, טבעת שכבות או טבעת הצעה עדינה.",
+      "טבעת יומיומית בעבודה נקייה. מתאימה כמתנה, טבעת שכבות או טבעת הצעה עדינה.",
     categorySlug: "rings",
     materialSlug: "yellow-gold",
     stoneSlug: "diamond",
     basePrice: "1290",
     collectionSlugs: ["studio-light", "bridal-edit"],
-    image: "/brand/v2/category-rings.avif",
-    tags: ["יוקרה נגישה", "סטודיו מודרני", "אירוסין", "מתנה"],
+    image: getSeedProductCatalogImage("rings", "venus-line-ring"),
+    tags: ["דיוק מאופק", "קו מודרני", "אירוסין", "מתנה"],
     variants: [
       {
         sku: "ELY-RG-001-52",
@@ -160,14 +165,14 @@ const manualProducts = [
     name: "עגילי Muse Pearl",
     shortDescription: "עגילי פנינה קטנים בזהב צהוב למראה נקי.",
     description:
-      "עגילים קלאסיים במראה סטודיו מודרני, עם פנינה טבעית ונעילה נוחה לשימוש יומיומי.",
+      "עגילים קלאסיים בקו מודרני מאופק, עם פנינה טבעית ונעילה נוחה לשימוש יומיומי.",
     categorySlug: "earrings",
     materialSlug: "yellow-gold",
     stoneSlug: "pearl",
     basePrice: "690",
     collectionSlugs: ["studio-light"],
-    image: "/brand/v2/category-earrings.avif",
-    tags: ["יוקרה נגישה", "סטודיו מודרני", "פנינה", "מתנה"],
+    image: getSeedProductCatalogImage("earrings", "muse-pearl-earrings"),
+    tags: ["דיוק מאופק", "קו מודרני", "פנינה", "מתנה"],
     variants: [
       {
         sku: "ELY-ER-018-STD",
@@ -194,8 +199,8 @@ const manualProducts = [
     stoneSlug: "diamond",
     basePrice: "980",
     collectionSlugs: ["studio-light"],
-    image: "/brand/v2/category-necklaces.avif",
-    tags: ["יוקרה נגישה", "סטודיו מודרני", "שכבות", "מתנה"],
+    image: getSeedProductCatalogImage("necklaces", "selene-chain"),
+    tags: ["דיוק מאופק", "קו מודרני", "שכבות", "מתנה"],
     variants: [
       {
         sku: "ELY-NK-044-42",
@@ -233,8 +238,8 @@ const manualProducts = [
     stoneSlug: null,
     basePrice: "840",
     collectionSlugs: ["studio-light"],
-    image: "/brand/v2/category-bracelets.avif",
-    tags: ["יוקרה נגישה", "סטודיו מודרני", "יום יום", "שכבות"],
+    image: getSeedProductCatalogImage("bracelets", "hera-bracelet"),
+    tags: ["דיוק מאופק", "קו מודרני", "יום יום", "שכבות"],
     variants: [
       {
         sku: "ELY-BR-027-S",
@@ -281,7 +286,7 @@ const categoryBlueprints = {
     productKind: "טבעת",
     skuPrefix: "RG",
     generatedSlugPrefix: "ring",
-    image: "/brand/v2/category-rings.avif",
+    image: "/brand/boutique/category-rings.avif",
     priceBase: 690,
     priceStep: 65,
     variantPriceStep: 45,
@@ -299,7 +304,7 @@ const categoryBlueprints = {
     productKind: "שרשרת",
     skuPrefix: "NK",
     generatedSlugPrefix: "necklace",
-    image: "/brand/v2/category-necklaces.avif",
+    image: "/brand/boutique/category-necklaces.avif",
     priceBase: 620,
     priceStep: 55,
     variantPriceStep: 35,
@@ -317,7 +322,7 @@ const categoryBlueprints = {
     productKind: "עגילי",
     skuPrefix: "ER",
     generatedSlugPrefix: "earrings",
-    image: "/brand/v2/category-earrings.avif",
+    image: "/brand/boutique/category-earrings.avif",
     priceBase: 360,
     priceStep: 48,
     variantPriceStep: 30,
@@ -335,7 +340,7 @@ const categoryBlueprints = {
     productKind: "צמיד",
     skuPrefix: "BR",
     generatedSlugPrefix: "bracelet",
-    image: "/brand/v2/category-bracelets.avif",
+    image: "/brand/boutique/category-bracelets.avif",
     priceBase: 520,
     priceStep: 52,
     variantPriceStep: 40,
@@ -351,29 +356,6 @@ const categoryBlueprints = {
   },
 } satisfies Record<SeedCategorySlug, CategoryBlueprint>;
 
-const categoryImageVariants = {
-  rings: [
-    "/brand/v2/category-rings.avif",
-    "/brand/v2/product-focus.avif",
-    "/brand/v2/hero-rings.avif",
-  ],
-  necklaces: [
-    "/brand/v2/category-necklaces.avif",
-    "/brand/v2/hero-pearls.avif",
-    "/brand/v2/commerce-catalog.avif",
-  ],
-  earrings: [
-    "/brand/v2/category-earrings.avif",
-    "/brand/v2/hero-pearls.avif",
-    "/brand/v2/service-task.avif",
-  ],
-  bracelets: [
-    "/brand/v2/category-bracelets.avif",
-    "/brand/v2/hero-glass.avif",
-    "/brand/v2/commerce-gifts.avif",
-  ],
-} satisfies Record<SeedCategorySlug, readonly string[]>;
-
 const designFamilies = [
   { slug: "aura", name: "Aura", hebrew: "הילה", tags: ["עדין", "יום יום"] },
   { slug: "noya", name: "Noya", hebrew: "נויה", tags: ["נקי", "מתנה"] },
@@ -383,9 +365,9 @@ const designFamilies = [
   { slug: "daphne", name: "Daphne", hebrew: "דפנה", tags: ["אלגנטי", "אירוע"] },
   { slug: "noor", name: "Noor", hebrew: "אור", tags: ["מודרני", "קל"] },
   { slug: "gaia", name: "Gaia", hebrew: "גאיה", tags: ["טבעי", "אבן חן"] },
-  { slug: "ariel", name: "Ariel", hebrew: "אריאל", tags: ["יוקרתי", "נקי"] },
+  { slug: "ariel", name: "Ariel", hebrew: "אריאל", tags: ["מאופק", "נקי"] },
   { slug: "eden", name: "Eden", hebrew: "עדן", tags: ["רך", "מתנה"] },
-  { slug: "lyra", name: "Lyra", hebrew: "לירה", tags: ["סטודיו", "ערב"] },
+  { slug: "lyra", name: "Lyra", hebrew: "לירה", tags: ["קו נקי", "ערב"] },
   { slug: "talia", name: "Talia", hebrew: "טליה", tags: ["יומיומי", "שכבות"] },
   { slug: "mika", name: "Mika", hebrew: "מיקה", tags: ["מינימלי", "קל"] },
   { slug: "sivan", name: "Sivan", hebrew: "סיון", tags: ["חגיגי", "מתנה"] },
@@ -394,7 +376,7 @@ const designFamilies = [
     slug: "zohar",
     name: "Zohar",
     hebrew: "זוהר",
-    tags: ["מבריק", "יוקרה נגישה"],
+    tags: ["מבריק", "אור רך"],
   },
 ] as const;
 
@@ -487,6 +469,7 @@ function createGeneratedProduct(
   );
   const stoneText = stone ? `עם ${stone.name}` : "ללא אבן";
   const name = `${blueprint.productKind} ${family.hebrew} ${detail.hebrew}`;
+  const slug = `${blueprint.generatedSlugPrefix}-${family.slug}-${detail.slug}-${serial}`;
   const description = createGeneratedProductDescription({
     materialName: material.name,
     name,
@@ -494,7 +477,7 @@ function createGeneratedProduct(
   });
 
   return {
-    slug: `${blueprint.generatedSlugPrefix}-${family.slug}-${detail.slug}-${serial}`,
+    slug,
     sku,
     name,
     shortDescription: `${blueprint.productKind} ${material.name} ${stoneText} בגימור ${detail.hebrew}.`,
@@ -504,7 +487,7 @@ function createGeneratedProduct(
     stoneSlug: stone?.slug ?? null,
     basePrice: String(basePrice),
     collectionSlugs,
-    image: pick(categoryImageVariants[categorySlug], index + blueprint.offset),
+    image: getSeedProductCatalogImage(categorySlug, slug),
     tags: createTags({
       blueprint,
       collectionSlugs,
@@ -558,7 +541,7 @@ function createTags(input: {
       ...input.familyTags,
       input.materialName,
       input.stoneName ?? "ללא אבן",
-      "יוקרה נגישה",
+      "אור רך",
       ...(input.collectionSlugs.includes("gift-studio") || input.index % 4 === 0
         ? ["מתנה"]
         : []),
@@ -574,7 +557,7 @@ function createGeneratedProductDescription(input: {
 }) {
   const stoneText = input.stoneName ? ` עם ${input.stoneName}` : "";
 
-  return `${input.name} משלב ${input.materialName}${stoneText} בקו נקי ונוח לענידה. מתאים לשילוב יומיומי, מתנה או אירוע, עם פירוט מלא של מידה, חומר וזמינות לפני רכישה.`;
+  return `${input.name} משלב ${input.materialName}${stoneText} בקו נקי ונוח לענידה. מתאים לשילוב יומיומי, מתנה או אירוע, עם פרטי מידה, חומר ומחיר שמוצגים בשפה ברורה.`;
 }
 
 function createVariants(input: {
@@ -600,6 +583,28 @@ function createVariants(input: {
     quantityJerusalem: 1 + ((input.index + variantIndex * 2) % 7),
     safetyStock: input.index % 5 === 0 ? 2 : 1,
   }));
+}
+
+function getSeedProductCatalogImage(
+  categorySlug: SeedCategorySlug,
+  slug: string,
+) {
+  const imageIndex = getStableIndex(slug, PRODUCT_CATALOG_IMAGE_COUNT);
+  const imageNumber =
+    (PRODUCT_CATALOG_IMAGE_ORDER[imageIndex] ?? imageIndex) + 1;
+  const paddedImageNumber = imageNumber.toString().padStart(2, "0");
+
+  return `/brand/product-catalog/${categorySlug}-${paddedImageNumber}.avif`;
+}
+
+function getStableIndex(value: string, length: number) {
+  let hash = 0;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
+  }
+
+  return length > 0 ? hash % length : 0;
 }
 
 function pick<T>(values: readonly T[], index: number): T {

@@ -26,10 +26,10 @@ type CartCountLinkProps = Omit<
 >;
 
 export const CartCountLink = forwardRef<HTMLAnchorElement, CartCountLinkProps>(
-  ({ className, ...props }, ref) => {
+  ({ className, prefetch = false, ...props }, ref) => {
     const [itemCount, setItemCount] = useState(0);
     const cartLabel =
-      itemCount > 0 ? `סל קניות, ${itemCount} פריטים` : "סל קניות";
+      itemCount > 0 ? `סל קניות, ${itemCount} תכשיטים` : "סל קניות ריק";
 
     useEffect(() => {
       let cancelled = false;
@@ -111,13 +111,15 @@ export const CartCountLink = forwardRef<HTMLAnchorElement, CartCountLinkProps>(
         ref={ref}
         aria-label={cartLabel}
         className={cn("relative", className)}
+        data-cart-state={itemCount > 0 ? "filled" : "empty"}
         href="/checkout"
+        prefetch={prefetch}
       >
         <ShoppingBag aria-hidden="true" className="size-5" />
         {itemCount > 0 ? (
           <span
             aria-hidden="true"
-            className="cart-count-badge bg-foreground text-background absolute -top-1.5 -right-1.5 grid h-5 min-w-5 place-items-center rounded-full px-1 text-[0.68rem] leading-none font-semibold"
+            className="cart-count-badge bg-foreground text-background absolute -top-1 -right-1 grid h-4 min-w-4 place-items-center rounded-full px-1 text-[0.6rem] leading-none font-semibold"
           >
             {itemCount > 99 ? "99+" : itemCount}
           </span>

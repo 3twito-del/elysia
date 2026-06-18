@@ -74,13 +74,17 @@ export async function listDueOutboxEvents(input: { limit?: number } = {}) {
 }
 
 export async function markOutboxEventStatus(input: {
+  attempts?: number;
   id: string;
   status: OutboxEventStatus;
   lastError?: string;
 }) {
   const retryAt =
     input.status === "FAILED"
-      ? new Date(Date.now() + 2 ** 3 * 60_000)
+      ? getOutboxRetryAvailableAt({
+          attempts: input.attempts ?? 1,
+          seed: input.id,
+        })
       : undefined;
 
   return db.outboxEvent.update({
@@ -94,6 +98,42 @@ export async function markOutboxEventStatus(input: {
       availableAt: retryAt,
     },
   });
+}
+
+export function getOutboxRetryAvailableAt(input: {
+  attempts: number;
+  now?: Date;
+  seed: string;
+}) {
+  const now = input.now ?? new Date();
+
+  return new Date(now.getTime() + getOutboxRetryDelayMs(input));
+}
+
+export function getOutboxRetryDelayMs(input: {
+  attempts: number;
+  seed: string;
+}) {
+  const attempts = Math.max(1, Math.floor(input.attempts));
+  const baseDelayMs = Math.min(
+    60 * 60_000,
+    2 ** Math.min(attempts, 6) * 60_000,
+  );
+  const jitterWindowMs = Math.min(60_000, Math.floor(baseDelayMs * 0.1));
+  const jitterMs =
+    jitterWindowMs > 0 ? getDeterministicJitter(input.seed, jitterWindowMs) : 0;
+
+  return Math.min(60 * 60_000, baseDelayMs + jitterMs);
+}
+
+function getDeterministicJitter(seed: string, windowMs: number) {
+  let hash = 0;
+
+  for (let index = 0; index < seed.length; index += 1) {
+    hash = (hash * 31 + seed.charCodeAt(index)) >>> 0;
+  }
+
+  return hash % windowMs;
 }
 
 export async function recordJobRun(input: {

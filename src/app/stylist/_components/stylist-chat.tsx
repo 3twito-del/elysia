@@ -3,15 +3,9 @@
 import { useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import type { ChatAddToolApproveResponseFunction, UIMessage } from "ai";
-import {
-  AlertCircle,
-  Check,
-  MessageSquare,
-  Send,
-  Sparkles,
-  X,
-} from "lucide-react";
+import { Check, MessageSquare, Send, Sparkles, X } from "lucide-react";
 
+import { AiFallbackRecovery } from "~/app/ai/_components/ai-fallback-recovery";
 import { AiProductRecommendations } from "~/components/ai-product-recommendations";
 import {
   Conversation,
@@ -39,9 +33,9 @@ import type { AiRecommendedProductInput } from "~/lib/ai-product-recommendations
 import { cn } from "~/lib/utils";
 
 const suggestions = [
-  "מתנה לאמא עד 700 ש״ח בסגנון עדין",
-  "טבעת זהב צהוב שמתאימה לענידה יומיומית",
-  "עגילים עדינים לכלה, בלי תחושה כבדה",
+  "מתנה עד 700 ₪",
+  "טבעת זהב צהוב ליום־יום",
+  "עגילים נקיים לאירוע",
 ];
 
 type StylistChatProps = {
@@ -84,7 +78,7 @@ export function StylistChat({ compact = false }: StylistChatProps) {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="grid gap-2">
               <Badge className="w-fit" variant="secondary">
-                סטייליסט Elysia
+                ייעוץ Elysia
               </Badge>
               <div className="grid gap-1">
                 <h2
@@ -93,11 +87,10 @@ export function StylistChat({ compact = false }: StylistChatProps) {
                     compact ? "text-xl" : "text-2xl",
                   )}
                 >
-                  סטייליסט תכשיטים אישי
+                  יועץ לוק
                 </h2>
                 <p className="text-muted-foreground max-w-2xl text-sm leading-6">
-                  מאתרים התאמות בקטלוג לפי תקציב, אירוע, חומר וסגנון, ומציגים את
-                  הפריטים עצמם אחרי ההמלצה.
+                  מאתרים תכשיטים לפי מחיר, אירוע, חומר וסגנון, מתוך המלאי הפעיל.
                 </p>
               </div>
             </div>
@@ -137,11 +130,9 @@ export function StylistChat({ compact = false }: StylistChatProps) {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <h3 className="text-lg font-semibold">
-                        איך אפשר להתאים לך תכשיט?
-                      </h3>
+                      <h3 className="text-lg font-semibold">מה תרצו למצוא?</h3>
                       <p className="text-muted-foreground text-sm leading-6">
-                        כתבו תקציב, אירוע, סגנון או פריט שמעניין אתכם.
+                        כתבו מחיר, אירוע, סגנון או תכשיט שמעניין אתכם.
                       </p>
                     </div>
                     <div className="flex flex-wrap justify-center gap-2">
@@ -187,36 +178,31 @@ export function StylistChat({ compact = false }: StylistChatProps) {
 
           <div className="border-t border-[var(--glass-border)] p-4 sm:p-5">
             {error ? (
-              <div className="glass-inset mb-4 rounded-md border p-4 text-sm">
-                <div className="flex items-start gap-3">
-                  <AlertCircle
-                    aria-hidden="true"
-                    className="mt-0.5 size-5 shrink-0"
-                  />
-                  <div className="grid gap-2">
-                    <p className="font-medium">הסטייליסט לא זמין כרגע.</p>
-                    <p className="text-muted-foreground leading-6">
-                      שירות ההתאמה אינו זמין כרגע. נסו שוב בעוד דקה.
-                    </p>
-                    <Button
-                      className="w-fit"
-                      onClick={clearError}
-                      size="sm"
-                      type="button"
-                      variant="outline"
-                    >
-                      נקה הודעה
-                    </Button>
-                  </div>
-                </div>
-              </div>
+              <AiFallbackRecovery
+                actions={
+                  <Button
+                    className="w-fit"
+                    onClick={clearError}
+                    size="sm"
+                    type="button"
+                    variant="outline"
+                  >
+                    נקה הודעה
+                  </Button>
+                }
+                className="mb-4 text-sm"
+                reason={error.message}
+                source="stylist"
+              />
             ) : null}
 
             <PromptInput className="relative" dir="rtl" onSubmit={handleSubmit}>
               <PromptInputTextarea
+                aria-label="תיאור הבקשה ליועץ"
                 className="max-h-32 min-h-14 py-3 pr-4 pl-14 leading-6"
+                id="stylist-message"
                 onChange={(event) => setInput(event.currentTarget.value)}
-                placeholder="לדוגמה: מתנה עד 900 ש״ח למישהי שאוהבת זהב לבן"
+                placeholder="לדוגמה: מתנה סביב 900 ש״ח למישהי שאוהבת זהב לבן"
                 value={input}
               />
               <PromptInputSubmit
@@ -235,7 +221,7 @@ export function StylistChat({ compact = false }: StylistChatProps) {
               </PromptInputSubmit>
             </PromptInput>
             <p className="text-muted-foreground mt-3 text-xs leading-5">
-              ההמלצות הן כלי עזר. זמינות, מידה והתאמה סופית יאושרו בקופה.
+              ההמלצות אינן מחליפות בדיקת מידה, זמינות ופרטי הזמנה.
             </p>
           </div>
         </div>
@@ -327,15 +313,11 @@ function SearchCatalogToolResult({
   queryText?: string;
 }) {
   if (part.state === "output-error") {
-    return (
-      <StatusMessage tone="error">
-        לא ניתן היה לטעון מוצרים מהקטלוג כרגע.
-      </StatusMessage>
-    );
+    return <StatusMessage tone="error">המבחר אינו פתוח כרגע.</StatusMessage>;
   }
 
   if (part.state !== "output-available") {
-    return <LoadingState label="מאתרים התאמות בקטלוג" variant="inline" />;
+    return <LoadingState label="מאתרים התאמות במבחר" variant="inline" />;
   }
 
   const products = Array.isArray(part.output)
@@ -349,7 +331,7 @@ function SearchCatalogToolResult({
       products={products}
       queryText={queryText}
       source="stylist"
-      title="פריטים שמתאימים לבקשה"
+      title="בחירות שמתאימות לבקשה"
     />
   );
 }
@@ -367,7 +349,7 @@ function SafeActionToolResult({
         <div className="grid gap-1">
           <p className="font-medium">{getToolLabel(part.type)}</p>
           <p className="text-muted-foreground leading-6">
-            פעולה זו דורשת אישור לפני ביצוע.
+            הפעולה הזו דורשת אישור לפני המשך.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -414,14 +396,12 @@ function SafeActionToolResult({
 
   if (part.state === "output-error") {
     return (
-      <StatusMessage tone="error">
-        לא ניתן היה להשלים את הפעולה כרגע.
-      </StatusMessage>
+      <StatusMessage tone="error">לא ניתן היה להשלים את הפעולה.</StatusMessage>
     );
   }
 
   if (part.state !== "output-available") {
-    return <LoadingState label="מבצעים פעולה מאובטחת" variant="inline" />;
+    return <LoadingState label="מאשרים פעולה מאובטחת" variant="inline" />;
   }
 
   return (
@@ -433,7 +413,7 @@ function SafeActionToolResult({
 
 function getToolLabel(type: string) {
   if (type === "tool-saveStyleProfile") return "שמירת פרופיל סגנון";
-  if (type === "tool-createTryOnSession") return "פתיחת מדידה וירטואלית";
+  if (type === "tool-createTryOnSession") return "פתיחת מידה";
   if (type === "tool-orderSupport") return "בדיקת הזמנה";
 
   return "פעולת התאמה";

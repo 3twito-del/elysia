@@ -13,21 +13,27 @@ const allowedTrackingUtilities = new Map([
 ]);
 
 describe("public typography spacing guardrails", () => {
-  it("uses a dedicated Hebrew UI font while keeping Geist scoped to brand marks", () => {
+  it("uses a rounded Hebrew UI font while keeping the graphic logo separate", () => {
     const layout = read("src/app/layout.tsx");
     const css = read("src/styles/globals.css");
     const home = read("src/app/page.tsx");
     const adminShell = read("src/app/admin/_components/admin-shell.tsx");
 
-    expect(layout).toContain("Noto_Sans_Hebrew");
-    expect(layout).toContain('variable: "--font-noto-hebrew"');
-    expect(layout).toContain("notoSansHebrew.variable");
+    expect(layout).toContain("Rubik");
+    expect(layout).toContain('variable: "--font-rubik"');
+    expect(layout).not.toContain("Noto_Sans_Hebrew");
+    expect(layout).not.toContain('variable: "--font-noto-hebrew"');
     expect(css).toContain("--font-hebrew-sans");
+    expect(css).toContain("var(--font-rubik)");
     expect(css).toContain("--font-latin-brand");
-    expect(css).toContain('--font-sans:\n    "Noto Sans Hebrew"');
+    expect(css).toContain('--font-sans:\n    "Rubik"');
+    expect(css).toContain('"Arial Hebrew"');
     expect(css).toContain("font-family: var(--font-hebrew-sans);");
-    expect(css).toContain(".home-hero-wordmark");
-    expect(home).toContain("home-hero-wordmark");
+    expect(css).toContain(".storefront-hero-statement");
+    expect(css).toContain(".storefront-hero-title");
+    expect(home).toContain("קיץ חדש. זוהר נקי.");
+    expect(home).not.toContain('<h1 className="sr-only">Elysia</h1>');
+    expect(home).not.toContain("home-hero-wordmark");
     expect(adminShell).toContain("admin-brand-mark");
   });
 
@@ -52,6 +58,16 @@ describe("public typography spacing guardrails", () => {
     expect(card).toContain("p-[var(--ui-card-padding)]");
     expect(adminShell).toContain("px-[var(--ui-page-x)]");
     expect(adminShell).toContain("py-[var(--ui-section-y)]");
+  });
+
+  it("balances public text wrapping to avoid orphan words and overflow", () => {
+    const css = read("src/styles/globals.css");
+
+    expect(css).toContain("text-wrap: pretty;");
+    expect(css).toContain("text-wrap: balance;");
+    expect(css).toContain("overflow-wrap: anywhere;");
+    expect(css).toContain('[data-slot="button"]');
+    expect(css).toContain(":where(h1, h2, h3, h4, h5, h6, legend)");
   });
 
   it("keeps public text letter spacing normal except documented shortcut labels", () => {

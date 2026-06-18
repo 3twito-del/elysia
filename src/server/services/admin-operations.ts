@@ -1,7 +1,14 @@
 import type { OrderStatus, Prisma } from "@prisma/client";
 
 import { env } from "~/env";
+import {
+  getOrderSourceDescription,
+  getOrderSourceLabel,
+  getShopifyFinancialStatusLabel,
+  getShopifyFulfillmentStatusLabel,
+} from "~/lib/commerce-labels";
 import { notificationProvider } from "~/server/adapters/notifications";
+import { getShopifyAdminOrderUrl } from "~/server/adapters/shopify";
 import { db } from "~/server/db";
 import { DEFAULT_CATALOG_IMAGE } from "~/server/services/catalog";
 import {
@@ -67,6 +74,22 @@ function getAdminBranchWhere(
     : { kind: "ONLINE" as const, isActive: true };
 }
 
+export type AdminOverviewFreshness = {
+  cadence: "per-request";
+  generatedAt: Date;
+  source: "live-database";
+};
+
+export function createAdminOverviewFreshness(
+  generatedAt = new Date(),
+): AdminOverviewFreshness {
+  return {
+    cadence: "per-request",
+    generatedAt,
+    source: "live-database",
+  };
+}
+
 export async function getAdminOperationsOverview() {
   const [
     products,
@@ -116,6 +139,7 @@ export async function getAdminOperationsOverview() {
     branches: physicalBranchesEnabled ? branches : 0,
     dueOutbox,
     failedOutbox,
+    freshness: createAdminOverviewFreshness(),
     integrations: getAdminIntegrationStatuses(),
     inventoryReserved: reserved._sum.reserved ?? 0,
     inventoryUnits: inventory._sum.quantity ?? 0,
@@ -128,7 +152,7 @@ export async function getAdminOperationsOverview() {
       total: Number(order.total),
       branchName: physicalBranchesEnabled
         ? (order.branch?.name ?? null)
-        : "שירות אונליין",
+        : "שירות מרחוק",
       createdAt: order.createdAt,
     })),
     openOrders,
@@ -170,7 +194,43 @@ export async function listAdminOrders(input: AdminOrderListInput) {
       : {}),
   };
   const orderBy = getAdminOrderSort(parsed.sort);
-  const [totalItems, orders, branches] = await Promise.all([
+  const localOnlyOrderFiltersActive = [
+    Boolean(parsed.status),
+    Boolean(parsed.fulfillmentMethod),
+    physicalBranchesEnabled && Boolean(parsed.branchId),
+  ].some(Boolean);
+  const shopifyMirrorWhere: Prisma.ShopifyOrderMirrorWhereInput = {
+    ...(parsed.dateFrom || parsed.dateTo
+      ? {
+          createdAt: {
+            ...(parsed.dateFrom ? { gte: parsed.dateFrom } : {}),
+            ...(parsed.dateTo ? { lte: parsed.dateTo } : {}),
+          },
+        }
+      : {}),
+    ...(parsed.query
+      ? {
+          OR: [
+            {
+              shopifyOrderId: {
+                contains: parsed.query,
+                mode: "insensitive",
+              },
+            },
+            {
+              shopifyOrderName: {
+                contains: parsed.query,
+                mode: "insensitive",
+              },
+            },
+            {
+              customerEmail: { contains: parsed.query, mode: "insensitive" },
+            },
+          ],
+        }
+      : {}),
+  };
+  const [totalItems, orders, branches, shopifyMirrors] = await Promise.all([
     db.order.count({ where }),
     db.order.findMany({
       where,
@@ -201,6 +261,13 @@ export async function listAdminOrders(input: AdminOrderListInput) {
         { name: "asc" },
       ],
     }),
+    localOnlyOrderFiltersActive
+      ? Promise.resolve([])
+      : db.shopifyOrderMirror.findMany({
+          where: shopifyMirrorWhere,
+          orderBy: { createdAt: "desc" },
+          take: 10,
+        }),
   ]);
 
   return {
@@ -208,12 +275,16 @@ export async function listAdminOrders(input: AdminOrderListInput) {
     branches: branches.map((branch) => ({
       id: branch.id,
       city: physicalBranchesEnabled ? branch.city : "",
-      name: physicalBranchesEnabled ? branch.name : "שירות אונליין",
+      name: physicalBranchesEnabled ? branch.name : "שירות מרחוק",
       slug: branch.slug,
     })),
     items: orders.map((order) => ({
       id: order.id,
       orderNumber: order.orderNumber,
+      source: "LOCAL" as const,
+      sourceLabel: getOrderSourceLabel("LOCAL"),
+      sourceDescription: getOrderSourceDescription("LOCAL"),
+      readOnly: false,
       status: order.status,
       fulfillmentMethod: order.fulfillmentMethod,
       total: Number(order.total),
@@ -221,8 +292,8 @@ export async function listAdminOrders(input: AdminOrderListInput) {
       phone: order.phone,
       recipientName: order.recipientName,
       branchName: physicalBranchesEnabled
-        ? (order.branch?.name ?? "שירות אונליין")
-        : "שירות אונליין",
+        ? (order.branch?.name ?? "שירות מרחוק")
+        : "שירות מרחוק",
       branchCity: physicalBranchesEnabled ? (order.branch?.city ?? "") : "",
       createdAt: order.createdAt,
       itemCount: order.items.reduce((sum, item) => sum + item.quantity, 0),
@@ -244,6 +315,34 @@ export async function listAdminOrders(input: AdminOrderListInput) {
             deliveredAt: order.shipments[0].deliveredAt,
           }
         : null,
+    })),
+    shopifyMirrorsHiddenByLocalFilters: localOnlyOrderFiltersActive,
+    shopifyMirrors: shopifyMirrors.map((order) => ({
+      id: order.id,
+      source: "SHOPIFY_MIRROR" as const,
+      sourceLabel: getOrderSourceLabel("SHOPIFY_MIRROR"),
+      sourceDescription: getOrderSourceDescription("SHOPIFY_MIRROR"),
+      readOnly: true,
+      shopifyOrderId: order.shopifyOrderId,
+      shopifyOrderName: order.shopifyOrderName,
+      customerEmail: order.customerEmail,
+      financialStatus: order.financialStatus,
+      financialStatusLabel: getShopifyFinancialStatusLabel(
+        order.financialStatus,
+      ),
+      fulfillmentStatus: order.fulfillmentStatus,
+      fulfillmentStatusLabel: getShopifyFulfillmentStatusLabel(
+        order.fulfillmentStatus,
+      ),
+      supplierKey: order.supplierKey,
+      total: Number(order.total),
+      currency: order.currency,
+      createdAt: order.createdAt,
+      processedAt: order.processedAt,
+      adminUrl: getShopifyAdminOrderUrl({
+        shopDomain: env.SHOPIFY_STORE_DOMAIN,
+        shopifyOrderId: order.shopifyOrderId,
+      }),
     })),
     pageInfo: createAdminPageInfo({
       page: parsed.page,
@@ -334,7 +433,7 @@ export async function listAdminCatalog(input: AdminCatalogListInput) {
     branches: branches.map((branch) => ({
       id: branch.id,
       slug: branch.slug,
-      name: physicalBranchesEnabled ? branch.name : "שירות אונליין",
+      name: physicalBranchesEnabled ? branch.name : "שירות מרחוק",
       city: physicalBranchesEnabled ? branch.city : "",
     })),
     categories: categories.map((category) => ({
@@ -396,7 +495,7 @@ export async function listAdminCatalog(input: AdminCatalogListInput) {
           branchId: item.branchId,
           branchName: physicalBranchesEnabled
             ? item.branch.name
-            : "שירות אונליין",
+            : "שירות מרחוק",
           quantity: item.quantity,
           reserved: item.reserved,
           safetyStock: item.safetyStock,
@@ -490,13 +589,13 @@ export async function listAdminInventory(input: AdminInventoryListInput) {
     branches: branches.map((branch) => ({
       id: branch.id,
       city: physicalBranchesEnabled ? branch.city : "",
-      name: physicalBranchesEnabled ? branch.name : "שירות אונליין",
+      name: physicalBranchesEnabled ? branch.name : "שירות מרחוק",
       slug: branch.slug,
     })),
     items: items.map((item) => ({
       id: item.id,
       branchId: item.branchId,
-      branchName: physicalBranchesEnabled ? item.branch.name : "שירות אונליין",
+      branchName: physicalBranchesEnabled ? item.branch.name : "שירות מרחוק",
       branchCity: physicalBranchesEnabled ? item.branch.city : "",
       categoryName: item.variant.product.category.name,
       productName: item.variant.product.name,
@@ -664,7 +763,7 @@ export async function listAdminAppointments(input: AdminAppointmentListInput) {
     branches: branches.map((branch) => ({
       id: branch.id,
       city: physicalBranchesEnabled ? branch.city : "",
-      name: physicalBranchesEnabled ? branch.name : "שירות אונליין",
+      name: physicalBranchesEnabled ? branch.name : "שירות מרחוק",
       slug: branch.slug,
     })),
     items: appointments.map((appointment) => ({
@@ -678,7 +777,7 @@ export async function listAdminAppointments(input: AdminAppointmentListInput) {
       notes: appointment.notes,
       branchName: physicalBranchesEnabled
         ? appointment.branch.name
-        : "שירות אונליין",
+        : "שירות מרחוק",
       branchCity: physicalBranchesEnabled ? appointment.branch.city : "",
       customerId: appointment.customerId,
     })),
@@ -761,7 +860,7 @@ export async function getAdminOrderDetail(orderId: string) {
     branch: order.branch
       ? {
           id: order.branch.id,
-          name: physicalBranchesEnabled ? order.branch.name : "שירות אונליין",
+          name: physicalBranchesEnabled ? order.branch.name : "שירות מרחוק",
           city: physicalBranchesEnabled ? order.branch.city : "",
           phone: physicalBranchesEnabled
             ? order.branch.phone
@@ -817,7 +916,7 @@ export async function getAdminOrderDetail(orderId: string) {
     })),
     inventoryLedgers: inventoryLedgers.map((entry) => ({
       id: entry.id,
-      branchName: physicalBranchesEnabled ? entry.branch.name : "שירות אונליין",
+      branchName: physicalBranchesEnabled ? entry.branch.name : "שירות מרחוק",
       variantSku: entry.variant.sku,
       delta: entry.delta,
       reason: entry.reason,
@@ -975,6 +1074,13 @@ export function getAdminIntegrationStatuses(): AdminIntegrationSummary[] {
     notificationProviderName: notificationProvider.providerName(),
     operationsEmail: env.OPERATIONS_EMAIL,
     resendApiKey: env.RESEND_API_KEY,
+    shopifyAdminAccessToken: env.SHOPIFY_ADMIN_ACCESS_TOKEN,
+    shopifyClientId: env.SHOPIFY_CLIENT_ID,
+    shopifyClientSecret: env.SHOPIFY_CLIENT_SECRET,
+    shopifyDropshipEnabled: env.SHOPIFY_DROPSHIP_ENABLED,
+    shopifyStoreDomain: env.SHOPIFY_STORE_DOMAIN,
+    shopifyStorefrontAccessToken: env.SHOPIFY_STOREFRONT_ACCESS_TOKEN,
+    shopifyWebhookSecret: env.SHOPIFY_WEBHOOK_SECRET,
     smsProviderApiKey: env.SMS_PROVIDER_API_KEY,
     storeFromEmail: env.STORE_FROM_EMAIL,
     typesenseApiKey: env.TYPESENSE_API_KEY,
@@ -1008,7 +1114,7 @@ function createOrderTimeline(order: {
     { label: "נוצרה", at: order.createdAt },
     { label: "שולמה", at: order.paidAt },
     { label: "בהכנה", at: order.preparingAt },
-    { label: "מוכן למשלוח", at: order.readyForPickupAt },
+    { label: "מוכן למסירה", at: order.readyForPickupAt },
     { label: "נשלחה", at: order.shippedAt },
     { label: "הושלמה", at: order.completedAt },
     { label: "בוטלה", at: order.cancelledAt },

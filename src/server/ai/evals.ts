@@ -40,7 +40,7 @@ export const DETERMINISTIC_AI_EVAL_CASES = [
   },
   {
     name: "gift finder is catalog backed only",
-    input: "מתנה לאמא עד 700 שח בסגנון עדין",
+    input: "מתנה לאמא עד 700 שח בסגנון נקי",
     expectedKind: AI_RUN_KIND.giftRecommendation,
     expectedTools: ["searchCatalog"],
     expectedConfidence: "medium",
@@ -58,10 +58,10 @@ export const DETERMINISTIC_AI_EVAL_CASES = [
   {
     name: "style and budget refinement stays catalog-backed",
     input: {
-      latestUserText: "אפשר משהו יותר עדין עד 700 שח?",
+      latestUserText: "אפשר משהו יותר נקי עד 700 שח?",
       recentUserTexts: [
         "מחפשת עגילים לכלה שלא נראים כבדים",
-        "אפשר משהו יותר עדין עד 700 שח?",
+        "אפשר משהו יותר נקי עד 700 שח?",
       ],
     },
     expectedKind: AI_RUN_KIND.catalogSearch,
@@ -82,14 +82,14 @@ export const DETERMINISTIC_AI_EVAL_CASES = [
   },
   {
     name: "try-on enables catalog search and approved try-on creation",
-    input: "אני רוצה מדידה וירטואלית לטבעת ונוס",
+    input: "אני רוצה מידה לטבעת ונוס",
     expectedKind: AI_RUN_KIND.tryOn,
     expectedTools: ["searchCatalog", "createTryOnSession"],
     expectedConfidence: "high",
   },
   {
     name: "vague try-on asks for product before approved action",
-    input: "אני רוצה מדידה וירטואלית",
+    input: "אני רוצה מידה",
     expectedKind: AI_RUN_KIND.tryOn,
     expectedTools: ["searchCatalog", "createTryOnSession"],
     expectedConfidence: "medium",

@@ -3,6 +3,8 @@ import { expect, test, type Page } from "@playwright/test";
 const cartProductSlug = "hera-bracelet";
 const notificationPromptMarker = "__elysiaNotificationPromptRequested";
 const pwaE2eOptInStorageKey = "elysia:pwa-e2e";
+const pwaServiceWorkerTimeoutMs = 30_000;
+const pwaPublicPagesCacheName = "elysia-v2-public-pages";
 const savedSizeStorageKey = "elysia_saved_sizes_v1";
 
 test.use({ serviceWorkers: "allow" });
@@ -48,16 +50,30 @@ test.describe("PWA runtime", () => {
       ]),
     );
 
+    const [robotsResponse, sitemapResponse] = await Promise.all([
+      page.request.get("/robots.txt"),
+      page.request.get("/sitemap.xml"),
+    ]);
+
+    expect(robotsResponse.ok()).toBe(true);
+    expect(robotsResponse.headers()["content-type"]).toContain("text/plain");
+    expect(await robotsResponse.text()).toContain("Sitemap:");
+    expect(sitemapResponse.ok()).toBe(true);
+    expect(sitemapResponse.headers()["content-type"]).toContain("xml");
+
     await waitForPwaRegistration(page);
     await expectNotificationPromptRequested(page);
   });
 
   test("serves a previously viewed product page while offline", async ({
+    browserName,
     context,
     page,
   }) => {
+    skipWebKitOfflineEmulation(browserName);
     await prepareControlledPwaPage(page, `/product/${cartProductSlug}`);
     await expect(page.getByTestId("product-gallery")).toBeVisible();
+    await waitForCachedPublicPage(page, `/product/${cartProductSlug}`);
 
     await context.setOffline(true);
 
@@ -74,9 +90,11 @@ test.describe("PWA runtime", () => {
   });
 
   test("keeps local size saving available offline", async ({
+    browserName,
     context,
     page,
   }) => {
+    skipWebKitOfflineEmulation(browserName);
     await prepareControlledPwaPage(page, "/size-guide?kind=ring");
     await expect(page.getByTestId("size-guide-tool")).toBeVisible();
 
@@ -114,9 +132,11 @@ test.describe("PWA runtime", () => {
   });
 
   test("queues add-to-cart offline and updates the cart badge", async ({
+    browserName,
     context,
     page,
   }) => {
+    skipWebKitOfflineEmulation(browserName);
     await prepareControlledPwaPage(page, `/product/${cartProductSlug}`);
     await expect(page.locator(".product-primary-cta").first()).toBeVisible();
 
@@ -144,9 +164,29 @@ test.describe("PWA runtime", () => {
     await prepareControlledPwaPage(page, "/");
 
     await page.evaluate(async () => {
+      const fetchWithTimeout = async (
+        input: RequestInfo,
+        init: RequestInit,
+      ) => {
+        const controller = new AbortController();
+        const timeout = window.setTimeout(() => controller.abort(), 5_000);
+
+        try {
+          await fetch(input, { ...init, signal: controller.signal });
+        } catch {
+          // A browser may cancel a protected redirect while the service worker
+          // is taking control. The cache assertions below are the hard gate.
+        } finally {
+          window.clearTimeout(timeout);
+        }
+      };
+
       await Promise.allSettled([
-        fetch("/admin", { cache: "no-store", redirect: "manual" }),
-        fetch("/api/health", { cache: "no-store" }),
+        fetchWithTimeout("/admin", {
+          cache: "no-store",
+          redirect: "manual",
+        }),
+        fetchWithTimeout("/api/health", { cache: "no-store" }),
       ]);
     });
 
@@ -197,12 +237,30 @@ function expectNotificationPromptRequested(page: Page) {
     .toBe(false);
 }
 
+function skipWebKitOfflineEmulation(browserName: string) {
+  test.skip(
+    browserName === "webkit",
+    "Playwright WebKit can close the context while emulating offline service-worker pages.",
+  );
+}
+
 async function prepareControlledPwaPage(page: Page, path: string) {
   await page.goto(path, { waitUntil: "domcontentloaded" });
   await waitForPwaRegistration(page);
-  await page.reload({ waitUntil: "domcontentloaded" });
-  await page.waitForLoadState("load");
+  await navigateAfterPwaRegistration(page, path);
+  await page.waitForLoadState("load", { timeout: 10_000 }).catch(() => {
+    // Firefox can leave the load event pending while a fresh service worker
+    // takes control. The DOM and controller checks below are the hard gates.
+  });
   await waitForPwaControl(page);
+}
+
+async function navigateAfterPwaRegistration(page: Page, path: string) {
+  try {
+    await page.goto(path, { timeout: 15_000, waitUntil: "domcontentloaded" });
+  } catch {
+    await page.reload({ timeout: 15_000, waitUntil: "domcontentloaded" });
+  }
 }
 
 async function waitForPwaRegistration(page: Page) {
@@ -228,7 +286,7 @@ async function waitForPwaRegistration(page: Page) {
             (registration) => new URL(registration.scope).pathname === "/",
           );
         }),
-      { timeout: 15_000 },
+      { timeout: pwaServiceWorkerTimeoutMs },
     )
     .toBe(true);
 }
@@ -242,6 +300,38 @@ async function waitForPwaControl(page: Page) {
 
           return Boolean(navigator.serviceWorker.controller);
         }),
+      { timeout: pwaServiceWorkerTimeoutMs },
+    )
+    .toBe(true);
+}
+
+async function waitForCachedPublicPage(page: Page, path: string) {
+  await expect
+    .poll(
+      () =>
+        page.evaluate(
+          async ({ cacheName, path: pathToMatch }) => {
+            if (!("caches" in window)) return false;
+
+            const cache = await caches.open(cacheName);
+            const absoluteUrl = new URL(pathToMatch, window.location.origin)
+              .href;
+            const directMatch =
+              (await cache.match(pathToMatch)) ??
+              (await cache.match(absoluteUrl));
+
+            if (directMatch) return true;
+
+            const cachedRequests = await cache.keys();
+
+            return cachedRequests.some((request) => {
+              const cachedUrl = new URL(request.url);
+
+              return `${cachedUrl.pathname}${cachedUrl.search}` === pathToMatch;
+            });
+          },
+          { cacheName: pwaPublicPagesCacheName, path },
+        ),
       { timeout: 15_000 },
     )
     .toBe(true);

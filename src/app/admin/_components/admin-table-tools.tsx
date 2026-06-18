@@ -34,9 +34,11 @@ export function AdminPagination({
       </p>
       <div className="flex items-center gap-2">
         <Button
+          aria-label={pageInfo.hasPreviousPage ? "עמוד קודם" : "אין עמוד קודם"}
           asChild={pageInfo.hasPreviousPage}
           disabled={!pageInfo.hasPreviousPage}
           size="sm"
+          title={pageInfo.hasPreviousPage ? undefined : "אין עמוד קודם"}
           variant="outline"
         >
           {pageInfo.hasPreviousPage ? (
@@ -48,9 +50,11 @@ export function AdminPagination({
           )}
         </Button>
         <Button
+          aria-label={pageInfo.hasNextPage ? "עמוד הבא" : "אין עמוד הבא"}
           asChild={pageInfo.hasNextPage}
           disabled={!pageInfo.hasNextPage}
           size="sm"
+          title={pageInfo.hasNextPage ? undefined : "אין עמוד הבא"}
           variant="outline"
         >
           {pageInfo.hasNextPage ? (

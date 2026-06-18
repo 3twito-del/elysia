@@ -15,8 +15,7 @@ export default function manifest(): ExtendedManifest {
     id: "/",
     name: "Elysia",
     short_name: "Elysia",
-    description:
-      "סטודיו תכשיטים ישראלי עם קטלוג, סל, שירות אישי וקנייה אונליין.",
+    description: "תכשיטי Elysia ללוק יומי, למתנה ולערב.",
     start_url: "/?source=pwa",
     scope: "/",
     lang: "he",
@@ -63,9 +62,9 @@ export default function manifest(): ExtendedManifest {
     ],
     shortcuts: [
       {
-        name: "קטלוג תכשיטים",
-        short_name: "קטלוג",
-        description: "פתיחת קטלוג Elysia",
+        name: "תכשיטי Elysia",
+        short_name: "תכשיטים",
+        description: "פתיחת כל התכשיטים",
         url: "/search?source=pwa-shortcut",
         icons: [
           {
@@ -76,23 +75,10 @@ export default function manifest(): ExtendedManifest {
         ],
       },
       {
-        name: "סל וקופה",
-        short_name: "סל",
-        description: "מעבר לסל הקניות",
-        url: "/checkout?source=pwa-shortcut",
-        icons: [
-          {
-            src: "/pwa/icons/icon-192.png",
-            sizes: "192x192",
-            type: "image/png",
-          },
-        ],
-      },
-      {
-        name: "שירות לקוחות",
-        short_name: "שירות",
-        description: "פתיחת פנייה לשירות",
-        url: "/service?source=pwa-shortcut",
+        name: "רעיונות למתנה",
+        short_name: "מתנות",
+        description: "פתיחת רעיונות למתנה",
+        url: "/gifts?source=pwa-shortcut",
         icons: [
           {
             src: "/pwa/icons/icon-192.png",
@@ -104,8 +90,21 @@ export default function manifest(): ExtendedManifest {
       {
         name: "מדריך מידות",
         short_name: "מידות",
-        description: "שמירת מידה מקומית להתאמה מהירה",
+        description: "בדיקת מידה לפני הזמנה",
         url: "/size-guide?source=pwa-shortcut",
+        icons: [
+          {
+            src: "/pwa/icons/icon-192.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+        ],
+      },
+      {
+        name: "שירות",
+        short_name: "שירות",
+        description: "שאלה לשירות",
+        url: "/service?source=pwa-shortcut",
         icons: [
           {
             src: "/pwa/icons/icon-192.png",

@@ -3,7 +3,9 @@ import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
 
 import {
+  getOtpChallengeVerificationState,
   getOtpExpiresAt,
+  getOtpResendWaitSeconds,
   hashOtp,
   normalizeOtpIdentifier,
   otpHashesMatch,
@@ -46,5 +48,67 @@ describe("customer OTP helpers", () => {
     expect(
       getOtpExpiresAt(new Date("2026-04-28T08:00:00.000Z")).toISOString(),
     ).toBe("2026-04-28T08:10:00.000Z");
+  });
+
+  it("communicates resend cooldown timing", () => {
+    const requestedAt = new Date("2026-06-01T10:00:00.000Z");
+
+    expect(
+      getOtpResendWaitSeconds(
+        requestedAt,
+        new Date("2026-06-01T10:00:15.000Z"),
+      ),
+    ).toBe(45);
+    expect(
+      getOtpResendWaitSeconds(
+        requestedAt,
+        new Date("2026-06-01T10:01:01.000Z"),
+      ),
+    ).toBe(0);
+  });
+
+  it("classifies expired reused locked and valid OTP challenges", () => {
+    const now = new Date("2026-06-01T10:00:00.000Z");
+
+    expect(
+      getOtpChallengeVerificationState(
+        {
+          attempts: 0,
+          consumedAt: null,
+          expiresAt: new Date("2026-06-01T10:05:00.000Z"),
+        },
+        now,
+      ),
+    ).toBe("valid");
+    expect(
+      getOtpChallengeVerificationState(
+        {
+          attempts: 0,
+          consumedAt: null,
+          expiresAt: new Date("2026-06-01T09:59:59.000Z"),
+        },
+        now,
+      ),
+    ).toBe("expired");
+    expect(
+      getOtpChallengeVerificationState(
+        {
+          attempts: 0,
+          consumedAt: new Date("2026-06-01T09:58:00.000Z"),
+          expiresAt: new Date("2026-06-01T10:05:00.000Z"),
+        },
+        now,
+      ),
+    ).toBe("invalid");
+    expect(
+      getOtpChallengeVerificationState(
+        {
+          attempts: 5,
+          consumedAt: null,
+          expiresAt: new Date("2026-06-01T10:05:00.000Z"),
+        },
+        now,
+      ),
+    ).toBe("locked");
   });
 });

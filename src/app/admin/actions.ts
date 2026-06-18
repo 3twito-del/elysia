@@ -5,10 +5,16 @@ import { redirect } from "next/navigation";
 
 import { adminLoginInputSchema } from "~/lib/public-action-validation";
 import { signIn, signOut } from "~/server/auth";
+import {
+  findAdminLoginAuditTarget,
+  recordAdminLoginAudit,
+} from "~/server/auth/admin-login-audit";
 import { sanitizeAdminRedirect } from "~/server/auth/admin-redirect";
+import { inactiveAdminLoginMessage } from "~/server/auth/admin-user-status";
 import {
   assertRateLimit,
   createRateLimitKey,
+  RateLimitExceededError,
   rateLimitMessage,
 } from "~/server/services/rate-limit";
 
@@ -34,6 +40,8 @@ export async function adminLoginAction(
   }
 
   const redirectTo = sanitizeAdminRedirect(parsed.data.next);
+  const auditTarget = await findAdminLoginAuditTarget(parsed.data.email);
+  const auditAdminUserId = auditTarget?.id ?? null;
 
   try {
     await assertRateLimit({
@@ -42,20 +50,57 @@ export async function adminLoginAction(
       windowMs: 15 * 60_000,
     });
 
+    if (auditTarget?.disabledAt) {
+      await recordAdminLoginAudit({
+        adminUserId: auditAdminUserId,
+        email: parsed.data.email,
+        outcome: "disabled",
+        redirectTo,
+      });
+
+      return { message: inactiveAdminLoginMessage };
+    }
+
     await signIn("admin", {
       email: parsed.data.email,
       password: parsed.data.password,
+      redirect: false,
+      redirectTo,
+    });
+
+    await recordAdminLoginAudit({
+      adminUserId: auditAdminUserId,
+      email: parsed.data.email,
+      outcome: "success",
       redirectTo,
     });
   } catch (error) {
     const message = rateLimitMessage(error);
 
     if (message) {
+      await recordAdminLoginAudit({
+        adminUserId: auditAdminUserId,
+        email: parsed.data.email,
+        outcome: "rate_limited",
+        redirectTo,
+        retryAfterSeconds:
+          error instanceof RateLimitExceededError
+            ? error.retryAfterSeconds
+            : undefined,
+      });
+
       return { message };
     }
 
     if (error instanceof AuthError) {
-      return { message: "פרטי ההתחברות אינם תואמים לאדמין פעיל." };
+      await recordAdminLoginAudit({
+        adminUserId: auditAdminUserId,
+        email: parsed.data.email,
+        outcome: "invalid_credentials",
+        redirectTo,
+      });
+
+      return { message: inactiveAdminLoginMessage };
     }
 
     throw error;

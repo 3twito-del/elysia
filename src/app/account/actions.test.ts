@@ -5,11 +5,14 @@ import { resetRateLimitStateForTests } from "~/server/services/rate-limit";
 const mocks = vi.hoisted(() => ({
   auth: vi.fn(),
   customerFindUnique: vi.fn(),
+  productFindMany: vi.fn(),
   revalidatePath: vi.fn(),
   savedSizeUpsert: vi.fn(),
   signIn: vi.fn(),
   signOut: vi.fn(),
   transaction: vi.fn(async (operations: unknown[]) => Promise.all(operations)),
+  wishlistItemUpsert: vi.fn(),
+  wishlistUpsert: vi.fn(),
 }));
 
 vi.mock("next/cache", () => ({
@@ -32,13 +35,23 @@ vi.mock("~/server/db", () => ({
     customer: {
       findUnique: mocks.customerFindUnique,
     },
+    product: {
+      findMany: mocks.productFindMany,
+    },
     savedSize: {
       upsert: mocks.savedSizeUpsert,
+    },
+    wishlist: {
+      upsert: mocks.wishlistUpsert,
+    },
+    wishlistItem: {
+      upsert: mocks.wishlistItemUpsert,
     },
   },
 }));
 
 import {
+  mergeGuestWishlistAction,
   saveCustomerSizeAction,
   syncCustomerSavedSizesAction,
 } from "./actions";
@@ -135,6 +148,60 @@ describe("saveCustomerSizeAction", () => {
         customerId: "customer_1",
         kind: "bracelet",
         value: "M",
+      },
+    });
+    expect(mocks.transaction).toHaveBeenCalledTimes(1);
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/account");
+  });
+
+  it("merges guest wishlist slugs into new account wishlist items without duplicates", async () => {
+    mocks.auth.mockResolvedValueOnce({
+      user: { adminUserId: null, id: "user_1" },
+    });
+    mocks.customerFindUnique.mockResolvedValueOnce({
+      id: "customer_1",
+      wishlist: {
+        id: "wishlist_1",
+        items: [{ variantId: "variant_existing" }],
+      },
+    });
+    mocks.wishlistUpsert.mockResolvedValueOnce({ id: "wishlist_1" });
+    mocks.productFindMany.mockResolvedValueOnce([
+      {
+        slug: "venus-line-ring",
+        variants: [{ id: "variant_existing" }],
+      },
+      {
+        slug: "noor-earrings",
+        variants: [{ id: "variant_new" }],
+      },
+    ]);
+    mocks.wishlistItemUpsert.mockResolvedValueOnce({});
+
+    const result = await mergeGuestWishlistAction([
+      "venus-line-ring",
+      "noor-earrings",
+      "venus-line-ring",
+    ]);
+
+    expect(result).toMatchObject({
+      duplicateCount: 1,
+      mergedCount: 1,
+      ok: true,
+      requestedCount: 2,
+    });
+    expect(mocks.wishlistItemUpsert).toHaveBeenCalledTimes(1);
+    expect(mocks.wishlistItemUpsert).toHaveBeenCalledWith({
+      where: {
+        wishlistId_variantId: {
+          variantId: "variant_new",
+          wishlistId: "wishlist_1",
+        },
+      },
+      update: {},
+      create: {
+        variantId: "variant_new",
+        wishlistId: "wishlist_1",
       },
     });
     expect(mocks.transaction).toHaveBeenCalledTimes(1);

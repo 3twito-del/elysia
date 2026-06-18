@@ -1,36 +1,37 @@
 import "~/styles/globals.css";
 
 import { type Metadata, type Viewport } from "next";
-import {
-  Cormorant_Garamond,
-  Geist,
-  Geist_Mono,
-  Noto_Sans_Hebrew,
-} from "next/font/google";
+import { Cormorant_Garamond, Geist, Geist_Mono, Rubik } from "next/font/google";
 
 import { CookieConsentBanner } from "~/components/cookie-consent-banner";
 import { DeferredAccessibilityWidget } from "~/components/deferred-accessibility-widget";
+import { ExclusiveDetailsProvider } from "~/components/exclusive-details-provider";
+import { FeedbackButton } from "~/components/feedback-button";
 import { PwaProvider } from "~/components/pwa-provider";
 import { PublicMotionProvider } from "~/components/public-motion-provider";
+import { SiteContextMenu } from "~/components/site-context-menu";
 import { SiteFooter } from "~/components/site-footer";
 import { env } from "~/env";
 
 const appName = "Elysia";
 const appDescription =
-  "רשת תכשיטים ישראלית בעיצוב יוקרה נגישה: טבעות, שרשראות, עגילים, צמידים, מתנות ורכישה אונליין.";
+  "תכשיטי Elysia ללוק יומי, למתנה ולערב: טבעות, שרשראות, עגילים וצמידים עם פרטי חומר, מידה ומחיר.";
+
+const sharePreviewImage = "/brand/boutique/lifestyle-hero.avif";
 
 export const metadata: Metadata = {
   applicationName: appName,
   title: {
-    default: "Elysia | תכשיטי סטודיו מודרניים",
+    default: "Elysia | תכשיטים",
     template: "%s | Elysia",
   },
   description:
-    "רשת תכשיטים ישראלית במיצוב יוקרה נגישה: טבעות, שרשראות, עגילים, צמידים, מתנות ורכישה אונליין.",
+    "תכשיטי Elysia ללוק יומי, למתנה ולערב: טבעות, שרשראות, עגילים וצמידים עם פרטי חומר, מידה ומחיר.",
   manifest: "/manifest.webmanifest",
   icons: [
-    { rel: "icon", url: "/favicon.ico" },
-    { rel: "apple-touch-icon", url: "/apple-touch-icon.png" },
+    { rel: "icon", type: "image/svg+xml", url: "/favicon.svg" },
+    { rel: "icon", sizes: "any", url: "/favicon.ico" },
+    { rel: "apple-touch-icon", sizes: "180x180", url: "/apple-touch-icon.png" },
   ],
   appleWebApp: {
     capable: true,
@@ -40,11 +41,19 @@ export const metadata: Metadata = {
   formatDetection: {
     telephone: false,
   },
-  metadataBase: new URL(env.SITE_URL ?? "https://elysia.co.il"),
+  metadataBase: new URL(env.SITE_URL ?? "https://elysia-jewellery.com"),
+  robots: {
+    follow: false,
+    index: false,
+  },
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: "Elysia",
-    description:
-      "תכשיטי סטודיו מודרניים בעברית, עם מסחר אונליין מלא ושירות אישי.",
+    description: "תכשיטי Elysia ללוק יומי, למתנה ולערב.",
+    url: "/",
+    images: [{ url: sharePreviewImage }],
     locale: "he_IL",
     siteName: appName,
     type: "website",
@@ -53,11 +62,12 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: appName,
     description: appDescription,
+    images: [sharePreviewImage],
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#101314",
+  themeColor: "#fbf8f4",
 };
 
 const geistSans = Geist({
@@ -70,23 +80,22 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
 });
 
+const rubik = Rubik({
+  subsets: ["hebrew", "latin"],
+  variable: "--font-rubik",
+});
+
 const cormorantGaramond = Cormorant_Garamond({
   subsets: ["latin"],
   variable: "--font-cormorant-garamond",
   weight: ["400", "500", "600"],
 });
 
-const notoSansHebrew = Noto_Sans_Hebrew({
-  subsets: ["hebrew"],
-  variable: "--font-noto-hebrew",
-  weight: "variable",
-});
-
 const fontClassName = [
-  notoSansHebrew.variable,
   cormorantGaramond.variable,
   geistSans.variable,
   geistMono.variable,
+  rubik.variable,
 ].join(" ");
 
 export default function RootLayout({
@@ -100,11 +109,13 @@ export default function RootLayout({
             דילוג לתוכן
           </a>
           <div id="main-content" tabIndex={-1}>
-            <PublicMotionProvider footer={<SiteFooter />}>
-              {children}
-            </PublicMotionProvider>
+            <PublicMotionProvider>{children}</PublicMotionProvider>
+            <SiteFooter />
           </div>
           <CookieConsentBanner />
+          <ExclusiveDetailsProvider />
+          <SiteContextMenu />
+          <FeedbackButton />
           <DeferredAccessibilityWidget />
         </PwaProvider>
       </body>

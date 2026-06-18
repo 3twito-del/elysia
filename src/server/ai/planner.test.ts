@@ -116,7 +116,7 @@ describe("AI planner", () => {
   });
 
   it("marks vague try-on requests as missing product context", () => {
-    const planning = createAiPlanningContext("אני רוצה מדידה וירטואלית");
+    const planning = createAiPlanningContext("אני רוצה מידה");
 
     expect(planning.kind).toBe("try_on");
     expect(planning.confidence).toBe("medium");

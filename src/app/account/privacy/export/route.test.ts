@@ -6,6 +6,7 @@ const authMock = vi.hoisted(() => vi.fn());
 const dbMocks = vi.hoisted(() => ({
   auditLogCreate: vi.fn(),
   customerFindUnique: vi.fn(),
+  shopifyOrderMirrorFindMany: vi.fn(),
 }));
 
 vi.mock("~/server/auth", () => ({
@@ -19,6 +20,9 @@ vi.mock("~/server/db", () => ({
     },
     customer: {
       findUnique: dbMocks.customerFindUnique,
+    },
+    shopifyOrderMirror: {
+      findMany: dbMocks.shopifyOrderMirrorFindMany,
     },
   },
 }));
@@ -36,6 +40,7 @@ describe("customer privacy export route", () => {
       },
     });
     dbMocks.customerFindUnique.mockResolvedValue(createCustomerExport());
+    dbMocks.shopifyOrderMirrorFindMany.mockResolvedValue([]);
     dbMocks.auditLogCreate.mockResolvedValue({ id: "audit_1" });
   });
 
@@ -45,9 +50,18 @@ describe("customer privacy export route", () => {
     const unauthenticated = await GET();
 
     expect(unauthenticated.status).toBe(401);
+    expect(unauthenticated.headers.get("Cache-Control")).toBe("no-store");
+    expect(unauthenticated.headers.get("Link")).toBe('</account>; rel="login"');
+    expect(unauthenticated.headers.get("X-Content-Type-Options")).toBe(
+      "nosniff",
+    );
     await expect(unauthenticated.json()).resolves.toEqual({
       ok: false,
       error: "Unauthorized.",
+      recovery: {
+        href: "/account",
+        rel: "account-sign-in",
+      },
     });
     expect(dbMocks.customerFindUnique).not.toHaveBeenCalled();
 
@@ -61,6 +75,14 @@ describe("customer privacy export route", () => {
     const admin = await GET();
 
     expect(admin.status).toBe(401);
+    await expect(admin.json()).resolves.toEqual({
+      ok: false,
+      error: "Unauthorized.",
+      recovery: {
+        href: "/account",
+        rel: "account-sign-in",
+      },
+    });
     expect(dbMocks.customerFindUnique).not.toHaveBeenCalled();
   });
 
@@ -77,6 +99,7 @@ describe("customer privacy export route", () => {
       customer: {
         id: "customer_1",
         email: "dana@example.com",
+        shopifyOrderMirrors: [],
       },
     });
     expect(dbMocks.auditLogCreate).toHaveBeenCalledWith({

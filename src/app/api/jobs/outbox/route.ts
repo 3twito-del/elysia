@@ -5,7 +5,10 @@ import {
   serviceUnavailableJson,
   unauthorizedJson,
 } from "~/server/http/api-response";
-import { processDueOutboxEvents } from "~/server/services/jobs";
+import {
+  type ProcessOutboxResult,
+  processDueOutboxEvents,
+} from "~/server/services/jobs";
 import {
   assertRateLimit,
   getRequestIp,
@@ -49,7 +52,37 @@ async function runOutboxJob(req: Request) {
     return unauthorizedJson("Unauthorized job runner.");
   }
 
-  const result = await processDueOutboxEvents({ limit: 25 });
+  let result: Awaited<ReturnType<typeof processDueOutboxEvents>>;
 
-  return okJson({ ok: true, result });
+  try {
+    result = await processDueOutboxEvents({ limit: 25 });
+  } catch (error) {
+    console.error("[jobs:outbox:process-failed]", error);
+
+    return serviceUnavailableJson("Outbox job processor is unavailable.");
+  }
+
+  return okJson({
+    ok: true,
+    result,
+    summary: createOutboxJobSummary(result),
+  });
+}
+
+function createOutboxJobSummary(result: ProcessOutboxResult) {
+  const status =
+    result.failed > 0
+      ? "retryable-failures"
+      : result.skipped > 0
+        ? "completed-with-skips"
+        : "completed";
+
+  return {
+    completed: result.processed,
+    failed: result.failed,
+    retryable: result.failed,
+    scanned: result.scanned,
+    skipped: result.skipped,
+    status,
+  };
 }

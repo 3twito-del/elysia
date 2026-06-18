@@ -3,43 +3,46 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Headset, Search, UserRound } from "lucide-react";
+import { Heart, Search, UserRound } from "lucide-react";
 
 import {
   isCategoryHref,
   useCategoryRoutePrefetch,
 } from "~/components/category-route-prefetch";
+import { BrandLogo } from "~/components/brand-logo";
 import { CartCountLink } from "~/components/cart-count-link";
 import { MobileNav, type HeaderNavItem } from "~/components/mobile-nav";
 import { Button } from "~/components/ui/button";
-import { cn } from "~/lib/utils";
 
 const navItems: HeaderNavItem[] = [
+  { href: "/search", label: "הכל" },
+  { href: "/search?sort=newest", label: "חדש" },
   { href: "/category/rings", label: "טבעות" },
   { href: "/category/necklaces", label: "שרשראות" },
   { href: "/category/earrings", label: "עגילים" },
   { href: "/category/bracelets", label: "צמידים" },
   { href: "/gifts", label: "מתנות" },
+  { href: "/search?sort=popular", label: "מבוקשים" },
+  { href: "/size-guide", label: "מידות" },
   { href: "/about", label: "אודות" },
-  { href: "/service", label: "שירות" },
+  { href: "/service", label: "תמיכה" },
 ];
 const categoryNavHrefs = navItems
   .map((item) => item.href)
   .filter(isCategoryHref);
-const desktopNavItems = navItems.slice(0, 4);
 const HOME_HEADER_SOLID_SCROLL_Y = 8;
+const mediaOverlayHeaderPathnames = new Set(["/", "/about"]);
 
 export function SiteHeader() {
   const pathname = usePathname();
   const [hasScrolled, setHasScrolled] = useState(false);
-  const categoryPrefetch = useCategoryRoutePrefetch(categoryNavHrefs, {
-    prefetchOnHomeIdle: true,
-  });
-  const isOverHomeHero = pathname === "/" && !hasScrolled;
+  const isMediaOverlayRoute = mediaOverlayHeaderPathnames.has(pathname);
+  const categoryPrefetch = useCategoryRoutePrefetch(categoryNavHrefs);
+  const isOverHomeHero = isMediaOverlayRoute && !hasScrolled;
   const headerState = isOverHomeHero ? "transparent" : "solid";
 
   useEffect(() => {
-    if (pathname !== "/") return;
+    if (!isMediaOverlayRoute) return;
 
     let frame = 0;
     let restoreTimer = 0;
@@ -79,7 +82,7 @@ export function SiteHeader() {
       window.removeEventListener("resize", requestSync);
       window.removeEventListener("pageshow", requestRestoredSync);
     };
-  }, [pathname]);
+  }, [isMediaOverlayRoute]);
 
   return (
     <>
@@ -90,126 +93,96 @@ export function SiteHeader() {
         dir="rtl"
       >
         <p className="sr-only">
-          Elysia היא סטודיו תכשיטים אונליין עם ניווט לקטלוג, חיפוש מוצרים, שירות
-          לקוחות, אזור לקוח, סל קניות וקטגוריות טבעות, שרשראות, עגילים וצמידים.
+          Elysia: ניווט ראשי לקולקציה, קטגוריות, מתנות, מידות, תמיכה, מועדפים
+          ואזור אישי.
         </p>
-        <div className="mx-auto grid h-16 max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 sm:px-6 md:h-[4.25rem] md:grid-cols-[auto_1fr_auto] md:gap-3 lg:h-[6.125rem] lg:gap-5">
-          <div className="flex items-center justify-self-start md:hidden">
+        <div
+          className="grid h-16 w-full grid-cols-[1fr_auto_1fr] items-center px-4 sm:px-6 md:h-[4.25rem] md:px-10 lg:h-[6.125rem] lg:px-16"
+          dir="ltr"
+        >
+          <div
+            className="[grid-column:3] [grid-row:1] flex min-w-0 items-center gap-5 justify-self-end sm:gap-7"
+            dir="rtl"
+          >
             <MobileNav
+              closeOnMediaQuery={false}
               currentPathname={pathname}
               items={navItems}
               onCategoryIntent={categoryPrefetch.prefetch}
               onOpenCategoryPrefetch={categoryPrefetch.prefetchAll}
+              triggerClassName="min-h-10 text-[0.94rem] font-medium"
+              triggerLabel="תפריט"
+              triggerMode="label"
             />
+            <Link
+              aria-label="חיפוש"
+              className="site-header-link site-header-label-action inline-flex min-h-10 items-center gap-2 text-[0.94rem] font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
+              href="/search"
+              prefetch={false}
+            >
+              <Search aria-hidden="true" className="size-5" />
+              <span className="hidden sm:inline">חיפוש</span>
+            </Link>
           </div>
 
           <Link
-            className="brand-header-mark site-header-link flex min-w-0 shrink-0 items-center justify-self-center md:justify-self-start"
+            className="brand-header-mark site-header-link [grid-column:2] [grid-row:1] flex min-w-0 shrink-0 items-center justify-self-center"
+            aria-label="Elysia - עמוד הבית"
             dir="ltr"
             href="/"
+            prefetch={false}
           >
-            <span className="truncate text-[1.65rem] font-medium tracking-normal sm:text-3xl lg:text-[2.35rem]">
-              Elysia
-            </span>
+            <BrandLogo className="h-6 w-auto max-w-[9rem] sm:h-8 sm:max-w-[12.5rem] lg:h-9 lg:max-w-[14.5rem] xl:h-10 xl:max-w-[16rem]" />
           </Link>
 
-          <nav
-            aria-label="ניווט ראשי"
-            className="hidden min-w-0 items-center justify-center gap-1 md:flex"
-          >
-            {desktopNavItems.map((item) => {
-              const categoryHref = isCategoryHref(item.href);
-              const isActive =
-                pathname === item.href ||
-                (categoryHref && pathname.startsWith(`${item.href}/`));
-
-              return (
-                <Link
-                  aria-current={isActive ? "page" : undefined}
-                  className={cn(
-                    "site-header-link relative inline-flex h-9 items-center px-2 text-[0.86rem] font-medium transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] xl:px-3",
-                    isActive &&
-                      "text-foreground after:bg-foreground font-semibold after:absolute after:inset-x-2 after:bottom-1 after:h-px after:content-[''] xl:after:inset-x-3",
-                  )}
-                  href={item.href}
-                  key={item.href}
-                  onFocus={
-                    categoryHref
-                      ? () => categoryPrefetch.prefetch(item.href)
-                      : undefined
-                  }
-                  onPointerEnter={
-                    categoryHref
-                      ? () => categoryPrefetch.prefetch(item.href)
-                      : undefined
-                  }
-                  prefetch={categoryHref ? true : undefined}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
-
           <div
-            className="flex items-center gap-0 justify-self-end sm:gap-1"
-            dir="ltr"
+            className="[grid-column:1] [grid-row:1] flex min-w-0 items-center gap-3 justify-self-start sm:gap-5"
+            dir="rtl"
           >
+            <Link
+              aria-label="תמיכה"
+              className="site-header-link site-header-label-action hidden min-h-10 items-center text-[0.94rem] font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] md:inline-flex"
+              href="/service"
+              prefetch={false}
+            >
+              תמיכה
+            </Link>
             <Button
               asChild
-              className="site-header-action"
+              className="site-header-action hidden size-10 sm:inline-flex sm:size-11"
               size="icon"
               variant="ghost"
             >
               <Link
-                data-icon-tooltip="חיפוש"
+                data-icon-tooltip="מועדפים"
                 data-icon-tooltip-placement="bottom"
-                href="/search"
+                href="/wishlist"
+                prefetch={false}
               >
-                <Search aria-hidden="true" className="size-5" />
-                <span className="sr-only">חיפוש</span>
+                <Heart aria-hidden="true" className="size-5" />
+                <span className="sr-only">מועדפים</span>
               </Link>
             </Button>
+            <CartCountLink
+              className="site-header-action inline-grid size-10 place-items-center rounded-md outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] sm:size-11"
+              data-icon-tooltip="סל"
+              data-icon-tooltip-placement="bottom"
+            />
             <Button
               asChild
-              className="site-header-action hidden md:inline-flex"
+              className="site-header-action size-10 sm:size-11"
               size="icon"
               variant="ghost"
             >
               <Link
-                data-icon-tooltip="סניפים ושירות"
-                data-icon-tooltip-placement="bottom"
-                href="/branches"
-              >
-                <Headset aria-hidden="true" className="size-5" />
-                <span className="sr-only">סניפים ושירות</span>
-              </Link>
-            </Button>
-            <Button
-              asChild
-              className="site-header-action hidden md:inline-flex"
-              size="icon"
-              variant="ghost"
-            >
-              <Link
-                data-icon-tooltip="אזור לקוח"
+                data-icon-tooltip="אזור אישי"
                 data-icon-tooltip-placement="bottom"
                 href="/account"
+                prefetch={false}
               >
                 <UserRound aria-hidden="true" className="size-5" />
-                <span className="sr-only">אזור לקוח</span>
+                <span className="sr-only">אזור אישי</span>
               </Link>
-            </Button>
-            <Button
-              asChild
-              className="site-header-action"
-              size="icon"
-              variant="ghost"
-            >
-              <CartCountLink
-                data-icon-tooltip="סל קניות"
-                data-icon-tooltip-placement="bottom"
-              />
             </Button>
           </div>
         </div>

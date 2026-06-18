@@ -6,36 +6,49 @@ import { describe, expect, it } from "vitest";
 const root = process.cwd();
 
 describe("luxury commerce UI hardening", () => {
-  it("keeps public header navigation typographic instead of button-framed", () => {
+  it("keeps public header in the split luxury nav structure", () => {
     const source = read("src/components/site-header.tsx");
-    const navBlock = extractBetween(
-      source,
-      "<nav\n            aria-label=",
-      "</nav>",
-    );
     const brandBlock = extractBetween(
       source,
       '<Link\n            className="brand-header-mark',
       "</Link>",
     );
 
-    expect(navBlock).not.toContain("<Button");
-    expect(navBlock).not.toContain("bg-secondary");
-    expect(navBlock).not.toContain("ring-1");
-    expect(navBlock).not.toContain("shadow-");
-    expect(navBlock).toContain("after:h-px");
-    expect(navBlock).toContain('aria-current={isActive ? "page" : undefined}');
-    expect(brandBlock).toContain("Elysia");
+    expect(source).toContain('dir="rtl"');
+    expect(source).toContain("grid-cols-[1fr_auto_1fr]");
+    expect(source).toContain('triggerLabel="תפריט"');
+    expect(source).toContain('triggerMode="label"');
+    expect(source).toContain('aria-label="חיפוש"');
+    expect(source).toContain("<Search");
+    expect(source).toContain('aria-label="תמיכה"');
+    expect(source).toContain("<Heart");
+    expect(source).toContain("<UserRound");
+    expect(source).toContain('href="/wishlist"');
+    expect(source).toContain("[grid-column:3]");
+    expect(source).toContain("[grid-column:1]");
+    expect(source).toContain("[grid-column:2]");
+    expect(source.match(/\[grid-row:1\]/g)).toHaveLength(3);
+    expect(source).not.toContain("const prelaunchNavItems = [");
+    expect(source).not.toContain('aria-label="Pre-launch navigation"');
+    expect(source).not.toContain("data-home-prelaunch");
+    expect(source).not.toContain("desktopNavItems");
+    expect(source).toContain("CartCountLink");
+    expect(source).toContain('className="site-header-action inline-grid');
+    expect(source).not.toContain("Headset");
+    expect(source).toContain(
+      'import { BrandLogo } from "~/components/brand-logo";',
+    );
+    expect(brandBlock).toContain('aria-label="Elysia -');
+    expect(brandBlock).toContain("<BrandLogo");
     expect(brandBlock).not.toContain("<Gem");
-    expect(source).toContain('href="/branches"');
-    expect(source).toContain("Headset");
     expect(source).not.toContain("MapPin");
-    expect(source).toContain('data-icon-tooltip="חיפוש"');
-    expect(source).toContain('data-icon-tooltip="סניפים ושירות"');
-    expect(source).toContain('data-icon-tooltip="אזור לקוח"');
-    expect(source).toContain('data-icon-tooltip="סל קניות"');
+    expect(source).toContain('data-icon-tooltip="מועדפים"');
+    expect(source).toContain('data-icon-tooltip="אזור אישי"');
     expect(read("src/styles/globals.css")).toContain(
       "[data-icon-tooltip]::after",
+    );
+    expect(read("src/styles/globals.css")).toContain(
+      ".site-header .site-header-label-action",
     );
   });
 
@@ -45,28 +58,43 @@ describe("luxury commerce UI hardening", () => {
 
     expect(mobileNav).not.toContain("h-auto min-h-14 flex-col");
     expect(mobileNav).not.toContain('variant="outline"');
+    expect(mobileNav).toContain("mobile-nav-panel-luxury");
+    expect(mobileNav).toContain('data-nav-variant="luxury-editorial"');
+    expect(mobileNav).toContain("mobile-nav-quick-list");
     expect(mobileNav).toContain(
-      "תכשיטים אונליין, ייעוץ אישי ושירות לקוחות נגיש.",
+      "תכשיטי בוטיק ללוק יומי, למתנה ולערב שמבקש קצת אור.",
     );
     expect(mobileNav).not.toContain("׳³");
     expect(mobileNav).toContain("after:h-px");
-    expect(mobileNav).toContain('href: "/branches"');
-    expect(mobileNav).toContain("grid-cols-4");
+    expect(mobileNav).toContain('href: "/gifts"');
+    expect(mobileNav).not.toContain("grid-cols-4");
     expect(mobileNav).not.toContain("<Gem");
+    expect(read("src/styles/globals.css")).toContain(
+      ".mobile-nav-panel-luxury",
+    );
+    expect(read("src/styles/globals.css")).toContain(
+      "clip-path: inset(0 0 0 18%);",
+    );
     expect(footer).not.toContain("bg-background rounded-md border");
+    expect(footer).toContain("brand-footer-mark inline-flex items-center");
+    expect(footer).toContain("site-footer-inner");
+    expect(footer).toContain("max-w-[92rem]");
+    expect(footer).toContain("gap-14");
     expect(footer).toContain(
-      'className="group border-b border-[var(--glass-border)]"',
+      "lg:grid-cols-[minmax(22rem,0.95fr)_minmax(0,1.35fr)]",
     );
-    expect(footer).toContain("lg:grid-cols-[1.3fr_0.55fr_0.64fr_0.64fr_1fr]");
-    expect(footer).toContain(
-      "const primaryServiceLinks = serviceLinks.slice(0, 7)",
-    );
-    expect(footer).toContain(
-      "const secondaryServiceLinks = serviceLinks.slice(7)",
-    );
+    expect(footer).toContain("site-footer-nav grid gap-0 md:grid-cols-2");
+    expect(footer).toContain("md:gap-x-14 md:gap-y-12");
+    expect(footer).toContain("function FooterNav");
+    expect(footer).toContain('title="קולקציות"');
+    expect(footer).toContain('title="תמיכה"');
+    expect(footer).toContain('title="Elysia"');
+    expect(footer).not.toContain("primaryServiceLinks");
+    expect(footer).not.toContain("secondaryServiceLinks");
+    expect(footer).not.toContain("שירות - המשך");
     expect(footer).toContain("const socialLinks = [");
     expect(footer).toContain("https://www.instagram.com/elysia.one/");
-    expect(footer).toContain("https://www.tiktok.com/@elysia.one");
+    expect(footer).toContain("https://www.tiktok.com/@elysia_jewellery");
     expect(footer).toContain("SiInstagram");
     expect(footer).toContain("SiTiktok");
     expect(footer).toContain("footer-social-link");
@@ -118,8 +146,11 @@ describe("luxury commerce UI hardening", () => {
       "brand-control-panel mt-4 hidden gap-2.5",
     );
     expect(category).toContain(
-      "mb-5 hidden border-b border-[var(--glass-border)] pb-4 lg:block",
+      "mb-5 border-b border-[var(--glass-border)] pb-4",
     );
+    expect(category).toContain('data-testid="category-filter-trigger"');
+    expect(category).toContain('data-testid="category-filter-panel"');
+    expect(category).toContain('className="hidden"');
     expect(search).toContain(
       "mt-4 border-b border-[var(--glass-border)] pb-4 sm:mt-6",
     );
@@ -155,13 +186,16 @@ describe("luxury commerce UI hardening", () => {
     expect(css).toContain(
       'main > header + [aria-hidden="true"] + [data-testid="cinematic-page-hero"]',
     );
+    expect(css).toContain(
+      '+ article\n  > [data-testid="about-cinematic-page-hero"]',
+    );
     expect(css).toContain("margin-top: calc(-1 * var(--site-header-height));");
     expect(css).toContain("padding-top: var(--site-header-height);");
     expect(home).not.toContain("bg-[var(--brand-aqua-deep)]");
     expect(home).not.toContain("bg-[var(--brand-aqua)]");
     expect(home).not.toContain("rgba(66,201,190");
-    expect(css).toContain("--glass-border: #e2e8ec;");
-    expect(css).toContain("--scrollbar-thumb: rgb(91 101 106 / 24%);");
+    expect(css).toContain("--glass-border: #e4dbd0;");
+    expect(css).toContain("--scrollbar-thumb: rgb(125 107 90 / 26%);");
     expect(css).not.toContain("--glass-border: #bfe9e5;");
     expect(css).not.toContain("--scrollbar-thumb: rgb(66 201 190 / 30%);");
     expect(cookieBanner).toContain(
@@ -178,6 +212,17 @@ describe("luxury commerce UI hardening", () => {
     const favorite = read("src/components/product-card-favorite-button.tsx");
     const productCard = read("src/components/product-card.tsx");
     const card = read("src/components/ui/card.tsx");
+    const css = read("src/styles/globals.css");
+    const favoriteTooltipCss = extractBetween(
+      css,
+      ".product-card-favorite [data-icon-tooltip]::after",
+      ".product-card-favorite [data-icon-tooltip]:focus-visible::after",
+    );
+    const favoriteSavedIconCss = extractBetween(
+      css,
+      '.product-card-favorite-button[data-favorite-saved="true"] svg',
+      ".product-card-favorite [data-icon-tooltip]::after",
+    );
 
     expect(button).not.toMatch(/(outline|secondary):\s*"[^"]*shadow-\[0_6px/);
     expect(button).not.toMatch(
@@ -188,7 +233,28 @@ describe("luxury commerce UI hardening", () => {
     );
     expect(favorite).not.toContain("shadow-[0_8px");
     expect(favorite).not.toContain("brand-aqua-soft");
+    expect(favorite).not.toContain("text-red");
+    expect(favorite).not.toContain('isSaved && "border-[');
+    expect(favorite).toContain("product-card-favorite-button");
+    expect(favorite).toContain("!bg-transparent");
+    expect(favorite).toContain("hover:!bg-transparent");
+    expect(favorite).toContain("data-favorite-saved=");
+    expect(css).toContain(".product-card-favorite:has(");
+    expect(css).toContain("border-color: rgb(29 25 22 / 14%);");
+    expect(css).toContain("background: transparent;");
+    expect(css).toContain(
+      '.product-card-favorite-button[data-favorite-saved="true"]:hover',
+    );
+    expect(css).not.toContain("border-color: rgb(29 25 22 / 32%) !important");
+    expect(css).not.toContain("background: rgb(255 250 244 / 98%) !important");
     expect(favorite).toContain('variant="ghost"');
+    expect(favorite).toContain('data-icon-tooltip-placement="bottom"');
+    expect(favorite).toContain("product-card-favorite-status");
+    expect(favoriteSavedIconCss).toContain("fill: rgb(29 25 22 / 68%)");
+    expect(favoriteSavedIconCss).toContain("stroke-width: 2.15");
+    expect(favoriteTooltipCss).toContain("right: 0;");
+    expect(favoriteTooltipCss).toContain("left: auto;");
+    expect(favoriteTooltipCss).toContain("translate(0, -2px)");
     expect(productCard).toContain("product-card-shell");
     expect(productCard).toContain("border-0");
     expect(productCard).toContain("shadow-none");

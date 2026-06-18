@@ -1,4 +1,5 @@
 import { resolveAiCatalogSearchIntent } from "~/lib/ai-catalog-intent";
+import { formatInlinePrice } from "~/lib/format";
 
 export type SearchMode = "semantic" | "classic";
 
@@ -116,7 +117,7 @@ const softSignalRules = [
   },
   {
     signal: "evening",
-    terms: ["ערב", "יוקרתי", "חגיגי", "evening", "luxury", "dressy"],
+    terms: ["ערב", "מאופק", "חגיגי", "evening", "luxury", "dressy"],
   },
   {
     signal: "mother",
@@ -247,9 +248,7 @@ export function createSemanticMatchReason(
     typeof product.price === "number" &&
     product.price <= intent.hardFilters.maxPrice
   ) {
-    reasons.push(
-      `בתקציב עד ${intent.hardFilters.maxPrice.toLocaleString("he-IL")} ₪`,
-    );
+    reasons.push(`במחיר עד ${formatInlinePrice(intent.hardFilters.maxPrice)}`);
   }
 
   if (intent.softSignals.includes("bridal")) {
@@ -257,14 +256,14 @@ export function createSemanticMatchReason(
   } else if (intent.softSignals.includes("daily")) {
     reasons.push("מתאים לענידה יומיומית");
   } else if (intent.softSignals.includes("delicate")) {
-    reasons.push("מראה עדין וקליל");
+    reasons.push("מראה נקי ולא כבד");
   } else if (intent.softSignals.includes("gift")) {
-    reasons.push("בחירה טובה למתנה");
+    reasons.push("רעיון טוב למתנה");
   }
 
   return reasons.length > 0
     ? reasons.slice(0, 2).join(" · ")
-    : "התאמה סמנטית מתוך הקטלוג";
+    : "התאמה נקייה מן הקולקציה";
 }
 
 export function productMatchesSemanticExclusions(

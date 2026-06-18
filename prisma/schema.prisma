@@ -19,6 +19,11 @@ enum ProductAvailabilityMode {
   CONSULTATION
 }
 
+enum ProductSource {
+  OWN
+  DROPSHIP_SHOPIFY
+}
+
 enum MediaKind {
   IMAGE
   VIDEO
@@ -224,6 +229,12 @@ model Product {
   stoneId            String?
   basePrice          Decimal                  @db.Decimal(10, 2)
   availabilityMode   ProductAvailabilityMode  @default(READY_TO_ORDER)
+  source             ProductSource            @default(OWN)
+  externalProvider   String?
+  externalProductId  String?
+  externalHandle     String?
+  supplierKey        String?
+  externalSyncedAt   DateTime?
   commerceHighlights String[]                 @default([])
   deliveryPromise    String?
   returnPolicy       String?
@@ -245,6 +256,9 @@ model Product {
   updatedAt          DateTime                 @updatedAt
 
   @@index([status])
+  @@index([source])
+  @@index([externalProvider, externalProductId])
+  @@index([supplierKey])
   @@index([categoryId])
   @@index([materialId])
 }
@@ -266,25 +280,27 @@ model ProductSearchEmbedding {
 }
 
 model ProductVariant {
-  id               String            @id @default(cuid())
-  productId        String
-  sku              String            @unique
-  name             String
-  size             String?
-  metalColor       String?
-  stoneColor       String?
-  priceDelta       Decimal           @default(0) @db.Decimal(10, 2)
-  isDefault        Boolean           @default(false)
-  product          Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
-  prices           Price[]
-  inventoryItems   InventoryItem[]
-  inventoryLedgers InventoryLedger[]
-  cartItems        CartItem[]
-  orderItems       OrderItem[]
-  wishlistItems    WishlistItem[]
-  tryOnSessions    TryOnSession[]
+  id                String            @id @default(cuid())
+  productId         String
+  sku               String            @unique
+  name              String
+  size              String?
+  metalColor        String?
+  stoneColor        String?
+  priceDelta        Decimal           @default(0) @db.Decimal(10, 2)
+  isDefault         Boolean           @default(false)
+  externalVariantId String?
+  product           Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  prices            Price[]
+  inventoryItems    InventoryItem[]
+  inventoryLedgers  InventoryLedger[]
+  cartItems         CartItem[]
+  orderItems        OrderItem[]
+  wishlistItems     WishlistItem[]
+  tryOnSessions     TryOnSession[]
 
   @@index([productId])
+  @@index([externalVariantId])
 }
 
 model Price {
@@ -343,9 +359,9 @@ model Branch {
 
 model ServiceSettings {
   id                      String   @id @default("default")
-  phoneE164               String   @default("+972547277455")
-  displayPhone            String   @default("054-727-7455")
-  serviceEmail            String   @default("3twito@gmail.com")
+  phoneE164               String   @default("+972000000000")
+  displayPhone            String   @default("05X-XXXXXXX")
+  serviceEmail            String   @default("support@example.com")
   physicalBranchesEnabled Boolean  @default(false)
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
@@ -474,6 +490,7 @@ model Customer {
   aiRuns                 AiRun[]
   pushSubscriptions      PushSubscription[]
   tryOnSessions          TryOnSession[]
+  feedback               UserFeedback[]
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @updatedAt
 }
@@ -756,6 +773,28 @@ model Payment {
   updatedAt         DateTime      @updatedAt
 }
 
+model ShopifyOrderMirror {
+  id                String    @id @default(cuid())
+  shopifyOrderId    String    @unique
+  shopifyOrderName  String?
+  customerEmail     String?
+  financialStatus   String?
+  fulfillmentStatus String?
+  currency          String    @default("ILS")
+  total             Decimal   @default(0) @db.Decimal(10, 2)
+  supplierKey       String?
+  lineItems         Json
+  rawPayload        Json?
+  processedAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([customerEmail])
+  @@index([financialStatus])
+  @@index([fulfillmentStatus])
+  @@index([supplierKey])
+}
+
 model Shipment {
   id          String    @id @default(cuid())
   orderId     String
@@ -953,10 +992,13 @@ model AdminUser {
   name         String
   email        String     @unique
   passwordHash String?
+  disabledAt   DateTime?
   role         Role       @relation(fields: [roleId], references: [id])
   user         User?      @relation(fields: [userId], references: [id])
   auditLogs    AuditLog[]
   createdAt    DateTime   @default(now())
+
+  @@index([disabledAt])
 }
 
 model AuditLog {
@@ -1033,4 +1075,16 @@ model IntegrationJob {
   lastError   String?
   scheduledAt DateTime  @default(now())
   finishedAt  DateTime?
+}
+
+model UserFeedback {
+  id         String    @id @default(cuid())
+  message    String
+  email      String?
+  url        String?
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  createdAt  DateTime  @default(now())
+
+  @@index([createdAt])
 }

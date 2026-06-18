@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
 import { newsletterInputSchema } from "~/lib/public-action-validation";
+import { newsletterConsentText } from "~/lib/legal-content";
 import { publicServiceRequestInputSchema } from "~/lib/service-validation";
 import { db } from "~/server/db";
 import {
@@ -49,6 +50,46 @@ export type OfflineSyncResult = {
   error?: string;
   ok: boolean;
 };
+
+export type OfflineSyncSummary = {
+  failed: number;
+  synced: number;
+  total: number;
+};
+
+export type OfflineSyncResponse = {
+  ok: boolean;
+  results: OfflineSyncResult[];
+  summary: OfflineSyncSummary;
+};
+
+export function createOfflineSyncResponse(
+  results: OfflineSyncResult[],
+): OfflineSyncResponse {
+  const failed = results.filter((result) => !result.ok).length;
+
+  return {
+    ok: failed === 0,
+    results,
+    summary: {
+      failed,
+      synced: results.length - failed,
+      total: results.length,
+    },
+  };
+}
+
+export function getPublicOfflineSyncError(kind: string) {
+  if (kind.startsWith("cart.")) {
+    return "Some offline cart changes could not be synced. Review your cart, then retry when the connection is stable.";
+  }
+
+  if (kind === "service.request") {
+    return "Queued service request or attachments could not be synced. Please retry or submit the request again from the service page.";
+  }
+
+  return "Queued action could not be synced. Please retry when the connection is stable.";
+}
 
 export async function processOfflineJsonActions(
   actions: z.infer<typeof offlineJsonActionSchema>[],
@@ -136,8 +177,8 @@ async function processOfflineAction<
     });
 
     return { actionId: action.actionId, ok: true };
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Sync failed.";
+  } catch {
+    const publicMessage = getPublicOfflineSyncError(action.kind);
 
     await db.offlineActionReceipt.update({
       where: {
@@ -147,12 +188,12 @@ async function processOfflineAction<
         },
       },
       data: {
-        lastError: message,
+        lastError: publicMessage,
         status: "FAILED",
       },
     });
 
-    return { actionId: action.actionId, error: message, ok: false };
+    return { actionId: action.actionId, error: publicMessage, ok: false };
   }
 }
 
@@ -197,11 +238,14 @@ async function executeJsonAction(
     await db.newsletterSubscription.upsert({
       where: { email: parsed.email },
       update: {
+        consentedAt: new Date(),
+        consentText: newsletterConsentText,
         status: "SUBSCRIBED",
         source: "pwa-offline",
       },
       create: {
         consentedAt: new Date(),
+        consentText: newsletterConsentText,
         email: parsed.email,
         source: "pwa-offline",
       },

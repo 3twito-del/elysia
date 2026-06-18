@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   useActionState,
   useEffect,
@@ -11,6 +12,7 @@ import {
   CheckCircle2,
   Circle,
   Gem,
+  LogIn,
   Ruler,
   Save,
   Sparkles,
@@ -50,6 +52,8 @@ type SizeGuideRow = {
   size: string;
 };
 
+type SizeGuideUnit = "cm" | "eu" | "mm" | "us";
+
 type GuideCopy = {
   icon: LucideIcon;
   inputLabel: string;
@@ -69,6 +73,13 @@ const defaultManualValues = {
   ring: "54",
 } satisfies Record<SizeFitKind, string>;
 
+const sizeGuideUnitLabels = {
+  cm: "ס״מ",
+  eu: "EU",
+  mm: "מ״מ",
+  us: "US",
+} satisfies Record<SizeGuideUnit, string>;
+
 const guideCopy = {
   bracelet: {
     icon: StretchHorizontal,
@@ -86,7 +97,7 @@ const guideCopy = {
       { measurement: "14-16 ס״מ", size: "S" },
       { measurement: "16-18 ס״מ", size: "M" },
       { measurement: "18-20 ס״מ", size: "L" },
-      { measurement: "20-24 ס״מ", size: "התאמה אישית" },
+      { measurement: "20-24 ס״מ", size: "התאמה" },
     ],
     tip: "אם את בין שתי מידות, בחרי את הגדולה יותר לצמידי שרשרת או צמידים עם תליונים.",
     title: "צמידים",
@@ -96,7 +107,7 @@ const guideCopy = {
     inputLabel: "סגנון עגילים מועדף",
     instructions: [
       "בחרי את הסגנון שאת עונדת בדרך כלל.",
-      "סטאד ומיני יישמרו כהעדפה עדינה; תלוי וארוך יכוונו לעיצובים עם נוכחות.",
+      "סטאד ומיני יישמרו כהעדפה נקייה; תלוי וארוך יכוונו לעיצובים עם נוכחות.",
       "ההתאמה משפיעה על המלצות סגנון, לא על מידה פיזית מחייבת.",
     ],
     placeholder: "",
@@ -112,12 +123,12 @@ const guideCopy = {
     ],
     range: "מיני, סטאד, קלאסי, תלוי ועוד",
     rows: [
-      { measurement: "עדין ויומיומי", size: "מיני / סטאד" },
+      { measurement: "נקי ויומיומי", size: "מיני / סטאד" },
       { measurement: "מאוזן", size: "קלאסי / בינוני" },
       { measurement: "נוכחות", size: "תלוי / ארוך" },
       { measurement: "קו עגול", size: "עגול" },
     ],
-    tip: "לעגילים אין מידת גוף אחת. השמירה כאן מיועדת להמלצות ולסינון סגנוני.",
+    tip: "לעגילים אין מידת גוף אחת. השמירה מיועדת להמלצות וסינון.",
     title: "עגילים",
   },
   necklace: {
@@ -137,16 +148,16 @@ const guideCopy = {
       { measurement: "50-55 ס״מ", size: "נפילה נמוכה" },
       { measurement: "60-70 ס״מ", size: "ארוך / שכבות" },
     ],
-    tip: "45 ס״מ היא נקודת פתיחה טובה לרוב השרשראות הקלאסיות.",
+    tip: "45 ס״מ היא נקודת פתיחה לרוב השרשראות הקלאסיות.",
     title: "שרשראות",
   },
   ring: {
     icon: Circle,
     inputLabel: "מידת טבעת אירופאית",
     instructions: [
-      "השתמשי בטבעת קיימת שיושבת בנוחות על אותה אצבע.",
-      "אם את מודדת אצבע, בדקי בסוף היום כשהיד בטמפרטורה רגילה.",
-      "בין שתי מידות, טבעות רחבות בדרך כלל מרגישות טוב יותר במידה הגדולה.",
+      "מדדו טבעת קיימת שמתאימה לאותה אצבע.",
+      "מדדו בסוף היום, כשהיד בטמפרטורה רגילה.",
+      "בין שתי מידות, מומלץ לבחור במידה הגדולה.",
     ],
     placeholder: "לדוגמה: 54",
     presets: ["48", "50", "52", "54", "56", "58", "60"],
@@ -157,13 +168,16 @@ const guideCopy = {
       { measurement: "56-58", size: "בינונית" },
       { measurement: "60 ומעלה", size: "גדולה" },
     ],
-    tip: "המספר האירופאי קרוב להיקף האצבע במ״מ, ולכן הוא נוח להשוואה בין דגמים.",
+    tip: "המידה האירופאית מבוססת בקירוב על היקף האצבע במ״מ.",
     title: "טבעות",
   },
 } satisfies Record<SizeFitKind, GuideCopy>;
 
 export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
   const [activeKind, setActiveKind] = useState<SizeFitKind>(initialKind);
+  const [activeUnit, setActiveUnit] = useState<SizeGuideUnit>(
+    getDefaultSizeGuideUnit(initialKind),
+  );
   const [manualValue, setManualValue] = useState(
     defaultManualValues[initialKind],
   );
@@ -173,6 +187,7 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
     {},
   );
   const activeCopy = guideCopy[activeKind];
+  const activeUnitOptions = getSizeGuideUnitOptions(activeKind);
   const normalizedManualValue = normalizeSavedSize(activeKind, manualValue);
   const savedSummary = normalizedManualValue
     ? formatSavedSize(activeKind, normalizedManualValue)
@@ -217,22 +232,75 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="grid gap-1">
             <h2 className="text-lg font-semibold tracking-normal">
-              בחירת סוג תכשיט
+              בחירת קטגוריה
             </h2>
             <p className="text-muted-foreground text-sm">
-              הזיני מידה קיימת או מדידה פשוטה ושמרי להמשך.
+              הזינו מידה קיימת או בחרו מידה מהטבלה.
             </p>
           </div>
           <div className="brand-surface w-full rounded-md px-4 py-3 text-sm md:w-64">
-            <span className="text-muted-foreground block">מידה פעילה</span>
+            <span className="text-muted-foreground block">מידה נבחרת:</span>
             <strong className="mt-1 block truncate text-base">
               {savedSummary}
             </strong>
           </div>
         </div>
 
+        {activeUnitOptions.length > 0 ? (
+          <div
+            className="glass-inset flex flex-col gap-3 rounded-md border p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
+            data-testid="size-guide-unit-toggle"
+          >
+            <div>
+              <p className="font-medium">יחידות תצוגה</p>
+              <p
+                className="text-muted-foreground mt-1 text-xs leading-5"
+                data-testid="size-guide-unit-summary"
+              >
+                {getSizeGuideUnitSummary(activeKind, activeUnit)}
+              </p>
+            </div>
+            <div
+              aria-label="בחירת יחידות למדריך המידות"
+              className="flex flex-wrap gap-2"
+              role="group"
+            >
+              {activeUnitOptions.map((unit) => {
+                const isSelected = activeUnit === unit;
+
+                return (
+                  <Button
+                    aria-pressed={isSelected}
+                    className="min-w-14"
+                    key={unit}
+                    onClick={() => setActiveUnit(unit)}
+                    size="sm"
+                    type="button"
+                    variant={isSelected ? "default" : "outline"}
+                  >
+                    {sizeGuideUnitLabels[unit]}
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
+
         <div
-          aria-label="בחירת סוג תכשיט"
+          className="glass-inset flex flex-wrap items-center justify-between gap-3 rounded-md border p-3 text-sm"
+          data-testid="size-guide-save-context"
+        >
+          <p className="text-muted-foreground leading-6">המידה נשמרת במכשיר. לקוחות מחוברים יכולים לסנכרן לחשבון.</p>
+          <Button asChild size="sm" variant="ghost">
+            <Link href="/account#account-sizes">
+              אזור המידות
+              <LogIn aria-hidden="true" className="size-4" />
+            </Link>
+          </Button>
+        </div>
+
+        <div
+          aria-label="בחירת קטגוריה"
           className="grid grid-cols-2 gap-2 md:grid-cols-4"
           role="group"
         >
@@ -245,7 +313,10 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
                 aria-pressed={isActive}
                 className="min-h-12 justify-center gap-2"
                 key={kind}
-                onClick={() => setActiveKind(kind)}
+                onClick={() => {
+                  setActiveKind(kind);
+                  setActiveUnit(getDefaultSizeGuideUnit(kind));
+                }}
                 type="button"
                 variant={isActive ? "default" : "outline"}
               >
@@ -270,7 +341,7 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
             <div className="grid gap-1">
               <h3 className="text-lg font-semibold">{activeCopy.title}</h3>
               <p className="text-muted-foreground text-sm">
-                טווח נתמך: {activeCopy.range}
+                טווח מידות: {activeCopy.range}
               </p>
             </div>
             <CheckCircle2
@@ -369,14 +440,20 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
           </ol>
 
           <div className="grid gap-3 border-t border-[var(--glass-border)] pt-5">
-            <h4 className="text-sm font-semibold">טבלת עזר</h4>
+            <h4 className="text-sm font-semibold">טבלת מידות</h4>
             <div className="grid gap-2 text-sm">
               {activeCopy.rows.map((row) => (
                 <div
                   className="grid gap-2 rounded-md border border-[var(--glass-border)] px-3 py-2 sm:grid-cols-[1fr_auto] sm:items-center"
                   key={`${row.measurement}-${row.size}`}
                 >
-                  <span>{row.measurement}</span>
+                  <span>
+                    {formatSizeGuideMeasurement(
+                      activeKind,
+                      row.measurement,
+                      activeUnit,
+                    )}
+                  </span>
                   <strong className="font-semibold">{row.size}</strong>
                 </div>
               ))}
@@ -390,6 +467,85 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
       </div>
     </section>
   );
+}
+
+function getDefaultSizeGuideUnit(kind: SizeFitKind): SizeGuideUnit {
+  if (kind === "ring") return "eu";
+  if (kind === "earring") return "eu";
+
+  return "cm";
+}
+
+function getSizeGuideUnitOptions(kind: SizeFitKind): SizeGuideUnit[] {
+  if (kind === "ring") return ["eu", "us", "mm"];
+  if (kind === "earring") return [];
+
+  return ["cm", "mm"];
+}
+
+function getSizeGuideUnitSummary(kind: SizeFitKind, unit: SizeGuideUnit) {
+  if (kind === "ring") {
+    if (unit === "us") return "טבלת הטבעות מוצגת בקירוב למידות US.";
+    if (unit === "mm") return "מידת EU מוצגת גם כהיקף אצבע במ״מ.";
+
+    return "מידות הטבעות מוצגות כברירת מחדל בשיטת EU.";
+  }
+
+  if (unit === "mm") return "המידות מוצגות במ״מ להשוואה מדויקת יותר.";
+
+  return "המידות מוצגות בס״מ כמו סרט מדידה ביתי.";
+}
+
+function formatSizeGuideMeasurement(
+  kind: SizeFitKind,
+  measurement: string,
+  unit: SizeGuideUnit,
+) {
+  if (kind === "ring") {
+    if (unit === "eu") return `EU ${measurement}`;
+    if (unit === "us") return formatRingMeasurementAsUs(measurement);
+
+    return formatRingMeasurementAsMillimeters(measurement);
+  }
+
+  if ((kind === "bracelet" || kind === "necklace") && unit === "mm") {
+    return formatCentimeterMeasurementAsMillimeters(measurement);
+  }
+
+  return measurement;
+}
+
+function formatCentimeterMeasurementAsMillimeters(measurement: string) {
+  return measurement
+    .replace(/\d+(?:\.\d+)?/g, (value) =>
+      String(Math.round(Number(value) * 10)),
+    )
+    .replace(/ס״מ|ס"מ|cm/gi, "מ״מ");
+}
+
+function formatRingMeasurementAsMillimeters(measurement: string) {
+  const withUnits = measurement.replace(/\d+(?:\.\d+)?/g, (value) =>
+    String(Math.round(Number(value))),
+  );
+
+  return withUnits.includes("מ״מ") ? withUnits : `${withUnits} מ״מ`;
+}
+
+function formatRingMeasurementAsUs(measurement: string) {
+  const converted = measurement.replace(/\d+(?:\.\d+)?/g, (value) =>
+    formatUsRingSize(Number(value)),
+  );
+
+  return `US ${converted}`;
+}
+
+function formatUsRingSize(euSize: number) {
+  const rawUsSize = (euSize - 36.5) / 2.55;
+  const roundedQuarter = Math.round(rawUsSize * 4) / 4;
+
+  return Number.isInteger(roundedQuarter)
+    ? String(roundedQuarter)
+    : roundedQuarter.toFixed(2).replace(/0$/u, "");
 }
 
 function PresetButtons({

@@ -73,21 +73,35 @@ function optionalParam(value: string | string[] | undefined) {
   return param && param.length > 0 ? param : undefined;
 }
 
+function pageParam(value: string | string[] | undefined) {
+  const page = Number(firstParam(value) ?? 1);
+
+  return Number.isInteger(page) && page > 0 ? page : 1;
+}
+
+function serviceStatusParam(value: string | string[] | undefined) {
+  const status = optionalParam(value);
+
+  return serviceRequestStatuses.includes(
+    status as (typeof serviceRequestStatuses)[number],
+  )
+    ? (status as (typeof serviceRequestStatuses)[number])
+    : undefined;
+}
+
 export default async function AdminServicePage({
   searchParams,
 }: AdminServicePageProps) {
-  const access = await getAdminPageAccess("CUSTOMER_VIEW");
+  const access = await getAdminPageAccess("CUSTOMER_VIEW", "/admin/service");
 
   if (access.denied) return <AdminForbidden {...access.denied} />;
 
   const query = await searchParams;
   const params = {
-    page: Number(firstParam(query.page) ?? 1),
+    page: pageParam(query.page),
     pageSize: 20,
     query: optionalParam(query.query),
-    status: optionalParam(query.status) as
-      | (typeof serviceRequestStatuses)[number]
-      | undefined,
+    status: serviceStatusParam(query.status),
     topicId: optionalParam(query.topicId),
   };
   const [requests, configuration] = await Promise.all([
@@ -110,6 +124,25 @@ export default async function AdminServicePage({
     Boolean(params.topicId),
     params.page > 1,
   ].some(Boolean);
+  const activeFilterLabels = [
+    params.query ? `חיפוש: ${params.query}` : null,
+    params.status
+      ? `סטטוס: ${getServiceRequestStatusLabel(params.status)}`
+      : null,
+    params.topicId
+      ? `נושא: ${
+          requests.topics.find((topic) => topic.id === params.topicId)?.label ??
+          "נושא לא זמין"
+        }`
+      : null,
+    params.page > 1 ? `עמוד ${params.page}` : null,
+  ].filter((label): label is string => Boolean(label));
+  const emptyTitle = hasActiveFilters
+    ? "אין פניות שירות מתאימות"
+    : "אין פניות שירות";
+  const emptyDescription = hasActiveFilters
+    ? "לא נמצאו פניות לפי הסינון הנוכחי. נקו סינון או שנו חיפוש כדי לחזור לתור השירות המלא."
+    : "פניות מהטופס הציבורי יופיעו כאן לטיפול ומעקב.";
 
   return (
     <AdminShell
@@ -139,6 +172,7 @@ export default async function AdminServicePage({
               />
               <select
                 aria-label="סינון לפי סטטוס"
+                autoComplete="off"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
                 defaultValue={params.status ?? ""}
                 name="status"
@@ -152,6 +186,7 @@ export default async function AdminServicePage({
               </select>
               <select
                 aria-label="סינון לפי נושא"
+                autoComplete="off"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
                 defaultValue={params.topicId ?? ""}
                 name="topicId"
@@ -170,6 +205,22 @@ export default async function AdminServicePage({
                 </Button>
               ) : null}
             </form>
+            {hasActiveFilters ? (
+              <div
+                className="text-muted-foreground mt-4 flex flex-wrap items-center gap-2 text-sm"
+                data-testid="admin-service-active-filters"
+              >
+                <span className="text-foreground font-medium">סינון פעיל</span>
+                {activeFilterLabels.map((label) => (
+                  <Badge key={label} variant="outline">
+                    {label}
+                  </Badge>
+                ))}
+                <Button asChild size="sm" variant="ghost">
+                  <Link href="/admin/service">ניקוי סינון</Link>
+                </Button>
+              </div>
+            ) : null}
           </CardContent>
         </Card>
 
@@ -196,10 +247,17 @@ export default async function AdminServicePage({
               <TableBody>
                 {requests.items.length === 0 ? (
                   <TableEmptyRow
+                    action={
+                      hasActiveFilters ? (
+                        <Button asChild size="sm" variant="outline">
+                          <Link href="/admin/service">ניקוי סינון</Link>
+                        </Button>
+                      ) : undefined
+                    }
                     colSpan={6}
-                    description="פניות מהטופס הציבורי יופיעו כאן לטיפול ומעקב."
+                    description={emptyDescription}
                     icon={Headset}
-                    title="אין פניות שירות"
+                    title={emptyTitle}
                   />
                 ) : (
                   requests.items.map((request) => (
@@ -241,6 +299,23 @@ export default async function AdminServicePage({
                               {request.preferredContactTime}
                             </span>
                           ) : null}
+                          <div
+                            className="flex flex-wrap gap-1"
+                            data-testid="admin-service-triage-facts"
+                          >
+                            {request.triageFacts.map((fact) => (
+                              <Badge
+                                key={fact.key}
+                                variant={
+                                  fact.tone === "warning"
+                                    ? "secondary"
+                                    : "outline"
+                                }
+                              >
+                                {fact.label}
+                              </Badge>
+                            ))}
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell className="align-top">
@@ -309,6 +384,7 @@ export default async function AdminServicePage({
                           />
                           <select
                             aria-label="עדכון סטטוס פנייה"
+                            autoComplete="off"
                             className="glass-control h-10 rounded-md border px-3 text-sm"
                             defaultValue={request.status}
                             name="status"

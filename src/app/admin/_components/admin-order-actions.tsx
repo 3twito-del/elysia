@@ -64,8 +64,7 @@ export function AdminOrderActions({
   const [feedback, setFeedback] = useState<AdminMutationFeedback>();
   const updateStatus = api.admin.updateOrderStatus.useMutation({
     onError: (error) => setFeedback({ message: error.message, tone: "error" }),
-    onMutate: () =>
-      setFeedback({ message: "מעדכן סטטוס הזמנה...", tone: "neutral" }),
+    onMutate: () => setFeedback(undefined),
     onSuccess: () => {
       router.refresh();
       setFeedback({ message: "סטטוס ההזמנה עודכן.", tone: "success" });
@@ -87,8 +86,8 @@ export function AdminOrderActions({
             onConfirm={() =>
               updateStatus.mutate({ orderId, status: action.status })
             }
-            pending={updateStatus.isPending}
             requiresConfirmation={action.status === "CANCELLED"}
+            targetLabel={orderId}
             variant={action.status === "CANCELLED" ? "outline" : "secondary"}
           />
         ))}
@@ -117,8 +116,7 @@ function AdminShipmentForm({
   const [fieldErrors, setFieldErrors] = useState<FormFieldErrors>({});
   const mutation = api.admin.upsertShipment.useMutation({
     onError: (error) => setFeedback({ message: error.message, tone: "error" }),
-    onMutate: () =>
-      setFeedback({ message: "שומר פרטי משלוח...", tone: "neutral" }),
+    onMutate: () => setFeedback(undefined),
     onSuccess: () => {
       router.refresh();
       setFeedback({ message: "פרטי המשלוח נשמרו.", tone: "success" });
@@ -174,8 +172,9 @@ function AdminShipmentForm({
           value={tracking}
         />
         <select
-          className="glass-control h-9 rounded-md border px-2 text-xs"
           aria-invalid={Boolean(fieldErrors.status)}
+          autoComplete="off"
+          className="glass-control h-9 rounded-md border px-2 text-xs"
           disabled={mutation.isPending}
           onChange={(event) => setStatus(event.currentTarget.value)}
           value={status}
@@ -186,6 +185,7 @@ function AdminShipmentForm({
         </select>
       </div>
       <Button
+        aria-label={`שמירת משלוח להזמנה ${orderId}`}
         className="w-fit gap-2"
         disabled={mutation.isPending}
         size="sm"
@@ -193,7 +193,7 @@ function AdminShipmentForm({
         variant="outline"
       >
         <Save aria-hidden="true" className="size-3.5" />
-        {mutation.isPending ? "שומר..." : "שמירת משלוח"}
+        שמירת משלוח
       </Button>
       <AdminMutationStatus feedback={feedback} />
     </form>
@@ -216,7 +216,7 @@ function AdminRefundForm({
   const [fieldErrors, setFieldErrors] = useState<FormFieldErrors>({});
   const mutation = api.admin.refundOrder.useMutation({
     onError: (error) => setFeedback({ message: error.message, tone: "error" }),
-    onMutate: () => setFeedback({ message: "מבצע זיכוי...", tone: "neutral" }),
+    onMutate: () => setFeedback(undefined),
     onSuccess: () => {
       router.refresh();
       setFeedback({ message: "הזיכוי נשמר וההזמנה עודכנה.", tone: "success" });
@@ -297,6 +297,7 @@ function AdminRefundForm({
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button
+            aria-label={`ביצוע זיכוי להזמנה ${orderId}`}
             className="w-fit gap-2"
             disabled={mutation.isPending}
             size="sm"
@@ -304,12 +305,12 @@ function AdminRefundForm({
             variant="outline"
           >
             <RotateCcw aria-hidden="true" className="size-3.5" />
-            {mutation.isPending ? "מבצע..." : "ביצוע זיכוי"}
+            ביצוע זיכוי
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent dir="rtl">
           <AlertDialogHeader>
-            <AlertDialogTitle>לאשר זיכוי להזמנה?</AlertDialogTitle>
+            <AlertDialogTitle>לאשר זיכוי להזמנה {orderId}?</AlertDialogTitle>
             <AlertDialogDescription>
               הפעולה תעדכן את סטטוס ההזמנה והתשלומים לזיכוי, ותיצור אירוע הודעה
               ללקוח. החזרת מלאי תתבצע רק אם האפשרות סומנה.
@@ -335,30 +336,30 @@ function StatusActionButton({
   disabled,
   label,
   onConfirm,
-  pending,
   requiresConfirmation,
+  targetLabel,
   variant,
 }: {
   disabled: boolean;
   label: string;
   onConfirm: () => void;
-  pending: boolean;
   requiresConfirmation: boolean;
+  targetLabel: string;
   variant: "outline" | "secondary";
 }) {
-  const buttonLabel = pending ? "מעדכן..." : label;
+  const accessibleLabel = `${label} להזמנה ${targetLabel}`;
 
   if (!requiresConfirmation) {
     return (
       <Button
-        aria-label={pending ? `מעדכן הזמנה: ${label}` : label}
+        aria-label={accessibleLabel}
         disabled={disabled}
         onClick={onConfirm}
         size="sm"
         type="button"
         variant={variant}
       >
-        {buttonLabel}
+        {label}
       </Button>
     );
   }
@@ -367,20 +368,21 @@ function StatusActionButton({
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button
-          aria-label={pending ? `מעדכן הזמנה: ${label}` : label}
+          aria-label={accessibleLabel}
           disabled={disabled}
           size="sm"
           type="button"
           variant={variant}
         >
-          {buttonLabel}
+          {label}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent dir="rtl">
         <AlertDialogHeader>
-          <AlertDialogTitle>לאשר ביטול הזמנה?</AlertDialogTitle>
+          <AlertDialogTitle>לאשר ביטול הזמנה {targetLabel}?</AlertDialogTitle>
           <AlertDialogDescription>
-            ביטול ישחרר שמירות מלאי, יעדכן תשלום ידני לכשל ויירשם ב-audit.
+            ביטול ההזמנה ישחרר שמירות מלאי, יעדכן תשלום ידני לכשל ויירשם
+            ב-audit. זו פעולה תפעולית שלא ממשיכה הכנה או מסירה.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

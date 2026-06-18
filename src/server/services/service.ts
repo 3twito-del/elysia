@@ -2,6 +2,7 @@ import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 
 import {
+  getServiceRequestTriageFacts,
   maxServiceRequestFileBytes,
   maxServiceRequestFiles,
   publicServiceRequestInputSchema,
@@ -11,16 +12,20 @@ import {
   upsertContactTopicInputSchema,
   upsertServiceBranchInputSchema,
 } from "~/lib/service-validation";
+import { siteContact, siteWhatsapp } from "~/config/site-contact";
 import { db } from "~/server/db";
 import { mediaProvider } from "~/server/adapters/media";
-import { shouldUseCatalogFixtures } from "~/server/services/catalog-fixtures";
+import {
+  shouldFallbackToCatalogFixturesOnDatabaseError,
+  shouldUseCatalogFixtures,
+} from "~/server/services/catalog-fixtures";
 import { BUSINESS_EVENTS, createOutboxEvent } from "~/server/services/outbox";
 
 const defaultServiceSettings = {
   id: "default",
-  phoneE164: "+972547277455",
-  displayPhone: "054-727-7455",
-  serviceEmail: "3twito@gmail.com",
+  phoneE164: siteContact.phoneE164,
+  displayPhone: siteContact.phoneDisplay,
+  serviceEmail: siteContact.email,
   physicalBranchesEnabled: false,
 };
 
@@ -56,7 +61,7 @@ export const defaultContactTopics = [
   {
     id: "topic_sizing",
     slug: "sizing",
-    label: "מידה והתאמה",
+    label: "מידות",
     description: "ייעוץ מידה, התאמה או בחירת מתנה.",
     sortOrder: 50,
   },
@@ -71,7 +76,7 @@ export const defaultContactTopics = [
     id: "topic_partnership",
     slug: "partnership",
     label: "שיתוף פעולה",
-    description: "פנייה עסקית, תוכן או שיתוף פעולה.",
+    description: "פנייה ל-Elysia, תוכן או שיתוף פעולה.",
     sortOrder: 70,
   },
 ];
@@ -99,58 +104,69 @@ export type ServiceRequestListInput = z.infer<
 export { serviceRequestListInputSchema };
 
 export async function getServiceSettings() {
-  if (shouldUseCatalogFixtures()) {
-    return defaultServiceSettings;
-  }
+  return readPublicServiceData({
+    label: "settings",
+    fallback: () => defaultServiceSettings,
+    database: async () => {
+      const settings = await db.serviceSettings.findUnique({
+        where: { id: defaultServiceSettings.id },
+      });
 
-  const settings = await db.serviceSettings.findUnique({
-    where: { id: defaultServiceSettings.id },
+      return settings ?? defaultServiceSettings;
+    },
   });
-
-  return settings ?? defaultServiceSettings;
 }
 
 export async function getPublicContactSettings() {
   const settings = await getServiceSettings();
+  const whatsappNumber =
+    siteWhatsapp.replace(/\D/g, "") || settings.phoneE164.replace(/\D/g, "");
 
   return {
     email: settings.serviceEmail,
     phoneDisplay: settings.displayPhone,
     phoneHref: `tel:${settings.phoneE164}`,
     phoneE164: settings.phoneE164,
+    whatsappDisplay: settings.displayPhone,
+    whatsappHref:
+      whatsappNumber.length > 0 ? `https://wa.me/${whatsappNumber}` : null,
   };
 }
 
 export async function getActiveContactTopics() {
-  if (shouldUseCatalogFixtures()) {
-    return defaultContactTopics;
-  }
+  return readPublicServiceData({
+    label: "contact-topics",
+    fallback: () => defaultContactTopics,
+    database: async () => {
+      const topics = await db.contactTopic.findMany({
+        where: { isActive: true },
+        orderBy: [{ sortOrder: "asc" }, { label: "asc" }],
+      });
 
-  const topics = await db.contactTopic.findMany({
-    where: { isActive: true },
-    orderBy: [{ sortOrder: "asc" }, { label: "asc" }],
+      return topics.length > 0 ? topics : defaultContactTopics;
+    },
   });
-
-  return topics.length > 0 ? topics : defaultContactTopics;
 }
 
 export async function getPublicPhysicalBranches() {
-  if (shouldUseCatalogFixtures()) {
-    return [];
-  }
+  return readPublicServiceData({
+    label: "branches",
+    fallback: () => [],
+    database: async () => {
+      const settings = await getServiceSettings();
 
-  const settings = await getServiceSettings();
+      if (!settings.physicalBranchesEnabled) return [];
 
-  if (!settings.physicalBranchesEnabled) return [];
-
-  return db.branch.findMany({
-    where: {
-      kind: "PHYSICAL",
-      isActive: true,
-      isApproved: true,
-      isPublic: true,
+      return db.branch.findMany({
+        where: {
+          kind: "PHYSICAL",
+          isActive: true,
+          isApproved: true,
+          isPublic: true,
+        },
+        orderBy: [{ sortOrder: "asc" }, { city: "asc" }, { name: "asc" }],
+      });
     },
-    orderBy: [{ sortOrder: "asc" }, { city: "asc" }, { name: "asc" }],
   });
 }
 
@@ -184,6 +200,7 @@ export async function createPublicServiceRequest(input: {
       }),
     ),
   );
+  // TODO: Define and enforce backend retention/deletion policy for service request attachments.
   const request = await db.$transaction(async (tx) => {
     const created = await tx.serviceRequest.create({
       data: {
@@ -308,6 +325,12 @@ export async function listAdminServiceRequests(input: ServiceRequestListInput) {
       adminNotes: request.adminNotes,
       createdAt: request.createdAt,
       updatedAt: request.updatedAt,
+      triageFacts: getServiceRequestTriageFacts({
+        attachmentCount: request.attachments.length,
+        orderNumber: request.orderNumber,
+        preferredContact: request.preferredContact,
+        productReference: request.productReference,
+      }),
       attachments: request.attachments.map((attachment) => ({
         id: attachment.id,
         provider: attachment.provider,
@@ -497,6 +520,71 @@ export function shouldShowPhysicalBranches(input: {
   return input.physicalBranchesEnabled;
 }
 
+const publicServiceFallbackWarningKeys = new Set<string>();
+
+async function readPublicServiceData<T>({
+  database,
+  fallback,
+  label,
+}: {
+  database: () => Promise<T>;
+  fallback: () => Promise<T> | T;
+  label: string;
+}) {
+  if (shouldUseCatalogFixtures()) {
+    return fallback();
+  }
+
+  try {
+    return await database();
+  } catch (error) {
+    if (
+      !shouldFallbackToCatalogFixturesOnDatabaseError() ||
+      !isPublicServiceDatabaseReadError(error)
+    ) {
+      throw error;
+    }
+
+    warnPublicServiceFallback(label, error);
+
+    return fallback();
+  }
+}
+
+function isPublicServiceDatabaseReadError(error: unknown) {
+  const code =
+    error && typeof error === "object" && "code" in error
+      ? (error as { code?: unknown }).code
+      : undefined;
+  const message = getPublicServiceErrorMessage(error);
+
+  return (
+    (typeof code === "string" &&
+      ["P1000", "P1001", "P1002", "P1008", "P1017", "P2024"].includes(code)) ||
+    /Can't reach database server|Authentication failed|Timed out fetching a new connection|Unable to start a transaction|Connection pool timeout|DATABASE_URL is required|Error opening a TLS connection|No credentials are available in the security package/i.test(
+      message,
+    )
+  );
+}
+
+function getPublicServiceErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function warnPublicServiceFallback(label: string, error: unknown) {
+  if (publicServiceFallbackWarningKeys.has(label)) return;
+
+  publicServiceFallbackWarningKeys.add(label);
+  console.warn(
+    `[service] Falling back to default public ${label} after database read failed: ${getPublicServiceErrorMessage(
+      error,
+    )
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 240)}`,
+  );
+}
+
 function getValidatedServiceRequestFiles(files: File[]) {
   const presentFiles = files.filter((file) => file.size > 0 && file.name);
 
@@ -510,7 +598,7 @@ function getValidatedServiceRequestFiles(files: File[]) {
         file.type as (typeof serviceRequestAcceptedFileTypes)[number],
       )
     ) {
-      throw new Error("ניתן לצרף תמונות או PDF בלבד.");
+      throw new Error("ניתן לצרף קבצים מצורפים בלבד.");
     }
 
     if (file.size > maxServiceRequestFileBytes) {

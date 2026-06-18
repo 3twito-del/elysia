@@ -55,6 +55,27 @@ export function createSearchResultMeta(
   };
 }
 
+export function shouldFallbackToLocalSearchPage(input: {
+  indexedHits: number;
+  found: number;
+  page: number;
+  perPage: number;
+  resolvedHits: number;
+}) {
+  const found = Math.max(0, input.found);
+  const indexedHits = Math.max(0, input.indexedHits);
+  const resolvedHits = Math.max(0, input.resolvedHits);
+  const expectedHits = getExpectedSearchPageHitCount({
+    found,
+    page: input.page,
+    perPage: input.perPage,
+  });
+
+  return (
+    found > 0 && (indexedHits < expectedHits || resolvedHits < indexedHits)
+  );
+}
+
 export function shouldUseLocalSearchFallback(config: TypesenseSearchEnv = env) {
   return !hasTypesenseConfig(config);
 }
@@ -74,6 +95,20 @@ export function getProductsCollectionName(model: string, dimension: number) {
 
 function getSearchTotalPages(total: number, perPage: number) {
   return Math.max(1, Math.ceil(total / perPage));
+}
+
+function getExpectedSearchPageHitCount(input: {
+  found: number;
+  page: number;
+  perPage: number;
+}) {
+  const found = Math.max(0, input.found);
+  const perPage = Math.max(1, input.perPage);
+  const totalPages = getSearchTotalPages(found, perPage);
+  const page = Math.min(Math.max(1, input.page), totalPages);
+  const start = (page - 1) * perPage;
+
+  return Math.min(perPage, Math.max(0, found - start));
 }
 
 export function hasTypesenseConfig(

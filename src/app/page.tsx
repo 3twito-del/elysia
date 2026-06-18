@@ -1,242 +1,545 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Search } from "lucide-react";
-
 import {
-  StaticCinematicHeroSequence,
-  StaticKineticImageFrame,
-} from "~/components/brand-media-panel";
-import { CommerceSectionHeader } from "~/components/commerce-section-header";
+  ArrowLeft,
+  Gem,
+  Gift,
+  Headphones,
+  Ruler,
+  ShieldCheck,
+  Truck,
+} from "lucide-react";
+
+import { NewsletterForm } from "~/components/newsletter-form";
+import { DeferredFixedBackgroundBand } from "~/components/deferred-fixed-background-band";
+import { HomeHeroVideo } from "~/components/home-hero-video";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { cinematicRouteMedia, getCategoryBrandSlides } from "~/lib/brand-media";
 import {
   getCatalogCategories,
-  searchCatalogProducts,
+  getFeaturedCatalogProducts,
+  type CatalogCategory,
 } from "~/server/services/catalog";
 
-const homeSlides = cinematicRouteMedia.home.slice(0, 1);
+const boutiqueHeroImage = "/brand/boutique/lifestyle-hero.avif";
+const boutiqueHeroPoster = "/brand/boutique/lifestyle-hero-poster.avif";
+const boutiqueHeroVideoMp4 = "/brand/boutique/lifestyle-hero.mp4";
+const boutiqueHeroVideoWebm = "/brand/boutique/lifestyle-hero.webm";
 
-const quickSearchSuggestions = [
-  { href: "/search?q=טבעת%20זהב", label: "טבעת זהב" },
-  { href: "/search?q=עגילי%20פנינה", label: "עגילי פנינה" },
-  { href: "/search?maxPrice=700", label: "מתנה עד 700" },
-  { href: "/search?category=rings", label: "טבעות" },
+const categoryOrder = ["rings", "necklaces", "earrings", "bracelets"];
+
+const categoryEditorialCopy: Record<
+  string,
+  { description: string; kicker: string }
+> = {
+  bracelets: {
+    description: "שכבות דקות, מתנה קטנה ורגע שבו היד צריכה אור.",
+    kicker: "קטגוריה",
+  },
+  earrings: {
+    description: "ברק שמחזיק בוקר, ערב וכל מעבר ביניהם.",
+    kicker: "קטגוריה",
+  },
+  necklaces: {
+    description: "תליונים שמרימים חולצה פשוטה או שמלת ערב.",
+    kicker: "קטגוריה",
+  },
+  rings: {
+    description: "נוכחות עדינה לבד, בזוג או בשכבות.",
+    kicker: "קטגוריה",
+  },
+};
+
+const materialTrust = [
+  {
+    icon: Gem,
+    title: "חומר ברור",
+    text: "זהב, כסף, פנינים ואבני צבע מוצגים לפי הדגם והמלאי.",
+  },
+  {
+    icon: Ruler,
+    title: "מידה בלי ניחוש",
+    text: "אורך, מידה ומשקל מופיעים כשיש נתון אמין, לצד מדריך מידות.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "שירות לפני הזמנה",
+    text: "אפשר לפתוח פנייה על מידה, חומר, מתנה או מסירה לפני שמחליטים.",
+  },
 ] as const;
 
+const editorialPrinciples = [
+  {
+    title: "נבחרו בקפידה",
+    text: "לא עוד מדף עמוס. כל פריט צריך להצדיק מקום בלוק, במתנה או ביומיום.",
+  },
+  {
+    title: "נוגעים בפרטים",
+    text: "חומר, גימור, אבן ומידה מופיעים קרוב להחלטה, לא רק בסוף העמוד.",
+  },
+  {
+    title: "מתנה שנראית אישית",
+    text: "רעיונות לפי תקציב, אירוע וסגנון, עם אפשרות לשאול לפני הזמנה.",
+  },
+] as const;
+
+const homeTrustSignals = [
+  {
+    icon: ShieldCheck,
+    title: "תשלום מאובטח",
+    text: "הפרטים מוצגים לפני תשלום.",
+  },
+  {
+    icon: Truck,
+    title: "משלוח והחלפה",
+    text: "מסירה, החלפה והחזרה לפי מדיניות Elysia.",
+  },
+  {
+    icon: Gift,
+    title: "מתנה מוכנה",
+    text: "אפשר לבחור לפי תקציב, אירוע וסגנון.",
+  },
+  {
+    icon: Headphones,
+    title: "שירות אנושי",
+    text: "שאלה על מידה, חומר או התאמה לפני שמזמינים.",
+  },
+] as const;
+
+const homeCommerceEntryLinks = [
+  {
+    href: "/gifts",
+    label: "מתנות לפי רגע",
+    text: "כניסה מהירה לרעיונות עם תקציב וסגנון.",
+  },
+  {
+    href: "/category/necklaces",
+    label: "שרשראות לקיץ",
+    text: "קו עדין שמרים חולצה לבנה או שמלת ערב.",
+  },
+] as const;
+
+export const metadata: Metadata = {
+  title: "Elysia Jewellery | תכשיטים בוטיקיים",
+  description:
+    "Elysia Jewellery היא בית תכשיטים בוטיקי לתכשיטי כסף, ציפוי זהב, פנינים ואבני צבע: טבעות, שרשראות, עגילים וצמידים למתנה, ליומיום ולערב.",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "Elysia Jewellery | תכשיטים בוטיקיים",
+    description:
+      "תכשיטים עדינים לקיץ, למתנות וללוקים יומיומיים, עם חומר, מידה ושירות לפני הזמנה.",
+    url: "/",
+    images: [{ url: boutiqueHeroImage }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Elysia Jewellery | תכשיטים בוטיקיים",
+    description:
+      "תכשיטים עדינים לקיץ, למתנות וללוקים יומיומיים, עם חומר, מידה ושירות לפני הזמנה.",
+    images: [boutiqueHeroImage],
+  },
+};
+
 export default async function Home() {
-  const [categories, ringProducts] = await Promise.all([
+  const [categories, featuredProducts] = await Promise.all([
     getCatalogCategories(),
-    searchCatalogProducts({ category: "rings" }),
+    getFeaturedCatalogProducts(4),
   ]);
-  const featuredProducts = ringProducts.slice(0, 4);
+  const orderedCategories = getOrderedHomeCategories(categories);
 
   return (
-    <main>
+    <main
+      className="home-luxury-page storefront-home-page"
+      data-testid="storefront-homepage"
+    >
+      <link
+        as="image"
+        fetchPriority="high"
+        href={boutiqueHeroPoster}
+        rel="preload"
+        type="image/avif"
+      />
       <SiteHeader />
 
       <RevealSection
-        className="relative isolate min-h-[var(--home-hero-height)] w-screen max-w-none overflow-hidden [--hero-edge:clamp(1.15rem,4vw,5rem)] [--home-hero-height:clamp(35rem,86svh,44rem)] sm:[--home-hero-height:clamp(40rem,78svh,52rem)] lg:[--hero-edge:clamp(3rem,4vw,5rem)]"
+        className="home-cinematic-hero storefront-hero relative isolate min-h-[var(--home-hero-height)] w-screen max-w-none overflow-hidden"
         data-testid="cinematic-page-hero"
         id="page-hero"
         initialVisible
         variant="hero"
       >
-        <div
-          className="motion-media-frame absolute inset-0 h-full min-h-[var(--home-hero-height)] w-full"
-          data-motion-intensity="cinematic"
-          data-motion-media="true"
-          data-motion-parallax="false"
-          data-motion-reduced="false"
-          data-motion-scope="home-hero"
-        >
-          <div className="motion-media-content absolute inset-0 min-h-[var(--home-hero-height)]">
-            <StaticKineticImageFrame scrollMotion={false}>
-              <StaticCinematicHeroSequence
-                priority
-                motionScope="home-hero"
-                slides={homeSlides}
-                testId="cinematic-page-hero-sequence"
-              />
-            </StaticKineticImageFrame>
-          </div>
-        </div>
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.02),rgba(0,0,0,0.16)_44%,rgba(0,0,0,0.58))]" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.68),rgba(0,0,0,0.12)_58%,rgba(0,0,0,0.22))]" />
-        <div className="absolute inset-x-0 top-0 h-px bg-white opacity-30" />
-        <div className="relative min-h-[var(--home-hero-height)]">
-          <div
-            className="motion-hero-copy absolute top-[var(--hero-edge)] right-[var(--hero-edge)] w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),48rem)] text-right text-white lg:w-[min(48rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
-            data-testid="home-hero-copy"
-            dir="rtl"
-          >
-            <h1
-              className="home-hero-wordmark motion-copy-item text-right text-5xl leading-[0.96] font-medium tracking-normal sm:text-7xl lg:text-[6rem]"
-              dir="ltr"
-            >
-              Elysia
-            </h1>
-            <p className="motion-copy-item mt-4 max-w-xl text-base leading-7 text-white/90 [--motion-copy-delay:90ms] sm:mt-5 sm:text-[1.05rem] sm:leading-8">
-              תכשיטים מדויקים לרגעים שנשארים.
-            </p>
-            <p className="motion-copy-item mt-2 max-w-xl text-sm leading-6 text-white/78 [--motion-copy-delay:130ms] sm:text-base sm:leading-7">
-              קולקציה ישראלית נקייה בטבעות, שרשראות, עגילים וצמידים.
-            </p>
-          </div>
-        </div>
+        <HomeHeroVideo
+          className="storefront-hero-image object-cover"
+          mp4Src={boutiqueHeroVideoMp4}
+          posterSrc={boutiqueHeroPoster}
+          webmSrc={boutiqueHeroVideoWebm}
+        />
+        <div className="storefront-hero-scrim absolute inset-0" />
+        <div className="storefront-hero-wash absolute inset-0" />
 
         <div
-          className="home-hero-actions motion-hero-copy absolute inset-x-4 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] w-auto text-white sm:inset-x-auto sm:bottom-[var(--hero-edge)] sm:left-[var(--hero-edge)] sm:w-[min(calc(100%_-_var(--hero-edge)_-_var(--hero-edge)),36rem)] lg:w-[min(36rem,calc(50vw_-_var(--hero-edge)_-_2rem))]"
-          data-testid="home-hero-actions"
+          className="home-hero-copy motion-hero-copy storefront-hero-copy absolute z-10 flex max-w-[min(38rem,calc(100vw-2.5rem))] flex-col items-start text-right sm:max-w-[min(42rem,45vw)]"
+          data-testid="home-hero-copy"
           dir="rtl"
         >
-          <div className="motion-copy-item flex flex-col items-stretch gap-3 px-3 [--motion-copy-delay:170ms] sm:flex-row sm:items-center sm:justify-end sm:gap-5 sm:px-0">
-            <Button
-              asChild
-              className="home-hero-cta-primary text-foreground hover:text-foreground border-white bg-white shadow-none hover:border-white hover:bg-white"
-              size="lg"
-            >
-              <Link href="/category/rings">
-                לקולקציה
-                <ArrowLeft
-                  aria-hidden="true"
-                  className="home-hero-cta-icon size-4"
-                />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </RevealSection>
-
-      <RevealSection
-        className="mx-auto max-w-7xl px-[var(--ui-page-x)] py-5 sm:px-6 sm:py-10"
-        id="categories"
-      >
-        <CommerceSectionHeader
-          action={
-            <Button asChild size="sm" variant="outline">
-              <Link href="/search">כל הקטלוג</Link>
-            </Button>
-          }
-          eyebrow="קטגוריות"
-          title="מסלול קצר למוצר הנכון"
-        />
-        <RevealGrid
-          className="grid grid-cols-2 gap-2.5 sm:gap-x-4 sm:gap-y-6 lg:grid-cols-4"
-          variant="media"
-        >
-          {categories.map((category) => (
-            <Link
-              className="group/card block w-full min-w-0 outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
-              data-testid="home-category-tile"
-              href={`/category/${category.slug}`}
-              key={category.slug}
-            >
-              <div className="bg-muted relative aspect-[4/3] overflow-hidden rounded-md sm:aspect-[4/5] sm:min-h-[220px]">
-                <Image
-                  alt=""
-                  className="media-color object-cover object-center transition duration-[700ms] ease-[var(--ease-motion-standard)] group-hover/card:scale-[1.015]"
-                  fill
-                  sizes="(min-width: 1280px) 18rem, (min-width: 1024px) 25vw, 50vw"
-                  src={
-                    getCategoryBrandSlides(category.slug)[0]?.src ??
-                    category.image
-                  }
-                />
-                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(16,19,20,0.48),rgba(16,19,20,0.08)_58%,rgba(255,255,255,0.04))] sm:bg-[linear-gradient(to_top,rgba(16,19,20,0.18),rgba(16,19,20,0.02)_42%,rgba(255,255,255,0.04))]" />
-                <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-3 text-white sm:hidden">
-                  <h3 className="min-w-0 text-base leading-5 font-medium">
-                    {category.name}
-                  </h3>
-                  <ArrowLeft aria-hidden="true" className="size-4 shrink-0" />
-                </div>
-              </div>
-              <div className="mt-3 hidden border-b border-[var(--glass-border)] pb-3 text-center sm:block">
-                <h3 className="group-hover/card:text-muted-foreground group-focus-visible/card:text-muted-foreground min-w-0 text-base leading-6 font-medium transition-colors duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)] sm:text-lg">
-                  {category.name}
-                </h3>
-              </div>
-            </Link>
-          ))}
-        </RevealGrid>
-      </RevealSection>
-
-      <RevealSection
-        className="brand-page-band border-y border-[var(--glass-border)]"
-        id="quick-search"
-      >
-        <div className="mx-auto grid max-w-7xl gap-4 px-[var(--ui-page-x)] py-5 sm:px-[var(--ui-page-x-wide)] sm:py-6 lg:grid-cols-[minmax(15rem,0.7fr)_minmax(0,1.9fr)] lg:items-center">
-          <div className="min-w-0">
-            <p className="text-muted-foreground text-sm">חיפוש מהיר</p>
-            <h2 className="text-2xl font-medium">מה תרצי למצוא היום?</h2>
-          </div>
-          <div className="grid min-w-0 gap-3">
-            <form
-              action="/search"
-              aria-label="חיפוש בקטלוג"
-              className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]"
-              data-testid="home-quick-search-form"
-              role="search"
-            >
-              <div className="relative">
-                <Search
-                  aria-hidden="true"
-                  className="text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2"
-                />
-                <Input
-                  aria-label="חיפוש מוצר בקטלוג"
-                  className="bg-background h-[3.25rem] rounded-md border-[var(--glass-border)] pr-11 pl-3 text-sm shadow-none focus-visible:border-[var(--glass-border-strong)]"
-                  name="q"
-                  placeholder="טבעת זהב, עגילי פנינה, מתנה עד 700..."
-                />
-              </div>
-              <Button className="h-[3.25rem] gap-2 px-5" type="submit">
-                חיפוש
-                <Search aria-hidden="true" className="size-4" />
-              </Button>
-            </form>
-            <div
-              aria-label="חיפושים מהירים"
-              className="flex flex-wrap items-center gap-2"
-              data-testid="home-quick-search-suggestions"
-            >
-              {quickSearchSuggestions.map((suggestion) => (
+          <p className="storefront-eyebrow motion-copy-item [--motion-copy-delay:70ms]">
+            Elysia Jewellery
+          </p>
+          <h1 className="storefront-hero-title motion-copy-item [--motion-copy-delay:90ms]">
+            קיץ חדש. זוהר נקי.
+          </h1>
+          <p
+            className="home-hero-statement motion-copy-item storefront-hero-statement [--motion-copy-delay:90ms]"
+            data-testid="home-hero-statement"
+          >
+            פריטים חדשים שמכניסים אור לקיץ.
+          </p>
+          <div
+            className="home-hero-actions motion-copy-item storefront-hero-actions [--motion-copy-delay:130ms]"
+            data-testid="home-hero-actions"
+          >
+            <div className="home-hero-cta-row" data-testid="home-hero-cta-row">
+              <Button asChild className="home-hero-cta-primary" size="lg">
                 <Link
-                  className="hover:bg-muted hover:text-foreground inline-flex min-h-8 items-center rounded-md border border-[var(--glass-border)] bg-transparent px-3 text-xs font-medium transition-[background-color,border-color,color,outline-color,opacity] duration-[var(--motion-fast)] ease-[var(--ease-motion-standard)] outline-none hover:border-[var(--glass-border-strong)] focus-visible:border-[var(--glass-border-strong)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
-                  href={suggestion.href}
-                  key={suggestion.href}
+                  data-testid="home-hero-primary-cta"
+                  dir="rtl"
+                  href="/search"
+                  prefetch={false}
                 >
-                  {suggestion.label}
+                  לכל התכשיטים
+                  <ArrowLeft
+                    aria-hidden="true"
+                    className="home-hero-cta-icon size-4"
+                  />
                 </Link>
-              ))}
+              </Button>
             </div>
           </div>
         </div>
       </RevealSection>
 
-      <RevealSection className="brand-page-band" id="featured">
-        <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-10">
-          <CommerceSectionHeader
-            eyebrow="נבחרים"
-            title="תכשיטים זמינים לקנייה"
+      <RevealSection
+        className="home-trust-strip mx-auto w-full max-w-[92rem] px-[var(--ui-page-x)] py-5 lg:px-[var(--ui-page-x-wide)]"
+        data-testid="home-commerce-shortcuts"
+        id="why-trust-elysia"
+        variant="none"
+      >
+        <div
+          className="grid gap-4 border-y border-[var(--glass-border)] py-5 sm:grid-cols-2 lg:grid-cols-4"
+          data-testid="home-commerce-trust-strip"
+        >
+          {homeTrustSignals.map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <section
+                className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-3"
+                key={item.title}
+              >
+                <span className="glass-inset grid size-9 place-items-center rounded-md border">
+                  <Icon aria-hidden="true" className="size-4" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-sm font-semibold">
+                    {item.title}
+                  </span>
+                  <span className="text-muted-foreground mt-1 block text-xs leading-5">
+                    {item.text}
+                  </span>
+                </span>
+              </section>
+            );
+          })}
+        </div>
+        <nav
+          aria-label="כניסות מהירות לקולקציה"
+          className="home-commerce-entry-links"
+          data-testid="home-commerce-entry-links"
+        >
+          {homeCommerceEntryLinks.map((item) => (
+            <Link
+              className="home-commerce-entry-link"
+              href={item.href}
+              key={item.href}
+              prefetch={false}
+            >
+              <span className="home-commerce-entry-label">{item.label}</span>
+              <span className="home-commerce-entry-text">{item.text}</span>
+            </Link>
+          ))}
+        </nav>
+      </RevealSection>
+
+      <RevealSection
+        className="boutique-section mx-auto w-full max-w-[92rem] px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]"
+        id="collections"
+      >
+        <SectionHeader
+          actionHref="/search"
+          actionLabel="כל התכשיטים"
+          eyebrow="Shop by piece"
+          text="טבעות, שרשראות, עגילים וצמידים שנועדו לעבוד עם בגדים אמיתיים: חולצה לבנה, שמלת ערב, תיק חוף או מתנה שנפתחת מיד."
+          title="התחילי מהתכשיט שנוגע בלוק."
+        />
+        <RevealGrid
+          className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+          data-layout-equal-group="home-category-tiles"
+          data-testid="home-category-tiles"
+          variant="media"
+        >
+          {orderedCategories.map((category) => (
+            <HomeCategoryCard category={category} key={category.slug} />
+          ))}
+        </RevealGrid>
+      </RevealSection>
+
+      <RevealSection
+        className="boutique-featured-band px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]"
+        id="featured"
+      >
+        <div className="mx-auto max-w-[92rem]">
+          <SectionHeader
+            actionHref="/search?sort=newest"
+            actionLabel="חדש בקולקציה"
+            eyebrow="New in"
+            text="פריטים שנכנסו עכשיו למבחר: קלים לענידה, ברורים בחומר, ומספיק מיוחדים כדי לשנות את כל הלוק."
+            title="הזוהר החדש של העונה."
           />
-          <RevealGrid
-            className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
-            variant="cards"
-          >
-            {featuredProducts.map((product, index) => (
-              <ProductCard
-                imagePriority={index < 4}
-                key={product.slug}
-                product={product}
-              />
-            ))}
-          </RevealGrid>
+          {featuredProducts.length > 0 ? (
+            <RevealGrid
+              className="ui-equal-grid grid gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-4"
+              data-layout-equal-group="home-featured-products"
+              data-testid="home-featured-products"
+              variant="cards"
+            >
+              {featuredProducts.map((product) => (
+                <ProductCard
+                  imageSizes="(min-width: 1280px) 18rem, (min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                  key={product.slug}
+                  product={product}
+                />
+              ))}
+            </RevealGrid>
+          ) : null}
+        </div>
+      </RevealSection>
+
+      <RevealSection
+        className="boutique-section mx-auto w-full max-w-[92rem] px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]"
+        id="materials"
+      >
+        <SectionHeader
+          eyebrow="Materials & service"
+          text="היופי מתחיל בתמונה, אבל ההחלטה מגיעה מהפרטים: חומר, גימור, מידה, משלוח ושירות לפני הזמנה."
+          title="חומרים ברורים. שירות אנושי."
+        />
+        <div
+          className="grid gap-5 border-y border-[var(--glass-border)] py-6 md:grid-cols-3"
+          data-testid="home-material-trust"
+        >
+          {materialTrust.map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <section className="boutique-trust-item" key={item.title}>
+                <Icon aria-hidden="true" className="size-5" />
+                <h2>{item.title}</h2>
+                <p>{item.text}</p>
+              </section>
+            );
+          })}
+        </div>
+      </RevealSection>
+
+      <RevealSection
+        className="boutique-story-band px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-0"
+        id="about-elysia"
+      >
+        <div className="boutique-story-layout mx-auto grid max-w-[92rem] gap-8 lg:items-center">
+          <figure className="boutique-story-media boutique-story-media-left relative">
+            <Image
+              alt=""
+              className="object-cover"
+              fill
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              src="/brand/boutique/product-detail.avif"
+            />
+          </figure>
+          <div className="boutique-story-copy">
+            <SectionHeader
+              actionHref="/about"
+              actionLabel="אודות"
+              eyebrow="Elysia"
+              text="Elysia נבנית כמו בוטיק קטן: פחות רעש, יותר בחירה מדויקת, צילום שמראה חומר, ושירות שנכנס כשצריך ביטחון."
+              title="בית תכשיטים קטן עם עין מאוד מדויקת."
+            />
+          </div>
+          <div className="boutique-story-secondary-copy">
+            <div className="grid gap-4">
+              {editorialPrinciples.map((principle, index) => (
+                <section
+                  className="boutique-story-principle"
+                  key={principle.title}
+                >
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <div>
+                    <h3>{principle.title}</h3>
+                    <p>{principle.text}</p>
+                  </div>
+                </section>
+              ))}
+            </div>
+          </div>
+          <figure className="boutique-story-media boutique-story-media-right relative">
+            <Image
+              alt=""
+              className="object-cover"
+              fill
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              src="/brand/boutique/lifestyle-hero-poster.avif"
+            />
+          </figure>
+        </div>
+      </RevealSection>
+
+      <DeferredFixedBackgroundBand
+        className="boutique-fixed-image-band"
+        id="fixed-editorial-image"
+      />
+
+      <RevealSection
+        className="boutique-final-cta px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]"
+        id="first-collection"
+      >
+        <div className="storefront-final-panel mx-auto max-w-[92rem]">
+          <section className="storefront-final-primary">
+            <p className="storefront-eyebrow">המבחר מתעדכן</p>
+            <h2 className="storefront-final-title">
+              תכשיט קטן יכול לשנות את כל היום.
+            </h2>
+            <p className="storefront-final-text">
+              בחרי לפי לוק, תקציב או חומר. ואם זו מתנה, מידה לא בטוחה או התלבטות
+              בין שני גוונים, אפשר לשאול לפני שמזמינים.
+            </p>
+            <div className="storefront-final-actions">
+              <Button asChild>
+                <Link href="/search">לכל התכשיטים</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/service">שאלה לפני הזמנה</Link>
+              </Button>
+            </div>
+          </section>
+
+          <section className="storefront-final-updates" id="collection-updates">
+            <div>
+              <p className="storefront-eyebrow">עדכוני קולקציה</p>
+              <h2 className="storefront-final-subtitle">
+                מכתב קצר כשהקולקציה מתרעננת.
+              </h2>
+              <p className="storefront-final-text">
+                בלי עומס. רק פריטים חדשים, רעיונות למתנה, והשראה קטנה לעונה.
+              </p>
+            </div>
+            <div className="storefront-final-newsletter">
+              <NewsletterForm />
+            </div>
+          </section>
         </div>
       </RevealSection>
     </main>
   );
+}
+
+function SectionHeader({
+  actionHref,
+  actionLabel,
+  eyebrow,
+  text,
+  title,
+}: {
+  actionHref?: string;
+  actionLabel?: string;
+  eyebrow: string;
+  text: string;
+  title: string;
+}) {
+  return (
+    <div className="commerce-section-header">
+      <div className="commerce-section-header-copy">
+        <p className="commerce-section-header-eyebrow">{eyebrow}</p>
+        <h2 className="commerce-section-header-title">{title}</h2>
+        <p className="commerce-section-header-description">{text}</p>
+      </div>
+      {actionHref && actionLabel ? (
+        <div className="commerce-section-header-action">
+          <Button asChild variant="outline">
+            <Link href={actionHref} prefetch={false}>
+              {actionLabel}
+              <ArrowLeft aria-hidden="true" className="size-4" />
+            </Link>
+          </Button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function HomeCategoryCard({ category }: { category: CatalogCategory }) {
+  const copy = categoryEditorialCopy[category.slug];
+
+  return (
+    <Link
+      aria-label={`מעבר לקטגוריית ${category.name}`}
+      className="boutique-collection-card"
+      data-category-slug={category.slug}
+      data-testid="home-category-card"
+      href={`/category/${category.slug}`}
+      prefetch={false}
+    >
+      <span className="boutique-collection-media">
+        <Image
+          alt=""
+          aria-hidden="true"
+          className="media-color object-cover"
+          fill
+          sizes="(min-width: 1024px) 22vw, (min-width: 640px) 50vw, 100vw"
+          src={category.image}
+        />
+      </span>
+      <span className="boutique-collection-copy">
+        <span className="min-w-0">
+          <span className="storefront-eyebrow">
+            {copy?.kicker ?? "לפי תכשיט"}
+          </span>
+          <span className="boutique-collection-title">{category.name}</span>
+          <span className="boutique-collection-description">
+            {copy?.description ?? category.description}
+          </span>
+        </span>
+        <span className="boutique-collection-action" aria-hidden="true">
+          <ArrowLeft className="size-4" />
+        </span>
+      </span>
+    </Link>
+  );
+}
+
+function getOrderedHomeCategories(categories: CatalogCategory[]) {
+  const bySlug = new Map(
+    categories.map((category) => [category.slug, category]),
+  );
+  const ordered = categoryOrder
+    .map((slug) => bySlug.get(slug))
+    .filter((category): category is CatalogCategory => Boolean(category));
+  const remaining = categories.filter(
+    (category) => !categoryOrder.includes(category.slug),
+  );
+
+  return [...ordered, ...remaining].slice(0, 4);
 }

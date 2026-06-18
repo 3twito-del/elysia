@@ -27,11 +27,69 @@ export const serviceRequestAcceptedFileTypes = [
 
 export const maxServiceRequestFiles = 5;
 export const maxServiceRequestFileBytes = 10 * 1024 * 1024;
+export const serviceRequestAcceptedFileTypeLabel = "JPG, PNG, WebP, GIF או PDF";
+
+export function getServiceRequestAttachmentPolicy() {
+  return {
+    acceptedFileTypeLabel: serviceRequestAcceptedFileTypeLabel,
+    acceptedFileTypes: serviceRequestAcceptedFileTypes,
+    maxFileBytes: maxServiceRequestFileBytes,
+    maxFileSizeMb: Math.round(maxServiceRequestFileBytes / 1024 / 1024),
+    maxFiles: maxServiceRequestFiles,
+  };
+}
+
+export type ServiceRequestTriageFact = {
+  key: "attachment" | "contact" | "order" | "product";
+  label: string;
+  tone: "neutral" | "warning";
+};
+
+export function getServiceRequestTriageFacts(input: {
+  attachmentCount: number;
+  orderNumber?: string | null;
+  preferredContact: string;
+  productReference?: string | null;
+}) {
+  const facts: ServiceRequestTriageFact[] = [];
+
+  if (input.attachmentCount > 0) {
+    facts.push({
+      key: "attachment",
+      label: `${input.attachmentCount} קבצים`,
+      tone: "warning",
+    });
+  }
+
+  if (input.productReference?.trim()) {
+    facts.push({
+      key: "product",
+      label: "יש מוצר",
+      tone: "neutral",
+    });
+  }
+
+  if (input.orderNumber?.trim()) {
+    facts.push({
+      key: "order",
+      label: "יש הזמנה",
+      tone: "neutral",
+    });
+  }
+
+  facts.push({
+    key: "contact",
+    label: `חזרה: ${getServiceContactPreferenceLabel(input.preferredContact)}`,
+    tone: input.preferredContact === "ANY" ? "neutral" : "warning",
+  });
+
+  return facts;
+}
 
 const requiredText = (message: string, maxLength: number) =>
   z.string().trim().min(1, message).max(maxLength, "הטקסט ארוך מדי.");
 
-const requiredId = (message = "חסר מזהה לביצוע הפעולה.") =>
+const requiredId = (message = "חסר פרט לביצוע הבקשה.") =>
   z.string().trim().min(1, message).max(128, "המזהה ארוך מדי.");
 
 const email = z
@@ -52,7 +110,7 @@ export const publicServiceRequestInputSchema = z.object({
   phone,
   email,
   orderNumber: optionalTrimmedString(80, "מספר ההזמנה ארוך מדי."),
-  productReference: optionalTrimmedString(240, "פרטי המוצר ארוכים מדי."),
+  productReference: optionalTrimmedString(240, "פרטי התכשיט ארוכים מדי."),
   preferredContact: z.enum(serviceContactPreferences).default("ANY"),
   preferredContactTime: optionalTrimmedString(160, "זמן החזרה ארוך מדי."),
   message: requiredText("יש לכתוב בקצרה במה נוכל לעזור.", 2_000),

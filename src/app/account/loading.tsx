@@ -20,8 +20,11 @@ export default function AccountLoading() {
         className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12"
         dir="rtl"
       >
-        <LoadingState label="טוען אזור לקוח..." variant="plain" />
-        <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        <LoadingState label="אזור הלקוח מתעדכן" variant="plain" />
+        <div
+          className="mt-8 grid min-h-40 gap-5 sm:grid-cols-2 xl:grid-cols-4"
+          data-testid="account-loading-summary-skeletons"
+        >
           {accountSections.map(({ icon: Icon, label }) => (
             <Card className="rounded-md" key={label}>
               <CardHeader className="flex flex-row items-center justify-between gap-3">
@@ -39,7 +42,10 @@ export default function AccountLoading() {
             </Card>
           ))}
         </div>
-        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <div
+          className="mt-6 grid min-h-[26rem] gap-6 lg:grid-cols-2"
+          data-testid="account-loading-detail-skeletons"
+        >
           {Array.from({ length: 4 }).map((_, index) => (
             <Card className="rounded-md" key={index}>
               <CardHeader>

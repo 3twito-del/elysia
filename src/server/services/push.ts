@@ -1,9 +1,19 @@
 import webPush from "web-push";
 import { z } from "zod";
 
+import { siteContact } from "~/config/site-contact";
 import { env } from "~/env";
+import {
+  normalizeInternalPushTargetUrl,
+  pushCampaignSegments,
+} from "~/lib/push-campaign-preview";
 import { db } from "~/server/db";
 import { BUSINESS_EVENTS, enqueueOutboxEvent } from "~/server/services/outbox";
+
+export {
+  createPushCampaignDryRunPreview,
+  pushCampaignSegments,
+} from "~/lib/push-campaign-preview";
 
 const pushPayloadSchema = z.object({
   body: z.string().trim().min(1).max(180),
@@ -35,9 +45,7 @@ export const pushPreferencesInputSchema = z.object({
 export const pushCampaignInputSchema = z.object({
   body: z.string().trim().min(1).max(180),
   scheduledAt: z.coerce.date().optional(),
-  segment: z
-    .enum(["MARKETING_OPT_IN", "TRANSACTIONAL_OPT_IN", "ALL_ACTIVE"])
-    .default("MARKETING_OPT_IN"),
+  segment: z.enum(pushCampaignSegments).default("MARKETING_OPT_IN"),
   targetUrl: z.string().trim().min(1).max(1024),
   title: z.string().trim().min(1).max(80),
 });
@@ -215,6 +223,22 @@ export async function listPushCampaigns() {
   });
 }
 
+export async function getPushCampaignAudienceSummary() {
+  const entries = await Promise.all(
+    pushCampaignSegments.map(async (segment) => [
+      segment,
+      await db.pushSubscription.count({
+        where: getCampaignSubscriptionWhere(segment),
+      }),
+    ]),
+  );
+
+  return Object.fromEntries(entries) as Record<
+    (typeof pushCampaignSegments)[number],
+    number
+  >;
+}
+
 export async function enqueuePushCampaign(
   campaignId: string,
   availableAt?: Date,
@@ -323,11 +347,11 @@ export async function sendCartReminder(sessionKey: string) {
   for (const subscription of subscriptions) {
     const result = await sendPushToSubscription({
       auth: subscription.auth,
-      body: "הסל שלך עדיין ממתין. אפשר לחזור אליו כשנוח לך.",
+      body: "הסל עדיין ממתין. אפשר לחזור אליו כשנוח לך.",
       endpoint: subscription.endpoint,
       p256dh: subscription.p256dh,
       tag: `cart:${cart.id}`,
-      title: "סל Elysia נשמר עבורך",
+      title: "הסל ב-Elysia נשמר",
       url: "/checkout",
     });
 
@@ -373,11 +397,11 @@ export async function processBackInStockInterests() {
 
     const result = await sendPushToSubscription({
       auth: interest.subscription.auth,
-      body: `${interest.product.name} חזר לזמינות בקטלוג.`,
+      body: `${interest.product.name} שוב זמין במבחר.`,
       endpoint: interest.subscription.endpoint,
       p256dh: interest.subscription.p256dh,
       tag: `back-in-stock:${interest.productId}`,
-      title: "תכשיט שחיכית לו זמין",
+      title: "תכשיט שחיכית לו חזר למלאי",
       url: `/product/${interest.product.slug}`,
     });
 
@@ -484,7 +508,7 @@ function configureWebPush() {
   }
 
   webPush.setVapidDetails(
-    env.VAPID_SUBJECT ?? `mailto:${env.OPERATIONS_EMAIL ?? "3twito@gmail.com"}`,
+    env.VAPID_SUBJECT ?? `mailto:${env.OPERATIONS_EMAIL ?? siteContact.email}`,
     publicKey,
     privateKey,
   );
@@ -507,14 +531,7 @@ export function assertInternalPushTargetUrl(value: string) {
   const baseUrl = env.SITE_URL ?? "https://elysia.co.il";
 
   try {
-    const url = new URL(value, baseUrl);
-    const base = new URL(baseUrl);
-
-    if (url.origin !== base.origin) {
-      throw new Error("Push target URL must stay on Elysia.");
-    }
-
-    return `${url.pathname}${url.search}${url.hash}`;
+    return normalizeInternalPushTargetUrl(value, baseUrl);
   } catch {
     throw new Error("Push target URL is invalid.");
   }

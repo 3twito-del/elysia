@@ -34,6 +34,14 @@ const largeFileExceptions = new Map([
     "route-level public search composition; URL and visual contract stay stable while state helpers live in _lib",
   ],
   [
+    "src/app/account/page.tsx",
+    "account dashboard route composition; protected data orchestration remains route-local while recovery helpers live in _lib and leaf components",
+  ],
+  [
+    "src/app/admin/service/page.tsx",
+    "admin service queue route composition; filter normalization and lifecycle copy stay route-local while mutations live in actions and services",
+  ],
+  [
     "src/server/adapters/search.ts",
     "search-provider adapter facade coordinating Typesense, semantic, and local fallback paths",
   ],
@@ -42,8 +50,20 @@ const largeFileExceptions = new Map([
     "admin operations read-model facade over extracted integration and workflow helpers",
   ],
   [
-    "scripts/benchmarks/core.ts",
-    "benchmark harness core used only by manual public QA gates; live benchmark depth stays outside gate:ship",
+    "scripts/qa-site-audit.ts",
+    "QA audit orchestrator coordinates route inventory, screenshots, and report output",
+  ],
+  [
+    "src/server/services/catalog.ts",
+    "catalog service facade preserves stable product query and fixture behavior across public routes",
+  ],
+  [
+    "src/server/adapters/shopify.ts",
+    "Shopify adapter keeps provider GraphQL schemas, mapping, webhook verification, and checkout calls behind the stable adapter facade",
+  ],
+  [
+    "scripts/shopify-dropship-doctor.mjs",
+    "operational Shopify readiness diagnostic combines database, Shopify scope, Storefront token, and webhook checks for rollout safety",
   ],
 ]);
 
@@ -86,6 +106,7 @@ function listSourceFiles() {
   if (gitFiles.length > 0) {
     return gitFiles
       .map(toPosixPath)
+      .filter((filePath) => existsSync(path.join(repoRoot, filePath)))
       .filter((filePath) =>
         sourceRoots.some((root) => filePath.startsWith(`${root}/`)),
       )

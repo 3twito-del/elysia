@@ -34,9 +34,9 @@ function FilterPanelContent({
       <div className="grid gap-4 pb-1">
         <div className="flex items-start justify-between gap-3">
           <div className="grid gap-1">
-            <p className="text-foreground text-sm font-medium">סינון מדויק</p>
+            <p className="text-foreground text-sm font-medium">סינון</p>
             <p className="text-muted-foreground text-xs leading-5">
-              בחירה לפי סוג, חומר, אבן ותקציב.
+              סינון לפי קטגוריה, חומר, אבן, מחיר, סגנון, אירוע וקולקציה.
             </p>
           </div>
           {data.activeFilterCount > 0 && (
@@ -45,7 +45,7 @@ function FilterPanelContent({
               href={data.resetHref}
               variant="ghost"
             >
-              איפוס
+              איפוס הכל
             </FilterActionLink>
           )}
         </div>
@@ -89,14 +89,20 @@ function FilterSelectionSummary({
   sections: CategoryFilterPayload["sections"];
 }) {
   return (
-    <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-xs">
+    <dl
+      className="grid grid-cols-2 gap-x-4 gap-y-3 text-xs"
+      data-testid="category-filter-selection-summary"
+    >
       {sections.map((section) => {
         const activeOption = section.options.find((option) => option.active);
 
         return (
           <div className="min-w-0" key={section.title}>
             <dt className="text-muted-foreground">{section.title}</dt>
-            <dd className="text-foreground truncate font-medium">
+            <dd
+              className="text-foreground truncate font-medium"
+              data-testid="category-filter-section-current"
+            >
               {activeOption?.label ?? "כל האפשרויות"}
             </dd>
           </div>
@@ -128,6 +134,15 @@ function FilterSection({
         <p className="text-muted-foreground text-xs leading-5">
           {section.description}
         </p>
+        {section.title === "מחיר" ? (
+          <div
+            className="text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1 text-xs"
+            data-testid="category-price-filter-labels"
+          >
+            <span>מינימום: כל מחיר</span>
+            <span>מקסימום: לפי סימון</span>
+          </div>
+        ) : null}
       </div>
       <ul className="grid gap-1">
         {section.options.map((option) => (
@@ -185,7 +200,7 @@ function FilterOptionLink({
         aria-disabled="true"
         className={className}
         data-disabled="true"
-        title="אין תוצאות זמינות"
+        title="אין התאמות פתוחות"
       >
         {content}
       </span>
@@ -254,14 +269,14 @@ export function FilterPanelFallback({ resetHref }: { resetHref: string }) {
     <div className="grid gap-3 text-sm">
       <div className="text-muted-foreground flex items-center gap-2">
         <RotateCw aria-hidden="true" className="size-4" />
-        <span>לא ניתן לטעון פילטרים כרגע.</span>
+        <span>הסינון אינו פתוח כרגע.</span>
       </div>
       <Link
         className="hover:border-foreground inline-flex min-h-8 w-fit items-center border-b border-[var(--glass-border)] px-1 text-sm font-medium transition-colors focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
         href={resetHref}
         scroll={false}
       >
-        איפוס פילטרים
+        איפוס סינונים
       </Link>
     </div>
   );

@@ -118,6 +118,24 @@ describe("rate limit service", () => {
     expect(key).toMatch(/^otp:request:[a-f0-9]{32}$/);
     expect(key).not.toContain("dana@example.com");
   });
+
+  it("keeps endpoint namespaces isolated for the same identifier", async () => {
+    const identifier = "Dana@Example.com";
+    const otpKey = createRateLimitKey("otp:request", identifier);
+    const privacyKey = createRateLimitKey("privacy:export", identifier);
+
+    expect(otpKey).not.toBe(privacyKey);
+
+    await expect(
+      consumeRateLimit({ key: otpKey, limit: 1, windowMs: 60_000 }),
+    ).resolves.toMatchObject({ allowed: true, remaining: 0 });
+    await expect(
+      consumeRateLimit({ key: otpKey, limit: 1, windowMs: 60_000 }),
+    ).resolves.toMatchObject({ allowed: false, remaining: 0 });
+    await expect(
+      consumeRateLimit({ key: privacyKey, limit: 1, windowMs: 60_000 }),
+    ).resolves.toMatchObject({ allowed: true, remaining: 0 });
+  });
 });
 
 function restoreEnv(

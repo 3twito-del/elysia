@@ -62,7 +62,7 @@ function validateDeliveryAddressForSchema(
 
   context.addIssue({
     code: z.ZodIssueCode.custom,
-    message: "כתובת משלוח נדרשת להזמנת משלוח.",
+    message: "כתובת מסירה נדרשת למסירה עד הבית.",
     path: ["shippingAddress"],
   });
 }
@@ -96,9 +96,55 @@ export function assertCartReservationAvailable(input: {
   if (!canReserveStock(input)) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "אין מספיק מלאי זמין לשמירת כל הפריטים.",
+      message: "הסל אינו פנוי במלואו לשמירה.",
     });
   }
+}
+
+export function assertCartCheckoutPricesAvailable(
+  items: Array<{ quantity: number; unitPrice: unknown }>,
+) {
+  const hasUnavailablePrice = items.some((item) => {
+    const unitPrice = Number(item.unitPrice);
+
+    return item.quantity <= 0 || !Number.isFinite(unitPrice) || unitPrice <= 0;
+  });
+
+  if (hasUnavailablePrice) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "אחד המחירים דורש בדיקה לפני שתמשיכי לתשלום.",
+    });
+  }
+}
+
+export function assertCartCheckoutOwnItems(
+  items: Array<{
+    variant: {
+      product: {
+        source: "OWN" | "DROPSHIP_SHOPIFY";
+      };
+    };
+  }>,
+) {
+  if (items.some((item) => item.variant.product.source !== "OWN")) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "פריטים אלה דורשים סיום הזמנה נפרד.",
+    });
+  }
+}
+
+export function getCartCheckoutOwnItems<
+  T extends {
+    variant: {
+      product: {
+        source: "OWN" | "DROPSHIP_SHOPIFY";
+      };
+    };
+  },
+>(items: T[]) {
+  return items.filter((item) => item.variant.product.source === "OWN");
 }
 
 export async function createCartCheckoutOrder(input: CartCheckoutInput) {
@@ -122,14 +168,27 @@ async function createCartCheckoutOrderInTransaction(
   if (cart.items.length === 0) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "הסל ריק. יש להוסיף פריטים לפני מעבר לקופה.",
+      message: "הסל עדיין ריק.",
     });
   }
 
-  const branch = await resolveOnlineFulfillmentBranch(tx, input, cart);
+  const ownItems = getCartCheckoutOwnItems(cart.items);
+
+  if (ownItems.length === 0) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "אין פריטים מקומיים לסיום הזמנה באתר.",
+    });
+  }
+
+  assertCartCheckoutPricesAvailable(ownItems);
+
+  const branch = await resolveOnlineFulfillmentBranch(tx, input, {
+    items: ownItems,
+  });
 
   const coupon = await resolveCoupon(tx, input.couponCode ?? cart.couponCode);
-  const items = cart.items.map((item) => ({
+  const items = ownItems.map((item) => ({
     cartItemId: item.id,
     variantId: item.variantId,
     name: createOrderItemName({
@@ -145,6 +204,7 @@ async function createCartCheckoutOrderInTransaction(
     shipping: getCartCheckoutShippingTotal(input.fulfillmentMethod),
     coupon: coupon?.value,
   });
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
   const customer = await tx.customer.upsert({
     where: { email: input.customer.email },
     update: {
@@ -165,7 +225,7 @@ async function createCartCheckoutOrderInTransaction(
     shippingAddress: input.shippingAddress,
   });
 
-  for (const item of cart.items) {
+  for (const item of ownItems) {
     const inventoryItem = await tx.inventoryItem.findUnique({
       where: {
         branchId_variantId: {
@@ -178,7 +238,7 @@ async function createCartCheckoutOrderInTransaction(
     if (!inventoryItem) {
       throw new TRPCError({
         code: "BAD_REQUEST",
-        message: `המלאי עבור ${item.variant.product.name} אינו זמין כרגע.`,
+        message: `${item.variant.product.name} אינו פנוי כרגע להזמנה.`,
       });
     }
 
@@ -219,7 +279,7 @@ async function createCartCheckoutOrderInTransaction(
     },
   });
 
-  for (const item of cart.items) {
+  for (const item of ownItems) {
     const reserved = await tx.inventoryItem.updateMany({
       where: {
         branchId: branch.id,
@@ -244,7 +304,7 @@ async function createCartCheckoutOrderInTransaction(
     if (reserved.count !== 1) {
       throw new TRPCError({
         code: "CONFLICT",
-        message: "המלאי השתנה בזמן יצירת ההזמנה. נסו שוב.",
+        message: "מצב הסל השתנה בזמן יצירת ההזמנה. נסו שוב.",
       });
     }
 
@@ -285,20 +345,42 @@ async function createCartCheckoutOrderInTransaction(
     },
   });
 
-  await tx.cart.update({
-    where: { id: cart.id },
-    data: {
-      customerId: customer.id,
-      status: "CONVERTED",
-      giftWrap: input.giftWrap,
-      giftMessage: input.giftMessage,
-      couponCode: coupon?.code,
-      mergeMetadata: {
-        checkedOutAt: new Date().toISOString(),
-        orderId: order.id,
+  if (ownItems.length === cart.items.length) {
+    await tx.cart.update({
+      where: { id: cart.id },
+      data: {
+        customerId: customer.id,
+        status: "CONVERTED",
+        giftWrap: input.giftWrap,
+        giftMessage: input.giftMessage,
+        couponCode: coupon?.code,
+        mergeMetadata: {
+          checkedOutAt: new Date().toISOString(),
+          orderId: order.id,
+        },
       },
-    },
-  });
+    });
+  } else {
+    await tx.cartItem.deleteMany({
+      where: {
+        id: { in: ownItems.map((item) => item.id) },
+      },
+    });
+    await tx.cart.update({
+      where: { id: cart.id },
+      data: {
+        customerId: customer.id,
+        giftWrap: input.giftWrap,
+        giftMessage: input.giftMessage,
+        couponCode: coupon?.code,
+        mergeMetadata: {
+          localCheckoutCompletedAt: new Date().toISOString(),
+          localOrderId: order.id,
+          remainingSource: "DROPSHIP_SHOPIFY",
+        },
+      },
+    });
+  }
 
   if (coupon) {
     await tx.coupon.update({
@@ -318,7 +400,7 @@ async function createCartCheckoutOrderInTransaction(
       customerId: customer.id,
       total: totals.total,
       fulfillmentMethod: input.fulfillmentMethod,
-      itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
+      itemCount,
     },
   });
 
@@ -358,7 +440,20 @@ async function createCartCheckoutOrderInTransaction(
       orderId: order.id,
       orderNumber: order.orderNumber,
       customerEmail: input.customer.email,
+      discount: totals.discount,
+      estimatedDelivery:
+        "מסירה עד הבית לאחר השלמת התשלום, לפי מדיניות המשלוחים.",
+      items: items.map((item) => ({
+        lineTotal: item.unitPrice * item.quantity,
+        name: item.name,
+        quantity: item.quantity,
+        sku: item.sku,
+        unitPrice: item.unitPrice,
+      })),
+      shipping: totals.shipping,
+      subtotal: totals.subtotal,
       template: "cart_checkout_created",
+      total: totals.total,
     },
   });
 
@@ -369,7 +464,16 @@ async function createCartCheckoutOrderInTransaction(
     inventoryBranchSlug: branch.slug,
     reservationExpiresAt,
     totals,
-    itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
+    itemCount,
+    estimatedDelivery:
+      "מסירה עד הבית לאחר השלמת התשלום, לפי מדיניות המשלוחים.",
+    items: items.map((item) => ({
+      lineTotal: item.unitPrice * item.quantity,
+      name: item.name,
+      quantity: item.quantity,
+      sku: item.sku,
+      unitPrice: item.unitPrice,
+    })),
   };
 }
 
@@ -387,7 +491,7 @@ async function resolveOnlineFulfillmentBranch(
 
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "מקור המלאי שנבחר לא נמצא.",
+      message: "מקור ההתאמה שנבחר לא נמצא.",
     });
   }
 
@@ -425,7 +529,7 @@ async function resolveOnlineFulfillmentBranch(
 
   throw new TRPCError({
     code: "BAD_REQUEST",
-    message: "אין מספיק מלאי זמין לשמירת ההזמנה.",
+    message: "הסל אינו פנוי במלואו לשמירה.",
   });
 }
 
@@ -445,7 +549,7 @@ async function getActiveCheckoutCart(
   if (!cart) {
     throw new TRPCError({
       code: "NOT_FOUND",
-      message: "לא נמצא סל פעיל לקופה.",
+      message: "לא נמצא סל פעיל לסיום ההזמנה.",
     });
   }
 
@@ -461,7 +565,7 @@ async function resolveCoupon(
   if (rawCode && !coupon) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "קוד הקופון אינו תקף להזמנה הזו.",
+      message: "קוד ההטבה אינו תקף להזמנה הזו.",
     });
   }
 

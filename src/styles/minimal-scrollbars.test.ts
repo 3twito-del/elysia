@@ -19,7 +19,7 @@ describe("minimal independent scrolling", () => {
     const css = read("src/styles/globals.css");
 
     expect(css).toContain("--scrollbar-size: 0.375rem;");
-    expect(css).toContain("--scrollbar-thumb: rgb(91 101 106 / 24%);");
+    expect(css).toContain("--scrollbar-thumb: rgb(125 107 90 / 26%);");
     expect(css).toContain("scrollbar-width: thin;");
     expect(css).toContain("overscroll-behavior: contain;");
     expect(css).toContain("::-webkit-scrollbar-button");

@@ -1,40 +1,48 @@
+"use client";
+
 import Link from "next/link";
 import {
   ChevronDown,
-  CircleHelp,
-  Headphones,
-  Info,
-  MapPin,
+  MessageCircle,
+  PackageCheck,
   Ruler,
-  ShoppingBag,
-  UserRound,
-  WandSparkles,
+  ShieldCheck,
 } from "lucide-react";
 import { SiInstagram, SiTiktok } from "react-icons/si";
 
+import { BrandLogo } from "~/components/brand-logo";
 import { NewsletterForm } from "~/components/newsletter-form";
-import { Separator } from "~/components/ui/separator";
-import { getCatalogCategories } from "~/server/services/catalog";
+import { SiteFooterDisclosures } from "~/components/site-footer-disclosures";
+import {
+  cookiePreferencesLink,
+  footerBusinessDetails,
+  policyLinks,
+} from "~/lib/legal-content";
 
-const serviceLinks = [
-  { href: "/about", label: "אודות Elysia", icon: Info },
-  { href: "/branches", label: "סניפים ושירות", icon: MapPin },
-  { href: "/account", label: "אזור לקוח", icon: UserRound },
-  { href: "/checkout", label: "קופה ותשלום", icon: ShoppingBag },
-  { href: "/faq", label: "שאלות ותשובות", icon: CircleHelp },
-  { href: "/service", label: "שירות לקוחות", icon: Headphones },
-  { href: "/size-guide", label: "מדריך מידות", icon: Ruler },
-  { href: "/stylist", label: "ייעוץ אישי", icon: WandSparkles },
-];
-
-const primaryServiceLinks = serviceLinks.slice(0, 7);
-const secondaryServiceLinks = serviceLinks.slice(7);
-
-const policyLinks = [
-  { href: "/terms", label: "תקנון האתר" },
-  { href: "/privacy", label: "מדיניות פרטיות" },
-  { href: "/accessibility", label: "הצהרת נגישות" },
+const catalogLinks = [
+  { href: "/search", label: "כל התכשיטים" },
+  { href: "/search?sort=newest", label: "חדש בקולקציה" },
+  { href: "/category/rings", label: "טבעות" },
+  { href: "/category/necklaces", label: "שרשראות" },
+  { href: "/category/earrings", label: "עגילים" },
+  { href: "/category/bracelets", label: "צמידים" },
+  { href: "/gifts", label: "מתנות" },
 ] as const;
+
+const commerceLinks = [
+  { href: "/checkout", label: "סל" },
+  { href: "/size-guide", label: "מדריך מידות" },
+  { href: "/service", label: "שירות תומך" },
+  { href: "/faq", label: "שאלות ותשובות" },
+] as const;
+
+const informationLinks = [
+  { href: "/about", label: "אודות" },
+  { href: "/branches", label: "סניפים" },
+  { href: "/account", label: "אזור אישי" },
+] as const;
+
+const footerPolicyLinks = [...policyLinks, cookiePreferencesLink] as const;
 
 const socialLinks = [
   {
@@ -44,225 +52,113 @@ const socialLinks = [
     icon: SiInstagram,
   },
   {
-    href: "https://www.tiktok.com/@elysia.one",
+    href: "https://www.tiktok.com/@elysia_jewellery",
     label: "טיקטוק",
     ariaLabel: "טיקטוק של Elysia",
     icon: SiTiktok,
   },
 ] as const;
 
-export async function SiteFooter() {
-  const categories = await getCatalogCategories();
+const footerTrustSignals = [
+  {
+    href: "/shipping-returns",
+    icon: PackageCheck,
+    label: "החלפה והחזרה",
+    text: "הסבר אנושי לפני הטקסט המשפטי.",
+  },
+  {
+    href: "/size-guide",
+    icon: Ruler,
+    label: "בחירת מידה",
+    text: "מידות טבעות, צמידים ושרשראות לפני הזמנה.",
+  },
+  {
+    href: "/warranty",
+    icon: ShieldCheck,
+    label: "אחריות 12 חודשים",
+    text: "כיסוי לפגמי ייצור לפי מדיניות האחריות.",
+  },
+  {
+    href: "/service",
+    icon: MessageCircle,
+    label: "שירות אישי",
+    text: "מענה עד יום עסקים דרך ערוץ מתועד.",
+  },
+] as const;
+
+export function SiteFooter() {
+  const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-transparent">
-      <div className="mx-auto max-w-7xl px-4 pt-10 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:px-6 sm:pt-12 sm:pb-12 md:py-14 lg:py-16">
-        <div className="grid gap-8 md:grid-cols-2 md:items-start lg:grid-cols-[1.3fr_0.55fr_0.64fr_0.64fr_1fr]">
-          <section className="max-w-lg">
+    <footer className="site-footer" dir="rtl">
+      <div className="site-footer-inner mx-auto max-w-[92rem] px-[var(--ui-page-x)] pt-10 pb-[calc(4.75rem+env(safe-area-inset-bottom))] sm:px-[var(--ui-page-x-wide)] sm:pt-20 sm:pb-20 lg:pt-24 lg:pb-24">
+        <div className="site-footer-primary grid gap-14 lg:grid-cols-[minmax(22rem,0.95fr)_minmax(0,1.35fr)] lg:gap-20 xl:gap-24">
+          <section
+            aria-labelledby="footer-brand-title"
+            className="site-footer-brand"
+          >
             <Link
+              aria-label="Elysia - עמוד הבית"
               className="brand-footer-mark inline-flex items-center"
               href="/"
             >
-              <span className="text-2xl font-semibold tracking-normal">
-                Elysia
-              </span>
+              <BrandLogo className="h-12 w-auto max-w-[14.5rem] sm:h-14 sm:max-w-[18rem]" />
             </Link>
-            <p className="text-muted-foreground mt-5 max-w-md text-sm leading-7">
-              רשת תכשיטי סטודיו ישראלית במיצוב יוקרה נגישה, עם קטלוג אונליין,
-              רכישה מאובטחת ושירות אישי לבחירת תכשיט או מתנה.
+            <h2 className="sr-only" id="footer-brand-title">
+              Elysia
+            </h2>
+            <p className="site-footer-brand-text mt-7 hidden max-w-lg text-base leading-8 sm:block sm:text-[1.05rem] sm:leading-9">
+              תכשיטים עדינים, מדויקים ונקיים — לבחירה יומיומית, למתנה ולאור של
+              קיץ.
             </p>
-            <NewsletterForm />
+            <div className="site-footer-newsletter mt-7 max-w-xl sm:mt-11">
+              <p className="site-footer-kicker text-xs font-medium tracking-normal">
+                הצטרפות לעדכונים
+              </p>
+              <p className="site-footer-newsletter-copy mt-4 hidden max-w-md text-sm leading-7 sm:block sm:leading-8">
+                קבלי עדכונים על קולקציות חדשות, מתנות ופריטים שנבחרו בקפידה.
+              </p>
+              <NewsletterForm
+                hintText="נשלח רק כשיש קולקציה חדשה, רעיון למתנה או פריט שנבחר בקפידה."
+                submitLabel="הצטרפות לעדכונים"
+                variant="footer"
+              />
+            </div>
           </section>
 
-          <div className="grid gap-3 md:hidden">
-            <details className="group border-b border-[var(--glass-border)]">
-              <summary
-                aria-expanded="true"
-                className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold [&::-webkit-details-marker]:hidden"
-              >
-                קטגוריות
-                <ChevronDown
-                  aria-hidden="true"
-                  className="size-4 transition group-open:rotate-180"
-                />
-              </summary>
-              <ul className="text-muted-foreground grid gap-3 border-t border-[var(--glass-border)] p-4 text-sm">
-                {categories.map((category) => (
-                  <li key={category.slug}>
-                    <Link
-                      className="hover:text-foreground inline-flex min-h-9 items-center transition"
-                      href={`/category/${category.slug}`}
-                    >
-                      {category.name}
-                    </Link>
-                  </li>
-                ))}
-                <li>
-                  <Link
-                    className="hover:text-foreground inline-flex min-h-9 items-center transition"
-                    href="/search"
-                  >
-                    חיפוש בקטלוג
-                  </Link>
-                </li>
-              </ul>
-            </details>
-
-            <details className="group border-b border-[var(--glass-border)]">
-              <summary
-                aria-expanded="true"
-                className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold [&::-webkit-details-marker]:hidden"
-              >
-                שירות וקנייה
-                <ChevronDown
-                  aria-hidden="true"
-                  className="size-4 transition group-open:rotate-180"
-                />
-              </summary>
-              <ul className="grid gap-3 border-t border-[var(--glass-border)] p-4 text-sm">
-                {serviceLinks.map((item) => {
-                  const Icon = item.icon;
-
-                  return (
-                    <li key={item.href}>
-                      <Link
-                        className="text-muted-foreground hover:text-foreground inline-flex min-h-9 items-center gap-2 transition"
-                        href={item.href}
-                      >
-                        <Icon aria-hidden="true" className="size-4" />
-                        {item.label}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </details>
-
-            <details className="group border-b border-[var(--glass-border)]">
-              <summary
-                aria-expanded="true"
-                className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold [&::-webkit-details-marker]:hidden"
-              >
-                שירות אונליין
-                <ChevronDown
-                  aria-hidden="true"
-                  className="size-4 transition group-open:rotate-180"
-                />
-              </summary>
-              <div className="grid gap-4 border-t border-[var(--glass-border)] p-4">
-                <p className="text-muted-foreground text-sm leading-6">
-                  כל המכירות מתקיימות אונליין בשלב זה, עם משלוח עד הבית ושירות
-                  לקוחות שמלווה את ההזמנה.
-                </p>
-              </div>
-            </details>
-          </div>
-
-          <nav aria-label="קטגוריות" className="hidden md:block">
-            <h2 className="text-sm font-semibold">קטגוריות</h2>
-            <ul className="text-muted-foreground mt-5 grid gap-2 text-sm">
-              {categories.map((category) => (
-                <li key={category.slug}>
-                  <Link
-                    className="hover:text-foreground inline-flex min-h-8 items-center transition"
-                    href={`/category/${category.slug}`}
-                  >
-                    {category.name}
-                  </Link>
-                </li>
-              ))}
-              <li>
-                <Link
-                  className="hover:text-foreground inline-flex min-h-8 items-center transition"
-                  href="/search"
-                >
-                  חיפוש בקטלוג
-                </Link>
-              </li>
-            </ul>
-          </nav>
-
-          <nav aria-label="שירות וקנייה" className="hidden md:block">
-            <h2 className="text-sm font-semibold">שירות וקנייה</h2>
-            <ul className="mt-5 grid gap-2 text-sm">
-              {primaryServiceLinks.map((item) => {
-                const Icon = item.icon;
-
-                return (
-                  <li key={item.href}>
-                    <Link
-                      className="text-muted-foreground hover:text-foreground inline-flex min-h-8 items-center gap-2 transition"
-                      href={item.href}
-                    >
-                      <Icon aria-hidden="true" className="size-4" />
-                      {item.label}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
-
-          <nav aria-label="שירות וקנייה - המשך" className="hidden md:block">
-            <h2 aria-hidden="true" className="invisible text-sm font-semibold">
-              שירות וקנייה
-            </h2>
-            <ul className="mt-5 grid gap-2 text-sm">
-              {secondaryServiceLinks.map((item) => {
-                const Icon = item.icon;
-
-                return (
-                  <li key={item.href}>
-                    <Link
-                      className="text-muted-foreground hover:text-foreground inline-flex min-h-8 items-center gap-2 transition"
-                      href={item.href}
-                    >
-                      <Icon aria-hidden="true" className="size-4" />
-                      {item.label}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
-
-          <section
-            aria-labelledby="footer-online-service"
-            className="hidden md:block"
-          >
-            <h2 className="text-sm font-semibold" id="footer-online-service">
-              שירות אונליין
-            </h2>
-            <p className="text-muted-foreground mt-5 text-sm leading-7">
-              כל המכירות מתקיימות אונליין בשלב זה. ההזמנות נשלחות לכתובת הלקוח,
-              וצוות השירות זמין לייעוץ, התאמה ומעקב אחרי ההזמנה.
-            </p>
-          </section>
-        </div>
-
-        <Separator className="my-7 sm:my-8" />
-
-        <div className="text-muted-foreground grid gap-5 text-sm sm:gap-4 lg:grid-cols-[1fr_auto_auto] lg:items-center">
-          <span className="text-center lg:text-start">
-            2026 Elysia. כל הזכויות שמורות.
-          </span>
           <nav
-            aria-label="קישורי מדיניות"
-            className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 lg:justify-start"
+            aria-label="ניווט תחתון"
+            className="site-footer-nav grid gap-0 md:grid-cols-2 md:gap-x-14 md:gap-y-12 xl:grid-cols-4 xl:gap-x-16 xl:gap-y-14"
+            data-footer-nav-root
           >
-            {policyLinks.map((item) => (
-              <Link
-                className="hover:text-foreground inline-flex min-h-8 items-center transition"
-                href={item.href}
-                key={item.href}
-              >
-                {item.label}
-              </Link>
-            ))}
+            <FooterNav links={catalogLinks} title="קולקציות" />
+            <FooterNav links={commerceLinks} title="תמיכה" />
+            <FooterNav links={informationLinks} title="Elysia" />
+            <FooterNav
+              links={footerPolicyLinks}
+              title="מדיניות"
+              titleTestId="footer-policy-heading"
+            />
           </nav>
+        </div>
+        <FooterTrustLayer />
+        <SiteFooterDisclosures />
+
+        <div className="site-footer-legal grid gap-7 text-sm md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:gap-12">
+          <div className="grid gap-2 text-center md:text-start">
+            <p className="max-w-xl leading-7" data-testid="footer-copyright">
+              © {currentYear} Elysia. כל הזכויות שמורות.
+            </p>
+            <p
+              className="max-w-xl text-xs leading-6"
+              data-testid="footer-business-details"
+            >
+              {footerBusinessDetails}
+            </p>
+          </div>
           <nav
             aria-label="רשתות חברתיות"
-            className="flex items-center justify-center gap-2 lg:justify-end"
+            className="flex items-center justify-center gap-2 md:justify-end"
           >
             {socialLinks.map((item) => {
               const Icon = item.icon;
@@ -270,13 +166,14 @@ export async function SiteFooter() {
               return (
                 <a
                   aria-label={item.ariaLabel}
-                  className="footer-social-link hover:text-foreground text-foreground inline-grid size-9 place-items-center rounded-full border border-[var(--glass-border)] transition"
+                  className="footer-social-link inline-grid size-10 place-items-center rounded-full border transition"
                   data-icon-tooltip={item.label}
                   data-icon-tooltip-placement="top"
                   href={item.href}
                   key={item.href}
                   rel="noreferrer"
                   target="_blank"
+                  title={item.label}
                 >
                   <Icon aria-hidden="true" className="size-4" />
                 </a>
@@ -286,5 +183,80 @@ export async function SiteFooter() {
         </div>
       </div>
     </footer>
+  );
+}
+
+function FooterNav({
+  links,
+  title,
+  titleTestId,
+}: {
+  links: readonly { href: string; label: string }[];
+  title: string;
+  titleTestId?: string;
+}) {
+  return (
+    <details className="footer-nav-disclosure" data-footer-nav-disclosure open>
+      <summary className="footer-nav-summary">
+        <h2 className="text-xs font-medium" data-testid={titleTestId}>
+          {title}
+        </h2>
+        <ChevronDown
+          aria-hidden="true"
+          className="footer-nav-chevron size-4"
+          strokeWidth={1.8}
+        />
+      </summary>
+      <ul className="mt-6 grid gap-4 text-sm">
+        {links.map((item) => (
+          <li key={item.href}>
+            <Link
+              className="inline-flex min-h-10 items-center transition"
+              href={item.href}
+            >
+              {item.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </details>
+  );
+}
+
+function FooterTrustLayer() {
+  return (
+    <section
+      aria-label="אמון ושירות לפני הזמנה"
+      className="footer-trust-layer mt-16 hidden border-y border-[var(--glass-border)] py-8 sm:block"
+      data-testid="footer-trust-layer"
+    >
+      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4 xl:gap-8">
+        {footerTrustSignals.map((item) => {
+          const Icon = item.icon;
+
+          return (
+            <Link
+              className="footer-trust-link grid min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-3 rounded-md px-0 py-3 transition focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
+              data-testid="footer-trust-link"
+              href={item.href}
+              key={item.href}
+            >
+              <span
+                aria-hidden="true"
+                className="glass-inset grid size-9 place-items-center rounded-md border"
+              >
+                <Icon className="size-4" />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-sm font-medium">{item.label}</span>
+                <span className="text-muted-foreground mt-1 block text-xs leading-5">
+                  {item.text}
+                </span>
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+    </section>
   );
 }

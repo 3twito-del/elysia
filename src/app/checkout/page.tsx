@@ -1,29 +1,33 @@
 import { CartCheckoutForm } from "./_components/cart-checkout-form";
-import { CommercePageHero } from "~/components/commerce-page-hero";
+import { CompactPageIntro } from "~/components/compact-page-intro";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata = {
-  title: "סל וקופה",
+  title: "הסל שלך",
 };
 
 export default async function CheckoutPage() {
   return (
-    <main>
+    <>
       <SiteHeader />
-      <CommercePageHero
-        description="סל, משלוח עד הבית וקופה מאובטחת עם פרטי מסירה, שמירת מלאי ושירות לפני חיוב."
-        eyebrow="קופה ושירות"
-        title="קופה מאובטחת"
-        variant="checkout"
-      />
-      <RevealSection id="checkout-form">
-        <div id="checkout-service" />
-        <TRPCReactProvider>
-          <CartCheckoutForm />
-        </TRPCReactProvider>
-      </RevealSection>
-    </main>
+
+      <main className="checkout-boutique-page">
+        <CompactPageIntro
+          className="checkout-boutique-hero"
+          description="התכשיטים שבחרת, פרטי מסירה וסיכום קצר לפני תשלום מאובטח."
+          eyebrow="סל"
+          title="הסל שלך"
+          variant="checkout"
+        />
+        <RevealSection id="checkout-form">
+          <div id="checkout-service" />
+          <TRPCReactProvider>
+            <CartCheckoutForm />
+          </TRPCReactProvider>
+        </RevealSection>
+      </main>
+    </>
   );
 }

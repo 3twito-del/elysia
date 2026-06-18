@@ -14,9 +14,10 @@ export function LoadingState({
 }: LoadingStateProps) {
   return (
     <div
+      aria-label={label}
       aria-live="polite"
       className={cn(
-        "text-muted-foreground flex items-center gap-2 text-sm leading-6",
+        "text-muted-foreground flex items-center gap-2",
         variant === "inset" && "glass-inset w-fit rounded-md border p-3",
         variant === "inline" && "glass-inset w-fit rounded-md border px-3 py-2",
         className,
@@ -28,7 +29,10 @@ export function LoadingState({
         className="size-4 shrink-0"
         role="presentation"
       />
-      <span>{label}</span>
+      <span
+        aria-hidden="true"
+        className="bg-foreground/10 h-2 w-16 rounded-full"
+      />
     </div>
   );
 }

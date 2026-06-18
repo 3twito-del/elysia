@@ -1,0 +1,200 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
+import { describe, expect, it } from "vitest";
+
+import {
+  getAddToCartFailureMessage,
+  getPurchaseConfidenceItems,
+  getVariantButtonLabel,
+  getVariantStatusLabel,
+  isVariantSelectableForCart,
+} from "./product-purchase-utils";
+
+it("maps add-to-cart failures to customer-safe recovery copy", () => {
+  expect(
+    getAddToCartFailureMessage({
+      message: "Inventory reservation failed for variant abc",
+    }),
+  ).toBe(
+    "האפשרות הזו אינה זמינה. אפשר לבחור אחרת או לפנות לשירות.",
+  );
+  expect(
+    getAddToCartFailureMessage({
+      message: "Quantity limit exceeded",
+    }),
+  ).toBe(
+    "לא ניתן להוסיף כמות זו לסל. נסו כמות אחרת או פנו לשירות.",
+  );
+  expect(
+    getAddToCartFailureMessage({
+      message: "database connection timeout",
+    }),
+  ).toBe("לא הצלחנו להוסיף לסל. ניתן לנסות שוב.");
+});
+
+const baseVariant = {
+  availableBranchCount: 0,
+  availableQuantity: 0,
+  inventory: {},
+  name: "Silver",
+  price: 390,
+  sku: "SHOPIFY-ELYSIA-HALO-RING-SILVER",
+};
+
+describe("product purchase utilities", () => {
+  it("treats separate-checkout variants as selectable", () => {
+    const variant = {
+      ...baseVariant,
+      separateCheckoutAvailable: true,
+    };
+
+    expect(
+      isVariantSelectableForCart({
+        availabilityMode: "READY_TO_ORDER",
+        requiresSeparateCheckout: true,
+        variant,
+      }),
+    ).toBe(true);
+    expect(
+      getVariantStatusLabel({
+        availabilityMode: "READY_TO_ORDER",
+        requiresSeparateCheckout: true,
+        variant,
+      }),
+    ).toBe("זמין להזמנה");
+    expect(
+      getVariantButtonLabel(variant, "READY_TO_ORDER", true),
+    ).toContain("זמין להזמנה");
+    expect(
+      getVariantButtonLabel(variant, "READY_TO_ORDER", true),
+    ).toContain("\u2068");
+  });
+
+  it("keeps owned zero-stock variants on the service inquiry path", () => {
+    const buttonLabel = getVariantButtonLabel(
+      baseVariant,
+      "READY_TO_ORDER",
+      false,
+    );
+
+    expect(
+      isVariantSelectableForCart({
+        availabilityMode: "READY_TO_ORDER",
+        requiresSeparateCheckout: false,
+        variant: baseVariant,
+      }),
+    ).toBe(false);
+    expect(buttonLabel).not.toMatch(/\b0\b.*(?:available|stock|inventory)/i);
+    expect(buttonLabel).not.toContain("availableQuantity");
+    expect(
+      getVariantStatusLabel({
+        availabilityMode: "READY_TO_ORDER",
+        requiresSeparateCheckout: false,
+        variant: baseVariant,
+      }),
+    ).toBe("בירור התאמה");
+  });
+
+  it("keeps unavailable PDP variant controls disabled without exposing stock", () => {
+    const panel = readFileSync(
+      path.join(
+        process.cwd(),
+        "src/app/product/[slug]/_components/product-purchase-panel.tsx",
+      ),
+      "utf8",
+    );
+
+    expect(panel).toContain("selectedVariantAvailable");
+    expect(panel).toContain("addToCartDisabled");
+    expect(panel).toContain("disabled={addToCartDisabled}");
+    expect(panel).toContain("!selectedVariantAvailable");
+    expect(panel).toContain("variant.availableQuantity <= 0");
+    expect(panel).toContain("commerceStatus.ctaLabel");
+    expect(panel).not.toContain("selectedVariantQuantity}");
+    expect(panel).not.toContain("availableQuantity}");
+  });
+
+  it("summarizes separate checkout expectations without public stock precision", () => {
+    const variant = {
+      ...baseVariant,
+      availableQuantity: 12,
+      separateCheckoutAvailable: true,
+    };
+    const items = getPurchaseConfidenceItems({
+      availabilityMode: "READY_TO_ORDER",
+      deliveryPromise: "מסירה ותשלום יושלמו בקופה מאובטחת.",
+      requiresSeparateCheckout: true,
+      returnPolicy: "החלפות והחזרות מטופלות בתיאום שירות אישי.",
+      sizeKind: "ring",
+      variant,
+      variantStatusLabel: getVariantStatusLabel({
+        availabilityMode: "READY_TO_ORDER",
+        requiresSeparateCheckout: true,
+        variant,
+      }),
+    });
+    const text = items.map((item) => item.description).join(" ");
+
+    expect(items).toHaveLength(3);
+    expect(text).toContain("קופה מאובטחת");
+    expect(text).not.toContain("Shopify");
+    expect(text).not.toContain("קופת הספק");
+    expect(text).not.toContain("12");
+  });
+
+  it("keeps owned-product purchase confidence tied to verification and service", () => {
+    const variant = {
+      ...baseVariant,
+      availableQuantity: 2,
+    };
+    const items = getPurchaseConfidenceItems({
+      availabilityMode: "READY_TO_ORDER",
+      deliveryPromise: "מסירה עד הבית לאחר השלמת פרטי ההזמנה.",
+      requiresSeparateCheckout: false,
+      returnPolicy: "החלפה או החזרה בתיאום אישי לפי מדיניות Elysia.",
+      sizeKind: "ring",
+      variant,
+      variantStatusLabel: getVariantStatusLabel({
+        availabilityMode: "READY_TO_ORDER",
+        requiresSeparateCheckout: false,
+        variant,
+      }),
+    });
+    const checkoutItem = items.find((item) => item.key === "checkout");
+    const fitItem = items.find((item) => item.key === "fit");
+
+    expect(checkoutItem?.description).toContain("יוצגו");
+    expect(fitItem?.description).toContain("מדריך המידות");
+    expect(items.map((item) => item.description).join(" ")).not.toContain("2");
+  });
+
+  it("places care and warranty facts in the purchase confidence service item", () => {
+    const variant = {
+      ...baseVariant,
+      availableQuantity: 2,
+    };
+    const items = getPurchaseConfidenceItems({
+      availabilityMode: "READY_TO_ORDER",
+      careInstructions: "ניקוי עדין במטלית רכה.",
+      deliveryPromise: "מסירה עד הבית לאחר השלמת פרטי ההזמנה.",
+      requiresSeparateCheckout: false,
+      returnPolicy: "החלפה או החזרה בתיאום אישי.",
+      sizeKind: "ring",
+      variant,
+      variantStatusLabel: getVariantStatusLabel({
+        availabilityMode: "READY_TO_ORDER",
+        requiresSeparateCheckout: false,
+        variant,
+      }),
+      warranty: "אחריות 12 חודשים על פגמי ייצור.",
+    });
+    const serviceItem = items.find((item) => item.key === "service");
+
+    expect(serviceItem?.title).toBe("מסירה, טיפול ואחריות");
+    expect(serviceItem?.description).toContain(
+      "אחריות: אחריות 12 חודשים על פגמי ייצור.",
+    );
+    expect(serviceItem?.description).toContain("טיפול: ניקוי עדין במטלית רכה.");
+  });
+});
