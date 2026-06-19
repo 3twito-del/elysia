@@ -165,10 +165,18 @@ class TypesenseSearchProvider implements SearchProvider {
       return searchLocalProducts({ ...input, mode: "classic" });
     }
 
-    return searchTypesenseKeywordProducts(client, {
-      ...input,
-      mode: "classic",
-    });
+    try {
+      return await searchTypesenseKeywordProducts(client, {
+        ...input,
+        mode: "classic",
+      });
+    } catch (error) {
+      if (process.env.NODE_ENV === "development") {
+        console.error("[search:typesense-keyword]", error);
+      }
+
+      return searchLocalProducts({ ...input, mode: "classic" });
+    }
   }
 
   async indexProducts(): Promise<SearchIndexResult> {
