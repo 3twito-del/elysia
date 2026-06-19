@@ -22,6 +22,10 @@ const buildScript = readFileSync(
   path.join(repoRoot, "scripts/build.mjs"),
   "utf8",
 );
+const vercelProductionMigrateScript = readFileSync(
+  path.join(repoRoot, "scripts/vercel-production-migrate.mjs"),
+  "utf8",
+);
 const engineeringConventions = readFileSync(
   path.join(repoRoot, "docs/ENGINEERING_CONVENTIONS.md"),
   "utf8",
@@ -84,12 +88,24 @@ describe("manual quality gates", () => {
     expect(packageJson.scripts["dev:turbo"]).toBe("next dev --turbopack");
     expect(packageJson.scripts.predev).toBeUndefined();
     expect(packageJson.scripts.prebuild).toBe(
-      "pnpm copy:check && node scripts/verify-production-env.mjs && node scripts/convert-public-images-to-avif.mjs --check",
+      "pnpm copy:check && node scripts/verify-production-env.mjs && node scripts/vercel-production-migrate.mjs && node scripts/convert-public-images-to-avif.mjs --check",
     );
     expect(packageJson.scripts["verify:fast"]).toBe(
       "pnpm lint && pnpm typecheck && pnpm test",
     );
     expect(packageJson.scripts["verify:full"]).toBe("pnpm gate:release");
+    expect(vercelProductionMigrateScript).toContain(
+      'process.env.VERCEL === "1"',
+    );
+    expect(vercelProductionMigrateScript).toContain(
+      'process.env.VERCEL_ENV === "production"',
+    );
+    expect(vercelProductionMigrateScript).toContain(
+      'process.env.SKIP_VERCEL_PRODUCTION_MIGRATE !== "1"',
+    );
+    expect(vercelProductionMigrateScript).toContain(
+      '["prisma", "migrate", "deploy"]',
+    );
   });
 
   it("documents wall-clock regression budgets for local verification commands", () => {

@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "prebuild": "pnpm copy:check && node scripts/verify-production-env.mjs && node scripts/convert-public-images-to-avif.mjs --check",
+    "prebuild": "pnpm copy:check && node scripts/verify-production-env.mjs && node scripts/vercel-production-migrate.mjs && node scripts/convert-public-images-to-avif.mjs --check",
     "build": "node scripts/build.mjs",
     "check": "pnpm copy:check && pnpm lint && pnpm typecheck && pnpm test",
     "catalog:readiness": "tsx scripts/catalog-readiness-audit.ts",
