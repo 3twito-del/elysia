@@ -41,6 +41,10 @@ describe("homepage boutique commerce bridge", () => {
     expect(home).toContain('data-testid="home-featured-products"');
     expect(home).toContain('data-testid="home-material-trust"');
     expect(home).toContain("home-materials-section");
+    expect(home).toContain("home-story-layout");
+    expect(home).toContain("home-story-secondary-copy");
+    expect(home).toContain("home-story-secondary-note");
+    expect(home).toContain("storySignatureNote");
     expect(home).toContain("<NewsletterForm />");
     expect(home).toContain("data-title-direction={titleDirection}");
     expect(home).toContain('data-title-direction="ltr"');
@@ -111,8 +115,15 @@ describe("homepage boutique commerce bridge", () => {
     expect(css).toContain(
       "--boutique-story-secondary-row: clamp(23rem, 28vw, 30rem);",
     );
+    expect(css).toContain(".storefront-home-page .home-story-layout");
+    expect(css).toContain(
+      "--boutique-story-secondary-row: var(--boutique-story-primary-row);",
+    );
+    expect(css).toContain(".storefront-home-page .home-story-secondary-copy");
+    expect(css).toContain(".home-story-secondary-note");
     expect(css).toContain("var(--boutique-story-primary-row)");
     expect(css).toContain("var(--boutique-story-secondary-row)");
+    expect(css).toContain("grid-template-rows: auto minmax(10rem, 1fr);");
     expect(css).toContain("height: 100%;");
     expect(css).toContain("padding-block: clamp(2rem, 4vw, 4rem);");
   });

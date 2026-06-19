@@ -90,6 +90,12 @@ const editorialPrinciples = [
   },
 ] as const;
 
+const storySignatureNote = {
+  eyebrow: "Elysia Standard",
+  title: "נוכחות עדינה, שימוש יומיומי",
+  text: "בחירה שמתחילה בחומר וממשיכה בפרופורציה, כדי שהתכשיט ירגיש טבעי מהרגע הראשון.",
+} as const;
+
 const homeTrustSignals = [
   {
     icon: ShieldCheck,
@@ -337,7 +343,7 @@ export default async function Home() {
         className="boutique-story-band px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-0"
         id="about-elysia"
       >
-        <div className="boutique-story-layout mx-auto grid max-w-[92rem] gap-8 lg:items-center">
+        <div className="boutique-story-layout home-story-layout mx-auto grid max-w-[92rem] gap-8 lg:items-center">
           <figure className="boutique-story-media boutique-story-media-left relative">
             <Image
               alt=""
@@ -356,7 +362,7 @@ export default async function Home() {
               title="A Distinct Point of View"
             />
           </div>
-          <div className="boutique-story-secondary-copy">
+          <div className="boutique-story-secondary-copy home-story-secondary-copy">
             <div className="grid gap-4">
               {editorialPrinciples.map((principle, index) => (
                 <section
@@ -371,8 +377,18 @@ export default async function Home() {
                 </section>
               ))}
             </div>
+            <section
+              aria-label={storySignatureNote.eyebrow}
+              className="home-story-secondary-note"
+            >
+              <p className="storefront-eyebrow" dir="ltr">
+                {storySignatureNote.eyebrow}
+              </p>
+              <h3>{storySignatureNote.title}</h3>
+              <p>{storySignatureNote.text}</p>
+            </section>
           </div>
-          <figure className="boutique-story-media boutique-story-media-right relative">
+          <figure className="boutique-story-media boutique-story-media-right home-story-media-right relative">
             <Image
               alt=""
               className="object-cover"

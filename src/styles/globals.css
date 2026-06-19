@@ -2319,6 +2319,29 @@ html[data-accessibility-motion="reduce"] .boutique-collection-action::before {
   line-height: 1.75;
 }
 
+.home-story-secondary-note {
+  display: grid;
+  align-content: center;
+  gap: 0.7rem;
+  min-height: clamp(9rem, 24vw, 13rem);
+  border-block: 1px solid var(--glass-border);
+  padding-block: clamp(1.25rem, 3vw, 2.25rem);
+}
+
+.home-story-secondary-note h3 {
+  max-width: 28rem;
+  font-size: clamp(1.35rem, 2.1vw, 1.95rem);
+  font-weight: 560;
+  line-height: 1.18;
+}
+
+.home-story-secondary-note p:last-child {
+  color: var(--muted-foreground);
+  max-width: 34rem;
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
 .boutique-final-cta {
   background: linear-gradient(
     180deg,
@@ -2386,6 +2409,10 @@ html[data-accessibility-motion="reduce"] .boutique-collection-action::before {
     margin-inline: calc(50% - 50vw);
   }
 
+  .storefront-home-page .home-story-layout {
+    --boutique-story-secondary-row: var(--boutique-story-primary-row);
+  }
+
   .boutique-story-media {
     width: 50vw;
     height: 100%;
@@ -2422,6 +2449,17 @@ html[data-accessibility-motion="reduce"] .boutique-collection-action::before {
     grid-column: 1;
     grid-row: 2;
     padding-block: clamp(2rem, 4vw, 4rem);
+  }
+
+  .storefront-home-page .home-story-secondary-copy {
+    align-content: stretch;
+    grid-template-rows: auto minmax(10rem, 1fr);
+    gap: clamp(1.5rem, 3vw, 2.75rem);
+  }
+
+  .storefront-home-page .home-story-secondary-note {
+    align-self: stretch;
+    min-height: 0;
   }
 
   .boutique-fixed-image-band[data-fixed-bg-loaded="true"] {
