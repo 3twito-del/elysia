@@ -14,6 +14,7 @@ Owner intake:
 
 - `docs/qa/catalog-owner-intake-template.md`
 - `pnpm catalog:intake -- --audit <catalog-readiness.json> --per-class 6 --include-named --release-scope wave-0-priority --out artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv`
+- `pnpm catalog:intake:validate -- --file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --strict --out-dir artifacts/qa/<date>-catalog-owner-intake-validation`
 - `pnpm catalog:readiness -- --source database --scope-file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --strict --out-dir artifacts/qa/<date>-wave-0-priority-readiness-strict`
 
 This plan translates the current failing catalog-readiness audit into owner
@@ -229,6 +230,7 @@ Status: ready after R-01 through R-05.
 Command:
 
 ```powershell
+pnpm catalog:intake:validate -- --file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --strict --out-dir artifacts/qa/<date>-catalog-owner-intake-validation
 pnpm catalog:readiness -- --source database --scope-file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --strict --out-dir artifacts/qa/<date>-wave-0-priority-readiness-strict
 ```
 
@@ -238,6 +240,8 @@ Exit criteria:
   compares media URLs and local content hashes against the full loaded catalog,
   so a release product cannot pass while sharing proof media with an
   out-of-scope active product.
+- Owner-intake validation passes before any import, activation, or release note
+  claims the slice is ready.
 - Artifact is retained.
 - `docs/qa/catalog-readiness-wave-0-baseline.md`,
   `docs/TIFFANY_SURPASS_MASTER_PLAN.md`, and `docs/PROJECT_TASKS.md` are

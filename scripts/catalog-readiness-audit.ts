@@ -18,6 +18,7 @@ import {
   type CatalogReadinessMediaRole,
   type CatalogReadinessProduct,
 } from "./lib/catalog-readiness";
+import { parseCsvRows } from "./lib/csv";
 import { listFixtureCatalogProducts } from "../src/server/services/catalog-fixtures";
 
 type AuditSource = "database" | "fixtures";
@@ -552,43 +553,6 @@ function readCatalogReadinessJsonScopeEntry(value: unknown): string[] {
   }
 
   return [];
-}
-
-function parseCsvRows(content: string): string[][] {
-  const rows: string[][] = [];
-  let currentRow: string[] = [];
-  let currentCell = "";
-  let inQuotes = false;
-
-  for (let index = 0; index < content.length; index += 1) {
-    const char = content[index];
-    const next = content[index + 1];
-
-    if (char === '"') {
-      if (inQuotes && next === '"') {
-        currentCell += '"';
-        index += 1;
-      } else {
-        inQuotes = !inQuotes;
-      }
-    } else if (char === "," && !inQuotes) {
-      currentRow.push(currentCell);
-      currentCell = "";
-    } else if ((char === "\n" || char === "\r") && !inQuotes) {
-      currentRow.push(currentCell);
-      rows.push(currentRow);
-      currentRow = [];
-      currentCell = "";
-      if (char === "\r" && next === "\n") index += 1;
-    } else {
-      currentCell += char;
-    }
-  }
-
-  currentRow.push(currentCell);
-  rows.push(currentRow);
-
-  return rows;
 }
 
 function uniqueSlugs(slugs: readonly string[]): string[] {

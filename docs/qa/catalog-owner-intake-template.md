@@ -30,6 +30,7 @@ After owners complete the slice and engineering imports the approved fields,
 audit the same scoped product list instead of claiming full-catalog readiness:
 
 ```powershell
+pnpm catalog:intake:validate -- --file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --strict --out-dir artifacts/qa/<date>-catalog-owner-intake-validation
 pnpm catalog:readiness -- --source database --scope-file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --strict --out-dir artifacts/qa/<date>-wave-0-priority-readiness-strict
 ```
 
@@ -88,6 +89,12 @@ the scoped products.
 | `mediaSourceReference` | yes      | Creative / catalog ops            | Shoot ID, asset library reference, license/source, or approved internal source. |
 | `mediaApprovedBy`      | yes      | Creative director / merchandising | Named approver.                                                                 |
 | `mediaApprovedAt`      | yes      | Creative director / merchandising | ISO date; must not be future-dated.                                             |
+| `primaryAltText`       | yes      | Accessibility / content           | Decision-useful alt text for the primary media.                                 |
+| `alternateAltText`     | yes      | Accessibility / content           | Decision-useful alt text for the alternate media.                               |
+| `scaleAltText`         | yes      | Accessibility / content           | Decision-useful alt text for the scale media.                                   |
+| `constructionAltText`  | yes      | Accessibility / content           | Decision-useful alt text for the construction media.                            |
+| `materialAltText`      | yes      | Accessibility / content           | Decision-useful alt text for the material media.                                |
+| `contextAltText`       | yes      | Accessibility / content           | Decision-useful alt text for the context media.                                 |
 | `altTextOwner`         | yes      | Accessibility / content           | Person responsible for decision-useful alt text.                                |
 
 ## CSV Header
@@ -95,7 +102,7 @@ the scoped products.
 Use this header when collecting rows in a spreadsheet:
 
 ```csv
-productSlug,priorityTier,releaseScope,directOwner,acceptanceOwner,residualRisk,factSourceReference,factVerifiedBy,factVerifiedAt,countryOfManufacture,manufacturerOrImporter,materialDetails,measurements,stoneDetails,variantSkuMap,policySourceReference,policyVerifiedBy,policyVerifiedAt,deliveryPromise,returnPolicy,careInstructions,warranty,supplierOrderException,primaryMediaUrl,alternateMediaUrl,scaleMediaUrl,constructionMediaUrl,materialMediaUrl,contextMediaUrl,mediaSourceReference,mediaApprovedBy,mediaApprovedAt,altTextOwner
+productSlug,priorityTier,releaseScope,directOwner,acceptanceOwner,residualRisk,factSourceReference,factVerifiedBy,factVerifiedAt,countryOfManufacture,manufacturerOrImporter,materialDetails,measurements,stoneDetails,variantSkuMap,policySourceReference,policyVerifiedBy,policyVerifiedAt,deliveryPromise,returnPolicy,careInstructions,warranty,supplierOrderException,primaryMediaUrl,alternateMediaUrl,scaleMediaUrl,constructionMediaUrl,materialMediaUrl,contextMediaUrl,mediaSourceReference,mediaApprovedBy,mediaApprovedAt,primaryAltText,alternateAltText,scaleAltText,constructionAltText,materialAltText,contextAltText,altTextOwner
 ```
 
 ## Engineering Acceptance
@@ -106,6 +113,8 @@ Engineering should not mark a product ready until all of the following are true:
 - Required product truth fields are filled and source-backed.
 - Required policy fields are filled and legal/operations-approved.
 - All six media roles are filled with exact-product assets.
+- All six media roles have decision-useful alt text.
+- `pnpm catalog:intake:validate -- --file <owner-intake.csv> --strict` passes.
 - The product has no blocker or high-severity finding in a fresh
   `pnpm catalog:readiness -- --source database --strict` artifact for the
   intended release scope.
