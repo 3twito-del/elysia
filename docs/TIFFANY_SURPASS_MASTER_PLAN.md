@@ -1542,13 +1542,24 @@ constraints.
 ### L-11 Create a release scorecard
 
 - `Priority`: P1
-- `Status`: NOW
+- `Status`: STARTED
 - `Effort`: M
 - `Fields`: P0 blockers, catalog completeness, media completeness, paid-flow
   proof, WCAG, CWV, security, provider health, visual matrix, production smoke,
   clean log window, legal sign-off, and rollback readiness.
 - `Acceptance`: a release cannot be labeled “Tiffany-surpassing” through prose
   while any required field is missing.
+- `Progress`: implemented `pnpm release:scorecard` (`scripts/release-scorecard.ts`,
+  `scripts/lib/release-scorecard.ts`, `scripts/release-scorecard.test.ts`). Every
+  required field defaults to `MISSING` and only a `PASS` counts; any
+  `MISSING/PENDING/FAIL` keeps the verdict `NOT READY`. Catalog and media
+  completeness are derived from a `catalog-readiness.json` artifact so the
+  scorecard cannot claim completeness while the audit fails. The current Wave 0
+  scorecard is `1/15` satisfied (production smoke only). Evidence:
+  `docs/qa/release-scorecard.md`, `docs/qa/release-scorecard-wave-0.json`, and
+  `artifacts/qa/2026-06-19-wave-0-release-scorecard/`. The strict gate is not yet
+  wired into release gating because the remaining fields are owner/external
+  blocked.
 
 ### L-12 Schedule benchmark refresh
 
@@ -1667,6 +1678,13 @@ Homepage backlog reconciliation:
   same release slice without ignoring full-catalog media duplication.
 - `I-341` tracks owner data, class-specific attributes, asset remediation, and
   final release-gate activation. Wave 0 remains in progress.
+- `L-11` release scorecard tooling now exists through `pnpm release:scorecard`.
+  It enforces that a release cannot be called "Tiffany-surpassing" while any
+  required field is missing, pending, or failing, and derives catalog/media
+  completeness from the catalog-readiness audit. The current Wave 0 scorecard is
+  `1/15` satisfied (production smoke only) and resolves to `NOT READY`. Evidence:
+  `docs/qa/release-scorecard.md`, `docs/qa/release-scorecard-wave-0.json`, and
+  `artifacts/qa/2026-06-19-wave-0-release-scorecard/`.
 
 ### Wave 0: Truth and proof foundation
 
