@@ -68,10 +68,7 @@ export function ProductCard({
   const productCardBadge = getProductCardBadge({
     product,
   });
-  const productDetails = [product.material, publicCollectionName].filter(
-    (detail): detail is string => isDisplayableProductDetail(detail),
-  );
-  const productMeta = productDetails.join(" · ");
+  const { productMeta } = getProductCardMeta(product, publicCollectionName);
   const productDescriptor = getProductCardDescriptor(product);
 
   return (
@@ -263,7 +260,11 @@ function getProductCardSecondaryImage(product: CatalogProduct) {
   return product.images.find((image) => image !== product.image);
 }
 
-function getProductCardSale(product: CatalogProduct) {
+// A sale is shown only when the data carries a real compare-at price that is
+// strictly higher than the current price. No inferred or fabricated discounts.
+export function getProductCardSale(
+  product: Pick<CatalogProduct, "compareAt" | "price">,
+) {
   if (!product.compareAt || product.compareAt <= product.price) return null;
 
   return { compareAt: product.compareAt };
@@ -368,16 +369,30 @@ function normalizeProductCardText(value: string) {
   return value.trim().toLowerCase();
 }
 
-// Never surface internal/legal placeholder values (e.g. "[להשלמה]") as public
-// product metadata — show only verified, bracket-free facts.
-function isDisplayableProductDetail(
+// Never surface internal/legal placeholder values (bracketed CMS fallbacks) as
+// public product metadata — show only verified, bracket-free facts.
+export function isDisplayableProductDetail(
   detail: string | null | undefined,
 ): detail is string {
   if (!detail) return false;
 
   const trimmed = detail.trim();
 
-  return trimmed.length > 0 && !trimmed.includes("[");
+  return trimmed.length > 0 && !trimmed.includes("[") && !trimmed.includes("]");
+}
+
+// Build the quiet product-card metadata line. Placeholder/empty values are
+// dropped so the card never renders brackets or a dangling "·" separator.
+export function getProductCardMeta(
+  product: Pick<CatalogProduct, "material">,
+  publicCollectionName?: string,
+) {
+  const productDetails = [product.material, publicCollectionName].filter(
+    (detail): detail is string => isDisplayableProductDetail(detail),
+  );
+  const productMeta = productDetails.join(" · ");
+
+  return { productDetails, productMeta };
 }
 
 function createProductHref(

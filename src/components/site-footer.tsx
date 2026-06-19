@@ -152,7 +152,7 @@ export function SiteFooter() {
             {/* TODO(owner): populate footerBusinessDetails in
                 src/lib/legal-content.ts with the verified legal business name
                 and registration number. Until then we never expose the
-                bracketed "[להשלמה]" placeholder to visitors. */}
+                bracketed CMS placeholder to visitors. */}
             {footerBusinessDetails.includes("[") ? null : (
               <p
                 className="max-w-xl text-xs leading-6"
