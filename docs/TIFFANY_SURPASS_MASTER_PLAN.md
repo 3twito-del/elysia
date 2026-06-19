@@ -502,12 +502,21 @@ constraints.
 ### C-08 Add catalog quality reporting
 
 - `Priority`: P1
-- `Status`: NOW
+- `Status`: STARTED
 - `Effort`: M
 - `Work`: admin dashboard for completeness, stale prices, unavailable items,
   missing media, duplicate assets, sync age, supplier mapping, and policy drift.
 - `Acceptance`: owners can see blockers by product and collection before a
   customer encounters them.
+- `Progress`: implemented `pnpm catalog:quality`
+  (`scripts/catalog-quality-report.ts`, `scripts/lib/catalog-quality-report.ts`,
+  `scripts/catalog-quality-report.test.ts`). It turns a `catalog-readiness.json`
+  artifact into an owner-facing rollup grouped by finding code (with owner role
+  and affected product samples) and by product class. The Wave 0 rollup
+  reproduces the previously hand-authored remediation breakdown by command.
+  Evidence: `docs/qa/catalog-quality-report.md` and
+  `artifacts/qa/2026-06-19-wave-0-catalog-quality/`. A rendered admin surface for
+  the same data remains, but the reporting data layer is code-complete.
 
 ---
 
