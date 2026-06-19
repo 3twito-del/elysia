@@ -2832,6 +2832,479 @@ html[data-accessibility-motion="reduce"]
   transition: none;
 }
 
+/* ════════════════════════════════════════════════════════════════════════
+   About redesign — cinematic editorial sections
+   Scroll reveals (`.about-rv`), principle cards, visual story, timeline,
+   trust grid, final CTA and the hero scroll cue. All motion is gated by
+   prefers-reduced-motion and the site accessibility flag.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ── Scroll reveal primitive ───────────────────────────────────────────── */
+.about-rv {
+  opacity: 0;
+  transform: translateY(1.6rem);
+  transition:
+    opacity 720ms var(--ease-liquid) var(--rv-delay, 0s),
+    transform 720ms var(--ease-liquid) var(--rv-delay, 0s);
+  will-change: opacity, transform;
+}
+
+.about-rv[data-inview="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Staggered children inside a revealed container. */
+.about-rv-item {
+  opacity: 0;
+  transform: translateY(1.4rem);
+}
+
+.about-rv[data-inview="true"] .about-rv-item {
+  animation: about-rv-rise 680ms var(--ease-liquid) both;
+  animation-delay: calc(var(--rv-i, 0) * 100ms + 60ms);
+}
+
+@keyframes about-rv-rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.4rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── Hero scroll cue ───────────────────────────────────────────────────── */
+.about-scroll-cue {
+  position: absolute;
+  bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  inset-inline-start: 50%;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  transform: translateX(50%);
+  color: rgb(255 250 244 / 86%);
+  text-decoration: none;
+  animation: about-cue-fade 900ms var(--ease-liquid) 0.6s both;
+}
+
+.about-scroll-cue-label {
+  font-size: 0.72rem;
+  font-weight: 550;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+}
+
+.about-scroll-cue-track {
+  position: relative;
+  display: block;
+  width: 1.35rem;
+  height: 2.2rem;
+  border: 1px solid rgb(255 250 244 / 55%);
+  border-radius: 999px;
+}
+
+.about-scroll-cue-dot {
+  position: absolute;
+  inset-inline-start: 50%;
+  top: 0.42rem;
+  width: 0.28rem;
+  height: 0.28rem;
+  margin-inline-start: -0.14rem;
+  border-radius: 50%;
+  background: rgb(255 250 244 / 95%);
+  animation: about-cue-dot 2.1s var(--ease-liquid) infinite;
+}
+
+@keyframes about-cue-fade {
+  from {
+    opacity: 0;
+    transform: translateX(50%) translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(50%) translateY(0);
+  }
+}
+
+@keyframes about-cue-dot {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  35% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 0;
+    transform: translateY(0.7rem);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(0.7rem);
+  }
+}
+
+/* ── Quiet manifesto ───────────────────────────────────────────────────── */
+.about-manifesto {
+  background: var(--brand-porcelain);
+}
+
+.about-eyebrow-dark {
+  color: var(--brand-gold-muted);
+  opacity: 1;
+}
+
+.about-rule {
+  display: block;
+  margin-top: 1rem;
+  height: 1px;
+  width: 0;
+  background: linear-gradient(
+    to left,
+    var(--brand-champagne),
+    transparent
+  );
+  transition: width 900ms var(--ease-liquid) 0.15s;
+}
+
+.about-rv[data-inview="true"] .about-rule {
+  width: min(14rem, 60%);
+}
+
+.about-manifesto-text {
+  max-width: 46rem;
+  color: var(--brand-ink);
+  font-size: clamp(1.45rem, 3vw, 2.5rem);
+  font-weight: 480;
+  line-height: 1.42;
+  letter-spacing: -0.01em;
+}
+
+.about-manifesto-text :is(strong) {
+  font-weight: 600;
+}
+
+/* ── Three principles cards ────────────────────────────────────────────── */
+.about-principle-card {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem;
+  padding: 1.35rem 1.4rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--brand-porcelain) 70%, white);
+  transition:
+    transform 360ms var(--ease-liquid),
+    border-color 360ms var(--ease-motion-standard),
+    box-shadow 360ms var(--ease-liquid);
+}
+
+.about-principle-index {
+  color: var(--brand-gold-muted);
+  font-size: 0.92rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.about-principle-card h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.about-principle-card p {
+  margin-top: 0.4rem;
+  color: var(--muted-foreground);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.about-principle-sweep {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgb(255 251 240 / 65%) 50%,
+    transparent 60%
+  );
+  background-size: 220% 100%;
+  background-position: 150% 0;
+  opacity: 0;
+}
+
+@media (hover: hover) {
+  .about-principle-card:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--brand-champagne) 70%, transparent);
+    box-shadow: 0 18px 40px -28px rgb(29 25 22 / 45%);
+  }
+
+  .about-principle-card:hover .about-principle-sweep {
+    opacity: 1;
+    background-position: -50% 0;
+    transition:
+      background-position 900ms var(--ease-liquid),
+      opacity 200ms linear;
+  }
+}
+
+/* ── Cinematic visual story band ───────────────────────────────────────── */
+.about-visual-story {
+  position: relative;
+}
+
+.about-visual-story .about-fixed-image-band {
+  min-height: clamp(28rem, 82vh, 56rem);
+}
+
+.about-visual-story-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: clamp(1.5rem, 6vw, 5rem);
+  background: linear-gradient(
+    to left,
+    rgb(20 17 15 / 76%) 0%,
+    rgb(20 17 15 / 40%) 46%,
+    rgb(20 17 15 / 8%) 100%
+  );
+}
+
+.about-visual-story-copy {
+  max-width: min(34rem, 100%);
+  color: rgb(255 250 244 / 96%);
+  text-align: right;
+}
+
+.about-visual-story .storefront-eyebrow {
+  color: rgb(255 250 244 / 78%);
+}
+
+.about-visual-story-title {
+  margin-top: 0.7rem;
+  font-size: clamp(1.9rem, 4.4vw, 3.5rem);
+  font-weight: 520;
+  line-height: 1.06;
+}
+
+.about-visual-story-text {
+  margin-top: 1.05rem;
+  color: rgb(255 250 244 / 86%);
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  line-height: 1.85;
+}
+
+.about-floating-labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.6rem;
+}
+
+.about-floating-label {
+  padding: 0.4rem 0.95rem;
+  border: 1px solid rgb(255 250 244 / 40%);
+  border-radius: 999px;
+  background: rgb(255 250 244 / 8%);
+  backdrop-filter: blur(4px);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgb(255 250 244 / 92%);
+}
+
+/* ── Brand rhythm timeline ─────────────────────────────────────────────── */
+.about-rhythm {
+  background: var(--brand-ivory);
+}
+
+.about-timeline {
+  position: relative;
+  display: grid;
+  gap: 1.75rem;
+  padding-inline-start: 0;
+}
+
+.about-timeline-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1.1rem;
+  padding-inline-end: 0.5rem;
+}
+
+/* Vertical connector that fills as items reveal. */
+.about-timeline-item::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: calc(1.5rem - 0.5px);
+  top: 3rem;
+  bottom: -1.75rem;
+  width: 1px;
+  background: var(--glass-border);
+}
+
+.about-timeline-item:last-child::before {
+  display: none;
+}
+
+.about-timeline-marker {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--brand-porcelain) 60%, white);
+  color: var(--brand-gold-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.about-timeline-body h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.about-timeline-body p {
+  margin-top: 0.4rem;
+  color: var(--muted-foreground);
+  line-height: 1.75;
+}
+
+/* ── Trust & service cards ─────────────────────────────────────────────── */
+.about-trust-card {
+  display: block;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    transform 320ms var(--ease-liquid),
+    border-color 320ms var(--ease-motion-standard),
+    box-shadow 320ms var(--ease-liquid);
+}
+
+.about-trust-arrow {
+  transition: transform 320ms var(--ease-liquid);
+}
+
+@media (hover: hover) {
+  .about-trust-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 40px -28px rgb(29 25 22 / 40%);
+  }
+
+  .about-trust-card:hover .about-trust-arrow {
+    transform: translateX(-0.25rem);
+  }
+}
+
+.about-trust-card:focus-visible {
+  outline: 2px solid var(--brand-gold-muted);
+  outline-offset: 2px;
+}
+
+/* ── Final CTA ─────────────────────────────────────────────────────────── */
+.about-final {
+  background:
+    radial-gradient(
+      120% 100% at 50% 0%,
+      color-mix(in srgb, var(--brand-champagne) 22%, transparent),
+      transparent 60%
+    ),
+    var(--brand-ivory);
+  border-top: 1px solid var(--glass-border);
+}
+
+.about-final-spark {
+  color: var(--brand-gold-muted);
+}
+
+.about-final-title {
+  margin-top: 1rem;
+  font-size: clamp(2rem, 4.4vw, 3.5rem);
+  font-weight: 520;
+  line-height: 1.05;
+}
+
+.about-final-text {
+  margin-inline: auto;
+  margin-top: 1.1rem;
+  max-width: 38rem;
+  color: var(--muted-foreground);
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  line-height: 1.85;
+}
+
+.about-final-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.9rem;
+}
+
+@media (max-width: 639px) {
+  .about-visual-story-overlay {
+    align-items: flex-end;
+    background: linear-gradient(
+      to top,
+      rgb(20 17 15 / 82%) 0%,
+      rgb(20 17 15 / 38%) 55%,
+      rgb(20 17 15 / 10%) 100%
+    );
+  }
+}
+
+/* Reduced motion: reveal everything immediately, drop ambient motion. */
+@media (prefers-reduced-motion: reduce) {
+  .about-rv,
+  .about-rv-item {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    animation: none;
+  }
+
+  .about-rv[data-inview="true"] .about-rv-item {
+    animation: none;
+  }
+
+  .about-rule {
+    transition: none;
+  }
+
+  .about-scroll-cue,
+  .about-scroll-cue-dot {
+    animation: none;
+  }
+}
+
+html[data-accessibility-motion="reduce"] :is(.about-rv, .about-rv-item) {
+  opacity: 1;
+  transform: none;
+  transition: none;
+  animation: none;
+}
+
+html[data-accessibility-motion="reduce"]
+  :is(.about-scroll-cue, .about-scroll-cue-dot, .about-rule) {
+  animation: none;
+  transition: none;
+}
+
 .storefront-final-panel {
   display: grid;
   border-block: 1px solid var(--glass-border);
