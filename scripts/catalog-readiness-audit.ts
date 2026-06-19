@@ -25,13 +25,23 @@ type AuditSource = "database" | "fixtures";
 type Options = {
   envFiles: string[];
   outDir?: string;
+  scopeFile?: string;
+  slugs: string[];
   source?: AuditSource;
   strict: boolean;
+};
+
+type CatalogReadinessScope = {
+  label: string;
+  productSlugs: string[];
+  requestedCount: number;
+  scopeFile?: string;
 };
 
 export function parseCatalogReadinessArgs(args: readonly string[]): Options {
   const options: Options = {
     envFiles: [".env", ".env.local", ".env.development.local"],
+    slugs: [],
     strict: false,
   };
 
@@ -39,7 +49,9 @@ export function parseCatalogReadinessArgs(args: readonly string[]): Options {
     const arg = args[index];
     const next = args[index + 1];
 
-    if (arg === "--strict") {
+    if (arg === "--") {
+      continue;
+    } else if (arg === "--strict") {
       options.strict = true;
     } else if (arg === "--source" && isAuditSource(next)) {
       options.source = next;
@@ -49,6 +61,12 @@ export function parseCatalogReadinessArgs(args: readonly string[]): Options {
       index += 1;
     } else if (arg === "--env-file" && next) {
       options.envFiles.push(next);
+      index += 1;
+    } else if (arg === "--scope-file" && next) {
+      options.scopeFile = next;
+      index += 1;
+    } else if (arg === "--slugs" && next) {
+      options.slugs.push(...parseCatalogReadinessSlugList(next));
       index += 1;
     }
   }
@@ -77,6 +95,43 @@ export function loadCatalogReadinessEnv(files: readonly string[]) {
   }
 
   return Object.fromEntries(values);
+}
+
+export function parseCatalogReadinessSlugList(value: string): string[] {
+  return value
+    .split(/[,\s]+/u)
+    .map((slug) => slug.trim())
+    .filter(Boolean);
+}
+
+export function readCatalogReadinessScopeFile(filePath: string): string[] {
+  const content = readFileSync(filePath, "utf8");
+  const trimmed = content.trim();
+
+  if (!trimmed) return [];
+
+  if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+    const parsed = JSON.parse(trimmed) as unknown;
+
+    return readCatalogReadinessJsonScope(parsed);
+  }
+
+  const csvRows = parseCsvRows(content).filter((row) =>
+    row.some((cell) => cell.trim()),
+  );
+  const header = csvRows[0]?.map((cell) => cell.trim());
+  const productSlugIndex = header?.indexOf("productSlug") ?? -1;
+
+  if (productSlugIndex >= 0) {
+    return uniqueSlugs(
+      csvRows
+        .slice(1)
+        .map((row) => row[productSlugIndex]?.trim() ?? "")
+        .filter(Boolean),
+    );
+  }
+
+  return uniqueSlugs(parseCatalogReadinessSlugList(content));
 }
 
 export function createCatalogReadinessArtifactDir() {
@@ -327,6 +382,7 @@ function writeArtifacts(input: {
   audit: ReturnType<typeof auditCatalogReadiness>;
   generatedAt: string;
   outDir: string;
+  scope: CatalogReadinessScope | null;
   source: AuditSource;
 }) {
   mkdirSync(input.outDir, { recursive: true });
@@ -356,8 +412,14 @@ Options:
                               Defaults to database when DATABASE_URL is available.
   --out-dir <path>            Write catalog-readiness.json and catalog-readiness.md.
   --env-file <path>           Load an additional environment file.
+  --scope-file <path>         Audit only productSlug values listed in CSV, JSON, or text.
+  --slugs <a,b,c>             Audit only the listed product slugs.
   --strict                    Return a non-zero exit code for blocker/high findings.
   --help                      Show this help.
+
+Scoped audits still compare media URLs and local content hashes against the
+full loaded catalog so a release slice cannot pass while sharing product media
+with an out-of-scope active product.
 `);
 }
 
@@ -370,17 +432,22 @@ async function main(args = process.argv.slice(2)) {
   const options = parseCatalogReadinessArgs(args);
   const env = loadCatalogReadinessEnv(options.envFiles);
   const source = options.source ?? (env.DATABASE_URL ? "database" : "fixtures");
-  const products =
+  const allProducts =
     source === "database"
       ? await loadDatabaseProducts(requireDatabaseUrl(env.DATABASE_URL))
       : loadFixtureProducts();
+  const scope = createCatalogReadinessScope(options);
+  const products = scope
+    ? selectCatalogReadinessScopeProducts(allProducts, scope.productSlugs)
+    : allProducts;
   const generatedAt = new Date().toISOString();
   const audit = auditCatalogReadiness(products, {
-    mediaFiles: inspectLocalMediaFiles(products),
+    duplicateMediaReferenceProducts: allProducts,
+    mediaFiles: inspectLocalMediaFiles(allProducts),
   });
   const outDir = options.outDir ?? createCatalogReadinessArtifactDir();
 
-  writeArtifacts({ audit, generatedAt, outDir, source });
+  writeArtifacts({ audit, generatedAt, outDir, scope, source });
   console.log(
     JSON.stringify(
       {
@@ -390,6 +457,13 @@ async function main(args = process.argv.slice(2)) {
         productCount: audit.productCount,
         publishReadyCount: audit.publishReadyCount,
         ready: audit.ready,
+        scope: scope
+          ? {
+              label: scope.label,
+              productCount: scope.productSlugs.length,
+              scopeFile: scope.scopeFile,
+            }
+          : null,
         source,
       },
       null,
@@ -402,6 +476,130 @@ async function main(args = process.argv.slice(2)) {
 
 function isAuditSource(value: string | undefined): value is AuditSource {
   return value === "database" || value === "fixtures";
+}
+
+function createCatalogReadinessScope(
+  options: Pick<Options, "scopeFile" | "slugs">,
+): CatalogReadinessScope | null {
+  const fileSlugs: string[] = options.scopeFile
+    ? readCatalogReadinessScopeFile(options.scopeFile)
+    : [];
+  const productSlugs = uniqueSlugs([...fileSlugs, ...options.slugs]);
+
+  if (productSlugs.length === 0) return null;
+
+  return {
+    label: options.scopeFile
+      ? `${productSlugs.length} products from ${options.scopeFile}`
+      : `${productSlugs.length} products from --slugs`,
+    productSlugs,
+    requestedCount: productSlugs.length,
+    scopeFile: options.scopeFile,
+  };
+}
+
+function selectCatalogReadinessScopeProducts(
+  products: readonly CatalogReadinessProduct[],
+  slugs: readonly string[],
+): CatalogReadinessProduct[] {
+  const productsBySlug = new Map(
+    products.map((product) => [product.slug, product] as const),
+  );
+  const missingSlugs = slugs.filter((slug) => !productsBySlug.has(slug));
+
+  if (missingSlugs.length > 0) {
+    throw new Error(
+      `Scope products not found in selected source: ${missingSlugs.join(", ")}.`,
+    );
+  }
+
+  return slugs.map((slug) => productsBySlug.get(slug)!);
+}
+
+function readCatalogReadinessJsonScope(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return uniqueSlugs(
+      value.flatMap((entry) => readCatalogReadinessJsonScopeEntry(entry)),
+    );
+  }
+
+  if (value && typeof value === "object") {
+    const object = value as {
+      audit?: { products?: unknown };
+      productSlugs?: unknown;
+      products?: unknown;
+      slugs?: unknown;
+    };
+
+    return uniqueSlugs([
+      ...readCatalogReadinessJsonScope(object.productSlugs ?? []),
+      ...readCatalogReadinessJsonScope(object.slugs ?? []),
+      ...readCatalogReadinessJsonScope(object.products ?? []),
+      ...readCatalogReadinessJsonScope(object.audit?.products ?? []),
+    ]);
+  }
+
+  return [];
+}
+
+function readCatalogReadinessJsonScopeEntry(value: unknown): string[] {
+  if (typeof value === "string") return [value];
+
+  if (value && typeof value === "object") {
+    const productSlug = (value as { productSlug?: unknown }).productSlug;
+
+    return typeof productSlug === "string" ? [productSlug] : [];
+  }
+
+  return [];
+}
+
+function parseCsvRows(content: string): string[][] {
+  const rows: string[][] = [];
+  let currentRow: string[] = [];
+  let currentCell = "";
+  let inQuotes = false;
+
+  for (let index = 0; index < content.length; index += 1) {
+    const char = content[index];
+    const next = content[index + 1];
+
+    if (char === '"') {
+      if (inQuotes && next === '"') {
+        currentCell += '"';
+        index += 1;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === "," && !inQuotes) {
+      currentRow.push(currentCell);
+      currentCell = "";
+    } else if ((char === "\n" || char === "\r") && !inQuotes) {
+      currentRow.push(currentCell);
+      rows.push(currentRow);
+      currentRow = [];
+      currentCell = "";
+      if (char === "\r" && next === "\n") index += 1;
+    } else {
+      currentCell += char;
+    }
+  }
+
+  currentRow.push(currentCell);
+  rows.push(currentRow);
+
+  return rows;
+}
+
+function uniqueSlugs(slugs: readonly string[]): string[] {
+  const unique = new Set<string>();
+
+  for (const slug of slugs) {
+    const trimmed = slug.trim();
+    if (trimmed) unique.add(trimmed);
+  }
+
+  return [...unique];
 }
 
 function requireDatabaseUrl(value: string | undefined) {

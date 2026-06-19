@@ -1,9 +1,14 @@
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import type { CatalogReadinessProduct } from "./lib/catalog-readiness";
 import {
   inspectLocalMediaFiles,
   parseCatalogReadinessArgs,
+  readCatalogReadinessScopeFile,
 } from "./catalog-readiness-audit";
 
 describe("catalog readiness audit CLI", () => {
@@ -16,14 +21,45 @@ describe("catalog readiness audit CLI", () => {
         "artifacts/qa/catalog",
         "--env-file",
         ".env.audit",
+        "--scope-file",
+        "artifacts/qa/catalog-owner-intake.csv",
+        "--slugs",
+        "ring-alpha, necklace-beta",
         "--strict",
       ]),
     ).toEqual({
       envFiles: [".env", ".env.local", ".env.development.local", ".env.audit"],
       outDir: "artifacts/qa/catalog",
+      scopeFile: "artifacts/qa/catalog-owner-intake.csv",
+      slugs: ["ring-alpha", "necklace-beta"],
       source: "fixtures",
       strict: true,
     });
+  });
+
+  it("reads scoped product slugs from an owner-intake CSV", () => {
+    const directory = mkdtempSync(path.join(tmpdir(), "catalog-scope-"));
+    const scopeFile = path.join(directory, "catalog-owner-intake.csv");
+
+    try {
+      writeFileSync(
+        scopeFile,
+        [
+          "releaseScope,productSlug,residualRisk",
+          "wave-0,ring-alpha,blocked",
+          'wave-0,"necklace-beta",blocked',
+          "wave-0,ring-alpha,duplicate row",
+          "",
+        ].join("\n"),
+      );
+
+      expect(readCatalogReadinessScopeFile(scopeFile)).toEqual([
+        "ring-alpha",
+        "necklace-beta",
+      ]);
+    } finally {
+      rmSync(directory, { force: true, recursive: true });
+    }
   });
 
   it("hashes existing public media and reports missing local media", () => {

@@ -14,6 +14,7 @@ Owner intake:
 
 - `docs/qa/catalog-owner-intake-template.md`
 - `pnpm catalog:intake -- --audit <catalog-readiness.json> --per-class 6 --include-named --release-scope wave-0-priority --out artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv`
+- `pnpm catalog:readiness -- --source database --scope-file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --strict --out-dir artifacts/qa/<date>-wave-0-priority-readiness-strict`
 
 This plan translates the current failing catalog-readiness audit into owner
 work packages. It does not assert that the audited database is production truth;
@@ -228,13 +229,15 @@ Status: ready after R-01 through R-05.
 Command:
 
 ```powershell
-pnpm catalog:readiness -- --source database --strict --out-dir artifacts/qa/<date>-catalog-readiness-strict
+pnpm catalog:readiness -- --source database --scope-file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --strict --out-dir artifacts/qa/<date>-wave-0-priority-readiness-strict
 ```
 
 Exit criteria:
 
-- Strict audit passes for the intended release scope, or fails with only
-  documented non-release products outside scope.
+- Strict audit passes for the intended release scope. The scoped audit still
+  compares media URLs and local content hashes against the full loaded catalog,
+  so a release product cannot pass while sharing proof media with an
+  out-of-scope active product.
 - Artifact is retained.
 - `docs/qa/catalog-readiness-wave-0-baseline.md`,
   `docs/TIFFANY_SURPASS_MASTER_PLAN.md`, and `docs/PROJECT_TASKS.md` are

@@ -76,7 +76,8 @@ Completed items are intentionally removed from this active list.
   verified-only PDP fact/policy rendering, reusable customer auth fixture,
   seeded customer account states for E2E, production-build E2E harness env
   isolation and teardown, route-status-aware visual QA, route sharding for long
-  all-product reviews, focused tests, and two 300-product database baselines.
+  all-product reviews, scoped release-slice readiness audits, focused tests,
+  and two 300-product database baselines.
 - `Current Result`: 0 of 300 active products are publish-ready. The baseline
   after the schema migration records 874 blockers and 2,426 high-severity
   findings. The increase is expected: five missing media roles per product are
@@ -115,7 +116,10 @@ Completed items are intentionally removed from this active list.
   fields owners must provide for verified product facts, policy approval, and
   six-role media evidence before engineering marks products ready. Use
   `pnpm catalog:intake` to generate CSV scaffolds from a catalog-readiness
-  artifact without committing owner data or private evidence.
+  artifact without committing owner data or private evidence. Use
+  `pnpm catalog:readiness -- --scope-file <owner-intake.csv>` to verify a
+  remediated release slice while still checking shared URLs and duplicate local
+  media hashes against the full loaded catalog.
 
 The previous active items were completed and removed after focused
 implementation and verification for product cards, coupon messaging, guest

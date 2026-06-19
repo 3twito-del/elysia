@@ -110,6 +110,36 @@ describe("catalog readiness", () => {
     );
   });
 
+  it("checks scoped products for duplicate media against a reference catalog", () => {
+    const scoped = createCompleteProduct({ slug: "scoped-product" });
+    const outsideScope = createCompleteProduct({
+      media: scoped.media,
+      slug: "outside-scope-product",
+    });
+    const audit = auditCatalogReadiness([scoped], {
+      duplicateMediaReferenceProducts: [scoped, outsideScope],
+      mediaFiles: createMediaFiles(scoped),
+    });
+
+    expect(audit.productCount).toBe(1);
+    expect(audit.products.map((product) => product.productSlug)).toEqual([
+      "scoped-product",
+    ]);
+    expect(audit.issues).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          code: "MEDIA_URL_SHARED_ACROSS_PRODUCTS",
+          productSlug: "scoped-product",
+        }),
+      ]),
+    );
+    expect(
+      audit.issues.some(
+        (issue) => issue.productSlug === "outside-scope-product",
+      ),
+    ).toBe(false);
+  });
+
   it("separates an incomplete media count from unverified media roles", () => {
     const product = createCompleteProduct({
       media: [

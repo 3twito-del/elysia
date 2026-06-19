@@ -124,6 +124,7 @@ export type CatalogReadinessAudit = {
 };
 
 export type CatalogReadinessOptions = {
+  duplicateMediaReferenceProducts?: readonly CatalogReadinessProduct[];
   mediaFiles?: Readonly<Record<string, CatalogReadinessMediaFile>>;
   now?: Date;
 };
@@ -168,7 +169,12 @@ export function auditCatalogReadiness(
     auditProduct(product, issues, options.mediaFiles ?? {}, now);
   }
 
-  auditDuplicateMedia(products, issues, options.mediaFiles ?? {});
+  auditDuplicateMedia(
+    options.duplicateMediaReferenceProducts ?? products,
+    issues,
+    options.mediaFiles ?? {},
+    new Set(products.map((product) => product.slug)),
+  );
 
   const sortedIssues = [...issues].sort(compareIssues);
   const productResults = products
@@ -190,6 +196,7 @@ export function auditCatalogReadiness(
 export function formatCatalogReadinessMarkdown(input: {
   audit: CatalogReadinessAudit;
   generatedAt: string;
+  scope?: { label: string } | null;
   source: string;
 }) {
   const { audit } = input;
@@ -199,6 +206,7 @@ export function formatCatalogReadinessMarkdown(input: {
     "",
     `Generated: ${input.generatedAt}`,
     `Source: ${input.source}`,
+    ...(input.scope ? [`Scope: ${input.scope.label}`] : []),
     `Status: ${audit.ready ? "PASS" : "FAIL"}`,
     "",
     "## Summary",
@@ -718,6 +726,7 @@ function auditDuplicateMedia(
   products: readonly CatalogReadinessProduct[],
   issues: CatalogReadinessIssue[],
   mediaFiles: Readonly<Record<string, CatalogReadinessMediaFile>>,
+  auditedProductSlugs: ReadonlySet<string>,
 ) {
   const byUrl = new Map<string, Set<string>>();
   const byHash = new Map<string, Set<string>>();
@@ -737,6 +746,8 @@ function auditDuplicateMedia(
     if (slugs.size <= 1) continue;
 
     for (const slug of slugs) {
+      if (!auditedProductSlugs.has(slug)) continue;
+
       addProductIssue(issues, slug, {
         category: "media",
         code: "MEDIA_URL_SHARED_ACROSS_PRODUCTS",
@@ -751,6 +762,8 @@ function auditDuplicateMedia(
     if (slugs.size <= 1) continue;
 
     for (const slug of slugs) {
+      if (!auditedProductSlugs.has(slug)) continue;
+
       addProductIssue(issues, slug, {
         category: "media",
         code: "MEDIA_CONTENT_DUPLICATED_ACROSS_PRODUCTS",

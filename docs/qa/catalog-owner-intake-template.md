@@ -26,6 +26,17 @@ It pre-fills only `productSlug`, optional `releaseScope`, and residual audit
 risk. Owners must fill the verification, policy, and media columns manually from
 approved sources.
 
+After owners complete the slice and engineering imports the approved fields,
+audit the same scoped product list instead of claiming full-catalog readiness:
+
+```powershell
+pnpm catalog:readiness -- --source database --scope-file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --strict --out-dir artifacts/qa/<date>-wave-0-priority-readiness-strict
+```
+
+Scoped readiness still compares product media against the full loaded catalog,
+so shared URLs or duplicate local content outside the slice remain blockers for
+the scoped products.
+
 ## Required Product Row
 
 | Field             | Required | Owner role              | Notes                                                                             |
