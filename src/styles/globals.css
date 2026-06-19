@@ -2373,17 +2373,22 @@ html[data-accessibility-motion="reduce"] .boutique-collection-action::before {
   }
 
   .boutique-story-layout {
+    --boutique-story-primary-row: clamp(34rem, 46vw, 44rem);
+    --boutique-story-secondary-row: clamp(23rem, 28vw, 30rem);
+
     width: 100vw;
     max-width: none;
     grid-template-columns: 50vw 50vw;
-    grid-template-rows: 50vw 50vw;
+    grid-template-rows:
+      var(--boutique-story-primary-row)
+      var(--boutique-story-secondary-row);
     gap: 0;
     margin-inline: calc(50% - 50vw);
   }
 
   .boutique-story-media {
     width: 50vw;
-    height: 50vw;
+    height: 100%;
     min-height: 0;
   }
 
@@ -2401,7 +2406,8 @@ html[data-accessibility-motion="reduce"] .boutique-collection-action::before {
   .boutique-story-secondary-copy {
     display: grid;
     align-content: center;
-    min-height: 50vw;
+    min-height: 0;
+    height: 100%;
     width: 50vw;
     padding-inline: clamp(2.25rem, 5vw, 5.5rem);
   }
@@ -2415,7 +2421,7 @@ html[data-accessibility-motion="reduce"] .boutique-collection-action::before {
     align-content: start;
     grid-column: 1;
     grid-row: 2;
-    padding-block-start: clamp(3rem, 7vw, 6rem);
+    padding-block: clamp(2rem, 4vw, 4rem);
   }
 
   .boutique-fixed-image-band[data-fixed-bg-loaded="true"] {

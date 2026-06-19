@@ -102,6 +102,21 @@ describe("homepage boutique commerce bridge", () => {
     expect(css).toContain("font-size: clamp(2rem, 3.8vw, 3.25rem);");
   });
 
+  it("keeps the story section from creating oversized dead space on wide screens", () => {
+    const css = read("src/styles/globals.css");
+
+    expect(css).toContain(
+      "--boutique-story-primary-row: clamp(34rem, 46vw, 44rem);",
+    );
+    expect(css).toContain(
+      "--boutique-story-secondary-row: clamp(23rem, 28vw, 30rem);",
+    );
+    expect(css).toContain("var(--boutique-story-primary-row)");
+    expect(css).toContain("var(--boutique-story-secondary-row)");
+    expect(css).toContain("height: 100%;");
+    expect(css).toContain("padding-block: clamp(2rem, 4vw, 4rem);");
+  });
+
   it("animates the category arrow color inversion on hover and focus", () => {
     const css = read("src/styles/globals.css");
 
