@@ -111,6 +111,9 @@ Completed items are intentionally removed from this active list.
   owner work packages: priority slice, product truth intake, policy
   verification, media replacement, non-ready product policy, and strict audit
   rerun.
+- `Owner Intake`: `docs/qa/catalog-owner-intake-template.md` defines the exact
+  fields owners must provide for verified product facts, policy approval, and
+  six-role media evidence before engineering marks products ready.
 
 The previous active items were completed and removed after focused
 implementation and verification for product cards, coupon messaging, guest

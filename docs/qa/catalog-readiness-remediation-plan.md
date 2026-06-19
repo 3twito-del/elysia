@@ -10,6 +10,10 @@ Source evidence:
 - `artifacts/qa/2026-06-19-wave-0-catalog-readiness-schema/catalog-readiness.md`
 - `docs/qa/catalog-readiness-wave-0-baseline.md`
 
+Owner intake:
+
+- `docs/qa/catalog-owner-intake-template.md`
+
 This plan translates the current failing catalog-readiness audit into owner
 work packages. It does not assert that the audited database is production truth;
 it records the repository-verifiable state of the database source used for the
@@ -105,6 +109,7 @@ Exit criteria:
 - Public priority: hero, category anchor, gift anchor, or essential.
 - Decision whether non-slice products stay public, move to draft, or remain
   visible with explicit readiness risk.
+- Intake rows started in the `docs/qa/catalog-owner-intake-template.md` format.
 
 ### R-02 Complete Product Truth Intake
 
@@ -129,6 +134,8 @@ Exit criteria:
 - `FACT_VERIFICATION_MISSING` is zero for the slice.
 - `STRUCTURED_SPECIFICATIONS_MISSING` is zero for the slice.
 - Public PDP fact rows render only from verified fields.
+- Product truth fields from `docs/qa/catalog-owner-intake-template.md` are
+  complete for every slice product.
 
 ### R-03 Complete Policy Verification
 
@@ -152,6 +159,8 @@ Exit criteria:
 - `POLICY_VERIFICATION_MISSING` is zero for the slice.
 - PDP, checkout, footer, emails, and policy pages do not contradict each other.
 - Policy text has effective date and owner.
+- Policy fields from `docs/qa/catalog-owner-intake-template.md` are complete
+  for every slice product.
 
 ### R-04 Replace Stale And Duplicated Media
 
@@ -180,6 +189,8 @@ Exit criteria:
 - `MEDIA_URL_SHARED_ACROSS_PRODUCTS` is zero for unrelated products in the
   slice.
 - `MEDIA_SET_INCOMPLETE` and `MEDIA_ROLE_MISSING` are zero for the slice.
+- Media fields from `docs/qa/catalog-owner-intake-template.md` are complete for
+  every slice product.
 
 ### R-05 Decide What Happens To Non-Ready Products
 
