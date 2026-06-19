@@ -149,12 +149,18 @@ export function SiteFooter() {
             <p className="max-w-xl leading-7" data-testid="footer-copyright">
               © {currentYear} Elysia. כל הזכויות שמורות.
             </p>
-            <p
-              className="max-w-xl text-xs leading-6"
-              data-testid="footer-business-details"
-            >
-              {footerBusinessDetails}
-            </p>
+            {/* TODO(owner): populate footerBusinessDetails in
+                src/lib/legal-content.ts with the verified legal business name
+                and registration number. Until then we never expose the
+                bracketed "[להשלמה]" placeholder to visitors. */}
+            {footerBusinessDetails.includes("[") ? null : (
+              <p
+                className="max-w-xl text-xs leading-6"
+                data-testid="footer-business-details"
+              >
+                {footerBusinessDetails}
+              </p>
+            )}
           </div>
           <nav
             aria-label="רשתות חברתיות"

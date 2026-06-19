@@ -480,13 +480,13 @@ export default async function Home() {
           >
             <div>
               <p className="storefront-eyebrow" dir="ltr">
-                Elysia Notes
+                First Access
               </p>
               <h2 className="storefront-final-subtitle" dir="ltr">
-                A Little Something New
+                See It Before It Launches
               </h2>
               <p className="storefront-final-text">
-                השקות חדשות, בחירות עונתיות וסיפורים מאחורי התכשיטים.
+                הצטרפי לרשימה ותהיי בין הראשונות לגלות השקות וקולקציות חדשות.
               </p>
             </div>
             <div className="storefront-final-newsletter">

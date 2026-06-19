@@ -69,7 +69,7 @@ export function ProductCard({
     product,
   });
   const productDetails = [product.material, publicCollectionName].filter(
-    (detail): detail is string => Boolean(detail),
+    (detail): detail is string => isDisplayableProductDetail(detail),
   );
   const productMeta = productDetails.join(" · ");
   const productDescriptor = getProductCardDescriptor(product);
@@ -164,7 +164,7 @@ export function ProductCard({
               >
                 {publicProductName}
               </h3>
-              {!isEditorialDisplay ? (
+              {!isEditorialDisplay && productMeta ? (
                 <div
                   className="ui-text-slot product-card-attributes text-muted-foreground truncate text-xs [--ui-text-slot-line-height:1.25rem]"
                   data-lines="1"
@@ -366,6 +366,18 @@ function getProductCardDescriptor(product: CatalogProduct) {
 
 function normalizeProductCardText(value: string) {
   return value.trim().toLowerCase();
+}
+
+// Never surface internal/legal placeholder values (e.g. "[להשלמה]") as public
+// product metadata — show only verified, bracket-free facts.
+function isDisplayableProductDetail(
+  detail: string | null | undefined,
+): detail is string {
+  if (!detail) return false;
+
+  const trimmed = detail.trim();
+
+  return trimmed.length > 0 && !trimmed.includes("[");
 }
 
 function createProductHref(
