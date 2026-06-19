@@ -51,6 +51,7 @@
     "qa:performance": "tsx scripts/qa-site-audit.ts --performance-only",
     "qa:routes": "tsx scripts/qa-route-inventory.ts --check",
     "qa:site": "tsx scripts/qa-site-audit.ts",
+    "release:scorecard": "tsx scripts/release-scorecard.ts",
     "shopify:dropship:doctor": "node scripts/shopify-dropship-doctor.mjs",
     "shopify:dropship:sync": "tsx scripts/sync-shopify-dropship-catalog.ts",
     "smoke": "node scripts/smoke.mjs",

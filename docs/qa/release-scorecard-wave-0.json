@@ -1,0 +1,64 @@
+{
+  "release": "Wave 0 truth-and-proof foundation",
+  "commit": "bc8d40b5325dddc330512a75f877520614202c3c",
+  "deployment": "dpl_BtVAaxtaCHBNyHSPFQWzog4gpUTZ",
+  "environment": "https://elysia-jewellery.com",
+  "fields": {
+    "p0Blockers": {
+      "status": "fail",
+      "evidence": "docs/TIFFANY_SURPASS_MASTER_PLAN.md",
+      "note": "Multiple P0 items remain open across workstreams C, G, H, J, K, and L."
+    },
+    "paidFlowProof": {
+      "status": "missing",
+      "evidence": "docs/qa/wave-0-owner-evidence-register.md",
+      "note": "G-02/G-04 are EXTERNAL and unassigned; no real own or supplier payment proven."
+    },
+    "supplierFulfillment": {
+      "status": "missing",
+      "note": "G-03 fulfillment proof is EXTERNAL and not yet executed."
+    },
+    "reconciliation": {
+      "status": "missing",
+      "note": "G-09 reconciliation depends on provider proof not yet available."
+    },
+    "wcag": {
+      "status": "missing",
+      "note": "J-01 manual WCAG 2.2 AA audit not yet run."
+    },
+    "coreWebVitals": {
+      "status": "missing",
+      "note": "J-03 production field Core Web Vitals not yet measured."
+    },
+    "security": {
+      "status": "missing",
+      "note": "K-08 application security review not yet completed."
+    },
+    "providerHealth": {
+      "status": "missing",
+      "note": "K-04/K-06 provider health and drift detection not yet proven."
+    },
+    "visualMatrix": {
+      "status": "missing",
+      "note": "F-11/L-04 full-catalog and authenticated visual matrix not yet passing."
+    },
+    "productionSmoke": {
+      "status": "pass",
+      "evidence": "docs/qa/production-deployment-evidence-ledger.md",
+      "note": "Production smoke passed on the released commit, including /search fallback states."
+    },
+    "cleanLogWindow": {
+      "status": "pending",
+      "evidence": "docs/qa/production-deployment-evidence-ledger.md",
+      "note": "60-minute post-alias clean error-log window is recorded as pending residual risk."
+    },
+    "legalSignOff": {
+      "status": "missing",
+      "note": "J-08 legal identity and policy review is OWNER/EXTERNAL and unassigned."
+    },
+    "rollbackReadiness": {
+      "status": "missing",
+      "note": "K-03 operational runbooks (including rollback) not yet authored."
+    }
+  }
+}
