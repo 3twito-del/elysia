@@ -24,9 +24,9 @@ import { RecentlyViewedProducts } from "~/app/product/[slug]/_components/recentl
 import {
   getCatalogCategories,
   getFeaturedCatalogProducts,
-  listCatalogProducts,
   type CatalogCategory,
 } from "~/server/services/catalog";
+import { TRPCReactProvider } from "~/trpc/react";
 
 const boutiqueHeroImage = "/brand/boutique/lifestyle-hero.avif";
 const boutiqueHeroPoster = "/brand/boutique/lifestyle-hero-poster.avif";
@@ -219,10 +219,9 @@ const homeStructuredData = [
 ] as const;
 
 export default async function Home() {
-  const [categories, featuredProducts, allProducts] = await Promise.all([
+  const [categories, featuredProducts] = await Promise.all([
     getCatalogCategories(),
     getFeaturedCatalogProducts(8),
-    listCatalogProducts(),
   ]);
   const orderedCategories = getOrderedHomeCategories(categories);
 
@@ -483,14 +482,15 @@ export default async function Home() {
         </RevealSection>
       )}
 
-      <RecentlyViewedProducts
-        className="boutique-section mx-auto w-full max-w-[92rem] border-y border-[var(--glass-border)] px-[var(--ui-page-x)] py-7 lg:px-[var(--ui-page-x-wide)]"
-        gridClassName="ui-equal-grid mt-5 grid gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-4"
-        heading="נצפו לאחרונה"
-        id="recently-viewed"
-        limit={4}
-        products={allProducts}
-      />
+      <TRPCReactProvider>
+        <RecentlyViewedProducts
+          className="boutique-section mx-auto w-full max-w-[92rem] border-y border-[var(--glass-border)] px-[var(--ui-page-x)] py-7 lg:px-[var(--ui-page-x-wide)]"
+          gridClassName="ui-equal-grid mt-5 grid gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-4"
+          heading="נצפו לאחרונה"
+          id="recently-viewed"
+          limit={4}
+        />
+      </TRPCReactProvider>
 
       <RevealSection
         className="boutique-section home-materials-section mx-auto w-full max-w-[92rem] px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]"

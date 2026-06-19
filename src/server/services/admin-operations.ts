@@ -12,6 +12,10 @@ import { getShopifyAdminOrderUrl } from "~/server/adapters/shopify";
 import { db } from "~/server/db";
 import { DEFAULT_CATALOG_IMAGE } from "~/server/services/catalog";
 import {
+  formatProductPublishBlockers,
+  getProductPublishBlockers,
+} from "~/server/services/catalog-publish-readiness";
+import {
   createProductionIntegrationSummaries,
   type AdminIntegrationSummary,
 } from "~/server/services/admin-integrations";
@@ -405,8 +409,12 @@ export async function listAdminCatalog(input: AdminCatalogListInput) {
         media: {
           where: { kind: "IMAGE" },
           orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }],
-          select: { url: true },
-          take: 1,
+          select: {
+            alt: true,
+            isPrimary: true,
+            role: true,
+            url: true,
+          },
         },
       },
     }),
@@ -476,6 +484,29 @@ export async function listAdminCatalog(input: AdminCatalogListInput) {
       returnPolicy: product.returnPolicy,
       careInstructions: product.careInstructions,
       warranty: product.warranty,
+      countryOfManufacture: product.countryOfManufacture,
+      manufacturerOrImporter: product.manufacturerOrImporter,
+      materialDetails: product.materialDetails,
+      measurements: product.measurements,
+      stoneDetails: product.stoneDetails,
+      factSourceReference: product.factSourceReference,
+      factVerifiedAt: product.factVerifiedAt,
+      factVerifiedBy: product.factVerifiedBy,
+      policySourceReference: product.policySourceReference,
+      policyVerifiedAt: product.policyVerifiedAt,
+      policyVerifiedBy: product.policyVerifiedBy,
+      publishBlockers: formatProductPublishBlockers(
+        getProductPublishBlockers({
+          ...product,
+          basePrice: Number(product.basePrice),
+          variants: product.variants.map((variant) => ({
+            prices: variant.prices.map((price) => ({
+              amount: Number(price.amount),
+              validTo: price.validTo,
+            })),
+          })),
+        }),
+      ),
       categoryName: product.category.name,
       materialName: product.material.name,
       stoneName: product.stone?.name ?? null,

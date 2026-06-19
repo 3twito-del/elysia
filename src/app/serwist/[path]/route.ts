@@ -16,11 +16,13 @@ type SerwistRoute = {
 
 const missingSerwistAssetStatus = 404;
 const serwistPrecacheIgnores = ["**/node_modules/**/*"] as const;
+const shouldUseProductionSerwistRoute =
+  process.env.NODE_ENV === "production" &&
+  process.env.E2E_SKIP_SERWIST_BUILD !== "1";
 
-const serwistRoute =
-  process.env.NODE_ENV === "production"
-    ? await createProductionSerwistRoute()
-    : createDevelopmentSerwistRoute();
+const serwistRoute = shouldUseProductionSerwistRoute
+  ? await createProductionSerwistRoute()
+  : createDevelopmentSerwistRoute();
 
 export const { dynamic, dynamicParams, revalidate, generateStaticParams, GET } =
   serwistRoute;

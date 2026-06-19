@@ -716,6 +716,31 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
     stone: displayStone,
   });
   const displayTags = getDisplayProductTags(record.tags);
+  const factsVerified = isCatalogVerificationValid({
+    sourceReference: record.factSourceReference,
+    verifiedAt: record.factVerifiedAt,
+    verifiedBy: record.factVerifiedBy,
+  });
+  const policiesVerified = isCatalogVerificationValid({
+    sourceReference: record.policySourceReference,
+    verifiedAt: record.policyVerifiedAt,
+    verifiedBy: record.policyVerifiedBy,
+  });
+  const verifiedSpecifications =
+    factsVerified &&
+    record.countryOfManufacture?.trim() &&
+    record.manufacturerOrImporter?.trim() &&
+    record.materialDetails?.trim() &&
+    record.measurements?.trim() &&
+    (!record.stoneId || record.stoneDetails?.trim())
+      ? {
+          countryOfManufacture: record.countryOfManufacture,
+          manufacturerOrImporter: record.manufacturerOrImporter,
+          materialDetails: record.materialDetails,
+          measurements: record.measurements,
+          stoneDetails: record.stoneDetails ?? undefined,
+        }
+      : undefined;
 
   return {
     slug: record.slug,
@@ -736,19 +761,26 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
     }),
     description: displayDescription,
     availabilityMode: record.availabilityMode,
-    commerceHighlights: getDisplayCommerceHighlights(record),
-    deliveryPromise: normalizePublicCatalogCopy(
-      record.deliveryPromise ?? "מסירה עד הבית לאחר השלמת התשלום.",
-    ),
-    returnPolicy: normalizePublicCatalogCopy(
-      record.returnPolicy ?? "החלפה או החזרה בתיאום שירות לפי מדיניות Elysia.",
-    ),
-    careInstructions: record.careInstructions
-      ? normalizePublicCatalogCopy(record.careInstructions)
-      : undefined,
-    warranty: record.warranty
-      ? normalizePublicCatalogCopy(record.warranty)
-      : undefined,
+    commerceHighlights: policiesVerified
+      ? getDisplayCommerceHighlights(record)
+      : [],
+    deliveryPromise:
+      policiesVerified && record.deliveryPromise
+        ? normalizePublicCatalogCopy(record.deliveryPromise)
+        : undefined,
+    returnPolicy:
+      policiesVerified && record.returnPolicy
+        ? normalizePublicCatalogCopy(record.returnPolicy)
+        : undefined,
+    careInstructions:
+      policiesVerified && record.careInstructions
+        ? normalizePublicCatalogCopy(record.careInstructions)
+        : undefined,
+    warranty:
+      policiesVerified && record.warranty
+        ? normalizePublicCatalogCopy(record.warranty)
+        : undefined,
+    verifiedSpecifications,
     price: defaultPrice,
     compareAt: getCompareAt(defaultVariant),
     createdAt: record.createdAt,
@@ -900,15 +932,20 @@ function getDisplayCommerceHighlights(record: CatalogProductRecord) {
     if (highlights.length > 0) return highlights;
   }
 
-  return [
-    normalizePublicCatalogCopy(record.warranty ?? "מענה לפני הזמנה"),
-    normalizePublicCatalogCopy(
-      record.deliveryPromise ?? "מסירה מתואמת עד הבית",
-    ),
-    normalizePublicCatalogCopy(
-      record.careInstructions ?? "הנחיות טיפול מצורפות לכל תכשיט",
-    ),
-  ];
+  return [];
+}
+
+function isCatalogVerificationValid(input: {
+  sourceReference: string | null;
+  verifiedAt: Date | null;
+  verifiedBy: string | null;
+}) {
+  return Boolean(
+    input.sourceReference?.trim() &&
+    input.verifiedBy?.trim() &&
+    input.verifiedAt &&
+    input.verifiedAt.getTime() <= Date.now(),
+  );
 }
 
 function isGeneratedCatalogDescription(description: string) {

@@ -1,10 +1,9 @@
+import { existsSync, readFileSync } from "node:fs";
+
 import { defineConfig, devices } from "@playwright/test";
 
 const baseURL = process.env.E2E_BASE_URL ?? "http://localhost:3000";
-const webServerReadyUrl = new URL("/manifest.webmanifest", baseURL).toString();
-const webServerCommand =
-  process.env.E2E_WEB_SERVER_COMMAND ??
-  "pnpm exec next build && pnpm exec next start -p 3000";
+const shouldStartLocalE2EServer = !process.env.E2E_BASE_URL;
 const qaArtifactDir = process.env.QA_ARTIFACT_DIR;
 const playwrightOutputDir = qaArtifactDir
   ? `${qaArtifactDir}/playwright-results`
@@ -12,6 +11,28 @@ const playwrightOutputDir = qaArtifactDir
 const playwrightReportDir = qaArtifactDir
   ? `${qaArtifactDir}/playwright-report`
   : "playwright-report";
+const e2eDatabaseUrl =
+  process.env.E2E_DATABASE_URL ??
+  process.env.DATABASE_URL ??
+  readDotenvValue(".env.development.local", "DATABASE_URL");
+const localE2EWebServerEnv: Record<string, string> = {
+  AI_SEMANTIC_SEARCH_ENABLED: "false",
+  E2E_AUTH_FIXTURES: "1",
+  E2E_CATALOG_FIXTURES: "1",
+  E2E_SKIP_SERWIST_BUILD: "1",
+  PORT: new URL(baseURL).port || "3000",
+  TYPESENSE_API_KEY: "",
+  TYPESENSE_HOST: "",
+  VERCEL_ENV: "preview",
+};
+
+if (e2eDatabaseUrl) {
+  localE2EWebServerEnv.DATABASE_URL = e2eDatabaseUrl;
+}
+
+if (shouldStartLocalE2EServer) {
+  Object.assign(process.env, localE2EWebServerEnv);
+}
 
 const qaViewports = [
   {
@@ -47,6 +68,12 @@ const qaBrowsers = [
 ] as const;
 
 export default defineConfig({
+  globalSetup: shouldStartLocalE2EServer
+    ? "./tests/e2e/global-setup.ts"
+    : undefined,
+  globalTeardown: shouldStartLocalE2EServer
+    ? "./tests/e2e/global-teardown.ts"
+    : undefined,
   outputDir: playwrightOutputDir,
   reporter: [
     ["list"],
@@ -55,21 +82,6 @@ export default defineConfig({
   testDir: "./tests/e2e",
   timeout: 30_000,
   workers: Number(process.env.PLAYWRIGHT_WORKERS ?? 3),
-  webServer: process.env.E2E_BASE_URL
-    ? undefined
-    : {
-        command: webServerCommand,
-        env: {
-          AI_SEMANTIC_SEARCH_ENABLED: "false",
-          E2E_CATALOG_FIXTURES: "1",
-          TYPESENSE_API_KEY: "",
-          TYPESENSE_HOST: "",
-          VERCEL_ENV: "preview",
-        },
-        reuseExistingServer: process.env.E2E_REUSE_EXISTING_SERVER === "1",
-        timeout: 180_000,
-        url: webServerReadyUrl,
-      },
   expect: {
     timeout: 10_000,
   },
@@ -101,3 +113,35 @@ export default defineConfig({
     })),
   ),
 });
+
+function readDotenvValue(filePath: string, key: string) {
+  if (!existsSync(filePath)) return undefined;
+
+  const assignmentPattern = new RegExp(`^\\s*${key}\\s*=\\s*(.*)\\s*$`);
+  const lines = readFileSync(filePath, "utf8").split(/\r?\n/);
+
+  for (const line of lines) {
+    const match = line.match(assignmentPattern);
+
+    if (!match) continue;
+
+    return normalizeDotenvValue(match[1] ?? "");
+  }
+
+  return undefined;
+}
+
+function normalizeDotenvValue(value: string) {
+  const trimmed = value.trim();
+
+  if (!trimmed) return undefined;
+
+  if (
+    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'"))
+  ) {
+    return trimmed.slice(1, -1);
+  }
+
+  return trimmed;
+}

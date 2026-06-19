@@ -6,8 +6,32 @@ import { ProductCard } from "~/components/product-card";
 import { RECENTLY_VIEWED_STORAGE_KEY } from "~/lib/cookie-consent";
 import { useCookieConsentValue } from "~/lib/use-cookie-consent";
 import type { CatalogProduct } from "~/server/services/catalog";
+import { api, TRPCReactProvider } from "~/trpc/react";
 
-export function RecentlyViewedProducts({
+type RecentlyViewedProductsProps = {
+  className?: string;
+  currentSlug?: string;
+  gridClassName?: string;
+  heading?: string;
+  id?: string;
+  limit?: number;
+  /**
+   * Pre-loaded catalog to resolve recently-viewed slugs against. When omitted,
+   * only the slugs the visitor actually has are fetched on the client via tRPC,
+   * so the host page does not have to ship the entire catalog in its payload.
+   */
+  products?: CatalogProduct[];
+};
+
+export function RecentlyViewedProducts(props: RecentlyViewedProductsProps) {
+  return (
+    <TRPCReactProvider>
+      <RecentlyViewedProductsContent {...props} />
+    </TRPCReactProvider>
+  );
+}
+
+function RecentlyViewedProductsContent({
   className = "border-border mx-auto mt-9 max-w-7xl border-t pt-7",
   currentSlug,
   gridClassName = "ui-equal-grid mt-5 grid gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-3",
@@ -15,26 +39,28 @@ export function RecentlyViewedProducts({
   id,
   limit = 3,
   products,
-}: {
-  className?: string;
-  currentSlug?: string;
-  gridClassName?: string;
-  heading?: string;
-  id?: string;
-  limit?: number;
-  products: CatalogProduct[];
-}) {
+}: RecentlyViewedProductsProps) {
   const consentValue = useCookieConsentValue();
   const slugs = useMemo(
     () => (consentValue === "all" ? readRecentlyViewedSlugs() : []),
     [consentValue],
   );
-
-  const productsBySlug = new Map(
-    products.map((product) => [product.slug, product]),
+  const candidateSlugs = useMemo(
+    () => slugs.filter((slug) => slug !== currentSlug).slice(0, limit),
+    [slugs, currentSlug, limit],
   );
-  const viewed = slugs
-    .filter((slug) => slug !== currentSlug)
+
+  const shouldFetch = products === undefined && candidateSlugs.length > 0;
+  const fetched = api.catalog.bySlugs.useQuery(
+    { slugs: candidateSlugs },
+    { enabled: shouldFetch, staleTime: 5 * 60 * 1000 },
+  );
+
+  const resolved = products ?? fetched.data ?? [];
+  const productsBySlug = new Map(
+    resolved.map((product) => [product.slug, product]),
+  );
+  const viewed = candidateSlugs
     .map((slug) => productsBySlug.get(slug))
     .filter((product): product is CatalogProduct => Boolean(product))
     .slice(0, limit);

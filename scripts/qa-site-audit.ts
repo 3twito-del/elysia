@@ -13,14 +13,20 @@ import {
 
 import {
   createQaArtifactDir,
-  getPerformanceQaRoutes,
-  getVisualQaRoutes,
+  getPerformanceQaRouteEntries,
+  getVisualQaRouteEntries,
+  type QaRoute,
   writeRouteInventoryArtifacts,
 } from "./qa-route-inventory";
 
 type BrowserName = "chromium" | "firefox" | "webkit";
 type ScreenshotMode = "all" | "failures" | "none";
 type ViewportName = "desktop" | "mobile" | "tablet";
+
+type RouteShard = {
+  index: number;
+  total: number;
+};
 
 type AuditOptions = {
   artifactDir: string;
@@ -29,6 +35,7 @@ type AuditOptions = {
   includeAllProducts: boolean;
   performanceOnly: boolean;
   repeats: number;
+  routeShard: RouteShard | null;
   screenshotMode: ScreenshotMode;
   viewports: ViewportName[];
   warmScreenshots: boolean;
@@ -40,6 +47,7 @@ type AuditResult = {
   consoleErrors: string[];
   failedRequests: string[];
   hasContent: boolean;
+  httpStatus: number | null;
   imageFailures: string[];
   lcpMs: number | null;
   navigationMs: number | null;
@@ -47,6 +55,8 @@ type AuditResult = {
   overlay: boolean;
   pageErrors: string[];
   path: string;
+  routeExpectedStatuses: number[];
+  routeSource: string;
   screenshotPath: string | null;
   status: "FAIL" | "PASS";
   tbtMs: number | null;
@@ -101,6 +111,7 @@ export const qaArtifactStandard = {
     "browsers",
     "viewports",
     "routeSet",
+    "routeShard",
     "repeats",
     "screenshotMode",
     "warmScreenshots",
@@ -113,6 +124,13 @@ export const scrollWarmedScreenshotEvidence = {
   purpose:
     "Scroll long pages before screenshots so lazy media can enter the viewport before visual review.",
   routeTypes: ["PDP", "search", "gifts", "homepage product rails"],
+} as const;
+
+export const routeShardAuditContract = {
+  example: "--route-shard 1/4",
+  indexing: "one-based",
+  purpose:
+    "Split long all-product visual audits by route while preserving every viewport/browser combination for the selected route subset.",
 } as const;
 
 export const consoleErrorBudget = {
@@ -147,9 +165,12 @@ export const inpSensitiveControlAudit = {
 } as const;
 
 export async function runQaSiteAudit(options: AuditOptions) {
-  const routes = options.performanceOnly
-    ? getPerformanceQaRoutes()
-    : getVisualQaRoutes({ includeAllProducts: options.includeAllProducts });
+  const routeSet = options.performanceOnly
+    ? getPerformanceQaRouteEntries()
+    : getVisualQaRouteEntries({
+        includeAllProducts: options.includeAllProducts,
+      });
+  const routes = applyRouteShard(routeSet, options.routeShard);
   const results: AuditResult[] = [];
   const screenshotsDir = path.join(options.artifactDir, "screenshots");
 
@@ -182,7 +203,7 @@ export async function runQaSiteAudit(options: AuditOptions) {
 
             results.push(result);
             console.log(
-              `${result.status} ${browserName}/${viewport} ${route} objective=${result.objectiveFindings.length}`,
+              `${result.status} ${browserName}/${viewport} ${route.path} objective=${result.objectiveFindings.length}`,
             );
           }
         }
@@ -198,6 +219,7 @@ export async function runQaSiteAudit(options: AuditOptions) {
     consoleErrorBudget,
     generatedAt: new Date().toISOString(),
     inpSensitiveControlAudit,
+    routeShardAuditContract,
     options,
     results,
     summary: summarizeResults(results),
@@ -258,7 +280,7 @@ async function auditRoute({
   browserName: BrowserName;
   enforcePerformanceBudgets: boolean;
   repeat: number;
-  route: string;
+  route: QaRoute;
   screenshotMode: ScreenshotMode;
   screenshotsDir: string;
   viewport: ViewportName;
@@ -292,7 +314,8 @@ async function auditRoute({
   const failedRequests: string[] = [];
   const imageFailures: string[] = [];
   const pageErrors: string[] = [];
-  const url = joinUrl(baseUrl, route);
+  const url = joinUrl(baseUrl, route.path);
+  let httpStatus: number | null = null;
 
   await installMetricObserver(page);
   page.on("console", (message) => {
@@ -335,13 +358,27 @@ async function auditRoute({
     if (response.status() < 400) return;
 
     const request = response.request();
+    if (
+      isExpectedRouteStatusForAudit({
+        baseUrl,
+        method: request.method(),
+        resourceType: request.resourceType(),
+        responseUrl,
+        route,
+        status: response.status(),
+      })
+    ) {
+      return;
+    }
+
     failedRequests.push(
       `${request.method()} ${responseUrl}: ${response.status()}`,
     );
   });
 
   try {
-    await page.goto(url, { waitUntil: "domcontentloaded" });
+    const response = await page.goto(url, { waitUntil: "domcontentloaded" });
+    httpStatus = response?.status() ?? null;
     await page
       .waitForLoadState("networkidle", { timeout: 7_000 })
       .catch(() => undefined);
@@ -407,9 +444,11 @@ async function auditRoute({
     consoleErrors,
     enforcePerformanceBudgets,
     failedRequests,
+    httpStatus,
     imageFailures,
     pageErrors,
     pageState,
+    routeExpectedStatuses: route.expectedStatuses,
     route,
     viewport,
   });
@@ -419,7 +458,7 @@ async function auditRoute({
   const screenshotPath = shouldCapture
     ? path.join(
         screenshotsDir,
-        `${safeFileName(`${browserName}-${viewport}-r${repeat}-${route}`)}.png`,
+        `${safeFileName(`${browserName}-${viewport}-r${repeat}-${route.path}`)}.png`,
       )
     : null;
 
@@ -447,13 +486,16 @@ async function auditRoute({
     consoleErrors,
     failedRequests,
     hasContent: pageState.bodyTextLength > 0,
+    httpStatus,
     imageFailures,
     lcpMs: pageState.lcpMs,
     navigationMs: pageState.navigationMs,
     objectiveFindings,
     overlay: pageState.overlay,
     pageErrors,
-    path: route,
+    path: route.path,
+    routeExpectedStatuses: route.expectedStatuses,
+    routeSource: route.source,
     screenshotPath,
     status: objectiveFindings.length === 0 ? "PASS" : "FAIL",
     tbtMs: pageState.tbtMs,
@@ -534,13 +576,16 @@ function buildObjectiveFindings({
   imageFailures,
   pageErrors,
   pageState,
+  httpStatus,
   route,
+  routeExpectedStatuses,
   viewport,
 }: {
   browserName: BrowserName;
   consoleErrors: string[];
   enforcePerformanceBudgets: boolean;
   failedRequests: string[];
+  httpStatus: number | null;
   imageFailures: string[];
   pageErrors: string[];
   pageState: {
@@ -551,7 +596,8 @@ function buildObjectiveFindings({
     tbtMs: number | null;
     xOverflowPx: number;
   };
-  route: string;
+  route: QaRoute;
+  routeExpectedStatuses: number[];
   viewport: ViewportName;
 }) {
   const findings: string[] = [];
@@ -561,6 +607,13 @@ function buildObjectiveFindings({
       : strictBudgets.navigationMs;
 
   if (pageState.bodyTextLength === 0) findings.push("blank body content");
+  if (httpStatus !== null && !routeExpectedStatuses.includes(httpStatus)) {
+    findings.push(
+      `HTTP ${httpStatus} not in expected statuses ${routeExpectedStatuses.join(
+        ", ",
+      )}`,
+    );
+  }
   if (pageState.overlay) findings.push("framework error overlay visible");
   if (pageState.xOverflowPx > 1) {
     findings.push(`horizontal overflow ${pageState.xOverflowPx}px`);
@@ -597,7 +650,7 @@ function buildObjectiveFindings({
     }
   }
 
-  return findings.map((finding) => `${route} ${viewport}: ${finding}`);
+  return findings.map((finding) => `${route.path} ${viewport}: ${finding}`);
 }
 
 async function warmPageForScreenshot(page: Page) {
@@ -721,6 +774,76 @@ function formatDesignReviewMarkdown(payload: {
   ];
 
   return `${lines.join("\n")}\n`;
+}
+
+export function applyRouteShard<T>(routes: T[], routeShard: RouteShard | null) {
+  if (!routeShard) return routes;
+
+  return routes.filter(
+    (_route, index) => index % routeShard.total === routeShard.index - 1,
+  );
+}
+
+export function parseRouteShard(value: string | undefined): RouteShard | null {
+  if (!value) return null;
+
+  const match = /^(?<index>\d+)\/(?<total>\d+)$/u.exec(value.trim());
+
+  if (!match?.groups) {
+    throw new Error("Invalid --route-shard value. Use the form 1/4.");
+  }
+
+  const index = Number(match.groups.index);
+  const total = Number(match.groups.total);
+
+  if (
+    !Number.isInteger(index) ||
+    !Number.isInteger(total) ||
+    index < 1 ||
+    total < 1 ||
+    index > total
+  ) {
+    throw new Error(
+      "Invalid --route-shard value. Index and total must be positive and index must be <= total.",
+    );
+  }
+
+  return { index, total };
+}
+
+export function isExpectedRouteStatusForAudit({
+  baseUrl,
+  method,
+  resourceType,
+  responseUrl,
+  route,
+  status,
+}: {
+  baseUrl: string;
+  method: string;
+  resourceType: string;
+  responseUrl: string;
+  route: Pick<QaRoute, "expectedStatuses" | "method" | "path">;
+  status: number;
+}) {
+  if (!route.expectedStatuses.includes(status)) return false;
+  if (method !== route.method) return false;
+  if (!["document", "fetch"].includes(resourceType)) return false;
+
+  return (
+    normalizeExpectedStatusPath(responseUrl, baseUrl) ===
+    normalizeExpectedStatusPath(route.path, baseUrl)
+  );
+}
+
+function normalizeExpectedStatusPath(value: string, baseUrl: string) {
+  const parsed = new URL(value, baseUrl);
+
+  parsed.searchParams.delete("_rsc");
+
+  const query = parsed.searchParams.toString();
+
+  return `${parsed.pathname}${query ? `?${query}` : ""}`;
 }
 
 function joinUrl(baseUrl: string, route: string) {
@@ -851,6 +974,7 @@ function parseArgs(argv = process.argv.slice(2)): AuditOptions {
     includeAllProducts: argv.includes("--all-products"),
     performanceOnly,
     repeats: Number(get("--repeats") ?? (performanceOnly ? "3" : "1")),
+    routeShard: parseRouteShard(get("--route-shard")),
     screenshotMode,
     viewports: parseCsvOption<ViewportName>(
       get("--viewports"),
@@ -875,6 +999,7 @@ Options:
   --all-products             Include every seeded product route.
   --performance-only         Audit the performance route subset with strict budgets.
   --repeats <n>              Repetitions per route. Defaults to 1, or 3 for performance.
+  --route-shard <i/n>        Run only one one-based route shard, for example 1/4.
   --screenshots <mode>       all, failures, none. Defaults to failures.
   --warm-screenshots         Scroll pages before screenshots so lazy media can load.
 `);

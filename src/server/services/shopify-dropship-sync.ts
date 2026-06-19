@@ -3,7 +3,6 @@ import type { Prisma } from "@prisma/client";
 
 import type { ShopifyProduct } from "~/server/adapters/shopify";
 import { shopifyDropshipProvider } from "~/server/adapters/shopify";
-import { legalPlaceholder } from "~/lib/legal-content";
 import { db } from "~/server/db";
 import { revalidateCatalogMutation } from "~/server/services/catalog-revalidation";
 
@@ -199,8 +198,7 @@ async function upsertShopifyDropshipProduct(
       update: {},
       create: {
         slug: product.materialSlug,
-        // TODO: Replace with verified Shopify material before production.
-        name: legalPlaceholder,
+        name: "חומר ספק ממתין לאימות",
       },
     });
     const syncedAt = new Date();
@@ -214,11 +212,14 @@ async function upsertShopifyDropshipProduct(
         externalProductId: product.externalProductId,
         externalProvider: "shopify",
         externalSyncedAt: syncedAt,
+        factSourceReference: null,
+        factVerifiedAt: null,
+        factVerifiedBy: null,
         materialId: material.id,
         name: product.name,
         shortDescription: product.shortDescription,
         source: "DROPSHIP_SHOPIFY",
-        status: "ACTIVE",
+        status: "DRAFT",
         supplierKey: product.supplierKey,
         tags: product.tags,
       },
@@ -228,7 +229,7 @@ async function upsertShopifyDropshipProduct(
         name: product.name,
         shortDescription: product.shortDescription,
         description: product.description,
-        status: "ACTIVE",
+        status: "DRAFT",
         source: "DROPSHIP_SHOPIFY",
         externalProvider: "shopify",
         externalProductId: product.externalProductId,
@@ -286,6 +287,7 @@ async function syncShopifyDropshipProductMedia(
       height: image.height ?? null,
       isPrimary: index === 0,
       kind: "IMAGE",
+      role: index === 0 ? "PRIMARY" : "ALTERNATE",
       productId: input.productId,
       sortOrder: index,
       url: image.url,

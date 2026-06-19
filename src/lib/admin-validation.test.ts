@@ -149,4 +149,46 @@ describe("admin validation", () => {
       );
     }
   });
+
+  it("does not certify product facts without complete fields and a source", () => {
+    const parsed = updateAdminProductCommerceInputSchema.safeParse({
+      availabilityMode: "READY_TO_ORDER",
+      commerceHighlights: [],
+      countryOfManufacture: "Israel",
+      productId: "product_1",
+      verifyFacts: true,
+    });
+
+    expect(parsed.success).toBe(false);
+    if (!parsed.success) {
+      expect(getZodFieldErrors(parsed.error)).toMatchObject({
+        factSourceReference: "נדרש ערך מלא לפני אימות עובדות המוצר.",
+        manufacturerOrImporter: "נדרש ערך מלא לפני אימות עובדות המוצר.",
+        materialDetails: "נדרש ערך מלא לפני אימות עובדות המוצר.",
+        measurements: "נדרש ערך מלא לפני אימות עובדות המוצר.",
+      });
+    }
+  });
+
+  it("accepts explicit verification when facts and policies are complete", () => {
+    const parsed = updateAdminProductCommerceInputSchema.safeParse({
+      availabilityMode: "READY_TO_ORDER",
+      careInstructions: "Keep dry",
+      commerceHighlights: [],
+      countryOfManufacture: "Israel",
+      deliveryPromise: "Seven business days",
+      factSourceReference: "supplier-sheet-123",
+      manufacturerOrImporter: "Elysia Ltd.",
+      materialDetails: "14K solid gold",
+      measurements: "18 mm by 12 mm",
+      policySourceReference: "policy-2026-06",
+      productId: "product_1",
+      returnPolicy: "Returns within 14 days",
+      verifyFacts: true,
+      verifyPolicies: true,
+      warranty: "One year",
+    });
+
+    expect(parsed.success).toBe(true);
+  });
 });

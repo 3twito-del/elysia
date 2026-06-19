@@ -59,7 +59,42 @@ Deep review basis: `docs/FULL_PRODUCT_BENCHMARK.md`,
 
 Completed items are intentionally removed from this active list.
 
-No active actionable items remain in this review batch.
+| ID    | Task                                          | Status      | Priority | Evidence                                       |
+| ----- | --------------------------------------------- | ----------- | -------- | ---------------------------------------------- |
+| I-341 | Wave 0 catalog truth and media readiness gate | In Progress | P0       | `docs/qa/catalog-readiness-wave-0-baseline.md` |
+
+### I-341 Wave 0 Catalog Truth and Media Readiness Gate
+
+- `Aspect`: Product truth, catalog media, and release evidence
+- `Status`: In Progress
+- `Priority`: P0
+- `Effort`: L
+- `Implemented`: Pure catalog-readiness engine, database/fixture CLI, local-file
+  and duplicate-hash inspection, Markdown/JSON artifacts, strict mode, governed
+  specification and verification schema, media roles, explicit admin
+  certification, draft-first creation and supplier sync, activation blockers,
+  verified-only PDP fact/policy rendering, reusable customer auth fixture,
+  seeded customer account states for E2E, production-build E2E harness env
+  isolation and teardown, route-status-aware visual QA, route sharding for long
+  all-product reviews, focused tests, and two 300-product database baselines.
+- `Current Result`: 0 of 300 active products are publish-ready. The baseline
+  after the schema migration records 874 blockers and 2,426 high-severity
+  findings. The increase is expected: five missing media roles per product are
+  now reported individually instead of one unclassifiable-media finding.
+- `Remaining`: Owner-supplied and approved product/policy facts, stale media
+  replacement, five additional truthful media roles per product, duplicate
+  asset remediation, global legal identity/policy approval, full PWA
+  service-worker production smoke without the E2E Serwist skip flag, and
+  release-gate activation after remediation.
+- `Acceptance Checks`: The strict database audit passes; every active product
+  has verified facts and policy evidence; required media roles are explicit;
+  local media exists; no unrelated product shares a URL or content hash.
+- `Verification`: `pnpm test -- scripts/catalog-readiness.test.ts scripts/catalog-readiness-audit.test.ts`,
+  `pnpm check`, `pnpm catalog:readiness -- --source database`, strict expected
+  failure, migration deploy, browser checks of home, PDP, and admin catalog,
+  `pnpm exec vitest run src/server/services/customer-auth-fixtures.test.ts scripts/qa-route-inventory.test.ts src/server/http/api-response-boundary.test.ts`,
+  the Chromium desktop authenticated account fixture E2E harness, and
+  `pnpm exec vitest run scripts/qa-site-audit.test.ts scripts/qa-route-inventory.test.ts`.
 
 The previous active items were completed and removed after focused
 implementation and verification for product cards, coupon messaging, guest
@@ -378,11 +413,11 @@ as a fixture-mode QA evidence issue, `I-334` moved to `Needs Benchmark`,
 `I-337` resolved by supplier-only and mixed-cart visual fixtures, and `I-329`
 was implemented after moving through `Ready for User Decision`.
 
-#### I-305 Recovery-State Visual Review Blocked by Expected 404 Semantics
+#### I-305 Recovery-State Visual Review Unblocked by Expected 404 Semantics
 
 - `Aspect`: Public UX and Brand
 - `Category`: Design Changes
-- `Status`: Blocked
+- `Status`: Needs Benchmark
 - `Priority`: P2
 - `Effort`: S
 - `Target Surface`: `/category/not-a-real-category`, public not-found and
@@ -395,43 +430,41 @@ was implemented after moving through `Ready for User Decision`.
   reports the same `404` failure for `/category/not-a-real-category` on
   desktop, tablet, and mobile. Route inventory identifies it as
   `source: recovery-state`.
-- `Gate Result`: Blocked before public design approval. The issue is not
-  whether a recovery page should exist; it is that the QA tool currently cannot
-  distinguish an intentional recovery status from an accidental route failure.
-- `Blocker`: Visual QA lacks route-status-aware handling for expected public
-  recovery responses.
-- `Unblock Condition`: The recovery route either receives an expected-status
-  allowance in the visual audit or is reviewed through a separate not-found
-  design check that records the `404` as intentional.
-- `Next Decision`: User should choose whether to fix the review harness before
-  approving recovery-state design changes.
+- `Gate Result`: Harness blocker removed. Route inventory now records the
+  recovery route as expected `404`, and visual QA suppresses only that primary
+  expected route response while keeping unrelated same-origin failures visible.
+- `Evidence`: `docs/qa/route-status-sharded-visual-audit.md`,
+  `scripts/qa-site-audit.ts`, and `scripts/qa-route-inventory.ts`.
+- `Blocker`: None at harness level.
+- `Unblock Condition`: Run the recovery-state visual review and approve or
+  reject the design against screenshots and objective findings.
+- `Next Decision`: Schedule the recovery-state visual review.
 
-#### I-306 Authenticated Account Design Review Blocked by Missing Customer E2E State
+#### I-306 Authenticated Account Design Review Unblocked by Customer E2E State
 
 - `Aspect`: Public UX and Brand
 - `Category`: Design Changes
-- `Status`: Blocked
+- `Status`: Needs Benchmark
 - `Priority`: P2
 - `Effort`: M
 - `Target Surface`: Authenticated `/account` and `/account/orders/[id]`
   customer states
-- `Finding`: The public review covered anonymous `/account` rendering, but it
-  did not verify the authenticated dashboard, customer profile, saved sizes,
-  privacy export shortcut, or real order detail visual states.
-- `Evidence`: No `E2E_*` customer credentials or reusable customer auth state
-  were present in the environment. Route inventory marks
-  `/account/orders/fixture-order` as auth-required, so the browser-visible pass
-  is not proof of the authenticated customer screen.
-- `Gate Result`: Blocked by missing test state. Account dashboard visual
-  changes should not be approved from anonymous or redirected route evidence.
-- `Blocker`: No repeatable customer login/auth fixture exists for this design
-  review pass.
-- `Unblock Condition`: Provide a reusable customer E2E auth state, fixture
-  account, or approved mocked authenticated account route for visual QA.
-- `Next Decision`: User should choose whether authenticated account design
-  review is required before the next implementation batch.
+- `Finding`: The public review covered anonymous `/account` rendering, and now
+  has a repeatable authenticated customer fixture for dashboard, profile,
+  saved sizes, privacy export, local order, return, and Shopify mirror states.
+- `Evidence`: `docs/qa/customer-auth-e2e-fixture.md`,
+  `tests/e2e/helpers/customer-auth.ts`, and
+  `tests/e2e/authenticated-account.spec.ts`.
+- `Gate Result`: The missing-auth-state blocker is removed. The visual review
+  itself is still not complete and should run as I-02.
+- `Blocker`: Full service-worker/PWA production evidence still needs a build
+  path without the E2E Serwist skip flag; this does not block authenticated
+  account review because those tests block service workers.
+- `Unblock Condition`: Run the authenticated account visual review with the
+  reusable fixture before treating the account surface as reviewed.
+- `Next Decision`: Schedule the authenticated account visual matrix under I-02.
 
-#### I-307 All-Products Cross-Viewport Design Review Blocked by Runtime Budget
+#### I-307 All-Products Cross-Viewport Design Review Sharded by Route
 
 - `Aspect`: QA, Release, and Observability
 - `Category`: Design Changes
@@ -450,12 +483,15 @@ was implemented after moving through `Ready for User Decision`.
   `artifacts/qa/2026-06-08-public-design-review`. Completed representative
   artifact directory:
   `artifacts/qa/2026-06-08-public-design-review-representative`.
-- `Gate Result`: Blocked by QA runtime, not by High Jewelry evidence.
-- `Blocker`: A single all-products, all-viewports, screenshot-all run is too
-  long for the current local command budget.
-- `Unblock Condition`: Split all-products visual review by viewport, product
-  category, or route shard, or increase the allowed QA runtime for this
-  artifact.
+- `Gate Result`: Runtime blocker has a supported split path. The audit can now
+  run `--all-products --route-shard <index>/<total>` so each shard preserves
+  the requested viewport/browser matrix for a smaller route subset.
+- `Evidence`: `docs/qa/route-status-sharded-visual-audit.md` and
+  `scripts/qa-site-audit.ts`.
+- `Blocker`: Full all-products review still needs execution of every shard and
+  artifact consolidation.
+- `Unblock Condition`: Run all configured shards, then review the combined
+  objective findings and screenshots.
 - `Next Decision`: User should choose whether full all-products visual evidence
   is required before approving broad catalog design changes.
 

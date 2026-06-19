@@ -258,6 +258,7 @@ export default async function AdminCatalogPage({
                       <TableCell>{product.variants.length}</TableCell>
                       <TableCell>
                         <AdminProductStatusAction
+                          publishBlockers={product.publishBlockers}
                           productId={product.id}
                           status={product.status}
                         />

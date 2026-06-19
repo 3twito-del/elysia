@@ -22,6 +22,10 @@ import {
   writeAdminAudit,
 } from "~/server/services/admin-commerce-workflow";
 import { revalidateCatalogMutation } from "~/server/services/catalog-revalidation";
+import {
+  formatProductPublishBlockers,
+  getProductPublishBlockers,
+} from "~/server/services/catalog-publish-readiness";
 import { normalizeCouponCode } from "~/server/services/coupons";
 import { BUSINESS_EVENTS, createOutboxEvent } from "~/server/services/outbox";
 
@@ -347,6 +351,7 @@ export async function createAdminProduct(input: {
 }) {
   const parsed = createAdminProductInputSchema.parse(input.data);
   const product = await db.$transaction(async (tx) => {
+    const verifiedAt = new Date();
     const created = await tx.product.create({
       data: {
         slug: parsed.slug,
@@ -354,7 +359,7 @@ export async function createAdminProduct(input: {
         name: parsed.name,
         shortDescription: parsed.shortDescription,
         description: parsed.description,
-        status: "ACTIVE",
+        status: "DRAFT",
         categoryId: parsed.categoryId,
         materialId: parsed.materialId,
         stoneId: parsed.stoneId,
@@ -365,6 +370,17 @@ export async function createAdminProduct(input: {
         returnPolicy: parsed.returnPolicy,
         careInstructions: parsed.careInstructions,
         warranty: parsed.warranty,
+        countryOfManufacture: parsed.countryOfManufacture,
+        manufacturerOrImporter: parsed.manufacturerOrImporter,
+        materialDetails: parsed.materialDetails,
+        measurements: parsed.measurements,
+        stoneDetails: parsed.stoneDetails,
+        factSourceReference: parsed.factSourceReference,
+        factVerifiedAt: parsed.verifyFacts ? verifiedAt : null,
+        factVerifiedBy: parsed.verifyFacts ? input.adminUserId : null,
+        policySourceReference: parsed.policySourceReference,
+        policyVerifiedAt: parsed.verifyPolicies ? verifiedAt : null,
+        policyVerifiedBy: parsed.verifyPolicies ? input.adminUserId : null,
         tags: [],
         media: parsed.imageUrl
           ? {
@@ -372,6 +388,7 @@ export async function createAdminProduct(input: {
                 url: parsed.imageUrl,
                 alt: parsed.name,
                 isPrimary: true,
+                role: "PRIMARY",
               },
             }
           : undefined,
@@ -413,7 +430,12 @@ export async function createAdminProduct(input: {
       action: "product_created",
       entity: "Product",
       entityId: created.id,
-      metadata: { slug: created.slug, sku: created.sku },
+      metadata: {
+        slug: created.slug,
+        sku: created.sku,
+        factVerified: parsed.verifyFacts,
+        policyVerified: parsed.verifyPolicies,
+      },
     });
 
     await createSearchReindexEvent(tx, {
@@ -438,6 +460,7 @@ export async function updateAdminProductCommerce(input: {
 }) {
   const parsed = updateAdminProductCommerceInputSchema.parse(input.data);
   const product = await db.$transaction(async (tx) => {
+    const verifiedAt = new Date();
     const updated = await tx.product.update({
       where: { id: parsed.productId },
       data: {
@@ -447,6 +470,17 @@ export async function updateAdminProductCommerce(input: {
         returnPolicy: parsed.returnPolicy ?? null,
         careInstructions: parsed.careInstructions ?? null,
         warranty: parsed.warranty ?? null,
+        countryOfManufacture: parsed.countryOfManufacture ?? null,
+        manufacturerOrImporter: parsed.manufacturerOrImporter ?? null,
+        materialDetails: parsed.materialDetails ?? null,
+        measurements: parsed.measurements ?? null,
+        stoneDetails: parsed.stoneDetails ?? null,
+        factSourceReference: parsed.factSourceReference ?? null,
+        factVerifiedAt: parsed.verifyFacts ? verifiedAt : null,
+        factVerifiedBy: parsed.verifyFacts ? input.adminUserId : null,
+        policySourceReference: parsed.policySourceReference ?? null,
+        policyVerifiedAt: parsed.verifyPolicies ? verifiedAt : null,
+        policyVerifiedBy: parsed.verifyPolicies ? input.adminUserId : null,
       },
       include: { category: true },
     });
@@ -500,6 +534,8 @@ export async function updateAdminProductCommerce(input: {
       metadata: {
         availabilityMode: parsed.availabilityMode,
         commerceHighlightCount: parsed.commerceHighlights.length,
+        factVerified: parsed.verifyFacts,
+        policyVerified: parsed.verifyPolicies,
         variantId: parsed.variantId,
       },
     });
@@ -526,6 +562,33 @@ export async function updateAdminProductStatus(input: {
 }) {
   const parsed = updateAdminProductStatusInputSchema.parse(input.data);
   const product = await db.$transaction(async (tx) => {
+    const current = await tx.product.findUniqueOrThrow({
+      where: { id: parsed.productId },
+      include: {
+        media: true,
+        variants: { include: { prices: true } },
+      },
+    });
+
+    if (parsed.status === "ACTIVE") {
+      const blockers = getProductPublishBlockers({
+        ...current,
+        basePrice: Number(current.basePrice),
+        variants: current.variants.map((variant) => ({
+          prices: variant.prices.map((price) => ({
+            amount: Number(price.amount),
+            validTo: price.validTo,
+          })),
+        })),
+      });
+
+      if (blockers.length > 0) {
+        throw new Error(
+          `לא ניתן לפרסם את המוצר. חסרים: ${formatProductPublishBlockers(blockers).join(", ")}.`,
+        );
+      }
+    }
+
     const updated = await tx.product.update({
       where: { id: parsed.productId },
       data: { status: parsed.status },

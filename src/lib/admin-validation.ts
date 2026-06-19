@@ -36,6 +36,80 @@ const optionalUrl = z.preprocess(
     .optional(),
 );
 
+const productTruthFields = {
+  countryOfManufacture: optionalTrimmedString(120, "מדינת הייצור ארוכה מדי."),
+  manufacturerOrImporter: optionalTrimmedString(
+    240,
+    "פרטי היצרן או היבואן ארוכים מדי.",
+  ),
+  materialDetails: optionalTrimmedString(500, "פרטי החומר ארוכים מדי."),
+  measurements: optionalTrimmedString(500, "פרטי המידות ארוכים מדי."),
+  stoneDetails: optionalTrimmedString(500, "פרטי האבן ארוכים מדי."),
+  factSourceReference: optionalTrimmedString(500, "אסמכתת העובדות ארוכה מדי."),
+  policySourceReference: optionalTrimmedString(
+    500,
+    "אסמכתת המדיניות ארוכה מדי.",
+  ),
+  verifyFacts: z.boolean().default(false),
+  verifyPolicies: z.boolean().default(false),
+};
+
+type ProductVerificationInput = {
+  careInstructions?: string;
+  countryOfManufacture?: string;
+  deliveryPromise?: string;
+  factSourceReference?: string;
+  manufacturerOrImporter?: string;
+  materialDetails?: string;
+  measurements?: string;
+  policySourceReference?: string;
+  returnPolicy?: string;
+  verifyFacts?: boolean;
+  verifyPolicies?: boolean;
+  warranty?: string;
+};
+
+function validateProductVerification(
+  input: ProductVerificationInput,
+  context: z.RefinementCtx,
+) {
+  if (input.verifyFacts) {
+    for (const field of [
+      "countryOfManufacture",
+      "manufacturerOrImporter",
+      "materialDetails",
+      "measurements",
+      "factSourceReference",
+    ] as const) {
+      if (!input[field]) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "נדרש ערך מלא לפני אימות עובדות המוצר.",
+          path: [field],
+        });
+      }
+    }
+  }
+
+  if (input.verifyPolicies) {
+    for (const field of [
+      "deliveryPromise",
+      "returnPolicy",
+      "careInstructions",
+      "warranty",
+      "policySourceReference",
+    ] as const) {
+      if (!input[field]) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "נדרש ערך מלא לפני אימות מדיניות המוצר.",
+          path: [field],
+        });
+      }
+    }
+  }
+}
+
 export const createAdminProductInputSchema = z
   .object({
     slug: z.string().trim().min(3, "יש להזין slug תקין.").max(120),
@@ -64,6 +138,7 @@ export const createAdminProductInputSchema = z
     returnPolicy: optionalTrimmedString(220, "מדיניות ההחזרה ארוכה מדי."),
     careInstructions: optionalTrimmedString(500, "הנחיות הטיפול ארוכות מדי."),
     warranty: optionalTrimmedString(300, "טקסט האחריות ארוך מדי."),
+    ...productTruthFields,
     imageUrl: optionalUrl,
     variantSku: z.string().trim().min(3, "יש להזין מק״ט וריאציה.").max(100),
     variantName: z.string().trim().min(1, "יש להזין שם וריאציה.").max(120),
@@ -89,7 +164,8 @@ export const createAdminProductInputSchema = z
       message: "מחיר לפני הנחה חייב להיות גבוה ממחיר המכירה.",
       path: ["compareAt"],
     },
-  );
+  )
+  .superRefine(validateProductVerification);
 
 export const updateAdminProductStatusInputSchema = z.object({
   productId: requiredId("חסר מוצר לעדכון."),
@@ -106,6 +182,7 @@ export const updateAdminProductCommerceInputSchema = z
     returnPolicy: optionalTrimmedString(220, "מדיניות ההחזרה ארוכה מדי."),
     careInstructions: optionalTrimmedString(500, "הנחיות הטיפול ארוכות מדי."),
     warranty: optionalTrimmedString(300, "טקסט האחריות ארוך מדי."),
+    ...productTruthFields,
     compareAt: z.number().positive("יש להזין מחיר לפני הנחה תקין.").optional(),
     variantSize: optionalTrimmedString(80, "מידת הווריאציה ארוכה מדי."),
     variantMetalColor: optionalTrimmedString(80, "גוון המתכת ארוך מדי."),
@@ -117,7 +194,8 @@ export const updateAdminProductCommerceInputSchema = z
       message: "יש לבחור וריאציה לעדכון מחיר לפני הנחה.",
       path: ["compareAt"],
     },
-  );
+  )
+  .superRefine(validateProductVerification);
 
 export const updateAdminInventoryInputSchema = z.object({
   variantId: requiredId("חסרה וריאציה לעדכון מלאי."),

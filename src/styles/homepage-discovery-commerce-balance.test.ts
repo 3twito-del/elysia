@@ -23,7 +23,9 @@ describe("homepage boutique commerce bridge", () => {
     );
     expect(home).toContain("getCatalogCategories");
     expect(home).toContain("getFeaturedCatalogProducts(8)");
-    expect(home).toContain("listCatalogProducts");
+    // Recently-viewed resolves its own slugs on the client, so the homepage
+    // must NOT ship the entire catalog in its static payload.
+    expect(home).not.toContain("listCatalogProducts");
     expect(home).toContain("<ProductCard");
     expect(home).toContain("function HomeCategoryCard");
     expect(home).toContain('data-testid="storefront-homepage"');

@@ -30,7 +30,6 @@ import { getPublicProductCommerceStatus } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
 import { stringifyJsonLd } from "~/lib/json-ld";
 import {
-  legalPlaceholder,
   productSensitivityDisclaimer,
   productVisualDisclaimer,
   vatIncludedNotice,
@@ -156,7 +155,7 @@ export default async function ProductPage({
     description: product.shortDescription,
     brand: { "@type": "Brand", name: "Elysia" },
     category: publicCollectionName ?? product.categorySlug,
-    material: product.material,
+    material: product.verifiedSpecifications?.materialDetails,
     offers: {
       "@type": "Offer",
       priceCurrency: "ILS",
@@ -187,19 +186,25 @@ export default async function ProductPage({
       typeof detail.value === "string" && detail.value.length > 0,
   );
   const productTrustNotes = [
-    {
-      icon: ShieldCheck,
-      label: "אחריות 12 חודשים לפגמי ייצור",
-    },
-    {
-      icon: RotateCcw,
-      label: "החלפה או החזרה לפי מדיניות Elysia",
-    },
+    product.warranty
+      ? {
+          icon: ShieldCheck,
+          label: product.warranty,
+        }
+      : null,
+    product.returnPolicy
+      ? {
+          icon: RotateCcw,
+          label: product.returnPolicy,
+        }
+      : null,
     {
       icon: MessageCircle,
       label: "שירות אישי לפני ואחרי הזמנה",
     },
-  ];
+  ].filter(
+    (note): note is { icon: LucideIcon; label: string } => note !== null,
+  );
   const productFaqItems = getProductFaqItems({
     deliveryPromise: product.deliveryPromise,
     productName: publicProductName,
@@ -466,16 +471,20 @@ export default async function ProductPage({
               className="brand-surface divide-border hidden divide-y overflow-hidden rounded-md sm:block"
               data-testid="product-service-summary"
             >
-              <ServiceRow
-                description="אחריות 12 חודשים לפגמי ייצור, עם אפשרות לפתוח בקשה מסודרת אם משהו לא תקין."
-                icon={ShieldCheck}
-                title="אחריות 12 חודשים"
-              />
-              <ServiceRow
-                description="החלפה או החזרה לפי מדיניות Elysia, בשפה ברורה לפני הטקסט המשפטי."
-                icon={RotateCcw}
-                title="החלפה והחזרה"
-              />
+              {product.warranty ? (
+                <ServiceRow
+                  description={product.warranty}
+                  icon={ShieldCheck}
+                  title="אחריות"
+                />
+              ) : null}
+              {product.returnPolicy ? (
+                <ServiceRow
+                  description={product.returnPolicy}
+                  icon={RotateCcw}
+                  title="החלפה והחזרה"
+                />
+              ) : null}
               <ServiceRow
                 description="אפשר לקבל ייעוץ מידה, התאמה ומתנה לפני הזמנה, עם שם התכשיט מצורף לפנייה."
                 icon={MessageCircle}
@@ -566,7 +575,7 @@ function getProductFaqItems(input: {
   productName: string;
   returnPolicy?: string;
 }) {
-  return [
+  const items = [
     {
       question: "איך יודעים אם המידה מתאימה?",
       answer:
@@ -577,14 +586,20 @@ function getProductFaqItems(input: {
       answer:
         "כן. מומלץ לבחור לפי סגנון, גוון ותקציב. אם המידה לא בטוחה, נוכל לעזור לפני הקנייה.",
     },
-    {
-      question: "מה חשוב לדעת על משלוח והחזרה?",
-      answer: [
-        input.deliveryPromise ?? "מסירה מתבצעת לפי אפשרויות המשלוח באתר.",
-        input.returnPolicy ?? "החלפה או החזרה מתבצעות לפי מדיניות Elysia.",
-      ].join(" "),
-    },
   ];
+
+  const policyAnswer = [input.deliveryPromise, input.returnPolicy]
+    .filter((value): value is string => Boolean(value?.trim()))
+    .join(" ");
+
+  if (policyAnswer) {
+    items.push({
+      question: "מה חשוב לדעת על משלוח והחזרה?",
+      answer: policyAnswer,
+    });
+  }
+
+  return items;
 }
 
 function getProductPageSale(product: CatalogProduct) {
@@ -607,6 +622,7 @@ function getProductSpecificationRows(input: {
   publicCollectionName?: string;
 }) {
   const { product } = input;
+  const specifications = product.verifiedSpecifications;
   const stoneColors = getUniqueProductVariantValues(
     product.variants.map((variant) => variant.stoneColor),
   );
@@ -615,75 +631,42 @@ function getProductSpecificationRows(input: {
     ...stoneColors.map((color) => `אבן: ${color}`),
   ];
 
-  return [
+  const rows = [
     {
-      label: "חומר בסיס",
-      value: getProductBaseMaterialValue(product.material),
+      label: "חומר",
+      value: specifications?.materialDetails,
     },
-    { label: "ציפוי", value: getProductCoatingValue(product.material) },
     {
       label: "סוג אבן / פנינה / קריסטל",
-      value: product.stone ?? legalPlaceholder,
+      value: specifications?.stoneDetails,
     },
     {
       label: "מידה / אורך / קוטר / משקל",
-      value: getProductMeasurementValue(product),
+      value: specifications?.measurements,
     },
     {
       label: "צבע",
-      value: colorValues.length > 0 ? colorValues.join(", ") : legalPlaceholder,
+      value:
+        specifications && colorValues.length > 0
+          ? colorValues.join(", ")
+          : undefined,
     },
-    // TODO: Replace with verified country of manufacture before production.
-    { label: "ארץ ייצור", value: legalPlaceholder },
-    // TODO: Replace with verified manufacturer/importer before production.
-    { label: "יצרן / יבואן", value: legalPlaceholder },
+    { label: "ארץ ייצור", value: specifications?.countryOfManufacture },
+    { label: "יצרן / יבואן", value: specifications?.manufacturerOrImporter },
     {
       label: "אחריות",
-      value:
-        product.warranty ??
-        "12 חודשים לפגמי ייצור בלבד, בכפוף למדיניות האחריות.",
+      value: product.warranty,
     },
     {
       label: "הוראות טיפול",
-      value:
-        product.careInstructions ??
-        "להסיר לפני מקלחת, ים, בריכה, שינה וספורט; להימנע מבושם, כלור וחומרי ניקוי.",
+      value: product.careInstructions,
     },
     { label: "הערת רגישות למתכות", value: productSensitivityDisclaimer },
   ];
-}
 
-function getProductBaseMaterialValue(material: string) {
-  if (!material || material === legalPlaceholder) {
-    // TODO: Replace with verified product material before production.
-    return `חומר: ${legalPlaceholder}`;
-  }
-
-  return material;
-}
-
-function getProductCoatingValue(material: string) {
-  if (/ציפוי|מצופה|plated|coating|gold fill/i.test(material)) {
-    return material;
-  }
-
-  return legalPlaceholder;
-}
-
-function getProductMeasurementValue(product: CatalogProduct) {
-  if (product.sizes.length > 0) {
-    return `מידות זמינות: ${product.sizes.join(", ")}`;
-  }
-
-  const variantSizes = getUniqueProductVariantValues(
-    product.variants.map((variant) => variant.size),
+  return rows.filter((row): row is { label: string; value: string } =>
+    Boolean(row.value?.trim()),
   );
-
-  if (variantSizes.length > 0) {
-    return `מידות זמינות: ${variantSizes.join(", ")}`;
-  }
-
-  return legalPlaceholder;
 }
 
 function getUniqueProductVariantValues(values: Array<string | undefined>) {

@@ -7,6 +7,7 @@
     "prebuild": "pnpm copy:check && node scripts/verify-production-env.mjs && node scripts/convert-public-images-to-avif.mjs --check",
     "build": "node scripts/build.mjs",
     "check": "pnpm copy:check && pnpm lint && pnpm typecheck && pnpm test",
+    "catalog:readiness": "tsx scripts/catalog-readiness-audit.ts",
     "copy:apply": "tsx scripts/site-copy.ts apply",
     "copy:check": "tsx scripts/site-copy.ts check",
     "copy:sync": "tsx scripts/site-copy.ts sync",

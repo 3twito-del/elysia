@@ -33,9 +33,11 @@ type Variant = Pick<Product["variants"][number], "id" | "name" | "sku">;
 type Coupon = AdminCatalog["coupons"][number];
 
 export function AdminProductStatusAction({
+  publishBlockers,
   productId,
   status,
 }: {
+  publishBlockers: string[];
   productId: string;
   status: ProductStatus;
 }) {
@@ -52,18 +54,33 @@ export function AdminProductStatusAction({
     },
   });
   const nextStatus = status === "ACTIVE" ? "ARCHIVED" : "ACTIVE";
+  const activationBlocked =
+    nextStatus === "ACTIVE" && publishBlockers.length > 0;
 
   return (
     <div className="grid gap-1">
       <Button
-        disabled={mutation.isPending}
+        disabled={mutation.isPending || activationBlocked}
         onClick={() => mutation.mutate({ productId, status: nextStatus })}
         size="sm"
+        title={
+          activationBlocked
+            ? `חסרים לפרסום: ${publishBlockers.join(", ")}`
+            : undefined
+        }
         type="button"
         variant="outline"
       >
         {nextStatus === "ACTIVE" ? "הפעלה" : "ארכוב"}
       </Button>
+      {publishBlockers.length > 0 ? (
+        <details className="max-w-64 text-xs">
+          <summary className="text-muted-foreground cursor-pointer">
+            {publishBlockers.length} חסמי פרסום
+          </summary>
+          <p className="mt-1 leading-5">{publishBlockers.join(", ")}</p>
+        </details>
+      ) : null}
       <AdminMutationStatus feedback={feedback} />
     </div>
   );
@@ -94,13 +111,28 @@ export function AdminProductCommerceForm({ product }: { product: Product }) {
       careInstructions: getOptionalFormString(form, "careInstructions"),
       commerceHighlights: getFormLines(form, "commerceHighlights"),
       compareAt: compareAt > 0 ? compareAt : undefined,
+      countryOfManufacture: getOptionalFormString(form, "countryOfManufacture"),
       deliveryPromise: getOptionalFormString(form, "deliveryPromise"),
+      factSourceReference: getOptionalFormString(form, "factSourceReference"),
+      manufacturerOrImporter: getOptionalFormString(
+        form,
+        "manufacturerOrImporter",
+      ),
+      materialDetails: getOptionalFormString(form, "materialDetails"),
+      measurements: getOptionalFormString(form, "measurements"),
+      policySourceReference: getOptionalFormString(
+        form,
+        "policySourceReference",
+      ),
       productId: product.id,
       returnPolicy: getOptionalFormString(form, "returnPolicy"),
+      stoneDetails: getOptionalFormString(form, "stoneDetails"),
       variantId: variant?.id,
       variantMetalColor: getOptionalFormString(form, "variantMetalColor"),
       variantSize: getOptionalFormString(form, "variantSize"),
       variantStoneColor: getOptionalFormString(form, "variantStoneColor"),
+      verifyFacts: form.has("verifyFacts"),
+      verifyPolicies: form.has("verifyPolicies"),
       warranty: getOptionalFormString(form, "warranty"),
     });
 
@@ -155,6 +187,76 @@ export function AdminProductCommerceForm({ product }: { product: Product }) {
             name="careInstructions"
             placeholder="הנחיות טיפול"
           />
+          <Input
+            aria-label="אסמכתת מדיניות"
+            defaultValue={product.policySourceReference ?? ""}
+            name="policySourceReference"
+            placeholder="אסמכתת מדיניות"
+          />
+          <Label
+            className="flex items-start gap-2 leading-5"
+            htmlFor={`verifyPolicies-${product.id}`}
+          >
+            <input
+              className="mt-0.5 size-4"
+              defaultChecked={Boolean(product.policyVerifiedAt)}
+              id={`verifyPolicies-${product.id}`}
+              name="verifyPolicies"
+              type="checkbox"
+            />
+            אימות מדיניות המשלוח, ההחזרה, הטיפול והאחריות מול האסמכתה
+          </Label>
+          <div className="grid gap-2 border-t pt-3">
+            <Input
+              aria-label="מדינת ייצור"
+              defaultValue={product.countryOfManufacture ?? ""}
+              name="countryOfManufacture"
+              placeholder="מדינת ייצור"
+            />
+            <Input
+              aria-label="יצרן או יבואן"
+              defaultValue={product.manufacturerOrImporter ?? ""}
+              name="manufacturerOrImporter"
+              placeholder="יצרן או יבואן"
+            />
+            <Textarea
+              aria-label="פרטי חומר"
+              defaultValue={product.materialDetails ?? ""}
+              name="materialDetails"
+              placeholder="פרטי חומר, טוהר וציפוי"
+            />
+            <Textarea
+              aria-label="מידות מוצר"
+              defaultValue={product.measurements ?? ""}
+              name="measurements"
+              placeholder="מידות ומשקל"
+            />
+            <Textarea
+              aria-label="פרטי אבן"
+              defaultValue={product.stoneDetails ?? ""}
+              name="stoneDetails"
+              placeholder="פרטי אבן"
+            />
+            <Input
+              aria-label="אסמכתת עובדות"
+              defaultValue={product.factSourceReference ?? ""}
+              name="factSourceReference"
+              placeholder="אסמכתת עובדות"
+            />
+            <Label
+              className="flex items-start gap-2 leading-5"
+              htmlFor={`verifyFacts-${product.id}`}
+            >
+              <input
+                className="mt-0.5 size-4"
+                defaultChecked={Boolean(product.factVerifiedAt)}
+                id={`verifyFacts-${product.id}`}
+                name="verifyFacts"
+                type="checkbox"
+              />
+              אימות פרטי המוצר מול האסמכתה
+            </Label>
+          </div>
           {variant ? (
             <div className="grid gap-2">
               <Input
@@ -448,19 +550,34 @@ export function AdminProductCreateForm({ catalog }: { catalog: AdminCatalog }) {
       compareAt: compareAt > 0 ? compareAt : undefined,
       description: getFormString(form, "description"),
       deliveryPromise: getOptionalFormString(form, "deliveryPromise"),
+      countryOfManufacture: getOptionalFormString(form, "countryOfManufacture"),
+      factSourceReference: getOptionalFormString(form, "factSourceReference"),
       imageUrl: getOptionalFormString(form, "imageUrl"),
+      manufacturerOrImporter: getOptionalFormString(
+        form,
+        "manufacturerOrImporter",
+      ),
       materialId: getFormString(form, "materialId"),
+      materialDetails: getOptionalFormString(form, "materialDetails"),
+      measurements: getOptionalFormString(form, "measurements"),
       name: getFormString(form, "name"),
+      policySourceReference: getOptionalFormString(
+        form,
+        "policySourceReference",
+      ),
       returnPolicy: getOptionalFormString(form, "returnPolicy"),
       shortDescription: getFormString(form, "shortDescription"),
       sku: getFormString(form, "sku"),
       slug: getFormString(form, "slug"),
       stoneId: getOptionalFormString(form, "stoneId"),
+      stoneDetails: getOptionalFormString(form, "stoneDetails"),
       variantMetalColor: getOptionalFormString(form, "variantMetalColor"),
       variantName: getOptionalFormString(form, "variantName") ?? "ברירת מחדל",
       variantSize: getOptionalFormString(form, "variantSize"),
       variantSku: getFormString(form, "variantSku"),
       variantStoneColor: getOptionalFormString(form, "variantStoneColor"),
+      verifyFacts: form.has("verifyFacts"),
+      verifyPolicies: form.has("verifyPolicies"),
       warranty: getOptionalFormString(form, "warranty"),
     });
 
@@ -504,6 +621,58 @@ export function AdminProductCreateForm({ catalog }: { catalog: AdminCatalog }) {
         </div>
         <Textarea name="warranty" placeholder="אחריות" />
         <Textarea name="careInstructions" placeholder="הנחיות טיפול" />
+        <Field
+          name="policySourceReference"
+          optional
+          placeholder="אסמכתת מדיניות"
+        />
+        <Label
+          className="flex items-start gap-2 leading-5"
+          htmlFor="verifyPolicies"
+        >
+          <input
+            className="mt-0.5 size-4"
+            id="verifyPolicies"
+            name="verifyPolicies"
+            type="checkbox"
+          />
+          אימות מדיניות המשלוח, ההחזרה, הטיפול והאחריות מול האסמכתה
+        </Label>
+        <div className="grid gap-3 border-t pt-4 md:grid-cols-2">
+          <Field
+            name="countryOfManufacture"
+            optional
+            placeholder="מדינת ייצור"
+          />
+          <Field
+            name="manufacturerOrImporter"
+            optional
+            placeholder="יצרן או יבואן"
+          />
+          <Textarea
+            name="materialDetails"
+            placeholder="פרטי חומר, טוהר וציפוי"
+          />
+          <Textarea name="measurements" placeholder="מידות ומשקל" />
+          <Textarea name="stoneDetails" placeholder="פרטי אבן" />
+          <Field
+            name="factSourceReference"
+            optional
+            placeholder="אסמכתת עובדות"
+          />
+        </div>
+        <Label
+          className="flex items-start gap-2 leading-5"
+          htmlFor="verifyFacts"
+        >
+          <input
+            className="mt-0.5 size-4"
+            id="verifyFacts"
+            name="verifyFacts"
+            type="checkbox"
+          />
+          אימות פרטי המוצר מול האסמכתה
+        </Label>
         <div className="grid gap-3 md:grid-cols-3">
           <Field name="name" placeholder="שם מוצר" />
           <Field name="slug" placeholder="slug" />

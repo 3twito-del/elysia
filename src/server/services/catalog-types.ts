@@ -51,6 +51,13 @@ export type CatalogProduct = {
   returnPolicy?: string;
   careInstructions?: string;
   warranty?: string;
+  verifiedSpecifications?: {
+    countryOfManufacture: string;
+    manufacturerOrImporter: string;
+    materialDetails: string;
+    measurements: string;
+    stoneDetails?: string;
+  };
   price: number;
   compareAt?: number;
   createdAt: Date | string;

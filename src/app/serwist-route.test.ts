@@ -55,10 +55,47 @@ describe("Serwist route", () => {
     const source = read("src/app/serwist/[path]/route.ts");
 
     expect(source).toContain('process.env.NODE_ENV === "production"');
+    expect(source).toContain('process.env.E2E_SKIP_SERWIST_BUILD !== "1"');
     expect(source).toContain('await import("@serwist/turbopack")');
     expect(source).toContain("createDevelopmentSerwistRoute");
     expect(source).toContain("missingSerwistAssetStatus");
     expect(source).toContain('"Cache-Control": "no-store"');
+  });
+
+  it("lets the production E2E harness skip the Serwist build step explicitly", () => {
+    const routeSource = read("src/app/serwist/[path]/route.ts");
+    const playwrightSource = read("playwright.config.ts");
+
+    expect(routeSource).toContain("shouldUseProductionSerwistRoute");
+    expect(routeSource).toContain('process.env.E2E_SKIP_SERWIST_BUILD !== "1"');
+    expect(playwrightSource).toContain('E2E_SKIP_SERWIST_BUILD: "1"');
+  });
+
+  it("lets production E2E use the local development database connection", () => {
+    const playwrightSource = read("playwright.config.ts");
+
+    expect(playwrightSource).toContain("E2E_DATABASE_URL");
+    expect(playwrightSource).toContain(".env.development.local");
+    expect(playwrightSource).toContain(
+      "localE2EWebServerEnv.DATABASE_URL = e2eDatabaseUrl",
+    );
+  });
+
+  it("uses a managed Playwright web server process for production E2E", () => {
+    const playwrightSource = read("playwright.config.ts");
+    const globalSetupSource = read("tests/e2e/global-setup.ts");
+    const globalTeardownSource = read("tests/e2e/global-teardown.ts");
+    const webServerSource = read("scripts/playwright-web-server.mjs");
+
+    expect(playwrightSource).toContain("globalSetup");
+    expect(playwrightSource).toContain("globalTeardown");
+    expect(playwrightSource).not.toContain("webServer:");
+    expect(globalSetupSource).toContain("scripts");
+    expect(globalSetupSource).toContain("playwright-web-server.mjs");
+    expect(globalTeardownSource).toContain("taskkill");
+    expect(webServerSource).toContain("process.execPath");
+    expect(webServerSource).toContain('runNextCommand(["build"])');
+    expect(webServerSource).toContain('"start", "-p", port');
   });
 
   it("keeps service worker runtime route patterns aligned with the QA route inventory", () => {

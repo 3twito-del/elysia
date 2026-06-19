@@ -342,6 +342,7 @@ async function main() {
             width: 1400,
             height: 1400,
             isPrimary: true,
+            role: "PRIMARY",
             sortOrder: 0,
           },
         },

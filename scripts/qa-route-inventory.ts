@@ -110,6 +110,7 @@ const documentedApiRoutes = [
   "/api/search/reindex",
   "/api/events/product-click",
   "/api/events/product-view",
+  "/api/e2e/customer-auth",
   "/api/jobs/outbox",
   "/serwist/[path]",
 ] as const;
@@ -180,7 +181,10 @@ export function getQaRouteInventory({
 
   entries.push(
     routeEntry({
+      expectedStatuses: [404],
       kind: "dynamic",
+      notes:
+        "Intentional recovery-state route; visual QA should treat the public 404 response as expected when the page renders recovery content.",
       path: "/category/not-a-real-category",
       source: "recovery-state",
       template: "/category/[slug]",
@@ -286,15 +290,23 @@ export function getQaRouteInventory({
 }
 
 export function getVisualQaRoutes(options?: { includeAllProducts?: boolean }) {
-  return getQaRouteInventory(options)
-    .filter((route) => route.includeInVisualQa)
-    .map((route) => route.path);
+  return getVisualQaRouteEntries(options).map((route) => route.path);
 }
 
 export function getPerformanceQaRoutes() {
-  return getQaRouteInventory()
-    .filter((route) => route.includeInPerformance)
-    .map((route) => route.path);
+  return getPerformanceQaRouteEntries().map((route) => route.path);
+}
+
+export function getVisualQaRouteEntries(options?: {
+  includeAllProducts?: boolean;
+}) {
+  return getQaRouteInventory(options).filter(
+    (route) => route.includeInVisualQa,
+  );
+}
+
+export function getPerformanceQaRouteEntries() {
+  return getQaRouteInventory().filter((route) => route.includeInPerformance);
 }
 
 export function discoverAppRouteTemplates({

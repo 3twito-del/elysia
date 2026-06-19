@@ -30,6 +30,15 @@ enum MediaKind {
   TRY_ON_REFERENCE
 }
 
+enum ProductMediaRole {
+  PRIMARY
+  ALTERNATE
+  SCALE
+  CONSTRUCTION
+  MATERIAL
+  CONTEXT
+}
+
 enum CartStatus {
   ACTIVE
   CONVERTED
@@ -217,43 +226,54 @@ model Stone {
 }
 
 model Product {
-  id                 String                   @id @default(cuid())
-  slug               String                   @unique
-  sku                String                   @unique
-  name               String
-  shortDescription   String
-  description        String
-  status             ProductStatus            @default(DRAFT)
-  categoryId         String
-  materialId         String
-  stoneId            String?
-  basePrice          Decimal                  @db.Decimal(10, 2)
-  availabilityMode   ProductAvailabilityMode  @default(READY_TO_ORDER)
-  source             ProductSource            @default(OWN)
-  externalProvider   String?
-  externalProductId  String?
-  externalHandle     String?
-  supplierKey        String?
-  externalSyncedAt   DateTime?
-  commerceHighlights String[]                 @default([])
-  deliveryPromise    String?
-  returnPolicy       String?
-  careInstructions   String?
-  warranty           String?
-  tags               String[]
-  category           Category                 @relation(fields: [categoryId], references: [id])
-  material           Material                 @relation(fields: [materialId], references: [id])
-  stone              Stone?                   @relation(fields: [stoneId], references: [id])
-  collections        Collection[]
-  variants           ProductVariant[]
-  media              ProductMedia[]
-  searchEmbeddings   ProductSearchEmbedding[]
-  pushInterests      ProductPushInterest[]
-  searchEvents       SearchEvent[]
-  viewEvents         ProductViewEvent[]
-  clickEvents        ProductClickEvent[]
-  createdAt          DateTime                 @default(now())
-  updatedAt          DateTime                 @updatedAt
+  id                     String                   @id @default(cuid())
+  slug                   String                   @unique
+  sku                    String                   @unique
+  name                   String
+  shortDescription       String
+  description            String
+  status                 ProductStatus            @default(DRAFT)
+  categoryId             String
+  materialId             String
+  stoneId                String?
+  basePrice              Decimal                  @db.Decimal(10, 2)
+  availabilityMode       ProductAvailabilityMode  @default(READY_TO_ORDER)
+  source                 ProductSource            @default(OWN)
+  externalProvider       String?
+  externalProductId      String?
+  externalHandle         String?
+  supplierKey            String?
+  externalSyncedAt       DateTime?
+  commerceHighlights     String[]                 @default([])
+  deliveryPromise        String?
+  returnPolicy           String?
+  careInstructions       String?
+  warranty               String?
+  countryOfManufacture   String?
+  manufacturerOrImporter String?
+  materialDetails        String?
+  measurements           String?
+  stoneDetails           String?
+  factSourceReference    String?
+  factVerifiedAt         DateTime?
+  factVerifiedBy         String?
+  policySourceReference  String?
+  policyVerifiedAt       DateTime?
+  policyVerifiedBy       String?
+  tags                   String[]
+  category               Category                 @relation(fields: [categoryId], references: [id])
+  material               Material                 @relation(fields: [materialId], references: [id])
+  stone                  Stone?                   @relation(fields: [stoneId], references: [id])
+  collections            Collection[]
+  variants               ProductVariant[]
+  media                  ProductMedia[]
+  searchEmbeddings       ProductSearchEmbedding[]
+  pushInterests          ProductPushInterest[]
+  searchEvents           SearchEvent[]
+  viewEvents             ProductViewEvent[]
+  clickEvents            ProductClickEvent[]
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
 
   @@index([status])
   @@index([source])
@@ -317,19 +337,21 @@ model Price {
 }
 
 model ProductMedia {
-  id           String    @id @default(cuid())
+  id           String            @id @default(cuid())
   productId    String
-  kind         MediaKind @default(IMAGE)
+  kind         MediaKind         @default(IMAGE)
+  role         ProductMediaRole?
   url          String
   alt          String
   cloudinaryId String?
   width        Int?
   height       Int?
-  isPrimary    Boolean   @default(false)
-  sortOrder    Int       @default(0)
-  product      Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  isPrimary    Boolean           @default(false)
+  sortOrder    Int               @default(0)
+  product      Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId, sortOrder])
+  @@index([productId, role])
 }
 
 model Branch {

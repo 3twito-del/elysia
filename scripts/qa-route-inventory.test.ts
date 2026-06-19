@@ -49,6 +49,17 @@ describe("QA route inventory", () => {
     expect(supplierRoute?.notes).toContain("database-backed supplier product");
   });
 
+  it("documents intentional recovery-state routes with expected HTTP status", () => {
+    const recoveryRoute = getQaRouteInventory().find(
+      (route) => route.source === "recovery-state",
+    );
+
+    expect(recoveryRoute?.path).toBe("/category/not-a-real-category");
+    expect(recoveryRoute?.expectedStatuses).toEqual([404]);
+    expect(recoveryRoute?.includeInVisualQa).toBe(true);
+    expect(recoveryRoute?.notes).toContain("Intentional recovery-state route");
+  });
+
   it("keeps unsafe API routes documented instead of browser-clicked", () => {
     const inventory = getQaRouteInventory();
     const documentedApis = inventory.filter(

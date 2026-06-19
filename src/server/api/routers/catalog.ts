@@ -40,5 +40,22 @@ export const catalogRouter = createTRPCRouter({
       };
     }),
 
+  bySlugs: publicProcedure
+    .input(z.object({ slugs: z.array(z.string().trim().min(1)).max(24) }))
+    .query(async ({ input }) => {
+      if (input.slugs.length === 0) return [];
+
+      const products = await listCatalogProducts();
+      const bySlug = new Map(
+        products.map((product) => [product.slug, product]),
+      );
+
+      return input.slugs
+        .map((slug) => bySlug.get(slug))
+        .filter((product): product is (typeof products)[number] =>
+          Boolean(product),
+        );
+    }),
+
   facets: publicProcedure.query(() => getCatalogFacets()),
 });
