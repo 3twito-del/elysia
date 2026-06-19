@@ -110,13 +110,13 @@ export function SiteHeader() {
               items={navItems}
               onCategoryIntent={categoryPrefetch.prefetch}
               onOpenCategoryPrefetch={categoryPrefetch.prefetchAll}
-              triggerClassName="min-h-10 text-[0.94rem] font-medium"
+              triggerClassName="min-h-11 min-w-11 justify-center text-[0.94rem] font-medium sm:min-h-10 sm:min-w-0"
               triggerLabel="תפריט"
               triggerMode="label"
             />
             <Link
               aria-label="חיפוש"
-              className="site-header-link site-header-label-action inline-flex min-h-10 items-center gap-2 text-[0.94rem] font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
+              className="site-header-link site-header-label-action inline-flex min-h-11 min-w-11 items-center justify-center gap-2 text-[0.94rem] font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] sm:min-h-10 sm:min-w-0 sm:justify-start"
               href="/search"
               prefetch={false}
             >
@@ -126,7 +126,7 @@ export function SiteHeader() {
           </div>
 
           <Link
-            className="brand-header-mark site-header-link [grid-column:2] [grid-row:1] flex min-w-0 shrink-0 items-center justify-self-center"
+            className="brand-header-mark site-header-link [grid-column:2] [grid-row:1] flex min-h-11 min-w-0 shrink-0 items-center justify-self-center"
             aria-label="Elysia - עמוד הבית"
             dir="ltr"
             href="/"
@@ -164,13 +164,13 @@ export function SiteHeader() {
               </Link>
             </Button>
             <CartCountLink
-              className="site-header-action inline-grid size-10 place-items-center rounded-md outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] sm:size-11"
+              className="site-header-action inline-grid size-11 place-items-center rounded-md outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
               data-icon-tooltip="סל"
               data-icon-tooltip-placement="bottom"
             />
             <Button
               asChild
-              className="site-header-action size-10 sm:size-11"
+              className="site-header-action size-11"
               size="icon"
               variant="ghost"
             >

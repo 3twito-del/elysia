@@ -1970,9 +1970,25 @@ main
 
 .home-luxury-page .commerce-section-header-title {
   max-width: 52rem;
-  font-size: clamp(2rem, 4.4vw, 3.75rem);
+  font-size: clamp(2rem, 3.8vw, 3.25rem);
   font-weight: 520;
   line-height: 1.05;
+}
+
+.commerce-section-header[data-title-direction="ltr"]
+  .commerce-section-header-copy {
+  text-align: left;
+}
+
+.commerce-section-header[data-title-direction="rtl"]
+  .commerce-section-header-copy {
+  text-align: right;
+}
+
+.commerce-section-header[data-title-direction]
+  .commerce-section-header-eyebrow {
+  margin-inline-start: 0;
+  margin-inline-end: auto;
 }
 
 .home-luxury-page .commerce-section-header-description {
@@ -2835,7 +2851,7 @@ html[data-accessibility-motion="reduce"]
 .storefront-final-title {
   margin-top: 0.85rem;
   max-width: 44rem;
-  font-size: clamp(2rem, 3.9vw, 3.55rem);
+  font-size: clamp(2rem, 3.6vw, 3.25rem);
   font-weight: 650;
   line-height: 1.08;
 }
@@ -2860,6 +2876,16 @@ html[data-accessibility-motion="reduce"]
   flex-wrap: wrap;
   gap: 0.75rem;
   margin-top: clamp(1.25rem, 2.4vw, 1.85rem);
+}
+
+.storefront-final-primary[data-title-direction="ltr"],
+.storefront-final-updates[data-title-direction="ltr"] {
+  text-align: left;
+}
+
+.storefront-final-primary[data-title-direction="ltr"]
+  .storefront-final-actions {
+  justify-content: flex-end;
 }
 
 .storefront-final-newsletter form {

@@ -393,7 +393,10 @@ export default async function Home() {
         id="first-collection"
       >
         <div className="storefront-final-panel mx-auto max-w-[92rem]">
-          <section className="storefront-final-primary">
+          <section
+            className="storefront-final-primary"
+            data-title-direction="ltr"
+          >
             <p className="storefront-eyebrow" dir="ltr">
               Your Next Signature
             </p>
@@ -401,7 +404,8 @@ export default async function Home() {
               Find the One That Feels Like You
             </h2>
             <p className="storefront-final-text">
-              בחרי לפי סגנון, חומר או רגע. אנחנו כאן כדי לעזור לך לדייק את הבחירה.
+              בחרי לפי סגנון, חומר או רגע. אנחנו כאן כדי לעזור לך לדייק את
+              הבחירה.
             </p>
             <div className="storefront-final-actions">
               <Button asChild>
@@ -413,7 +417,11 @@ export default async function Home() {
             </div>
           </section>
 
-          <section className="storefront-final-updates" id="collection-updates">
+          <section
+            className="storefront-final-updates"
+            data-title-direction="ltr"
+            id="collection-updates"
+          >
             <div>
               <p className="storefront-eyebrow" dir="ltr">
                 Elysia Notes
@@ -448,8 +456,13 @@ function SectionHeader({
   text: string;
   title: string;
 }) {
+  const titleDirection = getHeroTextDirection(title);
+
   return (
-    <div className="commerce-section-header">
+    <div
+      className="commerce-section-header"
+      data-title-direction={titleDirection}
+    >
       <div className="commerce-section-header-copy">
         <p
           className="commerce-section-header-eyebrow"
@@ -457,10 +470,7 @@ function SectionHeader({
         >
           {eyebrow}
         </p>
-        <h2
-          className="commerce-section-header-title"
-          dir={getHeroTextDirection(title)}
-        >
+        <h2 className="commerce-section-header-title" dir={titleDirection}>
           {title}
         </h2>
         <p

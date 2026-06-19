@@ -42,6 +42,8 @@ describe("homepage boutique commerce bridge", () => {
     expect(home).toContain('data-testid="home-material-trust"');
     expect(home).toContain("home-materials-section");
     expect(home).toContain("<NewsletterForm />");
+    expect(home).toContain("data-title-direction={titleDirection}");
+    expect(home).toContain('data-title-direction="ltr"');
 
     expect(home).not.toContain('href="#waitlist"');
     expect(home).not.toContain("First collection coming soon");
@@ -84,6 +86,20 @@ describe("homepage boutique commerce bridge", () => {
     expect(css).toContain(".home-materials-section .boutique-trust-item");
     expect(css).toContain("justify-items: start;");
     expect(css).toContain("text-align: start;");
+  });
+
+  it("keeps bilingual homepage sections aligned by their primary title", () => {
+    const css = read("src/styles/globals.css");
+
+    expect(css).toContain(
+      '.commerce-section-header[data-title-direction="ltr"]',
+    );
+    expect(css).toContain("text-align: left;");
+    expect(css).toContain(
+      '.commerce-section-header[data-title-direction="rtl"]',
+    );
+    expect(css).toContain("text-align: right;");
+    expect(css).toContain("font-size: clamp(2rem, 3.8vw, 3.25rem);");
   });
 
   it("animates the category arrow color inversion on hover and focus", () => {
