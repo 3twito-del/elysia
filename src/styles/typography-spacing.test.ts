@@ -35,6 +35,11 @@ describe("public typography spacing guardrails", () => {
     expect(home).toContain("getHeroTextDirection(homeHeroTitle)");
     expect(home).toContain("data-hero-copy-direction={homeHeroDirection}");
     expect(home).toContain("dir={homeHeroDirection}");
+    expect(home).toMatch(/data-testid="home-hero-statement"[\s\S]*dir="auto"/);
+    expect(home).toMatch(
+      /data-testid="home-hero-primary-cta"[\s\S]*dir="auto"/,
+    );
+    expect(home).toContain("dir={getHeroTextDirection(actionLabel)}");
     expect(home).not.toContain("text-right");
     expect(home).not.toContain('<h1 className="sr-only">Elysia</h1>');
     expect(home).not.toContain("home-hero-wordmark");

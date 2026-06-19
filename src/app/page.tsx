@@ -189,6 +189,7 @@ export default async function Home() {
           <p
             className="home-hero-statement motion-copy-item storefront-hero-statement [--motion-copy-delay:90ms]"
             data-testid="home-hero-statement"
+            dir="auto"
           >
             תכשיטים שנבחרו לחיים, לא רק לרגע.
           </p>
@@ -200,7 +201,7 @@ export default async function Home() {
               <Button asChild className="home-hero-cta-primary" size="lg">
                 <Link
                   data-testid="home-hero-primary-cta"
-                  dir={homeHeroDirection}
+                  dir="auto"
                   href="/search"
                   prefetch={false}
                 >
@@ -409,10 +410,14 @@ export default async function Home() {
             </p>
             <div className="storefront-final-actions">
               <Button asChild>
-                <Link href="/search">לגלות את הקולקציה</Link>
+                <Link dir="auto" href="/search">
+                  לגלות את הקולקציה
+                </Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href="/service">לקבל ייעוץ אישי</Link>
+                <Link dir="auto" href="/service">
+                  לקבל ייעוץ אישי
+                </Link>
               </Button>
             </div>
           </section>
@@ -483,7 +488,11 @@ function SectionHeader({
       {actionHref && actionLabel ? (
         <div className="commerce-section-header-action">
           <Button asChild variant="outline">
-            <Link href={actionHref} prefetch={false}>
+            <Link
+              dir={getHeroTextDirection(actionLabel)}
+              href={actionHref}
+              prefetch={false}
+            >
               {actionLabel}
               <ArrowLeft aria-hidden="true" className="size-4" />
             </Link>
