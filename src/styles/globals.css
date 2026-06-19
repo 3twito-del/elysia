@@ -2241,7 +2241,8 @@ html[data-accessibility-motion="reduce"] .boutique-collection-action::before {
   color: var(--brand-gold-muted);
 }
 
-.boutique-trust-item h2 {
+.boutique-trust-item h2,
+.boutique-trust-item h3 {
   font-size: 0.98rem;
   font-weight: 550;
   line-height: 1.45;

@@ -11,6 +11,8 @@ import {
   Truck,
 } from "lucide-react";
 
+import { env } from "~/env";
+import { stringifyJsonLd } from "~/lib/json-ld";
 import { NewsletterForm } from "~/components/newsletter-form";
 import { DeferredFixedBackgroundBand } from "~/components/deferred-fixed-background-band";
 import { HomeHeroVideo } from "~/components/home-hero-video";
@@ -142,6 +144,35 @@ export const metadata: Metadata = {
   },
 };
 
+const siteUrl = env.SITE_URL ?? "https://elysia-jewellery.com";
+
+const homeStructuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Elysia Jewellery",
+    url: siteUrl,
+    logo: new URL("/apple-touch-icon.png", siteUrl).toString(),
+    image: new URL(boutiqueHeroImage, siteUrl).toString(),
+    description:
+      "קולקציה ערוכה של טבעות, שרשראות, עגילים וצמידים בכסף, ציפוי זהב, פנינים ואבני צבע.",
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Elysia Jewellery",
+    url: siteUrl,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${siteUrl}/search?q={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+  },
+] as const;
+
 export default async function Home() {
   const [categories, featuredProducts] = await Promise.all([
     getCatalogCategories(),
@@ -154,6 +185,10 @@ export default async function Home() {
       className="home-luxury-page storefront-home-page"
       data-testid="storefront-homepage"
     >
+      <script
+        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(homeStructuredData) }}
+        type="application/ld+json"
+      />
       <link
         as="image"
         fetchPriority="high"
@@ -281,19 +316,19 @@ export default async function Home() {
         </RevealGrid>
       </RevealSection>
 
-      <RevealSection
-        className="boutique-featured-band px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]"
-        id="featured"
-      >
-        <div className="mx-auto max-w-[92rem]">
-          <SectionHeader
-            actionHref="/search?sort=newest"
-            actionLabel="לגלות מה חדש"
-            eyebrow="New Arrivals"
-            text="עיצובים חדשים, קלים לענידה ובעלי נוכחות שנשארת."
-            title="Icons of Summer"
-          />
-          {featuredProducts.length > 0 ? (
+      {featuredProducts.length > 0 ? (
+        <RevealSection
+          className="boutique-featured-band px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]"
+          id="featured"
+        >
+          <div className="mx-auto max-w-[92rem]">
+            <SectionHeader
+              actionHref="/search?sort=newest"
+              actionLabel="לגלות מה חדש"
+              eyebrow="New Arrivals"
+              text="עיצובים חדשים, קלים לענידה ובעלי נוכחות שנשארת."
+              title="Icons of Summer"
+            />
             <RevealGrid
               className="ui-equal-grid grid gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-4"
               data-layout-equal-group="home-featured-products"
@@ -308,9 +343,9 @@ export default async function Home() {
                 />
               ))}
             </RevealGrid>
-          ) : null}
-        </div>
-      </RevealSection>
+          </div>
+        </RevealSection>
+      ) : null}
 
       <RevealSection
         className="boutique-section home-materials-section mx-auto w-full max-w-[92rem] px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]"
@@ -331,7 +366,7 @@ export default async function Home() {
             return (
               <section className="boutique-trust-item" key={item.title}>
                 <Icon aria-hidden="true" className="size-5" />
-                <h2>{item.title}</h2>
+                <h3>{item.title}</h3>
                 <p>{item.text}</p>
               </section>
             );

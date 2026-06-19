@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from "react";
 
+import { useResolvedReducedMotion } from "~/components/motion-preference";
+
 type HomeHeroVideoProps = {
   className?: string;
   mp4Src: string;
@@ -16,11 +18,20 @@ export function HomeHeroVideo({
   webmSrc,
 }: HomeHeroVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const shouldReduceMotion = useResolvedReducedMotion();
 
   useEffect(() => {
     const video = videoRef.current;
 
     if (!video) return;
+
+    // Respect reduced-motion: keep the still poster instead of an
+    // auto-playing, looping background video (WCAG 2.2.2).
+    if (shouldReduceMotion) {
+      video.pause();
+      video.removeAttribute("autoplay");
+      return;
+    }
 
     video.preload = "auto";
     video.muted = true;
@@ -28,19 +39,19 @@ export function HomeHeroVideo({
     void video.play().catch(() => {
       // Browsers may still block autoplay in edge cases; the eager load remains.
     });
-  }, []);
+  }, [shouldReduceMotion]);
 
   return (
     <video
       aria-hidden="true"
-      autoPlay
+      autoPlay={!shouldReduceMotion}
       className={className}
       disablePictureInPicture
       loop
       muted
       playsInline
       poster={posterSrc}
-      preload="auto"
+      preload={shouldReduceMotion ? "none" : "auto"}
       ref={videoRef}
     >
       <source src={webmSrc} type="video/webm" />

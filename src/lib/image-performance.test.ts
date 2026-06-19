@@ -42,10 +42,13 @@ describe("image performance guardrails", () => {
     expect(aboutSource).not.toContain("<CommercePageHero");
     expect(aboutSource).not.toContain("<HomeHeroVideo");
     expect(aboutSource).not.toContain('as="video"');
-    expect(homeHeroVideoSource).toContain('preload="auto"');
+    expect(homeHeroVideoSource).toContain(
+      'preload={shouldReduceMotion ? "none" : "auto"}',
+    );
     expect(homeHeroVideoSource).toContain('video.preload = "auto";');
     expect(homeHeroVideoSource).toContain("video.load();");
     expect(homeHeroVideoSource).toContain("void video.play().catch");
+    expect(homeHeroVideoSource).toContain("useResolvedReducedMotion");
     expect(homeHeroVideoSource).not.toContain('preload="metadata"');
     expect(homeSource).toContain("src={category.image}");
     expect(homeSource).toContain("<ProductCard");
