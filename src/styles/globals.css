@@ -2895,7 +2895,6 @@ html[data-accessibility-motion="reduce"]
 .about-scroll-cue-label {
   font-size: 0.72rem;
   font-weight: 550;
-  letter-spacing: 0.04em;
   opacity: 0.85;
 }
 
@@ -2917,7 +2916,7 @@ html[data-accessibility-motion="reduce"]
   margin-inline-start: -0.14rem;
   border-radius: 50%;
   background: rgb(255 250 244 / 95%);
-  animation: about-cue-dot 2.1s var(--ease-liquid) infinite;
+  animation: about-cue-dot 2.4s var(--ease-liquid) 4 both;
 }
 
 @keyframes about-cue-fade {
@@ -2933,19 +2932,17 @@ html[data-accessibility-motion="reduce"]
 
 @keyframes about-cue-dot {
   0% {
-    opacity: 0;
+    opacity: 0.55;
     transform: translateY(0);
   }
-  35% {
+  40% {
     opacity: 1;
-  }
-  70% {
-    opacity: 0;
     transform: translateY(0.7rem);
   }
+  80%,
   100% {
-    opacity: 0;
-    transform: translateY(0.7rem);
+    opacity: 0.55;
+    transform: translateY(0);
   }
 }
 
@@ -2982,7 +2979,6 @@ html[data-accessibility-motion="reduce"]
   font-size: clamp(1.45rem, 3vw, 2.5rem);
   font-weight: 480;
   line-height: 1.42;
-  letter-spacing: -0.01em;
 }
 
 .about-manifesto-text :is(strong) {
@@ -3011,7 +3007,6 @@ html[data-accessibility-motion="reduce"]
   font-size: 0.92rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
 }
 
 .about-principle-card h3 {
