@@ -1653,6 +1653,11 @@ Homepage backlog reconciliation:
   roles, acceptance owners, evidence locations, target-date fields, and
   repository-safe proof requirements for G-01 through G-04 and J-08. The actual
   owners and dates remain unassigned rather than fabricated.
+- The catalog readiness baseline was converted into
+  `docs/qa/catalog-readiness-remediation-plan.md`, which breaks the 874
+  blockers and 2,426 high findings into owner work packages: priority slice,
+  product truth intake, policy verification, media replacement, non-ready
+  product policy, and strict audit rerun.
 - `I-341` tracks owner data, class-specific attributes, asset remediation, and
   final release-gate activation. Wave 0 remains in progress.
 
@@ -1852,8 +1857,14 @@ The first executable batch should be narrow and evidence-producing:
 
 1. Create a product-data completeness report for all active products and list
    every missing verified field from C-01.
+   `DONE: docs/qa/catalog-readiness-wave-0-baseline.md and
+docs/qa/catalog-readiness-remediation-plan.md now record the current
+database-source product truth gaps and remediation sequence.`
 2. Generate a duplicate-media and media-completeness report for every active
    product from B-01/B-02.
+   `DONE: docs/qa/catalog-readiness-wave-0-baseline.md and
+docs/qa/catalog-readiness-remediation-plan.md now record stale media,
+duplicate media, media-count, and media-role gaps from the generated audit.`
 3. Add authenticated customer fixture/auth state for I-01.
 4. Add expected-status support and QA sharding for E-08/E-09/L-02. `DONE:
 route-level expected statuses and --route-shard are implemented.`

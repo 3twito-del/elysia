@@ -106,6 +106,11 @@ Completed items are intentionally removed from this active list.
   locations, and safe repository summary rules for G-01 through G-04 and J-08.
   Named owners and dates remain unassigned until the responsible
   operations/payment/legal owners accept them.
+- `Remediation Plan`: `docs/qa/catalog-readiness-remediation-plan.md` breaks
+  the current 874 blockers and 2,426 high-severity findings into sequenced
+  owner work packages: priority slice, product truth intake, policy
+  verification, media replacement, non-ready product policy, and strict audit
+  rerun.
 
 The previous active items were completed and removed after focused
 implementation and verification for product cards, coupon messaging, guest
