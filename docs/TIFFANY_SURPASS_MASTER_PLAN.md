@@ -1642,6 +1642,12 @@ Homepage backlog reconciliation:
   selected route subset.
 - The post-schema baseline still has 0 of 300 products ready, 874 blockers, and
   2,426 high findings. This is owner/asset debt, not a reason to fabricate data.
+- L-05 production evidence was refreshed on 2026-06-19 for commit
+  `bc8d40b5325dddc330512a75f877520614202c3c` and deployment
+  `dpl_BtVAaxtaCHBNyHSPFQWzog4gpUTZ`. Production smoke passed on
+  `https://elysia-jewellery.com`, including the `/search` fallback states
+  fixed after a Typesense 403 regression. The 60-minute post-alias clean error
+  window remains pending and is recorded as residual risk rather than complete.
 - `I-341` tracks owner data, class-specific attributes, asset remediation, and
   final release-gate activation. Wave 0 remains in progress.
 
@@ -1847,6 +1853,11 @@ The first executable batch should be narrow and evidence-producing:
 4. Add expected-status support and QA sharding for E-08/E-09/L-02. `DONE:
 route-level expected statuses and --route-shard are implemented.`
 5. Refresh production ledger evidence for the current release under L-05.
+   - `DONE`: `docs/qa/production-deployment-evidence-ledger.md` now points to
+     commit `bc8d40b5325dddc330512a75f877520614202c3c` and production
+     deployment `dpl_BtVAaxtaCHBNyHSPFQWzog4gpUTZ`, with smoke and initial
+     clean-log evidence. The 60-minute clean-log window is explicitly pending.
+
 6. Assign owners and target evidence dates to G-01 through G-04 and J-08.
 7. Commission A-01/A-02 only after the fact and asset inventory is visible, so
    brand direction is built around real products rather than placeholder media.

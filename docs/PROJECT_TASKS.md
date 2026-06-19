@@ -95,6 +95,12 @@ Completed items are intentionally removed from this active list.
   `pnpm exec vitest run src/server/services/customer-auth-fixtures.test.ts scripts/qa-route-inventory.test.ts src/server/http/api-response-boundary.test.ts`,
   the Chromium desktop authenticated account fixture E2E harness, and
   `pnpm exec vitest run scripts/qa-site-audit.test.ts scripts/qa-route-inventory.test.ts`.
+- `Production Evidence`: 2026-06-19 L-05 ledger refresh points to commit
+  `bc8d40b5325dddc330512a75f877520614202c3c`, production deployment
+  `dpl_BtVAaxtaCHBNyHSPFQWzog4gpUTZ`, production alias
+  `https://elysia-jewellery.com`, passing smoke across 35 checks, and an
+  initial clean error-log scan. The 60-minute post-alias clean-log window is
+  still pending and remains residual risk.
 
 The previous active items were completed and removed after focused
 implementation and verification for product cards, coupon messaging, guest
