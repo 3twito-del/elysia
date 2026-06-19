@@ -1648,6 +1648,11 @@ Homepage backlog reconciliation:
   `https://elysia-jewellery.com`, including the `/search` fallback states
   fixed after a Typesense 403 regression. The 60-minute post-alias clean error
   window remains pending and is recorded as residual risk rather than complete.
+- Immediate action 6 started through
+  `docs/qa/wave-0-owner-evidence-register.md`, which defines required owner
+  roles, acceptance owners, evidence locations, target-date fields, and
+  repository-safe proof requirements for G-01 through G-04 and J-08. The actual
+  owners and dates remain unassigned rather than fabricated.
 - `I-341` tracks owner data, class-specific attributes, asset remediation, and
   final release-gate activation. Wave 0 remains in progress.
 
@@ -1859,6 +1864,12 @@ route-level expected statuses and --route-shard are implemented.`
      clean-log evidence. The 60-minute clean-log window is explicitly pending.
 
 6. Assign owners and target evidence dates to G-01 through G-04 and J-08.
+   - `STARTED`: `docs/qa/wave-0-owner-evidence-register.md` now defines the
+     owner roles, acceptance-owner fields, evidence locations, and safe
+     repository summary rules. Named owners and target dates remain
+     `UNASSIGNED` until the responsible business/legal/operations owners accept
+     them.
+
 7. Commission A-01/A-02 only after the fact and asset inventory is visible, so
    brand direction is built around real products rather than placeholder media.
 

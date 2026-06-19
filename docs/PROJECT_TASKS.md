@@ -101,6 +101,11 @@ Completed items are intentionally removed from this active list.
   `https://elysia-jewellery.com`, passing smoke across 35 checks, and an
   initial clean error-log scan. The 60-minute post-alias clean-log window is
   still pending and remains residual risk.
+- `Owner Evidence`: `docs/qa/wave-0-owner-evidence-register.md` defines the
+  required owner roles, acceptance-owner fields, target-date fields, evidence
+  locations, and safe repository summary rules for G-01 through G-04 and J-08.
+  Named owners and dates remain unassigned until the responsible
+  operations/payment/legal owners accept them.
 
 The previous active items were completed and removed after focused
 implementation and verification for product cards, coupon messaging, guest
