@@ -113,7 +113,9 @@ Completed items are intentionally removed from this active list.
   rerun.
 - `Owner Intake`: `docs/qa/catalog-owner-intake-template.md` defines the exact
   fields owners must provide for verified product facts, policy approval, and
-  six-role media evidence before engineering marks products ready.
+  six-role media evidence before engineering marks products ready. Use
+  `pnpm catalog:intake` to generate CSV scaffolds from a catalog-readiness
+  artifact without committing owner data or private evidence.
 
 The previous active items were completed and removed after focused
 implementation and verification for product cards, coupon messaging, guest

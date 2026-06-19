@@ -12,6 +12,20 @@ verified.
 Do not use this template to invent product facts. Unknown values remain blank
 until a source owner verifies them.
 
+## Generate From Audit
+
+Use the repository helper to create a CSV scaffold from a catalog-readiness
+artifact:
+
+```powershell
+pnpm catalog:intake -- --audit artifacts/qa/2026-06-19-wave-0-catalog-readiness-schema/catalog-readiness.json --per-class 6 --include-named --release-scope wave-0-priority --out artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv
+```
+
+The generated file stays under `artifacts/qa/` by default and is not committed.
+It pre-fills only `productSlug`, optional `releaseScope`, and residual audit
+risk. Owners must fill the verification, policy, and media columns manually from
+approved sources.
+
 ## Required Product Row
 
 | Field             | Required | Owner role              | Notes                                                                             |

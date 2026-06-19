@@ -1660,7 +1660,8 @@ Homepage backlog reconciliation:
   product policy, and strict audit rerun.
 - `docs/qa/catalog-owner-intake-template.md` now defines the exact owner-facing
   fields needed to collect verified product truth, policy approval, and six-role
-  media evidence without inventing missing facts.
+  media evidence without inventing missing facts. `pnpm catalog:intake` now
+  generates CSV scaffolds from catalog-readiness artifacts.
 - `I-341` tracks owner data, class-specific attributes, asset remediation, and
   final release-gate activation. Wave 0 remains in progress.
 

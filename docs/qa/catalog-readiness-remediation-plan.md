@@ -13,6 +13,7 @@ Source evidence:
 Owner intake:
 
 - `docs/qa/catalog-owner-intake-template.md`
+- `pnpm catalog:intake -- --audit <catalog-readiness.json> --per-class 6 --include-named --release-scope wave-0-priority --out artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv`
 
 This plan translates the current failing catalog-readiness audit into owner
 work packages. It does not assert that the audited database is production truth;
@@ -100,7 +101,8 @@ Minimum recommended slice:
 - 6 earrings.
 - 6 bracelets.
 - The named products `venus-line-ring`, `selene-drop-earrings`,
-  `muse-necklace`, and `hera-bracelet` if they are still strategic.
+  `selene-chain`, `muse-necklace`, `muse-pearl-earrings`, and `hera-bracelet`
+  if they are still strategic and present in the audited catalog.
 
 Exit criteria:
 
