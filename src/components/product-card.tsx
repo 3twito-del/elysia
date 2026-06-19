@@ -1,9 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { ProductCardFavoriteButton } from "~/components/product-card-favorite-button";
 import { Badge } from "~/components/ui/badge";
 import { Card, CardContent } from "~/components/ui/card";
 import { formatPrice } from "~/lib/format";
+import {
+  getProductCardMeta,
+  getProductCardSale,
+} from "~/lib/product-card-display";
 import {
   getPublicCollectionName,
   getPublicProductName,
@@ -37,6 +42,22 @@ const PRODUCT_CARD_IMAGE_POSITION_BY_SOURCE = [
   {
     source: "photo-1535632066927-ab7c9ab60908",
     position: "50% 56%",
+  },
+  {
+    source: "/brand/product-catalog/rings-",
+    position: "50% 46%",
+  },
+  {
+    source: "/brand/product-catalog/necklaces-",
+    position: "50% 44%",
+  },
+  {
+    source: "/brand/product-catalog/earrings-",
+    position: "50% 48%",
+  },
+  {
+    source: "/brand/product-catalog/bracelets-",
+    position: "50% 52%",
   },
 ] as const;
 
@@ -213,6 +234,17 @@ export function ProductCard({
           </div>
         </CardContent>
       </Link>
+      {!isEditorialDisplay ? (
+        <div
+          className="product-card-hover-actions product-card-favorite absolute top-2.5 right-2.5 z-20"
+          data-testid="product-card-hover-actions"
+        >
+          <ProductCardFavoriteButton
+            productName={publicProductName}
+            productSlug={product.slug}
+          />
+        </div>
+      ) : null}
     </Card>
   );
 }
@@ -258,16 +290,6 @@ function getProductCardImageObjectPosition(product: CatalogProduct) {
 
 function getProductCardSecondaryImage(product: CatalogProduct) {
   return product.images.find((image) => image !== product.image);
-}
-
-// A sale is shown only when the data carries a real compare-at price that is
-// strictly higher than the current price. No inferred or fabricated discounts.
-export function getProductCardSale(
-  product: Pick<CatalogProduct, "compareAt" | "price">,
-) {
-  if (!product.compareAt || product.compareAt <= product.price) return null;
-
-  return { compareAt: product.compareAt };
 }
 
 function getProductCardBadge(input: {
@@ -365,34 +387,8 @@ function getProductCardDescriptor(product: CatalogProduct) {
   return "קו נקי לענידה יומיומית.";
 }
 
-function normalizeProductCardText(value: string) {
-  return value.trim().toLowerCase();
-}
-
-// Never surface internal/legal placeholder values (bracketed CMS fallbacks) as
-// public product metadata — show only verified, bracket-free facts.
-export function isDisplayableProductDetail(
-  detail: string | null | undefined,
-): detail is string {
-  if (!detail) return false;
-
-  const trimmed = detail.trim();
-
-  return trimmed.length > 0 && !trimmed.includes("[") && !trimmed.includes("]");
-}
-
-// Build the quiet product-card metadata line. Placeholder/empty values are
-// dropped so the card never renders brackets or a dangling "·" separator.
-export function getProductCardMeta(
-  product: Pick<CatalogProduct, "material">,
-  publicCollectionName?: string,
-) {
-  const productDetails = [product.material, publicCollectionName].filter(
-    (detail): detail is string => isDisplayableProductDetail(detail),
-  );
-  const productMeta = productDetails.join(" · ");
-
-  return { productDetails, productMeta };
+function normalizeProductCardText(value?: string | null) {
+  return value?.trim().toLowerCase() ?? "";
 }
 
 function createProductHref(

@@ -20,9 +20,11 @@ import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
+import { RecentlyViewedProducts } from "~/app/product/[slug]/_components/recently-viewed-products";
 import {
   getCatalogCategories,
   getFeaturedCatalogProducts,
+  listCatalogProducts,
   type CatalogCategory,
 } from "~/server/services/catalog";
 
@@ -32,6 +34,10 @@ const boutiqueHeroVideoMp4 = "/brand/boutique/lifestyle-hero.mp4";
 const boutiqueHeroVideoWebm = "/brand/boutique/lifestyle-hero.webm";
 const homeHeroTitle = "The Elysia Experience";
 const homeHeroDirection = getHeroTextDirection(homeHeroTitle);
+const homeSameAs = [
+  "https://www.instagram.com/elysia.one/",
+  "https://www.tiktok.com/@elysia_jewellery",
+] as const;
 
 type HeroTextDirection = "ltr" | "rtl";
 
@@ -58,6 +64,40 @@ const categoryEditorialCopy: Record<
     kicker: "The Edit",
   },
 };
+
+const categoryImagePosition: Record<string, string> = {
+  bracelets: "50% 52%",
+  earrings: "50% 48%",
+  necklaces: "50% 44%",
+  rings: "50% 46%",
+};
+
+const homeGiftFinderGroups = [
+  {
+    label: "תקציב",
+    links: [
+      { href: "/search?q=מתנה&maxPrice=250", label: "עד 250 ₪" },
+      { href: "/search?q=מתנה&maxPrice=500", label: "עד 500 ₪" },
+      { href: "/search?q=מתנה&maxPrice=900", label: "עד 900 ₪" },
+    ],
+  },
+  {
+    label: "למי",
+    links: [
+      { href: "/search?q=מתנה לאמא", label: "לאמא" },
+      { href: "/search?q=מתנה לבת זוג", label: "לבת זוג" },
+      { href: "/search?q=מתנה לחברה", label: "לחברה" },
+    ],
+  },
+  {
+    label: "רגע",
+    links: [
+      { href: "/search?q=מתנת יום הולדת", label: "יום הולדת" },
+      { href: "/search?q=מתנת יום נישואין", label: "יום נישואין" },
+      { href: "/search?q=מתנה לחג", label: "חג" },
+    ],
+  },
+] as const;
 
 const materialTrust = [
   {
@@ -100,21 +140,25 @@ const storySignatureNote = {
 
 const homeTrustSignals = [
   {
+    href: "/privacy",
     icon: ShieldCheck,
     title: "קנייה בטוחה",
     text: "תשלום מאובטח ומחיר ברור, עד לאישור ההזמנה.",
   },
   {
+    href: "/shipping-returns",
     icon: Truck,
     title: "משלוח והחזרה",
     text: "כל המידע לבחירה רגועה, לפני ואחרי הרכישה.",
   },
   {
+    href: "/gifts",
     icon: Gift,
     title: "אריזה מוקפדת",
     text: "כל תכשיט מגיע מוכן לרגע שבו מעניקים אותו.",
   },
   {
+    href: "/service",
     icon: Headphones,
     title: "ליווי אישי",
     text: "עזרה אנושית בבחירת תכשיט, מידה ומתנה.",
@@ -154,6 +198,7 @@ const homeStructuredData = [
     url: siteUrl,
     logo: new URL("/apple-touch-icon.png", siteUrl).toString(),
     image: new URL(boutiqueHeroImage, siteUrl).toString(),
+    sameAs: homeSameAs,
     description:
       "קולקציה ערוכה של טבעות, שרשראות, עגילים וצמידים בכסף, ציפוי זהב, פנינים ואבני צבע.",
   },
@@ -174,9 +219,10 @@ const homeStructuredData = [
 ] as const;
 
 export default async function Home() {
-  const [categories, featuredProducts] = await Promise.all([
+  const [categories, featuredProducts, allProducts] = await Promise.all([
     getCatalogCategories(),
-    getFeaturedCatalogProducts(4),
+    getFeaturedCatalogProducts(8),
+    listCatalogProducts(),
   ]);
   const orderedCategories = getOrderedHomeCategories(categories);
 
@@ -186,7 +232,9 @@ export default async function Home() {
       data-testid="storefront-homepage"
     >
       <script
-        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(homeStructuredData) }}
+        dangerouslySetInnerHTML={{
+          __html: stringifyJsonLd(homeStructuredData),
+        }}
         type="application/ld+json"
       />
       <link
@@ -253,6 +301,22 @@ export default async function Home() {
                   />
                 </Link>
               </Button>
+              <Button
+                asChild
+                className="home-hero-cta-secondary"
+                size="lg"
+                variant="outline"
+              >
+                <Link
+                  data-testid="home-hero-secondary-cta"
+                  dir="auto"
+                  href="/gifts"
+                  prefetch={false}
+                >
+                  מתנות
+                  <Gift aria-hidden="true" className="size-4" />
+                </Link>
+              </Button>
             </div>
           </div>
         </div>
@@ -272,9 +336,11 @@ export default async function Home() {
             const Icon = item.icon;
 
             return (
-              <section
-                className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-3"
+              <Link
+                className="home-trust-strip-link grid min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-3 rounded-md outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
+                href={item.href}
                 key={item.title}
+                prefetch={false}
               >
                 <span className="glass-inset grid size-9 place-items-center rounded-md border">
                   <Icon aria-hidden="true" className="size-4" />
@@ -287,9 +353,58 @@ export default async function Home() {
                     {item.text}
                   </span>
                 </span>
-              </section>
+              </Link>
             );
           })}
+        </div>
+      </RevealSection>
+
+      <RevealSection
+        className="home-gift-finder mx-auto w-full max-w-[92rem] px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:px-[var(--ui-page-x-wide)]"
+        data-testid="home-gift-finder"
+        id="gift-finder"
+      >
+        <div className="home-gift-finder-inner border-y border-[var(--glass-border)] py-6">
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)_auto] lg:items-end">
+            <div>
+              <p className="storefront-eyebrow" dir="ltr">
+                Gift Finder
+              </p>
+              <h2 className="home-gift-finder-title">מתנה שמרגישה מדויקת</h2>
+              <p className="text-muted-foreground mt-3 max-w-xl text-sm leading-7">
+                התחלה מהירה לפי תקציב, למי מעניקים והרגע שעבורו בוחרים.
+              </p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {homeGiftFinderGroups.map((group, index) => (
+                <section className="home-gift-finder-group" key={group.label}>
+                  <p className="text-muted-foreground text-xs font-medium">
+                    {String(index + 1).padStart(2, "0")} / {group.label}
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {group.links.map((link) => (
+                      <Link
+                        className="home-gift-finder-chip"
+                        href={link.href}
+                        key={link.href}
+                        prefetch={false}
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+            <div className="flex lg:justify-end">
+              <Button asChild variant="outline">
+                <Link href="/gifts" prefetch={false}>
+                  לכל המתנות
+                  <ArrowLeft aria-hidden="true" className="size-4" />
+                </Link>
+              </Button>
+            </div>
+          </div>
         </div>
       </RevealSection>
 
@@ -304,16 +419,25 @@ export default async function Home() {
           text="טבעות, שרשראות, עגילים וצמידים שנועדו להפוך לחלק מהסגנון שלך."
           title="Find Your Signature"
         />
-        <RevealGrid
-          className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
-          data-layout-equal-group="home-category-tiles"
-          data-testid="home-category-tiles"
-          variant="media"
-        >
-          {orderedCategories.map((category) => (
-            <HomeCategoryCard category={category} key={category.slug} />
-          ))}
-        </RevealGrid>
+        {orderedCategories.length > 0 ? (
+          <RevealGrid
+            className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+            data-layout-equal-group="home-category-tiles"
+            data-testid="home-category-tiles"
+            variant="media"
+          >
+            {orderedCategories.map((category) => (
+              <HomeCategoryCard category={category} key={category.slug} />
+            ))}
+          </RevealGrid>
+        ) : (
+          <HomeEditorialFallback
+            actionHref="/search"
+            actionLabel="לפתיחת המבחר"
+            text="הקטגוריות מתעדכנות. אפשר להמשיך למבחר המלא ולסנן לפי חומר, מחיר וסגנון."
+            title="המבחר פתוח לבחירה"
+          />
+        )}
       </RevealSection>
 
       {featuredProducts.length > 0 ? (
@@ -337,7 +461,7 @@ export default async function Home() {
             >
               {featuredProducts.map((product) => (
                 <ProductCard
-                  imageSizes="(min-width: 1280px) 18rem, (min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                  imageSizes="(min-width: 1280px) 17rem, (min-width: 1024px) 22vw, (min-width: 640px) 50vw, 100vw"
                   key={product.slug}
                   product={product}
                 />
@@ -345,7 +469,28 @@ export default async function Home() {
             </RevealGrid>
           </div>
         </RevealSection>
-      ) : null}
+      ) : (
+        <RevealSection
+          className="boutique-featured-band px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]"
+          id="featured"
+        >
+          <HomeEditorialFallback
+            actionHref="/search"
+            actionLabel="לפתיחת המבחר"
+            text="הקולקציה מתעדכנת. אפשר להמשיך לחיפוש ולראות פריטים זמינים לפי סגנון, חומר ומחיר."
+            title="הפריטים החדשים בדרך"
+          />
+        </RevealSection>
+      )}
+
+      <RecentlyViewedProducts
+        className="boutique-section mx-auto w-full max-w-[92rem] border-y border-[var(--glass-border)] px-[var(--ui-page-x)] py-7 lg:px-[var(--ui-page-x-wide)]"
+        gridClassName="ui-equal-grid mt-5 grid gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-4"
+        heading="נצפו לאחרונה"
+        id="recently-viewed"
+        limit={4}
+        products={allProducts}
+      />
 
       <RevealSection
         className="boutique-section home-materials-section mx-auto w-full max-w-[92rem] px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]"
@@ -554,6 +699,36 @@ function SectionHeader({
   );
 }
 
+function HomeEditorialFallback({
+  actionHref,
+  actionLabel,
+  text,
+  title,
+}: {
+  actionHref: string;
+  actionLabel: string;
+  text: string;
+  title: string;
+}) {
+  return (
+    <section
+      className="home-editorial-fallback mx-auto max-w-[92rem] border-y border-[var(--glass-border)] py-7"
+      data-testid="home-editorial-fallback"
+    >
+      <h2 className="text-xl font-medium">{title}</h2>
+      <p className="text-muted-foreground mt-3 max-w-2xl text-sm leading-7">
+        {text}
+      </p>
+      <Button asChild className="mt-5" variant="outline">
+        <Link href={actionHref} prefetch={false}>
+          {actionLabel}
+          <ArrowLeft aria-hidden="true" className="size-4" />
+        </Link>
+      </Button>
+    </section>
+  );
+}
+
 function HomeCategoryCard({ category }: { category: CatalogCategory }) {
   const copy = categoryEditorialCopy[category.slug];
 
@@ -574,6 +749,9 @@ function HomeCategoryCard({ category }: { category: CatalogCategory }) {
           fill
           sizes="(min-width: 1024px) 22vw, (min-width: 640px) 50vw, 100vw"
           src={category.image}
+          style={{
+            objectPosition: categoryImagePosition[category.slug] ?? "50% 50%",
+          }}
         />
       </span>
       <span className="boutique-collection-copy">

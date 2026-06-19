@@ -69,7 +69,10 @@ export async function joinNewsletter(
   });
 
   revalidatePath("/");
-  return { ok: true, message: "נרשמת לעדכוני Elysia" };
+  return {
+    ok: true,
+    message: "נרשמת. נשלח עדכון רק כשיש משהו חדש לראות.",
+  };
 }
 
 export async function saveWishlistItem(
@@ -189,10 +192,7 @@ export async function submitFeedback(
 
   try {
     await assertRateLimit({
-      key: createRateLimitKey(
-        "feedback",
-        parsed.data.email ?? "anonymous",
-      ),
+      key: createRateLimitKey("feedback", parsed.data.email ?? "anonymous"),
       limit: 5,
       windowMs: 10 * 60_000,
     });

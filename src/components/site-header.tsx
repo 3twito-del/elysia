@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Heart, Search, UserRound } from "lucide-react";
+import { Heart, Search, ShoppingBag, UserRound } from "lucide-react";
 
 import {
   isCategoryHref,
@@ -40,6 +40,7 @@ export function SiteHeader() {
   const categoryPrefetch = useCategoryRoutePrefetch(categoryNavHrefs);
   const isOverHomeHero = isMediaOverlayRoute && !hasScrolled;
   const headerState = isOverHomeHero ? "transparent" : "solid";
+  const showCondensedCta = isMediaOverlayRoute && hasScrolled;
 
   useEffect(() => {
     if (!isMediaOverlayRoute) return;
@@ -88,6 +89,7 @@ export function SiteHeader() {
     <>
       <header
         className="site-header fixed inset-x-0 top-0 z-50 h-16 md:h-[4.25rem] lg:h-[6.125rem]"
+        data-condensed-cta={showCondensedCta ? "true" : undefined}
         data-header-state={headerState}
         data-over-media={isOverHomeHero ? "true" : undefined}
         dir="rtl"
@@ -122,6 +124,15 @@ export function SiteHeader() {
             >
               <Search aria-hidden="true" className="size-5" />
               <span className="hidden sm:inline">חיפוש</span>
+            </Link>
+            <Link
+              aria-label="לקנייה"
+              className="site-header-scroll-cta site-header-link hidden min-h-10 items-center gap-2 rounded-md border border-[var(--glass-border)] px-3 text-[0.9rem] font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] md:inline-flex"
+              href="/search"
+              prefetch={false}
+            >
+              <ShoppingBag aria-hidden="true" className="size-4" />
+              <span>לקנייה</span>
             </Link>
           </div>
 

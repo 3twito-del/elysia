@@ -118,6 +118,8 @@ describe("visible site improvement affordances", () => {
     expect(home).toContain('data-testid="home-hero-copy"');
     expect(home).toContain('data-testid="home-hero-statement"');
     expect(home).toContain('data-testid="home-hero-primary-cta"');
+    expect(home).toContain('data-testid="home-hero-secondary-cta"');
+    expect(home).toContain('data-testid="home-gift-finder"');
     expect(home).toContain("data-hero-copy-direction={homeHeroDirection}");
     expect(home).not.toContain('data-testid="home-commerce-entry-links"');
     expect(home).toContain("storefront-hero");
@@ -126,12 +128,12 @@ describe("visible site improvement affordances", () => {
     expect(home).toContain("home-hero-statement motion-copy-item");
     expect(home).toContain('data-testid="home-hero-cta-row"');
     expect(home).toContain('href="/search"');
-    expect(home).not.toContain('href: "/gifts"');
+    expect(home).toContain('href="/gifts"');
+    expect(home).toContain("homeGiftFinderGroups");
     expect(home).not.toContain('href: "/category/necklaces"');
     expect(home).toContain('data-testid="home-category-tiles"');
     expect(home).toContain('data-testid="home-featured-products"');
     expect(home).not.toContain('data-testid="home-hero-campaign-links"');
-    expect(home).not.toContain('data-testid="home-hero-secondary-cta"');
     expect(home).not.toContain('data-testid="home-hero-secondary-line"');
     expect(home).not.toContain('href="/category/rings"');
     expect(home).not.toContain('data-testid="home-hero-trust-notes"');
@@ -253,6 +255,8 @@ describe("visible site improvement affordances", () => {
     expect(header).not.toContain("desktopNavItems");
     expect(header).toContain("HOME_HEADER_SOLID_SCROLL_Y");
     expect(header).toContain("setHasScrolled");
+    expect(header).toContain("showCondensedCta");
+    expect(header).toContain("site-header-scroll-cta");
     expect(header).toContain('window.addEventListener("scroll"');
     expect(header).toContain(
       'const headerState = isOverHomeHero ? "transparent" : "solid";',
@@ -512,6 +516,8 @@ describe("visible site improvement affordances", () => {
     expect(productCard).toContain('data-testid="product-card-attributes"');
     expect(productCard).toContain('data-testid="product-card-price"');
     expect(productCard).not.toContain("<ProductCardQuickAddButton");
+    expect(productCard).toContain("ProductCardFavoriteButton");
+    expect(productCard).toContain('data-testid="product-card-hover-actions"');
     expect(productCard).toContain("product-card-hover-image");
     expect(productCard).toContain("group-hover/card:scale-[1.045]");
     expect(productCard).toContain("group-hover/card:scale-[1.055]");

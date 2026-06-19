@@ -75,7 +75,7 @@ describe("product recommendation rail return context", () => {
 
     expect(productPage).toContain('className="mx-auto mt-10 grid max-w-7xl');
     expect(recentlyViewed).toContain(
-      'className="border-border mx-auto mt-9 max-w-7xl border-t pt-7"',
+      'className = "border-border mx-auto mt-9 max-w-7xl border-t pt-7"',
     );
     expect(recentlyViewed).toContain(
       "ui-equal-grid mt-5 grid gap-x-7 gap-y-10",
@@ -83,9 +83,7 @@ describe("product recommendation rail return context", () => {
     expect(recentlyViewed).toContain(
       'data-layout-equal-group="recently-viewed-products"',
     );
-    expect(productPage).toContain(
-      "ui-equal-grid mt-5 grid gap-x-7 gap-y-10",
-    );
+    expect(productPage).toContain("ui-equal-grid mt-5 grid gap-x-7 gap-y-10");
     expect(productPage).toContain(
       "data-layout-equal-group={`product-recommendation-${rail.id}`}",
     );

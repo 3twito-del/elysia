@@ -22,12 +22,17 @@ describe("homepage boutique commerce bridge", () => {
       'const boutiqueHeroVideoMp4 = "/brand/boutique/lifestyle-hero.mp4";',
     );
     expect(home).toContain("getCatalogCategories");
-    expect(home).toContain("getFeaturedCatalogProducts(4)");
+    expect(home).toContain("getFeaturedCatalogProducts(8)");
+    expect(home).toContain("listCatalogProducts");
     expect(home).toContain("<ProductCard");
     expect(home).toContain("function HomeCategoryCard");
     expect(home).toContain('data-testid="storefront-homepage"');
     expect(home).toContain('data-testid="home-hero-statement"');
     expect(home).toContain('data-testid="home-hero-primary-cta"');
+    expect(home).toContain('data-testid="home-hero-secondary-cta"');
+    expect(home).toContain('href="/gifts"');
+    expect(home).toContain('data-testid="home-gift-finder"');
+    expect(home).toContain("homeGiftFinderGroups");
     expect(home).toContain('href="/search"');
     expect(home).toContain('id="collections"');
     expect(home).toContain('id="featured"');
@@ -39,6 +44,8 @@ describe("homepage boutique commerce bridge", () => {
     expect(home).toContain('id="collection-updates"');
     expect(home).toContain('data-layout-equal-group="home-category-tiles"');
     expect(home).toContain('data-testid="home-featured-products"');
+    expect(home).toContain("<RecentlyViewedProducts");
+    expect(home).toContain('id="recently-viewed"');
     expect(home).toContain('data-testid="home-material-trust"');
     expect(home).toContain("home-materials-section");
     expect(home).toContain("home-story-layout");
@@ -152,6 +159,8 @@ describe("homepage boutique commerce bridge", () => {
     expect(header).not.toContain("prelaunchNavItems.map");
     expect(header).not.toContain("data-home-prelaunch");
     expect(header).toContain("<MobileNav");
+    expect(header).toContain("site-header-scroll-cta");
+    expect(header).toContain("data-condensed-cta={showCondensedCta");
     expect(header).toContain('href="/search"');
     expect(header).toContain("/search?sort=newest");
     expect(header).toContain('href="/service"');

@@ -436,7 +436,11 @@ export function getCatalogFacetsFromProducts(
   const prices = products.map((product) => product.price);
 
   return {
-    materials: getUniqueValues(products.map((product) => product.material)),
+    materials: getUniqueValues(
+      products
+        .map((product) => product.material)
+        .filter((material): material is string => Boolean(material)),
+    ),
     stones: getUniqueValues(
       products
         .map((product) => product.stone)
@@ -749,7 +753,7 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
     compareAt: getCompareAt(defaultVariant),
     createdAt: record.createdAt,
     popularityScore: record._count.viewEvents + record._count.clickEvents * 2,
-    material: displayMaterial,
+    material: displayMaterial ?? "",
     stone: displayStone,
     collection: displayCollection,
     collections:
@@ -841,7 +845,7 @@ function normalizePublicCatalogCopy(value: string) {
 
 function getDisplayProductDescription(input: {
   description: string;
-  material: string;
+  material?: string;
   name: string;
   source: CatalogProductRecord["source"];
   stone?: string;
@@ -854,13 +858,21 @@ function getDisplayProductDescription(input: {
     return normalizePublicCatalogCopy(input.description);
   }
 
-  const stoneText = input.stone ? ` עם ${input.stone}` : "";
+  const materialStoneText = [
+    input.material ? `חומר ${input.material}` : undefined,
+    input.stone ? `אבן ${input.stone}` : undefined,
+  ]
+    .filter(Boolean)
+    .join(" ו");
+  const detailText = materialStoneText
+    ? `עם ${materialStoneText}`
+    : "עם פרטי מידה, מחיר ושירות";
 
-  return `${input.name} משלב ${input.material}${stoneText} בקו יומיומי ונוח לענידה, עם מידה, חומר ומחיר לפני הזמנה.`;
+  return `${input.name} מוצג ${detailText} לפני הזמנה.`;
 }
 
 function getDisplayProductShortDescription(input: {
-  material: string;
+  material?: string;
   name: string;
   shortDescription: string;
   source: CatalogProductRecord["source"];
@@ -874,7 +886,9 @@ function getDisplayProductShortDescription(input: {
     return normalizePublicCatalogCopy(input.shortDescription);
   }
 
-  return `${input.name} מוצג עם חומר, מידה ומחיר לפני הזמנה.`;
+  return input.material
+    ? `${input.name} מוצג עם חומר, מידה ומחיר לפני הזמנה.`
+    : `${input.name} מוצג עם מידה, מחיר ושירות לפני הזמנה.`;
 }
 
 function getDisplayCommerceHighlights(record: CatalogProductRecord) {

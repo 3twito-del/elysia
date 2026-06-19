@@ -7,7 +7,7 @@ import {
   getProductCardMeta,
   getProductCardSale,
   isDisplayableProductDetail,
-} from "~/components/product-card";
+} from "~/lib/product-card-display";
 import { legalPlaceholder } from "~/lib/legal-content";
 import {
   getPublicCategoryName,
@@ -71,12 +71,13 @@ describe("homepage production completion", () => {
     expect(realMaterial.productMeta).toBe("כסף 925 · Signature edit");
   });
 
-  it("contains the getPublicMaterialName CMS-fallback so it cannot reach the card", () => {
-    // getPublicMaterialName may legitimately fall back to the placeholder for
-    // products with no verified material; the card layer must neutralise it.
+  it("keeps unverified material undefined before it can reach the card", () => {
+    // getPublicMaterialName may infer obvious material from a clean product
+    // name, but it must not fall back to a legal placeholder for unknown data.
     const fallback = getPublicMaterialName("", null);
     const meta = getProductCardMeta({ material: fallback }, undefined);
 
+    expect(fallback).toBeUndefined();
     expect(meta.productMeta).not.toContain("[");
     expect(meta.productMeta).not.toContain("]");
   });

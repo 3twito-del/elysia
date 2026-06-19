@@ -51,13 +51,15 @@ describe("public CTA hierarchy", () => {
 
     expect(home).toContain("home-hero-actions");
     expect(home).toContain("home-hero-cta-primary");
+    expect(home).toContain("home-hero-cta-secondary");
     expect(home).toContain('data-testid="home-hero-primary-cta"');
+    expect(home).toContain('data-testid="home-hero-secondary-cta"');
     expect(home).toContain('href="/search"');
+    expect(home).toContain('href="/gifts"');
     expect(home).toContain('id="collections"');
     expect(home).toContain('id="featured"');
     expect(home).not.toContain('href="#waitlist"');
     expect(home).not.toContain("First collection coming soon");
-    expect(home).not.toContain("home-hero-secondary-cta");
     expect(home).not.toContain('href="/category/rings"');
     expect(home).not.toContain('data-testid="home-hero-secondary-line"');
     expect(home).not.toContain("home-hero-service-link");
@@ -78,7 +80,7 @@ describe("public CTA hierarchy", () => {
     expect(css).toContain(
       '.home-hero-actions [data-slot="button"]:focus-visible',
     );
-    expect(css).not.toContain(".home-hero-actions .home-hero-secondary-cta");
+    expect(css).toContain(".home-hero-actions .home-hero-cta-secondary");
     expect(css).toContain("outline: 2px solid currentColor !important;");
     expect(css).toContain("--tw-ring-color: transparent !important;");
   });
@@ -108,7 +110,8 @@ describe("public CTA hierarchy", () => {
     const searchSource = read("src/app/search/page.tsx");
 
     expect(productCard).toContain("group/product-link block min-w-0");
-    expect(productCard).not.toContain("ProductCardFavoriteButton");
+    expect(productCard).toContain("ProductCardFavoriteButton");
+    expect(productCard).toContain("product-card-hover-actions");
     expect(productCard).not.toContain("function getProductCardQuickAddVariant");
     expect(productCard).not.toContain("<ProductCardQuickAddButton");
     expect(productCard).toContain("product-card-cta");

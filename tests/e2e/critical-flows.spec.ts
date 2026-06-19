@@ -1132,8 +1132,8 @@ test.describe("accessibility and responsive guardrails", () => {
     await expect(heroCollectionLink).toBeVisible();
     await expect(page.getByTestId("home-hero-statement")).toBeVisible();
     await expect(
-      homeHero.locator('a.home-hero-secondary-cta[href="/category/rings"]'),
-    ).toHaveCount(0);
+      homeHero.locator('a.home-hero-cta-secondary[href="/gifts"]'),
+    ).toBeVisible();
     await expect(page.getByTestId("home-hero-secondary-line")).toHaveCount(0);
     await expect(page.getByTestId("home-commerce-entry-links")).toHaveCount(0);
     await expect(

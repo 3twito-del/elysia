@@ -2259,9 +2259,70 @@ html[data-accessibility-motion="reduce"] .boutique-collection-action::before {
   padding-block: clamp(1.75rem, 3.5vw, 3rem);
 }
 
+.home-trust-strip-link {
+  color: inherit;
+  text-decoration: none;
+  transition:
+    color var(--motion-fast) var(--ease-motion-standard),
+    transform var(--motion-fast) var(--ease-motion-standard);
+}
+
+.home-trust-strip-link:hover {
+  color: var(--foreground);
+  transform: translateY(-1px);
+}
+
 [data-testid="home-commerce-trust-strip"] {
   gap: clamp(1.25rem, 2.5vw, 2rem);
   padding-block: clamp(1.75rem, 3.5vw, 3rem);
+}
+
+.home-gift-finder-inner {
+  background: transparent;
+}
+
+.home-gift-finder-title {
+  margin-top: 0.45rem;
+  max-width: 24rem;
+  font-size: clamp(1.55rem, 2.9vw, 2.35rem);
+  font-weight: 560;
+  line-height: 1.12;
+}
+
+.home-gift-finder-group {
+  min-width: 0;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  background: rgb(255 250 244 / 46%);
+}
+
+.home-gift-finder-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  padding-inline: 0.8rem;
+  color: var(--foreground);
+  font-size: 0.82rem;
+  line-height: 1.2;
+  text-decoration: none;
+  transition:
+    border-color var(--motion-fast) var(--ease-motion-standard),
+    background-color var(--motion-fast) var(--ease-motion-standard),
+    color var(--motion-fast) var(--ease-motion-standard);
+}
+
+.home-gift-finder-chip:hover,
+.home-gift-finder-chip:focus-visible {
+  border-color: var(--glass-border-strong);
+  background: var(--background);
+  outline: none;
+}
+
+.home-editorial-fallback {
+  background: transparent;
 }
 
 [data-testid="home-material-trust"] {
@@ -2652,8 +2713,8 @@ html[data-accessibility-motion="reduce"] .boutique-collection-action::before {
 .about-aurora-prism {
   inset: -35%;
   background: conic-gradient(
-    from calc(var(--aurora-x) * 2.4deg + 40deg) at
-      calc(var(--aurora-x) * 1%) calc(var(--aurora-y) * 1%),
+    from calc(var(--aurora-x) * 2.4deg + 40deg) at calc(var(--aurora-x) * 1%)
+      calc(var(--aurora-y) * 1%),
     rgb(255 188 170 / 0%),
     rgb(255 214 158 / 55%),
     rgb(206 232 255 / 48%),
@@ -3000,11 +3061,7 @@ html[data-accessibility-motion="reduce"]
   margin-top: 1rem;
   height: 1px;
   width: 0;
-  background: linear-gradient(
-    to left,
-    var(--brand-champagne),
-    transparent
-  );
+  background: linear-gradient(to left, var(--brand-champagne), transparent);
   transition: width 900ms var(--ease-liquid) 0.15s;
 }
 
@@ -3531,6 +3588,26 @@ html[data-accessibility-motion="reduce"]
   margin-top: clamp(1.35rem, 2.8vw, 2rem);
 }
 
+.home-hero-video-control {
+  position: absolute;
+  right: clamp(1.25rem, 4vw, 3rem);
+  bottom: calc(1.25rem + env(safe-area-inset-bottom));
+  z-index: 12;
+  border-color: rgb(255 250 244 / 38%) !important;
+  background: rgb(20 17 15 / 38%) !important;
+  color: #fffaf4 !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.home-hero-video-control:hover,
+.home-hero-video-control:focus-visible {
+  border-color: rgb(255 250 244 / 76%) !important;
+  background: rgb(20 17 15 / 62%) !important;
+  color: white !important;
+}
+
 @media (min-width: 1280px) {
   .about-hero-title,
   .storefront-hero-title {
@@ -3584,11 +3661,7 @@ html[data-accessibility-motion="reduce"]
         rgb(20 17 15 / 44%) 48%,
         rgb(20 17 15 / 18%) 100%
       ),
-      linear-gradient(
-        to left,
-        rgb(20 17 15 / 70%) 0%,
-        rgb(20 17 15 / 20%) 100%
-      );
+      linear-gradient(to left, rgb(20 17 15 / 70%) 0%, rgb(20 17 15 / 20%) 100%);
   }
 
   .storefront-hero-copy {
@@ -3673,6 +3746,34 @@ html[data-accessibility-motion="reduce"]
 .site-header .site-header-label-action:hover,
 .site-header .site-header-label-action:focus-visible {
   color: var(--site-header-link-hover);
+}
+
+.site-header .site-header-scroll-cta {
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-0.25rem);
+  border-color: var(--glass-border);
+  background: rgb(255 250 244 / 72%);
+  color: var(--foreground);
+  transition:
+    opacity var(--motion-fast) var(--ease-motion-standard),
+    transform var(--motion-fast) var(--ease-motion-standard),
+    border-color var(--motion-fast) var(--ease-motion-standard),
+    background-color var(--motion-fast) var(--ease-motion-standard),
+    color var(--motion-fast) var(--ease-motion-standard);
+}
+
+.site-header[data-condensed-cta="true"] .site-header-scroll-cta {
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.site-header .site-header-scroll-cta:hover,
+.site-header .site-header-scroll-cta:focus-visible {
+  border-color: var(--glass-border-strong);
+  background: var(--background);
+  color: var(--foreground);
 }
 
 .site-header .site-header-action:hover,
@@ -4765,6 +4866,10 @@ footer nav a:focus-visible {
   -webkit-backdrop-filter: blur(10px);
 }
 
+.product-card-hover-actions {
+  display: none;
+}
+
 .product-card-favorite:has(
   .product-card-favorite-button[data-favorite-saved="true"]
 ) {
@@ -4809,6 +4914,28 @@ footer nav a:focus-visible {
 .product-wishlist-button[data-favorite-saved="true"] svg {
   fill: rgb(29 25 22 / 68%);
   stroke-width: 2.15;
+}
+
+@media (hover: hover) and (pointer: fine) and (min-width: 768px) {
+  .product-card-hover-actions {
+    pointer-events: none;
+    display: block;
+    opacity: 0;
+    transform: translateY(-0.25rem);
+    transition:
+      opacity var(--motion-fast) var(--ease-motion-standard),
+      transform var(--motion-fast) var(--ease-motion-standard);
+  }
+
+  .product-card-shell:hover .product-card-hover-actions,
+  .product-card-shell:focus-within .product-card-hover-actions,
+  .product-card-hover-actions:has(
+    .product-card-favorite-button[data-favorite-saved="true"]
+  ) {
+    pointer-events: auto;
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .product-card-favorite [data-icon-tooltip]::after {
@@ -5373,6 +5500,19 @@ footer nav a:focus-visible {
   color: white !important;
 }
 
+.home-hero-actions .home-hero-cta-secondary:not(:disabled) {
+  border-color: rgb(255 250 244 / 54%) !important;
+  background: rgb(20 17 15 / 24%) !important;
+  color: #fffaf4 !important;
+}
+
+.home-hero-actions .home-hero-cta-secondary:not(:disabled):hover,
+.home-hero-actions .home-hero-cta-secondary:not(:disabled):focus-visible {
+  border-color: rgb(255 250 244 / 84%) !important;
+  background: rgb(255 250 244 / 16%) !important;
+  color: white !important;
+}
+
 .home-hero-actions .home-hero-cta-icon {
   transition: transform 260ms var(--ease-motion-standard);
 }
@@ -5566,9 +5706,7 @@ footer nav a:focus-visible {
 
 .about-cinematic-page .motion-reveal.motion-reveal,
 .about-cinematic-page .motion-reveal-item.motion-reveal-item,
-.about-cinematic-page
-  .motion-hero-copy
-  .motion-copy-item.motion-copy-item {
+.about-cinematic-page .motion-hero-copy .motion-copy-item.motion-copy-item {
   animation: none;
   transform: none;
   transition: none;

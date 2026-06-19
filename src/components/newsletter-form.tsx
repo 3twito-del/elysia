@@ -22,7 +22,7 @@ const initialState: PublicActionState = {};
 const newsletterEmailHintId = "newsletter-email-hint";
 const newsletterStatusId = "newsletter-status";
 const newsletterOfflineStatusId = "newsletter-offline-status";
-const defaultHintText = "רק כשיש משהו שבאמת כדאי לפתוח.";
+const defaultHintText = "נשלח רק כשיש השקה, בחירה עונתית או עדכון שכדאי לפתוח.";
 const defaultSubmitLabel = "להצטרף";
 
 type NewsletterFormProps = {
@@ -80,7 +80,7 @@ export function NewsletterForm({
       .then(() => {
         setOfflineState({
           ok: true,
-          message: "ההרשמה נשמרה במכשיר.",
+          message: "ההרשמה נשמרה ותישלח כשהחיבור יחזור.",
         });
         form.reset();
         setMarketingConsent(false);
@@ -88,7 +88,7 @@ export function NewsletterForm({
       .catch(() =>
         setOfflineState({
           ok: false,
-          message: "לא הצלחנו לשלוח עכשיו. בדקו את החיבור ונסו שוב.",
+          message: "לא הצלחנו לשמור את ההרשמה כרגע. בדקו את החיבור ונסו שוב.",
         }),
       );
   }

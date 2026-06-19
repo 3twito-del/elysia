@@ -38,10 +38,11 @@ describe("product card overlay budget", () => {
 
   it("keeps sale price and hover media data-backed and restrained", () => {
     const source = read("src/components/product-card.tsx");
+    const display = read("src/lib/product-card-display.ts");
     const css = read("src/styles/globals.css");
 
-    expect(source).toContain("function getProductCardSale");
-    expect(source).toContain("product.compareAt <= product.price");
+    expect(display).toContain("function getProductCardSale");
+    expect(display).toContain("product.compareAt <= product.price");
     expect(source).toContain("sale.compareAt");
     expect(source).toContain('data-testid="product-card-price"');
     expect(source).toContain('data-sale={sale ? "true" : "false"}');
@@ -62,10 +63,11 @@ describe("product card overlay budget", () => {
 
   it("keeps material visible as quiet product metadata", () => {
     const source = read("src/components/product-card.tsx");
+    const display = read("src/lib/product-card-display.ts");
 
-    expect(source).toContain("const productDetails = [product.material");
+    expect(display).toContain("const productDetails = [product.material");
     expect(source).toContain("publicCollectionName");
-    expect(source).toContain("const productMeta = productDetails.join");
+    expect(display).toContain("const productMeta = productDetails.join");
     expect(source).toContain('data-testid="product-card-attributes"');
     expect(source).not.toContain('data-testid="product-card-material-cues"');
     expect(source).not.toContain('data-testid="product-card-swatches"');
@@ -75,23 +77,30 @@ describe("product card overlay budget", () => {
 
   it("keeps listing cards clean and routes fitting to the product page", () => {
     const source = read("src/components/product-card.tsx");
+    const css = read("src/styles/globals.css");
 
     expect(source).not.toContain("ProductCardQuickAddButton");
-    expect(source).not.toContain("ProductCardFavoriteButton");
+    expect(source).toContain("ProductCardFavoriteButton");
+    expect(source).toContain('data-testid="product-card-hover-actions"');
     expect(source).not.toContain("function getProductCardQuickAddVariant");
     expect(source).not.toContain("product-card-decision-facts");
     expect(source).not.toContain("בירור התאמה");
     expect(source).toContain("product-card-cta");
+    expect(css).toContain(".product-card-hover-actions");
+    expect(css).toContain(
+      ".product-card-shell:hover .product-card-hover-actions",
+    );
     expect(source).toContain("לפרטי התכשיט");
   });
 
   it("keeps product cards minimal with product facts as quiet metadata", () => {
     const source = read("src/components/product-card.tsx");
+    const display = read("src/lib/product-card-display.ts");
 
-    expect(source).toContain("const productDetails = [product.material");
+    expect(display).toContain("const productDetails = [product.material");
     expect(source).toContain("product.material");
     expect(source).toContain("publicCollectionName");
-    expect(source).toContain("const productMeta = productDetails.join");
+    expect(display).toContain("const productMeta = productDetails.join");
     expect(source).not.toContain("const productQuickFacts = [");
     expect(source).not.toContain("commerceStatus.label");
     expect(source).not.toContain('product.source === "DROPSHIP_SHOPIFY"');

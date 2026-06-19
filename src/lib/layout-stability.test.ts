@@ -24,7 +24,8 @@ describe("layout stability guardrails", () => {
     expect(productCardSource).toContain("group/product-link block min-w-0");
     expect(productCardSource).toContain("product-card-cta");
     expect(productCardSource).not.toContain("ProductCardQuickAddButton");
-    expect(productCardSource).not.toContain("ProductCardFavoriteButton");
+    expect(productCardSource).toContain("ProductCardFavoriteButton");
+    expect(productCardSource).toContain("product-card-hover-actions");
     expect(productCardSource).not.toContain("מחיר גלוי לפני שמירה");
     expect(productCardSource).not.toContain("בדיקת איכות לפני מסירה");
 

@@ -18,11 +18,14 @@ describe("mobile commerce density", () => {
     );
     expect(source).toContain('data-testid="home-hero-statement"');
     expect(source).toContain('data-testid="home-hero-primary-cta"');
+    expect(source).toContain('data-testid="home-hero-secondary-cta"');
+    expect(source).toContain('data-testid="home-gift-finder"');
     expect(source).toContain("data-hero-copy-direction={homeHeroDirection}");
     expect(source).not.toContain('data-testid="home-commerce-entry-links"');
     expect(source).not.toContain('data-testid="home-hero-campaign-links"');
     expect(source).toContain('href="/search"');
-    expect(source).not.toContain('href: "/gifts"');
+    expect(source).toContain('href="/gifts"');
+    expect(source).toContain("homeGiftFinderGroups");
     expect(source).not.toContain('href: "/category/necklaces"');
     expect(countOccurrences(source, "min-h-[var(--home-hero-height)]")).toBe(1);
     expect(indexOf(source, 'id="page-hero"')).toBeLessThan(
@@ -35,7 +38,6 @@ describe("mobile commerce density", () => {
     expect(source).toContain('data-testid="home-featured-products"');
     expect(source).toContain("<ProductCard");
     expect(source).not.toContain('href="#waitlist"');
-    expect(source).not.toContain('data-testid="home-hero-secondary-cta"');
     expect(source).not.toContain('data-testid="home-hero-secondary-line"');
     expect(source).not.toContain('href="/category/rings"');
     expect(source).not.toContain('data-testid="home-hero-trust-notes"');
