@@ -733,7 +733,7 @@ export function ProductGallery({
               </Button>
             </div>
             <DialogContent
-              className="product-gallery-viewer-dialog bg-background fixed !inset-0 !top-0 !left-0 z-[100] grid !h-[100dvh] !w-[100dvw] !max-w-none !translate-x-0 !translate-y-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden !rounded-none !border-0 !p-0 sm:!max-w-none"
+              className="product-gallery-viewer-dialog bg-background fixed !inset-0 !top-0 !left-0 z-[100] grid !h-auto !w-auto !max-w-none !translate-x-0 !translate-y-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden !rounded-none !border-0 !p-0 sm:!max-w-none"
               data-testid="product-gallery-fullscreen-dialog"
               dir="rtl"
               onKeyDown={handleViewerKeyDown}
