@@ -162,11 +162,11 @@
       "svix": "1.92.2"
     },
     "ignoredBuiltDependencies": [
-      "agent-browser",
-      "simple-git-hooks"
+      "agent-browser"
     ],
     "onlyBuiltDependencies": [
       "@prisma/client",
+      "simple-git-hooks",
       "@prisma/engines",
       "@swc/core",
       "esbuild",
