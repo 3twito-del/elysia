@@ -15,6 +15,7 @@ import { env } from "~/env";
 import { stringifyJsonLd } from "~/lib/json-ld";
 import { NewsletterForm } from "~/components/newsletter-form";
 import { DeferredFixedBackgroundBand } from "~/components/deferred-fixed-background-band";
+import { HomeHeroAura } from "~/components/home-hero-aura";
 import { HomeHeroVideo } from "~/components/home-hero-video";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
@@ -261,6 +262,7 @@ export default async function Home() {
         />
         <div className="storefront-hero-scrim absolute inset-0" />
         <div className="storefront-hero-wash absolute inset-0" />
+        <HomeHeroAura />
 
         <div
           className="home-hero-copy motion-hero-copy storefront-hero-copy absolute z-10 flex max-w-[min(38rem,calc(100vw-2.5rem))] flex-col items-start sm:max-w-[min(42rem,45vw)]"
