@@ -15,6 +15,7 @@ Owner intake:
 - `docs/qa/catalog-owner-intake-template.md`
 - `pnpm catalog:intake -- --audit <catalog-readiness.json> --per-class 6 --include-named --release-scope wave-0-priority --out artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv`
 - `pnpm catalog:intake:validate -- --file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --strict --out-dir artifacts/qa/<date>-catalog-owner-intake-validation`
+- `pnpm catalog:intake:apply -- --file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --replace-media --out-dir artifacts/qa/<date>-catalog-owner-intake-apply-dry-run`
 - `pnpm catalog:readiness -- --source database --scope-file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --strict --out-dir artifacts/qa/<date>-wave-0-priority-readiness-strict`
 
 This plan translates the current failing catalog-readiness audit into owner
@@ -231,6 +232,8 @@ Command:
 
 ```powershell
 pnpm catalog:intake:validate -- --file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --strict --out-dir artifacts/qa/<date>-catalog-owner-intake-validation
+pnpm catalog:intake:apply -- --file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --replace-media --out-dir artifacts/qa/<date>-catalog-owner-intake-apply-dry-run
+pnpm catalog:intake:apply -- --file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --apply --replace-media --out-dir artifacts/qa/<date>-catalog-owner-intake-apply
 pnpm catalog:readiness -- --source database --scope-file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --strict --out-dir artifacts/qa/<date>-wave-0-priority-readiness-strict
 ```
 
@@ -242,6 +245,9 @@ Exit criteria:
   out-of-scope active product.
 - Owner-intake validation passes before any import, activation, or release note
   claims the slice is ready.
+- Owner-intake apply plan is reviewed in dry-run mode before any database write;
+  actual writes require explicit `--apply`, and media replacement requires
+  explicit `--replace-media`.
 - Artifact is retained.
 - `docs/qa/catalog-readiness-wave-0-baseline.md`,
   `docs/TIFFANY_SURPASS_MASTER_PLAN.md`, and `docs/PROJECT_TASKS.md` are

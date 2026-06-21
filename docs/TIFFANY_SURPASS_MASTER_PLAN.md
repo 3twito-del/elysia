@@ -1683,8 +1683,9 @@ Homepage backlog reconciliation:
   media evidence without inventing missing facts. `pnpm catalog:intake` now
   generates CSV scaffolds from catalog-readiness artifacts,
   `pnpm catalog:intake:validate` blocks incomplete or malformed owner evidence,
-  and `pnpm catalog:readiness -- --scope-file <owner-intake.csv>` can verify the
-  same release slice without ignoring full-catalog media duplication.
+  `pnpm catalog:intake:apply` creates a dry-run/apply plan for approved rows,
+  and `pnpm catalog:readiness -- --scope-file <owner-intake.csv>` can verify
+  the same release slice without ignoring full-catalog media duplication.
 - `I-341` tracks owner data, class-specific attributes, asset remediation, and
   final release-gate activation. Wave 0 remains in progress.
 - `L-11` release scorecard tooling now exists through `pnpm release:scorecard`.

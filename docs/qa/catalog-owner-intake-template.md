@@ -31,6 +31,8 @@ audit the same scoped product list instead of claiming full-catalog readiness:
 
 ```powershell
 pnpm catalog:intake:validate -- --file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --strict --out-dir artifacts/qa/<date>-catalog-owner-intake-validation
+pnpm catalog:intake:apply -- --file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --replace-media --out-dir artifacts/qa/<date>-catalog-owner-intake-apply-dry-run
+pnpm catalog:intake:apply -- --file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --apply --replace-media --out-dir artifacts/qa/<date>-catalog-owner-intake-apply
 pnpm catalog:readiness -- --source database --scope-file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --strict --out-dir artifacts/qa/<date>-wave-0-priority-readiness-strict
 ```
 
@@ -115,6 +117,8 @@ Engineering should not mark a product ready until all of the following are true:
 - All six media roles are filled with exact-product assets.
 - All six media roles have decision-useful alt text.
 - `pnpm catalog:intake:validate -- --file <owner-intake.csv> --strict` passes.
+- `pnpm catalog:intake:apply -- --file <owner-intake.csv> --replace-media`
+  produces a dry-run plan with no blocker.
 - The product has no blocker or high-severity finding in a fresh
   `pnpm catalog:readiness -- --source database --strict` artifact for the
   intended release scope.

@@ -46,7 +46,8 @@ export const catalogOwnerIntakeHeader = [
   "altTextOwner",
 ] as const;
 
-type CatalogOwnerIntakeColumn = (typeof catalogOwnerIntakeHeader)[number];
+export type CatalogOwnerIntakeColumn =
+  (typeof catalogOwnerIntakeHeader)[number];
 
 type CatalogReadinessProductSummary = {
   issueCounts: {
@@ -100,6 +101,16 @@ export type CatalogOwnerIntakeValidation = {
     rowNumber: number;
   }[];
   ready: boolean;
+};
+
+export type CatalogOwnerIntakeParsedRow = {
+  rowNumber: number;
+  values: Record<CatalogOwnerIntakeColumn, string>;
+};
+
+export type CatalogOwnerIntakeRowsParseResult = {
+  headerIssues: CatalogOwnerIntakeValidationIssue[];
+  rows: CatalogOwnerIntakeParsedRow[];
 };
 
 const namedPrioritySlugs = new Set([
@@ -533,7 +544,9 @@ function parseSlugList(value: string) {
     .filter(Boolean);
 }
 
-function parseCatalogOwnerIntakeRows(content: string) {
+export function parseCatalogOwnerIntakeRows(
+  content: string,
+): CatalogOwnerIntakeRowsParseResult {
   const csvRows = parseCsvRows(content).filter((row) =>
     row.some((cell) => cell.trim()),
   );

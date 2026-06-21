@@ -8,6 +8,7 @@
     "build": "node scripts/build.mjs",
     "check": "pnpm copy:check && pnpm lint && pnpm typecheck && pnpm test",
     "catalog:intake": "tsx scripts/catalog-owner-intake.ts",
+    "catalog:intake:apply": "tsx scripts/catalog-owner-intake-apply.ts",
     "catalog:intake:validate": "tsx scripts/catalog-owner-intake-validate.ts",
     "catalog:quality": "tsx scripts/catalog-quality-report.ts",
     "catalog:readiness": "tsx scripts/catalog-readiness-audit.ts",
