@@ -17,6 +17,7 @@ Owner intake:
 - `pnpm catalog:intake:validate -- --file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --strict --out-dir artifacts/qa/<date>-catalog-owner-intake-validation`
 - `pnpm catalog:intake:apply -- --file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --replace-media --out-dir artifacts/qa/<date>-catalog-owner-intake-apply-dry-run`
 - `pnpm catalog:readiness -- --source database --scope-file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --strict --out-dir artifacts/qa/<date>-wave-0-priority-readiness-strict`
+- `pnpm release:slice-gate -- --owner-intake-validation <validation.json> --owner-intake-apply <apply.json> --catalog-readiness <catalog-readiness.json> --catalog-quality <catalog-quality-report.json> --release-scorecard <release-scorecard.json> --strict`
 
 This plan translates the current failing catalog-readiness audit into owner
 work packages. It does not assert that the audited database is production truth;
@@ -235,6 +236,7 @@ pnpm catalog:intake:validate -- --file artifacts/qa/catalog-owner-intake/catalog
 pnpm catalog:intake:apply -- --file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --replace-media --out-dir artifacts/qa/<date>-catalog-owner-intake-apply-dry-run
 pnpm catalog:intake:apply -- --file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --apply --replace-media --out-dir artifacts/qa/<date>-catalog-owner-intake-apply
 pnpm catalog:readiness -- --source database --scope-file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --strict --out-dir artifacts/qa/<date>-wave-0-priority-readiness-strict
+pnpm release:slice-gate -- --owner-intake-validation artifacts/qa/<date>-catalog-owner-intake-validation/catalog-owner-intake-validation.json --owner-intake-apply artifacts/qa/<date>-catalog-owner-intake-apply/catalog-owner-intake-apply.json --catalog-readiness artifacts/qa/<date>-wave-0-priority-readiness-strict/catalog-readiness.json --catalog-quality artifacts/qa/<date>-catalog-quality-report/catalog-quality-report.json --release-scorecard artifacts/qa/<date>-release-scorecard/release-scorecard.json --strict
 ```
 
 Exit criteria:
@@ -248,6 +250,8 @@ Exit criteria:
 - Owner-intake apply plan is reviewed in dry-run mode before any database write;
   actual writes require explicit `--apply`, and media replacement requires
   explicit `--replace-media`.
+- Release-slice gate passes against the validation, apply, readiness, quality,
+  and scorecard artifacts for the same scope.
 - Artifact is retained.
 - `docs/qa/catalog-readiness-wave-0-baseline.md`,
   `docs/TIFFANY_SURPASS_MASTER_PLAN.md`, and `docs/PROJECT_TASKS.md` are

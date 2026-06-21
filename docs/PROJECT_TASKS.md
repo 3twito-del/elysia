@@ -77,8 +77,8 @@ Completed items are intentionally removed from this active list.
   seeded customer account states for E2E, production-build E2E harness env
   isolation and teardown, route-status-aware visual QA, route sharding for long
   all-product reviews, scoped release-slice readiness audits, owner-intake CSV
-  validation, owner-intake dry-run/apply planning, focused tests, and two
-  300-product database baselines.
+  validation, owner-intake dry-run/apply planning, release-slice artifact gate,
+  focused tests, and two 300-product database baselines.
 - `Current Result`: 0 of 300 active products are publish-ready. The baseline
   after the schema migration records 874 blockers and 2,426 high-severity
   findings. The increase is expected: five missing media roles per product are
@@ -124,7 +124,10 @@ Completed items are intentionally removed from this active list.
   generate a dry-run database update plan, and
   `pnpm catalog:readiness -- --scope-file <owner-intake.csv>` to verify a
   remediated release slice while still checking shared URLs and duplicate local
-  media hashes against the full loaded catalog.
+  media hashes against the full loaded catalog. Use
+  `pnpm release:slice-gate -- --strict` to prevent a release claim unless the
+  validation, apply, readiness, quality, and scorecard artifacts all pass for
+  the same scope.
 
 The previous active items were completed and removed after focused
 implementation and verification for product cards, coupon messaging, guest

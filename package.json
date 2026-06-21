@@ -54,6 +54,7 @@
     "qa:routes": "tsx scripts/qa-route-inventory.ts --check",
     "qa:site": "tsx scripts/qa-site-audit.ts",
     "release:scorecard": "tsx scripts/release-scorecard.ts",
+    "release:slice-gate": "tsx scripts/release-slice-gate.ts",
     "shopify:dropship:doctor": "node scripts/shopify-dropship-doctor.mjs",
     "shopify:dropship:sync": "tsx scripts/sync-shopify-dropship-catalog.ts",
     "smoke": "node scripts/smoke.mjs",

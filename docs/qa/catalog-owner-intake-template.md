@@ -34,6 +34,7 @@ pnpm catalog:intake:validate -- --file artifacts/qa/catalog-owner-intake/catalog
 pnpm catalog:intake:apply -- --file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --replace-media --out-dir artifacts/qa/<date>-catalog-owner-intake-apply-dry-run
 pnpm catalog:intake:apply -- --file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --apply --replace-media --out-dir artifacts/qa/<date>-catalog-owner-intake-apply
 pnpm catalog:readiness -- --source database --scope-file artifacts/qa/catalog-owner-intake/catalog-owner-intake.csv --strict --out-dir artifacts/qa/<date>-wave-0-priority-readiness-strict
+pnpm release:slice-gate -- --owner-intake-validation artifacts/qa/<date>-catalog-owner-intake-validation/catalog-owner-intake-validation.json --owner-intake-apply artifacts/qa/<date>-catalog-owner-intake-apply/catalog-owner-intake-apply.json --catalog-readiness artifacts/qa/<date>-wave-0-priority-readiness-strict/catalog-readiness.json --catalog-quality artifacts/qa/<date>-catalog-quality-report/catalog-quality-report.json --release-scorecard artifacts/qa/<date>-release-scorecard/release-scorecard.json --strict
 ```
 
 Scoped readiness still compares product media against the full loaded catalog,
@@ -122,6 +123,8 @@ Engineering should not mark a product ready until all of the following are true:
 - The product has no blocker or high-severity finding in a fresh
   `pnpm catalog:readiness -- --source database --strict` artifact for the
   intended release scope.
+- `pnpm release:slice-gate -- --strict` passes against the validation, apply,
+  readiness, quality, and scorecard artifacts for the same release scope.
 
 ## Repository Safety
 

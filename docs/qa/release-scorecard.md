@@ -13,6 +13,7 @@ inferred from narrative.
 
 - Pure model: `scripts/lib/release-scorecard.ts`.
 - CLI: `scripts/release-scorecard.ts` (`pnpm release:scorecard`).
+- Slice gate: `scripts/release-slice-gate.ts` (`pnpm release:slice-gate`).
 - Tests: `scripts/release-scorecard.test.ts`.
 
 Every required field defaults to `MISSING`. A field only counts as satisfied
@@ -35,6 +36,18 @@ pnpm release:scorecard -- `
 
 `--strict` exits non-zero when the release is NOT READY, so the scorecard can be
 wired into a release gate once the underlying fields can actually pass.
+
+After owner-intake validation, owner-intake apply, scoped readiness, catalog
+quality, and this scorecard all produce artifacts for the same release scope,
+run:
+
+```powershell
+pnpm release:slice-gate -- --owner-intake-validation <validation.json> --owner-intake-apply <apply.json> --catalog-readiness <catalog-readiness.json> --catalog-quality <catalog-quality-report.json> --release-scorecard <release-scorecard.json> --strict
+```
+
+The slice gate is intentionally stricter than the scorecard alone: it requires
+the owner-intake and catalog artifacts that prove the scoped product data was
+validated, applied, and re-audited.
 
 ## Current verdict (Wave 0)
 
