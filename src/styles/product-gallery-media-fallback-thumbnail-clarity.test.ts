@@ -82,7 +82,7 @@ describe("product gallery media fallback and thumbnail clarity", () => {
     expect(gallery).toContain("product-gallery-viewer-nav");
     expect(gallery).toContain("product-gallery-viewer-filmstrip-shell");
     expect(gallery).toContain('variant: "viewer"');
-    expect(gallery).toContain("setIsViewerZoomed(true)");
+    expect(gallery).toContain("viewerPendingZoomRef.current = true");
     expect(gallery).toContain("aria-pressed={isViewerZoomed}");
     expect(gallery).toContain("100dvw");
     expect(gallery).toContain("viewerThumbnailRefs.current[activeImageIndex]");

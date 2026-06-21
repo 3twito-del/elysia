@@ -7,8 +7,10 @@ import {
   useRef,
   useState,
   type KeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
   type MutableRefObject,
   type PointerEvent,
+  type WheelEvent as ReactWheelEvent,
 } from "react";
 import {
   ChevronLeft,
@@ -57,6 +59,11 @@ const viewerCurrentMediaSelector = {
 const viewerSwipeOffsetCssProperty = {
   value: "--viewer-swipe-offset",
 } as const;
+const viewerZoomCssProperties = {
+  scale: { value: "--viewer-zoom-scale" },
+  translateX: { value: "--viewer-zoom-tx" },
+  translateY: { value: "--viewer-zoom-ty" },
+} as const;
 const viewerSwipePixelUnit = {
   value: "px",
 } as const;
@@ -77,9 +84,32 @@ type ViewerDragState = {
   pointerId: number;
   startScrollLeft: number;
   startScrollTop: number;
+  startTranslateX: number;
+  startTranslateY: number;
   startX: number;
   startY: number;
 };
+
+type ViewerZoomTransform = {
+  scale: number;
+  x: number;
+  y: number;
+};
+
+type ViewerPinchBaseline = {
+  distance: number;
+  midpoint: { x: number; y: number };
+  scale: number;
+  translateX: number;
+  translateY: number;
+};
+
+const viewerZoomBounds = {
+  min: 1,
+  max: 4,
+  toggleLevel: 2.5,
+} as const;
+const viewerWheelZoomSensitivity = 0.0016;
 
 const mainGalleryImageSizes =
   "(min-width: 1280px) 58vw, (min-width: 1024px) 54vw, 100vw";
@@ -103,12 +133,17 @@ export function ProductGallery({
   const [isViewerZoomed, setIsViewerZoomed] = useState(false);
   const galleryFrameRef = useRef<HTMLDivElement | null>(null);
   const viewerStageRef = useRef<HTMLDivElement | null>(null);
+  const viewerZoomSurfaceRef = useRef<HTMLDivElement | null>(null);
   const viewerTriggerRef = useRef<HTMLButtonElement | null>(null);
   const thumbnailRefs = useRef<ThumbnailRefs>([]);
   const viewerThumbnailRefs = useRef<ThumbnailRefs>([]);
   const viewerDragStateRef = useRef<ViewerDragState | null>(null);
   const viewerDragSuppressClickRef = useRef(false);
   const viewerSwipeReleaseTimeoutRef = useRef<number | null>(null);
+  const viewerZoomRef = useRef<ViewerZoomTransform>({ scale: 1, x: 0, y: 0 });
+  const viewerPointersRef = useRef(new Map<number, { x: number; y: number }>());
+  const viewerPinchRef = useRef<ViewerPinchBaseline | null>(null);
+  const viewerPendingZoomRef = useRef(false);
   const shouldReduceMotion = useResolvedReducedMotion();
   const activeImageIndex = Math.min(activeIndex, galleryImages.length - 1);
   const activeImage = galleryImages[activeImageIndex];
@@ -129,27 +164,6 @@ export function ProductGallery({
   const hiddenGalleryImageCount = Math.max(galleryImageCount - 3, 0);
 
   useEffect(() => {
-    if (!isViewerOpen) return;
-
-    const animationFrame = window.requestAnimationFrame(() => {
-      const stage = viewerStageRef.current;
-      if (!stage) return;
-
-      if (!isViewerZoomed) {
-        stage.scrollTo({ left: 0, top: 0 });
-        return;
-      }
-
-      stage.scrollTo({
-        left: Math.max((stage.scrollWidth - stage.clientWidth) / 2, 0),
-        top: Math.max((stage.scrollHeight - stage.clientHeight) / 2, 0),
-      });
-    });
-
-    return () => window.cancelAnimationFrame(animationFrame);
-  }, [activeImage, isViewerOpen, isViewerZoomed]);
-
-  useEffect(() => {
     if (!isViewerOpen || galleryImageCount <= 1) return;
 
     const animationFrame = window.requestAnimationFrame(() => {
@@ -161,6 +175,130 @@ export function ProductGallery({
 
     return () => window.cancelAnimationFrame(animationFrame);
   }, [activeImageIndex, galleryImageCount, isViewerOpen]);
+
+  function getViewerCurrentShell() {
+    return viewerStageRef.current?.querySelector<HTMLElement>(
+      viewerCurrentMediaSelector.value,
+    );
+  }
+
+  function clampViewerZoomTranslation(
+    scale: number,
+    x: number,
+    y: number,
+    shellRect: { height: number; width: number },
+  ) {
+    const maxX = Math.max(0, (shellRect.width * (scale - 1)) / 2);
+    const maxY = Math.max(0, (shellRect.height * (scale - 1)) / 2);
+
+    return {
+      x: clamp(x, -maxX, maxX),
+      y: clamp(y, -maxY, maxY),
+    };
+  }
+
+  function applyViewerZoomTransform(options: { animate?: boolean } = {}) {
+    const surface = viewerZoomSurfaceRef.current;
+    if (!surface) return;
+
+    const { scale, x, y } = viewerZoomRef.current;
+
+    surface.style.setProperty(viewerZoomCssProperties.scale.value, String(scale));
+    surface.style.setProperty(
+      viewerZoomCssProperties.translateX.value,
+      String(Math.round(x)).concat(viewerSwipePixelUnit.value),
+    );
+    surface.style.setProperty(
+      viewerZoomCssProperties.translateY.value,
+      String(Math.round(y)).concat(viewerSwipePixelUnit.value),
+    );
+    surface.dataset.viewerZoomAnimate = String(options.animate ?? false);
+  }
+
+  function commitViewerZoom(
+    next: ViewerZoomTransform,
+    options: { animate?: boolean } = {},
+  ) {
+    const wasZoomed = viewerZoomRef.current.scale > 1;
+    const nextScale = clamp(
+      next.scale,
+      viewerZoomBounds.min,
+      viewerZoomBounds.max,
+    );
+    const isZoomed = nextScale > 1;
+
+    viewerZoomRef.current = isZoomed
+      ? { scale: nextScale, x: next.x, y: next.y }
+      : { scale: 1, x: 0, y: 0 };
+
+    applyViewerZoomTransform(options);
+
+    if (isZoomed !== wasZoomed) {
+      setIsViewerZoomed(isZoomed);
+    }
+  }
+
+  function zoomViewerToPoint(
+    nextScale: number,
+    clientX: number,
+    clientY: number,
+    options: { animate?: boolean } = {},
+  ) {
+    const shell = getViewerCurrentShell();
+    if (!shell) return;
+
+    const rect = shell.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const current = viewerZoomRef.current;
+    const targetScale = clamp(
+      nextScale,
+      viewerZoomBounds.min,
+      viewerZoomBounds.max,
+    );
+
+    if (targetScale <= 1) {
+      commitViewerZoom({ scale: 1, x: 0, y: 0 }, options);
+      return;
+    }
+
+    const ratio = targetScale / current.scale;
+    const deltaX = clientX - centerX - current.x;
+    const deltaY = clientY - centerY - current.y;
+    const translation = clampViewerZoomTranslation(
+      targetScale,
+      current.x + deltaX * (1 - ratio),
+      current.y + deltaY * (1 - ratio),
+      rect,
+    );
+
+    commitViewerZoom(
+      { scale: targetScale, x: translation.x, y: translation.y },
+      options,
+    );
+  }
+
+  function resetViewerZoom(options: { animate?: boolean } = {}) {
+    viewerPinchRef.current = null;
+    commitViewerZoom({ scale: 1, x: 0, y: 0 }, options);
+  }
+
+  function toggleViewerZoom() {
+    if (viewerZoomRef.current.scale > 1) {
+      resetViewerZoom({ animate: true });
+      return;
+    }
+
+    const shell = getViewerCurrentShell();
+    const rect = shell?.getBoundingClientRect();
+
+    zoomViewerToPoint(
+      viewerZoomBounds.toggleLevel,
+      rect ? rect.left + rect.width / 2 : 0,
+      rect ? rect.top + rect.height / 2 : 0,
+      { animate: true },
+    );
+  }
 
   function activateThumbnail(
     nextIndex: number,
@@ -175,7 +313,7 @@ export function ProductGallery({
       (nextIndex + galleryImages.length) % galleryImages.length;
 
     setActiveIndex(boundedIndex);
-    setIsViewerZoomed(false);
+    resetViewerZoom();
 
     if (options.shouldFocus && options.refs) {
       window.requestAnimationFrame(() => {
@@ -223,6 +361,23 @@ export function ProductGallery({
   }
 
   function handleViewerPointerDown(event: PointerEvent<HTMLDivElement>) {
+    if (isViewerDragExemptTarget(event.target)) return;
+
+    // Track every active touch so a second finger upgrades the gesture into a
+    // pinch-to-zoom around the midpoint between the two pointers.
+    if (event.pointerType !== viewerPointerTypes.mouse.value) {
+      viewerPointersRef.current.set(event.pointerId, {
+        x: event.clientX,
+        y: event.clientY,
+      });
+
+      if (viewerPointersRef.current.size >= 2) {
+        beginViewerPinch();
+        viewerDragStateRef.current = null;
+        return;
+      }
+    }
+
     if (!event.isPrimary) return;
     if (
       event.pointerType === viewerPointerTypes.mouse.value &&
@@ -230,26 +385,92 @@ export function ProductGallery({
     ) {
       return;
     }
-    if (isViewerDragExemptTarget(event.target)) return;
-    if (!isViewerZoomed && galleryImageCount <= 1) return;
+
+    const zoomed = viewerZoomRef.current.scale > 1;
+    if (!zoomed && galleryImageCount <= 1) return;
 
     clearViewerSwipeReleaseTimeout();
     resetViewerSwipeTracking(event.currentTarget);
     viewerDragSuppressClickRef.current = false;
     viewerDragStateRef.current = {
       hasMoved: false,
-      mode: isViewerZoomed
-        ? viewerDragModes.pan.value
-        : viewerDragModes.swipe.value,
+      mode: zoomed ? viewerDragModes.pan.value : viewerDragModes.swipe.value,
       pointerId: event.pointerId,
       startScrollLeft: event.currentTarget.scrollLeft,
       startScrollTop: event.currentTarget.scrollTop,
+      startTranslateX: viewerZoomRef.current.x,
+      startTranslateY: viewerZoomRef.current.y,
       startX: event.clientX,
       startY: event.clientY,
     };
   }
 
+  function getViewerPinchGeometry() {
+    const points = Array.from(viewerPointersRef.current.values()).slice(0, 2);
+    const [first, second] = points;
+    if (!first || !second) return null;
+
+    return {
+      distance: Math.hypot(second.x - first.x, second.y - first.y),
+      midpoint: {
+        x: (first.x + second.x) / 2,
+        y: (first.y + second.y) / 2,
+      },
+    };
+  }
+
+  function beginViewerPinch() {
+    const geometry = getViewerPinchGeometry();
+    if (!geometry || geometry.distance <= 0) return;
+
+    clearViewerSwipeReleaseTimeout();
+    resetViewerSwipeTracking(viewerStageRef.current);
+    viewerDragSuppressClickRef.current = true;
+    viewerPinchRef.current = {
+      distance: geometry.distance,
+      midpoint: geometry.midpoint,
+      scale: viewerZoomRef.current.scale,
+      translateX: viewerZoomRef.current.x,
+      translateY: viewerZoomRef.current.y,
+    };
+  }
+
+  function updateViewerPinch() {
+    const baseline = viewerPinchRef.current;
+    const geometry = getViewerPinchGeometry();
+    if (!baseline || !geometry || baseline.distance <= 0) return;
+
+    const nextScale = clamp(
+      (baseline.scale * geometry.distance) / baseline.distance,
+      viewerZoomBounds.min,
+      viewerZoomBounds.max,
+    );
+
+    zoomViewerToPoint(
+      nextScale,
+      geometry.midpoint.x,
+      geometry.midpoint.y,
+      { animate: false },
+    );
+  }
+
   function handleViewerPointerMove(event: PointerEvent<HTMLDivElement>) {
+    if (
+      event.pointerType !== viewerPointerTypes.mouse.value &&
+      viewerPointersRef.current.has(event.pointerId)
+    ) {
+      viewerPointersRef.current.set(event.pointerId, {
+        x: event.clientX,
+        y: event.clientY,
+      });
+    }
+
+    if (viewerPinchRef.current) {
+      event.preventDefault();
+      updateViewerPinch();
+      return;
+    }
+
     const dragState = viewerDragStateRef.current;
 
     if (dragState?.pointerId !== event.pointerId) return;
@@ -266,8 +487,23 @@ export function ProductGallery({
 
     if (dragState.mode === viewerDragModes.pan.value) {
       event.preventDefault();
-      event.currentTarget.scrollLeft = dragState.startScrollLeft - deltaX;
-      event.currentTarget.scrollTop = dragState.startScrollTop - deltaY;
+      const shell = getViewerCurrentShell();
+      const rect = shell?.getBoundingClientRect();
+      const translation = clampViewerZoomTranslation(
+        viewerZoomRef.current.scale,
+        dragState.startTranslateX + deltaX,
+        dragState.startTranslateY + deltaY,
+        rect ?? { height: 0, width: 0 },
+      );
+
+      commitViewerZoom(
+        {
+          scale: viewerZoomRef.current.scale,
+          x: translation.x,
+          y: translation.y,
+        },
+        { animate: false },
+      );
       return;
     }
 
@@ -281,6 +517,21 @@ export function ProductGallery({
     event: PointerEvent<HTMLDivElement>,
     options: { cancelled?: boolean } = {},
   ) {
+    if (event.pointerType !== viewerPointerTypes.mouse.value) {
+      viewerPointersRef.current.delete(event.pointerId);
+
+      if (viewerPinchRef.current && viewerPointersRef.current.size < 2) {
+        // Lifting one finger ends the pinch; snap the lingering zoom into its
+        // clamped bounds and keep suppressing the click the lift would trigger.
+        viewerPinchRef.current = null;
+        commitViewerZoom(viewerZoomRef.current, { animate: true });
+        window.setTimeout(() => {
+          viewerDragSuppressClickRef.current = false;
+        }, 0);
+        return;
+      }
+    }
+
     const dragState = viewerDragStateRef.current;
 
     if (dragState?.pointerId !== event.pointerId) return;
@@ -337,22 +588,52 @@ export function ProductGallery({
     }
   }
 
-  function handleViewerMediaClick() {
+  function handleViewerMediaClick(event: ReactMouseEvent<HTMLButtonElement>) {
     if (viewerDragSuppressClickRef.current) {
       viewerDragSuppressClickRef.current = false;
       return;
     }
 
-    setIsViewerZoomed((currentZoom) => !currentZoom);
+    if (viewerZoomRef.current.scale > 1) {
+      resetViewerZoom({ animate: true });
+      return;
+    }
+
+    zoomViewerToPoint(
+      viewerZoomBounds.toggleLevel,
+      event.clientX,
+      event.clientY,
+      { animate: true },
+    );
+  }
+
+  function handleViewerWheel(event: ReactWheelEvent<HTMLDivElement>) {
+    if (isViewerDragExemptTarget(event.target)) return;
+
+    const current = viewerZoomRef.current;
+    const nextScale = clamp(
+      current.scale * (1 - event.deltaY * viewerWheelZoomSensitivity),
+      viewerZoomBounds.min,
+      viewerZoomBounds.max,
+    );
+
+    if (nextScale === current.scale) return;
+
+    if (event.cancelable) event.preventDefault();
+    zoomViewerToPoint(nextScale, event.clientX, event.clientY, {
+      animate: false,
+    });
   }
 
   function handleViewerOpenChange(nextOpen: boolean) {
     clearViewerSwipeReleaseTimeout();
     setIsViewerOpen(nextOpen);
     resetGalleryHoverZoom();
+    viewerPointersRef.current.clear();
+    viewerPinchRef.current = null;
 
     if (!nextOpen) {
-      setIsViewerZoomed(false);
+      resetViewerZoom();
       window.requestAnimationFrame(() => {
         viewerTriggerRef.current?.focus();
       });
@@ -412,7 +693,7 @@ export function ProductGallery({
   function openViewerFromSecondaryTile(index: number) {
     clearViewerSwipeReleaseTimeout();
     activateThumbnail(index);
-    setIsViewerZoomed(false);
+    resetViewerZoom();
     setIsViewerOpen(true);
   }
 
@@ -628,6 +909,27 @@ export function ProductGallery({
     );
   }
 
+  useEffect(() => {
+    if (!isViewerOpen) return;
+
+    // Re-apply the live zoom transform after the viewer re-renders between its
+    // swipe layout (scale 1) and its zoomed layout so the surface keeps the
+    // exact scale/translation the gesture engine committed imperatively.
+    applyViewerZoomTransform({ animate: false });
+  }, [activeImage, isViewerOpen, isViewerZoomed]);
+
+  useEffect(() => {
+    if (!isViewerOpen || !viewerPendingZoomRef.current) return;
+
+    viewerPendingZoomRef.current = false;
+    const animationFrame = window.requestAnimationFrame(() => {
+      toggleViewerZoom();
+    });
+
+    return () => window.cancelAnimationFrame(animationFrame);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isViewerOpen]);
+
   if (!activeImage) {
     return (
       <div className={cn("grid min-w-0 gap-4", className)}>
@@ -701,9 +1003,11 @@ export function ProductGallery({
                   alt={`${productName}, תמונה ${activeImagePosition} מתוך ${galleryImageCount}`}
                   className="media-color product-gallery-hover-zoom-image object-cover"
                   data-testid="product-gallery-main-image"
+                  decoding="async"
                   fill
                   loading={activeImageIndex === 0 ? undefined : "lazy"}
                   priority={activeImageIndex === 0}
+                  quality={90}
                   sizes={mainGalleryImageSizes}
                   src={activeImage}
                 />
@@ -740,7 +1044,7 @@ export function ProductGallery({
                   onClick={(event) => {
                     viewerTriggerRef.current = event.currentTarget;
                     event.currentTarget.focus();
-                    setIsViewerZoomed(false);
+                    resetViewerZoom();
                   }}
                   type="button"
                   variant="secondary"
@@ -757,7 +1061,7 @@ export function ProductGallery({
                 onClick={(event) => {
                   viewerTriggerRef.current = event.currentTarget;
                   event.currentTarget.focus();
-                  setIsViewerZoomed(true);
+                  viewerPendingZoomRef.current = true;
                   setIsViewerOpen(true);
                 }}
                 size="icon-sm"
@@ -811,7 +1115,7 @@ export function ProductGallery({
                     aria-pressed={isViewerZoomed}
                     data-icon-tooltip={isViewerZoomed ? "ביטול הגדלה" : "הגדלה"}
                     data-testid="product-gallery-fullscreen-zoom-toggle"
-                    onClick={() => setIsViewerZoomed((current) => !current)}
+                    onClick={() => toggleViewerZoom()}
                     size="icon-sm"
                     type="button"
                     variant="ghost"
@@ -839,10 +1143,8 @@ export function ProductGallery({
 
               <div
                 className={cn(
-                  "product-gallery-viewer-stage relative box-border grid min-h-0 w-full max-w-[100dvw] min-w-0 place-items-center",
-                  isViewerZoomed
-                    ? "product-gallery-viewer-stage-zoomed overflow-auto overscroll-contain"
-                    : "overflow-hidden",
+                  "product-gallery-viewer-stage relative box-border grid min-h-0 w-full max-w-[100dvw] min-w-0 place-items-center overflow-hidden",
+                  isViewerZoomed && "product-gallery-viewer-stage-zoomed",
                 )}
                 data-gallery-drag-mode={
                   isViewerZoomed
@@ -858,6 +1160,7 @@ export function ProductGallery({
                 onPointerDown={handleViewerPointerDown}
                 onPointerMove={handleViewerPointerMove}
                 onPointerUp={finishViewerPointerDrag}
+                onWheel={handleViewerWheel}
                 ref={viewerStageRef}
               >
                 <div
@@ -904,8 +1207,6 @@ export function ProductGallery({
                           "product-gallery-viewer-media-shell relative",
                           !isViewerZoomed &&
                             "product-gallery-viewer-media-shell-current",
-                          isViewerZoomed &&
-                            "product-gallery-viewer-media-shell-zoomed",
                         )}
                         data-gallery-viewer-current-media={String(true)}
                         data-testid="product-gallery-fullscreen-media"
@@ -929,14 +1230,23 @@ export function ProductGallery({
                         }}
                         type="button"
                       >
-                        <Image
-                          alt={`${productName}, תמונה במסך מלא ${activeImagePosition} מתוך ${galleryImageCount}`}
-                          className="media-color object-contain"
-                          draggable={false}
-                          fill
-                          sizes={viewerGalleryImageSizes}
-                          src={activeImage}
-                        />
+                        <div
+                          className="product-gallery-viewer-zoom-surface absolute inset-0"
+                          data-testid="product-gallery-fullscreen-zoom-surface"
+                          data-viewer-zoom-animate="false"
+                          ref={viewerZoomSurfaceRef}
+                        >
+                          <Image
+                            alt={`${productName}, תמונה במסך מלא ${activeImagePosition} מתוך ${galleryImageCount}`}
+                            className="media-color object-contain"
+                            decoding="async"
+                            draggable={false}
+                            fill
+                            quality={90}
+                            sizes={viewerGalleryImageSizes}
+                            src={activeImage}
+                          />
+                        </div>
                       </motion.button>
                     </AnimatePresence>
                     {!isViewerZoomed
