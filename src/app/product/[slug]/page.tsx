@@ -56,14 +56,6 @@ type ServiceRowProps = {
   title: string;
 };
 
-const boutiqueImageByCategorySlug: Record<string, string> = {
-  bracelets: "/brand/boutique/category-bracelets.avif",
-  earrings: "/brand/boutique/category-earrings.avif",
-  necklaces: "/brand/boutique/category-necklaces.avif",
-  rings: "/brand/boutique/category-rings.avif",
-};
-const boutiqueProductDetailImage = "/brand/boutique/product-detail.avif";
-
 export async function generateStaticParams() {
   const products = await listCatalogProducts();
 
@@ -757,18 +749,7 @@ function createSearchReturnHref(query: string) {
 }
 
 function getProductBoutiqueGalleryImages(product: CatalogProduct) {
-  const categoryLifestyleImage =
-    boutiqueImageByCategorySlug[product.categorySlug];
-
   return Array.from(
-    new Set(
-      [
-        product.image,
-        ...product.images,
-        categoryLifestyleImage,
-        boutiqueProductDetailImage,
-        "/brand/boutique/lifestyle-hero.avif",
-      ].filter((image): image is string => Boolean(image)),
-    ),
+    new Set([product.image, ...product.images].filter(Boolean)),
   ).slice(0, 6);
 }

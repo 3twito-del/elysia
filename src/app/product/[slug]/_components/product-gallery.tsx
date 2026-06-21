@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
 import {
+  useEffect,
   useRef,
   useState,
   type KeyboardEvent,
@@ -101,6 +102,7 @@ export function ProductGallery({
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [isViewerZoomed, setIsViewerZoomed] = useState(false);
   const galleryFrameRef = useRef<HTMLDivElement | null>(null);
+  const viewerStageRef = useRef<HTMLDivElement | null>(null);
   const viewerTriggerRef = useRef<HTMLButtonElement | null>(null);
   const thumbnailRefs = useRef<ThumbnailRefs>([]);
   const viewerThumbnailRefs = useRef<ThumbnailRefs>([]);
@@ -125,6 +127,40 @@ export function ProductGallery({
     galleryImageCount,
   });
   const hiddenGalleryImageCount = Math.max(galleryImageCount - 3, 0);
+
+  useEffect(() => {
+    if (!isViewerOpen) return;
+
+    const animationFrame = window.requestAnimationFrame(() => {
+      const stage = viewerStageRef.current;
+      if (!stage) return;
+
+      if (!isViewerZoomed) {
+        stage.scrollTo({ left: 0, top: 0 });
+        return;
+      }
+
+      stage.scrollTo({
+        left: Math.max((stage.scrollWidth - stage.clientWidth) / 2, 0),
+        top: Math.max((stage.scrollHeight - stage.clientHeight) / 2, 0),
+      });
+    });
+
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, [activeImage, isViewerOpen, isViewerZoomed]);
+
+  useEffect(() => {
+    if (!isViewerOpen || galleryImageCount <= 1) return;
+
+    const animationFrame = window.requestAnimationFrame(() => {
+      viewerThumbnailRefs.current[activeImageIndex]?.scrollIntoView({
+        block: "nearest",
+        inline: "center",
+      });
+    });
+
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, [activeImageIndex, galleryImageCount, isViewerOpen]);
 
   function activateThumbnail(
     nextIndex: number,
@@ -733,7 +769,7 @@ export function ProductGallery({
               </Button>
             </div>
             <DialogContent
-              className="product-gallery-viewer-dialog bg-background fixed !inset-0 !top-0 !left-0 z-[100] grid !h-auto !w-auto !max-w-none !translate-x-0 !translate-y-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden !rounded-none !border-0 !p-0 sm:!max-w-none"
+              className="product-gallery-viewer-dialog bg-background fixed !top-0 !left-0 z-[100] grid !h-[100dvh] !w-[100dvw] !max-w-[100dvw] !translate-x-0 !translate-y-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden !rounded-none !border-0 !p-0 sm:!max-w-[100dvw]"
               data-testid="product-gallery-fullscreen-dialog"
               dir="rtl"
               onKeyDown={handleViewerKeyDown}
@@ -815,12 +851,14 @@ export function ProductGallery({
                 }
                 data-gallery-zoomed={isViewerZoomed ? "true" : "false"}
                 data-testid="product-gallery-fullscreen-stage"
+                dir="ltr"
                 onPointerCancel={(event) =>
                   finishViewerPointerDrag(event, { cancelled: true })
                 }
                 onPointerDown={handleViewerPointerDown}
                 onPointerMove={handleViewerPointerMove}
                 onPointerUp={finishViewerPointerDrag}
+                ref={viewerStageRef}
               >
                 <div
                   className={cn(

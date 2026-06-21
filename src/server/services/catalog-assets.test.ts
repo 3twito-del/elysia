@@ -47,4 +47,29 @@ describe("catalog display assets", () => {
     );
     expect(firstImages[0]).not.toBe(secondImages[0]);
   });
+
+  it("keeps fallback gallery images inside the product category", () => {
+    const images = getDisplayCatalogImages({
+      categorySlug: "earrings",
+      images: ["/brand/boutique/category-earrings.avif"],
+      slug: "elysia-supplier-pearl-drop-earrings",
+    });
+
+    expect(images).toHaveLength(6);
+    expect(images).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(
+          /^\/brand\/product-catalog\/earrings-\d{2}\.avif$/,
+        ),
+      ]),
+    );
+    expect(
+      images.every((image) =>
+        /^\/brand\/product-catalog\/earrings-\d{2}\.avif$/.test(image),
+      ),
+    ).toBe(true);
+    expect(images.join(" ")).not.toMatch(
+      /category-(rings|bracelets|necklaces)/,
+    );
+  });
 });

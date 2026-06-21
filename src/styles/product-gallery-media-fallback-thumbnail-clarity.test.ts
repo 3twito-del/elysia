@@ -84,8 +84,9 @@ describe("product gallery media fallback and thumbnail clarity", () => {
     expect(gallery).toContain('variant: "viewer"');
     expect(gallery).toContain("setIsViewerZoomed(true)");
     expect(gallery).toContain("aria-pressed={isViewerZoomed}");
-    expect(gallery).toContain("100dvh");
     expect(gallery).toContain("100dvw");
+    expect(gallery).toContain("viewerThumbnailRefs.current[activeImageIndex]");
+    expect(gallery).toContain('inline: "center"');
     expect(gallery).toContain("mainGalleryImageSizes");
     expect(gallery).toContain("galleryThumbnailImageSizes");
     expect(gallery).toContain("integratedGallerySecondaryImageSizes");
@@ -125,8 +126,13 @@ describe("product gallery media fallback and thumbnail clarity", () => {
     expect(css).toContain(".product-gallery-viewer-dialog");
     expect(css).toContain(".product-gallery-viewer-header");
     expect(css).toContain(".product-gallery-viewer-stage");
+    expect(css).toContain("100dvh");
     expect(css).toContain(".product-gallery-viewer-media-shell");
     expect(css).toContain(".product-gallery-viewer-media-shell-zoomed");
+    expect(css).toContain(
+      ".product-gallery-viewer-stage-zoomed::-webkit-scrollbar",
+    );
+    expect(css).toContain("scrollbar-width: none;");
     expect(css).toContain(".product-gallery-viewer-nav-previous");
     expect(css).toContain(".product-gallery-viewer-nav-next");
     expect(css).toContain(".product-gallery-viewer-filmstrip-shell");

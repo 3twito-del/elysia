@@ -4312,6 +4312,11 @@ html[data-accessibility-motion="reduce"]
 
 .product-gallery-viewer-stage-zoomed {
   place-items: start center;
+  scrollbar-width: none;
+}
+
+.product-gallery-viewer-stage-zoomed::-webkit-scrollbar {
+  display: none;
 }
 
 .product-gallery-viewer-stage .product-gallery-viewer-nav {

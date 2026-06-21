@@ -44,7 +44,7 @@ import type {
 const ACTIVE_PRODUCT_WHERE = {
   status: "ACTIVE",
 } satisfies Prisma.ProductWhereInput;
-const CATALOG_MEDIA_VERSION = "boutique-v10";
+const CATALOG_MEDIA_VERSION = "boutique-v11";
 const CATALOG_REVALIDATE_SECONDS = 60 * 60;
 const publicCatalogCopyReplacements = [
   ["יוקרה", "נוכחות עדינה"],

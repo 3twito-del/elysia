@@ -13,30 +13,10 @@ const PRODUCT_CATALOG_IMAGE_CATEGORIES = new Set([
 ]);
 
 const CATALOG_IMAGE_VARIANTS: Record<string, readonly string[]> = {
-  rings: [
-    "/brand/boutique/category-rings.avif",
-    "/brand/boutique/lifestyle-hero.avif",
-    "/brand/boutique/product-detail.avif",
-    "/brand/boutique/category-necklaces.avif",
-  ],
-  necklaces: [
-    "/brand/boutique/category-necklaces.avif",
-    "/brand/boutique/lifestyle-hero.avif",
-    "/brand/boutique/product-detail.avif",
-    "/brand/boutique/category-earrings.avif",
-  ],
-  earrings: [
-    "/brand/boutique/category-earrings.avif",
-    "/brand/boutique/lifestyle-hero.avif",
-    "/brand/boutique/product-detail.avif",
-    "/brand/boutique/category-rings.avif",
-  ],
-  bracelets: [
-    "/brand/boutique/category-bracelets.avif",
-    "/brand/boutique/lifestyle-hero.avif",
-    "/brand/boutique/product-detail.avif",
-    "/brand/boutique/category-rings.avif",
-  ],
+  bracelets: ["/brand/boutique/category-bracelets.avif"],
+  earrings: ["/brand/boutique/category-earrings.avif"],
+  necklaces: ["/brand/boutique/category-necklaces.avif"],
+  rings: ["/brand/boutique/category-rings.avif"],
 };
 
 const CATEGORY_CATALOG_IMAGES: Record<string, string> = {
@@ -97,24 +77,18 @@ export function getProductCatalogImages(input: {
     input.slug,
     PRODUCT_CATALOG_IMAGE_COUNT,
   );
-  const productImages = [0, 1].map((offset) =>
-    getProductCatalogImageByIndex({
-      categorySlug: input.categorySlug,
-      imageIndex: getProductCatalogOrderedImageIndex(
-        (primaryImageIndex + offset) % PRODUCT_CATALOG_IMAGE_COUNT,
-      ),
-    }),
+  const productImages = Array.from(
+    { length: Math.min(6, PRODUCT_CATALOG_IMAGE_COUNT) },
+    (_, offset) =>
+      getProductCatalogImageByIndex({
+        categorySlug: input.categorySlug,
+        imageIndex: getProductCatalogOrderedImageIndex(
+          (primaryImageIndex + offset) % PRODUCT_CATALOG_IMAGE_COUNT,
+        ),
+      }),
   );
-  const fallbackImages = CATALOG_IMAGE_VARIANTS[input.categorySlug] ?? [
-    DEFAULT_CATALOG_IMAGE,
-  ];
-  const startIndex = getStableIndex(input.slug, fallbackImages.length);
-  const rotatedImages = [
-    ...fallbackImages.slice(startIndex),
-    ...fallbackImages.slice(0, startIndex),
-  ];
 
-  return Array.from(new Set([...productImages, ...rotatedImages])).slice(0, 6);
+  return Array.from(new Set(productImages)).slice(0, 6);
 }
 
 export function getProductCatalogImage(input: {
