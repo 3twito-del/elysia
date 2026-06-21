@@ -10,6 +10,7 @@ const sourceRoots = ["src/app", "src/components", "src/styles"].map((dir) =>
 const allowedContinuousMotionFiles = new Set([
   "src/app/page.tsx",
   "src/components/cinematic-hero-sequence.tsx",
+  "src/components/home-hero-aura.tsx",
 ]);
 const continuousMotionPatterns = [/\brepeat\s*:\s*-1\b/, /\binfinite\b/];
 

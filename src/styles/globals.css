@@ -3556,6 +3556,103 @@ html[data-accessibility-motion="reduce"]
   opacity: 0.48;
 }
 
+/* Interactive luminous aura that tracks the pointer across the hero. */
+.home-hero-aura {
+  --hero-aura-x: 68%;
+  --hero-aura-y: 38%;
+  z-index: 5;
+  overflow: hidden;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.home-hero-aura-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    32rem 32rem at var(--hero-aura-x) var(--hero-aura-y),
+    rgb(216 195 165 / 42%) 0%,
+    rgb(180 154 106 / 26%) 26%,
+    rgb(180 154 106 / 8%) 48%,
+    transparent 66%
+  );
+  opacity: 0.55;
+  transition:
+    opacity 600ms cubic-bezier(0.2, 0, 0, 1),
+    background-position 220ms cubic-bezier(0.2, 0, 0, 1);
+  will-change: background;
+}
+
+.home-hero-aura[data-hero-aura-active="true"] .home-hero-aura-glow {
+  opacity: 0.92;
+}
+
+.home-hero-aura-sheen {
+  position: absolute;
+  inset: -40% -10%;
+  background: linear-gradient(
+    115deg,
+    transparent 38%,
+    rgb(255 248 235 / 26%) 48%,
+    rgb(216 195 165 / 10%) 54%,
+    transparent 62%
+  );
+  /* Continuous sweep is driven by the Web Animations API in HomeHeroAura so
+     the public-motion budget stays free of looping CSS animations. */
+  transform: translateX(-120%);
+}
+
+.home-hero-aura-motes {
+  position: absolute;
+  inset: 0;
+}
+
+.home-hero-aura-mote {
+  position: absolute;
+  width: var(--mote-size, 4px);
+  height: var(--mote-size, 4px);
+  border-radius: 999px;
+  background: radial-gradient(
+    circle,
+    rgb(255 249 236 / 95%) 0%,
+    rgb(216 195 165 / 70%) 45%,
+    transparent 72%
+  );
+  box-shadow: 0 0 8px rgb(216 195 165 / 60%);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.home-hero-aura[data-hero-aura-reduced="true"] .home-hero-aura-glow {
+  opacity: 0.4;
+  transition: none;
+}
+
+.home-hero-aura[data-hero-aura-reduced="true"] .home-hero-aura-sheen,
+.home-hero-aura[data-hero-aura-reduced="true"] .home-hero-aura-motes {
+  display: none;
+}
+
+html[data-accessibility-motion="reduce"] .home-hero-aura-sheen,
+html[data-accessibility-motion="reduce"] .home-hero-aura-motes {
+  display: none;
+}
+
+html[data-accessibility-motion="reduce"] .home-hero-aura-glow {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-hero-aura-sheen,
+  .home-hero-aura-motes {
+    display: none;
+  }
+
+  .home-hero-aura-glow {
+    transition: none;
+  }
+}
+
 .storefront-hero-copy {
   inset-inline-start: clamp(1.25rem, 7vw, 7rem);
   inset-inline-end: auto;
@@ -4211,7 +4308,7 @@ html[data-accessibility-motion="reduce"]
 }
 
 .product-gallery-viewer-stage[data-gallery-drag-mode="swipe"] {
-  touch-action: pan-y;
+  touch-action: pan-y pinch-zoom;
 }
 
 .product-gallery-viewer-stage[data-gallery-drag-mode="pan"] {
@@ -4284,6 +4381,25 @@ html[data-accessibility-motion="reduce"]
   -webkit-user-drag: none;
 }
 
+.product-gallery-viewer-zoom-surface {
+  --viewer-zoom-scale: 1;
+  --viewer-zoom-tx: 0px;
+  --viewer-zoom-ty: 0px;
+  transform: translate3d(var(--viewer-zoom-tx), var(--viewer-zoom-ty), 0)
+    scale(var(--viewer-zoom-scale));
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.product-gallery-viewer-zoom-surface[data-viewer-zoom-animate="true"] {
+  transition: transform 220ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+html[data-accessibility-motion="reduce"]
+  .product-gallery-viewer-zoom-surface[data-viewer-zoom-animate="true"] {
+  transition: none;
+}
+
 .product-gallery-viewer-media-shell-adjacent {
   pointer-events: none;
 }
@@ -4311,7 +4427,7 @@ html[data-accessibility-motion="reduce"]
 }
 
 .product-gallery-viewer-stage-zoomed {
-  place-items: start center;
+  place-items: center;
   scrollbar-width: none;
 }
 
