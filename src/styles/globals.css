@@ -2297,6 +2297,11 @@ html[data-accessibility-motion="reduce"] .boutique-collection-action::before {
   background: rgb(255 250 244 / 46%);
 }
 
+.home-gift-finder-chips {
+  align-content: flex-start;
+  min-height: calc(2.5rem * 2 + 0.5rem);
+}
+
 .home-gift-finder-chip {
   display: inline-flex;
   align-items: center;
