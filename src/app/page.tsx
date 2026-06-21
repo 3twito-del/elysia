@@ -380,7 +380,7 @@ export default async function Home() {
                   <p className="text-muted-foreground text-xs font-medium">
                     {String(index + 1).padStart(2, "0")} / {group.label}
                   </p>
-                  <div className="home-gift-finder-chips mt-3 flex flex-wrap gap-2">
+                  <div className="home-gift-finder-chips mt-3">
                     {group.links.map((link) => (
                       <Link
                         className="home-gift-finder-chip"

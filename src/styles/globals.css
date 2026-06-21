@@ -2298,8 +2298,13 @@ html[data-accessibility-motion="reduce"] .boutique-collection-action::before {
 }
 
 .home-gift-finder-chips {
-  align-content: flex-start;
-  min-height: calc(2.5rem * 2 + 0.5rem);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.home-gift-finder-chips > .home-gift-finder-chip {
+  justify-content: center;
 }
 
 .home-gift-finder-chip {
