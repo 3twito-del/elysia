@@ -74,7 +74,8 @@ export const gateDefinitions = [
   },
   {
     name: "gate:build",
-    description: "Run a production Next.js build without writing source assets.",
+    description:
+      "Run a production Next.js build without writing source assets.",
     steps: [buildStep()],
   },
   {
@@ -99,8 +100,7 @@ export const gateDefinitions = [
   },
   {
     name: "gate:visual",
-    description:
-      "Build, start preview, then run agent-browser visual QA.",
+    description: "Build, start preview, then run agent-browser visual QA.",
     preview: true,
     steps: [
       step("Run visual QA", powerShellCommand(), [
@@ -205,6 +205,28 @@ export const gateDefinitions = [
         "scripts/verify-production-env.mjs",
         "--readiness",
         "--force",
+      ]),
+    ],
+  },
+  {
+    name: "gate:release-slice",
+    description:
+      "Run the strict release-slice artifact gate from explicit artifact env vars.",
+    steps: [
+      step("Run release slice gate", "pnpm", [
+        "release:slice-gate",
+        "--",
+        "--owner-intake-validation",
+        requiredEnvArg("RELEASE_OWNER_INTAKE_VALIDATION"),
+        "--owner-intake-apply",
+        requiredEnvArg("RELEASE_OWNER_INTAKE_APPLY"),
+        "--catalog-readiness",
+        requiredEnvArg("RELEASE_CATALOG_READINESS"),
+        "--catalog-quality",
+        requiredEnvArg("RELEASE_CATALOG_QUALITY"),
+        "--release-scorecard",
+        requiredEnvArg("RELEASE_SCORECARD"),
+        "--strict",
       ]),
     ],
   },
@@ -319,6 +341,20 @@ function buildSafeCatalogEnv() {
     TYPESENSE_API_KEY: "",
     TYPESENSE_HOST: "",
     VERCEL_ENV: "preview",
+  };
+}
+
+function requiredEnvArg(name) {
+  return () => {
+    const value = process.env[name]?.trim();
+
+    if (!value) {
+      throw new Error(
+        `Missing ${name}. Set it to the required release-slice artifact path before running gate:release-slice.`,
+      );
+    }
+
+    return value;
   };
 }
 

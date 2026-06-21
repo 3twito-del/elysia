@@ -46,6 +46,7 @@ const expectedGateNames = [
   "gate:coherence",
   "gate:security",
   "gate:prod",
+  "gate:release-slice",
   "gate:full",
   "gate:ship",
   "gate:release",
@@ -73,6 +74,22 @@ describe("manual quality gates", () => {
     expect(shipIncludes).toContain("gate:runtime");
     expect(shipIncludes).toContain("gate:security");
     expect(shipIncludes).not.toContain("gate:qa");
+  });
+
+  it("keeps the release-slice gate manual and artifact-driven", () => {
+    const releaseIncludes = getGateDefinition("gate:release")?.includes ?? [];
+    const releaseSlice = getGateDefinition("gate:release-slice");
+    const commandText = (releaseSlice?.steps ?? [])
+      .map(formatStepCommand)
+      .join("\n");
+
+    expect(releaseIncludes).not.toContain("gate:release-slice");
+    expect(commandText).toContain("release:slice-gate");
+    expect(commandText).toContain("--owner-intake-validation");
+    expect(commandText).toContain("--release-scorecard");
+    expect(packageJson.scripts["gate:slice"]).toBe(
+      "node scripts/gates.mjs release-slice",
+    );
   });
 
   it("does not register watch-mode gate commands", () => {

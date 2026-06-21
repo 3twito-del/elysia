@@ -97,12 +97,13 @@ Completed items are intentionally removed from this active list.
   `pnpm exec vitest run src/server/services/customer-auth-fixtures.test.ts scripts/qa-route-inventory.test.ts src/server/http/api-response-boundary.test.ts`,
   the Chromium desktop authenticated account fixture E2E harness, and
   `pnpm exec vitest run scripts/qa-site-audit.test.ts scripts/qa-route-inventory.test.ts`.
-- `Production Evidence`: 2026-06-19 L-05 ledger refresh points to commit
-  `bc8d40b5325dddc330512a75f877520614202c3c`, production deployment
-  `dpl_BtVAaxtaCHBNyHSPFQWzog4gpUTZ`, production alias
-  `https://elysia-jewellery.com`, passing smoke across 35 checks, and an
-  initial clean error-log scan. The 60-minute post-alias clean-log window is
-  still pending and remains residual risk.
+- `Production Evidence`: 2026-06-21 L-05 ledger refresh points to commit
+  `f59b4a8dbdcffcfa662add7e4a3f6593d9739d1d`, production deployment
+  `dpl_8F4hp3EBXado63ycn6RHQ7XPSEmB`, production alias
+  `https://elysia-jewellery.com`, passing smoke across 35 checks, and a clean
+  current error-log scan. The current deployment was about 11 minutes old at
+  refresh time, so the 60-minute post-alias clean-log window is still pending
+  and remains residual risk.
 - `Owner Evidence`: `docs/qa/wave-0-owner-evidence-register.md` defines the
   required owner roles, acceptance-owner fields, target-date fields, evidence
   locations, and safe repository summary rules for G-01 through G-04 and J-08.
@@ -127,7 +128,11 @@ Completed items are intentionally removed from this active list.
   media hashes against the full loaded catalog. Use
   `pnpm release:slice-gate -- --strict` to prevent a release claim unless the
   validation, apply, readiness, quality, and scorecard artifacts all pass for
-  the same scope.
+  the same scope. Current generated artifacts under
+  `artifacts/qa/2026-06-21-unblocked-current-*` still resolve to `NOT READY`
+  because owner intake is incomplete, the apply artifact is missing, catalog
+  readiness remains blocked, catalog quality is blocked, and the scorecard is
+  `1/15`.
 
 The previous active items were completed and removed after focused
 implementation and verification for product cards, coupon messaging, guest

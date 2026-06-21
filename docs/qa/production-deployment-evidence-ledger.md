@@ -2,7 +2,7 @@
 
 Status: active release evidence ledger.
 
-Last updated: 2026-06-19.
+Last updated: 2026-06-21.
 
 This ledger records the latest production deployment evidence that is safe to
 keep in the repository. It stores deployment URLs, aliases, command names, and
@@ -18,27 +18,27 @@ Related documents:
 
 ## Latest Production Evidence
 
-| Field               | Evidence                                                                                                                                                                      |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Evidence date       | 2026-06-19                                                                                                                                                                    |
-| Branch              | `main`                                                                                                                                                                        |
-| Commit SHA          | `bc8d40b5325dddc330512a75f877520614202c3c`                                                                                                                                    |
-| Vercel project      | `ariel-twitos-projects/elysia`                                                                                                                                                |
-| Deployment URL      | `https://elysia-ihvgj0fgh-ariel-twitos-projects.vercel.app`                                                                                                                   |
-| Deployment ID       | `dpl_BtVAaxtaCHBNyHSPFQWzog4gpUTZ`                                                                                                                                            |
-| Target              | Production                                                                                                                                                                    |
-| Status              | Ready                                                                                                                                                                         |
-| Created             | 2026-06-19 17:30:09 Asia/Jerusalem                                                                                                                                            |
-| Production alias    | `https://elysia-jewellery.com`                                                                                                                                                |
-| Additional aliases  | `https://elysia-ariel-twitos-projects.vercel.app`, `https://elysia-3twito-9803-ariel-twitos-projects.vercel.app`                                                              |
-| Smoke command       | `$env:SMOKE_BASE_URL = "https://elysia-jewellery.com"; pnpm smoke`                                                                                                            |
-| Smoke result        | PASS: 35 checks passed across health, public, search, category, checkout, account, API, and admin smoke routes                                                                |
-| Health result       | PASS: `/api/health` returned 200 during smoke                                                                                                                                 |
-| Error log scan      | PASS: `vercel logs https://elysia-ihvgj0fgh-ariel-twitos-projects.vercel.app --since 10m --level error` returned `No logs found for ariel-twitos-projects/elysia` after smoke |
-| Error-log window    | PENDING: initial post-deploy scan is clean; the 60-minute post-alias clean-window requirement had not elapsed when this ledger was refreshed                                  |
-| Marker checks       | PASS: `/search`, `/search?q=venus`, and `/search?q=zzzz-no-match&maxPrice=1` rendered search form/grid/empty states without RSC digest after the Typesense fallback fix       |
-| Runtime data caveat | Smoke uses public/logged-out routes and documented unauthenticated API expectations only                                                                                      |
-| Remaining risk      | Does not prove authenticated admin workflows, paid checkout, live supplier fulfillment, provider secrets, or the full 60-minute post-alias error-log window                   |
+| Field               | Evidence                                                                                                                                                                                 |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Evidence date       | 2026-06-21                                                                                                                                                                               |
+| Branch              | `main`                                                                                                                                                                                   |
+| Commit SHA          | `f59b4a8dbdcffcfa662add7e4a3f6593d9739d1d`                                                                                                                                               |
+| Vercel project      | `ariel-twitos-projects/elysia`                                                                                                                                                           |
+| Deployment URL      | `https://elysia-nrmnccd8x-ariel-twitos-projects.vercel.app`                                                                                                                              |
+| Deployment ID       | `dpl_8F4hp3EBXado63ycn6RHQ7XPSEmB`                                                                                                                                                       |
+| Target              | Production                                                                                                                                                                               |
+| Status              | Ready                                                                                                                                                                                    |
+| Created             | 2026-06-21 14:09:26 Asia/Jerusalem                                                                                                                                                       |
+| Production alias    | `https://elysia-jewellery.com`                                                                                                                                                           |
+| Additional aliases  | `https://elysia-ariel-twitos-projects.vercel.app`, `https://elysia-git-main-ariel-twitos-projects.vercel.app`                                                                            |
+| Smoke command       | `$env:SMOKE_BASE_URL = "https://elysia-jewellery.com"; pnpm smoke`                                                                                                                       |
+| Smoke result        | PASS: 35 checks passed across health, public, search, category, checkout, account, API, and admin smoke routes                                                                           |
+| Health result       | PASS: `/api/health` returned 200 during smoke                                                                                                                                            |
+| Error log scan      | PASS: `$env:VERCEL_TOKEN=$null; vercel logs https://elysia-jewellery.com --since 30m --level error` returned `No logs found for ariel-twitos-projects/elysia` after smoke                |
+| Error-log window    | PENDING: current scan is clean and covers the deployment lifetime so far, but the deployment was about 11 minutes old at refresh time so the 60-minute post-alias window has not elapsed |
+| Marker checks       | PASS: `/search`, `/search?q=venus`, and `/search?q=zzzz-no-match&maxPrice=1` rendered search form/grid/empty states without RSC digest after the Typesense fallback fix                  |
+| Runtime data caveat | Smoke uses public/logged-out routes and documented unauthenticated API expectations only                                                                                                 |
+| Remaining risk      | Does not prove authenticated admin workflows, paid checkout, live supplier fulfillment, provider secrets, or the full 60-minute post-alias error-log window for the current deployment   |
 
 ## Required Release Evidence Fields
 
@@ -66,8 +66,8 @@ Run these commands from the repository root when updating this ledger:
 git rev-parse --abbrev-ref HEAD
 git rev-parse HEAD
 vercel ls --yes
-vercel inspect https://elysia-ihvgj0fgh-ariel-twitos-projects.vercel.app
-vercel logs https://elysia-ihvgj0fgh-ariel-twitos-projects.vercel.app --level error --since 1h --json
+vercel inspect https://elysia-jewellery.com
+vercel logs https://elysia-jewellery.com --level error --since 1h --json
 $env:SMOKE_BASE_URL = "https://elysia-jewellery.com"; pnpm smoke
 pnpm exec prettier --check docs/qa/production-deployment-evidence-ledger.md docs/PROJECT_TASKS.md
 git diff --check

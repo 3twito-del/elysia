@@ -1566,9 +1566,10 @@ constraints.
   scorecard cannot claim completeness while the audit fails. The current Wave 0
   scorecard is `1/15` satisfied (production smoke only). Evidence:
   `docs/qa/release-scorecard.md`, `docs/qa/release-scorecard-wave-0.json`, and
-  `artifacts/qa/2026-06-19-wave-0-release-scorecard/`. The strict gate is not yet
-  wired into release gating because the remaining fields are owner/external
-  blocked.
+  `artifacts/qa/2026-06-19-wave-0-release-scorecard/`. The strict slice gate is
+  now wired as the manual `gate:release-slice`/`gate:slice` artifact gate, but
+  remains outside automatic `gate:release` because the remaining fields are
+  owner/external blocked.
 
 ### L-12 Schedule benchmark refresh
 
@@ -1662,12 +1663,14 @@ Homepage backlog reconciliation:
   selected route subset.
 - The post-schema baseline still has 0 of 300 products ready, 874 blockers, and
   2,426 high findings. This is owner/asset debt, not a reason to fabricate data.
-- L-05 production evidence was refreshed on 2026-06-19 for commit
-  `bc8d40b5325dddc330512a75f877520614202c3c` and deployment
-  `dpl_BtVAaxtaCHBNyHSPFQWzog4gpUTZ`. Production smoke passed on
+- L-05 production evidence was refreshed on 2026-06-21 for commit
+  `f59b4a8dbdcffcfa662add7e4a3f6593d9739d1d` and deployment
+  `dpl_8F4hp3EBXado63ycn6RHQ7XPSEmB`. Production smoke passed on
   `https://elysia-jewellery.com`, including the `/search` fallback states
-  fixed after a Typesense 403 regression. The 60-minute post-alias clean error
-  window remains pending and is recorded as residual risk rather than complete.
+  fixed after a Typesense 403 regression, and the current error-log scan found
+  no errors. The deployment was about 11 minutes old at refresh time, so the
+  60-minute post-alias clean error window remains pending and is recorded as
+  residual risk rather than complete.
 - Immediate action 6 started through
   `docs/qa/wave-0-owner-evidence-register.md`, which defines required owner
   roles, acceptance owners, evidence locations, target-date fields, and
@@ -1687,7 +1690,10 @@ Homepage backlog reconciliation:
   `pnpm catalog:readiness -- --scope-file <owner-intake.csv>` can verify the
   same release slice without ignoring full-catalog media duplication, and
   `pnpm release:slice-gate` ties the validation, apply, readiness, quality, and
-  scorecard artifacts into one strict release-scope verdict.
+  scorecard artifacts into one strict release-scope verdict. The current
+  generated `2026-06-21-unblocked-current-*` artifact set still resolves to
+  `NOT READY`: owner intake is incomplete, no apply artifact exists, readiness
+  and quality remain blocked, and the scorecard is `1/15`.
 - `I-341` tracks owner data, class-specific attributes, asset remediation, and
   final release-gate activation. Wave 0 remains in progress.
 - `L-11` release scorecard tooling now exists through `pnpm release:scorecard`.
@@ -1907,9 +1913,11 @@ duplicate media, media-count, and media-role gaps from the generated audit.`
 route-level expected statuses and --route-shard are implemented.`
 5. Refresh production ledger evidence for the current release under L-05.
    - `DONE`: `docs/qa/production-deployment-evidence-ledger.md` now points to
-     commit `bc8d40b5325dddc330512a75f877520614202c3c` and production
-     deployment `dpl_BtVAaxtaCHBNyHSPFQWzog4gpUTZ`, with smoke and initial
-     clean-log evidence. The 60-minute clean-log window is explicitly pending.
+     commit `f59b4a8dbdcffcfa662add7e4a3f6593d9739d1d` and production
+     deployment `dpl_8F4hp3EBXado63ycn6RHQ7XPSEmB`, with smoke and a clean
+     current error-log scan. The 60-minute clean-log window is explicitly
+     pending because the deployment had not been live for 60 minutes when the
+     ledger was refreshed.
 
 6. Assign owners and target evidence dates to G-01 through G-04 and J-08.
    - `STARTED`: `docs/qa/wave-0-owner-evidence-register.md` now defines the
