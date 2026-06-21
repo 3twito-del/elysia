@@ -118,11 +118,23 @@ export function shouldUseCatalogFixtures() {
 }
 
 export function shouldFallbackToCatalogFixturesOnDatabaseError() {
-  return process.env.CATALOG_DB_ERROR_FALLBACK === "1" || isVercelPreview();
+  return (
+    process.env.CATALOG_DB_ERROR_FALLBACK === "1" ||
+    isVercelPreview() ||
+    isProductionBuildPhase()
+  );
 }
 
 function isVercelPreview() {
   return process.env.VERCEL === "1" && process.env.VERCEL_ENV === "preview";
+}
+
+// During `next build` prerendering, a transient database outage (e.g. P1002
+// connection timeout) should degrade to seed fixtures instead of failing the
+// whole build. Runtime request handling stays strict. ISR revalidation
+// refreshes pages from the live database once it is reachable again.
+function isProductionBuildPhase() {
+  return process.env.NEXT_PHASE === "phase-production-build";
 }
 
 function hasDatabaseUrl() {

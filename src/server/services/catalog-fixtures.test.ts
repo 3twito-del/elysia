@@ -13,6 +13,7 @@ const originalEnv = {
   E2E_CATALOG_FIXTURES: process.env.E2E_CATALOG_FIXTURES,
   VERCEL: process.env.VERCEL,
   VERCEL_ENV: process.env.VERCEL_ENV,
+  NEXT_PHASE: process.env.NEXT_PHASE,
 };
 
 describe("catalog fixture flags", () => {
@@ -23,12 +24,25 @@ describe("catalog fixture flags", () => {
     restoreEnv("E2E_CATALOG_FIXTURES");
     restoreEnv("VERCEL");
     restoreEnv("VERCEL_ENV");
+    restoreEnv("NEXT_PHASE");
   });
 
   it("keeps database-error fallback separate from forced fixtures", () => {
     process.env.CATALOG_DB_ERROR_FALLBACK = "1";
     delete process.env.CATALOG_FIXTURE_FALLBACK;
     delete process.env.E2E_CATALOG_FIXTURES;
+
+    expect(shouldFallbackToCatalogFixturesOnDatabaseError()).toBe(true);
+    expect(shouldUseCatalogFixtures()).toBe(false);
+  });
+
+  it("falls back to fixtures during production build prerendering", () => {
+    process.env.NEXT_PHASE = "phase-production-build";
+    delete process.env.CATALOG_DB_ERROR_FALLBACK;
+    delete process.env.CATALOG_FIXTURE_FALLBACK;
+    delete process.env.E2E_CATALOG_FIXTURES;
+    delete process.env.VERCEL;
+    delete process.env.VERCEL_ENV;
 
     expect(shouldFallbackToCatalogFixturesOnDatabaseError()).toBe(true);
     expect(shouldUseCatalogFixtures()).toBe(false);
