@@ -3,10 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowLeft,
-  Gem,
   Gift,
   Headphones,
-  Ruler,
   ShieldCheck,
   Truck,
 } from "lucide-react";
@@ -15,7 +13,6 @@ import { env } from "~/env";
 import { stringifyJsonLd } from "~/lib/json-ld";
 import { NewsletterForm } from "~/components/newsletter-form";
 import { DeferredFixedBackgroundBand } from "~/components/deferred-fixed-background-band";
-import { HomeHeroAura } from "~/components/home-hero-aura";
 import { HomeHeroVideo } from "~/components/home-hero-video";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
@@ -72,51 +69,6 @@ const categoryImagePosition: Record<string, string> = {
   necklaces: "50% 44%",
   rings: "50% 46%",
 };
-
-const homeGiftFinderGroups = [
-  {
-    label: "תקציב",
-    links: [
-      { href: "/search?q=מתנה&maxPrice=250", label: "עד 250 ₪" },
-      { href: "/search?q=מתנה&maxPrice=500", label: "עד 500 ₪" },
-      { href: "/search?q=מתנה&maxPrice=900", label: "עד 900 ₪" },
-    ],
-  },
-  {
-    label: "למי",
-    links: [
-      { href: "/search?q=מתנה לאמא", label: "לאמא" },
-      { href: "/search?q=מתנה לבת זוג", label: "לבת זוג" },
-      { href: "/search?q=מתנה לחברה", label: "לחברה" },
-    ],
-  },
-  {
-    label: "רגע",
-    links: [
-      { href: "/search?q=מתנת יום הולדת", label: "יום הולדת" },
-      { href: "/search?q=מתנת יום נישואין", label: "יום נישואין" },
-      { href: "/search?q=מתנה לחג", label: "חג" },
-    ],
-  },
-] as const;
-
-const materialTrust = [
-  {
-    icon: Gem,
-    title: "חומרים נבחרים",
-    text: "זהב, כסף, פנינים ואבני צבע, עם פירוט ברור לכל תכשיט.",
-  },
-  {
-    icon: Ruler,
-    title: "התאמה מדויקת",
-    text: "מדריך מידות וליווי אישי לבחירה שנכונה לך.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "שירות מתמשך",
-    text: "מענה אנושי לפני ההזמנה וגם לאחריה.",
-  },
-] as const;
 
 const editorialPrinciples = [
   {
@@ -262,10 +214,9 @@ export default async function Home() {
         />
         <div className="storefront-hero-scrim absolute inset-0" />
         <div className="storefront-hero-wash absolute inset-0" />
-        <HomeHeroAura />
 
         <div
-          className="home-hero-copy motion-hero-copy storefront-hero-copy absolute z-10 flex max-w-[min(38rem,calc(100vw-2.5rem))] flex-col items-start sm:max-w-[min(42rem,45vw)]"
+          className="home-hero-copy motion-hero-copy storefront-hero-copy absolute z-10 flex max-w-[min(38rem,calc(100vw-2.5rem))] flex-col items-start sm:max-w-[min(42rem,72vw)]"
           data-hero-copy-direction={homeHeroDirection}
           data-testid="home-hero-copy"
           dir={homeHeroDirection}
@@ -300,22 +251,6 @@ export default async function Home() {
                     aria-hidden="true"
                     className="home-hero-cta-icon size-4"
                   />
-                </Link>
-              </Button>
-              <Button
-                asChild
-                className="home-hero-cta-secondary"
-                size="lg"
-                variant="outline"
-              >
-                <Link
-                  data-testid="home-hero-secondary-cta"
-                  dir="auto"
-                  href="/gifts"
-                  prefetch={false}
-                >
-                  מתנות
-                  <Gift aria-hidden="true" className="size-4" />
                 </Link>
               </Button>
             </div>
@@ -357,55 +292,6 @@ export default async function Home() {
               </Link>
             );
           })}
-        </div>
-      </RevealSection>
-
-      <RevealSection
-        className="home-gift-finder mx-auto w-full max-w-[92rem] px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:px-[var(--ui-page-x-wide)]"
-        data-testid="home-gift-finder"
-        id="gift-finder"
-      >
-        <div className="home-gift-finder-inner border-y border-[var(--glass-border)] py-6">
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)_auto] lg:items-end">
-            <div>
-              <p className="storefront-eyebrow" dir="ltr">
-                Gift Finder
-              </p>
-              <h2 className="home-gift-finder-title">מתנה שמרגישה מדויקת</h2>
-              <p className="text-muted-foreground mt-3 max-w-xl text-sm leading-7">
-                התחלה מהירה לפי תקציב, למי מעניקים והרגע שעבורו בוחרים.
-              </p>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-3">
-              {homeGiftFinderGroups.map((group, index) => (
-                <section className="home-gift-finder-group" key={group.label}>
-                  <p className="text-muted-foreground text-xs font-medium">
-                    {String(index + 1).padStart(2, "0")} / {group.label}
-                  </p>
-                  <div className="home-gift-finder-chips mt-3">
-                    {group.links.map((link) => (
-                      <Link
-                        className="home-gift-finder-chip"
-                        href={link.href}
-                        key={link.href}
-                        prefetch={false}
-                      >
-                        {link.label}
-                      </Link>
-                    ))}
-                  </div>
-                </section>
-              ))}
-            </div>
-            <div className="flex lg:justify-end">
-              <Button asChild variant="outline">
-                <Link href="/gifts" prefetch={false}>
-                  לכל המתנות
-                  <ArrowLeft aria-hidden="true" className="size-4" />
-                </Link>
-              </Button>
-            </div>
-          </div>
         </div>
       </RevealSection>
 
@@ -493,33 +379,6 @@ export default async function Home() {
           limit={4}
         />
       </TRPCReactProvider>
-
-      <RevealSection
-        className="boutique-section home-materials-section mx-auto w-full max-w-[92rem] px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]"
-        id="materials"
-      >
-        <SectionHeader
-          eyebrow="Craft & Care"
-          text="חומרים נבחרים, פרופורציות מדויקות ושירות שממשיך אחרי הבחירה."
-          title="The Details Matter"
-        />
-        <div
-          className="grid gap-5 border-y border-[var(--glass-border)] py-6 md:grid-cols-3"
-          data-testid="home-material-trust"
-        >
-          {materialTrust.map((item) => {
-            const Icon = item.icon;
-
-            return (
-              <section className="boutique-trust-item" key={item.title}>
-                <Icon aria-hidden="true" className="size-5" />
-                <h3>{item.title}</h3>
-                <p>{item.text}</p>
-              </section>
-            );
-          })}
-        </div>
-      </RevealSection>
 
       <RevealSection
         className="boutique-story-band px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-0"

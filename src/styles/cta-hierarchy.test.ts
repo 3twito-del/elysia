@@ -51,11 +51,9 @@ describe("public CTA hierarchy", () => {
 
     expect(home).toContain("home-hero-actions");
     expect(home).toContain("home-hero-cta-primary");
-    expect(home).toContain("home-hero-cta-secondary");
     expect(home).toContain('data-testid="home-hero-primary-cta"');
-    expect(home).toContain('data-testid="home-hero-secondary-cta"');
+    expect(home).not.toContain('data-testid="home-hero-secondary-cta"');
     expect(home).toContain('href="/search"');
-    expect(home).toContain('href="/gifts"');
     expect(home).toContain('id="collections"');
     expect(home).toContain('id="featured"');
     expect(home).not.toContain('href="#waitlist"');

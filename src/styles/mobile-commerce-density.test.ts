@@ -18,14 +18,13 @@ describe("mobile commerce density", () => {
     );
     expect(source).toContain('data-testid="home-hero-statement"');
     expect(source).toContain('data-testid="home-hero-primary-cta"');
-    expect(source).toContain('data-testid="home-hero-secondary-cta"');
-    expect(source).toContain('data-testid="home-gift-finder"');
+    expect(source).not.toContain('data-testid="home-hero-secondary-cta"');
+    expect(source).not.toContain('data-testid="home-gift-finder"');
     expect(source).toContain("data-hero-copy-direction={homeHeroDirection}");
     expect(source).not.toContain('data-testid="home-commerce-entry-links"');
     expect(source).not.toContain('data-testid="home-hero-campaign-links"');
     expect(source).toContain('href="/search"');
-    expect(source).toContain('href="/gifts"');
-    expect(source).toContain("homeGiftFinderGroups");
+    expect(source).not.toContain("homeGiftFinderGroups");
     expect(source).not.toContain('href: "/category/necklaces"');
     expect(countOccurrences(source, "min-h-[var(--home-hero-height)]")).toBe(1);
     expect(indexOf(source, 'id="page-hero"')).toBeLessThan(
@@ -54,7 +53,7 @@ describe("mobile commerce density", () => {
     expect(source).toContain("boutique-featured-band");
     expect(source).toContain("ui-equal-grid grid gap-x-7 gap-y-10");
     expect(source).toContain('data-testid="home-category-card"');
-    expect(source).toContain('data-testid="home-material-trust"');
+    expect(source).not.toContain('data-testid="home-material-trust"');
     expect(css).toContain(".boutique-collection-card");
     expect(css).toContain(".boutique-collection-media");
     expect(css).toContain(".boutique-trust-item");
@@ -163,7 +162,7 @@ describe("mobile commerce density", () => {
 
     expect(home).toContain('id="collections"');
     expect(home).toContain('id="featured"');
-    expect(home).toContain('id="materials"');
+    expect(home).not.toContain('id="materials"');
     expect(home).toContain('id="collection-updates"');
     expect(home).toContain("<NewsletterForm />");
     expect(home).toContain('data-layout-equal-group="home-category-tiles"');

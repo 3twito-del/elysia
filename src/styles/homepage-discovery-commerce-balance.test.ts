@@ -31,16 +31,15 @@ describe("homepage boutique commerce bridge", () => {
     expect(home).toContain('data-testid="storefront-homepage"');
     expect(home).toContain('data-testid="home-hero-statement"');
     expect(home).toContain('data-testid="home-hero-primary-cta"');
-    expect(home).toContain('data-testid="home-hero-secondary-cta"');
-    expect(home).toContain('href="/gifts"');
-    expect(home).toContain('data-testid="home-gift-finder"');
-    expect(home).toContain("homeGiftFinderGroups");
+    expect(home).not.toContain('data-testid="home-hero-secondary-cta"');
+    expect(home).not.toContain('data-testid="home-gift-finder"');
+    expect(home).not.toContain("homeGiftFinderGroups");
     expect(home).toContain('href="/search"');
     expect(home).toContain('id="collections"');
     expect(home).toContain('id="featured"');
     expect(home).toContain('title="Icons of Summer"');
     expect(home).not.toContain('title="חדש בעונה."');
-    expect(home).toContain('id="materials"');
+    expect(home).not.toContain('id="materials"');
     expect(home).toContain('id="about-elysia"');
     expect(home).toContain('id="first-collection"');
     expect(home).toContain('id="collection-updates"');
@@ -48,8 +47,8 @@ describe("homepage boutique commerce bridge", () => {
     expect(home).toContain('data-testid="home-featured-products"');
     expect(home).toContain("<RecentlyViewedProducts");
     expect(home).toContain('id="recently-viewed"');
-    expect(home).toContain('data-testid="home-material-trust"');
-    expect(home).toContain("home-materials-section");
+    expect(home).not.toContain('data-testid="home-material-trust"');
+    expect(home).not.toContain("home-materials-section");
     expect(home).toContain("home-story-layout");
     expect(home).toContain("home-story-secondary-copy");
     expect(home).toContain("home-story-secondary-note");
@@ -74,9 +73,6 @@ describe("homepage boutique commerce bridge", () => {
       indexOf(home, 'id="featured"'),
     );
     expect(indexOf(home, 'id="featured"')).toBeLessThan(
-      indexOf(home, 'id="materials"'),
-    );
-    expect(indexOf(home, 'id="materials"')).toBeLessThan(
       indexOf(home, 'id="about-elysia"'),
     );
     expect(indexOf(home, 'id="about-elysia"')).toBeLessThan(
@@ -161,7 +157,7 @@ describe("homepage boutique commerce bridge", () => {
     expect(header).not.toContain("prelaunchNavItems.map");
     expect(header).not.toContain("data-home-prelaunch");
     expect(header).toContain("<MobileNav");
-    expect(header).toContain("site-header-scroll-cta");
+    expect(header).not.toContain("site-header-scroll-cta");
     expect(header).toContain("data-condensed-cta={showCondensedCta");
     expect(header).toContain('href="/search"');
     expect(header).toContain("/search?sort=newest");

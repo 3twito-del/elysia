@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Heart, Search, ShoppingBag, UserRound } from "lucide-react";
+import { Heart, Search, UserRound } from "lucide-react";
 
 import {
   isCategoryHref,
@@ -99,11 +99,11 @@ export function SiteHeader() {
           ואזור אישי.
         </p>
         <div
-          className="grid h-16 w-full grid-cols-[1fr_auto_1fr] items-center px-4 sm:px-6 md:h-[4.25rem] md:px-10 lg:h-[6.125rem] lg:px-16"
+          className="grid h-16 w-full grid-cols-[1fr_auto_1fr] items-center px-3 sm:px-6 md:h-[4.25rem] md:px-10 lg:h-[6.125rem] lg:px-16"
           dir="ltr"
         >
           <div
-            className="[grid-column:3] [grid-row:1] flex min-w-0 items-center gap-5 justify-self-end sm:gap-7"
+            className="[grid-column:3] [grid-row:1] flex min-w-0 items-center gap-3 justify-self-end sm:gap-7"
             dir="rtl"
           >
             <MobileNav
@@ -118,21 +118,12 @@ export function SiteHeader() {
             />
             <Link
               aria-label="חיפוש"
-              className="site-header-link site-header-label-action inline-flex min-h-11 min-w-11 items-center justify-center gap-2 text-[0.94rem] font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] sm:min-h-10 sm:min-w-0 sm:justify-start"
+              className="site-header-link site-header-label-action inline-flex min-h-11 min-w-11 items-center justify-center gap-2 text-[0.94rem] font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] max-[360px]:hidden sm:min-h-10 sm:min-w-0 sm:justify-start"
               href="/search"
               prefetch={false}
             >
               <Search aria-hidden="true" className="size-5" />
               <span className="hidden sm:inline">חיפוש</span>
-            </Link>
-            <Link
-              aria-label="לקנייה"
-              className="site-header-scroll-cta site-header-link hidden min-h-10 items-center gap-2 rounded-md border border-[var(--glass-border)] px-3 text-[0.9rem] font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] md:inline-flex"
-              href="/search"
-              prefetch={false}
-            >
-              <ShoppingBag aria-hidden="true" className="size-4" />
-              <span>לקנייה</span>
             </Link>
           </div>
 
@@ -143,11 +134,11 @@ export function SiteHeader() {
             href="/"
             prefetch={false}
           >
-            <BrandLogo className="h-6 w-auto max-w-[9rem] sm:h-8 sm:max-w-[12.5rem] lg:h-9 lg:max-w-[14.5rem] xl:h-10 xl:max-w-[16rem]" />
+            <BrandLogo className="h-6 w-auto max-w-[7.5rem] sm:h-8 sm:max-w-[12.5rem] lg:h-9 lg:max-w-[14.5rem] xl:h-10 xl:max-w-[16rem]" />
           </Link>
 
           <div
-            className="[grid-column:1] [grid-row:1] flex min-w-0 items-center gap-3 justify-self-start sm:gap-5"
+            className="[grid-column:1] [grid-row:1] flex min-w-0 items-center gap-2 justify-self-start max-[360px]:hidden sm:gap-5"
             dir="rtl"
           >
             <Link

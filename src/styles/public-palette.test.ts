@@ -17,6 +17,7 @@ const approvedBrandTokens = new Set([
   "--brand-ink",
   "--brand-espresso",
   "--brand-gold-muted",
+  "--brand-rose",
   "--brand-accent",
 ]);
 const approvedWarmMaterialPaths = new Set([

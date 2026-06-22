@@ -250,7 +250,7 @@ describe("luxury commerce UI hardening", () => {
     expect(favorite).toContain('variant="ghost"');
     expect(favorite).toContain('data-icon-tooltip-placement="bottom"');
     expect(favorite).toContain("product-card-favorite-status");
-    expect(favoriteSavedIconCss).toContain("fill: rgb(29 25 22 / 68%)");
+    expect(favoriteSavedIconCss).toContain("fill: var(--brand-rose)");
     expect(favoriteSavedIconCss).toContain("stroke-width: 2.15");
     expect(favoriteTooltipCss).toContain("right: 0;");
     expect(favoriteTooltipCss).toContain("left: auto;");

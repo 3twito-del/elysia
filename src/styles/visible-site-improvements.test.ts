@@ -118,18 +118,17 @@ describe("visible site improvement affordances", () => {
     expect(home).toContain('data-testid="home-hero-copy"');
     expect(home).toContain('data-testid="home-hero-statement"');
     expect(home).toContain('data-testid="home-hero-primary-cta"');
-    expect(home).toContain('data-testid="home-hero-secondary-cta"');
-    expect(home).toContain('data-testid="home-gift-finder"');
+    expect(home).not.toContain('data-testid="home-hero-secondary-cta"');
+    expect(home).not.toContain('data-testid="home-gift-finder"');
     expect(home).toContain("data-hero-copy-direction={homeHeroDirection}");
     expect(home).not.toContain('data-testid="home-commerce-entry-links"');
     expect(home).toContain("storefront-hero");
     expect(home).toContain("max-w-[min(38rem,calc(100vw-2.5rem))]");
-    expect(home).toContain("sm:max-w-[min(42rem,45vw)]");
+    expect(home).toContain("sm:max-w-[min(42rem,72vw)]");
     expect(home).toContain("home-hero-statement motion-copy-item");
     expect(home).toContain('data-testid="home-hero-cta-row"');
     expect(home).toContain('href="/search"');
-    expect(home).toContain('href="/gifts"');
-    expect(home).toContain("homeGiftFinderGroups");
+    expect(home).not.toContain("homeGiftFinderGroups");
     expect(home).not.toContain('href: "/category/necklaces"');
     expect(home).toContain('data-testid="home-category-tiles"');
     expect(home).toContain('data-testid="home-featured-products"');
@@ -256,7 +255,7 @@ describe("visible site improvement affordances", () => {
     expect(header).toContain("HOME_HEADER_SOLID_SCROLL_Y");
     expect(header).toContain("setHasScrolled");
     expect(header).toContain("showCondensedCta");
-    expect(header).toContain("site-header-scroll-cta");
+    expect(header).not.toContain("site-header-scroll-cta");
     expect(header).toContain('window.addEventListener("scroll"');
     expect(header).toContain(
       'const headerState = isOverHomeHero ? "transparent" : "solid";',

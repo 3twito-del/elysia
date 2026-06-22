@@ -1133,7 +1133,7 @@ test.describe("accessibility and responsive guardrails", () => {
     await expect(page.getByTestId("home-hero-statement")).toBeVisible();
     await expect(
       homeHero.locator('a.home-hero-cta-secondary[href="/gifts"]'),
-    ).toBeVisible();
+    ).toHaveCount(0);
     await expect(page.getByTestId("home-hero-secondary-line")).toHaveCount(0);
     await expect(page.getByTestId("home-commerce-entry-links")).toHaveCount(0);
     await expect(

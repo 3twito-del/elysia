@@ -87,6 +87,7 @@
   --brand-ink: #1d1916;
   --brand-espresso: #14110f;
   --brand-gold-muted: #b49a6a;
+  --brand-rose: #c0566b;
   --brand-accent: var(--action-primary);
   --action-primary: var(--brand-ink);
   --action-primary-foreground: #fffaf4;
@@ -1975,6 +1976,15 @@ main
   line-height: 1.05;
 }
 
+/* Latin display headings follow the fine-jewellery convention: an elegant
+   brand serif at a light/regular weight rather than a heavy sans. */
+.commerce-section-header[data-title-direction="ltr"]
+  .commerce-section-header-title {
+  font-family: var(--font-latin-brand);
+  font-weight: 500;
+  line-height: 1.08;
+}
+
 .commerce-section-header[data-title-direction="ltr"]
   .commerce-section-header-copy {
   text-align: left;
@@ -2000,6 +2010,20 @@ main
 .home-luxury-page .commerce-section-header-action {
   align-items: center;
   margin-top: 0.25rem;
+}
+
+/* Below desktop, keep the section "see all" CTA stacked under the copy and
+   aligned to the text start instead of floating awkwardly mid-width. */
+@media (max-width: 1023px) {
+  .home-luxury-page .commerce-section-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .home-luxury-page .commerce-section-header-action {
+    justify-content: flex-start;
+    margin-top: 1.5rem;
+  }
 }
 
 .home-materials-section .commerce-section-header {
@@ -3431,16 +3455,18 @@ html[data-accessibility-motion="reduce"]
 .storefront-final-title {
   margin-top: 0.85rem;
   max-width: 44rem;
+  font-family: var(--font-latin-brand);
   font-size: clamp(2rem, 3.6vw, 3.25rem);
-  font-weight: 650;
+  font-weight: 500;
   line-height: 1.08;
 }
 
 .storefront-final-subtitle {
   margin-top: 0.8rem;
   max-width: 34rem;
+  font-family: var(--font-latin-brand);
   font-size: clamp(1.45rem, 2.45vw, 2.25rem);
-  font-weight: 650;
+  font-weight: 500;
   line-height: 1.18;
 }
 
@@ -3556,105 +3582,21 @@ html[data-accessibility-motion="reduce"]
   opacity: 0.48;
 }
 
-/* Interactive luminous aura that tracks the pointer across the hero. */
-.home-hero-aura {
-  --hero-aura-x: 68%;
-  --hero-aura-y: 38%;
-  z-index: 5;
-  overflow: hidden;
-  pointer-events: none;
-  mix-blend-mode: screen;
-}
-
-.home-hero-aura-glow {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    28rem 28rem at var(--hero-aura-x) var(--hero-aura-y),
-    rgb(216 195 165 / 24%) 0%,
-    rgb(180 154 106 / 14%) 26%,
-    rgb(180 154 106 / 5%) 48%,
-    transparent 66%
-  );
-  opacity: 0.34;
-  transition:
-    opacity 600ms cubic-bezier(0.2, 0, 0, 1),
-    background-position 220ms cubic-bezier(0.2, 0, 0, 1);
-  will-change: background;
-}
-
-.home-hero-aura[data-hero-aura-active="true"] .home-hero-aura-glow {
-  opacity: 0.55;
-}
-
-.home-hero-aura-motes {
-  position: absolute;
-  inset: 0;
-}
-
-.home-hero-aura-mote {
-  position: absolute;
-  width: var(--mote-size, 4px);
-  height: var(--mote-size, 4px);
-  border-radius: 999px;
-  background: radial-gradient(
-    circle,
-    rgb(255 249 236 / 95%) 0%,
-    rgb(216 195 165 / 70%) 45%,
-    transparent 72%
-  );
-  box-shadow: 0 0 8px rgb(216 195 165 / 60%);
-  opacity: 0;
-  will-change: transform, opacity;
-}
-
-.home-hero-aura[data-hero-aura-reduced="true"] .home-hero-aura-glow {
-  opacity: 0.26;
-  transition: none;
-}
-
-.home-hero-aura[data-hero-aura-reduced="true"] .home-hero-aura-motes {
-  display: none;
-}
-
-html[data-accessibility-motion="reduce"] .home-hero-aura-motes {
-  display: none;
-}
-
-html[data-accessibility-motion="reduce"] .home-hero-aura-glow {
-  transition: none;
-}
-
-/* On touch / coarse-pointer devices the aura cannot be steered, so drop the
-   floating motes and soften the glow to keep the hero light on mobile. */
-@media (hover: none), (pointer: coarse) {
-  .home-hero-aura-motes {
-    display: none;
-  }
-
-  .home-hero-aura-glow {
-    opacity: 0.22;
-    transition: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .home-hero-aura-motes {
-    display: none;
-  }
-
-  .home-hero-aura-glow {
-    transition: none;
-  }
-}
-
 .storefront-hero-copy {
-  inset-inline-start: clamp(1.25rem, 7vw, 7rem);
+  /* Comfortable breathing room from the edge at small/medium widths; the wider
+     cinematic inset returns on large screens via the min-width: 1024px rule. */
+  inset-inline-start: clamp(1.5rem, 6vw, 4.5rem);
   inset-inline-end: auto;
   bottom: calc(clamp(3rem, 8svh, 6rem) + env(safe-area-inset-bottom));
   top: auto;
   color: white;
   text-align: start;
+}
+
+@media (min-width: 1024px) {
+  .storefront-hero-copy {
+    inset-inline-start: clamp(3rem, 6.5vw, 7rem);
+  }
 }
 
 .storefront-eyebrow {
@@ -3671,9 +3613,18 @@ html[data-accessibility-motion="reduce"] .home-hero-aura-glow {
   max-width: 34rem;
   color: rgb(255 250 244 / 96%);
   font-size: 2.55rem;
-  font-weight: 520;
+  font-weight: 460;
   letter-spacing: 0;
-  line-height: 1.04;
+  line-height: 1.06;
+}
+
+/* Refine the Latin hero title with the elegant brand serif at a lighter,
+   less massive weight. */
+.storefront-hero[data-hero-title-direction="ltr"] .storefront-hero-title {
+  font-family: var(--font-latin-brand);
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.08;
 }
 
 .storefront-hero-statement {
@@ -3708,6 +3659,13 @@ html[data-accessibility-motion="reduce"] .home-hero-aura-glow {
   border-color: rgb(255 250 244 / 76%) !important;
   background: rgb(20 17 15 / 62%) !important;
   color: white !important;
+}
+
+/* The background-video pause control is desktop-only; hide it on phones. */
+@media (max-width: 767px) {
+  .home-hero-video-control {
+    display: none;
+  }
 }
 
 @media (min-width: 1280px) {
@@ -5038,7 +4996,8 @@ footer nav a:focus-visible {
 
 .product-card-favorite-button[data-favorite-saved="true"] svg,
 .product-wishlist-button[data-favorite-saved="true"] svg {
-  fill: rgb(29 25 22 / 68%);
+  fill: var(--brand-rose);
+  color: var(--brand-rose);
   stroke-width: 2.15;
 }
 
