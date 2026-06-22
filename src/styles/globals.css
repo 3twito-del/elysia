@@ -4120,6 +4120,54 @@ html[data-accessibility-motion="reduce"]
   }
 }
 
+/* Drag-to-slide layer for the inline main gallery image. The transform is set
+   imperatively while dragging and released into this transition on pointer-up. */
+.product-gallery-main-swipe-window {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.product-gallery-main-drag-layer {
+  position: absolute;
+  inset-block: 0;
+  left: -100%;
+  display: grid;
+  width: 300%;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  transition: transform 280ms cubic-bezier(0.2, 0, 0, 1);
+  will-change: transform;
+}
+
+.product-gallery-main-media-cell {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.product-gallery-main-frame[data-gallery-swipeable="true"] {
+  touch-action: pan-y;
+}
+
+.product-gallery-main-frame[data-gallery-inline-dragging="true"] {
+  cursor: grabbing;
+}
+
+.product-gallery-main-frame[data-gallery-inline-settling="true"] {
+  cursor: grabbing;
+}
+
+.product-gallery-main-frame[data-gallery-inline-dragging="true"]
+  .product-gallery-main-drag-layer {
+  transition: none;
+}
+
+.product-gallery-main-frame[data-gallery-inline-resetting="true"]
+  .product-gallery-main-drag-layer {
+  transition: none;
+}
+
 .product-gallery-hover-zoom-layer {
   transform: scale(1);
   transform-origin: var(--gallery-hover-origin-x) var(--gallery-hover-origin-y);
@@ -4250,6 +4298,22 @@ html[data-accessibility-motion="reduce"]
   color: var(--foreground);
 }
 
+/* Keep the fullscreen viewer's control tooltips inside the viewport: drop them
+   below the controls and grow inward from the inline-end edge instead of
+   centering (which overflowed the top-right corner of the page). */
+.product-gallery-viewer-actions [data-icon-tooltip]::after {
+  top: calc(100% + 0.35rem);
+  bottom: auto;
+  left: auto;
+  right: 0;
+  transform: translate(0, -2px);
+}
+
+.product-gallery-viewer-actions [data-icon-tooltip]:hover::after,
+.product-gallery-viewer-actions [data-icon-tooltip]:focus-visible::after {
+  transform: translate(0, 0);
+}
+
 .product-gallery-viewer-stage {
   --viewer-swipe-gap: clamp(0.75rem, 2vw, 1.25rem);
   --viewer-swipe-offset: 0px;
@@ -4302,6 +4366,46 @@ html[data-accessibility-motion="reduce"]
 .product-gallery-viewer-stage[data-gallery-swipe-settling="true"]
   .product-gallery-viewer-swipe-track {
   transition: transform 180ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.product-gallery-viewer-stage[data-gallery-swipe-resetting="true"]
+  .product-gallery-viewer-swipe-track {
+  transition: none;
+}
+
+.blog-markdown h2 {
+  margin-top: 1.5rem;
+  font-size: clamp(1.45rem, 2vw, 2rem);
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.blog-markdown h3 {
+  margin-top: 1rem;
+  font-size: clamp(1.2rem, 1.6vw, 1.45rem);
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.blog-markdown ul,
+.blog-markdown ol {
+  display: grid;
+  gap: 0.55rem;
+  padding-inline-start: 1.35rem;
+}
+
+.blog-markdown ul {
+  list-style: disc;
+}
+
+.blog-markdown ol {
+  list-style: decimal;
+}
+
+.blog-markdown blockquote {
+  border-inline-start: 2px solid var(--glass-border-strong);
+  color: var(--muted-foreground);
+  padding-inline-start: 1rem;
 }
 
 .product-gallery-viewer-swipe-track .product-gallery-viewer-media-shell {
@@ -4358,11 +4462,11 @@ html[data-accessibility-motion="reduce"]
 }
 
 .product-gallery-viewer-media-shell-zoomed {
-  width: min(132dvw, 92rem);
-  min-width: min(148dvw, 78rem);
+  width: min(96dvw, 72rem);
+  min-width: min(96dvw, 72rem);
   max-width: none;
-  height: min(118dvh, 84rem);
-  min-height: min(118dvh, 58rem);
+  height: min(calc(100dvh - 9.25rem), 78dvh);
+  min-height: min(calc(100dvh - 9.25rem), 78dvh);
   cursor: zoom-out;
 }
 
@@ -4476,10 +4580,10 @@ html[data-accessibility-motion="reduce"]
   }
 
   .product-gallery-viewer-media-shell-zoomed {
-    width: 158dvw;
-    min-width: 38rem;
-    height: 118dvh;
-    min-height: 42rem;
+    width: min(112dvw, 42rem);
+    min-width: min(112dvw, 42rem);
+    height: min(calc(100dvh - 10rem), 72dvh);
+    min-height: min(calc(100dvh - 10rem), 72dvh);
   }
 
   .product-gallery-viewer-stage .product-gallery-viewer-nav {

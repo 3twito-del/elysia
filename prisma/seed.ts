@@ -9,6 +9,12 @@ import {
   seedMaterials,
   seedStones,
 } from "./seed-catalog";
+import {
+  fixtureBlogAuthor,
+  fixtureBlogCategories,
+  fixtureBlogPosts,
+  fixtureBlogTags,
+} from "../src/server/services/blog-fixtures";
 
 const prisma = new PrismaClient();
 
@@ -82,6 +88,69 @@ function getSeedCommerceHighlights(slug: string) {
   return ["פרטים מאומתים לפני הזמנה", "נבדק בקפידה לפני מסירה"];
 }
 
+async function seedBlogContent(adminUserId: string) {
+  await prisma.blogAuthor.create({
+    data: {
+      id: fixtureBlogAuthor.id,
+      slug: fixtureBlogAuthor.slug,
+      name: fixtureBlogAuthor.name,
+      title: fixtureBlogAuthor.title,
+      bio: fixtureBlogAuthor.bio,
+      imageUrl: fixtureBlogAuthor.imageUrl,
+      createdAt: fixtureBlogAuthor.createdAt,
+      updatedAt: fixtureBlogAuthor.updatedAt,
+    },
+  });
+
+  await prisma.blogCategory.createMany({
+    data: fixtureBlogCategories.map((category) => ({
+      id: category.id,
+      slug: category.slug,
+      name: category.name,
+      description: category.description,
+      sortOrder: category.sortOrder,
+      createdAt: category.createdAt,
+      updatedAt: category.updatedAt,
+    })),
+  });
+
+  await prisma.blogTag.createMany({
+    data: fixtureBlogTags.map((tag) => ({
+      id: tag.id,
+      slug: tag.slug,
+      name: tag.name,
+      createdAt: tag.createdAt,
+      updatedAt: tag.updatedAt,
+    })),
+  });
+
+  for (const post of fixtureBlogPosts) {
+    await prisma.blogPost.create({
+      data: {
+        id: post.id,
+        slug: post.slug,
+        title: post.title,
+        excerpt: post.excerpt,
+        bodyMarkdown: post.bodyMarkdown,
+        status: post.status,
+        publishedAt: post.publishedAt,
+        heroImageUrl: post.heroImageUrl,
+        heroImageAlt: post.heroImageAlt,
+        seoTitle: post.seoTitle,
+        seoDescription: post.seoDescription,
+        featured: post.featured,
+        authorId: post.author.id,
+        categoryId: post.category.id,
+        createdByAdminUserId: adminUserId,
+        updatedByAdminUserId: adminUserId,
+        createdAt: post.createdAt,
+        updatedAt: post.updatedAt,
+        tags: { connect: post.tags.map((tag) => ({ id: tag.id })) },
+      },
+    });
+  }
+}
+
 async function main() {
   const bootstrapAdmin = await getBootstrapAdmin();
 
@@ -120,6 +189,10 @@ async function main() {
     prisma.inventoryLedger.deleteMany(),
     prisma.inventoryItem.deleteMany(),
     prisma.price.deleteMany(),
+    prisma.blogPost.deleteMany(),
+    prisma.blogTag.deleteMany(),
+    prisma.blogCategory.deleteMany(),
+    prisma.blogAuthor.deleteMany(),
     prisma.productMedia.deleteMany(),
     prisma.productVariant.deleteMany(),
     prisma.product.deleteMany(),
@@ -383,6 +456,9 @@ async function main() {
       name: "מנהל מערכת",
       permissions: [
         "SYSTEM",
+        "BLOG",
+        "BLOG_READ",
+        "BLOG_WRITE",
         "CATALOG",
         "CATALOG_READ",
         "CATALOG_WRITE",
@@ -401,7 +477,7 @@ async function main() {
     },
   });
 
-  await prisma.adminUser.create({
+  const adminUser = await prisma.adminUser.create({
     data: {
       roleId: systemRole.id,
       name: bootstrapAdmin.name,
@@ -409,6 +485,8 @@ async function main() {
       passwordHash: bootstrapAdmin.passwordHash,
     },
   });
+
+  await seedBlogContent(adminUser.id);
 }
 
 main()

@@ -24,6 +24,7 @@ const navItems: HeaderNavItem[] = [
   { href: "/gifts", label: "מתנות" },
   { href: "/search?sort=popular", label: "מבוקשים" },
   { href: "/size-guide", label: "מידות" },
+  { href: "/blog", label: "מגזין" },
   { href: "/about", label: "אודות" },
   { href: "/service", label: "תמיכה" },
 ];

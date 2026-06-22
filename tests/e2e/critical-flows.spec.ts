@@ -36,6 +36,8 @@ const publicRoutes = [
   "/ai",
   "/stylist",
   "/size-guide",
+  "/blog",
+  "/blog/elysia-jewellery-care-guide",
   "/about",
   "/faq",
   "/privacy",
@@ -1597,7 +1599,7 @@ async function expectProductGalleryFullScreenNavigation(
   await expect(
     page.getByTestId("product-gallery-fullscreen-stage"),
   ).toHaveAttribute("data-gallery-zoomed", "true");
-  await page.getByTestId("product-gallery-fullscreen-media").click();
+  await page.getByTestId("product-gallery-fullscreen-zoom-out").click();
   await expect(
     page.getByTestId("product-gallery-fullscreen-stage"),
   ).toHaveAttribute("data-gallery-zoomed", "false");
@@ -1701,6 +1703,11 @@ async function expectProductGalleryFullScreenNavigation(
     "data-gallery-drag-mode",
     "swipe",
   );
+  await expectViewerZoomToggleExpandsMedia(page);
+  await expect(fullscreenStage).toHaveAttribute(
+    "data-gallery-drag-mode",
+    "swipe",
+  );
   await expectGalleryStageFollowsDrag(page, "next");
   await expect(fullscreenStatus).toContainText(/2/);
   await expectGallerySwipeSettled(page);
@@ -1736,23 +1743,116 @@ async function dragGalleryStage(page: Page, direction: "next" | "previous") {
   await page.mouse.up();
 }
 
+async function expectViewerZoomToggleExpandsMedia(page: Page) {
+  const stage = page.getByTestId("product-gallery-fullscreen-stage");
+  const zoomInButton = page.getByTestId(
+    "product-gallery-fullscreen-zoom-toggle",
+  );
+  const zoomOutButton = page.getByTestId("product-gallery-fullscreen-zoom-out");
+  const previousButton = page.getByTestId("product-gallery-previous");
+  const nextButton = page.getByTestId("product-gallery-next");
+  const beforeZoom = await getViewerZoomMetrics(page);
+
+  await expect(previousButton).toBeVisible();
+  await expect(nextButton).toBeVisible();
+  await expect(zoomOutButton).toBeHidden();
+  await zoomInButton.click();
+  await expect(stage).toHaveAttribute("data-gallery-zoomed", "true");
+  await expect(stage).toHaveAttribute("data-gallery-drag-mode", "pan");
+  await expect(previousButton).toBeHidden();
+  await expect(nextButton).toBeHidden();
+  await expect(zoomOutButton).toBeVisible();
+  await expect
+    .poll(() => getViewerZoomMetrics(page))
+    .toMatchObject({
+      isZoomedShell: true,
+      scale: 1.2,
+    });
+
+  const firstZoom = await getViewerZoomMetrics(page);
+  expect(firstZoom.mediaWidth).toBeGreaterThan(beforeZoom.mediaWidth * 1.1);
+  expect(firstZoom.surfaceWidth).toBeGreaterThan(firstZoom.mediaWidth);
+
+  await zoomInButton.click();
+  await expect
+    .poll(() => getViewerZoomMetrics(page))
+    .toMatchObject({
+      isZoomedShell: true,
+      scale: 1.45,
+    });
+
+  const secondZoom = await getViewerZoomMetrics(page);
+  expect(secondZoom.surfaceWidth).toBeGreaterThan(firstZoom.surfaceWidth);
+
+  await zoomOutButton.click();
+  await expect
+    .poll(() => getViewerZoomMetrics(page))
+    .toMatchObject({
+      isZoomedShell: true,
+      scale: 1.2,
+    });
+
+  await zoomOutButton.click();
+  await expect(stage).toHaveAttribute("data-gallery-zoomed", "false");
+  await expect(stage).toHaveAttribute("data-gallery-drag-mode", "swipe");
+  await expect(previousButton).toBeVisible();
+  await expect(nextButton).toBeVisible();
+  await expect(zoomOutButton).toBeHidden();
+  await expect
+    .poll(() => getViewerZoomMetrics(page))
+    .toMatchObject({
+      isZoomedShell: false,
+      scale: 1,
+    });
+}
+
+async function getViewerZoomMetrics(page: Page) {
+  return page.evaluate(() => {
+    const media = document.querySelector(
+      '[data-testid="product-gallery-fullscreen-media"]',
+    );
+    const surface = document.querySelector(
+      '[data-testid="product-gallery-fullscreen-zoom-surface"]',
+    );
+
+    if (!(media instanceof HTMLElement) || !(surface instanceof HTMLElement)) {
+      throw new Error("Missing full-screen gallery zoom elements.");
+    }
+
+    const mediaBox = media.getBoundingClientRect();
+    const surfaceBox = surface.getBoundingClientRect();
+
+    return {
+      isZoomedShell: media.classList.contains(
+        "product-gallery-viewer-media-shell-zoomed",
+      ),
+      mediaWidth: Math.round(mediaBox.width),
+      scale: Number.parseFloat(
+        window
+          .getComputedStyle(surface)
+          .getPropertyValue("--viewer-zoom-scale"),
+      ),
+      surfaceWidth: Math.round(surfaceBox.width),
+    };
+  });
+}
+
 async function expectGalleryStageFollowsDrag(
   page: Page,
   direction: "next" | "previous",
 ) {
   const stage = page.getByTestId("product-gallery-fullscreen-stage");
   const track = page.getByTestId("product-gallery-fullscreen-swipe-track");
-  const box = await stage.boundingBox();
+  const media = page.getByTestId("product-gallery-fullscreen-media").last();
+  const box = await media.boundingBox();
 
   if (!box) {
-    throw new Error("Missing full-screen gallery stage box.");
+    throw new Error("Missing full-screen gallery media box.");
   }
 
   const startX =
     direction === "next" ? box.x + box.width * 0.68 : box.x + box.width * 0.32;
   const followX = box.x + box.width * 0.5;
-  const endX =
-    direction === "next" ? box.x + box.width * 0.32 : box.x + box.width * 0.68;
   const y = box.y + box.height * 0.52;
 
   await page.mouse.move(startX, y);
@@ -1777,8 +1877,120 @@ async function expectGalleryStageFollowsDrag(
     )
     .not.toBe("none");
 
-  await page.mouse.move(endX, y, { steps: 4 });
+  const farX =
+    direction === "next" ? box.x - box.width * 0.35 : box.x + box.width * 1.35;
+  await page.mouse.move(farX, y, { steps: 4 });
+
+  const farDrag = await stage.evaluate((element) => {
+    const currentMedia = element.querySelector<HTMLElement>(
+      "[data-gallery-viewer-current-media]",
+    );
+    return {
+      mediaWidth: currentMedia?.getBoundingClientRect().width ?? 0,
+      offset: Number.parseFloat(
+        element.getAttribute("data-gallery-swipe-offset") ?? "0",
+      ),
+    };
+  });
+
+  expect(farDrag.mediaWidth).toBeGreaterThan(0);
+  if (direction === "next") {
+    expect(farDrag.offset).toBeLessThan(-farDrag.mediaWidth * 0.9);
+  } else {
+    expect(farDrag.offset).toBeGreaterThan(farDrag.mediaWidth * 0.9);
+  }
+
+  await installGallerySwipeResetProbe(page);
   await page.mouse.up();
+  const resetSample = await waitForGallerySwipeResetSample(page);
+  expect(Math.abs(resetSample.translateX)).toBeLessThanOrEqual(1);
+  expect(resetSample.maxTransitionDurationMs).toBe(0);
+}
+
+type GallerySwipeResetSample = {
+  maxTransitionDurationMs: number;
+  translateX: number;
+};
+
+async function installGallerySwipeResetProbe(page: Page) {
+  await page.evaluate(() => {
+    const stage = document.querySelector(
+      '[data-testid="product-gallery-fullscreen-stage"]',
+    );
+    const track = document.querySelector(
+      '[data-testid="product-gallery-fullscreen-swipe-track"]',
+    );
+
+    if (!(stage instanceof HTMLElement) || !(track instanceof HTMLElement)) {
+      throw new Error("Missing full-screen gallery swipe reset elements.");
+    }
+
+    const stateWindow = window as typeof window & {
+      __gallerySwipeResetObserver?: MutationObserver;
+      __gallerySwipeResetSamples?: GallerySwipeResetSample[];
+    };
+    const readDurationMs = (durationList: string) =>
+      Math.max(
+        ...durationList.split(",").map((duration) => {
+          const trimmedDuration = duration.trim();
+          const parsedDuration = Number.parseFloat(trimmedDuration);
+
+          if (!Number.isFinite(parsedDuration)) return 0;
+
+          return trimmedDuration.endsWith("ms")
+            ? parsedDuration
+            : parsedDuration * 1000;
+        }),
+      );
+    const readTranslateX = (transform: string) => {
+      if (transform === "none") return 0;
+
+      return new DOMMatrixReadOnly(transform).m41;
+    };
+
+    stateWindow.__gallerySwipeResetObserver?.disconnect();
+    stateWindow.__gallerySwipeResetSamples = [];
+    stateWindow.__gallerySwipeResetObserver = new MutationObserver(() => {
+      if (!stage.hasAttribute("data-gallery-swipe-resetting")) return;
+
+      const styles = window.getComputedStyle(track);
+      stateWindow.__gallerySwipeResetSamples?.push({
+        maxTransitionDurationMs: readDurationMs(styles.transitionDuration),
+        translateX: Math.round(readTranslateX(styles.transform)),
+      });
+    });
+    stateWindow.__gallerySwipeResetObserver.observe(stage, {
+      attributeFilter: ["data-gallery-swipe-resetting"],
+      attributes: true,
+    });
+  });
+}
+
+async function waitForGallerySwipeResetSample(page: Page) {
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const stateWindow = window as typeof window & {
+          __gallerySwipeResetSamples?: GallerySwipeResetSample[];
+        };
+
+        return stateWindow.__gallerySwipeResetSamples?.length ?? 0;
+      }),
+    )
+    .toBeGreaterThan(0);
+
+  return page.evaluate(() => {
+    const stateWindow = window as typeof window & {
+      __gallerySwipeResetSamples?: GallerySwipeResetSample[];
+    };
+    const [sample] = stateWindow.__gallerySwipeResetSamples ?? [];
+
+    if (!sample) {
+      throw new Error("Missing full-screen gallery swipe reset sample.");
+    }
+
+    return sample;
+  });
 }
 
 async function expectGallerySwipeSettled(page: Page) {

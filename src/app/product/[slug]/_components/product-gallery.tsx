@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
@@ -8,10 +8,12 @@ import {
   useState,
   type KeyboardEvent,
   type MouseEvent as ReactMouseEvent,
+  type CSSProperties,
   type MutableRefObject,
   type PointerEvent,
   type WheelEvent as ReactWheelEvent,
 } from "react";
+import { flushSync } from "react-dom";
 import {
   ChevronLeft,
   ChevronRight,
@@ -106,9 +108,10 @@ type ViewerPinchBaseline = {
 
 const viewerZoomBounds = {
   min: 1,
-  max: 4,
-  toggleLevel: 2.5,
+  max: 1.75,
 } as const;
+const viewerZoomScales = [1, 1.2, 1.45, 1.75] as const;
+const viewerZoomStepEpsilon = 0.01;
 const viewerWheelZoomSensitivity = 0.0016;
 
 const mainGalleryImageSizes =
@@ -131,7 +134,18 @@ export function ProductGallery({
   const [isHoverZoomActive, setIsHoverZoomActive] = useState(false);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [isViewerZoomed, setIsViewerZoomed] = useState(false);
+  const [isSwipeCommitResetting, setIsSwipeCommitResetting] = useState(false);
+  const [viewerZoomRenderTransform, setViewerZoomRenderTransform] =
+    useState<ViewerZoomTransform>({ scale: 1, x: 0, y: 0 });
   const galleryFrameRef = useRef<HTMLDivElement | null>(null);
+  const inlineDragLayerRef = useRef<HTMLDivElement | null>(null);
+  const inlineDragStateRef = useRef<{
+    hasMoved: boolean;
+    pointerId: number;
+    startX: number;
+    startY: number;
+  } | null>(null);
+  const inlineDragReleaseTimeoutRef = useRef<number | null>(null);
   const viewerStageRef = useRef<HTMLDivElement | null>(null);
   const viewerZoomSurfaceRef = useRef<HTMLDivElement | null>(null);
   const viewerTriggerRef = useRef<HTMLButtonElement | null>(null);
@@ -162,6 +176,10 @@ export function ProductGallery({
     galleryImageCount,
   });
   const hiddenGalleryImageCount = Math.max(galleryImageCount - 3, 0);
+  const shouldAnimateMediaChange =
+    !shouldReduceMotion && !isSwipeCommitResetting;
+  const canViewerZoomIn =
+    viewerZoomRenderTransform.scale < viewerZoomBounds.max - viewerZoomStepEpsilon;
 
   useEffect(() => {
     if (!isViewerOpen || galleryImageCount <= 1) return;
@@ -227,11 +245,24 @@ export function ProductGallery({
     );
     const isZoomed = nextScale > 1;
 
-    viewerZoomRef.current = isZoomed
+    const nextTransform = isZoomed
       ? { scale: nextScale, x: next.x, y: next.y }
       : { scale: 1, x: 0, y: 0 };
 
+    viewerZoomRef.current = nextTransform;
     applyViewerZoomTransform(options);
+
+    setViewerZoomRenderTransform((currentTransform) => {
+      const scaleChanged =
+        Math.abs(currentTransform.scale - nextTransform.scale) >
+        viewerZoomStepEpsilon;
+
+      if (options.animate || scaleChanged || !isZoomed || isZoomed !== wasZoomed) {
+        return nextTransform;
+      }
+
+      return currentTransform;
+    });
 
     if (isZoomed !== wasZoomed) {
       setIsViewerZoomed(isZoomed);
@@ -283,8 +314,33 @@ export function ProductGallery({
     commitViewerZoom({ scale: 1, x: 0, y: 0 }, options);
   }
 
-  function toggleViewerZoom() {
-    if (viewerZoomRef.current.scale > 1) {
+  function getViewerZoomStepScale(direction: "in" | "out") {
+    const currentScale = viewerZoomRef.current.scale;
+
+    if (direction === "in") {
+      for (const scale of viewerZoomScales) {
+        if (scale > currentScale + viewerZoomStepEpsilon) return scale;
+      }
+
+      return viewerZoomBounds.max;
+    }
+
+    for (let index = viewerZoomScales.length - 1; index >= 0; index -= 1) {
+      const scale = viewerZoomScales[index] ?? viewerZoomBounds.min;
+
+      if (scale < currentScale - viewerZoomStepEpsilon) return scale;
+    }
+
+    return viewerZoomBounds.min;
+  }
+
+  function stepViewerZoom(
+    direction: "in" | "out",
+    point?: { clientX: number; clientY: number },
+  ) {
+    const nextScale = getViewerZoomStepScale(direction);
+
+    if (nextScale <= viewerZoomBounds.min + viewerZoomStepEpsilon) {
       resetViewerZoom({ animate: true });
       return;
     }
@@ -293,11 +349,28 @@ export function ProductGallery({
     const rect = shell?.getBoundingClientRect();
 
     zoomViewerToPoint(
-      viewerZoomBounds.toggleLevel,
-      rect ? rect.left + rect.width / 2 : 0,
-      rect ? rect.top + rect.height / 2 : 0,
+      nextScale,
+      point?.clientX ?? (rect ? rect.left + rect.width / 2 : 0),
+      point?.clientY ?? (rect ? rect.top + rect.height / 2 : 0),
       { animate: true },
     );
+  }
+
+  function getViewerZoomSurfaceStyle() {
+    const { scale, x, y } = viewerZoomRenderTransform;
+    const shouldApplyZoomTransform = isViewerZoomed && scale > 1;
+
+    return {
+      [viewerZoomCssProperties.scale.value]: shouldApplyZoomTransform
+        ? String(scale)
+        : "1",
+      [viewerZoomCssProperties.translateX.value]: shouldApplyZoomTransform
+        ? String(Math.round(x)).concat(viewerSwipePixelUnit.value)
+        : viewerSwipeZeroOffset.value,
+      [viewerZoomCssProperties.translateY.value]: shouldApplyZoomTransform
+        ? String(Math.round(y)).concat(viewerSwipePixelUnit.value)
+        : viewerSwipeZeroOffset.value,
+    } as CSSProperties;
   }
 
   function activateThumbnail(
@@ -564,8 +637,7 @@ export function ProductGallery({
       viewerSwipeReleaseTimeoutRef.current = window.setTimeout(
         () => {
           viewerSwipeReleaseTimeoutRef.current = null;
-          activateThumbnail(nextIndex);
-          resetViewerSwipeTracking(stage);
+          commitViewerSwipe(nextIndex, stage);
         },
         shouldReduceMotion ? 0 : 150,
       );
@@ -594,17 +666,12 @@ export function ProductGallery({
       return;
     }
 
-    if (viewerZoomRef.current.scale > 1) {
+    if (viewerZoomRef.current.scale >= viewerZoomBounds.max - viewerZoomStepEpsilon) {
       resetViewerZoom({ animate: true });
       return;
     }
 
-    zoomViewerToPoint(
-      viewerZoomBounds.toggleLevel,
-      event.clientX,
-      event.clientY,
-      { animate: true },
-    );
+    stepViewerZoom("in", { clientX: event.clientX, clientY: event.clientY });
   }
 
   function handleViewerWheel(event: ReactWheelEvent<HTMLDivElement>) {
@@ -690,11 +757,190 @@ export function ProductGallery({
     setIsHoverZoomActive(false);
   }
 
+  function handleFramePointerDown(event: PointerEvent<HTMLDivElement>) {
+    if (galleryImageCount <= 1 || !event.isPrimary) return;
+    if (
+      event.pointerType === viewerPointerTypes.mouse.value &&
+      event.button !== 0
+    ) {
+      return;
+    }
+    if (
+      event.target instanceof Element &&
+      event.target.closest("[data-gallery-hover-zoom-exempt], button, a")
+    ) {
+      return;
+    }
+
+    clearInlineDragReleaseTimeout();
+    resetInlineDragTracking(event.currentTarget);
+    inlineDragStateRef.current = {
+      hasMoved: false,
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+    };
+  }
+
+  function handleFramePointerMove(event: PointerEvent<HTMLDivElement>) {
+    const dragState = inlineDragStateRef.current;
+
+    if (dragState?.pointerId === event.pointerId) {
+      const deltaX = event.clientX - dragState.startX;
+      const deltaY = event.clientY - dragState.startY;
+
+      if (!dragState.hasMoved) {
+        // Let vertical gestures scroll the page; only claim horizontal drags.
+        if (Math.abs(deltaY) > 10 && Math.abs(deltaY) > Math.abs(deltaX)) {
+          inlineDragStateRef.current = null;
+          return;
+        }
+        if (Math.abs(deltaX) <= 8 || Math.abs(deltaX) <= Math.abs(deltaY)) {
+          return;
+        }
+
+        dragState.hasMoved = true;
+        resetGalleryHoverZoom(event.currentTarget);
+        event.currentTarget.setPointerCapture(event.pointerId);
+        event.currentTarget.dataset.galleryInlineDragging = String(true);
+      }
+
+      event.preventDefault();
+      syncInlineDragOffset(event.currentTarget, deltaX);
+      return;
+    }
+
+    syncGalleryHoverZoom(event);
+  }
+
+  function finishFramePointerDrag(
+    event: PointerEvent<HTMLDivElement>,
+    options: { cancelled?: boolean } = {},
+  ) {
+    const dragState = inlineDragStateRef.current;
+
+    if (dragState?.pointerId !== event.pointerId) return;
+
+    const frame = event.currentTarget;
+    const deltaX = event.clientX - dragState.startX;
+    const hasMoved = dragState.hasMoved;
+    const shouldCommitSwipe =
+      !options.cancelled &&
+      hasMoved &&
+      Math.abs(deltaX) >= getViewerSwipeThreshold(frame);
+
+    inlineDragStateRef.current = null;
+
+    if (frame.hasPointerCapture(event.pointerId)) {
+      frame.releasePointerCapture(event.pointerId);
+    }
+    delete frame.dataset.galleryInlineDragging;
+
+    if (!hasMoved) {
+      resetInlineDragTracking(frame);
+      return;
+    }
+
+    if (shouldCommitSwipe) {
+      const nextIndex = activeImageIndex + (deltaX < 0 ? 1 : -1);
+      const commitOffset =
+        deltaX < 0
+          ? -getInlineSwipeCommitDistance(frame)
+          : getInlineSwipeCommitDistance(frame);
+
+      frame.dataset.galleryInlineSettling = String(true);
+      syncInlineDragOffset(frame, commitOffset);
+      inlineDragReleaseTimeoutRef.current = window.setTimeout(
+        () => {
+          inlineDragReleaseTimeoutRef.current = null;
+          commitInlineSwipe(nextIndex, frame);
+        },
+        shouldReduceMotion ? 0 : 180,
+      );
+      return;
+    }
+
+    resetInlineDragTracking(frame);
+  }
+
+  function commitInlineSwipe(nextIndex: number, frame: HTMLElement) {
+    frame.dataset.galleryInlineResetting = String(true);
+
+    flushSync(() => {
+      setIsSwipeCommitResetting(true);
+      activateThumbnail(nextIndex);
+    });
+    resetInlineDragTracking(frame);
+    clearSwipeCommitReset(() => {
+      delete frame.dataset.galleryInlineResetting;
+    });
+  }
+
+  function commitViewerSwipe(nextIndex: number, stage: HTMLElement) {
+    stage.dataset.gallerySwipeResetting = String(true);
+
+    flushSync(() => {
+      setIsSwipeCommitResetting(true);
+      activateThumbnail(nextIndex);
+    });
+    resetViewerSwipeTracking(stage);
+    clearSwipeCommitReset(() => {
+      delete stage.dataset.gallerySwipeResetting;
+    });
+  }
+
+  function clearSwipeCommitReset(clearDataset: () => void) {
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        clearDataset();
+        setIsSwipeCommitResetting(false);
+      });
+    });
+  }
+
   function openViewerFromSecondaryTile(index: number) {
+    clearInlineDragReleaseTimeout();
+    resetInlineDragTracking(galleryFrameRef.current);
     clearViewerSwipeReleaseTimeout();
     activateThumbnail(index);
     resetViewerZoom();
     setIsViewerOpen(true);
+  }
+
+  function clearInlineDragReleaseTimeout() {
+    if (inlineDragReleaseTimeoutRef.current === null) return;
+
+    window.clearTimeout(inlineDragReleaseTimeoutRef.current);
+    inlineDragReleaseTimeoutRef.current = null;
+  }
+
+  function syncInlineDragOffset(frame: HTMLElement, deltaX: number) {
+    const offset = deltaX;
+    const roundedOffset = Math.round(offset);
+    const layer = inlineDragLayerRef.current;
+
+    if (layer) {
+      layer.style.transition = "";
+      layer.style.transform = `translate3d(${roundedOffset}px, 0, 0)`;
+    }
+
+    frame.dataset.galleryInlineSwipeOffset = String(roundedOffset);
+    frame.dataset.galleryInlineSwipeTracking = String(Math.abs(offset) > 0);
+  }
+
+  function resetInlineDragTracking(frame: HTMLElement | null) {
+    const layer = inlineDragLayerRef.current;
+
+    if (layer) {
+      layer.style.transition = "";
+      layer.style.transform = "";
+    }
+
+    if (!frame) return;
+
+    delete frame.dataset.galleryInlineSettling;
+    delete frame.dataset.galleryInlineSwipeOffset;
+    delete frame.dataset.galleryInlineSwipeTracking;
   }
 
   function clearViewerSwipeReleaseTimeout() {
@@ -707,8 +953,8 @@ export function ProductGallery({
   function syncViewerSwipeOffset(stage: HTMLElement, deltaX: number) {
     const offset = clamp(
       deltaX,
-      -getViewerSwipeMotionLimit(stage),
-      getViewerSwipeMotionLimit(stage),
+      -getViewerSwipeCommitDistance(stage),
+      getViewerSwipeCommitDistance(stage),
     );
 
     stage.style.setProperty(
@@ -751,6 +997,29 @@ export function ProductGallery({
           draggable={false}
           fill
           sizes={viewerGalleryImageSizes}
+          src={image}
+        />
+      </div>
+    );
+  }
+
+  function renderInlineAdjacentMedia(index: number) {
+    const image = galleryImages[index];
+    if (!image) return null;
+
+    return (
+      <div
+        aria-hidden="true"
+        className="product-gallery-main-media-cell"
+        key={`inline-adjacent-${index}-${image}`}
+      >
+        <Image
+          alt=""
+          className="media-color product-gallery-hover-zoom-image object-cover"
+          draggable={false}
+          fill
+          loading="lazy"
+          sizes={mainGalleryImageSizes}
           src={image}
         />
       </div>
@@ -923,7 +1192,7 @@ export function ProductGallery({
 
     viewerPendingZoomRef.current = false;
     const animationFrame = window.requestAnimationFrame(() => {
-      toggleViewerZoom();
+      stepViewerZoom("in");
     });
 
     return () => window.cancelAnimationFrame(animationFrame);
@@ -967,53 +1236,76 @@ export function ProductGallery({
         <div
           className="brand-gallery-frame product-gallery-main-frame relative aspect-[4/5] max-h-[min(82vh,46rem)] w-full min-w-0 overflow-hidden rounded-md bg-[var(--secondary)] sm:aspect-[5/4] lg:aspect-auto lg:max-h-none lg:min-h-[min(72vh,42rem)]"
           data-gallery-hover-zoom={isHoverZoomActive ? "true" : "false"}
+          data-gallery-swipeable={galleryImageCount > 1 ? "true" : undefined}
           data-motion-gallery="product"
           data-testid="product-gallery"
-          onPointerCancel={(event) =>
-            resetGalleryHoverZoom(event.currentTarget)
-          }
+          onPointerCancel={(event) => {
+            finishFramePointerDrag(event, { cancelled: true });
+            resetGalleryHoverZoom(event.currentTarget);
+          }}
+          onPointerDown={handleFramePointerDown}
           onPointerEnter={syncGalleryHoverZoom}
           onPointerLeave={(event) => resetGalleryHoverZoom(event.currentTarget)}
-          onPointerMove={syncGalleryHoverZoom}
+          onPointerMove={handleFramePointerMove}
+          onPointerUp={finishFramePointerDrag}
           ref={galleryFrameRef}
         >
-          <AnimatePresence initial={false} mode="popLayout">
-            <motion.div
-              animate={{ opacity: 1, scale: 1 }}
-              className="absolute inset-0"
-              exit={
-                shouldReduceMotion
-                  ? { opacity: 1, scale: 1 }
-                  : { opacity: 0, scale: 0.996 }
-              }
-              initial={
-                shouldReduceMotion ? false : { opacity: 0, scale: 1.006 }
-              }
-              key={activeImage}
-              transition={{
-                duration: shouldReduceMotion ? 0 : 0.38,
-                ease: [0.2, 0, 0, 1],
-              }}
+          <div
+            className="product-gallery-main-swipe-window"
+            data-testid="product-gallery-main-swipe-window"
+          >
+            <div
+              className="product-gallery-main-drag-layer"
+              data-testid="product-gallery-main-drag-layer"
+              dir="ltr"
+              ref={inlineDragLayerRef}
             >
-              <div
-                className="product-gallery-hover-zoom-layer absolute inset-0"
-                data-testid="product-gallery-hover-zoom-layer"
-              >
-                <Image
-                  alt={`${productName}, תמונה ${activeImagePosition} מתוך ${galleryImageCount}`}
-                  className="media-color product-gallery-hover-zoom-image object-cover"
-                  data-testid="product-gallery-main-image"
-                  decoding="async"
-                  fill
-                  loading={activeImageIndex === 0 ? undefined : "lazy"}
-                  priority={activeImageIndex === 0}
-                  quality={90}
-                  sizes={mainGalleryImageSizes}
-                  src={activeImage}
-                />
+              {renderInlineAdjacentMedia(previousViewerImageIndex)}
+              <div className="product-gallery-main-media-cell">
+                <AnimatePresence initial={false} mode="popLayout">
+                  <motion.div
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="absolute inset-0"
+                    exit={
+                      shouldAnimateMediaChange
+                        ? { opacity: 0, scale: 0.996 }
+                        : { opacity: 1, scale: 1 }
+                    }
+                    initial={
+                      shouldAnimateMediaChange
+                        ? { opacity: 0, scale: 1.006 }
+                        : false
+                    }
+                    key={activeImage}
+                    transition={{
+                      duration: shouldAnimateMediaChange ? 0.38 : 0,
+                      ease: [0.2, 0, 0, 1],
+                    }}
+                  >
+                    <div
+                      className="product-gallery-hover-zoom-layer absolute inset-0"
+                      data-testid="product-gallery-hover-zoom-layer"
+                    >
+                      <Image
+                        alt={`${productName}, תמונה ${activeImagePosition} מתוך ${galleryImageCount}`}
+                        className="media-color product-gallery-hover-zoom-image object-cover"
+                        data-testid="product-gallery-main-image"
+                        decoding="async"
+                        draggable={false}
+                        fill
+                        loading={activeImageIndex === 0 ? undefined : "lazy"}
+                        priority={activeImageIndex === 0}
+                        quality={90}
+                        sizes={mainGalleryImageSizes}
+                        src={activeImage}
+                      />
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
               </div>
-            </motion.div>
-          </AnimatePresence>
+              {renderInlineAdjacentMedia(nextViewerImageIndex)}
+            </div>
+          </div>
           {galleryImageCount > 1 ? (
             <Badge
               aria-live="polite"
@@ -1106,25 +1398,36 @@ export function ProductGallery({
                   </p>
                 </div>
                 <div className="product-gallery-viewer-actions flex shrink-0 items-center gap-1.5">
+                  {isViewerZoomed ? (
+                    <Button
+                      aria-label="הקטנת תמונת התכשיט לשלב קודם"
+                      data-icon-tooltip="הקטנה"
+                      data-testid="product-gallery-fullscreen-zoom-out"
+                      onClick={() => stepViewerZoom("out")}
+                      size="icon-sm"
+                      type="button"
+                      variant="ghost"
+                    >
+                      <ZoomOut aria-hidden="true" className="size-4" />
+                    </Button>
+                  ) : null}
                   <Button
                     aria-label={
-                      isViewerZoomed
-                        ? "ביטול הגדלת תמונת התכשיט"
-                        : "הגדלת תמונת התכשיט"
+                      canViewerZoomIn
+                        ? "הגדלת תמונת התכשיט לשלב הבא"
+                        : "הגדלה מרבית של תמונת התכשיט"
                     }
-                    aria-pressed={isViewerZoomed}
-                    data-icon-tooltip={isViewerZoomed ? "ביטול הגדלה" : "הגדלה"}
+                    data-icon-tooltip={
+                      canViewerZoomIn ? "הגדלה" : "הגדלה מרבית"
+                    }
                     data-testid="product-gallery-fullscreen-zoom-toggle"
-                    onClick={() => toggleViewerZoom()}
+                    disabled={!canViewerZoomIn}
+                    onClick={() => stepViewerZoom("in")}
                     size="icon-sm"
                     type="button"
                     variant="ghost"
                   >
-                    {isViewerZoomed ? (
-                      <ZoomOut aria-hidden="true" className="size-4" />
-                    ) : (
-                      <ZoomIn aria-hidden="true" className="size-4" />
-                    )}
+                    <ZoomIn aria-hidden="true" className="size-4" />
                   </Button>
                   <DialogClose asChild>
                     <Button
@@ -1198,34 +1501,38 @@ export function ProductGallery({
                       <motion.button
                         animate={{ opacity: 1, scale: 1 }}
                         aria-label={
-                          isViewerZoomed
-                            ? "ביטול הגדלת תמונת התכשיט"
-                            : "הגדלת תמונת התכשיט"
+                          !isViewerZoomed
+                            ? "הגדלת תמונת התכשיט"
+                            : canViewerZoomIn
+                              ? "הגדלת תמונת התכשיט לשלב הבא"
+                              : "איפוס הגדלת תמונת התכשיט"
                         }
                         aria-pressed={isViewerZoomed}
                         className={cn(
                           "product-gallery-viewer-media-shell relative",
                           !isViewerZoomed &&
                             "product-gallery-viewer-media-shell-current",
+                          isViewerZoomed &&
+                            "product-gallery-viewer-media-shell-zoomed",
                         )}
                         data-gallery-viewer-current-media={String(true)}
                         data-testid="product-gallery-fullscreen-media"
                         draggable={false}
                         exit={
-                          shouldReduceMotion
-                            ? { opacity: 1, scale: 1 }
-                            : { opacity: 0, scale: 0.996 }
+                          shouldAnimateMediaChange
+                            ? { opacity: 0, scale: 0.996 }
+                            : { opacity: 1, scale: 1 }
                         }
                         initial={
-                          shouldReduceMotion
-                            ? false
-                            : { opacity: 0, scale: 1.006 }
+                          shouldAnimateMediaChange
+                            ? { opacity: 0, scale: 1.006 }
+                            : false
                         }
                         key={`viewer-${activeImage}`}
                         onDragStart={(event) => event.preventDefault()}
                         onClick={handleViewerMediaClick}
                         transition={{
-                          duration: shouldReduceMotion ? 0 : 0.28,
+                          duration: shouldAnimateMediaChange ? 0.28 : 0,
                           ease: [0.2, 0, 0, 1],
                         }}
                         type="button"
@@ -1235,6 +1542,7 @@ export function ProductGallery({
                           data-testid="product-gallery-fullscreen-zoom-surface"
                           data-viewer-zoom-animate="false"
                           ref={viewerZoomSurfaceRef}
+                          style={getViewerZoomSurfaceStyle()}
                         >
                           <Image
                             alt={`${productName}, תמונה במסך מלא ${activeImagePosition} מתוך ${galleryImageCount}`}
@@ -1258,7 +1566,7 @@ export function ProductGallery({
                   </div>
                 </div>
 
-                {galleryImageCount > 1 ? (
+                {galleryImageCount > 1 && !isViewerZoomed ? (
                   <>
                     <Button
                       aria-label="התמונה הקודמת"
@@ -1340,6 +1648,10 @@ function getLoopedGalleryIndex(index: number, count: number) {
   return (index + count) % count;
 }
 
+function getInlineSwipeCommitDistance(frame: HTMLElement) {
+  return frame.getBoundingClientRect().width;
+}
+
 function getViewerCurrentMediaWidth(stage: HTMLElement) {
   const currentMedia = stage.querySelector<HTMLElement>(
     viewerCurrentMediaSelector.value,
@@ -1351,12 +1663,18 @@ function getViewerCurrentMediaWidth(stage: HTMLElement) {
   );
 }
 
-function getViewerSwipeMotionLimit(stage: HTMLElement) {
-  return getViewerCurrentMediaWidth(stage) * 0.72;
+function getViewerSwipeCommitDistance(stage: HTMLElement) {
+  return getViewerCurrentMediaWidth(stage) + getViewerSwipeGap(stage);
 }
 
-function getViewerSwipeCommitDistance(stage: HTMLElement) {
-  return getViewerCurrentMediaWidth(stage) * 0.92;
+function getViewerSwipeGap(stage: HTMLElement) {
+  const track = stage.querySelector<HTMLElement>(
+    ".product-gallery-viewer-swipe-track",
+  );
+  const gap = track ? window.getComputedStyle(track).columnGap : "0";
+  const parsedGap = Number.parseFloat(gap);
+
+  return Number.isFinite(parsedGap) ? parsedGap : 0;
 }
 
 function isViewerDragExemptTarget(target: EventTarget | null) {

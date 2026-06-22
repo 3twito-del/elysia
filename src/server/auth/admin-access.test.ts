@@ -19,6 +19,12 @@ describe("admin access", () => {
 
   it("allows broad permissions to satisfy granular checks", () => {
     expect(hasAdminPermission(ordersAdmin, "ORDERS_REFUND")).toBe(true);
+    expect(
+      hasAdminPermission(
+        { ...ordersAdmin, permissions: ["BLOG"] },
+        "BLOG_WRITE",
+      ),
+    ).toBe(true);
   });
 
   it("allows SYSTEM to act as a super permission", () => {

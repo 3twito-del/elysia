@@ -20,6 +20,8 @@ const publicRouteFiles = [
   "src/app/wishlist/page.tsx",
   "src/app/size-guide/page.tsx",
   "src/app/about/page.tsx",
+  "src/app/blog/page.tsx",
+  "src/app/blog/[slug]/page.tsx",
   "src/app/branches/page.tsx",
   "src/app/faq/page.tsx",
   "src/app/terms/page.tsx",
@@ -100,11 +102,13 @@ describe("public structure enforcement", () => {
     const category = read("src/app/category/[slug]/page.tsx");
     const gifts = read("src/app/gifts/page.tsx");
     const search = read("src/app/search/page.tsx");
-    const searchControls = read("src/app/search/_components/search-controls.tsx");
-
-    expect(indexOf(category, 'data-testid="category-results-grid"')).toBeLessThan(
-      indexOf(category, 'data-testid="category-trust-strip"'),
+    const searchControls = read(
+      "src/app/search/_components/search-controls.tsx",
     );
+
+    expect(
+      indexOf(category, 'data-testid="category-results-grid"'),
+    ).toBeLessThan(indexOf(category, 'data-testid="category-trust-strip"'));
     expect(category).toContain('data-testid="category-filter-trigger"');
     expect(category).toContain('className="hidden"');
     expect(category).not.toContain("קו על הצוואר");
@@ -112,9 +116,9 @@ describe("public structure enforcement", () => {
     expect(indexOf(gifts, 'data-testid="gift-results-grid"')).toBeLessThan(
       indexOf(gifts, 'data-testid="gift-discovery-chips"'),
     );
-    expect(indexOf(search, 'data-testid="search-results-summary"')).toBeLessThan(
-      indexOf(search, 'data-testid="search-controls-panel"'),
-    );
+    expect(
+      indexOf(search, 'data-testid="search-results-summary"'),
+    ).toBeLessThan(indexOf(search, 'data-testid="search-controls-panel"'));
     expect(searchControls).toContain('data-testid="search-controls-toggle"');
     expect(searchControls).toContain("<details");
   });
@@ -140,9 +144,7 @@ function extractPageIntroBlocks(content: string) {
   return [
     ...content.matchAll(/<CommercePageHero\b[\s\S]*?\/>/g),
     ...content.matchAll(/<CompactPageIntro\b[\s\S]*?\/>/g),
-  ].map(
-    (match) => match[0] ?? "",
-  );
+  ].map((match) => match[0] ?? "");
 }
 
 function read(relativePath: string) {

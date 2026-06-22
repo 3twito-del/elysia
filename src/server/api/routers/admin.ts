@@ -1,5 +1,19 @@
 import { adminProcedure, createTRPCRouter } from "~/server/api/trpc";
 import {
+  adminBlogPostListInputSchema,
+  createAdminBlogAuthor,
+  createAdminBlogAuthorInputSchema,
+  createAdminBlogCategory,
+  createAdminBlogCategoryInputSchema,
+  createAdminBlogPost,
+  createAdminBlogPostInputSchema,
+  createAdminBlogTag,
+  createAdminBlogTagInputSchema,
+  listAdminBlogPosts,
+  updateAdminBlogPost,
+  updateAdminBlogPostInputSchema,
+} from "~/server/services/admin-blog";
+import {
   createAdminCoupon,
   createAdminCouponInputSchema,
   createAdminProduct,
@@ -64,6 +78,40 @@ export const adminRouter = createTRPCRouter({
   overview: adminProcedure("ORDERS_READ").query(() =>
     getAdminOperationsOverview(),
   ),
+
+  blog: adminProcedure("BLOG_READ")
+    .input(adminBlogPostListInputSchema)
+    .query(({ input }) => listAdminBlogPosts(input)),
+
+  createBlogPost: adminProcedure("BLOG_WRITE")
+    .input(createAdminBlogPostInputSchema)
+    .mutation(({ ctx, input }) =>
+      createAdminBlogPost({ data: input, adminUserId: ctx.admin.id }),
+    ),
+
+  updateBlogPost: adminProcedure("BLOG_WRITE")
+    .input(updateAdminBlogPostInputSchema)
+    .mutation(({ ctx, input }) =>
+      updateAdminBlogPost({ data: input, adminUserId: ctx.admin.id }),
+    ),
+
+  createBlogAuthor: adminProcedure("BLOG_WRITE")
+    .input(createAdminBlogAuthorInputSchema)
+    .mutation(({ ctx, input }) =>
+      createAdminBlogAuthor({ data: input, adminUserId: ctx.admin.id }),
+    ),
+
+  createBlogCategory: adminProcedure("BLOG_WRITE")
+    .input(createAdminBlogCategoryInputSchema)
+    .mutation(({ ctx, input }) =>
+      createAdminBlogCategory({ data: input, adminUserId: ctx.admin.id }),
+    ),
+
+  createBlogTag: adminProcedure("BLOG_WRITE")
+    .input(createAdminBlogTagInputSchema)
+    .mutation(({ ctx, input }) =>
+      createAdminBlogTag({ data: input, adminUserId: ctx.admin.id }),
+    ),
 
   orders: adminProcedure("ORDERS_READ")
     .input(adminOrderListInputSchema)

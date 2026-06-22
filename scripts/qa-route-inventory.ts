@@ -3,6 +3,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 import { getSeedProducts, seedCategories } from "../prisma/seed-catalog";
+import { listFixtureBlogPosts } from "../src/server/services/blog-fixtures";
 import { listFixtureCatalogProducts } from "../src/server/services/catalog-fixtures";
 
 export type QaRouteCoverage = "documented" | "smoke" | "visual";
@@ -74,6 +75,7 @@ const staticPublicRoutes = [
   "/size-guide",
   "/size-guide?kind=ring",
   "/service",
+  "/blog",
   "/about",
   "/faq",
   "/privacy",
@@ -87,6 +89,7 @@ const staticPublicRoutes = [
 
 const protectedAdminRoutes = [
   "/admin",
+  "/admin/blog",
   "/admin/orders",
   "/admin/catalog",
   "/admin/inventory",
@@ -206,6 +209,17 @@ export function getQaRouteInventory({
     );
   }
 
+  for (const post of listFixtureBlogPosts().slice(0, 1)) {
+    entries.push(
+      routeEntry({
+        kind: "public",
+        path: `/blog/${post.slug}`,
+        source: "blog-fixture-sample",
+        template: "/blog/[slug]",
+      }),
+    );
+  }
+
   entries.push(
     routeEntry({
       kind: "account",
@@ -245,6 +259,16 @@ export function getQaRouteInventory({
       }),
     );
   }
+
+  entries.push(
+    routeEntry({
+      kind: "admin",
+      path: "/admin/blog/fixture-post",
+      requiresAuth: true,
+      source: "protected-dynamic",
+      template: "/admin/blog/[id]",
+    }),
+  );
 
   entries.push(
     routeEntry({

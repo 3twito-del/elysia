@@ -190,6 +190,7 @@ describe("QA route inventory", () => {
     ]);
     expect(groups.informationLinks.map((link) => link.href)).toEqual([
       "/about",
+      "/blog",
       "/branches",
       "/account",
     ]);

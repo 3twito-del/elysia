@@ -5,6 +5,7 @@ import {
   getCatalogCategories,
   listCatalogProducts,
 } from "~/server/services/catalog";
+import { listSitemapBlogPosts } from "~/server/services/blog";
 
 const siteUrl = env.SITE_URL ?? "https://elysia-jewellery.com";
 
@@ -14,6 +15,7 @@ const staticRoutes = [
   "/gifts",
   "/wishlist",
   "/service",
+  "/blog",
   "/stylist",
   "/ai",
   "/about",
@@ -28,9 +30,10 @@ const staticRoutes = [
 ] as const;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [categories, products] = await Promise.all([
+  const [categories, products, blogPosts] = await Promise.all([
     getCatalogCategories(),
     listCatalogProducts(),
+    listSitemapBlogPosts(),
   ]);
 
   return [
@@ -51,6 +54,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: product.createdAt,
       priority: 0.6,
       url: createAbsoluteUrl(`/product/${product.slug}`),
+    })),
+    ...blogPosts.map((post) => ({
+      changeFrequency: "weekly" as const,
+      lastModified: post.updatedAt,
+      priority: 0.5,
+      url: createAbsoluteUrl(`/blog/${post.slug}`),
     })),
   ];
 }

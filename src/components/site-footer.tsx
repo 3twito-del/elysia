@@ -38,6 +38,7 @@ const commerceLinks = [
 
 const informationLinks = [
   { href: "/about", label: "אודות" },
+  { href: "/blog", label: "מגזין" },
   { href: "/branches", label: "סניפים" },
   { href: "/account", label: "אזור אישי" },
 ] as const;

@@ -15,6 +15,7 @@ export type AuthorizedAdmin = {
 
 const impliedPermissions: Partial<Record<AdminPermission, AdminPermission[]>> =
   {
+    BLOG: ["BLOG_READ", "BLOG_WRITE"],
     CATALOG: ["CATALOG_READ", "CATALOG_WRITE"],
     INVENTORY: ["INVENTORY_READ", "INVENTORY_WRITE"],
     ORDERS: ["ORDERS_READ", "ORDERS_WRITE", "ORDERS_REFUND"],

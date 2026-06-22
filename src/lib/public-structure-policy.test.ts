@@ -48,6 +48,8 @@ describe("public structure benchmark v4 policy", () => {
     expect(routeStructurePolicy["/accessibility"].archetype).toBe("legal");
     expect(routeStructurePolicy["/shipping-returns"].archetype).toBe("legal");
     expect(routeStructurePolicy["/warranty"].archetype).toBe("legal");
+    expect(routeStructurePolicy["/blog"].archetype).toBe("content");
+    expect(routeStructurePolicy["/blog/[slug]"].archetype).toBe("content");
     expect(routeStructurePolicy["/jewellery-care"].archetype).toBe("content");
   });
 
@@ -110,6 +112,7 @@ describe("public structure benchmark v4 policy", () => {
       "/gifts",
       "/search?sort=popular",
       "/size-guide",
+      "/blog",
       "/about",
       "/service",
     ]);

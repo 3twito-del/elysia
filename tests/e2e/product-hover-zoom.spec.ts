@@ -1,4 +1,4 @@
-import { expect, test, type Locator } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 
 const consentStorageKey = "elysia_cookie_consent";
 const productSlug = "hera-bracelet";
@@ -56,6 +56,69 @@ test.describe("product hover zoom", () => {
     await expect(gallery).toHaveAttribute("data-gallery-hover-zoom", "false");
   });
 
+  test("continues inline gallery swipe release from the dragged offset", async ({
+    page,
+  }) => {
+    test.skip((page.viewportSize()?.width ?? 0) < 1024, "desktop mouse drag");
+
+    await page.goto(`/product/${productSlug}`, {
+      waitUntil: "domcontentloaded",
+    });
+
+    const gallery = page.getByTestId("product-gallery");
+    const dragLayer = page.getByTestId("product-gallery-main-drag-layer");
+    const status = page.getByTestId("product-gallery-selection-status");
+
+    await expect(gallery).toBeVisible();
+    await expect(dragLayer).toBeVisible();
+    await expect(page.getByTestId("product-purchase-panel")).toHaveAttribute(
+      "data-client-ready",
+      "true",
+    );
+    await expect(status).toContainText(/1\/\d+/);
+
+    const galleryBox = await gallery.boundingBox();
+    expect(galleryBox).not.toBeNull();
+
+    const y = galleryBox!.y + galleryBox!.height * 0.52;
+    const startX = galleryBox!.x + galleryBox!.width * 0.68;
+    const followX = galleryBox!.x + galleryBox!.width * 0.5;
+    const endX = galleryBox!.x - galleryBox!.width * 0.3;
+
+    await page.mouse.move(startX, y);
+    await page.mouse.down();
+    await page.mouse.move(followX, y, { steps: 4 });
+
+    const dragState = await getInlineGallerySwipeState(gallery);
+    expect(dragState.tracking).toBe("true");
+    expect(dragState.offset).toBeLessThan(-16);
+    expect(await getTranslateX(dragLayer)).toBeLessThan(-16);
+
+    await page.mouse.move(endX, y, { steps: 4 });
+    const farDragState = await getInlineGallerySwipeState(gallery);
+    expect(farDragState.offset).toBeLessThan(-galleryBox!.width * 0.9);
+
+    await installInlineGallerySwipeResetProbe(gallery);
+    await page.mouse.up();
+
+    const releaseState = await getInlineGallerySwipeState(gallery);
+    expect(releaseState.settling).toBe("true");
+    expect(releaseState.offset).toBeLessThan(-galleryBox!.width * 0.75);
+
+    const resetSample = await waitForInlineGallerySwipeResetSample(page);
+    expect(Math.abs(resetSample.translateX)).toBeLessThanOrEqual(1);
+    expect(resetSample.maxTransitionDurationMs).toBe(0);
+    await expect(status).toContainText(/2\/\d+/);
+    await expect
+      .poll(() => getInlineGallerySwipeState(gallery))
+      .toMatchObject({
+        offset: 0,
+        settling: null,
+        tracking: null,
+      });
+    await expect.poll(() => getTranslateX(dragLayer)).toBe(0);
+  });
+
   test("enlarges product-card media on hover without resizing the card", async ({
     page,
   }) => {
@@ -104,6 +167,109 @@ test.describe("product hover zoom", () => {
     );
   });
 });
+
+type InlineGallerySwipeResetSample = {
+  maxTransitionDurationMs: number;
+  translateX: number;
+};
+
+async function installInlineGallerySwipeResetProbe(gallery: Locator) {
+  await gallery.evaluate((element) => {
+    const layer = element.querySelector(
+      '[data-testid="product-gallery-main-drag-layer"]',
+    );
+
+    if (!(element instanceof HTMLElement) || !(layer instanceof HTMLElement)) {
+      throw new Error("Missing inline gallery swipe reset elements.");
+    }
+
+    const stateWindow = window as typeof window & {
+      __inlineGallerySwipeResetObserver?: MutationObserver;
+      __inlineGallerySwipeResetSamples?: InlineGallerySwipeResetSample[];
+    };
+    const readDurationMs = (durationList: string) =>
+      Math.max(
+        ...durationList.split(",").map((duration) => {
+          const trimmedDuration = duration.trim();
+          const parsedDuration = Number.parseFloat(trimmedDuration);
+
+          if (!Number.isFinite(parsedDuration)) return 0;
+
+          return trimmedDuration.endsWith("ms")
+            ? parsedDuration
+            : parsedDuration * 1000;
+        }),
+      );
+    const readTranslateX = (transform: string) => {
+      if (transform === "none") return 0;
+
+      return new DOMMatrixReadOnly(transform).m41;
+    };
+
+    stateWindow.__inlineGallerySwipeResetObserver?.disconnect();
+    stateWindow.__inlineGallerySwipeResetSamples = [];
+    stateWindow.__inlineGallerySwipeResetObserver = new MutationObserver(() => {
+      if (!element.hasAttribute("data-gallery-inline-resetting")) return;
+
+      const styles = window.getComputedStyle(layer);
+      stateWindow.__inlineGallerySwipeResetSamples?.push({
+        maxTransitionDurationMs: readDurationMs(styles.transitionDuration),
+        translateX: Math.round(readTranslateX(styles.transform)),
+      });
+    });
+    stateWindow.__inlineGallerySwipeResetObserver.observe(element, {
+      attributeFilter: ["data-gallery-inline-resetting"],
+      attributes: true,
+    });
+  });
+}
+
+async function waitForInlineGallerySwipeResetSample(page: Page) {
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const stateWindow = window as typeof window & {
+          __inlineGallerySwipeResetSamples?: InlineGallerySwipeResetSample[];
+        };
+
+        return stateWindow.__inlineGallerySwipeResetSamples?.length ?? 0;
+      }),
+    )
+    .toBeGreaterThan(0);
+
+  return page.evaluate(() => {
+    const stateWindow = window as typeof window & {
+      __inlineGallerySwipeResetSamples?: InlineGallerySwipeResetSample[];
+    };
+    const [sample] = stateWindow.__inlineGallerySwipeResetSamples ?? [];
+
+    if (!sample) {
+      throw new Error("Missing inline gallery swipe reset sample.");
+    }
+
+    return sample;
+  });
+}
+
+async function getInlineGallerySwipeState(gallery: Locator) {
+  return gallery.evaluate((element) => ({
+    offset: Number.parseFloat(
+      element.getAttribute("data-gallery-inline-swipe-offset") ?? "0",
+    ),
+    settling: element.getAttribute("data-gallery-inline-settling"),
+    tracking: element.getAttribute("data-gallery-inline-swipe-tracking"),
+  }));
+}
+
+async function getTranslateX(locator: Locator) {
+  return locator.evaluate((element) => {
+    const transform = window.getComputedStyle(element).transform;
+
+    if (transform === "none") return 0;
+
+    return new DOMMatrixReadOnly(transform).m41;
+  });
+}
 
 async function getGalleryHoverZoomMetrics(gallery: Locator) {
   return gallery.evaluate((element) => {

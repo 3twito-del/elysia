@@ -212,6 +212,16 @@ export const routeStructurePolicy = {
     publicStructurePolicy.legalCompactReadableContent,
     "Readable brand content with cross-route commerce actions only.",
   ),
+  "/blog": route(
+    "content",
+    publicStructurePolicy.taskFirstPublicIntro,
+    "Blog index prioritizes search, filters, and article cards without same-page hero anchors.",
+  ),
+  "/blog/[slug]": route(
+    "content",
+    publicStructurePolicy.legalCompactReadableContent,
+    "Blog articles prioritize readable editorial content and cross-route commerce links only.",
+  ),
   "/branches": route(
     "service",
     publicStructurePolicy.taskFirstPublicIntro,

@@ -8,6 +8,7 @@ import {
   Headset,
   History,
   LogOut,
+  Newspaper,
   PackageCheck,
   PlugZap,
   Users,
@@ -33,6 +34,7 @@ type AdminShellProps = {
 export type AdminSection =
   | "appointments"
   | "audit"
+  | "blog"
   | "catalog"
   | "customers"
   | "integrations"
@@ -49,6 +51,7 @@ const navItems: Array<{
   label: string;
 }> = [
   { href: "/admin", icon: Gauge, id: "overview", label: "סקירה" },
+  { href: "/admin/blog", icon: Newspaper, id: "blog", label: "מגזין" },
   { href: "/admin/orders", icon: ClipboardList, id: "orders", label: "הזמנות" },
   { href: "/admin/catalog", icon: PackageCheck, id: "catalog", label: "קטלוג" },
   { href: "/admin/inventory", icon: Boxes, id: "inventory", label: "מלאי" },
