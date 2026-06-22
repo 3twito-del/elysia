@@ -3570,13 +3570,13 @@ html[data-accessibility-motion="reduce"]
   position: absolute;
   inset: 0;
   background: radial-gradient(
-    32rem 32rem at var(--hero-aura-x) var(--hero-aura-y),
-    rgb(216 195 165 / 42%) 0%,
-    rgb(180 154 106 / 26%) 26%,
-    rgb(180 154 106 / 8%) 48%,
+    28rem 28rem at var(--hero-aura-x) var(--hero-aura-y),
+    rgb(216 195 165 / 24%) 0%,
+    rgb(180 154 106 / 14%) 26%,
+    rgb(180 154 106 / 5%) 48%,
     transparent 66%
   );
-  opacity: 0.55;
+  opacity: 0.34;
   transition:
     opacity 600ms cubic-bezier(0.2, 0, 0, 1),
     background-position 220ms cubic-bezier(0.2, 0, 0, 1);
@@ -3584,22 +3584,7 @@ html[data-accessibility-motion="reduce"]
 }
 
 .home-hero-aura[data-hero-aura-active="true"] .home-hero-aura-glow {
-  opacity: 0.92;
-}
-
-.home-hero-aura-sheen {
-  position: absolute;
-  inset: -40% -10%;
-  background: linear-gradient(
-    115deg,
-    transparent 38%,
-    rgb(255 248 235 / 26%) 48%,
-    rgb(216 195 165 / 10%) 54%,
-    transparent 62%
-  );
-  /* Continuous sweep is driven by the Web Animations API in HomeHeroAura so
-     the public-motion budget stays free of looping CSS animations. */
-  transform: translateX(-120%);
+  opacity: 0.55;
 }
 
 .home-hero-aura-motes {
@@ -3624,16 +3609,14 @@ html[data-accessibility-motion="reduce"]
 }
 
 .home-hero-aura[data-hero-aura-reduced="true"] .home-hero-aura-glow {
-  opacity: 0.4;
+  opacity: 0.26;
   transition: none;
 }
 
-.home-hero-aura[data-hero-aura-reduced="true"] .home-hero-aura-sheen,
 .home-hero-aura[data-hero-aura-reduced="true"] .home-hero-aura-motes {
   display: none;
 }
 
-html[data-accessibility-motion="reduce"] .home-hero-aura-sheen,
 html[data-accessibility-motion="reduce"] .home-hero-aura-motes {
   display: none;
 }
@@ -3642,8 +3625,20 @@ html[data-accessibility-motion="reduce"] .home-hero-aura-glow {
   transition: none;
 }
 
+/* On touch / coarse-pointer devices the aura cannot be steered, so drop the
+   floating motes and soften the glow to keep the hero light on mobile. */
+@media (hover: none), (pointer: coarse) {
+  .home-hero-aura-motes {
+    display: none;
+  }
+
+  .home-hero-aura-glow {
+    opacity: 0.22;
+    transition: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .home-hero-aura-sheen,
   .home-hero-aura-motes {
     display: none;
   }

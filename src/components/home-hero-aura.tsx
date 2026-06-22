@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { useResolvedReducedMotion } from "~/components/motion-preference";
 import { cn } from "~/lib/utils";
+
+const finePointerQuery = "(hover: hover) and (pointer: fine)";
 
 type HomeHeroAuraProps = {
   className?: string;
@@ -37,32 +39,28 @@ export function HomeHeroAura({ className }: HomeHeroAuraProps) {
   const auraRef = useRef<HTMLDivElement | null>(null);
   const frameRef = useRef<number | null>(null);
   const shouldReduceMotion = useResolvedReducedMotion();
+  const [isFinePointer, setIsFinePointer] = useState(false);
+
+  // The aura is a pointer-driven flourish; on touch / coarse-pointer devices it
+  // only adds GPU load, so we disable its motion entirely there.
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(finePointerQuery);
+    const updatePointer = () => setIsFinePointer(mediaQuery.matches);
+
+    updatePointer();
+    mediaQuery.addEventListener("change", updatePointer);
+
+    return () => mediaQuery.removeEventListener("change", updatePointer);
+  }, []);
+
+  const enableMotion = isFinePointer && !shouldReduceMotion;
 
   useEffect(() => {
     const aura = auraRef.current;
-    if (!aura || shouldReduceMotion) return;
+    if (!aura || !enableMotion) return;
     if (typeof Element.prototype.animate !== "function") return;
 
     const animations: Animation[] = [];
-
-    const sheen = aura.querySelector<HTMLElement>(".home-hero-aura-sheen");
-    if (sheen) {
-      animations.push(
-        sheen.animate(
-          [
-            { transform: "translateX(-120%)" },
-            { transform: "translateX(120%)", offset: 0.55 },
-            { transform: "translateX(120%)" },
-          ],
-          {
-            delay: 2400,
-            duration: 9000,
-            easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-            iterations: Number.POSITIVE_INFINITY,
-          },
-        ),
-      );
-    }
 
     for (const mote of aura.querySelectorAll<HTMLElement>(
       ".home-hero-aura-mote",
@@ -95,11 +93,11 @@ export function HomeHeroAura({ className }: HomeHeroAuraProps) {
     return () => {
       for (const animation of animations) animation.cancel();
     };
-  }, [shouldReduceMotion]);
+  }, [enableMotion]);
 
   useEffect(() => {
     const aura = auraRef.current;
-    if (!aura || shouldReduceMotion) return;
+    if (!aura || !enableMotion) return;
 
     const hero = aura.parentElement;
     if (!hero) return;
@@ -170,19 +168,18 @@ export function HomeHeroAura({ className }: HomeHeroAuraProps) {
         frameRef.current = null;
       }
     };
-  }, [shouldReduceMotion]);
+  }, [enableMotion]);
 
   return (
     <div
       aria-hidden="true"
       className={cn("home-hero-aura absolute inset-0", className)}
       data-hero-aura-active="false"
-      data-hero-aura-reduced={shouldReduceMotion ? "true" : "false"}
+      data-hero-aura-reduced={enableMotion ? "false" : "true"}
       data-testid="home-hero-aura"
       ref={auraRef}
     >
       <span className="home-hero-aura-glow" />
-      <span className="home-hero-aura-sheen" />
       <span className="home-hero-aura-motes">
         {heroAuraMotes.map((mote, index) => (
           <span
