@@ -34,7 +34,9 @@ export default function StylistPage() {
             <Card className="rounded-md">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Sparkles aria-hidden="true" className="size-5" />מה אפשר לבקש?</CardTitle>
+                  <Sparkles aria-hidden="true" className="size-5" />
+                  מה אפשר לבקש?
+                </CardTitle>
               </CardHeader>
               <CardContent className="text-muted-foreground grid gap-3 text-sm leading-7">
                 <p>מתנה לפי קשר, אירוע, מחיר וסגנון.</p>
@@ -49,7 +51,9 @@ export default function StylistPage() {
                   מידה
                 </CardTitle>
               </CardHeader>
-              <CardContent className="text-muted-foreground text-sm leading-7">אפשר לפתוח בקשת מדידה מתמונה או מפרטי מידה לפני שמחליטים.</CardContent>
+              <CardContent className="text-muted-foreground text-sm leading-7">
+                אפשר לפתוח בקשת מדידה מתמונה או מפרטי מידה לפני שמחליטים.
+              </CardContent>
             </Card>
           </RevealGrid>
         </aside>

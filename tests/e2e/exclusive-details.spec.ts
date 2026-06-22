@@ -33,6 +33,11 @@ test.describe("exclusive details accordions", () => {
   }) => {
     await page.goto(`/product/${supplierProductSlug}`);
     await waitForExclusiveDetailsProvider(page);
+    await waitForPublicMotionReady(page);
+    await expect(page.getByTestId("product-purchase-panel")).toHaveAttribute(
+      "data-client-ready",
+      "true",
+    );
 
     const commerceDetails = page.locator(
       '[data-testid="product-commerce-details"] details',
@@ -110,6 +115,13 @@ async function clickDetailsSummary(details: ReturnType<Page["locator"]>) {
 async function waitForExclusiveDetailsProvider(page: Page) {
   await page.waitForFunction(
     () => document.documentElement.dataset.exclusiveDetailsReady === "true",
+  );
+}
+
+async function waitForPublicMotionReady(page: Page) {
+  await expect(page.locator("html")).toHaveAttribute(
+    "data-public-motion-ready",
+    "true",
   );
 }
 

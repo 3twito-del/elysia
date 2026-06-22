@@ -16,16 +16,12 @@ it("maps add-to-cart failures to customer-safe recovery copy", () => {
     getAddToCartFailureMessage({
       message: "Inventory reservation failed for variant abc",
     }),
-  ).toBe(
-    "האפשרות הזו אינה זמינה. אפשר לבחור אחרת או לפנות לשירות.",
-  );
+  ).toBe("האפשרות הזו אינה זמינה. אפשר לבחור אחרת או לפנות לשירות.");
   expect(
     getAddToCartFailureMessage({
       message: "Quantity limit exceeded",
     }),
-  ).toBe(
-    "לא ניתן להוסיף כמות זו לסל. נסו כמות אחרת או פנו לשירות.",
-  );
+  ).toBe("לא ניתן להוסיף כמות זו לסל. נסו כמות אחרת או פנו לשירות.");
   expect(
     getAddToCartFailureMessage({
       message: "database connection timeout",
@@ -63,12 +59,12 @@ describe("product purchase utilities", () => {
         variant,
       }),
     ).toBe("זמין להזמנה");
-    expect(
-      getVariantButtonLabel(variant, "READY_TO_ORDER", true),
-    ).toContain("זמין להזמנה");
-    expect(
-      getVariantButtonLabel(variant, "READY_TO_ORDER", true),
-    ).toContain("\u2068");
+    expect(getVariantButtonLabel(variant, "READY_TO_ORDER", true)).toContain(
+      "זמין להזמנה",
+    );
+    expect(getVariantButtonLabel(variant, "READY_TO_ORDER", true)).toContain(
+      "\u2068",
+    );
   });
 
   it("keeps owned zero-stock variants on the service inquiry path", () => {

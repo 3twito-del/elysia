@@ -290,7 +290,9 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
           className="glass-inset flex flex-wrap items-center justify-between gap-3 rounded-md border p-3 text-sm"
           data-testid="size-guide-save-context"
         >
-          <p className="text-muted-foreground leading-6">המידה נשמרת במכשיר. לקוחות מחוברים יכולים לסנכרן לחשבון.</p>
+          <p className="text-muted-foreground leading-6">
+            המידה נשמרת במכשיר. לקוחות מחוברים יכולים לסנכרן לחשבון.
+          </p>
           <Button asChild size="sm" variant="ghost">
             <Link href="/account#account-sizes">
               אזור המידות

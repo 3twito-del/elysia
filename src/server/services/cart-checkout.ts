@@ -465,8 +465,7 @@ async function createCartCheckoutOrderInTransaction(
     reservationExpiresAt,
     totals,
     itemCount,
-    estimatedDelivery:
-      "מסירה עד הבית לאחר השלמת התשלום, לפי מדיניות המשלוחים.",
+    estimatedDelivery: "מסירה עד הבית לאחר השלמת התשלום, לפי מדיניות המשלוחים.",
     items: items.map((item) => ({
       lineTotal: item.unitPrice * item.quantity,
       name: item.name,

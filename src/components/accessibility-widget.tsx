@@ -205,6 +205,15 @@ export function AccessibilityWidget() {
       element,
       inert: getElementInert(element),
     }));
+    const ariaHiddenObserver = new MutationObserver((records) => {
+      records.forEach((record) => {
+        const element = record.target as HTMLElement;
+
+        if (element.getAttribute("aria-hidden") !== "true") {
+          element.setAttribute("aria-hidden", "true");
+        }
+      });
+    });
     const focusFrame = window.requestAnimationFrame(() => {
       initialFocusRef.current?.focus({ preventScroll: true });
     });
@@ -246,11 +255,16 @@ export function AccessibilityWidget() {
     inertTargets.forEach((element) => {
       setElementInert(element, true);
       element.setAttribute("aria-hidden", "true");
+      ariaHiddenObserver.observe(element, {
+        attributeFilter: ["aria-hidden"],
+        attributes: true,
+      });
     });
     document.body.style.overflow = "hidden";
     document.addEventListener("keydown", handleKeyDown, true);
 
     return () => {
+      ariaHiddenObserver.disconnect();
       previousInertStates.forEach(({ ariaHidden, element, inert }) => {
         setElementInert(element, inert);
 

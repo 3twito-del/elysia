@@ -124,8 +124,7 @@ export const metadata: Metadata = {
     "Elysia Jewellery היא בית תכשיטים בוטיקי לתכשיטים עדינים, מתנות ולוקים יומיומיים, עם חומר, מידה, מחיר ושירות לפני הזמנה.",
   openGraph: {
     title: "אודות Elysia Jewellery",
-    description:
-      "בית תכשיטים בוטיקי לתכשיטים עדינים, מתנות ולוקים יומיומיים.",
+    description: "בית תכשיטים בוטיקי לתכשיטים עדינים, מתנות ולוקים יומיומיים.",
     images: [{ url: aboutHeroImage }],
   },
 };
@@ -238,7 +237,9 @@ export default function AboutPage() {
               />
             </figure>
             <AboutReveal className="boutique-story-copy about-story-copy">
-              <p className="storefront-eyebrow about-eyebrow-dark">איך בוחרים</p>
+              <p className="storefront-eyebrow about-eyebrow-dark">
+                איך בוחרים
+              </p>
               <h2 className="about-section-title">מתחילים בבגד ובאור.</h2>
               <p className="about-section-text">
                 לא רק לתמונה. תכשיט שעובד עם הבגד, העונה, והתחושה — נבחר בשקט,
@@ -272,7 +273,10 @@ export default function AboutPage() {
                       <h3>{principle.title}</h3>
                       <p>{principle.text}</p>
                     </div>
-                    <span aria-hidden="true" className="about-principle-sweep" />
+                    <span
+                      aria-hidden="true"
+                      className="about-principle-sweep"
+                    />
                   </section>
                 ))}
               </div>
@@ -538,7 +542,11 @@ function TrustCard({ item }: { item: LinkCard }) {
   const Icon = item.icon;
 
   return (
-    <Link className="about-trust-card brand-surface p-5" href={item.href} prefetch={false}>
+    <Link
+      className="about-trust-card brand-surface p-5"
+      href={item.href}
+      prefetch={false}
+    >
       <div className="glass-inset flex size-10 items-center justify-center rounded-md border">
         <Icon aria-hidden="true" className="size-5" />
       </div>

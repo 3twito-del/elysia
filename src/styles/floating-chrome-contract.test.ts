@@ -27,7 +27,7 @@ describe("public floating chrome contract", () => {
     expect(css).toContain(
       'html[data-public-floating-bar-visible="true"] .public-motion-content',
     );
-    expect(css).toContain(
+    expect(css).not.toContain(
       'html[data-cookie-banner-placement="top"] .public-motion-content',
     );
     expect(css).not.toContain(
@@ -80,7 +80,7 @@ describe("public floating chrome contract", () => {
     expect(banner).toContain('data-cookie-consent-banner="true"');
   });
 
-  it("keeps the cookie banner fixed without reserving document space", () => {
+  it("keeps the cookie banner fixed without shifting document content", () => {
     const banner = read("src/components/cookie-consent-banner.tsx");
 
     expect(banner).toContain("--floating-stack-bottom");

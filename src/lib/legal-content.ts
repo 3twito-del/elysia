@@ -18,8 +18,7 @@ export const newsletterConsentText =
 export const checkoutLegalAgreementText =
   "קראתי ואני מסכים/ה לתקנון האתר, למדיניות הפרטיות ולמדיניות המשלוחים, הביטולים וההחזרות.";
 
-export const vatIncludedNotice =
-  "המחירים כוללים מע״מ ככל שחל לפי דין.";
+export const vatIncludedNotice = "המחירים כוללים מע״מ ככל שחל לפי דין.";
 
 // TODO: Replace business legal placeholders with verified business details before production.
 export const businessLegalPlaceholders = [

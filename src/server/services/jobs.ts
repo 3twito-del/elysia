@@ -262,7 +262,10 @@ function getOutboxOrderItems(payload: Prisma.JsonValue) {
 }
 
 function createPublicSiteUrl(path: string) {
-  return new URL(path, env.SITE_URL ?? "https://elysia-jewellery.com").toString();
+  return new URL(
+    path,
+    env.SITE_URL ?? "https://elysia-jewellery.com",
+  ).toString();
 }
 
 function isJsonRecord(value: Prisma.JsonValue): value is Prisma.JsonObject {

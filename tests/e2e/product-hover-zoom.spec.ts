@@ -153,6 +153,11 @@ test.describe("product hover zoom", () => {
         async () => (await getProductCardHoverMetrics(card)).hoverImageOpacity,
       )
       .toBeGreaterThan(0.9);
+    await expect
+      .poll(
+        async () => (await getProductCardHoverMetrics(card)).hoverImageScale,
+      )
+      .toBeGreaterThan(1.04);
     const metrics = await getProductCardHoverMetrics(card);
     const mediaBoxAfter = await media.boundingBox();
 

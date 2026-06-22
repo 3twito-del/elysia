@@ -141,8 +141,7 @@ export function getCheckoutFulfillmentSummaryRows({
       label: "מסירה",
     });
     rows.push({
-      detail:
-        "שני מסלולי התשלום נשארים נפרדים וברורים.",
+      detail: "שני מסלולי התשלום נשארים נפרדים וברורים.",
       key: "confirmation",
       label: "תשלום",
     });

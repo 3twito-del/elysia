@@ -61,7 +61,9 @@ export default async function AiPage({ searchParams }: AiPageProps) {
                   className="text-muted-foreground hover:text-foreground data-[state=active]:text-foreground min-h-10 min-w-0 cursor-pointer gap-2 rounded-none border-0 bg-transparent px-1.5 pt-1 pb-2 text-sm font-semibold shadow-none hover:bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none"
                   value="stylist"
                 >
-                  <MessageSquare aria-hidden="true" className="size-4" />יועץ לוק</TabsTrigger>
+                  <MessageSquare aria-hidden="true" className="size-4" />
+                  יועץ לוק
+                </TabsTrigger>
                 <TabsTrigger
                   className="text-muted-foreground hover:text-foreground data-[state=active]:text-foreground min-h-10 min-w-0 cursor-pointer gap-2 rounded-none border-0 bg-transparent px-1.5 pt-1 pb-2 text-sm font-semibold shadow-none hover:bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none"
                   value="gifts"
@@ -85,7 +87,10 @@ export default async function AiPage({ searchParams }: AiPageProps) {
             <div className="brand-icon-well flex size-10 items-center justify-center rounded-md border">
               <Sparkles aria-hidden="true" className="size-4" />
             </div>
-            <p className="text-muted-foreground max-w-4xl">ההמלצות מתמקדות בפריטים שפתוחים במלאי, לפי סגנון, מחיר ומידה זמינה.</p>
+            <p className="text-muted-foreground max-w-4xl">
+              ההמלצות מתמקדות בפריטים שפתוחים במלאי, לפי סגנון, מחיר ומידה
+              זמינה.
+            </p>
           </section>
         </div>
       </RevealSection>

@@ -80,6 +80,20 @@ describe("blog public service", () => {
       "elysia-jewellery-care-guide",
     );
   });
+
+  it("falls back to fixtures when build-time database credentials are rejected", async () => {
+    dbMocks.blogPostFindMany.mockRejectedValueOnce(
+      new Error(
+        "Authentication failed against database server, the provided database credentials are not valid.",
+      ),
+    );
+
+    const result = await listPublishedBlogPosts();
+
+    expect(result.posts.map((post) => post.slug)).toContain(
+      "elysia-jewellery-care-guide",
+    );
+  });
 });
 
 function getFirstMockArg(mock: ReturnType<typeof vi.fn>): unknown {

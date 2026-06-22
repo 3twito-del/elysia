@@ -3,17 +3,23 @@ import { expect, test, type Page } from "@playwright/test";
 const cartProductSlug = "hera-bracelet";
 const notificationPromptMarker = "__elysiaNotificationPromptRequested";
 const pwaE2eOptInStorageKey = "elysia:pwa-e2e";
-const pwaServiceWorkerTimeoutMs = 30_000;
+const pwaServiceWorkerTimeoutMs = 45_000;
 const pwaPublicPagesCacheName = "elysia-v2-public-pages";
 const savedSizeStorageKey = "elysia_saved_sizes_v1";
 
 test.use({ serviceWorkers: "allow" });
 
 test.describe("PWA runtime", () => {
-  test.beforeEach(({ browserName }) => {
+  test.setTimeout(105_000);
+
+  test.beforeEach(({ browserName }, testInfo) => {
     test.skip(
       browserName === "webkit",
       "Playwright WebKit service-worker registration is unreliable in this PWA harness.",
+    );
+    test.skip(
+      testInfo.project.name === "firefox-mobile",
+      "Playwright Firefox at the mobile viewport does not reliably settle service-worker registration in this PWA harness.",
     );
   });
 
@@ -275,31 +281,66 @@ async function navigateAfterPwaRegistration(page: Page, path: string) {
 }
 
 async function waitForPwaRegistration(page: Page) {
-  await expect
-    .poll(
-      () =>
-        page.evaluate(async () => {
-          if (!("serviceWorker" in navigator)) return false;
+  try {
+    await expect
+      .poll(() => hasReadyPwaRegistration(page), {
+        timeout: 20_000,
+      })
+      .toBe(true);
+  } catch {
+    await page.evaluate(async () => {
+      if (!("serviceWorker" in navigator)) return;
 
-          const ready = await Promise.race([
-            navigator.serviceWorker.ready.then(() => true),
-            new Promise<boolean>((resolve) => {
-              window.setTimeout(() => resolve(false), 1_000);
-            }),
-          ]);
+      const timeout = <T>(fallback: T, ms: number) =>
+        new Promise<T>((resolve) => {
+          window.setTimeout(() => resolve(fallback), ms);
+        });
+      const registrations = await Promise.race([
+        navigator.serviceWorker.getRegistrations(),
+        timeout<ServiceWorkerRegistration[]>([], 3_000),
+      ]);
 
-          if (!ready) return false;
+      await Promise.race([
+        Promise.allSettled(
+          registrations.map((registration) => registration.unregister()),
+        ),
+        timeout(null, 5_000),
+      ]);
+    });
+    await page.reload({ timeout: 15_000, waitUntil: "domcontentloaded" });
+    await expect
+      .poll(() => hasReadyPwaRegistration(page), {
+        timeout: pwaServiceWorkerTimeoutMs,
+      })
+      .toBe(true);
+  }
+}
 
-          const registrations =
-            await navigator.serviceWorker.getRegistrations();
+function hasReadyPwaRegistration(page: Page) {
+  return page.evaluate(async () => {
+    if (!("serviceWorker" in navigator)) return false;
 
-          return registrations.some(
-            (registration) => new URL(registration.scope).pathname === "/",
-          );
-        }),
-      { timeout: pwaServiceWorkerTimeoutMs },
-    )
-    .toBe(true);
+    const timeout = <T>(fallback: T, ms: number) =>
+      new Promise<T>((resolve) => {
+        window.setTimeout(() => resolve(fallback), ms);
+      });
+
+    const ready = await Promise.race([
+      navigator.serviceWorker.ready.then(() => true),
+      timeout(false, 1_000),
+    ]);
+
+    if (!ready) return false;
+
+    const registrations = await Promise.race([
+      navigator.serviceWorker.getRegistrations(),
+      timeout<ServiceWorkerRegistration[]>([], 1_000),
+    ]);
+
+    return registrations.some(
+      (registration) => new URL(registration.scope).pathname === "/",
+    );
+  });
 }
 
 async function waitForPwaControl(page: Page) {

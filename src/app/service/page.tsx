@@ -163,7 +163,7 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
                 </span>
                 <span className="min-w-0">
                   <span className="block text-sm font-semibold">אימייל</span>
-                  <span className="text-muted-foreground block break-all text-sm">
+                  <span className="text-muted-foreground block text-sm break-all">
                     {contact.email}
                   </span>
                 </span>
@@ -180,7 +180,9 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
                     <MessageCircle aria-hidden="true" className="size-4" />
                   </span>
                   <span className="min-w-0">
-                    <span className="block text-sm font-semibold">WhatsApp Elysia</span>
+                    <span className="block text-sm font-semibold">
+                      WhatsApp Elysia
+                    </span>
                     <span className="text-muted-foreground block text-sm">
                       מענה שירות ממותג
                     </span>
@@ -236,9 +238,7 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
           <section aria-labelledby="service-form" id="service-form">
             <div className="mb-4">
               <Badge variant="outline">פנייה לשירות</Badge>
-              <h2 className="mt-3 text-2xl font-semibold">
-                במה להתמקד
-              </h2>
+              <h2 className="mt-3 text-2xl font-semibold">במה להתמקד</h2>
               <p className="text-muted-foreground mt-2 text-sm leading-6">
                 נושא, פרטים, ונחזור אליכם.
               </p>

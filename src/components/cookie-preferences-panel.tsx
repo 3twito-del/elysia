@@ -48,7 +48,10 @@ export function CookiePreferencesPanel() {
               <CheckCircle2 className="size-5" aria-hidden="true" />
               {statusText}
             </p>
-            <p className="text-muted-foreground mt-2 leading-8">אפשר לשנות העדפה בכל רגע. ״רק חיוניים״ עוצר מדידה ומוחק צפיות אחרונות מהדפדפן.</p>
+            <p className="text-muted-foreground mt-2 leading-8">
+              אפשר לשנות העדפה בכל רגע. ״רק חיוניים״ עוצר מדידה ומוחק צפיות
+              אחרונות מהדפדפן.
+            </p>
           </div>
 
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">

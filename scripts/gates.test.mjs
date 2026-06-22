@@ -169,6 +169,10 @@ describe("manual quality gates", () => {
     expect(gatesSource).toContain(
       "env: { ...process.env, ...buildSafeCatalogEnv(), PORT: `${port}` }",
     );
+    expect(gatesSource).toContain('E2E_AUTH_FIXTURES: "1"');
+    expect(gatesSource).toContain(
+      'readDotenvValue(".env.development.local", "DATABASE_URL")',
+    );
   });
 
   it("uses a repo-managed copy-map pre-commit hook", () => {

@@ -94,22 +94,40 @@ describe("QA site audit contracts", () => {
   it("keeps production console errors at a zero-error budget", () => {
     expect(consoleErrorBudget.production).toBe("zero-console-errors");
     expect(
-      isIgnorableConsoleError(
-        "Download the React DevTools for a better development experience",
-        "https://elysia-jewellery.com",
-      ),
+      isIgnorableConsoleError({
+        baseUrl: "https://elysia-jewellery.com",
+        message:
+          "Download the React DevTools for a better development experience",
+      }),
     ).toBe(false);
     expect(
-      isIgnorableConsoleError(
-        "Download the React DevTools for a better development experience",
-        "http://localhost:3000",
-      ),
+      isIgnorableConsoleError({
+        baseUrl: "http://localhost:3000",
+        message:
+          "Download the React DevTools for a better development experience",
+      }),
     ).toBe(true);
     expect(
-      isIgnorableConsoleError(
-        "TypeError: checkout failed",
-        "http://localhost:3000",
-      ),
+      isIgnorableConsoleError({
+        baseUrl: "http://localhost:3000",
+        message: "TypeError: checkout failed",
+      }),
+    ).toBe(false);
+    expect(
+      isIgnorableConsoleError({
+        baseUrl: "https://elysia-jewellery.com",
+        message:
+          "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        route: { expectedStatuses: [404] },
+      }),
+    ).toBe(true);
+    expect(
+      isIgnorableConsoleError({
+        baseUrl: "https://elysia-jewellery.com",
+        message:
+          "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        route: { expectedStatuses: [200] },
+      }),
     ).toBe(false);
   });
 

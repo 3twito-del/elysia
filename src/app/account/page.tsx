@@ -316,67 +316,69 @@ export default async function AccountPage() {
             className="account-boutique-section account-entry-section mx-auto max-w-6xl scroll-mt-24 px-[var(--ui-page-x)] pt-1 pb-10 sm:scroll-mt-28 sm:pt-3 sm:pb-12 lg:px-[var(--ui-page-x-wide)]"
             id="account-login"
           >
-          <div className="account-entry-layout grid gap-5 lg:grid-cols-2">
-            <Card
-              className="account-boutique-panel account-entry-card account-login-panel rounded-md"
-              size="sm"
-            >
-              <CardHeader className="account-boutique-card-header">
-                <p className="account-card-kicker">כניסה מאובטחת</p>
-                <CardTitle>כניסת לקוח</CardTitle>
-                <p className="text-muted-foreground text-sm leading-7">
-                  הזיני אימייל או מספר נייד ונשלח אלייך קוד חד־פעמי לכניסה
-                  מאובטחת.
-                </p>
-              </CardHeader>
-              <CardContent className="grid gap-5">
-                <CustomerOtpForm />
-                <nav
-                  aria-label="קישורי עזרה בכניסה"
-                  className="account-entry-micro-links"
-                >
-                  <Link
-                    href={createAccountServiceHref({
-                      message: "אשמח לעזרה במעקב אחר הזמנה.",
-                      topic: "order",
-                    })}
+            <div className="account-entry-layout grid gap-5 lg:grid-cols-2">
+              <Card
+                className="account-boutique-panel account-entry-card account-login-panel rounded-md"
+                size="sm"
+              >
+                <CardHeader className="account-boutique-card-header">
+                  <p className="account-card-kicker">כניסה מאובטחת</p>
+                  <CardTitle>כניסת לקוח</CardTitle>
+                  <p className="text-muted-foreground text-sm leading-7">
+                    הזיני אימייל או מספר נייד ונשלח אלייך קוד חד־פעמי לכניסה
+                    מאובטחת.
+                  </p>
+                </CardHeader>
+                <CardContent className="grid gap-5">
+                  <CustomerOtpForm />
+                  <nav
+                    aria-label="קישורי עזרה בכניסה"
+                    className="account-entry-micro-links"
                   >
-                    מעקב אחר הזמנה
-                  </Link>
-                  <Link href="/service">שירות לקוחות</Link>
-                  <Link href="/faq">שאלות נפוצות</Link>
-                </nav>
-              </CardContent>
-            </Card>
-            <Card
-              className="account-boutique-panel account-entry-card account-benefits-panel rounded-md"
-              id="account-benefits"
-              size="sm"
-            >
-              <CardHeader className="account-boutique-card-header">
-                <p className="account-card-kicker">חשבון לקוחה</p>
-                <CardTitle>חדשה ב־Elysia?</CardTitle>
-                <p className="text-muted-foreground text-sm leading-7">
-                  חשבון אישי מאפשר לשמור תכשיטים, לעקוב אחר הזמנות, לנהל מידות
-                  ולקבל שירות מדויק יותר לפני ואחרי רכישה.
-                </p>
-              </CardHeader>
-              <CardContent className="grid gap-5">
-                <div className="grid gap-3">
-                  {guestAccountBenefitItems.map((item) => (
-                    <AccountFeatureRow
-                      description={item.description}
-                      icon={item.icon}
-                      key={item.label}
-                      label={item.label}
-                    />
-                  ))}
-                </div>
-                <p className="account-entry-note">אפשר לקבל עזרה לפני הזמנה או אחריה.</p>
-              </CardContent>
-            </Card>
-          </div>
-          <AccountServiceStrip />
+                    <Link
+                      href={createAccountServiceHref({
+                        message: "אשמח לעזרה במעקב אחר הזמנה.",
+                        topic: "order",
+                      })}
+                    >
+                      מעקב אחר הזמנה
+                    </Link>
+                    <Link href="/service">שירות לקוחות</Link>
+                    <Link href="/faq">שאלות נפוצות</Link>
+                  </nav>
+                </CardContent>
+              </Card>
+              <Card
+                className="account-boutique-panel account-entry-card account-benefits-panel rounded-md"
+                id="account-benefits"
+                size="sm"
+              >
+                <CardHeader className="account-boutique-card-header">
+                  <p className="account-card-kicker">חשבון לקוחה</p>
+                  <CardTitle>חדשה ב־Elysia?</CardTitle>
+                  <p className="text-muted-foreground text-sm leading-7">
+                    חשבון אישי מאפשר לשמור תכשיטים, לעקוב אחר הזמנות, לנהל מידות
+                    ולקבל שירות מדויק יותר לפני ואחרי רכישה.
+                  </p>
+                </CardHeader>
+                <CardContent className="grid gap-5">
+                  <div className="grid gap-3">
+                    {guestAccountBenefitItems.map((item) => (
+                      <AccountFeatureRow
+                        description={item.description}
+                        icon={item.icon}
+                        key={item.label}
+                        label={item.label}
+                      />
+                    ))}
+                  </div>
+                  <p className="account-entry-note">
+                    אפשר לקבל עזרה לפני הזמנה או אחריה.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+            <AccountServiceStrip />
           </RevealSection>
         </main>
       </>
@@ -417,468 +419,478 @@ export default async function AccountPage() {
           className="account-boutique-section account-client-section mx-auto max-w-6xl scroll-mt-24 px-[var(--ui-page-x)] py-7 sm:scroll-mt-28 sm:py-10 lg:px-[var(--ui-page-x-wide)]"
           id="account-overview"
         >
-        <div className="account-client-shell grid gap-6 lg:grid-cols-[18rem_minmax(0,1fr)] lg:items-start">
-          <AccountSidebar />
-          <div className="account-client-main min-w-0">
-            <AccountSummaryPanel
-              orderCount={accountOrderCount}
-              savedSizeCount={customer.savedSizes.length}
-              wishlistCount={wishlistItems.length}
-            />
-            <AccountRecoveryShortcuts
-              latestLocalOrderNumber={latestLocalOrderNumber}
-              latestSupplierOrderNumber={latestSupplierOrderNumber}
-            />
-            <GuestWishlistMergeNotice />
+          <div className="account-client-shell grid gap-6 lg:grid-cols-[18rem_minmax(0,1fr)] lg:items-start">
+            <AccountSidebar />
+            <div className="account-client-main min-w-0">
+              <AccountSummaryPanel
+                orderCount={accountOrderCount}
+                savedSizeCount={customer.savedSizes.length}
+                wishlistCount={wishlistItems.length}
+              />
+              <AccountRecoveryShortcuts
+                latestLocalOrderNumber={latestLocalOrderNumber}
+                latestSupplierOrderNumber={latestSupplierOrderNumber}
+              />
+              <GuestWishlistMergeNotice />
 
-            <div className="account-section-stack mt-7 grid gap-5">
-              <Card
-                className="account-boutique-panel account-client-card scroll-mt-24 rounded-md sm:scroll-mt-28"
-                id="account-profile"
-                size="sm"
-              >
-                <CardHeader className="account-boutique-card-header">
-                  <CardTitle className="flex items-center gap-2">
-                    <UserRound aria-hidden="true" className="size-5" />
-                    פרטים אישיים
-                  </CardTitle>
-                  <p className="text-muted-foreground text-sm leading-7">
-                    פרטי קשר בסיסיים המשמשים לכניסה, שירות ומעקב אחרי הזמנות.
-                  </p>
-                </CardHeader>
-                <CardContent className="grid gap-3 sm:grid-cols-3">
-                  <AccountProfileField
-                    icon={UserRound}
-                    label="שם"
-                    value={formatCustomerName(customer)}
-                  />
-                  <AccountProfileField
-                    icon={Mail}
-                    label="אימייל"
-                    value={customer.email ?? "לא נשמר"}
-                  />
-                  <AccountProfileField
-                    icon={Phone}
-                    label="טלפון"
-                    value={customer.phone ?? "לא נשמר"}
-                  />
-                </CardContent>
-              </Card>
-
-              <Card
-                className="account-boutique-panel account-client-card scroll-mt-24 rounded-md sm:scroll-mt-28"
-                id="account-orders"
-                size="sm"
-              >
-                <CardHeader className="account-boutique-card-header">
-                  <CardTitle>הזמנות</CardTitle>
-                  <p className="text-muted-foreground text-sm leading-7">
-                    סטטוס הזמנה, מקור הזמנה ופרטי מסירה לאחר רכישה.
-                  </p>
-                </CardHeader>
-                <CardContent className="grid gap-3">
-                  {accountOrderCount === 0 ? (
-                    <EmptyState
-                      description="ניתן לשמור כתובת למסירה מהירה."
-                      icon={PackageCheck}
-                      testId="account-empty-orders"
-                      title="עדיין אין הזמנות בחשבון זה."
-                      variant="inset"
-                      actions={
-                        <>
-                          <Button asChild variant="outline">
-                            <Link href="/search">המשך לקולקציות</Link>
-                          </Button>
-                        </>
-                      }
+              <div className="account-section-stack mt-7 grid gap-5">
+                <Card
+                  className="account-boutique-panel account-client-card scroll-mt-24 rounded-md sm:scroll-mt-28"
+                  id="account-profile"
+                  size="sm"
+                >
+                  <CardHeader className="account-boutique-card-header">
+                    <CardTitle className="flex items-center gap-2">
+                      <UserRound aria-hidden="true" className="size-5" />
+                      פרטים אישיים
+                    </CardTitle>
+                    <p className="text-muted-foreground text-sm leading-7">
+                      פרטי קשר בסיסיים המשמשים לכניסה, שירות ומעקב אחרי הזמנות.
+                    </p>
+                  </CardHeader>
+                  <CardContent className="grid gap-3 sm:grid-cols-3">
+                    <AccountProfileField
+                      icon={UserRound}
+                      label="שם"
+                      value={formatCustomerName(customer)}
                     />
-                  ) : (
-                    <>
-                      {customer.orders.map((order) => {
-                        const currentTimelineEvent =
-                          getCurrentOrderTimelineEvent(
-                            createAccountOrderTimeline(order),
-                          );
+                    <AccountProfileField
+                      icon={Mail}
+                      label="אימייל"
+                      value={customer.email ?? "לא נשמר"}
+                    />
+                    <AccountProfileField
+                      icon={Phone}
+                      label="טלפון"
+                      value={customer.phone ?? "לא נשמר"}
+                    />
+                  </CardContent>
+                </Card>
 
-                        return (
-                          <Link
+                <Card
+                  className="account-boutique-panel account-client-card scroll-mt-24 rounded-md sm:scroll-mt-28"
+                  id="account-orders"
+                  size="sm"
+                >
+                  <CardHeader className="account-boutique-card-header">
+                    <CardTitle>הזמנות</CardTitle>
+                    <p className="text-muted-foreground text-sm leading-7">
+                      סטטוס הזמנה, מקור הזמנה ופרטי מסירה לאחר רכישה.
+                    </p>
+                  </CardHeader>
+                  <CardContent className="grid gap-3">
+                    {accountOrderCount === 0 ? (
+                      <EmptyState
+                        description="ניתן לשמור כתובת למסירה מהירה."
+                        icon={PackageCheck}
+                        testId="account-empty-orders"
+                        title="עדיין אין הזמנות בחשבון זה."
+                        variant="inset"
+                        actions={
+                          <>
+                            <Button asChild variant="outline">
+                              <Link href="/search">המשך לקולקציות</Link>
+                            </Button>
+                          </>
+                        }
+                      />
+                    ) : (
+                      <>
+                        {customer.orders.map((order) => {
+                          const currentTimelineEvent =
+                            getCurrentOrderTimelineEvent(
+                              createAccountOrderTimeline(order),
+                            );
+
+                          return (
+                            <Link
+                              className="account-record-row flex min-w-0 items-center justify-between gap-4 rounded-md border p-3"
+                              data-testid="account-local-order"
+                              href={`/account/orders/${order.id}`}
+                              key={order.id}
+                            >
+                              <div className="min-w-0">
+                                <p className="font-medium">
+                                  {order.orderNumber}
+                                </p>
+                                <p className="text-muted-foreground mt-1 text-xs">
+                                  {formatAccountDate(order.createdAt)}
+                                </p>
+                                <div className="mt-1 flex flex-wrap gap-1.5">
+                                  <Badge className="w-fit" variant="secondary">
+                                    {getOrderSourceLabel("LOCAL")}
+                                  </Badge>
+                                  <Badge className="w-fit" variant="outline">
+                                    {getOrderStatusLabel(order.status)}
+                                  </Badge>
+                                </div>
+                                <p className="text-muted-foreground mt-1 text-xs">
+                                  {getOrderSourceDescription("LOCAL")}
+                                </p>
+                                {currentTimelineEvent ? (
+                                  <p
+                                    className="text-muted-foreground mt-1 text-xs leading-5"
+                                    data-testid="account-local-order-timeline"
+                                  >
+                                    {currentTimelineEvent.label}
+                                    {" · "}
+                                    {currentTimelineEvent.description}
+                                  </p>
+                                ) : null}
+                              </div>
+                              <span className="shrink-0 font-medium">
+                                {formatPrice(Number(order.total))}
+                              </span>
+                            </Link>
+                          );
+                        })}
+                        {customer.shopifyOrderMirrors.map((order) => (
+                          <div
                             className="account-record-row flex min-w-0 items-center justify-between gap-4 rounded-md border p-3"
-                            data-testid="account-local-order"
-                            href={`/account/orders/${order.id}`}
+                            data-testid="account-shopify-mirror-order"
                             key={order.id}
                           >
                             <div className="min-w-0">
-                              <p className="font-medium">{order.orderNumber}</p>
+                              <p className="font-medium">
+                                {order.shopifyOrderName ?? order.shopifyOrderId}
+                              </p>
                               <p className="text-muted-foreground mt-1 text-xs">
                                 {formatAccountDate(order.createdAt)}
                               </p>
                               <div className="mt-1 flex flex-wrap gap-1.5">
                                 <Badge className="w-fit" variant="secondary">
-                                  {getOrderSourceLabel("LOCAL")}
+                                  {getOrderSourceLabel("SHOPIFY_MIRROR")}
                                 </Badge>
                                 <Badge className="w-fit" variant="outline">
-                                  {getOrderStatusLabel(order.status)}
+                                  לקריאה בלבד
                                 </Badge>
                               </div>
-                              <p className="text-muted-foreground mt-1 text-xs">
-                                {getOrderSourceDescription("LOCAL")}
+                              <p
+                                className="text-muted-foreground mt-1 text-xs leading-5"
+                                data-testid="account-shopify-mirror-order-timeline"
+                              >
+                                {getOrderSourceDescription("SHOPIFY_MIRROR")}
                               </p>
-                              {currentTimelineEvent ? (
-                                <p
-                                  className="text-muted-foreground mt-1 text-xs leading-5"
-                                  data-testid="account-local-order-timeline"
-                                >
-                                  {currentTimelineEvent.label}
-                                  {" · "}
-                                  {currentTimelineEvent.description}
-                                </p>
-                              ) : null}
+                              <p className="text-muted-foreground mt-1 text-xs leading-5">
+                                תשלום:{" "}
+                                {getShopifyFinancialStatusLabel(
+                                  order.financialStatus,
+                                )}{" "}
+                                · מסירה:{" "}
+                                {getShopifyFulfillmentStatusLabel(
+                                  order.fulfillmentStatus,
+                                )}
+                              </p>
+                              <Link
+                                className="text-foreground mt-2 inline-flex text-xs font-medium underline-offset-4 hover:underline"
+                                data-testid="account-shopify-service-link"
+                                href={createAccountServiceHref({
+                                  message:
+                                    "אבקש עזרה בהזמנה שמופיעה באזור הלקוח.",
+                                  orderNumber:
+                                    order.shopifyOrderName ??
+                                    order.shopifyOrderId,
+                                  topic: "order",
+                                })}
+                              >
+                                פנייה לשירות
+                              </Link>
                             </div>
                             <span className="shrink-0 font-medium">
                               {formatPrice(Number(order.total))}
                             </span>
-                          </Link>
-                        );
-                      })}
-                      {customer.shopifyOrderMirrors.map((order) => (
-                        <div
-                          className="account-record-row flex min-w-0 items-center justify-between gap-4 rounded-md border p-3"
-                          data-testid="account-shopify-mirror-order"
-                          key={order.id}
-                        >
-                          <div className="min-w-0">
-                            <p className="font-medium">
-                              {order.shopifyOrderName ?? order.shopifyOrderId}
-                            </p>
-                            <p className="text-muted-foreground mt-1 text-xs">
-                              {formatAccountDate(order.createdAt)}
-                            </p>
-                            <div className="mt-1 flex flex-wrap gap-1.5">
-                              <Badge className="w-fit" variant="secondary">
-                                {getOrderSourceLabel("SHOPIFY_MIRROR")}
-                              </Badge>
-                              <Badge className="w-fit" variant="outline">
-                                לקריאה בלבד
-                              </Badge>
-                            </div>
-                            <p
-                              className="text-muted-foreground mt-1 text-xs leading-5"
-                              data-testid="account-shopify-mirror-order-timeline"
-                            >
-                              {getOrderSourceDescription("SHOPIFY_MIRROR")}
-                            </p>
-                            <p className="text-muted-foreground mt-1 text-xs leading-5">
-                              תשלום:{" "}
-                              {getShopifyFinancialStatusLabel(
-                                order.financialStatus,
-                              )}{" "}
-                              · מסירה:{" "}
-                              {getShopifyFulfillmentStatusLabel(
-                                order.fulfillmentStatus,
-                              )}
-                            </p>
-                            <Link
-                              className="text-foreground mt-2 inline-flex text-xs font-medium underline-offset-4 hover:underline"
-                              data-testid="account-shopify-service-link"
-                              href={createAccountServiceHref({
-                                message:
-                                  "אבקש עזרה בהזמנה שמופיעה באזור הלקוח.",
-                                orderNumber:
-                                  order.shopifyOrderName ??
-                                  order.shopifyOrderId,
-                                topic: "order",
-                              })}
-                            >פנייה לשירות</Link>
                           </div>
-                          <span className="shrink-0 font-medium">
-                            {formatPrice(Number(order.total))}
-                          </span>
-                        </div>
-                      ))}
-                    </>
-                  )}
-                </CardContent>
-              </Card>
+                        ))}
+                      </>
+                    )}
+                  </CardContent>
+                </Card>
 
-              <Card
-                className="account-boutique-panel account-client-card scroll-mt-24 rounded-md sm:scroll-mt-28"
-                id="account-wishlist"
-                size="sm"
-              >
-                <CardHeader className="account-boutique-card-header">
-                  <CardTitle>מועדפים</CardTitle>
-                  <p className="text-muted-foreground text-sm leading-7">
-                    תכשיטים שנשמרו לגישה מהירה לפני החלטה או התייעצות.
-                  </p>
-                </CardHeader>
-                <CardContent className="grid gap-3">
-                  {wishlistItems.length === 0 ? (
-                    <EmptyState
-                      description="כשפריט יישמר, הוא יופיע כאן לגישה מהירה."
-                      icon={Heart}
-                      title="עדיין לא נשמרו תכשיטים."
-                      variant="inset"
-                      actions={
-                        <Button asChild variant="outline">
-                          <Link href="/search">צפייה בקולקציות</Link>
-                        </Button>
-                      }
-                    />
-                  ) : (
-                    <>
-                      {wishlistDecisionSupport ? (
-                        <div
-                          className="glass-inset grid gap-3 rounded-md border p-3"
-                          data-testid="account-wishlist-decision-support"
-                        >
-                          <p className="text-sm font-medium">
-                            {wishlistDecisionSupport.summary}
-                          </p>
-                          <div className="grid gap-2 sm:grid-cols-3">
-                            {wishlistDecisionSupport.cues.map((cue) => (
-                              <div
-                                className="bg-background rounded-md border border-[var(--glass-border)] p-2"
-                                key={cue.id}
-                              >
-                                <p className="text-muted-foreground text-[0.7rem] tracking-normal uppercase">
-                                  {cue.label}
-                                </p>
-                                <p className="mt-1 truncate text-xs font-medium">
-                                  {cue.value}
-                                </p>
-                              </div>
-                            ))}
-                          </div>
-                          <div className="flex flex-wrap gap-2">
-                            <Button asChild size="sm" variant="outline">
-                              <Link href={wishlistDecisionSupport.categoryHref}>
-                                המשך בקטגוריה
-                              </Link>
-                            </Button>
-                            <Button asChild size="sm" variant="outline">
-                              <Link href="/size-guide">בדיקת מידה</Link>
-                            </Button>
-                            <Button asChild size="sm" variant="ghost">
-                              <Link href={wishlistDecisionSupport.serviceHref}>
-                                ייעוץ לוק
-                              </Link>
-                            </Button>
-                          </div>
-                        </div>
-                      ) : null}
-                      {wishlistItems.map((item) => (
-                        <div
-                          className="account-record-row flex items-center justify-between gap-4 rounded-md border p-3"
-                          key={item.id}
-                        >
-                          <Link
-                            className="flex min-w-0 flex-1 items-center gap-3"
-                            href={`/product/${item.variant.product.slug}`}
+                <Card
+                  className="account-boutique-panel account-client-card scroll-mt-24 rounded-md sm:scroll-mt-28"
+                  id="account-wishlist"
+                  size="sm"
+                >
+                  <CardHeader className="account-boutique-card-header">
+                    <CardTitle>מועדפים</CardTitle>
+                    <p className="text-muted-foreground text-sm leading-7">
+                      תכשיטים שנשמרו לגישה מהירה לפני החלטה או התייעצות.
+                    </p>
+                  </CardHeader>
+                  <CardContent className="grid gap-3">
+                    {wishlistItems.length === 0 ? (
+                      <EmptyState
+                        description="כשפריט יישמר, הוא יופיע כאן לגישה מהירה."
+                        icon={Heart}
+                        title="עדיין לא נשמרו תכשיטים."
+                        variant="inset"
+                        actions={
+                          <Button asChild variant="outline">
+                            <Link href="/search">צפייה בקולקציות</Link>
+                          </Button>
+                        }
+                      />
+                    ) : (
+                      <>
+                        {wishlistDecisionSupport ? (
+                          <div
+                            className="glass-inset grid gap-3 rounded-md border p-3"
+                            data-testid="account-wishlist-decision-support"
                           >
-                            <span className="bg-muted relative size-14 shrink-0 overflow-hidden rounded-md border border-[var(--glass-border)]">
-                              <Image
-                                alt=""
-                                className="media-color object-cover"
-                                fill
-                                sizes="56px"
-                                src={
-                                  item.variant.product.media[0]?.url ??
-                                  DEFAULT_CATALOG_IMAGE
-                                }
-                              />
-                            </span>
-                            <span className="min-w-0">
-                              <span className="block truncate font-medium">
-                                {item.variant.product.name}
-                              </span>
-                              <span className="text-muted-foreground block text-xs">
-                                {item.variant.name}
-                              </span>
-                            </span>
-                          </Link>
-                          <form action={removeWishlistItemAction}>
-                            <input
-                              name="itemId"
-                              type="hidden"
-                              value={item.id}
-                            />
-                            <Button
-                              aria-label={`הסרת ${item.variant.product.name} מהמועדפים`}
-                              data-icon-tooltip="הסרה"
-                              data-icon-tooltip-placement="top"
-                              size="icon"
-                              type="submit"
-                              variant="ghost"
+                            <p className="text-sm font-medium">
+                              {wishlistDecisionSupport.summary}
+                            </p>
+                            <div className="grid gap-2 sm:grid-cols-3">
+                              {wishlistDecisionSupport.cues.map((cue) => (
+                                <div
+                                  className="bg-background rounded-md border border-[var(--glass-border)] p-2"
+                                  key={cue.id}
+                                >
+                                  <p className="text-muted-foreground text-[0.7rem] tracking-normal uppercase">
+                                    {cue.label}
+                                  </p>
+                                  <p className="mt-1 truncate text-xs font-medium">
+                                    {cue.value}
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              <Button asChild size="sm" variant="outline">
+                                <Link
+                                  href={wishlistDecisionSupport.categoryHref}
+                                >
+                                  המשך בקטגוריה
+                                </Link>
+                              </Button>
+                              <Button asChild size="sm" variant="outline">
+                                <Link href="/size-guide">בדיקת מידה</Link>
+                              </Button>
+                              <Button asChild size="sm" variant="ghost">
+                                <Link
+                                  href={wishlistDecisionSupport.serviceHref}
+                                >
+                                  ייעוץ לוק
+                                </Link>
+                              </Button>
+                            </div>
+                          </div>
+                        ) : null}
+                        {wishlistItems.map((item) => (
+                          <div
+                            className="account-record-row flex items-center justify-between gap-4 rounded-md border p-3"
+                            key={item.id}
+                          >
+                            <Link
+                              className="flex min-w-0 flex-1 items-center gap-3"
+                              href={`/product/${item.variant.product.slug}`}
                             >
-                              <Trash2 aria-hidden="true" className="size-4" />
-                              <span className="sr-only">הסרה</span>
-                            </Button>
-                          </form>
+                              <span className="bg-muted relative size-14 shrink-0 overflow-hidden rounded-md border border-[var(--glass-border)]">
+                                <Image
+                                  alt=""
+                                  className="media-color object-cover"
+                                  fill
+                                  sizes="56px"
+                                  src={
+                                    item.variant.product.media[0]?.url ??
+                                    DEFAULT_CATALOG_IMAGE
+                                  }
+                                />
+                              </span>
+                              <span className="min-w-0">
+                                <span className="block truncate font-medium">
+                                  {item.variant.product.name}
+                                </span>
+                                <span className="text-muted-foreground block text-xs">
+                                  {item.variant.name}
+                                </span>
+                              </span>
+                            </Link>
+                            <form action={removeWishlistItemAction}>
+                              <input
+                                name="itemId"
+                                type="hidden"
+                                value={item.id}
+                              />
+                              <Button
+                                aria-label={`הסרת ${item.variant.product.name} מהמועדפים`}
+                                data-icon-tooltip="הסרה"
+                                data-icon-tooltip-placement="top"
+                                size="icon"
+                                type="submit"
+                                variant="ghost"
+                              >
+                                <Trash2 aria-hidden="true" className="size-4" />
+                                <span className="sr-only">הסרה</span>
+                              </Button>
+                            </form>
+                          </div>
+                        ))}
+                      </>
+                    )}
+                  </CardContent>
+                </Card>
+
+                <Card
+                  className="account-boutique-panel account-client-card scroll-mt-24 rounded-md sm:scroll-mt-28"
+                  id="account-addresses"
+                  size="sm"
+                >
+                  <CardHeader className="account-boutique-card-header">
+                    <CardTitle>כתובות</CardTitle>
+                    <p className="text-muted-foreground text-sm leading-7">
+                      כתובות למשלוחים עתידיים ולשירות מהיר יותר לאחר רכישה.
+                    </p>
+                  </CardHeader>
+                  <CardContent className="grid gap-4">
+                    {customer.addresses.length === 0 ? (
+                      <EmptyState
+                        description="ניתן לשמור כתובת למשלוחים עתידיים לאחר רכישה או מתוך החשבון."
+                        icon={MapPin}
+                        title="אין כתובות שמורות"
+                        variant="inset"
+                      />
+                    ) : (
+                      customer.addresses.map((address) => (
+                        <div
+                          className="account-record-row rounded-md border p-3"
+                          key={address.id}
+                        >
+                          <p className="font-medium">
+                            {address.label ?? address.recipient}
+                          </p>
+                          <p className="text-muted-foreground text-sm">
+                            {address.city}, {address.street}
+                          </p>
+                          <p className="text-muted-foreground text-xs">
+                            {address.phone}
+                          </p>
                         </div>
-                      ))}
-                    </>
-                  )}
-                </CardContent>
-              </Card>
+                      ))
+                    )}
+                    <CustomerAddressForm />
+                  </CardContent>
+                </Card>
 
-              <Card
-                className="account-boutique-panel account-client-card scroll-mt-24 rounded-md sm:scroll-mt-28"
-                id="account-addresses"
-                size="sm"
-              >
-                <CardHeader className="account-boutique-card-header">
-                  <CardTitle>כתובות</CardTitle>
-                  <p className="text-muted-foreground text-sm leading-7">
-                    כתובות למשלוחים עתידיים ולשירות מהיר יותר לאחר רכישה.
-                  </p>
-                </CardHeader>
-                <CardContent className="grid gap-4">
-                  {customer.addresses.length === 0 ? (
-                    <EmptyState
-                      description="ניתן לשמור כתובת למשלוחים עתידיים לאחר רכישה או מתוך החשבון."
-                      icon={MapPin}
-                      title="אין כתובות שמורות"
-                      variant="inset"
-                    />
-                  ) : (
-                    customer.addresses.map((address) => (
-                      <div
-                        className="account-record-row rounded-md border p-3"
-                        key={address.id}
-                      >
-                        <p className="font-medium">
-                          {address.label ?? address.recipient}
-                        </p>
-                        <p className="text-muted-foreground text-sm">
-                          {address.city}, {address.street}
-                        </p>
-                        <p className="text-muted-foreground text-xs">
-                          {address.phone}
-                        </p>
+                <Card
+                  className="account-boutique-panel account-client-card scroll-mt-24 rounded-md sm:scroll-mt-28"
+                  id="account-sizes"
+                  size="sm"
+                >
+                  <CardHeader className="account-boutique-card-header">
+                    <CardTitle>מידות</CardTitle>
+                    <p className="text-muted-foreground text-sm leading-7">
+                      שמרי מידות לטבעות, שרשראות וצמידים כדי להפוך הזמנה עתידית
+                      לקלה ומדויקת יותר.
+                    </p>
+                  </CardHeader>
+                  <CardContent className="grid gap-3">
+                    {customer.savedSizes.length === 0 ? (
+                      <EmptyState
+                        description="עד אז, ניתן להיעזר במדריך המידות או לפנות לשירות."
+                        icon={Ruler}
+                        title="פרופיל מידות יתווסף כאן בהמשך."
+                        variant="inset"
+                        actions={
+                          <>
+                            <Button asChild variant="outline">
+                              <Link href="/size-guide">מה נדרש עכשיו?</Link>
+                            </Button>
+                            <Button asChild>
+                              <Link href="/service?topic=sizing">
+                                ייעוץ אישי
+                              </Link>
+                            </Button>
+                          </>
+                        }
+                      />
+                    ) : (
+                      <div className="grid gap-2 text-sm">
+                        {customer.savedSizes.map((size) => (
+                          <div
+                            className="account-record-row flex items-center justify-between rounded-md border p-3"
+                            key={size.id}
+                          >
+                            <span>{getSavedSizeLabel(size.kind)}</span>
+                            <span className="font-medium">
+                              {getSavedSizeValue(size.kind, size.value)}
+                            </span>
+                          </div>
+                        ))}
                       </div>
-                    ))
-                  )}
-                  <CustomerAddressForm />
-                </CardContent>
-              </Card>
-
-              <Card
-                className="account-boutique-panel account-client-card scroll-mt-24 rounded-md sm:scroll-mt-28"
-                id="account-sizes"
-                size="sm"
-              >
-                <CardHeader className="account-boutique-card-header">
-                  <CardTitle>מידות</CardTitle>
-                  <p className="text-muted-foreground text-sm leading-7">
-                    שמרי מידות לטבעות, שרשראות וצמידים כדי להפוך הזמנה עתידית
-                    לקלה ומדויקת יותר.
-                  </p>
-                </CardHeader>
-                <CardContent className="grid gap-3">
-                  {customer.savedSizes.length === 0 ? (
+                    )}
+                    <CustomerSavedSizesForm savedSizes={customer.savedSizes} />
+                  </CardContent>
+                </Card>
+                <Card
+                  className="account-boutique-panel account-client-card scroll-mt-24 rounded-md sm:scroll-mt-28"
+                  id="account-service"
+                  size="sm"
+                >
+                  <CardHeader className="account-boutique-card-header">
+                    <CardTitle>שירות אישי</CardTitle>
+                    <p className="text-muted-foreground text-sm leading-7">
+                      צריכה עזרה בבחירת תכשיט, התאמת מידה, מתנה או מעקב אחרי
+                      הזמנה?
+                    </p>
+                  </CardHeader>
+                  <CardContent className="grid gap-3">
                     <EmptyState
-                      description="עד אז, ניתן להיעזר במדריך המידות או לפנות לשירות."
-                      icon={Ruler}
-                      title="פרופיל מידות יתווסף כאן בהמשך."
+                      description="צוות השירות זמין לשאלה לפני הזמנה ולאחר רכישה."
+                      icon={ShieldCheck}
+                      title="שירות אישי"
                       variant="inset"
                       actions={
                         <>
                           <Button asChild variant="outline">
-                            <Link href="/size-guide">מה נדרש עכשיו?</Link>
+                            <Link href="/faq">שאלות נפוצות</Link>
+                          </Button>
+                          <Button asChild variant="outline">
+                            <Link href="/stylist">ייעוץ אישי</Link>
                           </Button>
                           <Button asChild>
-                            <Link href="/service?topic=sizing">ייעוץ אישי</Link>
+                            <Link href="/service">פנייה לשירות</Link>
                           </Button>
                         </>
                       }
                     />
-                  ) : (
-                    <div className="grid gap-2 text-sm">
-                      {customer.savedSizes.map((size) => (
-                        <div
-                          className="account-record-row flex items-center justify-between rounded-md border p-3"
-                          key={size.id}
-                        >
-                          <span>{getSavedSizeLabel(size.kind)}</span>
-                          <span className="font-medium">
-                            {getSavedSizeValue(size.kind, size.value)}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  <CustomerSavedSizesForm savedSizes={customer.savedSizes} />
-                </CardContent>
-              </Card>
-              <Card
-                className="account-boutique-panel account-client-card scroll-mt-24 rounded-md sm:scroll-mt-28"
-                id="account-service"
-                size="sm"
-              >
-                <CardHeader className="account-boutique-card-header">
-                  <CardTitle>שירות אישי</CardTitle>
-                  <p className="text-muted-foreground text-sm leading-7">
-                    צריכה עזרה בבחירת תכשיט, התאמת מידה, מתנה או מעקב אחרי
-                    הזמנה?
-                  </p>
-                </CardHeader>
-                <CardContent className="grid gap-3">
-                  <EmptyState
-                    description="צוות השירות זמין לשאלה לפני הזמנה ולאחר רכישה."
-                    icon={ShieldCheck}
-                    title="שירות אישי"
-                    variant="inset"
-                    actions={
-                      <>
-                        <Button asChild variant="outline">
-                          <Link href="/faq">שאלות נפוצות</Link>
-                        </Button>
-                        <Button asChild variant="outline">
-                          <Link href="/stylist">ייעוץ אישי</Link>
-                        </Button>
-                        <Button asChild>
-                          <Link href="/service">פנייה לשירות</Link>
-                        </Button>
-                      </>
-                    }
-                  />
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
 
-              <Card
-                className="account-boutique-panel account-client-card scroll-mt-24 rounded-md sm:scroll-mt-28"
-                id="account-privacy"
-                size="sm"
-              >
-                <CardHeader className="account-boutique-card-header">
-                  <CardTitle className="flex items-center gap-2">
-                    <ShieldCheck aria-hidden="true" className="size-5" />
-                    פרטיות ואבטחה
-                  </CardTitle>
-                  <p className="text-muted-foreground text-sm leading-7">
-                    ניהול פרטי החשבון, כניסה מאובטחת והעדפות פרטיות.
-                  </p>
-                </CardHeader>
-                <CardContent className="grid gap-4">
-                  <div className="account-record-row grid gap-2 rounded-md border p-3">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <span className="font-medium">שיטת כניסה</span>
-                      <Badge variant="outline">קוד חד־פעמי</Badge>
-                    </div>
-                    <p className="text-muted-foreground text-sm leading-6">
-                      הכניסה לחשבון מתבצעת באמצעות קוד חד־פעמי הנשלח לאימייל או
-                      לנייד.
+                <Card
+                  className="account-boutique-panel account-client-card scroll-mt-24 rounded-md sm:scroll-mt-28"
+                  id="account-privacy"
+                  size="sm"
+                >
+                  <CardHeader className="account-boutique-card-header">
+                    <CardTitle className="flex items-center gap-2">
+                      <ShieldCheck aria-hidden="true" className="size-5" />
+                      פרטיות ואבטחה
+                    </CardTitle>
+                    <p className="text-muted-foreground text-sm leading-7">
+                      ניהול פרטי החשבון, כניסה מאובטחת והעדפות פרטיות.
                     </p>
-                    <Link className="account-text-link w-fit" href="/privacy">
-                      מדיניות פרטיות
-                    </Link>
-                  </div>
-                  <CustomerPrivacyActions />
-                </CardContent>
-              </Card>
+                  </CardHeader>
+                  <CardContent className="grid gap-4">
+                    <div className="account-record-row grid gap-2 rounded-md border p-3">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <span className="font-medium">שיטת כניסה</span>
+                        <Badge variant="outline">קוד חד־פעמי</Badge>
+                      </div>
+                      <p className="text-muted-foreground text-sm leading-6">
+                        הכניסה לחשבון מתבצעת באמצעות קוד חד־פעמי הנשלח לאימייל
+                        או לנייד.
+                      </p>
+                      <Link className="account-text-link w-fit" href="/privacy">
+                        מדיניות פרטיות
+                      </Link>
+                    </div>
+                    <CustomerPrivacyActions />
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
-        </div>
         </RevealSection>
       </main>
     </>

@@ -35,6 +35,83 @@ function Normalize-EvalResult {
   return $Value.Trim().Trim('"')
 }
 
+function Normalize-AgentBrowserErrors {
+  param([string]$Value)
+
+  $lines = New-Object System.Collections.Generic.List[string]
+  foreach ($line in ($Value -split '\r?\n|\r')) {
+    $trimmed = $line.Trim()
+    if (-not $trimmed) {
+      continue
+    }
+
+    if ($trimmed -match '^[\p{P}\p{S}]+$') {
+      continue
+    }
+
+    $lines.Add($trimmed) | Out-Null
+  }
+
+  return ([string]::Join([Environment]::NewLine, $lines)).Trim()
+}
+
+function Get-AgentBrowserErrors {
+  return Normalize-AgentBrowserErrors (Invoke-AgentBrowser -CommandArgs @("errors"))
+}
+
+function Get-BrokenImageCount {
+  $script = @'
+(async () => {
+  const sleep = (milliseconds) =>
+    new Promise((resolve) => setTimeout(resolve, milliseconds));
+  const getBrokenImages = () =>
+    Array.from(document.images).filter((image) => {
+      const source = image.currentSrc || image.src;
+
+      return Boolean(source) && image.complete && image.naturalWidth === 0;
+    });
+  const waitForPendingImages = async () => {
+    const pendingImages = Array.from(document.images).filter(
+      (image) => !image.complete,
+    );
+
+    await Promise.all(
+      pendingImages.map(
+        (image) =>
+          new Promise((resolve) => {
+            const done = () => resolve(undefined);
+
+            image.addEventListener("load", done, { once: true });
+            image.addEventListener("error", done, { once: true });
+            setTimeout(done, 650);
+          }),
+      ),
+    );
+  };
+
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    const brokenImages = getBrokenImages();
+
+    if (brokenImages.length === 0) return "0";
+
+    await waitForPendingImages();
+    await sleep(250);
+  }
+
+  return String(getBrokenImages().length);
+})()
+'@
+
+  return Normalize-EvalResult (Invoke-AgentBrowser -CommandArgs @(
+    "eval",
+    $script
+  ))
+}
+
+function Wait-AgentBrowserVisualSettled {
+  Invoke-AgentBrowser -CommandArgs @("wait", "900") | Out-Null
+}
+
 function Test-AgentBrowserReady {
   try {
     Invoke-AgentBrowser -CommandArgs @("get", "url") | Out-Null
@@ -201,7 +278,7 @@ try {
           Invoke-AgentBrowser -CommandArgs @("errors", "--clear") | Out-Null
           Invoke-AgentBrowser -CommandArgs @("network", "requests", "--clear") | Out-Null
           Invoke-AgentBrowser -CommandArgs @("open", $url) | Out-Null
-          Invoke-AgentBrowser -CommandArgs @("wait", "--load", "networkidle") | Out-Null
+          Wait-AgentBrowserVisualSettled
 
           $content = Normalize-EvalResult (Invoke-AgentBrowser -CommandArgs @(
             "eval",
@@ -218,12 +295,9 @@ try {
             "document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1 ? 'NO_X_OVERFLOW' : 'X_OVERFLOW'"
           ))
 
-          $brokenImages = Normalize-EvalResult (Invoke-AgentBrowser -CommandArgs @(
-            "eval",
-            "String(Array.from(document.images).filter((img) => img.complete && img.naturalWidth === 0).length)"
-          ))
+          $brokenImages = Get-BrokenImageCount
 
-          $consoleErrors = Invoke-AgentBrowser -CommandArgs @("errors")
+          $consoleErrors = Get-AgentBrowserErrors
           $title = Invoke-AgentBrowser -CommandArgs @("get", "title")
 
           $isPass = $content -eq "HAS_CONTENT" -and $overlay -eq "OK" -and $overflow -eq "NO_X_OVERFLOW" -and $brokenImages -eq "0" -and (-not $consoleErrors)

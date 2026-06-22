@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { z } from "zod";
 
 import { db } from "~/server/db";
@@ -55,6 +56,7 @@ export async function createCustomerAuthFixture(input: unknown = {}) {
   }
 
   const fixtureInput = parseCustomerAuthFixtureInput(input);
+  const fixtureIdentity = createCustomerAuthFixtureIdentity(fixtureInput.email);
   const now = new Date();
   const paidAt = new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000);
   const preparingAt = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
@@ -166,7 +168,7 @@ export async function createCustomerAuthFixture(input: unknown = {}) {
     });
 
     const existingOrder = await tx.order.findUnique({
-      where: { orderNumber: CUSTOMER_AUTH_FIXTURE_DEFAULTS.localOrderNumber },
+      where: { orderNumber: fixtureIdentity.localOrderNumber },
       select: { id: true },
     });
 
@@ -180,7 +182,7 @@ export async function createCustomerAuthFixture(input: unknown = {}) {
     }
 
     const localOrder = await tx.order.upsert({
-      where: { orderNumber: CUSTOMER_AUTH_FIXTURE_DEFAULTS.localOrderNumber },
+      where: { orderNumber: fixtureIdentity.localOrderNumber },
       update: {
         completedAt: null,
         currency: "ILS",
@@ -207,7 +209,7 @@ export async function createCustomerAuthFixture(input: unknown = {}) {
         total,
       },
       create: {
-        orderNumber: CUSTOMER_AUTH_FIXTURE_DEFAULTS.localOrderNumber,
+        orderNumber: fixtureIdentity.localOrderNumber,
         currency: "ILS",
         customerId: customer.id,
         discountTotal: 0,
@@ -246,10 +248,10 @@ export async function createCustomerAuthFixture(input: unknown = {}) {
         amount: total,
         capturedAt: paidAt,
         currency: "ILS",
-        idempotencyKey: `e2e_customer_fixture_payment_${localOrder.id}`,
+        idempotencyKey: `e2e_customer_fixture_payment_${fixtureIdentity.key}`,
         orderId: localOrder.id,
         provider: "fixture",
-        providerPaymentId: "e2e-payment-1001",
+        providerPaymentId: `e2e-payment-${fixtureIdentity.key}`,
         providerStatus: "captured",
         rawPayload: { fixture: "customer-auth" },
         status: "CAPTURED",
@@ -262,7 +264,7 @@ export async function createCustomerAuthFixture(input: unknown = {}) {
         provider: "E2E Delivery",
         shippedAt,
         status: "SHIPPED",
-        tracking: "E2E-TRACK-1001",
+        tracking: `E2E-TRACK-${fixtureIdentity.key}`,
       },
     });
     await tx.returnRequest.create({
@@ -275,7 +277,7 @@ export async function createCustomerAuthFixture(input: unknown = {}) {
     });
 
     await tx.shopifyOrderMirror.upsert({
-      where: { shopifyOrderId: CUSTOMER_AUTH_FIXTURE_DEFAULTS.shopifyOrderId },
+      where: { shopifyOrderId: fixtureIdentity.shopifyOrderId },
       update: {
         currency: "ILS",
         customerEmail: identifier,
@@ -290,12 +292,12 @@ export async function createCustomerAuthFixture(input: unknown = {}) {
         ],
         processedAt: shippedAt,
         rawPayload: { fixture: "customer-auth" },
-        shopifyOrderName: CUSTOMER_AUTH_FIXTURE_DEFAULTS.shopifyOrderName,
+        shopifyOrderName: fixtureIdentity.shopifyOrderName,
         supplierKey: "fixture-supplier",
         total: 420,
       },
       create: {
-        shopifyOrderId: CUSTOMER_AUTH_FIXTURE_DEFAULTS.shopifyOrderId,
+        shopifyOrderId: fixtureIdentity.shopifyOrderId,
         currency: "ILS",
         customerEmail: identifier,
         financialStatus: "PAID",
@@ -309,7 +311,7 @@ export async function createCustomerAuthFixture(input: unknown = {}) {
         ],
         processedAt: shippedAt,
         rawPayload: { fixture: "customer-auth" },
-        shopifyOrderName: CUSTOMER_AUTH_FIXTURE_DEFAULTS.shopifyOrderName,
+        shopifyOrderName: fixtureIdentity.shopifyOrderName,
         supplierKey: "fixture-supplier",
         total: 420,
       },
@@ -338,8 +340,30 @@ export async function createCustomerAuthFixture(input: unknown = {}) {
       localOrderId: localOrder.id,
       localOrderNumber: localOrder.orderNumber,
       sessionKey: fixtureInput.sessionKey,
-      shopifyOrderName: CUSTOMER_AUTH_FIXTURE_DEFAULTS.shopifyOrderName,
+      shopifyOrderName: fixtureIdentity.shopifyOrderName,
       userId: user.id,
     };
   });
+}
+
+export function createCustomerAuthFixtureIdentity(identifier: string) {
+  const normalized = normalizeOtpIdentifier(identifier);
+  const key = createHash("sha256")
+    .update(normalized)
+    .digest("hex")
+    .slice(0, 10);
+  const usesDefaults = normalized === CUSTOMER_AUTH_FIXTURE_DEFAULTS.email;
+
+  return {
+    key,
+    localOrderNumber: usesDefaults
+      ? CUSTOMER_AUTH_FIXTURE_DEFAULTS.localOrderNumber
+      : `${CUSTOMER_AUTH_FIXTURE_DEFAULTS.localOrderNumber}-${key}`,
+    shopifyOrderId: usesDefaults
+      ? CUSTOMER_AUTH_FIXTURE_DEFAULTS.shopifyOrderId
+      : `${CUSTOMER_AUTH_FIXTURE_DEFAULTS.shopifyOrderId}-${key}`,
+    shopifyOrderName: usesDefaults
+      ? CUSTOMER_AUTH_FIXTURE_DEFAULTS.shopifyOrderName
+      : `${CUSTOMER_AUTH_FIXTURE_DEFAULTS.shopifyOrderName}-${key}`,
+  };
 }

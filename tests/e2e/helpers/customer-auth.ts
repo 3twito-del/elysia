@@ -16,9 +16,23 @@ type CustomerAuthFixtureResponse = {
   ok: true;
 };
 
-export async function signInCustomerWithFixture(page: Page) {
+export async function signInCustomerWithFixture(
+  page: Page,
+  fixtureNamespace = "default",
+) {
+  const namespace = fixtureNamespace
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 40);
   const setupResponse = await page.request.post("/api/e2e/customer-auth", {
-    data: {},
+    data:
+      namespace === "default"
+        ? {}
+        : {
+            email: `e2e.customer+${namespace}@elysia.local`,
+            sessionKey: `e2e_customer_auth_fixture_${namespace}`,
+          },
   });
 
   expect(
@@ -52,7 +66,12 @@ export async function signInCustomerWithFixture(page: Page) {
   expect(signInResponse.status()).toBeLessThan(400);
 
   await page.goto("/account", { waitUntil: "domcontentloaded" });
-  await expect(page.getByTestId("account-summary-panel")).toBeVisible();
+  const visibleAccountSummary = page.locator(
+    '[data-testid="account-summary-panel"]:visible',
+  );
+
+  await expect(visibleAccountSummary).toHaveCount(1);
+  await expect(visibleAccountSummary).toBeVisible();
 
   return setup.fixture;
 }

@@ -141,6 +141,7 @@ test.describe("critical shopping flows", () => {
 
     await expect(page.getByTestId("product-gallery")).toBeVisible();
     await waitForProductPurchasePanelClientReady(page);
+    await waitForPublicMotionReady(page);
     await page.getByTestId("product-commerce-trust").scrollIntoViewIfNeeded();
 
     const layout = await page.evaluate(() => {
@@ -851,6 +852,7 @@ test.describe("accessibility and responsive guardrails", () => {
 
   test("exposes keyboard skip navigation", async ({ browserName, page }) => {
     await page.goto("/", { waitUntil: "domcontentloaded" });
+    await waitForPublicMotionReady(page);
 
     const skipLink = page.getByRole("link", { name: "דילוג לתוכן" });
     if (browserName === "webkit") {
@@ -1878,7 +1880,7 @@ async function expectGalleryStageFollowsDrag(
     .not.toBe("none");
 
   const farX =
-    direction === "next" ? box.x - box.width * 0.35 : box.x + box.width * 1.35;
+    direction === "next" ? box.x + box.width * 0.05 : box.x + box.width * 0.95;
   await page.mouse.move(farX, y, { steps: 4 });
 
   const farDrag = await stage.evaluate((element) => {
@@ -1894,10 +1896,12 @@ async function expectGalleryStageFollowsDrag(
   });
 
   expect(farDrag.mediaWidth).toBeGreaterThan(0);
+  // Firefox clips synthetic pointer coordinates at the viewport edge, so a
+  // full media-width drag is not reachable when the image fills the viewport.
   if (direction === "next") {
-    expect(farDrag.offset).toBeLessThan(-farDrag.mediaWidth * 0.9);
+    expect(farDrag.offset).toBeLessThan(-farDrag.mediaWidth * 0.55);
   } else {
-    expect(farDrag.offset).toBeGreaterThan(farDrag.mediaWidth * 0.9);
+    expect(farDrag.offset).toBeGreaterThan(farDrag.mediaWidth * 0.55);
   }
 
   await installGallerySwipeResetProbe(page);
@@ -2019,6 +2023,13 @@ async function expectGallerySwipeSettled(page: Page) {
 async function waitForProductPurchasePanelClientReady(page: Page) {
   await expect(page.getByTestId("product-purchase-panel")).toHaveAttribute(
     "data-client-ready",
+    "true",
+  );
+}
+
+async function waitForPublicMotionReady(page: Page) {
+  await expect(page.locator("html")).toHaveAttribute(
+    "data-public-motion-ready",
     "true",
   );
 }

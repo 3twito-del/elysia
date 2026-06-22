@@ -1,13 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowLeft,
-  Gift,
-  Headphones,
-  ShieldCheck,
-  Truck,
-} from "lucide-react";
+import { ArrowLeft, Gift, Headphones, ShieldCheck, Truck } from "lucide-react";
 
 import { env } from "~/env";
 import { stringifyJsonLd } from "~/lib/json-ld";

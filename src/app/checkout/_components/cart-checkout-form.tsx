@@ -1776,8 +1776,8 @@ function CheckoutEmptyCartState() {
             התחילי מהנמכרים ביותר
           </h2>
           <p className="text-muted-foreground mt-4 max-w-xl text-sm leading-7 sm:text-base">
-            שלושה תכשיטים שנבחרים שוב ושוב. אחרי הוספה לסל תראי כאן מוצר,
-            כמות, מחיר ומשלוח לפני תשלום.
+            שלושה תכשיטים שנבחרים שוב ושוב. אחרי הוספה לסל תראי כאן מוצר, כמות,
+            מחיר ומשלוח לפני תשלום.
           </p>
           <div className="mt-7 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <Button asChild>

@@ -38,7 +38,7 @@ export function FeedbackButton() {
       <DialogTrigger asChild>
         <Button
           aria-label="שליחת פידבק"
-          className="fixed bottom-6 end-6 z-50 gap-2 shadow-md"
+          className="fixed end-6 bottom-6 z-50 gap-2 shadow-md"
           size="sm"
           variant="outline"
         >
@@ -101,10 +101,7 @@ function FeedbackForm({ onDone }: { onDone: () => void }) {
           required
           rows={4}
         />
-        <p
-          className="text-muted-foreground text-xs"
-          id={feedbackMessageHintId}
-        >
+        <p className="text-muted-foreground text-xs" id={feedbackMessageHintId}>
           עד 1000 תווים
         </p>
       </div>

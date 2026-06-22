@@ -321,7 +321,11 @@ async function auditRoute({
   page.on("console", (message) => {
     if (
       message.type() === "error" &&
-      !isIgnorableConsoleError(message.text(), baseUrl)
+      !isIgnorableConsoleError({
+        baseUrl,
+        message: message.text(),
+        route,
+      })
     ) {
       consoleErrors.push(message.text());
     }
@@ -886,7 +890,9 @@ function isIgnorableCancelledRequest({
   return (
     parsed.searchParams.has("_rsc") ||
     (parsed.pathname.startsWith("/_next/static/") &&
-      ["fetch", "script"].includes(resourceType))
+      ["fetch", "script"].includes(resourceType)) ||
+    (parsed.pathname.startsWith("/brand/") &&
+      ["image", "media"].includes(resourceType))
   );
 }
 
@@ -897,7 +903,23 @@ function isIgnorablePageError(message: string) {
   );
 }
 
-export function isIgnorableConsoleError(message: string, baseUrl: string) {
+export function isIgnorableConsoleError({
+  baseUrl,
+  message,
+  route,
+}: {
+  baseUrl: string;
+  message: string;
+  route?: Pick<QaRoute, "expectedStatuses">;
+}) {
+  if (
+    route?.expectedStatuses.includes(404) &&
+    message.includes("Failed to load resource") &&
+    message.includes("404")
+  ) {
+    return true;
+  }
+
   if (!isLocalDevelopmentBaseUrl(baseUrl)) return false;
 
   return consoleErrorBudget.allowedDevelopmentOnlyPatterns.some((pattern) =>

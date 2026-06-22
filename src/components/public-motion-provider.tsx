@@ -453,12 +453,17 @@ export function PublicMotionProvider({ children }: PublicMotionProviderProps) {
   useEffect(() => {
     if (isAdminRoute) return;
 
+    const root = document.documentElement;
     const previousScrollRestoration = window.history.scrollRestoration;
     window.history.scrollRestoration = "manual";
+    delete root.dataset.publicMotionReady;
 
     if (window.location.hash) {
+      root.dataset.publicMotionReady = "true";
+
       return () => {
         window.history.scrollRestoration = previousScrollRestoration;
+        delete root.dataset.publicMotionReady;
       };
     }
 
@@ -467,12 +472,16 @@ export function PublicMotionProvider({ children }: PublicMotionProviderProps) {
     };
 
     const frame = window.requestAnimationFrame(scrollToTop);
-    const timer = window.setTimeout(scrollToTop, 120);
+    const timer = window.setTimeout(() => {
+      scrollToTop();
+      root.dataset.publicMotionReady = "true";
+    }, 120);
 
     return () => {
       window.cancelAnimationFrame(frame);
       window.clearTimeout(timer);
       window.history.scrollRestoration = previousScrollRestoration;
+      delete root.dataset.publicMotionReady;
     };
   }, [isAdminRoute]);
 

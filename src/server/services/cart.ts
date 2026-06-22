@@ -172,8 +172,9 @@ async function findCartVariantByPublicSku(
   });
 
   return (
-    candidates.find((candidate) => getPublicCatalogSku(candidate.sku) === variantSku) ??
-    null
+    candidates.find(
+      (candidate) => getPublicCatalogSku(candidate.sku) === variantSku,
+    ) ?? null
   );
 }
 

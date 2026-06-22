@@ -1,4 +1,5 @@
 import { spawn, spawnSync } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
 import net from "node:net";
 import process from "node:process";
 import { setTimeout as delay } from "node:timers/promises";
@@ -334,14 +335,42 @@ function buildStep() {
 }
 
 function buildSafeCatalogEnv() {
+  const e2eDatabaseUrl =
+    process.env.E2E_DATABASE_URL ??
+    process.env.DATABASE_URL ??
+    readDotenvValue(".env.development.local", "DATABASE_URL");
+
   return {
     AI_SEMANTIC_SEARCH_ENABLED: "false",
     CATALOG_DB_ERROR_FALLBACK: "1",
+    ...(e2eDatabaseUrl ? { DATABASE_URL: e2eDatabaseUrl } : {}),
+    E2E_AUTH_FIXTURES: "1",
     E2E_CATALOG_FIXTURES: "1",
     TYPESENSE_API_KEY: "",
     TYPESENSE_HOST: "",
     VERCEL_ENV: "preview",
   };
+}
+
+function readDotenvValue(filePath, key) {
+  if (!existsSync(filePath)) return undefined;
+
+  const assignmentPattern = new RegExp(`^\\s*${key}\\s*=\\s*(.*)\\s*$`);
+
+  for (const line of readFileSync(filePath, "utf8").split(/\r?\n/u)) {
+    const match = line.match(assignmentPattern);
+
+    if (!match) continue;
+
+    const value = (match[1] ?? "").trim();
+    const quoted =
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"));
+
+    return quoted ? value.slice(1, -1) : value || undefined;
+  }
+
+  return undefined;
 }
 
 function requiredEnvArg(name) {

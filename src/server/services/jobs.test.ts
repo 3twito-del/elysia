@@ -34,7 +34,9 @@ describe("outbox job helpers", () => {
     expect(message?.to).toBe("dana@example.com");
     expect(message?.subject).toContain("ELY-20260428-AB12CD");
     expect(message?.body).toContain("ELY-20260428-AB12CD");
-    expect(message?.body).toContain("https://elysia-jewellery.com/shipping-returns");
+    expect(message?.body).toContain(
+      "https://elysia-jewellery.com/shipping-returns",
+    );
     expect(message?.body).not.toContain("cart_checkout_created");
   });
 

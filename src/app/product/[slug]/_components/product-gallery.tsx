@@ -179,7 +179,8 @@ export function ProductGallery({
   const shouldAnimateMediaChange =
     !shouldReduceMotion && !isSwipeCommitResetting;
   const canViewerZoomIn =
-    viewerZoomRenderTransform.scale < viewerZoomBounds.max - viewerZoomStepEpsilon;
+    viewerZoomRenderTransform.scale <
+    viewerZoomBounds.max - viewerZoomStepEpsilon;
 
   useEffect(() => {
     if (!isViewerOpen || galleryImageCount <= 1) return;
@@ -221,7 +222,10 @@ export function ProductGallery({
 
     const { scale, x, y } = viewerZoomRef.current;
 
-    surface.style.setProperty(viewerZoomCssProperties.scale.value, String(scale));
+    surface.style.setProperty(
+      viewerZoomCssProperties.scale.value,
+      String(scale),
+    );
     surface.style.setProperty(
       viewerZoomCssProperties.translateX.value,
       String(Math.round(x)).concat(viewerSwipePixelUnit.value),
@@ -257,7 +261,12 @@ export function ProductGallery({
         Math.abs(currentTransform.scale - nextTransform.scale) >
         viewerZoomStepEpsilon;
 
-      if (options.animate || scaleChanged || !isZoomed || isZoomed !== wasZoomed) {
+      if (
+        options.animate ||
+        scaleChanged ||
+        !isZoomed ||
+        isZoomed !== wasZoomed
+      ) {
         return nextTransform;
       }
 
@@ -519,12 +528,9 @@ export function ProductGallery({
       viewerZoomBounds.max,
     );
 
-    zoomViewerToPoint(
-      nextScale,
-      geometry.midpoint.x,
-      geometry.midpoint.y,
-      { animate: false },
-    );
+    zoomViewerToPoint(nextScale, geometry.midpoint.x, geometry.midpoint.y, {
+      animate: false,
+    });
   }
 
   function handleViewerPointerMove(event: PointerEvent<HTMLDivElement>) {
@@ -666,7 +672,10 @@ export function ProductGallery({
       return;
     }
 
-    if (viewerZoomRef.current.scale >= viewerZoomBounds.max - viewerZoomStepEpsilon) {
+    if (
+      viewerZoomRef.current.scale >=
+      viewerZoomBounds.max - viewerZoomStepEpsilon
+    ) {
       resetViewerZoom({ animate: true });
       return;
     }

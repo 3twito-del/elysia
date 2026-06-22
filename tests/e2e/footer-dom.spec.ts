@@ -57,7 +57,9 @@ test.describe("footer DOM and accessibility structure", () => {
           footer.querySelector('[data-testid="footer-business-details"]'),
           footer.querySelector('nav[aria-label="רשתות חברתיות"]'),
         ]
-          .filter((element): element is HTMLElement => element instanceof HTMLElement)
+          .filter(
+            (element): element is HTMLElement => element instanceof HTMLElement,
+          )
           .map((element) => {
             const rect = element.getBoundingClientRect();
 
@@ -77,10 +79,7 @@ test.describe("footer DOM and accessibility structure", () => {
     expect(footerState.htmlDir).toBe("rtl");
     expect(footerState.htmlLang).toBe("he");
     expect(footerState.headingTexts).toEqual([...footerHeadings]);
-    expect(footerState.navLabels).toEqual([
-      "ניווט תחתון",
-      "רשתות חברתיות",
-    ]);
+    expect(footerState.navLabels).toEqual(["ניווט תחתון", "רשתות חברתיות"]);
     expect(footerState.text).not.toContain("תמיכה - המשך");
     expect(footerState.text).not.toContain("שירות אונליין");
 
@@ -178,6 +177,19 @@ test.describe("footer DOM and accessibility structure", () => {
     await page.waitForSelector(
       '[data-testid="search-results-summary"], [data-testid="search-empty-state"], [data-testid="search-results-grid"], [data-testid="search-results-list"]',
     );
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-public-motion-ready",
+      "true",
+    );
+    await expect
+      .poll(() =>
+        page.evaluate(() => ({
+          footerCount: document.querySelectorAll("footer").length,
+          headerCount: document.querySelectorAll("header").length,
+          mainCount: document.querySelectorAll("main").length,
+        })),
+      )
+      .toEqual({ footerCount: 1, headerCount: 1, mainCount: 1 });
 
     const searchState = await page.evaluate(() => {
       const header = document.querySelector("header");

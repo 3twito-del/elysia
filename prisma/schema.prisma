@@ -1084,15 +1084,15 @@ model Role {
 }
 
 model AdminUser {
-  id           String     @id @default(cuid())
-  userId       String?    @unique
-  roleId       String
-  name         String
-  email        String     @unique
-  passwordHash String?
-  disabledAt   DateTime?
-  role         Role       @relation(fields: [roleId], references: [id])
-  user         User?      @relation(fields: [userId], references: [id])
+  id               String     @id @default(cuid())
+  userId           String?    @unique
+  roleId           String
+  name             String
+  email            String     @unique
+  passwordHash     String?
+  disabledAt       DateTime?
+  role             Role       @relation(fields: [roleId], references: [id])
+  user             User?      @relation(fields: [userId], references: [id])
   auditLogs        AuditLog[]
   blogPostsCreated BlogPost[] @relation("BlogPostCreatedBy")
   blogPostsUpdated BlogPost[] @relation("BlogPostUpdatedBy")

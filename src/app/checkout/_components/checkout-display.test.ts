@@ -96,8 +96,7 @@ describe("checkout display helpers", () => {
 
     expect(rows).toEqual([
       {
-        detail:
-          "סוג תכשיט אחד ימשיך לקופה נפרדת; תשלום ומסירה ייקבעו שם.",
+        detail: "סוג תכשיט אחד ימשיך לקופה נפרדת; תשלום ומסירה ייקבעו שם.",
         key: "supplier",
         label: "פריטים נפרדים",
       },
@@ -142,8 +141,7 @@ describe("checkout display helpers", () => {
         label: "מסירה",
       },
       {
-        detail:
-          "שני מסלולי התשלום נשארים נפרדים וברורים.",
+        detail: "שני מסלולי התשלום נשארים נפרדים וברורים.",
         key: "confirmation",
         label: "תשלום",
       },

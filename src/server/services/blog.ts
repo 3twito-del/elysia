@@ -519,7 +519,7 @@ function isBlogDatabaseReadError(error: unknown) {
       ["P1000", "P1001", "P1002", "P1008", "P1017", "P2021", "P2024"].includes(
         code,
       )) ||
-    /DATABASE_URL is required|Can't reach database server|Timed out fetching a new connection|Unable to start a transaction|Connection pool timeout|Cannot read properties of undefined \(reading '(findMany|findFirst|count)'\)/i.test(
+    /DATABASE_URL is required|Authentication failed against database server|Can't reach database server|Timed out fetching a new connection|Unable to start a transaction|Connection pool timeout|Cannot read properties of undefined \(reading '(findMany|findFirst|count)'\)/i.test(
       message,
     )
   );

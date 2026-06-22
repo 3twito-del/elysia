@@ -183,8 +183,7 @@ export function ServiceRequestForm({
           data-testid="service-topic-guidance"
           id={topicGuidanceId}
         >
-          {selectedTopicDescription ??
-            "בחרו את הנושא הכי קרוב למה שצריך."}
+          {selectedTopicDescription ?? "בחרו את הנושא הכי קרוב למה שצריך."}
         </p>
         <div
           className="glass-inset rounded-md border p-3 text-xs leading-5"
@@ -347,7 +346,9 @@ export function ServiceRequestForm({
         <p
           className="text-muted-foreground text-xs leading-5"
           id={attachmentOfflineGuidanceId}
-        >אם השליחה לא הצליחה, בדקו את החיבור ונסו שוב.</p>
+        >
+          אם השליחה לא הצליחה, בדקו את החיבור ונסו שוב.
+        </p>
       </div>
 
       {state.message ? (

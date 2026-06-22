@@ -44,8 +44,7 @@ export function getSafeSizeGuideReturnContext(
 
   if (categoryPathPattern.test(url.pathname)) {
     return {
-      description:
-        "הגעתם מקטגוריה. ניתן לשמור מידה ולחזור בלי לאבד הקשר.",
+      description: "הגעתם מקטגוריה. ניתן לשמור מידה ולחזור בלי לאבד הקשר.",
       href,
       label: "חזרה לקטגוריה",
       surface: "category",

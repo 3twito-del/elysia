@@ -579,9 +579,7 @@ function getCategoryNoResultRecoveryActions({
 }
 
 function formatCategoryRecoveryDescription(total: number) {
-  return total === 1
-    ? "נמצאה התאמה לסינון הפעיל"
-    : "נמצאו התאמות לסינון הפעיל";
+  return total === 1 ? "נמצאה התאמה לסינון הפעיל" : "נמצאו התאמות לסינון הפעיל";
 }
 
 function createCategoryHref(slug: string, filters: Partial<CategoryFilters>) {
