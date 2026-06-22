@@ -1263,7 +1263,7 @@ main
 }
 
 .account-login-panel {
-  align-self: start;
+  align-self: stretch;
 }
 
 .account-otp-trust-note {

@@ -70,7 +70,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
               />
               <Input
                 aria-label="חיפוש במגזין"
-                className="pe-10"
+                className="ps-10"
                 defaultValue={params.q}
                 name="q"
                 placeholder="חיפוש מאמרים"

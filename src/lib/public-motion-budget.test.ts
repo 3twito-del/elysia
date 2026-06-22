@@ -139,11 +139,15 @@ describe("public motion budget", () => {
     expect(css).toContain("animation: none !important;");
     expect(css).toContain("transition: none !important;");
     expect(productGallerySource).toContain("useResolvedReducedMotion");
+    expect(productGallerySource).toContain("const shouldAnimateMediaChange =");
     expect(productGallerySource).toContain(
-      "duration: shouldReduceMotion ? 0 : 0.38",
+      "!shouldReduceMotion && !isSwipeCommitResetting",
+    );
+    expect(productGallerySource).toContain(
+      "duration: shouldAnimateMediaChange ? 0.38 : 0",
     );
     expect(productGallerySource).toMatch(
-      /initial=\{\s*shouldReduceMotion\s*\?\s*false\s*:\s*\{\s*opacity:\s*0,\s*scale:\s*1\.006\s*\}\s*\}/,
+      /initial=\{\s*shouldAnimateMediaChange\s*\?\s*\{\s*opacity:\s*0,\s*scale:\s*1\.006\s*\}\s*:\s*false\s*\}/,
     );
     expect(purchasePanelSource).toContain("motion-status-pop");
     expect(purchasePanelSource).toContain("motion-sticky-purchase");

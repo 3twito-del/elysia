@@ -242,6 +242,7 @@ function PostFieldset({
         />
         <select
           aria-label="סטטוס מאמר"
+          autoComplete="off"
           className="glass-control h-10 rounded-md border px-3 text-sm"
           defaultValue={defaults?.status ?? "DRAFT"}
           name="status"
@@ -495,6 +496,7 @@ function Select({
   return (
     <select
       aria-label={label}
+      autoComplete="off"
       className="glass-control h-10 rounded-md border px-3 text-sm"
       defaultValue={defaultValue}
       name={name}
@@ -542,6 +544,7 @@ function MultiSelect({
       ) : null}
       <select
         aria-label={label}
+        autoComplete="off"
         className="glass-control min-h-32 rounded-md border px-3 py-2 text-sm"
         multiple
         name={name}

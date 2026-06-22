@@ -334,5 +334,7 @@ function normalizePath(filePath: string) {
 }
 
 function read(relativePath: string) {
-  return readFileSync(path.join(process.cwd(), relativePath), "utf8");
+  return readFileSync(path.join(process.cwd(), relativePath), "utf8")
+    .replace(/^\uFEFF/u, "")
+    .replace(/\r\n?/gu, "\n");
 }

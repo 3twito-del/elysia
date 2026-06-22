@@ -122,6 +122,7 @@ export default async function AdminBlogPage({
               />
               <select
                 aria-label="סינון סטטוס מאמר"
+                autoComplete="off"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
                 defaultValue={params.status ?? ""}
                 name="status"
@@ -135,6 +136,7 @@ export default async function AdminBlogPage({
               </select>
               <select
                 aria-label="מיון מאמרים"
+                autoComplete="off"
                 className="glass-control h-11 rounded-md border px-3 text-sm"
                 defaultValue={params.sort}
                 name="sort"

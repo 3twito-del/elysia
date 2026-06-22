@@ -316,7 +316,7 @@ export default async function AccountPage() {
             className="account-boutique-section account-entry-section mx-auto max-w-6xl scroll-mt-24 px-[var(--ui-page-x)] pt-1 pb-10 sm:scroll-mt-28 sm:pt-3 sm:pb-12 lg:px-[var(--ui-page-x-wide)]"
             id="account-login"
           >
-          <div className="account-entry-layout grid gap-5 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:items-start">
+          <div className="account-entry-layout grid gap-5 lg:grid-cols-2">
             <Card
               className="account-boutique-panel account-entry-card account-login-panel rounded-md"
               size="sm"

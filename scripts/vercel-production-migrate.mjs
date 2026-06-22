@@ -18,13 +18,19 @@ if (!process.env.DATABASE_URL?.trim()) {
 
 console.log("[vercel-production-migrate] Applying Prisma migrations.");
 
+const prismaMigrationArgs = ["prisma", "migrate", "deploy"];
 const migrationInvocation =
   process.platform === "win32"
     ? {
-        args: ["/d", "/s", "/c", "pnpm exec prisma migrate deploy"],
+        args: [
+          "/d",
+          "/s",
+          "/c",
+          `pnpm exec ${prismaMigrationArgs.join(" ")}`,
+        ],
         command: "cmd.exe",
       }
-    : { args: ["exec", "prisma", "migrate", "deploy"], command: "pnpm" };
+    : { args: ["exec", ...prismaMigrationArgs], command: "pnpm" };
 
 const result = spawnSync(
   migrationInvocation.command,

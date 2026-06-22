@@ -142,6 +142,13 @@ describe("visible site improvement affordances", () => {
     expect(accountPage).toContain('id="account-benefits"');
     expect(accountPage).toContain("<AccountPageHeader");
     expect(accountPage).toContain("account-entry-layout");
+    expect(accountPage).toContain("lg:grid-cols-2");
+    expect(accountPage).not.toContain(
+      "lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)]",
+    );
+    expect(styles).toContain(
+      ".account-login-panel {\n  align-self: stretch;\n}",
+    );
     expect(accountPage).toContain("<AccountServiceStrip />");
     expect(accountPage).toContain("<AccountSidebar />");
     expect(accountPage).toContain("<AccountSummaryPanel");
