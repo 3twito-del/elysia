@@ -6,6 +6,9 @@ import { db } from "~/server/db";
 
 const vipLifetimeValueThreshold = 2_500;
 const dormantDays = 90;
+/** Recency thresholds (days since last order) used for churn-risk banding. */
+const churnWarningDays = 60;
+const churnHighDays = 120;
 
 export async function getCrmOverview(input: { adminUserId?: string } = {}) {
   await auditCrmAccess({
@@ -23,9 +26,13 @@ export async function getCrmOverview(input: { adminUserId?: string } = {}) {
     overdueTasks,
     segments,
     activeCarts,
+    activeCartsByCustomer,
     wishlistCustomers,
     openServiceRequests,
     recentNotes,
+    totalCustomers,
+    snapshotAggregate,
+    repeatCustomers,
   ] = await Promise.all([
     db.customer.findMany({
       orderBy: { updatedAt: "desc" },
@@ -46,6 +53,10 @@ export async function getCrmOverview(input: { adminUserId?: string } = {}) {
       include: { memberships: true },
     }),
     db.cart.count({ where: { status: "ACTIVE" } }),
+    db.cart.findMany({
+      where: { status: "ACTIVE", customerId: { not: null } },
+      select: { customerId: true },
+    }),
     db.wishlist.count({ where: { items: { some: {} } } }),
     db.serviceRequest.count({
       where: { status: { in: ["NEW", "IN_REVIEW", "WAITING_FOR_CUSTOMER"] } },
@@ -55,9 +66,33 @@ export async function getCrmOverview(input: { adminUserId?: string } = {}) {
       take: 5,
       include: { customer: true, adminUser: true },
     }),
+    db.customer.count(),
+    db.customerMetricSnapshot.aggregate({
+      _sum: { lifetimeValue: true, orderCount: true },
+      _avg: { lifetimeValue: true, averageOrderValue: true },
+      _count: true,
+    }),
+    db.order.groupBy({
+      by: ["customerId"],
+      where: { customerId: { not: null } },
+      _count: { _all: true },
+    }),
   ]);
 
-  const enrichedCustomers = customers.map(createCustomerSummary);
+  const openCartCustomerIds = new Set(
+    activeCartsByCustomer
+      .map((cart) => cart.customerId)
+      .filter((value): value is string => Boolean(value)),
+  );
+
+  const customersWithOrders = repeatCustomers.length;
+  const repeatBuyers = repeatCustomers.filter(
+    (row) => row._count._all > 1,
+  ).length;
+
+  const enrichedCustomers = customers.map((customer) =>
+    createCustomerSummary(customer, openCartCustomerIds),
+  );
   const vipCustomers = enrichedCustomers
     .filter((customer) => customer.lifetimeValue >= vipLifetimeValueThreshold)
     .slice(0, 5);
@@ -70,16 +105,41 @@ export async function getCrmOverview(input: { adminUserId?: string } = {}) {
         customer.lastOrderAt && customer.lastOrderAt < dormantCutoff,
     )
     .slice(0, 5);
+  const atRiskCustomers = enrichedCustomers
+    .filter(
+      (customer) =>
+        customer.orderCount > 0 && customer.churnRisk !== "ACTIVE",
+    )
+    .sort((first, second) => second.lifetimeValue - first.lifetimeValue)
+    .slice(0, 5);
+
+  const totalLifetimeValue = Number(snapshotAggregate._sum.lifetimeValue ?? 0);
+  const averageLifetimeValue = Number(snapshotAggregate._avg.lifetimeValue ?? 0);
+  const averageOrderValue = Number(
+    snapshotAggregate._avg.averageOrderValue ?? 0,
+  );
+  const repeatPurchaseRate =
+    customersWithOrders > 0
+      ? Math.round((repeatBuyers / customersWithOrders) * 100)
+      : 0;
 
   return {
     counts: {
-      customers: await db.customer.count(),
+      customers: totalCustomers,
       openTasks,
       overdueTasks,
       activeCarts,
       wishlistCustomers,
       openServiceRequests,
       segments: segments.length,
+      atRisk: atRiskCustomers.length,
+    },
+    kpis: {
+      totalLifetimeValue: Math.round(totalLifetimeValue * 100) / 100,
+      averageLifetimeValue: Math.round(averageLifetimeValue * 100) / 100,
+      averageOrderValue: Math.round(averageOrderValue * 100) / 100,
+      repeatPurchaseRate,
+      customersWithOrders,
     },
     segments: segments.map((segment) => ({
       id: segment.id,
@@ -92,6 +152,7 @@ export async function getCrmOverview(input: { adminUserId?: string } = {}) {
     vipCustomers,
     highIntentCustomers,
     dormantCustomers,
+    atRiskCustomers,
     recentCustomers: enrichedCustomers,
     recentNotes: recentNotes.map((note) => ({
       id: note.id,
@@ -187,6 +248,25 @@ export async function getCustomer360Profile(input: {
     take: 10,
   });
 
+  const hasOpenCart =
+    (await db.cart.count({
+      where: { customerId: customer.id, status: "ACTIVE" },
+    })) > 0;
+  const lastOrderAt = metric?.lastOrderAt ?? null;
+  const recencyDays = lastOrderAt
+    ? Math.floor((Date.now() - lastOrderAt.getTime()) / (24 * 60 * 60 * 1000))
+    : null;
+  const orderCount = metric?.orderCount ?? customer.orders.length;
+  const lifetimeValue = metric ? Number(metric.lifetimeValue) : 0;
+  const churnRisk = computeChurnRisk({ orderCount, recencyDays });
+  const healthScore = computeHealthScore({
+    lifetimeValue,
+    orderCount,
+    wishlistItems: metric?.wishlistItems ?? 0,
+    openCart: hasOpenCart,
+    recencyDays,
+  });
+
   return {
     customer: {
       id: customer.id,
@@ -195,6 +275,19 @@ export async function getCustomer360Profile(input: {
       phone: customer.phone,
       createdAt: customer.createdAt,
       updatedAt: customer.updatedAt,
+    },
+    risk: {
+      churnRisk,
+      healthScore,
+      recencyDays,
+      openCart: hasOpenCart,
+      nextBestAction: computeNextBestAction({
+        churnRisk,
+        openCart: hasOpenCart,
+        wishlistItems: metric?.wishlistItems ?? 0,
+        orderCount,
+        lifetimeValue,
+      }),
     },
     metric: metric
       ? {
@@ -420,16 +513,19 @@ async function auditCrmAccess(input: {
   });
 }
 
-function createCustomerSummary(customer: {
-  id: string;
-  email: string | null;
-  phone: string | null;
-  firstName: string | null;
-  lastName: string | null;
-  orders: Array<{ total: Prisma.Decimal; createdAt: Date }>;
-  wishlist: { items: unknown[] } | null;
-  segmentMemberships: Array<{ segment: { name: string } }>;
-}) {
+function createCustomerSummary(
+  customer: {
+    id: string;
+    email: string | null;
+    phone: string | null;
+    firstName: string | null;
+    lastName: string | null;
+    orders: Array<{ total: Prisma.Decimal; createdAt: Date }>;
+    wishlist: { items: unknown[] } | null;
+    segmentMemberships: Array<{ segment: { name: string } }>;
+  },
+  openCartCustomerIds: Set<string>,
+) {
   const lifetimeValue = customer.orders.reduce(
     (sum, order) => sum + Number(order.total),
     0,
@@ -437,6 +533,22 @@ function createCustomerSummary(customer: {
   const sortedOrderDates = customer.orders
     .map((order) => order.createdAt)
     .sort((first, second) => first.getTime() - second.getTime());
+  const lastOrderAt = sortedOrderDates.at(-1) ?? null;
+  const orderCount = customer.orders.length;
+  const wishlistItems = customer.wishlist?.items.length ?? 0;
+  const openCart = openCartCustomerIds.has(customer.id);
+
+  const recencyDays = lastOrderAt
+    ? Math.floor((Date.now() - lastOrderAt.getTime()) / (24 * 60 * 60 * 1000))
+    : null;
+  const churnRisk = computeChurnRisk({ orderCount, recencyDays });
+  const healthScore = computeHealthScore({
+    lifetimeValue,
+    orderCount,
+    wishlistItems,
+    openCart,
+    recencyDays,
+  });
 
   return {
     id: customer.id,
@@ -444,14 +556,87 @@ function createCustomerSummary(customer: {
     email: customer.email,
     phone: customer.phone,
     lifetimeValue,
-    orderCount: customer.orders.length,
-    lastOrderAt: sortedOrderDates.at(-1) ?? null,
-    wishlistItems: customer.wishlist?.items.length ?? 0,
-    openCart: false,
+    orderCount,
+    lastOrderAt,
+    recencyDays,
+    wishlistItems,
+    openCart,
+    churnRisk,
+    healthScore,
+    nextBestAction: computeNextBestAction({
+      churnRisk,
+      openCart,
+      wishlistItems,
+      orderCount,
+      lifetimeValue,
+    }),
     segments: customer.segmentMemberships.map(
       (membership) => membership.segment.name,
     ),
   };
+}
+
+type ChurnRisk = "ACTIVE" | "WARNING" | "HIGH" | "DORMANT";
+
+function computeChurnRisk(input: {
+  orderCount: number;
+  recencyDays: number | null;
+}): ChurnRisk {
+  if (input.orderCount === 0 || input.recencyDays === null) return "ACTIVE";
+  if (input.recencyDays >= dormantDays) return "DORMANT";
+  if (input.recencyDays >= churnHighDays) return "HIGH";
+  if (input.recencyDays >= churnWarningDays) return "WARNING";
+  return "ACTIVE";
+}
+
+/** 0–100 engagement health blending value, frequency and intent signals. */
+function computeHealthScore(input: {
+  lifetimeValue: number;
+  orderCount: number;
+  wishlistItems: number;
+  openCart: boolean;
+  recencyDays: number | null;
+}) {
+  const valueScore = Math.min(input.lifetimeValue / 50, 40);
+  const frequencyScore = Math.min(input.orderCount * 8, 30);
+  const intentScore = Math.min(
+    input.wishlistItems * 3 + (input.openCart ? 10 : 0),
+    20,
+  );
+  const recencyPenalty =
+    input.recencyDays === null
+      ? 0
+      : Math.min(Math.floor(input.recencyDays / 15) * 2, 30);
+
+  return Math.max(
+    0,
+    Math.min(
+      100,
+      Math.round(10 + valueScore + frequencyScore + intentScore - recencyPenalty),
+    ),
+  );
+}
+
+function computeNextBestAction(input: {
+  churnRisk: ChurnRisk;
+  openCart: boolean;
+  wishlistItems: number;
+  orderCount: number;
+  lifetimeValue: number;
+}) {
+  if (input.openCart) return "עגלה פעילה — שלח תזכורת/קופון להשלמת רכישה";
+  if (input.churnRisk === "DORMANT" || input.churnRisk === "HIGH") {
+    return "לקוח בסיכון נטישה — קמפיין win-back מותאם";
+  }
+  if (input.churnRisk === "WARNING") return "מתחיל להתקרר — פנייה יזומה / הטבה";
+  if (input.wishlistItems > 0) {
+    return "Wishlist פעיל — התראת מלאי/מבצע על פריטים שמורים";
+  }
+  if (input.orderCount === 0) return "לקוח חדש — אונבורדינג והצעת רכישה ראשונה";
+  if (input.lifetimeValue >= vipLifetimeValueThreshold) {
+    return "VIP — שירות פרסונלי והזמנות בלעדיות";
+  }
+  return "לקוח פעיל — הצעת cross-sell מותאמת";
 }
 
 function createCustomerTimeline(

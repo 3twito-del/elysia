@@ -185,6 +185,31 @@ export default async function AdminCustomerProfilePage({
                   ))
                 )}
               </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge variant="outline">
+                  בריאות {profile.risk.healthScore}/100
+                </Badge>
+                <Badge
+                  variant={
+                    profile.risk.churnRisk === "DORMANT"
+                      ? "destructive"
+                      : profile.risk.churnRisk === "ACTIVE"
+                        ? "secondary"
+                        : "default"
+                  }
+                >
+                  סיכון נטישה: {profile.risk.churnRisk}
+                </Badge>
+                {profile.risk.recencyDays !== null ? (
+                  <Badge variant="outline">
+                    {profile.risk.recencyDays} ימים מרכישה
+                  </Badge>
+                ) : null}
+              </div>
+              <p className="bg-muted/40 rounded-md border p-2 text-sm leading-6">
+                <span className="font-medium">המלצה: </span>
+                {profile.risk.nextBestAction}
+              </p>
               <div className="text-muted-foreground grid gap-1 text-sm">
                 <p>
                   Push marketing: {profile.consent.pushMarketing ? "כן" : "לא"}

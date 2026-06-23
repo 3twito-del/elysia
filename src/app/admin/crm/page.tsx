@@ -4,6 +4,8 @@ import {
   ContactRound,
   Heart,
   ListTodo,
+  Repeat,
+  ShoppingBag,
   Users,
 } from "lucide-react";
 
@@ -86,18 +88,49 @@ export default async function AdminCrmPage() {
           value={String(crm.counts.wishlistCustomers)}
         />
         <MetricCard
-          detail="פניות שירות פתוחות או ממתינות"
+          detail={`${crm.counts.openServiceRequests} פניות שירות`}
           icon={AlertTriangle}
-          label="Service risk"
-          value={String(crm.counts.openServiceRequests)}
+          label="לקוחות בסיכון"
+          value={String(crm.counts.atRisk)}
         />
       </div>
 
-      <div className="mt-6 grid gap-6 xl:grid-cols-3">
+      <div className="mt-5 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <MetricCard
+          detail={`ממוצע ${formatPrice(crm.kpis.averageLifetimeValue)}`}
+          icon={Users}
+          label="LTV מצטבר"
+          value={formatPrice(crm.kpis.totalLifetimeValue)}
+        />
+        <MetricCard
+          detail="ערך הזמנה ממוצע"
+          icon={ShoppingBag}
+          label="AOV"
+          value={formatPrice(crm.kpis.averageOrderValue)}
+        />
+        <MetricCard
+          detail={`${crm.kpis.customersWithOrders} לקוחות רוכשים`}
+          icon={Repeat}
+          label="רכישה חוזרת"
+          value={`${crm.kpis.repeatPurchaseRate}%`}
+        />
+        <MetricCard
+          detail={`${crm.counts.overdueTasks} משימות באיחור`}
+          icon={ListTodo}
+          label="משימות פתוחות"
+          value={String(crm.counts.openTasks)}
+        />
+      </div>
+
+      <div className="mt-6 grid gap-6 xl:grid-cols-2">
         <CustomerListCard title="VIP" customers={crm.vipCustomers} />
         <CustomerListCard
           title="כוונת רכישה גבוהה"
           customers={crm.highIntentCustomers}
+        />
+        <CustomerListCard
+          title="לקוחות בסיכון נטישה"
+          customers={crm.atRiskCustomers}
         />
         <CustomerListCard
           title="לקוחות רדומים"
@@ -192,6 +225,22 @@ export default async function AdminCrmPage() {
   );
 }
 
+const churnRiskLabel = {
+  ACTIVE: "פעיל",
+  WARNING: "מתקרר",
+  HIGH: "סיכון גבוה",
+  DORMANT: "רדום",
+} as const;
+
+const churnRiskVariant = {
+  ACTIVE: "secondary",
+  WARNING: "outline",
+  HIGH: "default",
+  DORMANT: "destructive",
+} as const;
+
+type ChurnRisk = keyof typeof churnRiskLabel;
+
 function CustomerListCard({
   customers,
   title,
@@ -203,6 +252,9 @@ function CustomerListCard({
     lifetimeValue: number;
     orderCount: number;
     wishlistItems: number;
+    churnRisk: ChurnRisk;
+    healthScore: number;
+    nextBestAction: string;
   }>;
   title: string;
 }) {
@@ -217,24 +269,34 @@ function CustomerListCard({
         ) : (
           customers.map((customer) => (
             <div
-              className="bg-background/70 flex items-center justify-between gap-3 rounded-md border p-3"
+              className="bg-background/70 grid gap-1 rounded-md border p-3"
               key={customer.id}
             >
-              <div className="min-w-0">
-                <Link
-                  className="truncate font-medium underline-offset-4 hover:underline"
-                  href={`/admin/customers/${customer.id}`}
-                >
-                  {customer.name}
-                </Link>
-                <p className="text-muted-foreground truncate text-xs">
-                  {customer.email ?? "ללא אימייל"} · {customer.orderCount}{" "}
-                  הזמנות
-                </p>
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <Link
+                    className="truncate font-medium underline-offset-4 hover:underline"
+                    href={`/admin/customers/${customer.id}`}
+                  >
+                    {customer.name}
+                  </Link>
+                  <p className="text-muted-foreground truncate text-xs">
+                    {customer.email ?? "ללא אימייל"} · {customer.orderCount}{" "}
+                    הזמנות · בריאות {customer.healthScore}
+                  </p>
+                </div>
+                <div className="flex shrink-0 flex-col items-end gap-1">
+                  <Badge variant="outline">
+                    {formatPrice(customer.lifetimeValue)}
+                  </Badge>
+                  <Badge variant={churnRiskVariant[customer.churnRisk]}>
+                    {churnRiskLabel[customer.churnRisk]}
+                  </Badge>
+                </div>
               </div>
-              <Badge variant="outline">
-                {formatPrice(customer.lifetimeValue)}
-              </Badge>
+              <p className="text-muted-foreground text-xs leading-5">
+                {customer.nextBestAction}
+              </p>
             </div>
           ))
         )}
