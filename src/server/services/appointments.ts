@@ -4,6 +4,7 @@ import type { z } from "zod";
 import type { createAppointmentInputSchema } from "~/lib/appointment-validation";
 import { notificationProvider } from "~/server/adapters/notifications";
 import { db } from "~/server/db";
+import { recordAnalyticsEvent } from "~/server/services/analytics";
 
 export type CreateAppointmentInput = z.infer<
   typeof createAppointmentInputSchema
@@ -56,6 +57,19 @@ export async function createAppointmentRequest(input: {
       topic: input.appointment.topic,
     });
   }
+  await recordAppointmentAnalyticsSafely({
+    type: "appointment_requested",
+    customerId: customer?.id,
+    consentMode: "business",
+    payload: {
+      appointmentId: appointment.id,
+      branchId: branch.id,
+      branchSlug: branch.slug,
+      topic: input.appointment.topic,
+      startsAt: new Date(input.appointment.startsAt).toISOString(),
+    },
+    idempotencyKey: `appointment_requested:${appointment.id}`,
+  });
 
   return {
     id: appointment.id,
@@ -63,6 +77,16 @@ export async function createAppointmentRequest(input: {
     branch,
     ...input.appointment,
   };
+}
+
+async function recordAppointmentAnalyticsSafely(
+  input: Parameters<typeof recordAnalyticsEvent>[0],
+) {
+  try {
+    await recordAnalyticsEvent(input);
+  } catch (error) {
+    console.error("[appointments:analytics-failed]", error);
+  }
 }
 
 async function sendAppointmentConfirmation(input: {

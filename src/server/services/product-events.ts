@@ -3,6 +3,7 @@ import {
   getFixtureCatalogProductBySlug,
   shouldUseCatalogFixtures,
 } from "~/server/services/catalog-fixtures";
+import { recordAnalyticsEvent } from "~/server/services/analytics";
 
 export async function recordProductClickEvent(input: {
   productSlug: string;
@@ -27,6 +28,16 @@ export async function recordProductClickEvent(input: {
       query: input.query,
       position: input.position,
       sessionKey: input.sessionKey,
+    },
+  });
+  await recordProductAnalyticsSafely({
+    type: "product_click",
+    productId: product.id,
+    sessionKey: input.sessionKey,
+    consentMode: "measurement",
+    payload: {
+      query: input.query ?? null,
+      position: input.position ?? null,
     },
   });
 
@@ -58,6 +69,24 @@ export async function recordProductViewEvent(input: {
       path: input.path,
     },
   });
+  await recordProductAnalyticsSafely({
+    type: "product_view",
+    productId: product.id,
+    sessionKey: input.sessionKey,
+    customerId: input.customerId,
+    path: input.path,
+    consentMode: "measurement",
+  });
 
   return true;
+}
+
+async function recordProductAnalyticsSafely(
+  input: Parameters<typeof recordAnalyticsEvent>[0],
+) {
+  try {
+    await recordAnalyticsEvent(input);
+  } catch (error) {
+    console.error("[product-events:analytics-failed]", error);
+  }
 }

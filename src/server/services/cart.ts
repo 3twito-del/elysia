@@ -14,6 +14,7 @@ import {
   updateFixtureCartItemQuantity,
   updateFixtureCartOptions,
 } from "~/server/services/cart-fixtures";
+import { recordAnalyticsEvent } from "~/server/services/analytics";
 import { calculateOrderTotal } from "~/server/services/pricing";
 import { getPublicCatalogSku } from "~/server/services/public-catalog-identifiers";
 
@@ -147,7 +148,21 @@ export async function addCartItem(
     return getCartById(tx, cart.id);
   });
 
-  return mapCartSummary(cart, "DELIVERY");
+  const summary = await mapCartSummary(cart, "DELIVERY");
+  await recordCartAnalyticsSafely({
+    type: "add_to_cart",
+    sessionKey: parsed.sessionKey,
+    consentMode: "business",
+    payload: {
+      variantSku: parsed.variantSku,
+      quantity: parsed.quantity,
+      cartId: cart.id,
+      itemCount: summary.itemCount,
+    },
+    idempotencyKey: `add_to_cart:${cart.id}:${parsed.variantSku}:${Date.now()}`,
+  });
+
+  return summary;
 }
 
 async function findCartVariantByPublicSku(
@@ -493,3 +508,13 @@ const cartInclude = {
     },
   },
 } satisfies Prisma.CartInclude;
+
+async function recordCartAnalyticsSafely(
+  input: Parameters<typeof recordAnalyticsEvent>[0],
+) {
+  try {
+    await recordAnalyticsEvent(input);
+  } catch (error) {
+    console.error("[cart:analytics-failed]", error);
+  }
+}

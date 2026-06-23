@@ -1403,10 +1403,15 @@ test.describe("access control surfaces", () => {
 
   test("protects routed admin operations pages", async ({ page }) => {
     for (const route of [
+      "/admin/insights",
+      "/admin/crm",
       "/admin/orders",
       "/admin/catalog",
       "/admin/inventory",
       "/admin/customers",
+      "/admin/customers/fixture-customer",
+      "/admin/erp",
+      "/admin/finance",
       "/admin/appointments",
       "/admin/integrations",
       "/admin/audit",

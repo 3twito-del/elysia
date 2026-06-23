@@ -19,7 +19,8 @@ const impliedPermissions: Partial<Record<AdminPermission, AdminPermission[]>> =
     CATALOG: ["CATALOG_READ", "CATALOG_WRITE"],
     INVENTORY: ["INVENTORY_READ", "INVENTORY_WRITE"],
     ORDERS: ["ORDERS_READ", "ORDERS_WRITE", "ORDERS_REFUND"],
-    CUSTOMER_SERVICE: ["CUSTOMER_VIEW", "CUSTOMER_WRITE"],
+    CUSTOMER_SERVICE: ["CUSTOMER_VIEW", "CUSTOMER_WRITE", "CRM_READ"],
+    CUSTOMER_WRITE: ["CRM_WRITE"],
   };
 
 export async function getAdminFromSession(

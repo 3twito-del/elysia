@@ -34,6 +34,10 @@ export const dynamic = "force-dynamic";
 
 const privacySections = [
   {
+    title: "Analytics, CRM ופרופיל לקוח",
+    text: "מערכת Elysia שומרת אירועי מסחר ותפעול כגון הזמנות, תשלומים, פניות שירות, תורים ו־Wishlist כצורך עסקי להפעלת השירות, תמיכה, מניעת הונאות וניתוח תפעולי. אירועי גלישה ושיווק מזוהים כמו page views, צפיות מוצר, clicks וחיפושים נרשמים רק לאחר אישור מדידה. אירועי Analytics אינם כוללים IP raw, טלפון, כתובת מלאה או פרטי תשלום; מידע אישי נשאר בטבלאות הלקוח, ההזמנות והשירות המוגנות.",
+  },
+  {
     title: "זהות בעל השליטה במידע",
     text: "בעל השליטה במידע הוא העסק המפעיל את אתר Elysia. יש להשלים את השם המשפטי ופרטי הקשר הייעודיים לפרטיות לפני הפעלה מסחרית מלאה.",
   },
@@ -226,7 +230,7 @@ export default async function PrivacyPage() {
 
             <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
               <p className="text-muted-foreground text-sm">
-                עודכן לאחרונה: 7 ביוני 2026
+                עודכן לאחרונה: 23 ביוני 2026
               </p>
               <Button asChild>
                 <Link href="/terms">לתקנון</Link>

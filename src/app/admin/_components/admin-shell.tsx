@@ -1,16 +1,20 @@
 import type { LucideIcon } from "lucide-react";
 import {
+  BarChart3,
   Bell,
   Boxes,
   CalendarClock,
   ClipboardList,
+  ContactRound,
   Gauge,
   Headset,
   History,
+  Landmark,
   LogOut,
   Newspaper,
   PackageCheck,
   PlugZap,
+  Workflow,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -36,7 +40,11 @@ export type AdminSection =
   | "audit"
   | "blog"
   | "catalog"
+  | "crm"
   | "customers"
+  | "erp"
+  | "finance"
+  | "insights"
   | "integrations"
   | "inventory"
   | "notifications"
@@ -50,6 +58,15 @@ const navItems: Array<{
   id: AdminSection;
   label: string;
 }> = [
+  {
+    href: "/admin/insights",
+    icon: BarChart3,
+    id: "insights",
+    label: "Insights",
+  },
+  { href: "/admin/crm", icon: ContactRound, id: "crm", label: "CRM" },
+  { href: "/admin/erp", icon: Workflow, id: "erp", label: "ERP" },
+  { href: "/admin/finance", icon: Landmark, id: "finance", label: "Finance" },
   { href: "/admin", icon: Gauge, id: "overview", label: "סקירה" },
   { href: "/admin/blog", icon: Newspaper, id: "blog", label: "מגזין" },
   { href: "/admin/orders", icon: ClipboardList, id: "orders", label: "הזמנות" },

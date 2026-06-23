@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import { SearchControls } from "~/app/search/_components/search-controls";
+import { SearchAnalytics } from "~/app/search/_components/search-analytics";
 import { CompactPageIntro } from "~/components/compact-page-intro";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
@@ -137,6 +138,23 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   return (
     <>
       <SiteHeader />
+      <SearchAnalytics
+        filters={{
+          availableOnly: input.availableOnly,
+          category: input.category,
+          collection: input.collection,
+          color: input.color,
+          gift: input.gift,
+          material: input.material,
+          maxPrice: input.maxPrice,
+          mode: input.mode ?? "semantic",
+          sort: input.sort ?? "relevance",
+          stone: input.stone,
+          style: input.style,
+        }}
+        query={input.query}
+        resultCount={result.total}
+      />
 
       <main>
         <CompactPageIntro

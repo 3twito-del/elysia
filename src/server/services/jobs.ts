@@ -10,6 +10,7 @@ import {
 import { notificationProvider } from "~/server/adapters/notifications";
 import { searchProvider } from "~/server/adapters/search";
 import { db } from "~/server/db";
+import { rollupAnalyticsDaily } from "~/server/services/analytics-rollups";
 import {
   BUSINESS_EVENTS,
   listDueOutboxEvents,
@@ -320,6 +321,10 @@ async function processOutboxEvent(event: OutboxEvent) {
     return processCartReminderEvent(event);
   }
 
+  if (event.type === BUSINESS_EVENTS.analyticsRollupRequested) {
+    return processAnalyticsRollupEvent(event);
+  }
+
   await recordJobRun({
     name: event.type,
     outboxEventId: event.id,
@@ -329,6 +334,33 @@ async function processOutboxEvent(event: OutboxEvent) {
   });
 
   return { status: "COMPLETED" as const };
+}
+
+async function processAnalyticsRollupEvent(event: OutboxEvent) {
+  const dateValue = getOutboxPayloadString(event.payload, "date");
+  const date = dateValue ? new Date(dateValue) : new Date();
+
+  if (Number.isNaN(date.getTime())) {
+    return recordSkippedJob(event, "Invalid analytics rollup date.");
+  }
+
+  const result = await rollupAnalyticsDaily({ date });
+
+  await recordJobRun({
+    name: event.type,
+    outboxEventId: event.id,
+    status: result.skipped ? "SKIPPED" : "COMPLETED",
+    attempts: event.attempts + 1,
+    metadata: {
+      date: result.date.toISOString(),
+      aggregates: result.aggregates,
+      funnelSteps: result.funnelSteps,
+      products: result.products,
+      skipped: result.skipped,
+    },
+  });
+
+  return { status: result.skipped ? "SKIPPED" : "COMPLETED" };
 }
 
 async function processPushCampaignEvent(event: OutboxEvent) {

@@ -10,6 +10,7 @@ import { feedbackInputSchema } from "~/lib/feedback-validation";
 import { newsletterConsentText } from "~/lib/legal-content";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
+import { recordAnalyticsEvent } from "~/server/services/analytics";
 import {
   assertRateLimit,
   createRateLimitKey,
@@ -67,12 +68,31 @@ export async function joinNewsletter(
       source: "site-footer",
     },
   });
+  await recordPublicActionAnalyticsSafely({
+    type: "newsletter_subscribed",
+    consentMode: "business",
+    payload: {
+      source: "site-footer",
+      consentTextVersion: newsletterConsentText.slice(0, 80),
+    },
+    idempotencyKey: `newsletter_subscribed:${parsed.data.email}`,
+  });
 
   revalidatePath("/");
   return {
     ok: true,
     message: "נרשמת. נשלח עדכון רק כשיש משהו חדש לראות.",
   };
+}
+
+async function recordPublicActionAnalyticsSafely(
+  input: Parameters<typeof recordAnalyticsEvent>[0],
+) {
+  try {
+    await recordAnalyticsEvent(input);
+  } catch (error) {
+    console.error("[public-actions:analytics-failed]", error);
+  }
 }
 
 export async function saveWishlistItem(
@@ -161,6 +181,17 @@ export async function saveWishlistItem(
     },
     update: {},
     create: wishlistIdentity,
+  });
+  await recordPublicActionAnalyticsSafely({
+    type: "wishlist_add",
+    customerId: customer.id,
+    productId: product.id,
+    consentMode: "business",
+    payload: {
+      productSlug: parsed.data.productSlug,
+      variantId: variant.id,
+    },
+    idempotencyKey: `wishlist_add:${customer.id}:${variant.id}`,
   });
 
   revalidatePath(`/product/${parsed.data.productSlug}`);

@@ -13,6 +13,7 @@ export const BUSINESS_EVENTS = {
   pushCampaignRequested: "push.campaign_requested",
   pushCartReminderDue: "push.cart_reminder_due",
   searchReindexRequested: "search.reindex_requested",
+  analyticsRollupRequested: "analytics.rollup_requested",
   webhookReceived: "webhook.received",
 } as const;
 

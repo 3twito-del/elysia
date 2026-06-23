@@ -237,9 +237,14 @@ export default async function AdminCustomersPage({
                     <TableCell>
                       <div className="grid gap-1">
                         <span className="font-medium">
-                          {customer.name
-                            ? customer.name
-                            : (customer.email ?? "-")}
+                          <Link
+                            className="underline-offset-4 hover:underline"
+                            href={`/admin/customers/${customer.id}`}
+                          >
+                            {customer.name
+                              ? customer.name
+                              : (customer.email ?? "-")}
+                          </Link>
                         </span>
                         <span className="text-muted-foreground text-xs">
                           {customer.phone ?? customer.email}

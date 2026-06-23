@@ -1,6 +1,8 @@
 import type { Prisma } from "@prisma/client";
 
 import { db } from "~/server/db";
+import { recordAnalyticsEvent } from "~/server/services/analytics";
+import { refreshFinanceLedgerFromOrders } from "~/server/services/finance";
 import { BUSINESS_EVENTS, enqueueOutboxEvent } from "~/server/services/outbox";
 import { redactWebhookPayload } from "~/server/services/webhook-events";
 
@@ -90,6 +92,16 @@ export async function applyCardComWebhook(payload: unknown) {
         providerPaymentId: updated.providerPaymentId,
       },
     });
+    await recordPaymentCapturedSideEffects({
+      amount: Number(updated.amount),
+      currency: updated.currency,
+      customerId: order.customerId ?? undefined,
+      orderCreatedAt: order.createdAt,
+      orderId: payment.orderId,
+      orderNumber: order.orderNumber,
+      paymentId: updated.id,
+      providerPaymentId: updated.providerPaymentId ?? undefined,
+    });
   }
 
   return {
@@ -99,6 +111,43 @@ export async function applyCardComWebhook(payload: unknown) {
     paymentId: updated.id,
     orderId: payment.orderId,
   };
+}
+
+async function recordPaymentCapturedSideEffects(input: {
+  amount: number;
+  currency: string;
+  customerId?: string;
+  orderCreatedAt: Date;
+  orderId: string;
+  orderNumber: string;
+  paymentId: string;
+  providerPaymentId?: string;
+}) {
+  try {
+    await recordAnalyticsEvent({
+      type: "payment_captured",
+      customerId: input.customerId,
+      orderId: input.orderId,
+      consentMode: "business",
+      payload: {
+        amount: input.amount,
+        currency: input.currency,
+        orderNumber: input.orderNumber,
+        paymentId: input.paymentId,
+        provider: "cardcom",
+        providerPaymentId: input.providerPaymentId ?? null,
+      },
+      idempotencyKey: `payment_captured:${input.paymentId}`,
+    });
+
+    const from = new Date(input.orderCreatedAt);
+    from.setDate(from.getDate() - 1);
+    const to = new Date(input.orderCreatedAt);
+    to.setDate(to.getDate() + 2);
+    await refreshFinanceLedgerFromOrders({ from, to });
+  } catch (error) {
+    console.error("[payment-webhooks:analytics-finance-failed]", error);
+  }
 }
 
 function getPayloadString(payload: unknown, keys: string[]) {

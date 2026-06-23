@@ -89,11 +89,15 @@ const staticPublicRoutes = [
 
 const protectedAdminRoutes = [
   "/admin",
+  "/admin/insights",
+  "/admin/crm",
   "/admin/blog",
   "/admin/orders",
   "/admin/catalog",
   "/admin/inventory",
   "/admin/customers",
+  "/admin/erp",
+  "/admin/finance",
   "/admin/appointments",
   "/admin/integrations",
   "/admin/audit",
@@ -273,10 +277,34 @@ export function getQaRouteInventory({
   entries.push(
     routeEntry({
       kind: "admin",
+      path: "/admin/customers/fixture-customer",
+      requiresAuth: true,
+      source: "protected-dynamic",
+      template: "/admin/customers/[id]",
+    }),
+  );
+
+  entries.push(
+    routeEntry({
+      kind: "admin",
       path: "/admin/orders/fixture-order",
       requiresAuth: true,
       source: "protected-dynamic",
       template: "/admin/orders/[id]",
+    }),
+  );
+
+  entries.push(
+    routeEntry({
+      coverage: "documented",
+      includeInVisualQa: false,
+      kind: "api",
+      method: "POST",
+      notes:
+        "Analytics batch ingestion endpoint; requires client consent context and structured event payload.",
+      path: "/api/analytics/events",
+      source: "documented-api",
+      template: "/api/analytics/events",
     }),
   );
 

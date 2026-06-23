@@ -160,6 +160,23 @@ async function main() {
     prisma.outboxEvent.deleteMany(),
     prisma.integrationJob.deleteMany(),
     prisma.webhookEvent.deleteMany(),
+    prisma.financeLedgerEntry.deleteMany(),
+    prisma.productCostSnapshot.deleteMany(),
+    prisma.goodsReceipt.deleteMany(),
+    prisma.purchaseOrderItem.deleteMany(),
+    prisma.purchaseOrder.deleteMany(),
+    prisma.vendor.deleteMany(),
+    prisma.campaignAudienceSnapshot.deleteMany(),
+    prisma.campaign.deleteMany(),
+    prisma.customerSegmentMembership.deleteMany(),
+    prisma.customerSegment.deleteMany(),
+    prisma.customerTask.deleteMany(),
+    prisma.customerNote.deleteMany(),
+    prisma.customerMetricSnapshot.deleteMany(),
+    prisma.productDailyMetric.deleteMany(),
+    prisma.funnelDailyMetric.deleteMany(),
+    prisma.analyticsDailyAggregate.deleteMany(),
+    prisma.analyticsEvent.deleteMany(),
     prisma.shopifyOrderMirror.deleteMany(),
     prisma.productClickEvent.deleteMany(),
     prisma.productViewEvent.deleteMany(),
@@ -451,6 +468,81 @@ async function main() {
     });
   }
 
+  await prisma.customerSegment.createMany({
+    data: [
+      {
+        key: "vip_customers",
+        name: "לקוחות VIP",
+        description: "לקוחות עם ערך הזמנות גבוה או רכישות חוזרות.",
+        rule: { kind: "rfm", minLifetimeValue: 2500, minOrders: 2 },
+      },
+      {
+        key: "high_intent",
+        name: "כוונת רכישה גבוהה",
+        description: "לקוחות עם Wishlist, צפיות מוצר או התחלת Checkout.",
+        rule: { kind: "behavior", signals: ["wishlist", "cart", "checkout"] },
+      },
+      {
+        key: "dormant",
+        name: "לקוחות רדומים",
+        description: "לקוחות שלא רכשו או פנו בתקופה האחרונה.",
+        rule: { kind: "recency", inactiveDays: 90 },
+      },
+      {
+        key: "abandoned_cart",
+        name: "עגלה נטושה",
+        description: "לקוחות עם עגלה פעילה ללא הזמנה.",
+        rule: { kind: "cart", activeWithoutOrderHours: 24 },
+      },
+      {
+        key: "service_risk",
+        name: "סיכון שירות",
+        description: "לקוחות עם פניות שירות פתוחות או חוזרות.",
+        rule: { kind: "service", openRequests: true },
+      },
+    ],
+  });
+
+  const vendor = await prisma.vendor.create({
+    data: {
+      key: "elysia-studio",
+      name: "Elysia Studio",
+      contactEmail: siteContact.email,
+      paymentTerms: "שוטף + 30",
+      leadTimeDays: 14,
+      metadata: {
+        kind: "internal_workshop",
+        operationalUse: "Seed vendor for ERP and margin snapshots.",
+      },
+    },
+  });
+
+  const seededProducts = await prisma.product.findMany({
+    select: {
+      id: true,
+      basePrice: true,
+      variants: { select: { id: true, isDefault: true } },
+    },
+  });
+
+  await prisma.productCostSnapshot.createMany({
+    data: seededProducts.map((product) => {
+      const defaultVariant =
+        product.variants.find((variant) => variant.isDefault) ??
+        product.variants[0];
+
+      return {
+        productId: product.id,
+        variantId: defaultVariant?.id ?? null,
+        vendorId: vendor.id,
+        unitCost: Math.round(Number(product.basePrice) * 0.38 * 100) / 100,
+        currency: "ILS",
+        source: "seed",
+        metadata: { marginModel: "estimated_seed_cost" },
+      };
+    }),
+  });
+
   const systemRole = await prisma.role.create({
     data: {
       name: "מנהל מערכת",
@@ -472,6 +564,12 @@ async function main() {
         "CUSTOMER_SERVICE",
         "CUSTOMER_VIEW",
         "CUSTOMER_WRITE",
+        "ANALYTICS_READ",
+        "CRM_READ",
+        "CRM_WRITE",
+        "ERP_READ",
+        "ERP_WRITE",
+        "FINANCE_READ",
         "SYSTEM_CONFIG",
       ],
     },

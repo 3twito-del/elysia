@@ -3,6 +3,7 @@ import type { FulfillmentMethod, Prisma } from "@prisma/client";
 import { z } from "zod";
 
 import { db } from "~/server/db";
+import { recordAnalyticsEvent } from "~/server/services/analytics";
 import { cartSessionKeySchema } from "~/server/services/cart";
 import { revalidateCatalogMutation } from "~/server/services/catalog-revalidation";
 import {
@@ -152,9 +153,38 @@ export async function createCartCheckoutOrder(input: CartCheckoutInput) {
   const result = await db.$transaction((tx) =>
     createCartCheckoutOrderInTransaction(tx, parsed),
   );
-  const { inventoryBranchSlug, ...orderResult } = result;
+  const { analyticsCustomerId, inventoryBranchSlug, ...orderResult } = result;
 
   revalidateCatalogMutation({ branchSlugs: [inventoryBranchSlug] });
+  await recordCheckoutAnalyticsSafely([
+    {
+      type: "checkout_started",
+      sessionKey: parsed.sessionKey,
+      customerId: analyticsCustomerId,
+      orderId: orderResult.orderId,
+      consentMode: "business",
+      payload: {
+        itemCount: orderResult.itemCount,
+        total: orderResult.totals.total,
+        fulfillmentMethod: parsed.fulfillmentMethod,
+      },
+      idempotencyKey: `checkout_started:${orderResult.orderId}`,
+    },
+    {
+      type: "order_created",
+      sessionKey: parsed.sessionKey,
+      customerId: analyticsCustomerId,
+      orderId: orderResult.orderId,
+      consentMode: "business",
+      payload: {
+        itemCount: orderResult.itemCount,
+        total: orderResult.totals.total,
+        currency: "ILS",
+        fulfillmentMethod: parsed.fulfillmentMethod,
+      },
+      idempotencyKey: `order_created:${orderResult.orderId}`,
+    },
+  ]);
 
   return orderResult;
 }
@@ -461,6 +491,7 @@ async function createCartCheckoutOrderInTransaction(
     orderId: order.id,
     orderNumber: order.orderNumber,
     status: order.status,
+    analyticsCustomerId: customer.id,
     inventoryBranchSlug: branch.slug,
     reservationExpiresAt,
     totals,
@@ -584,3 +615,15 @@ const checkoutCartInclude = {
     },
   },
 } satisfies Prisma.CartInclude;
+
+async function recordCheckoutAnalyticsSafely(
+  events: Array<Parameters<typeof recordAnalyticsEvent>[0]>,
+) {
+  for (const event of events) {
+    try {
+      await recordAnalyticsEvent(event);
+    } catch (error) {
+      console.error("[cart-checkout:analytics-failed]", error);
+    }
+  }
+}

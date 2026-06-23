@@ -15,6 +15,7 @@ import {
 import { siteContact, siteWhatsapp } from "~/config/site-contact";
 import { db } from "~/server/db";
 import { mediaProvider } from "~/server/adapters/media";
+import { recordAnalyticsEvent } from "~/server/services/analytics";
 import {
   shouldFallbackToCatalogFixturesOnDatabaseError,
   shouldUseCatalogFixtures,
@@ -266,6 +267,19 @@ export async function createPublicServiceRequest(input: {
     });
 
     return created;
+  });
+  await recordServiceAnalyticsSafely({
+    type: "service_request_created",
+    consentMode: "business",
+    payload: {
+      requestId: request.id,
+      topicSlug: parsed.topicSlug,
+      attachmentCount: uploads.length,
+      preferredContact: parsed.preferredContact,
+      hasOrderNumber: Boolean(parsed.orderNumber),
+      hasProductReference: Boolean(parsed.productReference),
+    },
+    idempotencyKey: `service_request_created:${request.id}`,
   });
 
   return request;
@@ -691,4 +705,14 @@ function createAdminPageInfo(input: {
 
 function getAdminSkip(input: { page: number; pageSize: number }) {
   return (input.page - 1) * input.pageSize;
+}
+
+async function recordServiceAnalyticsSafely(
+  input: Parameters<typeof recordAnalyticsEvent>[0],
+) {
+  try {
+    await recordAnalyticsEvent(input);
+  } catch (error) {
+    console.error("[service:analytics-failed]", error);
+  }
 }

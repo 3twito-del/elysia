@@ -12,6 +12,7 @@ import {
   isPushConfigured,
   upsertPushSubscription,
 } from "~/server/services/push";
+import { recordAnalyticsEvent } from "~/server/services/analytics";
 
 const subscribeSchema = z.object({
   deviceId: z.string().trim().min(8).max(128).optional(),
@@ -66,9 +67,33 @@ export async function POST(req: Request) {
     transactionalOptIn: parsed.data.transactionalOptIn,
     userAgent: req.headers.get("user-agent") ?? undefined,
   });
+  await recordPushAnalyticsSafely({
+    type: "push_opt_in",
+    customerId,
+    sessionKey: parsed.data.sessionKey,
+    productSlug: parsed.data.productSlug,
+    consentMode: "business",
+    payload: {
+      deviceId: parsed.data.deviceId ?? null,
+      marketingOptIn: parsed.data.marketingOptIn,
+      transactionalOptIn: parsed.data.transactionalOptIn,
+      subscriptionId: subscription.id,
+    },
+    idempotencyKey: `push_opt_in:${subscription.id}`,
+  });
 
   return okJson({
     ok: true,
     subscriptionId: subscription.id,
   });
+}
+
+async function recordPushAnalyticsSafely(
+  input: Parameters<typeof recordAnalyticsEvent>[0],
+) {
+  try {
+    await recordAnalyticsEvent(input);
+  } catch (error) {
+    console.error("[push-subscribe:analytics-failed]", error);
+  }
 }

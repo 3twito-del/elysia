@@ -2,7 +2,9 @@ import "~/styles/globals.css";
 
 import { type Metadata, type Viewport } from "next";
 import { Cormorant_Garamond, Geist, Geist_Mono, Rubik } from "next/font/google";
+import { Suspense } from "react";
 
+import { AnalyticsProvider } from "~/components/analytics-provider";
 import { CookieConsentBanner } from "~/components/cookie-consent-banner";
 import { DeferredAccessibilityWidget } from "~/components/deferred-accessibility-widget";
 import { ExclusiveDetailsProvider } from "~/components/exclusive-details-provider";
@@ -114,6 +116,9 @@ export default function RootLayout({
           <CookieConsentBanner />
           <ExclusiveDetailsProvider />
           <SiteContextMenu />
+          <Suspense fallback={null}>
+            <AnalyticsProvider />
+          </Suspense>
           <DeferredAccessibilityWidget />
         </PwaProvider>
       </body>

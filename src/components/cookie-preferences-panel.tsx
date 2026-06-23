@@ -52,6 +52,11 @@ export function CookiePreferencesPanel() {
               אפשר לשנות העדפה בכל רגע. ״רק חיוניים״ עוצר מדידה ומוחק צפיות
               אחרונות מהדפדפן.
             </p>
+            <p className="text-muted-foreground mt-2 leading-8">
+              אישור מדידה מאפשר ניתוח first-party של page views, צפיות מוצר,
+              clicks וחיפושים. אירועי רכישה, תשלום ושירות נשמרים בנפרד כצורך
+              עסקי, בלי לשמור IP raw או פרטים רגישים בתוך payload אנליטי.
+            </p>
           </div>
 
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
