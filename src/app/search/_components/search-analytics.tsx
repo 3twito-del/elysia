@@ -16,7 +16,8 @@ export function SearchAnalytics({
   query,
   resultCount,
 }: SearchAnalyticsProps) {
-  const analyticsAllowed = useCookieConsentValue() === "all";
+  const consent = useCookieConsentValue();
+  const analyticsAllowed = consent !== "essential";
 
   useEffect(() => {
     if (!analyticsAllowed) return;
@@ -24,9 +25,13 @@ export function SearchAnalytics({
 
     const body = JSON.stringify({
       type: "search_performed",
+      visitorKey: readVisitorKey(),
       sessionKey: safeGetCartSessionKey(),
+      source: "client",
+      url: window.location.href,
+      title: document.title,
       path: window.location.pathname + window.location.search,
-      consentMode: "measurement",
+      consentMode: consent === "all" ? "measurement" : "essential",
       payload: {
         query: query ?? "",
         filters,
@@ -43,9 +48,17 @@ export function SearchAnalytics({
     }).catch(() => {
       // Optional analytics must not surface failures.
     });
-  }, [analyticsAllowed, filters, query, resultCount]);
+  }, [analyticsAllowed, consent, filters, query, resultCount]);
 
   return null;
+}
+
+function readVisitorKey() {
+  try {
+    return window.localStorage.getItem("elysia_analytics_visitor") ?? undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 function safeGetCartSessionKey() {

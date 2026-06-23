@@ -90,6 +90,9 @@ const staticPublicRoutes = [
 const protectedAdminRoutes = [
   "/admin",
   "/admin/insights",
+  "/admin/insights/live",
+  "/admin/insights/replay",
+  "/admin/insights/replay/[sessionId]",
   "/admin/crm",
   "/admin/blog",
   "/admin/orders",
@@ -114,6 +117,8 @@ const documentedApiRoutes = [
   "/api/push/subscription",
   "/api/pwa/sync",
   "/api/pwa/sync/service-request",
+  "/api/admin/insights/live",
+  "/api/analytics/replay",
   "/api/search/reindex",
   "/api/events/product-click",
   "/api/events/product-view",

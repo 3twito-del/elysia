@@ -176,6 +176,32 @@ export default async function PrivacyPage() {
 
             <Separator className="my-8" />
 
+            <section aria-labelledby="privacy-first-party-analytics">
+              <h2
+                className="text-2xl font-semibold"
+                id="privacy-first-party-analytics"
+              >
+                מדידת גלישה first-party ו־session replay
+              </h2>
+              <p className="text-muted-foreground mt-3 leading-8">
+                מערכת המדידה של Elysia פועלת בתוך האתר ואינה שולחת נתוני גלישה
+                ל־Google Analytics, Hotjar, PostHog Cloud או שירות SaaS אנליטיקס
+                אחר. היא עשויה לשמור page views, route changes, scroll depth,
+                clicks, חיפושים, משפכי רכישה, attribution ו־session replay ממוסך
+                לצורך שיפור האתר, מדידת קמפיינים ותפעול CRM/ERP/Finance.
+              </p>
+              <p className="text-muted-foreground mt-3 leading-8">
+                Replay נחסם לחלוטין באזורי admin, ושדות קלט, תשלום, סיסמאות
+                ואזורים רגישים ממוסכים או נחסמים לפני שמירה. לא נשמר IP גולמי,
+                ערכי שדות, פרטי תשלום, כתובות מלאות או טלפונים בתוך payload
+                אנליטיקס. נתוני raw analytics ו־rollups נשמרים ללא מחיקה
+                אוטומטית כברירת מחדל עסקית, אך ניתן לפנות לבקשת מחיקה או
+                אנונימיזציה ידנית בכפוף לדין ולזיהוי מתאים.
+              </p>
+            </section>
+
+            <Separator className="my-8" />
+
             <section
               aria-labelledby="privacy-local-storage"
               data-testid="privacy-local-storage-notice"

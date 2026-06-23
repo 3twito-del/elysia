@@ -107,14 +107,15 @@ export async function getCrmOverview(input: { adminUserId?: string } = {}) {
     .slice(0, 5);
   const atRiskCustomers = enrichedCustomers
     .filter(
-      (customer) =>
-        customer.orderCount > 0 && customer.churnRisk !== "ACTIVE",
+      (customer) => customer.orderCount > 0 && customer.churnRisk !== "ACTIVE",
     )
     .sort((first, second) => second.lifetimeValue - first.lifetimeValue)
     .slice(0, 5);
 
   const totalLifetimeValue = Number(snapshotAggregate._sum.lifetimeValue ?? 0);
-  const averageLifetimeValue = Number(snapshotAggregate._avg.lifetimeValue ?? 0);
+  const averageLifetimeValue = Number(
+    snapshotAggregate._avg.lifetimeValue ?? 0,
+  );
   const averageOrderValue = Number(
     snapshotAggregate._avg.averageOrderValue ?? 0,
   );
@@ -612,7 +613,9 @@ function computeHealthScore(input: {
     0,
     Math.min(
       100,
-      Math.round(10 + valueScore + frequencyScore + intentScore - recencyPenalty),
+      Math.round(
+        10 + valueScore + frequencyScore + intentScore - recencyPenalty,
+      ),
     ),
   );
 }

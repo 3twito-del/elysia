@@ -83,7 +83,15 @@ export async function POST(req: Request) {
   }
 
   try {
-    const result = await recordAnalyticsEvents(parsed.data.events);
+    const requestGeo = getRequestGeo(req);
+    const events =
+      requestGeo && Object.keys(requestGeo).length > 0
+        ? parsed.data.events.map((event) => ({
+            ...event,
+            geo: event.geo ?? requestGeo,
+          }))
+        : parsed.data.events;
+    const result = await recordAnalyticsEvents(events);
 
     console.log(
       JSON.stringify({
@@ -110,5 +118,30 @@ export async function POST(req: Request) {
     );
 
     return serviceUnavailableJson("Analytics ingestion failed.");
+  }
+}
+
+function getRequestGeo(req: Request) {
+  const country = normalizeHeaderValue(req.headers.get("x-vercel-ip-country"));
+  const region = normalizeHeaderValue(
+    req.headers.get("x-vercel-ip-country-region"),
+  );
+  const city = normalizeHeaderValue(req.headers.get("x-vercel-ip-city"));
+  const geo: Record<string, string> = {};
+
+  if (country) geo.country = country;
+  if (region) geo.region = region;
+  if (city) geo.city = city;
+
+  return geo;
+}
+
+function normalizeHeaderValue(value: string | null) {
+  if (!value) return null;
+
+  try {
+    return decodeURIComponent(value).slice(0, 120);
+  } catch {
+    return value.slice(0, 120);
   }
 }

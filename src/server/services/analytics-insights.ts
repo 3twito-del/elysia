@@ -1,6 +1,143 @@
 import { db } from "~/server/db";
 import { startOfUtcDay } from "~/server/services/analytics-rollups";
 
+export async function getAdminLiveInsights(
+  input: {
+    cursor?: string | null;
+  } = {},
+) {
+  const now = new Date();
+  const activeSince = new Date(now.getTime() - 15 * 60_000);
+  const recentSince = new Date(now.getTime() - 5 * 60_000);
+  const cursorDate = parseCursorDate(input.cursor) ?? recentSince;
+
+  const [activeSessions, events, kpis] = await Promise.all([
+    db.analyticsSession.findMany({
+      where: { lastSeenAt: { gte: activeSince } },
+      orderBy: { lastSeenAt: "desc" },
+      take: 30,
+      select: {
+        id: true,
+        startedAt: true,
+        lastSeenAt: true,
+        entryPath: true,
+        exitPath: true,
+        referrer: true,
+        utm: true,
+        device: true,
+        eventCount: true,
+        replayEnabled: true,
+        visitor: {
+          select: {
+            id: true,
+            firstPath: true,
+          },
+        },
+        _count: {
+          select: {
+            events: true,
+            replayChunks: true,
+          },
+        },
+      },
+    }),
+    db.analyticsEvent.findMany({
+      where: { occurredAt: { gt: cursorDate } },
+      orderBy: [{ occurredAt: "asc" }, { id: "asc" }],
+      take: 100,
+      select: {
+        id: true,
+        type: true,
+        occurredAt: true,
+        source: true,
+        path: true,
+        title: true,
+        referrer: true,
+        utm: true,
+        device: true,
+        consentMode: true,
+        session: {
+          select: {
+            id: true,
+            exitPath: true,
+            replayEnabled: true,
+            _count: {
+              select: {
+                replayChunks: true,
+              },
+            },
+          },
+        },
+        product: {
+          select: {
+            name: true,
+            slug: true,
+          },
+        },
+        order: {
+          select: {
+            orderNumber: true,
+            total: true,
+          },
+        },
+      },
+    }),
+    db.analyticsEvent.groupBy({
+      by: ["type"],
+      where: { occurredAt: { gte: recentSince } },
+      _count: { _all: true },
+    }),
+  ]);
+  const lastEvent = events.at(-1);
+
+  return {
+    generatedAt: now,
+    activeWindowMinutes: 15,
+    kpiWindowMinutes: 5,
+    nextCursor: lastEvent?.occurredAt.toISOString() ?? now.toISOString(),
+    activeSessions: activeSessions.map((session) => ({
+      id: session.id,
+      startedAt: session.startedAt,
+      lastSeenAt: session.lastSeenAt,
+      entryPath: session.entryPath,
+      exitPath: session.exitPath,
+      referrer: session.referrer,
+      utm: session.utm,
+      device: session.device,
+      eventCount: session.eventCount,
+      replayEnabled: session.replayEnabled,
+      replayChunks: session._count.replayChunks,
+      events: session._count.events,
+      visitorId: session.visitor?.id ?? null,
+      firstPath: session.visitor?.firstPath ?? null,
+    })),
+    events: events.map((event) => ({
+      id: event.id,
+      type: event.type,
+      occurredAt: event.occurredAt,
+      source: event.source,
+      path: event.path,
+      title: event.title,
+      referrer: event.referrer,
+      utm: event.utm,
+      device: event.device,
+      consentMode: event.consentMode,
+      sessionId: event.session?.id ?? null,
+      sessionPath: event.session?.exitPath ?? null,
+      replayChunks: event.session?._count.replayChunks ?? 0,
+      replayEnabled: event.session?.replayEnabled ?? false,
+      product: event.product,
+      order: event.order
+        ? {
+            orderNumber: event.order.orderNumber,
+            total: Number(event.order.total),
+          }
+        : null,
+    })),
+    kpis: aggregateLiveKpis(kpis),
+  };
+}
+
 export async function getAdminInsightsOverview(
   input: {
     rangeDays?: number;
@@ -20,6 +157,8 @@ export async function getAdminInsightsOverview(
     rawFallback,
     searches,
     pathEvents,
+    pageMetrics,
+    campaignMetrics,
   ] = await Promise.all([
     db.analyticsDailyAggregate.findMany({
       where: { date: { gte: from, lt: exclusiveTo }, scope: "site" },
@@ -52,6 +191,16 @@ export async function getAdminInsightsOverview(
       },
       select: { path: true, utm: true },
       take: 1_000,
+    }),
+    db.pageDailyMetric.findMany({
+      where: { date: { gte: from, lt: exclusiveTo } },
+      orderBy: [{ views: "desc" }, { ctaClicks: "desc" }],
+      take: 20,
+    }),
+    db.campaignDailyMetric.findMany({
+      where: { date: { gte: from, lt: exclusiveTo } },
+      orderBy: [{ revenue: "desc" }, { sessions: "desc" }],
+      take: 20,
     }),
   ]);
 
@@ -94,9 +243,43 @@ export async function getAdminInsightsOverview(
         }))
         .slice(0, 10),
     },
+    pages: aggregatePageMetrics(pageMetrics),
+    campaigns: aggregateCampaignMetrics(campaignMetrics),
     paths: aggregatePaths(pathEvents),
     utmChannels: aggregateUtmChannels(pathEvents),
     freshness: { generatedAt: new Date(), source: "aggregate-tables" as const },
+  };
+}
+
+function parseCursorDate(value?: string | null) {
+  if (!value) return null;
+
+  const date = new Date(value);
+
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function aggregateLiveKpis(
+  kpis: Array<{ type: string; _count: { _all: number } }>,
+) {
+  const counts: Record<string, number> = {};
+
+  for (const item of kpis) {
+    counts[item.type] = item._count._all;
+  }
+
+  return {
+    pageViews: counts.page_view ?? 0,
+    routeChanges: counts.route_change ?? 0,
+    productViews: counts.product_view ?? 0,
+    addToCart: counts.add_to_cart ?? 0,
+    checkouts: counts.checkout_started ?? 0,
+    orders: counts.order_created ?? 0,
+    paymentCaptured: counts.payment_captured ?? 0,
+    searches: counts.search_performed ?? 0,
+    ctaClicks: counts.cta_click ?? 0,
+    formErrors: counts.form_error ?? 0,
+    totalEvents: Object.values(counts).reduce((sum, count) => sum + count, 0),
   };
 }
 
@@ -245,6 +428,119 @@ function aggregatePaths(events: Array<{ path: string | null }>) {
   return Array.from(counts.entries())
     .map(([path, count]) => ({ path, count }))
     .sort((first, second) => second.count - first.count)
+    .slice(0, 10);
+}
+
+function aggregatePageMetrics(
+  metrics: Array<{
+    path: string;
+    title: string | null;
+    views: number;
+    visitors: number;
+    sessions: number;
+    ctaClicks: number;
+    formErrors: number;
+    avgScrollDepth: number;
+  }>,
+) {
+  const byPath = new Map<
+    string,
+    {
+      path: string;
+      title: string | null;
+      views: number;
+      visitors: number;
+      sessions: number;
+      ctaClicks: number;
+      formErrors: number;
+      avgScrollDepth: number;
+    }
+  >();
+
+  for (const metric of metrics) {
+    const existing = byPath.get(metric.path) ?? {
+      path: metric.path,
+      title: metric.title,
+      views: 0,
+      visitors: 0,
+      sessions: 0,
+      ctaClicks: 0,
+      formErrors: 0,
+      avgScrollDepth: 0,
+    };
+
+    existing.views += metric.views;
+    existing.visitors += metric.visitors;
+    existing.sessions += metric.sessions;
+    existing.ctaClicks += metric.ctaClicks;
+    existing.formErrors += metric.formErrors;
+    existing.avgScrollDepth = Math.max(
+      existing.avgScrollDepth,
+      metric.avgScrollDepth,
+    );
+    byPath.set(metric.path, existing);
+  }
+
+  return Array.from(byPath.values())
+    .sort((first, second) => second.views - first.views)
+    .slice(0, 10);
+}
+
+function aggregateCampaignMetrics(
+  metrics: Array<{
+    source: string;
+    medium: string;
+    campaign: string;
+    channel: string;
+    visitors: number;
+    sessions: number;
+    orders: number;
+    revenue: unknown;
+    grossMargin: unknown;
+  }>,
+) {
+  const byCampaign = new Map<
+    string,
+    {
+      source: string;
+      medium: string;
+      campaign: string;
+      channel: string;
+      visitors: number;
+      sessions: number;
+      orders: number;
+      revenue: number;
+      grossMargin: number;
+    }
+  >();
+
+  for (const metric of metrics) {
+    const key = `${metric.source}:${metric.medium}:${metric.campaign}`;
+    const existing = byCampaign.get(key) ?? {
+      source: metric.source,
+      medium: metric.medium,
+      campaign: metric.campaign,
+      channel: metric.channel,
+      visitors: 0,
+      sessions: 0,
+      orders: 0,
+      revenue: 0,
+      grossMargin: 0,
+    };
+
+    existing.visitors += metric.visitors;
+    existing.sessions += metric.sessions;
+    existing.orders += metric.orders;
+    existing.revenue += Number(metric.revenue);
+    existing.grossMargin += Number(metric.grossMargin);
+    byCampaign.set(key, existing);
+  }
+
+  return Array.from(byCampaign.values())
+    .sort(
+      (first, second) =>
+        second.revenue - first.revenue || second.sessions - first.sessions,
+    )
     .slice(0, 10);
 }
 

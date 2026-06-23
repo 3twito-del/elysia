@@ -19,32 +19,63 @@ export function ProductAnalytics({
   productSlug,
   query,
 }: ProductAnalyticsProps) {
-  const analyticsAllowed = useCookieConsentValue() === "all";
+  const consent = useCookieConsentValue();
+  const analyticsAllowed = consent !== "essential";
 
   useEffect(() => {
     if (!analyticsAllowed) return;
 
     const sessionKey = safeGetCartSessionKey();
+    const visitorKey = readVisitorKey();
 
     writeRecentlyViewed(productSlug);
 
-    void sendAnalyticsEvent("/api/events/product-view", {
-      productSlug,
-      sessionKey,
-      path,
-    });
+    const events: Array<Record<string, unknown>> = [
+      {
+        type: "product_view",
+        productSlug,
+        visitorKey,
+        sessionKey,
+        source: "client",
+        url: window.location.href,
+        title: document.title,
+        path,
+        consentMode: consent === "all" ? "measurement" : "essential",
+        idempotencyKey: `product-view:${productSlug}:${path}:${Date.now()}`,
+      },
+    ];
 
     if (query) {
-      void sendAnalyticsEvent("/api/events/product-click", {
+      events.push({
+        type: "product_click",
         productSlug,
-        query,
-        position,
+        visitorKey,
         sessionKey,
+        source: "client",
+        url: window.location.href,
+        title: document.title,
+        path,
+        consentMode: consent === "all" ? "measurement" : "essential",
+        idempotencyKey: `product-click:${productSlug}:${query}:${position ?? 0}:${Date.now()}`,
+        payload: {
+          query,
+          position: position ?? null,
+        },
       });
     }
-  }, [analyticsAllowed, path, position, productSlug, query]);
+
+    void sendAnalyticsBatch(events);
+  }, [analyticsAllowed, consent, path, position, productSlug, query]);
 
   return null;
+}
+
+function readVisitorKey() {
+  try {
+    return window.localStorage.getItem("elysia_analytics_visitor") ?? undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 function safeGetCartSessionKey() {
@@ -71,15 +102,13 @@ function writeRecentlyViewed(productSlug: string) {
   }
 }
 
-async function sendAnalyticsEvent(
-  path: string,
-  body: Record<string, string | number | undefined>,
-) {
+async function sendAnalyticsBatch(events: Array<Record<string, unknown>>) {
   try {
-    await fetch(path, {
+    await fetch("/api/analytics/events", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify(body),
+      body: JSON.stringify({ events }),
+      keepalive: true,
     });
   } catch {
     // Fire-and-forget analytics must not surface network failures to users.

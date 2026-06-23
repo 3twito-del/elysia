@@ -117,7 +117,8 @@ export async function getErpOverview() {
     .map((item) => {
       const sellable = Math.max(0, item.quantity - item.reserved);
       const snapshot = item.variant.product.costSnapshots[0];
-      const leadTimeDays = snapshot?.vendor?.leadTimeDays ?? defaultLeadTimeDays;
+      const leadTimeDays =
+        snapshot?.vendor?.leadTimeDays ?? defaultLeadTimeDays;
       const dailyVelocity = velocityByVariant.get(item.variantId) ?? 0;
       const demandDuringLeadTime = dailyVelocity * leadTimeDays;
       // Reorder point = safety buffer + expected demand while restocking.

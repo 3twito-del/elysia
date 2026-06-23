@@ -6,6 +6,7 @@ import {
   ShoppingBag,
   TrendingUp,
 } from "lucide-react";
+import Link from "next/link";
 
 import { AdminShell } from "../_components/admin-shell";
 import {
@@ -62,6 +63,21 @@ export default async function AdminInsightsPage() {
           {formatHebrewDateTime(insights.freshness.generatedAt)}
         </time>
       </p>
+
+      <div className="mb-6 flex flex-wrap gap-3 text-sm">
+        <Link
+          className="rounded-md border px-3 py-2 underline-offset-4 hover:underline"
+          href="/admin/insights/live"
+        >
+          Live Console
+        </Link>
+        <Link
+          className="rounded-md border px-3 py-2 underline-offset-4 hover:underline"
+          href="/admin/insights/replay"
+        >
+          Replay Archive
+        </Link>
+      </div>
 
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard
@@ -174,6 +190,24 @@ export default async function AdminInsightsPage() {
           items={insights.utmChannels.map((item) => ({
             label: item.channel,
             value: String(item.count),
+          }))}
+        />
+      </div>
+      <div className="mt-6 grid gap-6 xl:grid-cols-2">
+        <InsightListCard
+          icon={BarChart3}
+          title="Top pages"
+          items={insights.pages.map((item) => ({
+            label: item.path,
+            value: `${item.views} views · ${item.sessions} sessions`,
+          }))}
+        />
+        <InsightListCard
+          icon={TrendingUp}
+          title="Campaign BI"
+          items={insights.campaigns.map((item) => ({
+            label: `${item.channel} · ${item.campaign}`,
+            value: `${formatPrice(item.revenue)} · ${item.orders} orders`,
           }))}
         />
       </div>

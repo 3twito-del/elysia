@@ -1335,7 +1335,7 @@ test.describe("cookie consent flow", () => {
       .toBe(false);
   });
 
-  test("blocks analytics until approval and clears it when switching to essential", async ({
+  test("records first-party analytics by default and clears it when switching to essential", async ({
     page,
   }) => {
     await page.goto(`/product/${searchProductSlug}`);
@@ -1343,7 +1343,7 @@ test.describe("cookie consent flow", () => {
     await expect(
       page.getByRole("region", { name: "בחירת קוקיז" }),
     ).toBeVisible();
-    await expectRecentlyViewed(page, searchProductSlug, false);
+    await expectRecentlyViewed(page, searchProductSlug, true);
 
     const acceptCookiesButton = page.getByRole("button", {
       name: "מאשרת הכל",
@@ -1399,6 +1399,9 @@ test.describe("access control surfaces", () => {
   test("protects routed admin operations pages", async ({ page }) => {
     for (const route of [
       "/admin/insights",
+      "/admin/insights/live",
+      "/admin/insights/replay",
+      "/admin/insights/replay/fixture-session",
       "/admin/crm",
       "/admin/orders",
       "/admin/catalog",

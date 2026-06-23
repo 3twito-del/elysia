@@ -59,6 +59,13 @@ export function CookiePreferencesPanel() {
             </p>
           </div>
 
+          <p className="text-muted-foreground mt-2 leading-8 lg:max-w-3xl">
+            אישור “הכל” מאפשר גם session replay ממוסך, attribution וניתוח משפכי
+            רכישה במערכת first-party בלבד. “רק חיוניים” עוצר אירועי גלישה
+            ו־replay להמשך הסשן; אירועי מסחר ותפעול נשמרים לפי צורך עסקי ואינם
+            כוללים IP גולמי או ערכי שדות.
+          </p>
+
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
             <Button
               aria-describedby="cookie-preferences-status"

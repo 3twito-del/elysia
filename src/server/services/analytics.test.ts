@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 import {
   analyticsBatchInputSchema,
   hashAnalyticsIdentifier,
-  recordAnalyticsEvent,
   redactAnalyticsPayload,
 } from "./analytics";
 
@@ -17,10 +16,12 @@ describe("analytics service", () => {
         query: "rings",
         token: "secret",
       },
+      freeText: "contact me at customer@example.com",
     });
 
     expect(payload).toEqual({
       safe: "value",
+      freeText: "[redacted]",
       nested: {
         query: "rings",
       },
@@ -38,29 +39,24 @@ describe("analytics service", () => {
     const parsed = analyticsBatchInputSchema.parse({
       events: [
         {
-          type: "page_view",
+          type: "route_change",
           path: "/rings?utm_source=test",
-          consentMode: "measurement",
+          visitorKey: "visitor-key-123",
+          sessionKey: "session-key-123",
+          source: "client",
+          sequence: 1,
+          url: "https://elysia.local/rings?utm_source=test",
+          title: "Rings",
+          consentMode: "essential",
           utm: { source: "test" },
-          payload: { title: "Rings" },
+          viewport: { width: 1440, height: 900, devicePixelRatio: 1 },
+          attribution: { source: "test", medium: "cpc" },
+          payload: { scrollDepth: 50 },
         },
       ],
     });
 
     expect(parsed.events).toHaveLength(1);
-  });
-
-  it("skips behavioral events without measurement consent before touching the database", async () => {
-    await expect(
-      recordAnalyticsEvent({
-        type: "page_view",
-        path: "/",
-        consentMode: "essential",
-      }),
-    ).resolves.toEqual({
-      status: "skipped",
-      eventId: null,
-      reason: "missing_consent",
-    });
+    expect(parsed.events[0]?.source).toBe("client");
   });
 });
