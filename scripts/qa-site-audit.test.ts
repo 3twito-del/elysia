@@ -4,6 +4,7 @@ import {
   applyRouteShard,
   consoleErrorBudget,
   inpSensitiveControlAudit,
+  isIgnorableCancelledRequest,
   isIgnorableConsoleError,
   isExpectedRouteStatusForAudit,
   parseRouteShard,
@@ -127,6 +128,25 @@ describe("QA site audit contracts", () => {
         message:
           "Failed to load resource: the server responded with a status of 404 (Not Found)",
         route: { expectedStatuses: [200] },
+      }),
+    ).toBe(false);
+  });
+
+  it("ignores browser-cancelled favicon probes without hiding real request failures", () => {
+    expect(
+      isIgnorableCancelledRequest({
+        errorText: "NS_BINDING_ABORTED",
+        method: "GET",
+        resourceType: "image",
+        url: "http://localhost:3000/favicon.svg",
+      }),
+    ).toBe(true);
+    expect(
+      isIgnorableCancelledRequest({
+        errorText: "net::ERR_FAILED",
+        method: "GET",
+        resourceType: "image",
+        url: "http://localhost:3000/favicon.svg",
       }),
     ).toBe(false);
   });

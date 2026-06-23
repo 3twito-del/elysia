@@ -175,6 +175,19 @@ describe("manual quality gates", () => {
     );
   });
 
+  it("isolates heavy runtime browser gates with fresh preview servers", () => {
+    const runtimeSteps = getGateDefinition("gate:runtime")?.steps ?? [];
+    const visualStep = runtimeSteps.find(
+      (step) => step.label === "Run visual QA",
+    );
+    const performanceStep = runtimeSteps.find(
+      (step) => step.label === "Run strict performance QA",
+    );
+
+    expect(visualStep?.restartPreviewBefore).toBe(true);
+    expect(performanceStep?.restartPreviewBefore).toBe(true);
+  });
+
   it("uses a repo-managed copy-map pre-commit hook", () => {
     expect(packageJson.scripts.prepare).toBe("simple-git-hooks");
     expect(packageJson.devDependencies?.["simple-git-hooks"]).toBeDefined();

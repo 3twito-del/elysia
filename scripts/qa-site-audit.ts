@@ -94,6 +94,12 @@ const browserTypes = {
   webkit,
 } satisfies Record<BrowserName, BrowserType>;
 
+const firefoxLaunchEnv = {
+  MOZ_DISABLE_CONTENT_SANDBOX: "1",
+  MOZ_DISABLE_GPU_SANDBOX: "1",
+  MOZ_DISABLE_RDD_SANDBOX: "1",
+} as const;
+
 export const qaArtifactStandard = {
   directoryPattern: "artifacts/qa/<iso-timestamp>-<audit-label>",
   files: [
@@ -182,7 +188,11 @@ export async function runQaSiteAudit(options: AuditOptions) {
   });
 
   for (const browserName of options.browsers) {
-    const browser = await browserTypes[browserName].launch();
+    const browser = await browserTypes[browserName].launch(
+      browserName === "firefox"
+        ? { env: createLaunchEnv(firefoxLaunchEnv) }
+        : undefined,
+    );
 
     try {
       for (const viewport of options.viewports) {
@@ -261,6 +271,21 @@ export async function runQaSiteAudit(options: AuditOptions) {
   );
 
   return payload;
+}
+
+function createLaunchEnv(overrides: Record<string, string>) {
+  const inheritedEnv: Record<string, string> = {};
+
+  for (const [key, value] of Object.entries(process.env)) {
+    if (typeof value === "string") {
+      inheritedEnv[key] = value;
+    }
+  }
+
+  return {
+    ...inheritedEnv,
+    ...overrides,
+  };
 }
 
 async function auditRoute({
@@ -865,7 +890,7 @@ function isSameOrigin(targetUrl: string, baseUrl: string) {
   }
 }
 
-function isIgnorableCancelledRequest({
+export function isIgnorableCancelledRequest({
   errorText,
   method,
   resourceType,
@@ -889,6 +914,7 @@ function isIgnorableCancelledRequest({
 
   return (
     parsed.searchParams.has("_rsc") ||
+    parsed.pathname === "/favicon.svg" ||
     (parsed.pathname.startsWith("/_next/static/") &&
       ["fetch", "script"].includes(resourceType)) ||
     (parsed.pathname.startsWith("/brand/") &&

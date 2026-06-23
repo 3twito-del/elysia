@@ -9,6 +9,9 @@ const defaultPreviewPort = Number(process.env.GATE_PREVIEW_PORT ?? 3002);
 const previewReadyTimeoutMs = Number(
   process.env.GATE_PREVIEW_TIMEOUT_MS ?? 120_000,
 );
+const previewStopTimeoutMs = Number(
+  process.env.GATE_PREVIEW_STOP_TIMEOUT_MS ?? 10_000,
+);
 
 const fixSteps = [
   step("Format Prisma schema", "pnpm", ["exec", "prisma", "format"]),
@@ -128,23 +131,37 @@ export const gateDefinitions = [
       step("Run Playwright", "pnpm", ["e2e"], {
         env: ({ baseUrl }) => ({ E2E_BASE_URL: baseUrl }),
       }),
-      step("Run visual QA", powerShellCommand(), [
-        "-NoProfile",
-        "-ExecutionPolicy",
-        "Bypass",
-        "-File",
-        "scripts/visual-qa-agent-browser.ps1",
-        "-BaseUrl",
-        ({ baseUrl }) => baseUrl,
-      ]),
-      step("Run strict performance QA", "pnpm", [
-        "exec",
-        "tsx",
-        "scripts/qa-site-audit.ts",
-        "--performance-only",
-        "--base-url",
-        ({ baseUrl }) => baseUrl,
-      ]),
+      step(
+        "Run visual QA",
+        powerShellCommand(),
+        [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "scripts/visual-qa-agent-browser.ps1",
+          "-BaseUrl",
+          ({ baseUrl }) => baseUrl,
+        ],
+        {
+          restartPreviewBefore: true,
+        },
+      ),
+      step(
+        "Run strict performance QA",
+        "pnpm",
+        [
+          "exec",
+          "tsx",
+          "scripts/qa-site-audit.ts",
+          "--performance-only",
+          "--base-url",
+          ({ baseUrl }) => baseUrl,
+        ],
+        {
+          restartPreviewBefore: true,
+        },
+      ),
     ],
   },
   {
@@ -346,6 +363,7 @@ function buildSafeCatalogEnv() {
     ...(e2eDatabaseUrl ? { DATABASE_URL: e2eDatabaseUrl } : {}),
     E2E_AUTH_FIXTURES: "1",
     E2E_CATALOG_FIXTURES: "1",
+    SERWIST_LOCAL_FALLBACK: "1",
     TYPESENSE_API_KEY: "",
     TYPESENSE_HOST: "",
     VERCEL_ENV: "preview",
@@ -453,6 +471,11 @@ async function runBuildIfNeeded(context) {
 
 async function runSteps(steps, context, gateName, runtime) {
   for (const item of steps) {
+    if (item.restartPreviewBefore) {
+      await restartPreviewServer(context);
+      runtime.baseUrl = context.previewBaseUrl;
+    }
+
     await runStep(item, context, gateName, runtime);
 
     if (item.marksBuild) {
@@ -494,6 +517,24 @@ async function withPreviewServer(context, callback) {
     return;
   }
 
+  await startPreviewServer(context);
+
+  try {
+    await callback(context.previewBaseUrl);
+  } finally {
+    await stopPreviewServer(context);
+  }
+}
+
+async function restartPreviewServer(context) {
+  if (!context.previewProcess) return;
+
+  context.logger("\n[gate:runtime] Restarting preview server.");
+  await stopPreviewServer(context);
+  await startPreviewServer(context);
+}
+
+async function startPreviewServer(context) {
   await runBuildIfNeeded(context);
 
   const port = await findAvailablePort(defaultPreviewPort);
@@ -523,12 +564,7 @@ async function withPreviewServer(context, callback) {
   context.previewProcess = previewProcess;
   context.previewBaseUrl = baseUrl;
 
-  try {
-    await waitForPreviewServer(baseUrl, previewProcess);
-    await callback(baseUrl);
-  } finally {
-    await stopPreviewServer(context);
-  }
+  await waitForPreviewServer(baseUrl, previewProcess);
 }
 
 async function spawnCommand(command, args, options) {
@@ -638,9 +674,24 @@ async function stopPreviewServer(context) {
   context.logger("\n[gate:runtime] Stopping preview server.");
 
   if (process.platform === "win32") {
-    spawnSync("taskkill", ["/pid", `${previewProcess.pid}`, "/t", "/f"], {
-      stdio: "ignore",
-    });
+    const result = spawnSync(
+      "taskkill",
+      ["/pid", `${previewProcess.pid}`, "/t", "/f"],
+      {
+        stdio: "ignore",
+        timeout: previewStopTimeoutMs,
+      },
+    );
+    previewProcess.unref();
+
+    if (result.error || result.status !== 0) {
+      try {
+        previewProcess.kill("SIGKILL");
+      } catch {
+        // The process may already be gone; cleanup should not fail the gate.
+      }
+    }
+
     return;
   }
 
@@ -663,6 +714,8 @@ async function stopPreviewServer(context) {
       previewProcess.kill("SIGKILL");
     }
   }
+
+  previewProcess.unref();
 }
 
 async function main(argv = process.argv.slice(2)) {

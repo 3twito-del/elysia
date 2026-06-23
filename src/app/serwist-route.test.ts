@@ -44,7 +44,10 @@ describe("Serwist route", () => {
     const configSource = read("next.config.js");
 
     expect(routeSource).toContain("serwistPrecacheIgnores");
+    expect(routeSource).toContain("cwd: process.cwd()");
+    expect(routeSource).toContain("globDirectory: process.cwd()");
     expect(routeSource).toContain('"**/node_modules/**/*"');
+    expect(routeSource).toContain("useNativeEsbuild: true");
     expect(routeSource).not.toContain("elysia-aqua");
     expect(routeSource).not.toContain("cinematic/*.png");
     expect(routeSource).toContain("globIgnores: [...serwistPrecacheIgnores]");
@@ -64,11 +67,16 @@ describe("Serwist route", () => {
 
   it("lets the production E2E harness skip the Serwist build step explicitly", () => {
     const routeSource = read("src/app/serwist/[path]/route.ts");
+    const gatesSource = read("scripts/gates.mjs");
     const playwrightSource = read("playwright.config.ts");
 
     expect(routeSource).toContain("shouldUseProductionSerwistRoute");
+    expect(routeSource).toContain("shouldUseLocalSerwistFallback");
+    expect(routeSource).toContain("createLocalFallbackSerwistRoute");
     expect(routeSource).toContain('process.env.E2E_SKIP_SERWIST_BUILD !== "1"');
+    expect(gatesSource).toContain('SERWIST_LOCAL_FALLBACK: "1"');
     expect(playwrightSource).toContain('E2E_SKIP_SERWIST_BUILD: "1"');
+    expect(playwrightSource).toContain('SERWIST_LOCAL_FALLBACK: "1"');
   });
 
   it("lets production E2E use the local development database connection", () => {

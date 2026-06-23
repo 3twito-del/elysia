@@ -9,7 +9,7 @@ param(
   [string]$ArtifactDir = "",
   [string]$DeploymentId = $(if ($env:VERCEL_DEPLOYMENT_ID) { $env:VERCEL_DEPLOYMENT_ID } else { "" }),
   [string]$RouteSetName = $(if ($env:QA_ROUTE_SET_NAME) { $env:QA_ROUTE_SET_NAME } else { "representative" }),
-  [string]$ProfilePath = $(Join-Path $env:TEMP "agent-browser-cdp-elysia-$Port"),
+  [string]$ProfilePath = $(Join-Path $env:TEMP "agent-browser-cdp-elysia-$Port-$PID"),
   [switch]$AllProducts,
   [switch]$NoScreenshot,
   [switch]$KeepOpen
@@ -17,10 +17,13 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+$agentBrowserCommand = if ($env:OS -eq "Windows_NT") { "agent-browser.cmd" } else { "agent-browser" }
+$pnpmCommand = if ($env:OS -eq "Windows_NT") { "pnpm.cmd" } else { "pnpm" }
+
 function Invoke-AgentBrowser {
   param([string[]]$CommandArgs)
 
-  $output = & agent-browser @CommandArgs 2>&1
+  $output = & $script:agentBrowserCommand @CommandArgs 2>&1
   if ($LASTEXITCODE -ne 0) {
     $message = ($output | Out-String).Trim()
     throw "agent-browser $($CommandArgs -join ' ') failed. $message"
@@ -57,6 +60,40 @@ function Normalize-AgentBrowserErrors {
 
 function Get-AgentBrowserErrors {
   return Normalize-AgentBrowserErrors (Invoke-AgentBrowser -CommandArgs @("errors"))
+}
+
+function Test-IgnorableConsoleError {
+  param(
+    [string]$Route,
+    [string]$Message
+  )
+
+  return $Route -eq "/category/not-a-real-category" -and $Message.Contains("Failed to load resource") -and $Message.Contains("404")
+}
+
+function Remove-IgnorableConsoleErrors {
+  param(
+    [string]$Route,
+    [string]$Errors
+  )
+
+  if (-not $Errors) {
+    return ""
+  }
+
+  $kept = New-Object System.Collections.Generic.List[string]
+  foreach ($line in ($Errors -split '\r?\n|\r')) {
+    $trimmed = $line.Trim()
+    if (-not $trimmed) {
+      continue
+    }
+
+    if (-not (Test-IgnorableConsoleError -Route $Route -Message $trimmed)) {
+      $kept.Add($trimmed) | Out-Null
+    }
+  }
+
+  return ([string]::Join([Environment]::NewLine, $kept)).Trim()
 }
 
 function Get-BrokenImageCount {
@@ -136,6 +173,52 @@ function Ensure-AgentBrowserReady {
   throw "agent-browser is still not ready after repair."
 }
 
+function Invoke-PlaywrightVisualFallback {
+  $fallbackArgs = @(
+    "exec",
+    "tsx",
+    "scripts/visual-qa-playwright.ts",
+    "--base-url",
+    $BaseUrl,
+    "--artifact-dir",
+    $ArtifactDir,
+    "--route-set-name",
+    $(if ($AllProducts) { "all-products" } else { $RouteSetName })
+  )
+
+  foreach ($viewport in $Viewports) {
+    $fallbackArgs += "--viewport"
+    $fallbackArgs += $viewport
+  }
+
+  if ($DeploymentId) {
+    $fallbackArgs += "--deployment-id"
+    $fallbackArgs += $DeploymentId
+  }
+
+  if ($AllProducts) {
+    $fallbackArgs += "--all-products"
+  }
+
+  if ($NoScreenshot) {
+    $fallbackArgs += "--no-screenshot"
+  }
+
+  & $script:pnpmCommand @fallbackArgs
+  if ($LASTEXITCODE -ne 0) {
+    throw "Playwright visual QA fallback failed with exit code $LASTEXITCODE."
+  }
+}
+
+function Test-CimProcessInspectionAvailable {
+  try {
+    Get-CimInstance Win32_Process -ErrorAction Stop | Select-Object -First 1 | Out-Null
+    return $true
+  } catch {
+    return $false
+  }
+}
+
 function Stop-CdpProfileProcesses {
   param([string]$TargetProfilePath)
 
@@ -143,8 +226,13 @@ function Stop-CdpProfileProcesses {
     return
   }
 
-  $targets = Get-CimInstance Win32_Process | Where-Object {
-    $_.Name -eq "chrome.exe" -and $_.CommandLine -like "*$TargetProfilePath*"
+  try {
+    $targets = Get-CimInstance Win32_Process | Where-Object {
+      $_.Name -eq "chrome.exe" -and $_.CommandLine -like "*$TargetProfilePath*"
+    }
+  } catch {
+    Write-Warning "Could not inspect Chrome profile processes through CIM: $($_.Exception.Message)"
+    return
   }
 
   foreach ($target in $targets) {
@@ -257,11 +345,23 @@ $metadata = [pscustomobject]@{
 
 $metadata | ConvertTo-Json -Depth 4 | Out-File -FilePath (Join-Path $ArtifactDir "agent-browser-visual-qa-metadata.json") -Encoding utf8
 
+if (-not (Test-CimProcessInspectionAvailable)) {
+  Write-Warning "CIM process inspection is unavailable; running Playwright visual QA fallback."
+  Invoke-PlaywrightVisualFallback
+  exit 0
+}
+
 $results = New-Object System.Collections.Generic.List[object]
 $failures = New-Object System.Collections.Generic.List[string]
 
 try {
-  Ensure-AgentBrowserReady
+  try {
+    Ensure-AgentBrowserReady
+  } catch {
+    Write-Warning "agent-browser is unavailable, running Playwright visual QA fallback: $($_.Exception.Message)"
+    Invoke-PlaywrightVisualFallback
+    exit 0
+  }
 
   foreach ($viewportValue in $Viewports) {
     $viewport = Parse-Viewport -Value $viewportValue
@@ -297,7 +397,7 @@ try {
 
           $brokenImages = Get-BrokenImageCount
 
-          $consoleErrors = Get-AgentBrowserErrors
+          $consoleErrors = Remove-IgnorableConsoleErrors -Route $route -Errors (Get-AgentBrowserErrors)
           $title = Invoke-AgentBrowser -CommandArgs @("get", "title")
 
           $isPass = $content -eq "HAS_CONTENT" -and $overlay -eq "OK" -and $overflow -eq "NO_X_OVERFLOW" -and $brokenImages -eq "0" -and (-not $consoleErrors)
@@ -345,7 +445,7 @@ try {
 finally {
   if (-not $KeepOpen) {
     try {
-      & agent-browser close --all | Out-Null
+      & $script:agentBrowserCommand close --all | Out-Null
       Stop-CdpProfileProcesses -TargetProfilePath $ProfilePath
     } catch {
       Write-Warning "Failed to close agent-browser: $($_.Exception.Message)"

@@ -184,9 +184,10 @@ describe("image performance guardrails", () => {
     ).toBe(true);
   });
 
-  it("keeps external connection hints on the current media and font whitelist", () => {
+  it("keeps external connection hints on the current media whitelist and fonts local", () => {
     const layoutSource = read("src/app/layout.tsx");
     const nextConfigSource = read("next.config.js");
+    const cssSource = read("src/styles/globals.css");
     const remoteHostnames = Array.from(
       nextConfigSource.matchAll(/hostname:\s*"(?<hostname>[^"]+)"/g),
     ).map((match) => match.groups?.hostname);
@@ -194,7 +195,9 @@ describe("image performance guardrails", () => {
     expect(layoutSource).not.toMatch(
       /rel=["'](?:preconnect|dns-prefetch)["']/u,
     );
-    expect(layoutSource).toContain("next/font/google");
+    expect(layoutSource).not.toContain("next/font/google");
+    expect(cssSource).toContain("--font-rubik:");
+    expect(cssSource).toContain("--font-geist-sans:");
     expect(remoteHostnames).toEqual([
       "images.unsplash.com",
       "res.cloudinary.com",

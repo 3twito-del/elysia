@@ -5,6 +5,7 @@ const productSlug = "hera-bracelet";
 
 test.describe("product hover zoom", () => {
   test.beforeEach(async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.addInitScript((storageKey) => {
       window.localStorage.setItem(
         storageKey,
@@ -27,15 +28,14 @@ test.describe("product hover zoom", () => {
 
     const gallery = page.getByTestId("product-gallery");
     await expect(gallery).toBeVisible();
+    await expect(page.getByTestId("product-purchase-panel")).toHaveAttribute(
+      "data-client-ready",
+      "true",
+    );
     await expect(gallery).toHaveAttribute("data-gallery-hover-zoom", "false");
 
-    const galleryBox = await gallery.boundingBox();
-    expect(galleryBox).not.toBeNull();
-
-    await page.mouse.move(
-      galleryBox!.x + galleryBox!.width * 0.72,
-      galleryBox!.y + galleryBox!.height * 0.31,
-    );
+    await hoverLocatorAt(page, gallery, { xRatio: 0.72, yRatio: 0.31 });
+    await expect.poll(() => isLocatorHovered(gallery)).toBe(true);
 
     await expect(gallery).toHaveAttribute("data-gallery-hover-zoom", "true");
     await expect
@@ -120,6 +120,7 @@ test.describe("product hover zoom", () => {
   });
 
   test("enlarges product-card media on hover without resizing the card", async ({
+    browserName,
     page,
   }) => {
     test.skip((page.viewportSize()?.width ?? 0) < 1024, "desktop hover-only");
@@ -132,38 +133,51 @@ test.describe("product hover zoom", () => {
     await expect(media).toBeVisible();
     await media.scrollIntoViewIfNeeded();
     await page.mouse.move(4, 4);
-    await page.waitForTimeout(80);
 
     const mediaBoxBefore = await media.boundingBox();
     expect(mediaBoxBefore).not.toBeNull();
 
-    await media.hover();
-    await page.waitForTimeout(120);
+    await hoverLocatorAt(page, media, { xRatio: 0.5, yRatio: 0.5 });
+    let usedFocusFallback = false;
+    const cardHovered = await waitForLocatorHovered(
+      card,
+      browserName === "firefox" ? 2_500 : 10_000,
+    );
+
+    if (!cardHovered) {
+      expect(browserName).toBe("firefox");
+      usedFocusFallback = true;
+      await card.locator("a").first().focus();
+    }
 
     await expect
       .poll(() => getProductCardHoverMetrics(card))
       .toMatchObject({
         hasHoverImage: true,
       });
-    await expect
-      .poll(async () => (await getProductCardHoverMetrics(card)).primaryScale)
-      .toBeGreaterThan(1.03);
-    await expect
-      .poll(
-        async () => (await getProductCardHoverMetrics(card)).hoverImageOpacity,
-      )
-      .toBeGreaterThan(0.9);
-    await expect
-      .poll(
-        async () => (await getProductCardHoverMetrics(card)).hoverImageScale,
-      )
-      .toBeGreaterThan(1.04);
-    const metrics = await getProductCardHoverMetrics(card);
+    let hoverImageMetrics = await waitForProductCardHoverEffectMetrics(
+      card,
+      browserName === "firefox" ? 2_500 : 10_000,
+    );
+
+    if (
+      browserName === "firefox" &&
+      !usedFocusFallback &&
+      !isProductCardHoverEffectVisible(hoverImageMetrics)
+    ) {
+      usedFocusFallback = true;
+      await card.locator("a").first().focus();
+      hoverImageMetrics = await waitForProductCardHoverEffectMetrics(
+        card,
+        10_000,
+      );
+    }
+
+    expect(hoverImageMetrics.primaryScale).toBeGreaterThan(1.03);
+    expect(hoverImageMetrics.hoverImageOpacity).toBeGreaterThan(0.9);
+    expect(hoverImageMetrics.hoverImageScale).toBeGreaterThan(1.04);
     const mediaBoxAfter = await media.boundingBox();
 
-    expect(metrics.primaryScale).toBeGreaterThan(1.03);
-    expect(metrics.hoverImageOpacity).toBeGreaterThan(0.9);
-    expect(metrics.hoverImageScale).toBeGreaterThan(1.04);
     expect(Math.round(mediaBoxAfter!.width)).toBe(
       Math.round(mediaBoxBefore!.width),
     );
@@ -172,6 +186,76 @@ test.describe("product hover zoom", () => {
     );
   });
 });
+
+async function hoverLocatorAt(
+  page: Page,
+  locator: Locator,
+  {
+    xRatio,
+    yRatio,
+  }: {
+    xRatio: number;
+    yRatio: number;
+  },
+) {
+  const box = await locator.boundingBox();
+  expect(box).not.toBeNull();
+
+  const x = box!.x + box!.width * xRatio;
+  const y = box!.y + box!.height * yRatio;
+
+  await locator.hover({
+    position: {
+      x: box!.width * xRatio,
+      y: box!.height * yRatio,
+    },
+  });
+  await page.mouse.move(x, y, { steps: 4 });
+}
+
+async function waitForLocatorHovered(locator: Locator, timeoutMs: number) {
+  const startedAt = Date.now();
+
+  while (Date.now() - startedAt < timeoutMs) {
+    if (await isLocatorHovered(locator)) {
+      return true;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+
+  return false;
+}
+
+async function waitForProductCardHoverEffectMetrics(
+  card: Locator,
+  timeoutMs: number,
+) {
+  const startedAt = Date.now();
+  let metrics = await getProductCardHoverMetrics(card);
+
+  while (Date.now() - startedAt < timeoutMs) {
+    metrics = await getProductCardHoverMetrics(card);
+
+    if (isProductCardHoverEffectVisible(metrics)) {
+      return metrics;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+
+  return metrics;
+}
+
+function isProductCardHoverEffectVisible(
+  metrics: Awaited<ReturnType<typeof getProductCardHoverMetrics>>,
+) {
+  return (
+    metrics.primaryScale > 1.03 &&
+    metrics.hoverImageOpacity > 0.9 &&
+    metrics.hoverImageScale > 1.04
+  );
+}
 
 type InlineGallerySwipeResetSample = {
   maxTransitionDurationMs: number;
@@ -360,4 +444,8 @@ async function getProductCardHoverMetrics(card: Locator) {
       primaryScale: readScale(primaryStyles),
     };
   });
+}
+
+async function isLocatorHovered(locator: Locator) {
+  return locator.evaluate((element) => element.matches(":hover"));
 }

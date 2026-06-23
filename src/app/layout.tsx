@@ -1,7 +1,6 @@
 import "~/styles/globals.css";
 
 import { type Metadata, type Viewport } from "next";
-import { Cormorant_Garamond, Geist, Geist_Mono, Rubik } from "next/font/google";
 import { Suspense } from "react";
 
 import { AnalyticsProvider } from "~/components/analytics-provider";
@@ -71,39 +70,11 @@ export const viewport: Viewport = {
   themeColor: "#fbf8f4",
 };
 
-const geistSans = Geist({
-  subsets: ["latin"],
-  variable: "--font-geist-sans",
-});
-
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-geist-mono",
-});
-
-const rubik = Rubik({
-  subsets: ["hebrew", "latin"],
-  variable: "--font-rubik",
-});
-
-const cormorantGaramond = Cormorant_Garamond({
-  subsets: ["latin"],
-  variable: "--font-cormorant-garamond",
-  weight: ["400", "500", "600"],
-});
-
-const fontClassName = [
-  cormorantGaramond.variable,
-  geistSans.variable,
-  geistMono.variable,
-  rubik.variable,
-].join(" ");
-
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="he" dir="rtl" className={fontClassName}>
+    <html lang="he" dir="rtl">
       <body>
         <PwaProvider>
           <a className="skip-link" href="#main-content">

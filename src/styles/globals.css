@@ -54,6 +54,14 @@
 }
 
 :root {
+  --font-cormorant-garamond: "Cormorant Garamond", Georgia, "Times New Roman",
+    serif;
+  --font-geist-mono: "Geist Mono", "SFMono-Regular", Consolas,
+    "Liberation Mono", ui-monospace, monospace;
+  --font-geist-sans: "Geist", "Inter", "Segoe UI", ui-sans-serif, system-ui,
+    sans-serif;
+  --font-rubik: "Rubik", "Noto Sans Hebrew", "Arial Hebrew", Arial,
+    ui-sans-serif, system-ui, sans-serif;
   --background: #fbf8f4;
   --foreground: var(--brand-ink);
   --card: #fffdf9;

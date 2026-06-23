@@ -21,6 +21,7 @@ const localE2EWebServerEnv: Record<string, string> = {
   E2E_CATALOG_FIXTURES: "1",
   E2E_SKIP_SERWIST_BUILD: "1",
   PORT: new URL(baseURL).port || "3000",
+  SERWIST_LOCAL_FALLBACK: "1",
   TYPESENSE_API_KEY: "",
   TYPESENSE_HOST: "",
   VERCEL_ENV: "preview",
@@ -67,6 +68,12 @@ const qaBrowsers = [
   { browserName: "webkit" as const, name: "webkit" },
 ] as const;
 
+const firefoxLaunchEnv = {
+  MOZ_DISABLE_CONTENT_SANDBOX: "1",
+  MOZ_DISABLE_GPU_SANDBOX: "1",
+  MOZ_DISABLE_RDD_SANDBOX: "1",
+} as const;
+
 export default defineConfig({
   globalSetup: shouldStartLocalE2EServer
     ? "./tests/e2e/global-setup.ts"
@@ -103,7 +110,7 @@ export default defineConfig({
         deviceScaleFactor: viewport.deviceScaleFactor,
         hasTouch: viewport.hasTouch,
         ...(browser.browserName === "firefox"
-          ? {}
+          ? { launchOptions: { env: createLaunchEnv(firefoxLaunchEnv) } }
           : { isMobile: viewport.isMobile }),
         viewport: {
           height: viewport.height,
@@ -129,6 +136,21 @@ function readDotenvValue(filePath: string, key: string) {
   }
 
   return undefined;
+}
+
+function createLaunchEnv(overrides: Record<string, string>) {
+  const inheritedEnv: Record<string, string> = {};
+
+  for (const [key, value] of Object.entries(process.env)) {
+    if (typeof value === "string") {
+      inheritedEnv[key] = value;
+    }
+  }
+
+  return {
+    ...inheritedEnv,
+    ...overrides,
+  };
 }
 
 function normalizeDotenvValue(value: string) {

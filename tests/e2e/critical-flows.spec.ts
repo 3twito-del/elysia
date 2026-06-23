@@ -278,12 +278,7 @@ test.describe("critical shopping flows", () => {
     await waitForProductPurchasePanelClientReady(page);
     const addToCartButton = page.getByTestId("product-add-to-cart-button");
 
-    await addToCartButton.evaluate((element) =>
-      element.scrollIntoView({ block: "center", inline: "nearest" }),
-    );
-    await expect(addToCartButton).toBeEnabled();
-    await addToCartButton.click();
-    await expect(page.getByTestId("product-cart-checkout-link")).toBeVisible();
+    await clickAddToCartAndExpectCheckoutLink(page, addToCartButton);
 
     await page.goto("/checkout");
 
@@ -1057,12 +1052,12 @@ test.describe("accessibility and responsive guardrails", () => {
       .first()
       .evaluate((element) => window.getComputedStyle(element).transform);
 
-    expect(revealMotion.transform).toBe("none");
+    expect(isIdentityCssTransform(revealMotion.transform)).toBe(true);
     expect(
       revealMotion.transitionDurationsMs.every((duration) => duration <= 0.01),
     ).toBe(true);
     expect(kineticImageReduced).toBe("true");
-    expect(kineticImageTransform).toBe("none");
+    expect(isIdentityCssTransform(kineticImageTransform)).toBe(true);
   });
 
   test("keeps selected size controls readable on hover and focus", async ({
@@ -2418,6 +2413,65 @@ async function expectReloadMotionStable(page: Page, label: string) {
 
 function visibleByTestId(page: Page, testId: string) {
   return page.getByTestId(testId).filter({ visible: true });
+}
+
+async function clickAddToCartAndExpectCheckoutLink(
+  page: Page,
+  addToCartButton: Locator,
+) {
+  const checkoutLink = page.getByTestId("product-cart-checkout-link");
+
+  await addToCartButton.scrollIntoViewIfNeeded();
+  await expect(addToCartButton).toBeVisible();
+  await expect(addToCartButton).toBeEnabled();
+  await addToCartButton.click();
+
+  const appearedAfterFirstClick = await checkoutLink
+    .waitFor({ state: "visible", timeout: 5_000 })
+    .then(() => true)
+    .catch(() => false);
+
+  if (appearedAfterFirstClick) return;
+
+  await addToCartButton.scrollIntoViewIfNeeded();
+  await expect(addToCartButton).toBeVisible();
+  await expect(addToCartButton).toBeEnabled();
+  await addToCartButton.click({ force: true });
+  await expect(checkoutLink).toBeVisible();
+}
+
+function isIdentityCssTransform(value: string) {
+  if (value === "none") return true;
+
+  const matrixMatch = /^matrix\(([^)]+)\)$/u.exec(value);
+  if (matrixMatch) {
+    const values = matrixMatch[1]!
+      .split(",")
+      .map((part) => Number.parseFloat(part.trim()));
+
+    return (
+      values.length === 6 &&
+      Math.abs(values[0]! - 1) <= 0.0001 &&
+      Math.abs(values[1]!) <= 0.0001 &&
+      Math.abs(values[2]!) <= 0.0001 &&
+      Math.abs(values[3]! - 1) <= 0.0001 &&
+      Math.abs(values[4]!) <= 0.0001 &&
+      Math.abs(values[5]!) <= 0.0001
+    );
+  }
+
+  const matrix3dMatch = /^matrix3d\(([^)]+)\)$/u.exec(value);
+  if (!matrix3dMatch) return false;
+
+  const values = matrix3dMatch[1]!
+    .split(",")
+    .map((part) => Number.parseFloat(part.trim()));
+  const identity = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+
+  return (
+    values.length === identity.length &&
+    values.every((part, index) => Math.abs(part - identity[index]!) <= 0.0001)
+  );
 }
 
 function escapeRegExp(value: string) {

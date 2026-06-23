@@ -19,12 +19,13 @@ describe("public typography spacing guardrails", () => {
     const home = read("src/app/page.tsx");
     const adminShell = read("src/app/admin/_components/admin-shell.tsx");
 
-    expect(layout).toContain("Rubik");
-    expect(layout).toContain('variable: "--font-rubik"');
+    expect(layout).not.toContain("next/font/google");
     expect(layout).not.toContain("Noto_Sans_Hebrew");
     expect(layout).not.toContain('variable: "--font-noto-hebrew"');
     expect(css).toContain("--font-hebrew-sans");
+    expect(css).toContain("--font-rubik:");
     expect(css).toContain("var(--font-rubik)");
+    expect(css).toContain("--font-cormorant-garamond:");
     expect(css).toContain("--font-latin-brand");
     expect(css).toContain('--font-sans:\n    "Rubik"');
     expect(css).toContain('"Arial Hebrew"');
