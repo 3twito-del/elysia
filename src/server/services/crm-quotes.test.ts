@@ -1,0 +1,46 @@
+import { describe, expect, it } from "vitest";
+
+import { computeQuoteTotals, isQuoteExpired } from "./crm-quotes";
+
+describe("computeQuoteTotals", () => {
+  it("computes subtotal, VAT and total", () => {
+    const totals = computeQuoteTotals({
+      lines: [
+        { quantity: 2, unitPrice: 50 },
+        { quantity: 1, unitPrice: 100 },
+      ],
+      taxRate: 0.18,
+    });
+    expect(totals).toEqual({ subtotal: 200, taxTotal: 36, total: 236 });
+  });
+});
+
+describe("isQuoteExpired", () => {
+  const asOf = new Date("2026-06-24T00:00:00.000Z");
+  const past = new Date("2026-06-01T00:00:00.000Z");
+  const future = new Date("2026-07-01T00:00:00.000Z");
+
+  it("is expired when sent and past its validity", () => {
+    expect(isQuoteExpired({ status: "SENT", validUntil: past }, asOf)).toBe(
+      true,
+    );
+  });
+
+  it("is not expired when still valid", () => {
+    expect(isQuoteExpired({ status: "SENT", validUntil: future }, asOf)).toBe(
+      false,
+    );
+  });
+
+  it("is not expired before it is sent", () => {
+    expect(isQuoteExpired({ status: "DRAFT", validUntil: past }, asOf)).toBe(
+      false,
+    );
+  });
+
+  it("is not expired without a validity date", () => {
+    expect(isQuoteExpired({ status: "SENT", validUntil: null }, asOf)).toBe(
+      false,
+    );
+  });
+});

@@ -1,0 +1,166 @@
+import { db } from "~/server/db";
+import { createCustomerInvoice } from "~/server/services/accounts-receivable";
+import { DEFAULT_VAT_RATE } from "~/server/services/erp";
+
+/**
+ * CRM quotes / proposals (CRM-SAL-002): Lead → Opportunity → Quote → Invoice.
+ * Pure helpers are exported for unit testing.
+ */
+
+function round2(value: number) {
+  return Math.round(value * 100) / 100;
+}
+
+export function computeQuoteTotals(input: {
+  lines: Array<{ quantity: number; unitPrice: number }>;
+  taxRate?: number;
+  taxTotal?: number;
+}) {
+  const subtotal = round2(
+    input.lines.reduce((sum, line) => sum + line.quantity * line.unitPrice, 0),
+  );
+  const taxTotal = Math.max(
+    0,
+    round2(input.taxTotal ?? subtotal * (input.taxRate ?? DEFAULT_VAT_RATE)),
+  );
+
+  return { subtotal, taxTotal, total: round2(subtotal + taxTotal) };
+}
+
+/** A quote is expired when it has been sent and its validity date has passed. */
+export function isQuoteExpired(
+  quote: { status: string; validUntil: Date | null },
+  asOf: Date = new Date(),
+): boolean {
+  if (quote.status !== "SENT") return false;
+  if (!quote.validUntil) return false;
+
+  return quote.validUntil < asOf;
+}
+
+async function createNextQuoteNumber() {
+  const today = new Date();
+  const prefix = `QUO-${today.getUTCFullYear()}${String(
+    today.getUTCMonth() + 1,
+  ).padStart(2, "0")}`;
+  const count = await db.quote.count({
+    where: { quoteNumber: { startsWith: prefix } },
+  });
+
+  return `${prefix}-${String(count + 1).padStart(5, "0")}`;
+}
+
+export async function createQuote(input: {
+  opportunityId?: string;
+  customerId?: string;
+  quoteNumber?: string;
+  currency?: string;
+  validUntil?: Date;
+  taxRate?: number;
+  taxTotal?: number;
+  notes?: string;
+  lines: Array<{ description: string; quantity: number; unitPrice: number }>;
+}) {
+  const totals = computeQuoteTotals({
+    lines: input.lines,
+    taxRate: input.taxRate,
+    taxTotal: input.taxTotal,
+  });
+
+  return db.quote.create({
+    data: {
+      quoteNumber: input.quoteNumber ?? (await createNextQuoteNumber()),
+      opportunityId: input.opportunityId,
+      customerId: input.customerId,
+      currency: input.currency ?? "ILS",
+      subtotal: totals.subtotal,
+      taxTotal: totals.taxTotal,
+      total: totals.total,
+      validUntil: input.validUntil,
+      notes: input.notes,
+      lines: {
+        create: input.lines.map((line) => ({
+          description: line.description,
+          quantity: line.quantity,
+          unitPrice: line.unitPrice,
+          lineTotal: round2(line.quantity * line.unitPrice),
+        })),
+      },
+    },
+    include: { lines: true },
+  });
+}
+
+export async function sendQuote(quoteId: string) {
+  return db.quote.update({
+    where: { id: quoteId },
+    data: { status: "SENT", sentAt: new Date() },
+  });
+}
+
+/**
+ * Records the customer's decision. Accepting a quote also marks the linked
+ * opportunity WON (probability 100).
+ */
+export async function decideQuote(input: {
+  quoteId: string;
+  decision: "ACCEPTED" | "DECLINED";
+}) {
+  return db.$transaction(async (tx) => {
+    const quote = await tx.quote.update({
+      where: { id: input.quoteId },
+      data: { status: input.decision, decidedAt: new Date() },
+    });
+
+    if (input.decision === "ACCEPTED" && quote.opportunityId) {
+      await tx.opportunity.update({
+        where: { id: quote.opportunityId },
+        data: {
+          stage: "WON",
+          status: "WON",
+          probability: 100,
+          closedAt: new Date(),
+        },
+      });
+    }
+
+    return quote;
+  });
+}
+
+/** Converts an accepted quote into a customer invoice (AR), reusing its lines. */
+export async function convertQuoteToInvoice(input: {
+  quoteId: string;
+  invoiceDate?: Date;
+  dueDate?: Date;
+}) {
+  const quote = await db.quote.findUnique({
+    where: { id: input.quoteId },
+    include: { lines: true },
+  });
+  if (!quote) throw new Error("Quote not found.");
+
+  return createCustomerInvoice({
+    customerId: quote.customerId ?? undefined,
+    invoiceDate: input.invoiceDate ?? new Date(),
+    dueDate: input.dueDate,
+    currency: quote.currency,
+    taxTotal: Number(quote.taxTotal),
+    notes: `מהצעת מחיר ${quote.quoteNumber}`,
+    lines: quote.lines.map((line) => ({
+      description: line.description,
+      quantity: line.quantity,
+      unitPrice: Number(line.unitPrice),
+    })),
+  });
+}
+
+/** Marks sent quotes whose validity has passed as EXPIRED. Returns the count. */
+export async function expireStaleQuotes(asOf: Date = new Date()) {
+  const result = await db.quote.updateMany({
+    where: { status: "SENT", validUntil: { lt: asOf } },
+    data: { status: "EXPIRED" },
+  });
+
+  return result.count;
+}

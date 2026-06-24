@@ -1793,6 +1793,7 @@ model Opportunity {
   metadata            Json?
   closedAt            DateTime?
   lead                Lead?     @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  quotes              Quote[]
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
@@ -1800,6 +1801,45 @@ model Opportunity {
   @@index([customerId])
   @@index([leadId])
   @@index([expectedCloseDate])
+}
+
+/// CRM quote / proposal (CRM-SAL-002).
+model Quote {
+  id            String      @id @default(cuid())
+  quoteNumber   String      @unique
+  opportunityId String?
+  customerId    String?
+  /// DRAFT | SENT | ACCEPTED | DECLINED | EXPIRED
+  status        String      @default("DRAFT")
+  currency      String      @default("ILS")
+  subtotal      Decimal     @default(0) @db.Decimal(14, 2)
+  taxTotal      Decimal     @default(0) @db.Decimal(14, 2)
+  total         Decimal     @default(0) @db.Decimal(14, 2)
+  validUntil    DateTime?   @db.Date
+  notes         String?
+  metadata      Json?
+  sentAt        DateTime?
+  decidedAt     DateTime?
+  opportunity   Opportunity? @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
+  lines         QuoteLine[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([status, validUntil])
+  @@index([opportunityId])
+  @@index([customerId])
+}
+
+model QuoteLine {
+  id          String  @id @default(cuid())
+  quoteId     String
+  description String
+  quantity    Int
+  unitPrice   Decimal @db.Decimal(14, 2)
+  lineTotal   Decimal @db.Decimal(14, 2)
+  quote       Quote   @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+
+  @@index([quoteId])
 }
 
 /// Immutable cost layer per goods receipt, for FIFO / weighted-average
