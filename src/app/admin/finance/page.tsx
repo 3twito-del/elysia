@@ -23,7 +23,10 @@ import {
   formatHebrewDateTime,
   formatPrice,
 } from "~/lib/format";
-import { getFinanceOverview } from "~/server/services/finance";
+import {
+  getFinanceOverview,
+  getGeneralLedgerOverview,
+} from "~/server/services/finance";
 
 export const metadata = {
   title: "Finance | Admin",
@@ -47,6 +50,16 @@ export default async function AdminFinancePage() {
   });
 
   if (!finance) return <AdminDatabaseFallback />;
+
+  const gl = await getGeneralLedgerOverview({ range: finance.range }).catch(
+    (error: unknown) => {
+      if (process.env.NODE_ENV === "development") {
+        console.error("[admin] failed to load general ledger", error);
+      }
+
+      return null;
+    },
+  );
 
   return (
     <AdminShell
@@ -170,6 +183,129 @@ export default async function AdminFinancePage() {
           </CardContent>
         </Card>
       </div>
+
+      {gl ? (
+        <div className="mt-6 grid gap-6 xl:grid-cols-[1.3fr_0.7fr]">
+          <Card className="rounded-md">
+            <CardHeader className="flex flex-row items-center justify-between gap-3">
+              <CardTitle className="flex items-center gap-2">
+                <Landmark aria-hidden="true" className="size-5" />
+                מאזן בוחן (Trial Balance)
+              </CardTitle>
+              <Badge
+                variant={
+                  gl.trialBalance.balanced ? "secondary" : "destructive"
+                }
+              >
+                {gl.trialBalance.balanced ? "מאוזן" : "לא מאוזן"}
+              </Badge>
+            </CardHeader>
+            <CardContent>
+              <Table className="min-w-[560px]">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>חשבון</TableHead>
+                    <TableHead>Debit</TableHead>
+                    <TableHead>Credit</TableHead>
+                    <TableHead>יתרה</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {gl.trialBalance.rows.length === 0 ? (
+                    <TableEmptyRow
+                      colSpan={4}
+                      description="רישומי יומן יופיעו לאחר מכירות וקליטות סחורה."
+                      icon={ReceiptText}
+                      title="אין תנועות GL"
+                    />
+                  ) : (
+                    gl.trialBalance.rows.map((row) => (
+                      <TableRow key={row.accountId}>
+                        <TableCell className="font-medium">
+                          {row.code} · {row.name}
+                        </TableCell>
+                        <TableCell>{formatPrice(row.debit)}</TableCell>
+                        <TableCell>{formatPrice(row.credit)}</TableCell>
+                        <TableCell>{formatPrice(row.balance)}</TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+              {gl.trialBalance.rows.length > 0 ? (
+                <p className="text-muted-foreground mt-3 text-sm">
+                  סה״כ Debit {formatPrice(gl.trialBalance.totalDebit)} · Credit{" "}
+                  {formatPrice(gl.trialBalance.totalCredit)}
+                </p>
+              ) : null}
+            </CardContent>
+          </Card>
+
+          <Card className="rounded-md">
+            <CardHeader>
+              <CardTitle>גיול AP / AR</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-3 text-sm">
+              <div className="rounded-md border p-3">
+                <p className="font-medium">ספקים (AP) — לתשלום</p>
+                <p className="text-muted-foreground mt-1 leading-6">
+                  סה״כ פתוח {formatPrice(gl.apAging.total)} · באיחור 90+{" "}
+                  {formatPrice(gl.apAging.days90plus)}
+                </p>
+              </div>
+              <div className="rounded-md border p-3">
+                <p className="font-medium">לקוחות (AR) — לגבייה</p>
+                <p className="text-muted-foreground mt-1 leading-6">
+                  סה״כ פתוח {formatPrice(gl.arAging.total)} · באיחור 90+{" "}
+                  {formatPrice(gl.arAging.days90plus)}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      ) : null}
+
+      {gl && gl.entries.length > 0 ? (
+        <Card className="mt-6 rounded-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <ReceiptText aria-hidden="true" className="size-5" />
+              תנועות יומן אחרונות (Journal Entries)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-2">
+            {gl.entries.map((entry) => (
+              <div className="rounded-md border p-3" key={entry.id}>
+                <div className="flex items-center justify-between gap-3">
+                  <p className="font-medium">
+                    {entry.entryNumber} · {entry.memo ?? entry.source}
+                  </p>
+                  <Badge variant="outline">
+                    {formatHebrewDate(entry.entryDate)}
+                  </Badge>
+                </div>
+                <div className="text-muted-foreground mt-2 grid gap-0.5 text-xs">
+                  {entry.lines.map((line) => (
+                    <div
+                      className="flex justify-between gap-3"
+                      key={`${entry.id}-${line.code}-${line.debit}-${line.credit}`}
+                    >
+                      <span>
+                        {line.code} · {line.name}
+                      </span>
+                      <span>
+                        {line.debit > 0
+                          ? `חובה ${formatPrice(line.debit)}`
+                          : `זכות ${formatPrice(line.credit)}`}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      ) : null}
     </AdminShell>
   );
 }

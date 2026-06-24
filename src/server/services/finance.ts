@@ -1,8 +1,10 @@
 import { Prisma } from "@prisma/client";
 
 import { db } from "~/server/db";
+import { getApAging } from "~/server/services/accounts-payable";
+import { getArAging } from "~/server/services/accounts-receivable";
 import { DEFAULT_VAT_RATE } from "~/server/services/erp";
-import { postSaleJournalEntry } from "~/server/services/ledger";
+import { computeTrialBalance, postSaleJournalEntry } from "~/server/services/ledger";
 import { ACCOUNT } from "~/server/services/ledger-accounts";
 
 export type FinanceDateRange = {
@@ -340,6 +342,49 @@ export async function postOrderSaleToLedger(orderId: string) {
   });
 
   return { posted: true as const, journalEntryId: entry.id };
+}
+
+/**
+ * Read-only view of the double-entry general ledger for the admin Finance page:
+ * cumulative trial balance, recent journal entries (with lines), and AP/AR aging.
+ */
+export async function getGeneralLedgerOverview(
+  input: { range?: FinanceDateRange } = {},
+) {
+  const range = normalizeFinanceRange(input.range);
+
+  const [trialBalance, recentEntries, apAging, arAging] = await Promise.all([
+    computeTrialBalance(),
+    db.journalEntry.findMany({
+      where: { entryDate: { gte: range.from, lt: range.to } },
+      orderBy: [{ entryDate: "desc" }, { createdAt: "desc" }],
+      take: 25,
+      include: { lines: { include: { account: true } } },
+    }),
+    getApAging(),
+    getArAging(),
+  ]);
+
+  return {
+    range,
+    trialBalance,
+    apAging,
+    arAging,
+    entries: recentEntries.map((entry) => ({
+      id: entry.id,
+      entryNumber: entry.entryNumber,
+      entryDate: entry.entryDate,
+      source: entry.source,
+      status: entry.status,
+      memo: entry.memo,
+      lines: entry.lines.map((line) => ({
+        code: line.account.code,
+        name: line.account.name,
+        debit: Number(line.debit),
+        credit: Number(line.credit),
+      })),
+    })),
+  };
 }
 
 async function auditFinanceAccess(input: {
