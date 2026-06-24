@@ -930,6 +930,7 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 
 .public-motion-shell {
   position: relative;
+  z-index: 10;
   isolation: isolate;
   min-height: 100vh;
   overflow-x: clip;
@@ -3995,6 +3996,8 @@ html[data-accessibility-motion="reduce"]
 .site-header {
   --site-header-link-color: var(--muted-foreground);
   --site-header-link-hover: var(--foreground);
+  z-index: 80;
+  isolation: isolate;
   border-bottom: 1px solid transparent;
   background: transparent;
   color: var(--foreground);
@@ -4008,7 +4011,7 @@ html[data-accessibility-motion="reduce"]
 
 .site-header[data-header-state="solid"] {
   border-bottom-color: var(--glass-border);
-  background: var(--background);
+  background: rgb(251 248 244);
   box-shadow: 0 1px 0 oklch(0 0 0 / 2%);
 }
 
@@ -4923,6 +4926,8 @@ footer nav a {
 }
 
 .site-footer {
+  position: relative;
+  z-index: 0;
   scroll-margin-top: calc(var(--site-header-height) + 2rem);
 }
 
