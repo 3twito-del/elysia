@@ -1430,6 +1430,8 @@ model Vendor {
   metadata       Json?
   purchaseOrders PurchaseOrder[]
   costSnapshots  ProductCostSnapshot[]
+  invoices       VendorInvoice[]
+  payments       VendorPayment[]
   createdAt      DateTime              @default(now())
   updatedAt      DateTime              @updatedAt
 
@@ -1454,6 +1456,7 @@ model PurchaseOrder {
   items                PurchaseOrderItem[]
   receipts             GoodsReceipt[]
   financeLedgerEntries FinanceLedgerEntry[]
+  vendorInvoices       VendorInvoice[]
   createdAt            DateTime             @default(now())
   updatedAt            DateTime             @updatedAt
 
@@ -1475,10 +1478,11 @@ model PurchaseOrderItem {
   purchaseOrder    PurchaseOrder         @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
   product          Product?              @relation(fields: [productId], references: [id], onDelete: SetNull)
   variant          ProductVariant?       @relation(fields: [variantId], references: [id], onDelete: SetNull)
-  receipts         GoodsReceipt[]
-  costSnapshots    ProductCostSnapshot[]
-  createdAt        DateTime              @default(now())
-  updatedAt        DateTime              @updatedAt
+  receipts           GoodsReceipt[]
+  costSnapshots      ProductCostSnapshot[]
+  vendorInvoiceLines VendorInvoiceLine[]
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
 
   @@index([purchaseOrderId])
   @@index([productId])
@@ -1596,6 +1600,80 @@ model JournalLine {
   @@index([journalEntryId])
   @@index([accountId])
   @@index([branchId])
+}
+
+/// Accounts Payable: a supplier invoice, optionally matched to a purchase order.
+model VendorInvoice {
+  id              String                    @id @default(cuid())
+  invoiceNumber   String
+  vendorId        String
+  purchaseOrderId String?
+  /// DRAFT | MATCHED | VARIANCE | APPROVED | PARTIALLY_PAID | PAID | CANCELLED
+  status          String                    @default("DRAFT")
+  currency        String                    @default("ILS")
+  subtotal        Decimal                   @default(0) @db.Decimal(14, 2)
+  taxTotal        Decimal                   @default(0) @db.Decimal(14, 2)
+  total           Decimal                   @default(0) @db.Decimal(14, 2)
+  paidTotal       Decimal                   @default(0) @db.Decimal(14, 2)
+  invoiceDate     DateTime                  @db.Date
+  dueDate         DateTime?                 @db.Date
+  approvedAt      DateTime?
+  notes           String?
+  metadata        Json?
+  vendor          Vendor                    @relation(fields: [vendorId], references: [id], onDelete: Restrict)
+  purchaseOrder   PurchaseOrder?            @relation(fields: [purchaseOrderId], references: [id], onDelete: SetNull)
+  lines           VendorInvoiceLine[]
+  allocations     VendorPaymentAllocation[]
+  createdAt       DateTime                  @default(now())
+  updatedAt       DateTime                  @updatedAt
+
+  @@unique([vendorId, invoiceNumber])
+  @@index([status, dueDate])
+  @@index([purchaseOrderId])
+}
+
+model VendorInvoiceLine {
+  id                  String             @id @default(cuid())
+  vendorInvoiceId     String
+  purchaseOrderItemId String?
+  description         String
+  quantity            Int
+  unitCost            Decimal            @db.Decimal(14, 2)
+  lineTotal           Decimal            @db.Decimal(14, 2)
+  vendorInvoice       VendorInvoice      @relation(fields: [vendorInvoiceId], references: [id], onDelete: Cascade)
+  purchaseOrderItem   PurchaseOrderItem? @relation(fields: [purchaseOrderItemId], references: [id], onDelete: SetNull)
+
+  @@index([vendorInvoiceId])
+  @@index([purchaseOrderItemId])
+}
+
+model VendorPayment {
+  id          String                    @id @default(cuid())
+  vendorId    String
+  amount      Decimal                   @db.Decimal(14, 2)
+  currency    String                    @default("ILS")
+  method      String                    @default("bank_transfer")
+  reference   String?
+  paidAt      DateTime                  @default(now())
+  notes       String?
+  vendor      Vendor                    @relation(fields: [vendorId], references: [id], onDelete: Restrict)
+  allocations VendorPaymentAllocation[]
+  createdAt   DateTime                  @default(now())
+
+  @@index([vendorId, paidAt])
+}
+
+/// Allocation of a vendor payment to a specific invoice (supports split payments).
+model VendorPaymentAllocation {
+  id              String        @id @default(cuid())
+  vendorPaymentId String
+  vendorInvoiceId String
+  amount          Decimal       @db.Decimal(14, 2)
+  vendorPayment   VendorPayment @relation(fields: [vendorPaymentId], references: [id], onDelete: Cascade)
+  vendorInvoice   VendorInvoice @relation(fields: [vendorInvoiceId], references: [id], onDelete: Restrict)
+
+  @@index([vendorPaymentId])
+  @@index([vendorInvoiceId])
 }
 
 model FinanceLedgerEntry {

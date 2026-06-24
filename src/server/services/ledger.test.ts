@@ -5,6 +5,8 @@ import {
   assertBalanced,
   buildPurchaseReceiptJournalLines,
   buildSaleJournalLines,
+  buildVendorInvoiceJournalLines,
+  buildVendorPaymentJournalLines,
   summarizeJournalLines,
 } from "./ledger";
 
@@ -90,5 +92,50 @@ describe("buildPurchaseReceiptJournalLines", () => {
     expect(
       lines.find((line) => line.accountCode === ACCOUNT.GRNI)?.credit,
     ).toBe(250);
+  });
+});
+
+describe("buildVendorInvoiceJournalLines", () => {
+  it("clears GRNI + VAT input into AP and balances", () => {
+    const lines = buildVendorInvoiceJournalLines({
+      goodsValue: 250,
+      taxTotal: 45,
+    });
+    const summary = assertBalanced(lines);
+    expect(summary.totalDebit).toBe(295);
+
+    expect(lines.find((line) => line.accountCode === ACCOUNT.GRNI)?.debit).toBe(
+      250,
+    );
+    expect(
+      lines.find((line) => line.accountCode === ACCOUNT.VAT_INPUT)?.debit,
+    ).toBe(45);
+    expect(
+      lines.find((line) => line.accountCode === ACCOUNT.ACCOUNTS_PAYABLE)
+        ?.credit,
+    ).toBe(295);
+  });
+
+  it("omits the VAT line when there is no tax", () => {
+    const lines = buildVendorInvoiceJournalLines({ goodsValue: 100 });
+    expect(
+      lines.some((line) => line.accountCode === ACCOUNT.VAT_INPUT),
+    ).toBe(false);
+    assertBalanced(lines);
+  });
+});
+
+describe("buildVendorPaymentJournalLines", () => {
+  it("debits AP and credits cash", () => {
+    const lines = buildVendorPaymentJournalLines({ amount: 295 });
+    assertBalanced(lines);
+
+    expect(
+      lines.find((line) => line.accountCode === ACCOUNT.ACCOUNTS_PAYABLE)
+        ?.debit,
+    ).toBe(295);
+    expect(lines.find((line) => line.accountCode === ACCOUNT.CASH)?.credit).toBe(
+      295,
+    );
   });
 });

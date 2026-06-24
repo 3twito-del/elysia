@@ -158,6 +158,76 @@ export function buildPurchaseReceiptJournalLines(input: {
   ];
 }
 
+/**
+ * Lines for approving a PO-matched vendor invoice: clears the GRNI accrual and
+ * recognises recoverable VAT against Accounts Payable. Balances by construction
+ * (GRNI goods value + VAT input = AP total).
+ */
+export function buildVendorInvoiceJournalLines(input: {
+  goodsValue: number;
+  taxTotal?: number;
+  branchId?: string;
+}): JournalLineInput[] {
+  const goodsValue = round2(input.goodsValue);
+  const taxTotal = Math.max(0, round2(input.taxTotal ?? 0));
+  const branchId = input.branchId;
+
+  const lines: JournalLineInput[] = [
+    {
+      accountCode: ACCOUNT.GRNI,
+      debit: goodsValue,
+      credit: 0,
+      memo: "סגירת התחייבות לסחורה שהתקבלה",
+      branchId,
+    },
+  ];
+
+  if (taxTotal > 0) {
+    lines.push({
+      accountCode: ACCOUNT.VAT_INPUT,
+      debit: taxTotal,
+      credit: 0,
+      memo: 'מע"מ תשומות',
+      branchId,
+    });
+  }
+
+  lines.push({
+    accountCode: ACCOUNT.ACCOUNTS_PAYABLE,
+    debit: 0,
+    credit: round2(goodsValue + taxTotal),
+    memo: "זכות ספק",
+    branchId,
+  });
+
+  return lines;
+}
+
+/** Lines for paying a vendor: Accounts Payable (debit) / Cash (credit). */
+export function buildVendorPaymentJournalLines(input: {
+  amount: number;
+  branchId?: string;
+}): JournalLineInput[] {
+  const amount = round2(input.amount);
+
+  return [
+    {
+      accountCode: ACCOUNT.ACCOUNTS_PAYABLE,
+      debit: amount,
+      credit: 0,
+      memo: "תשלום לספק",
+      branchId: input.branchId,
+    },
+    {
+      accountCode: ACCOUNT.CASH,
+      debit: 0,
+      credit: amount,
+      memo: "תשלום לספק",
+      branchId: input.branchId,
+    },
+  ];
+}
+
 /** Idempotently upserts the default chart of accounts. */
 export async function seedChartOfAccounts() {
   for (const account of DEFAULT_CHART_OF_ACCOUNTS) {
