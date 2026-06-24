@@ -1,0 +1,705 @@
+# מסמך-אב מחייב — חבילת ERP/CRM ארגונית (Elysia Enterprise Suite)
+
+> **סטטוס:** טיוטה לסקירה (v0.2) · **תאריך:** 2026-06-24 · **בעלות:** הנהלת Elysia + צוות הנדסה
+> **ייעוד:** מערכת פנימית בלבד (single-tenant) ברמה ארגונית מקסימלית — "לפחות SAP, ומעבר לכך".
+> **שפה:** עברית; מונחים טכניים, שמות מודולים, שדות ו-APIs באנגלית.
+
+---
+
+## 0. איך קוראים את המסמך הזה
+
+מסמך זה הוא **מפרט מחייב (binding spec)**, לא מסמך שיווקי. כל דרישה ממוספרת ובת-בדיקה.
+
+**מילות חיוב (לפי RFC 2119, בעברית):**
+
+| מילה | משמעות | מזהה |
+|---|---|---|
+| **חובה** (MUST) | דרישה מחייבת. אי-עמידה = המערכת אינה תואמת. | `[M]` |
+| **רצוי** (SHOULD) | מומלץ מאוד; סטייה מחייבת נימוק מתועד. | `[S]` |
+| **אפשר** (MAY) | רשות; נחמד-שיהיה. | `[O]` |
+
+**מזהי דרישות:** `<MODULE>-<AREA>-<NNN>` (לדוגמה `FIN-GL-001`). מזהים יציבים — לא ממחזרים מספרים גם אם דרישה נמחקת.
+
+**איך לעבור על המסמך:** עבור סעיף-סעיף. לכל דרישה החלט: ✅ מאשר · ✏️ מתקן (כתוב בשוליים) · ❌ מחוץ להיקף · ❓ להחלטה. הסעיפים המסומנים **🔧 פער קיים** ממופים לקוד הנוכחי בסעיף 12.
+
+**מה כן בהיקף:** מערכת אחת מאוחדת המכסה Commerce + CRM + ERP מלא (פיננסי כפול, רכש, מלאי/מחסן, הזמנות, ייצור, נכסים, HR), אנליטיקה ושכבת AI — **וכן פלטפורמת תפעול מלאה** (POS, תקשורת/טלפוניה, מסמכים+חתימה, workflow/no-code, שיווק דיגיטלי, לוגיסטיקה, פורטלים, תקצוב/FP&A, מנויים, תמחור/CPQ, GRC, משפטי, ידע/הדרכה ועוד) — כך ש**לעולם אין צורך לצאת לאף מערכת חיצונית**. הכול לעסק שלנו בלבד.
+**מה לא בהיקף (כרגע):** הפיכה ל-SaaS רב-לקוחותי, מרקטפלייס הרחבות חיצוני, מכירת המוצר לגורם שלישי. הארכיטקטורה תישאר נקייה מספיק כדי לא לחסום זאת בעתיד, אך לא נשלם מחיר תכנוני עבורו עכשיו.
+
+---
+
+## 1. חזון ועקרונות מנחים
+
+### 1.1 צפון אמיתי (North Star)
+מערכת **אחת**, real-time, AI-native, עברית-first/RTL, שהיא **מקור אמת יחיד** (single source of truth) לכל פעולה עסקית — מהקליק של הלקוח ועד הרישום החשבונאי הכפול ודוח המע"מ. כל מה ש-SAP/Salesforce/Oracle/Dynamics עושים בנפרד עם אינטגרציות — אנחנו עושים בתוך גרף נתונים אחד, בלי שכבות ETL בין-מערכתיות.
+
+### 1.2 עקרונות-על (Tenets) — כולם `[M]` אלא אם צוין
+1. **PRIN-001 [M] — Single source of truth.** כל ישות עסקית (Customer, Product, Order, Invoice, JournalEntry) קיימת פעם אחת. אין כפילויות מסונכרנות.
+2. **PRIN-002 [M] — Event-sourced core.** כל שינוי מצב משמעותי כותב אירוע ל-`OutboxEvent`/event log בלתי-משתנה. Read models נגזרים מהאירועים (CQRS היכן שמשתלם).
+3. **PRIN-003 [M] — Immutable financial & inventory ledgers.** ספרי החשבונות והמלאי הם append-only. תיקון = רישום נגדי (reversal), לא מחיקה/עדכון.
+4. **PRIN-004 [M] — Double-entry everywhere money moves.** כל תנועה כספית מייצרת רישום יומן מאוזן (debit=credit).
+5. **PRIN-005 [M] — Auditability by construction.** מי/מה/מתי/מאיזה ערך-לאיזה-ערך נשמר על כל מוטציה רגישה (`AuditLog`), כולל פעולות שמבצע AI.
+6. **PRIN-006 [M] — Authorization at the API boundary only.** בקרת גישה חיה ב-tRPC procedures (`adminProcedure(permission)`), ולעולם לא ב-UI בלבד.
+7. **PRIN-007 [M] — Israeli-statutory native.** מע"מ, חשבונית ישראל (מספר הקצאה), מבנה אחיד (קובץ SHAAM), ניכוי מס במקור — חלק מהליבה, לא תוספת.
+8. **PRIN-008 [M] — Hebrew-first, RTL-correct.** כל מסך, דוח ומסמך מודפס תקין ב-RTL.
+9. **PRIN-009 [S] — AI-native, not AI-bolted-on.** לכל מודול Copilot/agent עם הקשר מלא לנתונים, מאחורי guardrails ו-audit.
+10. **PRIN-010 [M] — Real-time over batch.** KPIs ודוחות נגזרים חי; batch רק כשאין ברירה (סגירות תקופה, רולאפים כבדים).
+11. **PRIN-011 [M] — Configurable, not hardcoded.** שיעורי מס, ספים, מטבעות, מדיניות — בטבלאות קונפיגורציה עם תוקף-לפי-תאריך (effective-dated), לא קבועים בקוד.
+12. **PRIN-012 [M] — Segregation of Duties (SoD).** מי שיוצר ספק ≠ מי שמאשר תשלום; מי שיוצר PO ≠ מי שמאשר חשבונית. נאכף במנוע הרשאות.
+13. **PRIN-013 [M] — Self-sufficiency ("לעולם לא לצאת").** לכל משימה עסקית חוזרת יש בית מדרגה-ראשונה בתוך המערכת. מערכת חיצונית היא לכל היותר adapter (מקור/יעד נתונים) — לעולם לא היעד שאליו המשתמש *עובר לעבוד*. אם משתמש פותח כלי חיצוני כדי לבצע עבודה — זהו פער מוצר שיש לתעד ולסגור.
+14. **PRIN-014 [M] — Extensibility ללא הנדסה.** שכבת no-code (workflow, custom fields/forms, report builder) מאפשרת לענות על צורך חדש בלי לצאת מהמערכת ובלי להמתין למחזור פיתוח.
+
+### 1.3 מה אומר "מעבר ל-SAP"
+SAP חזק בעומק ובציות, חלש ב-UX, איטי לשינוי, batch-כבד, ואינטגרציות בין-מודולריות יקרות. **היתרון שלנו:**
+- **Unified commerce-to-ledger** — הזמנת אתר → הקצאת מלאי → רישום הכנסה → דוח מע"מ, בלי גשרים.
+- **Real-time embedded analytics** — בלי data warehouse נפרד עבור רוב השאלות.
+- **AI-native** — שאילתות בשפה טבעית, חיזוי, Document-AI לחשבוניות ספק, next-best-action — מובנה.
+- **UX מודרני, עברית-first** — לא Fiori מתורגם.
+
+---
+
+## 2. בנצ'מארק שוק — מה לוקחים ובמה עוקפים
+
+| מערכת | חוזקות שנאמץ | מודולים מובילים | היכן נעקוף |
+|---|---|---|---|
+| **SAP S/4HANA** | עומק פיננסי, GL/CO, מבנה ארגוני, ציות, material ledger, ATP | FI, CO, MM, SD, PP, QM, PM, EWM, PS, HCM | UX, מהירות שינוי, real-time מלא, עברית/ישראל native, AI מובנה |
+| **Oracle (Fusion/NetSuite)** | רב-ספרי (multi-book), איחוד דוחות, SuiteAnalytics | ERP, SCM, EPM, CX | פשטות תפעול, עלות, התאמה מקומית |
+| **Salesforce** | CRM עומק: Sales/Service/Marketing, CDP, Agentforce | Sales/Service/Marketing Cloud, Data Cloud, Einstein | איחוד מלא עם ה-ERP (לא שתי מערכות), עלות רישוי |
+| **Microsoft Dynamics 365** | אינטגרציה, Business Central, Customer Insights, Copilot | Finance, SCM, Sales, Customer Service, Field Service | unified data model, עברית native |
+| **(ייחוס SMB) Odoo / NetSuite** | מודולריות, time-to-value | חבילה רחבה | עומק ארגוני + AI |
+
+**מסקנת ההיקף:** עלינו לכסות את ה-**superset** של המודולים לעיל, אבל כמערכת אחת מאוחדת. הטבלאות בסעיף 4 הן הרשימה המחייבת.
+
+---
+
+## 3. ארכיטקטורת-על (Reference Architecture)
+
+### 3.1 מפת תחומים (Bounded Contexts)
+```
+                ┌─────────────────────── Master Data (MDM) ───────────────────────┐
+                │ Accounts/Customers · Vendors · Items/Products · Pricing · Org/Branch/Warehouse · Chart of Accounts
+                └──────────────────────────────────────────────────────────────────┘
+   ┌──────────── CRM ────────────┐   ┌──────────────── ERP ────────────────┐   ┌──── Finance ────┐
+   │ Sales · Marketing · Service │   │ Procure-to-Pay · Inventory/WMS ·     │   │ GL · AP · AR ·  │
+   │ · Customer 360 / CDP ·      │   │ Order-to-Cash/OMS · Manufacturing ·  │   │ Tax · Assets ·  │
+   │ Loyalty                     │   │ Demand Planning                      │   │ Cost · Close    │
+   └─────────────────────────────┘   └──────────────────────────────────────┘   └─────────────────┘
+   ┌──────────── HR/HCM ─────────┐   ┌─── Analytics & BI ───┐   ┌──── AI Layer (cross-cutting) ────┐
+   │ Employees · Time · Payroll  │   │ Real-time KPIs ·     │   │ Copilots · NL-Query · Predictions │
+   │ · Recruiting (O)            │   │ Semantic layer ·     │   │ · Document-AI · Agents (guarded)  │
+   └─────────────────────────────┘   │ Forecast · Replay    │   └───────────────────────────────────┘
+        ▲ event log / OutboxEvent (append-only)   │   ▲ AuditLog (append-only)   │   ▲ RBAC/ABAC + SoD
+```
+
+### 3.2 דרישות ארכיטקטורה
+- **ARCH-001 [M]** מקור אמת יחיד ל-Postgres (Prisma). מערכות חיצוניות (Shopify, CardCom) הן adapters, לא מקור אמת מקביל.
+- **ARCH-002 [M]** Event log/outbox בלתי-משתנה לכל אירוע עסקי; consumers אידמפוטנטיים. מרחיב את `OutboxEvent` הקיים.
+- **ARCH-003 [M]** Read models / projections לדשבורדים כבדים, נבנים מאירועים; ניתנים לבנייה-מחדש (rebuild) מלאה.
+- **ARCH-004 [M]** כל מוטציה רגישה עוברת service layer (`src/server/services/`) ו-procedure מורשה; אין כתיבה ישירה ל-DB מ-UI/route.
+- **ARCH-005 [M]** Effective-dated config tables (tax rates, FX, pricing, policies) — שאילתה תמיד "מה היה התקף בתאריך X".
+- **ARCH-006 [S]** API פנימי אחיד (tRPC) + שכבת integration adapters מבודדת (`src/server/adapters/`) לכל מערכת חיצונית.
+- **ARCH-007 [M]** מיפוי לסטאק הקיים: Next.js 16 / tRPC 11 / Prisma 6 / PostgreSQL / NextAuth 5 / Redis (Upstash) / Typesense — אין החלפת סטאק; מרחיבים.
+- **ARCH-008 [S]** Multi-currency + multi-org מהיום הראשון במודל הנתונים (גם אם בפועל ILS/ארגון יחיד) — כדי לא לשבור ספרים בעתיד.
+
+---
+
+## 4. דרישות פונקציונליות לפי מודול
+
+> לכל מודול: מטרה, דרישות מחייבות, ומיפוי לבנצ'מארק. הדרישות הן רשימת-הבדיקה שלך.
+
+### 4.A Master Data Management (MDM)
+מטרה: ישות אחת נקייה לכל customer/vendor/item/account, עם מניעת כפילויות וזהות מאוחדת.
+
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| MDM-001 | [M] | רשומת **Item/Product** מאוחדת המשרתת קטלוג ציבורי, מלאי, רכש, ותמחיר (כבר קיים `Product`/`Variant` — להרחיב ב-cost/valuation fields). |
+| MDM-002 | [M] | **Vendor master** עם תנאי תשלום, lead time, מטבע, פרטי בנק, סטטוס, וקבצי ניכוי-מס-במקור (כבר קיים `Vendor` בסיסי). |
+| MDM-003 | [M] | **Account/Customer master** עם זהות מאוחדת (email+phone+external ids) ו-identity resolution למיזוג כפילויות. |
+| MDM-004 | [M] | **Org structure:** Company → Branch → Warehouse → Bin. כל תנועה משויכת לרמה הנכונה. |
+| MDM-005 | [M] | **Chart of Accounts (תרשים חשבונות)** היררכי, effective-dated, עם מיפוי לדיווח רשותי ישראלי. |
+| MDM-006 | [S] | מנגנון **dedup/merge** עם audit מלא ושחזור (un-merge) ל-customers ו-vendors. |
+| MDM-007 | [M] | Validation: ח.פ/ע.מ/ת.ז ישראלי, IBAN, אימות פורמט טלפון/דוא"ל. |
+
+### 4.B CRM — מכירות, שיווק, שירות, Customer 360
+
+**B.1 Sales (פייפליין מכירות) — `CRM-SAL`**
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| CRM-SAL-001 | [M] | Leads → Opportunities → Quotes → Orders עם שלבי pipeline מוגדרים וקונפיגורביליים. |
+| CRM-SAL-002 | [M] | הצעות מחיר (Quotes) עם תמחור, הנחות, תוקף, והמרה אוטומטית ל-Order/Invoice. |
+| CRM-SAL-003 | [S] | תחזית מכירות (sales forecast) לפי שלב × הסתברות; weighted pipeline. |
+| CRM-SAL-004 | [S] | Activity timeline אחיד (שיחות, מיילים, פגישות) לכל account. |
+
+**B.2 Marketing — `CRM-MKT`**
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| CRM-MKT-001 | [M] | **Segmentation engine** דינמי (rule-based + computed traits). מחליף את ה-segments הסטטיים הנוכחיים. |
+| CRM-MKT-002 | [M] | **Journeys/automation** מרובת-שלבים (trigger → wait → condition → action) על email/SMS/Push. |
+| CRM-MKT-003 | [M] | **Consent & preference center** מלא — opt-in/out פר-ערוץ, תיעוד הסכמה (לציות פרטיות). |
+| CRM-MKT-004 | [S] | A/B testing וניתוח attribution לקמפיינים. |
+| CRM-MKT-005 | [S] | קופונים/הטבות מותאמות-קהל מקושרות ל-segments (קיים `coupons` — לחבר). |
+
+**B.3 Service (שירות לקוחות) — `CRM-SVC`**
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| CRM-SVC-001 | [M] | **Cases/Tickets** עם סטטוס, עדיפות, בעלות, ו-linking ל-order/customer (קיים `ServiceRequest` — להרחיב ל-case management). |
+| CRM-SVC-002 | [M] | **SLA engine** — יעדי תגובה/פתרון, escalation אוטומטי, מדידת עמידה. |
+| CRM-SVC-003 | [S] | **Omnichannel inbox** — email/WhatsApp/chat/טופס באתר במקום אחד. |
+| CRM-SVC-004 | [S] | **Knowledge base** + הצעות מענה מבוססות-AI. |
+
+**B.4 Customer 360 / CDP — `CRM-360`**
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| CRM-360-001 | [M] | פרופיל 360 מאוחד: orders, wishlist, appointments, service, analytics events, consent, value (קיים בסיס ב-`getCustomer360Profile`). |
+| CRM-360-002 | [M] | **מדדים עקביים בין מסכים** — הגדרה אחת ל-LTV/order count/recency (🔧 פער קיים — סעיף 12). |
+| CRM-360-003 | [M] | **Churn/health scoring** עם ספים מסודרים ובני-בדיקה (🔧 פער קיים — באג סדר ספים). |
+| CRM-360-004 | [S] | Identity resolution חוצה-מכשירים/ערוצים → פרופיל אחד. |
+| CRM-360-005 | [S] | Next-best-action מבוסס-מודל (לא רק חוקים) פר לקוח. |
+
+**B.5 Loyalty — `CRM-LOY`** (O)
+| CRM-LOY-001 | [O] | תוכנית נקודות/דרגות, צבירה/מימוש, פקיעה — מקושרת ל-orders ו-AR.
+
+### 4.C ERP — Procure-to-Pay (P2P)
+מטרה: מספק → PO → קליטה → חשבונית → תשלום, עם 3-way match ובקרת SoD.
+
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| P2P-001 | [M] | **Purchase Requisition → PO** עם workflow אישורים מדורג (לפי סכום/קטגוריה). |
+| P2P-002 | [M] | **PO totals מלאים** — subtotal, מע"מ, משלוח, הנחות (כרגע `total=subtotal` בלבד — 🔧 פער). |
+| P2P-003 | [M] | **Goods Receipt מעדכן מלאי בפועל** — קליטת PO **חייבת** להגדיל `InventoryItem.quantity` בסניף/מחסן הנכון ולכתוב `InventoryLedger` בתוך אותה טרנזקציה (🔧 פער קריטי — סעיף 12). |
+| P2P-004 | [M] | קליטה משויכת ל-**Warehouse/Bin** (כרגע ל-`GoodsReceipt` אין `branchId` — 🔧 פער). |
+| P2P-005 | [M] | **Vendor Invoice + 3-way match** (PO ↔ Receipt ↔ Invoice); חריגות נחסמות/מסומנות. |
+| P2P-006 | [M] | **AP sub-ledger** — יתרת ספק, גיול (aging), לוח תשלומים. |
+| P2P-007 | [M] | **Payment run** — קיבוץ תשלומים, אישור, רישום GL, ניכוי מס במקור אוטומטי. |
+| P2P-008 | [M] | **Landed cost** — שיוך עלויות שילוח/מכס לעלות הפריט (FIFO/avg). |
+| P2P-009 | [M] | SoD: יוצר ספק ≠ מאשר תשלום; יוצר PO ≠ מאשר חשבונית. |
+
+### 4.D ERP — Inventory & Warehouse (WMS)
+מטרה: מלאי מדויק, ניתן-לביקורת, ברמת bin, עם valuation נכון.
+
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| INV-001 | [M] | **InventoryLedger בלתי-משתנה** הוא מקור האמת; כל תנועה (receipt/sale/transfer/adjust/return) = רשומת ledger. |
+| INV-002 | [M] | **Valuation method** מוגדר (FIFO / Weighted-Average / Standard) עם material ledger לעלות מדויקת לפריט. |
+| INV-003 | [M] | **Reservations** ל-24ש' בצ'קאאוט (קיים `InventoryReservation`) — לאחד עם ה-OMS allocation. |
+| INV-004 | [M] | **Multi-warehouse + bins** — מיקום, transfer בין-מחסני עם in-transit. |
+| INV-005 | [M] | **Cycle counting** ו-stock adjustments עם סיבה, אישור ו-GL impact. |
+| INV-006 | [M] | **Demand planning/reorder** — נקודת הזמנה לפי velocity×lead-time + safety stock (קיים בסיס ב-`getErpOverview`; להסיר את תקרת ה-80 פריטים ולהפוך לחישוב מלא — 🔧 פער). |
+| INV-007 | [S] | Pick/Pack/Ship workflow עם barcode/QR ו-mobile UI למחסן. |
+| INV-008 | [S] | Lot/serial tracking ו-expiry (FEFO) היכן שרלוונטי. |
+| INV-009 | [M] | תאימות בין `isInventoryLowStock` (לוגיקת sellable) לבין שאילתות ה-ERP low-stock. |
+
+### 4.E ERP — Order-to-Cash / OMS
+מטרה: ניהול הזמנות omnichannel מאוחד עד הכרת הכנסה וגבייה.
+
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| OMS-001 | [M] | מצב הזמנה אחיד: `PENDING_PAYMENT → PAID → PREPARING → READY_FOR_PICKUP | SHIPPED → COMPLETED` (קיים) + `CANCELLED/REFUNDED`; כל מעבר כותב `AuditLog`. |
+| OMS-002 | [M] | **Allocation/ATP** — הקצאת מלאי חכמה לפי מחסן/זמינות/קרבה; backorder מנוהל. |
+| OMS-003 | [M] | **Dropship (Shopify)** כ-fulfillment path עם mirror הזמנות (קיים `shopify-order-mirror`) — לאחד ב-OMS. |
+| OMS-004 | [M] | **Customer Invoice + הכרת הכנסה** — כל מכירה מייצרת חשבונית ורישום GL (הכנסה/מע"מ/AR). |
+| OMS-005 | [M] | **AR sub-ledger** — יתרות לקוח, גיול, התראות גבייה. |
+| OMS-006 | [M] | **Returns/RMA + Refunds** עם החזרת מלאי, רישום נגדי ב-GL, וזיכוי מע"מ. |
+| OMS-007 | [M] | אינטגרציית תשלום CardCom כ-adapter עם webhooks אידמפוטנטיים (קיים `payment-webhooks`). |
+
+### 4.F Finance & Accounting (הליבה החשבונאית)
+מטרה: הנהלת חשבונות כפולה מלאה, סגירת תקופה, ודיווח רשותי ישראלי — native.
+
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| FIN-GL-001 | [M] | **General Ledger כפול** — `JournalEntry` + `JournalLine` מאוזנים (Σdebit=Σcredit), append-only, reversal-based. |
+| FIN-GL-002 | [M] | **Sub-ledgers** (AP/AR/Inventory/Fixed Assets) מתאזנים אוטומטית מול ה-GL (control accounts). |
+| FIN-GL-003 | [M] | **Fiscal periods** עם נעילה; אין רישום לתקופה סגורה ללא הרשאה + audit. |
+| FIN-GL-004 | [M] | **Multi-currency** — שערים effective-dated, הפרשי שער ממומשים/לא-ממומשים. |
+| FIN-TAX-001 | [M] | **מנוע מע"מ** — שיעור effective-dated (לדוגמה 18% מ-2025-01-01; **לאמת מול רשות המסים**), קודי מס לפריט/לקוח, עסקאות פטורות/אפס. |
+| FIN-TAX-002 | [M] | **חשבונית ישראל** — בקשת **מספר הקצאה** מרשות המסים לחשבוניות מעל הסף (סף יורד מדורגת; ערך קונפיגורבי — **לאמת ערך נוכחי**). חסימת הנפקה ללא מספר כשנדרש. |
+| FIN-TAX-003 | [M] | **מבנה אחיד (קובץ SHAAM)** — ייצוא רשומות BKMVDATA/INI לפי המבנה האחיד הנדרש לביקורת. |
+| FIN-TAX-004 | [M] | **ניכוי מס במקור** — ניהול אישורי ניכוי לספקים, חישוב וניכוי בתשלום, דיווח 856. |
+| FIN-AP-001 | [M] | AP מלא: חשבוניות ספק, 3-way match, לוח תשלומים, גיול. |
+| FIN-AR-001 | [M] | AR מלא: חשבוניות לקוח, קבלות, גיול, גבייה, dunning. |
+| FIN-CASH-001 | [M] | **Cash & bank** — חשבונות בנק, **bank reconciliation** (התאמת בנק), תזרים מזומנים. |
+| FIN-CO-001 | [S] | **Cost accounting / רווחיות** — cost centers, profit centers, רווחיות לפי מוצר/לקוח/הזמנה (כיוון CO של SAP). |
+| FIN-RPT-001 | [M] | דוחות כספיים: מאזן (Balance Sheet), רווח והפסד (P&L), תזרים — real-time + לפי תקופה. |
+| FIN-RPT-002 | [M] | **Period close** — תהליך סגירה מובנה עם checklist, נעילה, ו-trial balance. |
+| FIN-RPT-003 | [S] | גיבוי/גישור לרו"ח חיצוני (ייצוא מבנה אחיד + דוחות PDF/Excel). |
+
+### 4.G Manufacturing / Production (PP/QM) — מותנה-צורך
+מטרה: אם/כאשר מיוצר מוצר עצמי (אריזות, סטים, הרכבות). נכלל כי "הכול כולל הכול"; להפעיל לפי צורך אמיתי.
+
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| MFG-001 | [S] | **BOM (Bill of Materials)** רב-רמתי + routings. |
+| MFG-002 | [S] | **Production/Work orders** עם צריכת חומר ו-GL (WIP). |
+| MFG-003 | [S] | **MRP** — תכנון דרישות חומר מבוסס תחזית+מלאי+פתוחים. |
+| MFG-004 | [O] | **Quality Management** — בדיקות נכנס/יוצא, NCR, אישורי שחרור. |
+| MFG-005 | [O] | Subcontracting / assembly kitting (רלוונטי לסטים/מארזים קמעונאיים). |
+
+### 4.H Asset Management (נכסים קבועים) — `FIN-FA`
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| FIN-FA-001 | [M] | רישום **נכסים קבועים** עם קטגוריה, עלות, תאריך הפעלה. |
+| FIN-FA-002 | [M] | **פחת** אוטומטי (קו ישר / יורד) עם רישום GL חודשי; ספרי מס מול הנהלת חשבונות. |
+| FIN-FA-003 | [S] | גריעה/מכירת נכס עם רווח/הפסד הון. |
+| FIN-FA-004 | [O] | **תחזוקת נכסים (PM)** — work orders, לוחות זמנים מונעים. |
+
+### 4.I HR / HCM — `HR`
+מטרה: עובדים, נוכחות, שכר ישראלי. **שים לב:** שכר ישראלי = לוקליזציה כבדה (ביטוח לאומי, מס הכנסה, פנסיה, תלוש 101/106) — **החלטת build-vs-buy פתוחה** (סעיף 14).
+
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| HR-001 | [M] | **Employee master** + מבנה ארגוני, תפקידים, היררכיית ניהול. |
+| HR-002 | [S] | **Time & attendance** — שעון נוכחות, חופשות, מחלה, אישורים. |
+| HR-003 | [S] | **Payroll ישראלי** — מס הכנסה, ביטוח לאומי, בריאות, פנסיה/קה"ש, תלוש, טופס 101/106, דיווח 102/126 (**מועמד לאינטגרציה חיצונית** ולא build). |
+| HR-004 | [O] | Recruiting/onboarding, ניהול ביצועים. |
+
+### 4.J Projects (PS) — `PRJ` (O)
+| PRJ-001 | [O] | פרויקטים עם תקציב, אבני-דרך, חיוב לפי שלב, ושיוך עלויות/הכנסות.
+
+### 4.K Analytics & BI — `BI`
+מטרה: כל שאלה עסקית נענית real-time; חיזוי ואנומליות מובנים.
+
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| BI-001 | [M] | **דשבורדים real-time** לכל מודול (KPIs נגזרים חי, לא batch). מרחיב את ה-analytics/BI הקיים. |
+| BI-002 | [M] | **Semantic layer** — הגדרת מטריקה אחת (LTV, GMV, margin) בשימוש חוזר בכל הדשבורדים (פותר חוסר-עקביות). |
+| BI-003 | [M] | **Self-service exploration** — חיתוכים לפי ממד (זמן/סניף/קטגוריה/לקוח) ללא קוד. |
+| BI-004 | [S] | **Forecasting + anomaly detection** — מכירות, מלאי, תזרים, אנומליות הונאה/החזרות. |
+| BI-005 | [S] | **Session replay** ו-product analytics (קיים `analytics-replay`) — לחבר ל-Customer 360. |
+| BI-006 | [M] | כל דוח כספי מתאזן מול ה-GL (אין "BI מספר" שסותר את הספרים). |
+
+### 4.L AI Layer ("מעבר ל-SAP") — `AI`
+מטרה: שכבת AI חוצת-מודולים, מאחורי guardrails ו-audit. בונה על ה-Vercel AI SDK הקיים (multi-provider).
+
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| AI-001 | [S] | **Copilot פר-מודול** — "מה מצב התזרים?", "אילו לקוחות בסיכון?", עם הקשר מלא והרשאות המשתמש. |
+| AI-002 | [S] | **NL-Query** — שאילתה בשפה טבעית מעל הנתונים → SQL/tRPC מאומת + תוצאה מוסברת. |
+| AI-003 | [S] | **Predictions** — churn, demand, credit risk, next-best-action (מחליף heuristics בחוקים+מודל). |
+| AI-004 | [S] | **Document-AI** — OCR לחשבוניות ספק/קבלות → טיוטת AP עם 3-way match. |
+| AI-005 | [M] | **Guardrails + audit** — כל פעולה שמבצע agent עוברת אותן הרשאות (`adminProcedure`) ונרשמת ב-`AuditLog` עם דגל `actor=ai`. אין כתיבה אוטונומית לספרים ללא אישור אנושי. |
+| AI-006 | [M] | שימוש בדגמי Claude העדכניים (Opus 4.x) כברירת מחדל למשימות ליבה; multi-provider fallback (קיים `quota-router`). |
+
+---
+
+## 4+ הרחבה: שטח הפעולה המלא — "לעולם לא לצאת מהמערכת"
+
+> מה שלמטה ממפה כל סיבה נפוצה שבגללה בעל עסק *עוזב* ל-Excel/Gmail/WhatsApp/POS נפרד/כלי שיווק/חתימה דיגיטלית/וכו'. כל אחד מקבל בית מדרגה-ראשונה בתוך החבילה (PRIN-013).
+
+### 4.M Point of Sale (POS) & קמעונאות אומניצ'אנל — `POS`
+מטרה: למכור בחנות הפיזית מאותה מערכת, עם מקור מלאי וכספים אחד.
+
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| POS-001 | [M] | POS לסניף: עגלה, סריקת ברקוד, תשלום (מזומן/אשראי/ארנק/שובר), הנפקת חשבונית/קבלה ישראלית עם מספר הקצאה (FIN-TAX-002). |
+| POS-002 | [M] | **Offline-first** עם סנכרון בטוח (קיים `offline-sync`) — מכירה נמשכת גם בלי רשת. |
+| POS-003 | [M] | מקור מלאי **אחד** בין אונליין לחנות (no double-sell); החזרות/החלפות בחנות → InventoryLedger + GL. |
+| POS-004 | [M] | משמרת קופה: פתיחה/סגירה, ספירת מזומן, **Z-report**, הפקדות בנק. |
+| POS-005 | [S] | חומרה: מגירת מזומן, מדפסת קבלות, מסך לקוח, סורק, מסוף סליקה (CardCom). |
+| POS-006 | [S] | **Clienteling** — זיהוי לקוח ב-POS עם Customer 360, היסטוריה והמלצות. |
+
+### 4.N Communications & Collaboration Hub — `COM`
+מטרה: דוא"ל, צ'אט, טלפון ו-WhatsApp במקום אחד, מקושרים להקשר.
+
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| COM-001 | [M] | **Shared inbox** דוא"ל מקושר ל-account/case — לשלוח/לקבל בלי לצאת ל-Gmail. |
+| COM-002 | [M] | **צ'אט פנימי** לצוות (ערוצים + ישיר), מקושר לכל ישות (הזמנה/לקוח/PO). |
+| COM-003 | [M] | **טלפוניה/VoIP** — click-to-call, הקלטה, לוג שיחות אוטומטי ל-CRM, IVR בסיסי. |
+| COM-004 | [M] | **WhatsApp Business + SMS** מאוחדים ל-omnichannel inbox (משלים CRM-SVC-003). |
+| COM-005 | [M] | **מרכז התראות אחד** (in-app/email/SMS/push) עם העדפות פר-משתמש (קיים push/web-push). |
+| COM-006 | [S] | אזכורים (@mention), תגובות ו-threads על כל ישות; הקצאת מטלות מתוך שיחה. |
+
+### 4.O Document Management & e-Signature — `DMS`
+מטרה: כל מסמך, תבנית וחתימה — בפנים.
+
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| DMS-001 | [M] | מאגר מסמכים מרכזי: תיוק, גרסאות, הרשאות, חיפוש מלא-טקסט + OCR. |
+| DMS-002 | [M] | **תבניות מסמכים** (חוזה/הצעה/PO/חשבונית) + מילוי-אוטומטי מנתוני המערכת → PDF. |
+| DMS-003 | [M] | **חתימה דיגיטלית** פנימית+חיצונית עם audit trail (לאמת מעמד "חתימה אלקטרונית מאובטחת/מאושרת" בישראל — D10). |
+| DMS-004 | [S] | קישור כל מסמך לישות + תאריכי תפוגה/חידוש עם תזכורות. |
+
+### 4.P Workflow, BPM & No-Code Platform — `WFL` (לב ה"לעולם לא לצאת")
+מטרה: לבנות תהליך/טופס/אוטומציה חדשים בלי קוד ובלי להמתין לפיתוח.
+
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| WFL-001 | [M] | **בונה תהליכים ויזואלי** (trigger → condition → action) חוצה-מודולים, ללא קוד. |
+| WFL-002 | [M] | **Custom fields + custom forms** על כל ישות, בלי שינוי סכמה ידני. |
+| WFL-003 | [M] | **שרשראות אישורים** מוגדרות-משתמש (לפי סכום/תפקיד/סניף) — מזין SoD ו-approval workflows. |
+| WFL-004 | [M] | אוטומציות מתוזמנות + מבוססות-אירוע (על גבי `OutboxEvent`), אידמפוטנטיות. |
+| WFL-005 | [S] | **Business rules + SLA/escalation** גנריים לכל ישות. |
+| WFL-006 | [S] | App builder קל למסכי/דשבורדי פנים חדשים בלי הנדסה (PRIN-014). |
+
+### 4.Q Report Builder & Spreadsheet Workspace — `RPT` (שלא ייפתח Excel)
+מטרה: כל ניתוח אד-הוק נעשה בפנים, חי על הנתונים.
+
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| RPT-001 | [M] | מעצב דוחות **drag-drop** (ממדים/מדדים) מעל ה-semantic layer (BI-002). |
+| RPT-002 | [M] | **סביבת spreadsheet** מובנית: pivot, נוסחאות, חיתוכים — חי על נתוני המערכת. |
+| RPT-003 | [M] | ייצוא Excel/PDF/CSV + **דוחות מתוזמנים** במייל/לפורטל. |
+| RPT-004 | [S] | דשבורדים אישיים מורכבים-משתמש, עם שיתוף והרשאות. |
+
+### 4.R Digital Marketing Suite — `DMK`
+מטרה: כל פעילות שיווק (אורגני+ממומן) מנוהלת בפנים.
+
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| DMK-001 | [M] | ניהול רשתות חברתיות: תזמון/פרסום/inbox מאוחד (Meta/IG/TikTok). |
+| DMK-002 | [M] | ניהול קמפיינים ממומנים (Google/Meta Ads): תקציב, ביצועים, **ROAS** במקום אחד. |
+| DMK-003 | [S] | SEO: meta/sitemaps/redirects, מחקר מילות מפתח, ניטור דירוג (משלים CMS). |
+| DMK-004 | [S] | לוח תוכן (content calendar) + ניהול נכסי קריאייטיב (DAM קל, מעל Cloudinary). |
+| DMK-005 | [M] | תוכנית **שותפים/הפניות** (affiliate/referral): מעקב, עמלות, ותשלום דרך AP. |
+
+### 4.S CMS & Storefront Experience — `CMS`
+מטרה: ניהול חוויית האתר, מבצעים ומרצ'נדייזינג — בלי כלי חיצוני.
+
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| CMS-001 | [M] | **Page/blog builder** ויזואלי (קיים בלוג — להרחיב לעמודי נחיתה). |
+| CMS-002 | [M] | מנוע **מבצעים/קופונים** מתקדם (BOGO, מדורג, ספי סל) מקושר ל-Pricing (PRC). |
+| CMS-003 | [M] | **מרצ'נדייזינג**: סדר קטגוריות, banners, pin/boost, **A/B testing** באתר. |
+| CMS-004 | [S] | **פרסונליזציה + recommendation engine** מעל Typesense + vectors. |
+| CMS-005 | [S] | ניהול חיפוש: synonyms, redirects, no-result rules. |
+
+### 4.T Field Service, Delivery & Logistics (TMS) — `LOG`
+מטרה: ניהול משלוחים, שליחים ושירות-שטח בתוך OMS.
+
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| LOG-001 | [M] | ניהול **shipments**: אריזה, מצב, מעקב, מסירה. |
+| LOG-002 | [M] | אינטגרציית שליחים + **הדפסת מדבקות/manifests** והשוואת תעריפים. |
+| LOG-003 | [S] | אופטימיזציית מסלולים + **אפליקציית נהג** (מעקב, חתימת מסירה/POD). |
+| LOG-004 | [S] | **Field service**: קריאות בשטח, לוח טכנאים, חלקים, חיוב. |
+| LOG-005 | [S] | **BOPIS** (איסוף עצמי) מסונכרן עם POS ו-OMS (קיים `READY_FOR_PICKUP`). |
+
+### 4.U Expense Management, כרטיסי אשראי וטיולים — `EXP`
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| EXP-001 | [M] | דיווח הוצאות עובד + צילום קבלה (Document-AI, AI-004) → אישור → החזר/AP. |
+| EXP-002 | [M] | התאמת **כרטיסי אשראי עסקיים** לתנועות והוצאות. |
+| EXP-003 | [S] | מדיניות הוצאות עם אכיפה אוטומטית; per-diem / החזר ק"מ. |
+| EXP-004 | [O] | הזמנת נסיעות/לינה. |
+
+### 4.V Treasury, תקצוב ו-FP&A — `FPA`
+מטרה: תכנון פיננסי, תקציבים ותזרים — לא ב-Excel.
+
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| FPA-001 | [M] | **תקציבים** (מחלקה/פרויקט/תקופה) מול ביצוע בפועל (budget vs actual). |
+| FPA-002 | [M] | תחזית **תזרים מזומנים** מתגלגלת (13-week + שנתי). |
+| FPA-003 | [M] | תכנון **תרחישים** (what-if), מודלים ויעדים. |
+| FPA-004 | [S] | **Board pack** — חבילת דוחות הנהלה אוטומטית תקופתית. |
+| FPA-005 | [S] | ניהול אשראי/הלוואות/קווי אשראי + FX hedging בסיסי. |
+
+### 4.W Subscriptions, חיוב מתגלגל והכרת הכנסה — `SUB`
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| SUB-001 | [M] | מוצרי מנוי/חברות: חיוב מתגלגל, חידוש, שדרוג/שנמוך, ביטול, proration. |
+| SUB-002 | [M] | **Dunning** (כשל גבייה → ניסיונות → השעיה) מקושר ל-AR ולתשלום. |
+| SUB-003 | [M] | **הכרת הכנסה** לאורך זמן (deferred revenue) לפי ASC 606 / IFRS 15. |
+| SUB-004 | [S] | מדדי **MRR/ARR/churn** מנויים בדשבורד. |
+
+### 4.X Pricing & CPQ — `PRC`
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| PRC-001 | [M] | מחירונים מרובים (ערוץ/לקוח/מטבע/כמות) **effective-dated**. |
+| PRC-002 | [M] | מנוע הנחות/מבצעים/**rebates** עם עדיפויות ומניעת stacking לא רצוי. |
+| PRC-003 | [S] | **CPQ**: תצורת מוצר מורכב + תמחור + הצעה אוטומטית (B2B/סטים). |
+| PRC-004 | [S] | Price optimization מבוסס-AI (ביקוש/תחרות/מרג'ין). |
+
+### 4.Y פורטלים: ספקים, B2B ולקוחות — `POR`
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| POR-001 | [M] | **פורטל לקוח** self-service: הזמנות, RMA, חשבוניות, מסמכים, פניות (מרחיב את עמודי החשבון הקיימים). |
+| POR-002 | [M] | **פורטל ספק**: PO, אישורי משלוח, חשבוניות, מצב תשלום, scorecard. |
+| POR-003 | [S] | **פורטל B2B**: מחירונים, אשראי, הזמנה חוזרת, מורשי-קנייה מרובים. |
+
+### 4.Z GRC — ממשל, סיכון, ציות + ESG — `GRC`
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| GRC-001 | [M] | ניהול מדיניות/נהלים + **attestation** (אישור קריאה) של עובדים. |
+| GRC-002 | [M] | רישום **סיכונים ובקרות** (internal controls) מול הספרים. |
+| GRC-003 | [M] | **בקשות פרטיות (DSAR)** — מחיקה/ייצוא נתוני לקוח אוטומטי (תיקון 13/GDPR, משלים NFR-PRIV-001). |
+| GRC-004 | [S] | דיווח **ESG/קיימות** (אריזה/פליטות/שרשרת אספקה). |
+| GRC-005 | [S] | **לוח ציות** (רישיונות/חידושים/תאריכי דיווח רשותי) עם תזכורות. |
+
+### 4.AA Legal & Contract Lifecycle (CLM) — `LGL`
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| LGL-001 | [M] | מחזור חיי חוזים: טיוטה → מו"מ → חתימה → חידוש/פקיעה (עם DMS + e-sign). |
+| LGL-002 | [S] | מאגר התחייבויות/סעיפים + תזכורות חידוש/הודעה מוקדמת. |
+| LGL-003 | [O] | ניהול תיקים/תביעות משפטיים. |
+
+### 4.AB Knowledge, Wiki & LMS — `KNW`
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| KNW-001 | [M] | **ויקי/בסיס ידע פנימי** (SOPs, נהלים) עם חיפוש ו-AI Q&A. |
+| KNW-002 | [M] | **LMS** — הדרכה/אונבורדינג עובדים: קורסים, מבחנים, מעקב השלמה. |
+| KNW-003 | [S] | בסיס ידע חיצוני ללקוחות (מקושר ל-CRM-SVC-004). |
+
+### 4.AC Calendar, Scheduling & Resource Booking — `CAL`
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| CAL-001 | [M] | **יומן מאוחד** (פגישות/משימות/אירועים) מסונכרן עם `appointments` הקיים. |
+| CAL-002 | [M] | הזמנת תורים/שירות ללקוחות + שיבוץ צוות/משאבים. |
+| CAL-003 | [S] | **תכנון משמרות** עובדים מקושר ל-HR ולנוכחות. |
+
+### 4.AD Multi-Entity, Intercompany & Consolidation — `ENT`
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| ENT-001 | [M] | תמיכת מבנה **רב-ישותי** (חברות/מטבעות) במודל מהיום, גם אם ישות אחת בפועל (ARCH-008). |
+| ENT-002 | [S] | תנועות **בין-חברתיות** (intercompany) + ביטול הדדי באיחוד. |
+| ENT-003 | [S] | דוחות **מאוחדים** (consolidation) רב-מטבעיים. |
+
+### 4.AE Integration Platform (iPaaS), API & EDI — `IPL`
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| IPL-001 | [M] | מחבּרים מנוהלים + **webhooks דו-כיווניים** אידמפוטנטיים לכל מערכת חיצונית (מרחיב `src/server/adapters/`). |
+| IPL-002 | [M] | **API management** פנימי: מפתחות, rate limits, לוגים, גרסאות. |
+| IPL-003 | [S] | **EDI** לספקים/קמעונאים גדולים (Orders/ASN/Invoices). |
+| IPL-004 | [O] | פורטל מפתחים + sandbox להרחבות עתידיות (בלי לפתוח ל-SaaS). |
+
+### 4.AF Gift Cards, Store Credit & Wallet — `WAL`
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| WAL-001 | [M] | **שוברי מתנה** (הנפקה/מימוש/יתרה) עם רישום **התחייבות** ב-GL. |
+| WAL-002 | [M] | **זיכוי חנות/ארנק** לקוח (החזרות → credit) שמיש אונליין + POS. |
+| WAL-003 | [S] | המרת נקודות נאמנות לארנק (קישור ל-CRM-LOY). |
+
+### 4.AG HR עומק: גיוס, ביצועים, הטבות, פורטל עובד — `HRX`
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| HRX-001 | [M] | **פורטל עובד** self-service (תלושים, חופשות, פרטים, בקשות). |
+| HRX-002 | [S] | **ATS/גיוס**: משרות, מועמדים, ראיונות, גיוס → onboarding. |
+| HRX-003 | [S] | **ניהול ביצועים**: יעדים, הערכות, 1:1, משוב. |
+| HRX-004 | [S] | הטבות/רווחה + ניהול נוכחות מתקדם. |
+
+### 4.AH Facilities, סניפים ותפעול חנות — `FAC`
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| FAC-001 | [M] | ניהול מיקומים/סניפים (קיים `Branch`): שעות, צוות, ציוד, חוזי שכירות. |
+| FAC-002 | [S] | **משימות תפעול לסניף** (פתיחה/סגירה/ניקיון/בקרת איכות) עם checklists. |
+| FAC-003 | [O] | תחזוקת מתקנים (מקושר ל-FIN-FA-004). |
+
+### 4.AI ITSM / Help Desk פנימי + נכסי IT — `ITS`
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| ITS-001 | [S] | קריאות תמיכה פנימיות (IT/תפעול) עם SLA — מעל מנוע ה-Case המשותף (CRM-SVC). |
+| ITS-002 | [O] | רישום נכסי IT/ציוד עובדים (מקושר ל-Fixed Assets ול-HR). |
+
+### 4.AJ Mobile & Offline App Surface — `MOB`
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| MOB-001 | [M] | **אפליקציית אדמין ניידת** (PWA קיים) לאישורים/דשבורדים/התראות בדרכים. |
+| MOB-002 | [M] | **אפליקציית מחסן** (סורק ברקוד) ל-receive/pick/count (INV/P2P). |
+| MOB-003 | [S] | אפליקציית POS/נהג/נציג-שטח לפי צורך — **offline-first**. |
+
+---
+
+## 5. דרישות לא-פונקציונליות (NFRs)
+
+| מזהה | חיוב | דרישה |
+|---|---|---|
+| NFR-PERF-001 | [M] | דשבורד ליבה < 1.5ש' P95; שאילתת רשימה < 500ms P95. |
+| NFR-SCALE-001 | [S] | תמיכה ב-≥1M orders, ≥500K customers, ≥100K SKUs בלי דגרדציה לינארית (אינדוקס/projections). |
+| NFR-AVAIL-001 | [M] | יעד זמינות 99.9%; RPO ≤ 5 דק', RTO ≤ 1ש' לנתונים פיננסיים. |
+| NFR-SEC-001 | [M] | הצפנה in-transit (TLS) ו-at-rest; secrets ב-vault/env מאומת (`src/env.js`). |
+| NFR-PRIV-001 | [M] | ציות **חוק הגנת הפרטיות (תיקון 13)** + GDPR-class: מחיקה/ייצוא נתוני לקוח, מינימיזציה, retention policies. |
+| NFR-AUDIT-001 | [M] | כל מוטציה פיננסית/מלאי/הרשאה ניתנת לשחזור מלא (who/what/when/before/after) ובלתי-ניתנת-למחיקה. |
+| NFR-OBS-001 | [S] | Observability: logs/metrics/traces, alerting על אנומליות פיננסיות, health checks (קיים `health` service). |
+| NFR-I18N-001 | [M] | RTL תקין בכל מסך ומסמך מודפס; פורמט תאריך/מטבע/מספר ישראלי. |
+| NFR-A11Y-001 | [S] | נגישות לפי ת"י 5568 / WCAG 2.1 AA במסכי האדמין. |
+| NFR-TEST-001 | [M] | כל מודול פיננסי/מלאי עם unit + integration tests; **CRM ו-ERP כרגע ללא בדיקות ייעודיות** (🔧 פער — סעיף 12). |
+
+---
+
+## 6. אבטחה, הרשאות וממשל (Security & Governance)
+
+- **SEC-001 [M]** הרחבת `AdminPermission` enum למודולים החדשים (finance.read/post, ap.approve, payment.run, inventory.adjust, payroll.run וכו'), נאכף ב-`adminProcedure(permission)`.
+- **SEC-002 [M]** **ABAC** מעבר ל-RBAC: גישה מותנית-הקשר (סניף/מחסן/סכום) — מאשר תשלום עד תקרה X.
+- **SEC-003 [M]** **מטריצת SoD** מתועדת ונאכפת (ראה PRIN-012). חריגה דורשת אישור-על + audit.
+- **SEC-004 [M]** **Approval workflows** מדורגים (סכום/קטגוריה) ל-PO, חשבוניות, תשלומים, התאמות מלאי, ושינויי GL.
+- **SEC-005 [M]** Audit immutability — `AuditLog` append-only; ניסיון שינוי/מחיקה נחסם ברמת ה-service ו-DB.
+- **SEC-006 [S]** הפרדת שתי זרימות האימות הקיימות (customers OTP, admins password) נשמרת; admins עם MFA `[S]`.
+
+---
+
+## 7. מודל נתונים — תוספות סכמה עיקריות (Prisma)
+
+> ברמת-על; הפירוט המלא בשלב התכנון של כל phase. מודלים קיימים מסומנים (קיים).
+
+- **Finance:** `LedgerAccount` (CoA), `JournalEntry`, `JournalLine`, `FiscalPeriod`, `TaxCode`, `TaxRate(effective-dated)`, `ExchangeRate(effective-dated)`, `BankAccount`, `BankReconciliation`.
+- **AP/AR:** `VendorInvoice`, `VendorInvoiceLine`, `Payment`, `PaymentAllocation`, `CustomerInvoice`(הרחבת order→invoice), `Receipt`, `CreditNote`, `WithholdingCertificate`.
+- **Inventory/WMS:** `InventoryLedger`(קיים — לחבר לקליטה), `Warehouse`, `Bin`, `StockTransfer`, `StockCount`, `ItemCostLayer`(FIFO), `LandedCost`.
+- **P2P:** `PurchaseRequisition`, `PurchaseOrder`(קיים — להוסיף tax/shipping), `GoodsReceipt`(קיים — להוסיף `warehouseId`/`binId` + inventory posting), `ProductCostSnapshot`(קיים).
+- **CRM:** `Lead`, `Opportunity`, `Quote`, `Campaign`, `Journey`, `Segment`(הרחבת `CustomerSegment` לדינמי), `Case`(הרחבת `ServiceRequest`), `SLAPolicy`, `ConsentRecord`.
+- **Fixed Assets:** `FixedAsset`, `DepreciationSchedule`, `AssetDisposal`.
+- **Manufacturing (מותנה):** `BillOfMaterials`, `BomLine`, `WorkOrder`, `Routing`.
+- **HR (מותנה):** `Employee`, `Position`, `TimeEntry`, `LeaveRequest` (+ payroll חיצוני אם נבחר).
+- **Config:** טבלאות effective-dated גנריות לכל policy/rate.
+
+---
+
+## 8. אינטגרציות חיצוניות (Adapters)
+
+| מערכת | תפקיד | מזהה |
+|---|---|---|
+| CardCom | סליקה (קיים) | INT-001 [M] |
+| Shopify | dropship/mirror (קיים) | INT-002 [M] |
+| Resend/Brevo | email (קיים) | INT-003 [M] |
+| Cloudinary | מדיה (קיים) | INT-004 [M] |
+| Typesense + vectors | חיפוש/סמנטי (קיים) | INT-005 [M] |
+| רשות המסים (חשבונית ישראל / מבנה אחיד) | חשבונית ומספר הקצאה ואישורי ניכוי | INT-006 [M] |
+| בנקים (Open Banking / קבצי תנועות) | bank reconciliation | INT-007 [S] |
+| ספק שכר (אם build-vs-buy=buy) | payroll | INT-008 [S] |
+
+- **INT-PRIN [M]** כל אינטגרציה היא adapter מבודד עם webhooks אידמפוטנטיים, retry/backoff, ו-dead-letter; לעולם לא מקור אמת מקביל.
+
+---
+
+## 9. דיווח רשותי ישראלי — דרישה מפורטת (קריטי)
+
+> מסומן בנפרד כי זו ההבחנה מ-ERP גלובלי "מתורגם". **כל המספרים/הספים — לאימות מול רו"ח/רשות המסים לפני יישום.**
+
+- **IL-001 [M]** מע"מ: שיעור effective-dated (18% נכון ל-2025 — לאמת), דוח תקופתי (PCN874), עסקאות חייב/פטור/אפס/תשומות.
+- **IL-002 [M]** **חשבונית ישראל:** קבלת **מספר הקצאה** מרשות המסים לחשבוניות מעל הסף; הצגתו על החשבונית; חסימת מסירה ללא מספר כשחובה. סף קונפיגורבי (יורד מדורגת — לאמת ערך נוכחי).
+- **IL-003 [M]** **מבנה אחיד (קובץ אחיד / SHAAM):** ייצוא `BKMVDATA`+`INI` במבנה הנדרש לביקורת מס.
+- **IL-004 [M]** **ניכוי מס במקור:** ניהול אישורים, חישוב, ניכוי בתשלום, דוח 856.
+- **IL-005 [S]** טפסי שכר (אם payroll פנימי): 101/106, דיווחי 102/126 לביטוח לאומי/מס הכנסה.
+- **IL-006 [M]** מספור חשבוניות/קבלות רציף וחוקי, מסמכים מקוריים בלתי-ניתנים-לשינוי (append-only + reversal).
+
+---
+
+## 10. קריטריוני קבלה ו-Definition of Done (מחייב)
+
+כל דרישה `[M]`/`[S]` נחשבת "בוצעה" רק כאשר:
+1. **DOD-001** קוד + טסטים (unit + integration; e2e לזרימות קריטיות) עוברים `pnpm verify:full`.
+2. **DOD-002** בקרת גישה ב-procedure + ערך הרשאה תואם; נבדק שמשתמש לא-מורשה נחסם.
+3. **DOD-003** כל מוטציה רגישה כותבת `AuditLog`/event; נבדק.
+4. **DOD-004** דרישה פיננסית: trial balance מאוזן בטסט; reversal מתואם.
+5. **DOD-005** RTL ועברית נבדקו במסך/מסמך הרלוונטי.
+6. **DOD-006** דרישה רשותית: אומתה מול רו"ח/מסמך רשות המסים, עם פנייה מתועדת.
+7. **DOD-007** טלמטריה/health check למסלול החדש.
+
+---
+
+## 11. עקרונות-על שאסור להפר (Invariants)
+- INV-A: סכום debit = סכום credit בכל `JournalEntry`. תמיד.
+- INV-B: יתרת sub-ledger = יתרת control account ב-GL. בכל רגע.
+- INV-C: סכום תנועות `InventoryLedger` לפריט×מחסן = `InventoryItem.quantity`. בכל רגע.
+- INV-D: אין מחיקה של מסמך פיננסי/מלאי — רק reversal.
+- INV-E: אין כתיבה ל-DB רגיש מחוץ ל-service layer מורשה.
+
+---
+
+## 12. ניתוח פערים מול הקוד הקיים (Gap Analysis)
+
+> מעוגן בסקירת `src/server/services/crm.ts` ו-`erp.ts`. זה הבסיס שעליו בונים.
+
+**מה כבר חזק (לשמר):**
+- מבנה service/router נקי, typed, עם `adminProcedure` + `AuditLog`.
+- KPIs אמיתיים מה-DB; `OutboxEvent` event-sourcing קיים; `InventoryLedger`/`InventoryReservation` קיימים; analytics/BI + session replay; multi-provider AI עם quota-router.
+
+**פערים מחייבי-תיקון (ממופים לדרישות):**
+
+| # | פער | חומרה | דרישה-יעד |
+|---|---|---|---|
+| G1 | **קליטת PO (`receivePurchaseOrder`) לא מעדכנת מלאי ולא כותבת `InventoryLedger`** — רושמת goods receipt + cost snapshot בלבד. לולאת הרכש שבורה. | קריטי | P2P-003, P2P-004, INV-001 |
+| G2 | **`computeChurnRisk` — `"HIGH"` קוד מת.** סדר הספים בודק `≥90→DORMANT` לפני `≥120→HIGH`; הסמנטיקה הפוכה. | בינוני-גבוה | CRM-360-003 |
+| G3 | **שתי הגדרות ל-LTV** — overview סופר כל ההזמנות (כולל CANCELLED/REFUNDED), 360/snapshot מסנן אותן. אי-עקביות בין מסכים. | בינוני | CRM-360-002, BI-002 |
+| G4 | **רשימות VIP/dormant/at-risk נגזרות מ-12 לקוחות בלבד** (`take: 12`) — לא מהבסיס כולו. | בינוני | CRM-360-001 |
+| G5 | **`total = subtotal`** ב-`createPurchaseOrder` — בלי מע"מ/משלוח. | בינוני | P2P-002 |
+| G6 | **תקרת 80 פריטים** ב-low-stock וקריטריון `OR safetyStock>0` מושך פריטים תקינים. | נמוך-בינוני | INV-006 |
+| G7 | **אפס בדיקות** ל-CRM/ERP (אין `crm.test.ts`/`erp.test.ts`). | בינוני | NFR-TEST-001 |
+
+**סטטוס יישום (Phase 0, פרוסה 1 — 2026-06-24):** ✅ G1–G7 תוקנו ברמת הלוגיקה ב-`src/server/services/{erp,crm}.ts`, עם `erp.test.ts`/`crm.test.ts`, typecheck ו-lint נקיים. **ללא שינוי סכמה / migration** (נשען על העמודות והמודלים הקיימים: `InventoryItem`, `InventoryLedger`, `PurchaseOrder.taxTotal/shippingTotal`).
+
+**סטטוס יישום (Phase 0, פרוסה 2 — 2026-06-24):** ✅ הונח **היסוד הפיננסי הכפול** (FIN-GL-001): מודלים `LedgerAccount`/`JournalEntry`/`JournalLine` בסכמה + שירות [ledger.ts](../src/server/services/ledger.ts) — chart of accounts, `postJournalEntry` עם אכיפת `Σdebit=Σcredit`, בוני שורות למכירה (חילוץ מע"מ + COGS) ולקליטת סחורה, `reverseJournalEntry` (reversal-based, PRIN-003) ו-`computeTrialBalance`. נוסף `branchId` ל-`GoodsReceipt` ונשמר בקליטה (P2P-004). 18 בדיקות עוברות (כולל `ledger.test.ts`), typecheck+lint נקיים. **ה-migration הוחל** (`migrate deploy`) וה-CoA נזרע (10 חשבונות, `scripts/seed-ledger.sql` + `prisma/seed.ts`).
+
+**סטטוס יישום (Phase 0, פרוסה 3 — 2026-06-24):** ✅ ה-GL **מחווט לזרימות החיות**: קליטת PO ([erp.ts](../src/server/services/erp.ts)) רושמת מלאי/GRNI בתוך אותה טרנזקציה; מעבר הזמנה ל-PAID (webhook CardCom → `recordPaymentCapturedSideEffects`) קורא ל-`postOrderSaleToLedger` ([finance.ts](../src/server/services/finance.ts)) — idempotent פר-הזמנה, best-effort (לא שובר checkout), מחלץ מע"מ בשיעור ברירת-מחדל ומשייך COGS↔מלאי. **אימות:** 954 בדיקות עוברות, typecheck+lint נקיים, ו-DB smoke (רישום מאוזן + FK) עבר. ✅ **Phase 0 exit מתקיים:** כל מכירה/קליטה מייצרת רישום GL מאוזן; ה-trial balance מתאזן. **נותר ל-Phase 1:** AP/AR מלאים, vendor invoices + 3-way match, valuation (FIFO/avg) ו-period close — ראה §13.
+
+---
+
+## 13. מפת דרכים מדורגת (Phased Roadmap)
+
+> כל phase עם **exit criteria** מחייב. לא עוברים phase בלי שכל ה-`[M]` שלו עומד ב-DoD.
+
+**Phase 0 — תיקון נכונות + יסוד פיננסי (בסיס לכל השאר)**
+G1–G7 + הקמת `LedgerAccount`/`JournalEntry`/`JournalLine` + מנוע מע"מ בסיסי (effective-dated).
+*Exit:* קליטת PO מעדכנת מלאי+ledger; כל מכירה מייצרת רישום GL מאוזן; trial balance מאוזן; טסטים ירוקים.
+
+**Phase 1 — Procure-to-Pay + AP/AR + Inventory posting מלא**
+PO totals, 3-way match, vendor invoices, payment run + ניכוי מס, AR/customer invoices, valuation (FIFO/avg), landed cost.
+*Exit:* sub-ledgers מתאזנים מול GL (INV-B); aging מדויק.
+
+**Phase 2 — CRM עומק**
+Sales pipeline, segmentation דינמי, journeys/automation, consent center, service/SLA, Customer 360 עקבי + scoring מתוקן.
+*Exit:* G2/G3/G4 סגורים; semantic layer (BI-002) חי; SLA נמדד.
+
+**Phase 3 — WMS + OMS omnichannel + Demand Planning**
+Bins/transfers/cycle count, allocation/ATP, dropship מאוחד, RMA/refunds, reorder מלא (G6).
+*Exit:* INV-C מתקיים בכל מחסן; OMS מנהל את כל הערוצים.
+
+**Phase 4 — Finance close + דיווח רשותי ישראלי**
+Period close, multi-currency, cash/bank reconciliation, cost accounting, חשבונית ישראל + מבנה אחיד + 856.
+*Exit:* IL-001..IL-004 אומתו מול רו"ח; סגירת תקופה מלאה.
+
+**Phase 5 — Manufacturing / Assets / HR (לפי צורך)**
+BOM/MRP/work orders (אם רלוונטי), fixed assets + פחת, HR master + החלטת payroll.
+*Exit:* פחת חודשי ל-GL; (manufacturing/payroll לפי החלטות סעיף 14).
+
+**Phase 6 — AI Layer מלא**
+Copilots פר-מודול, NL-query, predictions, Document-AI לחשבוניות, כולם מאחורי guardrails+audit.
+*Exit:* AI-005 נאכף; שום פעולה אוטונומית על הספרים ללא אישור.
+
+> **Phases 7–10 — "לעולם לא לצאת מהמערכת".** המודולים מ-§4+ נכנסים כאן, מקובצים לפי תלות. סדר ה-Phases הפנימי גמיש לפי כאב עסקי.
+
+**Phase 7 — פלטפורמת Self-Sufficiency (התשתית שמייתרת כלים חיצוניים)**
+Workflow/No-code (WFL), Report Builder + Spreadsheet (RPT), DMS + e-signature (DMS), Communications Hub (COM), מרכז התראות.
+*Exit:* אפשר לבנות תהליך/טופס/דוח חדש בלי קוד; דוא"ל/צ'אט/טלפון בתוך המערכת; PRIN-013/014 נמדדים.
+
+**Phase 8 — קמעונאות אומניצ'אנל ולוגיסטיקה**
+POS + משמרת קופה (POS), TMS/משלוחים + מדבקות (LOG), אפליקציות ניידות (MOB), שוברים/ארנק (WAL), יומן/שיבוץ (CAL), Facilities (FAC).
+*Exit:* מכירה בחנות עם מקור מלאי/כספים אחד; משלוח מקצה-לקצה; אפליקציית מחסן חיה.
+
+**Phase 9 — עומק מסחרי וצמיחה**
+Pricing & CPQ (PRC), Subscriptions + rev-rec (SUB), Digital Marketing (DMK), CMS/Storefront (CMS), פורטלים (POR), FP&A/Treasury (FPA), Expense (EXP).
+*Exit:* כל פעילות שיווק/תמחור/תקצוב/מנויים מנוהלת בפנים; פורטלי לקוח/ספק חיים.
+
+**Phase 10 — ממשל, ידע והרחבה ארגונית**
+GRC + ESG (GRC), Legal/CLM (LGL), Knowledge/LMS (KNW), Multi-entity/Consolidation (ENT), iPaaS/EDI (IPL), HR עומק (HRX), ITSM (ITS).
+*Exit:* DSAR אוטומטי; חוזים/ידע/ציות בפנים; מוכנות רב-ישותית.
+
+---
+
+## 14. החלטות פתוחות (Decision Log — דורש את החלטתך)
+
+| # | החלטה | אופציות | המלצה |
+|---|---|---|---|
+| D1 | **Payroll** build vs buy | לבנות שכר ישראלי מלא / לאינטגרציה לספק שכר ישראלי | **Buy** — לוקליזציה רגולטורית כבדה ומשתנה |
+| D2 | **Manufacturing depth** | מלא (BOM/MRP/QM) / קל (kitting/סטים בלבד) / לדלג | תלוי אם מייצרים/מרכיבים בפועל — כנראה **קל** |
+| D3 | **Inventory valuation** | FIFO / Weighted-Average / Standard | **Weighted-Average** לקמעונאות, אלא אם רו"ח מנחה אחרת |
+| D4 | **Period-1 priority** | פיננסי-first / CRM-first | **פיננסי-first** (Phase 0–1) — הוא מקור האמת |
+| D5 | **AI autonomy** | המלצות בלבד / פעולה-עם-אישור / אוטונומי-מוגבל | **פעולה-עם-אישור**; אף פעם לא אוטונומי על ספרים |
+| D6 | **דוחות רשותיים** | לבנות פנימי / לעבוד מול תוכנת הנה"ח מאושרת | לאמת מול רו"ח לפני Phase 4 |
+| D7 | **טלפוניה/VoIP + WhatsApp** | לבנות / לאינטגרציה לספק (Twilio/ספק ישראלי) | **Integrate** — adapter, לא core |
+| D8 | **רשתות חברתיות + Ads** | לבנות מנוע פרסום / לעטוף APIs (Meta/Google) | **Integrate** דרך IPL |
+| D9 | **חומרת POS** | מסוף ייעודי / טאבלט + סורק + מדפסת | טאבלט + perifריאלים, לפי סניף |
+| D10 | **תוקף חתימה דיגיטלית** | חתימה רגילה / מאובטחת / מאושרת (חוק חתימה אלקטרונית) | לאמת מול עו"ד לפי סוג מסמך |
+| D11 | **עומק No-Code (WFL)** | workflow+fields בלבד / עד app-builder מלא | להתחיל מצומצם, להרחיב לפי שימוש |
+
+---
+
+## 15. נספחים
+
+**A. מפתח חיוב:** `[M]` חובה · `[S]` רצוי · `[O]` אפשר.
+**B. מילון מונחים:** GL (ספר ראשי) · AP (זכאים/ספקים) · AR (חייבים/לקוחות) · CoA (תרשים חשבונות) · WMS (ניהול מחסן) · OMS (ניהול הזמנות) · ATP (זמין-להבטחה) · BOM (עץ מוצר) · MRP (תכנון דרישות חומר) · SoD (הפרדת תפקידים) · CDP (פלטפורמת נתוני לקוח) · RMA (החזרה מורשית).
+**C. אינדקס מודולים:**
+*ליבה:* MDM · CRM(SAL/MKT/SVC/360/LOY) · P2P · INV · OMS · FIN(GL/TAX/AP/AR/CASH/CO/RPT/FA) · MFG · HR · PRJ · BI · AI.
+*הרחבת "לעולם לא לצאת" (§4+):* POS · COM · DMS · WFL · RPT · DMK · CMS · LOG · EXP · FPA · SUB · PRC · POR · GRC · LGL · KNW · CAL · ENT · IPL · WAL · HRX · FAC · ITS · MOB.
+**D. הערת אזהרה רגולטורית:** כל שיעור/סף/טופס בסעיפים FIN-TAX, IL ו-HR הוא לדוגמה ולאימות מול רו"ח/יועץ מס/רשות המסים לפני יישום. אין במסמך ייעוץ מס/משפטי.
+
+---
+
+*סוף המסמך — v0.1. עבור עליו, סמן ✅/✏️/❌/❓ לכל דרישה, ונעדכן לגרסה מחייבת v1.0.*
