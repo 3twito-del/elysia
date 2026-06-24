@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ComponentProps } from "react";
 import {
+  Clock,
   Headset,
   Mail,
   MapPin,
@@ -52,6 +53,7 @@ import {
   getAdminServiceConfiguration,
   listAdminServiceRequests,
 } from "~/server/services/service";
+import { getServiceSlaOverview } from "~/server/services/service-sla";
 
 export const metadata = {
   title: "Service | Admin",
@@ -117,6 +119,14 @@ export default async function AdminServicePage({
 
   if (!requests || !configuration) return <AdminDatabaseFallback />;
 
+  const sla = await getServiceSlaOverview().catch((error: unknown) => {
+    if (process.env.NODE_ENV === "development") {
+      console.error("[admin] failed to load SLA overview", error);
+    }
+
+    return null;
+  });
+
   const canManageSettings = hasAdminPermission(access.admin, "SYSTEM_CONFIG");
   const hasActiveFilters = [
     Boolean(params.query),
@@ -152,6 +162,45 @@ export default async function AdminServicePage({
       title="שירות לקוחות"
     >
       <div className="grid gap-6">
+        {sla ? (
+          <Card className="rounded-md">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Clock aria-hidden="true" className="size-5" />
+                SLA — תור שירות פתוח
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-4 text-sm sm:grid-cols-4">
+              <div className="grid gap-1">
+                <span className="text-muted-foreground">פניות פתוחות</span>
+                <span className="text-2xl font-semibold">{sla.openCases}</span>
+              </div>
+              <div className="grid gap-1">
+                <span className="text-muted-foreground">חריגת SLA</span>
+                <span
+                  className={`text-2xl font-semibold ${
+                    sla.breached > 0 ? "text-destructive" : ""
+                  }`}
+                >
+                  {sla.breached}
+                </span>
+              </div>
+              <div className="grid gap-1">
+                <span className="text-muted-foreground">בסיכון</span>
+                <span className="text-2xl font-semibold">{sla.atRisk}</span>
+              </div>
+              <div className="grid gap-1">
+                <span className="text-muted-foreground">
+                  ממתינות למענה ראשון
+                </span>
+                <span className="text-2xl font-semibold">
+                  {sla.awaitingFirstResponse}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        ) : null}
+
         <Card className="rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">

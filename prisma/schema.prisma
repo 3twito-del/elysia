@@ -442,11 +442,17 @@ model ServiceRequest {
   preferredContactTime String?
   message              String
   adminNotes           String?
+  /// SLA priority: LOW | NORMAL | HIGH | URGENT
+  priority             String                     @default("NORMAL")
+  assignedAdminUserId  String?
+  firstRespondedAt     DateTime?
+  resolvedAt           DateTime?
   attachments          ServiceRequestAttachment[]
   createdAt            DateTime                   @default(now())
   updatedAt            DateTime                   @updatedAt
 
   @@index([status, createdAt])
+  @@index([status, priority])
   @@index([topicId])
   @@index([email])
   @@index([phone])
