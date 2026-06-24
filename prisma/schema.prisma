@@ -1751,6 +1751,24 @@ model CustomerReceiptAllocation {
   @@index([customerInvoiceId])
 }
 
+/// Immutable cost layer per goods receipt, for FIFO / weighted-average
+/// inventory valuation (INV-002). Append-only; never mutated.
+model ItemCostLayer {
+  id         String   @id @default(cuid())
+  branchId   String
+  variantId  String
+  unitCost   Decimal  @db.Decimal(14, 2)
+  quantity   Int
+  sourceType String   @default("purchase_receipt")
+  sourceId   String?
+  currency   String   @default("ILS")
+  receivedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  @@index([branchId, variantId, receivedAt])
+  @@index([variantId])
+}
+
 model FinanceLedgerEntry {
   id              String         @id @default(cuid())
   entryDate       DateTime       @db.Date

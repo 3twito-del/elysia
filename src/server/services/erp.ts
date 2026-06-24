@@ -532,6 +532,19 @@ export async function receivePurchaseOrder(input: {
             reference: input.reference ?? purchaseOrder.poNumber,
           },
         });
+
+        // Append an immutable cost layer for FIFO/weighted-average valuation (INV-002).
+        await tx.itemCostLayer.create({
+          data: {
+            branchId,
+            variantId: item.variantId,
+            unitCost: item.unitCost,
+            quantity,
+            sourceType: "purchase_receipt",
+            sourceId: purchaseOrder.id,
+            currency: purchaseOrder.currency,
+          },
+        });
       }
     }
 

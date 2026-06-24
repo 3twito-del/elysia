@@ -243,7 +243,7 @@ export default async function AdminFinancePage() {
 
           <Card className="rounded-md">
             <CardHeader>
-              <CardTitle>גיול AP / AR</CardTitle>
+              <CardTitle>גיול AP / AR ושווי מלאי</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-3 text-sm">
               <div className="rounded-md border p-3">
@@ -258,6 +258,16 @@ export default async function AdminFinancePage() {
                 <p className="text-muted-foreground mt-1 leading-6">
                   סה״כ פתוח {formatPrice(gl.arAging.total)} · באיחור 90+{" "}
                   {formatPrice(gl.arAging.days90plus)}
+                </p>
+              </div>
+              <div className="rounded-md border p-3">
+                <p className="font-medium">שווי מלאי ({gl.inventoryValuation.method})</p>
+                <p className="text-muted-foreground mt-1 leading-6">
+                  {formatPrice(gl.inventoryValuation.totalValue)} ·{" "}
+                  {gl.inventoryValuation.onHandUnits} יח׳ במלאי
+                  {gl.inventoryValuation.uncostedItems > 0
+                    ? ` · ${gl.inventoryValuation.uncostedItems} ללא בסיס עלות`
+                    : ""}
                 </p>
               </div>
             </CardContent>
