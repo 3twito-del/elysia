@@ -398,6 +398,7 @@ model Branch {
   inventoryLedgers InventoryLedger[]
   appointments     Appointment[]
   orders           Order[]
+  goodsReceipts    GoodsReceipt[]
 
   @@index([kind, isApproved, isPublic, isActive, sortOrder])
 }
@@ -1489,6 +1490,7 @@ model GoodsReceipt {
   purchaseOrderId     String
   purchaseOrderItemId String?
   variantId           String?
+  branchId            String?
   quantity            Int
   receivedAt          DateTime           @default(now())
   reference           String?
@@ -1496,10 +1498,12 @@ model GoodsReceipt {
   purchaseOrder       PurchaseOrder      @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
   purchaseOrderItem   PurchaseOrderItem? @relation(fields: [purchaseOrderItemId], references: [id], onDelete: SetNull)
   variant             ProductVariant?    @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  branch              Branch?            @relation(fields: [branchId], references: [id], onDelete: SetNull)
 
   @@index([purchaseOrderId, receivedAt])
   @@index([purchaseOrderItemId])
   @@index([variantId])
+  @@index([branchId])
 }
 
 model ProductCostSnapshot {
@@ -1521,6 +1525,77 @@ model ProductCostSnapshot {
   @@index([productId, effectiveAt])
   @@index([variantId, effectiveAt])
   @@index([vendorId])
+}
+
+/// Double-entry chart of accounts (FIN-GL-001). One row per ledger account.
+model LedgerAccount {
+  id          String          @id @default(cuid())
+  code        String          @unique
+  name        String
+  /// ASSET | LIABILITY | EQUITY | REVENUE | EXPENSE
+  type        String
+  /// DEBIT | CREDIT — the side that increases this account.
+  normalSide  String
+  parentId    String?
+  isActive    Boolean         @default(true)
+  description String?
+  parent      LedgerAccount?  @relation("LedgerAccountHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children    LedgerAccount[] @relation("LedgerAccountHierarchy")
+  lines       JournalLine[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([type, code])
+  @@index([parentId])
+}
+
+/// A balanced double-entry journal entry (Σdebit = Σcredit), append-only.
+/// Corrections are made by posting a reversing entry, never by mutation.
+model JournalEntry {
+  id              String        @id @default(cuid())
+  entryNumber     String        @unique
+  entryDate       DateTime      @db.Date
+  memo            String?
+  /// e.g. "sale" | "purchase_receipt" | "payment" | "manual" | "reversal"
+  source          String
+  /// DRAFT | POSTED | REVERSED
+  status          String        @default("POSTED")
+  currency        String        @default("ILS")
+  aggregateType   String?
+  aggregateId     String?
+  orderId         String?
+  purchaseOrderId String?
+  reversalOfId    String?       @unique
+  postedById      String?
+  metadata        Json?
+  lines           JournalLine[]
+  reversalOf      JournalEntry? @relation("JournalEntryReversal", fields: [reversalOfId], references: [id], onDelete: SetNull)
+  reversedBy      JournalEntry? @relation("JournalEntryReversal")
+  createdAt       DateTime      @default(now())
+
+  @@index([entryDate, source])
+  @@index([status, entryDate])
+  @@index([aggregateType, aggregateId])
+  @@index([orderId])
+  @@index([purchaseOrderId])
+}
+
+/// One debit-or-credit posting line of a JournalEntry.
+model JournalLine {
+  id             String        @id @default(cuid())
+  journalEntryId String
+  accountId      String
+  debit          Decimal       @default(0) @db.Decimal(14, 2)
+  credit         Decimal       @default(0) @db.Decimal(14, 2)
+  memo           String?
+  branchId       String?
+  metadata       Json?
+  journalEntry   JournalEntry  @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
+  account        LedgerAccount @relation(fields: [accountId], references: [id], onDelete: Restrict)
+
+  @@index([journalEntryId])
+  @@index([accountId])
+  @@index([branchId])
 }
 
 model FinanceLedgerEntry {

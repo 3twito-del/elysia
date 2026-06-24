@@ -2,7 +2,10 @@ import type { Prisma } from "@prisma/client";
 
 import { db } from "~/server/db";
 import { recordAnalyticsEvent } from "~/server/services/analytics";
-import { refreshFinanceLedgerFromOrders } from "~/server/services/finance";
+import {
+  postOrderSaleToLedger,
+  refreshFinanceLedgerFromOrders,
+} from "~/server/services/finance";
 import { BUSINESS_EVENTS, enqueueOutboxEvent } from "~/server/services/outbox";
 import { redactWebhookPayload } from "~/server/services/webhook-events";
 
@@ -145,6 +148,9 @@ async function recordPaymentCapturedSideEffects(input: {
     const to = new Date(input.orderCreatedAt);
     to.setDate(to.getDate() + 2);
     await refreshFinanceLedgerFromOrders({ from, to });
+
+    // Post the balanced double-entry GL journal for the sale (FIN-GL-001).
+    await postOrderSaleToLedger(input.orderId);
   } catch (error) {
     console.error("[payment-webhooks:analytics-finance-failed]", error);
   }

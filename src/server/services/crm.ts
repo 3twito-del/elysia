@@ -5,10 +5,24 @@ import { db } from "~/server/db";
 /* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
 
 const vipLifetimeValueThreshold = 2_500;
-const dormantDays = 90;
-/** Recency thresholds (days since last order) used for churn-risk banding. */
+/**
+ * Recency thresholds (days since last order) for churn-risk banding.
+ * Strictly increasing so every band is reachable: WARNING < HIGH < DORMANT.
+ * (Previously DORMANT=90 < HIGH=120 made "HIGH" dead code — G2.)
+ */
 const churnWarningDays = 60;
 const churnHighDays = 120;
+const churnDormantDays = 180;
+
+/** Orders in these statuses do not contribute to revenue / lifetime value. */
+const nonRevenueOrderStatuses = ["CANCELLED", "REFUNDED"];
+
+/** Single shared definition of a revenue-bearing order (G3). */
+export function isRevenueOrder(order: { status: string }) {
+  return !nonRevenueOrderStatuses.includes(order.status);
+}
+
+type CustomerSummary = ReturnType<typeof createCustomerSummary>;
 
 export async function getCrmOverview(input: { adminUserId?: string } = {}) {
   await auditCrmAccess({
@@ -18,7 +32,9 @@ export async function getCrmOverview(input: { adminUserId?: string } = {}) {
   });
 
   const dormantCutoff = new Date();
-  dormantCutoff.setDate(dormantCutoff.getDate() - dormantDays);
+  dormantCutoff.setDate(dormantCutoff.getDate() - churnDormantDays);
+  const warningCutoff = new Date();
+  warningCutoff.setDate(warningCutoff.getDate() - churnWarningDays);
 
   const [
     customers,
@@ -33,13 +49,18 @@ export async function getCrmOverview(input: { adminUserId?: string } = {}) {
     totalCustomers,
     snapshotAggregate,
     repeatCustomers,
+    vipSnapshots,
+    dormantSnapshots,
+    atRiskSnapshots,
   ] = await Promise.all([
     db.customer.findMany({
       orderBy: { updatedAt: "desc" },
       take: 12,
       include: {
         metricSnapshots: true,
-        orders: { select: { id: true, total: true, createdAt: true } },
+        orders: {
+          select: { id: true, total: true, createdAt: true, status: true },
+        },
         wishlist: { include: { items: true } },
         segmentMemberships: { include: { segment: true } },
       },
@@ -77,6 +98,26 @@ export async function getCrmOverview(input: { adminUserId?: string } = {}) {
       where: { customerId: { not: null } },
       _count: { _all: true },
     }),
+    // Segment lists derive from metric snapshots across the whole customer base,
+    // not just the 12 most-recently-updated customers (G4).
+    db.customerMetricSnapshot.findMany({
+      where: { lifetimeValue: { gte: vipLifetimeValueThreshold } },
+      orderBy: { lifetimeValue: "desc" },
+      take: 5,
+      select: { customerId: true },
+    }),
+    db.customerMetricSnapshot.findMany({
+      where: { orderCount: { gt: 0 }, lastOrderAt: { lt: dormantCutoff } },
+      orderBy: { lifetimeValue: "desc" },
+      take: 5,
+      select: { customerId: true },
+    }),
+    db.customerMetricSnapshot.findMany({
+      where: { orderCount: { gt: 0 }, lastOrderAt: { lt: warningCutoff } },
+      orderBy: { lifetimeValue: "desc" },
+      take: 5,
+      select: { customerId: true },
+    }),
   ]);
 
   const openCartCustomerIds = new Set(
@@ -93,23 +134,44 @@ export async function getCrmOverview(input: { adminUserId?: string } = {}) {
   const enrichedCustomers = customers.map((customer) =>
     createCustomerSummary(customer, openCartCustomerIds),
   );
-  const vipCustomers = enrichedCustomers
-    .filter((customer) => customer.lifetimeValue >= vipLifetimeValueThreshold)
-    .slice(0, 5);
+
+  // Enrich the customers referenced by the full-base lists with the same
+  // summary shape used everywhere else, so the output contract is unchanged.
+  const listCustomerIds = Array.from(
+    new Set(
+      [...vipSnapshots, ...dormantSnapshots, ...atRiskSnapshots].map(
+        (snapshot) => snapshot.customerId,
+      ),
+    ),
+  );
+  const listCustomers = listCustomerIds.length
+    ? await db.customer.findMany({
+        where: { id: { in: listCustomerIds } },
+        include: {
+          orders: {
+            select: { id: true, total: true, createdAt: true, status: true },
+          },
+          wishlist: { include: { items: true } },
+          segmentMemberships: { include: { segment: true } },
+        },
+      })
+    : [];
+  const summaryByCustomerId = new Map(
+    listCustomers.map((customer) => [
+      customer.id,
+      createCustomerSummary(customer, openCartCustomerIds),
+    ]),
+  );
+  const resolveSummaries = (rows: Array<{ customerId: string }>) =>
+    rows
+      .map((row) => summaryByCustomerId.get(row.customerId))
+      .filter((summary): summary is CustomerSummary => Boolean(summary));
+
+  const vipCustomers = resolveSummaries(vipSnapshots);
+  const dormantCustomers = resolveSummaries(dormantSnapshots);
+  const atRiskCustomers = resolveSummaries(atRiskSnapshots);
   const highIntentCustomers = enrichedCustomers
     .filter((customer) => customer.wishlistItems > 0 || customer.openCart)
-    .slice(0, 5);
-  const dormantCustomers = enrichedCustomers
-    .filter(
-      (customer) =>
-        customer.lastOrderAt && customer.lastOrderAt < dormantCutoff,
-    )
-    .slice(0, 5);
-  const atRiskCustomers = enrichedCustomers
-    .filter(
-      (customer) => customer.orderCount > 0 && customer.churnRisk !== "ACTIVE",
-    )
-    .sort((first, second) => second.lifetimeValue - first.lifetimeValue)
     .slice(0, 5);
 
   const totalLifetimeValue = Number(snapshotAggregate._sum.lifetimeValue ?? 0);
@@ -383,9 +445,7 @@ export async function refreshCustomerMetricSnapshot(customerId: string) {
 
   if (!customer) return null;
 
-  const completedOrders = customer.orders.filter(
-    (order) => !["CANCELLED", "REFUNDED"].includes(order.status),
-  );
+  const completedOrders = customer.orders.filter(isRevenueOrder);
   const lifetimeValue = completedOrders.reduce(
     (sum, order) => sum + Number(order.total),
     0,
@@ -521,21 +581,22 @@ function createCustomerSummary(
     phone: string | null;
     firstName: string | null;
     lastName: string | null;
-    orders: Array<{ total: Prisma.Decimal; createdAt: Date }>;
+    orders: Array<{ total: Prisma.Decimal; createdAt: Date; status: string }>;
     wishlist: { items: unknown[] } | null;
     segmentMemberships: Array<{ segment: { name: string } }>;
   },
   openCartCustomerIds: Set<string>,
 ) {
-  const lifetimeValue = customer.orders.reduce(
+  const revenueOrders = customer.orders.filter(isRevenueOrder);
+  const lifetimeValue = revenueOrders.reduce(
     (sum, order) => sum + Number(order.total),
     0,
   );
-  const sortedOrderDates = customer.orders
+  const sortedOrderDates = revenueOrders
     .map((order) => order.createdAt)
     .sort((first, second) => first.getTime() - second.getTime());
   const lastOrderAt = sortedOrderDates.at(-1) ?? null;
-  const orderCount = customer.orders.length;
+  const orderCount = revenueOrders.length;
   const wishlistItems = customer.wishlist?.items.length ?? 0;
   const openCart = openCartCustomerIds.has(customer.id);
 
@@ -579,19 +640,19 @@ function createCustomerSummary(
 
 type ChurnRisk = "ACTIVE" | "WARNING" | "HIGH" | "DORMANT";
 
-function computeChurnRisk(input: {
+export function computeChurnRisk(input: {
   orderCount: number;
   recencyDays: number | null;
 }): ChurnRisk {
   if (input.orderCount === 0 || input.recencyDays === null) return "ACTIVE";
-  if (input.recencyDays >= dormantDays) return "DORMANT";
+  if (input.recencyDays >= churnDormantDays) return "DORMANT";
   if (input.recencyDays >= churnHighDays) return "HIGH";
   if (input.recencyDays >= churnWarningDays) return "WARNING";
   return "ACTIVE";
 }
 
 /** 0–100 engagement health blending value, frequency and intent signals. */
-function computeHealthScore(input: {
+export function computeHealthScore(input: {
   lifetimeValue: number;
   orderCount: number;
   wishlistItems: number;

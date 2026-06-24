@@ -1,6 +1,9 @@
 import { Prisma } from "@prisma/client";
 
 import { db } from "~/server/db";
+import { DEFAULT_VAT_RATE } from "~/server/services/erp";
+import { postSaleJournalEntry } from "~/server/services/ledger";
+import { ACCOUNT } from "~/server/services/ledger-accounts";
 
 export type FinanceDateRange = {
   from?: Date;
@@ -268,6 +271,75 @@ export async function refreshFinanceLedgerFromPurchaseOrders(
   });
 
   return { created: purchaseOrders.length };
+}
+
+/**
+ * Posts the double-entry GL journal for a paid sale (revenue + VAT + COGS).
+ * Idempotent per order. VAT is extracted from the VAT-inclusive total at the
+ * default rate (the order does not store a separate tax breakdown). Skipped
+ * gracefully when the chart of accounts has not been seeded (FIN-GL-001).
+ */
+export async function postOrderSaleToLedger(orderId: string) {
+  const ledgerReady = await db.ledgerAccount.count({
+    where: {
+      code: { in: [ACCOUNT.ACCOUNTS_RECEIVABLE, ACCOUNT.SALES_REVENUE] },
+    },
+  });
+  if (ledgerReady < 2) {
+    return { posted: false as const, reason: "chart_of_accounts_missing" };
+  }
+
+  const existing = await db.journalEntry.findFirst({
+    where: { orderId, source: "sale" },
+    select: { id: true },
+  });
+  if (existing) {
+    return {
+      posted: false as const,
+      reason: "already_posted",
+      journalEntryId: existing.id,
+    };
+  }
+
+  const order = await db.order.findUnique({
+    where: { id: orderId },
+    include: {
+      items: {
+        include: {
+          variant: {
+            select: {
+              id: true,
+              productId: true,
+              product: {
+                select: {
+                  costSnapshots: { orderBy: { effectiveAt: "desc" }, take: 1 },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+  if (!order) return { posted: false as const, reason: "order_not_found" };
+
+  const grossTotal = Number(order.total);
+  if (grossTotal <= 0) {
+    return { posted: false as const, reason: "non_positive_total" };
+  }
+
+  const entry = await postSaleJournalEntry({
+    orderId: order.id,
+    orderNumber: order.orderNumber,
+    entryDate: order.paidAt ?? order.createdAt,
+    grossTotal,
+    vatRate: DEFAULT_VAT_RATE,
+    cogs: estimateOrderCogs(order.items),
+    branchId: order.branchId ?? undefined,
+    currency: order.currency,
+  });
+
+  return { posted: true as const, journalEntryId: entry.id };
 }
 
 async function auditFinanceAccess(input: {

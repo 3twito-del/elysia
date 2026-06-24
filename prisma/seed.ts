@@ -15,6 +15,7 @@ import {
   fixtureBlogPosts,
   fixtureBlogTags,
 } from "../src/server/services/blog-fixtures";
+import { DEFAULT_CHART_OF_ACCOUNTS } from "../src/server/services/ledger-accounts";
 
 const prisma = new PrismaClient();
 
@@ -146,6 +147,20 @@ async function seedBlogContent(adminUserId: string) {
         createdAt: post.createdAt,
         updatedAt: post.updatedAt,
         tags: { connect: post.tags.map((tag) => ({ id: tag.id })) },
+      },
+    });
+  }
+}
+
+async function seedLedgerAccounts() {
+  for (const account of DEFAULT_CHART_OF_ACCOUNTS) {
+    await prisma.ledgerAccount.upsert({
+      where: { code: account.code },
+      create: account,
+      update: {
+        name: account.name,
+        type: account.type,
+        normalSide: account.normalSide,
       },
     });
   }
@@ -585,6 +600,7 @@ async function main() {
   });
 
   await seedBlogContent(adminUser.id);
+  await seedLedgerAccounts();
 }
 
 main()

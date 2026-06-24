@@ -2,6 +2,8 @@ import type { Prisma } from "@prisma/client";
 
 import { env } from "~/env";
 import { db } from "~/server/db";
+import { postPurchaseReceiptJournalEntry } from "~/server/services/ledger";
+import { ACCOUNT } from "~/server/services/ledger-accounts";
 
 export function areErpModulesEnabled() {
   return !["0", "false"].includes(env.ERP_MODULES_ENABLED ?? "");
@@ -23,6 +25,18 @@ const openPurchaseOrderStatuses = [
 /** Trailing window used to derive sales velocity for demand planning. */
 const velocityWindowDays = 60;
 const defaultLeadTimeDays = 14;
+/**
+ * Default Israeli VAT (מע"מ) rate. Configurable placeholder — must move to an
+ * effective-dated tax-rate table per FIN-TAX-001, and the current statutory
+ * rate must be verified with the accountant / Tax Authority.
+ */
+export const DEFAULT_VAT_RATE = 0.18;
+/**
+ * Upper bound on low-stock candidates scanned per ERP overview, ordered
+ * worst-first so the most depleted are never silently dropped. Full demand
+ * planning (INV-006) will move to a batched/SQL job.
+ */
+const reorderCandidateScanLimit = 500;
 
 type ReorderUrgency = "CRITICAL" | "HIGH" | "MEDIUM";
 
@@ -83,7 +97,8 @@ export async function getErpOverview() {
           },
         },
       },
-      take: 80,
+      orderBy: { quantity: "asc" },
+      take: reorderCandidateScanLimit,
     }),
     db.productCostSnapshot.findMany({
       orderBy: { effectiveAt: "desc" },
@@ -335,12 +350,53 @@ function buildVendorScorecards(
     .sort((first, second) => second.openValue - first.openValue);
 }
 
+function round2(value: number) {
+  return Math.round(value * 100) / 100;
+}
+
+/**
+ * Computes the full PO money breakdown (subtotal + shipping + VAT).
+ * Pure and exported for unit testing. Replaces the previous `total = subtotal`
+ * behaviour that omitted tax and shipping entirely (G5 / P2P-002).
+ */
+export function computePurchaseOrderTotals(input: {
+  items: Array<{ quantity: number; unitCost: number | Prisma.Decimal }>;
+  shippingTotal?: number;
+  /** VAT fraction (e.g. 0.18). Pass 0 for exempt/zero-rated vendors. */
+  taxRate?: number;
+  /** Explicit tax amount; overrides `taxRate` when provided. */
+  taxTotal?: number;
+}) {
+  const subtotal = input.items.reduce(
+    (sum, item) => sum + item.quantity * Number(item.unitCost),
+    0,
+  );
+  const shippingTotal = Math.max(0, input.shippingTotal ?? 0);
+  const taxableBase = subtotal + shippingTotal;
+  const taxTotal = Math.max(
+    0,
+    input.taxTotal ?? taxableBase * (input.taxRate ?? DEFAULT_VAT_RATE),
+  );
+
+  return {
+    subtotal: round2(subtotal),
+    shippingTotal: round2(shippingTotal),
+    taxTotal: round2(taxTotal),
+    total: round2(subtotal + shippingTotal + taxTotal),
+  };
+}
+
 export async function createPurchaseOrder(input: {
   vendorId: string;
   poNumber?: string;
   currency?: string;
   expectedAt?: Date;
   notes?: string;
+  shippingTotal?: number;
+  /** VAT fraction (e.g. 0.18). Pass 0 for exempt/zero-rated. Defaults to DEFAULT_VAT_RATE. */
+  taxRate?: number;
+  /** Explicit tax amount; overrides `taxRate` when provided. */
+  taxTotal?: number;
   items: Array<{
     productId?: string;
     variantId?: string;
@@ -350,18 +406,22 @@ export async function createPurchaseOrder(input: {
     unitCost: number;
   }>;
 }) {
-  const subtotal = input.items.reduce(
-    (sum, item) => sum + item.quantity * item.unitCost,
-    0,
-  );
+  const totals = computePurchaseOrderTotals({
+    items: input.items,
+    shippingTotal: input.shippingTotal,
+    taxRate: input.taxRate,
+    taxTotal: input.taxTotal,
+  });
 
   return db.purchaseOrder.create({
     data: {
       vendorId: input.vendorId,
       poNumber: input.poNumber ?? (await createNextPurchaseOrderNumber()),
       currency: input.currency ?? "ILS",
-      subtotal,
-      total: subtotal,
+      subtotal: totals.subtotal,
+      shippingTotal: totals.shippingTotal,
+      taxTotal: totals.taxTotal,
+      total: totals.total,
       expectedAt: input.expectedAt,
       notes: input.notes,
       items: {
@@ -372,7 +432,7 @@ export async function createPurchaseOrder(input: {
           sku: item.sku,
           quantity: item.quantity,
           unitCost: item.unitCost,
-          totalCost: item.quantity * item.unitCost,
+          totalCost: round2(item.quantity * item.unitCost),
         })),
       },
     },
@@ -382,9 +442,16 @@ export async function createPurchaseOrder(input: {
 
 export async function receivePurchaseOrder(input: {
   purchaseOrderId: string;
+  /** Branch/warehouse that receives the stock. Falls back to the default active branch. */
+  branchId?: string;
   reference?: string;
   notes?: string;
-  lines: Array<{ purchaseOrderItemId: string; quantity: number }>;
+  lines: Array<{
+    purchaseOrderItemId: string;
+    quantity: number;
+    /** Optional per-line override of the receiving branch. */
+    branchId?: string;
+  }>;
 }) {
   return db.$transaction(async (tx) => {
     const purchaseOrder = await tx.purchaseOrder.findUnique({
@@ -394,8 +461,8 @@ export async function receivePurchaseOrder(input: {
 
     if (!purchaseOrder) throw new Error("Purchase order not found.");
 
-    const receiptCreates = [];
-    const costSnapshotCreates = [];
+    const defaultBranchId = await resolveReceivingBranchId(tx, input.branchId);
+    let receivedCost = 0;
 
     for (const line of input.lines) {
       const item = purchaseOrder.items.find(
@@ -405,47 +472,90 @@ export async function receivePurchaseOrder(input: {
 
       if (!item) throw new Error("Purchase order item not found.");
 
+      const quantity = Math.max(0, Math.trunc(line.quantity));
+      if (quantity === 0) continue;
+
+      const receiptBranchId = line.branchId ?? defaultBranchId;
+      receivedCost += quantity * Number(item.unitCost);
+
       await tx.purchaseOrderItem.update({
         where: { id: item.id },
+        data: { receivedQuantity: { increment: quantity } },
+      });
+
+      await tx.goodsReceipt.create({
         data: {
-          receivedQuantity: {
-            increment: Math.max(0, line.quantity),
-          },
+          purchaseOrderId: purchaseOrder.id,
+          purchaseOrderItemId: item.id,
+          variantId: item.variantId,
+          branchId: receiptBranchId,
+          quantity,
+          reference: input.reference,
+          notes: input.notes,
         },
       });
 
-      receiptCreates.push(
-        tx.goodsReceipt.create({
-          data: {
-            purchaseOrderId: purchaseOrder.id,
-            purchaseOrderItemId: item.id,
-            variantId: item.variantId,
-            quantity: line.quantity,
-            reference: input.reference,
-            notes: input.notes,
-          },
-        }),
-      );
-
       if (item.productId) {
-        costSnapshotCreates.push(
-          tx.productCostSnapshot.create({
-            data: {
-              productId: item.productId,
-              variantId: item.variantId,
-              vendorId: purchaseOrder.vendorId,
-              purchaseOrderItemId: item.id,
-              unitCost: item.unitCost,
-              currency: purchaseOrder.currency,
-              source: "purchase_order_receipt",
-              metadata: { purchaseOrderId: purchaseOrder.id },
-            },
-          }),
-        );
+        await tx.productCostSnapshot.create({
+          data: {
+            productId: item.productId,
+            variantId: item.variantId,
+            vendorId: purchaseOrder.vendorId,
+            purchaseOrderItemId: item.id,
+            unitCost: item.unitCost,
+            currency: purchaseOrder.currency,
+            source: "purchase_order_receipt",
+            metadata: { purchaseOrderId: purchaseOrder.id },
+          },
+        });
+      }
+
+      // Post received units into branch-level stock and the immutable ledger.
+      // Without this the reorder loop never sees restocked inventory (G1 / P2P-003).
+      if (item.variantId) {
+        const branchId = receiptBranchId;
+
+        await tx.inventoryItem.upsert({
+          where: {
+            branchId_variantId: { branchId, variantId: item.variantId },
+          },
+          create: { branchId, variantId: item.variantId, quantity },
+          update: { quantity: { increment: quantity } },
+        });
+
+        await tx.inventoryLedger.create({
+          data: {
+            branchId,
+            variantId: item.variantId,
+            delta: quantity,
+            reason: "purchase_order_received",
+            reference: input.reference ?? purchaseOrder.poNumber,
+          },
+        });
       }
     }
 
-    await Promise.all([...receiptCreates, ...costSnapshotCreates]);
+    // Post the goods receipt to the general ledger (Inventory / GRNI) in the
+    // same transaction. Skipped gracefully if the chart of accounts is not yet
+    // seeded, so receiving never hard-fails on a missing ledger (FIN-GL-001).
+    if (receivedCost > 0) {
+      const ledgerReady = await tx.ledgerAccount.count({
+        where: { code: { in: [ACCOUNT.INVENTORY, ACCOUNT.GRNI] } },
+      });
+      if (ledgerReady >= 2) {
+        await postPurchaseReceiptJournalEntry(
+          {
+            purchaseOrderId: purchaseOrder.id,
+            poNumber: purchaseOrder.poNumber,
+            entryDate: new Date(),
+            cost: receivedCost,
+            branchId: input.branchId ?? defaultBranchId,
+            currency: purchaseOrder.currency,
+          },
+          tx,
+        );
+      }
+    }
 
     const updatedItems = await tx.purchaseOrderItem.findMany({
       where: { purchaseOrderId: purchaseOrder.id },
@@ -468,6 +578,25 @@ export async function receivePurchaseOrder(input: {
       include: { items: true, receipts: true, vendor: true },
     });
   });
+}
+
+async function resolveReceivingBranchId(
+  tx: Prisma.TransactionClient,
+  branchId?: string,
+) {
+  if (branchId) return branchId;
+
+  const branch = await tx.branch.findFirst({
+    where: { isActive: true },
+    orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
+    select: { id: true },
+  });
+
+  if (!branch) {
+    throw new Error("No active branch available to receive stock into.");
+  }
+
+  return branch.id;
 }
 
 async function createNextPurchaseOrderNumber() {
