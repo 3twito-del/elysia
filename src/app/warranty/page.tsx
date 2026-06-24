@@ -47,7 +47,7 @@ export default function WarrantyPage() {
     <>
       <SiteHeader />
 
-      <main>
+      <main className="elysia-page">
         <CompactPageIntro
           description="אחריות קצרה וברורה: 12 חודשים לפגמי ייצור, בדיקה לפי פרטי ההזמנה, והמשך טיפול בלי ניסוחים מיותרים."
           eyebrow="אחרי הקנייה"

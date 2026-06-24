@@ -34,8 +34,12 @@ describe("public CTA hierarchy", () => {
     expect(css).toContain("--secondary: #faf7f3;");
     expect(css).toContain("--muted: #f6f3ef;");
     expect(css).toContain("--accent: #ead8d2;");
-    expect(css).toContain("--glass-border: #ece6df;");
-    expect(css).toContain("--glass-border-strong: #d8d0c8;");
+    expect(css).toContain("--elysia-border: var(--border);");
+    expect(css).toContain("--elysia-border-strong: #d8d0c8;");
+    expect(css).toContain("--glass-border: var(--elysia-border);");
+    expect(css).toContain(
+      "--glass-border-strong: var(--elysia-border-strong);",
+    );
     expect(css).toContain("--action-primary: var(--brand-ink);");
     expect(css).toContain(".glass-control:not(:disabled)");
     expect(css).toContain('[data-slot="button"][data-variant="secondary"]');

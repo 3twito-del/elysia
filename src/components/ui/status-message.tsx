@@ -32,7 +32,7 @@ export function StatusMessage({
       className={cn(
         "leading-6",
         size === "xs" ? "text-xs" : "text-sm",
-        variant === "inset" && "glass-inset rounded-md border p-3",
+        variant === "inset" && "elysia-inset glass-inset rounded-md border p-3",
         tone === "success" && "text-emerald-700 dark:text-emerald-300",
         tone === "error" && "text-red-700 dark:text-red-300",
         tone === "neutral" && "text-muted-foreground",

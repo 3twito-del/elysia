@@ -50,7 +50,7 @@ export default function JewelleryCarePage() {
     <>
       <SiteHeader />
 
-      <main>
+      <main className="elysia-page">
         <CompactPageIntro
           description="הנחיות שימוש, אחסון וניקוי שמסייעות לשמור על התכשיט ולהקטין חשיפה לנזק או רגישות."
           eyebrow="אחרי הקנייה"

@@ -12,9 +12,11 @@ describe("mobile commerce density", () => {
     expect(source).toContain("storefront-hero");
     expect(css).toContain(".home-cinematic-hero");
     expect(css).toContain(".storefront-hero");
-    expect(css).toContain("clamp(32rem, 78svh, 48rem)");
     expect(css).toMatch(
-      /@media \(max-width: 767px\)[\s\S]*\.home-cinematic-hero \{[\s\S]*--home-hero-height: clamp\(28rem, 72svh, 38rem\);/,
+      /\.home-cinematic-hero \{[\s\S]*--home-hero-height: clamp\(32rem, 80svh, 53rem\);/,
+    );
+    expect(css).toMatch(
+      /@media \(max-width: 767px\)[\s\S]*\.home-cinematic-hero \{[\s\S]*--home-hero-height: clamp\(30rem, 80svh, 38rem\);/,
     );
     expect(source).toContain('data-testid="home-hero-statement"');
     expect(source).toContain('data-testid="home-hero-primary-cta"');

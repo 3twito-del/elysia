@@ -56,6 +56,7 @@ export function HomeHeroVideo({
         autoPlay={!shouldReduceMotion && !shouldUsePosterOnly && !userPaused}
         className={className}
         disablePictureInPicture
+        draggable={false}
         loop
         muted
         playsInline

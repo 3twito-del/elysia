@@ -131,7 +131,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <main className="about-cinematic-page">
+    <main className="elysia-page about-cinematic-page">
       <link
         as="image"
         fetchPriority="high"
@@ -153,6 +153,7 @@ export default function AboutPage() {
             alt=""
             aria-hidden="true"
             className="storefront-hero-image object-cover"
+            draggable={false}
             fill
             fetchPriority="high"
             priority

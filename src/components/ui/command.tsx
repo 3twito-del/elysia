@@ -22,7 +22,7 @@ function Command({
     <CommandPrimitive
       data-slot="command"
       className={cn(
-        "popup-surface text-popover-foreground flex size-full flex-col overflow-hidden rounded-xl! border p-1",
+        "elysia-panel popup-surface text-popover-foreground flex size-full flex-col overflow-hidden rounded-xl! border p-1",
         className,
       )}
       {...props}
@@ -68,7 +68,7 @@ function CommandInput({
 }: React.ComponentProps<typeof CommandPrimitive.Input>) {
   return (
     <div data-slot="command-input-wrapper" className="p-1 pb-0">
-      <InputGroup className="glass-inset h-8! rounded-lg! *:data-[slot=input-group-addon]:pl-2!">
+      <InputGroup className="elysia-inset glass-inset h-8! rounded-lg! *:data-[slot=input-group-addon]:pl-2!">
         <CommandPrimitive.Input
           data-slot="command-input"
           className={cn(

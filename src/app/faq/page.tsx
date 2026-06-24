@@ -89,7 +89,7 @@ export default async function FaqPage() {
   const contact = await getPublicContactSettings();
 
   return (
-    <main>
+    <main className="elysia-page">
       <SiteHeader />
 
       <CompactPageIntro

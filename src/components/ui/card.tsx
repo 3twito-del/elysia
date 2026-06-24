@@ -12,7 +12,7 @@ function Card({
       data-slot="card"
       data-size={size}
       className={cn(
-        "bg-card group/card text-card-foreground flex flex-col gap-4 overflow-hidden rounded-md border py-4 text-sm shadow-none transition has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-md *:[img:last-child]:rounded-b-md",
+        "elysia-card bg-card group/card text-card-foreground flex flex-col gap-4 overflow-hidden rounded-md border py-4 text-sm shadow-none transition has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-md *:[img:last-child]:rounded-b-md",
         "py-[var(--ui-card-padding)] data-[size=sm]:py-[var(--ui-card-padding-tight)]",
         className,
       )}
@@ -89,7 +89,7 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-footer"
       className={cn(
-        "glass-inset flex items-center rounded-b-md border-t p-[var(--ui-card-padding)] group-data-[size=sm]/card:p-[var(--ui-card-padding-tight)]",
+        "elysia-inset glass-inset flex items-center rounded-b-md border-t p-[var(--ui-card-padding)] group-data-[size=sm]/card:p-[var(--ui-card-padding-tight)]",
         className,
       )}
       {...props}

@@ -69,6 +69,8 @@ const TECHNICAL_LITERAL_PROPERTY_NAMES = new Set([
   "aria-hidden",
   "aria-labelledby",
   "autoComplete",
+  "behavior",
+  "block",
   "className",
   "d",
   "dir",

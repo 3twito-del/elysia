@@ -96,7 +96,7 @@ export function ProductCard({
     <Card
       aria-label={publicProductName}
       className={cn(
-        "ui-equal-item product-card-shell group/card relative h-full min-w-0 gap-0 overflow-hidden rounded-md border-0 bg-transparent py-0 shadow-none transition focus-within:ring-3 focus-within:ring-[var(--glass-focus)]",
+        "ui-equal-item product-card-shell elysia-product-card group/card relative h-full min-w-0 gap-0 overflow-hidden rounded-md border-0 bg-transparent py-0 shadow-none transition focus-within:ring-3 focus-within:ring-[var(--glass-focus)]",
         isUnavailable && "opacity-90",
       )}
       data-public-floating-avoid="true"
@@ -117,7 +117,7 @@ export function ProductCard({
       >
         <div
           className={cn(
-            "brand-product-media product-card-media bg-muted relative aspect-[5/4] overflow-hidden rounded-md border-0 sm:aspect-[4/5]",
+            "elysia-media-frame brand-product-media product-card-media bg-muted relative aspect-[5/4] overflow-hidden rounded-md border-0 sm:aspect-[4/5]",
             isCompactDensity && "product-card-media-compact",
           )}
         >
@@ -228,7 +228,7 @@ export function ProductCard({
                 ) : null}
               </span>
             </span>
-            <span className="product-card-cta group-hover/product-link:border-foreground group-hover/product-link:text-foreground text-foreground mt-3 inline-flex min-h-11 w-fit items-center rounded-md border border-[var(--glass-border)] px-4 text-xs font-medium transition-colors">
+            <span className="elysia-control product-card-cta group-hover/product-link:border-foreground group-hover/product-link:text-foreground text-foreground mt-3 inline-flex min-h-11 w-fit items-center rounded-md border border-[var(--glass-border)] px-4 text-xs font-medium transition-colors">
               לפרטי התכשיט
             </span>
           </div>

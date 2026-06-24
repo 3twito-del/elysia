@@ -89,7 +89,7 @@ export function SiteHeader() {
   return (
     <>
       <header
-        className="site-header fixed inset-x-0 top-0 z-50 h-16 md:h-[4.25rem] lg:h-[6.125rem]"
+        className="site-header elysia-chrome fixed inset-x-0 top-0 z-50 h-16 md:h-[4.25rem] lg:h-[6.125rem]"
         data-condensed-cta={showCondensedCta ? "true" : undefined}
         data-header-state={headerState}
         data-over-media={isOverHomeHero ? "true" : undefined}

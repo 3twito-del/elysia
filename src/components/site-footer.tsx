@@ -91,7 +91,7 @@ export function SiteFooter() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="site-footer" dir="rtl">
+    <footer className="site-footer elysia-section" dir="rtl">
       <div className="site-footer-inner mx-auto max-w-[92rem] px-[var(--ui-page-x)] pt-10 pb-[calc(4.75rem+env(safe-area-inset-bottom))] sm:px-[var(--ui-page-x-wide)] sm:pt-20 sm:pb-20 lg:pt-24 lg:pb-24">
         <div className="site-footer-primary grid gap-14 lg:grid-cols-[minmax(22rem,0.95fr)_minmax(0,1.35fr)] lg:gap-20 xl:gap-24">
           <section

@@ -13,7 +13,7 @@ export default async function CheckoutPage() {
     <>
       <SiteHeader />
 
-      <main className="checkout-boutique-page">
+      <main className="elysia-page checkout-boutique-page">
         <CompactPageIntro
           className="checkout-boutique-hero"
           description="התכשיטים שבחרת, פרטי מסירה וסיכום קצר לפני תשלום מאובטח."

@@ -194,7 +194,8 @@ describe("luxury commerce UI hardening", () => {
     expect(home).not.toContain("bg-[var(--brand-aqua-deep)]");
     expect(home).not.toContain("bg-[var(--brand-aqua)]");
     expect(home).not.toContain("rgba(66,201,190");
-    expect(css).toContain("--glass-border: #ece6df;");
+    expect(css).toContain("--elysia-border: var(--border);");
+    expect(css).toContain("--glass-border: var(--elysia-border);");
     expect(css).toContain("--scrollbar-thumb: rgb(125 107 90 / 26%);");
     expect(css).not.toContain("--glass-border: #bfe9e5;");
     expect(css).not.toContain("--scrollbar-thumb: rgb(66 201 190 / 30%);");
@@ -250,8 +251,8 @@ describe("luxury commerce UI hardening", () => {
     expect(favorite).toContain('variant="ghost"');
     expect(favorite).toContain('data-icon-tooltip-placement="bottom"');
     expect(favorite).toContain("product-card-favorite-status");
-    expect(favoriteSavedIconCss).toContain("fill: var(--brand-rose)");
-    expect(favoriteSavedIconCss).toContain("stroke-width: 2.15");
+    expect(favoriteSavedIconCss).toContain("fill: var(--brand-ink)");
+    expect(favoriteSavedIconCss).toContain("stroke-width: 1.6");
     expect(favoriteTooltipCss).toContain("right: 0;");
     expect(favoriteTooltipCss).toContain("left: auto;");
     expect(favoriteTooltipCss).toContain("translate(0, -2px)");

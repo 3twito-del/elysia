@@ -25,7 +25,7 @@ export default async function AiPage({ searchParams }: AiPageProps) {
     search.tab === "gifts" || search.tool === "gifts" ? "gifts" : "stylist";
 
   return (
-    <main className="min-h-screen">
+    <main className="elysia-page min-h-screen">
       <SiteHeader />
       <CompactPageIntro
         description="פתחו כלי התאמה לפי תקציב, מתנה ומידה מתוך הפריטים שזמינים עכשיו."

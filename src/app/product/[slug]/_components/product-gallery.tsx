@@ -1012,7 +1012,7 @@ export function ProductGallery({
     );
   }
 
-  function renderInlineAdjacentMedia(index: number) {
+  function renderInlineAdjacentMedia(index: number, slot: "next" | "previous") {
     const image = galleryImages[index];
     if (!image) return null;
 
@@ -1020,7 +1020,7 @@ export function ProductGallery({
       <div
         aria-hidden="true"
         className="product-gallery-main-media-cell"
-        key={`inline-adjacent-${index}-${image}`}
+        key={`inline-adjacent-${slot}-${index}-${image}`}
       >
         <Image
           alt=""
@@ -1269,7 +1269,7 @@ export function ProductGallery({
               dir="ltr"
               ref={inlineDragLayerRef}
             >
-              {renderInlineAdjacentMedia(previousViewerImageIndex)}
+              {renderInlineAdjacentMedia(previousViewerImageIndex, "previous")}
               <div className="product-gallery-main-media-cell">
                 <AnimatePresence initial={false} mode="popLayout">
                   <motion.div
@@ -1312,7 +1312,7 @@ export function ProductGallery({
                   </motion.div>
                 </AnimatePresence>
               </div>
-              {renderInlineAdjacentMedia(nextViewerImageIndex)}
+              {renderInlineAdjacentMedia(nextViewerImageIndex, "next")}
             </div>
           </div>
           {galleryImageCount > 1 ? (

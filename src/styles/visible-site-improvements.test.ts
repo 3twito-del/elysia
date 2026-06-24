@@ -114,7 +114,9 @@ describe("visible site improvement affordances", () => {
 
     expect(home).toContain("home-cinematic-hero");
     expect(styles).toContain(".home-cinematic-hero");
-    expect(styles).toContain("clamp(32rem, 78svh, 48rem)");
+    expect(styles).toMatch(
+      /\.home-cinematic-hero \{[\s\S]*--home-hero-height: clamp\(32rem, 80svh, 53rem\);/,
+    );
     expect(home).toContain('data-testid="home-hero-copy"');
     expect(home).toContain('data-testid="home-hero-statement"');
     expect(home).toContain('data-testid="home-hero-primary-cta"');

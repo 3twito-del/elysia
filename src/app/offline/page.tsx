@@ -26,7 +26,7 @@ const offlineCapabilityGroups = [
 
 export default function OfflinePage() {
   return (
-    <main className="bg-background text-foreground grid min-h-svh place-items-center px-4 py-12">
+    <main className="elysia-page bg-background text-foreground grid min-h-svh place-items-center px-4 py-12">
       <section
         className="grid w-full max-w-2xl gap-6 text-right"
         dir="rtl"

@@ -28,9 +28,10 @@ describe("accessibility guardrails", () => {
     );
 
     expect(css).toContain("--brand-gold-muted: #b49a6a;");
-    expect(css).toContain("--glass-focus: rgb(180 154 106 / 26%);");
-    expect(css).toContain("--glass-focus: rgb(226 232 236 / 42%);");
-    expect(css).toContain("--glass-focus: oklch(0 0 0 / 52%);");
+    expect(css).toContain("--elysia-focus: rgb(180 154 106 / 26%);");
+    expect(css).toContain("--elysia-focus: rgb(226 232 236 / 42%);");
+    expect(css).toContain("--elysia-focus: oklch(0 0 0 / 52%);");
+    expect(css).toContain("--glass-focus: var(--elysia-focus);");
   });
 
   it("keeps the skip link as the first keyboard recovery target", () => {
@@ -178,7 +179,7 @@ describe("accessibility guardrails", () => {
       const source = readFileSync(path.join(process.cwd(), route.file), "utf8");
       const sectionLabels = source.match(/<section aria-labelledby=/g) ?? [];
 
-      expect(source).toContain("<main>");
+      expect(source).toContain('<main className="elysia-page">');
       expect(source).toContain("<SiteHeader />");
       expect(source).toContain("<CompactPageIntro");
       expect(source).toContain('variant="content"');

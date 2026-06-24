@@ -11,6 +11,7 @@ import { PwaProvider } from "~/components/pwa-provider";
 import { PublicMotionProvider } from "~/components/public-motion-provider";
 import { SiteContextMenu } from "~/components/site-context-menu";
 import { SiteFooter } from "~/components/site-footer";
+import { SiteUndraggableMedia } from "~/components/site-undraggable-media";
 import { env } from "~/env";
 
 const appName = "Elysia";
@@ -87,6 +88,7 @@ export default function RootLayout({
           <CookieConsentBanner />
           <ExclusiveDetailsProvider />
           <SiteContextMenu />
+          <SiteUndraggableMedia />
           <Suspense fallback={null}>
             <AnalyticsProvider />
           </Suspense>

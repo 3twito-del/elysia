@@ -80,7 +80,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   return (
     <>
       <SiteHeader />
-      <main className="bg-background text-foreground" dir="rtl">
+      <main className="elysia-page bg-background text-foreground" dir="rtl">
         <article
           className="mx-auto grid max-w-[74rem] gap-8 px-[var(--ui-page-x)] py-10 sm:px-[var(--ui-page-x-wide)] lg:py-16"
           data-testid="blog-post"

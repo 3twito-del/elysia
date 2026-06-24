@@ -29,7 +29,7 @@ export default async function AccessibilityPage() {
     <>
       <SiteHeader />
 
-      <main>
+      <main className="elysia-page">
         <CompactPageIntro
           description="האתר והשירות מיועדים להיות זמינים ונוחים לשימוש לכלל המשתמשים."
           eyebrow="נגישות"

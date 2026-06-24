@@ -8,7 +8,7 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
     <div
       data-slot="table-container"
-      className="minimal-scroll relative w-full overflow-x-auto overscroll-x-contain rounded-md border border-[var(--glass-border)]"
+      className="elysia-table elysia-panel minimal-scroll relative w-full overflow-x-auto overscroll-x-contain rounded-md border border-[var(--glass-border)]"
     >
       <table
         data-slot="table"
@@ -44,7 +44,7 @@ function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
     <tfoot
       data-slot="table-footer"
       className={cn(
-        "glass-inset border-t font-medium [&>tr]:last:border-b-0",
+        "elysia-inset glass-inset border-t font-medium [&>tr]:last:border-b-0",
         className,
       )}
       {...props}

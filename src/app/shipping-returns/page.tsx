@@ -91,7 +91,7 @@ export default async function ShippingReturnsPage() {
     <>
       <SiteHeader />
 
-      <main>
+      <main className="elysia-page">
         <CompactPageIntro
           description="מידע על משלוחים, זמני אספקה, ביטול עסקה, החלפות והחזרות באתר Elysia."
           eyebrow="מדיניות שירות"

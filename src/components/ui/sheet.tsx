@@ -155,7 +155,7 @@ function SheetContent({
         data-slot="sheet-content"
         data-side={side}
         className={cn(
-          "sheet-content popup-surface minimal-scroll text-popover-foreground fixed z-[90] flex flex-col gap-4 text-sm outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] motion-reduce:animate-none motion-reduce:transition-none",
+          "elysia-panel sheet-content popup-surface minimal-scroll text-popover-foreground fixed z-[90] flex flex-col gap-4 text-sm outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] motion-reduce:animate-none motion-reduce:transition-none",
           side === "bottom" && "inset-x-0 bottom-0 h-auto border-t",
           side === "left" &&
             "inset-y-0 left-0 h-full w-[min(88dvw,22rem)] border-r sm:max-w-sm",

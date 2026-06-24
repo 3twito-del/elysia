@@ -105,6 +105,7 @@ export function StaticCinematicHeroSequence({
           <Image
             alt={slide.alt}
             className="cinematic-hero-image media-color-rich object-cover"
+            draggable={false}
             fill
             loading={priority && index === 1 ? "eager" : undefined}
             priority={priority && index === 0}

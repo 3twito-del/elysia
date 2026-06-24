@@ -98,7 +98,7 @@ export default async function PrivacyPage() {
     <>
       <SiteHeader />
 
-      <main>
+      <main className="elysia-page">
         <CompactPageIntro
           description="כיצד נאסף, נשמר, משותף ומוגן מידע אישי באתר ובשירות."
           eyebrow="פרטיות ומידע"

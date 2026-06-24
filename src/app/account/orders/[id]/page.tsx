@@ -68,7 +68,7 @@ export default async function OrderDetailPage({
   const orderTimeline = createAccountOrderTimeline(order);
 
   return (
-    <main>
+    <main className="elysia-page">
       <SiteHeader />
       <CompactPageIntro
         description={`${order.recipientName} · ${order.email}`}

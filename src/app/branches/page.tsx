@@ -55,7 +55,7 @@ export default async function BranchesPage() {
     profile.settings.physicalBranchesEnabled && profile.branches.length > 0;
 
   return (
-    <main>
+    <main className="elysia-page">
       <SiteHeader />
       <CompactPageIntro
         description={

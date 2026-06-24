@@ -18,8 +18,10 @@ export function LoadingState({
       aria-live="polite"
       className={cn(
         "text-muted-foreground flex items-center gap-2",
-        variant === "inset" && "glass-inset w-fit rounded-md border p-3",
-        variant === "inline" && "glass-inset w-fit rounded-md border px-3 py-2",
+        variant === "inset" &&
+          "elysia-inset glass-inset w-fit rounded-md border p-3",
+        variant === "inline" &&
+          "elysia-inset glass-inset w-fit rounded-md border px-3 py-2",
         className,
       )}
       role="status"

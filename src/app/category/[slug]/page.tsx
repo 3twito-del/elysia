@@ -261,7 +261,7 @@ export default async function CategoryPage({
     <>
       <SiteHeader />
 
-      <main dir="rtl">
+      <main className="elysia-page" dir="rtl">
         <CategoryBreadcrumbs categoryName={categoryCopy.title} />
 
         <CompactPageIntro

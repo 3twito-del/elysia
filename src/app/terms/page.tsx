@@ -117,7 +117,7 @@ export default async function TermsPage() {
     <>
       <SiteHeader />
 
-      <main>
+      <main className="elysia-page">
         <CompactPageIntro
           description="תנאי שימוש באתר Elysia: הזמנות, מחירים, תשלום, משלוחים, ביטולים, אחריות, פרטיות ושירות."
           eyebrow="תקנון ומדיניות"

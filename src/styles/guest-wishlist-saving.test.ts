@@ -94,7 +94,14 @@ describe("guest wishlist saving", () => {
     expect(productCardFavorite).toContain("canRemove");
     expect(productCardFavorite).toContain("הסרה מהמועדפים");
     expect(productCardFavorite).toContain("data-icon-tooltip=");
-    expect(productCardFavorite).toContain("hasMessage || isSaved ? undefined");
+    expect(productCardFavorite).toContain(
+      "FAVORITE_REMOVAL_VISUAL_DELAY_MS = 3_000",
+    );
+    expect(productCardFavorite).toContain("pointerInsideCardRef");
+    expect(productCardFavorite).toContain("maybeHideRemovedFavorite");
+    expect(productCardFavorite).toContain(
+      "hasMessage || visuallySaved ? undefined",
+    );
     expect(productCardFavorite).toContain("product-card-favorite-status");
     expect(productCardFavorite).toContain(
       'data-testid="product-card-favorite-feedback"',

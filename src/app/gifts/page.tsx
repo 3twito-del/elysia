@@ -83,7 +83,7 @@ export default async function GiftsPage() {
   const bundlePairs = getGiftBundlePairs(products);
 
   return (
-    <main>
+    <main className="elysia-page">
       <SiteHeader />
       <CompactPageIntro
         description="תקציב, למי, אירוע."

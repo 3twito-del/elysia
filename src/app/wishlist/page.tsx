@@ -144,7 +144,7 @@ export default async function WishlistPage() {
   }
 
   return (
-    <main className="account-boutique-page wishlist-boutique-page">
+    <main className="elysia-page account-boutique-page wishlist-boutique-page">
       <SiteHeader />
       <CompactPageIntro
         className="account-entry-intro account-boutique-hero wishlist-boutique-hero"
@@ -183,7 +183,7 @@ function WishlistStatePage({
   const Icon = icon;
 
   return (
-    <main className="account-boutique-page wishlist-boutique-page">
+    <main className="elysia-page account-boutique-page wishlist-boutique-page">
       <SiteHeader />
       <section className="mx-auto flex min-h-[60vh] max-w-3xl items-center px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]">
         <Card className="account-boutique-panel w-full rounded-md">

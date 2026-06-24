@@ -63,7 +63,7 @@ export default async function SizeGuidePage({
   );
 
   return (
-    <main>
+    <main className="elysia-page">
       <SiteHeader />
       <CompactPageIntro
         description="בחרו סוג תכשיט והשתמשו בכלי המדידה לפני הזמנה."

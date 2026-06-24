@@ -188,7 +188,7 @@ function AccountStatePage({
   return (
     <>
       <SiteHeader />
-      <main className="account-boutique-page">
+      <main className="elysia-page account-boutique-page">
         <section className="mx-auto flex min-h-[60vh] max-w-3xl items-center px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]">
           <Card className="account-boutique-panel w-full rounded-md">
             <CardContent className="p-4 sm:p-6">
@@ -305,7 +305,10 @@ export default async function AccountPage() {
     return (
       <>
         <SiteHeader />
-        <main className="account-boutique-page account-client-page" dir="rtl">
+        <main
+          className="elysia-page account-boutique-page account-client-page"
+          dir="rtl"
+        >
           <AccountPageHeader
             description="כניסה להזמנות, מועדפים, מידות ושירות."
             eyebrow="אזור אישי"
@@ -408,7 +411,10 @@ export default async function AccountPage() {
   return (
     <>
       <SiteHeader />
-      <main className="account-boutique-page account-client-page" dir="rtl">
+      <main
+        className="elysia-page account-boutique-page account-client-page"
+        dir="rtl"
+      >
         <AccountPageHeader
           description="הזמנות, מועדפים, מידות ושירות - מרוכזים עבורך במקום אחד."
           eyebrow="אזור אישי"

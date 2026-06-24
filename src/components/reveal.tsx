@@ -123,7 +123,7 @@ export function RevealSection({
 
   return (
     <section
-      className={cn("motion-reveal", className)}
+      className={cn("elysia-section motion-reveal", className)}
       data-public-floating-avoid={floatingAvoid ? "true" : undefined}
       data-reveal-variant={variant}
       data-reveal-visible={isVisible}

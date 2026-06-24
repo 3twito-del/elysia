@@ -49,7 +49,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   return (
     <>
       <SiteHeader />
-      <main className="bg-background text-foreground" dir="rtl">
+      <main className="elysia-page bg-background text-foreground" dir="rtl">
         <CompactPageIntro
           description="מדריכים קצרים לבחירת תכשיט, טיפול נכון ושילובים שמרגישים טבעיים ביום-יום."
           eyebrow="Elysia Notes"

@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useId, useState, type FormEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type FormEvent,
+} from "react";
 import { Heart } from "lucide-react";
 
 import { saveWishlistItem, type PublicActionState } from "~/app/actions";
@@ -15,6 +22,7 @@ import {
 import { cn } from "~/lib/utils";
 
 const initialState: PublicActionState = {};
+const FAVORITE_REMOVAL_VISUAL_DELAY_MS = 3_000;
 
 type SavedServerState = {
   productSlug: string;
@@ -35,6 +43,12 @@ export function ProductCardFavoriteButton({
   const [pending, setPending] = useState(false);
   const [serverSavedState, setServerSavedState] =
     useState<SavedServerState | null>(null);
+  const [visuallySaved, setVisuallySaved] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const previousSavedRef = useRef(false);
+  const pointerInsideCardRef = useRef(false);
+  const removalStartedAtRef = useRef<number | null>(null);
+  const removalTimeoutRef = useRef<number | null>(null);
   const statusId = useId();
   const serverSaved =
     serverSavedState?.productSlug === productSlug && serverSavedState.saved;
@@ -43,12 +57,101 @@ export function ProductCardFavoriteButton({
 
   useEffect(() => {
     const syncGuestSavedState = () => {
-      setGuestSaved(isGuestWishlistSaved(productSlug));
+      const nextGuestSaved = isGuestWishlistSaved(productSlug);
+
+      setGuestSaved(nextGuestSaved);
+      if (nextGuestSaved) {
+        setVisuallySaved(true);
+      }
     };
 
     syncGuestSavedState();
     return subscribeToGuestWishlist(syncGuestSavedState);
   }, [productSlug]);
+
+  const clearRemovalTimeout = useCallback(() => {
+    if (removalTimeoutRef.current === null) return;
+
+    window.clearTimeout(removalTimeoutRef.current);
+    removalTimeoutRef.current = null;
+  }, []);
+
+  const maybeHideRemovedFavorite = useCallback(() => {
+    const removalStartedAt = removalStartedAtRef.current;
+
+    clearRemovalTimeout();
+
+    if (removalStartedAt === null) return;
+
+    const remainingDelay = Math.max(
+      FAVORITE_REMOVAL_VISUAL_DELAY_MS - (Date.now() - removalStartedAt),
+      0,
+    );
+
+    if (pointerInsideCardRef.current) return;
+
+    if (remainingDelay === 0) {
+      removalStartedAtRef.current = null;
+      setVisuallySaved(false);
+      return;
+    }
+
+    removalTimeoutRef.current = window.setTimeout(() => {
+      removalTimeoutRef.current = null;
+
+      if (pointerInsideCardRef.current) return;
+
+      removalStartedAtRef.current = null;
+      setVisuallySaved(false);
+    }, remainingDelay);
+  }, [clearRemovalTimeout]);
+
+  useEffect(() => {
+    if (isSaved) {
+      previousSavedRef.current = true;
+      removalStartedAtRef.current = null;
+      clearRemovalTimeout();
+      return;
+    }
+
+    if (previousSavedRef.current && removalStartedAtRef.current === null) {
+      removalStartedAtRef.current = Date.now();
+      maybeHideRemovedFavorite();
+    }
+
+    previousSavedRef.current = false;
+  }, [clearRemovalTimeout, isSaved, maybeHideRemovedFavorite]);
+
+  useEffect(() => {
+    const card = formRef.current?.closest<HTMLElement>(
+      '[data-testid="product-card"]',
+    );
+
+    if (!card) return;
+
+    pointerInsideCardRef.current = card.matches(":hover");
+
+    const handlePointerEnter = () => {
+      pointerInsideCardRef.current = true;
+      clearRemovalTimeout();
+    };
+    const handlePointerLeave = () => {
+      pointerInsideCardRef.current = false;
+      maybeHideRemovedFavorite();
+    };
+
+    card.addEventListener("pointerenter", handlePointerEnter);
+    card.addEventListener("pointerleave", handlePointerLeave);
+
+    return () => {
+      card.removeEventListener("pointerenter", handlePointerEnter);
+      card.removeEventListener("pointerleave", handlePointerLeave);
+    };
+  }, [clearRemovalTimeout, maybeHideRemovedFavorite]);
+
+  useEffect(() => {
+    return clearRemovalTimeout;
+  }, [clearRemovalTimeout]);
 
   useEffect(() => {
     if (!state.message || state.ok === false) return;
@@ -93,6 +196,7 @@ export function ProductCardFavoriteButton({
       if (nextState.code === "AUTH_REQUIRED") {
         saveGuestWishlistItem(productSlug);
         setGuestSaved(true);
+        setVisuallySaved(true);
         setServerSavedState({ productSlug, saved: false });
         setState({
           ok: true,
@@ -104,6 +208,9 @@ export function ProductCardFavoriteButton({
 
       if (typeof nextState.saved === "boolean") {
         setServerSavedState({ productSlug, saved: nextState.saved });
+        if (nextState.saved) {
+          setVisuallySaved(true);
+        }
       }
 
       setState(nextState);
@@ -115,7 +222,7 @@ export function ProductCardFavoriteButton({
   }
 
   return (
-    <form className="relative shrink-0" onSubmit={handleSubmit}>
+    <form className="relative shrink-0" onSubmit={handleSubmit} ref={formRef}>
       <input name="productSlug" type="hidden" value={productSlug} />
       <FavoriteSubmitButton
         canRemove={isSaved}
@@ -124,6 +231,7 @@ export function ProductCardFavoriteButton({
         pending={pending}
         productName={productName}
         statusId={hasMessage ? statusId : undefined}
+        visuallySaved={visuallySaved}
       />
       {hasMessage ? (
         <StatusMessage
@@ -149,6 +257,7 @@ function FavoriteSubmitButton({
   pending,
   productName,
   statusId,
+  visuallySaved,
 }: {
   canRemove: boolean;
   hasMessage: boolean;
@@ -156,6 +265,7 @@ function FavoriteSubmitButton({
   pending: boolean;
   productName: string;
   statusId?: string;
+  visuallySaved: boolean;
 }) {
   const label = pending
     ? `שומר למועדפים: ${productName}`
@@ -169,18 +279,20 @@ function FavoriteSubmitButton({
       aria-label={canRemove ? `הסרה מהמועדפים: ${productName}` : label}
       aria-pressed={isSaved}
       className={cn(
-        "product-card-favorite-button h-10 w-10 shrink-0 rounded-md border border-transparent !bg-transparent text-[var(--foreground)] shadow-none",
+        "product-card-favorite-button h-10 w-10 shrink-0 rounded-full border border-transparent !bg-transparent text-[var(--foreground)] shadow-none",
         "hover:border-transparent hover:!bg-transparent hover:text-[var(--foreground)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
       )}
-      data-favorite-saved={isSaved ? "true" : "false"}
-      data-icon-tooltip={hasMessage || isSaved ? undefined : "שמירה למועדפים"}
+      data-favorite-saved={visuallySaved ? "true" : "false"}
+      data-icon-tooltip={
+        hasMessage || visuallySaved ? undefined : "שמירה למועדפים"
+      }
       data-icon-tooltip-placement="bottom"
       disabled={pending}
       size="icon"
       type="submit"
       variant="ghost"
     >
-      <Heart aria-hidden="true" className="size-4 fill-transparent" />
+      <Heart aria-hidden="true" className="size-[1.15rem] fill-transparent" />
     </Button>
   );
 }

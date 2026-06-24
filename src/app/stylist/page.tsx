@@ -12,7 +12,7 @@ export const metadata = {
 
 export default function StylistPage() {
   return (
-    <main>
+    <main className="elysia-page">
       <SiteHeader />
       <CompactPageIntro
         description="ענו על לוק, אירוע, תקציב ומידה וקבלו כיוון לבחירת תכשיט."

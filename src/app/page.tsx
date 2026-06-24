@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Gift, Headphones, ShieldCheck, Truck } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 import { env } from "~/env";
 import { stringifyJsonLd } from "~/lib/json-ld";
+import { getTextDirection } from "~/lib/text-direction";
 import { NewsletterForm } from "~/components/newsletter-form";
 import { DeferredFixedBackgroundBand } from "~/components/deferred-fixed-background-band";
 import { HomeHeroVideo } from "~/components/home-hero-video";
@@ -24,7 +25,7 @@ const boutiqueHeroImage = "/brand/boutique/lifestyle-hero.avif";
 const boutiqueHeroPoster = "/brand/boutique/lifestyle-hero-poster.avif";
 const boutiqueHeroVideoMp4 = "/brand/boutique/lifestyle-hero.mp4";
 const boutiqueHeroVideoWebm = "/brand/boutique/lifestyle-hero.webm";
-const homeHeroTitle = "The Elysia Experience";
+const homeHeroTitle = "Timeless Elegance";
 const homeHeroDirection = getHeroTextDirection(homeHeroTitle);
 const homeSameAs = [
   "https://www.instagram.com/elysia.one/",
@@ -34,28 +35,6 @@ const homeSameAs = [
 type HeroTextDirection = "ltr" | "rtl";
 
 const categoryOrder = ["rings", "necklaces", "earrings", "bracelets"];
-
-const categoryEditorialCopy: Record<
-  string,
-  { description: string; kicker: string }
-> = {
-  bracelets: {
-    description: "צמידים מדויקים שנועדו לענידה יחידה או בשכבות.",
-    kicker: "The Edit",
-  },
-  earrings: {
-    description: "עגילים שנעים בטבעיות בין היומיום לרגעים של ערב.",
-    kicker: "The Edit",
-  },
-  necklaces: {
-    description: "קווים עדינים ותליונים שמעניקים לכל מראה נקודת אור.",
-    kicker: "The Edit",
-  },
-  rings: {
-    description: "טבעות בעלות נוכחות שקטה, לענידה לבד או בשילובים אישיים.",
-    kicker: "The Edit",
-  },
-};
 
 const categoryImagePosition: Record<string, string> = {
   bracelets: "50% 52%",
@@ -84,33 +63,6 @@ const storySignatureNote = {
   title: "נוכחות עדינה, שימוש יומיומי",
   text: "בחירה שמתחילה בחומר וממשיכה בפרופורציה, כדי שהתכשיט ירגיש טבעי מהרגע הראשון.",
 } as const;
-
-const homeTrustSignals = [
-  {
-    href: "/privacy",
-    icon: ShieldCheck,
-    title: "קנייה בטוחה",
-    text: "תשלום מאובטח ומחיר ברור, עד לאישור ההזמנה.",
-  },
-  {
-    href: "/shipping-returns",
-    icon: Truck,
-    title: "משלוח והחזרה",
-    text: "כל המידע לבחירה רגועה, לפני ואחרי הרכישה.",
-  },
-  {
-    href: "/gifts",
-    icon: Gift,
-    title: "אריזה מוקפדת",
-    text: "כל תכשיט מגיע מוכן לרגע שבו מעניקים אותו.",
-  },
-  {
-    href: "/service",
-    icon: Headphones,
-    title: "ליווי אישי",
-    text: "עזרה אנושית בבחירת תכשיט, מידה ומתנה.",
-  },
-] as const;
 
 export const metadata: Metadata = {
   title: "Elysia Jewellery | תכשיטים בעיצוב מדויק",
@@ -174,7 +126,7 @@ export default async function Home() {
 
   return (
     <main
-      className="home-luxury-page storefront-home-page"
+      className="elysia-page home-luxury-page storefront-home-page"
       data-testid="storefront-homepage"
     >
       <script
@@ -215,9 +167,6 @@ export default async function Home() {
           data-testid="home-hero-copy"
           dir={homeHeroDirection}
         >
-          <p className="storefront-eyebrow motion-copy-item [--motion-copy-delay:70ms]">
-            Elysia Jewellery
-          </p>
           <h1 className="storefront-hero-title motion-copy-item [--motion-copy-delay:90ms]">
             {homeHeroTitle}
           </h1>
@@ -226,7 +175,7 @@ export default async function Home() {
             data-testid="home-hero-statement"
             dir="auto"
           >
-            תכשיטים שנבחרו לחיים, לא רק לרגע.
+            לאהוב את מה שאת עונדת.
           </p>
           <div
             className="home-hero-actions motion-copy-item storefront-hero-actions [--motion-copy-delay:130ms]"
@@ -240,7 +189,7 @@ export default async function Home() {
                   href="/search"
                   prefetch={false}
                 >
-                  לגלות את הקולקציה
+                  גלי את הקולקציה
                   <ArrowLeft
                     aria-hidden="true"
                     className="home-hero-cta-icon size-4"
@@ -253,56 +202,12 @@ export default async function Home() {
       </RevealSection>
 
       <RevealSection
-        className="home-trust-strip mx-auto w-full max-w-[92rem] px-[var(--ui-page-x)] py-5 lg:px-[var(--ui-page-x-wide)]"
-        data-testid="home-commerce-shortcuts"
-        id="why-trust-elysia"
-        variant="none"
-      >
-        <div
-          className="grid gap-4 border-y border-[var(--glass-border)] py-5 sm:grid-cols-2 lg:grid-cols-4"
-          data-testid="home-commerce-trust-strip"
-        >
-          {homeTrustSignals.map((item) => {
-            const Icon = item.icon;
-
-            return (
-              <Link
-                className="home-trust-strip-link grid min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-3 rounded-md outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
-                href={item.href}
-                key={item.title}
-                prefetch={false}
-              >
-                <span className="glass-inset grid size-9 place-items-center rounded-md border">
-                  <Icon aria-hidden="true" className="size-4" />
-                </span>
-                <span className="min-w-0">
-                  <span className="block text-sm font-semibold">
-                    {item.title}
-                  </span>
-                  <span className="text-muted-foreground mt-1 block text-xs leading-5">
-                    {item.text}
-                  </span>
-                </span>
-              </Link>
-            );
-          })}
-        </div>
-      </RevealSection>
-
-      <RevealSection
         className="boutique-section mx-auto w-full max-w-[92rem] px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]"
         id="collections"
       >
-        <SectionHeader
-          actionHref="/search"
-          actionLabel="לגלות את כל התכשיטים"
-          eyebrow="Shop by Category"
-          text="טבעות, שרשראות, עגילים וצמידים שנועדו להפוך לחלק מהסגנון שלך."
-          title="Find Your Signature"
-        />
         {orderedCategories.length > 0 ? (
           <RevealGrid
-            className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+            className="grid gap-x-7 gap-y-7 sm:grid-cols-2 lg:grid-cols-4"
             data-layout-equal-group="home-category-tiles"
             data-testid="home-category-tiles"
             variant="media"
@@ -327,13 +232,7 @@ export default async function Home() {
           id="featured"
         >
           <div className="mx-auto max-w-[92rem]">
-            <SectionHeader
-              actionHref="/search?sort=newest"
-              actionLabel="לגלות מה חדש"
-              eyebrow="New Arrivals"
-              text="עיצובים חדשים, קלים לענידה ובעלי נוכחות שנשארת."
-              title="Icons of Summer"
-            />
+            <SectionHeader eyebrow="New Arrivals" title="Icons of Summer" />
             <RevealGrid
               className="ui-equal-grid grid gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-4"
               data-layout-equal-group="home-featured-products"
@@ -509,7 +408,7 @@ function SectionHeader({
   actionHref?: string;
   actionLabel?: string;
   eyebrow: string;
-  text: string;
+  text?: string;
   title: string;
 }) {
   const titleDirection = getHeroTextDirection(title);
@@ -518,6 +417,7 @@ function SectionHeader({
     <div
       className="commerce-section-header"
       data-title-direction={titleDirection}
+      dir={titleDirection}
     >
       <div className="commerce-section-header-copy">
         <p
@@ -529,12 +429,14 @@ function SectionHeader({
         <h2 className="commerce-section-header-title" dir={titleDirection}>
           {title}
         </h2>
-        <p
-          className="commerce-section-header-description"
-          dir={getHeroTextDirection(text)}
-        >
-          {text}
-        </p>
+        {text ? (
+          <p
+            className="commerce-section-header-description"
+            dir={getHeroTextDirection(text)}
+          >
+            {text}
+          </p>
+        ) : null}
       </div>
       {actionHref && actionLabel ? (
         <div className="commerce-section-header-action">
@@ -585,8 +487,6 @@ function HomeEditorialFallback({
 }
 
 function HomeCategoryCard({ category }: { category: CatalogCategory }) {
-  const copy = categoryEditorialCopy[category.slug];
-
   return (
     <Link
       aria-label={`לגלות את קטגוריית ${category.name}`}
@@ -611,13 +511,7 @@ function HomeCategoryCard({ category }: { category: CatalogCategory }) {
       </span>
       <span className="boutique-collection-copy">
         <span className="min-w-0">
-          <span className="storefront-eyebrow">
-            {copy?.kicker ?? "The Edit"}
-          </span>
           <span className="boutique-collection-title">{category.name}</span>
-          <span className="boutique-collection-description">
-            {copy?.description ?? category.description}
-          </span>
         </span>
         <span className="boutique-collection-action" aria-hidden="true">
           <ArrowLeft className="size-4" />
@@ -642,10 +536,5 @@ function getOrderedHomeCategories(categories: CatalogCategory[]) {
 }
 
 function getHeroTextDirection(title: string): HeroTextDirection {
-  for (const character of title) {
-    if (/[\u0590-\u05ff]/u.test(character)) return "rtl";
-    if (/[A-Za-z]/u.test(character)) return "ltr";
-  }
-
-  return "rtl";
+  return getTextDirection(title);
 }

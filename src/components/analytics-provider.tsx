@@ -555,6 +555,8 @@ function sendAnalyticsBatch(events: AnalyticsClientEventPayload[]) {
       headers: { "content-type": "application/json" },
       body,
       keepalive: true,
+    }).catch(() => {
+      // First-party analytics must never break navigation.
     });
   } catch {
     // First-party analytics must never break navigation.
@@ -587,9 +589,13 @@ function flushReplayBuffer(input: {
 
   input.replayChunkStartedAtRef.current = null;
 
-  void createReplayChecksum(JSON.stringify(events)).then((checksum) => {
-    sendReplayChunk({ ...payloadBase, checksum });
-  });
+  void createReplayChecksum(JSON.stringify(events))
+    .then((checksum) => {
+      sendReplayChunk({ ...payloadBase, checksum });
+    })
+    .catch(() => {
+      // Replay must never affect the shopping experience.
+    });
 }
 
 function sendReplayChunk(payload: ReplayChunkPayload) {
@@ -612,6 +618,8 @@ function sendReplayChunk(payload: ReplayChunkPayload) {
       headers: { "content-type": "application/json" },
       body,
       keepalive: true,
+    }).catch(() => {
+      // Replay must never affect the shopping experience.
     });
   } catch {
     // Replay must never affect the shopping experience.

@@ -207,53 +207,51 @@ export async function recordAnalyticsEvent(
     parsed.visitorKeyHash ??
     (parsed.visitorKey ? hashAnalyticsIdentifier(parsed.visitorKey) : null);
   const redactedPayload = redactAnalyticsPayload(parsed.payload);
-  const identity = await resolveAnalyticsIdentity({
-    occurredAt,
-    visitorKeyHash,
-    sessionKeyHash,
-    customerId: parsed.customerId,
-    path: parsed.path,
-    referrer: parsed.referrer,
-    utm: parsed.utm,
-    device: parsed.device,
-    geo: parsed.geo,
-  });
-
-  const data: Prisma.AnalyticsEventCreateInput = {
-    type: parsed.type,
-    occurredAt,
-    visitor: identity.visitorId
-      ? { connect: { id: identity.visitorId } }
-      : undefined,
-    session: identity.sessionId
-      ? { connect: { id: identity.sessionId } }
-      : undefined,
-    sessionKeyHash,
-    customer: parsed.customerId
-      ? { connect: { id: parsed.customerId } }
-      : undefined,
-    order: parsed.orderId ? { connect: { id: parsed.orderId } } : undefined,
-    product: productId ? { connect: { id: productId } } : undefined,
-    source: parsed.source,
-    sequence: parsed.sequence,
-    url: parsed.url,
-    title: parsed.title,
-    path: parsed.path,
-    referrer: parsed.referrer,
-    utm: toNullableJsonInput(parsed.utm),
-    device: toNullableJsonInput(parsed.device),
-    viewport: toNullableJsonInput(parsed.viewport),
-    geo: toNullableJsonInput(parsed.geo),
-    attribution: toNullableJsonInput(parsed.attribution),
-    consentMode: parsed.consentMode,
-    payload: toNullableJsonInput(redactedPayload),
-    schemaVersion: parsed.schemaVersion,
-    idempotencyKey: parsed.idempotencyKey
-      ? hashAnalyticsIdentifier(parsed.idempotencyKey)
-      : undefined,
-  };
-
   try {
+    const identity = await resolveAnalyticsIdentity({
+      occurredAt,
+      visitorKeyHash,
+      sessionKeyHash,
+      customerId: parsed.customerId,
+      path: parsed.path,
+      referrer: parsed.referrer,
+      utm: parsed.utm,
+      device: parsed.device,
+      geo: parsed.geo,
+    });
+    const data: Prisma.AnalyticsEventCreateInput = {
+      type: parsed.type,
+      occurredAt,
+      visitor: identity.visitorId
+        ? { connect: { id: identity.visitorId } }
+        : undefined,
+      session: identity.sessionId
+        ? { connect: { id: identity.sessionId } }
+        : undefined,
+      sessionKeyHash,
+      customer: parsed.customerId
+        ? { connect: { id: parsed.customerId } }
+        : undefined,
+      order: parsed.orderId ? { connect: { id: parsed.orderId } } : undefined,
+      product: productId ? { connect: { id: productId } } : undefined,
+      source: parsed.source,
+      sequence: parsed.sequence,
+      url: parsed.url,
+      title: parsed.title,
+      path: parsed.path,
+      referrer: parsed.referrer,
+      utm: toNullableJsonInput(parsed.utm),
+      device: toNullableJsonInput(parsed.device),
+      viewport: toNullableJsonInput(parsed.viewport),
+      geo: toNullableJsonInput(parsed.geo),
+      attribution: toNullableJsonInput(parsed.attribution),
+      consentMode: parsed.consentMode,
+      payload: toNullableJsonInput(redactedPayload),
+      schemaVersion: parsed.schemaVersion,
+      idempotencyKey: parsed.idempotencyKey
+        ? hashAnalyticsIdentifier(parsed.idempotencyKey)
+        : undefined,
+    };
     const event = await db.analyticsEvent.create({
       data,
       select: { id: true },
@@ -272,6 +270,14 @@ export async function recordAnalyticsEvent(
   } catch (error) {
     if (isUniqueConstraintError(error)) {
       return { status: "duplicate", eventId: null };
+    }
+
+    if (isAnalyticsDatabaseUnavailableError(error)) {
+      return {
+        status: "skipped",
+        eventId: null,
+        reason: "database_unavailable",
+      };
     }
 
     throw error;
@@ -694,5 +700,12 @@ function isUniqueConstraintError(error: unknown) {
   return (
     error instanceof Prisma.PrismaClientKnownRequestError &&
     error.code === "P2002"
+  );
+}
+
+export function isAnalyticsDatabaseUnavailableError(error: unknown) {
+  return (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    ["P2021", "P2022"].includes(error.code)
   );
 }

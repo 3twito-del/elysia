@@ -37,7 +37,7 @@ describe("public motion budget", () => {
     const css = read("src/styles/globals.css");
     const sheetSource = read("src/components/ui/sheet.tsx");
 
-    expect(sheetSource).toContain('"sheet-content popup-surface');
+    expect(sheetSource).toContain('"elysia-panel sheet-content popup-surface');
     expect(sheetSource).toContain('"sheet-overlay popup-overlay');
     expect(sheetSource).not.toContain("data-closed:slide-out-to-right");
     expect(css).toContain("--motion-sheet-exit: 420ms;");

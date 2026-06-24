@@ -7,6 +7,7 @@ import { env } from "~/env";
 import { db } from "~/server/db";
 import {
   hashAnalyticsIdentifier,
+  isAnalyticsDatabaseUnavailableError,
   isAnalyticsIngestionEnabled,
   resolveAnalyticsIdentity,
   toNullableJsonInput,
@@ -111,18 +112,17 @@ export async function recordAnalyticsReplayChunk(
   const visitorKeyHash =
     parsed.visitorKeyHash ??
     (parsed.visitorKey ? hashAnalyticsIdentifier(parsed.visitorKey) : null);
-  const identity = await resolveAnalyticsIdentity({
-    occurredAt: parsed.endedAt,
-    visitorKeyHash,
-    sessionKeyHash,
-    path,
-    replayEnabled: true,
-  });
-  const maskedEvents = maskReplayEvents(parsed.events, {
-    forceMaskText: Boolean(path && replaySensitiveRoutePattern.test(path)),
-  });
-
   try {
+    const identity = await resolveAnalyticsIdentity({
+      occurredAt: parsed.endedAt,
+      visitorKeyHash,
+      sessionKeyHash,
+      path,
+      replayEnabled: true,
+    });
+    const maskedEvents = maskReplayEvents(parsed.events, {
+      forceMaskText: Boolean(path && replaySensitiveRoutePattern.test(path)),
+    });
     const chunk = await db.analyticsReplayChunk.create({
       data: {
         session: identity.sessionId
@@ -145,6 +145,14 @@ export async function recordAnalyticsReplayChunk(
   } catch (error) {
     if (isUniqueConstraintError(error)) {
       return { status: "duplicate", chunkId: null };
+    }
+
+    if (isAnalyticsDatabaseUnavailableError(error)) {
+      return {
+        status: "skipped",
+        chunkId: null,
+        reason: "database_unavailable",
+      };
     }
 
     throw error;

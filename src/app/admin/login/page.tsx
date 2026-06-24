@@ -36,7 +36,7 @@ export default async function AdminLoginPage({
   }
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgb(66_201_190_/_10%),transparent_34%),linear-gradient(180deg,var(--background),var(--muted))]">
+    <main className="elysia-page elysia-admin-shell min-h-screen">
       <section className="mx-auto grid min-h-screen max-w-7xl items-center px-[var(--ui-page-x)] py-[var(--ui-section-y)] lg:px-[var(--ui-page-x-wide)]">
         <div className="mx-auto grid w-full max-w-md gap-6">
           <Link

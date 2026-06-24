@@ -95,7 +95,10 @@ export function CommercePageHero({
 
   return (
     <section
-      className={cn("commerce-page-hero brand-page-band", className)}
+      className={cn(
+        "elysia-route-header commerce-page-hero brand-page-band",
+        className,
+      )}
       data-commerce-density={density ?? densityByHeroVariant[variant]}
       data-commerce-hero={variant}
       data-has-aside={hasAside ? "true" : "false"}
@@ -106,7 +109,7 @@ export function CommercePageHero({
       dir="rtl"
       id={id}
     >
-      <div className="commerce-page-hero-inner">
+      <div className="elysia-section commerce-page-hero-inner">
         <div className="commerce-page-hero-copy">
           {eyebrow ? (
             <p className="commerce-page-hero-eyebrow">{eyebrow}</p>
@@ -125,7 +128,7 @@ export function CommercePageHero({
             {media ? (
               <BrandMediaPanel
                 alt={media.alt}
-                className="commerce-page-hero-media brand-media-frame"
+                className="elysia-media-frame commerce-page-hero-media brand-media-frame"
                 priority={media.priority}
                 sizes={media.sizes}
                 slides={media.slides}

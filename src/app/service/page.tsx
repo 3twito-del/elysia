@@ -114,7 +114,7 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
   const defaultTopicSlug = firstParam(query.topic);
 
   return (
-    <main>
+    <main className="elysia-page">
       <SiteHeader />
 
       <CompactPageIntro

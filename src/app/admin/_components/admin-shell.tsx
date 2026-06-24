@@ -104,9 +104,12 @@ export function AdminShell({
   title,
 }: AdminShellProps) {
   return (
-    <main className="bg-background min-h-screen" dir="rtl">
+    <main
+      className="elysia-page elysia-admin-shell bg-background min-h-screen"
+      dir="rtl"
+    >
       <div className="mx-auto grid max-w-[1440px] gap-0 lg:grid-cols-[17rem_1fr]">
-        <aside className="border-border/70 bg-card/95 border-b backdrop-blur lg:sticky lg:top-0 lg:z-30 lg:min-h-screen lg:border-e lg:border-b-0">
+        <aside className="elysia-chrome border-border/70 bg-card/95 border-b backdrop-blur lg:sticky lg:top-0 lg:z-30 lg:min-h-screen lg:border-e lg:border-b-0">
           <div className="grid gap-4 p-4 lg:p-5">
             <Link
               className="admin-brand-mark flex items-center text-lg font-semibold"
@@ -145,7 +148,7 @@ export function AdminShell({
               })}
             </nav>
             <Separator className="hidden lg:block" />
-            <div className="bg-background/70 hidden gap-3 rounded-md border p-3 text-sm lg:grid">
+            <div className="elysia-panel bg-background/70 hidden gap-3 rounded-md border p-3 text-sm lg:grid">
               <div>
                 <p className="font-medium">{admin.name}</p>
                 <p className="text-muted-foreground">{admin.roleName}</p>
@@ -165,7 +168,7 @@ export function AdminShell({
         </aside>
 
         <section className="min-w-0 px-[var(--ui-page-x)] py-[var(--ui-section-y)] lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y-wide)]">
-          <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+          <div className="elysia-route-header mb-6 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
             <div className="min-w-0">
               <Badge className="mb-3" variant="secondary">
                 {eyebrow}

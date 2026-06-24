@@ -156,7 +156,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         resultCount={result.total}
       />
 
-      <main>
+      <main className="elysia-page">
         <CompactPageIntro
           description="ראו את התוצאות תחילה. חיפוש, קטגוריה וסינון נפתחים לפי צורך."
           eyebrow="חיפוש"

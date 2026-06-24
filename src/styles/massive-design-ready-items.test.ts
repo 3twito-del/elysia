@@ -95,8 +95,12 @@ describe("massive ready design items implementation", () => {
       'console.error("[semantic-search:intent]"',
     );
     expect(searchIntent).toContain("Public search must degrade silently");
-    expect(styles).toContain("clamp(32rem, 78svh, 48rem)");
-    expect(styles).toContain("clamp(28rem, 72svh, 38rem)");
+    expect(styles).toMatch(
+      /\.home-cinematic-hero \{[\s\S]*--home-hero-height: clamp\(32rem, 80svh, 53rem\);/,
+    );
+    expect(styles).toMatch(
+      /@media \(max-width: 767px\)[\s\S]*--home-hero-height: clamp\(30rem, 80svh, 38rem\);/,
+    );
     expect(purchasePanel).toContain(
       'data-testid="product-before-order-summary"',
     );

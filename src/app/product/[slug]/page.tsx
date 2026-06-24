@@ -204,7 +204,7 @@ export default async function ProductPage({
   });
 
   return (
-    <main className="bg-background">
+    <main className="elysia-page bg-background">
       <SiteHeader />
       <ProductAnalytics
         path={`/product/${product.slug}`}
