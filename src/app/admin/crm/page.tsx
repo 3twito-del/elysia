@@ -6,6 +6,7 @@ import {
   ListTodo,
   Repeat,
   ShoppingBag,
+  TrendingUp,
   Users,
 } from "lucide-react";
 
@@ -29,12 +30,21 @@ import {
 import { TableEmptyRow } from "~/components/ui/table-empty-row";
 import { formatHebrewDateTime, formatPrice } from "~/lib/format";
 import { getCrmOverview } from "~/server/services/crm";
+import { getSalesPipelineOverview } from "~/server/services/crm-sales";
 
 export const metadata = {
   title: "CRM | Admin",
 };
 
 export const dynamic = "force-dynamic";
+
+const stageLabel: Record<string, string> = {
+  QUALIFIED: "מוסמך",
+  PROPOSAL: "הצעה",
+  NEGOTIATION: "משא ומתן",
+  WON: "נסגר בהצלחה",
+  LOST: "אבד",
+};
 
 export default async function AdminCrmPage() {
   const access = await getAdminPageAccess("CRM_READ", "/admin/crm");
@@ -52,6 +62,14 @@ export default async function AdminCrmPage() {
   );
 
   if (!crm) return <AdminDatabaseFallback />;
+
+  const pipeline = await getSalesPipelineOverview().catch((error: unknown) => {
+    if (process.env.NODE_ENV === "development") {
+      console.error("[admin] failed to load sales pipeline", error);
+    }
+
+    return null;
+  });
 
   return (
     <AdminShell
@@ -137,6 +155,82 @@ export default async function AdminCrmPage() {
           customers={crm.dormantCustomers}
         />
       </div>
+
+      {pipeline ? (
+        <div className="mt-6 grid gap-6 xl:grid-cols-[0.8fr_1.2fr]">
+          <Card className="rounded-md">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp aria-hidden="true" className="size-5" />
+                צבר מכירות (Pipeline)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-3 text-sm">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-muted-foreground">הזדמנויות פתוחות</span>
+                <span className="font-medium">
+                  {pipeline.openOpportunities}
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-muted-foreground">שווי פתוח</span>
+                <span className="font-medium">
+                  {formatPrice(pipeline.totalOpenValue)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-muted-foreground">תחזית משוקללת</span>
+                <Badge variant="secondary">
+                  {formatPrice(pipeline.weightedValue)}
+                </Badge>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-muted-foreground">Win rate</span>
+                <span className="font-medium">{pipeline.winRate}%</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="rounded-md">
+            <CardHeader>
+              <CardTitle>לפי שלב</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table className="min-w-[420px]">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>שלב</TableHead>
+                    <TableHead>הזדמנויות</TableHead>
+                    <TableHead>שווי</TableHead>
+                    <TableHead>משוקלל</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {pipeline.byStage.length === 0 ? (
+                    <TableEmptyRow
+                      colSpan={4}
+                      description="הזדמנויות יופיעו לאחר המרת לידים להזדמנויות."
+                      icon={TrendingUp}
+                      title="אין הזדמנויות פתוחות"
+                    />
+                  ) : (
+                    pipeline.byStage.map((row) => (
+                      <TableRow key={row.stage}>
+                        <TableCell className="font-medium">
+                          {stageLabel[row.stage] ?? row.stage}
+                        </TableCell>
+                        <TableCell>{row.count}</TableCell>
+                        <TableCell>{formatPrice(row.amount)}</TableCell>
+                        <TableCell>{formatPrice(row.weighted)}</TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </div>
+      ) : null}
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_0.8fr]">
         <Card className="rounded-md">

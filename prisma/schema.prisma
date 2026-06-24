@@ -1751,6 +1751,57 @@ model CustomerReceiptAllocation {
   @@index([customerInvoiceId])
 }
 
+/// CRM sales pipeline lead (CRM-SAL-001).
+model Lead {
+  id                  String        @id @default(cuid())
+  name                String
+  email               String?
+  phone               String?
+  /// manual | web | referral | campaign
+  source              String        @default("manual")
+  /// NEW | QUALIFIED | CONVERTED | DISQUALIFIED
+  status              String        @default("NEW")
+  customerId          String?
+  assignedAdminUserId String?
+  notes               String?
+  metadata            Json?
+  opportunities       Opportunity[]
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  @@index([status, createdAt])
+  @@index([customerId])
+}
+
+/// CRM sales opportunity (CRM-SAL-001/003).
+model Opportunity {
+  id                  String    @id @default(cuid())
+  title               String
+  /// QUALIFIED | PROPOSAL | NEGOTIATION | WON | LOST
+  stage               String    @default("QUALIFIED")
+  /// OPEN | WON | LOST
+  status              String    @default("OPEN")
+  amount              Decimal   @default(0) @db.Decimal(14, 2)
+  currency            String    @default("ILS")
+  /// 0–100 win probability for the weighted pipeline.
+  probability         Int       @default(0)
+  expectedCloseDate   DateTime? @db.Date
+  customerId          String?
+  leadId              String?
+  assignedAdminUserId String?
+  notes               String?
+  metadata            Json?
+  closedAt            DateTime?
+  lead                Lead?     @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([status, stage])
+  @@index([customerId])
+  @@index([leadId])
+  @@index([expectedCloseDate])
+}
+
 /// Immutable cost layer per goods receipt, for FIFO / weighted-average
 /// inventory valuation (INV-002). Append-only; never mutated.
 model ItemCostLayer {
