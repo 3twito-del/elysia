@@ -34,7 +34,10 @@ import {
 
 describe("cart service", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    // resetAllMocks (not clearAllMocks) so leftover mockResolvedValueOnce values
+    // never leak across tests — that leak cascaded into 7 CI-only failures when
+    // worker scheduling changed the test order.
+    vi.resetAllMocks();
     dbMocks.couponFindUnique.mockResolvedValue(null);
   });
 
