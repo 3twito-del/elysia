@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   ACCOUNT,
   assertBalanced,
+  buildCustomerReceiptJournalLines,
   buildPurchaseReceiptJournalLines,
   buildSaleJournalLines,
   buildVendorInvoiceJournalLines,
@@ -137,5 +138,20 @@ describe("buildVendorPaymentJournalLines", () => {
     expect(lines.find((line) => line.accountCode === ACCOUNT.CASH)?.credit).toBe(
       295,
     );
+  });
+});
+
+describe("buildCustomerReceiptJournalLines", () => {
+  it("debits cash and credits AR", () => {
+    const lines = buildCustomerReceiptJournalLines({ amount: 826 });
+    assertBalanced(lines);
+
+    expect(lines.find((line) => line.accountCode === ACCOUNT.CASH)?.debit).toBe(
+      826,
+    );
+    expect(
+      lines.find((line) => line.accountCode === ACCOUNT.ACCOUNTS_RECEIVABLE)
+        ?.credit,
+    ).toBe(826);
   });
 });

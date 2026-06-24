@@ -546,6 +546,8 @@ model Customer {
   tasks                     CustomerTask[]
   segmentMemberships        CustomerSegmentMembership[]
   campaignAudienceSnapshots CampaignAudienceSnapshot[]
+  invoices                  CustomerInvoice[]
+  receipts                  CustomerReceipt[]
   createdAt                 DateTime                    @default(now())
   updatedAt                 DateTime                    @updatedAt
 }
@@ -794,6 +796,7 @@ model Order {
   attributionTouchpoints AttributionTouchpoint[]
   orderAttribution       OrderAttribution?
   financeLedgerEntries   FinanceLedgerEntry[]
+  customerInvoices       CustomerInvoice[]
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @updatedAt
 
@@ -1674,6 +1677,78 @@ model VendorPaymentAllocation {
 
   @@index([vendorPaymentId])
   @@index([vendorInvoiceId])
+}
+
+/// Accounts Receivable: a customer invoice document, optionally from an order.
+model CustomerInvoice {
+  id            String                      @id @default(cuid())
+  invoiceNumber String                      @unique
+  customerId    String?
+  orderId       String?
+  /// DRAFT | ISSUED | PARTIALLY_PAID | PAID | CANCELLED
+  status        String                      @default("DRAFT")
+  currency      String                      @default("ILS")
+  subtotal      Decimal                     @default(0) @db.Decimal(14, 2)
+  taxTotal      Decimal                     @default(0) @db.Decimal(14, 2)
+  total         Decimal                     @default(0) @db.Decimal(14, 2)
+  paidTotal     Decimal                     @default(0) @db.Decimal(14, 2)
+  invoiceDate   DateTime                    @db.Date
+  dueDate       DateTime?                   @db.Date
+  issuedAt      DateTime?
+  notes         String?
+  metadata      Json?
+  customer      Customer?                   @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  order         Order?                      @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  lines         CustomerInvoiceLine[]
+  allocations   CustomerReceiptAllocation[]
+  createdAt     DateTime                    @default(now())
+  updatedAt     DateTime                    @updatedAt
+
+  @@index([status, dueDate])
+  @@index([customerId])
+  @@index([orderId])
+}
+
+model CustomerInvoiceLine {
+  id                String          @id @default(cuid())
+  customerInvoiceId String
+  orderItemId       String?
+  description       String
+  quantity          Int
+  unitPrice         Decimal         @db.Decimal(14, 2)
+  lineTotal         Decimal         @db.Decimal(14, 2)
+  customerInvoice   CustomerInvoice @relation(fields: [customerInvoiceId], references: [id], onDelete: Cascade)
+
+  @@index([customerInvoiceId])
+}
+
+model CustomerReceipt {
+  id          String                      @id @default(cuid())
+  customerId  String?
+  amount      Decimal                     @db.Decimal(14, 2)
+  currency    String                      @default("ILS")
+  method      String                      @default("card")
+  reference   String?
+  receivedAt  DateTime                    @default(now())
+  notes       String?
+  customer    Customer?                   @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  allocations CustomerReceiptAllocation[]
+  createdAt   DateTime                    @default(now())
+
+  @@index([customerId, receivedAt])
+}
+
+/// Allocation of a customer receipt to a specific invoice (supports split receipts).
+model CustomerReceiptAllocation {
+  id                String          @id @default(cuid())
+  customerReceiptId String
+  customerInvoiceId String
+  amount            Decimal         @db.Decimal(14, 2)
+  customerReceipt   CustomerReceipt @relation(fields: [customerReceiptId], references: [id], onDelete: Cascade)
+  customerInvoice   CustomerInvoice @relation(fields: [customerInvoiceId], references: [id], onDelete: Restrict)
+
+  @@index([customerReceiptId])
+  @@index([customerInvoiceId])
 }
 
 model FinanceLedgerEntry {

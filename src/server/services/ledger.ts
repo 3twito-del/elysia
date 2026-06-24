@@ -228,6 +228,31 @@ export function buildVendorPaymentJournalLines(input: {
   ];
 }
 
+/** Lines for a customer receipt: Cash (debit) / Accounts Receivable (credit). */
+export function buildCustomerReceiptJournalLines(input: {
+  amount: number;
+  branchId?: string;
+}): JournalLineInput[] {
+  const amount = round2(input.amount);
+
+  return [
+    {
+      accountCode: ACCOUNT.CASH,
+      debit: amount,
+      credit: 0,
+      memo: "תקבול מלקוח",
+      branchId: input.branchId,
+    },
+    {
+      accountCode: ACCOUNT.ACCOUNTS_RECEIVABLE,
+      debit: 0,
+      credit: amount,
+      memo: "תקבול מלקוח",
+      branchId: input.branchId,
+    },
+  ];
+}
+
 /** Idempotently upserts the default chart of accounts. */
 export async function seedChartOfAccounts() {
   for (const account of DEFAULT_CHART_OF_ACCOUNTS) {
