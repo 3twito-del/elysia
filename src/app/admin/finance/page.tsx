@@ -42,6 +42,7 @@ import {
   getFinanceOverview,
   getGeneralLedgerOverview,
 } from "~/server/services/finance";
+import { computeVatReport } from "~/server/services/vat-report";
 
 export const metadata = {
   title: "Finance | Admin",
@@ -97,6 +98,11 @@ export default async function AdminFinancePage() {
 
   const customerInvoices = await listCustomerInvoices().catch(() => []);
 
+  const vat = await computeVatReport({
+    from: finance.range.from,
+    to: finance.range.to,
+  }).catch(() => null);
+
   return (
     <AdminShell
       active="finance"
@@ -136,6 +142,47 @@ export default async function AdminFinancePage() {
           value={`${formatPrice(finance.kpis.cogs)} / ${formatPrice(finance.kpis.refunds)}`}
         />
       </div>
+
+      {vat ? (
+        <Card className="mt-6 rounded-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Landmark aria-hidden="true" className="size-5" />
+              דוח מע&quot;מ (סיכום תקופתי)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4 text-sm sm:grid-cols-4">
+            <div className="grid gap-1">
+              <span className="text-muted-foreground">מע&quot;מ עסקאות (פלט)</span>
+              <span className="text-xl font-semibold">
+                {formatPrice(vat.outputVat)}
+              </span>
+            </div>
+            <div className="grid gap-1">
+              <span className="text-muted-foreground">מע&quot;מ תשומות (קלט)</span>
+              <span className="text-xl font-semibold">
+                {formatPrice(vat.inputVat)}
+              </span>
+            </div>
+            <div className="grid gap-1">
+              <span className="text-muted-foreground">מע&quot;מ לתשלום (נטו)</span>
+              <span className="text-xl font-semibold">
+                {formatPrice(vat.netVatDue)}
+              </span>
+            </div>
+            <div className="grid gap-1">
+              <span className="text-muted-foreground">בסיס מכירות חייב</span>
+              <span className="text-xl font-semibold">
+                {formatPrice(vat.salesBase)}
+              </span>
+            </div>
+            <p className="text-muted-foreground text-xs sm:col-span-4">
+              סיכום ניהולי מתוך הספר הראשי — אינו דוח PCN874 / מבנה אחיד רשמי.
+              לאימות מול רו&quot;ח.
+            </p>
+          </CardContent>
+        </Card>
+      ) : null}
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_0.9fr]">
         <Card className="rounded-md">
