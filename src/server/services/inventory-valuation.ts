@@ -53,6 +53,28 @@ export function weightedAverageUnitCost(layers: CostLayer[]): number {
 }
 
 /**
+ * Resolves a unit cost for COGS: weighted-average from cost layers when
+ * available, else the latest cost snapshot, else a 40%-of-price fallback.
+ * Pure; exported for testing.
+ */
+export function resolveUnitCost(input: {
+  layers: CostLayer[];
+  snapshotCost: number | null;
+  unitPrice: number;
+}): number {
+  if (input.layers.length > 0) {
+    const average = weightedAverageUnitCost(input.layers);
+    if (average > 0) return average;
+  }
+
+  if (input.snapshotCost != null && input.snapshotCost > 0) {
+    return round2(input.snapshotCost);
+  }
+
+  return round2(input.unitPrice * 0.4);
+}
+
+/**
  * Values on-hand inventory using FIFO cost layers. Read-only; does not mutate
  * layers or touch sale flows. Items with no cost layers are skipped (no cost
  * basis) and reported in `uncostedItems`.

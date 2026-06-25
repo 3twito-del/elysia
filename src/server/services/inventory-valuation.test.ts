@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  resolveUnitCost,
   valueFifoEndingInventory,
   weightedAverageUnitCost,
 } from "./inventory-valuation";
@@ -28,6 +29,33 @@ describe("valueFifoEndingInventory", () => {
     // only 20 units of cost basis exist → 10*5 + 10*7 = 120
     const result = valueFifoEndingInventory(layers, 25);
     expect(result).toEqual({ value: 120, valuedQuantity: 20 });
+  });
+});
+
+describe("resolveUnitCost", () => {
+  it("prefers the weighted-average from cost layers", () => {
+    expect(
+      resolveUnitCost({
+        layers: [
+          { quantity: 10, unitCost: 5 },
+          { quantity: 10, unitCost: 7 },
+        ],
+        snapshotCost: 9,
+        unitPrice: 100,
+      }),
+    ).toBe(6);
+  });
+
+  it("falls back to the cost snapshot when there are no layers", () => {
+    expect(
+      resolveUnitCost({ layers: [], snapshotCost: 9, unitPrice: 100 }),
+    ).toBe(9);
+  });
+
+  it("falls back to 40% of price when there is no cost data", () => {
+    expect(
+      resolveUnitCost({ layers: [], snapshotCost: null, unitPrice: 100 }),
+    ).toBe(40);
   });
 });
 

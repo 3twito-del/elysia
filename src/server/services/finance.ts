@@ -4,7 +4,10 @@ import { db } from "~/server/db";
 import { getApAging } from "~/server/services/accounts-payable";
 import { getArAging } from "~/server/services/accounts-receivable";
 import { DEFAULT_VAT_RATE } from "~/server/services/erp";
-import { getInventoryValuation } from "~/server/services/inventory-valuation";
+import {
+  getInventoryValuation,
+  resolveUnitCost,
+} from "~/server/services/inventory-valuation";
 import { computeTrialBalance, postSaleJournalEntry } from "~/server/services/ledger";
 import { ACCOUNT } from "~/server/services/ledger-accounts";
 
@@ -337,7 +340,7 @@ export async function postOrderSaleToLedger(orderId: string) {
     entryDate: order.paidAt ?? order.createdAt,
     grossTotal,
     vatRate: DEFAULT_VAT_RATE,
-    cogs: estimateOrderCogs(order.items),
+    cogs: await computeOrderCogs(order.items),
     branchId: order.branchId ?? undefined,
     currency: order.currency,
   });
@@ -432,6 +435,54 @@ function estimateOrderCogs(
       new Prisma.Decimal(Number(item.unitPrice) * 0.4);
 
     return sum + Number(unitCost) * item.quantity;
+  }, 0);
+}
+
+/**
+ * Accurate-er COGS for the GL posting: weighted-average from each variant's cost
+ * layers (falling back to the latest snapshot, then 40% of price). Used only by
+ * postOrderSaleToLedger; the read-only overview keeps the lighter estimate.
+ */
+async function computeOrderCogs(
+  items: Array<{
+    variantId: string;
+    quantity: number;
+    unitPrice: Prisma.Decimal;
+    variant: {
+      product: { costSnapshots: Array<{ unitCost: Prisma.Decimal }> };
+    };
+  }>,
+) {
+  const variantIds = items.map((item) => item.variantId);
+  const layers = variantIds.length
+    ? await db.itemCostLayer.findMany({
+        where: { variantId: { in: variantIds } },
+        select: { variantId: true, quantity: true, unitCost: true },
+      })
+    : [];
+
+  const layersByVariant = new Map<
+    string,
+    Array<{ quantity: number; unitCost: number }>
+  >();
+  for (const layer of layers) {
+    const list = layersByVariant.get(layer.variantId) ?? [];
+    list.push({ quantity: layer.quantity, unitCost: Number(layer.unitCost) });
+    layersByVariant.set(layer.variantId, list);
+  }
+
+  return items.reduce((sum, item) => {
+    const snapshot = item.variant.product.costSnapshots[0]?.unitCost;
+
+    return (
+      sum +
+      resolveUnitCost({
+        layers: layersByVariant.get(item.variantId) ?? [],
+        snapshotCost: snapshot != null ? Number(snapshot) : null,
+        unitPrice: Number(item.unitPrice),
+      }) *
+        item.quantity
+    );
   }, 0);
 }
 
