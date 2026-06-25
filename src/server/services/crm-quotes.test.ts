@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { computeQuoteTotals, isQuoteExpired } from "./crm-quotes";
+import {
+  computeQuoteTotals,
+  isQuoteExpired,
+  parseQuoteLines,
+} from "./crm-quotes";
 
 describe("computeQuoteTotals", () => {
   it("computes subtotal, VAT and total", () => {
@@ -12,6 +16,23 @@ describe("computeQuoteTotals", () => {
       taxRate: 0.18,
     });
     expect(totals).toEqual({ subtotal: 200, taxTotal: 36, total: 236 });
+  });
+});
+
+describe("parseQuoteLines", () => {
+  it("parses 'description | qty | price' rows and skips blanks", () => {
+    expect(
+      parseQuoteLines("Ring | 2 | 500\n\nNecklace | 1 | 1200\n"),
+    ).toEqual([
+      { description: "Ring", quantity: 2, unitPrice: 500 },
+      { description: "Necklace", quantity: 1, unitPrice: 1200 },
+    ]);
+  });
+
+  it("defaults quantity to 1 and price to 0 when missing/invalid", () => {
+    expect(parseQuoteLines("Service only")).toEqual([
+      { description: "Service only", quantity: 1, unitPrice: 0 },
+    ]);
   });
 });
 

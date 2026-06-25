@@ -10,6 +10,13 @@ import {
   hasAdminPermission,
 } from "~/server/auth/admin-access";
 import {
+  convertQuoteToInvoice,
+  createQuote,
+  decideQuote,
+  parseQuoteLines,
+  sendQuote,
+} from "~/server/services/crm-quotes";
+import {
   convertLeadToOpportunity,
   createLead,
   setOpportunityStage,
@@ -56,6 +63,59 @@ export async function setOpportunityStageAction(formData: FormData) {
   await setOpportunityStage({
     opportunityId,
     stage: stringValue(formData.get("stage")),
+  });
+
+  revalidatePath("/admin/crm");
+}
+
+export async function createQuoteAction(formData: FormData) {
+  await requireAdmin("CRM_WRITE");
+
+  const lines = parseQuoteLines(stringValue(formData.get("lines")));
+  if (lines.length === 0) {
+    throw new Error("יש להזין לפחות שורת הצעה אחת (תיאור | כמות | מחיר).");
+  }
+
+  const validUntil = optionalString(formData.get("validUntil"));
+
+  await createQuote({
+    customerId: optionalString(formData.get("customerId")),
+    opportunityId: optionalString(formData.get("opportunityId")),
+    validUntil: validUntil ? new Date(validUntil) : undefined,
+    notes: optionalString(formData.get("notes")),
+    lines,
+  });
+
+  revalidatePath("/admin/crm");
+}
+
+export async function sendQuoteAction(formData: FormData) {
+  await requireAdmin("CRM_WRITE");
+
+  await sendQuote(stringValue(formData.get("quoteId")));
+
+  revalidatePath("/admin/crm");
+}
+
+export async function decideQuoteAction(formData: FormData) {
+  await requireAdmin("CRM_WRITE");
+
+  await decideQuote({
+    quoteId: stringValue(formData.get("quoteId")),
+    decision:
+      stringValue(formData.get("decision")) === "ACCEPTED"
+        ? "ACCEPTED"
+        : "DECLINED",
+  });
+
+  revalidatePath("/admin/crm");
+}
+
+export async function convertQuoteToInvoiceAction(formData: FormData) {
+  await requireAdmin("CRM_WRITE");
+
+  await convertQuoteToInvoice({
+    quoteId: stringValue(formData.get("quoteId")),
   });
 
   revalidatePath("/admin/crm");

@@ -2,6 +2,7 @@ import Link from "next/link";
 import {
   AlertTriangle,
   ContactRound,
+  FileText,
   Heart,
   ListTodo,
   Repeat,
@@ -18,7 +19,11 @@ import {
 import { getAdminPageAccess } from "../_lib/access";
 import {
   convertLeadAction,
+  convertQuoteToInvoiceAction,
   createLeadAction,
+  createQuoteAction,
+  decideQuoteAction,
+  sendQuoteAction,
   setOpportunityStageAction,
 } from "./actions";
 import { MetricCard } from "~/components/metric-card";
@@ -36,8 +41,13 @@ import {
 } from "~/components/ui/table";
 import { TableEmptyRow } from "~/components/ui/table-empty-row";
 import { Textarea } from "~/components/ui/textarea";
-import { formatHebrewDateTime, formatPrice } from "~/lib/format";
+import {
+  formatHebrewDate,
+  formatHebrewDateTime,
+  formatPrice,
+} from "~/lib/format";
 import { getCrmOverview } from "~/server/services/crm";
+import { listRecentQuotes } from "~/server/services/crm-quotes";
 import {
   getSalesPipelineOverview,
   listOpportunities,
@@ -56,6 +66,25 @@ const stageLabel: Record<string, string> = {
   NEGOTIATION: "משא ומתן",
   WON: "נסגר בהצלחה",
   LOST: "אבד",
+};
+
+const quoteStatusLabel: Record<string, string> = {
+  DRAFT: "טיוטה",
+  SENT: "נשלחה",
+  ACCEPTED: "אושרה",
+  DECLINED: "נדחתה",
+  EXPIRED: "פגה",
+};
+
+const quoteStatusVariant: Record<
+  string,
+  "secondary" | "outline" | "destructive"
+> = {
+  DRAFT: "outline",
+  SENT: "outline",
+  ACCEPTED: "secondary",
+  DECLINED: "destructive",
+  EXPIRED: "destructive",
 };
 
 export default async function AdminCrmPage() {
@@ -83,9 +112,10 @@ export default async function AdminCrmPage() {
     return null;
   });
 
-  const [leads, opportunities] = await Promise.all([
+  const [leads, opportunities, quotes] = await Promise.all([
     listRecentLeads().catch(() => []),
     listOpportunities().catch(() => []),
+    listRecentQuotes().catch(() => []),
   ]);
 
   return (
@@ -410,6 +440,110 @@ export default async function AdminCrmPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileText aria-hidden="true" className="size-5" />
+            הצעות מחיר
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          <form action={createQuoteAction} className="grid gap-2">
+            <Textarea
+              name="lines"
+              placeholder="שורה לכל פריט: תיאור | כמות | מחיר"
+              rows={3}
+            />
+            <div className="grid gap-2 sm:grid-cols-[1fr_180px_auto]">
+              <Input name="customerId" placeholder="מזהה לקוח (אופציונלי)" />
+              <Input aria-label="בתוקף עד" name="validUntil" type="date" />
+              <Button type="submit">צור הצעה</Button>
+            </div>
+          </form>
+
+          <Table className="min-w-[680px]">
+            <TableHeader>
+              <TableRow>
+                <TableHead>הצעה</TableHead>
+                <TableHead>סטטוס</TableHead>
+                <TableHead>סכום</TableHead>
+                <TableHead>בתוקף עד</TableHead>
+                <TableHead>פעולות</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {quotes.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={5}
+                  description="הצעות שתיצרו יופיעו כאן לשליחה, אישור והמרה לחשבונית."
+                  icon={FileText}
+                  title="אין הצעות מחיר"
+                />
+              ) : (
+                quotes.map((quote) => (
+                  <TableRow key={quote.id}>
+                    <TableCell className="font-medium">
+                      {quote.quoteNumber}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={quoteStatusVariant[quote.status] ?? "outline"}
+                      >
+                        {quoteStatusLabel[quote.status] ?? quote.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{formatPrice(quote.total)}</TableCell>
+                    <TableCell>
+                      {quote.validUntil
+                        ? formatHebrewDate(quote.validUntil)
+                        : "—"}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap gap-2">
+                        <form action={sendQuoteAction}>
+                          <input name="quoteId" type="hidden" value={quote.id} />
+                          <Button size="sm" type="submit" variant="outline">
+                            שלח
+                          </Button>
+                        </form>
+                        <form action={decideQuoteAction}>
+                          <input name="quoteId" type="hidden" value={quote.id} />
+                          <input
+                            name="decision"
+                            type="hidden"
+                            value="ACCEPTED"
+                          />
+                          <Button size="sm" type="submit" variant="outline">
+                            אישור
+                          </Button>
+                        </form>
+                        <form action={decideQuoteAction}>
+                          <input name="quoteId" type="hidden" value={quote.id} />
+                          <input
+                            name="decision"
+                            type="hidden"
+                            value="DECLINED"
+                          />
+                          <Button size="sm" type="submit" variant="outline">
+                            דחייה
+                          </Button>
+                        </form>
+                        <form action={convertQuoteToInvoiceAction}>
+                          <input name="quoteId" type="hidden" value={quote.id} />
+                          <Button size="sm" type="submit">
+                            ← חשבונית
+                          </Button>
+                        </form>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_0.8fr]">
         <Card className="rounded-md">

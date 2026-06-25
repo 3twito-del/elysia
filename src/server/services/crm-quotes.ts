@@ -164,3 +164,47 @@ export async function expireStaleQuotes(asOf: Date = new Date()) {
 
   return result.count;
 }
+
+/** Recent quotes for the CRM workbench. */
+export async function listRecentQuotes(limit = 15) {
+  const quotes = await db.quote.findMany({
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    select: {
+      id: true,
+      quoteNumber: true,
+      status: true,
+      total: true,
+      currency: true,
+      validUntil: true,
+      createdAt: true,
+    },
+  });
+
+  return quotes.map((quote) => ({ ...quote, total: Number(quote.total) }));
+}
+
+/**
+ * Parses free-text quote lines ("description | quantity | unitPrice" per line)
+ * into structured line inputs. Pure; exported for testing.
+ */
+export function parseQuoteLines(
+  text: string,
+): Array<{ description: string; quantity: number; unitPrice: number }> {
+  return text
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .map((line) => {
+      const [description, quantity, unitPrice] = line
+        .split("|")
+        .map((part) => part.trim());
+
+      return {
+        description: description ?? line,
+        quantity: Math.max(1, Math.trunc(Number(quantity) || 1)),
+        unitPrice: Math.max(0, Number(unitPrice) || 0),
+      };
+    })
+    .filter((line) => line.description.length > 0);
+}
