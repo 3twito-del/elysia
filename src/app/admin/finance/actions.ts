@@ -15,6 +15,10 @@ import {
   issueCustomerInvoice,
   recordCustomerReceipt,
 } from "~/server/services/accounts-receivable";
+import {
+  parseJournalLines,
+  postManualJournalEntry,
+} from "~/server/services/manual-journal";
 import { closePeriod } from "~/server/services/period-close";
 
 export async function createCustomerInvoiceAction(formData: FormData) {
@@ -67,6 +71,26 @@ export async function recordCustomerReceiptAction(formData: FormData) {
     amount,
     postedById: admin.id,
     allocations: [{ customerInvoiceId: invoiceId, amount }],
+  });
+
+  revalidatePath("/admin/finance");
+}
+
+export async function postManualJournalEntryAction(formData: FormData) {
+  const admin = await requireAdmin("ERP_WRITE");
+
+  const lines = parseJournalLines(stringValue(formData.get("lines")));
+  if (lines.length < 2) {
+    throw new Error("יש להזין לפחות שתי שורות (קוד חשבון | חובה | זכות).");
+  }
+
+  const entryDate = optionalString(formData.get("entryDate"));
+
+  await postManualJournalEntry({
+    entryDate: entryDate ? new Date(entryDate) : undefined,
+    memo: optionalString(formData.get("memo")),
+    lines,
+    postedById: admin.id,
   });
 
   revalidatePath("/admin/finance");

@@ -17,6 +17,7 @@ import {
   closePeriodAction,
   createCustomerInvoiceAction,
   issueCustomerInvoiceAction,
+  postManualJournalEntryAction,
   recordCustomerReceiptAction,
 } from "./actions";
 import { MetricCard } from "~/components/metric-card";
@@ -46,6 +47,10 @@ import {
 } from "~/server/services/finance";
 import { getFinancialStatements } from "~/server/services/financial-statements";
 import {
+  listLedgerAccounts,
+  listRecentJournalEntries,
+} from "~/server/services/manual-journal";
+import {
   getPeriodCloseSummary,
   listFiscalPeriods,
 } from "~/server/services/period-close";
@@ -63,6 +68,18 @@ const customerInvoiceStatusLabel: Record<string, string> = {
   PARTIALLY_PAID: "שולם חלקית",
   PAID: "שולם",
   CANCELLED: "בוטל",
+};
+
+const journalSourceLabel: Record<string, string> = {
+  sale: "מכירה",
+  customer_receipt: "תקבול לקוח",
+  customer_invoice: "חשבונית לקוח",
+  vendor_invoice: "חשבונית ספק",
+  vendor_payment: "תשלום ספק",
+  purchase_receipt: "קליטת סחורה",
+  period_close: "סגירת תקופה",
+  reversal: "היפוך",
+  manual: "ידני",
 };
 
 const customerInvoiceStatusVariant: Record<
@@ -117,10 +134,15 @@ export default async function AdminFinancePage() {
     year: now.getUTCMonth() === 0 ? now.getUTCFullYear() - 1 : now.getUTCFullYear(),
     month: now.getUTCMonth() === 0 ? 12 : now.getUTCMonth(),
   };
-  const [fiscalPeriods, closeSummary] = await Promise.all([
-    listFiscalPeriods().catch(() => []),
-    getPeriodCloseSummary(closeTarget.year, closeTarget.month).catch(() => null),
-  ]);
+  const [fiscalPeriods, closeSummary, ledgerAccounts, recentEntries] =
+    await Promise.all([
+      listFiscalPeriods().catch(() => []),
+      getPeriodCloseSummary(closeTarget.year, closeTarget.month).catch(
+        () => null,
+      ),
+      listLedgerAccounts().catch(() => []),
+      listRecentJournalEntries().catch(() => []),
+    ]);
 
   return (
     <AdminShell
@@ -399,6 +421,125 @@ export default async function AdminFinancePage() {
                 )}
               </TableBody>
             </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ReceiptText aria-hidden="true" className="size-5" />
+            תנועת יומן ידנית (Manual Journal Entry)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1fr]">
+          <form action={postManualJournalEntryAction} className="grid gap-3">
+            <p className="text-muted-foreground text-sm">
+              רישום ידני לספר הראשי (התאמות, הפרשות, יתרות פתיחה, הון). חובה = זכות
+              אחרת הרישום נדחה. שורה לכל חשבון בפורמט{" "}
+              <code>קוד חשבון | חובה | זכות</code>.
+            </p>
+            <div className="grid gap-1.5">
+              <label className="text-sm font-medium" htmlFor="je-date">
+                תאריך (ברירת מחדל: היום)
+              </label>
+              <Input id="je-date" name="entryDate" type="date" />
+            </div>
+            <div className="grid gap-1.5">
+              <label className="text-sm font-medium" htmlFor="je-memo">
+                תיאור
+              </label>
+              <Input
+                id="je-memo"
+                name="memo"
+                placeholder="לדוגמה: הפרשה לחופשה"
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <label className="text-sm font-medium" htmlFor="je-lines">
+                שורות
+              </label>
+              <Textarea
+                className="font-mono"
+                id="je-lines"
+                name="lines"
+                placeholder={"1000 | 500 | 0\n3000 | 0 | 500"}
+                rows={4}
+              />
+            </div>
+            <Button className="w-fit" type="submit">
+              רשום תנועה
+            </Button>
+          </form>
+
+          <div className="grid gap-4">
+            <div className="grid gap-2">
+              <span className="text-muted-foreground text-sm">
+                חשבונות זמינים
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {ledgerAccounts.map((account) => (
+                  <Badge
+                    className="font-normal"
+                    key={account.code}
+                    variant="outline"
+                  >
+                    {account.code} · {account.name}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid gap-2">
+              <span className="text-muted-foreground text-sm">
+                תנועות אחרונות
+              </span>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>מס׳</TableHead>
+                    <TableHead>תיאור</TableHead>
+                    <TableHead>מקור</TableHead>
+                    <TableHead className="text-left">סכום</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {recentEntries.length === 0 ? (
+                    <TableEmptyRow
+                      colSpan={4}
+                      description="טרם נרשמו תנועות יומן."
+                      icon={ReceiptText}
+                      title="אין תנועות"
+                    />
+                  ) : (
+                    recentEntries.map((entry) => (
+                      <TableRow key={entry.id}>
+                        <TableCell className="whitespace-nowrap font-mono text-xs">
+                          {entry.entryNumber}
+                        </TableCell>
+                        <TableCell className="max-w-[14rem] truncate">
+                          {entry.memo ?? "—"}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              entry.status === "REVERSED"
+                                ? "destructive"
+                                : "outline"
+                            }
+                          >
+                            {journalSourceLabel[entry.source] ?? entry.source}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-left">
+                          {formatPrice(entry.amount)}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </div>
         </CardContent>
       </Card>
