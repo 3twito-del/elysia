@@ -780,6 +780,40 @@ model WorkOrder {
   @@index([bomId])
 }
 
+/// Internal knowledge-base article (KNW) — the "never leave the system" wiki.
+model KnowledgeArticle {
+  id                String   @id @default(cuid())
+  slug              String   @unique
+  title             String
+  category          String?
+  body              String
+  /// DRAFT | PUBLISHED | ARCHIVED
+  status            String   @default("DRAFT")
+  authorAdminUserId String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([status])
+  @@index([category])
+}
+
+/// Internal staff announcement / alert (COM).
+model Announcement {
+  id                String    @id @default(cuid())
+  title             String
+  body              String
+  /// INFO | WARNING | CRITICAL
+  severity          String    @default("INFO")
+  isPinned          Boolean   @default(false)
+  publishedAt       DateTime?
+  expiresAt         DateTime?
+  authorAdminUserId String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([publishedAt])
+}
+
 model Customer {
   id                        String                      @id @default(cuid())
   userId                    String?                     @unique

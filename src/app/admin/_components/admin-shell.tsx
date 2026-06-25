@@ -2,6 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   BarChart3,
   Bell,
+  BookOpen,
   Boxes,
   CalendarClock,
   ClipboardList,
@@ -50,7 +51,8 @@ export type AdminSection =
   | "notifications"
   | "orders"
   | "overview"
-  | "service";
+  | "service"
+  | "workspace";
 
 const navItems: Array<{
   href: string;
@@ -74,6 +76,12 @@ const navItems: Array<{
   { href: "/admin/inventory", icon: Boxes, id: "inventory", label: "מלאי" },
   { href: "/admin/customers", icon: Users, id: "customers", label: "לקוחות" },
   { href: "/admin/service", icon: Headset, id: "service", label: "שירות" },
+  {
+    href: "/admin/workspace",
+    icon: BookOpen,
+    id: "workspace",
+    label: "מרחב עבודה",
+  },
   {
     href: "/admin/notifications",
     icon: Bell,
