@@ -28,6 +28,8 @@ const SOURCE_CATEGORY: Record<string, CashFlowCategory> = {
   vendor_payment: "OPERATING",
   purchase_receipt: "OPERATING",
   refund: "OPERATING",
+  asset_acquisition: "INVESTING",
+  asset_disposal: "INVESTING",
 };
 
 /** Classifies a cash movement by its entry source, falling back to contra types. */

@@ -25,6 +25,10 @@ import {
   parseJournalLines,
   postManualJournalEntry,
 } from "~/server/services/manual-journal";
+import {
+  createFixedAsset,
+  runDepreciation,
+} from "~/server/services/fixed-assets";
 import { closePeriod } from "~/server/services/period-close";
 
 export async function createCustomerInvoiceAction(formData: FormData) {
@@ -127,6 +131,37 @@ export async function postManualJournalEntryAction(formData: FormData) {
     lines,
     postedById: admin.id,
   });
+
+  revalidatePath("/admin/finance");
+}
+
+export async function createFixedAssetAction(formData: FormData) {
+  const admin = await requireAdmin("ERP_WRITE");
+
+  const name = stringValue(formData.get("name")).trim();
+  if (!name) throw new Error("שם הנכס הוא שדה חובה.");
+
+  const acquisitionCost = Number(formData.get("acquisitionCost") ?? 0) || 0;
+  const usefulLifeMonths = Number(formData.get("usefulLifeMonths") ?? 0) || 0;
+  if (acquisitionCost <= 0) throw new Error("יש להזין עלות רכישה חיובית.");
+  if (usefulLifeMonths <= 0) throw new Error("יש להזין אורך חיים בחודשים.");
+
+  await createFixedAsset({
+    name,
+    category: optionalString(formData.get("category")),
+    acquisitionCost,
+    salvageValue: Number(formData.get("salvageValue") ?? 0) || 0,
+    usefulLifeMonths,
+    postedById: admin.id,
+  });
+
+  revalidatePath("/admin/finance");
+}
+
+export async function runDepreciationAction() {
+  const admin = await requireAdmin("ERP_WRITE");
+
+  await runDepreciation({ postedById: admin.id });
 
   revalidatePath("/admin/finance");
 }

@@ -1,5 +1,6 @@
 import {
   Banknote,
+  Building2,
   CreditCard,
   Landmark,
   Lock,
@@ -18,11 +19,13 @@ import {
   autoMatchBankStatementAction,
   closePeriodAction,
   createCustomerInvoiceAction,
+  createFixedAssetAction,
   ignoreBankStatementLineAction,
   importBankStatementAction,
   issueCustomerInvoiceAction,
   postManualJournalEntryAction,
   recordCustomerReceiptAction,
+  runDepreciationAction,
 } from "./actions";
 import { MetricCard } from "~/components/metric-card";
 import { Badge } from "~/components/ui/badge";
@@ -50,6 +53,10 @@ import {
   listBankStatementLines,
 } from "~/server/services/bank-reconciliation";
 import { getCashFlowStatement } from "~/server/services/cash-flow";
+import {
+  getFixedAssetsSummary,
+  listFixedAssets,
+} from "~/server/services/fixed-assets";
 import {
   getFinanceOverview,
   getGeneralLedgerOverview,
@@ -170,10 +177,19 @@ export default async function AdminFinancePage() {
       listRecentJournalEntries().catch(() => []),
     ]);
 
-  const [bankLines, reconciliation] = await Promise.all([
-    listBankStatementLines().catch(() => []),
-    getReconciliationOverview().catch(() => null),
-  ]);
+  const [bankLines, reconciliation, fixedAssets, fixedAssetsSummary] =
+    await Promise.all([
+      listBankStatementLines().catch(() => []),
+      getReconciliationOverview().catch(() => null),
+      listFixedAssets().catch(() => []),
+      getFixedAssetsSummary().catch(() => null),
+    ]);
+
+  const fixedAssetStatusLabel: Record<string, string> = {
+    ACTIVE: "פעיל",
+    FULLY_DEPRECIATED: "פוחת במלואו",
+    DISPOSED: "נגרע",
+  };
 
   return (
     <AdminShell
@@ -379,6 +395,131 @@ export default async function AdminFinancePage() {
           </CardContent>
         </Card>
       ) : null}
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between gap-2">
+            <span className="flex items-center gap-2">
+              <Building2 aria-hidden="true" className="size-5" />
+              רכוש קבוע ופחת (Fixed Assets)
+            </span>
+            <form action={runDepreciationAction}>
+              <Button size="sm" type="submit" variant="outline">
+                הרץ פחת לחודש הנוכחי
+              </Button>
+            </form>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
+          <form action={createFixedAssetAction} className="grid gap-3">
+            <p className="text-muted-foreground text-sm">
+              היוון נכס ורישומו לספרים (Dr רכוש קבוע / Cr מזומן). פחת קו-ישר חודשי
+              נרשם ל-GL (Dr הוצאות פחת / Cr פחת נצבר) ומופיע כפעילות השקעה בתזרים.
+            </p>
+            <Input name="name" placeholder="שם הנכס" required />
+            <Input name="category" placeholder="קטגוריה (רשות)" />
+            <div className="grid grid-cols-2 gap-2">
+              <Input
+                name="acquisitionCost"
+                placeholder="עלות רכישה"
+                step="0.01"
+                type="number"
+              />
+              <Input
+                name="salvageValue"
+                placeholder="ערך גרט"
+                step="0.01"
+                type="number"
+              />
+            </div>
+            <Input
+              name="usefulLifeMonths"
+              placeholder="אורך חיים (חודשים)"
+              type="number"
+            />
+            <Button className="w-fit" type="submit">
+              היוון נכס
+            </Button>
+          </form>
+
+          <div className="grid gap-3">
+            {fixedAssetsSummary ? (
+              <div className="bg-muted/40 grid gap-3 rounded-md p-4 text-sm sm:grid-cols-4">
+                <div className="grid gap-1">
+                  <span className="text-muted-foreground">נכסים</span>
+                  <span className="text-lg font-semibold">
+                    {fixedAssetsSummary.count}
+                  </span>
+                </div>
+                <div className="grid gap-1">
+                  <span className="text-muted-foreground">עלות</span>
+                  <span className="text-lg font-semibold">
+                    {formatPrice(fixedAssetsSummary.totalCost)}
+                  </span>
+                </div>
+                <div className="grid gap-1">
+                  <span className="text-muted-foreground">פחת נצבר</span>
+                  <span className="text-lg font-semibold">
+                    {formatPrice(fixedAssetsSummary.totalAccumulated)}
+                  </span>
+                </div>
+                <div className="grid gap-1">
+                  <span className="text-muted-foreground">ערך בספרים</span>
+                  <span className="text-lg font-semibold">
+                    {formatPrice(fixedAssetsSummary.netBookValue)}
+                  </span>
+                </div>
+              </div>
+            ) : null}
+
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>מס׳</TableHead>
+                  <TableHead>שם</TableHead>
+                  <TableHead className="text-left">עלות</TableHead>
+                  <TableHead className="text-left">ערך בספרים</TableHead>
+                  <TableHead>סטטוס</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {fixedAssets.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={5}
+                    description="טרם הוונו נכסים קבועים."
+                    icon={Building2}
+                    title="אין נכסים"
+                  />
+                ) : (
+                  fixedAssets.map((asset) => (
+                    <TableRow key={asset.id}>
+                      <TableCell className="whitespace-nowrap font-mono text-xs">
+                        {asset.assetNumber}
+                      </TableCell>
+                      <TableCell className="text-sm">{asset.name}</TableCell>
+                      <TableCell className="text-left">
+                        {formatPrice(asset.acquisitionCost)}
+                      </TableCell>
+                      <TableCell className="text-left">
+                        {formatPrice(asset.netBookValue)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            asset.status === "ACTIVE" ? "secondary" : "outline"
+                          }
+                        >
+                          {fixedAssetStatusLabel[asset.status] ?? asset.status}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card className="mt-6 rounded-md">
         <CardHeader>

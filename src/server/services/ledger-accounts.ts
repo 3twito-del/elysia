@@ -11,6 +11,8 @@ export const ACCOUNT = {
   ACCOUNTS_RECEIVABLE: "1100",
   INVENTORY: "1300",
   VAT_INPUT: "1400",
+  FIXED_ASSETS: "1500",
+  ACCUMULATED_DEPRECIATION: "1590",
   ACCOUNTS_PAYABLE: "2000",
   GRNI: "2050",
   VAT_OUTPUT: "2100",
@@ -18,6 +20,7 @@ export const ACCOUNT = {
   RETAINED_EARNINGS: "3100",
   SALES_REVENUE: "4000",
   COGS: "5000",
+  DEPRECIATION_EXPENSE: "5100",
 } as const;
 
 export type AccountType =
@@ -47,6 +50,20 @@ export const DEFAULT_CHART_OF_ACCOUNTS: ChartOfAccountsEntry[] = [
   {
     code: ACCOUNT.VAT_INPUT,
     name: 'מע"מ תשומות',
+    type: "ASSET",
+    normalSide: "DEBIT",
+  },
+  {
+    code: ACCOUNT.FIXED_ASSETS,
+    name: "רכוש קבוע",
+    type: "ASSET",
+    normalSide: "DEBIT",
+  },
+  {
+    // Contra-asset: modeled with normalSide DEBIT so its (negative) signed
+    // balance reduces net assets in the balance-sheet sum (net book value).
+    code: ACCOUNT.ACCUMULATED_DEPRECIATION,
+    name: "פחת נצבר",
     type: "ASSET",
     normalSide: "DEBIT",
   },
@@ -82,4 +99,10 @@ export const DEFAULT_CHART_OF_ACCOUNTS: ChartOfAccountsEntry[] = [
     normalSide: "CREDIT",
   },
   { code: ACCOUNT.COGS, name: "עלות המכר", type: "EXPENSE", normalSide: "DEBIT" },
+  {
+    code: ACCOUNT.DEPRECIATION_EXPENSE,
+    name: "הוצאות פחת",
+    type: "EXPENSE",
+    normalSide: "DEBIT",
+  },
 ];

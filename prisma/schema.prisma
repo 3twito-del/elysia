@@ -597,6 +597,45 @@ model InventoryCountLine {
   @@index([variantId])
 }
 
+/// A capitalised fixed asset, depreciated straight-line into the GL each month
+/// (FIN-FA). `accumulatedDepreciation` is the running total; status moves to
+/// FULLY_DEPRECIATED once the depreciable base (cost − salvage) is exhausted.
+model FixedAsset {
+  id                      String                   @id @default(cuid())
+  assetNumber             String                   @unique
+  name                    String
+  category                String?
+  acquisitionCost         Decimal                  @db.Decimal(14, 2)
+  salvageValue            Decimal                  @default(0) @db.Decimal(14, 2)
+  usefulLifeMonths        Int
+  acquiredAt              DateTime                  @db.Date
+  /// ACTIVE | FULLY_DEPRECIATED | DISPOSED
+  status                  String                   @default("ACTIVE")
+  accumulatedDepreciation Decimal                  @default(0) @db.Decimal(14, 2)
+  lastDepreciatedPeriod   String?
+  branchId                String?
+  notes                   String?
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  depreciationEntries     FixedAssetDepreciation[]
+
+  @@index([status])
+}
+
+/// One month's depreciation charge for a fixed asset (idempotent per period).
+model FixedAssetDepreciation {
+  id             String     @id @default(cuid())
+  fixedAssetId   String
+  period         String
+  amount         Decimal    @db.Decimal(14, 2)
+  journalEntryId String?
+  createdAt      DateTime   @default(now())
+  fixedAsset     FixedAsset @relation(fields: [fixedAssetId], references: [id], onDelete: Cascade)
+
+  @@unique([fixedAssetId, period])
+  @@index([fixedAssetId])
+}
+
 model Customer {
   id                        String                      @id @default(cuid())
   userId                    String?                     @unique
