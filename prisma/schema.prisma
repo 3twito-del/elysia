@@ -631,8 +631,26 @@ model Customer {
   invoices                  CustomerInvoice[]
   receipts                  CustomerReceipt[]
   journeyEnrollments        JourneyEnrollment[]
+  consentRecords            ConsentRecord[]
   createdAt                 DateTime                    @default(now())
   updatedAt                 DateTime                    @updatedAt
+}
+
+/// Append-only marketing-consent log. Current consent per channel is the latest
+/// record for that channel; history is preserved for compliance.
+model ConsentRecord {
+  id         String   @id @default(cuid())
+  customerId String
+  /// EMAIL | SMS | PUSH | WHATSAPP
+  channel    String
+  /// GRANTED | REVOKED
+  status     String
+  source     String?
+  note       String?
+  createdAt  DateTime @default(now())
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId, channel, createdAt])
 }
 
 model OtpChallenge {

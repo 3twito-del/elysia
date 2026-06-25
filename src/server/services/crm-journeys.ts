@@ -1,6 +1,7 @@
 import type { Prisma } from "@prisma/client";
 
 import { db } from "~/server/db";
+import { isChannelAllowed } from "~/server/services/consent";
 import { BUSINESS_EVENTS, createOutboxEvent } from "~/server/services/outbox";
 
 /**
@@ -227,8 +228,18 @@ export async function runJourneyTick(now: Date = new Date()) {
         (step) => step.stepOrder === result.dueStep.stepOrder,
       )?.actionConfig ?? null;
 
+    // Respect marketing consent before any outbound email (CRM-MKT-003).
+    const emailAllowed =
+      result.dueStep.actionType === "send_email" && enrollment.customer.email
+        ? await isChannelAllowed(enrollment.customer.id, "EMAIL")
+        : false;
+
     await db.$transaction(async (tx) => {
-      if (result.dueStep.actionType === "send_email" && enrollment.customer.email) {
+      if (
+        result.dueStep.actionType === "send_email" &&
+        enrollment.customer.email &&
+        emailAllowed
+      ) {
         const template =
           config && typeof config === "object" && "template" in config
             ? String((config as Record<string, unknown>).template)

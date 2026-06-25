@@ -6,6 +6,7 @@ import {
   Heart,
   ListTodo,
   Repeat,
+  ShieldCheck,
   ShoppingBag,
   TrendingUp,
   Users,
@@ -30,6 +31,7 @@ import {
   decideQuoteAction,
   enrollJourneySegmentAction,
   recomputeSegmentsAction,
+  recordConsentAction,
   runJourneyTickAction,
   sendQuoteAction,
   setOpportunityStageAction,
@@ -60,6 +62,7 @@ import {
   listSegmentsForSelect,
 } from "~/server/services/crm-journeys";
 import { listRecentQuotes } from "~/server/services/crm-quotes";
+import { listRecentConsentRecords } from "~/server/services/consent";
 import {
   getSalesPipelineOverview,
   listOpportunities,
@@ -99,6 +102,13 @@ const journeyActionLabel: Record<string, string> = {
   send_email: 'דוא"ל',
   add_tag: "תיוג",
   wait: "המתנה",
+};
+
+const consentChannelLabel: Record<string, string> = {
+  EMAIL: 'דוא"ל',
+  SMS: "SMS",
+  PUSH: "Push",
+  WHATSAPP: "WhatsApp",
 };
 
 const quoteStatusLabel: Record<string, string> = {
@@ -145,14 +155,21 @@ export default async function AdminCrmPage() {
     return null;
   });
 
-  const [leads, opportunities, quotes, journeys, journeySegments] =
-    await Promise.all([
-      listRecentLeads().catch(() => []),
-      listOpportunities().catch(() => []),
-      listRecentQuotes().catch(() => []),
-      listJourneys().catch(() => []),
-      listSegmentsForSelect().catch(() => []),
-    ]);
+  const [
+    leads,
+    opportunities,
+    quotes,
+    journeys,
+    journeySegments,
+    consentRecords,
+  ] = await Promise.all([
+    listRecentLeads().catch(() => []),
+    listOpportunities().catch(() => []),
+    listRecentQuotes().catch(() => []),
+    listJourneys().catch(() => []),
+    listSegmentsForSelect().catch(() => []),
+    listRecentConsentRecords().catch(() => []),
+  ]);
 
   return (
     <AdminShell
@@ -838,6 +855,102 @@ export default async function AdminCrmPage() {
                 </div>
               ))
             )}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ShieldCheck aria-hidden="true" className="size-5" />
+            מרכז הסכמות (Consent)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
+          <form action={recordConsentAction} className="grid gap-3">
+            <p className="text-muted-foreground text-sm">
+              ניהול הסכמות שיווק לכל ערוץ. מסעות שולחים דוא&quot;ל רק ללקוחות עם
+              הסכמת EMAIL פעילה (opt-in). הרישום מתועד לצורכי ציות.
+            </p>
+            <Input name="email" placeholder='דוא"ל לקוח' required type="email" />
+            <div className="grid grid-cols-2 gap-2">
+              <select
+                aria-label="ערוץ"
+                autoComplete="off"
+                className="glass-control h-10 rounded-md border px-3 text-sm"
+                defaultValue="EMAIL"
+                name="channel"
+              >
+                <option value="EMAIL">דוא&quot;ל</option>
+                <option value="SMS">SMS</option>
+                <option value="PUSH">Push</option>
+                <option value="WHATSAPP">WhatsApp</option>
+              </select>
+              <select
+                aria-label="סטטוס"
+                autoComplete="off"
+                className="glass-control h-10 rounded-md border px-3 text-sm"
+                defaultValue="GRANTED"
+                name="status"
+              >
+                <option value="GRANTED">מאושר (opt-in)</option>
+                <option value="REVOKED">בוטל (opt-out)</option>
+              </select>
+            </div>
+            <Button className="w-fit" type="submit">
+              רשום הסכמה
+            </Button>
+          </form>
+
+          <div className="grid gap-2">
+            <span className="text-muted-foreground text-sm">שינויי הסכמה אחרונים</span>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>לקוח</TableHead>
+                  <TableHead>ערוץ</TableHead>
+                  <TableHead>סטטוס</TableHead>
+                  <TableHead>תאריך</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {consentRecords.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={4}
+                    description="טרם נרשמו הסכמות."
+                    icon={ShieldCheck}
+                    title="אין הסכמות"
+                  />
+                ) : (
+                  consentRecords.map((record) => (
+                    <TableRow key={record.id}>
+                      <TableCell className="text-sm">
+                        {record.customerName}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline">
+                          {consentChannelLabel[record.channel] ?? record.channel}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            record.status === "GRANTED"
+                              ? "secondary"
+                              : "destructive"
+                          }
+                        >
+                          {record.status === "GRANTED" ? "מאושר" : "בוטל"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {formatHebrewDate(record.createdAt)}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
           </div>
         </CardContent>
       </Card>

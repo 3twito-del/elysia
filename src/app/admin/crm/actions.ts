@@ -29,6 +29,11 @@ import {
   createLead,
   setOpportunityStage,
 } from "~/server/services/crm-sales";
+import {
+  CONSENT_CHANNELS,
+  type ConsentChannel,
+  recordConsentByEmail,
+} from "~/server/services/consent";
 import { recomputeSegmentMemberships } from "~/server/services/marketing-segments";
 
 export async function createLeadAction(formData: FormData) {
@@ -201,6 +206,27 @@ export async function runJourneyTickAction() {
   await requireAdmin("CRM_WRITE");
 
   await runJourneyTick();
+
+  revalidatePath("/admin/crm");
+}
+
+export async function recordConsentAction(formData: FormData) {
+  await requireAdmin("CRM_WRITE");
+
+  const email = stringValue(formData.get("email")).trim();
+  if (!email) throw new Error('יש להזין דוא"ל לקוח.');
+
+  const channel = stringValue(formData.get("channel"));
+  if (!CONSENT_CHANNELS.includes(channel as ConsentChannel)) {
+    throw new Error("ערוץ הסכמה לא תקין.");
+  }
+
+  await recordConsentByEmail({
+    email,
+    channel: channel as ConsentChannel,
+    status: stringValue(formData.get("status")) === "REVOKED" ? "REVOKED" : "GRANTED",
+    source: "admin",
+  });
 
   revalidatePath("/admin/crm");
 }
