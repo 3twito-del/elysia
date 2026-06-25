@@ -1,4 +1,11 @@
-import { BookOpen, CheckSquare, FileText, Megaphone, Search } from "lucide-react";
+import {
+  BookOpen,
+  CalendarClock,
+  CheckSquare,
+  FileText,
+  Megaphone,
+  Search,
+} from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
 import {
@@ -8,10 +15,13 @@ import {
 import { getAdminPageAccess } from "../_lib/access";
 import {
   archiveDocumentAction,
+  cancelBookingAction,
   createAnnouncementAction,
   createApprovalRequestAction,
   createArticleAction,
+  createBookingAction,
   createDocumentAction,
+  createResourceAction,
   decideApprovalRequestAction,
   expireAnnouncementAction,
   pinAnnouncementAction,
@@ -33,7 +43,11 @@ import {
 } from "~/components/ui/table";
 import { TableEmptyRow } from "~/components/ui/table-empty-row";
 import { Textarea } from "~/components/ui/textarea";
-import { formatHebrewDate, formatPrice } from "~/lib/format";
+import {
+  formatHebrewDate,
+  formatHebrewDateTime,
+  formatPrice,
+} from "~/lib/format";
 import { listActiveAnnouncements } from "~/server/services/announcements";
 import {
   getApprovalSummary,
@@ -44,6 +58,10 @@ import {
   listDocuments,
 } from "~/server/services/document-management";
 import { listArticles } from "~/server/services/knowledge-base";
+import {
+  listResources,
+  listUpcomingBookings,
+} from "~/server/services/resource-booking";
 
 export const metadata = {
   title: "מרחב עבודה | Admin",
@@ -106,6 +124,11 @@ export default async function AdminWorkspacePage({
       listApprovalRequests().catch(() => []),
       getApprovalSummary().catch(() => null),
     ]);
+
+  const [resources, bookings] = await Promise.all([
+    listResources().catch(() => []),
+    listUpcomingBookings().catch(() => []),
+  ]);
 
   if (!articles) return <AdminDatabaseFallback />;
 
@@ -552,6 +575,120 @@ export default async function AdminWorkspacePage({
                             </form>
                           </div>
                         ) : null}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CalendarClock aria-hidden="true" className="size-5" />
+            שיבוץ משאבים (Resources)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
+          <div className="grid gap-5">
+            <form action={createResourceAction} className="grid gap-2">
+              <p className="text-muted-foreground text-sm">
+                משאב לשיבוץ (חדר/ציוד/עובד). שיבוצים חופפים נדחים אוטומטית.
+              </p>
+              <Input name="name" placeholder="שם המשאב" required />
+              <select
+                aria-label="סוג"
+                autoComplete="off"
+                className="glass-control h-10 rounded-md border px-3 text-sm"
+                defaultValue="ROOM"
+                name="kind"
+              >
+                <option value="ROOM">חדר</option>
+                <option value="EQUIPMENT">ציוד</option>
+                <option value="STAFF">עובד</option>
+              </select>
+              <Button className="w-fit" size="sm" type="submit">
+                צור משאב
+              </Button>
+            </form>
+
+            <form
+              action={createBookingAction}
+              className="grid gap-2 border-t pt-4"
+            >
+              <select
+                aria-label="משאב"
+                autoComplete="off"
+                className="glass-control h-10 rounded-md border px-3 text-sm"
+                defaultValue=""
+                name="resourceId"
+                required
+              >
+                <option disabled value="">
+                  בחר משאב…
+                </option>
+                {resources.map((resource) => (
+                  <option key={resource.id} value={resource.id}>
+                    {resource.name}
+                  </option>
+                ))}
+              </select>
+              <Input name="title" placeholder="כותרת השיבוץ" required />
+              <div className="grid grid-cols-2 gap-2">
+                <Input aria-label="התחלה" name="startsAt" type="datetime-local" />
+                <Input aria-label="סיום" name="endsAt" type="datetime-local" />
+              </div>
+              <Button className="w-fit" size="sm" type="submit">
+                שבץ
+              </Button>
+            </form>
+          </div>
+
+          <div className="grid gap-2">
+            <span className="text-muted-foreground text-sm">שיבוצים קרובים</span>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>משאב</TableHead>
+                  <TableHead>כותרת</TableHead>
+                  <TableHead>מתי</TableHead>
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {bookings.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={4}
+                    description="אין שיבוצים קרובים."
+                    icon={CalendarClock}
+                    title="אין שיבוצים"
+                  />
+                ) : (
+                  bookings.map((booking) => (
+                    <TableRow key={booking.id}>
+                      <TableCell className="text-sm">
+                        {booking.resourceName}
+                      </TableCell>
+                      <TableCell className="max-w-[10rem] truncate text-sm">
+                        {booking.title}
+                      </TableCell>
+                      <TableCell className="text-xs">
+                        {formatHebrewDateTime(booking.startsAt)}
+                      </TableCell>
+                      <TableCell>
+                        <form action={cancelBookingAction}>
+                          <input
+                            name="bookingId"
+                            type="hidden"
+                            value={booking.id}
+                          />
+                          <Button size="sm" type="submit" variant="ghost">
+                            בטל
+                          </Button>
+                        </form>
                       </TableCell>
                     </TableRow>
                   ))

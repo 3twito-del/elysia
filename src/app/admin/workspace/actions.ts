@@ -28,6 +28,11 @@ import {
   createArticle,
   setArticleStatus,
 } from "~/server/services/knowledge-base";
+import {
+  cancelBooking,
+  createBooking,
+  createResource,
+} from "~/server/services/resource-booking";
 
 export async function createArticleAction(formData: FormData) {
   const admin = await requireAdmin("ERP_WRITE");
@@ -194,6 +199,53 @@ export async function decideApprovalRequestAction(formData: FormData) {
         : "REJECTED",
     decidedById: admin.id,
   });
+
+  revalidatePath("/admin/workspace");
+}
+
+export async function createResourceAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const name = stringValue(formData.get("name")).trim();
+  if (!name) throw new Error("שם המשאב הוא שדה חובה.");
+
+  const kindRaw = stringValue(formData.get("kind"));
+  const kind =
+    kindRaw === "EQUIPMENT" || kindRaw === "STAFF" ? kindRaw : "ROOM";
+
+  await createResource({ name, kind });
+
+  revalidatePath("/admin/workspace");
+}
+
+export async function createBookingAction(formData: FormData) {
+  const admin = await requireAdmin("ERP_WRITE");
+
+  const resourceId = stringValue(formData.get("resourceId"));
+  const title = stringValue(formData.get("title")).trim();
+  const startsAt = stringValue(formData.get("startsAt"));
+  const endsAt = stringValue(formData.get("endsAt"));
+  if (!resourceId || !title) throw new Error("יש לבחור משאב ולהזין כותרת.");
+  if (!startsAt || !endsAt) throw new Error("יש להזין שעת התחלה וסיום.");
+
+  await createBooking({
+    resourceId,
+    title,
+    startsAt: new Date(startsAt),
+    endsAt: new Date(endsAt),
+    bookedById: admin.id,
+  });
+
+  revalidatePath("/admin/workspace");
+}
+
+export async function cancelBookingAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const bookingId = stringValue(formData.get("bookingId"));
+  if (!bookingId) throw new Error("חסר מזהה שיבוץ.");
+
+  await cancelBooking({ bookingId });
 
   revalidatePath("/admin/workspace");
 }

@@ -59,6 +59,7 @@ import {
   formatPrice,
 } from "~/lib/format";
 import { getCrmOverview } from "~/server/services/crm";
+import { getDuplicateCustomerGroups } from "~/server/services/customer-identity";
 import {
   listJourneys,
   listSegmentsForSelect,
@@ -187,6 +188,8 @@ export default async function AdminCrmPage() {
     listLoyaltyAccounts().catch(() => []),
     getLoyaltySummary().catch(() => null),
   ]);
+
+  const duplicateGroups = await getDuplicateCustomerGroups().catch(() => []);
 
   return (
     <AdminShell
@@ -969,6 +972,56 @@ export default async function AdminCrmPage() {
               </TableBody>
             </Table>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between gap-2">
+            <span className="flex items-center gap-2">
+              <AlertTriangle aria-hidden="true" className="size-5" />
+              כפילויות לקוחות (CDP)
+            </span>
+            <span className="text-muted-foreground text-sm font-normal">
+              {duplicateGroups.length} קבוצות
+            </span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-3">
+          <p className="text-muted-foreground text-sm">
+            זיהוי לקוחות שחולקים דוא&quot;ל או טלפון מנורמל — לאיחוד ידני. תצוגה
+            בלבד (לא משנה נתונים).
+          </p>
+          {duplicateGroups.length === 0 ? (
+            <p className="text-muted-foreground text-sm">לא זוהו כפילויות.</p>
+          ) : (
+            duplicateGroups.map((group) => (
+              <div
+                className="rounded-md border p-3"
+                key={`${group.type}-${group.key}`}
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <Badge variant="outline">
+                    {group.type === "email" ? 'דוא"ל' : "טלפון"}: {group.key}
+                  </Badge>
+                  <span className="text-muted-foreground text-xs">
+                    {group.customers.length} רשומות
+                  </span>
+                </div>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {group.customers.map((customer) => (
+                    <Link
+                      className="text-sm underline-offset-4 hover:underline"
+                      href={`/admin/customers/${customer.id}`}
+                      key={customer.id}
+                    >
+                      {customer.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))
+          )}
         </CardContent>
       </Card>
 

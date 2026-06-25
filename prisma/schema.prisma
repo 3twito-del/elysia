@@ -857,6 +857,36 @@ model ApprovalRequest {
   @@index([status])
 }
 
+/// A bookable resource — room, equipment or staff (CAL).
+model Resource {
+  id        String            @id @default(cuid())
+  name      String
+  /// ROOM | EQUIPMENT | STAFF
+  kind      String            @default("ROOM")
+  isActive  Boolean           @default(true)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  bookings  ResourceBooking[]
+
+  @@index([kind, isActive])
+}
+
+/// A time-bounded booking of a resource; overlaps are rejected at creation.
+model ResourceBooking {
+  id         String   @id @default(cuid())
+  resourceId String
+  title      String
+  startsAt   DateTime
+  endsAt     DateTime
+  /// BOOKED | CANCELLED
+  status     String   @default("BOOKED")
+  bookedById String?
+  createdAt  DateTime @default(now())
+  resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@index([resourceId, startsAt])
+}
+
 model Customer {
   id                        String                      @id @default(cuid())
   userId                    String?                     @unique
