@@ -16,9 +16,16 @@ import {
   AdminForbidden,
 } from "../_components/admin-states";
 import { getAdminPageAccess } from "../_lib/access";
+import {
+  convertLeadAction,
+  createLeadAction,
+  setOpportunityStageAction,
+} from "./actions";
 import { MetricCard } from "~/components/metric-card";
 import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
 import {
   Table,
   TableBody,
@@ -28,9 +35,14 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { TableEmptyRow } from "~/components/ui/table-empty-row";
+import { Textarea } from "~/components/ui/textarea";
 import { formatHebrewDateTime, formatPrice } from "~/lib/format";
 import { getCrmOverview } from "~/server/services/crm";
-import { getSalesPipelineOverview } from "~/server/services/crm-sales";
+import {
+  getSalesPipelineOverview,
+  listOpportunities,
+  listRecentLeads,
+} from "~/server/services/crm-sales";
 
 export const metadata = {
   title: "CRM | Admin",
@@ -70,6 +82,11 @@ export default async function AdminCrmPage() {
 
     return null;
   });
+
+  const [leads, opportunities] = await Promise.all([
+    listRecentLeads().catch(() => []),
+    listOpportunities().catch(() => []),
+  ]);
 
   return (
     <AdminShell
@@ -231,6 +248,168 @@ export default async function AdminCrmPage() {
           </Card>
         </div>
       ) : null}
+
+      <div className="mt-6 grid gap-6 xl:grid-cols-[0.85fr_1.15fr]">
+        <Card className="rounded-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <ContactRound aria-hidden="true" className="size-5" />
+              לידים
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            <form
+              action={createLeadAction}
+              className="grid gap-2 sm:grid-cols-2"
+            >
+              <Input name="name" placeholder="שם הליד" required />
+              <Input
+                dir="ltr"
+                inputMode="tel"
+                name="phone"
+                placeholder="טלפון"
+              />
+              <Input dir="ltr" name="email" placeholder="אימייל" type="email" />
+              <Input name="source" placeholder="מקור (web/referral)" />
+              <Textarea
+                className="sm:col-span-2"
+                name="notes"
+                placeholder="הערות"
+              />
+              <Button className="sm:col-span-2" type="submit">
+                צור ליד
+              </Button>
+            </form>
+
+            <div className="grid gap-2">
+              {leads.length === 0 ? (
+                <p className="text-muted-foreground text-sm">
+                  אין לידים פתוחים.
+                </p>
+              ) : (
+                leads.map((lead) => (
+                  <form
+                    action={convertLeadAction}
+                    className="grid gap-2 rounded-md border p-3"
+                    key={lead.id}
+                  >
+                    <input name="leadId" type="hidden" value={lead.id} />
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-medium">{lead.name}</span>
+                      <Badge variant="outline">{lead.source}</Badge>
+                    </div>
+                    <p className="text-muted-foreground text-xs">
+                      {lead.email ?? lead.phone ?? "—"}
+                    </p>
+                    <div className="grid gap-2 sm:grid-cols-[1fr_110px_auto]">
+                      <Input
+                        defaultValue={`הזדמנות — ${lead.name}`}
+                        name="title"
+                        placeholder="כותרת הזדמנות"
+                      />
+                      <Input
+                        inputMode="numeric"
+                        name="amount"
+                        placeholder="סכום"
+                      />
+                      <Button size="sm" type="submit">
+                        המר
+                      </Button>
+                    </div>
+                  </form>
+                ))
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp aria-hidden="true" className="size-5" />
+              הזדמנויות
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table className="min-w-[560px]">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>כותרת</TableHead>
+                  <TableHead>שלב</TableHead>
+                  <TableHead>סכום</TableHead>
+                  <TableHead>עדכון שלב</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {opportunities.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={4}
+                    description="המר לידים כדי לפתוח הזדמנויות."
+                    icon={TrendingUp}
+                    title="אין הזדמנויות"
+                  />
+                ) : (
+                  opportunities.map((opportunity) => (
+                    <TableRow key={opportunity.id}>
+                      <TableCell className="font-medium">
+                        {opportunity.title}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            opportunity.status === "WON"
+                              ? "secondary"
+                              : opportunity.status === "LOST"
+                                ? "destructive"
+                                : "outline"
+                          }
+                        >
+                          {stageLabel[opportunity.stage] ?? opportunity.stage}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{formatPrice(opportunity.amount)}</TableCell>
+                      <TableCell>
+                        <form
+                          action={setOpportunityStageAction}
+                          className="flex gap-2"
+                        >
+                          <input
+                            name="opportunityId"
+                            type="hidden"
+                            value={opportunity.id}
+                          />
+                          <select
+                            aria-label="עדכון שלב הזדמנות"
+                            autoComplete="off"
+                            className="glass-control h-9 rounded-md border px-2 text-sm"
+                            defaultValue={opportunity.stage}
+                            name="stage"
+                          >
+                            {[
+                              "QUALIFIED",
+                              "PROPOSAL",
+                              "NEGOTIATION",
+                              "WON",
+                              "LOST",
+                            ].map((stage) => (
+                              <option key={stage} value={stage}>
+                                {stageLabel[stage] ?? stage}
+                              </option>
+                            ))}
+                          </select>
+                          <Button size="sm" type="submit">
+                            עדכן
+                          </Button>
+                        </form>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_0.8fr]">
         <Card className="rounded-md">

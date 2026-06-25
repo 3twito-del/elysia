@@ -179,3 +179,44 @@ export async function getSalesPipelineOverview() {
     generatedAt: new Date(),
   };
 }
+
+/** Open leads (NEW / QUALIFIED) for the CRM workbench. */
+export async function listRecentLeads(limit = 20) {
+  return db.lead.findMany({
+    where: { status: { in: ["NEW", "QUALIFIED"] } },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      source: true,
+      status: true,
+      createdAt: true,
+    },
+  });
+}
+
+/** Recent opportunities (open first) for the CRM workbench. */
+export async function listOpportunities(limit = 20) {
+  const opportunities = await db.opportunity.findMany({
+    orderBy: [{ status: "asc" }, { createdAt: "desc" }],
+    take: limit,
+    select: {
+      id: true,
+      title: true,
+      stage: true,
+      status: true,
+      amount: true,
+      probability: true,
+      expectedCloseDate: true,
+      createdAt: true,
+    },
+  });
+
+  return opportunities.map((opportunity) => ({
+    ...opportunity,
+    amount: Number(opportunity.amount),
+  }));
+}
