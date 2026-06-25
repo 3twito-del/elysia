@@ -308,6 +308,50 @@ export async function recordCustomerReceipt(input: {
   });
 }
 
+/** Recent customer invoices for the AR workbench. */
+export async function listCustomerInvoices(limit = 20) {
+  const invoices = await db.customerInvoice.findMany({
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    select: {
+      id: true,
+      invoiceNumber: true,
+      customerId: true,
+      status: true,
+      total: true,
+      paidTotal: true,
+      currency: true,
+      dueDate: true,
+      createdAt: true,
+      customer: {
+        select: { firstName: true, lastName: true, email: true },
+      },
+    },
+  });
+
+  return invoices.map((invoice) => {
+    const name = [invoice.customer?.firstName, invoice.customer?.lastName]
+      .filter(Boolean)
+      .join(" ")
+      .trim();
+
+    return {
+      id: invoice.id,
+      invoiceNumber: invoice.invoiceNumber,
+      customerId: invoice.customerId,
+      status: invoice.status,
+      total: Number(invoice.total),
+      paidTotal: Number(invoice.paidTotal),
+      outstanding: Number(invoice.total) - Number(invoice.paidTotal),
+      currency: invoice.currency,
+      dueDate: invoice.dueDate,
+      customerName:
+        name.length > 0 ? name : (invoice.customer?.email ?? "לקוח ללא שם"),
+      createdAt: invoice.createdAt,
+    };
+  });
+}
+
 /** Aging of the open AR sub-ledger (issued + partially-paid invoices). */
 export async function getArAging(asOf: Date = new Date()) {
   const invoices = await db.customerInvoice.findMany({

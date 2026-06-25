@@ -1,4 +1,10 @@
-import { CreditCard, Landmark, ReceiptText, TrendingUp } from "lucide-react";
+import {
+  CreditCard,
+  Landmark,
+  ReceiptText,
+  TrendingUp,
+  Wallet,
+} from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
 import {
@@ -6,9 +12,16 @@ import {
   AdminForbidden,
 } from "../_components/admin-states";
 import { getAdminPageAccess } from "../_lib/access";
+import {
+  createCustomerInvoiceAction,
+  issueCustomerInvoiceAction,
+  recordCustomerReceiptAction,
+} from "./actions";
 import { MetricCard } from "~/components/metric-card";
 import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
 import {
   Table,
   TableBody,
@@ -18,11 +31,13 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { TableEmptyRow } from "~/components/ui/table-empty-row";
+import { Textarea } from "~/components/ui/textarea";
 import {
   formatHebrewDate,
   formatHebrewDateTime,
   formatPrice,
 } from "~/lib/format";
+import { listCustomerInvoices } from "~/server/services/accounts-receivable";
 import {
   getFinanceOverview,
   getGeneralLedgerOverview,
@@ -33,6 +48,25 @@ export const metadata = {
 };
 
 export const dynamic = "force-dynamic";
+
+const customerInvoiceStatusLabel: Record<string, string> = {
+  DRAFT: "טיוטה",
+  ISSUED: "הונפקה",
+  PARTIALLY_PAID: "שולם חלקית",
+  PAID: "שולם",
+  CANCELLED: "בוטל",
+};
+
+const customerInvoiceStatusVariant: Record<
+  string,
+  "secondary" | "outline" | "destructive"
+> = {
+  DRAFT: "outline",
+  ISSUED: "outline",
+  PARTIALLY_PAID: "outline",
+  PAID: "secondary",
+  CANCELLED: "destructive",
+};
 
 export default async function AdminFinancePage() {
   const access = await getAdminPageAccess("FINANCE_READ", "/admin/finance");
@@ -60,6 +94,8 @@ export default async function AdminFinancePage() {
       return null;
     },
   );
+
+  const customerInvoices = await listCustomerInvoices().catch(() => []);
 
   return (
     <AdminShell
@@ -316,6 +352,119 @@ export default async function AdminFinancePage() {
           </CardContent>
         </Card>
       ) : null}
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Wallet aria-hidden="true" className="size-5" />
+            חשבונות לגבייה (AR)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          <form action={createCustomerInvoiceAction} className="grid gap-2">
+            <div className="grid gap-2 sm:grid-cols-[1fr_180px]">
+              <Input name="customerId" placeholder="מזהה לקוח (אופציונלי)" />
+              <Input aria-label="לתשלום עד" name="dueDate" type="date" />
+            </div>
+            <Textarea
+              name="lines"
+              placeholder="שורה לכל פריט: תיאור | כמות | מחיר"
+              rows={3}
+            />
+            <Button className="w-fit" type="submit">
+              צור חשבונית לקוח
+            </Button>
+          </form>
+
+          <Table className="min-w-[820px]">
+            <TableHeader>
+              <TableRow>
+                <TableHead>חשבונית</TableHead>
+                <TableHead>לקוח</TableHead>
+                <TableHead>סטטוס</TableHead>
+                <TableHead>סה״כ</TableHead>
+                <TableHead>יתרה</TableHead>
+                <TableHead>פעולות</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {customerInvoices.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={6}
+                  description="חשבוניות לקוח שתיצרו יופיעו כאן להנפקה (→ הכנסה/לקוחות) ולתקבול."
+                  icon={Wallet}
+                  title="אין חשבוניות לקוח"
+                />
+              ) : (
+                customerInvoices.map((invoice) => (
+                  <TableRow key={invoice.id}>
+                    <TableCell className="font-medium">
+                      {invoice.invoiceNumber}
+                    </TableCell>
+                    <TableCell>{invoice.customerName}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          customerInvoiceStatusVariant[invoice.status] ??
+                          "outline"
+                        }
+                      >
+                        {customerInvoiceStatusLabel[invoice.status] ??
+                          invoice.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{formatPrice(invoice.total)}</TableCell>
+                    <TableCell>{formatPrice(invoice.outstanding)}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <form action={issueCustomerInvoiceAction}>
+                          <input
+                            name="invoiceId"
+                            type="hidden"
+                            value={invoice.id}
+                          />
+                          <Button size="sm" type="submit" variant="outline">
+                            הנפק
+                          </Button>
+                        </form>
+                        <form
+                          action={recordCustomerReceiptAction}
+                          className="flex items-center gap-1"
+                        >
+                          <input
+                            name="invoiceId"
+                            type="hidden"
+                            value={invoice.id}
+                          />
+                          <input
+                            name="customerId"
+                            type="hidden"
+                            value={invoice.customerId ?? ""}
+                          />
+                          <Input
+                            aria-label="סכום תקבול"
+                            className="h-8 w-24"
+                            defaultValue={
+                              invoice.outstanding > 0
+                                ? String(invoice.outstanding)
+                                : ""
+                            }
+                            inputMode="numeric"
+                            name="amount"
+                          />
+                          <Button size="sm" type="submit">
+                            תקבול
+                          </Button>
+                        </form>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </AdminShell>
   );
 }
