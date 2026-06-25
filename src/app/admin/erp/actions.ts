@@ -22,6 +22,12 @@ import {
   parseCountLines,
 } from "~/server/services/cycle-count";
 import {
+  cancelWorkOrder,
+  completeWorkOrder,
+  createBom,
+  createWorkOrder,
+} from "~/server/services/manufacturing";
+import {
   cancelStockTransfer,
   completeStockTransfer,
   createStockTransfer,
@@ -169,6 +175,65 @@ export async function cancelInventoryCountAction(formData: FormData) {
   if (!countId) throw new Error("חסר מזהה ספירה.");
 
   await cancelInventoryCount({ countId });
+  revalidatePath("/admin/erp");
+}
+
+export async function createBomAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const finishedSku = stringValue(formData.get("finishedSku")).trim();
+  if (!finishedSku) throw new Error('יש להזין מק"ט מוצר מוגמר.');
+
+  const components = parseTransferLines(stringValue(formData.get("components")));
+  if (components.length === 0) {
+    throw new Error('יש להזין לפחות רכיב אחד (מק"ט | כמות).');
+  }
+
+  await createBom({
+    finishedSku,
+    name: optionalString(formData.get("name")),
+    components,
+  });
+
+  revalidatePath("/admin/erp");
+}
+
+export async function createWorkOrderAction(formData: FormData) {
+  const admin = await requireAdmin("ERP_WRITE");
+
+  const bomId = stringValue(formData.get("bomId"));
+  const branchId = stringValue(formData.get("branchId"));
+  if (!bomId || !branchId) throw new Error("יש לבחור עץ מוצר וסניף.");
+
+  await createWorkOrder({
+    bomId,
+    branchId,
+    quantity: Number(formData.get("quantity") ?? 0) || 0,
+    createdById: admin.id,
+  });
+
+  revalidatePath("/admin/erp");
+}
+
+export async function completeWorkOrderAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const workOrderId = stringValue(formData.get("workOrderId"));
+  if (!workOrderId) throw new Error("חסר מזהה הוראת עבודה.");
+
+  await completeWorkOrder({ workOrderId });
+
+  revalidatePath("/admin/erp");
+}
+
+export async function cancelWorkOrderAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const workOrderId = stringValue(formData.get("workOrderId"));
+  if (!workOrderId) throw new Error("חסר מזהה הוראת עבודה.");
+
+  await cancelWorkOrder({ workOrderId });
+
   revalidatePath("/admin/erp");
 }
 

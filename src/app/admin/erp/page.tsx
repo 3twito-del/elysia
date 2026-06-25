@@ -2,6 +2,7 @@ import {
   ArrowLeftRight,
   Boxes,
   ClipboardList,
+  Factory,
   GaugeCircle,
   PackageCheck,
   ReceiptText,
@@ -20,11 +21,15 @@ import {
   approveVendorInvoiceAction,
   cancelInventoryCountAction,
   cancelStockTransferAction,
+  cancelWorkOrderAction,
   completeInventoryCountAction,
   completeStockTransferAction,
+  completeWorkOrderAction,
+  createBomAction,
   createInventoryCountAction,
   createStockTransferAction,
   createVendorInvoiceAction,
+  createWorkOrderAction,
   recordVendorPaymentAction,
 } from "./actions";
 import { MetricCard } from "~/components/metric-card";
@@ -51,6 +56,7 @@ import {
 import { getErpOverview } from "~/server/services/erp";
 import { getAvailabilityBySku } from "~/server/services/availability";
 import { listInventoryCounts } from "~/server/services/cycle-count";
+import { listBoms, listWorkOrders } from "~/server/services/manufacturing";
 import {
   listBranchesForSelect,
   listStockTransfers,
@@ -152,6 +158,11 @@ export default async function AdminErpPage({
     listBranchesForSelect().catch(() => []),
     listStockTransfers().catch(() => []),
     listInventoryCounts().catch(() => []),
+  ]);
+
+  const [boms, workOrders] = await Promise.all([
+    listBoms().catch(() => []),
+    listWorkOrders().catch(() => []),
   ]);
 
   const atpSku = firstParam((await searchParams).atpSku);
@@ -579,6 +590,162 @@ export default async function AdminErpPage({
                                 name="countId"
                                 type="hidden"
                                 value={count.id}
+                              />
+                              <Button size="sm" type="submit" variant="ghost">
+                                בטל
+                              </Button>
+                            </form>
+                          </div>
+                        ) : null}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Factory aria-hidden="true" className="size-5" />
+            ייצור — עץ מוצר והוראות עבודה (Manufacturing)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.2fr]">
+          <div className="grid gap-5">
+            <form action={createBomAction} className="grid gap-2">
+              <p className="text-muted-foreground text-sm">
+                עץ מוצר (BOM): המק&quot;ט המוגמר והרכיבים הנדרשים ליחידה אחת.
+              </p>
+              <Input name="finishedSku" placeholder='מק"ט מוצר מוגמר' required />
+              <Input name="name" placeholder="שם העץ (רשות)" />
+              <Textarea
+                className="font-mono"
+                name="components"
+                placeholder={"GOLD-CHAIN | 1\nCLASP-01 | 2"}
+                rows={3}
+              />
+              <Button className="w-fit" size="sm" type="submit">
+                צור עץ מוצר
+              </Button>
+            </form>
+
+            <form
+              action={createWorkOrderAction}
+              className="grid gap-2 border-t pt-4"
+            >
+              <p className="text-muted-foreground text-sm">
+                הוראת עבודה: השלמתה צורכת רכיבים ומייצרת מוצר מוגמר (עם שכבת עלות).
+              </p>
+              <select
+                aria-label="עץ מוצר"
+                autoComplete="off"
+                className="glass-control h-10 rounded-md border px-3 text-sm"
+                defaultValue=""
+                name="bomId"
+                required
+              >
+                <option disabled value="">
+                  בחר עץ מוצר…
+                </option>
+                {boms.map((bom) => (
+                  <option key={bom.id} value={bom.id}>
+                    {bom.finishedName} ({bom.finishedSku}) · {bom.componentCount}{" "}
+                    רכיבים
+                  </option>
+                ))}
+              </select>
+              <div className="grid grid-cols-2 gap-2">
+                <select
+                  aria-label="סניף"
+                  autoComplete="off"
+                  className="glass-control h-10 rounded-md border px-3 text-sm"
+                  defaultValue=""
+                  name="branchId"
+                  required
+                >
+                  <option disabled value="">
+                    סניף ייצור…
+                  </option>
+                  {branches.map((branch) => (
+                    <option key={branch.id} value={branch.id}>
+                      {branch.name}
+                    </option>
+                  ))}
+                </select>
+                <Input
+                  aria-label="כמות"
+                  name="quantity"
+                  placeholder="כמות לייצור"
+                  type="number"
+                />
+              </div>
+              <Button className="w-fit" size="sm" type="submit">
+                צור הוראת עבודה
+              </Button>
+            </form>
+          </div>
+
+          <div className="grid gap-2">
+            <span className="text-muted-foreground text-sm">הוראות עבודה</span>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>מס׳</TableHead>
+                  <TableHead>מוצר</TableHead>
+                  <TableHead>כמות</TableHead>
+                  <TableHead>סטטוס</TableHead>
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {workOrders.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={5}
+                    description="טרם נוצרו הוראות עבודה."
+                    icon={Factory}
+                    title="אין הוראות עבודה"
+                  />
+                ) : (
+                  workOrders.map((order) => (
+                    <TableRow key={order.id}>
+                      <TableCell className="whitespace-nowrap font-mono text-xs">
+                        {order.workOrderNumber}
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {order.finishedName}
+                      </TableCell>
+                      <TableCell>{order.quantity}</TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            transferStatusVariant[order.status] ?? "outline"
+                          }
+                        >
+                          {transferStatusLabel[order.status] ?? order.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {order.status === "DRAFT" ? (
+                          <div className="flex gap-1">
+                            <form action={completeWorkOrderAction}>
+                              <input
+                                name="workOrderId"
+                                type="hidden"
+                                value={order.id}
+                              />
+                              <Button size="sm" type="submit" variant="outline">
+                                השלם
+                              </Button>
+                            </form>
+                            <form action={cancelWorkOrderAction}>
+                              <input
+                                name="workOrderId"
+                                type="hidden"
+                                value={order.id}
                               />
                               <Button size="sm" type="submit" variant="ghost">
                                 בטל

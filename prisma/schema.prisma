@@ -343,6 +343,8 @@ model ProductVariant {
   tryOnSessions       TryOnSession[]
   stockTransferLines  StockTransferLine[]
   inventoryCountLines InventoryCountLine[]
+  finishedBoms        BillOfMaterials[]    @relation("BomFinished")
+  bomComponents       BomComponent[]       @relation("BomComponent")
 
   @@index([productId])
   @@index([externalVariantId])
@@ -726,6 +728,56 @@ model FixedAssetDepreciation {
 
   @@unique([fixedAssetId, period])
   @@index([fixedAssetId])
+}
+
+/// A bill of materials: the components (and quantities) needed to produce one
+/// unit of a finished product variant (PP).
+model BillOfMaterials {
+  id               String         @id @default(cuid())
+  productVariantId String
+  name             String?
+  isActive         Boolean        @default(true)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  finishedVariant  ProductVariant @relation("BomFinished", fields: [productVariantId], references: [id], onDelete: Cascade)
+  components       BomComponent[]
+  workOrders       WorkOrder[]
+
+  @@index([productVariantId])
+}
+
+model BomComponent {
+  id                 String          @id @default(cuid())
+  bomId              String
+  componentVariantId String
+  quantity           Int
+  bom                BillOfMaterials @relation(fields: [bomId], references: [id], onDelete: Cascade)
+  componentVariant   ProductVariant  @relation("BomComponent", fields: [componentVariantId], references: [id], onDelete: Restrict)
+
+  @@index([bomId])
+  @@index([componentVariantId])
+}
+
+/// A production order: completing it consumes components and yields finished
+/// units (both as immutable InventoryLedger moves), and writes a finished cost
+/// layer equal to the consumed component cost.
+model WorkOrder {
+  id              String          @id @default(cuid())
+  workOrderNumber String          @unique
+  bomId           String
+  branchId        String
+  quantity        Int
+  /// DRAFT | COMPLETED | CANCELLED
+  status          String          @default("DRAFT")
+  notes           String?
+  completedAt     DateTime?
+  createdById     String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  bom             BillOfMaterials @relation(fields: [bomId], references: [id], onDelete: Restrict)
+
+  @@index([status])
+  @@index([bomId])
 }
 
 model Customer {
