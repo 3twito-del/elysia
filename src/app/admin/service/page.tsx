@@ -45,7 +45,9 @@ import { Textarea } from "~/components/ui/textarea";
 import { formatHebrewDateTime } from "~/lib/format";
 import {
   getServiceContactPreferenceLabel,
+  getServicePriorityLabel,
   getServiceRequestStatusLabel,
+  servicePriorities,
   serviceRequestStatuses,
 } from "~/lib/service-validation";
 import { hasAdminPermission } from "~/server/auth/admin-access";
@@ -60,6 +62,23 @@ export const metadata = {
 };
 
 export const dynamic = "force-dynamic";
+
+const slaStatusLabel: Record<string, string> = {
+  ON_TRACK: "בזמן",
+  AT_RISK: "בסיכון",
+  BREACHED: "חריגה",
+  MET: "עמד ביעד",
+};
+
+const slaBadgeVariant: Record<
+  string,
+  "secondary" | "outline" | "destructive"
+> = {
+  ON_TRACK: "secondary",
+  AT_RISK: "outline",
+  BREACHED: "destructive",
+  MET: "secondary",
+};
 
 type AdminServicePageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -417,9 +436,24 @@ export default async function AdminServicePage({
                         </div>
                       </TableCell>
                       <TableCell className="align-top">
-                        <Badge variant="secondary">
-                          {getServiceRequestStatusLabel(request.status)}
-                        </Badge>
+                        <div className="grid gap-1">
+                          <Badge className="w-fit" variant="secondary">
+                            {getServiceRequestStatusLabel(request.status)}
+                          </Badge>
+                          <Badge className="w-fit" variant="outline">
+                            עדיפות: {getServicePriorityLabel(request.priority)}
+                          </Badge>
+                          <Badge
+                            className="w-fit"
+                            variant={
+                              slaBadgeVariant[request.slaStatus] ?? "outline"
+                            }
+                          >
+                            SLA:{" "}
+                            {slaStatusLabel[request.slaStatus] ??
+                              request.slaStatus}
+                          </Badge>
+                        </div>
                       </TableCell>
                       <TableCell className="align-top">
                         <form
@@ -441,6 +475,19 @@ export default async function AdminServicePage({
                             {serviceRequestStatuses.map((status) => (
                               <option key={status} value={status}>
                                 {getServiceRequestStatusLabel(status)}
+                              </option>
+                            ))}
+                          </select>
+                          <select
+                            aria-label="עדיפות SLA"
+                            autoComplete="off"
+                            className="glass-control h-10 rounded-md border px-3 text-sm"
+                            defaultValue={request.priority}
+                            name="priority"
+                          >
+                            {servicePriorities.map((priority) => (
+                              <option key={priority} value={priority}>
+                                עדיפות: {getServicePriorityLabel(priority)}
                               </option>
                             ))}
                           </select>

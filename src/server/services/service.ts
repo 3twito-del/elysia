@@ -21,6 +21,7 @@ import {
   shouldUseCatalogFixtures,
 } from "~/server/services/catalog-fixtures";
 import { BUSINESS_EVENTS, createOutboxEvent } from "~/server/services/outbox";
+import { slaStatus } from "~/server/services/service-sla";
 
 const defaultServiceSettings = {
   id: "default",
@@ -337,6 +338,16 @@ export async function listAdminServiceRequests(input: ServiceRequestListInput) {
       preferredContactTime: request.preferredContactTime,
       message: request.message,
       adminNotes: request.adminNotes,
+      priority: request.priority,
+      slaStatus: slaStatus({
+        createdAt: request.createdAt,
+        priority: request.priority,
+        status: request.status,
+        firstRespondedAt: request.firstRespondedAt,
+        resolvedAt: request.resolvedAt,
+      }),
+      firstRespondedAt: request.firstRespondedAt,
+      resolvedAt: request.resolvedAt,
       createdAt: request.createdAt,
       updatedAt: request.updatedAt,
       triageFacts: getServiceRequestTriageFacts({
@@ -385,11 +396,23 @@ export async function updateAdminServiceRequest(input: {
   const parsed = updateServiceRequestInputSchema.parse(input.data);
 
   return db.$transaction(async (tx) => {
+    const current = await tx.serviceRequest.findUniqueOrThrow({
+      where: { id: parsed.serviceRequestId },
+      select: { firstRespondedAt: true, resolvedAt: true },
+    });
+    const isTerminal =
+      parsed.status === "RESOLVED" || parsed.status === "CLOSED";
+    const hasResponded = parsed.status !== "NEW";
+
     const updated = await tx.serviceRequest.update({
       where: { id: parsed.serviceRequestId },
       data: {
         status: parsed.status,
         adminNotes: parsed.adminNotes,
+        ...(parsed.priority ? { priority: parsed.priority } : {}),
+        firstRespondedAt:
+          current.firstRespondedAt ?? (hasResponded ? new Date() : null),
+        resolvedAt: isTerminal ? (current.resolvedAt ?? new Date()) : null,
       },
     });
 

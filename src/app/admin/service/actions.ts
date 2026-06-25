@@ -25,6 +25,12 @@ export async function updateServiceRequestAdminAction(formData: FormData) {
       serviceRequestId: stringValue(formData.get("serviceRequestId")),
       status: stringValue(formData.get("status")) as ServiceRequestStatus,
       adminNotes: optionalString(formData.get("adminNotes")),
+      priority: optionalString(formData.get("priority")) as
+        | "LOW"
+        | "NORMAL"
+        | "HIGH"
+        | "URGENT"
+        | undefined,
     },
   });
 

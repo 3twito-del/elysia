@@ -116,10 +116,30 @@ export const publicServiceRequestInputSchema = z.object({
   message: requiredText("יש לכתוב בקצרה במה נוכל לעזור.", 2_000),
 });
 
+export const servicePriorities = ["LOW", "NORMAL", "HIGH", "URGENT"] as const;
+
+const servicePriorityLabels: Record<
+  (typeof servicePriorities)[number],
+  string
+> = {
+  LOW: "נמוך",
+  NORMAL: "רגיל",
+  HIGH: "גבוה",
+  URGENT: "דחוף",
+};
+
+export function getServicePriorityLabel(priority: string) {
+  return (
+    servicePriorityLabels[priority as (typeof servicePriorities)[number]] ??
+    priority
+  );
+}
+
 export const updateServiceRequestInputSchema = z.object({
   serviceRequestId: requiredId("חסרה פנייה לעדכון."),
   status: z.enum(serviceRequestStatuses),
   adminNotes: optionalTrimmedString(1_500, "הערות הטיפול ארוכות מדי."),
+  priority: z.enum(servicePriorities).optional(),
 });
 
 export const updateServiceSettingsInputSchema = z.object({
