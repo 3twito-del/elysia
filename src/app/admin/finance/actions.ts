@@ -11,6 +11,12 @@ import {
 } from "~/server/auth/admin-access";
 import { parseInvoiceLines } from "~/server/services/accounts-payable";
 import {
+  autoMatchBankStatement,
+  ignoreBankStatementLine,
+  importBankStatementLines,
+  parseBankStatementCsv,
+} from "~/server/services/bank-reconciliation";
+import {
   createCustomerInvoice,
   issueCustomerInvoice,
   recordCustomerReceipt,
@@ -73,6 +79,35 @@ export async function recordCustomerReceiptAction(formData: FormData) {
     allocations: [{ customerInvoiceId: invoiceId, amount }],
   });
 
+  revalidatePath("/admin/finance");
+}
+
+export async function importBankStatementAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const lines = parseBankStatementCsv(stringValue(formData.get("csv")));
+  if (lines.length === 0) {
+    throw new Error("לא נמצאו שורות תקינות (פורמט: תאריך,תיאור,סכום,אסמכתא).");
+  }
+
+  await importBankStatementLines(lines);
+  revalidatePath("/admin/finance");
+}
+
+export async function autoMatchBankStatementAction() {
+  await requireAdmin("ERP_WRITE");
+
+  await autoMatchBankStatement();
+  revalidatePath("/admin/finance");
+}
+
+export async function ignoreBankStatementLineAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const id = stringValue(formData.get("lineId"));
+  if (!id) throw new Error("חסר מזהה שורת בנק.");
+
+  await ignoreBankStatementLine(id);
   revalidatePath("/admin/finance");
 }
 

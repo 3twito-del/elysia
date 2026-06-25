@@ -1582,6 +1582,25 @@ model FiscalPeriod {
   @@index([status])
 }
 
+/// An imported bank-statement line, reconciled against the GL cash account.
+/// `amount` is signed: positive is an inflow (deposit), negative an outflow.
+model BankStatementLine {
+  id                    String   @id @default(cuid())
+  statementDate         DateTime @db.Date
+  description           String
+  amount                Decimal  @db.Decimal(14, 2)
+  reference             String?
+  currency              String   @default("ILS")
+  /// UNMATCHED | MATCHED | IGNORED
+  status                String   @default("UNMATCHED")
+  matchedJournalEntryId String?  @unique
+  notes                 String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([status, statementDate])
+}
+
 /// A balanced double-entry journal entry (Σdebit = Σcredit), append-only.
 /// Corrections are made by posting a reversing entry, never by mutation.
 model JournalEntry {

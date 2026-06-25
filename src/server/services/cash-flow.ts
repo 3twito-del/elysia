@@ -76,9 +76,10 @@ export function buildCashFlowStatement(rows: CategorizedCashFlow[]) {
 export async function getCashFlowStatement(
   input: { from?: Date; to?: Date } = {},
 ) {
+  // Include all entries: a reversed entry and its reversal both carry cash
+  // lines that net to zero, so dropping either side would misstate the change.
   const entries = await db.journalEntry.findMany({
     where: {
-      status: { not: "REVERSED" },
       lines: { some: { account: { code: ACCOUNT.CASH } } },
       ...(input.from ?? input.to
         ? {

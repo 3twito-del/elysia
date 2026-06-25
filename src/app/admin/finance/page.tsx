@@ -1,4 +1,5 @@
 import {
+  Banknote,
   CreditCard,
   Landmark,
   Lock,
@@ -14,8 +15,11 @@ import {
 } from "../_components/admin-states";
 import { getAdminPageAccess } from "../_lib/access";
 import {
+  autoMatchBankStatementAction,
   closePeriodAction,
   createCustomerInvoiceAction,
+  ignoreBankStatementLineAction,
+  importBankStatementAction,
   issueCustomerInvoiceAction,
   postManualJournalEntryAction,
   recordCustomerReceiptAction,
@@ -41,6 +45,10 @@ import {
   formatPrice,
 } from "~/lib/format";
 import { listCustomerInvoices } from "~/server/services/accounts-receivable";
+import {
+  getReconciliationOverview,
+  listBankStatementLines,
+} from "~/server/services/bank-reconciliation";
 import { getCashFlowStatement } from "~/server/services/cash-flow";
 import {
   getFinanceOverview,
@@ -69,6 +77,21 @@ const customerInvoiceStatusLabel: Record<string, string> = {
   PARTIALLY_PAID: "שולם חלקית",
   PAID: "שולם",
   CANCELLED: "בוטל",
+};
+
+const bankStatusLabel: Record<string, string> = {
+  UNMATCHED: "ללא התאמה",
+  MATCHED: "הותאם",
+  IGNORED: "נוטרל",
+};
+
+const bankStatusVariant: Record<
+  string,
+  "secondary" | "outline" | "destructive"
+> = {
+  UNMATCHED: "outline",
+  MATCHED: "secondary",
+  IGNORED: "destructive",
 };
 
 const journalSourceLabel: Record<string, string> = {
@@ -146,6 +169,11 @@ export default async function AdminFinancePage() {
       listLedgerAccounts().catch(() => []),
       listRecentJournalEntries().catch(() => []),
     ]);
+
+  const [bankLines, reconciliation] = await Promise.all([
+    listBankStatementLines().catch(() => []),
+    getReconciliationOverview().catch(() => null),
+  ]);
 
   return (
     <AdminShell
@@ -584,6 +612,125 @@ export default async function AdminFinancePage() {
                 </TableBody>
               </Table>
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Banknote aria-hidden="true" className="size-5" />
+            התאמת בנק (Bank Reconciliation)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.2fr]">
+          <div className="grid gap-3">
+            <form action={importBankStatementAction} className="grid gap-2">
+              <p className="text-muted-foreground text-sm">
+                ייבוא דף בנק כ-CSV: שורה לכל תנועה בפורמט{" "}
+                <code>תאריך,תיאור,סכום,אסמכתא</code> (סכום חיובי = זכות/הפקדה,
+                שלילי = חובה/משיכה).
+              </p>
+              <Textarea
+                className="font-mono"
+                name="csv"
+                placeholder={"2026-06-01,תקבול,1180,REF1\n2026-06-03,תשלום ספק,-400"}
+                rows={4}
+              />
+              <Button className="w-fit" type="submit">
+                ייבא שורות
+              </Button>
+            </form>
+
+            {reconciliation ? (
+              <div className="bg-muted/40 grid gap-2 rounded-md p-4 text-sm">
+                <div className="flex justify-between gap-3">
+                  <span className="text-muted-foreground">
+                    יתרת מזומן בספרים
+                  </span>
+                  <span>{formatPrice(reconciliation.glCashBalance)}</span>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <span className="text-muted-foreground">יתרת דף הבנק</span>
+                  <span>{formatPrice(reconciliation.statementBalance)}</span>
+                </div>
+                <div className="flex items-center justify-between gap-3 border-t pt-2">
+                  <span className="font-medium">הפרש</span>
+                  <Badge
+                    variant={
+                      Math.abs(reconciliation.difference) < 0.005
+                        ? "secondary"
+                        : "destructive"
+                    }
+                  >
+                    {formatPrice(reconciliation.difference)}
+                  </Badge>
+                </div>
+                <div className="text-muted-foreground text-xs">
+                  {reconciliation.matched} הותאמו · {reconciliation.unmatched}{" "}
+                  ללא התאמה · {reconciliation.ignored} נוטרלו
+                </div>
+                <form action={autoMatchBankStatementAction} className="mt-1">
+                  <Button className="w-full" type="submit" variant="outline">
+                    התאמה אוטומטית מול הספר
+                  </Button>
+                </form>
+              </div>
+            ) : null}
+          </div>
+
+          <div className="grid gap-2">
+            <span className="text-muted-foreground text-sm">שורות דף הבנק</span>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>תאריך</TableHead>
+                  <TableHead>תיאור</TableHead>
+                  <TableHead className="text-left">סכום</TableHead>
+                  <TableHead>סטטוס</TableHead>
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {bankLines.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={5}
+                    description="ייבא דף בנק כדי להתחיל בהתאמה."
+                    icon={Banknote}
+                    title="אין שורות"
+                  />
+                ) : (
+                  bankLines.map((line) => (
+                    <TableRow key={line.id}>
+                      <TableCell className="whitespace-nowrap">
+                        {formatHebrewDate(line.statementDate)}
+                      </TableCell>
+                      <TableCell className="max-w-[12rem] truncate">
+                        {line.description}
+                      </TableCell>
+                      <TableCell className="text-left">
+                        {formatPrice(line.amount)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={bankStatusVariant[line.status] ?? "outline"}>
+                          {bankStatusLabel[line.status] ?? line.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {line.status === "UNMATCHED" ? (
+                          <form action={ignoreBankStatementLineAction}>
+                            <input name="lineId" type="hidden" value={line.id} />
+                            <Button size="sm" type="submit" variant="ghost">
+                              נטרל
+                            </Button>
+                          </form>
+                        ) : null}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
           </div>
         </CardContent>
       </Card>
