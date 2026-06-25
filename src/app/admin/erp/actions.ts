@@ -16,6 +16,12 @@ import {
   recordVendorPayment,
 } from "~/server/services/accounts-payable";
 import {
+  cancelInventoryCount,
+  completeInventoryCount,
+  createInventoryCount,
+  parseCountLines,
+} from "~/server/services/cycle-count";
+import {
   cancelStockTransfer,
   completeStockTransfer,
   createStockTransfer,
@@ -122,6 +128,47 @@ export async function cancelStockTransferAction(formData: FormData) {
   if (!transferId) throw new Error("חסר מזהה העברה.");
 
   await cancelStockTransfer({ transferId });
+  revalidatePath("/admin/erp");
+}
+
+export async function createInventoryCountAction(formData: FormData) {
+  const admin = await requireAdmin("ERP_WRITE");
+
+  const branchId = stringValue(formData.get("branchId"));
+  if (!branchId) throw new Error("יש לבחור סניף לספירה.");
+
+  const lines = parseCountLines(stringValue(formData.get("lines")));
+  if (lines.length === 0) {
+    throw new Error('יש להזין לפחות שורת ספירה אחת (מק"ט | כמות).');
+  }
+
+  await createInventoryCount({
+    branchId,
+    lines,
+    notes: optionalString(formData.get("notes")),
+    countedById: admin.id,
+  });
+
+  revalidatePath("/admin/erp");
+}
+
+export async function completeInventoryCountAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const countId = stringValue(formData.get("countId"));
+  if (!countId) throw new Error("חסר מזהה ספירה.");
+
+  await completeInventoryCount({ countId });
+  revalidatePath("/admin/erp");
+}
+
+export async function cancelInventoryCountAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const countId = stringValue(formData.get("countId"));
+  if (!countId) throw new Error("חסר מזהה ספירה.");
+
+  await cancelInventoryCount({ countId });
   revalidatePath("/admin/erp");
 }
 

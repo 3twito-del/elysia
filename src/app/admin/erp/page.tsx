@@ -1,6 +1,7 @@
 import {
   ArrowLeftRight,
   Boxes,
+  ClipboardList,
   PackageCheck,
   ReceiptText,
   Truck,
@@ -15,8 +16,11 @@ import {
 import { getAdminPageAccess } from "../_lib/access";
 import {
   approveVendorInvoiceAction,
+  cancelInventoryCountAction,
   cancelStockTransferAction,
+  completeInventoryCountAction,
   completeStockTransferAction,
+  createInventoryCountAction,
   createStockTransferAction,
   createVendorInvoiceAction,
   recordVendorPaymentAction,
@@ -43,6 +47,7 @@ import {
   listVendorsForSelect,
 } from "~/server/services/accounts-payable";
 import { getErpOverview } from "~/server/services/erp";
+import { listInventoryCounts } from "~/server/services/cycle-count";
 import {
   listBranchesForSelect,
   listStockTransfers,
@@ -119,14 +124,21 @@ export default async function AdminErpPage() {
 
   if (!erp) return <AdminDatabaseFallback />;
 
-  const [vendors, vendorInvoices, apAging, branches, stockTransfers] =
-    await Promise.all([
-      listVendorsForSelect().catch(() => []),
-      listVendorInvoices().catch(() => []),
-      getApAging().catch(() => null),
-      listBranchesForSelect().catch(() => []),
-      listStockTransfers().catch(() => []),
-    ]);
+  const [
+    vendors,
+    vendorInvoices,
+    apAging,
+    branches,
+    stockTransfers,
+    inventoryCounts,
+  ] = await Promise.all([
+    listVendorsForSelect().catch(() => []),
+    listVendorInvoices().catch(() => []),
+    getApAging().catch(() => null),
+    listBranchesForSelect().catch(() => []),
+    listStockTransfers().catch(() => []),
+    listInventoryCounts().catch(() => []),
+  ]);
 
   return (
     <AdminShell
@@ -306,6 +318,140 @@ export default async function AdminErpPage() {
                                 name="transferId"
                                 type="hidden"
                                 value={transfer.id}
+                              />
+                              <Button size="sm" type="submit" variant="ghost">
+                                בטל
+                              </Button>
+                            </form>
+                          </div>
+                        ) : null}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ClipboardList aria-hidden="true" className="size-5" />
+            ספירת מלאי (Cycle Count)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.2fr]">
+          <form action={createInventoryCountAction} className="grid gap-3">
+            <p className="text-muted-foreground text-sm">
+              ספירה פיזית מול מלאי-הספרים. בהשלמה, המלאי מתעדכן לכמות שנספרה ונרשמת
+              תנועת התאמה (cycle_count_adjustment) על ההפרש.
+            </p>
+            <div className="grid gap-1.5">
+              <label className="text-sm font-medium" htmlFor="cnt-branch">
+                סניף
+              </label>
+              <select
+                autoComplete="off"
+                className="glass-control h-10 rounded-md border px-3 text-sm"
+                defaultValue=""
+                id="cnt-branch"
+                name="branchId"
+                required
+              >
+                <option disabled value="">
+                  בחר סניף…
+                </option>
+                {branches.map((branch) => (
+                  <option key={branch.id} value={branch.id}>
+                    {branch.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="grid gap-1.5">
+              <label className="text-sm font-medium" htmlFor="cnt-lines">
+                שורות ספירה
+              </label>
+              <Textarea
+                className="font-mono"
+                id="cnt-lines"
+                name="lines"
+                placeholder={"RING-01 | 8\nNECK-09 | 0"}
+                rows={3}
+              />
+              <span className="text-muted-foreground text-xs">
+                שורה לכל פריט בפורמט <code>מק&quot;ט | כמות שנספרה</code> (0 מותר).
+              </span>
+            </div>
+            <Input name="notes" placeholder="הערות (רשות)" />
+            <Button className="w-fit" type="submit">
+              צור טיוטת ספירה
+            </Button>
+          </form>
+
+          <div className="grid gap-2">
+            <span className="text-muted-foreground text-sm">ספירות אחרונות</span>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>מס׳</TableHead>
+                  <TableHead>סניף</TableHead>
+                  <TableHead>שורות</TableHead>
+                  <TableHead>הפרש נטו</TableHead>
+                  <TableHead>סטטוס</TableHead>
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {inventoryCounts.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={6}
+                    description="טרם בוצעו ספירות מלאי."
+                    icon={ClipboardList}
+                    title="אין ספירות"
+                  />
+                ) : (
+                  inventoryCounts.map((count) => (
+                    <TableRow key={count.id}>
+                      <TableCell className="whitespace-nowrap font-mono text-xs">
+                        {count.countNumber}
+                      </TableCell>
+                      <TableCell className="text-sm">{count.branchName}</TableCell>
+                      <TableCell className="text-sm">{count.lineCount}</TableCell>
+                      <TableCell className="text-sm">
+                        {count.status === "COMPLETED"
+                          ? count.netVariance
+                          : "—"}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            transferStatusVariant[count.status] ?? "outline"
+                          }
+                        >
+                          {transferStatusLabel[count.status] ?? count.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {count.status === "DRAFT" ? (
+                          <div className="flex gap-1">
+                            <form action={completeInventoryCountAction}>
+                              <input
+                                name="countId"
+                                type="hidden"
+                                value={count.id}
+                              />
+                              <Button size="sm" type="submit" variant="outline">
+                                השלם
+                              </Button>
+                            </form>
+                            <form action={cancelInventoryCountAction}>
+                              <input
+                                name="countId"
+                                type="hidden"
+                                value={count.id}
                               />
                               <Button size="sm" type="submit" variant="ghost">
                                 בטל
