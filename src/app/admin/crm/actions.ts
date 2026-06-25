@@ -17,6 +17,14 @@ import {
   sendQuote,
 } from "~/server/services/crm-quotes";
 import {
+  activateJourney,
+  addJourneyStep,
+  archiveJourney,
+  createJourney,
+  enrollSegmentMembers,
+  runJourneyTick,
+} from "~/server/services/crm-journeys";
+import {
   convertLeadToOpportunity,
   createLead,
   setOpportunityStage,
@@ -126,6 +134,73 @@ export async function recomputeSegmentsAction() {
   await requireAdmin("CRM_WRITE");
 
   await recomputeSegmentMemberships();
+
+  revalidatePath("/admin/crm");
+}
+
+export async function createJourneyAction(formData: FormData) {
+  await requireAdmin("CRM_WRITE");
+
+  const key = stringValue(formData.get("key")).trim();
+  const name = stringValue(formData.get("name")).trim();
+  if (!key || !name) throw new Error("מפתח ושם המסע הם שדות חובה.");
+
+  await createJourney({
+    key,
+    name,
+    description: optionalString(formData.get("description")),
+    segmentId: optionalString(formData.get("segmentId")),
+  });
+
+  revalidatePath("/admin/crm");
+}
+
+export async function addJourneyStepAction(formData: FormData) {
+  await requireAdmin("CRM_WRITE");
+
+  const journeyId = stringValue(formData.get("journeyId"));
+  if (!journeyId) throw new Error("חסר מסע לצעד.");
+
+  const template = optionalString(formData.get("template"));
+
+  await addJourneyStep({
+    journeyId,
+    actionType: stringValue(formData.get("actionType")) || "send_email",
+    delayHours: Number(formData.get("delayHours") ?? 0) || 0,
+    actionConfig: template ? { template } : undefined,
+  });
+
+  revalidatePath("/admin/crm");
+}
+
+export async function activateJourneyAction(formData: FormData) {
+  await requireAdmin("CRM_WRITE");
+
+  await activateJourney(stringValue(formData.get("journeyId")));
+
+  revalidatePath("/admin/crm");
+}
+
+export async function enrollJourneySegmentAction(formData: FormData) {
+  await requireAdmin("CRM_WRITE");
+
+  await enrollSegmentMembers(stringValue(formData.get("journeyId")));
+
+  revalidatePath("/admin/crm");
+}
+
+export async function archiveJourneyAction(formData: FormData) {
+  await requireAdmin("CRM_WRITE");
+
+  await archiveJourney(stringValue(formData.get("journeyId")));
+
+  revalidatePath("/admin/crm");
+}
+
+export async function runJourneyTickAction() {
+  await requireAdmin("CRM_WRITE");
+
+  await runJourneyTick();
 
   revalidatePath("/admin/crm");
 }

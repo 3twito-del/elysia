@@ -630,6 +630,7 @@ model Customer {
   campaignAudienceSnapshots CampaignAudienceSnapshot[]
   invoices                  CustomerInvoice[]
   receipts                  CustomerReceipt[]
+  journeyEnrollments        JourneyEnrollment[]
   createdAt                 DateTime                    @default(now())
   updatedAt                 DateTime                    @updatedAt
 }
@@ -1448,6 +1449,7 @@ model CustomerSegment {
   isSystem    Boolean                     @default(true)
   memberships CustomerSegmentMembership[]
   campaigns   Campaign[]
+  journeys    Journey[]
   createdAt   DateTime                    @default(now())
   updatedAt   DateTime                    @updatedAt
 }
@@ -1499,6 +1501,66 @@ model CampaignAudienceSnapshot {
   createdAt  DateTime  @default(now())
 
   @@index([campaignId, createdAt])
+  @@index([customerId])
+}
+
+/// A multi-step marketing automation. Customers are enrolled (e.g. from a
+/// segment) and advanced step-by-step on a scheduled tick.
+model Journey {
+  id          String              @id @default(cuid())
+  key         String              @unique
+  name        String
+  description String?
+  /// segment_entered | manual
+  triggerType String              @default("manual")
+  segmentId   String?
+  /// DRAFT | ACTIVE | ARCHIVED
+  status      String              @default("DRAFT")
+  metadata    Json?
+  segment     CustomerSegment?    @relation(fields: [segmentId], references: [id], onDelete: SetNull)
+  steps       JourneyStep[]
+  enrollments JourneyEnrollment[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  @@index([status])
+  @@index([segmentId])
+}
+
+/// One ordered step of a journey. `delayHours` is the wait before this step runs
+/// (measured from the previous step / enrollment).
+model JourneyStep {
+  id           String  @id @default(cuid())
+  journeyId    String
+  stepOrder    Int
+  /// send_email | add_tag | wait
+  actionType   String
+  delayHours   Int     @default(0)
+  actionConfig Json?
+  journey      Journey @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+
+  @@unique([journeyId, stepOrder])
+  @@index([journeyId])
+}
+
+/// A customer's progress through a journey. `currentStepOrder` is the order of
+/// the last completed step (0 = not started); `nextRunAt` is when the next step
+/// is due.
+model JourneyEnrollment {
+  id               String    @id @default(cuid())
+  journeyId        String
+  customerId       String
+  /// ACTIVE | COMPLETED | CANCELLED
+  status           String    @default("ACTIVE")
+  currentStepOrder Int       @default(0)
+  nextRunAt        DateTime?
+  enrolledAt       DateTime  @default(now())
+  completedAt      DateTime?
+  journey          Journey   @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  customer         Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@unique([journeyId, customerId])
+  @@index([status, nextRunAt])
   @@index([customerId])
 }
 

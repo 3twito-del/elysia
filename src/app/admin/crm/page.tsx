@@ -9,6 +9,7 @@ import {
   ShoppingBag,
   TrendingUp,
   Users,
+  Workflow,
 } from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
@@ -18,12 +19,18 @@ import {
 } from "../_components/admin-states";
 import { getAdminPageAccess } from "../_lib/access";
 import {
+  activateJourneyAction,
+  addJourneyStepAction,
+  archiveJourneyAction,
   convertLeadAction,
   convertQuoteToInvoiceAction,
+  createJourneyAction,
   createLeadAction,
   createQuoteAction,
   decideQuoteAction,
+  enrollJourneySegmentAction,
   recomputeSegmentsAction,
+  runJourneyTickAction,
   sendQuoteAction,
   setOpportunityStageAction,
 } from "./actions";
@@ -48,6 +55,10 @@ import {
   formatPrice,
 } from "~/lib/format";
 import { getCrmOverview } from "~/server/services/crm";
+import {
+  listJourneys,
+  listSegmentsForSelect,
+} from "~/server/services/crm-journeys";
 import { listRecentQuotes } from "~/server/services/crm-quotes";
 import {
   getSalesPipelineOverview,
@@ -67,6 +78,27 @@ const stageLabel: Record<string, string> = {
   NEGOTIATION: "משא ומתן",
   WON: "נסגר בהצלחה",
   LOST: "אבד",
+};
+
+const journeyStatusLabel: Record<string, string> = {
+  DRAFT: "טיוטה",
+  ACTIVE: "פעיל",
+  ARCHIVED: "בארכיון",
+};
+
+const journeyStatusVariant: Record<
+  string,
+  "secondary" | "outline" | "destructive"
+> = {
+  DRAFT: "outline",
+  ACTIVE: "secondary",
+  ARCHIVED: "destructive",
+};
+
+const journeyActionLabel: Record<string, string> = {
+  send_email: 'דוא"ל',
+  add_tag: "תיוג",
+  wait: "המתנה",
 };
 
 const quoteStatusLabel: Record<string, string> = {
@@ -113,11 +145,14 @@ export default async function AdminCrmPage() {
     return null;
   });
 
-  const [leads, opportunities, quotes] = await Promise.all([
-    listRecentLeads().catch(() => []),
-    listOpportunities().catch(() => []),
-    listRecentQuotes().catch(() => []),
-  ]);
+  const [leads, opportunities, quotes, journeys, journeySegments] =
+    await Promise.all([
+      listRecentLeads().catch(() => []),
+      listOpportunities().catch(() => []),
+      listRecentQuotes().catch(() => []),
+      listJourneys().catch(() => []),
+      listSegmentsForSelect().catch(() => []),
+    ]);
 
   return (
     <AdminShell
@@ -635,6 +670,177 @@ export default async function AdminCrmPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between gap-2">
+            <span className="flex items-center gap-2">
+              <Workflow aria-hidden="true" className="size-5" />
+              מסעות לקוח / אוטומציה (Journeys)
+            </span>
+            <form action={runJourneyTickAction}>
+              <Button size="sm" type="submit" variant="outline">
+                הרץ tick
+              </Button>
+            </form>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
+          <form action={createJourneyAction} className="grid gap-3">
+            <p className="text-muted-foreground text-sm">
+              מסע רב-שלבי: רישום נמענים מסגמנט, והרצה צעד-אחר-צעד עם השהיות. כל
+              tick מקדם נמענים בשלים בצעד אחד.
+            </p>
+            <Input name="key" placeholder="מפתח ייחודי (welcome-flow)" required />
+            <Input name="name" placeholder="שם המסע" required />
+            <div className="grid gap-1.5">
+              <label className="text-sm font-medium" htmlFor="jr-segment">
+                סגמנט מפעיל (רשות)
+              </label>
+              <select
+                autoComplete="off"
+                className="glass-control h-10 rounded-md border px-3 text-sm"
+                defaultValue=""
+                id="jr-segment"
+                name="segmentId"
+              >
+                <option value="">ללא (ידני)</option>
+                {journeySegments.map((segment) => (
+                  <option key={segment.id} value={segment.id}>
+                    {segment.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <Input name="description" placeholder="תיאור (רשות)" />
+            <Button className="w-fit" type="submit">
+              צור מסע
+            </Button>
+          </form>
+
+          <div className="grid gap-3">
+            {journeys.length === 0 ? (
+              <p className="text-muted-foreground text-sm">עדיין אין מסעות.</p>
+            ) : (
+              journeys.map((journey) => (
+                <div className="rounded-md border p-3" key={journey.id}>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="font-medium">
+                      {journey.name}{" "}
+                      <span className="text-muted-foreground font-mono text-xs">
+                        ({journey.key})
+                      </span>
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        variant={
+                          journeyStatusVariant[journey.status] ?? "outline"
+                        }
+                      >
+                        {journeyStatusLabel[journey.status] ?? journey.status}
+                      </Badge>
+                      <span className="text-muted-foreground text-xs">
+                        {journey.activeEnrollmentCount}/{journey.enrollmentCount}{" "}
+                        פעילים
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="text-muted-foreground mt-2 flex flex-wrap gap-1.5 text-xs">
+                    {journey.segmentName ? (
+                      <Badge variant="outline">סגמנט: {journey.segmentName}</Badge>
+                    ) : null}
+                    {journey.steps.map((step) => (
+                      <Badge key={step.id} variant="outline">
+                        {step.stepOrder}.{" "}
+                        {journeyActionLabel[step.actionType] ?? step.actionType}
+                        {step.delayHours > 0 ? ` (+${step.delayHours}ש׳)` : ""}
+                      </Badge>
+                    ))}
+                    {journey.steps.length === 0 ? <span>אין צעדים</span> : null}
+                  </div>
+
+                  <div className="mt-3 flex flex-wrap items-end gap-2">
+                    <form
+                      action={addJourneyStepAction}
+                      className="flex flex-wrap items-end gap-2"
+                    >
+                      <input name="journeyId" type="hidden" value={journey.id} />
+                      <select
+                        aria-label="סוג פעולה"
+                        autoComplete="off"
+                        className="glass-control h-9 rounded-md border px-2 text-sm"
+                        defaultValue="send_email"
+                        name="actionType"
+                      >
+                        <option value="send_email">דוא&quot;ל</option>
+                        <option value="add_tag">תיוג</option>
+                        <option value="wait">המתנה</option>
+                      </select>
+                      <Input
+                        aria-label="השהיה בשעות"
+                        className="h-9 w-24"
+                        defaultValue="0"
+                        name="delayHours"
+                        placeholder="שעות"
+                        type="number"
+                      />
+                      <Input
+                        aria-label="תבנית"
+                        className="h-9 w-32"
+                        name="template"
+                        placeholder="תבנית"
+                      />
+                      <Button size="sm" type="submit" variant="outline">
+                        + צעד
+                      </Button>
+                    </form>
+
+                    {journey.status === "DRAFT" ? (
+                      <form action={activateJourneyAction}>
+                        <input
+                          name="journeyId"
+                          type="hidden"
+                          value={journey.id}
+                        />
+                        <Button size="sm" type="submit">
+                          הפעל
+                        </Button>
+                      </form>
+                    ) : null}
+
+                    {journey.status === "ACTIVE" && journey.segmentName ? (
+                      <form action={enrollJourneySegmentAction}>
+                        <input
+                          name="journeyId"
+                          type="hidden"
+                          value={journey.id}
+                        />
+                        <Button size="sm" type="submit" variant="outline">
+                          רשום סגמנט
+                        </Button>
+                      </form>
+                    ) : null}
+
+                    {journey.status !== "ARCHIVED" ? (
+                      <form action={archiveJourneyAction}>
+                        <input
+                          name="journeyId"
+                          type="hidden"
+                          value={journey.id}
+                        />
+                        <Button size="sm" type="submit" variant="ghost">
+                          ארכב
+                        </Button>
+                      </form>
+                    ) : null}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </AdminShell>
   );
 }
