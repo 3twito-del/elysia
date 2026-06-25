@@ -814,6 +814,49 @@ model Announcement {
   @@index([publishedAt])
 }
 
+/// A stored document reference, optionally linked to an entity and e-signed (DMS).
+model Document {
+  id              String    @id @default(cuid())
+  documentNumber  String    @unique
+  name            String
+  category        String?
+  url             String
+  entityType      String?
+  entityId        String?
+  /// ACTIVE | ARCHIVED
+  status          String    @default("ACTIVE")
+  /// NONE | PENDING | SIGNED
+  signatureStatus String    @default("NONE")
+  signedBy        String?
+  signedAt        DateTime?
+  uploadedById    String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([status])
+  @@index([entityType, entityId])
+}
+
+/// A generic approval request any module can raise (WFL).
+model ApprovalRequest {
+  id            String    @id @default(cuid())
+  requestNumber String    @unique
+  title         String
+  entityType    String?
+  entityId      String?
+  amount        Decimal?  @db.Decimal(14, 2)
+  /// PENDING | APPROVED | REJECTED
+  status        String    @default("PENDING")
+  notes         String?
+  requestedById String?
+  decidedById   String?
+  decidedAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([status])
+}
+
 model Customer {
   id                        String                      @id @default(cuid())
   userId                    String?                     @unique

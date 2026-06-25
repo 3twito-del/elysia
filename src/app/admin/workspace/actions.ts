@@ -15,6 +15,16 @@ import {
   setAnnouncementPinned,
 } from "~/server/services/announcements";
 import {
+  createApprovalRequest,
+  decideApprovalRequest,
+} from "~/server/services/approvals";
+import {
+  archiveDocument,
+  createDocument,
+  requestSignature,
+  signDocument,
+} from "~/server/services/document-management";
+import {
   createArticle,
   setArticleStatus,
 } from "~/server/services/knowledge-base";
@@ -96,6 +106,94 @@ export async function expireAnnouncementAction(formData: FormData) {
   if (!announcementId) throw new Error("חסר מזהה הודעה.");
 
   await expireAnnouncement({ announcementId });
+
+  revalidatePath("/admin/workspace");
+}
+
+export async function createDocumentAction(formData: FormData) {
+  const admin = await requireAdmin("ERP_WRITE");
+
+  const name = stringValue(formData.get("name")).trim();
+  const url = stringValue(formData.get("url")).trim();
+  if (!name || !url) throw new Error("שם וקישור הם שדות חובה.");
+
+  await createDocument({
+    name,
+    url,
+    category: optionalString(formData.get("category")),
+    entityType: optionalString(formData.get("entityType")),
+    entityId: optionalString(formData.get("entityId")),
+    uploadedById: admin.id,
+  });
+
+  revalidatePath("/admin/workspace");
+}
+
+export async function requestSignatureAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const documentId = stringValue(formData.get("documentId"));
+  if (!documentId) throw new Error("חסר מזהה מסמך.");
+
+  await requestSignature({ documentId });
+
+  revalidatePath("/admin/workspace");
+}
+
+export async function signDocumentAction(formData: FormData) {
+  const admin = await requireAdmin("ERP_WRITE");
+
+  const documentId = stringValue(formData.get("documentId"));
+  if (!documentId) throw new Error("חסר מזהה מסמך.");
+
+  await signDocument({ documentId, signedBy: admin.name });
+
+  revalidatePath("/admin/workspace");
+}
+
+export async function archiveDocumentAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const documentId = stringValue(formData.get("documentId"));
+  if (!documentId) throw new Error("חסר מזהה מסמך.");
+
+  await archiveDocument({ documentId });
+
+  revalidatePath("/admin/workspace");
+}
+
+export async function createApprovalRequestAction(formData: FormData) {
+  const admin = await requireAdmin("ERP_WRITE");
+
+  const title = stringValue(formData.get("title")).trim();
+  if (!title) throw new Error("חסרה כותרת לבקשה.");
+
+  const amountRaw = stringValue(formData.get("amount")).trim();
+
+  await createApprovalRequest({
+    title,
+    amount: amountRaw ? Number(amountRaw) || 0 : undefined,
+    notes: optionalString(formData.get("notes")),
+    requestedById: admin.id,
+  });
+
+  revalidatePath("/admin/workspace");
+}
+
+export async function decideApprovalRequestAction(formData: FormData) {
+  const admin = await requireAdmin("ERP_WRITE");
+
+  const requestId = stringValue(formData.get("requestId"));
+  if (!requestId) throw new Error("חסר מזהה בקשה.");
+
+  await decideApprovalRequest({
+    requestId,
+    decision:
+      stringValue(formData.get("decision")) === "APPROVED"
+        ? "APPROVED"
+        : "REJECTED",
+    decidedById: admin.id,
+  });
 
   revalidatePath("/admin/workspace");
 }

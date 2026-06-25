@@ -1,4 +1,4 @@
-import { BookOpen, Megaphone, Search } from "lucide-react";
+import { BookOpen, CheckSquare, FileText, Megaphone, Search } from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
 import {
@@ -7,19 +7,42 @@ import {
 } from "../_components/admin-states";
 import { getAdminPageAccess } from "../_lib/access";
 import {
+  archiveDocumentAction,
   createAnnouncementAction,
+  createApprovalRequestAction,
   createArticleAction,
+  createDocumentAction,
+  decideApprovalRequestAction,
   expireAnnouncementAction,
   pinAnnouncementAction,
+  requestSignatureAction,
   setArticleStatusAction,
+  signDocumentAction,
 } from "./actions";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/ui/table";
+import { TableEmptyRow } from "~/components/ui/table-empty-row";
 import { Textarea } from "~/components/ui/textarea";
-import { formatHebrewDate } from "~/lib/format";
+import { formatHebrewDate, formatPrice } from "~/lib/format";
 import { listActiveAnnouncements } from "~/server/services/announcements";
+import {
+  getApprovalSummary,
+  listApprovalRequests,
+} from "~/server/services/approvals";
+import {
+  getDocumentSummary,
+  listDocuments,
+} from "~/server/services/document-management";
 import { listArticles } from "~/server/services/knowledge-base";
 
 export const metadata = {
@@ -74,12 +97,38 @@ export default async function AdminWorkspacePage({
 
   const kbQuery = firstParam((await searchParams).kb);
 
-  const [articles, announcements] = await Promise.all([
-    listArticles({ query: kbQuery }).catch(() => null),
-    listActiveAnnouncements().catch(() => []),
-  ]);
+  const [articles, announcements, documents, docSummary, approvals, approvalSummary] =
+    await Promise.all([
+      listArticles({ query: kbQuery }).catch(() => null),
+      listActiveAnnouncements().catch(() => []),
+      listDocuments().catch(() => []),
+      getDocumentSummary().catch(() => null),
+      listApprovalRequests().catch(() => []),
+      getApprovalSummary().catch(() => null),
+    ]);
 
   if (!articles) return <AdminDatabaseFallback />;
+
+  const docSignatureLabel: Record<string, string> = {
+    NONE: "—",
+    PENDING: "ממתין לחתימה",
+    SIGNED: "נחתם",
+  };
+
+  const approvalStatusLabel: Record<string, string> = {
+    PENDING: "ממתין",
+    APPROVED: "אושר",
+    REJECTED: "נדחה",
+  };
+
+  const approvalStatusVariant: Record<
+    string,
+    "secondary" | "outline" | "destructive"
+  > = {
+    PENDING: "outline",
+    APPROVED: "secondary",
+    REJECTED: "destructive",
+  };
 
   return (
     <AdminShell
@@ -265,6 +314,250 @@ export default async function AdminWorkspacePage({
                 </div>
               ))
             )}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between gap-2">
+            <span className="flex items-center gap-2">
+              <FileText aria-hidden="true" className="size-5" />
+              ניהול מסמכים (Documents)
+            </span>
+            {docSummary ? (
+              <span className="text-muted-foreground text-sm font-normal">
+                {docSummary.active} פעילים · {docSummary.pendingSignatures}{" "}
+                ממתינים לחתימה
+              </span>
+            ) : null}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
+          <form action={createDocumentAction} className="grid gap-3">
+            <p className="text-muted-foreground text-sm">
+              רישום מסמך (קישור/URL) עם מחזור חתימה NONE → ממתין → נחתם.
+            </p>
+            <Input name="name" placeholder="שם המסמך" required />
+            <Input name="url" placeholder="קישור (URL)" required />
+            <Input name="category" placeholder="קטגוריה (רשות)" />
+            <Button className="w-fit" type="submit">
+              רשום מסמך
+            </Button>
+          </form>
+
+          <div className="grid gap-2">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>מס׳</TableHead>
+                  <TableHead>שם</TableHead>
+                  <TableHead>חתימה</TableHead>
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {documents.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={4}
+                    description="טרם נרשמו מסמכים."
+                    icon={FileText}
+                    title="אין מסמכים"
+                  />
+                ) : (
+                  documents.map((document) => (
+                    <TableRow key={document.id}>
+                      <TableCell className="whitespace-nowrap font-mono text-xs">
+                        {document.documentNumber}
+                      </TableCell>
+                      <TableCell className="max-w-[12rem] truncate text-sm">
+                        <a
+                          className="underline-offset-4 hover:underline"
+                          href={document.url}
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          {document.name}
+                        </a>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            document.signatureStatus === "SIGNED"
+                              ? "secondary"
+                              : document.signatureStatus === "PENDING"
+                                ? "outline"
+                                : "outline"
+                          }
+                        >
+                          {docSignatureLabel[document.signatureStatus] ??
+                            document.signatureStatus}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {document.status === "ACTIVE" ? (
+                          <div className="flex gap-1">
+                            {document.signatureStatus === "NONE" ? (
+                              <form action={requestSignatureAction}>
+                                <input
+                                  name="documentId"
+                                  type="hidden"
+                                  value={document.id}
+                                />
+                                <Button size="sm" type="submit" variant="ghost">
+                                  בקש חתימה
+                                </Button>
+                              </form>
+                            ) : null}
+                            {document.signatureStatus === "PENDING" ? (
+                              <form action={signDocumentAction}>
+                                <input
+                                  name="documentId"
+                                  type="hidden"
+                                  value={document.id}
+                                />
+                                <Button
+                                  size="sm"
+                                  type="submit"
+                                  variant="outline"
+                                >
+                                  חתום
+                                </Button>
+                              </form>
+                            ) : null}
+                            <form action={archiveDocumentAction}>
+                              <input
+                                name="documentId"
+                                type="hidden"
+                                value={document.id}
+                              />
+                              <Button size="sm" type="submit" variant="ghost">
+                                ארכב
+                              </Button>
+                            </form>
+                          </div>
+                        ) : null}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between gap-2">
+            <span className="flex items-center gap-2">
+              <CheckSquare aria-hidden="true" className="size-5" />
+              בקשות אישור (Approvals)
+            </span>
+            {approvalSummary ? (
+              <span className="text-muted-foreground text-sm font-normal">
+                {approvalSummary.pending} ממתינות ·{" "}
+                {formatPrice(approvalSummary.pendingAmount)}
+              </span>
+            ) : null}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
+          <form action={createApprovalRequestAction} className="grid gap-3">
+            <p className="text-muted-foreground text-sm">
+              בקשת אישור גנרית (לכל מודול). מאשר/דוחה מכריע אותה.
+            </p>
+            <Input name="title" placeholder="כותרת הבקשה" required />
+            <Input name="amount" placeholder="סכום (רשות)" step="0.01" type="number" />
+            <Input name="notes" placeholder="הערות (רשות)" />
+            <Button className="w-fit" type="submit">
+              הגש בקשה
+            </Button>
+          </form>
+
+          <div className="grid gap-2">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>מס׳</TableHead>
+                  <TableHead>כותרת</TableHead>
+                  <TableHead className="text-left">סכום</TableHead>
+                  <TableHead>סטטוס</TableHead>
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {approvals.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={5}
+                    description="טרם הוגשו בקשות אישור."
+                    icon={CheckSquare}
+                    title="אין בקשות"
+                  />
+                ) : (
+                  approvals.map((request) => (
+                    <TableRow key={request.id}>
+                      <TableCell className="whitespace-nowrap font-mono text-xs">
+                        {request.requestNumber}
+                      </TableCell>
+                      <TableCell className="max-w-[12rem] truncate text-sm">
+                        {request.title}
+                      </TableCell>
+                      <TableCell className="text-left">
+                        {request.amount != null
+                          ? formatPrice(request.amount)
+                          : "—"}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            approvalStatusVariant[request.status] ?? "outline"
+                          }
+                        >
+                          {approvalStatusLabel[request.status] ?? request.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {request.status === "PENDING" ? (
+                          <div className="flex gap-1">
+                            <form action={decideApprovalRequestAction}>
+                              <input
+                                name="requestId"
+                                type="hidden"
+                                value={request.id}
+                              />
+                              <input
+                                name="decision"
+                                type="hidden"
+                                value="APPROVED"
+                              />
+                              <Button size="sm" type="submit" variant="outline">
+                                אשר
+                              </Button>
+                            </form>
+                            <form action={decideApprovalRequestAction}>
+                              <input
+                                name="requestId"
+                                type="hidden"
+                                value={request.id}
+                              />
+                              <input
+                                name="decision"
+                                type="hidden"
+                                value="REJECTED"
+                              />
+                              <Button size="sm" type="submit" variant="ghost">
+                                דחה
+                              </Button>
+                            </form>
+                          </div>
+                        ) : null}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
           </div>
         </CardContent>
       </Card>
