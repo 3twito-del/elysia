@@ -1,4 +1,5 @@
 import {
+  ArrowLeftRight,
   Boxes,
   PackageCheck,
   ReceiptText,
@@ -14,6 +15,9 @@ import {
 import { getAdminPageAccess } from "../_lib/access";
 import {
   approveVendorInvoiceAction,
+  cancelStockTransferAction,
+  completeStockTransferAction,
+  createStockTransferAction,
   createVendorInvoiceAction,
   recordVendorPaymentAction,
 } from "./actions";
@@ -39,6 +43,10 @@ import {
   listVendorsForSelect,
 } from "~/server/services/accounts-payable";
 import { getErpOverview } from "~/server/services/erp";
+import {
+  listBranchesForSelect,
+  listStockTransfers,
+} from "~/server/services/stock-transfer";
 
 export const metadata = {
   title: "ERP | Admin",
@@ -81,6 +89,21 @@ const vendorInvoiceStatusVariant: Record<
   CANCELLED: "destructive",
 };
 
+const transferStatusLabel: Record<string, string> = {
+  DRAFT: "טיוטה",
+  COMPLETED: "הושלמה",
+  CANCELLED: "בוטלה",
+};
+
+const transferStatusVariant: Record<
+  string,
+  "secondary" | "outline" | "destructive"
+> = {
+  DRAFT: "outline",
+  COMPLETED: "secondary",
+  CANCELLED: "destructive",
+};
+
 export default async function AdminErpPage() {
   const access = await getAdminPageAccess("ERP_READ", "/admin/erp");
 
@@ -96,11 +119,14 @@ export default async function AdminErpPage() {
 
   if (!erp) return <AdminDatabaseFallback />;
 
-  const [vendors, vendorInvoices, apAging] = await Promise.all([
-    listVendorsForSelect().catch(() => []),
-    listVendorInvoices().catch(() => []),
-    getApAging().catch(() => null),
-  ]);
+  const [vendors, vendorInvoices, apAging, branches, stockTransfers] =
+    await Promise.all([
+      listVendorsForSelect().catch(() => []),
+      listVendorInvoices().catch(() => []),
+      getApAging().catch(() => null),
+      listBranchesForSelect().catch(() => []),
+      listStockTransfers().catch(() => []),
+    ]);
 
   return (
     <AdminShell
@@ -141,6 +167,161 @@ export default async function AdminErpPage() {
           value={String(erp.counts.reorderRecommendations)}
         />
       </div>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ArrowLeftRight aria-hidden="true" className="size-5" />
+            העברות מלאי בין סניפים (Stock Transfers)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.2fr]">
+          <form action={createStockTransferAction} className="grid gap-3">
+            <p className="text-muted-foreground text-sm">
+              העברת מלאי בין סניפים. נוצרת כטיוטה; ההשלמה מזיזה את המלאי ורושמת
+              תנועות יומן מלאי בלתי-הפיכות.
+            </p>
+            <div className="grid gap-1.5">
+              <label className="text-sm font-medium" htmlFor="tr-source">
+                סניף מקור
+              </label>
+              <select
+                autoComplete="off"
+                className="glass-control h-10 rounded-md border px-3 text-sm"
+                defaultValue=""
+                id="tr-source"
+                name="sourceBranchId"
+                required
+              >
+                <option disabled value="">
+                  בחר סניף…
+                </option>
+                {branches.map((branch) => (
+                  <option key={branch.id} value={branch.id}>
+                    {branch.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="grid gap-1.5">
+              <label className="text-sm font-medium" htmlFor="tr-dest">
+                סניף יעד
+              </label>
+              <select
+                autoComplete="off"
+                className="glass-control h-10 rounded-md border px-3 text-sm"
+                defaultValue=""
+                id="tr-dest"
+                name="destBranchId"
+                required
+              >
+                <option disabled value="">
+                  בחר סניף…
+                </option>
+                {branches.map((branch) => (
+                  <option key={branch.id} value={branch.id}>
+                    {branch.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="grid gap-1.5">
+              <label className="text-sm font-medium" htmlFor="tr-lines">
+                שורות
+              </label>
+              <Textarea
+                className="font-mono"
+                id="tr-lines"
+                name="lines"
+                placeholder={"RING-01 | 2\nNECK-09 | 5"}
+                rows={3}
+              />
+              <span className="text-muted-foreground text-xs">
+                שורה לכל פריט בפורמט <code>מק&quot;ט | כמות</code>.
+              </span>
+            </div>
+            <Input name="notes" placeholder="הערות (רשות)" />
+            <Button className="w-fit" type="submit">
+              צור טיוטת העברה
+            </Button>
+          </form>
+
+          <div className="grid gap-2">
+            <span className="text-muted-foreground text-sm">העברות אחרונות</span>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>מס׳</TableHead>
+                  <TableHead>מסלול</TableHead>
+                  <TableHead>פריטים</TableHead>
+                  <TableHead>סטטוס</TableHead>
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {stockTransfers.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={5}
+                    description="טרם נוצרו העברות מלאי."
+                    icon={ArrowLeftRight}
+                    title="אין העברות"
+                  />
+                ) : (
+                  stockTransfers.map((transfer) => (
+                    <TableRow key={transfer.id}>
+                      <TableCell className="whitespace-nowrap font-mono text-xs">
+                        {transfer.transferNumber}
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {transfer.sourceBranchName} ← {transfer.destBranchName}
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {transfer.lineCount} ({transfer.totalQuantity} יח׳)
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            transferStatusVariant[transfer.status] ?? "outline"
+                          }
+                        >
+                          {transferStatusLabel[transfer.status] ??
+                            transfer.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {transfer.status === "DRAFT" ? (
+                          <div className="flex gap-1">
+                            <form action={completeStockTransferAction}>
+                              <input
+                                name="transferId"
+                                type="hidden"
+                                value={transfer.id}
+                              />
+                              <Button size="sm" type="submit" variant="outline">
+                                השלם
+                              </Button>
+                            </form>
+                            <form action={cancelStockTransferAction}>
+                              <input
+                                name="transferId"
+                                type="hidden"
+                                value={transfer.id}
+                              />
+                              <Button size="sm" type="submit" variant="ghost">
+                                בטל
+                              </Button>
+                            </form>
+                          </div>
+                        ) : null}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card className="mt-6 rounded-md">
         <CardHeader>

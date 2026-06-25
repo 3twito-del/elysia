@@ -15,6 +15,12 @@ import {
   parseInvoiceLines,
   recordVendorPayment,
 } from "~/server/services/accounts-payable";
+import {
+  cancelStockTransfer,
+  completeStockTransfer,
+  createStockTransfer,
+  parseTransferLines,
+} from "~/server/services/stock-transfer";
 
 export async function createVendorInvoiceAction(formData: FormData) {
   await requireAdmin("ERP_WRITE");
@@ -71,6 +77,51 @@ export async function recordVendorPaymentAction(formData: FormData) {
     allocations: [{ vendorInvoiceId: invoiceId, amount }],
   });
 
+  revalidatePath("/admin/erp");
+}
+
+export async function createStockTransferAction(formData: FormData) {
+  const admin = await requireAdmin("ERP_WRITE");
+
+  const sourceBranchId = stringValue(formData.get("sourceBranchId"));
+  const destBranchId = stringValue(formData.get("destBranchId"));
+  if (!sourceBranchId || !destBranchId) {
+    throw new Error("יש לבחור סניף מקור ויעד.");
+  }
+
+  const lines = parseTransferLines(stringValue(formData.get("lines")));
+  if (lines.length === 0) {
+    throw new Error('יש להזין לפחות שורה אחת (מק"ט | כמות).');
+  }
+
+  await createStockTransfer({
+    sourceBranchId,
+    destBranchId,
+    lines,
+    notes: optionalString(formData.get("notes")),
+    createdById: admin.id,
+  });
+
+  revalidatePath("/admin/erp");
+}
+
+export async function completeStockTransferAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const transferId = stringValue(formData.get("transferId"));
+  if (!transferId) throw new Error("חסר מזהה העברה.");
+
+  await completeStockTransfer({ transferId });
+  revalidatePath("/admin/erp");
+}
+
+export async function cancelStockTransferAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const transferId = stringValue(formData.get("transferId"));
+  if (!transferId) throw new Error("חסר מזהה העברה.");
+
+  await cancelStockTransfer({ transferId });
   revalidatePath("/admin/erp");
 }
 
