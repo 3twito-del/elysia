@@ -411,6 +411,74 @@ export async function recordVendorPayment(input: {
   });
 }
 
+/**
+ * Parses free-text invoice lines ("description | quantity | unitCost" per line).
+ * Pure; exported for testing and reused by the AP/AR create forms.
+ */
+export function parseInvoiceLines(
+  text: string,
+): Array<{ description: string; quantity: number; unitCost: number }> {
+  return text
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .map((line) => {
+      const [description, quantity, unitCost] = line
+        .split("|")
+        .map((part) => part.trim());
+
+      return {
+        description: description ?? line,
+        quantity: Math.max(1, Math.trunc(Number(quantity) || 1)),
+        unitCost: Math.max(0, Number(unitCost) || 0),
+      };
+    })
+    .filter((line) => line.description.length > 0);
+}
+
+/** Active vendors for a create-invoice select. */
+export async function listVendorsForSelect() {
+  return db.vendor.findMany({
+    where: { status: "ACTIVE" },
+    orderBy: { name: "asc" },
+    select: { id: true, name: true },
+  });
+}
+
+/** Recent vendor invoices for the AP workbench. */
+export async function listVendorInvoices(limit = 20) {
+  const invoices = await db.vendorInvoice.findMany({
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    select: {
+      id: true,
+      invoiceNumber: true,
+      vendorId: true,
+      status: true,
+      total: true,
+      paidTotal: true,
+      currency: true,
+      dueDate: true,
+      createdAt: true,
+      vendor: { select: { name: true } },
+    },
+  });
+
+  return invoices.map((invoice) => ({
+    id: invoice.id,
+    invoiceNumber: invoice.invoiceNumber,
+    vendorId: invoice.vendorId,
+    status: invoice.status,
+    total: Number(invoice.total),
+    paidTotal: Number(invoice.paidTotal),
+    outstanding: Number(invoice.total) - Number(invoice.paidTotal),
+    currency: invoice.currency,
+    dueDate: invoice.dueDate,
+    vendorName: invoice.vendor.name,
+    createdAt: invoice.createdAt,
+  }));
+}
+
 /** Aging of the open AP sub-ledger (approved + partially-paid invoices). */
 export async function getApAging(asOf: Date = new Date()) {
   const invoices = await db.vendorInvoice.findMany({

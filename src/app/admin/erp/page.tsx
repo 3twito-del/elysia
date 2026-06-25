@@ -1,4 +1,10 @@
-import { Boxes, PackageCheck, Truck, Workflow } from "lucide-react";
+import {
+  Boxes,
+  PackageCheck,
+  ReceiptText,
+  Truck,
+  Workflow,
+} from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
 import {
@@ -6,9 +12,16 @@ import {
   AdminForbidden,
 } from "../_components/admin-states";
 import { getAdminPageAccess } from "../_lib/access";
+import {
+  approveVendorInvoiceAction,
+  createVendorInvoiceAction,
+  recordVendorPaymentAction,
+} from "./actions";
 import { MetricCard } from "~/components/metric-card";
 import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
 import {
   Table,
   TableBody,
@@ -18,7 +31,13 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { TableEmptyRow } from "~/components/ui/table-empty-row";
+import { Textarea } from "~/components/ui/textarea";
 import { formatHebrewDateTime, formatPrice } from "~/lib/format";
+import {
+  getApAging,
+  listVendorInvoices,
+  listVendorsForSelect,
+} from "~/server/services/accounts-payable";
 import { getErpOverview } from "~/server/services/erp";
 
 export const metadata = {
@@ -39,6 +58,29 @@ const reorderUrgencyVariant = {
   MEDIUM: "secondary",
 } as const;
 
+const vendorInvoiceStatusLabel: Record<string, string> = {
+  DRAFT: "טיוטה",
+  MATCHED: "תואם",
+  VARIANCE: "סטייה",
+  APPROVED: "מאושר",
+  PARTIALLY_PAID: "שולם חלקית",
+  PAID: "שולם",
+  CANCELLED: "בוטל",
+};
+
+const vendorInvoiceStatusVariant: Record<
+  string,
+  "secondary" | "outline" | "destructive"
+> = {
+  DRAFT: "outline",
+  MATCHED: "outline",
+  VARIANCE: "destructive",
+  APPROVED: "secondary",
+  PARTIALLY_PAID: "outline",
+  PAID: "secondary",
+  CANCELLED: "destructive",
+};
+
 export default async function AdminErpPage() {
   const access = await getAdminPageAccess("ERP_READ", "/admin/erp");
 
@@ -53,6 +95,12 @@ export default async function AdminErpPage() {
   });
 
   if (!erp) return <AdminDatabaseFallback />;
+
+  const [vendors, vendorInvoices, apAging] = await Promise.all([
+    listVendorsForSelect().catch(() => []),
+    listVendorInvoices().catch(() => []),
+    getApAging().catch(() => null),
+  ]);
 
   return (
     <AdminShell
@@ -93,6 +141,142 @@ export default async function AdminErpPage() {
           value={String(erp.counts.reorderRecommendations)}
         />
       </div>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ReceiptText aria-hidden="true" className="size-5" />
+            חשבונות לתשלום (AP)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          {apAging ? (
+            <p className="text-muted-foreground text-sm">
+              סה״כ פתוח {formatPrice(apAging.total)} · באיחור 90+{" "}
+              {formatPrice(apAging.days90plus)}
+            </p>
+          ) : null}
+
+          <form action={createVendorInvoiceAction} className="grid gap-2">
+            <div className="grid gap-2 sm:grid-cols-[1fr_1fr_180px]">
+              <select
+                aria-label="ספק"
+                autoComplete="off"
+                className="glass-control h-11 rounded-md border px-3 text-sm"
+                defaultValue=""
+                name="vendorId"
+              >
+                <option disabled value="">
+                  בחר ספק
+                </option>
+                {vendors.map((vendor) => (
+                  <option key={vendor.id} value={vendor.id}>
+                    {vendor.name}
+                  </option>
+                ))}
+              </select>
+              <Input name="invoiceNumber" placeholder="מספר חשבונית ספק" />
+              <Input aria-label="לתשלום עד" name="dueDate" type="date" />
+            </div>
+            <Textarea
+              name="lines"
+              placeholder="שורה לכל פריט: תיאור | כמות | עלות"
+              rows={3}
+            />
+            <Button className="w-fit" type="submit">
+              צור חשבונית ספק
+            </Button>
+          </form>
+
+          <Table className="min-w-[820px]">
+            <TableHeader>
+              <TableRow>
+                <TableHead>חשבונית</TableHead>
+                <TableHead>ספק</TableHead>
+                <TableHead>סטטוס</TableHead>
+                <TableHead>סה״כ</TableHead>
+                <TableHead>יתרה</TableHead>
+                <TableHead>פעולות</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {vendorInvoices.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={6}
+                  description="חשבוניות ספק שתיצרו יופיעו כאן לאישור (GRNI→ספק) ולתשלום."
+                  icon={ReceiptText}
+                  title="אין חשבוניות ספק"
+                />
+              ) : (
+                vendorInvoices.map((invoice) => (
+                  <TableRow key={invoice.id}>
+                    <TableCell className="font-medium">
+                      {invoice.invoiceNumber}
+                    </TableCell>
+                    <TableCell>{invoice.vendorName}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          vendorInvoiceStatusVariant[invoice.status] ?? "outline"
+                        }
+                      >
+                        {vendorInvoiceStatusLabel[invoice.status] ??
+                          invoice.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{formatPrice(invoice.total)}</TableCell>
+                    <TableCell>{formatPrice(invoice.outstanding)}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <form action={approveVendorInvoiceAction}>
+                          <input
+                            name="invoiceId"
+                            type="hidden"
+                            value={invoice.id}
+                          />
+                          <input name="force" type="hidden" value="1" />
+                          <Button size="sm" type="submit" variant="outline">
+                            אשר
+                          </Button>
+                        </form>
+                        <form
+                          action={recordVendorPaymentAction}
+                          className="flex items-center gap-1"
+                        >
+                          <input
+                            name="invoiceId"
+                            type="hidden"
+                            value={invoice.id}
+                          />
+                          <input
+                            name="vendorId"
+                            type="hidden"
+                            value={invoice.vendorId}
+                          />
+                          <Input
+                            aria-label="סכום תשלום"
+                            className="h-8 w-24"
+                            defaultValue={
+                              invoice.outstanding > 0
+                                ? String(invoice.outstanding)
+                                : ""
+                            }
+                            inputMode="numeric"
+                            name="amount"
+                          />
+                          <Button size="sm" type="submit">
+                            שלם
+                          </Button>
+                        </form>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[0.8fr_1.2fr]">
         <Card className="rounded-md">
