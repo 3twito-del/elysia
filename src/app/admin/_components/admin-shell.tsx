@@ -15,6 +15,7 @@ import {
   Newspaper,
   PackageCheck,
   PlugZap,
+  Store,
   Workflow,
   Users,
 } from "lucide-react";
@@ -51,6 +52,7 @@ export type AdminSection =
   | "notifications"
   | "orders"
   | "overview"
+  | "pos"
   | "service"
   | "workspace";
 
@@ -76,6 +78,7 @@ const navItems: Array<{
   { href: "/admin/inventory", icon: Boxes, id: "inventory", label: "מלאי" },
   { href: "/admin/customers", icon: Users, id: "customers", label: "לקוחות" },
   { href: "/admin/service", icon: Headset, id: "service", label: "שירות" },
+  { href: "/admin/pos", icon: Store, id: "pos", label: "קופה" },
   {
     href: "/admin/workspace",
     icon: BookOpen,

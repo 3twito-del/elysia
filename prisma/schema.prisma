@@ -887,6 +887,59 @@ model ResourceBooking {
   @@index([resourceId, startsAt])
 }
 
+/// A prepaid gift card / store-credit instrument (WAL). Issuing books a cash /
+/// gift-card-liability entry; redeeming recognises revenue against the liability.
+model GiftCard {
+  id             String                @id @default(cuid())
+  code           String                @unique
+  initialBalance Decimal               @db.Decimal(12, 2)
+  balance        Decimal               @db.Decimal(12, 2)
+  currency       String                @default("ILS")
+  /// ACTIVE | DEPLETED | CANCELLED
+  status         String                @default("ACTIVE")
+  customerId     String?
+  issuedById     String?
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+  transactions   GiftCardTransaction[]
+
+  @@index([status])
+}
+
+model GiftCardTransaction {
+  id         String   @id @default(cuid())
+  giftCardId String
+  /// ISSUE | REDEEM | ADJUST
+  type       String
+  amount     Decimal  @db.Decimal(12, 2)
+  reason     String?
+  createdAt  DateTime @default(now())
+  giftCard   GiftCard @relation(fields: [giftCardId], references: [id], onDelete: Cascade)
+
+  @@index([giftCardId])
+}
+
+/// A point-of-sale cash-register shift; closing reconciles counted vs expected.
+model RegisterShift {
+  id           String    @id @default(cuid())
+  shiftNumber  String    @unique
+  branchId     String?
+  /// OPEN | CLOSED
+  status       String    @default("OPEN")
+  openingFloat Decimal   @db.Decimal(12, 2)
+  cashSales    Decimal   @default(0) @db.Decimal(12, 2)
+  countedCash  Decimal?  @db.Decimal(12, 2)
+  variance     Decimal?  @db.Decimal(12, 2)
+  openedById   String?
+  closedById   String?
+  openedAt     DateTime  @default(now())
+  closedAt     DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([status])
+}
+
 model Customer {
   id                        String                      @id @default(cuid())
   userId                    String?                     @unique

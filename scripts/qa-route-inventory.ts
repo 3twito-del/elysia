@@ -106,6 +106,7 @@ const protectedAdminRoutes = [
   "/admin/audit",
   "/admin/notifications",
   "/admin/service",
+  "/admin/pos",
   "/admin/workspace",
 ] as const;
 

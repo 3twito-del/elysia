@@ -30,6 +30,7 @@ const SOURCE_CATEGORY: Record<string, CashFlowCategory> = {
   refund: "OPERATING",
   payroll: "OPERATING",
   expense: "OPERATING",
+  gift_card_issue: "OPERATING",
   asset_acquisition: "INVESTING",
   asset_disposal: "INVESTING",
 };

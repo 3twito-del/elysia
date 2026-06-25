@@ -17,6 +17,7 @@ export const ACCOUNT = {
   GRNI: "2050",
   VAT_OUTPUT: "2100",
   PAYROLL_LIABILITIES: "2200",
+  GIFT_CARD_LIABILITY: "2300",
   EQUITY: "3000",
   RETAINED_EARNINGS: "3100",
   SALES_REVENUE: "4000",
@@ -92,6 +93,12 @@ export const DEFAULT_CHART_OF_ACCOUNTS: ChartOfAccountsEntry[] = [
   {
     code: ACCOUNT.PAYROLL_LIABILITIES,
     name: "התחייבויות שכר (ניכויים)",
+    type: "LIABILITY",
+    normalSide: "CREDIT",
+  },
+  {
+    code: ACCOUNT.GIFT_CARD_LIABILITY,
+    name: "התחייבות שוברי מתנה",
     type: "LIABILITY",
     normalSide: "CREDIT",
   },
