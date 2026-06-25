@@ -5,6 +5,7 @@ import {
   Landmark,
   Lock,
   ReceiptText,
+  Repeat,
   TrendingUp,
   Users,
   Wallet,
@@ -19,11 +20,13 @@ import { getAdminPageAccess } from "../_lib/access";
 import {
   approveExpenseClaimAction,
   autoMatchBankStatementAction,
+  cancelSubscriptionAction,
   closePeriodAction,
   createCustomerInvoiceAction,
   createEmployeeAction,
   createExpenseClaimAction,
   createFixedAssetAction,
+  createSubscriptionPlanAction,
   disposeFixedAssetAction,
   ignoreBankStatementLineAction,
   importBankStatementAction,
@@ -33,7 +36,9 @@ import {
   rejectExpenseClaimAction,
   runDepreciationAction,
   runPayrollAction,
+  runSubscriptionBillingAction,
   setBudgetAction,
+  subscribeAction,
 } from "./actions";
 import { MetricCard } from "~/components/metric-card";
 import { Badge } from "~/components/ui/badge";
@@ -74,6 +79,11 @@ import {
   getPayrollSummary,
   listEmployees,
 } from "~/server/services/hr-payroll";
+import {
+  getSubscriptionSummary,
+  listPlans,
+  listSubscriptions,
+} from "~/server/services/subscriptions";
 import {
   getFinanceOverview,
   getGeneralLedgerOverview,
@@ -215,6 +225,19 @@ export default async function AdminFinancePage() {
     getExpenseSummary().catch(() => null),
     getBudgetVsActual().catch(() => null),
   ]);
+
+  const [subscriptionPlans, subscriptions, subscriptionSummary] =
+    await Promise.all([
+      listPlans().catch(() => []),
+      listSubscriptions().catch(() => []),
+      getSubscriptionSummary().catch(() => null),
+    ]);
+
+  const subscriptionStatusLabel: Record<string, string> = {
+    ACTIVE: "פעיל",
+    PAUSED: "מושהה",
+    CANCELLED: "בוטל",
+  };
 
   const fixedAssetStatusLabel: Record<string, string> = {
     ACTIVE: "פעיל",
@@ -919,6 +942,150 @@ export default async function AdminFinancePage() {
           </CardContent>
         </Card>
       ) : null}
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between gap-2">
+            <span className="flex items-center gap-2">
+              <Repeat aria-hidden="true" className="size-5" />
+              מנויים וחיוב מתגלגל (Subscriptions)
+            </span>
+            <div className="flex items-center gap-2">
+              {subscriptionSummary ? (
+                <span className="text-muted-foreground text-sm font-normal">
+                  {subscriptionSummary.activeCount} פעילים · MRR{" "}
+                  {formatPrice(subscriptionSummary.mrr)}
+                </span>
+              ) : null}
+              <form action={runSubscriptionBillingAction}>
+                <Button size="sm" type="submit" variant="outline">
+                  הרץ חיוב
+                </Button>
+              </form>
+            </div>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
+          <div className="grid gap-5">
+            <form action={createSubscriptionPlanAction} className="grid gap-2">
+              <p className="text-muted-foreground text-sm">
+                הרצת חיוב מנפיקה חשבונית AR לכל מנוי פעיל שמועד חיובו הגיע (הכנסה
+                ל-GL).
+              </p>
+              <Input name="key" placeholder="מפתח תוכנית (vip-monthly)" required />
+              <Input name="name" placeholder="שם התוכנית" required />
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  name="amount"
+                  placeholder="סכום"
+                  step="0.01"
+                  type="number"
+                />
+                <select
+                  aria-label="מחזור"
+                  autoComplete="off"
+                  className="glass-control h-10 rounded-md border px-3 text-sm"
+                  defaultValue="MONTHLY"
+                  name="interval"
+                >
+                  <option value="MONTHLY">חודשי</option>
+                  <option value="YEARLY">שנתי</option>
+                </select>
+              </div>
+              <Button className="w-fit" size="sm" type="submit">
+                צור תוכנית
+              </Button>
+            </form>
+
+            <form action={subscribeAction} className="grid gap-2 border-t pt-4">
+              <select
+                aria-label="תוכנית"
+                autoComplete="off"
+                className="glass-control h-10 rounded-md border px-3 text-sm"
+                defaultValue=""
+                name="planId"
+                required
+              >
+                <option disabled value="">
+                  בחר תוכנית…
+                </option>
+                {subscriptionPlans.map((plan) => (
+                  <option key={plan.id} value={plan.id}>
+                    {plan.name} · {formatPrice(Number(plan.amount))}
+                  </option>
+                ))}
+              </select>
+              <Button className="w-fit" size="sm" type="submit">
+                צרף מנוי
+              </Button>
+            </form>
+          </div>
+
+          <div className="grid gap-2">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>תוכנית</TableHead>
+                  <TableHead className="text-left">סכום</TableHead>
+                  <TableHead>חיוב הבא</TableHead>
+                  <TableHead>סטטוס</TableHead>
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {subscriptions.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={5}
+                    description="טרם נוצרו מנויים."
+                    icon={Repeat}
+                    title="אין מנויים"
+                  />
+                ) : (
+                  subscriptions.map((subscription) => (
+                    <TableRow key={subscription.id}>
+                      <TableCell className="text-sm">
+                        {subscription.planName}
+                      </TableCell>
+                      <TableCell className="text-left">
+                        {formatPrice(subscription.amount)}
+                      </TableCell>
+                      <TableCell className="text-xs">
+                        {formatHebrewDate(subscription.nextBillingAt)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            subscription.status === "ACTIVE"
+                              ? "secondary"
+                              : "outline"
+                          }
+                        >
+                          {subscriptionStatusLabel[subscription.status] ??
+                            subscription.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {subscription.status === "ACTIVE" ? (
+                          <form action={cancelSubscriptionAction}>
+                            <input
+                              name="subscriptionId"
+                              type="hidden"
+                              value={subscription.id}
+                            />
+                            <Button size="sm" type="submit" variant="ghost">
+                              בטל
+                            </Button>
+                          </form>
+                        ) : null}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card className="mt-6 rounded-md">
         <CardHeader>

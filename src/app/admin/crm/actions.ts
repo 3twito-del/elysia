@@ -35,6 +35,10 @@ import {
   recordConsentByEmail,
 } from "~/server/services/consent";
 import { applyLoyaltyByEmail } from "~/server/services/loyalty";
+import {
+  createPriceRule,
+  setPriceRuleActive,
+} from "~/server/services/pricing-rules";
 import { recomputeSegmentMemberships } from "~/server/services/marketing-segments";
 
 export async function createLeadAction(formData: FormData) {
@@ -246,6 +250,40 @@ export async function applyLoyaltyAction(formData: FormData) {
     points,
     type: stringValue(formData.get("type")) === "REDEEM" ? "REDEEM" : "EARN",
     reason: optionalString(formData.get("reason")),
+  });
+
+  revalidatePath("/admin/crm");
+}
+
+export async function createPriceRuleAction(formData: FormData) {
+  await requireAdmin("CRM_WRITE");
+
+  const code = stringValue(formData.get("code")).trim();
+  const name = stringValue(formData.get("name")).trim();
+  const value = Number(formData.get("value") ?? 0) || 0;
+  if (!code || !name) throw new Error("קוד ושם הם שדות חובה.");
+  if (value <= 0) throw new Error("ערך ההנחה חייב להיות חיובי.");
+
+  await createPriceRule({
+    code,
+    name,
+    type: stringValue(formData.get("type")) === "FIXED" ? "FIXED" : "PERCENT",
+    value,
+    minQuantity: Number(formData.get("minQuantity") ?? 1) || 1,
+  });
+
+  revalidatePath("/admin/crm");
+}
+
+export async function togglePriceRuleAction(formData: FormData) {
+  await requireAdmin("CRM_WRITE");
+
+  const ruleId = stringValue(formData.get("ruleId"));
+  if (!ruleId) throw new Error("חסר מזהה חוק.");
+
+  await setPriceRuleActive({
+    ruleId,
+    isActive: formData.get("isActive") === "1",
   });
 
   revalidatePath("/admin/crm");

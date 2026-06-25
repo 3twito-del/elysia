@@ -6,6 +6,7 @@ import {
   Heart,
   ListTodo,
   Award,
+  Percent,
   Repeat,
   ShieldCheck,
   ShoppingBag,
@@ -32,11 +33,13 @@ import {
   decideQuoteAction,
   enrollJourneySegmentAction,
   applyLoyaltyAction,
+  createPriceRuleAction,
   recomputeSegmentsAction,
   recordConsentAction,
   runJourneyTickAction,
   sendQuoteAction,
   setOpportunityStageAction,
+  togglePriceRuleAction,
 } from "./actions";
 import { MetricCard } from "~/components/metric-card";
 import { Badge } from "~/components/ui/badge";
@@ -66,6 +69,7 @@ import {
 } from "~/server/services/crm-journeys";
 import { listRecentQuotes } from "~/server/services/crm-quotes";
 import { listRecentConsentRecords } from "~/server/services/consent";
+import { listPriceRules } from "~/server/services/pricing-rules";
 import {
   getLoyaltySummary,
   listLoyaltyAccounts,
@@ -190,6 +194,7 @@ export default async function AdminCrmPage() {
   ]);
 
   const duplicateGroups = await getDuplicateCustomerGroups().catch(() => []);
+  const priceRules = await listPriceRules().catch(() => []);
 
   return (
     <AdminShell
@@ -965,6 +970,98 @@ export default async function AdminCrmPage() {
                       </TableCell>
                       <TableCell className="text-sm">
                         {formatHebrewDate(record.createdAt)}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Percent aria-hidden="true" className="size-5" />
+            חוקי תמחור והנחות (Pricing / CPQ)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
+          <form action={createPriceRuleAction} className="grid gap-3">
+            <p className="text-muted-foreground text-sm">
+              חוק הנחה (אחוז/קבוע) שמופעל בעת תמחור הצעה, מעל כמות מינימום.
+            </p>
+            <Input name="code" placeholder="קוד (BULK10)" required />
+            <Input name="name" placeholder="שם החוק" required />
+            <div className="grid grid-cols-2 gap-2">
+              <select
+                aria-label="סוג"
+                autoComplete="off"
+                className="glass-control h-10 rounded-md border px-3 text-sm"
+                defaultValue="PERCENT"
+                name="type"
+              >
+                <option value="PERCENT">אחוז</option>
+                <option value="FIXED">סכום קבוע</option>
+              </select>
+              <Input name="value" placeholder="ערך" step="0.01" type="number" />
+            </div>
+            <Input
+              defaultValue="1"
+              name="minQuantity"
+              placeholder="כמות מינימום"
+              type="number"
+            />
+            <Button className="w-fit" type="submit">
+              צור חוק
+            </Button>
+          </form>
+
+          <div className="grid gap-2">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>קוד</TableHead>
+                  <TableHead>שם</TableHead>
+                  <TableHead>הנחה</TableHead>
+                  <TableHead>מ-כמות</TableHead>
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {priceRules.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={5}
+                    description="טרם הוגדרו חוקי תמחור."
+                    icon={Percent}
+                    title="אין חוקים"
+                  />
+                ) : (
+                  priceRules.map((rule) => (
+                    <TableRow key={rule.id}>
+                      <TableCell className="font-mono text-xs">
+                        {rule.code}
+                      </TableCell>
+                      <TableCell className="text-sm">{rule.name}</TableCell>
+                      <TableCell className="text-sm">
+                        {rule.type === "PERCENT"
+                          ? `${rule.value}%`
+                          : formatPrice(rule.value)}
+                      </TableCell>
+                      <TableCell>{rule.minQuantity}</TableCell>
+                      <TableCell>
+                        <form action={togglePriceRuleAction}>
+                          <input name="ruleId" type="hidden" value={rule.id} />
+                          <input
+                            name="isActive"
+                            type="hidden"
+                            value={rule.isActive ? "0" : "1"}
+                          />
+                          <Button size="sm" type="submit" variant="ghost">
+                            {rule.isActive ? "השבת" : "הפעל"}
+                          </Button>
+                        </form>
                       </TableCell>
                     </TableRow>
                   ))

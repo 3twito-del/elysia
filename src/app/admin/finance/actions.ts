@@ -27,6 +27,12 @@ import {
 } from "~/server/services/manual-journal";
 import { setBudget } from "~/server/services/budgeting";
 import {
+  cancelSubscription,
+  createPlan,
+  runSubscriptionBilling,
+  subscribeCustomer,
+} from "~/server/services/subscriptions";
+import {
   approveExpenseClaim,
   createExpenseClaim,
   rejectExpenseClaim,
@@ -256,6 +262,59 @@ export async function rejectExpenseClaimAction(formData: FormData) {
   if (!claimId) throw new Error("חסר מזהה בקשה.");
 
   await rejectExpenseClaim({ claimId });
+
+  revalidatePath("/admin/finance");
+}
+
+export async function createSubscriptionPlanAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const key = stringValue(formData.get("key")).trim();
+  const name = stringValue(formData.get("name")).trim();
+  const amount = Number(formData.get("amount") ?? 0) || 0;
+  if (!key || !name) throw new Error("מפתח ושם התוכנית הם שדות חובה.");
+  if (amount <= 0) throw new Error("יש להזין סכום מנוי חיובי.");
+
+  await createPlan({
+    key,
+    name,
+    amount,
+    interval:
+      stringValue(formData.get("interval")) === "YEARLY" ? "YEARLY" : "MONTHLY",
+  });
+
+  revalidatePath("/admin/finance");
+}
+
+export async function subscribeAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const planId = stringValue(formData.get("planId"));
+  if (!planId) throw new Error("יש לבחור תוכנית מנוי.");
+
+  await subscribeCustomer({
+    planId,
+    customerId: optionalString(formData.get("customerId")),
+  });
+
+  revalidatePath("/admin/finance");
+}
+
+export async function runSubscriptionBillingAction() {
+  await requireAdmin("ERP_WRITE");
+
+  await runSubscriptionBilling();
+
+  revalidatePath("/admin/finance");
+}
+
+export async function cancelSubscriptionAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const subscriptionId = stringValue(formData.get("subscriptionId"));
+  if (!subscriptionId) throw new Error("חסר מזהה מנוי.");
+
+  await cancelSubscription({ subscriptionId });
 
   revalidatePath("/admin/finance");
 }
