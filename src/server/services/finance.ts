@@ -8,7 +8,12 @@ import {
   getInventoryValuation,
   resolveUnitCost,
 } from "~/server/services/inventory-valuation";
-import { computeTrialBalance, postSaleJournalEntry } from "~/server/services/ledger";
+import {
+  buildSalesReturnJournalLines,
+  computeTrialBalance,
+  postJournalEntry,
+  postSaleJournalEntry,
+} from "~/server/services/ledger";
 import { ACCOUNT } from "~/server/services/ledger-accounts";
 
 export type FinanceDateRange = {
@@ -344,6 +349,93 @@ export async function postOrderSaleToLedger(orderId: string) {
     branchId: order.branchId ?? undefined,
     currency: order.currency,
   });
+
+  return { posted: true as const, journalEntryId: entry.id };
+}
+
+/**
+ * Posts the sales-return / refund entry that reverses an order's recognised
+ * revenue, output VAT and COGS (FIN-GL-001). Only posts when the original sale
+ * was recognised, is idempotent per order, and is skipped gracefully when the
+ * chart of accounts is missing. Accepts a transaction client so it can run
+ * inside the refund mutation.
+ */
+export async function postOrderRefundToLedger(
+  orderId: string,
+  client: Prisma.TransactionClient = db,
+) {
+  const ledgerReady = await client.ledgerAccount.count({
+    where: {
+      code: { in: [ACCOUNT.ACCOUNTS_RECEIVABLE, ACCOUNT.SALES_REVENUE] },
+    },
+  });
+  if (ledgerReady < 2) {
+    return { posted: false as const, reason: "chart_of_accounts_missing" };
+  }
+
+  const sale = await client.journalEntry.findFirst({
+    where: { orderId, source: "sale" },
+    select: { id: true },
+  });
+  if (!sale) return { posted: false as const, reason: "no_sale_entry" };
+
+  const existing = await client.journalEntry.findFirst({
+    where: { orderId, source: "sales_return" },
+    select: { id: true },
+  });
+  if (existing) {
+    return {
+      posted: false as const,
+      reason: "already_posted",
+      journalEntryId: existing.id,
+    };
+  }
+
+  const order = await client.order.findUnique({
+    where: { id: orderId },
+    include: {
+      items: {
+        include: {
+          variant: {
+            select: {
+              id: true,
+              productId: true,
+              product: {
+                select: {
+                  costSnapshots: { orderBy: { effectiveAt: "desc" }, take: 1 },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+  if (!order) return { posted: false as const, reason: "order_not_found" };
+
+  const grossTotal = Number(order.total);
+  if (grossTotal <= 0) {
+    return { posted: false as const, reason: "non_positive_total" };
+  }
+
+  const entry = await postJournalEntry(
+    {
+      entryDate: new Date(),
+      memo: `החזר/זיכוי — הזמנה ${order.orderNumber}`,
+      source: "sales_return",
+      aggregateType: "Order",
+      aggregateId: order.id,
+      orderId: order.id,
+      currency: order.currency,
+      lines: buildSalesReturnJournalLines({
+        grossTotal,
+        vatRate: DEFAULT_VAT_RATE,
+        cogs: await computeOrderCogs(order.items),
+        branchId: order.branchId ?? undefined,
+      }),
+    },
+    client,
+  );
 
   return { posted: true as const, journalEntryId: entry.id };
 }

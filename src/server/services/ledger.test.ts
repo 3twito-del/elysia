@@ -6,6 +6,7 @@ import {
   buildCustomerReceiptJournalLines,
   buildPurchaseReceiptJournalLines,
   buildSaleJournalLines,
+  buildSalesReturnJournalLines,
   buildVendorInvoiceJournalLines,
   buildVendorPaymentJournalLines,
   summarizeJournalLines,
@@ -79,6 +80,44 @@ describe("buildSaleJournalLines", () => {
     expect(
       lines.find((line) => line.accountCode === ACCOUNT.INVENTORY)?.credit,
     ).toBe(80);
+  });
+});
+
+describe("buildSalesReturnJournalLines", () => {
+  it("mirrors the sale: credits AR, reverses revenue/VAT, restores inventory", () => {
+    const lines = buildSalesReturnJournalLines({
+      grossTotal: 236,
+      vatRate: 0.18,
+      cogs: 80,
+    });
+    const summary = assertBalanced(lines);
+    expect(summary.totalDebit).toBe(316); // gross 236 + cogs 80 on each side
+
+    expect(
+      lines.find((line) => line.accountCode === ACCOUNT.ACCOUNTS_RECEIVABLE)
+        ?.credit,
+    ).toBe(236);
+    expect(
+      lines.find((line) => line.accountCode === ACCOUNT.SALES_REVENUE)?.debit,
+    ).toBe(200);
+    expect(
+      lines.find((line) => line.accountCode === ACCOUNT.VAT_OUTPUT)?.debit,
+    ).toBe(36);
+    expect(
+      lines.find((line) => line.accountCode === ACCOUNT.INVENTORY)?.debit,
+    ).toBe(80);
+    expect(
+      lines.find((line) => line.accountCode === ACCOUNT.COGS)?.credit,
+    ).toBe(80);
+  });
+
+  it("omits VAT and COGS lines when they are zero", () => {
+    const lines = buildSalesReturnJournalLines({ grossTotal: 100, vatRate: 0 });
+    expect(lines.some((line) => line.accountCode === ACCOUNT.VAT_OUTPUT)).toBe(
+      false,
+    );
+    expect(lines.some((line) => line.accountCode === ACCOUNT.COGS)).toBe(false);
+    assertBalanced(lines);
   });
 });
 

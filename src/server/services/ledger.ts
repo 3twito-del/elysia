@@ -133,6 +133,75 @@ export function buildSaleJournalLines(input: {
   return lines;
 }
 
+/**
+ * Lines for a sales return / refund — the mirror of buildSaleJournalLines. The
+ * gross (VAT-inclusive) is credited back to AR, net revenue and output VAT are
+ * reversed, and any returned cost is moved back from COGS into inventory. A
+ * sales return is a NEW event (not a reversal of the original sale entry), so it
+ * is posted under its own source. Always balances.
+ */
+export function buildSalesReturnJournalLines(input: {
+  grossTotal: number;
+  vatRate?: number;
+  vatTotal?: number;
+  cogs?: number;
+  branchId?: string;
+}): JournalLineInput[] {
+  const gross = round2(input.grossTotal);
+  const vat = round2(
+    input.vatTotal ?? (input.vatRate ? gross - gross / (1 + input.vatRate) : 0),
+  );
+  const net = round2(gross - vat);
+  const branchId = input.branchId;
+
+  const lines: JournalLineInput[] = [
+    {
+      accountCode: ACCOUNT.SALES_REVENUE,
+      debit: net,
+      credit: 0,
+      memo: "החזרת מכר (נטו)",
+      branchId,
+    },
+    {
+      accountCode: ACCOUNT.ACCOUNTS_RECEIVABLE,
+      debit: 0,
+      credit: gross,
+      memo: "זיכוי לקוח (ברוטו)",
+      branchId,
+    },
+  ];
+
+  if (vat > 0) {
+    lines.push({
+      accountCode: ACCOUNT.VAT_OUTPUT,
+      debit: vat,
+      credit: 0,
+      memo: 'ביטול מע"מ עסקאות',
+      branchId,
+    });
+  }
+
+  const cogs = round2(input.cogs ?? 0);
+  if (cogs > 0) {
+    lines.push({
+      accountCode: ACCOUNT.INVENTORY,
+      debit: cogs,
+      credit: 0,
+      memo: "החזרת מלאי",
+      branchId,
+    });
+    lines.push({
+      accountCode: ACCOUNT.COGS,
+      debit: 0,
+      credit: cogs,
+      memo: "ביטול עלות המכר",
+      branchId,
+    });
+  }
+
+  return lines;
+}
+
 /** Lines for receiving purchased goods: Inventory (debit) / GRNI (credit). */
 export function buildPurchaseReceiptJournalLines(input: {
   cost: number;

@@ -27,6 +27,7 @@ import {
   getProductPublishBlockers,
 } from "~/server/services/catalog-publish-readiness";
 import { normalizeCouponCode } from "~/server/services/coupons";
+import { postOrderRefundToLedger } from "~/server/services/finance";
 import { BUSINESS_EVENTS, createOutboxEvent } from "~/server/services/outbox";
 
 export {
@@ -247,6 +248,16 @@ export async function refundAdminOrder(input: {
         refundedAt: new Date(),
       },
     });
+
+    // Reverse the recognised revenue/VAT/COGS in the GL (best-effort, mirrors the
+    // graceful sale posting — a ledger gap must not block the operational refund).
+    try {
+      await postOrderRefundToLedger(order.id, tx);
+    } catch (error) {
+      if (process.env.NODE_ENV === "development") {
+        console.error("[admin] failed to post refund to ledger", error);
+      }
+    }
 
     await writeAdminAudit(tx, {
       adminUserId: input.adminUserId,
