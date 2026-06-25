@@ -23,6 +23,7 @@ import {
   createLeadAction,
   createQuoteAction,
   decideQuoteAction,
+  recomputeSegmentsAction,
   sendQuoteAction,
   setOpportunityStageAction,
 } from "./actions";
@@ -132,6 +133,12 @@ export default async function AdminCrmPage() {
         </time>
         .
       </p>
+
+      <form action={recomputeSegmentsAction} className="mb-4">
+        <Button size="sm" type="submit" variant="outline">
+          חשב סגמנטים דינמיים מחדש
+        </Button>
+      </form>
 
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard

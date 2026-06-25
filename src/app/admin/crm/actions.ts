@@ -21,6 +21,7 @@ import {
   createLead,
   setOpportunityStage,
 } from "~/server/services/crm-sales";
+import { recomputeSegmentMemberships } from "~/server/services/marketing-segments";
 
 export async function createLeadAction(formData: FormData) {
   await requireAdmin("CRM_WRITE");
@@ -117,6 +118,14 @@ export async function convertQuoteToInvoiceAction(formData: FormData) {
   await convertQuoteToInvoice({
     quoteId: stringValue(formData.get("quoteId")),
   });
+
+  revalidatePath("/admin/crm");
+}
+
+export async function recomputeSegmentsAction() {
+  await requireAdmin("CRM_WRITE");
+
+  await recomputeSegmentMemberships();
 
   revalidatePath("/admin/crm");
 }
