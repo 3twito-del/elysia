@@ -41,6 +41,7 @@ import {
   formatPrice,
 } from "~/lib/format";
 import { listCustomerInvoices } from "~/server/services/accounts-receivable";
+import { getCashFlowStatement } from "~/server/services/cash-flow";
 import {
   getFinanceOverview,
   getGeneralLedgerOverview,
@@ -128,6 +129,8 @@ export default async function AdminFinancePage() {
   }).catch(() => null);
 
   const statements = await getFinancialStatements().catch(() => null);
+
+  const cashFlow = await getCashFlowStatement().catch(() => null);
 
   const now = new Date();
   const closeTarget = {
@@ -306,6 +309,47 @@ export default async function AdminFinancePage() {
             </CardContent>
           </Card>
         </div>
+      ) : null}
+
+      {cashFlow ? (
+        <Card className="mt-6 rounded-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Wallet aria-hidden="true" className="size-5" />
+              תזרים מזומנים (Cash Flow)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4 text-sm sm:grid-cols-4">
+            <div className="grid gap-1">
+              <span className="text-muted-foreground">פעילות שוטפת</span>
+              <span className="text-xl font-semibold">
+                {formatPrice(cashFlow.operating)}
+              </span>
+            </div>
+            <div className="grid gap-1">
+              <span className="text-muted-foreground">פעילות השקעה</span>
+              <span className="text-xl font-semibold">
+                {formatPrice(cashFlow.investing)}
+              </span>
+            </div>
+            <div className="grid gap-1">
+              <span className="text-muted-foreground">פעילות מימון</span>
+              <span className="text-xl font-semibold">
+                {formatPrice(cashFlow.financing)}
+              </span>
+            </div>
+            <div className="grid gap-1">
+              <span className="text-muted-foreground">שינוי נטו במזומן</span>
+              <span className="text-xl font-semibold">
+                {formatPrice(cashFlow.netChange)}
+              </span>
+            </div>
+            <p className="text-muted-foreground text-xs sm:col-span-4">
+              שיטה ישירה מתוך תנועות חשבון המזומן. פעילות השקעה תתמלא עם הוספת
+              חשבונות רכוש קבוע.
+            </p>
+          </CardContent>
+        </Card>
       ) : null}
 
       <Card className="mt-6 rounded-md">
