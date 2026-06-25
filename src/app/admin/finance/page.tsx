@@ -42,6 +42,7 @@ import {
   getFinanceOverview,
   getGeneralLedgerOverview,
 } from "~/server/services/finance";
+import { getFinancialStatements } from "~/server/services/financial-statements";
 import { computeVatReport } from "~/server/services/vat-report";
 
 export const metadata = {
@@ -102,6 +103,8 @@ export default async function AdminFinancePage() {
     from: finance.range.from,
     to: finance.range.to,
   }).catch(() => null);
+
+  const statements = await getFinancialStatements().catch(() => null);
 
   return (
     <AdminShell
@@ -182,6 +185,89 @@ export default async function AdminFinancePage() {
             </p>
           </CardContent>
         </Card>
+      ) : null}
+
+      {statements ? (
+        <div className="mt-6 grid gap-6 md:grid-cols-2">
+          <Card className="rounded-md">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp aria-hidden="true" className="size-5" />
+                רווח והפסד (P&amp;L)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-2 text-sm">
+              <div className="flex justify-between gap-3">
+                <span className="text-muted-foreground">הכנסות</span>
+                <span className="font-medium">
+                  {formatPrice(statements.incomeStatement.revenue)}
+                </span>
+              </div>
+              <div className="flex justify-between gap-3">
+                <span className="text-muted-foreground">
+                  הוצאות (COGS וכו&apos;)
+                </span>
+                <span className="font-medium">
+                  {formatPrice(statements.incomeStatement.expenses)}
+                </span>
+              </div>
+              <div className="flex justify-between gap-3 border-t pt-2">
+                <span className="font-medium">רווח נקי</span>
+                <span className="font-semibold">
+                  {formatPrice(statements.incomeStatement.netIncome)}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="rounded-md">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between gap-2">
+                <span className="flex items-center gap-2">
+                  <Landmark aria-hidden="true" className="size-5" />
+                  מאזן (Balance Sheet)
+                </span>
+                <Badge
+                  variant={
+                    statements.balanceSheet.balanced
+                      ? "secondary"
+                      : "destructive"
+                  }
+                >
+                  {statements.balanceSheet.balanced ? "מאוזן" : "לא מאוזן"}
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-2 text-sm">
+              <div className="flex justify-between gap-3">
+                <span className="text-muted-foreground">נכסים</span>
+                <span className="font-medium">
+                  {formatPrice(statements.balanceSheet.assets)}
+                </span>
+              </div>
+              <div className="flex justify-between gap-3">
+                <span className="text-muted-foreground">התחייבויות</span>
+                <span className="font-medium">
+                  {formatPrice(statements.balanceSheet.liabilities)}
+                </span>
+              </div>
+              <div className="flex justify-between gap-3">
+                <span className="text-muted-foreground">הון</span>
+                <span className="font-medium">
+                  {formatPrice(statements.balanceSheet.equity)}
+                </span>
+              </div>
+              <div className="flex justify-between gap-3 border-t pt-2">
+                <span className="text-muted-foreground">
+                  רווח נקי (טרם נסגר להון)
+                </span>
+                <span className="font-medium">
+                  {formatPrice(statements.balanceSheet.netIncome)}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       ) : null}
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_0.9fr]">
