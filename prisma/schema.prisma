@@ -1562,6 +1562,26 @@ model LedgerAccount {
   @@index([parentId])
 }
 
+/// A fiscal accounting period (one calendar month). When CLOSED, the GL rejects
+/// new postings dated within it (PRIN-003) and net income has been closed to
+/// retained earnings via the linked closing entry (FIN-RPT-002).
+model FiscalPeriod {
+  id             String   @id @default(cuid())
+  year           Int
+  month          Int
+  /// OPEN | CLOSED
+  status         String   @default("OPEN")
+  closingEntryId String?  @unique
+  closedAt       DateTime?
+  closedById     String?
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([year, month])
+  @@index([status])
+}
+
 /// A balanced double-entry journal entry (Σdebit = Σcredit), append-only.
 /// Corrections are made by posting a reversing entry, never by mutation.
 model JournalEntry {

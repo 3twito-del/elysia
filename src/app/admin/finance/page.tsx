@@ -1,6 +1,7 @@
 import {
   CreditCard,
   Landmark,
+  Lock,
   ReceiptText,
   TrendingUp,
   Wallet,
@@ -13,6 +14,7 @@ import {
 } from "../_components/admin-states";
 import { getAdminPageAccess } from "../_lib/access";
 import {
+  closePeriodAction,
   createCustomerInvoiceAction,
   issueCustomerInvoiceAction,
   recordCustomerReceiptAction,
@@ -43,6 +45,10 @@ import {
   getGeneralLedgerOverview,
 } from "~/server/services/finance";
 import { getFinancialStatements } from "~/server/services/financial-statements";
+import {
+  getPeriodCloseSummary,
+  listFiscalPeriods,
+} from "~/server/services/period-close";
 import { computeVatReport } from "~/server/services/vat-report";
 
 export const metadata = {
@@ -105,6 +111,16 @@ export default async function AdminFinancePage() {
   }).catch(() => null);
 
   const statements = await getFinancialStatements().catch(() => null);
+
+  const now = new Date();
+  const closeTarget = {
+    year: now.getUTCMonth() === 0 ? now.getUTCFullYear() - 1 : now.getUTCFullYear(),
+    month: now.getUTCMonth() === 0 ? 12 : now.getUTCMonth(),
+  };
+  const [fiscalPeriods, closeSummary] = await Promise.all([
+    listFiscalPeriods().catch(() => []),
+    getPeriodCloseSummary(closeTarget.year, closeTarget.month).catch(() => null),
+  ]);
 
   return (
     <AdminShell
@@ -269,6 +285,123 @@ export default async function AdminFinancePage() {
           </Card>
         </div>
       ) : null}
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Lock aria-hidden="true" className="size-5" />
+            סגירת תקופה (Period Close)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1fr]">
+          <div className="grid gap-3">
+            <p className="text-muted-foreground text-sm">
+              סגירת חודש מייצרת תנועת סגירה שמאפסת הכנסות והוצאות לעודפים, ונועלת
+              את התקופה מפני רישומים נוספים. לא ניתן לבטל סגירה למעט בתנועת היפוך.
+            </p>
+            {closeSummary ? (
+              <div className="bg-muted/40 grid gap-2 rounded-md p-4 text-sm">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="font-medium">
+                    תקופת יעד: {closeSummary.month}/{closeSummary.year}
+                  </span>
+                  <Badge
+                    variant={
+                      closeSummary.status === "CLOSED" ? "secondary" : "outline"
+                    }
+                  >
+                    {closeSummary.status === "CLOSED" ? "סגורה" : "פתוחה"}
+                  </Badge>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <span className="text-muted-foreground">הכנסות בתקופה</span>
+                  <span>{formatPrice(closeSummary.revenue)}</span>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <span className="text-muted-foreground">הוצאות בתקופה</span>
+                  <span>{formatPrice(closeSummary.expenses)}</span>
+                </div>
+                <div className="flex justify-between gap-3 border-t pt-2">
+                  <span className="font-medium">רווח נקי לסגירה</span>
+                  <span className="font-semibold">
+                    {formatPrice(closeSummary.netIncome)}
+                  </span>
+                </div>
+                {closeSummary.status === "CLOSED" ? (
+                  <p className="text-muted-foreground text-xs">
+                    התקופה כבר נסגרה
+                    {closeSummary.closedAt
+                      ? ` בתאריך ${formatHebrewDate(closeSummary.closedAt)}`
+                      : ""}
+                    .
+                  </p>
+                ) : (
+                  <form action={closePeriodAction} className="mt-1">
+                    <input name="year" type="hidden" value={closeSummary.year} />
+                    <input
+                      name="month"
+                      type="hidden"
+                      value={closeSummary.month}
+                    />
+                    <Button className="w-full" type="submit">
+                      סגור תקופה {closeSummary.month}/{closeSummary.year}
+                    </Button>
+                  </form>
+                )}
+              </div>
+            ) : (
+              <p className="text-muted-foreground text-sm">
+                אין נתוני תקופה זמינים כעת.
+              </p>
+            )}
+          </div>
+
+          <div className="grid gap-2">
+            <span className="text-muted-foreground text-sm">תקופות אחרונות</span>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>תקופה</TableHead>
+                  <TableHead>סטטוס</TableHead>
+                  <TableHead>נסגרה</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {fiscalPeriods.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={3}
+                    description="טרם נסגרו תקופות חשבונאיות."
+                    icon={Lock}
+                    title="אין תקופות"
+                  />
+                ) : (
+                  fiscalPeriods.map((period) => (
+                    <TableRow key={period.id}>
+                      <TableCell>
+                        {period.month}/{period.year}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            period.status === "CLOSED" ? "secondary" : "outline"
+                          }
+                        >
+                          {period.status === "CLOSED" ? "סגורה" : "פתוחה"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {period.closedAt
+                          ? formatHebrewDate(period.closedAt)
+                          : "—"}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_0.9fr]">
         <Card className="rounded-md">

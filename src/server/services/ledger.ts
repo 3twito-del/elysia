@@ -253,6 +253,31 @@ export function buildCustomerReceiptJournalLines(input: {
   ];
 }
 
+/**
+ * Guards against posting into a CLOSED fiscal period (FIN-RPT-002 / PRIN-003).
+ * No-op when no FiscalPeriod row exists for the date or it is still OPEN, so the
+ * GL behaves normally until periods are actively closed. Defined here (not in
+ * period-close) to keep the dependency one-way and avoid an import cycle.
+ */
+export async function assertPostingPeriodOpen(
+  date: Date,
+  client: Prisma.TransactionClient = db,
+) {
+  const year = date.getUTCFullYear();
+  const month = date.getUTCMonth() + 1;
+
+  const period = await client.fiscalPeriod.findUnique({
+    where: { year_month: { year, month } },
+    select: { status: true },
+  });
+
+  if (period?.status === "CLOSED") {
+    throw new Error(
+      `התקופה ${month}/${year} סגורה — לא ניתן לרשום תנועה בתאריך זה.`,
+    );
+  }
+}
+
 /** Idempotently upserts the default chart of accounts. */
 export async function seedChartOfAccounts() {
   for (const account of DEFAULT_CHART_OF_ACCOUNTS) {
@@ -308,6 +333,7 @@ export async function postJournalEntry(
     throw new Error("A journal entry requires at least two lines.");
   }
   assertBalanced(input.lines);
+  await assertPostingPeriodOpen(input.entryDate, client);
 
   const codes = Array.from(
     new Set(input.lines.map((line) => line.accountCode)),
@@ -460,6 +486,7 @@ export async function reverseJournalEntry(
   }
 
   const entryDate = input.entryDate ?? new Date();
+  await assertPostingPeriodOpen(entryDate, client);
   const entryNumber = await createNextJournalEntryNumber(client, entryDate);
 
   const reversal = await client.journalEntry.create({

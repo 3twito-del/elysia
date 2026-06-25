@@ -15,6 +15,7 @@ export const ACCOUNT = {
   GRNI: "2050",
   VAT_OUTPUT: "2100",
   EQUITY: "3000",
+  RETAINED_EARNINGS: "3100",
   SALES_REVENUE: "4000",
   COGS: "5000",
 } as const;
@@ -68,6 +69,12 @@ export const DEFAULT_CHART_OF_ACCOUNTS: ChartOfAccountsEntry[] = [
     normalSide: "CREDIT",
   },
   { code: ACCOUNT.EQUITY, name: "הון", type: "EQUITY", normalSide: "CREDIT" },
+  {
+    code: ACCOUNT.RETAINED_EARNINGS,
+    name: "עודפים (רווח שנצבר)",
+    type: "EQUITY",
+    normalSide: "CREDIT",
+  },
   {
     code: ACCOUNT.SALES_REVENUE,
     name: "הכנסות ממכירות",

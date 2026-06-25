@@ -15,6 +15,7 @@ import {
   issueCustomerInvoice,
   recordCustomerReceipt,
 } from "~/server/services/accounts-receivable";
+import { closePeriod } from "~/server/services/period-close";
 
 export async function createCustomerInvoiceAction(formData: FormData) {
   await requireAdmin("ERP_WRITE");
@@ -66,6 +67,25 @@ export async function recordCustomerReceiptAction(formData: FormData) {
     amount,
     postedById: admin.id,
     allocations: [{ customerInvoiceId: invoiceId, amount }],
+  });
+
+  revalidatePath("/admin/finance");
+}
+
+export async function closePeriodAction(formData: FormData) {
+  const admin = await requireAdmin("ERP_WRITE");
+
+  const year = Number(formData.get("year") ?? 0) || 0;
+  const month = Number(formData.get("month") ?? 0) || 0;
+  if (year <= 0 || month < 1 || month > 12) {
+    throw new Error("יש לבחור שנה וחודש תקינים לסגירה.");
+  }
+
+  await closePeriod({
+    year,
+    month,
+    postedById: admin.id,
+    notes: optionalString(formData.get("notes")),
   });
 
   revalidatePath("/admin/finance");
