@@ -24,6 +24,7 @@ export const ACCOUNT = {
   COGS: "5000",
   DEPRECIATION_EXPENSE: "5100",
   SALARY_EXPENSE: "5200",
+  GENERAL_EXPENSE: "5300",
 } as const;
 
 export type AccountType =
@@ -123,6 +124,12 @@ export const DEFAULT_CHART_OF_ACCOUNTS: ChartOfAccountsEntry[] = [
   {
     code: ACCOUNT.SALARY_EXPENSE,
     name: "הוצאות שכר",
+    type: "EXPENSE",
+    normalSide: "DEBIT",
+  },
+  {
+    code: ACCOUNT.GENERAL_EXPENSE,
+    name: "הוצאות תפעוליות",
     type: "EXPENSE",
     normalSide: "DEBIT",
   },

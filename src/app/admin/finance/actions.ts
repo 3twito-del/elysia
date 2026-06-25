@@ -25,6 +25,12 @@ import {
   parseJournalLines,
   postManualJournalEntry,
 } from "~/server/services/manual-journal";
+import { setBudget } from "~/server/services/budgeting";
+import {
+  approveExpenseClaim,
+  createExpenseClaim,
+  rejectExpenseClaim,
+} from "~/server/services/expense-management";
 import {
   createFixedAsset,
   disposeFixedAsset,
@@ -209,6 +215,61 @@ export async function runPayrollAction() {
   const admin = await requireAdmin("ERP_WRITE");
 
   await runPayroll({ postedById: admin.id });
+
+  revalidatePath("/admin/finance");
+}
+
+export async function createExpenseClaimAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const description = stringValue(formData.get("description")).trim();
+  if (!description) throw new Error("תיאור ההוצאה הוא שדה חובה.");
+
+  const amount = Number(formData.get("amount") ?? 0) || 0;
+  if (amount <= 0) throw new Error("יש להזין סכום הוצאה חיובי.");
+
+  await createExpenseClaim({
+    employeeId: optionalString(formData.get("employeeId")),
+    description,
+    category: optionalString(formData.get("category")),
+    amount,
+  });
+
+  revalidatePath("/admin/finance");
+}
+
+export async function approveExpenseClaimAction(formData: FormData) {
+  const admin = await requireAdmin("ERP_WRITE");
+
+  const claimId = stringValue(formData.get("claimId"));
+  if (!claimId) throw new Error("חסר מזהה בקשה.");
+
+  await approveExpenseClaim({ claimId, postedById: admin.id });
+
+  revalidatePath("/admin/finance");
+}
+
+export async function rejectExpenseClaimAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const claimId = stringValue(formData.get("claimId"));
+  if (!claimId) throw new Error("חסר מזהה בקשה.");
+
+  await rejectExpenseClaim({ claimId });
+
+  revalidatePath("/admin/finance");
+}
+
+export async function setBudgetAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const period = stringValue(formData.get("period")).trim();
+  const accountCode = stringValue(formData.get("accountCode")).trim();
+  if (!period || !accountCode) throw new Error("יש לבחור תקופה וחשבון.");
+
+  const amount = Number(formData.get("amount") ?? 0) || 0;
+
+  await setBudget({ period, accountCode, amount });
 
   revalidatePath("/admin/finance");
 }

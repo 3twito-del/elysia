@@ -17,10 +17,12 @@ import {
 } from "../_components/admin-states";
 import { getAdminPageAccess } from "../_lib/access";
 import {
+  approveExpenseClaimAction,
   autoMatchBankStatementAction,
   closePeriodAction,
   createCustomerInvoiceAction,
   createEmployeeAction,
+  createExpenseClaimAction,
   createFixedAssetAction,
   disposeFixedAssetAction,
   ignoreBankStatementLineAction,
@@ -28,8 +30,10 @@ import {
   issueCustomerInvoiceAction,
   postManualJournalEntryAction,
   recordCustomerReceiptAction,
+  rejectExpenseClaimAction,
   runDepreciationAction,
   runPayrollAction,
+  setBudgetAction,
 } from "./actions";
 import { MetricCard } from "~/components/metric-card";
 import { Badge } from "~/components/ui/badge";
@@ -56,7 +60,12 @@ import {
   getReconciliationOverview,
   listBankStatementLines,
 } from "~/server/services/bank-reconciliation";
+import { getBudgetVsActual } from "~/server/services/budgeting";
 import { getCashFlowStatement } from "~/server/services/cash-flow";
+import {
+  getExpenseSummary,
+  listExpenseClaims,
+} from "~/server/services/expense-management";
 import {
   getFixedAssetsSummary,
   listFixedAssets,
@@ -201,10 +210,31 @@ export default async function AdminFinancePage() {
     getPayrollSummary().catch(() => null),
   ]);
 
+  const [expenseClaims, expenseSummary, budget] = await Promise.all([
+    listExpenseClaims().catch(() => []),
+    getExpenseSummary().catch(() => null),
+    getBudgetVsActual().catch(() => null),
+  ]);
+
   const fixedAssetStatusLabel: Record<string, string> = {
     ACTIVE: "פעיל",
     FULLY_DEPRECIATED: "פוחת במלואו",
     DISPOSED: "נגרע",
+  };
+
+  const expenseStatusLabel: Record<string, string> = {
+    SUBMITTED: "הוגשה",
+    APPROVED: "אושרה",
+    REJECTED: "נדחתה",
+  };
+
+  const expenseStatusVariant: Record<
+    string,
+    "secondary" | "outline" | "destructive"
+  > = {
+    SUBMITTED: "outline",
+    APPROVED: "secondary",
+    REJECTED: "destructive",
   };
 
   return (
@@ -665,6 +695,230 @@ export default async function AdminFinancePage() {
           </div>
         </CardContent>
       </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between gap-2">
+            <span className="flex items-center gap-2">
+              <ReceiptText aria-hidden="true" className="size-5" />
+              ניהול הוצאות (Expenses)
+            </span>
+            {expenseSummary ? (
+              <span className="text-muted-foreground text-sm font-normal">
+                {expenseSummary.pendingCount} ממתינות ·{" "}
+                {formatPrice(expenseSummary.pendingTotal)}
+              </span>
+            ) : null}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
+          <form action={createExpenseClaimAction} className="grid gap-3">
+            <p className="text-muted-foreground text-sm">
+              בקשת החזר הוצאה. אישור רושם ל-GL: Dr הוצאות תפעוליות / Cr מזומן.
+            </p>
+            <Input name="description" placeholder="תיאור ההוצאה" required />
+            <div className="grid grid-cols-2 gap-2">
+              <Input name="category" placeholder="קטגוריה" />
+              <Input
+                name="amount"
+                placeholder="סכום"
+                step="0.01"
+                type="number"
+              />
+            </div>
+            <select
+              aria-label="עובד"
+              autoComplete="off"
+              className="glass-control h-10 rounded-md border px-3 text-sm"
+              defaultValue=""
+              name="employeeId"
+            >
+              <option value="">ללא עובד משויך</option>
+              {employees.map((employee) => (
+                <option key={employee.id} value={employee.id}>
+                  {employee.name}
+                </option>
+              ))}
+            </select>
+            <Button className="w-fit" type="submit">
+              הגש בקשה
+            </Button>
+          </form>
+
+          <div className="grid gap-2">
+            <span className="text-muted-foreground text-sm">בקשות אחרונות</span>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>מס׳</TableHead>
+                  <TableHead>תיאור</TableHead>
+                  <TableHead className="text-left">סכום</TableHead>
+                  <TableHead>סטטוס</TableHead>
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {expenseClaims.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={5}
+                    description="טרם הוגשו בקשות הוצאה."
+                    icon={ReceiptText}
+                    title="אין בקשות"
+                  />
+                ) : (
+                  expenseClaims.map((claim) => (
+                    <TableRow key={claim.id}>
+                      <TableCell className="whitespace-nowrap font-mono text-xs">
+                        {claim.claimNumber}
+                      </TableCell>
+                      <TableCell className="max-w-[12rem] truncate text-sm">
+                        {claim.description}
+                      </TableCell>
+                      <TableCell className="text-left">
+                        {formatPrice(claim.amount)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            expenseStatusVariant[claim.status] ?? "outline"
+                          }
+                        >
+                          {expenseStatusLabel[claim.status] ?? claim.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {claim.status === "SUBMITTED" ? (
+                          <div className="flex gap-1">
+                            <form action={approveExpenseClaimAction}>
+                              <input
+                                name="claimId"
+                                type="hidden"
+                                value={claim.id}
+                              />
+                              <Button size="sm" type="submit" variant="outline">
+                                אשר
+                              </Button>
+                            </form>
+                            <form action={rejectExpenseClaimAction}>
+                              <input
+                                name="claimId"
+                                type="hidden"
+                                value={claim.id}
+                              />
+                              <Button size="sm" type="submit" variant="ghost">
+                                דחה
+                              </Button>
+                            </form>
+                          </div>
+                        ) : null}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {budget ? (
+        <Card className="mt-6 rounded-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp aria-hidden="true" className="size-5" />
+              תקצוב מול ביצוע — {budget.period} (Budget vs Actual)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
+            <form action={setBudgetAction} className="grid gap-3">
+              <p className="text-muted-foreground text-sm">
+                הגדרת תקציב לחשבון בתקופה. הביצוע נגזר מהספר הראשי לאותו חודש.
+              </p>
+              <Input
+                defaultValue={budget.period}
+                name="period"
+                placeholder="YYYY-MM"
+                type="month"
+              />
+              <select
+                aria-label="חשבון"
+                autoComplete="off"
+                className="glass-control h-10 rounded-md border px-3 text-sm"
+                defaultValue=""
+                name="accountCode"
+                required
+              >
+                <option disabled value="">
+                  בחר חשבון…
+                </option>
+                {ledgerAccounts.map((account) => (
+                  <option key={account.code} value={account.code}>
+                    {account.code} · {account.name}
+                  </option>
+                ))}
+              </select>
+              <Input
+                name="amount"
+                placeholder="סכום תקציב"
+                step="0.01"
+                type="number"
+              />
+              <Button className="w-fit" type="submit">
+                שמור תקציב
+              </Button>
+            </form>
+
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>חשבון</TableHead>
+                  <TableHead className="text-left">תקציב</TableHead>
+                  <TableHead className="text-left">ביצוע</TableHead>
+                  <TableHead className="text-left">סטייה</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {budget.lines.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={4}
+                    description="טרם הוגדרו תקציבים לחודש זה."
+                    icon={TrendingUp}
+                    title="אין תקציב"
+                  />
+                ) : (
+                  budget.lines.map((line) => (
+                    <TableRow key={line.accountCode}>
+                      <TableCell className="text-sm">
+                        {line.accountName}
+                      </TableCell>
+                      <TableCell className="text-left">
+                        {formatPrice(line.budget)}
+                      </TableCell>
+                      <TableCell className="text-left">
+                        {formatPrice(line.actual)}
+                      </TableCell>
+                      <TableCell className="text-left">
+                        <span
+                          className={
+                            line.variance > 0
+                              ? "text-destructive"
+                              : "text-muted-foreground"
+                          }
+                        >
+                          {formatPrice(line.variance)}
+                          {line.variancePct !== null
+                            ? ` (${line.variancePct}%)`
+                            : ""}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      ) : null}
 
       <Card className="mt-6 rounded-md">
         <CardHeader>
