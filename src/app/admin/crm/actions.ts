@@ -34,6 +34,7 @@ import {
   type ConsentChannel,
   recordConsentByEmail,
 } from "~/server/services/consent";
+import { applyLoyaltyByEmail } from "~/server/services/loyalty";
 import { recomputeSegmentMemberships } from "~/server/services/marketing-segments";
 
 export async function createLeadAction(formData: FormData) {
@@ -226,6 +227,25 @@ export async function recordConsentAction(formData: FormData) {
     channel: channel as ConsentChannel,
     status: stringValue(formData.get("status")) === "REVOKED" ? "REVOKED" : "GRANTED",
     source: "admin",
+  });
+
+  revalidatePath("/admin/crm");
+}
+
+export async function applyLoyaltyAction(formData: FormData) {
+  await requireAdmin("CRM_WRITE");
+
+  const email = stringValue(formData.get("email")).trim();
+  if (!email) throw new Error('יש להזין דוא"ל לקוח.');
+
+  const points = Number(formData.get("points") ?? 0) || 0;
+  if (points <= 0) throw new Error("יש להזין מספר נקודות חיובי.");
+
+  await applyLoyaltyByEmail({
+    email,
+    points,
+    type: stringValue(formData.get("type")) === "REDEEM" ? "REDEEM" : "EARN",
+    reason: optionalString(formData.get("reason")),
   });
 
   revalidatePath("/admin/crm");

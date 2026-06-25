@@ -5,6 +5,7 @@ import {
   FileText,
   Heart,
   ListTodo,
+  Award,
   Repeat,
   ShieldCheck,
   ShoppingBag,
@@ -30,6 +31,7 @@ import {
   createQuoteAction,
   decideQuoteAction,
   enrollJourneySegmentAction,
+  applyLoyaltyAction,
   recomputeSegmentsAction,
   recordConsentAction,
   runJourneyTickAction,
@@ -63,6 +65,10 @@ import {
 } from "~/server/services/crm-journeys";
 import { listRecentQuotes } from "~/server/services/crm-quotes";
 import { listRecentConsentRecords } from "~/server/services/consent";
+import {
+  getLoyaltySummary,
+  listLoyaltyAccounts,
+} from "~/server/services/loyalty";
 import {
   getSalesPipelineOverview,
   listOpportunities,
@@ -109,6 +115,13 @@ const consentChannelLabel: Record<string, string> = {
   SMS: "SMS",
   PUSH: "Push",
   WHATSAPP: "WhatsApp",
+};
+
+const loyaltyTierLabel: Record<string, string> = {
+  BRONZE: "ארד",
+  SILVER: "כסף",
+  GOLD: "זהב",
+  PLATINUM: "פלטינה",
 };
 
 const quoteStatusLabel: Record<string, string> = {
@@ -162,6 +175,8 @@ export default async function AdminCrmPage() {
     journeys,
     journeySegments,
     consentRecords,
+    loyaltyAccounts,
+    loyaltySummary,
   ] = await Promise.all([
     listRecentLeads().catch(() => []),
     listOpportunities().catch(() => []),
@@ -169,6 +184,8 @@ export default async function AdminCrmPage() {
     listJourneys().catch(() => []),
     listSegmentsForSelect().catch(() => []),
     listRecentConsentRecords().catch(() => []),
+    listLoyaltyAccounts().catch(() => []),
+    getLoyaltySummary().catch(() => null),
   ]);
 
   return (
@@ -946,6 +963,92 @@ export default async function AdminCrmPage() {
                       <TableCell className="text-sm">
                         {formatHebrewDate(record.createdAt)}
                       </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between gap-2">
+            <span className="flex items-center gap-2">
+              <Award aria-hidden="true" className="size-5" />
+              מועדון לקוחות (Loyalty)
+            </span>
+            {loyaltySummary ? (
+              <span className="text-muted-foreground text-sm font-normal">
+                {loyaltySummary.members} חברים · {loyaltySummary.outstandingPoints}{" "}
+                נק׳ פתוחות
+              </span>
+            ) : null}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
+          <form action={applyLoyaltyAction} className="grid gap-3">
+            <p className="text-muted-foreground text-sm">
+              צבירה/פדיון נקודות. נקודות חיים מצטברות מעלות דרגה (ארד → כסף →
+              זהב → פלטינה). 1 נקודה לכל 10 ש&quot;ח רכישה.
+            </p>
+            <Input name="email" placeholder='דוא"ל לקוח' required type="email" />
+            <div className="grid grid-cols-2 gap-2">
+              <Input
+                name="points"
+                placeholder="נקודות"
+                type="number"
+              />
+              <select
+                aria-label="פעולה"
+                autoComplete="off"
+                className="glass-control h-10 rounded-md border px-3 text-sm"
+                defaultValue="EARN"
+                name="type"
+              >
+                <option value="EARN">צבירה</option>
+                <option value="REDEEM">פדיון</option>
+              </select>
+            </div>
+            <Input name="reason" placeholder="סיבה (רשות)" />
+            <Button className="w-fit" type="submit">
+              עדכן נקודות
+            </Button>
+          </form>
+
+          <div className="grid gap-2">
+            <span className="text-muted-foreground text-sm">מובילי המועדון</span>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>לקוח</TableHead>
+                  <TableHead>דרגה</TableHead>
+                  <TableHead>יתרה</TableHead>
+                  <TableHead>נק׳ חיים</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {loyaltyAccounts.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={4}
+                    description="טרם נצברו נקודות במועדון."
+                    icon={Award}
+                    title="אין חברי מועדון"
+                  />
+                ) : (
+                  loyaltyAccounts.map((account) => (
+                    <TableRow key={account.id}>
+                      <TableCell className="text-sm">
+                        {account.customerName}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">
+                          {loyaltyTierLabel[account.tier] ?? account.tier}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{account.pointsBalance}</TableCell>
+                      <TableCell>{account.lifetimePoints}</TableCell>
                     </TableRow>
                   ))
                 )}

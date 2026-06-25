@@ -671,8 +671,41 @@ model Customer {
   receipts                  CustomerReceipt[]
   journeyEnrollments        JourneyEnrollment[]
   consentRecords            ConsentRecord[]
+  loyaltyAccount            LoyaltyAccount?
   createdAt                 DateTime                    @default(now())
   updatedAt                 DateTime                    @updatedAt
+}
+
+/// A customer's loyalty membership: redeemable points balance, lifetime points
+/// (which drive the tier), and the resolved tier (CRM-LOY).
+model LoyaltyAccount {
+  id             String               @id @default(cuid())
+  customerId     String               @unique
+  pointsBalance  Int                  @default(0)
+  lifetimePoints Int                  @default(0)
+  tier           String               @default("BRONZE")
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  customer       Customer             @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  transactions   LoyaltyTransaction[]
+
+  @@index([tier])
+}
+
+/// One points movement (EARN / REDEEM / ADJUST); append-only ledger of points.
+model LoyaltyTransaction {
+  id               String         @id @default(cuid())
+  loyaltyAccountId String
+  /// EARN | REDEEM | ADJUST
+  type             String
+  points           Int
+  reason           String?
+  orderId          String?
+  createdAt        DateTime       @default(now())
+  account          LoyaltyAccount @relation(fields: [loyaltyAccountId], references: [id], onDelete: Cascade)
+
+  @@index([loyaltyAccountId])
+  @@index([orderId])
 }
 
 /// Append-only marketing-consent log. Current consent per channel is the latest
