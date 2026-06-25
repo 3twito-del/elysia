@@ -622,6 +622,60 @@ model FixedAsset {
   @@index([status])
 }
 
+/// An employee for HR and payroll (HR master).
+model Employee {
+  id             String    @id @default(cuid())
+  employeeNumber String    @unique
+  firstName      String
+  lastName       String
+  email          String?
+  role           String?
+  department     String?
+  monthlyGross   Decimal   @db.Decimal(12, 2)
+  /// ACTIVE | TERMINATED
+  status         String    @default("ACTIVE")
+  hiredAt        DateTime  @db.Date
+  branchId       String?
+  notes          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  payslips       Payslip[]
+
+  @@index([status])
+}
+
+/// A monthly payroll run posting salaries to the GL (idempotent per period).
+model PayrollRun {
+  id             String    @id @default(cuid())
+  period         String    @unique
+  /// DRAFT | POSTED
+  status         String    @default("DRAFT")
+  grossTotal     Decimal   @default(0) @db.Decimal(14, 2)
+  netTotal       Decimal   @default(0) @db.Decimal(14, 2)
+  journalEntryId String?
+  postedById     String?
+  postedAt       DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  payslips       Payslip[]
+}
+
+/// One employee's payslip within a payroll run.
+model Payslip {
+  id             String     @id @default(cuid())
+  payrollRunId   String
+  employeeId     String
+  gross          Decimal    @db.Decimal(12, 2)
+  incomeTax      Decimal    @default(0) @db.Decimal(12, 2)
+  socialSecurity Decimal    @default(0) @db.Decimal(12, 2)
+  net            Decimal    @db.Decimal(12, 2)
+  run            PayrollRun @relation(fields: [payrollRunId], references: [id], onDelete: Cascade)
+  employee       Employee   @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+
+  @@index([payrollRunId])
+  @@index([employeeId])
+}
+
 /// One month's depreciation charge for a fixed asset (idempotent per period).
 model FixedAssetDepreciation {
   id             String     @id @default(cuid())

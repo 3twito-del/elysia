@@ -46,6 +46,20 @@ export function depreciationForPeriod(input: {
   return Math.min(monthlyDepreciation(input), remaining);
 }
 
+/** Net book value and gain/loss for a disposal at the given proceeds. Pure. */
+export function disposalResult(input: {
+  acquisitionCost: number;
+  accumulatedDepreciation: number;
+  proceeds: number;
+}) {
+  const netBookValue = round2(
+    input.acquisitionCost - input.accumulatedDepreciation,
+  );
+  const gainLoss = round2(input.proceeds - netBookValue);
+
+  return { netBookValue, gainLoss };
+}
+
 /** Current accounting period as "YYYY-MM" (UTC). */
 export function currentPeriod(date: Date = new Date()): string {
   return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
@@ -71,6 +85,12 @@ async function ensureFixedAssetAccounts(client: Prisma.TransactionClient) {
       name: "הוצאות פחת",
       type: "EXPENSE",
       normalSide: "DEBIT",
+    },
+    {
+      code: ACCOUNT.DISPOSAL_GAIN_LOSS,
+      name: "רווח/הפסד ממימוש רכוש קבוע",
+      type: "REVENUE",
+      normalSide: "CREDIT",
     },
   ];
 
@@ -261,6 +281,94 @@ export async function runDepreciation(
   }
 
   return { period, count, total };
+}
+
+/**
+ * Disposes an asset: removes its cost and accumulated depreciation, books the
+ * cash proceeds, and recognises the gain/loss on disposal. Posts under source
+ * "asset_disposal" (investing cash flow).
+ */
+export async function disposeFixedAsset(input: {
+  fixedAssetId: string;
+  proceeds: number;
+  postedById?: string;
+}) {
+  const proceeds = round2(Math.max(0, input.proceeds));
+
+  return db.$transaction(async (tx) => {
+    const asset = await tx.fixedAsset.findUnique({
+      where: { id: input.fixedAssetId },
+    });
+    if (!asset) throw new Error("נכס לא נמצא.");
+    if (asset.status === "DISPOSED") throw new Error("הנכס כבר נגרע.");
+
+    await ensureFixedAssetAccounts(tx);
+
+    const acquisitionCost = Number(asset.acquisitionCost);
+    const accumulatedDepreciation = Number(asset.accumulatedDepreciation);
+    const { gainLoss } = disposalResult({
+      acquisitionCost,
+      accumulatedDepreciation,
+      proceeds,
+    });
+
+    const lines = [];
+    if (proceeds > 0) {
+      lines.push({ accountCode: ACCOUNT.CASH, debit: proceeds, credit: 0, memo: "תמורת מימוש" });
+    }
+    if (accumulatedDepreciation > 0) {
+      lines.push({
+        accountCode: ACCOUNT.ACCUMULATED_DEPRECIATION,
+        debit: accumulatedDepreciation,
+        credit: 0,
+        memo: "גריעת פחת נצבר",
+      });
+    }
+    lines.push({
+      accountCode: ACCOUNT.FIXED_ASSETS,
+      debit: 0,
+      credit: acquisitionCost,
+      memo: "גריעת עלות הנכס",
+    });
+    if (gainLoss > 0) {
+      lines.push({
+        accountCode: ACCOUNT.DISPOSAL_GAIN_LOSS,
+        debit: 0,
+        credit: gainLoss,
+        memo: "רווח ממימוש",
+      });
+    } else if (gainLoss < 0) {
+      lines.push({
+        accountCode: ACCOUNT.DISPOSAL_GAIN_LOSS,
+        debit: -gainLoss,
+        credit: 0,
+        memo: "הפסד ממימוש",
+      });
+    }
+
+    const cashReady = await tx.ledgerAccount.count({
+      where: { code: ACCOUNT.CASH },
+    });
+    if (cashReady > 0 && lines.length >= 2) {
+      await postJournalEntry(
+        {
+          entryDate: new Date(),
+          memo: `מימוש רכוש קבוע ${asset.assetNumber}`,
+          source: "asset_disposal",
+          aggregateType: "FixedAsset",
+          aggregateId: asset.id,
+          postedById: input.postedById,
+          lines,
+        },
+        tx,
+      );
+    }
+
+    return tx.fixedAsset.update({
+      where: { id: asset.id },
+      data: { status: "DISPOSED" },
+    });
+  });
 }
 
 /** Register totals: count, cost, accumulated depreciation, net book value. */

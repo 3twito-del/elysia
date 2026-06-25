@@ -28,6 +28,7 @@ const SOURCE_CATEGORY: Record<string, CashFlowCategory> = {
   vendor_payment: "OPERATING",
   purchase_receipt: "OPERATING",
   refund: "OPERATING",
+  payroll: "OPERATING",
   asset_acquisition: "INVESTING",
   asset_disposal: "INVESTING",
 };

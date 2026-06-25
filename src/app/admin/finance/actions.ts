@@ -27,8 +27,10 @@ import {
 } from "~/server/services/manual-journal";
 import {
   createFixedAsset,
+  disposeFixedAsset,
   runDepreciation,
 } from "~/server/services/fixed-assets";
+import { createEmployee, runPayroll } from "~/server/services/hr-payroll";
 import { closePeriod } from "~/server/services/period-close";
 
 export async function createCustomerInvoiceAction(formData: FormData) {
@@ -162,6 +164,51 @@ export async function runDepreciationAction() {
   const admin = await requireAdmin("ERP_WRITE");
 
   await runDepreciation({ postedById: admin.id });
+
+  revalidatePath("/admin/finance");
+}
+
+export async function disposeFixedAssetAction(formData: FormData) {
+  const admin = await requireAdmin("ERP_WRITE");
+
+  const fixedAssetId = stringValue(formData.get("fixedAssetId"));
+  if (!fixedAssetId) throw new Error("חסר מזהה נכס.");
+
+  await disposeFixedAsset({
+    fixedAssetId,
+    proceeds: Number(formData.get("proceeds") ?? 0) || 0,
+    postedById: admin.id,
+  });
+
+  revalidatePath("/admin/finance");
+}
+
+export async function createEmployeeAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const firstName = stringValue(formData.get("firstName")).trim();
+  const lastName = stringValue(formData.get("lastName")).trim();
+  if (!firstName || !lastName) throw new Error("שם פרטי ושם משפחה הם חובה.");
+
+  const monthlyGross = Number(formData.get("monthlyGross") ?? 0) || 0;
+  if (monthlyGross <= 0) throw new Error("יש להזין שכר חודשי חיובי.");
+
+  await createEmployee({
+    firstName,
+    lastName,
+    email: optionalString(formData.get("email")),
+    role: optionalString(formData.get("role")),
+    department: optionalString(formData.get("department")),
+    monthlyGross,
+  });
+
+  revalidatePath("/admin/finance");
+}
+
+export async function runPayrollAction() {
+  const admin = await requireAdmin("ERP_WRITE");
+
+  await runPayroll({ postedById: admin.id });
 
   revalidatePath("/admin/finance");
 }

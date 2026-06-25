@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   currentPeriod,
   depreciationForPeriod,
+  disposalResult,
   monthlyDepreciation,
 } from "./fixed-assets";
 
@@ -62,6 +63,28 @@ describe("depreciationForPeriod", () => {
         accumulatedDepreciation: 10000,
       }),
     ).toBe(0);
+  });
+});
+
+describe("disposalResult", () => {
+  it("computes a gain when proceeds exceed net book value", () => {
+    expect(
+      disposalResult({
+        acquisitionCost: 12000,
+        accumulatedDepreciation: 9000,
+        proceeds: 4000,
+      }),
+    ).toEqual({ netBookValue: 3000, gainLoss: 1000 });
+  });
+
+  it("computes a loss when proceeds are below net book value", () => {
+    expect(
+      disposalResult({
+        acquisitionCost: 12000,
+        accumulatedDepreciation: 4000,
+        proceeds: 5000,
+      }),
+    ).toEqual({ netBookValue: 8000, gainLoss: -3000 });
   });
 });
 

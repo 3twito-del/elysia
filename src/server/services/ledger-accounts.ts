@@ -16,11 +16,14 @@ export const ACCOUNT = {
   ACCOUNTS_PAYABLE: "2000",
   GRNI: "2050",
   VAT_OUTPUT: "2100",
+  PAYROLL_LIABILITIES: "2200",
   EQUITY: "3000",
   RETAINED_EARNINGS: "3100",
   SALES_REVENUE: "4000",
+  DISPOSAL_GAIN_LOSS: "4900",
   COGS: "5000",
   DEPRECIATION_EXPENSE: "5100",
+  SALARY_EXPENSE: "5200",
 } as const;
 
 export type AccountType =
@@ -85,6 +88,12 @@ export const DEFAULT_CHART_OF_ACCOUNTS: ChartOfAccountsEntry[] = [
     type: "LIABILITY",
     normalSide: "CREDIT",
   },
+  {
+    code: ACCOUNT.PAYROLL_LIABILITIES,
+    name: "התחייבויות שכר (ניכויים)",
+    type: "LIABILITY",
+    normalSide: "CREDIT",
+  },
   { code: ACCOUNT.EQUITY, name: "הון", type: "EQUITY", normalSide: "CREDIT" },
   {
     code: ACCOUNT.RETAINED_EARNINGS,
@@ -98,10 +107,22 @@ export const DEFAULT_CHART_OF_ACCOUNTS: ChartOfAccountsEntry[] = [
     type: "REVENUE",
     normalSide: "CREDIT",
   },
+  {
+    code: ACCOUNT.DISPOSAL_GAIN_LOSS,
+    name: "רווח/הפסד ממימוש רכוש קבוע",
+    type: "REVENUE",
+    normalSide: "CREDIT",
+  },
   { code: ACCOUNT.COGS, name: "עלות המכר", type: "EXPENSE", normalSide: "DEBIT" },
   {
     code: ACCOUNT.DEPRECIATION_EXPENSE,
     name: "הוצאות פחת",
+    type: "EXPENSE",
+    normalSide: "DEBIT",
+  },
+  {
+    code: ACCOUNT.SALARY_EXPENSE,
+    name: "הוצאות שכר",
     type: "EXPENSE",
     normalSide: "DEBIT",
   },

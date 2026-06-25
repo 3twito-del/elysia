@@ -6,6 +6,7 @@ import {
   Lock,
   ReceiptText,
   TrendingUp,
+  Users,
   Wallet,
 } from "lucide-react";
 
@@ -19,13 +20,16 @@ import {
   autoMatchBankStatementAction,
   closePeriodAction,
   createCustomerInvoiceAction,
+  createEmployeeAction,
   createFixedAssetAction,
+  disposeFixedAssetAction,
   ignoreBankStatementLineAction,
   importBankStatementAction,
   issueCustomerInvoiceAction,
   postManualJournalEntryAction,
   recordCustomerReceiptAction,
   runDepreciationAction,
+  runPayrollAction,
 } from "./actions";
 import { MetricCard } from "~/components/metric-card";
 import { Badge } from "~/components/ui/badge";
@@ -57,6 +61,10 @@ import {
   getFixedAssetsSummary,
   listFixedAssets,
 } from "~/server/services/fixed-assets";
+import {
+  getPayrollSummary,
+  listEmployees,
+} from "~/server/services/hr-payroll";
 import {
   getFinanceOverview,
   getGeneralLedgerOverview,
@@ -177,13 +185,21 @@ export default async function AdminFinancePage() {
       listRecentJournalEntries().catch(() => []),
     ]);
 
-  const [bankLines, reconciliation, fixedAssets, fixedAssetsSummary] =
-    await Promise.all([
-      listBankStatementLines().catch(() => []),
-      getReconciliationOverview().catch(() => null),
-      listFixedAssets().catch(() => []),
-      getFixedAssetsSummary().catch(() => null),
-    ]);
+  const [
+    bankLines,
+    reconciliation,
+    fixedAssets,
+    fixedAssetsSummary,
+    employees,
+    payrollSummary,
+  ] = await Promise.all([
+    listBankStatementLines().catch(() => []),
+    getReconciliationOverview().catch(() => null),
+    listFixedAssets().catch(() => []),
+    getFixedAssetsSummary().catch(() => null),
+    listEmployees().catch(() => []),
+    getPayrollSummary().catch(() => null),
+  ]);
 
   const fixedAssetStatusLabel: Record<string, string> = {
     ACTIVE: "פעיל",
@@ -480,12 +496,13 @@ export default async function AdminFinancePage() {
                   <TableHead className="text-left">עלות</TableHead>
                   <TableHead className="text-left">ערך בספרים</TableHead>
                   <TableHead>סטטוס</TableHead>
+                  <TableHead />
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {fixedAssets.length === 0 ? (
                   <TableEmptyRow
-                    colSpan={5}
+                    colSpan={6}
                     description="טרם הוונו נכסים קבועים."
                     icon={Building2}
                     title="אין נכסים"
@@ -510,6 +527,134 @@ export default async function AdminFinancePage() {
                           }
                         >
                           {fixedAssetStatusLabel[asset.status] ?? asset.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {asset.status === "ACTIVE" ? (
+                          <form
+                            action={disposeFixedAssetAction}
+                            className="flex items-center gap-1"
+                          >
+                            <input
+                              name="fixedAssetId"
+                              type="hidden"
+                              value={asset.id}
+                            />
+                            <Input
+                              aria-label="תמורה"
+                              className="h-8 w-24"
+                              name="proceeds"
+                              placeholder="תמורה"
+                              step="0.01"
+                              type="number"
+                            />
+                            <Button size="sm" type="submit" variant="ghost">
+                              מימוש
+                            </Button>
+                          </form>
+                        ) : null}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between gap-2">
+            <span className="flex items-center gap-2">
+              <Users aria-hidden="true" className="size-5" />
+              כוח אדם ושכר (HR / Payroll)
+            </span>
+            <div className="flex items-center gap-2">
+              {payrollSummary ? (
+                <span className="text-muted-foreground text-sm font-normal">
+                  {payrollSummary.headcount} עובדים ·{" "}
+                  {formatPrice(payrollSummary.monthlyGross)} ברוטו/חודש
+                </span>
+              ) : null}
+              <form action={runPayrollAction}>
+                <Button size="sm" type="submit" variant="outline">
+                  הרץ שכר לחודש הנוכחי
+                </Button>
+              </form>
+            </div>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
+          <form action={createEmployeeAction} className="grid gap-3">
+            <p className="text-muted-foreground text-sm">
+              קליטת עובד. הרצת שכר חודשית רושמת ל-GL: Dr הוצאות שכר / Cr מזומן
+              (נטו) / Cr ניכויים. שיעורי ניכוי להמחשה — לא שכר סטטוטורי.
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <Input name="firstName" placeholder="שם פרטי" required />
+              <Input name="lastName" placeholder="שם משפחה" required />
+            </div>
+            <Input name="role" placeholder="תפקיד (רשות)" />
+            <Input name="department" placeholder="מחלקה (רשות)" />
+            <Input
+              name="monthlyGross"
+              placeholder="שכר חודשי ברוטו"
+              step="0.01"
+              type="number"
+            />
+            <Button className="w-fit" type="submit">
+              קלוט עובד
+            </Button>
+          </form>
+
+          <div className="grid gap-2">
+            <span className="text-muted-foreground text-sm">
+              עובדים
+              {payrollSummary?.lastRun
+                ? ` · שכר אחרון ${payrollSummary.lastRun.period}: ${formatPrice(payrollSummary.lastRun.netTotal)} נטו`
+                : ""}
+            </span>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>מס׳</TableHead>
+                  <TableHead>שם</TableHead>
+                  <TableHead>תפקיד</TableHead>
+                  <TableHead className="text-left">שכר ברוטו</TableHead>
+                  <TableHead>סטטוס</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {employees.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={5}
+                    description="טרם נקלטו עובדים."
+                    icon={Users}
+                    title="אין עובדים"
+                  />
+                ) : (
+                  employees.map((employee) => (
+                    <TableRow key={employee.id}>
+                      <TableCell className="whitespace-nowrap font-mono text-xs">
+                        {employee.employeeNumber}
+                      </TableCell>
+                      <TableCell className="text-sm">{employee.name}</TableCell>
+                      <TableCell className="text-sm">
+                        {employee.role ?? "—"}
+                      </TableCell>
+                      <TableCell className="text-left">
+                        {formatPrice(employee.monthlyGross)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            employee.status === "ACTIVE"
+                              ? "secondary"
+                              : "outline"
+                          }
+                        >
+                          {employee.status === "ACTIVE" ? "פעיל" : "סיים"}
                         </Badge>
                       </TableCell>
                     </TableRow>
