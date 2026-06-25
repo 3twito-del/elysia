@@ -2,8 +2,10 @@ import {
   ArrowLeftRight,
   Boxes,
   ClipboardList,
+  GaugeCircle,
   PackageCheck,
   ReceiptText,
+  Search,
   Truck,
   Workflow,
 } from "lucide-react";
@@ -47,6 +49,7 @@ import {
   listVendorsForSelect,
 } from "~/server/services/accounts-payable";
 import { getErpOverview } from "~/server/services/erp";
+import { getAvailabilityBySku } from "~/server/services/availability";
 import { listInventoryCounts } from "~/server/services/cycle-count";
 import {
   listBranchesForSelect,
@@ -58,6 +61,15 @@ export const metadata = {
 };
 
 export const dynamic = "force-dynamic";
+
+type AdminErpPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+function firstParam(value: string | string[] | undefined) {
+  const param = Array.isArray(value) ? value[0] : value;
+  return param && param.length > 0 ? param.trim() : undefined;
+}
 
 const reorderUrgencyLabel = {
   CRITICAL: "קריטי",
@@ -109,7 +121,9 @@ const transferStatusVariant: Record<
   CANCELLED: "destructive",
 };
 
-export default async function AdminErpPage() {
+export default async function AdminErpPage({
+  searchParams,
+}: AdminErpPageProps) {
   const access = await getAdminPageAccess("ERP_READ", "/admin/erp");
 
   if (access.denied) return <AdminForbidden {...access.denied} />;
@@ -139,6 +153,11 @@ export default async function AdminErpPage() {
     listStockTransfers().catch(() => []),
     listInventoryCounts().catch(() => []),
   ]);
+
+  const atpSku = firstParam((await searchParams).atpSku);
+  const availability = atpSku
+    ? await getAvailabilityBySku(atpSku).catch(() => null)
+    : null;
 
   return (
     <AdminShell
@@ -179,6 +198,114 @@ export default async function AdminErpPage() {
           value={String(erp.counts.reorderRecommendations)}
         />
       </div>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <GaugeCircle aria-hidden="true" className="size-5" />
+            זמינות להבטחה (ATP)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          <p className="text-muted-foreground text-sm">
+            זמינות-להבטחה רשתית: זמין למכירה (יתרה − שמור − מלאי ביטחון) מסוכם על
+            פני כל הסניפים. מלאי נכנס (הזמנות רכש פתוחות) מוצג בנפרד ואינו נספר
+            כזמין להבטחה.
+          </p>
+          <form className="flex flex-wrap gap-2">
+            <Input
+              className="max-w-xs"
+              defaultValue={atpSku ?? ""}
+              name="atpSku"
+              placeholder='מק"ט (SKU)'
+            />
+            <Button type="submit" variant="outline">
+              <Search aria-hidden="true" className="size-4" />
+              בדוק זמינות
+            </Button>
+          </form>
+
+          {atpSku && !availability ? (
+            <p className="text-muted-foreground text-sm">
+              לא נמצא מק&quot;ט &quot;{atpSku}&quot;.
+            </p>
+          ) : null}
+
+          {availability ? (
+            <div className="grid gap-4">
+              <div className="text-sm font-medium">
+                {availability.variantName}{" "}
+                <span className="text-muted-foreground font-mono text-xs">
+                  ({availability.sku})
+                </span>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-4">
+                <div className="grid gap-1">
+                  <span className="text-muted-foreground text-sm">
+                    זמין להבטחה
+                  </span>
+                  <span className="text-2xl font-semibold">
+                    {availability.networkAtp}
+                  </span>
+                </div>
+                <div className="grid gap-1">
+                  <span className="text-muted-foreground text-sm">במלאי</span>
+                  <span className="text-2xl font-semibold">
+                    {availability.totalOnHand}
+                  </span>
+                </div>
+                <div className="grid gap-1">
+                  <span className="text-muted-foreground text-sm">שמור</span>
+                  <span className="text-2xl font-semibold">
+                    {availability.totalReserved}
+                  </span>
+                </div>
+                <div className="grid gap-1">
+                  <span className="text-muted-foreground text-sm">מלאי נכנס</span>
+                  <span className="text-2xl font-semibold">
+                    {availability.onOrder}
+                  </span>
+                </div>
+              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>סניף</TableHead>
+                    <TableHead>במלאי</TableHead>
+                    <TableHead>שמור</TableHead>
+                    <TableHead>מלאי ביטחון</TableHead>
+                    <TableHead>זמין</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {availability.byBranch.length === 0 ? (
+                    <TableEmptyRow
+                      colSpan={5}
+                      description="אין רשומות מלאי לפריט זה."
+                      icon={GaugeCircle}
+                      title="אין מלאי"
+                    />
+                  ) : (
+                    availability.byBranch.map((branch) => (
+                      <TableRow key={branch.branchId}>
+                        <TableCell className="text-sm">
+                          {branch.branchName}
+                        </TableCell>
+                        <TableCell>{branch.onHand}</TableCell>
+                        <TableCell>{branch.reserved}</TableCell>
+                        <TableCell>{branch.safetyStock}</TableCell>
+                        <TableCell className="font-medium">
+                          {branch.sellable}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          ) : null}
+        </CardContent>
+      </Card>
 
       <Card className="mt-6 rounded-md">
         <CardHeader>
