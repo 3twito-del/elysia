@@ -4,7 +4,9 @@ import {
   CheckSquare,
   FileText,
   Megaphone,
+  Scale,
   Search,
+  ShieldAlert,
 } from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
@@ -20,6 +22,8 @@ import {
   createApprovalRequestAction,
   createArticleAction,
   createBookingAction,
+  createComplianceItemAction,
+  createContractAction,
   createDocumentAction,
   createResourceAction,
   decideApprovalRequestAction,
@@ -27,6 +31,8 @@ import {
   pinAnnouncementAction,
   requestSignatureAction,
   setArticleStatusAction,
+  setComplianceStatusAction,
+  setContractStatusAction,
   signDocumentAction,
 } from "./actions";
 import { Badge } from "~/components/ui/badge";
@@ -54,9 +60,17 @@ import {
   listApprovalRequests,
 } from "~/server/services/approvals";
 import {
+  getContractsSummary,
+  listContracts,
+} from "~/server/services/contracts";
+import {
   getDocumentSummary,
   listDocuments,
 } from "~/server/services/document-management";
+import {
+  getComplianceSummary,
+  listComplianceItems,
+} from "~/server/services/grc";
 import { listArticles } from "~/server/services/knowledge-base";
 import {
   listResources,
@@ -130,7 +144,36 @@ export default async function AdminWorkspacePage({
     listUpcomingBookings().catch(() => []),
   ]);
 
+  const [complianceItems, complianceSummary, contracts, contractsSummary] =
+    await Promise.all([
+      listComplianceItems().catch(() => []),
+      getComplianceSummary().catch(() => null),
+      listContracts().catch(() => []),
+      getContractsSummary().catch(() => null),
+    ]);
+
   if (!articles) return <AdminDatabaseFallback />;
+
+  const severityLabelMap: Record<string, string> = {
+    LOW: "נמוכה",
+    MEDIUM: "בינונית",
+    HIGH: "גבוהה",
+    CRITICAL: "קריטית",
+  };
+
+  const complianceStatusLabel: Record<string, string> = {
+    OPEN: "פתוח",
+    IN_PROGRESS: "בטיפול",
+    RESOLVED: "טופל",
+    ACCEPTED: "התקבל",
+  };
+
+  const contractStatusLabel: Record<string, string> = {
+    DRAFT: "טיוטה",
+    ACTIVE: "פעיל",
+    EXPIRED: "פג",
+    TERMINATED: "בוטל",
+  };
 
   const docSignatureLabel: Record<string, string> = {
     NONE: "—",
@@ -689,6 +732,208 @@ export default async function AdminWorkspacePage({
                             בטל
                           </Button>
                         </form>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between gap-2">
+            <span className="flex items-center gap-2">
+              <ShieldAlert aria-hidden="true" className="size-5" />
+              ציות וסיכון (GRC)
+            </span>
+            {complianceSummary ? (
+              <span className="text-muted-foreground text-sm font-normal">
+                {complianceSummary.open} פתוחים ·{" "}
+                {complianceSummary.openHighOrCritical} חמורים
+              </span>
+            ) : null}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
+          <form action={createComplianceItemAction} className="grid gap-3">
+            <p className="text-muted-foreground text-sm">
+              מרשם סיכונים/מדיניות/ביקורת ומשימות רגולציה.
+            </p>
+            <Input name="title" placeholder="כותרת הפריט" required />
+            <Input name="category" placeholder="קטגוריה (סיכון/מדיניות…)" />
+            <div className="grid grid-cols-2 gap-2">
+              <select
+                aria-label="חומרה"
+                autoComplete="off"
+                className="glass-control h-10 rounded-md border px-3 text-sm"
+                defaultValue="MEDIUM"
+                name="severity"
+              >
+                <option value="LOW">נמוכה</option>
+                <option value="MEDIUM">בינונית</option>
+                <option value="HIGH">גבוהה</option>
+                <option value="CRITICAL">קריטית</option>
+              </select>
+              <Input aria-label="יעד" name="dueAt" type="date" />
+            </div>
+            <Button className="w-fit" type="submit">
+              צור פריט
+            </Button>
+          </form>
+
+          <div className="grid gap-2">
+            {complianceItems.length === 0 ? (
+              <p className="text-muted-foreground text-sm">המרשם ריק.</p>
+            ) : (
+              complianceItems.map((item) => (
+                <div className="rounded-md border p-3" key={item.id}>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="font-medium">
+                      {item.title}
+                      {item.overdue ? (
+                        <span className="text-destructive"> · באיחור</span>
+                      ) : null}
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <Badge
+                        variant={
+                          item.severity === "CRITICAL" || item.severity === "HIGH"
+                            ? "destructive"
+                            : "outline"
+                        }
+                      >
+                        {severityLabelMap[item.severity] ?? item.severity}
+                      </Badge>
+                      <Badge variant="outline">
+                        {complianceStatusLabel[item.status] ?? item.status}
+                      </Badge>
+                      {item.status === "OPEN" || item.status === "IN_PROGRESS" ? (
+                        <form action={setComplianceStatusAction}>
+                          <input name="itemId" type="hidden" value={item.id} />
+                          <input name="status" type="hidden" value="RESOLVED" />
+                          <Button size="sm" type="submit" variant="ghost">
+                            סגור
+                          </Button>
+                        </form>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between gap-2">
+            <span className="flex items-center gap-2">
+              <Scale aria-hidden="true" className="size-5" />
+              חוזים (Contracts / CLM)
+            </span>
+            {contractsSummary ? (
+              <span className="text-muted-foreground text-sm font-normal">
+                {contractsSummary.active} פעילים · {contractsSummary.expiringSoon}{" "}
+                לקראת פקיעה
+              </span>
+            ) : null}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
+          <form action={createContractAction} className="grid gap-3">
+            <p className="text-muted-foreground text-sm">
+              ניהול מחזור חיים של חוזה: טיוטה → פעיל → פג/בוטל, עם התראת פקיעה.
+            </p>
+            <Input name="title" placeholder="כותרת החוזה" required />
+            <Input name="counterparty" placeholder="צד נגדי" required />
+            <div className="grid grid-cols-2 gap-2">
+              <Input name="value" placeholder="שווי (רשות)" step="0.01" type="number" />
+              <Input aria-label="פקיעה" name="endsAt" type="date" />
+            </div>
+            <Input name="type" placeholder="סוג (ספק/לקוח/NDA…)" />
+            <Button className="w-fit" type="submit">
+              צור חוזה
+            </Button>
+          </form>
+
+          <div className="grid gap-2">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>מס׳</TableHead>
+                  <TableHead>כותרת</TableHead>
+                  <TableHead>צד נגדי</TableHead>
+                  <TableHead>סטטוס</TableHead>
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {contracts.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={5}
+                    description="טרם נוצרו חוזים."
+                    icon={Scale}
+                    title="אין חוזים"
+                  />
+                ) : (
+                  contracts.map((contract) => (
+                    <TableRow key={contract.id}>
+                      <TableCell className="whitespace-nowrap font-mono text-xs">
+                        {contract.contractNumber}
+                      </TableCell>
+                      <TableCell className="max-w-[10rem] truncate text-sm">
+                        {contract.title}
+                        {contract.expiringSoon ? (
+                          <span className="text-destructive"> · פוקע</span>
+                        ) : null}
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {contract.counterparty}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            contract.status === "ACTIVE" ? "secondary" : "outline"
+                          }
+                        >
+                          {contractStatusLabel[contract.status] ??
+                            contract.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {contract.status === "DRAFT" ? (
+                          <form action={setContractStatusAction}>
+                            <input
+                              name="contractId"
+                              type="hidden"
+                              value={contract.id}
+                            />
+                            <input name="status" type="hidden" value="ACTIVE" />
+                            <Button size="sm" type="submit" variant="outline">
+                              הפעל
+                            </Button>
+                          </form>
+                        ) : contract.status === "ACTIVE" ? (
+                          <form action={setContractStatusAction}>
+                            <input
+                              name="contractId"
+                              type="hidden"
+                              value={contract.id}
+                            />
+                            <input
+                              name="status"
+                              type="hidden"
+                              value="TERMINATED"
+                            />
+                            <Button size="sm" type="submit" variant="ghost">
+                              סיים
+                            </Button>
+                          </form>
+                        ) : null}
                       </TableCell>
                     </TableRow>
                   ))

@@ -989,6 +989,50 @@ model PriceRule {
   @@index([isActive])
 }
 
+/// A governance / risk / compliance register item (GRC).
+model ComplianceItem {
+  id               String    @id @default(cuid())
+  itemNumber       String    @unique
+  title            String
+  /// RISK | POLICY | AUDIT | TASK
+  category         String?
+  /// LOW | MEDIUM | HIGH | CRITICAL
+  severity         String    @default("MEDIUM")
+  /// OPEN | IN_PROGRESS | RESOLVED | ACCEPTED
+  status           String    @default("OPEN")
+  ownerAdminUserId String?
+  dueAt            DateTime?
+  notes            String?
+  resolvedAt       DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([status])
+  @@index([severity])
+}
+
+/// A legal contract tracked through its lifecycle (LGL / CLM).
+model Contract {
+  id             String    @id @default(cuid())
+  contractNumber String    @unique
+  title          String
+  counterparty   String
+  /// VENDOR | CUSTOMER | NDA | LEASE | OTHER
+  type           String?
+  value          Decimal?  @db.Decimal(14, 2)
+  /// DRAFT | ACTIVE | EXPIRED | TERMINATED
+  status         String    @default("DRAFT")
+  startsAt       DateTime? @db.Date
+  endsAt         DateTime? @db.Date
+  autoRenew      Boolean   @default(false)
+  notes          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([status])
+  @@index([endsAt])
+}
+
 model Customer {
   id                        String                      @id @default(cuid())
   userId                    String?                     @unique

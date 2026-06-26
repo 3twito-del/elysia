@@ -29,6 +29,14 @@ import {
   setArticleStatus,
 } from "~/server/services/knowledge-base";
 import {
+  createContract,
+  setContractStatus,
+} from "~/server/services/contracts";
+import {
+  createComplianceItem,
+  setComplianceStatus,
+} from "~/server/services/grc";
+import {
   cancelBooking,
   createBooking,
   createResource,
@@ -246,6 +254,93 @@ export async function cancelBookingAction(formData: FormData) {
   if (!bookingId) throw new Error("חסר מזהה שיבוץ.");
 
   await cancelBooking({ bookingId });
+
+  revalidatePath("/admin/workspace");
+}
+
+export async function createComplianceItemAction(formData: FormData) {
+  const admin = await requireAdmin("ERP_WRITE");
+
+  const title = stringValue(formData.get("title")).trim();
+  if (!title) throw new Error("כותרת הפריט היא שדה חובה.");
+
+  const severityRaw = stringValue(formData.get("severity"));
+  const severity =
+    severityRaw === "LOW" ||
+    severityRaw === "HIGH" ||
+    severityRaw === "CRITICAL"
+      ? severityRaw
+      : "MEDIUM";
+  const dueAt = optionalString(formData.get("dueAt"));
+
+  await createComplianceItem({
+    title,
+    category: optionalString(formData.get("category")),
+    severity,
+    dueAt: dueAt ? new Date(dueAt) : undefined,
+    ownerAdminUserId: admin.id,
+  });
+
+  revalidatePath("/admin/workspace");
+}
+
+export async function setComplianceStatusAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const itemId = stringValue(formData.get("itemId"));
+  const status = stringValue(formData.get("status"));
+  if (!itemId) throw new Error("חסר מזהה פריט.");
+  if (
+    status !== "OPEN" &&
+    status !== "IN_PROGRESS" &&
+    status !== "RESOLVED" &&
+    status !== "ACCEPTED"
+  ) {
+    throw new Error("סטטוס לא תקין.");
+  }
+
+  await setComplianceStatus({ itemId, status });
+
+  revalidatePath("/admin/workspace");
+}
+
+export async function createContractAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const title = stringValue(formData.get("title")).trim();
+  const counterparty = stringValue(formData.get("counterparty")).trim();
+  if (!title || !counterparty) throw new Error("כותרת וצד נגדי הם שדות חובה.");
+
+  const valueRaw = stringValue(formData.get("value")).trim();
+  const endsAt = optionalString(formData.get("endsAt"));
+
+  await createContract({
+    title,
+    counterparty,
+    type: optionalString(formData.get("type")),
+    value: valueRaw ? Number(valueRaw) || 0 : undefined,
+    endsAt: endsAt ? new Date(endsAt) : undefined,
+  });
+
+  revalidatePath("/admin/workspace");
+}
+
+export async function setContractStatusAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const contractId = stringValue(formData.get("contractId"));
+  const status = stringValue(formData.get("status"));
+  if (!contractId) throw new Error("חסר מזהה חוזה.");
+  if (
+    status !== "DRAFT" &&
+    status !== "ACTIVE" &&
+    status !== "EXPIRED" &&
+    status !== "TERMINATED"
+  ) {
+    throw new Error("סטטוס לא תקין.");
+  }
+
+  await setContractStatus({ contractId, status });
 
   revalidatePath("/admin/workspace");
 }
