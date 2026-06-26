@@ -1094,6 +1094,37 @@ model ITAsset {
   @@index([status])
 }
 
+/// A job opening in the recruiting pipeline (HRX, §4.AG).
+model JobOpening {
+  id         String         @id @default(cuid())
+  title      String
+  department String?
+  /// OPEN | ON_HOLD | CLOSED
+  status     String         @default("OPEN")
+  openings   Int            @default(1)
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  candidates JobCandidate[]
+
+  @@index([status])
+}
+
+/// A candidate moving through a job opening's stages (HRX).
+model JobCandidate {
+  id        String     @id @default(cuid())
+  openingId String
+  name      String
+  email     String?
+  /// APPLIED | SCREEN | INTERVIEW | OFFER | HIRED | REJECTED
+  stage     String     @default("APPLIED")
+  notes     String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  opening   JobOpening @relation(fields: [openingId], references: [id], onDelete: Cascade)
+
+  @@index([openingId, stage])
+}
+
 /// A facilities / branch maintenance request (FAC, §4.AH).
 model FacilityRequest {
   id            String    @id @default(cuid())

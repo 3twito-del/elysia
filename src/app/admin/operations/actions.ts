@@ -19,6 +19,12 @@ import {
   setAssetStatus,
   setTicketStatus,
 } from "~/server/services/it-service";
+import {
+  advanceCandidate,
+  createCandidate,
+  createOpening,
+  rejectCandidate,
+} from "~/server/services/recruiting";
 
 export async function createTicketAction(formData: FormData) {
   const admin = await requireAdmin("ERP_WRITE");
@@ -129,6 +135,59 @@ export async function setFacilityStatusAction(formData: FormData) {
   }
 
   await setFacilityStatus({ requestId, status });
+
+  revalidatePath("/admin/operations");
+}
+
+export async function createOpeningAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const title = stringValue(formData.get("title")).trim();
+  if (!title) throw new Error("כותרת המשרה היא שדה חובה.");
+
+  await createOpening({
+    title,
+    department: optionalString(formData.get("department")),
+    openings: Number(formData.get("openings") ?? 1) || 1,
+  });
+
+  revalidatePath("/admin/operations");
+}
+
+export async function createCandidateAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const openingId = stringValue(formData.get("openingId"));
+  const name = stringValue(formData.get("name")).trim();
+  if (!openingId || !name) throw new Error("יש לבחור משרה ולהזין שם מועמד.");
+
+  await createCandidate({
+    openingId,
+    name,
+    email: optionalString(formData.get("email")),
+  });
+
+  revalidatePath("/admin/operations");
+}
+
+export async function advanceCandidateAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const candidateId = stringValue(formData.get("candidateId"));
+  if (!candidateId) throw new Error("חסר מזהה מועמד.");
+
+  await advanceCandidate({ candidateId });
+
+  revalidatePath("/admin/operations");
+}
+
+export async function rejectCandidateAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const candidateId = stringValue(formData.get("candidateId"));
+  if (!candidateId) throw new Error("חסר מזהה מועמד.");
+
+  await rejectCandidate({ candidateId });
 
   revalidatePath("/admin/operations");
 }

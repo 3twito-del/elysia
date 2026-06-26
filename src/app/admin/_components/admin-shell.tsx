@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import {
+  Activity,
   BarChart3,
   Bell,
   BookOpen,
@@ -41,6 +42,7 @@ type AdminShellProps = {
 export type AdminSection =
   | "appointments"
   | "audit"
+  | "bi"
   | "blog"
   | "catalog"
   | "crm"
@@ -70,6 +72,7 @@ const navItems: Array<{
     id: "insights",
     label: "Insights",
   },
+  { href: "/admin/bi", icon: Activity, id: "bi", label: "BI" },
   { href: "/admin/crm", icon: ContactRound, id: "crm", label: "CRM" },
   { href: "/admin/erp", icon: Workflow, id: "erp", label: "ERP" },
   { href: "/admin/finance", icon: Landmark, id: "finance", label: "Finance" },

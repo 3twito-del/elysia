@@ -1,4 +1,4 @@
-import { Building, Laptop, LifeBuoy } from "lucide-react";
+import { Building, Laptop, LifeBuoy, UserPlus } from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
 import {
@@ -7,9 +7,13 @@ import {
 } from "../_components/admin-states";
 import { getAdminPageAccess } from "../_lib/access";
 import {
+  advanceCandidateAction,
   createAssetAction,
+  createCandidateAction,
   createFacilityRequestAction,
+  createOpeningAction,
   createTicketAction,
+  rejectCandidateAction,
   setAssetStatusAction,
   setFacilityStatusAction,
   setTicketStatusAction,
@@ -31,6 +35,10 @@ import {
   getFacilitySummary,
   listFacilityRequests,
 } from "~/server/services/facilities";
+import {
+  listCandidates,
+  listOpenings,
+} from "~/server/services/recruiting";
 import {
   getAssetSummary,
   getTicketSummary,
@@ -85,6 +93,20 @@ export default async function AdminOperationsPage() {
       listFacilityRequests().catch(() => []),
       getFacilitySummary().catch(() => null),
     ]);
+
+  const [openings, candidates] = await Promise.all([
+    listOpenings().catch(() => []),
+    listCandidates().catch(() => []),
+  ]);
+
+  const candidateStageLabel: Record<string, string> = {
+    APPLIED: "הוגש",
+    SCREEN: "סינון",
+    INTERVIEW: "ראיון",
+    OFFER: "הצעה",
+    HIRED: "התקבל",
+    REJECTED: "נדחה",
+  };
 
   if (!tickets) return <AdminDatabaseFallback />;
 
@@ -378,6 +400,132 @@ export default async function AdminOperationsPage() {
                             סמן בוצע
                           </Button>
                         </form>
+                      ) : null}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <UserPlus aria-hidden="true" className="size-5" />
+            גיוס (Recruiting)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
+          <div className="grid gap-5">
+            <form action={createOpeningAction} className="grid gap-2">
+              <p className="text-muted-foreground text-sm">
+                משרה ומועמדים בצנרת: הוגש → סינון → ראיון → הצעה → התקבל.
+              </p>
+              <Input name="title" placeholder="כותרת המשרה" required />
+              <div className="grid grid-cols-2 gap-2">
+                <Input name="department" placeholder="מחלקה" />
+                <Input
+                  defaultValue="1"
+                  name="openings"
+                  placeholder="תקנים"
+                  type="number"
+                />
+              </div>
+              <Button className="w-fit" size="sm" type="submit">
+                פתח משרה
+              </Button>
+            </form>
+
+            <form action={createCandidateAction} className="grid gap-2 border-t pt-4">
+              <select
+                aria-label="משרה"
+                autoComplete="off"
+                className="glass-control h-10 rounded-md border px-3 text-sm"
+                defaultValue=""
+                name="openingId"
+                required
+              >
+                <option disabled value="">
+                  בחר משרה…
+                </option>
+                {openings.map((opening) => (
+                  <option key={opening.id} value={opening.id}>
+                    {opening.title}
+                  </option>
+                ))}
+              </select>
+              <Input name="name" placeholder="שם המועמד" required />
+              <Input name="email" placeholder='דוא"ל (רשות)' />
+              <Button className="w-fit" size="sm" type="submit">
+                הוסף מועמד
+              </Button>
+            </form>
+          </div>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>מועמד</TableHead>
+                <TableHead>משרה</TableHead>
+                <TableHead>שלב</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {candidates.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={4}
+                  description="טרם נוספו מועמדים."
+                  icon={UserPlus}
+                  title="אין מועמדים"
+                />
+              ) : (
+                candidates.map((candidate) => (
+                  <TableRow key={candidate.id}>
+                    <TableCell className="text-sm">{candidate.name}</TableCell>
+                    <TableCell className="max-w-[10rem] truncate text-sm">
+                      {candidate.openingTitle}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          candidate.stage === "HIRED"
+                            ? "secondary"
+                            : candidate.stage === "REJECTED"
+                              ? "destructive"
+                              : "outline"
+                        }
+                      >
+                        {candidateStageLabel[candidate.stage] ?? candidate.stage}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {candidate.stage !== "HIRED" &&
+                      candidate.stage !== "REJECTED" ? (
+                        <div className="flex gap-1">
+                          <form action={advanceCandidateAction}>
+                            <input
+                              name="candidateId"
+                              type="hidden"
+                              value={candidate.id}
+                            />
+                            <Button size="sm" type="submit" variant="outline">
+                              קדם
+                            </Button>
+                          </form>
+                          <form action={rejectCandidateAction}>
+                            <input
+                              name="candidateId"
+                              type="hidden"
+                              value={candidate.id}
+                            />
+                            <Button size="sm" type="submit" variant="ghost">
+                              דחה
+                            </Button>
+                          </form>
+                        </div>
                       ) : null}
                     </TableCell>
                   </TableRow>

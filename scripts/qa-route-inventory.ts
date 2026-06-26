@@ -90,6 +90,7 @@ const staticPublicRoutes = [
 const protectedAdminRoutes = [
   "/admin",
   "/admin/insights",
+  "/admin/bi",
   "/admin/insights/live",
   "/admin/insights/replay",
   "/admin/insights/replay/[sessionId]",
