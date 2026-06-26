@@ -1203,6 +1203,107 @@ model ProjectTimeEntry {
   @@index([projectId, status])
 }
 
+/// A no-code automation: trigger → condition → actions (WFL, §4.P).
+model WorkflowDefinition {
+  id            String        @id @default(cuid())
+  name          String
+  description   String?
+  /// EVENT | MANUAL | SCHEDULE
+  triggerType   String        @default("MANUAL")
+  triggerEvent  String?
+  scheduleCron  String?
+  /// rule JSON (all/any/not + {field,op,value}); null = always run
+  conditionRule Json?
+  /// array of {type, config} action descriptors
+  actions       Json
+  isActive      Boolean       @default(true)
+  runCount      Int           @default(0)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  runs          WorkflowRun[]
+
+  @@index([triggerType, isActive])
+  @@index([triggerEvent])
+}
+
+/// An execution record of a workflow (WFL-004; idempotent via dedupeKey).
+model WorkflowRun {
+  id            String             @id @default(cuid())
+  workflowId    String
+  /// MATCHED | SKIPPED | FAILED
+  status        String
+  dedupeKey     String?            @unique
+  context       Json?
+  actionResults Json?
+  error         String?
+  createdAt     DateTime           @default(now())
+  workflow      WorkflowDefinition @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@index([workflowId, createdAt])
+}
+
+/// A no-code form definition over a field schema (WFL-002).
+model FormDefinition {
+  id          String           @id @default(cuid())
+  slug        String           @unique
+  name        String
+  description String?
+  /// array of field descriptors {key,label,type,required,options}
+  fields      Json
+  isActive    Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  submissions FormSubmission[]
+
+  @@index([isActive])
+}
+
+/// A submitted instance of a no-code form (WFL-002).
+model FormSubmission {
+  id            String         @id @default(cuid())
+  formId        String
+  data          Json
+  submittedById String?
+  createdAt     DateTime       @default(now())
+  form          FormDefinition @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@index([formId, createdAt])
+}
+
+/// A custom field attached to any entity without a schema change (WFL-002).
+model CustomFieldDefinition {
+  id         String             @id @default(cuid())
+  entityType String
+  key        String
+  label      String
+  /// TEXT | NUMBER | BOOLEAN | DATE | SELECT
+  fieldType  String             @default("TEXT")
+  required   Boolean            @default(false)
+  options    Json?
+  isActive   Boolean            @default(true)
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+  values     CustomFieldValue[]
+
+  @@unique([entityType, key])
+  @@index([entityType, isActive])
+}
+
+/// A stored value for a custom field on a specific entity row (WFL-002).
+model CustomFieldValue {
+  id         String                @id @default(cuid())
+  fieldId    String
+  entityType String
+  entityId   String
+  value      String?
+  createdAt  DateTime              @default(now())
+  updatedAt  DateTime              @updatedAt
+  field      CustomFieldDefinition @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+
+  @@unique([fieldId, entityId])
+  @@index([entityType, entityId])
+}
+
 model Customer {
   id                        String                      @id @default(cuid())
   userId                    String?                     @unique

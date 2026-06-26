@@ -21,6 +21,7 @@ import {
   Wrench,
   Workflow,
   Users,
+  Zap,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -60,6 +61,7 @@ export type AdminSection =
   | "pos"
   | "projects"
   | "service"
+  | "workflow"
   | "workspace";
 
 const navItems: Array<{
@@ -98,6 +100,12 @@ const navItems: Array<{
     icon: FolderKanban,
     id: "projects",
     label: "פרויקטים",
+  },
+  {
+    href: "/admin/workflow",
+    icon: Zap,
+    id: "workflow",
+    label: "אוטומציות",
   },
   {
     href: "/admin/notifications",
