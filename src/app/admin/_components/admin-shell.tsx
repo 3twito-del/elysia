@@ -8,6 +8,7 @@ import {
   CalendarClock,
   ClipboardList,
   ContactRound,
+  FolderKanban,
   Gauge,
   Headset,
   History,
@@ -57,6 +58,7 @@ export type AdminSection =
   | "orders"
   | "overview"
   | "pos"
+  | "projects"
   | "service"
   | "workspace";
 
@@ -91,6 +93,12 @@ const navItems: Array<{
     label: "מרחב עבודה",
   },
   { href: "/admin/operations", icon: Wrench, id: "operations", label: "תפעול" },
+  {
+    href: "/admin/projects",
+    icon: FolderKanban,
+    id: "projects",
+    label: "פרויקטים",
+  },
   {
     href: "/admin/notifications",
     icon: Bell,

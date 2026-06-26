@@ -1145,6 +1145,63 @@ model FacilityRequest {
   @@index([status])
 }
 
+/// A delivery/professional-services project with budget and billing (PRJ, §4.J).
+model Project {
+  id          String              @id @default(cuid())
+  code        String              @unique
+  name        String
+  /// optional link to a Customer (no hard FK — stored as id)
+  customerId  String?
+  /// FIXED | TIME_AND_MATERIALS | MILESTONE
+  billingType String              @default("MILESTONE")
+  /// PLANNING | ACTIVE | ON_HOLD | COMPLETED | CANCELLED
+  status      String              @default("PLANNING")
+  budgetAmount Decimal            @default(0) @db.Decimal(14, 2)
+  startDate   DateTime?           @db.Date
+  endDate     DateTime?           @db.Date
+  notes       String?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  milestones  ProjectMilestone[]
+  timeEntries ProjectTimeEntry[]
+
+  @@index([status])
+}
+
+/// A billable milestone within a project (PRJ).
+model ProjectMilestone {
+  id        String   @id @default(cuid())
+  projectId String
+  name      String
+  amount    Decimal  @default(0) @db.Decimal(14, 2)
+  dueDate   DateTime? @db.Date
+  /// PENDING | COMPLETED | INVOICED
+  status    String   @default("PENDING")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, status])
+}
+
+/// A logged time entry against a project (PRJ).
+model ProjectTimeEntry {
+  id          String   @id @default(cuid())
+  projectId   String
+  adminUserId String?
+  workDate    DateTime @db.Date
+  hours       Decimal  @db.Decimal(8, 2)
+  ratePerHour Decimal  @default(0) @db.Decimal(10, 2)
+  description String?
+  billable    Boolean  @default(true)
+  /// UNBILLED | INVOICED
+  status      String   @default("UNBILLED")
+  createdAt   DateTime @default(now())
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, status])
+}
+
 model Customer {
   id                        String                      @id @default(cuid())
   userId                    String?                     @unique
