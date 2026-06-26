@@ -26,6 +26,8 @@ import {
   postManualJournalEntry,
 } from "~/server/services/manual-journal";
 import { setBudget } from "~/server/services/budgeting";
+import { createLedgerAccount } from "~/server/services/chart-of-accounts";
+import { seedChartOfAccounts } from "~/server/services/ledger";
 import {
   cancelSubscription,
   createPlan,
@@ -262,6 +264,27 @@ export async function rejectExpenseClaimAction(formData: FormData) {
   if (!claimId) throw new Error("חסר מזהה בקשה.");
 
   await rejectExpenseClaim({ claimId });
+
+  revalidatePath("/admin/finance");
+}
+
+export async function seedChartAction() {
+  await requireAdmin("ERP_WRITE");
+
+  await seedChartOfAccounts();
+
+  revalidatePath("/admin/finance");
+}
+
+export async function createLedgerAccountAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const code = stringValue(formData.get("code")).trim();
+  const name = stringValue(formData.get("name")).trim();
+  const type = stringValue(formData.get("type"));
+  if (!code || !name) throw new Error("קוד ושם הם שדות חובה.");
+
+  await createLedgerAccount({ code, name, type });
 
   revalidatePath("/admin/finance");
 }

@@ -26,7 +26,9 @@ import {
   completeStockTransferAction,
   completeWorkOrderAction,
   createBomAction,
+  createCarrierAction,
   createInventoryCountAction,
+  createShippingRateAction,
   createStockTransferAction,
   createVendorInvoiceAction,
   createWorkOrderAction,
@@ -57,6 +59,10 @@ import { getErpOverview } from "~/server/services/erp";
 import { getAvailabilityBySku } from "~/server/services/availability";
 import { listInventoryCounts } from "~/server/services/cycle-count";
 import { listBoms, listWorkOrders } from "~/server/services/manufacturing";
+import {
+  listCarriers,
+  listShippingRates,
+} from "~/server/services/shipping-rates";
 import {
   listBranchesForSelect,
   listStockTransfers,
@@ -163,6 +169,11 @@ export default async function AdminErpPage({
   const [boms, workOrders] = await Promise.all([
     listBoms().catch(() => []),
     listWorkOrders().catch(() => []),
+  ]);
+
+  const [carriers, shippingRates] = await Promise.all([
+    listCarriers().catch(() => []),
+    listShippingRates().catch(() => []),
   ]);
 
   const atpSku = firstParam((await searchParams).atpSku);
@@ -753,6 +764,99 @@ export default async function AdminErpPage({
                             </form>
                           </div>
                         ) : null}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Truck aria-hidden="true" className="size-5" />
+            מובילים ותעריפי משלוח (Shipping)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.2fr]">
+          <div className="grid gap-5">
+            <form action={createCarrierAction} className="grid gap-2">
+              <p className="text-muted-foreground text-sm">
+                מוביל ותעריפי אזור/משקל. הצעת מחיר בוחרת את התעריף הזול שמכסה.
+              </p>
+              <Input name="name" placeholder="שם המוביל" required />
+              <Button className="w-fit" size="sm" type="submit">
+                צור מוביל
+              </Button>
+            </form>
+
+            <form
+              action={createShippingRateAction}
+              className="grid gap-2 border-t pt-4"
+            >
+              <select
+                aria-label="מוביל"
+                autoComplete="off"
+                className="glass-control h-10 rounded-md border px-3 text-sm"
+                defaultValue=""
+                name="carrierId"
+                required
+              >
+                <option disabled value="">
+                  בחר מוביל…
+                </option>
+                {carriers.map((carrier) => (
+                  <option key={carrier.id} value={carrier.id}>
+                    {carrier.name}
+                  </option>
+                ))}
+              </select>
+              <Input name="zone" placeholder="אזור (מרכז/צפון/דרום)" />
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  name="maxWeightKg"
+                  placeholder='מ"ק עד (ק"ג)'
+                  step="0.01"
+                  type="number"
+                />
+                <Input name="price" placeholder="מחיר" step="0.01" type="number" />
+              </div>
+              <Button className="w-fit" size="sm" type="submit">
+                הוסף תעריף
+              </Button>
+            </form>
+          </div>
+
+          <div className="grid gap-2">
+            <span className="text-muted-foreground text-sm">תעריפים</span>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>מוביל</TableHead>
+                  <TableHead>אזור</TableHead>
+                  <TableHead>עד ק&quot;ג</TableHead>
+                  <TableHead className="text-left">מחיר</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {shippingRates.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={4}
+                    description="טרם הוגדרו תעריפי משלוח."
+                    icon={Truck}
+                    title="אין תעריפים"
+                  />
+                ) : (
+                  shippingRates.map((rate) => (
+                    <TableRow key={rate.id}>
+                      <TableCell className="text-sm">{rate.carrierName}</TableCell>
+                      <TableCell className="text-sm">{rate.zone}</TableCell>
+                      <TableCell>{rate.maxWeightKg}</TableCell>
+                      <TableCell className="text-left">
+                        {formatPrice(rate.price)}
                       </TableCell>
                     </TableRow>
                   ))

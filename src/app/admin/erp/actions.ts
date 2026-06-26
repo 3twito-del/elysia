@@ -28,6 +28,10 @@ import {
   createWorkOrder,
 } from "~/server/services/manufacturing";
 import {
+  createCarrier,
+  createShippingRate,
+} from "~/server/services/shipping-rates";
+import {
   cancelStockTransfer,
   completeStockTransfer,
   createStockTransfer,
@@ -233,6 +237,34 @@ export async function cancelWorkOrderAction(formData: FormData) {
   if (!workOrderId) throw new Error("חסר מזהה הוראת עבודה.");
 
   await cancelWorkOrder({ workOrderId });
+
+  revalidatePath("/admin/erp");
+}
+
+export async function createCarrierAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const name = stringValue(formData.get("name")).trim();
+  if (!name) throw new Error("שם המוביל הוא שדה חובה.");
+
+  await createCarrier({ name });
+
+  revalidatePath("/admin/erp");
+}
+
+export async function createShippingRateAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const carrierId = stringValue(formData.get("carrierId"));
+  const zone = stringValue(formData.get("zone")).trim();
+  if (!carrierId || !zone) throw new Error("יש לבחור מוביל ולהזין אזור.");
+
+  await createShippingRate({
+    carrierId,
+    zone,
+    maxWeightKg: Number(formData.get("maxWeightKg") ?? 0) || 0,
+    price: Number(formData.get("price") ?? 0) || 0,
+  });
 
   revalidatePath("/admin/erp");
 }

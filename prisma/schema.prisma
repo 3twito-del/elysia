@@ -1011,6 +1011,30 @@ model ComplianceItem {
   @@index([severity])
 }
 
+/// A shipping carrier with zone/weight rate cards (LOG / TMS).
+model Carrier {
+  id        String         @id @default(cuid())
+  name      String
+  isActive  Boolean        @default(true)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  rates     ShippingRate[]
+
+  @@index([isActive])
+}
+
+/// One rate: a carrier's price for a zone up to a maximum weight.
+model ShippingRate {
+  id          String  @id @default(cuid())
+  carrierId   String
+  zone        String
+  maxWeightKg Decimal @db.Decimal(8, 2)
+  price       Decimal @db.Decimal(10, 2)
+  carrier     Carrier @relation(fields: [carrierId], references: [id], onDelete: Cascade)
+
+  @@index([carrierId, zone])
+}
+
 /// A legal contract tracked through its lifecycle (LGL / CLM).
 model Contract {
   id             String    @id @default(cuid())

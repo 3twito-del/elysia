@@ -26,6 +26,7 @@ import {
   createEmployeeAction,
   createExpenseClaimAction,
   createFixedAssetAction,
+  createLedgerAccountAction,
   createSubscriptionPlanAction,
   disposeFixedAssetAction,
   ignoreBankStatementLineAction,
@@ -37,6 +38,7 @@ import {
   runDepreciationAction,
   runPayrollAction,
   runSubscriptionBillingAction,
+  seedChartAction,
   setBudgetAction,
   subscribeAction,
 } from "./actions";
@@ -67,6 +69,7 @@ import {
 } from "~/server/services/bank-reconciliation";
 import { getBudgetVsActual } from "~/server/services/budgeting";
 import { getCashFlowStatement } from "~/server/services/cash-flow";
+import { listAccountsWithBalances } from "~/server/services/chart-of-accounts";
 import {
   getExpenseSummary,
   listExpenseClaims,
@@ -232,6 +235,8 @@ export default async function AdminFinancePage() {
       listSubscriptions().catch(() => []),
       getSubscriptionSummary().catch(() => null),
     ]);
+
+  const chartAccounts = await listAccountsWithBalances().catch(() => []);
 
   const subscriptionStatusLabel: Record<string, string> = {
     ACTIVE: "פעיל",
@@ -942,6 +947,86 @@ export default async function AdminFinancePage() {
           </CardContent>
         </Card>
       ) : null}
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between gap-2">
+            <span className="flex items-center gap-2">
+              <Landmark aria-hidden="true" className="size-5" />
+              תרשים חשבונות (Chart of Accounts)
+            </span>
+            <form action={seedChartAction}>
+              <Button size="sm" type="submit" variant="outline">
+                אתחל תרשים ברירת מחדל
+              </Button>
+            </form>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
+          <form action={createLedgerAccountAction} className="grid gap-3">
+            <p className="text-muted-foreground text-sm">
+              הוספת חשבון מותאם לספר הראשי. צד טבעי נגזר מהסוג. קוד = 3–5 ספרות.
+            </p>
+            <Input name="code" placeholder="קוד (לדוגמה 1600)" required />
+            <Input name="name" placeholder="שם החשבון" required />
+            <select
+              aria-label="סוג"
+              autoComplete="off"
+              className="glass-control h-10 rounded-md border px-3 text-sm"
+              defaultValue="ASSET"
+              name="type"
+            >
+              <option value="ASSET">נכס (ASSET)</option>
+              <option value="LIABILITY">התחייבות (LIABILITY)</option>
+              <option value="EQUITY">הון (EQUITY)</option>
+              <option value="REVENUE">הכנסה (REVENUE)</option>
+              <option value="EXPENSE">הוצאה (EXPENSE)</option>
+            </select>
+            <Button className="w-fit" type="submit">
+              צור חשבון
+            </Button>
+          </form>
+
+          <div className="grid gap-2">
+            <span className="text-muted-foreground text-sm">
+              {chartAccounts.length} חשבונות
+            </span>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>קוד</TableHead>
+                  <TableHead>שם</TableHead>
+                  <TableHead>סוג</TableHead>
+                  <TableHead className="text-left">יתרה</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {chartAccounts.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={4}
+                    description="התרשים ריק — אתחל את ברירת המחדל."
+                    icon={Landmark}
+                    title="אין חשבונות"
+                  />
+                ) : (
+                  chartAccounts.map((account) => (
+                    <TableRow key={account.id}>
+                      <TableCell className="font-mono text-xs">
+                        {account.code}
+                      </TableCell>
+                      <TableCell className="text-sm">{account.name}</TableCell>
+                      <TableCell className="text-xs">{account.type}</TableCell>
+                      <TableCell className="text-left">
+                        {formatPrice(account.balance)}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card className="mt-6 rounded-md">
         <CardHeader>
