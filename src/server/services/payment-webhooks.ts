@@ -6,6 +6,7 @@ import {
   postOrderSaleToLedger,
   refreshFinanceLedgerFromOrders,
 } from "~/server/services/finance";
+import { awardPointsForOrder } from "~/server/services/loyalty";
 import { BUSINESS_EVENTS, enqueueOutboxEvent } from "~/server/services/outbox";
 import { redactWebhookPayload } from "~/server/services/webhook-events";
 
@@ -151,6 +152,10 @@ async function recordPaymentCapturedSideEffects(input: {
 
     // Post the balanced double-entry GL journal for the sale (FIN-GL-001).
     await postOrderSaleToLedger(input.orderId);
+
+    // Award loyalty points for the purchase (idempotent per order; no-op for
+    // guest orders or when no points are due). CRM-LOY.
+    await awardPointsForOrder(input.orderId);
   } catch (error) {
     console.error("[payment-webhooks:analytics-finance-failed]", error);
   }

@@ -10,7 +10,11 @@ import {
   hasAdminPermission,
 } from "~/server/auth/admin-access";
 import { issueGiftCard, redeemGiftCard } from "~/server/services/gift-card";
-import { closeShift, openShift } from "~/server/services/pos-register";
+import {
+  closeShift,
+  openShift,
+  recordPosSale,
+} from "~/server/services/pos-register";
 
 export async function issueGiftCardAction(formData: FormData) {
   const admin = await requireAdmin("ERP_WRITE");
@@ -56,9 +60,30 @@ export async function closeShiftAction(formData: FormData) {
 
   await closeShift({
     shiftId,
-    cashSales: Number(formData.get("cashSales") ?? 0) || 0,
     countedCash: Number(formData.get("countedCash") ?? 0) || 0,
     closedById: admin.id,
+  });
+
+  revalidatePath("/admin/pos");
+}
+
+export async function recordPosSaleAction(formData: FormData) {
+  const admin = await requireAdmin("ERP_WRITE");
+
+  const shiftId = stringValue(formData.get("shiftId")).trim();
+  const sku = stringValue(formData.get("sku")).trim();
+  if (!shiftId) throw new Error("יש לבחור משמרת פתוחה.");
+  if (!sku) throw new Error('יש להזין מק"ט.');
+
+  const quantity = Number(formData.get("quantity") ?? 0) || 0;
+  if (quantity <= 0) throw new Error("יש להזין כמות חיובית.");
+
+  await recordPosSale({
+    shiftId,
+    sku,
+    quantity,
+    customerEmail: optionalString(formData.get("customerEmail")),
+    soldById: admin.id,
   });
 
   revalidatePath("/admin/pos");

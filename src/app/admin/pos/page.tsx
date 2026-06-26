@@ -1,4 +1,4 @@
-import { CreditCard, Store } from "lucide-react";
+import { CreditCard, ShoppingCart, Store } from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
 import {
@@ -10,6 +10,7 @@ import {
   closeShiftAction,
   issueGiftCardAction,
   openShiftAction,
+  recordPosSaleAction,
   redeemGiftCardAction,
 } from "./actions";
 import { Badge } from "~/components/ui/badge";
@@ -58,6 +59,8 @@ export default async function AdminPosPage() {
   ]);
 
   if (!giftCards) return <AdminDatabaseFallback />;
+
+  const openShifts = shifts.filter((shift) => shift.status === "OPEN");
 
   return (
     <AdminShell
@@ -197,6 +200,7 @@ export default async function AdminPosPage() {
                 <TableRow>
                   <TableHead>מס׳</TableHead>
                   <TableHead className="text-left">פותחת</TableHead>
+                  <TableHead className="text-left">מכירות מזומן</TableHead>
                   <TableHead className="text-left">סטייה</TableHead>
                   <TableHead>סטטוס</TableHead>
                   <TableHead />
@@ -205,7 +209,7 @@ export default async function AdminPosPage() {
               <TableBody>
                 {shifts.length === 0 ? (
                   <TableEmptyRow
-                    colSpan={5}
+                    colSpan={6}
                     description="טרם נפתחו משמרות."
                     icon={Store}
                     title="אין משמרות"
@@ -218,6 +222,12 @@ export default async function AdminPosPage() {
                       </TableCell>
                       <TableCell className="text-left">
                         {formatPrice(shift.openingFloat)}
+                      </TableCell>
+                      <TableCell className="text-left">
+                        {formatPrice(shift.cashSales)}
+                        <span className="text-muted-foreground ms-1 text-xs">
+                          ({shift.salesCount})
+                        </span>
                       </TableCell>
                       <TableCell className="text-left">
                         {shift.variance != null ? (
@@ -255,15 +265,7 @@ export default async function AdminPosPage() {
                               value={shift.id}
                             />
                             <Input
-                              aria-label="מכירות מזומן"
-                              className="h-8 w-24"
-                              name="cashSales"
-                              placeholder="מזומן"
-                              step="0.01"
-                              type="number"
-                            />
-                            <Input
-                              aria-label="ספירה"
+                              aria-label="ספירת מזומן"
                               className="h-8 w-24"
                               name="countedCash"
                               placeholder="ספירה"
@@ -282,6 +284,61 @@ export default async function AdminPosPage() {
               </TableBody>
             </Table>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ShoppingCart aria-hidden="true" className="size-5" />
+            מכירת קופה (POS Sale)
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {openShifts.length === 0 ? (
+            <p className="text-muted-foreground text-sm">
+              פִּתחו משמרת עם סניף כדי לרשום מכירות קופה. כל מכירה יוצרת הזמנה
+              משולמת, מנכה מלאי בסניף ורושמת ל-GL — אותו מקור מלאי וכספים כמו
+              האתר.
+            </p>
+          ) : (
+            <form
+              action={recordPosSaleAction}
+              className="grid items-end gap-2 sm:grid-cols-[1.2fr_1fr_0.6fr_1.2fr_auto]"
+            >
+              <select
+                aria-label="משמרת"
+                autoComplete="off"
+                className="glass-control h-10 rounded-md border px-3 text-sm"
+                name="shiftId"
+              >
+                {openShifts.map((shift) => (
+                  <option key={shift.id} value={shift.id}>
+                    {shift.shiftNumber}
+                  </option>
+                ))}
+              </select>
+              <Input aria-label="מק״ט" name="sku" placeholder='מק"ט' />
+              <Input
+                aria-label="כמות"
+                defaultValue={1}
+                min={1}
+                name="quantity"
+                placeholder="כמות"
+                step="1"
+                type="number"
+              />
+              <Input
+                aria-label="דוא״ל לקוח (לא חובה)"
+                name="customerEmail"
+                placeholder='דוא"ל לקוח (לא חובה)'
+                type="email"
+              />
+              <Button size="sm" type="submit">
+                רשום מכירה
+              </Button>
+            </form>
+          )}
         </CardContent>
       </Card>
     </AdminShell>
