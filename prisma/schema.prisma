@@ -1304,6 +1304,28 @@ model CustomFieldValue {
   @@index([entityType, entityId])
 }
 
+/// A saved report over a curated dataset + the semantic layer (RPT, §4.Q).
+model ReportDefinition {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  datasetKey  String
+  /// chosen dimension keys (string[])
+  dimensions  Json
+  /// chosen measure keys (string[])
+  measures    Json
+  /// optional filter rule tree (workflow-rules format)
+  filter      Json?
+  /// { by, dir } sort spec
+  sort        Json?
+  isActive    Boolean   @default(true)
+  lastRunAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([datasetKey])
+}
+
 model Customer {
   id                        String                      @id @default(cuid())
   userId                    String?                     @unique

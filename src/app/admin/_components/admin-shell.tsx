@@ -18,6 +18,7 @@ import {
   PackageCheck,
   PlugZap,
   Store,
+  Table2,
   Wrench,
   Workflow,
   Users,
@@ -60,6 +61,7 @@ export type AdminSection =
   | "overview"
   | "pos"
   | "projects"
+  | "reports"
   | "service"
   | "workflow"
   | "workspace";
@@ -107,6 +109,7 @@ const navItems: Array<{
     id: "workflow",
     label: "אוטומציות",
   },
+  { href: "/admin/reports", icon: Table2, id: "reports", label: "דוחות" },
   {
     href: "/admin/notifications",
     icon: Bell,
