@@ -16,6 +16,7 @@ import {
   PackageCheck,
   PlugZap,
   Store,
+  Wrench,
   Workflow,
   Users,
 } from "lucide-react";
@@ -50,6 +51,7 @@ export type AdminSection =
   | "integrations"
   | "inventory"
   | "notifications"
+  | "operations"
   | "orders"
   | "overview"
   | "pos"
@@ -85,6 +87,7 @@ const navItems: Array<{
     id: "workspace",
     label: "מרחב עבודה",
   },
+  { href: "/admin/operations", icon: Wrench, id: "operations", label: "תפעול" },
   {
     href: "/admin/notifications",
     icon: Bell,

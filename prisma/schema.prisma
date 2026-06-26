@@ -1057,6 +1057,63 @@ model Contract {
   @@index([endsAt])
 }
 
+/// An internal IT help-desk ticket (ITSM, §4.AI).
+model ITTicket {
+  id                    String    @id @default(cuid())
+  ticketNumber          String    @unique
+  title                 String
+  /// HARDWARE | SOFTWARE | ACCESS | OTHER
+  category              String?
+  /// LOW | MEDIUM | HIGH | URGENT
+  priority              String    @default("MEDIUM")
+  /// OPEN | IN_PROGRESS | RESOLVED | CLOSED
+  status                String    @default("OPEN")
+  requestedById         String?
+  assignedToAdminUserId String?
+  resolvedAt            DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([status])
+}
+
+/// An IT asset in the company inventory (ITSM, §4.AI).
+model ITAsset {
+  id           String   @id @default(cuid())
+  assetTag     String   @unique
+  name         String
+  /// LAPTOP | PHONE | MONITOR | OTHER
+  category     String?
+  /// IN_USE | IN_STORAGE | RETIRED
+  status       String   @default("IN_USE")
+  assignedTo   String?
+  serialNumber String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([status])
+}
+
+/// A facilities / branch maintenance request (FAC, §4.AH).
+model FacilityRequest {
+  id            String    @id @default(cuid())
+  requestNumber String    @unique
+  branchId      String?
+  title         String
+  /// MAINTENANCE | CLEANING | SUPPLIES | SAFETY
+  category      String?
+  /// LOW | MEDIUM | HIGH
+  priority      String    @default("MEDIUM")
+  /// OPEN | SCHEDULED | DONE | CANCELLED
+  status        String    @default("OPEN")
+  scheduledAt   DateTime?
+  notes         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([status])
+}
+
 model Customer {
   id                        String                      @id @default(cuid())
   userId                    String?                     @unique
