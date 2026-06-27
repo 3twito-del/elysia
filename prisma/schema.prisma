@@ -1326,6 +1326,48 @@ model ReportDefinition {
   @@index([datasetKey])
 }
 
+/// A legal entity (company) for multi-entity accounting + consolidation (ENT, §4.AD).
+model LegalEntity {
+  id                 String                    @id @default(cuid())
+  code               String                    @unique
+  name               String
+  functionalCurrency String                    @default("ILS")
+  /// rate to convert this entity's functional currency into the base currency
+  fxRateToBase       Decimal                   @default(1) @db.Decimal(18, 6)
+  isBase             Boolean                   @default(false)
+  isActive           Boolean                   @default(true)
+  parentId           String?
+  createdAt          DateTime                  @default(now())
+  updatedAt          DateTime                  @updatedAt
+  parent             LegalEntity?              @relation("EntityHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children           LegalEntity[]             @relation("EntityHierarchy")
+  journalEntries     JournalEntry[]
+  intercompanyFrom   IntercompanyTransaction[] @relation("IntercompanyFrom")
+  intercompanyTo     IntercompanyTransaction[] @relation("IntercompanyTo")
+
+  @@index([isActive])
+}
+
+/// A transaction between two legal entities, eliminated on consolidation (ENT-002).
+model IntercompanyTransaction {
+  id                String      @id @default(cuid())
+  transactionNumber String      @unique
+  fromEntityId      String
+  toEntityId        String
+  amount            Decimal     @db.Decimal(14, 2)
+  currency          String      @default("ILS")
+  description       String?
+  occurredAt        DateTime    @db.Date
+  /// OPEN | ELIMINATED
+  status            String      @default("OPEN")
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  fromEntity        LegalEntity @relation("IntercompanyFrom", fields: [fromEntityId], references: [id], onDelete: Cascade)
+  toEntity          LegalEntity @relation("IntercompanyTo", fields: [toEntityId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+}
+
 model Customer {
   id                        String                      @id @default(cuid())
   userId                    String?                     @unique
@@ -2540,10 +2582,13 @@ model JournalEntry {
   purchaseOrderId String?
   reversalOfId    String?       @unique
   postedById      String?
+  /// owning legal entity (ENT); null = the base entity
+  entityId        String?
   metadata        Json?
   lines           JournalLine[]
   reversalOf      JournalEntry? @relation("JournalEntryReversal", fields: [reversalOfId], references: [id], onDelete: SetNull)
   reversedBy      JournalEntry? @relation("JournalEntryReversal")
+  entity          LegalEntity?  @relation(fields: [entityId], references: [id], onDelete: SetNull)
   createdAt       DateTime      @default(now())
 
   @@index([entryDate, source])
@@ -2551,6 +2596,7 @@ model JournalEntry {
   @@index([aggregateType, aggregateId])
   @@index([orderId])
   @@index([purchaseOrderId])
+  @@index([entityId])
 }
 
 /// One debit-or-credit posting line of a JournalEntry.

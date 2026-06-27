@@ -5,6 +5,7 @@ import {
   Bell,
   BookOpen,
   Boxes,
+  Building2,
   CalendarClock,
   ClipboardList,
   ContactRound,
@@ -50,6 +51,7 @@ export type AdminSection =
   | "catalog"
   | "crm"
   | "customers"
+  | "entities"
   | "erp"
   | "finance"
   | "insights"
@@ -82,6 +84,7 @@ const navItems: Array<{
   { href: "/admin/crm", icon: ContactRound, id: "crm", label: "CRM" },
   { href: "/admin/erp", icon: Workflow, id: "erp", label: "ERP" },
   { href: "/admin/finance", icon: Landmark, id: "finance", label: "Finance" },
+  { href: "/admin/entities", icon: Building2, id: "entities", label: "ישויות" },
   { href: "/admin", icon: Gauge, id: "overview", label: "סקירה" },
   { href: "/admin/blog", icon: Newspaper, id: "blog", label: "מגזין" },
   { href: "/admin/orders", icon: ClipboardList, id: "orders", label: "הזמנות" },

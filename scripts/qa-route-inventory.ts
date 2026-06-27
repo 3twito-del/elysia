@@ -113,6 +113,7 @@ const protectedAdminRoutes = [
   "/admin/projects",
   "/admin/workflow",
   "/admin/reports",
+  "/admin/entities",
 ] as const;
 
 const documentedApiRoutes = [
