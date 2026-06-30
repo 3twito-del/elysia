@@ -1,6 +1,7 @@
 import {
   ArrowLeftRight,
   Boxes,
+  Building,
   ClipboardList,
   Factory,
   GaugeCircle,
@@ -32,7 +33,9 @@ import {
   createStockTransferAction,
   createVendorInvoiceAction,
   createWorkOrderAction,
+  issueVendorPortalTokenAction,
   recordVendorPaymentAction,
+  revokeVendorPortalTokenAction,
 } from "./actions";
 import { MetricCard } from "~/components/metric-card";
 import { Badge } from "~/components/ui/badge";
@@ -56,6 +59,7 @@ import {
   listVendorsForSelect,
 } from "~/server/services/accounts-payable";
 import { getErpOverview } from "~/server/services/erp";
+import { listVendorPortalTokens } from "~/server/services/vendor-portal";
 import { getAvailabilityBySku } from "~/server/services/availability";
 import { listInventoryCounts } from "~/server/services/cycle-count";
 import { listBoms, listWorkOrders } from "~/server/services/manufacturing";
@@ -165,6 +169,8 @@ export default async function AdminErpPage({
     listStockTransfers().catch(() => []),
     listInventoryCounts().catch(() => []),
   ]);
+
+  const vendorPortalTokens = await listVendorPortalTokens().catch(() => []);
 
   const [boms, workOrders] = await Promise.all([
     listBoms().catch(() => []),
@@ -994,6 +1000,88 @@ export default async function AdminErpPage({
                           </Button>
                         </form>
                       </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Building aria-hidden="true" className="size-5" />
+            פורטל ספקים — קישורי גישה
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.7fr]">
+          <form action={issueVendorPortalTokenAction} className="grid gap-2">
+            <p className="text-muted-foreground text-sm">
+              קישור גישה לקריאה בלבד (הזמנות רכש, חשבוניות, מצב תשלום, ציון אספקה).
+              שלחו את הקישור לספק; ניתן לבטל בכל עת.
+            </p>
+            <select
+              aria-label="ספק"
+              autoComplete="off"
+              className="glass-control h-10 rounded-md border px-3 text-sm"
+              defaultValue=""
+              name="vendorId"
+              required
+            >
+              <option disabled value="">
+                בחר ספק…
+              </option>
+              {vendors.map((vendor) => (
+                <option key={vendor.id} value={vendor.id}>
+                  {vendor.name}
+                </option>
+              ))}
+            </select>
+            <Button className="w-fit" size="sm" type="submit">
+              צור קישור
+            </Button>
+          </form>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>ספק</TableHead>
+                <TableHead>קישור</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {vendorPortalTokens.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={3}
+                  description="טרם הונפקו קישורי פורטל לספקים."
+                  icon={Building}
+                  title="אין קישורים"
+                />
+              ) : (
+                vendorPortalTokens.map((token) => (
+                  <TableRow key={token.id}>
+                    <TableCell className="text-sm">{token.vendorName}</TableCell>
+                    <TableCell className="max-w-[16rem] truncate">
+                      <a
+                        className="text-xs underline"
+                        dir="ltr"
+                        href={`/vendor-portal/${token.token}`}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        /vendor-portal/{token.token.slice(0, 12)}…
+                      </a>
+                    </TableCell>
+                    <TableCell>
+                      <form action={revokeVendorPortalTokenAction}>
+                        <input name="tokenId" type="hidden" value={token.id} />
+                        <Button size="sm" type="submit" variant="ghost">
+                          בטל
+                        </Button>
+                      </form>
                     </TableCell>
                   </TableRow>
                 ))

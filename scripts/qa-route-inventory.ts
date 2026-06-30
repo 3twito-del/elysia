@@ -254,6 +254,15 @@ export function getQaRouteInventory({
 
   entries.push(
     routeEntry({
+      kind: "public",
+      path: "/vendor-portal/invalid-token",
+      source: "token-gated-portal",
+      template: "/vendor-portal/[token]",
+    }),
+  );
+
+  entries.push(
+    routeEntry({
       kind: "admin",
       path: "/admin/login",
       source: "admin-auth",

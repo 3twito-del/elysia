@@ -2577,10 +2577,26 @@ model Vendor {
   costSnapshots  ProductCostSnapshot[]
   invoices       VendorInvoice[]
   payments       VendorPayment[]
+  portalTokens   VendorPortalToken[]
   createdAt      DateTime              @default(now())
   updatedAt      DateTime              @updatedAt
 
   @@index([status, name])
+}
+
+/// A revocable magic-link token granting a vendor read-only portal access (POR-002).
+model VendorPortalToken {
+  id         String    @id @default(cuid())
+  vendorId   String
+  token      String    @unique
+  label      String?
+  isActive   Boolean   @default(true)
+  expiresAt  DateTime?
+  lastUsedAt DateTime?
+  createdAt  DateTime  @default(now())
+  vendor     Vendor    @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([vendorId, isActive])
 }
 
 model PurchaseOrder {

@@ -37,6 +37,32 @@ import {
   createStockTransfer,
   parseTransferLines,
 } from "~/server/services/stock-transfer";
+import {
+  issueVendorPortalToken,
+  revokeVendorPortalToken,
+} from "~/server/services/vendor-portal";
+
+export async function issueVendorPortalTokenAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const vendorId = stringValue(formData.get("vendorId"));
+  if (!vendorId) throw new Error("יש לבחור ספק.");
+
+  await issueVendorPortalToken({ vendorId });
+
+  revalidatePath("/admin/erp");
+}
+
+export async function revokeVendorPortalTokenAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const tokenId = stringValue(formData.get("tokenId"));
+  if (!tokenId) throw new Error("חסר מזהה קישור.");
+
+  await revokeVendorPortalToken({ tokenId });
+
+  revalidatePath("/admin/erp");
+}
 
 export async function createVendorInvoiceAction(formData: FormData) {
   await requireAdmin("ERP_WRITE");
