@@ -10,6 +10,7 @@ import {
   createEntityAction,
   createIntercompanyAction,
   eliminateIntercompanyAction,
+  setBranchEntityAction,
   setEntityFxAction,
   toggleEntityAction,
 } from "./actions";
@@ -31,6 +32,7 @@ import { formatPrice } from "~/lib/format";
 import {
   getConsolidatedReport,
   getEntitiesSummary,
+  listBranchEntityAssignments,
   listEntities,
   listIntercompany,
 } from "~/server/services/entities";
@@ -50,10 +52,11 @@ export default async function AdminEntitiesPage() {
 
   if (!summary) return <AdminDatabaseFallback />;
 
-  const [entities, intercompany, report] = await Promise.all([
+  const [entities, intercompany, report, branches] = await Promise.all([
     listEntities().catch(() => []),
     listIntercompany().catch(() => []),
     getConsolidatedReport().catch(() => null),
+    listBranchEntityAssignments().catch(() => []),
   ]);
 
   const entityOptions = entities.filter((entity) => entity.isActive);
@@ -201,6 +204,71 @@ export default async function AdminEntitiesPage() {
           </Table>
         </CardContent>
       </Card>
+
+      {entityOptions.length > 0 ? (
+        <Card className="mt-6 rounded-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Building2 aria-hidden="true" className="size-5" />
+              שיוך סניפים לישויות
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground mb-3 text-sm">
+              מכירות וקליטות סחורה בסניף ייוחסו אוטומטית לישות שלו (אחרת לישות הבסיס).
+            </p>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>סניף</TableHead>
+                  <TableHead>ישות</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {branches.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={2}
+                    description="אין סניפים."
+                    icon={Building2}
+                    title="אין סניפים"
+                  />
+                ) : (
+                  branches.map((branch) => (
+                    <TableRow key={branch.id}>
+                      <TableCell className="text-sm">{branch.name}</TableCell>
+                      <TableCell>
+                        <form
+                          action={setBranchEntityAction}
+                          className="flex items-center gap-1"
+                        >
+                          <input name="branchId" type="hidden" value={branch.id} />
+                          <select
+                            aria-label="ישות"
+                            autoComplete="off"
+                            className="glass-control h-9 rounded-md border px-2 text-sm"
+                            defaultValue={branch.entityId ?? ""}
+                            name="entityId"
+                          >
+                            <option value="">ישות הבסיס</option>
+                            {entityOptions.map((entity) => (
+                              <option key={entity.id} value={entity.id}>
+                                {entity.code}
+                              </option>
+                            ))}
+                          </select>
+                          <Button size="sm" type="submit" variant="outline">
+                            שייך
+                          </Button>
+                        </form>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      ) : null}
 
       <Card className="mt-6 rounded-md">
         <CardHeader>

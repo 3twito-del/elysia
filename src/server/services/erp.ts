@@ -2,6 +2,7 @@ import type { Prisma } from "@prisma/client";
 
 import { env } from "~/env";
 import { db } from "~/server/db";
+import { resolvePostingEntityId } from "~/server/services/entities";
 import { postPurchaseReceiptJournalEntry } from "~/server/services/ledger";
 import { ACCOUNT } from "~/server/services/ledger-accounts";
 
@@ -564,6 +565,9 @@ export async function receivePurchaseOrder(input: {
             cost: receivedCost,
             branchId: input.branchId ?? defaultBranchId,
             currency: purchaseOrder.currency,
+            entityId: await resolvePostingEntityId(
+              input.branchId ?? defaultBranchId,
+            ),
           },
           tx,
         );

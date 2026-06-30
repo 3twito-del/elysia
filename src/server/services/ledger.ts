@@ -477,6 +477,7 @@ export async function postSaleJournalEntry(
     branchId?: string;
     currency?: string;
     postedById?: string;
+    entityId?: string;
   },
   client: Prisma.TransactionClient = db,
 ) {
@@ -490,6 +491,7 @@ export async function postSaleJournalEntry(
       aggregateId: input.orderId,
       orderId: input.orderId,
       postedById: input.postedById,
+      entityId: input.entityId,
       lines: buildSaleJournalLines({
         grossTotal: input.grossTotal,
         vatRate: input.vatRate,
@@ -512,6 +514,7 @@ export async function postPurchaseReceiptJournalEntry(
     branchId?: string;
     currency?: string;
     postedById?: string;
+    entityId?: string;
   },
   client: Prisma.TransactionClient = db,
 ) {
@@ -525,6 +528,7 @@ export async function postPurchaseReceiptJournalEntry(
       aggregateId: input.purchaseOrderId,
       purchaseOrderId: input.purchaseOrderId,
       postedById: input.postedById,
+      entityId: input.entityId,
       lines: buildPurchaseReceiptJournalLines({
         cost: input.cost,
         branchId: input.branchId,

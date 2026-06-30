@@ -280,6 +280,52 @@ export async function getBaseEntityId(): Promise<string | null> {
   return fallback?.id ?? null;
 }
 
+/**
+ * Resolves the legal entity a GL posting belongs to: the source branch's entity
+ * if set, otherwise the base entity. Resilient — returns undefined (→ null,
+ * i.e. base rollup) rather than throwing if entities aren't configured.
+ */
+export async function resolvePostingEntityId(
+  branchId?: string | null,
+): Promise<string | undefined> {
+  try {
+    if (branchId) {
+      const branch = await db.branch.findUnique({
+        where: { id: branchId },
+        select: { entityId: true },
+      });
+      if (branch?.entityId) return branch.entityId;
+    }
+    return (await getBaseEntityId()) ?? undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/** Assigns (or clears) the legal entity that owns a branch's books. */
+export async function setBranchEntity(input: {
+  branchId: string;
+  entityId: string | null;
+}) {
+  return db.branch.update({
+    where: { id: input.branchId },
+    data: { entityId: input.entityId },
+  });
+}
+
+/** Branches with their assigned legal entity, for the assignment UI. */
+export async function listBranchEntityAssignments() {
+  const branches = await db.branch.findMany({
+    orderBy: { sortOrder: "asc" },
+    select: { id: true, name: true, entityId: true },
+  });
+  return branches.map((branch) => ({
+    id: branch.id,
+    name: branch.name,
+    entityId: branch.entityId,
+  }));
+}
+
 /** Active entities for posting/selection dropdowns. */
 export async function listEntityOptions() {
   const entities = await db.legalEntity.findMany({

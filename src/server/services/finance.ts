@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client";
 import { db } from "~/server/db";
 import { getApAging } from "~/server/services/accounts-payable";
 import { getArAging } from "~/server/services/accounts-receivable";
+import { resolvePostingEntityId } from "~/server/services/entities";
 import { DEFAULT_VAT_RATE } from "~/server/services/erp";
 import {
   getInventoryValuation,
@@ -348,6 +349,7 @@ export async function postOrderSaleToLedger(orderId: string) {
     cogs: await computeOrderCogs(order.items),
     branchId: order.branchId ?? undefined,
     currency: order.currency,
+    entityId: await resolvePostingEntityId(order.branchId),
   });
 
   return { posted: true as const, journalEntryId: entry.id };
@@ -427,6 +429,7 @@ export async function postOrderRefundToLedger(
       aggregateId: order.id,
       orderId: order.id,
       currency: order.currency,
+      entityId: await resolvePostingEntityId(order.branchId),
       lines: buildSalesReturnJournalLines({
         grossTotal,
         vatRate: DEFAULT_VAT_RATE,

@@ -398,6 +398,8 @@ model Branch {
   isPublic         Boolean           @default(false)
   isActive         Boolean           @default(true)
   sortOrder        Int               @default(0)
+  /// owning legal entity for GL attribution (ENT); null = base entity
+  entityId         String?
   inventoryItems    InventoryItem[]
   inventoryLedgers  InventoryLedger[]
   appointments      Appointment[]

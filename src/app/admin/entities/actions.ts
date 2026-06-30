@@ -13,6 +13,7 @@ import {
   createEntity,
   createIntercompanyTransaction,
   eliminateIntercompanyTransaction,
+  setBranchEntity,
   setEntityActive,
   setEntityFxRate,
 } from "~/server/services/entities";
@@ -83,6 +84,18 @@ export async function createIntercompanyAction(formData: FormData) {
     description: optionalString(formData.get("description")),
     occurredAt: occurredAt ? new Date(occurredAt) : undefined,
   });
+
+  revalidatePath("/admin/entities");
+}
+
+export async function setBranchEntityAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const branchId = stringValue(formData.get("branchId"));
+  if (!branchId) throw new Error("חסר מזהה סניף.");
+
+  const entityId = stringValue(formData.get("entityId"));
+  await setBranchEntity({ branchId, entityId: entityId || null });
 
   revalidatePath("/admin/entities");
 }
