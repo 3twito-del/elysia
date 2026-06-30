@@ -1,6 +1,7 @@
-import { Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 
 import { db } from "~/server/db";
+import { toDisplayString } from "~/lib/stringify";
 
 /**
  * No-code form builder (WFL-002): define a form over a field schema and collect
@@ -125,30 +126,30 @@ export function validateSubmission(
         values[field.key] = raw === true || raw === "true" || raw === "1";
         break;
       case "DATE": {
-        const time = new Date(String(raw)).getTime();
+        const time = new Date(toDisplayString(raw)).getTime();
         if (Number.isNaN(time)) {
           errors.push(`${field.label} חייב להיות תאריך תקין.`);
         } else {
-          values[field.key] = String(raw);
+          values[field.key] = toDisplayString(raw);
         }
         break;
       }
       case "SELECT":
-        if (!field.options?.includes(String(raw))) {
+        if (!field.options?.includes(toDisplayString(raw))) {
           errors.push(`${field.label}: ערך לא חוקי.`);
         } else {
-          values[field.key] = String(raw);
+          values[field.key] = toDisplayString(raw);
         }
         break;
       case "EMAIL":
-        if (!emailRegex.test(String(raw))) {
+        if (!emailRegex.test(toDisplayString(raw))) {
           errors.push(`${field.label} חייב להיות דוא"ל תקין.`);
         } else {
-          values[field.key] = String(raw);
+          values[field.key] = toDisplayString(raw);
         }
         break;
       default:
-        values[field.key] = String(raw);
+        values[field.key] = toDisplayString(raw);
     }
   }
 

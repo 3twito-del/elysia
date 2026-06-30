@@ -7,6 +7,8 @@
  * the same evaluator powers workflow conditions and (later) business rules.
  */
 
+import { toDisplayString } from "~/lib/stringify";
+
 export type RuleContext = Record<string, unknown>;
 
 export const RULE_OPERATORS = [
@@ -160,9 +162,9 @@ export function describeCondition(rule: unknown): string {
 }
 
 function formatValue(value: unknown): string {
-  if (Array.isArray(value)) return value.map((v) => String(v)).join("/");
+  if (Array.isArray(value)) return value.map((v) => toDisplayString(v)).join("/");
   if (value === null || value === undefined) return "—";
-  return String(value);
+  return toDisplayString(value);
 }
 
 /** Validates a rule tree, returning a list of human errors. Pure. */

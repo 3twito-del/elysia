@@ -176,11 +176,15 @@ function parseFieldsSpec(spec: string): FormField[] {
     .map((line) => line.trim())
     .filter(Boolean)
     .map((line) => {
-      const [key, label, type, required] = line.split("|").map((p) => p.trim());
+      const parts = line.split("|").map((part) => part.trim());
+      const key = parts[0] ?? "";
+      const label = parts[1] ?? "";
+      const type = parts[2] ?? "";
+      const required = parts[3] ?? "";
       return {
-        key: key ?? "",
-        label: label || (key ?? ""),
-        type: (type || "TEXT").toUpperCase() as FormField["type"],
+        key,
+        label: label.length > 0 ? label : key,
+        type: (type.length > 0 ? type : "TEXT").toUpperCase() as FormField["type"],
         required: required === "1" || required === "true" || required === "כן",
       };
     })

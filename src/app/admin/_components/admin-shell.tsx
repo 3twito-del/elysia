@@ -13,6 +13,7 @@ import {
   Gauge,
   Headset,
   History,
+  KeyRound,
   Landmark,
   LogOut,
   Newspaper,
@@ -51,6 +52,7 @@ export type AdminSection =
   | "catalog"
   | "crm"
   | "customers"
+  | "developer"
   | "entities"
   | "erp"
   | "finance"
@@ -113,6 +115,12 @@ const navItems: Array<{
     label: "אוטומציות",
   },
   { href: "/admin/reports", icon: Table2, id: "reports", label: "דוחות" },
+  {
+    href: "/admin/developer",
+    icon: KeyRound,
+    id: "developer",
+    label: "API",
+  },
   {
     href: "/admin/notifications",
     icon: Bell,

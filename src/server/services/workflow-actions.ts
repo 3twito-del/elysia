@@ -1,3 +1,4 @@
+import { toDisplayString } from "~/lib/stringify";
 import { createApprovalRequest } from "~/server/services/approvals";
 import { getPath, type RuleContext } from "~/server/services/workflow-rules";
 
@@ -47,7 +48,7 @@ export function interpolateString(
 ): string {
   return template.replace(/\{\{\s*([\w.]+)\s*\}\}/g, (_match, path: string) => {
     const value = getPath(context, path);
-    return value === undefined || value === null ? "" : String(value);
+    return toDisplayString(value);
   });
 }
 
@@ -69,13 +70,13 @@ export function describeAction(action: WorkflowAction): string {
   const label = actionLabel[action.type] ?? action.type;
   const config = action.config ?? {};
   if (action.type === "CREATE_APPROVAL") {
-    return `${label}: ${String(config.title ?? "")}`.trim();
+    return `${label}: ${toDisplayString(config.title)}`.trim();
   }
   if (action.type === "WEBHOOK") {
-    return `${label}: ${String(config.url ?? "")}`.trim();
+    return `${label}: ${toDisplayString(config.url)}`.trim();
   }
   if (action.type === "NOTIFY" || action.type === "LOG") {
-    return `${label}: ${String(config.message ?? "")}`.trim();
+    return `${label}: ${toDisplayString(config.message)}`.trim();
   }
   return label;
 }
@@ -152,11 +153,11 @@ async function executeAction(
   switch (action.type) {
     case "CREATE_APPROVAL": {
       const approval = await createApprovalRequest({
-        title: String(config.title ?? "בקשה אוטומטית"),
+        title: toDisplayString(config.title) || "בקשה אוטומטית",
         amount: toNumberOrUndefined(config.amount),
-        notes: config.notes ? String(config.notes) : undefined,
-        entityType: config.entityType ? String(config.entityType) : "workflow",
-        entityId: config.entityId ? String(config.entityId) : undefined,
+        notes: config.notes ? toDisplayString(config.notes) : undefined,
+        entityType: config.entityType ? toDisplayString(config.entityType) : "workflow",
+        entityId: config.entityId ? toDisplayString(config.entityId) : undefined,
       });
       return {
         type: action.type,
@@ -169,19 +170,19 @@ async function executeAction(
       return {
         type: action.type,
         ok: true,
-        detail: `התראה: ${String(config.message ?? "")}`,
+        detail: `התראה: ${toDisplayString(config.message)}`,
       };
     case "LOG":
       return {
         type: action.type,
         ok: true,
-        detail: String(config.message ?? ""),
+        detail: toDisplayString(config.message),
       };
     case "WEBHOOK":
       return {
         type: action.type,
         ok: true,
-        detail: `Webhook (מתועד): ${String(config.url ?? "")}`,
+        detail: `Webhook (מתועד): ${toDisplayString(config.url)}`,
       };
     default:
       return {

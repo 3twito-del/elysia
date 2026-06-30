@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 
 import { db } from "~/server/db";
 import { getDataset, listDatasets } from "~/server/services/report-datasets";

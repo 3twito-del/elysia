@@ -27,6 +27,7 @@ import {
 } from "~/components/ui/table";
 import { TableEmptyRow } from "~/components/ui/table-empty-row";
 import { cn } from "~/lib/utils";
+import { toDisplayString } from "~/lib/stringify";
 import { listDatasets } from "~/server/services/report-datasets";
 import { formatMeasure } from "~/server/services/report-engine";
 import {
@@ -321,7 +322,7 @@ export default async function AdminReportsPage({ searchParams }: PageProps) {
                     <TableRow key={row.key}>
                       {run.result.dimensions.map((dimension) => (
                         <TableCell key={dimension.key} className="text-sm">
-                          {String(row.dimensions[dimension.key] ?? "—")}
+                          {toDisplayString(row.dimensions[dimension.key]) || "—"}
                         </TableCell>
                       ))}
                       {run.result.measures.map((measure) => (

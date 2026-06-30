@@ -1,6 +1,7 @@
-import { Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 
 import { db } from "~/server/db";
+import { toDisplayString } from "~/lib/stringify";
 
 /**
  * Custom fields on any entity without a schema change (WFL-002). A definition is
@@ -26,7 +27,7 @@ function normalizeType(value: string | undefined): CustomFieldType {
 
 function parseOptions(value: Prisma.JsonValue | null | undefined): string[] {
   if (!Array.isArray(value)) return [];
-  return value.map((option) => String(option));
+  return value.map((option) => toDisplayString(option));
 }
 
 export type CoercionResult = {
@@ -63,17 +64,17 @@ export function coerceFieldValue(
         value: raw === true || raw === "true" || raw === "1" ? "true" : "false",
       };
     case "DATE": {
-      const time = new Date(String(raw)).getTime();
+      const time = new Date(toDisplayString(raw)).getTime();
       return Number.isNaN(time)
         ? { ok: false, value: null, error: "תאריך לא תקין." }
-        : { ok: true, value: String(raw) };
+        : { ok: true, value: toDisplayString(raw) };
     }
     case "SELECT":
-      return field.options?.includes(String(raw))
-        ? { ok: true, value: String(raw) }
+      return field.options?.includes(toDisplayString(raw))
+        ? { ok: true, value: toDisplayString(raw) }
         : { ok: false, value: null, error: "ערך לא חוקי." };
     default:
-      return { ok: true, value: String(raw) };
+      return { ok: true, value: toDisplayString(raw) };
   }
 }
 

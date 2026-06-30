@@ -382,7 +382,7 @@ export default async function AdminEntitiesPage() {
                 )}
                 {report.consolidated.rows.length > 0 ? (
                   <TableRow className="font-semibold">
-                    <TableCell>סה"כ</TableCell>
+                    <TableCell>{'סה"כ'}</TableCell>
                     <TableCell>{formatPrice(report.consolidated.totalDebit)}</TableCell>
                     <TableCell>{formatPrice(report.consolidated.totalCredit)}</TableCell>
                     <TableCell />

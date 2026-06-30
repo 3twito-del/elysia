@@ -1,3 +1,4 @@
+import { toDisplayString } from "~/lib/stringify";
 import { evaluateCondition } from "~/server/services/workflow-rules";
 
 /**
@@ -72,7 +73,7 @@ export function aggregateMeasure(rows: DatasetRow[], measure: Measure): number {
     const seen = new Set<string>();
     for (const row of rows) {
       const value = row[field];
-      if (value !== undefined && value !== null) seen.add(String(value));
+      if (value !== undefined && value !== null) seen.add(toDisplayString(value));
     }
     return seen.size;
   }
@@ -88,7 +89,7 @@ export function aggregateMeasure(rows: DatasetRow[], measure: Measure): number {
 
 function groupKeyOf(row: DatasetRow, dimensions: Dimension[]): string {
   return dimensions
-    .map((dimension) => String(row[dimension.field] ?? "—"))
+    .map((dimension) => toDisplayString(row[dimension.field]) || "—")
     .join(" │ ");
 }
 
@@ -162,8 +163,8 @@ function sortGroups(
       return (a.measures[by] ?? 0) - (b.measures[by] ?? 0);
     }
     if (dimensionKeys.has(by)) {
-      return String(a.dimensions[by] ?? "").localeCompare(
-        String(b.dimensions[by] ?? ""),
+      return toDisplayString(a.dimensions[by]).localeCompare(
+        toDisplayString(b.dimensions[by]),
         "he",
       );
     }
@@ -194,7 +195,7 @@ export function toCsv(result: ReportResult): string {
 
   for (const row of result.rows) {
     const cells = [
-      ...result.dimensions.map((dimension) => String(row.dimensions[dimension.key] ?? "")),
+      ...result.dimensions.map((dimension) => toDisplayString(row.dimensions[dimension.key])),
       ...result.measures.map((measure) => String(row.measures[measure.key] ?? 0)),
     ];
     lines.push(cells.map(csvCell).join(","));
