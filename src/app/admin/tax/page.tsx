@@ -1,4 +1,11 @@
-import { FileCheck2, Landmark, Percent, ReceiptText } from "lucide-react";
+import {
+  FileCheck2,
+  FileDown,
+  Landmark,
+  Percent,
+  ReceiptText,
+} from "lucide-react";
+import Link from "next/link";
 
 import { AdminShell } from "../_components/admin-shell";
 import {
@@ -33,6 +40,7 @@ import {
   listInvoicesNeedingAllocation,
   listWithholdingRules,
 } from "~/server/services/israeli-tax";
+import { getShaamExportForPeriod } from "~/server/services/shaam-export";
 
 export const metadata = {
   title: "מיסוי ישראלי | Admin",
@@ -40,7 +48,11 @@ export const metadata = {
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminTaxPage() {
+type PageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function AdminTaxPage({ searchParams }: PageProps) {
   const access = await getAdminPageAccess("FINANCE_READ", "/admin/tax");
 
   if (access.denied) return <AdminForbidden {...access.denied} />;
@@ -48,6 +60,12 @@ export default async function AdminTaxPage() {
   const summary = await getStatutorySummary().catch(() => null);
 
   if (!summary) return <AdminDatabaseFallback />;
+
+  const query = await searchParams;
+  const now = new Date();
+  const year = Number(query.year) || now.getUTCFullYear();
+  const month = Number(query.month) || now.getUTCMonth() + 1;
+  const shaam = await getShaamExportForPeriod({ year, month }).catch(() => null);
 
   const [rules, needingAllocation] = await Promise.all([
     listWithholdingRules().catch(() => []),
@@ -229,6 +247,89 @@ export default async function AdminTaxPage() {
               )}
             </TableBody>
           </Table>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileDown aria-hidden="true" className="size-5" />
+            מבנה אחיד (SHAAM) — ייצוא לביקורת
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          <form className="flex flex-wrap items-end gap-2" method="get">
+            <div className="grid gap-1">
+              <label className="text-muted-foreground text-xs" htmlFor="shaam-year">
+                שנה
+              </label>
+              <Input
+                className="w-24"
+                defaultValue={String(year)}
+                id="shaam-year"
+                name="year"
+                type="number"
+              />
+            </div>
+            <div className="grid gap-1">
+              <label className="text-muted-foreground text-xs" htmlFor="shaam-month">
+                חודש
+              </label>
+              <Input
+                className="w-20"
+                defaultValue={String(month)}
+                id="shaam-month"
+                max="12"
+                min="1"
+                name="month"
+                type="number"
+              />
+            </div>
+            <Button size="sm" type="submit" variant="outline">
+              חשב תקופה
+            </Button>
+          </form>
+
+          {shaam ? (
+            <div className="grid gap-3 text-sm sm:grid-cols-3">
+              <div className="grid gap-1">
+                <span className="text-muted-foreground">רשומות בקובץ</span>
+                <span className="text-xl font-semibold">{shaam.summary.recordCount}</span>
+              </div>
+              <div className="grid gap-1">
+                <span className="text-muted-foreground">תנועות יומן</span>
+                <span className="text-xl font-semibold">{shaam.summary.movementCount}</span>
+              </div>
+              <div className="grid gap-1">
+                <span className="text-muted-foreground">חובה / זכות</span>
+                <span className="text-xl font-semibold">
+                  {formatPrice(shaam.summary.totalDebit)} /{" "}
+                  {formatPrice(shaam.summary.totalCredit)}
+                </span>
+              </div>
+            </div>
+          ) : null}
+
+          <div className="flex flex-wrap gap-2">
+            <Button asChild size="sm" variant="outline">
+              <Link href={`/api/admin/tax/shaam?year=${year}&month=${month}&file=bkmvdata`}>
+                <FileDown aria-hidden="true" className="size-3" />
+                הורד BKMVDATA
+              </Link>
+            </Button>
+            <Button asChild size="sm" variant="outline">
+              <Link href={`/api/admin/tax/shaam?year=${year}&month=${month}&file=ini`}>
+                <FileDown aria-hidden="true" className="size-3" />
+                הורד INI
+              </Link>
+            </Button>
+          </div>
+
+          <p className="text-muted-foreground text-xs">
+            {
+              'מבנה רשומות A100/B100/Z900 לפי הוראה 1.31 — מבנה בלבד. יש לאמת רוחב שדות, קודים וסט הרשומות המלא (B110/C100/D110) מול רשות המסים ורו"ח לפני הגשה.'
+            }
+          </p>
         </CardContent>
       </Card>
     </AdminShell>

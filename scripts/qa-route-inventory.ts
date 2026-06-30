@@ -128,6 +128,7 @@ const documentedApiRoutes = [
   "/api/pwa/sync",
   "/api/pwa/sync/service-request",
   "/api/admin/insights/live",
+  "/api/admin/tax/shaam",
   "/api/analytics/replay",
   "/api/search/reindex",
   "/api/events/product-click",
