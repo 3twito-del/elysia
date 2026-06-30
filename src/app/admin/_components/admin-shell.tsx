@@ -16,6 +16,7 @@ import {
   KeyRound,
   Landmark,
   LogOut,
+  Megaphone,
   Newspaper,
   PackageCheck,
   Percent,
@@ -60,6 +61,7 @@ export type AdminSection =
   | "insights"
   | "integrations"
   | "inventory"
+  | "marketing"
   | "notifications"
   | "operations"
   | "orders"
@@ -92,6 +94,7 @@ const navItems: Array<{
   { href: "/admin/tax", icon: Percent, id: "tax", label: "מיסוי" },
   { href: "/admin", icon: Gauge, id: "overview", label: "סקירה" },
   { href: "/admin/blog", icon: Newspaper, id: "blog", label: "מגזין" },
+  { href: "/admin/marketing", icon: Megaphone, id: "marketing", label: "שיווק" },
   { href: "/admin/orders", icon: ClipboardList, id: "orders", label: "הזמנות" },
   { href: "/admin/catalog", icon: PackageCheck, id: "catalog", label: "קטלוג" },
   { href: "/admin/inventory", icon: Boxes, id: "inventory", label: "מלאי" },

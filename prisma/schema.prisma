@@ -1341,6 +1341,56 @@ model SlaPolicy {
   @@index([entityType, isActive])
 }
 
+/// A digital-marketing campaign with budget/spend/revenue for ROAS (DMK, §4.R).
+model MarketingCampaign {
+  id        String    @id @default(cuid())
+  name      String
+  /// GOOGLE_ADS | META | TIKTOK | EMAIL | ORGANIC | OTHER
+  channel   String    @default("OTHER")
+  /// PLANNED | ACTIVE | PAUSED | COMPLETED
+  status    String    @default("ACTIVE")
+  budget    Decimal   @default(0) @db.Decimal(14, 2)
+  spend     Decimal   @default(0) @db.Decimal(14, 2)
+  revenue   Decimal   @default(0) @db.Decimal(14, 2)
+  startDate DateTime? @db.Date
+  endDate   DateTime? @db.Date
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([status])
+}
+
+/// An affiliate/referral partner earning commission (DMK-005).
+model AffiliatePartner {
+  id                String     @id @default(cuid())
+  name              String
+  code              String     @unique
+  commissionPercent Decimal    @default(0) @db.Decimal(5, 2)
+  /// ACTIVE | SUSPENDED
+  status            String     @default("ACTIVE")
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  referrals         Referral[]
+
+  @@index([status])
+}
+
+/// A referred sale and its commission, payable through AP (DMK-005).
+model Referral {
+  id         String           @id @default(cuid())
+  partnerId  String
+  orderId    String?
+  amount     Decimal          @db.Decimal(14, 2)
+  commission Decimal          @db.Decimal(14, 2)
+  /// PENDING | APPROVED | PAID
+  status     String           @default("PENDING")
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+  partner    AffiliatePartner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  @@index([partnerId, status])
+}
+
 /// Israeli withholding-tax (ניכוי מס במקור) rate per category, effective-dated.
 /// Rates are examples — verify with an accountant before use (FIN-TAX / IL).
 model WithholdingTaxRule {
