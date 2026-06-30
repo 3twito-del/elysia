@@ -92,6 +92,7 @@ const protectedAdminRoutes = [
   "/admin",
   "/admin/insights",
   "/admin/bi",
+  "/admin/ai",
   "/admin/insights/live",
   "/admin/insights/replay",
   "/admin/insights/replay/[sessionId]",

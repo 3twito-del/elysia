@@ -4,6 +4,7 @@ import {
   BarChart3,
   Bell,
   BookOpen,
+  Bot,
   Boxes,
   Building2,
   CalendarClock,
@@ -47,6 +48,7 @@ type AdminShellProps = {
 };
 
 export type AdminSection =
+  | "ai"
   | "appointments"
   | "audit"
   | "bi"
@@ -87,6 +89,7 @@ const navItems: Array<{
     label: "Insights",
   },
   { href: "/admin/bi", icon: Activity, id: "bi", label: "BI" },
+  { href: "/admin/ai", icon: Bot, id: "ai", label: "AI" },
   { href: "/admin/crm", icon: ContactRound, id: "crm", label: "CRM" },
   { href: "/admin/erp", icon: Workflow, id: "erp", label: "ERP" },
   { href: "/admin/finance", icon: Landmark, id: "finance", label: "Finance" },
