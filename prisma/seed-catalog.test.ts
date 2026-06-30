@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
+import { existsSync } from "node:fs";
+import path from "node:path";
 
 import {
-  PRODUCTS_PER_CATEGORY,
   getSeedProducts,
   seedCategories,
   seedCollections,
@@ -11,11 +12,16 @@ import {
 
 describe("seed catalog generator", () => {
   const products = getSeedProducts();
+  const expectedCountsByCategory = {
+    bracelets: 20,
+    earrings: 20,
+    necklaces: 24,
+    rings: 30,
+    sets: 10,
+  };
 
-  it("creates 300 products split evenly across categories", () => {
-    expect(products).toHaveLength(
-      seedCategories.length * PRODUCTS_PER_CATEGORY,
-    );
+  it("creates the 104 Silver Israel products split by launch category", () => {
+    expect(products).toHaveLength(104);
 
     const countsByCategory = products.reduce<Record<string, number>>(
       (counts, product) => {
@@ -26,9 +32,7 @@ describe("seed catalog generator", () => {
       {},
     );
 
-    for (const category of seedCategories) {
-      expect(countsByCategory[category.slug]).toBe(PRODUCTS_PER_CATEGORY);
-    }
+    expect(countsByCategory).toMatchObject(expectedCountsByCategory);
   });
 
   it("creates unique product and variant identifiers", () => {
@@ -65,10 +69,31 @@ describe("seed catalog generator", () => {
       expect(materialSlugs.has(product.materialSlug)).toBe(true);
       expect(Number(product.basePrice)).toBeGreaterThan(0);
       expect(product.image).toMatch(
-        /^\/brand\/product-catalog\/(?:bracelets|earrings|necklaces|rings)-\d{2}\.avif$/,
+        /^\/brand\/silver-israel\/[a-z0-9-]+-\d{2}\.avif$/,
       );
+      expect(product.images.length).toBeGreaterThanOrEqual(1);
+      expect(product.media.length).toBe(product.images.length);
+      expect(product.media[0]?.role).toBe("PRIMARY");
+      expect(product.supplierKey).toBe("silver-israel");
+      expect(product.sourceUrl).toMatch(/^https:\/\/silverisrael\.co\.il\//);
       expect(product.tags.length).toBeGreaterThan(0);
       expect(product.variants.length).toBeGreaterThan(0);
+
+      if (product.categorySlug === "sets") {
+        expect(product.sourceUrl).toMatch(
+          /^https:\/\/silverisrael\.co\.il\/product\//,
+        );
+      }
+
+      for (const image of product.images) {
+        expect(image).toMatch(
+          /^\/brand\/silver-israel\/[a-z0-9-]+-\d{2}\.avif$/,
+        );
+        expect(
+          existsSync(path.join(process.cwd(), "public", image.slice(1))),
+          `${image} should exist in public assets`,
+        ).toBe(true);
+      }
 
       if (product.stoneSlug) {
         expect(stoneSlugs.has(product.stoneSlug)).toBe(true);

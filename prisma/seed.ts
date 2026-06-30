@@ -427,6 +427,12 @@ async function main() {
         shortDescription: productData.shortDescription,
         description: productData.description,
         status: "ACTIVE",
+        source: "OWN",
+        externalProvider: "silver-israel",
+        externalProductId: productData.sourceCode,
+        externalHandle: productData.sourceHandle,
+        supplierKey: productData.supplierKey,
+        factSourceReference: productData.sourceUrl,
         categoryId: category.id,
         materialId: material.id,
         stoneId: stone?.id ?? null,
@@ -440,16 +446,16 @@ async function main() {
         tags: productData.tags,
         collections: { connect: productCollections },
         media: {
-          create: {
+          create: productData.media.map((media) => ({
             kind: "IMAGE",
-            url: productData.image,
-            alt: productData.name,
+            url: media.url,
+            alt: media.alt,
             width: 1400,
             height: 1400,
-            isPrimary: true,
-            role: "PRIMARY",
-            sortOrder: 0,
-          },
+            isPrimary: media.role === "PRIMARY",
+            role: media.role,
+            sortOrder: media.sortOrder,
+          })),
         },
         variants: {
           create: productData.variants.map((variantData, index) => ({

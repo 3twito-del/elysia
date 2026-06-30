@@ -21,6 +21,10 @@ const boutiqueMedia = {
     alt: "טבעות זהב עדינות על משי ואבן בהירה",
     src: "/brand/boutique/category-rings.avif",
   },
+  sets: {
+    alt: "תכשיטים עדינים בעריכה מוכנה למתנה",
+    src: "/brand/boutique/product-detail.avif",
+  },
 } satisfies Record<string, CinematicHeroSlide>;
 
 export const brandHeroSlides = [
@@ -59,6 +63,7 @@ const categorySlides = {
   earrings: [boutiqueMedia.earrings, boutiqueMedia.hero],
   necklaces: [boutiqueMedia.necklaces, boutiqueMedia.hero],
   rings: [boutiqueMedia.rings, boutiqueMedia.hero],
+  sets: [boutiqueMedia.sets, boutiqueMedia.necklaces],
 } satisfies Record<string, CinematicHeroSlide[]>;
 
 export type CinematicRouteMediaKey = keyof typeof cinematicRouteMedia;

@@ -69,6 +69,7 @@ const categoryLinks = [
   { href: "/category/necklaces", label: "שרשראות", icon: Gem },
   { href: "/category/earrings", label: "עגילים", icon: Sparkles },
   { href: "/category/bracelets", label: "צמידים", icon: Diamond },
+  { href: "/category/sets", label: "סטים", icon: Gift },
 ] satisfies ContextMenuItem[];
 
 export function SiteContextMenu() {

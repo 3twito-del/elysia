@@ -3,6 +3,7 @@ const publicCategoryNameBySlug: Record<string, string> = {
   earrings: "עגילים",
   necklaces: "שרשראות",
   rings: "טבעות",
+  sets: "סטים",
 };
 
 export function getPublicProductName(name: string) {

@@ -72,4 +72,22 @@ describe("catalog display assets", () => {
       /category-(rings|bracelets|necklaces)/,
     );
   });
+
+  it("uses existing mixed category product imagery for sets", () => {
+    const images = getDisplayCatalogImages({
+      categorySlug: "sets",
+      images: [],
+      slug: "elysia-bridal-set-silver-095",
+    });
+
+    expect(images).toHaveLength(6);
+    expect(
+      images.every((image) =>
+        /^\/brand\/product-catalog\/(?:bracelets|earrings|necklaces|rings)-\d{2}\.avif$/.test(
+          image,
+        ),
+      ),
+    ).toBe(true);
+    expect(images.join(" ")).not.toContain("/sets-");
+  });
 });

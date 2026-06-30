@@ -376,6 +376,10 @@ function getProductCardDescriptor(product: CatalogProduct) {
     return "שכבה נקייה לפרק היד.";
   }
 
+  if (product.categorySlug === "sets") {
+    return "שילוב מוכן למתנה או לאירוע.";
+  }
+
   if (product.stone) {
     return `${product.stone} שמוסיף נקודת אור עדינה.`;
   }

@@ -9,6 +9,7 @@ const categories = [
   { slug: "rings", name: "טבעות" },
   { slug: "earrings", name: "עגילים" },
   { slug: "necklaces", name: "שרשראות" },
+  { slug: "sets", name: "סטים" },
 ];
 const facets = {
   materials: ["זהב צהוב 14K", "זהב לבן 14K", "כסף סטרלינג 925"],
@@ -146,6 +147,18 @@ describe("semantic search intent", () => {
       maxPrice: 1000,
       stone: "diamond",
     });
+    expect(intent.softSignals).toContain("gift");
+  });
+
+  it("detects sets as a first-class catalog category", () => {
+    const intent = resolveDeterministicSemanticSearchIntent(
+      {
+        query: "סט תכשיטים למתנה",
+      },
+      { categories, facets },
+    );
+
+    expect(intent.hardFilters.category).toBe("sets");
     expect(intent.softSignals).toContain("gift");
   });
 });

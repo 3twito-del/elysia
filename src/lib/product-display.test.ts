@@ -10,6 +10,7 @@ import {
 describe("public product display labels", () => {
   it("keeps category and supplier-derived attributes brand-facing", () => {
     expect(getPublicCategoryName("rings", "Rings")).toBe("טבעות");
+    expect(getPublicCategoryName("sets", "Sets")).toBe("סטים");
     expect(
       getPublicMaterialName("Supplier selection", "Silver Halo Ring"),
     ).toBe("כסף 925");

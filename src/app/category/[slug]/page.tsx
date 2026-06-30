@@ -93,6 +93,13 @@ const categoryLuxuryCopyBySlug: Record<string, CategoryLuxuryCopy> = {
       "התחילו מהטבעות הזמינות ופתחו סינון לפי מידה, חומר, אבן, מחיר או קולקציה.",
     title: "טבעות",
   },
+  sets: {
+    description:
+      "סטים של שרשרת ועגילים לפי חומר, סגנון, מחיר וזמינות, עם פרטי שירות לפני הזמנה.",
+    intro:
+      "התחילו מהסטים הזמינים ופתחו סינון לפי חומר, אבן, מחיר או קולקציה.",
+    title: "סטים",
+  },
 };
 
 const categoryTrustSignals = [

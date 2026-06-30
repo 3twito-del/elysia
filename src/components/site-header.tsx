@@ -21,6 +21,7 @@ const navItems: HeaderNavItem[] = [
   { href: "/category/necklaces", label: "שרשראות" },
   { href: "/category/earrings", label: "עגילים" },
   { href: "/category/bracelets", label: "צמידים" },
+  { href: "/category/sets", label: "סטים" },
   { href: "/gifts", label: "מתנות" },
   { href: "/search?sort=popular", label: "מבוקשים" },
   { href: "/size-guide", label: "מידות" },

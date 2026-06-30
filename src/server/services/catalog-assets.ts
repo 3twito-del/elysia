@@ -11,12 +11,19 @@ const PRODUCT_CATALOG_IMAGE_CATEGORIES = new Set([
   "necklaces",
   "rings",
 ]);
+const SET_CATALOG_IMAGE_CATEGORIES = [
+  "necklaces",
+  "earrings",
+  "bracelets",
+  "rings",
+] as const;
 
 const CATALOG_IMAGE_VARIANTS: Record<string, readonly string[]> = {
   bracelets: ["/brand/boutique/category-bracelets.avif"],
   earrings: ["/brand/boutique/category-earrings.avif"],
   necklaces: ["/brand/boutique/category-necklaces.avif"],
   rings: ["/brand/boutique/category-rings.avif"],
+  sets: ["/brand/boutique/product-detail.avif"],
 };
 
 const CATEGORY_CATALOG_IMAGES: Record<string, string> = {
@@ -24,6 +31,7 @@ const CATEGORY_CATALOG_IMAGES: Record<string, string> = {
   earrings: "/brand/boutique/category-earrings.avif",
   necklaces: "/brand/boutique/category-necklaces.avif",
   rings: "/brand/boutique/category-rings.avif",
+  sets: "/brand/boutique/product-detail.avif",
 };
 
 export function getCatalogCategoryImage(input: {
@@ -56,6 +64,10 @@ export function getDisplayCatalogImages(input: {
       categorySlug: input.categorySlug,
       slug: input.slug,
     });
+  }
+
+  if (usesLegacyCatalogMedia && input.categorySlug === "sets") {
+    return getSetCatalogImages(input.slug);
   }
 
   const variants = CATALOG_IMAGE_VARIANTS[input.categorySlug];
@@ -95,6 +107,10 @@ export function getProductCatalogImage(input: {
   categorySlug: string;
   slug: string;
 }) {
+  if (input.categorySlug === "sets") {
+    return getSetCatalogImages(input.slug)[0] ?? DEFAULT_CATALOG_IMAGE;
+  }
+
   if (!hasProductCatalogImages(input.categorySlug))
     return DEFAULT_CATALOG_IMAGE;
 
@@ -108,6 +124,31 @@ export function getProductCatalogImage(input: {
 
 function getProductCatalogOrderedImageIndex(imageIndex: number) {
   return PRODUCT_CATALOG_IMAGE_ORDER[imageIndex] ?? imageIndex;
+}
+
+function getSetCatalogImages(slug: string) {
+  const primaryImageIndex = getStableIndex(slug, PRODUCT_CATALOG_IMAGE_COUNT);
+  const startCategoryIndex = getStableIndex(
+    slug,
+    SET_CATALOG_IMAGE_CATEGORIES.length,
+  );
+
+  return Array.from(
+    { length: Math.min(6, PRODUCT_CATALOG_IMAGE_COUNT) },
+    (_, offset) => {
+      const categorySlug =
+        SET_CATALOG_IMAGE_CATEGORIES[
+          (startCategoryIndex + offset) % SET_CATALOG_IMAGE_CATEGORIES.length
+        ] ?? "necklaces";
+
+      return getProductCatalogImageByIndex({
+        categorySlug,
+        imageIndex: getProductCatalogOrderedImageIndex(
+          (primaryImageIndex + offset) % PRODUCT_CATALOG_IMAGE_COUNT,
+        ),
+      });
+    },
+  );
 }
 
 function getProductCatalogImageByIndex(input: {

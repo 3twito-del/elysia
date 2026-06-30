@@ -27,6 +27,7 @@ const categoryImages = {
   earrings: "/brand/boutique/category-earrings.avif",
   necklaces: "/brand/boutique/category-necklaces.avif",
   rings: "/brand/boutique/category-rings.avif",
+  sets: "/brand/boutique/product-detail.avif",
 } satisfies Record<string, string>;
 
 const categoryGalleryImages: Record<string, string[]> = {
@@ -61,6 +62,14 @@ const categoryGalleryImages: Record<string, string[]> = {
     "/brand/boutique/category-necklaces.avif",
     "/brand/boutique/category-earrings.avif",
     "/brand/boutique/category-bracelets.avif",
+  ],
+  sets: [
+    "/brand/boutique/product-detail.avif",
+    "/brand/boutique/category-necklaces.avif",
+    "/brand/boutique/category-earrings.avif",
+    "/brand/boutique/category-bracelets.avif",
+    "/brand/boutique/category-rings.avif",
+    "/brand/boutique/lifestyle-hero.avif",
   ],
 };
 
@@ -187,17 +196,20 @@ function mapSeedProduct(product: SeedProduct): CatalogProduct {
 
     return acc;
   }, {});
-  const images = getFixtureProductImages({
-    categorySlug: product.categorySlug,
-    primaryImage: product.image,
-    slug: product.slug,
-  });
+  const images =
+    product.images.length > 0
+      ? product.images
+      : getFixtureProductImages({
+          categorySlug: product.categorySlug,
+          primaryImage: product.image,
+          slug: product.slug,
+        });
 
   return {
     slug: product.slug,
     sku: product.sku,
     requiresSeparateCheckout: false,
-    name: product.name.replace(/\s+\d{3}$/u, ""),
+    name: product.name,
     categorySlug: product.categorySlug,
     categoryName: category
       ? getPublicCategoryName(category.slug, category.name)

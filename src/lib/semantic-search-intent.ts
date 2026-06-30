@@ -70,6 +70,10 @@ const defaultCategoryAliases = [
     slug: "bracelets",
     terms: ["bracelets", "bracelet", "צמידים", "צמיד"],
   },
+  {
+    slug: "sets",
+    terms: ["sets", "set", "סטים", "סט", "סט תכשיטים"],
+  },
 ] as const;
 
 const semanticStopWords = [
@@ -306,7 +310,13 @@ function detectCategory(
   const aliases = categories?.length
     ? categories.map((category) => ({
         slug: category.slug,
-        terms: [category.slug, category.name],
+        terms: [
+          category.slug,
+          category.name,
+          ...(defaultCategoryAliases.find(
+            (alias) => alias.slug === category.slug,
+          )?.terms ?? []),
+        ],
       }))
     : defaultCategoryAliases;
 

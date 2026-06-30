@@ -26,6 +26,7 @@ const catalogLinks = [
   { href: "/category/necklaces", label: "שרשראות" },
   { href: "/category/earrings", label: "עגילים" },
   { href: "/category/bracelets", label: "צמידים" },
+  { href: "/category/sets", label: "סטים" },
   { href: "/gifts", label: "מתנות" },
 ] as const;
 
