@@ -69,6 +69,7 @@ const staticPublicRoutes = [
   "/branches",
   "/checkout",
   "/account",
+  "/account/invoices",
   "/ai",
   "/ai?tab=gifts",
   "/stylist",
@@ -179,7 +180,7 @@ export function getQaRouteInventory({
       routeEntry({
         includeInPerformance: isPerformanceRoute(route),
         kind:
-          route === "/account"
+          route.startsWith("/account")
             ? "account"
             : route === "/offline"
               ? "pwa"

@@ -115,6 +115,7 @@ const accountServiceStripItems = [
 const accountNavigationItems = [
   { href: "#account-overview", label: "סקירה כללית" },
   { href: "#account-orders", label: "הזמנות" },
+  { href: "/account/invoices", label: "חשבוניות" },
   { href: "#account-wishlist", label: "מועדפים" },
   { href: "#account-addresses", label: "כתובות" },
   { href: "#account-sizes", label: "מידות" },
