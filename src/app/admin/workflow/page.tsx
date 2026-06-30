@@ -1,4 +1,4 @@
-import { Boxes, FileText, Play, Workflow, Zap } from "lucide-react";
+import { Boxes, FileText, Play, Scale, Timer, Workflow, Zap } from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
 import {
@@ -7,13 +7,17 @@ import {
 } from "../_components/admin-states";
 import { getAdminPageAccess } from "../_lib/access";
 import {
+  createBusinessRuleAction,
   createFormAction,
   createWorkflowAction,
   defineCustomFieldAction,
+  deleteBusinessRuleAction,
   deleteWorkflowAction,
   runWorkflowAction,
+  toggleBusinessRuleAction,
   toggleFormAction,
   toggleWorkflowAction,
+  upsertSlaPolicyAction,
 } from "./actions";
 import { MetricCard } from "~/components/metric-card";
 import { Badge } from "~/components/ui/badge";
@@ -29,6 +33,10 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { TableEmptyRow } from "~/components/ui/table-empty-row";
+import {
+  listBusinessRules,
+  listSlaPolicies,
+} from "~/server/services/business-rules";
 import { listCustomFields, getCustomFieldsSummary } from "~/server/services/custom-fields";
 import { getFormsSummary, listForms } from "~/server/services/forms";
 import {
@@ -76,15 +84,25 @@ export default async function AdminWorkflowPage() {
 
   if (!summary) return <AdminDatabaseFallback />;
 
-  const [workflows, runs, forms, formsSummary, customFields, cfSummary] =
-    await Promise.all([
-      listWorkflows().catch(() => []),
-      listWorkflowRuns({ limit: 12 }).catch(() => []),
-      listForms().catch(() => []),
-      getFormsSummary().catch(() => null),
-      listCustomFields().catch(() => []),
-      getCustomFieldsSummary().catch(() => null),
-    ]);
+  const [
+    workflows,
+    runs,
+    forms,
+    formsSummary,
+    customFields,
+    cfSummary,
+    businessRules,
+    slaPolicies,
+  ] = await Promise.all([
+    listWorkflows().catch(() => []),
+    listWorkflowRuns({ limit: 12 }).catch(() => []),
+    listForms().catch(() => []),
+    getFormsSummary().catch(() => null),
+    listCustomFields().catch(() => []),
+    getCustomFieldsSummary().catch(() => null),
+    listBusinessRules().catch(() => []),
+    listSlaPolicies().catch(() => []),
+  ]);
 
   return (
     <AdminShell
@@ -427,6 +445,210 @@ export default async function AdminWorkflowPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Scale aria-hidden="true" className="size-5" />
+            חוקים עסקיים (Business Rules)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.6fr]">
+          <form action={createBusinessRuleAction} className="grid gap-2">
+            <p className="text-muted-foreground text-sm">
+              סיווג סינכרוני של רשומות: כשהתנאי מתקיים — סימון/עדיפות/אישור/הסלמה.
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <Input name="name" placeholder="שם החוק" required />
+              <Input name="entityType" placeholder="ישות (order)" required />
+            </div>
+            <div className="grid grid-cols-[1fr_auto_1fr] gap-2">
+              <Input name="conditionField" placeholder="שדה" />
+              <select
+                aria-label="אופרטור"
+                autoComplete="off"
+                className="glass-control h-10 rounded-md border px-2 text-sm"
+                defaultValue="gt"
+                name="conditionOp"
+              >
+                {["eq", "neq", "gt", "gte", "lt", "lte", "contains", "in", "exists"].map(
+                  (op) => (
+                    <option key={op} value={op}>
+                      {op}
+                    </option>
+                  ),
+                )}
+              </select>
+              <Input name="conditionValue" placeholder="ערך" />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <select
+                aria-label="פעולה"
+                autoComplete="off"
+                className="glass-control h-10 rounded-md border px-3 text-sm"
+                defaultValue="REQUIRE_APPROVAL"
+                name="actionType"
+              >
+                <option value="FLAG">סימון</option>
+                <option value="SET_PRIORITY">עדיפות</option>
+                <option value="REQUIRE_APPROVAL">דרישת אישור</option>
+                <option value="ESCALATE">הסלמה</option>
+                <option value="NOTIFY">התראה</option>
+              </select>
+              <Input name="actionDetail" placeholder="פירוט (רשות)" />
+            </div>
+            <Button className="w-fit" size="sm" type="submit">
+              צור חוק
+            </Button>
+          </form>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>חוק</TableHead>
+                <TableHead>תנאי</TableHead>
+                <TableHead>פעולה</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {businessRules.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={4}
+                  description="טרם הוגדרו חוקים עסקיים."
+                  icon={Scale}
+                  title="אין חוקים"
+                />
+              ) : (
+                businessRules.map((rule) => (
+                  <TableRow key={rule.id}>
+                    <TableCell className="text-sm">
+                      <div className="font-medium">{rule.name}</div>
+                      <div className="text-muted-foreground text-xs">
+                        {rule.entityType} · #{rule.priority}
+                      </div>
+                    </TableCell>
+                    <TableCell className="max-w-[10rem] truncate text-xs">
+                      {rule.condition}
+                    </TableCell>
+                    <TableCell className="text-xs">
+                      <Badge variant={rule.isActive ? "secondary" : "outline"}>
+                        {rule.action}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-1">
+                        <form action={toggleBusinessRuleAction}>
+                          <input name="ruleId" type="hidden" value={rule.id} />
+                          <input
+                            name="isActive"
+                            type="hidden"
+                            value={rule.isActive ? "0" : "1"}
+                          />
+                          <Button size="sm" type="submit" variant="ghost">
+                            {rule.isActive ? "כבה" : "הפעל"}
+                          </Button>
+                        </form>
+                        <form action={deleteBusinessRuleAction}>
+                          <input name="ruleId" type="hidden" value={rule.id} />
+                          <Button size="sm" type="submit" variant="ghost">
+                            מחק
+                          </Button>
+                        </form>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Timer aria-hidden="true" className="size-5" />
+            יעדי SLA והסלמה
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.6fr]">
+          <form action={upsertSlaPolicyAction} className="grid gap-2">
+            <p className="text-muted-foreground text-sm">
+              יעד תגובה/פתרון (בדקות) לכל ישות ורמת דחיפות. חריגה מזינה הסלמה.
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <Input name="name" placeholder="שם המדיניות" required />
+              <Input name="entityType" placeholder="ישות" required />
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <select
+                aria-label="רמה"
+                autoComplete="off"
+                className="glass-control h-10 rounded-md border px-2 text-sm"
+                defaultValue="STANDARD"
+                name="tier"
+              >
+                <option value="LOW">נמוכה</option>
+                <option value="STANDARD">רגילה</option>
+                <option value="HIGH">גבוהה</option>
+                <option value="URGENT">דחוף</option>
+              </select>
+              <Input
+                defaultValue="60"
+                min="1"
+                name="responseMinutes"
+                placeholder="תגובה (ד׳)"
+                type="number"
+              />
+              <Input
+                defaultValue="240"
+                min="1"
+                name="resolutionMinutes"
+                placeholder="פתרון (ד׳)"
+                type="number"
+              />
+            </div>
+            <Button className="w-fit" size="sm" type="submit">
+              שמור מדיניות
+            </Button>
+          </form>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>מדיניות</TableHead>
+                <TableHead>ישות / רמה</TableHead>
+                <TableHead>תגובה</TableHead>
+                <TableHead>פתרון</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {slaPolicies.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={4}
+                  description="טרם הוגדרו יעדי SLA."
+                  icon={Timer}
+                  title="אין מדיניות"
+                />
+              ) : (
+                slaPolicies.map((policy) => (
+                  <TableRow key={policy.id}>
+                    <TableCell className="text-sm">{policy.name}</TableCell>
+                    <TableCell className="text-xs">
+                      {policy.entityType} · {policy.tier}
+                    </TableCell>
+                    <TableCell className="text-sm">{policy.responseMinutes}ד׳</TableCell>
+                    <TableCell className="text-sm">
+                      {policy.resolutionMinutes}ד׳
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
       <Card className="mt-6 rounded-md">
         <CardHeader>

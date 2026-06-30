@@ -1,0 +1,236 @@
+import { FileCheck2, Landmark, Percent, ReceiptText } from "lucide-react";
+
+import { AdminShell } from "../_components/admin-shell";
+import {
+  AdminDatabaseFallback,
+  AdminForbidden,
+} from "../_components/admin-states";
+import { getAdminPageAccess } from "../_lib/access";
+import {
+  assignAllocationNumberAction,
+  createWithholdingRuleAction,
+  flagAllocationAction,
+  toggleWithholdingRuleAction,
+} from "./actions";
+import { MetricCard } from "~/components/metric-card";
+import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/ui/table";
+import { TableEmptyRow } from "~/components/ui/table-empty-row";
+import { formatPrice } from "~/lib/format";
+import {
+  ALLOCATION_NUMBER_THRESHOLD,
+  getStatutorySummary,
+  listInvoicesNeedingAllocation,
+  listWithholdingRules,
+} from "~/server/services/israeli-tax";
+
+export const metadata = {
+  title: "מיסוי ישראלי | Admin",
+};
+
+export const dynamic = "force-dynamic";
+
+export default async function AdminTaxPage() {
+  const access = await getAdminPageAccess("FINANCE_READ", "/admin/tax");
+
+  if (access.denied) return <AdminForbidden {...access.denied} />;
+
+  const summary = await getStatutorySummary().catch(() => null);
+
+  if (!summary) return <AdminDatabaseFallback />;
+
+  const [rules, needingAllocation] = await Promise.all([
+    listWithholdingRules().catch(() => []),
+    listInvoicesNeedingAllocation().catch(() => []),
+  ]);
+
+  return (
+    <AdminShell
+      active="tax"
+      admin={access.admin}
+      description='מיסוי ישראלי: ניכוי מס במקור ומספרי הקצאה ל"חשבונית ישראל". כל שיעור/סף לדוגמה — לאימות מול רו"ח.'
+      title="מיסוי ישראלי"
+    >
+      <div className="grid gap-5 md:grid-cols-3">
+        <MetricCard
+          detail="כללי ניכוי פעילים"
+          icon={Percent}
+          label="ניכוי במקור"
+          value={String(summary.withholdingRules)}
+        />
+        <MetricCard
+          detail={`מעל ${formatPrice(ALLOCATION_NUMBER_THRESHOLD)}`}
+          icon={ReceiptText}
+          label="ממתינות להקצאה"
+          value={String(summary.needingAllocation)}
+        />
+        <MetricCard
+          detail="חשבוניות עם מספר הקצאה"
+          icon={FileCheck2}
+          label="הוקצו"
+          value={String(summary.assigned)}
+        />
+      </div>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Percent aria-hidden="true" className="size-5" />
+            ניכוי מס במקור
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.6fr]">
+          <form action={createWithholdingRuleAction} className="grid gap-2">
+            <p className="text-muted-foreground text-sm">
+              שיעור ניכוי לפי קטגוריה, מתוארך-תוקף. השיעורים לדוגמה בלבד.
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <Input name="category" placeholder="קטגוריה (שירותים)" required />
+              <Input
+                min="0"
+                name="ratePercent"
+                placeholder="שיעור %"
+                step="0.01"
+                type="number"
+              />
+            </div>
+            <Input aria-label="בתוקף מ-" name="effectiveFrom" type="date" />
+            <Button className="w-fit" size="sm" type="submit">
+              הוסף כלל
+            </Button>
+          </form>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>קטגוריה</TableHead>
+                <TableHead>שיעור</TableHead>
+                <TableHead>בתוקף מ-</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rules.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={4}
+                  description="טרם הוגדרו כללי ניכוי."
+                  icon={Percent}
+                  title="אין כללים"
+                />
+              ) : (
+                rules.map((rule) => (
+                  <TableRow key={rule.id}>
+                    <TableCell className="text-sm">{rule.category}</TableCell>
+                    <TableCell className="text-sm">{rule.ratePercent}%</TableCell>
+                    <TableCell className="text-muted-foreground text-xs">
+                      {rule.effectiveFrom.toLocaleDateString("he-IL")}
+                    </TableCell>
+                    <TableCell>
+                      <form action={toggleWithholdingRuleAction}>
+                        <input name="ruleId" type="hidden" value={rule.id} />
+                        <input
+                          name="isActive"
+                          type="hidden"
+                          value={rule.isActive ? "0" : "1"}
+                        />
+                        <Button size="sm" type="submit" variant="ghost">
+                          {rule.isActive ? "השבת" : "הפעל"}
+                        </Button>
+                      </form>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between gap-2">
+            <span className="flex items-center gap-2">
+              <Landmark aria-hidden="true" className="size-5" />
+              מספרי הקצאה (חשבונית ישראל)
+            </span>
+            <form action={flagAllocationAction}>
+              <Button size="sm" type="submit" variant="outline">
+                סרוק חשבוניות
+              </Button>
+            </form>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>חשבונית</TableHead>
+                <TableHead>סכום</TableHead>
+                <TableHead>סטטוס</TableHead>
+                <TableHead>מספר הקצאה</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {needingAllocation.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={4}
+                  description="אין חשבוניות מעל הסף הממתינות למספר הקצאה."
+                  icon={ReceiptText}
+                  title="הכול מטופל"
+                />
+              ) : (
+                needingAllocation.map((invoice) => (
+                  <TableRow key={invoice.id}>
+                    <TableCell className="text-sm">{invoice.invoiceNumber}</TableCell>
+                    <TableCell className="text-sm">
+                      {formatPrice(invoice.total)}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          invoice.allocationStatus === "REQUIRED"
+                            ? "destructive"
+                            : "outline"
+                        }
+                      >
+                        {invoice.allocationStatus === "REQUIRED" ? "נדרש" : "—"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <form
+                        action={assignAllocationNumberAction}
+                        className="flex items-center gap-1"
+                      >
+                        <input name="invoiceId" type="hidden" value={invoice.id} />
+                        <Input
+                          className="h-8 w-32"
+                          dir="ltr"
+                          inputMode="numeric"
+                          name="allocationNumber"
+                          placeholder="9 ספרות"
+                        />
+                        <Button size="sm" type="submit" variant="outline">
+                          שייך
+                        </Button>
+                      </form>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </AdminShell>
+  );
+}

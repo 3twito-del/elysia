@@ -1304,6 +1304,57 @@ model CustomFieldValue {
   @@index([entityType, entityId])
 }
 
+/// A synchronous classification rule over any entity (WFL-005). When a record
+/// matches the condition, the action (flag/priority/approval/escalation) applies.
+model BusinessRule {
+  id            String   @id @default(cuid())
+  name          String
+  entityType    String
+  /// workflow-rules condition tree
+  conditionRule Json
+  /// action descriptor { type, config }
+  action        Json
+  priority      Int      @default(100)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([entityType, isActive])
+}
+
+/// A generic SLA target per entity type and tier, feeding escalation (WFL-005).
+model SlaPolicy {
+  id                String   @id @default(cuid())
+  name              String
+  entityType        String
+  /// LOW | STANDARD | HIGH | URGENT
+  tier              String   @default("STANDARD")
+  responseMinutes   Int
+  resolutionMinutes Int
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([entityType, tier])
+  @@index([entityType, isActive])
+}
+
+/// Israeli withholding-tax (ניכוי מס במקור) rate per category, effective-dated.
+/// Rates are examples — verify with an accountant before use (FIN-TAX / IL).
+model WithholdingTaxRule {
+  id            String   @id @default(cuid())
+  category      String
+  /// percentage, e.g. 30.00
+  ratePercent   Decimal  @db.Decimal(5, 2)
+  effectiveFrom DateTime @db.Date
+  isActive      Boolean  @default(true)
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([category, isActive])
+}
+
 /// A saved report over a curated dataset + the semantic layer (RPT, §4.Q).
 model ReportDefinition {
   id          String    @id @default(cuid())
@@ -2777,6 +2828,10 @@ model CustomerInvoice {
   invoiceDate   DateTime                    @db.Date
   dueDate       DateTime?                   @db.Date
   issuedAt      DateTime?
+  /// Israeli "חשבונית ישראל" allocation number (מספר הקצאה) from SHAAM
+  allocationNumber String?
+  /// NOT_REQUIRED | REQUIRED | ASSIGNED
+  allocationStatus String                   @default("NOT_REQUIRED")
   notes         String?
   metadata      Json?
   customer      Customer?                   @relation(fields: [customerId], references: [id], onDelete: SetNull)

@@ -9,6 +9,12 @@ import {
   getAdminFromSession,
   hasAdminPermission,
 } from "~/server/auth/admin-access";
+import {
+  createBusinessRule,
+  deleteBusinessRule,
+  setBusinessRuleActive,
+  upsertSlaPolicy,
+} from "~/server/services/business-rules";
 import { defineCustomField } from "~/server/services/custom-fields";
 import { createForm, setFormActive, type FormField } from "~/server/services/forms";
 import type { WorkflowAction } from "~/server/services/workflow-actions";
@@ -198,6 +204,80 @@ function coerceValue(raw: string): unknown {
   const num = Number(raw);
   if (raw.trim() !== "" && Number.isFinite(num)) return num;
   return raw;
+}
+
+export async function createBusinessRuleAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const name = stringValue(formData.get("name")).trim();
+  const entityType = stringValue(formData.get("entityType")).trim();
+  if (!name || !entityType) throw new Error("שם וסוג ישות הם שדות חובה.");
+
+  const field = optionalString(formData.get("conditionField"));
+  const op = stringValue(formData.get("conditionOp")) || "eq";
+  const valueRaw = stringValue(formData.get("conditionValue"));
+  const conditionRule = field
+    ? UNARY_OPS.has(op)
+      ? { field, op }
+      : { field, op, value: coerceValue(valueRaw) }
+    : {};
+
+  const actionType = stringValue(formData.get("actionType")) || "FLAG";
+  const detail = optionalString(formData.get("actionDetail"));
+
+  await createBusinessRule({
+    name,
+    entityType,
+    conditionRule,
+    action: { type: actionType, config: detail ? { label: detail } : undefined },
+    priority: Number(stringValue(formData.get("priority"))) || 100,
+  });
+
+  revalidatePath("/admin/workflow");
+}
+
+export async function toggleBusinessRuleAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const ruleId = stringValue(formData.get("ruleId"));
+  if (!ruleId) throw new Error("חסר מזהה חוק.");
+
+  await setBusinessRuleActive({
+    ruleId,
+    isActive: formData.get("isActive") === "1",
+  });
+
+  revalidatePath("/admin/workflow");
+}
+
+export async function deleteBusinessRuleAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const ruleId = stringValue(formData.get("ruleId"));
+  if (!ruleId) throw new Error("חסר מזהה חוק.");
+
+  await deleteBusinessRule({ ruleId });
+
+  revalidatePath("/admin/workflow");
+}
+
+export async function upsertSlaPolicyAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const name = stringValue(formData.get("name")).trim();
+  const entityType = stringValue(formData.get("entityType")).trim();
+  if (!name || !entityType) throw new Error("שם וסוג ישות הם שדות חובה.");
+
+  await upsertSlaPolicy({
+    name,
+    entityType,
+    tier: stringValue(formData.get("tier")) || "STANDARD",
+    responseMinutes: Number(stringValue(formData.get("responseMinutes"))) || 60,
+    resolutionMinutes:
+      Number(stringValue(formData.get("resolutionMinutes"))) || 240,
+  });
+
+  revalidatePath("/admin/workflow");
 }
 
 async function requireAdmin(permission: AdminPermission) {
