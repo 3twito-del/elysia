@@ -265,6 +265,36 @@ export async function getConsolidatedReport() {
   };
 }
 
+/** The base (reporting) entity's id, or the first active entity, or null. */
+export async function getBaseEntityId(): Promise<string | null> {
+  const base = await db.legalEntity.findFirst({
+    where: { isBase: true, isActive: true },
+    select: { id: true },
+  });
+  if (base) return base.id;
+  const fallback = await db.legalEntity.findFirst({
+    where: { isActive: true },
+    orderBy: { createdAt: "asc" },
+    select: { id: true },
+  });
+  return fallback?.id ?? null;
+}
+
+/** Active entities for posting/selection dropdowns. */
+export async function listEntityOptions() {
+  const entities = await db.legalEntity.findMany({
+    where: { isActive: true },
+    orderBy: [{ isBase: "desc" }, { code: "asc" }],
+    select: { id: true, code: true, name: true, isBase: true },
+  });
+  return entities.map((entity) => ({
+    id: entity.id,
+    code: entity.code,
+    name: entity.name,
+    isBase: entity.isBase,
+  }));
+}
+
 export async function getEntitiesSummary() {
   const [total, active, base] = await Promise.all([
     db.legalEntity.count(),

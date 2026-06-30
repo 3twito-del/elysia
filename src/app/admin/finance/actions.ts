@@ -146,6 +146,7 @@ export async function postManualJournalEntryAction(formData: FormData) {
     memo: optionalString(formData.get("memo")),
     lines,
     postedById: admin.id,
+    entityId: optionalString(formData.get("entityId")),
   });
 
   revalidatePath("/admin/finance");

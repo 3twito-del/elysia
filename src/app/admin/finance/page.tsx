@@ -91,6 +91,7 @@ import {
   getFinanceOverview,
   getGeneralLedgerOverview,
 } from "~/server/services/finance";
+import { listEntityOptions } from "~/server/services/entities";
 import { getFinancialStatements } from "~/server/services/financial-statements";
 import {
   listLedgerAccounts,
@@ -197,15 +198,19 @@ export default async function AdminFinancePage() {
     year: now.getUTCMonth() === 0 ? now.getUTCFullYear() - 1 : now.getUTCFullYear(),
     month: now.getUTCMonth() === 0 ? 12 : now.getUTCMonth(),
   };
-  const [fiscalPeriods, closeSummary, ledgerAccounts, recentEntries] =
-    await Promise.all([
-      listFiscalPeriods().catch(() => []),
-      getPeriodCloseSummary(closeTarget.year, closeTarget.month).catch(
-        () => null,
-      ),
-      listLedgerAccounts().catch(() => []),
-      listRecentJournalEntries().catch(() => []),
-    ]);
+  const [
+    fiscalPeriods,
+    closeSummary,
+    ledgerAccounts,
+    recentEntries,
+    entityOptions,
+  ] = await Promise.all([
+    listFiscalPeriods().catch(() => []),
+    getPeriodCloseSummary(closeTarget.year, closeTarget.month).catch(() => null),
+    listLedgerAccounts().catch(() => []),
+    listRecentJournalEntries().catch(() => []),
+    listEntityOptions().catch(() => []),
+  ]);
 
   const [
     bankLines,
@@ -1319,6 +1324,27 @@ export default async function AdminFinancePage() {
                 placeholder="לדוגמה: הפרשה לחופשה"
               />
             </div>
+            {entityOptions.length > 0 ? (
+              <div className="grid gap-1.5">
+                <label className="text-sm font-medium" htmlFor="je-entity">
+                  ישות (ברירת מחדל: ישות הבסיס)
+                </label>
+                <select
+                  autoComplete="off"
+                  className="glass-control h-10 rounded-md border px-3 text-sm"
+                  defaultValue=""
+                  id="je-entity"
+                  name="entityId"
+                >
+                  <option value="">ישות הבסיס</option>
+                  {entityOptions.map((entity) => (
+                    <option key={entity.id} value={entity.id}>
+                      {entity.code} · {entity.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
             <div className="grid gap-1.5">
               <label className="text-sm font-medium" htmlFor="je-lines">
                 שורות

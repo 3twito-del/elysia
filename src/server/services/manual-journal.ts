@@ -1,4 +1,5 @@
 import { db } from "~/server/db";
+import { getBaseEntityId } from "~/server/services/entities";
 import { postJournalEntry } from "~/server/services/ledger";
 
 /**
@@ -61,16 +62,22 @@ export async function postManualJournalEntry(input: {
   memo?: string;
   lines: ParsedJournalLine[];
   postedById?: string;
+  entityId?: string;
 }) {
   if (input.lines.length < 2) {
     throw new Error("תנועת יומן דורשת לפחות שתי שורות.");
   }
+
+  // Attribute the entry to the chosen entity, falling back to the base entity
+  // so multi-entity books populate explicitly rather than rolling up by default.
+  const entityId = input.entityId ?? (await getBaseEntityId()) ?? undefined;
 
   return postJournalEntry({
     entryDate: input.entryDate ?? new Date(),
     memo: input.memo,
     source: "manual",
     postedById: input.postedById,
+    entityId,
     lines: input.lines,
   });
 }

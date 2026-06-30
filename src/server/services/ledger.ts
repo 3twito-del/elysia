@@ -393,6 +393,7 @@ export async function postJournalEntry(
     orderId?: string;
     purchaseOrderId?: string;
     postedById?: string;
+    entityId?: string;
     metadata?: Prisma.InputJsonValue;
     lines: JournalLineInput[];
   },
@@ -440,6 +441,7 @@ export async function postJournalEntry(
       orderId: input.orderId,
       purchaseOrderId: input.purchaseOrderId,
       postedById: input.postedById,
+      entityId: input.entityId,
       metadata: input.metadata,
       lines: {
         create: input.lines.map((line) => {
