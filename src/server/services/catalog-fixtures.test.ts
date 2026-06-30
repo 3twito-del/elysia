@@ -86,7 +86,8 @@ describe("catalog fixture flags", () => {
 describe("catalog fixture product media", () => {
   it("keeps representative owned and supplier products on multi-image galleries", () => {
     expect(
-      getFixtureCatalogProductBySlug("hera-bracelet")?.images.length,
+      getFixtureCatalogProductBySlug("elysia-mila-bracelet-silver-ii-093")
+        ?.images.length,
     ).toBeGreaterThanOrEqual(4);
     expect(
       getFixtureCatalogProductBySlug("elysia-supplier-silver-halo-ring")?.images

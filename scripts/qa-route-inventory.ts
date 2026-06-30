@@ -215,7 +215,7 @@ export function getQaRouteInventory({
   for (const slug of productSlugs) {
     entries.push(
       routeEntry({
-        includeInPerformance: slug === "venus-line-ring",
+        includeInPerformance: slug === "elysia-mila-bracelet-silver-ii-093",
         kind: "dynamic",
         path: `/product/${slug}`,
         notes: getProductRouteNotes(slug),
@@ -513,9 +513,9 @@ function routeEntry(input: {
 function getRepresentativeProductSlugs() {
   const products = listFixtureCatalogProducts();
   const important = [
-    "venus-line-ring",
-    "hera-bracelet",
-    "muse-pearl-earrings",
+    "elysia-mila-bracelet-silver-ii-093",
+    "elysia-mira-earrings-silver-072",
+    "elysia-vera-necklace-silver-050",
     "elysia-supplier-silver-halo-ring",
   ];
   const firstByCategory = seedCategories
@@ -549,7 +549,7 @@ function isPerformanceRoute(route: string) {
     "/",
     "/search?q=venus",
     "/category/earrings",
-    "/product/venus-line-ring",
+    "/product/elysia-mila-bracelet-silver-ii-093",
     "/checkout",
     "/account",
     "/ai",

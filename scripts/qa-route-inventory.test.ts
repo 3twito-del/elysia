@@ -28,11 +28,13 @@ describe("QA route inventory", () => {
     expect(routes).toEqual(expect.arrayContaining(["/category/earrings"]));
     expect(routes).toEqual(expect.arrayContaining(["/category/bracelets"]));
     expect(routes).toEqual(
-      expect.arrayContaining(["/product/venus-line-ring"]),
+      expect.arrayContaining(["/product/elysia-mila-bracelet-silver-ii-093"]),
     );
-    expect(routes).toEqual(expect.arrayContaining(["/product/hera-bracelet"]));
     expect(routes).toEqual(
-      expect.arrayContaining(["/product/muse-pearl-earrings"]),
+      expect.arrayContaining(["/product/elysia-vera-necklace-silver-050"]),
+    );
+    expect(routes).toEqual(
+      expect.arrayContaining(["/product/elysia-mira-earrings-silver-072"]),
     );
     expect(routes).toEqual(
       expect.arrayContaining(["/product/elysia-supplier-silver-halo-ring"]),
@@ -80,7 +82,7 @@ describe("QA route inventory", () => {
         "/",
         "/search?q=venus",
         "/category/earrings",
-        "/product/venus-line-ring",
+        "/product/elysia-mila-bracelet-silver-ii-093",
         "/checkout",
         "/account",
         "/ai",
@@ -180,6 +182,7 @@ describe("QA route inventory", () => {
       "/category/necklaces",
       "/category/earrings",
       "/category/bracelets",
+      "/category/sets",
       "/gifts",
     ]);
     expect(groups.commerceLinks.map((link) => link.href)).toEqual([
@@ -242,7 +245,7 @@ describe("QA route inventory", () => {
         "/account",
         "/offline",
         "/category/rings",
-        "/product/venus-line-ring",
+        "/product/elysia-mila-bracelet-silver-ii-093",
         "/admin",
         "/admin/login",
       ]),

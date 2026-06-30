@@ -109,6 +109,7 @@ describe("public structure benchmark v4 policy", () => {
       "/category/necklaces",
       "/category/earrings",
       "/category/bracelets",
+      "/category/sets",
       "/gifts",
       "/search?sort=popular",
       "/size-guide",

@@ -167,7 +167,7 @@ describe("Serwist route", () => {
         "/jewellery-care",
         "/offline",
         "/category/rings",
-        "/product/venus-line-ring",
+        "/product/elysia-mila-bracelet-silver-ii-093",
       ]),
     );
   });
