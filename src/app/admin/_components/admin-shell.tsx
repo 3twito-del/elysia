@@ -2,6 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   Activity,
   BarChart3,
+  BadgePercent,
   Bell,
   BookOpen,
   Bot,
@@ -73,6 +74,7 @@ export type AdminSection =
   | "overview"
   | "pos"
   | "projects"
+  | "promotions"
   | "reorder"
   | "reports"
   | "service"
@@ -104,6 +106,7 @@ const navItems: Array<{
   { href: "/admin/marketing", icon: Megaphone, id: "marketing", label: "שיווק" },
   { href: "/admin/orders", icon: ClipboardList, id: "orders", label: "הזמנות" },
   { href: "/admin/catalog", icon: PackageCheck, id: "catalog", label: "קטלוג" },
+  { href: "/admin/promotions", icon: BadgePercent, id: "promotions", label: "מבצעים" },
   { href: "/admin/inventory", icon: Boxes, id: "inventory", label: "מלאי" },
   { href: "/admin/reorder", icon: PackageSearch, id: "reorder", label: "חידוש מלאי" },
   { href: "/admin/customers", icon: Users, id: "customers", label: "לקוחות" },

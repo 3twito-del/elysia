@@ -1345,6 +1345,26 @@ model SlaPolicy {
   @@index([entityType, isActive])
 }
 
+/// An automatic cart-level promotion evaluated at checkout (CMS-002).
+model Promotion {
+  id           String    @id @default(cuid())
+  name         String
+  /// PERCENT | FIXED | FREE_SHIPPING
+  type         String    @default("PERCENT")
+  value        Decimal   @default(0) @db.Decimal(10, 2)
+  minCartTotal Decimal   @default(0) @db.Decimal(10, 2)
+  minQuantity  Int       @default(0)
+  priority     Int       @default(100)
+  stackable    Boolean   @default(false)
+  isActive     Boolean   @default(true)
+  startsAt     DateTime?
+  endsAt       DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([isActive])
+}
+
 /// A B2B trade account: negotiated discount, credit limit and terms (POR-003).
 model B2bAccount {
   id               String   @id @default(cuid())
