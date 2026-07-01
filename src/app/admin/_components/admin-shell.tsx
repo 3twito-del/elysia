@@ -36,6 +36,7 @@ import {
   Store,
   Table2,
   Tags,
+  TrendingUp,
   Wrench,
   Workflow,
   Users,
@@ -61,6 +62,7 @@ type AdminShellProps = {
 
 export type AdminSection =
   | "ai"
+  | "anomalies"
   | "appointments"
   | "audit"
   | "b2b"
@@ -114,6 +116,7 @@ const navItems: Array<{
   },
   { href: "/admin/bi", icon: Activity, id: "bi", label: "BI" },
   { href: "/admin/ai", icon: Bot, id: "ai", label: "AI" },
+  { href: "/admin/anomalies", icon: TrendingUp, id: "anomalies", label: "אנומליות" },
   { href: "/admin/crm", icon: ContactRound, id: "crm", label: "CRM" },
   { href: "/admin/erp", icon: Workflow, id: "erp", label: "ERP" },
   { href: "/admin/finance", icon: Landmark, id: "finance", label: "Finance" },
