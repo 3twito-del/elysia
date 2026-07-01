@@ -361,6 +361,16 @@ export function getQaRouteInventory({
 
   entries.push(
     routeEntry({
+      kind: "admin",
+      path: "/admin/reports/fixture-report/print",
+      requiresAuth: true,
+      source: "protected-dynamic",
+      template: "/admin/reports/[id]/print",
+    }),
+  );
+
+  entries.push(
+    routeEntry({
       coverage: "documented",
       includeInVisualQa: false,
       kind: "api",

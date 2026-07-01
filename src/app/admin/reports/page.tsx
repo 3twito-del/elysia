@@ -291,6 +291,11 @@ export default async function AdminReportsPage({ searchParams }: PageProps) {
                             CSV
                           </Link>
                         </Button>
+                        <Button asChild size="sm" variant="ghost">
+                          <Link href={`/admin/reports/${report.id}/print`}>
+                            PDF
+                          </Link>
+                        </Button>
                         <form action={toggleReportAction}>
                           <input name="reportId" type="hidden" value={report.id} />
                           <input
