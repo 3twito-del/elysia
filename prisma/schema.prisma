@@ -2989,11 +2989,33 @@ model PurchaseOrder {
   receipts             GoodsReceipt[]
   financeLedgerEntries FinanceLedgerEntry[]
   vendorInvoices       VendorInvoice[]
+  landedCosts          LandedCost[]
   createdAt            DateTime             @default(now())
   updatedAt            DateTime             @updatedAt
 
   @@index([vendorId, status])
   @@index([status, expectedAt])
+}
+
+/// An extra acquisition cost (freight/customs/insurance) for a received PO,
+/// capitalized into the receipt's cost layers on apply (P2P-008). Allocation
+/// basis is by layer VALUE or QUANTITY.
+model LandedCost {
+  id              String        @id @default(cuid())
+  purchaseOrderId String
+  description     String
+  amount          Decimal       @db.Decimal(12, 2)
+  /// VALUE | QUANTITY
+  basis           String        @default("VALUE")
+  /// DRAFT | APPLIED
+  status          String        @default("DRAFT")
+  appliedAt       DateTime?
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([purchaseOrderId])
+  @@index([status])
 }
 
 model PurchaseOrderItem {

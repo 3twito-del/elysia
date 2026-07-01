@@ -35,7 +35,9 @@ import {
   createVendorInvoiceAction,
   createWorkOrderAction,
   approvePurchaseRequisitionAction,
+  applyLandedCostAction,
   convertRequisitionToPoAction,
+  createLandedCostAction,
   createPurchaseRequisitionAction,
   rejectPurchaseRequisitionAction,
   submitPurchaseRequisitionAction,
@@ -81,6 +83,10 @@ import {
   listPurchaseRequisitions,
   listVendorsForRequisition,
 } from "~/server/services/purchase-requisition";
+import {
+  listLandedCosts,
+  listReceivedPurchaseOrdersForLandedCost,
+} from "~/server/services/landed-cost";
 
 export const metadata = {
   title: "ERP | Admin",
@@ -216,6 +222,11 @@ export default async function AdminErpPage({
   const [requisitions, requisitionVendors] = await Promise.all([
     listPurchaseRequisitions().catch(() => []),
     listVendorsForRequisition().catch(() => []),
+  ]);
+
+  const [landedCosts, landedCostPos] = await Promise.all([
+    listLandedCosts().catch(() => []),
+    listReceivedPurchaseOrdersForLandedCost().catch(() => []),
   ]);
 
   const atpSku = firstParam((await searchParams).atpSku);
@@ -497,6 +508,115 @@ export default async function AdminErpPage({
                           </Button>
                         </form>
                       ) : null}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Truck aria-hidden="true" className="size-5" />
+            עלויות נלוות (Landed Cost)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
+          <form action={createLandedCostAction} className="grid gap-2">
+            <p className="text-muted-foreground text-sm">
+              שילוח/מכס/ביטוח על הזמנת רכש שנקלטה — משוקלל לתוך שכבות העלות של
+              הקליטה לפי ערך או כמות, ומעלה את עלות היחידה.
+            </p>
+            <select
+              autoComplete="off"
+              className="glass-control h-10 rounded-md border px-3 text-sm"
+              defaultValue=""
+              name="purchaseOrderId"
+              required
+            >
+              <option disabled value="">
+                בחר הזמנת רכש שנקלטה…
+              </option>
+              {landedCostPos.map((po) => (
+                <option key={po.id} value={po.id}>
+                  {po.poNumber} · {po.vendorName}
+                </option>
+              ))}
+            </select>
+            <Input name="description" placeholder="תיאור (למשל שילוח ימי)" required />
+            <div className="grid grid-cols-2 gap-2">
+              <Input
+                min="0"
+                name="amount"
+                placeholder="סכום ₪"
+                step="0.01"
+                type="number"
+              />
+              <select
+                autoComplete="off"
+                className="glass-control h-10 rounded-md border px-3 text-sm"
+                defaultValue="VALUE"
+                name="basis"
+              >
+                <option value="VALUE">שקלול לפי ערך</option>
+                <option value="QUANTITY">שקלול לפי כמות</option>
+              </select>
+            </div>
+            <Button className="w-fit" size="sm" type="submit">
+              הוסף עלות נלווית
+            </Button>
+          </form>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>הזמנה</TableHead>
+                <TableHead>תיאור</TableHead>
+                <TableHead>סכום</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {landedCosts.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={4}
+                  description="טרם נרשמו עלויות נלוות."
+                  icon={Truck}
+                  title="אין עלויות נלוות"
+                />
+              ) : (
+                landedCosts.map((landedCost) => (
+                  <TableRow key={landedCost.id}>
+                    <TableCell className="text-sm">
+                      {landedCost.poNumber}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      <div>{landedCost.description}</div>
+                      <Badge className="mt-1" variant="outline">
+                        {landedCost.basis === "QUANTITY" ? "לפי כמות" : "לפי ערך"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {formatPrice(landedCost.amount)}
+                    </TableCell>
+                    <TableCell>
+                      {landedCost.status === "DRAFT" ? (
+                        <form action={applyLandedCostAction}>
+                          <input
+                            name="landedCostId"
+                            type="hidden"
+                            value={landedCost.id}
+                          />
+                          <Button size="sm" type="submit" variant="outline">
+                            החל
+                          </Button>
+                        </form>
+                      ) : (
+                        <Badge variant="secondary">הוחל</Badge>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))

@@ -28,6 +28,10 @@ import {
   createWorkOrder,
 } from "~/server/services/manufacturing";
 import {
+  applyLandedCost,
+  createLandedCost,
+} from "~/server/services/landed-cost";
+import {
   approvePurchaseRequisition,
   convertRequisitionToPo,
   createPurchaseRequisition,
@@ -374,6 +378,32 @@ export async function convertRequisitionToPoAction(formData: FormData) {
   if (!requisitionId) throw new Error("חסר מזהה דרישה.");
 
   await convertRequisitionToPo({ requisitionId });
+  revalidatePath("/admin/erp");
+}
+
+export async function createLandedCostAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const purchaseOrderId = stringValue(formData.get("purchaseOrderId"));
+  if (!purchaseOrderId) throw new Error("יש לבחור הזמנת רכש.");
+
+  await createLandedCost({
+    purchaseOrderId,
+    description: stringValue(formData.get("description")),
+    amount: Number(stringValue(formData.get("amount"))) || 0,
+    basis: stringValue(formData.get("basis")),
+  });
+
+  revalidatePath("/admin/erp");
+}
+
+export async function applyLandedCostAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const landedCostId = stringValue(formData.get("landedCostId"));
+  if (!landedCostId) throw new Error("חסר מזהה עלות נלווית.");
+
+  await applyLandedCost({ landedCostId });
   revalidatePath("/admin/erp");
 }
 
