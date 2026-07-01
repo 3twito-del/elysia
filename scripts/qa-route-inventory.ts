@@ -348,6 +348,16 @@ export function getQaRouteInventory({
 
   entries.push(
     routeEntry({
+      kind: "admin",
+      path: "/admin/orders/fixture-order/packing-slip",
+      requiresAuth: true,
+      source: "protected-dynamic",
+      template: "/admin/orders/[id]/packing-slip",
+    }),
+  );
+
+  entries.push(
+    routeEntry({
       coverage: "documented",
       includeInVisualQa: false,
       kind: "api",

@@ -291,6 +291,14 @@ export default async function AdminOrderDetailPage({
                   status={order.status}
                 />
               </TRPCReactProvider>
+              <div className="mt-3">
+                <a
+                  className="text-sm underline"
+                  href={`/admin/orders/${order.id}/packing-slip`}
+                >
+                  תעודת אריזה (הדפסה)
+                </a>
+              </div>
             </CardContent>
           </Card>
 
