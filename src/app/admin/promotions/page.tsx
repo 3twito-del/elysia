@@ -43,6 +43,7 @@ const typeLabel: Record<string, string> = {
   PERCENT: "אחוז",
   FIXED: "סכום קבוע",
   FREE_SHIPPING: "משלוח חינם",
+  BOGO: "קנה-קבל (BOGO)",
 };
 
 function formatValue(type: string, value: number) {
@@ -139,6 +140,11 @@ export default async function AdminPromotionsPage({ searchParams }: PageProps) {
                 type="number"
               />
               <Input min="0" name="minQuantity" placeholder="סף כמות" type="number" />
+            </div>
+            <Input name="categoryId" placeholder="קטגוריה (מזהה, רשות)" />
+            <div className="grid grid-cols-2 gap-2">
+              <Input min="0" name="buyQuantity" placeholder="BOGO: קנה" type="number" />
+              <Input min="0" name="getQuantity" placeholder="BOGO: קבל" type="number" />
             </div>
             <label className="text-muted-foreground flex items-center gap-2 text-sm">
               <input name="stackable" type="checkbox" value="1" />

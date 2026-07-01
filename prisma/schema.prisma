@@ -1367,9 +1367,15 @@ model Banner {
 model Promotion {
   id           String    @id @default(cuid())
   name         String
-  /// PERCENT | FIXED | FREE_SHIPPING
+  /// PERCENT | FIXED | FREE_SHIPPING | BOGO
   type         String    @default("PERCENT")
   value        Decimal   @default(0) @db.Decimal(10, 2)
+  /// scope the discount to one category (null = whole cart)
+  categoryId   String?
+  /// BOGO: buy this many...
+  buyQuantity  Int       @default(0)
+  /// ...get this many at no charge (cheapest units)
+  getQuantity  Int       @default(0)
   minCartTotal Decimal   @default(0) @db.Decimal(10, 2)
   minQuantity  Int       @default(0)
   priority     Int       @default(100)

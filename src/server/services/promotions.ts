@@ -7,7 +7,7 @@ import { db } from "~/server/db";
  * unit-tested so it can later drive live checkout without behaviour surprises.
  */
 
-export const PROMOTION_TYPES = ["PERCENT", "FIXED", "FREE_SHIPPING"] as const;
+export const PROMOTION_TYPES = ["PERCENT", "FIXED", "FREE_SHIPPING", "BOGO"] as const;
 export type PromotionType = (typeof PROMOTION_TYPES)[number];
 
 export type PromotionRule = {
@@ -15,6 +15,9 @@ export type PromotionRule = {
   name: string;
   type: string;
   value: number;
+  categoryId: string | null;
+  buyQuantity: number;
+  getQuantity: number;
   minCartTotal: number;
   minQuantity: number;
   priority: number;
@@ -24,7 +27,46 @@ export type PromotionRule = {
   endsAt: Date | null;
 };
 
-export type PromotionCart = { subtotal: number; itemCount: number };
+export type PromotionCartItem = {
+  price: number;
+  quantity: number;
+  categoryId?: string | null;
+};
+
+export type PromotionCart = {
+  subtotal: number;
+  itemCount: number;
+  items?: PromotionCartItem[];
+};
+
+/** Subtotal of items in one category. Pure. */
+export function categorySubtotal(
+  items: PromotionCartItem[],
+  categoryId: string,
+): number {
+  return round2(
+    items
+      .filter((item) => item.categoryId === categoryId)
+      .reduce((sum, item) => sum + item.price * item.quantity, 0),
+  );
+}
+
+/** BOGO discount: cheapest free units across each buy+get set. Pure. */
+export function bogoDiscount(
+  items: PromotionCartItem[],
+  buyQuantity: number,
+  getQuantity: number,
+): number {
+  if (buyQuantity <= 0 || getQuantity <= 0) return 0;
+  const units: number[] = [];
+  for (const item of items) {
+    for (let i = 0; i < item.quantity; i += 1) units.push(item.price);
+  }
+  units.sort((a, b) => a - b);
+  const setSize = buyQuantity + getQuantity;
+  const freeUnits = Math.floor(units.length / setSize) * getQuantity;
+  return round2(units.slice(0, freeUnits).reduce((sum, price) => sum + price, 0));
+}
 
 function round2(value: number) {
   return Math.round((value + Number.EPSILON) * 100) / 100;
@@ -51,14 +93,30 @@ export function meetsConditions(
 
 /** The monetary discount a single promotion yields on a cart. Pure. */
 export function promotionDiscount(
-  promo: Pick<PromotionRule, "type" | "value">,
+  promo: Pick<
+    PromotionRule,
+    "type" | "value" | "categoryId" | "buyQuantity" | "getQuantity"
+  >,
   cart: PromotionCart,
 ): number {
+  const items = cart.items ?? [];
+
+  if (promo.type === "BOGO") {
+    const scoped = promo.categoryId
+      ? items.filter((item) => item.categoryId === promo.categoryId)
+      : items;
+    return bogoDiscount(scoped, promo.buyQuantity, promo.getQuantity);
+  }
+
+  const base = promo.categoryId
+    ? categorySubtotal(items, promo.categoryId)
+    : cart.subtotal;
+
   if (promo.type === "PERCENT") {
-    return round2((cart.subtotal * Math.max(0, Math.min(100, promo.value))) / 100);
+    return round2((base * Math.max(0, Math.min(100, promo.value))) / 100);
   }
   if (promo.type === "FIXED") {
-    return round2(Math.min(Math.max(0, promo.value), cart.subtotal));
+    return round2(Math.min(Math.max(0, promo.value), base));
   }
   return 0; // FREE_SHIPPING carries no line discount
 }
@@ -127,6 +185,9 @@ export async function createPromotion(input: {
   name: string;
   type?: string;
   value?: number;
+  categoryId?: string;
+  buyQuantity?: number;
+  getQuantity?: number;
   minCartTotal?: number;
   minQuantity?: number;
   priority?: number;
@@ -140,6 +201,9 @@ export async function createPromotion(input: {
       name: input.name.trim(),
       type: normalizeType(input.type),
       value: round2(Math.max(0, input.value ?? 0)),
+      categoryId: input.categoryId,
+      buyQuantity: Math.max(0, Math.trunc(input.buyQuantity ?? 0)),
+      getQuantity: Math.max(0, Math.trunc(input.getQuantity ?? 0)),
       minCartTotal: round2(Math.max(0, input.minCartTotal ?? 0)),
       minQuantity: Math.max(0, Math.trunc(input.minQuantity ?? 0)),
       priority: Math.trunc(input.priority ?? 100),
@@ -169,6 +233,9 @@ function mapPromotion(promo: {
   name: string;
   type: string;
   value: unknown;
+  categoryId: string | null;
+  buyQuantity: number;
+  getQuantity: number;
   minCartTotal: unknown;
   minQuantity: number;
   priority: number;
@@ -182,6 +249,9 @@ function mapPromotion(promo: {
     name: promo.name,
     type: promo.type,
     value: Number(promo.value),
+    categoryId: promo.categoryId,
+    buyQuantity: promo.buyQuantity,
+    getQuantity: promo.getQuantity,
     minCartTotal: Number(promo.minCartTotal),
     minQuantity: promo.minQuantity,
     priority: promo.priority,
