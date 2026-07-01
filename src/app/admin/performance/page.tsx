@@ -1,4 +1,4 @@
-import { Star, Target, Users } from "lucide-react";
+import { CalendarDays, Clock, Star, Target, Users } from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
 import {
@@ -8,7 +8,10 @@ import {
 import { getAdminPageAccess } from "../_lib/access";
 import {
   createGoalAction,
+  createLeaveRequestAction,
   createReviewAction,
+  recordAttendanceAction,
+  setLeaveRequestStatusAction,
   setReviewStatusAction,
   updateGoalAction,
 } from "./actions";
@@ -34,6 +37,12 @@ import {
   listReviews,
   REVIEW_STATUSES,
 } from "~/server/services/hr-performance";
+import {
+  getAttendanceSummary,
+  LEAVE_TYPES,
+  listAttendance,
+  listLeaveRequests,
+} from "~/server/services/time-attendance";
 
 export const metadata = {
   title: "ביצועים | Admin",
@@ -62,11 +71,26 @@ export default async function AdminPerformancePage() {
 
   if (!summary) return <AdminDatabaseFallback />;
 
-  const [employees, reviews, goals] = await Promise.all([
-    listEmployeesForSelect().catch(() => []),
-    listReviews().catch(() => []),
-    listGoals().catch(() => []),
-  ]);
+  const [employees, reviews, goals, attendance, leaveRequests, attendanceSummary] =
+    await Promise.all([
+      listEmployeesForSelect().catch(() => []),
+      listReviews().catch(() => []),
+      listGoals().catch(() => []),
+      listAttendance().catch(() => []),
+      listLeaveRequests().catch(() => []),
+      getAttendanceSummary().catch(() => ({ openShifts: 0, pendingLeave: 0 })),
+    ]);
+
+  const leaveTypeLabel: Record<string, string> = {
+    VACATION: "חופשה",
+    SICK: "מחלה",
+    UNPAID: "חל'ת",
+  };
+  const leaveStatusLabel: Record<string, string> = {
+    PENDING: "ממתין",
+    APPROVED: "אושר",
+    REJECTED: "נדחה",
+  };
 
   return (
     <AdminShell
@@ -289,6 +313,214 @@ export default async function AdminPerformancePage() {
                           שמור
                         </Button>
                       </form>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Clock aria-hidden="true" className="size-5" />
+            נוכחות
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.6fr]">
+          <form action={recordAttendanceAction} className="grid gap-2">
+            <p className="text-muted-foreground text-sm">
+              רישום כניסה/יציאה. {attendanceSummary.openShifts} משמרות פתוחות.
+            </p>
+            <select
+              aria-label="עובד"
+              autoComplete="off"
+              className="glass-control h-10 rounded-md border px-3 text-sm"
+              defaultValue=""
+              name="employeeId"
+              required
+            >
+              <option disabled value="">
+                בחר עובד…
+              </option>
+              {employees.map((employee) => (
+                <option key={employee.id} value={employee.id}>
+                  {employee.name}
+                </option>
+              ))}
+            </select>
+            <label className="text-muted-foreground text-xs">כניסה</label>
+            <Input name="clockIn" required type="datetime-local" />
+            <label className="text-muted-foreground text-xs">יציאה (רשות)</label>
+            <Input name="clockOut" type="datetime-local" />
+            <Input
+              min="0"
+              name="breakMinutes"
+              placeholder="הפסקה (דקות)"
+              type="number"
+            />
+            <Button className="w-fit" size="sm" type="submit">
+              רשום נוכחות
+            </Button>
+          </form>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>עובד</TableHead>
+                <TableHead>תאריך</TableHead>
+                <TableHead>שעות</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {attendance.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={3}
+                  description="טרם נרשמה נוכחות."
+                  icon={Clock}
+                  title="אין רישומים"
+                />
+              ) : (
+                attendance.map((entry) => (
+                  <TableRow key={entry.id}>
+                    <TableCell className="text-sm">{entry.employeeName}</TableCell>
+                    <TableCell className="text-xs" dir="ltr">
+                      {entry.workDate.toISOString().slice(0, 10)}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {entry.open ? (
+                        <Badge variant="outline">משמרת פתוחה</Badge>
+                      ) : (
+                        `${entry.hours} ש'`
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CalendarDays aria-hidden="true" className="size-5" />
+            בקשות חופשה
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.6fr]">
+          <form action={createLeaveRequestAction} className="grid gap-2">
+            <p className="text-muted-foreground text-sm">
+              {attendanceSummary.pendingLeave} בקשות ממתינות לאישור.
+            </p>
+            <select
+              aria-label="עובד לחופשה"
+              autoComplete="off"
+              className="glass-control h-10 rounded-md border px-3 text-sm"
+              defaultValue=""
+              name="employeeId"
+              required
+            >
+              <option disabled value="">
+                בחר עובד…
+              </option>
+              {employees.map((employee) => (
+                <option key={employee.id} value={employee.id}>
+                  {employee.name}
+                </option>
+              ))}
+            </select>
+            <select
+              aria-label="סוג חופשה"
+              autoComplete="off"
+              className="glass-control h-10 rounded-md border px-3 text-sm"
+              defaultValue="VACATION"
+              name="type"
+            >
+              {LEAVE_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {leaveTypeLabel[type] ?? type}
+                </option>
+              ))}
+            </select>
+            <div className="grid grid-cols-2 gap-2">
+              <Input aria-label="מתאריך" name="startDate" required type="date" />
+              <Input aria-label="עד תאריך" name="endDate" required type="date" />
+            </div>
+            <Button className="w-fit" size="sm" type="submit">
+              הגש בקשה
+            </Button>
+          </form>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>עובד</TableHead>
+                <TableHead>סוג</TableHead>
+                <TableHead>ימים</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {leaveRequests.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={4}
+                  description="אין בקשות חופשה."
+                  icon={CalendarDays}
+                  title="אין בקשות"
+                />
+              ) : (
+                leaveRequests.map((request) => (
+                  <TableRow key={request.id}>
+                    <TableCell className="text-sm">
+                      {request.employeeName}
+                      <Badge
+                        className="mr-2"
+                        variant={
+                          request.status === "APPROVED"
+                            ? "secondary"
+                            : request.status === "REJECTED"
+                              ? "destructive"
+                              : "outline"
+                        }
+                      >
+                        {leaveStatusLabel[request.status] ?? request.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {leaveTypeLabel[request.type] ?? request.type}
+                    </TableCell>
+                    <TableCell className="text-sm">{request.days}</TableCell>
+                    <TableCell>
+                      {request.status === "PENDING" ? (
+                        <div className="flex gap-1">
+                          <form action={setLeaveRequestStatusAction}>
+                            <input
+                              name="leaveRequestId"
+                              type="hidden"
+                              value={request.id}
+                            />
+                            <input name="status" type="hidden" value="APPROVED" />
+                            <Button size="sm" type="submit" variant="outline">
+                              אשר
+                            </Button>
+                          </form>
+                          <form action={setLeaveRequestStatusAction}>
+                            <input
+                              name="leaveRequestId"
+                              type="hidden"
+                              value={request.id}
+                            />
+                            <input name="status" type="hidden" value="REJECTED" />
+                            <Button size="sm" type="submit" variant="ghost">
+                              דחה
+                            </Button>
+                          </form>
+                        </div>
+                      ) : null}
                     </TableCell>
                   </TableRow>
                 ))

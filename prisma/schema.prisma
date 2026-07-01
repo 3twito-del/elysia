@@ -651,7 +651,45 @@ model Employee {
   expenseClaims  ExpenseClaim[]
   reviews        PerformanceReview[]
   goals          PerformanceGoal[]
+  attendance     AttendanceEntry[]
+  leaveRequests  LeaveRequest[]
 
+  @@index([status])
+}
+
+/// A clock-in/out attendance record for an employee (HR-002).
+model AttendanceEntry {
+  id           String    @id @default(cuid())
+  employeeId   String
+  workDate     DateTime  @db.Date
+  clockIn      DateTime
+  clockOut     DateTime?
+  breakMinutes Int       @default(0)
+  notes        String?
+  employee     Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([employeeId, workDate])
+}
+
+/// An employee leave request (HR-002): vacation / sick / unpaid.
+model LeaveRequest {
+  id         String   @id @default(cuid())
+  employeeId String
+  /// VACATION | SICK | UNPAID
+  type       String   @default("VACATION")
+  startDate  DateTime @db.Date
+  endDate    DateTime @db.Date
+  days       Int
+  /// PENDING | APPROVED | REJECTED
+  status     String   @default("PENDING")
+  notes      String?
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([employeeId, status])
   @@index([status])
 }
 

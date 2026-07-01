@@ -15,6 +15,11 @@ import {
   setReviewStatus,
   updateGoal,
 } from "~/server/services/hr-performance";
+import {
+  createLeaveRequest,
+  recordAttendance,
+  setLeaveRequestStatus,
+} from "~/server/services/time-attendance";
 
 export async function createReviewAction(formData: FormData) {
   await requireAdmin("ERP_WRITE");
@@ -73,6 +78,64 @@ export async function updateGoalAction(formData: FormData) {
     goalId,
     status: stringValue(formData.get("status")) || "OPEN",
     progress: Number(stringValue(formData.get("progress"))) || 0,
+  });
+
+  revalidatePath("/admin/performance");
+}
+
+export async function recordAttendanceAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const employeeId = stringValue(formData.get("employeeId"));
+  const clockInRaw = stringValue(formData.get("clockIn"));
+  if (!employeeId || !clockInRaw) {
+    throw new Error("יש לבחור עובד ולהזין שעת כניסה.");
+  }
+
+  const clockIn = new Date(clockInRaw);
+  const clockOutRaw = optionalString(formData.get("clockOut"));
+
+  await recordAttendance({
+    employeeId,
+    workDate: clockIn,
+    clockIn,
+    clockOut: clockOutRaw ? new Date(clockOutRaw) : undefined,
+    breakMinutes: Number(stringValue(formData.get("breakMinutes"))) || 0,
+  });
+
+  revalidatePath("/admin/performance");
+}
+
+export async function createLeaveRequestAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const employeeId = stringValue(formData.get("employeeId"));
+  const startRaw = stringValue(formData.get("startDate"));
+  const endRaw = stringValue(formData.get("endDate"));
+  if (!employeeId || !startRaw || !endRaw) {
+    throw new Error("יש לבחור עובד ולהזין טווח תאריכים.");
+  }
+
+  await createLeaveRequest({
+    employeeId,
+    type: stringValue(formData.get("type")),
+    startDate: new Date(startRaw),
+    endDate: new Date(endRaw),
+    notes: optionalString(formData.get("notes")),
+  });
+
+  revalidatePath("/admin/performance");
+}
+
+export async function setLeaveRequestStatusAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const leaveRequestId = stringValue(formData.get("leaveRequestId"));
+  if (!leaveRequestId) throw new Error("חסר מזהה בקשה.");
+
+  await setLeaveRequestStatus({
+    leaveRequestId,
+    status: formData.get("status") === "APPROVED" ? "APPROVED" : "REJECTED",
   });
 
   revalidatePath("/admin/performance");
