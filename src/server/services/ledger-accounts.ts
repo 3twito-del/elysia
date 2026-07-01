@@ -15,6 +15,7 @@ export const ACCOUNT = {
   ACCUMULATED_DEPRECIATION: "1590",
   ACCOUNTS_PAYABLE: "2000",
   GRNI: "2050",
+  LANDED_COST_CLEARING: "2060",
   VAT_OUTPUT: "2100",
   PAYROLL_LIABILITIES: "2200",
   GIFT_CARD_LIABILITY: "2300",
@@ -81,6 +82,12 @@ export const DEFAULT_CHART_OF_ACCOUNTS: ChartOfAccountsEntry[] = [
   {
     code: ACCOUNT.GRNI,
     name: "התחייבות לסחורה שהתקבלה (GRNI)",
+    type: "LIABILITY",
+    normalSide: "CREDIT",
+  },
+  {
+    code: ACCOUNT.LANDED_COST_CLEARING,
+    name: "סליקת עלויות נלוות",
     type: "LIABILITY",
     normalSide: "CREDIT",
   },

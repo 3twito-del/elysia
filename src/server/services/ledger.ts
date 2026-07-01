@@ -228,6 +228,35 @@ export function buildPurchaseReceiptJournalLines(input: {
 }
 
 /**
+ * Lines for capitalizing a landed cost into inventory: Inventory (debit) /
+ * Landed-cost clearing (credit). The clearing liability is settled when the
+ * freight/customs invoice is paid.
+ */
+export function buildLandedCostJournalLines(input: {
+  amount: number;
+  branchId?: string;
+}): JournalLineInput[] {
+  const amount = round2(input.amount);
+
+  return [
+    {
+      accountCode: ACCOUNT.INVENTORY,
+      debit: amount,
+      credit: 0,
+      memo: "היוון עלות נלווית למלאי",
+      branchId: input.branchId,
+    },
+    {
+      accountCode: ACCOUNT.LANDED_COST_CLEARING,
+      debit: 0,
+      credit: amount,
+      memo: "סליקת עלות נלווית",
+      branchId: input.branchId,
+    },
+  ];
+}
+
+/**
  * Lines for approving a PO-matched vendor invoice: clears the GRNI accrual and
  * recognises recoverable VAT against Accounts Payable. Balances by construction
  * (GRNI goods value + VAT input = AP total).
@@ -531,6 +560,51 @@ export async function postPurchaseReceiptJournalEntry(
       entityId: input.entityId,
       lines: buildPurchaseReceiptJournalLines({
         cost: input.cost,
+        branchId: input.branchId,
+      }),
+    },
+    client,
+  );
+}
+
+/** Posts the GL entry capitalizing a landed cost (Inventory / clearing). */
+export async function postLandedCostJournalEntry(
+  input: {
+    purchaseOrderId: string;
+    reference: string;
+    entryDate: Date;
+    amount: number;
+    branchId?: string;
+    currency?: string;
+    postedById?: string;
+  },
+  client: Prisma.TransactionClient = db,
+) {
+  // Self-heal the clearing account so applying a landed cost never hard-fails
+  // on a chart that predates it.
+  await client.ledgerAccount.upsert({
+    where: { code: ACCOUNT.LANDED_COST_CLEARING },
+    create: {
+      code: ACCOUNT.LANDED_COST_CLEARING,
+      name: "סליקת עלויות נלוות",
+      type: "LIABILITY",
+      normalSide: "CREDIT",
+    },
+    update: {},
+  });
+
+  return postJournalEntry(
+    {
+      entryDate: input.entryDate,
+      memo: `עלות נלווית — ${input.reference}`,
+      source: "landed_cost",
+      currency: input.currency,
+      aggregateType: "PurchaseOrder",
+      aggregateId: input.purchaseOrderId,
+      purchaseOrderId: input.purchaseOrderId,
+      postedById: input.postedById,
+      lines: buildLandedCostJournalLines({
+        amount: input.amount,
         branchId: input.branchId,
       }),
     },

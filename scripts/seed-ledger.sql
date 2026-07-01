@@ -8,6 +8,7 @@ VALUES
   (gen_random_uuid()::text, '1400', 'מע"מ תשומות',                     'ASSET',     'DEBIT',  true, now()),
   (gen_random_uuid()::text, '2000', 'ספקים (זכאים)',                   'LIABILITY', 'CREDIT', true, now()),
   (gen_random_uuid()::text, '2050', 'התחייבות לסחורה שהתקבלה (GRNI)',  'LIABILITY', 'CREDIT', true, now()),
+  (gen_random_uuid()::text, '2060', 'סליקת עלויות נלוות',              'LIABILITY', 'CREDIT', true, now()),
   (gen_random_uuid()::text, '2100', 'מע"מ עסקאות',                     'LIABILITY', 'CREDIT', true, now()),
   (gen_random_uuid()::text, '3000', 'הון',                             'EQUITY',    'CREDIT', true, now()),
   (gen_random_uuid()::text, '4000', 'הכנסות ממכירות',                  'REVENUE',   'CREDIT', true, now()),

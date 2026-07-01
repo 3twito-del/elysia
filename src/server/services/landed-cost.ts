@@ -1,4 +1,5 @@
 import { db } from "~/server/db";
+import { postLandedCostJournalEntry } from "~/server/services/ledger";
 
 /**
  * Landed cost (P2P-008): freight/customs/insurance capitalized into the cost
@@ -124,6 +125,7 @@ export async function applyLandedCost(input: { landedCostId: string }) {
         amount: true,
         basis: true,
         purchaseOrderId: true,
+        purchaseOrder: { select: { poNumber: true } },
       },
     });
     if (!landedCost) throw new Error("עלות נלווית לא נמצאה.");
@@ -158,6 +160,25 @@ export async function applyLandedCost(input: { landedCostId: string }) {
         where: { id: allocation.layerId },
         data: { unitCost: allocation.newUnitCost },
       });
+    }
+
+    // Capitalize the landed cost to the GL (Inventory / clearing). Best-effort:
+    // if the chart of accounts is not seeded, skip so the revaluation still
+    // commits (mirrors the sale/receipt posting policy).
+    try {
+      await postLandedCostJournalEntry(
+        {
+          purchaseOrderId: landedCost.purchaseOrderId,
+          reference: landedCost.purchaseOrder.poNumber,
+          entryDate: new Date(),
+          amount: Number(landedCost.amount),
+        },
+        tx,
+      );
+    } catch (error) {
+      if (process.env.NODE_ENV === "development") {
+        console.error("[landed-cost] GL posting skipped", error);
+      }
     }
 
     return tx.landedCost.update({

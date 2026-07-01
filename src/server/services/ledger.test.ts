@@ -4,6 +4,7 @@ import {
   ACCOUNT,
   assertBalanced,
   buildCustomerReceiptJournalLines,
+  buildLandedCostJournalLines,
   buildPurchaseReceiptJournalLines,
   buildSaleJournalLines,
   buildSalesReturnJournalLines,
@@ -132,6 +133,22 @@ describe("buildPurchaseReceiptJournalLines", () => {
     expect(
       lines.find((line) => line.accountCode === ACCOUNT.GRNI)?.credit,
     ).toBe(250);
+  });
+});
+
+describe("buildLandedCostJournalLines", () => {
+  it("debits inventory and credits the clearing account, balanced", () => {
+    const lines = buildLandedCostJournalLines({ amount: 400 });
+    assertBalanced(lines);
+
+    expect(
+      lines.find((line) => line.accountCode === ACCOUNT.INVENTORY)?.debit,
+    ).toBe(400);
+    expect(
+      lines.find(
+        (line) => line.accountCode === ACCOUNT.LANDED_COST_CLEARING,
+      )?.credit,
+    ).toBe(400);
   });
 });
 
