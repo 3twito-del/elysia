@@ -214,3 +214,35 @@ function csvCell(value: string): string {
   if (/[",\n]/.test(value)) return `"${value.replace(/"/g, '""')}"`;
   return value;
 }
+
+export type ReportMatrix = {
+  header: string[];
+  rows: Array<Array<string | number>>;
+  totals: Array<string | number>;
+};
+
+/**
+ * Flattens a result into a header/rows/totals matrix with dimension cells as
+ * strings and measure cells as raw numbers (so spreadsheets keep them numeric).
+ * Pure — shared by the CSV and Excel exporters.
+ */
+export function reportToMatrix(result: ReportResult): ReportMatrix {
+  const header = [
+    ...result.dimensions.map((dimension) => dimension.label),
+    ...result.measures.map((measure) => measure.label),
+  ];
+
+  const rows = result.rows.map((row) => [
+    ...result.dimensions.map((dimension) =>
+      toDisplayString(row.dimensions[dimension.key]),
+    ),
+    ...result.measures.map((measure) => Number(row.measures[measure.key] ?? 0)),
+  ]);
+
+  const totals: Array<string | number> = [
+    ...result.dimensions.map((_, index) => (index === 0 ? 'סה"כ' : "")),
+    ...result.measures.map((measure) => Number(result.totals[measure.key] ?? 0)),
+  ];
+
+  return { header, rows, totals };
+}

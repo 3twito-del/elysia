@@ -1,4 +1,11 @@
-import { BarChart3, Database, Filter, Play, Table2 } from "lucide-react";
+import {
+  BarChart3,
+  Database,
+  FileSpreadsheet,
+  Filter,
+  Play,
+  Table2,
+} from "lucide-react";
 import Link from "next/link";
 
 import { AdminShell } from "../_components/admin-shell";
@@ -252,6 +259,17 @@ export default async function AdminReportsPage({ searchParams }: PageProps) {
                           >
                             <Play aria-hidden="true" className="size-3" />
                             הרץ
+                          </Link>
+                        </Button>
+                        <Button asChild size="sm" variant="ghost">
+                          <Link href={`/api/admin/reports/${report.id}/export?format=xlsx`}>
+                            <FileSpreadsheet aria-hidden="true" className="size-3" />
+                            Excel
+                          </Link>
+                        </Button>
+                        <Button asChild size="sm" variant="ghost">
+                          <Link href={`/api/admin/reports/${report.id}/export?format=csv`}>
+                            CSV
                           </Link>
                         </Button>
                         <form action={toggleReportAction}>

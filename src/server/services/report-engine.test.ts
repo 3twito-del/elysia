@@ -4,6 +4,7 @@ import {
   aggregateMeasure,
   aggregateRows,
   formatMeasure,
+  reportToMatrix,
   toCsv,
   type Dimension,
   type Measure,
@@ -90,5 +91,23 @@ describe("toCsv", () => {
     const csv = toCsv(result).split("\n");
     expect(csv[0]).toBe("סטטוס,כמות");
     expect(csv.at(-1)).toContain("4");
+  });
+});
+
+describe("reportToMatrix", () => {
+  it("keeps measures numeric and totals the rows", () => {
+    const result = aggregateRows({
+      rows,
+      dimensions: [statusDim],
+      measures: [countMeasure, revenueMeasure],
+    });
+    const matrix = reportToMatrix(result);
+    expect(matrix.header).toEqual(["סטטוס", "כמות", "הכנסה"]);
+    // dimension cell is a string, measure cells are numbers
+    const paidRow = matrix.rows.find((row) => row[0] === "PAID");
+    expect(paidRow?.[1]).toBe(3);
+    expect(paidRow?.[2]).toBe(600);
+    expect(matrix.totals[0]).toBe('סה"כ');
+    expect(matrix.totals[1]).toBe(4);
   });
 });
