@@ -1,4 +1,11 @@
-import { CalendarDays, Clock, Star, Target, Users } from "lucide-react";
+import {
+  CalendarDays,
+  Calculator,
+  Clock,
+  Star,
+  Target,
+  Users,
+} from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
 import {
@@ -43,6 +50,8 @@ import {
   listAttendance,
   listLeaveRequests,
 } from "~/server/services/time-attendance";
+import { computeIsraeliPayslip } from "~/server/services/israeli-payroll";
+import { formatPrice } from "~/lib/format";
 
 export const metadata = {
   title: "ביצועים | Admin",
@@ -62,7 +71,13 @@ const goalStatusLabel: Record<string, string> = {
   DONE: "הושלם",
 };
 
-export default async function AdminPerformancePage() {
+type PerformancePageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function AdminPerformancePage({
+  searchParams,
+}: PerformancePageProps) {
   const access = await getAdminPageAccess("ERP_READ", "/admin/performance");
 
   if (access.denied) return <AdminForbidden {...access.denied} />;
@@ -91,6 +106,17 @@ export default async function AdminPerformancePage() {
     APPROVED: "אושר",
     REJECTED: "נדחה",
   };
+
+  const params = await searchParams;
+  const payGrossRaw = typeof params.payGross === "string" ? params.payGross : "";
+  const payPointsRaw = typeof params.payPoints === "string" ? params.payPoints : "";
+  const payslip =
+    payGrossRaw && Number(payGrossRaw) > 0
+      ? computeIsraeliPayslip({
+          monthlyGross: Number(payGrossRaw),
+          creditPoints: payPointsRaw ? Number(payPointsRaw) : 2.25,
+        })
+      : null;
 
   return (
     <AdminShell
@@ -527,6 +553,88 @@ export default async function AdminPerformancePage() {
               )}
             </TableBody>
           </Table>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calculator aria-hidden="true" className="size-5" />
+            מחשבון שכר ישראלי (נטו)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4 lg:grid-cols-[1fr_1.4fr]">
+          <form className="grid gap-2">
+            <p className="text-muted-foreground text-sm">
+              חישוב נטו מברוטו: מס הכנסה מדורג עם נקודות זיכוי, ביטוח לאומי, מס
+              בריאות ופנסיה. שיעורים לדוגמה (2024) — {"לאמת רו\"ח"}.
+            </p>
+            <Input
+              defaultValue={payGrossRaw}
+              min="0"
+              name="payGross"
+              placeholder="ברוטו חודשי ₪"
+              type="number"
+            />
+            <Input
+              defaultValue={payPointsRaw || "2.25"}
+              min="0"
+              name="payPoints"
+              placeholder="נקודות זיכוי"
+              step="0.25"
+              type="number"
+            />
+            <Button className="w-fit" size="sm" type="submit" variant="outline">
+              חשב נטו
+            </Button>
+          </form>
+
+          {payslip ? (
+            <Table>
+              <TableBody>
+                <TableRow>
+                  <TableCell className="text-sm font-medium">ברוטו</TableCell>
+                  <TableCell className="text-sm">
+                    {formatPrice(payslip.gross)}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="text-sm">מס הכנסה</TableCell>
+                  <TableCell className="text-sm">
+                    −{formatPrice(payslip.incomeTax)}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="text-sm">ביטוח לאומי</TableCell>
+                  <TableCell className="text-sm">
+                    −{formatPrice(payslip.nationalInsurance)}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="text-sm">מס בריאות</TableCell>
+                  <TableCell className="text-sm">
+                    −{formatPrice(payslip.healthTax)}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="text-sm">פנסיה (עובד)</TableCell>
+                  <TableCell className="text-sm">
+                    −{formatPrice(payslip.pension)}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="text-sm font-semibold">נטו</TableCell>
+                  <TableCell className="text-sm font-semibold">
+                    {formatPrice(payslip.net)}
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          ) : (
+            <p className="text-muted-foreground self-center text-sm">
+              הזן ברוטו לחישוב.
+            </p>
+          )}
         </CardContent>
       </Card>
     </AdminShell>
