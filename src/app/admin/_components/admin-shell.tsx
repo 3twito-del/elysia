@@ -18,6 +18,7 @@ import {
   FolderKanban,
   GalleryHorizontalEnd,
   Gauge,
+  GraduationCap,
   Grid3x3,
   Headset,
   History,
@@ -78,6 +79,7 @@ export type AdminSection =
   | "insights"
   | "integrations"
   | "inventory"
+  | "lms"
   | "marketing"
   | "mdm"
   | "merchandising"
@@ -144,6 +146,7 @@ const navItems: Array<{
   { href: "/admin/b2b", icon: Briefcase, id: "b2b", label: "B2B" },
   { href: "/admin/price-lists", icon: Tags, id: "price-lists", label: "מחירונים" },
   { href: "/admin/service", icon: Headset, id: "service", label: "שירות" },
+  { href: "/admin/lms", icon: GraduationCap, id: "lms", label: "הדרכה" },
   { href: "/admin/pos", icon: Store, id: "pos", label: "קופה" },
   {
     href: "/admin/workspace",
