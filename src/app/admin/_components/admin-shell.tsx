@@ -31,6 +31,7 @@ import {
   Star,
   Store,
   Table2,
+  Tags,
   Wrench,
   Workflow,
   Users,
@@ -81,6 +82,7 @@ export type AdminSection =
   | "overview"
   | "performance"
   | "pos"
+  | "price-lists"
   | "projects"
   | "promotions"
   | "reorder"
@@ -126,6 +128,7 @@ const navItems: Array<{
   { href: "/admin/bins", icon: Grid3x3, id: "bins", label: "מיקומים" },
   { href: "/admin/customers", icon: Users, id: "customers", label: "לקוחות" },
   { href: "/admin/b2b", icon: Briefcase, id: "b2b", label: "B2B" },
+  { href: "/admin/price-lists", icon: Tags, id: "price-lists", label: "מחירונים" },
   { href: "/admin/service", icon: Headset, id: "service", label: "שירות" },
   { href: "/admin/pos", icon: Store, id: "pos", label: "קופה" },
   {

@@ -1468,15 +1468,43 @@ model Promotion {
   @@index([isActive])
 }
 
+/// A named B2B price list with per-variant negotiated prices (POR-003).
+model PriceList {
+  id        String          @id @default(cuid())
+  name      String
+  currency  String          @default("ILS")
+  isActive  Boolean         @default(true)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  items     PriceListItem[]
+  accounts  B2bAccount[]
+
+  @@index([isActive])
+}
+
+/// A per-variant price within a price list (POR-003).
+model PriceListItem {
+  id          String    @id @default(cuid())
+  priceListId String
+  variantId   String
+  price       Decimal   @db.Decimal(10, 2)
+  priceList   PriceList @relation(fields: [priceListId], references: [id], onDelete: Cascade)
+
+  @@unique([priceListId, variantId])
+  @@index([variantId])
+}
+
 /// A B2B trade account: negotiated discount, credit limit and terms (POR-003).
 model B2bAccount {
-  id               String   @id @default(cuid())
-  customerId       String   @unique
+  id               String     @id @default(cuid())
+  customerId       String     @unique
   companyName      String?
   taxId            String?
-  discountPercent  Decimal  @default(0) @db.Decimal(5, 2)
-  creditLimit      Decimal  @default(0) @db.Decimal(14, 2)
-  paymentTermsDays Int      @default(30)
+  priceListId      String?
+  discountPercent  Decimal    @default(0) @db.Decimal(5, 2)
+  creditLimit      Decimal    @default(0) @db.Decimal(14, 2)
+  paymentTermsDays Int        @default(30)
+  priceList        PriceList? @relation(fields: [priceListId], references: [id], onDelete: SetNull)
   /// ACTIVE | SUSPENDED
   status           String   @default("ACTIVE")
   createdAt        DateTime @default(now())

@@ -107,6 +107,7 @@ const protectedAdminRoutes = [
   "/admin/bins",
   "/admin/customers",
   "/admin/b2b",
+  "/admin/price-lists",
   "/admin/erp",
   "/admin/finance",
   "/admin/appointments",
