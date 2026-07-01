@@ -36,6 +36,7 @@ import { TableEmptyRow } from "~/components/ui/table-empty-row";
 import { formatPrice } from "~/lib/format";
 import {
   ALLOCATION_NUMBER_THRESHOLD,
+  getForm856,
   getStatutorySummary,
   listInvoicesNeedingAllocation,
   listWithholdingRules,
@@ -66,6 +67,7 @@ export default async function AdminTaxPage({ searchParams }: PageProps) {
   const year = Number(query.year) || now.getUTCFullYear();
   const month = Number(query.month) || now.getUTCMonth() + 1;
   const shaam = await getShaamExportForPeriod({ year, month }).catch(() => null);
+  const form856 = await getForm856(year).catch(() => null);
 
   const [rules, needingAllocation] = await Promise.all([
     listWithholdingRules().catch(() => []),
@@ -327,9 +329,66 @@ export default async function AdminTaxPage({ searchParams }: PageProps) {
 
           <p className="text-muted-foreground text-xs">
             {
-              'מבנה רשומות A100/B100/Z900 לפי הוראה 1.31 — מבנה בלבד. יש לאמת רוחב שדות, קודים וסט הרשומות המלא (B110/C100/D110) מול רשות המסים ורו"ח לפני הגשה.'
+              'מבנה רשומות A100/B100/C100/D110/Z900 לפי הוראה 1.31 — מבנה בלבד. יש לאמת רוחב שדות וקודים מול רשות המסים ורו"ח לפני הגשה.'
             }
           </p>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between gap-2">
+            <span className="flex items-center gap-2">
+              <FileCheck2 aria-hidden="true" className="size-5" />
+              טופס 856 — ניכוי מס במקור שנתי {year}
+            </span>
+            <Button asChild size="sm" variant="outline">
+              <Link href={`/api/admin/tax/form856?year=${year}`}>
+                <FileDown aria-hidden="true" className="size-3" />
+                הורד CSV
+              </Link>
+            </Button>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>ספק</TableHead>
+                <TableHead>סך תשלומים</TableHead>
+                <TableHead>נוכה במקור</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {!form856 || form856.rows.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={3}
+                  description={`אין תשלומי ספקים לשנת ${year}.`}
+                  icon={FileCheck2}
+                  title="אין נתונים"
+                />
+              ) : (
+                <>
+                  {form856.rows.map((row) => (
+                    <TableRow key={row.vendorId}>
+                      <TableCell className="text-sm">{row.vendorName}</TableCell>
+                      <TableCell className="text-sm">
+                        {formatPrice(row.grossPaid)}
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {formatPrice(row.withheld)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  <TableRow className="font-semibold">
+                    <TableCell>{`סה"כ (${form856.vendorCount} ספקים)`}</TableCell>
+                    <TableCell>{formatPrice(form856.totalGross)}</TableCell>
+                    <TableCell>{formatPrice(form856.totalWithheld)}</TableCell>
+                  </TableRow>
+                </>
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </AdminShell>

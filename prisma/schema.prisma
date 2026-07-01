@@ -2872,6 +2872,8 @@ model VendorPayment {
   id          String                    @id @default(cuid())
   vendorId    String
   amount      Decimal                   @db.Decimal(14, 2)
+  /// tax withheld at source (ניכוי מס במקור) — feeds form 856
+  withheldTax Decimal                   @default(0) @db.Decimal(14, 2)
   currency    String                    @default("ILS")
   method      String                    @default("bank_transfer")
   reference   String?

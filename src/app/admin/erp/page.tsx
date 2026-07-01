@@ -995,6 +995,13 @@ export default async function AdminErpPage({
                             inputMode="numeric"
                             name="amount"
                           />
+                          <Input
+                            aria-label="ניכוי מס במקור"
+                            className="h-8 w-20"
+                            inputMode="numeric"
+                            name="withheldTax"
+                            placeholder="ניכוי"
+                          />
                           <Button size="sm" type="submit">
                             שלם
                           </Button>

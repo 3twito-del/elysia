@@ -104,6 +104,63 @@ export function buildB100(input: {
   );
 }
 
+export type ShaamDocumentLine = {
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  lineTotal: number;
+};
+
+export type ShaamDocument = {
+  docType: string;
+  docNumber: string;
+  date: Date;
+  total: number;
+  customerName?: string;
+  lines: ShaamDocumentLine[];
+};
+
+/** C100 document header record (invoice/receipt). Pure. */
+export function buildC100(input: {
+  document: ShaamDocument;
+  recordNumber: number;
+  vatNumber: string;
+}): string {
+  const doc = input.document;
+  return (
+    "C100" +
+    padNum(input.recordNumber, 9) +
+    padNum(input.vatNumber, 9) +
+    padText(doc.docType, 3) +
+    padText(doc.docNumber, 20) +
+    shaamDate(doc.date) +
+    padText(doc.customerName ?? "", 50) +
+    shaamAmount(doc.total)
+  );
+}
+
+/** D110 document line record. Pure. */
+export function buildD110(input: {
+  line: ShaamDocumentLine;
+  docNumber: string;
+  lineNumber: number;
+  recordNumber: number;
+  vatNumber: string;
+}): string {
+  const line = input.line;
+  return (
+    "D110" +
+    padNum(input.recordNumber, 9) +
+    padNum(input.vatNumber, 9) +
+    padText(input.docNumber, 20) +
+    padNum(input.lineNumber, 4) +
+    padText(line.description, 50) +
+    padNum(Math.round(line.quantity), 12) +
+    shaamAmount(line.unitPrice) +
+    shaamAmount(line.lineTotal)
+  );
+}
+
 /** Z900 closing record with the total record count. Pure. */
 export function buildZ900(input: {
   recordNumber: number;
@@ -125,6 +182,7 @@ export type UniformStructure = {
   summary: {
     recordCount: number;
     movementCount: number;
+    documentCount: number;
     totalDebit: number;
     totalCredit: number;
   };
@@ -141,7 +199,10 @@ function round2(value: number) {
 export function buildUniformStructure(input: {
   business: ShaamBusiness;
   movements: ShaamMovement[];
+  documents?: ShaamDocument[];
 }): UniformStructure {
+  const documents = input.documents ?? [];
+  const vatNumber = input.business.vatNumber;
   const lines: string[] = [];
   let recordNumber = 1;
 
@@ -150,29 +211,36 @@ export function buildUniformStructure(input: {
   let totalDebit = 0;
   let totalCredit = 0;
   for (const movement of input.movements) {
-    lines.push(
-      buildB100({
-        movement,
-        recordNumber: recordNumber++,
-        vatNumber: input.business.vatNumber,
-      }),
-    );
+    lines.push(buildB100({ movement, recordNumber: recordNumber++, vatNumber }));
     if (movement.side === "DEBIT") totalDebit += movement.amount;
     else totalCredit += movement.amount;
   }
 
-  const totalRecords = recordNumber; // A100 + movements + this Z900
-  lines.push(
-    buildZ900({
-      recordNumber,
-      vatNumber: input.business.vatNumber,
-      totalRecords,
-    }),
-  );
+  let documentLineCount = 0;
+  for (const document of documents) {
+    lines.push(buildC100({ document, recordNumber: recordNumber++, vatNumber }));
+    document.lines.forEach((line, index) => {
+      lines.push(
+        buildD110({
+          line,
+          docNumber: document.docNumber,
+          lineNumber: index + 1,
+          recordNumber: recordNumber++,
+          vatNumber,
+        }),
+      );
+      documentLineCount += 1;
+    });
+  }
+
+  const totalRecords = recordNumber; // A100 + movements + docs + this Z900
+  lines.push(buildZ900({ recordNumber, vatNumber, totalRecords }));
 
   const ini = [
     "A100" + padNum(1, 15),
     "B100" + padNum(input.movements.length, 15),
+    "C100" + padNum(documents.length, 15),
+    "D110" + padNum(documentLineCount, 15),
     "Z900" + padNum(1, 15),
     "TOTAL" + padNum(totalRecords, 15),
   ].join("\r\n");
@@ -183,6 +251,7 @@ export function buildUniformStructure(input: {
     summary: {
       recordCount: totalRecords,
       movementCount: input.movements.length,
+      documentCount: documents.length,
       totalDebit: round2(totalDebit),
       totalCredit: round2(totalCredit),
     },
@@ -255,5 +324,34 @@ export async function getShaamExportForPeriod(input: {
     };
   });
 
-  return buildUniformStructure({ business, movements });
+  const invoiceRows = await db.customerInvoice.findMany({
+    where: {
+      status: { in: ["ISSUED", "PARTIALLY_PAID", "PAID"] },
+      invoiceDate: { gte: from, lt: to },
+    },
+    orderBy: { invoiceDate: "asc" },
+    select: {
+      invoiceNumber: true,
+      invoiceDate: true,
+      total: true,
+      lines: {
+        select: { description: true, quantity: true, unitPrice: true, lineTotal: true },
+      },
+    },
+  });
+
+  const documents: ShaamDocument[] = invoiceRows.map((invoice) => ({
+    docType: "320", // tax invoice (חשבונית מס) — verify code
+    docNumber: invoice.invoiceNumber,
+    date: invoice.invoiceDate,
+    total: Number(invoice.total),
+    lines: invoice.lines.map((line) => ({
+      description: line.description,
+      quantity: line.quantity,
+      unitPrice: Number(line.unitPrice),
+      lineTotal: Number(line.lineTotal),
+    })),
+  }));
+
+  return buildUniformStructure({ business, movements, documents });
 }

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  computeForm856,
   computeWithholding,
   effectiveWithholdingRate,
   requiresAllocationNumber,
@@ -52,5 +53,26 @@ describe("effectiveWithholdingRate", () => {
   it("returns null when no rule applies", () => {
     expect(effectiveWithholdingRate(rules, "unknown")).toBeNull();
     expect(effectiveWithholdingRate(rules, "services", new Date("2024-01-01"))).toBeNull();
+  });
+});
+
+describe("computeForm856", () => {
+  it("aggregates gross + withheld per vendor with totals", () => {
+    const result = computeForm856([
+      { vendorId: "v1", vendorName: "Alpha", amount: 1000, withheldTax: 300 },
+      { vendorId: "v1", vendorName: "Alpha", amount: 500, withheldTax: 150 },
+      { vendorId: "v2", vendorName: "Beta", amount: 2000, withheldTax: 0 },
+    ]);
+    expect(result.vendorCount).toBe(2);
+    expect(result.totalGross).toBe(3500);
+    expect(result.totalWithheld).toBe(450);
+    // sorted by gross desc → Beta (2000) first
+    expect(result.rows[0]?.vendorName).toBe("Beta");
+    expect(result.rows[1]).toEqual({
+      vendorId: "v1",
+      vendorName: "Alpha",
+      grossPaid: 1500,
+      withheld: 450,
+    });
   });
 });

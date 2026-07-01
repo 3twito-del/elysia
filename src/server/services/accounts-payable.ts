@@ -337,9 +337,11 @@ export async function recordVendorPayment(input: {
   paidAt?: Date;
   notes?: string;
   postedById?: string;
+  withheldTax?: number;
   allocations: Array<{ vendorInvoiceId: string; amount: number }>;
 }) {
   const amount = round2(input.amount);
+  const withheldTax = round2(Math.max(0, input.withheldTax ?? 0));
   const allocationTotal = round2(
     input.allocations.reduce((sum, allocation) => sum + allocation.amount, 0),
   );
@@ -352,6 +354,7 @@ export async function recordVendorPayment(input: {
       data: {
         vendorId: input.vendorId,
         amount,
+        withheldTax,
         currency: input.currency ?? "ILS",
         method: input.method ?? "bank_transfer",
         reference: input.reference,

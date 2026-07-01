@@ -2,12 +2,14 @@ import { describe, expect, it } from "vitest";
 
 import {
   buildA100,
+  buildC100,
   buildUniformStructure,
   buildZ900,
   padNum,
   padText,
   shaamAmount,
   shaamDate,
+  type ShaamDocument,
   type ShaamMovement,
 } from "./shaam-export";
 
@@ -94,9 +96,56 @@ describe("buildUniformStructure", () => {
     expect(result.summary).toEqual({
       recordCount: 4,
       movementCount: 2,
+      documentCount: 0,
       totalDebit: 100,
       totalCredit: 100,
     });
     expect(result.ini).toContain("B100" + "000000000000002");
+  });
+
+  it("emits C100 + D110 records for documents and counts them", () => {
+    const documents: ShaamDocument[] = [
+      {
+        docType: "320",
+        docNumber: "INV-1",
+        date: new Date("2026-03-02T00:00:00Z"),
+        total: 234,
+        lines: [
+          { description: "Ring", quantity: 1, unitPrice: 200, lineTotal: 200 },
+          { description: "Gift wrap", quantity: 1, unitPrice: 34, lineTotal: 34 },
+        ],
+      },
+    ];
+    const result = buildUniformStructure({
+      business: { vatNumber: "123456789", name: "X", primaryKey: "202603" },
+      movements,
+      documents,
+    });
+    const rows = result.bkmvdata.split("\r\n");
+    expect(rows.some((r) => r.startsWith("C100"))).toBe(true);
+    expect(rows.filter((r) => r.startsWith("D110"))).toHaveLength(2);
+    // A100 + 2 B100 + C100 + 2 D110 + Z900 = 7
+    expect(result.summary.recordCount).toBe(7);
+    expect(result.summary.documentCount).toBe(1);
+    expect(result.ini).toContain("C100" + "000000000000001");
+    expect(result.ini).toContain("D110" + "000000000000002");
+  });
+});
+
+describe("buildC100", () => {
+  it("builds a document header with type and number", () => {
+    const c100 = buildC100({
+      document: {
+        docType: "320",
+        docNumber: "INV-9",
+        date: new Date("2026-03-02T00:00:00Z"),
+        total: 100,
+        lines: [],
+      },
+      recordNumber: 3,
+      vatNumber: "123456789",
+    });
+    expect(c100.startsWith("C100")).toBe(true);
+    expect(c100).toContain("INV-9");
   });
 });

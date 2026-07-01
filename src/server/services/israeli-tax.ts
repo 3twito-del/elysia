@@ -181,6 +181,62 @@ export async function listInvoicesNeedingAllocation(limit = 20) {
   }));
 }
 
+export type Form856Payment = {
+  vendorId: string;
+  vendorName: string;
+  amount: number;
+  withheldTax: number;
+};
+
+/** Aggregates supplier payments + withheld tax per vendor for form 856. Pure. */
+export function computeForm856(payments: Form856Payment[]) {
+  const byVendor = new Map<
+    string,
+    { vendorId: string; vendorName: string; grossPaid: number; withheld: number }
+  >();
+  for (const payment of payments) {
+    const current = byVendor.get(payment.vendorId) ?? {
+      vendorId: payment.vendorId,
+      vendorName: payment.vendorName,
+      grossPaid: 0,
+      withheld: 0,
+    };
+    current.grossPaid = round2(current.grossPaid + payment.amount);
+    current.withheld = round2(current.withheld + payment.withheldTax);
+    byVendor.set(payment.vendorId, current);
+  }
+
+  const rows = [...byVendor.values()].sort((a, b) => b.grossPaid - a.grossPaid);
+  return {
+    rows,
+    vendorCount: rows.length,
+    totalGross: round2(rows.reduce((sum, row) => sum + row.grossPaid, 0)),
+    totalWithheld: round2(rows.reduce((sum, row) => sum + row.withheld, 0)),
+  };
+}
+
+/** Builds the annual form-856 withholding report from vendor payments. */
+export async function getForm856(year: number) {
+  const from = new Date(Date.UTC(year, 0, 1));
+  const to = new Date(Date.UTC(year + 1, 0, 1));
+  const payments = await db.vendorPayment.findMany({
+    where: { paidAt: { gte: from, lt: to } },
+    select: {
+      amount: true,
+      withheldTax: true,
+      vendor: { select: { id: true, name: true } },
+    },
+  });
+  return computeForm856(
+    payments.map((payment) => ({
+      vendorId: payment.vendor.id,
+      vendorName: payment.vendor.name,
+      amount: Number(payment.amount),
+      withheldTax: Number(payment.withheldTax),
+    })),
+  );
+}
+
 export async function getStatutorySummary() {
   const [withholdingRules, needingAllocation, assigned] = await Promise.all([
     db.withholdingTaxRule.count({ where: { isActive: true } }),

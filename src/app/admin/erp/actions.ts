@@ -115,6 +115,7 @@ export async function recordVendorPaymentAction(formData: FormData) {
   await recordVendorPayment({
     vendorId,
     amount,
+    withheldTax: Number(formData.get("withheldTax") ?? 0) || 0,
     postedById: admin.id,
     allocations: [{ vendorInvoiceId: invoiceId, amount }],
   });
