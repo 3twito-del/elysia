@@ -121,6 +121,7 @@ const protectedAdminRoutes = [
   "/admin/reports",
   "/admin/entities",
   "/admin/developer",
+  "/admin/edi",
   "/admin/tax",
   "/admin/marketing",
 ] as const;
@@ -137,6 +138,7 @@ const documentedApiRoutes = [
   "/api/admin/insights/live",
   "/api/admin/tax/shaam",
   "/api/admin/tax/form856",
+  "/api/admin/edi/[id]",
   "/api/analytics/replay",
   "/api/search/reindex",
   "/api/events/product-click",

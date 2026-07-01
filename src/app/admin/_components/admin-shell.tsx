@@ -7,6 +7,7 @@ import {
   BookOpen,
   Bot,
   Briefcase,
+  Cable,
   Boxes,
   Building2,
   CalendarClock,
@@ -62,6 +63,7 @@ export type AdminSection =
   | "crm"
   | "customers"
   | "developer"
+  | "edi"
   | "entities"
   | "erp"
   | "finance"
@@ -147,6 +149,7 @@ const navItems: Array<{
     id: "developer",
     label: "API",
   },
+  { href: "/admin/edi", icon: Cable, id: "edi", label: "EDI" },
   {
     href: "/admin/notifications",
     icon: Bell,

@@ -1345,6 +1345,23 @@ model SlaPolicy {
   @@index([entityType, isActive])
 }
 
+/// A generated/received EDI document (X12) for a trading partner (IPL-003).
+model EdiDocument {
+  id        String   @id @default(cuid())
+  /// "850" (PO) | "810" (invoice) | "856" (ASN)
+  docType   String
+  /// OUTBOUND | INBOUND
+  direction String   @default("OUTBOUND")
+  partner   String?
+  reference String?
+  /// GENERATED | SENT | ACKNOWLEDGED
+  status    String   @default("GENERATED")
+  payload   String
+  createdAt DateTime @default(now())
+
+  @@index([docType, createdAt])
+}
+
 /// A merchandising banner shown in a storefront placement (CMS-003).
 model Banner {
   id        String    @id @default(cuid())
