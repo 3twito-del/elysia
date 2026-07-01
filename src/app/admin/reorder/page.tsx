@@ -154,13 +154,14 @@ export default async function AdminReorderPage() {
                 <TableHead>פריט</TableHead>
                 <TableHead>סניף</TableHead>
                 <TableHead>זמין</TableHead>
+                <TableHead>מהירות / מוצע</TableHead>
                 <TableHead>נקודת הזמנה / יעד</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {policyItems.length === 0 ? (
                 <TableEmptyRow
-                  colSpan={4}
+                  colSpan={5}
                   description="אין פריטי מלאי להצגה."
                   icon={PackageSearch}
                   title="אין פריטים"
@@ -174,6 +175,9 @@ export default async function AdminReorderPage() {
                     </TableCell>
                     <TableCell className="text-xs">{item.branchName}</TableCell>
                     <TableCell className="text-sm">{item.available}</TableCell>
+                    <TableCell className="text-xs">
+                      {item.velocity}/יום · מוצע {item.suggestedReorderPoint}
+                    </TableCell>
                     <TableCell>
                       <form
                         action={setReorderPolicyAction}
@@ -187,7 +191,11 @@ export default async function AdminReorderPage() {
                         <Input
                           aria-label="נקודת הזמנה"
                           className="h-8 w-16"
-                          defaultValue={String(item.reorderPoint)}
+                          defaultValue={String(
+                            item.reorderPoint > 0
+                              ? item.reorderPoint
+                              : item.suggestedReorderPoint,
+                          )}
                           name="reorderPoint"
                           type="number"
                         />

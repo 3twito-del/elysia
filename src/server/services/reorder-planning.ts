@@ -33,6 +33,22 @@ export function reorderStatus(
   return "OK";
 }
 
+/** Average daily demand over a window. Pure. */
+export function computeDailyVelocity(unitsConsumed: number, windowDays: number): number {
+  if (windowDays <= 0) return 0;
+  return Math.round((Math.max(0, unitsConsumed) / windowDays) * 100) / 100;
+}
+
+/** Suggested reorder point = demand over the lead time + safety stock. Pure. */
+export function dynamicReorderPoint(input: {
+  velocityPerDay: number;
+  leadTimeDays: number;
+  safetyStock: number;
+}): number {
+  const demand = Math.ceil(Math.max(0, input.velocityPerDay) * Math.max(0, input.leadTimeDays));
+  return demand + Math.max(0, input.safetyStock);
+}
+
 /** Sets (or clears) the reorder policy on an inventory item. */
 export async function setReorderPolicy(input: {
   inventoryItemId: string;
@@ -87,15 +103,28 @@ export async function listReorderSuggestions(limit = 40) {
     .slice(0, limit);
 }
 
-/** Lowest-stock inventory items for setting reorder policies. */
-export async function listInventoryForPolicy(limit = 30) {
+/** Demand not counted as real consumption (internal moves / corrections). */
+const NON_DEMAND_REASONS = ["transfer_out", "cycle_count_adjustment"];
+
+/**
+ * Lowest-stock inventory items for setting reorder policies, each with a velocity-
+ * based suggested reorder point (demand over the lead time + safety stock).
+ */
+export async function listInventoryForPolicy(input: { limit?: number; windowDays?: number; leadTimeDays?: number } = {}) {
+  const limit = input.limit ?? 30;
+  const windowDays = input.windowDays ?? 30;
+  const leadTimeDays = input.leadTimeDays ?? 14;
+
   const items = await db.inventoryItem.findMany({
     orderBy: { quantity: "asc" },
     take: limit,
     select: {
       id: true,
+      branchId: true,
+      variantId: true,
       quantity: true,
       reserved: true,
+      safetyStock: true,
       reorderPoint: true,
       targetLevel: true,
       branch: { select: { name: true } },
@@ -103,15 +132,40 @@ export async function listInventoryForPolicy(limit = 30) {
     },
   });
 
-  return items.map((item) => ({
-    id: item.id,
-    sku: item.variant.sku,
-    variantName: item.variant.name,
-    branchName: item.branch.name,
-    available: netAvailable(item.quantity, item.reserved),
-    reorderPoint: item.reorderPoint,
-    targetLevel: item.targetLevel,
-  }));
+  const windowStart = new Date(Date.now() - windowDays * 24 * 60 * 60 * 1000);
+  const consumption = await db.inventoryLedger.groupBy({
+    by: ["branchId", "variantId"],
+    where: {
+      createdAt: { gte: windowStart },
+      delta: { lt: 0 },
+      reason: { notIn: NON_DEMAND_REASONS },
+      variantId: { in: items.map((item) => item.variantId) },
+    },
+    _sum: { delta: true },
+  });
+  const consumedByKey = new Map(
+    consumption.map((row) => [`${row.branchId}:${row.variantId}`, -Number(row._sum.delta ?? 0)]),
+  );
+
+  return items.map((item) => {
+    const consumed = consumedByKey.get(`${item.branchId}:${item.variantId}`) ?? 0;
+    const velocity = computeDailyVelocity(consumed, windowDays);
+    return {
+      id: item.id,
+      sku: item.variant.sku,
+      variantName: item.variant.name,
+      branchName: item.branch.name,
+      available: netAvailable(item.quantity, item.reserved),
+      reorderPoint: item.reorderPoint,
+      targetLevel: item.targetLevel,
+      velocity,
+      suggestedReorderPoint: dynamicReorderPoint({
+        velocityPerDay: velocity,
+        leadTimeDays,
+        safetyStock: item.safetyStock,
+      }),
+    };
+  });
 }
 
 export async function getReorderSummary() {

@@ -1,10 +1,31 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  computeDailyVelocity,
+  dynamicReorderPoint,
   netAvailable,
   reorderStatus,
   suggestReorderQuantity,
 } from "./reorder-planning";
+
+describe("computeDailyVelocity", () => {
+  it("averages consumption over the window", () => {
+    expect(computeDailyVelocity(60, 30)).toBe(2);
+    expect(computeDailyVelocity(45, 30)).toBe(1.5);
+    expect(computeDailyVelocity(10, 0)).toBe(0);
+  });
+});
+
+describe("dynamicReorderPoint", () => {
+  it("covers demand over the lead time plus safety stock", () => {
+    expect(
+      dynamicReorderPoint({ velocityPerDay: 2, leadTimeDays: 14, safetyStock: 5 }),
+    ).toBe(33); // ceil(28) + 5
+    expect(
+      dynamicReorderPoint({ velocityPerDay: 1.5, leadTimeDays: 10, safetyStock: 0 }),
+    ).toBe(15);
+  });
+});
 
 describe("netAvailable", () => {
   it("subtracts reserved, never below zero", () => {
