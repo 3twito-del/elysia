@@ -178,6 +178,17 @@ export function computeApAging(
   return buckets;
 }
 
+/**
+ * Segregation of duties (P2P-009): the same admin may not both enter and
+ * approve a vendor invoice. Returns true when the action is a violation. Pure.
+ */
+export function violatesSoD(
+  creatorId: string | null | undefined,
+  approverId: string | null | undefined,
+): boolean {
+  return Boolean(creatorId) && Boolean(approverId) && creatorId === approverId;
+}
+
 export async function createVendorInvoice(input: {
   vendorId: string;
   invoiceNumber: string;
@@ -188,6 +199,7 @@ export async function createVendorInvoice(input: {
   taxRate?: number;
   taxTotal?: number;
   notes?: string;
+  createdById?: string;
   lines: Array<{
     purchaseOrderItemId?: string;
     description: string;
@@ -213,6 +225,7 @@ export async function createVendorInvoice(input: {
       invoiceDate: input.invoiceDate,
       dueDate: input.dueDate,
       notes: input.notes,
+      createdById: input.createdById,
       lines: {
         create: input.lines.map((line) => ({
           purchaseOrderItemId: line.purchaseOrderItemId,
@@ -287,6 +300,11 @@ export async function approveVendorInvoice(input: {
     if (!invoice) throw new Error("Vendor invoice not found.");
     if (["APPROVED", "PARTIALLY_PAID", "PAID"].includes(invoice.status)) {
       throw new Error("Vendor invoice already approved.");
+    }
+    if (!input.force && violatesSoD(invoice.createdById, input.postedById)) {
+      throw new Error(
+        "הפרדת תפקידים (SoD): מי שהזין את החשבונית אינו רשאי לאשר אותה.",
+      );
     }
     if (invoice.status === "VARIANCE" && !input.force) {
       throw new Error(

@@ -3371,6 +3371,8 @@ model VendorInvoice {
   invoiceDate     DateTime                  @db.Date
   dueDate         DateTime?                 @db.Date
   approvedAt      DateTime?
+  /// admin user who entered the invoice (for SoD: creator != approver, P2P-009)
+  createdById     String?
   notes           String?
   metadata        Json?
   vendor          Vendor                    @relation(fields: [vendorId], references: [id], onDelete: Restrict)

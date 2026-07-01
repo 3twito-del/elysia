@@ -4,9 +4,22 @@ import {
   computeApAging,
   computeThreeWayMatch,
   computeVendorInvoiceTotals,
+  violatesSoD,
 } from "./accounts-payable";
 
 const dayMs = 24 * 60 * 60 * 1000;
+
+describe("violatesSoD", () => {
+  it("flags the same admin creating and approving", () => {
+    expect(violatesSoD("admin-1", "admin-1")).toBe(true);
+  });
+
+  it("allows different admins or missing ids", () => {
+    expect(violatesSoD("admin-1", "admin-2")).toBe(false);
+    expect(violatesSoD(null, "admin-1")).toBe(false);
+    expect(violatesSoD("admin-1", undefined)).toBe(false);
+  });
+});
 
 describe("computeVendorInvoiceTotals", () => {
   it("computes subtotal, VAT and total", () => {

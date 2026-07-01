@@ -78,7 +78,7 @@ export async function revokeVendorPortalTokenAction(formData: FormData) {
 }
 
 export async function createVendorInvoiceAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("ERP_WRITE");
 
   const vendorId = stringValue(formData.get("vendorId"));
   if (!vendorId) throw new Error("יש לבחור ספק.");
@@ -98,6 +98,7 @@ export async function createVendorInvoiceAction(formData: FormData) {
     invoiceNumber,
     invoiceDate: new Date(),
     dueDate: dueDate ? new Date(dueDate) : undefined,
+    createdById: admin.id,
     lines,
   });
 
