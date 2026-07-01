@@ -31,6 +31,11 @@ import {
   recordCostEntry,
   setCostCenterActive,
 } from "~/server/services/cost-accounting";
+import {
+  createMaintenanceSchedule,
+  recordMaintenance,
+  setMaintenanceScheduleStatus,
+} from "~/server/services/asset-maintenance";
 import { createLedgerAccount } from "~/server/services/chart-of-accounts";
 import { seedChartOfAccounts } from "~/server/services/ledger";
 import {
@@ -403,6 +408,46 @@ export async function toggleCostCenterAction(formData: FormData) {
   await setCostCenterActive({
     costCenterId,
     isActive: formData.get("isActive") === "1",
+  });
+
+  revalidatePath("/admin/finance");
+}
+
+export async function createMaintenanceScheduleAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const fixedAssetId = stringValue(formData.get("fixedAssetId"));
+  if (!fixedAssetId) throw new Error("יש לבחור נכס.");
+
+  await createMaintenanceSchedule({
+    fixedAssetId,
+    title: stringValue(formData.get("title")),
+    intervalDays: Number(stringValue(formData.get("intervalDays"))) || 0,
+  });
+
+  revalidatePath("/admin/finance");
+}
+
+export async function recordMaintenanceAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const scheduleId = stringValue(formData.get("scheduleId"));
+  if (!scheduleId) throw new Error("חסר מזהה תזמון.");
+
+  await recordMaintenance({ scheduleId });
+
+  revalidatePath("/admin/finance");
+}
+
+export async function toggleMaintenanceScheduleAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const scheduleId = stringValue(formData.get("scheduleId"));
+  if (!scheduleId) throw new Error("חסר מזהה תזמון.");
+
+  await setMaintenanceScheduleStatus({
+    scheduleId,
+    status: formData.get("status") === "ACTIVE" ? "ACTIVE" : "PAUSED",
   });
 
   revalidatePath("/admin/finance");

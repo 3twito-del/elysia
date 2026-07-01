@@ -10,6 +10,7 @@ import {
   TrendingUp,
   Users,
   Wallet,
+  Wrench,
 } from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
@@ -24,6 +25,9 @@ import {
   cancelSubscriptionAction,
   closePeriodAction,
   createCostCenterAction,
+  createMaintenanceScheduleAction,
+  recordMaintenanceAction,
+  toggleMaintenanceScheduleAction,
   createCustomerInvoiceAction,
   createEmployeeAction,
   createExpenseClaimAction,
@@ -76,6 +80,11 @@ import {
   getCostAccountingSummary,
   listCostCenters,
 } from "~/server/services/cost-accounting";
+import {
+  getMaintenanceSummary,
+  listAssetsForMaintenance,
+  listMaintenanceSchedules,
+} from "~/server/services/asset-maintenance";
 import { getCashFlowStatement } from "~/server/services/cash-flow";
 import { listAccountsWithBalances } from "~/server/services/chart-of-accounts";
 import {
@@ -254,6 +263,25 @@ export default async function AdminFinancePage() {
   const currentPeriod = `${now.getUTCFullYear()}-${String(
     now.getUTCMonth() + 1,
   ).padStart(2, "0")}`;
+
+  const [maintenanceSchedules, maintenanceAssets, maintenanceSummary] =
+    await Promise.all([
+      listMaintenanceSchedules().catch(() => []),
+      listAssetsForMaintenance().catch(() => []),
+      getMaintenanceSummary().catch(() => ({
+        active: 0,
+        overdue: 0,
+        dueSoon: 0,
+      })),
+    ]);
+  const maintenanceDueMeta: Record<
+    string,
+    { label: string; variant: "secondary" | "outline" | "destructive" }
+  > = {
+    OK: { label: "תקין", variant: "secondary" },
+    DUE_SOON: { label: "מתקרב", variant: "outline" },
+    OVERDUE: { label: "באיחור", variant: "destructive" },
+  };
 
   const [subscriptionPlans, subscriptions, subscriptionSummary] =
     await Promise.all([
@@ -1891,6 +1919,119 @@ export default async function AdminFinancePage() {
                           />
                           <Button size="sm" type="submit">
                             תקבול
+                          </Button>
+                        </form>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Wrench aria-hidden="true" className="size-5" />
+            תחזוקת נכסים (PM)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.6fr]">
+          <form action={createMaintenanceScheduleAction} className="grid gap-2">
+            <p className="text-muted-foreground text-sm">
+              תחזוקה מונעת חוזרת לנכס. {maintenanceSummary.overdue} באיחור ·{" "}
+              {maintenanceSummary.dueSoon} מתקרבים.
+            </p>
+            <select
+              aria-label="נכס"
+              autoComplete="off"
+              className="glass-control h-10 rounded-md border px-3 text-sm"
+              defaultValue=""
+              name="fixedAssetId"
+              required
+            >
+              <option disabled value="">
+                בחר נכס…
+              </option>
+              {maintenanceAssets.map((asset) => (
+                <option key={asset.id} value={asset.id}>
+                  {asset.label}
+                </option>
+              ))}
+            </select>
+            <Input name="title" placeholder="כותרת (למשל טיפול תקופתי)" required />
+            <Input
+              min="1"
+              name="intervalDays"
+              placeholder="מרווח (ימים)"
+              type="number"
+            />
+            <Button className="w-fit" size="sm" type="submit">
+              צור תזמון
+            </Button>
+          </form>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>נכס / משימה</TableHead>
+                <TableHead>הבא</TableHead>
+                <TableHead>מצב</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {maintenanceSchedules.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={4}
+                  description="טרם הוגדרו תזמוני תחזוקה."
+                  icon={Wrench}
+                  title="אין תזמונים"
+                />
+              ) : (
+                maintenanceSchedules.map((schedule) => (
+                  <TableRow key={schedule.id}>
+                    <TableCell className="text-sm">
+                      <div className="font-medium">{schedule.title}</div>
+                      <div className="text-muted-foreground text-xs">
+                        {schedule.assetLabel} · כל {schedule.intervalDays} ימים
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-xs" dir="ltr">
+                      {schedule.nextDueAt.toISOString().slice(0, 10)}
+                    </TableCell>
+                    <TableCell>
+                      {schedule.status === "PAUSED" ? (
+                        <Badge variant="outline">מושהה</Badge>
+                      ) : (
+                        <Badge
+                          variant={
+                            maintenanceDueMeta[schedule.due]?.variant ?? "outline"
+                          }
+                        >
+                          {maintenanceDueMeta[schedule.due]?.label ?? schedule.due}
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-1">
+                        <form action={recordMaintenanceAction}>
+                          <input name="scheduleId" type="hidden" value={schedule.id} />
+                          <Button size="sm" type="submit" variant="outline">
+                            בוצע
+                          </Button>
+                        </form>
+                        <form action={toggleMaintenanceScheduleAction}>
+                          <input name="scheduleId" type="hidden" value={schedule.id} />
+                          <input
+                            name="status"
+                            type="hidden"
+                            value={schedule.status === "ACTIVE" ? "PAUSED" : "ACTIVE"}
+                          />
+                          <Button size="sm" type="submit" variant="ghost">
+                            {schedule.status === "ACTIVE" ? "השהה" : "הפעל"}
                           </Button>
                         </form>
                       </div>

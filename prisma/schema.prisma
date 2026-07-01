@@ -626,8 +626,29 @@ model FixedAsset {
   createdAt               DateTime                 @default(now())
   updatedAt               DateTime                 @updatedAt
   depreciationEntries     FixedAssetDepreciation[]
+  maintenanceSchedules    MaintenanceSchedule[]
 
   @@index([status])
+}
+
+/// A preventive-maintenance schedule for a fixed asset (FIN-FA-004): recurring
+/// service at a fixed interval, tracking the next due date.
+model MaintenanceSchedule {
+  id             String     @id @default(cuid())
+  fixedAssetId   String
+  title          String
+  intervalDays   Int
+  lastServicedAt DateTime?  @db.Date
+  nextDueAt      DateTime   @db.Date
+  /// ACTIVE | PAUSED
+  status         String     @default("ACTIVE")
+  notes          String?
+  asset          FixedAsset @relation(fields: [fixedAssetId], references: [id], onDelete: Cascade)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@index([status, nextDueAt])
+  @@index([fixedAssetId])
 }
 
 /// An employee for HR and payroll (HR master).
