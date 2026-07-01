@@ -1407,6 +1407,38 @@ model BinAssignment {
   @@index([variantId])
 }
 
+/// A consolidated warehouse pick list generated from orders being prepared
+/// (INV-007), with lines ordered by bin code for an efficient pick path.
+model PickList {
+  id          String         @id @default(cuid())
+  pickNumber  String         @unique
+  branchId    String?
+  /// OPEN | PICKED | CANCELLED
+  status      String         @default("OPEN")
+  createdById String?
+  lines       PickListLine[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([status])
+}
+
+model PickListLine {
+  id         String   @id @default(cuid())
+  pickListId String
+  variantId  String
+  sku        String
+  name       String
+  quantity   Int
+  binCode    String?
+  picked     Boolean  @default(false)
+  pickList   PickList @relation(fields: [pickListId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([pickListId])
+}
+
 /// A generated/received EDI document (X12) for a trading partner (IPL-003).
 model EdiDocument {
   id        String   @id @default(cuid())

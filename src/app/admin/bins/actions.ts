@@ -14,6 +14,12 @@ import {
   createBin,
   setBinActive,
 } from "~/server/services/bins";
+import {
+  cancelPickList,
+  completePickList,
+  generatePickList,
+  setPickLinePicked,
+} from "~/server/services/pick-list";
 
 export async function createBinAction(formData: FormData) {
   await requireAdmin("INVENTORY_WRITE");
@@ -54,6 +60,50 @@ export async function assignToBinAction(formData: FormData) {
     sku,
     quantity: Number(stringValue(formData.get("quantity"))) || 0,
   });
+
+  revalidatePath("/admin/bins");
+}
+
+export async function generatePickListAction(formData: FormData) {
+  const admin = await requireAdmin("INVENTORY_WRITE");
+
+  await generatePickList({
+    branchId: optionalString(formData.get("branchId")),
+    createdById: admin.id,
+  });
+
+  revalidatePath("/admin/bins");
+}
+
+export async function togglePickLineAction(formData: FormData) {
+  await requireAdmin("INVENTORY_WRITE");
+
+  const lineId = stringValue(formData.get("lineId"));
+  if (!lineId) throw new Error("חסר מזהה שורה.");
+
+  await setPickLinePicked({ lineId, picked: formData.get("picked") === "1" });
+
+  revalidatePath("/admin/bins");
+}
+
+export async function completePickListAction(formData: FormData) {
+  await requireAdmin("INVENTORY_WRITE");
+
+  const pickListId = stringValue(formData.get("pickListId"));
+  if (!pickListId) throw new Error("חסר מזהה רשימת ליקוט.");
+
+  await completePickList({ pickListId });
+
+  revalidatePath("/admin/bins");
+}
+
+export async function cancelPickListAction(formData: FormData) {
+  await requireAdmin("INVENTORY_WRITE");
+
+  const pickListId = stringValue(formData.get("pickListId"));
+  if (!pickListId) throw new Error("חסר מזהה רשימת ליקוט.");
+
+  await cancelPickList({ pickListId });
 
   revalidatePath("/admin/bins");
 }

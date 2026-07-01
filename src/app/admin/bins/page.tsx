@@ -1,4 +1,4 @@
-import { Grid3x3, MapPin, PackageOpen } from "lucide-react";
+import { ClipboardCheck, Grid3x3, MapPin, PackageOpen } from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
 import {
@@ -8,10 +8,15 @@ import {
 import { getAdminPageAccess } from "../_lib/access";
 import {
   assignToBinAction,
+  cancelPickListAction,
+  completePickListAction,
   createBinAction,
+  generatePickListAction,
+  togglePickLineAction,
   toggleBinAction,
 } from "./actions";
 import { MetricCard } from "~/components/metric-card";
+import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
@@ -30,6 +35,7 @@ import {
   listBins,
 } from "~/server/services/bins";
 import { listBranchesForSelect } from "~/server/services/stock-transfer";
+import { getPickListSummary, listPickLists } from "~/server/services/pick-list";
 
 export const metadata = {
   title: "מיקומי מלאי | Admin",
@@ -46,13 +52,21 @@ export default async function AdminBinsPage() {
 
   if (!summary) return <AdminDatabaseFallback />;
 
-  const [branches, bins, assignments] = await Promise.all([
-    listBranchesForSelect().catch(() => []),
-    listBins().catch(() => []),
-    listBinAssignments().catch(() => []),
-  ]);
+  const [branches, bins, assignments, pickLists, pickSummary] =
+    await Promise.all([
+      listBranchesForSelect().catch(() => []),
+      listBins().catch(() => []),
+      listBinAssignments().catch(() => []),
+      listPickLists().catch(() => []),
+      getPickListSummary().catch(() => ({ open: 0, picked: 0 })),
+    ]);
 
   const activeBins = bins.filter((bin) => bin.isActive);
+  const pickStatusLabel: Record<string, string> = {
+    OPEN: "פתוחה",
+    PICKED: "לוקטה",
+    CANCELLED: "בוטלה",
+  };
 
   return (
     <AdminShell
@@ -231,6 +245,157 @@ export default async function AdminBinsPage() {
               )}
             </TableBody>
           </Table>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ClipboardCheck aria-hidden="true" className="size-5" />
+            רשימות ליקוט (Pick Lists)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          <div className="flex flex-wrap items-end gap-3">
+            <form
+              action={generatePickListAction}
+              className="flex flex-wrap items-end gap-2"
+            >
+              <div className="grid gap-1">
+                <span className="text-muted-foreground text-xs">סניף (רשות)</span>
+                <select
+                  aria-label="סניף לליקוט"
+                  autoComplete="off"
+                  className="glass-control h-9 rounded-md border px-3 text-sm"
+                  defaultValue=""
+                  name="branchId"
+                >
+                  <option value="">כל הסניפים</option>
+                  {branches.map((branch) => (
+                    <option key={branch.id} value={branch.id}>
+                      {branch.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <Button size="sm" type="submit" variant="outline">
+                צור רשימת ליקוט מהזמנות בהכנה
+              </Button>
+            </form>
+            <p className="text-muted-foreground text-xs">
+              {pickSummary.open} פתוחות · {pickSummary.picked} לוקטו
+            </p>
+          </div>
+
+          {pickLists.length === 0 ? (
+            <p className="text-muted-foreground text-sm">
+              טרם נוצרו רשימות ליקוט. צור רשימה מהזמנות בסטטוס הכנה.
+            </p>
+          ) : (
+            <div className="grid gap-3">
+              {pickLists.map((pickList) => (
+                <div
+                  className="border-border/60 grid gap-2 rounded-md border p-3"
+                  key={pickList.id}
+                >
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-sm font-medium">
+                      {pickList.pickNumber}
+                    </span>
+                    <Badge
+                      variant={
+                        pickList.status === "PICKED"
+                          ? "secondary"
+                          : pickList.status === "CANCELLED"
+                            ? "destructive"
+                            : "outline"
+                      }
+                    >
+                      {pickStatusLabel[pickList.status] ?? pickList.status}
+                    </Badge>
+                    <span className="text-muted-foreground text-xs">
+                      {pickList.progress.picked}/{pickList.progress.total} (
+                      {pickList.progress.pct}%)
+                    </span>
+                    {pickList.status === "OPEN" ? (
+                      <div className="flex gap-1">
+                        <form action={completePickListAction}>
+                          <input
+                            name="pickListId"
+                            type="hidden"
+                            value={pickList.id}
+                          />
+                          <Button size="sm" type="submit" variant="outline">
+                            סיים ליקוט
+                          </Button>
+                        </form>
+                        <form action={cancelPickListAction}>
+                          <input
+                            name="pickListId"
+                            type="hidden"
+                            value={pickList.id}
+                          />
+                          <Button size="sm" type="submit" variant="ghost">
+                            בטל
+                          </Button>
+                        </form>
+                      </div>
+                    ) : null}
+                  </div>
+
+                  {pickList.status === "OPEN" ? (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>מיקום</TableHead>
+                          <TableHead>פריט</TableHead>
+                          <TableHead>כמות</TableHead>
+                          <TableHead />
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {pickList.lines.map((line) => (
+                          <TableRow key={line.id}>
+                            <TableCell className="text-xs">
+                              {line.binCode ? (
+                                <code dir="ltr">{line.binCode}</code>
+                              ) : (
+                                <span className="text-muted-foreground">ללא מיקום</span>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-sm">
+                              <div>{line.name}</div>
+                              <div className="text-muted-foreground text-xs">
+                                {line.sku}
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-sm">{line.quantity}</TableCell>
+                            <TableCell>
+                              <form action={togglePickLineAction}>
+                                <input name="lineId" type="hidden" value={line.id} />
+                                <input
+                                  name="picked"
+                                  type="hidden"
+                                  value={line.picked ? "0" : "1"}
+                                />
+                                <Button
+                                  size="sm"
+                                  type="submit"
+                                  variant={line.picked ? "secondary" : "outline"}
+                                >
+                                  {line.picked ? "לוקט ✓" : "סמן לוקט"}
+                                </Button>
+                              </form>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </AdminShell>
