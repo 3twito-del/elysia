@@ -3403,6 +3403,28 @@ model Opportunity {
   @@index([expectedCloseDate])
 }
 
+/// A unified CRM interaction on a customer/lead/opportunity timeline
+/// (CRM-SAL-004): calls, emails, meetings, notes and tasks in one log.
+model CrmActivity {
+  id                  String    @id @default(cuid())
+  /// CALL | EMAIL | MEETING | NOTE | TASK
+  type                String    @default("NOTE")
+  subject             String
+  body                String?
+  occurredAt          DateTime  @default(now())
+  customerId          String?
+  leadId              String?
+  opportunityId       String?
+  createdByAdminUserId String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([customerId, occurredAt])
+  @@index([leadId, occurredAt])
+  @@index([opportunityId, occurredAt])
+  @@index([occurredAt])
+}
+
 /// CRM quote / proposal (CRM-SAL-002).
 model Quote {
   id            String      @id @default(cuid())

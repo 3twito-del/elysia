@@ -5,6 +5,7 @@ import {
   FileText,
   Heart,
   ListTodo,
+  MessageSquare,
   Award,
   Percent,
   Repeat,
@@ -31,6 +32,7 @@ import {
   createLeadAction,
   createQuoteAction,
   decideQuoteAction,
+  logActivityAction,
   enrollJourneySegmentAction,
   applyLoyaltyAction,
   createPriceRuleAction,
@@ -69,6 +71,10 @@ import {
 } from "~/server/services/crm-journeys";
 import { listRecentQuotes } from "~/server/services/crm-quotes";
 import { listRecentConsentRecords } from "~/server/services/consent";
+import {
+  getActivityTimelineSummary,
+  listRecentActivities,
+} from "~/server/services/crm-activity";
 import { listPriceRules } from "~/server/services/pricing-rules";
 import {
   getLoyaltySummary,
@@ -127,6 +133,14 @@ const loyaltyTierLabel: Record<string, string> = {
   SILVER: "כסף",
   GOLD: "זהב",
   PLATINUM: "פלטינה",
+};
+
+const activityTypeLabel: Record<string, string> = {
+  CALL: "שיחה",
+  EMAIL: 'דוא"ל',
+  MEETING: "פגישה",
+  NOTE: "הערה",
+  TASK: "משימה",
 };
 
 const quoteStatusLabel: Record<string, string> = {
@@ -195,6 +209,10 @@ export default async function AdminCrmPage() {
 
   const duplicateGroups = await getDuplicateCustomerGroups().catch(() => []);
   const priceRules = await listPriceRules().catch(() => []);
+  const [activities, activitySummary] = await Promise.all([
+    listRecentActivities().catch(() => []),
+    getActivityTimelineSummary().catch(() => null),
+  ]);
 
   return (
     <AdminShell
@@ -1205,6 +1223,90 @@ export default async function AdminCrmPage() {
               </TableBody>
             </Table>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MessageSquare aria-hidden="true" className="size-5" />
+            ציר זמן פעילויות
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.6fr]">
+          <form action={logActivityAction} className="grid gap-2">
+            <p className="text-muted-foreground text-sm">
+              תיעוד מאוחד של שיחות, מיילים, פגישות, הערות ומשימות. שיוך ללקוח
+              קיים לפי {'דוא"ל'} (רשות).
+            </p>
+            <select
+              aria-label="סוג פעילות"
+              autoComplete="off"
+              className="glass-control h-10 rounded-md border px-3 text-sm"
+              defaultValue="CALL"
+              name="type"
+            >
+              {Object.entries(activityTypeLabel).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+            <Input name="subject" placeholder="נושא" required />
+            <Input name="customerEmail" placeholder='דוא"ל לקוח (רשות)' type="email" />
+            <Textarea name="body" placeholder="פירוט (רשות)" rows={2} />
+            <Button className="w-fit" size="sm" type="submit">
+              רשום פעילות
+            </Button>
+            {activitySummary ? (
+              <p className="text-muted-foreground text-xs">
+                {activitySummary.total} פעילויות · שיחות{" "}
+                {activitySummary.byType.CALL} · פגישות{" "}
+                {activitySummary.byType.MEETING} · הערות{" "}
+                {activitySummary.byType.NOTE}
+              </p>
+            ) : null}
+          </form>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>סוג</TableHead>
+                <TableHead>נושא</TableHead>
+                <TableHead>לקוח</TableHead>
+                <TableHead>מתי</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {activities.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={4}
+                  description="טרם תועדו פעילויות."
+                  icon={MessageSquare}
+                  title="אין פעילויות"
+                />
+              ) : (
+                activities.map((activity) => (
+                  <TableRow key={activity.id}>
+                    <TableCell>
+                      <Badge variant="outline">
+                        {activityTypeLabel[activity.type] ?? activity.type}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="max-w-[14rem] truncate text-sm">
+                      {activity.subject}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {activity.customerLabel ?? "—"}
+                    </TableCell>
+                    <TableCell className="text-xs">
+                      {formatHebrewDateTime(activity.occurredAt)}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </AdminShell>

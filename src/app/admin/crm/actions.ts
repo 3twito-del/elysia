@@ -40,6 +40,7 @@ import {
   setPriceRuleActive,
 } from "~/server/services/pricing-rules";
 import { recomputeSegmentMemberships } from "~/server/services/marketing-segments";
+import { logActivity } from "~/server/services/crm-activity";
 
 export async function createLeadAction(formData: FormData) {
   await requireAdmin("CRM_WRITE");
@@ -284,6 +285,23 @@ export async function togglePriceRuleAction(formData: FormData) {
   await setPriceRuleActive({
     ruleId,
     isActive: formData.get("isActive") === "1",
+  });
+
+  revalidatePath("/admin/crm");
+}
+
+export async function logActivityAction(formData: FormData) {
+  const admin = await requireAdmin("CRM_WRITE");
+
+  const subject = stringValue(formData.get("subject")).trim();
+  if (!subject) throw new Error("נדרש נושא לפעילות.");
+
+  await logActivity({
+    type: stringValue(formData.get("type")),
+    subject,
+    body: optionalString(formData.get("body")),
+    customerEmail: optionalString(formData.get("customerEmail")),
+    createdByAdminUserId: admin.id,
   });
 
   revalidatePath("/admin/crm");
