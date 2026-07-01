@@ -3520,6 +3520,18 @@ model CustomerInvoiceLine {
   @@index([customerInvoiceId])
 }
 
+/// A logged dunning (collection) follow-up on an overdue customer invoice
+/// (FIN-AR-001 dunning). Records the escalation level and a note.
+model DunningAction {
+  id                String   @id @default(cuid())
+  customerInvoiceId String
+  level             Int
+  note              String?
+  createdAt         DateTime @default(now())
+
+  @@index([customerInvoiceId, createdAt])
+}
+
 model CustomerReceipt {
   id          String                      @id @default(cuid())
   customerId  String?

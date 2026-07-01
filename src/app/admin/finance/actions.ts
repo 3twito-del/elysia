@@ -36,6 +36,7 @@ import {
   recordMaintenance,
   setMaintenanceScheduleStatus,
 } from "~/server/services/asset-maintenance";
+import { recordDunningContact } from "~/server/services/dunning";
 import { createLedgerAccount } from "~/server/services/chart-of-accounts";
 import { seedChartOfAccounts } from "~/server/services/ledger";
 import {
@@ -408,6 +409,21 @@ export async function toggleCostCenterAction(formData: FormData) {
   await setCostCenterActive({
     costCenterId,
     isActive: formData.get("isActive") === "1",
+  });
+
+  revalidatePath("/admin/finance");
+}
+
+export async function recordDunningContactAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const customerInvoiceId = stringValue(formData.get("customerInvoiceId"));
+  if (!customerInvoiceId) throw new Error("חסר מזהה חשבונית.");
+
+  await recordDunningContact({
+    customerInvoiceId,
+    level: Number(stringValue(formData.get("level"))) || 1,
+    note: optionalString(formData.get("note")),
   });
 
   revalidatePath("/admin/finance");

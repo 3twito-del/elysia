@@ -27,6 +27,7 @@ import {
   createCostCenterAction,
   createMaintenanceScheduleAction,
   recordMaintenanceAction,
+  recordDunningContactAction,
   toggleMaintenanceScheduleAction,
   createCustomerInvoiceAction,
   createEmployeeAction,
@@ -85,6 +86,10 @@ import {
   listAssetsForMaintenance,
   listMaintenanceSchedules,
 } from "~/server/services/asset-maintenance";
+import {
+  getDunningSummary,
+  getDunningWorklist,
+} from "~/server/services/dunning";
 import { getCashFlowStatement } from "~/server/services/cash-flow";
 import { listAccountsWithBalances } from "~/server/services/chart-of-accounts";
 import {
@@ -282,6 +287,15 @@ export default async function AdminFinancePage() {
     DUE_SOON: { label: "מתקרב", variant: "outline" },
     OVERDUE: { label: "באיחור", variant: "destructive" },
   };
+
+  const [dunningWorklist, dunningSummary] = await Promise.all([
+    getDunningWorklist().catch(() => []),
+    getDunningSummary().catch(() => ({
+      overdueCount: 0,
+      overdueTotal: 0,
+      escalations: 0,
+    })),
+  ]);
 
   const [subscriptionPlans, subscriptions, subscriptionSummary] =
     await Promise.all([
@@ -1922,6 +1936,84 @@ export default async function AdminFinancePage() {
                           </Button>
                         </form>
                       </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Banknote aria-hidden="true" className="size-5" />
+            גבייה (Dunning)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          <p className="text-muted-foreground text-sm">
+            חשבוניות לקוח באיחור לפי רמת הסלמה. {dunningSummary.overdueCount}{" "}
+            באיחור · {formatPrice(dunningSummary.overdueTotal)} · {" "}
+            {dunningSummary.escalations} בהסלמה. תיעוד פנייה בלבד (שליחת אימייל —
+            בהמשך, מותנה בספק).
+          </p>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>חשבונית / לקוח</TableHead>
+                <TableHead>יתרה</TableHead>
+                <TableHead>איחור</TableHead>
+                <TableHead>רמה</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {dunningWorklist.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={5}
+                  description="אין חשבוניות באיחור."
+                  icon={Banknote}
+                  title="אין פיגורים"
+                />
+              ) : (
+                dunningWorklist.map((entry) => (
+                  <TableRow key={entry.id}>
+                    <TableCell className="text-sm">
+                      <div className="font-medium">{entry.invoiceNumber}</div>
+                      <div className="text-muted-foreground text-xs">
+                        {entry.customerLabel}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {formatPrice(entry.outstanding)}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {entry.daysOverdue} ימים
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={entry.level >= 3 ? "destructive" : "outline"}
+                      >
+                        רמה {entry.level}
+                        {entry.lastContactLevel != null
+                          ? ` (נוצר: ${entry.lastContactLevel})`
+                          : ""}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <form action={recordDunningContactAction}>
+                        <input
+                          name="customerInvoiceId"
+                          type="hidden"
+                          value={entry.id}
+                        />
+                        <input name="level" type="hidden" value={entry.level} />
+                        <Button size="sm" type="submit" variant="outline">
+                          תעד פנייה
+                        </Button>
+                      </form>
                     </TableCell>
                   </TableRow>
                 ))
