@@ -116,6 +116,7 @@ const protectedAdminRoutes = [
   "/admin/pos",
   "/admin/workspace",
   "/admin/operations",
+  "/admin/performance",
   "/admin/projects",
   "/admin/workflow",
   "/admin/reports",

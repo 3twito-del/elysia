@@ -27,6 +27,7 @@ import {
   PackageSearch,
   Percent,
   PlugZap,
+  Star,
   Store,
   Table2,
   Wrench,
@@ -76,6 +77,7 @@ export type AdminSection =
   | "operations"
   | "orders"
   | "overview"
+  | "performance"
   | "pos"
   | "projects"
   | "promotions"
@@ -130,6 +132,7 @@ const navItems: Array<{
     label: "מרחב עבודה",
   },
   { href: "/admin/operations", icon: Wrench, id: "operations", label: "תפעול" },
+  { href: "/admin/performance", icon: Star, id: "performance", label: "ביצועים" },
   {
     href: "/admin/projects",
     icon: FolderKanban,

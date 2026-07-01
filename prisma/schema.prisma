@@ -649,8 +649,42 @@ model Employee {
   updatedAt      DateTime       @updatedAt
   payslips       Payslip[]
   expenseClaims  ExpenseClaim[]
+  reviews        PerformanceReview[]
+  goals          PerformanceGoal[]
 
   @@index([status])
+}
+
+/// A performance review for an employee in a cycle (HRX).
+model PerformanceReview {
+  id         String   @id @default(cuid())
+  employeeId String
+  cycle      String
+  rating     Int      @default(3)
+  /// DRAFT | SUBMITTED | ACKNOWLEDGED
+  status     String   @default("DRAFT")
+  summary    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId, cycle])
+}
+
+/// A performance / development goal for an employee (HRX).
+model PerformanceGoal {
+  id         String    @id @default(cuid())
+  employeeId String
+  title      String
+  /// OPEN | IN_PROGRESS | DONE
+  status     String    @default("OPEN")
+  progress   Int       @default(0)
+  dueDate    DateTime? @db.Date
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  employee   Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId, status])
 }
 
 /// An employee expense claim; approving it posts Dr General Expense / Cr Cash.
