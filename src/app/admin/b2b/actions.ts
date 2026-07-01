@@ -10,7 +10,10 @@ import {
   hasAdminPermission,
 } from "~/server/auth/admin-access";
 import {
+  addAuthorizedBuyer,
   createB2bAccount,
+  removeAuthorizedBuyer,
+  setAuthorizedBuyerStatus,
   setB2bAccountStatus,
   updateB2bAccount,
 } from "~/server/services/b2b";
@@ -59,6 +62,48 @@ export async function setB2bAccountStatusAction(formData: FormData) {
     accountId,
     status: formData.get("status") === "SUSPENDED" ? "SUSPENDED" : "ACTIVE",
   });
+
+  revalidatePath("/admin/b2b");
+}
+
+export async function addAuthorizedBuyerAction(formData: FormData) {
+  await requireAdmin("CUSTOMER_WRITE");
+
+  const accountId = stringValue(formData.get("accountId"));
+  if (!accountId) throw new Error("חסר מזהה חשבון.");
+
+  await addAuthorizedBuyer({
+    accountId,
+    name: stringValue(formData.get("name")),
+    email: stringValue(formData.get("email")),
+    role: optionalString(formData.get("role")),
+    spendLimit: Number(stringValue(formData.get("spendLimit"))) || 0,
+  });
+
+  revalidatePath("/admin/b2b");
+}
+
+export async function setAuthorizedBuyerStatusAction(formData: FormData) {
+  await requireAdmin("CUSTOMER_WRITE");
+
+  const buyerId = stringValue(formData.get("buyerId"));
+  if (!buyerId) throw new Error("חסר מזהה רוכש.");
+
+  await setAuthorizedBuyerStatus({
+    buyerId,
+    status: formData.get("status") === "SUSPENDED" ? "SUSPENDED" : "ACTIVE",
+  });
+
+  revalidatePath("/admin/b2b");
+}
+
+export async function removeAuthorizedBuyerAction(formData: FormData) {
+  await requireAdmin("CUSTOMER_WRITE");
+
+  const buyerId = stringValue(formData.get("buyerId"));
+  if (!buyerId) throw new Error("חסר מזהה רוכש.");
+
+  await removeAuthorizedBuyer({ buyerId });
 
   revalidatePath("/admin/b2b");
 }

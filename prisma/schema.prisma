@@ -1596,10 +1596,33 @@ model B2bAccount {
   priceList        PriceList? @relation(fields: [priceListId], references: [id], onDelete: SetNull)
   /// ACTIVE | SUSPENDED
   status           String   @default("ACTIVE")
+  buyers           B2bAuthorizedBuyer[]
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
   @@index([status])
+}
+
+/// An authorized purchaser acting on behalf of a B2bAccount (POR-003). Each
+/// buyer may carry a per-order spend limit (0 = unlimited) and can be suspended
+/// independently of the account.
+model B2bAuthorizedBuyer {
+  id         String     @id @default(cuid())
+  accountId  String
+  name       String
+  email      String
+  /// free-text role, e.g. רוכש / מאשר
+  role       String?
+  /// per-order spend limit in ₪; 0 = unlimited
+  spendLimit Decimal    @default(0) @db.Decimal(14, 2)
+  /// ACTIVE | SUSPENDED
+  status     String     @default("ACTIVE")
+  account    B2bAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@unique([accountId, email])
+  @@index([accountId, status])
 }
 
 /// A digital-marketing campaign with budget/spend/revenue for ROAS (DMK, §4.R).

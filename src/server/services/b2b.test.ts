@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { availableCredit, b2bPrice, creditStatus } from "./b2b";
+import {
+  availableCredit,
+  b2bPrice,
+  buyerWithinLimit,
+  creditStatus,
+} from "./b2b";
 
 describe("b2bPrice", () => {
   it("applies the discount percent", () => {
@@ -27,5 +32,17 @@ describe("creditStatus", () => {
     expect(creditStatus(10000, 9000)).toBe("NEAR_LIMIT");
     expect(creditStatus(10000, 11000)).toBe("OVER_LIMIT");
     expect(creditStatus(0, 5000)).toBe("OK"); // no limit set
+  });
+});
+
+describe("buyerWithinLimit", () => {
+  it("treats a non-positive limit as unlimited", () => {
+    expect(buyerWithinLimit(0, 999999)).toBe(true);
+    expect(buyerWithinLimit(-1, 100)).toBe(true);
+  });
+
+  it("enforces a positive per-order limit", () => {
+    expect(buyerWithinLimit(5000, 5000)).toBe(true);
+    expect(buyerWithinLimit(5000, 5001)).toBe(false);
   });
 });

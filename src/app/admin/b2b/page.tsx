@@ -7,7 +7,10 @@ import {
 } from "../_components/admin-states";
 import { getAdminPageAccess } from "../_lib/access";
 import {
+  addAuthorizedBuyerAction,
   createB2bAccountAction,
+  removeAuthorizedBuyerAction,
+  setAuthorizedBuyerStatusAction,
   setB2bAccountStatusAction,
   updateB2bAccountAction,
 } from "./actions";
@@ -26,7 +29,11 @@ import {
 } from "~/components/ui/table";
 import { TableEmptyRow } from "~/components/ui/table-empty-row";
 import { formatPrice } from "~/lib/format";
-import { getB2bSummary, listB2bAccounts } from "~/server/services/b2b";
+import {
+  getB2bSummary,
+  listAuthorizedBuyersByAccount,
+  listB2bAccounts,
+} from "~/server/services/b2b";
 
 export const metadata = {
   title: "B2B | Admin",
@@ -44,6 +51,9 @@ export default async function AdminB2bPage() {
   if (!summary) return <AdminDatabaseFallback />;
 
   const accounts = await listB2bAccounts().catch(() => []);
+  const buyersByAccount = await listAuthorizedBuyersByAccount(
+    accounts.map((account) => account.id),
+  ).catch(() => new Map<string, never[]>());
 
   return (
     <AdminShell
@@ -195,6 +205,94 @@ export default async function AdminB2bPage() {
                             {account.status === "ACTIVE" ? "השעה" : "הפעל"}
                           </Button>
                         </form>
+
+                        <div className="border-border/60 mt-1 grid gap-1 border-t pt-2">
+                          <p className="text-muted-foreground flex items-center gap-1 text-xs font-medium">
+                            <Users aria-hidden="true" className="size-3" />
+                            רוכשים מורשים
+                          </p>
+                          {(buyersByAccount.get(account.id) ?? []).map((buyer) => (
+                            <div
+                              className="flex flex-wrap items-center gap-1 text-xs"
+                              key={buyer.id}
+                            >
+                              <span className="font-medium">{buyer.name}</span>
+                              <span className="text-muted-foreground">
+                                {buyer.email}
+                              </span>
+                              <span className="text-muted-foreground">
+                                {buyer.spendLimit > 0
+                                  ? `עד ${formatPrice(buyer.spendLimit)}`
+                                  : "ללא הגבלה"}
+                              </span>
+                              <Badge
+                                variant={
+                                  buyer.status === "ACTIVE" ? "secondary" : "outline"
+                                }
+                              >
+                                {buyer.status === "ACTIVE" ? "פעיל" : "מושהה"}
+                              </Badge>
+                              <form action={setAuthorizedBuyerStatusAction}>
+                                <input name="buyerId" type="hidden" value={buyer.id} />
+                                <input
+                                  name="status"
+                                  type="hidden"
+                                  value={
+                                    buyer.status === "ACTIVE" ? "SUSPENDED" : "ACTIVE"
+                                  }
+                                />
+                                <Button
+                                  className="h-6 px-2"
+                                  size="sm"
+                                  type="submit"
+                                  variant="ghost"
+                                >
+                                  {buyer.status === "ACTIVE" ? "השעה" : "הפעל"}
+                                </Button>
+                              </form>
+                              <form action={removeAuthorizedBuyerAction}>
+                                <input name="buyerId" type="hidden" value={buyer.id} />
+                                <Button
+                                  className="h-6 px-2"
+                                  size="sm"
+                                  type="submit"
+                                  variant="ghost"
+                                >
+                                  הסר
+                                </Button>
+                              </form>
+                            </div>
+                          ))}
+                          <form
+                            action={addAuthorizedBuyerAction}
+                            className="flex flex-wrap items-center gap-1"
+                          >
+                            <input name="accountId" type="hidden" value={account.id} />
+                            <Input
+                              className="h-8 w-24"
+                              name="name"
+                              placeholder="שם"
+                              required
+                            />
+                            <Input
+                              className="h-8 w-32"
+                              name="email"
+                              placeholder='דוא"ל'
+                              required
+                              type="email"
+                            />
+                            <Input
+                              className="h-8 w-24"
+                              min="0"
+                              name="spendLimit"
+                              placeholder="תקרה ₪"
+                              type="number"
+                            />
+                            <Button size="sm" type="submit" variant="outline">
+                              הוסף רוכש
+                            </Button>
+                          </form>
+                        </div>
                       </div>
                     </TableCell>
                   </TableRow>

@@ -32,6 +32,18 @@ export function creditStatus(
   return outstanding >= creditLimit * 0.85 ? "NEAR_LIMIT" : "OK";
 }
 
+/**
+ * Whether an authorized buyer may place an order of `orderAmount`. A
+ * non-positive spend limit means unlimited authority. Pure.
+ */
+export function buyerWithinLimit(
+  spendLimit: number,
+  orderAmount: number,
+): boolean {
+  if (spendLimit <= 0) return true;
+  return orderAmount <= spendLimit;
+}
+
 export async function createB2bAccount(input: {
   customerEmail: string;
   companyName?: string;
@@ -152,6 +164,100 @@ export async function listB2bAccounts(limit = 30) {
     status: account.status,
   }));
 }
+
+/** Adds an authorized buyer to a B2B account. */
+export async function addAuthorizedBuyer(input: {
+  accountId: string;
+  name: string;
+  email: string;
+  role?: string;
+  spendLimit?: number;
+}) {
+  const name = input.name.trim();
+  const email = input.email.trim().toLowerCase();
+  if (!name) throw new Error("יש להזין שם רוכש.");
+  if (!email) throw new Error('יש להזין דוא"ל רוכש.');
+
+  const account = await db.b2bAccount.findUnique({
+    where: { id: input.accountId },
+    select: { id: true },
+  });
+  if (!account) throw new Error("חשבון B2B לא נמצא.");
+
+  const existing = await db.b2bAuthorizedBuyer.findUnique({
+    where: { accountId_email: { accountId: input.accountId, email } },
+    select: { id: true },
+  });
+  if (existing) throw new Error("רוכש עם דוא\"ל זה כבר משויך לחשבון.");
+
+  return db.b2bAuthorizedBuyer.create({
+    data: {
+      accountId: input.accountId,
+      name,
+      email,
+      role: input.role?.trim() ? input.role.trim() : null,
+      spendLimit: round2(Math.max(0, input.spendLimit ?? 0)),
+    },
+  });
+}
+
+export async function setAuthorizedBuyerStatus(input: {
+  buyerId: string;
+  status: "ACTIVE" | "SUSPENDED";
+}) {
+  return db.b2bAuthorizedBuyer.update({
+    where: { id: input.buyerId },
+    data: { status: input.status },
+  });
+}
+
+export async function removeAuthorizedBuyer(input: { buyerId: string }) {
+  return db.b2bAuthorizedBuyer.delete({ where: { id: input.buyerId } });
+}
+
+/** Authorized buyers grouped by account id. */
+export async function listAuthorizedBuyersByAccount(accountIds: string[]) {
+  if (accountIds.length === 0) return new Map<string, AuthorizedBuyerRow[]>();
+
+  const buyers = await db.b2bAuthorizedBuyer.findMany({
+    where: { accountId: { in: accountIds } },
+    orderBy: { createdAt: "asc" },
+    select: {
+      id: true,
+      accountId: true,
+      name: true,
+      email: true,
+      role: true,
+      spendLimit: true,
+      status: true,
+    },
+  });
+
+  const byAccount = new Map<string, AuthorizedBuyerRow[]>();
+  for (const buyer of buyers) {
+    const row: AuthorizedBuyerRow = {
+      id: buyer.id,
+      name: buyer.name,
+      email: buyer.email,
+      role: buyer.role,
+      spendLimit: Number(buyer.spendLimit),
+      status: buyer.status,
+    };
+    const list = byAccount.get(buyer.accountId);
+    if (list) list.push(row);
+    else byAccount.set(buyer.accountId, [row]);
+  }
+  return byAccount;
+}
+
+export type AuthorizedBuyerRow = {
+  id: string;
+  name: string;
+  email: string;
+  role: string | null;
+  spendLimit: number;
+  status: string;
+};
 
 export async function getB2bSummary() {
   const accounts = await db.b2bAccount.findMany({
