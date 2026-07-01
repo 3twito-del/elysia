@@ -16,6 +16,7 @@ import {
   FolderKanban,
   GalleryHorizontalEnd,
   Gauge,
+  Grid3x3,
   Headset,
   History,
   KeyRound,
@@ -59,6 +60,7 @@ export type AdminSection =
   | "audit"
   | "b2b"
   | "bi"
+  | "bins"
   | "blog"
   | "catalog"
   | "crm"
@@ -121,6 +123,7 @@ const navItems: Array<{
   },
   { href: "/admin/inventory", icon: Boxes, id: "inventory", label: "מלאי" },
   { href: "/admin/reorder", icon: PackageSearch, id: "reorder", label: "חידוש מלאי" },
+  { href: "/admin/bins", icon: Grid3x3, id: "bins", label: "מיקומים" },
   { href: "/admin/customers", icon: Users, id: "customers", label: "לקוחות" },
   { href: "/admin/b2b", icon: Briefcase, id: "b2b", label: "B2B" },
   { href: "/admin/service", icon: Headset, id: "service", label: "שירות" },

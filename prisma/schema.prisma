@@ -1379,6 +1379,34 @@ model SlaPolicy {
   @@index([entityType, isActive])
 }
 
+/// A physical storage bin/location within a branch (WMS).
+model StorageBin {
+  id          String          @id @default(cuid())
+  branchId    String
+  code        String
+  label       String?
+  isActive    Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  assignments BinAssignment[]
+
+  @@unique([branchId, code])
+  @@index([branchId, isActive])
+}
+
+/// A quantity of a variant stored in a specific bin (WMS).
+model BinAssignment {
+  id        String     @id @default(cuid())
+  binId     String
+  variantId String
+  quantity  Int        @default(0)
+  updatedAt DateTime   @updatedAt
+  bin       StorageBin @relation(fields: [binId], references: [id], onDelete: Cascade)
+
+  @@unique([binId, variantId])
+  @@index([variantId])
+}
+
 /// A generated/received EDI document (X12) for a trading partner (IPL-003).
 model EdiDocument {
   id        String   @id @default(cuid())
