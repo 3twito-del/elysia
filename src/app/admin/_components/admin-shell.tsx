@@ -21,6 +21,7 @@ import {
   Megaphone,
   Newspaper,
   PackageCheck,
+  PackageSearch,
   Percent,
   PlugZap,
   Store,
@@ -72,6 +73,7 @@ export type AdminSection =
   | "overview"
   | "pos"
   | "projects"
+  | "reorder"
   | "reports"
   | "service"
   | "tax"
@@ -103,6 +105,7 @@ const navItems: Array<{
   { href: "/admin/orders", icon: ClipboardList, id: "orders", label: "הזמנות" },
   { href: "/admin/catalog", icon: PackageCheck, id: "catalog", label: "קטלוג" },
   { href: "/admin/inventory", icon: Boxes, id: "inventory", label: "מלאי" },
+  { href: "/admin/reorder", icon: PackageSearch, id: "reorder", label: "חידוש מלאי" },
   { href: "/admin/customers", icon: Users, id: "customers", label: "לקוחות" },
   { href: "/admin/b2b", icon: Briefcase, id: "b2b", label: "B2B" },
   { href: "/admin/service", icon: Headset, id: "service", label: "שירות" },

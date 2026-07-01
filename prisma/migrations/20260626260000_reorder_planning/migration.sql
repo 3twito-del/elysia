@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "InventoryItem" ADD COLUMN "reorderPoint" INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE "InventoryItem" ADD COLUMN "targetLevel" INTEGER NOT NULL DEFAULT 0;
