@@ -1784,10 +1784,43 @@ model ReportDefinition {
   sort        Json?
   isActive    Boolean   @default(true)
   lastRunAt   DateTime?
+  schedules   ReportSchedule[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
   @@index([datasetKey])
+}
+
+/// A recurring schedule that runs a saved report and captures a CSV snapshot
+/// (RPT-003, scheduled reports). Processed by the report-schedules cron.
+model ReportSchedule {
+  id         String           @id @default(cuid())
+  reportId   String
+  /// DAILY | WEEKLY | MONTHLY
+  frequency  String           @default("WEEKLY")
+  isActive   Boolean          @default(true)
+  lastRunAt  DateTime?
+  nextRunAt  DateTime
+  report     ReportDefinition @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  runs       ReportRun[]
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  @@index([isActive, nextRunAt])
+  @@index([reportId])
+}
+
+/// A captured snapshot from a scheduled report run.
+model ReportRun {
+  id         String         @id @default(cuid())
+  scheduleId String
+  reportName String
+  rowCount   Int
+  csv        String
+  schedule   ReportSchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  createdAt  DateTime       @default(now())
+
+  @@index([scheduleId, createdAt])
 }
 
 /// A legal entity (company) for multi-entity accounting + consolidation (ENT, §4.AD).

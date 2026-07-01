@@ -14,6 +14,11 @@ import {
   deleteReport,
   setReportActive,
 } from "~/server/services/reports";
+import {
+  createReportSchedule,
+  deleteReportSchedule,
+  setReportScheduleActive,
+} from "~/server/services/report-schedules";
 
 const UNARY_OPS = new Set(["exists", "truthy", "falsy"]);
 
@@ -74,6 +79,45 @@ export async function deleteReportAction(formData: FormData) {
   if (!reportId) throw new Error("חסר מזהה דוח.");
 
   await deleteReport({ reportId });
+
+  revalidatePath("/admin/reports");
+}
+
+export async function createReportScheduleAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const reportId = stringValue(formData.get("reportId"));
+  if (!reportId) throw new Error("יש לבחור דוח.");
+
+  await createReportSchedule({
+    reportId,
+    frequency: stringValue(formData.get("frequency")),
+  });
+
+  revalidatePath("/admin/reports");
+}
+
+export async function toggleReportScheduleAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const scheduleId = stringValue(formData.get("scheduleId"));
+  if (!scheduleId) throw new Error("חסר מזהה תזמון.");
+
+  await setReportScheduleActive({
+    scheduleId,
+    isActive: formData.get("isActive") === "1",
+  });
+
+  revalidatePath("/admin/reports");
+}
+
+export async function deleteReportScheduleAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const scheduleId = stringValue(formData.get("scheduleId"));
+  if (!scheduleId) throw new Error("חסר מזהה תזמון.");
+
+  await deleteReportSchedule({ scheduleId });
 
   revalidatePath("/admin/reports");
 }

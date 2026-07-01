@@ -148,6 +148,8 @@ const documentedApiRoutes = [
   "/api/admin/tax/form856",
   "/api/admin/edi/[id]",
   "/api/admin/reports/[id]/export",
+  "/api/admin/reports/runs/[id]",
+  "/api/jobs/report-schedules",
   "/api/analytics/replay",
   "/api/search/reindex",
   "/api/events/product-click",

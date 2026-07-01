@@ -1,5 +1,6 @@
 import {
   BarChart3,
+  CalendarClock,
   Database,
   FileSpreadsheet,
   Filter,
@@ -16,8 +17,11 @@ import {
 import { getAdminPageAccess } from "../_lib/access";
 import {
   createReportAction,
+  createReportScheduleAction,
   deleteReportAction,
+  deleteReportScheduleAction,
   toggleReportAction,
+  toggleReportScheduleAction,
 } from "./actions";
 import { MetricCard } from "~/components/metric-card";
 import { Badge } from "~/components/ui/badge";
@@ -34,6 +38,7 @@ import {
 } from "~/components/ui/table";
 import { TableEmptyRow } from "~/components/ui/table-empty-row";
 import { cn } from "~/lib/utils";
+import { formatOptionalHebrewDateTime } from "~/lib/format";
 import { toDisplayString } from "~/lib/stringify";
 import { listDatasets } from "~/server/services/report-datasets";
 import { formatMeasure } from "~/server/services/report-engine";
@@ -43,6 +48,10 @@ import {
   runReport,
   type RunReportResult,
 } from "~/server/services/reports";
+import {
+  listRecentReportRuns,
+  listReportSchedules,
+} from "~/server/services/report-schedules";
 
 export const metadata = {
   title: "דוחות | Admin",
@@ -51,6 +60,12 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 const filterOps = ["eq", "neq", "gt", "gte", "lt", "lte", "contains", "in"];
+
+const scheduleFrequencyLabel: Record<string, string> = {
+  DAILY: "יומי",
+  WEEKLY: "שבועי",
+  MONTHLY: "חודשי",
+};
 
 type PageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -76,6 +91,10 @@ export default async function AdminReportsPage({ searchParams }: PageProps) {
     datasets.find((dataset) => dataset.key === activeKey) ?? datasets[0];
 
   const reports = await listReports().catch(() => []);
+  const [schedules, reportRuns] = await Promise.all([
+    listReportSchedules().catch(() => []),
+    listRecentReportRuns().catch(() => []),
+  ]);
 
   const reportId = typeof query.report === "string" ? query.report : undefined;
   const run: RunReportResult | null = reportId
@@ -296,6 +315,154 @@ export default async function AdminReportsPage({ searchParams }: PageProps) {
               )}
             </TableBody>
           </Table>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CalendarClock aria-hidden="true" className="size-5" />
+            דוחות מתוזמנים
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.6fr]">
+          <form action={createReportScheduleAction} className="grid gap-2">
+            <p className="text-muted-foreground text-sm">
+              הרצה אוטומטית של דוח שמור בתדירות קבועה; כל הרצה שומרת snapshot של
+              CSV להורדה. מופעל {'ע"י'} ה-cron היומי.
+            </p>
+            <select
+              aria-label="דוח"
+              autoComplete="off"
+              className="glass-control h-10 rounded-md border px-3 text-sm"
+              defaultValue=""
+              name="reportId"
+              required
+            >
+              <option disabled value="">
+                בחר דוח…
+              </option>
+              {reports.map((report) => (
+                <option key={report.id} value={report.id}>
+                  {report.name}
+                </option>
+              ))}
+            </select>
+            <select
+              aria-label="תדירות"
+              autoComplete="off"
+              className="glass-control h-10 rounded-md border px-3 text-sm"
+              defaultValue="WEEKLY"
+              name="frequency"
+            >
+              <option value="DAILY">יומי</option>
+              <option value="WEEKLY">שבועי</option>
+              <option value="MONTHLY">חודשי</option>
+            </select>
+            <Button className="w-fit" size="sm" type="submit">
+              צור תזמון
+            </Button>
+          </form>
+
+          <div className="grid gap-4">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>דוח</TableHead>
+                  <TableHead>תדירות</TableHead>
+                  <TableHead>הרצה הבאה</TableHead>
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {schedules.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={4}
+                    description="טרם הוגדרו תזמונים."
+                    icon={CalendarClock}
+                    title="אין תזמונים"
+                  />
+                ) : (
+                  schedules.map((schedule) => (
+                    <TableRow key={schedule.id}>
+                      <TableCell className="text-sm">
+                        {schedule.reportName}
+                        <Badge
+                          className="mr-2"
+                          variant={schedule.isActive ? "secondary" : "outline"}
+                        >
+                          {schedule.isActive ? "פעיל" : "כבוי"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {scheduleFrequencyLabel[schedule.frequency] ??
+                          schedule.frequency}
+                      </TableCell>
+                      <TableCell className="text-xs">
+                        {formatOptionalHebrewDateTime(schedule.nextRunAt)}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-1">
+                          <form action={toggleReportScheduleAction}>
+                            <input
+                              name="scheduleId"
+                              type="hidden"
+                              value={schedule.id}
+                            />
+                            <input
+                              name="isActive"
+                              type="hidden"
+                              value={schedule.isActive ? "0" : "1"}
+                            />
+                            <Button size="sm" type="submit" variant="ghost">
+                              {schedule.isActive ? "כבה" : "הפעל"}
+                            </Button>
+                          </form>
+                          <form action={deleteReportScheduleAction}>
+                            <input
+                              name="scheduleId"
+                              type="hidden"
+                              value={schedule.id}
+                            />
+                            <Button size="sm" type="submit" variant="ghost">
+                              מחק
+                            </Button>
+                          </form>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+
+            {reportRuns.length > 0 ? (
+              <div>
+                <p className="text-muted-foreground mb-2 text-xs font-medium">
+                  הרצות אחרונות
+                </p>
+                <div className="grid gap-1">
+                  {reportRuns.map((reportRun) => (
+                    <div
+                      className="flex flex-wrap items-center gap-2 text-xs"
+                      key={reportRun.id}
+                    >
+                      <span className="font-medium">{reportRun.reportName}</span>
+                      <span className="text-muted-foreground">
+                        {reportRun.rowCount} שורות ·{" "}
+                        {formatOptionalHebrewDateTime(reportRun.createdAt)}
+                      </span>
+                      <Button asChild className="h-6 px-2" size="sm" variant="ghost">
+                        <Link href={`/api/admin/reports/runs/${reportRun.id}`}>
+                          הורד CSV
+                        </Link>
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </div>
         </CardContent>
       </Card>
 
