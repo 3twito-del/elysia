@@ -13,6 +13,7 @@ import {
   CalendarClock,
   ClipboardList,
   ContactRound,
+  FlaskConical,
   FolderKanban,
   GalleryHorizontalEnd,
   Gauge,
@@ -71,6 +72,7 @@ export type AdminSection =
   | "edi"
   | "entities"
   | "erp"
+  | "experiments"
   | "finance"
   | "insights"
   | "integrations"
@@ -116,6 +118,12 @@ const navItems: Array<{
   { href: "/admin", icon: Gauge, id: "overview", label: "סקירה" },
   { href: "/admin/blog", icon: Newspaper, id: "blog", label: "מגזין" },
   { href: "/admin/pages", icon: LayoutTemplate, id: "pages", label: "עמודים" },
+  {
+    href: "/admin/experiments",
+    icon: FlaskConical,
+    id: "experiments",
+    label: "ניסויים",
+  },
   { href: "/admin/marketing", icon: Megaphone, id: "marketing", label: "שיווק" },
   { href: "/admin/orders", icon: ClipboardList, id: "orders", label: "הזמנות" },
   { href: "/admin/catalog", icon: PackageCheck, id: "catalog", label: "קטלוג" },

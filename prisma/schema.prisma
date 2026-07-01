@@ -1424,6 +1424,33 @@ model EdiDocument {
   @@index([docType, createdAt])
 }
 
+/// An on-site A/B experiment with weighted variants (CMS-003).
+model Experiment {
+  id        String              @id @default(cuid())
+  key       String              @unique
+  name      String
+  /// RUNNING | PAUSED | CONCLUDED
+  status    String              @default("RUNNING")
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+  variants  ExperimentVariant[]
+
+  @@index([status])
+}
+
+/// A variant of an experiment with impression/conversion counters (CMS-003).
+model ExperimentVariant {
+  id           String     @id @default(cuid())
+  experimentId String
+  key          String
+  weight       Int        @default(50)
+  impressions  Int        @default(0)
+  conversions  Int        @default(0)
+  experiment   Experiment @relation(fields: [experimentId], references: [id], onDelete: Cascade)
+
+  @@unique([experimentId, key])
+}
+
 /// A no-code landing page composed of ordered content blocks (CMS-001).
 model LandingPage {
   id        String      @id @default(cuid())

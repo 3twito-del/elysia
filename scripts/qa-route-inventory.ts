@@ -99,6 +99,7 @@ const protectedAdminRoutes = [
   "/admin/crm",
   "/admin/blog",
   "/admin/pages",
+  "/admin/experiments",
   "/admin/orders",
   "/admin/catalog",
   "/admin/promotions",
