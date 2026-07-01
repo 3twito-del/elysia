@@ -34,6 +34,11 @@ import {
   createStockTransferAction,
   createVendorInvoiceAction,
   createWorkOrderAction,
+  approvePurchaseRequisitionAction,
+  convertRequisitionToPoAction,
+  createPurchaseRequisitionAction,
+  rejectPurchaseRequisitionAction,
+  submitPurchaseRequisitionAction,
   issueVendorPortalTokenAction,
   recordVendorPaymentAction,
   revokeVendorPortalTokenAction,
@@ -72,6 +77,10 @@ import {
   listBranchesForSelect,
   listStockTransfers,
 } from "~/server/services/stock-transfer";
+import {
+  listPurchaseRequisitions,
+  listVendorsForRequisition,
+} from "~/server/services/purchase-requisition";
 
 export const metadata = {
   title: "ERP | Admin",
@@ -121,6 +130,25 @@ const vendorInvoiceStatusVariant: Record<
   PARTIALLY_PAID: "outline",
   PAID: "secondary",
   CANCELLED: "destructive",
+};
+
+const requisitionStatusLabel: Record<string, string> = {
+  DRAFT: "טיוטה",
+  PENDING_APPROVAL: "ממתין לאישור",
+  APPROVED: "מאושר",
+  REJECTED: "נדחה",
+  CONVERTED: "הומר להזמנה",
+};
+
+const requisitionStatusVariant: Record<
+  string,
+  "secondary" | "outline" | "destructive"
+> = {
+  DRAFT: "outline",
+  PENDING_APPROVAL: "outline",
+  APPROVED: "secondary",
+  REJECTED: "destructive",
+  CONVERTED: "secondary",
 };
 
 const transferStatusLabel: Record<string, string> = {
@@ -183,6 +211,11 @@ export default async function AdminErpPage({
   const [carriers, shippingRates] = await Promise.all([
     listCarriers().catch(() => []),
     listShippingRates().catch(() => []),
+  ]);
+
+  const [requisitions, requisitionVendors] = await Promise.all([
+    listPurchaseRequisitions().catch(() => []),
+    listVendorsForRequisition().catch(() => []),
   ]);
 
   const atpSku = firstParam((await searchParams).atpSku);
@@ -335,6 +368,141 @@ export default async function AdminErpPage({
               </Table>
             </div>
           ) : null}
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ClipboardList aria-hidden="true" className="size-5" />
+            דרישות רכש (Purchase Requisitions)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
+          <form action={createPurchaseRequisitionAction} className="grid gap-2">
+            <p className="text-muted-foreground text-sm">
+              בקשת רכש פנימית. מעל סף האישור נדרש אישור מנהל; מתחתיו מאושרת
+              אוטומטית. דרישה מאושרת ניתנת להמרה להזמנת רכש.
+            </p>
+            <select
+              autoComplete="off"
+              className="glass-control h-10 rounded-md border px-3 text-sm"
+              defaultValue=""
+              name="vendorId"
+            >
+              <option value="">ספק (רשות)</option>
+              {requisitionVendors.map((vendor) => (
+                <option key={vendor.id} value={vendor.id}>
+                  {vendor.name}
+                </option>
+              ))}
+            </select>
+            <Input name="category" placeholder="קטגוריה (רשות)" />
+            <Textarea
+              name="lines"
+              placeholder={"תיאור | כמות | עלות\nמסך 27 | 2 | 900"}
+              rows={3}
+            />
+            <Input name="notes" placeholder="הערות (רשות)" />
+            <Button className="w-fit" size="sm" type="submit">
+              צור דרישת רכש
+            </Button>
+          </form>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>דרישה</TableHead>
+                <TableHead>ספק</TableHead>
+                <TableHead>אומדן</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {requisitions.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={4}
+                  description="טרם נוצרו דרישות רכש."
+                  icon={ClipboardList}
+                  title="אין דרישות"
+                />
+              ) : (
+                requisitions.map((requisition) => (
+                  <TableRow key={requisition.id}>
+                    <TableCell className="text-sm">
+                      <div className="font-medium">
+                        {requisition.requisitionNumber}
+                      </div>
+                      <Badge
+                        className="mt-1"
+                        variant={
+                          requisitionStatusVariant[requisition.status] ??
+                          "outline"
+                        }
+                      >
+                        {requisitionStatusLabel[requisition.status] ??
+                          requisition.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {requisition.vendorName ?? "—"}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {formatPrice(requisition.estimatedTotal)}
+                    </TableCell>
+                    <TableCell>
+                      {requisition.status === "DRAFT" ? (
+                        <form action={submitPurchaseRequisitionAction}>
+                          <input
+                            name="requisitionId"
+                            type="hidden"
+                            value={requisition.id}
+                          />
+                          <Button size="sm" type="submit" variant="outline">
+                            הגש
+                          </Button>
+                        </form>
+                      ) : requisition.status === "PENDING_APPROVAL" ? (
+                        <div className="flex gap-1">
+                          <form action={approvePurchaseRequisitionAction}>
+                            <input
+                              name="requisitionId"
+                              type="hidden"
+                              value={requisition.id}
+                            />
+                            <Button size="sm" type="submit" variant="outline">
+                              אשר
+                            </Button>
+                          </form>
+                          <form action={rejectPurchaseRequisitionAction}>
+                            <input
+                              name="requisitionId"
+                              type="hidden"
+                              value={requisition.id}
+                            />
+                            <Button size="sm" type="submit" variant="ghost">
+                              דחה
+                            </Button>
+                          </form>
+                        </div>
+                      ) : requisition.status === "APPROVED" ? (
+                        <form action={convertRequisitionToPoAction}>
+                          <input
+                            name="requisitionId"
+                            type="hidden"
+                            value={requisition.id}
+                          />
+                          <Button size="sm" type="submit" variant="outline">
+                            המר להזמנה
+                          </Button>
+                        </form>
+                      ) : null}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
 

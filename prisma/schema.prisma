@@ -2862,10 +2862,52 @@ model Vendor {
   invoices       VendorInvoice[]
   payments       VendorPayment[]
   portalTokens   VendorPortalToken[]
+  requisitions   PurchaseRequisition[]
   createdAt      DateTime              @default(now())
   updatedAt      DateTime              @updatedAt
 
   @@index([status, name])
+}
+
+/// A purchase requisition awaiting approval before it becomes a PO (P2P-001).
+/// Requisitions at or above an approval threshold need explicit sign-off; below
+/// it they auto-approve. An approved requisition converts into a PurchaseOrder.
+model PurchaseRequisition {
+  id               String                    @id @default(cuid())
+  requisitionNumber String                   @unique
+  vendorId         String?
+  /// DRAFT | PENDING_APPROVAL | APPROVED | REJECTED | CONVERTED
+  status           String                    @default("DRAFT")
+  category         String?
+  notes            String?
+  estimatedTotal   Decimal                   @default(0) @db.Decimal(12, 2)
+  requestedById    String?
+  approvedById     String?
+  approvedAt       DateTime?
+  rejectedReason   String?
+  purchaseOrderId  String?
+  vendor           Vendor?                   @relation(fields: [vendorId], references: [id], onDelete: SetNull)
+  lines            PurchaseRequisitionLine[]
+  createdAt        DateTime                  @default(now())
+  updatedAt        DateTime                  @updatedAt
+
+  @@index([status])
+  @@index([vendorId])
+}
+
+model PurchaseRequisitionLine {
+  id             String              @id @default(cuid())
+  requisitionId  String
+  description    String
+  sku            String?
+  quantity       Int
+  unitCost       Decimal             @db.Decimal(12, 2)
+  totalCost      Decimal             @db.Decimal(12, 2)
+  requisition    PurchaseRequisition @relation(fields: [requisitionId], references: [id], onDelete: Cascade)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  @@index([requisitionId])
 }
 
 /// A revocable magic-link token granting a vendor read-only portal access (POR-002).

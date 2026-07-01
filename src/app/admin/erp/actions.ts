@@ -28,6 +28,14 @@ import {
   createWorkOrder,
 } from "~/server/services/manufacturing";
 import {
+  approvePurchaseRequisition,
+  convertRequisitionToPo,
+  createPurchaseRequisition,
+  parseRequisitionLines,
+  rejectPurchaseRequisition,
+  submitPurchaseRequisition,
+} from "~/server/services/purchase-requisition";
+import {
   createCarrier,
   createShippingRate,
 } from "~/server/services/shipping-rates";
@@ -304,6 +312,68 @@ export async function createShippingRateAction(formData: FormData) {
     price: Number(formData.get("price") ?? 0) || 0,
   });
 
+  revalidatePath("/admin/erp");
+}
+
+export async function createPurchaseRequisitionAction(formData: FormData) {
+  const admin = await requireAdmin("ERP_WRITE");
+
+  const lines = parseRequisitionLines(stringValue(formData.get("lines")));
+  if (lines.length === 0) {
+    throw new Error("יש להזין לפחות שורה אחת (תיאור | כמות | עלות).");
+  }
+
+  await createPurchaseRequisition({
+    vendorId: optionalString(formData.get("vendorId")),
+    category: optionalString(formData.get("category")),
+    notes: optionalString(formData.get("notes")),
+    lines,
+    requestedById: admin.id,
+  });
+
+  revalidatePath("/admin/erp");
+}
+
+export async function submitPurchaseRequisitionAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const requisitionId = stringValue(formData.get("requisitionId"));
+  if (!requisitionId) throw new Error("חסר מזהה דרישה.");
+
+  await submitPurchaseRequisition({ requisitionId });
+  revalidatePath("/admin/erp");
+}
+
+export async function approvePurchaseRequisitionAction(formData: FormData) {
+  const admin = await requireAdmin("ERP_WRITE");
+
+  const requisitionId = stringValue(formData.get("requisitionId"));
+  if (!requisitionId) throw new Error("חסר מזהה דרישה.");
+
+  await approvePurchaseRequisition({ requisitionId, approvedById: admin.id });
+  revalidatePath("/admin/erp");
+}
+
+export async function rejectPurchaseRequisitionAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const requisitionId = stringValue(formData.get("requisitionId"));
+  if (!requisitionId) throw new Error("חסר מזהה דרישה.");
+
+  await rejectPurchaseRequisition({
+    requisitionId,
+    reason: optionalString(formData.get("reason")),
+  });
+  revalidatePath("/admin/erp");
+}
+
+export async function convertRequisitionToPoAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const requisitionId = stringValue(formData.get("requisitionId"));
+  if (!requisitionId) throw new Error("חסר מזהה דרישה.");
+
+  await convertRequisitionToPo({ requisitionId });
   revalidatePath("/admin/erp");
 }
 
