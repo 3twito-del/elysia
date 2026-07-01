@@ -1,4 +1,4 @@
-import { Activity, TrendingDown, TrendingUp } from "lucide-react";
+import { Activity, LineChart, TrendingDown, TrendingUp } from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
 import {
@@ -20,6 +20,7 @@ import {
 import { TableEmptyRow } from "~/components/ui/table-empty-row";
 import { formatPrice } from "~/lib/format";
 import { getRevenueAnomalies } from "~/server/services/anomaly-detection";
+import { getRevenueForecast } from "~/server/services/forecasting";
 
 export const metadata = { title: "אנומליות | Admin" };
 
@@ -31,6 +32,10 @@ export default async function AdminAnomaliesPage() {
 
   const data = await getRevenueAnomalies({ days: 30 }).catch(() => null);
   if (!data) return <AdminDatabaseFallback />;
+
+  const forecast = await getRevenueForecast({ days: 30, horizon: 7 }).catch(
+    () => null,
+  );
 
   return (
     <AdminShell
@@ -87,6 +92,69 @@ export default async function AdminAnomaliesPage() {
           </Table>
         </CardContent>
       </Card>
+
+      {forecast ? (
+        <Card className="mt-6 rounded-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <LineChart aria-hidden="true" className="size-5" />
+              תחזית הכנסה (7 ימים)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            <div className="grid gap-3 sm:grid-cols-3">
+              <MetricCard
+                detail="סכום 7 ימי התחזית"
+                icon={LineChart}
+                label="תחזית מצטברת"
+                value={formatPrice(forecast.projectedTotal)}
+              />
+              <MetricCard
+                detail="ממוצע נע (7 ימים)"
+                icon={Activity}
+                label="בסיס"
+                value={formatPrice(forecast.baseline)}
+              />
+              <MetricCard
+                detail="שינוי יומי ממוצע (מגמה)"
+                icon={forecast.trendSlope >= 0 ? TrendingUp : TrendingDown}
+                label="מגמה"
+                value={`${forecast.trendSlope >= 0 ? "+" : ""}${formatPrice(forecast.trendSlope)}`}
+              />
+            </div>
+
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>תאריך</TableHead>
+                  <TableHead>הכנסה חזויה</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {forecast.forecast.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={2}
+                    description="אין מספיק נתונים לתחזית."
+                    icon={LineChart}
+                    title="אין תחזית"
+                  />
+                ) : (
+                  forecast.forecast.map((point) => (
+                    <TableRow key={point.label}>
+                      <TableCell className="text-sm" dir="ltr">
+                        {point.label}
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {formatPrice(point.value)}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      ) : null}
     </AdminShell>
   );
 }
