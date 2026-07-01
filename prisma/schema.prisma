@@ -1424,6 +1424,36 @@ model EdiDocument {
   @@index([docType, createdAt])
 }
 
+/// A no-code landing page composed of ordered content blocks (CMS-001).
+model LandingPage {
+  id        String      @id @default(cuid())
+  slug      String      @unique
+  title     String
+  /// DRAFT | PUBLISHED
+  status    String      @default("DRAFT")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  blocks    PageBlock[]
+
+  @@index([status])
+}
+
+/// One content block within a landing page (CMS-001).
+model PageBlock {
+  id        String      @id @default(cuid())
+  pageId    String
+  /// HERO | TEXT | IMAGE | CTA
+  type      String      @default("TEXT")
+  heading   String?
+  body      String?
+  imageUrl  String?
+  linkUrl   String?
+  sortOrder Int         @default(0)
+  page      LandingPage @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@index([pageId, sortOrder])
+}
+
 /// A merchandising banner shown in a storefront placement (CMS-003).
 model Banner {
   id        String    @id @default(cuid())

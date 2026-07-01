@@ -21,6 +21,7 @@ import {
   History,
   KeyRound,
   Landmark,
+  LayoutTemplate,
   LogOut,
   Megaphone,
   Newspaper,
@@ -80,6 +81,7 @@ export type AdminSection =
   | "operations"
   | "orders"
   | "overview"
+  | "pages"
   | "performance"
   | "pos"
   | "price-lists"
@@ -113,6 +115,7 @@ const navItems: Array<{
   { href: "/admin/tax", icon: Percent, id: "tax", label: "מיסוי" },
   { href: "/admin", icon: Gauge, id: "overview", label: "סקירה" },
   { href: "/admin/blog", icon: Newspaper, id: "blog", label: "מגזין" },
+  { href: "/admin/pages", icon: LayoutTemplate, id: "pages", label: "עמודים" },
   { href: "/admin/marketing", icon: Megaphone, id: "marketing", label: "שיווק" },
   { href: "/admin/orders", icon: ClipboardList, id: "orders", label: "הזמנות" },
   { href: "/admin/catalog", icon: PackageCheck, id: "catalog", label: "קטלוג" },

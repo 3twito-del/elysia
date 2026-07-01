@@ -98,6 +98,7 @@ const protectedAdminRoutes = [
   "/admin/insights/replay/[sessionId]",
   "/admin/crm",
   "/admin/blog",
+  "/admin/pages",
   "/admin/orders",
   "/admin/catalog",
   "/admin/promotions",
@@ -269,6 +270,15 @@ export function getQaRouteInventory({
       path: "/vendor-portal/invalid-token",
       source: "token-gated-portal",
       template: "/vendor-portal/[token]",
+    }),
+  );
+
+  entries.push(
+    routeEntry({
+      kind: "public",
+      path: "/p/sample-landing",
+      source: "cms-landing-page",
+      template: "/p/[slug]",
     }),
   );
 
