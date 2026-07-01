@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { build810, build850, ediSegment, x12Date } from "./edi";
+import { build810, build850, build856, ediSegment, x12Date } from "./edi";
 
 describe("ediSegment + x12Date", () => {
   it("joins elements with * and ends with ~", () => {
@@ -56,5 +56,42 @@ describe("build810", () => {
     expect(doc).toContain("BIG*20260307*INV-9~");
     expect(doc).toContain("TDS*35000~");
     expect(doc).toContain("CTT*1~");
+  });
+});
+
+describe("build856", () => {
+  const doc = build856({
+    shipmentId: "SHP-77",
+    shipDate: new Date("2026-03-07T08:30:00Z"),
+    orderNumber: "ORD-500",
+    shipToName: "Buyer Co",
+    carrier: "UPS",
+    tracking: "1Z-ABC",
+    senderId: "ELYSIA",
+    receiverId: "ORD-500",
+    controlNumber: 3,
+    lines: [
+      { sku: "SKU-1", quantity: 3 },
+      { sku: "SKU-2", quantity: 1 },
+    ],
+  });
+
+  it("builds the S→O→I HL hierarchy with BSN and PRF", () => {
+    expect(doc).toContain("ST*856*0001~");
+    expect(doc).toContain("BSN*00*SHP-77*20260307*0830~");
+    expect(doc).toContain("HL*1**S~");
+    expect(doc).toContain("HL*2*1*O~");
+    expect(doc).toContain("PRF*ORD-500~");
+    expect(doc).toContain("REF*CN*1Z-ABC~");
+    expect((doc.match(/SN1\*/g) ?? []).length).toBe(2);
+  });
+
+  it("counts HL segments in CTT and closes the envelope", () => {
+    // shipment(1) + order(1) + 2 items = 4 HL loops
+    expect(doc).toContain("CTT*4~");
+    // ST + BSN + HL/S + TD1 + TD5 + REF + DTM + N1 + HL/O + PRF
+    //   + 2×(HL/I + LIN + SN1) + CTT + SE = 18
+    expect(doc).toContain("SE*18*0001~");
+    expect(doc.trimEnd().endsWith("IEA*1*000000003~")).toBe(true);
   });
 });

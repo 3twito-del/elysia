@@ -145,6 +145,68 @@ export function build810(input: Edi810Input): string {
   });
 }
 
+export type Edi856Input = {
+  shipmentId: string;
+  shipDate: Date;
+  orderNumber: string;
+  shipToName: string;
+  carrier?: string;
+  tracking?: string;
+  senderId: string;
+  receiverId: string;
+  controlNumber: number;
+  lines: Array<{ sku: string; quantity: number }>;
+};
+
+/**
+ * Builds a complete X12 856 (Advance Ship Notice) with the standard
+ * Shipment→Order→Item HL hierarchy. Pure.
+ */
+export function build856(input: Edi856Input): string {
+  const setControl = padNum(1, 4);
+  const body: string[] = [
+    ediSegment(
+      "BSN",
+      "00",
+      input.shipmentId,
+      x12Date(input.shipDate),
+      x12Time(input.shipDate),
+    ),
+    // Shipment level
+    ediSegment("HL", 1, "", "S"),
+    ediSegment("TD1", "CTN", input.lines.length),
+    ediSegment("TD5", "", "", input.carrier ?? "", ""),
+    ediSegment("REF", "CN", input.tracking ?? ""),
+    ediSegment("DTM", "011", x12Date(input.shipDate)),
+    ediSegment("N1", "ST", input.shipToName),
+    // Order level
+    ediSegment("HL", 2, 1, "O"),
+    ediSegment("PRF", input.orderNumber),
+  ];
+
+  let hlCounter = 2;
+  for (const line of input.lines) {
+    hlCounter += 1;
+    body.push(
+      ediSegment("HL", hlCounter, 2, "I"),
+      ediSegment("LIN", "", "SK", line.sku || `LINE${hlCounter}`),
+      ediSegment("SN1", "", line.quantity, "EA"),
+    );
+  }
+
+  body.push(ediSegment("CTT", hlCounter));
+
+  const st = ediSegment("ST", "856", setControl);
+  const se = ediSegment("SE", body.length + 2, setControl);
+  return wrapEnvelope([st, ...body, se], {
+    senderId: input.senderId,
+    receiverId: input.receiverId,
+    controlNumber: input.controlNumber,
+    functionalCode: "SH",
+    date: input.shipDate,
+  });
+}
+
 // ---- persistence ----
 
 function partnerSender() {
@@ -192,6 +254,77 @@ export async function generateEdi850ForPo(purchaseOrderId: string) {
       payload,
     },
   });
+}
+
+/** Generates + stores an 856 (ASN) from a shipment. */
+export async function generateEdi856ForShipment(shipmentId: string) {
+  const shipment = await db.shipment.findUnique({
+    where: { id: shipmentId },
+    select: {
+      id: true,
+      provider: true,
+      tracking: true,
+      shippedAt: true,
+      order: {
+        select: {
+          orderNumber: true,
+          recipientName: true,
+          createdAt: true,
+          items: { select: { sku: true, quantity: true } },
+        },
+      },
+    },
+  });
+  if (!shipment) throw new Error("משלוח לא נמצא.");
+
+  const payload = build856({
+    shipmentId: shipment.id,
+    shipDate: shipment.shippedAt ?? shipment.order.createdAt,
+    orderNumber: shipment.order.orderNumber,
+    shipToName: shipment.order.recipientName,
+    carrier: shipment.provider ?? undefined,
+    tracking: shipment.tracking ?? undefined,
+    senderId: partnerSender(),
+    receiverId: shipment.order.orderNumber,
+    controlNumber: await nextControlNumber(),
+    lines: shipment.order.items.map((item) => ({
+      sku: item.sku,
+      quantity: item.quantity,
+    })),
+  });
+
+  return db.ediDocument.create({
+    data: {
+      docType: "856",
+      direction: "OUTBOUND",
+      partner: shipment.order.recipientName,
+      reference: shipment.order.orderNumber,
+      payload,
+    },
+  });
+}
+
+/** Recent shipments eligible for an ASN (856). */
+export async function listShipmentsForEdi(limit = 20) {
+  const shipments = await db.shipment.findMany({
+    orderBy: { shippedAt: "desc" },
+    take: limit,
+    select: {
+      id: true,
+      status: true,
+      tracking: true,
+      provider: true,
+      order: { select: { orderNumber: true, recipientName: true } },
+    },
+  });
+  return shipments.map((shipment) => ({
+    id: shipment.id,
+    status: shipment.status,
+    tracking: shipment.tracking,
+    provider: shipment.provider,
+    orderNumber: shipment.order.orderNumber,
+    recipientName: shipment.order.recipientName,
+  }));
 }
 
 export async function listPurchaseOrdersForEdi(limit = 20) {

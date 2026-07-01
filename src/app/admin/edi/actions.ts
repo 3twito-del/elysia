@@ -9,7 +9,10 @@ import {
   getAdminFromSession,
   hasAdminPermission,
 } from "~/server/auth/admin-access";
-import { generateEdi850ForPo } from "~/server/services/edi";
+import {
+  generateEdi850ForPo,
+  generateEdi856ForShipment,
+} from "~/server/services/edi";
 
 export async function generateEdi850Action(formData: FormData) {
   await requireAdmin("SYSTEM_CONFIG");
@@ -18,6 +21,17 @@ export async function generateEdi850Action(formData: FormData) {
   if (!purchaseOrderId) throw new Error("חסר מזהה הזמנת רכש.");
 
   await generateEdi850ForPo(purchaseOrderId);
+
+  revalidatePath("/admin/edi");
+}
+
+export async function generateEdi856Action(formData: FormData) {
+  await requireAdmin("SYSTEM_CONFIG");
+
+  const shipmentId = stringValue(formData.get("shipmentId"));
+  if (!shipmentId) throw new Error("חסר מזהה משלוח.");
+
+  await generateEdi856ForShipment(shipmentId);
 
   revalidatePath("/admin/edi");
 }

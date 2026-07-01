@@ -1,4 +1,4 @@
-import { Cable, FileCode2, FileDown } from "lucide-react";
+import { Cable, FileCode2, FileDown, Truck } from "lucide-react";
 import Link from "next/link";
 
 import { AdminShell } from "../_components/admin-shell";
@@ -7,7 +7,7 @@ import {
   AdminForbidden,
 } from "../_components/admin-states";
 import { getAdminPageAccess } from "../_lib/access";
-import { generateEdi850Action } from "./actions";
+import { generateEdi850Action, generateEdi856Action } from "./actions";
 import { MetricCard } from "~/components/metric-card";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -26,6 +26,7 @@ import {
   getEdiSummary,
   listEdiDocuments,
   listPurchaseOrdersForEdi,
+  listShipmentsForEdi,
 } from "~/server/services/edi";
 
 export const metadata = {
@@ -43,8 +44,9 @@ export default async function AdminEdiPage() {
 
   if (!summary) return <AdminDatabaseFallback />;
 
-  const [purchaseOrders, documents] = await Promise.all([
+  const [purchaseOrders, shipments, documents] = await Promise.all([
     listPurchaseOrdersForEdi().catch(() => []),
+    listShipmentsForEdi().catch(() => []),
     listEdiDocuments().catch(() => []),
   ]);
 
@@ -52,7 +54,7 @@ export default async function AdminEdiPage() {
     <AdminShell
       active="edi"
       admin={access.admin}
-      description="EDI (X12): הפקת מסמכי 850 (הזמנת רכש) ו-810 (חשבונית) לשותפי סחר. מבנה 004010 — לאמת מול השותף."
+      description="EDI (X12): הפקת מסמכי 850 (הזמנת רכש), 810 (חשבונית) ו-856 (הודעת משלוח מקדימה) לשותפי סחר. מבנה 004010 — לאמת מול השותף."
       title="EDI"
     >
       <div className="grid gap-5 md:grid-cols-2">
@@ -106,6 +108,59 @@ export default async function AdminEdiPage() {
                         <input name="purchaseOrderId" type="hidden" value={po.id} />
                         <Button size="sm" type="submit" variant="outline">
                           הפק 850
+                        </Button>
+                      </form>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Truck aria-hidden="true" className="size-5" />
+            משלוחים → 856 (ASN)
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>הזמנה</TableHead>
+                <TableHead>נמען</TableHead>
+                <TableHead>מעקב</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {shipments.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={4}
+                  description="אין משלוחים."
+                  icon={Truck}
+                  title="אין משלוחים"
+                />
+              ) : (
+                shipments.map((shipment) => (
+                  <TableRow key={shipment.id}>
+                    <TableCell className="text-sm">
+                      {shipment.orderNumber}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {shipment.recipientName}
+                    </TableCell>
+                    <TableCell className="text-xs">
+                      {shipment.tracking ?? "—"}
+                    </TableCell>
+                    <TableCell>
+                      <form action={generateEdi856Action}>
+                        <input name="shipmentId" type="hidden" value={shipment.id} />
+                        <Button size="sm" type="submit" variant="outline">
+                          הפק 856
                         </Button>
                       </form>
                     </TableCell>
