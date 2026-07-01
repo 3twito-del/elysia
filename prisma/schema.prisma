@@ -1407,6 +1407,25 @@ model BinAssignment {
   @@index([variantId])
 }
 
+/// A tracked inventory lot/batch with optional expiry, for FEFO allocation
+/// (INV-008). A parallel tracking layer over InventoryItem — quantities here
+/// record lot-level detail (which batch, expiring when).
+model InventoryLot {
+  id         String    @id @default(cuid())
+  variantId  String
+  branchId   String
+  lotNumber  String
+  quantity   Int       @default(0)
+  expiryDate DateTime? @db.Date
+  receivedAt DateTime  @default(now())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@unique([branchId, variantId, lotNumber])
+  @@index([variantId, branchId])
+  @@index([expiryDate])
+}
+
 /// A consolidated warehouse pick list generated from orders being prepared
 /// (INV-007), with lines ordered by bin code for an efficient pick path.
 model PickList {

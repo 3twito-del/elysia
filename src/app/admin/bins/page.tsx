@@ -1,4 +1,10 @@
-import { ClipboardCheck, Grid3x3, MapPin, PackageOpen } from "lucide-react";
+import {
+  CalendarX2,
+  ClipboardCheck,
+  Grid3x3,
+  MapPin,
+  PackageOpen,
+} from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
 import {
@@ -10,7 +16,9 @@ import {
   assignToBinAction,
   cancelPickListAction,
   completePickListAction,
+  consumeLotsAction,
   createBinAction,
+  createInventoryLotAction,
   generatePickListAction,
   togglePickLineAction,
   toggleBinAction,
@@ -36,6 +44,10 @@ import {
 } from "~/server/services/bins";
 import { listBranchesForSelect } from "~/server/services/stock-transfer";
 import { getPickListSummary, listPickLists } from "~/server/services/pick-list";
+import {
+  getLotSummary,
+  listInventoryLots,
+} from "~/server/services/lot-tracking";
 
 export const metadata = {
   title: "מיקומי מלאי | Admin",
@@ -52,13 +64,15 @@ export default async function AdminBinsPage() {
 
   if (!summary) return <AdminDatabaseFallback />;
 
-  const [branches, bins, assignments, pickLists, pickSummary] =
+  const [branches, bins, assignments, pickLists, pickSummary, lots, lotSummary] =
     await Promise.all([
       listBranchesForSelect().catch(() => []),
       listBins().catch(() => []),
       listBinAssignments().catch(() => []),
       listPickLists().catch(() => []),
       getPickListSummary().catch(() => ({ open: 0, picked: 0 })),
+      listInventoryLots().catch(() => []),
+      getLotSummary().catch(() => ({ total: 0, expiring: 0, expired: 0 })),
     ]);
 
   const activeBins = bins.filter((bin) => bin.isActive);
@@ -66,6 +80,15 @@ export default async function AdminBinsPage() {
     OPEN: "פתוחה",
     PICKED: "לוקטה",
     CANCELLED: "בוטלה",
+  };
+  const lotStatusMeta: Record<
+    string,
+    { label: string; variant: "secondary" | "outline" | "destructive" }
+  > = {
+    OK: { label: "תקין", variant: "secondary" },
+    EXPIRING: { label: "פג בקרוב", variant: "outline" },
+    EXPIRED: { label: "פג תוקף", variant: "destructive" },
+    NONE: { label: "ללא תפוגה", variant: "outline" },
   };
 
   return (
@@ -396,6 +419,140 @@ export default async function AdminBinsPage() {
               ))}
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CalendarX2 aria-hidden="true" className="size-5" />
+            מעקב אצוות ותפוגה (Lot / FEFO)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.6fr]">
+          <div className="grid gap-3">
+            <p className="text-muted-foreground text-sm">
+              מעקב אצוות עם תאריך תפוגה. משיכה מקצה First-Expired-First-Out.{" "}
+              {lotSummary.total} אצוות · {lotSummary.expiring} פגות בקרוב ·{" "}
+              {lotSummary.expired} פגות תוקף.
+            </p>
+            <form action={createInventoryLotAction} className="grid gap-2">
+              <select
+                aria-label="סניף לאצווה"
+                autoComplete="off"
+                className="glass-control h-10 rounded-md border px-3 text-sm"
+                defaultValue=""
+                name="branchId"
+                required
+              >
+                <option disabled value="">
+                  בחר סניף…
+                </option>
+                {branches.map((branch) => (
+                  <option key={branch.id} value={branch.id}>
+                    {branch.name}
+                  </option>
+                ))}
+              </select>
+              <div className="grid grid-cols-2 gap-2">
+                <Input dir="ltr" name="sku" placeholder="מק'ט" required />
+                <Input dir="ltr" name="lotNumber" placeholder="מס' אצווה" required />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <Input min="1" name="quantity" placeholder="כמות" type="number" />
+                <Input
+                  aria-label="תאריך תפוגה"
+                  name="expiryDate"
+                  type="date"
+                />
+              </div>
+              <Button className="w-fit" size="sm" type="submit">
+                הוסף אצווה
+              </Button>
+            </form>
+
+            <form
+              action={consumeLotsAction}
+              className="border-border/60 grid gap-2 border-t pt-2"
+            >
+              <p className="text-muted-foreground text-xs font-medium">
+                משיכת FEFO
+              </p>
+              <select
+                aria-label="סניף למשיכה"
+                autoComplete="off"
+                className="glass-control h-9 rounded-md border px-3 text-sm"
+                defaultValue=""
+                name="branchId"
+                required
+              >
+                <option disabled value="">
+                  בחר סניף…
+                </option>
+                {branches.map((branch) => (
+                  <option key={branch.id} value={branch.id}>
+                    {branch.name}
+                  </option>
+                ))}
+              </select>
+              <div className="grid grid-cols-2 gap-2">
+                <Input dir="ltr" name="sku" placeholder="מק'ט" required />
+                <Input min="1" name="quantity" placeholder="כמות" type="number" />
+              </div>
+              <Button size="sm" type="submit" variant="outline">
+                משוך FEFO
+              </Button>
+            </form>
+          </div>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>פריט</TableHead>
+                <TableHead>אצווה</TableHead>
+                <TableHead>כמות</TableHead>
+                <TableHead>תפוגה</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {lots.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={4}
+                  description="טרם נרשמו אצוות."
+                  icon={CalendarX2}
+                  title="אין אצוות"
+                />
+              ) : (
+                lots.map((lot) => (
+                  <TableRow key={lot.id}>
+                    <TableCell className="text-sm">
+                      <div className="font-medium">{lot.productName}</div>
+                      <div className="text-muted-foreground text-xs" dir="ltr">
+                        {lot.sku} · {lot.branchName}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-xs" dir="ltr">
+                      {lot.lotNumber}
+                    </TableCell>
+                    <TableCell className="text-sm">{lot.quantity}</TableCell>
+                    <TableCell className="text-xs">
+                      <div dir="ltr">
+                        {lot.expiryDate
+                          ? lot.expiryDate.toISOString().slice(0, 10)
+                          : "—"}
+                      </div>
+                      <Badge
+                        className="mt-1"
+                        variant={lotStatusMeta[lot.status]?.variant ?? "outline"}
+                      >
+                        {lotStatusMeta[lot.status]?.label ?? lot.status}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </AdminShell>

@@ -20,6 +20,10 @@ import {
   generatePickList,
   setPickLinePicked,
 } from "~/server/services/pick-list";
+import {
+  consumeLotsFefo,
+  createInventoryLot,
+} from "~/server/services/lot-tracking";
 
 export async function createBinAction(formData: FormData) {
   await requireAdmin("INVENTORY_WRITE");
@@ -104,6 +108,44 @@ export async function cancelPickListAction(formData: FormData) {
   if (!pickListId) throw new Error("חסר מזהה רשימת ליקוט.");
 
   await cancelPickList({ pickListId });
+
+  revalidatePath("/admin/bins");
+}
+
+export async function createInventoryLotAction(formData: FormData) {
+  await requireAdmin("INVENTORY_WRITE");
+
+  const branchId = stringValue(formData.get("branchId"));
+  const sku = stringValue(formData.get("sku")).trim();
+  const lotNumber = stringValue(formData.get("lotNumber")).trim();
+  if (!branchId || !sku || !lotNumber) {
+    throw new Error('יש לבחור סניף ולהזין מק"ט ומספר אצווה.');
+  }
+
+  const expiryRaw = optionalString(formData.get("expiryDate"));
+  await createInventoryLot({
+    branchId,
+    sku,
+    lotNumber,
+    quantity: Number(stringValue(formData.get("quantity"))) || 0,
+    expiryDate: expiryRaw ? new Date(expiryRaw) : undefined,
+  });
+
+  revalidatePath("/admin/bins");
+}
+
+export async function consumeLotsAction(formData: FormData) {
+  await requireAdmin("INVENTORY_WRITE");
+
+  const branchId = stringValue(formData.get("branchId"));
+  const sku = stringValue(formData.get("sku")).trim();
+  if (!branchId || !sku) throw new Error('יש לבחור סניף ולהזין מק"ט.');
+
+  await consumeLotsFefo({
+    branchId,
+    sku,
+    quantity: Number(stringValue(formData.get("quantity"))) || 0,
+  });
 
   revalidatePath("/admin/bins");
 }
