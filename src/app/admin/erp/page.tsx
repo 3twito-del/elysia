@@ -8,6 +8,7 @@ import {
   PackageCheck,
   ReceiptText,
   Search,
+  ShieldCheck,
   Truck,
   Workflow,
 } from "lucide-react";
@@ -34,6 +35,7 @@ import {
   createStockTransferAction,
   createVendorInvoiceAction,
   createWorkOrderAction,
+  createQualityInspectionAction,
   approvePurchaseRequisitionAction,
   applyLandedCostAction,
   convertRequisitionToPoAction,
@@ -72,6 +74,10 @@ import { getAvailabilityBySku } from "~/server/services/availability";
 import { listInventoryCounts } from "~/server/services/cycle-count";
 import { listBoms, listWorkOrders } from "~/server/services/manufacturing";
 import { runMrp } from "~/server/services/mrp";
+import {
+  getQualitySummary,
+  listQualityInspections,
+} from "~/server/services/quality";
 import {
   listCarriers,
   listShippingRates,
@@ -228,6 +234,11 @@ export default async function AdminErpPage({
   const [landedCosts, landedCostPos] = await Promise.all([
     listLandedCosts().catch(() => []),
     listReceivedPurchaseOrdersForLandedCost().catch(() => []),
+  ]);
+
+  const [qualityInspections, qualitySummary] = await Promise.all([
+    listQualityInspections().catch(() => []),
+    getQualitySummary().catch(() => ({ total: 0, passed: 0, failed: 0 })),
   ]);
 
   const resolvedSearchParams = await searchParams;
@@ -496,6 +507,95 @@ export default async function AdminErpPage({
               </Table>
             </div>
           ) : null}
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ShieldCheck aria-hidden="true" className="size-5" />
+            בקרת איכות (QM)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
+          <form action={createQualityInspectionAction} className="grid gap-2">
+            <p className="text-muted-foreground text-sm">
+              בדיקת מדגם: התוצאה (עבר/נכשל) נגזרת משיעור הפגמים מול סף האיכות
+              (AQL). {qualitySummary.passed} עברו · {qualitySummary.failed}{" "}
+              נכשלו.
+            </p>
+            <Input name="reference" placeholder="אסמכתא (PO/WO/אצווה)" required />
+            <Input dir="ltr" name="sku" placeholder="מק'ט (רשות)" />
+            <div className="grid grid-cols-3 gap-2">
+              <Input min="1" name="sampleSize" placeholder="מדגם" type="number" />
+              <Input
+                min="0"
+                name="defectsFound"
+                placeholder="פגמים"
+                type="number"
+              />
+              <Input
+                defaultValue="1"
+                min="0"
+                name="aqlPercent"
+                placeholder="AQL %"
+                step="0.1"
+                type="number"
+              />
+            </div>
+            <Button className="w-fit" size="sm" type="submit">
+              רשום בדיקה
+            </Button>
+          </form>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>אסמכתא</TableHead>
+                <TableHead>מדגם/פגמים</TableHead>
+                <TableHead>שיעור</TableHead>
+                <TableHead>תוצאה</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {qualityInspections.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={4}
+                  description="טרם נרשמו בדיקות איכות."
+                  icon={ShieldCheck}
+                  title="אין בדיקות"
+                />
+              ) : (
+                qualityInspections.map((inspection) => (
+                  <TableRow key={inspection.id}>
+                    <TableCell className="text-sm">
+                      <div>{inspection.reference}</div>
+                      {inspection.sku ? (
+                        <div className="text-muted-foreground font-mono text-xs">
+                          {inspection.sku}
+                        </div>
+                      ) : null}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {inspection.sampleSize} / {inspection.defectsFound}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {inspection.defectRate}% (AQL {inspection.aqlPercent}%)
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          inspection.result === "PASS" ? "secondary" : "destructive"
+                        }
+                      >
+                        {inspection.result === "PASS" ? "עבר" : "נכשל"}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
 

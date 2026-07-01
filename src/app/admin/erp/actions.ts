@@ -31,6 +31,7 @@ import {
   applyLandedCost,
   createLandedCost,
 } from "~/server/services/landed-cost";
+import { createQualityInspection } from "~/server/services/quality";
 import {
   approvePurchaseRequisition,
   convertRequisitionToPo,
@@ -379,6 +380,21 @@ export async function convertRequisitionToPoAction(formData: FormData) {
   if (!requisitionId) throw new Error("חסר מזהה דרישה.");
 
   await convertRequisitionToPo({ requisitionId });
+  revalidatePath("/admin/erp");
+}
+
+export async function createQualityInspectionAction(formData: FormData) {
+  const admin = await requireAdmin("ERP_WRITE");
+
+  await createQualityInspection({
+    reference: stringValue(formData.get("reference")),
+    sku: optionalString(formData.get("sku")),
+    sampleSize: Number(stringValue(formData.get("sampleSize"))) || 0,
+    defectsFound: Number(stringValue(formData.get("defectsFound"))) || 0,
+    aqlPercent: Number(stringValue(formData.get("aqlPercent"))) || 1,
+    inspectorId: admin.id,
+  });
+
   revalidatePath("/admin/erp");
 }
 

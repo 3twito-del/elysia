@@ -839,6 +839,25 @@ model BomComponent {
 /// A production order: completing it consumes components and yields finished
 /// units (both as immutable InventoryLedger moves), and writes a finished cost
 /// layer equal to the consumed component cost.
+/// A quality inspection of an incoming/produced batch (MFG-004). The result is
+/// derived from the defect rate versus the acceptable quality limit (AQL).
+model QualityInspection {
+  id           String   @id @default(cuid())
+  reference    String
+  sku          String?
+  sampleSize   Int
+  defectsFound Int      @default(0)
+  /// acceptable defect rate %, above which the batch fails
+  aqlPercent   Decimal  @default(1) @db.Decimal(5, 2)
+  /// PASS | FAIL
+  result       String
+  inspectorId  String?
+  notes        String?
+  createdAt    DateTime @default(now())
+
+  @@index([result, createdAt])
+}
+
 model WorkOrder {
   id              String          @id @default(cuid())
   workOrderNumber String          @unique
