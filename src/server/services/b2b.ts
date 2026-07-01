@@ -1,4 +1,5 @@
 import { db } from "~/server/db";
+import { isValidCompanyId } from "~/server/services/israeli-validators";
 
 /**
  * B2B trade accounts (POR-003): a customer gets a negotiated discount, a credit
@@ -54,6 +55,11 @@ export async function createB2bAccount(input: {
 }) {
   const email = input.customerEmail.trim().toLowerCase();
   if (!email) throw new Error('יש להזין דוא"ל לקוח.');
+
+  const taxId = input.taxId?.trim();
+  if (taxId && !isValidCompanyId(taxId)) {
+    throw new Error("מספר ח.פ/ע.מ אינו תקין (ספרת ביקורת).");
+  }
 
   const customer = await db.customer.findFirst({
     where: { email },

@@ -16,6 +16,7 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { formatHebrewDateTime } from "~/lib/format";
+import { toDisplayString } from "~/lib/stringify";
 import { formatMeasure } from "~/server/services/report-engine";
 import { runReport } from "~/server/services/reports";
 
@@ -76,7 +77,7 @@ export default async function ReportPrintPage({ params }: ReportPrintPageProps) 
             <TableRow key={index}>
               {run.result.dimensions.map((dimension) => (
                 <TableCell className="text-sm" key={dimension.key}>
-                  {String(row.dimensions[dimension.key] ?? "")}
+                  {toDisplayString(row.dimensions[dimension.key] ?? "")}
                 </TableCell>
               ))}
               {run.result.measures.map((measure) => (
