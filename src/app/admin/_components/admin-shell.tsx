@@ -13,6 +13,7 @@ import {
   ClipboardList,
   ContactRound,
   FolderKanban,
+  GalleryHorizontalEnd,
   Gauge,
   Headset,
   History,
@@ -68,6 +69,7 @@ export type AdminSection =
   | "integrations"
   | "inventory"
   | "marketing"
+  | "merchandising"
   | "notifications"
   | "operations"
   | "orders"
@@ -107,6 +109,12 @@ const navItems: Array<{
   { href: "/admin/orders", icon: ClipboardList, id: "orders", label: "הזמנות" },
   { href: "/admin/catalog", icon: PackageCheck, id: "catalog", label: "קטלוג" },
   { href: "/admin/promotions", icon: BadgePercent, id: "promotions", label: "מבצעים" },
+  {
+    href: "/admin/merchandising",
+    icon: GalleryHorizontalEnd,
+    id: "merchandising",
+    label: "מרצ'נדייזינג",
+  },
   { href: "/admin/inventory", icon: Boxes, id: "inventory", label: "מלאי" },
   { href: "/admin/reorder", icon: PackageSearch, id: "reorder", label: "חידוש מלאי" },
   { href: "/admin/customers", icon: Users, id: "customers", label: "לקוחות" },

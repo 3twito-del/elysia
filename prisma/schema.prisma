@@ -1345,6 +1345,24 @@ model SlaPolicy {
   @@index([entityType, isActive])
 }
 
+/// A merchandising banner shown in a storefront placement (CMS-003).
+model Banner {
+  id        String    @id @default(cuid())
+  title     String
+  /// HOME_HERO | HOME_STRIP | CATEGORY_TOP | CHECKOUT
+  placement String    @default("HOME_HERO")
+  imageUrl  String?
+  linkUrl   String?
+  priority  Int       @default(100)
+  isActive  Boolean   @default(true)
+  startsAt  DateTime?
+  endsAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([placement, isActive])
+}
+
 /// An automatic cart-level promotion evaluated at checkout (CMS-002).
 model Promotion {
   id           String    @id @default(cuid())
