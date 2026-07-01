@@ -1,3 +1,8 @@
+import {
+  availableCredit,
+  creditStatus,
+  getB2bAccountForCustomer,
+} from "~/server/services/b2b";
 import { db } from "~/server/db";
 
 /**
@@ -81,10 +86,26 @@ export async function getCustomerPortalData(userId: string) {
     allocationNumber: invoice.allocationNumber,
   }));
 
+  const summary = summarizeCustomerInvoices(invoices);
+
+  const b2bAccount = await getB2bAccountForCustomer(customer.id).catch(() => null);
+  const b2b =
+    b2bAccount?.status === "ACTIVE"
+      ? {
+          companyName: b2bAccount.companyName,
+          discountPercent: b2bAccount.discountPercent,
+          creditLimit: b2bAccount.creditLimit,
+          paymentTermsDays: b2bAccount.paymentTermsDays,
+          available: availableCredit(b2bAccount.creditLimit, summary.outstanding),
+          creditStatus: creditStatus(b2bAccount.creditLimit, summary.outstanding),
+        }
+      : null;
+
   return {
     customer,
     invoices,
     documents: documentRows,
-    summary: summarizeCustomerInvoices(invoices),
+    summary,
+    b2b,
   };
 }

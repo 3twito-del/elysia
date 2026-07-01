@@ -1341,6 +1341,23 @@ model SlaPolicy {
   @@index([entityType, isActive])
 }
 
+/// A B2B trade account: negotiated discount, credit limit and terms (POR-003).
+model B2bAccount {
+  id               String   @id @default(cuid())
+  customerId       String   @unique
+  companyName      String?
+  taxId            String?
+  discountPercent  Decimal  @default(0) @db.Decimal(5, 2)
+  creditLimit      Decimal  @default(0) @db.Decimal(14, 2)
+  paymentTermsDays Int      @default(30)
+  /// ACTIVE | SUSPENDED
+  status           String   @default("ACTIVE")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([status])
+}
+
 /// A digital-marketing campaign with budget/spend/revenue for ROAS (DMK, §4.R).
 model MarketingCampaign {
   id        String    @id @default(cuid())

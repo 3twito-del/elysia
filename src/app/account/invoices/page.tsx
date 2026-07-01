@@ -37,7 +37,7 @@ export default async function CustomerInvoicesPage() {
 
   if (!portal) redirect("/account");
 
-  const { invoices, documents, summary } = portal;
+  const { invoices, documents, summary, b2b } = portal;
 
   return (
     <main className="elysia-page">
@@ -80,6 +80,49 @@ export default async function CustomerInvoicesPage() {
             </CardContent>
           </Card>
         </div>
+
+        {b2b ? (
+          <Card className="mb-6 rounded-md">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Landmark aria-hidden="true" className="size-5" />
+                חשבון עסקי (B2B)
+                {b2b.companyName ? ` · ${b2b.companyName}` : ""}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-3 text-sm sm:grid-cols-4">
+              <div className="grid gap-1">
+                <span className="text-muted-foreground">הנחה מסחרית</span>
+                <span className="text-lg font-semibold">{b2b.discountPercent}%</span>
+              </div>
+              <div className="grid gap-1">
+                <span className="text-muted-foreground">מסגרת אשראי</span>
+                <span className="text-lg font-semibold">
+                  {formatPrice(b2b.creditLimit)}
+                </span>
+              </div>
+              <div className="grid gap-1">
+                <span className="text-muted-foreground">אשראי פנוי</span>
+                <span className="text-lg font-semibold">
+                  {formatPrice(b2b.available)}
+                </span>
+              </div>
+              <div className="grid gap-1">
+                <span className="text-muted-foreground">תנאי תשלום</span>
+                <span className="text-lg font-semibold">שוטף+{b2b.paymentTermsDays}</span>
+              </div>
+              {b2b.creditStatus !== "OK" ? (
+                <p className="text-muted-foreground sm:col-span-4">
+                  <Badge variant="outline">
+                    {b2b.creditStatus === "OVER_LIMIT"
+                      ? "חריגה ממסגרת האשראי"
+                      : "קרוב למסגרת האשראי"}
+                  </Badge>
+                </p>
+              ) : null}
+            </CardContent>
+          </Card>
+        ) : null}
 
         <Card className="mb-6 rounded-md">
           <CardHeader>

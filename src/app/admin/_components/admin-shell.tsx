@@ -5,6 +5,7 @@ import {
   Bell,
   BookOpen,
   Bot,
+  Briefcase,
   Boxes,
   Building2,
   CalendarClock,
@@ -51,6 +52,7 @@ export type AdminSection =
   | "ai"
   | "appointments"
   | "audit"
+  | "b2b"
   | "bi"
   | "blog"
   | "catalog"
@@ -102,6 +104,7 @@ const navItems: Array<{
   { href: "/admin/catalog", icon: PackageCheck, id: "catalog", label: "קטלוג" },
   { href: "/admin/inventory", icon: Boxes, id: "inventory", label: "מלאי" },
   { href: "/admin/customers", icon: Users, id: "customers", label: "לקוחות" },
+  { href: "/admin/b2b", icon: Briefcase, id: "b2b", label: "B2B" },
   { href: "/admin/service", icon: Headset, id: "service", label: "שירות" },
   { href: "/admin/pos", icon: Store, id: "pos", label: "קופה" },
   {
