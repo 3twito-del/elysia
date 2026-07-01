@@ -3208,6 +3208,40 @@ model ProductCostSnapshot {
 }
 
 /// Double-entry chart of accounts (FIN-GL-001). One row per ledger account.
+/// A managerial cost/profit center (FIN-CO-001). A CO layer separate from the
+/// financial GL: revenue/expense entries are booked per center for
+/// profitability and budget-variance reporting.
+model CostCenter {
+  id            String      @id @default(cuid())
+  code          String      @unique
+  name          String
+  /// COST | PROFIT
+  kind          String      @default("COST")
+  monthlyBudget Decimal     @default(0) @db.Decimal(14, 2)
+  isActive      Boolean     @default(true)
+  entries       CostEntry[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([isActive])
+}
+
+/// A revenue/expense entry attributed to a cost center for a period (YYYY-MM).
+model CostEntry {
+  id           String     @id @default(cuid())
+  costCenterId String
+  /// YYYY-MM
+  period       String
+  /// REVENUE | EXPENSE
+  kind         String
+  amount       Decimal    @db.Decimal(14, 2)
+  description  String?
+  costCenter   CostCenter @relation(fields: [costCenterId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+
+  @@index([costCenterId, period])
+}
+
 model LedgerAccount {
   id          String          @id @default(cuid())
   code        String          @unique

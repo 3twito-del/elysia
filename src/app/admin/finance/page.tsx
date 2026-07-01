@@ -4,6 +4,7 @@ import {
   CreditCard,
   Landmark,
   Lock,
+  PieChart,
   ReceiptText,
   Repeat,
   TrendingUp,
@@ -22,11 +23,14 @@ import {
   autoMatchBankStatementAction,
   cancelSubscriptionAction,
   closePeriodAction,
+  createCostCenterAction,
   createCustomerInvoiceAction,
   createEmployeeAction,
   createExpenseClaimAction,
   createFixedAssetAction,
   createLedgerAccountAction,
+  recordCostEntryAction,
+  toggleCostCenterAction,
   createSubscriptionPlanAction,
   disposeFixedAssetAction,
   ignoreBankStatementLineAction,
@@ -68,6 +72,10 @@ import {
   listBankStatementLines,
 } from "~/server/services/bank-reconciliation";
 import { getBudgetVsActual } from "~/server/services/budgeting";
+import {
+  getCostAccountingSummary,
+  listCostCenters,
+} from "~/server/services/cost-accounting";
 import { getCashFlowStatement } from "~/server/services/cash-flow";
 import { listAccountsWithBalances } from "~/server/services/chart-of-accounts";
 import {
@@ -233,6 +241,19 @@ export default async function AdminFinancePage() {
     getExpenseSummary().catch(() => null),
     getBudgetVsActual().catch(() => null),
   ]);
+
+  const [costCenters, costSummary] = await Promise.all([
+    listCostCenters().catch(() => []),
+    getCostAccountingSummary().catch(() => ({
+      centers: 0,
+      revenue: 0,
+      expense: 0,
+      margin: 0,
+    })),
+  ]);
+  const currentPeriod = `${now.getUTCFullYear()}-${String(
+    now.getUTCMonth() + 1,
+  ).padStart(2, "0")}`;
 
   const [subscriptionPlans, subscriptions, subscriptionSummary] =
     await Promise.all([
@@ -1873,6 +1894,165 @@ export default async function AdminFinancePage() {
                           </Button>
                         </form>
                       </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <PieChart aria-hidden="true" className="size-5" />
+            מרכזי עלות ורווח (CO)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5">
+          <p className="text-muted-foreground text-sm">
+            שכבת בקרה נפרדת מה-GL: {costSummary.centers} מרכזים · הכנסות{" "}
+            {formatPrice(costSummary.revenue)} · הוצאות{" "}
+            {formatPrice(costSummary.expense)} · רווחיות{" "}
+            {formatPrice(costSummary.margin)}.
+          </p>
+
+          <div className="grid gap-5 lg:grid-cols-2">
+            <form action={createCostCenterAction} className="grid gap-2">
+              <p className="text-sm font-medium">מרכז חדש</p>
+              <div className="grid grid-cols-2 gap-2">
+                <Input dir="ltr" name="code" placeholder="קוד (CC-01)" required />
+                <select
+                  aria-label="סוג מרכז"
+                  autoComplete="off"
+                  className="glass-control h-10 rounded-md border px-3 text-sm"
+                  defaultValue="COST"
+                  name="kind"
+                >
+                  <option value="COST">מרכז עלות</option>
+                  <option value="PROFIT">מרכז רווח</option>
+                </select>
+              </div>
+              <Input name="name" placeholder="שם המרכז" required />
+              <Input
+                min="0"
+                name="monthlyBudget"
+                placeholder="תקציב חודשי ₪"
+                type="number"
+              />
+              <Button className="w-fit" size="sm" type="submit">
+                צור מרכז
+              </Button>
+            </form>
+
+            <form action={recordCostEntryAction} className="grid gap-2">
+              <p className="text-sm font-medium">רישום תנועה</p>
+              <select
+                aria-label="מרכז"
+                autoComplete="off"
+                className="glass-control h-10 rounded-md border px-3 text-sm"
+                defaultValue=""
+                name="costCenterId"
+                required
+              >
+                <option disabled value="">
+                  בחר מרכז…
+                </option>
+                {costCenters.map((center) => (
+                  <option key={center.id} value={center.id}>
+                    {center.code} · {center.name}
+                  </option>
+                ))}
+              </select>
+              <div className="grid grid-cols-2 gap-2">
+                <select
+                  aria-label="סוג תנועה"
+                  autoComplete="off"
+                  className="glass-control h-10 rounded-md border px-3 text-sm"
+                  defaultValue="EXPENSE"
+                  name="kind"
+                >
+                  <option value="EXPENSE">הוצאה</option>
+                  <option value="REVENUE">הכנסה</option>
+                </select>
+                <Input
+                  defaultValue={currentPeriod}
+                  dir="ltr"
+                  name="period"
+                  placeholder="YYYY-MM"
+                />
+              </div>
+              <Input min="0" name="amount" placeholder="סכום ₪" type="number" />
+              <Button className="w-fit" size="sm" type="submit" variant="outline">
+                רשום תנועה
+              </Button>
+            </form>
+          </div>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>מרכז</TableHead>
+                <TableHead>הכנסות</TableHead>
+                <TableHead>הוצאות</TableHead>
+                <TableHead>רווחיות</TableHead>
+                <TableHead>תקציב</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {costCenters.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={6}
+                  description="טרם הוגדרו מרכזי עלות."
+                  icon={PieChart}
+                  title="אין מרכזים"
+                />
+              ) : (
+                costCenters.map((center) => (
+                  <TableRow key={center.id}>
+                    <TableCell className="text-sm">
+                      <div className="font-medium">
+                        <span dir="ltr">{center.code}</span> · {center.name}
+                      </div>
+                      <Badge
+                        className="mt-1"
+                        variant={center.kind === "PROFIT" ? "secondary" : "outline"}
+                      >
+                        {center.kind === "PROFIT" ? "רווח" : "עלות"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {formatPrice(center.revenue)}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {formatPrice(center.expense)}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {formatPrice(center.margin)} ({center.marginPct}%)
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      <Badge variant={center.budget.over ? "destructive" : "outline"}>
+                        {formatPrice(center.monthlyBudget)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <form action={toggleCostCenterAction}>
+                        <input
+                          name="costCenterId"
+                          type="hidden"
+                          value={center.id}
+                        />
+                        <input
+                          name="isActive"
+                          type="hidden"
+                          value={center.isActive ? "0" : "1"}
+                        />
+                        <Button size="sm" type="submit" variant="ghost">
+                          {center.isActive ? "השבת" : "הפעל"}
+                        </Button>
+                      </form>
                     </TableCell>
                   </TableRow>
                 ))

@@ -26,6 +26,11 @@ import {
   postManualJournalEntry,
 } from "~/server/services/manual-journal";
 import { setBudget } from "~/server/services/budgeting";
+import {
+  createCostCenter,
+  recordCostEntry,
+  setCostCenterActive,
+} from "~/server/services/cost-accounting";
 import { createLedgerAccount } from "~/server/services/chart-of-accounts";
 import { seedChartOfAccounts } from "~/server/services/ledger";
 import {
@@ -371,6 +376,50 @@ export async function closePeriodAction(formData: FormData) {
     month,
     postedById: admin.id,
     notes: optionalString(formData.get("notes")),
+  });
+
+  revalidatePath("/admin/finance");
+}
+
+export async function createCostCenterAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  await createCostCenter({
+    code: stringValue(formData.get("code")),
+    name: stringValue(formData.get("name")),
+    kind: stringValue(formData.get("kind")),
+    monthlyBudget: Number(stringValue(formData.get("monthlyBudget"))) || 0,
+  });
+
+  revalidatePath("/admin/finance");
+}
+
+export async function toggleCostCenterAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const costCenterId = stringValue(formData.get("costCenterId"));
+  if (!costCenterId) throw new Error("חסר מזהה מרכז.");
+
+  await setCostCenterActive({
+    costCenterId,
+    isActive: formData.get("isActive") === "1",
+  });
+
+  revalidatePath("/admin/finance");
+}
+
+export async function recordCostEntryAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const costCenterId = stringValue(formData.get("costCenterId"));
+  if (!costCenterId) throw new Error("יש לבחור מרכז עלות.");
+
+  await recordCostEntry({
+    costCenterId,
+    period: stringValue(formData.get("period")),
+    kind: stringValue(formData.get("kind")),
+    amount: Number(stringValue(formData.get("amount"))) || 0,
+    description: optionalString(formData.get("description")),
   });
 
   revalidatePath("/admin/finance");
