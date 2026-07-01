@@ -26,6 +26,7 @@ import {
   completeWorkOrder,
   createBom,
   createWorkOrder,
+  disassembleKit,
 } from "~/server/services/manufacturing";
 import {
   applyLandedCost,
@@ -266,6 +267,22 @@ export async function createWorkOrderAction(formData: FormData) {
     branchId,
     quantity: Number(formData.get("quantity") ?? 0) || 0,
     createdById: admin.id,
+  });
+
+  revalidatePath("/admin/erp");
+}
+
+export async function disassembleKitAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const bomId = stringValue(formData.get("bomId"));
+  const branchId = stringValue(formData.get("branchId"));
+  if (!bomId || !branchId) throw new Error("יש לבחור עץ מוצר וסניף.");
+
+  await disassembleKit({
+    bomId,
+    branchId,
+    quantity: Number(formData.get("quantity") ?? 0) || 0,
   });
 
   revalidatePath("/admin/erp");

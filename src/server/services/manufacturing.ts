@@ -259,6 +259,122 @@ export async function completeWorkOrder(input: { workOrderId: string }) {
   });
 }
 
+export type KitMovement = { variantId: string; delta: number };
+
+/**
+ * Plans the stock movements for disassembling a kit (MFG-005): the finished kit
+ * is consumed and its components are yielded — the reverse of a work order.
+ * Pure.
+ */
+export function planKitDisassembly(
+  finishedVariantId: string,
+  components: BomComponentLite[],
+  quantity: number,
+): { finished: KitMovement; components: KitMovement[] } {
+  const qty = Math.max(0, Math.trunc(quantity));
+  return {
+    finished: { variantId: finishedVariantId, delta: -qty },
+    components: components.map((component) => ({
+      variantId: component.componentVariantId,
+      delta: component.quantity * qty,
+    })),
+  };
+}
+
+/**
+ * Disassembles finished kit units back into their components at a branch:
+ * consumes the kit and yields the components, writing paired InventoryLedger
+ * moves — all atomically. (MFG-005.)
+ */
+export async function disassembleKit(input: {
+  bomId: string;
+  branchId: string;
+  quantity: number;
+}) {
+  const quantity = Math.trunc(input.quantity);
+  if (quantity <= 0) throw new Error("כמות הפירוק חייבת להיות חיובית.");
+  if (!input.branchId) throw new Error("יש לבחור סניף.");
+
+  const bom = await db.billOfMaterials.findUnique({
+    where: { id: input.bomId },
+    include: { components: true, finishedVariant: { select: { sku: true } } },
+  });
+  if (!bom) throw new Error("עץ מוצר לא נמצא.");
+
+  const plan = planKitDisassembly(
+    bom.productVariantId,
+    bom.components.map((component) => ({
+      componentVariantId: component.componentVariantId,
+      quantity: component.quantity,
+    })),
+    quantity,
+  );
+
+  const reference = `KIT-DIS-${bom.finishedVariant.sku}`;
+
+  return db.$transaction(async (tx) => {
+    const finished = await tx.inventoryItem.findUnique({
+      where: {
+        branchId_variantId: {
+          branchId: input.branchId,
+          variantId: bom.productVariantId,
+        },
+      },
+      select: { quantity: true },
+    });
+    if ((finished?.quantity ?? 0) < quantity) {
+      throw new Error("מלאי ערכות מוגמרות לא מספיק לפירוק.");
+    }
+
+    await tx.inventoryItem.update({
+      where: {
+        branchId_variantId: {
+          branchId: input.branchId,
+          variantId: bom.productVariantId,
+        },
+      },
+      data: { quantity: { decrement: quantity } },
+    });
+    await tx.inventoryLedger.create({
+      data: {
+        branchId: input.branchId,
+        variantId: bom.productVariantId,
+        delta: plan.finished.delta,
+        reason: "kit_disassemble_out",
+        reference,
+      },
+    });
+
+    for (const component of plan.components) {
+      await tx.inventoryItem.upsert({
+        where: {
+          branchId_variantId: {
+            branchId: input.branchId,
+            variantId: component.variantId,
+          },
+        },
+        create: {
+          branchId: input.branchId,
+          variantId: component.variantId,
+          quantity: component.delta,
+        },
+        update: { quantity: { increment: component.delta } },
+      });
+      await tx.inventoryLedger.create({
+        data: {
+          branchId: input.branchId,
+          variantId: component.variantId,
+          delta: component.delta,
+          reason: "kit_disassemble_in",
+          reference,
+        },
+      });
+    }
+
+    return { disassembled: quantity, components: plan.components.length };
+  });
+}
+
 /** Cancels a DRAFT work order (nothing has been produced yet). */
 export async function cancelWorkOrder(input: { workOrderId: string }) {
   const workOrder = await db.workOrder.findUnique({

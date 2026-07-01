@@ -35,6 +35,7 @@ import {
   createStockTransferAction,
   createVendorInvoiceAction,
   createWorkOrderAction,
+  disassembleKitAction,
   createQualityInspectionAction,
   approvePurchaseRequisitionAction,
   applyLandedCostAction,
@@ -445,6 +446,59 @@ export default async function AdminErpPage({
             <Button type="submit" variant="outline">
               <Search aria-hidden="true" className="size-4" />
               חשב MRP
+            </Button>
+          </form>
+
+          <form
+            action={disassembleKitAction}
+            className="border-border/60 flex flex-wrap items-end gap-2 border-t pt-3"
+          >
+            <p className="text-muted-foreground w-full text-xs font-medium">
+              פירוק ערכה (Kitting): צריכת מוצר מוגמר והשבת רכיביו למלאי.
+            </p>
+            <select
+              aria-label="ערכה לפירוק"
+              autoComplete="off"
+              className="glass-control h-9 rounded-md border px-3 text-sm"
+              defaultValue=""
+              name="bomId"
+              required
+            >
+              <option disabled value="">
+                בחר ערכה…
+              </option>
+              {boms.map((bom) => (
+                <option key={bom.id} value={bom.id}>
+                  {bom.finishedName} ({bom.finishedSku})
+                </option>
+              ))}
+            </select>
+            <select
+              aria-label="סניף לפירוק"
+              autoComplete="off"
+              className="glass-control h-9 rounded-md border px-3 text-sm"
+              defaultValue=""
+              name="branchId"
+              required
+            >
+              <option disabled value="">
+                בחר סניף…
+              </option>
+              {branches.map((branch) => (
+                <option key={branch.id} value={branch.id}>
+                  {branch.name}
+                </option>
+              ))}
+            </select>
+            <Input
+              className="max-w-[7rem]"
+              min="1"
+              name="quantity"
+              placeholder="כמות"
+              type="number"
+            />
+            <Button size="sm" type="submit" variant="outline">
+              פרק ערכה
             </Button>
           </form>
 
