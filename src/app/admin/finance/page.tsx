@@ -28,6 +28,7 @@ import {
   createMaintenanceScheduleAction,
   recordMaintenanceAction,
   recordDunningContactAction,
+  setExchangeRateAction,
   toggleMaintenanceScheduleAction,
   createCustomerInvoiceAction,
   createEmployeeAction,
@@ -90,6 +91,10 @@ import {
   getDunningSummary,
   getDunningWorklist,
 } from "~/server/services/dunning";
+import {
+  getRevaluationPreview,
+  listExchangeRates,
+} from "~/server/services/currency-fx";
 import { getCashFlowStatement } from "~/server/services/cash-flow";
 import { listAccountsWithBalances } from "~/server/services/chart-of-accounts";
 import {
@@ -296,6 +301,12 @@ export default async function AdminFinancePage() {
       escalations: 0,
     })),
   ]);
+
+  const [exchangeRates, revaluation] = await Promise.all([
+    listExchangeRates().catch(() => []),
+    getRevaluationPreview().catch(() => ({ lines: [], totalUnrealized: 0 })),
+  ]);
+  const currentYmd = now.toISOString().slice(0, 10);
 
   const [subscriptionPlans, subscriptions, subscriptionSummary] =
     await Promise.all([
@@ -1942,6 +1953,106 @@ export default async function AdminFinancePage() {
               )}
             </TableBody>
           </Table>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Repeat aria-hidden="true" className="size-5" />
+            רב-מטבעיות והפרשי שער (FX)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.6fr]">
+          <form action={setExchangeRateAction} className="grid gap-2">
+            <p className="text-muted-foreground text-sm">
+              שער אל בסיס (ILS) לכל מטבע, effective-dated. הערכת שווי מחדש
+              מציגה הפרשי-שער לא-ממומשים על יתרות מטבע-חוץ פתוחות. שערים ידניים
+              — לאמת מול מקור מוסמך.
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <Input dir="ltr" name="currency" placeholder="מטבע (USD)" required />
+              <Input
+                dir="ltr"
+                min="0"
+                name="rateToBase"
+                placeholder="שער ל-ILS"
+                step="0.0001"
+                type="number"
+              />
+            </div>
+            <Input defaultValue={currentYmd} name="effectiveDate" type="date" />
+            <Button className="w-fit" size="sm" type="submit">
+              עדכן שער
+            </Button>
+            <p className="text-muted-foreground text-xs">
+              {'סה"כ הפרשי-שער לא-ממומשים:'}{" "}
+              {formatPrice(revaluation.totalUnrealized)}
+            </p>
+          </form>
+
+          <div className="grid gap-4">
+            <div className="flex flex-wrap gap-2">
+              {exchangeRates.length === 0 ? (
+                <span className="text-muted-foreground text-sm">
+                  טרם הוזנו שערים.
+                </span>
+              ) : (
+                exchangeRates.map((rate) => (
+                  <Badge key={rate.id} variant="outline">
+                    <span dir="ltr">
+                      {rate.currency} {rate.rateToBase} ·{" "}
+                      {rate.effectiveDate.toISOString().slice(0, 10)}
+                    </span>
+                  </Badge>
+                ))
+              )}
+            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>מסמך</TableHead>
+                  <TableHead>{'מט"ח'}</TableHead>
+                  <TableHead>שווי נוכחי</TableHead>
+                  <TableHead>הפרש</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {revaluation.lines.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={4}
+                    description="אין יתרות מט''ח פתוחות להערכה."
+                    icon={Repeat}
+                    title="אין מט''ח"
+                  />
+                ) : (
+                  revaluation.lines.map((line) => (
+                    <TableRow key={`${line.kind}-${line.reference}`}>
+                      <TableCell className="text-sm">
+                        {line.reference}
+                        <Badge className="mr-2" variant="outline">
+                          {line.kind}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm" dir="ltr">
+                        {line.foreignOutstanding} {line.currency}
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {formatPrice(line.currentBase)}
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        <Badge
+                          variant={line.unrealized < 0 ? "destructive" : "secondary"}
+                        >
+                          {formatPrice(line.unrealized)}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
 

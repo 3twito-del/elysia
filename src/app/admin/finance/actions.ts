@@ -37,6 +37,7 @@ import {
   setMaintenanceScheduleStatus,
 } from "~/server/services/asset-maintenance";
 import { recordDunningContact } from "~/server/services/dunning";
+import { setExchangeRate } from "~/server/services/currency-fx";
 import { createLedgerAccount } from "~/server/services/chart-of-accounts";
 import { seedChartOfAccounts } from "~/server/services/ledger";
 import {
@@ -409,6 +410,19 @@ export async function toggleCostCenterAction(formData: FormData) {
   await setCostCenterActive({
     costCenterId,
     isActive: formData.get("isActive") === "1",
+  });
+
+  revalidatePath("/admin/finance");
+}
+
+export async function setExchangeRateAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const effectiveRaw = stringValue(formData.get("effectiveDate"));
+  await setExchangeRate({
+    currency: stringValue(formData.get("currency")),
+    rateToBase: Number(stringValue(formData.get("rateToBase"))) || 0,
+    effectiveDate: effectiveRaw ? new Date(effectiveRaw) : new Date(),
   });
 
   revalidatePath("/admin/finance");

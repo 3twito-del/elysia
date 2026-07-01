@@ -3282,6 +3282,20 @@ model CostEntry {
   @@index([costCenterId, period])
 }
 
+/// An effective-dated exchange rate to the base currency (ILS) for multi-currency
+/// accounting and FX revaluation (FIN-GL-004). rateToBase = base units per 1
+/// unit of `currency`. Rates are operator-entered — verify against a source.
+model ExchangeRate {
+  id            String   @id @default(cuid())
+  currency      String
+  rateToBase    Decimal  @db.Decimal(18, 6)
+  effectiveDate DateTime @db.Date
+  createdAt     DateTime @default(now())
+
+  @@unique([currency, effectiveDate])
+  @@index([currency, effectiveDate])
+}
+
 model LedgerAccount {
   id          String          @id @default(cuid())
   code        String          @unique
