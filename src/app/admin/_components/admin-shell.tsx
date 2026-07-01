@@ -13,6 +13,7 @@ import {
   CalendarClock,
   ClipboardList,
   ContactRound,
+  CopyCheck,
   FlaskConical,
   FolderKanban,
   GalleryHorizontalEnd,
@@ -78,6 +79,7 @@ export type AdminSection =
   | "integrations"
   | "inventory"
   | "marketing"
+  | "mdm"
   | "merchandising"
   | "notifications"
   | "operations"
@@ -138,6 +140,7 @@ const navItems: Array<{
   { href: "/admin/reorder", icon: PackageSearch, id: "reorder", label: "חידוש מלאי" },
   { href: "/admin/bins", icon: Grid3x3, id: "bins", label: "מיקומים" },
   { href: "/admin/customers", icon: Users, id: "customers", label: "לקוחות" },
+  { href: "/admin/mdm", icon: CopyCheck, id: "mdm", label: "MDM" },
   { href: "/admin/b2b", icon: Briefcase, id: "b2b", label: "B2B" },
   { href: "/admin/price-lists", icon: Tags, id: "price-lists", label: "מחירונים" },
   { href: "/admin/service", icon: Headset, id: "service", label: "שירות" },
