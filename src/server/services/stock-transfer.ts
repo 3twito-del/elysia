@@ -152,37 +152,49 @@ export async function completeStockTransfer(input: { transferId: string }) {
       include: { lines: true },
     });
     if (!transfer) throw new Error("העברת מלאי לא נמצאה.");
-    if (transfer.status !== "DRAFT") {
-      throw new Error("ניתן להשלים רק העברה בסטטוס טיוטה.");
+    if (transfer.status !== "DRAFT" && transfer.status !== "IN_TRANSIT") {
+      throw new Error("ניתן להשלים רק העברה בטיוטה או בדרך.");
     }
+    // When dispatched (IN_TRANSIT) the source was already decremented; only the
+    // destination leg remains. A DRAFT completes both legs at once (as before).
+    const sourceLegPending = transfer.status === "DRAFT";
 
     for (const line of transfer.lines) {
-      const source = await tx.inventoryItem.findUnique({
-        where: {
-          branchId_variantId: {
+      if (sourceLegPending) {
+        const source = await tx.inventoryItem.findUnique({
+          where: {
+            branchId_variantId: {
+              branchId: transfer.sourceBranchId,
+              variantId: line.variantId,
+            },
+          },
+          select: { quantity: true, reserved: true },
+        });
+        const available = (source?.quantity ?? 0) - (source?.reserved ?? 0);
+        if (available < line.quantity) {
+          throw new Error(
+            `מלאי זמין לא מספיק בסניף המקור עבור פריט (${line.variantId}).`,
+          );
+        }
+        await tx.inventoryItem.update({
+          where: {
+            branchId_variantId: {
+              branchId: transfer.sourceBranchId,
+              variantId: line.variantId,
+            },
+          },
+          data: { quantity: { decrement: line.quantity } },
+        });
+        await tx.inventoryLedger.create({
+          data: {
             branchId: transfer.sourceBranchId,
             variantId: line.variantId,
+            delta: -line.quantity,
+            reason: "transfer_out",
+            reference: transfer.transferNumber,
           },
-        },
-        select: { quantity: true, reserved: true },
-      });
-
-      const available = (source?.quantity ?? 0) - (source?.reserved ?? 0);
-      if (available < line.quantity) {
-        throw new Error(
-          `מלאי זמין לא מספיק בסניף המקור עבור פריט (${line.variantId}).`,
-        );
+        });
       }
-
-      await tx.inventoryItem.update({
-        where: {
-          branchId_variantId: {
-            branchId: transfer.sourceBranchId,
-            variantId: line.variantId,
-          },
-        },
-        data: { quantity: { decrement: line.quantity } },
-      });
 
       await tx.inventoryItem.upsert({
         where: {
@@ -199,29 +211,79 @@ export async function completeStockTransfer(input: { transferId: string }) {
         update: { quantity: { increment: line.quantity } },
       });
 
-      await tx.inventoryLedger.createMany({
-        data: [
-          {
-            branchId: transfer.sourceBranchId,
-            variantId: line.variantId,
-            delta: -line.quantity,
-            reason: "transfer_out",
-            reference: transfer.transferNumber,
-          },
-          {
-            branchId: transfer.destBranchId,
-            variantId: line.variantId,
-            delta: line.quantity,
-            reason: "transfer_in",
-            reference: transfer.transferNumber,
-          },
-        ],
+      await tx.inventoryLedger.create({
+        data: {
+          branchId: transfer.destBranchId,
+          variantId: line.variantId,
+          delta: line.quantity,
+          reason: "transfer_in",
+          reference: transfer.transferNumber,
+        },
       });
     }
 
     return tx.stockTransfer.update({
       where: { id: transfer.id },
       data: { status: "COMPLETED", completedAt: new Date() },
+    });
+  });
+}
+
+/**
+ * Dispatches a DRAFT transfer (→ IN_TRANSIT): validates and decrements source
+ * stock now, writing the transfer_out ledger; the destination leg is applied
+ * later by completeStockTransfer (receive).
+ */
+export async function dispatchStockTransfer(input: { transferId: string }) {
+  return db.$transaction(async (tx) => {
+    const transfer = await tx.stockTransfer.findUnique({
+      where: { id: input.transferId },
+      include: { lines: true },
+    });
+    if (!transfer) throw new Error("העברת מלאי לא נמצאה.");
+    if (transfer.status !== "DRAFT") {
+      throw new Error("ניתן לשלוח רק העברה בסטטוס טיוטה.");
+    }
+
+    for (const line of transfer.lines) {
+      const source = await tx.inventoryItem.findUnique({
+        where: {
+          branchId_variantId: {
+            branchId: transfer.sourceBranchId,
+            variantId: line.variantId,
+          },
+        },
+        select: { quantity: true, reserved: true },
+      });
+      const available = (source?.quantity ?? 0) - (source?.reserved ?? 0);
+      if (available < line.quantity) {
+        throw new Error(
+          `מלאי זמין לא מספיק בסניף המקור עבור פריט (${line.variantId}).`,
+        );
+      }
+      await tx.inventoryItem.update({
+        where: {
+          branchId_variantId: {
+            branchId: transfer.sourceBranchId,
+            variantId: line.variantId,
+          },
+        },
+        data: { quantity: { decrement: line.quantity } },
+      });
+      await tx.inventoryLedger.create({
+        data: {
+          branchId: transfer.sourceBranchId,
+          variantId: line.variantId,
+          delta: -line.quantity,
+          reason: "transfer_out",
+          reference: transfer.transferNumber,
+        },
+      });
+    }
+
+    return tx.stockTransfer.update({
+      where: { id: transfer.id },
+      data: { status: "IN_TRANSIT" },
     });
   });
 }

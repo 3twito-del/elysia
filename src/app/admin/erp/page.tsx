@@ -25,6 +25,7 @@ import {
   cancelWorkOrderAction,
   completeInventoryCountAction,
   completeStockTransferAction,
+  dispatchStockTransferAction,
   completeWorkOrderAction,
   createBomAction,
   createCarrierAction,
@@ -124,6 +125,7 @@ const vendorInvoiceStatusVariant: Record<
 
 const transferStatusLabel: Record<string, string> = {
   DRAFT: "טיוטה",
+  IN_TRANSIT: "בדרך",
   COMPLETED: "הושלמה",
   CANCELLED: "בוטלה",
 };
@@ -133,6 +135,7 @@ const transferStatusVariant: Record<
   "secondary" | "outline" | "destructive"
 > = {
   DRAFT: "outline",
+  IN_TRANSIT: "outline",
   COMPLETED: "secondary",
   CANCELLED: "destructive",
 };
@@ -458,13 +461,19 @@ export default async function AdminErpPage({
                       <TableCell>
                         {transfer.status === "DRAFT" ? (
                           <div className="flex gap-1">
+                            <form action={dispatchStockTransferAction}>
+                              <input name="transferId" type="hidden" value={transfer.id} />
+                              <Button size="sm" type="submit" variant="outline">
+                                שלח
+                              </Button>
+                            </form>
                             <form action={completeStockTransferAction}>
                               <input
                                 name="transferId"
                                 type="hidden"
                                 value={transfer.id}
                               />
-                              <Button size="sm" type="submit" variant="outline">
+                              <Button size="sm" type="submit" variant="ghost">
                                 השלם
                               </Button>
                             </form>
@@ -479,6 +488,13 @@ export default async function AdminErpPage({
                               </Button>
                             </form>
                           </div>
+                        ) : transfer.status === "IN_TRANSIT" ? (
+                          <form action={completeStockTransferAction}>
+                            <input name="transferId" type="hidden" value={transfer.id} />
+                            <Button size="sm" type="submit" variant="outline">
+                              קבל
+                            </Button>
+                          </form>
                         ) : null}
                       </TableCell>
                     </TableRow>

@@ -34,6 +34,7 @@ import {
 import {
   cancelStockTransfer,
   completeStockTransfer,
+  dispatchStockTransfer,
   createStockTransfer,
   parseTransferLines,
 } from "~/server/services/stock-transfer";
@@ -155,6 +156,16 @@ export async function completeStockTransferAction(formData: FormData) {
   if (!transferId) throw new Error("חסר מזהה העברה.");
 
   await completeStockTransfer({ transferId });
+  revalidatePath("/admin/erp");
+}
+
+export async function dispatchStockTransferAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const transferId = stringValue(formData.get("transferId"));
+  if (!transferId) throw new Error("חסר מזהה העברה.");
+
+  await dispatchStockTransfer({ transferId });
   revalidatePath("/admin/erp");
 }
 
