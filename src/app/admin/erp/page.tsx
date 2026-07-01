@@ -71,6 +71,7 @@ import { listVendorPortalTokens } from "~/server/services/vendor-portal";
 import { getAvailabilityBySku } from "~/server/services/availability";
 import { listInventoryCounts } from "~/server/services/cycle-count";
 import { listBoms, listWorkOrders } from "~/server/services/manufacturing";
+import { runMrp } from "~/server/services/mrp";
 import {
   listCarriers,
   listShippingRates,
@@ -229,9 +230,16 @@ export default async function AdminErpPage({
     listReceivedPurchaseOrdersForLandedCost().catch(() => []),
   ]);
 
-  const atpSku = firstParam((await searchParams).atpSku);
+  const resolvedSearchParams = await searchParams;
+  const atpSku = firstParam(resolvedSearchParams.atpSku);
   const availability = atpSku
     ? await getAvailabilityBySku(atpSku).catch(() => null)
+    : null;
+
+  const mrpBomId = firstParam(resolvedSearchParams.mrpBomId);
+  const mrpQty = Math.max(1, Number(firstParam(resolvedSearchParams.mrpQty)) || 1);
+  const mrpPlan = mrpBomId
+    ? await runMrp({ bomId: mrpBomId, buildQuantity: mrpQty }).catch(() => null)
     : null;
 
   return (
@@ -371,6 +379,115 @@ export default async function AdminErpPage({
                         <TableCell>{branch.safetyStock}</TableCell>
                         <TableCell className="font-medium">
                           {branch.sellable}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          ) : null}
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Factory aria-hidden="true" className="size-5" />
+            תכנון דרישות חומר (MRP)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          <p className="text-muted-foreground text-sm">
+            פיצוץ עץ מוצר לכמות ייצור מבוקשת וקיזוז מול מלאי זמין והזמנות רכש
+            פתוחות — כדי לחשב חוסרים לרכש.
+          </p>
+          <form className="flex flex-wrap items-end gap-2">
+            <div className="grid gap-1">
+              <span className="text-muted-foreground text-xs">עץ מוצר</span>
+              <select
+                aria-label="עץ מוצר ל-MRP"
+                autoComplete="off"
+                className="glass-control h-10 rounded-md border px-3 text-sm"
+                defaultValue={mrpBomId ?? ""}
+                name="mrpBomId"
+                required
+              >
+                <option disabled value="">
+                  בחר עץ מוצר…
+                </option>
+                {boms.map((bom) => (
+                  <option key={bom.id} value={bom.id}>
+                    {bom.finishedName} ({bom.finishedSku})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <Input
+              className="max-w-[8rem]"
+              defaultValue={String(mrpQty)}
+              min="1"
+              name="mrpQty"
+              placeholder="כמות ייצור"
+              type="number"
+            />
+            <Button type="submit" variant="outline">
+              <Search aria-hidden="true" className="size-4" />
+              חשב MRP
+            </Button>
+          </form>
+
+          {mrpBomId && !mrpPlan ? (
+            <p className="text-muted-foreground text-sm">
+              לא ניתן לחשב MRP לעץ המוצר שנבחר.
+            </p>
+          ) : null}
+
+          {mrpPlan ? (
+            <div className="grid gap-3">
+              <div className="text-sm font-medium">
+                {mrpPlan.finishedName}{" "}
+                <span className="text-muted-foreground font-mono text-xs">
+                  ({mrpPlan.finishedSku})
+                </span>{" "}
+                × {mrpQty} · {mrpPlan.shortageCount} חוסרים
+              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>רכיב</TableHead>
+                    <TableHead>דרוש</TableHead>
+                    <TableHead>במלאי</TableHead>
+                    <TableHead>בהזמנה</TableHead>
+                    <TableHead>לרכש (נטו)</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {mrpPlan.lines.length === 0 ? (
+                    <TableEmptyRow
+                      colSpan={5}
+                      description="לעץ המוצר אין רכיבים."
+                      icon={Factory}
+                      title="אין רכיבים"
+                    />
+                  ) : (
+                    mrpPlan.lines.map((line) => (
+                      <TableRow key={line.variantId}>
+                        <TableCell className="text-sm">
+                          <div className="font-medium">{line.name}</div>
+                          <div className="text-muted-foreground font-mono text-xs">
+                            {line.sku}
+                          </div>
+                        </TableCell>
+                        <TableCell>{line.gross}</TableCell>
+                        <TableCell>{line.onHand}</TableCell>
+                        <TableCell>{line.onOrder}</TableCell>
+                        <TableCell>
+                          {line.status === "SHORTAGE" ? (
+                            <Badge variant="destructive">{line.net}</Badge>
+                          ) : (
+                            <Badge variant="secondary">0</Badge>
+                          )}
                         </TableCell>
                       </TableRow>
                     ))
