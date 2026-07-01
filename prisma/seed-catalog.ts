@@ -386,7 +386,7 @@ const rolePricePremium = {
 
 const collectionSlugByName = Object.fromEntries(
   seedCollections.map((collection) => [collection.name, collection.slug]),
-) as Record<string, SeedCollectionSlug>;
+);
 
 const rowCountsByName = countBy(silverIsraelCatalogRows, (row) => row.name);
 const rowCountsByNameAndFinish = countBy(
