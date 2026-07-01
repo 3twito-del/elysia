@@ -1435,8 +1435,52 @@ model Course {
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
   enrollments CourseEnrollment[]
+  quiz        CourseQuiz?
 
   @@index([status])
+}
+
+/// A course completion quiz (KNW-002). One quiz per course; passingScore is the
+/// minimum percentage required to pass.
+model CourseQuiz {
+  id           String         @id @default(cuid())
+  courseId     String         @unique
+  passingScore Int            @default(70)
+  course       Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  questions    QuizQuestion[]
+  attempts     QuizAttempt[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model QuizQuestion {
+  id           String     @id @default(cuid())
+  quizId       String
+  prompt       String
+  /// array of answer option strings
+  options      Json
+  correctIndex Int
+  sortOrder    Int        @default(0)
+  quiz         CourseQuiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([quizId, sortOrder])
+}
+
+/// A graded attempt at a course quiz by an enrolled employee.
+model QuizAttempt {
+  id           String           @id @default(cuid())
+  quizId       String
+  enrollmentId String
+  score        Int
+  passed       Boolean
+  quiz         CourseQuiz       @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  enrollment   CourseEnrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  createdAt    DateTime         @default(now())
+
+  @@index([quizId])
+  @@index([enrollmentId])
 }
 
 /// An employee's enrolment + progress in a course (KNW-002).
@@ -1451,6 +1495,7 @@ model CourseEnrollment {
   updatedAt       DateTime  @updatedAt
   createdAt       DateTime  @default(now())
   course          Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  quizAttempts    QuizAttempt[]
 
   @@unique([courseId, employeeId])
   @@index([employeeId])

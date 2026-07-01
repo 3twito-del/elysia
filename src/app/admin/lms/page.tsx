@@ -1,4 +1,4 @@
-import { GraduationCap, Users } from "lucide-react";
+import { GraduationCap, ListChecks, Users } from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
 import {
@@ -7,10 +7,13 @@ import {
 } from "../_components/admin-states";
 import { getAdminPageAccess } from "../_lib/access";
 import {
+  addQuizQuestionAction,
   createCourseAction,
   enrollEmployeeAction,
   recordLessonProgressAction,
   setCourseStatusAction,
+  submitQuizAttemptAction,
+  upsertCourseQuizAction,
 } from "./actions";
 import { MetricCard } from "~/components/metric-card";
 import { Badge } from "~/components/ui/badge";
@@ -27,7 +30,12 @@ import {
 } from "~/components/ui/table";
 import { TableEmptyRow } from "~/components/ui/table-empty-row";
 import { listEmployeesForSelect } from "~/server/services/hr-performance";
-import { getLmsSummary, listCourses, listEnrollments } from "~/server/services/lms";
+import {
+  getLmsSummary,
+  listCourses,
+  listEnrollments,
+  listQuizzesByCourse,
+} from "~/server/services/lms";
 
 export const metadata = { title: "הדרכה | Admin" };
 
@@ -46,10 +54,22 @@ export default async function AdminLmsPage() {
   const summary = await getLmsSummary().catch(() => null);
   if (!summary) return <AdminDatabaseFallback />;
 
-  const [courses, enrollments, employees] = await Promise.all([
+  const [courses, enrollments, employees, quizzesByCourse] = await Promise.all([
     listCourses().catch(() => []),
     listEnrollments().catch(() => []),
     listEmployeesForSelect().catch(() => []),
+    listQuizzesByCourse().catch(
+      () =>
+        new Map<
+          string,
+          {
+            id: string;
+            passingScore: number;
+            questionCount: number;
+            attemptCount: number;
+          }
+        >(),
+    ),
   ]);
   const publishedCourses = courses.filter((course) => course.status === "PUBLISHED");
 
@@ -180,6 +200,131 @@ export default async function AdminLmsPage() {
               )}
             </TableBody>
           </Table>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ListChecks aria-hidden="true" className="size-5" />
+            מבחני קורס
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          <p className="text-muted-foreground text-sm">
+            מבחן אחד לכל קורס. הגדר ציון עובר, הוסף שאלות (סמן את התשובה הנכונה
+            בכוכבית), ורשום ניסיון מבחן לעובד רשום.
+          </p>
+
+          {courses.length === 0 ? (
+            <p className="text-muted-foreground text-sm">
+              צור קורס כדי להגדיר לו מבחן.
+            </p>
+          ) : (
+            <div className="grid gap-3">
+              {courses.map((course) => {
+                const quiz = quizzesByCourse.get(course.id);
+                return (
+                  <div
+                    className="border-border/60 grid gap-2 rounded-md border p-3"
+                    key={course.id}
+                  >
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-sm font-medium">{course.title}</span>
+                      {quiz ? (
+                        <Badge variant="secondary">
+                          ציון עובר {quiz.passingScore}% · {quiz.questionCount}{" "}
+                          שאלות · {quiz.attemptCount} ניסיונות
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline">ללא מבחן</Badge>
+                      )}
+                    </div>
+
+                    <form
+                      action={upsertCourseQuizAction}
+                      className="flex flex-wrap items-center gap-1"
+                    >
+                      <input name="courseId" type="hidden" value={course.id} />
+                      <Input
+                        aria-label="ציון עובר"
+                        className="h-8 w-20"
+                        defaultValue={String(quiz?.passingScore ?? 70)}
+                        max="100"
+                        min="0"
+                        name="passingScore"
+                        type="number"
+                      />
+                      <Button size="sm" type="submit" variant="outline">
+                        {quiz ? "עדכן ציון עובר" : "צור מבחן"}
+                      </Button>
+                    </form>
+
+                    {quiz ? (
+                      <form
+                        action={addQuizQuestionAction}
+                        className="flex flex-wrap items-center gap-1"
+                      >
+                        <input name="quizId" type="hidden" value={quiz.id} />
+                        <Input
+                          aria-label="נוסח השאלה"
+                          className="h-8 w-48"
+                          name="prompt"
+                          placeholder="נוסח השאלה"
+                          required
+                        />
+                        <Input
+                          aria-label="תשובות"
+                          className="h-8 w-64"
+                          name="options"
+                          placeholder="אדום | ירוק* | כחול"
+                          required
+                        />
+                        <Button size="sm" type="submit" variant="outline">
+                          הוסף שאלה
+                        </Button>
+                      </form>
+                    ) : null}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          <form
+            action={submitQuizAttemptAction}
+            className="border-border/60 flex flex-wrap items-end gap-2 border-t pt-3"
+          >
+            <div className="grid gap-1">
+              <span className="text-muted-foreground text-xs">הרשמה</span>
+              <select
+                aria-label="הרשמה"
+                autoComplete="off"
+                className="glass-control h-9 rounded-md border px-3 text-sm"
+                defaultValue=""
+                name="enrollmentId"
+                required
+              >
+                <option disabled value="">
+                  בחר עובד/קורס…
+                </option>
+                {enrollments.map((enrollment) => (
+                  <option key={enrollment.id} value={enrollment.id}>
+                    {enrollment.employeeName} · {enrollment.courseTitle}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <Input
+              aria-label="תשובות הנבחן"
+              className="h-9 w-40"
+              name="responses"
+              placeholder="0,2,1"
+            />
+            <Button size="sm" type="submit" variant="outline">
+              רשום ניסיון מבחן
+            </Button>
+          </form>
         </CardContent>
       </Card>
     </AdminShell>
