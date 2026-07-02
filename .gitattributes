@@ -1,0 +1,22 @@
+# Normalize text files to LF in the repository and on checkout so line-ending
+# sensitive contract tests behave identically on every platform (previously
+# CRLF checkouts on Windows failed CSS/markup substring assertions).
+* text=auto eol=lf
+
+# Binary assets must never be line-ending normalized.
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.avif  binary
+*.ico   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.otf   binary
+*.eot   binary
+*.pdf   binary
+*.mp4   binary
+*.webm  binary
+*.zip   binary
