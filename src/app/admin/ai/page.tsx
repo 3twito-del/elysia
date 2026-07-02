@@ -1,4 +1,4 @@
-import { Activity, Bot, ShieldCheck, Wrench } from "lucide-react";
+import { Activity, Bot, Sparkles, ShieldCheck, Wrench } from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
 import {
@@ -8,7 +8,9 @@ import {
 import { getAdminPageAccess } from "../_lib/access";
 import { MetricCard } from "~/components/metric-card";
 import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
 import {
   Table,
   TableBody,
@@ -22,6 +24,7 @@ import {
   describeGuardrails,
   getAiGovernanceOverview,
 } from "~/server/services/ai-governance";
+import { answerAdminQuestion } from "~/server/services/admin-copilot";
 
 export const metadata = {
   title: "ממשל AI | Admin",
@@ -41,7 +44,11 @@ const runStatusVariant: Record<string, "secondary" | "outline" | "destructive"> 
   FAILED: "destructive",
 };
 
-export default async function AdminAiPage() {
+type AdminAiPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function AdminAiPage({ searchParams }: AdminAiPageProps) {
   const access = await getAdminPageAccess("SYSTEM_CONFIG", "/admin/ai");
 
   if (access.denied) return <AdminForbidden {...access.denied} />;
@@ -51,6 +58,12 @@ export default async function AdminAiPage() {
   if (!overview) return <AdminDatabaseFallback />;
 
   const guardrails = describeGuardrails();
+
+  const params = await searchParams;
+  const copilotQuestion = typeof params.q === "string" ? params.q : "";
+  const copilot = copilotQuestion
+    ? await answerAdminQuestion({ question: copilotQuestion }).catch(() => null)
+    : null;
 
   return (
     <AdminShell
@@ -85,6 +98,49 @@ export default async function AdminAiPage() {
           value={`${overview.summary.avgDurationMs}ms`}
         />
       </div>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Sparkles aria-hidden="true" className="size-5" />
+            קופיילוט ניהולי (AI-001)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          <p className="text-muted-foreground text-sm">
+            שאלות ניהול מעוגנות בנתונים חיים (גבייה, הפרשי-שער, רווחיות). המלצה
+            בלבד — ה-AI אינו מבצע פעולות. ללא מפתח AI מוגדר מוצג סיכום מדדים.
+          </p>
+          <form className="flex flex-wrap gap-2">
+            <Input
+              className="max-w-md"
+              defaultValue={copilotQuestion}
+              name="q"
+              placeholder="למשל: מה מצב הגבייה? אילו סיכונים פיננסיים?"
+            />
+            <Button type="submit" variant="outline">
+              <Sparkles aria-hidden="true" className="size-4" />
+              שאל
+            </Button>
+          </form>
+
+          {copilot ? (
+            <div className="border-border/60 grid gap-2 rounded-md border p-3">
+              <Badge
+                className="w-fit"
+                variant={copilot.source === "ai" ? "secondary" : "outline"}
+              >
+                {copilot.source === "ai" ? "תשובת AI" : "סיכום מדדים (ללא AI)"}
+              </Badge>
+              <p className="text-sm whitespace-pre-line">{copilot.answer}</p>
+            </div>
+          ) : copilotQuestion ? (
+            <p className="text-muted-foreground text-sm">
+              לא ניתן היה להפיק תשובה כרגע.
+            </p>
+          ) : null}
+        </CardContent>
+      </Card>
 
       <Card className="mt-6 rounded-md">
         <CardHeader>
