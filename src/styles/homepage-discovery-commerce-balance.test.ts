@@ -37,7 +37,7 @@ describe("homepage boutique commerce bridge", () => {
     expect(home).toContain('href="/search"');
     expect(home).toContain('id="collections"');
     expect(home).toContain('id="featured"');
-    expect(home).toContain('title="Icons of Summer"');
+    expect(home).toContain('title="חדש באתר"');
     expect(home).not.toContain('title="חדש בעונה."');
     expect(home).not.toContain('id="materials"');
     expect(home).toContain('id="about-elysia"');
@@ -54,8 +54,8 @@ describe("homepage boutique commerce bridge", () => {
     expect(home).toContain("home-story-secondary-note");
     expect(home).toContain("storySignatureNote");
     expect(home).toContain("<NewsletterForm />");
-    expect(home).toContain("data-title-direction={titleDirection}");
-    expect(home).toContain('data-title-direction="ltr"');
+    expect(home).toContain("<CommerceSectionHeader");
+    expect(home).toContain('data-title-direction="rtl"');
 
     expect(home).not.toContain('href="#waitlist"');
     expect(home).not.toContain("First collection coming soon");
