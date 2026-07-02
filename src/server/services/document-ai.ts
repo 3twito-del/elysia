@@ -180,6 +180,18 @@ function persistExtraction(extraction: InvoiceExtraction, source: string) {
   });
 }
 
+export async function getDocumentExtraction(id: string) {
+  return db.documentExtraction.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      invoiceNumber: true,
+      invoiceDate: true,
+      linesText: true,
+    },
+  });
+}
+
 export async function listDocumentExtractions(limit = 15) {
   const rows = await db.documentExtraction.findMany({
     orderBy: { createdAt: "desc" },

@@ -36,6 +36,7 @@ import { createQualityInspection } from "~/server/services/quality";
 import {
   extractInvoiceDocument,
   extractInvoiceFromImage,
+  getDocumentExtraction,
 } from "~/server/services/document-ai";
 import {
   approvePurchaseRequisition,
@@ -411,6 +412,43 @@ export async function extractInvoiceDocumentAction(formData: FormData) {
   if (!text.trim()) throw new Error("יש להדביק טקסט חשבונית.");
 
   await extractInvoiceDocument({ text });
+
+  revalidatePath("/admin/erp");
+}
+
+export async function createInvoiceFromExtractionAction(formData: FormData) {
+  const admin = await requireAdmin("ERP_WRITE");
+
+  const extractionId = stringValue(formData.get("extractionId"));
+  const vendorId = stringValue(formData.get("vendorId"));
+  if (!extractionId) throw new Error("חסר מזהה חילוץ.");
+  if (!vendorId) throw new Error("יש לבחור ספק תואם.");
+
+  const extraction = await getDocumentExtraction(extractionId);
+  if (!extraction) throw new Error("חילוץ לא נמצא.");
+
+  const lines = parseInvoiceLines(extraction.linesText ?? "");
+  if (lines.length === 0) {
+    throw new Error("אין שורות תקינות בחילוץ ליצירת חשבונית.");
+  }
+
+  const parsedDate = extraction.invoiceDate
+    ? new Date(extraction.invoiceDate)
+    : null;
+  const invoiceDate =
+    parsedDate && !Number.isNaN(parsedDate.getTime()) ? parsedDate : new Date();
+
+  const extractedNumber = extraction.invoiceNumber?.trim();
+  await createVendorInvoice({
+    vendorId,
+    invoiceNumber:
+      extractedNumber && extractedNumber.length > 0
+        ? extractedNumber
+        : `DOC-${Date.now().toString(36)}`,
+    invoiceDate,
+    lines,
+    createdById: admin.id,
+  });
 
   revalidatePath("/admin/erp");
 }

@@ -38,6 +38,7 @@ import {
   disassembleKitAction,
   extractInvoiceDocumentAction,
   extractInvoiceImageAction,
+  createInvoiceFromExtractionAction,
   createQualityInspectionAction,
   approvePurchaseRequisitionAction,
   applyLandedCostAction,
@@ -617,12 +618,13 @@ export default async function AdminErpPage({
                 <TableHead>ספק / מספר</TableHead>
                 <TableHead>תאריך</TableHead>
                 <TableHead>שורות (מוכן להעתקה)</TableHead>
+                <TableHead>צור טיוטת AP</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {documentExtractions.length === 0 ? (
                 <TableEmptyRow
-                  colSpan={3}
+                  colSpan={4}
                   description="טרם בוצעו חילוצים."
                   icon={ReceiptText}
                   title="אין חילוצים"
@@ -648,6 +650,38 @@ export default async function AdminErpPage({
                       <pre className="whitespace-pre-wrap font-sans">
                         {extraction.linesText ?? "—"}
                       </pre>
+                    </TableCell>
+                    <TableCell>
+                      <form
+                        action={createInvoiceFromExtractionAction}
+                        className="flex flex-wrap items-center gap-1"
+                      >
+                        <input
+                          name="extractionId"
+                          type="hidden"
+                          value={extraction.id}
+                        />
+                        <select
+                          aria-label="ספק תואם"
+                          autoComplete="off"
+                          className="glass-control h-8 rounded-md border px-2 text-xs"
+                          defaultValue=""
+                          name="vendorId"
+                          required
+                        >
+                          <option disabled value="">
+                            בחר ספק…
+                          </option>
+                          {vendors.map((vendor) => (
+                            <option key={vendor.id} value={vendor.id}>
+                              {vendor.name}
+                            </option>
+                          ))}
+                        </select>
+                        <Button size="sm" type="submit" variant="outline">
+                          צור טיוטה
+                        </Button>
+                      </form>
                     </TableCell>
                   </TableRow>
                 ))
