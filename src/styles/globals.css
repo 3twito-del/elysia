@@ -314,12 +314,18 @@
     font-family: var(--font-hebrew-sans);
     font-feature-settings: "kern" 1;
     text-rendering: optimizeLegibility;
+    /* Tint native controls (checkboxes, radios) to the brand instead of the
+       browser default blue; `--action-primary` already adapts per theme. */
+    accent-color: var(--action-primary);
     scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
     scrollbar-width: thin;
   }
   html {
     @apply font-sans;
     scroll-padding-top: var(--anchor-scroll-offset);
+    /* Drop the grey/blue tap flash on touch; focus-visible and active states
+       already carry interaction feedback. */
+    -webkit-tap-highlight-color: transparent;
     scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
     scrollbar-gutter: stable;
     scrollbar-width: thin;
@@ -695,6 +701,17 @@
   [data-slot="table-container"]
 )::-webkit-scrollbar-corner {
   background: transparent;
+}
+
+/* Selected text carries a quiet brand tint rather than the browser default. */
+::selection {
+  background: var(--brand-ink);
+  color: var(--brand-porcelain);
+}
+
+.dark ::selection {
+  background: var(--brand-champagne);
+  color: var(--brand-espresso);
 }
 
 .skip-link {
