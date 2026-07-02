@@ -92,6 +92,81 @@ export async function extractInvoiceDocument(input: { text: string }) {
     throw new Error("לא ניתן היה לחלץ נתונים מהמסמך כרגע.");
   }
 
+  return persistExtraction(extraction, "ai");
+}
+
+const EXTRACTION_SYSTEM =
+  "אתה מחלץ שדות מחשבונית ספק. החזר שם ספק, מספר חשבונית, תאריך, מטבע, סכום כולל ושורות (תיאור, כמות, מחיר יחידה). חלץ רק מה שמופיע במסמך — אל תמציא.";
+
+const SUPPORTED_IMAGE_TYPES = new Set([
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+  "application/pdf",
+]);
+const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+
+/** Extracts a vendor-invoice draft from an uploaded image/PDF via vision. */
+export async function extractInvoiceFromImage(input: {
+  data: Uint8Array;
+  mediaType: string;
+}) {
+  if (!SUPPORTED_IMAGE_TYPES.has(input.mediaType)) {
+    throw new Error("סוג קובץ לא נתמך (PNG/JPEG/WEBP/PDF).");
+  }
+  if (input.data.byteLength === 0) throw new Error("קובץ ריק.");
+  if (input.data.byteLength > MAX_IMAGE_BYTES) {
+    throw new Error("הקובץ גדול מדי (עד 8MB).");
+  }
+
+  const resolved = resolveAiChatModel();
+  if (getResolvedAiModelReadinessError(resolved)) {
+    throw new Error("חילוץ מסמכים דורש מפתח AI מוגדר.");
+  }
+
+  let extraction: InvoiceExtraction;
+  try {
+    const generated = await generateText({
+      abortSignal: AbortSignal.timeout(DOC_AI_TIMEOUT_MS),
+      maxOutputTokens: getAiMaxOutputTokens(),
+      maxRetries: 0,
+      model: resolved.model,
+      system: EXTRACTION_SYSTEM,
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "text", text: "חלץ את פרטי החשבונית מהמסמך המצורף." },
+            { type: "image", image: input.data, mediaType: input.mediaType },
+          ],
+        },
+      ],
+      output: Output.object({ schema: extractionSchema }),
+      temperature: 0,
+    });
+    extraction = generated.output;
+    await recordAiProviderUsage({
+      provider: resolved.provider,
+      model: resolved.modelId,
+      purpose: "chat",
+      status: "succeeded",
+      usage: generated.usage,
+    });
+  } catch (error) {
+    await recordAiProviderUsage({
+      provider: resolved.provider,
+      model: resolved.modelId,
+      purpose: "chat",
+      status: isAiProviderQuotaError(error) ? "quota_exhausted" : "failed",
+      metadata: { error: getErrorMessage(error) },
+    });
+    throw new Error("לא ניתן היה לחלץ נתונים מהתמונה כרגע.");
+  }
+
+  return persistExtraction(extraction, "ai-image");
+}
+
+function persistExtraction(extraction: InvoiceExtraction, source: string) {
   return db.documentExtraction.create({
     data: {
       vendorName: extraction.vendorName ?? null,
@@ -100,6 +175,7 @@ export async function extractInvoiceDocument(input: { text: string }) {
       currency: extraction.currency ?? null,
       total: extraction.total ?? null,
       linesText: extractionToLinesText(extraction.lines),
+      source,
     },
   });
 }

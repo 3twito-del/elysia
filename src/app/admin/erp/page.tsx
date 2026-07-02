@@ -37,6 +37,7 @@ import {
   createWorkOrderAction,
   disassembleKitAction,
   extractInvoiceDocumentAction,
+  extractInvoiceImageAction,
   createQualityInspectionAction,
   approvePurchaseRequisitionAction,
   applyLandedCostAction,
@@ -576,6 +577,7 @@ export default async function AdminErpPage({
           </CardTitle>
         </CardHeader>
         <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
+          <div className="grid gap-3">
           <form action={extractInvoiceDocumentAction} className="grid gap-2">
             <p className="text-muted-foreground text-sm">
               הדבק טקסט חשבונית ספק — ה-AI מחלץ ספק, מספר, תאריך ושורות לטיוטת AP
@@ -587,9 +589,27 @@ export default async function AdminErpPage({
               rows={6}
             />
             <Button className="w-fit" size="sm" type="submit">
-              חלץ נתונים
+              חלץ מטקסט
             </Button>
           </form>
+
+          <form
+            action={extractInvoiceImageAction}
+            className="border-border/60 grid gap-2 border-t pt-3"
+          >
+            <p className="text-muted-foreground text-xs font-medium">
+              או העלה תמונה/PDF של החשבונית (Gemini vision)
+            </p>
+            <Input
+              accept="image/png,image/jpeg,image/webp,application/pdf"
+              name="documentImage"
+              type="file"
+            />
+            <Button className="w-fit" size="sm" type="submit" variant="outline">
+              חלץ מקובץ
+            </Button>
+          </form>
+          </div>
 
           <Table>
             <TableHeader>

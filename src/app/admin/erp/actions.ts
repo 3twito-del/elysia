@@ -33,7 +33,10 @@ import {
   createLandedCost,
 } from "~/server/services/landed-cost";
 import { createQualityInspection } from "~/server/services/quality";
-import { extractInvoiceDocument } from "~/server/services/document-ai";
+import {
+  extractInvoiceDocument,
+  extractInvoiceFromImage,
+} from "~/server/services/document-ai";
 import {
   approvePurchaseRequisition,
   convertRequisitionToPo,
@@ -408,6 +411,20 @@ export async function extractInvoiceDocumentAction(formData: FormData) {
   if (!text.trim()) throw new Error("יש להדביק טקסט חשבונית.");
 
   await extractInvoiceDocument({ text });
+
+  revalidatePath("/admin/erp");
+}
+
+export async function extractInvoiceImageAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const file = formData.get("documentImage");
+  if (!(file instanceof File) || file.size === 0) {
+    throw new Error("יש לבחור קובץ חשבונית (תמונה/PDF).");
+  }
+
+  const data = new Uint8Array(await file.arrayBuffer());
+  await extractInvoiceFromImage({ data, mediaType: file.type });
 
   revalidatePath("/admin/erp");
 }
