@@ -5,7 +5,6 @@ import {
   ChevronLeft,
   FileText,
   Heart,
-  LayoutDashboard,
   LockKeyhole,
   LogOut,
   Mail,
@@ -24,6 +23,8 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 
+import { AdminSessionActions } from "./_components/admin-session-actions";
+import { BoutiqueStatePage } from "./_components/boutique-state-page";
 import { CustomerOtpForm } from "./_components/customer-otp-form";
 import { CustomerAddressForm } from "./_components/customer-address-form";
 import { GuestWishlistMergeNotice } from "./_components/guest-wishlist-merge-notice";
@@ -34,7 +35,8 @@ import {
   createAccountOrderTimeline,
   getCurrentOrderTimelineEvent,
 } from "./_lib/order-timeline";
-import { getWishlistDecisionSupport } from "./_lib/wishlist-shortlist";
+import { customerWishlistInclude } from "./_lib/customer-wishlist-query";
+import { getWishlistDecisionSupportFromItems } from "./_lib/wishlist-shortlist";
 import { customerLogoutAction, removeWishlistItemAction } from "./actions";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
@@ -134,31 +136,7 @@ async function loadCustomerAccount(userId: string) {
       },
       addresses: true,
       savedSizes: true,
-      wishlist: {
-        include: {
-          items: {
-            orderBy: { createdAt: "desc" },
-            include: {
-              variant: {
-                include: {
-                  product: {
-                    include: {
-                      category: true,
-                      material: true,
-                      media: {
-                        where: { kind: "IMAGE" },
-                        orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }],
-                        take: 1,
-                      },
-                      stone: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+      wishlist: customerWishlistInclude,
     },
   });
 
@@ -171,42 +149,6 @@ async function loadCustomerAccount(userId: string) {
   });
 
   return { ...customer, shopifyOrderMirrors };
-}
-
-function AccountStatePage({
-  actions,
-  description,
-  icon,
-  testId,
-  title,
-}: {
-  actions?: ReactNode;
-  description: ReactNode;
-  icon: LucideIcon;
-  testId: string;
-  title: ReactNode;
-}) {
-  return (
-    <>
-      <SiteHeader />
-      <main className="elysia-page account-boutique-page">
-        <section className="mx-auto flex min-h-[60vh] max-w-3xl items-center px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]">
-          <Card className="account-boutique-panel w-full rounded-md">
-            <CardContent className="p-4 sm:p-6">
-              <EmptyState
-                actions={actions}
-                description={description}
-                icon={icon}
-                testId={testId}
-                title={title}
-                variant="inset"
-              />
-            </CardContent>
-          </Card>
-        </section>
-      </main>
-    </>
-  );
 }
 
 export default async function AccountPage() {
@@ -229,23 +171,8 @@ export default async function AccountPage() {
 
   if (session?.user?.adminUserId) {
     return (
-      <AccountStatePage
-        actions={
-          <>
-            <Button asChild>
-              <Link href="/admin">
-                <LayoutDashboard aria-hidden="true" className="size-4" />
-                מעבר לניהול
-              </Link>
-            </Button>
-            <form action={customerLogoutAction}>
-              <Button className="gap-2" type="submit" variant="outline">
-                <LogOut aria-hidden="true" className="size-4" />
-                יציאה
-              </Button>
-            </form>
-          </>
-        }
+      <BoutiqueStatePage
+        actions={<AdminSessionActions />}
         description="הסשן הנוכחי שייך למשתמש ניהול. האזור האישי מציג נתוני לקוח בלבד, כדי לשמור על הפרדה מסודרת מפרטי הניהול."
         icon={ShieldCheck}
         testId="account-admin-forbidden"
@@ -256,7 +183,7 @@ export default async function AccountPage() {
 
   if (isCustomerSession && accountLoadFailed) {
     return (
-      <AccountStatePage
+      <BoutiqueStatePage
         actions={
           <>
             <Button asChild>
@@ -280,7 +207,7 @@ export default async function AccountPage() {
 
   if (isCustomerSession && !customer) {
     return (
-      <AccountStatePage
+      <BoutiqueStatePage
         actions={
           <>
             <Button asChild>
@@ -390,17 +317,8 @@ export default async function AccountPage() {
   }
 
   const wishlistItems = customer.wishlist?.items ?? [];
-  const wishlistDecisionSupport = getWishlistDecisionSupport(
-    wishlistItems.map((item) => ({
-      categoryName: item.variant.product.category.name,
-      categorySlug: item.variant.product.category.slug,
-      materialName: item.variant.product.material.name,
-      productName: item.variant.product.name,
-      productSlug: item.variant.product.slug,
-      stoneName: item.variant.product.stone?.name,
-      variantName: item.variant.name,
-    })),
-  );
+  const wishlistDecisionSupport =
+    getWishlistDecisionSupportFromItems(wishlistItems);
   const accountOrderCount =
     customer.orders.length + customer.shopifyOrderMirrors.length;
   const latestLocalOrderNumber = customer.orders[0]?.orderNumber;

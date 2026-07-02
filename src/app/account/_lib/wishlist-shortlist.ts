@@ -21,6 +21,41 @@ export type WishlistDecisionSupport = {
   summary: string;
 };
 
+/**
+ * Structural shape of a persisted wishlist item (with its variant/product
+ * relations) as loaded on the account and wishlist pages. Declared here so
+ * both pages can derive decision support without repeating the field mapping.
+ */
+export type WishlistItemWithProduct = {
+  variant: {
+    name?: string | null;
+    product: {
+      name: string;
+      slug: string;
+      category: { name?: string | null; slug?: string | null };
+      material: { name?: string | null };
+      stone?: { name?: string | null } | null;
+    };
+  };
+};
+
+/** Map persisted wishlist items into shortlist facets and derive decision support. */
+export function getWishlistDecisionSupportFromItems(
+  items: readonly WishlistItemWithProduct[],
+): WishlistDecisionSupport | null {
+  return getWishlistDecisionSupport(
+    items.map((item) => ({
+      categoryName: item.variant.product.category.name,
+      categorySlug: item.variant.product.category.slug,
+      materialName: item.variant.product.material.name,
+      productName: item.variant.product.name,
+      productSlug: item.variant.product.slug,
+      stoneName: item.variant.product.stone?.name,
+      variantName: item.variant.name,
+    })),
+  );
+}
+
 export function getWishlistDecisionSupport(
   items: WishlistShortlistItem[],
 ): WishlistDecisionSupport | null {

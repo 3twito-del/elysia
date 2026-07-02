@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { Mail, PackageCheck, Phone, RotateCcw, Truck } from "lucide-react";
+import { PackageCheck, RotateCcw, Truck } from "lucide-react";
 
-import { CompactPageIntro } from "~/components/compact-page-intro";
+import { ContentPageShell } from "~/components/content-page-shell";
+import { LegalContactSection } from "~/components/legal-contact-section";
 import { LegalCookiePreferencesCallout } from "~/components/legal-cookie-preferences-callout";
-import { RevealSection } from "~/components/reveal";
-import { SiteHeader } from "~/components/site-header";
-import { Button } from "~/components/ui/button";
+import { LegalPlaceholderGrid } from "~/components/legal-placeholder-grid";
+import { LegalSectionList } from "~/components/legal-section-list";
 import { Separator } from "~/components/ui/separator";
 import {
   businessLegalPlaceholders,
@@ -88,142 +87,80 @@ export default async function ShippingReturnsPage() {
   const contact = await getPublicContactSettings();
 
   return (
-    <>
-      <SiteHeader />
-
-      <main className="elysia-page">
-        <CompactPageIntro
-          description="מידע על משלוחים, זמני אספקה, ביטול עסקה, החלפות והחזרות באתר Elysia."
-          eyebrow="מדיניות שירות"
-          title="משלוחים, ביטולים והחזרות"
-          variant="content"
-        />
-
-        <RevealSection className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:py-14">
-          <div className="brand-surface p-6 sm:p-8">
+    <ContentPageShell
+      description="מידע על משלוחים, זמני אספקה, ביטול עסקה, החלפות והחזרות באתר Elysia."
+      eyebrow="מדיניות שירות"
+      title="משלוחים, ביטולים והחזרות"
+    >
+      <section
+        aria-labelledby="shipping-returns-human-summary"
+        data-testid="shipping-returns-human-summary"
+      >
+        <div className="flex items-center gap-3">
+          <RotateCcw className="size-5" aria-hidden="true" />
+          <h2
+            className="text-2xl font-semibold"
+            id="shipping-returns-human-summary"
+          >
+            לפני הטקסט המשפטי: כך זה עובד בפועל
+          </h2>
+        </div>
+        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          {humanReturnSummary.map((item) => (
             <section
-              aria-labelledby="shipping-returns-human-summary"
-              data-testid="shipping-returns-human-summary"
+              className="glass-inset rounded-md border p-4"
+              key={item.title}
             >
-              <div className="flex items-center gap-3">
-                <RotateCcw className="size-5" aria-hidden="true" />
-                <h2
-                  className="text-2xl font-semibold"
-                  id="shipping-returns-human-summary"
-                >
-                  לפני הטקסט המשפטי: כך זה עובד בפועל
-                </h2>
-              </div>
-              <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                {humanReturnSummary.map((item) => (
-                  <section
-                    className="glass-inset rounded-md border p-4"
-                    key={item.title}
-                  >
-                    <h3 className="font-medium">{item.title}</h3>
-                    <p className="text-muted-foreground mt-2 text-sm leading-6">
-                      {item.text}
-                    </p>
-                  </section>
-                ))}
-              </div>
-            </section>
-
-            <Separator className="my-8" />
-
-            <section aria-labelledby="business-details">
-              <div className="flex items-center gap-3">
-                <PackageCheck className="size-5" aria-hidden="true" />
-                <h2 className="text-2xl font-semibold" id="business-details">
-                  פרטי העסק
-                </h2>
-              </div>
-              <dl className="mt-5 grid gap-3 sm:grid-cols-2">
-                {businessLegalPlaceholders.map((item) => (
-                  <div
-                    className="glass-inset rounded-md border p-4"
-                    key={item.label}
-                  >
-                    <dt className="text-muted-foreground text-sm">
-                      {item.label}
-                    </dt>
-                    <dd className="mt-1 font-medium">{item.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            </section>
-
-            <Separator className="my-8" />
-
-            <LegalCookiePreferencesCallout testId="shipping-returns-cookie-preferences-callout" />
-
-            <Separator className="my-8" />
-
-            <div className="grid gap-7">
-              {shippingReturnSections.map((section, index) => {
-                const sectionId = `shipping-return-section-${index + 1}`;
-                const Icon = index < 3 ? Truck : RotateCcw;
-
-                return (
-                  <section aria-labelledby={sectionId} key={section.title}>
-                    <div className="flex items-center gap-3">
-                      <Icon className="size-5" aria-hidden="true" />
-                      <h2 className="text-2xl font-semibold" id={sectionId}>
-                        {section.title}
-                      </h2>
-                    </div>
-                    <p className="text-muted-foreground mt-3 leading-8">
-                      {section.text}
-                    </p>
-                  </section>
-                );
-              })}
-            </div>
-
-            <Separator className="my-8" />
-
-            <p className="text-muted-foreground leading-8">
-              {legalSafetySentence}
-            </p>
-
-            <Separator className="my-8" />
-
-            <section aria-labelledby="shipping-returns-contact">
-              <h2
-                className="text-2xl font-semibold"
-                id="shipping-returns-contact"
-              >
-                פתיחת בקשת ביטול, החלפה או החזרה
-              </h2>
-              <p className="text-muted-foreground mt-3 leading-8">
-                ניתן לפתוח פנייה דרך שירות הלקוחות או ליצור קשר בפרטים שלהלן.
-                אין לשלוח מוצר חזרה לפני קבלת הנחיות מהשירות.
+              <h3 className="font-medium">{item.title}</h3>
+              <p className="text-muted-foreground mt-2 text-sm leading-6">
+                {item.text}
               </p>
-              <Button asChild className="mt-5" variant="secondary">
-                <Link href="/service?topic=returns">
-                  פתיחת בקשת החזרה או ביטול
-                </Link>
-              </Button>
-              <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                <a
-                  className="glass-inset hover:text-foreground flex items-center gap-3 rounded-md border p-4 transition"
-                  href={`mailto:${contact.email}`}
-                >
-                  <Mail className="size-5" aria-hidden="true" />
-                  <span>{contact.email}</span>
-                </a>
-                <a
-                  className="glass-inset hover:text-foreground flex items-center gap-3 rounded-md border p-4 transition"
-                  href={contact.phoneHref}
-                >
-                  <Phone className="size-5" aria-hidden="true" />
-                  <span>{contact.phoneDisplay}</span>
-                </a>
-              </div>
             </section>
-          </div>
-        </RevealSection>
-      </main>
-    </>
+          ))}
+        </div>
+      </section>
+
+      <Separator className="my-8" />
+
+      <section aria-labelledby="business-details">
+        <div className="flex items-center gap-3">
+          <PackageCheck className="size-5" aria-hidden="true" />
+          <h2 className="text-2xl font-semibold" id="business-details">
+            פרטי העסק
+          </h2>
+        </div>
+        <LegalPlaceholderGrid items={businessLegalPlaceholders} />
+      </section>
+
+      <Separator className="my-8" />
+
+      <LegalCookiePreferencesCallout testId="shipping-returns-cookie-preferences-callout" />
+
+      <Separator className="my-8" />
+
+      <LegalSectionList
+        icon={Truck}
+        iconFor={(index) => (index < 3 ? Truck : RotateCcw)}
+        idPrefix="shipping-return-section"
+        sections={shippingReturnSections}
+      />
+
+      <Separator className="my-8" />
+
+      <p className="text-muted-foreground leading-8">{legalSafetySentence}</p>
+
+      <Separator className="my-8" />
+
+      <LegalContactSection
+        action={{
+          href: "/service?topic=returns",
+          label: "פתיחת בקשת החזרה או ביטול",
+        }}
+        contact={contact}
+        description="ניתן לפתוח פנייה דרך שירות הלקוחות או ליצור קשר בפרטים שלהלן. אין לשלוח מוצר חזרה לפני קבלת הנחיות מהשירות."
+        id="shipping-returns-contact"
+        title="פתיחת בקשת ביטול, החלפה או החזרה"
+      />
+    </ContentPageShell>
   );
 }

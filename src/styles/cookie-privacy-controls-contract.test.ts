@@ -34,9 +34,7 @@ describe("cookie and privacy controls contract", () => {
     expect(banner).toContain('onClick={() => chooseConsent("all")}');
 
     expect(privacyPage).toContain("<CookiePreferencesPanel />");
-    expect(privacyPage).toContain(
-      'href="/service?topic=accessibility-privacy"',
-    );
+    expect(privacyPage).toContain("/service?topic=accessibility-privacy");
   });
 
   it("documents local-only guest storage and consent-gated measurement", () => {

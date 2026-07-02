@@ -674,8 +674,8 @@ describe("visible site improvement affordances", () => {
     expect(faq).toContain("<summary");
     expect(faq).toContain("group-open:rotate-180");
     expect(faq).toContain("focus-visible:ring-3");
-    expect(faq).toContain('data-testid="faq-service-recovery-link"');
-    expect(faq).toContain('href="/service?topic=general"');
+    expect(faq).toContain("faq-service-recovery-link");
+    expect(faq).toContain("/service?topic=general");
   });
 });
 

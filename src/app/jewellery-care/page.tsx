@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AlertTriangle, Droplets, ShieldCheck, Sparkles } from "lucide-react";
 
-import { CompactPageIntro } from "~/components/compact-page-intro";
+import { ContentPageShell } from "~/components/content-page-shell";
 import { LegalCookiePreferencesCallout } from "~/components/legal-cookie-preferences-callout";
-import { RevealSection } from "~/components/reveal";
-import { SiteHeader } from "~/components/site-header";
+import { LegalHighlightCards } from "~/components/legal-highlight-cards";
+import { LegalSectionList } from "~/components/legal-section-list";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 
@@ -47,73 +47,41 @@ const careSections = [
 
 export default function JewelleryCarePage() {
   return (
-    <>
-      <SiteHeader />
+    <ContentPageShell
+      description="הנחיות שימוש, אחסון וניקוי שמסייעות לשמור על התכשיט ולהקטין חשיפה לנזק או רגישות."
+      eyebrow="אחרי הקנייה"
+      title="טיפול בתכשיטים"
+    >
+      <LegalHighlightCards
+        items={[
+          { icon: Droplets, label: "להסיר לפני מים ולחות" },
+          { icon: Sparkles, label: "לאחסן במקום יבש" },
+          { icon: AlertTriangle, label: "להפסיק שימוש במקרה גירוי" },
+        ]}
+      />
 
-      <main className="elysia-page">
-        <CompactPageIntro
-          description="הנחיות שימוש, אחסון וניקוי שמסייעות לשמור על התכשיט ולהקטין חשיפה לנזק או רגישות."
-          eyebrow="אחרי הקנייה"
-          title="טיפול בתכשיטים"
-          variant="content"
-        />
+      <Separator className="my-8" />
 
-        <RevealSection className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:py-14">
-          <div className="brand-surface p-6 sm:p-8">
-            <div className="grid gap-6 sm:grid-cols-3">
-              <div className="glass-inset rounded-md border p-4">
-                <Droplets className="size-5" aria-hidden="true" />
-                <p className="mt-3 font-medium">להסיר לפני מים ולחות</p>
-              </div>
-              <div className="glass-inset rounded-md border p-4">
-                <Sparkles className="size-5" aria-hidden="true" />
-                <p className="mt-3 font-medium">לאחסן במקום יבש</p>
-              </div>
-              <div className="glass-inset rounded-md border p-4">
-                <AlertTriangle className="size-5" aria-hidden="true" />
-                <p className="mt-3 font-medium">להפסיק שימוש במקרה גירוי</p>
-              </div>
-            </div>
+      <LegalCookiePreferencesCallout testId="jewellery-care-cookie-preferences-callout" />
 
-            <Separator className="my-8" />
+      <Separator className="my-8" />
 
-            <LegalCookiePreferencesCallout testId="jewellery-care-cookie-preferences-callout" />
+      <LegalSectionList
+        icon={ShieldCheck}
+        idPrefix="care-section"
+        sections={careSections}
+      />
 
-            <Separator className="my-8" />
+      <Separator className="my-8" />
 
-            <div className="grid gap-7">
-              {careSections.map((section, index) => {
-                const sectionId = `care-section-${index + 1}`;
-
-                return (
-                  <section aria-labelledby={sectionId} key={section.title}>
-                    <div className="flex items-center gap-3">
-                      <ShieldCheck className="size-5" aria-hidden="true" />
-                      <h2 className="text-2xl font-semibold" id={sectionId}>
-                        {section.title}
-                      </h2>
-                    </div>
-                    <p className="text-muted-foreground mt-3 leading-8">
-                      {section.text}
-                    </p>
-                  </section>
-                );
-              })}
-            </div>
-
-            <Separator className="my-8" />
-
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Button asChild>
-                <Link href="/warranty">מדיניות אחריות</Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link href="/service?topic=repair">שאלה על טיפול או תיקון</Link>
-              </Button>
-            </div>
-          </div>
-        </RevealSection>
-      </main>
-    </>
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <Button asChild>
+          <Link href="/warranty">מדיניות אחריות</Link>
+        </Button>
+        <Button asChild variant="outline">
+          <Link href="/service?topic=repair">שאלה על טיפול או תיקון</Link>
+        </Button>
+      </div>
+    </ContentPageShell>
   );
 }

@@ -371,54 +371,47 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                 </>
               }
             />
-          ) : viewMode === "list" ? (
-            <>
-              <RevealGrid
-                className="mt-5 grid gap-3 sm:mt-8"
-                data-testid="search-results-list"
-                variant="compact"
-              >
-                {result.hits.map((product, index) => (
-                  <SearchResultListItem
-                    imagePriority={index < 2}
-                    key={product.slug}
-                    product={product}
-                    searchContext={{
-                      position: (result.page - 1) * result.perPage + index,
-                      query: input.query,
-                    }}
-                  />
-                ))}
-              </RevealGrid>
-
-              <SearchPagination
-                currentPage={result.page}
-                input={input}
-                totalPages={result.totalPages}
-                viewMode={viewMode}
-              />
-            </>
           ) : (
             <>
-              <RevealGrid
-                className="mt-5 grid gap-4 sm:mt-8 sm:grid-cols-2 lg:grid-cols-4"
-                data-testid="search-results-grid"
-                variant="cards"
-              >
-                {result.hits.map((product, index) => (
-                  <ProductCard
-                    density="compact"
-                    imagePriority={index < 4}
-                    imageSizes="(min-width: 1280px) 18rem, (min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    key={product.slug}
-                    product={product}
-                    searchContext={{
-                      position: (result.page - 1) * result.perPage + index,
-                      query: input.query,
-                    }}
-                  />
-                ))}
-              </RevealGrid>
+              {viewMode === "list" ? (
+                <RevealGrid
+                  className="mt-5 grid gap-3 sm:mt-8"
+                  data-testid="search-results-list"
+                  variant="compact"
+                >
+                  {result.hits.map((product, index) => (
+                    <SearchResultListItem
+                      imagePriority={index < 2}
+                      key={product.slug}
+                      product={product}
+                      searchContext={{
+                        position: (result.page - 1) * result.perPage + index,
+                        query: input.query,
+                      }}
+                    />
+                  ))}
+                </RevealGrid>
+              ) : (
+                <RevealGrid
+                  className="mt-5 grid gap-4 sm:mt-8 sm:grid-cols-2 lg:grid-cols-4"
+                  data-testid="search-results-grid"
+                  variant="cards"
+                >
+                  {result.hits.map((product, index) => (
+                    <ProductCard
+                      density="compact"
+                      imagePriority={index < 4}
+                      imageSizes="(min-width: 1280px) 18rem, (min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                      key={product.slug}
+                      product={product}
+                      searchContext={{
+                        position: (result.page - 1) * result.perPage + index,
+                        query: input.query,
+                      }}
+                    />
+                  ))}
+                </RevealGrid>
+              )}
 
               <SearchPagination
                 currentPage={result.page}

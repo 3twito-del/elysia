@@ -175,16 +175,30 @@ describe("accessibility guardrails", () => {
     expect(layout).toContain('id="main-content"');
     expect(layout).toContain("tabIndex={-1}");
 
+    // The shared shell owns the landmark chrome for every content route.
+    const shell = readFileSync(
+      path.join(process.cwd(), "src/components/content-page-shell.tsx"),
+      "utf8",
+    );
+    expect(shell).toContain('<main className="elysia-page">');
+    expect(shell).toContain("<SiteHeader />");
+    expect(shell).toContain("<CompactPageIntro");
+    expect(shell).toContain('variant="content"');
+    expect(shell).toContain("max-w-5xl");
+
+    // Labelled sections may live on the page or in the shared section blocks.
+    const sectionComponents = [
+      "src/components/legal-section-list.tsx",
+      "src/components/legal-contact-section.tsx",
+    ].map((file) => readFileSync(path.join(process.cwd(), file), "utf8"));
+
     for (const route of legalRoutes) {
       const source = readFileSync(path.join(process.cwd(), route.file), "utf8");
-      const sectionLabels = source.match(/<section aria-labelledby=/g) ?? [];
+      const combined = [source, ...sectionComponents].join("\n");
+      const sectionLabels = combined.match(/<section aria-labelledby=/g) ?? [];
 
-      expect(source).toContain('<main className="elysia-page">');
-      expect(source).toContain("<SiteHeader />");
-      expect(source).toContain("<CompactPageIntro");
-      expect(source).toContain('variant="content"');
-      expect(source).toContain("max-w-5xl");
-      expect(source).toContain(`data-testid="${route.requiredLinkTestId}"`);
+      expect(source).toContain("<ContentPageShell");
+      expect(source).toContain(route.requiredLinkTestId);
       expect(sectionLabels.length).toBeGreaterThanOrEqual(2);
     }
 

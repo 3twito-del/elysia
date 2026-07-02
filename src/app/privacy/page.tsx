@@ -1,18 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  Cookie,
-  Database,
-  Mail,
-  Phone,
-  ShieldCheck,
-  UserCheck,
-} from "lucide-react";
+import { Cookie, Database, ShieldCheck, UserCheck } from "lucide-react";
 
-import { CompactPageIntro } from "~/components/compact-page-intro";
+import { ContentPageShell } from "~/components/content-page-shell";
 import { CookiePreferencesPanel } from "~/components/cookie-preferences-panel";
-import { RevealSection } from "~/components/reveal";
-import { SiteHeader } from "~/components/site-header";
+import { LegalContactSection } from "~/components/legal-contact-section";
+import { LegalHighlightCards } from "~/components/legal-highlight-cards";
+import { LegalPlaceholderGrid } from "~/components/legal-placeholder-grid";
+import { LegalSectionList } from "~/components/legal-section-list";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import {
@@ -95,176 +90,108 @@ export default async function PrivacyPage() {
   const contact = await getPublicContactSettings();
 
   return (
-    <>
-      <SiteHeader />
+    <ContentPageShell
+      description="כיצד נאסף, נשמר, משותף ומוגן מידע אישי באתר ובשירות."
+      eyebrow="פרטיות ומידע"
+      title="מדיניות פרטיות"
+    >
+      <section aria-labelledby="privacy-controller">
+        <div className="flex items-center gap-3">
+          <ShieldCheck className="size-5" aria-hidden="true" />
+          <h2 className="text-2xl font-semibold" id="privacy-controller">
+            פרטי בעל השליטה וספקים
+          </h2>
+        </div>
+        <LegalPlaceholderGrid items={privacyProviderPlaceholders} />
+      </section>
 
-      <main className="elysia-page">
-        <CompactPageIntro
-          description="כיצד נאסף, נשמר, משותף ומוגן מידע אישי באתר ובשירות."
-          eyebrow="פרטיות ומידע"
-          title="מדיניות פרטיות"
-          variant="content"
-        />
+      <Separator className="my-8" />
 
-        <RevealSection className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:py-14">
-          <div className="brand-surface p-6 sm:p-8">
-            <section aria-labelledby="privacy-controller">
-              <div className="flex items-center gap-3">
-                <ShieldCheck className="size-5" aria-hidden="true" />
-                <h2 className="text-2xl font-semibold" id="privacy-controller">
-                  פרטי בעל השליטה וספקים
-                </h2>
-              </div>
-              <dl className="mt-5 grid gap-3 sm:grid-cols-2">
-                {privacyProviderPlaceholders.map((item) => (
-                  <div
-                    className="glass-inset rounded-md border p-4"
-                    key={item.label}
-                  >
-                    <dt className="text-muted-foreground text-sm">
-                      {item.label}
-                    </dt>
-                    <dd className="mt-1 font-medium">{item.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            </section>
+      <LegalHighlightCards
+        items={[
+          { icon: Database, label: "מידע שנמסר ונוצר באתר" },
+          { icon: Cookie, label: "מדידה רק לאחר הסכמה" },
+          { icon: UserCheck, label: "זכויות עיון, תיקון ומחיקה" },
+        ]}
+      />
 
-            <Separator className="my-8" />
+      <Separator className="my-8" />
 
-            <div className="grid gap-6 sm:grid-cols-3">
-              <div className="glass-inset rounded-md border p-4">
-                <Database className="size-5" aria-hidden="true" />
-                <p className="mt-3 font-medium">מידע שנמסר ונוצר באתר</p>
-              </div>
-              <div className="glass-inset rounded-md border p-4">
-                <Cookie className="size-5" aria-hidden="true" />
-                <p className="mt-3 font-medium">מדידה רק לאחר הסכמה</p>
-              </div>
-              <div className="glass-inset rounded-md border p-4">
-                <UserCheck className="size-5" aria-hidden="true" />
-                <p className="mt-3 font-medium">זכויות עיון, תיקון ומחיקה</p>
-              </div>
-            </div>
+      <LegalSectionList
+        icon={Database}
+        iconFor={(index) => (index === 5 ? Cookie : Database)}
+        idPrefix="privacy-section"
+        sections={privacySections}
+      />
 
-            <Separator className="my-8" />
+      <Separator className="my-8" />
 
-            <div className="grid gap-7">
-              {privacySections.map((section, index) => {
-                const sectionId = `privacy-section-${index + 1}`;
-                const Icon = index === 5 ? Cookie : Database;
+      <CookiePreferencesPanel />
 
-                return (
-                  <section aria-labelledby={sectionId} key={section.title}>
-                    <div className="flex items-center gap-3">
-                      <Icon className="size-5" aria-hidden="true" />
-                      <h2 className="text-2xl font-semibold" id={sectionId}>
-                        {section.title}
-                      </h2>
-                    </div>
-                    <p className="text-muted-foreground mt-3 leading-8">
-                      {section.text}
-                    </p>
-                  </section>
-                );
-              })}
-            </div>
+      <Separator className="my-8" />
 
-            <Separator className="my-8" />
+      <section aria-labelledby="privacy-first-party-analytics">
+        <h2
+          className="text-2xl font-semibold"
+          id="privacy-first-party-analytics"
+        >
+          מדידת גלישה first-party ו־session replay
+        </h2>
+        <p className="text-muted-foreground mt-3 leading-8">
+          מערכת המדידה של Elysia פועלת בתוך האתר ואינה שולחת נתוני גלישה
+          ל־Google Analytics, Hotjar, PostHog Cloud או שירות SaaS אנליטיקס אחר.
+          היא עשויה לשמור page views, route changes, scroll depth, clicks,
+          חיפושים, משפכי רכישה, attribution ו־session replay ממוסך לצורך שיפור
+          האתר, מדידת קמפיינים ותפעול CRM/ERP/Finance.
+        </p>
+        <p className="text-muted-foreground mt-3 leading-8">
+          Replay נחסם לחלוטין באזורי admin, ושדות קלט, תשלום, סיסמאות ואזורים
+          רגישים ממוסכים או נחסמים לפני שמירה. לא נשמר IP גולמי, ערכי שדות, פרטי
+          תשלום, כתובות מלאות או טלפונים בתוך payload אנליטיקס. נתוני raw
+          analytics ו־rollups נשמרים ללא מחיקה אוטומטית כברירת מחדל עסקית, אך
+          ניתן לפנות לבקשת מחיקה או אנונימיזציה ידנית בכפוף לדין ולזיהוי מתאים.
+        </p>
+      </section>
 
-            <CookiePreferencesPanel />
+      <Separator className="my-8" />
 
-            <Separator className="my-8" />
+      <section
+        aria-labelledby="privacy-local-storage"
+        data-testid="privacy-local-storage-notice"
+      >
+        <h2 className="text-2xl font-semibold" id="privacy-local-storage">
+          אחסון מקומי ומדידה בהסכמה
+        </h2>
+        <p className="text-muted-foreground mt-3 leading-8">
+          מועדפים, צפיות אחרונות, מידות, פעולות לא מקוונות ומזהה PWA נשמרים
+          בדפדפן. מדידה ואירועי שימוש שאינם חיוניים מופעלים לפי העדפות העוגיות.
+        </p>
+      </section>
 
-            <section aria-labelledby="privacy-first-party-analytics">
-              <h2
-                className="text-2xl font-semibold"
-                id="privacy-first-party-analytics"
-              >
-                מדידת גלישה first-party ו־session replay
-              </h2>
-              <p className="text-muted-foreground mt-3 leading-8">
-                מערכת המדידה של Elysia פועלת בתוך האתר ואינה שולחת נתוני גלישה
-                ל־Google Analytics, Hotjar, PostHog Cloud או שירות SaaS אנליטיקס
-                אחר. היא עשויה לשמור page views, route changes, scroll depth,
-                clicks, חיפושים, משפכי רכישה, attribution ו־session replay ממוסך
-                לצורך שיפור האתר, מדידת קמפיינים ותפעול CRM/ERP/Finance.
-              </p>
-              <p className="text-muted-foreground mt-3 leading-8">
-                Replay נחסם לחלוטין באזורי admin, ושדות קלט, תשלום, סיסמאות
-                ואזורים רגישים ממוסכים או נחסמים לפני שמירה. לא נשמר IP גולמי,
-                ערכי שדות, פרטי תשלום, כתובות מלאות או טלפונים בתוך payload
-                אנליטיקס. נתוני raw analytics ו־rollups נשמרים ללא מחיקה
-                אוטומטית כברירת מחדל עסקית, אך ניתן לפנות לבקשת מחיקה או
-                אנונימיזציה ידנית בכפוף לדין ולזיהוי מתאים.
-              </p>
-            </section>
+      <Separator className="my-8" />
 
-            <Separator className="my-8" />
+      <LegalContactSection
+        action={{
+          href: "/service?topic=accessibility-privacy",
+          label: "פתיחת פנייה בנושא פרטיות",
+          testId: "privacy-service-recovery-link",
+        }}
+        contact={contact}
+        description={`למימוש זכויות או בקשת פרטיות יש לציין פרטי זיהוי ומהות פנייה. ${privacySensitiveInfoWarning}`}
+        id="privacy-contact"
+        title="פנייה בנושא פרטיות"
+      />
 
-            <section
-              aria-labelledby="privacy-local-storage"
-              data-testid="privacy-local-storage-notice"
-            >
-              <h2 className="text-2xl font-semibold" id="privacy-local-storage">
-                אחסון מקומי ומדידה בהסכמה
-              </h2>
-              <p className="text-muted-foreground mt-3 leading-8">
-                מועדפים, צפיות אחרונות, מידות, פעולות לא מקוונות ומזהה PWA
-                נשמרים בדפדפן. מדידה ואירועי שימוש שאינם חיוניים מופעלים לפי
-                העדפות העוגיות.
-              </p>
-            </section>
+      <Separator className="my-8" />
 
-            <Separator className="my-8" />
-
-            <section aria-labelledby="privacy-contact">
-              <h2 className="text-2xl font-semibold" id="privacy-contact">
-                פנייה בנושא פרטיות
-              </h2>
-              <p className="text-muted-foreground mt-3 leading-8">
-                למימוש זכויות או בקשת פרטיות יש לציין פרטי זיהוי ומהות פנייה.
-                {` ${privacySensitiveInfoWarning}`}
-              </p>
-              <Button asChild className="mt-5" variant="secondary">
-                <Link
-                  data-testid="privacy-service-recovery-link"
-                  href="/service?topic=accessibility-privacy"
-                >
-                  פתיחת פנייה בנושא פרטיות
-                </Link>
-              </Button>
-              <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                <a
-                  className="glass-inset hover:text-foreground flex items-center gap-3 rounded-md border p-4 transition"
-                  href={`mailto:${contact.email}`}
-                >
-                  <Mail className="size-5" aria-hidden="true" />
-                  <span>{contact.email}</span>
-                </a>
-                <a
-                  className="glass-inset hover:text-foreground flex items-center gap-3 rounded-md border p-4 transition"
-                  href={contact.phoneHref}
-                >
-                  <Phone className="size-5" aria-hidden="true" />
-                  <span>{contact.phoneDisplay}</span>
-                </a>
-              </div>
-            </section>
-
-            <Separator className="my-8" />
-
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-              <p className="text-muted-foreground text-sm">
-                עודכן לאחרונה: 23 ביוני 2026
-              </p>
-              <Button asChild>
-                <Link href="/terms">לתקנון</Link>
-              </Button>
-            </div>
-          </div>
-        </RevealSection>
-      </main>
-    </>
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <p className="text-muted-foreground text-sm">
+          עודכן לאחרונה: 23 ביוני 2026
+        </p>
+        <Button asChild>
+          <Link href="/terms">לתקנון</Link>
+        </Button>
+      </div>
+    </ContentPageShell>
   );
 }

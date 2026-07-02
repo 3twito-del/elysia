@@ -3,17 +3,17 @@ import Link from "next/link";
 import {
   AlertTriangle,
   Heart,
-  LayoutDashboard,
   LogOut,
   Search,
   Trash2,
   UserRound,
-  type LucideIcon,
 } from "lucide-react";
-import type { ReactNode } from "react";
 
+import { AdminSessionActions } from "../account/_components/admin-session-actions";
+import { BoutiqueStatePage } from "../account/_components/boutique-state-page";
 import { GuestWishlistMergeNotice } from "../account/_components/guest-wishlist-merge-notice";
-import { getWishlistDecisionSupport } from "../account/_lib/wishlist-shortlist";
+import { customerWishlistInclude } from "../account/_lib/customer-wishlist-query";
+import { getWishlistDecisionSupportFromItems } from "../account/_lib/wishlist-shortlist";
 import {
   customerLogoutAction,
   removeWishlistItemAction,
@@ -41,31 +41,7 @@ async function loadCustomerWishlist(userId: string) {
   return db.customer.findUnique({
     where: { userId },
     include: {
-      wishlist: {
-        include: {
-          items: {
-            orderBy: { createdAt: "desc" },
-            include: {
-              variant: {
-                include: {
-                  product: {
-                    include: {
-                      category: true,
-                      material: true,
-                      media: {
-                        where: { kind: "IMAGE" },
-                        orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }],
-                        take: 1,
-                      },
-                      stone: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+      wishlist: customerWishlistInclude,
     },
   });
 }
@@ -97,23 +73,9 @@ export default async function WishlistPage() {
 
   if (session?.user?.adminUserId) {
     return (
-      <WishlistStatePage
-        actions={
-          <>
-            <Button asChild>
-              <Link href="/admin">
-                <LayoutDashboard aria-hidden="true" className="size-4" />
-                מעבר לניהול
-              </Link>
-            </Button>
-            <form action={customerLogoutAction}>
-              <Button className="gap-2" type="submit" variant="outline">
-                <LogOut aria-hidden="true" className="size-4" />
-                יציאה
-              </Button>
-            </form>
-          </>
-        }
+      <BoutiqueStatePage
+        className="wishlist-boutique-page"
+        actions={<AdminSessionActions />}
         description="מועדפים מוצגים ללקוחות בלבד, כדי להפריד בין חשבון ניהול לבין תכשיטים ששומרים לעצמך."
         icon={UserRound}
         testId="wishlist-admin-forbidden"
@@ -124,7 +86,8 @@ export default async function WishlistPage() {
 
   if (isCustomerSession && wishlistLoadFailed) {
     return (
-      <WishlistStatePage
+      <BoutiqueStatePage
+        className="wishlist-boutique-page"
         actions={
           <>
             <Button asChild>
@@ -144,78 +107,35 @@ export default async function WishlistPage() {
   }
 
   return (
-    <main className="elysia-page account-boutique-page wishlist-boutique-page">
+    <>
       <SiteHeader />
-      <CompactPageIntro
-        className="account-entry-intro account-boutique-hero wishlist-boutique-hero"
-        description="התכשיטים ששמרת להשוואה, בדיקת מידה או מעבר לרכישה."
-        eyebrow="מועדפים"
-        title="מועדפים"
-        variant="checkout"
-      />
-      <RevealSection
-        className="account-boutique-section mx-auto max-w-7xl scroll-mt-24 px-[var(--ui-page-x)] py-7 sm:scroll-mt-28 sm:py-10 lg:px-[var(--ui-page-x-wide)]"
-        data-testid="wishlist-page-content"
-      >
-        {customer ? (
-          <CustomerWishlistPanel customer={customer} />
-        ) : (
-          <GuestWishlistProducts />
-        )}
-      </RevealSection>
-    </main>
-  );
-}
-
-function WishlistStatePage({
-  actions,
-  description,
-  icon,
-  testId,
-  title,
-}: {
-  actions?: ReactNode;
-  description: ReactNode;
-  icon: LucideIcon;
-  testId: string;
-  title: ReactNode;
-}) {
-  const Icon = icon;
-
-  return (
-    <main className="elysia-page account-boutique-page wishlist-boutique-page">
-      <SiteHeader />
-      <section className="mx-auto flex min-h-[60vh] max-w-3xl items-center px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]">
-        <Card className="account-boutique-panel w-full rounded-md">
-          <CardContent className="p-4 sm:p-6">
-            <EmptyState
-              actions={actions}
-              description={description}
-              icon={Icon}
-              testId={testId}
-              title={title}
-              variant="inset"
-            />
-          </CardContent>
-        </Card>
-      </section>
-    </main>
+      <main className="elysia-page account-boutique-page wishlist-boutique-page">
+        <CompactPageIntro
+          className="account-entry-intro account-boutique-hero wishlist-boutique-hero"
+          description="התכשיטים ששמרת להשוואה, בדיקת מידה או מעבר לרכישה."
+          eyebrow="מועדפים"
+          title="מועדפים"
+          variant="checkout"
+        />
+        <RevealSection
+          className="account-boutique-section mx-auto max-w-7xl scroll-mt-24 px-[var(--ui-page-x)] py-7 sm:scroll-mt-28 sm:py-10 lg:px-[var(--ui-page-x-wide)]"
+          data-testid="wishlist-page-content"
+        >
+          {customer ? (
+            <CustomerWishlistPanel customer={customer} />
+          ) : (
+            <GuestWishlistProducts />
+          )}
+        </RevealSection>
+      </main>
+    </>
   );
 }
 
 function CustomerWishlistPanel({ customer }: { customer: CustomerWishlist }) {
   const wishlistItems = customer.wishlist?.items ?? [];
-  const wishlistDecisionSupport = getWishlistDecisionSupport(
-    wishlistItems.map((item) => ({
-      categoryName: item.variant.product.category.name,
-      categorySlug: item.variant.product.category.slug,
-      materialName: item.variant.product.material.name,
-      productName: item.variant.product.name,
-      productSlug: item.variant.product.slug,
-      stoneName: item.variant.product.stone?.name,
-      variantName: item.variant.name,
-    })),
-  );
+  const wishlistDecisionSupport =
+    getWishlistDecisionSupportFromItems(wishlistItems);
 
   return (
     <Card
