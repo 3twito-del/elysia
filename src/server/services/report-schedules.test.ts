@@ -4,7 +4,21 @@ import {
   computeNextRun,
   isScheduleDue,
   normalizeFrequency,
+  parseRecipients,
 } from "./report-schedules";
+
+describe("parseRecipients", () => {
+  it("splits, trims, validates and dedupes emails", () => {
+    expect(
+      parseRecipients("a@x.com, b@y.co\n a@x.com ; not-an-email"),
+    ).toEqual(["a@x.com", "b@y.co"]);
+  });
+
+  it("is empty for null/blank", () => {
+    expect(parseRecipients(null)).toEqual([]);
+    expect(parseRecipients("   ")).toEqual([]);
+  });
+});
 
 describe("normalizeFrequency", () => {
   it("accepts known frequencies, defaults to WEEKLY", () => {

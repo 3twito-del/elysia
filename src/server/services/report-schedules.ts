@@ -1,6 +1,20 @@
+import { notificationProvider } from "~/server/adapters/notifications";
 import { db } from "~/server/db";
 import { toCsv } from "~/server/services/report-engine";
 import { runReport } from "~/server/services/reports";
+
+/** Parses comma/newline-separated recipient emails into a clean list. Pure. */
+export function parseRecipients(input: string | null | undefined): string[] {
+  if (!input) return [];
+  return [
+    ...new Set(
+      input
+        .split(/[,\n;]/)
+        .map((part) => part.trim())
+        .filter((part) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(part)),
+    ),
+  ];
+}
 
 /**
  * Scheduled reports (RPT-003): a saved report runs on a recurring cadence and
@@ -43,6 +57,7 @@ export function isScheduleDue(nextRunAt: Date, now: Date): boolean {
 export async function createReportSchedule(input: {
   reportId: string;
   frequency?: string;
+  recipients?: string;
 }) {
   const report = await db.reportDefinition.findUnique({
     where: { id: input.reportId },
@@ -51,10 +66,12 @@ export async function createReportSchedule(input: {
   if (!report) throw new Error("דוח לא נמצא.");
 
   const frequency = normalizeFrequency(input.frequency);
+  const recipients = parseRecipients(input.recipients);
   return db.reportSchedule.create({
     data: {
       reportId: input.reportId,
       frequency,
+      recipients: recipients.length > 0 ? recipients.join(", ") : null,
       nextRunAt: computeNextRun(frequency, new Date()),
     },
   });
@@ -85,22 +102,42 @@ export async function runDueReportSchedules(
   const due = await db.reportSchedule.findMany({
     where: { isActive: true, nextRunAt: { lte: now } },
     take: input.limit ?? 25,
-    select: { id: true, reportId: true, frequency: true },
+    select: { id: true, reportId: true, frequency: true, recipients: true },
   });
 
   let processed = 0;
   let failed = 0;
+  let delivered = 0;
   for (const schedule of due) {
     try {
       const report = await runReport(schedule.reportId);
+      const csv = toCsv(report.result);
       await db.reportRun.create({
         data: {
           scheduleId: schedule.id,
           reportName: report.name,
           rowCount: report.result.rowCount,
-          csv: toCsv(report.result),
+          csv,
         },
       });
+
+      // Deliver to recipients (best-effort — a send failure never blocks the run).
+      const recipients = parseRecipients(schedule.recipients);
+      for (const to of recipients) {
+        try {
+          await notificationProvider.sendEmail({
+            to,
+            subject: `דוח מתוזמן: ${report.name}`,
+            body: `הדוח "${report.name}" הופק (${report.result.rowCount} שורות).\n\n${csv.slice(0, 20000)}`,
+          });
+          delivered += 1;
+        } catch (sendError) {
+          if (process.env.NODE_ENV === "development") {
+            console.error("[report-schedules] send failed", to, sendError);
+          }
+        }
+      }
+
       await db.reportSchedule.update({
         where: { id: schedule.id },
         data: {
@@ -120,7 +157,7 @@ export async function runDueReportSchedules(
     }
   }
 
-  return { scanned: due.length, processed, failed };
+  return { scanned: due.length, processed, failed, delivered };
 }
 
 export async function listReportSchedules(limit = 30) {

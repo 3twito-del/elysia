@@ -92,6 +92,7 @@ export async function createReportScheduleAction(formData: FormData) {
   await createReportSchedule({
     reportId,
     frequency: stringValue(formData.get("frequency")),
+    recipients: stringValue(formData.get("recipients")),
   });
 
   revalidatePath("/admin/reports");

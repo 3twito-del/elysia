@@ -440,6 +440,10 @@ export default async function AdminReportsPage({ searchParams }: PageProps) {
               <option value="WEEKLY">שבועי</option>
               <option value="MONTHLY">חודשי</option>
             </select>
+            <Input
+              name="recipients"
+              placeholder='נמענים לאימייל (מופרד בפסיק, רשות)'
+            />
             <Button className="w-fit" size="sm" type="submit">
               צור תזמון
             </Button>
