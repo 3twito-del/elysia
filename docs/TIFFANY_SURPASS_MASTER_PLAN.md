@@ -636,6 +636,21 @@ constraints.
   intent; evaluate deterministic and AI-assisted paths.
 - `Acceptance`: target precision/recall and zero-result thresholds are defined
   and met; AI/provider failure silently falls back without console noise.
+- `Progress` (2026-07-02): built the deterministic-path evaluation harness —
+  `src/server/adapters/search-evaluation.ts` `evaluateLexicalRetrieval(products,
+  cases)` scores the real `filterCatalogProducts` (the pure filter behind local
+  search) over a labeled query corpus, returning precision / recall /
+  zero-result accuracy with no DB, Typesense, or AI dependency. A labeled Hebrew
+  corpus (exact stone/material terms, facet + budget filters, misspelling,
+  out-of-vocabulary, and a reversed multi-token case) proves the deterministic
+  path retrieves in-vocabulary single-term/facet queries exactly (precision =
+  recall = 1) and correctly returns nothing for no-match intent
+  (zero-result accuracy = 1), while documenting the whole-query substring
+  limitation that the semantic/AI path must recover. The harness is reusable
+  against `listCatalogProducts()` output and extensible to score the AI path.
+  Remaining E-02 scope: transliteration/morphology corpus depth, the semantic/AI
+  path evaluation (needs embeddings/provider), and running against the real
+  catalog (needs owner-populated data).
 
 ### E-03 Make search ranking merchandiser-aware
 
