@@ -36,7 +36,10 @@ import {
   recordMaintenance,
   setMaintenanceScheduleStatus,
 } from "~/server/services/asset-maintenance";
-import { recordDunningContact } from "~/server/services/dunning";
+import {
+  recordDunningContact,
+  sendDunningReminder,
+} from "~/server/services/dunning";
 import { setExchangeRate } from "~/server/services/currency-fx";
 import { createLedgerAccount } from "~/server/services/chart-of-accounts";
 import { seedChartOfAccounts } from "~/server/services/ledger";
@@ -424,6 +427,17 @@ export async function setExchangeRateAction(formData: FormData) {
     rateToBase: Number(stringValue(formData.get("rateToBase"))) || 0,
     effectiveDate: effectiveRaw ? new Date(effectiveRaw) : new Date(),
   });
+
+  revalidatePath("/admin/finance");
+}
+
+export async function sendDunningReminderAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const customerInvoiceId = stringValue(formData.get("customerInvoiceId"));
+  if (!customerInvoiceId) throw new Error("חסר מזהה חשבונית.");
+
+  await sendDunningReminder({ customerInvoiceId });
 
   revalidatePath("/admin/finance");
 }

@@ -1,3 +1,4 @@
+import { notificationProvider } from "~/server/adapters/notifications";
 import { db } from "~/server/db";
 
 /**
@@ -130,6 +131,9 @@ export async function getDunningWorklist(limit = 50) {
       return [customer.id, name.length > 0 ? name : (customer.email ?? "לקוח")];
     }),
   );
+  const emailById = new Map(
+    customers.map((customer) => [customer.id, customer.email]),
+  );
 
   const lastActions = await db.dunningAction.findMany({
     where: { customerInvoiceId: { in: worklist.map((entry) => entry.id) } },
@@ -154,9 +158,78 @@ export async function getDunningWorklist(limit = 50) {
       customerLabel: customerId
         ? (labelById.get(customerId) ?? "לקוח")
         : "—",
+      customerEmail: customerId ? (emailById.get(customerId) ?? null) : null,
       lastContactLevel: lastAction?.level ?? null,
       lastContactAt: lastAction?.at ?? null,
     };
+  });
+}
+
+/** Builds the reminder email subject + body for a dunning level. Pure. */
+export function buildDunningEmail(input: {
+  invoiceNumber: string;
+  outstanding: number;
+  daysOverdue: number;
+  level: number;
+}): { subject: string; body: string } {
+  const tone =
+    input.level >= 3
+      ? "התראה לפני העברה לגבייה"
+      : input.level === 2
+        ? "תזכורת שנייה"
+        : "תזכורת ידידותית";
+  const subject = `${tone} — חשבונית ${input.invoiceNumber}`;
+  const body = [
+    "שלום,",
+    `חשבונית ${input.invoiceNumber} ביתרה של ₪${input.outstanding} נמצאת באיחור של ${input.daysOverdue} ימים.`,
+    input.level >= 3
+      ? "נבקש להסדיר את התשלום בהקדם כדי להימנע מהמשך הליכי גבייה."
+      : "נשמח אם תסדירו את התשלום בהקדם. אם שולם — התעלמו מהודעה זו.",
+    "תודה, Elysia.",
+  ].join("\n\n");
+  return { subject, body };
+}
+
+/**
+ * Sends a dunning reminder email for an overdue invoice to the customer and logs
+ * the contact. Outbound email via the configured provider.
+ */
+export async function sendDunningReminder(input: { customerInvoiceId: string }) {
+  const invoice = await db.customerInvoice.findUnique({
+    where: { id: input.customerInvoiceId },
+    select: {
+      invoiceNumber: true,
+      total: true,
+      paidTotal: true,
+      dueDate: true,
+      status: true,
+      customer: { select: { email: true } },
+    },
+  });
+  if (!invoice) throw new Error("חשבונית לא נמצאה.");
+
+  const email = invoice.customer?.email;
+  if (!email) throw new Error("ללקוח אין כתובת דוא\"ל לשליחת תזכורת.");
+
+  const outstanding = round2(Number(invoice.total) - Number(invoice.paidTotal));
+  const overdue = daysOverdue(invoice.dueDate, new Date());
+  const level = dunningLevel(overdue);
+
+  const { subject, body } = buildDunningEmail({
+    invoiceNumber: invoice.invoiceNumber,
+    outstanding,
+    daysOverdue: overdue,
+    level,
+  });
+
+  await notificationProvider.sendEmail({ to: email, subject, body });
+
+  return db.dunningAction.create({
+    data: {
+      customerInvoiceId: input.customerInvoiceId,
+      level,
+      note: `תזכורת נשלחה ל-${email}`,
+    },
   });
 }
 

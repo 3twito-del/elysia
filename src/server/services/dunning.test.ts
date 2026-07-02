@@ -1,8 +1,35 @@
 import { describe, expect, it } from "vitest";
 
-import { buildDunningWorklist, daysOverdue, dunningLevel } from "./dunning";
+import {
+  buildDunningEmail,
+  buildDunningWorklist,
+  daysOverdue,
+  dunningLevel,
+} from "./dunning";
 
 const asOf = new Date("2026-04-01T00:00:00Z");
+
+describe("buildDunningEmail", () => {
+  it("escalates the tone by level and includes the invoice details", () => {
+    const gentle = buildDunningEmail({
+      invoiceNumber: "INV-1",
+      outstanding: 500,
+      daysOverdue: 10,
+      level: 1,
+    });
+    expect(gentle.subject).toContain("תזכורת ידידותית");
+    expect(gentle.subject).toContain("INV-1");
+    expect(gentle.body).toContain("500");
+
+    const firm = buildDunningEmail({
+      invoiceNumber: "INV-9",
+      outstanding: 9000,
+      daysOverdue: 95,
+      level: 4,
+    });
+    expect(firm.subject).toContain("גבייה");
+  });
+});
 
 describe("daysOverdue", () => {
   it("counts whole days past due, else 0", () => {

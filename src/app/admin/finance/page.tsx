@@ -28,6 +28,7 @@ import {
   createMaintenanceScheduleAction,
   recordMaintenanceAction,
   recordDunningContactAction,
+  sendDunningReminderAction,
   setExchangeRateAction,
   toggleMaintenanceScheduleAction,
   createCustomerInvoiceAction,
@@ -2114,17 +2115,31 @@ export default async function AdminFinancePage() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <form action={recordDunningContactAction}>
-                        <input
-                          name="customerInvoiceId"
-                          type="hidden"
-                          value={entry.id}
-                        />
-                        <input name="level" type="hidden" value={entry.level} />
-                        <Button size="sm" type="submit" variant="outline">
-                          תעד פנייה
-                        </Button>
-                      </form>
+                      <div className="flex flex-wrap gap-1">
+                        {entry.customerEmail ? (
+                          <form action={sendDunningReminderAction}>
+                            <input
+                              name="customerInvoiceId"
+                              type="hidden"
+                              value={entry.id}
+                            />
+                            <Button size="sm" type="submit" variant="outline">
+                              שלח תזכורת
+                            </Button>
+                          </form>
+                        ) : null}
+                        <form action={recordDunningContactAction}>
+                          <input
+                            name="customerInvoiceId"
+                            type="hidden"
+                            value={entry.id}
+                          />
+                          <input name="level" type="hidden" value={entry.level} />
+                          <Button size="sm" type="submit" variant="ghost">
+                            תעד פנייה
+                          </Button>
+                        </form>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))
