@@ -3282,6 +3282,23 @@ model CostEntry {
   @@index([costCenterId, period])
 }
 
+/// An AI-extracted draft from a pasted vendor-invoice document (AI-004,
+/// Document-AI). Read-only extraction for human review before creating AP.
+model DocumentExtraction {
+  id            String   @id @default(cuid())
+  vendorName    String?
+  invoiceNumber String?
+  invoiceDate   String?
+  currency      String?
+  total         Decimal? @db.Decimal(14, 2)
+  /// parsed lines as "description | quantity | unitCost" (one per line)
+  linesText     String?
+  source        String   @default("ai")
+  createdAt     DateTime @default(now())
+
+  @@index([createdAt])
+}
+
 /// An effective-dated exchange rate to the base currency (ILS) for multi-currency
 /// accounting and FX revaluation (FIN-GL-004). rateToBase = base units per 1
 /// unit of `currency`. Rates are operator-entered — verify against a source.

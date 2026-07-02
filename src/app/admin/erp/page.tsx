@@ -36,6 +36,7 @@ import {
   createVendorInvoiceAction,
   createWorkOrderAction,
   disassembleKitAction,
+  extractInvoiceDocumentAction,
   createQualityInspectionAction,
   approvePurchaseRequisitionAction,
   applyLandedCostAction,
@@ -79,6 +80,7 @@ import {
   getQualitySummary,
   listQualityInspections,
 } from "~/server/services/quality";
+import { listDocumentExtractions } from "~/server/services/document-ai";
 import {
   listCarriers,
   listShippingRates,
@@ -241,6 +243,8 @@ export default async function AdminErpPage({
     listQualityInspections().catch(() => []),
     getQualitySummary().catch(() => ({ total: 0, passed: 0, failed: 0 })),
   ]);
+
+  const documentExtractions = await listDocumentExtractions().catch(() => []);
 
   const resolvedSearchParams = await searchParams;
   const atpSku = firstParam(resolvedSearchParams.atpSku);
@@ -561,6 +565,75 @@ export default async function AdminErpPage({
               </Table>
             </div>
           ) : null}
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ReceiptText aria-hidden="true" className="size-5" />
+            Document-AI — חילוץ חשבוניות ספק (AI-004)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
+          <form action={extractInvoiceDocumentAction} className="grid gap-2">
+            <p className="text-muted-foreground text-sm">
+              הדבק טקסט חשבונית ספק — ה-AI מחלץ ספק, מספר, תאריך ושורות לטיוטת AP
+              לבדיקה אנושית. חילוץ בלבד, אינו רושם לספרים. דורש מפתח AI.
+            </p>
+            <Textarea
+              name="documentText"
+              placeholder="הדבק כאן את טקסט החשבונית…"
+              rows={6}
+            />
+            <Button className="w-fit" size="sm" type="submit">
+              חלץ נתונים
+            </Button>
+          </form>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>ספק / מספר</TableHead>
+                <TableHead>תאריך</TableHead>
+                <TableHead>שורות (מוכן להעתקה)</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {documentExtractions.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={3}
+                  description="טרם בוצעו חילוצים."
+                  icon={ReceiptText}
+                  title="אין חילוצים"
+                />
+              ) : (
+                documentExtractions.map((extraction) => (
+                  <TableRow key={extraction.id}>
+                    <TableCell className="text-sm">
+                      <div className="font-medium">
+                        {extraction.vendorName ?? "—"}
+                      </div>
+                      <div className="text-muted-foreground text-xs">
+                        {extraction.invoiceNumber ?? "—"}
+                        {extraction.total != null
+                          ? ` · ${formatPrice(extraction.total)}`
+                          : ""}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-xs">
+                      {extraction.invoiceDate ?? "—"}
+                    </TableCell>
+                    <TableCell className="text-xs">
+                      <pre className="whitespace-pre-wrap font-sans">
+                        {extraction.linesText ?? "—"}
+                      </pre>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
 

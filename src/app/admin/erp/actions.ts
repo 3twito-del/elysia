@@ -33,6 +33,7 @@ import {
   createLandedCost,
 } from "~/server/services/landed-cost";
 import { createQualityInspection } from "~/server/services/quality";
+import { extractInvoiceDocument } from "~/server/services/document-ai";
 import {
   approvePurchaseRequisition,
   convertRequisitionToPo,
@@ -397,6 +398,17 @@ export async function convertRequisitionToPoAction(formData: FormData) {
   if (!requisitionId) throw new Error("חסר מזהה דרישה.");
 
   await convertRequisitionToPo({ requisitionId });
+  revalidatePath("/admin/erp");
+}
+
+export async function extractInvoiceDocumentAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const text = stringValue(formData.get("documentText"));
+  if (!text.trim()) throw new Error("יש להדביק טקסט חשבונית.");
+
+  await extractInvoiceDocument({ text });
+
   revalidatePath("/admin/erp");
 }
 
