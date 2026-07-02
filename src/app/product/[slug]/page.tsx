@@ -497,6 +497,9 @@ export default async function ProductPage({
         />
         <RecentlyViewedProducts
           currentSlug={product.slug}
+          excludeSlugs={recommendationRails.flatMap((rail) =>
+            rail.products.map((railProduct) => railProduct.slug),
+          )}
           products={allProducts}
         />
       </RevealSection>

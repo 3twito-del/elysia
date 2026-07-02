@@ -8,9 +8,16 @@ import { useCookieConsentValue } from "~/lib/use-cookie-consent";
 import type { CatalogProduct } from "~/server/services/catalog";
 import { api, TRPCReactProvider } from "~/trpc/react";
 
+import { selectRecentlyViewedSlugs } from "../_lib/recently-viewed";
+
 type RecentlyViewedProductsProps = {
   className?: string;
   currentSlug?: string;
+  /**
+   * Slugs already shown elsewhere on the page (e.g. the recommendation rails),
+   * excluded so the same product never appears twice on one route.
+   */
+  excludeSlugs?: readonly string[];
   gridClassName?: string;
   heading?: string;
   id?: string;
@@ -34,6 +41,7 @@ export function RecentlyViewedProducts(props: RecentlyViewedProductsProps) {
 function RecentlyViewedProductsContent({
   className = "border-border mx-auto mt-9 max-w-7xl border-t pt-7",
   currentSlug,
+  excludeSlugs,
   gridClassName = "ui-equal-grid mt-5 grid gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-3",
   heading = "נצפו לאחרונה",
   id,
@@ -46,8 +54,15 @@ function RecentlyViewedProductsContent({
     [consentValue],
   );
   const candidateSlugs = useMemo(
-    () => slugs.filter((slug) => slug !== currentSlug).slice(0, limit),
-    [slugs, currentSlug, limit],
+    () =>
+      selectRecentlyViewedSlugs({
+        excludeSlugs: currentSlug
+          ? [currentSlug, ...(excludeSlugs ?? [])]
+          : (excludeSlugs ?? []),
+        limit,
+        slugs,
+      }),
+    [slugs, currentSlug, excludeSlugs, limit],
   );
 
   const shouldFetch = products === undefined && candidateSlugs.length > 0;

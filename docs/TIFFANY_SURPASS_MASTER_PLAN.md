@@ -819,6 +819,18 @@ constraints.
   accurately.
 - `Acceptance`: no misleading personalization claim; no rail buries ownership
   or service content.
+- `Progress` (2026-07-02): audited the recommendation surfaces. PDP rails
+  (`product-recommendation-rails.ts`) already exclude the current product,
+  dedupe across rails via `usedSlugs`, score by relevance/availability/recency,
+  and disclose availability rather than hiding it; the AI normalizer dedupes by
+  slug and discloses source via the `q=ai:` href. Two real gaps were closed:
+  (1) recently-viewed now excludes slugs already shown in the PDP rails, so the
+  same product never appears twice on one route; (2) a shared, unit-tested
+  `selectRecentlyViewedSlugs` helper defensively de-duplicates the untrusted
+  localStorage list (previously two cards could collide on the same React
+  `key`). Remaining F-09 scope (whether to hard-exclude unavailable items vs.
+  the current disclose-and-demote behavior) is an OWNER product decision, not a
+  defect.
 
 ### F-10 Add product structured data completeness
 
