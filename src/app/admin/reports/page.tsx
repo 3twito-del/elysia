@@ -52,6 +52,7 @@ import {
   listRecentReportRuns,
   listReportSchedules,
 } from "~/server/services/report-schedules";
+import { answerNlQuery } from "~/server/services/nl-query";
 
 export const metadata = {
   title: "דוחות | Admin",
@@ -101,6 +102,11 @@ export default async function AdminReportsPage({ searchParams }: PageProps) {
     ? await runReport(reportId).catch(() => null)
     : null;
 
+  const nlQuestion = typeof query.nlq === "string" ? query.nlq : "";
+  const nlResult = nlQuestion
+    ? await answerNlQuery({ question: nlQuestion }).catch(() => null)
+    : null;
+
   return (
     <AdminShell
       active="reports"
@@ -128,6 +134,76 @@ export default async function AdminReportsPage({ searchParams }: PageProps) {
           value="Live"
         />
       </div>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 aria-hidden="true" className="size-5" />
+            שאילתה בשפה טבעית (NL-Query)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          <p className="text-muted-foreground text-sm">
+            שאל בשפה חופשית — ה-AI ממפה לשכבה הסמנטית (מאגר + ממדים + מדדים) ומריץ
+            חי. ללא SQL חופשי, מוגבל למאגרים המוגדרים. דורש מפתח AI.
+          </p>
+          <form className="flex flex-wrap gap-2">
+            <Input
+              className="max-w-md"
+              defaultValue={nlQuestion}
+              name="nlq"
+              placeholder="למשל: הכנסה לפי סניף, או מספר הזמנות לפי סטטוס"
+            />
+            <Button type="submit" variant="outline">
+              <Play aria-hidden="true" className="size-4" />
+              הרץ שאילתה
+            </Button>
+          </form>
+
+          {nlResult?.message ? (
+            <p className="text-muted-foreground text-sm">{nlResult.message}</p>
+          ) : null}
+
+          {nlResult?.result ? (
+            <div className="grid gap-2">
+              <Badge className="w-fit" variant="secondary">
+                {nlResult.datasetLabel} · {nlResult.result.rowCount} שורות
+              </Badge>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    {nlResult.result.dimensions.map((dimension) => (
+                      <TableHead key={dimension.key}>{dimension.label}</TableHead>
+                    ))}
+                    {nlResult.result.measures.map((measure) => (
+                      <TableHead key={measure.key}>{measure.label}</TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {nlResult.result.rows.slice(0, 20).map((row, index) => (
+                    <TableRow key={index}>
+                      {nlResult.result!.dimensions.map((dimension) => (
+                        <TableCell className="text-sm" key={dimension.key}>
+                          {toDisplayString(row.dimensions[dimension.key] ?? "")}
+                        </TableCell>
+                      ))}
+                      {nlResult.result!.measures.map((measure) => (
+                        <TableCell className="text-sm" key={measure.key}>
+                          {formatMeasure(
+                            row.measures[measure.key] ?? 0,
+                            measure.format,
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          ) : null}
+        </CardContent>
+      </Card>
 
       {activeDataset ? (
         <Card className="mt-6 rounded-md">
