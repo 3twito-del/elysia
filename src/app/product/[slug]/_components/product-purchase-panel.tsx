@@ -248,7 +248,7 @@ export function ProductPurchasePanel({
   function handleAddToCart() {
     if (!selectedVariant || !selectedVariantAvailable) {
       setCartMessageTone("error");
-      setCartMessage("התכשיט פתוח דרך השירות לפני הזמנה.");
+      setCartMessage("הפריט זמין להזמנה דרך שירות הלקוחות.");
       return;
     }
 
@@ -318,7 +318,7 @@ export function ProductPurchasePanel({
               ? "מוסיפים לסל"
               : selectedVariantAvailable
                 ? "הוספה לסל"
-                : "לא פנוי כרגע"}
+                : "אזל מהמלאי"}
             <PackageCheck aria-hidden="true" className="size-4" />
           </Button>
         ) : (
@@ -359,7 +359,7 @@ export function ProductPurchasePanel({
               <p className="text-muted-foreground mt-1 text-sm">
                 {selectedVariant
                   ? getVariantDisplayName(selectedVariant)
-                  : "אין התאמה פנויה"}
+                  : "אין מידות זמינות"}
               </p>
             </div>
           </div>
@@ -424,10 +424,10 @@ export function ProductPurchasePanel({
                 {savedSizeMatch.exact
                   ? savedSizeMatch.available
                     ? "המידה המתאימה נבחרה."
-                    : "המידה הזו אינה פנויה כרגע."
+                    : "המידה הזו אינה זמינה כרגע."
                   : savedSizeMatch.available
                     ? "נבחרה המידה הקרובה ביותר הזמינה."
-                    : "המידה הקרובה ביותר אינה פנויה כרגע."}
+                    : "המידה הקרובה ביותר אינה זמינה כרגע."}
               </p>
             </div>
           ) : null}
@@ -497,7 +497,7 @@ export function ProductPurchasePanel({
                 ? "מוסיפים לסל"
                 : selectedVariantAvailable
                   ? "הוספה לסל"
-                  : "לא פנוי כרגע"}
+                  : "אזל מהמלאי"}
               <PackageCheck aria-hidden="true" className="size-4" />
             </Button>
           ) : (
@@ -548,7 +548,7 @@ export function ProductPurchasePanel({
                   לפני שמזמינים
                 </h2>
                 <p className="text-muted-foreground mt-1">
-                  מסירה, החזרה, אחריות, טיפול ושירות מרוכזים כאן לפני ההחלטה.
+                  משלוח, החזרה, אחריות, טיפול ושירות מרוכזים כאן במקום אחד.
                 </p>
               </div>
             </div>

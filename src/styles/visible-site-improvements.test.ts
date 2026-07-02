@@ -103,7 +103,7 @@ describe("visible site improvement affordances", () => {
     expect(gifts).toContain('data-testid="gift-bundle-recommendations"');
     expect(gifts).toContain('data-testid="gift-bundle-pair"');
     expect(gifts).toContain("products: [CatalogProduct, CatalogProduct]");
-    expect(gifts).toContain('contextLabel="חלק מלוק מתנה"');
+    expect(gifts).toContain('contextLabel="מתאים לשילוב במתנה"');
     expect(gifts).toContain("categoryProducts.length < 2");
   });
 

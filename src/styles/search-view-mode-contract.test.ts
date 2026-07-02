@@ -18,8 +18,8 @@ describe("search view mode contract", () => {
     );
     expect(searchPage).not.toContain("data-search-view-active-marker");
     expect(searchPage).toContain('data-active={active ? "true" : "false"}');
-    expect(searchPage).toContain('label: "טבלה"');
-    expect(searchPage).toContain('label: "שורות"');
+    expect(searchPage).toContain('label: "רשת"');
+    expect(searchPage).toContain('label: "רשימה"');
     expect(searchPage).toContain(
       'active\n                ? "border-[var(--foreground)] bg-[var(--foreground)] text-[var(--background)]',
     );
@@ -32,7 +32,7 @@ describe("search view mode contract", () => {
     expect(styles).toContain("background: var(--foreground);");
     expect(styles).toContain("color: var(--background);");
     expect(searchPage).toContain(
-      'return viewMode === "list" ? "שורות" : "טבלה";',
+      'return viewMode === "list" ? "רשימה" : "רשת";',
     );
   });
 
