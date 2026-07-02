@@ -31,9 +31,9 @@ const catalogLinks = [
 ] as const;
 
 const commerceLinks = [
-  { href: "/checkout", label: "סל" },
+  { href: "/checkout", label: "סל הקניות" },
   { href: "/size-guide", label: "מדריך מידות" },
-  { href: "/service", label: "שירות תומך" },
+  { href: "/service", label: "שירות לקוחות" },
   { href: "/faq", label: "שאלות ותשובות" },
 ] as const;
 
@@ -65,14 +65,14 @@ const footerTrustSignals = [
   {
     href: "/shipping-returns",
     icon: PackageCheck,
-    label: "החלפה והחזרה",
-    text: "הסבר אנושי לפני הטקסט המשפטי.",
+    label: "החלפות והחזרות",
+    text: "כל המידע על משלוחים, החזרות וביטול עסקה.",
   },
   {
     href: "/size-guide",
     icon: Ruler,
-    label: "בחירת מידה",
-    text: "מידות טבעות, צמידים ושרשראות לפני הזמנה.",
+    label: "מדריך מידות",
+    text: "איך בוחרים מידה נכונה לפני ההזמנה.",
   },
   {
     href: "/warranty",
@@ -83,8 +83,8 @@ const footerTrustSignals = [
   {
     href: "/service",
     icon: MessageCircle,
-    label: "שירות אישי",
-    text: "מענה עד יום עסקים דרך ערוץ מתועד.",
+    label: "שירות לקוחות",
+    text: "מענה לכל פנייה בתוך יום עסקים אחד.",
   },
 ] as const;
 
@@ -110,19 +110,19 @@ export function SiteFooter() {
               Elysia
             </span>
             <p className="site-footer-brand-text mt-7 hidden max-w-lg text-base leading-8 sm:block sm:text-[1.05rem] sm:leading-9">
-              תכשיטים שנבחרו בזכות עיצוב מדויק, חומרים יפים והנוכחות שהם מביאים
-              לכל יום.
+              ב-Elysia תמצאי תכשיטי כסף 925 וציפוי זהב, לכל יום ולאירועים
+              מיוחדים.
             </p>
             <div className="site-footer-newsletter mt-7 max-w-xl sm:mt-11">
               <p className="site-footer-kicker text-xs font-medium tracking-normal">
-                Elysia Notes
+                הרשמה לניוזלטר
               </p>
               <p className="site-footer-newsletter-copy mt-4 hidden max-w-md text-sm leading-7 sm:block sm:leading-8">
-                קולקציות חדשות, בחירות עונתיות וסיפורים מאחורי התכשיטים.
+                עדכונים על קולקציות חדשות ופריטים נבחרים, ישירות למייל.
               </p>
               <NewsletterForm
-                hintText="נשלח רק כשיש משהו חדש שכדאי לראות."
-                submitLabel="להצטרף"
+                hintText="אפשר לבטל את ההרשמה בכל עת."
+                submitLabel="הרשמה"
                 variant="footer"
               />
             </div>
@@ -234,7 +234,7 @@ function FooterNav({
 function FooterTrustLayer() {
   return (
     <section
-      aria-label="אמון ושירות לפני הזמנה"
+      aria-label="שירות ומידע"
       className="footer-trust-layer mt-16 hidden border-y border-[var(--glass-border)] py-8 sm:block"
       data-testid="footer-trust-layer"
     >

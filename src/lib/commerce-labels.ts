@@ -154,7 +154,7 @@ export function getShopifyFulfillmentStatusLabel(
 }
 
 export function getFulfillmentMethodLabel(method: string) {
-  return method === "PICKUP" ? "שירות מרחוק" : "מסירה עד הבית";
+  return method === "PICKUP" ? "שירות מרחוק" : "משלוח עד הבית";
 }
 
 export function getProductAvailabilityLabel(availableQuantity: number) {
@@ -165,7 +165,7 @@ export function getProductAvailabilityLabel(availableQuantity: number) {
 }
 
 export function getPublicStockStatusLabel(quantity: number) {
-  return quantity > 0 ? "זמין" : "לא פנוי כרגע";
+  return quantity > 0 ? "זמין" : "אזל מהמלאי";
 }
 
 export function getPublicProductCommerceStatus({
@@ -176,7 +176,7 @@ export function getPublicProductCommerceStatus({
     return {
       canAddToCart: false,
       cardCtaLabel: "הזמנה אישית",
-      ctaLabel: "פתיחת בקשת התאמה",
+      ctaLabel: "יצירת קשר להזמנה",
       label: "בהזמנה אישית",
       serviceReason: "made-to-order",
     } as const;
@@ -195,9 +195,9 @@ export function getPublicProductCommerceStatus({
   if (availableQuantity <= 0) {
     return {
       canAddToCart: false,
-      cardCtaLabel: "בירור התאמה",
-      ctaLabel: "בירור התאמה",
-      label: "בירור התאמה",
+      cardCtaLabel: "בדיקת זמינות",
+      ctaLabel: "בדיקת זמינות",
+      label: "אזל מהמלאי",
       serviceReason: "availability",
     } as const;
   }
@@ -212,7 +212,7 @@ export function getPublicProductCommerceStatus({
 }
 
 export function getStockQuantityLabel(quantity: number) {
-  return quantity > 0 ? `${quantity} זמינים במלאי` : "לא פנוי כרגע";
+  return quantity > 0 ? `${quantity} זמינים במלאי` : "אזל מהמלאי";
 }
 
 export function getItemCountLabel(count: number, singular = "תכשיט") {

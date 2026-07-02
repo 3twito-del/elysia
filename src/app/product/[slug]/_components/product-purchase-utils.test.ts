@@ -89,7 +89,7 @@ describe("product purchase utilities", () => {
         requiresSeparateCheckout: false,
         variant: baseVariant,
       }),
-    ).toBe("בירור התאמה");
+    ).toBe("אזל מהמלאי");
   });
 
   it("keeps unavailable PDP variant controls disabled without exposing stock", () => {

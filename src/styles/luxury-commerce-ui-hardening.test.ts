@@ -62,7 +62,7 @@ describe("luxury commerce UI hardening", () => {
     expect(mobileNav).toContain('data-nav-variant="luxury-editorial"');
     expect(mobileNav).toContain("mobile-nav-quick-list");
     expect(mobileNav).toContain(
-      "תכשיטי בוטיק ללוק יומי, למתנה ולערב שמבקש קצת אור.",
+      "תכשיטי כסף 925 וציפוי זהב, לכל יום ולאירועים מיוחדים.",
     );
     expect(mobileNav).not.toContain("׳³");
     expect(mobileNav).toContain("after:h-px");

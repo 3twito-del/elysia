@@ -22,8 +22,8 @@ const initialState: PublicActionState = {};
 const newsletterEmailHintId = "newsletter-email-hint";
 const newsletterStatusId = "newsletter-status";
 const newsletterOfflineStatusId = "newsletter-offline-status";
-const defaultHintText = "נשלח רק כשיש השקה, בחירה עונתית או עדכון שכדאי לפתוח.";
-const defaultSubmitLabel = "להצטרף";
+const defaultHintText = "אפשר לבטל את ההרשמה בכל עת.";
+const defaultSubmitLabel = "הרשמה";
 
 type NewsletterFormProps = {
   hintText?: string;
@@ -88,7 +88,7 @@ export function NewsletterForm({
       .catch(() =>
         setOfflineState({
           ok: false,
-          message: "לא הצלחנו לשמור את ההרשמה כרגע. בדקו את החיבור ונסו שוב.",
+          message: "לא הצלחנו לשמור את ההרשמה כרגע. בדקי את החיבור ונסי שוב.",
         }),
       );
   }
