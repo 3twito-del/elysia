@@ -829,6 +829,16 @@ constraints.
   policy fields against actual public truth.
 - `Acceptance`: Rich Results validation passes; structured data never exposes a
   value hidden or contradicted by the page.
+- `Progress` (2026-07-02): extracted the PDP `Product` JSON-LD into a pure,
+  unit-tested `buildProductStructuredData` (`src/lib/product-structured-data.ts`).
+  `JSON.stringify` already drops `undefined`, but it emitted empty strings and
+  placeholder text; the builder now omits any empty/placeholder field
+  (`sku`, `image`, `description`, `category`, `material`) and only emits an
+  `Offer` when the price is a positive finite amount, with availability tied to
+  the page's add-to-cart status. This closes the "never exposes a value hidden
+  or contradicted by the page" half of the acceptance. Remaining F-10 scope
+  (verified field completeness against public truth, live Rich Results
+  validation) still depends on C-01 owner data.
 
 ### F-11 Validate PDP across the whole catalog
 
