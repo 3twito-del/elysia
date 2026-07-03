@@ -3785,8 +3785,8 @@ html[data-accessibility-motion="reduce"]
   background:
     linear-gradient(
       to bottom,
-      rgb(20 17 15 / 46%) 0%,
-      rgb(20 17 15 / 28%) var(--site-header-height),
+      rgb(20 17 15 / 56%) 0%,
+      rgb(20 17 15 / 38%) var(--site-header-height),
       transparent calc(var(--site-header-height) + 5rem)
     ),
     linear-gradient(
@@ -3807,8 +3807,8 @@ html[data-accessibility-motion="reduce"]
   background:
     linear-gradient(
       to bottom,
-      rgb(20 17 15 / 46%) 0%,
-      rgb(20 17 15 / 28%) var(--site-header-height),
+      rgb(20 17 15 / 56%) 0%,
+      rgb(20 17 15 / 38%) var(--site-header-height),
       transparent calc(var(--site-header-height) + 5rem)
     ),
     linear-gradient(
