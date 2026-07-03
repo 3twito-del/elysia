@@ -1,0 +1,24 @@
+# Force LF line endings in the working tree for all text files, regardless
+# of core.autocrlf. Style/contract tests compare file contents against
+# LF-only strings, so a CRLF checkout (Windows default) breaks them.
+* text=auto eol=lf
+
+# Binary assets — never touch line endings.
+*.avif binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.svg text eol=lf
+*.mp4 binary
+*.webm binary
+*.mp3 binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.eot binary
+*.pdf binary
+*.zip binary
