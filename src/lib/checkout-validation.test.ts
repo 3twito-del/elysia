@@ -18,7 +18,7 @@ describe("checkout validation", () => {
       phone: "0501234567",
     });
 
-    expect(errors.city).toBe("יש להזין עיר למסירה.");
+    expect(errors.city).toBe("יש להזין עיר למשלוח.");
     expect(errors.street).toBe("יש להזין רחוב ומספר.");
     expect(hasCheckoutErrors(errors)).toBe(true);
   });

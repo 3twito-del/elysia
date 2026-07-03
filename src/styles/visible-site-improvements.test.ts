@@ -636,8 +636,7 @@ describe("visible site improvement affordances", () => {
     expect(orderPage).toContain('data-testid="order-status-timeline"');
     expect(accountPage).toContain('testId="account-empty-orders"');
     expect(accountPage).toContain('href="/search"');
-    expect(accountPage).toContain("המשך לקולקציות");
-    expect(accountPage).toContain("צפייה בקולקציות");
+    expect(accountPage).toContain("לכל התכשיטים");
     expect(accountPage).toContain("<CustomerPrivacyActions />");
     expect(privacyActions).toContain(
       'data-testid="account-privacy-shortcut-context"',
