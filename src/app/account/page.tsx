@@ -589,7 +589,7 @@ export default async function AccountPage() {
                                 </Link>
                               </Button>
                               <Button asChild size="sm" variant="outline">
-                                <Link href="/size-guide">בדיקת מידה</Link>
+                                <Link href="/size-guide">מדריך מידות</Link>
                               </Button>
                               <Button asChild size="sm" variant="ghost">
                                 <Link

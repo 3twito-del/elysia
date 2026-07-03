@@ -26,9 +26,9 @@ import {
 } from "~/server/services/service";
 
 export const metadata: Metadata = {
-  title: "שירות תומך",
+  title: "שירות לקוחות",
   description:
-    "שירות תומך של Elysia להזמנות, מידות, מתנות, החזרות, פרטיות ונגישות, עם מענה עד יום עסקים.",
+    "שירות הלקוחות של Elysia להזמנות, מידות, מתנות, החזרות, פרטיות ונגישות, עם מענה עד יום עסקים.",
 };
 
 export const dynamic = "force-dynamic";
@@ -36,23 +36,23 @@ export const dynamic = "force-dynamic";
 const serviceTracks = [
   {
     icon: MessageSquareText,
-    title: "שאלה על תכשיט",
-    text: "לוק, מתנה, מידה.",
+    title: "שאלה על מוצר",
+    text: "שאלות על התאמה, מתנה או מידה.",
   },
   {
     icon: Wrench,
     title: "תיקון ואחריות",
-    text: "תיקון, אחריות, טיפול.",
+    text: "תיקונים, אחריות והוראות טיפול.",
   },
   {
     icon: RotateCcw,
     title: "החלפות והחזרות",
-    text: "החלפה או החזרה.",
+    text: "בקשות החלפה או החזרה.",
   },
   {
     icon: Ruler,
     title: "מידה והתאמה",
-    text: "אורך, מידה, התאמה.",
+    text: "עזרה בבחירת אורך ומידה מתאימים.",
   },
 ] as const;
 
@@ -62,8 +62,8 @@ const serviceResponseExpectations = [
     text: "עד 24 שעות, בימי עסקים.",
   },
   {
-    title: "פרטים שמקצרים את הדרך",
-    text: "מספר הזמנה, שם תכשיט, תמונה.",
+    title: "פרטים שכדאי לצרף",
+    text: "מספר הזמנה, שם המוצר ותמונה, אם רלוונטי.",
   },
 ] as const;
 
@@ -72,25 +72,25 @@ const servicePriorityActions = [
     href: "/service?topic=sizing#service-form",
     icon: Ruler,
     label: "לפני קנייה",
-    text: "מידה, חומר, התאמה.",
+    text: "שאלות על מידה, חומר והתאמה.",
   },
   {
     href: "/service?topic=order#service-form",
     icon: PackageCheck,
     label: "הזמנה קיימת",
-    text: "בירור, עדכון, מסירה.",
+    text: "בירור סטטוס, עדכון פרטים ומשלוח.",
   },
   {
     href: "/service?topic=returns#service-form",
     icon: RotateCcw,
     label: "החלפה או החזרה",
-    text: "מדיניות, זיכוי, חלופה.",
+    text: "מדיניות החזרות, זיכוי או החלפה.",
   },
   {
     href: "/service?topic=repair#service-form",
     icon: Wrench,
     label: "תיקון ואחריות",
-    text: "טיפול אחרי שימוש.",
+    text: "תיקון ואחריות לאחר קנייה.",
   },
 ] as const;
 
@@ -118,9 +118,9 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
       <SiteHeader />
 
       <CompactPageIntro
-        description="מידה, מתנה, הזמנה, החלפה, אחריות."
-        eyebrow="תמיכה לפני ואחרי הזמנה"
-        title="שירות תומך"
+        description="מענה לכל שאלה על הזמנות, מידות, מתנות, החלפות ואחריות."
+        eyebrow="שירות"
+        title="שירות לקוחות"
         variant="content"
       />
 
@@ -132,10 +132,10 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
             <div>
               <Badge variant="secondary">שירות</Badge>
               <h2 className="mt-3 text-2xl font-semibold" id="service-contact">
-                ערוצי קשר ברורים
+                דרכי יצירת קשר
               </h2>
               <p className="text-muted-foreground mt-2 max-w-prose leading-7">
-                מתועדת. מענה עד 24 שעות ביום עסקים.
+                כל פנייה מתועדת ומקבלת מענה בתוך יום עסקים.
               </p>
             </div>
 
@@ -184,7 +184,7 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
                       WhatsApp Elysia
                     </span>
                     <span className="text-muted-foreground block text-sm">
-                      מענה שירות ממותג
+                      מענה מהיר בוואטסאפ
                     </span>
                   </span>
                 </a>
@@ -238,9 +238,9 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
           <section aria-labelledby="service-form" id="service-form">
             <div className="mb-4">
               <Badge variant="outline">פנייה לשירות</Badge>
-              <h2 className="mt-3 text-2xl font-semibold">במה להתמקד</h2>
+              <h2 className="mt-3 text-2xl font-semibold">טופס פנייה</h2>
               <p className="text-muted-foreground mt-2 text-sm leading-6">
-                נושא, פרטים, ונחזור אליכם.
+                בחרי נושא, מלאי את הפרטים ונחזור אלייך.
               </p>
             </div>
             <section
@@ -250,10 +250,10 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
             >
               <div>
                 <h3 className="font-medium" id="service-topic-cards-title">
-                  נושא מהיר
+                  בחירת נושא
                 </h3>
                 <p className="text-muted-foreground mt-1 text-sm leading-6">
-                  לחיצה ממלאת את הנושא.
+                  לחיצה על נושא תמלא אותו בטופס.
                 </p>
               </div>
               <div className="grid gap-2 sm:grid-cols-2">
@@ -279,8 +279,8 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
             >
               <Clock3 aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
               <p>
-                פניות מטופלות לפי סדר קבלה ונושא. זמן מענה רגיל: עד 24 שעות /
-                יום עסקים. מספר הזמנה או שם תכשיט עוזרים לתת תשובה מדויקת יותר.
+                פניות מטופלות לפי סדר קבלתן. זמן מענה רגיל: עד 24 שעות ביום
+                עסקים. מספר הזמנה או שם המוצר יעזרו לנו לתת תשובה מדויקת יותר.
               </p>
             </div>
             <ServiceRequestForm
@@ -317,7 +317,7 @@ function ServicePriorityTriage() {
           className="mt-2 text-xl font-semibold"
           id="service-priority-triage-title"
         >
-          בחרו את סוג הפנייה, כדי שהשירות יתמוך בהחלטה ולא יחליף אותה
+          בחרי את סוג הפנייה
         </h2>
       </div>
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">

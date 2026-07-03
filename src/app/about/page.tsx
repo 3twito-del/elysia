@@ -39,53 +39,53 @@ const aboutHeroImage = "/brand/boutique/about-hero-prism.avif";
 
 const editorialPrinciples = [
   {
-    title: "לוק",
-    text: "ממה שלובשים. צבע, עונה, קו ותחושה — התכשיט משלים, לא מתחרה.",
+    title: "עיצוב",
+    text: "תכשיטים בקווים נקיים ובעיצוב קלאסי, שמשתלבים עם כל לוק.",
   },
   {
-    title: "חומר",
-    text: "גוון, אבן, ברק וגימור. בחירה שמבוססת על מה שרואים לפני ההחלטה.",
+    title: "חומרים",
+    text: "כסף 925 וציפויי זהב איכותיים, עם אבנים ופנינים נבחרות.",
   },
   {
     title: "שירות",
-    text: "לשאול לפני ההזמנה. מידה, מתנה, משלוח או התאמה — קרוב כשצריך.",
+    text: "מענה אישי לכל שאלה על מידה, מתנה או משלוח, לפני ההזמנה ואחריה.",
   },
 ] as const;
 
 const materialFacts = [
   {
     title: "חומר",
-    text: "חומר וגימור, כשזמין.",
+    text: "פרטי החומר והגימור מופיעים בכל עמוד מוצר.",
     icon: Gem,
   },
   {
     title: "מידה",
-    text: "מדריך להשוואה.",
+    text: "מדריך מידות מפורט לבחירה נכונה.",
     icon: Ruler,
   },
   {
-    title: "שאלה",
-    text: "פנייה עם שם התכשיט.",
+    title: "שירות",
+    text: "אפשר לפנות אלינו עם שם המוצר לכל שאלה.",
     icon: Headphones,
   },
 ] satisfies IconItem[];
 
 const brandRhythm = [
   {
-    title: "נראה נכון",
-    text: "קו נקי, עדינות, נוכחות בלי רעש.",
+    title: "עיצוב",
+    text: "אנחנו בוחרים פריטים בקווים נקיים ובעיצוב קלאסי.",
   },
   {
-    title: "מצולם ברור",
-    text: "תקריב, קנה מידה, חומר ותחושה.",
+    title: "צילום מפורט",
+    text: "כל פריט מצולם מקרוב, כולל קנה מידה וחומר.",
   },
   {
-    title: "נבחר לשימוש אמיתי",
-    text: "ליום רגיל, למתנה, לערב, או לאור של קיץ.",
+    title: "התאמה ליום-יום",
+    text: "פריטים שנוחים לענידה יומיומית ומתאימים גם למתנה.",
   },
   {
-    title: "מגיע עם מענה",
-    text: "מידה, טיפול, משלוח והחלפה — בלי להשאיר אותך לבד.",
+    title: "שירות מלא",
+    text: "מדריך מידות, הוראות טיפול, משלוח והחלפות לכל פריט.",
   },
 ] as const;
 
@@ -98,33 +98,34 @@ const trustCards = [
   },
   {
     title: "שאלות ותשובות",
-    text: "מה שחוזר הכי הרבה — מרוכז וברור.",
+    text: "תשובות לשאלות הנפוצות, במקום אחד.",
     href: "/faq",
     icon: HelpCircle,
   },
   {
     title: "טיפול בתכשיטים",
-    text: "שמירה על ברק, גוון וגימור לאורך זמן.",
+    text: "איך שומרים על ברק, גוון וגימור לאורך זמן.",
     href: "/jewellery-care",
     icon: Sparkles,
   },
   {
     title: "משלוחים והחלפות",
-    text: "מסירה, אריזת מתנה והחלפה — גלוי מראש.",
+    text: "כל המידע על משלוחים, החלפות והחזרות.",
     href: "/shipping-returns",
     icon: Truck,
   },
 ] satisfies LinkCard[];
 
-const floatingLabels = ["תקריב", "קנה מידה", "ענידה"] as const;
+const floatingLabels = ["חומר", "מידות", "גימור"] as const;
 
 export const metadata: Metadata = {
   title: "אודות | Elysia Jewellery",
   description:
-    "Elysia Jewellery היא בית תכשיטים בוטיקי לתכשיטים עדינים, מתנות ולוקים יומיומיים, עם חומר, מידה, מחיר ושירות לפני הזמנה.",
+    "Elysia Jewellery היא חנות תכשיטים אונליין: טבעות, שרשראות, עגילים וצמידים בכסף 925 ובציפוי זהב, עם מדריך מידות ושירות אישי.",
   openGraph: {
     title: "אודות Elysia Jewellery",
-    description: "בית תכשיטים בוטיקי לתכשיטים עדינים, מתנות ולוקים יומיומיים.",
+    description:
+      "חנות תכשיטים אונליין לתכשיטי כסף 925 וציפוי זהב, עם מדריך מידות ושירות אישי.",
     images: [{ url: aboutHeroImage }],
   },
 };
@@ -172,22 +173,22 @@ export default function AboutPage() {
           >
             <p className="storefront-eyebrow">אודות Elysia</p>
             <h1 className="about-hero-title motion-copy-item [--motion-copy-delay:80ms]">
-              מעט. מדויק. זוהר.
+              תכשיטים בעיצוב קלאסי
             </h1>
             <p className="about-hero-statement motion-copy-item [--motion-copy-delay:120ms]">
-              עין לחומר, מידה ואור — תכשיטים עדינים שנבחרים בשקט, ונלבשים
-              ביומיום.
+              Elysia היא חנות אונליין לתכשיטי כסף 925 וציפוי זהב, לכל יום
+              ולאירועים מיוחדים.
             </p>
             <div className="about-hero-actions motion-copy-item [--motion-copy-delay:160ms]">
               <Button asChild className="home-hero-cta-primary" size="lg">
                 <Link href="/search" prefetch={false}>
-                  למבחר
+                  לכל התכשיטים
                   <ArrowLeft aria-hidden="true" className="size-4" />
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline">
                 <Link href="/service" prefetch={false}>
-                  שאלה לשירות
+                  צרי קשר
                   <Headphones aria-hidden="true" className="size-4" />
                 </Link>
               </Button>
@@ -214,8 +215,9 @@ export default function AboutPage() {
               <span aria-hidden="true" className="about-rule" />
             </div>
             <p className="about-manifesto-text">
-              לא עודף. לא רעש. לא קנייה מתוך ניחוש. Elysia נבנתה סביב בחירה
-              מדויקת: תכשיט קטן, חומר נכון, מידה ברורה, ואור שעובד עם הלוק.
+              Elysia הוקמה מתוך אהבה לתכשיטים עדינים ואיכותיים. אנחנו בוחרים
+              כל פריט בקפידה לפי העיצוב, החומר ואיכות הגימור, ומלווים אותך
+              בשירות אישי מהבחירה ועד המשלוח.
             </p>
           </AboutReveal>
         </RevealSection>
@@ -239,12 +241,12 @@ export default function AboutPage() {
             </figure>
             <AboutReveal className="boutique-story-copy about-story-copy">
               <p className="storefront-eyebrow about-eyebrow-dark">
-                איך בוחרים
+                מה תמצאי אצלנו
               </p>
-              <h2 className="about-section-title">מתחילים בבגד ובאור.</h2>
+              <h2 className="about-section-title">מבחר שנבחר בקפידה</h2>
               <p className="about-section-text">
-                לא רק לתמונה. תכשיט שעובד עם הבגד, העונה, והתחושה — נבחר בשקט,
-                ונלבש ביומיום.
+                טבעות, שרשראות, עגילים, צמידים וסטים. כל פריט נבחר לפי העיצוב,
+                החומר ואיכות הגימור, כך שיתאים לענידה יומיומית.
               </p>
               <div className="about-story-actions">
                 <Button asChild variant="outline">
@@ -307,13 +309,13 @@ export default function AboutPage() {
           />
           <div className="about-visual-story-overlay">
             <AboutReveal className="about-visual-story-copy" dir="rtl">
-              <p className="storefront-eyebrow">חומר, מידה, אור</p>
+              <p className="storefront-eyebrow">איכות ושקיפות</p>
               <h2 className="about-visual-story-title">
-                תכשיט קטן משנה לוק שלם.
+                איכות שרואים בכל פרט
               </h2>
               <p className="about-visual-story-text">
-                כל פריט נמדד לפי שאלה פשוטה: האם הוא עובד באמת — עם הבגד, עם
-                הגוף, עם התקציב, ועם היום שבו הוא נענד.
+                בכל עמוד מוצר תמצאי את פרטי החומר, המידות והמחיר, כדי שתוכלי
+                לבחור בביטחון מלא.
               </p>
               <ul className="about-floating-labels">
                 {floatingLabels.map((label, index) => (
@@ -347,7 +349,7 @@ export default function AboutPage() {
                 className="mt-3 text-3xl leading-tight font-semibold sm:text-4xl"
                 id="about-brand-timeline-title"
               >
-                שלושה דברים. בלי לנחש.
+                מה שחשוב לדעת לפני ההזמנה
               </h2>
               <ol className="about-checklist mt-6 grid gap-4">
                 {editorialPrinciples.map((item, index) => (
@@ -408,10 +410,10 @@ export default function AboutPage() {
                   className="mt-4 text-xl font-semibold"
                   id="about-care-teaser-title"
                 >
-                  מידה, טיפול או מתנה?
+                  יש לך שאלה?
                 </h2>
                 <p className="text-muted-foreground mt-2 leading-7">
-                  שאלות ותשובות, או פנייה עם שם התכשיט.
+                  בדקי את עמוד השאלות והתשובות, או פני אלינו ישירות.
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <Button asChild size="sm" variant="outline">
@@ -421,7 +423,7 @@ export default function AboutPage() {
                   </Button>
                   <Button asChild size="sm" variant="outline">
                     <Link href="/service?topic=general" prefetch={false}>
-                      שאלה לשירות
+                      פנייה לשירות
                     </Link>
                   </Button>
                 </div>
@@ -438,9 +440,9 @@ export default function AboutPage() {
         >
           <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:py-14">
             <div className="mb-8 max-w-2xl">
-              <p className="text-muted-foreground text-sm">הקצב של Elysia</p>
+              <p className="text-muted-foreground text-sm">איך אנחנו עובדים</p>
               <h2 className="mt-3 text-3xl leading-tight font-semibold sm:text-4xl">
-                איך פריט נכנס ל־Elysia
+                איך פריט נכנס לקולקציה
               </h2>
             </div>
             <AboutReveal as="ol" className="about-timeline">
@@ -470,9 +472,9 @@ export default function AboutPage() {
           variant="none"
         >
           <div className="mb-7 max-w-3xl">
-            <p className="text-muted-foreground text-sm">שירות וביטחון</p>
+            <p className="text-muted-foreground text-sm">שירות ומידע</p>
             <h2 className="mt-3 text-3xl leading-tight font-semibold sm:text-4xl">
-              בחירה יפה צריכה גם להיות ברורה.
+              כל המידע לפני ההזמנה
             </h2>
           </div>
           <AboutReveal className="about-trust-grid grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -499,21 +501,21 @@ export default function AboutPage() {
               aria-hidden="true"
               className="about-final-spark mx-auto size-7"
             />
-            <h2 className="about-final-title">תכשיט קטן. שינוי שלם.</h2>
+            <h2 className="about-final-title">מצאי את התכשיט הבא שלך</h2>
             <p className="about-final-text">
-              מידה, חומר, תקציב — וממשיכים משם. בחרי את הפריט שמחזיק את הלוק
-              בשקט.
+              גלי את הקולקציה שלנו. לכל שאלה על מידה, חומר או מתנה, צוות
+              השירות זמין בשבילך.
             </p>
             <div className="about-final-actions">
               <Button asChild size="lg">
                 <Link href="/search" prefetch={false}>
-                  למבחר
+                  לכל התכשיטים
                   <Search aria-hidden="true" className="size-4" />
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline">
                 <Link href="/service" prefetch={false}>
-                  שאלה לשירות
+                  צרי קשר
                   <Headphones aria-hidden="true" className="size-4" />
                 </Link>
               </Button>

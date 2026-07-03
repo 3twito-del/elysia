@@ -102,7 +102,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                 <div className="grid gap-3 border-y border-[var(--glass-border)] py-10">
                   <h2 className="text-xl font-semibold">אין מאמרים מתאימים</h2>
                   <p className="text-muted-foreground">
-                    נסו חיפוש אחר או נקו את הסינון.
+                    נסי חיפוש אחר או נקי את הסינון.
                   </p>
                 </div>
               ) : (
