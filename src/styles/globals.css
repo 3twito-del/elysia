@@ -4066,6 +4066,45 @@ html[data-accessibility-motion="reduce"]
   color: var(--site-header-link-hover);
 }
 
+.site-header .site-header-category-nav {
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1.1rem, 2vw, 1.9rem);
+  height: 2.375rem;
+  padding-inline: var(--ui-page-x-wide);
+}
+
+.site-header .site-header-category-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  font-size: 0.85rem;
+  font-weight: 500;
+  outline: none;
+}
+
+.site-header .site-header-category-link:focus-visible {
+  box-shadow: 0 0 0 3px var(--glass-focus);
+}
+
+.site-header .site-header-category-link::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 1px;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity var(--motion-fast) var(--ease-motion-standard);
+}
+
+.site-header .site-header-category-link:hover::after,
+.site-header .site-header-category-link:focus-visible::after,
+.site-header .site-header-category-link[aria-current="page"]::after {
+  opacity: 1;
+}
+
 .site-header .site-header-scroll-cta {
   pointer-events: none;
   opacity: 0;
