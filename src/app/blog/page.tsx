@@ -51,8 +51,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       <SiteHeader />
       <main className="elysia-page bg-background text-foreground" dir="rtl">
         <CompactPageIntro
-          description="מדריכים קצרים לבחירת תכשיט, טיפול נכון ושילובים שמרגישים טבעיים ביום-יום."
-          eyebrow="Elysia Notes"
+          description="מדריכים קצרים לבחירת תכשיט, טיפול נכון ושילובים ליום-יום."
+          eyebrow="המגזין של Elysia"
           title="מגזין"
           variant="content"
         />
