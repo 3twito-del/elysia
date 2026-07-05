@@ -12,6 +12,7 @@ import {
 import { BrandLogo } from "~/components/brand-logo";
 import { CartCountLink } from "~/components/cart-count-link";
 import { MobileNav, type HeaderNavItem } from "~/components/mobile-nav";
+import { ThemeToggle } from "~/components/theme-toggle";
 import { Button } from "~/components/ui/button";
 
 const navItems: HeaderNavItem[] = [
@@ -189,6 +190,7 @@ export function SiteHeader() {
                 <span className="sr-only">אזור אישי</span>
               </Link>
             </Button>
+            <ThemeToggle />
           </div>
         </div>
 

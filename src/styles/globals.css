@@ -55,6 +55,7 @@
 }
 
 :root {
+  color-scheme: light;
   --font-cormorant-garamond:
     "Cormorant Garamond", Georgia, "Times New Roman", serif;
   --font-geist-mono:
@@ -225,63 +226,60 @@
 }
 
 .dark {
-  --background: oklch(0.15 0.025 195);
-  --foreground: oklch(0.97 0.018 185);
-  --card: oklch(0.2 0.026 195);
-  --card-foreground: oklch(0.97 0.018 185);
-  --popover: oklch(0.2 0.026 195);
-  --popover-foreground: oklch(0.97 0.018 185);
+  color-scheme: dark;
+  --background: #161210;
+  --foreground: #f3ede6;
+  --card: #1f1a15;
+  --card-foreground: #f3ede6;
+  --popover: #1f1a15;
+  --popover-foreground: #f3ede6;
   --primary: var(--action-primary);
   --primary-foreground: var(--action-primary-foreground);
-  --secondary: oklch(0.24 0.04 190);
-  --secondary-foreground: oklch(0.97 0.018 185);
-  --muted: oklch(0.24 0.04 190);
-  --muted-foreground: oklch(0.78 0.05 190);
-  --accent: oklch(0.3 0.06 190);
-  --accent-foreground: oklch(0.98 0.02 185);
+  --secondary: #251f19;
+  --secondary-foreground: #f3ede6;
+  --muted: #251f19;
+  --muted-foreground: #b5aa9e;
+  --accent: #322a22;
+  --accent-foreground: #f7f2ea;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(0.72 0.08 190 / 24%);
-  --input: oklch(0.72 0.08 190 / 28%);
-  --ring: oklch(0.74 0.02 220);
+  --border: rgb(243 237 230 / 14%);
+  --input: rgb(243 237 230 / 24%);
+  --ring: #c7a982;
   --chart-1: #fffaf4;
   --chart-2: #ead8d2;
   --chart-3: #b49a6a;
   --chart-4: #7d6b5a;
   --chart-5: #2b241f;
-  --action-primary: oklch(0.94 0 0);
+  --action-primary: #f2ebe2;
   --action-primary-foreground: var(--brand-espresso);
-  --action-primary-hover: oklch(1 0 0);
-  --sidebar: oklch(0.2 0.026 195);
-  --sidebar-foreground: oklch(0.97 0.018 185);
+  --action-primary-hover: #fffaf4;
+  --sidebar: #1f1a15;
+  --sidebar-foreground: #f3ede6;
   --sidebar-primary: var(--action-primary);
   --sidebar-primary-foreground: var(--action-primary-foreground);
-  --sidebar-accent: oklch(0.24 0.04 190);
-  --sidebar-accent-foreground: oklch(0.97 0.018 185);
-  --sidebar-border: oklch(0.72 0.08 190 / 24%);
-  --sidebar-ring: oklch(0.74 0.02 220);
+  --sidebar-accent: #251f19;
+  --sidebar-accent-foreground: #f3ede6;
+  --sidebar-border: rgb(243 237 230 / 14%);
+  --sidebar-ring: #c7a982;
   --elysia-page-bg: var(--background);
-  --elysia-page-wash: linear-gradient(
-    180deg,
-    oklch(0.18 0.028 195) 0%,
-    var(--background) 34rem
-  );
+  --elysia-page-wash: linear-gradient(180deg, #1b1613 0%, var(--background) 34rem);
   --elysia-surface-bg: var(--card);
   --elysia-surface-raised: var(--card);
-  --elysia-surface-control: oklch(0.18 0.028 195);
+  --elysia-surface-control: #1a1512;
   --elysia-surface-inset: var(--muted);
   --elysia-surface-chrome: var(--background);
   --elysia-surface-muted: var(--muted);
   --elysia-border: var(--border);
-  --elysia-border-soft: oklch(0.82 0.02 220 / 24%);
-  --elysia-border-strong: oklch(0.82 0.02 220 / 46%);
-  --elysia-focus: rgb(226 232 236 / 85%);
+  --elysia-border-soft: rgb(243 237 230 / 10%);
+  --elysia-border-strong: rgb(243 237 230 / 34%);
+  --elysia-focus: rgb(240 233 223 / 88%);
   --elysia-shadow-surface: oklch(0 0 0 / 16%);
   --elysia-shadow-lift: oklch(0 0 0 / 20%);
   --elysia-shadow-popover: oklch(0 0 0 / 26%);
-  --elysia-media-bg: var(--muted);
-  --elysia-media-border: oklch(0.82 0.02 220 / 24%);
-  --elysia-media-border-hover: oklch(0.82 0.02 220 / 46%);
-  --elysia-hover-bg: oklch(0.24 0.04 190);
+  --elysia-media-bg: #221c17;
+  --elysia-media-border: rgb(243 237 230 / 12%);
+  --elysia-media-border-hover: rgb(243 237 230 / 30%);
+  --elysia-hover-bg: #2a231c;
   --elysia-muted-text: var(--muted-foreground);
   --elysia-heading: var(--foreground);
   --glass-panel-bg: var(--elysia-surface-bg);
@@ -303,8 +301,8 @@
   --boutique-border-strong: var(--elysia-border-strong);
   --boutique-muted: var(--elysia-muted-text);
   --boutique-hover: var(--elysia-hover-bg);
-  --scrollbar-thumb: rgb(226 232 236 / 28%);
-  --scrollbar-thumb-hover: rgb(226 232 236 / 48%);
+  --scrollbar-thumb: rgb(236 228 214 / 30%);
+  --scrollbar-thumb-hover: rgb(236 228 214 / 50%);
 }
 
 @layer base {
@@ -6897,4 +6895,377 @@ html[data-accessibility-motion="reduce"]
   animation: none !important;
   transform: none !important;
   clip-path: none !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   Night mode — storefront surfaces that pin light literals.
+   The token layer flips in `.dark`; every rule below re-homes a hardcoded
+   porcelain/ivory/white value onto the warm dark surface system. The admin
+   surface never receives `.dark` (see theme-preference.ts).
+   ════════════════════════════════════════════════════════════════════════ */
+
+.dark .storefront-home-page,
+.dark .about-cinematic-page {
+  background: linear-gradient(180deg, var(--background), #1b1613 68%), var(--background);
+  color: var(--foreground);
+}
+
+.dark .commerce-page-hero {
+  color: var(--foreground);
+}
+
+.dark .boutique-featured-band,
+.dark .boutique-story-band,
+.dark .about-cinematic-story,
+.dark .about-rhythm,
+.dark .storefront-final-panel {
+  background: #1a1512;
+}
+
+.dark .about-manifesto {
+  background: var(--background);
+}
+
+.dark .about-manifesto-text {
+  color: var(--foreground);
+}
+
+.dark .about-final {
+  background:
+    radial-gradient(
+      120% 100% at 50% 0%,
+      rgb(216 195 165 / 10%),
+      transparent 60%
+    ),
+    #1a1512;
+}
+
+.dark .boutique-final-cta {
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgb(22 18 16 / 64%) 28%,
+    rgb(22 18 16 / 64%) 100%
+  );
+}
+
+.dark .about-principle-card,
+.dark .about-timeline-marker {
+  background: var(--card);
+}
+
+.dark .about-principle-sweep {
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgb(243 237 230 / 10%) 50%,
+    transparent 60%
+  );
+}
+
+.dark .boutique-fixed-image-band {
+  background: linear-gradient(180deg, #1b1613, var(--background)), var(--background);
+}
+
+.dark .boutique-fixed-image-band[data-fixed-bg-loaded="true"]::before {
+  background:
+    linear-gradient(
+      180deg,
+      rgb(22 18 16 / 34%),
+      rgb(22 18 16 / 22%) 46%,
+      rgb(22 18 16 / 58%)
+    ),
+    var(--boutique-fixed-image-url) center / cover no-repeat;
+}
+
+@media (min-width: 1024px) {
+  .dark .boutique-fixed-image-band[data-fixed-bg-loaded="true"] {
+    background:
+      linear-gradient(
+        180deg,
+        rgb(22 18 16 / 34%),
+        rgb(22 18 16 / 22%) 46%,
+        rgb(22 18 16 / 58%)
+      ),
+      var(--boutique-fixed-image-url) center / cover no-repeat;
+    background-attachment: scroll, fixed;
+  }
+}
+
+.dark .site-header[data-header-state="solid"] {
+  background: rgb(22 18 16 / 97%);
+}
+
+.dark .site-header .site-header-scroll-cta {
+  border-color: var(--glass-border);
+  background: rgb(31 26 21 / 80%);
+  color: var(--foreground);
+}
+
+.dark .commerce-page-hero-metric {
+  background: var(--card);
+}
+
+.dark .compact-page-intro-eyebrow {
+  border-color: rgb(243 237 230 / 14%);
+  background: var(--card);
+  color: var(--foreground);
+}
+
+.dark .home-gift-finder-group {
+  background: rgb(31 26 21 / 62%);
+}
+
+.dark .boutique-collection-card,
+.dark .boutique-collection-media,
+.dark .boutique-story-media,
+.dark .boutique-gift-media {
+  background: var(--elysia-media-bg);
+}
+
+.dark .elysia-media-frame,
+.dark .product-gallery-main-frame {
+  background: var(--elysia-media-bg);
+}
+
+.dark .product-card-media {
+  background: var(--elysia-media-bg);
+}
+
+.dark .product-card-material-badge,
+.dark .product-card-status-badge {
+  border-color: rgb(243 237 230 / 16%);
+  background: var(--card);
+  color: var(--foreground);
+}
+
+.dark .product-card-cta {
+  background: rgb(31 26 21 / 72%);
+}
+
+.dark .product-card-quick-add-button {
+  border-color: rgb(243 237 230 / 18%) !important;
+  background: rgb(31 26 21 / 88%) !important;
+}
+
+.dark .product-card-favorite {
+  border-color: rgb(243 237 230 / 14%);
+  background: rgb(31 26 21 / 72%);
+  box-shadow:
+    inset 0 0 0 1px rgb(243 237 230 / 8%),
+    0 4px 14px oklch(0 0 0 / 30%);
+}
+
+.dark .product-card-favorite:hover {
+  background: rgb(31 26 21 / 90%);
+  box-shadow:
+    inset 0 0 0 1px rgb(243 237 230 / 12%),
+    0 6px 18px oklch(0 0 0 / 36%);
+}
+
+.dark .product-card-favorite:has(
+  .product-card-favorite-button[data-favorite-saved="true"]
+) {
+  border-color: rgb(243 237 230 / 18%);
+  background: rgb(31 26 21 / 92%);
+  box-shadow:
+    inset 0 0 0 1px rgb(243 237 230 / 8%),
+    0 4px 14px oklch(0 0 0 / 32%);
+}
+
+.dark .product-card-favorite-button[data-favorite-saved="true"] svg,
+.dark .product-wishlist-button[data-favorite-saved="true"] svg {
+  fill: var(--foreground);
+  color: var(--foreground);
+}
+
+.dark .product-wishlist-button[data-favorite-saved="true"] {
+  border-color: rgb(243 237 230 / 18%);
+  background: rgb(31 26 21 / 92%);
+  color: var(--foreground);
+  box-shadow: inset 0 0 0 999px rgb(243 237 230 / 4%);
+}
+
+.dark .product-gallery-secondary-tile {
+  border-color: rgb(243 237 230 / 12%);
+  background: var(--elysia-media-bg);
+  box-shadow: none;
+}
+
+.dark .product-gallery-secondary-tile:hover,
+.dark .product-gallery-secondary-tile:focus-visible {
+  border-color: rgb(243 237 230 / 30%);
+}
+
+.dark .product-gallery-secondary-tile[data-gallery-selected="true"] {
+  border-color: rgb(243 237 230 / 55%);
+  box-shadow: 0 0 0 1px rgb(243 237 230 / 24%);
+}
+
+.dark .product-gallery-main-frame::after,
+.dark .product-gallery-secondary-tile::after {
+  border-color: rgb(243 237 230 / 10%);
+}
+
+.dark .product-gallery-more-images-veil {
+  background:
+    linear-gradient(180deg, rgb(22 18 16 / 30%), rgb(22 18 16 / 55%)),
+    rgb(22 18 16 / 30%);
+}
+
+.dark .product-gallery-more-images-label {
+  border-color: rgb(243 237 230 / 26%);
+  background: rgb(31 26 21 / 92%);
+  color: var(--foreground);
+  box-shadow: 0 8px 24px oklch(0 0 0 / 30%);
+}
+
+.dark .product-gallery-thumbnail-rail button {
+  border-color: rgb(243 237 230 / 12%);
+  background: var(--elysia-media-bg);
+}
+
+.dark .product-gallery-thumbnail-rail button[data-gallery-selected="true"] {
+  border-color: rgb(243 237 230 / 60%);
+  box-shadow: 0 0 0 1px rgb(243 237 230 / 40%);
+}
+
+.dark .product-gallery-viewer-dialog {
+  background:
+    linear-gradient(180deg, rgb(26 21 18 / 92%), rgb(22 18 16 / 97%)),
+    var(--background);
+}
+
+.dark .product-gallery-viewer-header {
+  border-bottom-color: rgb(243 237 230 / 10%);
+  background: rgb(26 21 18 / 90%);
+}
+
+.dark .product-gallery-viewer-stage {
+  background:
+    radial-gradient(circle at 50% 45%, rgb(243 237 230 / 5%), transparent 46%),
+    linear-gradient(180deg, rgb(26 21 18 / 92%), rgb(22 18 16 / 96%));
+}
+
+.dark .product-gallery-viewer-stage .product-gallery-viewer-nav {
+  border-color: rgb(243 237 230 / 16%);
+  background: rgb(31 26 21 / 92%);
+  box-shadow: 0 12px 28px oklch(0 0 0 / 30%);
+}
+
+.dark .product-gallery-viewer-stage .product-gallery-viewer-nav:hover,
+.dark .product-gallery-viewer-stage .product-gallery-viewer-nav:focus-visible {
+  border-color: rgb(243 237 230 / 30%);
+  background: rgb(37 31 25 / 96%);
+}
+
+.dark .product-gallery-viewer-filmstrip-shell {
+  border-top-color: rgb(243 237 230 / 10%);
+  background: rgb(26 21 18 / 88%);
+}
+
+.dark .product-gallery-thumbnail-rail .product-gallery-viewer-thumbnail {
+  border-color: rgb(243 237 230 / 14%);
+  background: rgb(31 26 21 / 96%);
+}
+
+.dark
+  .product-gallery-thumbnail-rail
+  .product-gallery-viewer-thumbnail[data-gallery-selected="true"] {
+  border-color: rgb(243 237 230 / 60%);
+  box-shadow:
+    0 0 0 1px rgb(243 237 230 / 36%),
+    0 8px 18px oklch(0 0 0 / 30%);
+}
+
+.dark .motion-sticky-purchase {
+  border-color: rgb(243 237 230 / 14%);
+  background: var(--card);
+}
+
+.dark .product-purchase-surface .glass-inset {
+  border-color: rgb(243 237 230 / 10%);
+  background: rgb(243 237 230 / 5%);
+}
+
+.dark .product-purchase-surface [data-slot="button"][variant="outline"],
+.dark .product-purchase-surface [data-slot="button"].border-input {
+  background: rgb(243 237 230 / 6%);
+}
+
+.dark .checkout-local-action-panel,
+.dark .checkout-policy-notes .glass-inset {
+  background: var(--elysia-surface-inset);
+}
+
+.dark .wishlist-product-thumb,
+.dark .checkout-boutique-thumb {
+  background: var(--elysia-media-bg);
+}
+
+.dark .brand-icon-well,
+.dark .public-motion-shell .brand-icon-well,
+.dark .public-motion-shell .glass-inset:has(> svg:only-child) {
+  border-color: rgb(243 237 230 / 12%);
+  background: rgb(243 237 230 / 6%);
+  color: var(--foreground);
+}
+
+.dark .brand-header-mark svg:not(.brand-logo),
+.dark .brand-footer-mark svg:not(.brand-logo),
+.dark .brand-branch-card svg,
+.dark .brand-accent-card svg,
+.dark .brand-icon-well svg {
+  color: var(--foreground);
+}
+
+.dark [data-icon-tooltip]::after {
+  border-color: rgb(243 237 230 / 14%);
+  box-shadow: 0 4px 14px oklch(0 0 0 / 35%);
+}
+
+.dark .mobile-nav-quick-action:hover,
+.dark .mobile-nav-quick-action:focus-visible,
+.dark .mobile-nav-link:hover,
+.dark .mobile-nav-link:focus-visible {
+  background: rgb(243 237 230 / 6%);
+}
+
+.dark .mobile-nav-feature-link:hover,
+.dark .mobile-nav-feature-link:focus-visible {
+  border-color: rgb(243 237 230 / 16%);
+  background: rgb(243 237 230 / 6%);
+}
+
+.dark .mobile-nav-panel-luxury {
+  box-shadow: -2rem 0 5rem oklch(0 0 0 / 45%);
+}
+
+.dark .public-motion-shell [data-slot="badge"][data-variant="secondary"],
+.dark .public-motion-shell [data-slot="badge"][data-variant="outline"] {
+  border-color: rgb(243 237 230 / 14%);
+  background: var(--card);
+  color: var(--foreground);
+}
+
+.dark .cookie-button-secondary:not(:disabled):hover,
+.dark .cookie-button-secondary:not(:disabled):focus-visible {
+  border-color: rgb(243 237 230 / 28%) !important;
+  background: var(--card) !important;
+  color: var(--foreground) !important;
+  box-shadow: none;
+}
+
+.dark .footer-trust-layer {
+  color: rgb(243 237 230 / 80%);
+}
+
+.dark .footer-trust-link .glass-inset {
+  border-color: rgb(243 237 230 / 12%);
+  background: rgb(243 237 230 / 6%);
+}
+
+.dark .footer-social-link:hover,
+.dark .footer-social-link:focus-visible {
+  background: rgb(243 237 230 / 6%);
 }

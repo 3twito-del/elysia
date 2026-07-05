@@ -29,7 +29,7 @@ describe("accessibility guardrails", () => {
 
     expect(css).toContain("--brand-gold-muted: #b49a6a;");
     expect(css).toContain("--elysia-focus: rgb(138 106 63 / 90%);");
-    expect(css).toContain("--elysia-focus: rgb(226 232 236 / 85%);");
+    expect(css).toContain("--elysia-focus: rgb(240 233 223 / 88%);");
     expect(css).toContain("--elysia-focus: oklch(0 0 0 / 85%);");
     expect(css).toContain("--glass-focus: var(--elysia-focus);");
   });
