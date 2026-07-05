@@ -195,7 +195,7 @@ export function ProductCard({
               {!isEditorialDisplay ? (
                 <p
                   className={cn(
-                    "ui-text-slot text-muted-foreground/90 text-xs leading-5 [--ui-text-slot-line-height:1.25rem]",
+                    "ui-text-slot text-muted-foreground text-xs leading-5 [--ui-text-slot-line-height:1.25rem]",
                     isCompactDensity && "product-card-descriptor-compact",
                   )}
                   data-lines="2"

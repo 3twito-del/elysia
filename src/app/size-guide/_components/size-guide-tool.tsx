@@ -352,7 +352,7 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
                 "size-5 shrink-0",
                 normalizedManualValue
                   ? "text-foreground"
-                  : "text-muted-foreground/50",
+                  : "text-muted-foreground/70",
               )}
             />
           </div>

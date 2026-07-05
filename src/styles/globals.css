@@ -80,13 +80,13 @@
   --secondary: #faf7f3;
   --secondary-foreground: var(--brand-ink);
   --muted: #f6f3ef;
-  --muted-foreground: #7a7168;
+  --muted-foreground: #6d645c;
   --accent: #ead8d2;
   --accent-foreground: var(--brand-ink);
   --destructive: oklch(0.47 0.15 27);
   --border: #ece6df;
-  --input: #ece6df;
-  --ring: #b49a6a;
+  --input: #d8d0c8;
+  --ring: #8a6a3f;
   --chart-1: #1d1916;
   --chart-2: #7d6b5a;
   --chart-3: #b49a6a;
@@ -121,8 +121,8 @@
   --elysia-surface-muted: var(--muted);
   --elysia-border: var(--border);
   --elysia-border-soft: rgb(29 25 22 / 7%);
-  --elysia-border-strong: #d8d0c8;
-  --elysia-focus: rgb(180 154 106 / 26%);
+  --elysia-border-strong: #c0b4a6;
+  --elysia-focus: rgb(138 106 63 / 90%);
   --elysia-shadow-surface: oklch(0 0 0 / 3%);
   --elysia-shadow-lift: oklch(0 0 0 / 5%);
   --elysia-shadow-popover: oklch(0 0 0 / 8%);
@@ -135,6 +135,7 @@
   --elysia-media-border-hover: rgb(29 25 22 / 16%);
   --elysia-hover-bg: #f5eee7;
   --elysia-muted-text: var(--muted-foreground);
+  --elysia-heading: var(--foreground);
   --glass-panel-bg: var(--elysia-surface-bg);
   --glass-card-bg: var(--elysia-surface-raised);
   --glass-control-bg: var(--elysia-surface-control);
@@ -155,8 +156,8 @@
   --boutique-muted: var(--elysia-muted-text);
   --boutique-hover: var(--elysia-hover-bg);
   --scrollbar-size: 0.375rem;
-  --scrollbar-thumb: rgb(125 107 90 / 26%);
-  --scrollbar-thumb-hover: rgb(125 107 90 / 42%);
+  --scrollbar-thumb: rgb(125 107 90 / 36%);
+  --scrollbar-thumb-hover: rgb(125 107 90 / 54%);
   --scrollbar-track: transparent;
   --font-hebrew-sans:
     var(--font-rubik), "Rubik", "Noto Sans Hebrew", "Arial Hebrew", Arial,
@@ -208,7 +209,7 @@
   --sidebar-accent: #f3eee8;
   --sidebar-accent-foreground: var(--brand-ink);
   --sidebar-border: #e4dbd0;
-  --sidebar-ring: #b49a6a;
+  --sidebar-ring: #8a6a3f;
 }
 
 @media (min-width: 768px) {
@@ -273,7 +274,7 @@
   --elysia-border: var(--border);
   --elysia-border-soft: oklch(0.82 0.02 220 / 24%);
   --elysia-border-strong: oklch(0.82 0.02 220 / 46%);
-  --elysia-focus: rgb(226 232 236 / 42%);
+  --elysia-focus: rgb(226 232 236 / 85%);
   --elysia-shadow-surface: oklch(0 0 0 / 16%);
   --elysia-shadow-lift: oklch(0 0 0 / 20%);
   --elysia-shadow-popover: oklch(0 0 0 / 26%);
@@ -282,6 +283,7 @@
   --elysia-media-border-hover: oklch(0.82 0.02 220 / 46%);
   --elysia-hover-bg: oklch(0.24 0.04 190);
   --elysia-muted-text: var(--muted-foreground);
+  --elysia-heading: var(--foreground);
   --glass-panel-bg: var(--elysia-surface-bg);
   --glass-card-bg: var(--elysia-surface-raised);
   --glass-control-bg: var(--elysia-surface-control);
@@ -768,7 +770,7 @@ html[data-accessibility-contrast="true"] {
   --elysia-border: oklch(0 0 0 / 42%);
   --elysia-border-soft: oklch(0 0 0 / 42%);
   --elysia-border-strong: oklch(0 0 0 / 78%);
-  --elysia-focus: oklch(0 0 0 / 52%);
+  --elysia-focus: oklch(0 0 0 / 85%);
   --elysia-shadow-surface: oklch(0 0 0 / 8%);
   --elysia-shadow-lift: oklch(0 0 0 / 10%);
   --elysia-shadow-popover: oklch(0 0 0 / 12%);
@@ -1111,7 +1113,7 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
 
 .compact-page-intro-eyebrow {
   width: fit-content;
-  border: 1px solid rgb(16 24 28 / 10%);
+  border: 1px solid rgb(29 25 22 / 10%);
   border-radius: 999px;
   background: rgb(255 255 255 / 88%);
   color: var(--brand-espresso);
@@ -1528,9 +1530,8 @@ main
 }
 
 .account-client-page {
-  --account-button: #211b17;
-  --account-button-hover: #342b25;
-  --account-muted-light: #b6aaa0;
+  --account-button: var(--action-primary);
+  --account-button-hover: var(--action-primary-hover);
 }
 
 .account-client-hero {
@@ -1663,13 +1664,13 @@ main
 .account-primary-action {
   min-height: 3.15rem;
   background: var(--account-button);
-  color: #fffdf9;
+  color: var(--action-primary-foreground);
   box-shadow: none;
 }
 
 .account-primary-action:hover {
   background: var(--account-button-hover);
-  color: #fffdf9;
+  color: var(--action-primary-foreground);
 }
 
 .account-secondary-action {
@@ -2026,7 +2027,7 @@ main
 }
 
 .commerce-page-hero[data-commerce-hero="catalog"] .commerce-page-hero-title {
-  color: var(--muted-foreground);
+  color: var(--elysia-heading);
   font-size: clamp(1.95rem, 4.15vw, 3.35rem);
   text-shadow: none;
 }
@@ -3705,20 +3706,20 @@ html[data-accessibility-motion="reduce"]
   line-height: 1.18;
 }
 
-/* Policy: headings on light surfaces take the brand wordmark's resting
-   (non-hover) colour for cohesion. Titles set over dark media — the home and
-   about heroes and the collection cards — keep their light treatment. */
+/* Policy: headings on light surfaces read in full ink so the visual
+   hierarchy peaks at the title instead of the body copy. Titles set over
+   dark media — the home and about heroes, the visual story band and the
+   collection cards — keep their light treatment. */
 .compact-page-intro-title,
 .brand-page-intro-title,
 .account-client-title,
 .commerce-page-hero-title,
 .commerce-section-header-title,
 .about-section-title,
-.about-visual-story-title,
 .about-final-title,
 .storefront-final-title,
 .storefront-final-subtitle {
-  color: var(--muted-foreground);
+  color: var(--elysia-heading);
 }
 
 .storefront-final-text {
@@ -4165,7 +4166,7 @@ html[data-accessibility-motion="reduce"]
   z-index: 120;
   min-width: max-content;
   transform: translate(-50%, 2px);
-  border: 1px solid rgb(16 24 28 / 10%);
+  border: 1px solid rgb(29 25 22 / 10%);
   border-radius: 0.25rem;
   background: var(--popover);
   color: var(--foreground);
@@ -4176,7 +4177,7 @@ html[data-accessibility-motion="reduce"]
   letter-spacing: 0;
   white-space: nowrap;
   opacity: 0;
-  box-shadow: 0 4px 14px rgb(16 24 28 / 6%);
+  box-shadow: 0 4px 14px rgb(29 25 22 / 6%);
   transition:
     opacity var(--motion-fast) var(--ease-motion-standard),
     transform var(--motion-fast) var(--ease-motion-standard),
@@ -4225,7 +4226,7 @@ html[data-accessibility-motion="reduce"]
   --mobile-nav-item-step: 40ms;
   border-left-color: var(--glass-border) !important;
   background: var(--background) !important;
-  box-shadow: -2rem 0 5rem rgb(16 24 28 / 16%);
+  box-shadow: -2rem 0 5rem rgb(29 25 22 / 16%);
 }
 
 .mobile-nav-panel[data-state="open"] {
@@ -4315,7 +4316,7 @@ html[data-accessibility-motion="reduce"]
 .mobile-nav-quick-action:focus-visible,
 .mobile-nav-link:hover,
 .mobile-nav-link:focus-visible {
-  background: rgb(16 24 28 / 3%);
+  background: rgb(29 25 22 / 3%);
 }
 
 .mobile-nav-feature-link {
@@ -4328,8 +4329,8 @@ html[data-accessibility-motion="reduce"]
 
 .mobile-nav-feature-link:hover,
 .mobile-nav-feature-link:focus-visible {
-  border-color: rgb(16 24 28 / 12%);
-  background: rgb(16 24 28 / 3%);
+  border-color: rgb(29 25 22 / 12%);
+  background: rgb(29 25 22 / 3%);
 }
 
 .mobile-nav-feature-link:hover .mobile-nav-feature-icon,
@@ -4910,8 +4911,8 @@ html[data-accessibility-motion="reduce"]
 .brand-icon-well,
 .public-motion-shell .brand-icon-well,
 .public-motion-shell .glass-inset:has(> svg:only-child) {
-  border-color: rgb(16 24 28 / 9%);
-  background: rgb(16 24 28 / 3%);
+  border-color: rgb(29 25 22 / 9%);
+  background: rgb(29 25 22 / 3%);
   color: var(--brand-espresso);
 }
 
@@ -5152,7 +5153,7 @@ footer nav a:focus-visible {
 .footer-social-link:hover,
 .footer-social-link:focus-visible {
   border-color: var(--glass-border-strong);
-  background: rgb(16 24 28 / 3%);
+  background: rgb(29 25 22 / 3%);
   text-decoration-line: none;
 }
 
@@ -5561,7 +5562,7 @@ footer nav a:focus-visible {
 }
 
 :where(.glass-control) {
-  border-color: var(--glass-border);
+  border-color: var(--input);
   background: var(--glass-control-bg);
   box-shadow: none;
 }
@@ -6115,10 +6116,10 @@ footer nav a:focus-visible {
 
 .cookie-button-secondary:not(:disabled):hover,
 .cookie-button-secondary:not(:disabled):focus-visible {
-  border-color: rgb(16 24 28 / 18%) !important;
+  border-color: rgb(29 25 22 / 18%) !important;
   background: #ffffff !important;
   color: var(--foreground) !important;
-  box-shadow: 0 8px 18px rgb(16 24 28 / 4%);
+  box-shadow: 0 8px 18px rgb(29 25 22 / 4%);
 }
 
 .cookie-button-primary:not(:disabled):active,
@@ -6142,7 +6143,7 @@ footer nav a:focus-visible {
 
 .public-motion-shell [data-slot="badge"][data-variant="secondary"],
 .public-motion-shell [data-slot="badge"][data-variant="outline"] {
-  border-color: rgb(16 24 28 / 10%);
+  border-color: rgb(29 25 22 / 10%);
   background: rgb(255 255 255 / 92%);
   color: var(--foreground);
   box-shadow: none;
@@ -6325,7 +6326,7 @@ html[data-public-floating-bar-visible="true"] .public-motion-content {
   animation: motion-badge-pop var(--motion-feedback) var(--ease-motion-feedback)
     both;
   border: 1px solid var(--background);
-  box-shadow: 0 2px 7px rgb(16 24 28 / 12%);
+  box-shadow: 0 2px 7px rgb(29 25 22 / 12%);
   font-variant-numeric: tabular-nums;
 }
 
@@ -6570,13 +6571,13 @@ html[data-public-floating-bar-visible="true"] .public-motion-content {
 
 @keyframes anchor-target-glow {
   0% {
-    box-shadow: inset 0 0 0 0 rgb(16 24 28 / 0%);
+    box-shadow: inset 0 0 0 0 rgb(29 25 22 / 0%);
   }
   36% {
-    box-shadow: inset 0 0 0 2px rgb(16 24 28 / 14%);
+    box-shadow: inset 0 0 0 2px rgb(29 25 22 / 14%);
   }
   100% {
-    box-shadow: inset 0 0 0 0 rgb(16 24 28 / 0%);
+    box-shadow: inset 0 0 0 0 rgb(29 25 22 / 0%);
   }
 }
 

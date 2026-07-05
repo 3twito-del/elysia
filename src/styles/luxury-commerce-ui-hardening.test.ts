@@ -196,7 +196,7 @@ describe("luxury commerce UI hardening", () => {
     expect(home).not.toContain("rgba(66,201,190");
     expect(css).toContain("--elysia-border: var(--border);");
     expect(css).toContain("--glass-border: var(--elysia-border);");
-    expect(css).toContain("--scrollbar-thumb: rgb(125 107 90 / 26%);");
+    expect(css).toContain("--scrollbar-thumb: rgb(125 107 90 / 36%);");
     expect(css).not.toContain("--glass-border: #bfe9e5;");
     expect(css).not.toContain("--scrollbar-thumb: rgb(66 201 190 / 30%);");
     expect(cookieBanner).toContain(
