@@ -297,7 +297,7 @@ export function ProductPurchasePanel({
             {formatPrice(selectedVariantPrice)}
           </p>
           <p
-            className="text-muted-foreground truncate text-[0.68rem] leading-4"
+            className="text-muted-foreground truncate text-xs leading-4"
             data-testid="product-sticky-variant-state"
           >
             {stickyVariantSummary}

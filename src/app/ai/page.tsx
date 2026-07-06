@@ -74,11 +74,11 @@ export default async function AiPage({ searchParams }: AiPageProps) {
               </TabsList>
             </div>
 
-            <TabsContent className="mt-0" id="ai-stylist" value="stylist">
+            <TabsContent className="mt-0" value="stylist">
               <DeferredStylistChat compact />
             </TabsContent>
 
-            <TabsContent className="mt-0" id="ai-gifts" value="gifts">
+            <TabsContent className="mt-0" value="gifts">
               <DeferredAiGiftPanel />
             </TabsContent>
           </Tabs>

@@ -2630,10 +2630,17 @@ html[data-accessibility-motion="reduce"] .boutique-collection-action::before {
 }
 
 .boutique-story-principle > span {
-  color: var(--brand-gold-muted);
+  /* Deep gold clears AA (4.5:1) on the ivory/porcelain ground at this size;
+     the soft --brand-gold-muted (2.44:1) was too light for 12px text. Night
+     mode keeps the lighter gold, which already passes on the dark ground. */
+  color: #856126;
   font-size: 0.78rem;
   font-variant-numeric: tabular-nums;
   line-height: 1.8;
+}
+
+.dark .boutique-story-principle > span {
+  color: var(--brand-gold-muted);
 }
 
 .boutique-story-principle h3 {
@@ -5144,7 +5151,7 @@ footer nav a {
   .footer-nav-summary {
     cursor: default;
     justify-content: flex-start;
-    min-height: auto;
+    min-height: 1.5rem;
     padding-block: 0;
     pointer-events: none;
   }
@@ -7303,4 +7310,20 @@ html[data-accessibility-motion="reduce"]
 .dark .footer-social-link:hover,
 .dark .footer-social-link:focus-visible {
   background: rgb(243 237 230 / 6%);
+}
+
+/* Keyboard focus visibility (WCAG 2.4.7). Several controls flatten box-shadow
+   for their resting/hover/focus state, which also swallows the Tailwind
+   focus-visible ring, leaving keyboard focus invisible. Re-assert the ring on
+   :focus-visible. Kept unlayered at file end so it wins the cascade over the
+   component-level `box-shadow: none !important` rules above; aria-invalid is
+   excluded so error/destructive rings keep their own colour. */
+.elysia-control:focus-visible:not([aria-invalid="true"]),
+.site-header .site-header-action:focus-visible,
+.home-hero-video-control:focus-visible,
+.mobile-nav-close:focus-visible,
+.home-hero-actions [data-slot="button"]:not(:disabled):focus-visible,
+.public-motion-shell [data-slot="button"].product-primary-cta:not(:disabled):focus-visible,
+[data-slot="button"].product-primary-cta:not(:disabled):focus-visible {
+  box-shadow: 0 0 0 3px var(--glass-focus) !important;
 }

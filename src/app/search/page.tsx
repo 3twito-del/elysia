@@ -638,7 +638,6 @@ function SearchViewToggle({
             <Link
               aria-current={active ? "page" : undefined}
               aria-label={`תצוגת ${view.label}`}
-              aria-pressed={active}
               href={view.href}
               scroll={false}
             >
