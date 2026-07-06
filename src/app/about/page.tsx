@@ -20,7 +20,6 @@ import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 
 import { AboutChapterNav, type AboutChapter } from "./_components/about-chapter-nav";
-import { AboutHeroAurora } from "./_components/about-hero-aurora";
 import { AboutReveal, AboutScrollCue } from "./_components/about-reveal";
 
 type IconItem = {
@@ -179,8 +178,6 @@ export default function AboutPage() {
           />
           <div className="storefront-hero-scrim absolute inset-0" />
           <div className="storefront-hero-wash absolute inset-0" />
-
-          <AboutHeroAurora />
 
           <div
             className="about-hero-copy motion-hero-copy storefront-hero-copy absolute z-10 flex max-w-[min(39rem,calc(100vw-2.5rem))] flex-col items-start"
@@ -425,62 +422,60 @@ export default function AboutPage() {
             </h2>
           </div>
 
-          <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
-            <AboutReveal
-              as="section"
-              aria-labelledby="about-material-facts-title"
-              data-testid="about-material-facts"
+          <AboutReveal
+            as="section"
+            aria-labelledby="about-material-facts-title"
+            data-testid="about-material-facts"
+          >
+            <h3
+              className="text-xl font-semibold"
+              id="about-material-facts-title"
             >
-              <h3
-                className="text-xl font-semibold"
-                id="about-material-facts-title"
+              מה לבדוק לפני שמזמינים
+            </h3>
+            <div className="about-facts-grid mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {materialFacts.map((fact, index) => (
+                <div
+                  className="about-rv-item h-full"
+                  key={fact.title}
+                  style={{ "--rv-i": index } as CSSProperties}
+                >
+                  <IconCard item={fact} />
+                </div>
+              ))}
+              <section
+                aria-labelledby="about-care-teaser-title"
+                className="about-care-card about-rv-item brand-surface h-full p-5"
+                data-testid="about-care-teaser"
+                style={{ "--rv-i": materialFacts.length } as CSSProperties}
               >
-                מה לבדוק לפני שמזמינים
-              </h3>
-              <div className="about-facts-grid mt-4 grid gap-3 sm:grid-cols-3">
-                {materialFacts.map((fact, index) => (
-                  <div
-                    className="about-rv-item h-full"
-                    key={fact.title}
-                    style={{ "--rv-i": index } as CSSProperties}
-                  >
-                    <IconCard item={fact} />
-                  </div>
-                ))}
-              </div>
-            </AboutReveal>
-
-            <AboutReveal
-              as="section"
-              aria-labelledby="about-care-teaser-title"
-              className="about-care-card rounded-md border border-[var(--glass-border)] p-5"
-              data-testid="about-care-teaser"
-              delay={0.06}
-            >
-              <Sparkles aria-hidden="true" className="size-5" />
-              <h3
-                className="mt-4 text-xl font-semibold"
-                id="about-care-teaser-title"
-              >
-                יש לך שאלה?
-              </h3>
-              <p className="text-muted-foreground mt-2 leading-7">
-                בדקי את עמוד השאלות והתשובות, או פני אלינו ישירות.
-              </p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                <Button asChild size="sm" variant="outline">
-                  <Link href="/faq#faq-group-2" prefetch={false}>
-                    שאלות על מידות
-                  </Link>
-                </Button>
-                <Button asChild size="sm" variant="outline">
-                  <Link href="/service?topic=general" prefetch={false}>
-                    פנייה לשירות
-                  </Link>
-                </Button>
-              </div>
-            </AboutReveal>
-          </div>
+                <div className="glass-inset flex size-10 items-center justify-center rounded-md border">
+                  <Sparkles aria-hidden="true" className="size-5" />
+                </div>
+                <h4
+                  className="mt-5 text-xl font-semibold"
+                  id="about-care-teaser-title"
+                >
+                  יש לך שאלה?
+                </h4>
+                <p className="text-muted-foreground mt-3 leading-7">
+                  בדקי את עמוד השאלות והתשובות, או פני אלינו ישירות.
+                </p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <Button asChild size="sm" variant="outline">
+                    <Link href="/faq#faq-group-2" prefetch={false}>
+                      שאלות על מידות
+                    </Link>
+                  </Button>
+                  <Button asChild size="sm" variant="outline">
+                    <Link href="/service?topic=general" prefetch={false}>
+                      פנייה לשירות
+                    </Link>
+                  </Button>
+                </div>
+              </section>
+            </div>
+          </AboutReveal>
 
           <AboutReveal
             className="about-trust-grid mt-9 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"

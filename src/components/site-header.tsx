@@ -33,7 +33,6 @@ const navItems: HeaderNavItem[] = [
 const categoryNavHrefs = navItems
   .map((item) => item.href)
   .filter(isCategoryHref);
-const primaryCategoryLinks = navItems.slice(0, 8);
 const HOME_HEADER_SOLID_SCROLL_Y = 8;
 const mediaOverlayHeaderPathnames = new Set(["/", "/about"]);
 
@@ -103,7 +102,7 @@ export function SiteHeader() {
           ואזור אישי.
         </p>
         <div
-          className="grid h-16 w-full grid-cols-[1fr_auto_1fr] items-center px-3 sm:px-6 md:h-[4.25rem] md:px-10 lg:h-[3.75rem] lg:px-16"
+          className="grid h-16 w-full grid-cols-[1fr_auto_1fr] items-center px-3 sm:px-6 md:h-[4.25rem] md:px-10 lg:h-[6.125rem] lg:px-16"
           dir="ltr"
         >
           <div
@@ -193,36 +192,6 @@ export function SiteHeader() {
             <ThemeToggle />
           </div>
         </div>
-
-        <nav
-          aria-label="קטגוריות"
-          className="site-header-category-nav hidden lg:flex"
-          data-testid="site-header-category-nav"
-        >
-          {primaryCategoryLinks.map((item) => {
-            const isActive =
-              pathname === item.href ||
-              (item.href.startsWith("/category/") &&
-                pathname.startsWith(item.href));
-            const prefetchOnIntent = isCategoryHref(item.href)
-              ? () => categoryPrefetch.prefetch(item.href)
-              : undefined;
-
-            return (
-              <Link
-                aria-current={isActive ? "page" : undefined}
-                className="site-header-link site-header-category-link"
-                href={item.href}
-                key={item.href}
-                onFocus={prefetchOnIntent}
-                onPointerEnter={prefetchOnIntent}
-                prefetch={false}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
       </header>
       <div aria-hidden="true" className="h-16 md:h-[4.25rem] lg:h-[6.125rem]" />
     </>

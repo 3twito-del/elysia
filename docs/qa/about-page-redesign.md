@@ -62,3 +62,18 @@ Chaptered editorial rebuild on top of the original guardrails:
 - All guardrails still hold: media-led (hero + two figures + fixed band),
   compact section padding, no `Separator`, and no final boxed `brand-surface`
   CTA. Reduced-motion and night-mode variants covered in `globals.css`.
+
+### v2.1 owner-feedback fixes (2026-07-06)
+
+- Hero stripped to image + scrim + copy: aurora layers, Ken Burns drift and
+  title sheen removed after owner review flagged them as excessive.
+- Site-wide desktop category row removed from the header (owner preference);
+  header returns to the split three-column layout only.
+- Principles chapter: neutralised homepage story-band layout baggage
+  (50vw width / fixed grid slots) that made the figure overlap the copy.
+- Service chapter rebalanced to a symmetric 4+4 card grid (facts + care,
+  then trust links).
+- Chapter nav aligns flex-start on mobile (no horizontal page overflow) and
+  centers from lg.
+- Night mode: hero primary CTA label pinned to literal ink so it stays
+  readable on the cream fill.

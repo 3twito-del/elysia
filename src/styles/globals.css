@@ -2940,265 +2940,6 @@ html[data-accessibility-motion="reduce"] .boutique-collection-action::before {
   }
 }
 
-/* ── Living prism: cursor/tilt-reactive light on the about hero ─────────────
-   Fed by --aurora-x / --aurora-y (0–100), --aurora-energy (0–1) and
-   --aurora-shift-* (-1–1) from <AboutHeroAurora>. Pure CSS; JS only nudges
-   the variables. The hero has `isolate`, so screen-blended layers brighten the
-   prism image beneath them without touching the copy (which sits above). */
-.about-aurora {
-  position: absolute;
-  inset: 0;
-  z-index: 4;
-  overflow: hidden;
-  pointer-events: none;
-  --aurora-x: 62;
-  --aurora-y: 40;
-  --aurora-energy: 0;
-}
-
-.about-aurora-spotlight,
-.about-aurora-prism,
-.about-aurora-sheen,
-.about-aurora-bloom {
-  position: absolute;
-  mix-blend-mode: screen;
-}
-
-/* Warm gem highlight that follows the light source. */
-.about-aurora-spotlight {
-  inset: -25%;
-  background: radial-gradient(
-    34% 34% at calc(var(--aurora-x) * 1%) calc(var(--aurora-y) * 1%),
-    rgb(255 250 240 / calc(0.14 + 0.24 * var(--aurora-energy))) 0%,
-    rgb(255 240 214 / calc(0.07 + 0.13 * var(--aurora-energy))) 38%,
-    transparent 64%
-  );
-  transition: background 120ms linear;
-}
-
-/* Faint spectral dispersion — light splitting through a faceted stone.
-   Kept low-saturation and masked to a soft halo so it reads luxe, not neon. */
-.about-aurora-prism {
-  inset: -35%;
-  background: conic-gradient(
-    from calc(var(--aurora-x) * 2.4deg + 40deg) at calc(var(--aurora-x) * 1%)
-      calc(var(--aurora-y) * 1%),
-    rgb(255 188 170 / 0%),
-    rgb(255 214 158 / 55%),
-    rgb(206 232 255 / 48%),
-    rgb(214 184 255 / 42%),
-    rgb(255 224 196 / 0%)
-  );
-  mask: radial-gradient(
-    30% 30% at calc(var(--aurora-x) * 1%) calc(var(--aurora-y) * 1%),
-    #000 0%,
-    transparent 72%
-  );
-  -webkit-mask: radial-gradient(
-    30% 30% at calc(var(--aurora-x) * 1%) calc(var(--aurora-y) * 1%),
-    #000 0%,
-    transparent 72%
-  );
-  opacity: calc(0.22 + 0.6 * var(--aurora-energy));
-  filter: blur(9px) saturate(1.04);
-}
-
-/* A single glint sweeping across the hero, like light catching glass. */
-.about-aurora-sheen {
-  inset: 0;
-  background: linear-gradient(
-    112deg,
-    transparent 38%,
-    rgb(255 252 245 / 0%) 46%,
-    rgb(255 251 240 / 52%) 50%,
-    rgb(255 250 238 / 0%) 54%,
-    transparent 62%
-  );
-  background-size: 260% 100%;
-  background-position: 150% 0;
-  opacity: 0;
-  animation: about-aurora-sheen 8.5s var(--ease-motion-standard) 1.4s both;
-}
-
-/* One-time cinematic bloom on entrance. */
-.about-aurora-bloom {
-  inset: 0;
-  background: radial-gradient(
-    46% 46% at calc(var(--aurora-x) * 1%) calc(var(--aurora-y) * 1%),
-    rgb(255 247 232 / 58%),
-    transparent 60%
-  );
-  opacity: 0;
-  animation: about-aurora-bloom 2.6s var(--ease-motion-expressive) 0.15s both;
-}
-
-.about-aurora-sparkles {
-  position: absolute;
-  inset: 0;
-}
-
-/* Drifting light dust; density of glow rises with cursor energy. */
-.about-aurora-spark {
-  position: absolute;
-  width: var(--spark-size);
-  height: var(--spark-size);
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgb(255 252 244 / 95%) 0%,
-    rgb(255 236 202 / 45%) 42%,
-    transparent 72%
-  );
-  box-shadow: 0 0 6px rgb(255 244 222 / 80%);
-  opacity: 0;
-  mix-blend-mode: screen;
-  will-change: transform, opacity;
-  animation: about-aurora-spark var(--spark-duration) ease-in-out
-    var(--spark-delay) both;
-}
-
-@keyframes about-aurora-sheen {
-  0% {
-    background-position: 150% 0;
-    opacity: 0;
-  }
-  6% {
-    opacity: 0.9;
-  }
-  22% {
-    background-position: -50% 0;
-    opacity: 0;
-  }
-  100% {
-    background-position: -50% 0;
-    opacity: 0;
-  }
-}
-
-@keyframes about-aurora-bloom {
-  0% {
-    opacity: 0;
-    transform: scale(1.16);
-  }
-  28% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: scale(1);
-  }
-}
-
-@keyframes about-aurora-spark {
-  0%,
-  100% {
-    opacity: 0;
-    transform: translateY(0) scale(0.6);
-  }
-  22% {
-    opacity: calc(0.45 + 0.5 * var(--aurora-energy));
-  }
-  52% {
-    opacity: calc(0.78 + 0.22 * var(--aurora-energy));
-    transform: translateY(calc(var(--spark-drift) * 0.55)) scale(1);
-  }
-  82% {
-    opacity: 0.18;
-  }
-}
-
-/* Depth parallax: image and copy drift apart with the light. */
-.about-cinematic-hero .storefront-hero-image {
-  transform: scale(1.06)
-    translate3d(
-      calc(var(--aurora-shift-x, 0) * -14px),
-      calc(var(--aurora-shift-y, 0) * -10px),
-      0
-    );
-  transition: transform 700ms var(--ease-liquid);
-  will-change: transform;
-}
-
-.about-cinematic-hero .about-hero-copy {
-  transform: translate3d(
-    calc(var(--aurora-shift-x, 0) * 9px),
-    calc(var(--aurora-shift-y, 0) * 7px),
-    0
-  );
-  transition: transform 600ms var(--ease-liquid);
-  will-change: transform;
-}
-
-/* Gold sheen drifting through the headline — a slow metallic glint. */
-@supports (-webkit-background-clip: text) or (background-clip: text) {
-  .about-cinematic-hero .about-hero-title.motion-copy-item {
-    background-image: linear-gradient(
-      100deg,
-      #fff 0%,
-      #fff 40%,
-      #ffe7bd 48%,
-      #fffaf0 52%,
-      #fff 60%,
-      #fff 100%
-    );
-    background-size: 220% 100%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    text-shadow: 0 0 calc(18px * var(--aurora-energy, 0))
-      rgb(255 228 182 / calc(0.5 * var(--aurora-energy, 0)));
-    animation: about-title-sheen 9s ease-in-out 1s both;
-  }
-}
-
-@keyframes about-title-sheen {
-  0%,
-  64%,
-  100% {
-    background-position: 130% 0;
-  }
-  84% {
-    background-position: -30% 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .about-aurora-sheen,
-  .about-aurora-bloom,
-  .about-aurora-spark,
-  .about-cinematic-hero .about-hero-title.motion-copy-item {
-    animation: none;
-  }
-
-  .about-cinematic-hero .storefront-hero-image,
-  .about-cinematic-hero .about-hero-copy {
-    transform: none;
-    transition: none;
-  }
-
-  .about-aurora-spark {
-    opacity: 0.3;
-  }
-}
-
-html[data-accessibility-motion="reduce"] .about-aurora-sheen,
-html[data-accessibility-motion="reduce"] .about-aurora-bloom,
-html[data-accessibility-motion="reduce"] .about-aurora-spark,
-html[data-accessibility-motion="reduce"]
-  .about-cinematic-hero
-  .about-hero-title.motion-copy-item {
-  animation: none;
-}
-
-html[data-accessibility-motion="reduce"]
-  .about-cinematic-hero
-  .storefront-hero-image,
-html[data-accessibility-motion="reduce"]
-  .about-cinematic-hero
-  .about-hero-copy {
-  transform: none;
-  transition: none;
-}
 
 /* ════════════════════════════════════════════════════════════════════════
    About redesign — cinematic editorial sections
@@ -3682,12 +3423,19 @@ html[data-accessibility-motion="reduce"]
 .about-chapter-nav-track {
   display: flex;
   gap: clamp(1.4rem, 4vw, 3.25rem);
-  justify-content: safe center;
-  max-width: 88rem;
+  justify-content: flex-start;
+  max-width: 100%;
   margin-inline: auto;
   padding-inline: var(--ui-page-x);
   overflow-x: auto;
   scrollbar-width: none;
+}
+
+@media (min-width: 1024px) {
+  .about-chapter-nav-track {
+    justify-content: center;
+    max-width: 88rem;
+  }
 }
 
 .about-chapter-nav-track::-webkit-scrollbar {
@@ -3798,6 +3546,17 @@ html[data-accessibility-motion="reduce"]
   gap: clamp(2rem, 4.5vw, 4rem);
   max-width: 88rem;
   margin-inline: auto;
+}
+
+/* The pinned `boutique-story-media-*` classes carry homepage story-band
+   layout (50vw widths, fixed grid slots). Neutralise that baggage inside the
+   about grid so the figures obey their own tracks. */
+.about-v2 .boutique-story-media,
+.about-v2 .boutique-story-media-left,
+.about-v2 .boutique-story-media-right {
+  grid-area: auto;
+  width: 100%;
+  height: auto;
 }
 
 .about-v2 .about-sticky-figure {
@@ -3945,10 +3704,6 @@ html[data-accessibility-motion="reduce"]
     grid-template-columns: minmax(0, 1fr);
     gap: 1.15rem;
   }
-}
-
-.about-care-card {
-  background: var(--background);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -4371,45 +4126,6 @@ html[data-accessibility-motion="reduce"] .about-timeline-flow::before {
 .site-header .site-header-label-action:hover,
 .site-header .site-header-label-action:focus-visible {
   color: var(--site-header-link-hover);
-}
-
-.site-header .site-header-category-nav {
-  align-items: center;
-  justify-content: center;
-  gap: clamp(1.1rem, 2vw, 1.9rem);
-  height: 2.375rem;
-  padding-inline: var(--ui-page-x-wide);
-}
-
-.site-header .site-header-category-link {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  height: 100%;
-  font-size: 0.85rem;
-  font-weight: 500;
-  outline: none;
-}
-
-.site-header .site-header-category-link:focus-visible {
-  box-shadow: 0 0 0 3px var(--glass-focus);
-}
-
-.site-header .site-header-category-link::after {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  bottom: 0;
-  height: 1px;
-  background: currentColor;
-  opacity: 0;
-  transition: opacity var(--motion-fast) var(--ease-motion-standard);
-}
-
-.site-header .site-header-category-link:hover::after,
-.site-header .site-header-category-link:focus-visible::after,
-.site-header .site-header-category-link[aria-current="page"]::after {
-  opacity: 1;
 }
 
 .site-header .site-header-scroll-cta {
@@ -6321,7 +6037,9 @@ footer nav a:focus-visible {
 .home-hero-actions .home-hero-cta-primary:not(:disabled) {
   border-color: rgb(255 250 244 / 94%) !important;
   background: rgb(255 250 244 / 94%) !important;
-  color: var(--foreground) !important;
+  /* Literal ink: the cream fill is theme-independent, so the label must not
+     flip with --foreground in night mode. */
+  color: var(--brand-ink) !important;
 }
 
 .home-hero-actions .home-hero-cta-primary:not(:disabled):hover,
@@ -7267,8 +6985,7 @@ html[data-accessibility-motion="reduce"]
 }
 
 .dark .about-principle-num,
-.dark .about-flow-marker,
-.dark .about-care-card {
+.dark .about-flow-marker {
   background: var(--card);
 }
 
