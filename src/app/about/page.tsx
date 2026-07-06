@@ -19,6 +19,7 @@ import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 
+import { AboutChapterNav, type AboutChapter } from "./_components/about-chapter-nav";
 import { AboutHeroAurora } from "./_components/about-hero-aurora";
 import { AboutReveal, AboutScrollCue } from "./_components/about-reveal";
 
@@ -36,6 +37,20 @@ type LinkCard = {
 };
 
 const aboutHeroImage = "/brand/boutique/about-hero-prism.avif";
+
+const aboutChapters: AboutChapter[] = [
+  { id: "about-manifesto", index: "01", label: "הסיפור" },
+  { id: "about-editorial", index: "02", label: "העקרונות" },
+  { id: "about-rhythm", index: "03", label: "התהליך" },
+  { id: "about-practical-proof", index: "04", label: "שירות" },
+];
+
+const aboutStats = [
+  { value: "925", label: "כסף סטרלינג בבסיס כל פריט" },
+  { value: "12", label: "חודשי אחריות על פגמי ייצור" },
+  { value: "24", label: "שעות עד מענה בימי עסקים" },
+  { value: "100%", label: "חנות אונליין עם שירות אישי" },
+] as const;
 
 const editorialPrinciples = [
   {
@@ -72,19 +87,19 @@ const materialFacts = [
 
 const brandRhythm = [
   {
-    title: "עיצוב",
+    title: "בחירה",
     text: "אנחנו בוחרים פריטים בקווים נקיים ובעיצוב קלאסי.",
   },
   {
-    title: "צילום מפורט",
+    title: "בדיקה",
+    text: "כל פריט נבדק מול העקרונות שלנו: עיצוב, חומר וגימור.",
+  },
+  {
+    title: "צילום",
     text: "כל פריט מצולם מקרוב, כולל קנה מידה וחומר.",
   },
   {
-    title: "התאמה ליום-יום",
-    text: "פריטים שנוחים לענידה יומיומית ומתאימים גם למתנה.",
-  },
-  {
-    title: "שירות מלא",
+    title: "ליווי",
     text: "מדריך מידות, הוראות טיפול, משלוח והחלפות לכל פריט.",
   },
 ] as const;
@@ -132,7 +147,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <main className="elysia-page about-cinematic-page">
+    <main className="elysia-page about-cinematic-page about-v2">
       <link
         as="image"
         fetchPriority="high"
@@ -143,6 +158,7 @@ export default function AboutPage() {
       <SiteHeader />
 
       <article>
+        {/* ── Chapter 00: cinematic hero ─────────────────────────────────── */}
         <RevealSection
           className="home-cinematic-hero storefront-hero about-cinematic-hero relative isolate min-h-[var(--home-hero-height)] w-screen max-w-none overflow-hidden"
           data-testid="about-cinematic-page-hero"
@@ -198,7 +214,9 @@ export default function AboutPage() {
           <AboutScrollCue />
         </RevealSection>
 
-        {/* ── Quiet manifesto ─────────────────────────────────────────────── */}
+        <AboutChapterNav chapters={aboutChapters} />
+
+        {/* ── Chapter 01: manifesto + facts ──────────────────────────────── */}
         <RevealSection
           className="about-manifesto px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)]"
           id="about-manifesto"
@@ -214,40 +232,83 @@ export default function AboutPage() {
               </p>
               <span aria-hidden="true" className="about-rule" />
             </div>
-            <p className="about-manifesto-text">
-              Elysia הוקמה מתוך אהבה לתכשיטים עדינים ואיכותיים. אנחנו בוחרים
-              כל פריט בקפידה לפי העיצוב, החומר ואיכות הגימור, ומלווים אותך
-              בשירות אישי מהבחירה ועד המשלוח.
-            </p>
+            <div>
+              <p className="about-manifesto-text">
+                אנחנו מאמינים שתכשיט טוב נמדד ביום-יום: בנוחות שלו, בגימור שלו
+                ובשירות שעומד מאחוריו.
+              </p>
+              <p className="about-manifesto-support">
+                Elysia הוקמה מתוך אהבה לתכשיטים עדינים ואיכותיים. אנחנו בוחרים
+                כל פריט בקפידה לפי העיצוב, החומר ואיכות הגימור, ומלווים אותך
+                בשירות אישי מהבחירה ועד המשלוח.
+              </p>
+            </div>
+          </AboutReveal>
+
+          <AboutReveal
+            as="dl"
+            aria-label="Elysia במספרים"
+            className="about-stats mx-auto grid max-w-[88rem]"
+            data-testid="about-stats-band"
+            delay={0.08}
+          >
+            {aboutStats.map((stat, index) => (
+              <div
+                className="about-stat about-rv-item"
+                key={stat.value}
+                style={{ "--rv-i": index } as CSSProperties}
+              >
+                <dt className="about-stat-label order-2">{stat.label}</dt>
+                <dd className="about-stat-value order-1">{stat.value}</dd>
+              </div>
+            ))}
           </AboutReveal>
         </RevealSection>
 
-        {/* ── Three principles (story band) ───────────────────────────────── */}
+        {/* ── Chapter 02: principles with sticky editorial media ─────────── */}
         <RevealSection
-          className="boutique-story-band about-cinematic-story px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-0"
+          className="about-editorial-v2 px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)]"
           id="about-editorial"
           variant="none"
         >
-          <div className="boutique-story-layout mx-auto grid max-w-[92rem] gap-8 lg:items-center">
-            <figure className="boutique-story-media boutique-story-media-left relative">
+          <div className="about-editorial-grid">
+            <figure className="boutique-story-media boutique-story-media-left about-sticky-figure relative">
               <Image
-                alt="תקריב על גימור וברק של תכשיט Elysia"
-                className="object-cover"
+                alt="שרשרת עדינה של Elysia בצילום תקריב על קנה מידה אמיתי"
+                className="media-color object-cover"
                 fill
                 loading="lazy"
-                sizes="(min-width: 1024px) 50vw, 100vw"
-                src="/brand/boutique/product-detail.avif"
+                sizes="(min-width: 1024px) 44vw, 100vw"
+                src="/brand/boutique/category-necklaces.avif"
               />
             </figure>
-            <AboutReveal className="boutique-story-copy about-story-copy">
+
+            <AboutReveal className="about-editorial-copy">
               <p className="storefront-eyebrow about-eyebrow-dark">
-                מה תמצאי אצלנו
+                מה מנחה אותנו
               </p>
-              <h2 className="about-section-title">מבחר שנבחר בקפידה</h2>
+              <h2 className="about-section-title">שלושה עקרונות, כל פריט</h2>
               <p className="about-section-text">
-                טבעות, שרשראות, עגילים, צמידים וסטים. כל פריט נבחר לפי העיצוב,
-                החומר ואיכות הגימור, כך שיתאים לענידה יומיומית.
+                לפני שפריט נכנס לקולקציה, הוא נבחן מול שלושה עקרונות קבועים.
+                אלה שיקולי הבחירה שתפגשי בכל עמוד מוצר.
               </p>
+              <ol className="about-principles-list">
+                {editorialPrinciples.map((principle, index) => (
+                  <li
+                    className="about-principle-row about-rv-item"
+                    key={principle.title}
+                    style={{ "--rv-i": index } as CSSProperties}
+                  >
+                    <span aria-hidden="true" className="about-principle-num">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <div>
+                      <h3>{principle.title}</h3>
+                      <p>{principle.text}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
               <div className="about-story-actions">
                 <Button asChild variant="outline">
                   <Link href="/size-guide" prefetch={false}>
@@ -261,43 +322,28 @@ export default function AboutPage() {
                 </Button>
               </div>
             </AboutReveal>
-            <AboutReveal className="boutique-story-secondary-copy">
-              <div className="about-principles grid gap-4">
-                {editorialPrinciples.map((principle, index) => (
-                  <section
-                    className="about-principle-card about-rv-item"
-                    key={principle.title}
-                    style={{ "--rv-i": index } as CSSProperties}
-                  >
-                    <span className="about-principle-index">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <div>
-                      <h3>{principle.title}</h3>
-                      <p>{principle.text}</p>
-                    </div>
-                    <span
-                      aria-hidden="true"
-                      className="about-principle-sweep"
-                    />
-                  </section>
-                ))}
-              </div>
-            </AboutReveal>
-            <figure className="boutique-story-media boutique-story-media-right relative">
-              <Image
-                alt="שרשרת עדינה של Elysia על קנה מידה אמיתי"
-                className="object-cover"
-                fill
-                loading="lazy"
-                sizes="(min-width: 1024px) 50vw, 100vw"
-                src="/brand/boutique/category-necklaces.avif"
-              />
-            </figure>
           </div>
+
+          <AboutReveal
+            as="figure"
+            className="boutique-story-media boutique-story-media-right about-figure-banner relative"
+            delay={0.05}
+          >
+            <Image
+              alt="גימור וברק של תכשיטי כסף 925 וציפוי זהב בצילום רוחב"
+              className="media-color object-cover"
+              fill
+              loading="lazy"
+              sizes="100vw"
+              src="/brand/boutique/lifestyle-hero-poster.avif"
+            />
+            <figcaption className="about-figure-caption">
+              כסף 925 וציפוי זהב, בצילום תקריב של הגימור.
+            </figcaption>
+          </AboutReveal>
         </RevealSection>
 
-        {/* ── Cinematic visual story: material, light, scale ──────────────── */}
+        {/* ── Cinematic fixed band: material, light, scale ───────────────── */}
         <RevealSection
           className="about-visual-story relative isolate"
           id="about-visual-story"
@@ -311,11 +357,11 @@ export default function AboutPage() {
             <AboutReveal className="about-visual-story-copy" dir="rtl">
               <p className="storefront-eyebrow">איכות ושקיפות</p>
               <h2 className="about-visual-story-title">
-                איכות שרואים בכל פרט
+                איכות שרואים בכל פרט.
               </h2>
               <p className="about-visual-story-text">
                 בכל עמוד מוצר תמצאי את פרטי החומר, המידות והמחיר, כדי שתוכלי
-                לבחור בביטחון מלא.
+                לבחור בביטחון.
               </p>
               <ul className="about-floating-labels">
                 {floatingLabels.map((label, index) => (
@@ -332,130 +378,31 @@ export default function AboutPage() {
           </div>
         </RevealSection>
 
-        {/* ── Before ordering: three things, no guessing ──────────────────── */}
-        <RevealSection
-          className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-14"
-          id="about-practical-proof"
-          variant="none"
-        >
-          <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-            <AboutReveal
-              as="section"
-              aria-labelledby="about-brand-timeline-title"
-              data-testid="about-brand-timeline"
-            >
-              <p className="text-muted-foreground text-sm">לפני שמוסיפים לסל</p>
-              <h2
-                className="mt-3 text-3xl leading-tight font-semibold sm:text-4xl"
-                id="about-brand-timeline-title"
-              >
-                מה שחשוב לדעת לפני ההזמנה
-              </h2>
-              <ol className="about-checklist mt-6 grid gap-4">
-                {editorialPrinciples.map((item, index) => (
-                  <li
-                    className="about-rv-item grid grid-cols-[auto_minmax(0,1fr)] gap-4 border-t border-[var(--glass-border)] pt-4"
-                    key={item.title}
-                    style={{ "--rv-i": index } as CSSProperties}
-                  >
-                    <span className="glass-inset grid size-9 place-items-center rounded-md border text-sm font-medium tabular-nums">
-                      {index + 1}
-                    </span>
-                    <span>
-                      <span className="block font-semibold">{item.title}</span>
-                      <span className="text-muted-foreground mt-1 block leading-7">
-                        {item.text}
-                      </span>
-                    </span>
-                  </li>
-                ))}
-              </ol>
-            </AboutReveal>
-
-            <div className="grid gap-4">
-              <AboutReveal
-                as="section"
-                aria-labelledby="about-material-facts-title"
-                data-testid="about-material-facts"
-                delay={0.06}
-              >
-                <h2
-                  className="text-xl font-semibold"
-                  id="about-material-facts-title"
-                >
-                  מה לבדוק לפני שמזמינים
-                </h2>
-                <div className="about-facts-grid mt-4 grid gap-3 sm:grid-cols-3">
-                  {materialFacts.map((fact, index) => (
-                    <div
-                      className="about-rv-item h-full"
-                      key={fact.title}
-                      style={{ "--rv-i": index } as CSSProperties}
-                    >
-                      <IconCard item={fact} />
-                    </div>
-                  ))}
-                </div>
-              </AboutReveal>
-
-              <AboutReveal
-                as="section"
-                aria-labelledby="about-care-teaser-title"
-                className="rounded-md border border-[var(--glass-border)] p-5"
-                data-testid="about-care-teaser"
-                delay={0.1}
-              >
-                <Sparkles aria-hidden="true" className="size-5" />
-                <h2
-                  className="mt-4 text-xl font-semibold"
-                  id="about-care-teaser-title"
-                >
-                  יש לך שאלה?
-                </h2>
-                <p className="text-muted-foreground mt-2 leading-7">
-                  בדקי את עמוד השאלות והתשובות, או פני אלינו ישירות.
-                </p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <Button asChild size="sm" variant="outline">
-                    <Link href="/faq#faq-group-2" prefetch={false}>
-                      שאלות על מידות
-                    </Link>
-                  </Button>
-                  <Button asChild size="sm" variant="outline">
-                    <Link href="/service?topic=general" prefetch={false}>
-                      פנייה לשירות
-                    </Link>
-                  </Button>
-                </div>
-              </AboutReveal>
-            </div>
-          </div>
-        </RevealSection>
-
-        {/* ── Brand rhythm timeline ───────────────────────────────────────── */}
+        {/* ── Chapter 03: process timeline ───────────────────────────────── */}
         <RevealSection
           className="about-rhythm border-y"
+          data-testid="about-brand-timeline"
           id="about-rhythm"
           variant="none"
         >
-          <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:py-14">
-            <div className="mb-8 max-w-2xl">
+          <div className="mx-auto max-w-[88rem] px-4 py-10 sm:px-6 lg:py-14">
+            <div className="mb-9 max-w-2xl">
               <p className="text-muted-foreground text-sm">איך אנחנו עובדים</p>
               <h2 className="mt-3 text-3xl leading-tight font-semibold sm:text-4xl">
                 איך פריט נכנס לקולקציה
               </h2>
             </div>
-            <AboutReveal as="ol" className="about-timeline">
+            <AboutReveal as="ol" className="about-timeline-flow">
               {brandRhythm.map((step, index) => (
                 <li
-                  className="about-timeline-item about-rv-item"
+                  className="about-flow-step about-rv-item"
                   key={step.title}
                   style={{ "--rv-i": index } as CSSProperties}
                 >
-                  <span aria-hidden="true" className="about-timeline-marker">
+                  <span aria-hidden="true" className="about-flow-marker">
                     {String(index + 1).padStart(2, "0")}
                   </span>
-                  <div className="about-timeline-body">
+                  <div className="about-flow-body">
                     <h3>{step.title}</h3>
                     <p>{step.text}</p>
                   </div>
@@ -465,10 +412,10 @@ export default function AboutPage() {
           </div>
         </RevealSection>
 
-        {/* ── Trust & service ─────────────────────────────────────────────── */}
+        {/* ── Chapter 04: practical proof and service ────────────────────── */}
         <RevealSection
-          className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-14"
-          id="about-trust"
+          className="mx-auto max-w-[88rem] px-4 py-10 sm:px-6 lg:py-14"
+          id="about-practical-proof"
           variant="none"
         >
           <div className="mb-7 max-w-3xl">
@@ -477,7 +424,68 @@ export default function AboutPage() {
               כל המידע לפני ההזמנה
             </h2>
           </div>
-          <AboutReveal className="about-trust-grid grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+
+          <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+            <AboutReveal
+              as="section"
+              aria-labelledby="about-material-facts-title"
+              data-testid="about-material-facts"
+            >
+              <h3
+                className="text-xl font-semibold"
+                id="about-material-facts-title"
+              >
+                מה לבדוק לפני שמזמינים
+              </h3>
+              <div className="about-facts-grid mt-4 grid gap-3 sm:grid-cols-3">
+                {materialFacts.map((fact, index) => (
+                  <div
+                    className="about-rv-item h-full"
+                    key={fact.title}
+                    style={{ "--rv-i": index } as CSSProperties}
+                  >
+                    <IconCard item={fact} />
+                  </div>
+                ))}
+              </div>
+            </AboutReveal>
+
+            <AboutReveal
+              as="section"
+              aria-labelledby="about-care-teaser-title"
+              className="about-care-card rounded-md border border-[var(--glass-border)] p-5"
+              data-testid="about-care-teaser"
+              delay={0.06}
+            >
+              <Sparkles aria-hidden="true" className="size-5" />
+              <h3
+                className="mt-4 text-xl font-semibold"
+                id="about-care-teaser-title"
+              >
+                יש לך שאלה?
+              </h3>
+              <p className="text-muted-foreground mt-2 leading-7">
+                בדקי את עמוד השאלות והתשובות, או פני אלינו ישירות.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Button asChild size="sm" variant="outline">
+                  <Link href="/faq#faq-group-2" prefetch={false}>
+                    שאלות על מידות
+                  </Link>
+                </Button>
+                <Button asChild size="sm" variant="outline">
+                  <Link href="/service?topic=general" prefetch={false}>
+                    פנייה לשירות
+                  </Link>
+                </Button>
+              </div>
+            </AboutReveal>
+          </div>
+
+          <AboutReveal
+            className="about-trust-grid mt-9 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+            delay={0.05}
+          >
             {trustCards.map((card, index) => (
               <div
                 className="about-rv-item h-full"
@@ -490,7 +498,7 @@ export default function AboutPage() {
           </AboutReveal>
         </RevealSection>
 
-        {/* ── Final CTA ───────────────────────────────────────────────────── */}
+        {/* ── Final CTA ──────────────────────────────────────────────────── */}
         <RevealSection
           className="about-final px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)]"
           id="about-close"
@@ -531,11 +539,11 @@ function IconCard({ item }: { item: IconItem }) {
   const Icon = item.icon;
 
   return (
-    <section className="brand-surface p-5">
+    <section className="brand-surface h-full p-5">
       <div className="glass-inset flex size-10 items-center justify-center rounded-md border">
         <Icon aria-hidden="true" className="size-5" />
       </div>
-      <h3 className="mt-5 text-xl font-semibold">{item.title}</h3>
+      <h4 className="mt-5 text-xl font-semibold">{item.title}</h4>
       <p className="text-muted-foreground mt-3 leading-7">{item.text}</p>
     </section>
   );

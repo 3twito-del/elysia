@@ -45,3 +45,20 @@ Checked the page across these grouped aspects:
 - No final boxed `brand-surface` CTA.
 - No duplicate icons inside any static icon list.
 - Text scale remains editorial, not oversized dashboard or hero type inside panels.
+
+## Relaunch v2 (2026-07-06)
+
+Chaptered editorial rebuild on top of the original guardrails:
+
+- Sticky chapter navigation (`about-chapter-nav`) with IntersectionObserver
+  scrollspy; anchors map to the four content chapters.
+- Manifesto chapter gains a facts band (`about-stats-band`) with four factual
+  numerals (925 silver, 12-month warranty, 24h response, online-only model).
+- Principles chapter uses a sticky editorial figure (desktop) with numbered
+  hairline rows instead of boxed cards, plus a wide banner figure with an
+  in-image caption.
+- Process chapter is a horizontal four-step flow with a hairline that draws
+  once on reveal; vertical on mobile.
+- All guardrails still hold: media-led (hero + two figures + fixed band),
+  compact section padding, no `Separator`, and no final boxed `brand-surface`
+  CTA. Reduced-motion and night-mode variants covered in `globals.css`.
