@@ -795,6 +795,7 @@ export default async function AdminErpPage({
               אוטומטית. דרישה מאושרת ניתנת להמרה להזמנת רכש.
             </p>
             <select
+              aria-label="ספק מועדף (רשות)"
               autoComplete="off"
               className="glass-control h-10 rounded-md border px-3 text-sm"
               defaultValue=""
