@@ -146,7 +146,7 @@ export function SiteHeader() {
           >
             <Link
               aria-label="תמיכה"
-              className="site-header-link site-header-label-action hidden min-h-10 items-center text-[0.94rem] font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] md:inline-flex"
+              className="site-header-link site-header-label-action hidden min-h-10 items-center text-[0.94rem] font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] lg:inline-flex"
               href="/service"
               prefetch={false}
             >
@@ -154,7 +154,7 @@ export function SiteHeader() {
             </Link>
             <Button
               asChild
-              className="site-header-action hidden size-10 sm:inline-flex sm:size-11"
+              className="site-header-action hidden size-10 md:inline-flex md:size-11"
               size="icon"
               variant="ghost"
             >
@@ -175,7 +175,7 @@ export function SiteHeader() {
             />
             <Button
               asChild
-              className="site-header-action size-11"
+              className="site-header-action hidden size-11 md:inline-flex"
               size="icon"
               variant="ghost"
             >

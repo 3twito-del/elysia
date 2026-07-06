@@ -46,25 +46,53 @@ export function AboutReveal({
 
     if (!node) return;
 
-    if (!("IntersectionObserver" in window)) {
-      const frame = requestAnimationFrame(() => setRevealed(true));
+    let settled = false;
 
-      return () => cancelAnimationFrame(frame);
+    const reveal = () => {
+      if (settled) return;
+      settled = true;
+      setRevealed(true);
+      cleanup();
+    };
+
+    // A generous in-view test so a fast scroll (or scroll restoration) that
+    // skips the observer's sampled frames still reveals the content instead of
+    // leaving it stuck at opacity 0.
+    const isInView = () => {
+      const rect = node.getBoundingClientRect();
+      return rect.top < window.innerHeight * 1.05 && rect.bottom > 0;
+    };
+
+    const handleScroll = () => {
+      if (isInView()) reveal();
+    };
+
+    const observer =
+      "IntersectionObserver" in window
+        ? new IntersectionObserver(
+            ([entry]) => {
+              if (entry?.isIntersecting) reveal();
+            },
+            { rootMargin: "0px 0px -12% 0px", threshold: 0.12 },
+          )
+        : null;
+
+    observer?.observe(node);
+
+    // Fallback net: catches observer frames skipped by fast scrolling and
+    // reveals content already on screen at mount time.
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll);
+    const frame = requestAnimationFrame(handleScroll);
+
+    function cleanup() {
+      observer?.disconnect();
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+      cancelAnimationFrame(frame);
     }
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry?.isIntersecting) return;
-
-        setRevealed(true);
-        observer.disconnect();
-      },
-      { rootMargin: "0px 0px -12% 0px", threshold: 0.12 },
-    );
-
-    observer.observe(node);
-
-    return () => observer.disconnect();
+    return cleanup;
   }, [reduceMotion, revealed]);
 
   return (
