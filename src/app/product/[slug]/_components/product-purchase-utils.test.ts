@@ -21,7 +21,7 @@ it("maps add-to-cart failures to customer-safe recovery copy", () => {
     getAddToCartFailureMessage({
       message: "Quantity limit exceeded",
     }),
-  ).toBe("לא ניתן להוסיף כמות זו לסל. נסו כמות אחרת או פנו לשירות.");
+  ).toBe("לא ניתן להוסיף כמות זו לסל. נסי כמות אחרת או פני לשירות.");
   expect(
     getAddToCartFailureMessage({
       message: "database connection timeout",
@@ -89,7 +89,7 @@ describe("product purchase utilities", () => {
         requiresSeparateCheckout: false,
         variant: baseVariant,
       }),
-    ).toBe("בירור התאמה");
+    ).toBe("אזל מהמלאי");
   });
 
   it("keeps unavailable PDP variant controls disabled without exposing stock", () => {
@@ -187,7 +187,7 @@ describe("product purchase utilities", () => {
     });
     const serviceItem = items.find((item) => item.key === "service");
 
-    expect(serviceItem?.title).toBe("מסירה, טיפול ואחריות");
+    expect(serviceItem?.title).toBe("משלוח, טיפול ואחריות");
     expect(serviceItem?.description).toContain(
       "אחריות: אחריות 12 חודשים על פגמי ייצור.",
     );

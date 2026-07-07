@@ -8,7 +8,10 @@ import { LegalCookiePreferencesCallout } from "~/components/legal-cookie-prefere
 import { LegalPlaceholderGrid } from "~/components/legal-placeholder-grid";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-import { accessibilityPlaceholders } from "~/lib/legal-content";
+import {
+  accessibilityPlaceholders,
+  legalLastUpdated,
+} from "~/lib/legal-content";
 import { getPublicContactSettings } from "~/server/services/service";
 
 export const metadata: Metadata = {
@@ -118,7 +121,7 @@ export default async function AccessibilityPage() {
 
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <p className="text-muted-foreground text-sm">
-          ההצהרה עודכנה לאחרונה: 7 ביוני 2026.
+          ההצהרה עודכנה לאחרונה: {legalLastUpdated.accessibility}.
         </p>
         <Button asChild>
           <Link href="/">חזרה לעמוד הבית</Link>

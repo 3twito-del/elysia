@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { DeferredStylistChat } from "./_components/deferred-stylist-chat";
 
 export const metadata = {
-  title: "יועץ לוק",
+  title: "סטיילינג אישי",
 };
 
 export default function StylistPage() {
@@ -15,8 +15,8 @@ export default function StylistPage() {
     <main className="elysia-page">
       <SiteHeader />
       <CompactPageIntro
-        description="ענו על לוק, אירוע, תקציב ומידה וקבלו כיוון לבחירת תכשיט."
-        eyebrow="יועץ לוק"
+        description="ספרי לנו על האירוע, התקציב והסגנון, וקבלי המלצות לבחירת תכשיט."
+        eyebrow="סטיילינג אישי"
         id="page-hero"
         title="ייעוץ לבחירת תכשיט"
         variant="content"
@@ -39,9 +39,9 @@ export default function StylistPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-muted-foreground grid gap-3 text-sm leading-7">
-                <p>מתנה לפי קשר, אירוע, מחיר וסגנון.</p>
-                <p>פריטים לפי קטגוריה, חומר וזמינות.</p>
-                <p>כיוון ראשוני למידה לפני הזמנה.</p>
+                <p>המלצות למתנה לפי נמענת, אירוע, מחיר וסגנון.</p>
+                <p>חיפוש פריטים לפי קטגוריה, חומר וזמינות.</p>
+                <p>הכוונה ראשונית לבחירת מידה לפני ההזמנה.</p>
               </CardContent>
             </Card>
             <Card className="rounded-md">
@@ -52,7 +52,7 @@ export default function StylistPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-muted-foreground text-sm leading-7">
-                אפשר לפתוח בקשת מדידה מתמונה או מפרטי מידה לפני שמחליטים.
+                אפשר לקבל עזרה בבחירת מידה מתמונה או מפרטי מידה קיימים.
               </CardContent>
             </Card>
           </RevealGrid>

@@ -176,16 +176,16 @@ export function buildDunningEmail(input: {
     input.level >= 3
       ? "התראה לפני העברה לגבייה"
       : input.level === 2
-        ? "תזכורת שנייה"
-        : "תזכורת ידידותית";
-  const subject = `${tone} — חשבונית ${input.invoiceNumber}`;
+        ? "תזכורת שנייה לתשלום"
+        : "תזכורת לתשלום";
+  const subject = `${tone} - חשבונית ${input.invoiceNumber}`;
   const body = [
     "שלום,",
     `חשבונית ${input.invoiceNumber} ביתרה של ₪${input.outstanding} נמצאת באיחור של ${input.daysOverdue} ימים.`,
     input.level >= 3
       ? "נבקש להסדיר את התשלום בהקדם כדי להימנע מהמשך הליכי גבייה."
-      : "נשמח אם תסדירו את התשלום בהקדם. אם שולם — התעלמו מהודעה זו.",
-    "תודה, Elysia.",
+      : "נשמח אם תסדירו את התשלום בהקדם. אם התשלום כבר בוצע, נא להתעלם מהודעה זו.",
+    "בברכה,\nצוות Elysia",
   ].join("\n\n");
   return { subject, body };
 }

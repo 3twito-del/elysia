@@ -45,7 +45,9 @@ describe("public typography spacing guardrails", () => {
     expect(home).toMatch(
       /data-testid="home-hero-primary-cta"[\s\S]*dir="auto"/,
     );
-    expect(home).toContain("dir={getHeroTextDirection(actionLabel)}");
+    expect(home).toContain(
+      'import { CommerceSectionHeader } from "~/components/commerce-section-header";',
+    );
     expect(home).not.toContain("text-right");
     expect(home).not.toContain('<h1 className="sr-only">Elysia</h1>');
     expect(home).not.toContain("home-hero-wordmark");

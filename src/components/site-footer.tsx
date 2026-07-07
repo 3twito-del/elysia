@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   ChevronDown,
   MessageCircle,
@@ -31,9 +32,9 @@ const catalogLinks = [
 ] as const;
 
 const commerceLinks = [
-  { href: "/checkout", label: "סל" },
+  { href: "/checkout", label: "סל הקניות" },
   { href: "/size-guide", label: "מדריך מידות" },
-  { href: "/service", label: "שירות תומך" },
+  { href: "/service", label: "שירות לקוחות" },
   { href: "/faq", label: "שאלות ותשובות" },
 ] as const;
 
@@ -65,14 +66,14 @@ const footerTrustSignals = [
   {
     href: "/shipping-returns",
     icon: PackageCheck,
-    label: "החלפה והחזרה",
-    text: "הסבר אנושי לפני הטקסט המשפטי.",
+    label: "החלפות והחזרות",
+    text: "כל המידע על משלוחים, החזרות וביטול עסקה.",
   },
   {
     href: "/size-guide",
     icon: Ruler,
-    label: "בחירת מידה",
-    text: "מידות טבעות, צמידים ושרשראות לפני הזמנה.",
+    label: "מדריך מידות",
+    text: "איך בוחרים מידה נכונה לפני ההזמנה.",
   },
   {
     href: "/warranty",
@@ -83,13 +84,16 @@ const footerTrustSignals = [
   {
     href: "/service",
     icon: MessageCircle,
-    label: "שירות אישי",
-    text: "מענה עד יום עסקים דרך ערוץ מתועד.",
+    label: "שירות לקוחות",
+    text: "מענה לכל פנייה בתוך יום עסקים אחד.",
   },
 ] as const;
 
 export function SiteFooter() {
   const currentYear = new Date().getFullYear();
+  const pathname = usePathname();
+  // Keep the transactional checkout surface focused: no marketing newsletter.
+  const showNewsletter = pathname !== "/checkout";
 
   return (
     <footer className="site-footer elysia-section" dir="rtl">
@@ -104,28 +108,30 @@ export function SiteFooter() {
               className="brand-footer-mark inline-flex items-center"
               href="/"
             >
-              <BrandLogo className="h-12 w-auto max-w-[14.5rem] sm:h-14 sm:max-w-[18rem]" />
+              <BrandLogo className="h-8 w-auto max-w-[11rem] sm:h-10 sm:max-w-[13rem]" />
             </Link>
             <span className="sr-only" id="footer-brand-title">
               Elysia
             </span>
             <p className="site-footer-brand-text mt-7 hidden max-w-lg text-base leading-8 sm:block sm:text-[1.05rem] sm:leading-9">
-              תכשיטים שנבחרו בזכות עיצוב מדויק, חומרים יפים והנוכחות שהם מביאים
-              לכל יום.
+              ב-Elysia תמצאי תכשיטי כסף 925 וציפוי זהב, לכל יום ולאירועים
+              מיוחדים.
             </p>
-            <div className="site-footer-newsletter mt-7 max-w-xl sm:mt-11">
-              <p className="site-footer-kicker text-xs font-medium tracking-normal">
-                Elysia Notes
-              </p>
-              <p className="site-footer-newsletter-copy mt-4 hidden max-w-md text-sm leading-7 sm:block sm:leading-8">
-                קולקציות חדשות, בחירות עונתיות וסיפורים מאחורי התכשיטים.
-              </p>
-              <NewsletterForm
-                hintText="נשלח רק כשיש משהו חדש שכדאי לראות."
-                submitLabel="להצטרף"
-                variant="footer"
-              />
-            </div>
+            {showNewsletter ? (
+              <div className="site-footer-newsletter mt-7 max-w-xl sm:mt-11">
+                <p className="site-footer-kicker text-xs font-medium tracking-normal">
+                  הרשמה לניוזלטר
+                </p>
+                <p className="site-footer-newsletter-copy mt-4 hidden max-w-md text-sm leading-7 sm:block sm:leading-8">
+                  עדכונים על קולקציות חדשות ופריטים נבחרים, ישירות למייל.
+                </p>
+                <NewsletterForm
+                  hintText="אפשר לבטל את ההרשמה בכל עת."
+                  submitLabel="הרשמה"
+                  variant="footer"
+                />
+              </div>
+            ) : null}
           </section>
 
           <nav
@@ -234,7 +240,7 @@ function FooterNav({
 function FooterTrustLayer() {
   return (
     <section
-      aria-label="אמון ושירות לפני הזמנה"
+      aria-label="שירות ומידע"
       className="footer-trust-layer mt-16 hidden border-y border-[var(--glass-border)] py-8 sm:block"
       data-testid="footer-trust-layer"
     >

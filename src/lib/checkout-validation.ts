@@ -66,7 +66,7 @@ export function validateCheckoutFields({
 
   if (fulfillmentMethod === "DELIVERY") {
     if (city.trim().length < 2) {
-      errors.city = "יש להזין עיר למסירה.";
+      errors.city = "יש להזין עיר למשלוח.";
     }
 
     if (street.trim().length < 2) {

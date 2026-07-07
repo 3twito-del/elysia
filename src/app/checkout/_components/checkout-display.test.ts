@@ -48,7 +48,7 @@ describe("checkout display helpers", () => {
       getFriendlyCheckoutErrorMessage({
         message: "Fixture cart item was not found.",
       }),
-    ).toBe("התכשיט אינו פנוי כרגע. רעננו ונסו שוב.");
+    ).toBe("הפריט אינו זמין כרגע. רענני את העמוד ונסי שוב.");
 
     expect(
       getFriendlyCheckoutErrorMessage({
@@ -73,9 +73,9 @@ describe("checkout display helpers", () => {
         label: "פריטי החנות",
       },
       {
-        detail: "מסירה עד הבית כלולה לפי הכתובת.",
+        detail: "משלוח עד הבית כלול לפי הכתובת.",
         key: "delivery",
-        label: "מסירה",
+        label: "משלוח",
       },
       {
         detail: "הסיכום נשמר לפני המעבר לתשלום.",
@@ -96,14 +96,14 @@ describe("checkout display helpers", () => {
 
     expect(rows).toEqual([
       {
-        detail: "סוג תכשיט אחד ימשיך לקופה נפרדת; תשלום ומסירה ייקבעו שם.",
+        detail: "סוג תכשיט אחד ימשיך לקופה נפרדת; התשלום והמשלוח ייקבעו שם.",
         key: "supplier",
         label: "פריטים נפרדים",
       },
       {
-        detail: "אין מילוי כתובת באתר; פרטי המסירה ייאספו בקופה הנפרדת.",
+        detail: "אין צורך למלא כתובת באתר; פרטי המשלוח ייאספו בקופה הנפרדת.",
         key: "delivery",
-        label: "מסירה",
+        label: "משלוח",
       },
       {
         detail: "ההזמנה תמשיך במסלול התשלום הנפרד.",
@@ -136,9 +136,9 @@ describe("checkout display helpers", () => {
       },
       {
         detail:
-          "מסירת פריטי חנות תתואם לפי הכתובת; פריטים נפרדים יקבלו מסירה בקופה נפרדת.",
+          "משלוח פריטי החנות יתואם לפי הכתובת; פריטים נפרדים יטופלו בקופה הנפרדת.",
         key: "delivery",
-        label: "מסירה",
+        label: "משלוח",
       },
       {
         detail: "שני מסלולי התשלום נשארים נפרדים וברורים.",

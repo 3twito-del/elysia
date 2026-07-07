@@ -20,9 +20,11 @@ describe("search empty-state guided recovery", () => {
   it("keeps guided recovery compact and tied to count-backed search actions", () => {
     const searchPage = read("src/app/search/page.tsx");
 
-    expect(searchPage).toContain('data-testid="search-guided-recovery"');
+    // Recovery was de-duplicated: the guided-recovery text list and the
+    // redundant first-category button were removed; the single count-backed
+    // recovery-actions row (with result totals) remains the recovery affordance.
+    expect(searchPage).not.toContain('data-testid="search-guided-recovery"');
     expect(searchPage).toContain("recoveryActions.map((action) => (");
-    expect(searchPage).toContain("{action.description}");
     expect(searchPage).toContain("formatSearchResultCount(action.total)");
     expect(searchPage).toContain('data-testid="search-recovery-actions"');
     expect(searchPage).not.toContain('href="/service"');

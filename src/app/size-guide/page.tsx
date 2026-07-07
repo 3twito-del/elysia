@@ -15,23 +15,23 @@ export const metadata = {
 const printRulerTicks = ["0", "1", "2", "3", "4", "5", "6"] as const;
 
 const sizeMeasurementSteps = [
-  "מדדו על משטח ישר, בלי למתוח את הסרט.",
-  "השוו לטבלה של טבעת, צמיד או שרשרת.",
-  "אם אתם בין מידות, לכו על מה שיהיה נוח ביום רגיל.",
+  "מדדי על משטח ישר, בלי למתוח את הסרט.",
+  "השוו את התוצאה לטבלת המידות של טבעת, צמיד או שרשרת.",
+  "אם את בין מידות, בחרי את המידה שתהיה נוחה ביום-יום.",
 ] as const;
 
 const sizeGuideConfidenceNotes = [
   {
-    title: "שומרים הקשר",
-    text: "אם הגעתם ממוצר או מקטגוריה, הקישור חזרה נשאר קרוב למדידה.",
+    title: "חזרה קלה למוצר",
+    text: "אם הגעת ממוצר או מקטגוריה, קישור חזרה נשאר זמין ליד כלי המדידה.",
   },
   {
-    title: "לא מנחשים בכוח",
-    text: "כשמידה נופלת בין שתי אפשרויות, ההמלצה נשארת זהירה ונוחה לענידה.",
+    title: "המלצה זהירה",
+    text: "כשהמידה נופלת בין שתי אפשרויות, ההמלצה היא המידה הנוחה יותר לענידה.",
   },
   {
     title: "אפשר לשאול",
-    text: "אם המדידה לא חד-משמעית, שירות אישי זמין לפני החלטה.",
+    text: "אם המדידה לא חד-משמעית, שירות הלקוחות זמין לפני ההחלטה.",
   },
 ] as const;
 
@@ -66,9 +66,9 @@ export default async function SizeGuidePage({
     <main className="elysia-page">
       <SiteHeader />
       <CompactPageIntro
-        description="בחרו סוג תכשיט והשתמשו בכלי המדידה לפני הזמנה."
+        description="בחרי סוג תכשיט והשתמשי בכלי המדידה לפני ההזמנה."
         eyebrow="מידות"
-        title="בדיקת מידה"
+        title="מדריך מידות"
         variant="checkout"
       />
       <RevealSection
@@ -89,10 +89,10 @@ export default async function SizeGuidePage({
               className="mt-2 text-lg font-medium text-balance"
               id="size-guide-measurement-title"
             >
-              התחילו מסרגל קצר ובדקו שהקנה מידה נכון
+              התחילי מהסרגל ובדקי שקנה המידה נכון
             </h2>
             <p className="text-muted-foreground mt-2 text-sm leading-6">
-              בהדפסה, הגדירו 100% ובדקו את המרווחים לפני שמשווים לתכשיט.
+              בהדפסה, הגדירי 100% ובדקי את המרווחים לפני ההשוואה לתכשיט.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(12rem,0.9fr)]">

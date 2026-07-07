@@ -9,6 +9,9 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
     <div
       data-slot="table-container"
       className="elysia-table elysia-panel minimal-scroll relative w-full overflow-x-auto overscroll-x-contain rounded-md border border-[var(--glass-border)]"
+      // Keep the horizontal scroll region reachable by keyboard (WCAG 2.1.1);
+      // an overflow container that can't be focused traps keyboard users.
+      tabIndex={0}
     >
       <table
         data-slot="table"

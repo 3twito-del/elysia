@@ -4,6 +4,14 @@
 - `Backlog Item`: I-023 Search Empty-State Guided Recovery
 - `Status`: Supported and implemented
 
+> **Update 2026-07-07 (design-restraint pass):** the recovery affordance was
+> de-duplicated. The descriptive `search-guided-recovery` text list and the
+> redundant standalone first-category button were removed; the single
+> **count-backed recovery-actions row** (each action shows its result total)
+> remains as the recovery affordance, alongside filter reset and the category
+> suggestions. This keeps the benchmark's core decision (route-backed,
+> count-backed continuation) while cutting the empty state's button/text density.
+
 ## Scope
 
 This benchmark covers `/search` zero-result states, query persistence, filter

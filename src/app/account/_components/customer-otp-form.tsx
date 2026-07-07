@@ -76,7 +76,7 @@ export function CustomerOtpForm() {
               requestState.message ? otpRequestStatusId : undefined
             }
             aria-invalid={hasRequestError}
-            autoComplete="email tel"
+            autoComplete="username"
             className={accountInputClassName}
             data-testid="account-identifier-input"
             defaultValue={verificationIdentifier}

@@ -15,14 +15,14 @@ export default function ProductNotFound() {
           actions={
             <>
               <Button asChild>
-                <Link href="/search">חיפוש במבחר</Link>
+                <Link href="/search">לכל התכשיטים</Link>
               </Button>
               <Button asChild variant="outline">
                 <Link href="/">חזרה לעמוד הבית</Link>
               </Button>
             </>
           }
-          description="ייתכן שהקישור השתנה או שהתכשיט אינו פעיל. ניתן להמשיך לחיפוש או לקולקציות."
+          description="ייתכן שהקישור השתנה או שהפריט אינו זמין עוד. אפשר להמשיך לחיפוש או לחזור לעמוד הבית."
           icon={SearchX}
           testId="product-not-found-empty-state"
           title="התכשיט לא נמצא"
