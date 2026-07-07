@@ -19,7 +19,10 @@ import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 
-import { AboutChapterNav, type AboutChapter } from "./_components/about-chapter-nav";
+import {
+  AboutChapterNav,
+  type AboutChapter,
+} from "./_components/about-chapter-nav";
 import { AboutReveal, AboutScrollCue } from "./_components/about-reveal";
 
 type IconItem = {
@@ -147,13 +150,10 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <main className="elysia-page about-cinematic-page about-v2">
-      <link
-        as="image"
-        fetchPriority="high"
-        href={aboutHeroImage}
-        rel="preload"
-        type="image/avif"
-      />
+      {/* The hero <Image priority> below already emits a matching preload for the
+          Next-optimized URL. A manual preload of the raw .avif points at a URL
+          the optimized <img> never requests, so the browser reports it as
+          "preloaded but not used". */}
       <SiteHeader />
 
       <article>
@@ -286,8 +286,8 @@ export default function AboutPage() {
               </p>
               <h2 className="about-section-title">שלושה עקרונות, כל פריט</h2>
               <p className="about-section-text">
-                לפני שפריט נכנס לקולקציה, הוא נבחן מול שלושה עקרונות קבועים.
-                אלה שיקולי הבחירה שתפגשי בכל עמוד מוצר.
+                לפני שפריט נכנס לקולקציה, הוא נבחן מול שלושה עקרונות קבועים. אלה
+                שיקולי הבחירה שתפגשי בכל עמוד מוצר.
               </p>
               <ol className="about-principles-list">
                 {editorialPrinciples.map((principle, index) => (
@@ -506,8 +506,8 @@ export default function AboutPage() {
             />
             <h2 className="about-final-title">מצאי את התכשיט הבא שלך</h2>
             <p className="about-final-text">
-              גלי את הקולקציה שלנו. לכל שאלה על מידה, חומר או מתנה, צוות
-              השירות זמין בשבילך.
+              גלי את הקולקציה שלנו. לכל שאלה על מידה, חומר או מתנה, צוות השירות
+              זמין בשבילך.
             </p>
             <div className="about-final-actions">
               <Button asChild size="lg">
