@@ -414,6 +414,19 @@ constraints.
   missing alt, unsupported formats, extreme aspect ratios, and broken URLs.
 - `Acceptance`: catalog publish/release fails for P0 media violations and warns
   for non-critical issues with exact product IDs.
+- `Progress` (2026-07-02): the `pnpm catalog:readiness` audit already covered
+  duplicate hashes/URLs, missing/duplicate primary media, missing alt, missing
+  dimensions, and missing local files. Added the three remaining B-08 checks in
+  `scripts/lib/catalog-readiness.ts`, each attributed to the exact product slug:
+  `MEDIA_UNSUPPORTED_FORMAT` (high — extension outside the governed image/video
+  allow-list), `MEDIA_LOW_RESOLUTION` (high — shorter edge below
+  `minImageEdgePx` = 1000), and `MEDIA_ASPECT_RATIO_EXTREME` (medium — long:short
+  ratio above `maxImageAspectRatio` = 2.5). Thresholds and the allow-list are
+  exported (`CATALOG_READINESS_MEDIA_LIMITS`,
+  `CATALOG_READINESS_SUPPORTED_MEDIA_FORMATS`). Remote CDN URLs without an
+  extension are not flagged (no false positives). High-severity findings keep a
+  product out of publish-ready and fail `--strict`; medium ones warn. Covered by
+  new unit tests; full catalog script suite green (32 tests).
 
 ---
 
