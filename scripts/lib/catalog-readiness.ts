@@ -10,6 +10,18 @@ export const CATALOG_READINESS_REQUIRED_MEDIA_ROLES = [
 export type CatalogReadinessMediaRole =
   (typeof CATALOG_READINESS_REQUIRED_MEDIA_ROLES)[number];
 
+export const CATALOG_READINESS_SUPPORTED_MEDIA_FORMATS = {
+  image: ["avif", "webp", "jpg", "jpeg", "png"],
+  video: ["mp4", "webm"],
+} as const;
+
+export const CATALOG_READINESS_MEDIA_LIMITS = {
+  /** Minimum shorter-edge pixels for inspection-grade product imagery. */
+  minImageEdgePx: 1000,
+  /** Maximum long:short edge ratio before framing is flagged. */
+  maxImageAspectRatio: 2.5,
+} as const;
+
 export type CatalogReadinessSeverity = "blocker" | "high" | "medium" | "info";
 
 export type CatalogReadinessCategory =
@@ -699,6 +711,17 @@ function auditProductMedia(
       });
     }
 
+    const extension = getMediaExtension(media.url);
+    if (extension && !isSupportedMediaFormat(media.kind, extension)) {
+      addProductIssue(issues, product.slug, {
+        category: "media",
+        code: "MEDIA_UNSUPPORTED_FORMAT",
+        field: "media.url",
+        message: `Media ${media.url} uses an unsupported format ".${extension}".`,
+        severity: "high",
+      });
+    }
+
     if (!media.width || !media.height) {
       addProductIssue(issues, product.slug, {
         category: "media",
@@ -707,6 +730,30 @@ function auditProductMedia(
         message: `Media ${media.url} is missing intrinsic dimensions.`,
         severity: "medium",
       });
+    } else if (media.kind === "IMAGE" || media.kind === "TRY_ON_REFERENCE") {
+      const shortEdge = Math.min(media.width, media.height);
+
+      if (shortEdge < CATALOG_READINESS_MEDIA_LIMITS.minImageEdgePx) {
+        addProductIssue(issues, product.slug, {
+          category: "media",
+          code: "MEDIA_LOW_RESOLUTION",
+          field: "media.width/media.height",
+          message: `Media ${media.url} is ${media.width}×${media.height}px, below the ${CATALOG_READINESS_MEDIA_LIMITS.minImageEdgePx}px minimum edge for inspection-grade imagery.`,
+          severity: "high",
+        });
+      }
+
+      const aspectRatio = Math.max(media.width, media.height) / shortEdge;
+
+      if (aspectRatio > CATALOG_READINESS_MEDIA_LIMITS.maxImageAspectRatio) {
+        addProductIssue(issues, product.slug, {
+          category: "media",
+          code: "MEDIA_ASPECT_RATIO_EXTREME",
+          field: "media.width/media.height",
+          message: `Media ${media.url} aspect ratio ${aspectRatio.toFixed(2)}:1 exceeds the ${CATALOG_READINESS_MEDIA_LIMITS.maxImageAspectRatio}:1 framing limit.`,
+          severity: "medium",
+        });
+      }
     }
 
     const localFile = mediaFiles[media.url];
@@ -798,6 +845,30 @@ function requireText(
 
 function isMissingText(value: string | null | undefined) {
   return !value?.trim() || isPlaceholderText(value);
+}
+
+function getMediaExtension(url: string | null | undefined): string | null {
+  if (!url) return null;
+
+  const withoutQuery = url.split(/[?#]/u)[0] ?? "";
+  const lastSegment = withoutQuery.split("/").pop() ?? "";
+  const dotIndex = lastSegment.lastIndexOf(".");
+
+  if (dotIndex <= 0 || dotIndex === lastSegment.length - 1) return null;
+
+  return lastSegment.slice(dotIndex + 1).toLowerCase();
+}
+
+function isSupportedMediaFormat(
+  kind: CatalogReadinessMedia["kind"],
+  extension: string,
+) {
+  const allowed =
+    kind === "VIDEO"
+      ? CATALOG_READINESS_SUPPORTED_MEDIA_FORMATS.video
+      : CATALOG_READINESS_SUPPORTED_MEDIA_FORMATS.image;
+
+  return (allowed as readonly string[]).includes(extension);
 }
 
 function isPlaceholderText(value: string | null | undefined) {
