@@ -76,8 +76,12 @@ describe("PDP purchase fact placement", () => {
     expect(purchasePanel).toContain('label: "מחיר"');
     expect(purchasePanel).toContain('label: "זמינות"');
     expect(purchasePanel).toContain("formatPrice(selectedVariantPrice)");
-    expect(purchasePanel).toContain("שירות אישי על הפריט");
-    expect(purchasePanel).toContain("MessageCircle");
+    // Design-restraint pass (E2): the decision summary is a passive recap only.
+    // Its duplicated action buttons — a second "מדריך מידות" (the size header
+    // already links it) and a redundant service link (the trust panel below
+    // keeps the single "שאלה לפני הזמנה") — were removed so add-to-cart stays the
+    // one primary action. The summary still sits directly before the primary CTA.
+    expect(purchasePanel).not.toContain("שירות אישי על הפריט");
     expect(
       indexOf(purchasePanel, 'data-testid="product-purchase-decision-summary"'),
     ).toBeLessThan(
