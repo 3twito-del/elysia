@@ -166,6 +166,75 @@ describe("catalog readiness", () => {
     );
   });
 
+  it("flags low-resolution, extreme aspect ratio, and unsupported media formats", () => {
+    const product = createCompleteProduct({
+      media: [
+        {
+          alt: "primary",
+          height: 640,
+          isPrimary: true,
+          kind: "IMAGE",
+          role: "primary",
+          sortOrder: 0,
+          url: "/media/tiny.avif",
+          width: 640,
+        },
+        {
+          alt: "banner",
+          height: 400,
+          isPrimary: false,
+          kind: "IMAGE",
+          role: "alternate",
+          sortOrder: 1,
+          url: "/media/wide.webp",
+          width: 2000,
+        },
+        {
+          alt: "legacy",
+          height: 1400,
+          isPrimary: false,
+          kind: "IMAGE",
+          role: "scale",
+          sortOrder: 2,
+          url: "/media/legacy.gif",
+          width: 1400,
+        },
+      ],
+    });
+    const audit = auditCatalogReadiness([product], {
+      mediaFiles: {
+        "/media/tiny.avif": { exists: true },
+        "/media/wide.webp": { exists: true },
+        "/media/legacy.gif": { exists: true },
+      },
+    });
+    const codes = audit.issues.map((issue) => issue.code);
+
+    expect(codes).toEqual(
+      expect.arrayContaining([
+        "MEDIA_LOW_RESOLUTION",
+        "MEDIA_ASPECT_RATIO_EXTREME",
+        "MEDIA_UNSUPPORTED_FORMAT",
+      ]),
+    );
+  });
+
+  it("accepts a remote CDN URL without a file extension", () => {
+    const product = createCompleteProduct({
+      media: createCompleteProduct().media.map((media, index) => ({
+        ...media,
+        url: index === 0 ? "https://cdn.example.com/render?id=1" : media.url,
+      })),
+    });
+    const audit = auditCatalogReadiness([product], {
+      mediaFiles: createMediaFiles(product),
+    });
+
+    expect(
+      audit.issues.some((issue) => issue.code === "MEDIA_UNSUPPORTED_FORMAT"),
+    ).toBe(false);
+  });
+
   it("writes a deterministic markdown summary", () => {
     const product = createCompleteProduct();
     const audit = auditCatalogReadiness([product], {
