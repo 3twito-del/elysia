@@ -32,10 +32,10 @@ export default function AccountError({
                   </Button>
                 </>
               }
-              description="האזור האישי אינו פתוח כרגע. אפשר לנסות שוב בלי לאבד את הסשן."
+              description="אירעה שגיאה בטעינת האזור האישי. אפשר לנסות שוב או לפנות לשירות."
               icon={AlertTriangle}
               testId="account-error-boundary"
-              title="האזור האישי אינו פתוח כרגע"
+              title="האזור האישי אינו זמין כרגע"
               variant="inset"
             />
           </CardContent>

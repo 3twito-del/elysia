@@ -76,7 +76,7 @@ export default async function WishlistPage() {
       <BoutiqueStatePage
         className="wishlist-boutique-page"
         actions={<AdminSessionActions />}
-        description="מועדפים מוצגים ללקוחות בלבד, כדי להפריד בין חשבון ניהול לבין תכשיטים ששומרים לעצמך."
+        description="רשימת המועדפים זמינה ללקוחות בלבד ואינה חלק מחשבון הניהול."
         icon={UserRound}
         testId="wishlist-admin-forbidden"
         title="מועדפים זמינים ללקוחות"
@@ -98,10 +98,10 @@ export default async function WishlistPage() {
             </Button>
           </>
         }
-        description="לא הצלחנו לפתוח את המועדפים כרגע. התכשיטים לא נמחקו, ואפשר לנסות שוב בעוד רגע."
+        description="לא הצלחנו לטעון את המועדפים. הפריטים שמורים, ואפשר לנסות שוב בעוד רגע."
         icon={AlertTriangle}
         testId="wishlist-load-error"
-        title="המועדפים אינם פתוחים כרגע"
+        title="לא ניתן לטעון את המועדפים כרגע"
       />
     );
   }
@@ -112,7 +112,7 @@ export default async function WishlistPage() {
       <main className="elysia-page account-boutique-page wishlist-boutique-page">
         <CompactPageIntro
           className="account-entry-intro account-boutique-hero wishlist-boutique-hero"
-          description="התכשיטים ששמרת להשוואה, בדיקת מידה או מעבר לרכישה."
+          description="כל הפריטים ששמרת, במקום אחד."
           eyebrow="מועדפים"
           title="מועדפים"
           variant="checkout"
@@ -179,10 +179,10 @@ function CustomerWishlistPanel({ customer }: { customer: CustomerWishlist }) {
                 </Button>
               </>
             }
-            description="כשתסמני תכשיט בלב, הוא יופיע כאן ויישמר לחשבון שלך."
+            description="לחצי על סמל הלב בכל מוצר כדי לשמור אותו כאן, לחשבון שלך."
             icon={Heart}
             testId="wishlist-empty-account"
-            title="אין עדיין מועדפים בחשבון."
+            title="עדיין אין פריטים במועדפים"
             variant="inset"
           />
         ) : (
@@ -217,11 +217,11 @@ function CustomerWishlistPanel({ customer }: { customer: CustomerWishlist }) {
                     </Link>
                   </Button>
                   <Button asChild size="sm" variant="outline">
-                    <Link href="/size-guide">בדיקת מידה</Link>
+                    <Link href="/size-guide">מדריך מידות</Link>
                   </Button>
                   <Button asChild size="sm" variant="ghost">
                     <Link href={wishlistDecisionSupport.serviceHref}>
-                      ייעוץ לוק
+                      ייעוץ אישי
                     </Link>
                   </Button>
                 </div>

@@ -603,6 +603,7 @@ export default async function AdminErpPage({
             </p>
             <Input
               accept="image/png,image/jpeg,image/webp,application/pdf"
+              aria-label="קובץ חשבונית להעלאה"
               name="documentImage"
               type="file"
             />
@@ -794,6 +795,7 @@ export default async function AdminErpPage({
               אוטומטית. דרישה מאושרת ניתנת להמרה להזמנת רכש.
             </p>
             <select
+              aria-label="ספק מועדף (רשות)"
               autoComplete="off"
               className="glass-control h-10 rounded-md border px-3 text-sm"
               defaultValue=""
@@ -929,6 +931,7 @@ export default async function AdminErpPage({
               הקליטה לפי ערך או כמות, ומעלה את עלות היחידה.
             </p>
             <select
+              aria-label="הזמנת רכש שנקלטה"
               autoComplete="off"
               className="glass-control h-10 rounded-md border px-3 text-sm"
               defaultValue=""
@@ -954,6 +957,7 @@ export default async function AdminErpPage({
                 type="number"
               />
               <select
+                aria-label="שיטת שקלול עלות נלווית"
                 autoComplete="off"
                 className="glass-control h-10 rounded-md border px-3 text-sm"
                 defaultValue="VALUE"

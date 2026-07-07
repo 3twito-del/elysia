@@ -345,7 +345,7 @@ test.describe("critical shopping flows", () => {
       page.getByRole("heading", { name: madeToOrderProductName }).first(),
     ).toBeVisible();
     const serviceCta = page
-      .getByRole("link", { name: /פתיחת בקשת התאמה/ })
+      .getByRole("link", { name: /יצירת קשר להזמנה/ })
       .filter({ visible: true })
       .first();
 
@@ -1346,7 +1346,7 @@ test.describe("cookie consent flow", () => {
     await expectRecentlyViewed(page, searchProductSlug, true);
 
     const acceptCookiesButton = page.getByRole("button", {
-      name: "מאשרת הכל",
+      name: "אישור הכל",
     });
     await expect(acceptCookiesButton).toHaveCSS(
       "background-color",

@@ -99,7 +99,7 @@ export async function requestCustomerOtpAction(
       identifier,
       message:
         rateLimitMessage(error) ??
-        "לא ניתן לשלוח קוד כרגע. בדקו את הפרטים ונסו שוב בעוד דקה.",
+        "לא ניתן לשלוח קוד כרגע. בדקי את הפרטים ונסי שוב בעוד דקה.",
     };
   }
 }

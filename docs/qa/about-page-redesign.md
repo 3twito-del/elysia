@@ -45,3 +45,35 @@ Checked the page across these grouped aspects:
 - No final boxed `brand-surface` CTA.
 - No duplicate icons inside any static icon list.
 - Text scale remains editorial, not oversized dashboard or hero type inside panels.
+
+## Relaunch v2 (2026-07-06)
+
+Chaptered editorial rebuild on top of the original guardrails:
+
+- Sticky chapter navigation (`about-chapter-nav`) with IntersectionObserver
+  scrollspy; anchors map to the four content chapters.
+- Manifesto chapter gains a facts band (`about-stats-band`) with four factual
+  numerals (925 silver, 12-month warranty, 24h response, online-only model).
+- Principles chapter uses a sticky editorial figure (desktop) with numbered
+  hairline rows instead of boxed cards, plus a wide banner figure with an
+  in-image caption.
+- Process chapter is a horizontal four-step flow with a hairline that draws
+  once on reveal; vertical on mobile.
+- All guardrails still hold: media-led (hero + two figures + fixed band),
+  compact section padding, no `Separator`, and no final boxed `brand-surface`
+  CTA. Reduced-motion and night-mode variants covered in `globals.css`.
+
+### v2.1 owner-feedback fixes (2026-07-06)
+
+- Hero stripped to image + scrim + copy: aurora layers, Ken Burns drift and
+  title sheen removed after owner review flagged them as excessive.
+- Site-wide desktop category row removed from the header (owner preference);
+  header returns to the split three-column layout only.
+- Principles chapter: neutralised homepage story-band layout baggage
+  (50vw width / fixed grid slots) that made the figure overlap the copy.
+- Service chapter rebalanced to a symmetric 4+4 card grid (facts + care,
+  then trust links).
+- Chapter nav aligns flex-start on mobile (no horizontal page overflow) and
+  centers from lg.
+- Night mode: hero primary CTA label pinned to literal ink so it stays
+  readable on the cream fill.

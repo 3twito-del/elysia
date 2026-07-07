@@ -485,7 +485,13 @@ export const PromptInput = ({
         ref={formRef}
         {...props}
       >
-        <InputGroup className="overflow-hidden">{children}</InputGroup>
+        {/* A prompt input should read as active/ready even when empty. Its own
+            submit button is disabled while the field is empty, which would
+            otherwise trigger InputGroup's has-disabled dimming and drop the
+            placeholder below AA contrast. Keep the group at full opacity. */}
+        <InputGroup className="has-disabled:opacity-100! overflow-hidden">
+          {children}
+        </InputGroup>
       </form>
     </>
   );

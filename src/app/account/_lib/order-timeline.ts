@@ -88,21 +88,21 @@ export function createAccountOrderTimeline(
     },
     {
       at: order.paidAt ?? null,
-      description: "התשלום מאומת לפני הכנה או מסירה.",
+      description: "התשלום מאומת לפני ההכנה והמשלוח.",
       id: "paid",
       label: "תשלום",
     },
     {
       at: order.preparingAt ?? null,
-      description: "הצוות מכין את התכשיטים למסירה.",
+      description: "הצוות מכין את הפריטים למשלוח.",
       id: "preparing",
       label: "בהכנה",
     },
     {
       at: order.shippedAt ?? order.readyForPickupAt ?? null,
-      description: "פרטי מסירה או איסוף יעודכנו כאן.",
+      description: "פרטי המשלוח או המסירה יעודכנו כאן.",
       id: "handoff",
-      label: "מסירה",
+      label: "משלוח",
     },
     {
       at: order.completedAt ?? null,

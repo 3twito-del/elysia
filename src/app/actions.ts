@@ -49,7 +49,7 @@ export async function joinNewsletter(
   } catch (error) {
     return {
       ok: false,
-      message: rateLimitMessage(error) ?? "לא ניתן להירשם כרגע. נסו שוב.",
+      message: rateLimitMessage(error) ?? "לא ניתן להירשם כרגע. נסי שוב.",
     };
   }
 
@@ -81,7 +81,7 @@ export async function joinNewsletter(
   revalidatePath("/");
   return {
     ok: true,
-    message: "נרשמת. נשלח עדכון רק כשיש משהו חדש לראות.",
+    message: "נרשמת בהצלחה לניוזלטר.",
   };
 }
 
@@ -145,7 +145,7 @@ export async function saveWishlistItem(
   if (!variant) {
     return {
       ok: false,
-      message: "לא נמצאה התאמה פנויה לשמירה.",
+      message: "לא נמצאה אפשרות זמינה לשמירה.",
     };
   }
 
@@ -230,7 +230,7 @@ export async function submitFeedback(
   } catch (error) {
     return {
       ok: false,
-      message: rateLimitMessage(error) ?? "לא ניתן לשלוח כרגע. נסו שוב.",
+      message: rateLimitMessage(error) ?? "לא ניתן לשלוח כרגע. נסי שוב.",
     };
   }
 

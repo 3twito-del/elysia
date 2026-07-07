@@ -55,13 +55,13 @@ describe("commerce labels", () => {
 
   it("formats fulfillment, availability, stock, and count labels", () => {
     expect(getFulfillmentMethodLabel("PICKUP")).toBe("שירות מרחוק");
-    expect(getFulfillmentMethodLabel("DELIVERY")).toBe("מסירה עד הבית");
-    expect(getProductAvailabilityLabel(0)).toBe("בירור התאמה");
+    expect(getFulfillmentMethodLabel("DELIVERY")).toBe("משלוח עד הבית");
+    expect(getProductAvailabilityLabel(0)).toBe("אזל מהמלאי");
     expect(getProductAvailabilityLabel(1)).toBe("זמין");
     expect(getProductAvailabilityLabel(3)).toBe("זמין");
-    expect(getPublicStockStatusLabel(0)).toBe("לא פנוי כרגע");
+    expect(getPublicStockStatusLabel(0)).toBe("אזל מהמלאי");
     expect(getPublicStockStatusLabel(4)).toBe("זמין");
-    expect(getStockQuantityLabel(0)).toBe("לא פנוי כרגע");
+    expect(getStockQuantityLabel(0)).toBe("אזל מהמלאי");
     expect(getStockQuantityLabel(4)).toBe("4 זמינים במלאי");
     expect(getItemCountLabel(1)).toBe("תכשיט אחד");
     expect(getItemCountLabel(3)).toBe("3 תכשיטים");
@@ -86,7 +86,7 @@ describe("commerce labels", () => {
       }),
     ).toMatchObject({
       canAddToCart: false,
-      ctaLabel: "פתיחת בקשת התאמה",
+      ctaLabel: "יצירת קשר להזמנה",
       label: "בהזמנה אישית",
       serviceReason: "made-to-order",
     });

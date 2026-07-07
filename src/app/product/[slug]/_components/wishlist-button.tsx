@@ -103,7 +103,7 @@ export function WishlistButton({
 
       setState(nextState);
     } catch {
-      setState({ ok: false, message: "לא הצלחנו לשמור כרגע. נסו שוב." });
+      setState({ ok: false, message: "לא הצלחנו לשמור כרגע. נסי שוב." });
     } finally {
       setPending(false);
     }

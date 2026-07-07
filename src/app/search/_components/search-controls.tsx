@@ -102,7 +102,7 @@ export function SearchControls({
             <summary className="text-muted-foreground hover:text-foreground flex min-h-9 cursor-pointer list-none items-center justify-between gap-3 text-sm outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]">
               <span className="inline-flex items-center gap-2">
                 <SlidersHorizontal aria-hidden="true" className="size-4" />
-                {"סינון לפי לוק"}
+                {"סינון מתקדם"}
               </span>
               {activeFilterCount > 0 ? (
                 <Badge variant="secondary">{activeFilterCount}</Badge>
@@ -191,11 +191,10 @@ export function SearchControls({
               <SheetHeader className="border-b border-[var(--glass-border)] pe-12 text-right">
                 <SheetTitle className="flex items-center gap-2">
                   <SlidersHorizontal aria-hidden="true" className="size-4" />
-                  סינון לפי לוק
+                  סינון מתקדם
                 </SheetTitle>
                 <SheetDescription>
-                  בחרו חומר, מחיר, סגנון, מתנה, צבע ומיון כדי להגיע מהר יותר
-                  לפריטים הנכונים.
+                  בחרי חומר, מחיר, סגנון, צבע ומיון כדי לצמצם את התוצאות.
                 </SheetDescription>
               </SheetHeader>
               <form
@@ -215,7 +214,7 @@ export function SearchControls({
                 <PreservedModeInput input={input} />
                 <PreservedViewInput viewMode={viewMode} />
                 <div className="grid gap-3 pt-1">
-                  <Button type="submit">הצגת פריטים</Button>
+                  <Button type="submit">הצגת תוצאות</Button>
                   <Button asChild variant="outline">
                     <SheetClose asChild>
                       <Link href={clearFiltersHref}>איפוס</Link>
