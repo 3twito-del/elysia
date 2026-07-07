@@ -3004,13 +3004,6 @@ html[data-accessibility-motion="reduce"] .boutique-collection-action::before {
     box-shadow 360ms var(--ease-liquid);
 }
 
-.about-principle-index {
-  color: var(--brand-gold-muted);
-  font-size: 0.92rem;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-
 .about-principle-card h3 {
   font-size: 1.1rem;
   font-weight: 600;
