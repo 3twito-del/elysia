@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const dbMocks = vi.hoisted(() => ({
   cartFindFirst: vi.fn(),
@@ -34,11 +34,22 @@ import {
 
 describe("cart service", () => {
   beforeEach(() => {
+    // CI sets the catalog fixture flags (E2E_CATALOG_FIXTURES /
+    // CATALOG_DB_ERROR_FALLBACK = "1") for the Playwright surfaces. They flip the
+    // cart service onto its in-memory fixture path, which bypasses the mocked
+    // `~/server/db` these unit tests depend on — deterministically breaking 7 of
+    // them in CI while they passed locally (where the flags are unset). Force
+    // real-db mode so the mock is exercised regardless of the ambient env.
+    vi.stubEnv("E2E_CATALOG_FIXTURES", "0");
+    vi.stubEnv("CATALOG_DB_ERROR_FALLBACK", "0");
     // resetAllMocks (not clearAllMocks) so leftover mockResolvedValueOnce values
-    // never leak across tests — that leak cascaded into 7 CI-only failures when
-    // worker scheduling changed the test order.
+    // never leak across tests.
     vi.resetAllMocks();
     dbMocks.couponFindUnique.mockResolvedValue(null);
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   it("maps active carts into checkout summaries with coupon totals", async () => {
