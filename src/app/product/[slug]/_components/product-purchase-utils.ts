@@ -134,7 +134,7 @@ export function getPurchaseConfidenceItems(input: {
       description: getServiceConfidenceDescription(input),
       icon: "service",
       key: "service",
-      title: hasAftercareFacts ? "מסירה, טיפול ואחריות" : "מסירה והחלפה",
+      title: hasAftercareFacts ? "משלוח, טיפול ואחריות" : "משלוח והחלפה",
     },
   ];
 }
@@ -149,12 +149,12 @@ export function getBeforeOrderSummaryItems(input: {
   return [
     {
       key: "delivery",
-      label: "מסירה",
+      label: "משלוח",
       value:
         input.deliveryPromise ??
         (input.requiresSeparateCheckout
-          ? "מסירה ותשלום יושלמו בקופה מאובטחת לאחר בחירת האפשרות."
-          : "מסירה עד הבית לאחר השלמת פרטי ההזמנה והתשלום."),
+          ? "המשלוח והתשלום יושלמו בקופה מאובטחת לאחר בחירת האפשרות."
+          : "משלוח עד הבית לאחר השלמת פרטי ההזמנה והתשלום."),
     },
     {
       key: "returns",
@@ -183,7 +183,7 @@ export function getBeforeOrderSummaryItems(input: {
       key: "gift",
       label: "מתנה ושירות",
       value:
-        "אפשר לפנות לשירות לפני הזמנה כדי לוודא מידה, גוון, התאמה למתנה או מסלול מסירה.",
+        "אפשר לפנות לשירות לפני ההזמנה כדי לוודא מידה, גוון, התאמה למתנה או אופן משלוח.",
     },
   ];
 }
@@ -218,7 +218,7 @@ export function getAddToCartFailureMessage(error: { message: string }) {
     message.includes("amount") ||
     message.includes("limit")
   ) {
-    return "לא ניתן להוסיף כמות זו לסל. נסו כמות אחרת או פנו לשירות.";
+    return "לא ניתן להוסיף כמות זו לסל. נסי כמות אחרת או פני לשירות.";
   }
 
   return "לא הצלחנו להוסיף לסל. ניתן לנסות שוב.";
@@ -235,7 +235,7 @@ function getCheckoutConfidenceDescription(input: {
   }
 
   if (isSeparateCheckoutVariantAvailable(input)) {
-    return "האפשרות זמינה להזמנה; התשלום והמסירה יושלמו בקופה מאובטחת.";
+    return "האפשרות זמינה להזמנה; התשלום והמשלוח יושלמו בקופה מאובטחת.";
   }
 
   if (
@@ -261,8 +261,8 @@ function getServiceConfidenceDescription(input: {
   const delivery =
     input.deliveryPromise ??
     (input.requiresSeparateCheckout
-      ? "מסירה ותשלום יושלמו בקופה מאובטחת."
-      : "מסירה עד הבית לאחר השלמת התשלום.");
+      ? "המשלוח והתשלום יושלמו בקופה מאובטחת."
+      : "משלוח עד הבית לאחר השלמת התשלום.");
   const returns =
     input.returnPolicy ??
     (input.requiresSeparateCheckout

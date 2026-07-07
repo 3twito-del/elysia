@@ -195,7 +195,7 @@ export function ProductCard({
               {!isEditorialDisplay ? (
                 <p
                   className={cn(
-                    "ui-text-slot text-muted-foreground/90 text-xs leading-5 [--ui-text-slot-line-height:1.25rem]",
+                    "ui-text-slot text-muted-foreground text-xs leading-5 [--ui-text-slot-line-height:1.25rem]",
                     isCompactDensity && "product-card-descriptor-compact",
                   )}
                   data-lines="2"
@@ -361,34 +361,34 @@ function isProductCardNew(product: CatalogProduct) {
 
 function getProductCardDescriptor(product: CatalogProduct) {
   if (product.categorySlug === "rings") {
-    return "נוכחות עדינה ליד, לבד או בשכבות.";
+    return "טבעת לענידה יומיומית או לאירוע.";
   }
 
   if (product.categorySlug === "necklaces") {
-    return "קו עדין שמאיר מחשוף ושכבות.";
+    return "שרשרת לענידה יחידה או בשכבות.";
   }
 
   if (product.categorySlug === "earrings") {
-    return "ברק קטן ליום, ערב ומתנה.";
+    return "עגילים ליום-יום ולאירועים.";
   }
 
   if (product.categorySlug === "bracelets") {
-    return "שכבה נקייה לפרק היד.";
+    return "צמיד בקו נקי לפרק היד.";
   }
 
   if (product.categorySlug === "sets") {
-    return "שילוב מוכן למתנה או לאירוע.";
+    return "סט תואם, מתאים גם למתנה.";
   }
 
   if (product.stone) {
-    return `${product.stone} שמוסיף נקודת אור עדינה.`;
+    return `בשילוב ${product.stone}.`;
   }
 
   if (product.material) {
-    return `${product.material} בקו נקי לענידה.`;
+    return `${product.material}, בעיצוב קלאסי.`;
   }
 
-  return "קו נקי לענידה יומיומית.";
+  return "עיצוב קלאסי לענידה יומיומית.";
 }
 
 function normalizeProductCardText(value?: string | null) {

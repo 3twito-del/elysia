@@ -11,6 +11,7 @@ import {
 
 import { CompactPageIntro } from "~/components/compact-page-intro";
 import { LegalContactSection } from "~/components/legal-contact-section";
+import { legalLastUpdated } from "~/lib/legal-content";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
@@ -93,7 +94,7 @@ export default async function FaqPage() {
 
       <main className="elysia-page">
         <CompactPageIntro
-          description="מידות, מתנות, משלוחים והחזרות - בלי לחפש בין עמודים."
+          description="תשובות לשאלות נפוצות על מידות, מתנות, משלוחים והחזרות."
           eyebrow="שירות"
           title="שאלות ותשובות"
           variant="content"
@@ -110,7 +111,7 @@ export default async function FaqPage() {
             </Link>
             <Link className="brand-surface interactive-lift p-5" href="/gifts">
               <Gift className="size-5" aria-hidden="true" />
-              <p className="mt-3 font-medium">מתנות לפי מחיר</p>
+              <p className="mt-3 font-medium">מתנות לפי תקציב</p>
             </Link>
           </div>
 
@@ -123,7 +124,7 @@ export default async function FaqPage() {
               <div>
                 <p className="text-sm font-medium">סינון מהיר</p>
                 <p className="text-muted-foreground text-sm">
-                  קפיצה ישירה לנושא שמעניין אתכם.
+                  מעבר ישיר לנושא שמעניין אותך.
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -191,16 +192,16 @@ export default async function FaqPage() {
                 testId: "faq-service-recovery-link",
               }}
               contact={contact}
-              description="אפשר לפנות לשירות עם שם התכשיט, מספר הזמנה או תיאור קצר של מה שצריך."
+              description="אפשר לפנות לשירות עם שם המוצר, מספר הזמנה או תיאור קצר של הבקשה."
               id="faq-contact"
-              title="לא מצאתם תשובה?"
+              title="לא מצאת תשובה?"
             />
 
             <Separator className="my-8" />
 
             <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
               <p className="text-muted-foreground text-sm">
-                עודכן לאחרונה: 29 באפריל 2026
+                עודכן לאחרונה: {legalLastUpdated.faq}
               </p>
               <Button asChild>
                 <Link href="/terms">לתקנון</Link>

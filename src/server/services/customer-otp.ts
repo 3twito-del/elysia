@@ -217,7 +217,7 @@ export async function requestCustomerOtp(input: RequestCustomerOtpInput) {
 
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
-      message: "לא ניתן לשלוח קוד כרגע. נסו שוב בעוד דקה.",
+      message: "לא ניתן לשלוח קוד כרגע. נסי שוב בעוד דקה.",
     });
   }
 
@@ -260,14 +260,14 @@ export async function verifyCustomerOtp(input: VerifyCustomerOtpInput) {
     if (challengeState === "expired") {
       throw new TRPCError({
         code: "BAD_REQUEST",
-        message: "הקוד פג תוקף. בקשו קוד חדש.",
+        message: "הקוד פג תוקף. בקשי קוד חדש.",
       });
     }
 
     if (challengeState === "locked") {
       throw new TRPCError({
         code: "TOO_MANY_REQUESTS",
-        message: "בוצעו יותר מדי ניסיונות. בקשו קוד חדש.",
+        message: "בוצעו יותר מדי ניסיונות. בקשי קוד חדש.",
       });
     }
 

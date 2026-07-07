@@ -31,22 +31,23 @@ export function createManualOrderCustomerMessage(
   const fulfillmentText =
     input.fulfillmentMethod === "PICKUP"
       ? `תיאום שירות דרך ${input.branchName}`
-      : "מסירה לכתובת שנמסרה";
+      : "משלוח לכתובת שנמסרה";
 
   return {
     to: input.customerEmail,
     toName: input.customerName,
     subject: `בקשת ההזמנה ${input.orderNumber} התקבלה`,
     body: [
-      `${input.customerName} שלום,`,
+      `שלום ${input.customerName},`,
       `בקשת ההזמנה שלך ב-Elysia התקבלה ונשמרה לטיפול.`,
       `מספר הזמנה: ${input.orderNumber}`,
-      `תכשיט: ${input.productName}`,
+      `מוצר: ${input.productName}`,
       `כמות: ${input.quantity}`,
       `סכום לתשלום באישור ידני: ${formatManualOrderAmount(input.total)}`,
       `אופן קבלה: ${fulfillmentText}`,
-      `התכשיטים נשמרו עד ${formatHebrewDateTime(input.reservationExpiresAt)}.`,
-      `צוות Elysia יחזור אליך לאישור סופי והמשך טיפול.`,
+      `הפריטים שמורים עבורך עד ${formatHebrewDateTime(input.reservationExpiresAt)}.`,
+      `ניצור איתך קשר לאישור סופי ולהמשך הטיפול.`,
+      `בברכה,\nצוות Elysia`,
     ].join("\n\n"),
   };
 }

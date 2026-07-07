@@ -32,13 +32,13 @@ const onlineServiceHighlights = [
     icon: Search,
   },
   {
-    title: "שירות תומך",
+    title: "שירות לקוחות",
     text: "שאלות על מידה, מתנה או הזמנה מקבלות מענה מתועד.",
     icon: Headphones,
   },
   {
-    title: "משלוח מסודר",
-    text: "הזמנה ממשיכה למסלול מסירה מקוון וברור.",
+    title: "משלוח עד הבית",
+    text: "ההזמנה נשלחת אלייך לכתובת שנבחרה.",
     icon: PackageCheck,
   },
 ] as const;
@@ -46,7 +46,7 @@ const onlineServiceHighlights = [
 const onlineContinuitySteps = [
   "מוצאים תכשיט דרך הקטלוג, החיפוש או מדריך המידות.",
   "בוחרים מידה, חומר ומחיר באתר לפני שמוסיפים לסל.",
-  "שאלות על התאמה, מתנה או הזמנה נשלחות לשירות תומך.",
+  "שאלות על התאמה, מתנה או הזמנה נשלחות לשירות הלקוחות.",
 ] as const;
 
 export default async function BranchesPage() {
@@ -61,10 +61,10 @@ export default async function BranchesPage() {
         description={
           hasPhysicalBranches
             ? "מיקומי שירות מאושרים של Elysia, כולל קשר, שעות ותיאום."
-            : "מודל אונליין ממוקד: בחירה, הזמנה, מסירה ושירות תומך במקום אחד."
+            : "Elysia פועלת כחנות אונליין: בחירה, הזמנה, משלוח ושירות במקום אחד."
         }
-        eyebrow="אסטרטגיית אונליין"
-        title={hasPhysicalBranches ? "שירות ומיקומים" : "אונליין בלבד, בכוונה"}
+        eyebrow="שירות"
+        title={hasPhysicalBranches ? "שירות ומיקומים" : "חנות אונליין"}
         variant="content"
       />
 
@@ -129,22 +129,22 @@ export default async function BranchesPage() {
             data-testid="branches-online-status-banner"
           >
             <div>
-              <p className="text-sm font-medium">אונליין בלבד, בכוונה</p>
+              <p className="text-sm font-medium">חנות אונליין בלבד</p>
               <p className="text-muted-foreground text-sm">
                 הקטלוג, ההזמנה והשירות מרוכזים באתר כדי לשמור על תהליך ברור.
               </p>
             </div>
-            <Badge variant="secondary">מודל שירות פעיל</Badge>
+            <Badge variant="secondary">שירות פעיל</Badge>
           </section>
           <div className="grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-start">
             <section>
               <Badge variant="secondary">אונליין בלבד</Badge>
               <h2 className="mt-4 text-3xl font-medium">
-                פחות מסלול פיזי, יותר ודאות לפני הזמנה
+                כל מה שצריך כדי להזמין, באתר אחד
               </h2>
               <p className="text-muted-foreground mt-4 max-w-2xl text-sm leading-7 sm:text-base sm:leading-8">
-                Elysia נבנתה כחנות מקוונת: תמונות, חומר, מידה, מחיר ושירות
-                נמצאים באותו מסלול, בלי צורך להגיע לנקודת מכירה כדי לקבל החלטה.
+                Elysia פועלת כחנות אונליין: תמונות, פרטי חומר, מידות, מחיר
+                ושירות זמינים באתר, כך שאפשר להזמין בנוחות מכל מקום.
               </p>
               <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <Button asChild>
@@ -155,7 +155,7 @@ export default async function BranchesPage() {
                 </Button>
                 <Button asChild variant="outline">
                   <Link href="/service">
-                    שאלה לשירות
+                    פנייה לשירות
                     <Headphones aria-hidden="true" className="size-4" />
                   </Link>
                 </Button>
@@ -178,7 +178,7 @@ export default async function BranchesPage() {
                     <Link href="/size-guide">מדריך מידות</Link>
                   </Button>
                   <Button asChild size="sm" variant="outline">
-                    <Link href="/service?topic=general">שאלה לשירות</Link>
+                    <Link href="/service?topic=general">פנייה לשירות</Link>
                   </Button>
                 </div>
               </div>
@@ -192,10 +192,10 @@ export default async function BranchesPage() {
               >
                 <div>
                   <h3 className="font-medium" id="branches-contact-channels">
-                    ערוצי קשר זמינים
+                    דרכי יצירת קשר
                   </h3>
                   <p className="text-muted-foreground mt-1 text-sm leading-6">
-                    בחרו את הדרך הכי נוחה לשאלה, הזמנה או התאמה.
+                    בחרי את הדרך הנוחה לך ליצירת קשר.
                   </p>
                 </div>
                 <div className="grid gap-2 sm:grid-cols-3">
@@ -224,7 +224,7 @@ export default async function BranchesPage() {
                     href="/service?topic=general"
                   >
                     <Headphones aria-hidden="true" className="mb-3 size-4" />
-                    <span className="block font-medium">שאלה לשירות</span>
+                    <span className="block font-medium">פנייה לשירות</span>
                     <span className="text-muted-foreground mt-1 block">
                       טופס קצר באתר
                     </span>
@@ -245,11 +245,11 @@ export default async function BranchesPage() {
                   מפת סניפים תופיע כשייפתחו נקודות שירות
                 </h3>
                 <p className="text-muted-foreground mt-2 text-sm leading-7">
-                  כרגע המסלול המרכזי הוא אונליין: חיפוש תכשיט, מדידה, הזמנה
-                  ושירות תומך מתבצעים באתר.
+                  כרגע השירות פועל אונליין בלבד: חיפוש, מדידה, הזמנה ושירות
+                  הלקוחות מתבצעים באתר.
                 </p>
                 <Button asChild className="mt-4" size="sm" variant="outline">
-                  <Link href="/service?topic=general">שאלה לשירות</Link>
+                  <Link href="/service?topic=general">פנייה לשירות</Link>
                 </Button>
               </section>
 

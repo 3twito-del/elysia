@@ -11,6 +11,7 @@ import { LegalSectionList } from "~/components/legal-section-list";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import {
+  legalLastUpdated,
   privacyProviderPlaceholders,
   privacySensitiveInfoWarning,
 } from "~/lib/legal-content";
@@ -186,7 +187,7 @@ export default async function PrivacyPage() {
 
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <p className="text-muted-foreground text-sm">
-          עודכן לאחרונה: 23 ביוני 2026
+          עודכן לאחרונה: {legalLastUpdated.privacy}
         </p>
         <Button asChild>
           <Link href="/terms">לתקנון</Link>

@@ -55,7 +55,7 @@ describe("PDP purchase fact placement", () => {
     expect(purchaseUtils).toContain('key: "warranty"');
     expect(purchaseUtils).toContain('key: "care"');
     expect(purchaseUtils).toContain('key: "gift"');
-    expect(purchaseUtils).toContain("מסירה, טיפול ואחריות");
+    expect(purchaseUtils).toContain("משלוח, טיפול ואחריות");
     expect(purchaseUtils).toContain("אחריות: ${input.warranty}");
     expect(purchaseUtils).toContain("טיפול: ${input.careInstructions}");
     expect(purchasePanel).not.toContain(

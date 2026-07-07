@@ -49,7 +49,7 @@ export default function JewelleryCarePage() {
   return (
     <ContentPageShell
       description="הנחיות שימוש, אחסון וניקוי שמסייעות לשמור על התכשיט ולהקטין חשיפה לנזק או רגישות."
-      eyebrow="אחרי הקנייה"
+      eyebrow="שירות"
       title="טיפול בתכשיטים"
     >
       <LegalHighlightCards

@@ -28,7 +28,7 @@ export default async function AiPage({ searchParams }: AiPageProps) {
     <main className="elysia-page min-h-screen">
       <SiteHeader />
       <CompactPageIntro
-        description="פתחו כלי התאמה לפי תקציב, מתנה ומידה מתוך הפריטים שזמינים עכשיו."
+        description="כלים לבחירת תכשיט לפי תקציב, מתנה ומידה, מתוך הפריטים הזמינים."
         eyebrow="התאמה"
         id="page-hero"
         title="התאמת תכשיט"
@@ -47,7 +47,7 @@ export default async function AiPage({ searchParams }: AiPageProps) {
                 </Badge>
                 <div className="grid gap-2">
                   <h2 className="max-w-4xl text-xl font-semibold tracking-normal sm:text-2xl">
-                    בחרו איך להתחיל
+                    בחרי איך להתחיל
                   </h2>
                 </div>
               </div>
@@ -62,7 +62,7 @@ export default async function AiPage({ searchParams }: AiPageProps) {
                   value="stylist"
                 >
                   <MessageSquare aria-hidden="true" className="size-4" />
-                  יועץ לוק
+                  סטיילינג אישי
                 </TabsTrigger>
                 <TabsTrigger
                   className="text-muted-foreground hover:text-foreground data-[state=active]:text-foreground min-h-10 min-w-0 cursor-pointer gap-2 rounded-none border-0 bg-transparent px-1.5 pt-1 pb-2 text-sm font-semibold shadow-none hover:bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none"
@@ -74,11 +74,11 @@ export default async function AiPage({ searchParams }: AiPageProps) {
               </TabsList>
             </div>
 
-            <TabsContent className="mt-0" id="ai-stylist" value="stylist">
+            <TabsContent className="mt-0" value="stylist">
               <DeferredStylistChat compact />
             </TabsContent>
 
-            <TabsContent className="mt-0" id="ai-gifts" value="gifts">
+            <TabsContent className="mt-0" value="gifts">
               <DeferredAiGiftPanel />
             </TabsContent>
           </Tabs>
@@ -88,8 +88,7 @@ export default async function AiPage({ searchParams }: AiPageProps) {
               <Sparkles aria-hidden="true" className="size-4" />
             </div>
             <p className="text-muted-foreground max-w-4xl">
-              ההמלצות מתמקדות בפריטים שפתוחים במלאי, לפי סגנון, מחיר ומידה
-              זמינה.
+              ההמלצות מתמקדות בפריטים זמינים במלאי, לפי סגנון, מחיר ומידה.
             </p>
           </section>
         </div>

@@ -133,21 +133,21 @@ export function GuestWishlistProducts() {
                 <Button asChild>
                   <Link href="/search">
                     <Search aria-hidden="true" className="size-4" />
-                    חיפוש במבחר
+                    חיפוש תכשיטים
                   </Link>
                 </Button>
                 <Button asChild variant="outline">
                   <Link href="/account">
                     <UserRound aria-hidden="true" className="size-4" />
-                    כניסה לסנכרון
+                    התחברות לחשבון
                   </Link>
                 </Button>
               </>
             }
-            description="תכשיטים שתסמני בלב יופיעו כאן מיד, גם לפני התחברות."
+            description="פריטים שתסמני בלב יופיעו כאן, גם לפני התחברות לחשבון."
             icon={Heart}
             testId="wishlist-empty-guest"
-            title="עדיין אין מועדפים."
+            title="עדיין אין פריטים במועדפים"
             variant="inset"
           />
         ) : null}
@@ -157,17 +157,17 @@ export function GuestWishlistProducts() {
             actions={
               <>
                 <Button asChild variant="outline">
-                  <Link href="/search">חיפוש במבחר</Link>
+                  <Link href="/search">חיפוש תכשיטים</Link>
                 </Button>
                 <Button onClick={handleClearWishlist} type="button">
                   ניקוי מועדפים
                 </Button>
               </>
             }
-            description="הפריטים שנשמרו בדפדפן כבר לא זמינים במבחר הפעיל."
+            description="הפריטים שנשמרו בדפדפן אינם זמינים עוד באתר."
             icon={Heart}
             testId="wishlist-missing-guest"
-            title="המועדפים לא זמינים כרגע."
+            title="המועדפים לא זמינים כרגע"
             variant="inset"
           />
         ) : null}
@@ -176,11 +176,11 @@ export function GuestWishlistProducts() {
           <>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-muted-foreground text-sm">
-                {products.length} תכשיטים במועדפים בדפדפן הזה.
+                {products.length} פריטים במועדפים בדפדפן הזה.
               </p>
               <div className="flex flex-wrap gap-2">
                 <Button asChild size="sm" variant="outline">
-                  <Link href="/account">כניסה לסנכרון לחשבון</Link>
+                  <Link href="/account">התחברות לשמירה בחשבון</Link>
                 </Button>
                 <Button
                   onClick={handleClearWishlist}
@@ -195,7 +195,7 @@ export function GuestWishlistProducts() {
 
             {missingSlugs.length > 0 ? (
               <StatusMessage role="status" tone="neutral">
-                חלק מהמועדפים שנשמרו כבר לא זמינים במבחר הפעיל.
+                חלק מהפריטים שנשמרו אינם זמינים עוד באתר.
               </StatusMessage>
             ) : null}
 
@@ -225,7 +225,7 @@ export function GuestWishlistProducts() {
 
   function handleClearWishlist() {
     clearGuestWishlistItems();
-    setMessage("המועדפים המקומיים נוקו.");
+    setMessage("רשימת המועדפים נוקתה.");
   }
 }
 
@@ -244,11 +244,11 @@ function GuestWishlistShortlistOnboarding({
         <p className="font-medium">
           {hasSavedSlugs
             ? "הרשימה נשמרת בדפדפן הזה"
-            : "אפשר לבנות shortlist לפני התחברות"}
+            : "אפשר לשמור פריטים גם לפני התחברות"}
         </p>
         <p className="text-muted-foreground mt-1 leading-6">
-          סמנו לב בפריטים שמעניינים אתכם, השוו בנחת, ואז היכנסו לחשבון כדי
-          לסנכרן את הרשימה.
+          סמני לב בפריטים שמעניינים אותך, ואז היכנסי לחשבון כדי לשמור את
+          הרשימה.
         </p>
       </div>
       <div className="flex flex-wrap items-center gap-2 sm:justify-end">
@@ -262,7 +262,7 @@ function GuestWishlistShortlistOnboarding({
           className="border-border hover:border-foreground/50 hover:bg-muted/60 rounded-full border px-3 py-1.5 text-xs transition"
           href="/account"
         >
-          סנכרון לחשבון
+          שמירה בחשבון
         </Link>
       </div>
     </section>
