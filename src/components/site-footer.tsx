@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   ChevronDown,
   MessageCircle,
@@ -90,6 +91,9 @@ const footerTrustSignals = [
 
 export function SiteFooter() {
   const currentYear = new Date().getFullYear();
+  const pathname = usePathname();
+  // Keep the transactional checkout surface focused: no marketing newsletter.
+  const showNewsletter = pathname !== "/checkout";
 
   return (
     <footer className="site-footer elysia-section" dir="rtl">
@@ -104,7 +108,7 @@ export function SiteFooter() {
               className="brand-footer-mark inline-flex items-center"
               href="/"
             >
-              <BrandLogo className="h-12 w-auto max-w-[14.5rem] sm:h-14 sm:max-w-[18rem]" />
+              <BrandLogo className="h-8 w-auto max-w-[11rem] sm:h-10 sm:max-w-[13rem]" />
             </Link>
             <span className="sr-only" id="footer-brand-title">
               Elysia
@@ -113,19 +117,21 @@ export function SiteFooter() {
               ב-Elysia תמצאי תכשיטי כסף 925 וציפוי זהב, לכל יום ולאירועים
               מיוחדים.
             </p>
-            <div className="site-footer-newsletter mt-7 max-w-xl sm:mt-11">
-              <p className="site-footer-kicker text-xs font-medium tracking-normal">
-                הרשמה לניוזלטר
-              </p>
-              <p className="site-footer-newsletter-copy mt-4 hidden max-w-md text-sm leading-7 sm:block sm:leading-8">
-                עדכונים על קולקציות חדשות ופריטים נבחרים, ישירות למייל.
-              </p>
-              <NewsletterForm
-                hintText="אפשר לבטל את ההרשמה בכל עת."
-                submitLabel="הרשמה"
-                variant="footer"
-              />
-            </div>
+            {showNewsletter ? (
+              <div className="site-footer-newsletter mt-7 max-w-xl sm:mt-11">
+                <p className="site-footer-kicker text-xs font-medium tracking-normal">
+                  הרשמה לניוזלטר
+                </p>
+                <p className="site-footer-newsletter-copy mt-4 hidden max-w-md text-sm leading-7 sm:block sm:leading-8">
+                  עדכונים על קולקציות חדשות ופריטים נבחרים, ישירות למייל.
+                </p>
+                <NewsletterForm
+                  hintText="אפשר לבטל את ההרשמה בכל עת."
+                  submitLabel="הרשמה"
+                  variant="footer"
+                />
+              </div>
+            ) : null}
           </section>
 
           <nav
