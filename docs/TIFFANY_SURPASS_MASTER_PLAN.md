@@ -414,6 +414,19 @@ constraints.
   missing alt, unsupported formats, extreme aspect ratios, and broken URLs.
 - `Acceptance`: catalog publish/release fails for P0 media violations and warns
   for non-critical issues with exact product IDs.
+- `Progress` (2026-07-02): the `pnpm catalog:readiness` audit already covered
+  duplicate hashes/URLs, missing/duplicate primary media, missing alt, missing
+  dimensions, and missing local files. Added the three remaining B-08 checks in
+  `scripts/lib/catalog-readiness.ts`, each attributed to the exact product slug:
+  `MEDIA_UNSUPPORTED_FORMAT` (high — extension outside the governed image/video
+  allow-list), `MEDIA_LOW_RESOLUTION` (high — shorter edge below
+  `minImageEdgePx` = 1000), and `MEDIA_ASPECT_RATIO_EXTREME` (medium — long:short
+  ratio above `maxImageAspectRatio` = 2.5). Thresholds and the allow-list are
+  exported (`CATALOG_READINESS_MEDIA_LIMITS`,
+  `CATALOG_READINESS_SUPPORTED_MEDIA_FORMATS`). Remote CDN URLs without an
+  extension are not flagged (no false positives). High-severity findings keep a
+  product out of publish-ready and fail `--strict`; medium ones warn. Covered by
+  new unit tests; full catalog script suite green (32 tests).
 
 ---
 
@@ -610,6 +623,38 @@ constraints.
   motion support, and stable hover/focus states.
 - `Acceptance`: interaction feels consistent across cards, galleries, sheets,
   tabs, and CTAs; no motion is required to discover content.
+- `Progress` (2026-07-02): easing vocabulary consolidated in
+  `src/styles/globals.css` to one documented family — `--ease-standard`
+  (in-out), `--ease-enter` (decelerate), `--ease-exit` (accelerate). The six
+  legacy tokens (`--ease-liquid`, `--ease-motion-standard/expressive/feedback/
+  enter/exit`) are now aliases onto that family, so all 122 consumers stay
+  consistent without call-site edits. Two were exact duplicates; the only value
+  change is `--ease-liquid` (16 uses) moving to the shared `enter` curve.
+- `Progress` (2026-07-02, hover/focus): all interactive state transitions that
+  used the bare `ease` keyword + magic values (150ms/160ms) now use one tokenized
+  duration and the shared family — a new `--motion-micro: 160ms` token plus
+  `var(--ease-standard)` across account links/sidebar, wishlist card, checkout
+  action/item panels, and the public select trigger. No bare `ease` interactive
+  transition remains (only decorative `ease-in-out` keyframe loops on /about).
+  Full styles contract suite green (293 tests / 74 files).
+- `Assessment` (2026-07-02, durations + spacing): the restrained-duration and
+  home vertical-rhythm sub-items were reviewed and intentionally left unchanged.
+  The `--motion-*` durations form a deliberate scale guarded by
+  `public-motion-budget.test.ts` (e.g. the 680ms cinematic media zoom and 620ms
+  feature reveal are art direction, and reveal timings sync with JS stagger);
+  home sections already share `--ui-section-y-wide` (the `py-7` bands are
+  intentional tight dividers). Cutting these would degrade intentional design
+  without visual review, so no churn was made.
+- `Progress` (2026-07-02, no-layout-movement audit): no `transition: all` exists
+  anywhere. The one layout-animating transition — `.about-rule` animating
+  `width` 900ms for its scroll-in draw effect — was converted to a
+  compositor-only `transform: scaleX()` from the RTL start edge (visually
+  identical, zero per-frame layout). The remaining non-transform transitions are
+  intentional and non-repeated: `.public-motion-content` `padding` (header
+  safe-area offset) and an SVG `fill`/`stroke-width` (paint, not layout).
+- D-08 is substantially complete at the token/CSS layer. Subjective motion-feel
+  changes still require `PUBLIC_CHANGE_GATE` sign-off and L-03 visual-regression
+  review before release.
 
 ---
 
@@ -636,6 +681,21 @@ constraints.
   intent; evaluate deterministic and AI-assisted paths.
 - `Acceptance`: target precision/recall and zero-result thresholds are defined
   and met; AI/provider failure silently falls back without console noise.
+- `Progress` (2026-07-02): built the deterministic-path evaluation harness —
+  `src/server/adapters/search-evaluation.ts` `evaluateLexicalRetrieval(products,
+  cases)` scores the real `filterCatalogProducts` (the pure filter behind local
+  search) over a labeled query corpus, returning precision / recall /
+  zero-result accuracy with no DB, Typesense, or AI dependency. A labeled Hebrew
+  corpus (exact stone/material terms, facet + budget filters, misspelling,
+  out-of-vocabulary, and a reversed multi-token case) proves the deterministic
+  path retrieves in-vocabulary single-term/facet queries exactly (precision =
+  recall = 1) and correctly returns nothing for no-match intent
+  (zero-result accuracy = 1), while documenting the whole-query substring
+  limitation that the semantic/AI path must recover. The harness is reusable
+  against `listCatalogProducts()` output and extensible to score the AI path.
+  Remaining E-02 scope: transliteration/morphology corpus depth, the semantic/AI
+  path evaluation (needs embeddings/provider), and running against the real
+  catalog (needs owner-populated data).
 
 ### E-03 Make search ranking merchandiser-aware
 
@@ -841,6 +901,16 @@ constraints.
   policy fields against actual public truth.
 - `Acceptance`: Rich Results validation passes; structured data never exposes a
   value hidden or contradicted by the page.
+- `Progress` (2026-07-02): extracted the PDP `Product` JSON-LD into a pure,
+  unit-tested `buildProductStructuredData` (`src/lib/product-structured-data.ts`).
+  `JSON.stringify` already drops `undefined`, but it emitted empty strings and
+  placeholder text; the builder now omits any empty/placeholder field
+  (`sku`, `image`, `description`, `category`, `material`) and only emits an
+  `Offer` when the price is a positive finite amount, with availability tied to
+  the page's add-to-cart status. This closes the "never exposes a value hidden
+  or contradicted by the page" half of the acceptance. Remaining F-10 scope
+  (verified field completeness against public truth, live Rich Results
+  validation) still depends on C-01 owner data.
 
 ### F-11 Validate PDP across the whole catalog
 

@@ -29,6 +29,7 @@ import { Button } from "~/components/ui/button";
 import { getPublicProductCommerceStatus } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
 import { stringifyJsonLd } from "~/lib/json-ld";
+import { buildProductStructuredData } from "~/lib/product-structured-data";
 import {
   productSensitivityDisclaimer,
   productVisualDisclaimer,
@@ -138,25 +139,18 @@ export default async function ProductPage({
     productReference: `${publicProductName} (${product.sku})`,
     reason: "שאלת התאמה, מידה, חומר, מתנה או מסירה לפני הזמנה.",
   });
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: publicProductName,
-    sku: product.sku,
-    image: product.image,
-    description: product.shortDescription,
-    brand: { "@type": "Brand", name: "Elysia" },
+  const structuredData = buildProductStructuredData({
+    brandName: "Elysia",
     category: publicCollectionName ?? product.categorySlug,
+    description: product.shortDescription,
+    image: product.image,
+    inStock: commerceStatus.canAddToCart,
     material: product.verifiedSpecifications?.materialDetails,
-    offers: {
-      "@type": "Offer",
-      priceCurrency: "ILS",
-      price: product.price,
-      availability: commerceStatus.canAddToCart
-        ? "https://schema.org/InStock"
-        : "https://schema.org/PreOrder",
-    },
-  };
+    name: publicProductName,
+    price: product.price,
+    priceCurrency: "ILS",
+    sku: product.sku,
+  });
   const recommendationRails = getProductRecommendationRails({
     product,
     products: allProducts,
