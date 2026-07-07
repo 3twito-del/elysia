@@ -173,6 +173,7 @@
   --ui-card-padding: clamp(1rem, 2.1vw, 1.3rem);
   --ui-card-padding-tight: clamp(0.875rem, 1.8vw, 1.05rem);
   --ui-form-gap: clamp(0.9rem, 2vw, 1.25rem);
+  --motion-micro: 160ms;
   --motion-fast: 220ms;
   --motion-medium: 340ms;
   --motion-slow: 560ms;
@@ -189,12 +190,20 @@
   --motion-sheet-exit: 420ms;
   --motion-sheet-axis-distance: 102%;
   --motion-sheet-axis-distance-negative: -102%;
-  --ease-liquid: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-motion-standard: cubic-bezier(0.2, 0, 0, 1);
-  --ease-motion-expressive: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-motion-feedback: cubic-bezier(0.2, 0, 0, 1);
-  --ease-motion-enter: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-motion-exit: cubic-bezier(0.32, 0, 0.2, 1);
+  /* One easing family (D-08). Three roles derive from a single motion language:
+     `standard` (in-out) for most state transitions, `enter` (decelerate) for
+     elements arriving, `exit` (accelerate) for elements leaving. All legacy
+     token names are kept as aliases onto this family so every consumer stays
+     consistent without touching call sites. */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit: cubic-bezier(0.32, 0, 0.2, 1);
+  --ease-liquid: var(--ease-enter);
+  --ease-motion-standard: var(--ease-standard);
+  --ease-motion-expressive: var(--ease-enter);
+  --ease-motion-feedback: var(--ease-standard);
+  --ease-motion-enter: var(--ease-enter);
+  --ease-motion-exit: var(--ease-exit);
   --motion-distance-subtle: 5px;
   --motion-distance-standard: 10px;
   --motion-distance-feature: 14px;
@@ -1614,8 +1623,8 @@ main
   text-decoration-color: var(--boutique-border-strong);
   text-underline-offset: 0.28rem;
   transition:
-    color 160ms ease,
-    text-decoration-color 160ms ease;
+    color var(--motion-micro) var(--ease-standard),
+    text-decoration-color var(--motion-micro) var(--ease-standard);
 }
 
 .account-entry-micro-links a:hover,
@@ -1715,9 +1724,9 @@ main
   font-size: 0.92rem;
   font-weight: 500;
   transition:
-    background-color 160ms ease,
-    color 160ms ease,
-    border-color 160ms ease;
+    background-color var(--motion-micro) var(--ease-standard),
+    color var(--motion-micro) var(--ease-standard),
+    border-color var(--motion-micro) var(--ease-standard);
 }
 
 .account-sidebar-link {
@@ -1914,8 +1923,8 @@ main
 
 .wishlist-product-card {
   transition:
-    border-color 160ms ease,
-    background-color 160ms ease;
+    border-color var(--motion-micro) var(--ease-standard),
+    background-color var(--motion-micro) var(--ease-standard);
 }
 
 .wishlist-product-card:hover {
@@ -1962,8 +1971,8 @@ main
 
 .checkout-action-panel {
   transition:
-    border-color 160ms ease,
-    background-color 160ms ease;
+    border-color var(--motion-micro) var(--ease-standard),
+    background-color var(--motion-micro) var(--ease-standard);
 }
 
 .checkout-action-panel:hover {
@@ -1980,8 +1989,8 @@ main
 
 .checkout-boutique-item-card {
   transition:
-    border-color 160ms ease,
-    background-color 160ms ease;
+    border-color var(--motion-micro) var(--ease-standard),
+    background-color var(--motion-micro) var(--ease-standard);
 }
 
 .checkout-boutique-item-card:hover {
@@ -2983,13 +2992,17 @@ html[data-accessibility-motion="reduce"] .boutique-collection-action::before {
   display: block;
   margin-top: 1rem;
   height: 1px;
-  width: 0;
+  /* Draw-in via a compositor-only transform (no per-frame layout).
+     transform-origin sits at the RTL reading start (right edge). */
+  width: min(14rem, 60%);
   background: linear-gradient(to left, var(--brand-champagne), transparent);
-  transition: width 900ms var(--ease-liquid) 0.15s;
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform 900ms var(--ease-liquid) 0.15s;
 }
 
 .about-rv[data-inview="true"] .about-rule {
-  width: min(14rem, 60%);
+  transform: scaleX(1);
 }
 
 .about-manifesto-text {
@@ -5578,9 +5591,9 @@ footer nav a:focus-visible {
   box-shadow: inset 0 0 0 1px transparent;
   cursor: pointer;
   transition:
-    border-color 150ms ease,
-    background-color 150ms ease,
-    box-shadow 150ms ease;
+    border-color var(--motion-micro) var(--ease-standard),
+    background-color var(--motion-micro) var(--ease-standard),
+    box-shadow var(--motion-micro) var(--ease-standard);
 }
 
 .public-select-trigger [data-public-select-value] {

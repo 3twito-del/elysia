@@ -610,6 +610,38 @@ constraints.
   motion support, and stable hover/focus states.
 - `Acceptance`: interaction feels consistent across cards, galleries, sheets,
   tabs, and CTAs; no motion is required to discover content.
+- `Progress` (2026-07-02): easing vocabulary consolidated in
+  `src/styles/globals.css` to one documented family — `--ease-standard`
+  (in-out), `--ease-enter` (decelerate), `--ease-exit` (accelerate). The six
+  legacy tokens (`--ease-liquid`, `--ease-motion-standard/expressive/feedback/
+  enter/exit`) are now aliases onto that family, so all 122 consumers stay
+  consistent without call-site edits. Two were exact duplicates; the only value
+  change is `--ease-liquid` (16 uses) moving to the shared `enter` curve.
+- `Progress` (2026-07-02, hover/focus): all interactive state transitions that
+  used the bare `ease` keyword + magic values (150ms/160ms) now use one tokenized
+  duration and the shared family — a new `--motion-micro: 160ms` token plus
+  `var(--ease-standard)` across account links/sidebar, wishlist card, checkout
+  action/item panels, and the public select trigger. No bare `ease` interactive
+  transition remains (only decorative `ease-in-out` keyframe loops on /about).
+  Full styles contract suite green (293 tests / 74 files).
+- `Assessment` (2026-07-02, durations + spacing): the restrained-duration and
+  home vertical-rhythm sub-items were reviewed and intentionally left unchanged.
+  The `--motion-*` durations form a deliberate scale guarded by
+  `public-motion-budget.test.ts` (e.g. the 680ms cinematic media zoom and 620ms
+  feature reveal are art direction, and reveal timings sync with JS stagger);
+  home sections already share `--ui-section-y-wide` (the `py-7` bands are
+  intentional tight dividers). Cutting these would degrade intentional design
+  without visual review, so no churn was made.
+- `Progress` (2026-07-02, no-layout-movement audit): no `transition: all` exists
+  anywhere. The one layout-animating transition — `.about-rule` animating
+  `width` 900ms for its scroll-in draw effect — was converted to a
+  compositor-only `transform: scaleX()` from the RTL start edge (visually
+  identical, zero per-frame layout). The remaining non-transform transitions are
+  intentional and non-repeated: `.public-motion-content` `padding` (header
+  safe-area offset) and an SVG `fill`/`stroke-width` (paint, not layout).
+- D-08 is substantially complete at the token/CSS layer. Subjective motion-feel
+  changes still require `PUBLIC_CHANGE_GATE` sign-off and L-03 visual-regression
+  review before release.
 
 ---
 
