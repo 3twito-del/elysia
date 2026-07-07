@@ -43,8 +43,8 @@ export default async function CustomerInvoicesPage() {
     <main className="elysia-page">
       <SiteHeader />
       <CompactPageIntro
-        description="חשבוניות, מצב תשלום ומסמכים אישיים — במקום אחד."
-        eyebrow="הפורטל שלי"
+        description="חשבוניות, מצב תשלום ומסמכים אישיים במקום אחד."
+        eyebrow="אזור אישי"
         title="חשבוניות ומסמכים"
         variant="checkout"
       />

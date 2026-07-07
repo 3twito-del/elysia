@@ -86,10 +86,10 @@ export default async function GiftsPage() {
     <main className="elysia-page">
       <SiteHeader />
       <CompactPageIntro
-        description="תקציב, למי, אירוע."
+        description="בחרי מתנה לפי תקציב, נמענת או אירוע."
         eyebrow="מתנות"
         id="page-hero"
-        title="מתנות זמינות עכשיו"
+        title="מתנות"
         variant="catalog"
       />
       <RevealSection className="mx-auto max-w-7xl px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:px-[var(--ui-page-x-wide)] lg:py-[var(--ui-section-y)]">
@@ -113,7 +113,7 @@ export default async function GiftsPage() {
               className="text-muted-foreground hover:text-foreground text-sm font-medium underline-offset-4 hover:underline"
               href="/search?q=%D7%9E%D7%AA%D7%A0%D7%94"
             >
-              חיפוש מתנה במבחר
+              חיפוש מתנות
             </Link>
           </div>
         </section>
@@ -149,13 +149,13 @@ export default async function GiftsPage() {
                 </Button>
                 <Button asChild variant="outline">
                   <Link href="/search?q=%D7%9E%D7%AA%D7%A0%D7%94">
-                    חיפוש רחב למתנה
+                    חיפוש מתנות
                   </Link>
                 </Button>
               </>
             }
             className="mt-5"
-            description="אפשר חיפוש רחב יותר, או חזרה לכל הרעיונות."
+            description="נסי חיפוש רחב יותר או חזרי לכל רעיונות המתנה."
             icon={Gift}
             testId="gifts-empty-state"
             title="לא נמצאה מתנה מתאימה"
@@ -168,16 +168,16 @@ export default async function GiftsPage() {
         >
           <div>
             <p className="text-muted-foreground text-xs font-medium uppercase">
-              מאיפה מתחילים
+              איך בוחרים
             </p>
             <h2
               className="mt-2 text-lg font-medium text-balance"
               id="gift-discovery-title"
             >
-              תקציב, למי, או הרגע
+              בחירה לפי תקציב, נמענת או אירוע
             </h2>
             <p className="text-muted-foreground mt-2 text-sm leading-6">
-              מסלול אחד, וכיוון ברור.
+              בחרי נקודת התחלה אחת וצמצמי את החיפוש.
             </p>
           </div>
           <div
@@ -196,7 +196,7 @@ export default async function GiftsPage() {
           <div className="flex lg:justify-end">
             <Button asChild size="sm" variant="outline">
               <Link href="/search?q=%D7%9E%D7%AA%D7%A0%D7%94">
-                חיפוש מתנה רחב
+                לכל המתנות בחיפוש
               </Link>
             </Button>
           </div>
@@ -216,11 +216,11 @@ export default async function GiftsPage() {
                   className="mt-2 text-lg font-medium"
                   id="gift-bundles-title"
                 >
-                  שני תכשיטים, לוק אחד
+                  שילובים מומלצים למתנה
                 </h2>
               </div>
               <p className="text-muted-foreground max-w-xl text-sm leading-6">
-                מחיר, צבע, חומר.
+                שני פריטים מאותה קטגוריה שמשתלבים יפה יחד.
               </p>
             </div>
             <div className="mt-4 grid gap-5 lg:grid-cols-2">
@@ -240,7 +240,7 @@ export default async function GiftsPage() {
                   <div className="grid gap-3 sm:grid-cols-2">
                     {pair.products.map((product) => (
                       <ProductCard
-                        contextLabel="חלק מלוק מתנה"
+                        contextLabel="מתאים לשילוב במתנה"
                         key={product.slug}
                         product={product}
                       />

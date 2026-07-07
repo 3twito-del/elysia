@@ -115,7 +115,7 @@ export function AiProductRecommendations({
                   ) : null}
                   {product.availableOnline === false ? (
                     <span className="inline-flex items-center gap-1">
-                      לא פנוי כרגע
+                      אזל מהמלאי
                     </span>
                   ) : null}
                 </div>

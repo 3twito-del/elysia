@@ -13,14 +13,20 @@ import {
   toNullableJsonInput,
 } from "~/server/services/analytics";
 
+// Per-node limits are generous because a single rrweb full-snapshot legitimately
+// carries large strings (an inlined <style>'s CSS, a data: URI) and long arrays
+// (a rich page's childNodes). The real bound is the overall payload: the route
+// caps the request at 256 KB and the service rejects serialized events over
+// 220 KB, so a chunk cannot approach these ceilings — they only stop a single
+// pathological value. Tight limits here were silently 400-ing valid chunks.
 const replayJsonSchema: z.ZodType<Prisma.JsonValue> = z.lazy(() =>
   z.union([
-    z.string().max(10_000),
+    z.string().max(262_144),
     z.number().finite(),
     z.boolean(),
     z.null(),
-    z.array(replayJsonSchema).max(1_000),
-    z.record(z.string().max(120), replayJsonSchema),
+    z.array(replayJsonSchema).max(100_000),
+    z.record(z.string().max(256), replayJsonSchema),
   ]),
 );
 
@@ -100,14 +106,12 @@ export async function recordAnalyticsReplayChunk(
     return { status: "rejected", chunkId: null, reason: "invalid_checksum" };
   }
 
-  if (containsUnmaskedSensitiveData(parsed.events)) {
-    return {
-      status: "rejected",
-      chunkId: null,
-      reason: "contains_unmasked_sensitive_data",
-    };
-  }
-
+  // We do NOT reject chunks that still contain PII-looking values: static page
+  // text the client can't input-mask (a footer email, a "name@example.com"
+  // placeholder that appears in the footer sitewide) would otherwise reject
+  // every full-snapshot on every page. maskReplayEvents below is the real
+  // safety net — it redacts sensitive strings and keys before storage — so we
+  // mask rather than drop the session.
   const sessionKeyHash = hashAnalyticsIdentifier(parsed.sessionKey);
   const visitorKeyHash =
     parsed.visitorKeyHash ??

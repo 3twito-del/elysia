@@ -142,7 +142,7 @@ export default async function OrderDetailPage({
             <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
               {orderTimeline.map((event) => (
                 <li
-                  className="glass-inset data-[state=current]:border-foreground/50 rounded-md border p-3 data-[state=pending]:opacity-70"
+                  className="glass-inset data-[state=current]:border-foreground/50 data-[state=pending]:border-dashed rounded-md border p-3"
                   data-state={event.state}
                   key={event.id}
                 >

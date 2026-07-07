@@ -115,13 +115,13 @@ export function CookieConsentBanner() {
             <Cookie className="size-5" aria-hidden="true" />
           </div>
           <div className="min-w-0">
-            <h2 className="text-xs font-semibold sm:text-base">קוקיז, בקצרה</h2>
+            <h2 className="text-xs font-semibold sm:text-base">שימוש בקוקיז</h2>
             <p
               className="text-muted-foreground mt-1 line-clamp-1 max-w-3xl text-[0.68rem] leading-5 sm:text-sm sm:leading-6"
               id="cookie-consent-summary"
             >
-              האתר משתמש בקוקיז חיוניים להפעלה. באישורכם נשתמש גם במדידה ושיפור
-              החוויה, כולל צפיות אחרונות.
+              האתר משתמש בקוקיז חיוניים לתפעולו. באישורך נשתמש בקוקיז נוספים
+              למדידה ולשיפור החוויה.
               <Link
                 className="text-foreground ms-1 underline underline-offset-4"
                 href="/privacy"
@@ -150,7 +150,7 @@ export function CookieConsentBanner() {
             onClick={() => chooseConsent("all")}
           >
             <CheckCircle2 aria-hidden="true" className="size-4" />
-            מאשרת הכל
+            אישור הכל
           </Button>
         </div>
       </div>

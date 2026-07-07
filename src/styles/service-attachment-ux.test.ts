@@ -46,7 +46,7 @@ describe("service attachment UX", () => {
 
     expect(form).toContain("queueOfflineServiceRequest");
     expect(form).toContain("אם השליחה לא הצליחה");
-    expect(form).toContain("בדקו את החיבור ונסו שוב");
+    expect(form).toContain("בדקי את החיבור ונסי שוב");
   });
 });
 
