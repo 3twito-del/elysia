@@ -55,6 +55,7 @@
 }
 
 :root {
+  color-scheme: light;
   --font-cormorant-garamond:
     "Cormorant Garamond", Georgia, "Times New Roman", serif;
   --font-geist-mono:
@@ -80,13 +81,13 @@
   --secondary: #faf7f3;
   --secondary-foreground: var(--brand-ink);
   --muted: #f6f3ef;
-  --muted-foreground: #7a7168;
+  --muted-foreground: #6d645c;
   --accent: #ead8d2;
   --accent-foreground: var(--brand-ink);
   --destructive: oklch(0.47 0.15 27);
   --border: #ece6df;
-  --input: #ece6df;
-  --ring: #b49a6a;
+  --input: #d8d0c8;
+  --ring: #8a6a3f;
   --chart-1: #1d1916;
   --chart-2: #7d6b5a;
   --chart-3: #b49a6a;
@@ -121,8 +122,8 @@
   --elysia-surface-muted: var(--muted);
   --elysia-border: var(--border);
   --elysia-border-soft: rgb(29 25 22 / 7%);
-  --elysia-border-strong: #d8d0c8;
-  --elysia-focus: rgb(180 154 106 / 26%);
+  --elysia-border-strong: #c0b4a6;
+  --elysia-focus: rgb(138 106 63 / 90%);
   --elysia-shadow-surface: oklch(0 0 0 / 3%);
   --elysia-shadow-lift: oklch(0 0 0 / 5%);
   --elysia-shadow-popover: oklch(0 0 0 / 8%);
@@ -135,6 +136,7 @@
   --elysia-media-border-hover: rgb(29 25 22 / 16%);
   --elysia-hover-bg: #f5eee7;
   --elysia-muted-text: var(--muted-foreground);
+  --elysia-heading: var(--foreground);
   --glass-panel-bg: var(--elysia-surface-bg);
   --glass-card-bg: var(--elysia-surface-raised);
   --glass-control-bg: var(--elysia-surface-control);
@@ -155,8 +157,8 @@
   --boutique-muted: var(--elysia-muted-text);
   --boutique-hover: var(--elysia-hover-bg);
   --scrollbar-size: 0.375rem;
-  --scrollbar-thumb: rgb(125 107 90 / 26%);
-  --scrollbar-thumb-hover: rgb(125 107 90 / 42%);
+  --scrollbar-thumb: rgb(125 107 90 / 36%);
+  --scrollbar-thumb-hover: rgb(125 107 90 / 54%);
   --scrollbar-track: transparent;
   --font-hebrew-sans:
     var(--font-rubik), "Rubik", "Noto Sans Hebrew", "Arial Hebrew", Arial,
@@ -208,7 +210,7 @@
   --sidebar-accent: #f3eee8;
   --sidebar-accent-foreground: var(--brand-ink);
   --sidebar-border: #e4dbd0;
-  --sidebar-ring: #b49a6a;
+  --sidebar-ring: #8a6a3f;
 }
 
 @media (min-width: 768px) {
@@ -224,64 +226,62 @@
 }
 
 .dark {
-  --background: oklch(0.15 0.025 195);
-  --foreground: oklch(0.97 0.018 185);
-  --card: oklch(0.2 0.026 195);
-  --card-foreground: oklch(0.97 0.018 185);
-  --popover: oklch(0.2 0.026 195);
-  --popover-foreground: oklch(0.97 0.018 185);
+  color-scheme: dark;
+  --background: #161210;
+  --foreground: #f3ede6;
+  --card: #1f1a15;
+  --card-foreground: #f3ede6;
+  --popover: #1f1a15;
+  --popover-foreground: #f3ede6;
   --primary: var(--action-primary);
   --primary-foreground: var(--action-primary-foreground);
-  --secondary: oklch(0.24 0.04 190);
-  --secondary-foreground: oklch(0.97 0.018 185);
-  --muted: oklch(0.24 0.04 190);
-  --muted-foreground: oklch(0.78 0.05 190);
-  --accent: oklch(0.3 0.06 190);
-  --accent-foreground: oklch(0.98 0.02 185);
+  --secondary: #251f19;
+  --secondary-foreground: #f3ede6;
+  --muted: #251f19;
+  --muted-foreground: #b5aa9e;
+  --accent: #322a22;
+  --accent-foreground: #f7f2ea;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(0.72 0.08 190 / 24%);
-  --input: oklch(0.72 0.08 190 / 28%);
-  --ring: oklch(0.74 0.02 220);
+  --border: rgb(243 237 230 / 14%);
+  --input: rgb(243 237 230 / 24%);
+  --ring: #c7a982;
   --chart-1: #fffaf4;
   --chart-2: #ead8d2;
   --chart-3: #b49a6a;
   --chart-4: #7d6b5a;
   --chart-5: #2b241f;
-  --action-primary: oklch(0.94 0 0);
+  --action-primary: #f2ebe2;
   --action-primary-foreground: var(--brand-espresso);
-  --action-primary-hover: oklch(1 0 0);
-  --sidebar: oklch(0.2 0.026 195);
-  --sidebar-foreground: oklch(0.97 0.018 185);
+  --action-primary-hover: #fffaf4;
+  --sidebar: #1f1a15;
+  --sidebar-foreground: #f3ede6;
   --sidebar-primary: var(--action-primary);
   --sidebar-primary-foreground: var(--action-primary-foreground);
-  --sidebar-accent: oklch(0.24 0.04 190);
-  --sidebar-accent-foreground: oklch(0.97 0.018 185);
-  --sidebar-border: oklch(0.72 0.08 190 / 24%);
-  --sidebar-ring: oklch(0.74 0.02 220);
+  --sidebar-accent: #251f19;
+  --sidebar-accent-foreground: #f3ede6;
+  --sidebar-border: rgb(243 237 230 / 14%);
+  --sidebar-ring: #c7a982;
   --elysia-page-bg: var(--background);
-  --elysia-page-wash: linear-gradient(
-    180deg,
-    oklch(0.18 0.028 195) 0%,
-    var(--background) 34rem
-  );
+  --elysia-page-wash: linear-gradient(180deg, #1b1613 0%, var(--background) 34rem);
   --elysia-surface-bg: var(--card);
   --elysia-surface-raised: var(--card);
-  --elysia-surface-control: oklch(0.18 0.028 195);
+  --elysia-surface-control: #1a1512;
   --elysia-surface-inset: var(--muted);
   --elysia-surface-chrome: var(--background);
   --elysia-surface-muted: var(--muted);
   --elysia-border: var(--border);
-  --elysia-border-soft: oklch(0.82 0.02 220 / 24%);
-  --elysia-border-strong: oklch(0.82 0.02 220 / 46%);
-  --elysia-focus: rgb(226 232 236 / 42%);
+  --elysia-border-soft: rgb(243 237 230 / 10%);
+  --elysia-border-strong: rgb(243 237 230 / 34%);
+  --elysia-focus: rgb(240 233 223 / 88%);
   --elysia-shadow-surface: oklch(0 0 0 / 16%);
   --elysia-shadow-lift: oklch(0 0 0 / 20%);
   --elysia-shadow-popover: oklch(0 0 0 / 26%);
-  --elysia-media-bg: var(--muted);
-  --elysia-media-border: oklch(0.82 0.02 220 / 24%);
-  --elysia-media-border-hover: oklch(0.82 0.02 220 / 46%);
-  --elysia-hover-bg: oklch(0.24 0.04 190);
+  --elysia-media-bg: #221c17;
+  --elysia-media-border: rgb(243 237 230 / 12%);
+  --elysia-media-border-hover: rgb(243 237 230 / 30%);
+  --elysia-hover-bg: #2a231c;
   --elysia-muted-text: var(--muted-foreground);
+  --elysia-heading: var(--foreground);
   --glass-panel-bg: var(--elysia-surface-bg);
   --glass-card-bg: var(--elysia-surface-raised);
   --glass-control-bg: var(--elysia-surface-control);
@@ -301,8 +301,8 @@
   --boutique-border-strong: var(--elysia-border-strong);
   --boutique-muted: var(--elysia-muted-text);
   --boutique-hover: var(--elysia-hover-bg);
-  --scrollbar-thumb: rgb(226 232 236 / 28%);
-  --scrollbar-thumb-hover: rgb(226 232 236 / 48%);
+  --scrollbar-thumb: rgb(236 228 214 / 30%);
+  --scrollbar-thumb-hover: rgb(236 228 214 / 50%);
 }
 
 @layer base {
@@ -785,7 +785,7 @@ html[data-accessibility-contrast="true"] {
   --elysia-border: oklch(0 0 0 / 42%);
   --elysia-border-soft: oklch(0 0 0 / 42%);
   --elysia-border-strong: oklch(0 0 0 / 78%);
-  --elysia-focus: oklch(0 0 0 / 52%);
+  --elysia-focus: oklch(0 0 0 / 85%);
   --elysia-shadow-surface: oklch(0 0 0 / 8%);
   --elysia-shadow-lift: oklch(0 0 0 / 10%);
   --elysia-shadow-popover: oklch(0 0 0 / 12%);
@@ -1128,7 +1128,7 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
 
 .compact-page-intro-eyebrow {
   width: fit-content;
-  border: 1px solid rgb(16 24 28 / 10%);
+  border: 1px solid rgb(29 25 22 / 10%);
   border-radius: 999px;
   background: rgb(255 255 255 / 88%);
   color: var(--brand-espresso);
@@ -1545,9 +1545,8 @@ main
 }
 
 .account-client-page {
-  --account-button: #211b17;
-  --account-button-hover: #342b25;
-  --account-muted-light: #b6aaa0;
+  --account-button: var(--action-primary);
+  --account-button-hover: var(--action-primary-hover);
 }
 
 .account-client-hero {
@@ -1680,13 +1679,13 @@ main
 .account-primary-action {
   min-height: 3.15rem;
   background: var(--account-button);
-  color: #fffdf9;
+  color: var(--action-primary-foreground);
   box-shadow: none;
 }
 
 .account-primary-action:hover {
   background: var(--account-button-hover);
-  color: #fffdf9;
+  color: var(--action-primary-foreground);
 }
 
 .account-secondary-action {
@@ -2043,7 +2042,7 @@ main
 }
 
 .commerce-page-hero[data-commerce-hero="catalog"] .commerce-page-hero-title {
-  color: var(--muted-foreground);
+  color: var(--elysia-heading);
   font-size: clamp(1.95rem, 4.15vw, 3.35rem);
   text-shadow: none;
 }
@@ -2486,7 +2485,10 @@ main
 .boutique-collection-card:hover .boutique-collection-action,
 .boutique-collection-card:focus-visible .boutique-collection-action {
   border-color: #fffaf4;
-  color: var(--foreground);
+  /* The hover fill (::before) is always white, so the arrow must be a
+     theme-independent dark ink. var(--foreground) flips light in night mode
+     and would vanish on the white fill. */
+  color: var(--brand-ink);
 }
 
 .boutique-collection-card:hover .boutique-collection-action::before,
@@ -2640,18 +2642,8 @@ html[data-accessibility-motion="reduce"] .boutique-collection-action::before {
 }
 
 .boutique-story-principle {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 1rem;
   border-top: 1px solid var(--glass-border);
   padding-top: 1.25rem;
-}
-
-.boutique-story-principle > span {
-  color: var(--brand-gold-muted);
-  font-size: 0.78rem;
-  font-variant-numeric: tabular-nums;
-  line-height: 1.8;
 }
 
 .boutique-story-principle h3 {
@@ -2958,265 +2950,6 @@ html[data-accessibility-motion="reduce"] .boutique-collection-action::before {
   }
 }
 
-/* ── Living prism: cursor/tilt-reactive light on the about hero ─────────────
-   Fed by --aurora-x / --aurora-y (0–100), --aurora-energy (0–1) and
-   --aurora-shift-* (-1–1) from <AboutHeroAurora>. Pure CSS; JS only nudges
-   the variables. The hero has `isolate`, so screen-blended layers brighten the
-   prism image beneath them without touching the copy (which sits above). */
-.about-aurora {
-  position: absolute;
-  inset: 0;
-  z-index: 4;
-  overflow: hidden;
-  pointer-events: none;
-  --aurora-x: 62;
-  --aurora-y: 40;
-  --aurora-energy: 0;
-}
-
-.about-aurora-spotlight,
-.about-aurora-prism,
-.about-aurora-sheen,
-.about-aurora-bloom {
-  position: absolute;
-  mix-blend-mode: screen;
-}
-
-/* Warm gem highlight that follows the light source. */
-.about-aurora-spotlight {
-  inset: -25%;
-  background: radial-gradient(
-    34% 34% at calc(var(--aurora-x) * 1%) calc(var(--aurora-y) * 1%),
-    rgb(255 250 240 / calc(0.14 + 0.24 * var(--aurora-energy))) 0%,
-    rgb(255 240 214 / calc(0.07 + 0.13 * var(--aurora-energy))) 38%,
-    transparent 64%
-  );
-  transition: background 120ms linear;
-}
-
-/* Faint spectral dispersion — light splitting through a faceted stone.
-   Kept low-saturation and masked to a soft halo so it reads luxe, not neon. */
-.about-aurora-prism {
-  inset: -35%;
-  background: conic-gradient(
-    from calc(var(--aurora-x) * 2.4deg + 40deg) at calc(var(--aurora-x) * 1%)
-      calc(var(--aurora-y) * 1%),
-    rgb(255 188 170 / 0%),
-    rgb(255 214 158 / 55%),
-    rgb(206 232 255 / 48%),
-    rgb(214 184 255 / 42%),
-    rgb(255 224 196 / 0%)
-  );
-  mask: radial-gradient(
-    30% 30% at calc(var(--aurora-x) * 1%) calc(var(--aurora-y) * 1%),
-    #000 0%,
-    transparent 72%
-  );
-  -webkit-mask: radial-gradient(
-    30% 30% at calc(var(--aurora-x) * 1%) calc(var(--aurora-y) * 1%),
-    #000 0%,
-    transparent 72%
-  );
-  opacity: calc(0.22 + 0.6 * var(--aurora-energy));
-  filter: blur(9px) saturate(1.04);
-}
-
-/* A single glint sweeping across the hero, like light catching glass. */
-.about-aurora-sheen {
-  inset: 0;
-  background: linear-gradient(
-    112deg,
-    transparent 38%,
-    rgb(255 252 245 / 0%) 46%,
-    rgb(255 251 240 / 52%) 50%,
-    rgb(255 250 238 / 0%) 54%,
-    transparent 62%
-  );
-  background-size: 260% 100%;
-  background-position: 150% 0;
-  opacity: 0;
-  animation: about-aurora-sheen 8.5s var(--ease-motion-standard) 1.4s both;
-}
-
-/* One-time cinematic bloom on entrance. */
-.about-aurora-bloom {
-  inset: 0;
-  background: radial-gradient(
-    46% 46% at calc(var(--aurora-x) * 1%) calc(var(--aurora-y) * 1%),
-    rgb(255 247 232 / 58%),
-    transparent 60%
-  );
-  opacity: 0;
-  animation: about-aurora-bloom 2.6s var(--ease-motion-expressive) 0.15s both;
-}
-
-.about-aurora-sparkles {
-  position: absolute;
-  inset: 0;
-}
-
-/* Drifting light dust; density of glow rises with cursor energy. */
-.about-aurora-spark {
-  position: absolute;
-  width: var(--spark-size);
-  height: var(--spark-size);
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgb(255 252 244 / 95%) 0%,
-    rgb(255 236 202 / 45%) 42%,
-    transparent 72%
-  );
-  box-shadow: 0 0 6px rgb(255 244 222 / 80%);
-  opacity: 0;
-  mix-blend-mode: screen;
-  will-change: transform, opacity;
-  animation: about-aurora-spark var(--spark-duration) ease-in-out
-    var(--spark-delay) both;
-}
-
-@keyframes about-aurora-sheen {
-  0% {
-    background-position: 150% 0;
-    opacity: 0;
-  }
-  6% {
-    opacity: 0.9;
-  }
-  22% {
-    background-position: -50% 0;
-    opacity: 0;
-  }
-  100% {
-    background-position: -50% 0;
-    opacity: 0;
-  }
-}
-
-@keyframes about-aurora-bloom {
-  0% {
-    opacity: 0;
-    transform: scale(1.16);
-  }
-  28% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: scale(1);
-  }
-}
-
-@keyframes about-aurora-spark {
-  0%,
-  100% {
-    opacity: 0;
-    transform: translateY(0) scale(0.6);
-  }
-  22% {
-    opacity: calc(0.45 + 0.5 * var(--aurora-energy));
-  }
-  52% {
-    opacity: calc(0.78 + 0.22 * var(--aurora-energy));
-    transform: translateY(calc(var(--spark-drift) * 0.55)) scale(1);
-  }
-  82% {
-    opacity: 0.18;
-  }
-}
-
-/* Depth parallax: image and copy drift apart with the light. */
-.about-cinematic-hero .storefront-hero-image {
-  transform: scale(1.06)
-    translate3d(
-      calc(var(--aurora-shift-x, 0) * -14px),
-      calc(var(--aurora-shift-y, 0) * -10px),
-      0
-    );
-  transition: transform 700ms var(--ease-liquid);
-  will-change: transform;
-}
-
-.about-cinematic-hero .about-hero-copy {
-  transform: translate3d(
-    calc(var(--aurora-shift-x, 0) * 9px),
-    calc(var(--aurora-shift-y, 0) * 7px),
-    0
-  );
-  transition: transform 600ms var(--ease-liquid);
-  will-change: transform;
-}
-
-/* Gold sheen drifting through the headline — a slow metallic glint. */
-@supports (-webkit-background-clip: text) or (background-clip: text) {
-  .about-cinematic-hero .about-hero-title.motion-copy-item {
-    background-image: linear-gradient(
-      100deg,
-      #fff 0%,
-      #fff 40%,
-      #ffe7bd 48%,
-      #fffaf0 52%,
-      #fff 60%,
-      #fff 100%
-    );
-    background-size: 220% 100%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    text-shadow: 0 0 calc(18px * var(--aurora-energy, 0))
-      rgb(255 228 182 / calc(0.5 * var(--aurora-energy, 0)));
-    animation: about-title-sheen 9s ease-in-out 1s both;
-  }
-}
-
-@keyframes about-title-sheen {
-  0%,
-  64%,
-  100% {
-    background-position: 130% 0;
-  }
-  84% {
-    background-position: -30% 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .about-aurora-sheen,
-  .about-aurora-bloom,
-  .about-aurora-spark,
-  .about-cinematic-hero .about-hero-title.motion-copy-item {
-    animation: none;
-  }
-
-  .about-cinematic-hero .storefront-hero-image,
-  .about-cinematic-hero .about-hero-copy {
-    transform: none;
-    transition: none;
-  }
-
-  .about-aurora-spark {
-    opacity: 0.3;
-  }
-}
-
-html[data-accessibility-motion="reduce"] .about-aurora-sheen,
-html[data-accessibility-motion="reduce"] .about-aurora-bloom,
-html[data-accessibility-motion="reduce"] .about-aurora-spark,
-html[data-accessibility-motion="reduce"]
-  .about-cinematic-hero
-  .about-hero-title.motion-copy-item {
-  animation: none;
-}
-
-html[data-accessibility-motion="reduce"]
-  .about-cinematic-hero
-  .storefront-hero-image,
-html[data-accessibility-motion="reduce"]
-  .about-cinematic-hero
-  .about-hero-copy {
-  transform: none;
-  transition: none;
-}
 
 /* ════════════════════════════════════════════════════════════════════════
    About redesign — cinematic editorial sections
@@ -3226,110 +2959,14 @@ html[data-accessibility-motion="reduce"]
    ════════════════════════════════════════════════════════════════════════ */
 
 /* ── Scroll reveal primitive ───────────────────────────────────────────── */
-.about-rv {
-  opacity: 0;
-  transform: translateY(1.6rem);
-  transition:
-    opacity 720ms var(--ease-liquid) var(--rv-delay, 0s),
-    transform 720ms var(--ease-liquid) var(--rv-delay, 0s);
-  will-change: opacity, transform;
-}
-
-.about-rv[data-inview="true"] {
+/* Reveal motion was removed in the design-restraint pass: About content renders
+   static (it read as an effect and could strand content invisible on fast
+   scroll). AboutReveal always sets data-inview="true"; these are now the plain
+   visible states. */
+.about-rv,
+.about-rv-item {
   opacity: 1;
   transform: none;
-}
-
-/* Staggered children inside a revealed container. */
-.about-rv-item {
-  opacity: 0;
-  transform: translateY(1.4rem);
-}
-
-.about-rv[data-inview="true"] .about-rv-item {
-  animation: about-rv-rise 680ms var(--ease-liquid) both;
-  animation-delay: calc(var(--rv-i, 0) * 100ms + 60ms);
-}
-
-@keyframes about-rv-rise {
-  from {
-    opacity: 0;
-    transform: translateY(1.4rem);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-/* ── Hero scroll cue ───────────────────────────────────────────────────── */
-.about-scroll-cue {
-  position: absolute;
-  bottom: calc(1.5rem + env(safe-area-inset-bottom));
-  inset-inline-start: 50%;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.55rem;
-  transform: translateX(50%);
-  color: rgb(255 250 244 / 86%);
-  text-decoration: none;
-  animation: about-cue-fade 900ms var(--ease-liquid) 0.6s both;
-}
-
-.about-scroll-cue-label {
-  font-size: 0.72rem;
-  font-weight: 550;
-  opacity: 0.85;
-}
-
-.about-scroll-cue-track {
-  position: relative;
-  display: block;
-  width: 1.35rem;
-  height: 2.2rem;
-  border: 1px solid rgb(255 250 244 / 55%);
-  border-radius: 999px;
-}
-
-.about-scroll-cue-dot {
-  position: absolute;
-  inset-inline-start: 50%;
-  top: 0.42rem;
-  width: 0.28rem;
-  height: 0.28rem;
-  margin-inline-start: -0.14rem;
-  border-radius: 50%;
-  background: rgb(255 250 244 / 95%);
-  animation: about-cue-dot 2.4s var(--ease-liquid) 4 both;
-}
-
-@keyframes about-cue-fade {
-  from {
-    opacity: 0;
-    transform: translateX(50%) translateY(0.5rem);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(50%) translateY(0);
-  }
-}
-
-@keyframes about-cue-dot {
-  0% {
-    opacity: 0.55;
-    transform: translateY(0);
-  }
-  40% {
-    opacity: 1;
-    transform: translateY(0.7rem);
-  }
-  80%,
-  100% {
-    opacity: 0.55;
-    transform: translateY(0);
-  }
 }
 
 /* ── Quiet manifesto ───────────────────────────────────────────────────── */
@@ -3382,13 +3019,6 @@ html[data-accessibility-motion="reduce"]
     transform 360ms var(--ease-liquid),
     border-color 360ms var(--ease-motion-standard),
     box-shadow 360ms var(--ease-liquid);
-}
-
-.about-principle-index {
-  color: var(--brand-gold-muted);
-  font-size: 0.92rem;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
 }
 
 .about-principle-card h3 {
@@ -3655,17 +3285,8 @@ html[data-accessibility-motion="reduce"]
     animation: none;
   }
 
-  .about-rv[data-inview="true"] .about-rv-item {
-    animation: none;
-  }
-
   .about-rule {
     transition: none;
-  }
-
-  .about-scroll-cue,
-  .about-scroll-cue-dot {
-    animation: none;
   }
 }
 
@@ -3676,10 +3297,323 @@ html[data-accessibility-motion="reduce"] :is(.about-rv, .about-rv-item) {
   animation: none;
 }
 
-html[data-accessibility-motion="reduce"]
-  :is(.about-scroll-cue, .about-scroll-cue-dot, .about-rule) {
-  animation: none;
+html[data-accessibility-motion="reduce"] .about-rule {
   transition: none;
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+   About v2 — chaptered editorial relaunch.
+   Sticky chapter nav, manifesto + facts band, sticky-media principles
+   chapter, horizontal process flow. Everything sits on the token layer so
+   night mode inherits automatically unless overridden in the dark section.
+   ──────────────────────────────────────────────────────────────────────── */
+
+.about-chapter-nav {
+  position: sticky;
+  top: var(--site-header-height);
+  z-index: 30;
+  border-block: 1px solid var(--glass-border);
+  background: var(--background);
+}
+
+.about-chapter-nav-track {
+  display: flex;
+  gap: clamp(1.4rem, 4vw, 3.25rem);
+  justify-content: flex-start;
+  max-width: 100%;
+  margin-inline: auto;
+  padding-inline: var(--ui-page-x);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+@media (min-width: 1024px) {
+  .about-chapter-nav-track {
+    justify-content: center;
+    max-width: 88rem;
+  }
+}
+
+.about-chapter-nav-track::-webkit-scrollbar {
+  display: none;
+}
+
+.about-chapter-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 3rem;
+  white-space: nowrap;
+  color: var(--muted-foreground);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  outline: none;
+  transition: color var(--motion-fast) var(--ease-motion-standard);
+}
+
+.about-chapter-link::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--foreground);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--motion-medium) var(--ease-motion-standard);
+}
+
+.about-chapter-link:hover,
+.about-chapter-link:focus-visible,
+.about-chapter-link[aria-current="true"] {
+  color: var(--foreground);
+}
+
+.about-chapter-link:focus-visible {
+  box-shadow: 0 0 0 3px var(--glass-focus);
+}
+
+.about-chapter-link[aria-current="true"]::after {
+  transform: scaleX(1);
+}
+
+.about-chapter-index {
+  color: var(--muted-foreground);
+  font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.about-manifesto-support {
+  margin-top: 1.4rem;
+  max-width: 40rem;
+  color: var(--muted-foreground);
+  font-size: clamp(1rem, 1.35vw, 1.16rem);
+  line-height: 1.9;
+}
+
+.about-stats {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem 1rem;
+  margin-top: clamp(2.75rem, 6vw, 4.5rem);
+  border-top: 1px solid var(--glass-border);
+  padding-top: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.about-stat {
+  display: grid;
+  align-content: start;
+}
+
+.about-stat-value {
+  font-family: var(--font-rounded-heading);
+  font-size: clamp(2.4rem, 5.4vw, 4rem);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--elysia-heading);
+}
+
+.about-stat-label {
+  margin-top: 0.65rem;
+  max-width: 11rem;
+  color: var(--muted-foreground);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+@media (min-width: 1024px) {
+  .about-stat + .about-stat {
+    border-inline-start: 1px solid var(--glass-border);
+    padding-inline-start: 1.5rem;
+  }
+}
+
+.about-editorial-v2 {
+  background: var(--brand-ivory);
+}
+
+.about-editorial-grid {
+  display: grid;
+  gap: clamp(2rem, 4.5vw, 4rem);
+  max-width: 88rem;
+  margin-inline: auto;
+}
+
+/* The pinned `boutique-story-media-*` classes carry homepage story-band
+   layout (50vw widths, fixed grid slots). Neutralise that baggage inside the
+   about grid so the figures obey their own tracks. */
+.about-v2 .boutique-story-media,
+.about-v2 .boutique-story-media-left,
+.about-v2 .boutique-story-media-right {
+  grid-area: auto;
+  width: 100%;
+  height: auto;
+}
+
+.about-v2 .about-sticky-figure {
+  aspect-ratio: 4 / 5;
+  min-height: 0;
+  border-radius: var(--elysia-radius-sm);
+}
+
+.about-principles-list {
+  display: grid;
+  margin-top: clamp(1.6rem, 3vw, 2.4rem);
+}
+
+.about-principle-row {
+  padding-block: 1.2rem;
+  border-top: 1px solid var(--glass-border);
+}
+
+.about-principle-num {
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border: 1px solid var(--glass-border-strong);
+  border-radius: 999px;
+  background: var(--background);
+  font-size: 0.78rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.about-principle-row h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.about-principle-row p {
+  margin-top: 0.35rem;
+  color: var(--muted-foreground);
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+.about-v2 .about-figure-banner {
+  aspect-ratio: 21 / 9;
+  min-height: 13rem;
+  margin-top: clamp(2.25rem, 4.5vw, 3.5rem);
+  border-radius: var(--elysia-radius-sm);
+  max-width: 88rem;
+  margin-inline: auto;
+}
+
+.about-figure-caption {
+  position: absolute;
+  inset-inline-start: 1rem;
+  bottom: 0.9rem;
+  z-index: 1;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: rgb(20 17 15 / 62%);
+  color: rgb(255 250 244 / 92%);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+@media (min-width: 1024px) {
+  .about-editorial-grid {
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    align-items: start;
+  }
+
+  .about-v2 .about-sticky-figure {
+    position: sticky;
+    top: calc(var(--site-header-height) + 3rem + 1.75rem);
+  }
+}
+
+.about-timeline-flow {
+  position: relative;
+  display: grid;
+  gap: 2rem;
+}
+
+.about-timeline-flow::before {
+  content: "";
+  position: absolute;
+  top: 1.3rem;
+  inset-inline: 1.3rem;
+  height: 1px;
+  background: var(--glass-border-strong);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 900ms var(--ease-motion-standard) 180ms;
+}
+
+.about-timeline-flow[data-inview="true"]::before {
+  transform: scaleX(1);
+}
+
+.about-flow-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1.1rem;
+  align-items: start;
+}
+
+.about-flow-marker {
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border: 1px solid var(--glass-border-strong);
+  border-radius: 999px;
+  background: var(--background);
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.about-flow-body h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.about-flow-body p {
+  margin-top: 0.35rem;
+  max-width: 26rem;
+  color: var(--muted-foreground);
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+@media (min-width: 1024px) {
+  .about-timeline-flow {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  .about-flow-step {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.15rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-chapter-link::after,
+  .about-timeline-flow::before {
+    transform: none;
+    transition: none;
+  }
+
+  .about-chapter-link:not([aria-current="true"])::after {
+    transform: scaleX(0);
+  }
+}
+
+html[data-accessibility-motion="reduce"] .about-chapter-link::after,
+html[data-accessibility-motion="reduce"] .about-timeline-flow::before {
+  transition: none;
+}
+
+html[data-accessibility-motion="reduce"] .about-timeline-flow::before {
+  transform: scaleX(1);
 }
 
 .storefront-final-panel {
@@ -3722,20 +3656,20 @@ html[data-accessibility-motion="reduce"]
   line-height: 1.18;
 }
 
-/* Policy: headings on light surfaces take the brand wordmark's resting
-   (non-hover) colour for cohesion. Titles set over dark media — the home and
-   about heroes and the collection cards — keep their light treatment. */
+/* Policy: headings on light surfaces read in full ink so the visual
+   hierarchy peaks at the title instead of the body copy. Titles set over
+   dark media — the home and about heroes, the visual story band and the
+   collection cards — keep their light treatment. */
 .compact-page-intro-title,
 .brand-page-intro-title,
 .account-client-title,
 .commerce-page-hero-title,
 .commerce-section-header-title,
 .about-section-title,
-.about-visual-story-title,
 .about-final-title,
 .storefront-final-title,
 .storefront-final-subtitle {
-  color: var(--muted-foreground);
+  color: var(--elysia-heading);
 }
 
 .storefront-final-text {
@@ -3802,8 +3736,8 @@ html[data-accessibility-motion="reduce"]
   background:
     linear-gradient(
       to bottom,
-      rgb(20 17 15 / 46%) 0%,
-      rgb(20 17 15 / 28%) var(--site-header-height),
+      rgb(20 17 15 / 56%) 0%,
+      rgb(20 17 15 / 38%) var(--site-header-height),
       transparent calc(var(--site-header-height) + 5rem)
     ),
     linear-gradient(
@@ -3824,8 +3758,8 @@ html[data-accessibility-motion="reduce"]
   background:
     linear-gradient(
       to bottom,
-      rgb(20 17 15 / 46%) 0%,
-      rgb(20 17 15 / 28%) var(--site-header-height),
+      rgb(20 17 15 / 56%) 0%,
+      rgb(20 17 15 / 38%) var(--site-header-height),
       transparent calc(var(--site-header-height) + 5rem)
     ),
     linear-gradient(
@@ -4143,7 +4077,7 @@ html[data-accessibility-motion="reduce"]
   z-index: 120;
   min-width: max-content;
   transform: translate(-50%, 2px);
-  border: 1px solid rgb(16 24 28 / 10%);
+  border: 1px solid rgb(29 25 22 / 10%);
   border-radius: 0.25rem;
   background: var(--popover);
   color: var(--foreground);
@@ -4154,7 +4088,7 @@ html[data-accessibility-motion="reduce"]
   letter-spacing: 0;
   white-space: nowrap;
   opacity: 0;
-  box-shadow: 0 4px 14px rgb(16 24 28 / 6%);
+  box-shadow: 0 4px 14px rgb(29 25 22 / 6%);
   transition:
     opacity var(--motion-fast) var(--ease-motion-standard),
     transform var(--motion-fast) var(--ease-motion-standard),
@@ -4203,7 +4137,7 @@ html[data-accessibility-motion="reduce"]
   --mobile-nav-item-step: 40ms;
   border-left-color: var(--glass-border) !important;
   background: var(--background) !important;
-  box-shadow: -2rem 0 5rem rgb(16 24 28 / 16%);
+  box-shadow: -2rem 0 5rem rgb(29 25 22 / 16%);
 }
 
 .mobile-nav-panel[data-state="open"] {
@@ -4293,7 +4227,7 @@ html[data-accessibility-motion="reduce"]
 .mobile-nav-quick-action:focus-visible,
 .mobile-nav-link:hover,
 .mobile-nav-link:focus-visible {
-  background: rgb(16 24 28 / 3%);
+  background: rgb(29 25 22 / 3%);
 }
 
 .mobile-nav-feature-link {
@@ -4306,8 +4240,8 @@ html[data-accessibility-motion="reduce"]
 
 .mobile-nav-feature-link:hover,
 .mobile-nav-feature-link:focus-visible {
-  border-color: rgb(16 24 28 / 12%);
-  background: rgb(16 24 28 / 3%);
+  border-color: rgb(29 25 22 / 12%);
+  background: rgb(29 25 22 / 3%);
 }
 
 .mobile-nav-feature-link:hover .mobile-nav-feature-icon,
@@ -4888,8 +4822,8 @@ html[data-accessibility-motion="reduce"]
 .brand-icon-well,
 .public-motion-shell .brand-icon-well,
 .public-motion-shell .glass-inset:has(> svg:only-child) {
-  border-color: rgb(16 24 28 / 9%);
-  background: rgb(16 24 28 / 3%);
+  border-color: rgb(29 25 22 / 9%);
+  background: rgb(29 25 22 / 3%);
   color: var(--brand-espresso);
 }
 
@@ -5099,7 +5033,7 @@ footer nav a {
   .footer-nav-summary {
     cursor: default;
     justify-content: flex-start;
-    min-height: auto;
+    min-height: 1.5rem;
     padding-block: 0;
     pointer-events: none;
   }
@@ -5130,7 +5064,7 @@ footer nav a:focus-visible {
 .footer-social-link:hover,
 .footer-social-link:focus-visible {
   border-color: var(--glass-border-strong);
-  background: rgb(16 24 28 / 3%);
+  background: rgb(29 25 22 / 3%);
   text-decoration-line: none;
 }
 
@@ -5539,7 +5473,7 @@ footer nav a:focus-visible {
 }
 
 :where(.glass-control) {
-  border-color: var(--glass-border);
+  border-color: var(--input);
   background: var(--glass-control-bg);
   box-shadow: none;
 }
@@ -5992,7 +5926,9 @@ footer nav a:focus-visible {
 .home-hero-actions .home-hero-cta-primary:not(:disabled) {
   border-color: rgb(255 250 244 / 94%) !important;
   background: rgb(255 250 244 / 94%) !important;
-  color: var(--foreground) !important;
+  /* Literal ink: the cream fill is theme-independent, so the label must not
+     flip with --foreground in night mode. */
+  color: var(--brand-ink) !important;
 }
 
 .home-hero-actions .home-hero-cta-primary:not(:disabled):hover,
@@ -6093,10 +6029,10 @@ footer nav a:focus-visible {
 
 .cookie-button-secondary:not(:disabled):hover,
 .cookie-button-secondary:not(:disabled):focus-visible {
-  border-color: rgb(16 24 28 / 18%) !important;
+  border-color: rgb(29 25 22 / 18%) !important;
   background: #ffffff !important;
   color: var(--foreground) !important;
-  box-shadow: 0 8px 18px rgb(16 24 28 / 4%);
+  box-shadow: 0 8px 18px rgb(29 25 22 / 4%);
 }
 
 .cookie-button-primary:not(:disabled):active,
@@ -6120,7 +6056,7 @@ footer nav a:focus-visible {
 
 .public-motion-shell [data-slot="badge"][data-variant="secondary"],
 .public-motion-shell [data-slot="badge"][data-variant="outline"] {
-  border-color: rgb(16 24 28 / 10%);
+  border-color: rgb(29 25 22 / 10%);
   background: rgb(255 255 255 / 92%);
   color: var(--foreground);
   box-shadow: none;
@@ -6303,7 +6239,7 @@ html[data-public-floating-bar-visible="true"] .public-motion-content {
   animation: motion-badge-pop var(--motion-feedback) var(--ease-motion-feedback)
     both;
   border: 1px solid var(--background);
-  box-shadow: 0 2px 7px rgb(16 24 28 / 12%);
+  box-shadow: 0 2px 7px rgb(29 25 22 / 12%);
   font-variant-numeric: tabular-nums;
 }
 
@@ -6548,13 +6484,13 @@ html[data-public-floating-bar-visible="true"] .public-motion-content {
 
 @keyframes anchor-target-glow {
   0% {
-    box-shadow: inset 0 0 0 0 rgb(16 24 28 / 0%);
+    box-shadow: inset 0 0 0 0 rgb(29 25 22 / 0%);
   }
   36% {
-    box-shadow: inset 0 0 0 2px rgb(16 24 28 / 14%);
+    box-shadow: inset 0 0 0 2px rgb(29 25 22 / 14%);
   }
   100% {
-    box-shadow: inset 0 0 0 0 rgb(16 24 28 / 0%);
+    box-shadow: inset 0 0 0 0 rgb(29 25 22 / 0%);
   }
 }
 
@@ -6874,4 +6810,402 @@ html[data-accessibility-motion="reduce"]
   animation: none !important;
   transform: none !important;
   clip-path: none !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   Night mode — storefront surfaces that pin light literals.
+   The token layer flips in `.dark`; every rule below re-homes a hardcoded
+   porcelain/ivory/white value onto the warm dark surface system. The admin
+   surface never receives `.dark` (see theme-preference.ts).
+   ════════════════════════════════════════════════════════════════════════ */
+
+.dark .storefront-home-page,
+.dark .about-cinematic-page {
+  background: linear-gradient(180deg, var(--background), #1b1613 68%), var(--background);
+  color: var(--foreground);
+}
+
+.dark .commerce-page-hero {
+  color: var(--foreground);
+}
+
+.dark .boutique-featured-band,
+.dark .boutique-story-band,
+.dark .about-cinematic-story,
+.dark .about-rhythm,
+.dark .storefront-final-panel {
+  background: #1a1512;
+}
+
+.dark .about-manifesto {
+  background: var(--background);
+}
+
+.dark .about-manifesto-text {
+  color: var(--foreground);
+}
+
+.dark .about-final {
+  background:
+    radial-gradient(
+      120% 100% at 50% 0%,
+      rgb(216 195 165 / 10%),
+      transparent 60%
+    ),
+    #1a1512;
+}
+
+.dark .boutique-final-cta {
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgb(22 18 16 / 64%) 28%,
+    rgb(22 18 16 / 64%) 100%
+  );
+}
+
+.dark .about-principle-card,
+.dark .about-timeline-marker {
+  background: var(--card);
+}
+
+.dark .about-editorial-v2 {
+  background: #1a1512;
+}
+
+.dark .about-principle-num,
+.dark .about-flow-marker {
+  background: var(--card);
+}
+
+.dark .about-principle-sweep {
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgb(243 237 230 / 10%) 50%,
+    transparent 60%
+  );
+}
+
+.dark .boutique-fixed-image-band {
+  background: linear-gradient(180deg, #1b1613, var(--background)), var(--background);
+}
+
+.dark .boutique-fixed-image-band[data-fixed-bg-loaded="true"]::before {
+  background:
+    linear-gradient(
+      180deg,
+      rgb(22 18 16 / 34%),
+      rgb(22 18 16 / 22%) 46%,
+      rgb(22 18 16 / 58%)
+    ),
+    var(--boutique-fixed-image-url) center / cover no-repeat;
+}
+
+@media (min-width: 1024px) {
+  .dark .boutique-fixed-image-band[data-fixed-bg-loaded="true"] {
+    background:
+      linear-gradient(
+        180deg,
+        rgb(22 18 16 / 34%),
+        rgb(22 18 16 / 22%) 46%,
+        rgb(22 18 16 / 58%)
+      ),
+      var(--boutique-fixed-image-url) center / cover no-repeat;
+    background-attachment: scroll, fixed;
+  }
+}
+
+.dark .site-header[data-header-state="solid"] {
+  background: rgb(22 18 16 / 97%);
+}
+
+.dark .site-header .site-header-scroll-cta {
+  border-color: var(--glass-border);
+  background: rgb(31 26 21 / 80%);
+  color: var(--foreground);
+}
+
+.dark .commerce-page-hero-metric {
+  background: var(--card);
+}
+
+.dark .compact-page-intro-eyebrow {
+  border-color: rgb(243 237 230 / 14%);
+  background: var(--card);
+  color: var(--foreground);
+}
+
+.dark .home-gift-finder-group {
+  background: rgb(31 26 21 / 62%);
+}
+
+.dark .boutique-collection-card,
+.dark .boutique-collection-media,
+.dark .boutique-story-media,
+.dark .boutique-gift-media {
+  background: var(--elysia-media-bg);
+}
+
+.dark .elysia-media-frame,
+.dark .product-gallery-main-frame {
+  background: var(--elysia-media-bg);
+}
+
+.dark .product-card-media {
+  background: var(--elysia-media-bg);
+}
+
+.dark .product-card-material-badge,
+.dark .product-card-status-badge {
+  border-color: rgb(243 237 230 / 16%);
+  background: var(--card);
+  color: var(--foreground);
+}
+
+.dark .product-card-cta {
+  background: rgb(31 26 21 / 72%);
+}
+
+.dark .product-card-quick-add-button {
+  border-color: rgb(243 237 230 / 18%) !important;
+  background: rgb(31 26 21 / 88%) !important;
+}
+
+.dark .product-card-favorite {
+  border-color: rgb(243 237 230 / 14%);
+  background: rgb(31 26 21 / 72%);
+  box-shadow:
+    inset 0 0 0 1px rgb(243 237 230 / 8%),
+    0 4px 14px oklch(0 0 0 / 30%);
+}
+
+.dark .product-card-favorite:hover {
+  background: rgb(31 26 21 / 90%);
+  box-shadow:
+    inset 0 0 0 1px rgb(243 237 230 / 12%),
+    0 6px 18px oklch(0 0 0 / 36%);
+}
+
+.dark .product-card-favorite:has(
+  .product-card-favorite-button[data-favorite-saved="true"]
+) {
+  border-color: rgb(243 237 230 / 18%);
+  background: rgb(31 26 21 / 92%);
+  box-shadow:
+    inset 0 0 0 1px rgb(243 237 230 / 8%),
+    0 4px 14px oklch(0 0 0 / 32%);
+}
+
+.dark .product-card-favorite-button[data-favorite-saved="true"] svg,
+.dark .product-wishlist-button[data-favorite-saved="true"] svg {
+  fill: var(--foreground);
+  color: var(--foreground);
+}
+
+.dark .product-wishlist-button[data-favorite-saved="true"] {
+  border-color: rgb(243 237 230 / 18%);
+  background: rgb(31 26 21 / 92%);
+  color: var(--foreground);
+  box-shadow: inset 0 0 0 999px rgb(243 237 230 / 4%);
+}
+
+.dark .product-gallery-secondary-tile {
+  border-color: rgb(243 237 230 / 12%);
+  background: var(--elysia-media-bg);
+  box-shadow: none;
+}
+
+.dark .product-gallery-secondary-tile:hover,
+.dark .product-gallery-secondary-tile:focus-visible {
+  border-color: rgb(243 237 230 / 30%);
+}
+
+.dark .product-gallery-secondary-tile[data-gallery-selected="true"] {
+  border-color: rgb(243 237 230 / 55%);
+  box-shadow: 0 0 0 1px rgb(243 237 230 / 24%);
+}
+
+.dark .product-gallery-main-frame::after,
+.dark .product-gallery-secondary-tile::after {
+  border-color: rgb(243 237 230 / 10%);
+}
+
+.dark .product-gallery-more-images-veil {
+  background:
+    linear-gradient(180deg, rgb(22 18 16 / 30%), rgb(22 18 16 / 55%)),
+    rgb(22 18 16 / 30%);
+}
+
+.dark .product-gallery-more-images-label {
+  border-color: rgb(243 237 230 / 26%);
+  background: rgb(31 26 21 / 92%);
+  color: var(--foreground);
+  box-shadow: 0 8px 24px oklch(0 0 0 / 30%);
+}
+
+.dark .product-gallery-thumbnail-rail button {
+  border-color: rgb(243 237 230 / 12%);
+  background: var(--elysia-media-bg);
+}
+
+.dark .product-gallery-thumbnail-rail button[data-gallery-selected="true"] {
+  border-color: rgb(243 237 230 / 60%);
+  box-shadow: 0 0 0 1px rgb(243 237 230 / 40%);
+}
+
+.dark .product-gallery-viewer-dialog {
+  background:
+    linear-gradient(180deg, rgb(26 21 18 / 92%), rgb(22 18 16 / 97%)),
+    var(--background);
+}
+
+.dark .product-gallery-viewer-header {
+  border-bottom-color: rgb(243 237 230 / 10%);
+  background: rgb(26 21 18 / 90%);
+}
+
+.dark .product-gallery-viewer-stage {
+  background:
+    radial-gradient(circle at 50% 45%, rgb(243 237 230 / 5%), transparent 46%),
+    linear-gradient(180deg, rgb(26 21 18 / 92%), rgb(22 18 16 / 96%));
+}
+
+.dark .product-gallery-viewer-stage .product-gallery-viewer-nav {
+  border-color: rgb(243 237 230 / 16%);
+  background: rgb(31 26 21 / 92%);
+  box-shadow: 0 12px 28px oklch(0 0 0 / 30%);
+}
+
+.dark .product-gallery-viewer-stage .product-gallery-viewer-nav:hover,
+.dark .product-gallery-viewer-stage .product-gallery-viewer-nav:focus-visible {
+  border-color: rgb(243 237 230 / 30%);
+  background: rgb(37 31 25 / 96%);
+}
+
+.dark .product-gallery-viewer-filmstrip-shell {
+  border-top-color: rgb(243 237 230 / 10%);
+  background: rgb(26 21 18 / 88%);
+}
+
+.dark .product-gallery-thumbnail-rail .product-gallery-viewer-thumbnail {
+  border-color: rgb(243 237 230 / 14%);
+  background: rgb(31 26 21 / 96%);
+}
+
+.dark
+  .product-gallery-thumbnail-rail
+  .product-gallery-viewer-thumbnail[data-gallery-selected="true"] {
+  border-color: rgb(243 237 230 / 60%);
+  box-shadow:
+    0 0 0 1px rgb(243 237 230 / 36%),
+    0 8px 18px oklch(0 0 0 / 30%);
+}
+
+.dark .motion-sticky-purchase {
+  border-color: rgb(243 237 230 / 14%);
+  background: var(--card);
+}
+
+.dark .product-purchase-surface .glass-inset {
+  border-color: rgb(243 237 230 / 10%);
+  background: rgb(243 237 230 / 5%);
+}
+
+.dark .product-purchase-surface [data-slot="button"][variant="outline"],
+.dark .product-purchase-surface [data-slot="button"].border-input {
+  background: rgb(243 237 230 / 6%);
+}
+
+.dark .checkout-local-action-panel,
+.dark .checkout-policy-notes .glass-inset {
+  background: var(--elysia-surface-inset);
+}
+
+.dark .wishlist-product-thumb,
+.dark .checkout-boutique-thumb {
+  background: var(--elysia-media-bg);
+}
+
+.dark .brand-icon-well,
+.dark .public-motion-shell .brand-icon-well,
+.dark .public-motion-shell .glass-inset:has(> svg:only-child) {
+  border-color: rgb(243 237 230 / 12%);
+  background: rgb(243 237 230 / 6%);
+  color: var(--foreground);
+}
+
+.dark .brand-header-mark svg:not(.brand-logo),
+.dark .brand-footer-mark svg:not(.brand-logo),
+.dark .brand-branch-card svg,
+.dark .brand-accent-card svg,
+.dark .brand-icon-well svg {
+  color: var(--foreground);
+}
+
+.dark [data-icon-tooltip]::after {
+  border-color: rgb(243 237 230 / 14%);
+  box-shadow: 0 4px 14px oklch(0 0 0 / 35%);
+}
+
+.dark .mobile-nav-quick-action:hover,
+.dark .mobile-nav-quick-action:focus-visible,
+.dark .mobile-nav-link:hover,
+.dark .mobile-nav-link:focus-visible {
+  background: rgb(243 237 230 / 6%);
+}
+
+.dark .mobile-nav-feature-link:hover,
+.dark .mobile-nav-feature-link:focus-visible {
+  border-color: rgb(243 237 230 / 16%);
+  background: rgb(243 237 230 / 6%);
+}
+
+.dark .mobile-nav-panel-luxury {
+  box-shadow: -2rem 0 5rem oklch(0 0 0 / 45%);
+}
+
+.dark .public-motion-shell [data-slot="badge"][data-variant="secondary"],
+.dark .public-motion-shell [data-slot="badge"][data-variant="outline"] {
+  border-color: rgb(243 237 230 / 14%);
+  background: var(--card);
+  color: var(--foreground);
+}
+
+.dark .cookie-button-secondary:not(:disabled):hover,
+.dark .cookie-button-secondary:not(:disabled):focus-visible {
+  border-color: rgb(243 237 230 / 28%) !important;
+  background: var(--card) !important;
+  color: var(--foreground) !important;
+  box-shadow: none;
+}
+
+.dark .footer-trust-layer {
+  color: rgb(243 237 230 / 80%);
+}
+
+.dark .footer-trust-link .glass-inset {
+  border-color: rgb(243 237 230 / 12%);
+  background: rgb(243 237 230 / 6%);
+}
+
+.dark .footer-social-link:hover,
+.dark .footer-social-link:focus-visible {
+  background: rgb(243 237 230 / 6%);
+}
+
+/* Keyboard focus visibility (WCAG 2.4.7). Several controls flatten box-shadow
+   for their resting/hover/focus state, which also swallows the Tailwind
+   focus-visible ring, leaving keyboard focus invisible. Re-assert the ring on
+   :focus-visible. Kept unlayered at file end so it wins the cascade over the
+   component-level `box-shadow: none !important` rules above; aria-invalid is
+   excluded so error/destructive rings keep their own colour. */
+.elysia-control:focus-visible:not([aria-invalid="true"]),
+.site-header .site-header-action:focus-visible,
+.home-hero-video-control:focus-visible,
+.mobile-nav-close:focus-visible,
+.home-hero-actions [data-slot="button"]:not(:disabled):focus-visible,
+.public-motion-shell [data-slot="button"].product-primary-cta:not(:disabled):focus-visible,
+[data-slot="button"].product-primary-cta:not(:disabled):focus-visible {
+  box-shadow: 0 0 0 3px var(--glass-focus) !important;
 }

@@ -24,6 +24,40 @@ describe("analytics replay service", () => {
     expect(parsed.masked).toBe(true);
   });
 
+  it("accepts a realistic full-snapshot chunk with a large inlined stylesheet and long childNodes", () => {
+    const inlinedStylesheet = `body{color:#111}`.repeat(2_000); // ~30 KB single string
+    const longChildNodes = Array.from({ length: 5_000 }, (_, index) => ({
+      type: 3,
+      id: index,
+      textContent: "•",
+    }));
+
+    expect(() =>
+      analyticsReplayChunkInputSchema.parse({
+        sessionKey: "session-key-123",
+        sequence: 0,
+        startedAt: new Date("2026-06-23T10:00:00.000Z"),
+        endedAt: new Date("2026-06-23T10:00:05.000Z"),
+        path: "/",
+        checksum: "client-unavailable",
+        events: [
+          {
+            type: 2,
+            data: {
+              node: {
+                type: 1,
+                childNodes: [
+                  { type: 2, tagName: "style", textContent: inlinedStylesheet },
+                  { type: 1, tagName: "ul", childNodes: longChildNodes },
+                ],
+              },
+            },
+          },
+        ],
+      }),
+    ).not.toThrow();
+  });
+
   it("detects unmasked sensitive replay strings", () => {
     expect(
       containsUnmaskedSensitiveData({
@@ -31,6 +65,19 @@ describe("analytics replay service", () => {
         data: { textContent: "customer@example.com" },
       }),
     ).toBe(true);
+  });
+
+  it("masks a PII-looking string value (e.g. an email placeholder) before storage", () => {
+    expect(
+      maskReplayEvents([
+        {
+          type: 2,
+          data: { attributes: { placeholder: "name@example.com" } },
+        },
+      ]),
+    ).toEqual([
+      { type: 2, data: { attributes: { placeholder: "[masked]" } } },
+    ]);
   });
 
   it("masks sensitive route text before storage", () => {

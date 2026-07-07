@@ -54,6 +54,13 @@ export const accessibilityPlaceholders = [
   { label: "זמן מענה לפניות נגישות", value: legalPlaceholder },
 ] as const;
 
+export const legalLastUpdated = {
+  accessibility: "7 ביוני 2026",
+  faq: "29 באפריל 2026",
+  privacy: "23 ביוני 2026",
+  terms: "7 ביוני 2026",
+} as const;
+
 export const policyLinks = [
   { href: "/terms", label: "תקנון האתר" },
   { href: "/privacy", label: "פרטיות" },

@@ -1982,7 +1982,12 @@ export default async function AdminFinancePage() {
                 type="number"
               />
             </div>
-            <Input defaultValue={currentYmd} name="effectiveDate" type="date" />
+            <Input
+              aria-label="תאריך תחולה"
+              defaultValue={currentYmd}
+              name="effectiveDate"
+              type="date"
+            />
             <Button className="w-fit" size="sm" type="submit">
               עדכן שער
             </Button>

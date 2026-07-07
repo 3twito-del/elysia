@@ -49,7 +49,8 @@ export default async function VendorPortalPage({ params }: PageProps) {
   if (!data) {
     return (
       <main className="elysia-page">
-        <section className="mx-auto flex min-h-[60vh] max-w-xl items-center px-4 py-10">
+        <section className="mx-auto flex min-h-[60vh] max-w-xl flex-col items-start justify-center gap-4 px-4 py-10">
+          <h1 className="text-2xl font-semibold">הקישור אינו זמין</h1>
           <StatusMessage tone="neutral">
             הקישור אינו תקין, פג תוקפו או בוטל. אנא פנו לאיש הקשר שלכם לקבלת קישור
             מעודכן.

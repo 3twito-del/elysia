@@ -116,6 +116,13 @@ export const gateDefinitions = [
         "-BaseUrl",
         ({ baseUrl }) => baseUrl,
       ]),
+      step("Run interaction-state contrast check", "pnpm", [
+        "exec",
+        "tsx",
+        "scripts/qa-interaction-contrast.ts",
+        "--base-url",
+        ({ baseUrl }) => baseUrl,
+      ]),
     ],
   },
   {
@@ -175,6 +182,13 @@ export const gateDefinitions = [
         "exec",
         "tsx",
         "scripts/qa-site-audit.ts",
+        "--base-url",
+        ({ baseUrl }) => baseUrl,
+      ]),
+      step("Run interaction-state contrast check", "pnpm", [
+        "exec",
+        "tsx",
+        "scripts/qa-interaction-contrast.ts",
         "--base-url",
         ({ baseUrl }) => baseUrl,
       ]),
