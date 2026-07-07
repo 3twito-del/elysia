@@ -106,14 +106,12 @@ export async function recordAnalyticsReplayChunk(
     return { status: "rejected", chunkId: null, reason: "invalid_checksum" };
   }
 
-  if (containsUnmaskedSensitiveData(parsed.events)) {
-    return {
-      status: "rejected",
-      chunkId: null,
-      reason: "contains_unmasked_sensitive_data",
-    };
-  }
-
+  // We do NOT reject chunks that still contain PII-looking values: static page
+  // text the client can't input-mask (a footer email, a "name@example.com"
+  // placeholder that appears in the footer sitewide) would otherwise reject
+  // every full-snapshot on every page. maskReplayEvents below is the real
+  // safety net — it redacts sensitive strings and keys before storage — so we
+  // mask rather than drop the session.
   const sessionKeyHash = hashAnalyticsIdentifier(parsed.sessionKey);
   const visitorKeyHash =
     parsed.visitorKeyHash ??

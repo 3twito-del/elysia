@@ -67,6 +67,19 @@ describe("analytics replay service", () => {
     ).toBe(true);
   });
 
+  it("masks a PII-looking string value (e.g. an email placeholder) before storage", () => {
+    expect(
+      maskReplayEvents([
+        {
+          type: 2,
+          data: { attributes: { placeholder: "name@example.com" } },
+        },
+      ]),
+    ).toEqual([
+      { type: 2, data: { attributes: { placeholder: "[masked]" } } },
+    ]);
+  });
+
   it("masks sensitive route text before storage", () => {
     expect(
       maskReplayEvents([{ data: { textContent: "Private account content" } }], {
