@@ -2468,7 +2468,10 @@ main
 .boutique-collection-card:hover .boutique-collection-action,
 .boutique-collection-card:focus-visible .boutique-collection-action {
   border-color: #fffaf4;
-  color: var(--foreground);
+  /* The hover fill (::before) is always white, so the arrow must be a
+     theme-independent dark ink. var(--foreground) flips light in night mode
+     and would vanish on the white fill. */
+  color: var(--brand-ink);
 }
 
 .boutique-collection-card:hover .boutique-collection-action::before,
