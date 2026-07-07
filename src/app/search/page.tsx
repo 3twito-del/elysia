@@ -117,7 +117,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const resetAllHref = createSearchHref({ mode: input.mode, view: viewMode });
   const recoveryActions =
     result.total === 0 ? await getSearchRecoveryActions(input, viewMode) : [];
-  const firstCategory = categories[0];
   const resultSummary =
     result.total > 0
       ? hasActiveFilters || input.query
@@ -311,56 +310,26 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               actions={
                 <>
                   {recoveryActions.length > 0 ? (
-                    <>
-                      <div
-                        className="text-muted-foreground mx-auto mb-2 grid max-w-md basis-full gap-2 text-sm leading-6 sm:text-start"
-                        data-testid="search-guided-recovery"
-                      >
-                        <p className="text-foreground font-medium">
-                          הצעות להרחבת החיפוש
-                        </p>
-                        <ul className="grid gap-1.5">
-                          {recoveryActions.map((action) => (
-                            <li
-                              className="grid gap-0.5"
-                              key={`${action.href}-guidance`}
-                            >
-                              <span className="text-foreground font-medium">
-                                {action.label}
-                              </span>
-                              <span>{action.description}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <span
-                        className="contents"
-                        data-testid="search-recovery-actions"
-                      >
-                        {recoveryActions.map((action) => (
-                          <Button asChild key={action.href} variant="outline">
-                            <Link href={action.href} scroll={false}>
-                              <span>{action.label}</span>
-                              <span className="text-xs opacity-75">
-                                {formatSearchResultCount(action.total)}
-                              </span>
-                            </Link>
-                          </Button>
-                        ))}
-                      </span>
-                    </>
+                    <span
+                      className="contents"
+                      data-testid="search-recovery-actions"
+                    >
+                      {recoveryActions.map((action) => (
+                        <Button asChild key={action.href} variant="outline">
+                          <Link href={action.href} scroll={false}>
+                            <span>{action.label}</span>
+                            <span className="text-xs opacity-75">
+                              {formatSearchResultCount(action.total)}
+                            </span>
+                          </Link>
+                        </Button>
+                      ))}
+                    </span>
                   ) : null}
                   {hasActiveFilters ? (
                     <Button asChild variant="outline">
                       <Link href={resetAllHref} scroll={false}>
                         איפוס חיפוש
-                      </Link>
-                    </Button>
-                  ) : null}
-                  {firstCategory ? (
-                    <Button asChild variant="outline">
-                      <Link href={`/category/${firstCategory.slug}`}>
-                        {firstCategory.name}
                       </Link>
                     </Button>
                   ) : null}

@@ -178,9 +178,6 @@ export function ProductPurchasePanel({
   });
   const addToCartDisabled =
     !selectedVariant || !selectedVariantAvailable || addItem.isPending;
-  const stickyVariantSummary = selectedVariant
-    ? `${getVariantDisplayName(selectedVariant)} / ${selectedVariantStatusLabel}`
-    : selectedVariantStatusLabel;
   const selectedVariantDisplayName = selectedVariant
     ? getVariantDisplayName(selectedVariant)
     : "בחירת מידה";
@@ -295,12 +292,6 @@ export function ProductPurchasePanel({
           </p>
           <p className="text-base leading-6 font-semibold">
             {formatPrice(selectedVariantPrice)}
-          </p>
-          <p
-            className="text-muted-foreground truncate text-xs leading-4"
-            data-testid="product-sticky-variant-state"
-          >
-            {stickyVariantSummary}
           </p>
         </div>
         {selectedVariantAvailable ? (
