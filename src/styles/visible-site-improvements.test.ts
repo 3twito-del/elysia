@@ -513,7 +513,10 @@ describe("visible site improvement affordances", () => {
     expect(recommendationRails).toContain("reason:");
     expect(recommendationRails).toContain("cardContextLabel:");
     expect(recentlyViewed).toContain('data-testid="recently-viewed-products"');
-    expect(recentlyViewed).toContain(".filter((slug) => slug !== currentSlug)");
+    // F-09 hardened the dedup: recently-viewed now excludes the current product
+    // *and* any slug already shown in the recommendation rails, via the tested
+    // selectRecentlyViewedSlugs helper (was an inline slug !== currentSlug filter).
+    expect(recentlyViewed).toContain("[currentSlug, ...(excludeSlugs ?? [])]");
     expect(recentlyViewed).toContain(
       'data-layout-equal-group="recently-viewed-products"',
     );
