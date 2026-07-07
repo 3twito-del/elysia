@@ -12,7 +12,6 @@ import {
   AlertCircle,
   CheckCircle2,
   Heart,
-  MessageCircle,
   PackageCheck,
   RotateCcw,
   Ruler,
@@ -454,22 +453,6 @@ export function ProductPurchasePanel({
                 </div>
               ))}
             </dl>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {sizeGuideHref ? (
-                <Button asChild size="sm" variant="outline">
-                  <Link href={sizeGuideHref}>
-                    <Ruler aria-hidden="true" className="size-4" />
-                    מדריך מידות
-                  </Link>
-                </Button>
-              ) : null}
-              <Button asChild size="sm" variant="ghost">
-                <Link href={serviceHref}>
-                  <MessageCircle aria-hidden="true" className="size-4" />
-                  שירות אישי על הפריט
-                </Link>
-              </Button>
-            </div>
           </section>
         </div>
 
