@@ -143,7 +143,9 @@ describe("public floating chrome contract", () => {
     expect(purchasePanel).toContain(
       'data-testid="product-sticky-purchase-bar"',
     );
-    expect(purchasePanel).toContain(
+    // The sticky bar was simplified to product name + price + one CTA; the
+    // cramped variant micro-line (product-sticky-variant-state) was removed.
+    expect(purchasePanel).not.toContain(
       'data-testid="product-sticky-variant-state"',
     );
     expect(purchasePanel).toContain(

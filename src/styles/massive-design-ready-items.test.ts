@@ -23,7 +23,7 @@ describe("massive ready design items implementation", () => {
 
     expect(gifts).toContain("const giftDecisionGroups");
     expect(gifts).toContain('data-testid="gift-finder-decision-bar"');
-    expect(gifts).toContain("חיפוש מתנה רחב");
+    expect(gifts).toContain("לכל המתנות בחיפוש");
     expect(gifts).toContain('data-testid="gift-results-grid"');
   });
 

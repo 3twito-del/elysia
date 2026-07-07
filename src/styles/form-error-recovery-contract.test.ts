@@ -85,7 +85,7 @@ describe("form error and recovery contract", () => {
     expect(otpForm).toContain("aria-invalid={hasVerifyError}");
 
     expect(accountActions).not.toContain("const fallbackMessage");
-    expect(accountActions).toContain("בדקו את הפרטים");
+    expect(accountActions).toContain("בדקי את הפרטים");
   });
 });
 

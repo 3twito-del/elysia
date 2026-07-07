@@ -75,7 +75,7 @@ const guestAccountBenefitItems = [
     label: "שמירת תכשיטים מועדפים",
   },
   {
-    description: "סטטוס, פרטי מסירה וחשבוניות יופיעו לאחר רכישה.",
+    description: "סטטוס, פרטי משלוח וחשבוניות יופיעו לאחר רכישה.",
     icon: PackageCheck,
     label: "מעקב אחר הזמנות וחשבוניות",
   },
@@ -197,10 +197,10 @@ export default async function AccountPage() {
             </form>
           </>
         }
-        description="פרטי החשבון אינם פתוחים כרגע. הנתונים לא נמחקו, ואפשר לנסות שוב בעוד רגע."
+        description="לא ניתן לטעון את פרטי החשבון כרגע. הנתונים לא נמחקו, ואפשר לנסות שוב בעוד רגע."
         icon={AlertTriangle}
         testId="account-load-error"
-        title="האזור האישי אינו פתוח כרגע"
+        title="האזור האישי אינו זמין כרגע"
       />
     );
   }
@@ -400,21 +400,21 @@ export default async function AccountPage() {
                   <CardHeader className="account-boutique-card-header">
                     <CardTitle>הזמנות</CardTitle>
                     <p className="text-muted-foreground text-sm leading-7">
-                      סטטוס הזמנה, מקור הזמנה ופרטי מסירה לאחר רכישה.
+                      סטטוס הזמנה, מקור הזמנה ופרטי משלוח לאחר רכישה.
                     </p>
                   </CardHeader>
                   <CardContent className="grid gap-3">
                     {accountOrderCount === 0 ? (
                       <EmptyState
-                        description="ניתן לשמור כתובת למסירה מהירה."
+                        description="ההזמנות שלך יופיעו כאן לאחר רכישה באתר."
                         icon={PackageCheck}
                         testId="account-empty-orders"
-                        title="עדיין אין הזמנות בחשבון זה."
+                        title="עדיין אין הזמנות בחשבון זה"
                         variant="inset"
                         actions={
                           <>
                             <Button asChild variant="outline">
-                              <Link href="/search">המשך לקולקציות</Link>
+                              <Link href="/search">לכל התכשיטים</Link>
                             </Button>
                           </>
                         }
@@ -545,13 +545,13 @@ export default async function AccountPage() {
                   <CardContent className="grid gap-3">
                     {wishlistItems.length === 0 ? (
                       <EmptyState
-                        description="כשפריט יישמר, הוא יופיע כאן לגישה מהירה."
+                        description="לחצי על סמל הלב בכל מוצר כדי לשמור אותו כאן."
                         icon={Heart}
-                        title="עדיין לא נשמרו תכשיטים."
+                        title="עדיין אין פריטים במועדפים"
                         variant="inset"
                         actions={
                           <Button asChild variant="outline">
-                            <Link href="/search">צפייה בקולקציות</Link>
+                            <Link href="/search">לכל התכשיטים</Link>
                           </Button>
                         }
                       />
@@ -589,7 +589,7 @@ export default async function AccountPage() {
                                 </Link>
                               </Button>
                               <Button asChild size="sm" variant="outline">
-                                <Link href="/size-guide">בדיקת מידה</Link>
+                                <Link href="/size-guide">מדריך מידות</Link>
                               </Button>
                               <Button asChild size="sm" variant="ghost">
                                 <Link
@@ -712,14 +712,14 @@ export default async function AccountPage() {
                   <CardContent className="grid gap-3">
                     {customer.savedSizes.length === 0 ? (
                       <EmptyState
-                        description="עד אז, ניתן להיעזר במדריך המידות או לפנות לשירות."
+                        description="בינתיים אפשר להיעזר במדריך המידות או לפנות לשירות."
                         icon={Ruler}
-                        title="פרופיל מידות יתווסף כאן בהמשך."
+                        title="עדיין אין מידות שמורות"
                         variant="inset"
                         actions={
                           <>
                             <Button asChild variant="outline">
-                              <Link href="/size-guide">מה נדרש עכשיו?</Link>
+                              <Link href="/size-guide">למדריך המידות</Link>
                             </Button>
                             <Button asChild>
                               <Link href="/service?topic=sizing">

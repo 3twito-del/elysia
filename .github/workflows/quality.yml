@@ -16,6 +16,9 @@ env:
   CATALOG_DB_ERROR_FALLBACK: "1"
   DATABASE_URL: postgresql://postgres:postgres@localhost:5432/elysia?schema=public
   E2E_CATALOG_FIXTURES: "1"
+  # Type-aware ESLint (and the Next build) exceed Node's ~2 GB default heap on
+  # this codebase, OOM-killing the Lint step (exit 134). Runners have ≥7 GB RAM.
+  NODE_OPTIONS: --max-old-space-size=4096
   TYPESENSE_API_KEY: ""
   TYPESENSE_HOST: ""
   VERCEL_ENV: preview

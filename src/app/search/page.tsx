@@ -71,20 +71,20 @@ const SEARCH_RESULT_IMAGE_BLUR_DATA_URL =
 
 export const metadata = {
   title: "חיפוש תכשיטים",
-  description: "חיפוש תכשיטים לפי לוק, חומר, מחיר וזמינות.",
+  description: "חיפוש תכשיטים לפי קטגוריה, חומר, מחיר וזמינות.",
   alternates: {
     canonical: "/search",
   },
   openGraph: {
     title: "Elysia | חיפוש תכשיטים",
-    description: "מצאו טבעות, שרשראות, עגילים וצמידים לפי חומר, מחיר וסגנון.",
+    description: "מצאי טבעות, שרשראות, עגילים וצמידים לפי חומר, מחיר וסגנון.",
     url: "/search",
     images: [{ url: "/brand/boutique/lifestyle-hero.avif" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Elysia | חיפוש תכשיטים",
-    description: "מצאו טבעות, שרשראות, עגילים וצמידים לפי חומר, מחיר וסגנון.",
+    description: "מצאי טבעות, שרשראות, עגילים וצמידים לפי חומר, מחיר וסגנון.",
     images: ["/brand/boutique/lifestyle-hero.avif"],
   },
 };
@@ -117,7 +117,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const resetAllHref = createSearchHref({ mode: input.mode, view: viewMode });
   const recoveryActions =
     result.total === 0 ? await getSearchRecoveryActions(input, viewMode) : [];
-  const firstCategory = categories[0];
   const resultSummary =
     result.total > 0
       ? hasActiveFilters || input.query
@@ -129,10 +128,10 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     result.total > 0
       ? result.totalPages > 1
         ? `עמוד ${result.page}`
-        : "המבחר מתעדכן לאורך העונה"
+        : "המבחר מתעדכן מדי עונה"
       : recoveryActions.length > 0
-        ? "נמצאו כיוונים פתוחים יותר"
-        : "אפשר לנקות סינונים או לעבור לכל המלאי";
+        ? "אפשר להרחיב את החיפוש בעזרת ההצעות שלמטה"
+        : "אפשר לנקות את הסינונים או לעבור לכל התכשיטים";
   after(() => recordSearchEvent(input, result.total));
 
   return (
@@ -158,7 +157,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
       <main className="elysia-page">
         <CompactPageIntro
-          description="ראו את התוצאות תחילה. חיפוש, קטגוריה וסינון נפתחים לפי צורך."
+          description="חפשי לפי שם, קטגוריה, חומר או מחיר."
           eyebrow="חיפוש"
           title="חיפוש תכשיטים"
           variant="catalog"
@@ -301,7 +300,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               className="mt-6 sm:mt-10"
               description={
                 <>
-                  אפשר לנקות סינונים, לעבור לקטגוריה פתוחה או להרחיב את החיפוש.
+                  נסי לנקות את הסינונים, לחפש מילה אחרת או לעבור לקטגוריה
+                  אחרת.
                 </>
               }
               icon={Search}
@@ -310,56 +310,26 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               actions={
                 <>
                   {recoveryActions.length > 0 ? (
-                    <>
-                      <div
-                        className="text-muted-foreground mx-auto mb-2 grid max-w-md basis-full gap-2 text-sm leading-6 sm:text-start"
-                        data-testid="search-guided-recovery"
-                      >
-                        <p className="text-foreground font-medium">
-                          כיוונים פתוחים יותר
-                        </p>
-                        <ul className="grid gap-1.5">
-                          {recoveryActions.map((action) => (
-                            <li
-                              className="grid gap-0.5"
-                              key={`${action.href}-guidance`}
-                            >
-                              <span className="text-foreground font-medium">
-                                {action.label}
-                              </span>
-                              <span>{action.description}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <span
-                        className="contents"
-                        data-testid="search-recovery-actions"
-                      >
-                        {recoveryActions.map((action) => (
-                          <Button asChild key={action.href} variant="outline">
-                            <Link href={action.href} scroll={false}>
-                              <span>{action.label}</span>
-                              <span className="text-xs opacity-75">
-                                {formatSearchResultCount(action.total)}
-                              </span>
-                            </Link>
-                          </Button>
-                        ))}
-                      </span>
-                    </>
+                    <span
+                      className="contents"
+                      data-testid="search-recovery-actions"
+                    >
+                      {recoveryActions.map((action) => (
+                        <Button asChild key={action.href} variant="outline">
+                          <Link href={action.href} scroll={false}>
+                            <span>{action.label}</span>
+                            <span className="text-xs opacity-75">
+                              {formatSearchResultCount(action.total)}
+                            </span>
+                          </Link>
+                        </Button>
+                      ))}
+                    </span>
                   ) : null}
                   {hasActiveFilters ? (
                     <Button asChild variant="outline">
                       <Link href={resetAllHref} scroll={false}>
                         איפוס חיפוש
-                      </Link>
-                    </Button>
-                  ) : null}
-                  {firstCategory ? (
-                    <Button asChild variant="outline">
-                      <Link href={`/category/${firstCategory.slug}`}>
-                        {firstCategory.name}
                       </Link>
                     </Button>
                   ) : null}
@@ -518,7 +488,7 @@ function SearchNoResultsSuggestions({
       data-testid="search-no-results-category-suggestions"
     >
       <span className="text-muted-foreground basis-full text-center text-sm">
-        נסו להתחיל מקטגוריה:
+        נסי להתחיל מקטגוריה:
       </span>
       {suggestions.map((category) => (
         <Button asChild key={category.slug} variant="outline">
@@ -595,13 +565,13 @@ function SearchViewToggle({
     {
       href: createSearchHref({ ...input, page: undefined, view: "grid" }),
       icon: Grid2X2,
-      label: "טבלה",
+      label: "רשת",
       value: "grid" as const,
     },
     {
       href: createSearchHref({ ...input, page: undefined, view: "list" }),
       icon: List,
-      label: "שורות",
+      label: "רשימה",
       value: "list" as const,
     },
   ];
@@ -637,7 +607,6 @@ function SearchViewToggle({
             <Link
               aria-current={active ? "page" : undefined}
               aria-label={`תצוגת ${view.label}`}
-              aria-pressed={active}
               href={view.href}
               scroll={false}
             >
@@ -708,7 +677,7 @@ function SearchResultListItem({
               className="text-foreground h-6 border border-[var(--glass-border)] bg-[var(--brand-ivory)] px-2.5 text-[0.7rem] font-semibold shadow-[0_8px_20px_oklch(0.18_0_0_/_8%)]"
               variant="ghost"
             >
-              לא פנוי כרגע
+              אזל מהמלאי
             </Badge>
           </div>
         ) : null}
@@ -932,7 +901,7 @@ async function getSearchRecoveryActions(
     };
 
     candidates.push({
-      description: "משאיר את מילת החיפוש ומסיר קטגוריה, חומר, אבן, מחיר ומיון.",
+      description: "הצגת כל התוצאות למילת החיפוש, ללא סינונים.",
       href: createSearchHref({ ...queryOnlyInput, view: viewMode }),
       input: queryOnlyInput,
       label: "ניקוי סינונים",
@@ -948,7 +917,7 @@ async function getSearchRecoveryActions(
     };
 
     candidates.push({
-      description: "משאיר את הסינונים ומסיר רק את מילת החיפוש.",
+      description: "חיפוש לפי הסינונים בלבד, ללא מילת החיפוש.",
       href: createSearchHref({ ...withoutQueryInput, view: viewMode }),
       input: withoutQueryInput,
       label: "בלי מילת החיפוש",
@@ -962,7 +931,7 @@ async function getSearchRecoveryActions(
     };
 
     candidates.push({
-      description: "פותח את כל המלאי בלי חיפוש וסינונים.",
+      description: "מעבר לכל התכשיטים באתר, ללא חיפוש וסינונים.",
       href: createSearchHref({ ...allCatalogInput, view: viewMode }),
       input: allCatalogInput,
       label: "כל התכשיטים",
@@ -1097,7 +1066,7 @@ function getSortLabel(sort: NonNullable<ProductSearchInput["sort"]>) {
 }
 
 function getSearchViewLabel(viewMode: SearchViewMode) {
-  return viewMode === "list" ? "שורות" : "טבלה";
+  return viewMode === "list" ? "רשימה" : "רשת";
 }
 
 function formatActiveSelectionCount(count: number) {
@@ -1113,7 +1082,7 @@ function formatActiveSelectionPreview(filters: ActiveSearchFilter[]) {
 }
 
 function formatSearchResultCount(count: number) {
-  return count === 1 ? "התאמה אחת" : "התאמות";
+  return count === 1 ? "תוצאה אחת" : `${count} תוצאות`;
 }
 
 async function recordSearchEvent(

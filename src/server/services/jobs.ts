@@ -211,7 +211,7 @@ function createStructuredOrderEmailBody(
     shipping !== null ? `משלוח: ${formatPrice(shipping)}` : "משלוח: [להשלמה]",
     total !== null ? `סה״כ לתשלום/שולם: ${formatPrice(total)}` : null,
     vatIncludedNotice,
-    `מסירה משוערת: ${estimatedDelivery}`,
+    `אספקה משוערת: ${estimatedDelivery}`,
     "",
     "קישורים חשובים:",
     ...orderLegalLinks.map(

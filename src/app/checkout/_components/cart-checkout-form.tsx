@@ -135,7 +135,7 @@ const checkoutProgressSteps = [
     value: "1",
   },
   {
-    detail: "קשר, כתובת ומסירה",
+    detail: "פרטי קשר, כתובת ומשלוח",
     label: "פרטים",
     value: "2",
   },
@@ -365,18 +365,18 @@ export function CartCheckoutForm() {
   const checkoutIntroCopy = hasMixedSourceCart
     ? "הסל מחולק לשני מסלולים: פריטי החנות מסוכמים כאן, ופריטים נפרדים ימשיכו לקופה נפרדת."
     : hasDropshipItems
-      ? "הסל ימשיך לקופה נפרדת לתשלום ומסירה."
-      : "סיכום קצר של התכשיטים, המסירה והתשלום המאובטח.";
+      ? "הסל ימשיך לקופה נפרדת לתשלום ולמשלוח."
+      : "סיכום קצר של הפריטים, המשלוח והתשלום המאובטח.";
   const localCheckoutButtonLabel = hasMixedSourceCart
     ? "המשיכי לתשלום עבור פריטי החנות"
     : "המשיכי לתשלום";
   const supplierCheckoutDescription = hasMixedSourceCart
     ? `${dropshipItems.length} פריטים נפרדים יושלמו בקופה נפרדת מהפריטים המקומיים.`
-    : `${dropshipItems.length} פריטים נפרדים יושלמו בקופה נפרדת. תשלום ומסירה ייאספו שם.`;
+    : `${dropshipItems.length} פריטים נפרדים יושלמו בקופה נפרדת. פרטי התשלום והמשלוח ייאספו שם.`;
   const checkoutPaymentConfidenceCopy = hasMixedSourceCart
     ? "הסכום המקומי מוצג כאן; הפריטים הנפרדים ישולמו בקופה נפרדת."
     : hasDropshipItems && !hasOwnItems
-      ? "תשלום, מסירה וסיכום ההזמנה יתבצעו בקופה נפרדת. לא נוצרת כאן הזמנה מקומית."
+      ? "התשלום, המשלוח וסיכום ההזמנה יתבצעו בקופה נפרדת. לא נוצרת כאן הזמנה מקומית."
       : "הסיכום מוצג לפני המעבר לתשלום. אין חיוב בשלב זה.";
   const checkoutQuantityRecoveryCopy = isOffline
     ? "שינויי כמות והסרה נשמרים במכשיר ויסתנכרנו כשהחיבור יחזור. המשיכי לתשלום כשיש חיבור פעיל."
@@ -406,11 +406,11 @@ export function CartCheckoutForm() {
     },
     {
       detail: hasOwnItems
-        ? "כתובת המסירה נשמרת עבור המשלוח."
-        : "פרטי המסירה ייקלטו במסלול הספק.",
+        ? "הכתובת שתמסרי תשמש למשלוח."
+        : "פרטי המשלוח ייקלטו בקופה הנפרדת.",
       icon: Truck,
       key: "delivery",
-      label: "מסירה",
+      label: "משלוח",
       value: hasMixedSourceCart
         ? "מסלולים נפרדים"
         : hasOwnItems
@@ -445,19 +445,19 @@ export function CartCheckoutForm() {
   const cartMutationErrorMessage = cartMutationError
     ? getFriendlyCheckoutErrorMessage(
         cartMutationError,
-        "לא הצלחנו לעדכן את הסל כרגע. נסו שוב בעוד רגע.",
+        "לא הצלחנו לעדכן את הסל כרגע. נסי שוב בעוד רגע.",
       )
     : null;
   const createOrderErrorMessage = createOrder.error
     ? getFriendlyCheckoutErrorMessage(
         createOrder.error,
-        "לא הצלחנו לשמור את ההזמנה. בדקו פרטים ונסו שוב.",
+        "לא הצלחנו לשמור את ההזמנה. בדקי את הפרטים ונסי שוב.",
       )
     : null;
   const createShopifyCheckoutErrorMessage = createShopifyCheckout.error
     ? getFriendlyCheckoutErrorMessage(
         createShopifyCheckout.error,
-        "לא הצלחנו לפתוח את הקופה הנפרדת. נסו שוב.",
+        "לא הצלחנו לפתוח את הקופה הנפרדת. נסי שוב.",
       )
     : null;
   const checkoutPaymentStatusKind: CheckoutPaymentStatusKind = isOffline
@@ -866,8 +866,8 @@ export function CartCheckoutForm() {
             </div>
           ) : (
             <StatusMessage testId="checkout-supplier-only-message">
-              אין צורך בפרטי מסירה באתר עבור פריטים אלה. המעבר לקופה נפרדת יפתח
-              תשלום מאובטח ומסירה.
+              אין צורך בפרטי משלוח באתר עבור פריטים אלה. המעבר לקופה נפרדת
+              יפתח תשלום מאובטח ומשלוח.
             </StatusMessage>
           )}
 
@@ -876,7 +876,7 @@ export function CartCheckoutForm() {
               <CardTitle className="flex items-center gap-2">
                 <CheckoutStepBadge value="1" />
                 <PackageCheck aria-hidden="true" className="size-5" />
-                התכשיטים שנבחרו
+                הפריטים בסל
               </CardTitle>
             </CardHeader>
             <CardContent className="grid min-h-72 gap-4">
@@ -906,8 +906,8 @@ export function CartCheckoutForm() {
                     </p>
                     <p className="text-xs font-medium">
                       {group.source === "OWN"
-                        ? "הסכום, הכמות והמסירה מוצגים כאן לפני תשלום."
-                        : "התשלום והמסירה יושלמו בקופה נפרדת."}
+                        ? "הסכום, הכמות והמשלוח מוצגים כאן לפני התשלום."
+                        : "התשלום והמשלוח יושלמו בקופה נפרדת."}
                     </p>
                   </div>
                 ))}
@@ -1084,7 +1084,7 @@ export function CartCheckoutForm() {
                 <CardHeader className="checkout-boutique-card-header">
                   <CardTitle className="flex items-center gap-2">
                     <CheckoutStepBadge value="2" />
-                    פרטים ומסירה
+                    פרטים ומשלוח
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-4">
@@ -1165,9 +1165,9 @@ export function CartCheckoutForm() {
                         aria-hidden="true"
                       />
                       <div>
-                        <p className="font-medium">מסירה עד הבית</p>
+                        <p className="font-medium">משלוח עד הבית</p>
                         <p className="text-muted-foreground mt-1">
-                          המסירה תתואם לפי הכתובת שתבחרו.
+                          המשלוח יתואם לפי הכתובת שתמסרי.
                         </p>
                       </div>
                     </div>
@@ -1318,8 +1318,8 @@ export function CartCheckoutForm() {
                     data-testid="checkout-order-note-hint"
                     id="checkout-order-note-hint"
                   >
-                    ניתן לציין ברכה, אריזה או העדפת מסירה. אין לכתוב אשראי,
-                    סיסמאות או מידע רגיש.
+                    אפשר לציין ברכה, אריזה או העדפת משלוח. אין לכתוב פרטי
+                    אשראי, סיסמאות או מידע רגיש.
                   </p>
                 </CardContent>
               </Card>
@@ -1438,8 +1438,8 @@ export function CartCheckoutForm() {
                     {vatIncludedNotice}
                   </p>
                   <p className="text-muted-foreground text-xs leading-5">
-                    תשלום, מסירה וסיכום הזמנה יושלמו בקופה נפרדת. לא נוצרת כאן
-                    הזמנה מקומית.
+                    התשלום, המשלוח וסיכום ההזמנה יושלמו בקופה נפרדת. לא נוצרת
+                    כאן הזמנה מקומית.
                   </p>
                 </div>
               )}
@@ -1471,7 +1471,7 @@ export function CartCheckoutForm() {
                       בדיקת הזמנה לפני תשלום
                     </h2>
                     <p className="text-muted-foreground mt-1 text-xs leading-5">
-                      הסיכום, המסירה והתשלום מרוכזים כאן לפני המעבר לשלב הבא.
+                      הסיכום, המשלוח והתשלום מרוכזים כאן לפני המעבר לשלב הבא.
                     </p>
                   </div>
                 </div>
@@ -1771,7 +1771,9 @@ function CheckoutEmptyCartState() {
           <div className="checkout-empty-icon glass-inset mb-5 grid size-12 place-items-center rounded-full border">
             <ShoppingBag aria-hidden="true" className="size-5" />
           </div>
-          <p className="text-muted-foreground text-xs font-medium">הסל שלך</p>
+          <p className="text-muted-foreground text-xs font-medium">
+            סל הקניות
+          </p>
           <h2 className="mt-3 text-2xl font-semibold tracking-normal sm:text-3xl">
             התחילי מהנמכרים ביותר
           </h2>

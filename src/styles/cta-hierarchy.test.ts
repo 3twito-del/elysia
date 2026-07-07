@@ -35,7 +35,7 @@ describe("public CTA hierarchy", () => {
     expect(css).toContain("--muted: #f6f3ef;");
     expect(css).toContain("--accent: #ead8d2;");
     expect(css).toContain("--elysia-border: var(--border);");
-    expect(css).toContain("--elysia-border-strong: #d8d0c8;");
+    expect(css).toContain("--elysia-border-strong: #c0b4a6;");
     expect(css).toContain("--glass-border: var(--elysia-border);");
     expect(css).toContain(
       "--glass-border-strong: var(--elysia-border-strong);",

@@ -87,10 +87,11 @@ export function StylistChat({ compact = false }: StylistChatProps) {
                     compact ? "text-xl" : "text-2xl",
                   )}
                 >
-                  יועץ לוק
+                  סטיילינג אישי
                 </h2>
                 <p className="text-muted-foreground max-w-2xl text-sm leading-6">
-                  מאתרים תכשיטים לפי מחיר, אירוע, חומר וסגנון, מתוך המלאי הפעיל.
+                  מאתרים תכשיטים לפי מחיר, אירוע, חומר וסגנון, מתוך המלאי
+                  הזמין.
                 </p>
               </div>
             </div>
@@ -130,9 +131,9 @@ export function StylistChat({ compact = false }: StylistChatProps) {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <h3 className="text-lg font-semibold">מה תרצו למצוא?</h3>
+                      <h3 className="text-lg font-semibold">מה תרצי למצוא?</h3>
                       <p className="text-muted-foreground text-sm leading-6">
-                        כתבו מחיר, אירוע, סגנון או תכשיט שמעניין אתכם.
+                        כתבי מחיר, אירוע, סגנון או תכשיט שמעניין אותך.
                       </p>
                     </div>
                     <div className="flex flex-wrap justify-center gap-2">
@@ -198,7 +199,7 @@ export function StylistChat({ compact = false }: StylistChatProps) {
 
             <PromptInput className="relative" dir="rtl" onSubmit={handleSubmit}>
               <PromptInputTextarea
-                aria-label="תיאור הבקשה ליועץ"
+                aria-label="תיאור הבקשה לסטיילינג"
                 className="max-h-32 min-h-14 py-3 pr-4 pl-14 leading-6"
                 id="stylist-message"
                 onChange={(event) => setInput(event.currentTarget.value)}
@@ -313,7 +314,9 @@ function SearchCatalogToolResult({
   queryText?: string;
 }) {
   if (part.state === "output-error") {
-    return <StatusMessage tone="error">המבחר אינו פתוח כרגע.</StatusMessage>;
+    return (
+      <StatusMessage tone="error">החיפוש אינו זמין כרגע.</StatusMessage>
+    );
   }
 
   if (part.state !== "output-available") {

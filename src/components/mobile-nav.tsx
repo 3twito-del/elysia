@@ -60,9 +60,9 @@ const quickActions = [
 ] as const;
 
 const serviceActions = [
-  { href: "/service", label: "שירות תומך", icon: Headphones },
-  { href: "/stylist", label: "יועץ לוק", icon: Sparkles },
-  { href: "/faq", label: "שאלות", icon: CircleHelp },
+  { href: "/service", label: "שירות לקוחות", icon: Headphones },
+  { href: "/stylist", label: "סטיילינג אישי", icon: Sparkles },
+  { href: "/faq", label: "שאלות ותשובות", icon: CircleHelp },
 ] as const;
 
 const spotlightActions = [
@@ -231,7 +231,7 @@ export function MobileNav({
             className="mobile-nav-animated-item text-foreground mt-6 max-w-[24rem] text-[1.05rem] leading-8"
             style={getMobileNavStaggerStyle(1)}
           >
-            תכשיטי בוטיק ללוק יומי, למתנה ולערב שמבקש קצת אור.
+            תכשיטי כסף 925 וציפוי זהב, לכל יום ולאירועים מיוחדים.
           </p>
         </div>
 
@@ -278,7 +278,7 @@ export function MobileNav({
               className="mobile-nav-section-kicker text-muted-foreground mobile-nav-animated-item text-xs font-medium"
               style={getMobileNavStaggerStyle(spotlightKickerIndex)}
             >
-              מאיפה מתחילים?
+              קישורים מהירים
             </p>
             {spotlightActions.map((item, index) => {
               const Icon = item.icon;
@@ -334,7 +334,7 @@ export function MobileNav({
                     נצפה לאחרונה
                   </span>
                   <span className="text-muted-foreground truncate text-xs">
-                    חזרה מהירה למוצר האחרון שפתחתם
+                    חזרה למוצר האחרון שצפית בו
                   </span>
                 </span>
                 <ArrowLeft
@@ -351,14 +351,14 @@ export function MobileNav({
           />
 
           <nav
-            aria-label="ניווט הקולקציה"
+            aria-label="ניווט קטגוריות"
             className="mobile-nav-section grid gap-0"
           >
             <p
               className="mobile-nav-section-kicker text-muted-foreground mobile-nav-animated-item text-xs font-medium"
               style={getMobileNavStaggerStyle(catalogKickerIndex)}
             >
-              הקולקציה
+              קטגוריות
             </p>
             {catalogItems.map((item, index) => {
               const isActive =

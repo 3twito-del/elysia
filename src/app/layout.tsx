@@ -12,6 +12,7 @@ import { PublicMotionProvider } from "~/components/public-motion-provider";
 import { SiteContextMenu } from "~/components/site-context-menu";
 import { SiteFooter } from "~/components/site-footer";
 import { SiteUndraggableMedia } from "~/components/site-undraggable-media";
+import { ThemeSync } from "~/components/theme-sync";
 import { env } from "~/env";
 
 const appName = "Elysia";
@@ -71,12 +72,18 @@ export const viewport: Viewport = {
   themeColor: "#fbf8f4",
 };
 
+// Runs before first paint so a stored night-mode preference never flashes the
+// light theme. The admin surface stays light-only until it gets a dark audit.
+const themeInitScript = `try{if(localStorage.getItem("elysia.theme-preference")==="dark"&&location.pathname.indexOf("/admin")!==0){document.documentElement.classList.add("dark");var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content","#161210");}}catch(e){}`;
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="he" dir="rtl">
+    <html lang="he" dir="rtl" suppressHydrationWarning>
       <body>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <ThemeSync />
         <PwaProvider>
           <a className="skip-link" href="#main-content">
             דילוג לתוכן

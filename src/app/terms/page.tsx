@@ -11,6 +11,7 @@ import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import {
   businessLegalPlaceholders,
+  legalLastUpdated,
   policyLinks,
   termsSafetySentence,
   vatIncludedNotice,
@@ -183,7 +184,7 @@ export default async function TermsPage() {
 
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <p className="text-muted-foreground text-sm">
-          עודכן לאחרונה: 7 ביוני 2026
+          עודכן לאחרונה: {legalLastUpdated.terms}
         </p>
         <Button asChild>
           <Link href="/shipping-returns">

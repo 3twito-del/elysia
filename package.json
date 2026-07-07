@@ -52,6 +52,7 @@
     "lint:fix": "eslint . --fix",
     "preview": "next build && next start",
     "production:readiness": "node scripts/verify-production-env.mjs --readiness",
+    "qa:contrast": "tsx scripts/qa-interaction-contrast.ts",
     "qa:performance": "tsx scripts/qa-site-audit.ts --performance-only",
     "qa:routes": "tsx scripts/qa-route-inventory.ts --check",
     "qa:site": "tsx scripts/qa-site-audit.ts",
