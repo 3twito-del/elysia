@@ -209,7 +209,7 @@ export default async function Home() {
       >
         {orderedCategories.length > 0 ? (
           <RevealGrid
-            className="grid gap-x-7 gap-y-7 sm:grid-cols-2 lg:grid-cols-4"
+            className="grid gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-4"
             data-layout-equal-group="home-category-tiles"
             data-testid="home-category-tiles"
             variant="media"
