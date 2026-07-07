@@ -306,16 +306,13 @@ export default async function Home() {
           </div>
           <div className="boutique-story-secondary-copy home-story-secondary-copy">
             <div className="grid gap-4">
-              {editorialPrinciples.map((principle, index) => (
+              {editorialPrinciples.map((principle) => (
                 <section
                   className="boutique-story-principle"
                   key={principle.title}
                 >
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  <div>
-                    <h3>{principle.title}</h3>
-                    <p>{principle.text}</p>
-                  </div>
+                  <h3>{principle.title}</h3>
+                  <p>{principle.text}</p>
                 </section>
               ))}
             </div>
@@ -452,12 +449,7 @@ function HomeCategoryCard({ category }: { category: CatalogCategory }) {
         />
       </span>
       <span className="boutique-collection-copy">
-        <span className="min-w-0">
-          <span className="boutique-collection-title">{category.name}</span>
-        </span>
-        <span className="boutique-collection-action" aria-hidden="true">
-          <ArrowLeft className="size-4" />
-        </span>
+        <span className="boutique-collection-title">{category.name}</span>
       </span>
     </Link>
   );

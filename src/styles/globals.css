@@ -2625,25 +2625,8 @@ html[data-accessibility-motion="reduce"] .boutique-collection-action::before {
 }
 
 .boutique-story-principle {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 1rem;
   border-top: 1px solid var(--glass-border);
   padding-top: 1.25rem;
-}
-
-.boutique-story-principle > span {
-  /* Deep gold clears AA (4.5:1) on the ivory/porcelain ground at this size;
-     the soft --brand-gold-muted (2.44:1) was too light for 12px text. Night
-     mode keeps the lighter gold, which already passes on the dark ground. */
-  color: #856126;
-  font-size: 0.78rem;
-  font-variant-numeric: tabular-nums;
-  line-height: 1.8;
-}
-
-.dark .boutique-story-principle > span {
-  color: var(--brand-gold-muted);
 }
 
 .boutique-story-principle h3 {
@@ -3508,7 +3491,7 @@ html[data-accessibility-motion="reduce"]
 }
 
 .about-stats {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.5rem 1rem;
   margin-top: clamp(2.75rem, 6vw, 4.5rem);
   border-top: 1px solid var(--glass-border);
@@ -3537,10 +3520,6 @@ html[data-accessibility-motion="reduce"]
 }
 
 @media (min-width: 1024px) {
-  .about-stats {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
   .about-stat + .about-stat {
     border-inline-start: 1px solid var(--glass-border);
     padding-inline-start: 1.5rem;
@@ -3581,9 +3560,6 @@ html[data-accessibility-motion="reduce"]
 }
 
 .about-principle-row {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 1.15rem;
   padding-block: 1.2rem;
   border-top: 1px solid var(--glass-border);
 }

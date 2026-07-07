@@ -23,7 +23,7 @@ import {
   AboutChapterNav,
   type AboutChapter,
 } from "./_components/about-chapter-nav";
-import { AboutReveal, AboutScrollCue } from "./_components/about-reveal";
+import { AboutReveal } from "./_components/about-reveal";
 
 type IconItem = {
   icon: LucideIcon;
@@ -51,7 +51,6 @@ const aboutStats = [
   { value: "925", label: "כסף סטרלינג בבסיס כל פריט" },
   { value: "12", label: "חודשי אחריות על פגמי ייצור" },
   { value: "24", label: "שעות עד מענה בימי עסקים" },
-  { value: "100%", label: "חנות אונליין עם שירות אישי" },
 ] as const;
 
 const editorialPrinciples = [
@@ -133,7 +132,6 @@ const trustCards = [
   },
 ] satisfies LinkCard[];
 
-const floatingLabels = ["חומר", "מידות", "גימור"] as const;
 
 export const metadata: Metadata = {
   title: "אודות | Elysia Jewellery",
@@ -199,16 +197,8 @@ export default function AboutPage() {
                   <ArrowLeft aria-hidden="true" className="size-4" />
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link href="/service" prefetch={false}>
-                  צרי קשר
-                  <Headphones aria-hidden="true" className="size-4" />
-                </Link>
-              </Button>
             </div>
           </div>
-
-          <AboutScrollCue />
         </RevealSection>
 
         <AboutChapterNav chapters={aboutChapters} />
@@ -296,28 +286,11 @@ export default function AboutPage() {
                     key={principle.title}
                     style={{ "--rv-i": index } as CSSProperties}
                   >
-                    <span aria-hidden="true" className="about-principle-num">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <div>
-                      <h3>{principle.title}</h3>
-                      <p>{principle.text}</p>
-                    </div>
+                    <h3>{principle.title}</h3>
+                    <p>{principle.text}</p>
                   </li>
                 ))}
               </ol>
-              <div className="about-story-actions">
-                <Button asChild variant="outline">
-                  <Link href="/size-guide" prefetch={false}>
-                    מדריך מידות
-                  </Link>
-                </Button>
-                <Button asChild variant="outline">
-                  <Link href="/gifts" prefetch={false}>
-                    מתנות
-                  </Link>
-                </Button>
-              </div>
             </AboutReveal>
           </div>
 
@@ -360,17 +333,6 @@ export default function AboutPage() {
                 בכל עמוד מוצר תמצאי את פרטי החומר, המידות והמחיר, כדי שתוכלי
                 לבחור בביטחון.
               </p>
-              <ul className="about-floating-labels">
-                {floatingLabels.map((label, index) => (
-                  <li
-                    className="about-floating-label about-rv-item"
-                    key={label}
-                    style={{ "--rv-i": index } as CSSProperties}
-                  >
-                    {label}
-                  </li>
-                ))}
-              </ul>
             </AboutReveal>
           </div>
         </RevealSection>
