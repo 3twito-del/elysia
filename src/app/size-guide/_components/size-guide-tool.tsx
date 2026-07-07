@@ -107,7 +107,7 @@ const guideCopy = {
     inputLabel: "סגנון עגילים מועדף",
     instructions: [
       "בחרי את הסגנון שאת עונדת בדרך כלל.",
-      "סטאד ומיני יישמרו כהעדפה נקייה; תלוי וארוך יכוונו לעיצובים עם נוכחות.",
+      "עגילים צמודים (סטאד) מתאימים לשימוש יומיומי; עגילים תלויים בולטים יותר.",
       "ההתאמה משפיעה על המלצות סגנון, לא על מידה פיזית מחייבת.",
     ],
     placeholder: "",
@@ -235,7 +235,7 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
               בחירת קטגוריה
             </h2>
             <p className="text-muted-foreground text-sm">
-              הזינו מידה קיימת או בחרו מידה מהטבלה.
+              הזיני מידה קיימת או בחרי מידה מהטבלה.
             </p>
           </div>
           <div className="brand-surface w-full rounded-md px-4 py-3 text-sm md:w-64">
@@ -352,7 +352,7 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
                 "size-5 shrink-0",
                 normalizedManualValue
                   ? "text-foreground"
-                  : "text-muted-foreground/50",
+                  : "text-muted-foreground/70",
               )}
             />
           </div>

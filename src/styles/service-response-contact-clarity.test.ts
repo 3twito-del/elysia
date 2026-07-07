@@ -25,7 +25,7 @@ describe("service response and contact clarity", () => {
       'data-testid="service-response-expectations"',
     );
     expect(servicePage).toContain("מענה עד יום עסקים");
-    expect(servicePage).toContain("פרטים שמקצרים את הדרך");
+    expect(servicePage).toContain("פרטים שכדאי לצרף");
     expect(servicePage).toContain("href={contact.phoneHref}");
     expect(servicePage).toContain("mailto:${contact.email}");
     expect(servicePage).toContain('data-testid="service-whatsapp-link"');
@@ -51,7 +51,7 @@ describe("service response and contact clarity", () => {
     );
     expect(serviceForm).toContain('data-testid="service-topic-guidance"');
     expect(serviceForm).toContain('aria-live="polite"');
-    expect(serviceForm).toContain("בחרו את הנושא הכי קרוב");
+    expect(serviceForm).toContain("בחרי את הנושא הקרוב ביותר");
   });
 
   it("confirms response expectations with a clear business-day SLA", () => {
@@ -61,7 +61,7 @@ describe("service response and contact clarity", () => {
     );
 
     expect(serviceActions).toContain("יחזור עד 24 שעות ביום עסקים");
-    expect(serviceForm).toContain("שמרו את המספר לעדכון");
+    expect(serviceForm).toContain("שמרי את המספר להמשך מעקב");
     expect(serviceForm).toContain("עד 24");
     expect(serviceForm).toContain("שעות ביום עסקים");
   });

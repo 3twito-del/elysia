@@ -67,37 +67,32 @@ export const revalidate = 3600;
 const categoryLuxuryCopyBySlug: Record<string, CategoryLuxuryCopy> = {
   bracelets: {
     description:
-      "צמידים לפי חומר, מידה, מחיר וזמינות, עם פרטי מסירה ושירות לפני הזמנה.",
-    intro:
-      "התחילו מהצמידים הזמינים ופתחו סינון לפי חומר, אבן, מחיר או קולקציה.",
+      "צמידים בכסף 925 ובציפוי זהב. אפשר לסנן לפי חומר, מידה, מחיר וזמינות.",
+    intro: "סינון לפי חומר, אבן, מחיר או קולקציה.",
     title: "צמידים",
   },
   earrings: {
     description:
-      "עגילים לפי חומר, אבן, מחיר וזמינות, עם פרטי מוצר ברורים לפני מעבר לקופה.",
-    intro:
-      "התחילו מהעגילים הזמינים ופתחו סינון לפי חומר, אבן, מחיר או קולקציה.",
+      "עגילים בכסף 925 ובציפוי זהב. אפשר לסנן לפי חומר, אבן, מחיר וזמינות.",
+    intro: "סינון לפי חומר, אבן, מחיר או קולקציה.",
     title: "עגילים",
   },
   necklaces: {
     description:
-      "שרשראות ותליונים שנראים טוב לבד או בשכבות, לפי אורך, חומר, אבן וגימור.",
-    intro:
-      "התחילו מהשרשראות הזמינות ופתחו סינון לפי אורך, חומר, אבן, מחיר או קולקציה.",
+      "שרשראות ותליונים בכסף 925 ובציפוי זהב, לענידה יחידה או בשכבות.",
+    intro: "סינון לפי אורך, חומר, אבן, מחיר או קולקציה.",
     title: "שרשראות",
   },
   rings: {
     description:
-      "טבעות לפי מידה, חומר, אבן, מחיר וזמינות, עם מדריך מידה לפני הזמנה.",
-    intro:
-      "התחילו מהטבעות הזמינות ופתחו סינון לפי מידה, חומר, אבן, מחיר או קולקציה.",
+      "טבעות בכסף 925 ובציפוי זהב. מדריך המידות שלנו יעזור לך לבחור נכון לפני ההזמנה.",
+    intro: "סינון לפי מידה, חומר, אבן, מחיר או קולקציה.",
     title: "טבעות",
   },
   sets: {
     description:
-      "סטים של שרשרת ועגילים לפי חומר, סגנון, מחיר וזמינות, עם פרטי שירות לפני הזמנה.",
-    intro:
-      "התחילו מהסטים הזמינים ופתחו סינון לפי חומר, אבן, מחיר או קולקציה.",
+      "סטים תואמים של שרשרת ועגילים. אפשר לסנן לפי חומר, סגנון, מחיר וזמינות.",
+    intro: "סינון לפי חומר, אבן, מחיר או קולקציה.",
     title: "סטים",
   },
 };
@@ -105,23 +100,23 @@ const categoryLuxuryCopyBySlug: Record<string, CategoryLuxuryCopy> = {
 const categoryTrustSignals = [
   {
     icon: Gem,
-    title: "פרטי תכשיט ברורים",
-    text: "מתכת, אבן, קולקציה ומחיר מופיעים לפני מעבר לדף המוצר.",
+    title: "פרטי מוצר מלאים",
+    text: "חומר, אבן, קולקציה ומחיר מוצגים בכל עמוד מוצר.",
   },
   {
     icon: Ruler,
-    title: "מידה בלי ניחוש",
-    text: "מדריך מידות ושיחת ייעוץ זמינים לפני בחירת טבעת, צמיד או שרשרת.",
+    title: "מדריך מידות",
+    text: "מדריך מידות מפורט לטבעות, צמידים ושרשראות לפני ההזמנה.",
   },
   {
     icon: Truck,
-    title: "מסירה ואריזת Elysia",
-    text: "מסירה, החלפה ואריזה למתנה מוצגים לפני תשלום.",
+    title: "משלוח ואריזה",
+    text: "פרטי משלוח, החלפה ואריזה למתנה מוצגים לפני התשלום.",
   },
   {
     icon: Headphones,
-    title: "יועצת לפני הזמנה",
-    text: "אפשר לשלוח שם תכשיט ולקבל תשובה על חומר, מידה או התאמה.",
+    title: "שירות לקוחות",
+    text: "אפשר לפנות אלינו בכל שאלה על חומר, מידה או התאמה.",
   },
 ] as const;
 
@@ -142,9 +137,9 @@ export async function generateMetadata({
 
   if (!copy && !category) {
     return {
-      title: "המשפחה לא נמצאה",
+      title: "הקטגוריה לא נמצאה",
       description:
-        "הקישור לקולקציה אינו פעיל. אפשר להמשיך לחיפוש או לחזור לעמוד הבית.",
+        "הקישור לקטגוריה אינו פעיל. אפשר להמשיך לחיפוש או לחזור לעמוד הבית.",
       alternates: {
         canonical: `/category/${slug}`,
       },
@@ -213,9 +208,8 @@ export default async function CategoryPage({
   const categoryCopy = categoryLuxuryCopyBySlug[slug] ?? {
     description:
       category.description ||
-      "תכשיטים מתוך הקולקציה של Elysia, עם חומר, מידה ומחיר לפני הזמנה.",
-    intro:
-      "התחילו מהתכשיטים הזמינים ופתחו סינון לפי חומר, אבן, מחיר או קולקציה.",
+      "תכשיטים מתוך הקולקציה של Elysia, עם פרטי חומר, מידה ומחיר.",
+    intro: "סינון לפי חומר, אבן, מחיר או קולקציה.",
     title: category.name,
   };
   const facets = getCatalogFacetsFromProducts(catalogProducts);
@@ -343,10 +337,10 @@ export default async function CategoryPage({
                 <SheetHeader className="border-b border-[var(--glass-border)] p-[var(--ui-panel-padding)]">
                   <SheetTitle className="flex items-center gap-2">
                     <SlidersHorizontal aria-hidden="true" className="size-4" />
-                    סינון לפי לוק
+                    סינון מתקדם
                   </SheetTitle>
                   <SheetDescription>
-                    בחרו חומר, אבן, מחיר או קולקציה מתוך המבחר.
+                    בחרי חומר, אבן, מחיר או קולקציה מתוך המבחר.
                   </SheetDescription>
                   <p
                     className="text-muted-foreground text-xs leading-5"
@@ -395,7 +389,7 @@ export default async function CategoryPage({
               <div className="pb-4">
                 <h2 className="flex items-center gap-2 text-base font-medium">
                   <SlidersHorizontal aria-hidden="true" className="size-4" />
-                  סינון לפי לוק
+                  סינון מתקדם
                 </h2>
               </div>
               <DeferredCategoryFilterPanel data={filterPayload} />
@@ -421,7 +415,7 @@ export default async function CategoryPage({
                       : filteredProducts.length > productsPerPage
                         ? `${categoryVisibleRangeLabel} · עמוד ${currentPage}`
                         : hasActiveFilters
-                          ? "התוצאות מסוננות לפי מה שבחרתם"
+                          ? "התוצאות מסוננות לפי הבחירה שלך"
                           : categoryVisibleRangeLabel}
                     <span className="mx-2">·</span>
                     <span data-testid="category-current-sort-label">
@@ -545,7 +539,7 @@ function CategoryBreadcrumbs({ categoryName }: { categoryName: string }) {
       </Link>
       <span aria-hidden="true">›</span>
       <Link className="hover:text-foreground transition-colors" href="/search">
-        קולקציות
+        כל התכשיטים
       </Link>
       <span aria-hidden="true">›</span>
       <span className="text-foreground">{categoryName}</span>
@@ -592,10 +586,10 @@ function CategoryFilterDrawer({
         <SheetHeader className="border-b border-[var(--glass-border)] p-[var(--ui-panel-padding)]">
           <SheetTitle className="flex items-center gap-2">
             <SlidersHorizontal aria-hidden="true" className="size-4" />
-            סינון לפי תכשיט
+            סינון מתקדם
           </SheetTitle>
           <SheetDescription>
-            בחרו חומר, אבן, מחיר או קולקציה מתוך הפריטים שזמינים עכשיו.
+            בחרי חומר, אבן, מחיר או קולקציה מתוך הפריטים הזמינים.
           </SheetDescription>
           <p
             className="text-muted-foreground text-xs leading-5"
@@ -679,12 +673,12 @@ function CategoryEditorialNote({
       data-testid="category-editorial-care-note"
     >
       <summary className="flex cursor-pointer items-center justify-between gap-3 font-medium">
-        <span>איך לענוד ולשמור</span>
+        <span>טיפים לשמירה על התכשיט</span>
         <span className="text-muted-foreground text-xs">{categoryName}</span>
       </summary>
       <p className="text-muted-foreground mt-3 max-w-3xl leading-7">
-        {description} מומלץ לשמור בנפרד, להרחיק מים ובושם, ולבחור מידה לפי אופן
-        הענידה בפועל.
+        {description} מומלץ לאחסן כל תכשיט בנפרד, להרחיק ממים ומבושם, ולבחור
+        מידה לפי מדריך המידות.
       </p>
     </details>
   );
@@ -720,7 +714,7 @@ function CategoryEmptyState({
             </Button>
           </>
         }
-        description="הקטגוריה קיימת, אך אין בה כרגע פריטים פתוחים. ניתן לעבור לחיפוש או לבחור קטגוריה אחרת."
+        description="אין כרגע פריטים זמינים בקטגוריה זו. אפשר לעבור לחיפוש או לבחור קטגוריה אחרת."
         icon={Gem}
         testId="category-empty-state"
         title="הקטגוריה מתעדכנת"
@@ -752,10 +746,10 @@ function CategoryEmptyState({
           </Button>
         </>
       }
-      description="אפשר לנקות סינונים, לעבור לקטגוריה קרובה או להרחיב את החיפוש."
+      description="נסי לנקות את הסינונים או לעבור לקטגוריה אחרת."
       icon={Gem}
       testId="category-empty-state"
-      title="לא מצאנו התאמה לסינון הזה"
+      title="לא נמצאו תוצאות לסינון שנבחר"
     />
   );
 }
@@ -809,7 +803,7 @@ function CategoryRecoveryActions({
 }
 
 function formatCategoryRecoveryResultCount(total: number) {
-  return total === 1 ? "התאמה אחת" : "התאמות";
+  return total === 1 ? "תוצאה אחת" : `${total} תוצאות`;
 }
 
 function formatCategoryResultCount(total: number) {

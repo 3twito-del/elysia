@@ -54,7 +54,7 @@ export function getProductRecommendationRails({
     cardContextLabel: "אותה קטגוריה",
     continuationHref: `/category/${product.categorySlug}`,
     continuationLabel: `המשך בקטגוריית ${product.categoryName}`,
-    reason: `עוד תכשיטים מאותה קטגוריה, אם זה הכיוון של הלוק.`,
+    reason: `עוד תכשיטים מאותה קטגוריה.`,
     title: `עוד בקטגוריית ${product.categoryName}`,
     usedSlugs,
   });
@@ -89,9 +89,9 @@ export function getProductRecommendationRails({
       rails,
       cardContextLabel: "מומלץ עכשיו",
       continuationHref: "/search",
-      continuationLabel: "פתיחת כל התכשיטים",
-      reason: "פריטים זמינים כשאין התאמה ישירה.",
-      title: "עוד רעיונות להתחלה",
+      continuationLabel: "לכל התכשיטים",
+      reason: "מבחר פריטים זמינים מהקולקציה.",
+      title: "עוד מהמבחר שלנו",
       usedSlugs,
     });
   }

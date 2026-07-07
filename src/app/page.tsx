@@ -7,6 +7,7 @@ import { env } from "~/env";
 import { stringifyJsonLd } from "~/lib/json-ld";
 import { getTextDirection } from "~/lib/text-direction";
 import { NewsletterForm } from "~/components/newsletter-form";
+import { CommerceSectionHeader } from "~/components/commerce-section-header";
 import { DeferredFixedBackgroundBand } from "~/components/deferred-fixed-background-band";
 import { HomeHeroVideo } from "~/components/home-hero-video";
 import { ProductCard } from "~/components/product-card";
@@ -46,43 +47,43 @@ const categoryImagePosition: Record<string, string> = {
 const editorialPrinciples = [
   {
     title: "עיצוב",
-    text: "צללית ברורה שנשארת רלוונטית מעבר לעונה.",
+    text: "קווים נקיים וקלאסיים שמתאימים לכל סגנון ולכל גיל.",
   },
   {
-    title: "מלאכת מחשבת",
-    text: "חומר, גימור ופרופורציה שנבחנים עד הפרט האחרון.",
+    title: "איכות",
+    text: "כסף 925 וציפויי זהב באיכות גבוהה, בגימור מוקפד.",
   },
   {
-    title: "בחירה אישית",
-    text: "תכשיט שמתאים לסגנון, לרגע ולדרך שבה תרצי לענוד אותו.",
+    title: "שירות",
+    text: "מדריך מידות, החלפות והחזרות ושירות אישי לכל הזמנה.",
   },
 ] as const;
 
 const storySignatureNote = {
-  eyebrow: "Elysia Standard",
-  title: "נוכחות עדינה, שימוש יומיומי",
-  text: "בחירה שמתחילה בחומר וממשיכה בפרופורציה, כדי שהתכשיט ירגיש טבעי מהרגע הראשון.",
+  eyebrow: "הסטנדרט שלנו",
+  title: "תכשיטים לשימוש יומיומי",
+  text: "אנחנו מקפידים על חומרים איכותיים ועל גימור נוח, כדי שהתכשיט ילווה אותך בכל יום.",
 } as const;
 
 export const metadata: Metadata = {
-  title: "Elysia Jewellery | תכשיטים בעיצוב מדויק",
+  title: "Elysia Jewellery | תכשיטי כסף וזהב אונליין",
   description:
-    "קולקציה ערוכה של טבעות, שרשראות, עגילים וצמידים בכסף, ציפוי זהב, פנינים ואבני צבע, עם מדריך מידות ושירות אישי.",
+    "חנות תכשיטים אונליין: טבעות, שרשראות, עגילים וצמידים בכסף 925 ובציפוי זהב, עם פנינים ואבני צבע. מדריך מידות, החלפות והחזרות ושירות אישי.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "Elysia Jewellery | תכשיטים בעיצוב מדויק",
+    title: "Elysia Jewellery | תכשיטי כסף וזהב אונליין",
     description:
-      "קולקציה ערוכה של תכשיטים בעיצוב מדויק, עם חומרים נבחרים, מדריך מידות ושירות אישי.",
+      "טבעות, שרשראות, עגילים וצמידים בכסף 925 ובציפוי זהב. מדריך מידות, החלפות והחזרות ושירות אישי.",
     url: "/",
     images: [{ url: boutiqueHeroImage }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Elysia Jewellery | תכשיטים בעיצוב מדויק",
+    title: "Elysia Jewellery | תכשיטי כסף וזהב אונליין",
     description:
-      "קולקציה ערוכה של תכשיטים בעיצוב מדויק, עם חומרים נבחרים, מדריך מידות ושירות אישי.",
+      "טבעות, שרשראות, עגילים וצמידים בכסף 925 ובציפוי זהב. מדריך מידות, החלפות והחזרות ושירות אישי.",
     images: [boutiqueHeroImage],
   },
 };
@@ -99,7 +100,7 @@ const homeStructuredData = [
     image: new URL(boutiqueHeroImage, siteUrl).toString(),
     sameAs: homeSameAs,
     description:
-      "קולקציה ערוכה של טבעות, שרשראות, עגילים וצמידים בכסף, ציפוי זהב, פנינים ואבני צבע.",
+      "חנות תכשיטים אונליין: טבעות, שרשראות, עגילים וצמידים בכסף 925 ובציפוי זהב, עם פנינים ואבני צבע.",
   },
   {
     "@context": "https://schema.org",
@@ -175,7 +176,8 @@ export default async function Home() {
             data-testid="home-hero-statement"
             dir="auto"
           >
-            לאהוב את מה שאת עונדת.
+            תכשיטי כסף 925 וציפוי זהב בעיצוב קלאסי, לכל יום ולאירועים
+            מיוחדים.
           </p>
           <div
             className="home-hero-actions motion-copy-item storefront-hero-actions [--motion-copy-delay:130ms]"
@@ -207,7 +209,7 @@ export default async function Home() {
       >
         {orderedCategories.length > 0 ? (
           <RevealGrid
-            className="grid gap-x-7 gap-y-7 sm:grid-cols-2 lg:grid-cols-4"
+            className="grid gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-4"
             data-layout-equal-group="home-category-tiles"
             data-testid="home-category-tiles"
             variant="media"
@@ -219,9 +221,9 @@ export default async function Home() {
         ) : (
           <HomeEditorialFallback
             actionHref="/search"
-            actionLabel="לפתיחת המבחר"
-            text="הקטגוריות מתעדכנות. אפשר להמשיך למבחר המלא ולסנן לפי חומר, מחיר וסגנון."
-            title="המבחר פתוח לבחירה"
+            actionLabel="לכל התכשיטים"
+            text="הקטגוריות מתעדכנות כרגע. בינתיים אפשר לצפות בכל התכשיטים ולסנן לפי קטגוריה, חומר ומחיר."
+            title="הקטגוריות מתעדכנות"
           />
         )}
       </RevealSection>
@@ -232,7 +234,7 @@ export default async function Home() {
           id="featured"
         >
           <div className="mx-auto max-w-[92rem]">
-            <SectionHeader eyebrow="New Arrivals" title="Icons of Summer" />
+            <CommerceSectionHeader eyebrow="הקולקציה שלנו" title="חדש באתר" />
             <RevealGrid
               className="ui-equal-grid grid gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-4"
               data-layout-equal-group="home-featured-products"
@@ -256,9 +258,9 @@ export default async function Home() {
         >
           <HomeEditorialFallback
             actionHref="/search"
-            actionLabel="לפתיחת המבחר"
-            text="הקולקציה מתעדכנת. אפשר להמשיך לחיפוש ולראות פריטים זמינים לפי סגנון, חומר ומחיר."
-            title="הפריטים החדשים בדרך"
+            actionLabel="לכל התכשיטים"
+            text="הקולקציה מתעדכנת כרגע. בינתיים אפשר לצפות בכל התכשיטים הזמינים באתר."
+            title="פריטים חדשים בדרך"
           />
         </RevealSection>
       )}
@@ -288,26 +290,29 @@ export default async function Home() {
             />
           </figure>
           <div className="boutique-story-copy">
-            <SectionHeader
-              actionHref="/about"
-              actionLabel="להכיר את Elysia"
-              eyebrow="The Elysia Point of View"
-              text="אוסף ערוך בקפידה, שבו כל תכשיט נבחר בזכות העיצוב, החומר והאופן שבו הוא מרגיש כשעונדים אותו."
-              title="A Distinct Point of View"
+            <CommerceSectionHeader
+              action={
+                <Button asChild variant="outline">
+                  <Link dir="auto" href="/about" prefetch={false}>
+                    קראי עוד עלינו
+                    <ArrowLeft aria-hidden="true" className="size-4" />
+                  </Link>
+                </Button>
+              }
+              description="אנחנו בוחרים כל תכשיט בקפידה לפי העיצוב, החומר ואיכות הגימור, כדי שתמצאי פריטים שמתאימים לך."
+              eyebrow="אודות"
+              title="הסיפור של Elysia"
             />
           </div>
           <div className="boutique-story-secondary-copy home-story-secondary-copy">
             <div className="grid gap-4">
-              {editorialPrinciples.map((principle, index) => (
+              {editorialPrinciples.map((principle) => (
                 <section
                   className="boutique-story-principle"
                   key={principle.title}
                 >
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  <div>
-                    <h3>{principle.title}</h3>
-                    <p>{principle.text}</p>
-                  </div>
+                  <h3>{principle.title}</h3>
+                  <p>{principle.text}</p>
                 </section>
               ))}
             </div>
@@ -315,9 +320,7 @@ export default async function Home() {
               aria-label={storySignatureNote.eyebrow}
               className="home-story-secondary-note"
             >
-              <p className="storefront-eyebrow" dir="ltr">
-                {storySignatureNote.eyebrow}
-              </p>
+              <p className="storefront-eyebrow">{storySignatureNote.eyebrow}</p>
               <h3>{storySignatureNote.title}</h3>
               <p>{storySignatureNote.text}</p>
             </section>
@@ -346,27 +349,25 @@ export default async function Home() {
         <div className="storefront-final-panel mx-auto max-w-[92rem]">
           <section
             className="storefront-final-primary"
-            data-title-direction="ltr"
+            data-title-direction="rtl"
           >
-            <p className="storefront-eyebrow" dir="ltr">
-              Your Next Signature
-            </p>
-            <h2 className="storefront-final-title" dir="ltr">
-              Find the One That Feels Like You
+            <p className="storefront-eyebrow">התכשיט הבא שלך</p>
+            <h2 className="storefront-final-title">
+              מצאי את התכשיט המושלם בשבילך
             </h2>
             <p className="storefront-final-text">
-              בחרי לפי סגנון, חומר או רגע. אנחנו כאן כדי לעזור לך לדייק את
-              הבחירה.
+              בחרי לפי קטגוריה, חומר או תקציב. צוות השירות שלנו ישמח לעזור בכל
+              שאלה.
             </p>
             <div className="storefront-final-actions">
               <Button asChild>
                 <Link dir="auto" href="/search">
-                  לגלות את הקולקציה
+                  לכל התכשיטים
                 </Link>
               </Button>
               <Button asChild variant="outline">
                 <Link dir="auto" href="/service">
-                  לקבל ייעוץ אישי
+                  צרי קשר
                 </Link>
               </Button>
             </div>
@@ -374,18 +375,14 @@ export default async function Home() {
 
           <section
             className="storefront-final-updates"
-            data-title-direction="ltr"
+            data-title-direction="rtl"
             id="collection-updates"
           >
             <div>
-              <p className="storefront-eyebrow" dir="ltr">
-                First Access
-              </p>
-              <h2 className="storefront-final-subtitle" dir="ltr">
-                See It Before It Launches
-              </h2>
+              <p className="storefront-eyebrow">ניוזלטר</p>
+              <h2 className="storefront-final-subtitle">הישארי מעודכנת</h2>
               <p className="storefront-final-text">
-                הצטרפי לרשימה ותהיי בין הראשונות לגלות השקות וקולקציות חדשות.
+                הירשמי לניוזלטר וקבלי עדכונים על קולקציות חדשות ופריטים נבחרים.
               </p>
             </div>
             <div className="storefront-final-newsletter">
@@ -395,64 +392,6 @@ export default async function Home() {
         </div>
       </RevealSection>
     </main>
-  );
-}
-
-function SectionHeader({
-  actionHref,
-  actionLabel,
-  eyebrow,
-  text,
-  title,
-}: {
-  actionHref?: string;
-  actionLabel?: string;
-  eyebrow: string;
-  text?: string;
-  title: string;
-}) {
-  const titleDirection = getHeroTextDirection(title);
-
-  return (
-    <div
-      className="commerce-section-header"
-      data-title-direction={titleDirection}
-      dir={titleDirection}
-    >
-      <div className="commerce-section-header-copy">
-        <p
-          className="commerce-section-header-eyebrow"
-          dir={getHeroTextDirection(eyebrow)}
-        >
-          {eyebrow}
-        </p>
-        <h2 className="commerce-section-header-title" dir={titleDirection}>
-          {title}
-        </h2>
-        {text ? (
-          <p
-            className="commerce-section-header-description"
-            dir={getHeroTextDirection(text)}
-          >
-            {text}
-          </p>
-        ) : null}
-      </div>
-      {actionHref && actionLabel ? (
-        <div className="commerce-section-header-action">
-          <Button asChild variant="outline">
-            <Link
-              dir={getHeroTextDirection(actionLabel)}
-              href={actionHref}
-              prefetch={false}
-            >
-              {actionLabel}
-              <ArrowLeft aria-hidden="true" className="size-4" />
-            </Link>
-          </Button>
-        </div>
-      ) : null}
-    </div>
   );
 }
 
@@ -489,7 +428,7 @@ function HomeEditorialFallback({
 function HomeCategoryCard({ category }: { category: CatalogCategory }) {
   return (
     <Link
-      aria-label={`לגלות את קטגוריית ${category.name}`}
+      aria-label={`למעבר לקטגוריית ${category.name}`}
       className="boutique-collection-card"
       data-category-slug={category.slug}
       data-testid="home-category-card"
@@ -510,12 +449,7 @@ function HomeCategoryCard({ category }: { category: CatalogCategory }) {
         />
       </span>
       <span className="boutique-collection-copy">
-        <span className="min-w-0">
-          <span className="boutique-collection-title">{category.name}</span>
-        </span>
-        <span className="boutique-collection-action" aria-hidden="true">
-          <ArrowLeft className="size-4" />
-        </span>
+        <span className="boutique-collection-title">{category.name}</span>
       </span>
     </Link>
   );

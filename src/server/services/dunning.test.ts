@@ -17,7 +17,7 @@ describe("buildDunningEmail", () => {
       daysOverdue: 10,
       level: 1,
     });
-    expect(gentle.subject).toContain("תזכורת ידידותית");
+    expect(gentle.subject).toContain("תזכורת לתשלום");
     expect(gentle.subject).toContain("INV-1");
     expect(gentle.body).toContain("500");
 

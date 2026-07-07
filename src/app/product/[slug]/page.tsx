@@ -169,7 +169,7 @@ export default async function ProductPage({
     publicCollectionName,
   });
   const productCommerceDetails = [
-    { label: "מסירה", value: product.deliveryPromise },
+    { label: "משלוח", value: product.deliveryPromise },
     { label: "החזרה", value: product.returnPolicy },
     { label: "אחריות", value: product.warranty },
     { label: "טיפול", value: product.careInstructions },
@@ -355,7 +355,7 @@ export default async function ProductPage({
                   className="mt-1 size-4 shrink-0"
                 />
                 <p className="text-muted-foreground">
-                  לוודא מידה, חומר, מתנה או מסירה? נצרף את המוצר לפנייה.
+                  יש לך שאלה על מידה, חומר או משלוח? נצרף את המוצר לפנייה.
                 </p>
               </div>
               <Button asChild className="shrink-0" size="sm" variant="outline">
@@ -517,7 +517,7 @@ function ProductFaq({
       data-testid="product-faq"
     >
       <h2 className="text-xl font-semibold" id="product-faq-title">
-        שאלות לפני הזמנה
+        שאלות נפוצות על המוצר
       </h2>
       <div className="grid gap-2">
         {items.map((item) => (
@@ -571,7 +571,7 @@ function getProductFaqItems(input: {
     {
       question: "איך יודעים אם המידה מתאימה?",
       answer:
-        "בדקו את מדריך המידות ואת המידות בעמוד. אם יש התלבטות, שלחו שאלה עם שם התכשיט.",
+        "בדקי את מדריך המידות ואת פרטי המידה בעמוד. אם יש התלבטות, שלחי לנו שאלה עם שם המוצר.",
     },
     {
       question: `${input.productName} מתאים למתנה?`,
@@ -690,7 +690,7 @@ function ProductRecommendationRails({
           data-testid="product-discovery-return-context"
         >
           <p className="text-muted-foreground text-sm leading-6">
-            הגעתם מחיפוש. אפשר לחזור לתוצאות בלי לאבד את ההקשר.
+            הגעת לכאן מחיפוש. אפשר לחזור לתוצאות בכל שלב.
           </p>
           <Button asChild size="sm" variant="outline">
             <Link href={searchReturnHref}>{searchReturnLabel}</Link>
@@ -708,7 +708,7 @@ function ProductRecommendationRails({
             key={rail.id}
           >
             <CommerceSectionHeader
-              eyebrow="עוד כיוון"
+              eyebrow="אולי יעניין אותך גם"
               id={headingId}
               title={rail.title}
             />

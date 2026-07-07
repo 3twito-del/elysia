@@ -71,7 +71,7 @@ export function getCheckoutAmountLabel(
 
 export function getFriendlyCheckoutErrorMessage(
   error: CheckoutDisplayError | null | undefined,
-  fallback = "לא הצלחנו להשלים את הבקשה כרגע. נסו שוב בעוד רגע.",
+  fallback = "לא הצלחנו להשלים את הבקשה כרגע. נסי שוב בעוד רגע.",
 ) {
   const rawMessage = error?.message?.trim();
 
@@ -82,11 +82,11 @@ export function getFriendlyCheckoutErrorMessage(
   }
 
   if (/תכשיט.*לא נמצא|לא נמצא.*תכשיט/u.test(rawMessage)) {
-    return "התכשיט אינו פנוי כרגע. רעננו ונסו שוב.";
+    return "הפריט אינו זמין כרגע. רענני את העמוד ונסי שוב.";
   }
 
   if (/cart item|product variant/i.test(rawMessage)) {
-    return "התכשיט אינו פנוי כרגע. רעננו ונסו שוב.";
+    return "הפריט אינו זמין כרגע. רענני את העמוד ונסי שוב.";
   }
 
   if (/fixture cart|local cart|session/i.test(rawMessage)) {
@@ -127,7 +127,7 @@ export function getCheckoutFulfillmentSummaryRows({
     rows.push({
       detail: hasOwnItems
         ? `${formatCheckoutItemTypeCount(dropshipItemCount)} ${supplierContinuationVerb} לקופה נפרדת.`
-        : `${formatCheckoutItemTypeCount(dropshipItemCount)} ${supplierContinuationVerb} לקופה נפרדת; תשלום ומסירה ייקבעו שם.`,
+        : `${formatCheckoutItemTypeCount(dropshipItemCount)} ${supplierContinuationVerb} לקופה נפרדת; התשלום והמשלוח ייקבעו שם.`,
       key: "supplier",
       label: "פריטים נפרדים",
     });
@@ -136,9 +136,9 @@ export function getCheckoutFulfillmentSummaryRows({
   if (hasOwnItems && hasDropshipItems) {
     rows.push({
       detail:
-        "מסירת פריטי חנות תתואם לפי הכתובת; פריטים נפרדים יקבלו מסירה בקופה נפרדת.",
+        "משלוח פריטי החנות יתואם לפי הכתובת; פריטים נפרדים יטופלו בקופה הנפרדת.",
       key: "delivery",
-      label: "מסירה",
+      label: "משלוח",
     });
     rows.push({
       detail: "שני מסלולי התשלום נשארים נפרדים וברורים.",
@@ -151,9 +151,9 @@ export function getCheckoutFulfillmentSummaryRows({
 
   if (hasOwnItems) {
     rows.push({
-      detail: `מסירה עד הבית ${getShippingSummaryLabel(shippingLabel)} לפי הכתובת.`,
+      detail: `משלוח עד הבית ${getShippingSummaryLabel(shippingLabel)} לפי הכתובת.`,
       key: "delivery",
-      label: "מסירה",
+      label: "משלוח",
     });
     rows.push({
       detail: "הסיכום נשמר לפני המעבר לתשלום.",
@@ -164,9 +164,9 @@ export function getCheckoutFulfillmentSummaryRows({
 
   if (hasDropshipItems && !hasOwnItems) {
     rows.push({
-      detail: "אין מילוי כתובת באתר; פרטי המסירה ייאספו בקופה הנפרדת.",
+      detail: "אין צורך למלא כתובת באתר; פרטי המשלוח ייאספו בקופה הנפרדת.",
       key: "delivery",
-      label: "מסירה",
+      label: "משלוח",
     });
     rows.push({
       detail: "ההזמנה תמשיך במסלול התשלום הנפרד.",
@@ -195,7 +195,7 @@ function formatCheckoutItemTypeCount(count: number) {
 }
 
 function getShippingSummaryLabel(shippingLabel: string) {
-  if (shippingLabel === "כלול") return "כלולה";
+  if (shippingLabel === "כלול") return "כלול";
 
-  return `תחושב כ-${shippingLabel}`;
+  return `יחושב כ-${shippingLabel}`;
 }

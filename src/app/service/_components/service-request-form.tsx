@@ -141,7 +141,7 @@ export function ServiceRequestForm({
       .catch(() =>
         setOfflineState({
           ok: false,
-          message: "לא הצלחנו לשלוח עכשיו. בדקו את החיבור ונסו שוב.",
+          message: "לא הצלחנו לשלוח עכשיו. בדקי את החיבור ונסי שוב.",
         }),
       );
   }
@@ -183,7 +183,7 @@ export function ServiceRequestForm({
           data-testid="service-topic-guidance"
           id={topicGuidanceId}
         >
-          {selectedTopicDescription ?? "בחרו את הנושא הכי קרוב למה שצריך."}
+          {selectedTopicDescription ?? "בחרי את הנושא הקרוב ביותר לפנייה."}
         </p>
         <div
           className="glass-inset rounded-md border p-3 text-xs leading-5"
@@ -347,7 +347,7 @@ export function ServiceRequestForm({
           className="text-muted-foreground text-xs leading-5"
           id={attachmentOfflineGuidanceId}
         >
-          אם השליחה לא הצליחה, בדקו את החיבור ונסו שוב.
+          אם השליחה לא הצליחה, בדקי את החיבור ונסי שוב.
         </p>
       </div>
 
@@ -368,8 +368,8 @@ export function ServiceRequestForm({
             </strong>
           </div>
           <p className="text-muted-foreground">
-            שמרו את המספר לעדכון. הצוות יבדוק את הפרטים והקבצים ויחזור עד 24
-            שעות ביום עסקים.
+            שמרי את המספר להמשך מעקב. הצוות יבדוק את הפרטים והקבצים ויחזור
+            בתוך עד 24 שעות ביום עסקים.
           </p>
           <a
             className="w-fit text-sm font-medium underline underline-offset-4"
