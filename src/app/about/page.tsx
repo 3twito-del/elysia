@@ -24,6 +24,7 @@ import {
   type AboutChapter,
 } from "./_components/about-chapter-nav";
 import { AboutReveal } from "./_components/about-reveal";
+import { AboutStatCounter } from "./_components/about-stat-counter";
 
 type IconItem = {
   icon: LucideIcon;
@@ -246,7 +247,9 @@ export default function AboutPage() {
                 style={{ "--rv-i": index } as CSSProperties}
               >
                 <dt className="about-stat-label order-2">{stat.label}</dt>
-                <dd className="about-stat-value order-1">{stat.value}</dd>
+                <dd className="about-stat-value order-1">
+                  <AboutStatCounter value={stat.value} />
+                </dd>
               </div>
             ))}
           </AboutReveal>
