@@ -55,3 +55,8 @@ yarn-error.log*
 .idea
 
 .vercel
+
+# Claude Code / skills tooling (local, not product code)
+.claude/
+.agents/
+skills-lock.json

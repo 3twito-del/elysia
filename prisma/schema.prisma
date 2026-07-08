@@ -152,6 +152,9 @@ enum OutboxEventStatus {
   PROCESSING
   PROCESSED
   FAILED
+  // ADR 0003/0007 — retry budget exhausted; stops retrying and becomes a
+  // loud operational fact for the invariant sweep instead of silent churn.
+  DEAD_LETTER
 }
 
 enum JobRunStatus {

@@ -44,6 +44,8 @@ const jobRunStatuses = ["RUNNING", "COMPLETED", "FAILED", "SKIPPED"] as const;
 const outboxStatusRecoveryCopy = {
   FAILED:
     "נכשל ונשמר לנסיון חוזר לפי זמן הזמינות הבא; בדקו ספק או הגדרות אם הכשל חוזר.",
+  DEAD_LETTER:
+    "מוצה תקציב הניסיונות; העיבוד הופסק לצמיתות והאירוע סומן כעובדה תפעולית רועשת לטיפול ידני ולסקירת ה-invariants.",
   PENDING: "ממתין לעיבוד על ידי job runner.",
   PROCESSING: "נמצא בעיבוד כעת.",
   PROCESSED: "עובד בהצלחה ואין צורך בפעולת retry.",
