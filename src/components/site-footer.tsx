@@ -93,7 +93,9 @@ export function SiteFooter() {
   const currentYear = new Date().getFullYear();
   const pathname = usePathname();
   // Keep the transactional checkout surface focused: no marketing newsletter.
-  const showNewsletter = pathname !== "/checkout";
+  // The home page has its own dedicated newsletter band, so suppress the footer
+  // duplicate there too (avoid two signup forms on one page).
+  const showNewsletter = pathname !== "/checkout" && pathname !== "/";
 
   return (
     <footer className="site-footer elysia-section" dir="rtl">

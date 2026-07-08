@@ -27,7 +27,10 @@ describe("PDP purchase fact placement", () => {
       "careInstructions={product.careInstructions}",
     );
     expect(productPage).toContain("warranty={product.warranty}");
-    expect(productPage).toContain('data-testid="product-commerce-details"');
+    // Design sweep A5 (approved): the page-level product-commerce-details
+    // accordions were removed as a duplicate — delivery/returns/warranty/care now
+    // live once, in the panel's product-before-order-summary.
+    expect(productPage).not.toContain('data-testid="product-commerce-details"');
   });
 
   it("keeps facts inside the existing purchase-confidence area", () => {

@@ -51,12 +51,6 @@ type ProductPageProps = {
   searchParams?: Promise<{ q?: string; position?: string }>;
 };
 
-type ServiceRowProps = {
-  description: string;
-  icon: LucideIcon;
-  title: string;
-};
-
 export async function generateStaticParams() {
   const products = await listCatalogProducts();
 
@@ -162,15 +156,6 @@ export default async function ProductPage({
     product,
     publicCollectionName,
   });
-  const productCommerceDetails = [
-    { label: "משלוח", value: product.deliveryPromise },
-    { label: "החזרה", value: product.returnPolicy },
-    { label: "אחריות", value: product.warranty },
-    { label: "טיפול", value: product.careInstructions },
-  ].filter(
-    (detail): detail is { label: string; value: string } =>
-      typeof detail.value === "string" && detail.value.length > 0,
-  );
   const productTrustNotes = [
     product.warranty
       ? {
@@ -405,31 +390,6 @@ export default async function ProductPage({
               </div>
             </section>
 
-            {productCommerceDetails.length > 0 ? (
-              <div
-                className="mt-5 grid gap-2"
-                data-exclusive-details-group
-                data-testid="product-commerce-details"
-              >
-                {productCommerceDetails.map((detail) => (
-                  <details
-                    className="group rounded-md border border-[var(--glass-border)] p-3"
-                    key={detail.label}
-                  >
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none [&::-webkit-details-marker]:hidden">
-                      <span>{detail.label}</span>
-                      <ChevronDown
-                        aria-hidden="true"
-                        className="size-4 shrink-0 transition-transform group-open:rotate-180"
-                      />
-                    </summary>
-                    <p className="text-muted-foreground mt-2 text-sm leading-6">
-                      {detail.value}
-                    </p>
-                  </details>
-                ))}
-              </div>
-            ) : null}
           </div>
         </aside>
       </RevealSection>
@@ -452,31 +412,6 @@ export default async function ProductPage({
             <p className="text-muted-foreground hidden text-base leading-8 sm:block">
               {product.description}
             </p>
-
-            <div
-              className="brand-surface divide-border hidden divide-y overflow-hidden rounded-md sm:block"
-              data-testid="product-service-summary"
-            >
-              {product.warranty ? (
-                <ServiceRow
-                  description={product.warranty}
-                  icon={ShieldCheck}
-                  title="אחריות"
-                />
-              ) : null}
-              {product.returnPolicy ? (
-                <ServiceRow
-                  description={product.returnPolicy}
-                  icon={RotateCcw}
-                  title="החלפה והחזרה"
-                />
-              ) : null}
-              <ServiceRow
-                description="אפשר לקבל ייעוץ מידה, התאמה ומתנה לפני הזמנה, עם שם התכשיט מצורף לפנייה."
-                icon={MessageCircle}
-                title="שירות אישי"
-              />
-            </div>
 
             <ProductFaq items={productFaqItems} />
           </div>
@@ -536,26 +471,6 @@ function ProductFaq({
         ))}
       </div>
     </section>
-  );
-}
-
-function ServiceRow({ description, icon: Icon, title }: ServiceRowProps) {
-  return (
-    <div
-      className="grid gap-3 px-5 py-5 sm:grid-cols-[2.75rem_minmax(0,1fr)] sm:gap-5 sm:px-6 lg:px-7"
-      data-testid="product-service-row"
-    >
-      <span
-        className="border-border bg-background flex size-10 items-center justify-center rounded-full border"
-        data-testid="product-service-row-icon"
-      >
-        <Icon aria-hidden="true" className="size-4" />
-      </span>
-      <div>
-        <h3 className="font-semibold">{title}</h3>
-        <p className="text-muted-foreground mt-2 leading-7">{description}</p>
-      </div>
-    </div>
   );
 }
 

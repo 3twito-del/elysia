@@ -209,7 +209,7 @@ export default async function Home() {
       >
         {orderedCategories.length > 0 ? (
           <RevealGrid
-            className="grid gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-4"
+            className="grid grid-cols-2 gap-x-5 gap-y-8 sm:gap-x-7 sm:gap-y-10 lg:grid-cols-4"
             data-layout-equal-group="home-category-tiles"
             data-testid="home-category-tiles"
             variant="media"
@@ -236,14 +236,14 @@ export default async function Home() {
           <div className="mx-auto max-w-[92rem]">
             <CommerceSectionHeader eyebrow="הקולקציה שלנו" title="חדש באתר" />
             <RevealGrid
-              className="ui-equal-grid grid gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-4"
+              className="ui-equal-grid grid grid-cols-2 gap-x-5 gap-y-8 sm:gap-x-7 sm:gap-y-10 lg:grid-cols-4"
               data-layout-equal-group="home-featured-products"
               data-testid="home-featured-products"
               variant="cards"
             >
               {featuredProducts.map((product) => (
                 <ProductCard
-                  imageSizes="(min-width: 1280px) 17rem, (min-width: 1024px) 22vw, (min-width: 640px) 50vw, 100vw"
+                  imageSizes="(min-width: 1280px) 17rem, (min-width: 1024px) 22vw, 50vw"
                   key={product.slug}
                   product={product}
                 />
@@ -268,7 +268,7 @@ export default async function Home() {
       <TRPCReactProvider>
         <RecentlyViewedProducts
           className="boutique-section mx-auto w-full max-w-[92rem] border-y border-[var(--glass-border)] px-[var(--ui-page-x)] py-7 lg:px-[var(--ui-page-x-wide)]"
-          gridClassName="ui-equal-grid mt-5 grid gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-4"
+          gridClassName="ui-equal-grid mt-5 grid grid-cols-2 gap-x-5 gap-y-8 sm:gap-x-7 sm:gap-y-10 lg:grid-cols-4"
           heading="נצפו לאחרונה"
           id="recently-viewed"
           limit={4}
@@ -441,7 +441,7 @@ function HomeCategoryCard({ category }: { category: CatalogCategory }) {
           aria-hidden="true"
           className="media-color object-cover"
           fill
-          sizes="(min-width: 1024px) 22vw, (min-width: 640px) 50vw, 100vw"
+          sizes="(min-width: 1024px) 22vw, 50vw"
           src={category.image}
           style={{
             objectPosition: categoryImagePosition[category.slug] ?? "50% 50%",

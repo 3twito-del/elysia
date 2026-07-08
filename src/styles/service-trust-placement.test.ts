@@ -44,16 +44,26 @@ describe("commerce service trust placement", () => {
     ).toBeLessThan(indexOf(purchasePanel, "data-material-swatch"));
   });
 
-  it("keeps product detail service rows available below the buy area", () => {
+  it("consolidates product detail reassurance into the buy panel, not duplicated below it", () => {
     const productPage = read("src/app/product/[slug]/page.tsx");
+    const purchasePanel = read(
+      "src/app/product/[slug]/_components/product-purchase-panel.tsx",
+    );
 
     expect(productPage).toContain("<ProductPurchasePanel");
-    expect(productPage).toContain('data-testid="product-commerce-details"');
-    expect(productPage).toContain("<ServiceRow");
-    expect(productPage).toContain("ShieldCheck");
-    expect(productPage).toContain("RotateCcw");
+    // Design sweep A5 (approved override): the two duplicated below-buy-area
+    // reassurance blocks — the product-commerce-details accordions and the
+    // ServiceRow service summary — were removed. Delivery/returns/warranty/care
+    // now live once, in the panel's before-order summary; below the buy area the
+    // page keeps only the distinct spec + FAQ.
+    expect(productPage).not.toContain('data-testid="product-commerce-details"');
+    expect(productPage).not.toContain("<ServiceRow");
+    expect(purchasePanel).toContain(
+      'data-testid="product-before-order-summary"',
+    );
+    expect(productPage).toContain('data-testid="product-faq"');
     expect(indexOf(productPage, "<ProductPurchasePanel")).toBeLessThan(
-      indexOf(productPage, "<ServiceRow"),
+      indexOf(productPage, 'data-testid="product-faq"'),
     );
   });
 

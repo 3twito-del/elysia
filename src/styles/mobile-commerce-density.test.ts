@@ -45,7 +45,7 @@ describe("mobile commerce density", () => {
     expect(source).not.toContain("brand-control-panel grid gap-2 p-1.5");
   });
 
-  it("keeps home collection tiles and product previews curated rather than dense", () => {
+  it("keeps home collection tiles and product previews as a 2-up mobile grid", () => {
     const source = read("src/app/page.tsx");
     const css = read("src/styles/globals.css");
 
@@ -53,7 +53,10 @@ describe("mobile commerce density", () => {
     expect(source).toContain("boutique-collection-card");
     expect(source).toContain("boutique-collection-media");
     expect(source).toContain("boutique-featured-band");
-    expect(source).toContain("ui-equal-grid grid gap-x-7 gap-y-10");
+    // Design sweep A6 (approved override of the prior curated-not-dense default):
+    // the home category tiles and product previews are now a 2-up grid from
+    // mobile up, cutting the mobile home ~11,100px -> ~6,600px (-41%).
+    expect(source).toContain("ui-equal-grid grid grid-cols-2 gap-x-5 gap-y-8");
     expect(source).toContain('data-testid="home-category-card"');
     expect(source).not.toContain('data-testid="home-material-trust"');
     expect(css).toContain(".boutique-collection-card");
