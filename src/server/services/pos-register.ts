@@ -2,6 +2,7 @@ import { db } from "~/server/db";
 import { postOrderSaleToLedger } from "~/server/services/finance";
 import { awardPointsForOrder } from "~/server/services/loyalty";
 import { createCommerceOrderNumber } from "~/server/services/order-workflow";
+import { assertOwnCommerceEnabled } from "~/server/services/own-commerce";
 
 /**
  * Point-of-sale cash-register shifts (POS, Phase 8).
@@ -47,6 +48,9 @@ export async function recordPosSale(input: {
   customerEmail?: string;
   soldById?: string;
 }) {
+  // ADR 0013 Gate L2 — a POS sale is own commerce: Elysia takes the money.
+  assertOwnCommerceEnabled("POS sale (recordPosSale)");
+
   const quantity = Math.trunc(input.quantity);
   if (quantity <= 0) throw new Error("כמות המכירה חייבת להיות מספר שלם חיובי.");
 
@@ -122,6 +126,7 @@ export async function recordPosSale(input: {
         branchId: shift.branchId,
         registerShiftId: shift.id,
         status: "PAID",
+        financialTreatment: "OWN_SALE",
         fulfillmentMethod: "PICKUP",
         currency: "ILS",
         subtotal: total,

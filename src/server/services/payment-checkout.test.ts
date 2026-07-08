@@ -22,6 +22,14 @@ vi.mock("~/server/adapters/payment", () => ({
   },
 }));
 
+const ownCommerceMocks = vi.hoisted(() => ({
+  isOwnCommerceEnabled: vi.fn(() => true),
+}));
+
+vi.mock("~/server/services/own-commerce", () => ({
+  isOwnCommerceEnabled: ownCommerceMocks.isOwnCommerceEnabled,
+}));
+
 import {
   createPaymentCheckoutSession,
   getExistingPaymentCheckoutSessionFromPayments,
@@ -41,6 +49,7 @@ describe("payment checkout failure copy", () => {
       "callback_mismatch",
       "webhook_delay",
       "payment_already_recorded",
+      "own_commerce_disabled",
     ];
     const messages = kinds.map((kind) =>
       getPaymentCheckoutFailureMessage(kind),
@@ -140,6 +149,30 @@ describe("payment checkout failure copy", () => {
       providerPaymentId: "provider_payment_1",
       redirectUrl: "https://secure.example/pay/provider_payment_1",
     });
+    expect(paymentMocks.createCheckout).not.toHaveBeenCalled();
+  });
+
+  // ADR 0013 Gate L2 — while own commerce is disabled, the merchant-of-record
+  // payment path must refuse before touching the order or the provider.
+  it("refuses to open a payment session while own commerce is disabled", async () => {
+    ownCommerceMocks.isOwnCommerceEnabled.mockReturnValueOnce(false);
+
+    await expect(
+      createPaymentCheckoutSession({
+        checkout: {
+          amount: 1290,
+          customerEmail: "customer@example.com",
+          orderId: "order_1",
+          orderNumber: "ELY-1001",
+          returnUrl: "https://elysia.local/checkout/return",
+        },
+        headers: new Headers({ origin: "https://elysia.local" }),
+      }),
+    ).rejects.toMatchObject({
+      code: "SERVICE_UNAVAILABLE",
+      message: getPaymentCheckoutFailureMessage("own_commerce_disabled"),
+    });
+    expect(dbMocks.orderFindUnique).not.toHaveBeenCalled();
     expect(paymentMocks.createCheckout).not.toHaveBeenCalled();
   });
 });

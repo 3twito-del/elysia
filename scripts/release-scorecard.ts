@@ -147,6 +147,18 @@ export async function main(args = process.argv.slice(2)) {
     JSON.stringify(
       {
         blockingFields: scorecard.blockingFields,
+        gates: {
+          L1: {
+            ready: scorecard.gates.L1.ready,
+            satisfiedCount: scorecard.gates.L1.satisfiedCount,
+            totalCount: scorecard.gates.L1.totalCount,
+          },
+          L2: {
+            ready: scorecard.gates.L2.ready,
+            satisfiedCount: scorecard.gates.L2.satisfiedCount,
+            totalCount: scorecard.gates.L2.totalCount,
+          },
+        },
         generatedAt,
         outDir,
         ready: scorecard.ready,

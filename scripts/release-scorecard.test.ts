@@ -107,9 +107,46 @@ describe("release scorecard model", () => {
       }),
     );
 
-    expect(markdown).toContain("Status: NOT READY");
+    expect(markdown).toContain("Overall claim gate: NOT READY");
     expect(markdown).toContain("PROJECT_TASKS.md");
     expect(markdown).toContain("`wcag`");
+  });
+
+  // ADR 0013 — the scorecard separates the referral-storefront gate (L1)
+  // from the own-commerce gate (L2). L1 readiness never implies L2.
+  it("assigns exactly the own-commerce proofs to gate L2", () => {
+    const scorecard = buildReleaseScorecard({ generatedAt });
+    const l2Keys = scorecard.fields
+      .filter((field) => field.gate === "L2")
+      .map((field) => field.key)
+      .sort();
+
+    expect(l2Keys).toEqual(["ownPaidFlowProof", "reconciliation"]);
+    expect(scorecard.gates.L1.totalCount + scorecard.gates.L2.totalCount).toBe(
+      scorecard.totalCount,
+    );
+  });
+
+  it("reports L1 ready while L2 remains blocked", () => {
+    const l1Fields = Object.fromEntries(
+      buildReleaseScorecard({ generatedAt })
+        .fields.filter((field) => field.gate === "L1")
+        .map((field) => [field.key, { status: "pass" as const }]),
+    );
+
+    const scorecard = buildReleaseScorecard({ generatedAt, fields: l1Fields });
+
+    expect(scorecard.gates.L1.ready).toBe(true);
+    expect(scorecard.gates.L1.blockingFields).toHaveLength(0);
+    expect(scorecard.gates.L2.ready).toBe(false);
+    expect(scorecard.gates.L2.blockingFields).toContain("ownPaidFlowProof");
+    expect(scorecard.gates.L2.blockingFields).toContain("reconciliation");
+    // The overall claim gate still requires both gates.
+    expect(scorecard.ready).toBe(false);
+
+    const markdown = formatReleaseScorecardMarkdown(scorecard);
+    expect(markdown).toContain("Gate L1 (referral storefront): READY");
+    expect(markdown).toContain("Gate L2 (own commerce): NOT READY");
   });
 });
 

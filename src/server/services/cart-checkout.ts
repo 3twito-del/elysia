@@ -287,6 +287,7 @@ async function createCartCheckoutOrderInTransaction(
       customerId: customer.id,
       branchId: branch.id,
       status: "PENDING_PAYMENT",
+      financialTreatment: "OWN_SALE",
       fulfillmentMethod: input.fulfillmentMethod,
       currency: "ILS",
       subtotal: totals.subtotal,

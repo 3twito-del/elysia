@@ -9,10 +9,15 @@
       "evidence": "docs/TIFFANY_SURPASS_MASTER_PLAN.md",
       "note": "Multiple P0 items remain open across workstreams C, G, H, J, K, and L."
     },
-    "paidFlowProof": {
+    "supplierPaidFlowProof": {
       "status": "missing",
       "evidence": "docs/qa/wave-0-owner-evidence-register.md",
-      "note": "G-02/G-04 are EXTERNAL and unassigned; no real own or supplier payment proven."
+      "note": "G-02 is EXTERNAL and unassigned; no real supplier (MOR) checkout proven. Gate L1 per ADR 0013."
+    },
+    "ownPaidFlowProof": {
+      "status": "missing",
+      "evidence": "docs/qa/wave-0-owner-evidence-register.md",
+      "note": "G-04 gates L2 (own commerce activation) per ADR 0013; CardCom sandbox/docs are EXTERNAL-P0."
     },
     "supplierFulfillment": {
       "status": "missing",

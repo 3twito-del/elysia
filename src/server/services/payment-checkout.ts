@@ -6,6 +6,7 @@ import {
 } from "~/server/adapters/payment";
 import { db } from "~/server/db";
 import { BUSINESS_EVENTS, enqueueOutboxEvent } from "~/server/services/outbox";
+import { isOwnCommerceEnabled } from "~/server/services/own-commerce";
 
 export type CreatePaymentCheckoutInput = {
   orderId: string;
@@ -20,11 +21,14 @@ export type PaymentCheckoutFailureKind =
   | "payment_rejected"
   | "callback_mismatch"
   | "webhook_delay"
-  | "payment_already_recorded";
+  | "payment_already_recorded"
+  | "own_commerce_disabled";
 
 const paymentCheckoutFailureMessages = {
   provider_unavailable:
     "Payment cannot be opened right now. Please keep the order page open and contact service if this continues.",
+  own_commerce_disabled:
+    "Direct payment is not available yet. Please contact service to complete this order.",
   payment_rejected:
     "The payment was not approved. No payment was recorded, so please try again or use service support.",
   callback_mismatch:
@@ -83,6 +87,15 @@ export async function createPaymentCheckoutSession(input: {
   checkout: CreatePaymentCheckoutInput;
   headers: Headers;
 }) {
+  // ADR 0013 Gate L2 — Elysia must not open a merchant-of-record payment
+  // path while own commerce is structurally disabled.
+  if (!isOwnCommerceEnabled()) {
+    throw new TRPCError({
+      code: "SERVICE_UNAVAILABLE",
+      message: getPaymentCheckoutFailureMessage("own_commerce_disabled"),
+    });
+  }
+
   const order = await db.order.findUnique({
     where: { id: input.checkout.orderId },
     include: { payments: true },

@@ -29,6 +29,10 @@ import {
 import { normalizeCouponCode } from "~/server/services/coupons";
 import { postOrderRefundToLedger } from "~/server/services/finance";
 import { BUSINESS_EVENTS, createOutboxEvent } from "~/server/services/outbox";
+import {
+  isOwnCommerceEnabled,
+  ownProductPublicationBlockReason,
+} from "~/server/services/own-commerce";
 
 export {
   createAdminCouponInputSchema,
@@ -580,6 +584,19 @@ export async function updateAdminProductStatus(input: {
         variants: { include: { prices: true } },
       },
     });
+
+    // ADR 0013 Gate L2 — a visible OWN product implies a purchasable OWN
+    // product. Publication stays blocked until own commerce is activated.
+    const gateBlock = ownProductPublicationBlockReason({
+      nextStatus: parsed.status,
+      ownCommerceEnabled: isOwnCommerceEnabled(),
+      source: current.source,
+    });
+    if (gateBlock) {
+      throw new Error(
+        "לא ניתן לפרסם מוצר OWN: מסחר עצמי מושבת עד השלמת שער L2 (OWN_COMMERCE_ENABLED).",
+      );
+    }
 
     if (parsed.status === "ACTIVE") {
       const blockers = getProductPublishBlockers({

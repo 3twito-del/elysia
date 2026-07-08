@@ -16,6 +16,7 @@ import {
   postSaleJournalEntry,
 } from "~/server/services/ledger";
 import { ACCOUNT } from "~/server/services/ledger-accounts";
+import { orderSalePostingBlockReason } from "~/server/services/own-commerce";
 
 export type FinanceDateRange = {
   from?: Date;
@@ -335,6 +336,13 @@ export async function postOrderSaleToLedger(orderId: string) {
   });
   if (!order) return { posted: false as const, reason: "order_not_found" };
 
+  // ADR 0009 — only an OWN_SALE order may post product-sale revenue.
+  // Supplier-MOR / agency / unknown-treatment orders never enter the books.
+  const treatmentBlock = orderSalePostingBlockReason(order.financialTreatment);
+  if (treatmentBlock) {
+    return { posted: false as const, reason: treatmentBlock };
+  }
+
   const grossTotal = Number(order.total);
   if (grossTotal <= 0) {
     return { posted: false as const, reason: "non_positive_total" };
@@ -414,6 +422,12 @@ export async function postOrderRefundToLedger(
     },
   });
   if (!order) return { posted: false as const, reason: "order_not_found" };
+
+  // ADR 0009 — refund reversal follows the same treatment rule as the sale.
+  const treatmentBlock = orderSalePostingBlockReason(order.financialTreatment);
+  if (treatmentBlock) {
+    return { posted: false as const, reason: treatmentBlock };
+  }
 
   const grossTotal = Number(order.total);
   if (grossTotal <= 0) {

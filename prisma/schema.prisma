@@ -56,6 +56,18 @@ enum OrderStatus {
   REFUNDED
 }
 
+// ADR 0009 — who legally sold the order and therefore which accounting path
+// it may take. Only OWN_SALE may ever post product-sale revenue to the GL.
+// UNKNOWN_BLOCKED is the fail-closed default: a creation path that does not
+// declare its treatment is blocked from the books.
+enum FinancialTreatment {
+  OWN_SALE
+  AGENCY_DROPSHIP
+  SUPPLIER_MOR_REFERENCE
+  COMMISSION_ONLY
+  UNKNOWN_BLOCKED
+}
+
 enum FulfillmentMethod {
   DELIVERY
   PICKUP
@@ -2340,6 +2352,7 @@ model Order {
   branchId               String?
   registerShiftId        String?
   status                 OrderStatus             @default(PENDING_PAYMENT)
+  financialTreatment     FinancialTreatment      @default(UNKNOWN_BLOCKED)
   fulfillmentMethod      FulfillmentMethod       @default(DELIVERY)
   currency               String                  @default("ILS")
   subtotal               Decimal                 @db.Decimal(10, 2)

@@ -47,6 +47,9 @@ export const env = createEnv({
     ANALYTICS_ROLLUPS_ENABLED: z.enum(["0", "1", "false", "true"]).optional(),
     CRM_AUTOMATION_ENABLED: z.enum(["0", "1", "false", "true"]).optional(),
     ERP_MODULES_ENABLED: z.enum(["0", "1", "false", "true"]).optional(),
+    // ADR 0013 Gate L2 — own commerce (Elysia as merchant of record) stays
+    // structurally disabled until the L2 checklist is complete. Default off.
+    OWN_COMMERCE_ENABLED: z.enum(["0", "1", "false", "true"]).optional(),
     SHOPIFY_STORE_DOMAIN: z.string().optional(),
     SHOPIFY_CLIENT_ID: z.string().optional(),
     SHOPIFY_CLIENT_SECRET: z.string().optional(),
@@ -128,6 +131,7 @@ export const env = createEnv({
     ANALYTICS_ROLLUPS_ENABLED: process.env.ANALYTICS_ROLLUPS_ENABLED,
     CRM_AUTOMATION_ENABLED: process.env.CRM_AUTOMATION_ENABLED,
     ERP_MODULES_ENABLED: process.env.ERP_MODULES_ENABLED,
+    OWN_COMMERCE_ENABLED: process.env.OWN_COMMERCE_ENABLED,
     SHOPIFY_STORE_DOMAIN: process.env.SHOPIFY_STORE_DOMAIN,
     SHOPIFY_CLIENT_ID: process.env.SHOPIFY_CLIENT_ID,
     SHOPIFY_CLIENT_SECRET: process.env.SHOPIFY_CLIENT_SECRET,
