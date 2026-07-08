@@ -125,7 +125,7 @@ describe("public structure enforcement", () => {
 
   it("documents the v4 structure policy in code and docs", () => {
     const policy = read("src/lib/public-structure-policy.ts");
-    const artifact = read("docs/PUBLIC_CHANGE_GATE.md");
+    const artifact = read("docs/DESIGN.md");
 
     expect(policy).toContain("PublicRouteArchetype");
     expect(policy).toContain("PublicStructureDecision");

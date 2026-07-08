@@ -8,7 +8,7 @@
 //
 // The guard is an environment switch, not an admin UI toggle, so it cannot be
 // flipped casually from the console. Flipping it requires a deploy with
-// documented L2 checklist proof (see docs/adr/0013-two-gate-launch-model.md).
+// documented L2 checklist proof (see docs/DECISIONS.md, ADR 0013).
 
 import type { FinancialTreatment } from "@prisma/client";
 
@@ -37,7 +37,7 @@ export class OwnCommerceDisabledError extends Error {
   constructor(context: string) {
     super(
       `Own commerce is disabled (OWN_COMMERCE_ENABLED is off): ${context}. ` +
-        "Gate L2 is incomplete — see docs/adr/0013-two-gate-launch-model.md.",
+        "Gate L2 is incomplete — see docs/DECISIONS.md (ADR 0013).",
     );
     this.name = "OwnCommerceDisabledError";
     this.context = context;

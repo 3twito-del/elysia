@@ -8,7 +8,7 @@ const root = process.cwd();
 describe("content route service recovery links", () => {
   it("keeps the I-027 benchmark gate attached to content route recovery", () => {
     const benchmark = read(
-      "docs/qa/faq-content-service-recovery-links-benchmark.md",
+      "docs/QA_EVIDENCE.md",
     );
 
     expect(benchmark).toContain("`Backlog Item`: I-027");

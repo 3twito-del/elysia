@@ -10,8 +10,8 @@ describe("Tiffany plus completion guardrails", () => {
     const productCard = read("src/components/product-card.tsx");
     const footer = read("src/components/site-footer.tsx");
     const css = read("src/styles/globals.css");
-    const plan = read("docs/TIFFANY_PLUS_IMPLEMENTATION_PLAN.md");
-    const visualQa = read("docs/qa/tiffany-plus-visual-qa-mobile-first.md");
+    const plan = read("docs/DESIGN.md");
+    const visualQa = read("docs/QA_EVIDENCE.md");
 
     expect(plan).toContain("Product Cards Luxury Pass");
     expect(plan).toContain("Trust Layer");

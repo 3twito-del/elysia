@@ -53,7 +53,7 @@ describe("account recovery shortcuts", () => {
 
   it("keeps benchmark support evidence available after backlog replacement", () => {
     const benchmark = read(
-      "docs/qa/account-recovery-service-shortcuts-benchmark.md",
+      "docs/QA_EVIDENCE.md",
     );
 
     expect(benchmark).toContain("Weighted Score`: 12.0");

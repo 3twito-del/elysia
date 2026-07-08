@@ -28,7 +28,7 @@ describe("about page redesign guardrails", () => {
   });
 
   it("keeps the implementation report available for the benchmark review", () => {
-    const report = read("docs/qa/about-page-redesign.md");
+    const report = read("docs/QA_EVIDENCE.md");
 
     expect(report).toContain("Local benchmark reviewed");
     expect(report).toContain("Media: count, placement, aspect ratios");

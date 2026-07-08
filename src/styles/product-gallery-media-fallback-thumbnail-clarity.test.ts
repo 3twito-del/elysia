@@ -7,7 +7,7 @@ const root = process.cwd();
 
 describe("product gallery media fallback and thumbnail clarity", () => {
   it("keeps full-gallery benchmark support evidence available", () => {
-    const benchmark = read("docs/qa/product-gallery-full-gallery-benchmark.md");
+    const benchmark = read("docs/QA_EVIDENCE.md");
 
     expect(benchmark).toContain("I-034");
     expect(benchmark).toContain("Weighted Score`: 37.5");

@@ -116,7 +116,7 @@ describe("product card overlay budget", () => {
 
   it("keeps quick facts benchmark evidence available", () => {
     const benchmark = read(
-      "docs/qa/product-card-quick-facts-density-benchmark.md",
+      "docs/QA_EVIDENCE.md",
     );
 
     expect(benchmark).toContain("Weighted Score`: 12.0");

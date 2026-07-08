@@ -8,7 +8,7 @@ const root = process.cwd();
 describe("checkout quantity recovery and mobile summary", () => {
   it("keeps benchmark support evidence available", () => {
     const benchmark = read(
-      "docs/qa/checkout-quantity-mobile-summary-benchmark.md",
+      "docs/QA_EVIDENCE.md",
     );
 
     expect(benchmark).toContain("I-039");

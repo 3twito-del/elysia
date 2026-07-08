@@ -8,7 +8,7 @@ const root = process.cwd();
 describe("size guide save context and product return path", () => {
   it("keeps benchmark support evidence available", () => {
     const benchmark = read(
-      "docs/qa/size-guide-save-context-return-path-benchmark.md",
+      "docs/QA_EVIDENCE.md",
     );
 
     expect(benchmark).toContain("I-045");

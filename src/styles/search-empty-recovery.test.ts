@@ -8,7 +8,7 @@ const root = process.cwd();
 describe("search empty-state guided recovery", () => {
   it("records benchmark support before changing the public search empty state", () => {
     const benchmark = read(
-      "docs/qa/search-empty-state-guided-recovery-benchmark.md",
+      "docs/QA_EVIDENCE.md",
     );
 
     expect(benchmark).toContain("Weighted Score`: 16.5");

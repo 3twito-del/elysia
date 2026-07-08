@@ -8,7 +8,7 @@ const root = process.cwd();
 describe("product recommendation rail return context", () => {
   it("keeps benchmark support evidence available", () => {
     const benchmark = read(
-      "docs/qa/product-recommendation-rail-return-context-benchmark.md",
+      "docs/QA_EVIDENCE.md",
     );
 
     expect(benchmark).toContain("I-038");

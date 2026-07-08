@@ -34,7 +34,7 @@ describe("AI fallback recovery UI", () => {
   });
 
   it("keeps benchmark support evidence available after backlog replacement", () => {
-    const benchmark = read("docs/qa/ai-stylist-fallback-benchmark.md");
+    const benchmark = read("docs/QA_EVIDENCE.md");
 
     expect(benchmark).toContain("Weighted Score`: 12.0");
     expect(benchmark).toContain("Decision`: Supported");

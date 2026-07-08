@@ -31,7 +31,7 @@ describe("account wishlist decision support", () => {
 
   it("records high-jewelry benchmark support for the shortlist change", () => {
     const benchmark = read(
-      "docs/qa/wishlist-shortlist-decision-support-benchmark.md",
+      "docs/QA_EVIDENCE.md",
     );
 
     expect(benchmark).toContain("Weighted Score`: 12.0");

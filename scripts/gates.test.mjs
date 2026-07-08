@@ -27,7 +27,7 @@ const vercelProductionMigrateScript = readFileSync(
   "utf8",
 );
 const engineeringConventions = readFileSync(
-  path.join(repoRoot, "docs/ENGINEERING_CONVENTIONS.md"),
+  path.join(repoRoot, "docs/ENGINEERING.md"),
   "utf8",
 );
 

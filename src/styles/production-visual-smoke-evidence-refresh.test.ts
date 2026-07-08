@@ -8,9 +8,9 @@ const root = process.cwd();
 describe("production visual smoke evidence refresh", () => {
   it("keeps a repeatable post-deploy evidence checklist", () => {
     const evidence = read(
-      "docs/qa/production-visual-smoke-evidence-refresh.md",
+      "docs/QA_EVIDENCE.md",
     );
-    const ledger = read("docs/qa/production-deployment-evidence-ledger.md");
+    const ledger = read("docs/QA_EVIDENCE.md");
 
     expect(evidence).toContain("I-047");
     expect(evidence).toContain(
@@ -26,7 +26,7 @@ describe("production visual smoke evidence refresh", () => {
 
   it("keeps production visual artifacts named with route set and deployment id", () => {
     const evidence = read(
-      "docs/qa/production-visual-smoke-evidence-refresh.md",
+      "docs/QA_EVIDENCE.md",
     );
     const script = read("scripts/visual-qa-agent-browser.ps1");
 
@@ -43,7 +43,7 @@ describe("production visual smoke evidence refresh", () => {
   });
 
   it("keeps deployment ledger evidence tied to alias, commit, and error logs", () => {
-    const ledger = read("docs/qa/production-deployment-evidence-ledger.md");
+    const ledger = read("docs/QA_EVIDENCE.md");
 
     expect(ledger).toContain("Commit SHA");
     expect(ledger).toContain("Deployment ID");
@@ -55,7 +55,7 @@ describe("production visual smoke evidence refresh", () => {
   });
 
   it("keeps Shopify release notes split from deferred provider blockers", () => {
-    const roadmap = read("docs/PROJECT_TASKS.md");
+    const roadmap = read("docs/TASKS.md");
 
     expect(roadmap).toContain("Release note pattern");
     expect(roadmap).toContain("Actionable release tasks");

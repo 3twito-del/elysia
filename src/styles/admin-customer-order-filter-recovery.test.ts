@@ -8,7 +8,7 @@ const root = process.cwd();
 describe("admin customer and order filter recovery", () => {
   it("keeps benchmark support evidence available", () => {
     const benchmark = read(
-      "docs/qa/admin-customer-order-filter-recovery-benchmark.md",
+      "docs/QA_EVIDENCE.md",
     );
 
     expect(benchmark).toContain("I-041");

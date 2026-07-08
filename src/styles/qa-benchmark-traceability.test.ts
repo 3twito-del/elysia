@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -15,7 +15,7 @@ const activeBacklogRotation = {
 
 describe("QA benchmark traceability", () => {
   it("keeps benchmark backlog references current or intentionally historical", () => {
-    const backlog = read("docs/PROJECT_TASKS.md");
+    const backlog = read("docs/TASKS.md");
     const activeBacklogIds = new Set(
       Array.from(backlog.matchAll(/\|\s*(I-\d{3})\s*\|/g), (match) => {
         const id = match[1];
@@ -31,38 +31,31 @@ describe("QA benchmark traceability", () => {
     const activeBatchIsEmpty = backlog.includes(
       "No active actionable items remain in this review batch.",
     );
-    const qaDocs = readdirSync(path.join(root, "docs", "qa"))
-      .filter((entry) => entry.endsWith(".md"))
-      .map((entry) => `docs/qa/${entry}`);
-    const offenders = qaDocs.flatMap((file) => {
-      const contents = read(file);
-      const backlogItemLines = contents
-        .split("\n")
-        .filter((line) => line.includes("`Backlog Item`"));
+    const evidenceLedger = read("docs/QA_EVIDENCE.md");
+    const backlogItemLines = evidenceLedger
+      .split("\n")
+      .filter((line) => line.includes("`Backlog Item`"));
+    const offenders = backlogItemLines.flatMap((line) => {
+      const ids = Array.from(line.matchAll(/\bI-\d{3}\b/g), (match) => {
+        const id = match[0];
 
-      return backlogItemLines.flatMap((line) => {
-        const ids = Array.from(line.matchAll(/\bI-\d{3}\b/g), (match) => {
-          const id = match[0];
-
-          return id;
-        });
-
-        if (ids.length === 0) return [`${file}: missing backlog ID`];
-
-        return ids
-          .filter(
-            (id) =>
-              !activeBacklogIds.has(id) &&
-              !historicalBenchmarkBacklogIds.has(id),
-          )
-          .map((id) => `${file}: unknown backlog ID ${id}`);
+        return id;
       });
+
+      if (ids.length === 0) return [`docs/QA_EVIDENCE.md: missing backlog ID`];
+
+      return ids
+        .filter(
+          (id) =>
+            !activeBacklogIds.has(id) && !historicalBenchmarkBacklogIds.has(id),
+        )
+        .map((id) => `docs/QA_EVIDENCE.md: unknown backlog ID ${id}`);
     });
 
-    expect(read("docs/qa/benchmark-traceability.md")).toContain("I-199");
-    expect(read("docs/qa/benchmark-traceability.md")).toContain("I-300");
-    expect(read("docs/qa/benchmark-traceability.md")).toContain("I-301");
-    expect(read("docs/qa/benchmark-traceability.md")).toContain("I-400");
+    expect(evidenceLedger).toContain("I-199");
+    expect(evidenceLedger).toContain("I-300");
+    expect(evidenceLedger).toContain("I-301");
+    expect(evidenceLedger).toContain("I-400");
     if (activeBatchIsEmpty) {
       expect(activeBacklogNumbers).toHaveLength(0);
     } else {

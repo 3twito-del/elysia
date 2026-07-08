@@ -37,7 +37,7 @@ describe("admin redirect sanitization", () => {
   });
 
   it("keeps the QA evidence note aligned with the sanitizer coverage", () => {
-    const evidence = read("docs/qa/admin-login-redirect-evidence.md");
+    const evidence = read("docs/QA_EVIDENCE.md");
     const loginPage = read("src/app/admin/login/page.tsx");
 
     expect(evidence).toContain("sanitizeAdminRedirect");

@@ -8,7 +8,7 @@ const root = process.cwd();
 describe("account dashboard privacy shortcut clarity", () => {
   it("keeps benchmark support evidence available", () => {
     const benchmark = read(
-      "docs/qa/account-dashboard-privacy-shortcut-clarity-benchmark.md",
+      "docs/QA_EVIDENCE.md",
     );
 
     expect(benchmark).toContain("I-036");

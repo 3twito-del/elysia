@@ -8,7 +8,7 @@ const root = process.cwd();
 describe("service topic routing and attachment review", () => {
   it("keeps benchmark support evidence available", () => {
     const benchmark = read(
-      "docs/qa/service-topic-attachment-review-benchmark.md",
+      "docs/QA_EVIDENCE.md",
     );
 
     expect(benchmark).toContain("I-040");

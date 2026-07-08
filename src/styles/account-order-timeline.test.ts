@@ -24,7 +24,7 @@ describe("account order timeline clarity", () => {
 
   it("records high-jewelry benchmark support for account order timelines", () => {
     const benchmark = read(
-      "docs/qa/account-order-timeline-clarity-benchmark.md",
+      "docs/QA_EVIDENCE.md",
     );
 
     expect(benchmark).toContain("Weighted Score`: 12.0");

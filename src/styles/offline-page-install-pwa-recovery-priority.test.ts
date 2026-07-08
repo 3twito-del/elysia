@@ -8,7 +8,7 @@ const root = process.cwd();
 describe("offline page install and PWA recovery priority", () => {
   it("keeps benchmark support evidence available", () => {
     const benchmark = read(
-      "docs/qa/offline-page-install-pwa-recovery-priority-benchmark.md",
+      "docs/QA_EVIDENCE.md",
     );
 
     expect(benchmark).toContain("I-037");

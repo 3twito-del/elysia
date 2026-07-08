@@ -8,7 +8,7 @@ const root = process.cwd();
 describe("category no-result recovery depth", () => {
   it("records benchmark support before changing category empty recovery", () => {
     const benchmark = read(
-      "docs/qa/category-no-result-recovery-depth-benchmark.md",
+      "docs/QA_EVIDENCE.md",
     );
 
     expect(benchmark).toContain("Weighted Score`: 16.5");

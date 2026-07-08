@@ -42,7 +42,7 @@ describe("discovery filter density", () => {
 
   it("keeps benchmark support evidence available after backlog replacement", () => {
     const benchmark = read(
-      "docs/qa/search-category-filter-density-benchmark.md",
+      "docs/QA_EVIDENCE.md",
     );
 
     expect(benchmark).toContain("Weighted Score`: 16.5");

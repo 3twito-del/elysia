@@ -8,7 +8,7 @@ const root = process.cwd();
 describe("PDP purchase fact placement", () => {
   it("keeps the I-025 benchmark gate attached to the PDP implementation", () => {
     const benchmark = read(
-      "docs/qa/pdp-size-care-fit-fact-placement-benchmark.md",
+      "docs/QA_EVIDENCE.md",
     );
 
     expect(benchmark).toContain("`Backlog Item`: I-025");

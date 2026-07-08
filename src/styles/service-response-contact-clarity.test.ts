@@ -8,7 +8,7 @@ const root = process.cwd();
 describe("service response and contact clarity", () => {
   it("keeps the I-026 benchmark gate attached to the service implementation", () => {
     const benchmark = read(
-      "docs/qa/service-response-contact-clarity-benchmark.md",
+      "docs/QA_EVIDENCE.md",
     );
 
     expect(benchmark).toContain("`Backlog Item`: I-026");

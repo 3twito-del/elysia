@@ -7,7 +7,7 @@ const root = process.cwd();
 
 describe("high jewelry reference gate documentation", () => {
   it("documents the gate, source list, threshold, and blocking protocol", () => {
-    const doc = read("docs/PUBLIC_CHANGE_GATE.md");
+    const doc = read("docs/DESIGN.md");
 
     expect(doc).toContain("HIGH_JEWELRY_REFERENCE_GATE");
     expect(doc).toContain("15 Tier A high jewelry sites");

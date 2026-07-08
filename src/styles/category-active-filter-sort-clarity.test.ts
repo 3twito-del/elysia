@@ -8,7 +8,7 @@ const root = process.cwd();
 describe("category active filter and sort clarity", () => {
   it("records benchmark support for the category clarity pass", () => {
     const benchmark = read(
-      "docs/qa/category-active-filter-sort-clarity-benchmark.md",
+      "docs/QA_EVIDENCE.md",
     );
 
     expect(benchmark).toContain("Weighted Score`: 16.5");

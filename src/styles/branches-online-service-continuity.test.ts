@@ -8,7 +8,7 @@ const root = process.cwd();
 describe("branches online-only service continuity", () => {
   it("keeps benchmark support evidence available", () => {
     const benchmark = read(
-      "docs/qa/branches-online-only-service-continuity-benchmark.md",
+      "docs/QA_EVIDENCE.md",
     );
 
     expect(benchmark).toContain("I-046");

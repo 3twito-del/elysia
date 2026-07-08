@@ -8,7 +8,7 @@ const root = process.cwd();
 describe("checkout validation summary and payment confidence", () => {
   it("keeps benchmark support evidence available", () => {
     const benchmark = read(
-      "docs/qa/checkout-validation-payment-confidence-benchmark.md",
+      "docs/QA_EVIDENCE.md",
     );
 
     expect(benchmark).toContain("I-035");

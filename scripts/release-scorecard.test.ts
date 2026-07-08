@@ -102,13 +102,13 @@ describe("release scorecard model", () => {
       buildReleaseScorecard({
         generatedAt,
         fields: {
-          p0Blockers: { status: "pass", evidence: "PROJECT_TASKS.md" },
+          p0Blockers: { status: "pass", evidence: "TASKS.md" },
         },
       }),
     );
 
     expect(markdown).toContain("Overall claim gate: NOT READY");
-    expect(markdown).toContain("PROJECT_TASKS.md");
+    expect(markdown).toContain("TASKS.md");
     expect(markdown).toContain("`wcag`");
   });
 
