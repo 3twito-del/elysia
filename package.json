@@ -21,6 +21,7 @@
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
+    "db:verify:immutability": "prisma db execute --schema prisma/schema.prisma --file scripts/verify-immutability-triggers.sql",
     "dev": "next dev --webpack",
     "dev:turbo": "next dev --turbopack",
     "e2e": "playwright test",

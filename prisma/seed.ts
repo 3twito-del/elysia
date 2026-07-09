@@ -170,6 +170,9 @@ async function main() {
   const bootstrapAdmin = await getBootstrapAdmin();
 
   await prisma.$transaction([
+    // Dev-only reset: the ADR 0004 immutability triggers block DELETE on
+    // evidentiary tables; SET LOCAL scopes the escape hatch to this txn only.
+    prisma.$executeRaw`SET LOCAL elysia.allow_protected_mutation = 'on'`,
     prisma.auditLog.deleteMany(),
     prisma.jobRun.deleteMany(),
     prisma.outboxEvent.deleteMany(),
