@@ -10,6 +10,10 @@ const envMock = vi.hoisted(() => ({
 const jobMocks = vi.hoisted(() => ({
   processDueOutboxEvents: vi.fn(),
 }));
+const alertMocks = vi.hoisted(() => ({
+  deliverDueAlertNotifications: vi.fn(),
+  sweepOperationalInvariants: vi.fn(),
+}));
 
 vi.mock("~/env", () => ({
   env: envMock,
@@ -17,6 +21,11 @@ vi.mock("~/env", () => ({
 
 vi.mock("~/server/services/jobs", () => ({
   processDueOutboxEvents: jobMocks.processDueOutboxEvents,
+}));
+
+vi.mock("~/server/services/operational-alerts", () => ({
+  deliverDueAlertNotifications: alertMocks.deliverDueAlertNotifications,
+  sweepOperationalInvariants: alertMocks.sweepOperationalInvariants,
 }));
 
 import { POST } from "./route";
@@ -35,6 +44,10 @@ describe("outbox job route", () => {
       scanned: 1,
       skipped: 0,
     });
+    alertMocks.sweepOperationalInvariants.mockResolvedValue({ violations: 0 });
+    alertMocks.deliverDueAlertNotifications.mockResolvedValue({
+      delivered: 0,
+    });
   });
 
   it("runs the outbox processor for authorized job runners", async () => {
@@ -49,6 +62,7 @@ describe("outbox job route", () => {
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
       ok: true,
+      alerts: { violations: 0 },
       result: {
         failed: 0,
         processed: 1,
@@ -67,6 +81,8 @@ describe("outbox job route", () => {
     expect(jobMocks.processDueOutboxEvents).toHaveBeenCalledWith({
       limit: 25,
     });
+    expect(alertMocks.sweepOperationalInvariants).toHaveBeenCalled();
+    expect(alertMocks.deliverDueAlertNotifications).toHaveBeenCalled();
   });
 
   it("summarizes skipped and retryable failed jobs without changing processor counts", async () => {
@@ -82,6 +98,7 @@ describe("outbox job route", () => {
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
       ok: true,
+      alerts: { violations: 0 },
       result: {
         failed: 1,
         processed: 2,

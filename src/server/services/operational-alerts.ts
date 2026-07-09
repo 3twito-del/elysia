@@ -6,6 +6,7 @@
 import { notificationProvider } from "~/server/adapters/notifications";
 import { env } from "~/env";
 import { db } from "~/server/db";
+import { countRecentAdminLoginFailures } from "~/server/services/admin-security";
 import { getEventClassPolicy } from "~/server/services/event-classes";
 import { recordJobRun } from "~/server/services/outbox";
 
@@ -315,6 +316,27 @@ export async function sweepOperationalInvariants(now: Date = new Date()) {
     });
   }
 
+  // 4. Security: failed / rate-limited admin logins awaiting review
+  //    (ADR 0005 telemetry × ADR 0007 sweep).
+  const loginFailures = await countRecentAdminLoginFailures({
+    now,
+    windowMinutes: 60,
+  });
+
+  if (loginFailures >= 5) {
+    violations.push({
+      alertKey: "security-admin-login-failures",
+      class: "SECURITY",
+      severity: "P1",
+      invariant: "admin-login-failures-reviewed",
+      message: `${loginFailures} failed or rate-limited admin login attempts in the last 60 minutes.`,
+      measuredValue: String(loginFailures),
+      thresholdValue: "5/60m",
+      remediationHint:
+        "Review AdminAuth events in /admin/audit; if the source is unknown, rotate the admin password and inspect for lockout abuse.",
+    });
+  }
+
   // Raise / refresh all violated invariants, then auto-resolve cleared ones.
   for (const violation of violations) {
     await raiseOperationalAlert(violation, now);
@@ -328,6 +350,7 @@ export async function sweepOperationalInvariants(now: Date = new Date()) {
       "outbox-dead-letter:",
       "money-paid-without-gl:",
       "reservations-expired-unreleased",
+      "security-admin-login-failures",
     ],
   });
 
