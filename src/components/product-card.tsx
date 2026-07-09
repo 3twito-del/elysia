@@ -305,6 +305,12 @@ function getProductCardBadge(input: {
 function getProductCardLabel(
   product: CatalogProduct,
 ): ProductCardBadgeModel | null {
+  // "חדש" outranks the near-universal material labels: a badge has to
+  // differentiate the card, and recency is the one label most cards lack.
+  if (isProductCardNew(product)) {
+    return { key: "new", label: "חדש" };
+  }
+
   const normalizedMaterial = normalizeProductCardText(product.material);
   const normalizedTags = product.tags.map(normalizeProductCardText);
   const normalizedCollections = product.collections.map(
@@ -339,12 +345,11 @@ function getProductCardLabel(
     return { key: "gift", label: "מתנה" };
   }
 
-  if (isProductCardNew(product)) {
-    return { key: "new", label: "חדש" };
-  }
-
   return null;
 }
+
+/** "New" is a data-driven claim: 30 days from creation, then it disappears. */
+const PRODUCT_CARD_NEW_WINDOW_DAYS = 30;
 
 function isProductCardNew(product: CatalogProduct) {
   const createdAt =
@@ -356,7 +361,7 @@ function isProductCardNew(product: CatalogProduct) {
 
   const daysSinceCreated = (Date.now() - createdAt) / (1000 * 60 * 60 * 24);
 
-  return daysSinceCreated <= 60;
+  return daysSinceCreated <= PRODUCT_CARD_NEW_WINDOW_DAYS;
 }
 
 function getProductCardDescriptor(product: CatalogProduct) {

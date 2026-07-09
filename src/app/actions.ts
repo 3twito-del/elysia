@@ -81,7 +81,7 @@ export async function joinNewsletter(
   revalidatePath("/");
   return {
     ok: true,
-    message: "נרשמת בהצלחה לניוזלטר.",
+    message: "תודה שהצטרפת! נעדכן אותך ראשונה על קולקציות ופריטים חדשים.",
   };
 }
 

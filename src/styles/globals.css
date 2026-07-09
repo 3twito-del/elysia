@@ -2370,6 +2370,8 @@ main
 .boutique-featured-band,
 .boutique-story-band {
   background: var(--brand-ivory);
+  /* One shared hairline language at every home band boundary. */
+  border-top: 1px solid var(--glass-border);
 }
 
 .boutique-collection-card {
@@ -3955,6 +3957,70 @@ html[data-accessibility-motion="reduce"] .about-timeline-flow::before {
   .storefront-hero-statement {
     max-width: 19rem;
   }
+}
+
+/* Home design pass (owner-selected DP 1–10, 2026-07-09). */
+
+/* Short viewports (landscape phones, small laptops): the hero caps at the
+   visible viewport and the copy tightens instead of clipping under the
+   header or pushing past the fold. */
+@media (max-height: 640px) {
+  .home-cinematic-hero {
+    --home-hero-height: max(26rem, 100svh);
+  }
+
+  .home-cinematic-hero .storefront-hero-copy {
+    bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  }
+
+  .home-cinematic-hero .storefront-hero-title {
+    font-size: 2.1rem;
+  }
+
+  .home-cinematic-hero .storefront-hero-statement {
+    margin-top: 0.6rem;
+  }
+
+  .home-cinematic-hero .storefront-hero-actions {
+    margin-top: 1.1rem;
+  }
+}
+
+/* Hero hierarchy: a quieter statement and one breath more separation from
+   the title — spacing and tone, never size inflation. (Letter-spacing stays
+   normal per the public typography guardrail.) */
+.home-hero-statement {
+  margin-top: 1rem;
+  color: rgb(255 250 244 / 84%);
+}
+
+/* Copy-anchored scrim layer: the copy corner keeps passing contrast on every
+   bright video frame, independent of frame content. Anchored to the copy
+   corner per title direction. */
+.home-cinematic-hero .storefront-hero-scrim::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    120% 90% at 12% 88%,
+    rgb(20 17 15 / 58%),
+    transparent 52%
+  );
+}
+
+.home-cinematic-hero[data-hero-title-direction="rtl"]
+  .storefront-hero-scrim::after {
+  background: radial-gradient(
+    120% 90% at 88% 88%,
+    rgb(20 17 15 / 58%),
+    transparent 52%
+  );
+}
+
+/* The final-panel newsletter aligns to a reading column instead of
+   stretching to the full panel width. */
+.storefront-final-newsletter .newsletter-form {
+  max-width: 26rem;
 }
 
 .site-header {
@@ -5946,7 +6012,8 @@ footer nav a:focus-visible {
 
 .home-hero-actions .home-hero-cta-primary:not(:disabled):hover,
 .home-hero-actions .home-hero-cta-primary:not(:disabled):focus-visible {
-  border-color: rgb(255 250 244 / 82%) !important;
+  /* Bronze frame emphasis on hover — same box metrics, zero layout shift. */
+  border-color: var(--glass-focus) !important;
   background: rgb(29 25 22 / 72%) !important;
   color: white !important;
 }

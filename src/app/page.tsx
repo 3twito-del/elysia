@@ -234,7 +234,23 @@ export default async function Home() {
           id="featured"
         >
           <div className="mx-auto max-w-[92rem]">
-            <CommerceSectionHeader eyebrow="הקולקציה שלנו" title="חדש באתר" />
+            <CommerceSectionHeader
+              action={
+                <Button asChild variant="outline">
+                  <Link
+                    data-testid="home-featured-view-all"
+                    dir="auto"
+                    href="/search"
+                    prefetch={false}
+                  >
+                    לכל התכשיטים
+                    <ArrowLeft aria-hidden="true" className="size-4" />
+                  </Link>
+                </Button>
+              }
+              eyebrow="הקולקציה שלנו"
+              title="חדש באתר"
+            />
             <RevealGrid
               className="ui-equal-grid grid grid-cols-2 gap-x-5 gap-y-8 sm:gap-x-7 sm:gap-y-10 lg:grid-cols-4"
               data-layout-equal-group="home-featured-products"
