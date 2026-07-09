@@ -9,6 +9,10 @@
     {
       "path": "/api/jobs/report-schedules",
       "schedule": "0 5 * * *"
+    },
+    {
+      "path": "/api/jobs/dropship-sync",
+      "schedule": "30 2 * * *"
     }
   ]
 }

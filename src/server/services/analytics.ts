@@ -29,6 +29,8 @@ export const analyticsEventTypes = [
   "order_created",
   "payment_captured",
   "shopify_checkout_started",
+  "dropship_clickout_blocked",
+  "dropship_price_drift",
   "service_request_created",
   "appointment_requested",
   "newsletter_subscribed",

@@ -156,6 +156,7 @@ const documentedApiRoutes = [
   "/api/events/product-view",
   "/api/e2e/customer-auth",
   "/api/jobs/outbox",
+  "/api/jobs/dropship-sync",
   "/serwist/[path]",
 ] as const;
 

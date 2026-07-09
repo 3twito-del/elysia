@@ -345,6 +345,8 @@ model ProductVariant {
   priceDelta         Decimal               @default(0) @db.Decimal(10, 2)
   isDefault          Boolean               @default(false)
   externalVariantId  String?
+  /// ADR 0012 display truth: last successful click-out live verification.
+  lastLiveVerifiedAt DateTime?
   product            Product               @relation(fields: [productId], references: [id], onDelete: Cascade)
   prices             Price[]
   inventoryItems     InventoryItem[]

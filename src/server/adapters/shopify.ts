@@ -64,10 +64,26 @@ export type ShopifyCartCheckout = {
   cartId: string;
 };
 
+export type ShopifyLiveVariant = {
+  id: string;
+  availableForSale: boolean;
+  priceAmount: number;
+  currencyCode: string;
+};
+
 export interface ShopifyDropshipProvider {
   createCart(input: {
     lines: ShopifyCartLineInput[];
   }): Promise<ShopifyCartCheckout>;
+  /**
+   * ADR 0012 click-out verification: live variant-level truth fetched at the
+   * moment before the supplier-checkout redirect. Returns `null` only in
+   * non-production environments without Shopify credentials (mirrors the
+   * mock createCart behavior); in production a missing configuration throws.
+   */
+  getVariantNodes(input: {
+    ids: string[];
+  }): Promise<ShopifyLiveVariant[] | null>;
   isConfigured(): boolean;
   isEnabled(): boolean;
   listProducts(input?: { first?: number }): Promise<ShopifyCatalogPage>;
@@ -540,6 +556,45 @@ class StorefrontShopifyDropshipProvider implements ShopifyDropshipProvider {
     return mapStorefrontCartCreateResponse(await response.json());
   }
 
+  async getVariantNodes(input: {
+    ids: string[];
+  }): Promise<ShopifyLiveVariant[] | null> {
+    if (!this.isEnabled()) {
+      throw new Error(SHOPIFY_DROPSHIP_DISABLED_ERROR);
+    }
+
+    if (input.ids.length === 0) {
+      return [];
+    }
+
+    if (!this.isConfigured()) {
+      if (this.config.NODE_ENV === "production") {
+        throw new Error(SHOPIFY_DROPSHIP_CONFIG_ERROR);
+      }
+
+      return null;
+    }
+
+    const storefrontToken = await this.getStorefrontAccessToken();
+    const response = await fetch(this.getStorefrontGraphqlUrl(), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Storefront-Access-Token": storefrontToken,
+      },
+      body: JSON.stringify({
+        query: storefrontVariantNodesQuery,
+        variables: { ids: input.ids },
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Shopify Storefront API failed with ${response.status}.`);
+    }
+
+    return mapStorefrontVariantNodesResponse(await response.json());
+  }
+
   private async listProductsWithAdminApi(input: { first?: number }) {
     const response = await fetch(this.getAdminGraphqlUrl(), {
       method: "POST",
@@ -813,6 +868,79 @@ export function mapStorefrontCartCreateResponse(payload: unknown) {
     cartId: cart.id,
     checkoutUrl: cart.checkoutUrl,
   };
+}
+
+const storefrontVariantNodesQuery = `
+  query DropshipVariantNodes($ids: [ID!]!) {
+    nodes(ids: $ids) {
+      __typename
+      ... on ProductVariant {
+        id
+        availableForSale
+        price {
+          amount
+          currencyCode
+        }
+      }
+    }
+  }
+`;
+
+const storefrontVariantNodesResponseSchema = z.object({
+  data: z
+    .object({
+      nodes: z.array(
+        z
+          .object({
+            __typename: z.string().optional(),
+            id: z.string().optional(),
+            availableForSale: z.boolean().optional(),
+            price: z
+              .object({
+                amount: z.string(),
+                currencyCode: z.string(),
+              })
+              .optional(),
+          })
+          .nullable(),
+      ),
+    })
+    .optional(),
+  errors: z.array(z.object({ message: z.string() })).optional(),
+});
+
+export function mapStorefrontVariantNodesResponse(
+  payload: unknown,
+): ShopifyLiveVariant[] {
+  const parsed = storefrontVariantNodesResponseSchema.parse(payload);
+
+  if (parsed.errors?.length) {
+    throw new Error(
+      `Shopify Storefront API returned errors: ${parsed.errors.map((error) => error.message).join("; ")}`,
+    );
+  }
+
+  const nodes = parsed.data?.nodes ?? [];
+
+  return nodes.flatMap((node) => {
+    if (
+      node?.__typename !== "ProductVariant" ||
+      !node.id ||
+      node.availableForSale === undefined ||
+      !node.price
+    ) {
+      return [];
+    }
+
+    return [
+      {
+        availableForSale: node.availableForSale,
+        currencyCode: node.price.currencyCode,
+        id: node.id,
+        priceAmount: Number(node.price.amount),
+      },
+    ];
+  });
 }
 
 export function normalizeShopifyDomain(value: string | undefined) {
