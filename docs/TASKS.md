@@ -56,6 +56,7 @@ fails on a stale `docs/SITE_COPY_MAP.md`.
 | ID    | Task                                          | Status      | Priority | Evidence              |
 | ----- | --------------------------------------------- | ----------- | -------- | --------------------- |
 | I-341 | Wave 0 catalog truth and media readiness gate | In Progress | P0       | `docs/QA_EVIDENCE.md` |
+| I-342 | Admin TOTP enrollment + recovery codes        | NOW         | P0       | ADR 0005 acceptance   |
 
 ### I-341 Wave 0 catalog truth and media readiness gate
 
@@ -85,6 +86,32 @@ fails on a stale `docs/SITE_COPY_MAP.md`.
 Note: under ADR 0011 the launch gate is the **capsule** (floor 30, target 36
 publish-ready supplier products), not 300 remediated products. The 0/300
 metric remains catalog-debt reporting; the release gate scores capsule members.
+
+### I-342 Admin TOTP enrollment + recovery codes
+
+- `Status`: NOW · `Priority`: P0 · `Effort`: M
+- `Context`: the rest of the ADR 0005 L1 auth package shipped 2026-07-09 —
+  edge middleware over `/admin` + `/api/admin`, 12-hour admin sessions,
+  per-account/per-IP login rate limiting, and audited AdminAuth security
+  events feeding the SECURITY invariant sweep. TOTP is the remaining
+  launch-gating piece; until it ships, password compromise equals
+  control-plane compromise (`docs/RUNBOOKS.md` §13).
+- `Work`: mandatory TOTP for every admin including bootstrap — forced
+  enrollment at next login before console access; recovery codes generated
+  once, shown once, hash-stored, single-use; TOTP secrets protected at rest;
+  audited enrollment/failure/recovery events (the AdminAuth audit surface
+  already exists).
+- `Acceptance` (ADR 0005): password alone cannot reach `/admin`; tests cover
+  missing-TOTP / failed-TOTP / successful-MFA paths; step-up re-auth remains
+  the first fast-follow after this lands.
+
+Launch-gate engineering shipped 2026-07-09 (branch
+`feat/launch-engineering-p0`): ADR 0004 DB immutability triggers (verified
+via `pnpm db:verify:immutability`), ADR 0007 OperationalAlert sweeps +
+delivery + `/admin/notifications` card + health heartbeats, ADR 0012
+fail-closed click-out verification + dropship sync cron, ADR 0005 partial
+(above), operational runbooks (`docs/RUNBOOKS.md`), and the C-03 activation
+gate verified as enforced.
 
 ## 3. Benchmark-gated design candidates
 
@@ -166,8 +193,6 @@ have been deleted; partially done items state only their remaining scope.
 - **C-02 Governed attributes over free-form facts** · P1 · NOW after C-01
   policy — typed attributes, controlled vocabularies, effective dates; shared
   facts update centrally.
-- **C-03 Product publish readiness** · P0 · NOW — class-specific publish
-  checklist; a product cannot go `ACTIVE` with a missing P0 field.
 - **C-04 Pricing and promotion truth** · P0 · OWNER — compare-at rules,
   promotion ownership, price history, supplier drift; every public discount
   reproducible. (Note: ADR 0012 structurally blocks all discounts on
@@ -383,16 +408,19 @@ have been deleted; partially done items state only their remaining scope.
   over critical read/write actions with audit assertions.
 - **K-02 Role and permission review** · P0 · MEASURE — least privilege; no
   unlogged sensitive mutation. (ADR 0005 defines the admin control plane.)
-- **K-03 Operational runbooks** · P0 · NOW+OWNER — payment outage, webhook
-  delay, supplier failure, oversell, outages, rotation, rollback; a second
-  operator can recover without tribal knowledge.
-- **K-04 SLOs and alert ownership** · P1 · OWNER+NOW — every alert has an owner
-  and escalation path. (ADR 0003/0007 define classes and the alert model.)
+- **K-04 SLOs and alert ownership — residual** · P1 · OWNER — the alert model,
+  event-class SLOs, escalating email delivery to `OPERATIONS_EMAIL`, and the
+  invariant sweep are shipped (ADR 0003/0007). Remaining scope: the owner
+  names a human owner + escalation path per alert class beyond the single
+  operations inbox.
 - **K-05 Inventory correctness testing** · P0 · MEASURE — concurrency,
   reservations, expiry, oversell; Shopify inventory never enters the local
   ownership ledger.
-- **K-06 Catalog and provider drift detection** · P1 · NOW — detected before a
-  customer reaches checkout. (ADR 0012 defines sync SLO + click-out guarantee.)
+- **K-06 Catalog and provider drift detection — residual** · P1 · NOW —
+  the fail-closed click-out verification, price-drift re-confirmation, and the
+  scheduled sync job are shipped (ADR 0012). Remaining scope: mirror-staleness
+  alerting against the 12h freshness SLO (needs the 6h cadence unlocked by
+  Fact B) and webhook-registration/token-scope drift checks.
 - **K-07 Backups and recovery** · P0 · EXTERNAL+MEASURE — restore drill meets
   RPO/RTO. (ADR 0008: PITR is a launch requirement; drill is acceptance;
   blocked on owner Fact A — Postgres provider/tier.)
@@ -474,14 +502,14 @@ Named blockers that no engineering task can close:
 Truth and proof before visual polish — polish cannot compensate for
 placeholder facts, duplicate media, or unproven payment.
 
-| Wave  | Theme                              | Open items                                                                                                             |
-| ----- | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| **0** | Truth & proof foundation           | I-341, C-01/C-03/C-04, D-04, G-01…G-04, H-01/H-07, I-06/I-07, J-08/J-09, K-01…K-03/K-05/K-07…K-09, L-01/L-04/L-05/L-07 |
-| **1** | House identity, collections, media | A-01…A-05, B-01…B-07, C-05/C-07/C-08                                                                                   |
-| **2** | Discovery & PDP authority          | E-01…E-10, F-01…F-11, D-05                                                                                             |
-| **3** | Real commerce & clienteling        | G-05…G-12, H-02…H-10, I-02…I-08, A-06                                                                                  |
-| **4** | Reduction, polish, field quality   | D-01…D-03/D-06…D-08, J-01…J-07/J-10…J-12, K-04/K-06, L-02/L-03/L-06                                                    |
-| **5** | Comparative proof                  | A-08, I-09, L-08…L-10/L-12                                                                                             |
+| Wave  | Theme                              | Open items                                                                                                               |
+| ----- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **0** | Truth & proof foundation           | I-341, I-342, C-01/C-04, D-04, G-01…G-04, H-01/H-07, I-06/I-07, J-08/J-09, K-01/K-02/K-05/K-07…K-09, L-01/L-04/L-05/L-07 |
+| **1** | House identity, collections, media | A-01…A-05, B-01…B-07, C-05/C-07/C-08                                                                                     |
+| **2** | Discovery & PDP authority          | E-01…E-10, F-01…F-11, D-05                                                                                               |
+| **3** | Real commerce & clienteling        | G-05…G-12, H-02…H-10, I-02…I-08, A-06                                                                                    |
+| **4** | Reduction, polish, field quality   | D-01…D-03/D-06…D-08, J-01…J-07/J-10…J-12, K-04/K-06, L-02/L-03/L-06                                                      |
+| **5** | Comparative proof                  | A-08, I-09, L-08…L-10/L-12                                                                                               |
 
 Homepage backlog reconciliation: the former homepage implementation-pass items
 are implemented but not field-verified — verification lands in D-03, J-01,

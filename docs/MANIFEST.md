@@ -20,6 +20,7 @@ the binding functional spec is `docs/ERP_CRM_MASTER_BLUEPRINT.md`.
 | `docs/TASKS.md`                    | All open work, single backlog                                               |
 | `docs/PARKING_LOT.md`              | Deferred decisions with named triggers                                      |
 | `docs/ERP_CRM_MASTER_BLUEPRINT.md` | Binding ERP/CRM functional spec                                             |
+| `docs/RUNBOOKS.md`                 | Operational recovery runbooks (K-03)                                        |
 | `docs/QA_EVIDENCE.md`              | Consolidated QA evidence ledger (append-only)                               |
 | `docs/SITE_COPY_MAP.md`            | Generated site-copy map — never edit by hand; run `pnpm copy:sync`          |
 
