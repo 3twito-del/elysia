@@ -10,6 +10,10 @@ import {
   processDueOutboxEvents,
 } from "~/server/services/jobs";
 import {
+  deliverDueAlertNotifications,
+  sweepOperationalInvariants,
+} from "~/server/services/operational-alerts";
+import {
   assertRateLimit,
   getRequestIp,
   RateLimitExceededError,
@@ -62,9 +66,23 @@ async function runOutboxJob(req: Request) {
     return serviceUnavailableJson("Outbox job processor is unavailable.");
   }
 
+  // ADR 0007: the worker tick both processes due events and sweeps
+  // class-aware business invariants. Sweep/delivery failures are logged and
+  // retried on the next tick; they never mask detection or fail the tick.
+  let alerts: { violations: number } | { error: string };
+
+  try {
+    alerts = await sweepOperationalInvariants();
+    await deliverDueAlertNotifications();
+  } catch (error) {
+    console.error("[jobs:outbox:alert-sweep-failed]", error);
+    alerts = { error: "sweep-failed" };
+  }
+
   return okJson({
     ok: true,
     result,
+    alerts,
     summary: createOutboxJobSummary(result),
   });
 }

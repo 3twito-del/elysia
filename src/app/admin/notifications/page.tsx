@@ -1,4 +1,4 @@
-import { Bell, Send } from "lucide-react";
+import { Bell, Send, ShieldAlert } from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
 import {
@@ -7,7 +7,10 @@ import {
 } from "../_components/admin-states";
 import { AdminTableScrollHint } from "../_components/admin-table-tools";
 import { getAdminPageAccess } from "../_lib/access";
-import { enqueuePushCampaignAction } from "./actions";
+import {
+  acknowledgeOperationalAlertAction,
+  enqueuePushCampaignAction,
+} from "./actions";
 import { AdminPushCampaignForm } from "./admin-push-campaign-form";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -22,6 +25,7 @@ import {
 } from "~/components/ui/table";
 import { TableEmptyRow } from "~/components/ui/table-empty-row";
 import { formatOptionalHebrewDateTime } from "~/lib/format";
+import { getOperationalAlertsOverview } from "~/server/services/operational-alerts";
 import {
   getPushCampaignAudienceSummary,
   isPushConfigured,
@@ -42,18 +46,21 @@ export default async function AdminNotificationsPage() {
 
   if (access.denied) return <AdminForbidden {...access.denied} />;
 
-  const [campaigns, audienceSummary] = await Promise.all([
+  const [campaigns, audienceSummary, alertsOverview] = await Promise.all([
     listPushCampaigns(),
     getPushCampaignAudienceSummary(),
+    getOperationalAlertsOverview(),
   ]).catch((error: unknown) => {
     if (process.env.NODE_ENV === "development") {
       console.error("[admin] failed to load push campaigns", error);
     }
 
-    return [null, null] as const;
+    return [null, null, null] as const;
   });
 
-  if (!campaigns || !audienceSummary) return <AdminDatabaseFallback />;
+  if (!campaigns || !audienceSummary || !alertsOverview) {
+    return <AdminDatabaseFallback />;
+  }
 
   const configured = isPushConfigured();
 
@@ -64,6 +71,96 @@ export default async function AdminNotificationsPage() {
       description="ניהול Push opt-in, קמפיינים שיווקיים, ושליחה דרך outbox עם מעקב delivery."
       title="Push והתראות"
     >
+      <Card className="mb-6 rounded-md" data-testid="admin-operational-alerts">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between gap-3">
+            <span className="flex items-center gap-2">
+              <ShieldAlert aria-hidden="true" className="size-5" />
+              התראות תפעוליות
+            </span>
+            <span className="flex items-center gap-2">
+              <Badge
+                variant={alertsOverview.openP0 > 0 ? "destructive" : "secondary"}
+              >
+                P0 פתוחות: {alertsOverview.openP0}
+              </Badge>
+              <Badge variant="outline">פתוחות: {alertsOverview.open}</Badge>
+            </span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground mb-3 text-sm leading-6">
+            הפרות אינווריאנטים עסקיים (ADR 0007): אישור צפייה משתיק הסלמה;
+            ההתראה נסגרת רק כשההפרה חדלה בפועל. סריקה אחרונה:{" "}
+            {formatOptionalHebrewDateTime(alertsOverview.lastSweepAt)}
+          </p>
+          <AdminTableScrollHint />
+          <Table className="min-w-[840px]">
+            <TableHeader>
+              <TableRow>
+                <TableHead>חומרה</TableHead>
+                <TableHead>מחלקה</TableHead>
+                <TableHead>הפרה</TableHead>
+                <TableHead>מופעים</TableHead>
+                <TableHead>נראתה לאחרונה</TableHead>
+                <TableHead>פעולה</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {alertsOverview.alerts.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={6}
+                  description="אין הפרות אינווריאנטים פעילות."
+                  icon={ShieldAlert}
+                  title="אין התראות פתוחות"
+                />
+              ) : (
+                alertsOverview.alerts.map((alert) => (
+                  <TableRow key={alert.id}>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          alert.severity === "P0" ? "destructive" : "secondary"
+                        }
+                      >
+                        {alert.severity}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{alert.class}</TableCell>
+                    <TableCell className="max-w-[320px]">
+                      <p className="font-medium">{alert.invariant}</p>
+                      <p className="text-muted-foreground mt-1 text-xs leading-5">
+                        {alert.message}
+                      </p>
+                    </TableCell>
+                    <TableCell>{alert.occurrenceCount}</TableCell>
+                    <TableCell>
+                      {formatOptionalHebrewDateTime(alert.lastSeenAt)}
+                    </TableCell>
+                    <TableCell>
+                      {alert.status === "OPEN" ? (
+                        <form action={acknowledgeOperationalAlertAction}>
+                          <input
+                            name="alertId"
+                            type="hidden"
+                            value={alert.id}
+                          />
+                          <Button size="sm" type="submit" variant="outline">
+                            אישור צפייה
+                          </Button>
+                        </form>
+                      ) : (
+                        <Badge variant="outline">נצפתה</Badge>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
       <div className="grid gap-6 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.4fr)]">
         <Card className="rounded-md">
           <CardHeader>

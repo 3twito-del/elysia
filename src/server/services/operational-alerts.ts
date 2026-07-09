@@ -1,0 +1,579 @@
+// ADR 0007 (docs/DECISIONS.md): P0 observability means business-invariant
+// observability, not generic logging. Violations write a durable
+// OperationalAlert with dedup identity; acknowledgment silences noise; only
+// resolution (the invariant no longer violated) closes the alert.
+
+import { notificationProvider } from "~/server/adapters/notifications";
+import { env } from "~/env";
+import { db } from "~/server/db";
+import { getEventClassPolicy } from "~/server/services/event-classes";
+import { recordJobRun } from "~/server/services/outbox";
+
+export const ALERT_SWEEP_JOB_NAME = "operational-alert-sweep";
+
+/** Expired reservation grace before it becomes an operational violation. */
+const RESERVATION_RELEASE_GRACE_MINUTES = 15;
+
+/** PAID own-sale order must have its GL sale entry within this window. */
+const PAID_WITHOUT_GL_THRESHOLD_MINUTES = 15;
+
+/** Escalating notification cooldowns until acknowledged (ADR 0007 §3). */
+export const ALERT_ESCALATION_COOLDOWNS_MS = [
+  0,
+  15 * 60_000,
+  60 * 60_000,
+  240 * 60_000,
+] as const;
+
+export type OperationalAlertClass =
+  | "MONEY"
+  | "INVENTORY"
+  | "SECURITY"
+  | "CUSTOMER_COMMUNICATION"
+  | "OUTBOX"
+  | "ANALYTICS"
+  | "SYSTEM";
+
+export type OperationalAlertSeverity = "P0" | "P1" | "P2";
+
+export type AlertViolation = {
+  alertKey: string;
+  class: OperationalAlertClass;
+  severity: OperationalAlertSeverity;
+  invariant: string;
+  message: string;
+  entityType?: string;
+  entityId?: string;
+  measuredValue?: string;
+  thresholdValue?: string;
+  remediationHint?: string;
+};
+
+/**
+ * Pure: which escalation delay applies before the next notification.
+ * Beyond the ladder the last cooldown repeats.
+ */
+export function nextNotificationDelayMs(notifyCount: number) {
+  const index = Math.min(
+    Math.max(notifyCount, 0),
+    ALERT_ESCALATION_COOLDOWNS_MS.length - 1,
+  );
+
+  return ALERT_ESCALATION_COOLDOWNS_MS[index] ?? 0;
+}
+
+/**
+ * Pure: money-class P0 alerts are loud and repeat with escalating cooldowns
+ * until acknowledged; other severities notify once; acknowledged, resolved,
+ * and suppressed alerts never notify. Dashboard visibility is unconditional.
+ */
+export function shouldNotifyAlert(input: {
+  status: string;
+  severity: string;
+  notifyCount: number;
+  lastNotifiedAt: Date | null;
+  now: Date;
+}) {
+  if (input.status !== "OPEN") {
+    return false;
+  }
+
+  if (input.severity === "P2") {
+    return false;
+  }
+
+  if (input.notifyCount === 0) {
+    return true;
+  }
+
+  if (input.severity !== "P0") {
+    return false;
+  }
+
+  if (!input.lastNotifiedAt) {
+    return true;
+  }
+
+  const delay = nextNotificationDelayMs(input.notifyCount);
+
+  return input.now.getTime() - input.lastNotifiedAt.getTime() >= delay;
+}
+
+/**
+ * Pure: class-aware outbox invariants (ADR 0003 registry × ADR 0007 sweep).
+ * Overdue pending/failed events aggregate per event class; dead-letters
+ * aggregate per event type. One stuck payment produces one alert with
+ * occurrence counting — never sixty emails an hour.
+ */
+export function evaluateOutboxInvariants(input: {
+  events: { type: string; status: string; createdAt: Date }[];
+  now: Date;
+}): AlertViolation[] {
+  const overdueByClass = new Map<string, { count: number; oldestMinutes: number }>();
+  const deadLetterByType = new Map<string, number>();
+
+  for (const event of input.events) {
+    const policy = getEventClassPolicy(event.type);
+
+    if (event.status === "DEAD_LETTER") {
+      deadLetterByType.set(
+        event.type,
+        (deadLetterByType.get(event.type) ?? 0) + 1,
+      );
+      continue;
+    }
+
+    const ageMinutes =
+      (input.now.getTime() - event.createdAt.getTime()) / 60_000;
+
+    if (ageMinutes <= policy.alertAfterMinutes) {
+      continue;
+    }
+
+    const existing = overdueByClass.get(policy.class) ?? {
+      count: 0,
+      oldestMinutes: 0,
+    };
+    overdueByClass.set(policy.class, {
+      count: existing.count + 1,
+      oldestMinutes: Math.max(existing.oldestMinutes, ageMinutes),
+    });
+  }
+
+  const violations: AlertViolation[] = [];
+
+  for (const [eventClass, data] of overdueByClass) {
+    const isMoney = eventClass === "MONEY";
+    violations.push({
+      alertKey: `outbox-overdue:${eventClass}`,
+      class: isMoney ? "MONEY" : outboxAlertClass(eventClass),
+      severity: isMoney ? "P0" : overdueSeverity(eventClass),
+      invariant: "outbox-events-converge-within-class-slo",
+      message: `${data.count} ${eventClass} outbox event(s) unprocessed beyond the class SLO; oldest is ${Math.round(data.oldestMinutes)} minutes old.`,
+      measuredValue: `${Math.round(data.oldestMinutes)}m`,
+      thresholdValue: `${getClassAlertThresholdMinutes(eventClass)}m`,
+      remediationHint:
+        "Run the outbox worker (POST /api/jobs/outbox) and inspect OutboxEvent.lastError for the oldest event.",
+    });
+  }
+
+  for (const [eventType, count] of deadLetterByType) {
+    const policy = getEventClassPolicy(eventType);
+    const isMoney = policy.class === "MONEY";
+    violations.push({
+      alertKey: `outbox-dead-letter:${eventType}`,
+      class: isMoney ? "MONEY" : outboxAlertClass(policy.class),
+      severity: isMoney ? "P0" : "P1",
+      invariant: "no-dead-lettered-business-events",
+      message: `${count} ${eventType} event(s) dead-lettered after exhausting retries.`,
+      measuredValue: String(count),
+      thresholdValue: "0",
+      remediationHint:
+        "Inspect OutboxEvent.lastError, fix the handler or payload, then requeue the event deliberately.",
+    });
+  }
+
+  return violations;
+}
+
+function outboxAlertClass(eventClass: string): OperationalAlertClass {
+  if (eventClass === "CUSTOMER_COMMUNICATION") {
+    return "CUSTOMER_COMMUNICATION";
+  }
+
+  if (eventClass === "PROJECTION" || eventClass === "ANALYTICS") {
+    return "ANALYTICS";
+  }
+
+  return "OUTBOX";
+}
+
+function overdueSeverity(eventClass: string): OperationalAlertSeverity {
+  if (eventClass === "PROJECTION" || eventClass === "ANALYTICS") {
+    return "P2";
+  }
+
+  return "P1";
+}
+
+function getClassAlertThresholdMinutes(eventClass: string) {
+  // Registry thresholds are per event type; classes share the policy values,
+  // so read a representative through the same accessor used per event.
+  const representative: Record<string, string> = {
+    MONEY: "payment.captured",
+    OPERATIONAL: "inventory.reservation_expired",
+    CUSTOMER_COMMUNICATION: "email.requested",
+    PROJECTION: "search.reindex_requested",
+    ANALYTICS: "analytics.rollup_requested",
+  };
+
+  return getEventClassPolicy(representative[eventClass] ?? "unknown")
+    .alertAfterMinutes;
+}
+
+/**
+ * Class-aware invariant sweep (runs in the worker tick). Each violated
+ * invariant raises or refreshes a durable alert; invariants that are no
+ * longer violated auto-resolve their alerts. Detection is separated from
+ * delivery so a notification failure never hides the violation.
+ */
+export async function sweepOperationalInvariants(now: Date = new Date()) {
+  const violations: AlertViolation[] = [];
+
+  // 1. Outbox convergence + dead letters (MONEY / OPERATIONAL / COMMS / ...).
+  const openEvents = await db.outboxEvent.findMany({
+    where: {
+      status: {
+        in: ["PENDING", "PUBLISHED", "PROCESSING", "FAILED", "DEAD_LETTER"],
+      },
+    },
+    select: { type: true, status: true, createdAt: true },
+    take: 2_000,
+  });
+  violations.push(
+    ...evaluateOutboxInvariants({
+      events: openEvents.map((event) => ({
+        createdAt: event.createdAt,
+        status: event.status,
+        type: event.type,
+      })),
+      now,
+    }),
+  );
+
+  // 2. Money truth: a PAID own-sale order without its GL sale entry beyond
+  //    SLO (ADR 0002/0013 — the ledger refuses non-OWN_SALE revenue, so the
+  //    invariant applies to OWN_SALE orders only).
+  const paidCutoff = new Date(
+    now.getTime() - PAID_WITHOUT_GL_THRESHOLD_MINUTES * 60_000,
+  );
+  const paidOrders = await db.order.findMany({
+    where: {
+      financialTreatment: "OWN_SALE",
+      status: { in: ["PAID", "PREPARING", "READY_FOR_PICKUP", "SHIPPED", "COMPLETED"] },
+      paidAt: { not: null, lt: paidCutoff },
+    },
+    select: { id: true, paidAt: true },
+    orderBy: { paidAt: "desc" },
+    take: 500,
+  });
+
+  if (paidOrders.length > 0) {
+    const saleEntries = await db.journalEntry.findMany({
+      where: {
+        orderId: { in: paidOrders.map((order) => order.id) },
+        source: "sale",
+      },
+      select: { orderId: true },
+    });
+    const postedOrderIds = new Set(saleEntries.map((entry) => entry.orderId));
+    const unposted = paidOrders.filter((order) => !postedOrderIds.has(order.id));
+
+    for (const order of unposted) {
+      violations.push({
+        alertKey: `money-paid-without-gl:${order.id}`,
+        class: "MONEY",
+        severity: "P0",
+        invariant: "every-paid-own-sale-has-a-posted-gl-entry",
+        message: `Order ${order.id} is PAID without a posted GL sale entry beyond ${PAID_WITHOUT_GL_THRESHOLD_MINUTES} minutes.`,
+        entityType: "Order",
+        entityId: order.id,
+        thresholdValue: `${PAID_WITHOUT_GL_THRESHOLD_MINUTES}m`,
+        remediationHint:
+          "Run the outbox worker; if the payment.captured consumer failed, inspect its lastError and repost via finance.postOrderSaleToLedger.",
+      });
+    }
+  }
+
+  // 3. Operational stock: expired-but-unreleased reservations. A 24h expired
+  //    hold on a one-of-a-kind piece is a destroyed sale, not technical delay.
+  const reservationCutoff = new Date(
+    now.getTime() - RESERVATION_RELEASE_GRACE_MINUTES * 60_000,
+  );
+  const expiredReservations = await db.inventoryReservation.findMany({
+    where: { releasedAt: null, expiresAt: { lt: reservationCutoff } },
+    select: { expiresAt: true },
+    orderBy: { expiresAt: "asc" },
+    take: 500,
+  });
+
+  if (expiredReservations.length > 0) {
+    const oldest = expiredReservations[0]?.expiresAt ?? now;
+    const oldestMinutes = Math.round(
+      (now.getTime() - oldest.getTime()) / 60_000,
+    );
+    violations.push({
+      alertKey: "reservations-expired-unreleased",
+      class: "INVENTORY",
+      severity: oldestMinutes > 24 * 60 ? "P0" : "P1",
+      invariant: "expired-reservations-release-within-slo",
+      message: `${expiredReservations.length} expired inventory reservation(s) still hold stock; oldest expired ${oldestMinutes} minutes ago.`,
+      measuredValue: `${oldestMinutes}m`,
+      thresholdValue: `${RESERVATION_RELEASE_GRACE_MINUTES}m`,
+      remediationHint:
+        "Run the outbox worker (reservation.expired handler) or release the holds from admin inventory.",
+    });
+  }
+
+  // Raise / refresh all violated invariants, then auto-resolve cleared ones.
+  for (const violation of violations) {
+    await raiseOperationalAlert(violation, now);
+  }
+
+  await resolveClearedAlerts({
+    activeKeys: new Set(violations.map((violation) => violation.alertKey)),
+    now,
+    scopes: [
+      "outbox-overdue:",
+      "outbox-dead-letter:",
+      "money-paid-without-gl:",
+      "reservations-expired-unreleased",
+    ],
+  });
+
+  await recordJobRun({
+    name: ALERT_SWEEP_JOB_NAME,
+    status: "COMPLETED",
+    metadata: {
+      openViolations: violations.length,
+      sweptAt: now.toISOString(),
+    },
+  });
+
+  return { violations: violations.length };
+}
+
+/** Dedup upsert: refresh an existing alert or reopen a resolved one. */
+export async function raiseOperationalAlert(
+  violation: AlertViolation,
+  now: Date = new Date(),
+) {
+  const existing = await db.operationalAlert.findUnique({
+    where: { alertKey: violation.alertKey },
+    select: { id: true, status: true },
+  });
+
+  if (!existing) {
+    return db.operationalAlert.create({
+      data: {
+        alertKey: violation.alertKey,
+        class: violation.class,
+        severity: violation.severity,
+        invariant: violation.invariant,
+        message: violation.message,
+        entityType: violation.entityType,
+        entityId: violation.entityId,
+        measuredValue: violation.measuredValue,
+        thresholdValue: violation.thresholdValue,
+        remediationHint: violation.remediationHint,
+        firstSeenAt: now,
+        lastSeenAt: now,
+      },
+    });
+  }
+
+  const reopen = existing.status === "RESOLVED";
+
+  return db.operationalAlert.update({
+    where: { id: existing.id },
+    data: {
+      class: violation.class,
+      severity: violation.severity,
+      message: violation.message,
+      measuredValue: violation.measuredValue,
+      lastSeenAt: now,
+      occurrenceCount: { increment: 1 },
+      ...(reopen
+        ? {
+            status: "OPEN",
+            resolvedAt: null,
+            acknowledgedAt: null,
+            acknowledgedById: null,
+            notifyCount: 0,
+            lastNotifiedAt: null,
+          }
+        : {}),
+    },
+  });
+}
+
+/** Resolution means the invariant is no longer violated — never a human whim. */
+async function resolveClearedAlerts(input: {
+  activeKeys: Set<string>;
+  now: Date;
+  scopes: string[];
+}) {
+  const candidates = await db.operationalAlert.findMany({
+    where: { status: { in: ["OPEN", "ACKNOWLEDGED"] } },
+    select: { id: true, alertKey: true },
+  });
+
+  const clearedIds = candidates
+    .filter(
+      (alert) =>
+        input.scopes.some((scope) => alert.alertKey.startsWith(scope)) &&
+        !input.activeKeys.has(alert.alertKey),
+    )
+    .map((alert) => alert.id);
+
+  if (clearedIds.length === 0) {
+    return { resolved: 0 };
+  }
+
+  await db.operationalAlert.updateMany({
+    where: { id: { in: clearedIds } },
+    data: { status: "RESOLVED", resolvedAt: input.now },
+  });
+
+  return { resolved: clearedIds.length };
+}
+
+/**
+ * Severity-aware delivery over existing channels (ADR 0007 §3): email to the
+ * operations address; the admin dashboard shows everything unconditionally.
+ * Failures are logged and retried on the next tick — delivery never masks
+ * detection.
+ */
+export async function deliverDueAlertNotifications(now: Date = new Date()) {
+  const operationsEmail = env.OPERATIONS_EMAIL;
+
+  if (!operationsEmail) {
+    return { delivered: 0, skipped: "no-operations-email" as const };
+  }
+
+  const openAlerts = await db.operationalAlert.findMany({
+    where: { status: "OPEN", severity: { in: ["P0", "P1"] } },
+    orderBy: { firstSeenAt: "asc" },
+    take: 50,
+  });
+
+  let delivered = 0;
+
+  for (const alert of openAlerts) {
+    if (
+      !shouldNotifyAlert({
+        lastNotifiedAt: alert.lastNotifiedAt,
+        notifyCount: alert.notifyCount,
+        now,
+        severity: alert.severity,
+        status: alert.status,
+      })
+    ) {
+      continue;
+    }
+
+    try {
+      await notificationProvider.sendEmail({
+        to: operationsEmail,
+        subject: `[Elysia ${alert.severity} ${alert.class}] ${alert.invariant}`,
+        body: [
+          alert.message,
+          "",
+          `Alert key: ${alert.alertKey}`,
+          `First seen: ${alert.firstSeenAt.toISOString()}`,
+          `Occurrences: ${alert.occurrenceCount}`,
+          alert.remediationHint ? `Remediation: ${alert.remediationHint}` : "",
+          "Acknowledge in /admin/notifications to silence escalation; the alert resolves only when the invariant holds again.",
+        ]
+          .filter(Boolean)
+          .join("\n"),
+        idempotencyKey: `operational-alert:${alert.id}:${alert.notifyCount}`,
+      });
+
+      await db.operationalAlert.update({
+        where: { id: alert.id },
+        data: {
+          lastNotifiedAt: now,
+          notifyCount: { increment: 1 },
+        },
+      });
+      delivered += 1;
+    } catch (error) {
+      console.error("[operational-alerts:notify-failed]", alert.alertKey, error);
+    }
+  }
+
+  return { delivered };
+}
+
+/** Acknowledgment ≠ resolution: the operator saw it; escalation goes quiet. */
+export async function acknowledgeOperationalAlert(input: {
+  alertId: string;
+  adminUserId: string;
+}) {
+  return db.$transaction(async (tx) => {
+    const alert = await tx.operationalAlert.update({
+      where: { id: input.alertId },
+      data: {
+        status: "ACKNOWLEDGED",
+        acknowledgedAt: new Date(),
+        acknowledgedById: input.adminUserId,
+      },
+    });
+
+    await tx.auditLog.create({
+      data: {
+        adminUserId: input.adminUserId,
+        action: "operational_alert.acknowledged",
+        entity: "OperationalAlert",
+        entityId: alert.id,
+        metadata: { alertKey: alert.alertKey, severity: alert.severity },
+      },
+    });
+
+    return alert;
+  });
+}
+
+export async function getOperationalAlertsOverview() {
+  const [open, acknowledged, recent, lastSweep] = await Promise.all([
+    db.operationalAlert.count({ where: { status: "OPEN" } }),
+    db.operationalAlert.count({ where: { status: "ACKNOWLEDGED" } }),
+    db.operationalAlert.findMany({
+      where: { status: { in: ["OPEN", "ACKNOWLEDGED"] } },
+      orderBy: [{ severity: "asc" }, { lastSeenAt: "desc" }],
+      take: 30,
+    }),
+    db.jobRun.findFirst({
+      where: { name: ALERT_SWEEP_JOB_NAME, status: "COMPLETED" },
+      orderBy: { finishedAt: "desc" },
+      select: { finishedAt: true },
+    }),
+  ]);
+
+  const openP0 = recent.filter(
+    (alert) => alert.severity === "P0" && alert.status === "OPEN",
+  ).length;
+
+  return {
+    acknowledged,
+    alerts: recent,
+    lastSweepAt: lastSweep?.finishedAt ?? null,
+    open,
+    openP0,
+  };
+}
+
+/** Coarse heartbeat data for the health surface (ADR 0007 §4). */
+export async function getOperationalHeartbeats() {
+  const [lastSweep, lastWorkerRun, openP0] = await Promise.all([
+    db.jobRun.findFirst({
+      where: { name: ALERT_SWEEP_JOB_NAME },
+      orderBy: { finishedAt: "desc" },
+      select: { finishedAt: true },
+    }),
+    db.jobRun.findFirst({
+      orderBy: { finishedAt: "desc" },
+      select: { finishedAt: true, name: true },
+    }),
+    db.operationalAlert.count({
+      where: { status: "OPEN", severity: "P0" },
+    }),
+  ]);
+
+  return {
+    lastSweepAt: lastSweep?.finishedAt ?? null,
+    lastWorkerRunAt: lastWorkerRun?.finishedAt ?? null,
+    openP0Alerts: openP0,
+  };
+}

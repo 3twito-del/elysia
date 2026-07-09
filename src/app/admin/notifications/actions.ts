@@ -7,6 +7,7 @@ import {
   getAdminFromSession,
   hasAdminPermission,
 } from "~/server/auth/admin-access";
+import { acknowledgeOperationalAlert } from "~/server/services/operational-alerts";
 import {
   createPushCampaign,
   enqueuePushCampaign,
@@ -70,6 +71,22 @@ export async function createPushCampaignAction(
         ? "הקמפיין נוצר ונשלח לעיבוד."
         : "הקמפיין נשמר.",
   };
+}
+
+export async function acknowledgeOperationalAlertAction(formData: FormData) {
+  const session = await auth();
+  const admin = session ? await getAdminFromSession(session) : null;
+
+  if (!admin || !hasAdminPermission(admin, "SYSTEM_CONFIG")) {
+    return;
+  }
+
+  const alertId = getFormString(formData, "alertId");
+
+  if (!alertId) return;
+
+  await acknowledgeOperationalAlert({ alertId, adminUserId: admin.id });
+  revalidatePath("/admin/notifications");
 }
 
 export async function enqueuePushCampaignAction(formData: FormData) {

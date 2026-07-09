@@ -3889,6 +3889,42 @@ model WebhookEvent {
   @@index([provider, rawBodyHash])
 }
 
+/// ADR 0007: a durable record that a business invariant is currently
+/// violated, at risk, or awaiting review. Not a log line. Acknowledgment
+/// (operator saw it) is distinct from resolution (invariant no longer
+/// violated).
+model OperationalAlert {
+  id               String    @id @default(cuid())
+  /// Dedup identity for the violated invariant instance.
+  alertKey         String    @unique
+  /// MONEY | INVENTORY | SECURITY | CUSTOMER_COMMUNICATION | OUTBOX | ANALYTICS | SYSTEM
+  class            String
+  /// P0 | P1 | P2
+  severity         String
+  /// OPEN | ACKNOWLEDGED | RESOLVED | SUPPRESSED
+  status           String    @default("OPEN")
+  invariant        String
+  message          String
+  entityType       String?
+  entityId         String?
+  measuredValue    String?
+  thresholdValue   String?
+  remediationHint  String?
+  occurrenceCount  Int       @default(1)
+  firstSeenAt      DateTime  @default(now())
+  lastSeenAt       DateTime  @default(now())
+  acknowledgedAt   DateTime?
+  acknowledgedById String?
+  resolvedAt       DateTime?
+  lastNotifiedAt   DateTime?
+  notifyCount      Int       @default(0)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([status, severity])
+  @@index([class, status])
+}
+
 model OutboxEvent {
   id             String            @id @default(cuid())
   type           String

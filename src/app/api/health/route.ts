@@ -7,6 +7,7 @@ import {
   getHealthOk,
   getHealthReadinessReport,
 } from "~/server/services/health";
+import { getOperationalHeartbeats } from "~/server/services/operational-alerts";
 
 export const dynamic = "force-dynamic";
 
@@ -15,11 +16,19 @@ export async function GET() {
   const checks = await createHealthChecks();
   const ok = getHealthOk(checks);
 
+  // ADR 0007 §4: coarse public status only; worker/sweep heartbeats and open
+  // P0 alert counts are private/admin detail so health can expose a stale
+  // scheduler without leaking operational internals publicly.
+  const heartbeats = detailed
+    ? await getOperationalHeartbeats().catch(() => null)
+    : null;
+
   return okJson(
     detailed
       ? {
           ok,
           checks,
+          heartbeats,
           readiness: getHealthReadinessReport(checks),
           timestamp: new Date().toISOString(),
         }
