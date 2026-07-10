@@ -226,7 +226,7 @@ export default async function ProductPage({
             </div>
 
             <h1
-              className="product-title-mixed-script mt-4 max-w-[17ch] text-3xl leading-[1.08] font-semibold break-words sm:text-4xl"
+              className="product-title-mixed-script mt-2 max-w-[17ch] text-3xl leading-[1.08] font-semibold break-words sm:text-4xl"
               data-testid="product-title"
               dir="auto"
             >
@@ -298,7 +298,7 @@ export default async function ProductPage({
                     key={note.label}
                   >
                     <Icon aria-hidden="true" className="size-4 shrink-0" />
-                    <span>{note.label}</span>
+                    <span className="line-clamp-1">{note.label}</span>
                   </li>
                 );
               })}
@@ -324,23 +324,19 @@ export default async function ProductPage({
               </TRPCReactProvider>
             </div>
 
-            <div
-              className="mt-4 hidden flex-col gap-3 rounded-md border border-[var(--glass-border)] p-3 text-sm leading-6 sm:flex sm:flex-row sm:items-center sm:justify-between"
+            <p
+              className="text-muted-foreground mt-4 hidden items-center gap-1.5 text-sm sm:flex"
               data-testid="product-support-context-link"
             >
-              <div className="flex min-w-0 gap-2">
-                <MessageCircle
-                  aria-hidden="true"
-                  className="mt-1 size-4 shrink-0"
-                />
-                <p className="text-muted-foreground">
-                  יש לך שאלה על מידה, חומר או משלוח? נצרף את המוצר לפנייה.
-                </p>
-              </div>
-              <Button asChild className="shrink-0" size="sm" variant="outline">
-                <Link href={productSupportHref}>שאלה על המוצר</Link>
-              </Button>
-            </div>
+              <MessageCircle aria-hidden="true" className="size-3.5 shrink-0" />
+              <span>יש לך שאלה על מידה, חומר או משלוח?</span>
+              <Link
+                className="text-foreground font-medium underline-offset-4 hover:underline"
+                href={productSupportHref}
+              >
+                שאלה על המוצר
+              </Link>
+            </p>
 
             <div
               className="mt-4 hidden rounded-md border border-[var(--glass-border)] p-3 text-sm leading-6 sm:block"
@@ -636,10 +632,10 @@ function ProductRecommendationRails({
               </Button>
             </div>
             <div
-              className="ui-equal-grid mt-5 grid gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-3"
+              className="ui-equal-grid mt-5 grid gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-4"
               data-layout-equal-group={`product-recommendation-${rail.id}`}
             >
-              {rail.products.slice(0, 3).map((recommended) => (
+              {rail.products.slice(0, 4).map((recommended) => (
                 <ProductCard
                   contextLabel={rail.cardContextLabel}
                   key={recommended.slug}

@@ -25,6 +25,7 @@ import {
   getBeforeOrderSummaryItems,
   getInitialVariantSku,
   getPurchaseConfidenceItems,
+  getSelectedVariantLabel,
   getVariantButtonLabel,
   getVariantDisplayName,
   getVariantStatusLabel,
@@ -277,7 +278,7 @@ export function ProductPurchasePanel({
 
   const stickyPurchaseBar = (
     <div
-      className="public-floating-control motion-sticky-purchase glass-chrome fixed inset-x-2 bottom-[calc(var(--floating-stack-bottom,0px)+0.625rem+env(safe-area-inset-bottom))] z-40 rounded-md border p-2.5 shadow-none md:hidden"
+      className="public-floating-control motion-sticky-purchase glass-chrome fixed inset-x-2 bottom-[calc(var(--floating-stack-bottom,0px)+0.625rem+env(safe-area-inset-bottom))] z-40 rounded-md border p-2.5 md:hidden"
       aria-label="פעולת רכישה מהירה"
       data-public-floating-bar="true"
       data-public-floating-bar-kind="product-purchase"
@@ -457,6 +458,18 @@ export function ProductPurchasePanel({
         </div>
 
         <div className="grid gap-3">
+          {selectedVariant ? (
+            <p
+              className="text-sm font-medium"
+              data-testid="product-selected-variant-label"
+            >
+              {getSelectedVariantLabel({
+                metalColors,
+                sizeKind,
+                variant: selectedVariant,
+              })}
+            </p>
+          ) : null}
           {selectedVariantAvailable ? (
             <Button
               aria-describedby="product-variant-feedback"

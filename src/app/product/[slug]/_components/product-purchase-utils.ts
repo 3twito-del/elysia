@@ -45,6 +45,19 @@ export function getVariantDisplayName(variant: CatalogProductVariant) {
   return variant.size ?? getPublicVariantOptionName(variant.name);
 }
 
+export function getSelectedVariantLabel(input: {
+  metalColors: string[];
+  sizeKind: SizeFitKind | null;
+  variant: CatalogProductVariant;
+}) {
+  const kindLabel = input.sizeKind ? "מידה" : "אפשרות";
+  const base = `${kindLabel}: ${getVariantDisplayName(input.variant)}`;
+
+  return input.metalColors.length === 1
+    ? `${base} · ${input.metalColors[0]}`
+    : base;
+}
+
 export function getVariantButtonLabel(
   variant: CatalogProductVariant,
   availabilityMode: PublicProductAvailabilityMode,

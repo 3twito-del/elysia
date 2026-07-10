@@ -5570,6 +5570,10 @@ footer nav a:focus-visible {
 .motion-sticky-purchase {
   border-color: rgb(29 25 22 / 10%);
   background: #fffaf4;
+  /* Lifts the fixed bottom bar off scrolling content behind it; the
+     .glass-chrome bottom hairline it also carries doesn't do this since it
+     shadows the bar's underside, which sits off-screen. */
+  box-shadow: 0 -10px 22px rgb(29 25 22 / 7%);
 }
 
 @media (max-width: 767px) {
@@ -7269,6 +7273,7 @@ html[data-accessibility-motion="reduce"]
 .dark .motion-sticky-purchase {
   border-color: rgb(243 237 230 / 14%);
   background: var(--card);
+  box-shadow: 0 -10px 22px oklch(0 0 0 / 24%);
 }
 
 .dark .product-purchase-surface .glass-inset {
