@@ -43,6 +43,7 @@ export function CustomerAddressForm() {
           error={fieldErrors.recipient}
           id="address-recipient"
           label="שם מקבל"
+          required
         >
           <Input
             aria-describedby="address-recipient-error"
@@ -61,6 +62,7 @@ export function CustomerAddressForm() {
           error={fieldErrors.phone}
           id="address-phone"
           label="טלפון"
+          required
         >
           <Input
             aria-describedby="address-phone-error"
@@ -78,7 +80,12 @@ export function CustomerAddressForm() {
             required
           />
         </AddressField>
-        <AddressField error={fieldErrors.city} id="address-city" label="עיר">
+        <AddressField
+          error={fieldErrors.city}
+          id="address-city"
+          label="עיר"
+          required
+        >
           <Input
             aria-describedby="address-city-error"
             aria-invalid={Boolean(fieldErrors.city)}
@@ -96,6 +103,7 @@ export function CustomerAddressForm() {
           error={fieldErrors.street}
           id="address-street"
           label="רחוב ומספר"
+          required
         >
           <Input
             aria-describedby="address-street-error"
@@ -144,15 +152,17 @@ function AddressField({
   error,
   id,
   label,
+  required,
 }: {
   children: ReactNode;
   error?: string;
   id: string;
   label: string;
+  required?: boolean;
 }) {
   return (
     <div className="grid gap-2">
-      <Label className={accountLabelClassName} htmlFor={id}>
+      <Label className={accountLabelClassName} htmlFor={id} required={required}>
         {label}
       </Label>
       {children}

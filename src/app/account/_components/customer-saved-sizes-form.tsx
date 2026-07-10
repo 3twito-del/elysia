@@ -161,7 +161,9 @@ function SavedSizeRow({
       <input name="kind" type="hidden" value={kind} />
       <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
         <div className="grid gap-2">
-          <Label htmlFor={inputId}>{getSizeKindLabel(kind)}</Label>
+          <Label htmlFor={inputId} required>
+            {getSizeKindLabel(kind)}
+          </Label>
           <Input
             aria-describedby={`${inputId}-hint ${inputId}-error`}
             aria-invalid={Boolean(state.fieldErrors?.value)}

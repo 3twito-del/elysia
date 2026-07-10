@@ -3567,6 +3567,19 @@ html[data-accessibility-motion="reduce"] .about-rule {
   line-height: 1.5;
 }
 
+/* Tablet range: the two-column editorial layout only has room to breathe
+   from 1024px up (see below). Below that, the figure was stretching full
+   container width, which reads as an oversized slab on tablet — a
+   full-bleed 4:5 photo isn't unbalanced on a phone (it's already the
+   narrowest thing on the page) but looks disproportionate once the
+   container itself is tablet-wide. Cap and center it instead. */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .about-v2 .about-sticky-figure {
+    max-width: 28rem;
+    margin-inline: auto;
+  }
+}
+
 @media (min-width: 1024px) {
   .about-editorial-grid {
     grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);

@@ -154,7 +154,9 @@ export function ServiceRequestForm({
       ref={formRef}
     >
       <div className="grid gap-2">
-        <Label htmlFor="topicSlug">נושא הפנייה</Label>
+        <Label htmlFor="topicSlug" required>
+          נושא הפנייה
+        </Label>
         <FieldError
           id={getFieldErrorId("topicSlug")}
           message={state.fieldErrors?.topicSlug}
@@ -208,6 +210,7 @@ export function ServiceRequestForm({
         />
         <Field
           autoComplete="tel"
+          dir="ltr"
           error={state.fieldErrors?.phone}
           label="טלפון"
           name="phone"
@@ -220,6 +223,7 @@ export function ServiceRequestForm({
 
       <Field
         autoComplete="email"
+        dir="ltr"
         error={state.fieldErrors?.email}
         label="אימייל"
         name="email"
@@ -276,7 +280,9 @@ export function ServiceRequestForm({
       </div>
 
       <div className="grid gap-2">
-        <Label htmlFor="message">תיאור הפנייה</Label>
+        <Label htmlFor="message" required>
+          תיאור הפנייה
+        </Label>
         <FieldError
           id={getFieldErrorId("message")}
           message={state.fieldErrors?.message}
@@ -403,6 +409,7 @@ function Field({
   label,
   name,
   pending,
+  required,
   "aria-describedby": ariaDescribedBy,
   ...props
 }: {
@@ -416,7 +423,9 @@ function Field({
 
   return (
     <div className="grid gap-2">
-      <Label htmlFor={name}>{label}</Label>
+      <Label htmlFor={name} required={required}>
+        {label}
+      </Label>
       <FieldError id={errorId} message={error} />
       <Input
         aria-describedby={describedBy}
@@ -424,6 +433,7 @@ function Field({
         disabled={pending}
         id={name}
         name={name}
+        required={required}
         {...props}
       />
     </div>

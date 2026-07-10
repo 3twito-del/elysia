@@ -182,7 +182,7 @@ export function SiteFooter() {
               return (
                 <a
                   aria-label={item.ariaLabel}
-                  className="footer-social-link inline-grid size-10 place-items-center rounded-full border transition"
+                  className="footer-social-link inline-grid size-11 place-items-center rounded-full border transition"
                   data-icon-tooltip={item.label}
                   data-icon-tooltip-placement="top"
                   href={item.href}

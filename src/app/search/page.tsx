@@ -14,7 +14,10 @@ import {
 import { SearchControls } from "~/app/search/_components/search-controls";
 import { SearchAnalytics } from "~/app/search/_components/search-analytics";
 import { CompactPageIntro } from "~/components/compact-page-intro";
-import { ProductCard } from "~/components/product-card";
+import {
+  ProductCard,
+  PRODUCT_IMAGE_BLUR_DATA_URL,
+} from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
@@ -65,9 +68,6 @@ type SearchRecoveryAction = {
   label: string;
   total: number;
 };
-
-const SEARCH_RESULT_IMAGE_BLUR_DATA_URL =
-  "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='10'%20height='8'%20viewBox='0%200%2010%208'%3E%3Crect%20width='10'%20height='8'%20fill='%23f3eee8'/%3E%3C/svg%3E";
 
 export const metadata = {
   title: "חיפוש תכשיטים",
@@ -700,7 +700,7 @@ function SearchResultListItem({
       <div className="brand-product-media glass-inset relative block h-full min-h-[8.75rem] overflow-hidden md:aspect-square md:min-h-0">
         <Image
           alt={publicProductName}
-          blurDataURL={SEARCH_RESULT_IMAGE_BLUR_DATA_URL}
+          blurDataURL={PRODUCT_IMAGE_BLUR_DATA_URL}
           className="media-color object-cover transition duration-[700ms] ease-[var(--ease-motion-standard)] group-hover/list:scale-[1.015]"
           fill
           placeholder="blur"

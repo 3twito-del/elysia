@@ -29,7 +29,7 @@ type ProductCardProps = {
   };
 };
 
-const PRODUCT_IMAGE_BLUR_DATA_URL =
+export const PRODUCT_IMAGE_BLUR_DATA_URL =
   "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='10'%20height='8'%20viewBox='0%200%2010%208'%3E%3Crect%20width='10'%20height='8'%20fill='%23f3eee8'/%3E%3C/svg%3E";
 const DEFAULT_PRODUCT_CARD_IMAGE_SIZES =
   "(min-width: 1280px) 18rem, (min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw";

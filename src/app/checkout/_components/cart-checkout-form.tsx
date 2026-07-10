@@ -1106,7 +1106,9 @@ export function CartCheckoutForm() {
                   </p>
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div>
-                      <Label htmlFor="name">שם מלא</Label>
+                      <Label htmlFor="name" required>
+                        שם מלא
+                      </Label>
                       <FieldError
                         id="name-error"
                         message={getVisibleFieldError("name")}
@@ -1125,7 +1127,9 @@ export function CartCheckoutForm() {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="phone">טלפון</Label>
+                      <Label htmlFor="phone" required>
+                        טלפון
+                      </Label>
                       <FieldError
                         id="phone-error"
                         message={getVisibleFieldError("phone")}
@@ -1134,8 +1138,10 @@ export function CartCheckoutForm() {
                         aria-describedby="phone-error"
                         aria-invalid={Boolean(getVisibleFieldError("phone"))}
                         autoComplete="tel"
+                        dir="ltr"
                         disabled={checkoutLocked}
                         id="phone"
+                        inputMode="tel"
                         minLength={7}
                         onBlur={() => markFieldTouched("phone")}
                         onChange={(event) =>
@@ -1149,7 +1155,9 @@ export function CartCheckoutForm() {
                     </div>
                   </div>
                   <div>
-                    <Label htmlFor="email">אימייל</Label>
+                    <Label htmlFor="email" required>
+                      אימייל
+                    </Label>
                     <FieldError
                       id="email-error"
                       message={getVisibleFieldError("email")}
@@ -1158,6 +1166,7 @@ export function CartCheckoutForm() {
                       aria-describedby="email-error"
                       aria-invalid={Boolean(getVisibleFieldError("email"))}
                       autoComplete="email"
+                      dir="ltr"
                       disabled={checkoutLocked}
                       id="email"
                       onBlur={() => markFieldTouched("email")}
@@ -1186,7 +1195,9 @@ export function CartCheckoutForm() {
                     </div>
                     <div className="grid gap-3 sm:grid-cols-2">
                       <div>
-                        <Label htmlFor="city">עיר</Label>
+                        <Label htmlFor="city" required>
+                          עיר
+                        </Label>
                         <FieldError
                           id="city-error"
                           message={getVisibleFieldError("city")}
@@ -1207,7 +1218,9 @@ export function CartCheckoutForm() {
                         />
                       </div>
                       <div>
-                        <Label htmlFor="street">רחוב ומספר</Label>
+                        <Label htmlFor="street" required>
+                          רחוב ומספר
+                        </Label>
                         <FieldError
                           id="street-error"
                           message={getVisibleFieldError("street")}
@@ -1231,8 +1244,10 @@ export function CartCheckoutForm() {
                         <Label htmlFor="postalCode">מיקוד</Label>
                         <Input
                           autoComplete="postal-code"
+                          dir="ltr"
                           disabled={checkoutLocked}
                           id="postalCode"
+                          inputMode="numeric"
                           onChange={(event) =>
                             setPostalCode(event.currentTarget.value)
                           }
