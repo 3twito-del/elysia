@@ -49,11 +49,14 @@ const checkoutPaymentStatusCopy = {
 export function FieldError({ id, message }: { id: string; message?: string }) {
   return (
     <p
-      className="text-destructive min-h-5 text-xs leading-5"
+      className="text-destructive flex min-h-5 items-center gap-1 text-xs leading-5"
       data-testid={message ? `${id}-visible` : undefined}
       id={id}
       role={message ? "alert" : undefined}
     >
+      {message ? (
+        <AlertCircle aria-hidden="true" className="size-3.5 shrink-0" />
+      ) : null}
       {message}
     </p>
   );

@@ -30,6 +30,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Separator } from "~/components/ui/separator";
+import { Spinner } from "~/components/ui/spinner";
 import { StatusMessage } from "~/components/ui/status-message";
 import { Textarea } from "~/components/ui/textarea";
 import {
@@ -345,6 +346,25 @@ export function CartCheckoutForm() {
     sessionReady: Boolean(sessionKey),
     street,
   });
+  const checkoutContactFieldValues: Record<
+    "city" | "email" | "name" | "phone" | "street",
+    string
+  > = {
+    name,
+    phone,
+    email,
+    city,
+    street,
+  };
+  const isCheckoutDetailsStepComplete = checkoutFieldFocusOrder.every(
+    (field) =>
+      Boolean(checkoutContactFieldValues[field].trim()) &&
+      !checkoutErrors[field],
+  );
+  const checkoutStepCompletionByValue: Record<string, boolean> = {
+    "1": hasOwnItems,
+    "2": isCheckoutDetailsStepComplete,
+  };
   const checkoutLegalIssue =
     (hasOwnItems || hasDropshipItems) && !legalAccepted
       ? checkoutLegalAcceptanceMessage
@@ -565,25 +585,13 @@ export function CartCheckoutForm() {
     >
       <div className="mx-auto grid max-w-md grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
         <div className="min-w-0">
-          <p className="text-muted-foreground truncate text-xs">
-            {checkoutIssues.length > 0
-              ? `${checkoutIssues.length} פרטים חסרים`
-              : hasMixedSourceCart
-                ? "מוכן לתשלום פריטי החנות"
-                : "מוכן להמשיך לתשלום"}
-          </p>
-          <p className="text-lg font-semibold">{orderTotalLabel}</p>
           <p
             className="text-muted-foreground truncate text-xs"
             data-testid="mobile-checkout-source-context"
           >
             {mobileCheckoutSummaryCopy}
           </p>
-          {hasPricingReview ? (
-            <p className="text-muted-foreground truncate text-xs">
-              נדרשת בדיקת מחיר
-            </p>
-          ) : null}
+          <p className="text-lg font-semibold">{orderTotalLabel}</p>
         </div>
         <Button disabled={!canSubmit} form={checkoutFormId} type="submit">
           המשיכי
@@ -855,7 +863,12 @@ export function CartCheckoutForm() {
                   key={step.value}
                 >
                   <div className="flex items-center gap-2">
-                    <CheckoutStepBadge value={step.value} />
+                    <CheckoutStepBadge
+                      isComplete={
+                        checkoutStepCompletionByValue[step.value] ?? false
+                      }
+                      value={step.value}
+                    />
                     <p className="font-medium">{step.label}</p>
                   </div>
                   <p className="text-muted-foreground text-xs leading-5">
@@ -951,10 +964,10 @@ export function CartCheckoutForm() {
                       })}
                     </p>
                     <p
-                      className="text-foreground mt-1 text-sm font-semibold"
+                      className="text-foreground mt-1 flex items-baseline justify-between gap-2 text-sm font-semibold"
                       data-testid="checkout-line-total"
                     >
-                      סה״כ:{" "}
+                      <span>סה״כ</span>
                       <span data-testid="checkout-line-total-amount">
                         {getCheckoutAmountLabel(item.lineTotal, {
                           requiresPositive: true,
@@ -1705,8 +1718,12 @@ export function CartCheckoutForm() {
                       size="lg"
                       type="submit"
                     >
-                      {localCheckoutButtonLabel}
-                      <PackageCheck aria-hidden="true" className="size-4" />
+                      {createOrder.isPending ? "שולחים הזמנה" : localCheckoutButtonLabel}
+                      {createOrder.isPending ? (
+                        <Spinner aria-hidden="true" role="presentation" />
+                      ) : (
+                        <PackageCheck aria-hidden="true" className="size-4" />
+                      )}
                     </Button>
                   </div>
                 ) : null}
@@ -1778,8 +1795,7 @@ function CheckoutEmptyCartState() {
             התחילי מהנמכרים ביותר
           </h2>
           <p className="text-muted-foreground mt-4 max-w-xl text-sm leading-7 sm:text-base">
-            שלושה תכשיטים שנבחרים שוב ושוב. אחרי הוספה לסל תראי כאן מוצר, כמות,
-            מחיר ומשלוח לפני תשלום.
+            שלושה תכשיטים שנבחרים שוב ושוב.
           </p>
           <div className="mt-7 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <Button asChild>
