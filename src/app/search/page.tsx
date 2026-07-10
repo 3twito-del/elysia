@@ -459,7 +459,7 @@ function SearchCategoryChips({
       data-testid="search-category-chips"
     >
       <span className="text-muted-foreground shrink-0">קטגוריה</span>
-      <div className="flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0">
+      <div className="search-category-chips-scroll flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0 sm:[mask-image:none]">
         <Button
           asChild
           className="h-11 shrink-0 sm:h-8"

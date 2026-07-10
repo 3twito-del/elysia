@@ -4212,6 +4212,21 @@ html[data-accessibility-motion="reduce"] .about-timeline-flow::before {
   font-variant-numeric: tabular-nums;
 }
 
+/* The mobile category-chip row (search-category-chips) scrolls
+   horizontally with no scrollbar on touch devices — without a fade, the
+   trailing chip gets hard-clipped mid-pill and reads as a rendering glitch
+   rather than "swipe for more". Direction-agnostic (fades both edges) so it
+   is correct regardless of scroll position, not just the RTL start edge. */
+.search-category-chips-scroll {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 1.25rem,
+    black calc(100% - 1.25rem),
+    transparent
+  );
+}
+
 .site-header .site-header-scroll-cta {
   pointer-events: none;
   opacity: 0;
