@@ -25,6 +25,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "~/components/ui/sheet";
+import { formatPlpResultCount } from "~/lib/format";
 import { cn } from "~/lib/utils";
 import type { ProductSearchInput } from "~/server/adapters/search";
 import type { CatalogCategory, CatalogFacets } from "~/server/services/catalog";
@@ -37,6 +38,7 @@ type SearchControlsProps = {
   clearSearchHref: string;
   facets: CatalogFacets;
   input: ProductSearchInput;
+  resultTotal: number;
   viewMode: "grid" | "list";
 };
 
@@ -49,6 +51,7 @@ export function SearchControls({
   clearSearchHref,
   facets,
   input,
+  resultTotal,
   viewMode,
 }: SearchControlsProps) {
   const shouldShowAdvancedFilters = activeFilterCount > 0;
@@ -218,6 +221,14 @@ export function SearchControls({
                     className="text-foreground size-4"
                   />
                   סינון ומיון
+                  {getCompactSortLabel(input.sort) ? (
+                    <span
+                      className="text-muted-foreground font-normal"
+                      data-testid="mobile-search-filter-trigger-sort"
+                    >
+                      {"· " + getCompactSortLabel(input.sort)}
+                    </span>
+                  ) : null}
                 </span>
                 {activeFilterCount > 0 ? (
                   <Badge
@@ -247,7 +258,8 @@ export function SearchControls({
               <form
                 action="/search"
                 aria-label="סינון תוצאות חיפוש"
-                className="grid gap-4 p-4"
+                className="grid gap-4 p-4 pb-24"
+                id="mobile-search-filter-form"
                 onSubmit={pruneEmptySearchParams}
                 role="search"
               >
@@ -260,15 +272,22 @@ export function SearchControls({
                 <AvailabilityField input={input} />
                 <PreservedModeInput input={input} />
                 <PreservedViewInput viewMode={viewMode} />
-                <div className="grid gap-3 pt-1">
-                  <Button type="submit">הצגת תוצאות</Button>
-                  <Button asChild variant="outline">
-                    <SheetClose asChild>
-                      <Link href={clearFiltersHref}>איפוס</Link>
-                    </SheetClose>
-                  </Button>
-                </div>
               </form>
+              {/* Sticky footer, outside the scrollable form: always reachable
+                  without hunting through facet fields, and the submit button
+                  shows the result count for the currently loaded page so the
+                  action reads as concrete rather than a blind "show results". */}
+              <div className="bg-popover sticky bottom-0 grid gap-2 border-t border-[var(--glass-border)] p-4">
+                <Button form="mobile-search-filter-form" type="submit">
+                  {"הצגת "}
+                  {formatPlpResultCount(resultTotal)}
+                </Button>
+                <Button asChild variant="outline">
+                  <SheetClose asChild>
+                    <Link href={clearFiltersHref}>איפוס</Link>
+                  </SheetClose>
+                </Button>
+              </div>
             </SheetContent>
           </Sheet>
         </div>
@@ -793,4 +812,14 @@ function PreservedInput({
   if (value === undefined || value === "") return null;
 
   return <input name={name} type="hidden" value={String(value)} />;
+}
+
+/** Short trigger-button label for the active sort -- absent for the default. */
+function getCompactSortLabel(sort: ProductSearchInput["sort"]) {
+  if (sort === "price-asc") return "מחיר נמוך";
+  if (sort === "price-desc") return "מחיר גבוה";
+  if (sort === "newest") return "חדש";
+  if (sort === "popular") return "מומלץ";
+
+  return null;
 }

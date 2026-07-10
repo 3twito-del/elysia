@@ -284,75 +284,102 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             </div>
           </section>
 
-          <div
-            className="mt-4 grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4"
-            data-testid="search-controls-panel"
-          >
-            <SearchControls
-              activeFilterCount={activeRefinementCount}
-              categories={categories}
-              clearSearchHref={clearSearchHref}
-              clearFiltersHref={clearFiltersHref}
-              facets={facets}
-              input={input}
-              viewMode={viewMode}
-            />
-
-            <SearchCategoryChips
-              categories={categories}
-              input={input}
-              viewMode={viewMode}
-            />
-          </div>
-
           {result.hits.length === 0 ? (
-            <EmptyState
-              className="mt-6 sm:mt-10"
-              description={
-                <>
-                  נסי לנקות את הסינונים, לחפש מילה אחרת או לעבור לקטגוריה
-                  אחרת.
-                </>
-              }
-              icon={Search}
-              testId="search-empty-state"
-              title="לא נמצאו תוצאות"
-              actions={
-                <>
-                  {recoveryActions.length > 0 ? (
-                    <span
-                      className="contents"
-                      data-testid="search-recovery-actions"
-                    >
-                      {recoveryActions.map((action) => (
-                        <Button asChild key={action.href} variant="outline">
-                          <Link href={action.href} scroll={false}>
-                            <span>{action.label}</span>
-                            <span className="text-xs opacity-75">
-                              {formatPlpResultCount(action.total)}
-                            </span>
-                          </Link>
-                        </Button>
-                      ))}
-                    </span>
-                  ) : null}
-                  {hasActiveFilters ? (
-                    <Button asChild variant="outline">
-                      <Link href={resetAllHref} scroll={false}>
-                        איפוס חיפוש
-                      </Link>
-                    </Button>
-                  ) : null}
-                  <SearchNoResultsSuggestions
-                    categories={categories}
-                    input={input}
-                    viewMode={viewMode}
-                  />
-                </>
-              }
-            />
+            // No-results hierarchy inversion: recovery comes first, the
+            // query field that just failed is secondary, reachable right
+            // below it -- not the first thing offered again.
+            <>
+              <EmptyState
+                className="mt-6 sm:mt-10"
+                description={
+                  <>
+                    נסי לנקות את הסינונים, לחפש מילה אחרת או לעבור לקטגוריה
+                    אחרת.
+                  </>
+                }
+                icon={Search}
+                testId="search-empty-state"
+                title="לא נמצאו תוצאות"
+                actions={
+                  <>
+                    {recoveryActions.length > 0 ? (
+                      <span
+                        className="contents"
+                        data-testid="search-recovery-actions"
+                      >
+                        {recoveryActions.map((action) => (
+                          <Button asChild key={action.href} variant="outline">
+                            <Link href={action.href} scroll={false}>
+                              <span>{action.label}</span>
+                              <span className="text-xs opacity-75">
+                                {formatPlpResultCount(action.total)}
+                              </span>
+                            </Link>
+                          </Button>
+                        ))}
+                      </span>
+                    ) : null}
+                    {hasActiveFilters ? (
+                      <Button asChild variant="outline">
+                        <Link href={resetAllHref} scroll={false}>
+                          איפוס חיפוש
+                        </Link>
+                      </Button>
+                    ) : null}
+                    <SearchNoResultsSuggestions
+                      categories={categories}
+                      input={input}
+                      viewMode={viewMode}
+                    />
+                  </>
+                }
+              />
+              <div
+                className="mt-4 grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4"
+                data-testid="search-controls-panel"
+              >
+                <SearchControls
+                  activeFilterCount={activeRefinementCount}
+                  categories={categories}
+                  clearSearchHref={clearSearchHref}
+                  clearFiltersHref={clearFiltersHref}
+                  facets={facets}
+                  input={input}
+                  resultTotal={result.total}
+                  viewMode={viewMode}
+                />
+
+                <SearchCategoryChips
+                  categories={categories}
+                  input={input}
+                  viewMode={viewMode}
+                />
+              </div>
+            </>
           ) : (
             <>
+              <div
+                className="mt-4 grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4"
+                data-testid="search-controls-panel"
+              >
+                <SearchControls
+                  activeFilterCount={activeRefinementCount}
+                  categories={categories}
+                  clearSearchHref={clearSearchHref}
+                  clearFiltersHref={clearFiltersHref}
+                  facets={facets}
+                  input={input}
+                  resultTotal={result.total}
+                  viewMode={viewMode}
+                />
+
+                <SearchCategoryChips
+                  categories={categories}
+                  input={input}
+                  viewMode={viewMode}
+                />
+              </div>
+
               {viewMode === "list" ? (
                 <RevealGrid
                   className="mt-5 grid gap-3 sm:mt-8"

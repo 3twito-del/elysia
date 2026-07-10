@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
+  ChevronLeft,
   Filter,
   Gem,
   Headphones,
@@ -21,11 +22,15 @@ import {
   getValidPage as getValidCategoryPage,
   productsPerPage,
   sortCategoryProducts as sortCategoryRouteProducts,
+  sortOptions as categorySortOptions,
   toCategoryFilterPayload,
   type CategoryFilters,
   type CategoryNoResultRecoveryAction,
   type CategorySearchParams,
 } from "./_lib/category-filter-state";
+
+/** The default sort's label is omitted from the compact trigger button. */
+const CATEGORY_DEFAULT_SORT_LABEL = categorySortOptions[0].label;
 import { CompactPageIntro } from "~/components/compact-page-intro";
 import { ProductCard } from "~/components/product-card";
 import { RevealGrid, RevealSection } from "~/components/reveal";
@@ -281,6 +286,7 @@ export default async function CategoryPage({
               ? `${categoryResultCountLabel} זמינים עכשיו. ${categoryCopy.intro}`
               : "הקטגוריה קיימת, אבל אין בה פריטים זמינים כרגע. אפשר לעבור לחיפוש או לבחור קטגוריה אחרת."
           }
+          descriptionClassName="line-clamp-1"
           eyebrow="קולקציה"
           id="page-hero"
           title={categoryCopy.title}
@@ -547,11 +553,11 @@ function CategoryBreadcrumbs({ categoryName }: { categoryName: string }) {
       <Link className="hover:text-foreground transition-colors" href="/">
         עמוד הבית
       </Link>
-      <span aria-hidden="true">›</span>
+      <ChevronLeft aria-hidden="true" className="size-3.5 shrink-0" />
       <Link className="hover:text-foreground transition-colors" href="/search">
         כל התכשיטים
       </Link>
-      <span aria-hidden="true">›</span>
+      <ChevronLeft aria-hidden="true" className="size-3.5 shrink-0" />
       <span className="text-foreground">{categoryName}</span>
     </nav>
   );
@@ -582,6 +588,14 @@ function CategoryFilterDrawer({
       >
         <Filter aria-hidden="true" className="size-4" />
         סינון ומיון
+        {currentSortLabel !== CATEGORY_DEFAULT_SORT_LABEL ? (
+          <span
+            className="text-muted-foreground font-normal"
+            data-testid="category-filter-trigger-sort"
+          >
+            {"· " + currentSortLabel}
+          </span>
+        ) : null}
         {activeFilterCount > 0 ? (
           <Badge className="h-5 px-1.5" variant="secondary">
             {activeFilterCount}

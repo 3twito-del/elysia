@@ -4542,6 +4542,20 @@ html[data-accessibility-motion="reduce"] .about-timeline-flow::before {
   transform: scale(var(--gallery-hover-zoom-scale));
 }
 
+/* Subtle mobile position dots (DP 29): the numeric badge remains the
+   accessible + desktop-visual indicator; dots are the mobile visual role. */
+.product-gallery-position-dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  background: rgb(255 250 244 / 55%);
+  box-shadow: 0 0 0 1px rgb(29 25 22 / 18%);
+}
+
+.product-gallery-position-dot[data-gallery-dot-active="true"] {
+  width: 1.25rem;
+  background: rgb(255 250 244 / 96%);
+}
+
 @media (hover: hover) and (pointer: fine) {
   .product-gallery-main-frame {
     cursor: zoom-in;

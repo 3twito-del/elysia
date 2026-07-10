@@ -1318,7 +1318,11 @@ export function ProductGallery({
           {galleryImageCount > 1 ? (
             <Badge
               aria-live="polite"
-              className="bg-background text-foreground absolute bottom-5 left-4 rounded-full px-3"
+              // Visually a pill only from lg up (dots take the mobile visual
+              // role below); the aria-live wrapper itself always stays in the
+              // accessibility tree via sr-only, not display:none, so the
+              // position announcement keeps firing for mobile screen readers.
+              className="bg-background text-foreground sr-only lg:not-sr-only lg:absolute lg:bottom-5 lg:left-4 lg:inline-flex lg:rounded-full lg:px-3"
               data-testid="product-gallery-selection-status"
               variant="secondary"
             >
@@ -1330,6 +1334,23 @@ export function ProductGallery({
                 {activeImagePosition}/{galleryImageCount}
               </span>
             </Badge>
+          ) : null}
+          {galleryImageCount > 1 && galleryImageCount <= 8 ? (
+            <div
+              aria-hidden="true"
+              className="product-gallery-position-dots absolute inset-x-0 bottom-5 flex items-center justify-center gap-1.5 lg:hidden"
+              data-testid="product-gallery-position-dots"
+            >
+              {galleryImages.map((image, index) => (
+                <span
+                  className="product-gallery-position-dot rounded-full transition-all"
+                  data-gallery-dot-active={
+                    activeImageIndex === index ? "true" : "false"
+                  }
+                  key={image}
+                />
+              ))}
+            </div>
           ) : null}
           <Dialog open={isViewerOpen} onOpenChange={handleViewerOpenChange}>
             <div

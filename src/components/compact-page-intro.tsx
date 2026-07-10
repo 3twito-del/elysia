@@ -17,6 +17,7 @@ type CompactPageIntroProps = {
   className?: string;
   density?: CommercePageHeroDensity;
   description?: ReactNode;
+  descriptionClassName?: string;
   eyebrow?: ReactNode;
   id?: string;
   intent?: CommercePageHeroIntent;
@@ -31,6 +32,7 @@ export function CompactPageIntro({
   className,
   density,
   description,
+  descriptionClassName,
   eyebrow,
   id,
   intent,
@@ -45,6 +47,7 @@ export function CompactPageIntro({
       className={cn("task-first-page-intro", className)}
       density={density}
       description={description}
+      descriptionClassName={descriptionClassName}
       eyebrow={eyebrow}
       id={id}
       intent={intent}

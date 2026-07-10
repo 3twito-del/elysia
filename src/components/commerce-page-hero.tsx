@@ -31,6 +31,9 @@ type CommercePageHeroProps = {
   archetype?: PublicRouteArchetype;
   className?: string;
   description?: ReactNode;
+  /** Extra classes on the description paragraph only (e.g. a line-clamp for
+   * a specific route) -- never changes the shared default for every caller. */
+  descriptionClassName?: string;
   density?: CommercePageHeroDensity;
   eyebrow?: ReactNode;
   id?: string;
@@ -75,6 +78,7 @@ export function CommercePageHero({
   archetype,
   className,
   description,
+  descriptionClassName,
   density,
   eyebrow,
   id,
@@ -116,7 +120,14 @@ export function CommercePageHero({
           ) : null}
           <h1 className="commerce-page-hero-title">{title}</h1>
           {description ? (
-            <p className="commerce-page-hero-description">{description}</p>
+            <p
+              className={cn(
+                "commerce-page-hero-description",
+                descriptionClassName,
+              )}
+            >
+              {description}
+            </p>
           ) : null}
           {hasActions ? (
             <div className="commerce-page-hero-actions">{actions}</div>
