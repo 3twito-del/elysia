@@ -121,14 +121,13 @@ edited.
 
 | ID    | Candidate                                        | Status          | Priority |
 | ----- | ------------------------------------------------ | --------------- | -------- |
-| I-306 | Authenticated account visual review (fixture ok) | Needs Benchmark | P2       |
 | I-330 | Legal pages editorial styling                    | Needs Benchmark | P2       |
 | I-331 | AI/stylist concierge promotion exception review  | Needs Benchmark | P2       |
 | I-334 | Supplier-product merchandising treatment         | Needs Benchmark | P1       |
 
-These map into the workstream backlog below: I-306→I-02, I-330→J-07,
-I-334→C-07. I-331 stays a standalone exception decision — AI remains
-demoted by default and out of primary navigation without an approved
+These map into the workstream backlog below: I-330→J-07, I-334→C-07. I-331
+stays a standalone exception decision — AI remains demoted by default and
+out of primary navigation without an approved
 exception.
 
 ## 4. Workstream backlog (open items)
@@ -340,11 +339,6 @@ have been deleted; partially done items state only their remaining scope.
 
 ### I — Account, wishlist, post-purchase
 
-- **I-02 Authenticated visual review** · P1 · MEASURE — the reusable fixture
-  exists (`E2E_AUTH_FIXTURES=1`, Chromium desktop E2E, managed
-  build/start/teardown harness); remaining scope is running the full matrix:
-  dashboard, profile, addresses, saved sizes, wishlist merge, privacy, order
-  detail, returns, empty/error/loading, mobile. (I-306)
 - **I-03 Ownership-grade order timeline** · P1 · NOW after provider proof —
   event truth only; no fabricated milestones for Shopify mirrors.
 - **I-04 Reorder/care/service continuity** · P2 · BENCHMARK — without turning

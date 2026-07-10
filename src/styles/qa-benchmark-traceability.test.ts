@@ -3,7 +3,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 const historicalBenchmarkBacklogIds = new Set(
-  [...Array.from({ length: 302 }, (_, index) => index + 1), 305, 328].map(
+  [...Array.from({ length: 302 }, (_, index) => index + 1), 305, 306, 328].map(
     (number) => `I-${String(number).padStart(3, "0")}`,
   ),
 );

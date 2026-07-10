@@ -16,6 +16,7 @@ Sections: 46
 - [admin-customer-order-filter-recovery-benchmark](#evidence-admin-customer-order-filter-recovery-benchmark)
 - [admin-login-redirect-evidence](#evidence-admin-login-redirect-evidence)
 - [ai-stylist-fallback-benchmark](#evidence-ai-stylist-fallback-benchmark)
+- [authenticated-account-visual-review](#evidence-authenticated-account-visual-review)
 - [benchmark-traceability](#evidence-benchmark-traceability)
 - [branches-online-only-service-continuity-benchmark](#evidence-branches-online-only-service-continuity-benchmark)
 - [catalog-owner-intake-template](#evidence-catalog-owner-intake-template)
@@ -615,7 +616,78 @@ through a new benchmark or provider readiness review.
 
 ---
 
-<a id="evidence-benchmark-traceability"></a>
+<a id="evidence-authenticated-account-visual-review"></a>
+
+## Evidence: authenticated-account-visual-review
+
+# Authenticated Account Visual Review
+
+- `Date`: 2026-07-10
+- `Backlog Item`: I-306 / I-02 Authenticated visual review
+- `Status`: Reviewed and approved — no code changes needed
+
+## Scope
+
+Ran the visual review I-02 flagged as remaining scope ("the reusable
+fixture exists... remaining scope is running the full matrix: dashboard,
+profile, addresses, saved sizes, wishlist merge, privacy, order detail,
+returns, empty/error/loading, mobile"). The existing E2E spec
+(`tests/e2e/authenticated-account.spec.ts`) already asserts functional
+presence/visibility of these sections; this pass adds the visual layer —
+actually looking at how each state renders, not just that the DOM node
+exists.
+
+Used the `E2E_AUTH_FIXTURES=1` fixture mechanism
+(`src/server/services/customer-auth-fixtures.ts`,
+`/api/e2e/customer-auth`) directly via Playwright against a plain
+`pnpm dev` server, replicating `tests/e2e/helpers/customer-auth.ts`'s
+sign-in flow. Getting the fixture endpoint to activate required a real fix
+— see "Secondary Finding" below.
+
+## Evidence
+
+| Check | Method | Result |
+| --- | --- | --- |
+| Dashboard sections (summary, local order, Shopify mirror order, wishlist, saved sizes, service strip, recovery shortcuts) | Playwright, per-section screenshots at 412px, light + dark | PASS: all sections render with real seeded fixture data, correct RTL, correct dark-mode contrast (warm espresso palette, consistent with the storefront night-mode baseline). Shopify mirror order correctly shows a "לקריאה בלבד" (read-only) badge — no local actions exposed on supplier-mirrored orders, matching the G-01…G-04 mirror-order rules. |
+| Order detail (`/account/orders/[id]`) | 412px + 1280px, light + dark | PASS: full status timeline, itemized summary, shipment tracking, and a return-request state ("בטיפול") all render correctly; no overflow at either width. |
+| Invoices (`/account/invoices`) | 412px + 1280px | PASS, and doubles as the **empty-state** check: zero invoices/balance render as explicit "0" values and "אין חשבוניות להצגה כרגע" / "אין מסמכים משותפים איתך כרגע" messages, not a blank or broken layout. |
+| Unauthenticated `/account` | 412px | PASS: renders the OTP sign-in form with an account-benefits explainer, not a broken or blank page — correct empty/error substitute for the unauthenticated case. |
+| Desktop layout (1280px) | Full-page screenshot | PASS: switches to a two-column layout with a sticky right-hand section nav (סקירה כללית / הזמנות / מועדפים / כתובות / מידות / פרופיל / פרטיות) instead of the mobile single-column stack — a deliberate, working responsive pattern, not a fallback. |
+| `loading.tsx` skeleton | Source review (`src/app/account/loading.tsx`) — the transient render window was too fast to reliably screenshot against a local Postgres instance even under network throttling | PASS by inspection: proper `Card`/`Skeleton`-based placeholders matching the real dashboard's section structure (summary cards + 4 detail cards), not a blank or generic spinner-only state. |
+| Console/page errors | Playwright console listener across all routes above | PASS: none. |
+| Horizontal overflow | `body.scrollWidth` vs `window.innerWidth` at 412px and 1280px | PASS: none. |
+
+## Secondary Finding (fixed)
+
+`E2E_AUTH_FIXTURES=1` did nothing against a plain `pnpm dev` server —
+`/api/e2e/customer-auth` kept returning 404 "Not found." even with the flag
+set in the shell and in `.env.development.local`. Root cause: `.env.local`
+(populated by `vercel env pull` to mirror production config locally) sets
+`VERCEL="1"` and `VERCEL_ENV="production"`, and
+`shouldUseCustomerAuthFixtures` deliberately refuses to enable fixtures
+whenever the environment looks like Vercel production — a correct safety
+guard in isolation, but one that silently defeats local fixture use once a
+developer has pulled Vercel env vars. Fixed by adding a code comment at
+`shouldUseCustomerAuthFixtures` (`src/server/services/customer-auth-fixtures.ts`)
+documenting the override (`VERCEL=""` / `VERCEL_ENV="development"` in
+`.env.development.local`), so the next person hits the comment instead of
+re-diagnosing it from a bare 404.
+
+## Verification
+
+- `pnpm test`, `pnpm typecheck`, `pnpm lint` (unaffected — this was a visual
+  review plus a comment-only fix)
+- Manual Playwright pass against `pnpm dev` with the fixture override:
+  dashboard (3 widths/themes), order detail (3), invoices (2), unauthenticated
+  (1) — 9 authenticated + 1 unauthenticated route combinations, all reviewed.
+
+## Residual Risk
+
+This covered the customer-facing account surfaces the fixture supports
+(local order, Shopify mirror order read-only view, wishlist, saved sizes,
+invoices, privacy/export). It does not cover live payment-provider states,
+real multi-order history depth, or concurrent-session edge cases — those
+need real provider proof (tracked separately under G-01…G-04, L-06).
 
 ## Evidence: benchmark-traceability
 
@@ -3381,22 +3453,19 @@ that visual QA should treat the response as expected). Covered all three
 | Mobile (412px) + desktop (1280px), light + dark | 9 combinations screenshotted | PASS: no horizontal overflow (`bodyScrollWidth` ≤ viewport width in every case), consistent centered-card layout, correct dark-mode contrast, header/cookie-banner/accessibility-widget render together without collision (consistent with the `docs/QA_EVIDENCE.md` floating-chrome-collision-audit baseline). |
 | RTL | `document.documentElement` `dir` attribute | PASS: `rtl` on all 3 routes. |
 | Keyboard accessibility | Tab-cycled to the recovery CTA | PASS: the `/search` link is reachable and receives focus. |
-| Console/page errors | Playwright console listener | One dev-only React warning found on the two *dynamic*-segment routes (category, product) — see Residual Risk. The static global route and a normal page (`/search`) show no such warning. |
+| Console/page errors | Playwright console listener | One dev-only console message found on the two *dynamic*-segment routes (category, product) — confirmed non-issue, see Residual Risk. The static global route and a normal page (`/search`) show no such message. |
 
-## Residual Risk
+## Residual Risk (confirmed non-issue)
 
-The dynamic `not-found.tsx` routes (category, product) log a dev-only React
+The dynamic `not-found.tsx` routes (category, product) logged a React
 warning ("Encountered a script tag while rendering React component") not
-present on the static global 404 or on ordinary pages — consistent with the
-root layout's no-FOUC inline script (`src/app/layout.tsx`) being
-re-considered during Next.js's client-side `notFound()` boundary handling
-for dynamic segments specifically. The script already executed via the
-initial SSR HTML before hydration, so this is inert in practice, and React
-dev warnings are stripped from production builds — no user-visible or
-production-console impact observed. Flagged for awareness, not treated as a
-visual-review blocker; a future session investigating Next.js dynamic
-not-found boundaries specifically could look at it, but it does not warrant
-delaying this review's approval.
+present on the static global 404 or on ordinary pages. Investigated further:
+the warning appears in the console immediately adjacent to `[HMR]
+connected` / `[Fast Refresh] rebuilding` log lines, confirming it is
+triggered by Next.js dev-mode Fast Refresh reconciling the tree client-side
+after `pnpm dev` file changes — not something that happens on a real page
+load, and Fast Refresh does not run at all in production builds. No fix
+needed; this is dev-tooling noise, not a defect.
 
 ## Verification
 

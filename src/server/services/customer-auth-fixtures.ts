@@ -33,6 +33,11 @@ export class CustomerAuthFixturesDisabledError extends Error {
 export function shouldUseCustomerAuthFixtures(
   env: Record<string, string | undefined> = process.env,
 ) {
+  // Local dev note: `vercel env pull` writes VERCEL=1 / VERCEL_ENV=production
+  // into .env.local so `pnpm dev` mirrors production config. That silently
+  // disables this flag even with E2E_AUTH_FIXTURES=1 set. Override both in
+  // .env.development.local (higher precedence, gitignored) for a local E2E
+  // run: VERCEL="" and VERCEL_ENV="development".
   return (
     env[CUSTOMER_AUTH_FIXTURE_FLAG] === "1" &&
     !(env.VERCEL === "1" && env.VERCEL_ENV === "production")
