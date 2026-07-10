@@ -41,7 +41,7 @@ export const returnRequestInputSchema = z.object({
 
 export const deleteCustomerDataInputSchema = z.object({
   confirmation: z.literal(DELETE_CONFIRMATION_VALUE, {
-    errorMap: () => ({ message: "יש להקליד DELETE כדי לאשר מחיקה." }),
+    error: "יש להקליד DELETE כדי לאשר מחיקה.",
   }),
 });
 

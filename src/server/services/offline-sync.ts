@@ -30,7 +30,7 @@ export const offlineJsonActionSchema = z.object({
     "newsletter.join",
     "push.preferences",
   ]),
-  payload: z.record(z.unknown()),
+  payload: z.record(z.string(), z.unknown()),
 });
 
 export const offlineJsonSyncSchema = z.object({
@@ -42,7 +42,7 @@ export const offlineServiceRequestMetadataSchema = z.object({
   createdAt: z.string().trim().max(64).optional(),
   deviceId: z.string().trim().min(8).max(128),
   kind: z.literal("service.request"),
-  payload: z.record(z.unknown()),
+  payload: z.record(z.string(), z.unknown()),
 });
 
 export type OfflineSyncResult = {

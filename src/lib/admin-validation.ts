@@ -9,10 +9,10 @@ const requiredText = (message: string, maxLength: number) =>
   z.string().trim().min(1, message).max(maxLength, "הטקסט ארוך מדי.");
 
 const positiveNumber = (message: string) =>
-  z.number({ invalid_type_error: message }).positive(message).finite(message);
+  z.number({ error: message }).positive(message).finite(message);
 
 const nonnegativeInteger = (message: string) =>
-  z.number({ invalid_type_error: message }).int(message).nonnegative(message);
+  z.number({ error: message }).int(message).nonnegative(message);
 
 const productAvailabilityModes = [
   "READY_TO_ORDER",
