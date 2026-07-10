@@ -7,6 +7,7 @@ import { AnalyticsProvider } from "~/components/analytics-provider";
 import { CookieConsentBanner } from "~/components/cookie-consent-banner";
 import { DeferredAccessibilityWidget } from "~/components/deferred-accessibility-widget";
 import { ExclusiveDetailsProvider } from "~/components/exclusive-details-provider";
+import { PageTransitionFade } from "~/components/page-transition-fade";
 import { PwaProvider } from "~/components/pwa-provider";
 import { PublicMotionProvider } from "~/components/public-motion-provider";
 import { SiteContextMenu } from "~/components/site-context-menu";
@@ -89,7 +90,9 @@ export default function RootLayout({
             דילוג לתוכן
           </a>
           <div id="main-content" tabIndex={-1}>
-            <PublicMotionProvider>{children}</PublicMotionProvider>
+            <PublicMotionProvider>
+              <PageTransitionFade>{children}</PageTransitionFade>
+            </PublicMotionProvider>
             <SiteFooter />
           </div>
           <CookieConsentBanner />

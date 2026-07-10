@@ -16,6 +16,7 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { TableEmptyRow } from "~/components/ui/table-empty-row";
+import { formatPrice } from "~/lib/format";
 
 export type LiveInsightsPayload = {
   generatedAt: string;
@@ -252,7 +253,7 @@ export function AnalyticsLiveConsole({
                     <TableCell>{event.source}</TableCell>
                     <TableCell>
                       {event.order
-                        ? `${event.order.orderNumber} · ₪${event.order.total}`
+                        ? `${event.order.orderNumber} · ${formatPrice(event.order.total)}`
                         : (event.product?.name ?? "—")}
                     </TableCell>
                     <TableCell>

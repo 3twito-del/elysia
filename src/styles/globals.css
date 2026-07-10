@@ -322,6 +322,9 @@
     @apply bg-background text-foreground overflow-x-clip antialiased;
     font-family: var(--font-hebrew-sans);
     font-feature-settings: "kern" 1;
+    /* Site-wide: keeps every price and table figure on fixed-width digits so
+       nothing jitters when a number changes in place (quantity, totals). */
+    font-variant-numeric: tabular-nums;
     text-rendering: optimizeLegibility;
     /* Tint native controls (checkboxes, radios) to the brand instead of the
        browser default blue; `--action-primary` already adapts per theme. */
@@ -6377,6 +6380,20 @@ footer nav a:focus-visible {
 .faq-answer-reveal {
   animation: motion-status-pop var(--motion-fast) var(--ease-motion-standard)
     both;
+}
+
+.page-transition-fade {
+  animation: page-transition-fade-in var(--motion-page)
+    var(--ease-motion-standard) both;
+}
+
+@keyframes page-transition-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .motion-sticky-purchase {

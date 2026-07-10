@@ -168,7 +168,7 @@ export default async function FaqPage() {
                           <summary className="hover:text-foreground flex cursor-pointer list-none items-center justify-between gap-3 rounded-sm font-medium transition outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]">
                             <span>{item.question}</span>
                             <ChevronDown
-                              className="size-4 shrink-0 transition group-open:rotate-180"
+                              className="size-4 shrink-0 transition-transform duration-[var(--motion-fast)] ease-[var(--ease-standard)] group-open:rotate-180"
                               aria-hidden="true"
                             />
                           </summary>

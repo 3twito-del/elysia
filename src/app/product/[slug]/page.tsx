@@ -457,7 +457,7 @@ function ProductFaq({
               <span>{item.question}</span>
               <ChevronDown
                 aria-hidden="true"
-                className="size-4 shrink-0 transition-transform group-open:rotate-180"
+                className="size-4 shrink-0 transition-transform duration-[var(--motion-fast)] ease-[var(--ease-standard)] group-open:rotate-180"
               />
             </summary>
             <p className="faq-answer-reveal text-muted-foreground mt-2 text-sm leading-6">

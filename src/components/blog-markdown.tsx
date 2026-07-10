@@ -27,6 +27,16 @@ const markdownComponents: Components = {
       </a>
     );
   },
+  blockquote({ children }) {
+    return (
+      <blockquote className="border-s-2 border-[var(--glass-border-strong)] ps-4 text-muted-foreground italic">
+        {children}
+      </blockquote>
+    );
+  },
+  strong({ children }) {
+    return <strong className="text-foreground font-semibold">{children}</strong>;
+  },
   img() {
     return null;
   },
