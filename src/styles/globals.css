@@ -1937,6 +1937,41 @@ main
   background: #f1e8df;
 }
 
+.order-timeline-dot {
+  background: var(--muted-foreground);
+  opacity: 0.4;
+}
+
+.order-timeline-dot[data-state="current"] {
+  background: var(--glass-focus);
+  opacity: 1;
+}
+
+.order-timeline-dot[data-state="done"] {
+  background: rgb(4 120 87);
+  opacity: 1;
+}
+
+.dark .order-timeline-dot[data-state="done"] {
+  background: rgb(110 231 183);
+}
+
+.wishlist-item-remove {
+  opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) and (min-width: 768px) {
+  .wishlist-item-remove {
+    opacity: 0;
+    transition: opacity var(--motion-fast) var(--ease-motion-standard);
+  }
+
+  .wishlist-product-card:hover .wishlist-item-remove,
+  .wishlist-product-card:focus-within .wishlist-item-remove {
+    opacity: 1;
+  }
+}
+
 .checkout-boutique-form {
   direction: rtl;
 }

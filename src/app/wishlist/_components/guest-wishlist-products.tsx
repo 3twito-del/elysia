@@ -306,11 +306,19 @@ function GuestWishlistProductCard({
           <span className="text-sm font-medium">
             {formatPrice(product.price)}
           </span>
+          {product.availabilityLabel ? (
+            <span
+              className="text-muted-foreground truncate text-xs"
+              data-testid="wishlist-item-availability-note"
+            >
+              {product.availabilityLabel}
+            </span>
+          ) : null}
         </span>
       </Link>
       <Button
         aria-label={`הסרת ${product.name} מהמועדפים`}
-        className="justify-self-start"
+        className="wishlist-item-remove justify-self-start"
         onClick={() => onRemove(product)}
         size="sm"
         type="button"

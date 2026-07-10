@@ -712,35 +712,33 @@ export default async function AccountPage() {
                   <CardContent className="grid gap-3">
                     {customer.savedSizes.length === 0 ? (
                       <EmptyState
-                        description="בינתיים אפשר להיעזר במדריך המידות או לפנות לשירות."
+                        description="בינתיים אפשר להיעזר במדריך המידות."
                         icon={Ruler}
                         title="עדיין אין מידות שמורות"
                         variant="inset"
                         actions={
-                          <>
-                            <Button asChild variant="outline">
-                              <Link href="/size-guide">למדריך המידות</Link>
-                            </Button>
-                            <Button asChild>
-                              <Link href="/service?topic=sizing">
-                                ייעוץ אישי
-                              </Link>
-                            </Button>
-                          </>
+                          <Button asChild variant="outline">
+                            <Link href="/size-guide">למדריך המידות</Link>
+                          </Button>
                         }
                       />
                     ) : (
-                      <div className="grid gap-2 text-sm">
+                      <div
+                        className="flex flex-wrap gap-2"
+                        data-testid="account-saved-size-chips"
+                      >
                         {customer.savedSizes.map((size) => (
-                          <div
-                            className="account-record-row flex items-center justify-between rounded-md border p-3"
+                          <span
+                            className="border-border inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm"
                             key={size.id}
                           >
-                            <span>{getSavedSizeLabel(size.kind)}</span>
+                            <span className="text-muted-foreground">
+                              {getSavedSizeLabel(size.kind)}
+                            </span>
                             <span className="font-medium">
                               {getSavedSizeValue(size.kind, size.value)}
                             </span>
-                          </div>
+                          </span>
                         ))}
                       </div>
                     )}
@@ -1133,7 +1131,7 @@ function AccountRecoveryShortcuts({
           שירות מהיר לחשבון
         </h2>
       </div>
-      <div className="account-support-grid grid gap-0 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="account-support-grid grid gap-0 sm:grid-cols-2 lg:grid-cols-4">
         {shortcuts.map((shortcut) => {
           const Icon = shortcut.icon;
 

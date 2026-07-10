@@ -60,13 +60,15 @@ export default async function CustomerInvoicesPage() {
           <Card className="rounded-md">
             <CardContent className="grid gap-1 p-5">
               <span className="text-muted-foreground text-sm">חשבוניות</span>
-              <span className="text-2xl font-semibold">{summary.count}</span>
+              <span className="text-2xl font-semibold tabular-nums">
+                {summary.count}
+              </span>
             </CardContent>
           </Card>
           <Card className="rounded-md">
             <CardContent className="grid gap-1 p-5">
               <span className="text-muted-foreground text-sm">יתרה לתשלום</span>
-              <span className="text-2xl font-semibold">
+              <span className="text-2xl font-semibold tabular-nums">
                 {formatPrice(summary.outstanding)}
               </span>
             </CardContent>
@@ -74,7 +76,7 @@ export default async function CustomerInvoicesPage() {
           <Card className="rounded-md">
             <CardContent className="grid gap-1 p-5">
               <span className="text-muted-foreground text-sm">שולם עד היום</span>
-              <span className="text-2xl font-semibold">
+              <span className="text-2xl font-semibold tabular-nums">
                 {formatPrice(summary.paid)}
               </span>
             </CardContent>
@@ -152,7 +154,7 @@ export default async function CustomerInvoicesPage() {
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="font-semibold">
+                    <span className="font-semibold tabular-nums">
                       {formatPrice(invoice.total)}
                     </span>
                     <Badge

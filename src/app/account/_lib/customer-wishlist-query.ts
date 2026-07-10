@@ -11,6 +11,9 @@ export const customerWishlistItemsArgs = {
   include: {
     variant: {
       include: {
+        inventoryItems: {
+          select: { quantity: true, reserved: true, safetyStock: true },
+        },
         product: {
           include: {
             category: true,

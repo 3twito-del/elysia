@@ -13,7 +13,10 @@ import { AdminSessionActions } from "../account/_components/admin-session-action
 import { BoutiqueStatePage } from "../account/_components/boutique-state-page";
 import { GuestWishlistMergeNotice } from "../account/_components/guest-wishlist-merge-notice";
 import { customerWishlistInclude } from "../account/_lib/customer-wishlist-query";
-import { getWishlistDecisionSupportFromItems } from "../account/_lib/wishlist-shortlist";
+import {
+  getWishlistDecisionSupportFromItems,
+  getWishlistItemAvailabilityNote,
+} from "../account/_lib/wishlist-shortlist";
 import {
   customerLogoutAction,
   removeWishlistItemAction,
@@ -254,6 +257,10 @@ function CustomerWishlistItemCard({ item }: { item: CustomerWishlistItem }) {
   ]
     .filter((detail): detail is string => Boolean(detail))
     .join(" · ");
+  const availabilityNote = getWishlistItemAvailabilityNote({
+    availabilityMode: product.availabilityMode,
+    inventoryItems: item.variant.inventoryItems,
+  });
 
   return (
     <article className="wishlist-product-card glass-inset flex min-w-0 gap-3 rounded-md border p-3">
@@ -283,11 +290,22 @@ function CustomerWishlistItemCard({ item }: { item: CustomerWishlistItem }) {
               Number(product.basePrice) + Number(item.variant.priceDelta),
             )}
           </span>
+          {availabilityNote ? (
+            <span
+              className="text-muted-foreground truncate text-xs"
+              data-testid="wishlist-item-availability-note"
+            >
+              {availabilityNote}
+            </span>
+          ) : null}
         </span>
       </Link>
       <div className="grid shrink-0 content-between justify-items-end gap-2">
         <Badge variant="outline">שמור</Badge>
-        <form action={removeWishlistItemAction}>
+        <form
+          action={removeWishlistItemAction}
+          className="wishlist-item-remove"
+        >
           <input name="itemId" type="hidden" value={item.id} />
           <Button
             aria-label={`הסרת ${product.name} מהמועדפים`}

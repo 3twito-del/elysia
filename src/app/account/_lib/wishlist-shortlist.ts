@@ -1,3 +1,39 @@
+import {
+  getPublicProductCommerceStatus,
+  type PublicProductAvailabilityMode,
+} from "~/lib/commerce-labels";
+import { getSellableQuantity } from "~/server/services/inventory";
+
+export type WishlistItemAvailabilityInput = {
+  availabilityMode: PublicProductAvailabilityMode;
+  inventoryItems: Array<{
+    quantity: number;
+    reserved: number;
+    safetyStock: number;
+  }>;
+};
+
+/**
+ * Live availability note for a saved wishlist item, shown only when the item
+ * is no longer purchasable (sold out / made-to-order / consultation-only).
+ * There is no price/availability snapshot from when the item was saved, so
+ * this reflects current status rather than a detected change.
+ */
+export function getWishlistItemAvailabilityNote(
+  input: WishlistItemAvailabilityInput,
+) {
+  const availableQuantity = input.inventoryItems.reduce(
+    (sum, item) => sum + getSellableQuantity(item),
+    0,
+  );
+  const status = getPublicProductCommerceStatus({
+    availabilityMode: input.availabilityMode,
+    availableQuantity,
+  });
+
+  return status.canAddToCart ? null : status.label;
+}
+
 export type WishlistShortlistItem = {
   categoryName?: string | null;
   categorySlug?: string | null;

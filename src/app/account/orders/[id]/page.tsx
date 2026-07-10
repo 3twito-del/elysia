@@ -146,7 +146,14 @@ export default async function OrderDetailPage({
                   data-state={event.state}
                   key={event.id}
                 >
-                  <p className="text-xs font-medium">{event.label}</p>
+                  <p className="flex items-center gap-1.5 text-xs font-medium">
+                    <span
+                      aria-hidden="true"
+                      className="order-timeline-dot size-2 shrink-0 rounded-full"
+                      data-state={event.state}
+                    />
+                    {event.label}
+                  </p>
                   <p className="text-muted-foreground mt-1 text-xs">
                     {formatOptionalHebrewDateTime(
                       event.at,
