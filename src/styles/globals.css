@@ -5106,7 +5106,7 @@ footer nav a {
 }
 
 .footer-trust-link .glass-inset {
-  border-color: rgb(29 25 22 / 10%);
+  border-color: var(--glass-border);
   background: rgb(255 250 244 / 54%);
 }
 
@@ -5217,6 +5217,7 @@ footer nav a {
     margin-top: 4.5rem;
     border-top: 1px solid var(--glass-border);
     padding-top: 2.75rem;
+    font-size: 0.8rem;
   }
 
   .footer-nav-disclosure {
@@ -5248,6 +5249,20 @@ footer nav a {
   }
 }
 
+@media (min-width: 768px) and (max-width: 1279px) {
+  .footer-nav-disclosure:nth-child(2n) {
+    border-inline-start: 1px solid var(--glass-border);
+    padding-inline-start: 1.5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .footer-nav-disclosure:not(:first-child) {
+    border-inline-start: 1px solid var(--glass-border);
+    padding-inline-start: 1.5rem;
+  }
+}
+
 footer nav a:hover,
 footer nav a:focus-visible {
   color: var(--foreground);
@@ -5260,7 +5275,7 @@ footer nav a:focus-visible {
 
 .footer-social-link:hover,
 .footer-social-link:focus-visible {
-  border-color: var(--glass-border-strong);
+  border-color: var(--glass-focus);
   background: rgb(29 25 22 / 3%);
   text-decoration-line: none;
 }
@@ -5593,7 +5608,7 @@ footer nav a:focus-visible {
 }
 
 .product-purchase-surface .glass-inset {
-  border-color: rgb(29 25 22 / 8%);
+  border-color: var(--glass-border);
   background: rgb(255 250 244 / 42%);
 }
 
@@ -7164,6 +7179,14 @@ html[data-accessibility-motion="reduce"]
   background: var(--elysia-media-bg);
 }
 
+.dark .brand-gallery-frame {
+  border: 1px solid var(--glass-border);
+}
+
+.dark .about-trust-card:hover {
+  box-shadow: 0 18px 40px -28px oklch(0 0 0 / 55%);
+}
+
 .dark .product-card-material-badge,
 .dark .product-card-status-badge {
   border-color: rgb(243 237 230 / 16%);
@@ -7317,7 +7340,7 @@ html[data-accessibility-motion="reduce"]
 }
 
 .dark .product-purchase-surface .glass-inset {
-  border-color: rgb(243 237 230 / 10%);
+  border-color: var(--glass-border);
   background: rgb(243 237 230 / 5%);
 }
 
@@ -7394,7 +7417,7 @@ html[data-accessibility-motion="reduce"]
 }
 
 .dark .footer-trust-link .glass-inset {
-  border-color: rgb(243 237 230 / 12%);
+  border-color: var(--glass-border);
   background: rgb(243 237 230 / 6%);
 }
 

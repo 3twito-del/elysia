@@ -252,7 +252,7 @@ function FooterTrustLayer() {
 
           return (
             <Link
-              className="footer-trust-link grid min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-3 rounded-md px-0 py-3 transition focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
+              className="footer-trust-link grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-start gap-3 rounded-md px-0 py-3 transition focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] focus-visible:outline-none"
               data-testid="footer-trust-link"
               href={item.href}
               key={item.href}
