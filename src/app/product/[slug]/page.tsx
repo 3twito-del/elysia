@@ -405,9 +405,15 @@ export default async function ProductPage({
           />
 
           <div className="grid gap-8">
-            <p className="text-muted-foreground hidden text-base leading-8 sm:block">
-              {product.description}
-            </p>
+            <div
+              className="grid gap-2"
+              data-testid="product-story"
+            >
+              <p className="text-muted-foreground text-xs font-medium tracking-normal uppercase">
+                הסיפור שמאחורי הפריט
+              </p>
+              <p className="text-base leading-8">{product.description}</p>
+            </div>
 
             <ProductFaq items={productFaqItems} />
           </div>

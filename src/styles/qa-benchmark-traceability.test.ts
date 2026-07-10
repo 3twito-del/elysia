@@ -3,9 +3,8 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 const historicalBenchmarkBacklogIds = new Set(
-  Array.from(
-    { length: 302 },
-    (_, index) => `I-${String(index + 1).padStart(3, "0")}`,
+  [...Array.from({ length: 302 }, (_, index) => index + 1), 328].map(
+    (number) => `I-${String(number).padStart(3, "0")}`,
   ),
 );
 const activeBacklogRotation = {

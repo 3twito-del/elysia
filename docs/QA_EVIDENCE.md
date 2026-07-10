@@ -35,6 +35,7 @@ Sections: 46
 - [mobile-pdp-rail-density-benchmark](#evidence-mobile-pdp-rail-density-benchmark)
 - [offline-page-install-pwa-recovery-priority-benchmark](#evidence-offline-page-install-pwa-recovery-priority-benchmark)
 - [order-source-label-audit](#evidence-order-source-label-audit)
+- [pdp-product-story-module-benchmark](#evidence-pdp-product-story-module-benchmark)
 - [pdp-purchase-confidence-benchmark](#evidence-pdp-purchase-confidence-benchmark)
 - [pdp-size-care-fit-fact-placement-benchmark](#evidence-pdp-size-care-fit-fact-placement-benchmark)
 - [product-card-quick-facts-density-benchmark](#evidence-product-card-quick-facts-density-benchmark)
@@ -2372,6 +2373,63 @@ records are visibly distinct and do not expose the wrong operational actions.
 This audit validates labeling, action separation, and local UI guardrails. It
 does not validate live Shopify admin permissions or supplier-side fulfillment
 operations because those remain external to the current Elysia runtime.
+
+---
+
+<a id="evidence-pdp-product-story-module-benchmark"></a>
+
+## Evidence: pdp-product-story-module-benchmark
+
+# PDP Product Story Module Benchmark
+
+- `Date`: 2026-07-10
+- `Backlog Item`: I-328 / F-07 Concise product story module
+- `Status`: Supported (existence, flexible placement) and implemented
+
+## Scope
+
+Checked whether Tier-A high jewelry sites carry a distinct per-product
+narrative ("why this piece") module on the PDP, and where it sits relative
+to the purchase panel. Elysia's `product.description` existed but was
+`hidden` below the `sm` breakpoint (invisible on mobile) and unstyled as
+editorial content.
+
+## Gate Classification
+
+- `Change Type`: PDP narrative/editorial content module.
+- `Route Context`: pdp.
+- `Primary Lens`: High Jewelry Reference Gate in `docs/DESIGN.md`.
+- `Secondary Lens`: full site-by-site evidence in
+  `docs/qa/pdp-product-story-module-benchmark.md`.
+- `Required Gate`: Tier A high-jewelry threshold `11.25`.
+
+## Score
+
+- `Existence` (module exists somewhere on the PDP): 13 of 14 verified sites
+  — weighted score 19.5. Clearly supported.
+- `Fixed "after purchase panel" placement`: 7 of 14 — 10.5, below threshold.
+- `Fixed "before/inside purchase panel" placement`: 6 of 14 — 9.0, below
+  threshold.
+- `Decision`: Supported for existence; neither fixed position independently
+  clears 8-of-15. Implementation adds the story content (reusing the
+  existing verified `product.description` field, no invented copy) without
+  pinning a rigid site-wide position rule the evidence doesn't support.
+
+## Implementation Decision
+
+- Remove the `hidden` class so the description renders at every viewport.
+- Add a small eyebrow label and full-foreground text color so it reads as
+  distinct editorial content, not secondary meta text.
+- Keep it inside the existing `"מה חשוב לדעת לפני שמזמינים"` section
+  (after the purchase panel) — the lower-risk, additive placement.
+- No second full section header — kept concise per the backlog item name.
+
+## Residual Risk
+
+No fixed "story module position" rule is established by this record — a
+future proposal to relocate or add imagery to this content needs its own
+benchmark pass. Full site-by-site detail lives in
+`docs/qa/pdp-product-story-module-benchmark.md`.
 
 ---
 

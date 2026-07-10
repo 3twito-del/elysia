@@ -123,15 +123,14 @@ edited.
 | ----- | ------------------------------------------------ | --------------- | -------- |
 | I-305 | Recovery-state (intentional 404) visual review   | Needs Benchmark | P2       |
 | I-306 | Authenticated account visual review (fixture ok) | Needs Benchmark | P2       |
-| I-328 | Product story module before recommendation rails | Needs Benchmark | P2       |
 | I-330 | Legal pages editorial styling                    | Needs Benchmark | P2       |
 | I-331 | AI/stylist concierge promotion exception review  | Needs Benchmark | P2       |
 | I-334 | Supplier-product merchandising treatment         | Needs Benchmark | P1       |
 
 These map into the workstream backlog below: I-305→E-09, I-306→I-02,
-I-328→F-07, I-330→J-07, I-334→C-07. I-331 stays a standalone exception
-decision — AI remains demoted by default and out of primary navigation
-without an approved exception.
+I-330→J-07, I-334→C-07. I-331 stays a standalone exception decision — AI
+remains demoted by default and out of primary navigation without an
+approved exception.
 
 ## 4. Workstream backlog (open items)
 
@@ -274,8 +273,6 @@ have been deleted; partially done items state only their remaining scope.
   counts or delivery guarantees.
 - **F-06 Product-specific care and warranty** · P1 · OWNER — material-sensitive
   care that never contradicts product guidance.
-- **F-07 Concise product story** · P2 · BENCHMARK — one "why this piece"
-  module after purchase confidence. (I-328)
 - **F-08 Comparison/shortlist support** · P2 · MEASURE+BENCHMARK — only if
   testing proves it reduces uncertainty.
 - **F-09 Recommendations — residual owner decision** · P2 · OWNER — dedupe and
