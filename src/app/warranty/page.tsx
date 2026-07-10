@@ -48,6 +48,10 @@ export default function WarrantyPage() {
       description="מדיניות האחריות של Elysia: 12 חודשים לפגמי ייצור, עם בדיקה לפי פרטי ההזמנה."
       eyebrow="שירות"
       title="מדיניות אחריות"
+      tocSections={warrantySections.map((section, index) => ({
+        id: `warranty-section-${index + 1}`,
+        label: section.title,
+      }))}
     >
       <LegalHighlightCards
         items={[

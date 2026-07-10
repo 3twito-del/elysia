@@ -460,7 +460,7 @@ function ProductFaq({
                 className="size-4 shrink-0 transition-transform group-open:rotate-180"
               />
             </summary>
-            <p className="text-muted-foreground mt-2 text-sm leading-6">
+            <p className="faq-answer-reveal text-muted-foreground mt-2 text-sm leading-6">
               {item.answer}
             </p>
           </details>

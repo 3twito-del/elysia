@@ -172,7 +172,7 @@ export default async function FaqPage() {
                               aria-hidden="true"
                             />
                           </summary>
-                          <p className="text-muted-foreground mt-3 leading-8">
+                          <p className="faq-answer-reveal text-muted-foreground mt-3 leading-8">
                             {item.answer}
                           </p>
                         </details>

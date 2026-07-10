@@ -91,6 +91,10 @@ export default async function ShippingReturnsPage() {
       description="מידע על משלוחים, זמני אספקה, ביטול עסקה, החלפות והחזרות באתר Elysia."
       eyebrow="מדיניות שירות"
       title="משלוחים, ביטולים והחזרות"
+      tocSections={shippingReturnSections.map((section, index) => ({
+        id: `shipping-return-section-${index + 1}`,
+        label: section.title,
+      }))}
     >
       <section
         aria-labelledby="shipping-returns-human-summary"

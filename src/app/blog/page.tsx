@@ -118,7 +118,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                       {post.heroImageUrl ? (
                         <Link
                           aria-label={post.title}
-                          className="bg-muted relative block aspect-[16/10] overflow-hidden"
+                          className="bg-muted relative block aspect-[16/9] overflow-hidden"
                           href={`/blog/${post.slug}`}
                         >
                           <Image

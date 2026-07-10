@@ -120,6 +120,10 @@ export default async function TermsPage() {
       description="תנאי שימוש באתר Elysia: הזמנות, מחירים, תשלום, משלוחים, ביטולים, אחריות, פרטיות ושירות."
       eyebrow="תקנון ומדיניות"
       title="תקנון האתר"
+      tocSections={termsSections.map((section, index) => ({
+        id: `terms-section-${index + 1}`,
+        label: section.title,
+      }))}
     >
       <section aria-labelledby="terms-business-details">
         <div className="flex items-center gap-3">

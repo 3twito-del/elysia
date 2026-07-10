@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AlertTriangle, Droplets, ShieldCheck, Sparkles } from "lucide-react";
+import {
+  AlertTriangle,
+  Circle,
+  Droplets,
+  Gem,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 
 import { ContentPageShell } from "~/components/content-page-shell";
 import { LegalCookiePreferencesCallout } from "~/components/legal-cookie-preferences-callout";
@@ -20,20 +27,16 @@ export const metadata: Metadata = {
 
 const careSections = [
   {
-    title: "לפני מים, שינה וספורט",
-    text: "מומלץ להסיר את התכשיט לפני מקלחת, ים, בריכה, שינה, פעילות ספורטיבית או כל פעילות שבה התכשיט עלול להימתח, להישרט, להישבר או להיחשף ללחות ממושכת.",
+    title: "כסף 925",
+    text: "כל תכשיטי Elysia מבוססים על כסף 925. יש להימנע ממים, בושם, קרמים, אלכוהול, כלור וחומרי ניקוי, ולאחסן במקום יבש ונפרד ככל האפשר כדי לצמצם שריטות, קשרים, לחות ושינויי גוון. מומלץ להשתמש בקופסה או בשקית בד נקייה.",
   },
   {
-    title: "חומרים שיש להימנע מהם",
-    text: "יש להימנע ממגע עם בושם, קרמים, אלכוהול, כלור, חומרי ניקוי וחומרים כימיים אחרים. מומלץ לענוד את התכשיט רק לאחר שהעור יבש והחומרים נספגו.",
+    title: "ציפוי זהב ורוז גולד",
+    text: "בתכשיטים עם ציפוי זהב או רוז גולד על כסף 925 ייתכן שינוי גוון או שחיקה של הציפוי לאורך זמן, בהתאם לאופן השימוש, חומציות העור, חשיפה למים, חומרים, זיעה וחיכוך. מומלץ להסיר לפני מקלחת, ים, בריכה, שינה ופעילות ספורטיבית.",
   },
   {
-    title: "אחסון",
-    text: "יש לאחסן את התכשיטים במקום יבש, בנפרד ככל האפשר, כדי לצמצם שריטות, קשרים, לחות ושינויי גוון. מומלץ להשתמש בקופסה או בשקית בד נקייה.",
-  },
-  {
-    title: "תכשיטים מצופים",
-    text: "בתכשיטים מצופים ייתכן שינוי גוון או שחיקה של הציפוי לאורך זמן, בהתאם לאופן השימוש, חומציות העור, חשיפה למים, חומרים, זיעה וחיכוך.",
+    title: "פנינים וזירקון",
+    text: "פנינים הן חומר אורגני ורגיש במיוחד לבושם, קרמים, אלכוהול וחומרי ניקוי; מומלץ לענוד אותן אחרונות, לאחר שהעור יבש. אבני זירקון עלולות להישרט או להישבר ממכה, מתיחה או חיכוך, ולכן כדאי להסיר את התכשיט לפני פעילות מאומצת.",
   },
   {
     title: "רגישות וגירוי",
@@ -44,6 +47,8 @@ const careSections = [
     text: "אם התכשיט כולל חלקים קטנים, יש להרחיקו מילדים קטנים ולשמור אותו במקום שאינו נגיש להם.",
   },
 ] as const;
+
+const careSectionIcons = [Circle, Sparkles, Gem, AlertTriangle, ShieldCheck];
 
 export default function JewelleryCarePage() {
   return (
@@ -69,6 +74,7 @@ export default function JewelleryCarePage() {
       <LegalSectionList
         icon={ShieldCheck}
         idPrefix="care-section"
+        iconFor={(index) => careSectionIcons[index] ?? ShieldCheck}
         sections={careSections}
       />
 

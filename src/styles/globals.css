@@ -6359,6 +6359,11 @@ footer nav a:focus-visible {
   transform-origin: top center;
 }
 
+.faq-answer-reveal {
+  animation: motion-status-pop var(--motion-fast) var(--ease-motion-standard)
+    both;
+}
+
 .motion-sticky-purchase {
   animation: motion-sticky-in var(--motion-feedback) var(--ease-motion-standard)
     both;

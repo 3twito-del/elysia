@@ -95,6 +95,10 @@ export default async function PrivacyPage() {
       description="כיצד נאסף, נשמר, משותף ומוגן מידע אישי באתר ובשירות."
       eyebrow="פרטיות ומידע"
       title="מדיניות פרטיות"
+      tocSections={privacySections.map((section, index) => ({
+        id: `privacy-section-${index + 1}`,
+        label: section.title,
+      }))}
     >
       <section aria-labelledby="privacy-controller">
         <div className="flex items-center gap-3">
