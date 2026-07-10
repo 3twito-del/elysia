@@ -44,14 +44,16 @@ describe("storefront night mode", () => {
     expect(preference).toContain('meta[name="theme-color"]');
   });
 
-  it("exposes an accessible header toggle", () => {
+  it("exposes an accessible toggle inside the mobile nav drawer", () => {
     const header = read("src/components/site-header.tsx");
+    const mobileNav = read("src/components/mobile-nav.tsx");
     const toggle = read("src/components/theme-toggle.tsx");
 
-    expect(header).toContain("<ThemeToggle />");
+    expect(header).not.toContain("ThemeToggle");
+    expect(mobileNav).toContain("<ThemeToggle");
     expect(toggle).toContain("aria-pressed={isDark}");
-    expect(toggle).toContain('data-icon-tooltip="מצב לילה"');
-    expect(toggle).toContain('<span className="sr-only">מצב לילה</span>');
+    expect(toggle).toContain("mobile-nav-quick-action");
+    expect(toggle).toContain("border-b border-[var(--glass-border)]");
     expect(toggle).toContain("useSyncExternalStore");
   });
 });

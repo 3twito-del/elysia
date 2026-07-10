@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 
 import { BrandLogo } from "~/components/brand-logo";
+import { ThemeToggle } from "~/components/theme-toggle";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import {
@@ -113,7 +114,8 @@ export function MobileNav({
         !serviceActions.some((action) => action.href === item.href),
     );
   const quickActionStartIndex = 2;
-  const spotlightKickerIndex = quickActionStartIndex + quickActions.length;
+  const themeToggleIndex = quickActionStartIndex + quickActions.length;
+  const spotlightKickerIndex = themeToggleIndex + 1;
   const spotlightActionStartIndex = spotlightKickerIndex + 1;
   const recentlyViewedIndex =
     spotlightActionStartIndex + spotlightActions.length;
@@ -269,6 +271,7 @@ export function MobileNav({
                 </Link>
               );
             })}
+            <ThemeToggle style={getMobileNavStaggerStyle(themeToggleIndex)} />
           </nav>
 
           <nav
