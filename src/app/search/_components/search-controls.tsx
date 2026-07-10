@@ -4,11 +4,13 @@ import Link from "next/link";
 import { Check, ChevronDown, Search, SlidersHorizontal, X } from "lucide-react";
 import {
   type FormEvent,
+  useEffect,
   useId,
   useRef,
   useState,
   type KeyboardEvent,
   type ReactNode,
+  type RefObject,
 } from "react";
 
 import { Badge } from "~/components/ui/badge";
@@ -51,16 +53,57 @@ export function SearchControls({
 }: SearchControlsProps) {
   const shouldShowAdvancedFilters = activeFilterCount > 0;
   const hasQuery = Boolean(input.query?.trim());
+  const detailsRef = useRef<HTMLDetailsElement>(null);
+  const summaryRef = useRef<HTMLElement>(null);
+  const desktopQueryInputRef = useRef<HTMLInputElement>(null);
+  const mobileQueryInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const detailsElement = detailsRef.current;
+
+    if (!detailsElement) return;
+
+    const focusVisibleQueryInput = () => {
+      for (const inputRef of [desktopQueryInputRef, mobileQueryInputRef]) {
+        const element = inputRef.current;
+
+        if (element && element.offsetParent !== null) {
+          element.focus();
+          return;
+        }
+      }
+    };
+
+    const handleToggle = () => {
+      if (detailsElement.open) focusVisibleQueryInput();
+    };
+
+    detailsElement.addEventListener("toggle", handleToggle);
+
+    return () => detailsElement.removeEventListener("toggle", handleToggle);
+  }, []);
+
+  function closeSearchPanel(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key !== "Escape") return;
+
+    event.preventDefault();
+
+    if (detailsRef.current) detailsRef.current.open = false;
+
+    summaryRef.current?.focus();
+  }
 
   return (
     <details
       className="group/search-controls w-full max-w-full min-w-0 border-y border-[var(--glass-border)] py-3"
       data-testid="search-form"
       open={hasQuery || activeFilterCount > 0}
+      ref={detailsRef}
     >
       <summary
         className="flex min-h-10 w-full max-w-full min-w-0 cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
         data-testid="search-controls-toggle"
+        ref={summaryRef}
       >
         <span className="inline-flex items-center gap-2">
           <SlidersHorizontal aria-hidden="true" className="size-4" />
@@ -89,6 +132,8 @@ export function SearchControls({
               categories={categories}
               clearSearchHref={clearSearchHref}
               input={input}
+              onQueryKeyDown={closeSearchPanel}
+              queryInputRef={desktopQueryInputRef}
             />
             <Button className="h-11 gap-2" type="submit">
               <Search aria-hidden="true" className="size-4" />
@@ -139,7 +184,9 @@ export function SearchControls({
                 data-search-prune-empty
                 defaultValue={input.query}
                 name="q"
+                onKeyDown={closeSearchPanel}
                 placeholder="טבעת, פנינה, מתנה..."
+                ref={mobileQueryInputRef}
               />
               {hasQuery ? (
                 <SearchClearQueryLink href={clearSearchHref} />
@@ -239,10 +286,19 @@ function PrimarySearchFields({
   categories,
   clearSearchHref,
   input,
+  onQueryKeyDown,
+  queryInputRef,
 }: {
   categories: CatalogCategory[];
   clearSearchHref: string;
   input: ProductSearchInput;
+  // Optional: only the "חיפוש וסינון" details panel's own input wires these
+  // (autofocus-on-open + Escape returns focus to its summary toggle). The
+  // mobile filter/sort Sheet reuses this component too, but a Sheet is a
+  // separate overlay with its own native Escape-to-close behavior, which
+  // must stay unmodified.
+  onQueryKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
+  queryInputRef?: RefObject<HTMLInputElement | null>;
 }) {
   const hasQuery = Boolean(input.query?.trim());
 
@@ -260,7 +316,9 @@ function PrimarySearchFields({
             data-search-prune-empty
             defaultValue={input.query}
             name="q"
+            onKeyDown={onQueryKeyDown}
             placeholder="טבעת, פנינה, מתנה..."
+            ref={queryInputRef}
           />
           {hasQuery ? <SearchClearQueryLink href={clearSearchHref} /> : null}
         </div>

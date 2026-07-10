@@ -20,7 +20,7 @@ import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { EmptyState } from "~/components/ui/empty-state";
-import { formatInlinePrice, formatPrice } from "~/lib/format";
+import { formatInlinePrice, formatPlpResultCount, formatPrice } from "~/lib/format";
 import { getPublicProductName } from "~/lib/product-display";
 import { cn } from "~/lib/utils";
 import { db } from "~/server/db";
@@ -194,13 +194,13 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                 {activeFilters.map((filter) => (
                   <Badge
                     asChild
-                    className="h-8 max-w-full gap-1 pr-3 pl-2"
+                    className="h-9 max-w-full gap-1.5 pr-3 pl-2.5 sm:h-8"
                     key={filter.key}
                     variant="outline"
                   >
                     <Link href={filter.href} scroll={false}>
                       <span className="min-w-0 truncate">{filter.label}</span>
-                      <X aria-hidden="true" className="size-3 shrink-0" />
+                      <X aria-hidden="true" className="size-3.5 shrink-0" />
                       <span className="sr-only">הסרת סינון</span>
                     </Link>
                   </Badge>
@@ -217,9 +217,19 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           >
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="text-base font-medium" id="search-results">
-                  {resultSummary}
-                </h2>
+                <div className="flex flex-wrap items-baseline gap-2">
+                  <h2 className="text-base font-medium" id="search-results">
+                    {resultSummary}
+                  </h2>
+                  {result.total > 0 ? (
+                    <span
+                      className="plp-result-count-badge text-muted-foreground text-sm font-normal"
+                      data-testid="search-result-count-badge"
+                    >
+                      {formatPlpResultCount(result.total)}
+                    </span>
+                  ) : null}
+                </div>
                 <p className="text-muted-foreground text-sm">
                   {input.query
                     ? `עבור "${input.query}"`
@@ -319,7 +329,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                           <Link href={action.href} scroll={false}>
                             <span>{action.label}</span>
                             <span className="text-xs opacity-75">
-                              {formatSearchResultCount(action.total)}
+                              {formatPlpResultCount(action.total)}
                             </span>
                           </Link>
                         </Button>
@@ -1079,10 +1089,6 @@ function formatActiveSelectionPreview(filters: ActiveSearchFilter[]) {
   const compact = labels.join(" \u00b7 ");
 
   return hidden > 0 ? `${compact} +${hidden}` : compact;
-}
-
-function formatSearchResultCount(count: number) {
-  return count === 1 ? "תוצאה אחת" : `${count} תוצאות`;
 }
 
 async function recordSearchEvent(

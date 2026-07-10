@@ -7,7 +7,7 @@ import { RevealGrid, RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import { EmptyState } from "~/components/ui/empty-state";
-import { formatInlinePrice } from "~/lib/format";
+import { formatInlinePrice, formatPlpResultCount } from "~/lib/format";
 import {
   getFeaturedCatalogProducts,
   searchCatalogProducts,
@@ -100,9 +100,19 @@ export default async function GiftsPage() {
         >
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-base font-medium" id="gift-results">
-                מתנות זמינות עכשיו
-              </h2>
+              <div className="flex flex-wrap items-baseline gap-2">
+                <h2 className="text-base font-medium" id="gift-results">
+                  מתנות זמינות עכשיו
+                </h2>
+                {products.length > 0 ? (
+                  <span
+                    className="plp-result-count-badge text-muted-foreground text-sm font-normal"
+                    data-testid="gift-result-count-badge"
+                  >
+                    {formatPlpResultCount(products.length)}
+                  </span>
+                ) : null}
+              </div>
               <p className="text-muted-foreground text-sm">
                 {hiddenProductsCount > 0
                   ? `${products.length} מתוך ${sourceProducts.length} רעיונות למתנה`

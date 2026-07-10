@@ -25,7 +25,7 @@ describe("search empty-state guided recovery", () => {
     // recovery-actions row (with result totals) remains the recovery affordance.
     expect(searchPage).not.toContain('data-testid="search-guided-recovery"');
     expect(searchPage).toContain("recoveryActions.map((action) => (");
-    expect(searchPage).toContain("formatSearchResultCount(action.total)");
+    expect(searchPage).toContain("formatPlpResultCount(action.total)");
     expect(searchPage).toContain('data-testid="search-recovery-actions"');
     expect(searchPage).not.toContain('href="/service"');
     expect(searchPage).not.toContain('href="/size-guide"');

@@ -4096,6 +4096,71 @@ html[data-accessibility-motion="reduce"] .about-timeline-flow::before {
   color: var(--site-header-link-hover);
 }
 
+/* Header design pass (owner-selected DP 11-20, 2026-07-09). */
+
+/* The chrome earns its edge only after scroll — at rest the solid header
+   sits flush on the page. */
+.site-header[data-header-state="solid"]:not([data-scrolled="true"]) {
+  border-bottom-color: transparent;
+  box-shadow: none;
+}
+
+/* Condensed desktop header after scroll. The fixed header sits above a
+   static spacer that reserves its resting height for page flow, so the box
+   height itself must never change on scroll — that would desync the spacer
+   and open a gap under the header. The condensed feel instead comes from
+   shrinking the brand mark alone, which recenters inside the same fixed row
+   height with zero layout shift. */
+@media (min-width: 1024px) {
+  .site-header .brand-logo {
+    transition: height var(--motion-ui) var(--ease-motion-standard);
+  }
+
+  .site-header[data-scrolled="true"] .brand-logo {
+    height: 1.75rem !important;
+  }
+}
+
+/* The current page is marked, quietly, wherever the header links to it. */
+.site-header .site-header-label-action[aria-current="page"] {
+  color: var(--site-header-link-hover);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 6px;
+}
+
+.mobile-nav-link[aria-current="page"],
+.mobile-nav-quick-action[aria-current="page"] {
+  color: var(--foreground);
+}
+
+.mobile-nav-link[aria-current="page"] {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 6px;
+}
+
+/* Clearer group separation in the mobile drawer: kickers breathe before
+   their group starts. */
+.mobile-nav-section-kicker {
+  margin-block-start: 0.4rem;
+}
+
+/* One bronze focus language for every header utility, icon buttons included. */
+.site-header .site-header-action:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 3px var(--glass-focus) !important;
+}
+
+/* PLP design pass (owner-selected DP 19-20, 2026-07-09). */
+
+/* One shared secondary-typography treatment for the result counter across
+   every listing route (search, category, gifts) — plain text next to the
+   heading, not a decorative pill. */
+.plp-result-count-badge {
+  font-variant-numeric: tabular-nums;
+}
+
 .site-header .site-header-scroll-cta {
   pointer-events: none;
   opacity: 0;
@@ -4907,6 +4972,10 @@ html[data-accessibility-motion="reduce"]
 }
 
 .brand-header-mark {
+  /* Explicit at the CSS level (not just a Tailwind utility) so the wordmark
+     stays vertically centered against the icon row even if the utility
+     class list ever drifts. */
+  display: inline-flex;
   align-items: center;
   color: var(--foreground);
   font-family: var(--font-latin-brand);
@@ -6315,11 +6384,12 @@ html[data-public-floating-bar-visible="true"] .public-motion-content {
   }
 }
 
+/* A subtle icon-adjacent digit, not a filled bubble: bronze tint, no pill,
+   no border — reads as a count, not an alert. */
 .cart-count-badge {
   animation: motion-badge-pop var(--motion-feedback) var(--ease-motion-feedback)
     both;
-  border: 1px solid var(--background);
-  box-shadow: 0 2px 7px rgb(29 25 22 / 12%);
+  color: var(--glass-focus);
   font-variant-numeric: tabular-nums;
 }
 

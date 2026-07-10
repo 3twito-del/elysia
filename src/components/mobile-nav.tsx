@@ -121,7 +121,8 @@ export function MobileNav({
     recentlyViewedIndex + (recentlyViewedProductHref ? 1 : 0);
   const catalogKickerIndex = separatorIndex + 1;
   const catalogStartIndex = catalogKickerIndex + 1;
-  const serviceKickerIndex = catalogStartIndex + catalogItems.length;
+  const catalogServiceSeparatorIndex = catalogStartIndex + catalogItems.length;
+  const serviceKickerIndex = catalogServiceSeparatorIndex + 1;
   const serviceStartIndex = serviceKickerIndex + 1;
   const editorialStartIndex = serviceStartIndex + serviceActions.length;
 
@@ -395,6 +396,12 @@ export function MobileNav({
               );
             })}
           </nav>
+
+          <Separator
+            className="mobile-nav-animated-item"
+            data-testid="mobile-nav-catalog-service-separator"
+            style={getMobileNavStaggerStyle(catalogServiceSeparatorIndex)}
+          />
 
           <nav
             aria-label="ניווט עזרה ומידע"

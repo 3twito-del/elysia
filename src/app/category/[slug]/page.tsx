@@ -404,11 +404,21 @@ export default async function CategoryPage({
             <div className="mb-5 border-b border-[var(--glass-border)] pb-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <h2 className="text-base font-medium" id="category-results">
-                    <span data-testid="category-result-count">
-                      {pageRangeLabel}
-                    </span>
-                  </h2>
+                  <div className="flex flex-wrap items-baseline gap-2">
+                    <h2 className="text-base font-medium" id="category-results">
+                      <span data-testid="category-result-count">
+                        {pageRangeLabel}
+                      </span>
+                    </h2>
+                    {hasCategoryProducts ? (
+                      <span
+                        className="plp-result-count-badge text-muted-foreground text-sm font-normal"
+                        data-testid="category-result-count-badge"
+                      >
+                        {categoryResultCountLabel}
+                      </span>
+                    ) : null}
+                  </div>
                   <p className="text-muted-foreground text-sm">
                     {!hasCategoryProducts
                       ? "נעדכן את הקטגוריה בקרוב"
@@ -458,7 +468,7 @@ export default async function CategoryPage({
                     {activeFilters.map((filter) => (
                       <Badge
                         asChild
-                        className="h-7 max-w-full gap-1 pr-2 pl-1"
+                        className="h-9 max-w-full gap-1.5 pr-2.5 pl-1.5 sm:h-7"
                         key={filter.key}
                         variant="outline"
                       >
@@ -466,7 +476,7 @@ export default async function CategoryPage({
                           <span className="min-w-0 truncate">
                             {filter.label}
                           </span>
-                          <X aria-hidden="true" className="size-3" />
+                          <X aria-hidden="true" className="size-3.5" />
                           <span className="sr-only">הסרת סינון</span>
                         </Link>
                       </Badge>

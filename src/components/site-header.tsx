@@ -46,8 +46,6 @@ export function SiteHeader() {
   const showCondensedCta = isMediaOverlayRoute && hasScrolled;
 
   useEffect(() => {
-    if (!isMediaOverlayRoute) return;
-
     let frame = 0;
     let restoreTimer = 0;
 
@@ -86,7 +84,7 @@ export function SiteHeader() {
       window.removeEventListener("resize", requestSync);
       window.removeEventListener("pageshow", requestRestoredSync);
     };
-  }, [isMediaOverlayRoute]);
+  }, []);
 
   return (
     <>
@@ -95,6 +93,7 @@ export function SiteHeader() {
         data-condensed-cta={showCondensedCta ? "true" : undefined}
         data-header-state={headerState}
         data-over-media={isOverHomeHero ? "true" : undefined}
+        data-scrolled={hasScrolled ? "true" : undefined}
         dir="rtl"
       >
         <p className="sr-only">
@@ -102,7 +101,7 @@ export function SiteHeader() {
           ואזור אישי.
         </p>
         <div
-          className="grid h-16 w-full grid-cols-[1fr_auto_1fr] items-center px-3 sm:px-6 md:h-[4.25rem] md:px-10 lg:h-[6.125rem] lg:px-16"
+          className="site-header-row grid h-16 w-full grid-cols-[1fr_auto_1fr] items-center px-3 sm:px-6 md:h-[4.25rem] md:px-10 lg:h-[6.125rem] lg:px-16"
           dir="ltr"
         >
           <div
@@ -120,6 +119,7 @@ export function SiteHeader() {
               triggerMode="label"
             />
             <Link
+              aria-current={pathname === "/search" ? "page" : undefined}
               aria-label="חיפוש"
               className="site-header-link site-header-label-action inline-flex min-h-11 min-w-11 items-center justify-center gap-2 text-[0.94rem] font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] max-[360px]:hidden sm:min-h-10 sm:min-w-0 sm:justify-start"
               href="/search"
@@ -145,6 +145,7 @@ export function SiteHeader() {
             dir="rtl"
           >
             <Link
+              aria-current={pathname === "/service" ? "page" : undefined}
               aria-label="תמיכה"
               className="site-header-link site-header-label-action hidden min-h-10 items-center text-[0.94rem] font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] lg:inline-flex"
               href="/service"
@@ -159,6 +160,7 @@ export function SiteHeader() {
               variant="ghost"
             >
               <Link
+                aria-current={pathname === "/wishlist" ? "page" : undefined}
                 data-icon-tooltip="מועדפים"
                 data-icon-tooltip-placement="bottom"
                 href="/wishlist"
@@ -180,6 +182,7 @@ export function SiteHeader() {
               variant="ghost"
             >
               <Link
+                aria-current={pathname === "/account" ? "page" : undefined}
                 data-icon-tooltip="אזור אישי"
                 data-icon-tooltip-placement="bottom"
                 href="/account"
