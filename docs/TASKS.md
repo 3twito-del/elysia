@@ -121,16 +121,15 @@ edited.
 
 | ID    | Candidate                                        | Status          | Priority |
 | ----- | ------------------------------------------------ | --------------- | -------- |
-| I-305 | Recovery-state (intentional 404) visual review   | Needs Benchmark | P2       |
 | I-306 | Authenticated account visual review (fixture ok) | Needs Benchmark | P2       |
 | I-330 | Legal pages editorial styling                    | Needs Benchmark | P2       |
 | I-331 | AI/stylist concierge promotion exception review  | Needs Benchmark | P2       |
 | I-334 | Supplier-product merchandising treatment         | Needs Benchmark | P1       |
 
-These map into the workstream backlog below: I-305→E-09, I-306→I-02,
-I-330→J-07, I-334→C-07. I-331 stays a standalone exception decision — AI
-remains demoted by default and out of primary navigation without an
-approved exception.
+These map into the workstream backlog below: I-306→I-02, I-330→J-07,
+I-334→C-07. I-331 stays a standalone exception decision — AI remains
+demoted by default and out of primary navigation without an approved
+exception.
 
 ## 4. Workstream backlog (open items)
 
@@ -251,9 +250,6 @@ have been deleted; partially done items state only their remaining scope.
 - **E-08 All-products visual consistency** · P1 · NOW — run all configured
   `--route-shard` shards and consolidate artifacts; every active product gets
   desktop and mobile evidence.
-- **E-09 Intentional-404 recovery review** · P2 · NOW — harness support exists
-  (expected statuses); remaining scope is running and approving the
-  recovery-state visual review. (I-305)
 - **E-10 Discovery measurement** · P1 · NOW+MEASURE — query success,
   refinements, zero results, clickthrough; privacy-respecting, deduplicated.
 

@@ -46,6 +46,7 @@ Sections: 46
 - [production-visual-smoke-evidence-refresh](#evidence-production-visual-smoke-evidence-refresh)
 - [provider-negative-path-review](#evidence-provider-negative-path-review)
 - [public-performance-sweep](#evidence-public-performance-sweep)
+- [recovery-state-visual-review](#evidence-recovery-state-visual-review)
 - [release-scorecard](#evidence-release-scorecard)
 - [route-evidence-ledger](#evidence-route-evidence-ledger)
 - [route-status-sharded-visual-audit](#evidence-route-status-sharded-visual-audit)
@@ -3346,6 +3347,63 @@ overlays, blank content, or horizontal overflow.
 This was a local production-server performance sweep with seeded fixtures. It
 does not replace periodic preview or production monitoring after provider
 configuration, real account data, or Shopify supplier traffic changes.
+
+---
+
+<a id="evidence-recovery-state-visual-review"></a>
+
+## Evidence: recovery-state-visual-review
+
+# Recovery-State (Intentional 404) Visual Review
+
+- `Date`: 2026-07-10
+- `Backlog Item`: I-305 / E-09 Intentional-404 recovery review
+- `Status`: Reviewed and approved — no code changes needed
+
+## Scope
+
+Ran the recovery-state visual review the route-inventory harness flags as
+remaining scope (`scripts/qa-route-inventory.ts` registers
+`/category/not-a-real-category` with `expectedStatuses: [404]` and a note
+that visual QA should treat the response as expected). Covered all three
+`NotFoundState` consumers, not just the registered category route:
+`src/app/not-found.tsx` (global), `src/app/category/[slug]/not-found.tsx`,
+`src/app/product/[slug]/not-found.tsx` — all built on the shared
+`src/components/not-found-state.tsx`.
+
+## Evidence
+
+| Check | Method | Result |
+| --- | --- | --- |
+| HTTP status | Playwright `page.goto` response status for all 3 routes | PASS: all return `404`, matching the registered `expectedStatuses`. |
+| Heading matches context | DOM query for `h1`/`h2` text at each route | PASS: "העמוד לא נמצא" (global), "הקטגוריה לא נמצאה" (category), "התכשיט לא נמצא" (product) — each route names what wasn't found, not a generic message. |
+| Single recovery CTA | DOM query for the action link | PASS: all 3 routes expose exactly one CTA, "לכל התכשיטים" → `/search` — consistent, no dead-end. |
+| Mobile (412px) + desktop (1280px), light + dark | 9 combinations screenshotted | PASS: no horizontal overflow (`bodyScrollWidth` ≤ viewport width in every case), consistent centered-card layout, correct dark-mode contrast, header/cookie-banner/accessibility-widget render together without collision (consistent with the `docs/QA_EVIDENCE.md` floating-chrome-collision-audit baseline). |
+| RTL | `document.documentElement` `dir` attribute | PASS: `rtl` on all 3 routes. |
+| Keyboard accessibility | Tab-cycled to the recovery CTA | PASS: the `/search` link is reachable and receives focus. |
+| Console/page errors | Playwright console listener | One dev-only React warning found on the two *dynamic*-segment routes (category, product) — see Residual Risk. The static global route and a normal page (`/search`) show no such warning. |
+
+## Residual Risk
+
+The dynamic `not-found.tsx` routes (category, product) log a dev-only React
+warning ("Encountered a script tag while rendering React component") not
+present on the static global 404 or on ordinary pages — consistent with the
+root layout's no-FOUC inline script (`src/app/layout.tsx`) being
+re-considered during Next.js's client-side `notFound()` boundary handling
+for dynamic segments specifically. The script already executed via the
+initial SSR HTML before hydration, so this is inert in practice, and React
+dev warnings are stripped from production builds — no user-visible or
+production-console impact observed. Flagged for awareness, not treated as a
+visual-review blocker; a future session investigating Next.js dynamic
+not-found boundaries specifically could look at it, but it does not warrant
+delaying this review's approval.
+
+## Verification
+
+- `pnpm qa:routes -- -- --visual-routes` (confirms `/category/not-a-real-category`
+  is the harness-registered recovery-state route)
+- Manual Playwright pass: 3 routes × {412px, 1280px} × {light, dark} = 9
+  screenshots, all reviewed.
 
 ---
 
