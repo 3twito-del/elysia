@@ -631,8 +631,8 @@ function SearchViewToggle({
             className={cn(
               "h-9 min-w-0 gap-1.5 px-2 text-xs sm:h-7",
               active
-                ? "border-[var(--foreground)] bg-[var(--foreground)] text-[var(--background)] shadow-[inset_0_0_0_1px_var(--foreground)] hover:border-[var(--foreground)] hover:bg-[var(--foreground)] hover:text-[var(--background)]"
-                : "text-muted-foreground hover:text-foreground border-transparent hover:border-[var(--glass-border-strong)] hover:bg-[var(--muted)]",
+                ? "border-[var(--foreground)] bg-[var(--foreground)] text-[var(--background)] hover:border-[var(--foreground)] hover:bg-[var(--foreground)] hover:text-[var(--background)]"
+                : "text-muted-foreground hover:text-foreground border-[var(--glass-border)] hover:border-[var(--glass-border-strong)] hover:bg-[var(--muted)]",
             )}
             data-active={active ? "true" : "false"}
             data-search-view-state={active ? "active" : "inactive"}

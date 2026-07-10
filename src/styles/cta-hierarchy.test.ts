@@ -106,7 +106,7 @@ describe("public CTA hierarchy", () => {
     expect(wishlistSource).toContain('variant="outline"');
   });
 
-  it("keeps listing cards browse-first with one details CTA", () => {
+  it("keeps listing cards browse-first with the whole card as the only click target", () => {
     const css = read("src/styles/globals.css");
     const productCard = read("src/components/product-card.tsx");
     const searchSource = read("src/app/search/page.tsx");
@@ -116,12 +116,12 @@ describe("public CTA hierarchy", () => {
     expect(productCard).toContain("product-card-hover-actions");
     expect(productCard).not.toContain("function getProductCardQuickAddVariant");
     expect(productCard).not.toContain("<ProductCardQuickAddButton");
-    expect(productCard).toContain("product-card-cta");
+    expect(productCard).not.toContain("product-card-cta");
     expect(productCard).not.toContain("<Button");
     expect(productCard).not.toContain("ShoppingBag");
     expect(searchSource).not.toContain("product-card-cta");
     expect(searchSource).not.toContain("ShoppingBag");
-    expect(css).toContain(".product-card-cta");
+    expect(css).not.toContain(".product-card-cta");
   });
 
   it("keeps recovery and filter action groups from presenting two default CTAs", () => {

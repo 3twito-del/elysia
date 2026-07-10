@@ -5466,10 +5466,6 @@ footer nav a:focus-visible {
   padding-block: 0.1rem;
 }
 
-.product-card-cta {
-  background: rgb(255 250 244 / 64%);
-}
-
 .product-card-quick-add-button {
   border-color: rgb(29 25 22 / 12%) !important;
   background: rgb(255 250 244 / 88%) !important;
@@ -5665,11 +5661,6 @@ footer nav a:focus-visible {
       [data-size="icon-lg"]
     ) {
     min-height: 2.75rem;
-  }
-
-  .product-card-cta {
-    min-height: 2.75rem;
-    padding-inline: 1rem;
   }
 }
 
@@ -7222,10 +7213,6 @@ html[data-accessibility-motion="reduce"]
   border-color: rgb(243 237 230 / 16%);
   background: var(--card);
   color: var(--foreground);
-}
-
-.dark .product-card-cta {
-  background: rgb(31 26 21 / 72%);
 }
 
 .dark .product-card-quick-add-button {

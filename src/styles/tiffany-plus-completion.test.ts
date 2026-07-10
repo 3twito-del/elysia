@@ -23,9 +23,6 @@ describe("Tiffany plus completion guardrails", () => {
     expect(productCard).toContain("data-product-card-badge={badge.key}");
     expect(productCard).toContain("data-product-card-availability=");
     expect(productCard).toContain("data-product-card-sale=");
-    expect(indexOf(productCard, "product-card-cta")).toBeGreaterThan(
-      indexOf(productCard, 'data-testid="product-card-price"'),
-    );
     expect(css).not.toContain(".product-card-decision-facts");
     expect(css).not.toContain(".product-card-decision-fact::before");
 

@@ -251,7 +251,7 @@ export function MobileNav({
                 <Link
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "mobile-nav-quick-action mobile-nav-animated-item text-muted-foreground hover:text-foreground grid min-h-[3.25rem] grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-[var(--glass-border)] px-0 text-sm transition-colors outline-none last:border-b-0 focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+                    "mobile-nav-quick-action mobile-nav-animated-item text-muted-foreground hover:text-foreground grid min-h-[3.25rem] grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-[var(--glass-border)] px-2 text-sm transition-colors outline-none last:border-b-0 focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
                     isActive && "text-foreground font-semibold",
                   )}
                   href={item.href}
@@ -292,7 +292,7 @@ export function MobileNav({
                 <Link
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "mobile-nav-feature-link mobile-nav-animated-item group/nav-feature grid min-h-[4.25rem] grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-[var(--glass-border)] px-0 py-3 outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+                    "mobile-nav-feature-link mobile-nav-animated-item group/nav-feature grid min-h-[4.25rem] grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-[var(--glass-border)] px-2 py-3 outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
                     isActive && "text-foreground font-semibold",
                   )}
                   href={item.href}
@@ -323,7 +323,7 @@ export function MobileNav({
             })}
             {recentlyViewedProductHref ? (
               <Link
-                className="mobile-nav-feature-link mobile-nav-animated-item group/nav-feature grid min-h-[4.25rem] grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-[var(--glass-border)] px-0 py-3 outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
+                className="mobile-nav-feature-link mobile-nav-animated-item group/nav-feature grid min-h-[4.25rem] grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-[var(--glass-border)] px-2 py-3 outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
                 data-testid="mobile-nav-recently-viewed-shortcut"
                 href={recentlyViewedProductHref}
                 onClick={closeNav}
@@ -373,7 +373,7 @@ export function MobileNav({
                 <Link
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "mobile-nav-link mobile-nav-animated-item text-muted-foreground hover:text-foreground relative inline-flex min-h-[3.05rem] items-center border-b border-[var(--glass-border)] px-0 text-[1.08rem] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+                    "mobile-nav-link mobile-nav-animated-item text-muted-foreground hover:text-foreground relative inline-flex min-h-[3.05rem] items-center border-b border-[var(--glass-border)] px-2 text-[1.08rem] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
                     isActive &&
                       "text-foreground after:bg-foreground font-semibold after:absolute after:inset-x-0 after:bottom-0 after:h-px after:content-['']",
                   )}
@@ -424,7 +424,7 @@ export function MobileNav({
                 <Link
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "mobile-nav-link mobile-nav-animated-item text-muted-foreground hover:text-foreground relative inline-flex min-h-[3.05rem] items-center gap-2 border-b border-[var(--glass-border)] px-0 text-[1.08rem] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+                    "mobile-nav-link mobile-nav-animated-item text-muted-foreground hover:text-foreground relative inline-flex min-h-[3.05rem] items-center gap-2 border-b border-[var(--glass-border)] px-2 text-[1.08rem] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
                     isActive &&
                       "text-foreground after:bg-foreground font-semibold after:absolute after:inset-x-0 after:bottom-0 after:h-px after:content-['']",
                   )}
@@ -447,7 +447,7 @@ export function MobileNav({
                 <Link
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "mobile-nav-link mobile-nav-animated-item text-muted-foreground hover:text-foreground relative inline-flex min-h-[3.05rem] items-center border-b border-[var(--glass-border)] px-0 text-[1.08rem] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+                    "mobile-nav-link mobile-nav-animated-item text-muted-foreground hover:text-foreground relative inline-flex min-h-[3.05rem] items-center border-b border-[var(--glass-border)] px-2 text-[1.08rem] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
                     isActive &&
                       "text-foreground after:bg-foreground font-semibold after:absolute after:inset-x-0 after:bottom-0 after:h-px after:content-['']",
                   )}

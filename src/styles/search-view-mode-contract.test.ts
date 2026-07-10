@@ -24,7 +24,7 @@ describe("search view mode contract", () => {
       'active\n                ? "border-[var(--foreground)] bg-[var(--foreground)] text-[var(--background)]',
     );
     expect(searchPage).toContain(
-      "text-muted-foreground hover:text-foreground border-transparent hover:border-[var(--glass-border-strong)]",
+      "text-muted-foreground hover:text-foreground border-[var(--glass-border)] hover:border-[var(--glass-border-strong)]",
     );
     expect(styles).toContain(
       '[data-slot="button"][data-search-view-state="active"]',

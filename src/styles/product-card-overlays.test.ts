@@ -85,12 +85,11 @@ describe("product card overlay budget", () => {
     expect(source).not.toContain("function getProductCardQuickAddVariant");
     expect(source).not.toContain("product-card-decision-facts");
     expect(source).not.toContain("בירור התאמה");
-    expect(source).toContain("product-card-cta");
+    expect(source).not.toContain("product-card-cta");
     expect(css).toContain(".product-card-hover-actions");
     expect(css).toContain(
       ".product-card-shell:hover .product-card-hover-actions",
     );
-    expect(source).toContain("לפרטי התכשיט");
   });
 
   it("keeps product cards minimal with product facts as quiet metadata", () => {
