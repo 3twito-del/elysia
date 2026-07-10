@@ -22,6 +22,7 @@ accepted text.
 - [ADR 0012 — Dropship display truth: scheduled sync as baseline, mandatory click-out verification as guarantee](#adr-0012)
 - [ADR 0013 — Launch is two named gates: L1 referral storefront, L2 own commerce activation](#adr-0013)
 - [ADR 0014 — L1 legal/compliance package: lawyer EXTERNAL-P0, verified identity, consent proof, statutory a11y, replay off](#adr-0014)
+- [ADR 0015 — High Jewelry Reference Gate site-list substitution: 8 unreachable Tier A sites replaced with verified-accessible maisons](#adr-0015)
 
 ---
 
@@ -874,3 +875,63 @@ Lawyer reviews complete across the scope; identity facts verified and
 placeholders removed; consent tests green; statutory a11y review of capsule
 routes with an honest statement; replay disabled or lawyer-approved
 consent-gated.
+
+---
+
+<a id="adr-0015"></a>
+
+## ADR 0015 — High Jewelry Reference Gate site-list substitution: 8 unreachable Tier A sites replaced with verified-accessible maisons
+
+Status: accepted (2026-07-10)
+
+The 15-site High Jewelry Reference Gate (`docs/DESIGN.md` Part I) exists to
+give every public design decision real, checkable evidence. A site that this
+repository's automated research tooling cannot reach cannot supply that
+evidence — it can neither support nor block a score, which silently shrinks
+the gate's real denominator below 15 and makes the 8-of-15 threshold harder
+to reach than intended, for reasons unrelated to design merit.
+
+### Trigger
+
+While running the I-302 mobile PDP recommendation-rail density benchmark
+(`docs/qa/mobile-pdp-rail-density-benchmark.md`), 8 of the 15 named sites —
+Tiffany & Co., Van Cleef & Arpels, Bulgari, Harry Winston, Graff, Boucheron,
+Chaumet, Piaget — were unreachable across two independent verification
+passes using fresh, freshly-searched product URLs (not reused guesses). Every
+failure was one of: HTTP `403` (bot-edge block), connection timeout, or
+`ECONNRESET`. A Wayback Machine fallback also failed (the tool cannot reach
+`web.archive.org` in this environment). This is a tooling ceiling, not a
+one-off fluke or a bad URL — the same 4 sites failed identically on retry
+with different, verified-live product pages.
+
+### Decision
+
+1. Replace each of the 8 unreachable sites with a comparable fine/high
+   jewelry maison confirmed reachable by the same tooling, verified by
+   fetching a real product page and observing real content (not a guess):
+   Tiffany & Co. → Repossi, Van Cleef & Arpels → Garrard, Bulgari → Vhernier,
+   Harry Winston → Verdura, Graff → Suzanne Kalan, Boucheron → Anna Sheffield,
+   Chaumet → Jessica McCormack, Piaget → Roberto Coin.
+2. Keep the 7 originally-reachable sites unchanged: Cartier, Chopard,
+   Mikimoto (source URL corrected to `mikimotoamerica.com` — `mikimoto.com`
+   redirects to the Japan site), Messika, Buccellati, De Beers, Pomellato.
+3. Update the list of record in three places that must stay in sync:
+   `docs/DESIGN.md` Part I (documentation), `src/lib/public-design-policy.ts`
+   `tierALuxuryHouses` (the 15 names), and
+   `src/lib/high-jewelry-reference-gate.ts` `referenceSiteUrls` (name → URL
+   map consumed by `highJewelryReferenceSites`).
+4. Historical evidence records in `docs/QA_EVIDENCE.md` that cite the
+   original 8 sites for past, already-implemented decisions are untouched —
+   they document what was true and reachable at the time of that research,
+   not the gate's current site list.
+5. If future tooling can reach the original 8 (different network path,
+   different fetch tool, a real headless browser with residential exit),
+   they may be restored. Until then, this replacement list is authoritative.
+
+### Acceptance criteria
+
+`pnpm test -- src/lib/high-jewelry-reference-gate.test.ts src/lib/public-design-policy.test.ts src/styles/high-jewelry-reference-gate.test.ts`
+passes; `docs/DESIGN.md` Part I table, `tierALuxuryHouses`, and
+`referenceSiteUrls` list the same 15 names; every replacement site was
+verified reachable with a real fetched product page, not asserted from
+memory.

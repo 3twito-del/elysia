@@ -31,6 +31,7 @@ Sections: 46
 - [faq-content-service-recovery-links-benchmark](#evidence-faq-content-service-recovery-links-benchmark)
 - [floating-chrome-collision-audit](#evidence-floating-chrome-collision-audit)
 - [homepage-discovery-commerce-balance-benchmark](#evidence-homepage-discovery-commerce-balance-benchmark)
+- [mobile-pdp-rail-density-benchmark](#evidence-mobile-pdp-rail-density-benchmark)
 - [offline-page-install-pwa-recovery-priority-benchmark](#evidence-offline-page-install-pwa-recovery-priority-benchmark)
 - [order-source-label-audit](#evidence-order-source-label-audit)
 - [pdp-purchase-confidence-benchmark](#evidence-pdp-purchase-confidence-benchmark)
@@ -2096,6 +2097,84 @@ The benchmark supports a restrained shortcut rail only. Moving the quick-search
 form above editorial content, adding a merchandising mega-panel, changing hero
 composition, or introducing personalized recommendation controls still requires
 a separate benchmark.
+
+---
+
+<a id="evidence-mobile-pdp-rail-density-benchmark"></a>
+
+## Evidence: mobile-pdp-rail-density-benchmark
+
+# Mobile PDP Recommendation-Rail Density Benchmark
+
+- `Date`: 2026-07-10
+- `Backlog Item`: I-302 / E-07 Mobile PDP product-rail density reduction
+- `Status`: Supported and implemented
+
+## Scope
+
+Elysia's PDP could render up to 3 stacked recommendation sections below the
+purchase panel (same collection, same category, same material), each with up
+to 4 full product cards — worst case 12 cards stacked vertically on mobile
+before a separate recently-viewed rail. This benchmark checks whether Tier-A
+high jewelry sites support a leaner pattern.
+
+## Gate Classification
+
+- `Change Type`: PDP recommendation-rail density and mobile layout.
+- `Route Context`: PDP (product detail).
+- `Primary Lens`: High Jewelry Reference Gate in `docs/DESIGN.md`.
+- `Secondary Lens`: full evidence table, site-by-site notes, and the ADR 0015
+  site-list substitution record in
+  `docs/qa/mobile-pdp-rail-density-benchmark.md`.
+- `Required Gate`: Tier A high-jewelry threshold `11.25`.
+
+## Score
+
+- `Supported Sites`: 12 of 15 (Cartier, Chopard, Mikimoto, Messika, Buccellati,
+  De Beers, Pomellato, Repossi, Garrard, Vhernier, Verdura, Suzanne Kalan).
+- `Weighted Score`: 18.0.
+- `Threshold`: 11.25.
+- `Decision`: Supported. None of the verified sites approach Elysia's prior
+  worst case; most show 0-1 recommendation rails, and where a rail exists it
+  reads as a horizontal carousel rather than a full vertical stack. One
+  verified site (Anna Sheffield) was denser and is reported as a genuine
+  counterexample, not excluded from the record.
+
+## Implementation Decision
+
+- Cap total recommendation rails at **2** (was up to 3) —
+  `getProductRecommendationRails` in
+  `src/app/product/[slug]/_lib/product-recommendation-rails.ts` only adds the
+  material rail when fewer than 2 rails were already produced.
+- Cap products per rail at **3** (was 4), uniformly across breakpoints; the
+  PDP grid changed from `lg:grid-cols-4` to `lg:grid-cols-3` to avoid an
+  orphaned empty column.
+- `RecentlyViewedProducts` is unchanged — it is user-specific, not a
+  merchandising rail.
+
+## Acceptance Checks
+
+- `getProductRecommendationRails` never returns more than 2 rails.
+- Each rail renders at most 3 product cards.
+- No rail loses its `reason`, `title`, or `continuationHref`.
+
+## Verification
+
+- `pnpm test -- "src/app/product/[slug]/_lib/product-recommendation-rails.test.ts" src/styles/pdp-design-pass-2.test.ts src/styles/product-recommendation-rail-return-context.test.ts`
+- `pnpm typecheck`
+- `pnpm lint`
+- Browser smoke: PDP at mobile viewport, confirmed exactly 2 stacked rail
+  sections with 3 cards each before "Recently Viewed" (light + dark).
+
+## Residual Risk
+
+Carousel-vs-vertical-stack presentation could not be confirmed with a
+rendered mobile screenshot for most reference sites (fetch tooling returns
+markdown, not a rendered viewport) — this benchmark supports rail/card
+**count** reduction with higher confidence than a specific carousel
+mechanism. Full site-by-site evidence, the two verification passes on the 8
+originally-unreachable sites, and the ADR 0015 site-list substitution
+rationale live in `docs/qa/mobile-pdp-rail-density-benchmark.md`.
 
 ---
 

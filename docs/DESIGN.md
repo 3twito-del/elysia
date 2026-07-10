@@ -49,23 +49,38 @@ The Tier A-only high jewelry gate uses 15 Tier A high jewelry sites. Each site
 has weight `1.5`, for a total weight of `22.5`. The pass threshold is `11.25`,
 which requires support from at least 8 of 15 sites.
 
-| Site               | Source URL                                                            | Weight |
-| ------------------ | --------------------------------------------------------------------- | ------ |
-| Cartier            | https://www.cartier.com/en-us/jewelry/                                | 1.5    |
-| Tiffany & Co.      | https://www.tiffany.com/                                              | 1.5    |
-| Van Cleef & Arpels | https://www.vancleefarpels.com/us/en/collections/jewelry/couture.html | 1.5    |
-| Bulgari            | https://www.bulgari.com/en-us/                                        | 1.5    |
-| Harry Winston      | https://www.harrywinston.com/                                         | 1.5    |
-| Graff              | https://www.graff.com/us-en/home/                                     | 1.5    |
-| Chopard            | https://www.chopard.com/en-us                                         | 1.5    |
-| Boucheron          | https://www.boucheron.com/us/                                         | 1.5    |
-| Chaumet            | https://www.chaumet.com/us_en/                                        | 1.5    |
-| Piaget             | https://www.piaget.com/us-en                                          | 1.5    |
-| Mikimoto           | https://www.mikimoto.com/en/index.html                                | 1.5    |
-| Messika            | https://www.messika.com/us_en/                                        | 1.5    |
-| Buccellati         | https://www.buccellati.com/en_us/home                                 | 1.5    |
-| De Beers           | https://www.debeers.com/en-us/home                                    | 1.5    |
-| Pomellato          | https://www.pomellato.com/                                            | 1.5    |
+Site-list note (2026-07-10): 8 of the originally-named sites (Tiffany & Co.,
+Van Cleef & Arpels, Bulgari, Harry Winston, Graff, Boucheron, Chaumet, Piaget)
+are not reachable by this repository's automated research tooling — confirmed
+across two independent verification passes with fresh URLs, consistently
+returning bot-edge `403`, connection timeout, or `ECONNRESET` (see
+`docs/qa/mobile-pdp-rail-density-benchmark.md` for the full evidence trail).
+A site that cannot be verified cannot support or block a gate score, so each
+was replaced with a comparable fine/high-jewelry maison confirmed reachable
+by the same tooling. See the ADR in `docs/DECISIONS.md` ("High Jewelry
+Reference Gate site-list substitution") for the decision record. If future
+tooling can reach the original 8, they may be restored; until then this is
+the list of record. `Mikimoto`'s source URL is also updated below —
+`mikimoto.com` redirects to the Japan site; `mikimotoamerica.com` is the
+reachable US storefront actually used for verification.
+
+| Site           | Source URL                             | Weight |
+| -------------- | --------------------------------------- | ------ |
+| Cartier        | https://www.cartier.com/en-us/jewelry/  | 1.5    |
+| Repossi        | https://intl.repossi.com/en-us          | 1.5    |
+| Garrard        | https://www.garrard.com/en-us/          | 1.5    |
+| Vhernier       | https://www.vhernier.com/en-us/         | 1.5    |
+| Verdura        | https://verdura.com/                    | 1.5    |
+| Chopard        | https://www.chopard.com/en-us           | 1.5    |
+| Suzanne Kalan  | https://suzannekalan.com/               | 1.5    |
+| Anna Sheffield | https://www.annasheffield.com/          | 1.5    |
+| Jessica McCormack | https://us.jessicamccormack.com/     | 1.5    |
+| Mikimoto       | https://www.mikimotoamerica.com/us_en   | 1.5    |
+| Messika        | https://www.messika.com/us_en/          | 1.5    |
+| Buccellati     | https://www.buccellati.com/en_us/home   | 1.5    |
+| De Beers       | https://www.debeers.com/en-us/home      | 1.5    |
+| Pomellato      | https://www.pomellato.com/              | 1.5    |
+| Roberto Coin   | https://robertocoin.com/                | 1.5    |
 
 ### Required Workflow
 

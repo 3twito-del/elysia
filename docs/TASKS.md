@@ -121,7 +121,6 @@ edited.
 
 | ID    | Candidate                                        | Status          | Priority |
 | ----- | ------------------------------------------------ | --------------- | -------- |
-| I-302 | Mobile PDP / product-rail density reduction      | Needs Benchmark | P2       |
 | I-305 | Recovery-state (intentional 404) visual review   | Needs Benchmark | P2       |
 | I-306 | Authenticated account visual review (fixture ok) | Needs Benchmark | P2       |
 | I-328 | Product story module before recommendation rails | Needs Benchmark | P2       |
@@ -129,10 +128,10 @@ edited.
 | I-331 | AI/stylist concierge promotion exception review  | Needs Benchmark | P2       |
 | I-334 | Supplier-product merchandising treatment         | Needs Benchmark | P1       |
 
-These map into the workstream backlog below: I-302→E-07, I-305→E-09,
-I-306→I-02, I-328→F-07, I-330→J-07, I-334→C-07. I-331 stays a standalone
-exception decision — AI remains demoted by default and out of primary
-navigation without an approved exception.
+These map into the workstream backlog below: I-305→E-09, I-306→I-02,
+I-328→F-07, I-330→J-07, I-334→C-07. I-331 stays a standalone exception
+decision — AI remains demoted by default and out of primary navigation
+without an approved exception.
 
 ## 4. Workstream backlog (open items)
 
@@ -250,8 +249,6 @@ have been deleted; partially done items state only their remaining scope.
 - **E-06 Gifts around decisions** · P1 · BENCHMARK+MEASURE — occasion,
   recipient, budget, material, urgency; shortlist with fewer decisions; no
   invented stock/delivery/suitability.
-- **E-07 Mobile product-rail density** · P1 · BENCHMARK — cap secondary cards,
-  merge duplicate recommendation reasons. (I-302)
 - **E-08 All-products visual consistency** · P1 · NOW — run all configured
   `--route-shard` shards and consolidate artifacts; every active product gets
   desktop and mobile evidence.

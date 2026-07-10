@@ -63,21 +63,20 @@ export type HighJewelryGateEvaluation = HighJewelryGateEvaluationInput & {
 
 const referenceSiteUrls = {
   Cartier: "https://www.cartier.com/en-us/jewelry/",
-  "Tiffany & Co.": "https://www.tiffany.com/",
-  "Van Cleef & Arpels":
-    "https://www.vancleefarpels.com/us/en/collections/jewelry/couture.html",
-  Bulgari: "https://www.bulgari.com/en-us/",
-  "Harry Winston": "https://www.harrywinston.com/",
-  Graff: "https://www.graff.com/us-en/home/",
+  Repossi: "https://intl.repossi.com/en-us",
+  Garrard: "https://www.garrard.com/en-us/",
+  Vhernier: "https://www.vhernier.com/en-us/",
+  Verdura: "https://verdura.com/",
   Chopard: "https://www.chopard.com/en-us",
-  Boucheron: "https://www.boucheron.com/us/",
-  Chaumet: "https://www.chaumet.com/us_en/",
-  Piaget: "https://www.piaget.com/us-en",
-  Mikimoto: "https://www.mikimoto.com/en/index.html",
+  "Suzanne Kalan": "https://suzannekalan.com/",
+  "Anna Sheffield": "https://www.annasheffield.com/",
+  "Jessica McCormack": "https://us.jessicamccormack.com/",
+  Mikimoto: "https://www.mikimotoamerica.com/us_en",
   Messika: "https://www.messika.com/us_en/",
   Buccellati: "https://www.buccellati.com/en_us/home",
   "De Beers": "https://www.debeers.com/en-us/home",
   Pomellato: "https://www.pomellato.com/",
+  "Roberto Coin": "https://robertocoin.com/",
 } as const;
 
 export const highJewelryReferenceSites: HighJewelryReferenceSite[] =

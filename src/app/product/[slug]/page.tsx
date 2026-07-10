@@ -632,10 +632,10 @@ function ProductRecommendationRails({
               </Button>
             </div>
             <div
-              className="ui-equal-grid mt-5 grid gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-4"
+              className="ui-equal-grid mt-5 grid gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-3"
               data-layout-equal-group={`product-recommendation-${rail.id}`}
             >
-              {rail.products.slice(0, 4).map((recommended) => (
+              {rail.products.slice(0, 3).map((recommended) => (
                 <ProductCard
                   contextLabel={rail.cardContextLabel}
                   key={recommended.slug}

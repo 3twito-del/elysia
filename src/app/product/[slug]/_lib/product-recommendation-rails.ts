@@ -16,7 +16,8 @@ type ProductRecommendationRailInput = {
   products: CatalogProduct[];
 };
 
-const DEFAULT_MAX_PRODUCTS_PER_RAIL = 4;
+const DEFAULT_MAX_PRODUCTS_PER_RAIL = 3;
+const MAX_RAILS = 2;
 
 export function getProductRecommendationRails({
   maxProductsPerRail = DEFAULT_MAX_PRODUCTS_PER_RAIL,
@@ -58,26 +59,28 @@ export function getProductRecommendationRails({
     title: `עוד בקטגוריית ${product.categoryName}`,
     usedSlugs,
   });
-  addRail({
-    candidates,
-    id: "material",
-    maxProductsPerRail,
-    predicate: (candidate) =>
-      candidate.material === product.material ||
-      Boolean(product.stone && candidate.stone === product.stone),
-    product,
-    rails,
-    cardContextLabel: product.stone ? "חומר או אבן דומים" : "חומר דומה",
-    continuationHref: createSearchContinuationHref({
-      material: product.material,
-    }),
-    continuationLabel: `חיפוש ${product.material}`,
-    reason: product.stone
-      ? `התאמה לפי ${product.material} או ${product.stone}.`
-      : `התאמה לפי ${product.material}.`,
-    title: `עוד תכשיטים ב${product.material}`,
-    usedSlugs,
-  });
+  if (rails.length < MAX_RAILS) {
+    addRail({
+      candidates,
+      id: "material",
+      maxProductsPerRail,
+      predicate: (candidate) =>
+        candidate.material === product.material ||
+        Boolean(product.stone && candidate.stone === product.stone),
+      product,
+      rails,
+      cardContextLabel: product.stone ? "חומר או אבן דומים" : "חומר דומה",
+      continuationHref: createSearchContinuationHref({
+        material: product.material,
+      }),
+      continuationLabel: `חיפוש ${product.material}`,
+      reason: product.stone
+        ? `התאמה לפי ${product.material} או ${product.stone}.`
+        : `התאמה לפי ${product.material}.`,
+      title: `עוד תכשיטים ב${product.material}`,
+      usedSlugs,
+    });
+  }
 
   if (rails.length === 0) {
     addRail({

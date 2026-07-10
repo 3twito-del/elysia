@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 
 const historicalBenchmarkBacklogIds = new Set(
   Array.from(
-    { length: 300 },
+    { length: 302 },
     (_, index) => `I-${String(index + 1).padStart(3, "0")}`,
   ),
 );

@@ -4,7 +4,7 @@ import { getProductRecommendationRails } from "./product-recommendation-rails";
 import type { CatalogProduct } from "~/server/services/catalog";
 
 describe("product recommendation rails", () => {
-  it("builds catalog-only rails without duplicating products", () => {
+  it("builds catalog-only rails without duplicating products, capped at 2 rails", () => {
     const current = createProduct({
       categoryName: "Rings",
       categorySlug: "rings",
@@ -45,25 +45,87 @@ describe("product recommendation rails", () => {
       ],
     });
 
-    expect(rails.map((rail) => rail.id)).toEqual([
-      "collection",
-      "category",
-      "material",
-    ]);
+    expect(rails.map((rail) => rail.id)).toEqual(["collection", "category"]);
     expect(
       rails.flatMap((rail) => rail.products.map((item) => item.slug)),
-    ).toEqual(["same-collection", "same-category", "same-material"]);
+    ).toEqual(["same-collection", "same-category"]);
     expect(rails.map((rail) => rail.cardContextLabel)).toEqual([
       "מאותה קולקציה",
       "אותה קטגוריה",
-      "חומר או אבן דומים",
     ]);
     expect(rails.map((rail) => rail.continuationHref)).toEqual([
       "/search?collection=Sol",
       "/category/rings",
-      "/search?material=Gold",
     ]);
     expect(rails.every((rail) => rail.reason.length > 0)).toBe(true);
+  });
+
+  it("falls back to the material rail when fewer than 2 rails were produced", () => {
+    const current = createProduct({
+      categoryName: "Rings",
+      categorySlug: "rings",
+      collection: "Sol",
+      collections: ["Sol"],
+      material: "Gold",
+      slug: "current",
+      stone: "Diamond",
+    });
+    const rails = getProductRecommendationRails({
+      product: current,
+      products: [
+        current,
+        createProduct({
+          categorySlug: "necklaces",
+          collection: "Sol",
+          collections: ["Sol"],
+          material: "Silver",
+          popularityScore: 2,
+          slug: "same-collection",
+        }),
+        createProduct({
+          categorySlug: "bracelets",
+          collection: "Nova",
+          collections: ["Nova"],
+          material: "Gold",
+          popularityScore: 1,
+          slug: "same-material",
+        }),
+      ],
+    });
+
+    expect(rails.map((rail) => rail.id)).toEqual(["collection", "material"]);
+    expect(
+      rails.flatMap((rail) => rail.products.map((item) => item.slug)),
+    ).toEqual(["same-collection", "same-material"]);
+  });
+
+  it("caps each rail's products at 3", () => {
+    const current = createProduct({
+      categorySlug: "rings",
+      collection: "Sol",
+      collections: ["Sol"],
+      material: "Gold",
+      slug: "current",
+    });
+    const rails = getProductRecommendationRails({
+      product: current,
+      products: [
+        current,
+        ...Array.from({ length: 5 }, (_, index) =>
+          createProduct({
+            categorySlug: "earrings",
+            collection: "Sol",
+            collections: ["Sol"],
+            material: "Silver",
+            popularityScore: index,
+            slug: `same-collection-${index}`,
+          }),
+        ),
+      ],
+    });
+
+    expect(rails).toHaveLength(1);
+    expect(rails[0]?.products).toHaveLength(3);
   });
 
   it("falls back to popular catalog products when there are no direct matches", () => {

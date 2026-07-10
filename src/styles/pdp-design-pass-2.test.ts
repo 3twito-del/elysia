@@ -39,11 +39,11 @@ describe("PDP design pass 2 (owner-selected DP 31-40)", () => {
     expect(productPage).toContain('<span className="line-clamp-1">{note.label}</span>');
   });
 
-  it("caps the similar-products rail at 4 items with a matching 4-column desktop grid (no orphaned card)", () => {
+  it("caps the similar-products rail at 3 items with a matching 3-column desktop grid (no orphaned card)", () => {
     expect(productPage).toContain(
-      'className="ui-equal-grid mt-5 grid gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-4"',
+      'className="ui-equal-grid mt-5 grid gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-3"',
     );
-    expect(productPage).toContain("rail.products.slice(0, 4)");
+    expect(productPage).toContain("rail.products.slice(0, 3)");
   });
 
   it("gives the mobile sticky purchase bar a real top shadow instead of the ineffective shadow-none it carried", () => {

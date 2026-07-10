@@ -43,20 +43,20 @@ export type PublicElementKey = keyof typeof publicElementPolicy;
 
 const tierALuxuryHouses = [
   "Cartier",
-  "Tiffany & Co.",
-  "Van Cleef & Arpels",
-  "Bulgari",
-  "Harry Winston",
-  "Graff",
+  "Repossi",
+  "Garrard",
+  "Vhernier",
+  "Verdura",
   "Chopard",
-  "Boucheron",
-  "Chaumet",
-  "Piaget",
+  "Suzanne Kalan",
+  "Anna Sheffield",
+  "Jessica McCormack",
   "Mikimoto",
   "Messika",
   "Buccellati",
   "De Beers",
   "Pomellato",
+  "Roberto Coin",
 ] as const;
 
 const tierBCommerceLeaders = [
