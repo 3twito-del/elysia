@@ -31,6 +31,7 @@ Sections: 46
 - [faq-content-service-recovery-links-benchmark](#evidence-faq-content-service-recovery-links-benchmark)
 - [floating-chrome-collision-audit](#evidence-floating-chrome-collision-audit)
 - [homepage-discovery-commerce-balance-benchmark](#evidence-homepage-discovery-commerce-balance-benchmark)
+- [legal-page-editorial-structure-benchmark](#evidence-legal-page-editorial-structure-benchmark)
 - [mobile-pdp-rail-density-benchmark](#evidence-mobile-pdp-rail-density-benchmark)
 - [offline-page-install-pwa-recovery-priority-benchmark](#evidence-offline-page-install-pwa-recovery-priority-benchmark)
 - [order-source-label-audit](#evidence-order-source-label-audit)
@@ -2097,6 +2098,55 @@ The benchmark supports a restrained shortcut rail only. Moving the quick-search
 form above editorial content, adding a merchandising mega-panel, changing hero
 composition, or introducing personalized recommendation controls still requires
 a separate benchmark.
+
+---
+
+<a id="evidence-legal-page-editorial-structure-benchmark"></a>
+
+## Evidence: legal-page-editorial-structure-benchmark
+
+# Legal Page Editorial Structure Benchmark
+
+- `Date`: 2026-07-10
+- `Backlog Item`: I-330 / J-07 Legal-page editorial usability
+- `Status`: Not supported — no implementation
+
+## Scope
+
+Checked whether Tier-A high jewelry sites give their long-form legal/policy
+pages (1) in-page navigation usable on mobile, and (2) short summaries near
+the full legal text — the two gaps identified in Elysia's shared
+`content-page-shell.tsx` / `legal-section-list.tsx` (ToC is `hidden` below
+the `lg` breakpoint; no summaries exist at any width).
+
+## Gate Classification
+
+- `Change Type`: Legal/policy page mobile navigation and summary treatment.
+- `Route Context`: legal.
+- `Primary Lens`: High Jewelry Reference Gate in `docs/DESIGN.md`.
+- `Secondary Lens`: full site-by-site evidence in
+  `docs/qa/legal-page-editorial-structure-benchmark.md`.
+- `Required Gate`: Tier A high-jewelry threshold `11.25`.
+
+## Score
+
+- `Supported Sites`: 0 of 15 (14 verified with real fetched evidence,
+  Buccellati unreachable — HTTP 405 on every legal-page URL tried).
+- `Weighted Score`: 0.0.
+- `Threshold`: 11.25.
+- `Decision`: **Not supported.** Every verified site's legal pages open
+  directly into full linear legal prose — no jump-link ToC, no accordion
+  (except Anna Sheffield's non-ToS store-policies page, which groups by
+  topic but still has no summary and isn't a jump-link ToC), no
+  plain-language summary anywhere. Elysia's existing desktop-only sidebar
+  ToC already exceeds what most reference sites offer. No code change made.
+
+## Residual Risk
+
+This result is scoped exactly as researched (jump-link ToC + summaries). A
+narrower or differently-shaped proposal (e.g., an accordion grouping like
+Anna Sheffield's) was not evaluated and would need its own benchmark pass —
+do not reuse this "not supported" result to block an unrelated proposal.
 
 ---
 

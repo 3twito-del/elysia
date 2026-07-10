@@ -385,8 +385,13 @@ have been deleted; partially done items state only their remaining scope.
   architecture decision itself is parked: Hebrew-only at L1.)
 - **J-06 Hebrew search-content model** · P1 · OWNER+MEASURE — content answers a
   task and leads to products; no SEO filler.
-- **J-07 Editorial legal-page usability** · P2 · BENCHMARK — summaries, ToC,
-  print style, last-updated; legal meaning exact. (I-330)
+- **J-07 Editorial legal-page usability** · P2 · BENCHMARK — print style and
+  last-updated are already shipped; a 2026-07-10 benchmark pass found zero of
+  15 Tier A sites support mobile in-page ToC or plain-language summaries
+  (`docs/QA_EVIDENCE.md` legal-page-editorial-structure-benchmark) — that
+  specific pairing is not implementable without an explicit exception.
+  Remaining scope, if pursued: a differently-scoped proposal (e.g. an
+  accordion grouping) would need its own benchmark pass. (I-330)
 - **J-08 Legal identity and policy review** · P0 · OWNER+EXTERNAL — counsel
   approval; footer/checkout expose only applicable facts. (ADR 0014: no
   verified legal identity, no L1.)
