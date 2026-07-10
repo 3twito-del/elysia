@@ -6,7 +6,7 @@ import {
   hasActiveAdminAuthority,
 } from "~/server/auth/admin-session";
 
-// ADR 0005 (docs/DECISIONS.md): path-based edge middleware is the outer gate
+// ADR 0005 (docs/DECISIONS.md): path-based edge proxy is the outer gate
 // of the admin control plane. It protects every /admin route and admin API
 // before any server code runs. Defense in depth — it never replaces
 // per-procedure authorization (adminProcedure) or execution-time permission
@@ -14,7 +14,7 @@ import {
 
 const ADMIN_LOGIN_PATH = "/admin/login";
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // The login surface (and only it) stays reachable without authority.

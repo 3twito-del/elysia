@@ -2,7 +2,7 @@
 // separately from customer sessions. Long customer sessions are a usability
 // decision; long admin sessions are a control failure. This module is pure
 // and edge-safe — it is shared by the NextAuth jwt callback and the edge
-// middleware in src/middleware.ts.
+// proxy in src/proxy.ts.
 
 export const ADMIN_SESSION_MAX_AGE_MS = 12 * 60 * 60 * 1000;
 

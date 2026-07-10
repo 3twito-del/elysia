@@ -277,7 +277,7 @@ unacceptable for launch.
    steps through one compromised channel). **Passkeys/WebAuthn are post-launch
    additive hardening**, not the launch dependency. The daily operator friction
    is explicitly accepted: convenience does not outrank control-plane security.
-2. **Isolation: path-based edge middleware now** (`src/middleware.ts`) —
+2. **Isolation: path-based edge middleware now** (`src/proxy.ts`) —
    protects all `/admin` routes AND admin APIs, verifies admin authority,
    applies strict security headers; `/admin/login` and the narrow MFA-enrollment
    flow stay reachable. Defense in depth: middleware is the outer gate, never a
