@@ -616,7 +616,7 @@ function SearchViewToggle({
   return (
     <div
       aria-label="מצב תצוגה"
-      className="glass-control grid h-11 min-w-[8.75rem] grid-cols-2 items-center gap-1 rounded-md border p-1 sm:h-9"
+      className="glass-control grid h-11 min-w-[10.5rem] grid-cols-2 items-center gap-1 rounded-md border p-1 sm:h-9 sm:min-w-[8.75rem]"
       data-testid="search-view-toggle"
       data-view-mode={viewMode}
       role="group"
@@ -629,7 +629,7 @@ function SearchViewToggle({
           <Button
             asChild
             className={cn(
-              "h-9 min-w-0 gap-1.5 px-2 text-xs sm:h-7",
+              "h-9 min-w-0 gap-2 px-2.5 text-sm sm:h-7 sm:gap-1.5 sm:px-2 sm:text-xs",
               active
                 ? "border-[var(--foreground)] bg-[var(--foreground)] text-[var(--background)] hover:border-[var(--foreground)] hover:bg-[var(--foreground)] hover:text-[var(--background)]"
                 : "text-muted-foreground hover:text-foreground border-[var(--glass-border)] hover:border-[var(--glass-border-strong)] hover:bg-[var(--muted)]",
@@ -649,9 +649,12 @@ function SearchViewToggle({
             >
               <Icon
                 aria-hidden="true"
-                className={cn("size-3.5", active && "stroke-[2.5]")}
+                className={cn(
+                  "size-4 shrink-0 sm:size-3.5",
+                  active && "stroke-[2.5]",
+                )}
               />
-              <span>{view.label}</span>
+              <span className="whitespace-nowrap">{view.label}</span>
             </Link>
           </Button>
         );
