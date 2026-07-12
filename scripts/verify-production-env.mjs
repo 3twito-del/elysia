@@ -5,6 +5,9 @@ const requiredVercelEnv = [
   "DATABASE_URL",
   "UPSTASH_REDIS_REST_URL",
   "UPSTASH_REDIS_REST_TOKEN",
+  // ADR 0005: admin TOTP-secret encryption key, deliberately separate from
+  // AUTH_SECRET (docs/RUNBOOKS.md §10).
+  "ADMIN_TOTP_ENCRYPTION_KEY",
 ];
 
 export function getProductionEnvValidationError(env = process.env) {
