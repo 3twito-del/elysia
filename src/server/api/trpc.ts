@@ -156,3 +156,29 @@ export const adminProcedure = (permission: AdminPermission) =>
       },
     });
   });
+
+/**
+ * Any-admin procedure: for surfaces every admin must reach regardless of
+ * role permissions (e.g. managing one's own TOTP enrollment/recovery
+ * codes) — no AdminPermission check, only "is this a real, enabled admin".
+ */
+export const adminSelfProcedure = t.procedure
+  .use(timingMiddleware)
+  .use(async ({ ctx, next }) => {
+    if (!ctx.session?.user) {
+      throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
+
+    const admin = await getAdminFromSession(ctx.session);
+
+    if (!admin) {
+      throw new TRPCError({ code: "FORBIDDEN" });
+    }
+
+    return next({
+      ctx: {
+        ...ctx,
+        admin,
+      },
+    });
+  });

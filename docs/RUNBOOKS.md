@@ -170,7 +170,12 @@ production` dry-run → `--write` → redeploy → `pnpm smoke` against the
   `JOB_RUNNER_SECRET`/`CRON_SECRET` requires the Vercel cron header to match
   (Vercel injects `Authorization: Bearer $CRON_SECRET` automatically).
   Provider webhooks (`CARD_COM_WEBHOOK_SECRET`, `SHOPIFY_WEBHOOK_SECRET`)
-  must be rotated on both sides in one maintenance window.
+  must be rotated on both sides in one maintenance window. `ADMIN_TOTP_ENCRYPTION_KEY`
+  is a **separate secret from `AUTH_SECRET`, on purpose** (ADR 0005) — do not
+  fold it into an `AUTH_SECRET` rotation. Rotating it permanently undecrypts
+  every stored TOTP secret, so every admin must re-enroll TOTP from scratch
+  (recovery codes still work to regain access first); treat it as a rare,
+  explicit, scheduled operation, never a routine one.
 
 ## 11. Customer data request (DSAR)
 
@@ -205,12 +210,18 @@ production` dry-run → `--write` → redeploy → `pnpm smoke` against the
 - **Symptom:** `security-admin-login-failures` alert (5+ failed or
   rate-limited attempts in 60 minutes), or the operator is locked out.
 - **Verify:** `/admin/audit` — `AdminAuth` events record every failed,
-  rate-limited, and successful login with email + IP.
-- **Lockout mechanics:** limits are windowed (5/15m per account, 20/15m per
-  IP) — a locked-out legitimate operator waits out the window; there is no
-  permanent lockout by design (ADR 0005).
+  rate-limited, and successful login attempt (password step and TOTP/
+  recovery-code step) with email, and password-step attempts with IP.
+- **Lockout mechanics:** password limits are windowed (5/15m per account,
+  20/15m per IP); the TOTP/recovery-code step is separately windowed
+  (5/15m per admin) — a locked-out legitimate operator waits out the
+  window; there is no permanent lockout by design (ADR 0005).
 - **Contain (suspected attack):** rotate the admin password; rotating
   `AUTH_SECRET` kills all live sessions immediately; admin authority expires
-  within 12 hours regardless.
-- **Follow-up:** mandatory TOTP is the remaining ADR 0005 launch scope —
-  until it ships, treat password compromise as full control-plane compromise.
+  within 12 hours regardless. Password alone can no longer reach `/admin` —
+  TOTP is mandatory for every admin including bootstrap.
+- **Lost authenticator device:** the admin signs in with one of their 10
+  one-time recovery codes, then regenerates a fresh set from
+  `/admin/security` (invalidates all prior unused codes). If recovery codes
+  are also exhausted, there is no self-service reset yet — see the parked
+  "Admin MFA reset" item in `docs/PARKING_LOT.md` (gated on step-up re-auth).

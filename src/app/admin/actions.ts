@@ -1,14 +1,16 @@
 "use server";
 
-import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
 
 import { adminLoginInputSchema } from "~/lib/public-action-validation";
-import { signIn, signOut } from "~/server/auth";
+import { signOut } from "~/server/auth";
+import { verifyAdminCredentials } from "~/server/auth/admin-credentials";
 import {
   findAdminLoginAuditTarget,
   recordAdminLoginAudit,
 } from "~/server/auth/admin-login-audit";
+import { setAdminLoginTicketCookie } from "~/server/auth/admin-login-ticket-cookie";
+import { mintAdminLoginTicket } from "~/server/auth/admin-mfa-ticket";
 import { sanitizeAdminRedirect } from "~/server/auth/admin-redirect";
 import { inactiveAdminLoginMessage } from "~/server/auth/admin-user-status";
 import {
@@ -22,6 +24,12 @@ export type AdminLoginState = {
   message?: string;
 };
 
+/**
+ * ADR 0005 phase 1 of 3: password only. On success this hands off to
+ * /admin/login/mfa via a signed, short-lived ticket cookie — it never mints
+ * a NextAuth session by itself (see ~/app/admin/login/mfa/actions.ts for
+ * phases 2/3).
+ */
 export async function adminLoginAction(
   _state: AdminLoginState,
   formData: FormData,
@@ -61,12 +69,21 @@ export async function adminLoginAction(
       return { message: inactiveAdminLoginMessage };
     }
 
-    await signIn("admin", {
+    const verified = await verifyAdminCredentials({
       email: parsed.data.email,
       password: parsed.data.password,
-      redirect: false,
-      redirectTo,
     });
+
+    if (!verified) {
+      await recordAdminLoginAudit({
+        adminUserId: auditAdminUserId,
+        email: parsed.data.email,
+        outcome: "invalid_credentials",
+        redirectTo,
+      });
+
+      return { message: inactiveAdminLoginMessage };
+    }
 
     await recordAdminLoginAudit({
       adminUserId: auditAdminUserId,
@@ -74,6 +91,14 @@ export async function adminLoginAction(
       outcome: "success",
       redirectTo,
     });
+
+    await setAdminLoginTicketCookie(
+      mintAdminLoginTicket({
+        adminUserId: verified.id,
+        stage: "password_verified",
+      }),
+      "password_verified",
+    );
   } catch (error) {
     const message = rateLimitMessage(error);
 
@@ -92,21 +117,10 @@ export async function adminLoginAction(
       return { message };
     }
 
-    if (error instanceof AuthError) {
-      await recordAdminLoginAudit({
-        adminUserId: auditAdminUserId,
-        email: parsed.data.email,
-        outcome: "invalid_credentials",
-        redirectTo,
-      });
-
-      return { message: inactiveAdminLoginMessage };
-    }
-
     throw error;
   }
 
-  redirect(redirectTo);
+  redirect(`/admin/login/mfa?next=${encodeURIComponent(redirectTo)}`);
 }
 
 export async function adminLogoutAction() {

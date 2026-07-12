@@ -132,6 +132,7 @@ const protectedAdminRoutes = [
   "/admin/edi",
   "/admin/tax",
   "/admin/marketing",
+  "/admin/security",
 ] as const;
 
 const documentedApiRoutes = [
@@ -296,6 +297,15 @@ export function getQaRouteInventory({
       path: "/admin/login",
       source: "admin-auth",
       template: "/admin/login",
+    }),
+  );
+
+  entries.push(
+    routeEntry({
+      kind: "admin",
+      path: "/admin/login/mfa",
+      source: "admin-mfa-auth",
+      template: "/admin/login/mfa",
     }),
   );
 

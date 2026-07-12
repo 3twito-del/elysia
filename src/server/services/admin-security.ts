@@ -23,26 +23,63 @@ export type AdminSecurityEvent =
       action: "admin_login.rate_limited";
       email: string;
       ip?: string;
+    }
+  | {
+      action: "admin_totp.failed";
+      adminUserId: string;
+      email: string;
+      reason: "invalid-code";
+    }
+  | {
+      action: "admin_totp.rate_limited";
+      adminUserId: string;
+      email: string;
+    }
+  | {
+      action: "admin_mfa.enrolled";
+      adminUserId: string;
+      email: string;
+    }
+  | {
+      action: "admin_recovery_code.generated";
+      adminUserId: string;
+      email: string;
+      count: number;
+    }
+  | {
+      action: "admin_recovery_code.used";
+      adminUserId: string;
+      email: string;
+      recoveryCodeId: string;
     };
 
 export const ADMIN_SECURITY_ACTIONS = [
   "admin_login.succeeded",
   "admin_login.failed",
   "admin_login.rate_limited",
+  "admin_totp.failed",
+  "admin_totp.rate_limited",
+  "admin_mfa.enrolled",
+  "admin_recovery_code.generated",
+  "admin_recovery_code.used",
 ] as const;
 
 export async function recordAdminSecurityEvent(event: AdminSecurityEvent) {
   try {
     await db.auditLog.create({
       data: {
+        action: event.action,
         adminUserId:
           "adminUserId" in event ? (event.adminUserId ?? null) : null,
-        action: event.action,
         entity: "AdminAuth",
         metadata: {
           email: event.email,
-          ip: event.ip ?? null,
+          ...("ip" in event ? { ip: event.ip ?? null } : {}),
           ...("reason" in event ? { reason: event.reason } : {}),
+          ...("count" in event ? { count: event.count } : {}),
+          ...("recoveryCodeId" in event
+            ? { recoveryCodeId: event.recoveryCodeId }
+            : {}),
         },
       },
     });
@@ -53,7 +90,8 @@ export async function recordAdminSecurityEvent(event: AdminSecurityEvent) {
 
 /**
  * ADR 0007 SECURITY invariant input: recent failed / rate-limited admin
- * logins that no operator has reviewed yet.
+ * logins (password or TOTP/recovery-code step) that no operator has
+ * reviewed yet.
  */
 export async function countRecentAdminLoginFailures(input: {
   windowMinutes: number;
@@ -64,7 +102,14 @@ export async function countRecentAdminLoginFailures(input: {
 
   return db.auditLog.count({
     where: {
-      action: { in: ["admin_login.failed", "admin_login.rate_limited"] },
+      action: {
+        in: [
+          "admin_login.failed",
+          "admin_login.rate_limited",
+          "admin_totp.failed",
+          "admin_totp.rate_limited",
+        ],
+      },
       createdAt: { gte: since },
     },
   });

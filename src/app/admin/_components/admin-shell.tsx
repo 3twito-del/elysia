@@ -32,6 +32,7 @@ import {
   PackageSearch,
   Percent,
   PlugZap,
+  ShieldCheck,
   Star,
   Store,
   Table2,
@@ -97,6 +98,7 @@ export type AdminSection =
   | "promotions"
   | "reorder"
   | "reports"
+  | "security"
   | "service"
   | "tax"
   | "workflow"
@@ -198,6 +200,7 @@ const navItems: Array<{
     label: "אינטגרציות",
   },
   { href: "/admin/audit", icon: History, id: "audit", label: "יומן ביקורת" },
+  { href: "/admin/security", icon: ShieldCheck, id: "security", label: "אבטחה" },
 ];
 
 export function AdminShell({

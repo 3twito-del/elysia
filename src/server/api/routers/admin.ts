@@ -1,4 +1,12 @@
-import { adminProcedure, createTRPCRouter } from "~/server/api/trpc";
+import {
+  adminProcedure,
+  adminSelfProcedure,
+  createTRPCRouter,
+} from "~/server/api/trpc";
+import {
+  getAdminMfaStatus,
+  regenerateAdminRecoveryCodes,
+} from "~/server/services/admin-mfa";
 import {
   adminBlogPostListInputSchema,
   createAdminBlogAuthor,
@@ -77,6 +85,14 @@ import { z } from "zod";
 export const adminRouter = createTRPCRouter({
   overview: adminProcedure("ORDERS_READ").query(() =>
     getAdminOperationsOverview(),
+  ),
+
+  mfaStatus: adminSelfProcedure.query(({ ctx }) =>
+    getAdminMfaStatus(ctx.admin.id),
+  ),
+
+  regenerateOwnRecoveryCodes: adminSelfProcedure.mutation(({ ctx }) =>
+    regenerateAdminRecoveryCodes(ctx.admin.id),
   ),
 
   blog: adminProcedure("BLOG_READ")

@@ -56,7 +56,6 @@ fails on a stale `docs/SITE_COPY_MAP.md`.
 | ID    | Task                                          | Status      | Priority | Evidence              |
 | ----- | --------------------------------------------- | ----------- | -------- | --------------------- |
 | I-341 | Wave 0 catalog truth and media readiness gate | In Progress | P0       | `docs/QA_EVIDENCE.md` |
-| I-342 | Admin TOTP enrollment + recovery codes        | NOW         | P0       | ADR 0005 acceptance   |
 
 ### I-341 Wave 0 catalog truth and media readiness gate
 
@@ -87,31 +86,21 @@ Note: under ADR 0011 the launch gate is the **capsule** (floor 30, target 36
 publish-ready supplier products), not 300 remediated products. The 0/300
 metric remains catalog-debt reporting; the release gate scores capsule members.
 
-### I-342 Admin TOTP enrollment + recovery codes
-
-- `Status`: NOW · `Priority`: P0 · `Effort`: M
-- `Context`: the rest of the ADR 0005 L1 auth package shipped 2026-07-09 —
-  edge middleware over `/admin` + `/api/admin`, 12-hour admin sessions,
-  per-account/per-IP login rate limiting, and audited AdminAuth security
-  events feeding the SECURITY invariant sweep. TOTP is the remaining
-  launch-gating piece; until it ships, password compromise equals
-  control-plane compromise (`docs/RUNBOOKS.md` §13).
-- `Work`: mandatory TOTP for every admin including bootstrap — forced
-  enrollment at next login before console access; recovery codes generated
-  once, shown once, hash-stored, single-use; TOTP secrets protected at rest;
-  audited enrollment/failure/recovery events (the AdminAuth audit surface
-  already exists).
-- `Acceptance` (ADR 0005): password alone cannot reach `/admin`; tests cover
-  missing-TOTP / failed-TOTP / successful-MFA paths; step-up re-auth remains
-  the first fast-follow after this lands.
-
 Launch-gate engineering shipped 2026-07-09 (branch
 `feat/launch-engineering-p0`): ADR 0004 DB immutability triggers (verified
 via `pnpm db:verify:immutability`), ADR 0007 OperationalAlert sweeps +
 delivery + `/admin/notifications` card + health heartbeats, ADR 0012
 fail-closed click-out verification + dropship sync cron, ADR 0005 partial
-(above), operational runbooks (`docs/RUNBOOKS.md`), and the C-03 activation
-gate verified as enforced.
+(edge middleware over `/admin` + `/api/admin`, 12-hour admin sessions,
+per-account/per-IP login rate limiting, audited AdminAuth security events),
+operational runbooks (`docs/RUNBOOKS.md`), and the C-03 activation gate
+verified as enforced.
+
+I-342 (Admin TOTP enrollment + recovery codes) shipped 2026-07-12: mandatory
+TOTP for every admin including bootstrap, forced enrollment at next login,
+one-time hash-stored recovery codes, TOTP secrets encrypted at rest, and the
+full audited enrollment/failure/recovery event set — completing the ADR 0005
+L1 auth package (`docs/QA_EVIDENCE.md`).
 
 ## 3. Benchmark-gated design candidates
 

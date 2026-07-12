@@ -3844,23 +3844,45 @@ model Role {
 }
 
 model AdminUser {
-  id                    String         @id @default(cuid())
-  userId                String?        @unique
-  roleId                String
-  name                  String
-  email                 String         @unique
-  passwordHash          String?
-  disabledAt            DateTime?
-  role                  Role           @relation(fields: [roleId], references: [id])
-  user                  User?          @relation(fields: [userId], references: [id])
-  auditLogs             AuditLog[]
-  blogPostsCreated      BlogPost[]     @relation("BlogPostCreatedBy")
-  blogPostsUpdated      BlogPost[]     @relation("BlogPostUpdatedBy")
-  customerNotes         CustomerNote[]
-  assignedCustomerTasks CustomerTask[]
-  createdAt             DateTime       @default(now())
+  id                         String              @id @default(cuid())
+  userId                     String?             @unique
+  roleId                     String
+  name                       String
+  email                      String              @unique
+  passwordHash               String?
+  disabledAt                 DateTime?
+  totpSecretEncrypted        String?
+  totpEnabledAt              DateTime?
+  totpPendingSecretEncrypted String?
+  totpPendingExpiresAt       DateTime?
+  role                       Role                @relation(fields: [roleId], references: [id])
+  user                       User?               @relation(fields: [userId], references: [id])
+  auditLogs                  AuditLog[]
+  blogPostsCreated           BlogPost[]          @relation("BlogPostCreatedBy")
+  blogPostsUpdated           BlogPost[]          @relation("BlogPostUpdatedBy")
+  customerNotes              CustomerNote[]
+  assignedCustomerTasks      CustomerTask[]
+  recoveryCodes              AdminRecoveryCode[]
+  createdAt                  DateTime            @default(now())
 
   @@index([disabledAt])
+}
+
+// ADR 0005 (docs/DECISIONS.md): mandatory admin TOTP MFA. Recovery codes are
+// operational working state, not evidentiary truth (unlike AuditLog) — ADR
+// 0004's immutability triggers deliberately exclude this table, matching the
+// existing OutboxEvent/ItemCostLayer carve-out. Regeneration hard-deletes all
+// prior rows for the admin; the AuditLog row on generate/use is the durable
+// evidence trail.
+model AdminRecoveryCode {
+  id          String    @id @default(cuid())
+  adminUserId String
+  codeHash    String
+  usedAt      DateTime?
+  createdAt   DateTime  @default(now())
+  adminUser   AdminUser @relation(fields: [adminUserId], references: [id])
+
+  @@index([adminUserId])
 }
 
 model AuditLog {

@@ -5,7 +5,7 @@ former `docs/qa/*.md` file, preserved verbatim as recorded evidence. New QA
 evidence is appended as a new `## Evidence:` section; existing sections are
 historical records and are not rewritten.
 
-Sections: 46
+Sections: 47
 
 ## Index
 
@@ -15,6 +15,7 @@ Sections: 46
 - [account-recovery-service-shortcuts-benchmark](#evidence-account-recovery-service-shortcuts-benchmark)
 - [admin-customer-order-filter-recovery-benchmark](#evidence-admin-customer-order-filter-recovery-benchmark)
 - [admin-login-redirect-evidence](#evidence-admin-login-redirect-evidence)
+- [admin-totp-mfa](#evidence-admin-totp-mfa)
 - [ai-stylist-fallback-benchmark](#evidence-ai-stylist-fallback-benchmark)
 - [authenticated-account-visual-review](#evidence-authenticated-account-visual-review)
 - [benchmark-traceability](#evidence-benchmark-traceability)
@@ -522,6 +523,63 @@ Scope: `next` parameter handling for `/admin/login`.
 - `src/server/auth/admin-redirect.test.ts` covers internal admin redirects,
   encoded admin paths, external URLs, protocol-relative URLs, encoded external
   URLs, scheme payloads, control characters, and non-admin paths.
+
+---
+
+<a id="evidence-admin-totp-mfa"></a>
+
+## Evidence: admin-totp-mfa
+
+# Admin TOTP MFA + Recovery Codes (I-342)
+
+Date: 2026-07-12
+
+Scope: ADR 0005 mandatory admin TOTP MFA — phased login
+(`/admin/login` → `/admin/login/mfa` → NextAuth session), enrollment,
+recovery codes, and the audited event set.
+
+## ADR 0005 acceptance paths and their coverage
+
+| Path                | Covered by                                                              |
+| ------------------- | ------------------------------------------------------------------------ |
+| Unauthenticated      | `src/server/auth/admin-access.test.ts`                                    |
+| Non-admin            | `src/server/auth/admin-access.test.ts`                                    |
+| Expired session      | `src/server/auth/admin-session-callbacks.test.ts`, `admin-session.test.ts` |
+| Missing TOTP         | `src/server/services/admin-mfa.test.ts` ("not_enrolled" cases)            |
+| Failed TOTP          | `src/server/services/admin-mfa.test.ts` (wrong code, audits `admin_totp.failed`) |
+| Successful MFA       | `src/server/services/admin-mfa.test.ts` (TOTP and recovery-code accept paths) |
+
+## Implementation evidence
+
+- `src/server/auth/totp.ts` + `totp.test.ts` — RFC 4226/6238 HOTP/TOTP,
+  hand-rolled with `node:crypto`; tested against the official RFC 6238
+  Appendix B vectors, not just self-consistency.
+- `src/server/auth/totp-encryption.ts` + `totp-encryption.test.ts` —
+  AES-256-GCM at rest, keyed by the separate `ADMIN_TOTP_ENCRYPTION_KEY`
+  secret (never derived from `AUTH_SECRET` — see `docs/RUNBOOKS.md` §10).
+- `src/server/auth/admin-mfa-ticket.ts` + `.test.ts` — the short-lived signed
+  cookie ticket that phases login (password → MFA → session) without any
+  NextAuth/proxy/tRPC change; `src/proxy.ts` and
+  `src/server/auth/admin-session.ts` are untouched.
+- `src/server/auth/recovery-codes.ts` + `.test.ts` — 10 one-time codes per
+  enrollment, hashed with the existing `password.ts` scrypt scheme.
+- `src/server/services/admin-mfa.ts` + `.test.ts` — enroll/confirm/verify/
+  regenerate domain logic; regeneration hard-deletes prior unused codes
+  (not in ADR 0004's immutable-table set — confirmed against
+  `prisma/migrations/20260708140000_immutability_triggers/migration.sql`).
+- `src/server/auth/config.ts` — the `admin` Credentials provider now only
+  accepts a signed `mfa_verified` ticket; it never sees a password.
+- `src/app/admin/login/mfa/` — enrollment (QR + manual secret + recovery
+  codes shown once) and verify UI; `/admin/security` — self-service
+  recovery-code regeneration.
+
+## Residual risk
+
+- No Playwright/e2e coverage of the login UI (none exists for admin login
+  today); acceptance is proven at the service/unit level per existing
+  `admin-*.test.ts` convention.
+- Admin-resets-another-admin's-MFA (lost device + exhausted recovery codes)
+  is deferred — see `docs/PARKING_LOT.md`, gated on step-up re-auth.
 
 ---
 

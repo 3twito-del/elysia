@@ -6,18 +6,13 @@ import { z } from "zod";
 import { db } from "~/server/db";
 import { recordAdminSecurityEvent } from "~/server/services/admin-security";
 import { verifyCustomerOtp } from "~/server/services/customer-otp";
-import {
-  assertRateLimit,
-  getHeadersIp,
-  RateLimitExceededError,
-} from "~/server/services/rate-limit";
+import { verifyAdminLoginTicket } from "./admin-mfa-ticket";
 import {
   type AdminSessionTokenFields,
   applyAdminAuthorityToToken,
   resolveActiveAdminAuthority,
 } from "./admin-session";
 import { isAdminUserEnabled } from "./admin-user-status";
-import { verifyPassword } from "./password";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -44,9 +39,13 @@ const otpCredentialsSchema = z.object({
   sessionKey: z.string().min(16).max(128).optional(),
 });
 
-const adminCredentialsSchema = z.object({
-  email: z.string().email().toLowerCase(),
-  password: z.string().min(12),
+// ADR 0005: password + TOTP/recovery-code verification happen in server
+// actions before any NextAuth session exists (~/app/admin/actions.ts,
+// ~/app/admin/login/mfa/actions.ts). This provider only ever mints the
+// actual session, gated on a signed, short-lived "mfa_verified" ticket
+// (~/server/auth/admin-mfa-ticket.ts) proving both steps already succeeded.
+const adminTicketCredentialsSchema = z.object({
+  ticket: z.string().min(20).max(2048),
 });
 
 export const authConfig = {
@@ -88,49 +87,28 @@ export const authConfig = {
       id: "admin",
       name: "Admin",
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        ticket: { label: "Ticket", type: "text" },
       },
-      async authorize(credentials, request) {
-        const parsed = adminCredentialsSchema.safeParse(credentials);
+      async authorize(credentials) {
+        const parsed = adminTicketCredentialsSchema.safeParse(credentials);
 
         if (!parsed.success) {
           return null;
         }
 
-        // ADR 0005 abuse controls: per-account + per-IP rate limiting with a
-        // bounded window so the sole operator cannot be locked out forever.
-        const ip = request?.headers
-          ? getHeadersIp(new Headers(request.headers))
-          : undefined;
+        const payload = verifyAdminLoginTicket(parsed.data.ticket, {
+          expectedStage: "mfa_verified",
+        });
 
-        try {
-          await assertRateLimit({
-            key: `admin-login:ip:${ip ?? "unknown"}`,
-            limit: 20,
-            windowMs: 15 * 60_000,
-          });
-          await assertRateLimit({
-            key: `admin-login:acct:${parsed.data.email}`,
-            limit: 5,
-            windowMs: 15 * 60_000,
-          });
-        } catch (error) {
-          if (error instanceof RateLimitExceededError) {
-            await recordAdminSecurityEvent({
-              action: "admin_login.rate_limited",
-              email: parsed.data.email,
-              ip,
-            });
-
-            return null;
-          }
-
-          throw error;
+        if (!payload) {
+          return null;
         }
 
+        // Re-fetch fresh rather than trusting the ticket's identity alone —
+        // covers the account being disabled in the few minutes between
+        // password verification and finishing the MFA step.
         const admin = await db.adminUser.findUnique({
-          where: { email: parsed.data.email },
+          where: { id: payload.adminUserId },
           include: { role: true },
         });
 
@@ -138,26 +116,8 @@ export const authConfig = {
           await recordAdminSecurityEvent({
             action: "admin_login.failed",
             adminUserId: admin?.id ?? null,
-            email: parsed.data.email,
-            ip,
+            email: admin?.email ?? "unknown",
             reason: admin ? "disabled" : "invalid-credentials",
-          });
-
-          return null;
-        }
-
-        const passwordMatches = await verifyPassword(
-          parsed.data.password,
-          admin.passwordHash,
-        );
-
-        if (!passwordMatches) {
-          await recordAdminSecurityEvent({
-            action: "admin_login.failed",
-            adminUserId: admin.id,
-            email: parsed.data.email,
-            ip,
-            reason: "invalid-credentials",
           });
 
           return null;
@@ -167,7 +127,6 @@ export const authConfig = {
           action: "admin_login.succeeded",
           adminUserId: admin.id,
           email: admin.email,
-          ip,
         });
 
         return {

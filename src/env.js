@@ -20,6 +20,11 @@ export const env = createEnv({
     ADMIN_BOOTSTRAP_EMAIL: z.string().email().optional(),
     ADMIN_BOOTSTRAP_PASSWORD: z.string().min(12).optional(),
     ADMIN_BOOTSTRAP_NAME: z.string().optional(),
+    // ADR 0005: admin TOTP-secret encryption key, deliberately separate from
+    // AUTH_SECRET (docs/RUNBOOKS.md §10) — rotating it re-enrolls every admin.
+    ADMIN_TOTP_ENCRYPTION_KEY: requiresProductionRuntimeEnv
+      ? z.string().min(32)
+      : z.string().min(32).optional(),
     CARD_COM_TERMINAL: z.string().optional(),
     CARD_COM_API_NAME: z.string().optional(),
     CARD_COM_API_PASSWORD: z.string().optional(),
@@ -106,6 +111,7 @@ export const env = createEnv({
     ADMIN_BOOTSTRAP_EMAIL: process.env.ADMIN_BOOTSTRAP_EMAIL,
     ADMIN_BOOTSTRAP_PASSWORD: process.env.ADMIN_BOOTSTRAP_PASSWORD,
     ADMIN_BOOTSTRAP_NAME: process.env.ADMIN_BOOTSTRAP_NAME,
+    ADMIN_TOTP_ENCRYPTION_KEY: process.env.ADMIN_TOTP_ENCRYPTION_KEY,
     CARD_COM_TERMINAL: process.env.CARD_COM_TERMINAL,
     CARD_COM_API_NAME: process.env.CARD_COM_API_NAME,
     CARD_COM_API_PASSWORD: process.env.CARD_COM_API_PASSWORD,

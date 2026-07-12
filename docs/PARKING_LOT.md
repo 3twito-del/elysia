@@ -23,6 +23,11 @@ its trigger — the event that pulls it out of the lot. Frozen from the
 - **Step-up re-auth for destructive finance/security actions** (ADR 0005) —
   first fast-follow after the P0 auth package; pull into launch only if cheap
   while touching the auth layer.
+- **Admin MFA reset for lost-device + exhausted-recovery-codes support**
+  (ADR 0005) — today's answer is self-service via the 10 one-time recovery
+  codes (I-342); an admin-resets-another-admin flow is deferred until
+  step-up re-auth lands, since it's exactly the kind of destructive
+  security action step-up is meant to gate.
 - **QStash / always-on worker escalation** (ADR 0003) — only if Vercel cron
   granularity is unavailable (Fact B) or measured convergence violates SLO.
 - **Sentry-class APM** (ADR 0007) — post-launch; never a substitute for
