@@ -5,7 +5,7 @@ former `docs/qa/*.md` file, preserved verbatim as recorded evidence. New QA
 evidence is appended as a new `## Evidence:` section; existing sections are
 historical records and are not rewritten.
 
-Sections: 50
+Sections: 51
 
 ## Index
 
@@ -36,6 +36,7 @@ Sections: 50
 - [k-01-admin-e2e-workflow-proof](#evidence-k-01-admin-e2e-workflow-proof)
 - [k-08-admin-mfa-security-review](#evidence-k-08-admin-mfa-security-review)
 - [k-08-webhook-security-review](#evidence-k-08-webhook-security-review)
+- [k-08-idor-xss-review](#evidence-k-08-idor-xss-review)
 - [legal-page-editorial-structure-benchmark](#evidence-legal-page-editorial-structure-benchmark)
 - [mobile-pdp-rail-density-benchmark](#evidence-mobile-pdp-rail-density-benchmark)
 - [offline-page-install-pwa-recovery-priority-benchmark](#evidence-offline-page-install-pwa-recovery-priority-benchmark)
@@ -2410,6 +2411,72 @@ in a state this webhook could currently mis-capture.
 This pass covered CardCom, Cloudinary, and the Shopify orders webhook only.
 K-08's full scope (IDOR, CSRF, XSS, uploads, prompt injection, dependencies)
 remains open.
+
+---
+
+<a id="evidence-k-08-idor-xss-review"></a>
+
+## Evidence: k-08-idor-xss-review
+
+# K-08 Application Security Review — Customer IDOR + Stored-XSS Sweep
+
+Date: 2026-07-12
+
+Scope: (1) IDOR across every customer-facing tRPC procedure and Server
+Action that takes an id (order, wishlist item, address, saved size,
+appointment, cart item) — can an authenticated customer or anonymous caller
+read/mutate another customer's row; (2) a codebase-wide
+`dangerouslySetInnerHTML` sweep for stored-XSS.
+
+## IDOR: clean
+
+Every id-taking customer data operation scopes its query by both the input
+id and the session-derived customer id (the `where: { id, customerId }`
+idiom), or — for guest/email-based flows (checkout payment lookup, AI order
+support) — requires an order-number-plus-matching-email ownership proof.
+Customer identity is always derived server-side from the verified NextAuth
+session (`session.user.id`), never from a client-supplied field. Checked:
+`customers.ts`, `orders.ts`, `appointments.ts`, `cart.ts`, `checkout.ts`
+routers; `src/app/account/actions.ts` (wishlist removal, return requests,
+addresses, saved sizes, privacy deletion); `src/app/account/orders/[id]/page.tsx`;
+`src/app/account/privacy/export/route.ts`; `src/server/services/customer-portal.ts`
+(invoices/documents, explicitly never accepts a client-supplied customerId);
+`src/server/ai/commerce-actions.ts`. No finding.
+
+One non-finding worth a note for future authors: `mergeGuestCartToCustomer`
+(`src/server/services/cart.ts`) accepts `{ sessionKey, customerId }` but is
+not wired to any router or Server Action today — unit-test-only, not
+client-reachable. If it's ever exposed, `customerId` must come from the
+session, not the input.
+
+## Stored XSS: one finding, fixed
+
+`src/app/blog/[slug]/page.tsx` rendered its `BlogPosting` JSON-LD via raw
+`dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}` — unescaped
+`<`/`>` in admin-authored fields (`post.title`, `post.excerpt`/
+`seoDescription`, `post.author.name`) could break out of the `<script>` tag
+on a **public** blog page. `src/app/page.tsx` (home) and
+`src/app/product/[slug]/page.tsx` already guard the identical pattern with
+`~/lib/json-ld.ts`'s `stringifyJsonLd()` (escapes `&`/`<`/`>`/line-separators
+to `\u00XX` before embedding) — the blog page was the one place that hadn't
+been switched over. Fixed by using the same helper; no new dependency, no
+behavior change to the rendered JSON-LD payload.
+
+Severity note: this required an admin account with at least `BLOG_WRITE` to
+post the payload — not an anonymous vector — but a narrowly-scoped
+blog-only admin being able to run script for every public site visitor is a
+real privilege-boundary gap, not merely a "trust the admin" question, and
+the fix was free (reuse an existing helper), so it was applied directly
+rather than left as a residual note.
+
+No other `dangerouslySetInnerHTML` usage exists in the codebase
+(`src/app/layout.tsx`'s theme-init script is a hardcoded, non-dynamic
+string — no finding).
+
+## Residual risk
+
+CSRF, SSRF, uploads, prompt injection, and a dependency review remain open
+for K-08.
 
 ---
 

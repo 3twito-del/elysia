@@ -8,6 +8,7 @@ import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { env } from "~/env";
+import { stringifyJsonLd } from "~/lib/json-ld";
 import { getPublishedBlogPostBySlugCachedRequest } from "~/server/services/blog";
 
 type BlogPostPageProps = {
@@ -86,7 +87,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           data-testid="blog-post"
         >
           <script
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            dangerouslySetInnerHTML={{ __html: stringifyJsonLd(jsonLd) }}
             type="application/ld+json"
           />
           <header className="grid gap-5 border-b border-[var(--glass-border)] pb-8">

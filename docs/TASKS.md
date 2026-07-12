@@ -417,15 +417,18 @@ have been deleted; partially done items state only their remaining scope.
 - **K-07 Backups and recovery** · P0 · EXTERNAL+MEASURE — restore drill meets
   RPO/RTO. (ADR 0008: PITR is a launch requirement; drill is acceptance;
   blocked on owner Fact A — Postgres provider/tier.)
-- **K-08 Application security review — residual** · P0 · MEASURE — two scoped
-  passes done: the admin TOTP MFA surface, I-342
+- **K-08 Application security review — residual** · P0 · MEASURE — three
+  scoped passes done: the admin TOTP MFA surface, I-342
   (`docs/QA_EVIDENCE.md` "k-08-admin-mfa-security-review" — no high-confidence
-  auth-bypass/privilege-escalation/crypto finding), and the webhook layer
+  auth-bypass/privilege-escalation/crypto finding); the webhook layer
   (`docs/QA_EVIDENCE.md` "k-08-webhook-security-review" — Cloudinary and
   Shopify-orders clean; CardCom's ADR-0006 gap confirmed and folded into
-  G-04, not tracked separately). Remaining scope:
-  IDOR/CSRF/XSS/SSRF/uploads/prompt-injection/dependency review across the
-  rest of the application.
+  G-04, not tracked separately); and customer-facing IDOR + a stored-XSS
+  sweep (`docs/QA_EVIDENCE.md` "k-08-idor-xss-review" — IDOR clean across
+  orders/wishlist/addresses/cart/checkout; one stored-XSS gap found and
+  fixed, blog JSON-LD now uses the same escaping helper the home/product
+  pages already used). Remaining scope: CSRF/SSRF/uploads/prompt-injection/
+  dependency review across the rest of the application.
 - **K-09 Privacy and retention implementation** · P0 · OWNER+MEASURE —
   retention matrix, deletion jobs, legal holds; policy and implementation
   agree.
