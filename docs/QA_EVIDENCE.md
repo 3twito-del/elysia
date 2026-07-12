@@ -3126,7 +3126,7 @@ separate benchmark and data review.
 
 Status: active release evidence ledger.
 
-Last updated: 2026-06-21.
+Last updated: 2026-07-12.
 
 This ledger records the latest production deployment evidence that is safe to
 keep in the repository. It stores deployment URLs, aliases, command names, and
@@ -3144,25 +3144,26 @@ Related documents:
 
 | Field               | Evidence                                                                                                                                                                                 |
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Evidence date       | 2026-06-21                                                                                                                                                                               |
+| Evidence date       | 2026-07-12                                                                                                                                                                               |
 | Branch              | `main`                                                                                                                                                                                   |
-| Commit SHA          | `f59b4a8dbdcffcfa662add7e4a3f6593d9739d1d`                                                                                                                                               |
+| Commit SHA          | `ec62664ee9b1cd7b8372c73b4f9910221fab003f`                                                                                                                                               |
+| Release             | I-342 mandatory admin TOTP MFA + recovery codes (ADR 0005 L1 auth package complete)                                                                                                     |
 | Vercel project      | `ariel-twitos-projects/elysia`                                                                                                                                                           |
-| Deployment URL      | `https://elysia-nrmnccd8x-ariel-twitos-projects.vercel.app`                                                                                                                              |
-| Deployment ID       | `dpl_8F4hp3EBXado63ycn6RHQ7XPSEmB`                                                                                                                                                       |
+| Deployment URL      | `https://elysia-dhs2zw13e-ariel-twitos-projects.vercel.app`                                                                                                                              |
+| Deployment ID       | `dpl_3L2ohaRr8KdgvtC9T5JA97edJEED`                                                                                                                                                       |
 | Target              | Production                                                                                                                                                                               |
 | Status              | Ready                                                                                                                                                                                    |
-| Created             | 2026-06-21 14:09:26 Asia/Jerusalem                                                                                                                                                       |
-| Production alias    | `https://elysia-jewellery.com`                                                                                                                                                           |
+| Created             | 2026-07-12 16:09:50 Asia/Jerusalem                                                                                                                                                       |
+| Production alias    | `https://elysia-jewellery.com` (confirmed via `vercel inspect`)                                                                                                                          |
 | Additional aliases  | `https://elysia-ariel-twitos-projects.vercel.app`, `https://elysia-git-main-ariel-twitos-projects.vercel.app`                                                                            |
-| Smoke command       | `$env:SMOKE_BASE_URL = "https://elysia-jewellery.com"; pnpm smoke`                                                                                                                       |
-| Smoke result        | PASS: 35 checks passed across health, public, search, category, checkout, account, API, and admin smoke routes                                                                           |
-| Health result       | PASS: `/api/health` returned 200 during smoke                                                                                                                                            |
-| Error log scan      | PASS: `$env:VERCEL_TOKEN=$null; vercel logs https://elysia-jewellery.com --since 30m --level error` returned `No logs found for ariel-twitos-projects/elysia` after smoke                |
-| Error-log window    | PENDING: current scan is clean and covers the deployment lifetime so far, but the deployment was about 11 minutes old at refresh time so the 60-minute post-alias window has not elapsed |
-| Marker checks       | PASS: `/search`, `/search?q=venus`, and `/search?q=zzzz-no-match&maxPrice=1` rendered search form/grid/empty states without RSC digest after the Typesense fallback fix                  |
+| Smoke command       | `SMOKE_BASE_URL="https://elysia-jewellery.com" pnpm smoke`                                                                                                                               |
+| Smoke result        | 32/35 PASS. 3 pre-existing, unrelated failures: `/` missing `data-testid="home-commerce-shortcuts"` and `/ai?tab=gifts` missing `id="ai-gifts"` — neither string exists anywhere in `src/`, i.e. stale smoke assertions predating this release, not a regression; `/admin` (bare) redirect omits `next=` by proxy.ts's own existing design (default landing page), which the smoke check doesn't account for — `src/proxy.ts` was not touched by this release |
+| Health result       | PASS: `/api/health` returned 200                                                                                                                                                         |
+| Error log scan      | PASS: `vercel logs https://elysia-jewellery.com --since 30m --level error` → `No logs found for ariel-twitos-projects/elysia`                                                            |
+| Error-log window    | PENDING: clean so far, but deployment was ~15 minutes old at scan time — the 60-minute post-alias window has not elapsed                                                                |
+| Admin MFA smoke     | PASS (manual, not in `scripts/smoke.mjs`): full enroll → recovery codes → session, logout → re-verify, and recovery-code login/reuse-rejection walkthrough run against local dev before this release; not re-run against production (would require a real admin session)                                                                                                                    |
 | Runtime data caveat | Smoke uses public/logged-out routes and documented unauthenticated API expectations only                                                                                                 |
-| Remaining risk      | Does not prove authenticated admin workflows, paid checkout, live supplier fulfillment, provider secrets, or the full 60-minute post-alias error-log window for the current deployment   |
+| Remaining risk      | Does not prove authenticated admin workflows in production (see K-01, open), paid checkout, live supplier fulfillment, provider secrets, or the full 60-minute post-alias error-log window for the current deployment; the 3 pre-existing smoke failures above are untracked debt, not filed as their own backlog item yet |
 
 ## Required Release Evidence Fields
 
