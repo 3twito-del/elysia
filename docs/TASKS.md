@@ -417,22 +417,6 @@ have been deleted; partially done items state only their remaining scope.
 - **K-07 Backups and recovery** · P0 · EXTERNAL+MEASURE — restore drill meets
   RPO/RTO. (ADR 0008: PITR is a launch requirement; drill is acceptance;
   blocked on owner Fact A — Postgres provider/tier.)
-- **K-08 Application security review — residual** · P0 · MEASURE — three
-  scoped passes done: the admin TOTP MFA surface, I-342
-  (`docs/QA_EVIDENCE.md` "k-08-admin-mfa-security-review" — no high-confidence
-  auth-bypass/privilege-escalation/crypto finding); the webhook layer
-  (`docs/QA_EVIDENCE.md` "k-08-webhook-security-review" — Cloudinary and
-  Shopify-orders clean; CardCom's ADR-0006 gap confirmed and folded into
-  G-04, not tracked separately); and customer-facing IDOR + a stored-XSS
-  sweep (`docs/QA_EVIDENCE.md` "k-08-idor-xss-review" — IDOR clean across
-  orders/wishlist/addresses/cart/checkout; one stored-XSS gap found and
-  fixed, blog JSON-LD now uses the same escaping helper the home/product
-  pages already used); and CSRF/SSRF/uploads
-  (`docs/QA_EVIDENCE.md` "k-08-csrf-ssrf-uploads-review" — CSRF and uploads
-  clean; one Low SSRF finding, `SYSTEM_CONFIG`-only outbound webhook delivery
-  has no egress allowlist — real gap, not fixed here, needs an explicit
-  private-range/metadata-IP blocklist design decision before implementing).
-  Remaining scope: prompt-injection and a dependency review.
 - **K-09 Privacy and retention implementation** · P0 · OWNER+MEASURE —
   retention matrix, deletion jobs, legal holds; policy and implementation
   agree.
@@ -444,6 +428,14 @@ have been deleted; partially done items state only their remaining scope.
 - **K-12 Physical boutique scope** · P2 · OWNER — keep the truthful online-only
   route or provide verified branch data; never imply boutiques that do not
   exist.
+- **K-13 Outbound webhook egress allowlist** · P2 · NOW — split off from the
+  now-closed K-08 review: `src/server/services/webhook-delivery.ts`'s
+  `SYSTEM_CONFIG`-gated outbound webhook delivery has no private-range/
+  metadata-IP egress filtering (`docs/QA_EVIDENCE.md`
+  "k-08-csrf-ssrf-uploads-review"). Not a privilege escalation (only the
+  highest admin tier can reach it), but a real SSRF primitive on an
+  outbound-webhook feature. Needs an explicit allowlist-vs-blocklist design
+  decision plus delivery-time DNS-rebind re-validation before implementing.
 
 ### L — QA, measurement, release proof
 

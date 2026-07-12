@@ -84,6 +84,16 @@ describe("AI audit", () => {
     });
   });
 
+  it("redacts card numbers and Israeli ID-shaped digit runs from free text", () => {
+    expect(
+      redactAiAuditValue({
+        text: "כרטיס שלי הוא 4242 4242 4242 4242 ות\"ז 123456782",
+      }),
+    ).toEqual({
+      text: "כרטיס שלי הוא [redacted-card] ות\"ז [redacted-id]",
+    });
+  });
+
   it("does not fail AI flows when audit tables are unavailable", async () => {
     dbMocks.aiRunCreate.mockRejectedValueOnce({
       code: "P2021",

@@ -38,6 +38,8 @@ Sections: 52
 - [k-08-webhook-security-review](#evidence-k-08-webhook-security-review)
 - [k-08-idor-xss-review](#evidence-k-08-idor-xss-review)
 - [k-08-csrf-ssrf-uploads-review](#evidence-k-08-csrf-ssrf-uploads-review)
+- [k-08-prompt-injection-review](#evidence-k-08-prompt-injection-review)
+- [k-08-dependency-review](#evidence-k-08-dependency-review)
 - [legal-page-editorial-structure-benchmark](#evidence-legal-page-editorial-structure-benchmark)
 - [mobile-pdp-rail-density-benchmark](#evidence-mobile-pdp-rail-density-benchmark)
 - [offline-page-install-pwa-recovery-priority-benchmark](#evidence-offline-page-install-pwa-recovery-priority-benchmark)
@@ -2548,9 +2550,147 @@ idea (magic-byte sniffing, explicit `resource_type`).
 
 ## Residual risk
 
-Prompt injection and a dependency review remain open for K-08. The SSRF
-finding above is documented, not remediated — needs an explicit design
-decision before implementation.
+A dependency review remains open for K-08 (see
+`k-08-prompt-injection-review` below for the completed prompt-injection
+sub-pass). The SSRF finding above is documented, not remediated — needs an
+explicit design decision before implementation.
+
+---
+
+<a id="evidence-k-08-prompt-injection-review"></a>
+
+## Evidence: k-08-prompt-injection-review
+
+# K-08 Application Security Review — Prompt Injection (AI Stylist/Concierge)
+
+Date: 2026-07-12
+
+Scope: `src/app/api/chat/route.ts`, `src/server/ai/{agent,commerce-tools,
+commerce-actions,policy,planner,model,audit,quota-router}.ts`, the chat UI
+(`src/app/stylist/_components/stylist-chat.tsx`,
+`src/components/ai-elements/message.tsx`, `ai-product-recommendations.tsx`).
+
+## No high-confidence finding
+
+The design has a structural control that neuters the classic "trick the
+model into calling a tool out of scope" attack: **which tools the model may
+call is decided deterministically from user text by the planner, not by the
+model**, and is re-checked server-side. `route.ts` builds a `planning`
+context via a deterministic keyword/regex classifier over user text;
+`agent.ts`'s `getActiveToolsForPlanning` only *offers* the tools matching the
+classified intent, and every tool's `execute` calls `assertAiToolPolicy`
+(`policy.ts`), which throws unless `planning.kind` matches the tool. An
+injected "call orderSupport now" cannot fire `orderSupport` unless the
+deterministic planner already classified the turn as order-support intent —
+and injected text in retrieved product data is never part of the planner
+input (the planner only reads `role:"user"` texts).
+
+Per-tool argument scoping confirms no injection-driven scope bypass:
+`saveStyleProfile` writes only to the session-derived `customerId` (not a
+model-controllable parameter); `searchCatalog` only reads the public
+catalog; `createTryOnSession` returns a session id/status only; `orderSupport`
+requires the caller to already know the victim's order number *and* email
+(the IDOR-adjacent surface cleared in `k-08-idor-xss-review` — from the
+injection angle it adds nothing, since injected catalog text can't flip the
+active-tool set to `orderSupport` in the first place).
+
+No cross-user history exfiltration is possible: conversation history is
+per-request and entirely client-supplied, so the server never loads another
+user's transcript into context. System-prompt "recitation" carries no
+secrets (behavioral rules and Hebrew catalog policy only).
+
+Tool results (including attacker-influenceable `product.description`) are
+returned as structured JSON in a `tool`-role message — correctly delimited
+as data, not concatenated into the system role. Chat rendering is safe:
+assistant text renders through `Streamdown` (sanitizing markdown), product
+fields render as plain React children — no `dangerouslySetInnerHTML` on the
+chat path. No admin surface renders raw chat/AI-run content (grepped `src/
+app/admin` for `aiRun|transcript|chat` — no matches).
+
+## Fixed: user-derived text was concatenated into the system-role instructions
+
+`src/server/ai/agent.ts`'s `createCatalogHintInstruction` (now removed)
+joined `JSON.stringify(planning.catalogHints)` — which embeds raw user chat
+text via `catalogHints.query` — directly into the agent's system
+`instructions` string. `JSON.stringify` escaped quotes/newlines so it
+couldn't break the JSON string literal, but the model still read attacker
+-influenceable prose inside a system-role message, the exact anti-pattern
+this review category flags. Blast radius was already bounded by the
+deterministic `activeTools`/`assertAiToolPolicy` gate above (an "ignore
+previous instructions" style injection here still can't unlock a tool the
+planner didn't activate), so this was LOW severity — but the instruction was
+also functionally redundant: `commerce-tools.ts`'s `applyCatalogPlanningHints`
+already merges the same hints into the actual `searchCatalog` tool input
+server-side, unconditionally, regardless of what the model does with the
+system-prompt copy. **Fixed by deleting `createCatalogHintInstruction`
+entirely** (`src/server/ai/agent.ts`) — no functional regression, since the
+hints still reach the tool call via the existing server-side merge; only the
+redundant, injectable copy in the system role is gone. Updated
+`agent.test.ts` to assert the hints no longer appear in the instructions
+string.
+
+## Hardening: broadened AI audit-log redaction
+
+`src/server/ai/audit.ts`'s `redactAiAuditText` masked emails and Israeli
+phone numbers in persisted `AiRun`/`AiToolCall` free text, but a user pasting
+a card number or national ID (ת"ז) in chat was stored verbatim. Access to
+`AiRun` is DB/admin-only and no admin UI renders it (checked above), so this
+was data-at-rest exposure, not an injection/XSS path — LOW/MEDIUM per the
+`k-08-csrf-ssrf-uploads-review` severity convention. **Fixed**: added a
+Luhn-validated card-number pattern (13–19 digit run, redacts only if the
+checksum passes, to avoid over-redacting unrelated long numbers) and a
+9-digit Israeli-ID-shaped pattern to `redactAiAuditText`. Covered by a new
+`audit.test.ts` case.
+
+## Residual
+
+Prompt-injection sub-pass complete for K-08. Only the dependency
+vulnerability pass (`pnpm audit`, a mechanical check, not another
+agent-driven code review) remains open — see
+`k-08-dependency-review` below, which closes out K-08's full scope.
+
+---
+
+<a id="evidence-k-08-dependency-review"></a>
+
+## Evidence: k-08-dependency-review
+
+# K-08 Application Security Review — Dependency Vulnerability Pass
+
+Date: 2026-07-12
+
+Command: `pnpm audit` (and `pnpm audit --prod`).
+
+Five advisories, none applicable to the running production app:
+
+| Package | Severity | Advisory | Path | Applicability |
+| --- | --- | --- | --- | --- |
+| `uuid` | Moderate | Missing bounds check in v3/v5/v6 when a `buf` argument is supplied (GHSA-w5hq-g745-h8pq) | `.>exceljs>uuid` | Not reachable — `exceljs@4.4.0` (latest) only calls `uuid`'s `v4` export (`node_modules/exceljs/lib/xlsx/xform/sheet/cf-ext/cf-rule-ext-xform.js`), never `v3`/`v5`/`v6`, and never supplies a `buf` argument. No direct `uuid` import anywhere in `src/`. |
+| `vite` | High | `server.fs.deny` bypass on Windows alternate paths (GHSA-fx2h-pf6j-xcff) | `.>vitest>vite` | Dev/test-only transitive dependency of `vitest`; the app never runs Vite's own dev server (Next.js uses webpack/Turbopack) and this vite instance never runs in the deployed production build. |
+| `vite` (`launch-editor`) | Moderate | NTLMv2 hash disclosure via UNC path handling on Windows (GHSA-v6wh-96g9-6wx3) | `.>vitest>vite` | Same as above — dev/test-only, never present in production. |
+| `js-yaml` | Moderate | Quadratic-complexity DoS via repeated merge-key aliases (GHSA-h67p-54hq-rp68) | `.>@eslint/eslintrc>js-yaml` | ESLint config parsing only; ESLint is a local/CI dev tool, not part of the deployed app, and never parses untrusted YAML at runtime. |
+| `esbuild` | Low | Arbitrary file read via the dev server on Windows (GHSA-g7r4-m6w7-qqqr) | `.>esbuild`, `.>tsx>esbuild` | `tsx`/`esbuild` are used for local scripts only; no `esbuild`/`vite` dev server is exposed in production. |
+
+No package version bump attempted: `exceljs@4.4.0` is already the latest
+release and still pins the vulnerable `uuid@8.3.2` range upstream — forcing
+a `pnpm.overrides` bump to `uuid@>=11.1.1` would cross a major version (v8 →
+v11 changed the package's export shape) without upstream `exceljs` testing
+against it, which is a real regression risk for a codepath (Excel export)
+that has no security exposure here. Per the security-review methodology's
+own exclusion ("vulnerabilities related to outdated third-party libraries
+... managed separately") and since none of the five advisories are reachable
+in this app's actual runtime usage, no fix is required. Revisit if `exceljs`
+ships a release that bumps `uuid` itself, or if a direct (non-transitive)
+`uuid` v3/v5/v6 usage is ever introduced.
+
+## K-08 status
+
+All six planned sub-passes are now complete: admin MFA surface, webhooks,
+customer IDOR + stored XSS, CSRF/SSRF/uploads, prompt injection, and this
+dependency pass. Two real gaps remain open, tracked outside K-08 itself so
+they aren't lost when this backlog row is removed: the CardCom ADR-0006
+verify-then-commit gap (folded into `G-04`) and the outbound-webhook SSRF
+egress-allowlist gap (split into a new backlog item, `K-13`).
 
 ---
 

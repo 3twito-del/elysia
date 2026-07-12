@@ -5,7 +5,7 @@ import { AI_RUN_KIND } from "~/server/ai/constants";
 import type { AiPlanningContext } from "~/server/ai/planner";
 
 describe("AI commerce agent instructions", () => {
-  it("includes deterministic catalog hints when catalog tools are active", () => {
+  it("does not leak raw catalog hints into the model instructions", () => {
     const instructions = createAiCommerceAgentInstructions({
       kind: AI_RUN_KIND.catalogSearch,
       signals: ["catalog"],
@@ -21,8 +21,8 @@ describe("AI commerce agent instructions", () => {
       },
     });
 
-    expect(instructions).toContain("רמזי חיפוש");
-    expect(instructions).toContain('"category":"earrings"');
+    expect(instructions).not.toContain("רמזי חיפוש");
+    expect(instructions).not.toContain("earrings");
   });
 
   it("includes a clarification guard when required fields are missing", () => {
@@ -59,7 +59,7 @@ describe("AI commerce agent instructions", () => {
       },
     } satisfies AiPlanningContext);
 
-    expect(instructions).toContain("רמזי חיפוש");
+    expect(instructions).not.toContain("רמזי חיפוש");
     expect(instructions).not.toContain("clarificationRequired=true");
   });
 });

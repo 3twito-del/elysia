@@ -208,7 +208,30 @@ export function redactAiAuditText(value: string) {
     .replace(
       /(?:\+?972[-\s]?)?(?:0?5\d|0[2-9])[-\s]?\d{3}[-\s]?\d{4}\b/g,
       "[redacted-phone]",
-    );
+    )
+    .replace(
+      /\b(?:\d[ -]?){13,19}\b/g,
+      (match) => (isLuhnValid(match) ? "[redacted-card]" : match),
+    )
+    .replace(/\b\d{9}\b/g, "[redacted-id]");
+}
+
+function isLuhnValid(value: string) {
+  const digits = value.replace(/[ -]/g, "");
+  let sum = 0;
+  let shouldDouble = false;
+
+  for (let i = digits.length - 1; i >= 0; i--) {
+    let digit = Number(digits[i]);
+    if (shouldDouble) {
+      digit *= 2;
+      if (digit > 9) digit -= 9;
+    }
+    sum += digit;
+    shouldDouble = !shouldDouble;
+  }
+
+  return sum % 10 === 0;
 }
 
 async function createAiToolCallTrace(
