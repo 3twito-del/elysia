@@ -25,12 +25,21 @@ export async function proxy(req: NextRequest) {
     return withAdminSecurityHeaders(NextResponse.next());
   }
 
+  // Must match whether NextAuth itself set a __Secure__-prefixed session
+  // cookie, which it decides from the request's actual transport — not from
+  // NODE_ENV. Those normally agree (every real Vercel deployment, preview or
+  // production, is NODE_ENV=production AND https), but diverge under a local
+  // `next start` production build served over plain HTTP (e.g. e2e runs),
+  // where NODE_ENV=production is true while the connection is not.
   const secret = process.env.AUTH_SECRET;
+  const isHttps =
+    req.nextUrl.protocol === "https:" ||
+    req.headers.get("x-forwarded-proto") === "https";
   const token = secret
     ? await getToken({
         req,
         secret,
-        secureCookie: process.env.NODE_ENV === "production",
+        secureCookie: isHttps,
       }).catch(() => null)
     : null;
 

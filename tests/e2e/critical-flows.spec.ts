@@ -1,5 +1,11 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import {
+  createAdminAuthFixture,
+  signInAdminWithFixture,
+} from "./helpers/admin-auth";
+import { getTestDb } from "./helpers/db";
+
 const consentStorageKey = "elysia_cookie_consent";
 const accessibilityStorageKey = "elysia.accessibility-settings";
 const recentlyViewedStorageKey = "elysia_recently_viewed";
@@ -44,9 +50,6 @@ const publicRoutes = [
   "/terms",
   "/accessibility",
 ];
-const adminEmail = process.env.E2E_ADMIN_EMAIL;
-const adminPassword = process.env.E2E_ADMIN_PASSWORD;
-
 test.describe("critical shopping flows", () => {
   test.beforeEach(async ({ page }) => {
     await clearBrowserState(page);
@@ -1423,20 +1426,104 @@ test.describe("access control surfaces", () => {
   test("authenticated admins can open the operations shell", async ({
     page,
   }) => {
-    test.skip(
-      !adminEmail || !adminPassword,
-      "Set E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD to run authenticated admin e2e.",
-    );
-
-    await page.goto("/admin/login?next=/admin/orders");
-    await page.locator("#email").fill(adminEmail!);
-    await page.locator("#password").fill(adminPassword!);
-    await page.getByRole("button", { name: /אדמין|Admin/ }).click();
+    await signInAdminWithFixture(page);
+    await page.goto("/admin/orders");
 
     await expect(page).toHaveURL(/\/admin\/orders/);
     await expect(page.getByRole("link", { name: /הזמנות/ })).toBeVisible();
     await expect(page.getByRole("heading", { name: "הזמנות" })).toBeVisible();
     await expect(page.getByRole("link", { name: /אינטגרציות/ })).toBeVisible();
+  });
+
+  test("password alone does not reach the admin shell — MFA is mandatory", async ({
+    page,
+  }) => {
+    const fixture = await createAdminAuthFixture(page, "full");
+
+    await page.goto("/admin/login");
+    await page.locator("#email").fill(fixture.email);
+    await page.locator("#password").fill(fixture.password);
+    await page.getByRole("button", { name: /אדמין|Admin/u }).click();
+
+    await expect(page).toHaveURL(/\/admin\/login\/mfa/);
+    await page.goto("/admin/orders");
+    await expect(page).toHaveURL(/\/admin\/login\?next=/);
+  });
+
+  test("logging in with a recovery code succeeds and rejects reuse", async ({
+    page,
+  }) => {
+    const fixture = await signInAdminWithFixture(page, {
+      useRecoveryCode: true,
+    });
+
+    await page.goto("/admin/orders");
+    await expect(page).toHaveURL(/\/admin\/orders/);
+
+    await page.locator("text=יציאה").first().click();
+    await expect(page).toHaveURL(/\/admin\/login/);
+
+    await page.locator("#email").fill(fixture.email);
+    await page.locator("#password").fill(fixture.password);
+    await page.getByRole("button", { name: /אדמין|Admin/u }).click();
+    await expect(page).toHaveURL(/\/admin\/login\/mfa/);
+
+    const beforeReuse = await page.evaluate(() => document.body.innerText);
+
+    await page.locator("#code").fill(fixture.recoveryCodes[0]!);
+    await page.getByRole("button", { name: /אישור/u }).click();
+    await page.waitForFunction(
+      (prevText) => document.body.innerText !== prevText,
+      beforeReuse,
+      { timeout: 20_000 },
+    );
+
+    await expect(page).toHaveURL(/\/admin\/login\/mfa/);
+    await expect(page.getByText("קוד שגוי")).toBeVisible();
+  });
+
+  test("a limited-permission admin is denied an orders-only page", async ({
+    page,
+  }) => {
+    await signInAdminWithFixture(page, { role: "limited" });
+    await page.goto("/admin/orders");
+
+    await expect(page).toHaveURL(/\/admin\/orders/);
+    await expect(page.getByText("אין הרשאה למסך המבוקש")).toBeVisible();
+  });
+
+  test("regenerating recovery codes is a real write, recorded in the audit log", async ({
+    page,
+  }) => {
+    const fixture = await signInAdminWithFixture(page);
+
+    await page.goto("/admin/security");
+    await expect(
+      page.getByRole("button", { name: "יצירת קודי גיבוי חדשים" }),
+    ).toBeVisible();
+
+    const before = new Date();
+
+    await page
+      .getByRole("button", { name: "יצירת קודי גיבוי חדשים" })
+      .click();
+    await expect(
+      page.getByRole("heading", { name: "קודי גיבוי חדשים" }),
+    ).toBeVisible();
+
+    const auditRow = await getTestDb().auditLog.findFirst({
+      orderBy: { createdAt: "desc" },
+      where: {
+        action: "admin_recovery_code.generated",
+        adminUserId: fixture.adminUserId,
+        createdAt: { gte: before },
+      },
+    });
+
+    expect(
+      auditRow,
+      "expected an admin_recovery_code.generated AuditLog row for this admin",
+    ).not.toBeNull();
   });
 
   test("shows customer login and rejects unauthenticated data export", async ({
