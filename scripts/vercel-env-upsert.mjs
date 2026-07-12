@@ -31,6 +31,7 @@ const defaultKeys = [
   "SHOPIFY_STOREFRONT_ACCESS_TOKEN",
   "SHOPIFY_WEBHOOK_SECRET",
   "SHOPIFY_API_VERSION",
+  "ADMIN_TOTP_ENCRYPTION_KEY",
 ];
 
 const plainKeys = new Set([
