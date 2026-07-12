@@ -5,7 +5,7 @@ former `docs/qa/*.md` file, preserved verbatim as recorded evidence. New QA
 evidence is appended as a new `## Evidence:` section; existing sections are
 historical records and are not rewritten.
 
-Sections: 51
+Sections: 52
 
 ## Index
 
@@ -37,6 +37,7 @@ Sections: 51
 - [k-08-admin-mfa-security-review](#evidence-k-08-admin-mfa-security-review)
 - [k-08-webhook-security-review](#evidence-k-08-webhook-security-review)
 - [k-08-idor-xss-review](#evidence-k-08-idor-xss-review)
+- [k-08-csrf-ssrf-uploads-review](#evidence-k-08-csrf-ssrf-uploads-review)
 - [legal-page-editorial-structure-benchmark](#evidence-legal-page-editorial-structure-benchmark)
 - [mobile-pdp-rail-density-benchmark](#evidence-mobile-pdp-rail-density-benchmark)
 - [offline-page-install-pwa-recovery-priority-benchmark](#evidence-offline-page-install-pwa-recovery-priority-benchmark)
@@ -2477,6 +2478,79 @@ string — no finding).
 
 CSRF, SSRF, uploads, prompt injection, and a dependency review remain open
 for K-08.
+
+---
+
+<a id="evidence-k-08-csrf-ssrf-uploads-review"></a>
+
+## Evidence: k-08-csrf-ssrf-uploads-review
+
+# K-08 Application Security Review — CSRF, SSRF, Uploads
+
+Date: 2026-07-12
+
+## CSRF: clean
+
+Next.js's built-in Server Action same-origin check is active and unmodified
+(no `experimental.serverActions.allowedOrigins` override in `next.config.*`).
+Beyond that default: every state-changing GET handler in `src/app/api/**`
+is either a Vercel-cron endpoint gated on a `Bearer <JOB_RUNNER_SECRET|
+CRON_SECRET>` header (not attachable by a cross-site navigation) or a
+strictly read-only admin export/report route. No route or Server Action
+authorizes a mutation from a query-string token. The session cookie stays
+`sameSite: "lax"` throughout (`src/server/auth/config.ts`, and the ADR-0005
+ticket cookie in `admin-login-ticket-cookie.ts`) — never weakened to
+`"none"`. No finding.
+
+## SSRF: one Low finding, `SYSTEM_CONFIG`-gated
+
+`src/server/services/webhook-delivery.ts:147` fetches an admin-registered
+outbound webhook endpoint URL with no egress allowlist — `isValidUrl`
+(`:44-51`) only checks the protocol is `http:`/`https:`, not whether the
+resolved host is a private/loopback/link-local/metadata range
+(`169.254.169.254` etc.). Reachable only via `createEndpointAction`/
+`deliverWebhookAction` (`src/app/admin/developer/actions.ts`), both gated on
+the highest admin permission, `SYSTEM_CONFIG` — not a privilege escalation,
+since that actor already has full control, but a genuine SSRF primitive
+with zero egress filtering on a real "outbound webhook platform" feature.
+Response body isn't persisted (only status/error), so exploitation is
+largely blind (status-code oracle / internal POST side effects).
+
+**Not fixed in this pass** — implementing egress filtering correctly needs
+a design decision (explicit allowlist vs. private-range blocklist,
+DNS-rebind re-validation at delivery time, redirect handling) rather than a
+one-line change, so it's recorded here rather than built without that
+decision.
+
+Everything else checked clean: no adapter (Shopify, CardCom, notifications,
+AI providers, Typesense) ever builds an outbound URL from request input —
+all use `env.*`-configured hosts. The AI tool set
+(`src/server/ai/commerce-tools.ts`) has no URL-fetching tool; the try-on
+adapter validates but never fetches `sourceImageUrl`. Cloudinary has no
+"upload by URL" (`type: "fetch"`) path — only server-side buffer uploads.
+Webhook callback targets (CardCom, Shopify) are never payload-derived.
+
+## Uploads: no high-confidence finding
+
+The one Cloudinary write path (`src/server/adapters/media.ts`, from the
+public service-request contact form) is server-signed
+(`cloudinary.uploader.upload_stream` with the server API secret), pinned to
+a fixed folder, with no client-controlled resource path, no unsigned upload
+preset, no `NEXT_PUBLIC_CLOUDINARY_*` anywhere. Type/size validated (jpeg/
+png/webp/gif/pdf only, 5 files × 10MB, rate-limited) — SVG is excluded from
+the allowlist. The check is against a client-declared `file.type` (in
+principle spoofable), but the admin UI only ever renders the attachment as
+`<a href={secureUrl} target="_blank" rel="noreferrer">` — never inline,
+`<img>`, `<iframe>`, or `dangerouslySetInnerHTML` — so even a successfully
+smuggled SVG would execute on Cloudinary's own origin with no access to the
+app's session. Below the reporting bar; noted only as an optional hardening
+idea (magic-byte sniffing, explicit `resource_type`).
+
+## Residual risk
+
+Prompt injection and a dependency review remain open for K-08. The SSRF
+finding above is documented, not remediated — needs an explicit design
+decision before implementation.
 
 ---
 

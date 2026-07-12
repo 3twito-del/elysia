@@ -427,8 +427,12 @@ have been deleted; partially done items state only their remaining scope.
   sweep (`docs/QA_EVIDENCE.md` "k-08-idor-xss-review" — IDOR clean across
   orders/wishlist/addresses/cart/checkout; one stored-XSS gap found and
   fixed, blog JSON-LD now uses the same escaping helper the home/product
-  pages already used). Remaining scope: CSRF/SSRF/uploads/prompt-injection/
-  dependency review across the rest of the application.
+  pages already used); and CSRF/SSRF/uploads
+  (`docs/QA_EVIDENCE.md` "k-08-csrf-ssrf-uploads-review" — CSRF and uploads
+  clean; one Low SSRF finding, `SYSTEM_CONFIG`-only outbound webhook delivery
+  has no egress allowlist — real gap, not fixed here, needs an explicit
+  private-range/metadata-IP blocklist design decision before implementing).
+  Remaining scope: prompt-injection and a dependency review.
 - **K-09 Privacy and retention implementation** · P0 · OWNER+MEASURE —
   retention matrix, deletion jobs, legal holds; policy and implementation
   agree.
