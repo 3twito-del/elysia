@@ -5,7 +5,7 @@ former `docs/qa/*.md` file, preserved verbatim as recorded evidence. New QA
 evidence is appended as a new `## Evidence:` section; existing sections are
 historical records and are not rewritten.
 
-Sections: 47
+Sections: 49
 
 ## Index
 
@@ -33,6 +33,8 @@ Sections: 47
 - [faq-content-service-recovery-links-benchmark](#evidence-faq-content-service-recovery-links-benchmark)
 - [floating-chrome-collision-audit](#evidence-floating-chrome-collision-audit)
 - [homepage-discovery-commerce-balance-benchmark](#evidence-homepage-discovery-commerce-balance-benchmark)
+- [k-01-admin-e2e-workflow-proof](#evidence-k-01-admin-e2e-workflow-proof)
+- [k-08-admin-mfa-security-review](#evidence-k-08-admin-mfa-security-review)
 - [legal-page-editorial-structure-benchmark](#evidence-legal-page-editorial-structure-benchmark)
 - [mobile-pdp-rail-density-benchmark](#evidence-mobile-pdp-rail-density-benchmark)
 - [offline-page-install-pwa-recovery-priority-benchmark](#evidence-offline-page-install-pwa-recovery-priority-benchmark)
@@ -2230,6 +2232,107 @@ The benchmark supports a restrained shortcut rail only. Moving the quick-search
 form above editorial content, adding a merchandising mega-panel, changing hero
 composition, or introducing personalized recommendation controls still requires
 a separate benchmark.
+
+---
+
+<a id="evidence-k-01-admin-e2e-workflow-proof"></a>
+
+## Evidence: k-01-admin-e2e-workflow-proof
+
+# K-01 Authenticated Admin Workflow Proof
+
+Date: 2026-07-12
+
+Scope: role-scoped Playwright e2e coverage over the admin control plane,
+proving the full ADR 0005 login flow and one representative permission-gated
+read/write action end to end, not just at the unit-test level.
+
+## What's covered
+
+- `src/server/services/admin-auth-fixtures.ts` + `src/app/api/e2e/admin-auth/route.ts` —
+  E2E-only fixture (same `E2E_AUTH_FIXTURES` gate as
+  `customer-auth-fixtures.ts`, refused outside that flag or in real
+  production) that seeds a fully-enrolled admin (known password + TOTP
+  secret + 10 recovery codes) under either a full (`SYSTEM`) or limited
+  (`CATALOG_READ`-only) role.
+- `tests/e2e/helpers/admin-auth.ts` — drives the real UI through
+  password → TOTP/recovery-code → session, computing a valid RFC 6238 code
+  independently from the fixture's plaintext secret.
+- `tests/e2e/critical-flows.spec.ts` ("access control surfaces"):
+  - Full-permission admin reaches `/admin/orders` after signing in.
+  - Password alone lands on `/admin/login/mfa`, not the shell.
+  - Recovery-code sign-in succeeds; reusing the same code is rejected.
+  - A limited-permission (`CATALOG_READ`-only) admin is denied `/admin/orders`.
+  - Regenerating recovery codes from `/admin/security` is asserted against a
+    real `AuditLog` row (`admin_recovery_code.generated`) via
+    `tests/e2e/helpers/db.ts`, not just the UI.
+
+## Bug found and fixed during this work
+
+`src/proxy.ts` decided which session-cookie name to look up (`__Secure-`
+prefixed or not) from `NODE_ENV`, while NextAuth decides whether to set that
+prefix from the request's actual transport. These agree on every real Vercel
+deployment (always HTTPS, always `NODE_ENV=production`) but diverged under a
+local production build served over plain HTTP (`next start` for e2e) —
+login would "succeed" (redirect) but the very next navigation lost admin
+recognition. Fixed by deriving the check from `req.nextUrl.protocol` /
+`x-forwarded-proto` instead of `NODE_ENV`.
+
+## Residual risk
+
+Only one write action (recovery-code regeneration) has an audit-log
+assertion; other critical admin writes (order refund, inventory adjustment,
+catalog status changes) are covered by unit tests but not yet by this
+role-scoped e2e + audit-assertion pattern. One pre-existing, unrelated e2e
+test ("routes unauthenticated admin users to a sanitized login target")
+still fails: it expects a `next=` query param on the bare `/admin` → login
+redirect, but `src/proxy.ts` deliberately omits it for that exact path
+(default landing page) — a pre-existing test/behavior mismatch, not
+something this work introduced or in scope to fix here.
+
+---
+
+<a id="evidence-k-08-admin-mfa-security-review"></a>
+
+## Evidence: k-08-admin-mfa-security-review
+
+# K-08 Application Security Review — Admin TOTP MFA Surface
+
+Date: 2026-07-12
+
+Scope: a security-focused review of the I-342 admin TOTP MFA diff (commit
+range `fc06648..7163621`), following the standard security-review
+methodology (identify findings, then an independent filtering pass per
+finding scored 1–10, only findings scoring ≥8 are reported as confirmed).
+
+## Result
+
+No finding scored ≥8. Three findings were raised and independently
+evaluated:
+
+| Finding | Confidence | Disposition |
+| --- | --- | --- |
+| TOTP codes are not single-use — a captured live code is valid for repeated logins within its ~90s window (no `lastUsedStep` tracked, unlike recovery codes) | 6/10 | Not reported as confirmed, but a real, concrete gap worth closing — see recommendation below |
+| Password-only compromise of a not-yet-enrolled admin lets the attacker bind their own authenticator | 2/10 | False positive — inherent trust-on-first-use property of any self-service mandatory-MFA system (GitHub, AWS IAM, Google Workspace behave identically) |
+| No step-up re-authentication before regenerating recovery codes | 2/10 | False positive — no privilege boundary crossed (self-scoped, session-derived identity); step-up re-auth is an ADR-0005-acknowledged, already-tracked fast-follow, not a gap this change introduced |
+
+Explicitly checked and found sound: ticket forgery/replay/stage-confusion,
+cross-account/IDOR on `adminSelfProcedure`, AES-256-GCM IV/tamper handling,
+CSPRNG usage for secrets/codes, and audit-log metadata (never logs a secret
+or code value).
+
+## Recommendation (not yet implemented)
+
+Persist the last successfully-consumed TOTP step per admin and reject a code
+matching a step at or before it, mirroring the single-use guarantee already
+applied to recovery codes. Cheap (one column + one comparison) but requires
+a migration; left for a follow-up rather than bundled into this review.
+
+## Residual risk
+
+This pass covered only the new admin TOTP MFA surface. K-08's full scope
+(IDOR, CSRF, XSS, SSRF, uploads, webhooks, prompt injection, dependencies
+across the rest of the application) remains open.
 
 ---
 
