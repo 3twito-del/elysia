@@ -5,7 +5,7 @@ former `docs/qa/*.md` file, preserved verbatim as recorded evidence. New QA
 evidence is appended as a new `## Evidence:` section; existing sections are
 historical records and are not rewritten.
 
-Sections: 49
+Sections: 50
 
 ## Index
 
@@ -35,6 +35,7 @@ Sections: 49
 - [homepage-discovery-commerce-balance-benchmark](#evidence-homepage-discovery-commerce-balance-benchmark)
 - [k-01-admin-e2e-workflow-proof](#evidence-k-01-admin-e2e-workflow-proof)
 - [k-08-admin-mfa-security-review](#evidence-k-08-admin-mfa-security-review)
+- [k-08-webhook-security-review](#evidence-k-08-webhook-security-review)
 - [legal-page-editorial-structure-benchmark](#evidence-legal-page-editorial-structure-benchmark)
 - [mobile-pdp-rail-density-benchmark](#evidence-mobile-pdp-rail-density-benchmark)
 - [offline-page-install-pwa-recovery-priority-benchmark](#evidence-offline-page-install-pwa-recovery-priority-benchmark)
@@ -2331,8 +2332,84 @@ a migration; left for a follow-up rather than bundled into this review.
 ## Residual risk
 
 This pass covered only the new admin TOTP MFA surface. K-08's full scope
-(IDOR, CSRF, XSS, SSRF, uploads, webhooks, prompt injection, dependencies
-across the rest of the application) remains open.
+(IDOR, CSRF, XSS, SSRF, uploads, prompt injection, dependencies across the
+rest of the application) remains open. Webhooks were covered in a separate
+pass — see "k-08-webhook-security-review" below.
+
+---
+
+<a id="evidence-k-08-webhook-security-review"></a>
+
+## Evidence: k-08-webhook-security-review
+
+# K-08 Application Security Review — Webhook Ingestion Layer
+
+Date: 2026-07-12
+
+Scope: the three webhook route handlers and everything they call — signature
+verification, idempotency, and trust-boundary handling for CardCom,
+Cloudinary, and the Shopify orders mirror. Same methodology as the MFA pass
+(identify, then an independent confidence check per finding).
+
+## Cross-cutting facts (all three handlers)
+
+Raw-body signature verification is correct everywhere (signed bytes match
+what's hashed; JSON is parsed separately, no re-serialize-then-hash bug).
+All three fail closed in production when their secret env var is unset. All
+DB access is parameterized Prisma — no injection. No handler builds an
+outbound URL from webhook-supplied input — no SSRF. Duplicate deliveries are
+idempotent (`recordWebhookEvent` upserts on `(provider, externalId)`,
+`createOutboxEvent` upserts on `idempotencyKey`).
+
+## Cloudinary and Shopify orders: clean
+
+Both verify their provider's real, documented HMAC scheme with a
+length-checked, timing-safe comparison, fail closed, and only ever write an
+idempotent mirror/log row — neither crosses into financial or fulfillment
+state. No finding met the reporting bar for either handler.
+
+## CardCom: one High-severity finding, folded into G-04 (not a new item)
+
+`src/server/services/payment-webhooks.ts` (reached from
+`src/app/api/webhooks/cardcom/route.ts`) derives payment status from the
+webhook body and, on a `captured` status against a `PENDING_PAYMENT` order,
+directly writes `payment → CAPTURED`, `order → PAID`, and emits the
+`payment.captured` outbox event that drives GL posting and loyalty accrual.
+**There is no server-to-server verification call back to CardCom anywhere in
+this path** — ADR 0006's explicit "webhook is a hint, API call is truth"
+model (docs/DECISIONS.md, accepted 2026-07-08) is not implemented; the
+webhook signature alone gates a financial state change, and ADR 0006 itself
+calls that signature scheme "no CardCom documentation in our possession
+confirms — a speculative contract."
+
+Two secondary, same-root-cause items: the replay-window check
+(`verifyCardComWebhookSignature`) is only enforced when a timestamp header is
+present, and a late `failed` callback can overwrite an already-`CAPTURED`
+payment while the order stays `PAID` (inconsistent pair). Both are
+HMAC-gated, not independently exploitable, and belong in the same
+remediation as the primary finding.
+
+**Not tracked as a new backlog item** — this is concrete code-level evidence
+for the already-open `G-04` / ADR-0006 remediation in `docs/TASKS.md`, which
+was already known to be incomplete pending the external CardCom API
+documentation blocker. The correct fix (implement the documented
+verify-then-commit call) cannot be built without that blocker resolving
+first; inventing a verification contract would violate this repo's
+no-fabricated-facts rule.
+
+## Why this is not an active production risk today
+
+`OWN_COMMERCE_ENABLED` (ADR 0013's L2 gate) defaults off, and
+`CARD_COM_API_NAME`/`CARD_COM_API_PASSWORD` are unset (G-04) — so no order
+can currently reach `PENDING_PAYMENT` through the local CardCom path in
+production. The gap is real and must close before L2, but there is no order
+in a state this webhook could currently mis-capture.
+
+## Residual risk
+
+This pass covered CardCom, Cloudinary, and the Shopify orders webhook only.
+K-08's full scope (IDOR, CSRF, XSS, uploads, prompt injection, dependencies)
+remains open.
 
 ---
 

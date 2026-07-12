@@ -283,7 +283,15 @@ have been deleted; partially done items state only their remaining scope.
 - **G-04 CardCom enablement and proof** · P0 · EXTERNAL — credentials missing
   (`CARD_COM_TERMINAL`, `CARD_COM_API_NAME`, `CARD_COM_API_PASSWORD`); then
   success/decline/cancel/duplicate/timeout/refund/reconciliation per the ADR
-  0006 trust model. Gates L2, not L1 (ADR 0013).
+  0006 trust model. Gates L2, not L1 (ADR 0013). **Confirmed in code**
+  (2026-07-12 K-08 webhook review, `docs/QA_EVIDENCE.md`
+  "k-08-webhook-security-review"): `src/server/services/payment-webhooks.ts`
+  currently commits `PAID`/`CAPTURED` and fires the GL/loyalty pipeline
+  directly from `x-cardcom-signature`-gated webhook fields — ADR 0006's
+  server-to-server verification call is not implemented. Not exploitable
+  today (`OWN_COMMERCE_ENABLED` off, no CardCom credentials configured, so no
+  order can reach `PENDING_PAYMENT` via this path), but the verify-then-commit
+  flow must ship as part of this item, not assumed already done, before L2.
 - **G-05 Complete order-confirmation state** · P0 · NOW after G-02/G-04 —
   source-aware confirmation; refresh and duplicate callbacks idempotent.
 - **G-06 Checkout state matrix** · P0 · NOW+MEASURE — empty/own/supplier/mixed/
@@ -409,12 +417,15 @@ have been deleted; partially done items state only their remaining scope.
 - **K-07 Backups and recovery** · P0 · EXTERNAL+MEASURE — restore drill meets
   RPO/RTO. (ADR 0008: PITR is a launch requirement; drill is acceptance;
   blocked on owner Fact A — Postgres provider/tier.)
-- **K-08 Application security review — residual** · P0 · MEASURE — the new
-  admin TOTP MFA surface (I-342) had a scoped review (`docs/QA_EVIDENCE.md`
-  "k-08-admin-mfa-security-review"): no high-confidence auth-bypass,
-  privilege-escalation, or crypto finding. Remaining scope: the same
-  auth/OTP/IDOR/CSRF/XSS/SSRF/uploads/webhooks/prompt-injection/dependency
-  review across the rest of the application, which this pass did not cover.
+- **K-08 Application security review — residual** · P0 · MEASURE — two scoped
+  passes done: the admin TOTP MFA surface, I-342
+  (`docs/QA_EVIDENCE.md` "k-08-admin-mfa-security-review" — no high-confidence
+  auth-bypass/privilege-escalation/crypto finding), and the webhook layer
+  (`docs/QA_EVIDENCE.md` "k-08-webhook-security-review" — Cloudinary and
+  Shopify-orders clean; CardCom's ADR-0006 gap confirmed and folded into
+  G-04, not tracked separately). Remaining scope:
+  IDOR/CSRF/XSS/SSRF/uploads/prompt-injection/dependency review across the
+  rest of the application.
 - **K-09 Privacy and retention implementation** · P0 · OWNER+MEASURE —
   retention matrix, deletion jobs, legal holds; policy and implementation
   agree.
