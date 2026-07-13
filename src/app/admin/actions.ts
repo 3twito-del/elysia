@@ -14,6 +14,10 @@ import { mintAdminLoginTicket } from "~/server/auth/admin-mfa-ticket";
 import { sanitizeAdminRedirect } from "~/server/auth/admin-redirect";
 import { inactiveAdminLoginMessage } from "~/server/auth/admin-user-status";
 import {
+  isAdminAuthFixtureEmail,
+  shouldUseAdminAuthFixtures,
+} from "~/server/services/admin-auth-fixtures";
+import {
   assertRateLimit,
   createRateLimitKey,
   RateLimitExceededError,
@@ -52,11 +56,18 @@ export async function adminLoginAction(
   const auditAdminUserId = auditTarget?.id ?? null;
 
   try {
-    await assertRateLimit({
-      key: createRateLimitKey("admin-login", parsed.data.email),
-      limit: 5,
-      windowMs: 15 * 60_000,
-    });
+    if (
+      !(
+        shouldUseAdminAuthFixtures() &&
+        isAdminAuthFixtureEmail(parsed.data.email)
+      )
+    ) {
+      await assertRateLimit({
+        key: createRateLimitKey("admin-login", parsed.data.email),
+        limit: 5,
+        windowMs: 15 * 60_000,
+      });
+    }
 
     if (auditTarget?.disabledAt) {
       await recordAdminLoginAudit({

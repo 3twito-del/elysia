@@ -45,6 +45,25 @@ const adminAuthFixtureInputSchema = z.object({
   role: z.enum(["full", "limited"]).default("full"),
 });
 
+const ADMIN_AUTH_FIXTURE_EMAILS = new Set(
+  Object.values(ADMIN_AUTH_FIXTURE_ROLES).map((role) =>
+    role.email.toLowerCase(),
+  ),
+);
+
+/**
+ * A real e2e run repeatedly logs in as the same fixture admin account across
+ * many tests (K-01: each admin write proof drives a full password -> TOTP ->
+ * session flow through the real UI), which would otherwise trip the login/MFA
+ * rate limits — real, deliberately tight production controls (5 attempts /
+ * 15 min per account, docs/RUNBOOKS.md §13) — well within one test file.
+ * Callers must also gate on `shouldUseAdminAuthFixtures()`; this only checks
+ * the email.
+ */
+export function isAdminAuthFixtureEmail(email: string) {
+  return ADMIN_AUTH_FIXTURE_EMAILS.has(email.trim().toLowerCase());
+}
+
 export class AdminAuthFixturesDisabledError extends Error {
   constructor() {
     super("Admin auth fixtures are disabled.");

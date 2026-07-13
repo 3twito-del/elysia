@@ -17,6 +17,10 @@ import {
 } from "~/server/auth/admin-mfa-ticket";
 import { sanitizeAdminRedirect } from "~/server/auth/admin-redirect";
 import {
+  isAdminAuthFixtureEmail,
+  shouldUseAdminAuthFixtures,
+} from "~/server/services/admin-auth-fixtures";
+import {
   confirmAdminMfaEnrollment,
   getAdminEmailForAudit,
   verifyAdminMfaCode,
@@ -55,6 +59,12 @@ async function requirePasswordVerifiedTicket() {
 
 /** Returns a user-facing message if rate-limited (and audits it), else null. */
 async function assertAdminMfaRateLimit(adminUserId: string) {
+  const email = await getAdminEmailForAudit(adminUserId);
+
+  if (shouldUseAdminAuthFixtures() && isAdminAuthFixtureEmail(email)) {
+    return null;
+  }
+
   try {
     await assertRateLimit({
       key: createRateLimitKey("admin-mfa", adminUserId),
@@ -73,7 +83,7 @@ async function assertAdminMfaRateLimit(adminUserId: string) {
     await recordAdminSecurityEvent({
       action: "admin_totp.rate_limited",
       adminUserId,
-      email: await getAdminEmailForAudit(adminUserId),
+      email,
     });
 
     return message;

@@ -24,6 +24,13 @@ const localE2EWebServerEnv: Record<string, string> = {
   SERWIST_LOCAL_FALLBACK: "1",
   TYPESENSE_API_KEY: "",
   TYPESENSE_HOST: "",
+  // Blanked like Typesense above: `.env.local` (vercel env pull) carries real
+  // shared Upstash credentials, which would otherwise make local e2e runs
+  // consume production-shared rate-limit budget instead of the in-memory
+  // limiter `resetRateLimitStateForTests()` (tests/e2e/helpers/admin-auth.ts)
+  // actually clears between tests.
+  UPSTASH_REDIS_REST_TOKEN: "",
+  UPSTASH_REDIS_REST_URL: "",
   VERCEL_ENV: "preview",
 };
 

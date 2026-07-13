@@ -2246,11 +2246,11 @@ a separate benchmark.
 
 # K-01 Authenticated Admin Workflow Proof
 
-Date: 2026-07-12
+Date: 2026-07-12, extended 2026-07-13.
 
 Scope: role-scoped Playwright e2e coverage over the admin control plane,
-proving the full ADR 0005 login flow and one representative permission-gated
-read/write action end to end, not just at the unit-test level.
+proving the full ADR 0005 login flow and the ticket's named critical
+read/write admin actions end to end, not just at the unit-test level.
 
 ## What's covered
 
@@ -2263,37 +2263,83 @@ read/write action end to end, not just at the unit-test level.
 - `tests/e2e/helpers/admin-auth.ts` — drives the real UI through
   password → TOTP/recovery-code → session, computing a valid RFC 6238 code
   independently from the fixture's plaintext secret.
+- `tests/e2e/helpers/db.ts`'s `createDisposableAdminProduct`/
+  `deleteDisposableAdminProduct` — a throwaway product+variant (optionally
+  with a real `InventoryItem`), unique per test run, so the inventory and
+  catalog-status write proofs never touch seeded products other specs
+  depend on. Cleanup uses the ADR 0004 escape hatch
+  (`SET LOCAL elysia.allow_protected_mutation = 'on'`) to cascade-delete
+  through the append-only `InventoryLedger`.
 - `tests/e2e/critical-flows.spec.ts` ("access control surfaces"):
   - Full-permission admin reaches `/admin/orders` after signing in.
   - Password alone lands on `/admin/login/mfa`, not the shell.
   - Recovery-code sign-in succeeds; reusing the same code is rejected.
   - A limited-permission (`CATALOG_READ`-only) admin is denied `/admin/orders`.
   - Regenerating recovery codes from `/admin/security` is asserted against a
-    real `AuditLog` row (`admin_recovery_code.generated`) via
-    `tests/e2e/helpers/db.ts`, not just the UI.
+    real `AuditLog` row (`admin_recovery_code.generated`).
+  - **Adjusting inventory** (`/admin/inventory`) is asserted against a real
+    `AuditLog` row (`inventory_updated`) and the `InventoryLedger` delta.
+  - **Archiving a product** (`/admin/catalog`, ACTIVE → ARCHIVED) is asserted
+    against a real `AuditLog` row (`product_status_updated`) and the
+    product's persisted status.
+  - **Refunding an order** (`/admin/orders/[id]`, using a dedicated local
+    order seeded via `customer-auth-fixtures.ts`) is asserted against both a
+    real `AuditLog` row (`order_refunded`) and the `OutboxEvent`
+    (`email.requested`, template `order_refunded`) it enqueues.
 
-## Bug found and fixed during this work
+All three admin writes named in the ticket's original remaining scope
+(order refund, inventory adjustment, catalog status changes) now have
+real e2e + database-assertion coverage. K-01 is closed.
 
-`src/proxy.ts` decided which session-cookie name to look up (`__Secure-`
-prefixed or not) from `NODE_ENV`, while NextAuth decides whether to set that
-prefix from the request's actual transport. These agree on every real Vercel
-deployment (always HTTPS, always `NODE_ENV=production`) but diverged under a
-local production build served over plain HTTP (`next start` for e2e) —
-login would "succeed" (redirect) but the very next navigation lost admin
-recognition. Fixed by deriving the check from `req.nextUrl.protocol` /
-`x-forwarded-proto` instead of `NODE_ENV`.
+## Bugs found and fixed during this work
+
+- `src/proxy.ts` decided which session-cookie name to look up (`__Secure-`
+  prefixed or not) from `NODE_ENV`, while NextAuth decides whether to set
+  that prefix from the request's actual transport. These agree on every
+  real Vercel deployment (always HTTPS, always `NODE_ENV=production`) but
+  diverged under a local production build served over plain HTTP
+  (`next start` for e2e) — login would "succeed" (redirect) but the very
+  next navigation lost admin recognition. Fixed by deriving the check from
+  `req.nextUrl.protocol` / `x-forwarded-proto` instead of `NODE_ENV`.
+  (2026-07-12)
+- **Admin-login/MFA rate limits silently broke any e2e file that logged in
+  as the same fixture admin more than 5 times** (`src/app/admin/actions.ts`,
+  `src/app/admin/login/mfa/actions.ts` — both a real 5-attempts/15-min
+  control per ADR 0005/`docs/RUNBOOKS.md` §13). The pre-existing suite was
+  already exactly at that boundary before this pass; adding the three new
+  write-proof tests (three more full password→MFA logins) tipped it over,
+  surfacing a latent test-suite fragility rather than something newly
+  introduced. **Fixed** by exempting the two known e2e fixture emails
+  (`isAdminAuthFixtureEmail` in `admin-auth-fixtures.ts`) from both rate
+  limits, but only when `shouldUseAdminAuthFixtures()` is also true — never
+  in production, and never for any other account. Verified the suite is
+  stable across repeated consecutive runs, not just a single pass.
+- **Local e2e runs were unintentionally consuming the real, shared
+  production Upstash Redis rate-limit budget.** `.env.local` (from
+  `vercel env pull`) carries real `UPSTASH_REDIS_REST_URL`/`_TOKEN`
+  credentials; `playwright.config.ts`'s local web-server env override
+  already blanks `TYPESENSE_*` for the same reason but had never been
+  extended to Upstash. A locally-run rate-limit reset (`resetRateLimitStateForTests()`)
+  only clears the in-process fallback Map, not Redis, so this was
+  invisible until the fixture-email exemption above made the difference
+  observable. Fixed by blanking `UPSTASH_REDIS_REST_TOKEN`/`_URL` in
+  `localE2EWebServerEnv`, matching the existing Typesense pattern.
+- **Pre-existing test/behavior mismatch, now resolved**: "routes
+  unauthenticated admin users to a sanitized login target" expected a
+  `next=` query param on the bare `/admin` → login redirect, but
+  `src/proxy.ts` deliberately omits it for that exact path (it's already
+  the login form's own default via `sanitizeAdminRedirect(undefined) ===
+  "/admin"`, confirmed by reading that function — redundant, not a bug).
+  This was flagged as a known residual in the 2026-07-12 evidence and is
+  now fixed by correcting the test's assertion to match the documented
+  intentional behavior.
 
 ## Residual risk
 
-Only one write action (recovery-code regeneration) has an audit-log
-assertion; other critical admin writes (order refund, inventory adjustment,
-catalog status changes) are covered by unit tests but not yet by this
-role-scoped e2e + audit-assertion pattern. One pre-existing, unrelated e2e
-test ("routes unauthenticated admin users to a sanitized login target")
-still fails: it expects a `next=` query param on the bare `/admin` → login
-redirect, but `src/proxy.ts` deliberately omits it for that exact path
-(default landing page) — a pre-existing test/behavior mismatch, not
-something this work introduced or in scope to fix here.
+None outstanding for K-01's originally-scoped write actions. Further admin
+writes not named in the original ticket (e.g. appointment status, shipment
+upsert, coupon toggle) still rely on unit-test coverage only — a candidate
+for a future ticket, not implied by K-01's closed scope.
 
 ---
 

@@ -390,15 +390,6 @@ have been deleted; partially done items state only their remaining scope.
 
 ### K — Operations, admin, security, reliability
 
-- **K-01 Authenticated admin workflow proof — residual** · P1 · NOW — a
-  fixture-based e2e sign-in helper (`tests/e2e/helpers/admin-auth.ts`,
-  `/api/e2e/admin-auth`) now drives the real password → TOTP/recovery-code →
-  session flow, plus role-scoped permission denial and a write action
-  (recovery-code regeneration) with an `AuditLog` assertion
-  (`docs/QA_EVIDENCE.md` "k-01-admin-e2e-workflow-proof"). Remaining scope:
-  extend the same pattern to other critical read/write admin actions
-  (order refund, inventory adjustment, catalog status changes) beyond the
-  one representative write proven so far.
 - **K-02 Role and permission review** · P0 · MEASURE — least privilege; no
   unlogged sensitive mutation. (ADR 0005 defines the admin control plane.)
 - **K-04 SLOs and alert ownership — residual** · P1 · OWNER — the alert model,
@@ -503,7 +494,7 @@ placeholder facts, duplicate media, or unproven payment.
 
 | Wave  | Theme                              | Open items                                                                                                               |
 | ----- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| **0** | Truth & proof foundation           | I-341, I-342, C-01/C-04, D-04, G-01…G-04, H-01/H-07, I-06/I-07, J-08/J-09, K-01/K-02/K-05/K-07…K-09, L-01/L-04/L-05/L-07 |
+| **0** | Truth & proof foundation           | I-341, I-342, C-01/C-04, D-04, G-01…G-04, H-01/H-07, I-06/I-07, J-08/J-09, K-02/K-05/K-07/K-09, L-01/L-04/L-05/L-07 |
 | **1** | House identity, collections, media | A-01…A-05, B-01…B-07, C-05/C-07/C-08                                                                                     |
 | **2** | Discovery & PDP authority          | E-01…E-10, F-01…F-11, D-05                                                                                               |
 | **3** | Real commerce & clienteling        | G-05…G-12, H-02…H-10, I-02…I-08, A-06                                                                                    |

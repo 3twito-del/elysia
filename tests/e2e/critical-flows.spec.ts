@@ -4,7 +4,11 @@ import {
   createAdminAuthFixture,
   signInAdminWithFixture,
 } from "./helpers/admin-auth";
-import { getTestDb } from "./helpers/db";
+import {
+  createDisposableAdminProduct,
+  deleteDisposableAdminProduct,
+  getTestDb,
+} from "./helpers/db";
 
 const consentStorageKey = "elysia_cookie_consent";
 const accessibilityStorageKey = "elysia.accessibility-settings";
@@ -1391,7 +1395,11 @@ test.describe("access control surfaces", () => {
   }) => {
     await page.goto("/admin");
 
-    await expect(page).toHaveURL(/\/admin\/login\?next=/);
+    // proxy.ts intentionally omits `?next=` for the bare /admin path — it's
+    // already the login form's own default redirect target
+    // (sanitizeAdminRedirect(undefined) === "/admin"), so appending it would
+    // be redundant.
+    await expect(page).toHaveURL(/\/admin\/login$/);
     await expect(page.locator('input[name="next"]')).toHaveValue("/admin");
     await expect(page.locator("#email")).toBeVisible();
 
@@ -1523,6 +1531,167 @@ test.describe("access control surfaces", () => {
     expect(
       auditRow,
       "expected an admin_recovery_code.generated AuditLog row for this admin",
+    ).not.toBeNull();
+  });
+
+  test("adjusting inventory is a real write, recorded in the audit log", async ({
+    page,
+  }) => {
+    const fixture = await createDisposableAdminProduct({
+      status: "DRAFT",
+      withInventory: true,
+    });
+
+    try {
+      await signInAdminWithFixture(page);
+      await page.goto(`/admin/inventory?query=${fixture.variantSku}`);
+
+      const row = page.getByRole("row").filter({ hasText: fixture.variantSku });
+      const quantityInput = row.getByRole("spinbutton").first();
+
+      await expect(quantityInput).toHaveValue("10");
+      await quantityInput.fill("15");
+
+      const before = new Date();
+
+      await row.getByRole("button", { name: "שמירת מלאי" }).click();
+      await expect(page.getByText("המלאי נשמר.")).toBeVisible();
+
+      const auditRow = await getTestDb().auditLog.findFirst({
+        orderBy: { createdAt: "desc" },
+        where: {
+          action: "inventory_updated",
+          entity: "InventoryItem",
+          entityId: fixture.variantId,
+          createdAt: { gte: before },
+        },
+      });
+
+      expect(
+        auditRow,
+        "expected an inventory_updated AuditLog row for this variant",
+      ).not.toBeNull();
+
+      const ledgerRow = await getTestDb().inventoryLedger.findFirst({
+        orderBy: { createdAt: "desc" },
+        where: { variantId: fixture.variantId, createdAt: { gte: before } },
+      });
+
+      expect(ledgerRow?.delta).toBe(5);
+    } finally {
+      await deleteDisposableAdminProduct(fixture.productId);
+    }
+  });
+
+  test("archiving a product is a real write, recorded in the audit log", async ({
+    page,
+  }) => {
+    const fixture = await createDisposableAdminProduct({ status: "ACTIVE" });
+
+    try {
+      await signInAdminWithFixture(page);
+      await page.goto(`/admin/catalog?query=${fixture.productSku}`);
+
+      const row = page.getByRole("row").filter({ hasText: fixture.productSku });
+
+      await expect(row).toBeVisible();
+
+      const before = new Date();
+
+      await row.getByRole("button", { name: "ארכוב" }).click();
+      await expect(page.getByText("סטטוס המוצר עודכן.")).toBeVisible();
+
+      const auditRow = await getTestDb().auditLog.findFirst({
+        orderBy: { createdAt: "desc" },
+        where: {
+          action: "product_status_updated",
+          entity: "Product",
+          entityId: fixture.productId,
+          createdAt: { gte: before },
+        },
+      });
+
+      expect(
+        auditRow,
+        "expected a product_status_updated AuditLog row for this product",
+      ).not.toBeNull();
+
+      const updatedProduct = await getTestDb().product.findUniqueOrThrow({
+        where: { id: fixture.productId },
+      });
+
+      expect(updatedProduct.status).toBe("ARCHIVED");
+    } finally {
+      await deleteDisposableAdminProduct(fixture.productId);
+    }
+  });
+
+  test("refunding an order is a real write, recorded in the audit log and outbox", async ({
+    page,
+  }, testInfo) => {
+    const namespace = `refund-worker-${testInfo.parallelIndex}`;
+    const setupResponse = await page.request.post("/api/e2e/customer-auth", {
+      data: {
+        email: `e2e.customer+${namespace}@elysia.local`,
+        sessionKey: `e2e_customer_auth_fixture_${namespace}`,
+      },
+    });
+
+    expect(setupResponse.status()).toBe(200);
+
+    const setup = (await setupResponse.json()) as {
+      fixture: { localOrderId: string };
+    };
+    const orderId = setup.fixture.localOrderId;
+
+    await signInAdminWithFixture(page);
+    await page.goto(`/admin/orders/${orderId}`);
+
+    await page
+      .getByPlaceholder("סיבת זיכוי")
+      .fill("החזרה עקב פגם - בדיקת E2E");
+
+    const before = new Date();
+
+    await page.getByRole("button", { name: /ביצוע זיכוי/ }).click();
+    await page.getByRole("button", { name: "אישור זיכוי" }).click();
+
+    await expect(
+      page.getByText("הזיכוי נשמר וההזמנה עודכנה."),
+    ).toBeVisible();
+
+    const auditRow = await getTestDb().auditLog.findFirst({
+      orderBy: { createdAt: "desc" },
+      where: {
+        action: "order_refunded",
+        entity: "Order",
+        entityId: orderId,
+        createdAt: { gte: before },
+      },
+    });
+
+    expect(
+      auditRow,
+      "expected an order_refunded AuditLog row for this order",
+    ).not.toBeNull();
+
+    // createOutboxEvent upserts by idempotencyKey (`email.requested:refund:<orderId>`)
+    // — a re-run against the same worker-pinned fixture order updates the
+    // existing row rather than inserting a new one, so this checks
+    // `updatedAt` (always bumped) rather than `createdAt` (only set once).
+    const outboxRow = await getTestDb().outboxEvent.findFirst({
+      orderBy: { updatedAt: "desc" },
+      where: {
+        type: "email.requested",
+        aggregateType: "Order",
+        aggregateId: orderId,
+        updatedAt: { gte: before },
+      },
+    });
+
+    expect(
+      outboxRow,
+      "expected an email.requested OutboxEvent for the refund",
     ).not.toBeNull();
   });
 
