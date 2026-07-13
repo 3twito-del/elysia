@@ -18,7 +18,7 @@ import {
 } from "~/server/services/webhook-delivery";
 
 export async function issueApiKeyAction(formData: FormData) {
-  await requireAdmin("SYSTEM_CONFIG");
+  const admin = await requireAdmin("SYSTEM_CONFIG");
 
   const name = stringValue(formData.get("name")).trim();
   if (!name) throw new Error("שם המפתח הוא שדה חובה.");
@@ -35,6 +35,7 @@ export async function issueApiKeyAction(formData: FormData) {
     scopes,
     rateLimitPerMin: rateRaw ? Number(rateRaw) || 120 : undefined,
     expiresAt: expiresRaw ? new Date(expiresRaw) : undefined,
+    adminUserId: admin.id,
   });
 
   // The plaintext is shown exactly once via a redirect flash.
@@ -42,18 +43,18 @@ export async function issueApiKeyAction(formData: FormData) {
 }
 
 export async function revokeApiKeyAction(formData: FormData) {
-  await requireAdmin("SYSTEM_CONFIG");
+  const admin = await requireAdmin("SYSTEM_CONFIG");
 
   const apiKeyId = stringValue(formData.get("apiKeyId"));
   if (!apiKeyId) throw new Error("חסר מזהה מפתח.");
 
-  await revokeApiKey({ apiKeyId });
+  await revokeApiKey({ apiKeyId, adminUserId: admin.id });
 
   revalidatePath("/admin/developer");
 }
 
 export async function createEndpointAction(formData: FormData) {
-  await requireAdmin("SYSTEM_CONFIG");
+  const admin = await requireAdmin("SYSTEM_CONFIG");
 
   const name = stringValue(formData.get("name")).trim();
   const url = stringValue(formData.get("url")).trim();
@@ -67,13 +68,13 @@ export async function createEndpointAction(formData: FormData) {
         .filter(Boolean)
     : [];
 
-  const result = await createEndpoint({ name, url, events });
+  const result = await createEndpoint({ name, url, events, adminUserId: admin.id });
 
   redirect(`/admin/developer?newSecret=${encodeURIComponent(result.secret)}`);
 }
 
 export async function toggleEndpointAction(formData: FormData) {
-  await requireAdmin("SYSTEM_CONFIG");
+  const admin = await requireAdmin("SYSTEM_CONFIG");
 
   const endpointId = stringValue(formData.get("endpointId"));
   if (!endpointId) throw new Error("חסר מזהה יעד.");
@@ -81,29 +82,30 @@ export async function toggleEndpointAction(formData: FormData) {
   await setEndpointActive({
     endpointId,
     isActive: formData.get("isActive") === "1",
+    adminUserId: admin.id,
   });
 
   revalidatePath("/admin/developer");
 }
 
 export async function deleteEndpointAction(formData: FormData) {
-  await requireAdmin("SYSTEM_CONFIG");
+  const admin = await requireAdmin("SYSTEM_CONFIG");
 
   const endpointId = stringValue(formData.get("endpointId"));
   if (!endpointId) throw new Error("חסר מזהה יעד.");
 
-  await deleteEndpoint({ endpointId });
+  await deleteEndpoint({ endpointId, adminUserId: admin.id });
 
   revalidatePath("/admin/developer");
 }
 
 export async function deliverWebhookAction(formData: FormData) {
-  await requireAdmin("SYSTEM_CONFIG");
+  const admin = await requireAdmin("SYSTEM_CONFIG");
 
   const deliveryId = stringValue(formData.get("deliveryId"));
   if (!deliveryId) throw new Error("חסר מזהה משלוח.");
 
-  await deliverWebhook({ deliveryId });
+  await deliverWebhook({ deliveryId, adminUserId: admin.id });
 
   revalidatePath("/admin/developer");
 }

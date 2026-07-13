@@ -118,7 +118,7 @@ export async function sendQuoteAction(formData: FormData) {
 }
 
 export async function decideQuoteAction(formData: FormData) {
-  await requireAdmin("CRM_WRITE");
+  const admin = await requireAdmin("CRM_WRITE");
 
   await decideQuote({
     quoteId: stringValue(formData.get("quoteId")),
@@ -126,16 +126,18 @@ export async function decideQuoteAction(formData: FormData) {
       stringValue(formData.get("decision")) === "ACCEPTED"
         ? "ACCEPTED"
         : "DECLINED",
+    adminUserId: admin.id,
   });
 
   revalidatePath("/admin/crm");
 }
 
 export async function convertQuoteToInvoiceAction(formData: FormData) {
-  await requireAdmin("CRM_WRITE");
+  const admin = await requireAdmin("CRM_WRITE");
 
   await convertQuoteToInvoice({
     quoteId: stringValue(formData.get("quoteId")),
+    adminUserId: admin.id,
   });
 
   revalidatePath("/admin/crm");
@@ -217,7 +219,7 @@ export async function runJourneyTickAction() {
 }
 
 export async function recordConsentAction(formData: FormData) {
-  await requireAdmin("CRM_WRITE");
+  const admin = await requireAdmin("CRM_WRITE");
 
   const email = stringValue(formData.get("email")).trim();
   if (!email) throw new Error('יש להזין דוא"ל לקוח.');
@@ -232,13 +234,14 @@ export async function recordConsentAction(formData: FormData) {
     channel: channel as ConsentChannel,
     status: stringValue(formData.get("status")) === "REVOKED" ? "REVOKED" : "GRANTED",
     source: "admin",
+    adminUserId: admin.id,
   });
 
   revalidatePath("/admin/crm");
 }
 
 export async function applyLoyaltyAction(formData: FormData) {
-  await requireAdmin("CRM_WRITE");
+  const admin = await requireAdmin("CRM_WRITE");
 
   const email = stringValue(formData.get("email")).trim();
   if (!email) throw new Error('יש להזין דוא"ל לקוח.');
@@ -251,13 +254,14 @@ export async function applyLoyaltyAction(formData: FormData) {
     points,
     type: stringValue(formData.get("type")) === "REDEEM" ? "REDEEM" : "EARN",
     reason: optionalString(formData.get("reason")),
+    adminUserId: admin.id,
   });
 
   revalidatePath("/admin/crm");
 }
 
 export async function createPriceRuleAction(formData: FormData) {
-  await requireAdmin("CRM_WRITE");
+  const admin = await requireAdmin("CRM_WRITE");
 
   const code = stringValue(formData.get("code")).trim();
   const name = stringValue(formData.get("name")).trim();
@@ -271,13 +275,14 @@ export async function createPriceRuleAction(formData: FormData) {
     type: stringValue(formData.get("type")) === "FIXED" ? "FIXED" : "PERCENT",
     value,
     minQuantity: Number(formData.get("minQuantity") ?? 1) || 1,
+    adminUserId: admin.id,
   });
 
   revalidatePath("/admin/crm");
 }
 
 export async function togglePriceRuleAction(formData: FormData) {
-  await requireAdmin("CRM_WRITE");
+  const admin = await requireAdmin("CRM_WRITE");
 
   const ruleId = stringValue(formData.get("ruleId"));
   if (!ruleId) throw new Error("חסר מזהה חוק.");
@@ -285,6 +290,7 @@ export async function togglePriceRuleAction(formData: FormData) {
   await setPriceRuleActive({
     ruleId,
     isActive: formData.get("isActive") === "1",
+    adminUserId: admin.id,
   });
 
   revalidatePath("/admin/crm");

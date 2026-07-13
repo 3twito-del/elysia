@@ -4,6 +4,7 @@ import type { Prisma } from "@prisma/client";
 
 import { db } from "~/server/db";
 import { toDisplayString } from "~/lib/stringify";
+import { writeAdminAudit } from "~/server/services/admin-commerce-workflow";
 
 /**
  * API key management for the internal API platform (IPL-002). Keys are stored as
@@ -84,6 +85,7 @@ export async function issueApiKey(input: {
   scopes: string[];
   rateLimitPerMin?: number;
   expiresAt?: Date;
+  adminUserId: string;
 }) {
   if (!input.name.trim()) throw new Error("שם המפתח הוא שדה חובה.");
 
@@ -91,15 +93,27 @@ export async function issueApiKey(input: {
   if (scopeErrors.length > 0) throw new Error(scopeErrors.join(" "));
 
   const material = generateKeyMaterial();
-  const key = await db.apiKey.create({
-    data: {
-      name: input.name.trim(),
-      prefix: material.prefix,
-      hashedKey: material.hashedKey,
-      scopes: asJson(input.scopes),
-      rateLimitPerMin: Math.max(1, Math.trunc(input.rateLimitPerMin ?? 120)),
-      expiresAt: input.expiresAt,
-    },
+  const key = await db.$transaction(async (tx) => {
+    const created = await tx.apiKey.create({
+      data: {
+        name: input.name.trim(),
+        prefix: material.prefix,
+        hashedKey: material.hashedKey,
+        scopes: asJson(input.scopes),
+        rateLimitPerMin: Math.max(1, Math.trunc(input.rateLimitPerMin ?? 120)),
+        expiresAt: input.expiresAt,
+      },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "api_key_issued",
+      entity: "ApiKey",
+      entityId: created.id,
+      metadata: { name: created.name, scopes: input.scopes },
+    });
+
+    return created;
   });
 
   return {
@@ -110,10 +124,25 @@ export async function issueApiKey(input: {
   };
 }
 
-export async function revokeApiKey(input: { apiKeyId: string }) {
-  return db.apiKey.update({
-    where: { id: input.apiKeyId },
-    data: { isActive: false },
+export async function revokeApiKey(input: {
+  apiKeyId: string;
+  adminUserId: string;
+}) {
+  return db.$transaction(async (tx) => {
+    const updated = await tx.apiKey.update({
+      where: { id: input.apiKeyId },
+      data: { isActive: false },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "api_key_revoked",
+      entity: "ApiKey",
+      entityId: updated.id,
+      metadata: { name: updated.name },
+    });
+
+    return updated;
   });
 }
 

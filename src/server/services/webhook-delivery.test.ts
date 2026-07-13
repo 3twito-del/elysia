@@ -1,4 +1,6 @@
 import { createHmac } from "node:crypto";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
@@ -37,5 +39,30 @@ describe("nextBackoffSeconds", () => {
 describe("maskSecret", () => {
   it("reveals only the prefix", () => {
     expect(maskSecret("whsec_abcdef123456")).toBe("whsec_••••••");
+  });
+});
+
+describe("K-14 audit coverage", () => {
+  it("every admin-initiated endpoint/delivery mutation writes an AuditLog row", () => {
+    const source = readFileSync(
+      path.join(process.cwd(), "src/server/services/webhook-delivery.ts"),
+      "utf8",
+    );
+
+    for (const operation of [
+      "createEndpoint",
+      "setEndpointActive",
+      "deleteEndpoint",
+      "deliverWebhook",
+    ]) {
+      const start = source.indexOf(`export async function ${operation}`);
+      const next = source.indexOf("\nexport async function ", start + 1);
+
+      expect(start).toBeGreaterThanOrEqual(0);
+
+      const body = source.slice(start, next === -1 ? source.length : next);
+
+      expect(body).toContain("writeAdminAudit");
+    }
   });
 });

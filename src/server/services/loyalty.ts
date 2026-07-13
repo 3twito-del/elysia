@@ -1,4 +1,5 @@
 import { db } from "~/server/db";
+import { writeAdminAudit } from "~/server/services/admin-commerce-workflow";
 
 /**
  * Loyalty program: points and tiers (CRM-LOY, Phase 2).
@@ -38,6 +39,8 @@ type ApplyInput = {
   type: "EARN" | "REDEEM" | "ADJUST";
   reason?: string;
   orderId?: string;
+  /** Present only for admin-initiated movements (not order/POS side effects). */
+  adminUserId?: string;
 };
 
 /** Applies a signed points movement atomically, updating balance/lifetime/tier. */
@@ -67,7 +70,7 @@ async function applyPoints(input: ApplyInput) {
       },
     });
 
-    return tx.loyaltyAccount.update({
+    const updated = await tx.loyaltyAccount.update({
       where: { id: account.id },
       data: {
         pointsBalance: newBalance,
@@ -75,6 +78,18 @@ async function applyPoints(input: ApplyInput) {
         tier: resolveTier(newLifetime),
       },
     });
+
+    if (input.adminUserId) {
+      await writeAdminAudit(tx, {
+        adminUserId: input.adminUserId,
+        action: "loyalty_points_applied",
+        entity: "LoyaltyAccount",
+        entityId: account.id,
+        metadata: { type: input.type, points: delta, reason: input.reason },
+      });
+    }
+
+    return updated;
   });
 }
 
@@ -83,6 +98,7 @@ export async function earnPoints(input: {
   points: number;
   reason?: string;
   orderId?: string;
+  adminUserId?: string;
 }) {
   if (input.points <= 0) throw new Error("מספר הנקודות לצבירה חייב להיות חיובי.");
   return applyPoints({ ...input, type: "EARN" });
@@ -92,6 +108,7 @@ export async function redeemPoints(input: {
   customerId: string;
   points: number;
   reason?: string;
+  adminUserId?: string;
 }) {
   if (input.points <= 0) throw new Error("מספר הנקודות לפדיון חייב להיות חיובי.");
   return applyPoints({ ...input, points: -input.points, type: "REDEEM" });
@@ -101,6 +118,7 @@ export async function adjustPoints(input: {
   customerId: string;
   points: number;
   reason?: string;
+  adminUserId?: string;
 }) {
   return applyPoints({ ...input, type: "ADJUST" });
 }
@@ -111,6 +129,7 @@ export async function applyLoyaltyByEmail(input: {
   points: number;
   type: "EARN" | "REDEEM";
   reason?: string;
+  adminUserId: string;
 }) {
   const customer = await db.customer.findUnique({
     where: { email: input.email },
@@ -121,8 +140,18 @@ export async function applyLoyaltyByEmail(input: {
   }
 
   return input.type === "EARN"
-    ? earnPoints({ customerId: customer.id, points: input.points, reason: input.reason })
-    : redeemPoints({ customerId: customer.id, points: input.points, reason: input.reason });
+    ? earnPoints({
+        customerId: customer.id,
+        points: input.points,
+        reason: input.reason,
+        adminUserId: input.adminUserId,
+      })
+    : redeemPoints({
+        customerId: customer.id,
+        points: input.points,
+        reason: input.reason,
+        adminUserId: input.adminUserId,
+      });
 }
 
 /** Awards purchase points for an order (idempotent per order). */

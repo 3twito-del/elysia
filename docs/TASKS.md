@@ -425,21 +425,22 @@ have been deleted; partially done items state only their remaining scope.
   highest admin tier can reach it), but a real SSRF primitive on an
   outbound-webhook feature. Needs an explicit allowlist-vs-blocklist design
   decision plus delivery-time DNS-rebind re-validation before implementing.
-- **K-14 Audit-trail completion for developer/finance/CRM mutations** · P1 ·
-  NOW — split off from the now-closed K-02 review
-  (`docs/QA_EVIDENCE.md` "k-02-role-permission-review"). Several live,
-  correctly permission-gated mutations write no `AuditLog` row and pass no
-  actor id, contra ADR 0004's evidentiary-trail requirement: API key
-  issuance/revocation (`src/server/services/api-keys.ts` — highest
-  priority, a credential mutation with zero trail), FX-rate/budget/
+- **K-14 Audit-trail completion for developer/finance/CRM mutations — residual**
+  · P1 · NOW — split off from the now-closed K-02 review
+  (`docs/QA_EVIDENCE.md` "k-02-role-permission-review" and
+  "k-14-audit-trail-completion"). Done: API key issuance/revocation
+  (`src/server/services/api-keys.ts`), webhook endpoint create/toggle/
+  delete/manual-redeliver (`src/server/services/webhook-delivery.ts`), and
+  the five money/legal-material CRM mutations — loyalty point grants,
+  price-rule create/toggle, consent recording, and quote decide/
+  convert-to-invoice (`src/server/services/{loyalty,pricing-rules,consent,
+  crm-quotes}.ts`) — each now threads `adminUserId` through and writes an
+  in-transaction `writeAdminAudit` row. Remaining scope: FX-rate/budget/
   chart-of-accounts changes (`src/app/admin/finance/actions.ts` and its
-  leaf services), and most of `src/app/admin/crm/actions.ts`'s 19 actions
-  (loyalty grants, price rules, quote→invoice conversion, consent records —
-  each calls `requireAdmin("CRM_WRITE")` but discards the returned admin
-  rather than threading it through for `writeAdminAudit`). Needs
-  `adminUserId` threaded into each service function and an in-transaction
-  `writeAdminAudit` call added, matching the existing `admin-commerce.ts`
-  pattern — real but multi-file work, not a one-line fix.
+  leaf services), and the other ~13 lower-materiality
+  `src/app/admin/crm/actions.ts` actions (leads, opportunities, quote
+  create/send, marketing journeys, segment recompute) — same pattern,
+  lower priority since they don't move money or create legal records.
 - **K-15 `ERP_WRITE` permission granularity** · P2 · NOW — split off from
   the now-closed K-02 review. A single `ERP_WRITE` `AdminPermission` gates
   writes across 12 unrelated domains (`src/app/admin/{finance,pos,tax,

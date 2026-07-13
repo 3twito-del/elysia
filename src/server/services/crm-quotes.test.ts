@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -63,5 +66,25 @@ describe("isQuoteExpired", () => {
     expect(isQuoteExpired({ status: "SENT", validUntil: null }, asOf)).toBe(
       false,
     );
+  });
+});
+
+describe("K-14 audit coverage", () => {
+  it("decideQuote and convertQuoteToInvoice write an AuditLog row", () => {
+    const source = readFileSync(
+      path.join(process.cwd(), "src/server/services/crm-quotes.ts"),
+      "utf8",
+    );
+
+    for (const operation of ["decideQuote", "convertQuoteToInvoice"]) {
+      const start = source.indexOf(`export async function ${operation}`);
+      const next = source.indexOf("\nexport async function ", start + 1);
+
+      expect(start).toBeGreaterThanOrEqual(0);
+
+      const body = source.slice(start, next === -1 ? source.length : next);
+
+      expect(body).toContain("writeAdminAudit");
+    }
   });
 });

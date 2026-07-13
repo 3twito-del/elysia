@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -55,5 +58,26 @@ describe("isKeyExpired", () => {
   it("compares against now", () => {
     expect(isKeyExpired(new Date("2026-06-26T00:00:00Z"), now)).toBe(true);
     expect(isKeyExpired(new Date("2026-06-28T00:00:00Z"), now)).toBe(false);
+  });
+});
+
+describe("K-14 audit coverage", () => {
+  it("issues and revokes keys inside a transaction that writes an AuditLog row", () => {
+    const source = readFileSync(
+      path.join(process.cwd(), "src/server/services/api-keys.ts"),
+      "utf8",
+    );
+
+    for (const operation of ["issueApiKey", "revokeApiKey"]) {
+      const start = source.indexOf(`export async function ${operation}`);
+      const next = source.indexOf("\nexport async function ", start + 1);
+
+      expect(start).toBeGreaterThanOrEqual(0);
+
+      const body = source.slice(start, next === -1 ? source.length : next);
+
+      expect(body).toContain("db.$transaction");
+      expect(body).toContain("writeAdminAudit");
+    }
   });
 });

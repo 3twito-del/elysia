@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 
 import { db } from "~/server/db";
 import { toDisplayString } from "~/lib/stringify";
+import { writeAdminAudit } from "~/server/services/admin-commerce-workflow";
 
 /**
  * Outbound webhook platform (IPL-001): register endpoints subscribed to events,
@@ -55,6 +56,7 @@ export async function createEndpoint(input: {
   name: string;
   url: string;
   events: string[];
+  adminUserId: string;
 }) {
   if (!input.name.trim()) throw new Error("שם היעד הוא שדה חובה.");
   if (!isValidUrl(input.url)) throw new Error("כתובת URL לא תקינה.");
@@ -62,8 +64,25 @@ export async function createEndpoint(input: {
   if (events.length === 0) throw new Error("יש לבחור לפחות אירוע אחד.");
 
   const secret = `whsec_${randomBytes(24).toString("hex")}`;
-  const endpoint = await db.webhookEndpoint.create({
-    data: { name: input.name.trim(), url: input.url.trim(), secret, events: asJson(events) },
+  const endpoint = await db.$transaction(async (tx) => {
+    const created = await tx.webhookEndpoint.create({
+      data: {
+        name: input.name.trim(),
+        url: input.url.trim(),
+        secret,
+        events: asJson(events),
+      },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "webhook_endpoint_created",
+      entity: "WebhookEndpoint",
+      entityId: created.id,
+      metadata: { name: created.name, url: created.url, events },
+    });
+
+    return created;
   });
 
   return { id: endpoint.id, name: endpoint.name, secret };
@@ -72,15 +91,45 @@ export async function createEndpoint(input: {
 export async function setEndpointActive(input: {
   endpointId: string;
   isActive: boolean;
+  adminUserId: string;
 }) {
-  return db.webhookEndpoint.update({
-    where: { id: input.endpointId },
-    data: { isActive: input.isActive },
+  return db.$transaction(async (tx) => {
+    const updated = await tx.webhookEndpoint.update({
+      where: { id: input.endpointId },
+      data: { isActive: input.isActive },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "webhook_endpoint_status_updated",
+      entity: "WebhookEndpoint",
+      entityId: updated.id,
+      metadata: { isActive: updated.isActive },
+    });
+
+    return updated;
   });
 }
 
-export async function deleteEndpoint(input: { endpointId: string }) {
-  return db.webhookEndpoint.delete({ where: { id: input.endpointId } });
+export async function deleteEndpoint(input: {
+  endpointId: string;
+  adminUserId: string;
+}) {
+  return db.$transaction(async (tx) => {
+    const deleted = await tx.webhookEndpoint.delete({
+      where: { id: input.endpointId },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "webhook_endpoint_deleted",
+      entity: "WebhookEndpoint",
+      entityId: deleted.id,
+      metadata: { name: deleted.name, url: deleted.url },
+    });
+
+    return deleted;
+  });
 }
 
 /**
@@ -129,7 +178,10 @@ export async function dispatchWebhookEvent(input: {
 }
 
 /** Sends (or retries) a single delivery over HTTP with a signed body. */
-export async function deliverWebhook(input: { deliveryId: string }) {
+export async function deliverWebhook(input: {
+  deliveryId: string;
+  adminUserId: string;
+}) {
   const delivery = await db.webhookDelivery.findUnique({
     where: { id: input.deliveryId },
     include: { endpoint: true },
@@ -162,7 +214,7 @@ export async function deliverWebhook(input: { deliveryId: string }) {
     error = caught instanceof Error ? caught.message : "שגיאת רשת.";
   }
 
-  return db.webhookDelivery.update({
+  const updated = await db.webhookDelivery.update({
     where: { id: delivery.id },
     data: {
       status,
@@ -171,6 +223,19 @@ export async function deliverWebhook(input: { deliveryId: string }) {
       attempts: { increment: 1 },
     },
   });
+
+  // Not run inside a transaction with the update above: the outbound fetch
+  // sits between the read and the write, so there's no single db.$transaction
+  // this could join without holding a connection open across a network call.
+  await writeAdminAudit(db, {
+    adminUserId: input.adminUserId,
+    action: "webhook_delivery_triggered",
+    entity: "WebhookDelivery",
+    entityId: updated.id,
+    metadata: { status: updated.status, responseStatus, error },
+  });
+
+  return updated;
 }
 
 export async function listEndpoints() {

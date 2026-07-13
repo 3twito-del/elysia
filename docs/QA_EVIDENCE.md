@@ -41,6 +41,7 @@ Sections: 52
 - [k-08-prompt-injection-review](#evidence-k-08-prompt-injection-review)
 - [k-08-dependency-review](#evidence-k-08-dependency-review)
 - [k-02-role-permission-review](#evidence-k-02-role-permission-review)
+- [k-14-audit-trail-completion](#evidence-k-14-audit-trail-completion)
 - [legal-page-editorial-structure-benchmark](#evidence-legal-page-editorial-structure-benchmark)
 - [mobile-pdp-rail-density-benchmark](#evidence-mobile-pdp-rail-density-benchmark)
 - [offline-page-install-pwa-recovery-priority-benchmark](#evidence-offline-page-install-pwa-recovery-priority-benchmark)
@@ -2850,6 +2851,79 @@ re-flag them without this context, and re-evaluate `createCustomerNote`/
 Closed. The one cheap, safe, high-confidence fix (`ORDERS_REFUND`) is
 shipped; the two substantial gaps are tracked as their own backlog items
 (`K-14`, `K-15`) so they aren't lost when this row is removed.
+
+---
+
+<a id="evidence-k-14-audit-trail-completion"></a>
+
+## Evidence: k-14-audit-trail-completion
+
+# K-14 Audit-Trail Completion (developer / CRM slice)
+
+Date: 2026-07-13.
+
+Scope: the highest-priority slice of K-14 — mutations with real
+credential, money, or legal materiality that had no `AuditLog` row and no
+actor attribution.
+
+## Fixed
+
+- **API keys** (`src/server/services/api-keys.ts`): `issueApiKey` and
+  `revokeApiKey` now run inside `db.$transaction`, writing
+  `api_key_issued`/`api_key_revoked` `AuditLog` rows (entity `ApiKey`)
+  in the same transaction as the mutation.
+- **Webhook endpoints** (`src/server/services/webhook-delivery.ts`):
+  `createEndpoint`/`setEndpointActive`/`deleteEndpoint` now run inside
+  `db.$transaction` with `webhook_endpoint_{created,status_updated,deleted}`
+  audit rows (entity `WebhookEndpoint`). `deliverWebhook` (manual
+  redelivery, `SYSTEM_CONFIG`-gated — the same admin-triggered outbound
+  call flagged in `k-08-csrf-ssrf-uploads-review`/`K-13` for SSRF) writes
+  a `webhook_delivery_triggered` row separately, since the outbound
+  `fetch` sits between the read and the write and can't sensibly join a
+  single db transaction.
+- **CRM — the five money/legal-material actions**:
+  - `applyLoyaltyByEmail` → `earnPoints`/`redeemPoints` → `applyPoints`
+    (`loyalty.ts`) writes a `loyalty_points_applied` row inside the
+    existing transaction, only when `adminUserId` is present — `applyPoints`
+    is also called by `awardPointsForOrder` (webhook/POS order-completion
+    side effect, no admin actor), so `adminUserId` stays optional on the
+    shared path and required only on the admin-facing
+    `applyLoyaltyByEmail`.
+  - `createPriceRule`/`setPriceRuleActive` (`pricing-rules.ts`) — now
+    transactional with `price_rule_{created,status_updated}` rows.
+  - `recordConsent`/`recordConsentByEmail` (`consent.ts`) — now
+    transactional with a `consent_recorded` row (entity `Customer`).
+  - `decideQuote` (`crm-quotes.ts`) — audit row added inside its existing
+    transaction (`quote_decided`).
+  - `convertQuoteToInvoice` (`crm-quotes.ts`) — audits
+    `quote_converted_to_invoice` after the invoice is created; not wrapped
+    in a transaction with `createCustomerInvoice` since that call is a
+    shared AR service function with its own internals, not something this
+    pass should reach into.
+- `src/app/admin/developer/actions.ts` and
+  `src/app/admin/crm/actions.ts` updated to capture the `admin` returned
+  by `requireAdmin(...)` (previously discarded) and forward `admin.id` to
+  each service call above.
+- Confirmed via grep: none of the modified service functions have any
+  other caller besides the admin action that already threads the new
+  `adminUserId` field through — no other call site needed updating.
+- Tests: added source-shape checks (matching the existing
+  `admin-commerce.test.ts` convention — assert the function body contains
+  `db.$transaction`/`writeAdminAudit`) to `api-keys.test.ts`,
+  `webhook-delivery.test.ts`, `loyalty.test.ts`, `pricing-rules.test.ts`,
+  `consent.test.ts`, and `crm-quotes.test.ts`.
+
+## Remaining (K-14 stays open)
+
+- **Finance**: FX-rate/budget/chart-of-accounts changes
+  (`src/app/admin/finance/actions.ts` and its leaf services) — not
+  started.
+- **CRM, lower-materiality actions** (~13 of 19): leads, opportunities,
+  quote create/send, the six marketing-journey actions, and segment
+  recompute. These don't move money or create a legal record the way the
+  five fixed above do, so they're correctly lower priority, but they're
+  still real gaps against ADR 0004's "no unlogged sensitive mutation"
+  bar and should be closed in a follow-up pass using the same pattern.
 
 ---
 

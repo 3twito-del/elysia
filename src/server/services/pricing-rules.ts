@@ -1,4 +1,5 @@
 import { db } from "~/server/db";
+import { writeAdminAudit } from "~/server/services/admin-commerce-workflow";
 
 /**
  * Pricing / discount rules (PRC, CPQ — §4.X).
@@ -59,17 +60,30 @@ export async function createPriceRule(input: {
   type: "PERCENT" | "FIXED";
   value: number;
   minQuantity?: number;
+  adminUserId: string;
 }) {
   if (input.value <= 0) throw new Error("ערך ההנחה חייב להיות חיובי.");
 
-  return db.priceRule.create({
-    data: {
-      code: input.code,
-      name: input.name,
-      type: input.type,
-      value: input.value,
-      minQuantity: Math.max(1, Math.trunc(input.minQuantity ?? 1)),
-    },
+  return db.$transaction(async (tx) => {
+    const created = await tx.priceRule.create({
+      data: {
+        code: input.code,
+        name: input.name,
+        type: input.type,
+        value: input.value,
+        minQuantity: Math.max(1, Math.trunc(input.minQuantity ?? 1)),
+      },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "price_rule_created",
+      entity: "PriceRule",
+      entityId: created.id,
+      metadata: { code: created.code, type: created.type, value: input.value },
+    });
+
+    return created;
   });
 }
 
@@ -77,10 +91,23 @@ export async function createPriceRule(input: {
 export async function setPriceRuleActive(input: {
   ruleId: string;
   isActive: boolean;
+  adminUserId: string;
 }) {
-  return db.priceRule.update({
-    where: { id: input.ruleId },
-    data: { isActive: input.isActive },
+  return db.$transaction(async (tx) => {
+    const updated = await tx.priceRule.update({
+      where: { id: input.ruleId },
+      data: { isActive: input.isActive },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "price_rule_status_updated",
+      entity: "PriceRule",
+      entityId: updated.id,
+      metadata: { isActive: updated.isActive },
+    });
+
+    return updated;
   });
 }
 

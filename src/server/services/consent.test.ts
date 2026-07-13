@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { isConsentGranted, resolveConsent } from "./consent";
@@ -33,5 +36,23 @@ describe("isConsentGranted", () => {
 
   it("is false for a channel with no records", () => {
     expect(isConsentGranted(records, "SMS")).toBe(false);
+  });
+});
+
+describe("K-14 audit coverage", () => {
+  it("recordConsent writes an AuditLog row inside a transaction", () => {
+    const source = readFileSync(
+      path.join(process.cwd(), "src/server/services/consent.ts"),
+      "utf8",
+    );
+    const start = source.indexOf("export async function recordConsent(");
+    const next = source.indexOf("\nexport async function ", start + 1);
+
+    expect(start).toBeGreaterThanOrEqual(0);
+
+    const body = source.slice(start, next === -1 ? source.length : next);
+
+    expect(body).toContain("db.$transaction");
+    expect(body).toContain("writeAdminAudit");
   });
 });

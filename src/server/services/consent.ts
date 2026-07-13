@@ -1,4 +1,5 @@
 import { db } from "~/server/db";
+import { writeAdminAudit } from "~/server/services/admin-commerce-workflow";
 
 /**
  * Marketing consent / preference center (CRM-MKT-003, Phase 2).
@@ -55,15 +56,28 @@ export async function recordConsent(input: {
   status: "GRANTED" | "REVOKED";
   source?: string;
   note?: string;
+  adminUserId: string;
 }) {
-  return db.consentRecord.create({
-    data: {
-      customerId: input.customerId,
-      channel: input.channel,
-      status: input.status,
-      source: input.source,
-      note: input.note,
-    },
+  return db.$transaction(async (tx) => {
+    const created = await tx.consentRecord.create({
+      data: {
+        customerId: input.customerId,
+        channel: input.channel,
+        status: input.status,
+        source: input.source,
+        note: input.note,
+      },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "consent_recorded",
+      entity: "Customer",
+      entityId: input.customerId,
+      metadata: { channel: input.channel, status: input.status },
+    });
+
+    return created;
   });
 }
 
@@ -74,6 +88,7 @@ export async function recordConsentByEmail(input: {
   status: "GRANTED" | "REVOKED";
   source?: string;
   note?: string;
+  adminUserId: string;
 }) {
   const customer = await db.customer.findUnique({
     where: { email: input.email },

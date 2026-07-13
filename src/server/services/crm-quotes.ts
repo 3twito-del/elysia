@@ -1,5 +1,6 @@
 import { db } from "~/server/db";
 import { createCustomerInvoice } from "~/server/services/accounts-receivable";
+import { writeAdminAudit } from "~/server/services/admin-commerce-workflow";
 import { DEFAULT_VAT_RATE } from "~/server/services/erp";
 
 /**
@@ -105,6 +106,7 @@ export async function sendQuote(quoteId: string) {
 export async function decideQuote(input: {
   quoteId: string;
   decision: "ACCEPTED" | "DECLINED";
+  adminUserId: string;
 }) {
   return db.$transaction(async (tx) => {
     const quote = await tx.quote.update({
@@ -124,6 +126,14 @@ export async function decideQuote(input: {
       });
     }
 
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "quote_decided",
+      entity: "Quote",
+      entityId: quote.id,
+      metadata: { decision: input.decision },
+    });
+
     return quote;
   });
 }
@@ -133,6 +143,7 @@ export async function convertQuoteToInvoice(input: {
   quoteId: string;
   invoiceDate?: Date;
   dueDate?: Date;
+  adminUserId: string;
 }) {
   const quote = await db.quote.findUnique({
     where: { id: input.quoteId },
@@ -140,7 +151,7 @@ export async function convertQuoteToInvoice(input: {
   });
   if (!quote) throw new Error("Quote not found.");
 
-  return createCustomerInvoice({
+  const invoice = await createCustomerInvoice({
     customerId: quote.customerId ?? undefined,
     invoiceDate: input.invoiceDate ?? new Date(),
     dueDate: input.dueDate,
@@ -153,6 +164,16 @@ export async function convertQuoteToInvoice(input: {
       unitPrice: Number(line.unitPrice),
     })),
   });
+
+  await writeAdminAudit(db, {
+    adminUserId: input.adminUserId,
+    action: "quote_converted_to_invoice",
+    entity: "Quote",
+    entityId: quote.id,
+    metadata: { quoteNumber: quote.quoteNumber, invoiceId: invoice.id },
+  });
+
+  return invoice;
 }
 
 /** Marks sent quotes whose validity has passed as EXPIRED. Returns the count. */

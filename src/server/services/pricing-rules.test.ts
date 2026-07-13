@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { applyPriceRules } from "./pricing-rules";
@@ -42,5 +45,26 @@ describe("applyPriceRules", () => {
       rules: [{ code: "BIG", type: "FIXED", value: 999, minQuantity: 1 }],
     });
     expect(result.discountedTotal).toBe(0);
+  });
+});
+
+describe("K-14 audit coverage", () => {
+  it("createPriceRule and setPriceRuleActive write an AuditLog row inside a transaction", () => {
+    const source = readFileSync(
+      path.join(process.cwd(), "src/server/services/pricing-rules.ts"),
+      "utf8",
+    );
+
+    for (const operation of ["createPriceRule", "setPriceRuleActive"]) {
+      const start = source.indexOf(`export async function ${operation}`);
+      const next = source.indexOf("\nexport async function ", start + 1);
+
+      expect(start).toBeGreaterThanOrEqual(0);
+
+      const body = source.slice(start, next === -1 ? source.length : next);
+
+      expect(body).toContain("db.$transaction");
+      expect(body).toContain("writeAdminAudit");
+    }
   });
 });
