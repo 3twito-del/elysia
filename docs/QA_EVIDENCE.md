@@ -2572,6 +2572,26 @@ DNS-rebind re-validation at delivery time, redirect handling) rather than a
 one-line change, so it's recorded here rather than built without that
 decision.
 
+**Update 2026-07-13 — fixed as K-13.** Blocklist chosen over an allowlist
+(this is a general-purpose "register any customer endpoint" feature — an
+allowlist would defeat its purpose). `assertPublicWebhookUrl` resolves the
+endpoint's hostname via `dns.promises.lookup` and rejects if any resolved
+address falls in a private/reserved/loopback/link-local/metadata range
+(`isBlockedIpv4Address`/`isBlockedIpv6Address`, pure + unit-tested against
+RFC1918, TEST-NET, carrier-grade NAT, multicast, `169.254.169.254`, `::1`,
+`fc00::/7`, `fe80::/10`, and IPv4-mapped IPv6). Called at both
+`createEndpoint` (registration) **and** immediately before every `fetch` in
+`deliverWebhook` (delivery time) — the second call is the one that
+actually matters for DNS-rebinding, where a domain resolves to a public IP
+when registered and is repointed to a private IP before the real delivery
+fires. A blocked delivery is recorded as a normal `FAILED` delivery
+(caught in the same try/catch as network errors), not an unhandled crash.
+Residual, accepted limitation: there's a small TOCTOU window between our
+DNS check and undici's own connection (no custom dispatcher pinning the
+validated IP) — reasonable given this is a `SYSTEM_CONFIG`-gated, non-
+privilege-escalating feature, not a public-facing one. `docs/TASKS.md`'s
+K-13 row deleted; full record here.
+
 Everything else checked clean: no adapter (Shopify, CardCom, notifications,
 AI providers, Typesense) ever builds an outbound URL from request input —
 all use `env.*`-configured hosts. The AI tool set

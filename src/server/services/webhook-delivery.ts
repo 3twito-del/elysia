@@ -1,4 +1,5 @@
 import { createHmac, randomBytes } from "node:crypto";
+import { lookup as dnsLookup } from "node:dns/promises";
 
 import { Prisma } from "@prisma/client";
 
@@ -11,7 +12,111 @@ import { writeAdminAudit } from "~/server/services/admin-commerce-workflow";
  * then dispatch idempotent, HMAC-signed deliveries with retry/backoff. Signing,
  * subscription matching and backoff are pure + tested. `deliverWebhook` is the
  * only function that makes an outbound HTTP call (explicit, short-timeout).
+ *
+ * K-13 (docs/QA_EVIDENCE.md "k-08-csrf-ssrf-uploads-review"): this is a
+ * SYSTEM_CONFIG-gated admin feature that fetches an admin-registered URL —
+ * a real SSRF primitive with no privilege-escalation angle (the actor
+ * already holds the highest admin tier), but worth blocking regardless.
+ * `assertPublicWebhookUrl` blocks private/reserved/loopback/link-local
+ * (incl. the 169.254.169.254 cloud metadata endpoint) destinations by
+ * resolving the hostname's real IP(s) and checking them, not just the
+ * literal hostname string — this is why it must be async and re-run at
+ * *delivery* time, not only at registration time: a DNS-rebinding attacker
+ * registers a domain that resolves to a public IP when checked, then
+ * repoints it to a private IP before the actual delivery fires.
  */
+
+const BLOCKED_IPV4_RANGES: Array<{ base: string; prefixLength: number }> = [
+  { base: "0.0.0.0", prefixLength: 8 }, // "this network"
+  { base: "10.0.0.0", prefixLength: 8 }, // RFC1918 private
+  { base: "100.64.0.0", prefixLength: 10 }, // carrier-grade NAT
+  { base: "127.0.0.0", prefixLength: 8 }, // loopback
+  { base: "169.254.0.0", prefixLength: 16 }, // link-local (incl. cloud metadata)
+  { base: "172.16.0.0", prefixLength: 12 }, // RFC1918 private
+  { base: "192.0.0.0", prefixLength: 24 }, // IETF protocol assignments
+  { base: "192.0.2.0", prefixLength: 24 }, // TEST-NET-1 (documentation)
+  { base: "192.168.0.0", prefixLength: 16 }, // RFC1918 private
+  { base: "198.18.0.0", prefixLength: 15 }, // benchmark testing
+  { base: "198.51.100.0", prefixLength: 24 }, // TEST-NET-2 (documentation)
+  { base: "203.0.113.0", prefixLength: 24 }, // TEST-NET-3 (documentation)
+  { base: "224.0.0.0", prefixLength: 4 }, // multicast
+  { base: "240.0.0.0", prefixLength: 4 }, // reserved (incl. 255.255.255.255)
+];
+
+function ipv4ToInt(address: string): number | null {
+  const parts = address.split(".");
+  if (parts.length !== 4) return null;
+
+  let value = 0;
+  for (const part of parts) {
+    if (!/^\d{1,3}$/.test(part)) return null;
+    const octet = Number(part);
+    if (octet > 255) return null;
+    value = value * 256 + octet;
+  }
+
+  return value;
+}
+
+/** Whether an IPv4 address falls in a blocked private/reserved range. Pure. */
+export function isBlockedIpv4Address(address: string): boolean {
+  const value = ipv4ToInt(address);
+  if (value === null) return false;
+
+  return BLOCKED_IPV4_RANGES.some((range) => {
+    const base = ipv4ToInt(range.base);
+    if (base === null) return false;
+    const mask = range.prefixLength === 0 ? 0 : ~0 << (32 - range.prefixLength);
+    return (value & mask) === (base & mask);
+  });
+}
+
+/** Whether an IPv6 address falls in a blocked private/reserved range. Pure. */
+export function isBlockedIpv6Address(address: string): boolean {
+  const normalized = address.toLowerCase();
+
+  if (normalized === "::1" || normalized === "::") return true;
+  if (normalized.startsWith("fe80:") || normalized.startsWith("fe80::")) {
+    return true;
+  }
+  // Unique local addresses, fc00::/7 (fc00:: through fdff:...).
+  if (/^f[cd][0-9a-f]{0,2}:/.test(normalized)) return true;
+
+  // IPv4-mapped (::ffff:a.b.c.d) — check the embedded IPv4 address too.
+  const mapped = /^::ffff:(\d+\.\d+\.\d+\.\d+)$/.exec(normalized);
+  if (mapped?.[1]) return isBlockedIpv4Address(mapped[1]);
+
+  return false;
+}
+
+/** Whether a resolved IP address (v4 or v6) is private/reserved. Pure. */
+export function isBlockedAddress(address: string): boolean {
+  return address.includes(":")
+    ? isBlockedIpv6Address(address)
+    : isBlockedIpv4Address(address);
+}
+
+export class WebhookUrlBlockedError extends Error {
+  constructor(url: string) {
+    super(`כתובת URL אינה מותרת (יעד פרטי/שמור): ${url}`);
+    this.name = "WebhookUrlBlockedError";
+  }
+}
+
+/**
+ * Resolves the URL's hostname and rejects if any resolved address is
+ * private/reserved. Must be called again immediately before every delivery
+ * attempt, not only at registration — see the module-level comment on
+ * DNS rebinding.
+ */
+export async function assertPublicWebhookUrl(url: string): Promise<void> {
+  const parsed = new URL(url);
+  const addresses = await dnsLookup(parsed.hostname, { all: true });
+
+  if (addresses.length === 0 || addresses.some((entry) => isBlockedAddress(entry.address))) {
+    throw new WebhookUrlBlockedError(url);
+  }
+}
 
 const DELIVERY_TIMEOUT_MS = 5000;
 
@@ -60,6 +165,7 @@ export async function createEndpoint(input: {
 }) {
   if (!input.name.trim()) throw new Error("שם היעד הוא שדה חובה.");
   if (!isValidUrl(input.url)) throw new Error("כתובת URL לא תקינה.");
+  await assertPublicWebhookUrl(input.url);
   const events = input.events.map((event) => event.trim()).filter(Boolean);
   if (events.length === 0) throw new Error("יש לבחור לפחות אירוע אחד.");
 
@@ -196,6 +302,11 @@ export async function deliverWebhook(input: {
   let error: string | null = null;
 
   try {
+    // Re-checked here, not only at registration: DNS rebinding can repoint
+    // an approved hostname at a private IP between registration and this
+    // exact delivery attempt.
+    await assertPublicWebhookUrl(delivery.endpoint.url);
+
     const response = await fetch(delivery.endpoint.url, {
       method: "POST",
       headers: {

@@ -417,14 +417,6 @@ have been deleted; partially done items state only their remaining scope.
 - **K-12 Physical boutique scope** · P2 · OWNER — keep the truthful online-only
   route or provide verified branch data; never imply boutiques that do not
   exist.
-- **K-13 Outbound webhook egress allowlist** · P2 · NOW — split off from the
-  now-closed K-08 review: `src/server/services/webhook-delivery.ts`'s
-  `SYSTEM_CONFIG`-gated outbound webhook delivery has no private-range/
-  metadata-IP egress filtering (`docs/QA_EVIDENCE.md`
-  "k-08-csrf-ssrf-uploads-review"). Not a privilege escalation (only the
-  highest admin tier can reach it), but a real SSRF primitive on an
-  outbound-webhook feature. Needs an explicit allowlist-vs-blocklist design
-  decision plus delivery-time DNS-rebind re-validation before implementing.
 - **K-15 `ERP_WRITE` permission granularity** · P2 · NOW — split off from
   the now-closed K-02 review. A single `ERP_WRITE` `AdminPermission` gates
   writes across 12 unrelated domains (`src/app/admin/{finance,pos,tax,
