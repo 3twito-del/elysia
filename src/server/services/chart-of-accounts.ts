@@ -1,4 +1,5 @@
 import { db } from "~/server/db";
+import { writeAdminAudit } from "~/server/services/admin-commerce-workflow";
 import { computeTrialBalance } from "~/server/services/ledger";
 
 /**
@@ -27,6 +28,7 @@ export async function createLedgerAccount(input: {
   name: string;
   type: string;
   normalSide?: "DEBIT" | "CREDIT";
+  adminUserId: string;
 }) {
   const code = input.code.trim();
   if (!isValidAccountCode(code)) {
@@ -40,13 +42,25 @@ export async function createLedgerAccount(input: {
   const existing = await db.ledgerAccount.findUnique({ where: { code } });
   if (existing) throw new Error(`קוד החשבון ${code} כבר קיים.`);
 
-  return db.ledgerAccount.create({
-    data: {
-      code,
-      name: input.name.trim(),
-      type: input.type,
-      normalSide: input.normalSide ?? deriveNormalSide(input.type),
-    },
+  return db.$transaction(async (tx) => {
+    const account = await tx.ledgerAccount.create({
+      data: {
+        code,
+        name: input.name.trim(),
+        type: input.type,
+        normalSide: input.normalSide ?? deriveNormalSide(input.type),
+      },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "ledger_account_created",
+      entity: "LedgerAccount",
+      entityId: account.id,
+      metadata: { code: account.code, name: account.name, type: account.type },
+    });
+
+    return account;
   });
 }
 

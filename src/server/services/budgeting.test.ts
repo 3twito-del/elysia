@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { computeBudgetVariance } from "./budgeting";
@@ -23,5 +26,23 @@ describe("computeBudgetVariance", () => {
 
     expect(result.lines[0]?.variancePct).toBeNull();
     expect(result.lines[0]?.variance).toBe(50);
+  });
+});
+
+describe("K-14 audit coverage", () => {
+  it("setBudget writes an AuditLog row inside a transaction", () => {
+    const source = readFileSync(
+      path.join(process.cwd(), "src/server/services/budgeting.ts"),
+      "utf8",
+    );
+    const start = source.indexOf("export async function setBudget(");
+    const next = source.indexOf("\nexport async function ", start + 1);
+
+    expect(start).toBeGreaterThanOrEqual(0);
+
+    const body = source.slice(start, next === -1 ? source.length : next);
+
+    expect(body).toContain("db.$transaction");
+    expect(body).toContain("writeAdminAudit");
   });
 });

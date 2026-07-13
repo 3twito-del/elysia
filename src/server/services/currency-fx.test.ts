@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -36,5 +39,23 @@ describe("revaluationGainLoss", () => {
   it("is the foreign amount times the rate delta", () => {
     expect(revaluationGainLoss(100, 3.6, 3.75)).toBe(15);
     expect(revaluationGainLoss(100, 3.75, 3.6)).toBe(-15);
+  });
+});
+
+describe("K-14 audit coverage", () => {
+  it("setExchangeRate writes an AuditLog row inside a transaction", () => {
+    const source = readFileSync(
+      path.join(process.cwd(), "src/server/services/currency-fx.ts"),
+      "utf8",
+    );
+    const start = source.indexOf("export async function setExchangeRate(");
+    const next = source.indexOf("\nexport async function ", start + 1);
+
+    expect(start).toBeGreaterThanOrEqual(0);
+
+    const body = source.slice(start, next === -1 ? source.length : next);
+
+    expect(body).toContain("db.$transaction");
+    expect(body).toContain("writeAdminAudit");
   });
 });

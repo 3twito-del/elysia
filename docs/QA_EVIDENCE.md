@@ -2913,11 +2913,45 @@ actor attribution.
   `webhook-delivery.test.ts`, `loyalty.test.ts`, `pricing-rules.test.ts`,
   `consent.test.ts`, and `crm-quotes.test.ts`.
 
+## Update 2026-07-13 (same day, continued pass): core GL-structure finance mutations fixed
+
+Read `src/app/admin/finance/actions.ts` in full for the first time (30
+actions total) — several already pass `postedById` into their service call
+(customer invoices, manual journal entries, fixed assets, payroll, period
+close, expense-claim approval), consistent with the K-02 finding's note
+that GL `JournalEntry` rows already carry `postedById`. The remaining ~23
+actions discard the `requireAdmin(...)` return value entirely. Fixed the
+four that touch the chart-of-accounts/GL structure itself (highest
+materiality of the remainder, and the three explicitly named in this
+ticket's original text):
+
+- `setExchangeRate` (`currency-fx.ts`) — now transactional,
+  `exchange_rate_set` audit row (entity `ExchangeRate`).
+- `setBudget` (`budgeting.ts`) — now transactional, `budget_set` audit
+  row (entity `BudgetLine`).
+- `createLedgerAccount` (`chart-of-accounts.ts`) — now transactional,
+  `ledger_account_created` audit row (entity `LedgerAccount`).
+- `seedChartOfAccounts` (`ledger.ts`) — bulk upsert loop (not
+  transactional itself, already idempotent per-row); writes one
+  `chart_of_accounts_seeded` audit row after the loop rather than one per
+  account, to avoid a noisy 1:1 audit-row-per-default-account explosion.
+
+`src/app/admin/finance/actions.ts` updated to capture and forward
+`admin.id` for these four. Confirmed via grep no other caller of any of
+the four functions exists. Tests: same source-shape-check pattern added to
+`currency-fx.test.ts`, `budgeting.test.ts`, `chart-of-accounts.test.ts`,
+`ledger.test.ts`.
+
 ## Remaining (K-14 stays open)
 
-- **Finance**: FX-rate/budget/chart-of-accounts changes
-  (`src/app/admin/finance/actions.ts` and its leaf services) — not
-  started.
+- **Finance, ~19 more actions** (`src/app/admin/finance/actions.ts`):
+  bank-statement import/auto-match/ignore, employee creation, expense-claim
+  create/reject, subscriptions (plan create/subscribe/cancel/billing run),
+  cost centers (create/toggle/record entry), dunning (send reminder/record
+  contact), asset maintenance (schedule create/record/toggle). Priority
+  order if resumed: subscriptions and cost centers first (real recurring
+  financial commitments), then expense claims, then bank-reconciliation/
+  dunning/maintenance last (operational, lower stakes).
 - **CRM, lower-materiality actions** (~13 of 19): leads, opportunities,
   quote create/send, the six marketing-journey actions, and segment
   recompute. These don't move money or create a legal record the way the

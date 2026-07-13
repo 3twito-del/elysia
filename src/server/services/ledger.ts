@@ -1,6 +1,7 @@
 import type { Prisma } from "@prisma/client";
 
 import { db } from "~/server/db";
+import { writeAdminAudit } from "~/server/services/admin-commerce-workflow";
 import { ACCOUNT, DEFAULT_CHART_OF_ACCOUNTS } from "./ledger-accounts";
 
 export {
@@ -377,7 +378,7 @@ export async function assertPostingPeriodOpen(
 }
 
 /** Idempotently upserts the default chart of accounts. */
-export async function seedChartOfAccounts() {
+export async function seedChartOfAccounts(input: { adminUserId: string }) {
   for (const account of DEFAULT_CHART_OF_ACCOUNTS) {
     await db.ledgerAccount.upsert({
       where: { code: account.code },
@@ -390,7 +391,16 @@ export async function seedChartOfAccounts() {
     });
   }
 
-  return db.ledgerAccount.count();
+  const count = await db.ledgerAccount.count();
+
+  await writeAdminAudit(db, {
+    adminUserId: input.adminUserId,
+    action: "chart_of_accounts_seeded",
+    entity: "LedgerAccount",
+    metadata: { accountCount: DEFAULT_CHART_OF_ACCOUNTS.length },
+  });
+
+  return count;
 }
 
 async function createNextJournalEntryNumber(

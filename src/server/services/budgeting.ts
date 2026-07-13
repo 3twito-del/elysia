@@ -1,4 +1,5 @@
 import { db } from "~/server/db";
+import { writeAdminAudit } from "~/server/services/admin-commerce-workflow";
 import { computeTrialBalance } from "~/server/services/ledger";
 
 /**
@@ -52,24 +53,41 @@ export async function setBudget(input: {
   period: string;
   accountCode: string;
   amount: number;
+  adminUserId: string;
 }) {
   if (!/^\d{4}-\d{2}$/.test(input.period)) {
     throw new Error("תקופה לא תקינה (YYYY-MM).");
   }
 
-  return db.budgetLine.upsert({
-    where: {
-      period_accountCode: {
+  return db.$transaction(async (tx) => {
+    const budget = await tx.budgetLine.upsert({
+      where: {
+        period_accountCode: {
+          period: input.period,
+          accountCode: input.accountCode,
+        },
+      },
+      create: {
         period: input.period,
         accountCode: input.accountCode,
+        amount: round2(input.amount),
       },
-    },
-    create: {
-      period: input.period,
-      accountCode: input.accountCode,
-      amount: round2(input.amount),
-    },
-    update: { amount: round2(input.amount) },
+      update: { amount: round2(input.amount) },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "budget_set",
+      entity: "BudgetLine",
+      entityId: budget.id,
+      metadata: {
+        period: input.period,
+        accountCode: input.accountCode,
+        amount: Number(budget.amount),
+      },
+    });
+
+    return budget;
   });
 }
 

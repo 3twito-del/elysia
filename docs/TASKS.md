@@ -430,17 +430,30 @@ have been deleted; partially done items state only their remaining scope.
   (`docs/QA_EVIDENCE.md` "k-02-role-permission-review" and
   "k-14-audit-trail-completion"). Done: API key issuance/revocation
   (`src/server/services/api-keys.ts`), webhook endpoint create/toggle/
-  delete/manual-redeliver (`src/server/services/webhook-delivery.ts`), and
-  the five money/legal-material CRM mutations — loyalty point grants,
+  delete/manual-redeliver (`src/server/services/webhook-delivery.ts`), the
+  five money/legal-material CRM mutations — loyalty point grants,
   price-rule create/toggle, consent recording, and quote decide/
   convert-to-invoice (`src/server/services/{loyalty,pricing-rules,consent,
-  crm-quotes}.ts`) — each now threads `adminUserId` through and writes an
-  in-transaction `writeAdminAudit` row. Remaining scope: FX-rate/budget/
-  chart-of-accounts changes (`src/app/admin/finance/actions.ts` and its
-  leaf services), and the other ~13 lower-materiality
-  `src/app/admin/crm/actions.ts` actions (leads, opportunities, quote
-  create/send, marketing journeys, segment recompute) — same pattern,
-  lower priority since they don't move money or create legal records.
+  crm-quotes}.ts`) — and the core GL-structure finance mutations —
+  exchange-rate changes, budget line changes, custom ledger accounts, and
+  chart-of-accounts seeding (`src/server/services/{currency-fx,budgeting,
+  chart-of-accounts,ledger}.ts`) — each now threads `adminUserId` through
+  and writes an in-transaction `writeAdminAudit` row. **Scope correction**:
+  mapping `src/app/admin/finance/actions.ts` fully (30 actions, not
+  previously read in full) found the real remaining gap is larger than
+  first estimated — roughly 19 more finance actions with no actor
+  attribution: bank-statement import/auto-match/ignore, employee creation,
+  expense-claim create/reject (approve already has `postedById`),
+  subscriptions (plan create/subscribe/cancel/billing run), cost centers
+  (create/toggle/record entry), dunning (send/record contact), and asset
+  maintenance (schedule create/record/toggle) — plus the other ~13
+  lower-materiality `src/app/admin/crm/actions.ts` actions (leads,
+  opportunities, quote create/send, marketing journeys, segment recompute).
+  Same mechanical pattern throughout (thread `adminUserId`, wrap in
+  `db.$transaction` if not already, `writeAdminAudit` inside it) — just
+  substantial remaining file count, prioritize subscriptions/cost-centers/
+  expense-claims next (real financial commitments) over
+  bank-reconciliation/dunning/maintenance (operational, lower stakes).
 - **K-15 `ERP_WRITE` permission granularity** · P2 · NOW — split off from
   the now-closed K-02 review. A single `ERP_WRITE` `AdminPermission` gates
   writes across 12 unrelated domains (`src/app/admin/{finance,pos,tax,

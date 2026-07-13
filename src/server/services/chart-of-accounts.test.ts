@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { deriveNormalSide, isValidAccountCode } from "./chart-of-accounts";
@@ -23,5 +26,23 @@ describe("deriveNormalSide", () => {
     expect(deriveNormalSide("LIABILITY")).toBe("CREDIT");
     expect(deriveNormalSide("REVENUE")).toBe("CREDIT");
     expect(deriveNormalSide("EQUITY")).toBe("CREDIT");
+  });
+});
+
+describe("K-14 audit coverage", () => {
+  it("createLedgerAccount writes an AuditLog row inside a transaction", () => {
+    const source = readFileSync(
+      path.join(process.cwd(), "src/server/services/chart-of-accounts.ts"),
+      "utf8",
+    );
+    const start = source.indexOf("export async function createLedgerAccount(");
+    const next = source.indexOf("\nexport async function ", start + 1);
+
+    expect(start).toBeGreaterThanOrEqual(0);
+
+    const body = source.slice(start, next === -1 ? source.length : next);
+
+    expect(body).toContain("db.$transaction");
+    expect(body).toContain("writeAdminAudit");
   });
 });

@@ -285,22 +285,22 @@ export async function rejectExpenseClaimAction(formData: FormData) {
 }
 
 export async function seedChartAction() {
-  await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("ERP_WRITE");
 
-  await seedChartOfAccounts();
+  await seedChartOfAccounts({ adminUserId: admin.id });
 
   revalidatePath("/admin/finance");
 }
 
 export async function createLedgerAccountAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("ERP_WRITE");
 
   const code = stringValue(formData.get("code")).trim();
   const name = stringValue(formData.get("name")).trim();
   const type = stringValue(formData.get("type"));
   if (!code || !name) throw new Error("קוד ושם הם שדות חובה.");
 
-  await createLedgerAccount({ code, name, type });
+  await createLedgerAccount({ code, name, type, adminUserId: admin.id });
 
   revalidatePath("/admin/finance");
 }
@@ -359,7 +359,7 @@ export async function cancelSubscriptionAction(formData: FormData) {
 }
 
 export async function setBudgetAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("ERP_WRITE");
 
   const period = stringValue(formData.get("period")).trim();
   const accountCode = stringValue(formData.get("accountCode")).trim();
@@ -367,7 +367,7 @@ export async function setBudgetAction(formData: FormData) {
 
   const amount = Number(formData.get("amount") ?? 0) || 0;
 
-  await setBudget({ period, accountCode, amount });
+  await setBudget({ period, accountCode, amount, adminUserId: admin.id });
 
   revalidatePath("/admin/finance");
 }
@@ -419,13 +419,14 @@ export async function toggleCostCenterAction(formData: FormData) {
 }
 
 export async function setExchangeRateAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("ERP_WRITE");
 
   const effectiveRaw = stringValue(formData.get("effectiveDate"));
   await setExchangeRate({
     currency: stringValue(formData.get("currency")),
     rateToBase: Number(stringValue(formData.get("rateToBase"))) || 0,
     effectiveDate: effectiveRaw ? new Date(effectiveRaw) : new Date(),
+    adminUserId: admin.id,
   });
 
   revalidatePath("/admin/finance");

@@ -1,4 +1,5 @@
 import { db } from "~/server/db";
+import { writeAdminAudit } from "~/server/services/admin-commerce-workflow";
 
 /**
  * Multi-currency accounting + FX revaluation (FIN-GL-004). Base currency is ILS.
@@ -60,6 +61,7 @@ export async function setExchangeRate(input: {
   currency: string;
   rateToBase: number;
   effectiveDate: Date;
+  adminUserId: string;
 }) {
   const currency = input.currency.trim().toUpperCase();
   if (!currency || currency === BASE_CURRENCY) {
@@ -75,10 +77,30 @@ export async function setExchangeRate(input: {
     ),
   );
 
-  return db.exchangeRate.upsert({
-    where: { currency_effectiveDate: { currency, effectiveDate } },
-    create: { currency, rateToBase: round6(input.rateToBase), effectiveDate },
-    update: { rateToBase: round6(input.rateToBase) },
+  return db.$transaction(async (tx) => {
+    const rate = await tx.exchangeRate.upsert({
+      where: { currency_effectiveDate: { currency, effectiveDate } },
+      create: {
+        currency,
+        rateToBase: round6(input.rateToBase),
+        effectiveDate,
+      },
+      update: { rateToBase: round6(input.rateToBase) },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "exchange_rate_set",
+      entity: "ExchangeRate",
+      entityId: rate.id,
+      metadata: {
+        currency,
+        rateToBase: Number(rate.rateToBase),
+        effectiveDate: effectiveDate.toISOString(),
+      },
+    });
+
+    return rate;
   });
 }
 

@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -209,5 +212,22 @@ describe("buildCustomerReceiptJournalLines", () => {
       lines.find((line) => line.accountCode === ACCOUNT.ACCOUNTS_RECEIVABLE)
         ?.credit,
     ).toBe(826);
+  });
+});
+
+describe("K-14 audit coverage", () => {
+  it("seedChartOfAccounts writes an AuditLog row", () => {
+    const source = readFileSync(
+      path.join(process.cwd(), "src/server/services/ledger.ts"),
+      "utf8",
+    );
+    const start = source.indexOf("export async function seedChartOfAccounts(");
+    const next = source.indexOf("\nexport async function ", start + 1);
+
+    expect(start).toBeGreaterThanOrEqual(0);
+
+    const body = source.slice(start, next === -1 ? source.length : next);
+
+    expect(body).toContain("writeAdminAudit");
   });
 });
