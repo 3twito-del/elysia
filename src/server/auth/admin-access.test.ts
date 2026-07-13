@@ -18,13 +18,18 @@ describe("admin access", () => {
   });
 
   it("allows broad permissions to satisfy granular checks", () => {
-    expect(hasAdminPermission(ordersAdmin, "ORDERS_REFUND")).toBe(true);
+    expect(hasAdminPermission(ordersAdmin, "ORDERS_READ")).toBe(true);
+    expect(hasAdminPermission(ordersAdmin, "ORDERS_WRITE")).toBe(true);
     expect(
       hasAdminPermission(
         { ...ordersAdmin, permissions: ["BLOG"] },
         "BLOG_WRITE",
       ),
     ).toBe(true);
+  });
+
+  it("does not let the broad ORDERS grant imply the money-moving refund permission (K-02)", () => {
+    expect(hasAdminPermission(ordersAdmin, "ORDERS_REFUND")).toBe(false);
   });
 
   it("allows SYSTEM to act as a super permission", () => {

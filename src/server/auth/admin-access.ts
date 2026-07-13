@@ -18,7 +18,10 @@ const impliedPermissions: Partial<Record<AdminPermission, AdminPermission[]>> =
     BLOG: ["BLOG_READ", "BLOG_WRITE"],
     CATALOG: ["CATALOG_READ", "CATALOG_WRITE"],
     INVENTORY: ["INVENTORY_READ", "INVENTORY_WRITE"],
-    ORDERS: ["ORDERS_READ", "ORDERS_WRITE", "ORDERS_REFUND"],
+    // ORDERS_REFUND is deliberately NOT implied here (K-02): refunds move
+    // real money and were split into their own permission precisely so they
+    // could be granted independently of routine order management.
+    ORDERS: ["ORDERS_READ", "ORDERS_WRITE"],
     CUSTOMER_SERVICE: ["CUSTOMER_VIEW", "CUSTOMER_WRITE", "CRM_READ"],
     CUSTOMER_WRITE: ["CRM_WRITE"],
   };

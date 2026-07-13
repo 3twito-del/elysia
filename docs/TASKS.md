@@ -390,8 +390,6 @@ have been deleted; partially done items state only their remaining scope.
 
 ### K — Operations, admin, security, reliability
 
-- **K-02 Role and permission review** · P0 · MEASURE — least privilege; no
-  unlogged sensitive mutation. (ADR 0005 defines the admin control plane.)
 - **K-04 SLOs and alert ownership — residual** · P1 · OWNER — the alert model,
   event-class SLOs, escalating email delivery to `OPERATIONS_EMAIL`, and the
   invariant sweep are shipped (ADR 0003/0007). Remaining scope: the owner
@@ -427,6 +425,31 @@ have been deleted; partially done items state only their remaining scope.
   highest admin tier can reach it), but a real SSRF primitive on an
   outbound-webhook feature. Needs an explicit allowlist-vs-blocklist design
   decision plus delivery-time DNS-rebind re-validation before implementing.
+- **K-14 Audit-trail completion for developer/finance/CRM mutations** · P1 ·
+  NOW — split off from the now-closed K-02 review
+  (`docs/QA_EVIDENCE.md` "k-02-role-permission-review"). Several live,
+  correctly permission-gated mutations write no `AuditLog` row and pass no
+  actor id, contra ADR 0004's evidentiary-trail requirement: API key
+  issuance/revocation (`src/server/services/api-keys.ts` — highest
+  priority, a credential mutation with zero trail), FX-rate/budget/
+  chart-of-accounts changes (`src/app/admin/finance/actions.ts` and its
+  leaf services), and most of `src/app/admin/crm/actions.ts`'s 19 actions
+  (loyalty grants, price rules, quote→invoice conversion, consent records —
+  each calls `requireAdmin("CRM_WRITE")` but discards the returned admin
+  rather than threading it through for `writeAdminAudit`). Needs
+  `adminUserId` threaded into each service function and an in-transaction
+  `writeAdminAudit` call added, matching the existing `admin-commerce.ts`
+  pattern — real but multi-file work, not a one-line fix.
+- **K-15 `ERP_WRITE` permission granularity** · P2 · NOW — split off from
+  the now-closed K-02 review. A single `ERP_WRITE` `AdminPermission` gates
+  writes across 12 unrelated domains (`src/app/admin/{finance,pos,tax,
+  operations,projects,entities,workflow,reports,workspace,erp,marketing,
+  performance}/actions.ts`), including money-moving finance (manual journal
+  entries, payroll, period close) and POS cash/gift-card sales — there is
+  no way to grant one domain's write access without granting all twelve.
+  Needs a permission-model design decision (at minimum a dedicated
+  `FINANCE_WRITE`) plus a schema migration and re-gating the affected
+  action files before implementing.
 
 ### L — QA, measurement, release proof
 
@@ -494,7 +517,7 @@ placeholder facts, duplicate media, or unproven payment.
 
 | Wave  | Theme                              | Open items                                                                                                               |
 | ----- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| **0** | Truth & proof foundation           | I-341, I-342, C-01/C-04, D-04, G-01…G-04, H-01/H-07, I-06/I-07, J-08/J-09, K-02/K-05/K-07/K-09, L-01/L-04/L-05/L-07 |
+| **0** | Truth & proof foundation           | I-341, I-342, C-01/C-04, D-04, G-01…G-04, H-01/H-07, I-06/I-07, J-08/J-09, K-05/K-07/K-09, L-01/L-04/L-05/L-07 |
 | **1** | House identity, collections, media | A-01…A-05, B-01…B-07, C-05/C-07/C-08                                                                                     |
 | **2** | Discovery & PDP authority          | E-01…E-10, F-01…F-11, D-05                                                                                               |
 | **3** | Real commerce & clienteling        | G-05…G-12, H-02…H-10, I-02…I-08, A-06                                                                                    |

@@ -40,6 +40,7 @@ Sections: 52
 - [k-08-csrf-ssrf-uploads-review](#evidence-k-08-csrf-ssrf-uploads-review)
 - [k-08-prompt-injection-review](#evidence-k-08-prompt-injection-review)
 - [k-08-dependency-review](#evidence-k-08-dependency-review)
+- [k-02-role-permission-review](#evidence-k-02-role-permission-review)
 - [legal-page-editorial-structure-benchmark](#evidence-legal-page-editorial-structure-benchmark)
 - [mobile-pdp-rail-density-benchmark](#evidence-mobile-pdp-rail-density-benchmark)
 - [offline-page-install-pwa-recovery-priority-benchmark](#evidence-offline-page-install-pwa-recovery-priority-benchmark)
@@ -2737,6 +2738,118 @@ dependency pass. Two real gaps remain open, tracked outside K-08 itself so
 they aren't lost when this backlog row is removed: the CardCom ADR-0006
 verify-then-commit gap (folded into `G-04`) and the outbound-webhook SSRF
 egress-allowlist gap (split into a new backlog item, `K-13`).
+
+---
+
+<a id="evidence-k-02-role-permission-review"></a>
+
+## Evidence: k-02-role-permission-review
+
+# K-02 Role and Permission Review
+
+Date: 2026-07-13.
+
+Scope: least-privilege correctness across the admin control plane (ADR
+0005), and completeness of `AuditLog` coverage for sensitive mutations
+(ADR 0004's evidentiary-trail requirement), per the ticket's own wording —
+"least privilege; no unlogged sensitive mutation."
+
+Method: an agent-driven review, same methodology as the K-08 passes.
+Coverage: every `adminProcedure(...)` call in `src/server/api/routers/admin.ts`
+(32 total); every exported Server Action across all 27
+`src/app/admin/*/actions.ts` domain files (222 exported actions, counted
+against their permission checks); every admin page's `getAdminPageAccess`
+permission (~48 pages); the `impliedPermissions` map in
+`src/server/auth/admin-access.ts`; and a repo-wide grep for `AuditLog`
+writes across `src/server/services` (12 files write it). The ~25 ERP/CRM
+leaf services (accounts-payable/receivable, payroll, budgeting, etc.) were
+confirmed audit-absent by that grep rather than read line-by-line — noted
+as the review's confidence boundary, not a gap in coverage.
+
+## No finding: tRPC procedure permission matching
+
+All 32 `adminProcedure(...)` calls were traced to their underlying service
+call. Every one requires a permission matching its actual sensitivity — no
+write/refund/delete-class mutation is gated by a `*_READ` permission, and
+none borrows an unrelated domain's permission. `refundOrder` (money-moving)
+correctly requires the dedicated `ORDERS_REFUND`, not the broader `ORDERS`.
+
+## No finding: Server Actions independently re-check permission
+
+All 222 exported Server Actions call a local permission-check helper
+(`requireAdmin`/equivalent, re-deriving the admin from the session) before
+mutating — none rely solely on the calling page already being gated. This
+rules out the common Next.js pitfall where a Server Action, once its ID is
+known client-side, could be POSTed directly bypassing a page-only gate.
+
+## No finding: page-level vs procedure-level gating
+
+Every admin page gates on the domain's `*_READ` tier while the
+corresponding mutation requires `*_WRITE` — the safe direction (a
+read-only admin may see a button that 403s server-side; no page is more
+permissive than the action it exposes). Because actions re-check
+independently, this could not produce a bypass even where the page's own
+permission and the action's felt cosmetically mismatched (`finance`/`tax`/
+`entities` pages gate on `FINANCE_READ`, their mutations on `ERP_WRITE` —
+see Finding 2).
+
+## Fixed: `ORDERS` implied the money-moving `ORDERS_REFUND`
+
+`src/server/auth/admin-access.ts`'s `impliedPermissions` map had
+`ORDERS: ["ORDERS_READ", "ORDERS_WRITE", "ORDERS_REFUND"]` — meaning any
+role granted the coarse `ORDERS` umbrella (intended for routine order
+management: viewing, status updates, shipments) automatically also gained
+refund authority, defeating the purpose of `ORDERS_REFUND` existing as a
+separate, more sensitive permission. Confirmed safe to tighten: the only
+seeded role (`prisma/seed.ts`'s "מנהל מערכת") already has `SYSTEM`
+(bypasses all checks) and doesn't depend on the implied grant; no other
+role exists today (there is no in-app role-management UI — roles are only
+created via `seed.ts` or the e2e fixture service). **Fixed**: removed
+`ORDERS_REFUND` from the implied set; refunds now require an explicit
+`ORDERS_REFUND` (or `SYSTEM`) grant. Updated `admin-access.test.ts`.
+
+## Documented, not fixed: two findings split into their own backlog items
+
+- **`ERP_WRITE` spans 12 unrelated domains**, including money-moving
+  finance (manual journal entries, payroll, period close) and POS cash/
+  gift-card sales — there's no way to grant one domain's write access
+  without granting all twelve. Needs a permission-model design decision
+  (at minimum a dedicated `FINANCE_WRITE`) plus a migration. Split into
+  **K-15**.
+- **Several live, correctly permission-gated mutations write no
+  `AuditLog` row and pass no actor id**: API key issuance/revocation
+  (`src/server/services/api-keys.ts` — highest priority, a credential
+  mutation with zero trail), FX-rate/budget/chart-of-accounts changes
+  (`src/app/admin/finance/actions.ts`), and most of
+  `src/app/admin/crm/actions.ts`'s 19 actions (loyalty grants, price
+  rules, quote→invoice conversion, consent records — each calls
+  `requireAdmin("CRM_WRITE")` but discards the returned admin instead of
+  threading it through for `writeAdminAudit`). Real, live gaps, but
+  multi-file work spanning several service modules — not a one-line fix.
+  Split into **K-14**.
+
+## Investigated and downgraded: `auditCrmAccess`/`auditFinanceAccess`
+
+The review agent also flagged `crm.ts`'s `auditCrmAccess` and
+`finance.ts`'s `auditFinanceAccess` helpers as writing outside their
+mutation's transaction and silently no-op'ing when `adminUserId` is
+absent. On inspection, both call sites turned out to be lower-risk than
+the initial framing suggested: `auditCrmAccess`'s only two callers
+(`createCustomerNote`/`createCustomerTask` in `crm.ts`) are **dead
+code** — grepped `src/` for any reference and found none, so nothing
+reachable is affected today. `auditFinanceAccess`'s only caller is
+`getFinanceOverview`, a **read**, not a mutation — it audits finance-data
+*views*, not finance mutations, so it isn't actually an instance of "no
+unlogged sensitive mutation" as the ticket defines it. Neither is worth
+fixing in isolation right now; noted here so a future pass doesn't
+re-flag them without this context, and re-evaluate `createCustomerNote`/
+`createCustomerTask` if they're ever wired up to a live caller.
+
+## K-02 status
+
+Closed. The one cheap, safe, high-confidence fix (`ORDERS_REFUND`) is
+shipped; the two substantial gaps are tracked as their own backlog items
+(`K-14`, `K-15`) so they aren't lost when this row is removed.
 
 ---
 
