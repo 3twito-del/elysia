@@ -1,6 +1,7 @@
 import type { Prisma } from "@prisma/client";
 
 import { db } from "~/server/db";
+import { writeAdminAudit } from "~/server/services/admin-commerce-workflow";
 import { ACCOUNT, postJournalEntry } from "~/server/services/ledger";
 
 /**
@@ -69,12 +70,13 @@ export async function createExpenseClaim(input: {
   amount: number;
   incurredAt?: Date;
   notes?: string;
+  adminUserId: string;
 }) {
   const amount = round2(input.amount);
   if (amount <= 0) throw new Error("סכום ההוצאה חייב להיות חיובי.");
 
   return db.$transaction(async (tx) => {
-    return tx.expenseClaim.create({
+    const claim = await tx.expenseClaim.create({
       data: {
         claimNumber: await nextClaimNumber(tx),
         employeeId: input.employeeId,
@@ -85,6 +87,16 @@ export async function createExpenseClaim(input: {
         notes: input.notes,
       },
     });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "expense_claim_created",
+      entity: "ExpenseClaim",
+      entityId: claim.id,
+      metadata: { claimNumber: claim.claimNumber, amount },
+    });
+
+    return claim;
   });
 }
 
@@ -151,7 +163,10 @@ export async function approveExpenseClaim(input: {
 }
 
 /** Rejects a submitted claim. */
-export async function rejectExpenseClaim(input: { claimId: string }) {
+export async function rejectExpenseClaim(input: {
+  claimId: string;
+  adminUserId: string;
+}) {
   const claim = await db.expenseClaim.findUnique({
     where: { id: input.claimId },
     select: { status: true },
@@ -159,9 +174,20 @@ export async function rejectExpenseClaim(input: { claimId: string }) {
   if (!claim) throw new Error("בקשת הוצאה לא נמצאה.");
   if (claim.status !== "SUBMITTED") throw new Error("ניתן לדחות רק בקשה שהוגשה.");
 
-  return db.expenseClaim.update({
-    where: { id: input.claimId },
-    data: { status: "REJECTED" },
+  return db.$transaction(async (tx) => {
+    const rejected = await tx.expenseClaim.update({
+      where: { id: input.claimId },
+      data: { status: "REJECTED" },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "expense_claim_rejected",
+      entity: "ExpenseClaim",
+      entityId: rejected.id,
+    });
+
+    return rejected;
   });
 }
 

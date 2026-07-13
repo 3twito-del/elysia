@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -50,5 +53,24 @@ describe("computeArAging", () => {
     expect(aging.days61to90).toBe(300);
     expect(aging.days90plus).toBe(400);
     expect(aging.total).toBe(950);
+  });
+});
+
+describe("K-14 audit coverage", () => {
+  it("createCustomerInvoice writes an AuditLog row only when admin-initiated", () => {
+    const source = readFileSync(
+      path.join(process.cwd(), "src/server/services/accounts-receivable.ts"),
+      "utf8",
+    );
+    const start = source.indexOf("export async function createCustomerInvoice(");
+    const next = source.indexOf("\nexport async function ", start + 1);
+
+    expect(start).toBeGreaterThanOrEqual(0);
+
+    const body = source.slice(start, next === -1 ? source.length : next);
+
+    expect(body).toContain("db.$transaction");
+    expect(body).toContain("writeAdminAudit");
+    expect(body).toContain("if (input.adminUserId)");
   });
 });

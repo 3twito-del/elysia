@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -79,5 +82,43 @@ describe("summarizeReconciliation", () => {
       unmatchedAmount: -400,
       statementBalance: 805,
     });
+  });
+});
+
+describe("K-14 audit coverage", () => {
+  it("bank reconciliation mutations write an AuditLog row, and auto-match uses a callback-form transaction", () => {
+    const source = readFileSync(
+      path.join(process.cwd(), "src/server/services/bank-reconciliation.ts"),
+      "utf8",
+    );
+
+    for (const operation of [
+      "importBankStatementLines",
+      "autoMatchBankStatement",
+      "ignoreBankStatementLine",
+    ]) {
+      const start = source.indexOf(`export async function ${operation}`);
+      const next = source.indexOf("\nexport async function ", start + 1);
+
+      expect(start).toBeGreaterThanOrEqual(0);
+
+      const body = source.slice(start, next === -1 ? source.length : next);
+
+      expect(body).toContain("writeAdminAudit");
+    }
+
+    const autoMatchStart = source.indexOf(
+      "export async function autoMatchBankStatement",
+    );
+    const autoMatchNext = source.indexOf(
+      "\nexport async function ",
+      autoMatchStart + 1,
+    );
+    const autoMatchBody = source.slice(autoMatchStart, autoMatchNext);
+
+    // K-01/I-342 gotcha: db.$transaction([...]) (array form) throws under
+    // this repo's retry-proxy wrapper — must use the callback form.
+    expect(autoMatchBody).toContain("db.$transaction(async (tx)");
+    expect(autoMatchBody).not.toMatch(/db\.\$transaction\(\s*matches\.map/);
   });
 });

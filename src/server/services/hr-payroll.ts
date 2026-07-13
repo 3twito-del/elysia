@@ -1,6 +1,7 @@
 import type { Prisma } from "@prisma/client";
 
 import { db } from "~/server/db";
+import { writeAdminAudit } from "~/server/services/admin-commerce-workflow";
 import { ACCOUNT, postJournalEntry } from "~/server/services/ledger";
 
 /**
@@ -98,12 +99,13 @@ export async function createEmployee(input: {
   monthlyGross: number;
   hiredAt?: Date;
   branchId?: string;
+  adminUserId: string;
 }) {
   const monthlyGross = round2(input.monthlyGross);
   if (monthlyGross <= 0) throw new Error("שכר חודשי חייב להיות חיובי.");
 
   return db.$transaction(async (tx) => {
-    return tx.employee.create({
+    const employee = await tx.employee.create({
       data: {
         employeeNumber: await nextEmployeeNumber(tx),
         firstName: input.firstName,
@@ -116,6 +118,16 @@ export async function createEmployee(input: {
         branchId: input.branchId,
       },
     });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "employee_created",
+      entity: "Employee",
+      entityId: employee.id,
+      metadata: { employeeNumber: employee.employeeNumber },
+    });
+
+    return employee;
   });
 }
 

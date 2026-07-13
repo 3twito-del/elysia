@@ -425,26 +425,6 @@ have been deleted; partially done items state only their remaining scope.
   highest admin tier can reach it), but a real SSRF primitive on an
   outbound-webhook feature. Needs an explicit allowlist-vs-blocklist design
   decision plus delivery-time DNS-rebind re-validation before implementing.
-- **K-14 Audit-trail completion for developer/finance/CRM mutations — residual**
-  · P1 · NOW — split off from the now-closed K-02 review
-  (`docs/QA_EVIDENCE.md` "k-02-role-permission-review" and
-  "k-14-audit-trail-completion"). **CRM is fully done** (18 of 19 actions
-  in `src/app/admin/crm/actions.ts`; the 19th, segment recompute, is a
-  derived-state cache refresh, not a fact-creating mutation, so it's
-  deliberately not audited): leads, opportunities, quotes (create/send/
-  decide/convert-to-invoice), journeys (create/add-step/activate/archive/
-  enroll/tick), consent, and loyalty/price-rule grants all thread
-  `adminUserId` and write `writeAdminAudit` rows. Finance: API keys,
-  webhook endpoints, the four GL-structure mutations (exchange rates,
-  budgets, ledger accounts, chart-of-accounts seeding), subscriptions
-  (plan/subscribe/cancel/billing-run), and cost centers (create/toggle/
-  record-entry) are done. **Remaining scope** (`src/app/admin/finance/actions.ts`,
-  lower-priority operational mutations): bank-statement import/auto-match/
-  ignore, employee creation, expense-claim create/reject (approve already
-  has `postedById`), dunning (send reminder/record contact), and asset
-  maintenance (schedule create/record/toggle) — roughly 12 actions left,
-  same mechanical pattern (thread `adminUserId`, wrap in `db.$transaction`
-  if not already, `writeAdminAudit` inside it).
 - **K-15 `ERP_WRITE` permission granularity** · P2 · NOW — split off from
   the now-closed K-02 review. A single `ERP_WRITE` `AdminPermission` gates
   writes across 12 unrelated domains (`src/app/admin/{finance,pos,tax,

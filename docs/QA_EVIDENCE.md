@@ -2986,16 +2986,61 @@ CRM) in the same pass:
   `crm-journeys.test.ts`, `subscriptions.test.ts`, `cost-accounting.test.ts`,
   and the existing `crm-quotes.test.ts` K-14 block.
 
-## Remaining (K-14 stays open)
+## Update 2026-07-13 (fourth pass): finance's remaining ~12 actions fixed — K-14 fully closed
 
-- **Finance only, ~12 actions** (`src/app/admin/finance/actions.ts`):
-  bank-statement import/auto-match/ignore, employee creation, expense-claim
-  create/reject (approve already carries `postedById`), dunning (send
-  reminder/record contact), asset maintenance (schedule create/record/
-  toggle). All operational/lower-stakes relative to what's already fixed —
-  same mechanical pattern, no design decision needed, just remaining file
-  count.
-- CRM's audit-trail gap is fully closed as of this update.
+Per an explicit request to continue ("ארצה") through the last remaining
+front:
+
+- **Bank reconciliation** (`src/server/services/bank-reconciliation.ts`):
+  `importBankStatementLines`, `autoMatchBankStatement`,
+  `ignoreBankStatementLine` now write `bank_statement_{imported,
+  auto_matched, line_ignored}` rows. **Bonus fix, found while reading this
+  function closely for the audit-trail work**: `autoMatchBankStatement`
+  used the array form of `db.$transaction([...])` — the exact I-342/K-01
+  gotcha (this repo's retry-proxy-wrapped `db` export doesn't return real
+  Prisma `PrismaPromise` objects, so the array form throws "All elements
+  of the array need to be Prisma Client promises"). This meant the
+  auto-match feature has been **completely broken** (throws on every call
+  with ≥1 match) since it shipped. Fixed by converting to the callback
+  form, matching every other `$transaction` call site in the codebase.
+- **HR**: `createEmployee` (`hr-payroll.ts`) — `employee_created` row.
+- **Expense claims** (`expense-management.ts`): `createExpenseClaim`,
+  `rejectExpenseClaim` — `expense_claim_{created,rejected}` rows
+  (`approveExpenseClaim` already carried `postedById`).
+- **Dunning** (`dunning.ts`): `sendDunningReminder`,
+  `recordDunningContact` — `dunning_{reminder_sent,contact_recorded}` rows.
+- **Asset maintenance** (`asset-maintenance.ts`): `createMaintenanceSchedule`,
+  `recordMaintenance`, `setMaintenanceScheduleStatus` —
+  `maintenance_{schedule_created,recorded,schedule_status_updated}` rows.
+- **Bonus**: `createCustomerInvoice` (`accounts-receivable.ts`) — the
+  direct-create step for customer invoices, called from three places
+  (the finance admin action, `crm-quotes.ts`'s `convertQuoteToInvoice`,
+  and `subscriptions.ts`'s `runSubscriptionBilling`). Only the finance
+  admin action creates an invoice with no other audit trail of its own —
+  the other two callers already write their own higher-level audit row.
+  Added an **optional** `adminUserId`; the `customer_invoice_created` row
+  only fires when it's present, so the two batch/system callers are
+  unaffected (no double-auditing) and only the direct admin path gets a
+  new row.
+- `src/app/admin/finance/actions.ts` updated to capture and forward
+  `admin.id` for all of the above.
+- Tests: same source-shape-check pattern extended to
+  `bank-reconciliation.test.ts` (plus an explicit assertion that
+  `autoMatchBankStatement` no longer uses the array form),
+  `hr-payroll.test.ts`, `expense-management.test.ts`, `dunning.test.ts`,
+  `asset-maintenance.test.ts`, and `accounts-receivable.test.ts`.
+
+## K-14 status
+
+**Closed.** All identified sensitive mutations across developer (API
+keys, webhooks), finance (GL structure, subscriptions, cost centers, bank
+reconciliation, HR, expense claims, dunning, asset maintenance), and CRM
+(leads, opportunities, quotes, journeys, consent, loyalty, price rules)
+now thread `adminUserId` and write `writeAdminAudit` rows. Two exclusions
+remain intentional, not gaps: `recomputeSegmentMemberships` (derived-cache
+refresh, not a new fact) and `pauseSubscription`/`createCustomerNote`/
+`createCustomerTask` (confirmed dead code, no live caller). Row deleted
+from `docs/TASKS.md` per its own "completed items are deleted" convention.
 
 ---
 

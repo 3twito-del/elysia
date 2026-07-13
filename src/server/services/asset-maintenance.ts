@@ -1,4 +1,5 @@
 import { db } from "~/server/db";
+import { writeAdminAudit } from "~/server/services/admin-commerce-workflow";
 
 /**
  * Preventive maintenance for fixed assets (FIN-FA-004): recurring service
@@ -29,6 +30,7 @@ export async function createMaintenanceSchedule(input: {
   title: string;
   intervalDays: number;
   startDate?: Date;
+  adminUserId: string;
 }) {
   const title = input.title.trim();
   if (!input.fixedAssetId) throw new Error("יש לבחור נכס.");
@@ -43,18 +45,34 @@ export async function createMaintenanceSchedule(input: {
   if (!asset) throw new Error("נכס לא נמצא.");
 
   const start = input.startDate ?? new Date();
-  return db.maintenanceSchedule.create({
-    data: {
-      fixedAssetId: input.fixedAssetId,
-      title,
-      intervalDays,
-      nextDueAt: computeNextDue(start, intervalDays),
-    },
+
+  return db.$transaction(async (tx) => {
+    const schedule = await tx.maintenanceSchedule.create({
+      data: {
+        fixedAssetId: input.fixedAssetId,
+        title,
+        intervalDays,
+        nextDueAt: computeNextDue(start, intervalDays),
+      },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "maintenance_schedule_created",
+      entity: "MaintenanceSchedule",
+      entityId: schedule.id,
+      metadata: { fixedAssetId: input.fixedAssetId, title: schedule.title },
+    });
+
+    return schedule;
   });
 }
 
 /** Records a completed service: sets lastServicedAt=now and advances nextDueAt. */
-export async function recordMaintenance(input: { scheduleId: string }) {
+export async function recordMaintenance(input: {
+  scheduleId: string;
+  adminUserId: string;
+}) {
   const schedule = await db.maintenanceSchedule.findUnique({
     where: { id: input.scheduleId },
     select: { intervalDays: true },
@@ -62,22 +80,47 @@ export async function recordMaintenance(input: { scheduleId: string }) {
   if (!schedule) throw new Error("תזמון תחזוקה לא נמצא.");
 
   const now = new Date();
-  return db.maintenanceSchedule.update({
-    where: { id: input.scheduleId },
-    data: {
-      lastServicedAt: now,
-      nextDueAt: computeNextDue(now, schedule.intervalDays),
-    },
+
+  return db.$transaction(async (tx) => {
+    const updated = await tx.maintenanceSchedule.update({
+      where: { id: input.scheduleId },
+      data: {
+        lastServicedAt: now,
+        nextDueAt: computeNextDue(now, schedule.intervalDays),
+      },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "maintenance_recorded",
+      entity: "MaintenanceSchedule",
+      entityId: updated.id,
+    });
+
+    return updated;
   });
 }
 
 export async function setMaintenanceScheduleStatus(input: {
   scheduleId: string;
   status: "ACTIVE" | "PAUSED";
+  adminUserId: string;
 }) {
-  return db.maintenanceSchedule.update({
-    where: { id: input.scheduleId },
-    data: { status: input.status },
+  return db.$transaction(async (tx) => {
+    const updated = await tx.maintenanceSchedule.update({
+      where: { id: input.scheduleId },
+      data: { status: input.status },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "maintenance_schedule_status_updated",
+      entity: "MaintenanceSchedule",
+      entityId: updated.id,
+      metadata: { status: updated.status },
+    });
+
+    return updated;
   });
 }
 

@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { computePayslip, summarizePayroll } from "./hr-payroll";
@@ -34,5 +37,23 @@ describe("summarizePayroll", () => {
       netTotal: 13280,
       withholdingTotal: 2720,
     });
+  });
+});
+
+describe("K-14 audit coverage", () => {
+  it("createEmployee writes an AuditLog row inside a transaction", () => {
+    const source = readFileSync(
+      path.join(process.cwd(), "src/server/services/hr-payroll.ts"),
+      "utf8",
+    );
+    const start = source.indexOf("export async function createEmployee(");
+    const next = source.indexOf("\nexport async function ", start + 1);
+
+    expect(start).toBeGreaterThanOrEqual(0);
+
+    const body = source.slice(start, next === -1 ? source.length : next);
+
+    expect(body).toContain("db.$transaction");
+    expect(body).toContain("writeAdminAudit");
   });
 });

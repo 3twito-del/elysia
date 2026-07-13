@@ -1,4 +1,5 @@
 import { db } from "~/server/db";
+import { writeAdminAudit } from "~/server/services/admin-commerce-workflow";
 import { ACCOUNT } from "~/server/services/ledger";
 
 /**
@@ -155,7 +156,10 @@ export function summarizeReconciliation(
 }
 
 /** Imports parsed statement lines. Returns the inserted count. */
-export async function importBankStatementLines(lines: ParsedBankLine[]) {
+export async function importBankStatementLines(
+  lines: ParsedBankLine[],
+  adminUserId: string,
+) {
   if (lines.length === 0) return 0;
 
   const created = await db.bankStatementLine.createMany({
@@ -165,6 +169,13 @@ export async function importBankStatementLines(lines: ParsedBankLine[]) {
       amount: line.amount,
       reference: line.reference,
     })),
+  });
+
+  await writeAdminAudit(db, {
+    adminUserId,
+    action: "bank_statement_imported",
+    entity: "BankStatementLine",
+    metadata: { count: created.count },
   });
 
   return created.count;
@@ -231,7 +242,7 @@ async function loadUnmatchedCashEntries(): Promise<MatchableGlEntry[]> {
 }
 
 /** Auto-matches unmatched statement lines to GL cash entries. Returns the count. */
-export async function autoMatchBankStatement() {
+export async function autoMatchBankStatement(adminUserId: string) {
   const [bankLines, glEntries] = await Promise.all([
     db.bankStatementLine.findMany({
       where: { status: "UNMATCHED" },
@@ -251,26 +262,49 @@ export async function autoMatchBankStatement() {
 
   if (matches.length === 0) return 0;
 
-  await db.$transaction(
-    matches.map((match) =>
-      db.bankStatementLine.update({
+  // Callback form required: this repo's `db` export wraps every call in a
+  // retry proxy (src/server/db.ts), whose returned promises aren't real
+  // Prisma "PrismaPromise" objects — the array form of $transaction throws
+  // "All elements of the array need to be Prisma Client promises" (see
+  // admin-commerce.ts's other $transaction calls for the same convention).
+  await db.$transaction(async (tx) => {
+    for (const match of matches) {
+      await tx.bankStatementLine.update({
         where: { id: match.bankLineId },
         data: {
           status: "MATCHED",
           matchedJournalEntryId: match.journalEntryId,
         },
-      }),
-    ),
-  );
+      });
+    }
+  });
+
+  await writeAdminAudit(db, {
+    adminUserId,
+    action: "bank_statement_auto_matched",
+    entity: "BankStatementLine",
+    metadata: { matched: matches.length },
+  });
 
   return matches.length;
 }
 
 /** Marks a statement line as ignored (reconciled out of band). */
-export async function ignoreBankStatementLine(id: string) {
-  return db.bankStatementLine.update({
-    where: { id },
-    data: { status: "IGNORED", matchedJournalEntryId: null },
+export async function ignoreBankStatementLine(id: string, adminUserId: string) {
+  return db.$transaction(async (tx) => {
+    const line = await tx.bankStatementLine.update({
+      where: { id },
+      data: { status: "IGNORED", matchedJournalEntryId: null },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId,
+      action: "bank_statement_line_ignored",
+      entity: "BankStatementLine",
+      entityId: line.id,
+    });
+
+    return line;
   });
 }
 

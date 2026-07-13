@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -91,5 +94,25 @@ describe("buildDunningWorklist", () => {
     expect(worklist.map((entry) => entry.id)).toEqual(["a", "b"]);
     expect(worklist[0]!.level).toBe(2);
     expect(worklist[1]!.level).toBe(1);
+  });
+});
+
+describe("K-14 audit coverage", () => {
+  it("sendDunningReminder and recordDunningContact write an AuditLog row", () => {
+    const source = readFileSync(
+      path.join(process.cwd(), "src/server/services/dunning.ts"),
+      "utf8",
+    );
+
+    for (const operation of ["sendDunningReminder", "recordDunningContact"]) {
+      const start = source.indexOf(`export async function ${operation}`);
+      const next = source.indexOf("\nexport async function ", start + 1);
+
+      expect(start).toBeGreaterThanOrEqual(0);
+
+      const body = source.slice(start, next === -1 ? source.length : next);
+
+      expect(body).toContain("writeAdminAudit");
+    }
   });
 });

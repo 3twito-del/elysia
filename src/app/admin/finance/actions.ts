@@ -63,7 +63,7 @@ import { createEmployee, runPayroll } from "~/server/services/hr-payroll";
 import { closePeriod } from "~/server/services/period-close";
 
 export async function createCustomerInvoiceAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("ERP_WRITE");
 
   const lines = parseInvoiceLines(stringValue(formData.get("lines"))).map(
     (line) => ({
@@ -83,6 +83,7 @@ export async function createCustomerInvoiceAction(formData: FormData) {
     invoiceDate: new Date(),
     dueDate: dueDate ? new Date(dueDate) : undefined,
     lines,
+    adminUserId: admin.id,
   });
 
   revalidatePath("/admin/finance");
@@ -118,31 +119,31 @@ export async function recordCustomerReceiptAction(formData: FormData) {
 }
 
 export async function importBankStatementAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("ERP_WRITE");
 
   const lines = parseBankStatementCsv(stringValue(formData.get("csv")));
   if (lines.length === 0) {
     throw new Error("לא נמצאו שורות תקינות (פורמט: תאריך,תיאור,סכום,אסמכתא).");
   }
 
-  await importBankStatementLines(lines);
+  await importBankStatementLines(lines, admin.id);
   revalidatePath("/admin/finance");
 }
 
 export async function autoMatchBankStatementAction() {
-  await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("ERP_WRITE");
 
-  await autoMatchBankStatement();
+  await autoMatchBankStatement(admin.id);
   revalidatePath("/admin/finance");
 }
 
 export async function ignoreBankStatementLineAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("ERP_WRITE");
 
   const id = stringValue(formData.get("lineId"));
   if (!id) throw new Error("חסר מזהה שורת בנק.");
 
-  await ignoreBankStatementLine(id);
+  await ignoreBankStatementLine(id, admin.id);
   revalidatePath("/admin/finance");
 }
 
@@ -214,7 +215,7 @@ export async function disposeFixedAssetAction(formData: FormData) {
 }
 
 export async function createEmployeeAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("ERP_WRITE");
 
   const firstName = stringValue(formData.get("firstName")).trim();
   const lastName = stringValue(formData.get("lastName")).trim();
@@ -230,6 +231,7 @@ export async function createEmployeeAction(formData: FormData) {
     role: optionalString(formData.get("role")),
     department: optionalString(formData.get("department")),
     monthlyGross,
+    adminUserId: admin.id,
   });
 
   revalidatePath("/admin/finance");
@@ -244,7 +246,7 @@ export async function runPayrollAction() {
 }
 
 export async function createExpenseClaimAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("ERP_WRITE");
 
   const description = stringValue(formData.get("description")).trim();
   if (!description) throw new Error("תיאור ההוצאה הוא שדה חובה.");
@@ -257,6 +259,7 @@ export async function createExpenseClaimAction(formData: FormData) {
     description,
     category: optionalString(formData.get("category")),
     amount,
+    adminUserId: admin.id,
   });
 
   revalidatePath("/admin/finance");
@@ -274,12 +277,12 @@ export async function approveExpenseClaimAction(formData: FormData) {
 }
 
 export async function rejectExpenseClaimAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("ERP_WRITE");
 
   const claimId = stringValue(formData.get("claimId"));
   if (!claimId) throw new Error("חסר מזהה בקשה.");
 
-  await rejectExpenseClaim({ claimId });
+  await rejectExpenseClaim({ claimId, adminUserId: admin.id });
 
   revalidatePath("/admin/finance");
 }
@@ -437,18 +440,18 @@ export async function setExchangeRateAction(formData: FormData) {
 }
 
 export async function sendDunningReminderAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("ERP_WRITE");
 
   const customerInvoiceId = stringValue(formData.get("customerInvoiceId"));
   if (!customerInvoiceId) throw new Error("חסר מזהה חשבונית.");
 
-  await sendDunningReminder({ customerInvoiceId });
+  await sendDunningReminder({ customerInvoiceId, adminUserId: admin.id });
 
   revalidatePath("/admin/finance");
 }
 
 export async function recordDunningContactAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("ERP_WRITE");
 
   const customerInvoiceId = stringValue(formData.get("customerInvoiceId"));
   if (!customerInvoiceId) throw new Error("חסר מזהה חשבונית.");
@@ -457,13 +460,14 @@ export async function recordDunningContactAction(formData: FormData) {
     customerInvoiceId,
     level: Number(stringValue(formData.get("level"))) || 1,
     note: optionalString(formData.get("note")),
+    adminUserId: admin.id,
   });
 
   revalidatePath("/admin/finance");
 }
 
 export async function createMaintenanceScheduleAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("ERP_WRITE");
 
   const fixedAssetId = stringValue(formData.get("fixedAssetId"));
   if (!fixedAssetId) throw new Error("יש לבחור נכס.");
@@ -472,24 +476,25 @@ export async function createMaintenanceScheduleAction(formData: FormData) {
     fixedAssetId,
     title: stringValue(formData.get("title")),
     intervalDays: Number(stringValue(formData.get("intervalDays"))) || 0,
+    adminUserId: admin.id,
   });
 
   revalidatePath("/admin/finance");
 }
 
 export async function recordMaintenanceAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("ERP_WRITE");
 
   const scheduleId = stringValue(formData.get("scheduleId"));
   if (!scheduleId) throw new Error("חסר מזהה תזמון.");
 
-  await recordMaintenance({ scheduleId });
+  await recordMaintenance({ scheduleId, adminUserId: admin.id });
 
   revalidatePath("/admin/finance");
 }
 
 export async function toggleMaintenanceScheduleAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("ERP_WRITE");
 
   const scheduleId = stringValue(formData.get("scheduleId"));
   if (!scheduleId) throw new Error("חסר מזהה תזמון.");
@@ -497,6 +502,7 @@ export async function toggleMaintenanceScheduleAction(formData: FormData) {
   await setMaintenanceScheduleStatus({
     scheduleId,
     status: formData.get("status") === "ACTIVE" ? "ACTIVE" : "PAUSED",
+    adminUserId: admin.id,
   });
 
   revalidatePath("/admin/finance");

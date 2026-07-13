@@ -1,5 +1,6 @@
 import { notificationProvider } from "~/server/adapters/notifications";
 import { db } from "~/server/db";
+import { writeAdminAudit } from "~/server/services/admin-commerce-workflow";
 
 /**
  * AR dunning / collections (FIN-AR-001): builds a worklist of overdue customer
@@ -194,7 +195,10 @@ export function buildDunningEmail(input: {
  * Sends a dunning reminder email for an overdue invoice to the customer and logs
  * the contact. Outbound email via the configured provider.
  */
-export async function sendDunningReminder(input: { customerInvoiceId: string }) {
+export async function sendDunningReminder(input: {
+  customerInvoiceId: string;
+  adminUserId: string;
+}) {
   const invoice = await db.customerInvoice.findUnique({
     where: { id: input.customerInvoiceId },
     select: {
@@ -224,12 +228,24 @@ export async function sendDunningReminder(input: { customerInvoiceId: string }) 
 
   await notificationProvider.sendEmail({ to: email, subject, body });
 
-  return db.dunningAction.create({
-    data: {
-      customerInvoiceId: input.customerInvoiceId,
-      level,
-      note: `תזכורת נשלחה ל-${email}`,
-    },
+  return db.$transaction(async (tx) => {
+    const action = await tx.dunningAction.create({
+      data: {
+        customerInvoiceId: input.customerInvoiceId,
+        level,
+        note: `תזכורת נשלחה ל-${email}`,
+      },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "dunning_reminder_sent",
+      entity: "CustomerInvoice",
+      entityId: input.customerInvoiceId,
+      metadata: { level },
+    });
+
+    return action;
   });
 }
 
@@ -238,6 +254,7 @@ export async function recordDunningContact(input: {
   customerInvoiceId: string;
   level: number;
   note?: string;
+  adminUserId: string;
 }) {
   if (!input.customerInvoiceId) throw new Error("חסר מזהה חשבונית.");
   const level = Math.max(1, Math.min(4, Math.trunc(input.level)));
@@ -248,12 +265,24 @@ export async function recordDunningContact(input: {
   });
   if (!invoice) throw new Error("חשבונית לא נמצאה.");
 
-  return db.dunningAction.create({
-    data: {
-      customerInvoiceId: input.customerInvoiceId,
-      level,
-      note: input.note?.trim() ? input.note.trim() : null,
-    },
+  return db.$transaction(async (tx) => {
+    const action = await tx.dunningAction.create({
+      data: {
+        customerInvoiceId: input.customerInvoiceId,
+        level,
+        note: input.note?.trim() ? input.note.trim() : null,
+      },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "dunning_contact_recorded",
+      entity: "CustomerInvoice",
+      entityId: input.customerInvoiceId,
+      metadata: { level },
+    });
+
+    return action;
   });
 }
 

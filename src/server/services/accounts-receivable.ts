@@ -1,4 +1,5 @@
 import { db } from "~/server/db";
+import { writeAdminAudit } from "~/server/services/admin-commerce-workflow";
 import { DEFAULT_VAT_RATE } from "~/server/services/erp";
 import {
   ACCOUNT,
@@ -128,6 +129,10 @@ export async function createCustomerInvoice(input: {
     quantity: number;
     unitPrice: number;
   }>;
+  /** Present only when an admin directly creates the invoice (not when this
+   * is a step inside another audited flow, e.g. quote conversion or
+   * subscription billing — those already write their own audit row). */
+  adminUserId?: string;
 }) {
   const totals = computeCustomerInvoiceTotals({
     lines: input.lines,
@@ -135,30 +140,44 @@ export async function createCustomerInvoice(input: {
     taxTotal: input.taxTotal,
   });
 
-  return db.customerInvoice.create({
-    data: {
-      invoiceNumber:
-        input.invoiceNumber ?? (await createNextCustomerInvoiceNumber()),
-      customerId: input.customerId,
-      orderId: input.orderId,
-      currency: input.currency ?? "ILS",
-      subtotal: totals.subtotal,
-      taxTotal: totals.taxTotal,
-      total: totals.total,
-      invoiceDate: input.invoiceDate,
-      dueDate: input.dueDate,
-      notes: input.notes,
-      lines: {
-        create: input.lines.map((line) => ({
-          orderItemId: line.orderItemId,
-          description: line.description,
-          quantity: line.quantity,
-          unitPrice: line.unitPrice,
-          lineTotal: round2(line.quantity * line.unitPrice),
-        })),
+  return db.$transaction(async (tx) => {
+    const invoice = await tx.customerInvoice.create({
+      data: {
+        invoiceNumber:
+          input.invoiceNumber ?? (await createNextCustomerInvoiceNumber()),
+        customerId: input.customerId,
+        orderId: input.orderId,
+        currency: input.currency ?? "ILS",
+        subtotal: totals.subtotal,
+        taxTotal: totals.taxTotal,
+        total: totals.total,
+        invoiceDate: input.invoiceDate,
+        dueDate: input.dueDate,
+        notes: input.notes,
+        lines: {
+          create: input.lines.map((line) => ({
+            orderItemId: line.orderItemId,
+            description: line.description,
+            quantity: line.quantity,
+            unitPrice: line.unitPrice,
+            lineTotal: round2(line.quantity * line.unitPrice),
+          })),
+        },
       },
-    },
-    include: { lines: true, customer: true },
+      include: { lines: true, customer: true },
+    });
+
+    if (input.adminUserId) {
+      await writeAdminAudit(tx, {
+        adminUserId: input.adminUserId,
+        action: "customer_invoice_created",
+        entity: "CustomerInvoice",
+        entityId: invoice.id,
+        metadata: { invoiceNumber: invoice.invoiceNumber, total: totals.total },
+      });
+    }
+
+    return invoice;
   });
 }
 
