@@ -1342,7 +1342,7 @@ test.describe("cookie consent flow", () => {
       .toBe(false);
   });
 
-  test("records first-party analytics by default and clears it when switching to essential", async ({
+  test("does not record first-party analytics before consent, records after accepting, and clears when switching to essential", async ({
     page,
   }) => {
     await page.goto(`/product/${searchProductSlug}`);
@@ -1350,7 +1350,9 @@ test.describe("cookie consent flow", () => {
     await expect(
       page.getByRole("region", { name: "בחירת קוקיז" }),
     ).toBeVisible();
-    await expectRecentlyViewed(page, searchProductSlug, true);
+    // J-09: no tracking before an explicit "all" choice — "no choice yet" must
+    // never be treated the same as full consent.
+    await expectRecentlyViewed(page, searchProductSlug, false);
 
     const acceptCookiesButton = page.getByRole("button", {
       name: "אישור הכל",
