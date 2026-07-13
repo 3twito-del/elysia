@@ -1,4 +1,5 @@
 import { db } from "~/server/db";
+import { writeAdminAudit } from "~/server/services/admin-commerce-workflow";
 
 /**
  * Cost accounting / controlling (FIN-CO-001): cost & profit centers with
@@ -62,6 +63,7 @@ export async function createCostCenter(input: {
   name: string;
   kind?: string;
   monthlyBudget?: number;
+  adminUserId: string;
 }) {
   const code = input.code.trim().toUpperCase();
   const name = input.name.trim();
@@ -74,23 +76,48 @@ export async function createCostCenter(input: {
   });
   if (existing) throw new Error("קוד מרכז כבר קיים.");
 
-  return db.costCenter.create({
-    data: {
-      code,
-      name,
-      kind: normalizeCenterKind(input.kind),
-      monthlyBudget: round2(Math.max(0, input.monthlyBudget ?? 0)),
-    },
+  return db.$transaction(async (tx) => {
+    const center = await tx.costCenter.create({
+      data: {
+        code,
+        name,
+        kind: normalizeCenterKind(input.kind),
+        monthlyBudget: round2(Math.max(0, input.monthlyBudget ?? 0)),
+      },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "cost_center_created",
+      entity: "CostCenter",
+      entityId: center.id,
+      metadata: { code: center.code, kind: center.kind },
+    });
+
+    return center;
   });
 }
 
 export async function setCostCenterActive(input: {
   costCenterId: string;
   isActive: boolean;
+  adminUserId: string;
 }) {
-  return db.costCenter.update({
-    where: { id: input.costCenterId },
-    data: { isActive: input.isActive },
+  return db.$transaction(async (tx) => {
+    const center = await tx.costCenter.update({
+      where: { id: input.costCenterId },
+      data: { isActive: input.isActive },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "cost_center_status_updated",
+      entity: "CostCenter",
+      entityId: center.id,
+      metadata: { isActive: center.isActive },
+    });
+
+    return center;
   });
 }
 
@@ -100,6 +127,7 @@ export async function recordCostEntry(input: {
   kind: string;
   amount: number;
   description?: string;
+  adminUserId: string;
 }) {
   const period = input.period.trim();
   if (!/^\d{4}-\d{2}$/.test(period)) {
@@ -113,14 +141,26 @@ export async function recordCostEntry(input: {
   });
   if (!center) throw new Error("מרכז עלות לא נמצא.");
 
-  return db.costEntry.create({
-    data: {
-      costCenterId: input.costCenterId,
-      period,
-      kind: normalizeEntryKind(input.kind),
-      amount: round2(input.amount),
-      description: input.description,
-    },
+  return db.$transaction(async (tx) => {
+    const entry = await tx.costEntry.create({
+      data: {
+        costCenterId: input.costCenterId,
+        period,
+        kind: normalizeEntryKind(input.kind),
+        amount: round2(input.amount),
+        description: input.description,
+      },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "cost_entry_recorded",
+      entity: "CostCenter",
+      entityId: input.costCenterId,
+      metadata: { entryId: entry.id, kind: entry.kind, amount: Number(entry.amount) },
+    });
+
+    return entry;
   });
 }
 

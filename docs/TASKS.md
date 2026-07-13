@@ -428,32 +428,23 @@ have been deleted; partially done items state only their remaining scope.
 - **K-14 Audit-trail completion for developer/finance/CRM mutations — residual**
   · P1 · NOW — split off from the now-closed K-02 review
   (`docs/QA_EVIDENCE.md` "k-02-role-permission-review" and
-  "k-14-audit-trail-completion"). Done: API key issuance/revocation
-  (`src/server/services/api-keys.ts`), webhook endpoint create/toggle/
-  delete/manual-redeliver (`src/server/services/webhook-delivery.ts`), the
-  five money/legal-material CRM mutations — loyalty point grants,
-  price-rule create/toggle, consent recording, and quote decide/
-  convert-to-invoice (`src/server/services/{loyalty,pricing-rules,consent,
-  crm-quotes}.ts`) — and the core GL-structure finance mutations —
-  exchange-rate changes, budget line changes, custom ledger accounts, and
-  chart-of-accounts seeding (`src/server/services/{currency-fx,budgeting,
-  chart-of-accounts,ledger}.ts`) — each now threads `adminUserId` through
-  and writes an in-transaction `writeAdminAudit` row. **Scope correction**:
-  mapping `src/app/admin/finance/actions.ts` fully (30 actions, not
-  previously read in full) found the real remaining gap is larger than
-  first estimated — roughly 19 more finance actions with no actor
-  attribution: bank-statement import/auto-match/ignore, employee creation,
-  expense-claim create/reject (approve already has `postedById`),
-  subscriptions (plan create/subscribe/cancel/billing run), cost centers
-  (create/toggle/record entry), dunning (send/record contact), and asset
-  maintenance (schedule create/record/toggle) — plus the other ~13
-  lower-materiality `src/app/admin/crm/actions.ts` actions (leads,
-  opportunities, quote create/send, marketing journeys, segment recompute).
-  Same mechanical pattern throughout (thread `adminUserId`, wrap in
-  `db.$transaction` if not already, `writeAdminAudit` inside it) — just
-  substantial remaining file count, prioritize subscriptions/cost-centers/
-  expense-claims next (real financial commitments) over
-  bank-reconciliation/dunning/maintenance (operational, lower stakes).
+  "k-14-audit-trail-completion"). **CRM is fully done** (18 of 19 actions
+  in `src/app/admin/crm/actions.ts`; the 19th, segment recompute, is a
+  derived-state cache refresh, not a fact-creating mutation, so it's
+  deliberately not audited): leads, opportunities, quotes (create/send/
+  decide/convert-to-invoice), journeys (create/add-step/activate/archive/
+  enroll/tick), consent, and loyalty/price-rule grants all thread
+  `adminUserId` and write `writeAdminAudit` rows. Finance: API keys,
+  webhook endpoints, the four GL-structure mutations (exchange rates,
+  budgets, ledger accounts, chart-of-accounts seeding), subscriptions
+  (plan/subscribe/cancel/billing-run), and cost centers (create/toggle/
+  record-entry) are done. **Remaining scope** (`src/app/admin/finance/actions.ts`,
+  lower-priority operational mutations): bank-statement import/auto-match/
+  ignore, employee creation, expense-claim create/reject (approve already
+  has `postedById`), dunning (send reminder/record contact), and asset
+  maintenance (schedule create/record/toggle) — roughly 12 actions left,
+  same mechanical pattern (thread `adminUserId`, wrap in `db.$transaction`
+  if not already, `writeAdminAudit` inside it).
 - **K-15 `ERP_WRITE` permission granularity** · P2 · NOW — split off from
   the now-closed K-02 review. A single `ERP_WRITE` `AdminPermission` gates
   writes across 12 unrelated domains (`src/app/admin/{finance,pos,tax,

@@ -61,41 +61,67 @@ export async function createQuote(input: {
   taxTotal?: number;
   notes?: string;
   lines: Array<{ description: string; quantity: number; unitPrice: number }>;
+  adminUserId: string;
 }) {
   const totals = computeQuoteTotals({
     lines: input.lines,
     taxRate: input.taxRate,
     taxTotal: input.taxTotal,
   });
+  const quoteNumber = input.quoteNumber ?? (await createNextQuoteNumber());
 
-  return db.quote.create({
-    data: {
-      quoteNumber: input.quoteNumber ?? (await createNextQuoteNumber()),
-      opportunityId: input.opportunityId,
-      customerId: input.customerId,
-      currency: input.currency ?? "ILS",
-      subtotal: totals.subtotal,
-      taxTotal: totals.taxTotal,
-      total: totals.total,
-      validUntil: input.validUntil,
-      notes: input.notes,
-      lines: {
-        create: input.lines.map((line) => ({
-          description: line.description,
-          quantity: line.quantity,
-          unitPrice: line.unitPrice,
-          lineTotal: round2(line.quantity * line.unitPrice),
-        })),
+  return db.$transaction(async (tx) => {
+    const quote = await tx.quote.create({
+      data: {
+        quoteNumber,
+        opportunityId: input.opportunityId,
+        customerId: input.customerId,
+        currency: input.currency ?? "ILS",
+        subtotal: totals.subtotal,
+        taxTotal: totals.taxTotal,
+        total: totals.total,
+        validUntil: input.validUntil,
+        notes: input.notes,
+        lines: {
+          create: input.lines.map((line) => ({
+            description: line.description,
+            quantity: line.quantity,
+            unitPrice: line.unitPrice,
+            lineTotal: round2(line.quantity * line.unitPrice),
+          })),
+        },
       },
-    },
-    include: { lines: true },
+      include: { lines: true },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "quote_created",
+      entity: "Quote",
+      entityId: quote.id,
+      metadata: { quoteNumber: quote.quoteNumber, total: totals.total },
+    });
+
+    return quote;
   });
 }
 
-export async function sendQuote(quoteId: string) {
-  return db.quote.update({
-    where: { id: quoteId },
-    data: { status: "SENT", sentAt: new Date() },
+export async function sendQuote(quoteId: string, adminUserId: string) {
+  return db.$transaction(async (tx) => {
+    const quote = await tx.quote.update({
+      where: { id: quoteId },
+      data: { status: "SENT", sentAt: new Date() },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId,
+      action: "quote_sent",
+      entity: "Quote",
+      entityId: quote.id,
+      metadata: { quoteNumber: quote.quoteNumber },
+    });
+
+    return quote;
   });
 }
 

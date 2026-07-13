@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { advanceEnrollment, computeNextRunAt } from "./crm-journeys";
@@ -83,5 +86,32 @@ describe("advanceEnrollment", () => {
         now,
       }),
     ).toEqual({ due: false });
+  });
+});
+
+describe("K-14 audit coverage", () => {
+  it("journey mutations write an AuditLog row", () => {
+    const source = readFileSync(
+      path.join(process.cwd(), "src/server/services/crm-journeys.ts"),
+      "utf8",
+    );
+
+    for (const operation of [
+      "createJourney",
+      "addJourneyStep",
+      "activateJourney",
+      "archiveJourney",
+      "enrollSegmentMembers",
+      "runJourneyTick",
+    ]) {
+      const start = source.indexOf(`export async function ${operation}`);
+      const next = source.indexOf("\nexport async function ", start + 1);
+
+      expect(start).toBeGreaterThanOrEqual(0);
+
+      const body = source.slice(start, next === -1 ? source.length : next);
+
+      expect(body).toContain("writeAdminAudit");
+    }
   });
 });

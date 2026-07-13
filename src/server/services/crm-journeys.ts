@@ -1,6 +1,7 @@
 import type { Prisma } from "@prisma/client";
 
 import { db } from "~/server/db";
+import { writeAdminAudit } from "~/server/services/admin-commerce-workflow";
 import { isChannelAllowed } from "~/server/services/consent";
 import { BUSINESS_EVENTS, createOutboxEvent } from "~/server/services/outbox";
 
@@ -81,15 +82,28 @@ export async function createJourney(input: {
   name: string;
   description?: string;
   segmentId?: string;
+  adminUserId: string;
 }) {
-  return db.journey.create({
-    data: {
-      key: input.key,
-      name: input.name,
-      description: input.description,
-      segmentId: input.segmentId,
-      triggerType: input.segmentId ? "segment_entered" : "manual",
-    },
+  return db.$transaction(async (tx) => {
+    const journey = await tx.journey.create({
+      data: {
+        key: input.key,
+        name: input.name,
+        description: input.description,
+        segmentId: input.segmentId,
+        triggerType: input.segmentId ? "segment_entered" : "manual",
+      },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "journey_created",
+      entity: "Journey",
+      entityId: journey.id,
+      metadata: { key: journey.key, name: journey.name },
+    });
+
+    return journey;
   });
 }
 
@@ -99,53 +113,89 @@ export async function addJourneyStep(input: {
   actionType: string;
   delayHours: number;
   actionConfig?: Prisma.InputJsonValue;
+  adminUserId: string;
 }) {
-  const last = await db.journeyStep.findFirst({
-    where: { journeyId: input.journeyId },
-    orderBy: { stepOrder: "desc" },
-    select: { stepOrder: true },
-  });
+  return db.$transaction(async (tx) => {
+    const last = await tx.journeyStep.findFirst({
+      where: { journeyId: input.journeyId },
+      orderBy: { stepOrder: "desc" },
+      select: { stepOrder: true },
+    });
 
-  return db.journeyStep.create({
-    data: {
-      journeyId: input.journeyId,
-      stepOrder: (last?.stepOrder ?? 0) + 1,
-      actionType: input.actionType,
-      delayHours: Math.max(0, Math.trunc(input.delayHours)),
-      actionConfig: input.actionConfig,
-    },
+    const step = await tx.journeyStep.create({
+      data: {
+        journeyId: input.journeyId,
+        stepOrder: (last?.stepOrder ?? 0) + 1,
+        actionType: input.actionType,
+        delayHours: Math.max(0, Math.trunc(input.delayHours)),
+        actionConfig: input.actionConfig,
+      },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "journey_step_added",
+      entity: "Journey",
+      entityId: input.journeyId,
+      metadata: { stepId: step.id, actionType: step.actionType },
+    });
+
+    return step;
   });
 }
 
 /** Activates a journey (requires at least one step). */
-export async function activateJourney(journeyId: string) {
+export async function activateJourney(journeyId: string, adminUserId: string) {
   const stepCount = await db.journeyStep.count({ where: { journeyId } });
   if (stepCount === 0) {
     throw new Error("לא ניתן להפעיל מסע ללא צעדים.");
   }
 
-  return db.journey.update({
-    where: { id: journeyId },
-    data: { status: "ACTIVE" },
+  return db.$transaction(async (tx) => {
+    const journey = await tx.journey.update({
+      where: { id: journeyId },
+      data: { status: "ACTIVE" },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId,
+      action: "journey_activated",
+      entity: "Journey",
+      entityId: journey.id,
+    });
+
+    return journey;
   });
 }
 
 /** Archives a journey and cancels its active enrollments. */
-export async function archiveJourney(journeyId: string) {
+export async function archiveJourney(journeyId: string, adminUserId: string) {
   return db.$transaction(async (tx) => {
     await tx.journeyEnrollment.updateMany({
       where: { journeyId, status: "ACTIVE" },
       data: { status: "CANCELLED" },
     });
-    return tx.journey.update({
+    const journey = await tx.journey.update({
       where: { id: journeyId },
       data: { status: "ARCHIVED" },
     });
+
+    await writeAdminAudit(tx, {
+      adminUserId,
+      action: "journey_archived",
+      entity: "Journey",
+      entityId: journey.id,
+    });
+
+    return journey;
   });
 }
 
 /** Enrolls a journey's segment members who are not already enrolled. */
-export async function enrollSegmentMembers(journeyId: string) {
+export async function enrollSegmentMembers(
+  journeyId: string,
+  adminUserId: string,
+) {
   const journey = await db.journey.findUnique({
     where: { id: journeyId },
     include: { steps: { orderBy: { stepOrder: "asc" }, take: 1 } },
@@ -177,23 +227,38 @@ export async function enrollSegmentMembers(journeyId: string) {
   if (toEnroll.length === 0) return 0;
 
   const nextRunAt = computeNextRunAt(new Date(), firstStep.delayHours);
-  const created = await db.journeyEnrollment.createMany({
-    data: toEnroll.map((customerId) => ({
-      journeyId,
-      customerId,
-      nextRunAt,
-    })),
-    skipDuplicates: true,
-  });
 
-  return created.count;
+  return db.$transaction(async (tx) => {
+    const created = await tx.journeyEnrollment.createMany({
+      data: toEnroll.map((customerId) => ({
+        journeyId,
+        customerId,
+        nextRunAt,
+      })),
+      skipDuplicates: true,
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId,
+      action: "journey_segment_enrolled",
+      entity: "Journey",
+      entityId: journeyId,
+      metadata: { enrolledCount: created.count },
+    });
+
+    return created.count;
+  });
 }
 
 /**
  * Advances every due enrollment by one step, dispatching its action. Returns the
  * number of enrollments processed and actions dispatched.
  */
-export async function runJourneyTick(now: Date = new Date()) {
+export async function runJourneyTick(input: {
+  now?: Date;
+  adminUserId: string;
+}) {
+  const now = input.now ?? new Date();
   const due = await db.journeyEnrollment.findMany({
     where: { status: "ACTIVE", nextRunAt: { lte: now } },
     include: {
@@ -273,6 +338,15 @@ export async function runJourneyTick(now: Date = new Date()) {
     });
 
     processed += 1;
+  }
+
+  if (processed > 0) {
+    await writeAdminAudit(db, {
+      adminUserId: input.adminUserId,
+      action: "journey_tick_run",
+      entity: "Journey",
+      metadata: { processed, dispatched },
+    });
   }
 
   return { processed, dispatched };

@@ -2942,22 +2942,60 @@ the four functions exists. Tests: same source-shape-check pattern added to
 `currency-fx.test.ts`, `budgeting.test.ts`, `chart-of-accounts.test.ts`,
 `ledger.test.ts`.
 
+## Update 2026-07-13 (third pass): CRM fully closed, subscriptions + cost centers fixed
+
+Per an explicit request to continue both remaining fronts (finance and
+CRM) in the same pass:
+
+- **CRM — all remaining 13 actions fixed** (`src/server/services/{crm-sales,
+  crm-quotes,crm-journeys}.ts`, wired through `src/app/admin/crm/actions.ts`):
+  - `createLead`, `convertLeadToOpportunity`, `setOpportunityStage`
+    (`crm-sales.ts`) — `lead_created`, `lead_converted_to_opportunity`,
+    `opportunity_stage_updated` rows.
+  - `createQuote`, `sendQuote` (`crm-quotes.ts`, alongside the
+    already-fixed `decideQuote`/`convertQuoteToInvoice`) — `quote_created`,
+    `quote_sent` rows. `sendQuote`'s signature changed from a single
+    positional `quoteId` to `(quoteId, adminUserId)` — its only caller
+    (`sendQuoteAction`) updated to match.
+  - `createJourney`, `addJourneyStep`, `activateJourney`, `archiveJourney`,
+    `enrollSegmentMembers`, `runJourneyTick` (`crm-journeys.ts`) —
+    `journey_{created,step_added,activated,archived,segment_enrolled}`
+    rows per-call; `runJourneyTick` (a batch tick, confirmed only
+    admin-triggered — no cron caller) writes one summary
+    `journey_tick_run` row (`processed`/`dispatched` counts) only when
+    `processed > 0`, matching the `seedChartOfAccounts`/
+    `runSubscriptionBilling` batch-summary convention below rather than
+    one row per enrollment advanced.
+  - **Deliberately not audited**: `recomputeSegmentMemberships` — this
+    recomputes derived segment-membership *cache* state from existing
+    customer metrics, not a new business fact, so it doesn't fit "sensitive
+    mutation" under ADR 0004 any more than a cache warm would. CRM's
+    audit-trail gap is now fully closed (18 of 19 actions; the 19th is this
+    intentional exclusion).
+- **Finance — subscriptions and cost centers** (the two categories flagged
+  as next-priority "real recurring financial commitments" in the prior
+  update): `createPlan`, `subscribeCustomer`, `cancelSubscription`,
+  `runSubscriptionBilling` (`subscriptions.ts`) and `createCostCenter`,
+  `setCostCenterActive`, `recordCostEntry` (`cost-accounting.ts`).
+  `runSubscriptionBilling` follows the same batch-summary pattern
+  (`subscription_billing_run` with `billed`/`total`, only when `billed > 0`).
+  `pauseSubscription` was left unaudited — grepped and confirmed it has no
+  caller anywhere (dead code, same situation as `createCustomerNote`/
+  `createCustomerTask` found during K-02).
+- Tests: same source-shape-check pattern extended to `crm-sales.test.ts`,
+  `crm-journeys.test.ts`, `subscriptions.test.ts`, `cost-accounting.test.ts`,
+  and the existing `crm-quotes.test.ts` K-14 block.
+
 ## Remaining (K-14 stays open)
 
-- **Finance, ~19 more actions** (`src/app/admin/finance/actions.ts`):
+- **Finance only, ~12 actions** (`src/app/admin/finance/actions.ts`):
   bank-statement import/auto-match/ignore, employee creation, expense-claim
-  create/reject, subscriptions (plan create/subscribe/cancel/billing run),
-  cost centers (create/toggle/record entry), dunning (send reminder/record
-  contact), asset maintenance (schedule create/record/toggle). Priority
-  order if resumed: subscriptions and cost centers first (real recurring
-  financial commitments), then expense claims, then bank-reconciliation/
-  dunning/maintenance last (operational, lower stakes).
-- **CRM, lower-materiality actions** (~13 of 19): leads, opportunities,
-  quote create/send, the six marketing-journey actions, and segment
-  recompute. These don't move money or create a legal record the way the
-  five fixed above do, so they're correctly lower priority, but they're
-  still real gaps against ADR 0004's "no unlogged sensitive mutation"
-  bar and should be closed in a follow-up pass using the same pattern.
+  create/reject (approve already carries `postedById`), dunning (send
+  reminder/record contact), asset maintenance (schedule create/record/
+  toggle). All operational/lower-stakes relative to what's already fixed —
+  same mechanical pattern, no design decision needed, just remaining file
+  count.
+- CRM's audit-trail gap is fully closed as of this update.
 
 ---
 

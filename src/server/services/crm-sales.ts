@@ -1,4 +1,5 @@
 import { db } from "~/server/db";
+import { writeAdminAudit } from "~/server/services/admin-commerce-workflow";
 
 /**
  * CRM sales pipeline (CRM-SAL): Leads → Opportunities with a weighted forecast.
@@ -84,17 +85,30 @@ export async function createLead(input: {
   customerId?: string;
   assignedAdminUserId?: string;
   notes?: string;
+  adminUserId: string;
 }) {
-  return db.lead.create({
-    data: {
-      name: input.name,
-      email: input.email,
-      phone: input.phone,
-      source: input.source ?? "manual",
-      customerId: input.customerId,
-      assignedAdminUserId: input.assignedAdminUserId,
-      notes: input.notes,
-    },
+  return db.$transaction(async (tx) => {
+    const lead = await tx.lead.create({
+      data: {
+        name: input.name,
+        email: input.email,
+        phone: input.phone,
+        source: input.source ?? "manual",
+        customerId: input.customerId,
+        assignedAdminUserId: input.assignedAdminUserId,
+        notes: input.notes,
+      },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "lead_created",
+      entity: "Lead",
+      entityId: lead.id,
+      metadata: { name: lead.name, source: lead.source },
+    });
+
+    return lead;
   });
 }
 
@@ -105,6 +119,7 @@ export async function convertLeadToOpportunity(input: {
   stage?: string;
   expectedCloseDate?: Date;
   assignedAdminUserId?: string;
+  adminUserId: string;
 }) {
   return db.$transaction(async (tx) => {
     const lead = await tx.lead.findUnique({ where: { id: input.leadId } });
@@ -131,6 +146,14 @@ export async function convertLeadToOpportunity(input: {
       data: { status: "CONVERTED" },
     });
 
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "lead_converted_to_opportunity",
+      entity: "Opportunity",
+      entityId: opportunity.id,
+      metadata: { leadId: lead.id, title: opportunity.title },
+    });
+
     return opportunity;
   });
 }
@@ -139,18 +162,31 @@ export async function setOpportunityStage(input: {
   opportunityId: string;
   stage: string;
   probability?: number;
+  adminUserId: string;
 }) {
   const status =
     input.stage === "WON" ? "WON" : input.stage === "LOST" ? "LOST" : "OPEN";
 
-  return db.opportunity.update({
-    where: { id: input.opportunityId },
-    data: {
-      stage: input.stage,
-      status,
-      probability: input.probability ?? STAGE_PROBABILITY[input.stage] ?? 0,
-      closedAt: status === "OPEN" ? null : new Date(),
-    },
+  return db.$transaction(async (tx) => {
+    const opportunity = await tx.opportunity.update({
+      where: { id: input.opportunityId },
+      data: {
+        stage: input.stage,
+        status,
+        probability: input.probability ?? STAGE_PROBABILITY[input.stage] ?? 0,
+        closedAt: status === "OPEN" ? null : new Date(),
+      },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "opportunity_stage_updated",
+      entity: "Opportunity",
+      entityId: opportunity.id,
+      metadata: { stage: opportunity.stage, status: opportunity.status },
+    });
+
+    return opportunity;
   });
 }
 

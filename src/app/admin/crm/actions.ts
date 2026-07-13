@@ -43,7 +43,7 @@ import { recomputeSegmentMemberships } from "~/server/services/marketing-segment
 import { logActivity } from "~/server/services/crm-activity";
 
 export async function createLeadAction(formData: FormData) {
-  await requireAdmin("CRM_WRITE");
+  const admin = await requireAdmin("CRM_WRITE");
 
   const name = stringValue(formData.get("name")).trim();
   if (!name) throw new Error("שם הליד הוא שדה חובה.");
@@ -54,13 +54,14 @@ export async function createLeadAction(formData: FormData) {
     phone: optionalString(formData.get("phone")),
     source: optionalString(formData.get("source")),
     notes: optionalString(formData.get("notes")),
+    adminUserId: admin.id,
   });
 
   revalidatePath("/admin/crm");
 }
 
 export async function convertLeadAction(formData: FormData) {
-  await requireAdmin("CRM_WRITE");
+  const admin = await requireAdmin("CRM_WRITE");
 
   const leadId = stringValue(formData.get("leadId"));
   if (!leadId) throw new Error("חסר ליד להמרה.");
@@ -69,13 +70,14 @@ export async function convertLeadAction(formData: FormData) {
     leadId,
     title: optionalString(formData.get("title")) ?? "הזדמנות חדשה",
     amount: Number(formData.get("amount") ?? 0) || 0,
+    adminUserId: admin.id,
   });
 
   revalidatePath("/admin/crm");
 }
 
 export async function setOpportunityStageAction(formData: FormData) {
-  await requireAdmin("CRM_WRITE");
+  const admin = await requireAdmin("CRM_WRITE");
 
   const opportunityId = stringValue(formData.get("opportunityId"));
   if (!opportunityId) throw new Error("חסרה הזדמנות לעדכון.");
@@ -83,13 +85,14 @@ export async function setOpportunityStageAction(formData: FormData) {
   await setOpportunityStage({
     opportunityId,
     stage: stringValue(formData.get("stage")),
+    adminUserId: admin.id,
   });
 
   revalidatePath("/admin/crm");
 }
 
 export async function createQuoteAction(formData: FormData) {
-  await requireAdmin("CRM_WRITE");
+  const admin = await requireAdmin("CRM_WRITE");
 
   const lines = parseQuoteLines(stringValue(formData.get("lines")));
   if (lines.length === 0) {
@@ -104,15 +107,16 @@ export async function createQuoteAction(formData: FormData) {
     validUntil: validUntil ? new Date(validUntil) : undefined,
     notes: optionalString(formData.get("notes")),
     lines,
+    adminUserId: admin.id,
   });
 
   revalidatePath("/admin/crm");
 }
 
 export async function sendQuoteAction(formData: FormData) {
-  await requireAdmin("CRM_WRITE");
+  const admin = await requireAdmin("CRM_WRITE");
 
-  await sendQuote(stringValue(formData.get("quoteId")));
+  await sendQuote(stringValue(formData.get("quoteId")), admin.id);
 
   revalidatePath("/admin/crm");
 }
@@ -152,7 +156,7 @@ export async function recomputeSegmentsAction() {
 }
 
 export async function createJourneyAction(formData: FormData) {
-  await requireAdmin("CRM_WRITE");
+  const admin = await requireAdmin("CRM_WRITE");
 
   const key = stringValue(formData.get("key")).trim();
   const name = stringValue(formData.get("name")).trim();
@@ -163,13 +167,14 @@ export async function createJourneyAction(formData: FormData) {
     name,
     description: optionalString(formData.get("description")),
     segmentId: optionalString(formData.get("segmentId")),
+    adminUserId: admin.id,
   });
 
   revalidatePath("/admin/crm");
 }
 
 export async function addJourneyStepAction(formData: FormData) {
-  await requireAdmin("CRM_WRITE");
+  const admin = await requireAdmin("CRM_WRITE");
 
   const journeyId = stringValue(formData.get("journeyId"));
   if (!journeyId) throw new Error("חסר מסע לצעד.");
@@ -181,39 +186,40 @@ export async function addJourneyStepAction(formData: FormData) {
     actionType: stringValue(formData.get("actionType")) || "send_email",
     delayHours: Number(formData.get("delayHours") ?? 0) || 0,
     actionConfig: template ? { template } : undefined,
+    adminUserId: admin.id,
   });
 
   revalidatePath("/admin/crm");
 }
 
 export async function activateJourneyAction(formData: FormData) {
-  await requireAdmin("CRM_WRITE");
+  const admin = await requireAdmin("CRM_WRITE");
 
-  await activateJourney(stringValue(formData.get("journeyId")));
+  await activateJourney(stringValue(formData.get("journeyId")), admin.id);
 
   revalidatePath("/admin/crm");
 }
 
 export async function enrollJourneySegmentAction(formData: FormData) {
-  await requireAdmin("CRM_WRITE");
+  const admin = await requireAdmin("CRM_WRITE");
 
-  await enrollSegmentMembers(stringValue(formData.get("journeyId")));
+  await enrollSegmentMembers(stringValue(formData.get("journeyId")), admin.id);
 
   revalidatePath("/admin/crm");
 }
 
 export async function archiveJourneyAction(formData: FormData) {
-  await requireAdmin("CRM_WRITE");
+  const admin = await requireAdmin("CRM_WRITE");
 
-  await archiveJourney(stringValue(formData.get("journeyId")));
+  await archiveJourney(stringValue(formData.get("journeyId")), admin.id);
 
   revalidatePath("/admin/crm");
 }
 
 export async function runJourneyTickAction() {
-  await requireAdmin("CRM_WRITE");
+  const admin = await requireAdmin("CRM_WRITE");
 
-  await runJourneyTick();
+  await runJourneyTick({ adminUserId: admin.id });
 
   revalidatePath("/admin/crm");
 }

@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -55,5 +58,29 @@ describe("winRate", () => {
         { stage: "PROPOSAL", status: "OPEN", amount: 1, probability: 50 },
       ]),
     ).toBe(0);
+  });
+});
+
+describe("K-14 audit coverage", () => {
+  it("createLead, convertLeadToOpportunity, and setOpportunityStage write an AuditLog row", () => {
+    const source = readFileSync(
+      path.join(process.cwd(), "src/server/services/crm-sales.ts"),
+      "utf8",
+    );
+
+    for (const operation of [
+      "createLead",
+      "convertLeadToOpportunity",
+      "setOpportunityStage",
+    ]) {
+      const start = source.indexOf(`export async function ${operation}`);
+      const next = source.indexOf("\nexport async function ", start + 1);
+
+      expect(start).toBeGreaterThanOrEqual(0);
+
+      const body = source.slice(start, next === -1 ? source.length : next);
+
+      expect(body).toContain("writeAdminAudit");
+    }
   });
 });

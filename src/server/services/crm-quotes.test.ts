@@ -76,7 +76,12 @@ describe("K-14 audit coverage", () => {
       "utf8",
     );
 
-    for (const operation of ["decideQuote", "convertQuoteToInvoice"]) {
+    for (const operation of [
+      "createQuote",
+      "sendQuote",
+      "decideQuote",
+      "convertQuoteToInvoice",
+    ]) {
       const start = source.indexOf(`export async function ${operation}`);
       const next = source.indexOf("\nexport async function ", start + 1);
 

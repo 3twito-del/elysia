@@ -1,4 +1,5 @@
 import { db } from "~/server/db";
+import { writeAdminAudit } from "~/server/services/admin-commerce-workflow";
 import {
   createCustomerInvoice,
   issueCustomerInvoice,
@@ -36,16 +37,29 @@ export async function createPlan(input: {
   name: string;
   amount: number;
   interval?: BillingInterval;
+  adminUserId: string;
 }) {
   if (input.amount <= 0) throw new Error("סכום המנוי חייב להיות חיובי.");
 
-  return db.subscriptionPlan.create({
-    data: {
-      key: input.key,
-      name: input.name,
-      amount: input.amount,
-      interval: input.interval ?? "MONTHLY",
-    },
+  return db.$transaction(async (tx) => {
+    const plan = await tx.subscriptionPlan.create({
+      data: {
+        key: input.key,
+        name: input.name,
+        amount: input.amount,
+        interval: input.interval ?? "MONTHLY",
+      },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "subscription_plan_created",
+      entity: "SubscriptionPlan",
+      entityId: plan.id,
+      metadata: { key: plan.key, amount: Number(plan.amount) },
+    });
+
+    return plan;
   });
 }
 
@@ -53,6 +67,7 @@ export async function createPlan(input: {
 export async function subscribeCustomer(input: {
   planId: string;
   customerId?: string;
+  adminUserId: string;
 }) {
   const plan = await db.subscriptionPlan.findUnique({
     where: { id: input.planId },
@@ -61,12 +76,24 @@ export async function subscribeCustomer(input: {
   if (!plan) throw new Error("תוכנית מנוי לא נמצאה.");
   if (!plan.isActive) throw new Error("תוכנית המנוי אינה פעילה.");
 
-  return db.customerSubscription.create({
-    data: {
-      planId: input.planId,
-      customerId: input.customerId,
-      nextBillingAt: new Date(),
-    },
+  return db.$transaction(async (tx) => {
+    const subscription = await tx.customerSubscription.create({
+      data: {
+        planId: input.planId,
+        customerId: input.customerId,
+        nextBillingAt: new Date(),
+      },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "customer_subscribed",
+      entity: "CustomerSubscription",
+      entityId: subscription.id,
+      metadata: { planId: input.planId, customerId: input.customerId },
+    });
+
+    return subscription;
   });
 }
 
@@ -77,10 +104,24 @@ export async function pauseSubscription(input: { subscriptionId: string }) {
   });
 }
 
-export async function cancelSubscription(input: { subscriptionId: string }) {
-  return db.customerSubscription.update({
-    where: { id: input.subscriptionId },
-    data: { status: "CANCELLED" },
+export async function cancelSubscription(input: {
+  subscriptionId: string;
+  adminUserId: string;
+}) {
+  return db.$transaction(async (tx) => {
+    const subscription = await tx.customerSubscription.update({
+      where: { id: input.subscriptionId },
+      data: { status: "CANCELLED" },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "subscription_cancelled",
+      entity: "CustomerSubscription",
+      entityId: subscription.id,
+    });
+
+    return subscription;
   });
 }
 
@@ -88,7 +129,11 @@ export async function cancelSubscription(input: { subscriptionId: string }) {
  * Bills every due ACTIVE subscription: issues an AR invoice per plan amount and
  * advances the schedule. Returns the number billed and the total amount.
  */
-export async function runSubscriptionBilling(now: Date = new Date()) {
+export async function runSubscriptionBilling(input: {
+  now?: Date;
+  adminUserId: string;
+}) {
+  const now = input.now ?? new Date();
   const due = await db.customerSubscription.findMany({
     where: { status: "ACTIVE", nextBillingAt: { lte: now } },
     include: { plan: true },
@@ -127,6 +172,15 @@ export async function runSubscriptionBilling(now: Date = new Date()) {
 
     billed += 1;
     total = Math.round((total + amount) * 100) / 100;
+  }
+
+  if (billed > 0) {
+    await writeAdminAudit(db, {
+      adminUserId: input.adminUserId,
+      action: "subscription_billing_run",
+      entity: "CustomerSubscription",
+      metadata: { billed, total },
+    });
   }
 
   return { billed, total };

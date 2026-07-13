@@ -306,7 +306,7 @@ export async function createLedgerAccountAction(formData: FormData) {
 }
 
 export async function createSubscriptionPlanAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("ERP_WRITE");
 
   const key = stringValue(formData.get("key")).trim();
   const name = stringValue(formData.get("name")).trim();
@@ -320,13 +320,14 @@ export async function createSubscriptionPlanAction(formData: FormData) {
     amount,
     interval:
       stringValue(formData.get("interval")) === "YEARLY" ? "YEARLY" : "MONTHLY",
+    adminUserId: admin.id,
   });
 
   revalidatePath("/admin/finance");
 }
 
 export async function subscribeAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("ERP_WRITE");
 
   const planId = stringValue(formData.get("planId"));
   if (!planId) throw new Error("יש לבחור תוכנית מנוי.");
@@ -334,26 +335,27 @@ export async function subscribeAction(formData: FormData) {
   await subscribeCustomer({
     planId,
     customerId: optionalString(formData.get("customerId")),
+    adminUserId: admin.id,
   });
 
   revalidatePath("/admin/finance");
 }
 
 export async function runSubscriptionBillingAction() {
-  await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("ERP_WRITE");
 
-  await runSubscriptionBilling();
+  await runSubscriptionBilling({ adminUserId: admin.id });
 
   revalidatePath("/admin/finance");
 }
 
 export async function cancelSubscriptionAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("ERP_WRITE");
 
   const subscriptionId = stringValue(formData.get("subscriptionId"));
   if (!subscriptionId) throw new Error("חסר מזהה מנוי.");
 
-  await cancelSubscription({ subscriptionId });
+  await cancelSubscription({ subscriptionId, adminUserId: admin.id });
 
   revalidatePath("/admin/finance");
 }
@@ -392,20 +394,21 @@ export async function closePeriodAction(formData: FormData) {
 }
 
 export async function createCostCenterAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("ERP_WRITE");
 
   await createCostCenter({
     code: stringValue(formData.get("code")),
     name: stringValue(formData.get("name")),
     kind: stringValue(formData.get("kind")),
     monthlyBudget: Number(stringValue(formData.get("monthlyBudget"))) || 0,
+    adminUserId: admin.id,
   });
 
   revalidatePath("/admin/finance");
 }
 
 export async function toggleCostCenterAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("ERP_WRITE");
 
   const costCenterId = stringValue(formData.get("costCenterId"));
   if (!costCenterId) throw new Error("חסר מזהה מרכז.");
@@ -413,6 +416,7 @@ export async function toggleCostCenterAction(formData: FormData) {
   await setCostCenterActive({
     costCenterId,
     isActive: formData.get("isActive") === "1",
+    adminUserId: admin.id,
   });
 
   revalidatePath("/admin/finance");
@@ -499,7 +503,7 @@ export async function toggleMaintenanceScheduleAction(formData: FormData) {
 }
 
 export async function recordCostEntryAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("ERP_WRITE");
 
   const costCenterId = stringValue(formData.get("costCenterId"));
   if (!costCenterId) throw new Error("יש לבחור מרכז עלות.");
@@ -510,6 +514,7 @@ export async function recordCostEntryAction(formData: FormData) {
     kind: stringValue(formData.get("kind")),
     amount: Number(stringValue(formData.get("amount"))) || 0,
     description: optionalString(formData.get("description")),
+    adminUserId: admin.id,
   });
 
   revalidatePath("/admin/finance");

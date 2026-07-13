@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -50,5 +53,30 @@ describe("budgetVariance", () => {
     const over = budgetVariance(1000, 1200);
     expect(over.variance).toBe(-200);
     expect(over.over).toBe(true);
+  });
+});
+
+describe("K-14 audit coverage", () => {
+  it("createCostCenter, setCostCenterActive, and recordCostEntry write an AuditLog row", () => {
+    const source = readFileSync(
+      path.join(process.cwd(), "src/server/services/cost-accounting.ts"),
+      "utf8",
+    );
+
+    for (const operation of [
+      "createCostCenter",
+      "setCostCenterActive",
+      "recordCostEntry",
+    ]) {
+      const start = source.indexOf(`export async function ${operation}`);
+      const next = source.indexOf("\nexport async function ", start + 1);
+
+      expect(start).toBeGreaterThanOrEqual(0);
+
+      const body = source.slice(start, next === -1 ? source.length : next);
+
+      expect(body).toContain("db.$transaction");
+      expect(body).toContain("writeAdminAudit");
+    }
   });
 });

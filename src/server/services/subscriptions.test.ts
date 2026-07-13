@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { computeNextBilling, isSubscriptionDue } from "./subscriptions";
@@ -25,5 +28,30 @@ describe("isSubscriptionDue", () => {
 
   it("is not due when the next billing date is in the future", () => {
     expect(isSubscriptionDue(new Date("2026-07-01T00:00:00Z"), now)).toBe(false);
+  });
+});
+
+describe("K-14 audit coverage", () => {
+  it("subscription mutations write an AuditLog row", () => {
+    const source = readFileSync(
+      path.join(process.cwd(), "src/server/services/subscriptions.ts"),
+      "utf8",
+    );
+
+    for (const operation of [
+      "createPlan",
+      "subscribeCustomer",
+      "cancelSubscription",
+      "runSubscriptionBilling",
+    ]) {
+      const start = source.indexOf(`export async function ${operation}`);
+      const next = source.indexOf("\nexport async function ", start + 1);
+
+      expect(start).toBeGreaterThanOrEqual(0);
+
+      const body = source.slice(start, next === -1 ? source.length : next);
+
+      expect(body).toContain("writeAdminAudit");
+    }
   });
 });
