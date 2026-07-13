@@ -439,6 +439,29 @@ async function processReservationExpiryEvent(event: OutboxEvent) {
       return { skipped: true, reason: "No due reservations." };
     }
 
+    // Atomically claim the PENDING_PAYMENT -> CANCELLED transition BEFORE
+    // touching stock. This is a compare-and-swap on order status: the WHERE
+    // clause takes the order row lock and, under READ COMMITTED, re-evaluates
+    // the predicate against the freshly-committed row. If a payment webhook
+    // flipped the order to PAID between our status read above and here, this
+    // matches 0 rows and we back off WITHOUT releasing the reservation — the
+    // paid order still owns that stock, so releasing it would oversell.
+    const cancelled = await tx.order.updateMany({
+      where: { id: orderId, status: "PENDING_PAYMENT" },
+      data: {
+        status: "CANCELLED",
+        cancelledAt: new Date(),
+      },
+    });
+
+    if (cancelled.count !== 1) {
+      return {
+        skipped: true,
+        reason:
+          "Order left PENDING_PAYMENT before expiry (paid or cancelled concurrently).",
+      };
+    }
+
     for (const reservation of reservations) {
       await tx.inventoryItem.updateMany({
         where: {
@@ -473,14 +496,6 @@ async function processReservationExpiryEvent(event: OutboxEvent) {
         status: "FAILED",
         providerStatus: "reservation_expired",
         failureCode: "reservation_expired",
-      },
-    });
-
-    await tx.order.update({
-      where: { id: orderId },
-      data: {
-        status: "CANCELLED",
-        cancelledAt: new Date(),
       },
     });
 

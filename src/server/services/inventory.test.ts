@@ -87,4 +87,63 @@ describe("inventory service", () => {
       },
     ]);
   });
+
+  it("admits exactly the sellable quantity across a burst of single-unit races", () => {
+    // 5 on hand, safety 1 => exactly 4 sellable. Six concurrent buyers each
+    // wanting one unit: the first four win, the last two are refused. This is
+    // the invariant the checkout compare-and-swap enforces at the DB level.
+    const results = simulateInventoryReservations({
+      quantity: 5,
+      reserved: 0,
+      requests: [1, 1, 1, 1, 1, 1],
+      safetyStock: 1,
+    });
+
+    expect(results.map((row) => row.accepted)).toEqual([
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+    ]);
+    expect(results.at(-1)?.reservedAfter).toBe(4);
+    expect(results.at(-1)?.sellableAfter).toBe(0);
+    // No oversell: accepted units never exceed on-hand minus safety stock.
+    const accepted = results
+      .filter((row) => row.accepted)
+      .reduce((sum, row) => sum + row.requested, 0);
+
+    expect(accepted).toBeLessThanOrEqual(5 - 1);
+  });
+
+  it("refuses a multi-unit request that would cross the safety-stock floor but admits a smaller one behind it", () => {
+    // 6 on hand, safety 2, one unit already reserved => 3 sellable. A request
+    // for 4 is refused (would breach safety stock); a later request for 3
+    // still fits exactly, and a trailing request for 1 is then refused.
+    const results = simulateInventoryReservations({
+      quantity: 6,
+      reserved: 1,
+      requests: [4, 3, 1],
+      safetyStock: 2,
+    });
+
+    expect(results.map((row) => row.accepted)).toEqual([false, true, false]);
+    expect(results[1]?.reservedAfter).toBe(4);
+    expect(results[1]?.sellableAfter).toBe(0);
+  });
+
+  it("treats an already-oversubscribed row as fully unavailable", () => {
+    // reserved already exceeds on-hand (e.g. after a manual correction):
+    // every further request must be refused, never producing negative stock.
+    const results = simulateInventoryReservations({
+      quantity: 3,
+      reserved: 5,
+      requests: [1, 2],
+      safetyStock: 0,
+    });
+
+    expect(results.every((row) => !row.accepted)).toBe(true);
+    expect(results.every((row) => row.sellableAfter === 0)).toBe(true);
+  });
 });

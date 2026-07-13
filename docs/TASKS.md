@@ -395,9 +395,29 @@ have been deleted; partially done items state only their remaining scope.
   invariant sweep are shipped (ADR 0003/0007). Remaining scope: the owner
   names a human owner + escalation path per alert class beyond the single
   operations inbox.
-- **K-05 Inventory correctness testing** · P0 · MEASURE — concurrency,
-  reservations, expiry, oversell; Shopify inventory never enters the local
-  ownership ledger.
+- **K-05 Inventory correctness testing — residual** · P1 · MEASURE — the
+  correctness work is shipped and evidenced (docs/QA_EVIDENCE.md →
+  `k-05-inventory-correctness`): the checkout oversell guard is a proven
+  compare-and-swap on `reserved` (READ COMMITTED EvalPlanQual re-check), the
+  same guard covers manual-order and POS, and the reservation-expiry vs.
+  payment-capture race is fixed with a symmetric `PENDING_PAYMENT` status CAS
+  in `jobs.ts` (expiry now claims the cancellation before releasing stock) and
+  `payment-webhooks.ts` (capture flips to PAID only from PENDING_PAYMENT).
+  Shopify stock never reaches the local ledger — the sync writes no inventory
+  rows, checkout filters to `source === "OWN"`, and `updateAdminInventory` now
+  rejects dropship variants. Deterministic + source-shape tests pin all of it.
+  The same status CAS also gates the GL/loyalty pipeline directly: a payment
+  captured after the order already lost the race to cancellation is logged
+  (`captured-after-order-not-paid`) and never posts a sale or awards points
+  against inventory it no longer owns. Remaining scope: (1) an empirical
+  live-DB concurrency e2e (two simultaneous checkouts of the same low-stock
+  variant) — this repo has no Vitest test-DB wiring, so the oversell guard is
+  currently proven by reasoning + DB semantics rather than measured; (2) a
+  payment captured in that same narrow race still leaves a CAPTURED payment
+  sitting on a CANCELLED order (inventory and the books both stay correct, but
+  the customer paid for an order marked cancelled) — needs a manual
+  finance/refund reconciliation path, tracked as an EXTERNAL+OWNER follow-up
+  once CardCom refund credentials exist (G-04), not an inventory gap.
 - **K-06 Catalog and provider drift detection — residual** · P1 · NOW —
   the fail-closed click-out verification, price-drift re-confirmation, and the
   scheduled sync job are shipped (ADR 0012). Remaining scope: mirror-staleness

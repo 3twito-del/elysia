@@ -41,6 +41,7 @@ Sections: 52
 - [k-08-prompt-injection-review](#evidence-k-08-prompt-injection-review)
 - [k-08-dependency-review](#evidence-k-08-dependency-review)
 - [k-02-role-permission-review](#evidence-k-02-role-permission-review)
+- [k-05-inventory-correctness](#evidence-k-05-inventory-correctness)
 - [k-14-audit-trail-completion](#evidence-k-14-audit-trail-completion)
 - [k-15-permission-domain-split](#evidence-k-15-permission-domain-split)
 - [legal-page-editorial-structure-benchmark](#evidence-legal-page-editorial-structure-benchmark)
@@ -5423,3 +5424,175 @@ The benchmark supports compact account-level shortlist help only. A dedicated
 wishlist route, visual comparison table, item ranking, cart conversion module,
 or supplier-aware availability promise still requires a separate benchmark and
 provider-readiness review.
+
+---
+
+<a id="evidence-k-05-inventory-correctness"></a>
+
+## Evidence: k-05-inventory-correctness
+
+# K-05 Inventory Correctness (concurrency, reservations, expiry, oversell)
+
+Date: 2026-07-13.
+
+Scope: prove or disprove that the stock-reservation paths are correct under
+concurrency, that reservation expiry cannot race payment capture into an
+oversell or a double state transition, and that Shopify-sourced (dropship)
+inventory never enters the local ownership ledger.
+
+## What was reviewed
+
+Every code path that writes `InventoryItem.reserved` / `InventoryItem.quantity`
+/ `InventoryLedger` / `InventoryReservation` was traced:
+`cart-checkout.ts`, `manual-order.ts`, `pos-register.ts`, `jobs.ts`
+(reservation-expiry outbox consumer), `payment-webhooks.ts` (CardCom capture),
+`admin-commerce.ts` (`updateAdminInventory`, `refundAdminOrder`),
+`admin-commerce-workflow.ts` (refund release), `shopify-dropship-sync.ts`,
+and `shopify-dropship-checkout.ts`.
+
+## Finding 1 — the checkout oversell guard is correct (no change needed)
+
+`createCartCheckoutOrderInTransaction` (cart-checkout.ts) reserves stock with a
+conditional `updateMany`:
+
+```
+UPDATE "InventoryItem"
+   SET reserved = reserved + :qty
+ WHERE branchId = :b AND variantId = :v
+   AND reserved <= (quantity - safetyStock - :qty)   -- headroom, from the tx snapshot
+```
+
+then requires `reserved.count === 1` or throws `CONFLICT`. This is a correct
+compare-and-swap. Under Postgres READ COMMITTED, when two checkouts contend for
+the last unit, the second `UPDATE` blocks on the row lock and — per Postgres
+EvalPlanQual — **re-evaluates its `WHERE` predicate against the freshly
+committed row**, not its original snapshot. The loser therefore matches 0 rows
+and raises the Hebrew `CONFLICT` ("מצב הסל השתנה…"). No oversell of a shared
+variant is possible. `manual-order.ts` uses the identical `reserved`-CAS and
+`pos-register.ts` uses the same shape on `quantity` (`gte` guard,
+`deducted.count !== 1`) for immediate-handover POS sales.
+
+Residual (documented, not fixed): the `quantity - safetyStock` term in the
+headroom bound is materialised from the transaction's read snapshot, not
+re-read live inside the `WHERE`. A concurrent admin **reduction** of on-hand
+`quantity` for the same variant mid-checkout is therefore not re-checked. This
+requires an admin editing the exact variant a customer is checking out in the
+same instant; it is not reachable from customer traffic alone and the immutable
+ledger records both movements. Left as a known edge.
+
+## Finding 2 — reservation-expiry vs. payment-capture race (BUG, fixed)
+
+The 30-minute reservation expiry (`processReservationExpiryEvent`, jobs.ts) and
+the CardCom capture webhook (`applyCardComWebhook`, payment-webhooks.ts) are two
+independent state machines that both terminate a `PENDING_PAYMENT` order. Before
+this change **neither guarded its terminal `order.update` with a status
+precondition**:
+
+- the webhook decided `order.status === "PENDING_PAYMENT"` from a snapshot read
+  *outside* the transaction, then did an unconditional `tx.order.update(... PAID)`;
+- the expiry job read status with a plain (unlocked) `SELECT`, then released the
+  reservation and did an unconditional `tx.order.update(... CANCELLED)`.
+
+Interleaved, they double-book: the expiry releases the reservation (putting the
+units back in the sellable pool) while the webhook flips the same order to PAID
+— a paid order whose stock is now sellable to someone else → **oversell**. The
+reverse interleave cancels a genuinely paid order.
+
+Fix — a symmetric compare-and-swap on order status, reusing the same
+affected-row-count pattern the checkout path already relies on:
+
+- **jobs.ts**: the `PENDING_PAYMENT → CANCELLED` flip is now an
+  `updateMany({ where: { id, status: "PENDING_PAYMENT" }, … })` performed
+  **before** any reservation is released; if `count !== 1` the job backs off and
+  records a SKIPPED run ("Order left PENDING_PAYMENT before expiry…") without
+  touching stock. The old trailing unconditional `tx.order.update` is removed.
+- **payment-webhooks.ts**: the `→ PAID` flip is now
+  `updateMany({ where: { id, status: "PENDING_PAYMENT" }, … })`, so a
+  concurrently-cancelled order is never resurrected to PAID, and redelivered
+  webhooks are idempotent (a second capture matches 0 rows). No functional
+  change on the normal path.
+
+Whichever transaction wins the order-row lock commits its transition; the loser
+re-evaluates `status = 'PENDING_PAYMENT'`, matches 0 rows, and stands down.
+Exactly one of {expire, pay} takes effect. All ledger writes remain INSERT-only,
+so the `InventoryLedger` immutability trigger (migration
+`20260708140000_immutability_triggers`) is respected.
+
+**Follow-up fix, same finding (2026-07-13):** the capture side's status CAS only
+protected the order row itself — `applyCardComWebhook` still unconditionally
+created the `payment.captured` outbox event and ran the GL-sale-posting +
+loyalty convergence pipeline whenever CardCom reported a capture, regardless of
+whether the order actually ended up `PAID`. `postOrderSaleToLedger` posts
+revenue from `order.total`/`financialTreatment` alone — it does not check
+`order.status` — so a payment captured in the same instant its reservation
+expired would have booked a sale and awarded loyalty points against an order
+that was actually `CANCELLED`, with its stock already released back to the
+sellable pool (potentially to another customer). Fixed: `applyCardComWebhook`
+now re-reads the order's status inside the transaction after the CAS attempt,
+and only creates the outbox event (which gates the whole downstream fast path)
+when the order is genuinely `PAID` — either this call made the transition, or
+an earlier successful call already did (idempotent redelivery). When the order
+lost the race to a cancellation, no GL entry is posted, no points are awarded,
+and a `[payment-webhooks:captured-after-order-not-paid]` error is logged for
+visibility.
+
+Residual (money scope, out of K-05): the order/inventory/books all now stay
+consistent, but the customer's card was still charged and the payment row sits
+`CAPTURED` on a `CANCELLED` order. Refunding that capture requires a real
+CardCom refund call, which needs the CardCom credentials/API work already
+tracked under **G-04** — this is a genuine EXTERNAL+OWNER follow-up, not an
+inventory-correctness defect, and it exists independently of this change.
+
+## Finding 3 — Shopify inventory never enters the local ledger (verified + hardened)
+
+Dropship (`DROPSHIP_SHOPIFY`) products carry **no local `InventoryItem` rows**:
+`shopify-dropship-sync.ts` upserts product/variant/price/media only and never
+references `InventoryItem`, `InventoryLedger`, or `reserved` (confirmed by
+grep). The separation holds at every write path:
+
+- `cart-checkout.ts` reserves only `getCartCheckoutOwnItems(...)`
+  (`source === "OWN"`); the dropship path (`shopify-dropship-checkout.ts`) is a
+  fail-closed click-out to Shopify that writes no local stock.
+- `manual-order.ts` and `pos-register.ts` require an existing `InventoryItem`
+  and throw otherwise — dropship variants have none.
+
+One admin-override gap existed: `updateAdminInventory` upserts an
+`InventoryItem` + ledger row for any `variantId` and did **not** check source, so
+a direct API call for a dropship variant could have created a local ownership
+ledger entry. Hardened: it now loads `variant.product.source` (already
+included) and rejects non-`OWN` variants
+("לא ניתן לנהל מלאי מקומי לפריט דרופשיפינג של ספק חיצוני.").
+
+## Tests
+
+- `src/server/services/inventory.test.ts` — added exhaustive
+  `simulateInventoryReservations` cases: a 6-buyer single-unit burst admitting
+  exactly the sellable count (no oversell), a multi-unit request refused at the
+  safety-stock floor while a smaller trailing one fits, and an
+  already-oversubscribed row staying fully unavailable.
+- `src/server/services/inventory-correctness.test.ts` (new) — source-shape
+  guards pinning: the `reserved`/`quantity` CAS + `count !== 1` in checkout,
+  manual-order, and POS; the OWN-only filter; the expiry `PENDING_PAYMENT`
+  status CAS with `cancelled.count !== 1` and the removal of the unconditional
+  `tx.order.update`; the capture-side status CAS; the capture-side GL/loyalty
+  gate (`captured && finalOrderStatus === "PAID"` plus the
+  `captured-after-order-not-paid` log line); and the absence of any
+  `InventoryItem`/`InventoryLedger`/`reserved` write in the dropship sync and
+  click-out. These lock the concurrency guards against a future refactor and
+  catch any regression to the array form of `db.$transaction`.
+
+Note on method: this repo has no test-database wiring for Vitest, so the races
+are proven by reasoning over Postgres isolation semantics plus these
+deterministic + shape guards. An empirical live-DB e2e (two simultaneous
+checkouts of one low-stock variant asserting exactly one success + one
+`CONFLICT` + a single reservation) remains the open MEASURE follow-up.
+
+## Verification
+
+- `pnpm check` (lint + typecheck + unit tests + build).
+
+## K-05 status
+
+Residual. Correctness work shipped and evidenced; `docs/TASKS.md` K-05 row
+edited in place to the two remaining items (empirical concurrency MEASURE e2e;
+captured-payment-on-cancelled-order money reconciliation).

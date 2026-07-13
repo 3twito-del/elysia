@@ -657,6 +657,16 @@ export async function updateAdminInventory(input: {
       where: { id: parsed.variantId },
       include: { product: true },
     });
+
+    // K-05 invariant: dropship (Shopify-sourced) stock is owned by the
+    // supplier and must never enter the local ownership ledger. Only OWN
+    // products carry local InventoryItem / InventoryLedger rows.
+    if (variant.product.source !== "OWN") {
+      throw new Error(
+        "לא ניתן לנהל מלאי מקומי לפריט דרופשיפינג של ספק חיצוני.",
+      );
+    }
+
     const branch = await tx.branch.findUniqueOrThrow({
       where: { id: parsed.branchId },
     });

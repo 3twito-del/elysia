@@ -77,30 +77,64 @@ export async function applyCardComWebhook(payload: unknown) {
       },
     });
 
-    if (captured && order.status === "PENDING_PAYMENT") {
-      await tx.order.update({
-        where: { id: payment.orderId },
+    let finalOrderStatus = order.status;
+
+    if (captured) {
+      // Compare-and-swap on order status rather than trusting the snapshot
+      // read outside this transaction: a concurrent reservation-expiry job may
+      // have cancelled this order in the meantime. The WHERE clause matches 0
+      // rows in that case, so we never resurrect a CANCELLED order into PAID
+      // (which would leave a released reservation backing a paid order —
+      // oversell). It is also idempotent for redelivered webhooks: a second
+      // capture finds the order already PAID and matches 0 rows.
+      const transition = await tx.order.updateMany({
+        where: { id: payment.orderId, status: "PENDING_PAYMENT" },
         data: {
           status: "PAID",
           paidAt: new Date(),
         },
       });
+
+      finalOrderStatus =
+        transition.count === 1
+          ? "PAID"
+          : (
+              await tx.order.findUniqueOrThrow({
+                where: { id: payment.orderId },
+                select: { status: true },
+              })
+            ).status;
+
+      if (finalOrderStatus !== "PAID") {
+        // The order lost the race to a concurrent cancellation (e.g. its
+        // reservation expired first, and that stock may already be resold).
+        // Do not enter the GL/loyalty pipeline for a non-PAID order — that
+        // would book revenue and award points against inventory this order
+        // no longer owns. This is a rare edge case that needs manual finance
+        // reconciliation (tracked as a K-05 follow-up), not a silent no-op.
+        console.error("[payment-webhooks:captured-after-order-not-paid]", {
+          orderId: payment.orderId,
+          orderStatus: finalOrderStatus,
+          paymentId: updatedPayment.id,
+        });
+      }
     }
 
-    const event = captured
-      ? await createOutboxEvent(tx, {
-          type: BUSINESS_EVENTS.paymentCaptured,
-          aggregateType: "Order",
-          aggregateId: payment.orderId,
-          idempotencyKey: `${BUSINESS_EVENTS.paymentCaptured}:cardcom:${updatedPayment.id}`,
-          payload: {
-            orderId: payment.orderId,
-            orderNumber: order.orderNumber,
-            provider: "cardcom",
-            providerPaymentId: updatedPayment.providerPaymentId,
-          },
-        })
-      : null;
+    const event =
+      captured && finalOrderStatus === "PAID"
+        ? await createOutboxEvent(tx, {
+            type: BUSINESS_EVENTS.paymentCaptured,
+            aggregateType: "Order",
+            aggregateId: payment.orderId,
+            idempotencyKey: `${BUSINESS_EVENTS.paymentCaptured}:cardcom:${updatedPayment.id}`,
+            payload: {
+              orderId: payment.orderId,
+              orderNumber: order.orderNumber,
+              provider: "cardcom",
+              providerPaymentId: updatedPayment.providerPaymentId,
+            },
+          })
+        : null;
 
     return { updated: updatedPayment, capturedEvent: event };
   });
