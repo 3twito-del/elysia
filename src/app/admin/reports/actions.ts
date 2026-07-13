@@ -23,7 +23,7 @@ import {
 const UNARY_OPS = new Set(["exists", "truthy", "falsy"]);
 
 export async function createReportAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("REPORTS_WRITE");
 
   const name = stringValue(formData.get("name")).trim();
   const datasetKey = stringValue(formData.get("datasetKey"));
@@ -59,7 +59,7 @@ export async function createReportAction(formData: FormData) {
 }
 
 export async function toggleReportAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("REPORTS_WRITE");
 
   const reportId = stringValue(formData.get("reportId"));
   if (!reportId) throw new Error("חסר מזהה דוח.");
@@ -73,7 +73,7 @@ export async function toggleReportAction(formData: FormData) {
 }
 
 export async function deleteReportAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("REPORTS_WRITE");
 
   const reportId = stringValue(formData.get("reportId"));
   if (!reportId) throw new Error("חסר מזהה דוח.");
@@ -84,7 +84,7 @@ export async function deleteReportAction(formData: FormData) {
 }
 
 export async function createReportScheduleAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("REPORTS_WRITE");
 
   const reportId = stringValue(formData.get("reportId"));
   if (!reportId) throw new Error("יש לבחור דוח.");
@@ -99,7 +99,7 @@ export async function createReportScheduleAction(formData: FormData) {
 }
 
 export async function toggleReportScheduleAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("REPORTS_WRITE");
 
   const scheduleId = stringValue(formData.get("scheduleId"));
   if (!scheduleId) throw new Error("חסר מזהה תזמון.");
@@ -113,7 +113,7 @@ export async function toggleReportScheduleAction(formData: FormData) {
 }
 
 export async function deleteReportScheduleAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("REPORTS_WRITE");
 
   const scheduleId = stringValue(formData.get("scheduleId"));
   if (!scheduleId) throw new Error("חסר מזהה תזמון.");

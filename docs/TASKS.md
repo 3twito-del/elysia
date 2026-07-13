@@ -417,16 +417,6 @@ have been deleted; partially done items state only their remaining scope.
 - **K-12 Physical boutique scope** · P2 · OWNER — keep the truthful online-only
   route or provide verified branch data; never imply boutiques that do not
   exist.
-- **K-15 `ERP_WRITE` permission granularity** · P2 · NOW — split off from
-  the now-closed K-02 review. A single `ERP_WRITE` `AdminPermission` gates
-  writes across 12 unrelated domains (`src/app/admin/{finance,pos,tax,
-  operations,projects,entities,workflow,reports,workspace,erp,marketing,
-  performance}/actions.ts`), including money-moving finance (manual journal
-  entries, payroll, period close) and POS cash/gift-card sales — there is
-  no way to grant one domain's write access without granting all twelve.
-  Needs a permission-model design decision (at minimum a dedicated
-  `FINANCE_WRITE`) plus a schema migration and re-gating the affected
-  action files before implementing.
 
 ### L — QA, measurement, release proof
 

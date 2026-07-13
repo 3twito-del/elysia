@@ -22,7 +22,7 @@ import {
 } from "~/server/services/marketing-campaigns";
 
 export async function createCampaignAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("MARKETING_WRITE");
 
   const name = stringValue(formData.get("name")).trim();
   if (!name) throw new Error("שם הקמפיין הוא שדה חובה.");
@@ -39,7 +39,7 @@ export async function createCampaignAction(formData: FormData) {
 }
 
 export async function recordCampaignResultsAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("MARKETING_WRITE");
 
   const campaignId = stringValue(formData.get("campaignId"));
   if (!campaignId) throw new Error("חסר מזהה קמפיין.");
@@ -54,7 +54,7 @@ export async function recordCampaignResultsAction(formData: FormData) {
 }
 
 export async function setCampaignStatusAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("MARKETING_WRITE");
 
   const campaignId = stringValue(formData.get("campaignId"));
   const status = stringValue(formData.get("status"));
@@ -66,7 +66,7 @@ export async function setCampaignStatusAction(formData: FormData) {
 }
 
 export async function createAffiliatePartnerAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("MARKETING_WRITE");
 
   const name = stringValue(formData.get("name")).trim();
   if (!name) throw new Error("שם השותף הוא שדה חובה.");
@@ -81,7 +81,7 @@ export async function createAffiliatePartnerAction(formData: FormData) {
 }
 
 export async function setPartnerStatusAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("MARKETING_WRITE");
 
   const partnerId = stringValue(formData.get("partnerId"));
   if (!partnerId) throw new Error("חסר מזהה שותף.");
@@ -95,7 +95,7 @@ export async function setPartnerStatusAction(formData: FormData) {
 }
 
 export async function recordReferralAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("MARKETING_WRITE");
 
   const partnerId = stringValue(formData.get("partnerId"));
   const amountRaw = stringValue(formData.get("amount")).trim();
@@ -111,7 +111,7 @@ export async function recordReferralAction(formData: FormData) {
 }
 
 export async function setReferralStatusAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("MARKETING_WRITE");
 
   const referralId = stringValue(formData.get("referralId"));
   if (!referralId) throw new Error("חסר מזהה הפניה.");

@@ -22,7 +22,7 @@ import {
 } from "~/server/services/time-attendance";
 
 export async function createReviewAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("PERFORMANCE_WRITE");
 
   const employeeId = stringValue(formData.get("employeeId"));
   const cycle = stringValue(formData.get("cycle")).trim();
@@ -39,7 +39,7 @@ export async function createReviewAction(formData: FormData) {
 }
 
 export async function setReviewStatusAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("PERFORMANCE_WRITE");
 
   const reviewId = stringValue(formData.get("reviewId"));
   const status = stringValue(formData.get("status"));
@@ -51,7 +51,7 @@ export async function setReviewStatusAction(formData: FormData) {
 }
 
 export async function createGoalAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("PERFORMANCE_WRITE");
 
   const employeeId = stringValue(formData.get("employeeId"));
   const title = stringValue(formData.get("title")).trim();
@@ -69,7 +69,7 @@ export async function createGoalAction(formData: FormData) {
 }
 
 export async function updateGoalAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("PERFORMANCE_WRITE");
 
   const goalId = stringValue(formData.get("goalId"));
   if (!goalId) throw new Error("חסר מזהה יעד.");
@@ -84,7 +84,7 @@ export async function updateGoalAction(formData: FormData) {
 }
 
 export async function recordAttendanceAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("PERFORMANCE_WRITE");
 
   const employeeId = stringValue(formData.get("employeeId"));
   const clockInRaw = stringValue(formData.get("clockIn"));
@@ -107,7 +107,7 @@ export async function recordAttendanceAction(formData: FormData) {
 }
 
 export async function createLeaveRequestAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("PERFORMANCE_WRITE");
 
   const employeeId = stringValue(formData.get("employeeId"));
   const startRaw = stringValue(formData.get("startDate"));
@@ -128,7 +128,7 @@ export async function createLeaveRequestAction(formData: FormData) {
 }
 
 export async function setLeaveRequestStatusAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("PERFORMANCE_WRITE");
 
   const leaveRequestId = stringValue(formData.get("leaveRequestId"));
   if (!leaveRequestId) throw new Error("חסר מזהה בקשה.");

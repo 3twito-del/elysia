@@ -43,7 +43,7 @@ import {
 } from "~/server/services/resource-booking";
 
 export async function createArticleAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("WORKSPACE_WRITE");
 
   const title = stringValue(formData.get("title")).trim();
   const body = stringValue(formData.get("body")).trim();
@@ -60,7 +60,7 @@ export async function createArticleAction(formData: FormData) {
 }
 
 export async function setArticleStatusAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("WORKSPACE_WRITE");
 
   const articleId = stringValue(formData.get("articleId"));
   const status = stringValue(formData.get("status"));
@@ -75,7 +75,7 @@ export async function setArticleStatusAction(formData: FormData) {
 }
 
 export async function createAnnouncementAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("WORKSPACE_WRITE");
 
   const title = stringValue(formData.get("title")).trim();
   const body = stringValue(formData.get("body")).trim();
@@ -99,7 +99,7 @@ export async function createAnnouncementAction(formData: FormData) {
 }
 
 export async function pinAnnouncementAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("WORKSPACE_WRITE");
 
   const announcementId = stringValue(formData.get("announcementId"));
   if (!announcementId) throw new Error("חסר מזהה הודעה.");
@@ -113,7 +113,7 @@ export async function pinAnnouncementAction(formData: FormData) {
 }
 
 export async function expireAnnouncementAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("WORKSPACE_WRITE");
 
   const announcementId = stringValue(formData.get("announcementId"));
   if (!announcementId) throw new Error("חסר מזהה הודעה.");
@@ -124,7 +124,7 @@ export async function expireAnnouncementAction(formData: FormData) {
 }
 
 export async function createDocumentAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("WORKSPACE_WRITE");
 
   const name = stringValue(formData.get("name")).trim();
   const url = stringValue(formData.get("url")).trim();
@@ -143,7 +143,7 @@ export async function createDocumentAction(formData: FormData) {
 }
 
 export async function requestSignatureAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("WORKSPACE_WRITE");
 
   const documentId = stringValue(formData.get("documentId"));
   if (!documentId) throw new Error("חסר מזהה מסמך.");
@@ -154,7 +154,7 @@ export async function requestSignatureAction(formData: FormData) {
 }
 
 export async function signDocumentAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("WORKSPACE_WRITE");
 
   const documentId = stringValue(formData.get("documentId"));
   if (!documentId) throw new Error("חסר מזהה מסמך.");
@@ -165,7 +165,7 @@ export async function signDocumentAction(formData: FormData) {
 }
 
 export async function archiveDocumentAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("WORKSPACE_WRITE");
 
   const documentId = stringValue(formData.get("documentId"));
   if (!documentId) throw new Error("חסר מזהה מסמך.");
@@ -176,7 +176,7 @@ export async function archiveDocumentAction(formData: FormData) {
 }
 
 export async function createApprovalRequestAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("WORKSPACE_WRITE");
 
   const title = stringValue(formData.get("title")).trim();
   if (!title) throw new Error("חסרה כותרת לבקשה.");
@@ -194,7 +194,7 @@ export async function createApprovalRequestAction(formData: FormData) {
 }
 
 export async function decideApprovalRequestAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("WORKSPACE_WRITE");
 
   const requestId = stringValue(formData.get("requestId"));
   if (!requestId) throw new Error("חסר מזהה בקשה.");
@@ -212,7 +212,7 @@ export async function decideApprovalRequestAction(formData: FormData) {
 }
 
 export async function createResourceAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("WORKSPACE_WRITE");
 
   const name = stringValue(formData.get("name")).trim();
   if (!name) throw new Error("שם המשאב הוא שדה חובה.");
@@ -227,7 +227,7 @@ export async function createResourceAction(formData: FormData) {
 }
 
 export async function createBookingAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("WORKSPACE_WRITE");
 
   const resourceId = stringValue(formData.get("resourceId"));
   const title = stringValue(formData.get("title")).trim();
@@ -248,7 +248,7 @@ export async function createBookingAction(formData: FormData) {
 }
 
 export async function cancelBookingAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("WORKSPACE_WRITE");
 
   const bookingId = stringValue(formData.get("bookingId"));
   if (!bookingId) throw new Error("חסר מזהה שיבוץ.");
@@ -259,7 +259,7 @@ export async function cancelBookingAction(formData: FormData) {
 }
 
 export async function createComplianceItemAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("WORKSPACE_WRITE");
 
   const title = stringValue(formData.get("title")).trim();
   if (!title) throw new Error("כותרת הפריט היא שדה חובה.");
@@ -285,7 +285,7 @@ export async function createComplianceItemAction(formData: FormData) {
 }
 
 export async function setComplianceStatusAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("WORKSPACE_WRITE");
 
   const itemId = stringValue(formData.get("itemId"));
   const status = stringValue(formData.get("status"));
@@ -305,7 +305,7 @@ export async function setComplianceStatusAction(formData: FormData) {
 }
 
 export async function createContractAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("WORKSPACE_WRITE");
 
   const title = stringValue(formData.get("title")).trim();
   const counterparty = stringValue(formData.get("counterparty")).trim();
@@ -326,7 +326,7 @@ export async function createContractAction(formData: FormData) {
 }
 
 export async function setContractStatusAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("WORKSPACE_WRITE");
 
   const contractId = stringValue(formData.get("contractId"));
   const status = stringValue(formData.get("status"));

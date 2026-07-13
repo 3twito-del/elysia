@@ -28,7 +28,7 @@ import {
 const UNARY_OPS = new Set(["exists", "truthy", "falsy"]);
 
 export async function createWorkflowAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("WORKFLOW_WRITE");
 
   const name = stringValue(formData.get("name")).trim();
   if (!name) throw new Error("שם התהליך הוא שדה חובה.");
@@ -79,7 +79,7 @@ function buildAction(formData: FormData): WorkflowAction {
 }
 
 export async function toggleWorkflowAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("WORKFLOW_WRITE");
 
   const workflowId = stringValue(formData.get("workflowId"));
   if (!workflowId) throw new Error("חסר מזהה תהליך.");
@@ -93,7 +93,7 @@ export async function toggleWorkflowAction(formData: FormData) {
 }
 
 export async function runWorkflowAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("WORKFLOW_WRITE");
 
   const workflowId = stringValue(formData.get("workflowId"));
   if (!workflowId) throw new Error("חסר מזהה תהליך.");
@@ -104,7 +104,7 @@ export async function runWorkflowAction(formData: FormData) {
 }
 
 export async function deleteWorkflowAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("WORKFLOW_WRITE");
 
   const workflowId = stringValue(formData.get("workflowId"));
   if (!workflowId) throw new Error("חסר מזהה תהליך.");
@@ -115,7 +115,7 @@ export async function deleteWorkflowAction(formData: FormData) {
 }
 
 export async function createFormAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("WORKFLOW_WRITE");
 
   const name = stringValue(formData.get("name")).trim();
   if (!name) throw new Error("שם הטופס הוא שדה חובה.");
@@ -135,7 +135,7 @@ export async function createFormAction(formData: FormData) {
 }
 
 export async function toggleFormAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("WORKFLOW_WRITE");
 
   const formId = stringValue(formData.get("formId"));
   if (!formId) throw new Error("חסר מזהה טופס.");
@@ -146,7 +146,7 @@ export async function toggleFormAction(formData: FormData) {
 }
 
 export async function defineCustomFieldAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("WORKFLOW_WRITE");
 
   const entityType = stringValue(formData.get("entityType")).trim();
   const key = stringValue(formData.get("key")).trim();
@@ -207,7 +207,7 @@ function coerceValue(raw: string): unknown {
 }
 
 export async function createBusinessRuleAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("WORKFLOW_WRITE");
 
   const name = stringValue(formData.get("name")).trim();
   const entityType = stringValue(formData.get("entityType")).trim();
@@ -237,7 +237,7 @@ export async function createBusinessRuleAction(formData: FormData) {
 }
 
 export async function toggleBusinessRuleAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("WORKFLOW_WRITE");
 
   const ruleId = stringValue(formData.get("ruleId"));
   if (!ruleId) throw new Error("חסר מזהה חוק.");
@@ -251,7 +251,7 @@ export async function toggleBusinessRuleAction(formData: FormData) {
 }
 
 export async function deleteBusinessRuleAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("WORKFLOW_WRITE");
 
   const ruleId = stringValue(formData.get("ruleId"));
   if (!ruleId) throw new Error("חסר מזהה חוק.");
@@ -262,7 +262,7 @@ export async function deleteBusinessRuleAction(formData: FormData) {
 }
 
 export async function upsertSlaPolicyAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("WORKFLOW_WRITE");
 
   const name = stringValue(formData.get("name")).trim();
   const entityType = stringValue(formData.get("entityType")).trim();

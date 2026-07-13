@@ -63,7 +63,7 @@ import { createEmployee, runPayroll } from "~/server/services/hr-payroll";
 import { closePeriod } from "~/server/services/period-close";
 
 export async function createCustomerInvoiceAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   const lines = parseInvoiceLines(stringValue(formData.get("lines"))).map(
     (line) => ({
@@ -90,7 +90,7 @@ export async function createCustomerInvoiceAction(formData: FormData) {
 }
 
 export async function issueCustomerInvoiceAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   await issueCustomerInvoice({
     invoiceId: stringValue(formData.get("invoiceId")),
@@ -101,7 +101,7 @@ export async function issueCustomerInvoiceAction(formData: FormData) {
 }
 
 export async function recordCustomerReceiptAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   const invoiceId = stringValue(formData.get("invoiceId"));
   const amount = Number(formData.get("amount") ?? 0) || 0;
@@ -119,7 +119,7 @@ export async function recordCustomerReceiptAction(formData: FormData) {
 }
 
 export async function importBankStatementAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   const lines = parseBankStatementCsv(stringValue(formData.get("csv")));
   if (lines.length === 0) {
@@ -131,14 +131,14 @@ export async function importBankStatementAction(formData: FormData) {
 }
 
 export async function autoMatchBankStatementAction() {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   await autoMatchBankStatement(admin.id);
   revalidatePath("/admin/finance");
 }
 
 export async function ignoreBankStatementLineAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   const id = stringValue(formData.get("lineId"));
   if (!id) throw new Error("חסר מזהה שורת בנק.");
@@ -148,7 +148,7 @@ export async function ignoreBankStatementLineAction(formData: FormData) {
 }
 
 export async function postManualJournalEntryAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   const lines = parseJournalLines(stringValue(formData.get("lines")));
   if (lines.length < 2) {
@@ -169,7 +169,7 @@ export async function postManualJournalEntryAction(formData: FormData) {
 }
 
 export async function createFixedAssetAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   const name = stringValue(formData.get("name")).trim();
   if (!name) throw new Error("שם הנכס הוא שדה חובה.");
@@ -192,7 +192,7 @@ export async function createFixedAssetAction(formData: FormData) {
 }
 
 export async function runDepreciationAction() {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   await runDepreciation({ postedById: admin.id });
 
@@ -200,7 +200,7 @@ export async function runDepreciationAction() {
 }
 
 export async function disposeFixedAssetAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   const fixedAssetId = stringValue(formData.get("fixedAssetId"));
   if (!fixedAssetId) throw new Error("חסר מזהה נכס.");
@@ -215,7 +215,7 @@ export async function disposeFixedAssetAction(formData: FormData) {
 }
 
 export async function createEmployeeAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   const firstName = stringValue(formData.get("firstName")).trim();
   const lastName = stringValue(formData.get("lastName")).trim();
@@ -238,7 +238,7 @@ export async function createEmployeeAction(formData: FormData) {
 }
 
 export async function runPayrollAction() {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   await runPayroll({ postedById: admin.id });
 
@@ -246,7 +246,7 @@ export async function runPayrollAction() {
 }
 
 export async function createExpenseClaimAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   const description = stringValue(formData.get("description")).trim();
   if (!description) throw new Error("תיאור ההוצאה הוא שדה חובה.");
@@ -266,7 +266,7 @@ export async function createExpenseClaimAction(formData: FormData) {
 }
 
 export async function approveExpenseClaimAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   const claimId = stringValue(formData.get("claimId"));
   if (!claimId) throw new Error("חסר מזהה בקשה.");
@@ -277,7 +277,7 @@ export async function approveExpenseClaimAction(formData: FormData) {
 }
 
 export async function rejectExpenseClaimAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   const claimId = stringValue(formData.get("claimId"));
   if (!claimId) throw new Error("חסר מזהה בקשה.");
@@ -288,7 +288,7 @@ export async function rejectExpenseClaimAction(formData: FormData) {
 }
 
 export async function seedChartAction() {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   await seedChartOfAccounts({ adminUserId: admin.id });
 
@@ -296,7 +296,7 @@ export async function seedChartAction() {
 }
 
 export async function createLedgerAccountAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   const code = stringValue(formData.get("code")).trim();
   const name = stringValue(formData.get("name")).trim();
@@ -309,7 +309,7 @@ export async function createLedgerAccountAction(formData: FormData) {
 }
 
 export async function createSubscriptionPlanAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   const key = stringValue(formData.get("key")).trim();
   const name = stringValue(formData.get("name")).trim();
@@ -330,7 +330,7 @@ export async function createSubscriptionPlanAction(formData: FormData) {
 }
 
 export async function subscribeAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   const planId = stringValue(formData.get("planId"));
   if (!planId) throw new Error("יש לבחור תוכנית מנוי.");
@@ -345,7 +345,7 @@ export async function subscribeAction(formData: FormData) {
 }
 
 export async function runSubscriptionBillingAction() {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   await runSubscriptionBilling({ adminUserId: admin.id });
 
@@ -353,7 +353,7 @@ export async function runSubscriptionBillingAction() {
 }
 
 export async function cancelSubscriptionAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   const subscriptionId = stringValue(formData.get("subscriptionId"));
   if (!subscriptionId) throw new Error("חסר מזהה מנוי.");
@@ -364,7 +364,7 @@ export async function cancelSubscriptionAction(formData: FormData) {
 }
 
 export async function setBudgetAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   const period = stringValue(formData.get("period")).trim();
   const accountCode = stringValue(formData.get("accountCode")).trim();
@@ -378,7 +378,7 @@ export async function setBudgetAction(formData: FormData) {
 }
 
 export async function closePeriodAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   const year = Number(formData.get("year") ?? 0) || 0;
   const month = Number(formData.get("month") ?? 0) || 0;
@@ -397,7 +397,7 @@ export async function closePeriodAction(formData: FormData) {
 }
 
 export async function createCostCenterAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   await createCostCenter({
     code: stringValue(formData.get("code")),
@@ -411,7 +411,7 @@ export async function createCostCenterAction(formData: FormData) {
 }
 
 export async function toggleCostCenterAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   const costCenterId = stringValue(formData.get("costCenterId"));
   if (!costCenterId) throw new Error("חסר מזהה מרכז.");
@@ -426,7 +426,7 @@ export async function toggleCostCenterAction(formData: FormData) {
 }
 
 export async function setExchangeRateAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   const effectiveRaw = stringValue(formData.get("effectiveDate"));
   await setExchangeRate({
@@ -440,7 +440,7 @@ export async function setExchangeRateAction(formData: FormData) {
 }
 
 export async function sendDunningReminderAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   const customerInvoiceId = stringValue(formData.get("customerInvoiceId"));
   if (!customerInvoiceId) throw new Error("חסר מזהה חשבונית.");
@@ -451,7 +451,7 @@ export async function sendDunningReminderAction(formData: FormData) {
 }
 
 export async function recordDunningContactAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   const customerInvoiceId = stringValue(formData.get("customerInvoiceId"));
   if (!customerInvoiceId) throw new Error("חסר מזהה חשבונית.");
@@ -467,7 +467,7 @@ export async function recordDunningContactAction(formData: FormData) {
 }
 
 export async function createMaintenanceScheduleAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   const fixedAssetId = stringValue(formData.get("fixedAssetId"));
   if (!fixedAssetId) throw new Error("יש לבחור נכס.");
@@ -483,7 +483,7 @@ export async function createMaintenanceScheduleAction(formData: FormData) {
 }
 
 export async function recordMaintenanceAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   const scheduleId = stringValue(formData.get("scheduleId"));
   if (!scheduleId) throw new Error("חסר מזהה תזמון.");
@@ -494,7 +494,7 @@ export async function recordMaintenanceAction(formData: FormData) {
 }
 
 export async function toggleMaintenanceScheduleAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   const scheduleId = stringValue(formData.get("scheduleId"));
   if (!scheduleId) throw new Error("חסר מזהה תזמון.");
@@ -509,7 +509,7 @@ export async function toggleMaintenanceScheduleAction(formData: FormData) {
 }
 
 export async function recordCostEntryAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("FINANCE_WRITE");
 
   const costCenterId = stringValue(formData.get("costCenterId"));
   if (!costCenterId) throw new Error("יש לבחור מרכז עלות.");

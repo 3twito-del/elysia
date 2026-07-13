@@ -27,7 +27,7 @@ import {
 } from "~/server/services/recruiting";
 
 export async function createTicketAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("OPERATIONS_WRITE");
 
   const title = stringValue(formData.get("title")).trim();
   if (!title) throw new Error("כותרת הפנייה היא שדה חובה.");
@@ -49,7 +49,7 @@ export async function createTicketAction(formData: FormData) {
 }
 
 export async function setTicketStatusAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("OPERATIONS_WRITE");
 
   const ticketId = stringValue(formData.get("ticketId"));
   const status = stringValue(formData.get("status"));
@@ -69,7 +69,7 @@ export async function setTicketStatusAction(formData: FormData) {
 }
 
 export async function createAssetAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("OPERATIONS_WRITE");
 
   const name = stringValue(formData.get("name")).trim();
   if (!name) throw new Error("שם הנכס הוא שדה חובה.");
@@ -85,7 +85,7 @@ export async function createAssetAction(formData: FormData) {
 }
 
 export async function setAssetStatusAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("OPERATIONS_WRITE");
 
   const assetId = stringValue(formData.get("assetId"));
   const status = stringValue(formData.get("status"));
@@ -100,7 +100,7 @@ export async function setAssetStatusAction(formData: FormData) {
 }
 
 export async function createFacilityRequestAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("OPERATIONS_WRITE");
 
   const title = stringValue(formData.get("title")).trim();
   if (!title) throw new Error("כותרת הבקשה היא שדה חובה.");
@@ -120,7 +120,7 @@ export async function createFacilityRequestAction(formData: FormData) {
 }
 
 export async function setFacilityStatusAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("OPERATIONS_WRITE");
 
   const requestId = stringValue(formData.get("requestId"));
   const status = stringValue(formData.get("status"));
@@ -140,7 +140,7 @@ export async function setFacilityStatusAction(formData: FormData) {
 }
 
 export async function createOpeningAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("OPERATIONS_WRITE");
 
   const title = stringValue(formData.get("title")).trim();
   if (!title) throw new Error("כותרת המשרה היא שדה חובה.");
@@ -155,7 +155,7 @@ export async function createOpeningAction(formData: FormData) {
 }
 
 export async function createCandidateAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("OPERATIONS_WRITE");
 
   const openingId = stringValue(formData.get("openingId"));
   const name = stringValue(formData.get("name")).trim();
@@ -171,7 +171,7 @@ export async function createCandidateAction(formData: FormData) {
 }
 
 export async function advanceCandidateAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("OPERATIONS_WRITE");
 
   const candidateId = stringValue(formData.get("candidateId"));
   if (!candidateId) throw new Error("חסר מזהה מועמד.");
@@ -182,7 +182,7 @@ export async function advanceCandidateAction(formData: FormData) {
 }
 
 export async function rejectCandidateAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("OPERATIONS_WRITE");
 
   const candidateId = stringValue(formData.get("candidateId"));
   if (!candidateId) throw new Error("חסר מזהה מועמד.");

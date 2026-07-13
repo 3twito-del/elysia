@@ -42,6 +42,7 @@ Sections: 52
 - [k-08-dependency-review](#evidence-k-08-dependency-review)
 - [k-02-role-permission-review](#evidence-k-02-role-permission-review)
 - [k-14-audit-trail-completion](#evidence-k-14-audit-trail-completion)
+- [k-15-permission-domain-split](#evidence-k-15-permission-domain-split)
 - [legal-page-editorial-structure-benchmark](#evidence-legal-page-editorial-structure-benchmark)
 - [mobile-pdp-rail-density-benchmark](#evidence-mobile-pdp-rail-density-benchmark)
 - [offline-page-install-pwa-recovery-priority-benchmark](#evidence-offline-page-install-pwa-recovery-priority-benchmark)
@@ -2874,7 +2875,86 @@ shipped; the two substantial gaps are tracked as their own backlog items
 
 ---
 
-<a id="evidence-k-14-audit-trail-completion"></a>
+<a id="evidence-k-15-permission-domain-split"></a>
+
+## Evidence: k-15-permission-domain-split
+
+# K-15 `ERP_WRITE` Permission Granularity
+
+Date: 2026-07-13.
+
+Scope: a single `ERP_WRITE` `AdminPermission` gated writes across 12
+unrelated admin domains, including money-moving finance/payroll — flagged
+by the K-02 review as needing a real design decision (a new permission
+enum value plus a schema migration) rather than a mechanical fix.
+
+## Design decision
+
+Asked explicitly: split out just `FINANCE_WRITE` (smallest migration,
+addresses the actual money-moving risk K-02 flagged) or a full per-domain
+split (a dedicated `*_WRITE` for all 12 domains, matching the existing
+`CATALOG_READ`/`CATALOG_WRITE`, `INVENTORY_READ`/`INVENTORY_WRITE`
+pattern). **Chose the full split.**
+
+Mapped all 12 domains by reading each `actions.ts` file's actual exported
+functions (not just trusting the folder name):
+
+| Domain | File | What it actually does | New permission |
+| --- | --- | --- | --- |
+| finance | `finance/actions.ts` | GL, budgets, subscriptions, cost centers, HR/payroll, expense claims, bank reconciliation, dunning, asset maintenance | `FINANCE_WRITE` |
+| entities | `entities/actions.ts` | Legal entities, intercompany transactions, per-entity FX | `FINANCE_WRITE` (already shared `FINANCE_READ` with finance) |
+| tax | `tax/actions.ts` | Withholding rules, invoice allocation numbers | `FINANCE_WRITE` (already shared `FINANCE_READ` with finance) |
+| erp | `erp/actions.ts` | Vendor portal, vendor invoices/payments, stock transfers | **unchanged** — kept `ERP_WRITE`, the one domain whose name already matched |
+| marketing | `marketing/actions.ts` | Campaigns, affiliates, referrals | `MARKETING_WRITE` |
+| operations | `operations/actions.ts` | Support tickets, assets, facilities, HR openings/candidates | `OPERATIONS_WRITE` |
+| performance | `performance/actions.ts` | HR reviews, goals, attendance, leave | `PERFORMANCE_WRITE` |
+| pos | `pos/actions.ts` | Gift cards, shifts, POS sales | `POS_WRITE` |
+| projects | `projects/actions.ts` | Projects, milestones, time logging | `PROJECTS_WRITE` |
+| reports | `reports/actions.ts` | Custom reports, schedules | `REPORTS_WRITE` |
+| workflow | `workflow/actions.ts` | Workflow automation, forms, custom fields, business rules | `WORKFLOW_WRITE` |
+| workspace | `workspace/actions.ts` | Articles, announcements, documents/signatures, contracts, compliance, bookings | `WORKSPACE_WRITE` |
+
+`entities` and `tax` were folded into `FINANCE_WRITE` rather than given
+their own permission: both already shared the existing `FINANCE_READ` for
+their page-level gate (pre-dating this change), so splitting their WRITE
+side from `finance` while their READ side stays merged would have been an
+inconsistent half-measure.
+
+**Explicitly out of scope**: the `*_READ` side. 9 of the 12 domains still
+share the generic `ERP_READ` for their page-level gate — this pass only
+addressed the `*_WRITE` mutation gate K-02 actually flagged. Splitting
+reads too would be a second, separately-scoped migration.
+
+## Implementation
+
+- `prisma/schema.prisma`: added 9 new `AdminPermission` enum values
+  (`FINANCE_WRITE`, `MARKETING_WRITE`, `OPERATIONS_WRITE`,
+  `PERFORMANCE_WRITE`, `POS_WRITE`, `PROJECTS_WRITE`, `REPORTS_WRITE`,
+  `WORKFLOW_WRITE`, `WORKSPACE_WRITE`).
+- `prisma/migrations/20260713000000_admin_permission_domain_split/migration.sql`:
+  additive `ALTER TYPE "AdminPermission" ADD VALUE` statements, matching
+  the exact precedent in `20260623100000_enterprise_analytics_crm_erp_schema`.
+- Re-gated all `requireAdmin("ERP_WRITE")` call sites in 11 of the 12
+  domain action files (142 total call sites checked; each file used
+  exactly one permission string throughout, confirmed before a blanket
+  replace). `erp/actions.ts` untouched.
+- `prisma/seed.ts`'s "מנהל מערכת" bootstrap role: added the 9 new values
+  to its explicit permission list, matching its existing (redundant with
+  `SYSTEM`, but consistent) exhaustive-enumeration convention. No
+  functional change — `SYSTEM` already bypasses every check — but keeps
+  the seed's own listing complete and accurate.
+- No `impliedPermissions` (`src/server/auth/admin-access.ts`) changes
+  needed: unlike `CATALOG`/`INVENTORY`/`ORDERS`, there's no bare `ERP`
+  umbrella value that implies `ERP_READ`/`ERP_WRITE`, so there's nothing
+  for the new granular permissions to hang off of either.
+- No other callers, tests, or role-management UI reference the full
+  `AdminPermission` list elsewhere (checked — this app has no in-app
+  role-management UI at all; roles are only created via `seed.ts` or the
+  e2e fixture service).
+
+## K-15 status
+
+Closed. `docs/TASKS.md` row deleted.
 
 ## Evidence: k-14-audit-trail-completion
 

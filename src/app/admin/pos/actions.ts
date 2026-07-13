@@ -17,7 +17,7 @@ import {
 } from "~/server/services/pos-register";
 
 export async function issueGiftCardAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("POS_WRITE");
 
   const amount = Number(formData.get("amount") ?? 0) || 0;
   if (amount <= 0) throw new Error("יש להזין סכום שובר חיובי.");
@@ -28,7 +28,7 @@ export async function issueGiftCardAction(formData: FormData) {
 }
 
 export async function redeemGiftCardAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("POS_WRITE");
 
   const code = stringValue(formData.get("code")).trim();
   const amount = Number(formData.get("amount") ?? 0) || 0;
@@ -41,7 +41,7 @@ export async function redeemGiftCardAction(formData: FormData) {
 }
 
 export async function openShiftAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("POS_WRITE");
 
   await openShift({
     branchId: optionalString(formData.get("branchId")),
@@ -53,7 +53,7 @@ export async function openShiftAction(formData: FormData) {
 }
 
 export async function closeShiftAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("POS_WRITE");
 
   const shiftId = stringValue(formData.get("shiftId"));
   if (!shiftId) throw new Error("חסר מזהה משמרת.");
@@ -68,7 +68,7 @@ export async function closeShiftAction(formData: FormData) {
 }
 
 export async function recordPosSaleAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("POS_WRITE");
 
   const shiftId = stringValue(formData.get("shiftId")).trim();
   const sku = stringValue(formData.get("sku")).trim();

@@ -19,7 +19,7 @@ import {
 } from "~/server/services/entities";
 
 export async function createEntityAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("FINANCE_WRITE");
 
   const code = stringValue(formData.get("code")).trim();
   const name = stringValue(formData.get("name")).trim();
@@ -39,7 +39,7 @@ export async function createEntityAction(formData: FormData) {
 }
 
 export async function toggleEntityAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("FINANCE_WRITE");
 
   const entityId = stringValue(formData.get("entityId"));
   if (!entityId) throw new Error("חסר מזהה ישות.");
@@ -53,7 +53,7 @@ export async function toggleEntityAction(formData: FormData) {
 }
 
 export async function setEntityFxAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("FINANCE_WRITE");
 
   const entityId = stringValue(formData.get("entityId"));
   const fxRaw = stringValue(formData.get("fxRateToBase")).trim();
@@ -66,7 +66,7 @@ export async function setEntityFxAction(formData: FormData) {
 }
 
 export async function createIntercompanyAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("FINANCE_WRITE");
 
   const fromEntityId = stringValue(formData.get("fromEntityId"));
   const toEntityId = stringValue(formData.get("toEntityId"));
@@ -89,7 +89,7 @@ export async function createIntercompanyAction(formData: FormData) {
 }
 
 export async function setBranchEntityAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("FINANCE_WRITE");
 
   const branchId = stringValue(formData.get("branchId"));
   if (!branchId) throw new Error("חסר מזהה סניף.");
@@ -101,7 +101,7 @@ export async function setBranchEntityAction(formData: FormData) {
 }
 
 export async function eliminateIntercompanyAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("FINANCE_WRITE");
 
   const transactionId = stringValue(formData.get("transactionId"));
   if (!transactionId) throw new Error("חסר מזהה עסקה.");

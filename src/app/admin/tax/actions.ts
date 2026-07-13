@@ -17,7 +17,7 @@ import {
 } from "~/server/services/israeli-tax";
 
 export async function createWithholdingRuleAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("FINANCE_WRITE");
 
   const category = stringValue(formData.get("category")).trim();
   const rateRaw = stringValue(formData.get("ratePercent")).trim();
@@ -36,7 +36,7 @@ export async function createWithholdingRuleAction(formData: FormData) {
 }
 
 export async function toggleWithholdingRuleAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("FINANCE_WRITE");
 
   const ruleId = stringValue(formData.get("ruleId"));
   if (!ruleId) throw new Error("חסר מזהה כלל.");
@@ -50,7 +50,7 @@ export async function toggleWithholdingRuleAction(formData: FormData) {
 }
 
 export async function assignAllocationNumberAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("FINANCE_WRITE");
 
   const invoiceId = stringValue(formData.get("invoiceId"));
   const allocationNumber = stringValue(formData.get("allocationNumber")).trim();
@@ -64,7 +64,7 @@ export async function assignAllocationNumberAction(formData: FormData) {
 }
 
 export async function flagAllocationAction() {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("FINANCE_WRITE");
 
   await flagInvoicesNeedingAllocation();
 

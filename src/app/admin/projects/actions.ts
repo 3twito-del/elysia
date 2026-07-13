@@ -19,7 +19,7 @@ import {
 } from "~/server/services/projects";
 
 export async function createProjectAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("PROJECTS_WRITE");
 
   const name = stringValue(formData.get("name")).trim();
   if (!name) throw new Error("שם הפרויקט הוא שדה חובה.");
@@ -42,7 +42,7 @@ export async function createProjectAction(formData: FormData) {
 }
 
 export async function setProjectStatusAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("PROJECTS_WRITE");
 
   const projectId = stringValue(formData.get("projectId"));
   const status = stringValue(formData.get("status"));
@@ -54,7 +54,7 @@ export async function setProjectStatusAction(formData: FormData) {
 }
 
 export async function addMilestoneAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("PROJECTS_WRITE");
 
   const projectId = stringValue(formData.get("projectId"));
   const name = stringValue(formData.get("name")).trim();
@@ -74,7 +74,7 @@ export async function addMilestoneAction(formData: FormData) {
 }
 
 export async function completeMilestoneAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("PROJECTS_WRITE");
 
   const milestoneId = stringValue(formData.get("milestoneId"));
   if (!milestoneId) throw new Error("חסר מזהה אבן דרך.");
@@ -85,7 +85,7 @@ export async function completeMilestoneAction(formData: FormData) {
 }
 
 export async function invoiceMilestoneAction(formData: FormData) {
-  await requireAdmin("ERP_WRITE");
+  await requireAdmin("PROJECTS_WRITE");
 
   const milestoneId = stringValue(formData.get("milestoneId"));
   if (!milestoneId) throw new Error("חסר מזהה אבן דרך.");
@@ -96,7 +96,7 @@ export async function invoiceMilestoneAction(formData: FormData) {
 }
 
 export async function logTimeAction(formData: FormData) {
-  const admin = await requireAdmin("ERP_WRITE");
+  const admin = await requireAdmin("PROJECTS_WRITE");
 
   const projectId = stringValue(formData.get("projectId"));
   const hoursRaw = stringValue(formData.get("hours")).trim();
