@@ -311,6 +311,71 @@ test.describe("critical shopping flows", () => {
     await expect(page.locator("#name")).toHaveCount(0);
   });
 
+  test("keeps own and supplier items on separate checkout paths in a mixed cart", async ({
+    page,
+  }) => {
+    await setCookieConsent(page, "essential");
+
+    // Own (local inventory + local payment) item first, then the supplier
+    // (Shopify dropship) fixture item — both into the same session-keyed cart.
+    // The own slug is resolved from the live fixture catalog so the test never
+    // hard-codes a slug that catalog drift could turn into a 404.
+    const ownSlug = await resolveOwnCatalogProductSlug(page);
+
+    await addCatalogProductToCart(page, ownSlug);
+    await addCatalogProductToCart(page, supplierProductSlug);
+
+    await page.goto("/checkout");
+
+    // Both source lanes render side by side — the cart is neither treated as
+    // own-only nor as supplier-only.
+    await expect(
+      page.getByTestId("checkout-source-group-own"),
+    ).toBeVisible();
+    await expect(
+      page.getByTestId("checkout-source-group-dropship_shopify"),
+    ).toBeVisible();
+
+    // Own lane keeps its full local-order surface: progress steps, delivery
+    // fields and the local summary.
+    await expect(page.getByTestId("checkout-progress-steps")).toBeVisible();
+    await expect(page.getByTestId("checkout-delivery-fields")).toBeVisible();
+    await expect(page.locator("#name")).toBeVisible();
+    await expect(page.getByTestId("checkout-item-count")).toContainText(
+      "סוג תכשיט",
+    );
+    await expect(page.getByTestId("checkout-order-total")).not.toHaveText(
+      zeroShekelPattern,
+    );
+
+    // Neither the supplier-only banner nor the supplier-only summary appear:
+    // a mixed cart must not collapse into the dropship-only layout.
+    await expect(
+      page.getByTestId("checkout-supplier-only-message"),
+    ).toHaveCount(0);
+    await expect(
+      page.getByTestId("checkout-dropship-only-summary"),
+    ).toHaveCount(0);
+
+    // Two independent action panels — a local submit and a separate supplier
+    // click-out — prove there is no single fake combined payment.
+    const localPanel = page.getByTestId("checkout-local-action-panel");
+    const supplierPanel = page.getByTestId("checkout-supplier-action-panel");
+
+    await expect(localPanel).toBeVisible();
+    await expect(supplierPanel).toBeVisible();
+    await expect(
+      page.getByTestId("local-checkout-submit-button"),
+    ).toBeVisible();
+    await expect(
+      page.getByTestId("shopify-dropship-checkout-button"),
+    ).toBeVisible();
+    await expect(localPanel).toContainText("פריטי החנות");
+    await expect(page.getByTestId("checkout-payment-confidence")).toContainText(
+      "בקופה נפרדת",
+    );
+  });
+
   test("saves a ring size locally and applies it on product pages", async ({
     page,
   }) => {
@@ -1492,14 +1557,51 @@ test.describe("access control surfaces", () => {
     await expect(page.getByText("קוד שגוי")).toBeVisible();
   });
 
-  test("a limited-permission admin is denied an orders-only page", async ({
+  test("the per-domain permission split gates each admin domain independently", async ({
     page,
   }) => {
+    // The "limited" fixture role carries CATALOG_READ only, so it must reach
+    // the catalog surface and be turned away from every other domain — proving
+    // the page-level `getAdminPageAccess(<DOMAIN>_READ)` gates are wired per
+    // domain and not to a single shared grant. This is the navigable e2e
+    // counterpart to K-15's WRITE-side split (which is proven at the mutation
+    // gate by unit/shape tests, not reachable from a CATALOG_READ-only UI).
+    // Kept as one sign-in on purpose: the fixture admin account is shared, so
+    // adding a second limited-admin login would only widen cross-project
+    // fixture contention.
     await signInAdminWithFixture(page, { role: "limited" });
-    await page.goto("/admin/orders");
 
-    await expect(page).toHaveURL(/\/admin\/orders/);
-    await expect(page.getByText("אין הרשאה למסך המבוקש")).toBeVisible();
+    // Positive: CATALOG_READ reaches the catalog domain.
+    await page.goto("/admin/catalog");
+    await expect(page).toHaveURL(/\/admin\/catalog/);
+    await expect(
+      page.getByRole("heading", { name: "קטלוג" }).first(),
+    ).toBeVisible();
+    await expect(page.getByText("אין הרשאה למסך המבוקש")).toHaveCount(0);
+
+    // Negative: each other domain, gated by its own *_READ permission, denies
+    // the catalog-only admin with the shared forbidden surface.
+    const foreignDomains = [
+      "/admin/orders", // ORDERS_READ
+      "/admin/finance", // FINANCE_READ
+      "/admin/crm", // CRM_READ
+      "/admin/erp", // ERP_READ
+      "/admin/inventory", // INVENTORY_READ
+      "/admin/insights", // ANALYTICS_READ
+      "/admin/customers", // CUSTOMER_VIEW
+    ];
+
+    for (const route of foreignDomains) {
+      await page.goto(route);
+      await expect(page).toHaveURL(new RegExp(route.replace(/\//g, "\\/")));
+      await expect(
+        page.getByText("אין הרשאה למסך המבוקש"),
+        `expected ${route} to deny a CATALOG_READ-only admin`,
+      ).toBeVisible();
+      await expect(
+        page.getByRole("heading", { name: "קטלוג" }),
+      ).toHaveCount(0);
+    }
   });
 
   test("regenerating recovery codes is a real write, recorded in the audit log", async ({
@@ -1725,6 +1827,114 @@ test.describe("access control surfaces", () => {
         rel: "account-sign-in",
       },
     });
+  });
+});
+
+test.describe("degraded network and provider states", () => {
+  test.beforeEach(async ({ page }) => {
+    await clearBrowserState(page);
+    await setCookieConsent(page, "essential");
+  });
+
+  test("degrades checkout to an offline-safe state and recovers on reconnect", async ({
+    browserName,
+    context,
+    page,
+  }) => {
+    // WebKit's offline emulation can tear down the context in this harness
+    // (see pwa.spec.ts) — the offline event contract is asserted on the other
+    // engines where it is deterministic.
+    test.skip(
+      browserName === "webkit",
+      "Playwright WebKit offline emulation is unreliable in this harness.",
+    );
+
+    // A mixed cart puts both the local submit and the supplier click-out on the
+    // page, so a network drop must disable every payment action at once rather
+    // than crash or let a submission through.
+    const ownSlug = await resolveOwnCatalogProductSlug(page);
+
+    await addCatalogProductToCart(page, ownSlug);
+    await addCatalogProductToCart(page, supplierProductSlug);
+
+    await page.goto("/checkout");
+
+    const paymentStatus = page.getByTestId("checkout-payment-status");
+    const localSubmit = page.getByTestId("local-checkout-submit-button");
+    const supplierSubmit = page.getByTestId("shopify-dropship-checkout-button");
+
+    await expect(paymentStatus).toHaveAttribute("data-payment-status", "ready");
+    await expect(localSubmit).toBeVisible();
+    await expect(supplierSubmit).toBeVisible();
+
+    await context.setOffline(true);
+
+    try {
+      await expect(paymentStatus).toHaveAttribute(
+        "data-payment-status",
+        "unavailable",
+      );
+      await expect(page.getByText("סיום הזמנה דורש חיבור")).toBeVisible();
+      await expect(localSubmit).toBeDisabled();
+      await expect(supplierSubmit).toBeDisabled();
+      // No Next.js runtime/error overlay — the app degrades, it does not throw.
+      await expect(
+        page.locator(
+          "[data-nextjs-dialog], [data-nextjs-dialog-overlay], [data-nextjs-error-overlay]",
+        ),
+      ).toHaveCount(0);
+    } finally {
+      await context.setOffline(false);
+    }
+
+    // Reconnecting restores the ready-to-pay state without a reload.
+    await expect(paymentStatus).toHaveAttribute("data-payment-status", "ready");
+  });
+
+  test("returns real catalog results on search while Typesense is unreachable", async ({
+    page,
+  }) => {
+    // The e2e web server runs with TYPESENSE_HOST / TYPESENSE_API_KEY blanked
+    // and AI_SEMANTIC_SEARCH_ENABLED=false (playwright.config.ts), so every
+    // search request here exercises the fixture/Postgres-backed fallback. This
+    // asserts that degraded path returns real catalog rows and a real count
+    // rather than a crash, an empty state, or invented data. "Elysia" is the
+    // shared prefix of every fixture product name, so it deterministically
+    // matches real catalog rows without hard-coding a single slug.
+    await page.goto("/search?q=Elysia", { waitUntil: "networkidle" });
+
+    await expect(
+      page.getByRole("heading", { name: /חיפוש תכשיטים/ }),
+    ).toBeVisible();
+    await expect(
+      page.getByTestId("search-result-count").first(),
+    ).toBeVisible();
+
+    const resultsGrid = page.getByTestId("search-results-grid");
+    await expect(resultsGrid).toBeVisible();
+
+    // At least one real, resolvable catalog product link is served from the
+    // degraded path.
+    const firstProductLink = resultsGrid
+      .getByTestId("product-card")
+      .first()
+      .getByRole("link")
+      .first();
+
+    await expect(firstProductLink).toBeVisible();
+    expect(await firstProductLink.getAttribute("href")).toMatch(
+      /\/product\/[^/?#]+/,
+    );
+
+    // Graceful degradation, not an error/empty fallback.
+    await expect(
+      page.locator("#main-content").getByTestId("search-empty-state"),
+    ).toHaveCount(0);
+    await expect(
+      page.locator(
+        "[data-nextjs-dialog], [data-nextjs-dialog-overlay], [data-nextjs-error-overlay]",
+      ),
+    ).toHaveCount(0);
   });
 });
 
@@ -2674,6 +2884,44 @@ async function expectReloadMotionStable(page: Page, label: string) {
 
 function visibleByTestId(page: Page, testId: string) {
   return page.getByTestId(testId).filter({ visible: true });
+}
+
+// Resolves a real OWN (locally-fulfilled) product slug from the live fixture
+// catalog rather than hard-coding one. Under E2E_CATALOG_FIXTURES=1 the PDP is
+// served only from the fixture set, whose slugs are generated — so a hard-coded
+// friendly slug can silently 404 after catalog drift. Earrings fixtures are all
+// own-source, single-variant products, which keeps add-to-cart unambiguous.
+async function resolveOwnCatalogProductSlug(page: Page, category = "earrings") {
+  await page.goto(`/category/${category}`, { waitUntil: "domcontentloaded" });
+
+  const grid = visibleByTestId(page, "category-results-grid");
+
+  await expect(grid).toBeVisible();
+
+  const href = await grid
+    .getByTestId("product-card")
+    .first()
+    .getByRole("link")
+    .first()
+    .getAttribute("href");
+  const slug = href?.match(/\/product\/([^/?#]+)/)?.[1];
+
+  if (!slug) {
+    throw new Error(
+      `Could not resolve an own product slug from /category/${category}.`,
+    );
+  }
+
+  return slug;
+}
+
+async function addCatalogProductToCart(page: Page, slug: string) {
+  await page.goto(`/product/${slug}`);
+  await waitForProductPurchasePanelClientReady(page);
+  await clickAddToCartAndExpectCheckoutLink(
+    page,
+    page.getByTestId("product-add-to-cart-button"),
+  );
 }
 
 async function clickAddToCartAndExpectCheckoutLink(

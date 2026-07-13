@@ -461,9 +461,33 @@ have been deleted; partially done items state only their remaining scope.
 - **L-03 Visual regression with human approval boundaries** · P1 · NOW —
   deterministic fixtures; objective regressions fail automatically; subjective
   design never auto-approved.
-- **L-04 Full state matrix** · P0 · NOW — anonymous/authenticated/admin ×
-  own/supplier/mixed × device × offline/provider states; every P0 journey has
-  a deterministic test per applicable state.
+- **L-04 Full state matrix** · P0 · NOW (residual) — anonymous/authenticated/
+  admin × own/supplier/mixed × device × offline/provider states; every P0
+  journey has a deterministic test per applicable state. **Covered (e2e,
+  `tests/e2e/critical-flows.spec.ts` + `authenticated-account.spec.ts` +
+  `pwa.spec.ts`), each auto-parametrized across desktop/tablet/mobile ×
+  chromium/firefox/webkit via `playwright.config.ts` projects:** anon×own
+  checkout, anon×supplier-only checkout, **anon×mixed checkout** (own+supplier
+  kept on separate local-submit vs. supplier-click-out paths — no fake combined
+  payment), auth-customer×own+supplier order view + data export, admin auth
+  (password→TOTP→session, recovery-code login+reuse-reject, MFA-mandatory) and
+  audited admin writes, **admin per-domain READ permission split** (CATALOG_READ
+  reaches `/admin/catalog`, denied on orders/finance/crm/erp/inventory/analytics/
+  customers), **offline-degraded checkout** (payment status→unavailable, both
+  pay actions disabled, recovers on reconnect, no crash), PWA offline (cached
+  PDP, offline size-save, queued add-to-cart), and **search under Typesense
+  unreachable** (real fixture catalog results + count, no invented/empty state).
+  **Open gaps (named):** (1) authenticated-customer *local order placement* +
+  own-checkout payment success + supplier click-out redirect — blocked on
+  CardCom/Shopify credentials (G-01/G-02/G-04, EXTERNAL); (2) admin per-domain
+  *WRITE*-gate e2e (K-15 split proven only at the mutation gate by unit/shape
+  tests; needs a `FINANCE_READ`-without-`FINANCE_WRITE` fixture role to drive via
+  UI); (3) empirical two-simultaneous-checkout concurrency proof (K-05 MEASURE);
+  (4) provider-down for a live Shopify/CardCom error (no creds locally → mock
+  path, EXTERNAL). Harness note: `signInAdminWithFixture` shares one fixture
+  account per role, so admin tests can contend under parallel projects (shared
+  TOTP secret) — verified serialized. Evidence: `docs/QA_EVIDENCE.md` →
+  `l-04-full-state-matrix`.
 - **L-05 Production deployment evidence refresh** · P0 · NOW after each
   release — commit SHA, deployment ID, alias, smoke, 60-minute clean-log
   window; recorded in `docs/QA_EVIDENCE.md`.

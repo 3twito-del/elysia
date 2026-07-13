@@ -5,7 +5,7 @@ former `docs/qa/*.md` file, preserved verbatim as recorded evidence. New QA
 evidence is appended as a new `## Evidence:` section; existing sections are
 historical records and are not rewritten.
 
-Sections: 54
+Sections: 55
 
 ## Index
 
@@ -46,6 +46,7 @@ Sections: 54
 - [k-05-inventory-correctness](#evidence-k-05-inventory-correctness)
 - [k-14-audit-trail-completion](#evidence-k-14-audit-trail-completion)
 - [k-15-permission-domain-split](#evidence-k-15-permission-domain-split)
+- [l-04-full-state-matrix](#evidence-l-04-full-state-matrix)
 - [legal-page-editorial-structure-benchmark](#evidence-legal-page-editorial-structure-benchmark)
 - [mobile-pdp-rail-density-benchmark](#evidence-mobile-pdp-rail-density-benchmark)
 - [offline-page-install-pwa-recovery-priority-benchmark](#evidence-offline-page-install-pwa-recovery-priority-benchmark)
@@ -5907,3 +5908,142 @@ checkouts of one low-stock variant asserting exactly one success + one
 Residual. Correctness work shipped and evidenced; `docs/TASKS.md` K-05 row
 edited in place to the two remaining items (empirical concurrency MEASURE e2e;
 captured-payment-on-cancelled-order money reconciliation).
+
+<a id="evidence-l-04-full-state-matrix"></a>
+
+## Evidence: l-04-full-state-matrix
+
+# L-04 Full State Matrix (breadth pass)
+
+Date: 2026-07-13.
+
+Scope: L-04 is intentionally never "done" in one pass. This pass audited the
+existing e2e coverage of the state matrix (identity ×
+own/supplier/mixed × device × offline/provider) and closed the highest-value
+*breadth* gaps — new journeys/cells, not deeper parametrization of an
+already-covered cell. Environment: the standard local e2e harness — real
+`next build` + `next start` against the dev Postgres DB, `E2E_AUTH_FIXTURES=1`
+/ `E2E_CATALOG_FIXTURES=1`, Typesense + Upstash blanked (`playwright.config.ts`).
+
+## Audit — what was already covered (cited by test)
+
+- **anon × own × checkout**: `critical-flows.spec.ts` › "adds a product to cart
+  and shows it in checkout".
+- **anon × supplier × checkout**: › "shows supplier-only checkout without local
+  order fields".
+- **auth-customer × own+supplier × account view**:
+  `authenticated-account.spec.ts` (local order + Shopify-mirror order + data
+  export), reused fixture `signInCustomerWithFixture`.
+- **admin auth journey**: password→TOTP→session, recovery-code login + reuse
+  rejection, MFA-mandatory, four audited admin writes (recovery regen, inventory
+  adjust, product archive, order refund) — the "access control surfaces" block.
+- **anon × own/size × offline (PWA)**: `pwa.spec.ts` (cached PDP offline,
+  offline size-save, queued add-to-cart, no admin/API caching).
+- **device**: every `critical-flows`/`pwa` test is auto-parametrized across
+  desktop(1440)/tablet(768)/mobile(390) × chromium/firefox/webkit by the
+  `projects` matrix — device is a config dimension, not per-test code.
+
+## Audit — genuine gaps found
+
+1. **anon × mixed cart × checkout** — only pure-own and pure-supplier existed;
+   no test proved a cart holding *both* keeps two independent checkout paths
+   (the G-06 "no fake combined payment" requirement).
+2. **offline/provider-down × checkout** — PWA offline covered browse/size/cart,
+   but nothing proved the *checkout* journey degrades safely when the network
+   drops mid-session.
+3. **admin × per-domain permission matrix** — only a single `/admin/orders`
+   denial for a limited admin existed; no proof the per-domain page gates
+   (`getAdminPageAccess(<DOMAIN>_READ)`) admit the granted domain and deny the
+   rest independently (the navigable counterpart to K-15's WRITE split).
+4. **provider-down × discovery (search)** — search already runs with Typesense
+   blanked in every e2e run, but no test *explicitly* asserted the degraded path
+   returns real catalog rows rather than a crash/empty/invented state.
+
+Verified non-gaps (so they were not "closed" redundantly): the checkout form is
+identity-agnostic — it queries only `cart.get` and prefills nothing from the
+customer profile — so there is no distinct "authenticated-customer checkout
+prefill" behavior to test. Authenticated order *viewing* across sources is
+already covered by `authenticated-account.spec.ts`.
+
+## Gaps closed (new tests, all in `critical-flows.spec.ts`)
+
+- **"keeps own and supplier items on separate checkout paths in a mixed cart"** —
+  adds an own item + the supplier fixture item to one cart and asserts: both
+  `checkout-source-group-own` and `checkout-source-group-dropship_shopify`
+  render; the own lane keeps `checkout-progress-steps` + `checkout-delivery-fields`
+  + `#name` + a non-zero `checkout-order-total`; the supplier-only banner and
+  supplier-only summary are **absent** (`toHaveCount(0)`); and two independent
+  action panels (`local-checkout-submit-button` + `shopify-dropship-checkout-button`)
+  both render — proving there is no single combined payment.
+- **"degrades checkout to an offline-safe state and recovers on reconnect"** —
+  builds a mixed cart, then `context.setOffline(true)`: asserts
+  `checkout-payment-status[data-payment-status="unavailable"]`, the offline
+  status message, **both** pay buttons disabled, and no Next.js error overlay;
+  then `setOffline(false)` restores `data-payment-status="ready"` without a
+  reload. Driven purely by the app's `navigator.onLine` listener, so it runs in
+  the standard (service-worker-blocked) harness; WebKit is skipped (its offline
+  emulation is unreliable here, per `pwa.spec.ts`).
+- **"the per-domain permission split gates each admin domain independently"** —
+  one `limited` (CATALOG_READ) admin sign-in: reaches `/admin/catalog` (heading
+  "קטלוג", no forbidden card), then is denied on `/admin/{orders,finance,crm,erp,
+  inventory,insights,customers}` with "אין הרשאה למסך המבוקש". This replaced
+  (superset of) the former single "orders-only" denial test — deliberately one
+  sign-in, since the fixture admin account is shared and a second login would
+  only widen parallel-project contention. It is the e2e counterpart to
+  `k-15-permission-domain-split` (whose WRITE gates are proven at the mutation
+  layer by unit/shape tests, unreachable from a CATALOG_READ-only UI).
+- **"returns real catalog results on search while Typesense is unreachable"** —
+  `/search?q=Elysia` (the shared prefix of every fixture product name) asserts a
+  visible `search-result-count`, a `search-results-grid` with at least one
+  resolvable `/product/<slug>` link, and **no** `search-empty-state` or error
+  overlay — proving the search journey degrades to real catalog data, not a lie
+  or a crash, with the provider down.
+
+## Catalog-fixture drift (found + worked around, reported not hidden)
+
+Confirmed a broader form of the known `venus-line-ring` 404: under
+`E2E_CATALOG_FIXTURES=1` the PDP is served **only** from the fixture set
+(`getFixtureCatalogProductBySlug`), and that set is `getSeedProducts()`
+(generated slugs like `elysia-halo-earrings-silver-055`) + one synthetic
+supplier product (`elysia-supplier-silver-halo-ring`). The friendly slugs the
+existing specs hard-code — `hera-bracelet`, `venus-line-ring`,
+`muse-pearl-earrings` — exist **only in the seeded DB, which fixtures mode
+bypasses**, so they now 404 in this env (verified: the mixed-cart PDP rendered
+"התכשיט לא נמצא"). This means several *pre-existing* catalog-dependent specs
+are currently red locally, independent of this pass. To avoid inheriting that
+fragility, the new tests do **not** hard-code a friendly slug: `resolveOwnCatalogProductSlug`
+reads a real slug from the live `/category/earrings` grid at runtime, and the
+supplier path uses the always-present synthetic fixture slug. This is a genuine
+harness/data-drift issue (seed-catalog vs. `seed.ts` product sets diverged),
+flagged here rather than silently patched.
+
+## Verification
+
+- New tests, run against a real local `next build` + `next start`:
+  `pnpm exec playwright test --project=chromium-desktop --project=chromium-mobile
+  --workers=1 -g "mixed cart|per-domain permission|offline-safe|Typesense"` →
+  **8 passed** (4 tests × 2 device projects). Device breadth confirmed on
+  desktop(1440) + mobile(390); the same tests are compiled/collected across all
+  9 projects (chromium/firefox/webkit × 3 viewports).
+- Observed and diagnosed a real harness flake: under *parallel* projects
+  (`--workers` > 1) the admin sign-in intermittently fails `waitForURL` because
+  `signInAdminWithFixture` recreates the **shared** fixture admin (rotating its
+  TOTP secret) while another project is mid-login — reproduced (permission test
+  failed on desktop, passed on mobile), then green when serialized. Root cause
+  is the shared per-role fixture account, not the new test; recorded as an open
+  harness item (per-worker fixture accounts would remove it).
+- `copy:check` synced, `tsc --noEmit` clean, `vitest run` **1661/1661** unit
+  tests passing, `next build` green. `eslint` on the changed spec is clean; a
+  full `eslint .` needs a larger Node heap and its only errors are false hits in
+  the **gitignored** `.claude/worktrees/…` nested-worktree copy of the repo,
+  where the relaxed-rule path globs for `src/server/db.ts` and
+  `src/components/ai-elements/**` (CLAUDE.md) don't match the deeper path — the
+  main-repo copies of those files lint clean.
+
+## L-04 status
+
+Residual (by design). `docs/TASKS.md` L-04 row edited in place — the covered
+cells and the four named open gaps (authenticated local-order *placement* +
+own-checkout success + supplier redirect, all EXTERNAL on CardCom/Shopify creds;
+per-domain *WRITE*-gate e2e; empirical concurrency MEASURE; live provider-error
+path) are enumerated there for the next pass.
