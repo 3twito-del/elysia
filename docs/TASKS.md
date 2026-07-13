@@ -305,9 +305,25 @@ have been deleted; partially done items state only their remaining scope.
   remediation without manual DB edits. (See also ADR 0002/0006 acceptance.)
 - **G-10 Refund/cancellation/return ownership** · P0 · OWNER+EXTERNAL — own vs
   supplier paths explicit; no unsupported actions on Shopify mirrors.
-- **G-11 Checkout accessibility and security review** · P0 · MEASURE —
-  keyboard, SR, RTL input, autofill, CSP, CSRF, webhook signatures, rate
-  limits; no critical/high unresolved issue.
+- **G-11 Checkout accessibility and security review — residual** · P1 ·
+  MEASURE — the security half is shipped and evidenced
+  (`docs/QA_EVIDENCE.md` → `g-11-checkout-security-review`): a site-wide
+  Content-Security-Policy with a per-request nonce now runs alongside the
+  ADR 0005 admin gate in `src/proxy.ts` (verified live in a real browser —
+  zero CSP violations across home/admin/admin-login/search/checkout, a real
+  form submission round-tripped through a Server Action and rendered its
+  Hebrew error correctly); CSRF and webhook signatures were already clean
+  (K-08); rate limits already covered all four checkout mutations; autofill
+  and RTL input direction were already correct on every checkout field.
+  Remaining scope: keyboard-navigation and screen-reader (NVDA/VoiceOver)
+  testing — this needs a human with real assistive tech and cannot be
+  fabricated or inferred from code. **Known cost, accepted deliberately**: the
+  CSP's per-request nonce requires the root layout to read `headers()`, which
+  forces every route (including previously-static marketing pages like
+  `/checkout`, `/gifts`, `/warranty`) into dynamic rendering — confirmed via
+  build output and a rejected hash-based alternative that broke Next's own
+  RSC-streaming scripts (see `docs/QA_EVIDENCE.md`). Relevant to J-03/J-04 if
+  Core Web Vitals regress after this ships.
 - **G-12 Long-term payment architecture decision** · P2 · OWNER — own products
   local/CardCom vs Shopify vs split; one approved architecture and runbook.
 
@@ -379,9 +395,6 @@ have been deleted; partially done items state only their remaining scope.
 - **J-08 Legal identity and policy review** · P0 · OWNER+EXTERNAL — counsel
   approval; footer/checkout expose only applicable facts. (ADR 0014: no
   verified legal identity, no L1.)
-- **J-09 Cookie and analytics behavior validation** · P0 · MEASURE — no
-  pre-consent tracking where prohibited; withdrawal effective. (ADR 0014
-  requires tests as the evidence.)
 - **J-10 Content governance** · P1 · NOW — owner, source, review date,
   expiration, rollback for every public claim.
 - **J-11 Social proof only when real** · P2 · OWNER.
@@ -504,7 +517,7 @@ placeholder facts, duplicate media, or unproven payment.
 
 | Wave  | Theme                              | Open items                                                                                                               |
 | ----- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| **0** | Truth & proof foundation           | I-341, I-342, C-01/C-04, D-04, G-01…G-04, H-01/H-07, I-06/I-07, J-08/J-09, K-05/K-07/K-09, L-01/L-04/L-05/L-07 |
+| **0** | Truth & proof foundation           | I-341, I-342, C-01/C-04, D-04, G-01…G-04, H-01/H-07, I-06/I-07, J-08, K-05/K-07/K-09, L-01/L-04/L-05/L-07 |
 | **1** | House identity, collections, media | A-01…A-05, B-01…B-07, C-05/C-07/C-08                                                                                     |
 | **2** | Discovery & PDP authority          | E-01…E-10, F-01…F-11, D-05                                                                                               |
 | **3** | Real commerce & clienteling        | G-05…G-12, H-02…H-10, I-02…I-08, A-06                                                                                    |

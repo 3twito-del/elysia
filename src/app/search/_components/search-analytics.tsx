@@ -17,7 +17,7 @@ export function SearchAnalytics({
   resultCount,
 }: SearchAnalyticsProps) {
   const consent = useCookieConsentValue();
-  const analyticsAllowed = consent !== "essential";
+  const analyticsAllowed = consent === "all";
 
   useEffect(() => {
     if (!analyticsAllowed) return;

@@ -82,7 +82,7 @@ export function AnalyticsProvider() {
 
     return search ? `${pathname}?${search}` : pathname;
   }, [pathname, search]);
-  const analyticsEnabled = consent !== "essential";
+  const analyticsEnabled = consent === "all";
   const previousPathRef = useRef<string | null>(null);
   const eventSequenceRef = useRef(0);
   const replaySequenceRef = useRef(0);

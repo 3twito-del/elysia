@@ -5,7 +5,7 @@ former `docs/qa/*.md` file, preserved verbatim as recorded evidence. New QA
 evidence is appended as a new `## Evidence:` section; existing sections are
 historical records and are not rewritten.
 
-Sections: 52
+Sections: 54
 
 ## Index
 
@@ -32,7 +32,9 @@ Sections: 52
 - [customer-auth-e2e-fixture](#evidence-customer-auth-e2e-fixture)
 - [faq-content-service-recovery-links-benchmark](#evidence-faq-content-service-recovery-links-benchmark)
 - [floating-chrome-collision-audit](#evidence-floating-chrome-collision-audit)
+- [g-11-checkout-security-review](#evidence-g-11-checkout-security-review)
 - [homepage-discovery-commerce-balance-benchmark](#evidence-homepage-discovery-commerce-balance-benchmark)
+- [j-09-pre-consent-tracking](#evidence-j-09-pre-consent-tracking)
 - [k-01-admin-e2e-workflow-proof](#evidence-k-01-admin-e2e-workflow-proof)
 - [k-08-admin-mfa-security-review](#evidence-k-08-admin-mfa-security-review)
 - [k-08-webhook-security-review](#evidence-k-08-webhook-security-review)
@@ -2157,6 +2159,209 @@ sheet overlay behavior are coherent for the audited route set.
 
 ---
 
+<a id="evidence-g-11-checkout-security-review"></a>
+
+## Evidence: g-11-checkout-security-review
+
+# G-11 Checkout Accessibility and Security Review
+
+Date: 2026-07-13.
+
+Scope: keyboard, screen-reader, RTL input, autofill, CSP, CSRF, webhook
+signatures, rate limits on the checkout surface; no critical/high unresolved
+issue.
+
+## Already-clean before this pass (cited, not re-reviewed)
+
+- **Rate limits**: `src/server/api/routers/checkout.ts` rate-limits all four
+  checkout mutations (`createManualOrder`, `createCartOrder`, `createPayment`,
+  `createShopifyDropshipCheckout`) via `consumeRateLimit`, 5-8 attempts/15min,
+  keyed per customer email or session key.
+- **Autofill + RTL input**: `src/app/checkout/_components/cart-checkout-form.tsx`
+  already has correct `autoComplete` attributes on every field (`name`, `tel`,
+  `email`, `address-level2`, `street-address`, `postal-code`) and correctly
+  forces `dir="ltr"` on the `tel`/`email`/`postal-code` inputs specifically —
+  the standard RTL-form gotcha (Latin-script/numeric fields need LTR direction
+  even inside an RTL page) was already handled.
+- **CSRF and webhook signatures**: reviewed in the K-08 pass this session
+  (`k-08-csrf-ssrf-uploads-review`, `k-08-webhook-security-review`) — clean.
+  CardCom's ADR-0006 verify-then-commit gap is tracked separately as G-04, not
+  this ticket's concern.
+
+## Finding — no Content-Security-Policy anywhere in the app (gap, closed)
+
+`next.config.js` set a solid static security-header set (COOP, HSTS,
+Referrer-Policy, X-Frame-Options, X-Content-Type-Options, Permissions-Policy)
+but no `Content-Security-Policy` existed anywhere — not in `next.config.js`,
+not in `src/proxy.ts` (this repo's Next.js 16 "proxy", the renamed middleware
+entry point).
+
+Before implementing, the client-side surface was audited to build a policy
+from actual usage rather than a generic template: no `next/script`/`<Script>`
+usage, no client component fetches an external host directly, no WebSocket,
+no direct client-side Typesense access — the AI chat, search, and everything
+else is proxied through this app's own `/api/*`/tRPC routes. The one inline
+script in the app is the no-FOUC theme-init script in `src/app/layout.tsx`.
+
+**Implemented**: `src/proxy.ts`'s matcher was widened from admin-only
+(`/admin/:path*`, `/api/admin/:path*`) to run on every route (Next's
+documented negative-lookahead form, excluding only `_next/static`,
+`_next/image`, and common static assets). On every request it now mints a
+fresh per-request nonce with Web Crypto (`crypto.getRandomValues` — edge
+runtime has no `node:crypto`), forwards it via an `x-nonce` request header
+plus a `content-security-policy` request header (so Next.js auto-stamps its
+own framework scripts with the nonce, per Next's official CSP recipe), and
+sets the `Content-Security-Policy` response header on every response. The
+pre-existing ADR 0005 admin-gate logic (login-path passthrough, token
+verification, `hasActiveAdminAuthority` check, the `next=` redirect, the
+`/api/*` 401 JSON response) is preserved with identical behavior — it now
+runs alongside the CSP concern rather than being replaced by it.
+`src/app/layout.tsx`'s `RootLayout` became `async`, reads the nonce via
+`(await headers()).get("x-nonce")`, and stamps it onto the inline theme-init
+script.
+
+Policy shipped:
+
+```
+default-src 'self'; base-uri 'self';
+script-src 'self' 'nonce-<value>' 'strict-dynamic' [+ 'unsafe-eval' in dev only];
+style-src 'self' 'unsafe-inline';
+img-src 'self' data: blob: https://images.unsplash.com https://res.cloudinary.com https://upload.wikimedia.org https://cdn.shopify.com;
+font-src 'self' data:;
+media-src 'self' blob: data: https://res.cloudinary.com;
+connect-src 'self'; worker-src 'self' blob:; manifest-src 'self';
+object-src 'none'; form-action 'self'; frame-ancestors 'none';
+upgrade-insecure-requests (prod only)
+```
+
+`img-src` mirrors `next.config.js`'s `images.remotePatterns` exactly (pinned
+by a test that reads both files and cross-checks the hostnames). `'unsafe-eval'`
+is scoped to `NODE_ENV !== "production"` only (React Fast Refresh/webpack dev
+compile with `eval()`); the shipped production policy carries no wildcard and
+no blanket `unsafe-inline` on `script-src`.
+
+## Live-browser verification (real, not just source review)
+
+This work was originally delegated to a background agent, which was
+terminated mid-verification by a session usage limit before it could
+complete its browser check (it had gotten as far as starting a production
+server). Its code changes (`src/proxy.ts`, `src/app/layout.tsx`,
+`src/proxy.test.ts`) were reviewed line-by-line and then verified directly:
+
+- `pnpm check`-equivalent (lint, typecheck, full unit suite: 335 files, 1661
+  tests) all pass.
+- Started `pnpm dev` and drove a real Chromium instance (Playwright,
+  `@playwright/test`'s `chromium.launch()`) against it, loading `/`, `/admin`,
+  `/admin/login`, `/search`, `/checkout`. **Zero CSP violations** on any route
+  (checked via `page.on("console")` filtering for CSP-related messages).
+  `/admin` correctly redirected to `/admin/login` (ADR 0005 gate intact under
+  the widened matcher).
+- Confirmed the exact response header via `curl -sD -`: well-formed, matched
+  the policy, `'unsafe-eval'` present (dev mode).
+- Screenshotted `/`, `/checkout`, `/admin/login` — all rendered fully and
+  correctly (hero video/images, product cards, cookie banner, checkout
+  empty-cart summary, admin login form all visually correct).
+- **Functional check, not just static rendering**: filled the admin login
+  form with wrong credentials and submitted it. A real Server Action
+  round-trip occurred and the correct Hebrew error rendered
+  ("פרטי ההתחברות אינם תואמים לאדמין פעיל.") with zero CSP violations and
+  zero console errors — proved client-side React interactivity, event
+  handling, and the Server Action pipeline all work under the new policy,
+  not just that pages load.
+
+## A build-output check caught what the browser check couldn't, and led to a real design mistake
+
+Running `pnpm build` after the above (to match `pnpm verify:fast`'s coverage)
+showed several previously-static routes had flipped to dynamic:
+`/checkout`, `/gifts`, `/jewellery-care`, `/offline`, `/size-guide`,
+`/stylist`, `/warranty` all went from `○` (static) to `ƒ` (dynamic). Root
+cause: `layout.tsx`'s `RootLayout` calling `(await headers())` to read the
+nonce forces the *entire* route tree into dynamic rendering — Next.js cannot
+statically prerender a page whose root layout depends on per-request headers.
+This is real, silent-otherwise cost (slower TTFB, more server compute, lost
+edge-cache benefit) that no CSP-violation check or screenshot would ever
+surface, since the page behaves identically to a browser either way — only
+the build output reveals it.
+
+**First fix attempted (wrong, caught by live re-testing, reverted):** since
+the only inline script in the app (`themeInitScript`) is a static, unchanging
+string, a SHA-256 **hash** source (`'sha256-<hash-of-exact-content>'`) was
+substituted for the nonce, dropping `'strict-dynamic'` and the `headers()`
+read entirely — this fully restored static rendering on rebuild (all seven
+routes back to `○`, except `/size-guide`, confirmed unrelated: it already used
+`searchParams` for its own return-to-product feature both before and after
+this change, which independently forces it dynamic under Next's own rules).
+It also introduced a real runtime bug on the way (a temporal-dead-zone
+`ReferenceError` from computing the module-level CSP constant before the hash
+constant it referenced was declared — `pnpm build` did **not** catch this,
+because Next.js never executes middleware at build time, only at serve time;
+only starting `pnpm dev` and making a live request surfaced it).
+
+After fixing that ordering bug, live-browser re-testing (the same
+Playwright/Chromium check, extended to seven routes) found the hash-only
+policy **broke real script execution**: multiple `Executing inline script
+violates ... script-src` console violations appeared on the home page, for
+inline scripts with hashes that didn't match `themeInitScript`'s. These are
+Next.js's own App Router RSC-streaming/hydration inline scripts, whose
+content is generated fresh per request — a static hash can allow-list
+`themeInitScript` (which never changes) but categorically cannot allow-list
+scripts whose bytes differ every render. Only a nonce (regenerated and
+reapplied by Next.js automatically every request) can cover those, which is
+exactly why Next's own official CSP guide for the App Router specifies the
+nonce-based recipe and not a hash-based one.
+
+**Reverted to the nonce-based implementation** (`src/proxy.ts`,
+`src/app/layout.tsx`, `src/proxy.test.ts` all restored to mint/forward a
+per-request nonce, `'strict-dynamic'` back in `script-src`, `RootLayout` back
+to `async` reading `headers()`). Re-verified live in a real browser across
+seven routes (`/`, `/admin`, `/admin/login`, `/search`, `/checkout`, `/blog`,
+`/category/rings`): **zero CSP violations, zero console errors on every
+route**. This confirms the original (interrupted) agent's nonce-based design
+was correct, and the dynamic-rendering cost is Next.js's own documented,
+unavoidable tradeoff for a strict App Router CSP — not a bug to keep chasing.
+
+(A local `pnpm start` / production-mode check was also attempted, specifically
+to confirm `'unsafe-eval'` is genuinely absent in the production policy — it
+was blocked by an unrelated, pre-existing local-environment limitation
+(production-mode DB credentials don't resolve locally, the same category of
+gotcha as the `.env.local`/`VERCEL=1` divergence noted elsewhere in this
+ledger), not by anything in this change. `isDevelopment ? "'unsafe-eval'" :
+null` is verified at the source level by `proxy.test.ts` instead; the actual
+Vercel production deployment is the real proof once this ships.)
+
+**Residual, explicitly accepted**: `/checkout`, `/gifts`, `/jewellery-care`,
+`/offline`, `/stylist`, `/warranty` (and every other route sharing the root
+layout) are dynamically rendered as a direct, load-bearing consequence of this
+CSP. If this cost is ever judged too high, the real fix is architectural (e.g.
+moving the strict, nonce-based policy to only the routes that need it via a
+route-group-scoped layout that reads the nonce, leaving a relaxed
+hash-or-`unsafe-inline` policy — or no CSP at all — on purely static marketing
+pages), not a repeat of the hash-only attempt above. Not undertaken here: real
+scope, needs its own deliberate design pass, and this ticket's acceptance bar
+(a working, verified site-wide CSP) is already met.
+
+## Tests
+
+`src/proxy.test.ts` (new) — source-shape assertions (this repo has no
+edge-runtime harness for Vitest, so the real middleware can only be exercised
+against a running server, as done above): pins the Web-Crypto-only nonce
+generation, the request-header forwarding shape, the response CSP header, the
+non-wildcard/non-blanket-unsafe-inline policy shape, `'unsafe-eval'` scoped to
+dev only, the `img-src` mirroring `next.config.js`, and — critically — that
+every piece of the ADR 0005 admin-gate logic (login passthrough, secure-cookie
+transport check, 401 JSON, redirect-with-`next=`, security headers) is still
+present verbatim alongside the new CSP concern.
+
+## G-11 status: RESIDUAL
+
+The full security scope (CSP, CSRF, webhook signatures, rate limits, autofill,
+RTL input) is closed and evidenced above. `docs/TASKS.md`'s row is edited to
+residual, not deleted: keyboard-navigation and screen-reader (NVDA/VoiceOver)
+testing genuinely needs a human with real assistive technology and is left as
+open MEASURE scope.
+
+---
+
 <a id="evidence-homepage-discovery-commerce-balance-benchmark"></a>
 
 ## Evidence: homepage-discovery-commerce-balance-benchmark
@@ -2241,6 +2446,112 @@ The benchmark supports a restrained shortcut rail only. Moving the quick-search
 form above editorial content, adding a merchandising mega-panel, changing hero
 composition, or introducing personalized recommendation controls still requires
 a separate benchmark.
+
+---
+
+<a id="evidence-j-09-pre-consent-tracking"></a>
+
+## Evidence: j-09-pre-consent-tracking
+
+# J-09 Cookie and Analytics Behavior Validation
+
+Date: 2026-07-13.
+
+Scope: prove or disprove that no client-side tracking fires before the
+customer has made a cookie choice, and that withdrawing consent actually
+stops in-flight tracking (ADR 0014's two named acceptance criteria).
+
+## What was reviewed
+
+Every client-side call site that sends an event to `/api/analytics/events`
+or `/api/analytics/replay` was found and traced: `analytics-provider.tsx`
+(page views, scroll depth, CTA clicks/impressions, outbound clicks, form
+start/error, full rrweb session replay), `product-analytics.tsx`
+(product view/click + recently-viewed write), and `search-analytics.tsx`
+(search performed). Confirmed these are the *only* three client-side
+senders (`grep -rl "api/analytics/events|api/analytics/replay"` across
+`src/app`, `src/components`, `src/lib`). Two dedicated routes,
+`/api/events/product-view` and `/api/events/product-click`, exist server-side
+but have zero callers anywhere in `src` — confirmed dead code (same pattern
+noted repeatedly this session: this repo's ERP/CRM/analytics surface has real
+dead code sitting next to live code; always grep for a live caller before
+treating a route as a live surface), not a live pre-consent gap.
+
+## Finding — pre-consent tracking fired by default (BUG, fixed)
+
+`readCookieConsent()` (`src/lib/cookie-consent.ts`) and
+`useCookieConsentValue()` (`src/lib/use-cookie-consent.ts`) both correctly
+return `null` (client, no choice recorded yet) or `undefined` (server
+snapshot) before the customer answers the cookie banner. All three tracking
+components gated their sends on:
+
+```ts
+const analyticsEnabled = consent !== "essential";
+```
+
+Since neither `null` nor `undefined` equals `"essential"`, this expression
+evaluates to `true` in the "no choice made yet" state — identical to an
+explicit `"all"` opt-in. Concretely: **every first-time visitor got page-view,
+scroll-depth, CTA-click/impression, outbound-click, form-start/error tracking,
+and full rrweb session replay recording from the moment the page loaded**,
+before ever seeing or answering the cookie banner. Only clicking "רק חיוניים"
+(essential only) turned it off — backwards from ADR 0014's requirement.
+
+One related component already had the correct shape:
+`recently-viewed-products.tsx` reads recently-viewed slugs with
+`consentValue === "all" ? readRecentlyViewedSlugs() : []` — proving this was
+an inconsistency introduced in the three tracking components, not an
+intentional design choice.
+
+**Fixed** in all three files: `const analyticsEnabled = consent === "all"`
+(and the equivalent `analyticsAllowed` name in the other two). Now every
+tracking send — including the `writeRecentlyViewed` call inside
+`product-analytics.tsx`, which shared the same gate — requires an explicit
+"all" opt-in, consistent with the reference component. No other logic
+changed: `consentMode` on each event payload was already correctly computed
+(`consent === "all" ? "measurement" : "essential"`), only the boolean gating
+whether the event fires at all was inverted.
+
+## Withdrawal effectiveness — verified, not just assumed
+
+`AnalyticsProvider`'s effects all depend on `analyticsEnabled` in their
+dependency arrays, so React tears down and re-evaluates them the instant
+consent changes (the reactive path: `writeCookieConsent` dispatches
+`COOKIE_CONSENT_EVENT` → `useSyncExternalStore` re-renders → `analyticsEnabled`
+flips). The session-replay effect goes further than relying on implicit
+cleanup: its guard clause explicitly calls `replayStopRef.current?.()` and
+clears `replayBufferRef.current` the moment `analyticsEnabled` becomes false,
+stopping an in-flight rrweb recording immediately rather than waiting for
+its next scheduled flush. Pinned with a source-shape test (below).
+
+## Tests
+
+New `src/lib/pre-consent-tracking.test.ts`:
+
+- Pins the exact `consent === "all"` gate in all three tracking components
+  and asserts the inverted `!== "essential"` shape is absent from each
+  (regression guard against this exact bug reappearing).
+- Asserts `recently-viewed-products.tsx` still uses the reference-correct
+  shape.
+- Asserts the session-replay effect's withdrawal teardown
+  (`replayStopRef.current?.()` + buffer clear) sits behind the same
+  `analyticsEnabled` guard.
+- Asserts the inverted shape doesn't exist anywhere else that could
+  re-introduce it (`use-cookie-consent.ts` itself).
+
+This matches ADR 0014's explicit requirement that tests are the evidence for
+cookie/consent behavior, not a manual claim.
+
+## Verification
+
+`pnpm lint` (0 errors), `pnpm typecheck` (clean), full unit suite (1660 tests,
+335 files, all passing including the 6 new assertions).
+
+## J-09 status: CLOSED
+
+Both named acceptance criteria (no pre-consent tracking; withdrawal
+effective) are met and evidenced with tests. `docs/TASKS.md`'s J-09 row is
+deleted per the file's own convention.
 
 ---
 

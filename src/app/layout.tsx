@@ -1,6 +1,7 @@
 import "~/styles/globals.css";
 
 import { type Metadata, type Viewport } from "next";
+import { headers } from "next/headers";
 import { Suspense } from "react";
 
 import { AnalyticsProvider } from "~/components/analytics-provider";
@@ -77,13 +78,25 @@ export const viewport: Viewport = {
 // light theme. The admin surface stays light-only until it gets a dark audit.
 const themeInitScript = `try{if(localStorage.getItem("elysia.theme-preference")==="dark"&&location.pathname.indexOf("/admin")!==0){document.documentElement.classList.add("dark");var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content","#161210");}}catch(e){}`;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  // Per-request CSP nonce minted in src/proxy.ts. Next.js's own RSC-streaming
+  // inline scripts change per request, so only a nonce (not a static hash)
+  // can cover them -- this is why the root layout reads headers() and, yes,
+  // that forces the whole route into dynamic rendering (see the tradeoff note
+  // in src/proxy.ts). The inline theme-init script below needs the same nonce
+  // or it is blocked too (a flash of the light theme before ThemeSync catches
+  // up).
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
+
   return (
     <html lang="he" dir="rtl" suppressHydrationWarning>
       <body>
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <script
+          nonce={nonce}
+          dangerouslySetInnerHTML={{ __html: themeInitScript }}
+        />
         <ThemeSync />
         <PwaProvider>
           <a className="skip-link" href="#main-content">

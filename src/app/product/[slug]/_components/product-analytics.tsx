@@ -20,7 +20,7 @@ export function ProductAnalytics({
   query,
 }: ProductAnalyticsProps) {
   const consent = useCookieConsentValue();
-  const analyticsAllowed = consent !== "essential";
+  const analyticsAllowed = consent === "all";
 
   useEffect(() => {
     if (!analyticsAllowed) return;
