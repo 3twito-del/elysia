@@ -5,7 +5,7 @@ former `docs/qa/*.md` file, preserved verbatim as recorded evidence. New QA
 evidence is appended as a new `## Evidence:` section; existing sections are
 historical records and are not rewritten.
 
-Sections: 55
+Sections: 56
 
 ## Index
 
@@ -21,6 +21,7 @@ Sections: 55
 - [benchmark-traceability](#evidence-benchmark-traceability)
 - [branches-online-only-service-continuity-benchmark](#evidence-branches-online-only-service-continuity-benchmark)
 - [catalog-owner-intake-template](#evidence-catalog-owner-intake-template)
+- [c-08-catalog-quality-admin-surface](#evidence-c-08-catalog-quality-admin-surface)
 - [catalog-quality-report](#evidence-catalog-quality-report)
 - [catalog-readiness-remediation-plan](#evidence-catalog-readiness-remediation-plan)
 - [catalog-readiness-wave-0-baseline](#evidence-catalog-readiness-wave-0-baseline)
@@ -1033,6 +1034,74 @@ Not allowed in the repository:
 - Full customer identity.
 - Unapproved legal counsel notes.
 - Product facts that are plausible but not verified.
+
+---
+
+<a id="evidence-c-08-catalog-quality-admin-surface"></a>
+
+## Evidence: c-08-catalog-quality-admin-surface
+
+# C-08 Catalog Quality Reporting — Admin Surface
+
+Date: 2026-07-14.
+
+Scope: the data layer (`pnpm catalog:quality`, see the `catalog-quality-report`
+section below) was already code-complete; the remaining scope was rendering
+that same rollup — live, against the real database, not an offline
+artifact — as an admin dashboard.
+
+## What shipped
+
+- `scripts/lib/catalog-readiness-prisma.ts` (new): the Prisma `include` shape
+  and the row→`CatalogReadinessProduct` mapping were extracted verbatim out of
+  `scripts/catalog-readiness-audit.ts` into a shared module, so the offline
+  `pnpm catalog:readiness` script and the new live admin path load and audit
+  the exact same fields identically — no drift between the two.
+- `src/server/services/catalog-quality.ts` (new): `getCatalogQualitySnapshot()`
+  queries active products from the live `db`, reuses the shared mapping above,
+  runs the existing pure `auditCatalogReadiness`, and feeds it through the
+  existing pure `buildCatalogQualityReport` (`scripts/lib/catalog-quality-report.ts`)
+  — no new business logic, just live wiring. Local-file-existence and
+  content-hash duplicate checks are intentionally skipped (media lives on
+  Cloudinary in production; those are offline-artifact-only concerns), noted
+  explicitly in the function's own comment. The URL-based cross-product
+  duplicate check still runs against the full active catalog.
+- `src/app/admin/catalog/page.tsx`: added a "איכות קטלוג" (Catalog Quality)
+  card above the existing search/product-list card, gated on the same
+  `CATALOG_READ` permission as the rest of the page. Shows: a ready/not-ready
+  badge, four summary stats (products audited, publish-ready, product-level
+  blockers, high-severity findings), a findings-by-owner table (severity,
+  finding code, count, affected products, responsible owner role, sample
+  product slugs), and a findings-by-product-class table. The quality fetch is
+  independently try/caught from the main catalog fetch — a failure in the
+  quality rollup never blocks the page's primary catalog-management tools
+  from rendering.
+
+## Verification
+
+- `pnpm check`-equivalent: `copy:sync`/`copy:check` synced, `tsc --noEmit`
+  clean, `eslint` clean on all changed/new files, full unit suite
+  **1661/1661** tests passing, `next build` green.
+- **Live-rendered, not just typechecked**: started a real dev server with the
+  e2e admin-auth fixture enabled, signed in as a full admin through the actual
+  password → TOTP → session flow, and loaded `/admin/catalog`. The quality
+  card rendered with real data: 300 products audited, 0 publish-ready, 600
+  product-level blockers, 2400 high-severity findings, both breakdown tables
+  populated. Zero console errors beyond the already-documented, benign G-11
+  nonce-hydration warning (`g-11-checkout-security-review`).
+- **Cross-checked against the independent offline metric**: I-341's own
+  reported figure (`docs/TASKS.md`) is "0 of 300 active products are
+  publish-ready" from `pnpm catalog:readiness -- --source database` — the new
+  live dashboard's `productCount`/`publishReadyCount` (300 / 0) match exactly.
+  The blocker/high-finding totals differ from I-341's offline figures (which
+  include the skipped local-file/hash checks above) — expected, not a bug,
+  given the documented scope difference.
+
+## C-08 status: CLOSED
+
+`docs/TASKS.md`'s C-08 row is deleted — the full stated scope (a rendered
+admin dashboard for the already-code-complete data layer) shipped and is
+verified live.
 
 ---
 

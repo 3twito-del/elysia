@@ -189,10 +189,6 @@ have been deleted; partially done items state only their remaining scope.
 - **C-07 Supplier provenance language** · P1 · BENCHMARK+OWNER — what source/
   fulfillment/warranty facts are public; premium tone without implying Elysia
   manufacture. (I-334)
-- **C-08 Catalog quality reporting — admin surface** · P1 · NOW — the data
-  layer is code-complete (`pnpm catalog:quality`); remaining scope is the
-  rendered admin dashboard for the same rollup.
-
 ### D — Homepage and global experience
 
 - **D-01 Reduce homepage length and competing intent** · P1 · BENCHMARK — rank
@@ -542,7 +538,7 @@ placeholder facts, duplicate media, or unproven payment.
 | Wave  | Theme                              | Open items                                                                                                               |
 | ----- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | **0** | Truth & proof foundation           | I-341, I-342, C-01/C-04, D-04, G-01…G-04, H-01/H-07, I-06/I-07, J-08, K-05/K-07/K-09, L-01/L-04/L-05/L-07 |
-| **1** | House identity, collections, media | A-01…A-05, B-01…B-07, C-05/C-07/C-08                                                                                     |
+| **1** | House identity, collections, media | A-01…A-05, B-01…B-07, C-05/C-07                                                                                          |
 | **2** | Discovery & PDP authority          | E-01…E-10, F-01…F-11, D-05                                                                                               |
 | **3** | Real commerce & clienteling        | G-05…G-12, H-02…H-10, I-02…I-08, A-06                                                                                    |
 | **4** | Reduction, polish, field quality   | D-01…D-03/D-06…D-08, J-01…J-07/J-10…J-12, K-04/K-06, L-02/L-03/L-06                                                      |

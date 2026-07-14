@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { PackageCheck, Search } from "lucide-react";
+import { PackageCheck, Search, ShieldAlert } from "lucide-react";
 
 import {
   AdminProductCreateForm,
@@ -32,8 +32,29 @@ import {
 import { TableEmptyRow } from "~/components/ui/table-empty-row";
 import { getProductStatusLabel } from "~/lib/commerce-labels";
 import { formatPrice } from "~/lib/format";
+import {
+  type CatalogQualitySeverity,
+  getCatalogQualitySnapshot,
+} from "~/server/services/catalog-quality";
 import { listAdminCatalog } from "~/server/services/admin-operations";
 import { TRPCReactProvider } from "~/trpc/react";
+
+const qualitySeverityLabel: Record<CatalogQualitySeverity, string> = {
+  blocker: "חוסם",
+  high: "גבוה",
+  medium: "בינוני",
+  info: "מידע",
+};
+
+const qualitySeverityBadgeVariant: Record<
+  CatalogQualitySeverity,
+  "destructive" | "secondary" | "outline"
+> = {
+  blocker: "destructive",
+  high: "destructive",
+  medium: "secondary",
+  info: "outline",
+};
 
 export const metadata = {
   title: "Catalog | Admin",
@@ -91,6 +112,17 @@ export default async function AdminCatalogPage({
 
   if (!catalog) return <AdminDatabaseFallback />;
 
+  // The quality rollup is a supplementary reporting surface, not the primary
+  // catalog-management job of this page — a failure here must never block the
+  // product list/search/create tools above from rendering.
+  const quality = await getCatalogQualitySnapshot().catch((error: unknown) => {
+    if (process.env.NODE_ENV === "development") {
+      console.error("[admin] failed to load catalog quality snapshot", error);
+    }
+
+    return null;
+  });
+
   const hasActiveFilters = [
     Boolean(params.categoryId),
     Boolean(params.query),
@@ -107,7 +139,127 @@ export default async function AdminCatalogPage({
       title="קטלוג"
     >
       <TRPCReactProvider>
-        <Card className="rounded-md">
+        {quality ? (
+          <Card className="rounded-md">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <ShieldAlert aria-hidden="true" className="size-5" />
+                איכות קטלוג
+                <Badge variant={quality.report.ready ? "secondary" : "destructive"}>
+                  {quality.report.ready ? "מוכן לפרסום" : "לא מוכן לפרסום"}
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <dl className="grid gap-4 sm:grid-cols-4">
+                <div className="glass-inset rounded-md border p-3">
+                  <dt className="text-muted-foreground text-xs">מוצרים שנבדקו</dt>
+                  <dd className="text-xl font-semibold">
+                    {quality.report.productCount}
+                  </dd>
+                </div>
+                <div className="glass-inset rounded-md border p-3">
+                  <dt className="text-muted-foreground text-xs">מוכנים לפרסום</dt>
+                  <dd className="text-xl font-semibold">
+                    {quality.report.publishReadyCount}
+                  </dd>
+                </div>
+                <div className="glass-inset rounded-md border p-3">
+                  <dt className="text-muted-foreground text-xs">חסימות ברמת מוצר</dt>
+                  <dd className="text-destructive text-xl font-semibold">
+                    {quality.report.totalBlockers}
+                  </dd>
+                </div>
+                <div className="glass-inset rounded-md border p-3">
+                  <dt className="text-muted-foreground text-xs">
+                    ממצאים בחומרה גבוהה
+                  </dt>
+                  <dd className="text-xl font-semibold">
+                    {quality.report.totalHigh}
+                  </dd>
+                </div>
+              </dl>
+
+              {quality.report.findingBreakdown.length > 0 ? (
+                <div className="mt-6">
+                  <h3 className="mb-2 text-sm font-medium">ממצאים לפי בעלים</h3>
+                  <AdminTableScrollHint />
+                  <Table className="min-w-[760px]">
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>חומרה</TableHead>
+                        <TableHead>קוד ממצא</TableHead>
+                        <TableHead>כמות</TableHead>
+                        <TableHead>מוצרים מושפעים</TableHead>
+                        <TableHead>בעלים אחראי</TableHead>
+                        <TableHead>מוצרים לדוגמה</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {quality.report.findingBreakdown.map((finding) => (
+                        <TableRow key={finding.code}>
+                          <TableCell>
+                            <Badge
+                              variant={qualitySeverityBadgeVariant[finding.severity]}
+                            >
+                              {qualitySeverityLabel[finding.severity]}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="font-mono text-xs">
+                            {finding.code}
+                          </TableCell>
+                          <TableCell>{finding.count}</TableCell>
+                          <TableCell>{finding.affectedProducts}</TableCell>
+                          <TableCell>{finding.ownerRole}</TableCell>
+                          <TableCell className="text-muted-foreground text-xs">
+                            {finding.sampleProducts.join(", ") || "—"}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              ) : null}
+
+              {quality.report.classBreakdown.length > 0 ? (
+                <div className="mt-6">
+                  <h3 className="mb-2 text-sm font-medium">
+                    ממצאים לפי סוג מוצר
+                  </h3>
+                  <AdminTableScrollHint />
+                  <Table className="min-w-[560px]">
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>סוג מוצר</TableHead>
+                        <TableHead>מוצרים</TableHead>
+                        <TableHead>מוכנים לפרסום</TableHead>
+                        <TableHead>חסימות</TableHead>
+                        <TableHead>חומרה גבוהה</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {quality.report.classBreakdown.map((group) => (
+                        <TableRow key={group.productClass}>
+                          <TableCell className="font-mono text-xs">
+                            {group.productClass}
+                          </TableCell>
+                          <TableCell>{group.products}</TableCell>
+                          <TableCell>{group.publishReady}</TableCell>
+                          <TableCell className="text-destructive">
+                            {group.blockers}
+                          </TableCell>
+                          <TableCell>{group.high}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              ) : null}
+            </CardContent>
+          </Card>
+        ) : null}
+
+        <Card className="mt-6 rounded-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Search aria-hidden="true" className="size-5" />
