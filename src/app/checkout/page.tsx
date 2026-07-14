@@ -6,6 +6,7 @@ import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata = {
   title: "סל הקניות",
+  description: "השלמת הזמנה: פרטי משלוח, סיכום סל הקניות ותשלום.",
 };
 
 export default async function CheckoutPage() {

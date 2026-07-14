@@ -56,6 +56,7 @@
     "qa:contrast": "tsx scripts/qa-interaction-contrast.ts",
     "qa:performance": "tsx scripts/qa-site-audit.ts --performance-only",
     "qa:routes": "tsx scripts/qa-route-inventory.ts --check",
+    "qa:seo": "tsx scripts/qa-seo-audit.ts",
     "qa:site": "tsx scripts/qa-site-audit.ts",
     "release:scorecard": "tsx scripts/release-scorecard.ts",
     "release:slice-gate": "tsx scripts/release-slice-gate.ts",

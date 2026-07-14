@@ -36,6 +36,7 @@ import { DEFAULT_CATALOG_IMAGE } from "~/server/services/catalog";
 
 export const metadata = {
   title: "מועדפים",
+  description: "התכשיטים שסימנת כמועדפים, במקום אחד לצפייה ולהזמנה מהירה.",
 };
 
 export const dynamic = "force-dynamic";

@@ -384,9 +384,23 @@ have been deleted; partially done items state only their remaining scope.
 - **J-03 Production Core Web Vitals** · P0 · MEASURE — RUM by route/device;
   needs real traffic (post-L1); lab-only until then.
 - **J-04 Homepage/PDP JavaScript cost** · P1 · NOW after measurement.
-- **J-05 Technical SEO validation** · P1 · NOW+MEASURE — crawl, canonicals,
-  sitemap, metadata uniqueness, structured data, redirects. (Language/SEO
-  architecture decision itself is parked: Hebrew-only at L1.)
+- **J-05 Technical SEO validation — residual** · P1 · MEASURE — the NOW-doable
+  mechanical half is shipped and evidenced (`docs/QA_EVIDENCE.md` →
+  `j-05-technical-seo-validation`): new `pnpm qa:seo` crawl tool + tests for
+  `sitemap.ts`/`robots.ts`. Found and fixed a real gap: 6 live pages
+  (`/gifts`, `/wishlist`, `/checkout`, `/ai`, `/stylist`, `/size-guide`) had
+  no page-specific meta description and silently inherited the root
+  layout's, making them indistinguishable to a crawler; each now has its own.
+  Structured data was already tested (`json-ld.test.ts`,
+  `product-structured-data.test.ts`, pre-existing); no `redirects()` rules
+  are configured in `next.config.js`, so there is nothing to validate there
+  yet. **Remaining, genuinely MEASURE**: the site is intentionally
+  `noindex`/`nofollow` site-wide pre-launch (no verified legal identity,
+  J-08 open; 0/300 catalog products publish-ready, I-341 open) — real
+  search-console crawl/ranking behavior cannot be measured until that
+  policy is lifted for a real launch, which is a business/legal decision,
+  not an engineering one. (Language/SEO architecture decision itself is
+  parked: Hebrew-only at L1.)
 - **J-06 Hebrew search-content model** · P1 · OWNER+MEASURE — content answers a
   task and leads to products; no SEO filler.
 - **J-07 Editorial legal-page usability** · P2 · BENCHMARK — print style and

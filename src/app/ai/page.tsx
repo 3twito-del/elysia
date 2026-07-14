@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 export const metadata = {
   title: "התאמה לתכשיט",
+  description: "התאמת תכשיט אישית והשראה למתנה בעזרת בינה מלאכותית.",
 };
 
 type AiPageProps = {

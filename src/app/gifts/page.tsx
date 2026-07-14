@@ -70,6 +70,7 @@ const giftDecisionGroups = [
 
 export const metadata = {
   title: "מתנות",
+  description: "רעיונות למתנות תכשיטים מ-Elysia לפי אירוע, מקבל/ת ותקציב.",
 };
 
 export default async function GiftsPage() {

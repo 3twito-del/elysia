@@ -5,7 +5,7 @@ former `docs/qa/*.md` file, preserved verbatim as recorded evidence. New QA
 evidence is appended as a new `## Evidence:` section; existing sections are
 historical records and are not rewritten.
 
-Sections: 59
+Sections: 60
 
 ## Index
 
@@ -36,6 +36,7 @@ Sections: 59
 - [g-11-checkout-security-review](#evidence-g-11-checkout-security-review)
 - [homepage-discovery-commerce-balance-benchmark](#evidence-homepage-discovery-commerce-balance-benchmark)
 - [i-08-transactional-communication-governance](#evidence-i-08-transactional-communication-governance)
+- [j-05-technical-seo-validation](#evidence-j-05-technical-seo-validation)
 - [j-09-pre-consent-tracking](#evidence-j-09-pre-consent-tracking)
 - [k-01-admin-e2e-workflow-proof](#evidence-k-01-admin-e2e-workflow-proof)
 - [k-08-admin-mfa-security-review](#evidence-k-08-admin-mfa-security-review)
@@ -2641,6 +2642,91 @@ deleted: no central template-ownership registry exists (every send-site
 inlines its own copy inline in the service file that triggers it) — whether
 building one is worth the cost is a real design decision for a future pass,
 not attempted here.
+
+---
+
+<a id="evidence-j-05-technical-seo-validation"></a>
+
+## Evidence: j-05-technical-seo-validation
+
+# J-05 Technical SEO Validation
+
+Date: 2026-07-14.
+
+Scope: "crawl, canonicals, sitemap, metadata uniqueness, structured data,
+redirects." Split cleanly into a NOW-doable mechanical half (can this
+app's own metadata machinery be proven correct today) and a MEASURE half
+(real search-console crawl/ranking data, which needs the site to actually
+be indexed) — only the former is in scope for an engineering pass.
+
+## Built
+
+- **`scripts/qa-seo-audit.ts`** (new, wired to `pnpm qa:seo`): crawls the
+  public, non-authenticated route set from the existing
+  `getVisualQaRouteEntries()` inventory and checks every 200-status response
+  for a title, a meta description, and a canonical link, then flags any two
+  *live* routes that share an identical title or description. Deliberately
+  does **not** flag shared fallback metadata on non-200 (404) responses —
+  a not-found page correctly has no specific content to derive a title
+  from, so sharing the site default with other not-found pages is expected
+  behavior, not a bug (verified this distinction explicitly with a unit
+  test, not just assumed). Non-200 routes are still reported, just
+  informationally. 4 new unit tests in `scripts/qa-seo-audit.test.ts`
+  (mocked `fetch`) cover: clean pass, real duplicate-metadata failure,
+  404-fallback-is-not-a-failure, and missing-tag detection.
+- **`src/app/sitemap.test.ts`** (new): confirms every sitemap entry is a
+  unique, absolute, correctly-rooted URL, the homepage is the sole
+  priority-1 entry, and every documented static route is present.
+- **`src/app/robots.test.ts`** (new): confirms the sitemap/host pointers are
+  correct, and explicitly pins the current blanket `disallow: "/"` policy as
+  **intentional, not a bug** — matching `layout.tsx`'s root
+  `robots: { index: false, follow: false }` metadata. The test's own comment
+  explains why (no verified legal identity yet, J-08 open; 0/300 products
+  publish-ready, I-341 open) so a future engineer doesn't mistake a passing
+  test for permission to silently flip it.
+
+## Finding — a real, live metadata gap (found and fixed)
+
+Running the new crawl tool against a local dev server surfaced that six
+live, distinct, 200-status pages — `/gifts`, `/wishlist`, `/checkout`,
+`/ai`, `/stylist`, `/size-guide` — each had their own page `title` but no
+`description` in their `metadata` export, so Next.js silently fell back to
+the root layout's generic description for all six. Distinct pages sharing
+one generic description is a real, if minor, technical SEO defect (it's
+exactly the kind of thing that dilutes how distinctly search engines can
+represent each page). Fixed by adding an accurate, page-purpose description
+to each (what the page is *for*, not a product/legal claim — no fact was
+invented, matching the ground rules' concern with legal/material/warranty
+claims specifically, not with routine navigational copy). Re-ran the crawl
+after the fix: all six no longer appear in the duplicate list.
+
+## Already covered, cited not re-built
+
+- **Structured data**: `src/lib/json-ld.test.ts` and
+  `src/lib/product-structured-data.test.ts` already existed and test this
+  directly (also the subject of F-10's own residual note about verified
+  field completeness, which stays a separate, already-tracked item).
+- **Redirects**: `next.config.js` has no `redirects()` block at all — there
+  is currently nothing configured to validate. Confirmed by reading the
+  file, not assumed.
+
+## Verification
+
+`copy:sync`/`copy:check` synced, `eslint`/`tsc --noEmit` clean, full unit
+suite **338 files / 1670 tests** passing (8 new: 4 in
+`qa-seo-audit.test.ts`, 2 in `sitemap.test.ts`, 2 in `robots.test.ts`),
+`next build` green. The crawl tool itself was run twice against a real
+local dev server (before and after the description fix) — not just
+typechecked — confirming the fix actually resolved the duplicate-metadata
+finding it surfaced.
+
+## J-05 status: RESIDUAL
+
+The mechanical half is closed and evidenced above; `docs/TASKS.md`'s row
+is edited in place, not deleted, because the MEASURE half (real
+search-console crawl/ranking behavior) is genuinely blocked on lifting the
+intentional pre-launch noindex policy — a business/legal launch decision
+(J-08, I-341), not something this pass can or should force.
 
 ---
 

@@ -10,6 +10,8 @@ import { sizeFitKinds, type SizeFitKind } from "~/lib/size-fit";
 
 export const metadata = {
   title: "מידות תכשיטים",
+  description:
+    "מדריך מידות לתכשיטי Elysia: איך לבחור מידת טבעת, צמיד או שרשרת נכונה לפני ההזמנה.",
 };
 
 const printRulerTicks = ["0", "1", "2", "3", "4", "5", "6"] as const;

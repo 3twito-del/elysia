@@ -8,6 +8,7 @@ import { DeferredStylistChat } from "./_components/deferred-stylist-chat";
 
 export const metadata = {
   title: "סטיילינג אישי",
+  description: "ייעוץ סטיילינג אישי לבחירת תכשיט מתאים ללוק ולאירוע שלך.",
 };
 
 export default function StylistPage() {
