@@ -436,6 +436,7 @@ model Branch {
   inventoryCounts   InventoryCount[]
 
   @@index([kind, isApproved, isPublic, isActive, sortOrder])
+  @@index([entityId])
 }
 
 model ServiceSettings {
@@ -1836,6 +1837,7 @@ model B2bAccount {
   updatedAt        DateTime @updatedAt
 
   @@index([status])
+  @@index([priceListId])
 }
 
 /// An authorized purchaser acting on behalf of a B2bAccount (POR-003). Each

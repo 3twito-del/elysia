@@ -6518,14 +6518,47 @@ separate follow-up (see `docs/TASKS.md` K-13).
 - Temporary `.env.k13check` and scratch SQL files deleted after use; no
   production credentials committed to the repository.
 
-## Residual
+## Residual (closed 2026-07-14, later same day)
 
 The `_BlogPostToBlogTag`/`_BlogPostToProduct` PK shape and `ServiceSettings`
-default values still lack a migration file. Neither is confirmed
-live-breaking (the tables/row already exist; only the exact constraint shape
-and default-for-new-rows behavior are unverified against `schema.prisma`),
-so this is left as documented residual rather than bundled into an
-under-verified fix.
+default values were fixed with a second, equally additive-only migration:
+`prisma/migrations/20260714020000_service_settings_defaults_blog_pk`.
+
+Also found and fixed two more orphaned indexes while re-running the full
+`prisma migrate diff` for this follow-up (`B2bAccount_priceListId_idx`,
+`Branch_entityId_idx` — present in the DB via their original migrations,
+`20260626330000_price_lists` and `20260626210000_branch_entity`, but no
+longer declared in `schema.prisma`). Resolved the opposite way from the
+diff's own suggestion (`DROP INDEX`): restored the missing `@@index`
+declarations to `schema.prisma` instead, since both are foreign-key-shaped
+columns where keeping the index is the safer default and this requires zero
+DDL (the index already exists in every environment that already ran those
+two migrations, production included).
+
+**Verification**:
+
+- `prisma migrate diff --from-migrations prisma/migrations
+  --to-schema-datamodel prisma/schema.prisma --shadow-database-url ...`
+  returns "This is an empty migration." after the schema.prisma restoration
+  + the new migration file — confirms the full migration history now matches
+  `schema.prisma` exactly, with nothing left unaccounted for.
+- `prisma migrate diff --from-url <local dev DB> --to-schema-datamodel
+  prisma/schema.prisma` also returns empty, confirming the migration was
+  applied correctly to the real local DB (via `prisma db execute`, since
+  this local DB predates migration-history tracking and `migrate dev`/
+  `deploy` both refuse to run against it — a pre-existing local-only
+  baselining quirk, unrelated to this fix).
+- A live query through the changed join tables
+  (`db.blogPost.findMany({ include: { tags: true, relatedProducts: true }
+  })`) succeeded with no constraint error, proving the PK conversion didn't
+  break Prisma's relation queries.
+- `tsc --noEmit` clean, full unit suite 1681/1681 passing.
+- Production applies via the existing `scripts/vercel-production-migrate.mjs`
+  prebuild step (same path the `UserFeedback` migration went through) —
+  automatic on push, not a manual step against a pulled production URL.
+
+K-13 row deleted from `docs/TASKS.md`; both real gaps this item tracked are
+now closed.
 
 ---
 
