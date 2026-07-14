@@ -235,6 +235,98 @@ describe("catalog readiness", () => {
     ).toBe(false);
   });
 
+  it("flags media with no recorded provenance or license status", () => {
+    const product = createCompleteProduct({
+      media: createCompleteProduct().media.map((media) => ({
+        ...media,
+        licenseStatus: undefined,
+        provenance: undefined,
+      })),
+    });
+    const audit = auditCatalogReadiness([product], {
+      mediaFiles: createMediaFiles(product),
+    });
+    const codes = audit.issues.map((issue) => issue.code);
+
+    expect(codes.filter((code) => code === "MEDIA_PROVENANCE_UNKNOWN")).toHaveLength(
+      product.media.length,
+    );
+    expect(
+      codes.filter((code) => code === "MEDIA_LICENSE_STATUS_UNKNOWN"),
+    ).toHaveLength(product.media.length);
+  });
+
+  it("blocks a license flagged NEEDS_REVIEW and an expired license", () => {
+    const complete = createCompleteProduct();
+    const product = createCompleteProduct({
+      media: complete.media.map((media, index) => ({
+        ...media,
+        licenseExpiresAt:
+          index === 1 ? "2026-01-01T00:00:00.000Z" : undefined,
+        licenseStatus: index === 0 ? "NEEDS_REVIEW" : media.licenseStatus,
+      })),
+    });
+    const audit = auditCatalogReadiness([product], {
+      mediaFiles: createMediaFiles(product),
+      now: new Date("2026-06-19T00:00:00.000Z"),
+    });
+
+    expect(audit.ready).toBe(false);
+    expect(audit.issues).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          code: "MEDIA_LICENSE_NEEDS_REVIEW",
+          severity: "high",
+        }),
+        expect.objectContaining({
+          code: "MEDIA_LICENSE_EXPIRED",
+          severity: "blocker",
+        }),
+      ]),
+    );
+  });
+
+  it("blocks a generated asset that has not been explicitly approved", () => {
+    const complete = createCompleteProduct();
+    const product = createCompleteProduct({
+      media: complete.media.map((media, index) => ({
+        ...media,
+        isGenerated: index === 0,
+      })),
+    });
+    const audit = auditCatalogReadiness([product], {
+      mediaFiles: createMediaFiles(product),
+    });
+
+    expect(audit.ready).toBe(false);
+    expect(audit.issues).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          code: "MEDIA_GENERATED_UNAPPROVED",
+          severity: "blocker",
+        }),
+      ]),
+    );
+  });
+
+  it("accepts a generated asset once it carries an explicit approval", () => {
+    const complete = createCompleteProduct();
+    const product = createCompleteProduct({
+      media: complete.media.map((media, index) => ({
+        ...media,
+        approvedAt: index === 0 ? "2026-06-01T00:00:00.000Z" : media.approvedAt,
+        isGenerated: index === 0,
+      })),
+    });
+    const audit = auditCatalogReadiness([product], {
+      mediaFiles: createMediaFiles(product),
+    });
+
+    expect(
+      audit.issues.some((issue) => issue.code === "MEDIA_GENERATED_UNAPPROVED"),
+    ).toBe(false);
+  });
+
   it("writes a deterministic markdown summary", () => {
     const product = createCompleteProduct();
     const audit = auditCatalogReadiness([product], {
@@ -283,8 +375,11 @@ function createCompleteProduct(
     ].map((role, index) => ({
       alt: `מוצר - ${role}`,
       height: 1400,
+      isGenerated: false,
       isPrimary: index === 0,
       kind: "IMAGE" as const,
+      licenseStatus: "OWNED" as const,
+      provenance: "OWNER_UPLOAD" as const,
       role: role as
         | "primary"
         | "alternate"

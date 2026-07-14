@@ -39,6 +39,24 @@ enum ProductMediaRole {
   CONTEXT
 }
 
+/// B-07 asset governance (docs/TASKS.md): where a media asset originated.
+enum MediaProvenance {
+  SUPPLIER_FEED
+  OWNER_UPLOAD
+  AI_GENERATED
+  STOCK_LICENSED
+  UNKNOWN
+}
+
+/// B-07 asset governance: rights status for using a media asset publicly.
+enum MediaLicenseStatus {
+  OWNED
+  SUPPLIER_GRANTED
+  LICENSED
+  NEEDS_REVIEW
+  UNKNOWN
+}
+
 enum CartStatus {
   ACTIVE
   CONVERTED
@@ -344,33 +362,33 @@ model ProductSearchEmbedding {
 }
 
 model ProductVariant {
-  id                 String                @id @default(cuid())
-  productId          String
-  sku                String                @unique
-  name               String
-  size               String?
-  metalColor         String?
-  stoneColor         String?
-  priceDelta         Decimal               @default(0) @db.Decimal(10, 2)
-  isDefault          Boolean               @default(false)
-  externalVariantId  String?
+  id                  String                @id @default(cuid())
+  productId           String
+  sku                 String                @unique
+  name                String
+  size                String?
+  metalColor          String?
+  stoneColor          String?
+  priceDelta          Decimal               @default(0) @db.Decimal(10, 2)
+  isDefault           Boolean               @default(false)
+  externalVariantId   String?
   /// ADR 0012 display truth: last successful click-out live verification.
-  lastLiveVerifiedAt DateTime?
-  product            Product               @relation(fields: [productId], references: [id], onDelete: Cascade)
-  prices             Price[]
-  inventoryItems     InventoryItem[]
-  inventoryLedgers   InventoryLedger[]
-  cartItems          CartItem[]
-  orderItems         OrderItem[]
-  purchaseOrderItems PurchaseOrderItem[]
-  goodsReceipts      GoodsReceipt[]
+  lastLiveVerifiedAt  DateTime?
+  product             Product               @relation(fields: [productId], references: [id], onDelete: Cascade)
+  prices              Price[]
+  inventoryItems      InventoryItem[]
+  inventoryLedgers    InventoryLedger[]
+  cartItems           CartItem[]
+  orderItems          OrderItem[]
+  purchaseOrderItems  PurchaseOrderItem[]
+  goodsReceipts       GoodsReceipt[]
   costSnapshots       ProductCostSnapshot[]
   wishlistItems       WishlistItem[]
   tryOnSessions       TryOnSession[]
   stockTransferLines  StockTransferLine[]
   inventoryCountLines InventoryCountLine[]
-  finishedBoms        BillOfMaterials[]    @relation("BomFinished")
-  bomComponents       BomComponent[]       @relation("BomComponent")
+  finishedBoms        BillOfMaterials[]     @relation("BomFinished")
+  bomComponents       BomComponent[]        @relation("BomComponent")
 
   @@index([productId])
   @@index([externalVariantId])
@@ -390,42 +408,53 @@ model Price {
 }
 
 model ProductMedia {
-  id           String            @id @default(cuid())
-  productId    String
-  kind         MediaKind         @default(IMAGE)
-  role         ProductMediaRole?
-  url          String
-  alt          String
-  cloudinaryId String?
-  width        Int?
-  height       Int?
-  isPrimary    Boolean           @default(false)
-  sortOrder    Int               @default(0)
-  product      Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id               String             @id @default(cuid())
+  productId        String
+  kind             MediaKind          @default(IMAGE)
+  role             ProductMediaRole?
+  url              String
+  alt              String
+  cloudinaryId     String?
+  width            Int?
+  height           Int?
+  isPrimary        Boolean            @default(false)
+  sortOrder        Int                @default(0)
+  /// B-07 asset governance: where this asset came from; UNKNOWN until reviewed.
+  provenance       MediaProvenance    @default(UNKNOWN)
+  /// B-07 asset governance: rights status for public use; UNKNOWN until reviewed.
+  licenseStatus    MediaLicenseStatus @default(UNKNOWN)
+  licenseExpiresAt DateTime?
+  /// B-07: AI/synthetically generated imagery must be labeled, never silently
+  /// presented as real product photography.
+  isGenerated      Boolean            @default(false)
+  /// Set when an admin explicitly clears a generated asset for public use.
+  approvedAt       DateTime?
+  approvedBy       String?
+  product          Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId, sortOrder])
   @@index([productId, role])
 }
 
 model Branch {
-  id               String            @id @default(cuid())
-  slug             String            @unique
-  name             String
-  address          String
-  city             String
-  phone            String
-  whatsapp         String?
-  latitude         Float?
-  longitude        Float?
-  openingHours     Json
-  services         String[]
-  kind             BranchKind        @default(PHYSICAL)
-  isApproved       Boolean           @default(false)
-  isPublic         Boolean           @default(false)
-  isActive         Boolean           @default(true)
-  sortOrder        Int               @default(0)
+  id                String            @id @default(cuid())
+  slug              String            @unique
+  name              String
+  address           String
+  city              String
+  phone             String
+  whatsapp          String?
+  latitude          Float?
+  longitude         Float?
+  openingHours      Json
+  services          String[]
+  kind              BranchKind        @default(PHYSICAL)
+  isApproved        Boolean           @default(false)
+  isPublic          Boolean           @default(false)
+  isActive          Boolean           @default(true)
+  sortOrder         Int               @default(0)
   /// owning legal entity for GL attribution (ENT); null = base entity
-  entityId         String?
+  entityId          String?
   inventoryItems    InventoryItem[]
   inventoryLedgers  InventoryLedger[]
   appointments      Appointment[]
@@ -547,19 +576,19 @@ enum ServiceRequestEventVisibility {
 }
 
 model InventoryItem {
-  id          String         @id @default(cuid())
-  branchId    String
-  variantId   String
-  quantity    Int            @default(0)
-  reserved    Int            @default(0)
-  safetyStock Int            @default(0)
+  id           String         @id @default(cuid())
+  branchId     String
+  variantId    String
+  quantity     Int            @default(0)
+  reserved     Int            @default(0)
+  safetyStock  Int            @default(0)
   /// reorder trigger (0 = no policy); when net available drops to/below it, reorder
-  reorderPoint Int           @default(0)
+  reorderPoint Int            @default(0)
   /// replenish-up-to target level for reorder suggestions
-  targetLevel  Int           @default(0)
-  branch      Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  variant     ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
-  updatedAt   DateTime       @updatedAt
+  targetLevel  Int            @default(0)
+  branch       Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  variant      ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  updatedAt    DateTime       @updatedAt
 
   @@unique([branchId, variantId])
   @@index([variantId])
@@ -678,7 +707,7 @@ model FixedAsset {
   acquisitionCost         Decimal                  @db.Decimal(14, 2)
   salvageValue            Decimal                  @default(0) @db.Decimal(14, 2)
   usefulLifeMonths        Int
-  acquiredAt              DateTime                  @db.Date
+  acquiredAt              DateTime                 @db.Date
   /// ACTIVE | FULLY_DEPRECIATED | DISPOSED
   status                  String                   @default("ACTIVE")
   accumulatedDepreciation Decimal                  @default(0) @db.Decimal(14, 2)
@@ -715,21 +744,21 @@ model MaintenanceSchedule {
 
 /// An employee for HR and payroll (HR master).
 model Employee {
-  id             String    @id @default(cuid())
-  employeeNumber String    @unique
+  id             String              @id @default(cuid())
+  employeeNumber String              @unique
   firstName      String
   lastName       String
   email          String?
   role           String?
   department     String?
-  monthlyGross   Decimal   @db.Decimal(12, 2)
+  monthlyGross   Decimal             @db.Decimal(12, 2)
   /// ACTIVE | TERMINATED
-  status         String    @default("ACTIVE")
-  hiredAt        DateTime       @db.Date
+  status         String              @default("ACTIVE")
+  hiredAt        DateTime            @db.Date
   branchId       String?
   notes          String?
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
   payslips       Payslip[]
   expenseClaims  ExpenseClaim[]
   reviews        PerformanceReview[]
@@ -1328,39 +1357,39 @@ model FacilityRequest {
 
 /// A delivery/professional-services project with budget and billing (PRJ, §4.J).
 model Project {
-  id          String              @id @default(cuid())
-  code        String              @unique
-  name        String
+  id           String             @id @default(cuid())
+  code         String             @unique
+  name         String
   /// optional link to a Customer (no hard FK — stored as id)
-  customerId  String?
+  customerId   String?
   /// FIXED | TIME_AND_MATERIALS | MILESTONE
-  billingType String              @default("MILESTONE")
+  billingType  String             @default("MILESTONE")
   /// PLANNING | ACTIVE | ON_HOLD | COMPLETED | CANCELLED
-  status      String              @default("PLANNING")
+  status       String             @default("PLANNING")
   budgetAmount Decimal            @default(0) @db.Decimal(14, 2)
-  startDate   DateTime?           @db.Date
-  endDate     DateTime?           @db.Date
-  notes       String?
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
-  milestones  ProjectMilestone[]
-  timeEntries ProjectTimeEntry[]
+  startDate    DateTime?          @db.Date
+  endDate      DateTime?          @db.Date
+  notes        String?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  milestones   ProjectMilestone[]
+  timeEntries  ProjectTimeEntry[]
 
   @@index([status])
 }
 
 /// A billable milestone within a project (PRJ).
 model ProjectMilestone {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   projectId String
   name      String
-  amount    Decimal  @default(0) @db.Decimal(14, 2)
+  amount    Decimal   @default(0) @db.Decimal(14, 2)
   dueDate   DateTime? @db.Date
   /// PENDING | COMPLETED | INVOICED
-  status    String   @default("PENDING")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  status    String    @default("PENDING")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId, status])
 }
@@ -1676,17 +1705,17 @@ model QuizAttempt {
 
 /// An employee's enrolment + progress in a course (KNW-002).
 model CourseEnrollment {
-  id              String    @id @default(cuid())
-  courseId        String
-  employeeId      String
-  completedLessons Int      @default(0)
+  id               String        @id @default(cuid())
+  courseId         String
+  employeeId       String
+  completedLessons Int           @default(0)
   /// ENROLLED | IN_PROGRESS | COMPLETED
-  status          String    @default("ENROLLED")
-  completedAt     DateTime?
-  updatedAt       DateTime  @updatedAt
-  createdAt       DateTime  @default(now())
-  course          Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  quizAttempts    QuizAttempt[]
+  status           String        @default("ENROLLED")
+  completedAt      DateTime?
+  updatedAt        DateTime      @updatedAt
+  createdAt        DateTime      @default(now())
+  course           Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  quizAttempts     QuizAttempt[]
 
   @@unique([courseId, employeeId])
   @@index([employeeId])
@@ -1821,20 +1850,20 @@ model PriceListItem {
 
 /// A B2B trade account: negotiated discount, credit limit and terms (POR-003).
 model B2bAccount {
-  id               String     @id @default(cuid())
-  customerId       String     @unique
+  id               String               @id @default(cuid())
+  customerId       String               @unique
   companyName      String?
   taxId            String?
   priceListId      String?
-  discountPercent  Decimal    @default(0) @db.Decimal(5, 2)
-  creditLimit      Decimal    @default(0) @db.Decimal(14, 2)
-  paymentTermsDays Int        @default(30)
-  priceList        PriceList? @relation(fields: [priceListId], references: [id], onDelete: SetNull)
+  discountPercent  Decimal              @default(0) @db.Decimal(5, 2)
+  creditLimit      Decimal              @default(0) @db.Decimal(14, 2)
+  paymentTermsDays Int                  @default(30)
+  priceList        PriceList?           @relation(fields: [priceListId], references: [id], onDelete: SetNull)
   /// ACTIVE | SUSPENDED
-  status           String   @default("ACTIVE")
+  status           String               @default("ACTIVE")
   buyers           B2bAuthorizedBuyer[]
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
 
   @@index([status])
   @@index([priceListId])
@@ -1930,7 +1959,7 @@ model WithholdingTaxRule {
 
 /// A saved report over a curated dataset + the semantic layer (RPT, §4.Q).
 model ReportDefinition {
-  id          String    @id @default(cuid())
+  id          String           @id @default(cuid())
   name        String
   description String?
   datasetKey  String
@@ -1942,11 +1971,11 @@ model ReportDefinition {
   filter      Json?
   /// { by, dir } sort spec
   sort        Json?
-  isActive    Boolean   @default(true)
+  isActive    Boolean          @default(true)
   lastRunAt   DateTime?
   schedules   ReportSchedule[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 
   @@index([datasetKey])
 }
@@ -3147,39 +3176,39 @@ model Vendor {
 /// Requisitions at or above an approval threshold need explicit sign-off; below
 /// it they auto-approve. An approved requisition converts into a PurchaseOrder.
 model PurchaseRequisition {
-  id               String                    @id @default(cuid())
-  requisitionNumber String                   @unique
-  vendorId         String?
+  id                String                    @id @default(cuid())
+  requisitionNumber String                    @unique
+  vendorId          String?
   /// DRAFT | PENDING_APPROVAL | APPROVED | REJECTED | CONVERTED
-  status           String                    @default("DRAFT")
-  category         String?
-  notes            String?
-  estimatedTotal   Decimal                   @default(0) @db.Decimal(12, 2)
-  requestedById    String?
-  approvedById     String?
-  approvedAt       DateTime?
-  rejectedReason   String?
-  purchaseOrderId  String?
-  vendor           Vendor?                   @relation(fields: [vendorId], references: [id], onDelete: SetNull)
-  lines            PurchaseRequisitionLine[]
-  createdAt        DateTime                  @default(now())
-  updatedAt        DateTime                  @updatedAt
+  status            String                    @default("DRAFT")
+  category          String?
+  notes             String?
+  estimatedTotal    Decimal                   @default(0) @db.Decimal(12, 2)
+  requestedById     String?
+  approvedById      String?
+  approvedAt        DateTime?
+  rejectedReason    String?
+  purchaseOrderId   String?
+  vendor            Vendor?                   @relation(fields: [vendorId], references: [id], onDelete: SetNull)
+  lines             PurchaseRequisitionLine[]
+  createdAt         DateTime                  @default(now())
+  updatedAt         DateTime                  @updatedAt
 
   @@index([status])
   @@index([vendorId])
 }
 
 model PurchaseRequisitionLine {
-  id             String              @id @default(cuid())
-  requisitionId  String
-  description    String
-  sku            String?
-  quantity       Int
-  unitCost       Decimal             @db.Decimal(12, 2)
-  totalCost      Decimal             @db.Decimal(12, 2)
-  requisition    PurchaseRequisition @relation(fields: [requisitionId], references: [id], onDelete: Cascade)
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
+  id            String              @id @default(cuid())
+  requisitionId String
+  description   String
+  sku           String?
+  quantity      Int
+  unitCost      Decimal             @db.Decimal(12, 2)
+  totalCost     Decimal             @db.Decimal(12, 2)
+  requisition   PurchaseRequisition @relation(fields: [requisitionId], references: [id], onDelete: Cascade)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
 
   @@index([requisitionId])
 }
@@ -3248,19 +3277,19 @@ model LandedCost {
 }
 
 model PurchaseOrderItem {
-  id               String                @id @default(cuid())
-  purchaseOrderId  String
-  productId        String?
-  variantId        String?
-  description      String
-  sku              String?
-  quantity         Int
-  unitCost         Decimal               @db.Decimal(12, 2)
-  totalCost        Decimal               @db.Decimal(12, 2)
-  receivedQuantity Int                   @default(0)
-  purchaseOrder    PurchaseOrder         @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
-  product          Product?              @relation(fields: [productId], references: [id], onDelete: SetNull)
-  variant          ProductVariant?       @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  id                 String                @id @default(cuid())
+  purchaseOrderId    String
+  productId          String?
+  variantId          String?
+  description        String
+  sku                String?
+  quantity           Int
+  unitCost           Decimal               @db.Decimal(12, 2)
+  totalCost          Decimal               @db.Decimal(12, 2)
+  receivedQuantity   Int                   @default(0)
+  purchaseOrder      PurchaseOrder         @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  product            Product?              @relation(fields: [productId], references: [id], onDelete: SetNull)
+  variant            ProductVariant?       @relation(fields: [variantId], references: [id], onDelete: SetNull)
   receipts           GoodsReceipt[]
   costSnapshots      ProductCostSnapshot[]
   vendorInvoiceLines VendorInvoiceLine[]
@@ -3405,17 +3434,17 @@ model LedgerAccount {
 /// new postings dated within it (PRIN-003) and net income has been closed to
 /// retained earnings via the linked closing entry (FIN-RPT-002).
 model FiscalPeriod {
-  id             String   @id @default(cuid())
+  id             String    @id @default(cuid())
   year           Int
   month          Int
   /// OPEN | CLOSED
-  status         String   @default("OPEN")
-  closingEntryId String?  @unique
+  status         String    @default("OPEN")
+  closingEntryId String?   @unique
   closedAt       DateTime?
   closedById     String?
   notes          String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   @@unique([year, month])
   @@index([status])
@@ -3573,32 +3602,32 @@ model VendorPaymentAllocation {
 
 /// Accounts Receivable: a customer invoice document, optionally from an order.
 model CustomerInvoice {
-  id            String                      @id @default(cuid())
-  invoiceNumber String                      @unique
-  customerId    String?
-  orderId       String?
+  id               String                      @id @default(cuid())
+  invoiceNumber    String                      @unique
+  customerId       String?
+  orderId          String?
   /// DRAFT | ISSUED | PARTIALLY_PAID | PAID | CANCELLED
-  status        String                      @default("DRAFT")
-  currency      String                      @default("ILS")
-  subtotal      Decimal                     @default(0) @db.Decimal(14, 2)
-  taxTotal      Decimal                     @default(0) @db.Decimal(14, 2)
-  total         Decimal                     @default(0) @db.Decimal(14, 2)
-  paidTotal     Decimal                     @default(0) @db.Decimal(14, 2)
-  invoiceDate   DateTime                    @db.Date
-  dueDate       DateTime?                   @db.Date
-  issuedAt      DateTime?
+  status           String                      @default("DRAFT")
+  currency         String                      @default("ILS")
+  subtotal         Decimal                     @default(0) @db.Decimal(14, 2)
+  taxTotal         Decimal                     @default(0) @db.Decimal(14, 2)
+  total            Decimal                     @default(0) @db.Decimal(14, 2)
+  paidTotal        Decimal                     @default(0) @db.Decimal(14, 2)
+  invoiceDate      DateTime                    @db.Date
+  dueDate          DateTime?                   @db.Date
+  issuedAt         DateTime?
   /// Israeli "חשבונית ישראל" allocation number (מספר הקצאה) from SHAAM
   allocationNumber String?
   /// NOT_REQUIRED | REQUIRED | ASSIGNED
-  allocationStatus String                   @default("NOT_REQUIRED")
-  notes         String?
-  metadata      Json?
-  customer      Customer?                   @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  order         Order?                      @relation(fields: [orderId], references: [id], onDelete: SetNull)
-  lines         CustomerInvoiceLine[]
-  allocations   CustomerReceiptAllocation[]
-  createdAt     DateTime                    @default(now())
-  updatedAt     DateTime                    @updatedAt
+  allocationStatus String                      @default("NOT_REQUIRED")
+  notes            String?
+  metadata         Json?
+  customer         Customer?                   @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  order            Order?                      @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  lines            CustomerInvoiceLine[]
+  allocations      CustomerReceiptAllocation[]
+  createdAt        DateTime                    @default(now())
+  updatedAt        DateTime                    @updatedAt
 
   @@index([status, dueDate])
   @@index([customerId])
@@ -3714,18 +3743,18 @@ model Opportunity {
 /// A unified CRM interaction on a customer/lead/opportunity timeline
 /// (CRM-SAL-004): calls, emails, meetings, notes and tasks in one log.
 model CrmActivity {
-  id                  String    @id @default(cuid())
+  id                   String   @id @default(cuid())
   /// CALL | EMAIL | MEETING | NOTE | TASK
-  type                String    @default("NOTE")
-  subject             String
-  body                String?
-  occurredAt          DateTime  @default(now())
-  customerId          String?
-  leadId              String?
-  opportunityId       String?
+  type                 String   @default("NOTE")
+  subject              String
+  body                 String?
+  occurredAt           DateTime @default(now())
+  customerId           String?
+  leadId               String?
+  opportunityId        String?
   createdByAdminUserId String?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
   @@index([customerId, occurredAt])
   @@index([leadId, occurredAt])
@@ -3735,25 +3764,25 @@ model CrmActivity {
 
 /// CRM quote / proposal (CRM-SAL-002).
 model Quote {
-  id            String      @id @default(cuid())
-  quoteNumber   String      @unique
+  id            String       @id @default(cuid())
+  quoteNumber   String       @unique
   opportunityId String?
   customerId    String?
   /// DRAFT | SENT | ACCEPTED | DECLINED | EXPIRED
-  status        String      @default("DRAFT")
-  currency      String      @default("ILS")
-  subtotal      Decimal     @default(0) @db.Decimal(14, 2)
-  taxTotal      Decimal     @default(0) @db.Decimal(14, 2)
-  total         Decimal     @default(0) @db.Decimal(14, 2)
-  validUntil    DateTime?   @db.Date
+  status        String       @default("DRAFT")
+  currency      String       @default("ILS")
+  subtotal      Decimal      @default(0) @db.Decimal(14, 2)
+  taxTotal      Decimal      @default(0) @db.Decimal(14, 2)
+  total         Decimal      @default(0) @db.Decimal(14, 2)
+  validUntil    DateTime?    @db.Date
   notes         String?
   metadata      Json?
   sentAt        DateTime?
   decidedAt     DateTime?
   opportunity   Opportunity? @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
   lines         QuoteLine[]
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 
   @@index([status, validUntil])
   @@index([opportunityId])

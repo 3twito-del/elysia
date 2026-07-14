@@ -31,11 +31,31 @@ export type CatalogReadinessCategory =
   | "source"
   | "variant";
 
+export type CatalogReadinessMediaProvenance =
+  | "AI_GENERATED"
+  | "OWNER_UPLOAD"
+  | "STOCK_LICENSED"
+  | "SUPPLIER_FEED"
+  | "UNKNOWN";
+
+export type CatalogReadinessMediaLicenseStatus =
+  | "LICENSED"
+  | "NEEDS_REVIEW"
+  | "OWNED"
+  | "SUPPLIER_GRANTED"
+  | "UNKNOWN";
+
 export type CatalogReadinessMedia = {
   alt: string;
+  /** B-07 asset governance fields — see auditProductMedia's governance checks. */
+  approvedAt?: Date | string | null;
   height?: number | null;
+  isGenerated?: boolean;
   isPrimary: boolean;
   kind: "IMAGE" | "TRY_ON_REFERENCE" | "VIDEO";
+  licenseExpiresAt?: Date | string | null;
+  licenseStatus?: CatalogReadinessMediaLicenseStatus | null;
+  provenance?: CatalogReadinessMediaProvenance | null;
   role?: CatalogReadinessMediaRole | null;
   sortOrder: number;
   url: string;
@@ -365,7 +385,7 @@ function auditProduct(
   auditProductTruth(product, issues, now);
   auditSourceMapping(product, issues);
   auditVariants(product, issues, now);
-  auditProductMedia(product, issues, mediaFiles);
+  auditProductMedia(product, issues, mediaFiles, now);
 }
 
 function auditProductTruth(
@@ -613,6 +633,7 @@ function auditProductMedia(
   product: CatalogReadinessProduct,
   issues: CatalogReadinessIssue[],
   mediaFiles: Readonly<Record<string, CatalogReadinessMediaFile>>,
+  now: Date,
 ) {
   if (product.media.length === 0) {
     addProductIssue(issues, product.slug, {
@@ -766,6 +787,70 @@ function auditProductMedia(
         severity: "blocker",
       });
     }
+
+    auditMediaGovernance(product, media, issues, now);
+  }
+}
+
+// B-07 asset governance (docs/TASKS.md): provenance, license status, and
+// generated-asset labeling for a single media item. Kept separate from the
+// structural checks above since these are rights/disclosure findings, not
+// display-quality findings, even though they share the "media" category.
+function auditMediaGovernance(
+  product: CatalogReadinessProduct,
+  media: CatalogReadinessMedia,
+  issues: CatalogReadinessIssue[],
+  now: Date,
+) {
+  if (!media.provenance || media.provenance === "UNKNOWN") {
+    addProductIssue(issues, product.slug, {
+      category: "media",
+      code: "MEDIA_PROVENANCE_UNKNOWN",
+      field: "media.provenance",
+      message: `Media ${media.url} has no recorded provenance.`,
+      severity: "medium",
+    });
+  }
+
+  if (!media.licenseStatus || media.licenseStatus === "UNKNOWN") {
+    addProductIssue(issues, product.slug, {
+      category: "media",
+      code: "MEDIA_LICENSE_STATUS_UNKNOWN",
+      field: "media.licenseStatus",
+      message: `Media ${media.url} has no recorded license status.`,
+      severity: "medium",
+    });
+  } else if (media.licenseStatus === "NEEDS_REVIEW") {
+    addProductIssue(issues, product.slug, {
+      category: "media",
+      code: "MEDIA_LICENSE_NEEDS_REVIEW",
+      field: "media.licenseStatus",
+      message: `Media ${media.url} is flagged NEEDS_REVIEW and cannot be assumed clear for public use.`,
+      severity: "high",
+    });
+  }
+
+  if (
+    media.licenseExpiresAt &&
+    new Date(media.licenseExpiresAt).getTime() <= now.getTime()
+  ) {
+    addProductIssue(issues, product.slug, {
+      category: "media",
+      code: "MEDIA_LICENSE_EXPIRED",
+      field: "media.licenseExpiresAt",
+      message: `Media ${media.url}'s license expired ${new Date(media.licenseExpiresAt).toISOString()}.`,
+      severity: "blocker",
+    });
+  }
+
+  if (media.isGenerated && !media.approvedAt) {
+    addProductIssue(issues, product.slug, {
+      category: "media",
+      code: "MEDIA_GENERATED_UNAPPROVED",
+      field: "media.approvedAt",
+      message: `Media ${media.url} is labeled generated but has no explicit approval — it cannot represent this product publicly unlabeled.`,
+      severity: "blocker",
+    });
   }
 }
 

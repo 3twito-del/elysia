@@ -19,6 +19,7 @@ Sections: 64
 - [ai-stylist-fallback-benchmark](#evidence-ai-stylist-fallback-benchmark)
 - [authenticated-account-visual-review](#evidence-authenticated-account-visual-review)
 - [benchmark-traceability](#evidence-benchmark-traceability)
+- [b-07-asset-governance](#evidence-b-07-asset-governance)
 - [branches-online-only-service-continuity-benchmark](#evidence-branches-online-only-service-continuity-benchmark)
 - [catalog-owner-intake-template](#evidence-catalog-owner-intake-template)
 - [c-06-product-relationship-modeling](#evidence-c-06-product-relationship-modeling)
@@ -6559,6 +6560,92 @@ two migrations, production included).
 
 K-13 row deleted from `docs/TASKS.md`; both real gaps this item tracked are
 now closed.
+
+---
+
+<a id="evidence-b-07-asset-governance"></a>
+
+## Evidence: b-07-asset-governance
+
+# B-07 Asset Governance — Manifest and Enforcement Engine
+
+Date: 2026-07-14.
+
+Scope: "provenance, license, approval, mapping, alt, expiration in an asset
+manifest; generated assets labeled."
+
+## What already existed
+
+`ProductMedia.alt` (alt text) and the `productId` foreign key (per-product
+mapping) were already governed fields — nothing to add there.
+
+## What was built
+
+Added five new `ProductMedia` columns
+(`prisma/migrations/20260714030000_product_media_asset_governance`,
+additive-only, every column defaults to `UNKNOWN`/`false`/`null`):
+
+- `provenance: MediaProvenance` (`SUPPLIER_FEED` / `OWNER_UPLOAD` /
+  `AI_GENERATED` / `STOCK_LICENSED` / `UNKNOWN`)
+- `licenseStatus: MediaLicenseStatus` (`OWNED` / `SUPPLIER_GRANTED` /
+  `LICENSED` / `NEEDS_REVIEW` / `UNKNOWN`)
+- `licenseExpiresAt: DateTime?`
+- `isGenerated: Boolean` (the "generated assets labeled" requirement)
+- `approvedAt` / `approvedBy` (free-text `approvedBy`, matching the existing
+  `factVerifiedBy` convention elsewhere in `Product` rather than an FK)
+
+A manifest with no enforcement is just documentation, so this wires directly
+into the existing I-341 catalog-readiness engine
+(`scripts/lib/catalog-readiness.ts`'s `auditMediaGovernance`, called from
+`auditProductMedia` for every media item on every audited product):
+
+| Condition | Code | Severity |
+| --- | --- | --- |
+| No recorded provenance | `MEDIA_PROVENANCE_UNKNOWN` | medium |
+| No recorded license status | `MEDIA_LICENSE_STATUS_UNKNOWN` | medium |
+| License explicitly flagged for review | `MEDIA_LICENSE_NEEDS_REVIEW` | high |
+| License expired as of the audit's `now` | `MEDIA_LICENSE_EXPIRED` | blocker |
+| Generated asset with no `approvedAt` | `MEDIA_GENERATED_UNAPPROVED` | blocker |
+
+The last row is the structural enforcement of this document's own non-goal
+("generated lifestyle images that misrepresent products") and of the
+`docs/DESIGN.md` ground rule against unverified public claims: a generated
+asset cannot silently represent a real product without an explicit,
+attributable approval.
+
+The three new `CatalogReadinessMedia` fields (`provenance`, `licenseStatus`,
+`isGenerated`) were made optional rather than required, unlike the rest of
+the type — this avoided touching the ~5 pre-existing test fixture files that
+construct minimal media objects (`catalog-readiness-audit.test.ts`,
+`release-slice-pipeline-smoke.test.ts`, etc.); missing is treated identically
+to `UNKNOWN`/`false` by the checks, which is also the correct real-world
+reading (a media row that predates this migration has no governance data,
+not a false "clean" status).
+
+## Verification
+
+- 4 new unit tests in `scripts/catalog-readiness.test.ts` (13/13 passing in
+  that file): unknown provenance/license flagged per-asset, `NEEDS_REVIEW` +
+  an expired license both block, an unapproved generated asset blocks, and
+  the same asset stops blocking once `approvedAt` is set.
+- `prisma migrate diff` (both migration-history and live local-DB variants)
+  returns empty after the migration — schema and DB agree exactly.
+- A live query against the real local DB
+  (`db.product.findMany` → `mapPrismaProductToCatalogReadiness` →
+  `auditCatalogReadiness`) on 3 real seeded products produced 6 real
+  `MEDIA_PROVENANCE_UNKNOWN`/`MEDIA_LICENSE_STATUS_UNKNOWN` findings (every
+  row defaults to `UNKNOWN` until an owner reviews it) — confirms the full
+  DB → mapping → engine wire-up, not just the pure-function unit tests.
+- `tsc --noEmit` clean, `eslint` clean, full unit suite 1685/1685 passing.
+
+## Residual
+
+No admin UI exists yet to set these fields per-asset — they are reachable
+today only via direct DB/script access, same starting point I-341's other
+governed fields had before their own admin surfaces were built. Populating
+real provenance/license facts for the existing catalog is owner-dependent
+asset debt, tracked alongside the rest of I-341's 0/300 publish-ready gap,
+not a new blocker this item introduces.
 
 ---
 

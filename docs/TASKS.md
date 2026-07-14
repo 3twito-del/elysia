@@ -165,8 +165,26 @@ have been deleted; partially done items state only their remaining scope.
   touch pan, sequencing, color fidelity; nothing blocks the purchase panel.
 - **B-06 Truthful scale and fit media** · P1 · OWNER — on-body photography at
   defined measurements; reproducible scale claims.
-- **B-07 Asset governance** · P1 · NOW — provenance, license, approval,
-  mapping, alt, expiration in an asset manifest; generated assets labeled.
+- **B-07 Asset governance — residual** · P1 · NOW — the manifest and
+  enforcement engine are shipped: `ProductMedia` carries `provenance`
+  (`SUPPLIER_FEED`/`OWNER_UPLOAD`/`AI_GENERATED`/`STOCK_LICENSED`/`UNKNOWN`),
+  `licenseStatus` (`OWNED`/`SUPPLIER_GRANTED`/`LICENSED`/`NEEDS_REVIEW`/
+  `UNKNOWN`), `licenseExpiresAt`, `isGenerated`, `approvedAt`/`approvedBy`
+  (`prisma/migrations/20260714030000_product_media_asset_governance`); the
+  I-341 catalog-readiness engine (`scripts/lib/catalog-readiness.ts`) gates on
+  all of it — unknown provenance/license (medium), `NEEDS_REVIEW` (high),
+  an expired license (blocker), and a generated asset with no explicit
+  `approvedAt` (blocker) — enforcing the "generated assets labeled" rule and
+  the D-01 non-goal against misrepresentative generated imagery structurally,
+  not by convention. `alt` and per-product mapping already existed
+  (`ProductMedia.alt`, the `productId` relation). Verified: 4 new unit tests
+  (`scripts/catalog-readiness.test.ts`, 13/13 passing) plus a live query
+  through real seeded DB rows via `mapPrismaProductToCatalogReadiness`
+  confirming the DB→engine wiring. **Remaining scope**: no admin UI surface
+  yet to set these fields per-asset (they default to `UNKNOWN`/`false` and
+  can currently only be set by direct DB/script access); populating real
+  provenance/license facts for the existing catalog is owner-dependent, same
+  as the rest of I-341's asset debt.
 
 ### C — Product truth, catalog, and merchandising data
 
