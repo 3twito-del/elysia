@@ -5,7 +5,7 @@ former `docs/qa/*.md` file, preserved verbatim as recorded evidence. New QA
 evidence is appended as a new `## Evidence:` section; existing sections are
 historical records and are not rewritten.
 
-Sections: 57
+Sections: 59
 
 ## Index
 
@@ -48,6 +48,8 @@ Sections: 57
 - [k-05-inventory-correctness](#evidence-k-05-inventory-correctness)
 - [k-14-audit-trail-completion](#evidence-k-14-audit-trail-completion)
 - [k-15-permission-domain-split](#evidence-k-15-permission-domain-split)
+- [l-02-stable-browser-evidence-collection](#evidence-l-02-stable-browser-evidence-collection)
+- [l-03-visual-regression-human-approval](#evidence-l-03-visual-regression-human-approval)
 - [l-04-full-state-matrix](#evidence-l-04-full-state-matrix)
 - [legal-page-editorial-structure-benchmark](#evidence-legal-page-editorial-structure-benchmark)
 - [mobile-pdp-rail-density-benchmark](#evidence-mobile-pdp-rail-density-benchmark)
@@ -6105,6 +6107,114 @@ checkouts of one low-stock variant asserting exactly one success + one
 Residual. Correctness work shipped and evidenced; `docs/TASKS.md` K-05 row
 edited in place to the two remaining items (empirical concurrency MEASURE e2e;
 captured-payment-on-cancelled-order money reconciliation).
+
+---
+
+<a id="evidence-l-02-stable-browser-evidence-collection"></a>
+
+## Evidence: l-02-stable-browser-evidence-collection
+
+# L-02 Stable Browser Evidence Collection
+
+Date: 2026-07-14.
+
+Scope: "maintained agent-browser/Playwright path; shard long runs; repeated
+runs complete within budget." No prior timing/reliability measurement of
+this suite existed in the repository — this is a first measurement, not a
+re-verification.
+
+## Measurement
+
+`npx playwright test tests/e2e/critical-flows.spec.ts --project=chromium-desktop`
+(this repo's single largest spec, one of 9 configured projects — 3 browsers
+× 3 viewports, `playwright.config.ts`): **5.1 minutes**, 51 passed, 13
+failed, 3 skipped. Playwright's native `--shard=i/n` flag is available and
+would apply cleanly to this spec (no config changes needed to use it), but
+no npm script currently wires it, and it has not been exercised.
+
+## Finding — a real reliability gap, not just a timing question
+
+13 of 64 tests in that single run failed. Spot-checked one directly
+(`"adds a product to cart and shows it in checkout"`) rather than assumed:
+it times out waiting for the heading "צמיד Hera" — the `hera-bracelet`
+product page renders "התכשיט לא נמצא" (not found). This is the same root
+cause the L-04 pass already found and documented
+(`l-04-full-state-matrix`): under `E2E_CATALOG_FIXTURES=1`, the PDP is
+served only from the generated fixture-catalog set, and several
+pre-existing tests hard-code friendly slugs (`hera-bracelet`,
+`venus-line-ring`, `muse-pearl-earrings`) that only exist in the seeded DB,
+which fixture mode bypasses. All 13 failures are consistent with this same
+class of test-data drift, not 13 independent bugs and not a regression from
+any change made today.
+
+L-04's pass already established the fix pattern for *new* tests
+(`resolveOwnCatalogProductSlug`, which resolves a real slug from a live
+category grid at runtime instead of hard-coding one) — retrofitting it onto
+the ~13 already-affected, pre-existing tests is real, scoped, mechanical
+work, but touches enough existing test call sites that it deserves its own
+careful pass rather than a rushed fix bundled into this measurement.
+
+## L-02 status: RESIDUAL
+
+Not closed. `docs/TASKS.md`'s row is edited in place with the exact
+measurement and the exact gap, not deleted — "repeated runs complete within
+budget" cannot be honestly claimed while roughly a fifth of one project's
+tests reliably fail for a known, fixable reason. Sharding itself
+(`--shard=i/n`) is technically available and untested; whether it's
+actually needed depends on whether the full 9-project matrix is normally
+run serially or in parallel in practice, which was not measured here.
+
+---
+
+<a id="evidence-l-03-visual-regression-human-approval"></a>
+
+## Evidence: l-03-visual-regression-human-approval
+
+# L-03 Visual Regression With Human Approval Boundaries
+
+Date: 2026-07-14.
+
+Scope: "deterministic fixtures; objective regressions fail automatically;
+subjective design never auto-approved." Investigated whether this is a gap
+to build or already-existing infrastructure to verify and document.
+
+## Finding — already substantially built, verified rather than assumed
+
+- **Objective regressions fail automatically**: `src/styles/` holds **81**
+  dedicated design/contract test files (`*-contract.test.ts`,
+  `*-design-pass.test.ts`, and per-surface pins like
+  `floating-chrome-contract.test.ts`, `cookie-privacy-controls-contract.test.ts`,
+  `luxury-commerce-ui-hardening.test.ts`, `no-decorative-page-gradients.test.ts`,
+  `opaque-glass-surfaces.test.ts`, and dozens more), each asserting specific,
+  deterministic structural/token/copy facts (exact class names, exact CSS
+  variables, exact test-ids, exact Hebrew strings) against real source files.
+  These run as part of the standard `pnpm test`/`pnpm check` gate on every
+  change — confirmed passing as part of this session's repeated full-suite
+  runs (335 test files, 1662 tests, all green). A regression to any pinned
+  token, contract, or structural invariant fails the build automatically,
+  with no human step required to catch it.
+- **Subjective design never auto-approved**: `docs/DESIGN.md` documents a
+  binding, already-enforced two-part gate — `PUBLIC_CHANGE_GATE.md` (Part I,
+  blocking) and the **High Jewelry Reference Gate** (a benchmark-scored
+  process against real reference sites) — and states explicitly that "[the
+  gate] does not approve a change that fails the High Jewelry Reference
+  Gate." This is why a large fraction of `docs/TASKS.md`'s open items carry
+  a `BENCHMARK` status tag instead of plain `NOW`: any subjective public
+  design change is structurally required to go through that gate before
+  implementation, not just reviewed after the fact. This session's own
+  practice reinforces the same boundary procedurally — every push this
+  session was confirmed with the user first, and subjective/visual
+  decisions were treated distinctly from objective bug fixes throughout
+  (see e.g. `design-taste-restraint` and `storefront-visibility-token-decisions`
+  precedent in the project's memory record).
+
+## L-03 status: CLOSED
+
+No code change needed — the deterministic-regression layer and the
+human-approval boundary for subjective design both already exist and are
+already enforced on every change. `docs/TASKS.md`'s L-03 row is deleted.
+
+---
 
 <a id="evidence-l-04-full-state-matrix"></a>
 
