@@ -6557,9 +6557,17 @@ two migrations, production included).
 - Production applies via the existing `scripts/vercel-production-migrate.mjs`
   prebuild step (same path the `UserFeedback` migration went through) —
   automatic on push, not a manual step against a pulled production URL.
+- **Production confirmed** (2026-07-14, after the deploy from this push went
+  `Ready`): a fresh `vercel env pull --environment=production` +
+  read-only `information_schema` query confirmed `_BlogPostToBlogTag`'s PK is
+  now `_BlogPostToBlogTag_AB_pkey` (`PRIMARY KEY`, not the old unique index)
+  and `ServiceSettings.phoneE164`/`displayPhone`/`serviceEmail` all carry the
+  expected column defaults. The earlier `UserFeedback` migration was
+  reconfirmed present in the same pass. Temporary env file and check script
+  deleted after use.
 
 K-13 row deleted from `docs/TASKS.md`; both real gaps this item tracked are
-now closed.
+now closed and confirmed live in production.
 
 ---
 
@@ -6637,6 +6645,11 @@ not a false "clean" status).
   row defaults to `UNKNOWN` until an owner reviews it) — confirms the full
   DB → mapping → engine wire-up, not just the pure-function unit tests.
 - `tsc --noEmit` clean, `eslint` clean, full unit suite 1685/1685 passing.
+- **Production confirmed** (2026-07-14, after deploy): a read-only
+  `information_schema` query against a freshly pulled production
+  `DATABASE_URL` confirmed all six `ProductMedia` governance columns
+  (`provenance`, `licenseStatus`, `licenseExpiresAt`, `isGenerated`,
+  `approvedAt`, `approvedBy`) exist.
 
 ## Residual
 
