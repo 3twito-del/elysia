@@ -184,8 +184,6 @@ have been deleted; partially done items state only their remaining scope.
   supplier-MOR items at L1.)
 - **C-05 Collection merchandising controls** · P1 · NOW after A-05 — hero
   product, manual rank, launch status, availability-aware fallback.
-- **C-06 Product relationship modeling** · P2 · NOW — same-family, complements,
-  sets, alternatives; no implied personalization when logic is source-based.
 - **C-07 Supplier provenance language** · P1 · BENCHMARK+OWNER — what source/
   fulfillment/warranty facts are public; premium tone without implying Elysia
   manufacture. (I-334)

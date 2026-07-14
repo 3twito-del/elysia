@@ -5,7 +5,7 @@ former `docs/qa/*.md` file, preserved verbatim as recorded evidence. New QA
 evidence is appended as a new `## Evidence:` section; existing sections are
 historical records and are not rewritten.
 
-Sections: 60
+Sections: 61
 
 ## Index
 
@@ -21,6 +21,7 @@ Sections: 60
 - [benchmark-traceability](#evidence-benchmark-traceability)
 - [branches-online-only-service-continuity-benchmark](#evidence-branches-online-only-service-continuity-benchmark)
 - [catalog-owner-intake-template](#evidence-catalog-owner-intake-template)
+- [c-06-product-relationship-modeling](#evidence-c-06-product-relationship-modeling)
 - [c-08-catalog-quality-admin-surface](#evidence-c-08-catalog-quality-admin-surface)
 - [catalog-quality-report](#evidence-catalog-quality-report)
 - [catalog-readiness-remediation-plan](#evidence-catalog-readiness-remediation-plan)
@@ -1038,6 +1039,98 @@ Not allowed in the repository:
 - Full customer identity.
 - Unapproved legal counsel notes.
 - Product facts that are plausible but not verified.
+
+---
+
+<a id="evidence-c-06-product-relationship-modeling"></a>
+
+## Evidence: c-06-product-relationship-modeling
+
+# C-06 Product Relationship Modeling
+
+Date: 2026-07-14.
+
+Scope: `docs/TASKS.md`'s acceptance text names four relationship kinds —
+"same-family, complements, sets, alternatives; no implied personalization
+when logic is source-based."
+
+## What was found
+
+Before writing anything new, `src/app/product/[slug]/_lib/product-recommendation-rails.ts`
+turned out to already be a live, customer-facing "you might also like" rail
+system on the product page (`getProductRecommendationRails`, rendered via
+`ProductRecommendationRails` in `page.tsx`), covering three of the four named
+kinds already: a `category` rail (same-family), a `material` rail
+(alternatives, matching material or stone), and a single `collection` rail
+that did not distinguish "same collection AND same category" (a matching
+set) from "same collection AND a different category" (a complementary piece
+meant to be worn together) — it showed both under one undifferentiated
+label. That is the one real, narrow gap between the live system and this
+ticket's exact taxonomy.
+
+A parallel backend-only service was drafted first
+(`src/server/services/product-relationships.ts`, pure Prisma queries for all
+four kinds, verified correct against the real dev database) before this
+discovery. It was deleted rather than shipped: wiring two independent
+systems that both compute "related products" for the same page would have
+left one of them dead code or produced two competing rails UIs, neither of
+which serves the ticket's actual customer-facing goal better than fixing the
+one real gap in the system already live in production.
+
+## What shipped
+
+- `product-recommendation-rails.ts`: split the single `collection` rail into
+  two — `sets` (`candidate.collections.includes(product.collection) &&
+  candidate.categorySlug === product.categorySlug`, tried first) and
+  `complements` (same collection membership, different category, tried
+  next only if a rail slot remains). `category` (sameFamily) and `material`
+  (alternatives) are unchanged. All four kinds are now distinct, named rail
+  `id`s: `sets | complements | category | material` (+ the pre-existing
+  `popular` fallback for products with no matches at all).
+- Added explicit `if (rails.length < MAX_RAILS)` gating before every rail
+  attempt after the first (previously only the `material` rail had this
+  gate, which was sufficient when there were only two unconditional
+  attempts; splitting `collection` into two added a third unconditional
+  attempt that would have silently broken the existing 2-rail cap without
+  this fix).
+- Personalization boundary re-confirmed unchanged: `scoreRecommendation()`
+  still uses `candidate.popularityScore` (aggregate site-wide view/click
+  counts) only as an in-rail sort tiebreaker after match-quality bonuses —
+  it decides *ordering within* a rail whose *membership* is fully
+  source-based (category/collection/material), never which rail a product
+  appears in or whether a rail exists. Sorting is identical for every
+  visitor (no per-customer signal), and rail copy never claims personal
+  framing (`"אולי יעניין אותך גם"` = "you might also like", not "recommended
+  for you") — the existing
+  `keeps rail labels source-based instead of implying personalization` test
+  already locks this down and was left unchanged.
+- Added a new test,
+  `distinguishes sets (same collection + category) from complements (same collection, different category) (C-06)`,
+  exercising the one behavior that was previously untested: a product in the
+  same collection AND same category lands in `sets`, one in the same
+  collection but a different category lands in `complements`. Updated two
+  pre-existing tests whose fixtures happened to produce a
+  same-collection/different-category match, whose expected rail `id`
+  changed from `"collection"` to `"complements"` (correct — no fixture in
+  the pre-existing suite exercised the same-collection/same-category case,
+  which is exactly the gap the new test above now covers).
+
+## Verification
+
+- `pnpm copy:sync`/`copy:check` synced (new rail titles/labels are new
+  Hebrew UI strings).
+- `tsc --noEmit` clean.
+- `eslint` clean on changed files (repo-wide run showed one pre-existing,
+  unrelated warning in `admin-mfa-enroll-form.tsx` from the I-342 release).
+- Full unit suite: 1671/1671 passing, including the updated and new
+  `product-recommendation-rails.test.ts` cases (6/6).
+- `next build` green.
+
+## Residual
+
+None — this closes the ticket's full stated scope (all four relationship
+kinds, source-based only) using the existing live rail system rather than
+adding a second, unwired one.
 
 ---
 

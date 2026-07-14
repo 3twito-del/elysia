@@ -1,10 +1,20 @@
 import type { CatalogProduct } from "~/server/services/catalog";
 
+// C-06 product relationship modeling: four source-based relationship kinds,
+// tried in priority order and capped at MAX_RAILS. "sets" and "complements"
+// both key off shared collection membership -- the only difference is
+// whether the candidate is in the same category (a matching pair, e.g. two
+// rings from "Venus") or a different one (a companion piece meant to be worn
+// together, e.g. a ring + earrings from "Venus"). "category" (sameFamily)
+// and "material" (alternatives) are unchanged. Popularity is used only as an
+// in-rail sort tiebreaker (scoreRecommendation below), never to decide rail
+// membership -- so labels stay honestly source-based, not implied
+// personalization.
 export type ProductRecommendationRail = {
   cardContextLabel: string;
   continuationHref: string;
   continuationLabel: string;
-  id: "collection" | "category" | "material" | "popular";
+  id: "sets" | "complements" | "category" | "material" | "popular";
   products: CatalogProduct[];
   reason: string;
   title: string;
@@ -30,35 +40,59 @@ export function getProductRecommendationRails({
 
   addRail({
     candidates,
-    id: "collection",
+    id: "sets",
     maxProductsPerRail,
     predicate: (candidate) =>
-      candidate.collections.includes(product.collection),
+      candidate.collections.includes(product.collection) &&
+      candidate.categorySlug === product.categorySlug,
     product,
     rails,
-    cardContextLabel: "מאותה קולקציה",
+    cardContextLabel: "סט מאותה קולקציה",
     continuationHref: createSearchContinuationHref({
       collection: product.collection,
     }),
     continuationLabel: `המשך בקולקציית ${product.collection}`,
-    reason: `תכשיטים מקולקציית ${product.collection}.`,
-    title: `עוד מקולקציית ${product.collection}`,
+    reason: `פריטים תואמים מאותה קטגוריה וקולקציה, להשלמת סט.`,
+    title: `סטים מקולקציית ${product.collection}`,
     usedSlugs,
   });
-  addRail({
-    candidates,
-    id: "category",
-    maxProductsPerRail,
-    predicate: (candidate) => candidate.categorySlug === product.categorySlug,
-    product,
-    rails,
-    cardContextLabel: "אותה קטגוריה",
-    continuationHref: `/category/${product.categorySlug}`,
-    continuationLabel: `המשך בקטגוריית ${product.categoryName}`,
-    reason: `עוד תכשיטים מאותה קטגוריה.`,
-    title: `עוד בקטגוריית ${product.categoryName}`,
-    usedSlugs,
-  });
+  if (rails.length < MAX_RAILS) {
+    addRail({
+      candidates,
+      id: "complements",
+      maxProductsPerRail,
+      predicate: (candidate) =>
+        candidate.collections.includes(product.collection) &&
+        candidate.categorySlug !== product.categorySlug,
+      product,
+      rails,
+      cardContextLabel: "משלים מאותה קולקציה",
+      continuationHref: createSearchContinuationHref({
+        collection: product.collection,
+      }),
+      continuationLabel: `המשך בקולקציית ${product.collection}`,
+      reason: `תכשיטים משלימים מאותה קולקציה, לשילוב יחד.`,
+      title: `משלימים לקולקציית ${product.collection}`,
+      usedSlugs,
+    });
+  }
+  if (rails.length < MAX_RAILS) {
+    addRail({
+      candidates,
+      id: "category",
+      maxProductsPerRail,
+      predicate: (candidate) =>
+        candidate.categorySlug === product.categorySlug,
+      product,
+      rails,
+      cardContextLabel: "אותה קטגוריה",
+      continuationHref: `/category/${product.categorySlug}`,
+      continuationLabel: `המשך בקטגוריית ${product.categoryName}`,
+      reason: `עוד תכשיטים מאותה קטגוריה.`,
+      title: `עוד בקטגוריית ${product.categoryName}`,
+      usedSlugs,
+    });
+  }
   if (rails.length < MAX_RAILS) {
     addRail({
       candidates,

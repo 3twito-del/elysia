@@ -45,12 +45,12 @@ describe("product recommendation rails", () => {
       ],
     });
 
-    expect(rails.map((rail) => rail.id)).toEqual(["collection", "category"]);
+    expect(rails.map((rail) => rail.id)).toEqual(["complements", "category"]);
     expect(
       rails.flatMap((rail) => rail.products.map((item) => item.slug)),
     ).toEqual(["same-collection", "same-category"]);
     expect(rails.map((rail) => rail.cardContextLabel)).toEqual([
-      "מאותה קולקציה",
+      "משלים מאותה קולקציה",
       "אותה קטגוריה",
     ]);
     expect(rails.map((rail) => rail.continuationHref)).toEqual([
@@ -58,6 +58,47 @@ describe("product recommendation rails", () => {
       "/category/rings",
     ]);
     expect(rails.every((rail) => rail.reason.length > 0)).toBe(true);
+  });
+
+  it("distinguishes sets (same collection + category) from complements (same collection, different category) (C-06)", () => {
+    const current = createProduct({
+      categoryName: "Rings",
+      categorySlug: "rings",
+      collection: "Sol",
+      collections: ["Sol"],
+      material: "Gold",
+      slug: "current",
+    });
+    const rails = getProductRecommendationRails({
+      product: current,
+      products: [
+        current,
+        createProduct({
+          categorySlug: "rings",
+          collection: "Sol",
+          collections: ["Sol"],
+          material: "Silver",
+          popularityScore: 5,
+          slug: "matching-set",
+        }),
+        createProduct({
+          categorySlug: "earrings",
+          collection: "Sol",
+          collections: ["Sol"],
+          material: "Silver",
+          popularityScore: 5,
+          slug: "companion-piece",
+        }),
+      ],
+    });
+
+    expect(rails.map((rail) => rail.id)).toEqual(["sets", "complements"]);
+    expect(rails[0]?.products.map((item) => item.slug)).toEqual([
+      "matching-set",
+    ]);
+    expect(rails[1]?.products.map((item) => item.slug)).toEqual([
+      "companion-piece",
+    ]);
   });
 
   it("falls back to the material rail when fewer than 2 rails were produced", () => {
@@ -93,7 +134,7 @@ describe("product recommendation rails", () => {
       ],
     });
 
-    expect(rails.map((rail) => rail.id)).toEqual(["collection", "material"]);
+    expect(rails.map((rail) => rail.id)).toEqual(["complements", "material"]);
     expect(
       rails.flatMap((rail) => rail.products.map((item) => item.slug)),
     ).toEqual(["same-collection", "same-material"]);
