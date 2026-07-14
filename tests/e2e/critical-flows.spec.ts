@@ -1604,6 +1604,34 @@ test.describe("access control surfaces", () => {
     }
   });
 
+  test("a FINANCE_READ-only admin reaches Finance but a real write is blocked through the UI", async ({
+    page,
+  }) => {
+    // L-04's named open gap: K-15's WRITE-side permission split was provable
+    // only at the mutation/service gate by unit/shape tests, because no
+    // fixture role carried a *_READ permission without its *_WRITE sibling.
+    // The "finance-read-only" role does, so this drives a real form submit
+    // through the browser into requireAdmin("FINANCE_WRITE"), instead of
+    // calling the server action directly.
+    await signInAdminWithFixture(page, { role: "finance-read-only" });
+
+    await page.goto("/admin/finance");
+    await expect(page).toHaveURL(/\/admin\/finance/);
+    await expect(
+      page.getByRole("heading", { name: "Finance" }).first(),
+    ).toBeVisible();
+    await expect(page.getByText("אין הרשאה למסך המבוקש")).toHaveCount(0);
+
+    // The chart-of-accounts reset button requires no form input, is always
+    // rendered, and is gated by requireAdmin("FINANCE_WRITE") in
+    // seedChartAction -- the simplest real write reachable from this page.
+    await page
+      .getByRole("button", { name: "אתחל תרשים ברירת מחדל" })
+      .click();
+
+    await expect(page.getByTestId("admin-error-boundary")).toBeVisible();
+  });
+
   test("regenerating recovery codes is a real write, recorded in the audit log", async ({
     page,
   }) => {

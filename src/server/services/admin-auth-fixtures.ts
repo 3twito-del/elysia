@@ -21,10 +21,11 @@ export const ADMIN_AUTH_FIXTURE_DEFAULTS = {
   password: "E2eAdminFixturePassword42!",
   roleNameFull: "E2E Fixture — Full Access",
   roleNameLimited: "E2E Fixture — Catalog Only",
+  roleNameFinanceReadOnly: "E2E Fixture — Finance Read Only",
 } as const;
 
 const ADMIN_AUTH_FIXTURE_ROLES: Record<
-  "full" | "limited",
+  "full" | "limited" | "finance-read-only",
   { email: string; name: string; permissions: AdminPermission[]; roleName: string }
 > = {
   full: {
@@ -39,10 +40,20 @@ const ADMIN_AUTH_FIXTURE_ROLES: Record<
     permissions: ["CATALOG_READ"],
     roleName: ADMIN_AUTH_FIXTURE_DEFAULTS.roleNameLimited,
   },
+  "finance-read-only": {
+    email: "e2e.admin.finance-read-only@elysia.local",
+    name: "E2E Finance Read-Only Admin",
+    // FINANCE_READ without FINANCE_WRITE (L-04 open gap): the only fixture
+    // role that carries a *_READ permission without its *_WRITE sibling, so
+    // K-15's WRITE-side permission split can be driven through the real UI
+    // instead of only proven at the mutation gate by unit/shape tests.
+    permissions: ["FINANCE_READ"],
+    roleName: ADMIN_AUTH_FIXTURE_DEFAULTS.roleNameFinanceReadOnly,
+  },
 };
 
 const adminAuthFixtureInputSchema = z.object({
-  role: z.enum(["full", "limited"]).default("full"),
+  role: z.enum(["full", "limited", "finance-read-only"]).default("full"),
 });
 
 const ADMIN_AUTH_FIXTURE_EMAILS = new Set(

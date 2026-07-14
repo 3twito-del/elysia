@@ -2,7 +2,7 @@ import { createHmac } from "node:crypto";
 
 import { expect, type Page } from "@playwright/test";
 
-export type AdminAuthFixtureRole = "full" | "limited";
+export type AdminAuthFixtureRole = "full" | "limited" | "finance-read-only";
 
 export type AdminAuthFixture = {
   adminUserId: string;

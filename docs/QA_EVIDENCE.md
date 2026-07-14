@@ -6605,3 +6605,30 @@ cells and the four named open gaps (authenticated local-order *placement* +
 own-checkout success + supplier redirect, all EXTERNAL on CardCom/Shopify creds;
 per-domain *WRITE*-gate e2e; empirical concurrency MEASURE; live provider-error
 path) are enumerated there for the next pass.
+
+## Addendum (2026-07-14): admin per-domain WRITE-gate closed
+
+Closed the second named gap above. Added a `finance-read-only` fixture role
+(`src/server/services/admin-auth-fixtures.ts`) — `FINANCE_READ` without
+`FINANCE_WRITE`, the first fixture role carrying a `*_READ` permission
+without its `*_WRITE` sibling — and one new test in `critical-flows.spec.ts`,
+"a FINANCE_READ-only admin reaches Finance but a real write is blocked
+through the UI": signs in as the new role, confirms `/admin/finance` renders
+(heading "Finance", no forbidden banner), then submits the chart-of-accounts
+reset button (`seedChartAction`, gated by `requireAdmin("FINANCE_WRITE")`,
+chosen because it needs no form input and is always rendered) and asserts
+the shared `admin-error-boundary` renders instead of the write silently
+succeeding. This is the real-UI counterpart K-15's WRITE split previously
+lacked — it was provable only at the mutation/service gate by unit/shape
+tests.
+
+Verification: `pnpm exec playwright test tests/e2e/critical-flows.spec.ts -g
+"FINANCE_READ-only admin reaches Finance|per-domain permission split"
+--project=chromium-desktop` → **2 passed** (new test + the neighboring
+permission-split test, re-run to confirm no regression from the new fixture
+role). `copy:sync`/`copy:check` synced, `tsc --noEmit` clean, `eslint` clean,
+full unit suite **1681/1681** passing, `next build` green.
+
+Remaining named gaps: authenticated local-order placement + own-checkout
+success + supplier redirect (EXTERNAL, CardCom/Shopify creds); empirical
+concurrency proof (K-05 MEASURE); live provider-error path (EXTERNAL).

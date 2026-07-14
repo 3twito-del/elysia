@@ -503,19 +503,20 @@ have been deleted; partially done items state only their remaining scope.
   reaches `/admin/catalog`, denied on orders/finance/crm/erp/inventory/analytics/
   customers), **offline-degraded checkout** (payment status→unavailable, both
   pay actions disabled, recovers on reconnect, no crash), PWA offline (cached
-  PDP, offline size-save, queued add-to-cart), and **search under Typesense
-  unreachable** (real fixture catalog results + count, no invented/empty state).
+  PDP, offline size-save, queued add-to-cart), **search under Typesense
+  unreachable** (real fixture catalog results + count, no invented/empty state),
+  and **admin per-domain WRITE-gate** (a new `finance-read-only` fixture role —
+  `FINANCE_READ` without `FINANCE_WRITE` — reaches `/admin/finance` but a real
+  form-submitted write (`seedChartAction`) is blocked, proving K-15's WRITE
+  split through the real UI, not just at the mutation gate).
   **Open gaps (named):** (1) authenticated-customer *local order placement* +
   own-checkout payment success + supplier click-out redirect — blocked on
-  CardCom/Shopify credentials (G-01/G-02/G-04, EXTERNAL); (2) admin per-domain
-  *WRITE*-gate e2e (K-15 split proven only at the mutation gate by unit/shape
-  tests; needs a `FINANCE_READ`-without-`FINANCE_WRITE` fixture role to drive via
-  UI); (3) empirical two-simultaneous-checkout concurrency proof (K-05 MEASURE);
-  (4) provider-down for a live Shopify/CardCom error (no creds locally → mock
-  path, EXTERNAL). Harness note: `signInAdminWithFixture` shares one fixture
-  account per role, so admin tests can contend under parallel projects (shared
-  TOTP secret) — verified serialized. Evidence: `docs/QA_EVIDENCE.md` →
-  `l-04-full-state-matrix`.
+  CardCom/Shopify credentials (G-01/G-02/G-04, EXTERNAL); (2) empirical
+  two-simultaneous-checkout concurrency proof (K-05 MEASURE); (3) provider-down
+  for a live Shopify/CardCom error (no creds locally → mock path, EXTERNAL).
+  Harness note: `signInAdminWithFixture` shares one fixture account per role,
+  so admin tests can contend under parallel projects (shared TOTP secret) —
+  verified serialized. Evidence: `docs/QA_EVIDENCE.md` → `l-04-full-state-matrix`.
 - **L-05 Production deployment evidence refresh** · P0 · NOW after each
   release — commit SHA, deployment ID, alias, smoke, 60-minute clean-log
   window; recorded in `docs/QA_EVIDENCE.md`.
