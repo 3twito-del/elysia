@@ -5,7 +5,7 @@ former `docs/qa/*.md` file, preserved verbatim as recorded evidence. New QA
 evidence is appended as a new `## Evidence:` section; existing sections are
 historical records and are not rewritten.
 
-Sections: 63
+Sections: 64
 
 ## Index
 
@@ -50,6 +50,7 @@ Sections: 63
 - [k-02-role-permission-review](#evidence-k-02-role-permission-review)
 - [k-05-inventory-correctness](#evidence-k-05-inventory-correctness)
 - [k-06-webhook-scope-drift-detection](#evidence-k-06-webhook-scope-drift-detection)
+- [k-13-user-feedback-migration-gap](#evidence-k-13-user-feedback-migration-gap)
 - [k-14-audit-trail-completion](#evidence-k-14-audit-trail-completion)
 - [k-15-permission-domain-split](#evidence-k-15-permission-domain-split)
 - [l-02-stable-browser-evidence-collection](#evidence-l-02-stable-browser-evidence-collection)
@@ -6455,6 +6456,76 @@ webhook/scope-drift half.
   (`getAdminAccessToken`, `getAdminGraphqlUrl`'s sibling REST URL builder),
   consistent with this file's existing untested-orchestration /
   tested-pure-logic split.
+
+---
+
+<a id="evidence-k-13-user-feedback-migration-gap"></a>
+
+## Evidence: k-13-user-feedback-migration-gap
+
+# K-13 Missing `UserFeedback` Migration — Found and Fixed Live
+
+Date: 2026-07-14.
+
+## Finding
+
+While generating H-05's migration via `prisma migrate diff --from-migrations
+prisma/migrations --to-schema-datamodel prisma/schema.prisma
+--shadow-database-url ...`, the raw output included changes unrelated to
+H-05: a `UserFeedback` table, a `_BlogPostToBlogTag`/`_BlogPostToProduct`
+many-to-many primary-key change, and `ServiceSettings` default-value changes
+-- none with a corresponding file in `prisma/migrations/`. Confirmed this
+predates the current session: `git diff --stat prisma/schema.prisma` showed
+only H-05's own +36 lines.
+
+`UserFeedback` is not cosmetic -- `src/app/actions.ts`'s `submitFeedback`
+(backing the site-wide feedback button, `src/components/feedback-button.tsx`)
+calls `db.userFeedback.create(...)` on every submission. Since production
+applies migrations via `prisma migrate deploy`
+(`scripts/vercel-production-migrate.mjs`, run in the Vercel `prebuild` step),
+a model with no migration file would never have its table created in
+production.
+
+## Verification against production (read-only, before any fix)
+
+- `npx vercel env pull .env.k13check --environment=production` for a fresh,
+  valid production `DATABASE_URL` (the one in the repo's existing
+  `.env.local` had gone stale and failed auth).
+- `db.$queryRawUnsafe` (read-only) against
+  `information_schema.tables`: confirmed `UserFeedback` **does not exist** in
+  production; `_BlogPostToBlogTag`/`_BlogPostToProduct` **do** exist (their
+  exact PK/index shape vs. `schema.prisma` was not diffed further).
+- Confirmed via the same connection that H-05's own migration
+  (`20260714000000_service_case_timeline`) had already applied cleanly
+  (`ServiceRequestEvent` present, recorded in `_prisma_migrations` with a
+  `finished_at` timestamp) before this check ran.
+
+## Fix
+
+`prisma/migrations/20260714010000_user_feedback_table` (additive-only):
+creates `UserFeedback`, its `createdAt` index, and its `customerId` FK to
+`Customer` -- hand-isolated from the raw diff to exclude the unrelated blog
+PK / `ServiceSettings` changes, which are lower-severity and left for a
+separate follow-up (see `docs/TASKS.md` K-13).
+
+## Verification
+
+- Applied to local dev DB (`prisma db execute`); a real
+  `db.userFeedback.create` followed by cleanup round-tripped successfully
+  (previously would have thrown "relation does not exist").
+- `pnpm copy:sync`/`copy:check` synced, `tsc --noEmit` clean, `eslint` clean,
+  full unit suite **1681/1681** passing, `next build` green.
+- Temporary `.env.k13check` and scratch SQL files deleted after use; no
+  production credentials committed to the repository.
+
+## Residual
+
+The `_BlogPostToBlogTag`/`_BlogPostToProduct` PK shape and `ServiceSettings`
+default values still lack a migration file. Neither is confirmed
+live-breaking (the tables/row already exist; only the exact constraint shape
+and default-for-new-rows behavior are unverified against `schema.prisma`),
+so this is left as documented residual rather than bundled into an
+under-verified fix.
 
 ---
 

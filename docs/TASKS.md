@@ -465,23 +465,26 @@ have been deleted; partially done items state only their remaining scope.
 - **K-12 Physical boutique scope** · P2 · OWNER — keep the truthful online-only
   route or provide verified branch data; never imply boutiques that do not
   exist.
-- **K-13 Missing migration for `UserFeedback` + blog-tables (found 2026-07-14)**
-  · P0 · NOW — `prisma migrate diff` between the committed `prisma/migrations/`
-  history and `prisma/schema.prisma` (both predating today's H-05 change)
-  showed drift unrelated to any single feature: the `UserFeedback` model
-  (used live by `submitFeedback` in `src/app/actions.ts`), a `_BlogPostToBlogTag`/
-  `_BlogPostToProduct` many-to-many PK change, and `ServiceSettings` default-value
-  changes have no corresponding migration file. Since production applies
-  migrations via `prisma migrate deploy` (`scripts/vercel-production-migrate.mjs`,
-  additive-only), if these were never applied out-of-band, the `UserFeedback`
-  table likely does not exist in production and every feedback submission is
-  failing there right now. Not confirmed against production directly (a
-  read-only `prisma db execute` probe against the pulled production
-  `DATABASE_URL` failed auth from this environment) — needs an authenticated
-  check of production `information_schema.tables`, then a catch-up migration
-  generated the same way this session's H-05 migration was (hand-verified
-  `prisma migrate diff --from-migrations ... --to-schema-datamodel ...` output,
-  isolating only the intended changes) if the table is confirmed missing.
+- **K-13 Missing migration for blog-tables PK / `ServiceSettings` defaults —
+  residual** · P2 · NOW+MEASURE — `prisma migrate diff` between the committed
+  `prisma/migrations/` history and `prisma/schema.prisma` showed drift
+  unrelated to any single feature. The urgent part is closed: `UserFeedback`
+  (used live by `submitFeedback` in `src/app/actions.ts`) was confirmed
+  **missing from production** via a direct, read-only `information_schema`
+  query against a freshly `vercel env pull`-ed production `DATABASE_URL` —
+  every feedback submission had been failing there — and
+  `prisma/migrations/20260714010000_user_feedback_table` (additive-only,
+  hand-isolated from the full diff) fixes it; verified against the local dev
+  DB (table created, a real `db.userFeedback.create` + cleanup round-trip
+  succeeded) — see `docs/QA_EVIDENCE.md` for production deployment
+  confirmation once pushed. Remaining, lower-severity: the diff also showed
+  a `_BlogPostToBlogTag`/`_BlogPostToProduct` many-to-many PK change (tables
+  already exist in production per the same check; the exact PK/index shape
+  vs. `schema.prisma` was not diffed row-by-row) and `ServiceSettings`
+  default-value changes (affects only newly-inserted rows without an
+  explicit value; the singleton `id: "default"` row already exists, so this
+  is not believed to be live-breaking). Needs the same
+  diff-and-hand-isolate treatment as a follow-up, at lower urgency.
 
 ### L — QA, measurement, release proof
 
