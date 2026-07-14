@@ -71,10 +71,21 @@ export type ShopifyLiveVariant = {
   currencyCode: string;
 };
 
+export type ShopifyRegisteredWebhook = {
+  topic: string;
+  address: string;
+};
+
 export interface ShopifyDropshipProvider {
   createCart(input: {
     lines: ShopifyCartLineInput[];
   }): Promise<ShopifyCartCheckout>;
+  /**
+   * K-06 drift detection: the access scopes actually granted to the stored
+   * admin token. `null` only in non-production environments without Shopify
+   * credentials; in production a missing configuration throws.
+   */
+  getGrantedAccessScopes(): Promise<string[] | null>;
   /**
    * ADR 0012 click-out verification: live variant-level truth fetched at the
    * moment before the supplier-checkout redirect. Returns `null` only in
@@ -86,6 +97,14 @@ export interface ShopifyDropshipProvider {
   }): Promise<ShopifyLiveVariant[] | null>;
   isConfigured(): boolean;
   isEnabled(): boolean;
+  /**
+   * K-06 drift detection: the webhook subscriptions currently registered on
+   * the Shopify side, so they can be compared against the topics/address
+   * this app's receiver depends on. `null` only in non-production
+   * environments without Shopify credentials; in production a missing
+   * configuration throws.
+   */
+  listWebhookSubscriptions(): Promise<ShopifyRegisteredWebhook[] | null>;
   listProducts(input?: { first?: number }): Promise<ShopifyCatalogPage>;
 }
 
@@ -409,6 +428,16 @@ const adminTokenResponseSchema = z.object({
   scope: z.string().optional(),
 });
 
+const webhooksListResponseSchema = z.object({
+  webhooks: z.array(
+    z.object({ topic: z.string(), address: z.string() }).passthrough(),
+  ),
+});
+
+const accessScopesResponseSchema = z.object({
+  access_scopes: z.array(z.object({ handle: z.string() }).passthrough()),
+});
+
 const storefrontTokenCreateResponseSchema = z.object({
   data: z
     .object({
@@ -595,6 +624,54 @@ class StorefrontShopifyDropshipProvider implements ShopifyDropshipProvider {
     return mapStorefrontVariantNodesResponse(await response.json());
   }
 
+  async listWebhookSubscriptions(): Promise<ShopifyRegisteredWebhook[] | null> {
+    if (!this.isEnabled()) {
+      throw new Error(SHOPIFY_DROPSHIP_DISABLED_ERROR);
+    }
+
+    if (!this.isConfigured()) {
+      if (this.config.NODE_ENV === "production") {
+        throw new Error(SHOPIFY_DROPSHIP_CONFIG_ERROR);
+      }
+
+      return null;
+    }
+
+    const response = await fetch(this.getAdminRestUrl("webhooks.json"), {
+      headers: { "X-Shopify-Access-Token": await this.getAdminAccessToken() },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Shopify Admin API failed with ${response.status}.`);
+    }
+
+    return mapShopifyWebhooksListResponse(await response.json());
+  }
+
+  async getGrantedAccessScopes(): Promise<string[] | null> {
+    if (!this.isEnabled()) {
+      throw new Error(SHOPIFY_DROPSHIP_DISABLED_ERROR);
+    }
+
+    if (!this.isConfigured()) {
+      if (this.config.NODE_ENV === "production") {
+        throw new Error(SHOPIFY_DROPSHIP_CONFIG_ERROR);
+      }
+
+      return null;
+    }
+
+    const response = await fetch(this.getAccessScopesUrl(), {
+      headers: { "X-Shopify-Access-Token": await this.getAdminAccessToken() },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Shopify Admin API failed with ${response.status}.`);
+    }
+
+    return mapShopifyAccessScopesResponse(await response.json());
+  }
+
   private async listProductsWithAdminApi(input: { first?: number }) {
     const response = await fetch(this.getAdminGraphqlUrl(), {
       method: "POST",
@@ -696,6 +773,19 @@ class StorefrontShopifyDropshipProvider implements ShopifyDropshipProvider {
     const version = this.config.SHOPIFY_API_VERSION?.trim() ?? "2026-04";
 
     return `https://${domain}/admin/api/${version}/graphql.json`;
+  }
+
+  private getAdminRestUrl(resource: string) {
+    const domain = normalizeShopifyDomain(this.config.SHOPIFY_STORE_DOMAIN);
+    const version = this.config.SHOPIFY_API_VERSION?.trim() ?? "2026-04";
+
+    return `https://${domain}/admin/api/${version}/${resource}`;
+  }
+
+  private getAccessScopesUrl() {
+    const domain = normalizeShopifyDomain(this.config.SHOPIFY_STORE_DOMAIN);
+
+    return `https://${domain}/admin/oauth/access_scopes.json`;
   }
 
   private getStorefrontGraphqlUrl() {
@@ -941,6 +1031,21 @@ export function mapStorefrontVariantNodesResponse(
       },
     ];
   });
+}
+
+export function mapShopifyWebhooksListResponse(
+  payload: unknown,
+): ShopifyRegisteredWebhook[] {
+  return webhooksListResponseSchema.parse(payload).webhooks.map((webhook) => ({
+    address: webhook.address,
+    topic: webhook.topic,
+  }));
+}
+
+export function mapShopifyAccessScopesResponse(payload: unknown): string[] {
+  return accessScopesResponseSchema
+    .parse(payload)
+    .access_scopes.map((scope) => scope.handle);
 }
 
 export function normalizeShopifyDomain(value: string | undefined) {

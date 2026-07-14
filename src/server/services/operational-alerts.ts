@@ -9,6 +9,10 @@ import { db } from "~/server/db";
 import { countRecentAdminLoginFailures } from "~/server/services/admin-security";
 import { getEventClassPolicy } from "~/server/services/event-classes";
 import { recordJobRun } from "~/server/services/outbox";
+import {
+  checkShopifyIntegrationDrift,
+  type ShopifyIntegrationDriftReport,
+} from "~/server/services/shopify-integration-drift";
 
 export const ALERT_SWEEP_JOB_NAME = "operational-alert-sweep";
 
@@ -177,6 +181,49 @@ export function evaluateOutboxInvariants(input: {
   return violations;
 }
 
+/** Pure: turns a Shopify drift report (K-06) into alert violations, if any. */
+export function buildShopifyDriftViolations(
+  drift: ShopifyIntegrationDriftReport | null,
+): AlertViolation[] {
+  if (!drift || drift.ok) return [];
+
+  const violations: AlertViolation[] = [];
+
+  for (const webhook of drift.webhooks) {
+    if (webhook.status === "ok") continue;
+
+    violations.push({
+      alertKey: `shopify-webhook-drift:${webhook.topic}`,
+      class: "SYSTEM",
+      severity: "P1",
+      invariant: "shopify-order-webhooks-registered-and-current",
+      message:
+        webhook.status === "missing"
+          ? `Shopify webhook topic "${webhook.topic}" is not registered.`
+          : `Shopify webhook topic "${webhook.topic}" points at an unexpected address: ${webhook.registeredAddress}.`,
+      entityType: "ShopifyWebhookSubscription",
+      entityId: webhook.topic,
+      remediationHint:
+        "Re-register the missing/misdirected webhook topic in the Shopify admin (Settings > Notifications > Webhooks) pointing at /api/webhooks/shopify/orders.",
+    });
+  }
+
+  if (drift.missingScopes.length > 0) {
+    violations.push({
+      alertKey: "shopify-scope-drift",
+      class: "SYSTEM",
+      severity: "P1",
+      invariant: "shopify-admin-token-has-required-scopes",
+      message: `Shopify admin token is missing required scope(s): ${drift.missingScopes.join(", ")}.`,
+      measuredValue: String(drift.grantedScopeCount),
+      remediationHint:
+        "Reinstall or reauthorize the Shopify app with the missing scope(s), then rotate SHOPIFY_ADMIN_ACCESS_TOKEN.",
+    });
+  }
+
+  return violations;
+}
+
 function outboxAlertClass(eventClass: string): OperationalAlertClass {
   if (eventClass === "CUSTOMER_COMMUNICATION") {
     return "CUSTOMER_COMMUNICATION";
@@ -337,6 +384,12 @@ export async function sweepOperationalInvariants(now: Date = new Date()) {
     });
   }
 
+  // 5. Shopify integration drift: webhook registration + token scope (K-06).
+  //    `null` when dropshipping isn't enabled/configured -- nothing to check.
+  const shopifyDrift = await checkShopifyIntegrationDrift({ now });
+
+  violations.push(...buildShopifyDriftViolations(shopifyDrift));
+
   // Raise / refresh all violated invariants, then auto-resolve cleared ones.
   for (const violation of violations) {
     await raiseOperationalAlert(violation, now);
@@ -351,6 +404,8 @@ export async function sweepOperationalInvariants(now: Date = new Date()) {
       "money-paid-without-gl:",
       "reservations-expired-unreleased",
       "security-admin-login-failures",
+      "shopify-webhook-drift:",
+      "shopify-scope-drift",
     ],
   });
 

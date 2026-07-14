@@ -447,11 +447,12 @@ have been deleted; partially done items state only their remaining scope.
   the customer paid for an order marked cancelled) — needs a manual
   finance/refund reconciliation path, tracked as an EXTERNAL+OWNER follow-up
   once CardCom refund credentials exist (G-04), not an inventory gap.
-- **K-06 Catalog and provider drift detection — residual** · P1 · NOW —
-  the fail-closed click-out verification, price-drift re-confirmation, and the
-  scheduled sync job are shipped (ADR 0012). Remaining scope: mirror-staleness
-  alerting against the 12h freshness SLO (needs the 6h cadence unlocked by
-  Fact B) and webhook-registration/token-scope drift checks.
+- **K-06 Catalog and provider drift detection — residual** · P1 · NOW+MEASURE —
+  the fail-closed click-out verification, price-drift re-confirmation, the
+  scheduled sync job (ADR 0012), and webhook-registration/token-scope drift
+  checks (wired into the existing operational-alert sweep) are shipped.
+  Remaining scope: mirror-staleness alerting against the 12h freshness SLO
+  (needs the 6h cadence unlocked by Fact B).
 - **K-07 Backups and recovery** · P0 · EXTERNAL+MEASURE — restore drill meets
   RPO/RTO. (ADR 0008: PITR is a launch requirement; drill is acceptance;
   blocked on owner Fact A — Postgres provider/tier.)

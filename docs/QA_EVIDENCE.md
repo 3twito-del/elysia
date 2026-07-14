@@ -5,7 +5,7 @@ former `docs/qa/*.md` file, preserved verbatim as recorded evidence. New QA
 evidence is appended as a new `## Evidence:` section; existing sections are
 historical records and are not rewritten.
 
-Sections: 61
+Sections: 62
 
 ## Index
 
@@ -48,6 +48,7 @@ Sections: 61
 - [k-08-dependency-review](#evidence-k-08-dependency-review)
 - [k-02-role-permission-review](#evidence-k-02-role-permission-review)
 - [k-05-inventory-correctness](#evidence-k-05-inventory-correctness)
+- [k-06-webhook-scope-drift-detection](#evidence-k-06-webhook-scope-drift-detection)
 - [k-14-audit-trail-completion](#evidence-k-14-audit-trail-completion)
 - [k-15-permission-domain-split](#evidence-k-15-permission-domain-split)
 - [l-02-stable-browser-evidence-collection](#evidence-l-02-stable-browser-evidence-collection)
@@ -6286,6 +6287,77 @@ checkouts of one low-stock variant asserting exactly one success + one
 Residual. Correctness work shipped and evidenced; `docs/TASKS.md` K-05 row
 edited in place to the two remaining items (empirical concurrency MEASURE e2e;
 captured-payment-on-cancelled-order money reconciliation).
+
+---
+
+<a id="evidence-k-06-webhook-scope-drift-detection"></a>
+
+## Evidence: k-06-webhook-scope-drift-detection
+
+# K-06 Catalog and Provider Drift Detection — Webhook/Scope Drift Slice
+
+Date: 2026-07-14.
+
+Scope: of K-06's residual remaining scope ("mirror-staleness alerting" and
+"webhook-registration/token-scope drift checks"), only the latter was
+buildable now — mirror-staleness alerting needs the 6h sync cadence that is
+blocked on owner Fact B, so it stays residual. This closes the
+webhook/scope-drift half.
+
+## What shipped
+
+- `src/server/adapters/shopify.ts`: two new `ShopifyDropshipProvider`
+  methods, `listWebhookSubscriptions()` (REST `GET
+  /admin/api/{version}/webhooks.json`) and `getGrantedAccessScopes()` (REST
+  `GET /admin/oauth/access_scopes.json`), following the exact
+  isEnabled/isConfigured gating and `null`-in-dev/throw-in-prod convention
+  the existing `getVariantNodes` method already uses. Two new pure,
+  independently tested mapper functions,
+  `mapShopifyWebhooksListResponse`/`mapShopifyAccessScopesResponse`.
+- `src/server/services/shopify-integration-drift.ts` (new): declares what
+  this app actually depends on, traced to real code rather than assumed —
+  `EXPECTED_SHOPIFY_ORDER_WEBHOOK_TOPICS` (`orders/create`, `orders/updated`,
+  `orders/cancelled` — all three needed because
+  `mirrorShopifyOrderWebhook` is topic-agnostic and Shopify doesn't always
+  emit `orders/updated` for a cancellation) and
+  `REQUIRED_SHOPIFY_ACCESS_SCOPES` (`read_products` for the admin catalog
+  sync query; `read_orders`, which Shopify requires before it will deliver
+  any `orders/*` webhook at all). The pure `evaluateShopifyIntegrationDrift`
+  compares already-fetched state against these; `checkShopifyIntegrationDrift`
+  wraps the live provider calls and returns `null` when dropshipping isn't
+  enabled/configured (nothing to check yet).
+- `src/server/services/operational-alerts.ts`: wired into the existing ADR
+  0007 sweep (`sweepOperationalInvariants`, run from `/api/jobs/outbox`) as a
+  new step 5, using the existing `OperationalAlert` dedup/escalation/
+  auto-resolve machinery rather than a new mechanism. New pure
+  `buildShopifyDriftViolations()` turns a drift report into `AlertViolation`s
+  (`SYSTEM` class, `P1`): one per missing/misdirected webhook topic
+  (`shopify-webhook-drift:<topic>`) and one for missing scopes
+  (`shopify-scope-drift`). Added the two new alertKey prefixes to
+  `resolveClearedAlerts`'s scopes so a cleared drift auto-resolves like every
+  other invariant here.
+
+## Verification
+
+- New unit tests: `shopify.test.ts` (2 new cases — webhook list mapping,
+  access scope mapping), `shopify-integration-drift.test.ts` (5 cases — ok,
+  missing topic, address-mismatch, missing scope, address-fallback),
+  `operational-alerts.test.ts` (3 new cases for
+  `buildShopifyDriftViolations`, including the "not configured" and "clean"
+  no-op paths).
+- `pnpm check`-equivalent: `copy:sync`/`copy:check` synced, `tsc --noEmit`
+  clean, `eslint` clean on changed files, full unit suite **1681/1681**
+  passing, `next build` green.
+- Not live-tested against a real Shopify store: this repo's Shopify
+  dropshipping integration is optional and unconfigured in this
+  environment (`SHOPIFY_DROPSHIP_ENABLED` unset), matching every other
+  Shopify-adapter method's existing test convention (fixture-payload unit
+  tests only, no live store in CI). The orchestration function
+  (`checkShopifyIntegrationDrift`) is a thin, direct wire-up of already-
+  tested pure logic to already-existing, already-used provider methods
+  (`getAdminAccessToken`, `getAdminGraphqlUrl`'s sibling REST URL builder),
+  consistent with this file's existing untested-orchestration /
+  tested-pure-logic split.
 
 ---
 

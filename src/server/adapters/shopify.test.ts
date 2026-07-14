@@ -5,6 +5,8 @@ import { describe, expect, it } from "vitest";
 import {
   getShopifyAdminOrderUrl,
   mapAdminProductsResponse,
+  mapShopifyAccessScopesResponse,
+  mapShopifyWebhooksListResponse,
   mapStorefrontCartCreateResponse,
   mapStorefrontProductsResponse,
   mapStorefrontTokenCreateResponse,
@@ -232,5 +234,46 @@ describe("Shopify dropship adapter", () => {
         signature: "invalid",
       }),
     ).toBe(false);
+  });
+
+  it("maps a webhooks.json response into registered topic/address pairs (K-06)", () => {
+    expect(
+      mapShopifyWebhooksListResponse({
+        webhooks: [
+          {
+            id: 1,
+            topic: "orders/create",
+            address: "https://elysia-jewellery.com/api/webhooks/shopify/orders",
+          },
+          {
+            id: 2,
+            topic: "orders/updated",
+            address: "https://stale-preview-url.vercel.app/api/webhooks/shopify/orders",
+          },
+        ],
+      }),
+    ).toEqual([
+      {
+        topic: "orders/create",
+        address: "https://elysia-jewellery.com/api/webhooks/shopify/orders",
+      },
+      {
+        topic: "orders/updated",
+        address: "https://stale-preview-url.vercel.app/api/webhooks/shopify/orders",
+      },
+    ]);
+    expect(mapShopifyWebhooksListResponse({ webhooks: [] })).toEqual([]);
+  });
+
+  it("maps an access_scopes.json response into a flat scope handle list (K-06)", () => {
+    expect(
+      mapShopifyAccessScopesResponse({
+        access_scopes: [
+          { handle: "read_products" },
+          { handle: "read_orders" },
+        ],
+      }),
+    ).toEqual(["read_products", "read_orders"]);
+    expect(mapShopifyAccessScopesResponse({ access_scopes: [] })).toEqual([]);
   });
 });

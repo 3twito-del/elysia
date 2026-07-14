@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   ALERT_ESCALATION_COOLDOWNS_MS,
+  buildShopifyDriftViolations,
   evaluateOutboxInvariants,
   nextNotificationDelayMs,
   shouldNotifyAlert,
@@ -203,5 +204,65 @@ describe("evaluateOutboxInvariants", () => {
       class: "MONEY",
       severity: "P0",
     });
+  });
+});
+
+describe("buildShopifyDriftViolations (K-06)", () => {
+  it("stays quiet when Shopify dropshipping isn't configured", () => {
+    expect(buildShopifyDriftViolations(null)).toEqual([]);
+  });
+
+  it("stays quiet when the drift report is clean", () => {
+    expect(
+      buildShopifyDriftViolations({
+        checkedAt: now.toISOString(),
+        grantedScopeCount: 2,
+        missingScopes: [],
+        ok: true,
+        webhooks: [
+          { status: "ok", topic: "orders/create" },
+          { status: "ok", topic: "orders/updated" },
+          { status: "ok", topic: "orders/cancelled" },
+        ],
+      }),
+    ).toEqual([]);
+  });
+
+  it("raises one violation per missing or mismatched webhook, plus a scope violation", () => {
+    const violations = buildShopifyDriftViolations({
+      checkedAt: now.toISOString(),
+      grantedScopeCount: 1,
+      missingScopes: ["read_orders"],
+      ok: false,
+      webhooks: [
+        { status: "missing", topic: "orders/create" },
+        {
+          registeredAddress: "https://stale.vercel.app/api/webhooks/shopify/orders",
+          status: "address-mismatch",
+          topic: "orders/updated",
+        },
+        { status: "ok", topic: "orders/cancelled" },
+      ],
+    });
+
+    expect(violations).toHaveLength(3);
+    expect(violations[0]).toMatchObject({
+      alertKey: "shopify-webhook-drift:orders/create",
+      class: "SYSTEM",
+      severity: "P1",
+    });
+    expect(violations[1]).toMatchObject({
+      alertKey: "shopify-webhook-drift:orders/updated",
+      class: "SYSTEM",
+      severity: "P1",
+    });
+    expect(violations[1]?.message).toContain("stale.vercel.app");
+    expect(violations[2]).toMatchObject({
+      alertKey: "shopify-scope-drift",
+      class: "SYSTEM",
+      severity: "P1",
+      measuredValue: "1",
+    });
+    expect(violations[2]?.message).toContain("read_orders");
   });
 });
